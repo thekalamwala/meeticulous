@@ -335,7 +335,7 @@ function Timeline({ timeline }) {
       <div className="fp-tl-mobile">
         {nodes.map((n, i) => (
           <div key={n.title} className="fp-tl-step">
-            <span className="n" style={{ background: tlColor(i), color: tlColor(i) === '#FFCC1C' ? '#191919' : '#fff' }}>{i + 1}</span>
+            <span className="n" style={{ background: tlColor(i), color: tlColor(i) === '#FFCC1C' ? '#1E0B4D' : '#fff' }}>{i + 1}</span>
             <div><div style={{ fontWeight: 700 }}>{n.title}</div><div style={{ fontSize: 13, color: 'var(--fp-muted)', marginTop: 2 }}>{n.desc}</div></div>
           </div>
         ))}

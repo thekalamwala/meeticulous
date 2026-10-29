@@ -440,7 +440,7 @@ const PlanEarningsBars = ({ planContracted, planEarnings, period, onPeriod }) =>
   ];
   const series = [
     { key: 'contracted', label: 'Contracted (plan × holders)', color: '#2E1065', data: planContracted },
-    { key: 'collected',  label: 'Collected (paid to us)',      color: '#191919', data: planEarnings },
+    { key: 'collected',  label: 'Collected (paid to us)',      color: '#1E0B4D', data: planEarnings },
   ];
   const valueOf = (g, s) => Number(s.data?.[g.key]) || 0;
   const max = Math.max(1, ...groups.flatMap((g) => series.map((s) => valueOf(g, s))));

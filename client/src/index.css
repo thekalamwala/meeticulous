@@ -433,7 +433,7 @@ button[role='switch'] {
 /* Calm neutral surface palette */
 .sloth-bg-canvas { background: #F8FAFC; }
 .sloth-bg-sand   { background: #F1F5F9; }
-.sloth-ink       { color: #191919; }
+.sloth-ink       { color: #1E0B4D; }
 .sloth-muted     { color: #6b6b6b; }
 
 /* Hero ambient aura — soft warm wash on the flat canvas (no palette change).

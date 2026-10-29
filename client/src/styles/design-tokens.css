@@ -23,7 +23,7 @@
     --surface: #FFFFFF;          /* cards, inputs, modals */
 
     /* ── Neutrals: text ramp ───────────────────────────────── */
-    --text-strong: #191919;      /* primary text / headings */
+    --text-strong: #1E0B4D;      /* primary text / headings */
     --text-secondary: #334155;   /* body / secondary */
     --text-muted: #64748B;       /* meta, captions, placeholder */
     --text-disabled: #94A3B8;
@@ -102,12 +102,12 @@
        off (Phase B/C). Still consumed by styles/base-fb.css + styles/
        components/*.css + a few global rules. Do not use in new UI. */
     --bg: var(--canvas);
-    --text: #191919;                        /* legacy strong-ink alias (global h1 color, fb-*) */
+    --text: #1E0B4D;                        /* legacy strong-ink alias (global h1 color, fb-*) */
     --secondary: #D8B4FE;                   /* DEPRECATED — Book-A-Sloth purple */
     --accent: #FFB703;                      /* DEPRECATED — amber, only .fb-badge--accent */
     --success: #4CAF50;                     /* legacy alias; prefer --success-fg */
     --danger: #EF4444;                      /* legacy alias; prefer --error-fg */
-    --border: #191919;                      /* DEPRECATED — brutalist 3px ink border (fb-card/modal) */
+    --border: #1E0B4D;                      /* DEPRECATED — brutalist 3px ink border (fb-card/modal) */
     --color-ink: var(--text);
     --color-muted: #64748b;
     --color-soft: var(--canvas);

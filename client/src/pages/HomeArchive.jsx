@@ -1475,7 +1475,7 @@ const HomeArchive = () => {
                     className="border-t px-5 py-3 text-center text-sm font-semibold"
                     style={{
                       borderColor: "color-mix(in srgb, var(--cc) 16%, transparent)",
-                      color: "color-mix(in srgb, var(--cc) 80%, #191919)",
+                      color: "color-mix(in srgb, var(--cc) 80%, #1E0B4D)",
                     }}
                   >
                     {shot.title}

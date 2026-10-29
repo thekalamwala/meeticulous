@@ -22,12 +22,12 @@ const isAllowedPath = (p) =>
 
 // Bolt — Meeticulous's floating support assistant. Mounted app-wide (App.jsx).
 // Blended look: reference-widget layout + polish, on Meeticulous's brand (orange
-// #2E1065 + ink #191919, Plus Jakarta headings / Poppins body, medium borders).
+// #2E1065 + ink #1E0B4D, Plus Jakarta headings / Poppins body, medium borders).
 // The answer STREAMS in over SSE and renders through <Markdown>, so the model's
 // **bold**/links render as formatting — raw HTML tags are never shown.
 
 const PRIMARY = '#2E1065';
-const INK = '#191919';
+const INK = '#1E0B4D';
 
 // Post-handoff satisfaction scale — 1..5, coloured worst→best. Click = auto-submit.
 const FEEDBACK = [

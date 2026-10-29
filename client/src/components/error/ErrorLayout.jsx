@@ -42,7 +42,7 @@ export default function ErrorLayout({
   };
 
   return (
-    <main className="bas-error min-h-screen w-full flex items-center justify-center px-5 py-12 bg-[#F1F2F2] text-[#191919]">
+    <main className="bas-error min-h-screen w-full flex items-center justify-center px-5 py-12 bg-[#F1F2F2] text-[#1E0B4D]">
       {/* Error pages must never be indexed and carry no canonical. */}
       <Seo title={seoTitle} robots="noindex, nofollow, noarchive" />
 
@@ -50,13 +50,13 @@ export default function ErrorLayout({
       <div className="bas-error__card w-full max-w-3xl text-center px-7 py-10 sm:px-10 sm:py-12">
         {/* Sloth art — random PNG variant on 404/410, line-art elsewhere. No
             wordmark beside it. */}
-        <div className="flex justify-center mb-6 text-[#191919]">
+        <div className="flex justify-center mb-6 text-[#1E0B4D]">
           <ErrorIllustration art={art} image={image} />
         </div>
 
         {/* Explicit colour: a global `h1 { color: var(--text) }` (base-fb.css) is
             not theme-aware and would force the title dark-on-dark. */}
-        <h1 className="font-heading text-2xl sm:text-[28px] font-semibold leading-snug mb-3 text-[#191919]">
+        <h1 className="font-heading text-2xl sm:text-[28px] font-semibold leading-snug mb-3 text-[#1E0B4D]">
           {title}
         </h1>
 
@@ -79,7 +79,7 @@ export default function ErrorLayout({
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Search services by skill or topic…"
                 aria-label="Search Meeticulous"
-                className="min-w-0 flex-1 border-0 bg-transparent py-1.5 text-[15px] text-[#191919] outline-none focus:outline-none focus:ring-0 focus:shadow-none focus:border-transparent placeholder:text-gray-400"
+                className="min-w-0 flex-1 border-0 bg-transparent py-1.5 text-[15px] text-[#1E0B4D] outline-none focus:outline-none focus:ring-0 focus:shadow-none focus:border-transparent placeholder:text-gray-400"
               />
               <button
                 type="submit"
@@ -96,7 +96,7 @@ export default function ErrorLayout({
           <button
             type="button"
             onClick={onPrimary}
-            className="inline-flex items-center justify-center w-full sm:w-auto px-7 py-3 rounded-md bg-[#2E1065] hover:bg-[#1E0B4D] active:bg-[#191919] text-white font-medium text-[15px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2E1065] focus-visible:ring-offset-2"
+            className="inline-flex items-center justify-center w-full sm:w-auto px-7 py-3 rounded-md bg-[#2E1065] hover:bg-[#1E0B4D] active:bg-[#1E0B4D] text-white font-medium text-[15px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2E1065] focus-visible:ring-offset-2"
           >
             {primaryLabel}
           </button>

@@ -16,7 +16,7 @@ export default {
         "ink-brand": "#1E0B4D",
         surface: "#ffffff",
         muted: "#6b7280",
-        ink: "#191919",
+        ink: "#1E0B4D",
         sand: "#F5F3FF",
         canvas: "#F9FAFB",
         // Accent palette — reusable multi-hue accents (Calendly-style colour).

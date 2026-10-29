@@ -59,7 +59,7 @@ export default function EscalationDetail({ id, onBack, onChanged }) {
       <div className="space-y-4">
         <div className="rounded-xl border adm-border p-3">
           <div className="mb-2 flex flex-wrap items-center gap-2">
-            <code className="rounded bg-[#FFF4EC] px-1.5 py-0.5 text-sm font-semibold text-[#191919]">{e.reference}</code>
+            <code className="rounded bg-[#FFF4EC] px-1.5 py-0.5 text-sm font-semibold text-[#1E0B4D]">{e.reference}</code>
             <Badge tone={STATUS_TONE[e.status] || 'neutral'}>{e.status}</Badge>
             <Badge tone="neutral">🦥 Bolt</Badge>
             {e.contact_verified && <Badge tone="ok">verified</Badge>}

@@ -567,19 +567,19 @@ const Home = () => {
 
       {/* ════════════════ HERO — DESKTOP/TABLET (sm+) ════════════════ */}
       {/* Mobile gets its own centered section below; this whole block is sm:block. */}
-      <section ref={heroRef} className="relative hidden px-5 pb-14 pt-8 sm:block sm:px-8 sm:pb-20 sm:pt-12 lg:pb-32 lg:pt-16">
-        {/* Ambient warm aura — adds depth on the flat canvas without changing the palette */}
-        <div aria-hidden className="sloth-hero-aura" />
+      <section ref={heroRef} className="relative hidden overflow-hidden bg-gradient-to-br from-surface-dark to-surface-darker px-5 pb-14 pt-8 sm:block sm:px-8 sm:pb-20 sm:pt-12 lg:pb-32 lg:pt-16">
+        {/* Ambient lavender glow for depth on the dark hero */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_55%_at_18%_0%,rgba(167,139,250,0.20),transparent)]" />
 
         <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-10 sm:gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
           {/* LEFT */}
           <div>
-            <Reveal instant as="h1" delay={0.05} className="text-[clamp(1.7rem,7vw,2.7rem)] font-semibold leading-[1.1] tracking-[-0.03em] text-ink sm:text-[2.7rem] sm:leading-[1.1] lg:text-[3rem]">
-              Get <span className="text-primary-cta">booked, paid, and reminded.</span>{" "}
+            <Reveal instant as="h1" delay={0.05} className="text-[clamp(1.7rem,7vw,2.7rem)] font-semibold leading-[1.1] tracking-[-0.03em] text-white sm:text-[2.7rem] sm:leading-[1.1] lg:text-[3rem]">
+              Get <span className="text-secondary">booked, paid, and reminded.</span>{" "}
               <span className="font-bold">Without the admin.</span>
             </Reveal>
 
-            <Reveal instant as="p" delay={0.12} className="mt-5 max-w-md text-base leading-relaxed text-neutral-500 sm:mt-7 sm:text-lg">
+            <Reveal instant as="p" delay={0.12} className="mt-5 max-w-md text-base leading-relaxed text-white/70 sm:mt-7 sm:text-lg">
               One link for appointments, payments, availability, invoices, and reminders.
               Built for people who sell their time.
             </Reveal>
@@ -590,15 +590,15 @@ const Home = () => {
                 <button
                   onClick={startGoogle}
                   disabled={googleLoading}
-                  className="btn flex w-full items-center justify-center gap-3 rounded-[5px] bg-ink py-3.5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] transition-opacity hover:opacity-90 disabled:opacity-50"
+                  className="btn flex w-full items-center justify-center gap-3 rounded-[5px] bg-white py-3.5 text-sm font-semibold text-[#2E1065] shadow-[0_10px_28px_rgba(0,0,0,0.28)] transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
                   <GoogleIcon />
                   {googleLoading ? "Opening Google…" : "Create Your Free Booking Page"}
                 </button>
-                <p className="mt-3 text-xs leading-relaxed text-neutral-500">
+                <p className="mt-3 text-xs leading-relaxed text-white/55">
                   By continuing, you agree to our{" "}
-                  <Link to="/terms" className="text-neutral-500 underline decoration-neutral-300 underline-offset-2 hover:text-ink">Terms &amp; Conditions</Link> and{" "}
-                  <Link to="/privacy" className="text-neutral-500 underline decoration-neutral-300 underline-offset-2 hover:text-ink">Privacy Policy</Link>.
+                  <Link to="/terms" className="text-white/75 underline decoration-white/30 underline-offset-2 hover:text-white">Terms &amp; Conditions</Link> and{" "}
+                  <Link to="/privacy" className="text-white/75 underline decoration-white/30 underline-offset-2 hover:text-white">Privacy Policy</Link>.
                 </p>
               </div>
             </Reveal>
@@ -615,9 +615,9 @@ const Home = () => {
                   {[0, 1, 2, 3, 4].map((i) => (
                     <Star key={i} size={13} className="fill-amber-400 text-amber-400" />
                   ))}
-                  <span className="ml-1 text-sm font-semibold text-ink">5/5</span>
+                  <span className="ml-1 text-sm font-semibold text-white">5/5</span>
                 </div>
-                <p className="text-xs text-neutral-500">
+                <p className="text-xs text-white/70">
                   Loved by India's creators and coaches.
                 </p>
               </div>
@@ -674,19 +674,19 @@ const Home = () => {
       {/* ════════════════ HERO — MOBILE ONLY (centered) ════════════════ */}
       {/* Same left-column content as the sm+ hero, centered. Full-viewport
           height so the hero fills the first screen; content vertically centered. */}
-      <section className="relative flex min-h-screen flex-col justify-center px-5 pb-14 pt-8 sm:hidden">
-        <div aria-hidden className="sloth-hero-aura" />
+      <section className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-gradient-to-br from-surface-dark to-surface-darker px-5 pb-14 pt-8 sm:hidden">
+        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_50%_at_50%_0%,rgba(167,139,250,0.20),transparent)]" />
 
         <div className="relative z-10 mx-auto max-w-md text-center">
           {/* Mobile hero is the responsive twin of the desktop <h1> above; both
               render in the DOM (CSS-hidden per breakpoint), so this one is an h2
               to keep a single H1 per page for crawlers. */}
-          <Reveal instant as="h2" delay={0.05} className="text-[clamp(2.2rem,9vw,3.2rem)] font-semibold leading-[1.08] tracking-[-0.03em] text-ink">
-            Get <span className="text-primary-cta">booked, paid, and reminded.</span>{" "}
+          <Reveal instant as="h2" delay={0.05} className="text-[clamp(2.2rem,9vw,3.2rem)] font-semibold leading-[1.08] tracking-[-0.03em] text-white">
+            Get <span className="text-secondary">booked, paid, and reminded.</span>{" "}
             <span className="font-bold">Without the admin.</span>
           </Reveal>
 
-          <Reveal instant as="p" delay={0.12} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-neutral-500">
+          <Reveal instant as="p" delay={0.12} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-white/70">
             One link for appointments, payments, availability, invoices, and reminders.
             Built for people who sell their time.
           </Reveal>
@@ -697,15 +697,15 @@ const Home = () => {
               <button
                 onClick={startGoogle}
                 disabled={googleLoading}
-                className="btn btn--outline flex w-full items-center justify-center gap-3 rounded-[5px] border border-black/[0.12] bg-white py-3.5 text-sm font-semibold text-ink shadow-[0_1px_2px_rgba(16,24,40,0.05)] transition-colors hover:border-black/20 disabled:opacity-50"
+                className="btn flex w-full items-center justify-center gap-3 rounded-[5px] bg-white py-3.5 text-sm font-semibold text-[#2E1065] shadow-[0_10px_28px_rgba(0,0,0,0.28)] transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 <GoogleIcon />
                 {googleLoading ? "Opening Google…" : "Create Your Free Booking Page"}
               </button>
-              <p className="mt-3 text-xs leading-relaxed text-neutral-500">
+              <p className="mt-3 text-xs leading-relaxed text-white/55">
                 By continuing, you agree to our{" "}
-                <Link to="/terms" className="text-neutral-500 underline decoration-neutral-300 underline-offset-2 hover:text-ink">Terms &amp; Conditions</Link> and{" "}
-                <Link to="/privacy" className="text-neutral-500 underline decoration-neutral-300 underline-offset-2 hover:text-ink">Privacy Policy</Link>.
+                <Link to="/terms" className="text-white/75 underline decoration-white/30 underline-offset-2 hover:text-white">Terms &amp; Conditions</Link> and{" "}
+                <Link to="/privacy" className="text-white/75 underline decoration-white/30 underline-offset-2 hover:text-white">Privacy Policy</Link>.
               </p>
             </div>
           </Reveal>
@@ -722,9 +722,9 @@ const Home = () => {
                 {[0, 1, 2, 3, 4].map((i) => (
                   <Star key={i} size={13} className="fill-amber-400 text-amber-400" />
                 ))}
-                <span className="ml-1 text-sm font-semibold text-ink">5/5</span>
+                <span className="ml-1 text-sm font-semibold text-white">5/5</span>
               </div>
-              <p className="text-center text-xs text-neutral-500">
+              <p className="text-center text-xs text-white/70">
                 Loved by India's first calm professionals.
               </p>
             </div>

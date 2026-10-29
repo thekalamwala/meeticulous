@@ -140,7 +140,7 @@ const StackSidebar = ({ nav, pathname, counts, onNavigate, onOpenPalette, onLogo
   return (
     <aside className="hidden lg:flex flex-col w-[272px] flex-shrink-0 fixed inset-y-0 left-0 z-30 bg-[#17171A] border-r border-[#232327]">
       <style>{STYLE}</style>
-      <div className="h-[60px] flex items-center gap-2.5 px-4 flex-shrink-0 border-b border-[#191919]">
+      <div className="h-[60px] flex items-center gap-2.5 px-4 flex-shrink-0 border-b border-[#1E0B4D]">
         <Link to="/super-dashboard" title="Meeticulous Admin"
           className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#2E1065' }}>
           <Ic d={IC.zap} size={13} className="text-white" strokeWidth={2.5} />
@@ -154,7 +154,7 @@ const StackSidebar = ({ nav, pathname, counts, onNavigate, onOpenPalette, onLogo
         <span className="ml-auto text-[10px] font-mono border border-[#232327] rounded px-1">⌘K</span>
       </button>
       {panels}
-      <div className="border-t border-[#191919] flex-shrink-0 p-2 space-y-0.5">
+      <div className="border-t border-[#1E0B4D] flex-shrink-0 p-2 space-y-0.5">
         <Link to="/dashboard" className="flex items-center gap-2.5 rounded-lg text-gray-600 hover:text-gray-300 hover:bg-white/[0.04] transition-colors text-[12.5px] px-2.5 py-2">
           <Ic d={IC.external} size={14} /><span>Host Dashboard</span>
         </Link>

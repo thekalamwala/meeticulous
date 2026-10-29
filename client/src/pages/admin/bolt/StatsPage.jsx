@@ -53,7 +53,7 @@ export default function StatsPage() {
               return (
                 <div key={d.source_file} className="flex items-center gap-2">
                   <div className="w-48 shrink-0 truncate text-xs adm-t2" title={d.source_file}>{name}</div>
-                  <div className="h-4 flex-1 rounded bg-[#191919]/5">
+                  <div className="h-4 flex-1 rounded bg-[#1E0B4D]/5">
                     <div className="h-4 rounded bg-[#2E1065]" style={{ width: `${Math.round((d.answers / max) * 100)}%` }} />
                   </div>
                   <div className="w-10 shrink-0 text-right text-xs font-semibold adm-t2">{d.answers}</div>

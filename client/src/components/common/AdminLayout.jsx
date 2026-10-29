@@ -109,7 +109,7 @@ const AdminLayout = ({ children }) => {
       {/* Mobile drawer — every visible section stacked (rail + sidebar collapse into one) */}
       {mobileOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setMobileOpen(false)} />}
       <aside className={`fixed inset-y-0 left-0 z-50 w-[272px] flex flex-col bg-[#17171A] transition-transform duration-300 lg:hidden ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex items-center justify-between px-4 h-[60px] border-b border-[#191919] flex-shrink-0">
+        <div className="flex items-center justify-between px-4 h-[60px] border-b border-[#1E0B4D] flex-shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background:'#2E1065' }}>
               <Ic d={IC.zap} size={12} className="text-white" strokeWidth={2.5} />
@@ -120,7 +120,7 @@ const AdminLayout = ({ children }) => {
         </div>
         <StackSidebar variant="drawer" nav={nav} pathname={location.pathname} counts={counts}
           onNavigate={() => setMobileOpen(false)} onLogout={handleLogout} />
-        <div className="border-t border-[#191919] flex-shrink-0 p-3 space-y-0.5">
+        <div className="border-t border-[#1E0B4D] flex-shrink-0 p-3 space-y-0.5">
           <Link to="/dashboard" className="flex items-center gap-2.5 rounded-lg text-gray-600 hover:text-gray-300 hover:bg-white/[0.04] transition-colors text-[12px] px-2.5 py-2">
             <Ic d={IC.external} size={14} /><span>Host Dashboard</span>
           </Link>

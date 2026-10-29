@@ -8,7 +8,7 @@
 //   1 Hero + live demo · 2 Proof strip · 3 Without vs with · 4 How it works ·
 //   5 Capabilities · 6 The difference · 7 Testimonials · 8 FAQ · 9 Final CTA
 //
-// Design system B "Calm cream": soft cream grounds, warm orange accent (#191919
+// Design system B "Calm cream": soft cream grounds, warm orange accent (#1E0B4D
 // for text and CTA fills, peach tints for surfaces), pill chips, an avatar-count
 // pill motif. Gentle and human, not dashboardy. Mechanics unique to this page:
 // clickable client list + client card (hero) · avatar-stack pill with fact chips ·
@@ -50,7 +50,7 @@ const START = '/become-a-host';
 const CREAM = '#FBF6EE';      // page ground
 const CREAM_DEEP = '#F4EBDD'; // alternate section ground
 const PEACH = '#FCE7DA';      // soft accent surface
-const ACCENT = '#191919';     // text + CTA fill (AA on cream and with white text)
+const ACCENT = '#1E0B4D';     // text + CTA fill (AA on cream and with white text)
 const INK = '#2A211B';        // warm ink
 const MUTED = '#6B5D52';      // body copy on cream (AA)
 const TINTS = ['#FCE3D3', '#F7E6C4', '#F9D9CF', '#EFE4D6']; // avatar backgrounds
@@ -700,7 +700,7 @@ export default function ClientManagementFeature() {
           </Reveal>
           <nav aria-label="Related features" className="mt-12 flex flex-wrap justify-center gap-2 border-t border-black/5 pt-8">
             {RELATED.map((r) => (
-              <Link key={r.to} to={r.to} className="rounded-full border border-black/5 bg-white px-3.5 py-1.5 text-[13px] font-semibold transition-colors hover:no-underline hover:border-[#191919]/40" style={{ color: INK }}>
+              <Link key={r.to} to={r.to} className="rounded-full border border-black/5 bg-white px-3.5 py-1.5 text-[13px] font-semibold transition-colors hover:no-underline hover:border-[#1E0B4D]/40" style={{ color: INK }}>
                 {r.label}
               </Link>
             ))}

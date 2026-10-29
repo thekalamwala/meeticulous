@@ -99,7 +99,7 @@ function Slide({ id, children, className = '', dark = false }) {
   return (
     <section id={id} data-slide={id}
       className={`relative overflow-hidden snap-start min-h-[100dvh] w-full flex flex-col justify-center px-6 py-16 sm:px-10 md:px-16 lg:px-24 ${className}`}
-      style={dark ? { background: '#141210', color: '#F8FAFC' } : { background: '#F8FAFC', color: '#191919' }}>
+      style={dark ? { background: '#141210', color: '#F8FAFC' } : { background: '#F8FAFC', color: '#1E0B4D' }}>
       {dark && (
         <motion.div aria-hidden className="pointer-events-none absolute right-[6%] top-[12%] h-72 w-72 rounded-full"
           style={{ background: 'radial-gradient(circle,#2E1065,transparent 70%)', opacity: 0.1 }}
@@ -215,7 +215,7 @@ function FunnelChart({ items, pct }) {
 function MarketRings({ rings }) {
   return (
     <svg viewBox="0 0 320 320" className="w-full max-w-[340px]" role="img" aria-label="TAM SAM SOM market sizing">
-      {rings.map((m) => <circle key={m.k} cx="160" cy="170" r={m.r} fill={m.fill} stroke="#191919" strokeWidth="2.5" />)}
+      {rings.map((m) => <circle key={m.k} cx="160" cy="170" r={m.r} fill={m.fill} stroke="#1E0B4D" strokeWidth="2.5" />)}
       <text x="160" y="176" textAnchor="middle" fontSize="15" fontWeight="800" fill="#fff" fontFamily="Plus Jakarta Sans">SOM</text>
       <text x="160" y="88" textAnchor="middle" fontSize="13" fontWeight="800" fill="#1E0B4D" fontFamily="Plus Jakarta Sans">SAM</text>
       <text x="160" y="42" textAnchor="middle" fontSize="13" fontWeight="800" fill="#1e3a8a" fontFamily="Plus Jakarta Sans">TAM</text>
@@ -303,11 +303,11 @@ function CompMatrix() {
         <tbody>
           {COMP_ROWS.map((r) => (
             <tr key={r.name} style={r.us ? { background: '#EDE9FE' } : undefined}>
-              <td className={`p-2 ${r.us ? 'text-ink font-extrabold' : 'text-ink/75 font-semibold'}`} style={{ borderTop: '2px solid #191919' }}>
+              <td className={`p-2 ${r.us ? 'text-ink font-extrabold' : 'text-ink/75 font-semibold'}`} style={{ borderTop: '2px solid #1E0B4D' }}>
                 <span className="flex items-center gap-2 whitespace-nowrap"><BrandLogo brand={r} />{r.name}</span>
               </td>
               {r.cells.map((v, i) => (
-                <td key={i} className="p-2 text-center text-lg" style={{ borderTop: '2px solid #191919' }}>
+                <td key={i} className="p-2 text-center text-lg" style={{ borderTop: '2px solid #1E0B4D' }}>
                   {v ? <span style={{ color: '#059669' }}>✓</span> : <span className="text-ink/25">—</span>}
                 </td>
               ))}
