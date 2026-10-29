@@ -21,9 +21,9 @@
     "loadtest:cleanup": "node scripts/cleanupLoadTest.js"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.131.0",
-    "@sentry/node": "^10.76.0",
-    "@supabase/supabase-js": "^2.117.2",
+    "@anthropic-ai/sdk": "^0.137.0",
+    "@sentry/node": "^10.76.2",
+    "@supabase/supabase-js": "^2.118.0",
     "archiver": "^7.0.1",
     "bcryptjs": "^3.0.3",
     "compression": "^1.8.2",
@@ -42,7 +42,7 @@
     "multer": "^1.4.5-lts.1",
     "node-html-parser": "^6.1.13",
     "nodemailer": "^9.1.1",
-    "posthog-node": "^5.55.0",
+    "posthog-node": "^5.57.2",
     "qrcode": "^1.5.4",
     "razorpay": "^2.9.8",
     "speakeasy": "^2.0.0",
