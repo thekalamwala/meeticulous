@@ -14,7 +14,7 @@ const GoogleIcon = () => (
 export default function GoogleButton({ className = '', label = 'Continue with Google', large = false }) {
   return (
     <a
-      href="/be-a-sloth"
+      href="/become-a-host"
       className={`btn inline-flex items-center justify-center gap-3 rounded-[5px] bg-ink px-6 font-semibold text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] transition-opacity hover:opacity-90 ${large ? 'py-4 text-base' : 'py-3.5 text-sm'} ${className}`}
     >
       <GoogleIcon />

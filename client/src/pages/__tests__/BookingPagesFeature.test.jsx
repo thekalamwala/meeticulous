@@ -21,7 +21,7 @@ describe('Booking pages feature page', () => {
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
     expect(screen.getByRole('link', { name: /see a live booking page/i }).getAttribute('href')).toBe('/demo');
     expect(screen.getByRole('link', { name: /see pricing/i }).getAttribute('href')).toBe('/pricing');
-    expect(screen.getAllByRole('link', { name: /claim your free link/i })[0].getAttribute('href')).toBe('/be-a-sloth');
+    expect(screen.getAllByRole('link', { name: /claim your free link/i })[0].getAttribute('href')).toBe('/become-a-host');
   });
 
   it('opens a service in the phone demo when tapped', () => {

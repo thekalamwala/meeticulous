@@ -46,7 +46,7 @@ import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
 
-const START = '/be-a-sloth';
+const START = '/become-a-host';
 const CREAM = '#FBF6EE';      // page ground
 const CREAM_DEEP = '#F4EBDD'; // alternate section ground
 const PEACH = '#FCE7DA';      // soft accent surface

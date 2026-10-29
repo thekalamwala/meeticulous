@@ -65,7 +65,7 @@ import Seo from "../components/common/Seo";
 import { ogCard } from "../config/ogImages";
 
 /* Real funnel routes — do not point CTAs anywhere else. */
-const ROUTE_START = "/be-a-sloth";
+const ROUTE_START = "/become-a-host";
 const ROUTE_LOGIN = "/login-as-vendor";
 
 /* Directory badges — "Trusted & featured on" strip below the hero. Images are the

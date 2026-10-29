@@ -32,12 +32,12 @@ describe("TopmateVsBookASloth (Topmate-style rebuild)", () => {
     expect(text).toMatch(/isn.t affiliated with Topmate/);
   });
 
-  it("uses single-button CTAs to /be-a-sloth and no email field", () => {
+  it("uses single-button CTAs to /become-a-host and no email field", () => {
     renderPage();
     expect(screen.queryByPlaceholderText("you@email.com")).toBeNull();
     const ctas = screen.getAllByRole("link", { name: /start my page/i });
     expect(ctas.length).toBeGreaterThanOrEqual(1);
-    expect(ctas.every((a) => a.getAttribute("href") === "/be-a-sloth")).toBe(true);
+    expect(ctas.every((a) => a.getAttribute("href") === "/become-a-host")).toBe(true);
   });
 
   it("renders the creators showcase block", () => {

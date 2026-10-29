@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import OperatorCredit from './OperatorCredit';
 
-const ROUTE_START = '/be-a-sloth';
+const ROUTE_START = '/become-a-host';
 const EMAIL = 'bolt@meeticulous.in';
 
 // Minimal footer: link discovery now lives in the navbar mega-menus, so the

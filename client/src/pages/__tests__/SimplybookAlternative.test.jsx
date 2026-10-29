@@ -20,11 +20,11 @@ describe("SimplybookAlternative (/compare/simplybook-alternative)", () => {
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
   });
 
-  it("sends every Start free CTA to /be-a-sloth", () => {
+  it("sends every Start free CTA to /become-a-host", () => {
     renderPage();
     const ctas = screen.getAllByRole("link", { name: /start free/i });
     expect(ctas.length).toBeGreaterThanOrEqual(2);
-    ctas.forEach((a) => expect(a.getAttribute("href")).toBe("/be-a-sloth"));
+    ctas.forEach((a) => expect(a.getAttribute("href")).toBe("/become-a-host"));
   });
 
   it("shows SimplyBook's published paid price and Sloth Active's monthly price in the table", () => {

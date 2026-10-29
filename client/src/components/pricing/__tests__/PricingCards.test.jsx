@@ -44,7 +44,7 @@ describe("PricingCards", () => {
   it("both CTAs point at the signup route", () => {
     const { container } = setup();
     const links = [...container.querySelectorAll("a")].map((a) => a.getAttribute("href"));
-    expect(links).toContain("/be-a-sloth");
+    expect(links).toContain("/become-a-host");
     // Enterprise is no longer a card — it's a single line under the comparison
     // table on /pricing, not a fourth plan here.
     expect(links).not.toContain("/enterprise");

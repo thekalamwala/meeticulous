@@ -13,7 +13,7 @@ describe('<Footer>', () => {
     expect(screen.getByText(/Power up your/i)).toBeTruthy();
     expect(
       screen.getByRole('link', { name: "Let's Get Started" }).getAttribute('href'),
-    ).toBe('/be-a-sloth');
+    ).toBe('/become-a-host');
   });
 
   test('links the Solutions + Compare discovery hubs (not a heavy column sitemap)', () => {

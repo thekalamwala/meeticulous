@@ -8,7 +8,7 @@
 //
 // This is the well-known React-vs-translation crash (facebook/react#17256) and
 // it was our #1 mobile crash: ~650 boundary hits / 14 days, almost entirely
-// Instagram in-app webviews + iOS Safari landing on the homepage and /be-a-sloth
+// Instagram in-app webviews + iOS Safari landing on the homepage and /become-a-host
 // (our paid/social ad entry pages), all en_GB locale = auto-translate on.
 //
 // The fix is the standard one: make the two DOM methods React uses during

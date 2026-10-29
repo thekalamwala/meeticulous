@@ -14,7 +14,7 @@ describe('inferAudienceFromUrl', () => {
     ['https://bookasloth.com/dashboard/services', 'host'],
     ['https://bookasloth.com/login-as-vendor', 'host'],
     ['https://bookasloth.com/pricing', 'host'],
-    ['https://bookasloth.com/be-a-sloth', 'host'],
+    ['https://meeticulous.com/become-a-host', 'host'],
     ['https://bookasloth.com/for/therapists', 'host'],
     ['https://bookasloth.com/user/my-bookings', 'guest'],
     ['https://bookasloth.com/explore', 'guest'],

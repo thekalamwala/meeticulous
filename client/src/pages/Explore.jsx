@@ -308,7 +308,7 @@ function ExploreFull() {
             <p className="font-heading text-xl font-bold text-ink">You could be on this page 🦥</p>
             <p className="mt-1 text-sm text-muted">Join coaches, mentors &amp; experts on Meeticulous</p>
           </div>
-          <Link to="/be-a-sloth"
+          <Link to="/become-a-host"
             className="btn inline-flex shrink-0 items-center bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-[#a83400] hover:no-underline">
             Become a Sloth →
           </Link>
@@ -364,7 +364,7 @@ function ExploreComingSoon() {
             className="btn inline-flex w-full items-center justify-center bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-[#a83400] hover:no-underline sm:w-auto">
             Browse Categories
           </Link>
-          <Link to="/be-a-sloth"
+          <Link to="/become-a-host"
             className="btn btn--outline inline-flex w-full items-center justify-center border border-black/10 bg-white px-5 py-2.5 text-sm font-semibold text-ink transition-colors duration-150 hover:bg-black/[0.04] hover:no-underline sm:w-auto">
             Become a Sloth →
           </Link>

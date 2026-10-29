@@ -36,7 +36,7 @@ test('repeat guest, not a host, not invited → sends', async () => {
   const sent = NotificationEngine.send.mock.calls[0][0];
   expect(sent.event).toBe('GUEST_TO_HOST_INVITE');
   expect(sent.data.emailData).toMatchObject({ completed_count: 2, first_name: 'Priya' });
-  expect(sent.data.emailData.become_host_url).toContain('/be-a-sloth');
+  expect(sent.data.emailData.become_host_url).toContain('/become-a-host');
 });
 
 test('guest is already a host → skipped', async () => {

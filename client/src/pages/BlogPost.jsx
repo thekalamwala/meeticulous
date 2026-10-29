@@ -488,7 +488,7 @@ const BlogPost = () => {
             <p className="mx-auto mt-3 max-w-md text-sm sm:text-base" style={{ color: tt.soft }}>
               Set up your page, sync your calendar, and start getting paid at 0% commission.
             </p>
-            <Link to="/be-a-sloth"
+            <Link to="/become-a-host"
               className="btn mt-6 inline-flex items-center px-6 py-3 text-sm font-semibold transition-transform hover:no-underline"
               style={{ backgroundColor: t.light ? '#141416' : '#FFFFFF', color: t.light ? '#FFFFFF' : '#141416' }}>
               Become a host

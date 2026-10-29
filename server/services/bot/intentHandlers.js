@@ -71,7 +71,7 @@ const HANDLERS = {
       "services, and share your booking page. Paid plans (Host+/Studio) unlock more services " +
       "and features.",
     cards: [
-      { label: 'Become a host',        action: { type: 'route', value: '/be-a-sloth' } },
+      { label: 'Become a host',        action: { type: 'route', value: '/become-a-host' } },
       { label: 'See plans & pricing',  action: { type: 'send',  value: 'What does it cost?' } },
     ],
   },

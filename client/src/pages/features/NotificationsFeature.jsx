@@ -52,7 +52,7 @@ import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
 
-const START = '/be-a-sloth';
+const START = '/become-a-host';
 const INK = '#0F1111';        // dominant near-black
 const INK_2 = '#171A1A';      // raised cards on dark
 const PAPER = '#F2F5F3';      // light text on dark + light section bg

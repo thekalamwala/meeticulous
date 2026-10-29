@@ -639,7 +639,7 @@ const SponsoredCard = () => (
     <p className="text-base font-semibold leading-snug text-gray-700">More visibility means more bookings</p>
 
     {/* Pill CTA */}
-    <Link to="/be-a-sloth"
+    <Link to="/become-a-host"
       className="btn cta-ghost mt-4 inline-flex items-center justify-center !rounded-full px-6 py-2.5 text-sm font-semibold no-underline">
       Try 1 month free
     </Link>
@@ -673,7 +673,7 @@ const SponsoredCardB = () => (
     <p className="text-base font-semibold leading-snug text-gray-700">Save time and grow your bookings.</p>
 
     {/* Pill CTA */}
-    <Link to="/be-a-sloth"
+    <Link to="/become-a-host"
       className="btn cta-ghost mt-4 inline-flex items-center justify-center !rounded-full px-6 py-2.5 text-sm font-semibold no-underline">
       Sign Up
     </Link>
@@ -682,7 +682,7 @@ const SponsoredCardB = () => (
 
 // ─── Display Ad Card — bold full-bleed banner (LinkedIn-style) ─────────────────
 const DisplayAdCard = () => (
-  <Link to="/be-a-sloth"
+  <Link to="/become-a-host"
     className="group relative block overflow-hidden rounded-2xl no-underline"
     style={{ background: '#1463D6' }}>
     {/* Ad tag */}

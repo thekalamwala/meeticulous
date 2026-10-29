@@ -73,7 +73,7 @@ const WALL_OF_LOVE_COUNT =
    ("Calmer / Smoother / …") was retired with the copy reposition. */
 
 /* Real funnel routes — do not point CTAs anywhere else. */
-const ROUTE_START = "/be-a-sloth";
+const ROUTE_START = "/become-a-host";
 const ROUTE_LOGIN = "/login-as-vendor";
 
 /* ── Homepage SEO ──────────────────────────────────────────────────────────

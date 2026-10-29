@@ -193,7 +193,7 @@ export const testimonials = {
 };
 
 // Shared CTA destination — matches homepage ROUTE_START.
-export const ROUTE_START = "/be-a-sloth";
+export const ROUTE_START = "/become-a-host";
 
 // ── New rebuild sections (2026-06-26). [TBD] assets marked data-swap. ──
 

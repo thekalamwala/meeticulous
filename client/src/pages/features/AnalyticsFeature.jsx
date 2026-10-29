@@ -49,7 +49,7 @@ import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
 
-const START = '/be-a-sloth';
+const START = '/become-a-host';
 const CHARCOAL = '#0F172A';   // darkest surface
 const SLATE = '#1E293B';      // panels on dark, final CTA
 const AMBER = '#F59E0B';      // accent on dark surfaces only

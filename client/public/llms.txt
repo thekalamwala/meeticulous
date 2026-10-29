@@ -17,7 +17,7 @@ Key facts:
 - [Pricing](https://meeticulous.com/pricing): Full plan comparison — Starter, Host+ and Studio.
 - [Explore](https://meeticulous.com/explore): Browse bookable services across professions.
 - [Services directory](https://meeticulous.com/services): Services grouped by profession.
-- [Become a host](https://meeticulous.com/be-a-sloth): Why and how to start taking bookings on Meeticulous.
+- [Become a host](https://meeticulous.com/become-a-host): Why and how to start taking bookings on Meeticulous.
 - [Enterprise](https://meeticulous.com/enterprise): For teams, studios and larger practices.
 - [About](https://meeticulous.com/about): The company, mission and the "calm economy" positioning.
 - [Blog](https://meeticulous.com/blog): Product updates and guides.

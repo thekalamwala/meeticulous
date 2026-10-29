@@ -263,7 +263,7 @@ export default function WallOfLove() {
           <h2 className="font-heading text-2xl font-bold tracking-tight text-ink">Your success is our favorite story.</h2>
           <p className="mt-2 text-sm text-muted">Join amazing hosts growing their business with Meeticulous.</p>
           <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link to="/be-a-sloth" className="inline-flex min-h-10 items-center justify-center rounded bg-primary px-6 text-xs font-bold text-white transition hover:bg-primary-dark">
+            <Link to="/become-a-host" className="inline-flex min-h-10 items-center justify-center rounded bg-primary px-6 text-xs font-bold text-white transition hover:bg-primary-dark">
               Start Free
             </Link>
             <Link to="/pricing" className="inline-flex min-h-10 items-center justify-center rounded border-2 border-ink/10 bg-surface px-6 text-xs font-bold text-ink transition hover:border-ink/20">

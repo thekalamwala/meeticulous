@@ -27,7 +27,7 @@ const { gone } = require('../middleware/gone');
 
 // #534: email/password host registration is retired — hosts sign in with Google
 // only. 410 so any stale caller fails loudly instead of minting a password account.
-router.post('/register/vendor', gone('Removed. Hosts sign in with Google at /be-a-sloth.'));
+router.post('/register/vendor', gone('Removed. Hosts sign in with Google at /become-a-host.'));
 // guest_signup kill-switch — guest registration stays.
 router.post('/register/user', authLimiter, requireFeature('guest_signup'), registerUser);
 

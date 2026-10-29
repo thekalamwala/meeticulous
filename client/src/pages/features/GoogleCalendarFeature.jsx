@@ -50,7 +50,7 @@ import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
 
-const START = '/be-a-sloth';
+const START = '/become-a-host';
 
 // The four calendar hues: dots, bars and chips only, never body text.
 const BLUE = '#4285F4';

@@ -30,7 +30,7 @@ import { FREE_PLAN, PREMIUM_PLAN, PLAN_MATRIX } from '../../data/plans';
 import { TESTIMONIALS } from '../../data/testimonials';
 
 const SLUG = 'zoho-bookings-alternative';
-const START = '/be-a-sloth';
+const START = '/become-a-host';
 const Z = COMPETITORS.zoho;
 
 const THEME = {

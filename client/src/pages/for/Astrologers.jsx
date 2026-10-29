@@ -56,7 +56,7 @@ import PageGuides from '../../components/common/PageGuides';
 
 const WHATSAPP_LOGO = '/for/astrologers/whatsapp.svg'; // green WhatsApp mark (public asset)
 
-const START = '/be-a-sloth';      // real host signup funnel
+const START = '/become-a-host';      // real host signup funnel
 const LOGIN = '/login-as-vendor'; // host login (Google-only door)
 const HERO_IMG = '/for/astrologers/hero-sloth.webp';
 const ABOUT_IMG = '/for/astrologers/astro-about.webp';

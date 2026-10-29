@@ -156,7 +156,7 @@ const GstCalculator = () => {
             collects payment over UPI at the time of booking — no separate accounting tool.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
-            <Link to="/be-a-sloth" className="inline-flex items-center gap-1.5 rounded-[10px] bg-primary px-5 py-2.5 font-semibold text-white hover:no-underline">
+            <Link to="/become-a-host" className="inline-flex items-center gap-1.5 rounded-[10px] bg-primary px-5 py-2.5 font-semibold text-white hover:no-underline">
               Start taking bookings <ArrowRight size={16} />
             </Link>
             <Link to="/host-fees" className="inline-flex items-center gap-1.5 rounded-[10px] border border-black/10 px-5 py-2.5 font-semibold text-ink hover:no-underline">
