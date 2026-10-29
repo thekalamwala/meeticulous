@@ -1,4 +1,4 @@
-# Book A Sloth
+# Meeticulous
 
 A multi-tenant appointment-booking SaaS. Hosts (creators) publish services, set availability, and receive paid bookings. Guests discover profiles, book via OTP or account login, and pay through Razorpay.
 
