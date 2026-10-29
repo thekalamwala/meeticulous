@@ -244,17 +244,13 @@ app.get('/robots.txt', (req, res) =>
 );
 
 // Browser-facing pages carry the brand; API/JSON clients keep the machine payload.
-const { brandPage, wantsBrandedHtml } = require('./utils/brandPage');
+const { brandPage, apiHomePage, wantsBrandedHtml } = require('./utils/brandPage');
 
 app.get('/', (req, res) => {
   if (wantsBrandedHtml(req)) {
-    return res.type('html').send(brandPage({
-      title: 'API',
-      heading: 'You found the engine room',
-      body: 'This is the Book A Sloth API — nothing to book here. The actual site, where you get set up and paid at 0% commission, is one tap away.',
-    }));
+    return res.type('html').send(apiHomePage());
   }
-  res.json({ message: 'Book A Sloth API v1.4 running' });
+  res.json({ message: 'Meeticulous API running' });
 });
 
 // 404 — branded page for browsers, JSON for API/clients. Must come after every
