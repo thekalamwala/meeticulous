@@ -239,7 +239,7 @@ const PlansStep = () => {
                   type="button"
                   onClick={chooseFree}
                   disabled={busy !== null}
-                  className="btn bg-primary text-white py-2.5 px-6 text-sm font-semibold hover:bg-primary-dark disabled:opacity-60 transition inline-flex items-center justify-center gap-2"
+                  className="btn bg-primary-cta text-white py-2.5 px-6 text-sm font-semibold hover:opacity-90 disabled:opacity-60 transition inline-flex items-center justify-center gap-2"
                 >
                   {busy === 'free' ? (
                     <><Loader2 className="w-4 h-4 animate-spin" strokeWidth={2.5} /> Publishing…</>
@@ -255,7 +255,7 @@ const PlansStep = () => {
               {heroPlan && (
                 <div className="relative rounded-2xl border-2 border-primary bg-primary-light/60 p-6 sm:p-7 shadow-sm">
                   <div className="absolute -top-3 left-6">
-                    <span className="bg-primary text-white text-xs font-bold px-3 py-1 rounded-full">Recommended</span>
+                    <span className="bg-primary-cta text-white text-xs font-bold px-3 py-1 rounded-full">Recommended</span>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                     <div>
@@ -272,7 +272,7 @@ const PlansStep = () => {
                       type="button"
                       onClick={() => choosePaid(heroPlan, 'annual')}
                       disabled={busy !== null}
-                      className="btn bg-primary text-white py-3 px-6 text-sm font-semibold hover:bg-primary-dark disabled:opacity-60 transition inline-flex items-center justify-center gap-2 whitespace-nowrap"
+                      className="btn bg-primary-cta text-white py-3 px-6 text-sm font-semibold hover:opacity-90 disabled:opacity-60 transition inline-flex items-center justify-center gap-2 whitespace-nowrap"
                     >
                       {busy === heroPlan.slug ? (
                         <>
@@ -424,7 +424,7 @@ const PlansStep = () => {
               <button type="button" className="rounded-lg px-3 py-2 text-sm text-gray-500"
                       onClick={() => setPendingPaid(null)}>Cancel</button>
               <button type="button"
-                className="btn rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                className="btn rounded-lg bg-primary-cta px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
                 disabled={!billing.state_code}
                 onClick={() => { const p = pendingPaid; setPendingPaid(null); choosePaid(p.plan, p.payCadence); }}>
                 Continue
