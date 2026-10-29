@@ -50,7 +50,7 @@ API.interceptors.response.use(
       const isAdminRoute = original.url?.startsWith('/admin') || original.url?.startsWith('/admin-auth');
       if (isAdminRoute) {
         localStorage.removeItem('bas_admin');
-        window.location.href = '/hello-sloth';
+        window.location.href = '/backstage';
         return Promise.reject(error);
       }
 

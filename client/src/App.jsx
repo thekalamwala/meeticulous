@@ -401,7 +401,7 @@ function App() {
     location.pathname.startsWith('/for/') ||
     location.pathname === '/become-a-host' ||
     location.pathname === '/opening' ||
-    location.pathname === '/hello-sloth';
+    location.pathname === '/backstage';
 
   const isAuthPage =
     location.pathname === '/login' ||
@@ -422,7 +422,7 @@ function App() {
     location.pathname.startsWith('/admin') ||
     location.pathname.startsWith('/super-dashboard') ||
     location.pathname.startsWith('/vendor-register') ||
-    location.pathname === '/hello-sloth';
+    location.pathname === '/backstage';
 
   return (
     <ChromeContext.Provider value={chromeValue}>
@@ -531,8 +531,9 @@ function App() {
           <Route path="/vendor-register/:slug/plan"     element={<PlansStep />} />
           <Route path="/vendor-register/:slug/live"     element={<ExploreWithBolt />} />
 
-          {/* Admin login */}
-          <Route path="/hello-sloth" element={<AdminLogin />} />
+          {/* Admin login (Backstage). Old /hello-sloth path redirects here. */}
+          <Route path="/backstage" element={<AdminLogin />} />
+          <Route path="/hello-sloth" element={<Navigate to="/backstage" replace />} />
 
           {/* Vendor dashboard */}
           <Route path="/dashboard" element={<DashboardWrapper><Dashboard /></DashboardWrapper>} />
