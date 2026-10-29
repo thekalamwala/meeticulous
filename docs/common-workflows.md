@@ -1,4 +1,4 @@
-# Common Workflows — Book A Sloth
+# Common Workflows — Meeticulous
 
 ## How to Add a New API Endpoint
 

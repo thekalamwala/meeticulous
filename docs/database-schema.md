@@ -1,4 +1,4 @@
-# Database Schema — Book A Sloth
+# Database Schema — Meeticulous
 
 ## Run Order for Fresh Setup
 1. `server/config/schema.sql` — base tables + RLS

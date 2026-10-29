@@ -34,7 +34,7 @@ Unsubscribing stops marketing and newsletter emails. You'll still get essential 
 
 **Does unsubscribing affect my bookings or account?** No. It only stops promotional/newsletter emails — you keep getting essential booking messages and can use the platform normally.
 
-**I'm not getting newsletters.** Check your spam/junk folder and confirm you subscribed with the right address. If it still doesn't arrive, contact Book A Sloth Support.
+**I'm not getting newsletters.** Check your spam/junk folder and confirm you subscribed with the right address. If it still doesn't arrive, contact Meeticulous Support.
 
 **Are newsletters the same as booking emails?** No — booking confirmations, reminders, and payment/refund updates are transactional and sent regardless of newsletter preferences.
 
@@ -44,7 +44,7 @@ If you want your account removed, contact us from the [Help](/help) page and we'
 
 ## What is a Host Profile?
 
-Your public business page on Book A Sloth, where customers learn about you, view your services, buy digital products, and make bookings.
+Your public business page on Meeticulous, where customers learn about you, view your services, buy digital products, and make bookings.
 
 ## Why should I complete my Host Profile?
 
@@ -236,7 +236,7 @@ Yes. You can reactivate whenever you're ready to accept customers again.
 
 ## Who should I contact if I can't edit my profile?
 
-Contact Book A Sloth Support with details about the issue.
+Contact Meeticulous Support with details about the issue.
 
 ## What makes a great Host Profile?
 

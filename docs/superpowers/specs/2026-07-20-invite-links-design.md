@@ -7,7 +7,7 @@
 ## Goal
 
 Give the sales/marketing team shareable pretty links like
-`bookasloth.com/invite/social` that:
+`meeticulous.com/invite/social` that:
 
 1. **Attribute new host signups** to a named source (social platform, sales rep,
    campaign, QR code, etc.) — stored in our own DB, visible in admin.
@@ -85,7 +85,7 @@ list only.)
   components; do NOT fork the whole homepage. Sections, in order:
   1. **Hero** (with dynamic greeting — see below)
   2. **Numbers** — top 3 stat integrations from the current homepage
-  3. **Why Book A Sloth**
+  3. **Why Meeticulous**
   4. **Pricing**
   5. **Testimonials**
   6. **Minimal footer** — bottom strip only (no full footer columns)
@@ -175,8 +175,8 @@ inline in `googleCallback`'s brand-new-profile branch. See Attribution capture.)
   note, `create table if not exists`, additive `alter table … add column if not
   exists`, RLS enabled + `revoke all … from anon, authenticated` (service-role only),
   partial index `where invite_slug is not null`, idempotent seeds `on conflict do nothing`.
-- Apply to **BOTH** DBs (prod Mumbai `ayjhlwyzszykqtnaktpb` + staging Tokyo
-  `xwvciqkayammbvsidqig`). Additive only — no destructive changes.
+- Apply to **BOTH** DBs (prod Mumbai `PROD_PROJECT_REF` + staging Tokyo
+  `STAGING_PROJECT_REF`). Additive only — no destructive changes.
 - Code keeps schema-fallback (SELECT/INSERT degrade on "table/column not found")
   until confirmed applied everywhere. House rule.
 
@@ -200,4 +200,4 @@ inline in `googleCallback`'s brand-new-profile branch. See Attribution capture.)
 ## Rollout
 1. Migration on both DBs.
 2. Ship in normal deploy (additive, inert until a slug is created — no kill-switch).
-3. Sales creates first slug in admin, shares `bookasloth.com/invite/<slug>`.
+3. Sales creates first slug in admin, shares `meeticulous.com/invite/<slug>`.

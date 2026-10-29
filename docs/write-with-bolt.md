@@ -35,7 +35,7 @@ Price, duration and other factual values are never invented.
 Generated content must:
 - Match the host's intent.
 - Be natural and human-readable.
-- Follow Book A Sloth's writing style.
+- Follow Meeticulous's writing style.
 - Be optimized for search engines, answer engines and AI search.
 - Never fabricate prices, reviews, ratings, certifications or guarantees.
 

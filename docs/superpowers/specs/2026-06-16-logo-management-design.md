@@ -2,11 +2,11 @@
 
 **Date:** 2026-06-16
 **Status:** Approved (pending spec review), ready for implementation plan
-**Author:** Book A Sloth + Claude
+**Author:** Meeticulous + Claude
 
 ## Problem
 
-The website logo is a placeholder SVG (`<GoogleLogo />`) plus the text "Book A Sloth"
+The website logo is a placeholder SVG (`<GoogleLogo />`) plus the text "Meeticulous"
 ([Navbar.jsx:159](../../../client/src/components/common/Navbar.jsx)). There is no real
 image logo, and no way for an admin to manage it. Emails likewise fall back to a text
 wordmark when `email_settings.logo_url` is empty.
@@ -36,7 +36,7 @@ the website navbar and pulled into email templates.
 ### Email (trivial — no code)
 
 Set `email_settings.logo_url` to the hosted stable mark:
-`https://company-assets.bookasloth.in/images/email/sloth-icon-sqr.png`
+`https://company-assets.meeticulous.in/images/email/sloth-icon-sqr.png`
 
 The email header (`emailLayout.js`) already renders `settings.logo_url` as a 48px image
 with a text fallback, so this is a one-time value set via the existing admin email-settings
@@ -103,13 +103,13 @@ A small `useAppearance` hook (or AppearanceContext) that:
 - exposes `{ mode, iconUrl, logoImageUrl, festiveLogoUrl, loaded }`.
 
 Navbar logo block renders by mode:
-- `icon_text` → `<img icon_url>` + "Book A Sloth" text span (current text styling).
+- `icon_text` → `<img icon_url>` + "Meeticulous" text span (current text styling).
 - `image` → `<img logo_image_url>`.
 - `festive` → `<img festive_logo_url>`.
 - **Fallback** (not loaded / empty url for the active mode) → current text wordmark, so the
   header never breaks.
 
-Images use fixed height + `alt="Book A Sloth"`; width auto.
+Images use fixed height + `alt="Meeticulous"`; width auto.
 
 ## Data flow
 

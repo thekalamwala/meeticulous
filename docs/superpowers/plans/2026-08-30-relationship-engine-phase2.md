@@ -33,7 +33,7 @@ Read these before Task 1 — the reuse points are the whole design:
 
 - **Never hardcode plan limits** or send caps in a way that can't be tuned — the governor cap is config (env + feature-flag-visible), not a literal buried in a hot path.
 - **Fail-open on governor read errors** (matches `sendGate.throttle`): a DB outage must not silently freeze every automated send. A real cap breach always wins; an *error* does not block.
-- **Schema-fallback discipline:** every new column/table degrades on the missing-column/table error until confirmed on BOTH DBs (staging Tokyo `xwvciqkayammbvsidqig` first, then prod Mumbai `ayjhlwyzszykqtnaktpb`). Keep the fallback until confirmed applied everywhere.
+- **Schema-fallback discipline:** every new column/table degrades on the missing-column/table error until confirmed on BOTH DBs (staging Tokyo `STAGING_PROJECT_REF` first, then prod Mumbai `PROD_PROJECT_REF`). Keep the fallback until confirmed applied everywhere.
 - **Migrations applied via Supabase MCP** (the founder's choice), staging first. The plan produces the `.sql` files; apply them out-of-band, then remove the fallback in a follow-up once verified.
 - **Sends stay OFF until PR-8.** PR-7 and PR-7.5 must be safe to merge and run with `crm_admin_sends` still OFF — they add gating and signals, they do not enable delivery.
 - Do NOT create a new pipeline for guests (PR-9). Extend `contacts`/`touch_recommendations`; reuse the pure health/touch functions.

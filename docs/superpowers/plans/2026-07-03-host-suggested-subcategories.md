@@ -15,7 +15,7 @@
 - `status` values: exactly `active` | `pending` | `rejected`. Default `active`.
 - `categories.allow_subcategory_suggestions` default `false` (protects curated 74).
 - Uniqueness key: `(primary_category, slug)`. Slug via existing `slugify()` in `serviceCategoryController.js`.
-- Migrations run in Supabase SQL editor on BOTH DBs: prod Mumbai `ayjhlwyzszykqtnaktpb`, staging Tokyo `xwvciqkayammbvsidqig`. Keep code-side schema fallback until confirmed applied.
+- Migrations run in Supabase SQL editor on BOTH DBs: prod Mumbai `PROD_PROJECT_REF`, staging Tokyo `STAGING_PROJECT_REF`. Keep code-side schema fallback until confirmed applied.
 - Server tests live in `server/tests/`, not `__tests__`. Mock pattern: `jest.mock('../../config/supabase', () => ({ supabaseAdmin: { from: (...a) => mockFrom(...a) } }))`.
 - Client vitest does NOT load jest-dom matchers beyond `toBeInTheDocument`/`toBeDisabled`/`toBeEnabled`/`toBeEmptyDOMElement`; assert via `.getAttribute()`/`.textContent`.
 - Host auth = `protect` then `requireHost` from `server/middleware/authMiddleware.js`. `req.user.id` is the host id.
@@ -50,7 +50,7 @@ CREATE INDEX IF NOT EXISTS idx_service_categories_status
 
 - [ ] **Step 2: Apply to staging, then prod**
 
-Run the file's SQL in the Supabase SQL editor for `xwvciqkayammbvsidqig` (staging), then `ayjhlwyzszykqtnaktpb` (prod).
+Run the file's SQL in the Supabase SQL editor for `STAGING_PROJECT_REF` (staging), then `PROD_PROJECT_REF` (prod).
 
 - [ ] **Step 3: Verify columns + defaults on both DBs**
 

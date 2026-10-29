@@ -1,7 +1,7 @@
 # Community Forum — Product Spec
 
 **Status:** Draft (pre-build)
-**Route:** `bookasloth.com/community`
+**Route:** `meeticulous.com/community`
 **Owner:** _TBD_
 **Last updated:** 2026-07-11
 
@@ -17,7 +17,7 @@ post threads and reply to each other — built in-house, shipped light, iterated
 | # | Goal | How this serves it |
 |---|------|--------------------|
 | 1 | **Retention** | Peers solve each other's problems; hosts get a shop-talk room |
-| 2 | **Support** | Public Q&A deflects tickets off `bolt@bookasloth.in`; answers self-serve |
+| 2 | **Support** | Public Q&A deflects tickets off `bolt@meeticulous.in`; answers self-serve |
 | 3 | **Brand** | A visibly alive community; hosts share wins → free distribution |
 | 4 | **Ambassador fuel** | Hosts who get value here tell other hosts to join |
 
@@ -142,7 +142,7 @@ community_flags            -- the one justified extra table: legal audit trail (
 This is the part that is **not code** — operational + legal commitments. Sort before launch.
 
 ### 9.1 India IT Rules 2021 (intermediary compliance) — **mandatory**
-Hosting user-generated content makes Book A Sloth an "intermediary." Required:
+Hosting user-generated content makes Meeticulous an "intermediary." Required:
 - Published **community guidelines + user agreement**, visible before posting.
 - A **named Grievance Officer** with published contact details.
 - Complaint acknowledgment within **24h**, resolution within **15 days**.
@@ -233,7 +233,7 @@ Net new code ≈ 3 tables + a controller + routes + a handful of pages. Small.
 
 ## 16. Bolt — AI first-responder
 
-An AI agent account, **`bolt958`** (already exists on Book A Sloth), acts as the first
+An AI agent account, **`bolt958`** (already exists on Meeticulous), acts as the first
 responder to community questions, problems, and concerns. It answers what it can from a
 grounded knowledge base and **escalates the rest to the human owner** (`sndatarkar`).
 

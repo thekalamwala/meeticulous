@@ -42,8 +42,8 @@ docs/c ──PR──┘         ▲
 4. **Additive migrations only.** Add columns and tables. No drops or renames, and no NOT NULL on existing rows. Keep the code-side
    schema fallback (degrade gracefully if the column or table is missing), so prod migrations can be applied
    *before* the deploy with zero risk. Anything destructive waits for October.
-5. **Apply each migration to staging (Tokyo `xwvciqkayammbvsidqig`) when its PR merges into the train.**
-   Prod (Mumbai `ayjhlwyzszykqtnaktpb`) waits for ship night (§5).
+5. **Apply each migration to staging (Tokyo `STAGING_PROJECT_REF`) when its PR merges into the train.**
+   Prod (Mumbai `PROD_PROJECT_REF`) waits for ship night (§5).
 6. **Before asking for merge, run locally:** `cd server && npm test` and `cd client && npx vitest run && npm run build`.
    A single stale client test blocks **all** Vercel deploys, and CI green does not guarantee the Vercel build passes.
 7. **PR body must state:** migration (file + number or "none"), new env vars (Render/Vercel), post-deploy steps
@@ -101,17 +101,17 @@ Everything else waits for the train.
 
 Order matters. The database goes first, then code.
 
-1. **Prod migrations**, in manifest order, on Mumbai `ayjhlwyzszykqtnaktpb`. After each one, run its verification query.
+1. **Prod migrations**, in manifest order, on Mumbai `PROD_PROJECT_REF`. After each one, run its verification query.
    (Safe before deploy because every migration is additive and schema-fallback-guarded, per rule 4.)
 2. Mark the train PR ready → **founder merges with "Create a merge commit".**
 3. Watch both deploys:
    - Vercel: `gh run list --workflow "Deploy to Vercel (production)" -L 1`, then check that the **`deploy` job succeeded**
      on the merge SHA. A skipped job is a failure. On a prerender `HTTP 403` (transient rate limit), re-run:
      `gh workflow run deploy-vercel.yml --ref main`.
-   - Render: `curl https://book-a-sloth.onrender.com/health`. Once the `uptime` resets past the merge time, the new server is live.
+   - Render: `curl https://meeticulous-api.onrender.com/health`. Once the `uptime` resets past the merge time, the new server is live.
 4. Run each manifest row's post-deploy step (Bolt KB reseed, `seedBlogs` on both DBs, flag flips).
 
-## 8. Verify (on **bookasloth.com**, never .in)
+## 8. Verify (on **meeticulous.com**, never .in)
 
 - [ ] Home, `/pricing`, one host profile, one service page load with no console errors.
 - [ ] Host Google login → dashboard loads.
@@ -127,7 +127,7 @@ Order matters. The database goes first, then code.
 |-------|------|-------|
 | One feature | `git revert -m 1 <that PR's merge commit on the train>` → PR to `main` (the merge-commit ship keeps each feature revertable) | minutes |
 | Whole frontend | Vercel → Deployments → previous → Promote to Production | seconds |
-| Whole backend | Render → bookasloth-api → Events → previous deploy → Rollback | ~1 min |
+| Whole backend | Render → meeticulous-api → Events → previous deploy → Rollback | ~1 min |
 | Database | No undo. Migrations are additive, so old code runs fine against the new schema: roll the **code** back and leave the DB alone. | n/a |
 
 ## 10. Close-out (after verify)

@@ -14,7 +14,7 @@
 - Plus Jakarta Sans headings (`font-heading`), Poppins body.
 - Client tests use Vitest with NO jest-dom — use plain assertions / `.getAttribute()`, not `toBeInTheDocument`.
 - Lazy-load routes via `lazyWithRetry` (aliased `lazy` in App.jsx), matching surrounding routes.
-- Moment art URL convention: `https://company-assets.bookasloth.in/images/moments/${slug}.png` (matches existing Search.jsx).
+- Moment art URL convention: `https://company-assets.meeticulous.in/images/moments/${slug}.png` (matches existing Search.jsx).
 
 ---
 
@@ -93,7 +93,7 @@ Expected: FAIL — cannot resolve `./moments`.
 //   credits  — optional attribution string.
 //   cta      — optional { label, href } (internal path or external URL).
 
-const CDN = 'https://company-assets.bookasloth.in/images/moments';
+const CDN = 'https://company-assets.meeticulous.in/images/moments';
 
 export const MOMENTS = [
   {
@@ -102,14 +102,14 @@ export const MOMENTS = [
     date: 'July 19, 2026',
     image: `${CDN}/fifa-2026-winners-argentina.png`,
     alt: 'Illustration celebrating Argentina winning the FIFA World Cup 2026',
-    excerpt: 'La Albiceleste lifts the trophy again. We are celebrating with a Book A Sloth moment for the 2026 champions.',
+    excerpt: 'La Albiceleste lifts the trophy again. We are celebrating with a Meeticulous moment for the 2026 champions.',
     body: [
       { p: 'Argentina are champions of the world once more. After a tournament that kept an entire planet on the edge of its seat, La Albiceleste lifted the FIFA World Cup 2026 trophy.' },
       { h2: 'Why we made this moment' },
-      { p: 'At Book A Sloth we love the days the whole world stops to watch the same thing at the same time. A World Cup final is one of those days — so we drew a little something to mark it.' },
+      { p: 'At Meeticulous we love the days the whole world stops to watch the same thing at the same time. A World Cup final is one of those days — so we drew a little something to mark it.' },
       { p: 'Congratulations to the champions, and to every fan who stayed up for extra time. Here is to the next four years.' },
     ],
-    credits: 'Art by the Book A Sloth team.',
+    credits: 'Art by the Meeticulous team.',
     cta: { label: 'Explore hosts', href: '/explore' },
   },
 ];
@@ -175,11 +175,11 @@ export default function MomentPage() {
   return (
     <div className="mx-auto max-w-3xl px-6 py-10 sm:py-14">
       <Seo
-        title={`${moment.title} — Moments · Book A Sloth`}
+        title={`${moment.title} — Moments · Meeticulous`}
         description={moment.excerpt}
         image={moment.image}
         ogType="article"
-        canonical={`https://bookasloth.com/moments/${moment.slug}`}
+        canonical={`https://meeticulous.com/moments/${moment.slug}`}
       />
 
       <Link to="/moments" className="inline-flex items-center gap-1.5 text-sm text-muted transition hover:text-primary">
@@ -268,14 +268,14 @@ export default function Moments() {
   return (
     <div className="mx-auto max-w-5xl px-6 py-10 sm:py-14">
       <Seo
-        title="Moments — Book A Sloth"
-        description="A little archive of the days the world stopped to watch. Book A Sloth moments, doodle-style."
-        canonical="https://bookasloth.com/moments"
+        title="Moments — Meeticulous"
+        description="A little archive of the days the world stopped to watch. Meeticulous moments, doodle-style."
+        canonical="https://meeticulous.com/moments"
       />
 
       <header className="text-center">
         <h1 className="font-heading text-3xl font-bold tracking-tight text-ink sm:text-4xl">Moments</h1>
-        <p className="mt-3 text-muted">The days worth marking, drawn by the Book A Sloth team.</p>
+        <p className="mt-3 text-muted">The days worth marking, drawn by the Meeticulous team.</p>
       </header>
 
       {/* Featured */}
@@ -391,7 +391,7 @@ In the featured-moment JSX, replace the `<a href={MOMENT_URL}>` block with a rou
 
 - [ ] **Step 3: Fix the empty-search fallback**
 
-In `submit`, replace `window.location.href = 'https://bookasloth.com/moments';` with SPA navigation:
+In `submit`, replace `window.location.href = 'https://meeticulous.com/moments';` with SPA navigation:
 
 ```jsx
     if (!v) { navigate('/moments'); return; }
@@ -424,7 +424,7 @@ Start the dev server and load `/moments` and `/moments/fifa-2026-winners-argenti
 
 - [ ] **Step 3: Note CDN asset dependency**
 
-The Argentina art must exist at `https://company-assets.bookasloth.in/images/moments/fifa-2026-winners-argentina.png`. If not uploaded, the page structure is correct but the image 404s — flag to the user as a content follow-up.
+The Argentina art must exist at `https://company-assets.meeticulous.in/images/moments/fifa-2026-winners-argentina.png`. If not uploaded, the page structure is correct but the image 404s — flag to the user as a content follow-up.
 
 ---
 

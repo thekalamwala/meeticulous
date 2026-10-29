@@ -6,8 +6,8 @@ Lead Ad submissions flow into the CRM. **None of this blocks the website lead fo
 (`/be-a-sloth`), which is a fully independent production lead path.
 
 App: **Timewheel BAS Com Web** — App ID `1769255080737297`
-Dataset/Pixel: `3530370983781569` · Page: **bookasloth** `908528999000335` · Ad account `805768188521643`
-Webhook URL: `https://book-a-sloth.onrender.com/api/webhooks/meta-leadgen`
+Dataset/Pixel: `3530370983781569` · Page: **meeticulous** `908528999000335` · Ad account `805768188521643`
+Webhook URL: `https://meeticulous-api.onrender.com/api/webhooks/meta-leadgen`
 
 ## ✅ Already validated (do not redo)
 - [x] `leadgen` + `leadgen_update` subscriptions active (Page object).
@@ -25,16 +25,16 @@ data** (even from admins/testers) until it is **published (Live)** *and* `leads_
 is approved.
 
 1. [ ] **App icon** (1024×1024 PNG) — App → Settings → Basic.
-2. [ ] **Privacy policy URL** — use `https://bookasloth.com/privacy` (page exists).
+2. [ ] **Privacy policy URL** — use `https://meeticulous.com/privacy` (page exists).
 3. [ ] **User data deletion URL** — a data-deletion instructions page/URL
-       (e.g. `https://bookasloth.com/privacy#data-deletion` or a dedicated page).
+       (e.g. `https://meeticulous.com/privacy#data-deletion` or a dedicated page).
 4. [ ] **App category** — App → Settings → Basic → Category (e.g. "Business & Pages").
 5. [ ] **Switch app Development → Live** — top toggle (needs 1–4 done first).
 6. [ ] **Submit + obtain App Review approval for `leads_retrieval`**
        — App → App Review → Permissions and Features. Requires a screencast + use-case
        description (reading lead form data into our CRM to contact the lead).
 7. [ ] **Verify production Page/webhook subscription** — after going Live, confirm the
-       **bookasloth** Page is still subscribed to the app and to the `leadgen` field.
+       **meeticulous** Page is still subscribed to the app and to the `leadgen` field.
 8. [ ] **Test with a real Facebook Lead Ad submission**
        — Meta **Lead Ads Testing Tool** (or a live form Preview) → submit a real lead →
        confirm a `leads` row appears with `source = facebook_lead_ad` and `meta_lead_id`

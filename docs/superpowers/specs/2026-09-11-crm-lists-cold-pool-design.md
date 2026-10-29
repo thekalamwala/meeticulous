@@ -92,7 +92,7 @@ until cold rows are imported or the Topmate backfill runs.
 - **`NO_AUTO`** — the every-15-min `lifecycleEngine` cron must never auto-advance a cold
   lead. Manual `changeStatus` still moves it (that's promotion).
 
-Run on **staging (Tokyo `xwvciqkayammbvsidqig`) → prod (Mumbai `ayjhlwyzszykqtnaktpb`)**.
+Run on **staging (Tokyo `STAGING_PROJECT_REF`) → prod (Mumbai `PROD_PROJECT_REF`)**.
 Keep the code-side schema fallback (destructure-safe) until confirmed on both.
 
 List counts (cold / promoted) are **derived by query**, not stored — no drift.

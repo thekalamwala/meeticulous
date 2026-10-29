@@ -1,4 +1,4 @@
-# Book A Sloth — Build-in-Public Blog Series (30 Posts)
+# Meeticulous — Build-in-Public Blog Series (30 Posts)
 
 _Backdated public journal, May 22 → June 18. Founder voice, honest, dated._
 
@@ -8,7 +8,7 @@ What's inside:
 - The PHP + SQL version is real, self-hosted, and already sold to a handful of paying customers who use it daily
 - The uncomfortable truth: every new customer means an install, a server, and a support call — it doesn't scale
 - The decision to build a hosted SaaS version so people can just sign up instead of install
-- What Book A Sloth actually does, in one line: a payment-ready booking page for any creator in under 2 minutes
+- What Meeticulous actually does, in one line: a payment-ready booking page for any creator in under 2 minutes
 - Why I'm choosing to do this in public now, even though the code's been private for about a month
 - The thing I'm most scared of: rebuilding something that already works
 - The one rule for this series — honest, dated, no polishing the bad days
@@ -41,7 +41,7 @@ What's inside:
 - Folder structure decisions up front: marketing routes vs app routes vs admin
 - Setting up the Supabase project and getting my head around the anon-key vs service-role split
 - First Postgres tables sketched on paper: profiles, services, bookings
-- Locking in the public URL shape early — bookasloth.com/:username
+- Locking in the public URL shape early — meeticulous.com/:username
 - Small win: the dev server runs and a hello page renders
 - What I'm deliberately NOT building yet (payments, email, literally everything)
 ---

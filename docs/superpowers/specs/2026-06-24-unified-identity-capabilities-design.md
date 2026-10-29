@@ -15,7 +15,7 @@ A single human cannot be both a host and a guest under one login. The root cause
 |---|---|---|
 | Identifier | phone | email / Google |
 | Auth path | phone OTP, phone+password (`/login-phone`, `/verify-otp-login`) | email+password (`/login`), Google OAuth (vendor auth) |
-| Internal id | synthetic `pXXXX@users.bookasloth.app` | real email |
+| Internal id | synthetic `pXXXX@users.meeticulous.app` | real email |
 | `profiles.role` | `'guest'` | `'host'` |
 
 Every feature layered on this split has been a patch: the binary `role`, the removed become-host flip, the two-way role wall (PR #151), and the reverted host-bookings view (PR #154). The disease is the split itself.

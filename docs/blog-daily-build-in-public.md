@@ -1,6 +1,6 @@
 # Daily Build-in-Public Blog — Claude Code Operating Brief
 
-**Purpose:** This is the single instruction file for generating Book A Sloth's build-in-public blog.
+**Purpose:** This is the single instruction file for generating Meeticulous's build-in-public blog.
 Hand it to Claude Code and say: *"Follow docs/blog-daily-build-in-public.md and generate the post for <DATE>."*
 Claude Code will read that day's real PRs + changelog, write one post in the house voice, and insert it into the blog.
 

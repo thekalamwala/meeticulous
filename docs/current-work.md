@@ -1,4 +1,4 @@
-# Current Work — Book A Sloth
+# Current Work — Meeticulous
 _Last updated: 2026-09-10_
 
 ## SEO: Google WRS fetch-failure root cause (ipGuard/rate-limit) — 2026-09-10
@@ -9,7 +9,7 @@ _Last updated: 2026-09-10_
 - **Confirmed root cause, recurring incident:** `docs/cloudflare-edge-setup.md` already documents a live incident (2026-07-23) where `CLIENT_IP_HEADER` being unset resolves `getClientIp` to Render's shared internal `10.x` proxy address, and a single auto-ban on it 403s the entire platform — recovered only by a manual SQL delete each time. Fixed at the code layer: `lib/ipBlocklist.js` now refuses to ever ban (or honour a ban on) a private/reserved IP, from any source (auto or manual), so this can't recur regardless of whether the `CLIENT_IP_HEADER` ops step is done.
 - **Also relaxed:** `GET /api/host/:username` and `GET /api/host/:username/:slug` (public host profile + service detail reads — no auth) are now exempt from `ipGuard`/`offenseTracker` and from `apiLimiter`'s cap, mirroring the existing `/api/blogs` exemption. Other `/api/host/*` routes (search, availability, categories, username, services) are unaffected.
 - **Still an OPS action, not code:** set `CLIENT_IP_HEADER=cf-connecting-ip` on Render (Step 9 of `docs/cloudflare-edge-setup.md`) — see that doc for how to find the right header.
-- **Part B (Cloudflare AI-bot block) verification could not be run from this session** — outbound network access to `bookasloth.com` / `book-a-sloth.onrender.com` is blocked by this sandbox's egress policy. See the PR description for what to check manually.
+- **Part B (Cloudflare AI-bot block) verification could not be run from this session** — outbound network access to `meeticulous.com` / `meeticulous-api.onrender.com` is blocked by this sandbox's egress policy. See the PR description for what to check manually.
 
 ## Prod deploy + CRM sends state — 2026-09-03
 
@@ -20,7 +20,7 @@ _Last updated: 2026-09-10_
   - **Server → Render:** auto-deploys on every push to main (no GitHub Action). Confirmed via the `job_locks` leader-election table (the sandbox can't reach the server directly — proxy blocks the app domains): a **new Render pod** (`…-84cd676b99-tnd5r`) holds the freshest leases (renewed within ~1–2 min), replacing the prior pod — i.e. a fresh deploy is live and actively running the full cron suite, including the CRM workers (`crm-send-worker`, `crm-sequence-worker`, `crm-lifecycle-engine`, `crm-guest-engine`).
 - **CRM sends are LIVE (`crm_admin_sends` = ON).** Corrected in `CLAUDE.md` (#939) after discovering the flag was NOT off as assumed: enabled on **prod Mumbai since 2026-08-27** (founder-enabled) and **staging Tokyo since 2026-09-02**. The flag stays FAIL-CLOSED in code; "on" is a `feature_flags` row. Instant pause: `UPDATE feature_flags SET enabled=false WHERE key='crm_admin_sends'` (effective within the 60s flag cache). Live guardrails on every send: governor cap (1/48h per subject), quiet-hours (09–20 IST), do-not-contact, email/WhatsApp opt-out.
 - **Prod send-log review (Aug 24 → Sep 3):** 189 messages / 127 recipients — 107 WhatsApp sent, 54 email delivered, **7 bounced**, 21 skipped by the gate (0 cap breaches). Biggest event: a one-time "Inaugurators to Hosts" WhatsApp blast (~106, mostly Aug 24). Two cleanups from the review, both done:
-  - **`fix/never-email-placeholder-addresses` (#940, merged + deployed):** 6 of 7 bounces were synthetic `p<phone>@users.bookasloth.app` phone-only addresses (never real mailboxes). New `isPlaceholderEmail` guard skips them in the CRM gate (`sendGate`, reason `placeholder_email`) AND at the universal provider chokepoint (`email/providers.getProvider` → benign no-op), so no path emails them.
+  - **`fix/never-email-placeholder-addresses` (#940, merged + deployed):** 6 of 7 bounces were synthetic `p<phone>@users.meeticulous.app` phone-only addresses (never real mailboxes). New `isPlaceholderEmail` guard skips them in the CRM gate (`sendGate`, reason `placeholder_email`) AND at the universal provider chokepoint (`email/providers.getProvider` → benign no-op), so no path emails them.
   - **1 real bounce** (`arjunrv42@gmail.com`, dead mailbox) suppressed on prod via `email_unsubscribes` + `contacts.email_suppressed` (the auto-suppression on bounce only fires when the message has a linked `contact_id`; this one didn't).
 
 ## Relationship engine Phase 2 — PR-9 guests via contacts — 2026-09-02
@@ -79,7 +79,7 @@ The MVP left the automated-touch cap fragmented: `sendGate` throttled CRM sends 
 
 ## Host notification system overhaul + AiSensy fix + admin badge — 2026-08-29
 
-> **Status: ALL MERGED to main + LIVE. PRs #855–#861, #863, #864. Migrations `v3.130`/`v3.131`/`v3.132` applied via Supabase MCP on BOTH DBs (prod `ayjhlwyzszykqtnaktpb` + staging `xwvciqkayammbvsidqig`), verified identical. Full client vitest 704 green (Vercel gate). Prod redeployed & healthy.**
+> **Status: ALL MERGED to main + LIVE. PRs #855–#861, #863, #864. Migrations `v3.130`/`v3.131`/`v3.132` applied via Supabase MCP on BOTH DBs (prod `PROD_PROJECT_REF` + staging `STAGING_PROJECT_REF`), verified identical. Full client vitest 704 green (Vercel gate). Prod redeployed & healthy.**
 
 Full audit ("Host Signal") of the HOST notification experience, then a phased rebuild. Root problem: **three disconnected notification systems** — a mature email/WhatsApp `NotificationEngine`, a thin poll-only in-app bell (`in_app_notifications`, v3.39) with a `type` vocabulary disconnected from the engine's `event` keys, and founder-only `adminAlert`. The same event was wired twice and drifted — which is how the host new-booking bell entry got forgotten.
 
@@ -129,13 +129,13 @@ Ran four parallel audits of the Bolt support bot (KB/FAQ, escalation, intent lay
 
 > **Status: BUILT on branch (not merged). Migration v3.83 APPLIED + verified on BOTH DBs. server 1489/1489 + client build green. Grounded answers need `ANTHROPIC_API_KEY` (present on Render, ABSENT in local `server/.env` — so the bot escalates on every question locally, by design).**
 
-In-app support chatbot that answers Book A Sloth questions grounded ONLY on our own `docs/`, cites sources, and escalates to a human on low confidence / no match / sensitive topics. No embeddings, no new vendor — Postgres full-text search.
+In-app support chatbot that answers Meeticulous questions grounded ONLY on our own `docs/`, cites sources, and escalates to a human on low confidence / no match / sensitive topics. No embeddings, no new vendor — Postgres full-text search.
 
 - **Retrieval = Postgres FTS, not embeddings.** `kb_chunks(source_file, heading, content, tsv GENERATED, GIN)` + `search_kb_chunks(query_text, match_count)` RPC returning `ts_rank`. Seeded from `docs/` by `server/scripts/seedKnowledgeBase.js` (heading-aware, ~300–800-word chunks, clear+reinsert; `--check` self-tests the chunker). **809 chunks / 149 docs on staging.**
 - **LANDMINE — `plainto_tsquery` ANDs every lexeme.** A long question ("how many services can a Creator vs Professional host have?") then requires ONE chunk containing every word → matched nothing → always escalated. The RPC flips `&`→`|` (OR match; `ts_rank` still floats the best hits). Verified via direct SQL. If you ever recreate this RPC, keep the OR flip.
 - **LANDMINE — `docs/` is DEVELOPER docs, not a help centre.** Seeding all 149 files pulls in specs/plans/blog drafts that share keywords with real answers and out-rank them, so the bot honestly escalates a lot. `MATCH_COUNT=8` + an answer-by-default system prompt mitigate it. Real fix later = a curated user-facing help corpus (or exclude `superpowers/`, `*-plan.md`, blog drafts from the seed).
 - **Grounding + escalation.** `server/services/botService.js` `askBot()`: RPC → filter `rank >= MIN_RANK (0.02)` → sensitive-topic regex (payments/refunds/KYC/account access → always escalate, per spec) → Claude **Haiku** forced through an `emit_answer` tool that answers ONLY from the numbered sources. Never a dead end: no match / sensitive / unconfigured key / model or DB error all escalate with a fixed human-handoff line. Persists to `bot_conversations`/`bot_messages` best-effort.
-- **Escalation reuses the email engine** — `botController` emails `SUPPORT_EMAIL` (bolt@bookasloth.in) with the transcript via `sendEmail` (same as `contactController`), best-effort so a mail failure never breaks the reply.
+- **Escalation reuses the email engine** — `botController` emails `SUPPORT_EMAIL` (bolt@meeticulous.in) with the transcript via `sendEmail` (same as `contactController`), best-effort so a mail failure never breaks the reply.
 - **Routes:** `POST /api/bot/ask`, `POST /api/bot/feedback` (both `botLimiter`, 20/min/IP — the ask path costs an Anthropic call). Public, no auth. Client: floating `BotWidget.jsx` mounted app-wide in `App.jsx` (hidden on admin/onboarding/auth/error), calls via `api.js` `askBot`/`sendBotFeedback`, renders answer + cited-source chips + 👍/👎 + a human-handoff card on escalate.
 - **Tests:** `server/tests/unit/botService.test.js` (7, Anthropic+Supabase mocked — proves grounded answer + citation mapping + every escape path), `server/tests/integration/bot.test.js` (9, validation + escalation email + feedback), `client/src/components/common/__tests__/BotWidget.test.jsx` (4). Live browser smoke confirmed the widget renders/sends/escalates cleanly and feedback persists (👍 → `POST /bot/feedback 200`); the grounded path is proven by the mocked unit test + live SQL retrieval (local has no key).
 - **TO SEED PROD:** run `node scripts/seedKnowledgeBase.js` from an env whose Supabase creds point at prod (`.env.production`) — the script targets whatever `server/.env*` is loaded (default `.env` = staging). Re-run whenever `docs/` changes.
@@ -150,7 +150,7 @@ In-app support chatbot that answers Book A Sloth questions grounded ONLY on our 
 
 > **Status: MERGED to main (`2aed5f1`, `a1da54c`), deployed and verified live. No DB migration, no API change — the blog list endpoint was already returning everything this needed. CI green both.**
 
-`/blog` was a wall of text cards, and `bookasloth.com/blogs` — the plural everyone types — 404'd.
+`/blog` was a wall of text cards, and `meeticulous.com/blogs` — the plural everyone types — 404'd.
 
 - **Card art was already built, just unused.** Post pages generate category-themed SVG heroes (`BlogHeroThumbnail`); the index rendered none. `GET /api/blogs` already returned `image` + `icons`, so the index now renders the *same component* — index and post agree by construction, with no server change. `BlogHeroThumbnail` now takes its pattern canvas as `w`/`h` props (defaults = the old 600×500) because the tall hero box clipped the scatter pattern inside the index's short wide cards.
 - **Hover: the underline came from CSS, not the cards.** Hovering a card underlined *every line of text in it* and forced brand orange regardless of category. Cause was `.blog-page a:hover { text-decoration: underline }` in `index.css`, outranking the cards' own `hover:no-underline`. Deleted at the source rather than patched per link. Heading + CTA now tint to the post's own category via a `--card-hov` var reusing `CATEGORY_THEME.chipFg` (already the darkened band, already contrast-checked on white).
@@ -219,7 +219,7 @@ Each **service** now carries one `category` slug, drawn from the host's own cate
 - **Pre-migration tolerant:** `category` added to `V2_SELECT_COLS`; `hostController` safe-fallback regex broadened to include `category`; writes drop `category` gracefully until the column exists (currently load-bearing since v3.22 unapplied).
 - **Client:** `ServiceCategoryPicker` (auto-chip when host has 1 category, single-select chips when 2–3), wired into dashboard `ServiceForm` + onboarding `FirstServiceStep`, default = `primary_category`. Category **badge** on dashboard list (`Services.jsx`) + public page (`ServiceDetail.jsx`, server-resolved `category_label`). slug→label via `categoryUtils.categoryLabel`.
 - **Deferred (follow-ups):** Explore filter by category; sharpen `admin_category_stats()` to count by the service's own category; guard against null-wiping a category on update for a 0-category host; client retry if the host-categories fetch fails.
-- **Ops:** `v3.22` **applied** to both Supabase projects (prod Mumbai `ayjhlwyzszykqtnaktpb` + staging Tokyo `xwvciqkayammbvsidqig`), verified 2026-07-01.
+- **Ops:** `v3.22` **applied** to both Supabase projects (prod Mumbai `PROD_PROJECT_REF` + staging Tokyo `STAGING_PROJECT_REF`), verified 2026-07-01.
 
 ## Sprint: Industry Categories (branch `feat/category-system`) — built 2026-06-20
 
@@ -237,7 +237,7 @@ Each **service** now carries one `category` slug, drawn from the host's own cate
 
 ## Sprint: Financial Ledger P1 (Ledger Core) — Double-Entry Accounting (DONE 2026-06-13)
 
-> **Status: SHIPPED on branch `sd/adoring-elgamal-625af7` (NOT merged).** Migrations APPLIED to live Supabase (`xwvciqkayammbvsidqig`). Tests: server **281/281**, client **115/115**, build clean. Live ledger integrity verified: Σdebit = Σcredit, imbalance 0.
+> **Status: SHIPPED on branch `sd/adoring-elgamal-625af7` (NOT merged).** Migrations APPLIED to live Supabase (`STAGING_PROJECT_REF`). Tests: server **281/281**, client **115/115**, build clean. Live ledger integrity verified: Σdebit = Σcredit, imbalance 0.
 
 **Spec / plan:** `docs/superpowers/specs/2026-06-13-financial-ledger-p1-design.md`; `docs/superpowers/plans/2026-06-13-financial-ledger-p1.md` (full P1→P5 decomposition; only **P1** built).
 
@@ -359,7 +359,7 @@ Each **service** now carries one `category` slug, drawn from the host's own cate
 - `planMiddleware.js` rewritten DB-driven; booking limit is now per subscription YEAR (anchor = plan_activated_at). paymentController PLAN_PRICES removed → reads annual_price from DB; subscription expiry fixed 30→365 days; plan_activated_at now set on purchase.
 - Admin: `/api/admin/plans*` (create/edit/archive/restore/clone/reorder/assign; min 2 / max 3 active plans enforced) + rebuilt `AdminPlans.jsx`; public `GET /api/plans` for the pricing page.
 - KNOWN DECISION: commission_percentage seeded at 5% for ALL plans per spec JSON, but payout math still uses pricingEngine (paid plans 0%) — the PRD v2.0 contradicts the JSON here; wire pricing to plan.commission_percentage once resolved.
-- PRD DOCX generated at docs/BookASloth_Subscription_PRD_v2.docx.
+- PRD DOCX generated at docs/Meeticulous_Subscription_PRD_v2.docx.
 - Tests: server 166/166, client 113/113.
 
 ## Sprint: Badge System (DONE 2026-06-10)

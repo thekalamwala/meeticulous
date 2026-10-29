@@ -6,7 +6,7 @@
 
 ## Problem
 
-Publishing a blog post to Book A Sloth today is manual: write Markdown → hand-edit
+Publishing a blog post to Meeticulous today is manual: write Markdown → hand-edit
 `client/src/data/blogPosts.js` → `node server/scripts/seedBlogs.js` on both DBs. Nothing
 enforces the SEO/GEO/AEO bar before publish. The existing audit engine
 (`server/services/seo/scoring/`, #960) only scores **live crawled URLs** after publish, so a

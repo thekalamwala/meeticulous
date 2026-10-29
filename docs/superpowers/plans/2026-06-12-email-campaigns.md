@@ -159,7 +159,7 @@ WHERE NOT EXISTS (SELECT 1 FROM segments s WHERE s.name = v.name);
 
 - [ ] **Step 2: Apply and verify**
 
-Apply via Supabase SQL Editor (project `xwvciqkayammbvsidqig`) or Supabase MCP `apply_migration`.
+Apply via Supabase SQL Editor (project `STAGING_PROJECT_REF`) or Supabase MCP `apply_migration`.
 Run: `SELECT count(*) FROM segments WHERE is_system;`
 Expected: `4`. Also confirm `contacts`, `email_campaigns`, `campaign_recipients` exist and `email_logs.campaign_id` is present.
 
@@ -300,7 +300,7 @@ const testProvider = async (req, res) => {
     const provider = getProvider(settings.provider);
     const r = await provider.sendEmail({
       to,
-      subject: `Book A Sloth — ${settings.provider} provider test`,
+      subject: `Meeticulous — ${settings.provider} provider test`,
       html: `<p>This is a provider connectivity test sent via <b>${settings.provider}</b>.</p>`,
       fromName: settings.from_name, fromEmail: settings.from_email,
     });
@@ -325,7 +325,7 @@ Expected: PASS (2 tests).
 
 - [ ] **Step 6: Configure Resend env (manual, deployment)**
 
-In `server/.env` set `RESEND_API_KEY=<key>` and `RESEND_FROM=campaigns@bookasloth.in` (a verified Resend domain sender). Then in the admin Communications → Settings UI set provider to **Resend** for bulk. Transactional OTP can stay on SMTP if you keep a separate path; for Phase 1 the whole engine uses one provider, so verify Resend handles transactional volume too (it does).
+In `server/.env` set `RESEND_API_KEY=<key>` and `RESEND_FROM=campaigns@meeticulous.in` (a verified Resend domain sender). Then in the admin Communications → Settings UI set provider to **Resend** for bulk. Transactional OTP can stay on SMTP if you keep a separate path; for Phase 1 the whole engine uses one provider, so verify Resend handles transactional volume too (it does).
 
 - [ ] **Step 7: Commit**
 

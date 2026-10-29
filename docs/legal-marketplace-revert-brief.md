@@ -15,7 +15,7 @@ describe an abandoned seller-of-record model and must not go live as-is.
 
 ## The model, in one paragraph (factual)
 
-Book A Sloth is an **intermediary/marketplace**. The host is the supplier and seller of the
+Meeticulous is an **intermediary/marketplace**. The host is the supplier and seller of the
 service; the guest is the buyer; the contract for the service is **between host and guest**.
 BAS's own supply is a platform service (a booking fee to the guest, and a commission to the
 host). BAS invoices **only its own fee + commission** under its GSTIN — never the host's service
@@ -31,16 +31,16 @@ between the host and the guest."*
 ## Per-document changes
 
 ### `/terms` — `client/src/pages/Terms.jsx`
-- **Header comment + §2 "What Book A Sloth is"** — the load-bearing revert. Currently: "buys
+- **Header comment + §2 "What Meeticulous is"** — the load-bearing revert. Currently: "buys
   services from hosts and sells them to guests in its own name… seller and supplier of record…
-  guest's contract is with Book A Sloth… money received from a guest is our own revenue."
+  guest's contract is with Meeticulous… money received from a guest is our own revenue."
   → Marketplace: BAS is an intermediary; the host is the seller/supplier; the service contract
   is host↔guest; BAS invoices only its fee + commission; guest money for the service is
   collected on the host's behalf and paid onward net of PG/TDS/TCS.
-- **§1 Definitions** — "Host = supplies services **to Book A Sloth** for onward sale" → "Host =
+- **§1 Definitions** — "Host = supplies services **to Meeticulous** for onward sale" → "Host =
   seller who supplies services **to guests** via the Platform." "Guest = buys **from Book A
   Sloth**" → "buys **from the host** via the Platform."
-- **§4/§5** — remove "you supply to Book A Sloth / you buy from Book A Sloth"; restate as
+- **§4/§5** — remove "you supply to Meeticulous / you buy from Meeticulous"; restate as
   host-sells-to-guest, BAS facilitates.
 - **§6 Bookings/payments/taxes** — "we issue the guest a tax invoice for the full amount" →
   BAS invoices only its fee (guest) + commission (host); host's price documented by payment
@@ -72,7 +72,7 @@ between the host and the guest."*
     invoice** to the host.
   - **TDS = 1% (194-O), TCS = 1% (§52)** — NOT 10%. Both deposited against host PAN, credit
     claimable.
-  - §5 "Book A Sloth is the seller of record, so GST is chargeable on the whole sale at our
+  - §5 "Meeticulous is the seller of record, so GST is chargeable on the whole sale at our
     GSTIN" → **delete**. BAS does not charge GST on the host's price at all; the host handles
     their own GST on their own sale.
   - **PAN mandatory before any paid booking** (already enforced in code) — state it in §6.

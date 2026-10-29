@@ -9,7 +9,7 @@ _Date: 2026-07-01 · Q1 "Prove value" item #2 (Deposits & prepay)_
 ## Problem
 
 Offline services (turfs, studios, salons, clinics, workshops) often can't ask a guest to
-prepay 100% — the norm is a deposit online + the rest paid in person. Today Book A Sloth
+prepay 100% — the norm is a deposit online + the rest paid in person. Today Meeticulous
 charges the **full** `customer_total` at booking for every paid service (`createOrder`), so an
 offline host who wants "deposit now, balance at the venue" has no option and either takes the
 full amount (friction) or lists the service free (no commitment → no-shows). Online services do

@@ -38,8 +38,8 @@ requirement).
 
 ## Schema — migration `v3.60_service_category_integrity.sql`
 
-Run manually in Supabase SQL Editor on BOTH DBs (staging Tokyo `xwvciqkayammbvsidqig`
-first, then prod Mumbai `ayjhlwyzszykqtnaktpb`).
+Run manually in Supabase SQL Editor on BOTH DBs (staging Tokyo `STAGING_PROJECT_REF`
+first, then prod Mumbai `PROD_PROJECT_REF`).
 
 ```sql
 BEGIN;
@@ -103,7 +103,7 @@ the friendly 409 pre-check as UX, DB is the backstop).
 | `GET /api/explore` | Implement real `listVendors`: verified+active hosts; filters `category` (profession), **new `service` param**, `q`; paginated; VendorCard shape. Service filter uses `EXISTS (services WHERE primary_category = ? AND category = ? AND active)` |
 
 Description template fallback (computed at read time, never stored):
-`"Book trusted {profession label} professionals for {service name} on Book A Sloth"`.
+`"Book trusted {profession label} professionals for {service name} on Meeticulous"`.
 
 ## Admin management
 

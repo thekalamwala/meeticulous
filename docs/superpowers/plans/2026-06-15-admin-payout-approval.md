@@ -63,7 +63,7 @@ ALTER TABLE payout_requests
 
 - [ ] **Step 2: Apply to live Supabase**
 
-Apply via the Supabase MCP `apply_migration` tool (name `v3_8_payout_approval`, project `xwvciqkayammbvsidqig`) with the SQL above. This is a LIVE schema change — additive only, safe on existing rows.
+Apply via the Supabase MCP `apply_migration` tool (name `v3_8_payout_approval`, project `STAGING_PROJECT_REF`) with the SQL above. This is a LIVE schema change — additive only, safe on existing rows.
 
 - [ ] **Step 3: Verify the schema landed**
 

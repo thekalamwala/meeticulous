@@ -1,14 +1,14 @@
-# Book a Sloth — `/presentation` Interactive Deck — Design Spec
+# Meeticulous — `/presentation` Interactive Deck — Design Spec
 
 **Date:** 2026-08-25
 **Branch:** `feat/presentation-deck`
-**Route:** `https://bookasloth.com/presentation`
+**Route:** `https://meeticulous.com/presentation`
 
 ## Goal
-A single shareable link that lets a potential client understand Book a Sloth end-to-end
+A single shareable link that lets a potential client understand Meeticulous end-to-end
 without a human explaining it: what it is, why it exists, how it works, what the customer
 and the host each experience, why it's valuable, and how to start. It must feel like a
-premium interactive product story in the existing Book a Sloth brand — Google Slides +
+premium interactive product story in the existing Meeticulous brand — Google Slides +
 Keynote + product demo — **not** a PowerPoint clone, not a long marketing webpage, and
 **not** a new visual identity.
 

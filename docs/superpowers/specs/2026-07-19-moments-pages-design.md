@@ -6,7 +6,7 @@
 
 ## What
 
-"Moments" is a Book A Sloth product surface modeled on Google Doodles: an
+"Moments" is a Meeticulous product surface modeled on Google Doodles: an
 archive homepage listing all moments, plus a subpage per moment with its art
 and story. Search.jsx already links a featured moment to `/moments/:slug` and
 falls back to `/moments` on empty search — those routes do not exist yet. This

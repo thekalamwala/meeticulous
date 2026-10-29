@@ -14,7 +14,7 @@
 - **Model IDs:** generate → `claude-haiku-4-5-20251001`; regenerate → `claude-sonnet-5`. Define these as named constants, never inline literals scattered around.
 - **API key server-side only** — `ANTHROPIC_API_KEY` (server `.env` + Render). **Key is NOT yet provisioned** — every task must degrade gracefully when the key is absent: the endpoint returns `503 { message, ai_unavailable: true }`, never throws at import time, and the form stays fully manual-usable.
 - **Plan limits come from config** — `subscription_plans.limits.ai_generations` in the DB + `FALLBACK_PLANS` in `planService.js`. Never hardcode a per-plan number in gate logic. Quota values: **Starter 1 / 6 months · Host+ 2 / 3 months · Studio 2 / 1 month**; unlimited = `-1` (Supreme).
-- **No `services` schema change** — all target columns already exist. Only new DB object = `ai_listing_generations` (migration `v3.69`, applied to BOTH DBs: prod Mumbai `ayjhlwyzszykqtnaktpb` + staging Tokyo `xwvciqkayammbvsidqig`). Keep the code-side SELECT/INSERT destructure fallback until confirmed applied on both.
+- **No `services` schema change** — all target columns already exist. Only new DB object = `ai_listing_generations` (migration `v3.69`, applied to BOTH DBs: prod Mumbai `PROD_PROJECT_REF` + staging Tokyo `STAGING_PROJECT_REF`). Keep the code-side SELECT/INSERT destructure fallback until confirmed applied on both.
 - **`faqs` shape** = array of `{ question, answer }` (jsonb). `included_items`/`excluded_items` = string[] (text[]). AI must match these exactly.
 - **Anti-hallucination guardrails are mandatory** — the model must not invent prices, guarantees, certifications, licenses, medical/legal claims, results, reviews, ratings, addresses, or phone numbers. Server strips/blanks any such field before returning.
 - **Fill-then-review, never fill-then-publish** — the button only populates form state; nothing goes live without the host clicking the existing Save/Publish.
@@ -42,7 +42,7 @@ Creates the usage-tracking table and registers the `ai_generations` limit key so
 `server/migrations/v3.69_ai_listing_generations.sql`:
 ```sql
 -- v3.69_ai_listing_generations.sql — usage log for "Write with Bolt" AI listing autofill.
--- Idempotent. Apply on BOTH DBs (prod Mumbai ayjhlwyzszykqtnaktpb + staging Tokyo xwvciqkayammbvsidqig).
+-- Idempotent. Apply on BOTH DBs (prod Mumbai PROD_PROJECT_REF + staging Tokyo STAGING_PROJECT_REF).
 -- No RLS: only the service_role (server) reads/writes this; it bypasses RLS.
 
 CREATE TABLE IF NOT EXISTS ai_listing_generations (
@@ -451,7 +451,7 @@ const { getClient, MODELS } = require('./anthropicClient');
 const { LISTING_TOOL, sanitizeListing } = require('./listingContract');
 
 const SYSTEM = [
-  'You are an expert SEO/AEO/GEO copywriter for a services marketplace (Book A Sloth).',
+  'You are an expert SEO/AEO/GEO copywriter for a services marketplace (Meeticulous).',
   'Write a complete, publish-ready service listing by calling the emit_listing tool.',
   'Rules: English only. Primary keyword (from the title) appears in the title, the first',
   'sentence of long_description, and at least one FAQ — natural density, no stuffing.',

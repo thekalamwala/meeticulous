@@ -8,7 +8,7 @@
 
 A premium `/enterprise` landing page targeting medium/large organizations (hospitals, clinic
 chains, salon/gym chains, universities, coaching institutes, multi-location businesses,
-franchises, agencies, government/NGO). It positions Book A Sloth as **booking infrastructure
+franchises, agencies, government/NGO). It positions Meeticulous as **booking infrastructure
 built around an organization's workflow** — not a pricing page, not a feature dump.
 
 Tone: professional, calm, spacious, confident. No startup hype, no emoji, no gradient soup,
@@ -52,9 +52,9 @@ hover:-translate-y-1 hover:shadow-[0_22px_45px_-18px_rgba(26,26,26,0.16)]`.
 - `client/src/pages/enterprise/EnterpriseFaq.jsx` — 20-item framer-motion `AnimatePresence` accordion (recipe from ProfessionLanding `FaqAccordion`), fires `enterprise_faq_opened`.
 
 ### New — server
-- `server/controllers/enterpriseLeadController.js` — clone of `contactController.submitContact`: validate + `esc()` every field, insert `enterprise_leads` row, `sendEmail` to `SUPPORT_EMAIL` (`bolt@bookasloth.in`). Table insert wrapped so an email still sends if the insert fails (fail-soft), and vice-versa.
+- `server/controllers/enterpriseLeadController.js` — clone of `contactController.submitContact`: validate + `esc()` every field, insert `enterprise_leads` row, `sendEmail` to `SUPPORT_EMAIL` (`bolt@meeticulous.in`). Table insert wrapped so an email still sends if the insert fails (fail-soft), and vice-versa.
 - `server/routes/enterpriseLeadRoutes.js` — `router.post('/', newsletterEmailLimiter, newsletterIpLimiter, submitEnterpriseLead)`; mounted `POST /api/enterprise-lead` in `server.js` next to the contact mount (~L158).
-- `server/migrations/v3.75_enterprise_leads.sql` — new table (see §6). Apply on **both** DBs (Tokyo staging `xwvciqkayammbvsidqig` + Mumbai prod `ayjhlwyzszykqtnaktpb`). Keep a code-side schema fallback until confirmed applied on both.
+- `server/migrations/v3.75_enterprise_leads.sql` — new table (see §6). Apply on **both** DBs (Tokyo staging `STAGING_PROJECT_REF` + Mumbai prod `PROD_PROJECT_REF`). Keep a code-side schema fallback until confirmed applied on both.
 
 ### Edited — wiring
 - `client/src/App.jsx` — `const Enterprise = lazy(() => import('./pages/Enterprise'));` + `<Route path="/enterprise" element={<Enterprise />} />` before the `/:profileSlug` catch-all.
@@ -69,7 +69,7 @@ hover:-translate-y-1 hover:shadow-[0_22px_45px_-18px_rgba(26,26,26,0.16)]`.
 
 1. **Hero** — H1 "Built around your business, not the other way around." + subheading, primary "Talk to Enterprise Sales" + secondary "Book a Demo" (both scroll to lead form). Right: CSS/SVG mockup of multiple branches / staff / calendars / dashboard (no stock photos, no heavy image).
 2. **Trust cards** — 8 cards: Unlimited Staff, Multiple Locations, Custom Integrations, Priority Support, Dedicated Infrastructure, Custom Workflows, Role-based Access, Implementation Support.
-3. **Problem** — "Enterprise scheduling isn't just booking appointments." Challenge list → transition line "Book A Sloth Enterprise adapts to your workflow."
+3. **Problem** — "Enterprise scheduling isn't just booking appointments." Challenge list → transition line "Meeticulous Enterprise adapts to your workflow."
 4. **Enterprise Features** — 6 categories, each title+description+icon+cards: Scheduling, Teams, Customer Experience, Payments, Integrations, Security (card contents per brief).
 5. **Workflow builder** — vertical timeline: Customer → Location → Department → Staff → Service → Approval → Payment → Confirmation → WhatsApp → Reminder → Reports.
 6. **Industries** — 8 cards (Healthcare, Education, Fitness, Corporate, Government, Consulting, Hospitality, Beauty), each with typical challenge + how Enterprise solves it.
@@ -77,7 +77,7 @@ hover:-translate-y-1 hover:shadow-[0_22px_45px_-18px_rgba(26,26,26,0.16)]`.
 8. **Integrations grid** — Google Calendar/Meet, Zoom, Microsoft, WhatsApp Business API, Razorpay, Stripe, Cashfree, Webhook, REST API + "future-ready architecture".
 9. **Deployment options** — Cloud, Dedicated Instance, Private Cloud, On-premise (Coming Soon).
 10. **Frequently requested customizations** — accordion (per-branch calendars, custom approval, own gateway, own WhatsApp API, custom templates, dedicated SMTP, role restrictions, API/ERP/CRM integration, staff hierarchy, custom reports, migration).
-11. **Why Book A Sloth** — comparison cards: adapts to workflow, direct engineering support, fast implementation, transparent communication, Indian business workflows, modern APIs, scalable architecture, no unnecessary complexity.
+11. **Why Meeticulous** — comparison cards: adapts to workflow, direct engineering support, fast implementation, transparent communication, Indian business workflows, modern APIs, scalable architecture, no unnecessary complexity.
 12. **Implementation timeline** — Discovery → Requirement Mapping → Proposal → Implementation → Migration → Testing → Training → Launch.
 13. **FAQ** — ≥20 enterprise questions (own domain, own WhatsApp API, own Razorpay, permissions, per-location calendars, migration, onboarding, custom integrations, SLA, self-host, API docs, ERP, + more).
 14. **Enterprise Lead Form** — fields: Organization Name, Website, Industry, Team Size, Locations, Estimated Monthly Bookings, Current Scheduling Software, Required Integrations, Phone, Business Email, Additional Requirements. CTA "Request Enterprise Consultation". Validation + honeypot + success state.
@@ -123,7 +123,7 @@ email-only (fail-soft) until confirmed applied.
 ## 7. SEO + AEO + GEO
 
 ### Target keywords
-- **Primary:** Book A Sloth Enterprise, **Appointment Booking App**, Enterprise Appointment Booking App.
+- **Primary:** Meeticulous Enterprise, **Appointment Booking App**, Enterprise Appointment Booking App.
 - **Secondary:** Appointment Booking Software, Enterprise Booking Software, Enterprise Scheduling
   Software, Business Scheduling Platform, Multi-location Booking Software, Franchise Scheduling
   Software, Booking Infrastructure, Custom Booking Platform.
@@ -138,21 +138,21 @@ non-JS crawlers read tags). Internal links to `/pricing`, `/features`, `/securit
 
 ### AEO — Answer Engine Optimization (surfaced in Google AI Overviews, Bing Copilot, voice/answer boxes)
 - **Self-contained FAQ answers.** Each of the 20 answers leads with a direct one-sentence answer
-  ("Yes — Book A Sloth Enterprise supports your own WhatsApp Business API…"), then detail. Extractable
+  ("Yes — Meeticulous Enterprise supports your own WhatsApp Business API…"), then detail. Extractable
   as a standalone answer without page context.
 - **A definitional block** near the top (or as FAQ #1) — "What is an enterprise appointment booking
-  app?" — one clean paragraph binding the entity **Book A Sloth Enterprise** to the concept. Gives
+  app?" — one clean paragraph binding the entity **Meeticulous Enterprise** to the concept. Gives
   answer engines a citable definition.
 - **`FAQPage` JSON-LD** carries all 20 Q&A verbatim (question `name` + `acceptedAnswer.text`), so the
   structured answers match the visible copy exactly (required for rich-result eligibility).
-- **Comparison + spec content** ("Why Book A Sloth", deployment table, integrations grid) as clean
+- **Comparison + spec content** ("Why Meeticulous", deployment table, integrations grid) as clean
   lists/tables — the format answer engines lift into summaries.
 
 ### GEO — Generative Engine Optimization (cited by ChatGPT / Perplexity / Gemini)
 - **Concrete, citable claims** over vague marketing: specific capabilities, named integrations
   (Razorpay/Stripe/Cashfree/WhatsApp Business API/Zoom/Outlook), deployment tiers, timeline steps.
   Generative engines prefer specific, attributable statements.
-- **Entity clarity:** consistent product name "Book A Sloth Enterprise", `Organization` +
+- **Entity clarity:** consistent product name "Meeticulous Enterprise", `Organization` +
   `SoftwareApplication` schema with `sameAs` (from `utils/seo.js` `ORG_SAME_AS`) so the entity is
   disambiguated across the web.
 - **Structured JSON-LD `@graph`** (one `<script>`): `SoftwareApplication` (name, applicationCategory

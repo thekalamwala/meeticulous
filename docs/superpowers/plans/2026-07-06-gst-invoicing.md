@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Insert a billing-details step before Razorpay and issue a compliant GST tax invoice (from Timewheel Internet Pvt. Ltd.) for Book A Sloth's own supply on host subscriptions and guest-booking platform fees.
+**Goal:** Insert a billing-details step before Razorpay and issue a compliant GST tax invoice (from Timewheel Internet Pvt. Ltd.) for Meeticulous's own supply on host subscriptions and guest-booking platform fees.
 
 **Architecture:** A new `invoices` + `invoice_counters` pair (atomic gap-free serials via a `create_invoice` Postgres RPC) is written by a shared `invoiceService.generateInvoice()` after any successful payment. Billing details are captured before checkout and snapshotted (`profiles.billing_details`, `bookings.billing_details`). A pure `invoiceHtml.js` renders the Zoho/Timewheel A4 tax invoice; a token-gated `GET /api/invoices/:id` serves it for download + email.
 
@@ -14,7 +14,7 @@
 - **Invoice covers BAS's own supply only.** Booking → platform fee (`platform_fee_amount` + `platform_fee_gst`). Subscription → plan price (`plan_price` + `gst_amount`). Never the host's service value.
 - **No pricing change.** Invoice `total` must equal the amount already charged; GST is re-split (CGST+SGST vs IGST), never recomputed from scratch.
 - **Seller** = Timewheel Internet Pvt. Ltd., GSTIN `21AAMCT8270C1ZF`, PAN `AAMCT8270C`, **state code 21 (Odisha)**.
-- **Migrations run manually on BOTH DBs** (prod Mumbai `ayjhlwyzszykqtnaktpb`, staging Tokyo `xwvciqkayammbvsidqig`); keep code-side destructure fallback until confirmed. Migration file `v3.67_gst_invoicing.sql` (latest is v3.66).
+- **Migrations run manually on BOTH DBs** (prod Mumbai `PROD_PROJECT_REF`, staging Tokyo `STAGING_PROJECT_REF`); keep code-side destructure fallback until confirmed. Migration file `v3.67_gst_invoicing.sql` (latest is v3.66).
 - **Server tests:** `server/tests/unit/*.test.js`, jest (`describe`/`test`/`expect`, `require('../../...')`). **Client tests:** Vitest, NO jest-dom — assert with `.getAttribute()` / `.textContent`.
 - Preserve existing behaviour; do not rename routes/columns. Money math uses `round2` from `pricingEngine`.
 - Fiscal year = Indian FY (Apr–Mar); serial uses the **2-digit start year** (Jun 2026 → `26`, i.e. FY2026-27). The full "FY 2026-27" label is printed on the invoice body.
@@ -223,9 +223,9 @@ const seller = {
   email:     env.SELLER_EMAIL      || 'team@timewheel.co.in',
   phone:     env.SELLER_PHONE      || '+91 8637758344',
   website:   env.SELLER_WEBSITE    || 'timewheel.co.in',
-  brandName: 'Book A Sloth',
+  brandName: 'Meeticulous',
   brandSubline: 'by Timewheel Internet (P) Ltd',
-  logoUrl:   'https://company-assets.bookasloth.in/images/email/footer-logo.png',
+  logoUrl:   'https://company-assets.meeticulous.in/images/email/footer-logo.png',
 };
 
 // SAC codes — confirm with CA before go-live; one-line editable here.
@@ -578,7 +578,7 @@ describe('buildTaxInvoiceHTML', () => {
 
 - [ ] **Step 3: Write the implementation**
 
-`server/services/invoiceHtml.js` — port the approved mockup (`scratchpad/invoice-mockup.html`): Poppins, Book A Sloth logo + "by Timewheel Internet (P) Ltd", seller/Bill-to blocks, item table (Description · SAC · Qty · Unit price · Tax · Amount), Subtotal → CGST+SGST **or** IGST → Total, Zoho 4-colour footer bar, A4 `@page`. Reference constants come from `invoice.seller_snapshot` (frozen) with `seller` as fallback.
+`server/services/invoiceHtml.js` — port the approved mockup (`scratchpad/invoice-mockup.html`): Poppins, Meeticulous logo + "by Timewheel Internet (P) Ltd", seller/Bill-to blocks, item table (Description · SAC · Qty · Unit price · Tax · Amount), Subtotal → CGST+SGST **or** IGST → Total, Zoho 4-colour footer bar, A4 `@page`. Reference constants come from `invoice.seller_snapshot` (frozen) with `seller` as fallback.
 
 ```js
 'use strict';
@@ -593,14 +593,14 @@ const fmtDate = (iso) => { try { return new Date(iso).toLocaleDateString('en-IN'
 function buildTaxInvoiceHTML(inv = {}) {
   const s = { ...seller, ...(inv.seller_snapshot || {}) };
   const isSub = inv.source_type === 'subscription';
-  const itemDesc = isSub ? 'Book A Sloth — subscription plan' : 'Booking convenience / platform fee';
+  const itemDesc = isSub ? 'Meeticulous — subscription plan' : 'Booking convenience / platform fee';
   const intra = Number(inv.igst) === 0 && (Number(inv.cgst) > 0 || Number(inv.sgst) > 0);
   const taxRows = intra
     ? `<div class="row"><span class="mut">CGST @ 9%</span><span>${inr(inv.cgst)}</span></div>
        <div class="row"><span class="mut">SGST @ 9%</span><span>${inr(inv.sgst)}</span></div>`
     : `<div class="row"><span class="mut">IGST @ 18%</span><span>${inr(inv.igst)}</span></div>`;
   const bookingNote = isSub ? '' :
-    `<div class="note">This invoice covers Book A Sloth’s platform fee only. The booked service is supplied by the host, who invoices separately if GST-registered.</div>`;
+    `<div class="note">This invoice covers Meeticulous’s platform fee only. The booked service is supplied by the host, who invoices separately if GST-registered.</div>`;
 
   return `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -639,8 +639,8 @@ function buildTaxInvoiceHTML(inv = {}) {
 </style></head>
 <body><div class="page"><div class="body">
  <div class="head">
-   <div class="brand"><img src="${esc(s.logoUrl || seller.logoUrl)}" alt="Book A Sloth">
-     <div><div class="co">Book A Sloth</div><div class="tag">${esc(seller.brandSubline)}</div></div></div>
+   <div class="brand"><img src="${esc(s.logoUrl || seller.logoUrl)}" alt="Meeticulous">
+     <div><div class="co">Meeticulous</div><div class="tag">${esc(seller.brandSubline)}</div></div></div>
    <div class="title"><div class="t">TAX INVOICE</div>
      <div class="meta">
        <div class="k">Invoice #</div><div class="v">${esc(inv.invoice_number)}</div>
@@ -676,8 +676,8 @@ function buildTaxInvoiceHTML(inv = {}) {
  ${bookingNote}
  </div>
  <div class="foot"><div class="fbar"><span class="r"></span><span class="y"></span><span class="g"></span><span class="b"></span></div>
-   <div class="fmeta"><div>Computer-generated tax invoice — no signature required. Issued by <b>${esc(s.legalName)}</b> for the Book A Sloth platform.</div>
-   <div style="text-align:right">${esc(s.website)} · bookasloth.com</div></div></div>
+   <div class="fmeta"><div>Computer-generated tax invoice — no signature required. Issued by <b>${esc(s.legalName)}</b> for the Meeticulous platform.</div>
+   <div style="text-align:right">${esc(s.website)} · meeticulous.com</div></div></div>
 </div>
 <script>window.onload=function(){setTimeout(function(){window.print&&window.print()},350)}</script>
 </body></html>`;

@@ -1,13 +1,13 @@
 ---
-title: "Book A Sloth — Sales & Marketing Operating Guide"
+title: "Meeticulous — Sales & Marketing Operating Guide"
 subtitle: "How to run the growth engine, one person, without living in the CRM"
-author: "Book A Sloth"
+author: "Meeticulous"
 date: "August 2026"
 ---
 
 # Welcome
 
-This guide is for the **one person** who runs Sales **and** Marketing at Book A Sloth. It explains the system we built to do the repetitive work for you, so your day is spent on real conversations — not hunting through a lead list or copy‑pasting messages.
+This guide is for the **one person** who runs Sales **and** Marketing at Meeticulous. It explains the system we built to do the repetitive work for you, so your day is spent on real conversations — not hunting through a lead list or copy‑pasting messages.
 
 **The one idea to remember:**
 

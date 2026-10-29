@@ -1,4 +1,4 @@
-# API Reference — Book A Sloth
+# API Reference — Meeticulous
 
 Base URL: `http://localhost:5000/api` (dev) or your production domain.
 

@@ -1,6 +1,6 @@
 # The Ledger — read this in five minutes
 
-Book A Sloth ("BAS") keeps a **double-entry ledger**. Every rupee that moves is
+Meeticulous ("BAS") keeps a **double-entry ledger**. Every rupee that moves is
 recorded as a balanced journal entry (Σ debits = Σ credits), and the DB rejects
 any entry that doesn't balance. This page tells you **whose money each account
 holds** so any entry reads plainly. It is the human companion to the legend at
@@ -13,7 +13,7 @@ the money math lives in [`server/lib/pricingEngine.js`](../server/lib/pricingEng
 
 | Owner | What it means |
 |---|---|
-| **BAS revenue / asset / cost** | Book A Sloth's own money — what we keep, hold, or spend. |
+| **BAS revenue / asset / cost** | Meeticulous's own money — what we keep, hold, or spend. |
 | **Host pass-through** | The host's money. We only hold it and owe it on to the host. **Never BAS revenue.** |
 | **Government payable** | GST / TDS (194-O) / TCS (§52). Collected on the government's behalf, remitted to it. **Never revenue.** |
 | **Razorpay cost** | Gateway MDR. **Host-borne** on bookings, **BAS-borne** on subscriptions. |
@@ -96,5 +96,5 @@ transfer so a refunded booking never also pays the host.
 ## Where to see it
 
 Admin → **Finance → Journal**: expand any entry to see each line tagged with
-**who gets it** (Host / Book A Sloth / Government / Razorpay), footing to the
+**who gets it** (Host / Meeticulous / Government / Razorpay), footing to the
 amount paid. Corrections are append-only (adjustment / reversal), never edits.

@@ -13,7 +13,7 @@
 - Invite attribution NEVER writes a `referrals` row. `profiles.invite_slug` is a separate axis from Refer & Earn. Independent of `bas_ref`.
 - New host signups only. Stamp once, at account creation, inside the `if (!profileId)` branch — the branch, not a null-guard, is the gate.
 - Slugs immutable after creation; never deleted, only `active` toggled. Unknown/inactive slug → silent redirect to `/`, never 404.
-- Migration is additive-only, applied to BOTH DBs (prod Mumbai `ayjhlwyzszykqtnaktpb` + staging Tokyo `xwvciqkayammbvsidqig`). Keep code-side schema fallback until confirmed.
+- Migration is additive-only, applied to BOTH DBs (prod Mumbai `PROD_PROJECT_REF` + staging Tokyo `STAGING_PROJECT_REF`). Keep code-side schema fallback until confirmed.
 - SQL style matches `server/migrations/v3.77_referral_program.sql`.
 - `invite` must be added to client `client/src/config/reservedSegments.js` (already reserved server-side in `reservedNamespaces.js` ACCOUNT array).
 - Server tests live in `server/tests/`. Client has NO jest-dom (only 4 basic vitest matchers — use `.getAttribute()`, not `toHaveAttribute`).
@@ -35,7 +35,7 @@
 -- v3.91_invite_links.sql
 -- Lead-source attribution "Invite Links". Attribution-only — NO payouts, fully
 -- separate from Refer & Earn (referrals table). Sales/marketing share pretty
--- links like bookasloth.com/invite/social; new HOST signups get stamped with the
+-- links like meeticulous.com/invite/social; new HOST signups get stamped with the
 -- slug so acquisition source is queryable in admin.
 --
 --   invite_links       — one row per shareable link (admin-created, slug immutable).
@@ -68,7 +68,7 @@ revoke all on public.invite_links from anon, authenticated;
 
 - [ ] **Step 2: Apply to BOTH DBs**
 
-Use the Supabase MCP `apply_migration` (or the SQL editor) against prod `ayjhlwyzszykqtnaktpb` AND staging `xwvciqkayammbvsidqig`. Additive only.
+Use the Supabase MCP `apply_migration` (or the SQL editor) against prod `PROD_PROJECT_REF` AND staging `STAGING_PROJECT_REF`. Additive only.
 
 - [ ] **Step 3: Verify columns exist**
 
@@ -793,7 +793,7 @@ export default function InviteLanding() {
 
   return (
     <div className="min-h-screen bg-white text-ink">
-      <Seo title={`You're invited — Book A Sloth`} description="Your invitation to Book A Sloth." noindex />
+      <Seo title={`You're invited — Meeticulous`} description="Your invitation to Meeticulous." noindex />
 
       {/* Hero — dynamic greeting */}
       <section className="mx-auto max-w-3xl px-6 pt-20 pb-14 text-center">
@@ -831,7 +831,7 @@ export default function InviteLanding() {
         </div>
       </section>
 
-      {/* Why Book A Sloth */}
+      {/* Why Meeticulous */}
       <HowItWorks />
 
       {/* Pricing */}
@@ -862,7 +862,7 @@ export default function InviteLanding() {
 
       {/* Minimal footer — bottom strip only */}
       <footer className="border-t-4 border-ink py-6 text-center text-xs text-neutral-500">
-        © Book A Sloth · <Link to="/privacy" className="underline">Privacy</Link> · <Link to="/terms" className="underline">Terms</Link>
+        © Meeticulous · <Link to="/privacy" className="underline">Privacy</Link> · <Link to="/terms" className="underline">Terms</Link>
       </footer>
     </div>
   );

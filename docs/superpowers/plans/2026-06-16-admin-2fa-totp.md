@@ -103,7 +103,7 @@ const { authenticator } = require('otplib');
 // Tolerate ±1 time-step (30s) of clock skew; no wider.
 authenticator.options = { window: 1 };
 
-const ISSUER = 'Book A Sloth Admin';
+const ISSUER = 'Meeticulous Admin';
 
 /** New TOTP secret + provisioning URI for an account label (the admin email). */
 const newSecret = (label) => {
@@ -634,6 +634,6 @@ git commit -m "feat(admin-2fa): break-glass reset script + runbook"
 ---
 
 ## Post-implementation (manual)
-- Apply `server/migrations/v3.13_admin_2fa.sql` to live Supabase (`xwvciqkayammbvsidqig`).
+- Apply `server/migrations/v3.13_admin_2fa.sql` to live Supabase (`STAGING_PROJECT_REF`).
 - Tell the 4 admin staff they'll set up an authenticator app on next login.
 - Smoke: log in → forced enroll → scan QR → confirm code → save recovery codes → next login asks for the code → a recovery code works once → SQL reset re-enrolls.

@@ -33,7 +33,7 @@ Replace the Home-only, inline-hardcoded footer with a single **reusable, refined
 | Extra blocks | Social icons + brand blurb + trust line (**no** newsletter) |
 | Render scope | **Public + marketing only** (mirror `hideNavbar` boundary) |
 | DB-driven depth | **Static now, Footer Builder deferred to Phase 2** |
-| Support email | **Keep `bolt@bookasloth.in`** (confirmed intentional) |
+| Support email | **Keep `bolt@meeticulous.in`** (confirmed intentional) |
 | Socials | Instagram, X/Twitter, LinkedIn, Facebook, WhatsApp (handles TBD) |
 | Wiring | Global render in `App.jsx` gated by `hideFooter` |
 
@@ -61,9 +61,9 @@ const FOOTER = {
   socials: [ /* {name, href, icon} — see §6.4 */ ],
   columns: [ /* {h, links:[{t, href}]} — see §6.3 */ ],
   trust:  "Razorpay-secure payments · GST invoices · Made in India 🇮🇳",
-  legal:  { copyright: "Book A Sloth", links: [
+  legal:  { copyright: "Meeticulous", links: [
             {t:"Terms", to:"/terms"}, {t:"Privacy", to:"/privacy"}, {t:"Refund", to:"/refund"} ],
-            email: "bolt@bookasloth.in" },
+            email: "bolt@meeticulous.in" },
 };
 ```
 
@@ -91,22 +91,22 @@ const hideFooter = hideNavbar; // same boundary for now
 Heading "Power up your bookings." + sub "Get started in seconds — for free." + primary **Let's Get Started** (→ `ROUTE_START`, the same start target Home uses — replicate the constant in the component) + secondary **See how it works** (→ `/#how-it-works`).
 
 ### 6.2 Brand row
-Wordmark "Book A Sloth" + blurb (§5.1) + social icon row (§6.4).
+Wordmark "Meeticulous" + blurb (§5.1) + social icon row (§6.4).
 
 ### 6.3 Link columns (3)
 | Column | Links (label → href) |
 |---|---|
 | **Product** | How it works → `/#how-it-works` · Pricing → `/#pricing` · FAQ → `/#faq` · Be a Host → `/be-a-sloth` · Explore → `/explore` |
 | **Company** | About → `/about` · Reviews → `/#collective` · Log in → `/login-as-vendor` |
-| **Support** | Help → `/help` · Contact → `mailto:bolt@bookasloth.in` · Support → `/support` |
+| **Support** | Help → `/help` · Contact → `mailto:bolt@meeticulous.in` · Support → `/support` |
 
 ### 6.4 Socials (handles **TBD — verify before merge**)
 | Network | Placeholder href |
 |---|---|
-| Instagram | `https://instagram.com/bookasloth` |
-| X / Twitter | `https://x.com/bookasloth` |
-| LinkedIn | `https://linkedin.com/company/bookasloth` |
-| Facebook | `https://facebook.com/bookasloth` |
+| Instagram | `https://instagram.com/meeticulous` |
+| X / Twitter | `https://x.com/meeticulous` |
+| LinkedIn | `https://linkedin.com/company/meeticulous` |
+| Facebook | `https://facebook.com/meeticulous` |
 | WhatsApp | `https://wa.me/<number>` |
 
 Icons: inline SVGs (no new dependency). Open in new tab (`target="_blank" rel="noopener noreferrer"`).
@@ -115,7 +115,7 @@ Icons: inline SVGs (no new dependency). Open in new tab (`target="_blank" rel="n
 "Razorpay-secure payments · GST invoices · Made in India 🇮🇳"
 
 ### 6.6 Legal bar
-© {current year} Book A Sloth · Terms · Privacy · Refund · `bolt@bookasloth.in`. Wordmark links to `#top` / scroll-to-top.
+© {current year} Meeticulous · Terms · Privacy · Refund · `bolt@meeticulous.in`. Wordmark links to `#top` / scroll-to-top.
 
 ## 7. Anchor handling (important)
 On-page anchors (`#how-it-works`, `#pricing`, `#faq`, `#collective`) only resolve on Home. Because the footer is now site-wide, they must be **root-relative** (`/#how-it-works`): from any page they navigate to Home, then scroll to the section. Verify the Home sections have matching `id`s (they currently back the Home-local anchors). React-router does not auto-scroll to a hash by default — confirm existing hash-scroll behaviour (`useLenis` is present) or add a small hash-scroll-on-load handler on Home if needed.

@@ -15,14 +15,14 @@ Full, current prices and limits are always on the [pricing](/pricing) page — t
 
 ## How much does each plan cost?
 
-If you're wondering how much Book A Sloth costs, or what Sloth Active comes to monthly or yearly — the current prices are listed on the [pricing](/pricing) page.
+If you're wondering how much Meeticulous costs, or what Sloth Active comes to monthly or yearly — the current prices are listed on the [pricing](/pricing) page.
 
 Here's the shape of it:
 
 - **Sloth** costs nothing — it's free forever (a 5% per-booking commission applies).
 - **Sloth Active** is ₹399 a month or ₹3,599 a year, GST included — under ₹10 a day, and about 25% cheaper paid yearly.
 
-Prices can change and are set by Book A Sloth, so check the [pricing](/pricing) page for the up-to-date figure.
+Prices can change and are set by Meeticulous, so check the [pricing](/pricing) page for the up-to-date figure.
 
 ## Commission
 
@@ -35,7 +35,7 @@ The exact percentage and prices are on the [pricing](/pricing) page.
 
 Two costs sit on top of the service price at checkout, and the guest sees the full total before paying:
 
-- A flat **₹10 booking fee (+18% GST)** — charged by Book A Sloth on each paid booking, regardless of plan.
+- A flat **₹10 booking fee (+18% GST)** — charged by Meeticulous on each paid booking, regardless of plan.
 - The **payment gateway's processing fee** (Razorpay's) — charged by the gateway, not by us.
 
 Your earnings are calculated from the service price you set, not the total the guest pays.

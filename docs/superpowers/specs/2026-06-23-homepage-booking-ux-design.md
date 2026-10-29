@@ -51,13 +51,13 @@ Final values: `20+`, `100+`, `₹40K+`, `5 / 5` — animated numerics 20 / 100 /
 ## C. Email support
 `Help.jsx` (card), plus support/contact touchpoints in `Home.jsx`.
 
-**Root cause:** the Help card already renders a correct `<a href="mailto:bolt@bookasloth.in">` (`Help.jsx:91-96`) — no router `Link`, no `target=_blank` on mailto. The "blank page" happens when the browser has **no default mail handler** (common on desktop Chrome): a bare `mailto:` click opens a blank `about:blank` and strands the user.
+**Root cause:** the Help card already renders a correct `<a href="mailto:bolt@meeticulous.in">` (`Help.jsx:91-96`) — no router `Link`, no `target=_blank` on mailto. The "blank page" happens when the browser has **no default mail handler** (common on desktop Chrome): a bare `mailto:` click opens a blank `about:blank` and strands the user.
 
 **Changes:**
 1. **Robust + copyable email card** — render the address as visible, selectable text with a one-click **Copy** button (clipboard + "Copied!" feedback). Keep the `mailto:` anchor for users who do have a mail app. Clicking always does something useful; no dead blank page. Implemented as a small dedicated treatment for the email card (the other channel cards keep current behavior).
-2. **Standardize support address** to `bolt@bookasloth.in` — update the homepage **footer "Contact"**, the **FAQ "write to us"** line, and the **comparison "Tell us"** mailto (all currently `hello@bookasloth.com`) to `bolt@bookasloth.in`.
+2. **Standardize support address** to `bolt@meeticulous.in` — update the homepage **footer "Contact"**, the **FAQ "write to us"** line, and the **comparison "Tell us"** mailto (all currently `hello@meeticulous.com`) to `bolt@meeticulous.in`.
 
-> ⚠️ **Memory override flag:** project memory records support/marketing email as `hello@bookasloth.com` (legal stays `team@timewheel.co.in`). This spec **intentionally overrides** that for support/contact → `bolt@bookasloth.in`, per the user's explicit instruction. Legal/Privacy `team@timewheel.co.in` is unchanged.
+> ⚠️ **Memory override flag:** project memory records support/marketing email as `hello@meeticulous.com` (legal stays `team@timewheel.co.in`). This spec **intentionally overrides** that for support/contact → `bolt@meeticulous.in`, per the user's explicit instruction. Legal/Privacy `team@timewheel.co.in` is unchanged.
 
 ---
 
@@ -93,6 +93,6 @@ Final values: `20+`, `100+`, `₹40K+`, `5 / 5` — animated numerics 20 / 100 /
 ## Commit plan
 1. `fix(home): tighten stats spacing, balance heading, add dividers, 40K, bigger tagline, count-up`
 2. `fix(home): brighten how-it-works text, strengthen pills + arrows`
-3. `fix(help): copyable email support + standardize support email to bolt@bookasloth.in`
+3. `fix(help): copyable email support + standardize support email to bolt@meeticulous.in`
 4. `fix(services): isolate TagInput focus via ref so Not Included accepts input`
 5. `feat(booking): Download Receipt on confirmation via shared client receipt util`

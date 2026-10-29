@@ -1,4 +1,4 @@
-# AI Context — Book A Sloth
+# AI Context — Meeticulous
 
 ## What This Project Is
 A multi-tenant appointment booking SaaS. Hosts (creators) sign up, create services, set availability, and receive bookings. Guests browse public profiles, book via OTP verification or logged-in session, and pay via Razorpay.

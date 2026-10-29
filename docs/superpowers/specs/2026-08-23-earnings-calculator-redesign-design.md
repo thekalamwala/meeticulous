@@ -61,7 +61,7 @@ Studio unlocks) → "Top annual plan makes sense" → CTA.
 
 1. **Hero + live calculator, fused, above the fold.** No separate intro paragraph.
    Provocative H1, two pre-filled inputs, headline result already computed on load.
-2. **Reveal strip** — one big animated number (annual take-home on Book A Sloth)
+2. **Reveal strip** — one big animated number (annual take-home on Meeticulous)
    beside the commission-bleed loss counter.
 3. **Three plan cards, annual-first**, best-for-you highlighted honestly by volume;
    monthly/annual toggle, annual default.

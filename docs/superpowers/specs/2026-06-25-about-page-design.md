@@ -74,7 +74,7 @@ Alternating warm-white (W) / ink-dark (D) rhythm: 1W 2W 3D 4W 5W 6D 7W 8D 9W 10W
 - **UX reasoning:** Lead with *why we exist*, not "we are". Headline = purpose. Establishes homepage continuity instantly (same hero motif: big Plus-Jakarta headline + floating `sloth-glass` cards).
 - **Copy:**
   - H1: "Your time is worth protecting. So we built the calm way to get booked."
-  - Sub: "Book A Sloth helps creators publish their services, get booked, and get paid — without chasing DMs or losing a cut to commission."
+  - Sub: "Meeticulous helps creators publish their services, get booked, and get paid — without chasing DMs or losing a cut to commission."
   - CTA primary: "Let's Get Started" (→ host/get-started route, match homepage CTA target). Ghost: "See how it works" (anchor to §8 or home how-it-works).
 - **Layout:** 2-col desktop (text left, floating placeholder cards right with `sloth-float`); centered single column mobile. Warm ambient aura bg (reuse hero aura).
 

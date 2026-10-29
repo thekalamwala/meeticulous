@@ -13,7 +13,7 @@ Replace the current 12-section calm/editorial About page with a new, motion-rich
 - **Direction:** modern, polished, smooth motion, editorial layout.
 - **Visual language:** reuse the existing app tokens — accent = `--primary-cta` (orange), `--c-*` palette, existing radii. CTAs stay orange.
 - **Motion stack:** existing GSAP + Lenis + ScrollTrigger (already wired in `useAboutMotion.js`). No framer-motion added. All motion honors `prefers-reduced-motion`.
-- **Known values filled from project context** (NOT placeholders): company = "Book A Sloth"; one-liner + hero copy from existing `aboutContent.js`; booking-slot link = `bookasloth.com/:username`.
+- **Known values filled from project context** (NOT placeholders): company = "Meeticulous"; one-liner + hero copy from existing `aboutContent.js`; booking-slot link = `meeticulous.com/:username`.
 
 ---
 
@@ -58,7 +58,7 @@ Replace the current 12-section calm/editorial About page with a new, motion-rich
 
 8. **Team masonry** (`TeamMasonry.jsx` + `TeamModal.jsx`).
    - People in a **masonry / irregular grid** (not uniform rows).
-   - Click person → **modal**: left = image; right = short bio + **social links** + **2 buttons**: **"Book a session"** (primary) and **"Visit their page"** — both link to `bookasloth.com/:username`.
+   - Click person → **modal**: left = image; right = short bio + **social links** + **2 buttons**: **"Book a session"** (primary) and **"Visit their page"** — both link to `meeticulous.com/:username`.
    - Data: extend `team.members` with `username`, `bio`, `socials[]` — `[PHOTOS/BIOS/USERNAMES TBD]`, current 3 placeholder members.
 
 ### Appended existing sections (kept, unchanged)
@@ -118,7 +118,7 @@ All marquees + scrubbed scenes skipped/static under `prefers-reduced-motion`.
 | Logos | `[TBD]` placeholder chips |
 | Join copy + image | `[TBD]` |
 | Case studies | `[TBD]` placeholder tiles |
-| Team photos/bios/usernames/socials | `[TBD]` (3 placeholder members; "Book a session"/"Visit their page" → `bookasloth.com/:username`) |
+| Team photos/bios/usernames/socials | `[TBD]` (3 placeholder members; "Book a session"/"Visit their page" → `meeticulous.com/:username`) |
 
 All `[TBD]` slots marked with `data-swap="…"` and discoverable via `grep -r 'data-swap' client/src/components/about`.
 

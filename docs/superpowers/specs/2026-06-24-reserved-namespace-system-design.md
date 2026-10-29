@@ -28,8 +28,8 @@ A partial guard already exists (shipped, live):
 
 ### Live collision audit (Phase 7, run 2026-06-24)
 
-- **Prod (Mumbai `ayjhlwyzszykqtnaktpb`):** 31 profiles, 27 hosts. **One hard collision: `demo`** (host, `source=onboarding`, claimed 2026-06-24) — `demo`/`/demo` is a classic reserved/future route. Plus 2 `user-<phone>` bypass artifacts.
-- **Staging (Tokyo `xwvciqkayammbvsidqig`):** 7 profiles, 3 hosts. Zero hard collisions. One `user-<phone>` artifact. `timewheel-team` is NOT a collision (exact slug ≠ reserved `team`).
+- **Prod (Mumbai `PROD_PROJECT_REF`):** 31 profiles, 27 hosts. **One hard collision: `demo`** (host, `source=onboarding`, claimed 2026-06-24) — `demo`/`/demo` is a classic reserved/future route. Plus 2 `user-<phone>` bypass artifacts.
+- **Staging (Tokyo `STAGING_PROJECT_REF`):** 7 profiles, 3 hosts. Zero hard collisions. One `user-<phone>` artifact. `timewheel-team` is NOT a collision (exact slug ≠ reserved `team`).
 
 Footprint is tiny → remediation is low-risk.
 
@@ -183,7 +183,7 @@ Schema fields already present (`premium`, `assignable`, `assigned_to`). Supporte
 ## 12. Rollout
 
 - Migration `v3.33_reserved_slugs.sql` + RPC hardening applied to **both DBs** post-merge via Supabase MCP (project norm), idempotent (`IF NOT EXISTS`).
-- Seed a handful of L2 brand/premium rows (`bookasloth`, `sloth`, `official`, short names) — optional, most coverage is L1.
+- Seed a handful of L2 brand/premium rows (`meeticulous`, `sloth`, `official`, short names) — optional, most coverage is L1.
 - Grandfather existing usernames (no writes).
 - PR from `worktree-feat+reserved-slugs` → `main`; Render auto-deploys backend, Vercel auto-deploys client on merge.
 

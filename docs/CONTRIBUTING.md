@@ -1,4 +1,4 @@
-# Contributing — Book A Sloth
+# Contributing — Meeticulous
 
 ## Getting Started
 

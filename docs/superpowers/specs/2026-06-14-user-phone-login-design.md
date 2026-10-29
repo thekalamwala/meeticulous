@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-14
 **Status:** Approved design, pending implementation plan
-**Author:** Book A Sloth + Claude
+**Author:** Meeticulous + Claude
 
 ## Summary
 
@@ -41,7 +41,7 @@ Supabase Auth is email-keyed; that does not change. Phone login resolves
   `mintSessionForEmail(profile.email)` to issue a real session without a
   password.
 
-New phone-only accounts get a **synthetic auth email** `p<e164>@users.bookasloth.app`
+New phone-only accounts get a **synthetic auth email** `p<e164>@users.meeticulous.app`
 (real phone stored on `profiles.phone`). Synthetic email is an internal auth
 artifact only; the user never sees or types it.
 
@@ -94,7 +94,7 @@ Order matters to avoid duplicate accounts:
 2. Else, look for a prior booking with `bookings.guest_phone == phone` that has a
    `guest_id`; if found, load that profile, set its `phone` (now that we own the
    unique index), return it. (Links existing email-guests to their phone.)
-3. Else, create a new auth user with synthetic email `p<e164>@users.bookasloth.app`
+3. Else, create a new auth user with synthetic email `p<e164>@users.meeticulous.app`
    + random temp password, then a `profiles` row (`role: 'guest'`,
    `phone`, `password_set: false`). Mirrors `ensureGuestProfile`'s
    create-or-resolve resilience.

@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ship a production-ready `/enterprise` landing page + a public enterprise-lead capture endpoint, positioning Book A Sloth as enterprise appointment-booking infrastructure, with SEO/AEO/GEO integrated.
+**Goal:** Ship a production-ready `/enterprise` landing page + a public enterprise-lead capture endpoint, positioning Meeticulous as enterprise appointment-booking infrastructure, with SEO/AEO/GEO integrated.
 
-**Architecture:** A self-contained React marketing page (`Enterprise.jsx`) cloning the existing `ProfessionLanding.jsx` pattern — inline Tailwind + scoped `--ent-*` CSS vars + shared `Reveal` + a `enterpriseData.js` content module. It inherits global Navbar/Footer (matches `/about`). Lead form POSTs to a new `POST /api/enterprise-lead` Express endpoint that inserts a row in `enterprise_leads` and emails `bolt@bookasloth.in`, reusing the `contactController` pattern. JSON-LD `@graph` (SoftwareApplication + FAQPage + BreadcrumbList + Organization) drives AEO/GEO.
+**Architecture:** A self-contained React marketing page (`Enterprise.jsx`) cloning the existing `ProfessionLanding.jsx` pattern — inline Tailwind + scoped `--ent-*` CSS vars + shared `Reveal` + a `enterpriseData.js` content module. It inherits global Navbar/Footer (matches `/about`). Lead form POSTs to a new `POST /api/enterprise-lead` Express endpoint that inserts a row in `enterprise_leads` and emails `bolt@meeticulous.in`, reusing the `contactController` pattern. JSON-LD `@graph` (SoftwareApplication + FAQPage + BreadcrumbList + Organization) drives AEO/GEO.
 
 **Tech Stack:** React 18 + Vite, Tailwind, react-router-dom v6, framer-motion, lucide-react, Express 4, Supabase (PostgreSQL), Nodemailer, Vitest (client), Jest (server).
 
@@ -14,10 +14,10 @@
 - **Fonts:** Plus Jakarta Sans headings (global), Poppins body. Radius `rounded-[6px]`. Card borders `border-black/5` (1px). 
 - **Tone:** professional/calm/confident. Never use: amazing, revolutionary, magic, easy, best, ultimate. No emoji. Prefer: reliable, secure, configurable, flexible, scalable, dedicated, managed, enterprise-ready, built around your workflow.
 - **Copy:** production-ready, no placeholder/mock/TODO text. No invented metrics, ratings, customer counts, or logos (AEO/GEO truthfulness gate — fabricated schema risks manual action).
-- **Keywords:** primary "Appointment Booking App", "Book A Sloth Enterprise", "Enterprise Appointment Booking App"; secondary "Appointment Booking Software", "Enterprise Scheduling Software", "Multi-location Booking Software", "Franchise Scheduling Software". One primary phrase per section max, no stuffing.
+- **Keywords:** primary "Appointment Booking App", "Meeticulous Enterprise", "Enterprise Appointment Booking App"; secondary "Appointment Booking Software", "Enterprise Scheduling Software", "Multi-location Booking Software", "Franchise Scheduling Software". One primary phrase per section max, no stuffing.
 - **No new npm dependency.** Icons from `lucide-react` (v1.24) — verify each named import exists; a missing one breaks the whole bundle. Always finish with `cd client && npm run build`.
 - **Client vitest has no jest-dom** (memory: `jest-dom-matcher-gap`) — use `.getAttribute()` / `.textContent` / `getByText`, not `toBeInTheDocument`/`toHaveAttribute`.
-- **Migrations run on BOTH DBs** (Tokyo staging `xwvciqkayammbvsidqig` + Mumbai prod `ayjhlwyzszykqtnaktpb`); keep code-side schema fallback until confirmed applied.
+- **Migrations run on BOTH DBs** (Tokyo staging `STAGING_PROJECT_REF` + Mumbai prod `PROD_PROJECT_REF`); keep code-side schema fallback until confirmed applied.
 - **Server tests live in `server/tests/`** (not `__tests__`) — memory `industry-categories-build`.
 
 ---
@@ -133,7 +133,7 @@ Expected: FAIL — `validateLead is not a function`.
 const sendEmail = require('../utils/sendEmail');
 const { supabaseAdmin } = require('../config/supabase');
 
-const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'bolt@bookasloth.in';
+const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'bolt@meeticulous.in';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const esc = (s = '') =>
@@ -223,7 +223,7 @@ Expected: PASS (5 tests).
 
 - [ ] **Step 7: Apply migration to both DBs**
 
-Run the SQL in `server/migrations/v3.75_enterprise_leads.sql` in the Supabase SQL Editor on **both** the Tokyo staging (`xwvciqkayammbvsidqig`) and Mumbai prod (`ayjhlwyzszykqtnaktpb`) projects. (Executor may use the Supabase MCP `apply_migration`/`execute_sql` per project instead.) Controller is fail-soft, so code can merge before this runs, but note it in the PR as a required deploy step.
+Run the SQL in `server/migrations/v3.75_enterprise_leads.sql` in the Supabase SQL Editor on **both** the Tokyo staging (`STAGING_PROJECT_REF`) and Mumbai prod (`PROD_PROJECT_REF`) projects. (Executor may use the Supabase MCP `apply_migration`/`execute_sql` per project instead.) Controller is fail-soft, so code can merge before this runs, but note it in the PR as a required deploy step.
 
 - [ ] **Step 8: Commit**
 
@@ -335,7 +335,7 @@ git commit -m "feat(enterprise): wire /enterprise route, api, analytics, sitemap
 ```js
 export const HERO = {
   h1: 'Built around your business, not the other way around.',
-  sub: 'Book A Sloth Enterprise helps organizations manage teams, locations, bookings, payments, and customer communication through an appointment booking app designed around their workflow.',
+  sub: 'Meeticulous Enterprise helps organizations manage teams, locations, bookings, payments, and customer communication through an appointment booking app designed around their workflow.',
   primary: 'Talk to Enterprise Sales',
   secondary: 'Book a Demo',
 };
@@ -361,7 +361,7 @@ export const PROBLEMS = {
     'Customer communication over email, WhatsApp, and SMS.',
     'Legacy software and manual operations that slow teams down.',
   ],
-  transition: 'Book A Sloth Enterprise adapts to your workflow.',
+  transition: 'Meeticulous Enterprise adapts to your workflow.',
 };
 
 export const FEATURE_CATEGORIES = [
@@ -420,7 +420,7 @@ export const CUSTOMIZATIONS = [
   { q: 'Custom email templates', a: 'Email templates can be branded and tailored per organization or per location.' },
   { q: 'Dedicated SMTP', a: 'Send transactional email from your own SMTP for full deliverability control.' },
   { q: 'Role restrictions', a: 'Permissions are configurable per role so staff only see what they need.' },
-  { q: 'API integration', a: 'REST APIs and webhooks let you connect Book A Sloth Enterprise to your internal systems.' },
+  { q: 'API integration', a: 'REST APIs and webhooks let you connect Meeticulous Enterprise to your internal systems.' },
   { q: 'ERP integration', a: 'We build integrations with your ERP as part of implementation.' },
   { q: 'CRM integration', a: 'Booking and customer data can sync with your CRM through APIs and webhooks.' },
   { q: 'Staff hierarchy', a: 'Model department heads, managers, and staff with reporting relationships.' },
@@ -451,7 +451,7 @@ export const IMPLEMENTATION_STEPS = [
 ];
 
 export const FAQ = [
-  { q: 'What is an enterprise appointment booking app?', a: 'An enterprise appointment booking app is scheduling software built for organizations with multiple teams, locations, and workflows. Book A Sloth Enterprise provides configurable calendars, role-based access, payments, and integrations as booking infrastructure for your organization.' },
+  { q: 'What is an enterprise appointment booking app?', a: 'An enterprise appointment booking app is scheduling software built for organizations with multiple teams, locations, and workflows. Meeticulous Enterprise provides configurable calendars, role-based access, payments, and integrations as booking infrastructure for your organization.' },
   { q: 'Can we use our own domain?', a: 'Yes. Enterprise plans support custom domains and white-label booking pages so the experience carries your brand.' },
   { q: 'Can we use our own WhatsApp Business API?', a: 'Yes. You can connect your own WhatsApp Business API sender for confirmations, reminders, and updates.' },
   { q: 'Can we use our own Razorpay account?', a: 'Yes. Connect your own Razorpay, Stripe, or Cashfree account so payments settle directly to you.' },
@@ -688,17 +688,17 @@ import { SITE_URL, ORG_SAME_AS, organizationJsonLd, faqJsonLd, breadcrumbJsonLd 
 const URL = `${SITE_URL}/enterprise`;
 
 export const ENT_SEO = {
-  title: 'Enterprise Appointment Booking App | Book A Sloth Enterprise',
-  description: 'Book A Sloth Enterprise is an appointment booking app for organizations — configurable calendars, multiple locations, role-based access, payments, and integrations, built around your workflow.',
+  title: 'Enterprise Appointment Booking App | Meeticulous Enterprise',
+  description: 'Meeticulous Enterprise is an appointment booking app for organizations — configurable calendars, multiple locations, role-based access, payments, and integrations, built around your workflow.',
   canonical: URL,
   keywords: 'appointment booking app, enterprise appointment booking app, enterprise scheduling software, appointment booking software, multi-location booking software, franchise scheduling software, business scheduling platform',
-  ogTitle: 'Enterprise Appointment Booking App — Book A Sloth Enterprise',
+  ogTitle: 'Enterprise Appointment Booking App — Meeticulous Enterprise',
   ogDescription: 'Booking infrastructure for organizations with multiple teams, locations, and workflows.',
 };
 
 const softwareApplicationJsonLd = () => ({
   '@type': 'SoftwareApplication',
-  name: 'Book A Sloth Enterprise',
+  name: 'Meeticulous Enterprise',
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Web',
   url: URL,
@@ -728,7 +728,7 @@ it('emits FAQPage + SoftwareApplication with matching FAQ count', () => {
   const g = buildEnterpriseJsonLd()['@graph'];
   const faq = g.find(n => n['@type'] === 'FAQPage');
   const app = g.find(n => n['@type'] === 'SoftwareApplication');
-  expect(app.name).toBe('Book A Sloth Enterprise');
+  expect(app.name).toBe('Meeticulous Enterprise');
   expect(faq.mainEntity.length).toBeGreaterThanOrEqual(20);
 });
 it('title targets the primary keyword', () => {

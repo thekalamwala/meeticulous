@@ -1,4 +1,4 @@
-# Project Status — Book A Sloth
+# Project Status — Meeticulous
 
 _Last updated: 2026-06-11_
 

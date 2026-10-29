@@ -559,7 +559,7 @@ Add before `module.exports`:
 ```javascript
 const PROCESS_BATCH = 200;
 const MAX_ATTEMPTS = 3;
-const CLIENT_URL = process.env.CLIENT_URL || 'https://bookasloth.in';
+const CLIENT_URL = process.env.CLIENT_URL || 'https://meeticulous.in';
 
 const setStatus = (id, vals) =>
   supabaseAdmin.from('scheduled_followups')
@@ -738,7 +738,7 @@ Expected: FAIL — template not found / flag missing / event not marketing.
     name: 'Rebook Nudge — Customer', subject: 'Ready for another session with {{vendor_name}}?',
     preview_text: 'Book {{vendor_name}} again in a tap.',
     email_category: 'Session Complete',
-    email_reason: 'You are receiving this because you recently booked a session on Book A Sloth.',
+    email_reason: 'You are receiving this because you recently booked a session on Meeticulous.',
     html_content:
       eyebrow(t.text, 'Come back soon') + h('Hi {{first_name}},') +
       lead('Hope your session with {{vendor_name}} went well. Ready for another?') +

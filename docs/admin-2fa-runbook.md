@@ -1,6 +1,6 @@
 # Admin 2FA — Owner Runbook
 
-This document is written for the Book A Sloth owner and is intentionally non-technical. You do not need to know how to code to follow any of these steps.
+This document is written for the Meeticulous owner and is intentionally non-technical. You do not need to know how to code to follow any of these steps.
 
 ---
 
@@ -28,7 +28,7 @@ You only do this once. After that, daily login is quick.
 1. Open the admin panel and log in with your **username and password** as usual.
 2. You will see a page with a **QR code** (a square barcode).
 3. Open your authenticator app → tap **+** or **Add account** → choose **Scan QR code** → point your camera at the QR code on screen.
-4. The app will add a "Book A Sloth" entry and immediately start showing a 6-digit code.
+4. The app will add a "Meeticulous" entry and immediately start showing a 6-digit code.
 5. Type that 6-digit code into the box on screen and click **Verify**.
 6. You will see **8 recovery codes** — these are your backup if you ever lose your phone. **Write them down or save them somewhere safe** (a password manager, a secure notes app, a piece of paper in a locked drawer). Each code can only be used once. Do not skip this step.
 7. Click **Done**. Setup is complete.
@@ -39,7 +39,7 @@ You only do this once. After that, daily login is quick.
 
 1. Go to the admin login page.
 2. Enter your **username and password**, click **Log in**.
-3. Open your authenticator app, find the **Book A Sloth** entry, and type the current **6-digit code** into the box.
+3. Open your authenticator app, find the **Meeticulous** entry, and type the current **6-digit code** into the box.
 4. Click **Verify**. You are in.
 
 The code refreshes every 30 seconds. If it says "invalid code", just wait for a fresh code and try again.
@@ -67,7 +67,7 @@ If you are completely locked out — no phone, no recovery codes — there are t
 This is the recommended method because you already have access to the Supabase dashboard.
 
 1. Go to [https://supabase.com](https://supabase.com) and log in with your Supabase account.
-2. Open the **Book A Sloth project** from your project list.
+2. Open the **Meeticulous project** from your project list.
 3. In the left sidebar, click **SQL Editor**.
 4. Click **New query** (top-left of the editor area).
 5. Paste the following into the blank editor:

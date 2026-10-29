@@ -26,7 +26,7 @@ Re-issue a fresh download link for them from your Products area. Links are cappe
 
 Files must be under **2 MB**. If an upload is rejected, check the file size and that it's a supported file, then try again. Reach us from the [Help](/help) page if it keeps failing.
 
-## What are Digital Products on Book A Sloth?
+## What are Digital Products on Meeticulous?
 
 Digital Products let hosts sell or share downloadable files — eBooks, templates, guides, PDFs, courses, checklists, or other resources. Customers buy or claim them online and receive a secure download link.
 
@@ -224,4 +224,4 @@ Yes. Offer both appointment-based services and downloadable products from the sa
 
 ## Who should I contact if I have problems managing my Digital Products?
 
-If you can't create, edit, upload, publish, or manage products, contact Book A Sloth Support with your registered email or phone number and a description of the issue.
+If you can't create, edit, upload, publish, or manage products, contact Meeticulous Support with your registered email or phone number and a description of the issue.

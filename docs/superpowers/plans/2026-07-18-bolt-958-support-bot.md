@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: superpowers:executing-plans. Steps use checkbox (`- [ ]`) syntax.
 
-**Goal:** In-app support chatbot ("Bolt 958") that answers Book A Sloth questions grounded ONLY on our `docs/` content via Postgres full-text search, cites sources, and escalates to a human on low confidence / no results / sensitive topics.
+**Goal:** In-app support chatbot ("Bolt 958") that answers Meeticulous questions grounded ONLY on our `docs/` content via Postgres full-text search, cites sources, and escalates to a human on low confidence / no results / sensitive topics.
 
 **Architecture:** Docs → `kb_chunks` (tsvector) seeded by a manual script. `botService.askBot()` runs a `ts_rank` RPC, gates on min rank + a sensitive-topic list, then calls Claude (Haiku via existing `@anthropic-ai/sdk`) forced to answer only from the retrieved chunks through a structured tool. Route persists the exchange and, on escalation, emails `SUPPORT_EMAIL` (reusing `sendEmail`). Client floating widget calls `/api/bot/ask` + `/api/bot/feedback` via `api.js`.
 

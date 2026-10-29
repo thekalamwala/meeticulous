@@ -870,9 +870,9 @@ Expected: FAIL — `Cannot find module '../../services/crm/coldCallTemplates'`
  * must create + get Meta approval for each, then mark it approved in the tab
  * (is_active=true). Until then sends are skipped with reason "pending_aisensy".
  */
-const SIGNUP = 'https://bookasloth.com/login-as-vendor';
-const PRICING = 'https://bookasloth.com/pricing';
-const SIGN = '<p>Shubham<br>Founder, Book A Sloth</p>';
+const SIGNUP = 'https://meeticulous.com/login-as-vendor';
+const PRICING = 'https://meeticulous.com/pricing';
+const SIGN = '<p>Shubham<br>Founder, Meeticulous</p>';
 const BIZ = [{ key: 'business_name', label: 'Business name', example: 'Smile Dental' }];
 
 const COLD_CALL_TEMPLATES = [
@@ -888,15 +888,15 @@ ${SIGN}`,
   },
   {
     channel: 'email', name: 'cold_call_details_email', label: 'Cold call · Wants details → info pack', category: 'cold_call_details', variables: [], is_active: true,
-    subject: 'Book A Sloth — the details you asked for',
+    subject: 'Meeticulous — the details you asked for',
     body: `<p>Hi {{business_name}} team,</p>
 <p>Thanks for speaking with me. Here are the details you asked for:</p>
 <ul>
 <li><b>What it is:</b> your own online booking page. Clients pick a service and a time slot, pay online, and get automatic reminders.</li>
-<li><b>Pricing:</b> free to start. Plans are here: <a href="${PRICING}">bookasloth.com/pricing</a></li>
+<li><b>Pricing:</b> free to start. Plans are here: <a href="${PRICING}">meeticulous.com/pricing</a></li>
 <li><b>Setup:</b> about 10 minutes, and I can do it with you on a call.</li>
 </ul>
-<p>When you're ready, you can create your page here: <a href="${SIGNUP}">bookasloth.com</a></p>
+<p>When you're ready, you can create your page here: <a href="${SIGNUP}">meeticulous.com</a></p>
 <p>I'll call you in a few days in case you have questions.</p>
 ${SIGN}`,
   },
@@ -905,7 +905,7 @@ ${SIGN}`,
     subject: "I'll call you on {{callback_time}}",
     body: `<p>Hi {{business_name}} team,</p>
 <p>Thanks for picking up, I know it was a busy moment. As discussed, I'll call you on <b>{{callback_time}}</b>.</p>
-<p>In the meantime, here's a quick look at what we do: <a href="https://bookasloth.com">bookasloth.com</a>, an online booking page with payments and automatic reminders for clinics and salons.</p>
+<p>In the meantime, here's a quick look at what we do: <a href="https://meeticulous.com">meeticulous.com</a>, an online booking page with payments and automatic reminders for clinics and salons.</p>
 ${SIGN}`,
   },
   {
@@ -919,20 +919,20 @@ ${SIGN}`,
   },
   {
     channel: 'whatsapp', name: 'cold_call_interested_wa', label: 'Cold call · Interested → signup link (WA)', category: 'cold_call_interested', variables: BIZ, is_active: false, subject: null,
-    body: `Hi {{1}} team, this is Shubham from Book A Sloth. Thanks for the call! Here's the link to create your free online booking page: ${SIGNUP} . It takes about 10 minutes. Reply here if you'd like me to set it up with you.`,
+    body: `Hi {{1}} team, this is Shubham from Meeticulous. Thanks for the call! Here's the link to create your free online booking page: ${SIGNUP} . It takes about 10 minutes. Reply here if you'd like me to set it up with you.`,
   },
   {
     channel: 'whatsapp', name: 'cold_call_details_wa', label: 'Cold call · Wants details → info pack (WA)', category: 'cold_call_details', variables: BIZ, is_active: false, subject: null,
-    body: `Hi {{1}} team, Shubham from Book A Sloth here. As discussed: your own online booking page with online payments and automatic reminders, free to start. Pricing: ${PRICING} . I'll call you in a few days for any questions.`,
+    body: `Hi {{1}} team, Shubham from Meeticulous here. As discussed: your own online booking page with online payments and automatic reminders, free to start. Pricing: ${PRICING} . I'll call you in a few days for any questions.`,
   },
   {
     channel: 'whatsapp', name: 'cold_call_callback_wa', label: 'Cold call · Busy → callback reminder (WA)', category: 'cold_call_callback',
     variables: [...BIZ, { key: 'callback_time', label: 'Callback time', example: 'Tue, 7 Oct, 5:00 pm' }], is_active: false, subject: null,
-    body: 'Hi {{1}} team, Shubham from Book A Sloth. As discussed, I\'ll call you on {{2}}. Talk soon!',
+    body: 'Hi {{1}} team, Shubham from Meeticulous. As discussed, I\'ll call you on {{2}}. Talk soon!',
   },
   {
     channel: 'whatsapp', name: 'cold_call_nurture_wa', label: 'Cold call · Not now → soft nurture (WA)', category: 'cold_call_nurture', variables: BIZ, is_active: false, subject: null,
-    body: `Hi {{1}} team, Shubham from Book A Sloth. Thanks for your time today. Whenever you're ready, your free booking page takes 10 minutes: ${SIGNUP}`,
+    body: `Hi {{1}} team, Shubham from Meeticulous. Thanks for your time today. Whenever you're ready, your free booking page takes 10 minutes: ${SIGNUP}`,
   },
 ];
 
@@ -946,8 +946,8 @@ module.exports = { COLD_CALL_TEMPLATES };
 'use strict';
 /**
  * Prints idempotent SQL that upserts the 8 Cold Calling templates into crm_templates.
- * Run the output via Supabase MCP execute_sql on STAGING (xwvciqkayammbvsidqig) then
- * PROD (ayjhlwyzszykqtnaktpb). (Local .env points at staging only — see memory
+ * Run the output via Supabase MCP execute_sql on STAGING (STAGING_PROJECT_REF) then
+ * PROD (PROD_PROJECT_REF). (Local .env points at staging only — see memory
  * "seed .env BOTH → staging".) Re-runnable: content updates, is_active is NOT
  * touched on conflict so an approved WhatsApp template stays approved.
  *
@@ -1816,15 +1816,15 @@ Run: `cd client && npm run build` — Expected: build succeeds.
 
 - [ ] **Step 2: Seed templates on STAGING, then PROD**
 
-`cd server && node scripts/seedColdCallTemplates.js` → run the printed SQL via Supabase MCP `execute_sql` on `xwvciqkayammbvsidqig` (staging) first, verify:
+`cd server && node scripts/seedColdCallTemplates.js` → run the printed SQL via Supabase MCP `execute_sql` on `STAGING_PROJECT_REF` (staging) first, verify:
 ```sql
 select channel, name, category, is_active from crm_templates where category like 'cold_call_%' order by category, channel;
 ```
-Expected: 8 rows, email `is_active=true`, whatsapp `false`. Then the same on `ayjhlwyzszykqtnaktpb` (prod). Seeding before merge is safe: rows are inert until the tab ships.
+Expected: 8 rows, email `is_active=true`, whatsapp `false`. Then the same on `PROD_PROJECT_REF` (prod). Seeding before merge is safe: rows are inert until the tab ships.
 
 - [ ] **Step 3: Live check in the browser preview (local client → local server → staging DB)**
 
-Start server + client via `.claude/launch.json` (`preview_start`), log in as admin, open `/admin/sales/cold-calling`. With a 3-row FAKE CSV (fake names, `+91 90000 0000x`-style numbers, `test+N@bookasloth.in` emails):
+Start server + client via `.claude/launch.json` (`preview_start`), log in as admin, open `/admin/sales/cold-calling`. With a 3-row FAKE CSV (fake names, `+91 90000 0000x`-style numbers, `test+N@meeticulous.in` emails):
 1. Upload → list created, 3 fresh rows in Day/Priority order.
 2. Lead 1: press `6`, Enter → moves to next; reload → lead 1 absent from Fresh (retry tomorrow).
 3. Lead 2: `3`, pick "In 1 hr", note, Enter → appears under "Later callbacks" with countdown.

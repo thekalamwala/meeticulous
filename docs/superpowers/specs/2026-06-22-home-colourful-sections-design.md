@@ -19,7 +19,7 @@ Four sections in `client/src/pages/Home.jsx`:
 |---|---|---|---|
 | Industry Discovery | "Industries we support" | 856 | dark (`bg-ink`) |
 | How it works | "From link to paid. Calmly." | 1113 | dark (`bg-neutral-800`) |
-| Why Book A Sloth | "Why Book A Sloth" | 1470 | dark (`bg-ink`) |
+| Why Meeticulous | "Why Meeticulous" | 1470 | dark (`bg-ink`) |
 | Trust & security | "Trust & security" | 1829 | light (canvas) |
 
 ## Palette
@@ -54,7 +54,7 @@ Colour lands on **icon tiles + accents only**. CTAs stay brand-orange
 (`primary-cta`) for brand + conversion consistency. Dark sections stay dark
 (the recent dark-section pass is intentional — do not flip to light).
 
-- **Why Book A Sloth** (`WHY_CARDS`, 6 cards): add a `color` field per card →
+- **Why Meeticulous** (`WHY_CARDS`, 6 cards): add a `color` field per card →
   `blue, violet, cyan, emerald, amber, pink`. Icon tile becomes
   hue-tinted (`bg` hue @ ~15%) with hue icon; replace uniform
   `bg-primary/15 text-primary`. Add a soft hue glow on hover (optional, matches

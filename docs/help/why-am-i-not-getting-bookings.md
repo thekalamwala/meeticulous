@@ -10,7 +10,7 @@ If your page is quiet, run through this checklist — most gaps are one of these
 
 ## Are you sharing your link?
 
-Your booking link (`bookasloth.com/your-name`) is yours to share — put it in your Instagram bio, WhatsApp, email signature, wherever your clients already find you. Book A Sloth is a booking tool, not a discovery marketplace, so bookings come from you sharing your link.
+Your booking link (`meeticulous.com/your-name`) is yours to share — put it in your Instagram bio, WhatsApp, email signature, wherever your clients already find you. Meeticulous is a booking tool, not a discovery marketplace, so bookings come from you sharing your link.
 
 ## Is your pricing and offer clear?
 

@@ -1,4 +1,4 @@
-# Architectural Decisions — Book A Sloth
+# Architectural Decisions — Meeticulous
 
 Key decisions with context and rationale. Read this before making changes to foundational parts of the system.
 

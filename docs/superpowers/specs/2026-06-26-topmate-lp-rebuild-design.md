@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-26
 **Branch:** `feat/landing-page`
-**Target:** `client/src/pages/lp/TopmateVsBookASloth.jsx` (`/lp/topmate-vs-bookasloth`)
+**Target:** `client/src/pages/lp/TopmateVsMeeticulous.jsx` (`/lp/topmate-vs-meeticulous`)
 **Scope:** Redesign one page + fix shared LeadForm flow + fix consent-banner leak. Calendly LP untouched.
 
 ## Goal
@@ -23,7 +23,7 @@ Source palette (Topmate brand, via Brandfetch): red `#E44332`, peach `#FFE4D6`, 
 |---|---|---|
 | Canvas | `#FFF6EF` warm cream | page background |
 | Band | `#FFE4D6` peach | alternating section bands |
-| Win green | `#009D28` | "you keep" / Book A Sloth wins / checkmarks |
+| Win green | `#009D28` | "you keep" / Meeticulous wins / checkmarks |
 | Loss red | `#E44332` (Topmate's own red) | every place Topmate takes a cut / X marks |
 | CTA | `#FE5100` BAS orange | the only CTA color (brand anchor, pops on cream) |
 | Ink | existing `text-ink` | headlines/body |
@@ -57,7 +57,7 @@ Add a `mode` prop (default `"email"` so Calendly LP is unchanged):
 ### `ConsentBanner` leak fix (`client/src/App.jsx` + `ConsentBanner`)
 - Render a **slim one-line dismissible bottom bar** when on `/lp`, the full banner otherwise. Two options at implementation time (decide in plan): (a) pass a `variant="slim"` prop to `ConsentBanner` driven by `location.pathname.startsWith('/lp')`; or (b) a dedicated slim component for /lp. Constraint: must still gate the same marketing pixels (Meta/GA/Clarity) and persist the same consent decision — only the chrome changes.
 
-### `TopmateVsBookASloth.jsx`
+### `TopmateVsMeeticulous.jsx`
 - Keep all data constants and the `SavingsCalc`, `Cell` helpers (logic unchanged).
 - Keep `useUtm`, `useDocumentMeta`, analytics `page` + `LP_VIEWED` on mount.
 - Restyle markup + swap LeadForm to `mode="google-only"`.
@@ -71,7 +71,7 @@ Add a `mode` prop (default `"email"` so Calendly LP is unchanged):
 
 ## Success criteria
 
-- `/lp/topmate-vs-bookasloth` renders in Topmate's warm style with the color judo; no consent card covering content (slim bar only).
+- `/lp/topmate-vs-meeticulous` renders in Topmate's warm style with the color judo; no consent card covering content (slim bar only).
 - One-click Google CTA in hero + final; no email field on this page; clicking fires `LP_CTA_CLICKED` and starts Google signup.
 - Calendly LP visually unchanged; its LeadForm still email mode.
 - Mobile 375px clean; no layout overflow; accessibility (table scopes/caption, labelled controls, reduced-motion respected) preserved.

@@ -8,10 +8,10 @@
 
 ## 1. Current product reality (production `main`)
 
-**Model:** marketplace. The host is the seller; Book A Sloth lists, books, collects, and pays the host via **Razorpay Route**. `fee_only_mode` is **FALSE** in prod (verified live: `GET /api/config/public` → `{"feeOnlyMode":false}`), so real service prices and host payouts are active.
+**Model:** marketplace. The host is the seller; Meeticulous lists, books, collects, and pays the host via **Razorpay Route**. `fee_only_mode` is **FALSE** in prod (verified live: `GET /api/config/public` → `{"feeOnlyMode":false}`), so real service prices and host payouts are active.
 
 **Payment + payout flow (as built):**
-1. Guest pays the full amount; a Razorpay **order is created in Book A Sloth's own account** (`paymentController.js:191`, no split at order time).
+1. Guest pays the full amount; a Razorpay **order is created in Meeticulous's own account** (`paymentController.js:191`, no split at order time).
 2. **At capture**, a **held Route transfer** of the host's `vendor_amount` is created to the host's **Razorpay linked account**: `razorpay.payments.transfer(paymentId, { transfers:[{ account, on_hold:true, on_hold_until: serviceEnd+24h }]})` (`routeAutoPayoutService.js:99`, `HOLD_BUFFER_MS = 24h` `:30`).
 3. **Release**: customer marks complete → instant, or Razorpay auto-releases at `on_hold_until` (`releaseHeldTransfer`, `transfers.edit …on_hold:false` `:153`).
 4. **Reverse** (full only, empty body) on cancel / report-problem / dispute-webhook / admin action (`transfers.reverse` `:177`; callers `bookingController.js:731`, `:1074`, `paymentController.js:1306`, `disputeAdminController.js`).

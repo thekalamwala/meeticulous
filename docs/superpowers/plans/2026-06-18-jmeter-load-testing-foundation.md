@@ -28,7 +28,7 @@ No code, no tests — these are analysis deliverables. Content is sourced from t
 Include this table verbatim plus a one-line intro and a "Auth legend" (Public / JWT = Supabase `protect` / optionalProtect / admin JWT):
 
 ```markdown
-# Endpoint Inventory — Book A Sloth
+# Endpoint Inventory — Meeticulous
 
 Hot + auth-relevant endpoints for load testing. Auth: Public = no token; JWT = Supabase `protect`; opt = `optionalProtect`; admin = admin JWT.
 
@@ -64,7 +64,7 @@ Cover these concrete findings (one short section each):
 
 - [ ] **Step 3: Write `performance/docs/LOAD_TEST_STRATEGY.md`**
 
-Summarize from the spec: targets (public reads P95<300ms, booking<500ms, error<1%), the four scenarios (A 10u / B 100u / C 500u / D 1000u; A+B run on localhost, C+D authored only), tiered stubbing table, test-data tagging (`@loadtest.bookasloth.local`), and the "localhost ≠ prod" caveat. Link back to the design spec.
+Summarize from the spec: targets (public reads P95<300ms, booking<500ms, error<1%), the four scenarios (A 10u / B 100u / C 500u / D 1000u; A+B run on localhost, C+D authored only), tiered stubbing table, test-data tagging (`@loadtest.meeticulous.local`), and the "localhost ≠ prod" caveat. Link back to the design spec.
 
 - [ ] **Step 4: Commit**
 
@@ -363,7 +363,7 @@ Change the `sendEmail` function to short-circuit:
 const sendEmail = async ({ to, subject, html }) => {
   if (isLoadTestMode()) return; // no SMTP egress in load mode
   await transporter.sendMail({
-    from: `"Book A Sloth" <${process.env.SMTP_USER}>`,
+    from: `"Meeticulous" <${process.env.SMTP_USER}>`,
     to,
     subject,
     html,
@@ -621,7 +621,7 @@ require('dotenv').config();
 const { supabaseAdmin } = require('../config/supabase');
 const { assertNotProd } = require('./lib/guard');
 
-const TAG_DOMAIN = '@loadtest.bookasloth.local';
+const TAG_DOMAIN = '@loadtest.meeticulous.local';
 const PASSWORD = process.env.LOADTEST_VENDOR_PASSWORD || 'LoadTest!2026';
 const VENDORS = [
   { key: 'rules', username: 'loadtest-vendor-rules', gcal: false },
@@ -701,7 +701,7 @@ require('dotenv').config();
 const { supabaseAdmin } = require('../config/supabase');
 const { assertNotProd } = require('./lib/guard');
 
-const TAG_DOMAIN = '@loadtest.bookasloth.local';
+const TAG_DOMAIN = '@loadtest.meeticulous.local';
 
 (async () => {
   assertNotProd('cleanupLoadTest');
@@ -739,7 +739,7 @@ const path = require('path');
 const { supabaseAdmin } = require('../config/supabase');
 const { assertNotProd } = require('./lib/guard');
 
-const TAG_DOMAIN = '@loadtest.bookasloth.local';
+const TAG_DOMAIN = '@loadtest.meeticulous.local';
 const DATA_DIR = path.resolve(__dirname, '../../performance/jmeter/data');
 
 (async () => {

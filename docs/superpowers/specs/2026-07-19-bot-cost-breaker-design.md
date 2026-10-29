@@ -13,7 +13,7 @@ botnet) bypasses both entirely. Every request that reaches the model path costs 
 Claude Haiku call plus a Voyage embedding plus DB work, so rotating-IP volume
 translates directly into token spend and DB/CPU load.
 
-There is **no user-controllable edge** on the API today: `book-a-sloth.onrender.com`
+There is **no user-controllable edge** on the API today: `meeticulous-api.onrender.com`
 sits behind *Render's managed* Cloudflare (`x-render-origin-server: Render`), which
 we cannot configure (no WAF/Turnstile/rate rules). Edge protection is a separate
 follow-up (see `2026-07-19-bot-edge-hardening-plan.md`); this spec is the

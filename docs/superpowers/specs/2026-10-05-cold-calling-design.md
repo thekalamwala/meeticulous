@@ -13,7 +13,7 @@ people who were actually called (replaces the paused Topmate cold-email drip).
 Success: every dialled lead has a logged outcome and a next step; follow-up sent
 within minutes of the call; per-list outcome counts and signups visible.
 
-First list: `bookasloth-top-priority-week.csv` — 353 Nagpur clinics/salons, columns
+First list: `meeticulous-top-priority-week.csv` — 353 Nagpur clinics/salons, columns
 `Day,Priority,Business,Category,Locality,Phone,WhatsApp,Email,Fit,Website,Talking Point`.
 The CSV is PII: never committed, uploaded only through the admin UI.
 

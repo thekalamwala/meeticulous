@@ -24,7 +24,7 @@ Paid plans let your booking page carry your own branding, so it looks like *your
 
 ## Theme & Branding — the basics
 
-**What is Theme & Branding?** It's how you personalise your Book A Sloth profile with your business identity — your theme colour, profile image (which doubles as your logo), and cover image. It changes how your public page looks, not how bookings work.
+**What is Theme & Branding?** It's how you personalise your Meeticulous profile with your business identity — your theme colour, profile image (which doubles as your logo), and cover image. It changes how your public page looks, not how bookings work.
 
 **Why does branding matter?** A consistent, professional look helps customers recognise your business, builds trust, and creates a memorable booking experience.
 
@@ -34,7 +34,7 @@ Paid plans let your booking page carry your own branding, so it looks like *your
 
 ## Theme colour
 
-Book A Sloth uses a single **theme colour** — the main accent used across your public profile (buttons, highlights, and supporting elements all follow it). There isn't a separate "primary" and "secondary" colour or per-element colour control; the one theme colour drives the accents where the design supports it.
+Meeticulous uses a single **theme colour** — the main accent used across your public profile (buttons, highlights, and supporting elements all follow it). There isn't a separate "primary" and "secondary" colour or per-element colour control; the one theme colour drives the accents where the design supports it.
 
 **Choosing a colour.** Pick a colour that represents your business and reads clearly. Both light and dark colours work as long as they keep good contrast and readability. The range you can pick from depends on your plan — the free tier has standard colours, paid plans unlock more, up to full custom hex on the top tier.
 
@@ -78,7 +78,7 @@ Branding applies to your overall **host profile**, not to individual services �
 
 **Preview before sharing.** Always review your public profile after saving so you can confirm the colour and images look the way you want.
 
-**Not saving or not displaying?** Confirm you're uploading a supported format at the recommended size, then save and refresh. If changes still won't save or show correctly, contact Book A Sloth Support with the details.
+**Not saving or not displaying?** Confirm you're uploading a supported format at the recommended size, then save and refresh. If changes still won't save or show correctly, contact Meeticulous Support with the details.
 
 ## Branding best practices
 

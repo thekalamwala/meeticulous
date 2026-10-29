@@ -1,4 +1,4 @@
-# Feature Map — Book A Sloth
+# Feature Map — Meeticulous
 
 ## 1. Public Host Profile
 **Purpose:** Guest-facing creator page showing bio, services, reviews, products.

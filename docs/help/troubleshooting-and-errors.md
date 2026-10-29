@@ -82,4 +82,4 @@ Quick fixes for the errors and hiccups you might run into. Still stuck after try
 
 ## Still stuck?
 
-Contact Book A Sloth Support with what you were doing, the exact error text, and a screenshot if you have one — it helps us fix it faster.
+Contact Meeticulous Support with what you were doing, the exact error text, and a screenshot if you have one — it helps us fix it faster.

@@ -1,4 +1,4 @@
-# Architecture — Book A Sloth
+# Architecture — Meeticulous
 
 ## System Diagram
 

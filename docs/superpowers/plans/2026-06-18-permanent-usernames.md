@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Run superpowers:test-driven-development per task.
 >
-> **Status:** ✅ BUILT 2026-06-18 on branch `feat/permanent-usernames`. Migration `v3.17` APPLIED live (Supabase project `xwvciqkayammbvsidqig`); backfill verified (7/7 profiles → history as `source='auto'`), `change_username` RPC smoke-tested (gate + positive swap, prod state restored). Server suite 506/506, client 145/145. NOT committed/pushed yet.
+> **Status:** ✅ BUILT 2026-06-18 on branch `feat/permanent-usernames`. Migration `v3.17` APPLIED live (Supabase project `STAGING_PROJECT_REF`); backfill verified (7/7 profiles → history as `source='auto'`), `change_username` RPC smoke-tested (gate + positive swap, prod state restored). Server suite 506/506, client 145/145. NOT committed/pushed yet.
 
 **Goal:** Give every account a permanent, globally-unique username (Facebook/GitHub style). Username is a mutable alias over the immutable UUID identity. Old usernames are preserved forever, never reusable, and resolve to the current one via a true HTTP 301 redirect.
 

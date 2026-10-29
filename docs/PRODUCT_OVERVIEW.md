@@ -1,8 +1,8 @@
-# Product Overview — Book A Sloth
+# Product Overview — Meeticulous
 
 ## What It Is
 
-Book A Sloth is a multi-tenant SaaS platform where **creators (hosts)** publish services and **guests** book them. It targets the Indian creator economy — coaches, consultants, tutors, therapists, and other knowledge-based service providers who want a professional booking page without technical setup.
+Meeticulous is a multi-tenant SaaS platform where **creators (hosts)** publish services and **guests** book them. It targets the Indian creator economy — coaches, consultants, tutors, therapists, and other knowledge-based service providers who want a professional booking page without technical setup.
 
 Think Topmate.io or Cal.com, but with an opinionated Indian payment stack (Razorpay), WhatsApp notifications, and a commission/subscription revenue model.
 
@@ -12,7 +12,7 @@ Think Topmate.io or Cal.com, but with an opinionated Indian payment stack (Razor
 
 ### Host (Vendor / Creator)
 - Registers via a 10-step onboarding flow (slug → OTP → password → profile → first service → plan)
-- Gets a public profile at `bookasloth.com/:username`
+- Gets a public profile at `meeticulous.com/:username`
 - Creates services (1-on-1, group, paid DM) with pricing, duration, availability, and booking slots
 - Receives bookings from guests, manages them from a dashboard
 - Pays a platform subscription to unlock higher service/product limits and zero commission

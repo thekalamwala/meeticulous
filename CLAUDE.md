@@ -1,4 +1,4 @@
-# Book A Sloth — Claude Project Memory
+# Meeticulous — Claude Project Memory
 
 ## Task Workflow (default for every task)
 1. **Ask first.** Before starting any task, ask at least one clarifying question. Never dive in cold.
@@ -14,7 +14,7 @@ Read these 4 files before touching any code:
 4. `docs/feature-map.md` — find any file in seconds
 
 ## Project in One Sentence
-**Book A Sloth** is a SaaS appointment-booking platform where creators (hosts) publish services, guests book them via OTP or account login, and payments flow through Razorpay.
+**Meeticulous** is a SaaS appointment-booking platform where creators (hosts) publish services, guests book them via OTP or account login, and payments flow through Razorpay.
 
 ## Stack
 | Layer | Technology |
@@ -67,8 +67,8 @@ cd client && npm test             # Vitest
 - `client/.env` — VITE_API_URL, VITE_RAZORPAY_KEY_ID, VITE_SUPABASE_*
 
 ## Database Migrations — Status (verified 2026-07-01 against both DBs)
-All migrations through **v3.57 are APPLIED** on both prod (Mumbai `ayjhlwyzszykqtnaktpb`)
-and staging (Tokyo `xwvciqkayammbvsidqig`), verified by live schema introspection.
+All migrations through **v3.57 are APPLIED** on both prod (Mumbai `PROD_PROJECT_REF`)
+and staging (Tokyo `STAGING_PROJECT_REF`), verified by live schema introspection.
 Items previously listed here as pending are now live:
 - **v1.7** (`bookings.commission_applied`) — applied.
 - **v3.53** (profession-scoped `service_categories` redesign + `seedServiceCategories.js`) — applied.
@@ -98,8 +98,8 @@ Items previously listed here as pending are now live:
   `bot_escalations.rating` (1–5 post-handoff satisfaction). Additive, schema-fallback safe.
 
 - **Host notification system** (audit "Host Signal", PRs #855–#859) — applied 2026-08-29 on
-  BOTH DBs via Supabase MCP and verified identical (prod `ayjhlwyzszykqtnaktpb` + staging
-  `xwvciqkayammbvsidqig`). All additive + schema-fallback safe in `utils/inAppNotify.js`:
+  BOTH DBs via Supabase MCP and verified identical (prod `PROD_PROJECT_REF` + staging
+  `STAGING_PROJECT_REF`). All additive + schema-fallback safe in `utils/inAppNotify.js`:
   - **`v3.130_notification_in_app_channel.sql`** — `notification_events.in_app_enabled`
     (in-app becomes a NotificationEngine channel) + seeds `SUBSCRIPTION_HALTED` and
     `REFERRAL_REWARD_RELEASED` event rows. **Filename note:** number collides with
@@ -115,7 +115,7 @@ Items previously listed here as pending are now live:
 - **Relationship engine Phase 2** (audit follow-on, PRs #925/#927/#928/#931/#936) — merged 2026-09-02.
   Only PR-9 needed a migration; the rest are code-only (governor, health signals, sends-proof, two-clock):
   - **`v3.139_touch_rec_guest_subject.sql`** — applied 2026-09-02 on BOTH DBs (staging Tokyo
-    `xwvciqkayammbvsidqig` first, then prod Mumbai `ayjhlwyzszykqtnaktpb`) via Supabase MCP and
+    `STAGING_PROJECT_REF` first, then prod Mumbai `PROD_PROJECT_REF`) via Supabase MCP and
     verified identical (10 columns present on each): `touch_recommendations.contact_id` (FK
     contacts, ON DELETE CASCADE) lets a guest rec set `subject_type='guest'` + `contact_id` with a
     null `lead_id`; `contacts` gains the same touch-clock columns as leads' v3.133

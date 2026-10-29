@@ -1,7 +1,7 @@
 # Legal & Tax Review Brief — Merchant-of-Record Documents
 
 **For:** external counsel and chartered accountant
-**From:** Timewheel Internet Private Limited (Book A Sloth)
+**From:** Timewheel Internet Private Limited (Meeticulous)
 **Date:** 24 July 2026
 **Documents to review:** `/terms`, `/guest-terms`, `/refund`, `/host-agreement`, `/host-fees`
 **Commercial model:** `docs/payment-model.md`
@@ -14,7 +14,7 @@
 
 ## 1. What changed and why
 
-Book A Sloth previously operated, and its published terms described, a **marketplace**: guests paid into
+Meeticulous previously operated, and its published terms described, a **marketplace**: guests paid into
 one company account, the company deducted a fee, and hosts were paid by manual transfer.
 
 Razorpay confirmed in writing that a standard merchant account does not permit collecting from customers
@@ -24,7 +24,7 @@ licence requires ₹15 crore net worth.
 
 The company has therefore restructured as a **merchant of record**:
 
-> The host sells the service to Book A Sloth and invoices us. Book A Sloth sells it to the guest and
+> The host sells the service to Meeticulous and invoices us. Meeticulous sells it to the guest and
 > invoices the guest. Money received from guests is the company's own revenue; payment to the host is a
 > vendor bill. Nothing is collected on behalf of, or settled to, a third party.
 

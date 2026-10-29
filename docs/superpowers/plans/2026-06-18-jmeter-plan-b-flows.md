@@ -66,7 +66,7 @@ jmeter/reports/
 - Create: `server/scripts/mintVendorToken.js`
 - Create: `performance/jmeter/test-plans/vendor-flow.jmx`
 
-- [ ] `mintVendorToken.js` — `assertNotProd()`; sign in `loadtest-vendor-rules@loadtest.bookasloth.local` / `LOADTEST_VENDOR_PASSWORD` via the config disposable-client `signInWithPassword` helper; print the `access_token`. (run.js captures it into `-Jvendor.token=`.)
+- [ ] `mintVendorToken.js` — `assertNotProd()`; sign in `loadtest-vendor-rules@loadtest.meeticulous.local` / `LOADTEST_VENDOR_PASSWORD` via the config disposable-client `signInWithPassword` helper; print the `access_token`. (run.js captures it into `-Jvendor.token=`.)
 - [ ] `vendor-flow.jmx` — Header Manager `Authorization: Bearer ${__P(vendor.token)}`; samplers `GET /api/bookings/host`, `GET /api/host/profile` (or dashboard stats). If `vendor.token` empty → thread group disabled (logged).
 - [ ] **Validate:** mint token, run headless, confirm 2xx.
 

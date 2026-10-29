@@ -11,7 +11,7 @@ A logged-in **guest** can act as a **host** without ever signing up as one. Two 
 1. **Server authz hole (root cause).** `protect` ([server/middleware/authMiddleware.js](../../../server/middleware/authMiddleware.js)) verifies the JWT and attaches only `{ id, email }` — it never loads or checks `role`. Every `/api/host/*` and protected `/api/services` route uses `protect` alone, so a guest's normal token already works on vendor APIs (create services, set availability, edit host profile, etc.).
 2. **Client-trusted role (cosmetic).** The app gates host UI on `user.role` read from `localStorage`. Setting it to `host` unlocks the vendor dashboard until the next `getMe()` reverts it — but the unlocked UI's API calls succeed because of layer 1.
 
-Live prod audit (`ayjhlwyzszykqtnaktpb`, 2026-06-23): 17 hosts, 4 guests, **0** services or bookings owned by a non-host, 0 null roles. The hole exists but **has not been exploited**. Low blast radius → safe to fix additively.
+Live prod audit (`PROD_PROJECT_REF`, 2026-06-23): 17 hosts, 4 guests, **0** services or bookings owned by a non-host, 0 null roles. The hole exists but **has not been exploited**. Low blast radius → safe to fix additively.
 
 ### Already in place (not part of this work)
 - Email separation: [registerVendor](../../../server/controllers/authController.js) rejects guest emails; [registerUser](../../../server/controllers/authController.js) rejects host emails; Google vendor flow rejects customer emails.

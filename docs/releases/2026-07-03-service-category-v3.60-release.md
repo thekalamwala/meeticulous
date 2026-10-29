@@ -2,7 +2,7 @@
 
 **Feature:** composite-FK category integrity + `/services` SEO pages (PR #260, branch `feat/service-categories`).
 **Strategy:** zero-downtime Expand → Deploy → Backfill → Validate → Enforce → (later) Contract.
-**DBs:** staging Tokyo `xwvciqkayammbvsidqig` first, then prod Mumbai `ayjhlwyzszykqtnaktpb`.
+**DBs:** staging Tokyo `STAGING_PROJECT_REF` first, then prod Mumbai `PROD_PROJECT_REF`.
 **Migration files (all in `server/migrations/`):**
 `v3.60_service_category_expand.sql` · `v3.61_service_category_backfill.sql` · `v3.62_service_category_validate.sql` · `v3.63_service_category_enforce.sql` · `v3.63_service_category_rollback.sql`.
 

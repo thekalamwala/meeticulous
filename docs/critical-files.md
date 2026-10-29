@@ -1,4 +1,4 @@
-# Critical Files — Book A Sloth
+# Critical Files — Meeticulous
 
 High-risk files. Always understand the full impact before modifying.
 
