@@ -38,7 +38,7 @@ const MARKETING_PROVIDER = 'resend';
 // reply-to a caller/persona set (Aastha, Tithi, Durga, …). Forced here because
 // this wrapper is the single send chokepoint, so no path can leak a reply to an
 // unwatched persona box. Env-overridable if a flow ever needs its own reply-to.
-const REPLY_TO = process.env.SUPPORT_REPLY_TO || 'bolt@bookasloth.in';
+const REPLY_TO = process.env.SUPPORT_REPLY_TO || 'support@meeticulous.com';
 
 /**
  * Resolve a provider by name (default SMTP), wrapped with the universal

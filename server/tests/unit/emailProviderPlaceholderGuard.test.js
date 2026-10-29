@@ -1,4 +1,9 @@
 'use strict';
+// Pin the forced reply-to so this test is independent of the ambient SUPPORT_REPLY_TO
+// (the deploy host sets its own, e.g. Render). Must run before the provider module is
+// required below, since providers/index.js reads SUPPORT_REPLY_TO at load time.
+process.env.SUPPORT_REPLY_TO = 'reply@meeticulous.test';
+
 // The universal placeholder-recipient guard in the provider resolver: a
 // p<phone>@users.bookasloth.app address is never handed to a real provider, from any
 // email path (CRM / transactional / campaign). Short-circuits to a benign success.
@@ -38,5 +43,5 @@ test('reply-to is forced to the support inbox, overriding any caller/persona val
     to: 'ada@gmail.com', subject: 'x', html: 'y', replyTo: 'aastha@bookasloth.in',
   });
   expect(resend.sendEmail).toHaveBeenCalledTimes(1);
-  expect(resend.sendEmail.mock.calls[0][0].replyTo).toBe('bolt@bookasloth.in');
+  expect(resend.sendEmail.mock.calls[0][0].replyTo).toBe('reply@meeticulous.test');
 });
