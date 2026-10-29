@@ -1,4 +1,4 @@
-# Render Blueprint — Book A Sloth backend (Express API)
+# Render Blueprint — Meeticulous backend (Express API)
 # Render reads this when you create a "Blueprint" from the repo. It provisions
 # the API service with the right build/start/health settings. Secrets are NOT
 # in here (sync: false) — you paste them once in the Render dashboard.
@@ -8,7 +8,7 @@
 
 services:
   - type: web
-    name: bookasloth-api
+    name: meeticulous-api
     runtime: node
     rootDir: server
     region: singapore
@@ -79,12 +79,28 @@ services:
         sync: false
       - key: SUPER_ADMIN_EMAIL
         sync: false
+      # ── Integrations in use (set real values in the dashboard; see DEPLOYMENT.md).
+      #    POSTHOG_HOST is public → inline. The rest are secrets → sync:false.
+      - key: SENTRY_DSN
+        sync: false
+      - key: POSTHOG_PROJECT_TOKEN
+        sync: false
+      - key: POSTHOG_HOST
+        value: https://us.i.posthog.com
+      - key: BREVO_API_KEY
+        sync: false
+      - key: BREVO_FROM
+        sync: false
 
   # ───────────────────────────────────────────────────────────────────────
   # STAGING backend — the online "testing URL" that sits between your laptop
   # and production. Deploys from the `staging` git branch and points at your
   # SEPARATE staging Supabase project, so nothing you test here can touch real
-  # customer/payment data. Full setup + promotion flow: docs/release-pipeline.md
+  # customer/payment data.
+  #
+  #   ⚠️ Meeticulous has NO staging Supabase project yet. Create one FIRST
+  #      (DEPLOYMENT.md Phase 2) before this service can boot — its SUPABASE_*
+  #      must point at the staging project, never at prod.
   #
   #   plan: free  → spins down after ~15 min idle (cold start ~30s on next hit).
   #   Fine for staging. TRADE-OFF: while spun down, reminder/email crons do NOT
@@ -92,7 +108,7 @@ services:
   #   `starter` ($7/mo) only if you need staging crons always-on.
   # ───────────────────────────────────────────────────────────────────────
   - type: web
-    name: bookasloth-api-staging
+    name: meeticulous-api-staging
     runtime: node
     rootDir: server
     region: singapore
@@ -113,8 +129,8 @@ services:
       - key: NODE_VERSION
         value: "22"
       # ── Set real values in the Render dashboard for THIS service. Use the
-      #    STAGING variants (see docs/release-pipeline.md → "Staging env values"):
-      #      • SUPABASE_* → your separate STAGING Supabase project
+      #    STAGING variants:
+      #      • SUPABASE_* → your separate STAGING Supabase project (create it first)
       #      • RAZORPAY_* → Razorpay TEST-mode keys (never live keys on staging)
       #      • CLIENT_URL / API_URL → staging URLs
       #      • GOOGLE_REDIRECT_URI → staging callback (add it in Google Console too)
@@ -160,6 +176,16 @@ services:
         sync: false
       - key: SUPER_ADMIN_EMAIL
         sync: false
+      - key: SENTRY_DSN
+        sync: false
+      - key: POSTHOG_PROJECT_TOKEN
+        sync: false
+      - key: POSTHOG_HOST
+        value: https://us.i.posthog.com
+      - key: BREVO_API_KEY
+        sync: false
+      - key: BREVO_FROM
+        sync: false
 
   # ───────────────────────────────────────────────────────────────────────
   # STAGING frontend — static SPA for sales demos / testing. Deploys from the
@@ -167,12 +193,12 @@ services:
   # skips the puppeteer + prerender/OG steps (Vercel-prod concerns, not needed
   # for a demo SPA). No CORS change required: set the staging API's CLIENT_URL
   # to THIS site's URL and corsOrigins derives the allowlist (+ www/apex) from it.
-  #   URL will be https://bookasloth-client-staging.onrender.com
+  #   URL will be https://meeticulous-client-staging.onrender.com
   # NOTE: verify the static-site fields on first Blueprint apply — Render's schema
   # for static sites (runtime/staticPublishPath/routes) can change; adjust if it errors.
   # ───────────────────────────────────────────────────────────────────────
   - type: web
-    name: bookasloth-client-staging
+    name: meeticulous-client-staging
     runtime: static
     rootDir: client
     branch: staging
@@ -187,11 +213,14 @@ services:
       - key: NODE_VERSION
         value: "22"
       - key: VITE_API_URL
-        value: https://bookasloth-api-staging.onrender.com/api
+        value: https://meeticulous-api-staging.onrender.com/api
+      # Staging frontend → STAGING Supabase project. Meeticulous has no staging
+      # Supabase project yet (see DEPLOYMENT.md Phase 2) — set the URL + anon key
+      # in the Render dashboard once it exists. Do NOT point staging at prod.
       - key: VITE_SUPABASE_URL
-        value: https://xwvciqkayammbvsidqig.supabase.co
+        sync: false
       - key: VITE_POSTHOG_HOST
-        value: https://app.posthog.com
+        value: https://us.i.posthog.com
       # Public anon key — set in the Render dashboard (kept out of git by convention).
       - key: VITE_SUPABASE_ANON_KEY
         sync: false

@@ -53,8 +53,12 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  VERCEL_ORG_ID: team_zIeLwmD7MoWJWDJyb2YEb8IK
-  VERCEL_PROJECT_ID: prj_b02XYKuwhxoZakgucihWVXgUdUIA
+  # Replace BOTH with THIS project's IDs after you create the Vercel project
+  # (Vercel → Project → Settings → General → Project ID; Org/Team ID under
+  # Team/Account Settings → General). IDs are NOT secrets. See DEPLOYMENT.md Phase 3.
+  # Until these are real, the production deploy job will fail fast (wrong/empty project).
+  VERCEL_ORG_ID: REPLACE_WITH_VERCEL_ORG_ID
+  VERCEL_PROJECT_ID: REPLACE_WITH_VERCEL_PROJECT_ID
 
 jobs:
   # Generate OG social cards for any freshly-published blog post BEFORE the deploy.
@@ -69,7 +73,11 @@ jobs:
     name: Generate blog OG cards (missing only)
     runs-on: ubuntu-latest
     timeout-minutes: 12   # the Chromium apt step is flaky; never let it hang a runner
-    if: github.repository == 'bookasloth/book-a-sloth'
+    # Disabled for Meeticulous: no blog-OG card pipeline is wired yet (needs
+    # PROD_SUPABASE_* secrets + published posts). The independent `deploy` job
+    # below still runs. Flip to
+    # `github.repository == 'thekalamwala/meeticulous'` once OG cards are set up.
+    if: false
     defaults:
       run:
         working-directory: client
