@@ -320,14 +320,10 @@ const NavDropdown = ({ id, label, icon: Icon, align = 'left', wide = false, acti
         aria-hidden={!open}
         onClick={() => onClose(true)}
         className={[
-          'origin-top rounded-xl border border-gray-200 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.12)] z-50 overflow-hidden',
-          // `wide` breaks out to span the whole bar (logo → CTA): fixed + centered
-          // in the viewport at the container's own width (app-container = 72rem,
-          // margin-auto), so its edges line up with the container. Otherwise the
-          // panel auto-sizes and anchors under its trigger.
-          wide
-            ? 'fixed left-1/2 top-[3.75rem] -translate-x-1/2 w-[min(72rem,calc(100vw-2rem))]'
-            : `absolute top-full mt-1.5 w-max max-w-[calc(100vw-2rem)] ${centered ? 'left-1/2 -translate-x-1/2' : 'left-0'}`,
+          'origin-top-left rounded-[16px] border border-gray-200 bg-white shadow-[0_18px_50px_-12px_rgba(30,11,77,0.22)] z-50 overflow-hidden',
+          // Clay-style: one left-aligned card anchored to the container's left
+          // edge, with a small gap below the bar; auto-sizes to its content.
+          'fixed top-[4.1rem] left-[max(1rem,calc((100vw-72rem)/2))] w-max max-w-[calc(100vw-2rem)]',
           'transition duration-200 ease-out motion-reduce:transition-none',
           open ? 'translate-y-0 scale-100 opacity-100' : '-translate-y-1 scale-[0.98] opacity-0 pointer-events-none',
         ].join(' ')}
@@ -377,7 +373,7 @@ const COMPARE_PNG = {
   'Calendly': '/nav/compare/calendly.png', 'Acuity': '/nav/compare/acuity.png', 'Setmore': '/nav/compare/setmore.png', 'SimplyBook': '/nav/compare/simplybook.png', 'Zoho Bookings': '/nav/compare/zoho-bookings.png', 'Topmate': '/nav/compare/topmate.png',
 };
 
-const MegaItem = ({ item, tone }) => {
+const MegaItem = ({ item, tone, compact }) => {
   const Icon = item.icon;
   const c = TILE_MAP[tone] || TILE_MAP.orange;
   return (
@@ -400,7 +396,7 @@ const MegaItem = ({ item, tone }) => {
       </span>
       <span className="relative z-10 min-w-0">
         <span className="block text-[14px] font-bold text-ink">{item.label}</span>
-        {item.desc && <span className="block text-[12px] leading-snug text-gray-400">{item.desc}</span>}
+        {item.desc && !compact && <span className="block text-[12px] leading-snug text-gray-400">{item.desc}</span>}
       </span>
     </Link>
   );
@@ -413,7 +409,7 @@ const MENU_COL = 'w-60'; // 15rem — every column, promo tile and compare cell
 
 // Renders grouped columns + an optional promo tile on the right. `colClass` lets
 // a menu widen its columns (Product uses fewer, wider columns).
-const MegaMenu = ({ sections, promo, colClass = MENU_COL }) => (
+const MegaMenu = ({ sections, promo, colClass = MENU_COL, compact }) => (
   <div className="flex gap-5 p-5">
     {sections.map((col, ci) => {
       // Tone index continues across columns so hues keep rotating (never resets).
@@ -422,7 +418,7 @@ const MegaMenu = ({ sections, promo, colClass = MENU_COL }) => (
         <div key={col.header} className={colClass}>
           <p className="mb-2 px-3 text-[11px] font-normal uppercase tracking-wider text-gray-400">{col.header}</p>
           <div className="space-y-0.5">
-            {col.items.map((it, i) => <MegaItem key={it.href} item={it} tone={it.tone || TILE_TONES[(offset + i) % TILE_TONES.length]} />)}
+            {col.items.map((it, i) => <MegaItem key={it.href} item={it} compact={compact} tone={it.tone || TILE_TONES[(offset + i) % TILE_TONES.length]} />)}
           </div>
         </div>
       );
@@ -532,7 +528,7 @@ export const PublicCenterNav = () => {
       </NavDropdown>
 
       <NavDropdown id="whofor" label="Who it's for" wide {...menuProps}>
-        <MegaMenu sections={WHOFOR_MENU} colClass="flex-1" />
+        <MegaMenu sections={WHOFOR_MENU} colClass="w-64" compact />
       </NavDropdown>
 
       <NavDropdown id="resources" label="Resources" {...menuProps}>
@@ -687,7 +683,7 @@ const Navbar = () => {
           </Link>
 
           {/* Center nav (desktop only) */}
-          <div className="hidden md:flex items-stretch flex-1 justify-center">
+          <div className="hidden md:flex items-stretch flex-1 justify-start">
             {!user ? <PublicCenterNav /> : navItems.map((item) => {
               const active = isActive(item);
               const Icon   = item.icon;
