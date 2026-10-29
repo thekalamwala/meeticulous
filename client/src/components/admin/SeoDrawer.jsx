@@ -184,7 +184,7 @@ const SeoDrawer = ({ kind, entity, onClose, onSaved }) => {
         {/* Footer */}
         <div className="sticky bottom-0 flex justify-end gap-2 border-t border-gray-100 bg-white px-5 py-4">
           <button onClick={onClose} className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100">Cancel</button>
-          <button onClick={handleSave} disabled={saving} className="rounded-lg bg-[#0079C1] px-4 py-2 text-sm font-semibold text-white hover:bg-[#e04800] disabled:opacity-50">
+          <button onClick={handleSave} disabled={saving} className="rounded-lg bg-[#0079C1] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005E99] disabled:opacity-50">
             {saving ? 'Saving…' : 'Save SEO'}
           </button>
         </div>

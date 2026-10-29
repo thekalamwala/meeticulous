@@ -321,7 +321,7 @@ export default function BotWidget() {
           </div>
 
           {/* Messages / Welcome */}
-          <div ref={listRef} onScroll={onListScroll} className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain bg-[#FFF8F4] px-3.5 py-4">
+          <div ref={listRef} onScroll={onListScroll} className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain bg-[#F8FAFC] px-3.5 py-4">
             {messages.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center px-2 text-center">
                 <Avatar size={52} ring />
@@ -333,7 +333,7 @@ export default function BotWidget() {
                   {SUGGESTIONS.map((s) => (
                     <button
                       key={s} type="button" onClick={() => send(s)}
-                      className="rounded-md border border-[#0079C1]/70 bg-transparent px-2 py-px text-[10px] font-medium text-[#0079C1] transition-colors hover:bg-[#FFE4D1] hover:border-[#0079C1]"
+                      className="rounded-md border border-[#0079C1]/70 bg-transparent px-2 py-px text-[10px] font-medium text-[#0079C1] transition-colors hover:bg-[#D6ECF8] hover:border-[#0079C1]"
                     >
                       {s}
                     </button>
@@ -419,12 +419,12 @@ export default function BotWidget() {
                         {m.pills.map((p, pi) => (
                           p.action?.type === 'route' ? (
                             <a key={pi} href={p.action.value}
-                              className="rounded-md border border-[#0079C1]/70 px-2 py-0.5 text-[11px] font-medium text-[#0079C1] transition-colors hover:bg-[#FFE4D1]">
+                              className="rounded-md border border-[#0079C1]/70 px-2 py-0.5 text-[11px] font-medium text-[#0079C1] transition-colors hover:bg-[#D6ECF8]">
                               {p.label}
                             </a>
                           ) : (
                             <button key={pi} type="button" disabled={streaming} onClick={() => send(p.action?.value || p.label)}
-                              className="rounded-md border border-[#0079C1]/70 px-2 py-0.5 text-[11px] font-medium text-[#0079C1] transition-colors hover:bg-[#FFE4D1] disabled:opacity-50">
+                              className="rounded-md border border-[#0079C1]/70 px-2 py-0.5 text-[11px] font-medium text-[#0079C1] transition-colors hover:bg-[#D6ECF8] disabled:opacity-50">
                               {p.label}
                             </button>
                           )
@@ -490,11 +490,11 @@ export default function BotWidget() {
                     </p>
                     <div className="flex flex-col gap-1.5">
                       <button type="button" onClick={() => chooseChannel('whatsapp')}
-                        className="rounded-lg border-2 border-[#0079C1]/70 px-3 py-1.5 text-[12px] font-semibold text-[#0079C1] transition-colors hover:bg-[#FFE4D1]">
+                        className="rounded-lg border-2 border-[#0079C1]/70 px-3 py-1.5 text-[12px] font-semibold text-[#0079C1] transition-colors hover:bg-[#D6ECF8]">
                         Continue with WhatsApp
                       </button>
                       <button type="button" onClick={() => chooseChannel('email')}
-                        className="rounded-lg border-2 border-[#0079C1]/70 px-3 py-1.5 text-[12px] font-semibold text-[#0079C1] transition-colors hover:bg-[#FFE4D1]">
+                        className="rounded-lg border-2 border-[#0079C1]/70 px-3 py-1.5 text-[12px] font-semibold text-[#0079C1] transition-colors hover:bg-[#D6ECF8]">
                         Continue with Email
                       </button>
                       <button type="button" onClick={() => chooseChannel('browsing')}

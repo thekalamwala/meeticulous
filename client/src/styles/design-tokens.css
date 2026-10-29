@@ -1,21 +1,44 @@
-/* Friendly Brutalism - Design Tokens */
+/* Meeticulous — Design Tokens (single source of truth)
+ * Full spec + usage rules: docs/design/03-design-tokens.md
+ * Design language: soft modern SaaS, brand blue #0079C1.
+ *
+ * The NEW semantic system is at the top. The "Legacy compatibility" block at
+ * the bottom is kept ONLY until the fb-* component CSS is migrated off (see
+ * docs/design/06-roadmap.md Phase B/C) — do not build new UI on it. */
 :root {
-    /* Core colors */
-    --bg: #F8FAFC;
-    --surface: #FFFFFF;
-    --text: #191919;
-    --primary: #0079C1;
-    --secondary: #D8B4FE;
-    --accent: #FFB703;
-    --success: #4CAF50;
-    --danger: #EF4444;
-    --border: #191919;
+    /* ── Brand ─────────────────────────────────────────────── */
+    --primary: #0079C1;          /* brand blue — accents, active, links-on-light, large text */
+    --primary-dark: #005E99;     /* hover/pressed of primary */
+    --primary-cta: #00457C;      /* AA-safe navy for white-text buttons + body links (~5.3:1) */
+    --primary-light: #D6ECF8;    /* subtle tints, selected bg, info chips */
+    --action: #059669;           /* reserved: the ONE primary conversion CTA (pops off blue) */
+    --action-dark: #047857;      /* hover/pressed of action */
 
-    /* ── Accent palette ──────────────────────────────────────────────
-       Reusable multi-hue accents (distilled from the "...and so much more"
-       grid). Source of truth for the colourful homepage sections; use
-       anywhere via var(--c-*). Mirrored as Tailwind `c-*` colours in
-       client/tailwind.config.js — keep both in sync. */
+    /* ── Neutrals: surfaces ────────────────────────────────── */
+    --canvas: #F8FAFC;           /* page background */
+    --sand: #F1F5F9;             /* muted bands, table headers */
+    --surface: #FFFFFF;          /* cards, inputs, modals */
+
+    /* ── Neutrals: text ramp ───────────────────────────────── */
+    --text-strong: #191919;      /* primary text / headings */
+    --text-secondary: #334155;   /* body / secondary */
+    --text-muted: #64748B;       /* meta, captions, placeholder */
+    --text-disabled: #94A3B8;
+
+    /* ── Neutrals: borders ─────────────────────────────────── */
+    --border-subtle: #E2E8F0;    /* hairline borders, dividers (becomes --border once fb-* is gone) */
+    --border-strong: #CBD5E1;    /* emphasised borders, input hover */
+
+    /* ── Semantic status (fg = text/icon/solid, bg = subtle) ─ */
+    --success-fg: #15803D;  --success-bg: #DCFCE7;
+    --warning-fg: #B45309;  --warning-bg: #FEF3C7;
+    --error-fg:   #DC2626;  --error-bg:   #FEE2E2;
+    --info-fg:    #0369A1;  --info-bg:    #E0F2FE;
+
+    /* ── Accent palette (categorization + charts ONLY) ──────────────
+       Reusable multi-hue accents. Mirrored as Tailwind `c-*` colours in
+       client/tailwind.config.js — keep both in sync. Literal hex (not var)
+       so Tailwind's /opacity modifier can compute alpha. */
     --c-blue: #0079C1;
     --c-violet: #1DA1F2;
     --c-cyan: #36D8FF;
@@ -23,45 +46,73 @@
     --c-amber: #f59e0b;
     --c-pink: #db2777;
 
-    /* Legacy mappings (keep for compatibility) */
-    --color-ink: var(--text);
-    --color-muted: #64748b;
-    --color-soft: var(--bg);
-    --color-surface: var(--surface);
-    --color-line: #e5e7eb;
-    --color-primary: var(--primary);
-    --color-primary-dark: var(--primary);
+    /* ── Focus ring (blue — replaces the old orange ring) ──── */
+    --focus-ring: rgba(0, 121, 193, 0.4);
 
-    /* Radii — global rule: 4px max, 6px only for elements that wrap a 4px child */
+    /* ── Radii — global rule: 4px controls, 6px cards ──────── */
+    --radius-control: 4px;   /* inputs/buttons/small controls (was UNDEFINED → inputs lost their radius) */
     --radius-sm: 4px;
     --radius-md: 4px;
     --radius-lg: 6px;
     --radius-card: 6px;
     --radius-nested: 6px;
 
-    /* ── Buttons — SINGLE SOURCE OF TRUTH (geometry only; colors stay per-button) ──
-       Matches the public Vendor Profile "Book" CTA (HostProfile.jsx).
-       Change these three values to restyle every button in the app. */
-    --btn-radius: 4px;            /* border-radius for ALL buttons */
-    --btn-border-width: 1px;      /* stroke width — outline/secondary buttons only */
-    --btn-border-color: #E5E5E5;  /* stroke color — outline/secondary buttons only */
+    /* ── Elevation — soft only ─────────────────────────────── */
+    --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+    --shadow-soft: 0 8px 30px rgba(23, 32, 51, 0.05);      /* card rest (was UNDEFINED → .page-card lost its shadow) */
+    --shadow-1: var(--shadow-soft);
+    --shadow-2: 0 24px 60px -28px rgba(16, 24, 40, 0.18);  /* hover / raised */
+    --shadow-3: 0 24px 48px -12px rgba(16, 24, 40, 0.22);  /* modal / popover */
 
-    /* Spacing */
+    /* ── Z-index scale (named layers — replaces ad-hoc z-50…z-[9999]) ── */
+    --z-base: 0;
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-overlay: 1030;
+    --z-modal: 1040;
+    --z-popover: 1050;
+    --z-toast: 1060;
+
+    /* ── Buttons — geometry source of truth (colors stay per-button) ── */
+    --btn-radius: 4px;
+    --btn-border-width: 1px;
+    --btn-border-color: #E5E5E5;
+
+    /* ── Spacing ───────────────────────────────────────────── */
     --space-1: 8px;
     --space-2: 16px;
     --space-3: 24px;
     --space-4: 32px;
     --space-5: 48px;
 
-    /* Shadows - hard, offset shadows for tactile feel */
-    --shadow-hard-1: 6px 6px 0 rgba(30, 30, 30, 0.9);
-    --shadow-hard-2: 8px 8px 0 rgba(30, 30, 30, 0.9);
-    --shadow-inset-press: inset 0 3px 0 rgba(0, 0, 0, 0.12);
-
-    /* Typography */
+    /* ── Typography ────────────────────────────────────────── */
     --font-primary: 'Plus Jakarta Sans', Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-    /* Motion */
+    /* ── Motion ────────────────────────────────────────────── */
     --motion-fast: 120ms;
     --motion-base: 180ms;
+    --motion-slow: 240ms;
+    --ease-out: cubic-bezier(.2, .8, .2, 1);
+
+    /* ───────────────────────────────────────────────────────────────────
+       LEGACY COMPATIBILITY — kept until the fb-* component CSS is migrated
+       off (Phase B/C). Still consumed by styles/base-fb.css + styles/
+       components/*.css + a few global rules. Do not use in new UI. */
+    --bg: var(--canvas);
+    --text: #191919;                        /* legacy strong-ink alias (global h1 color, fb-*) */
+    --secondary: #D8B4FE;                   /* DEPRECATED — Book-A-Sloth purple */
+    --accent: #FFB703;                      /* DEPRECATED — amber, only .fb-badge--accent */
+    --success: #4CAF50;                     /* legacy alias; prefer --success-fg */
+    --danger: #EF4444;                      /* legacy alias; prefer --error-fg */
+    --border: #191919;                      /* DEPRECATED — brutalist 3px ink border (fb-card/modal) */
+    --color-ink: var(--text);
+    --color-muted: #64748b;
+    --color-soft: var(--canvas);
+    --color-surface: var(--surface);
+    --color-line: #e5e7eb;
+    --color-primary: var(--primary);
+    --color-primary-dark: var(--primary-dark);   /* was var(--primary) — now a real darken on hover */
+    --shadow-hard-1: 6px 6px 0 rgba(30, 30, 30, 0.9);   /* DEPRECATED — brutalist */
+    --shadow-hard-2: 8px 8px 0 rgba(30, 30, 30, 0.9);   /* DEPRECATED — brutalist */
+    --shadow-inset-press: inset 0 3px 0 rgba(0, 0, 0, 0.12);
 }

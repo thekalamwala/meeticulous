@@ -34,7 +34,7 @@ const Loyalty = () => {
     <>
       {/* Header / coming soon banner */}
         <div className="rounded-2xl p-6 sm:p-8 mb-6 text-white relative overflow-hidden"
-          style={{ background: "linear-gradient(135deg,#0079C1,#ff7a3c)" }}>
+          style={{ background: "linear-gradient(135deg,#0079C1,#00457C)" }}>
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide opacity-90">
             <Sparkles size={14} /> Coming soon
           </div>

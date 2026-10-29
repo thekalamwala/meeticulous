@@ -180,7 +180,7 @@ export default function ManageBooking() {
                   <button
                     onClick={onPay}
                     disabled={paying}
-                    className="btn flex w-full items-center justify-center gap-2 rounded-xl bg-[#0079C1] py-3 text-sm font-semibold text-white hover:bg-[#e64800] disabled:opacity-60"
+                    className="btn flex w-full items-center justify-center gap-2 rounded-xl bg-[#0079C1] py-3 text-sm font-semibold text-white hover:bg-[#005E99] disabled:opacity-60"
                   >
                     {paying ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard size={16} />}
                     {paying ? "Opening payment…" : "Complete payment"}

@@ -25,6 +25,20 @@ export default {
         "c-emerald": "#059669",
         "c-amber": "#f59e0b",
         "c-pink": "#db2777",
+        // Action accent — reserved for the SINGLE primary conversion CTA so it
+        // pops off blue surfaces (see docs/design/03-design-tokens.md).
+        action: "#059669",
+        "action-dark": "#047857",
+        // Semantic status (fg = text/icon/solid, bg = subtle tint). Keep in sync
+        // with the --*-fg / --*-bg vars in src/styles/design-tokens.css.
+        "success-fg": "#15803D",
+        "success-bg": "#DCFCE7",
+        "warning-fg": "#B45309",
+        "warning-bg": "#FEF3C7",
+        "error-fg": "#DC2626",
+        "error-bg": "#FEE2E2",
+        "info-fg": "#0369A1",
+        "info-bg": "#E0F2FE",
       },
       fontFamily: {
         sans: ["Poppins", "Poppins Fallback", "system-ui", "sans-serif"],

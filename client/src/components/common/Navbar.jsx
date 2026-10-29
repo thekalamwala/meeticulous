@@ -415,7 +415,7 @@ const MegaMenu = ({ sections, promo, colClass = MENU_COL }) => (
     {promo && (
       <Link
         to={promo.href}
-        className={`flex ${MENU_COL} flex-col justify-end rounded-xl bg-gradient-to-br from-[#0079C1] to-[#ff8244] p-5 text-white transition-transform hover:scale-[1.01] hover:no-underline`}
+        className={`flex ${MENU_COL} flex-col justify-end rounded-xl bg-gradient-to-br from-[#0079C1] to-[#00457C] p-5 text-white transition-transform hover:scale-[1.01] hover:no-underline`}
       >
         <p className="text-[15px] font-bold leading-tight">{promo.title}</p>
         <p className="mt-1.5 text-[12.5px] leading-snug text-white/85">{promo.desc}</p>

@@ -3,7 +3,7 @@ import Ic from '../Ic';
 import { IC } from '../adminNav';
 
 const VARIANTS = {
-  primary: 'bg-[#0079C1] text-white hover:bg-[#e54900]',
+  primary: 'bg-[#0079C1] text-white hover:bg-[#005E99]',
   outline: 'adm-card adm-t2 adm-hoverable',
   ghost:   'adm-t2 adm-hoverable',
   danger:  'bg-red-600 text-white hover:bg-red-700',

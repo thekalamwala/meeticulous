@@ -103,7 +103,7 @@ const HeroNext = ({ b, host, count, onDetails }) => {
   const svc = b.services || {};
   return (
     <div className="rounded-2xl p-5 sm:p-6 mb-5 text-white relative overflow-hidden"
-      style={{ background: "linear-gradient(135deg,#0079C1,#ff7a3c)" }}>
+      style={{ background: "linear-gradient(135deg,#0079C1,#00457C)" }}>
       <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide opacity-90">
         <CalendarClock size={14} /> Your next session · {relWhen(b.scheduled_at)}
       </p>
@@ -269,7 +269,7 @@ const CustomerBookings = () => {
                 Report a problem
               </button>
               <button onClick={() => handleConfirmComplete(b.id)} disabled={confirming === b.id}
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-[#0079C1] hover:bg-[#e04800] disabled:opacity-60 px-3 py-1.5 rounded-lg">
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-[#0079C1] hover:bg-[#005E99] disabled:opacity-60 px-3 py-1.5 rounded-lg">
                 {confirming === b.id ? "Confirming…" : "Confirm completed"}
               </button>
             </div>
