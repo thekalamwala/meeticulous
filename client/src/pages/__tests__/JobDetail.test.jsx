@@ -18,7 +18,7 @@ describe('JobDetail page', () => {
     expect(screen.getByRole('heading', { name: /digital marketeer/i })).toBeInTheDocument();
     expect(screen.getByText(/responsibilities/i)).toBeInTheDocument();
     const apply = screen.getByRole('link', { name: /apply/i });
-    expect(apply.getAttribute('href')).toMatch(/^mailto:bolt@bookasloth\.in\?subject=/);
+    expect(apply.getAttribute('href')).toMatch(/^mailto:bolt@meeticulous\.in\?subject=/);
   });
 
   it('shows a friendly not-found block for an unknown slug', () => {

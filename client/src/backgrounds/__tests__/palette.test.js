@@ -4,11 +4,11 @@ import { hexToRgb, rgbToHex, rotateHue, tint, festivePalette } from '../palette'
 
 describe('palette', () => {
   it('parses hex to rgb', () => {
-    expect(hexToRgb('#0079C1')).toEqual({ r: 254, g: 81, b: 0 });
+    expect(hexToRgb('#0079C1')).toEqual({ r: 0, g: 121, b: 193 });
     expect(hexToRgb('bad')).toEqual({ r: 0, g: 0, b: 0 });
   });
   it('round-trips rgb<->hex', () => {
-    expect(rgbToHex({ r: 254, g: 81, b: 0 })).toBe('#0079C1');
+    expect(rgbToHex({ r: 0, g: 121, b: 193 })).toBe('#0079C1');
   });
   it('rotateHue returns a valid hex different from input', () => {
     const out = rotateHue('#0079C1', 120);
