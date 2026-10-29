@@ -1,11 +1,16 @@
 @import './styles/fonts.css';
 @import './styles/design-tokens.css';
 @import './styles/base-fb.css';
-@import './styles/components/button.css';
-@import './styles/components/card.css';
-@import './styles/components/input.css';
-@import './styles/components/badge.css';
-@import './styles/components/modal.css';
+/* Legacy brutalist component CSS, demoted into a cascade layer so Tailwind
+   utilities AND the soft redefinitions in `@layer components` below win over
+   them (fixes the "hard fb-* shadow beats a utility" trap). base-fb.css stays
+   unlayered on purpose — it carries base element styles incl. heading fonts.
+   See docs/design/06-roadmap.md (fb-* migration). */
+@import './styles/components/button.css' layer(legacy);
+@import './styles/components/card.css' layer(legacy);
+@import './styles/components/input.css' layer(legacy);
+@import './styles/components/badge.css' layer(legacy);
+@import './styles/components/modal.css' layer(legacy);
 
 @tailwind base;
 @tailwind components;
