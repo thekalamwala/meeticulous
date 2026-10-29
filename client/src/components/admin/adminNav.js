@@ -98,7 +98,7 @@ export const PATH_LABELS = {
   sales:'Sales', leads:'Leads', lists:'Lists', pipeline:'Pipeline', 'follow-ups':'Follow-ups', reports:'Reports', templates:'Templates', 'cold-calling':'Cold Calling', today:"Today's Calls", lead:'Call', history:'Call History',
   desk:'Desk', sequences:'Sequences', growth:'Growth',
   security:'Security', 'blocked-ips':'Blocked IPs',
-  dept:'Department', cxo:'CXO', marketing:'Marketing', operation:'Operation', engineering:'Engineering', 'sloth-house':'Sloth House',
+  dept:'Department', cxo:'CXO', marketing:'Marketing', operation:'Operation', engineering:'Engineering', 'sloth-house':'The Hive',
 };
 
 // ── NAV TREE ──────────────────────────────────────────────────────────────

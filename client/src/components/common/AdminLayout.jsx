@@ -26,7 +26,7 @@ const AdminLayout = ({ children }) => {
   // ── SECURITY GUARD ────────────────────────────────────────────
   // Reject anything that isn't a valid admin session.
   if (!isValidAdminSession(session)) {
-    return <Navigate to="/hello-sloth" replace />;
+    return <Navigate to="/backstage" replace />;
   }
 
   const [mobileOpen,  setMobileOpen]  = useState(false);
@@ -60,7 +60,7 @@ const AdminLayout = ({ children }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('bas_admin');
-    navigate('/hello-sloth');
+    navigate('/backstage');
   };
 
   useEffect(() => {
