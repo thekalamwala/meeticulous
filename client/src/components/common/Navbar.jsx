@@ -151,7 +151,7 @@ const VENDOR_MENU = [
 // so the header never renders empty even if the appearance API is unreachable.
 
 const wordmarkText = (always = false) => (
-  <span className={`${always ? '' : 'hidden sm:block '}text-[15px] font-bold text-[#191919] tracking-tight`}>
+  <span className={`${always ? '' : 'hidden sm:block '}text-[15px] font-bold text-ink tracking-tight`}>
     Meeticulous
   </span>
 );
@@ -187,7 +187,7 @@ const PhotoAvatar = ({ user, className = 'h-11 w-11' }) =>
     />
   ) : (
     <span
-      className={`${className} inline-flex items-center justify-center rounded-full bg-[#0079C1] text-white font-bold flex-shrink-0 select-none`}
+      className={`${className} inline-flex items-center justify-center rounded-full bg-primary text-white font-bold flex-shrink-0 select-none`}
       aria-hidden="true"
     >
       {user?.name ? user.name[0].toUpperCase() : 'U'}
@@ -203,7 +203,7 @@ const SlothAvatar = ({ appearance, className = 'h-11 w-11' }) => (
   <img
     src={appearance?.icon_url || '/favicon-96x96.png'}
     alt="Meeticulous"
-    className={`${className} rounded-full object-contain bg-[#0079C1]/10 p-1 flex-shrink-0`}
+    className={`${className} rounded-full object-contain bg-primary/10 p-1 flex-shrink-0`}
   />
 );
 
@@ -212,7 +212,7 @@ const VendorProfileHeader = ({ user }) => (
   <div className="flex items-center gap-3">
     <PhotoAvatar user={user} />
     <div className="min-w-0 flex-1">
-      <p className="text-[14px] font-semibold text-[#191919] truncate">{user?.name || 'Host'}</p>
+      <p className="text-[14px] font-semibold text-ink truncate">{user?.name || 'Host'}</p>
       {user?.username && <p className="text-[12px] text-gray-400 truncate">@{user.username}</p>}
     </div>
   </div>
@@ -224,7 +224,7 @@ const GuestProfileHeader = ({ appearance, name }) => (
     <SlothAvatar appearance={appearance} />
     <div className="min-w-0 flex-1">
       <p className="text-[12px] text-gray-400 leading-tight">Hello,</p>
-      <p className="text-[14px] font-semibold text-[#191919] truncate">{name || 'there'}</p>
+      <p className="text-[14px] font-semibold text-ink truncate">{name || 'there'}</p>
     </div>
   </div>
 );
@@ -233,7 +233,7 @@ const MembershipButton = ({ user, onClick }) => (
   <Link
     to="/dashboard/upgrade"
     onClick={onClick}
-    className="mt-3 flex items-center justify-center gap-1.5 rounded-lg bg-[#0079C1]/10 px-3 py-2 text-[12.5px] font-semibold text-[#0079C1] transition-colors hover:bg-[#0079C1]/15 hover:no-underline"
+    className="mt-3 flex items-center justify-center gap-1.5 rounded-lg bg-primary/10 px-3 py-2 text-[12.5px] font-semibold text-primary transition-colors hover:bg-primary/15 hover:no-underline"
   >
     <Sparkles size={14} className="flex-shrink-0" />
     You are a {getPlanBorderLabel(normalizePlan(user?.plan))} Member
@@ -249,7 +249,7 @@ const MenuLinks = ({ items, user, onNavigate }) =>
       ? (user?.username ? `/${user.username}` : '/dashboard/profile')
       : item.href;
     const cls =
-      'flex items-center gap-3 px-4 py-2.5 text-[13px] text-gray-600 hover:bg-[#0079C1]/5 hover:text-[#0079C1] transition-colors duration-150 hover:no-underline outline-none focus-visible:bg-[#0079C1]/5 focus-visible:text-[#0079C1]';
+      'flex items-center gap-3 px-4 py-2.5 text-[13px] text-gray-600 hover:bg-primary/5 hover:text-primary transition-colors duration-150 hover:no-underline outline-none focus-visible:bg-primary/5 focus-visible:text-primary';
     return item.external ? (
       <a key={item.label} href={href} target="_blank" rel="noreferrer" role="menuitem" onClick={onNavigate} className={cls}>
         <Icon size={15} className="flex-shrink-0 text-gray-400" /> {item.label}
@@ -265,7 +265,7 @@ const MenuLinks = ({ items, user, onNavigate }) =>
 
 const BadgePill = ({ count }) =>
   count > 0 ? (
-    <span className="absolute -top-1.5 -right-2 min-w-[15px] h-[15px] px-0.5 rounded-full bg-[#0079C1] text-white text-[9px] font-bold flex items-center justify-center leading-none pointer-events-none">
+    <span className="absolute -top-1.5 -right-2 min-w-[15px] h-[15px] px-0.5 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center leading-none pointer-events-none">
       {count > 99 ? '99+' : count}
     </span>
   ) : null;
@@ -273,7 +273,7 @@ const BadgePill = ({ count }) =>
 // ── Static label tag (e.g. "Soon") — distinct from numeric BadgePill ──────────
 const TagPill = ({ text }) =>
   text ? (
-    <span className="absolute -top-2 -right-5 px-1 py-px rounded-full bg-amber-400 text-[#191919] text-[8px] font-bold uppercase tracking-wide leading-none pointer-events-none">
+    <span className="absolute -top-2 -right-5 px-1 py-px rounded-full bg-amber-400 text-ink text-[8px] font-bold uppercase tracking-wide leading-none pointer-events-none">
       {text}
     </span>
   ) : null;
@@ -307,11 +307,11 @@ const NavDropdown = ({ id, label, icon: Icon, align = 'left', wide = false, acti
         aria-haspopup="menu"
         className={[
           'group relative flex items-center gap-1 px-3.5 text-[12.5px] font-medium transition-colors outline-none',
-          'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0079C1]',
-          open ? 'text-[#0079C1]' : 'text-gray-500 hover:text-[#0079C1]',
+          'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary',
+          open ? 'text-primary' : 'text-gray-500 hover:text-primary',
         ].join(' ')}
       >
-        {Icon && <Icon size={16} className={open ? 'text-[#0079C1]' : 'text-gray-400 group-hover:text-[#0079C1]/80'} />}
+        {Icon && <Icon size={16} className={open ? 'text-primary' : 'text-gray-400 group-hover:text-primary/80'} />}
         {label}
         <ChevronDown size={13} strokeWidth={2.5} className={`text-gray-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
@@ -384,7 +384,7 @@ const MegaItem = ({ item, tone }) => {
         <Icon size={19} strokeWidth={2} />
       </span>
       <span className="relative z-10 min-w-0">
-        <span className="block text-[14px] font-bold text-[#191919]">{item.label}</span>
+        <span className="block text-[14px] font-bold text-ink">{item.label}</span>
         {item.desc && <span className="block text-[12px] leading-snug text-gray-400">{item.desc}</span>}
       </span>
     </Link>
@@ -415,7 +415,7 @@ const MegaMenu = ({ sections, promo, colClass = MENU_COL }) => (
     {promo && (
       <Link
         to={promo.href}
-        className={`flex ${MENU_COL} flex-col justify-end rounded-xl bg-gradient-to-br from-[#0079C1] to-[#00457C] p-5 text-white transition-transform hover:scale-[1.01] hover:no-underline`}
+        className={`flex ${MENU_COL} flex-col justify-end rounded-xl bg-gradient-to-br from-primary to-primary-cta p-5 text-white transition-transform hover:scale-[1.01] hover:no-underline`}
       >
         <p className="text-[15px] font-bold leading-tight">{promo.title}</p>
         <p className="mt-1.5 text-[12.5px] leading-snug text-white/85">{promo.desc}</p>
@@ -460,7 +460,7 @@ const CompareItem = ({ item, active }) => {
           </span>
         )}
       </span>
-      <span className="relative z-10 text-[14px] font-bold text-[#191919] transition-colors group-hover/mi:text-[var(--bc)]">{item.name}</span>
+      <span className="relative z-10 text-[14px] font-bold text-ink transition-colors group-hover/mi:text-[var(--bc)]">{item.name}</span>
     </Link>
   );
 };
@@ -528,7 +528,7 @@ export const PublicCenterNav = () => {
         <CompareMega active={activeKey === 'compare'} />
       </NavDropdown>
 
-      <Link to="/pricing" className="flex items-center px-3.5 text-[12.5px] font-medium text-gray-500 transition-colors hover:text-[#0079C1] hover:no-underline">
+      <Link to="/pricing" className="flex items-center px-3.5 text-[12.5px] font-medium text-gray-500 transition-colors hover:text-primary hover:no-underline">
         Pricing
       </Link>
     </>
@@ -665,7 +665,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-2.5 shrink-0 pr-4 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0079C1] focus-visible:ring-offset-1 rounded"
+            className="flex items-center gap-2.5 shrink-0 pr-4 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded"
             aria-label="Meeticulous — home"
           >
             <NavbarLogo appearance={appearance} />
@@ -687,14 +687,14 @@ const Navbar = () => {
                   className={[
                     'group relative flex flex-col items-center justify-center gap-0.5 px-3.5 text-[12.5px] font-medium',
                     'transition-colors duration-150 outline-none',
-                    'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0079C1]',
-                    active ? 'text-[#0079C1]' : 'text-gray-500 hover:text-[#0079C1]',
+                    'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary',
+                    active ? 'text-primary' : 'text-gray-500 hover:text-primary',
                   ].join(' ')}
                 >
                   {/* Hover background pill */}
                   <span className={[
                     'absolute inset-x-1 inset-y-1.5 rounded-lg transition-colors duration-150',
-                    active ? 'bg-[#0079C1]/6' : 'group-hover:bg-[#0079C1]/5',
+                    active ? 'bg-primary/6' : 'group-hover:bg-primary/5',
                   ].join(' ')} aria-hidden="true" />
 
                   {/* Icon + label */}
@@ -703,7 +703,7 @@ const Navbar = () => {
                       <Icon
                         size={19}
                         strokeWidth={active ? 2.2 : 1.7}
-                        className={`transition-colors duration-150 ${active ? 'text-[#0079C1]' : 'text-gray-400 group-hover:text-[#0079C1]/80'}`}
+                        className={`transition-colors duration-150 ${active ? 'text-primary' : 'text-gray-400 group-hover:text-primary/80'}`}
                       />
                       {item.badge && <BadgePill count={badges[item.badge]} />}
                       {item.tag && <TagPill text={item.tag} />}
@@ -713,7 +713,7 @@ const Navbar = () => {
 
                   {/* Active bottom indicator */}
                   <span
-                    className={`absolute bottom-0 left-1 right-1 h-[2.5px] rounded-t-full bg-[#0079C1] transition-all duration-150 ${active ? 'opacity-100' : 'opacity-0'}`}
+                    className={`absolute bottom-0 left-1 right-1 h-[2.5px] rounded-t-full bg-primary transition-all duration-150 ${active ? 'opacity-100' : 'opacity-0'}`}
                     aria-hidden="true"
                   />
                 </NavLink>
@@ -728,7 +728,7 @@ const Navbar = () => {
             <Link
               to="/search"
               aria-label="Search creators"
-              className="p-2.5 rounded-full text-gray-500 hover:text-[#0079C1] hover:bg-[#0079C1]/5 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#0079C1] focus-visible:ring-offset-1 hover:no-underline"
+              className="p-2.5 rounded-full text-gray-500 hover:text-primary hover:bg-primary/5 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 hover:no-underline"
             >
               <Search size={19} strokeWidth={1.7} />
             </Link>
@@ -739,7 +739,7 @@ const Navbar = () => {
                 <div ref={notifRef} className="relative">
                   <button
                     onClick={() => { setNotifOpen(o => !o); setDropdownOpen(false); setMenuOpen(false); }}
-                    className="relative p-2.5 rounded-full text-gray-500 hover:text-[#0079C1] hover:bg-[#0079C1]/5 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#0079C1] focus-visible:ring-offset-1"
+                    className="relative p-2.5 rounded-full text-gray-500 hover:text-primary hover:bg-primary/5 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
                     aria-label={`Notifications${badges.notifications > 0 ? `, ${badges.notifications} unread` : ''}`}
                     aria-expanded={notifOpen}
                     aria-haspopup="dialog"
@@ -756,9 +756,9 @@ const Navbar = () => {
                       aria-label="Notifications"
                     >
                       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                        <span className="text-sm font-semibold text-[#191919]">Notifications</span>
+                        <span className="text-sm font-semibold text-ink">Notifications</span>
                         <button
-                          className="text-[11px] text-[#0079C1] font-medium hover:underline focus:outline-none"
+                          className="text-[11px] text-primary font-medium hover:underline focus:outline-none"
                           onClick={() => markAllNotificationsRead(notifRole).then(loadNotifs).catch(() => {})}
                         >
                           Mark all read
@@ -780,7 +780,7 @@ const Navbar = () => {
                           <button
                             type="button"
                             onClick={loadNotifs}
-                            className="mt-2 text-[11px] font-medium text-[#0079C1] hover:underline focus:outline-none"
+                            className="mt-2 text-[11px] font-medium text-primary hover:underline focus:outline-none"
                           >
                             Try again
                           </button>
@@ -802,9 +802,9 @@ const Navbar = () => {
                                   markNotificationRead(n.id).catch(() => {});
                                   setNotifOpen(false);
                                 }}
-                                className={`block px-4 py-3 hover:bg-gray-50 hover:no-underline ${n.read_at ? '' : 'bg-[#0079C1]/4'}`}
+                                className={`block px-4 py-3 hover:bg-gray-50 hover:no-underline ${n.read_at ? '' : 'bg-primary/4'}`}
                               >
-                                <p className="text-sm font-medium text-[#191919]">{n.title}</p>
+                                <p className="text-sm font-medium text-ink">{n.title}</p>
                                 {n.body && <p className="text-xs text-gray-500 mt-0.5">{n.body}</p>}
                               </Link>
                             </li>
@@ -819,7 +819,7 @@ const Navbar = () => {
                 <div ref={dropdownRef} className="relative">
                   <button
                     onClick={() => { setDropdownOpen(o => !o); setNotifOpen(false); setMenuOpen(false); }}
-                    className="flex items-center gap-1.5 pl-1 pr-2 py-1 rounded-full hover:bg-gray-100 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#0079C1] focus-visible:ring-offset-1"
+                    className="flex items-center gap-1.5 pl-1 pr-2 py-1 rounded-full hover:bg-gray-100 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
                     aria-label="Profile and account menu"
                     aria-expanded={dropdownOpen}
                     aria-haspopup="menu"
@@ -884,7 +884,7 @@ const Navbar = () => {
               <>
                 <Link
                   to="/become-a-host"
-                  className="btn hidden md:inline-flex items-center px-4 py-2 text-[13px] font-semibold text-white bg-primary hover:bg-[#005E99] transition-colors duration-150 shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-[#0079C1] focus-visible:ring-offset-1 hover:no-underline"
+                  className="btn hidden md:inline-flex items-center px-4 py-2 text-[13px] font-semibold text-white bg-primary hover:bg-primary-dark transition-colors duration-150 shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 hover:no-underline"
                 >
                   Let's Get Started
                 </Link>
@@ -893,7 +893,7 @@ const Navbar = () => {
 
             {/* Mobile hamburger */}
             <button
-              className="md:hidden p-2.5 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#0079C1] ml-1"
+              className="md:hidden p-2.5 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-primary ml-1"
               onClick={() => { setMenuOpen(o => !o); setDropdownOpen(false); setNotifOpen(false); setSignInOpen(false); }}
               aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={menuOpen}
@@ -935,28 +935,28 @@ const Navbar = () => {
                     className={[
                       'flex items-center gap-3 px-3 py-3 text-[13px] font-medium rounded-lg transition-colors duration-150',
                       active
-                        ? 'text-[#0079C1] bg-[#0079C1]/6'
-                        : 'text-gray-600 hover:text-[#0079C1] hover:bg-[#0079C1]/5',
+                        ? 'text-primary bg-primary/6'
+                        : 'text-gray-600 hover:text-primary hover:bg-primary/5',
                     ].join(' ')}
                   >
                     <Icon
                       size={18}
                       strokeWidth={active ? 2.2 : 1.7}
-                      className={`flex-shrink-0 ${active ? 'text-[#0079C1]' : 'text-gray-400'}`}
+                      className={`flex-shrink-0 ${active ? 'text-primary' : 'text-gray-400'}`}
                     />
                     <span className="flex-1">{item.label}</span>
                     {item.tag && (
-                      <span className="px-1.5 h-[16px] rounded-full bg-amber-400 text-[#191919] text-[10px] font-bold uppercase tracking-wide flex items-center">
+                      <span className="px-1.5 h-[16px] rounded-full bg-amber-400 text-ink text-[10px] font-bold uppercase tracking-wide flex items-center">
                         {item.tag}
                       </span>
                     )}
                     {item.badge && badges[item.badge] > 0 && (
-                      <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[#0079C1] text-white text-[10px] font-bold flex items-center justify-center">
+                      <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center">
                         {badges[item.badge]}
                       </span>
                     )}
                     {active && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#0079C1] flex-shrink-0" aria-hidden="true" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" aria-hidden="true" />
                     )}
                   </NavLink>
                 );
@@ -967,11 +967,11 @@ const Navbar = () => {
                 CTA. Industry + info collapsed so the drawer stays short. */}
             {!user && (
               <div className="px-2 pt-2 space-y-1.5">
-                <Link to="/how-it-works" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-[#0079C1]/5 hover:text-[#0079C1] hover:no-underline">
+                <Link to="/how-it-works" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-primary/5 hover:text-primary hover:no-underline">
                   <Sparkles size={16} className="flex-shrink-0 text-gray-400" /> How It Works
                 </Link>
 
-                <Link to="/pricing" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-[#0079C1]/5 hover:text-[#0079C1] hover:no-underline">
+                <Link to="/pricing" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-primary/5 hover:text-primary hover:no-underline">
                   <Tag size={16} className="flex-shrink-0 text-gray-400" /> Pricing
                 </Link>
 
@@ -982,7 +982,7 @@ const Navbar = () => {
                   const SecIcon = sec.icon;
                   return (
                     <details key={sec.label} className="group rounded-lg">
-                      <summary className="flex cursor-pointer list-none items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-[#0079C1]/5 [&::-webkit-details-marker]:hidden">
+                      <summary className="flex cursor-pointer list-none items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-primary/5 [&::-webkit-details-marker]:hidden">
                         <SecIcon size={16} className="flex-shrink-0 text-gray-400" />
                         <span className="flex-1">{sec.label}</span>
                         <ChevronDown size={15} className="text-gray-400 transition-transform group-open:rotate-180" />
@@ -991,7 +991,7 @@ const Navbar = () => {
                         {sec.items.map((it) => {
                           const ItIcon = it.icon;
                           return (
-                            <Link key={it.href} to={it.href} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] text-gray-600 hover:bg-[#0079C1]/5 hover:text-[#0079C1] hover:no-underline">
+                            <Link key={it.href} to={it.href} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] text-gray-600 hover:bg-primary/5 hover:text-primary hover:no-underline">
                               {ItIcon && <ItIcon size={15} className="flex-shrink-0 text-gray-400" />}
                               {it.label}
                             </Link>
@@ -1005,7 +1005,7 @@ const Navbar = () => {
                 {/* Primary conversion CTA — last in the sequence */}
                 <Link
                   to="/become-a-host"
-                  className="btn mt-1 block w-full rounded-lg bg-primary py-2.5 text-center text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-[#005E99] hover:no-underline"
+                  className="btn mt-1 block w-full rounded-lg bg-primary py-2.5 text-center text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-primary-dark hover:no-underline"
                 >
                   Let's Get Started
                 </Link>

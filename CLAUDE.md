@@ -210,10 +210,10 @@ old docs is stale). The shipped public pages (Home, Pricing, /for/* landings,
 Navbar, Footer) are the source of truth; match them.
 
 **Tokens only — never invent colors.** Use the Tailwind token classes:
-`bg-ink`/`text-ink` (#1a1a1a), `bg-canvas` (#faf9f6, page bg), `bg-sand` (#f4f1ea),
-`text-primary`/`bg-primary` (#FE5100), `text-primary-cta`/`bg-primary-cta` (#c23d00 —
-the WCAG-safe orange for white-on-orange CTAs and accent headline words),
-`primary-light` (#FFE9DD), and the multi-hue `--c-*` / `text-c-*` accents. Per-landing
+`bg-ink`/`text-ink` (#191919), `bg-canvas` (#F8FAFC, page bg), `bg-sand` (#F1F5F9),
+`text-primary`/`bg-primary` (#0079C1), `text-primary-cta`/`bg-primary-cta` (#00457C —
+the WCAG-safe navy for white-on-blue CTAs and accent headline words),
+`primary-light` (#D6ECF8), and the multi-hue `--c-*` / `text-c-*` accents. Per-landing
 pages drive accents off CSS vars (`--lp-accent`) via inline `style`.
 
 **Radius:** 4–6px on cards/buttons, `rounded-full` on chips/pills/avatars. NOTE
