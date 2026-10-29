@@ -14,7 +14,7 @@
   justify-content: center;
   background:
     radial-gradient(120% 90% at 50% 18%, rgba(254, 81, 0, 0.06), transparent 60%),
-    linear-gradient(180deg, #fdfcf9 0%, #f8fafc 48%, #f7f5ef 100%);
+    linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 48%, #F8FAFC 100%);
   opacity: 1;
   transform: scale(1);
   transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);

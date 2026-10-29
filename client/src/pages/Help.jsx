@@ -117,7 +117,7 @@ const EmailSupportCard = ({ email }) => {
 };
 
 const Help = () => (
-  <div className="min-h-screen" style={{ background: "#f7f5ef" }}>
+  <div className="min-h-screen" style={{ background: "#F8FAFC" }}>
     <Seo
       title="Help & Support — Meeticulous"
       description="Get help with bookings, rescheduling, payments, and becoming a host on Meeticulous. Answers to common questions plus WhatsApp, email, and phone support."

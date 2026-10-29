@@ -412,7 +412,7 @@ const DashboardLayout = ({ children }) => {
   const initial = (user?.name || user?.email || 'U').trim().charAt(0).toUpperCase();
 
   return (
-    <div className="dash flex min-h-screen overflow-x-hidden bg-[#f7f5ef]">
+    <div className="dash flex min-h-screen overflow-x-hidden bg-canvas">
       <ConsoleSidebar open={navOpen} onClose={() => setNavOpen(false)} triggerRef={navTriggerRef} />
 
       {/* Main — offset by the fixed rail (56) + panel (220) = 276px on lg+

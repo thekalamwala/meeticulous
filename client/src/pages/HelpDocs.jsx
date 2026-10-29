@@ -38,7 +38,7 @@ const HelpDocs = () => {
   const hasResults = filtered.length > 0;
 
   return (
-    <div className="min-h-screen" style={{ background: '#f7f5ef' }}>
+    <div className="min-h-screen" style={{ background: '#F8FAFC' }}>
       <Seo
         title="Help Articles — Meeticulous"
         description="Guides and answers for booking, sign-in, payments, hosting, plans, and payouts on Meeticulous."

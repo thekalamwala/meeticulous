@@ -29,7 +29,7 @@ const HelpDoc = () => {
   ];
 
   return (
-    <main className="min-h-screen" style={{ background: '#f7f5ef' }}>
+    <main className="min-h-screen" style={{ background: '#F8FAFC' }}>
       <Seo
         title={`${doc.title} — Help — Meeticulous`}
         description={description}

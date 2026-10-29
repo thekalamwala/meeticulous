@@ -56,7 +56,7 @@ body {
   overflow-x: clip; /* clip (not hidden): stops horizontal scroll WITHOUT making
                        html/body a vertical scroll container — that container is
                        what created dead scroll space below the footer on /lp. */
-  background: #fdfcf9;
+  background: #F8FAFC;
   color: var(--color-ink);
   font-family: 'Poppins', 'Poppins Fallback', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   text-rendering: optimizeLegibility;

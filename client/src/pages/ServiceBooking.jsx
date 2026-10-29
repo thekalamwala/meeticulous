@@ -924,7 +924,7 @@ const ServiceBooking = () => {
   if (loading)
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6"
-        style={{ background: `radial-gradient(circle at top, ${tc}0f, transparent 22rem), linear-gradient(180deg,#fffaf3,#faf7f1)` }}>
+        style={{ background: `radial-gradient(circle at top, ${tc}0f, transparent 22rem), linear-gradient(180deg,#F8FAFC,#F1F5F9)` }}>
         <style>{`@keyframes bkspin{to{transform:rotate(360deg)}}`}</style>
         {/* Petal spinner — 8 rounded squares in one colour, stepped shades,
             rotating as a wheel. Overlap at the centre deepens the shade. */}
@@ -989,7 +989,7 @@ const ServiceBooking = () => {
       className="bk-page min-h-screen"
       style={{
         background:
-          `radial-gradient(circle at top, ${tc}0f, transparent 22rem), linear-gradient(180deg, #fffaf3 0%, #faf7f1 100%)`,
+          `radial-gradient(circle at top, ${tc}0f, transparent 22rem), linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%)`,
         paddingBottom: '48px',
       }}
     >

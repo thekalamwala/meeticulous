@@ -937,7 +937,7 @@ export default function ServiceDetail() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f7f5ef] relative">
+    <div className="min-h-screen bg-canvas relative">
       <Seo {...seo} jsonLd={jsonLd} />
       {/* ── Above-the-fold backdrop — flat dark-grey hero band + calendar-inspired
            accents. Host theme colour no longer paints the hero; it stays on

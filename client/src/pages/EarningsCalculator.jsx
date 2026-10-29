@@ -157,7 +157,7 @@ function PlanCard({ result, winnerKey, cycle }) {
       : `0% commission · ${cycle === "annual" ? `${inr0(yearly)}/yr` : `${inr0(monthly)}/mo`}`;
   return (
     <div className={`relative flex flex-col rounded-[14px] border bg-white p-5 sm:p-6 ${isRec ? "border-2 shadow-[0_12px_40px_rgba(254,81,0,0.12)]" : "border-black/10"}`}
-      style={isRec ? { borderColor: accent, background: "#fff8f4" } : undefined}>
+      style={isRec ? { borderColor: accent, background: "#EFF6FB" } : undefined}>
       {isRec && (
         <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-semibold text-white" style={{ background: accent }}>
           <Crown size={12} fill="#fff" /> Recommended
@@ -244,7 +244,7 @@ export default function EarningsCalculator() {
   const canonical = `${SITE_URL}/earnings-calculator`;
 
   return (
-    <div className="min-h-screen" style={{ background: "#f7f5ef" }}>
+    <div className="min-h-screen" style={{ background: "#F8FAFC" }}>
       <Seo
         title="Earnings Calculator — see what you keep | Meeticulous"
         description="Meeticulous earnings calculator: set your price and monthly bookings to see exactly what you keep — and whether Sloth or Sloth Active leaves you the most."

@@ -310,7 +310,7 @@ const ProductPurchase = () => {
   const host = product.profiles;
 
   return (
-    <div className="min-h-screen bg-[#f7f5ef]">
+    <div className="min-h-screen bg-canvas">
       <Seo
         title={`${product.title} — ${host?.name || "Meeticulous"}`}
         description={(product.description || `Buy ${product.title} from ${host?.name || "this creator"} on Meeticulous.`).slice(0, 160)}
