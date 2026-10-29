@@ -1,0 +1,19 @@
+/* Friendly Brutalism Modal (structure-only) */
+.fb-modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 10, 10, 0.45);
+    z-index: 60;
+}
+
+.fb-modal__panel {
+    width: min(96%, 720px);
+    background: var(--surface);
+    border: 3px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-hard-2);
+    padding: var(--space-3);
+}

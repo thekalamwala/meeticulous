@@ -1,0 +1,155 @@
+/* ───────────────────────────────────────────────────────────────────────────
+   Brand preloader — GPU-only animations (opacity / transform / filter).
+   No layout properties animated → no jank, no layout shift. Accent is themeable
+   via --pl-accent (profile variant passes the vendor's colour).
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.pl-overlay {
+  --pl-accent: #0079C1;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(120% 90% at 50% 18%, rgba(254, 81, 0, 0.06), transparent 60%),
+    linear-gradient(180deg, #fdfcf9 0%, #f8fafc 48%, #f7f5ef 100%);
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity, transform;
+  overscroll-behavior: contain;
+}
+
+.pl-overlay[data-phase='exit'] {
+  opacity: 0;
+  transform: scale(1.02);
+  pointer-events: none;
+}
+
+.pl-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+/* ── Greeting ── */
+.pl-greet {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: #191919;
+  font-size: clamp(2.5rem, 11vw, 5rem);
+  min-height: 1.1em;
+  animation: pl-greet-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes pl-greet-in {
+  0%   { opacity: 0; transform: translateY(10px); filter: blur(5px); }
+  100% { opacity: 1; transform: translateY(0);    filter: blur(0); }
+}
+
+/* ── Brand lockup (homepage) / personal line (profile) ── */
+.pl-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  animation: pl-brand-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.pl-brand__mark {
+  font-size: clamp(2rem, 8vw, 3.4rem);
+  line-height: 1;
+}
+
+.pl-brand__word {
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #191919;
+  font-size: clamp(1.6rem, 6.5vw, 2.6rem);
+}
+
+.pl-brand__sub {
+  margin: 0;
+  font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+  font-weight: 500;
+  color: #6b6b6b;
+}
+
+.pl-brand__name {
+  color: var(--pl-accent);
+  font-weight: 700;
+}
+
+.pl-brand__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--pl-accent);
+  animation: pl-dot 0.55s ease both;
+}
+
+@keyframes pl-brand-in {
+  0%   { opacity: 0; transform: scale(0.96) translateY(6px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes pl-dot {
+  0%   { opacity: 0; transform: scale(0); }
+  60%  { opacity: 1; transform: scale(1.4); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* ── Calm progress hairline (caps at ready; never fake-completes) ── */
+.pl-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  overflow: hidden;
+  background: transparent;
+}
+
+.pl-progress__bar {
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, var(--pl-accent), transparent);
+  animation: pl-sweep 1.4s ease-in-out infinite;
+}
+
+@keyframes pl-sweep {
+  0%   { transform: translateX(-120%); }
+  100% { transform: translateX(320%); }
+}
+
+/* Visually-hidden live-region text for screen readers. */
+.pl-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Reduced motion: drop blur/translate/scale, keep gentle opacity only ── */
+@media (prefers-reduced-motion: reduce) {
+  .pl-overlay { transition: opacity 0.3s linear; transform: none; }
+  .pl-overlay[data-phase='exit'] { transform: none; }
+  .pl-greet { animation: pl-fade 0.3s ease both; }
+  .pl-brand { animation: pl-fade 0.3s ease both; }
+  .pl-brand__dot { animation: none; }
+  .pl-progress__bar { animation: none; width: 100%; opacity: 0.5; }
+  @keyframes pl-fade { from { opacity: 0; } to { opacity: 1; } }
+}

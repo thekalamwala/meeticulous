@@ -1,0 +1,127 @@
+name: CI
+
+# Server unit tests on every push and PR to main.
+#
+# CI does NOT deploy, and is NOT the deployment gate. Both deploys own their own
+# checks, so a green deploy means the checks passed:
+#   - Client → deploy-vercel.yml runs `vercel deploy --prod` on push to main (a
+#     REMOTE build, so `vercel-build` runs vitest → build → prerender; any failure
+#     fails the deploy). Vercel still builds a PREVIEW on every PR, so client
+#     regressions surface there before merge.
+#   - Server → Render. buildCommand runs `npm run test:unit`; a failing test means
+#     the server does not ship. Render is where the server actually deploys, which
+#     is the only place a server test can gate a server release.
+#
+# The `client` job runs `vitest run` (unit tests ONLY — no build/prerender, which
+# is Vercel's job and needs Sensitive env it can't read in CI). Re-added 2026-08
+# after two outages where a STALE CLIENT TEST merged with green CI and then failed
+# the Vercel deploy gate (vercel-build runs the full vitest): the Vercel PR preview
+# builds the client but is NOT a required status check, so a red preview never
+# blocked the merge. This cheap job IS a PR check, so a broken client test is
+# caught BEFORE merge instead of blocking every deploy afterwards.
+#
+# Remote builds (whether via deploy-vercel.yml or a PR preview) run inside Vercel
+# and can read env vars marked Sensitive, which a CI-side `vercel build --prebuilt`
+# cannot — that mismatch caused the 2026-07-08 white-screen outage, so we never
+# prebuild client bundles in CI.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    # release/** = release trains: feature PRs target the train branch, not main,
+    # and still need the same checks before they're merged into it.
+    branches: [main, 'release/**']
+
+# Cancel an in-progress run if a newer commit is pushed to the same branch.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Detect which half of the repo a push/PR touched, so we only run the suite
+  # that could have broken. A docs-only change runs neither. (A skipped required
+  # check counts as passed for branch protection, so gating never blocks a merge.)
+  changes:
+    runs-on: ubuntu-latest
+    # dorny/paths-filter reads the PR's changed-file list via the API, which needs
+    # pull-requests:read (the repo's default GITHUB_TOKEN is otherwise restricted).
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      server: ${{ steps.filter.outputs.server }}
+      client: ${{ steps.filter.outputs.client }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            server:
+              - 'server/**'
+            client:
+              - 'client/**'
+              # Bundled into the client by helpDocs.js and prerendered, so a
+              # malformed help article breaks the client build — test it.
+              - 'docs/help/**'
+
+  server:
+    name: Server (unit tests)
+    needs: changes
+    # Fail-safe: run unless the server half is EXPLICITLY unchanged. If change
+    # detection breaks (empty output), tests still run — never silently skip.
+    if: ${{ !cancelled() && needs.changes.outputs.server != 'false' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      # Informational dependency audit. Non-blocking (|| true) so a freshly
+      # disclosed advisory in a transitive dep doesn't wall off all deploys —
+      # Dependabot raises the fix PR; this surfaces high/critical in the log.
+      - name: Audit (informational)
+        run: npm audit --omit=dev --audit-level=high || true
+      - name: Unit tests
+        # Only unit tests in CI. Integration tests hit live Supabase/SMTP and
+        # need real credentials — run those manually/locally, not in CI.
+        run: npm run test:unit
+        env:
+          NODE_ENV: test
+          # Dummy secrets so tests that read process.env don't crash. These are
+          # NOT real and grant nothing.
+          SUPER_ADMIN_JWT_SECRET: ci-test-secret-not-real
+          OAUTH_STATE_SECRET: ci-test-secret-not-real
+          GOOGLE_TOKEN_KEY: ci-test-32-byte-key-000000000000
+          CLIENT_URL: http://localhost:5173
+          AISENSY_WEBHOOK_SECRET: ci-test-secret-not-real
+
+  client:
+    name: Client (unit tests)
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.client != 'false' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - run: npm ci
+      # The SAME `vitest run` the Vercel deploy gate runs (vercel-build =
+      # vitest && build && prerender). Running it here catches a stale/broken
+      # client test on the PR, so it can't silently block production deploys.
+      # Build + prerender are intentionally NOT here — those are Vercel's job and
+      # need Sensitive env CI can't read (the 2026-07-08 white-screen lesson).
+      - run: npx vitest run

@@ -1,0 +1,1927 @@
+{
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman-compress\\scripts\\__init__.py": {
+    "mtime": 1781081637.3619852,
+    "ast_hash": "d6acae7e188357d1bc1258ce02a29811",
+    "semantic_hash": "d6acae7e188357d1bc1258ce02a29811"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman-compress\\scripts\\__main__.py": {
+    "mtime": 1781081637.3619852,
+    "ast_hash": "5bd0e02db4907bf4e435e5d770256fef",
+    "semantic_hash": "5bd0e02db4907bf4e435e5d770256fef"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman-compress\\scripts\\benchmark.py": {
+    "mtime": 1781081637.3629873,
+    "ast_hash": "07500037c8606fc9ab1832f55a5ff346",
+    "semantic_hash": "07500037c8606fc9ab1832f55a5ff346"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman-compress\\scripts\\cli.py": {
+    "mtime": 1781081637.3639884,
+    "ast_hash": "c558740fb2c74c292c1886353add193a",
+    "semantic_hash": "c558740fb2c74c292c1886353add193a"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman-compress\\scripts\\compress.py": {
+    "mtime": 1781081637.3650217,
+    "ast_hash": "b64cfd042fdf93e8ac852fb3b87195a3",
+    "semantic_hash": "b64cfd042fdf93e8ac852fb3b87195a3"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman-compress\\scripts\\detect.py": {
+    "mtime": 1781081637.3660913,
+    "ast_hash": "951a4593947c23cb9bfe8d99dc245b16",
+    "semantic_hash": "951a4593947c23cb9bfe8d99dc245b16"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman-compress\\scripts\\validate.py": {
+    "mtime": 1781081637.3670285,
+    "ast_hash": "5d3394df7677d1ee08f0b69bb767b38c",
+    "semantic_hash": "5d3394df7677d1ee08f0b69bb767b38c"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\launch.json": {
+    "mtime": 1781345194.267761,
+    "ast_hash": "3614f5549cb932338199912af9d12ab1",
+    "semantic_hash": "3614f5549cb932338199912af9d12ab1"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\settings.local.json": {
+    "mtime": 1781075663.4598265,
+    "ast_hash": "dba3a0eb049258f1ccfd0b8da6408e4a",
+    "semantic_hash": "dba3a0eb049258f1ccfd0b8da6408e4a"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman-compress\\scripts\\__init__.py": {
+    "mtime": 1781081637.3619852,
+    "ast_hash": "d6acae7e188357d1bc1258ce02a29811",
+    "semantic_hash": "d6acae7e188357d1bc1258ce02a29811"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman-compress\\scripts\\__main__.py": {
+    "mtime": 1781081637.3619852,
+    "ast_hash": "5bd0e02db4907bf4e435e5d770256fef",
+    "semantic_hash": "5bd0e02db4907bf4e435e5d770256fef"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman-compress\\scripts\\benchmark.py": {
+    "mtime": 1781081637.3629873,
+    "ast_hash": "07500037c8606fc9ab1832f55a5ff346",
+    "semantic_hash": "07500037c8606fc9ab1832f55a5ff346"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman-compress\\scripts\\cli.py": {
+    "mtime": 1781081637.3639884,
+    "ast_hash": "c558740fb2c74c292c1886353add193a",
+    "semantic_hash": "c558740fb2c74c292c1886353add193a"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman-compress\\scripts\\compress.py": {
+    "mtime": 1781081637.3650217,
+    "ast_hash": "b64cfd042fdf93e8ac852fb3b87195a3",
+    "semantic_hash": "b64cfd042fdf93e8ac852fb3b87195a3"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman-compress\\scripts\\detect.py": {
+    "mtime": 1781081637.3660913,
+    "ast_hash": "951a4593947c23cb9bfe8d99dc245b16",
+    "semantic_hash": "951a4593947c23cb9bfe8d99dc245b16"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman-compress\\scripts\\validate.py": {
+    "mtime": 1781081637.3670285,
+    "ast_hash": "5d3394df7677d1ee08f0b69bb767b38c",
+    "semantic_hash": "5d3394df7677d1ee08f0b69bb767b38c"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\SETUP_VERIFICATION.sh": {
+    "mtime": 1781078341.6612043,
+    "ast_hash": "8ccbecc598d8c056edb601285c4853a0",
+    "semantic_hash": "8ccbecc598d8c056edb601285c4853a0"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\.claude\\launch.json": {
+    "mtime": 1781174776.158351,
+    "ast_hash": "e04828d26f1627cd1b2d1fa46a3d2b2e",
+    "semantic_hash": "e04828d26f1627cd1b2d1fa46a3d2b2e"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\package.json": {
+    "mtime": 1781345315.510868,
+    "ast_hash": "1d0a585e35d394144aeac81f88a93935",
+    "semantic_hash": "1d0a585e35d394144aeac81f88a93935"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\postcss.config.js": {
+    "mtime": 1780417320.878694,
+    "ast_hash": "c735540bb63936a123bc867d950c9f69",
+    "semantic_hash": "c735540bb63936a123bc867d950c9f69"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\App.jsx": {
+    "mtime": 1781375980.8758018,
+    "ast_hash": "e9db6a72f2a486101afc4db663de7332",
+    "semantic_hash": "e9db6a72f2a486101afc4db663de7332"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\components\\admin\\AdminEmptyState.jsx": {
+    "mtime": 1780719257.5266838,
+    "ast_hash": "297db3ad052e6dd9e8e77d24acff01ba",
+    "semantic_hash": "297db3ad052e6dd9e8e77d24acff01ba"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\components\\common\\AdminLayout.jsx": {
+    "mtime": 1781408804.3079698,
+    "ast_hash": "23c05b52d83e36ce3a0a4233378fafe3",
+    "semantic_hash": "23c05b52d83e36ce3a0a4233378fafe3"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\components\\common\\BackButton.jsx": {
+    "mtime": 1780449882.175184,
+    "ast_hash": "a31af4c8d6d222b2906efb623e34dadf",
+    "semantic_hash": "a31af4c8d6d222b2906efb623e34dadf"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\components\\common\\DashboardLayout.jsx": {
+    "mtime": 1781196618.5668745,
+    "ast_hash": "c8abaed0176849590be6f584d46e9eb3",
+    "semantic_hash": "c8abaed0176849590be6f584d46e9eb3"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\components\\common\\ImageCropper.jsx": {
+    "mtime": 1780624876.7368467,
+    "ast_hash": "1950f9d0ba1b2fcc8614d54d50cc934d",
+    "semantic_hash": "1950f9d0ba1b2fcc8614d54d50cc934d"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\components\\common\\Navbar.jsx": {
+    "mtime": 1781172221.5005105,
+    "ast_hash": "67729e46a103073e5e52d63b5d9d3a13",
+    "semantic_hash": "67729e46a103073e5e52d63b5d9d3a13"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\components\\common\\ProtectedRoute.jsx": {
+    "mtime": 1781136079.6360605,
+    "ast_hash": "5e75e597f33fe0fdd42d5552b1399861",
+    "semantic_hash": "5e75e597f33fe0fdd42d5552b1399861"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\components\\home\\Reveal.jsx": {
+    "mtime": 1781174443.9433756,
+    "ast_hash": "c2f5f85fa0d8414cc83e8c33c8e7c79b",
+    "semantic_hash": "c2f5f85fa0d8414cc83e8c33c8e7c79b"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\components\\home\\images.js": {
+    "mtime": 1781174475.41421,
+    "ast_hash": "74e71f9fe10709bde6e1f158863d08dd",
+    "semantic_hash": "74e71f9fe10709bde6e1f158863d08dd"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\components\\preloader\\BrandPreloader.jsx": {
+    "mtime": 1781408804.3127973,
+    "ast_hash": "9ccfb6735dbdc268b03535eb82dac25e",
+    "semantic_hash": "9ccfb6735dbdc268b03535eb82dac25e"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\components\\preloader\\fontLoader.js": {
+    "mtime": 1781408804.3142662,
+    "ast_hash": "59ad342a3b5a1829a1742cd203aec9a5",
+    "semantic_hash": "59ad342a3b5a1829a1742cd203aec9a5"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\components\\preloader\\greetings.js": {
+    "mtime": 1781408804.3165123,
+    "ast_hash": "2cbb7ffedda5ef37b9f412194bbe432b",
+    "semantic_hash": "2cbb7ffedda5ef37b9f412194bbe432b"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\components\\preloader\\usePreloader.js": {
+    "mtime": 1781408804.3225026,
+    "ast_hash": "bcad2b88da15d7f454fac6b0690c46b2",
+    "semantic_hash": "bcad2b88da15d7f454fac6b0690c46b2"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\context\\AuthContext.jsx": {
+    "mtime": 1781171866.4750664,
+    "ast_hash": "c5e20cb075da2842cdd21e1532d2df3e",
+    "semantic_hash": "c5e20cb075da2842cdd21e1532d2df3e"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\hooks\\useLenis.js": {
+    "mtime": 1781174436.3992724,
+    "ast_hash": "1f7c465aa1190adf1cc79a2f5afcf9e6",
+    "semantic_hash": "1f7c465aa1190adf1cc79a2f5afcf9e6"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\main.jsx": {
+    "mtime": 1780417326.561954,
+    "ast_hash": "3547aa89d68d1e849f071575de60b9f5",
+    "semantic_hash": "3547aa89d68d1e849f071575de60b9f5"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\AdminLogin.jsx": {
+    "mtime": 1781133331.4275658,
+    "ast_hash": "c9b0cf6d9b5d880ebb6f5fe35b77b733",
+    "semantic_hash": "c9b0cf6d9b5d880ebb6f5fe35b77b733"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\Availability.jsx": {
+    "mtime": 1781172194.262612,
+    "ast_hash": "130c348460c7ae9d1c93f33824350929",
+    "semantic_hash": "130c348460c7ae9d1c93f33824350929"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\BadgeShowcase.jsx": {
+    "mtime": 1781086156.6409433,
+    "ast_hash": "bfa026daf7aa3941dec162eaf0afbfe4",
+    "semantic_hash": "bfa026daf7aa3941dec162eaf0afbfe4"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\BeASloth.jsx": {
+    "mtime": 1781171890.347092,
+    "ast_hash": "ce98563474f45254fffdccda9e462300",
+    "semantic_hash": "ce98563474f45254fffdccda9e462300"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\Bookings.jsx": {
+    "mtime": 1780644568.4787533,
+    "ast_hash": "f8d453a9b5ac80baa016ff9c4ae522ea",
+    "semantic_hash": "f8d453a9b5ac80baa016ff9c4ae522ea"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\CustomerBookings.jsx": {
+    "mtime": 1781172864.279116,
+    "ast_hash": "5bcbd5940042c255988c4f7bccee0e10",
+    "semantic_hash": "5bcbd5940042c255988c4f7bccee0e10"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\Dashboard.jsx": {
+    "mtime": 1781193152.4422123,
+    "ast_hash": "199d784da1fc729ae4ce55325a7c3bf5",
+    "semantic_hash": "199d784da1fc729ae4ce55325a7c3bf5"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\Earnings.jsx": {
+    "mtime": 1780633814.6705232,
+    "ast_hash": "fd79795a4d1c54c34e1cfe7e937ad8a1",
+    "semantic_hash": "fd79795a4d1c54c34e1cfe7e937ad8a1"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\ForgotPassword.jsx": {
+    "mtime": 1780633814.5665236,
+    "ast_hash": "527f05c7ff91111ca27b1d2ce21bc065",
+    "semantic_hash": "527f05c7ff91111ca27b1d2ce21bc065"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\GoogleAuthDone.jsx": {
+    "mtime": 1781171909.9379346,
+    "ast_hash": "504066c3060b5cf341c9bb482023f6f0",
+    "semantic_hash": "504066c3060b5cf341c9bb482023f6f0"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\Home.jsx": {
+    "mtime": 1781408804.330055,
+    "ast_hash": "c3a1df782779c770869cc7a13f2c03e6",
+    "semantic_hash": "c3a1df782779c770869cc7a13f2c03e6"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\HostProfile.jsx": {
+    "mtime": 1781415168.6460936,
+    "ast_hash": "500d30101d2bfc0ba701bb229385bdac",
+    "semantic_hash": "500d30101d2bfc0ba701bb229385bdac"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\Login.jsx": {
+    "mtime": 1781171933.6324928,
+    "ast_hash": "7a5022ec9b1c10005c8d2ac71747a416",
+    "semantic_hash": "7a5022ec9b1c10005c8d2ac71747a416"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\NotFound.jsx": {
+    "mtime": 1780417376.6137638,
+    "ast_hash": "1edcde77ba0ed55de98c1daa5a3f9362",
+    "semantic_hash": "1edcde77ba0ed55de98c1daa5a3f9362"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\Payouts.jsx": {
+    "mtime": 1780634853.2589328,
+    "ast_hash": "c35619d2f6b3f78978e6fd5d13b77ed3",
+    "semantic_hash": "c35619d2f6b3f78978e6fd5d13b77ed3"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\ProductPurchase.jsx": {
+    "mtime": 1780751874.658156,
+    "ast_hash": "db6466e301c62b31f0fa9a5427e24bb8",
+    "semantic_hash": "db6466e301c62b31f0fa9a5427e24bb8"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\Products.jsx": {
+    "mtime": 1781375980.8813696,
+    "ast_hash": "22b51c8e0e21ce2ac221f8abfaebd3c3",
+    "semantic_hash": "22b51c8e0e21ce2ac221f8abfaebd3c3"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\ProfileSetup.jsx": {
+    "mtime": 1781172079.4076118,
+    "ast_hash": "6bfbca064e77ecaf49959a2702dbbb66",
+    "semantic_hash": "6bfbca064e77ecaf49959a2702dbbb66"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\ResetPassword.jsx": {
+    "mtime": 1780633813.7102382,
+    "ast_hash": "ad131564d66bc1b893d4d1f55b99ff76",
+    "semantic_hash": "ad131564d66bc1b893d4d1f55b99ff76"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\ServiceBooking.jsx": {
+    "mtime": 1781418816.7549446,
+    "ast_hash": "6875a7750be0353d04cfd1084e1167f5",
+    "semantic_hash": "6875a7750be0353d04cfd1084e1167f5"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\ServiceDetail.jsx": {
+    "mtime": 1781419225.8342266,
+    "ast_hash": "234a97dc39e36bbc468f2860a12970d6",
+    "semantic_hash": "234a97dc39e36bbc468f2860a12970d6"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\Services.jsx": {
+    "mtime": 1780634852.6472225,
+    "ast_hash": "3e2d96b80b00f151a6c61e348943de8a",
+    "semantic_hash": "3e2d96b80b00f151a6c61e348943de8a"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\Transactions.jsx": {
+    "mtime": 1781379830.289709,
+    "ast_hash": "8b0bb9e3c102eeeabfb289f6424b847b",
+    "semantic_hash": "8b0bb9e3c102eeeabfb289f6424b847b"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\UpgradePlan.jsx": {
+    "mtime": 1781319303.5552053,
+    "ast_hash": "c685c714851ad949e27b5fee5f5e2ee1",
+    "semantic_hash": "c685c714851ad949e27b5fee5f5e2ee1"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\UserSignup.jsx": {
+    "mtime": 1780644479.7423928,
+    "ast_hash": "46baa93d87f6cfff58f7337d6c5162a1",
+    "semantic_hash": "46baa93d87f6cfff58f7337d6c5162a1"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\VendorLogin.jsx": {
+    "mtime": 1781375980.8878586,
+    "ast_hash": "ee215548fb2405f497eef49d678adb83",
+    "semantic_hash": "ee215548fb2405f497eef49d678adb83"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\VendorSignup.jsx": {
+    "mtime": 1780644471.3934891,
+    "ast_hash": "abd0c1cacec65e53903b0ec75fb5def8",
+    "semantic_hash": "abd0c1cacec65e53903b0ec75fb5def8"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminAddons.jsx": {
+    "mtime": 1780719356.2735534,
+    "ast_hash": "59d17715ff62513c8ede7e89350cb0a7",
+    "semantic_hash": "59d17715ff62513c8ede7e89350cb0a7"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminAppearance.jsx": {
+    "mtime": 1780719356.2033386,
+    "ast_hash": "e00c8352455472961cbecdd4f53b85fb",
+    "semantic_hash": "e00c8352455472961cbecdd4f53b85fb"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminAudit.jsx": {
+    "mtime": 1781133496.5704236,
+    "ast_hash": "c0ecc83e03c3c994c20170f4c96e82e4",
+    "semantic_hash": "c0ecc83e03c3c994c20170f4c96e82e4"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminBadges.jsx": {
+    "mtime": 1781135205.0605774,
+    "ast_hash": "f2ce761270f7a61716ff5d15d013f124",
+    "semantic_hash": "f2ce761270f7a61716ff5d15d013f124"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminBlogs.jsx": {
+    "mtime": 1780719356.104358,
+    "ast_hash": "9e1711226708309aea96243bbde6b7bb",
+    "semantic_hash": "9e1711226708309aea96243bbde6b7bb"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminBookings.jsx": {
+    "mtime": 1781408804.3381634,
+    "ast_hash": "31be6c1e3d2ef7944379337ecb6468de",
+    "semantic_hash": "31be6c1e3d2ef7944379337ecb6468de"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminCampaigns.jsx": {
+    "mtime": 1781261914.5334222,
+    "ast_hash": "c03cb5ede625d86c925677d1fca08ecf",
+    "semantic_hash": "c03cb5ede625d86c925677d1fca08ecf"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminCategories.jsx": {
+    "mtime": 1781191941.0982358,
+    "ast_hash": "7a33360200eb8b2c1a16095f95944394",
+    "semantic_hash": "7a33360200eb8b2c1a16095f95944394"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminCommunication.jsx": {
+    "mtime": 1781104420.1794925,
+    "ast_hash": "026ba8ee2025694fd306d640cd90c157",
+    "semantic_hash": "026ba8ee2025694fd306d640cd90c157"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminDisputes.jsx": {
+    "mtime": 1780719356.175559,
+    "ast_hash": "948545943eb7ca4914b6bed013c8a543",
+    "semantic_hash": "948545943eb7ca4914b6bed013c8a543"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminEarnings.jsx": {
+    "mtime": 1780719356.0624907,
+    "ast_hash": "c38651f6312ad435ecd0bbbd34927402",
+    "semantic_hash": "c38651f6312ad435ecd0bbbd34927402"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminFAQ.jsx": {
+    "mtime": 1780719356.1317134,
+    "ast_hash": "502f20aba6fb4ab9f5ff7a1e856ccfc4",
+    "semantic_hash": "502f20aba6fb4ab9f5ff7a1e856ccfc4"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminFinanceDashboard.jsx": {
+    "mtime": 1781319303.5582106,
+    "ast_hash": "9910ff73c377810355c90cabf78e2242",
+    "semantic_hash": "9910ff73c377810355c90cabf78e2242"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminFooterBuilder.jsx": {
+    "mtime": 1780719356.2325032,
+    "ast_hash": "7533ba6fb487595e2dd111cf3ea44e78",
+    "semantic_hash": "7533ba6fb487595e2dd111cf3ea44e78"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminJournal.jsx": {
+    "mtime": 1781319303.5612116,
+    "ast_hash": "d2d52df0db6de565f85196282e07db51",
+    "semantic_hash": "d2d52df0db6de565f85196282e07db51"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminKYC.jsx": {
+    "mtime": 1780719356.0311563,
+    "ast_hash": "1a7cd7c638f7f29dbeaa7f2db0088a62",
+    "semantic_hash": "1a7cd7c638f7f29dbeaa7f2db0088a62"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminLedger.jsx": {
+    "mtime": 1781319303.563217,
+    "ast_hash": "ec4ddecab26938661b7f294bd7b3f11e",
+    "semantic_hash": "ec4ddecab26938661b7f294bd7b3f11e"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminMenuBuilder.jsx": {
+    "mtime": 1780719356.2185452,
+    "ast_hash": "e09a763023baf14751d9f3562e4852ae",
+    "semantic_hash": "e09a763023baf14751d9f3562e4852ae"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminNewsletter.jsx": {
+    "mtime": 1780719356.1174295,
+    "ast_hash": "b20e37c61f0d46ec47adcbe4517c3407",
+    "semantic_hash": "b20e37c61f0d46ec47adcbe4517c3407"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminNotifications.jsx": {
+    "mtime": 1781084960.1494255,
+    "ast_hash": "63795c84b3f4a7ba93cd2dce0870aabe",
+    "semantic_hash": "63795c84b3f4a7ba93cd2dce0870aabe"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminOverview.jsx": {
+    "mtime": 1780483788.4767704,
+    "ast_hash": "374cdca1299aee10966cf86c1782c351",
+    "semantic_hash": "374cdca1299aee10966cf86c1782c351"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminPages.jsx": {
+    "mtime": 1780719356.0916014,
+    "ast_hash": "8ec93d397f521bb942d417dc1b869820",
+    "semantic_hash": "8ec93d397f521bb942d417dc1b869820"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminPlans.jsx": {
+    "mtime": 1781086742.713129,
+    "ast_hash": "5ea77350b3f5a22c5e180becb9c21e94",
+    "semantic_hash": "5ea77350b3f5a22c5e180becb9c21e94"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminProviders.jsx": {
+    "mtime": 1780719356.014396,
+    "ast_hash": "0c82b8181225a89cafa651279563b4c3",
+    "semantic_hash": "0c82b8181225a89cafa651279563b4c3"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminRefunds.jsx": {
+    "mtime": 1780719356.0778139,
+    "ast_hash": "14f5eeed68b68b02eadf8951baa82606",
+    "semantic_hash": "14f5eeed68b68b02eadf8951baa82606"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminReviews.jsx": {
+    "mtime": 1780719356.1904943,
+    "ast_hash": "e03f0d5beffe06dc03862ae5c746afeb",
+    "semantic_hash": "e03f0d5beffe06dc03862ae5c746afeb"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminServices.jsx": {
+    "mtime": 1780634855.3732862,
+    "ast_hash": "ebda4bed42d3febef0d70532d3adf511",
+    "semantic_hash": "ebda4bed42d3febef0d70532d3adf511"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminSettings.jsx": {
+    "mtime": 1780644592.7143664,
+    "ast_hash": "27c4e55f5b99d2ebaf19fa3e0e7a50dd",
+    "semantic_hash": "27c4e55f5b99d2ebaf19fa3e0e7a50dd"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminStaff.jsx": {
+    "mtime": 1781133472.3713417,
+    "ast_hash": "ad82eac42b70d93f27c035bac15a0f5b",
+    "semantic_hash": "ad82eac42b70d93f27c035bac15a0f5b"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminTestimonials.jsx": {
+    "mtime": 1780719356.1453834,
+    "ast_hash": "9b2a3975c994bff4a22a559532372588",
+    "semantic_hash": "9b2a3975c994bff4a22a559532372588"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminTickets.jsx": {
+    "mtime": 1780719356.161278,
+    "ast_hash": "df753b52ced2162d75d803ccef8b0857",
+    "semantic_hash": "df753b52ced2162d75d803ccef8b0857"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminTransactions.jsx": {
+    "mtime": 1780719356.0474856,
+    "ast_hash": "6f4665f1b036ad4e62615b4fbcf43182",
+    "semantic_hash": "6f4665f1b036ad4e62615b4fbcf43182"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\AdminUsers.jsx": {
+    "mtime": 1780644603.2367556,
+    "ast_hash": "c8780836fc5747743bb55e779a1e0077",
+    "semantic_hash": "c8780836fc5747743bb55e779a1e0077"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\SuperDashboard.jsx": {
+    "mtime": 1781408804.3416326,
+    "ast_hash": "7f05d7c1b60c0ca93b30c25d755efd83",
+    "semantic_hash": "7f05d7c1b60c0ca93b30c25d755efd83"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\__tests__\\AdminCampaigns.test.jsx": {
+    "mtime": 1781261938.3412085,
+    "ast_hash": "6a46b2bd0c1ac122602c071abb3eb160",
+    "semantic_hash": "6a46b2bd0c1ac122602c071abb3eb160"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\admin\\__tests__\\AdminFinance.test.jsx": {
+    "mtime": 1781319303.5662088,
+    "ast_hash": "6a67a5d29af0db87df92cb595e43cc38",
+    "semantic_hash": "6a67a5d29af0db87df92cb595e43cc38"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\onboarding\\BookingTypeStep.jsx": {
+    "mtime": 1781191653.662819,
+    "ast_hash": "73606621b49c38bc2fcb28aa072c287c",
+    "semantic_hash": "73606621b49c38bc2fcb28aa072c287c"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\onboarding\\CalendarStep.jsx": {
+    "mtime": 1781191668.4811623,
+    "ast_hash": "48f5a751c7f1b19855f4094c28b61165",
+    "semantic_hash": "48f5a751c7f1b19855f4094c28b61165"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\onboarding\\CategoryStep.jsx": {
+    "mtime": 1781191883.776986,
+    "ast_hash": "02acae3c62b7f72be698387f2437e92f",
+    "semantic_hash": "02acae3c62b7f72be698387f2437e92f"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\onboarding\\ExploreWithBolt.jsx": {
+    "mtime": 1781193034.6630585,
+    "ast_hash": "2a64733f3d5b6990d86ec1d25d26b92d",
+    "semantic_hash": "2a64733f3d5b6990d86ec1d25d26b92d"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\onboarding\\FirstServiceStep.jsx": {
+    "mtime": 1781191721.6705582,
+    "ast_hash": "408ccc0f9c2cef8108f88063489bf927",
+    "semantic_hash": "408ccc0f9c2cef8108f88063489bf927"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\onboarding\\OtpVerify.jsx": {
+    "mtime": 1781077897.9166176,
+    "ast_hash": "44e11cde1d402c1c80e25efaa5c0d792",
+    "semantic_hash": "44e11cde1d402c1c80e25efaa5c0d792"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\onboarding\\PasswordStep.jsx": {
+    "mtime": 1781077909.2864156,
+    "ast_hash": "830912dbbe381b113556d387bbff4204",
+    "semantic_hash": "830912dbbe381b113556d387bbff4204"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\onboarding\\PlansStep.jsx": {
+    "mtime": 1781191749.6517,
+    "ast_hash": "dd22d652168a5ef53ad4ddef64bf202b",
+    "semantic_hash": "dd22d652168a5ef53ad4ddef64bf202b"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\onboarding\\ProfileStep.jsx": {
+    "mtime": 1781191694.385586,
+    "ast_hash": "fb132a697f724824bb202b35e3577a22",
+    "semantic_hash": "fb132a697f724824bb202b35e3577a22"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\onboarding\\ProgressBar.jsx": {
+    "mtime": 1781077871.6649497,
+    "ast_hash": "720b08f433855b2d66dfd548141f978d",
+    "semantic_hash": "720b08f433855b2d66dfd548141f978d"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\onboarding\\SlugClaim.jsx": {
+    "mtime": 1781375980.8955586,
+    "ast_hash": "0cd4bc3359cc8e2d404da4e0e6fc5c1a",
+    "semantic_hash": "0cd4bc3359cc8e2d404da4e0e6fc5c1a"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\onboarding\\VendorTypeStep.jsx": {
+    "mtime": 1781191627.3901474,
+    "ast_hash": "07a63b4fd499a09148978fbea89f1873",
+    "semantic_hash": "07a63b4fd499a09148978fbea89f1873"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\services\\AddService.jsx": {
+    "mtime": 1780638472.6092708,
+    "ast_hash": "45b67720e53256d3cd436ab8d5e253dd",
+    "semantic_hash": "45b67720e53256d3cd436ab8d5e253dd"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\services\\EditService.jsx": {
+    "mtime": 1780638472.6362329,
+    "ast_hash": "ea9cd38539cd32eca87481fa2b3532c3",
+    "semantic_hash": "ea9cd38539cd32eca87481fa2b3532c3"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\services\\ServiceForm.jsx": {
+    "mtime": 1780646529.6363654,
+    "ast_hash": "d3aec8e74b16f9e579dbd5036354d169",
+    "semantic_hash": "d3aec8e74b16f9e579dbd5036354d169"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\pages\\services\\ServicesList.jsx": {
+    "mtime": 1780717108.3754687,
+    "ast_hash": "53797844d5a10c14accb18ae8bb49161",
+    "semantic_hash": "53797844d5a10c14accb18ae8bb49161"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\services\\api.js": {
+    "mtime": 1781408804.343001,
+    "ast_hash": "b2bfd57a3ff03a403dbb90497a32c3bc",
+    "semantic_hash": "b2bfd57a3ff03a403dbb90497a32c3bc"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\services\\supabaseClient.js": {
+    "mtime": 1780420591.0081346,
+    "ast_hash": "0473796d24b5262ec3d8bf0919d0c172",
+    "semantic_hash": "0473796d24b5262ec3d8bf0919d0c172"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\tests\\AdminLogin.test.jsx": {
+    "mtime": 1781375980.9017098,
+    "ast_hash": "49601451a5e2fdd34deb8744bb68899b",
+    "semantic_hash": "49601451a5e2fdd34deb8744bb68899b"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\tests\\AuthContext.test.jsx": {
+    "mtime": 1780740363.0273042,
+    "ast_hash": "8e9e64785719a91fd35dfebaefb0e522",
+    "semantic_hash": "8e9e64785719a91fd35dfebaefb0e522"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\tests\\Dashboard.test.jsx": {
+    "mtime": 1781261201.483205,
+    "ast_hash": "ec0c73e47dd6b53b56230e4ff8ccbbbd",
+    "semantic_hash": "ec0c73e47dd6b53b56230e4ff8ccbbbd"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\tests\\HostProfile.test.jsx": {
+    "mtime": 1780750394.175819,
+    "ast_hash": "2898dcf8c662b0ece84bd6aac71ace6f",
+    "semantic_hash": "2898dcf8c662b0ece84bd6aac71ace6f"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\tests\\ProfileSetup.test.jsx": {
+    "mtime": 1781375980.9017098,
+    "ast_hash": "cfc5c73bd8437100d6a587b598dbcd7e",
+    "semantic_hash": "cfc5c73bd8437100d6a587b598dbcd7e"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\tests\\ServiceBooking.test.jsx": {
+    "mtime": 1781261187.6460578,
+    "ast_hash": "5b11cdd5dc15e55ba568e1e37ab98d04",
+    "semantic_hash": "5b11cdd5dc15e55ba568e1e37ab98d04"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\tests\\minimal.test.jsx": {
+    "mtime": 1780700714.7319422,
+    "ast_hash": "10f19a98b8fc8905dad9ad4244089829",
+    "semantic_hash": "10f19a98b8fc8905dad9ad4244089829"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\tests\\setup.js": {
+    "mtime": 1780699927.476834,
+    "ast_hash": "d0f261420ff3d8d3b6e6a9ac9c42d290",
+    "semantic_hash": "d0f261420ff3d8d3b6e6a9ac9c42d290"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\tests\\themeUtils.test.js": {
+    "mtime": 1780716302.905682,
+    "ast_hash": "9929f227e0375fc0028d55cae1b13c55",
+    "semantic_hash": "9929f227e0375fc0028d55cae1b13c55"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\src\\utils\\themeUtils.js": {
+    "mtime": 1781172040.527404,
+    "ast_hash": "db05034b71d63009638dfa4c0eec7968",
+    "semantic_hash": "db05034b71d63009638dfa4c0eec7968"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\tailwind.config.js": {
+    "mtime": 1781408804.3498173,
+    "ast_hash": "9f263c87a1ffd163ca84c17ee17e9f61",
+    "semantic_hash": "9f263c87a1ffd163ca84c17ee17e9f61"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\vercel.json": {
+    "mtime": 1781353012.5553553,
+    "ast_hash": "62d85185b9153f9477bfc0c7dfa43765",
+    "semantic_hash": "62d85185b9153f9477bfc0c7dfa43765"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\vite.config.js": {
+    "mtime": 1781345194.2807574,
+    "ast_hash": "25053ccbcbc385bf0d76526afb1d8224",
+    "semantic_hash": "25053ccbcbc385bf0d76526afb1d8224"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\vitest.config.js": {
+    "mtime": 1781070660.9727235,
+    "ast_hash": "8b0cdc98104da4ef53a3149ad8a52b31",
+    "semantic_hash": "8b0cdc98104da4ef53a3149ad8a52b31"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\package.json": {
+    "mtime": 1780421053.7189684,
+    "ast_hash": "47cb09dd788eb03d01377ff93746698d",
+    "semantic_hash": "47cb09dd788eb03d01377ff93746698d"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\__tests__\\vendorOnboarding.test.js": {
+    "mtime": 1781078095.1537366,
+    "ast_hash": "19bf93501dfab211180712e376c9f49e",
+    "semantic_hash": "19bf93501dfab211180712e376c9f49e"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\config\\emailTemplates.js": {
+    "mtime": 1781279875.6465063,
+    "ast_hash": "e183d430feb9d8ad864558336d9684d0",
+    "semantic_hash": "e183d430feb9d8ad864558336d9684d0"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\config\\google.js": {
+    "mtime": 1781171494.677942,
+    "ast_hash": "88e121c9d48821b77a61f13cee227820",
+    "semantic_hash": "88e121c9d48821b77a61f13cee227820"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\config\\migration_v2.sql": {
+    "mtime": 1780449857.2520635,
+    "ast_hash": "b8fd03e91efe425ef8bb7fb641962651",
+    "semantic_hash": "b8fd03e91efe425ef8bb7fb641962651"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\config\\migration_v3.sql": {
+    "mtime": 1780451774.5966535,
+    "ast_hash": "95825faf79fb237b25f5c55e4e72cfda",
+    "semantic_hash": "95825faf79fb237b25f5c55e4e72cfda"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\config\\migration_v4_admin.sql": {
+    "mtime": 1780483654.8096533,
+    "ast_hash": "8f9b8fda1852b5ccc97b6b555dcbc483",
+    "semantic_hash": "8f9b8fda1852b5ccc97b6b555dcbc483"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\config\\migration_v5_booking_reschedule.sql": {
+    "mtime": 1780554476.946889,
+    "ast_hash": "a0071597bf87f6b87ddb39f77133008f",
+    "semantic_hash": "a0071597bf87f6b87ddb39f77133008f"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\config\\migration_v6_twilio_otp.sql": {
+    "mtime": 1780557606.2297928,
+    "ast_hash": "52732945baa604dd0dd8f1c3b85c419c",
+    "semantic_hash": "52732945baa604dd0dd8f1c3b85c419c"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\config\\schema.sql": {
+    "mtime": 1780635983.7187853,
+    "ast_hash": "268d62b674aa9deb3ef8d36f238cdf97",
+    "semantic_hash": "268d62b674aa9deb3ef8d36f238cdf97"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\config\\supabase.js": {
+    "mtime": 1781171505.5381882,
+    "ast_hash": "9c95fdd143c86c4fcea46c603e6021da",
+    "semantic_hash": "9c95fdd143c86c4fcea46c603e6021da"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\adminAuthController.js": {
+    "mtime": 1781132554.4640987,
+    "ast_hash": "b0b5fbce320c7aa20abfec6653d3b9c8",
+    "semantic_hash": "b0b5fbce320c7aa20abfec6653d3b9c8"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\adminController.js": {
+    "mtime": 1781418467.73741,
+    "ast_hash": "ca158297e348a7032cfb5dafebae223a",
+    "semantic_hash": "ca158297e348a7032cfb5dafebae223a"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\auditAdminController.js": {
+    "mtime": 1781348142.2003312,
+    "ast_hash": "a593d7e5316d85d56ea518a56afb7379",
+    "semantic_hash": "a593d7e5316d85d56ea518a56afb7379"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\authController.js": {
+    "mtime": 1781347549.6374636,
+    "ast_hash": "50e7272f32feb03288eca479d9bf4b0e",
+    "semantic_hash": "50e7272f32feb03288eca479d9bf4b0e"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\badgeAdminController.js": {
+    "mtime": 1781347549.6384654,
+    "ast_hash": "fa849832176395233db984070d152014",
+    "semantic_hash": "fa849832176395233db984070d152014"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\badgePublicController.js": {
+    "mtime": 1781347549.640451,
+    "ast_hash": "339c559ceb9c9db7c29776b90d3499e2",
+    "semantic_hash": "339c559ceb9c9db7c29776b90d3499e2"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\bookingController.js": {
+    "mtime": 1781379830.300875,
+    "ast_hash": "b62b8ffde3e249fce2a74bc1a91cc907",
+    "semantic_hash": "b62b8ffde3e249fce2a74bc1a91cc907"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\campaignAdminController.js": {
+    "mtime": 1781348142.2071166,
+    "ast_hash": "3a8824c4ba07b07bdc80979e6ed210af",
+    "semantic_hash": "3a8824c4ba07b07bdc80979e6ed210af"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\categoryController.js": {
+    "mtime": 1781347549.6432426,
+    "ast_hash": "bdf31b12f416b0249d2c1a623bd236e8",
+    "semantic_hash": "bdf31b12f416b0249d2c1a623bd236e8"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\emailAdminController.js": {
+    "mtime": 1781348142.2089303,
+    "ast_hash": "7af3e79a85dfccf476fe185e16e1947c",
+    "semantic_hash": "7af3e79a85dfccf476fe185e16e1947c"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\financeAdminController.js": {
+    "mtime": 1781348142.2103672,
+    "ast_hash": "b2e1e69b817c8a76f5ff474bb2f9aa50",
+    "semantic_hash": "b2e1e69b817c8a76f5ff474bb2f9aa50"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\hostController.js": {
+    "mtime": 1781418789.2670722,
+    "ast_hash": "941b7920727482f942ea5f5bdb31ea9b",
+    "semantic_hash": "941b7920727482f942ea5f5bdb31ea9b"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\notificationAdminController.js": {
+    "mtime": 1781348200.2481117,
+    "ast_hash": "e2d7349ea0849f75bc53ed7087d05141",
+    "semantic_hash": "e2d7349ea0849f75bc53ed7087d05141"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\opsAdminController.js": {
+    "mtime": 1781348142.2118905,
+    "ast_hash": "bc832776f3fe9775def80e78fdb089f2",
+    "semantic_hash": "bc832776f3fe9775def80e78fdb089f2"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\paymentController.js": {
+    "mtime": 1781348251.520684,
+    "ast_hash": "a2483cb0a323fbd1bf303cf2dd83748f",
+    "semantic_hash": "a2483cb0a323fbd1bf303cf2dd83748f"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\planAdminController.js": {
+    "mtime": 1781347549.6527085,
+    "ast_hash": "49ac50eb4e940cf30c9bfff91aa256e9",
+    "semantic_hash": "49ac50eb4e940cf30c9bfff91aa256e9"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\productController.js": {
+    "mtime": 1781375980.9098234,
+    "ast_hash": "3deaecbb1fec1fd357abca3aac2da4d0",
+    "semantic_hash": "3deaecbb1fec1fd357abca3aac2da4d0"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\reviewController.js": {
+    "mtime": 1781347549.6548812,
+    "ast_hash": "cb4f7739be990789f25478d022876b55",
+    "semantic_hash": "cb4f7739be990789f25478d022876b55"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\serviceController.js": {
+    "mtime": 1781417106.1513517,
+    "ast_hash": "5b51c0ced0437e2074301f004a6de68b",
+    "semantic_hash": "5b51c0ced0437e2074301f004a6de68b"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\staffAdminController.js": {
+    "mtime": 1781348142.2139165,
+    "ast_hash": "9ac3200f121df0d0a41fb72aab74c96e",
+    "semantic_hash": "9ac3200f121df0d0a41fb72aab74c96e"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\uploadController.js": {
+    "mtime": 1781375980.9098234,
+    "ast_hash": "083431a3ebb001830d6aff0fa4a0acdc",
+    "semantic_hash": "083431a3ebb001830d6aff0fa4a0acdc"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\vendorController.js": {
+    "mtime": 1781379830.3037107,
+    "ast_hash": "2e009af23cf164002421fa6fecbf78d0",
+    "semantic_hash": "2e009af23cf164002421fa6fecbf78d0"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\vendorOnboardingController.js": {
+    "mtime": 1781345053.982391,
+    "ast_hash": "54b3dbac0bc462a51fe14e5750cfdab3",
+    "semantic_hash": "54b3dbac0bc462a51fe14e5750cfdab3"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\controllers\\whatsappWebhookController.js": {
+    "mtime": 1781348142.215407,
+    "ast_hash": "7c7f4a21e7b8ff90c57f56f075fe241e",
+    "semantic_hash": "7c7f4a21e7b8ff90c57f56f075fe241e"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\jest.config.js": {
+    "mtime": 1780751409.7224998,
+    "ast_hash": "4122358ab9f93f00a47f6659b5c8067e",
+    "semantic_hash": "4122358ab9f93f00a47f6659b5c8067e"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\jest.resolver.js": {
+    "mtime": 1780676893.8890076,
+    "ast_hash": "eda30d82a5ff882273a72f1ea1b819dc",
+    "semantic_hash": "eda30d82a5ff882273a72f1ea1b819dc"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\lib\\adminPermissions.js": {
+    "mtime": 1781319303.5952158,
+    "ast_hash": "51d5e39c75b74c078685bc8248a5f515",
+    "semantic_hash": "51d5e39c75b74c078685bc8248a5f515"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\lib\\ledgerAccounts.js": {
+    "mtime": 1781319303.597207,
+    "ast_hash": "e82fd5adbc3c980a755cd3cc70c66255",
+    "semantic_hash": "e82fd5adbc3c980a755cd3cc70c66255"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\lib\\pricingEngine.js": {
+    "mtime": 1781319303.599208,
+    "ast_hash": "9d13b24eb1e367af8a84559ee09ae38c",
+    "semantic_hash": "9d13b24eb1e367af8a84559ee09ae38c"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\middleware\\adminMiddleware.js": {
+    "mtime": 1781132575.047119,
+    "ast_hash": "0f4cea85ba365a508f0dd92e2418ea12",
+    "semantic_hash": "0f4cea85ba365a508f0dd92e2418ea12"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\middleware\\authMiddleware.js": {
+    "mtime": 1781345100.3036418,
+    "ast_hash": "63249d8a8942b0348bb634fb63079293",
+    "semantic_hash": "63249d8a8942b0348bb634fb63079293"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\middleware\\errorMiddleware.js": {
+    "mtime": 1780417257.627844,
+    "ast_hash": "8013e59d7668757562e90fcd808ffca0",
+    "semantic_hash": "8013e59d7668757562e90fcd808ffca0"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\middleware\\maintenanceMiddleware.js": {
+    "mtime": 1781132622.1017735,
+    "ast_hash": "2c50018382680c033d47a709be9b9344",
+    "semantic_hash": "2c50018382680c033d47a709be9b9344"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\middleware\\planMiddleware.js": {
+    "mtime": 1781086483.915408,
+    "ast_hash": "ffb7e279132fa62695afae701a6930dd",
+    "semantic_hash": "ffb7e279132fa62695afae701a6930dd"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\middleware\\security.js": {
+    "mtime": 1781196206.1237397,
+    "ast_hash": "ac21aedbb1ce763439d4e98c4a787ec5",
+    "semantic_hash": "ac21aedbb1ce763439d4e98c4a787ec5"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\middleware\\validate.js": {
+    "mtime": 1780551197.6426334,
+    "ast_hash": "864c7860f50cb2587c0d717355973246",
+    "semantic_hash": "864c7860f50cb2587c0d717355973246"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v1.1.sql": {
+    "mtime": 1780548445.5982692,
+    "ast_hash": "817878af82d660f0a5dfb7be12aa357f",
+    "semantic_hash": "817878af82d660f0a5dfb7be12aa357f"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v1.10_security_constraints.sql": {
+    "mtime": 1781348270.937637,
+    "ast_hash": "2a806a46adf98545f9b2b39100273ef9",
+    "semantic_hash": "2a806a46adf98545f9b2b39100273ef9"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v1.2.sql": {
+    "mtime": 1780550469.1731534,
+    "ast_hash": "2b1556deaed654b7bac9bd1e5ecbfb16",
+    "semantic_hash": "2b1556deaed654b7bac9bd1e5ecbfb16"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v1.3.sql": {
+    "mtime": 1780658787.690213,
+    "ast_hash": "dc2b5381e86d2a16fa85d3084ddf598d",
+    "semantic_hash": "dc2b5381e86d2a16fa85d3084ddf598d"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v1.4.sql": {
+    "mtime": 1780624363.69559,
+    "ast_hash": "6df758c4d53a764ae8eda7ff019c21e6",
+    "semantic_hash": "6df758c4d53a764ae8eda7ff019c21e6"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v1.5.sql": {
+    "mtime": 1780644418.1161816,
+    "ast_hash": "a8cf9ba2cd77a9d915d3c6b8e915c882",
+    "semantic_hash": "a8cf9ba2cd77a9d915d3c6b8e915c882"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v1.6_catchup.sql": {
+    "mtime": 1780646236.7368078,
+    "ast_hash": "8820de165919a4240b90c91a9ae63d52",
+    "semantic_hash": "8820de165919a4240b90c91a9ae63d52"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v1.7_pricing_snapshot.sql": {
+    "mtime": 1780713520.9978235,
+    "ast_hash": "5c093b0c0826458cbc685df5a54536b7",
+    "semantic_hash": "5c093b0c0826458cbc685df5a54536b7"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v1.8_vendor_onboarding.sql": {
+    "mtime": 1781077792.17509,
+    "ast_hash": "827fae81e0e8ec7eb752f27faa40591a",
+    "semantic_hash": "827fae81e0e8ec7eb752f27faa40591a"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v1.9_categories.sql": {
+    "mtime": 1781191804.2678757,
+    "ast_hash": "bce75ddec13bdd02fd3373b010c322c0",
+    "semantic_hash": "bce75ddec13bdd02fd3373b010c322c0"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v1.9_notification_system.sql": {
+    "mtime": 1781082433.8046238,
+    "ast_hash": "23469922a53ae8f372479a1a36bc9766",
+    "semantic_hash": "23469922a53ae8f372479a1a36bc9766"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v2.0_badge_system.sql": {
+    "mtime": 1781085786.865094,
+    "ast_hash": "a593ef11fc0a39e5b88c95c1d4577466",
+    "semantic_hash": "a593ef11fc0a39e5b88c95c1d4577466"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v2.1_subscription_plans.sql": {
+    "mtime": 1781102822.678951,
+    "ast_hash": "1cb0995595fd3b046250e5730f0e604d",
+    "semantic_hash": "1cb0995595fd3b046250e5730f0e604d"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v2.2_payout_model.sql": {
+    "mtime": 1781087852.0022123,
+    "ast_hash": "07f6fee133e56070e11dca2410579fe8",
+    "semantic_hash": "07f6fee133e56070e11dca2410579fe8"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v2.3_email_communication_engine.sql": {
+    "mtime": 1781103315.5001235,
+    "ast_hash": "b9f20394ec3d0239948e0a90b6f1234c",
+    "semantic_hash": "b9f20394ec3d0239948e0a90b6f1234c"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v2.4_admin_rbac.sql": {
+    "mtime": 1781132417.5245862,
+    "ast_hash": "c3fdb723a405c4ac924066ef9b12be8a",
+    "semantic_hash": "c3fdb723a405c4ac924066ef9b12be8a"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v2.5_google_auth_availability.sql": {
+    "mtime": 1781171798.1150503,
+    "ast_hash": "03d0d9ee2116c010e2bfa21dbbf81d73",
+    "semantic_hash": "03d0d9ee2116c010e2bfa21dbbf81d73"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v2.6_campaigns.sql": {
+    "mtime": 1781260642.0744796,
+    "ast_hash": "5a319f8578e33e9bc0c16956bf8389f8",
+    "semantic_hash": "5a319f8578e33e9bc0c16956bf8389f8"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v2.6_freebusy_cache.sql": {
+    "mtime": 1781172839.3515458,
+    "ast_hash": "6adb5774b0608f6631273da2aac5b5af",
+    "semantic_hash": "6adb5774b0608f6631273da2aac5b5af"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v2.7_whatsapp_campaigns.sql": {
+    "mtime": 1781261370.6929984,
+    "ast_hash": "3ff10d5eb9abf9844c4fa9ab55c10211",
+    "semantic_hash": "3ff10d5eb9abf9844c4fa9ab55c10211"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v2.8.1_ledger_hardening.sql": {
+    "mtime": 1781319303.6012068,
+    "ast_hash": "695750ba324f9be0b87b82b4d9892d56",
+    "semantic_hash": "695750ba324f9be0b87b82b4d9892d56"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v2.8.2_subscription_payment_idempotency.sql": {
+    "mtime": 1781319303.60222,
+    "ast_hash": "4edaf9c59d8299af21762e0f8311ba44",
+    "semantic_hash": "4edaf9c59d8299af21762e0f8311ba44"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v2.8_email_template_meta.sql": {
+    "mtime": 1781279875.64897,
+    "ast_hash": "1c8cb25f5f06c85baae79aa6a1c83d12",
+    "semantic_hash": "1c8cb25f5f06c85baae79aa6a1c83d12"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\migrations\\v2.8_financial_ledger.sql": {
+    "mtime": 1781319303.6042175,
+    "ast_hash": "8b6bc0194a4829441c87c82b27b0fb3c",
+    "semantic_hash": "8b6bc0194a4829441c87c82b27b0fb3c"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\package.json": {
+    "mtime": 1781345319.9973354,
+    "ast_hash": "e64fd61aabcb56d0e3f622ab13ee382e",
+    "semantic_hash": "e64fd61aabcb56d0e3f622ab13ee382e"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\routes\\adminAuthRoutes.js": {
+    "mtime": 1781132826.949185,
+    "ast_hash": "cccc38cf8e61332eb875e17172270fe9",
+    "semantic_hash": "cccc38cf8e61332eb875e17172270fe9"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\routes\\adminRoutes.js": {
+    "mtime": 1781408804.356887,
+    "ast_hash": "c37b5b57d0c729b63d13dc0a67bc9e66",
+    "semantic_hash": "c37b5b57d0c729b63d13dc0a67bc9e66"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\routes\\authRoutes.js": {
+    "mtime": 1781171616.182904,
+    "ast_hash": "72f7e125d59464736b0811dc21abec20",
+    "semantic_hash": "72f7e125d59464736b0811dc21abec20"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\routes\\badgePublicRoutes.js": {
+    "mtime": 1781085977.1010048,
+    "ast_hash": "4727d0fe78fac8474e8ed477c4484f66",
+    "semantic_hash": "4727d0fe78fac8474e8ed477c4484f66"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\routes\\bookingRoutes.js": {
+    "mtime": 1781345106.9817116,
+    "ast_hash": "deb2cae944065bea2f5b06da8f9b3998",
+    "semantic_hash": "deb2cae944065bea2f5b06da8f9b3998"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\routes\\categoryRoutes.js": {
+    "mtime": 1781191831.930711,
+    "ast_hash": "2bd65e2c01241e6467611c255c3e25e9",
+    "semantic_hash": "2bd65e2c01241e6467611c255c3e25e9"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\routes\\hostRoutes.js": {
+    "mtime": 1780550583.3240435,
+    "ast_hash": "ff6d34305525a1767da39cc6ff899c0f",
+    "semantic_hash": "ff6d34305525a1767da39cc6ff899c0f"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\routes\\notificationWebhookRoutes.js": {
+    "mtime": 1781261765.63199,
+    "ast_hash": "b03ec552796f165479eb1debe946f5a2",
+    "semantic_hash": "b03ec552796f165479eb1debe946f5a2"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\routes\\paymentRoutes.js": {
+    "mtime": 1781348220.9146495,
+    "ast_hash": "49be754ab2376283e7c2965159e368e4",
+    "semantic_hash": "49be754ab2376283e7c2965159e368e4"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\routes\\productRoutes.js": {
+    "mtime": 1781347343.407805,
+    "ast_hash": "acb0c1240e3fa30c035ed4e3c45f3136",
+    "semantic_hash": "acb0c1240e3fa30c035ed4e3c45f3136"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\routes\\reviewRoutes.js": {
+    "mtime": 1780548612.9592514,
+    "ast_hash": "65cd2925de4d6c64e311de8c0e5b94f4",
+    "semantic_hash": "65cd2925de4d6c64e311de8c0e5b94f4"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\routes\\serviceRoutes.js": {
+    "mtime": 1780657036.036584,
+    "ast_hash": "e1ff55572645a9d4908beaa91343d453",
+    "semantic_hash": "e1ff55572645a9d4908beaa91343d453"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\routes\\uploadRoutes.js": {
+    "mtime": 1781375980.9173305,
+    "ast_hash": "8c9f56f961eeedc0e6479e34830e2782",
+    "semantic_hash": "8c9f56f961eeedc0e6479e34830e2782"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\routes\\vendorOnboardingRoutes.js": {
+    "mtime": 1781345062.0716562,
+    "ast_hash": "2d6e7e7cc563184a0265c2ad1c4d15d3",
+    "semantic_hash": "2d6e7e7cc563184a0265c2ad1c4d15d3"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\routes\\vendorRoutes.js": {
+    "mtime": 1780621829.850173,
+    "ast_hash": "0526a2de44dc0450f5118c01a1ef95c4",
+    "semantic_hash": "0526a2de44dc0450f5118c01a1ef95c4"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\scripts\\backfillLedger.js": {
+    "mtime": 1781319303.6082065,
+    "ast_hash": "0144d4e3bf1afcd2b01678fd06d4c545",
+    "semantic_hash": "0144d4e3bf1afcd2b01678fd06d4c545"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\scripts\\encryptGoogleTokens.js": {
+    "mtime": 1781172884.0531597,
+    "ast_hash": "f1b4c2f9f9a10f84b97170d8c19c2bae",
+    "semantic_hash": "f1b4c2f9f9a10f84b97170d8c19c2bae"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\scripts\\load-me.js": {
+    "mtime": 1781195965.5860634,
+    "ast_hash": "a80f5f0b089627194a111a7d34f5328a",
+    "semantic_hash": "a80f5f0b089627194a111a7d34f5328a"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\scripts\\measure-me.js": {
+    "mtime": 1781195847.8440182,
+    "ast_hash": "aa2d05e1cb6ee688e3c2394876cdb243",
+    "semantic_hash": "aa2d05e1cb6ee688e3c2394876cdb243"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\scripts\\seedEmailTemplates.js": {
+    "mtime": 1781279875.6508112,
+    "ast_hash": "68750107df5bb78ccf34f44dccc26ee1",
+    "semantic_hash": "68750107df5bb78ccf34f44dccc26ee1"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\server.js": {
+    "mtime": 1781379830.305725,
+    "ast_hash": "9ecc07f9dfde80e752f9388661338fbb",
+    "semantic_hash": "9ecc07f9dfde80e752f9388661338fbb"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\adminAuthService.js": {
+    "mtime": 1781347268.8065567,
+    "ast_hash": "b612f8c2f468470b163ad6e8803e1340",
+    "semantic_hash": "b612f8c2f468470b163ad6e8803e1340"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\aisensyService.js": {
+    "mtime": 1781268484.454762,
+    "ast_hash": "73e807a910c937afcbdfbeb236b00111",
+    "semantic_hash": "73e807a910c937afcbdfbeb236b00111"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\auditService.js": {
+    "mtime": 1781132534.9864407,
+    "ast_hash": "6a3963c292d6cfa025c35bf0303b9fee",
+    "semantic_hash": "6a3963c292d6cfa025c35bf0303b9fee"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\availabilityService.js": {
+    "mtime": 1781172784.8562117,
+    "ast_hash": "aafbfdf25c33f4de1767a8838b43ab7d",
+    "semantic_hash": "aafbfdf25c33f4de1767a8838b43ab7d"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\badgeEngine.js": {
+    "mtime": 1781085860.8635209,
+    "ast_hash": "78a506413a335065dd242b29ace8e4dc",
+    "semantic_hash": "78a506413a335065dd242b29ace8e4dc"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\campaignService.js": {
+    "mtime": 1781261562.754395,
+    "ast_hash": "eedbb84228b82afaf457fac0d4063797",
+    "semantic_hash": "eedbb84228b82afaf457fac0d4063797"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\campaignWorker.js": {
+    "mtime": 1781261478.1561618,
+    "ast_hash": "31c9d03e3cfe2f24463e99ff25e1f974",
+    "semantic_hash": "31c9d03e3cfe2f24463e99ff25e1f974"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\contactsService.js": {
+    "mtime": 1781261316.680252,
+    "ast_hash": "e31acea787e25b20d5b581bb6f245dfe",
+    "semantic_hash": "e31acea787e25b20d5b581bb6f245dfe"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\email\\communicationEngine.js": {
+    "mtime": 1781279875.6548233,
+    "ast_hash": "17af763fd4de42e06d7fa85087c5a5cc",
+    "semantic_hash": "17af763fd4de42e06d7fa85087c5a5cc"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\email\\emailLayout.js": {
+    "mtime": 1781279875.658827,
+    "ast_hash": "b8e9b1688e103c7a10234258b0041a6f",
+    "semantic_hash": "b8e9b1688e103c7a10234258b0041a6f"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\email\\placeholderResolver.js": {
+    "mtime": 1781103477.1685784,
+    "ast_hash": "4e4a1daefffc852432423b3416cf013e",
+    "semantic_hash": "4e4a1daefffc852432423b3416cf013e"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\email\\providers\\index.js": {
+    "mtime": 1781103516.3283908,
+    "ast_hash": "030fb954e83e907a4c54709536fdf22a",
+    "semantic_hash": "030fb954e83e907a4c54709536fdf22a"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\email\\providers\\resendProvider.js": {
+    "mtime": 1781103543.4254234,
+    "ast_hash": "ab57670e972df143d2919bf3ff2d7fa9",
+    "semantic_hash": "ab57670e972df143d2919bf3ff2d7fa9"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\email\\providers\\sesProvider.js": {
+    "mtime": 1781103562.1944585,
+    "ast_hash": "e42885a29e0cddb3c1597880a08ae6e3",
+    "semantic_hash": "e42885a29e0cddb3c1597880a08ae6e3"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\email\\providers\\smtpProvider.js": {
+    "mtime": 1781103533.5302887,
+    "ast_hash": "6548cb276e6ba96ab8a54e11f7abc951",
+    "semantic_hash": "6548cb276e6ba96ab8a54e11f7abc951"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\ledger\\journalTemplates.js": {
+    "mtime": 1781319303.6122026,
+    "ast_hash": "3a888aa279ec3283de6186b9cdbb65fa",
+    "semantic_hash": "3a888aa279ec3283de6186b9cdbb65fa"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\ledger\\ledgerReconciler.js": {
+    "mtime": 1781319303.6142056,
+    "ast_hash": "e6d149bd9567b1b5d6ac32d9f0bd033f",
+    "semantic_hash": "e6d149bd9567b1b5d6ac32d9f0bd033f"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\ledger\\postingService.js": {
+    "mtime": 1781319303.615203,
+    "ast_hash": "e4554e0fbb0a4fbabba203e8909f84b9",
+    "semantic_hash": "e4554e0fbb0a4fbabba203e8909f84b9"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\notificationEngine.js": {
+    "mtime": 1781268501.462516,
+    "ast_hash": "116b4849c7f2c35e970a02d6a70f118b",
+    "semantic_hash": "116b4849c7f2c35e970a02d6a70f118b"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\planService.js": {
+    "mtime": 1781086464.220186,
+    "ast_hash": "051642ce54a47b21e4e13d9f4dbe0765",
+    "semantic_hash": "051642ce54a47b21e4e13d9f4dbe0765"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\platformConfig.js": {
+    "mtime": 1781418417.8345773,
+    "ast_hash": "3ce62d6f95d3ba0f957b6ae6d3e947e8",
+    "semantic_hash": "3ce62d6f95d3ba0f957b6ae6d3e947e8"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\segmentService.js": {
+    "mtime": 1781260642.0820668,
+    "ast_hash": "433b54ced0ace2f00e916bad59fc3fd9",
+    "semantic_hash": "433b54ced0ace2f00e916bad59fc3fd9"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\services\\whatsappTemplateService.js": {
+    "mtime": 1781261408.154095,
+    "ast_hash": "5f7eea19ddb1ad4eaa7c2d1e72643cd3",
+    "semantic_hash": "5f7eea19ddb1ad4eaa7c2d1e72643cd3"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\integration\\admin.test.js": {
+    "mtime": 1781347707.7751532,
+    "ast_hash": "3d6c9e7d259011486e833f2315f2c706",
+    "semantic_hash": "3d6c9e7d259011486e833f2315f2c706"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\integration\\adminAuth.test.js": {
+    "mtime": 1781133122.1291745,
+    "ast_hash": "5df8061ee7f714df50c575e0592e9b67",
+    "semantic_hash": "5df8061ee7f714df50c575e0592e9b67"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\integration\\auth.test.js": {
+    "mtime": 1781085133.1358335,
+    "ast_hash": "b0b602b62ec76b67dca26a0e016c9006",
+    "semantic_hash": "b0b602b62ec76b67dca26a0e016c9006"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\integration\\helpers.js": {
+    "mtime": 1781153023.5210674,
+    "ast_hash": "e60d59f4c78355cb3b0bfdcc3300c222",
+    "semantic_hash": "e60d59f4c78355cb3b0bfdcc3300c222"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\integration\\vendor.test.js": {
+    "mtime": 1780693255.8260348,
+    "ast_hash": "a64d0b4e301e5fec2a8a5631a8db313a",
+    "semantic_hash": "a64d0b4e301e5fec2a8a5631a8db313a"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\adminAuthController.test.js": {
+    "mtime": 1781133034.3690133,
+    "ast_hash": "31381a0ee034fb36fe33ce137106b1a9",
+    "semantic_hash": "31381a0ee034fb36fe33ce137106b1a9"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\adminAuthService.test.js": {
+    "mtime": 1781132951.3311317,
+    "ast_hash": "708b90ce18e6a43a17999d393dfa8e19",
+    "semantic_hash": "708b90ce18e6a43a17999d393dfa8e19"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\adminController.test.js": {
+    "mtime": 1781347718.8692794,
+    "ast_hash": "1cb2eb207cb4f4494bc0109c00dde2db",
+    "semantic_hash": "1cb2eb207cb4f4494bc0109c00dde2db"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\adminMiddleware.test.js": {
+    "mtime": 1781132973.9901752,
+    "ast_hash": "25c23baaebaf4d6dddcf09ab22636c58",
+    "semantic_hash": "25c23baaebaf4d6dddcf09ab22636c58"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\adminPermissions.test.js": {
+    "mtime": 1781260642.083374,
+    "ast_hash": "83eced464363083bd7ca0667c04d7208",
+    "semantic_hash": "83eced464363083bd7ca0667c04d7208"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\aisensyButtons.test.js": {
+    "mtime": 1781268534.2219052,
+    "ast_hash": "12f84fb603aa33a53688e373a74a0edf",
+    "semantic_hash": "12f84fb603aa33a53688e373a74a0edf"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\auditService.test.js": {
+    "mtime": 1781134307.9220572,
+    "ast_hash": "29e3f99f8abe9e2ea952373163eac4af",
+    "semantic_hash": "29e3f99f8abe9e2ea952373163eac4af"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\authController.test.js": {
+    "mtime": 1781153016.5771048,
+    "ast_hash": "e28b5d0fc059f2cf8d20478345b983ff",
+    "semantic_hash": "e28b5d0fc059f2cf8d20478345b983ff"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\authGoogleOAuth.test.js": {
+    "mtime": 1781173256.301247,
+    "ast_hash": "0021f517f0606aa2fb6578cd08314af9",
+    "semantic_hash": "0021f517f0606aa2fb6578cd08314af9"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\autoCompleteBookings.test.js": {
+    "mtime": 1781379830.3138394,
+    "ast_hash": "8df790c1cf2a9814e45e6a404ab96db8",
+    "semantic_hash": "8df790c1cf2a9814e45e6a404ab96db8"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\badgeEngine.test.js": {
+    "mtime": 1781085889.4713652,
+    "ast_hash": "1b8376cb237be8b429004f1024fd736c",
+    "semantic_hash": "1b8376cb237be8b429004f1024fd736c"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\bookingCalendarDeferral.test.js": {
+    "mtime": 1781260642.083374,
+    "ast_hash": "c37a10be8f299cfd921e94c3e5151445",
+    "semantic_hash": "c37a10be8f299cfd921e94c3e5151445"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\campaignAdminController.test.js": {
+    "mtime": 1781261671.8787782,
+    "ast_hash": "7e5fefc2edf04fb862d9082bcfc1d8a0",
+    "semantic_hash": "7e5fefc2edf04fb862d9082bcfc1d8a0"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\campaignService.test.js": {
+    "mtime": 1781261635.843904,
+    "ast_hash": "15ba8d7d7b177b13ce83977fc4a998c0",
+    "semantic_hash": "15ba8d7d7b177b13ce83977fc4a998c0"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\campaignWorker.test.js": {
+    "mtime": 1781260642.0866697,
+    "ast_hash": "cee49891c4d4a7da390001db56d7e4e7",
+    "semantic_hash": "cee49891c4d4a7da390001db56d7e4e7"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\campaignWorkerWhatsapp.test.js": {
+    "mtime": 1781261518.1510422,
+    "ast_hash": "83ce92f5c323afbd5d25a2ab21d0047f",
+    "semantic_hash": "83ce92f5c323afbd5d25a2ab21d0047f"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\communicationEngine.test.js": {
+    "mtime": 1781104562.9643137,
+    "ast_hash": "aff10f51d63e90a418d03b4273f13996",
+    "semantic_hash": "aff10f51d63e90a418d03b4273f13996"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\communicationEngineCampaign.test.js": {
+    "mtime": 1781260642.0866697,
+    "ast_hash": "7a1e645110f53347066f16cb0d9dfced",
+    "semantic_hash": "7a1e645110f53347066f16cb0d9dfced"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\contactsService.test.js": {
+    "mtime": 1781261341.544274,
+    "ast_hash": "b9cb0edf175f553c06abf0c4b522d6b8",
+    "semantic_hash": "b9cb0edf175f553c06abf0c4b522d6b8"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\emailProviderTest.test.js": {
+    "mtime": 1781260642.0876667,
+    "ast_hash": "c57144fe95b1ec9041bc08ec13a96bed",
+    "semantic_hash": "c57144fe95b1ec9041bc08ec13a96bed"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\financeAdminController.test.js": {
+    "mtime": 1781319303.6162186,
+    "ast_hash": "c03cdab152cc206fc268cf858d3a4b89",
+    "semantic_hash": "c03cdab152cc206fc268cf858d3a4b89"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\hostController.test.js": {
+    "mtime": 1780662715.2490819,
+    "ast_hash": "844765a538317658f7e176552c505eb8",
+    "semantic_hash": "844765a538317658f7e176552c505eb8"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\journalTemplates.test.js": {
+    "mtime": 1781319303.617219,
+    "ast_hash": "cdb983f87078c6e7a2c0677dd3b13f70",
+    "semantic_hash": "cdb983f87078c6e7a2c0677dd3b13f70"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\ledgerReconciler.test.js": {
+    "mtime": 1781319303.6192062,
+    "ast_hash": "d3e563742f4f5936afd7de39fc0d0b00",
+    "semantic_hash": "d3e563742f4f5936afd7de39fc0d0b00"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\notificationEngine.test.js": {
+    "mtime": 1781104702.5718455,
+    "ast_hash": "afad608c3da3aed497b5e7d8ad2563df",
+    "semantic_hash": "afad608c3da3aed497b5e7d8ad2563df"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\otpStore.test.js": {
+    "mtime": 1781085036.548745,
+    "ast_hash": "04c96566fd8224e1507f0afb5387f93c",
+    "semantic_hash": "04c96566fd8224e1507f0afb5387f93c"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\placeholderResolver.test.js": {
+    "mtime": 1781104461.927495,
+    "ast_hash": "6d396bf959d0ec547cf6811dae443095",
+    "semantic_hash": "6d396bf959d0ec547cf6811dae443095"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\postingService.test.js": {
+    "mtime": 1781319303.6202052,
+    "ast_hash": "66da358db6d57ddd7fd30f02f3ca5f3a",
+    "semantic_hash": "66da358db6d57ddd7fd30f02f3ca5f3a"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\pricingEngine.test.js": {
+    "mtime": 1781319303.6222036,
+    "ast_hash": "549917e2a8430eca051890164947c5c0",
+    "semantic_hash": "549917e2a8430eca051890164947c5c0"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\segmentService.test.js": {
+    "mtime": 1781260642.088666,
+    "ast_hash": "3ede7a161bc61b0c0f711494f5a5b3f6",
+    "semantic_hash": "3ede7a161bc61b0c0f711494f5a5b3f6"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\serviceController.test.js": {
+    "mtime": 1780677966.2174258,
+    "ast_hash": "6021ec3a28a038c54db0c63fb1cf63a0",
+    "semantic_hash": "6021ec3a28a038c54db0c63fb1cf63a0"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\vendorBookingVisibility.test.js": {
+    "mtime": 1781379830.3138394,
+    "ast_hash": "cdbf275007c167320b0ea90a01190bb6",
+    "semantic_hash": "cdbf275007c167320b0ea90a01190bb6"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\whatsappTemplateService.test.js": {
+    "mtime": 1781261411.8612347,
+    "ast_hash": "435fcb874af43983c74755b1f9a7a91c",
+    "semantic_hash": "435fcb874af43983c74755b1f9a7a91c"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\tests\\unit\\whatsappWebhook.test.js": {
+    "mtime": 1781261772.1936185,
+    "ast_hash": "d8bded84bb21da1d041840aeaac33aad",
+    "semantic_hash": "d8bded84bb21da1d041840aeaac33aad"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\utils\\cryptoTokens.js": {
+    "mtime": 1781172719.4615972,
+    "ast_hash": "566e0a9ff947344967e780c80ecb5e1a",
+    "semantic_hash": "566e0a9ff947344967e780c80ecb5e1a"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\utils\\httpError.js": {
+    "mtime": 1781347237.2208421,
+    "ast_hash": "6dc682376be8492ff786748daa823f0a",
+    "semantic_hash": "6dc682376be8492ff786748daa823f0a"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\utils\\logger.js": {
+    "mtime": 1780551168.0431297,
+    "ast_hash": "a4542f473bc279cba81781f1fa5a0780",
+    "semantic_hash": "a4542f473bc279cba81781f1fa5a0780"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\utils\\notify.js": {
+    "mtime": 1781268514.1754334,
+    "ast_hash": "2a5903ae54eaff454bfadd34119cf8ef",
+    "semantic_hash": "2a5903ae54eaff454bfadd34119cf8ef"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\utils\\otpStore.js": {
+    "mtime": 1781345244.593043,
+    "ast_hash": "b6d76d83bfafeccb4effb3367d9e5329",
+    "semantic_hash": "b6d76d83bfafeccb4effb3367d9e5329"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\utils\\searchSanitize.js": {
+    "mtime": 1781347245.0567589,
+    "ast_hash": "2c9a60523f3d24458e4d9e98c7e32a72",
+    "semantic_hash": "2c9a60523f3d24458e4d9e98c7e32a72"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\server\\utils\\sendEmail.js": {
+    "mtime": 1780453998.7026105,
+    "ast_hash": "64f70b54cb4a90fc4dcb6f0c02fac0f1",
+    "semantic_hash": "64f70b54cb4a90fc4dcb6f0c02fac0f1"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\skills-lock.json": {
+    "mtime": 1781081642.469073,
+    "ast_hash": "28e5edd5cf3588bb2f3feca381ddfaf3",
+    "semantic_hash": "28e5edd5cf3588bb2f3feca381ddfaf3"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\supabase\\migrations\\001_otp_codes_table.sql": {
+    "mtime": 1780638217.5133646,
+    "ast_hash": "8bc00e2df3af1350248c371a43aaf138",
+    "semantic_hash": "8bc00e2df3af1350248c371a43aaf138"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\supabase\\migrations\\002_services_v2.sql": {
+    "mtime": 1780638225.8886888,
+    "ast_hash": "a40ff21d9f9540227afef49e7ed7fa1a",
+    "semantic_hash": "a40ff21d9f9540227afef49e7ed7fa1a"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\supabase\\migrations\\20240001_vendor_user_separation.sql": {
+    "mtime": 1780660638.537824,
+    "ast_hash": "cdcea4fe3eed90dda1a2059397b37259",
+    "semantic_hash": "cdcea4fe3eed90dda1a2059397b37259"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\supabase\\migrations\\20240002_cleanup_accounts.sql": {
+    "mtime": 1780660808.3641546,
+    "ast_hash": "1a165eeb5212cc897520296c8111e96b",
+    "semantic_hash": "1a165eeb5212cc897520296c8111e96b"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\supabase\\migrations\\20240003_add_theme_color.sql": {
+    "mtime": 1780662083.2597225,
+    "ast_hash": "7badf869d850035cdb4752f55ddca2b4",
+    "semantic_hash": "7badf869d850035cdb4752f55ddca2b4"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\cavecrew\\README.md": {
+    "mtime": 1781081637.3549864,
+    "ast_hash": "8b7ca548bd36b6db39006bac6cd54759",
+    "semantic_hash": "8b7ca548bd36b6db39006bac6cd54759"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\cavecrew\\SKILL.md": {
+    "mtime": 1781081637.3559873,
+    "ast_hash": "6ea8150438c6392a5ee0afef0a735ad4",
+    "semantic_hash": "6ea8150438c6392a5ee0afef0a735ad4"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman-commit\\README.md": {
+    "mtime": 1781081637.3569872,
+    "ast_hash": "2fe1d98cadbd2709a34ee3c77795a143",
+    "semantic_hash": "2fe1d98cadbd2709a34ee3c77795a143"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman-commit\\SKILL.md": {
+    "mtime": 1781081637.3579862,
+    "ast_hash": "e8d814f342ec5752f47866299badd0a7",
+    "semantic_hash": "e8d814f342ec5752f47866299badd0a7"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman-compress\\README.md": {
+    "mtime": 1781081637.3579862,
+    "ast_hash": "78d3757502badfab9db0e38724d336b3",
+    "semantic_hash": "78d3757502badfab9db0e38724d336b3"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman-compress\\SECURITY.md": {
+    "mtime": 1781081637.358985,
+    "ast_hash": "b2caed82d9d4a58c0530f7e741851224",
+    "semantic_hash": "b2caed82d9d4a58c0530f7e741851224"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman-compress\\SKILL.md": {
+    "mtime": 1781081637.3599875,
+    "ast_hash": "5cfd6ee9993c9e72da6404a9841d82fd",
+    "semantic_hash": "5cfd6ee9993c9e72da6404a9841d82fd"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman-help\\README.md": {
+    "mtime": 1781081637.3699858,
+    "ast_hash": "f49266e99b58d33c1d40b7bf0a644ec3",
+    "semantic_hash": "f49266e99b58d33c1d40b7bf0a644ec3"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman-help\\SKILL.md": {
+    "mtime": 1781081637.370985,
+    "ast_hash": "b0168dbcf14c8d3cd29101e1eb66de12",
+    "semantic_hash": "b0168dbcf14c8d3cd29101e1eb66de12"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman-review\\README.md": {
+    "mtime": 1781081637.370985,
+    "ast_hash": "9777a26704850f1e091ab072f02fa10f",
+    "semantic_hash": "9777a26704850f1e091ab072f02fa10f"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman-review\\SKILL.md": {
+    "mtime": 1781081637.3719826,
+    "ast_hash": "0e038c50a6bfdc9b8a307e6316c07236",
+    "semantic_hash": "0e038c50a6bfdc9b8a307e6316c07236"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman-stats\\README.md": {
+    "mtime": 1781081637.3749855,
+    "ast_hash": "866dc96f332b4e2bc1f80fec878fea52",
+    "semantic_hash": "866dc96f332b4e2bc1f80fec878fea52"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman-stats\\SKILL.md": {
+    "mtime": 1781081637.3759866,
+    "ast_hash": "e9966f688641209792719474f241a6ef",
+    "semantic_hash": "e9966f688641209792719474f241a6ef"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman\\README.md": {
+    "mtime": 1781081637.3769858,
+    "ast_hash": "3358f5119f61b24f5fa65a25de7b866b",
+    "semantic_hash": "3358f5119f61b24f5fa65a25de7b866b"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.agents\\skills\\caveman\\SKILL.md": {
+    "mtime": 1781081637.3779845,
+    "ast_hash": "90e5f9d97791c2080495926731e0f5ad",
+    "semantic_hash": "90e5f9d97791c2080495926731e0f5ad"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\cavecrew\\README.md": {
+    "mtime": 1781081637.3549864,
+    "ast_hash": "8b7ca548bd36b6db39006bac6cd54759",
+    "semantic_hash": "8b7ca548bd36b6db39006bac6cd54759"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\cavecrew\\SKILL.md": {
+    "mtime": 1781081637.3559873,
+    "ast_hash": "6ea8150438c6392a5ee0afef0a735ad4",
+    "semantic_hash": "6ea8150438c6392a5ee0afef0a735ad4"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman-commit\\README.md": {
+    "mtime": 1781081637.3569872,
+    "ast_hash": "2fe1d98cadbd2709a34ee3c77795a143",
+    "semantic_hash": "2fe1d98cadbd2709a34ee3c77795a143"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman-commit\\SKILL.md": {
+    "mtime": 1781081637.3579862,
+    "ast_hash": "e8d814f342ec5752f47866299badd0a7",
+    "semantic_hash": "e8d814f342ec5752f47866299badd0a7"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman-compress\\README.md": {
+    "mtime": 1781081637.3579862,
+    "ast_hash": "78d3757502badfab9db0e38724d336b3",
+    "semantic_hash": "78d3757502badfab9db0e38724d336b3"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman-compress\\SECURITY.md": {
+    "mtime": 1781081637.358985,
+    "ast_hash": "b2caed82d9d4a58c0530f7e741851224",
+    "semantic_hash": "b2caed82d9d4a58c0530f7e741851224"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman-compress\\SKILL.md": {
+    "mtime": 1781081637.3599875,
+    "ast_hash": "5cfd6ee9993c9e72da6404a9841d82fd",
+    "semantic_hash": "5cfd6ee9993c9e72da6404a9841d82fd"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman-help\\README.md": {
+    "mtime": 1781081637.3699858,
+    "ast_hash": "f49266e99b58d33c1d40b7bf0a644ec3",
+    "semantic_hash": "f49266e99b58d33c1d40b7bf0a644ec3"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman-help\\SKILL.md": {
+    "mtime": 1781081637.370985,
+    "ast_hash": "b0168dbcf14c8d3cd29101e1eb66de12",
+    "semantic_hash": "b0168dbcf14c8d3cd29101e1eb66de12"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman-review\\README.md": {
+    "mtime": 1781081637.370985,
+    "ast_hash": "9777a26704850f1e091ab072f02fa10f",
+    "semantic_hash": "9777a26704850f1e091ab072f02fa10f"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman-review\\SKILL.md": {
+    "mtime": 1781081637.3719826,
+    "ast_hash": "0e038c50a6bfdc9b8a307e6316c07236",
+    "semantic_hash": "0e038c50a6bfdc9b8a307e6316c07236"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman-stats\\README.md": {
+    "mtime": 1781081637.3749855,
+    "ast_hash": "866dc96f332b4e2bc1f80fec878fea52",
+    "semantic_hash": "866dc96f332b4e2bc1f80fec878fea52"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman-stats\\SKILL.md": {
+    "mtime": 1781081637.3759866,
+    "ast_hash": "e9966f688641209792719474f241a6ef",
+    "semantic_hash": "e9966f688641209792719474f241a6ef"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman\\README.md": {
+    "mtime": 1781081637.3769858,
+    "ast_hash": "3358f5119f61b24f5fa65a25de7b866b",
+    "semantic_hash": "3358f5119f61b24f5fa65a25de7b866b"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.claude\\skills\\caveman\\SKILL.md": {
+    "mtime": 1781081637.3779845,
+    "ast_hash": "90e5f9d97791c2080495926731e0f5ad",
+    "semantic_hash": "90e5f9d97791c2080495926731e0f5ad"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\.github\\workflows\\ci.yml": {
+    "mtime": 1781353012.5430608,
+    "ast_hash": "d51866252b6ee7b5dbe433b41f49bb26",
+    "semantic_hash": "d51866252b6ee7b5dbe433b41f49bb26"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\ADMIN_ACCESS_GUIDE.md": {
+    "mtime": 1781074137.491392,
+    "ast_hash": "1f3eadeacaef3568cea2ae76a1f6b104",
+    "semantic_hash": "1f3eadeacaef3568cea2ae76a1f6b104"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\BUG_REPORT.md": {
+    "mtime": 1780639524.2043319,
+    "ast_hash": "c650671811cb1c8273875bbaa0bae757",
+    "semantic_hash": "c650671811cb1c8273875bbaa0bae757"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\CLAUDE.md": {
+    "mtime": 1780717638.1589668,
+    "ast_hash": "2edd94953c75df62e82e1c66f9a2c433",
+    "semantic_hash": "2edd94953c75df62e82e1c66f9a2c433"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\DEPLOYMENT.md": {
+    "mtime": 1781353012.547262,
+    "ast_hash": "b99312b3edae32238847c8479ba7c0d1",
+    "semantic_hash": "b99312b3edae32238847c8479ba7c0d1"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\DESIGN_AUDIT.md": {
+    "mtime": 1780631076.8004086,
+    "ast_hash": "370d56a60ebed235752352a0c5a254e2",
+    "semantic_hash": "370d56a60ebed235752352a0c5a254e2"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\DEVOPS_SETUP_LOG.md": {
+    "mtime": 1781353656.3378332,
+    "ast_hash": "1704664686a7000ef7ec271a943b44cc",
+    "semantic_hash": "1704664686a7000ef7ec271a943b44cc"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\FIRST_5_STEPS_STATUS.md": {
+    "mtime": 1781078364.6794188,
+    "ast_hash": "745137977e13c98cf0f5716b3852374b",
+    "semantic_hash": "745137977e13c98cf0f5716b3852374b"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\ONBOARDING_IMPLEMENTATION_CHECKLIST.md": {
+    "mtime": 1781078182.6185975,
+    "ast_hash": "f2381793b97c5077e05ef7164af03270",
+    "semantic_hash": "f2381793b97c5077e05ef7164af03270"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\README.md": {
+    "mtime": 1781290385.906076,
+    "ast_hash": "d4d136a572657ccbe7d3d09f360d3189",
+    "semantic_hash": "d4d136a572657ccbe7d3d09f360d3189"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\SCHEMA_MIGRATION_GUIDE.md": {
+    "mtime": 1780636736.5902205,
+    "ast_hash": "c555ea213d6242770bcda63efe232cb7",
+    "semantic_hash": "c555ea213d6242770bcda63efe232cb7"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\SYNTAX_FIX_REPORT.md": {
+    "mtime": 1780636970.8293016,
+    "ast_hash": "d397e3af371178fb9d618d2c0fad6e84",
+    "semantic_hash": "d397e3af371178fb9d618d2c0fad6e84"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\index.html": {
+    "mtime": 1781375980.8758018,
+    "ast_hash": "c30cf05961c670f0687760aba68eb56f",
+    "semantic_hash": "c30cf05961c670f0687760aba68eb56f"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\API_REFERENCE.md": {
+    "mtime": 1781155744.3287432,
+    "ast_hash": "1e8fa820fa8f4d644116606bb5f2c6ae",
+    "semantic_hash": "1e8fa820fa8f4d644116606bb5f2c6ae"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\CHANGELOG.md": {
+    "mtime": 1781156105.084849,
+    "ast_hash": "65cf62fb0cd12dc60403c78078babb03",
+    "semantic_hash": "65cf62fb0cd12dc60403c78078babb03"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\CODEBASE_GUIDE.md": {
+    "mtime": 1781155627.0317562,
+    "ast_hash": "fc93e5851b3c92a631cd43319b44e3a0",
+    "semantic_hash": "fc93e5851b3c92a631cd43319b44e3a0"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\CONTRIBUTING.md": {
+    "mtime": 1781155960.436552,
+    "ast_hash": "10791ae628885415bc4a21719d78d803",
+    "semantic_hash": "10791ae628885415bc4a21719d78d803"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\DATABASE.md": {
+    "mtime": 1781155691.7561743,
+    "ast_hash": "37fb9a809ffc1f34f35ab6d387bf21a8",
+    "semantic_hash": "37fb9a809ffc1f34f35ab6d387bf21a8"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\DECISIONS.md": {
+    "mtime": 1781156170.2195878,
+    "ast_hash": "081e038d4d855e44993252f5ac904e06",
+    "semantic_hash": "081e038d4d855e44993252f5ac904e06"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\DEPLOYMENT.md": {
+    "mtime": 1781155823.296144,
+    "ast_hash": "865718f640842a6726c35ef8c5c851a5",
+    "semantic_hash": "865718f640842a6726c35ef8c5c851a5"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\DEVELOPMENT.md": {
+    "mtime": 1781155789.186693,
+    "ast_hash": "7e98c0fa7c49fdba8aedda977fb912f1",
+    "semantic_hash": "7e98c0fa7c49fdba8aedda977fb912f1"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\PRODUCT_OVERVIEW.md": {
+    "mtime": 1781155416.0952058,
+    "ast_hash": "9abc31113af7d6efd4795f77459498e9",
+    "semantic_hash": "9abc31113af7d6efd4795f77459498e9"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\PROJECT_STATUS.md": {
+    "mtime": 1781156051.6891723,
+    "ast_hash": "b0d98c60f2e591966b50ba8a17e21f78",
+    "semantic_hash": "b0d98c60f2e591966b50ba8a17e21f78"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\ROADMAP.md": {
+    "mtime": 1781156005.2330675,
+    "ast_hash": "e68c89261b91550b4d62e017c8938ab8",
+    "semantic_hash": "e68c89261b91550b4d62e017c8938ab8"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\SECURITY.md": {
+    "mtime": 1781155868.68053,
+    "ast_hash": "61ce714e6f28edfc073f4553a1652c89",
+    "semantic_hash": "61ce714e6f28edfc073f4553a1652c89"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\TESTING.md": {
+    "mtime": 1781155906.404871,
+    "ast_hash": "a5537eaa51a75e527b579de688510ea6",
+    "semantic_hash": "a5537eaa51a75e527b579de688510ea6"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\admin-booking-ui-redesign.md": {
+    "mtime": 1781345194.2837584,
+    "ast_hash": "928b133d0daba1f54dcb051698ad87ea",
+    "semantic_hash": "928b133d0daba1f54dcb051698ad87ea"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\admin-platform-architecture.md": {
+    "mtime": 1781132019.3751614,
+    "ast_hash": "4fd3560a86ac215ce338634807f14ef1",
+    "semantic_hash": "4fd3560a86ac215ce338634807f14ef1"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\ai-context.md": {
+    "mtime": 1780717664.7724326,
+    "ast_hash": "54a6053925ba0725d5750270acf3cb69",
+    "semantic_hash": "54a6053925ba0725d5750270acf3cb69"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\architecture.md": {
+    "mtime": 1781155541.3586485,
+    "ast_hash": "868a7fc574e096cafe05d6529fb527c1",
+    "semantic_hash": "868a7fc574e096cafe05d6529fb527c1"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\coding-rules.md": {
+    "mtime": 1780717855.6201794,
+    "ast_hash": "2961c91ef6196dc5aca538e00bce1776",
+    "semantic_hash": "2961c91ef6196dc5aca538e00bce1776"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\common-workflows.md": {
+    "mtime": 1780717973.3128066,
+    "ast_hash": "65bb7b3ed83600b6aaca5909d4cbd578",
+    "semantic_hash": "65bb7b3ed83600b6aaca5909d4cbd578"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\communication-campaigns-architecture.md": {
+    "mtime": 1781262073.9826152,
+    "ast_hash": "6a315edc9a1ffd1b059f2e34b8f47571",
+    "semantic_hash": "6a315edc9a1ffd1b059f2e34b8f47571"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\critical-files.md": {
+    "mtime": 1780718018.109203,
+    "ast_hash": "0ca38985e4a5187ca2ab5a6933962511",
+    "semantic_hash": "0ca38985e4a5187ca2ab5a6933962511"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\current-state.md": {
+    "mtime": 1781319303.5712109,
+    "ast_hash": "e9d09c1da64bccaaad2a7fb872d4e673",
+    "semantic_hash": "e9d09c1da64bccaaad2a7fb872d4e673"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\current-work.md": {
+    "mtime": 1781319303.5752075,
+    "ast_hash": "2312ab3ec31f651460c66fdec766fba2",
+    "semantic_hash": "2312ab3ec31f651460c66fdec766fba2"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\database-schema.md": {
+    "mtime": 1781319303.5782292,
+    "ast_hash": "afec31d40189f2158fe2f7446c8d2f0f",
+    "semantic_hash": "afec31d40189f2158fe2f7446c8d2f0f"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\design-system.md": {
+    "mtime": 1780717891.8418653,
+    "ast_hash": "7f8b795466075e59a6f34341ba693ed1",
+    "semantic_hash": "7f8b795466075e59a6f34341ba693ed1"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\feature-map.md": {
+    "mtime": 1781262190.1712935,
+    "ast_hash": "ffb36a21334a2eeb6e033d5712a90d1a",
+    "semantic_hash": "ffb36a21334a2eeb6e033d5712a90d1a"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\guides\\aisensy-onboarding.md": {
+    "mtime": 1781262101.3607886,
+    "ast_hash": "f7bbb77331831c41fbd9d54500ce3b41",
+    "semantic_hash": "f7bbb77331831c41fbd9d54500ce3b41"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\guides\\email-campaigns.md": {
+    "mtime": 1781262083.445671,
+    "ast_hash": "9e34512f5beba401a278ba4abc6d7e4c",
+    "semantic_hash": "9e34512f5beba401a278ba4abc6d7e4c"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\guides\\segments-and-consent.md": {
+    "mtime": 1781262124.2055974,
+    "ast_hash": "52606c2279f82c7f0242fabba219c6da",
+    "semantic_hash": "52606c2279f82c7f0242fabba219c6da"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\guides\\whatsapp-campaigns.md": {
+    "mtime": 1781262092.8570707,
+    "ast_hash": "00b8eef3f4d048dce13799d605e0eb88",
+    "semantic_hash": "00b8eef3f4d048dce13799d605e0eb88"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\project-index.md": {
+    "mtime": 1780717699.516443,
+    "ast_hash": "1c158995175498bf42648a10586cb0b7",
+    "semantic_hash": "1c158995175498bf42648a10586cb0b7"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\superpowers\\plans\\2026-06-12-email-campaigns.md": {
+    "mtime": 1781260642.067656,
+    "ast_hash": "5af287c8e3db419c6e0954ef08746483",
+    "semantic_hash": "5af287c8e3db419c6e0954ef08746483"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\superpowers\\plans\\2026-06-12-guest-booking-flow.md": {
+    "mtime": 1781246451.6807377,
+    "ast_hash": "e0e4f58d28365cc784b3aee4de0b0883",
+    "semantic_hash": "e0e4f58d28365cc784b3aee4de0b0883"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\superpowers\\plans\\2026-06-13-financial-ledger-p1.md": {
+    "mtime": 1781319303.583219,
+    "ast_hash": "6fb3858a6d5b2e8b2d784759e52bc383",
+    "semantic_hash": "6fb3858a6d5b2e8b2d784759e52bc383"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\superpowers\\specs\\2026-06-12-guest-booking-flow-design.md": {
+    "mtime": 1781246245.5512395,
+    "ast_hash": "1ecea40088c055e26220cca8a51621fd",
+    "semantic_hash": "1ecea40088c055e26220cca8a51621fd"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\superpowers\\specs\\2026-06-13-financial-ledger-p1-design.md": {
+    "mtime": 1781319303.5852206,
+    "ast_hash": "debe45501cad950755ca782a4cf3bb90",
+    "semantic_hash": "debe45501cad950755ca782a4cf3bb90"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\superpowers\\specs\\2026-06-14-admin-booking-modal-redesign.md": {
+    "mtime": 1781377400.462074,
+    "ast_hash": "cb444f78d2a3c520f54d5b402b9473ee",
+    "semantic_hash": "cb444f78d2a3c520f54d5b402b9473ee"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\superpowers\\specs\\2026-06-14-profile-landing-redesign-design.md": {
+    "mtime": 1781409246.4660642,
+    "ast_hash": "f0494f4e49004f90f25d0408a1454470",
+    "semantic_hash": "f0494f4e49004f90f25d0408a1454470"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\vendor-onboarding-implementation-summary.md": {
+    "mtime": 1781078127.438931,
+    "ast_hash": "93c2c4c27234f8ce7fd261cbc2a9fe9b",
+    "semantic_hash": "93c2c4c27234f8ce7fd261cbc2a9fe9b"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\docs\\vendor-onboarding.md": {
+    "mtime": 1781078078.1055603,
+    "ast_hash": "c05193ce7203b119faf10a6fbc687308",
+    "semantic_hash": "c05193ce7203b119faf10a6fbc687308"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\render.yaml": {
+    "mtime": 1781353012.5553553,
+    "ast_hash": "96c05c04cab71295e6e03e22cd32566d",
+    "semantic_hash": "96c05c04cab71295e6e03e22cd32566d"
+  },
+  "C:\\Users\\shubh\\OneDrive\\Documents\\Claude\\Projects\\Book A Sloth Web App\\appointment-booking\\client\\book-a-sloth-responsive-qa.png": {
+    "mtime": 1780469106.406182,
+    "ast_hash": "8ec39dd40de2cf2949dc5fc41e0a3bfa",
+    "semantic_hash": "8ec39dd40de2cf2949dc5fc41e0a3bfa"
+  }
+}

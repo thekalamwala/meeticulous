@@ -1,0 +1,53 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "git": { "deploymentEnabled": false },
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.bookasloth.com" }],
+      "destination": "https://bookasloth.com/:path*",
+      "statusCode": 308
+    },
+    { "source": "/blogs", "destination": "/blog", "statusCode": 301 },
+    { "source": "/blogs/:slug", "destination": "/blog/:slug", "statusCode": 301 },
+    { "source": "/blog/topmate-alternative", "destination": "/compare/topmate-alternative", "statusCode": 301 },
+    { "source": "/lp/topmate-vs-bookasloth", "destination": "/compare/topmate-alternative", "statusCode": 301 },
+    { "source": "/lp/:competitor(calendly|setmore|acuity|simplybook|zoho-bookings)-alternative", "destination": "/compare/:competitor-alternative", "statusCode": 301 },
+    { "source": "/blog/scheduling-terms-glossary", "destination": "/glossary/buffer-time", "statusCode": 301 },
+    { "source": "/for/doctors-india", "destination": "/for/doctors", "statusCode": 301 }
+  ],
+  "rewrites": [
+    { "source": "/sitemap.xml", "destination": "https://book-a-sloth.onrender.com/sitemap.xml" },
+    { "source": "/sitemap-:name.xml", "destination": "https://book-a-sloth.onrender.com/sitemap-:name.xml" },
+    { "source": "/((?!assets/).*)", "destination": "/spa-shell.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), browsing-topics=()" },
+        { "key": "Content-Security-Policy-Report-Only", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://*.clarity.ms https://us-assets.i.posthog.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https://*.supabase.co https://api.razorpay.com https://book-a-sloth.onrender.com https://*.i.posthog.com https://*.posthog.com https://www.google-analytics.com https://*.google-analytics.com https://*.clarity.ms https://*.facebook.com https://static.cloudflareinsights.com https://cloudflareinsights.com; frame-src https://*.razorpay.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" }
+      ]
+    },
+    {
+      "source": "/spa-shell.html",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+    },
+    {
+      "source": "/fonts/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+    },
+    {
+      "source": "/((?!assets/|fonts/).*\\.(?:png|jpe?g|gif|svg|webp|ico|avif))",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000, stale-while-revalidate=604800" }]
+    }
+  ]
+}

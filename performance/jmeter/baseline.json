@@ -1,0 +1,6 @@
+{
+  "throughput": 13.605442176870747,
+  "p95": 372.54999999999995,
+  "errPct": 0,
+  "savedFrom": "bench-slots-readonly-10"
+}

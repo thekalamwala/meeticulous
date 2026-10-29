@@ -1,0 +1,230 @@
+[
+  {
+    "pattern": "are you a bot",
+    "answer": "Yep, I'm Bolt 958 — the Book A Sloth assistant and THE FASTEST Sloth Alive, not a human. I can answer most things about booking, payments, plans and hosting. If I hit something I can't, I'll pull in a real person from the team.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "are you human",
+    "answer": "Nope, I'm Bolt - The Sloth — an assistant, not a person. I'll get you a human the moment something needs one.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "become a host",
+    "answer": "Become a host from the [Be a Sloth](/be-a-sloth) page in just **7 simple steps**.\n\n---\n\n**⭐ 1. Sign in with Google**  \nNo passwords. If you've booked as a guest before, use the same account.\n\n---\n\n**⭐ 2. Claim your username**  \nPick your public link, like `bookasloth.com/your-name`.\n\n---\n\n**⭐ 3. Verify WhatsApp**  \nReceive booking alerts and confirmations.\n\n---\n\n**⭐ 4. Complete your profile**  \nAdd your photo, bio, and profession.\n\n---\n\n**⭐ 5. Set your availability**  \nChoose when you're available for bookings.\n\n---\n\n**⭐ 6. Add your first service**  \nSet its name, duration, and price.\n\n---\n\n**⭐ 7. Choose a plan**  \nStart free with **Starter**, or upgrade to **Host+** or **Studio** for more features and **0% commission**.\n\n---\n\nYour page goes live once setup is complete. If you leave midway, just sign in again and continue where you left off.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "booking kaise kare",
+    "answer": "Host ka page kholo, service select karo, date aur time choose karo, apni details bharo, aur payment karo (agar required ho).\n\nBooking confirm hote hi WhatsApp aur email par confirmation mil jayega. Apni saari bookings [My Bookings](/my-bookings) se manage kar sakte ho.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "booking kaise karen",
+    "answer": "Booking karna bilkul simple hai:\n\n1. Host ka page kholo (example: `bookasloth.com/their-name`) aur jo service chahiye wo select karo.\n2. Date aur time choose karo jo available ho.\n3. Apni details dalo. Agar account mein sign in nahi ho to hum WhatsApp aur email pe 6-digit code bhejenge confirm karne ke liye.\n4. Payment karo (agar service paid hai). Payment complete hote hi booking confirm ho jaata hai aur tume WhatsApp aur email pe confirmation mil jaata hai.\n\nFree service hai to payment step nahi hota — seedha confirm ho jaata hai.\n\nTeri bookings dekh sakte ho anytime [My Bookings](/my-bookings) page pe — phone number se sign in kar.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "calendar sync",
+    "answer": "Yes — Book A Sloth syncs **two-way with Google Calendar**. Confirmed bookings are added to your Google Calendar automatically (and updated or removed when they change), and your existing Google **busy times are read back in**, so you won't get double-booked. It's Google only for now — Outlook, iCloud and other calendars aren't synced, so block any busy time from those manually in your availability settings. Connect or reconnect Google Calendar anytime from your dashboard.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "can i get a refund",
+    "answer": "For any questions related to payments or refunds, please contact the Book A Sloth Support Team. Share your Booking ID or Order ID, along with your registered email or phone number and a brief description of your issue. Our team will review your request and assist you as soon as possible.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "do you have a mobile app?",
+    "answer": "Not yet. Apparently building one takes more than saying \"just make an app.\"\n\nFor now, Book A Sloth works on your phone through the browser. The mobile app will join the party when it's ready.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "do you integrate with zapier?",
+    "answer": "Not yet. Zapier and Book A Sloth aren't friends yet.\n\nFor now, you'll have to keep them in separate group chats.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "hello",
+    "answer": "Hey! I'm Bolt. Ask me about booking a service, payments, plans, or becoming a host — I'll get you sorted.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "help with refund",
+    "answer": "Need a refund? Please contact the Book A Sloth Support Team with your Booking ID, registered email/phone number, and the reason for your request. Our team will review your request based on the booking and refund policy and get back to you as soon as possible.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "how do i add a new service to my page",
+    "answer": "Go to your dashboard, hit **Services → Add New**, and fill in the basics:\n\n- **Title and description** — what you're offering. Stuck on what to write? Hit **Write with Bolt** and let it cook.\n- **Price** — charge for it or keep it free\n- **Duration** — how long it takes (this sets your available slots)\n- **Inclusions, exclusions, FAQs** — so people know exactly what they're booking\n- **Thumbnail** — a cover image\n\nSave it and it goes live on your page ready to book. That's it.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "how do i become a host?",
+    "answer": "Visit the [Be a Sloth](/be-a-sloth) page and sign in with Google.\n\nThen choose your username, verify your WhatsApp number, set up your profile, availability, and first service, select a plan, and publish your page. Once setup is complete, you're ready to start accepting bookings.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "how do i book a service",
+    "answer": "Booking on Book A Sloth is straightforward. Here's how:\n\n1. Open the host's page (their link looks like `bookasloth.com/their-name`) and pick the service you want.\n2. Choose a date and time from the available slots shown.\n3. Enter your details. If you're not signed in, we'll send a 6-digit code to your phone via WhatsApp and email to confirm it's you.\n4. Pay for the service (if it has a price). Once payment goes through, your booking is confirmed and you get a confirmation by WhatsApp and email.\n\nYou don't need an account to book — it takes about a minute. If the service is free, there's no payment step and the booking confirms straight away. Everything you've booked lives on your My Bookings page, where you can reschedule or cancel anytime.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "how do i book a service?",
+    "answer": "Open the host's page, choose a service, pick an available date and time, enter your details, and complete payment (if required).\n\nYou'll receive a confirmation via WhatsApp and email. You can manage your bookings anytime from [My Bookings](/my-bookings).",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "how do i cancel my booking?",
+    "answer": "Go to [My Bookings](/my-bookings), open the booking, and click **Cancel**.\n\nOnce cancelled, the booking can't be rescheduled. Refunds, if applicable, are handled by the host.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "how do i login",
+    "answer": "Depends on who you are.\n\n**As a guest** (booking a service): go to the [login page](/login), enter your phone number, and we'll send you a 6-digit code by WhatsApp and email. Enter the code and you're in. No password needed.\n\n**As a host** (publishing services): sign in with Google from the [Be a Sloth](/be-a-sloth) page. That's it — no separate password to remember.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "how much is host+?",
+    "answer": "Host+ is the mid tier (Studio is the top tier). It's **₹229/month, or ₹1,499/year** (~₹4/day) — prices exclude tax (+18% GST). You get higher limits and more features than Starter, and **0% commission** on paid plans, so you keep the full price your clients pay. See [all plans](/pricing) for the current numbers.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "how you are better than topmate.io?",
+    "answer": "Book A Sloth is built to **run your entire appointment business**, not just sell one-on-one calls.\n\nSome key differences:\n\n- **Works for both online and offline bookings**, not just virtual sessions.\n- **Dedicated booking website** with your own public link and branding.\n- **WhatsApp-first experience** with confirmations and reminders by WhatsApp and email.\n- **Built for recurring service businesses** like clinics, salons, coaches, trainers, photographers, consultants, and studios.\n- **Multiple services, staff, availability, and scheduling** in one place.\n- **0% commission on paid plans**. You keep what you earn.\n- **Made for India**, with phone-first booking and local payment support.\n\nIf you mainly sell advice calls, my pal, Topmate is a solid option. If you run a service business that depends on appointments every day, Book A Sloth is built for that.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "i cant log in",
+    "answer": "**Guests:** Go to the [Login](/login) page, enter your phone number, and verify the 6-digit code sent to your WhatsApp and email.\n\n**Hosts:** Sign in with Google from the [Be a Sloth](/be-a-sloth) page.\n\nIf you still can't log in, visit the [Help](/help) page for support.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "i need money",
+    "answer": "If you're looking to earn money, the fastest way is to **become a host** — set up a service, share your link, and get paid when clients book.\n\nHere's how it works:\n\n**You set your own price.** On paid plans (**Host+** or **Studio**), you keep 100% of what clients pay — no commission. On the free **Starter** plan, a small commission applies per booking instead.\n\n**Money lands in your account when booked.** Once a guest pays, it goes straight to your earnings. You can request a payout anytime you've earned at least ₹1 — our team reviews it and transfers it to your bank.\n\n**Start free, upgrade when you're ready.** The **Starter** plan costs nothing, includes real payments, and has no credit card needed. If you want 0% commission and more features, upgrade to **Host+** or **Studio**.\n\nReady to start? Head to [Be a Sloth](/be-a-sloth) and sign in with Google — the setup takes about 5 minutes.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "i want a refund",
+    "answer": "For any questions related to payments or refunds, please contact the Book A Sloth Support Team. Share your Booking ID or Order ID, along with your registered email or phone number and a brief description of your issue. Our team will review your request and assist you as soon as possible.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "i want my refund for service",
+    "answer": "For any questions related to payments or refunds, please contact the Book A Sloth Support Team. Share your Booking ID or Order ID, along with your registered email or phone number and a brief description of your issue. Our team will review your request and assist you as soon as possible.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "i want to change my number",
+    "answer": "**Guests:** update your phone number from your profile at [/user/profile](/user/profile) once you're signed in. Your WhatsApp number must stay verified to change account details.\n\n**Hosts:** your login is your Google account — to change the phone number on a host account, reach us from the [Help](/help) page.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "is it free",
+    "answer": "Yep, Starter is free forever. No credit card needed.\n\nCatch: there's a small commission per booking to keep the free tier actually free. If you want 0% commission, you'd upgrade to Host+ or Studio — those are paid plans.\n\nCurrent prices are on the [pricing](/pricing) page.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "it works with whastapp",
+    "answer": "Yeah, Book A Sloth uses WhatsApp to send you confirmations and the login code — but the actual booking happens on the web. You open a host's link in your browser, pick a time, enter your details, and pay. Then you get a confirmation message on WhatsApp and email.\n\nSo to be clear: the booking page itself is on the web, but WhatsApp is how we stay in touch about your booking.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "no issue",
+    "answer": "Gotcha. No issues then — you're all set. Anything else about Book A Sloth, just ask.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "notify",
+    "answer": "Not sure what you're looking for — do you mean notifications or reminders for your bookings? Or something else about Book A Sloth?\n\nQuick rundown: **booking confirmations, reschedules, and cancellations** go out automatically by WhatsApp and email. **Reminders before a session** depend on your plan — free tier doesn't have them, Host+ and Studio do.\n\nWhat's the actual issue?",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "okay",
+    "answer": "Nice. I'm around if you need anything else.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "paisa wapas chahiye",
+    "answer": "For any questions related to payments or refunds, please contact the Book A Sloth Support Team. Share your Booking ID or Order ID, along with your registered email or phone number and a brief description of your issue. Our team will review your request and assist you as soon as possible.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "payments & refunds",
+    "answer": "For any questions related to payments or refunds, please contact the Book A Sloth Support Team. Share your Booking ID or Order ID, along with your registered email or phone number and a brief description of your issue. Our team will review your request and assist you as soon as possible.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "plans pricing",
+    "answer": "Book A Sloth has three plans:\n\n**Starter** — free forever, no credit card needed. You get real payment collection built in, but a small commission applies per booking.\n\n**Host+** — flat annual price, 0% commission, higher limits, custom branding, reminders, and auto invoices.\n\n**Studio** — the top tier. Everything in Host+ plus unlimited services and bookings, advanced analytics, client CRM, and premium branding.\n\nFor exact prices, limits, and what's included in each plan, head to the [pricing](/pricing) page — they can change and we always keep it current there.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "price",
+    "answer": "Price depends on which plan you're asking about.\n\n**Starter** is free forever — no upfront cost, but a small commission applies per booking. **Host+** and **Studio** are paid plans with **0% commission** on bookings. Exact prices for all three are on the [pricing](/pricing) page since they can change.\n\nOn every paid booking there's a flat **₹10 booking fee (+18% GST)** plus the payment gateway's own processing fee (Razorpay's) — both shown at checkout, not charged by us on top of your plan.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "reschedule or cancel",
+    "answer": "You can reschedule or cancel a booking from your **My Bookings** page.\n\n**To reschedule:** Open the booking, choose **Reschedule**, and pick a new time from the host's available slots. Your first reschedule is always free. Some hosts charge ₹10 for the second reschedule onward — you'll see that fee before you confirm. Many hosts don't charge at all.\n\n**To cancel:** Open the booking and choose **Cancel**. Only you or the host can cancel it. Note: once cancelled, you can't reschedule it — you'd need to book a new time instead. Cancelling doesn't automatically refund you; refunds are handled case by case.\n\nIf you see \"Reschedule is currently disabled\", the host has that turned off. Message them directly or reach us from the Help page to sort it out.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "stop",
+    "answer": "Okay. Stopped. \nWanna hear a knock-knock joke? say knowk-knock.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "talk to a human",
+    "answer": "A human? Damn. I thought we had something special. 💔\nFine, you can [talk to our support team](/support). They'll take it from here.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "thanks",
+    "answer": "Anytime. Shout if anything else comes up.",
+    "enabled": true,
+    "category": "General"
+  },
+  {
+    "pattern": "what does it cost",
+    "answer": "Our plans:\n\n- **Starter** — ₹0 forever (+5% per booking)\n- **Host+** — ₹229/mo or ₹1,499/yr (~₹4/day)\n- **Studio** — ₹555/mo or ₹3,650/yr (~₹10/day)\n\nYearly saves ~45%. Prices exclude tax (+ 18% GST). Ask about a specific plan for details, or [see all plans](/pricing).",
+    "enabled": true,
+    "category": "General"
+  }
+]

@@ -1,0 +1,47 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Meeticulous",
+    "identifier": "did:web:meeticulous.com",
+    "documentationUrl": "https://meeticulous.com/help/docs",
+    "logoUrl": "https://meeticulous.com/og-image.png"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:meeticulous:docs:llms-txt",
+      "displayName": "Meeticulous — LLM Guide (llms.txt)",
+      "description": "Structured overview of Meeticulous for AI agents: what it is, plans and pricing, key pages, features, comparisons and profession landing pages.",
+      "type": "text/markdown",
+      "url": "https://meeticulous.com/llms.txt",
+      "tags": ["overview", "documentation", "pricing", "features"],
+      "representativeQueries": [
+        "What is Meeticulous and how does it work?",
+        "How much does Meeticulous cost and what are the plans?"
+      ]
+    },
+    {
+      "identifier": "urn:air:meeticulous:index:sitemap",
+      "displayName": "Meeticulous — Sitemap Index",
+      "description": "XML sitemap index listing all indexable pages: marketing pages, profession pages, host profiles, bookable services and blog posts.",
+      "type": "application/xml",
+      "url": "https://meeticulous.com/sitemap.xml",
+      "tags": ["sitemap", "index", "urls"],
+      "representativeQueries": [
+        "List all pages and bookable services on Meeticulous",
+        "Where can I find every host profile on Meeticulous?"
+      ]
+    },
+    {
+      "identifier": "urn:air:meeticulous:site:home",
+      "displayName": "Meeticulous — Booking Platform",
+      "description": "India-first appointment-booking platform. Hosts publish services and share one booking link; guests book in seconds via OTP or a free account, paying up front through Razorpay (UPI, cards, netbanking).",
+      "type": "text/html",
+      "url": "https://meeticulous.com/",
+      "tags": ["appointment-booking", "scheduling", "payments", "india", "creators"],
+      "representativeQueries": [
+        "Book an appointment with a coach or consultant in India",
+        "Create a booking page and get paid up front for my services"
+      ]
+    }
+  ]
+}

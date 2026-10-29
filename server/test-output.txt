@@ -1,0 +1,16 @@
+﻿
+> appointment-booking-server@1.1.0 test
+> jest
+
+node.exe : 
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Test Suites: 346 passed, 346 total
+Tests:       2770 passed, 2770 total
+Snapshots:   0 total
+Time:        107.64 s, estimated 124 s
+Ran all test suites.

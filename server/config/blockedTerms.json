@@ -1,0 +1,80 @@
+{
+  "_comment": "Versioned adult/sexual-content slug blocklist. Consumed by utils/adultContentFilter.js. Edit this file (NOT code) to update terms; bump `version` and `updated` on every change. Tiers: `substring` (adult domains/brands + performer handles, matched anywhere in the leet-folded, hyphen-stripped slug), `hard` (keywords that almost never appear inside an innocent word, also substring), `token` (keywords that DO appear inside innocent words like sussex/analysis/cucumber, matched as a WHOLE hyphen-token only), `allowlist` (explicit compact slugs that survive a substring/hard hit). All terms MUST be lowercase; hyphens/spaces are ignored at load time.",
+  "version": "1.0.0",
+  "updated": "2026-07-04",
+
+  "substring": [
+    "pornhub", "xvideos", "xnxx", "xhamster", "redtube", "youporn", "tube8",
+    "spankbang", "beeg", "sexvideo", "tnaflix", "thumbzilla", "porntrex",
+    "eporner", "sunporno", "gotporn", "porngo", "hqporner", "slutload",
+    "sexvideo24", "porn300", "yespornplease", "motherless", "heavyr",
+    "imagefap", "fapello", "sexvideox", "porzo", "porndoe", "pornerbros",
+    "fakehub", "brazzers", "realitykings", "mofos", "naughtyamerica",
+    "bangbros", "teamskeet", "digitalplayground", "evilangel", "vixen",
+    "blacked", "blackedraw", "tushy", "tushyraw", "deceitfulmedia",
+    "fakeagent", "fakehospital", "faketaxi", "fakehuboriginals", "babes",
+    "twistys", "wickedpictures", "julesjordan", "dogfart", "scoreland",
+    "metart", "sexart", "nubiles", "teenfidelity", "onlyfans", "fansly",
+    "loyalfans", "manyvids", "myfreecams", "chaturbate", "stripchat",
+    "bongacams", "camsoda", "cam4", "flirt4free", "livejasmin", "jerkmate",
+    "streamate", "imlive", "adultfriendfinder", "fetlife", "ashleymadison",
+    "sextpanther", "literotica", "lushstories", "eroticbeauty", "hentaihaven",
+    "nhentai", "hanime", "fakku", "e621", "rule34", "rule34video", "gelbooru",
+    "danbooru", "sankakucomplex", "pornpics", "sexvideo24h", "pornone",
+    "porndig", "porntube", "freeones", "babesource", "sexvid"
+  ],
+
+  "performers": [
+    "miakhalifa", "lanarhoades", "rileyreid", "angelawhite", "abelladanger",
+    "evaelfie", "sashagrey", "lisaann", "sunnyleone", "asaakira",
+    "alexistexas", "kendralust", "adrianachechik", "lenapaul", "emilywillis",
+    "nicoleaniston", "danidaniels", "brandilove", "avaaddams", "violetmyers",
+    "johnnysins", "emilybloom", "piperperri", "cheriedeville", "giannamichaels",
+    "toriblack", "kaydenkross", "bonnierotten", "augustames", "miamalkova",
+    "jordielninopolla", "skylarvox", "violetstarr", "autumnfalls", "leahgotti",
+    "elsajean", "scarlettsage", "jillkassidy", "alinalopez", "kimmygranger",
+    "gabbiecarter", "aidrafox", "kylierocket", "blakeblossom", "skybri",
+    "arialee", "giannadior", "athenafaris", "naomiswann", "vinasky",
+    "littlecaprice", "anissakate", "shalinadevine", "romirain", "phoenixmarie",
+    "ninahartley", "christymack", "jennajameson", "jessejane", "breeolson",
+    "lexibelle", "teaganpresley", "kagneylinnkarter", "sophiedee", "torylane",
+    "jynxmaze", "rileemarks", "harmonywonder", "paigeowens", "whitneywright",
+    "hazelmoore", "kenziereeves", "mayabijou", "carolinasweets",
+    "scarletthampton", "lelastar", "jasminejae", "krissylynn", "brooklynchase",
+    "reaganfoxx", "silviasaige", "pennypax", "charlottestokely", "chanelpreston",
+    "janicegriffith", "aaliyahhadid", "keishagrey", "valentinanappi",
+    "veronicarodriguez", "kissasins", "melissamoore", "savannahbond",
+    "lexiluna", "demisutra", "ginavalentina", "marleybrinx"
+  ],
+
+  "hard": [
+    "porn", "xxx", "hentai", "nsfw", "camgirl", "camwhore", "milftube",
+    "creampie", "cumshot", "gangbang", "bukkake", "deepthroat", "handjob",
+    "blowjob", "footjob", "fisting", "bdsm", "hardcore", "camsex", "sexcam",
+    "sexchat", "livesex", "adultcam", "webcamsex", "jerkoff", "masturbat",
+    "fapping", "coomer", "kemono"
+  ],
+
+  "token": [
+    "sex", "sexy", "nude", "nudes", "naked", "anal", "cum", "cunt", "slut",
+    "whore", "milf", "gilf", "escort", "escorts", "hooker", "camboy", "boobs",
+    "boobies", "tits", "titty", "titties", "dick", "cock", "pussy", "vagina",
+    "penis", "orgy", "orgasm", "erotic", "erotica", "fetish", "kinky", "horny",
+    "hentia", "ahegao", "bdsmxxx", "prostitute", "stripper", "hardcorexx",
+    "swinger", "swingers", "incest", "bareback", "gloryhole", "squirting",
+    "smut", "camsluts", "footfetish", "sexwork", "sexworker", "cammodel",
+    "onlyfan"
+  ],
+
+  "allowlist": [
+    "essex", "sussex", "middlesex", "wessex", "analysis", "analyst",
+    "analytics", "analog", "canal", "cardinal", "arsenal", "signal",
+    "terminal", "journal", "national", "personal", "cumulative", "cumulus",
+    "cumberland", "cucumber", "documentum", "circumference", "accumulate",
+    "scunthorpe", "penistone", "assassin", "assist", "classic", "grassland",
+    "cockburn", "cockpit", "peacock", "shuttlecock", "hancock", "babcock",
+    "dickson", "dickens", "moby", "titan", "titanium", "competition",
+    "constitution", "dictionary", "predict", "benedict", "verdict",
+    "hornbill", "thornbury", "hornby", "cornwall", "hornsey"
+  ]
+}

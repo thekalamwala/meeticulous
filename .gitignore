@@ -1,0 +1,111 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment files — NEVER commit secrets
+.env
+.env.staging
+.env.local
+.env.development
+.env.development.local
+.env.test.local
+.env.production
+.env.production.local
+*.env
+
+# Build output
+dist/
+build/
+.next/
+out/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.project
+.settings/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+.cache/
+.temp/
+tmp/
+
+# Vercel CLI link data (org/project IDs) — local only
+.vercel/
+
+# Superpowers brainstorm artifacts — local only
+.superpowers/
+
+# Graphify — commit graph + report, skip local/machine-specific files
+graphify-out/cost.json
+graphify-out/cache/
+graphify-out/.graphify_python
+graphify-out/.graphify_root
+graphify-out/.graphify_labels.json
+
+# Security — never commit
+*.pem
+*.key
+*.cert
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+
+# Schema dumps — contain RLS logic, never commit
+staging_schema.sql
+*_schema.sql
+
+# Database backups — contain customer PII + payment data, never commit
+*.dump
+*.dump.gpg
+*.sql.gz
+*.backup
+
+# DB clone working dir (scripts/init-prod-db.sh) — schema + config dumps
+.db-clone/
+
+# gstack tooling artifacts (browse logs, audits) — local only
+.gstack/
+
+# Business/planning docs kept in the working tree but not version-controlled
+# (roadmaps, decks, research notes). Not code; excluded so they don't show up as
+# uncommitted changes / trigger PR prompts.
+autoresearch/
+book-a-sloth-messaging-bible.md
+BookASloth_12Month_Roadmap_Tracker.xlsx
+BookASloth_12Month_Value_Roadmap.docx
+BookASloth_12Month_Value_Roadmap.pdf
+
+# Local-only OG card previews from client/scripts/generateBlogOgImages.mjs --dry
+client/scripts/.og-preview/
+client/scripts/.host-og-preview/
+
+# Vercel CLI local link state (project/org ids) — created by `vercel link`
+.vercel/
+cold-email-preview.html

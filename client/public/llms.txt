@@ -1,0 +1,110 @@
+# Meeticulous
+
+> Meeticulous is an India-first appointment-booking platform for creators and professionals — coaches, tutors, consultants, designers, wellness practitioners and more (called "hosts"). Hosts publish services, share one short booking link, and get paid up-front — with 0% commission on paid plans. Guests book in seconds via OTP or a free account; payments run through Razorpay (UPI, cards, netbanking).
+
+Key facts:
+
+- **Plans:** Sloth (free forever, 5% commission per paid booking) and Sloth Active (₹399/month or ₹3,599/year, 0% commission). Prices in INR, GST included. A payment gateway fee of about 2.4% applies (Razorpay's, not Meeticulous's).
+- **0% commission on Sloth Active** — hosts keep what they earn, minus the gateway fee.
+- **India-native:** INR pricing, GST invoicing and UPI built in.
+- **Runs the whole booking:** payments up-front, email + WhatsApp reminders, two-way Google Calendar sync, and auto-generated video-call links.
+- **Personal page:** every host gets `meeticulous.com/their-username` — a mini-site that books, bills and brands them.
+- Positioned as a calmer, India-first alternative to tools like Topmate, Calendly, Setmore, Acuity, SimplyBook.me and Zoho Bookings.
+
+## Main pages
+
+- [Home](https://meeticulous.com/): What Meeticulous is — features, pricing and how booking works.
+- [Pricing](https://meeticulous.com/pricing): Full plan comparison — Starter, Host+ and Studio.
+- [Explore](https://meeticulous.com/explore): Browse bookable services across professions.
+- [Services directory](https://meeticulous.com/services): Services grouped by profession.
+- [Become a host](https://meeticulous.com/be-a-sloth): Why and how to start taking bookings on Meeticulous.
+- [Enterprise](https://meeticulous.com/enterprise): For teams, studios and larger practices.
+- [About](https://meeticulous.com/about): The company, mission and the "calm economy" positioning.
+- [Blog](https://meeticulous.com/blog): Product updates and guides.
+- [Help](https://meeticulous.com/help): Common questions for hosts and guests, with a full article index at [/help/docs](https://meeticulous.com/help/docs).
+- [Templates](https://meeticulous.com/templates): Free WhatsApp, SMS and email templates for service businesses (confirmations, reminders, payment follow-ups, cancellation policies), including Hindi.
+- [Glossary](https://meeticulous.com/glossary): Plain-English definitions of booking and scheduling terms (buffer time, no-show, advance payment, UPI, GST invoice and more).
+- [Tools](https://meeticulous.com/tools): Free calculators — no-show cost, GST on services, earnings by plan.
+
+## Guides for Indian professionals
+
+- [How to collect payments from clients in India](https://meeticulous.com/blog/collect-payments-from-clients-india)
+- [How much to charge for a consultation in India](https://meeticulous.com/blog/consultation-fees-india)
+- [How to start an online consultation practice in India](https://meeticulous.com/blog/start-online-consultation-practice-india)
+- [How to reduce no-shows](https://meeticulous.com/blog/how-to-reduce-no-shows)
+- [Calendly pricing in India (₹, GST)](https://meeticulous.com/blog/calendly-pricing-india)
+- [Topmate commission and fees explained](https://meeticulous.com/blog/topmate-commission)
+- [Best appointment booking apps in India](https://meeticulous.com/blog/best-appointment-booking-apps-india)
+
+## Features
+
+- [Online scheduling](https://meeticulous.com/features/online-scheduling)
+- [Payments & GST invoicing](https://meeticulous.com/features/payments)
+- [Google Calendar sync](https://meeticulous.com/features/google-calendar)
+- [Email + WhatsApp notifications](https://meeticulous.com/features/notifications)
+- [Booking pages](https://meeticulous.com/features/booking-pages)
+- [Digital products](https://meeticulous.com/features/digital-products)
+- [Reviews](https://meeticulous.com/features/reviews)
+- [Availability management](https://meeticulous.com/features/availability)
+- [Analytics](https://meeticulous.com/features/analytics)
+- [Client management](https://meeticulous.com/features/client-management)
+
+## Comparisons
+
+- [Meeticulous vs Topmate](https://meeticulous.com/compare/topmate-alternative)
+- [Calendly alternative](https://meeticulous.com/compare/calendly-alternative)
+- [Setmore alternative](https://meeticulous.com/compare/setmore-alternative)
+- [Acuity alternative](https://meeticulous.com/compare/acuity-alternative)
+- [SimplyBook.me alternative](https://meeticulous.com/compare/simplybook-alternative)
+- [Zoho Bookings alternative](https://meeticulous.com/compare/zoho-bookings-alternative)
+
+## For professions
+
+**Healthcare & wellness**
+
+- [Doctors & clinics](https://meeticulous.com/for/doctors)
+- [Dentists](https://meeticulous.com/for/dentists)
+- [Dermatologists](https://meeticulous.com/for/dermatologists)
+- [ENT specialists](https://meeticulous.com/for/ent-specialists)
+- [Gynecologists](https://meeticulous.com/for/gynecologists)
+- [Ophthalmologists](https://meeticulous.com/for/ophthalmologists)
+- [Pediatricians](https://meeticulous.com/for/pediatricians)
+- [Physiotherapists](https://meeticulous.com/for/physiotherapists)
+- [Veterinarians](https://meeticulous.com/for/veterinarians)
+- [Nutritionists](https://meeticulous.com/for/nutritionists)
+- [Therapists & psychologists](https://meeticulous.com/for/therapists)
+- [Fitness trainers & studios](https://meeticulous.com/for/fitness)
+- [Salons](https://meeticulous.com/for/salon) · [Spas](https://meeticulous.com/for/spa)
+- [Life coaches](https://meeticulous.com/for/life-coaches)
+- [Yoga instructors](https://meeticulous.com/for/yoga-instructors)
+- [Astrologers](https://meeticulous.com/for/astrologers)
+
+**Legal, finance & advisory**
+
+- [Lawyers & advocates](https://meeticulous.com/for/lawyers)
+- [Chartered accountants](https://meeticulous.com/for/chartered-accountants)
+- [Business consultants](https://meeticulous.com/for/business-consultant)
+
+**Creative & professional**
+
+- [Architects & designers](https://meeticulous.com/for/architects)
+- [Freelancers](https://meeticulous.com/for/freelancers)
+- [Photographers](https://meeticulous.com/for/photographers)
+- [Tutors & educators](https://meeticulous.com/for/tutors)
+- [Event organisers](https://meeticulous.com/for/events)
+- [Agencies & studios](https://meeticulous.com/for/agencies)
+
+**Sports & venues**
+
+- [Sports & turf owners](https://meeticulous.com/for/sports-turf)
+
+## Legal
+
+- [Privacy Policy](https://meeticulous.com/privacy)
+- [Terms of Service](https://meeticulous.com/terms)
+- [Refund Policy](https://meeticulous.com/refund)
+
+## Notes for crawlers
+
+- Host profiles are public and live at `https://meeticulous.com/{username}`. The full, always-current list is in the [sitemap](https://meeticulous.com/sitemap.xml).
+- Private app surfaces — host dashboard, admin, and sign-in/sign-up flows — are not intended for indexing or training (see [robots.txt](https://meeticulous.com/robots.txt)).

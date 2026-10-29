@@ -1,0 +1,45 @@
+# Automated dependency + GitHub Actions updates.
+# Weekly PRs, grouped to keep the noise low. Security advisories are raised
+# immediately regardless of this schedule (GitHub's Dependabot alerts).
+#
+# Policy: minor + patch only. Major bumps are excluded (`ignore` below) because
+# they carry breaking changes (express 4->5, tailwind 3->4, react-router 6->7,
+# etc.) that break the build/deploy; do those manually, one at a time, with a
+# real test pass. `groups` alone does NOT block majors — Dependabot opens a
+# separate PR for every out-of-range dep unless it is explicitly ignored.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /server
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      server-deps:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: npm
+    directory: /client
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      client-deps:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]

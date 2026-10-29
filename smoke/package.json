@@ -1,0 +1,13 @@
+{
+  "name": "book-a-sloth-smoke",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Playwright smoke tests. Isolated from client/server npm graphs.",
+  "scripts": {
+    "test": "playwright test",
+    "setup": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0"
+  }
+}

@@ -1,0 +1,129 @@
+/* ── Unified app button — SHARED, geometry only (radius + border/stroke) ──
+   Radius + stroke come from the --btn-* tokens (design-tokens.css), which mirror
+   the public Vendor Profile "Book" CTA. Each button keeps its own background,
+   text color, size, padding and shadow — only radius + border are unified here.
+
+   .btn          → filled buttons (have a solid background): no border.
+   .btn .btn--outline (or .btn--outline alone) → transparent/light buttons that
+                    need a visible edge: one standardized 1px stroke. */
+.btn {
+    border-radius: var(--btn-radius);
+    border: none;
+}
+
+.btn--outline {
+    border-radius: var(--btn-radius);
+    border: var(--btn-border-width) solid var(--btn-border-color);
+}
+
+/* Accent CTA — lifted hard-shadow on hover, press-down on click.
+   Background/colour come from the per-vendor theme tokens. On hover the fill
+   drops to transparent with an offset shadow + accent outline (kept accent,
+   not white, so it stays legible on the white card/bottom-bar surfaces). */
+.cta-press {
+    background: var(--profile-accent, #0079C1);
+    color: var(--profile-accent-text, #ffffff);
+    border: 0.2px solid transparent;
+    transition: transform var(--motion-fast, 0.15s) ease,
+                box-shadow var(--motion-fast, 0.15s) ease,
+                background var(--motion-fast, 0.15s) ease,
+                color var(--motion-fast, 0.15s) ease;
+}
+
+.cta-press:hover {
+    background: transparent;
+    color: var(--profile-accent, #0079C1);
+    box-shadow: 5px 5px 0 rgb(36, 36, 36);
+    border: 0.2px solid var(--profile-accent, #0079C1);
+}
+
+.cta-press:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+/* Ghost variant — transparent accent outline, fills with accent on hover. */
+.cta-ghost {
+    background: transparent;
+    color: var(--profile-accent, #0079C1);
+    border: 1px solid var(--profile-accent, #0079C1);
+    transition: transform var(--motion-fast, 0.15s) ease,
+                box-shadow var(--motion-fast, 0.15s) ease,
+                background var(--motion-fast, 0.15s) ease,
+                color var(--motion-fast, 0.15s) ease;
+}
+
+.cta-ghost:hover {
+    background: var(--profile-accent, #0079C1);
+    color: var(--profile-accent-text, #ffffff);
+    box-shadow: 5px 5px 0 rgb(36, 36, 36);
+}
+
+.cta-ghost:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+/* Friendly Brutalism Buttons */
+.fb-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0.6rem 1.1rem;
+    border-radius: var(--btn-radius);
+    font-weight: 700;
+    font-family: var(--font-primary);
+    border: none;
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-hard-2);
+    transition: transform var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
+    text-decoration: none;
+}
+
+.fb-btn:focus-visible {
+    outline: 3px solid rgba(0, 0, 0, 0.14);
+    outline-offset: 3px;
+}
+
+.fb-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: calc(var(--shadow-hard-2) + 2px);
+}
+
+.fb-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+    box-shadow: var(--shadow-inset-press);
+}
+
+.fb-btn--primary {
+    background: linear-gradient(180deg, var(--primary), color-mix(in srgb, var(--primary) 80%, black 10%));
+    color: #ffffff;
+}
+
+.fb-btn--secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: var(--btn-border-width) solid var(--btn-border-color);
+}
+
+.fb-btn--ghost {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.fb-btn--block {
+    width: 100%;
+}
+
+@media (max-width: 640px) {
+    .fb-btn {
+        width: 100%;
+        min-height: 46px;
+        padding: 0.85rem 1rem;
+    }
+}

@@ -1,0 +1,147 @@
+# PRIMARY production deployer. Local → push to main → this deploys to Vercel.
+#
+# On every push to main it runs `vercel deploy --prod` (REMOTE build), which runs
+# `vercel-build`: vitest → vite build → prerender, failing the deploy on any error.
+# Also runnable by hand from the Actions tab (workflow_dispatch).
+#
+# NO DOUBLE-DEPLOY RACE: Vercel's own Git integration is disabled for main
+# (client/vercel.json → git.deploymentEnabled: { "main": false }), so Vercel does
+# NOT auto-deploy production — only this workflow does. Vercel still builds PR
+# PREVIEW deployments for other branches, so client regressions surface on PRs.
+#
+# WHY TOKEN-AUTH (not Vercel's git integration for prod): the Vercel project sits
+# on a Hobby team, and the git integration blocks deployments whose commit author
+# isn't the team owner ("does not have contributing access"). Token-authenticated
+# CLI deploys run AS the owner and bypass that check — so bot/co-author commits
+# still ship.
+#
+# FALLBACK if this workflow can't run — e.g. the Actions spending limit is
+# exhausted, jobs refused before checkout ("recent account payments have failed
+# or your spending limit needs to be increased"): deploy production by hand.
+#   - Vercel dashboard → Deployments → Redeploy the latest main commit, OR
+#   - from a machine with the Vercel CLI, at the REPO ROOT (project dir is `client`):
+#       npx vercel deploy --prod
+#
+# REQUIRED SECRET (GitHub repo → Settings → Secrets and variables → Actions):
+#   VERCEL_TOKEN — create at vercel.com → Account Settings → Tokens.
+# Org/project IDs are not secrets; they are pinned below.
+
+name: Deploy to Vercel (production)
+
+on:
+  push:
+    branches: [main]
+    # Only the CLIENT ships to Vercel. Server-only / docs-only / workflow-only
+    # merges (the server deploys separately to Render) skip this ~13-min build
+    # entirely — the single biggest Actions-minute saver. A merge that touches
+    # both client and server still deploys (client path matched). Manual
+    # workflow_dispatch has no path filter, so a forced re-deploy always runs.
+    paths:
+      - 'client/**'
+      # docs/help is the ONE docs directory that ships in the client bundle:
+      # client/src/content/helpDocs.js inlines it at build time via
+      # import.meta.glob, and the /help/docs/* pages prerender from it. Without
+      # this line a help-article-only merge never redeploys, so /help keeps
+      # serving the previous text indefinitely while Bolt (reseeded from the
+      # same files) moves on. Every other docs/ directory is still skipped.
+      - 'docs/help/**'
+      - '.github/workflows/deploy-vercel.yml'
+  workflow_dispatch: {}
+
+concurrency:
+  group: vercel-production
+  cancel-in-progress: true
+
+env:
+  VERCEL_ORG_ID: team_zIeLwmD7MoWJWDJyb2YEb8IK
+  VERCEL_PROJECT_ID: prj_b02XYKuwhxoZakgucihWVXgUdUIA
+
+jobs:
+  # Generate OG social cards for any freshly-published blog post BEFORE the deploy.
+  # WHY first: the Vercel remote build's prerender HARD-FAILS if a published post
+  # has no og_image card (see the blog-OG guard). Blogs are DB-backed, so a card
+  # can't be produced at prerender time inside Vercel — Chromium is kept off both
+  # Render and Vercel build. This job renders the /og/blog route with Puppeteer
+  # here (Actions has Chromium + prod secrets), uploads the PNG, and stamps
+  # blogs.og_image. `--missing` only touches posts with no card yet, so a normal
+  # deploy with nothing new is a fast no-op. Mirrors host-og-cards.yml.
+  blog-og:
+    name: Generate blog OG cards (missing only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 12   # the Chromium apt step is flaky; never let it hang a runner
+    if: github.repository == 'bookasloth/book-a-sloth'
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - run: npm ci
+
+      # Puppeteer's bundled Chromium needs these shared libs on the runner. The
+      # `|| true` fallback covers Ubuntu's libasound2 → libasound2t64 rename.
+      - name: Chromium system libraries
+        working-directory: .
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libnss3 libatk-bridge2.0-0 libcups2 libxkbcommon0 libxcomposite1 \
+            libxdamage1 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2t64 \
+            || sudo apt-get install -y libasound2
+
+      - name: Ensure Chromium is present
+        run: npx puppeteer browsers install chrome
+
+      # The /og/blog route reads all data from query params — no API/Supabase call
+      # at render time — so these placeholders are never used; they only satisfy
+      # vite.config.js's required-env guard. The dist is screenshotted then discarded.
+      #
+      # EVERY VITE_* referenced as a %PLACEHOLDER% in index.html must be set here,
+      # even when this job never uses the value. An unsubstituted `%VITE_FOO%` left
+      # in an href reaches Vite's HTML pass, which calls decodeURI on it and dies
+      # with "URI malformed" (`%VI` is not a valid percent escape) — failing this
+      # job and skipping the `deploy` job that needs it.
+      - name: Build (no prerender)
+        run: npm run build:no-prerender
+        env:
+          VITE_SUPABASE_URL: https://placeholder.supabase.co
+          VITE_SUPABASE_ANON_KEY: placeholder-anon-key-unused-by-og-route
+          VITE_API_URL: https://placeholder.invalid/api
+          VITE_POSTHOG_HOST: https://placeholder.invalid
+
+      - name: Generate cards for newly-published posts
+        run: node scripts/generateBlogOgImages.mjs --missing
+        env:
+          SUPABASE_URL: ${{ secrets.PROD_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.PROD_SUPABASE_SERVICE_ROLE_KEY }}
+
+  # Deploy runs independently of blog-og. OG-card generation is best-effort and
+  # must NEVER block a production deploy — its Chromium apt step is flaky and has
+  # hung the pipeline. Trade-off: a brand-new blog post may ship one deploy before
+  # its OG card is stamped in the DB; the next deploy backfills it.
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      # Build REMOTELY on Vercel (no `vercel build` + `--prebuilt`). Local CI
+      # builds via `vercel pull` cannot access env vars marked Sensitive in the
+      # Vercel dashboard, so the 2026-07-08 deploy shipped a bundle with no
+      # VITE_* vars baked in — a total white screen. Remote builds run inside
+      # Vercel's infra where ALL project env vars (sensitive included) exist,
+      # and run `vercel-build`, so the tests + prerender gate apply here too.
+      - name: Deploy (remote build)
+        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}

@@ -1,0 +1,58 @@
+{
+  "name": "appointment-booking-client",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "dev": "vite",
+    "ensure-chrome": "node scripts/ensureChrome.mjs",
+    "build": "npm run ensure-chrome && vite build && node scripts/prerender.mjs",
+    "vercel-build": "node scripts/vercelBuildOnce.mjs",
+    "build:no-prerender": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "og:blog": "node scripts/generateBlogOgImages.mjs",
+    "og:check": "node scripts/checkOgImages.mjs"
+  },
+  "dependencies": {
+    "@gsap/react": "^2.1.2",
+    "@supabase/supabase-js": "^2.117.2",
+    "axios": "^1.20.0",
+    "canvas-confetti": "^1.9.4",
+    "dompurify": "^3.4.16",
+    "framer-motion": "^12.43.0",
+    "gsap": "^3.15.0",
+    "lenis": "^1.3.26",
+    "lucide-react": "^1.48.0",
+    "posthog-js": "^1.434.17",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.6.1",
+    "react-router-dom": "^6.30.6"
+  },
+  "devDependencies": {
+    "@sparticuz/chromium": "^148.0.0",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@vitejs/plugin-react": "^4.2.0",
+    "@vitest/coverage-v8": "^4.1.11",
+    "autoprefixer": "^10.6.1",
+    "beasties": "^0.3.5",
+    "jsdom": "^29.1.1",
+    "postcss": "^8.5.29",
+    "puppeteer": "^24.43.1",
+    "rollup-plugin-visualizer": "^7.1.1",
+    "tailwindcss": "^3.3.5",
+    "vite": "^5.0.0",
+    "vitest": "^4.1.8"
+  }
+}

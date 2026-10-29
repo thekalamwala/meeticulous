@@ -1,0 +1,9 @@
+# .graphifyignore — keep the knowledge graph focused on project code + docs.
+# .gitignore is respected automatically; this adds repo-tracked noise to skip.
+
+# Vendored agent/skill trees (caveman, cavecrew, graphify) — not Book A Sloth code
+.agents/
+.claude/
+
+# Graphify's own output
+graphify-out/

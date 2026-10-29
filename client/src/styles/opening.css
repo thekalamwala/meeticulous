@@ -1,0 +1,33 @@
+/* opening.css — "The Opening" ceremony. Homepage language: the dramatic moment
+   lives on our ink section (like the homepage stats band), not a velvet stage. */
+
+.op-stage {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 6vh 20px;
+  overflow: hidden;
+  background: #191919;               /* --ink */
+  color: #fff;
+}
+.op-stage--light { background: #F8FAFC; color: #191919; }   /* --canvas */
+
+/* Headlines on the ink stage must stay white — beat the global unlayered
+   h1{color:ink} rule (Tailwind's .text-white utility loses to it). Only h1s
+   sit directly on the dark stage; card headings (h2/h3) keep the ink default. */
+.op-stage h1 { color: #fff; }
+
+/* slow, deliberate entrances */
+.op-fade   { animation: opFade 700ms ease both; }
+.op-rise   { animation: opRise 700ms cubic-bezier(.2,.7,.2,1) both; }
+.op-pop    { animation: opPop 600ms cubic-bezier(.2,.8,.2,1) both; }
+
+@keyframes opFade { from { opacity: 0 } to { opacity: 1 } }
+@keyframes opRise { from { opacity: 0; transform: translateY(18px) } to { opacity: 1; transform: none } }
+@keyframes opPop  { from { opacity: 0; transform: scale(.94) } to { opacity: 1; transform: none } }
+
+@media (prefers-reduced-motion: reduce) {
+  .op-fade, .op-rise, .op-pop { animation: none; }
+}

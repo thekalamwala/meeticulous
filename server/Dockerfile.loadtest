@@ -1,0 +1,12 @@
+# Load-test server image. Runs the Express app in a daemon-managed container so the
+# host's background-node reaper can't kill it mid-run. Env (incl. Supabase creds +
+# LOAD_TEST_MODE) is injected at runtime via --env-file server/.env.loadtest, so no
+# secrets are baked into the image.
+# Node 22 (not 20): @supabase/realtime-js needs native WebSocket (Node >=21).
+FROM node:22-slim
+WORKDIR /app
+COPY package*.json ./
+RUN npm install --omit=dev
+COPY . .
+EXPOSE 5599
+CMD ["node", "server.js"]

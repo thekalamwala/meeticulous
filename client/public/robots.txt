@@ -1,0 +1,39 @@
+# Meeticulous — robots.txt
+# Public profiles/services are crawlable; private app surfaces are not.
+# The sitemap is generated dynamically from the DB (see server sitemapController).
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /super-dashboard
+Disallow: /hello-sloth
+Disallow: /dashboard
+Disallow: /user/
+Disallow: /vendor-register
+Disallow: /vendor/signup
+Disallow: /review/
+Disallow: /auth/
+Disallow: /login
+Disallow: /signup
+Disallow: /login-as-vendor
+Disallow: /forgot-password
+Disallow: /reset-password
+# Booking funnel is a duplicate of the public service page (which is canonical).
+Disallow: /*/booking/
+# Social-card render target (/og/blog/:slug) — an art board, not a page.
+Disallow: /og/
+
+# AI crawlers — explicitly welcomed (GEO / AI-search citation).
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://meeticulous.com/sitemap.xml

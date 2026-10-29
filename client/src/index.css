@@ -1,0 +1,530 @@
+@import './styles/fonts.css';
+@import './styles/design-tokens.css';
+@import './styles/base-fb.css';
+@import './styles/components/button.css';
+@import './styles/components/card.css';
+@import './styles/components/input.css';
+@import './styles/components/badge.css';
+@import './styles/components/modal.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: clip; /* clip (not hidden): stops horizontal scroll WITHOUT making
+                       html/body a vertical scroll container — that container is
+                       what created dead scroll space below the footer on /lp. */
+}
+
+/* Lenis smooth-scroll (client/src/hooks/useLenis.js).
+   Required so Lenis' per-frame scrollTo isn't fought by native smooth scroll. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+html.lenis,
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: clip; /* clip (not hidden): stops horizontal scroll WITHOUT making
+                       html/body a vertical scroll container — that container is
+                       what created dead scroll space below the footer on /lp. */
+  background: #fdfcf9;
+  color: var(--color-ink);
+  font-family: 'Poppins', 'Poppins Fallback', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  isolation: isolate;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--color-ink);
+  letter-spacing: 0;
+  line-height: 1.15;
+}
+
+/* Headings: H1/H2/H3 → Plus Jakarta Sans. Everything else inherits Poppins. */
+h1,
+h2,
+h3 {
+  font-family: 'Plus Jakarta Sans', 'Plus Jakarta Sans Fallback', 'Poppins', system-ui, sans-serif;
+}
+
+/* Admin/super-admin dashboard: entirely Poppins, headings included. */
+.admin-shell,
+.admin-shell h1,
+.admin-shell h2,
+.admin-shell h3,
+.admin-shell h4,
+.admin-shell h5,
+.admin-shell h6 {
+  font-family: 'Poppins', system-ui, sans-serif;
+}
+
+/* No link underline anywhere in the admin dashboard (incl. hover). */
+.admin-shell a,
+.admin-shell a:hover {
+  text-decoration: none;
+}
+
+/* ═══ Admin theme tokens ═══════════════════════════════════════
+   Light values on .admin-shell, dark on .admin-shell.dark.
+   Sidebar chrome stays permanently dark; ONLY content area switches. */
+.admin-shell {
+  --adm-bg: #F6F7F9;
+  --adm-card: #ffffff;
+  --adm-card-hover: #fafafa;
+  --adm-border: rgba(229, 231, 235, 0.8);
+  --adm-text-1: #111827;
+  --adm-text-2: #4b5563;
+  --adm-text-3: #9ca3af;
+  --adm-accent: #0079C1;
+  --adm-th-bg: #f9fafb;
+  --adm-hover: rgba(17, 24, 39, 0.045);
+  --adm-header-bg: rgba(255, 255, 255, 0.95);
+  --adm-ok: #15803d;      --adm-ok-bg: #f0fdf4;
+  --adm-warn: #b45309;    --adm-warn-bg: #fffbeb;
+  --adm-danger: #dc2626;  --adm-danger-bg: #fef2f2;
+  --adm-info: #00457C;    --adm-info-bg: #eff6ff;
+}
+.admin-shell.dark {
+  --adm-bg: #0f0f10;
+  --adm-card: #17171a;
+  --adm-card-hover: #1c1c20;
+  --adm-border: #232327;
+  --adm-text-1: #e7e7ea;
+  --adm-text-2: #a1a1aa;
+  --adm-text-3: #71717a;
+  --adm-th-bg: #1c1c20;
+  --adm-hover: rgba(255, 255, 255, 0.05);
+  --adm-header-bg: rgba(23, 23, 26, 0.95);
+  --adm-ok: #4ade80;      --adm-ok-bg: rgba(34, 197, 94, 0.12);
+  --adm-warn: #fbbf24;    --adm-warn-bg: rgba(245, 158, 11, 0.12);
+  --adm-danger: #f87171;  --adm-danger-bg: rgba(239, 68, 68, 0.12);
+  --adm-info: #60a5fa;    --adm-info-bg: rgba(59, 130, 246, 0.12);
+}
+
+/* Token utilities — avoids Tailwind text-[var(...)] ambiguity pitfalls */
+.adm-canvas { background: var(--adm-bg); }
+.adm-card { background: var(--adm-card); border: 1px solid var(--adm-border); }
+.adm-t1 { color: var(--adm-text-1); }
+.adm-t2 { color: var(--adm-text-2); }
+.adm-t3 { color: var(--adm-text-3); }
+.adm-border { border-color: var(--adm-border) !important; }
+.adm-th { background: var(--adm-th-bg); }
+.adm-hoverable:hover { background: var(--adm-hover); }
+.adm-chip { background: var(--adm-hover); color: var(--adm-text-3); }
+.adm-header { background: var(--adm-header-bg); border-bottom: 1px solid var(--adm-border); color: var(--adm-text-1); }
+
+.adm-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px;
+  border-radius: 9999px; font-size: 11px; font-weight: 600; line-height: 1.4; white-space: nowrap; }
+.adm-badge-ok      { color: var(--adm-ok);     background: var(--adm-ok-bg); }
+.adm-badge-warn    { color: var(--adm-warn);   background: var(--adm-warn-bg); }
+.adm-badge-danger  { color: var(--adm-danger); background: var(--adm-danger-bg); }
+.adm-badge-info    { color: var(--adm-info);   background: var(--adm-info-bg); }
+.adm-badge-neutral { color: var(--adm-text-2); background: var(--adm-hover); }
+
+.adm-table thead tr { background: var(--adm-th-bg); }
+.adm-table tbody tr + tr { border-top: 1px solid var(--adm-border); }
+
+/* Dark content-area default ink — replaces the deleted legacy override */
+.admin-shell.dark main { color: var(--adm-text-2); }
+
+/* No link underline on host profile page (incl. hover). */
+.host-profile a,
+.host-profile a:hover {
+  text-decoration: none;
+}
+
+h1 {
+  font-size: clamp(2.1rem, 5vw, 3.7rem);
+  font-weight: 800;
+}
+
+h2 {
+  font-size: clamp(1.45rem, 3vw, 2.35rem);
+  font-weight: 700;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+}
+
+p,
+label,
+button,
+input,
+textarea,
+select,
+small {
+  line-height: 1.6;
+}
+
+a {
+  color: var(--color-primary-dark);
+  text-decoration: none;
+  text-underline-offset: 0.2em;
+}
+
+/* No hover-underline anywhere app-wide, blog pages included. Blog cards signal
+   hover by tinting the heading to the post's category colour; links in post
+   body copy wipe an underline in, below. */
+
+/* Post body links (rich() in BlogPost.jsx). The underline wipes in from the
+   left on hover, in the link's own colour — inherited, so each category keeps
+   its accent.
+
+   Drawn as a background-image rather than the usual absolutely-positioned
+   ::after: these links sit in prose and wrap across lines, and an absolute
+   ::after can only cover the first line box. A background stretches over every
+   line fragment, so a wrapped link underlines in full.
+
+   Body copy is 400, so 500 here is the +100 the design asks for. */
+.blog-page .blog-link {
+  font-weight: 500;
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 2px;
+  padding-bottom: 3px;
+  transition: background-size 0.25s ease;
+}
+
+.blog-page .blog-link:hover,
+.blog-page .blog-link:focus-visible {
+  background-size: 100% 2px;
+}
+
+/* Honour a reduced-motion preference: keep the underline, drop the wipe. */
+@media (prefers-reduced-motion: reduce) {
+  .blog-page .blog-link {
+    transition: none;
+  }
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  min-height: 40px;
+  border-radius: var(--btn-radius);
+  touch-action: manipulation;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #d7dce3;
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  padding: 0.78rem 0.95rem;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+textarea {
+  min-height: 112px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(254, 81, 0, 0.14);
+}
+
+button:focus-visible,
+a:focus-visible,
+[role='button']:focus-visible {
+  outline: 3px solid rgba(254, 81, 0, 0.34);
+  outline-offset: 3px;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+::selection {
+  background: rgba(254, 81, 0, 0.22);
+  color: var(--color-ink);
+}
+
+@layer components {
+  .app-shell {
+    min-height: 100vh;
+    background: var(--color-soft);
+  }
+
+  .app-container {
+    width: min(100% - 2rem, 72rem);
+    margin-inline: auto;
+  }
+
+  .page-card {
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .surface-card,
+  .fb-card {
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+    box-shadow: 0 8px 30px rgba(23, 32, 51, 0.05);
+  }
+
+  .btn-primary,
+  .fb-btn--primary {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--btn-radius);
+    background: var(--color-primary);
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 12px 26px rgba(254, 81, 0, 0.22);
+  }
+
+  .btn-primary:hover,
+  .fb-btn--primary:hover {
+    background: var(--color-primary-dark);
+    text-decoration: none;
+  }
+
+  .btn-secondary,
+  .fb-btn--secondary {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    border: var(--btn-border-width) solid var(--btn-border-color);
+    border-radius: var(--btn-radius);
+    background: #ffffff;
+    color: var(--color-ink);
+    font-weight: 700;
+  }
+
+  .btn-secondary:hover,
+  .fb-btn--secondary:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 10px 24px rgba(23, 32, 51, 0.08);
+    text-decoration: none;
+  }
+
+  .scroll-safe {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 767px) {
+  body {
+    font-size: 15px;
+  }
+
+  .app-container {
+    width: min(100% - 1rem, 72rem);
+  }
+
+  h1 {
+    line-height: 1.12;
+  }
+
+  button,
+  a[class*='px-'],
+  input,
+  select {
+    min-height: 44px;
+  }
+}
+
+/* Toggle switches are decorative pills, not tap-target buttons — the 44px
+   mobile min-height above stretches the track and floats the knob. Higher
+   specificity than bare `button`, so it wins in and out of the media query. */
+button[role='switch'] {
+  min-height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════
+   HOMEPAGE — premium editorial styling (Meeticulous landing)
+   ════════════════════════════════════════════════════════════ */
+
+/* Calm neutral surface palette */
+.sloth-bg-canvas { background: #F8FAFC; }
+.sloth-bg-sand   { background: #F1F5F9; }
+.sloth-ink       { color: #191919; }
+.sloth-muted     { color: #6b6b6b; }
+
+/* Hero ambient aura — soft warm wash on the flat canvas (no palette change).
+   Painted inside the hero <section> box; gradients fade out before the edges,
+   so nothing bleeds into neighbouring sections. */
+.sloth-hero-aura {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(38rem 30rem at 82% 14%, rgba(254, 81, 0, 0.08), transparent 62%),
+    radial-gradient(40rem 32rem at 8% 4%, rgba(244, 241, 234, 0.85), transparent 58%);
+}
+
+/* Frosted glass cards (hero floating cards) */
+.sloth-glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 18px 50px -12px rgba(26, 26, 26, 0.18);
+}
+
+/* Slow vertical float for hero glass cards */
+@keyframes sloth-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-14px); }
+}
+.sloth-float       { animation: sloth-float 6s ease-in-out infinite; }
+.sloth-float--slow { animation: sloth-float 8s ease-in-out infinite; }
+.sloth-float--mid  { animation: sloth-float 7s ease-in-out infinite; animation-delay: -2s; }
+
+/* Gentle 5px bob for homepage stat icons. CSS (compositor) instead of a
+   framer-motion `repeat: Infinity` — that ran a JS rAF tick every frame forever. */
+@keyframes sloth-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+.sloth-bob { display: inline-block; animation: sloth-bob 3s ease-in-out infinite; }
+
+/* Infinite testimonial marquee rows */
+@keyframes sloth-marquee-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes sloth-marquee-right {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+.sloth-marquee {
+  display: flex;
+  width: max-content;
+  gap: 1.25rem;
+}
+.sloth-marquee--left  { animation: sloth-marquee-left  64s linear infinite; }
+.sloth-marquee--right { animation: sloth-marquee-right 64s linear infinite; }
+.sloth-marquee-wrap:hover .sloth-marquee { animation-play-state: paused; }
+
+/* Animated SVG line-draw for "How it works" icons */
+@keyframes sloth-draw {
+  to { stroke-dashoffset: 0; }
+}
+.sloth-draw path,
+.sloth-draw circle,
+.sloth-draw rect,
+.sloth-draw line {
+  stroke-dasharray: 220;
+  stroke-dashoffset: 220;
+}
+.sloth-draw.is-visible path,
+.sloth-draw.is-visible circle,
+.sloth-draw.is-visible rect,
+.sloth-draw.is-visible line {
+  animation: sloth-draw 1.4s ease forwards;
+}
+
+/* Edge fade mask for marquee + scrollers */
+.sloth-edge-fade {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sloth-float, .sloth-float--slow, .sloth-float--mid, .sloth-bob,
+  .sloth-marquee--left, .sloth-marquee--right { animation: none !important; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   HOMEPAGE — "See it in action" colourful stacking product shots
+   ALL viewports (mobile included): cards pile via position: sticky — each
+   card pins below the navbar with a per-index offset so the deck stacks as
+   you scroll, identical on phone and desktop. Per-card colour from var --cc.
+   ════════════════════════════════════════════════════════════ */
+.home-shots { display: flex; flex-direction: column; gap: 24px; }
+.home-shot { position: sticky; top: calc(80px + var(--i, 0) * 16px); }
+/* Last card scrolls normally over the pinned stack so the section ends right
+   after it — kills the large empty gap a fully-pinned stack leaves below. */
+.home-shot:last-child { position: relative; top: 0; }

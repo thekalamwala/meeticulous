@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); if [ \"$branch\" = \"main\" ] || [ \"$branch\" = \"master\" ]; then printf '{\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"GIT BRANCH GUARD: You are on the protected branch (%s). Before doing ANY code change, file edit, or implementation work, STOP and call the AskUserQuestion tool to ask the user what branch to create. Offer clickable options for the branch TYPE (feat/, fix/, docs/, chore/, refactor/) inferred from their request, plus any other clarifying questions the request needs. After they pick, create it with: git checkout -b <type>/<short-name>. If the user is only asking a question or chatting with no code change, ignore this guard.\"}}' \"$branch\"; fi",
+            "statusMessage": "Checking git branch..."
+          }
+        ]
+      }
+    ]
+  }
+}

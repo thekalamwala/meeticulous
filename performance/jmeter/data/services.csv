@@ -1,0 +1,5 @@
+service_id,host_id,slug,price
+879d3623-a687-4765-b627-35a5d0c46381,208c46a8-aa9b-481c-8b03-92a9a00a1491,loadtest-rules-free,0
+b54df5a9-ee12-4372-92e1-47da8ed061cc,208c46a8-aa9b-481c-8b03-92a9a00a1491,loadtest-rules-paid,500
+712d06e8-e95c-46eb-aa0e-a4815e4536b3,619ebe87-a735-4a57-90ed-2d88a6f0351b,loadtest-gcal-free,0
+880a73f4-08de-4baf-9d2a-61418bffb255,619ebe87-a735-4a57-90ed-2d88a6f0351b,loadtest-gcal-paid,500

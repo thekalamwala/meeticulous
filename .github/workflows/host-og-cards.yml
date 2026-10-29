@@ -1,0 +1,106 @@
+name: Host OG cards
+
+# Generates the 1200x630 social share cards for host profiles
+# (client/scripts/generateHostOgImages.mjs — see host card feature, v3.88).
+#
+# WHY here and not on Render: the generator screenshots the built /og/host route
+# with Puppeteer/Chromium. Render is the shared API host and we keep Chromium off
+# it (OOM risk); GitHub Actions has Chromium + the prod secrets, and this mirrors
+# how the blog cards are generated off-Render.
+#
+# Two schedules (all times UTC):
+#   - Nightly  20:00 UTC (~01:30 IST): sweep og_status in (none, dirty) — picks up
+#     new hosts who became card-ready and hosts who edited a visible field. Cheap:
+#     og_hash skips a row whose card didn't actually change.
+#   - Weekly   Sun 19:30 UTC: --all --force full refresh, so rating/booking stat
+#     drift (which a profile edit doesn't mark dirty) never lags more than a week.
+# Also runnable on demand (workflow_dispatch) with mode = sweep | full.
+#
+# Required repo secrets (Settings → Secrets and variables → Actions):
+#   PROD_SUPABASE_URL                — https://ayjhlwyzszykqtnaktpb.supabase.co
+#   PROD_SUPABASE_SERVICE_ROLE_KEY   — prod service-role key (storage upload + row update)
+# Without them the job exits early (the script requires both).
+
+on:
+  schedule:
+    - cron: "0 20 * * *"    # nightly sweep
+    - cron: "30 19 * * 0"   # weekly full refresh
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "sweep (none/dirty) or full (--all --force)"
+        default: sweep
+        type: choice
+        options: [sweep, full]
+
+concurrency:
+  group: host-og-cards
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    name: Generate host OG cards
+    runs-on: ubuntu-latest
+    # Never run on forks — the secrets aren't there and it would just fail noisily.
+    if: github.repository == 'bookasloth/book-a-sloth'
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - run: npm ci
+
+      # Puppeteer's bundled Chromium needs these shared libs on the runner. The
+      # `|| true` fallback covers Ubuntu's libasound2 → libasound2t64 rename.
+      - name: Chromium system libraries
+        working-directory: .
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libnss3 libatk-bridge2.0-0 libcups2 libxkbcommon0 libxcomposite1 \
+            libxdamage1 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2t64 \
+            || sudo apt-get install -y libasound2
+
+      - name: Ensure Chromium is present
+        run: npx puppeteer browsers install chrome
+
+      # The /og/host route reads all data from query params — no API or Supabase
+      # call — so these values are never used at render time. They exist only to
+      # satisfy vite.config.js's required-env guard (which prevents shipping a
+      # white-screen bundle). The dist is screenshotted then discarded, so
+      # placeholders are correct and keep real keys out of CI.
+      - name: Build (no prerender)
+        run: npm run build:no-prerender
+        env:
+          VITE_SUPABASE_URL: https://placeholder.supabase.co
+          VITE_SUPABASE_ANON_KEY: placeholder-anon-key-unused-by-og-route
+          VITE_API_URL: https://placeholder.invalid/api
+          # Unset → index.html keeps a literal `%VITE_POSTHOG_HOST%` href and Vite's
+          # decodeURI throws "URI malformed". Every %PLACEHOLDER% in index.html needs
+          # a value here, used or not.
+          VITE_POSTHOG_HOST: https://placeholder.invalid
+
+      - name: Decide mode
+        id: mode
+        working-directory: .
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            [ "${{ github.event.inputs.mode }}" = "full" ] && echo "args=--all --force" >> "$GITHUB_OUTPUT" || echo "args=" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "30 19 * * 0" ]; then
+            echo "args=--all --force" >> "$GITHUB_OUTPUT"   # weekly full refresh
+          else
+            echo "args=" >> "$GITHUB_OUTPUT"                # nightly sweep
+          fi
+
+      - name: Generate cards
+        run: node scripts/generateHostOgImages.mjs ${{ steps.mode.outputs.args }}
+        env:
+          SUPABASE_URL: ${{ secrets.PROD_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.PROD_SUPABASE_SERVICE_ROLE_KEY }}

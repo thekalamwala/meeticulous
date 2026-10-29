@@ -1,0 +1,73 @@
+/* Self-hosted fonts (latin subset, woff2). Served from /public/fonts.
+ *
+ * Replaces the two render-blocking Google Fonts requests (the index.html <link>
+ * and the index.css @import that also fetched Poppins a SECOND time). Same
+ * families/weights as before, so nothing visual changes — just same-origin,
+ * cache-controlled, and no cross-origin round trips on the critical path.
+ *
+ * font-display: swap → text paints immediately in the fallback, then swaps to the
+ * webfont when it arrives (no invisible-text FOIT). The 1–2 above-the-fold weights
+ * are <link rel="preload">ed in index.html so the hero gets them fastest.
+ */
+
+/* Plus Jakarta Sans — variable font: one file covers weights 400–800 (used for
+   headings, h1–h3). */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/plus-jakarta-sans-latin-var.woff2') format('woff2');
+}
+
+/* Poppins — static weights (body + admin UI). */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/poppins-latin-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/poppins-latin-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/poppins-latin-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/poppins-latin-700.woff2') format('woff2');
+}
+
+/* Metric-matched fallbacks. With critical CSS inlined, the prerendered page paints
+ * BEFORE the webfonts land, so the swap re-flowed text (CLS ~0.11 on mobile
+ * Lighthouse). These local faces are scaled to Poppins / Plus Jakarta Sans metrics
+ * (size-adjust from avg lowercase advance vs Arial; overrides from hhea), so the
+ * swap is near-invisible. Recompute if the webfont files change. */
+@font-face {
+  font-family: 'Poppins Fallback';
+  src: local('Arial'), local('Helvetica'), local('Liberation Sans'), local('Arimo'), local('Roboto');
+  size-adjust: 114.11%;
+  ascent-override: 92.02%;
+  descent-override: 30.67%;
+  line-gap-override: 8.76%;
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans Fallback';
+  src: local('Arial'), local('Helvetica'), local('Liberation Sans'), local('Arimo'), local('Roboto');
+  size-adjust: 106.05%;
+  ascent-override: 97.88%;
+  descent-override: 20.93%;
+  line-gap-override: 0%;
+}

@@ -1,0 +1,36 @@
+/* error-pages.css — scoped styling for the branded error / offline pages.
+ *
+ * Layout lives in Tailwind on the components; this file owns the brand accent
+ * token, the illustration halo, and the calm fade-in (kept here so we don't add
+ * a global keyframe). Everything is namespaced under .bas-error so it can't
+ * leak into the rest of the app. Dark mode follows the OS via prefers-color-scheme
+ * (Tailwind's default `media` strategy — no darkMode override in tailwind.config). */
+
+.bas-error {
+  --bas-error-accent: #0079C1;
+}
+
+/* Calm entrance — respects reduced-motion. */
+@keyframes basErrorFade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.bas-error__card {
+  animation: basErrorFade 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bas-error__card { animation: none; }
+}
+
+/* Illustration — error pages are always white (no dark-mode variant), so the
+   line-art colour is fixed light-mode. See ErrorLayout for why. */
+.bas-error-art {
+  color: #1f2937;
+}
+
+.bas-error-art__halo {
+  fill: var(--bas-error-accent);
+  opacity: 0.06;
+}

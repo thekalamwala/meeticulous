@@ -1,0 +1,29 @@
+/* Dashboard-scoped design tokens.
+   Scoped under .dash so nothing leaks into marketing/profile pages that use the
+   global brutalist .fb-* system. Applied by DashboardLayout's root wrapper. */
+.dash {
+  --dash-canvas: #f7f5ef;
+  --elev-1: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --elev-2: 0 1px 3px rgba(16, 24, 40, 0.08), 0 1px 2px rgba(16, 24, 40, 0.04);
+  --elev-3: 0 12px 32px -8px rgba(16, 24, 40, 0.20), 0 4px 12px rgba(16, 24, 40, 0.08);
+}
+
+.dash-elev-1 { box-shadow: var(--elev-1); }
+.dash-elev-2 { box-shadow: var(--elev-2); }
+.dash-elev-3 { box-shadow: var(--elev-3); }
+
+.dash-elev-hover { transition: box-shadow 0.15s ease; }
+.dash-elev-hover:hover { box-shadow: var(--elev-2); }
+
+/* Hide scrollbars on horizontal nav/tab strips while keeping scroll. */
+.dash-noscrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.dash-noscrollbar::-webkit-scrollbar { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dash *,
+  .dash *::before,
+  .dash *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

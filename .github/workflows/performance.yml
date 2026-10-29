@@ -1,0 +1,99 @@
+name: Performance (JMeter)
+
+# Load-test gate. Runs the smoke scenario against an ephemeral server booted in
+# LOAD_TEST_MODE, then fails if the SLA is breached (P95 > 500ms / error > 1% /
+# throughput drop > 20% vs baseline).
+#
+# Runs on PRs to main, plus manual + nightly. SAFE before secrets exist: the
+# "Check secrets" step soft-passes (no-op) when TEST_SUPABASE_* is absent, so it
+# never blocks PRs. Once the secrets are set it actually runs the smoke + gate.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 2 * * *'   # nightly 02:00 UTC
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check secrets
+        id: gate
+        run: |
+          if [ -z "${{ secrets.TEST_SUPABASE_URL }}" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::TEST_SUPABASE_URL not set — skipping perf run (configure secrets to enable)."
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.run == 'true'
+        with:
+          node-version: '22'
+
+      - uses: actions/setup-java@v4
+        if: steps.gate.outputs.run == 'true'
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install JMeter
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          curl -sSL https://dlcdn.apache.org/jmeter/binaries/apache-jmeter-5.6.3.zip -o jmeter.zip
+          unzip -q jmeter.zip -d "$HOME"
+          echo "JMETER_HOME=$HOME/apache-jmeter-5.6.3" >> "$GITHUB_ENV"
+
+      - name: Install server deps
+        if: steps.gate.outputs.run == 'true'
+        run: npm ci --prefix server
+
+      - name: Boot server (LOAD_TEST_MODE) + seed
+        if: steps.gate.outputs.run == 'true'
+        env:
+          PORT: '5599'
+          LOAD_TEST_MODE: 'true'
+          NODE_ENV: development
+          PERF_LOG: 'false'
+          SUPABASE_URL: ${{ secrets.TEST_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.TEST_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.TEST_SUPABASE_SERVICE_KEY }}
+          SUPABASE_JWT_SECRET: ${{ secrets.TEST_SUPABASE_JWT_SECRET }}
+          SUPER_ADMIN_JWT_SECRET: ci-not-secret
+          OAUTH_STATE_SECRET: ci-not-secret
+          GOOGLE_TOKEN_KEY: ci-not-secret-32-bytes-padding-xx
+        run: |
+          node server/server.js & echo $! > server.pid
+          for i in $(seq 1 30); do curl -sf http://localhost:5599/health && break || sleep 1; done
+          node server/scripts/seedLoadTest.js
+          node server/scripts/exportLoadTestData.js
+
+      - name: Run smoke + gate
+        if: steps.gate.outputs.run == 'true'
+        env:
+          JAVA_HOME: ${{ env.JAVA_HOME }}
+        run: |
+          cd performance
+          node scripts/run.js local smoke slots-readonly
+          node scripts/parse-jtl.js
+
+      - name: Upload HTML report
+        if: ${{ always() && steps.gate.outputs.run == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: jmeter-report
+          path: performance/jmeter/reports/
+          retention-days: 14
+
+      - name: Cleanup test data
+        if: ${{ always() && steps.gate.outputs.run == 'true' }}
+        env:
+          SUPABASE_URL: ${{ secrets.TEST_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.TEST_SUPABASE_SERVICE_KEY }}
+        run: node server/scripts/cleanupLoadTest.js || true

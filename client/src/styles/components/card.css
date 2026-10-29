@@ -1,0 +1,32 @@
+/* Friendly Brutalism Cards */
+.fb-card {
+    background: var(--surface);
+    border: 3px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-hard-2);
+    padding: var(--space-3);
+}
+
+.fb-card--elevated {
+    box-shadow: var(--shadow-hard-2);
+}
+
+.fb-card--compact {
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
+}
+
+.fb-card__title {
+    margin: 0 0 var(--space-2) 0;
+    font-weight: 700;
+}
+
+.fb-card__body {
+    color: var(--text);
+}
+
+@media (max-width: 640px) {
+    .fb-card {
+        padding: var(--space-2);
+    }
+}

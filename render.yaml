@@ -1,0 +1,197 @@
+# Render Blueprint — Book A Sloth backend (Express API)
+# Render reads this when you create a "Blueprint" from the repo. It provisions
+# the API service with the right build/start/health settings. Secrets are NOT
+# in here (sync: false) — you paste them once in the Render dashboard.
+#
+# Region note: "singapore" is the closest Render region to India (lowest latency
+# for your users). Change if your audience is elsewhere.
+
+services:
+  - type: web
+    name: bookasloth-api
+    runtime: node
+    rootDir: server
+    region: singapore
+    plan: starter # $7/mo, always-on (no spin-down → reminder/email crons keep running)
+    branch: main
+    # Tests gate the deploy: the server ships from HERE, so this is the only place
+    # a failing server test can actually stop a bad server reaching production.
+    # (Running them in the Vercel build instead would gate the *client* deploy on
+    # server tests — wrong service — and would mean putting the service-role key
+    # into the client's deploy project just to run jest.)
+    #
+    # Unit tests only — `npm test` would also run tests/integration, which hit live
+    # Supabase/SMTP with this service's real credentials. Firing those at production
+    # on every deploy is not a build check, it is a side effect.
+    buildCommand: npm ci && npm run test:unit
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true # deploy automatically on push to main
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PERF_LOG
+        value: "false"
+      - key: NODE_VERSION
+        value: "22"
+      # ── Everything below: set the real values in Render dashboard → Environment.
+      #    sync:false keeps them OUT of git. CLIENT_URL/API_URL get your real
+      #    domains once DNS is wired in Phase 4.
+      - key: CLIENT_URL
+        sync: false
+      - key: API_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      - key: SUPER_ADMIN_JWT_SECRET
+        sync: false
+      - key: OAUTH_STATE_SECRET
+        sync: false
+      - key: GOOGLE_TOKEN_KEY
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: ADMIN_ALERT_EMAIL
+        sync: false
+      - key: SUPER_ADMIN_EMAIL
+        sync: false
+
+  # ───────────────────────────────────────────────────────────────────────
+  # STAGING backend — the online "testing URL" that sits between your laptop
+  # and production. Deploys from the `staging` git branch and points at your
+  # SEPARATE staging Supabase project, so nothing you test here can touch real
+  # customer/payment data. Full setup + promotion flow: docs/release-pipeline.md
+  #
+  #   plan: free  → spins down after ~15 min idle (cold start ~30s on next hit).
+  #   Fine for staging. TRADE-OFF: while spun down, reminder/email crons do NOT
+  #   run on staging — acceptable, you test those flows by hand. Bump to
+  #   `starter` ($7/mo) only if you need staging crons always-on.
+  # ───────────────────────────────────────────────────────────────────────
+  - type: web
+    name: bookasloth-api-staging
+    runtime: node
+    rootDir: server
+    region: singapore
+    plan: free
+    branch: staging
+    # Unit tests only — `npm test` would also run tests/integration, which hit live
+    # Supabase/SMTP with this service's real credentials. Firing those at a live DB
+    # on every deploy is not a build check, it is a side effect.
+    buildCommand: npm ci && npm run test:unit
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true # auto-deploy on push to the `staging` branch
+    envVars:
+      - key: NODE_ENV
+        value: production # mirror prod behaviour (CORS, cookies) so staging is a true rehearsal
+      - key: PERF_LOG
+        value: "false"
+      - key: NODE_VERSION
+        value: "22"
+      # ── Set real values in the Render dashboard for THIS service. Use the
+      #    STAGING variants (see docs/release-pipeline.md → "Staging env values"):
+      #      • SUPABASE_* → your separate STAGING Supabase project
+      #      • RAZORPAY_* → Razorpay TEST-mode keys (never live keys on staging)
+      #      • CLIENT_URL / API_URL → staging URLs
+      #      • GOOGLE_REDIRECT_URI → staging callback (add it in Google Console too)
+      - key: CLIENT_URL
+        sync: false
+      - key: API_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      - key: SUPER_ADMIN_JWT_SECRET
+        sync: false
+      - key: OAUTH_STATE_SECRET
+        sync: false
+      - key: GOOGLE_TOKEN_KEY
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: ADMIN_ALERT_EMAIL
+        sync: false
+      - key: SUPER_ADMIN_EMAIL
+        sync: false
+
+  # ───────────────────────────────────────────────────────────────────────
+  # STAGING frontend — static SPA for sales demos / testing. Deploys from the
+  # `staging` branch. Uses build:no-prerender (plain `vite build`) so the build
+  # skips the puppeteer + prerender/OG steps (Vercel-prod concerns, not needed
+  # for a demo SPA). No CORS change required: set the staging API's CLIENT_URL
+  # to THIS site's URL and corsOrigins derives the allowlist (+ www/apex) from it.
+  #   URL will be https://bookasloth-client-staging.onrender.com
+  # NOTE: verify the static-site fields on first Blueprint apply — Render's schema
+  # for static sites (runtime/staticPublishPath/routes) can change; adjust if it errors.
+  # ───────────────────────────────────────────────────────────────────────
+  - type: web
+    name: bookasloth-client-staging
+    runtime: static
+    rootDir: client
+    branch: staging
+    buildCommand: npm ci && npm run build:no-prerender
+    staticPublishPath: dist
+    autoDeploy: true
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: VITE_API_URL
+        value: https://bookasloth-api-staging.onrender.com/api
+      - key: VITE_SUPABASE_URL
+        value: https://xwvciqkayammbvsidqig.supabase.co
+      - key: VITE_POSTHOG_HOST
+        value: https://app.posthog.com
+      # Public anon key — set in the Render dashboard (kept out of git by convention).
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false

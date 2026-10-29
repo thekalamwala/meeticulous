@@ -1,0 +1,88 @@
+-- ============================================================================
+-- REVIEWS — FILL-IN TEMPLATE for host sndatarkar's services   (PROD Mumbai)
+-- Date: 2026-09-11
+-- ============================================================================
+--
+--  ⚠️  READ THIS FIRST — DO NOT INVENT REVIEWS.
+--
+--  Every row here becomes a public testimonial AND feeds the schema.org
+--  aggregateRating sent to Google. Fabricated reviews are:
+--    - deceptive to real guests, and
+--    - a Google review-spam policy violation that risks a manual action
+--      (the OPPOSITE of fixing SEO).
+--  The codebase already enforces "real reviews only" for aggregateRating.
+--
+--  Only insert reviews from REAL clients, in their own words, with the rating
+--  they actually gave (1-5). If you don't have real ones yet, leave this file
+--  as-is — it inserts NOTHING until you uncomment the block below.
+--
+-- ── HOW IT WORKS (verified in code) ─────────────────────────────────────────
+--  Read filters (serviceController.js / hostController.js):
+--     direction = 'guest_to_host'  AND  status <> 'hidden'
+--  Service page + rating: matched by service_id (a trigger recomputes
+--     services.rating/total_reviews automatically on insert).
+--  Host profile aggregateRating: matched by host_id.
+--  → set BOTH service_id and host_id on each row.
+--
+--  REVIEWER NAME/PHOTO comes from reviewer_id → profiles (reviews_reviewer_id_fkey).
+--     - reviewer_id = the client's real profiles.id  → shows their name + photo.
+--     - reviewer_id = NULL                           → shows as anonymous (no name).
+--     NEVER point reviewer_id at an unrelated profile to fake a name.
+--
+--  Constants for this host:
+--     host_id / subject_id = '6dbf6aac-6580-41d9-a8dd-6ba3b9609f32'  (Shubham)
+--     service_id options:
+--       talk-about-shubham-datarkar-dot-com                    aa65524b-9519-4fff-8f03-9a05a72d2f17
+--       video-kyc-for-book-a-sloth                             6e0ddb63-e82a-457d-8c2b-14ea4f297fde
+--       book-a-sloth-app-online-demo-30-min-advisory-session   d7b2768c-acd2-447e-9b8d-9cafb3fef151
+--       seo-consultancy-by-shubham-30-minute-advisory-session  42c0acca-63ab-4c24-8c16-dcdcd9b7bd17
+--
+-- ── OPTIONAL: find a real client's profile id (to show their name) ───────────
+--   select id, name, phone, email from profiles
+--   where phone = '+9198XXXXXXXX' or lower(email) = lower('client@example.com');
+--   -- use that id as reviewer_id below; else leave NULL for anonymous.
+--
+-- ── OPTIONAL: link to the client's real completed booking (nice-to-have) ─────
+--   select id, service_id, created_at from bookings
+--   where host_id='6dbf6aac-6580-41d9-a8dd-6ba3b9609f32' and status='completed'
+--   order by created_at desc;
+--   -- use that id as booking_id below; else leave NULL.
+--
+-- ============================================================================
+-- FILL EACH ROW WITH A REAL REVIEW, THEN UNCOMMENT THE BLOCK AND RUN.
+-- Duplicate/remove the (...) rows to match how many real reviews you have.
+-- ============================================================================
+
+-- begin;
+--
+-- insert into reviews (host_id, subject_id, service_id, reviewer_id, booking_id,
+--                      direction, status, rating, comment, created_at) values
+--   -- (service_id,                                   reviewer_id, booking_id, rating, 'real comment')
+--   ('6dbf6aac-6580-41d9-a8dd-6ba3b9609f32', '6dbf6aac-6580-41d9-a8dd-6ba3b9609f32',
+--    '42c0acca-63ab-4c24-8c16-dcdcd9b7bd17',        -- service: SEO Consultancy
+--    NULL,                                           -- reviewer_id: real profiles.id, or NULL for anonymous
+--    NULL,                                           -- booking_id: real booking, or NULL
+--    'guest_to_host', 'visible',
+--    5,                                              -- rating 1-5 (the real one)
+--    $c$<< paste the client's real words here >>$c$,
+--    now()),
+--
+--   ('6dbf6aac-6580-41d9-a8dd-6ba3b9609f32', '6dbf6aac-6580-41d9-a8dd-6ba3b9609f32',
+--    'd7b2768c-acd2-447e-9b8d-9cafb3fef151',        -- service: Book A Sloth App Demo
+--    NULL, NULL, 'guest_to_host', 'visible',
+--    5,
+--    $c$<< paste the client's real words here >>$c$,
+--    now());
+--
+-- commit;
+
+-- ── After running, verify ───────────────────────────────────────────────────
+--   select r.rating, left(r.comment,60) as comment, p.name as reviewer, s.slug
+--   from reviews r
+--   left join profiles p on p.id = r.reviewer_id
+--   left join services s on s.id = r.service_id
+--   where r.host_id='6dbf6aac-6580-41d9-a8dd-6ba3b9609f32' and r.direction='guest_to_host'
+--   order by r.created_at desc;
+--   -- and confirm the trigger updated the service:
+--   select slug, rating, total_reviews from services
+--   where host_id='6dbf6aac-6580-41d9-a8dd-6ba3b9609f32' and is_active=true;

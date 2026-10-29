@@ -1,0 +1,18 @@
+{
+  "name": "bookasloth-performance",
+  "version": "1.0.0",
+  "private": true,
+  "description": "JMeter load-testing harness for Book A Sloth. See README.md.",
+  "scripts": {
+    "perf:local": "node scripts/run.js local smoke",
+    "perf:staging": "node scripts/run.js staging smoke",
+    "perf:smoke": "node scripts/run.js local smoke",
+    "perf:normal": "node scripts/run.js local normal",
+    "perf:launch": "node scripts/run.js local launch",
+    "perf:spike": "node scripts/run.js local spike",
+    "perf:ladder": "node scripts/ladder.js local",
+    "perf:ladder:staging": "node scripts/ladder.js staging",
+    "perf:report": "node scripts/run.js report",
+    "perf:gate": "node scripts/parse-jtl.js"
+  }
+}

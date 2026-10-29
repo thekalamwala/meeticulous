@@ -1,0 +1,83 @@
+name: Reseed Bolt KB
+
+# Rebuilds the two prod tables the Bolt support bot answers from — which a normal
+# deploy does NOT touch, so editing the sources changes nothing until this runs:
+#   - kb_chunks  ← docs/help/*.md            (retrieval corpus, via seedKnowledgeBase.js)
+#   - bot_faqs   ← server/scripts/data/botFaqs.json (canned FAQ layer, via seedBotFaqs.js)
+#
+# Fires when a merge to main changes those sources, or on demand (workflow_dispatch).
+#
+# Required repo secrets (already present — host-og-cards.yml uses the same two):
+#   PROD_SUPABASE_URL, PROD_SUPABASE_SERVICE_ROLE_KEY
+# Optional:
+#   VOYAGE_API_KEY — without it, kb_chunks seed FTS-only (no vector search) until a
+#   later run supplies it. Both scripts are idempotent (clear + reinsert).
+#
+# NOTE: this targets whatever DB the PROD_* secrets point at. Staging is reseeded
+# separately (run the scripts locally against the staging .env).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/help/**"
+      - "server/scripts/seedKnowledgeBase.js"
+      - "server/scripts/seedBotFaqs.js"
+      - "server/scripts/data/botFaqs.json"
+  workflow_dispatch:
+
+concurrency:
+  group: reseed-bot-kb
+  cancel-in-progress: false
+
+jobs:
+  reseed:
+    name: Reseed kb_chunks + bot_faqs (prod)
+    runs-on: ubuntu-latest
+    # Never run on forks — the secrets aren't there and it would just fail noisily.
+    if: github.repository == 'bookasloth/book-a-sloth'
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - run: npm ci
+
+      - name: Guard — prod Supabase secrets must be set
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "::error::PROD_SUPABASE_URL / PROD_SUPABASE_SERVICE_ROLE_KEY not set — cannot reseed."
+            exit 1
+          fi
+          [ -z "$VOYAGE_API_KEY" ] && echo "::warning::VOYAGE_API_KEY not set — kb_chunks will be FTS-only (no embeddings)."
+          echo "ok"
+        env:
+          SUPABASE_URL: ${{ secrets.PROD_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.PROD_SUPABASE_SERVICE_ROLE_KEY }}
+          VOYAGE_API_KEY: ${{ secrets.VOYAGE_API_KEY }}
+
+      - name: Reseed kb_chunks + bot_faqs
+        run: |
+          node scripts/seedKnowledgeBase.js
+          node scripts/seedBotFaqs.js
+        env:
+          SUPABASE_URL: ${{ secrets.PROD_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.PROD_SUPABASE_SERVICE_ROLE_KEY }}
+          VOYAGE_API_KEY: ${{ secrets.VOYAGE_API_KEY }}
+          # Both seed scripts only ever use supabaseAdmin, but config/supabase.js
+          # eagerly constructs the PUBLIC anon client at require time as well, and
+          # createClient throws "supabaseKey is required" on an empty key. With no
+          # anon key in this job, every run died on the first require — before the
+          # delete, so nothing was lost, but nothing was ever reseeded either. The
+          # anon client is never called here, so any non-empty value satisfies
+          # construction without granting anything; a real key would add a secret
+          # to manage for no benefit. Deliberately NOT fixed in config/supabase.js:
+          # on the live server a missing anon key SHOULD fail loudly.
+          SUPABASE_ANON_KEY: unused-by-seed-scripts

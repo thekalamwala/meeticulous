@@ -1,0 +1,43 @@
+/* Friendly Brutalism Inputs */
+.fb-input {
+    width: 100%;
+    padding: 0.8rem 0.95rem;
+    border: 2px solid var(--color-line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--text);
+    transition: border-color var(--motion-base), box-shadow var(--motion-base), transform var(--motion-fast);
+}
+
+.fb-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 6px rgba(20, 83, 45, 0.08);
+}
+
+.fb-input--center {
+    text-align: center;
+}
+
+.fb-input--sm {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    font-size: 12.5px; /* match navbar links */
+}
+
+.fb-input--otp {
+    letter-spacing: 0.35em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
+    font-size: 1.5rem;
+}
+
+@media (max-width: 640px) {
+    .fb-input {
+        font-size: 0.95rem;
+        padding: 0.75rem 0.9rem;
+    }
+
+    .fb-input--otp {
+        font-size: 1.25rem;
+    }
+}

@@ -1,0 +1,120 @@
+name: Daily DB Backup
+
+# Daily encrypted pg_dump of the production Supabase database.
+#
+# WHY: Supabase free tier has no point-in-time recovery, and there is otherwise
+# no backup. A bad migration or a buggy DELETE would be unrecoverable. This is
+# the cheapest insurance available until prod Supabase is upgraded to Pro (PITR).
+#
+# SETUP (one-time) — add two repo secrets in GitHub → Settings → Secrets → Actions:
+#   BACKUP_DATABASE_URL  Supabase dashboard → Project Settings → Database →
+#                        Connection string → URI (Session mode, port 5432).
+#                        Format: postgresql://postgres.[ref]:[pw]@aws-0-ap-south-1.pooler.supabase.com:5432/postgres
+#   BACKUP_PASSPHRASE    A long random string. The dump is AES256-encrypted with
+#                        it. STORE IT IN YOUR PASSWORD MANAGER — without it the
+#                        backup cannot be restored. Never commit it.
+#
+# Until BACKUP_DATABASE_URL is set, this workflow skips (no-op, never fails).
+#
+# RESTORE: download the artifact, then:
+#   gpg --batch --decrypt --passphrase "$BACKUP_PASSPHRASE" \
+#       -o restore.dump bookasloth-YYYYMMDD-HHMMSS.dump.gpg
+#   pg_restore -d "$TARGET_DATABASE_URL" --clean --if-exists --no-owner restore.dump
+#   (restore into a STAGING project first to verify — never test-restore on prod.)
+#
+# RETENTION: artifacts live 30 days on GitHub. For longer / truly off-vendor
+# retention, add an upload to S3/Cloudflare R2 after the dump step (see the
+# commented block at the bottom). Test a restore monthly — an untested backup
+# is a hypothesis, not a backup.
+
+on:
+  schedule:
+    - cron: "30 2 * * *" # 02:30 UTC = 08:00 IST, daily
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: db-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    name: Dump + encrypt + upload
+    runs-on: ubuntu-latest
+    steps:
+      - name: Gate on secrets
+        id: gate
+        env:
+          BACKUP_DATABASE_URL: ${{ secrets.BACKUP_DATABASE_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          if [ -z "${BACKUP_DATABASE_URL:-}" ]; then
+            echo "BACKUP_DATABASE_URL not set — skipping. Add the repo secrets to enable backups."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ -z "${BACKUP_PASSPHRASE:-}" ]; then
+            echo "::error::BACKUP_DATABASE_URL is set but BACKUP_PASSPHRASE is not. Refusing to"
+            echo "::error::upload an UNENCRYPTED dump (it contains customer PII + payment data)."
+            echo "::error::Add a BACKUP_PASSPHRASE secret and re-run."
+            exit 1
+          fi
+          echo "run=true" >> "$GITHUB_OUTPUT"
+
+      - name: Install PostgreSQL 17 client
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          set -euo pipefail
+          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
+          sudo apt-get update -qq
+          sudo apt-get install -y postgresql-client-17
+          pg_dump --version
+
+      - name: Dump and encrypt
+        if: steps.gate.outputs.run == 'true'
+        env:
+          DATABASE_URL: ${{ secrets.BACKUP_DATABASE_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+          PGSSLMODE: require
+        run: |
+          set -euo pipefail
+          STAMP="$(date -u +%Y%m%d-%H%M%S)"
+          FILE="bookasloth-${STAMP}.dump"
+          echo "Dumping production database to ${FILE} ..."
+          # -Fc = compressed custom format (best for pg_restore --clean / selective restore)
+          pg_dump "$DATABASE_URL" -Fc --no-owner --no-privileges -f "$FILE"
+          ls -lh "$FILE"
+          echo "Encrypting (AES256) ..."
+          gpg --batch --yes --symmetric --cipher-algo AES256 \
+            --passphrase "$BACKUP_PASSPHRASE" -o "${FILE}.gpg" "$FILE"
+          rm -f "$FILE"
+          ls -lh "${FILE}.gpg"
+          echo "ARTIFACT=${FILE}.gpg" >> "$GITHUB_ENV"
+
+      - name: Upload backup artifact
+        if: steps.gate.outputs.run == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-backup-${{ github.run_id }}
+          path: ${{ env.ARTIFACT }}
+          retention-days: 30
+          if-no-files-found: error
+
+      # ── Optional: off-vendor retention to S3 / Cloudflare R2 ──────────────
+      # Uncomment and add AWS_* (or R2) secrets to also push the encrypted dump
+      # to your own bucket with longer retention. GitHub artifacts are convenient
+      # but same-vendor; a separate bucket survives a GitHub account loss.
+      #
+      # - name: Upload to S3/R2
+      #   if: steps.gate.outputs.run == 'true'
+      #   env:
+      #     AWS_ACCESS_KEY_ID: ${{ secrets.BACKUP_S3_ACCESS_KEY }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.BACKUP_S3_SECRET_KEY }}
+      #     AWS_DEFAULT_REGION: ${{ secrets.BACKUP_S3_REGION }}
+      #     S3_ENDPOINT: ${{ secrets.BACKUP_S3_ENDPOINT }}  # R2: https://<acct>.r2.cloudflarestorage.com
+      #   run: |
+      #     aws s3 cp "$ARTIFACT" "s3://${{ secrets.BACKUP_S3_BUCKET }}/db/" \
+      #       ${S3_ENDPOINT:+--endpoint-url "$S3_ENDPOINT"}

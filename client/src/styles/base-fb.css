@@ -1,0 +1,255 @@
+/* Friendly Brutalism - Base styles */
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headline system */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-primary);
+    line-height: 1.12;
+    margin: 0 0 var(--space-2) 0;
+    color: var(--text);
+}
+
+h1 {
+    font-size: clamp(2.1rem, 5vw, 3.7rem);
+    font-weight: 800;
+}
+
+h2 {
+    font-size: clamp(1.45rem, 3vw, 2.35rem);
+    font-weight: 700;
+}
+
+h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+p,
+label,
+button,
+input,
+textarea,
+select,
+small {
+    line-height: 1.6;
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+/* No hover-underline app-wide, blog pages included. */
+
+/* Focus and accessibility */
+:focus {
+    outline: none;
+}
+
+:focus-visible {
+    outline: 3px solid rgba(20, 83, 45, 0.14);
+    outline-offset: 3px;
+}
+
+/* Inputs */
+input,
+textarea,
+select {
+    font: inherit;
+    border: 2px solid var(--color-line);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    padding: 0.75rem 0.9rem;
+    transition: border-color var(--motion-base), box-shadow var(--motion-base);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 6px rgba(20, 83, 45, 0.08);
+}
+
+/* Buttons base */
+button {
+    font-family: var(--font-primary);
+    cursor: pointer;
+}
+
+/* Layout helpers */
+.fb-container {
+    width: min(100% - 2rem, 72rem);
+    max-width: 100%;
+    margin-inline: auto;
+    padding-inline: 1rem;
+}
+
+.fb-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+}
+
+.fb-col {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.fb-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.fb-stack-sm {
+    gap: var(--space-1);
+}
+
+.fb-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 100%;
+}
+
+.fb-table th,
+.fb-table td {
+    padding: 0.85rem 1rem;
+    text-align: left;
+    border-color: transparent;
+}
+
+.fb-table th {
+    color: var(--color-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.fb-table tbody tr {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.fb-table td {
+    vertical-align: top;
+}
+
+@media (max-width: 768px) {
+    .fb-table {
+        display: block;
+    }
+
+    .fb-table thead {
+        display: none;
+    }
+
+    .fb-table tbody,
+    .fb-table tr {
+        display: block;
+        width: 100%;
+    }
+
+    .fb-table tr {
+        margin-bottom: 1rem;
+        padding: 0.85rem;
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        border-radius: var(--radius-lg);
+    }
+
+    /* Each <td> becomes a "LABEL | value" grid row. Grid (not flex) so cells that
+       hold several stacked block children — Booking = ID/Date/Time, Customer =
+       Name/Email, Service = Title/Price — keep those children stacked vertically
+       in the value column instead of collapsing into one cramped horizontal row
+       (the mobile overlap bug). Single-value cells stay label-left/value-right. */
+    .fb-table td {
+        display: grid;
+        grid-template-columns: minmax(7rem, 38%) 1fr;
+        column-gap: 0.75rem;
+        row-gap: 0.15rem;
+        align-items: start;
+        padding: 0.5rem 0;
+        white-space: normal;
+        text-align: right;
+    }
+
+    .fb-table td::before {
+        content: attr(data-label);
+        grid-column: 1;
+        grid-row: 1;
+        text-align: left;
+        color: var(--color-muted);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    /* All value nodes share the right-hand column and stack top-to-bottom.
+       justify-self:end keeps chips/pills/buttons at their natural width (no
+       full-column stretch) and right-aligned next to the label. */
+    .fb-table td > * {
+        grid-column: 2;
+        justify-self: end;
+        max-width: 100%;
+        min-width: 0;
+        word-break: break-word;
+    }
+}
+
+/* Ensure media assets never overflow */
+img,
+svg,
+video,
+canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Utility: visually-hidden */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 640px) {
+    body {
+        font-size: 0.95rem;
+    }
+
+    h1 {
+        font-size: clamp(2rem, 7vw, 3rem);
+    }
+
+    h2 {
+        font-size: clamp(1.35rem, 4vw, 2rem);
+    }
+
+    .fb-container {
+        width: min(100% - 1.25rem, 100%);
+    }
+}
