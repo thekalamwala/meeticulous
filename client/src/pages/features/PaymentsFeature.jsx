@@ -37,7 +37,7 @@ import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
 
-const START = '/be-a-sloth';
+const START = '/become-a-host';
 const GOLD = '#E9C46A';       // accent on dark forest only (AA on #0E3B2C)
 const GOLD_INK = '#7A5C0E';   // gold for text on light paper (AA on #F5EFE3)
 

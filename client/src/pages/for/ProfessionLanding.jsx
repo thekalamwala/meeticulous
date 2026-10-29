@@ -29,7 +29,7 @@ import { FREE_PLAN, PAID_PLANS } from '../../data/plans';
 import useFeeOnly from '../../hooks/useFeeOnly';
 import { getProfessionLanding } from './professionLandingData';
 
-const ROUTE_START = '/be-a-sloth';
+const ROUTE_START = '/become-a-host';
 const YEAR = 2026;
 
 /* ── Minimal page header — logo left, themed CTA right; mobile = logo centered ── */

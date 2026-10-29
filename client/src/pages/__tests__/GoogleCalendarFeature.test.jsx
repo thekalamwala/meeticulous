@@ -29,7 +29,7 @@ describe('Google Calendar feature page', () => {
   it('renders one h1 and real CTA targets', () => {
     renderPage();
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
-    expect(screen.getAllByRole('link', { name: /connect your calendar free/i })[0].getAttribute('href')).toBe('/be-a-sloth');
+    expect(screen.getAllByRole('link', { name: /connect your calendar free/i })[0].getAttribute('href')).toBe('/become-a-host');
     expect(screen.getByRole('link', { name: /what syncs which way/i }).getAttribute('href')).toBe('#sync');
     expect(screen.getByRole('link', { name: /see pricing/i }).getAttribute('href')).toBe('/pricing');
   });

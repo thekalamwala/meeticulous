@@ -72,7 +72,7 @@ const ToolsIndex = () => (
       </div>
 
       <p className="mt-10 text-sm text-neutral-500">
-        Ready to take bookings and get paid upfront? <Link to="/be-a-sloth" className="text-primary hover:underline">Create your booking page</Link>.
+        Ready to take bookings and get paid upfront? <Link to="/become-a-host" className="text-primary hover:underline">Create your booking page</Link>.
       </p>
     </main>
   </div>

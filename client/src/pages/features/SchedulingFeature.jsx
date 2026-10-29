@@ -44,7 +44,7 @@ import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
 
-const START = '/be-a-sloth';
+const START = '/become-a-host';
 const BLUE = '#00457C';       // accent for text + fills on white (AA, ~6.7:1)
 const BLUE_DEEP = '#0B2559';  // dark section background
 const BLUE_SKY = '#93C5FD';   // decorative / text on BLUE_DEEP only (AA)

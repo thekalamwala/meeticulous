@@ -87,7 +87,7 @@ const SimplybookAlternative = lazy(() => import('./pages/compare/SimplybookAlter
 const ZohoBookingsAlternative = lazy(() => import('./pages/compare/ZohoBookingsAlternative'));
 
 // Vendor Google auth (Google-only signup/login)
-const BeASloth       = lazy(() => import('./pages/BeASloth'));
+const BecomeAHost    = lazy(() => import('./pages/BecomeAHost'));
 const InviteLanding  = lazy(() => import('./pages/InviteLanding'));
 const HostLogin      = lazy(() => import('./pages/HostLogin'));
 const Changelog      = lazy(() => import('./pages/Changelog'));
@@ -399,14 +399,14 @@ function App() {
     location.pathname.startsWith('/vendor-register') ||
     location.pathname.startsWith('/lp') ||
     location.pathname.startsWith('/for/') ||
-    location.pathname === '/be-a-sloth' ||
+    location.pathname === '/become-a-host' ||
     location.pathname === '/opening' ||
     location.pathname === '/hello-sloth';
 
   const isAuthPage =
     location.pathname === '/login' ||
     location.pathname === '/login-as-vendor' ||
-    location.pathname === '/be-a-sloth';
+    location.pathname === '/become-a-host';
 
   // Guest booking page (/:profileSlug/booking/:serviceSlug) gets a stripped-down
   // footer — CTA band + legal bar only, no link columns — so checkout stays focused.
@@ -508,11 +508,13 @@ function App() {
           {/* Customers never register — accounts are created automatically
               during booking (phone OTP). Old signup URL redirects home. */}
           <Route path="/signup" element={<Navigate to="/" replace />} />
-          {/* #534: email/password host signup retired — hosts use Google at /be-a-sloth. */}
-          <Route path="/vendor/signup" element={<Navigate to="/be-a-sloth" replace />} />
+          {/* #534: email/password host signup retired — hosts use Google at /become-a-host. */}
+          <Route path="/vendor/signup" element={<Navigate to="/become-a-host" replace />} />
 
-          {/* Vendor auth — Google-only */}
-          <Route path="/be-a-sloth" element={<BeASloth />} />
+          {/* Host signup — Google-only */}
+          <Route path="/become-a-host" element={<BecomeAHost />} />
+          {/* Old /be-a-sloth URL → permanent redirect to the renamed route. */}
+          <Route path="/be-a-sloth" element={<Navigate to="/become-a-host" replace />} />
           {/* Host login door (Google-only) — also the Google-callback error target. */}
           <Route path="/login-as-vendor" element={<HostLogin />} />
           <Route path="/auth/google/done" element={<GoogleAuthDone />} />

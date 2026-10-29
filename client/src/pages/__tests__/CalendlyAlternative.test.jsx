@@ -20,11 +20,11 @@ describe("CalendlyAlternative (/compare/calendly-alternative)", () => {
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
   });
 
-  it("primary CTAs go to /be-a-sloth", () => {
+  it("primary CTAs go to /become-a-host", () => {
     renderPage();
     const ctas = screen.getAllByRole("link", { name: /start free/i });
     expect(ctas.length).toBeGreaterThanOrEqual(1);
-    expect(ctas.every((a) => a.getAttribute("href") === "/be-a-sloth")).toBe(true);
+    expect(ctas.every((a) => a.getAttribute("href") === "/become-a-host")).toBe(true);
   });
 
   it("table shows Calendly's paidFrom and Sloth Active's monthly price", () => {

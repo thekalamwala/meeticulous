@@ -14,7 +14,7 @@ import {
 // lib/earningsCalc.js + lib/morPricing.js (server mirror) — display only, real
 // pricing computed server-side at booking. No invented tiers, no fake figures.
 
-const ROUTE_START = "/be-a-sloth";
+const ROUTE_START = "/become-a-host";
 const ICON = { free: Sprout, premium: Rocket };
 const ACCENT = { free: "#4AB765", premium: "#0079C1" };
 const CTA_LABEL = { free: "Get Started", premium: "Start on Sloth Active" };

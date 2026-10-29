@@ -52,7 +52,7 @@ import razorpayLogo from '../enterprise-v2/assets/logo/razorpay.png';
 import OperatorCredit from '../../components/common/OperatorCredit';
 import PageGuides from '../../components/common/PageGuides';
 
-const START = '/be-a-sloth';
+const START = '/become-a-host';
 const LOGIN = '/login-as-vendor';
 const DEMO = '/sndatarkar/booking/book-a-sloth-app-online-demo-30-min-advisory-session';
 

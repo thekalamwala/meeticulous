@@ -24,7 +24,7 @@ import { ogCard } from "../config/ogImages";
 // there and in both reserved-segment lists. No aggregateRating by design
 // (platform rating lives only on the homepage node — see bas-seo-schema skill).
 
-const ROUTE_START = "/be-a-sloth";
+const ROUTE_START = "/become-a-host";
 const CANONICAL = `${SITE_URL}/appointment-booking-software`;
 
 // Real assets the founder will supply drop into client/public/images/abs/.

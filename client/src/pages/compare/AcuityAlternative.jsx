@@ -34,7 +34,7 @@ import {
 import { TESTIMONIALS } from '../../data/testimonials';
 
 const SLUG = 'acuity-alternative';
-const START = '/be-a-sloth';
+const START = '/become-a-host';
 const ACU = COMPETITORS.acuity;
 const FREE = FREE_PLAN.name;
 const PREM = PREMIUM_PLAN.name;

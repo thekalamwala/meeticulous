@@ -255,7 +255,7 @@ export default function OpeningCeremony({ status: statusProp, embedded = false, 
             <h2 className="mt-3 font-heading text-2xl font-extrabold sm:text-3xl">Open a business on it <span className="text-primary">too.</span></h2>
             <p className="mx-auto mt-3 max-w-md text-muted">Register today. Your booking page, live in minutes.</p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <Link to="/be-a-sloth" onClick={() => exit('placed')} className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 font-heading font-bold text-white">Register <ArrowRight size={18} /></Link>
+              <Link to="/become-a-host" onClick={() => exit('placed')} className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 font-heading font-bold text-white">Register <ArrowRight size={18} /></Link>
               <button onClick={() => exit('placed')} className="rounded-md border border-black/10 px-6 py-3 font-heading font-bold text-ink">Maybe later</button>
             </div>
             <div className="mt-6 flex flex-wrap justify-center gap-3 text-left">

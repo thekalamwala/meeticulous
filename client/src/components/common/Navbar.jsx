@@ -883,7 +883,7 @@ const Navbar = () => {
               /* Public CTAs */
               <>
                 <Link
-                  to="/be-a-sloth"
+                  to="/become-a-host"
                   className="btn hidden md:inline-flex items-center px-4 py-2 text-[13px] font-semibold text-white bg-primary hover:bg-[#005E99] transition-colors duration-150 shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-[#0079C1] focus-visible:ring-offset-1 hover:no-underline"
                 >
                   Let's Get Started
@@ -1004,7 +1004,7 @@ const Navbar = () => {
 
                 {/* Primary conversion CTA — last in the sequence */}
                 <Link
-                  to="/be-a-sloth"
+                  to="/become-a-host"
                   className="btn mt-1 block w-full rounded-lg bg-primary py-2.5 text-center text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-[#005E99] hover:no-underline"
                 >
                   Let's Get Started

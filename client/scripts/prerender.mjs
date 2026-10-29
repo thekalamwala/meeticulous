@@ -115,7 +115,7 @@ const PRERENDER_ROUTES = [
   // Marketing/event pages with bespoke OG cards — prerender so social scrapers
   // (which don't run JS) get the card + real title, not the default og:image.
   '/how-it-works',
-  '/be-a-sloth',
+  '/become-a-host',
   '/opening',
   '/inaugurators',
   // KEEP IN SYNC with careersContent.js `jobs` slugs (it imports lucide-react,

@@ -58,7 +58,7 @@ const Glossary = () => (
       </div>
 
       <p className="mt-10 text-sm text-neutral-500">
-        Ready to put these into practice? <Link to="/be-a-sloth" className="text-primary hover:underline">Create your booking page</Link> or try the{" "}
+        Ready to put these into practice? <Link to="/become-a-host" className="text-primary hover:underline">Create your booking page</Link> or try the{" "}
         <Link to="/tools" className="text-primary hover:underline">free calculators</Link>.
       </p>
     </main>

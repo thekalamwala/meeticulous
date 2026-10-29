@@ -14,7 +14,7 @@ const ROUTES = [
   'login', 'logout', 'signin', 'signup', 'register', 'forgot-password', 'reset-password',
   'help', 'about', 'privacy', 'terms', 'refund', 'unsubscribe', 'support', 'explore', 'how-it-works',
   'guest-terms', 'host-agreement', 'host-fees', // legal document set
-  'be-a-sloth', 'login-as-vendor', 'vendor', 'vendor-register', 'auth',
+  'be-a-sloth', 'become-a-host', 'login-as-vendor', 'vendor', 'vendor-register', 'auth',
   'hello-sloth', 'super-dashboard', 'admin', 'dashboard', 'user', 'review', 'manage-booking', 'lp', 'for',
   'og', // /og/blog/:slug — render target for the OG card generator
   'my-bookings', 'profile', 'reviews', 'loyalty', 'settings', 'search', 'wall-of-love', 'moments',

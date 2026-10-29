@@ -68,7 +68,7 @@ async function processGuestHostInvites() {
           emailData: {
             first_name: name.split(' ')[0] || 'there',
             completed_count: count,
-            become_host_url: `${base}/be-a-sloth`,
+            become_host_url: `${base}/become-a-host`,
           },
           recipientUserId: guestId,
         },

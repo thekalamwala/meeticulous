@@ -13,7 +13,7 @@
   },
   {
     "pattern": "become a host",
-    "answer": "Become a host from the [Be a Sloth](/be-a-sloth) page in just **7 simple steps**.\n\n---\n\n**⭐ 1. Sign in with Google**  \nNo passwords. If you've booked as a guest before, use the same account.\n\n---\n\n**⭐ 2. Claim your username**  \nPick your public link, like `bookasloth.com/your-name`.\n\n---\n\n**⭐ 3. Verify WhatsApp**  \nReceive booking alerts and confirmations.\n\n---\n\n**⭐ 4. Complete your profile**  \nAdd your photo, bio, and profession.\n\n---\n\n**⭐ 5. Set your availability**  \nChoose when you're available for bookings.\n\n---\n\n**⭐ 6. Add your first service**  \nSet its name, duration, and price.\n\n---\n\n**⭐ 7. Choose a plan**  \nStart free with **Starter**, or upgrade to **Host+** or **Studio** for more features and **0% commission**.\n\n---\n\nYour page goes live once setup is complete. If you leave midway, just sign in again and continue where you left off.",
+    "answer": "Become a host from the [Become a host](/become-a-host) page in just **7 simple steps**.\n\n---\n\n**⭐ 1. Sign in with Google**  \nNo passwords. If you've booked as a guest before, use the same account.\n\n---\n\n**⭐ 2. Claim your username**  \nPick your public link, like `bookasloth.com/your-name`.\n\n---\n\n**⭐ 3. Verify WhatsApp**  \nReceive booking alerts and confirmations.\n\n---\n\n**⭐ 4. Complete your profile**  \nAdd your photo, bio, and profession.\n\n---\n\n**⭐ 5. Set your availability**  \nChoose when you're available for bookings.\n\n---\n\n**⭐ 6. Add your first service**  \nSet its name, duration, and price.\n\n---\n\n**⭐ 7. Choose a plan**  \nStart free with **Starter**, or upgrade to **Host+** or **Studio** for more features and **0% commission**.\n\n---\n\nYour page goes live once setup is complete. If you leave midway, just sign in again and continue where you left off.",
     "enabled": true,
     "category": "General"
   },
@@ -73,7 +73,7 @@
   },
   {
     "pattern": "how do i become a host?",
-    "answer": "Visit the [Be a Sloth](/be-a-sloth) page and sign in with Google.\n\nThen choose your username, verify your WhatsApp number, set up your profile, availability, and first service, select a plan, and publish your page. Once setup is complete, you're ready to start accepting bookings.",
+    "answer": "Visit the [Become a host](/become-a-host) page and sign in with Google.\n\nThen choose your username, verify your WhatsApp number, set up your profile, availability, and first service, select a plan, and publish your page. Once setup is complete, you're ready to start accepting bookings.",
     "enabled": true,
     "category": "General"
   },
@@ -97,7 +97,7 @@
   },
   {
     "pattern": "how do i login",
-    "answer": "Depends on who you are.\n\n**As a guest** (booking a service): go to the [login page](/login), enter your phone number, and we'll send you a 6-digit code by WhatsApp and email. Enter the code and you're in. No password needed.\n\n**As a host** (publishing services): sign in with Google from the [Be a Sloth](/be-a-sloth) page. That's it — no separate password to remember.",
+    "answer": "Depends on who you are.\n\n**As a guest** (booking a service): go to the [login page](/login), enter your phone number, and we'll send you a 6-digit code by WhatsApp and email. Enter the code and you're in. No password needed.\n\n**As a host** (publishing services): sign in with Google from the [Become a host](/become-a-host) page. That's it — no separate password to remember.",
     "enabled": true,
     "category": "General"
   },
@@ -115,13 +115,13 @@
   },
   {
     "pattern": "i cant log in",
-    "answer": "**Guests:** Go to the [Login](/login) page, enter your phone number, and verify the 6-digit code sent to your WhatsApp and email.\n\n**Hosts:** Sign in with Google from the [Be a Sloth](/be-a-sloth) page.\n\nIf you still can't log in, visit the [Help](/help) page for support.",
+    "answer": "**Guests:** Go to the [Login](/login) page, enter your phone number, and verify the 6-digit code sent to your WhatsApp and email.\n\n**Hosts:** Sign in with Google from the [Become a host](/become-a-host) page.\n\nIf you still can't log in, visit the [Help](/help) page for support.",
     "enabled": true,
     "category": "General"
   },
   {
     "pattern": "i need money",
-    "answer": "If you're looking to earn money, the fastest way is to **become a host** — set up a service, share your link, and get paid when clients book.\n\nHere's how it works:\n\n**You set your own price.** On paid plans (**Host+** or **Studio**), you keep 100% of what clients pay — no commission. On the free **Starter** plan, a small commission applies per booking instead.\n\n**Money lands in your account when booked.** Once a guest pays, it goes straight to your earnings. You can request a payout anytime you've earned at least ₹1 — our team reviews it and transfers it to your bank.\n\n**Start free, upgrade when you're ready.** The **Starter** plan costs nothing, includes real payments, and has no credit card needed. If you want 0% commission and more features, upgrade to **Host+** or **Studio**.\n\nReady to start? Head to [Be a Sloth](/be-a-sloth) and sign in with Google — the setup takes about 5 minutes.",
+    "answer": "If you're looking to earn money, the fastest way is to **become a host** — set up a service, share your link, and get paid when clients book.\n\nHere's how it works:\n\n**You set your own price.** On paid plans (**Host+** or **Studio**), you keep 100% of what clients pay — no commission. On the free **Starter** plan, a small commission applies per booking instead.\n\n**Money lands in your account when booked.** Once a guest pays, it goes straight to your earnings. You can request a payout anytime you've earned at least ₹1 — our team reviews it and transfers it to your bank.\n\n**Start free, upgrade when you're ready.** The **Starter** plan costs nothing, includes real payments, and has no credit card needed. If you want 0% commission and more features, upgrade to **Host+** or **Studio**.\n\nReady to start? Head to [Become a host](/become-a-host) and sign in with Google — the setup takes about 5 minutes.",
     "enabled": true,
     "category": "General"
   },

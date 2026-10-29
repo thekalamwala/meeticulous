@@ -46,7 +46,7 @@ import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
 
-const START = '/be-a-sloth';
+const START = '/become-a-host';
 const NAVY = '#0B1026';          // page dark base
 const PLUM = '#2E1065';          // gradient end
 const VIOLET = '#8B5CF6';        // decorative only (glows, lines, fills)

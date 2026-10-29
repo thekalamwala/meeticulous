@@ -127,7 +127,7 @@ const HostLogin = () => {
 
           <p className="mt-8 text-sm text-gray-500">
             New here?{" "}
-            <Link to="/be-a-sloth" className="font-semibold text-primary hover:underline">Sign up as a Host</Link>
+            <Link to="/become-a-host" className="font-semibold text-primary hover:underline">Sign up as a Host</Link>
           </p>
         </div>
 

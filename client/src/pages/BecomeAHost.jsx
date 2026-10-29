@@ -62,9 +62,9 @@ const PERSONAS = [
   { label: 'Designers',   hue: '#36D8FF', icon: <Glyph><circle cx="13.5" cy="6.5" r=".7" fill="currentColor" stroke="none"/><circle cx="17" cy="10.5" r=".7" fill="currentColor" stroke="none"/><circle cx="8.5" cy="7.5" r=".7" fill="currentColor" stroke="none"/><circle cx="6.5" cy="12.5" r=".7" fill="currentColor" stroke="none"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.6-.7 1.6-1.6 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1a1.6 1.6 0 0 1 1.6-1.6h2c3 0 5.5-2.5 5.5-5.6C22 6 17.5 2 12 2z"/></Glyph> },
 ];
 
-// /be-a-sloth — vendor signup. Google-only: one consent screen grants identity
+// /become-a-host — host signup. Google-only: one consent screen grants identity
 // + calendar access, the account is created automatically in the callback.
-const BeASloth = () => {
+const BecomeAHost = () => {
   const { startVendorGoogleAuth, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [demoOpen, setDemoOpen] = useState(false);
@@ -97,7 +97,7 @@ const BeASloth = () => {
       <Seo
         title="Get booked and paid — become a host on Meeticulous"
         description="Start taking bookings in minutes. Create your Meeticulous host page, publish services, and get paid — sign up free with Google."
-        canonical={`${SITE_URL}/be-a-sloth`}
+        canonical={`${SITE_URL}/become-a-host`}
         image={ogCard('be-a-sloth', 'png')}
       />
       {/* ── LEFT · colourful brand panel (lg+ only) ──────────────────────────── */}
@@ -133,7 +133,7 @@ const BeASloth = () => {
                   {p.icon}
                 </span>
                 <span className="min-w-0 leading-tight">
-                  <span className="block text-[9px] font-medium uppercase tracking-wide text-gray-500">bookasloth</span>
+                  <span className="block text-[9px] font-medium uppercase tracking-wide text-gray-500">meeticulous</span>
                   <span className="block truncate text-[13px] font-bold text-ink">{p.label}</span>
                 </span>
               </div>
@@ -166,7 +166,7 @@ const BeASloth = () => {
             Become a host
           </p>
           <h1 className="mt-1.5 font-heading text-2xl font-bold tracking-tight text-ink sm:text-3xl">
-            Be a Sloth
+            Become a host
           </h1>
           <p className="mt-1 text-base font-semibold text-gray-700">
             Get booked. Get paid.
@@ -249,7 +249,7 @@ const BeASloth = () => {
           </button>
 
           <p className="mt-8 text-sm text-gray-500">
-            Already a sloth?{' '}
+            Already a host?{' '}
             <Link to="/login-as-vendor" className="font-semibold text-primary hover:underline">Log in</Link>
           </p>
 
@@ -270,4 +270,4 @@ const Check = () => (
   </svg>
 );
 
-export default BeASloth;
+export default BecomeAHost;

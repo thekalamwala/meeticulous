@@ -36,7 +36,7 @@ import useUtm from "../hooks/useUtm";
 // homepage cards and the enforced server limits never drift apart. Only features
 // the server actually enforces are shown (honesty rule — see plans.js).
 
-const ROUTE_START = "/be-a-sloth";
+const ROUTE_START = "/become-a-host";
 
 // Green (Sloth / operate) vs orange (Active / grow) — the two plan accents from
 // plans.js. Kept as locals so the storytelling sections read the same hues as the

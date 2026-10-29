@@ -141,7 +141,7 @@ const Login = () => {
 
             <p className="mt-6 text-center text-sm text-gray-500">
               Want to get booked?{" "}
-              <Link to="/be-a-sloth" className="text-primary hover:underline">Become a host</Link>
+              <Link to="/become-a-host" className="text-primary hover:underline">Become a host</Link>
             </p>
           </>
         )}

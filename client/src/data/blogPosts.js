@@ -793,7 +793,7 @@ export const BLOG_POSTS = [
       ]
     },
     {
-      "p": "That last one matters most. Want a human to review your resume before you send it? You can [book a 30-minute resume review](/blog/how-to-book-an-appointment-online) with a mentor who has read hundreds of them — one link, one slot, done. If you are the mentor on the other side, here is [how to become a paid mentor](/blog/how-to-become-paid-mentor) and run tidy [30-minute review calls](/blog/30-minute-call-setup) without drowning in scheduling. Your craft is the feedback; let the [booking machinery](/be-a-sloth) handle the rest."
+      "p": "That last one matters most. Want a human to review your resume before you send it? You can [book a 30-minute resume review](/blog/how-to-book-an-appointment-online) with a mentor who has read hundreds of them — one link, one slot, done. If you are the mentor on the other side, here is [how to become a paid mentor](/blog/how-to-become-paid-mentor) and run tidy [30-minute review calls](/blog/30-minute-call-setup) without drowning in scheduling. Your craft is the feedback; let the [booking machinery](/become-a-host) handle the rest."
     },
     {
       "h2": "Frequently asked questions"
@@ -991,7 +991,7 @@ export const BLOG_POSTS = [
       "p": "The tedious part of any meeting isn't the notice — it's the back-and-forth to lock a time everyone can make. A notice fixes one time and hopes it works. A booking link flips it: you offer the open slots and people claim one."
     },
     {
-      "p": "That's the calmer way, and it's what I built [Meeticulous](/be-a-sloth) for — one link that lets people book, with email and WhatsApp reminders sent automatically so you're not the one chasing. For recurring committee or team meetings, learning [how to book an appointment online](/blog/how-to-book-an-appointment-online) can replace the confirmation thread entirely. And when you're wrangling a group's availability, a [scheduling poll](/blog/scheduling-poll-group-meeting) beats a wall of \"I'm free Tuesday\" replies."
+      "p": "That's the calmer way, and it's what I built [Meeticulous](/become-a-host) for — one link that lets people book, with email and WhatsApp reminders sent automatically so you're not the one chasing. For recurring committee or team meetings, learning [how to book an appointment online](/blog/how-to-book-an-appointment-online) can replace the confirmation thread entirely. And when you're wrangling a group's availability, a [scheduling poll](/blog/scheduling-poll-group-meeting) beats a wall of \"I'm free Tuesday\" replies."
     },
     {
       "faq": [
@@ -1193,7 +1193,7 @@ export const BLOG_POSTS = [
       ]
     },
     {
-      "p": "That last one is where onboarding usually stalls. Instead of a scheduling thread, let a new hire book their intro 1:1s with the team in one click — see [how one-click appointment booking works](/blog/how-to-book-an-appointment-online) and set up tidy [30-minute intro calls](/blog/30-minute-call-setup) with reminders that actually arrive. Pair it with clean [meeting invitations](/blog/meeting-invitation-templates) and the whole first week runs itself. The welcome is yours; let the [scheduling machinery be ours](/be-a-sloth)."
+      "p": "That last one is where onboarding usually stalls. Instead of a scheduling thread, let a new hire book their intro 1:1s with the team in one click — see [how one-click appointment booking works](/blog/how-to-book-an-appointment-online) and set up tidy [30-minute intro calls](/blog/30-minute-call-setup) with reminders that actually arrive. Pair it with clean [meeting invitations](/blog/meeting-invitation-templates) and the whole first week runs itself. The welcome is yours; let the [scheduling machinery be ours](/become-a-host)."
     },
     {
       "faq": [
@@ -1586,7 +1586,7 @@ export const BLOG_POSTS = [
       "p": "Listing on Airbnb turns a spare room or a second property into income. It is real, and for the right space it works well. But it comes with cleaning, key handovers, damaged towels, and the occasional 2am message. There is upkeep in renting a place."
     },
     {
-      "p": "If you have a skill instead of a spare room — coaching, consulting, tutoring, design — you can rent your time the same way. Someone picks a slot, pays, and shows up. There is nothing to clean and no linen to replace. If that sounds like you, look at [how to make money from home in India](/blog/how-to-make-money-from-home-india) and set up [how to book an appointment online](/blog/how-to-book-an-appointment-online) so people can book and pay you in one link. [Become a Sloth](/be-a-sloth) and see [pricing](/pricing) — the craft is yours, the machinery is ours."
+      "p": "If you have a skill instead of a spare room — coaching, consulting, tutoring, design — you can rent your time the same way. Someone picks a slot, pays, and shows up. There is nothing to clean and no linen to replace. If that sounds like you, look at [how to make money from home in India](/blog/how-to-make-money-from-home-india) and set up [how to book an appointment online](/blog/how-to-book-an-appointment-online) so people can book and pay you in one link. [Become a Sloth](/become-a-host) and see [pricing](/pricing) — the craft is yours, the machinery is ours."
     },
     {
       "faq": [
@@ -1742,7 +1742,7 @@ export const BLOG_POSTS = [
       }
     },
     {
-      "p": "This is the difference between selling your time and becoming your own finance department. One link books the call and collects the payment — the model behind [Meeticulous](/be-a-sloth). If you're still figuring out the booking side, start with [how to book an appointment online](/blog/how-to-book-an-appointment-online), and if you're building an income around your expertise, [how to make money from home in India](/blog/how-to-make-money-from-home-india) puts payments in context."
+      "p": "This is the difference between selling your time and becoming your own finance department. One link books the call and collects the payment — the model behind [Meeticulous](/become-a-host). If you're still figuring out the booking side, start with [how to book an appointment online](/blog/how-to-book-an-appointment-online), and if you're building an income around your expertise, [how to make money from home in India](/blog/how-to-make-money-from-home-india) puts payments in context."
     },
     {
       "p": "The craft is yours. The machinery is ours."
@@ -2776,7 +2776,7 @@ export const BLOG_POSTS = [
       ]
     },
     {
-      "p": "Four hosts, four parts of the same problem: what help you need, what to say, who to say it to, and somewhere quiet to actually do the work. If you're the kind of person who'd be a fifth (a consultant, a specialist, a space with good chairs), [talk to me](/sndatarkar) or [become a host](/be-a-sloth). The aunt has already bought it. Time to find the next hundred buyers. Three more hosts joined the same week, including a [family lawyer consultation online](/blog/family-lawyer-architect-financial-advisor-consultation-online)."
+      "p": "Four hosts, four parts of the same problem: what help you need, what to say, who to say it to, and somewhere quiet to actually do the work. If you're the kind of person who'd be a fifth (a consultant, a specialist, a space with good chairs), [talk to me](/sndatarkar) or [become a host](/become-a-host). The aunt has already bought it. Time to find the next hundred buyers. Three more hosts joined the same week, including a [family lawyer consultation online](/blog/family-lawyer-architect-financial-advisor-consultation-online)."
     }
   ]
 },
@@ -3080,7 +3080,7 @@ export const BLOG_POSTS = [
       ]
     },
     {
-      "p": "Four hosts, four very different doors: one for your plate, one for your head, one for your next move, one for your mirror. If you are a nutritionist, reader, coach, designer or any kind of expert who would rather spend time on clients than on chasing payments, [list your own services](/be-a-sloth), or just [talk to me](/sndatarkar). I read every message. Even the jeera water ones."
+      "p": "Four hosts, four very different doors: one for your plate, one for your head, one for your next move, one for your mirror. If you are a nutritionist, reader, coach, designer or any kind of expert who would rather spend time on clients than on chasing payments, [list your own services](/become-a-host), or just [talk to me](/sndatarkar). I read every message. Even the jeera water ones."
     }
   ]
 },
@@ -3589,7 +3589,7 @@ export const BLOG_POSTS = [
       "p": "You don't need a website or a course. You need three things: a skill someone wants, a price, and a link. If you're not sure how to start taking bookings, our guide on [how to book an appointment online](/blog/how-to-book-an-appointment-online) walks through it. And if your skill is knowledge — advice, feedback, guidance — read [how to become a paid mentor](/blog/how-to-become-paid-mentor). Mentoring is just selling your time with a nicer word attached."
     },
     {
-      "p": "The enemy here isn't finding clients. It's becoming the admin. The moment you start selling your time, you inherit a second unpaid job: chasing payments, sending reminders, making invoices, juggling your calendar. That's the part [Meeticulous](/be-a-sloth) handles so the craft stays yours."
+      "p": "The enemy here isn't finding clients. It's becoming the admin. The moment you start selling your time, you inherit a second unpaid job: chasing payments, sending reminders, making invoices, juggling your calendar. That's the part [Meeticulous](/become-a-host) handles so the craft stays yours."
     },
     {
       "h2": "Method 2: Freelancing"
@@ -3922,7 +3922,7 @@ export const BLOG_POSTS = [
       "p": "Booking a first session should take one link, not five WhatsApp messages. For practitioners, that same link removes the back-and-forth that eats your evenings. If you are just setting up, see [how to start an online consultation practice](/blog/start-online-consultation-practice-india)."
     },
     {
-      "p": "If you are a psychologist or therapist in Hyderabad, you can put your real availability online so a client books a slot and pays in one step. Here is [how online appointment booking works](/blog/how-to-book-an-appointment-online), and you can set up [gentle session reminders](/blog/appointment-reminder-templates) that reduce no-shows without nagging. See [what it costs](/pricing), or [start your booking page](/be-a-sloth) and stay a clinician, not an admin."
+      "p": "If you are a psychologist or therapist in Hyderabad, you can put your real availability online so a client books a slot and pays in one step. Here is [how online appointment booking works](/blog/how-to-book-an-appointment-online), and you can set up [gentle session reminders](/blog/appointment-reminder-templates) that reduce no-shows without nagging. See [what it costs](/pricing), or [start your booking page](/become-a-host) and stay a clinician, not an admin."
     },
     {
       "quote": "The craft of therapy is yours. The scheduling machinery can be ours.",
@@ -4596,7 +4596,7 @@ export const BLOG_POSTS = [
       "p": "Both are trust mechanics. One makes sure a buyer can prove it is them and get their file; the other makes sure a guest can see, at a glance, that you are a verified person. Neither adds a step for you to manage. The OTP just works, and the badges appear from accounts you already linked. This sits alongside the identity and payout verification we already do: [KYC only after you earn](/blog/kyc-only-after-you-earn) explains why we verify late, and [what happens to your Aadhaar](/blog/what-happens-to-your-aadhaar) covers how sensitive identity data is handled."
     },
     {
-      "p": "For everything else that shipped recently, the [September update](/blog/september-2026-product-update) has the two-plan pricing and the Build-with-Bolt page builder. Setting up now? Connect Google when you sign in and your badge is handled for you. [Start your page](/be-a-sloth). The craft is yours. The machinery is ours."
+      "p": "For everything else that shipped recently, the [September update](/blog/september-2026-product-update) has the two-plan pricing and the Build-with-Bolt page builder. Setting up now? Connect Google when you sign in and your badge is handled for you. [Start your page](/become-a-host). The craft is yours. The machinery is ours."
     },
     {
       "faq": [
@@ -4705,7 +4705,7 @@ export const BLOG_POSTS = [
       "p": "Pick the page that matches what you do, send it to a peer, or use it to decide if Meeticulous fits your work. More professions are on the way, and the schema work means the right people — and the right assistants — can find them. The October release then [cleaned up these pages' heroes](/blog/october-2026-small-fixes). For the trust side of this release, see [product OTP and verification badges](/blog/product-otp-and-verification-badges)."
     },
     {
-      "p": "[Find your profession's page](/be-a-sloth) or compare [pricing](/pricing). The craft is yours. The machinery is ours."
+      "p": "[Find your profession's page](/become-a-host) or compare [pricing](/pricing). The craft is yours. The machinery is ours."
     },
     {
       "h2": "Frequently asked questions"
@@ -4807,7 +4807,7 @@ export const BLOG_POSTS = [
       "h2": "Why we write these down"
     },
     {
-      "p": "Shipping is not just features; it is the hundred small corrections that make the product feel calm. Writing the boring fixes down keeps us honest and gives you a real record of what changed. It is the same reason we [build in public](/blog/building-in-public-why-we-blog). For the bigger October items, see [product OTP and verification badges](/blog/product-otp-and-verification-badges). Ready to put it to use? [Set up your page](/be-a-sloth). The craft is yours; the machinery is ours."
+      "p": "Shipping is not just features; it is the hundred small corrections that make the product feel calm. Writing the boring fixes down keeps us honest and gives you a real record of what changed. It is the same reason we [build in public](/blog/building-in-public-why-we-blog). For the bigger October items, see [product OTP and verification badges](/blog/product-otp-and-verification-badges). Ready to put it to use? [Set up your page](/become-a-host). The craft is yours; the machinery is ours."
     },
     {
       "faq": [
@@ -5494,7 +5494,7 @@ export const BLOG_POSTS = [
       "p": "Once your 30 minute call has a link, an agenda, and reminders, you have built a small product: a bookable, repeatable slot. That is the calm way to sell your time."
     },
     {
-      "p": "Stop the \"when are you free?\" thread — set up a bookable 30-min slot people pay for. With [Meeticulous](/be-a-sloth), one link books the call, collects payment over UPI or Razorpay, and sends the invoice, so the half hour is the only thing you have to show up for. See [how to book an appointment online](/blog/how-to-book-an-appointment-online) to get the slot live. The craft is yours. The machinery is ours."
+      "p": "Stop the \"when are you free?\" thread — set up a bookable 30-min slot people pay for. With [Meeticulous](/become-a-host), one link books the call, collects payment over UPI or Razorpay, and sends the invoice, so the half hour is the only thing you have to show up for. See [how to book an appointment online](/blog/how-to-book-an-appointment-online) to get the slot live. The craft is yours. The machinery is ours."
     },
     {
       "faq": [
@@ -5683,7 +5683,7 @@ export const BLOG_POSTS = [
       "p": "A good poll flow is just three moves: [pick your times, share the link, and book the winner](https://calendly.com/scheduling/meeting-polls.html). That's it. If you find yourself building a grid in Google Sheets, color-coding cells, and pinging people to fill their row, you've rebuilt a worse version of a tool that already exists."
     },
     {
-      "p": "For the meetings that are really one-on-one — client calls, mentoring, interviews — skip the poll entirely. Send a booking link and let people self-serve. That's the calm path: [group scheduling without the spreadsheet](/blog/how-to-book-an-appointment-online) for the group case, and a [personal booking page](/be-a-sloth) for the rest. If you're weighing tools for the solo-creator version of this, our [Topmate alternative](/compare/topmate-alternative) breakdown covers the options, and a simple [30-minute call setup](/blog/30-minute-call-setup) is often all you need."
+      "p": "For the meetings that are really one-on-one — client calls, mentoring, interviews — skip the poll entirely. Send a booking link and let people self-serve. That's the calm path: [group scheduling without the spreadsheet](/blog/how-to-book-an-appointment-online) for the group case, and a [personal booking page](/become-a-host) for the rest. If you're weighing tools for the solo-creator version of this, our [Topmate alternative](/compare/topmate-alternative) breakdown covers the options, and a simple [30-minute call setup](/blog/30-minute-call-setup) is often all you need."
     },
     {
       "h2": "Conclusion: poll for groups, link for one-on-ones"
@@ -6249,7 +6249,7 @@ export const BLOG_POSTS = [
       "h2": "Where Meeticulous fits"
     },
     {
-      "p": "Meeticulous gives you a booking page at meeticulous.com/yourname with fixed-price services. Clients book with a phone OTP, pay upfront through Razorpay by UPI, card or netbanking, and the booking confirms on payment. Confirmations and reminders go out on WhatsApp and email, Google Calendar syncs both ways, and online sessions get a Google Meet link automatically. See how [booking pages](/features/booking-pages) work, or [set up your page](/be-a-sloth) on the free Sloth plan, which charges 5% only on paid bookings. Sloth Active is ₹399 a month with 0% commission. Razorpay's gateway fee of about 2.4% applies on both plans."
+      "p": "Meeticulous gives you a booking page at meeticulous.com/yourname with fixed-price services. Clients book with a phone OTP, pay upfront through Razorpay by UPI, card or netbanking, and the booking confirms on payment. Confirmations and reminders go out on WhatsApp and email, Google Calendar syncs both ways, and online sessions get a Google Meet link automatically. See how [booking pages](/features/booking-pages) work, or [set up your page](/become-a-host) on the free Sloth plan, which charges 5% only on paid bookings. Sloth Active is ₹399 a month with 0% commission. Razorpay's gateway fee of about 2.4% applies on both plans."
     },
     {
       "h2": "Online consultation business FAQs"
@@ -6884,7 +6884,7 @@ export const BLOG_POSTS = [
       ]
     },
     {
-      "p": "That is exactly what [Meeticulous](/be-a-sloth) does: one link books the slot, collects the payment, and fires the reminders. UPI and Razorpay for money in, auto GST invoices, Google Calendar and Meet built in, and 0% commission on paid plans. The craft is yours. The machinery is ours."
+      "p": "That is exactly what [Meeticulous](/become-a-host) does: one link books the slot, collects the payment, and fires the reminders. UPI and Razorpay for money in, auto GST invoices, Google Calendar and Meet built in, and 0% commission on paid plans. The craft is yours. The machinery is ours."
     },
     {
       "info": {
@@ -7244,7 +7244,7 @@ export const BLOG_POSTS = [
       "h2": "Local SEO for in-person hosts"
     },
     {
-      "p": "If you offer in-person appointments, your city now appears in the page title and meta description — so searches like “physiotherapist in Nagpur” can find you. Online-only pages are unchanged. To feed this, hosts are gently nudged to add their city, both in the dashboard setup checklist and during onboarding, and it never blocks going live. In-person hosts can also put a [booking link on their Google Business Profile](/blog/book-button-google-business-profile). Ready to claim your page? [Become a Sloth](/be-a-sloth)."
+      "p": "If you offer in-person appointments, your city now appears in the page title and meta description — so searches like “physiotherapist in Nagpur” can find you. Online-only pages are unchanged. To feed this, hosts are gently nudged to add their city, both in the dashboard setup checklist and during onboarding, and it never blocks going live. In-person hosts can also put a [booking link on their Google Business Profile](/blog/book-button-google-business-profile). Ready to claim your page? [Become a Sloth](/become-a-host)."
     },
     {
       "h2": "A quieter fix: reschedule-fee tax invoices"
@@ -7485,7 +7485,7 @@ export const BLOG_POSTS = [
       "h2": "Sending confirmations automatically with Meeticulous"
     },
     {
-      "p": "On Meeticulous, a client books from your page at meeticulous.com/yourname and pays up front by UPI, card or netbanking through Razorpay. The booking confirms automatically when the payment goes through, and the client gets an email and WhatsApp confirmation with the date, time, place or auto-generated Google Meet link. Reminders, reschedule and cancel links follow from the same booking. See how the [booking notifications](/features/notifications) work. The free Sloth plan charges 5% per paid booking only, and you can [create your booking page](/be-a-sloth) in a few minutes."
+      "p": "On Meeticulous, a client books from your page at meeticulous.com/yourname and pays up front by UPI, card or netbanking through Razorpay. The booking confirms automatically when the payment goes through, and the client gets an email and WhatsApp confirmation with the date, time, place or auto-generated Google Meet link. Reminders, reschedule and cancel links follow from the same booking. See how the [booking notifications](/features/notifications) work. The free Sloth plan charges 5% per paid booking only, and you can [create your booking page](/become-a-host) in a few minutes."
     },
     {
       "faq": [
@@ -9045,7 +9045,7 @@ export const BLOG_POSTS = [
       "p": "Stop cold-DMing experts and hoping. Decide your problem, find someone vetted, run the ten-minute checks, ask two sharp questions, and book a small paid session you can actually pay for. If it works, book again. If not, you are out one session, not one month."
     },
     {
-      "p": "If you are on the other side of this — someone people want to pay for your time — read [how to become a paid mentor](/blog/how-to-become-paid-mentor), then set up [how to book an appointment online](/blog/how-to-book-an-appointment-online) so the right people can reach you without the chase. [Start free on Meeticulous](/be-a-sloth). The craft is yours; the machinery is ours."
+      "p": "If you are on the other side of this — someone people want to pay for your time — read [how to become a paid mentor](/blog/how-to-become-paid-mentor), then set up [how to book an appointment online](/blog/how-to-book-an-appointment-online) so the right people can reach you without the chase. [Start free on Meeticulous](/become-a-host). The craft is yours; the machinery is ours."
     },
     {
       "faq": [
@@ -9342,7 +9342,7 @@ export const BLOG_POSTS = [
       "p": "If you meet clients for paid sessions or want WhatsApp confirmations, a [Meeticulous booking page](/features/booking-pages) gives you one link at meeticulous.com/yourname. The other person picks a slot from your availability and books with a phone OTP, with no app to download. If it is a paid session, they pay by UPI, card or netbanking at the moment of booking and it confirms automatically. Email and WhatsApp confirmations and reminders go out on their own, online meetings get an auto-generated Google Meet link, and two-way Google Calendar sync keeps your calendar clean."
     },
     {
-      "p": "Inviting a candidate instead? Pair the booking link with an [interview calling message](/blog/interview-calling-message). You can [start free](/be-a-sloth) and drop the link into any template above."
+      "p": "Inviting a candidate instead? Pair the booking link with an [interview calling message](/blog/interview-calling-message). You can [start free](/become-a-host) and drop the link into any template above."
     },
     {
       "faq": [
@@ -11238,7 +11238,7 @@ export const BLOG_POSTS = [
       "p": "That is the whole idea behind Meeticulous. The craft is yours — reading people, asking the right questions. The machinery is ours. You send [one link that books the slot and sends the reminders](/blog/how-to-book-an-appointment-online), and it syncs to Google Calendar and Meet on its own. No back-and-forth, no \"does 3pm still work,\" no becoming the admin of your own calendar."
     },
     {
-      "p": "For a recruiter running ten interviews a week, that is hours back. The template above tells you what to plan; a booking link means you stop being the person who chases every confirmation. [Set up online scheduling](/features/online-scheduling), [start free](/be-a-sloth), and let [Meeticulous](/) keep the calendar calm while you focus on the hiring."
+      "p": "For a recruiter running ten interviews a week, that is hours back. The template above tells you what to plan; a booking link means you stop being the person who chases every confirmation. [Set up online scheduling](/features/online-scheduling), [start free](/become-a-host), and let [Meeticulous](/) keep the calendar calm while you focus on the hiring."
     },
     {
       "faq": [
@@ -11381,7 +11381,7 @@ export const BLOG_POSTS = [
       "p": "If you are the one sending these invitations, chasing confirmations is its own part-time job. Candidates go quiet, time zones get muddled, and you end up refreshing your inbox instead of hiring. It helps to start with a clear [interview calling message](/blog/interview-calling-message) that includes a slot link."
     },
     {
-      "p": "There is a calmer way. Instead of proposing a time and hoping for a \"yes,\" you share one link, the candidate picks a slot that is actually free, and the confirmation and reminders send themselves. The time saved is not small: availability-based back-and-forth burns [243 minutes of coordination per hire versus 27 minutes when the candidate self-schedules](https://candidate.fyi/post/interview-confirmation-email). That is what Meeticulous does — a [Topmate-style booking link that removes the back-and-forth](/compare/topmate-alternative) and syncs straight to your calendar. You send [one link that books and confirms the slot](/blog/how-to-book-an-appointment-online), the schedule fills itself, and the acknowledgement email you were waiting for stops being something you have to chase. [Set up online scheduling](/features/online-scheduling), [start free](/be-a-sloth), and let [Meeticulous](/) do the chasing for you."
+      "p": "There is a calmer way. Instead of proposing a time and hoping for a \"yes,\" you share one link, the candidate picks a slot that is actually free, and the confirmation and reminders send themselves. The time saved is not small: availability-based back-and-forth burns [243 minutes of coordination per hire versus 27 minutes when the candidate self-schedules](https://candidate.fyi/post/interview-confirmation-email). That is what Meeticulous does — a [Topmate-style booking link that removes the back-and-forth](/compare/topmate-alternative) and syncs straight to your calendar. You send [one link that books and confirms the slot](/blog/how-to-book-an-appointment-online), the schedule fills itself, and the acknowledgement email you were waiting for stops being something you have to chase. [Set up online scheduling](/features/online-scheduling), [start free](/become-a-host), and let [Meeticulous](/) do the chasing for you."
     },
     {
       "faq": [
@@ -11763,7 +11763,7 @@ export const BLOG_POSTS = [
       ]
     },
     {
-      "p": "When you're ready to sell, you don't need a separate storefront. [Meeticulous](/) lets you [list a digital product](/features/digital-products) on the same page where clients book your time, with UPI checkout, automatic delivery, and no per-sale commission on paid plans. [Start free](/be-a-sloth), upload your first product, and share one link. Build the catalogue, own the audience, and let the compounding do the work."
+      "p": "When you're ready to sell, you don't need a separate storefront. [Meeticulous](/) lets you [list a digital product](/features/digital-products) on the same page where clients book your time, with UPI checkout, automatic delivery, and no per-sale commission on paid plans. [Start free](/become-a-host), upload your first product, and share one link. Build the catalogue, own the audience, and let the compounding do the work."
     },
     {
       "faq": [
@@ -12087,7 +12087,7 @@ export const BLOG_POSTS = [
       "p": "If you interview regularly, set up an interview slot on a [Meeticulous booking page](/features/booking-pages) and drop that link into templates 2, 11, 15, 18, 25 and 26. Candidates pick a slot from your availability and book with a phone OTP, with no app to download. They get a WhatsApp and email confirmation, a reminder before the interview, and a reschedule link. Online interviews get an auto-generated Google Meet link, and two-way Google Calendar sync keeps interview slots from clashing with your other meetings."
     },
     {
-      "p": "You can [start free on Meeticulous](/be-a-sloth) and have the link ready before your next shortlist goes out."
+      "p": "You can [start free on Meeticulous](/become-a-host) and have the link ready before your next shortlist goes out."
     },
     {
       "faq": [
@@ -13824,7 +13824,7 @@ export const BLOG_POSTS = [
       "p": "Run your own website and the major portals together, because each does a job the other cannot. [Portals like 99acres, MagicBricks, and Housing.com own the high-intent search demand and put your inventory in front of active buyers](/blog/digital-marketing-for-travel-and-tourism); your own site is where you control the story, capture the lead, and retarget. Treat the portal as reach and your site as conversion."
     },
     {
-      "p": "The website is not decoration. On real estate sites, [about 67% of visitors who arrive from organic search go on to call the company](https://www.sigmasolve.com/blog/digital-marketing-for-real-estate), so every listing and landing page needs a visible phone number, [a short enquiry form](/be-a-sloth), and fast mobile load. Own the pages portals can't rank for: project-specific pages, locality guides, and price-trend posts that pull organic traffic you don't pay per lead for."
+      "p": "The website is not decoration. On real estate sites, [about 67% of visitors who arrive from organic search go on to call the company](https://www.sigmasolve.com/blog/digital-marketing-for-real-estate), so every listing and landing page needs a visible phone number, [a short enquiry form](/become-a-host), and fast mobile load. Own the pages portals can't rank for: project-specific pages, locality guides, and price-trend posts that pull organic traffic you don't pay per lead for."
     },
     {
       "h2": "Paid lead generation for projects"
@@ -14085,7 +14085,7 @@ export const BLOG_POSTS = [
       "h2": "Own your neighbourhood: Google Business Profile, local SEO and reviews"
     },
     {
-      "p": "For a neighbourhood practice, local search is the highest-return channel — a complete Google Business Profile, consistent listings and a steady stream of recent reviews will out-earn almost anything else. Intent here is enormous: [\"dentist near me\" is searched roughly 113,000 times a day](https://click-vision.com/dental-marketing-statistics), and [those searchers are ready to book, not browse](/be-a-sloth). Schools win admissions with the same near-me playbook; see [marketing for schools around the admission cycle](/blog/digital-marketing-for-schools)."
+      "p": "For a neighbourhood practice, local search is the highest-return channel — a complete Google Business Profile, consistent listings and a steady stream of recent reviews will out-earn almost anything else. Intent here is enormous: [\"dentist near me\" is searched roughly 113,000 times a day](https://click-vision.com/dental-marketing-statistics), and [those searchers are ready to book, not browse](/become-a-host). Schools win admissions with the same near-me playbook; see [marketing for schools around the admission cycle](/blog/digital-marketing-for-schools)."
     },
     {
       "p": "Start with the basics that Google and patients both reward: Then add a [booking button to your Google Business Profile](/blog/book-button-google-business-profile) so that intent turns into an appointment."
@@ -14278,7 +14278,7 @@ export const BLOG_POSTS = [
       "h2": "Online marketing for doctors starts with your local base"
     },
     {
-      "p": "Before any advertising, online marketing for doctors should nail the local basics: a complete Google Business Profile and a fast, honest website. Because most patients travel only a short distance for non-emergency care, a fully filled Business Profile — accurate address, hours, phone, services, photos and a stream of recent reviews — often outperforms a big ad budget for a solo practice, and it is the foundation of local SEO. Your website needs to do just three things well: load fast on a phone, state your qualifications, conditions treated, timings and fees plainly, and [make booking effortless](/be-a-sloth). Add a medical-directory listing or two, such as Practo, for reach. Targeted ads can follow later — but only once this base, which every review and article points back to, is solid. Add a [booking button to your Google Business Profile](/blog/book-button-google-business-profile) so patients can book straight from search."
+      "p": "Before any advertising, online marketing for doctors should nail the local basics: a complete Google Business Profile and a fast, honest website. Because most patients travel only a short distance for non-emergency care, a fully filled Business Profile — accurate address, hours, phone, services, photos and a stream of recent reviews — often outperforms a big ad budget for a solo practice, and it is the foundation of local SEO. Your website needs to do just three things well: load fast on a phone, state your qualifications, conditions treated, timings and fees plainly, and [make booking effortless](/become-a-host). Add a medical-directory listing or two, such as Practo, for reach. Targeted ads can follow later — but only once this base, which every review and article points back to, is solid. Add a [booking button to your Google Business Profile](/blog/book-button-google-business-profile) so patients can book straight from search."
     },
     {
       "h2": "Digital marketing for doctors in India: the rules you can't ignore"
@@ -14423,7 +14423,7 @@ export const BLOG_POSTS = [
     {
       "ol": [
         "Put click-to-call and WhatsApp buttons on every page and profile.",
-        "[Capture name, phone, and department in one short enquiry form](/be-a-sloth).",
+        "[Capture name, phone, and department in one short enquiry form](/become-a-host).",
         "Respond within minutes during clinic hours; auto-acknowledge after hours.",
         "Track which channel produced each booked appointment, not just each click."
       ]
@@ -14575,7 +14575,7 @@ export const BLOG_POSTS = [
       "h2": "Turn enquiries into admissions: capture, nurture, measure"
     },
     {
-      "p": "Traffic is worthless until it becomes a tracked enquiry you follow up fast. Every channel above should point to one thing: [a short, mobile-friendly enquiry form](/be-a-sloth) and a click-to-WhatsApp button, because speed of response is often the difference between a booked visit and a lost lead. From there, nurture — a simple WhatsApp and email sequence that sends the prospectus, invites a campus tour, and answers common questions keeps your school top-of-mind through a long decision window. And measure the only metric that counts: not likes or reach, but enquiries and enrolments per channel, so you double down on what fills seats and cut what doesn't. For enquiries that arrive after office hours, set up an [after-hours WhatsApp away message](/blog/whatsapp-business-away-message)."
+      "p": "Traffic is worthless until it becomes a tracked enquiry you follow up fast. Every channel above should point to one thing: [a short, mobile-friendly enquiry form](/become-a-host) and a click-to-WhatsApp button, because speed of response is often the difference between a booked visit and a lost lead. From there, nurture — a simple WhatsApp and email sequence that sends the prospectus, invites a campus tour, and answers common questions keeps your school top-of-mind through a long decision window. And measure the only metric that counts: not likes or reach, but enquiries and enrolments per channel, so you double down on what fills seats and cut what doesn't. For enquiries that arrive after office hours, set up an [after-hours WhatsApp away message](/blog/whatsapp-business-away-message)."
     },
     {
       "h2": "The bottom line, and three things to do this week"
@@ -14852,7 +14852,7 @@ export const BLOG_POSTS = [
       "h2": "Marketing for criminal defense lawyers"
     },
     {
-      "p": "Marketing for criminal defense lawyers rewards urgency and locality above all — prospects search on a phone, often after hours, and hire quickly, so mobile-ready pages, click-to-call buttons, and near-instant response matter more than polish. Criminal defense also carries some of the lowest paid-search costs in legal (see the CPC table below), which makes strong local SEO [paired with fast intake](/be-a-sloth) an efficient combination. The firm that answers in minutes usually wins the case the firm that answers tomorrow never hears about. If enquiries land on WhatsApp after hours, an [away message for your business](/blog/whatsapp-business-away-message) holds the lead until you reply."
+      "p": "Marketing for criminal defense lawyers rewards urgency and locality above all — prospects search on a phone, often after hours, and hire quickly, so mobile-ready pages, click-to-call buttons, and near-instant response matter more than polish. Criminal defense also carries some of the lowest paid-search costs in legal (see the CPC table below), which makes strong local SEO [paired with fast intake](/become-a-host) an efficient combination. The firm that answers in minutes usually wins the case the firm that answers tomorrow never hears about. If enquiries land on WhatsApp after hours, an [away message for your business](/blog/whatsapp-business-away-message) holds the lead until you reply."
     },
     {
       "h2": "PPC marketing for lawyers: know the economics before you bid"
@@ -16041,7 +16041,7 @@ export const BLOG_POSTS = [
         "cite": "The bit worth keeping"
       },
       {
-        "p": "If you are a host reading this: the single most useful thing you can do today is [share your link](/be-a-sloth). Not tomorrow, not once the profile is perfect. The hosts who get booked are, almost without exception, the ones who sent their link to their own people first. Everything we build from here is in service of that one moment. Adding a [booking button to your Google listing](/blog/book-button-google-business-profile) also puts it in front of people already searching for you."
+        "p": "If you are a host reading this: the single most useful thing you can do today is [share your link](/become-a-host). Not tomorrow, not once the profile is perfect. The hosts who get booked are, almost without exception, the ones who sent their link to their own people first. Everything we build from here is in service of that one moment. Adding a [booking button to your Google listing](/blog/book-button-google-business-profile) also puts it in front of people already searching for you."
       },
       {
         "faq": [
@@ -16111,7 +16111,7 @@ export const BLOG_POSTS = [
         "cite": "The bit worth keeping"
       },
       {
-        "p": "So the site reads differently today. Same product, same sloth, sharper promise. If you [make things worth paying for](/be-a-sloth), the link that gets you paid is the one thing we want to be known for — the same bet as [going 0% on commission](/blog/zero-commission-bet), just said out loud on the homepage. And now the whole website says so."
+        "p": "So the site reads differently today. Same product, same sloth, sharper promise. If you [make things worth paying for](/become-a-host), the link that gets you paid is the one thing we want to be known for — the same bet as [going 0% on commission](/blog/zero-commission-bet), just said out loud on the homepage. And now the whole website says so."
       },
       {
         "faq": [
@@ -16181,7 +16181,7 @@ export const BLOG_POSTS = [
         "cite": "The bit worth keeping"
       },
       {
-        "p": "If you want to see the maths on your own numbers, it lives right in your dashboard — the commission you have paid, and what a plan would have saved. Or just [start taking bookings](/be-a-sloth) for free, get paid a few times, and let the arithmetic make the case when it is ready."
+        "p": "If you want to see the maths on your own numbers, it lives right in your dashboard — the commission you have paid, and what a plan would have saved. Or just [start taking bookings](/become-a-host) for free, get paid a few times, and let the arithmetic make the case when it is ready."
       },
       {
         "faq": [
@@ -16248,7 +16248,7 @@ export const BLOG_POSTS = [
         "cite": "The bit worth keeping"
       },
       {
-        "p": "This is off until we turn it on host by host, and it will only ever go to people with something to report. If you want the recap to have good news in it, the lever is the same as it always is: [get your link in front of your people](/be-a-sloth). We will handle the arithmetic and the Sunday note. Adding a [booking button to your Google Business Profile](/blog/book-button-google-business-profile) is one easy way to get that link seen."
+        "p": "This is off until we turn it on host by host, and it will only ever go to people with something to report. If you want the recap to have good news in it, the lever is the same as it always is: [get your link in front of your people](/become-a-host). We will handle the arithmetic and the Sunday note. Adding a [booking button to your Google Business Profile](/blog/book-button-google-business-profile) is one easy way to get that link seen."
       },
       {
         "faq": [
@@ -16318,7 +16318,7 @@ export const BLOG_POSTS = [
         "cite": "The bit worth keeping"
       },
       {
-        "p": "If you have been putting off setting up because the first thing we wanted was your PAN — that is gone. [Publish your services](/be-a-sloth), take your bookings, and we will only ask for the paperwork once there is something waiting to be paid out to you."
+        "p": "If you have been putting off setting up because the first thing we wanted was your PAN — that is gone. [Publish your services](/become-a-host), take your bookings, and we will only ask for the paperwork once there is something waiting to be paid out to you."
       },
       {
         "faq": [
@@ -16658,7 +16658,7 @@ export const BLOG_POSTS = [
         "cite": "The bit worth keeping"
       },
       {
-        "p": "So the doors opened again, the wall grew, and the founders kept their place at the front of it. If you missed both windows, that is alright — the best time to arrive is still now, and the [door is always open](/be-a-sloth) even when the ceremony is not running. Going [from sign-up to live takes about 60 seconds](/blog/onboarding-a-host-in-60-seconds)."
+        "p": "So the doors opened again, the wall grew, and the founders kept their place at the front of it. If you missed both windows, that is alright — the best time to arrive is still now, and the [door is always open](/become-a-host) even when the ceremony is not running. Going [from sign-up to live takes about 60 seconds](/blog/onboarding-a-host-in-60-seconds)."
       },
       {
         "faq": [
@@ -16794,7 +16794,7 @@ export const BLOG_POSTS = [
         "p": "When you asked me something, I answered, and then we both sat there. You knew what you wanted next; I did not, so I waited. That is a small friction that adds up over a day."
       },
       {
-        "p": "Now, under most answers, there are a couple of small suggestions — the next thing people usually want. Ask about a plan and one of them takes you to [pricing](/pricing). Ask how hosting works and one of them starts you at [Be a Sloth](/be-a-sloth). They are guesses, not a menu, so when they are wrong you ignore them and keep typing. When they are right, you save a sentence. Most of the time they are right, because most questions come in the same handful of shapes."
+        "p": "Now, under most answers, there are a couple of small suggestions — the next thing people usually want. Ask about a plan and one of them takes you to [pricing](/pricing). Ask how hosting works and one of them starts you at [Be a Sloth](/become-a-host). They are guesses, not a menu, so when they are wrong you ignore them and keep typing. When they are right, you save a sentence. Most of the time they are right, because most questions come in the same handful of shapes."
       },
       {
         "h2": "I don't argue anymore"
@@ -16934,7 +16934,7 @@ export const BLOG_POSTS = [
           "\"When do I get paid as a host?\"",
           "\"How much is a paid plan?\" — I'll point you at the [pricing page](/pricing).",
           "\"Do you send WhatsApp reminders?\"",
-          "\"How do I become a host?\" — that one starts at [Be a Sloth](/be-a-sloth)."
+          "\"How do I become a host?\" — that one starts at [Be a Sloth](/become-a-host)."
         ]
       },
       {
@@ -17211,7 +17211,7 @@ export const BLOG_POSTS = [
         "p": "A couple of smaller things landed alongside. The [booking confirmation screen](/blog/themes-doors-and-a-warmer-booking-flow) got restructured so the parts that matter (when, where, how much) sit where your eye actually lands, and phone numbers are now gated a little to keep deals from quietly walking off-platform. Running at bigger scale? There is a dedicated [enterprise](/enterprise) page now too, though that one is a conversation rather than a signup button."
       },
       {
-        "p": "If [your account is verified](/blog/kyc-only-after-you-earn), that referral reward is real money, and it is the rare kind that arrives whether or not you remembered it was coming. [Set up your page](/be-a-sloth), then go tell the one host friend who has been meaning to switch."
+        "p": "If [your account is verified](/blog/kyc-only-after-you-earn), that referral reward is real money, and it is the rare kind that arrives whether or not you remembered it was coming. [Set up your page](/become-a-host), then go tell the one host friend who has been meaning to switch."
       }
     ]
   },
@@ -17632,7 +17632,7 @@ export const BLOG_POSTS = [
         "p": "A few more things landed nearby: a public [contact](/contact) form that reaches support without you hunting for an email address, a set of feature pages that finally explain what the product does, and [dedicated landing pages for specific professions](/blog/landing-pages-for-your-profession), from [lawyers](/for/lawyers) to [doctors](/for/doctors) to [salons](/for/salon) to [fitness coaches](/for/fitness). A physiotherapist and a wedding DJ should not have to read the same homepage, so now they do not."
       },
       {
-        "p": "If you have been putting off verification because it smelled like paperwork, it is a few taps now. Do it before the booking where a payout is sitting there waiting on it. Fill in the full address while you are there; [one blank address line](/blog/the-address-line-nobody-filled) once held up a payout. [Start here](/be-a-sloth)."
+        "p": "If you have been putting off verification because it smelled like paperwork, it is a few taps now. Do it before the booking where a payout is sitting there waiting on it. Fill in the full address while you are there; [one blank address line](/blog/the-address-line-nobody-filled) once held up a payout. [Start here](/become-a-host)."
       }
     ]
   },
@@ -17758,7 +17758,7 @@ export const BLOG_POSTS = [
         "p": "Here is the quiet arithmetic of any service business: your best next customer is the one who already booked you once and had a good time. They are not avoiding you. They just forgot, because [their week is loud and their notifications are louder](/blog/the-one-email-a-host-should-get). A [studio CRM that remembers your regulars](/blog/refer-earn-studio-crm-offline-bookings) makes them easy to spot."
       },
       {
-        "p": "So we built a follow-up engine. After a session wraps, it can send a well-timed nudge with a link straight back to your [profile](/be-a-sloth), with none of the “hey, just checking in” energy, just an easy door back to booking you again. It runs on a schedule, it is built to grow into other kinds of follow-ups later, and it does the remembering so you do not have to. It is the same idea behind our [0% commission bet](/blog/zero-commission-bet): the platform earns when you earn, so it should be working on your rebookings in the background."
+        "p": "So we built a follow-up engine. After a session wraps, it can send a well-timed nudge with a link straight back to your [profile](/become-a-host), with none of the “hey, just checking in” energy, just an easy door back to booking you again. It runs on a schedule, it is built to grow into other kinds of follow-ups later, and it does the remembering so you do not have to. It is the same idea behind our [0% commission bet](/blog/zero-commission-bet): the platform earns when you earn, so it should be working on your rebookings in the background."
       },
       {
         "p": "The maths is unglamorous and hard to argue with. Filling a slot with someone who already knows you is cheaper than every ad you will ever run. Open your [pricing page](/pricing), read it like a stranger would, and ask whether it says what you would want that stranger to understand in ten seconds. Then let the follow-ups chase the rebookings you were never actually going to chase yourself."
@@ -17805,7 +17805,7 @@ export const BLOG_POSTS = [
         }
       },
       {
-        "p": "None of this will trend. But the gap between a product you trust and one you tolerate is almost never the flashy feature, it is whether the small stuff works when you are not looking. This week was the small stuff, handled. If you [verified your number](/blog/monthly-plans-whatsapp-verification-reminders) a while ago and it never showed up, go [check your profile](/be-a-sloth), it is there now."
+        "p": "None of this will trend. But the gap between a product you trust and one you tolerate is almost never the flashy feature, it is whether the small stuff works when you are not looking. This week was the small stuff, handled. If you [verified your number](/blog/monthly-plans-whatsapp-verification-reminders) a while ago and it never showed up, go [check your profile](/become-a-host), it is there now."
       }
     ]
   },
@@ -17852,7 +17852,7 @@ export const BLOG_POSTS = [
         }
       },
       {
-        "p": "Go recolour your page. Two minutes, and it stops looking like a template and starts looking like a decision you made. Guests notice decisions, even when they could not tell you why they trusted the page. [Make yours yours.](/be-a-sloth)"
+        "p": "Go recolour your page. Two minutes, and it stops looking like a template and starts looking like a decision you made. Guests notice decisions, even when they could not tell you why they trusted the page. [Make yours yours.](/become-a-host)"
       }
     ]
   },
@@ -17899,7 +17899,7 @@ export const BLOG_POSTS = [
         "p": "Reviews used to flow one direction: guest rates host, host says thank you into the void. Now it is mutual. Hosts and guests can review each other, reviews are role-separated so it is always clear who is speaking, and there is a dedicated review page reached from a working “leave a review” email. Reputation is a two-way street in real life, and the software finally agrees with real life. Reviews also count toward [how Explore ranks listings](/blog/how-explore-ranking-works)."
       },
       {
-        "p": "Underneath all of it, [guest and host accounts got proper URL separation](/blog/phone-login-and-reschedule-bookings), so the two worlds stop bleeding into each other. If you onboarded back when it was a marathon, go look at the [new flow](/be-a-sloth) anyway. It is the version you will actually want to send the next host you refer."
+        "p": "Underneath all of it, [guest and host accounts got proper URL separation](/blog/phone-login-and-reschedule-bookings), so the two worlds stop bleeding into each other. If you onboarded back when it was a marathon, go look at the [new flow](/become-a-host) anyway. It is the version you will actually want to send the next host you refer."
       }
     ]
   },
@@ -17946,7 +17946,7 @@ export const BLOG_POSTS = [
         }
       },
       {
-        "p": "Go send yourself a test booking and open the confirmation email. If it makes you feel even slightly more legit than last month, that was the whole point. Making those emails better is now part of [Mohini Daf's marketing automation work](/blog/welcome-mohini-daf). [Set up your page](/be-a-sloth) and see it land."
+        "p": "Go send yourself a test booking and open the confirmation email. If it makes you feel even slightly more legit than last month, that was the whole point. Making those emails better is now part of [Mohini Daf's marketing automation work](/blog/welcome-mohini-daf). [Set up your page](/become-a-host) and see it land."
       }
     ]
   },
@@ -17993,7 +17993,7 @@ export const BLOG_POSTS = [
         "p": "We renamed the customer-facing “Vendor” to “Host” everywhere it shows. “Vendor” makes you sound like a stall at a trade fair, and “Host” is what you actually are to the person booking you. There is a newsletter now with [a proper welcome email](/blog/homepage-emails-and-downloadable-products), plus a [phased 60-category industry taxonomy](/blog/categories-that-make-sense-profile-polish) so services get sorted by what they genuinely are, which quietly helps guests [find you](/explore)."
       },
       {
-        "p": "None of this is a headline. All of it is the reason the headlines later get believed. Foundations first, always. If you have not [claimed your handle](/be-a-sloth) yet, now is a good week for it, because permanent means the good ones go once."
+        "p": "None of this is a headline. All of it is the reason the headlines later get believed. Foundations first, always. If you have not [claimed your handle](/become-a-host) yet, now is a good week for it, because permanent means the good ones go once."
       }
     ]
   },
@@ -18040,7 +18040,7 @@ export const BLOG_POSTS = [
         "p": "A reminder that says “you have a session soon” and then makes you dig for the [Meet](https://meet.google.com) link has only done half its job. Booking reminders now include the actual meeting link or location, so the nudge is also the doorway. The end-user dashboard got redesigned in the same pass, so guests can see their bookings without emailing anyone to ask. If you also send your own, start from these [WhatsApp reminder messages for appointments](/blog/appointment-reminder-templates)."
       },
       {
-        "p": "If a year felt like a lot, the monthly option removes the excuse. Take it for a month, that is a much easier yes. The plans have since been simplified to two; see the [September product update](/blog/september-2026-product-update). [Start your page](/be-a-sloth) and see how it feels with real bookings in it."
+        "p": "If a year felt like a lot, the monthly option removes the excuse. Take it for a month, that is a much easier yes. The plans have since been simplified to two; see the [September product update](/blog/september-2026-product-update). [Start your page](/become-a-host) and see how it feels with real bookings in it."
       }
     ]
   },
@@ -18087,7 +18087,7 @@ export const BLOG_POSTS = [
         }
       },
       {
-        "p": "This is where the user-facing story starts: a login with nothing to memorise, a menu that pays attention, and a button that moves an appointment instead of destroying it. Small things you only miss when they are gone. Now they are not. Easy rescheduling is also one of the quieter ways to [reduce no-shows](/blog/how-to-reduce-no-shows). [Come see the rest.](/be-a-sloth)"
+        "p": "This is where the user-facing story starts: a login with nothing to memorise, a menu that pays attention, and a button that moves an appointment instead of destroying it. Small things you only miss when they are gone. Now they are not. Easy rescheduling is also one of the quieter ways to [reduce no-shows](/blog/how-to-reduce-no-shows). [Come see the rest.](/become-a-host)"
       }
     ]
   },
@@ -18751,7 +18751,7 @@ export const BLOG_POSTS = [
         "p": "Ship a small free tool that solves one slice of the customer’s problem. ALM Corp’s 2026 search-marketing guide flags [interactive ROI calculators as among the highest-value B2B assets](/blog/content-marketing-for-brand-awareness) precisely because AI Overviews cannot replicate a working tool, they can only summarize a static page. A calculator, grader, or generator costs you one evening in Bolt or v0, ranks for “[problem] calculator,” and captures emails while you sleep. Every other founder treats tool-building as expensive. For you it is a Tuesday."
       },
       {
-        "p": "Example, when personality is the channel: Meeticulous, a niche [booking product](/be-a-sloth), is the archetype where build-in-public overdelivers. The name alone is a hook, every demo screenshot is inherently shareable, and a weekly “weirdest bookings this week” post markets the product without ever pitching it (you can watch us try it in our own [build-in-public series](/blog/building-in-public-why-we-blog)). Rule of thumb from the matrix: if your product has a personality, the personality is the channel. If it does not, pick SEO and let the compounding do the talking."
+        "p": "Example, when personality is the channel: Meeticulous, a niche [booking product](/become-a-host), is the archetype where build-in-public overdelivers. The name alone is a hook, every demo screenshot is inherently shareable, and a weekly “weirdest bookings this week” post markets the product without ever pitching it (you can watch us try it in our own [build-in-public series](/blog/building-in-public-why-we-blog)). Rule of thumb from the matrix: if your product has a personality, the personality is the channel. If it does not, pick SEO and let the compounding do the talking."
       },
       {
         "h2": "How do you pay down Distribution Debt in 30 days?"
@@ -18946,7 +18946,7 @@ export const BLOG_POSTS = [
         }
       },
       {
-        "p": "It is a limit we put on ourselves deliberately, and it shapes every pricing decision we make. Compare it against the per-booking cut on the tool you use today, then come [try the other way](/be-a-sloth). Our [comparison of booking apps in India](/blog/best-appointment-booking-apps-india) shows the cut each one takes."
+        "p": "It is a limit we put on ourselves deliberately, and it shapes every pricing decision we make. Compare it against the per-booking cut on the tool you use today, then come [try the other way](/become-a-host). Our [comparison of booking apps in India](/blog/best-appointment-booking-apps-india) shows the cut each one takes."
       }
     ]
   },
@@ -19035,7 +19035,7 @@ export const BLOG_POSTS = [
         }
       },
       {
-        "p": "Want to feel it from the guest side? [Set up a service](/be-a-sloth) and book yourself. It is a strangely satisfying thirty seconds."
+        "p": "Want to feel it from the guest side? [Set up a service](/become-a-host) and book yourself. It is a strangely satisfying thirty seconds."
       }
     ]
   },
@@ -19079,7 +19079,7 @@ export const BLOG_POSTS = [
         "cite": "Product principle"
       },
       {
-        "p": "[Sixty seconds is not a slogan](/blog/the-first-booking), it is roughly how long the whole thing takes. [Try it](/be-a-sloth) and hold us to it. Once you are live, here is [how to start an online consultation business](/blog/start-online-consultation-practice-india)."
+        "p": "[Sixty seconds is not a slogan](/blog/the-first-booking), it is roughly how long the whole thing takes. [Try it](/become-a-host) and hold us to it. Once you are live, here is [how to start an online consultation business](/blog/start-online-consultation-practice-india)."
       }
     ]
   },
@@ -19201,7 +19201,7 @@ export const BLOG_POSTS = [
         "p": "Today, she's helping build Meeticulous across multiple areas."
       },
       {
-        "p": "She's worked on improving our [KYC flow](/be-a-sloth), making [the mobile experience smoother](/blog/gst-invoices-host-verification-mobile), and polishing interfaces that thousands of future users will interact with. Alongside the core product, she's also started taking ownership of individual client projects, including WeCos, Ashlar Studios, and Ashlar Academy."
+        "p": "She's worked on improving our [KYC flow](/become-a-host), making [the mobile experience smoother](/blog/gst-invoices-host-verification-mobile), and polishing interfaces that thousands of future users will interact with. Alongside the core product, she's also started taking ownership of individual client projects, including WeCos, Ashlar Studios, and Ashlar Academy."
       },
       {
         "p": "One thing we've particularly appreciated is the way she approaches problems."
@@ -19308,7 +19308,7 @@ export const BLOG_POSTS = [
         "p": "That's the space Mohini has joined — formally as part of [Timewheel Internet Private Limited](https://timewheel.co.in/), the parent company behind Meeticulous."
       },
       {
-        "p": "As part of our Marketing Automation team, she's working on improving how Meeticulous communicates with everyone who interacts with our platform, whether they're [hosts running their businesses](/be-a-sloth), guests making bookings, or people who are simply [exploring what we offer](/explore). Her work spans [automated email journeys](/blog/the-one-email-a-host-should-get), WhatsApp integrations, [chatbot development](/blog/meet-bolt-the-support-assistant), and even interactive experiences like games that make engagement a little more enjoyable. Most people never notice these systems when they're working well, but they're often the difference between software that feels mechanical and software that feels thoughtful."
+        "p": "As part of our Marketing Automation team, she's working on improving how Meeticulous communicates with everyone who interacts with our platform, whether they're [hosts running their businesses](/become-a-host), guests making bookings, or people who are simply [exploring what we offer](/explore). Her work spans [automated email journeys](/blog/the-one-email-a-host-should-get), WhatsApp integrations, [chatbot development](/blog/meet-bolt-the-support-assistant), and even interactive experiences like games that make engagement a little more enjoyable. Most people never notice these systems when they're working well, but they're often the difference between software that feels mechanical and software that feels thoughtful."
       },
       {
         "p": "There is one thing I have noticed about Mohini during her time with us so far."
@@ -19988,7 +19988,7 @@ export const BLOG_POSTS = [
         "h2": "One step closer"
       },
       {
-        "p": "This week was all about laying the foundation, because before payments, before calendars, before notifications, you need something worth booking. That starts with [your very first service](/blog/onboarding-a-host-in-60-seconds). [Publish yours](/be-a-sloth) and see how little time it actually takes."
+        "p": "This week was all about laying the foundation, because before payments, before calendars, before notifications, you need something worth booking. That starts with [your very first service](/blog/onboarding-a-host-in-60-seconds). [Publish yours](/become-a-host) and see how little time it actually takes."
       },
       {
         "p": "Next, we dig into something just as important: [why accepting payments was never an add-on](/blog/razorpay-is-the-source-of-truth), it was one of the first things we built."
@@ -20152,7 +20152,7 @@ export const BLOG_POSTS = [
         "h2": "What’s next?"
       },
       {
-        "p": "Next, the first major milestone: [how we build services that take under five minutes to publish](/blog/the-first-booking). The journey starts here. Months after launch we even [reopened the doors as an event](/blog/the-opening-again). Welcome aboard, and if you would rather jump in than read along, [claim your page](/be-a-sloth). 🦥"
+        "p": "Next, the first major milestone: [how we build services that take under five minutes to publish](/blog/the-first-booking). The journey starts here. Months after launch we even [reopened the doors as an event](/blog/the-opening-again). Welcome aboard, and if you would rather jump in than read along, [claim your page](/become-a-host). 🦥"
       }
     ]
   },
@@ -20188,7 +20188,7 @@ export const BLOG_POSTS = [
         ]
       },
       {
-        "p": "If you are reading this early, thank you for being here. The product you see today is the worst it will ever be, and the best is still ahead. Eleven days later, [the first host paid us](/blog/the-first-host-who-paid). You can watch it get better week by week in the [changelog](/changelog), or just [come build your page](/be-a-sloth) and grow with it."
+        "p": "If you are reading this early, thank you for being here. The product you see today is the worst it will ever be, and the best is still ahead. Eleven days later, [the first host paid us](/blog/the-first-host-who-paid). You can watch it get better week by week in the [changelog](/changelog), or just [come build your page](/become-a-host) and grow with it."
       },
       {
         "quote": "Hello, Meeticulous. 🦥",

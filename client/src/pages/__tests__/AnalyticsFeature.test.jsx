@@ -11,7 +11,7 @@ describe('Analytics feature page', () => {
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
     expect(screen.getByRole('link', { name: /see pricing/i }).getAttribute('href')).toBe('/pricing');
     expect(screen.getByRole('link', { name: /see what it answers/i }).getAttribute('href')).toBe('#questions');
-    expect(screen.getAllByRole('link', { name: /start free/i })[0].getAttribute('href')).toBe('/be-a-sloth');
+    expect(screen.getAllByRole('link', { name: /start free/i })[0].getAttribute('href')).toBe('/become-a-host');
   });
 
   it('labels the hero demo as sample data and switches tabs', () => {

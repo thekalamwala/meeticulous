@@ -95,7 +95,7 @@ export default function Compare() {
             as each company publishes them, checked in {CHECKED_LABEL}.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/be-a-sloth" className="rounded-[6px] bg-ink px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(26,26,26,0.12)] hover:no-underline hover:opacity-90">
+            <Link to="/become-a-host" className="rounded-[6px] bg-ink px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(26,26,26,0.12)] hover:no-underline hover:opacity-90">
               Start free
             </Link>
             <a href="#side-by-side" className="rounded-[6px] border border-black/10 bg-white px-6 py-3 text-sm font-semibold text-ink hover:no-underline hover:opacity-90">

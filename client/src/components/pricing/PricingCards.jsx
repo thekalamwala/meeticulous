@@ -10,7 +10,7 @@ import {
 } from "../../data/plans";
 import useFeeOnly from "../../hooks/useFeeOnly";
 
-const ROUTE_START = "/be-a-sloth"; // must match Home.jsx
+const ROUTE_START = "/become-a-host"; // must match Home.jsx
 const ICONS = { Sprout, Rocket };
 
 // Glow is hover-only now: the accent shadow lives in a CSS var and is applied

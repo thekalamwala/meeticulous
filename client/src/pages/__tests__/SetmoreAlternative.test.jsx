@@ -22,11 +22,11 @@ describe('SetmoreAlternative (/compare/setmore-alternative)', () => {
     expect(container.querySelectorAll('*').length).toBeLessThan(1200);
   });
 
-  it('sends every "Start free" CTA to /be-a-sloth', () => {
+  it('sends every "Start free" CTA to /become-a-host', () => {
     renderPage();
     const ctas = screen.getAllByRole('link', { name: /^start free/i });
     expect(ctas.length).toBeGreaterThanOrEqual(2);
-    ctas.forEach((a) => expect(a.getAttribute('href')).toBe('/be-a-sloth'));
+    ctas.forEach((a) => expect(a.getAttribute('href')).toBe('/become-a-host'));
   });
 
   it("shows Setmore's paidFrom and Sloth Active's monthly price in the table", () => {

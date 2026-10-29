@@ -15,12 +15,12 @@ const inr = (n) => `₹${n.toLocaleString('en-IN')}`;
 const renderPage = () => render(<MemoryRouter><AcuityAlternative /></MemoryRouter>);
 
 describe('AcuityAlternative (/compare/acuity-alternative)', () => {
-  it('renders exactly one h1 and a primary CTA to /be-a-sloth', () => {
+  it('renders exactly one h1 and a primary CTA to /become-a-host', () => {
     renderPage();
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
     const ctas = screen.getAllByRole('link', { name: /start free/i });
     expect(ctas.length).toBeGreaterThan(0);
-    ctas.forEach((a) => expect(a.getAttribute('href')).toBe('/be-a-sloth'));
+    ctas.forEach((a) => expect(a.getAttribute('href')).toBe('/become-a-host'));
     expect(screen.getByRole('link', { name: /see the comparison/i }).getAttribute('href')).toBe('#side-by-side');
   });
 

@@ -59,7 +59,7 @@ import razorpayLogo from '../enterprise-v2/assets/logo/razorpay.png';
 import OperatorCredit from '../../components/common/OperatorCredit';
 import PageGuides from '../../components/common/PageGuides';
 
-const START = '/be-a-sloth';        // real host signup funnel
+const START = '/become-a-host';        // real host signup funnel
 const LOGIN = '/login-as-vendor';   // host login (Google-only door)
 const DEMO = '/sndatarkar/booking/book-a-sloth-app-online-demo-30-min-advisory-session';               // real demo page
 const MASCOT = '/images/lawyer.webp'; // advocate sloth mascot — transparent cutout (107KB webp)
