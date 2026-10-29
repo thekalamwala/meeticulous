@@ -1,6 +1,6 @@
 # Google OAuth Verification — Submission Runbook
 
-Project: **book-a-sloth-web-app** (number `979443533557`)
+Project: **meeticulous-web-app** (number `979443533557`)
 Verification path: **sensitive scopes** (no CASA audit — see "Scope inventory" below)
 
 ## Status
@@ -95,7 +95,7 @@ hand-writing one and not the other leaves the account subtly broken.
 Setup checklist for the account:
 
 - [ ] Fresh Gmail, **2FA disabled** (2FA is itself an auth blocker Google will reject)
-- [ ] Signed in once at `https://bookasloth.com/login-as-vendor`
+- [ ] Signed in once at `https://meeticulous.com/login-as-vendor`
 - [ ] Onboarding completed: slug → about → category → **skip** WhatsApp → **free** plan
 - [ ] Lands on `/dashboard` with `onboarding_completed = true`
 - [ ] At least one published service, so the reviewer has something bookable
@@ -108,12 +108,12 @@ Setup checklist for the account:
 
 Google rejects Drive links routinely — reviewers open them logged-out from outside the
 org. **Upload to YouTube as Unlisted or Public.** Then update the link in
-[Cloud Console → Data Access](https://console.cloud.google.com/auth/scopes?project=book-a-sloth-web-app)
+[Cloud Console → Data Access](https://console.cloud.google.com/auth/scopes?project=meeticulous-web-app)
 **and** paste it in the email reply. They check the console field, not just the mail.
 
 The video must show, in one unbroken take:
 
-1. URL bar on `bookasloth.com` — proves the domain matches the registered client
+1. URL bar on `meeticulous.com` — proves the domain matches the registered client
 2. The OAuth consent screen, with **app name and client ID legible**
 3. Each of the three Calendar scopes being granted
 4. The app *using* the data from each scope:
@@ -131,7 +131,7 @@ the Trust & Safety thread — a new mail loses the case association.
 
 ---
 
-Subject: **Re: Verification for project 979443533557 (book-a-sloth-web-app)**
+Subject: **Re: Verification for project 979443533557 (meeticulous-web-app)**
 
 > Hello,
 >
@@ -148,7 +148,7 @@ Subject: **Re: Verification for project 979443533557 (book-a-sloth-web-app)**
 >
 > **2. Authorized login credentials**
 >
-> Book A Sloth uses **Google Sign-In as the only authentication method for hosts** — the
+> Meeticulous uses **Google Sign-In as the only authentication method for hosts** — the
 > account type that requests Calendar scopes. There is no local username/password login
 > for hosts, so no application-specific credentials exist. Reviewers may sign in with any
 > Google account and will reach the consent screen immediately.
@@ -163,7 +163,7 @@ Subject: **Re: Verification for project 979443533557 (book-a-sloth-web-app)**
 >
 > **Step-by-step navigation**
 >
-> 1. Open `https://bookasloth.com/login-as-vendor`
+> 1. Open `https://meeticulous.com/login-as-vendor`
 >    *(Please use this URL, not `/login` — that is the separate guest entry point.)*
 > 2. Click **Continue with Google** and sign in with the test account above.
 > 3. The Google consent screen appears, requesting:
@@ -178,12 +178,12 @@ Subject: **Re: Verification for project 979443533557 (book-a-sloth-web-app)**
 >    slot as a guest, and observe the event created on the host's Google Calendar with a
 >    Meet link, and the booked slot disappearing from the availability grid.
 >
-> Our Limited Use disclosure is published at `https://bookasloth.com/privacy`.
+> Our Limited Use disclosure is published at `https://meeticulous.com/privacy`.
 >
 > Please let us know if anything further is needed.
 >
 > Best regards,
-> Shubham — Book A Sloth
+> Shubham — Meeticulous
 
 ---
 

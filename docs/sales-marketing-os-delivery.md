@@ -13,19 +13,19 @@ isolated, tested, migrations verified on staging.
 
 | PR | Title | Base | Migration | Notes |
 |----|-------|------|-----------|-------|
-| [#711](https://github.com/bookasloth/book-a-sloth/pull/711) | P0 spec (5 stacked PRs) | main | — | doc only |
-| [#712](https://github.com/bookasloth/book-a-sloth/pull/712) | P0-1 real-time lead creation | main | — | signup / booking / enterprise → `upsertLead` |
-| [#713](https://github.com/bookasloth/book-a-sloth/pull/713) | P0-2 frequency cap + quiet hours | main | — | automated sends only; the missing safeguard |
-| [#714](https://github.com/bookasloth/book-a-sloth/pull/714) | P0-3 persist score/intent | main | **v3.112** | `leads.score/intent/next_action` |
-| [#715](https://github.com/bookasloth/book-a-sloth/pull/715) | P0-4 lifecycle engine | #714 | — | 15-min cron: score→stage→next action→enrol/task |
-| [#717](https://github.com/bookasloth/book-a-sloth/pull/717) | seed nurture sequences | main | — | 3 email sequences active, New-Lead inactive |
-| [#718](https://github.com/bookasloth/book-a-sloth/pull/718) | P1a Sales Desk backend | #714 | **v3.113** | `GET /admin/crm/desk`, `leads.last_reply_at` |
-| [#720](https://github.com/bookasloth/book-a-sloth/pull/720) | P1b Sales Desk UI | #718 | — | `/admin/sales` → 5-queue desk |
-| [#721](https://github.com/bookasloth/book-a-sloth/pull/721) | P1c desk card actions | #720 | — | snooze / nurture / won / lost |
-| [#722](https://github.com/bookasloth/book-a-sloth/pull/722) | leads → contacts sync | main | — | marketing can reach CRM leads |
-| [#723](https://github.com/bookasloth/book-a-sloth/pull/723) | sequence builder UI + enrol | main | — | wires the dead sequence APIs |
-| [#724](https://github.com/bookasloth/book-a-sloth/pull/724) | intent-event sink | main | **v3.114** | identified intent → `lead_events` → score |
-| [#725](https://github.com/bookasloth/book-a-sloth/pull/725) | bulk WhatsApp/email/enrol | main | — | multi-select send, gated + capped |
+| [#711](https://github.com/meeticulous/meeticulous/pull/711) | P0 spec (5 stacked PRs) | main | — | doc only |
+| [#712](https://github.com/meeticulous/meeticulous/pull/712) | P0-1 real-time lead creation | main | — | signup / booking / enterprise → `upsertLead` |
+| [#713](https://github.com/meeticulous/meeticulous/pull/713) | P0-2 frequency cap + quiet hours | main | — | automated sends only; the missing safeguard |
+| [#714](https://github.com/meeticulous/meeticulous/pull/714) | P0-3 persist score/intent | main | **v3.112** | `leads.score/intent/next_action` |
+| [#715](https://github.com/meeticulous/meeticulous/pull/715) | P0-4 lifecycle engine | #714 | — | 15-min cron: score→stage→next action→enrol/task |
+| [#717](https://github.com/meeticulous/meeticulous/pull/717) | seed nurture sequences | main | — | 3 email sequences active, New-Lead inactive |
+| [#718](https://github.com/meeticulous/meeticulous/pull/718) | P1a Sales Desk backend | #714 | **v3.113** | `GET /admin/crm/desk`, `leads.last_reply_at` |
+| [#720](https://github.com/meeticulous/meeticulous/pull/720) | P1b Sales Desk UI | #718 | — | `/admin/sales` → 5-queue desk |
+| [#721](https://github.com/meeticulous/meeticulous/pull/721) | P1c desk card actions | #720 | — | snooze / nurture / won / lost |
+| [#722](https://github.com/meeticulous/meeticulous/pull/722) | leads → contacts sync | main | — | marketing can reach CRM leads |
+| [#723](https://github.com/meeticulous/meeticulous/pull/723) | sequence builder UI + enrol | main | — | wires the dead sequence APIs |
+| [#724](https://github.com/meeticulous/meeticulous/pull/724) | intent-event sink | main | **v3.114** | identified intent → `lead_events` → score |
+| [#725](https://github.com/meeticulous/meeticulous/pull/725) | bulk WhatsApp/email/enrol | main | — | multi-select send, gated + capped |
 | — | PR-5 flip `crm_admin_sends` | — | — | config, not a PR — see runbook |
 
 Migrations applied on **staging (Tokyo)**; **prod (Mumbai) pending** (steps below).
@@ -48,7 +48,7 @@ Each merge auto-deploys. Run the prod migration **before** merging the code that
 
 **2. Score/intent columns**
 - Merge **#714**.
-- Run **`v3.112`** on prod (Mumbai `ayjhlwyzszykqtnaktpb`): `server/migrations/v3.112_lead_scoring.sql`.
+- Run **`v3.112`** on prod (Mumbai `PROD_PROJECT_REF`): `server/migrations/v3.112_lead_scoring.sql`.
 
 **3. Lifecycle engine** — merge **#715**.
 - First deploy: set `LIFECYCLE_ENGINE_DRYRUN=true` on Render, watch one cycle's logs, then remove the env so it writes.

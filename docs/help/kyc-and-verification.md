@@ -53,7 +53,7 @@ There's no separate "under review" state — it's pending until a decision is ma
 
 ## If your KYC is rejected
 
-Common reasons: unclear or cut-off images, details that don't match your account, or an invalid/expired document. Fix the issue and **resubmit** — you can re-upload corrected documents and submit again straight away (a new submission replaces the previous one). If you're not sure why it was rejected, the notification explains it, or contact Book A Sloth Support.
+Common reasons: unclear or cut-off images, details that don't match your account, or an invalid/expired document. Fix the issue and **resubmit** — you can re-upload corrected documents and submit again straight away (a new submission replaces the previous one). If you're not sure why it was rejected, the notification explains it, or contact Meeticulous Support.
 
 ## Editing, viewing, and privacy
 
@@ -69,4 +69,4 @@ Common reasons: unclear or cut-off images, details that don't match your account
 
 **Status isn't changing.** Verification is manual — wait for the review, or contact Support if it's taking unusually long.
 
-**Who do I contact?** For any document-upload, status, or verification problem, reach Book A Sloth Support with the details.
+**Who do I contact?** For any document-upload, status, or verification problem, reach Meeticulous Support with the details.

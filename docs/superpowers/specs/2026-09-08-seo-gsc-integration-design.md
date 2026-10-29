@@ -14,7 +14,7 @@ Automate the weekly manual GSC routine (`seo-gsc-sop.md`) by pulling Google Sear
 - **Creds:** Render env vars `GSC_SA_KEY` + `GSC_PROPERTY` (single non-rotating service-account credential; not admin-editable).
 
 ## Hard prerequisite (user-provisioned; code no-ops until present)
-A **service account** (separate from the user-facing Calendar OAuth — that stays untouched; adding `webmasters` scope there would regress its verification): GCP project → enable Search Console API → create SA + JSON key → add the SA email as a user on the `bookasloth.com` GSC property → set `GSC_SA_KEY` (JSON) + `GSC_PROPERTY` (`sc-domain:bookasloth.com`) on Render. Claude never handles the key.
+A **service account** (separate from the user-facing Calendar OAuth — that stays untouched; adding `webmasters` scope there would regress its verification): GCP project → enable Search Console API → create SA + JSON key → add the SA email as a user on the `meeticulous.com` GSC property → set `GSC_SA_KEY` (JSON) + `GSC_PROPERTY` (`sc-domain:meeticulous.com`) on Render. Claude never handles the key.
 
 ## Architecture
 

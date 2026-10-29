@@ -8,7 +8,7 @@ product_area: username
 
 ## Your link
 
-Your username is your public booking link: `bookasloth.com/your-name`. It's what you share with clients, and it's how guests find your page and services.
+Your username is your public booking link: `meeticulous.com/your-name`. It's what you share with clients, and it's how guests find your page and services.
 
 Pick something clean and recognizable — usernames are **3–30 characters**, using lowercase letters, numbers, or hyphens.
 

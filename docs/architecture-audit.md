@@ -1,4 +1,4 @@
-# Architecture & Infrastructure Audit — Book A Sloth
+# Architecture & Infrastructure Audit — Meeticulous
 
 **Date:** 2026-06-23
 **Scope:** Codebase, infrastructure, deployment config, docs, and architecture decisions.
@@ -46,7 +46,7 @@ production-*viable* at low scale, not production-*ready* for scaling.
   non-blocking `npm audit`, concurrency cancel), `performance.yml` (JMeter SLA gate),
   `backup.yml` (daily AES256 dump), `dependabot.yml`. Gaps: CI is **not a merge gate** (no branch
   protection); server **integration tests excluded** from CI. *Priority: High.*
-- **Deployments — ✅ Implemented.** `render.yaml` (prod `bookasloth-api` on `main`, staging on
+- **Deployments — ✅ Implemented.** `render.yaml` (prod `meeticulous-api` on `main`, staging on
   `staging`, `/health` check) + `client/vercel.json` (SPA routing, security headers). Node 22
   locked. Auto-deploy on push (no manual gate). *Priority: Medium.*
 - **Staging Environment — ✅ Implemented.** 3-stage local → staging → prod, separate Supabase

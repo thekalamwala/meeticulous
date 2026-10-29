@@ -30,7 +30,7 @@ const PRERENDER_ROUTES = [
   '/services',
   '/explore',
   '/lp/calendly-alternative',
-  '/lp/topmate-vs-bookasloth',
+  '/lp/topmate-vs-meeticulous',
 ];
 ```
 

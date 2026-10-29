@@ -7,7 +7,7 @@
 ## Problem
 
 Today, both purchase flows jump straight to Razorpay with only name/email/contact.
-Book A Sloth (legal entity **Timewheel Internet Pvt. Ltd.**) needs to (a) collect the
+Meeticulous (legal entity **Timewheel Internet Pvt. Ltd.**) needs to (a) collect the
 buyer's billing details before charging and (b) issue a compliant **GST tax invoice**
 for its own taxable supply.
 
@@ -19,7 +19,7 @@ Out of scope (YAGNI, add later): digital-product invoices, e-invoicing IRN/QR, c
 
 ## Legal frame
 
-Book A Sloth is an e-commerce operator. It tax-invoices **only its own revenue**:
+Meeticulous is an e-commerce operator. It tax-invoices **only its own revenue**:
 - Subscription: the whole plan price is BAS's SaaS supply → invoice full plan price.
 - Booking: only the platform fee is BAS's supply → invoice the fee, not the service.
 

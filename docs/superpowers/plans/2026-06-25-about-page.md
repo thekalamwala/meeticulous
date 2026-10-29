@@ -45,7 +45,7 @@ Expected: `feat/about-page`; only untracked docs if any.
 // All About-page copy + data. Round-2: replace placeholders / [bracketed] values + wire real photos.
 export const hero = {
   h1: "Your time is worth protecting. So we built the calm way to get booked.",
-  sub: "Book A Sloth helps creators publish their services, get booked, and get paid — without chasing DMs or losing a cut to commission.",
+  sub: "Meeticulous helps creators publish their services, get booked, and get paid — without chasing DMs or losing a cut to commission.",
   ctaPrimary: "Let's Get Started",
   ctaGhost: "See how it works",
 };
@@ -104,7 +104,7 @@ export const stats = {
 };
 
 export const team = {
-  heading: "The people behind Book A Sloth.",
+  heading: "The people behind Meeticulous.",
   sub: "Small team, big care. Real faces coming soon.",
   members: [
     { name: "Founder Name", role: "Founder", quip: "Believes the best software disappears.", swap: "team-1" },
@@ -813,7 +813,7 @@ export default function About() {
   return (
     <main className="bg-[var(--bg)]">
       <Seo
-        title="About Book A Sloth — the calm way to get booked"
+        title="About Meeticulous — the calm way to get booked"
         description="Why we exist, who we are, and how we help creators get booked and paid without commission."
       />
       <AboutHero />

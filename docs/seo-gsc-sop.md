@@ -2,7 +2,7 @@
 
 _Owner: Shubham • Created: 2026-07-19 • Cadence: weekly (Monday), plus after every deploy that touches SEO surface or publishes content._
 
-Scope: the `bookasloth.com` domain property in GSC. Companion docs: `seo-aeo-geo-plan.md` (strategy), `seo-audit-2026-07-19.md` (fix history).
+Scope: the `meeticulous.com` domain property in GSC. Companion docs: `seo-aeo-geo-plan.md` (strategy), `seo-audit-2026-07-19.md` (fix history).
 
 ---
 
@@ -23,7 +23,7 @@ Every future reading is judged against this, not against zero.
 1. **Indexing → Sitemaps.** All 5 children still "Success". `sitemap-pages.xml` discovered count should read **71** once Google re-reads the post-#435 file (was 28). If a child shows an error → escalate (§4).
 2. **Indexing → Pages.** Note two numbers in a running log (bottom of this file): **Indexed** and **Discovered – currently not indexed**. Healthy motion = Indexed climbing, queue draining.
 3. **Read the "Why pages aren't indexed" table** against §2 below. Only act when a row is marked ACT.
-4. **Performance tab** (once impressions exist): note total impressions + clicks weekly. Watch the brand query `book a sloth` — the namesake booksloth.com (book app) owns the near-name SERP today.
+4. **Performance tab** (once impressions exist): note total impressions + clicks weekly. Watch the brand query `Meeticulous` — the namesake booksloth.com (book app) owns the near-name SERP today.
 5. **Request indexing** (§3) for any newly published high-value page (new LP, feature page, blog post).
 
 ## 2. How to read "Why pages aren't indexed"
@@ -72,7 +72,7 @@ From `seo-aeo-geo-plan.md`: qualified organic traffic that converts — never va
 1. Indexed count trends toward sitemap count (~245 today, grows with hosts/posts).
 2. Commercial pages (`/pricing`, `/lp/*`, `/for/*`) earn impressions for buying keywords (GSC Performance → Queries).
 3. Host profiles index under their own canonicals.
-4. Brand query `book a sloth` shows our pages, not only the namesake book app.
+4. Brand query `Meeticulous` shows our pages, not only the namesake book app.
 5. Zero rows in §4's escalation list.
 
 ---

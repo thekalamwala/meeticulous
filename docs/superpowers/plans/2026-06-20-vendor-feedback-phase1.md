@@ -664,10 +664,10 @@ In `server/config/emailTemplates.js`, add a new entry to the `TEMPLATES` array (
     name: 'Feedback Status Update', subject: 'Update on your feedback: {{feedback_subject}}',
     preview_text: 'Your feedback is now {{status_label}}.',
     email_category: 'Product Feedback',
-    email_reason: 'You are receiving this email because you submitted feedback on Book A Sloth.',
+    email_reason: 'You are receiving this email because you submitted feedback on Meeticulous.',
     html_content:
       eyebrow('Your feedback') + h('Your feedback is now {{status_label}}') +
-      lead('Thanks for helping us improve Book A Sloth. Here is where your feedback stands:') +
+      lead('Thanks for helping us improve Meeticulous. Here is where your feedback stands:') +
       card(
         detail('Your feedback', '{{feedback_subject}}') +
         detail('Status', '{{status_label}}'),

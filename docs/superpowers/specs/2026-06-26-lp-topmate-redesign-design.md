@@ -1,12 +1,12 @@
-# /lp/topmate-vs-bookasloth — Topmate-style rebuild
+# /lp/topmate-vs-meeticulous — Topmate-style rebuild
 
 **Date:** 2026-06-26
 **Branch:** `feat/lp-topmate-redesign`
-**Route (unchanged):** `/lp/topmate-vs-bookasloth`
+**Route (unchanged):** `/lp/topmate-vs-meeticulous`
 
 ## Goal
 Rebuild the paid-traffic landing page so each block mirrors Topmate.io's homepage
-*visual style*, while the copy positions Book A Sloth *against* Topmate (0% commission,
+*visual style*, while the copy positions Meeticulous *against* Topmate (0% commission,
 flat ₹499/mo, India-native). Single conversion goal: start a host signup.
 
 ## Decisions (locked with user)
@@ -29,11 +29,11 @@ flat ₹499/mo, India-native). Single conversion goal: start a host signup.
 
 2. **Creators carousel** (ref img 2)
    - Orange (`--primary`) full-bleed section. Heading "See what the best creators
-     build on Book A Sloth", prev/next arrow buttons (scroll the strip), horizontal
+     build on Meeticulous", prev/next arrow buttons (scroll the strip), horizontal
      scroll-snap row of dark cards: name, tag pills, photo, "View page →".
 
 3. **Page in a flash** (ref img 3)
-   - Left: H2 "Create your Book A Sloth page in a **flash**" + subcopy + text-link CTA.
+   - Left: H2 "Create your Meeticulous page in a **flash**" + subcopy + text-link CTA.
    - Right: static mockup card — avatar + slug + colored swatch column + lightning tile
      + notification stack ("New booking | ₹X", "A new testimonial", "New sale | ₹Y").
 
@@ -48,7 +48,7 @@ flat ₹499/mo, India-native). Single conversion goal: start a host signup.
    - Self-contained copy on the LP (LP pages are intentionally standalone).
 
 6. **Bento stat grid** (ref img 6)
-   - Heading "Earn & Convert more with Book A Sloth". 6 colored bento cards using the
+   - Heading "Earn & Convert more with Meeticulous". 6 colored bento cards using the
      existing `--c-*` palette, reworded honestly for us:
      localised currency (2X), testimonial showcase (40%), country pricing (4X),
      instant/transparent payouts, abandoned-cart emails, get discovered.
@@ -61,7 +61,7 @@ flat ₹499/mo, India-native). Single conversion goal: start a host signup.
 
 ## File layout
 ```
-client/src/pages/lp/TopmateVsBookASloth.jsx   # orchestrator: meta, analytics, block order
+client/src/pages/lp/TopmateVsMeeticulous.jsx   # orchestrator: meta, analytics, block order
 client/src/components/lp/
   lpData.js            # PROFILES (hero+carousel placeholders), TESTIMONIALS, BENTO, FAQ, STEPS
   LpHero.jsx

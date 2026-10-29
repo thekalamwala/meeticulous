@@ -1,4 +1,4 @@
-# Book A Sloth — Handover Document
+# Meeticulous — Handover Document
 
 _Prepared 2026-10-27. Covers the whole `appointment-booking` repository: what it is, what's live, how it ships, what's half-built, and what will bite the next person._
 
@@ -8,7 +8,7 @@ _Prepared 2026-10-27. Covers the whole `appointment-booking` repository: what it
 
 # PART 1 — Executive summary (for the founder / business reader)
 
-## What Book A Sloth is
+## What Meeticulous is
 
 A SaaS appointment-booking platform. **Hosts** (creators, coaches, consultants, salons, clinics) sign up, publish services with prices and availability, and get a public page. **Guests** book those services — either with a one-time phone/email OTP or logged in — and pay through **Razorpay**. The platform takes a cut (platform fee + commission on the free tier) and runs the money, notifications, and payouts around it.
 
@@ -51,7 +51,7 @@ The booking → payment → payout loop is real and in production. The host acti
 
 2. **Email provider is in a contested state.** Marketing email currently routes through Brevo, which is the *opposite* of a founder decision on record (Resend). This is flagged as needing resolution. Resend's free tier is also capped at 100 emails/day across *all* outreach — a real throughput ceiling.
 
-3. **Compliance / tax is not fully settled.** The GST, TDS and TCS treatment (including whether Book A Sloth is a "Merchant of Record" or a marketplace) has open questions a CA needs to confirm. There are notes that the current TDS/TCS rates may be stale. Do not treat the tax math as final.
+3. **Compliance / tax is not fully settled.** The GST, TDS and TCS treatment (including whether Meeticulous is a "Merchant of Record" or a marketplace) has open questions a CA needs to confirm. There are notes that the current TDS/TCS rates may be stale. Do not treat the tax math as final.
 
 4. **The financial ledger is half-built and unmerged.** Double-entry accounting Phase 1 exists on a branch (`sd/adoring-elgamal-625af7`) with its migrations applied to the live DB, but it was never merged to `main`, and the historical backfill has never been run on production. Settlement, refunds, and financial reporting (Phases 2–5) do not exist. If the company needs auditable books, this is unfinished work.
 
@@ -72,7 +72,7 @@ The booking → payment → payout loop is real and in production. The host acti
 - **PostHog, Sentry** — analytics and error tracking.
 - **Cloudflare** — sits in front (edge IP handling matters — see landmines).
 
-Support / contact addresses on file: **bolt@bookasloth.in** (support), legal/billing **team@timewheel.co.in**.
+Support / contact addresses on file: **bolt@meeticulous.in** (support), legal/billing **team@timewheel.co.in**.
 
 ---
 
@@ -169,7 +169,7 @@ See `docs/critical-files.md` for the per-file "before you change this" notes.
 
 ## Database
 
-- **Two Supabase projects.** Prod = **Mumbai `ayjhlwyzszykqtnaktpb`**, staging = **Tokyo `xwvciqkayammbvsidqig`**. (Memorise this; the naming is counterintuitive and has caused mistakes.)
+- **Two Supabase projects.** Prod = **Mumbai `PROD_PROJECT_REF`**, staging = **Tokyo `STAGING_PROJECT_REF`**. (Memorise this; the naming is counterintuitive and has caused mistakes.)
 - **Migrations:** ~220 SQL files in `server/migrations/`, versioned v1.1 → v3.1xx. All through the latest verified version are applied on **both** DBs. A new migration must be run on both, staging first, and the code-side schema fallback kept until confirmed everywhere.
 - Staging is **DB-only** — there is no separately deployed staging app.
 - Prod schema changes go through Supabase MCP `execute_sql` / `apply_migration` (the seed scripts point at staging by default — a known landmine).

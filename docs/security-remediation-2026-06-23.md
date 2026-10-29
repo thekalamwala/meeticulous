@@ -14,8 +14,8 @@ self-row RLS policies and the public anon key, any logged-in user could write
 - **Fix:** `v3.27_revoke_public_write_grants.sql` — revoke write privileges from
   `anon`/`authenticated` (SELECT preserved). All app writes go through the
   Express server's `service_role` client, which bypasses RLS and is unaffected.
-- **Status: APPLIED LIVE to prod (`ayjhlwyzszykqtnaktpb`) + staging
-  (`xwvciqkayammbvsidqig`) and verified** — `has_column_privilege` for the
+- **Status: APPLIED LIVE to prod (`PROD_PROJECT_REF`) + staging
+  (`STAGING_PROJECT_REF`) and verified** — `has_column_privilege` for the
   columns above is now `false`; SELECT/read paths unchanged. Reversible via GRANT.
 
 ## Fixed in code (this branch)

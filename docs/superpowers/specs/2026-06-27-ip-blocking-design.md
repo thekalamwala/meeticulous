@@ -6,12 +6,12 @@
 
 ## Goal
 
-Protect the Book A Sloth API from abusive/hostile traffic with two complementary
+Protect the Meeticulous API from abusive/hostile traffic with two complementary
 layers:
 
 1. **Edge (Cloudflare)** — block volumetric/DDoS/bot traffic *before* it reaches
    Render. Delivered as an ops runbook the founder executes when the
-   `bookasloth.com` DNS move happens. No application code.
+   `meeticulous.com` DNS move happens. No application code.
 2. **App-layer auto-ban** — an in-app IP blocklist that auto-bans IPs which
    repeatedly trip the existing rate limiters, plus a separate stricter tracker
    for admin-login brute-force, plus a full admin page to manage bans and an
@@ -172,7 +172,7 @@ Reuses existing admin shell layout + the admin API client patterns.
 ## Cloudflare runbook — `docs/cloudflare-edge-setup.md`
 
 Step-by-step, executed when DNS moves:
-1. Add `bookasloth.com` to Cloudflare; copy assigned nameservers.
+1. Add `meeticulous.com` to Cloudflare; copy assigned nameservers.
 2. Update nameservers at the registrar (Hostinger).
 3. Recreate DNS records for the public domain (proxied / orange-cloud).
 4. Enable WAF managed ruleset.

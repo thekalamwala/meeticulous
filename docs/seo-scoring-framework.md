@@ -4,7 +4,7 @@ Internal, auditable scoring for the SEO control center. Two independent 0–100 
 per page: **SEO** (traditional search health) and **GEO/AEO** (readiness for AI answer
 engines to understand, retrieve and cite the page).
 
-> **These are Book A Sloth's diagnostic scores, not any search engine's ranking
+> **These are Meeticulous's diagnostic scores, not any search engine's ranking
 > formula.** No vendor publishes a weighted ranking formula. Every weight below is our
 > engineering judgement, tagged with an evidence level so it can be challenged.
 

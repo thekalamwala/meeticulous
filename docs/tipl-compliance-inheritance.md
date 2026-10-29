@@ -1,7 +1,7 @@
-# TIPL compliance: what a new product inherits from Book A Sloth
+# TIPL compliance: what a new product inherits from Meeticulous
 
 **Audience:** Claude sessions (and humans) building any new TIPL product on the same company + Razorpay.
-**Written:** 2026-10-10, from Book A Sloth code (`origin/main` lineage) + project memory. Not legal advice;
+**Written:** 2026-10-10, from Meeticulous code (`origin/main` lineage) + project memory. Not legal advice;
 tax positions need the CA's written opinion.
 
 **Entity:** Timewheel Internet Pvt. Ltd. (TIPL), GSTIN 21AAMCT8270C1ZF, PAN AAMCT8270C, Odisha.

@@ -1,4 +1,4 @@
-# Book A Sloth — Technical SEO + AEO Audit
+# Meeticulous — Technical SEO + AEO Audit
 
 _Audited: 2026-10-04 · Auditor: automated senior technical-SEO/AEO pass over the codebase + prod config · Branch: `claude/seo-aeo-audit-9a2qny`_
 
@@ -6,11 +6,11 @@ _Audited: 2026-10-04 · Auditor: automated senior technical-SEO/AEO pass over th
 
 ## 0. Scope, assumptions & method
 
-**Product (inferred from `README.md:3`, `docs/ai-context.md`, routes):** Book A Sloth is a multi-tenant appointment-booking SaaS for India — hosts (creators/professionals) publish services, guests book via phone-OTP or account and pay over UPI through Razorpay. Positioning line: _"the calm way to sell your time"_ (`client/index.html:15`).
+**Product (inferred from `README.md:3`, `docs/ai-context.md`, routes):** Meeticulous is a multi-tenant appointment-booking SaaS for India — hosts (creators/professionals) publish services, guests book via phone-OTP or account and pay over UPI through Razorpay. Positioning line: _"the calm way to sell your time"_ (`client/index.html:15`).
 
-**Prod URL:** `https://bookasloth.com` (apex; `www` → apex 308, `client/vercel.json:5-10`).
+**Prod URL:** `https://meeticulous.com` (apex; `www` → apex 308, `client/vercel.json:5-10`).
 
-**Stack — correction to the brief.** The template assumed **Next.js + Supabase**. The real stack is a **React 18 + Vite client-rendered SPA** (hosted on Vercel) + a separate **Express API** (Render, `book-a-sloth.onrender.com`) + Supabase (Postgres/Auth/Storage). This is material: a Vite SPA has **no SSR** — indexable HTML for non-JS crawlers and social scrapers comes from a **build-time Puppeteer prerender** (`client/scripts/prerender.mjs`) and a **server-side bot-prerender endpoint** (`server/controllers/prerenderController.js` via `client/middleware.js`). Most of Pillar 0 hinges on that prerender path, not on a framework's Metadata API.
+**Stack — correction to the brief.** The template assumed **Next.js + Supabase**. The real stack is a **React 18 + Vite client-rendered SPA** (hosted on Vercel) + a separate **Express API** (Render, `meeticulous-api.onrender.com`) + Supabase (Postgres/Auth/Storage). This is material: a Vite SPA has **no SSR** — indexable HTML for non-JS crawlers and social scrapers comes from a **build-time Puppeteer prerender** (`client/scripts/prerender.mjs`) and a **server-side bot-prerender endpoint** (`server/controllers/prerenderController.js` via `client/middleware.js`). Most of Pillar 0 hinges on that prerender path, not on a framework's Metadata API.
 
 **Money keywords (template blank → inferred** from `docs/seo-aeo-geo-plan.md:68`, pricing copy, and `/lp` + `/for` targeting):
 1. `appointment booking software` / `appointment scheduling software` (India)
@@ -21,8 +21,8 @@ _Audited: 2026-10-04 · Auditor: automated senior technical-SEO/AEO pass over th
 
 ### Method & evidence rules
 - Every finding cites a **file:line** or a **prod/DB observation**.
-- **Live prod HTML / Lighthouse could NOT be fetched.** This environment's egress policy blocks all outbound web (verified: `bookasloth.com` and even `google.com` return HTTP 000 / proxy `403 connect_rejected`). So "what crawlers see" is derived from the **prerender source that generates that exact HTML** (`prerender.mjs`, `prerenderController.js`, `index.html`, `vercel.json`), which is authoritative for the markup but **cannot confirm live status codes, render timing, or Core Web Vitals**. Items needing live verification are tagged **[VERIFY LIVE]** and listed in §7.
-- **Supabase: read-only aggregates only, no PII.** Figures below are counts/averages against prod (`ayjhlwyzszykqtnaktpb`).
+- **Live prod HTML / Lighthouse could NOT be fetched.** This environment's egress policy blocks all outbound web (verified: `meeticulous.com` and even `google.com` return HTTP 000 / proxy `403 connect_rejected`). So "what crawlers see" is derived from the **prerender source that generates that exact HTML** (`prerender.mjs`, `prerenderController.js`, `index.html`, `vercel.json`), which is authoritative for the markup but **cannot confirm live status codes, render timing, or Core Web Vitals**. Items needing live verification are tagged **[VERIFY LIVE]** and listed in §7.
+- **Supabase: read-only aggregates only, no PII.** Figures below are counts/averages against prod (`PROD_PROJECT_REF`).
 
 ### Platform scale (prod DB, 2026-10-04)
 | Metric | Value |
@@ -69,19 +69,19 @@ Two numbers drive several findings below: the platform is **very early** (49 lif
 
 ### Findings
 
-**0-A · `Organization.logo` is a dead link (404) on every `/for` + article/blog page.** → **Evidence:** `seo.js:278` (`organizationJsonLd`) and `seo.js:344` (`orgNode`, used by `articleGraphJsonLd` + `professionGraphJsonLd`) emit `logo: ${site}/logo-512.png`. No `logo-512.png` exists in `client/public/` (`find client/public -iname 'logo-512*'` → empty; only `web-app-manifest-512x512.png` exists). The homepage uses a different, working logo (`Home.jsx:77` → `company-assets.bookasloth.in/images/brand/logo.png`), so the brand's logo is **both broken and inconsistent** across page types. → **Fix (shipped, P0):** point `seo.js` logo to the on-domain `web-app-manifest-512x512.png` (exists, genuinely 512×512 so the `width/height:512` claim stays truthful). → **Impact:** M (Organization logo is what Google uses for the knowledge panel / brand SERP; a 404 is silently dropped). → **Effort:** S.
+**0-A · `Organization.logo` is a dead link (404) on every `/for` + article/blog page.** → **Evidence:** `seo.js:278` (`organizationJsonLd`) and `seo.js:344` (`orgNode`, used by `articleGraphJsonLd` + `professionGraphJsonLd`) emit `logo: ${site}/logo-512.png`. No `logo-512.png` exists in `client/public/` (`find client/public -iname 'logo-512*'` → empty; only `web-app-manifest-512x512.png` exists). The homepage uses a different, working logo (`Home.jsx:77` → `company-assets.meeticulous.in/images/brand/logo.png`), so the brand's logo is **both broken and inconsistent** across page types. → **Fix (shipped, P0):** point `seo.js` logo to the on-domain `web-app-manifest-512x512.png` (exists, genuinely 512×512 so the `width/height:512` claim stays truthful). → **Impact:** M (Organization logo is what Google uses for the knowledge panel / brand SERP; a 404 is silently dropped). → **Effort:** S.
 
 **0-B · 5 live, prerendered `/for` pages are missing from the sitemap.** → **Evidence:** `prerender.mjs:103-108` prerenders `/for/astrologers`, `/for/architects`, `/for/dentists`, `/for/sports-turf`, `/for/chartered-accountants`; all are real routes (`App.jsx:664-668`). None appear in `sitemapService.js` STATIC_ROUTES `/for/*` block (`:106-126`). They are therefore crawlable only via internal links, not declared. → **Fix (shipped, P0):** add the 5 entries to STATIC_ROUTES. → **Impact:** M. → **Effort:** S.
 
 **0-C · Homepage `aggregateRating` claims `reviewCount: 176` (5★) but the DB has 6 reviews.** → **Evidence:** `Home.jsx:95-100` hardcodes `ratingValue "5" / reviewCount "176"`; the code's own comment (`:92-94`) says _"reviewCount must reflect real 5★ user reviews/testimonials shown on the site — don't inflate."_ Prod `reviews` table: **6 rows, avg 5.00**. Even counting `/wall-of-love` testimonials, 176 is unlikely to be substantiated. → **Risk:** this is **self-serving markup on fabricated volume** — exactly what Google's structured-data policy penalises, and it undercuts the brand with AI engines that cross-check. → **Fix (NEEDS YOU — not auto-changed):** set `reviewCount` to the real number of displayed 5★ reviews/testimonials (the count rendered on `/wall-of-love`), or remove `aggregateRating` from the homepage SoftwareApplication until there's a defensible count. I did not guess a number. → **Impact:** **H** (manual action, penalty + trust risk). → **Effort:** S.
 
-**0-D · `/lp/*` competitor pages render FAQ/pricing/comparison content but emit no structured data.** (Also an AEO finding — see 2-A.) → **Evidence:** `SetmoreAlternative.jsx:636-646` renders a visible `#faq` with no `jsonLd=`/`@type`; same across all 5 `*Alternative` pages (not `TopmateVsBookASloth`, which is also missing). These are high-commercial-intent pages. → **Fix (P1):** add `faqJsonLd` + the `professionGraphJsonLd`/`SoftwareApplication` builder (already in `seo.js`) from each page's existing FAQ/pricing arrays. → **Impact:** M. → **Effort:** M (per-page wiring; not a one-liner, hence not auto-shipped).
+**0-D · `/lp/*` competitor pages render FAQ/pricing/comparison content but emit no structured data.** (Also an AEO finding — see 2-A.) → **Evidence:** `SetmoreAlternative.jsx:636-646` renders a visible `#faq` with no `jsonLd=`/`@type`; same across all 5 `*Alternative` pages (not `TopmateVsMeeticulous`, which is also missing). These are high-commercial-intent pages. → **Fix (P1):** add `faqJsonLd` + the `professionGraphJsonLd`/`SoftwareApplication` builder (already in `seo.js`) from each page's existing FAQ/pricing arrays. → **Impact:** M. → **Effort:** M (per-page wiring; not a one-liner, hence not auto-shipped).
 
 **0-E · Client↔server schema divergence on host/service pages.** → **Evidence:** the SPA emits `ProfilePage` + `BreadcrumbList` + `FAQPage` for a host page (`HostProfile.jsx:478-507`), but the bot-prerender shell emits only `ProfilePage` + `FAQPage` (no `BreadcrumbList`, `prerenderController.js:252-312`). Non-JS crawlers/scrapers get the subset. → **Fix (P2):** add a `BreadcrumbList` node to the prerender shells to match. The repo's own `bas-seo-schema` skill already mandates two-path sync. → **Impact:** L. → **Effort:** S.
 
 **0-F · Heading structure — two pages need a verify.** → **Evidence:** `Home.jsx` and `Pricing.jsx` have exactly one `<h1>` (good); `About.jsx` and `HowItWorks.jsx` have **no literal `<h1>`** (may resolve to one via a shared Hero component). → **Fix (P2):** confirm each renders exactly one h1. → **Impact:** L. → **Effort:** S. **[VERIFY LIVE]**
 
-**0-G · Entity/logo inconsistency within schema (see 0-A) + contact-email split.** `contactPageJsonLd` + footer use `bolt@bookasloth.in` (`seo.js:594`, `Footer.jsx:4`), while legal pages use `team@timewheel.co.in` (`Privacy.jsx:5`). Pick one canonical support address for schema consistency. → **Impact:** L. → **Effort:** S.
+**0-G · Entity/logo inconsistency within schema (see 0-A) + contact-email split.** `contactPageJsonLd` + footer use `bolt@meeticulous.in` (`seo.js:594`, `Footer.jsx:4`), while legal pages use `team@timewheel.co.in` (`Privacy.jsx:5`). Pick one canonical support address for schema consistency. → **Impact:** L. → **Effort:** S.
 
 > **Non-finding (corrected):** the 6 legal pages (`Privacy/Terms/Refund/GuestTerms/HostAgreement/HostFees`) **do** get correct title/description/canonical — they render `<Seo>` via the shared `LegalLayout.jsx:53-57`. An earlier pass flagged them as gaps by grepping only the page files; verified false.
 
@@ -127,7 +127,7 @@ HUB: Appointment booking software (India)  → /appointment-booking-software  [E
 
 **1-C · No definitional/glossary tier.** → **Evidence:** content inventory found **no glossary, no "what is a booking page" hub page** outside `/help/docs`. These are the pages that win "what is…" and feed AI definitions. → **Fix (P1):** add a glossary + 3–4 definitional pages (see §6). → **Impact:** M. → **Effort:** M.
 
-**1-D · Orphan/anchor-text checks need a live crawl.** → The internal-link graph uses discovery hubs (`/solutions`, `/compare`) that are prerendered so links land in static HTML (`prerender.mjs:79-82`) — good. But "pages >3 clicks from home", true orphans, and weak anchors ("click here"/"learn more") can only be confirmed on the live rendered graph. **[VERIFY LIVE]** — run Screaming Frog / Sitebulb against `https://bookasloth.com` and the sitemap. → **Impact:** M. → **Effort:** S (once a crawl is available).
+**1-D · Orphan/anchor-text checks need a live crawl.** → The internal-link graph uses discovery hubs (`/solutions`, `/compare`) that are prerendered so links land in static HTML (`prerender.mjs:79-82`) — good. But "pages >3 clicks from home", true orphans, and weak anchors ("click here"/"learn more") can only be confirmed on the live rendered graph. **[VERIFY LIVE]** — run Screaming Frog / Sitebulb against `https://meeticulous.com` and the sitemap. → **Impact:** M. → **Effort:** S (once a crawl is available).
 
 ---
 
@@ -154,7 +154,7 @@ For each money keyword, the sub-questions an AI engine researches before answeri
 | What's the best Calendly alternative in India? | ✅ `/lp/calendly-alternative` |
 | Calendly alternative with payments/UPI? | ✅ `/lp/calendly-alternative` + `/features/payments` |
 | Cheaper than Calendly? | ✅ `/pricing` |
-| Calendly vs Book A Sloth feature table? | ⚠ page exists but **no comparison/FAQ JSON-LD** (0-D/2-A) |
+| Calendly vs Meeticulous feature table? | ⚠ page exists but **no comparison/FAQ JSON-LD** (0-D/2-A) |
 | Free Calendly alternative? | ✅ `/pricing` (Starter) |
 | Calendly alternative for coaches/consultants? | ⚠ `/for/business-consultant` (not linked from the `/lp` page) |
 | Does it integrate Google Calendar? | ✅ `/features/google-calendar` |
@@ -234,8 +234,8 @@ seo-aeo-audit   → seo-topical-map   → blog-seo-optimizer   → seo-measure
 
 ## 7. Access I don't have — what you must pull manually
 
-- **Live rendered prod HTML & status codes** — egress is blocked here. Run: `curl -sL -A "Googlebot" https://bookasloth.com/` and a host/service URL; confirm the prerender shells actually serve (header `X-Prerender: true`), legal-page canonicals, and that the 5 newly-sitemapped `/for` pages return 200.
-- **Core Web Vitals / Lighthouse** — `npx lighthouse https://bookasloth.com --preset=desktop` and mobile; the static hints (`index.html`) look good but LCP/INP/CLS need real measurement. **[VERIFY LIVE]**
+- **Live rendered prod HTML & status codes** — egress is blocked here. Run: `curl -sL -A "Googlebot" https://meeticulous.com/` and a host/service URL; confirm the prerender shells actually serve (header `X-Prerender: true`), legal-page canonicals, and that the 5 newly-sitemapped `/for` pages return 200.
+- **Core Web Vitals / Lighthouse** — `npx lighthouse https://meeticulous.com --preset=desktop` and mobile; the static hints (`index.html`) look good but LCP/INP/CLS need real measurement. **[VERIFY LIVE]**
 - **Google Search Console + Bing Webmaster** — coverage/indexing, which `/for` + `/services` pages are "Crawled – not indexed" (expect the empty-supply verticals from 1-A), query/CTR data. The plan notes GSC submission was never confirmed (`seo-aeo-geo-plan.md:25`).
 - **Backlink data (Ahrefs/Semrush)** — for Pillar 3 baseline and competitor gap.
 - **A full site crawl (Screaming Frog/Sitebulb)** — for the orphan/click-depth/anchor-text items in 1-D and the h1 verifies in 0-F.
@@ -298,7 +298,7 @@ _Role = place in the topical map. Each brief is 5 lines: intent, angle, key sect
 - Intent: commercial — "Topmate alternative for creators / paid 1:1s".
 - Angle: monetise 1:1s, priority DMs, digital products with 0% commission on paid plans.
 - Sections: creator use-cases; vs Topmate; payments; FAQ.
-- Links: `/lp/topmate-vs-bookasloth`, `/features/digital-products`, `/pricing`.
+- Links: `/lp/topmate-vs-meeticulous`, `/features/digital-products`, `/pricing`.
 - Schema: `professionGraphJsonLd`.
 
 **5. `/tools/no-show-cost-calculator` (NEW linkable tool)**

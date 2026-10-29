@@ -440,8 +440,8 @@ export default function EarningsCalculator() {
   return (
     <div className="min-h-screen" style={{ background: "#f7f5ef" }}>
       <Seo
-        title="Earnings Calculator | Book A Sloth"
-        description="See what you'd actually pocket on Book A Sloth. Drag your price and monthly bookings to watch your yearly take-home — and what the wrong plan quietly costs you."
+        title="Earnings Calculator | Meeticulous"
+        description="See what you'd actually pocket on Meeticulous. Drag your price and monthly bookings to watch your yearly take-home — and what the wrong plan quietly costs you."
         canonical={canonical}
         image={ogCard("earnings-calculator", "png")}
       />

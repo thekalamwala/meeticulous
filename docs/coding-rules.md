@@ -1,4 +1,4 @@
-# Coding Rules — Book A Sloth
+# Coding Rules — Meeticulous
 
 ## General Principles
 1. **Minimal exploration.** Use docs first, open code only for the specific change.

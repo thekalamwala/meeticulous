@@ -490,7 +490,7 @@ create index if not exists idx_in_app_notif_unread
 alter table in_app_notifications enable row level security;
 revoke all on in_app_notifications from anon, authenticated;
 ```
-- [ ] **Step 2:** Apply via Supabase MCP `apply_migration` to BOTH the prod (Mumbai `ayjhlwyzszykqtnaktpb`) and staging (Tokyo `xwvciqkayammbvsidqig`) projects (memory `staging-prod-pipeline-and-db-inversion`). Confirm `list_tables` shows it.
+- [ ] **Step 2:** Apply via Supabase MCP `apply_migration` to BOTH the prod (Mumbai `PROD_PROJECT_REF`) and staging (Tokyo `STAGING_PROJECT_REF`) projects (memory `staging-prod-pipeline-and-db-inversion`). Confirm `list_tables` shows it.
 - [ ] **Step 3:** Commit
 ```bash
 git add -- server/migrations/v3.39_in_app_notifications.sql

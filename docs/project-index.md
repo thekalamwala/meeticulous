@@ -1,4 +1,4 @@
-# Project Index — Book A Sloth
+# Project Index — Meeticulous
 
 ## Root
 | Path | Purpose |

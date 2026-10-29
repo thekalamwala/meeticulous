@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Rebuild `/lp/topmate-vs-bookasloth` to look like Topmate's own homepage (warm cream, playful, rounded floating cards) while the copy sells against Topmate; switch the CTA to one-click Google; fix the consent-banner leak onto /lp.
+**Goal:** Rebuild `/lp/topmate-vs-meeticulous` to look like Topmate's own homepage (warm cream, playful, rounded floating cards) while the copy sells against Topmate; switch the CTA to one-click Google; fix the consent-banner leak onto /lp.
 
 **Architecture:** Frontend-only. One page file restyled (logic constants kept verbatim), one shared `LeadForm` gains a `google-only` mode, `ConsentBanner` gains a `slim` variant gated by route in `App.jsx`. Logic is TDD'd (LeadForm mode, ConsentBanner variant); the visual page rebuild is verified by a render smoke test + live preview.
 
@@ -17,7 +17,7 @@
 - `client/src/pages/lp/_shared/LeadForm.jsx` — **modify**: add `mode` prop (`"email"` default | `"google-only"`).
 - `client/src/components/common/ConsentBanner.jsx` — **modify**: add `variant` prop (`"full"` default | `"slim"`).
 - `client/src/App.jsx` — **modify**: pass `variant` to `<ConsentBanner />` based on `/lp` route (line ~183).
-- `client/src/pages/lp/TopmateVsBookASloth.jsx` — **rewrite**: Topmate-style restyle, keep data/logic constants, use `LeadForm mode="google-only"`.
+- `client/src/pages/lp/TopmateVsMeeticulous.jsx` — **rewrite**: Topmate-style restyle, keep data/logic constants, use `LeadForm mode="google-only"`.
 - `client/src/pages/__tests__/LeadForm.test.jsx` — **create**: mode behaviour.
 - `client/src/pages/__tests__/ConsentBanner.test.jsx` — **create**: variant behaviour.
 - `client/src/pages/__tests__/TopmateLp.test.jsx` — **create**: page smoke test.
@@ -76,15 +76,15 @@ beforeEach(() => {
 
 describe("LeadForm google-only mode", () => {
   it("renders no email field and a single Google CTA", () => {
-    render(<LeadForm slug="topmate-vs-bookasloth" slot="hero" mode="google-only" ctaLabel="Continue with Google" />);
+    render(<LeadForm slug="topmate-vs-meeticulous" slot="hero" mode="google-only" ctaLabel="Continue with Google" />);
     expect(screen.queryByPlaceholderText("you@email.com")).toBeNull();
     expect(screen.getByRole("button", { name: /continue with google/i })).toBeTruthy();
   });
 
   it("clicking the CTA fires LP_CTA_CLICKED with_email:false and starts Google signup", () => {
-    render(<LeadForm slug="topmate-vs-bookasloth" slot="hero" mode="google-only" ctaLabel="Continue with Google" />);
+    render(<LeadForm slug="topmate-vs-meeticulous" slot="hero" mode="google-only" ctaLabel="Continue with Google" />);
     fireEvent.click(screen.getByRole("button", { name: /continue with google/i }));
-    expect(track).toHaveBeenCalledWith("LP_CTA_CLICKED", expect.objectContaining({ slug: "topmate-vs-bookasloth", slot: "hero", with_email: false }));
+    expect(track).toHaveBeenCalledWith("LP_CTA_CLICKED", expect.objectContaining({ slug: "topmate-vs-meeticulous", slot: "hero", with_email: false }));
     expect(startVendorGoogleAuth).toHaveBeenCalledWith("signup");
   });
 
@@ -241,7 +241,7 @@ git commit -m "fix(lp): slim consent bar on /lp, stop giant banner covering CTAs
 ## Task 3: Rebuild the Topmate LP page (smoke test first)
 
 **Files:**
-- Rewrite: `client/src/pages/lp/TopmateVsBookASloth.jsx`
+- Rewrite: `client/src/pages/lp/TopmateVsMeeticulous.jsx`
 - Test: `client/src/pages/__tests__/TopmateLp.test.jsx`
 
 **Keep verbatim** from the current file (logic, do not change): `SLUG`, `PRO_MONTHLY`, `PRO_ANNUAL`, `TM_RATE_LO`, `TM_RATE_HI`, `TM_CLAIM_AS_OF`, `inr`, `TRUST`, `COMPARE`, `Cell`, `SavingsCalc`, `STEPS`, `FAQ`, the `useUtm`/`useDocumentMeta`/`analytics` mount effect (`page` + `LP_VIEWED`). Only markup/styling and the LeadForm usage change.
@@ -253,7 +253,7 @@ git commit -m "fix(lp): slim consent bar on /lp, stop giant banner covering CTAs
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import TopmateVsBookASloth from "../lp/TopmateVsBookASloth";
+import TopmateVsMeeticulous from "../lp/TopmateVsMeeticulous";
 
 vi.mock("../../context/AuthContext", () => ({ useAuth: () => ({ startVendorGoogleAuth: vi.fn() }) }));
 vi.mock("../../hooks/useUtm", () => ({ default: () => ({}) }));
@@ -264,14 +264,14 @@ vi.mock("../../services/analytics", () => ({
 }));
 vi.mock("../../components/home/images", () => ({ HERO_FACES: [] }));
 
-const renderPage = () => render(<MemoryRouter><TopmateVsBookASloth /></MemoryRouter>);
+const renderPage = () => render(<MemoryRouter><TopmateVsMeeticulous /></MemoryRouter>);
 
-describe("TopmateVsBookASloth", () => {
+describe("TopmateVsMeeticulous", () => {
   it("renders the anti-Topmate hero and comparison", () => {
     renderPage();
     expect(screen.getByRole("heading", { level: 1 })).toBeTruthy();
     expect(screen.getAllByText(/topmate/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/Book A Sloth vs Topmate/i)).toBeTruthy();
+    expect(screen.getByText(/Meeticulous vs Topmate/i)).toBeTruthy();
   });
 
   it("uses one-click Google CTAs and no email field", () => {
@@ -298,16 +298,16 @@ Keep all imports plus add `import { HERO_FACES } from "../../components/home/ima
 
 Concrete copy + structure (use these strings):
 
-- **Header:** wordmark "Book A Sloth" + pill "0% commission"; right CTA `<a href="#start">` "Start free".
+- **Header:** wordmark "Meeticulous" + pill "0% commission"; right CTA `<a href="#start">` "Start free".
 - **Hero badge:** `Coming from Topmate? 👋` (rounded white pill, emoji).
 - **Hero H1:** `Your storefront.` then accent line `Without the 30% tax.` (accent line in `text-primary`).
-- **Hero sub:** `Book A Sloth is the 0% commission alternative to Topmate. Flat ₹499/month — keep every rupee your clients pay, instead of losing up to 30% on every booking.`
+- **Hero sub:** `Meeticulous is the 0% commission alternative to Topmate. Flat ₹499/month — keep every rupee your clients pay, instead of losing up to 30% on every booking.`
 - **Hero CTA:** `<div id="start" className="scroll-mt-24">` containing `<LeadForm slug={SLUG} slot="hero" mode="google-only" ctaLabel="Continue with Google" />`.
 - **Social proof strip:** map `HERO_FACES` into overlapping circular avatars (`-space-x-3`, `h-9 w-9 rounded-full ring-2 ring-white object-cover`); if `HERO_FACES` is empty render nothing. Beside it: `Loved by creators who keep 100% of what they earn.` (no invented numeric counts).
-- **Hero mockup (the judo visual):** two stacked rounded cards styled like Topmate booking cards. Card A (front, `bg-white`, green accent): title `Book A Sloth`, row `₹1,000 booking`, big `You keep ₹1,000` in `text-[#009D28]`, small `0% commission`. Card B (behind, slightly rotated/`opacity-70`, `bg-[#FFE4D6]`, red accent): title `Topmate`, row `₹1,000 booking`, `You keep ₹700` in `text-[#E44332]`, small `–30% commission`. Wrap so it stacks below the hero copy on mobile, beside on `lg:`.
+- **Hero mockup (the judo visual):** two stacked rounded cards styled like Topmate booking cards. Card A (front, `bg-white`, green accent): title `Meeticulous`, row `₹1,000 booking`, big `You keep ₹1,000` in `text-[#009D28]`, small `0% commission`. Card B (behind, slightly rotated/`opacity-70`, `bg-[#FFE4D6]`, red accent): title `Topmate`, row `₹1,000 booking`, `You keep ₹700` in `text-[#E44332]`, small `–30% commission`. Wrap so it stacks below the hero copy on mobile, beside on `lg:`.
 - **Trust strip:** map `TRUST` (icons) as before, restyled.
 - **The math section:** peach band `bg-[#FFE4D6]`. Eyebrow `THE COMMISSION MATH`, H2 `See what Topmate quietly takes.` Render `<SavingsCalc />`. In `SavingsCalc`, restyle the two result blocks: Topmate block → `bg-[#E44332]/10` with `text-[#E44332]` label; BAS block → `bg-[#009D28]/10` with `text-[#009D28]` label. Keep numbers/logic. Keep the disclaimer line `Topmate commission band of 10–30% as of {TM_CLAIM_AS_OF}...`.
-- **Comparison table:** H2 `Book A Sloth vs Topmate`. Keep `COMPARE` + `Cell`; in `Cell`, good check → `text-[#009D28]`, bad X → `text-[#E44332]`. Keep `<caption className="sr-only">`, `scope` attrs.
+- **Comparison table:** H2 `Meeticulous vs Topmate`. Keep `COMPARE` + `Cell`; in `Cell`, good check → `text-[#009D28]`, bad X → `text-[#E44332]`. Keep `<caption className="sr-only">`, `scope` attrs.
 - **Switch in 2 minutes:** keep `STEPS`, numbered Topmate blocks; rounded white icon tiles.
 - **FAQ:** keep `FAQ` + native `<details>` accordion, restyled rounded card.
 - **Final CTA:** dark rounded block (`bg-ink`), H2 `Stop paying commission on your own work.`, sub line, `<LeadForm slug={SLUG} slot="final" mode="google-only" dark ctaLabel="Continue with Google" />`.
@@ -323,7 +323,7 @@ Expected: PASS (3 tests).
 - [ ] **Step 5: Commit**
 
 ```bash
-git add client/src/pages/lp/TopmateVsBookASloth.jsx client/src/pages/__tests__/TopmateLp.test.jsx
+git add client/src/pages/lp/TopmateVsMeeticulous.jsx client/src/pages/__tests__/TopmateLp.test.jsx
 git commit -m "feat(lp): rebuild Topmate LP in Topmate's own style, copy turned against them"
 ```
 
@@ -335,7 +335,7 @@ git commit -m "feat(lp): rebuild Topmate LP in Topmate's own style, copy turned 
 
 - [ ] **Step 1: Start dev server**
 
-Use preview_start (name `client`, port 5173). Navigate to `/lp/topmate-vs-bookasloth`.
+Use preview_start (name `client`, port 5173). Navigate to `/lp/topmate-vs-meeticulous`.
 
 - [ ] **Step 2: Desktop check**
 

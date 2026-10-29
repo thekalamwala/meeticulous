@@ -8,9 +8,9 @@ What you need before you can send WhatsApp (campaigns or triggered notifications
 ## 2. Create + get a template approved
 - In AiSensy, create a campaign/template with the message body and `{{1}}, {{2}}…` variables.
 - Submit it for **Meta approval**. You can only send approved templates.
-- Note the **exact campaign name** — you'll paste it into Book A Sloth verbatim.
+- Note the **exact campaign name** — you'll paste it into Meeticulous verbatim.
 
-## 3. Connect it in Book A Sloth
+## 3. Connect it in Meeticulous
 - Admin → **Notification Settings → AiSensy Configuration**: paste API key + connected number, toggle **Enable WhatsApp**, click **Test Connection** (validates the key without messaging anyone).
 
 ## 4. Register the template for campaigns

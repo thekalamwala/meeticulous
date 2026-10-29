@@ -6,11 +6,11 @@ product_area: booking
 
 # Booking a service
 
-Booking on Book A Sloth takes a minute, and you don't need an account to do it.
+Booking on Meeticulous takes a minute, and you don't need an account to do it.
 
 ## How to book
 
-1. Open the host's page (their link looks like `bookasloth.com/their-name`) and pick the service you want.
+1. Open the host's page (their link looks like `meeticulous.com/their-name`) and pick the service you want.
 2. Choose a date and time from the slots shown. Only times the host is actually free will appear.
 3. Enter your details. If you're not signed in, we'll send a 6-digit code to your phone (by WhatsApp and email) to confirm it's you.
 4. Pay for the service. Once payment goes through, your booking is confirmed and you get a confirmation by WhatsApp and email.
@@ -169,7 +169,7 @@ No. Bookings are linked to the selected host and cannot be transferred.
 
 ## Which payment gateway is used?
 
-Book A Sloth securely processes payments using Razorpay.
+Meeticulous securely processes payments using Razorpay.
 
 ## What payment methods are supported?
 
@@ -213,11 +213,11 @@ Support may assist with booking-related issues, while administrators can view, e
 
 ## Who should I contact if I have a booking issue?
 
-Contact Book A Sloth Support with your Booking ID and payment reference (if applicable). This helps the support team investigate and resolve your issue more quickly.
+Contact Meeticulous Support with your Booking ID and payment reference (if applicable). This helps the support team investigate and resolve your issue more quickly.
 
 ## Can I book a service from my mobile phone?
 
-Yes. Book A Sloth works on mobile devices — browse hosts, select services, and complete your booking directly from your phone. The process works the same as on desktop.
+Yes. Meeticulous works on mobile devices — browse hosts, select services, and complete your booking directly from your phone. The process works the same as on desktop.
 
 ## Do I receive a Booking ID after booking?
 
@@ -405,8 +405,8 @@ Yes. [My Bookings](/my-bookings) helps you track upcoming, completed, and cancel
 
 ## What time zone are booking times shown in?
 
-All slots, confirmations, and reminders use **India Standard Time (IST)**. Book A Sloth is India-first, so times aren't localized to your device yet. If you're booking from outside India, convert the slot to your local time before you confirm — a 3:00 PM IST slot is 3:00 PM in India.
+All slots, confirmations, and reminders use **India Standard Time (IST)**. Meeticulous is India-first, so times aren't localized to your device yet. If you're booking from outside India, convert the slot to your local time before you confirm — a 3:00 PM IST slot is 3:00 PM in India.
 
 ## How can I get help with my booking?
 
-Contact Book A Sloth Support and provide your Booking ID, registered phone number, and payment reference (if applicable), so the team can investigate and help as quickly as possible.
+Contact Meeticulous Support and provide your Booking ID, registered phone number, and payment reference (if applicable), so the team can investigate and help as quickly as possible.

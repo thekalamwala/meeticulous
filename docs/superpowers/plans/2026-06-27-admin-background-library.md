@@ -488,7 +488,7 @@ ALTER TABLE profiles
 
 - [ ] **Step 2: Apply to BOTH Supabase DBs**
 
-Run in Supabase SQL Editor for **both** projects (Tokyo staging `xwvciqkayammbvsidqig`, Mumbai prod `ayjhlwyzszykqtnaktpb`). Verify:
+Run in Supabase SQL Editor for **both** projects (Tokyo staging `STAGING_PROJECT_REF`, Mumbai prod `PROD_PROJECT_REF`). Verify:
 
 ```sql
 SELECT column_name FROM information_schema.columns

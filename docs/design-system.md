@@ -1,4 +1,4 @@
-# Design System — Book A Sloth
+# Design System — Meeticulous
 
 ## Design Language
 "Friendly Brutalism" — clean white surfaces with bold typography, hard offset shadows, and warm brand orange. Tailwind utility-first with a custom CSS-variable token layer.

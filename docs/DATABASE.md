@@ -1,4 +1,4 @@
-# Database — Book A Sloth
+# Database — Meeticulous
 
 Database: **Supabase (PostgreSQL)**. All server queries use `supabaseAdmin` (service role key) which bypasses Row Level Security. RLS enforces client-side access control only.
 
@@ -246,7 +246,7 @@ Key-value for platform-wide config.
 | `platform_fee` | 10 | Flat fee per booking (₹) |
 | `platform_fee_gst_rate` | 0.18 | GST on platform fee |
 | `maintenance_mode` | false | 503s all public traffic when true |
-| `platform_name` | Book A Sloth | |
+| `platform_name` | Meeticulous | |
 
 ---
 

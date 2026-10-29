@@ -71,10 +71,10 @@ function selfcheck() {
   assert.ok(a.wordCount > 5, 'word count counted');
   assert.ok(a.bodyText.includes('Is it free?'), 'faq text included in body');
 
-  const row = buildPageRow({ slug: 's', title: 'T', excerpt: 'E', body }, { siteUrl: 'https://bookasloth.com', jsonLdGraph: [{ '@type': 'BlogPosting' }] });
+  const row = buildPageRow({ slug: 's', title: 'T', excerpt: 'E', body }, { siteUrl: 'https://meeticulous.com', jsonLdGraph: [{ '@type': 'BlogPosting' }] });
   assert.equal(row.page_type, 'blog');
   assert.equal(row.http_status, 200);
-  assert.equal(row.canonical, 'https://bookasloth.com/blog/s');
+  assert.equal(row.canonical, 'https://meeticulous.com/blog/s');
   assert.deepEqual(row.h1, ['T']);
   assert.equal(row.raw_signals.jsonLd[0]['@type'], 'BlogPosting');
   assert.equal(row.raw_signals.headings.length, 1);
@@ -141,7 +141,7 @@ export function analyzeBody(body = []) {
 - [ ] **Step 4: Implement `buildPageRow`**
 
 ```js
-export function buildPageRow(post, { siteUrl = 'https://bookasloth.com', jsonLdGraph = [] } = {}) {
+export function buildPageRow(post, { siteUrl = 'https://meeticulous.com', jsonLdGraph = [] } = {}) {
   const a = analyzeBody(post.body || []);
   const images = post.image ? [{ src: post.image, alt: post.imageAlt || '' }] : [];
   return {
@@ -208,7 +208,7 @@ Append inside `selfcheck()` before the final `console.log`:
 
 ```js
   // Import sanity — both app modules must resolve under Node ESM.
-  const graph = articleGraphJsonLd({ url: 'https://bookasloth.com/blog/s', headline: 'T', description: 'E' });
+  const graph = articleGraphJsonLd({ url: 'https://meeticulous.com/blog/s', headline: 'T', description: 'E' });
   assert.ok(Array.isArray(graph['@graph']) && graph['@graph'].length, 'articleGraphJsonLd returns a @graph');
   assert.equal(typeof scorePage, 'function', 'scorePage imported');
 
@@ -230,7 +230,7 @@ Expected: FAIL — `scoreDraft is not defined` (plus, if `client/src/utils/seo.j
 Add above `selfcheck()`:
 
 ```js
-export function scoreDraft(post, { siteUrl = 'https://bookasloth.com', queries = [] } = {}) {
+export function scoreDraft(post, { siteUrl = 'https://meeticulous.com', queries = [] } = {}) {
   const graph = articleGraphJsonLd({
     siteUrl,
     url: `${siteUrl}/blog/${post.slug}`,
@@ -276,7 +276,7 @@ async function readPost() {
 if (process.argv.includes('--selfcheck')) {
   selfcheck();
 } else {
-  const siteUrl = process.env.SITE_URL || 'https://bookasloth.com';
+  const siteUrl = process.env.SITE_URL || 'https://meeticulous.com';
   readPost()
     .then((post) => { process.stdout.write(JSON.stringify(scoreDraft(post, { siteUrl }), null, 2)); })
     .catch((e) => { console.error('scoreBlogDraft error:', e.message); process.exit(1); });
@@ -292,7 +292,7 @@ Expected: PASS — prints both selfcheck lines, no assertion error.
 
 Run:
 ```bash
-echo '{"slug":"test-post","title":"How Book A Sloth pricing works","excerpt":"A short clear explainer about plans and fees kept under one hundred sixty characters for the meta.","date":"2026-09-10","body":[{"h2":"Plans"},{"p":"Starter is free. Host+ is 229 rupees. See [pricing](/pricing)."}]}' | node server/scripts/scoreBlogDraft.mjs
+echo '{"slug":"test-post","title":"How Meeticulous pricing works","excerpt":"A short clear explainer about plans and fees kept under one hundred sixty characters for the meta.","date":"2026-09-10","body":[{"h2":"Plans"},{"p":"Starter is free. Host+ is 229 rupees. See [pricing](/pricing)."}]}' | node server/scripts/scoreBlogDraft.mjs
 ```
 Expected: JSON with `seo.score`, `geo.score`, `seo.profile: "blog"`, and a `recommendations` array printed to stdout.
 
@@ -324,10 +324,10 @@ Create `~/.claude/skills/blog-seo-optimizer/SKILL.md`:
 ```markdown
 ---
 name: blog-seo-optimizer
-description: Use when optimizing or publishing a Book A Sloth blog post from a Markdown file — takes the MD, classifies search intent, checks cannibalization, runs a SERP/content-gap analysis, adds cluster-based internal links and verified outbound citations, optimizes for SEO/GEO/AEO, scores it with the live production scorer (server/scripts/scoreBlogDraft.mjs), gates on a multi-condition quality check, and opens a PR. Trigger: "optimize this blog post", "blog SEO", "/blog-seo".
+description: Use when optimizing or publishing a Meeticulous blog post from a Markdown file — takes the MD, classifies search intent, checks cannibalization, runs a SERP/content-gap analysis, adds cluster-based internal links and verified outbound citations, optimizes for SEO/GEO/AEO, scores it with the live production scorer (server/scripts/scoreBlogDraft.mjs), gates on a multi-condition quality check, and opens a PR. Trigger: "optimize this blog post", "blog SEO", "/blog-seo".
 ---
 
-# Blog SEO/GEO/AEO Optimizer (Book A Sloth)
+# Blog SEO/GEO/AEO Optimizer (Meeticulous)
 
 Takes one blog-post Markdown file → an optimized, scored, PR-ready post written into
 `client/src/data/blogPosts.js`. Scoring uses the live production scorer; this skill never
@@ -356,7 +356,7 @@ Append the full numbered pipeline. Copy the spec's 12 steps, and for the mechani
 
 2. **Cannibalization pre-check (gating).** Query existing posts:
    `SELECT slug, title, category FROM blogs WHERE status='published'` via Supabase MCP (project =
-   prod Mumbai `ayjhlwyzszykqtnaktpb`). If Supabase is unreachable, parse `BLOG_POSTS` from
+   prod Mumbai `PROD_PROJECT_REF`). If Supabase is unreachable, parse `BLOG_POSTS` from
    `client/src/data/blogPosts.js` instead and note reduced confidence. Compare the target query's
    intent to each post. If one already owns the same intent → STOP, report HIGH cannibalization
    with the overlapping slug(s) + options (update existing / re-angle / override). Do not proceed

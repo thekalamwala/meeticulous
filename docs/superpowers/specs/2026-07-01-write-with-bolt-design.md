@@ -1,6 +1,6 @@
 # Design Spec — "Write with Bolt" (AI Service-Listing Autofill)
 
-**Product:** Book A Sloth
+**Product:** Meeticulous
 **Feature:** One-click AI generation that fills every field on the Create-Service form
 **Owner:** Shubham (Timewheel Internet Pvt Ltd)
 **Stack (actual):** React 18 + Vite SPA · Node/Express 4 · Supabase (Postgres) · Claude (Haiku 4.5 / Sonnet 5)
@@ -13,7 +13,7 @@
 
 ## 1. Summary
 
-Creating a service on Book A Sloth means filling a long form (title, short + long description, inclusions/exclusions, FAQs, notes). Hosts drop off before publishing.
+Creating a service on Meeticulous means filling a long form (title, short + long description, inclusions/exclusions, FAQs, notes). Hosts drop off before publishing.
 
 **"Write with Bolt"** is a single button on the Create-Service form. The host types **only the service title**, clicks the button, and the AI fills **every content field on the form** with publish-ready, SEO/AEO/GEO-optimized content. The host reviews, optionally tweaks or regenerates, and publishes.
 

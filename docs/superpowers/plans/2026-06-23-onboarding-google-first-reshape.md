@@ -113,7 +113,7 @@ ALTER TABLE profiles
   ADD COLUMN IF NOT EXISTS last_name  TEXT;
 ```
 
-- [ ] **Step 2: Apply to BOTH Supabase DBs** (Mumbai prod `ayjhlwyzszykqtnaktpb`, Tokyo staging `xwvciqkayammbvsidqig`) via the Supabase MCP `apply_migration` or SQL editor. Verify with `list_tables` that `profiles.first_name` / `last_name` exist.
+- [ ] **Step 2: Apply to BOTH Supabase DBs** (Mumbai prod `PROD_PROJECT_REF`, Tokyo staging `STAGING_PROJECT_REF`) via the Supabase MCP `apply_migration` or SQL editor. Verify with `list_tables` that `profiles.first_name` / `last_name` exist.
 
 - [ ] **Step 3: Commit**
 
@@ -502,7 +502,7 @@ export default function GoogleStart() {
   return (
     <div className="min-h-[calc(100vh-72px)] flex items-center justify-center px-4">
       <div className="page-card w-full max-w-md text-center">
-        <h1 className="text-2xl font-semibold">Start hosting on Book A Sloth</h1>
+        <h1 className="text-2xl font-semibold">Start hosting on Meeticulous</h1>
         <p className="mt-2 text-gray-600">
           Continue with Google — we'll pull your name and photo so you can skip the forms.
         </p>
@@ -532,7 +532,7 @@ git commit -m "feat(onboarding): Google CTA landing as sole entry"
 **Files:**
 - Modify: `client/src/pages/onboarding/SlugClaim.jsx`
 
-- [ ] **Step 1: Rewrite** — pre-fill from the authed user's current `onboarding_slug`/`username`; debounced availability via `checkOnboardingSlug`; on continue `await claimOnboardingSlug(slug)` then navigate to `about`. Guard with `useOnboardingGuard(1)`. Use the existing markup but: drop the `bookasloth.com/` `pl-[160px]` magic-number padding in favor of a prefix `<span>` in a flex row; add a Back button to `/vendor-register`; enforce `maxLength={60}`; show a "min 3 chars" hint distinct from "taken".
+- [ ] **Step 1: Rewrite** — pre-fill from the authed user's current `onboarding_slug`/`username`; debounced availability via `checkOnboardingSlug`; on continue `await claimOnboardingSlug(slug)` then navigate to `about`. Guard with `useOnboardingGuard(1)`. Use the existing markup but: drop the `meeticulous.com/` `pl-[160px]` magic-number padding in favor of a prefix `<span>` in a flex row; add a Back button to `/vendor-register`; enforce `maxLength={60}`; show a "min 3 chars" hint distinct from "taken".
 
 Key handler:
 

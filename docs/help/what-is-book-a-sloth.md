@@ -1,6 +1,6 @@
-# What is Book A Sloth?
+# What is Meeticulous?
 
-Book A Sloth is a booking-and-payments platform for people who sell their time — coaches, tutors, consultants, therapists, freelancers, and creators.
+Meeticulous is a booking-and-payments platform for people who sell their time — coaches, tutors, consultants, therapists, freelancers, and creators.
 
 ## What it does
 

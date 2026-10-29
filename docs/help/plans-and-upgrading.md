@@ -1,6 +1,6 @@
 # Plans and upgrading
 
-Book A Sloth has two plans: **Sloth** and **Sloth Active**. See the [pricing](/pricing) page for the current comparison.
+Meeticulous has two plans: **Sloth** and **Sloth Active**. See the [pricing](/pricing) page for the current comparison.
 
 ## The plans
 
@@ -123,7 +123,7 @@ No. Existing bookings are unaffected and you can keep taking new ones throughout
 
 Yes. You can choose Sloth Active while setting up, or publish on Sloth and upgrade later from your dashboard.
 
-## Can I use Book A Sloth without paying?
+## Can I use Meeticulous without paying?
 
 Yes, indefinitely. Sloth is a complete booking business — page, payments, reminders, invoices — with a 5% commission on what you earn.
 

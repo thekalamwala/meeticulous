@@ -19,7 +19,7 @@
 - **Migration:** `server/migrations/v3.145_seo_audit.sql`. Idempotent (`CREATE TABLE IF NOT EXISTS`). Server-only: `ALTER TABLE … ENABLE ROW LEVEL SECURITY` with **no policy** (service-role only), like `job_runs`. Apply to **BOTH** DBs (`npm run migrate:staging -- migrations/v3.145_seo_audit.sql`, then `:prod`).
 - **Permission:** all admin SEO routes gated `requireAdmin('seo.manage')`. `seo.manage` already exists in `server/lib/adminPermissions.js` (marketing role) — **no RBAC migration**.
 - **Admin auth:** never set auth headers in client code; any route starting with `/admin` gets the `bas_admin` bearer token auto-attached by the `services/api.js` interceptor.
-- **Canonical domain:** `SITE_URL` defaults to `https://bookasloth.com` (`.com` = prod; never `.in`).
+- **Canonical domain:** `SITE_URL` defaults to `https://meeticulous.com` (`.com` = prod; never `.in`).
 - **Before the client PR:** run `npx vitest run` in `client/` (full vitest gates the Vercel deploy).
 - **Workflow:** branch `feat/seo-audit-engine`. Work → commit per task → open PR. **Do NOT merge** (user merges; merge auto-deploys prod). Commit messages: Conventional Commits, end with `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`.
 
@@ -202,7 +202,7 @@ const { parse } = require('../../services/seo/seoParse');
 const HTML = `<!doctype html><html><head>
   <title>Book A Coach</title>
   <meta name="description" content="Hire a coach">
-  <link rel="canonical" href="https://bookasloth.com/jane">
+  <link rel="canonical" href="https://meeticulous.com/jane">
   <meta name="robots" content="index, follow">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script type="application/ld+json">{"@type":"Person"}</script>
@@ -210,7 +210,7 @@ const HTML = `<!doctype html><html><head>
 </head><body>
   <h1>Jane the Coach</h1><h1>Second H1</h1>
   <p>Some body copy here with several words for counting.</p>
-  <a href="https://bookasloth.com/jane/intro">internal</a>
+  <a href="https://meeticulous.com/jane/intro">internal</a>
   <a href="https://google.com">external</a>
   <img src="/a.jpg" alt="A photo"><img src="/b.jpg">
 </body></html>`;
@@ -220,11 +220,11 @@ describe('seoParse', () => {
     const pd = parse(HTML, { 'x-robots-tag': 'noarchive' });
     expect(pd.title).toBe('Book A Coach');
     expect(pd.metaDescription).toBe('Hire a coach');
-    expect(pd.canonical).toBe('https://bookasloth.com/jane');
+    expect(pd.canonical).toBe('https://meeticulous.com/jane');
     expect(pd.robots).toBe('index, follow, noarchive');           // meta + header merged, lowercased
     expect(pd.viewport).toBe('width=device-width, initial-scale=1');
     expect(pd.h1).toEqual(['Jane the Coach', 'Second H1']);
-    expect(pd.links.internal).toContain('https://bookasloth.com/jane/intro');
+    expect(pd.links.internal).toContain('https://meeticulous.com/jane/intro');
     expect(pd.links.external).toContain('https://google.com');
     expect(pd.images).toEqual([{ src: '/a.jpg', alt: 'A photo' }, { src: '/b.jpg', alt: null }]);
     expect(pd.jsonLd).toEqual([{ '@type': 'Person' }, { __invalid: true, raw: '{bad json}' }]);
@@ -246,8 +246,8 @@ Expected: FAIL — "Cannot find module '../../services/seo/seoParse'".
 const { parse: parseHtml } = require('node-html-parser');
 
 const SITE_HOST = (() => {
-  try { return new URL(process.env.SITE_URL || 'https://bookasloth.com').host; }
-  catch { return 'bookasloth.com'; }
+  try { return new URL(process.env.SITE_URL || 'https://meeticulous.com').host; }
+  catch { return 'meeticulous.com'; }
 })();
 
 const attr = (el, name) => (el ? el.getAttribute(name) || null : null);
@@ -277,7 +277,7 @@ function parse(html, headers = {}) {
     const href = a.getAttribute('href');
     if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) continue;
     let abs;
-    try { abs = new URL(href, process.env.SITE_URL || 'https://bookasloth.com').toString(); } catch { continue; }
+    try { abs = new URL(href, process.env.SITE_URL || 'https://meeticulous.com').toString(); } catch { continue; }
     let host; try { host = new URL(abs).host; } catch { continue; }
     (host === SITE_HOST ? links.internal : links.external).push(abs);
   }
@@ -341,16 +341,16 @@ describe('seoFetch', () => {
       sentHeaders = init.headers;
       return { status: 200, url, headers: new Map([['content-type', 'text/html']]), text: async () => '<title>ok</title>' };
     });
-    const r = await fetchUrl('https://bookasloth.com/');
+    const r = await fetchUrl('https://meeticulous.com/');
     expect(r.status).toBe(200);
     expect(r.body).toContain('ok');
     expect(r.responseMs).toBeGreaterThanOrEqual(0);
-    expect(String(sentHeaders['User-Agent'])).toMatch(/BookASlothSEOBot|ClaudeBot/i);
+    expect(String(sentHeaders['User-Agent'])).toMatch(/MeeticulousSEOBot|ClaudeBot/i);
   });
 
   test('captures fetch errors without throwing', async () => {
     global.fetch = jest.fn(async () => { throw new Error('ECONNREFUSED'); });
-    const r = await fetchUrl('https://bookasloth.com/x');
+    const r = await fetchUrl('https://meeticulous.com/x');
     expect(r.status).toBeNull();
     expect(r.error).toMatch(/ECONNREFUSED/);
   });
@@ -370,7 +370,7 @@ Expected: FAIL — module not found.
 // Bot UA so host/service pages resolve real prerendered meta via edge -> /prerender.
 const DEFAULT_UA =
   process.env.SEO_CRAWLER_UA ||
-  'Mozilla/5.0 (compatible; BookASlothSEOBot/1.0; +https://bookasloth.com/robots.txt) ClaudeBot/1.0';
+  'Mozilla/5.0 (compatible; MeeticulousSEOBot/1.0; +https://meeticulous.com/robots.txt) ClaudeBot/1.0';
 const TIMEOUT_MS = Number(process.env.SEO_CRAWLER_TIMEOUT_MS) || 15000;
 
 const headersToObject = (h) => {
@@ -457,7 +457,7 @@ const { check } = require('../../services/seo/rules/onpage');
 const { buildContext } = require('../../services/seo/rules/index');
 
 const page = (over = {}) => ({
-  url: 'https://bookasloth.com/jane', pageType: 'host', httpStatus: 200,
+  url: 'https://meeticulous.com/jane', pageType: 'host', httpStatus: 200,
   title: 'A Great Coach You Should Book Today Right Now Here', metaDescription: 'x'.repeat(150),
   h1: ['A Great Coach You Should Book Today Right Now Here'], ...over,
 });
@@ -476,8 +476,8 @@ describe('onpage rules', () => {
   });
 
   test('flags duplicate titles across pages', () => {
-    const p1 = page({ url: 'https://bookasloth.com/a', title: 'Same Title Here For Both Pages OK Yes Sure Indeed' });
-    const p2 = page({ url: 'https://bookasloth.com/b', title: 'Same Title Here For Both Pages OK Yes Sure Indeed' });
+    const p1 = page({ url: 'https://meeticulous.com/a', title: 'Same Title Here For Both Pages OK Yes Sure Indeed' });
+    const p2 = page({ url: 'https://meeticulous.com/b', title: 'Same Title Here For Both Pages OK Yes Sure Indeed' });
     const ctx = buildContext([p1, p2], new Set());
     expect(check(p1, ctx).map((i) => i.ruleKey)).toContain('onpage.duplicate_title');
   });
@@ -530,7 +530,7 @@ function buildContext(pages, sitemapUrls) {
   const descCounts = new Map();
   const internalLinkTargets = new Set();
   let homepageTitle = null;
-  const siteUrl = process.env.SITE_URL || 'https://bookasloth.com';
+  const siteUrl = process.env.SITE_URL || 'https://meeticulous.com';
   for (const p of pages) {
     if (p.title) titleCounts.set(p.title, (titleCounts.get(p.title) || 0) + 1);
     if (p.metaDescription) descCounts.set(p.metaDescription, (descCounts.get(p.metaDescription) || 0) + 1);
@@ -666,8 +666,8 @@ const tech = require('../../services/seo/rules/technical');
 const idx = require('../../services/seo/rules/indexability');
 const { buildContext } = require('../../services/seo/rules/index');
 
-const base = (o = {}) => ({ url: 'https://bookasloth.com/jane', pageType: 'host', httpStatus: 200,
-  canonical: 'https://bookasloth.com/jane', redirectChain: [], responseMs: 100, viewport: 'w', wordCount: 500, robots: 'index, follow', title: 'Jane', ...o });
+const base = (o = {}) => ({ url: 'https://meeticulous.com/jane', pageType: 'host', httpStatus: 200,
+  canonical: 'https://meeticulous.com/jane', redirectChain: [], responseMs: 100, viewport: 'w', wordCount: 500, robots: 'index, follow', title: 'Jane', ...o });
 
 describe('technical + indexability rules', () => {
   test('non_200 fires on 404', () => {
@@ -679,13 +679,13 @@ describe('technical + indexability rules', () => {
     expect(idx.check(base({ robots: 'noindex, follow' }), ctx).map((i) => i.ruleKey)).toContain('indexability.unexpected_noindex');
   });
   test('prerender_regression fires when title equals homepage title', () => {
-    const home = { url: 'https://bookasloth.com/', pageType: 'static', title: 'Book A Sloth' };
-    const p = base({ title: 'Book A Sloth', pageType: 'service' });
+    const home = { url: 'https://meeticulous.com/', pageType: 'static', title: 'Meeticulous' };
+    const p = base({ title: 'Meeticulous', pageType: 'service' });
     const ctx = buildContext([home, p], new Set());
     expect(idx.check(p, ctx).map((i) => i.ruleKey)).toContain('indexability.prerender_regression');
   });
   test('error_url_in_sitemap fires for a 404 that is in the sitemap', () => {
-    const ctx = buildContext([], new Set(['https://bookasloth.com/jane']));
+    const ctx = buildContext([], new Set(['https://meeticulous.com/jane']));
     expect(idx.check(base({ httpStatus: 404, inSitemap: true }), ctx).map((i) => i.ruleKey)).toContain('indexability.error_url_in_sitemap');
   });
 });
@@ -750,21 +750,21 @@ const sitemap = require('../../services/seo/rules/sitemap');
 const { buildContext } = require('../../services/seo/rules/index');
 
 test('broken_internal fires when a linked page is 404', () => {
-  const target = { url: 'https://bookasloth.com/dead', httpStatus: 404 };
-  const src = { url: 'https://bookasloth.com/a', pageType: 'static', httpStatus: 200, links: { internal: ['https://bookasloth.com/dead'], external: [] }, images: [] };
+  const target = { url: 'https://meeticulous.com/dead', httpStatus: 404 };
+  const src = { url: 'https://meeticulous.com/a', pageType: 'static', httpStatus: 200, links: { internal: ['https://meeticulous.com/dead'], external: [] }, images: [] };
   const ctx = buildContext([src, target], new Set());
   expect(links.check(src, ctx).map((i) => i.ruleKey)).toContain('links.broken_internal');
 });
 test('missing_alt fires when an image has no alt', () => {
-  const p = { url: 'https://bookasloth.com/a', pageType: 'static', httpStatus: 200, images: [{ src: '/x.jpg', alt: null }], links: { internal: [], external: [] } };
+  const p = { url: 'https://meeticulous.com/a', pageType: 'static', httpStatus: 200, images: [{ src: '/x.jpg', alt: null }], links: { internal: [], external: [] } };
   expect(images.check(p, buildContext([p], new Set())).map((i) => i.ruleKey)).toContain('images.missing_alt');
 });
 test('schema.missing fires with no json-ld', () => {
-  const p = { url: 'https://bookasloth.com/a', pageType: 'blog', httpStatus: 200, jsonLd: [], images: [], links: { internal: [], external: [] } };
+  const p = { url: 'https://meeticulous.com/a', pageType: 'blog', httpStatus: 200, jsonLd: [], images: [], links: { internal: [], external: [] } };
   expect(schema.check(p, buildContext([p], new Set())).map((i) => i.ruleKey)).toContain('schema.missing');
 });
 test('sitemap.missing_indexable fires for a 200 indexable page not in the sitemap', () => {
-  const p = { url: 'https://bookasloth.com/a', pageType: 'static', httpStatus: 200, robots: 'index', images: [], links: { internal: [], external: [] } };
+  const p = { url: 'https://meeticulous.com/a', pageType: 'static', httpStatus: 200, robots: 'index', images: [], links: { internal: [], external: [] } };
   const ctx = buildContext([p], new Set()); // empty sitemap set
   expect(sitemap.siteCheck(ctx).map((i) => i.ruleKey)).toContain('sitemap.missing_indexable');
 });
@@ -915,15 +915,15 @@ test('saveResults maps issues to page ids and skips muted rules', async () => {
   supabaseAdmin.from.mockImplementation((table) => {
     calls[table] = (calls[table] || 0) + 1;
     if (table === 'seo_issue_mutes') return selectAll([{ rule_key: 'onpage.missing_h1', url_pattern: null }]);
-    if (table === 'seo_crawl_pages') return insertReturning([{ id: 'pg1', url: 'https://bookasloth.com/a' }]);
+    if (table === 'seo_crawl_pages') return insertReturning([{ id: 'pg1', url: 'https://meeticulous.com/a' }]);
     if (table === 'seo_issues') return insertReturning([{ id: 'is1' }]);
     if (table === 'seo_score_snapshots') return insertReturning([{ id: 'sn1' }]);
     return insertReturning([]);
   });
-  const pages = [{ url: 'https://bookasloth.com/a', pageType: 'static', httpStatus: 200, h1: [] }];
+  const pages = [{ url: 'https://meeticulous.com/a', pageType: 'static', httpStatus: 200, h1: [] }];
   const issues = [
-    { ruleKey: 'onpage.missing_title', affectedUrl: 'https://bookasloth.com/a', category: 'onpage', severity: 'P1', confidence: 1, title: 't', evidence: {}, autoFixable: false, priorityScore: 60 },
-    { ruleKey: 'onpage.missing_h1', affectedUrl: 'https://bookasloth.com/a', category: 'onpage', severity: 'P2', confidence: 1, title: 'h', evidence: {}, autoFixable: false, priorityScore: 30 },
+    { ruleKey: 'onpage.missing_title', affectedUrl: 'https://meeticulous.com/a', category: 'onpage', severity: 'P1', confidence: 1, title: 't', evidence: {}, autoFixable: false, priorityScore: 60 },
+    { ruleKey: 'onpage.missing_h1', affectedUrl: 'https://meeticulous.com/a', category: 'onpage', severity: 'P2', confidence: 1, title: 'h', evidence: {}, autoFixable: false, priorityScore: 30 },
   ];
   await persist.saveResults('crawl1', pages, issues, { overall: 90, technical: 100, onpage: 80, content: 80, indexability: 100, internal_linking: 100, breakdown: {} });
   expect(calls.seo_crawl_pages).toBe(1);
@@ -966,7 +966,7 @@ jest.mock('../../services/seo/seoPersist', () => ({
 }));
 jest.mock('../../services/sitemapService', () => ({
   STATIC_ROUTES: [{ path: '/', changefreq: 'daily', priority: 1 }],
-  staticEntries: () => [{ loc: 'https://bookasloth.com/' }],
+  staticEntries: () => [{ loc: 'https://meeticulous.com/' }],
   hostUrl: (s, u) => `${s}/${u}`, serviceUrl: (s, u, sl) => `${s}/${u}/${sl}`,
   fetchHosts: async () => [{ username: 'jane', updated_at: null }],
   fetchServices: async () => [{ slug: 'intro', profiles: { username: 'jane' } }],
@@ -982,10 +982,10 @@ describe('seoCrawler', () => {
   test('seedUrls includes static, host, service, blog URLs', async () => {
     const urls = await seedUrls();
     const list = urls.map((u) => u.url);
-    expect(list).toContain('https://bookasloth.com/');
-    expect(list).toContain('https://bookasloth.com/jane');
-    expect(list).toContain('https://bookasloth.com/jane/intro');
-    expect(list).toContain('https://bookasloth.com/blog/post-1');
+    expect(list).toContain('https://meeticulous.com/');
+    expect(list).toContain('https://meeticulous.com/jane');
+    expect(list).toContain('https://meeticulous.com/jane/intro');
+    expect(list).toContain('https://meeticulous.com/blog/post-1');
   });
   test('run() crawls, scores and persists', async () => {
     const id = await run({ trigger: 'manual' });
@@ -1013,7 +1013,7 @@ const { score } = require('./healthScore');
 const persist = require('./seoPersist');
 const { runLocked } = require('../../utils/jobLock');
 
-const SITE_URL = (process.env.SITE_URL || 'https://bookasloth.com').replace(/\/$/, '');
+const SITE_URL = (process.env.SITE_URL || 'https://meeticulous.com').replace(/\/$/, '');
 const CONCURRENCY = Number(process.env.SEO_CRAWL_CONCURRENCY) || 4;
 const DELAY_MS = Number(process.env.SEO_CRAWL_DELAY_MS) || 150;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

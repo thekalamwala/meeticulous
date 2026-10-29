@@ -1,4 +1,4 @@
-# Development Guide — Book A Sloth
+# Development Guide — Meeticulous
 
 ## Prerequisites
 

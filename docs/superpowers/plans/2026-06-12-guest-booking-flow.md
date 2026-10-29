@@ -146,7 +146,7 @@ In `server/controllers/bookingController.js`, change the calendar block (~L234-2
           decryptToken(host.google_refresh_token),
           {
             title: `${service.title} — ${guest_name || "Guest"}`,
-            description: `Booked via Book A Sloth\n${notes || ""}`,
+            description: `Booked via Meeticulous\n${notes || ""}`,
             startTime: startTime.toISOString(),
             endTime: endTime.toISOString(),
             timezone: hostTimezone,
@@ -229,7 +229,7 @@ Immediately AFTER the `if (error) return res.status(500)...` line that follows t
             decryptToken(host.google_refresh_token),
             {
               title: `${svc.title || "Service"} — ${booking.guest_name || "Guest"}`,
-              description: `Booked via Book A Sloth\n${booking.notes || ""}`,
+              description: `Booked via Meeticulous\n${booking.notes || ""}`,
               startTime: startTime.toISOString(),
               endTime: endTime.toISOString(),
               timezone: avail?.timezone || "Asia/Kolkata",
@@ -344,8 +344,8 @@ const buildICS = ({ title, details, location, startISO, durationMin, uid }) => {
   const end = new Date(start.getTime() + durationMin * 60000);
   const esc = (s) => String(s || "").replace(/([,;\\])/g, "\\$1").replace(/\n/g, "\\n");
   const lines = [
-    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Book A Sloth//Booking//EN",
-    "BEGIN:VEVENT", `UID:${uid || fmt(start)}@bookasloth`, `DTSTAMP:${fmt(new Date())}`,
+    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Meeticulous//Booking//EN",
+    "BEGIN:VEVENT", `UID:${uid || fmt(start)}@meeticulous`, `DTSTAMP:${fmt(new Date())}`,
     `DTSTART:${fmt(start)}`, `DTEND:${fmt(end)}`, `SUMMARY:${esc(title)}`,
     `DESCRIPTION:${esc(details)}`, `LOCATION:${esc(location)}`, "END:VEVENT", "END:VCALENDAR",
   ];

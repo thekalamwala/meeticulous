@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-15
 **Status:** Approved, ready for implementation plan
-**Author:** Book A Sloth + Claude
+**Author:** Meeticulous + Claude
 
 ## Problem
 
@@ -10,10 +10,10 @@
 Vendors and customers are at different relationship stages and take different actions,
 so a single layout serves neither well:
 
-- **Customers** are new to the platform — the email must build trust in *Book A Sloth*
+- **Customers** are new to the platform — the email must build trust in *Meeticulous*
   itself, and offer navigation + a legal unsubscribe.
 - **Vendors** already know the brand — the email should lead with *their own* brand and
-  stay lean (their own booking notification, "Powered by Book a Sloth" in the footer).
+  stay lean (their own booking notification, "Powered by Meeticulous" in the footer).
 
 ## Goal
 
@@ -29,7 +29,7 @@ the vendor "new booking" email the team already uses.
 | 2 | **Fully distinct headers** (different logo identity), clean header = logo + name + chip only (no tagline / no trust strip). |
 | 3 | Customer footer = nav row + legal block. Vendor footer = minimal "Powered by" + legal, **no nav**. |
 | 4 | Footer links point to their **final routes now**; unbuilt pages (`/help`, `/privacy`, `/unsubscribe`) are built later by the team pre-launch (task chip `task_83c19d1a`). |
-| 5 | Customer header logo = **Book A Sloth** logo image + "Book A Sloth" wordmark. Vendor header logo = **host's own** `{{company_logo}}` + host name. |
+| 5 | Customer header logo = **Meeticulous** logo image + "Meeticulous" wordmark. Vendor header logo = **host's own** `{{company_logo}}` + host name. |
 | 6 | Two layouts **hardcoded** in `emailLayout.js` (Option A). Tokens still come from `email_settings`. No DB migration, no admin UI. |
 | 7 | Layout selected by the **recipient** (`opts.audience`), NOT the template row tag (`template.audience`). Default → customer layout. |
 
@@ -42,8 +42,8 @@ the vendor "new booking" email the team already uses.
   (`brand_color` at ~7% alpha background, `brand_color` text, `border-radius:999px`).
 - **Body:** rendered template body + optional block CTA.
 - **CTA:** full-width block, `brand_color` background, white text, `border-radius:10px`.
-- **Footer:** centered, 11px `#9aa0a6`, "Powered by" + Book a Sloth footer-logo
-  (`https://company-assets.bookasloth.in/images/email/footer-logo.png`, 60px) +
+- **Footer:** centered, 11px `#9aa0a6`, "Powered by" + Meeticulous footer-logo
+  (`https://company-assets.meeticulous.in/images/email/footer-logo.png`, 60px) +
   legal entity + address + © year.
 
 > **Outlook note:** the existing design uses 8-digit hex alpha (`{{primary_color}}12`).
@@ -57,7 +57,7 @@ the vendor "new booking" email the team already uses.
 
 **`emailLayout.js`** — exports two render functions plus a selector:
 
-- `renderCustomerLayout(opts)` — Book A Sloth-branded, nav + legal footer.
+- `renderCustomerLayout(opts)` — Meeticulous-branded, nav + legal footer.
 - `renderVendorLayout(opts)` — host-branded, minimal "Powered by" footer.
 - `renderLayout(opts)` — thin dispatcher: reads `opts.audience`, delegates to the right
   variant. Keeps a single import surface for `communicationEngine`.
@@ -105,27 +105,27 @@ mistakenly receiving customer chrome is cosmetic only.
 
 **Customer layout**
 - Top accent: 4px `settings.brand_color`.
-- Header: `settings.logo_url` (Book A Sloth logo) + "Book A Sloth" wordmark (left) +
+- Header: `settings.logo_url` (Meeticulous logo) + "Meeticulous" wordmark (left) +
   dynamic sub-label (`emailCategory`) + pill chip (right). Falls back to wordmark text if
   `logo_url` empty.
 - Body + optional CTA.
 - Footer:
   - Nav row: **My Bookings** (`/my-bookings`) · **Help** (`/help`) · **Privacy** (`/privacy`) · **Unsubscribe** (`/unsubscribe?u={{unsubscribe_token}}`).
-  - Legal block: "Powered by" Book a Sloth footer-logo + `Timewheel Internet (P) Ltd` + address + support email + © year.
+  - Legal block: "Powered by" Meeticulous footer-logo + `Timewheel Internet (P) Ltd` + address + support email + © year.
   - Unsubscribe URL includes an `{{unsubscribe_token}}` placeholder slot (resolves to empty until the mechanism ships; link target built later).
 
 **Vendor layout**
 - Top accent: 4px `settings.brand_color`.
 - Header: `data.company_logo` (host's logo) + `data.company_name` (left) + dynamic sub-label + pill chip (right). Falls back to `settings.logo_url` / `from_name` if host values absent.
 - Body + optional CTA.
-- Footer (minimal, matches existing design): "Powered by" Book a Sloth footer-logo + legal entity + address + © year. **No nav links.**
+- Footer (minimal, matches existing design): "Powered by" Meeticulous footer-logo + legal entity + address + © year. **No nav links.**
 
 ### Tokens & data sources
 
 | Value | Source |
 |-------|--------|
 | `brand_color`, `website_url`, `support_email`, `from_name`, `logo_url` | `email_settings` (via `settings`) |
-| Book a Sloth footer-logo URL | constant in `emailLayout.js` (matches existing asset URL) |
+| Meeticulous footer-logo URL | constant in `emailLayout.js` (matches existing asset URL) |
 | Host logo / name | template `data.company_logo` / `data.company_name` |
 | `emailCategory`, `emailReason` | template row |
 
@@ -138,7 +138,7 @@ Layout is recipient-driven, so every place that emails a **host/vendor** must pa
 - All `NotificationEngine.send({ ... })` call sites whose email path reaches a host.
 
 For each host-bound send, ensure `audience:'vendor'` is set. A missed one is cosmetic
-(host gets Book A Sloth chrome instead of their own) but should be corrected. Document the
+(host gets Meeticulous chrome instead of their own) but should be corrected. Document the
 list of audited call sites in the implementation.
 
 ## Data flow
@@ -156,14 +156,14 @@ business event
 
 ## Error handling & fallbacks
 
-- Empty `logo_url` → customer header falls back to "Book A Sloth" wordmark text (existing pattern).
+- Empty `logo_url` → customer header falls back to "Meeticulous" wordmark text (existing pattern).
 - Empty `data.company_logo` / `data.company_name` → vendor header falls back to `settings.logo_url` / `from_name`.
 - Unknown / missing `audience` → customer layout.
 - `{{unsubscribe_token}}` unresolved → renders empty; link still present (target page built later). Acceptable pre-launch; flagged in the page-build task.
 
 ## Testing
 
-- **Unit (`emailLayout`):** customer layout contains Book A Sloth logo + nav links + unsubscribe; vendor layout contains host logo + no nav links + "Powered by". Both contain the 4px accent and the card wrapper.
+- **Unit (`emailLayout`):** customer layout contains Meeticulous logo + nav links + unsubscribe; vendor layout contains host logo + no nav links + "Powered by". Both contain the 4px accent and the card wrapper.
 - **Unit (`communicationEngine.renderEmail`):** `audience:'vendor'` → vendor chrome; `audience:'customer'` and `audience:'all'` and missing → customer chrome; same template body present in both.
 - **Regression:** existing `communicationEngine` / campaign tests still green (template body, queue, retry unaffected).
 - **Manual:** test-send one customer-audience and one vendor-audience template; verify in Gmail + Outlook (chip tint visible, logos load, footer correct).

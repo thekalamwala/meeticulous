@@ -6,11 +6,11 @@ _Owner: Performance / DevOps_
 
 ## 1. Goal
 
-Build a reusable Apache JMeter load-testing framework for the Book A Sloth backend so we can measure and improve performance before public launch, and guard against future regressions in CI. Delivered in 5 phases (audit → setup → flow automation → load/stress → CI/CD).
+Build a reusable Apache JMeter load-testing framework for the Meeticulous backend so we can measure and improve performance before public launch, and guard against future regressions in CI. Delivered in 5 phases (audit → setup → flow automation → load/stress → CI/CD).
 
 ## 2. Constraints & Non-Goals (read first — these shape everything)
 
-- **No staging environment exists.** Production is Render Starter (`bookasloth-api.onrender.com`) + Vercel. The prompt forbids heavy load against production. **Therefore the default target is `http://localhost:5000`.** Every plan is parameterized by a `BASE_URL`/host property so a future staging or throwaway prod-sized box is a one-line change.
+- **No staging environment exists.** Production is Render Starter (`meeticulous-api.onrender.com`) + Vercel. The prompt forbids heavy load against production. **Therefore the default target is `http://localhost:5000`.** Every plan is parameterized by a `BASE_URL`/host property so a future staging or throwaway prod-sized box is a one-line change.
 - **Localhost numbers are a relative baseline, not a prod capacity claim.** A single 12-core / 17 GB laptop generating *and* serving load measures the laptop. Render Starter (~0.5 vCPU / 512 MB) and the Supabase connection pooler will cap far lower. This is stated plainly in `BENCHMARKS.md` and `SCALING_RECOMMENDATIONS.md`; we never present a localhost number as a prod number.
 - **No fabricated results.** Scenarios A (smoke, 10u) and B (normal, 100u) are run for real against localhost and the actual JMeter output is reported. Scenarios C (500u) and D (1000u) are authored and parameterized but **not** run on localhost; running them requires an adequately-provisioned target (documented).
 - **Production safety is non-negotiable.** The only server-code change is an additive, default-off `LOAD_TEST_MODE` that fail-safes to OFF whenever `NODE_ENV=production`. When the flag is off the code path is byte-for-byte the current behavior (pure no-op). Every seam gets a test proving both states.
@@ -45,7 +45,7 @@ Real prod latency on the hot endpoints is dominated by the external calls (Googl
 - `loadtest-vendor-gcal` — Google-connected, enabled only when `TEST_VENDOR_GOOGLE_REFRESH_TOKEN` is provided in the test env. Used by a dedicated cache-effectiveness plan. If the token is absent, that plan is skipped with a clear log (never fabricated).
 
 ### 3.3 Test-data tagging (no schema change → no migration → zero DB risk)
-- Guests created during load tests use email domain `@loadtest.bookasloth.local` and phone prefix `+910000…`.
+- Guests created during load tests use email domain `@loadtest.meeticulous.local` and phone prefix `+910000…`.
 - Seeded vendors use usernames prefixed `loadtest-`.
 - Cleanup deletes by these patterns. No new columns, no migration, fully reversible.
 

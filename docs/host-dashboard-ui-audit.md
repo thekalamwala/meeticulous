@@ -221,7 +221,7 @@ None of the above requires backend, route, or data-model changes — it's all pr
 
 ### Visual language (from the PhonePe references — direction, not spec)
 
-The screenshots read as an app because of a tight, repeated visual grammar — worth mirroring in *our* tokens (do **not** copy their purple; keep Book A Sloth brand):
+The screenshots read as an app because of a tight, repeated visual grammar — worth mirroring in *our* tokens (do **not** copy their purple; keep Meeticulous brand):
 
 - **Dark canvas, elevated tiles.** Near-black background, cards are subtly lighter rounded-2xl tiles with generous padding. Our dashboard is light-first — a proper dark theme with elevated surfaces would do a lot of the "app" work. (Ties to existing `--adm-*`/dark-mode groundwork.)
 - **Icon-tile grid sections.** 4-across rounded tiles, colored glyph + short 2-line label, grouped under a bold section header ("Loans", "Insurance"). This is the home-screen shortcut pattern — maps cleanly to our Dashboard quick-actions and could replace flat stat/link rows.

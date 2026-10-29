@@ -1,11 +1,11 @@
 # Cloudflare Edge Setup — Runbook
 
-**Purpose:** put Cloudflare in front of Book A Sloth so volumetric/DDoS/bot traffic
+**Purpose:** put Cloudflare in front of Meeticulous so volumetric/DDoS/bot traffic
 is blocked at the edge, *before* it reaches Render. This is the strongest layer of
 the IP-blocking system; the in-app blocklist (admin → Security → Blocked IPs) is the
 second layer for app-specific abuse.
 
-**Status:** not yet executed — gated on the `bookasloth.com` DNS move. Run this when
+**Status:** not yet executed — gated on the `meeticulous.com` DNS move. Run this when
 you move DNS to Cloudflare. No application code changes; this is all dashboard/ops,
 plus **one env var** at the end (`CLIENT_IP_HEADER`).
 
@@ -15,9 +15,9 @@ plus **one env var** at the end (`CLIENT_IP_HEADER`).
 > IP locks out the entire API. Observed recurring on 2026-07-23. See the incident
 > section immediately below; the permanent fix is Step 9 (`CLIENT_IP_HEADER`).
 
-**Topology today:** apex `bookasloth.com` → Vercel (React client); the client calls
+**Topology today:** apex `meeticulous.com` → Vercel (React client); the client calls
 same-origin `/api/*` which Vercel rewrites to the Render API
-(`book-a-sloth.onrender.com`). Cloudflare will sit in front of the public domain.
+(`meeticulous-api.onrender.com`). Cloudflare will sit in front of the public domain.
 
 ---
 
@@ -33,9 +33,9 @@ Render's shared **internal `10.x`** proxy IP, and the attack-pattern matcher
 (`ipBlockConfig.attack` — a single suspicious request → 24h ban, no threshold)
 auto-bans that shared IP → the whole platform is locked out.
 
-**Confirm it's this:** `curl -s https://book-a-sloth.onrender.com/api/blogs` returns
+**Confirm it's this:** `curl -s https://meeticulous-api.onrender.com/api/blogs` returns
 `{"message":"Access denied."}` (403). Then check the ban table (Supabase prod Mumbai
-`ayjhlwyzszykqtnaktpb`):
+`PROD_PROJECT_REF`):
 ```sql
 select ip, source, reason, created_at, expires_at from blocked_ips
 where expires_at is null or expires_at > now() order by created_at desc;
@@ -50,7 +50,7 @@ where ip << inet '10.0.0.0/8'
    or ip << inet '192.168.0.0/16';
 ```
 The in-app cache re-syncs from the DB every `IP_BLOCK_CACHE_REFRESH_MS` (default 60s).
-Verify recovery: `curl -s -o /dev/null -w "%{http_code}\n" https://book-a-sloth.onrender.com/api/blogs` → `200`.
+Verify recovery: `curl -s -o /dev/null -w "%{http_code}\n" https://meeticulous-api.onrender.com/api/blogs` → `200`.
 
 **Notes:**
 - The admin "Blocked IPs" UI can't fix this — the admin API is *also* behind `ipGuard`,
@@ -90,7 +90,7 @@ permanent fix is to key the guard on the real client IP — see Step 9 below.
    record** (A, AAAA, CNAME, MX, TXT — especially MX and SPF/DKIM/DMARC for email,
    and any Vercel/Render verification records). You must recreate these in
    Cloudflare or email + verification will break.
-2. In Cloudflare: **Add a site** → enter `bookasloth.com` → choose the **Free** plan.
+2. In Cloudflare: **Add a site** → enter `meeticulous.com` → choose the **Free** plan.
 3. Cloudflare auto-imports detected records. **Compare against your export** and add
    anything missing. Do NOT proxy mail records (MX/TXT stay "DNS only" / grey cloud).
 

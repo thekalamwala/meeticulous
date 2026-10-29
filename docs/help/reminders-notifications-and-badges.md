@@ -14,7 +14,7 @@ For these to land, keep your WhatsApp number verified and your guests' contact d
 
 ## In-app notifications (the bell)
 
-Beyond email and WhatsApp, Book A Sloth shows notifications in-app on a **bell icon** — in your dashboard if you're a host, and in the top navbar if you're a guest. It updates in real time and collects things like new bookings, reschedules and cancellations, KYC decisions, subscription problems, and referral rewards. Some notices **clear themselves** once you've dealt with them — for example, a KYC-rejected notice disappears once you're approved.
+Beyond email and WhatsApp, Meeticulous shows notifications in-app on a **bell icon** — in your dashboard if you're a host, and in the top navbar if you're a guest. It updates in real time and collects things like new bookings, reschedules and cancellations, KYC decisions, subscription problems, and referral rewards. Some notices **clear themselves** once you've dealt with them — for example, a KYC-rejected notice disappears once you're approved.
 
 ## Reminders before a session
 
@@ -34,7 +34,7 @@ If a badge you expected hasn't appeared, give it some time first. For verificati
 
 ## Notifications — common questions
 
-**What notifications does Book A Sloth send?** Booking confirmations, reschedules, cancellations, payment confirmations, refund updates, and (on paid plans) session reminders — over **email, WhatsApp, and the in-app bell**. Both guests and hosts get the ones relevant to them. They're triggered automatically when the related action happens.
+**What notifications does Meeticulous send?** Booking confirmations, reschedules, cancellations, payment confirmations, refund updates, and (on paid plans) session reminders — over **email, WhatsApp, and the in-app bell**. Both guests and hosts get the ones relevant to them. They're triggered automatically when the related action happens.
 
 **Do reminders go out for every booking?** Confirmations do, always. **Reminders are plan-based** — Sloth includes the 24-hour reminder, and Sloth Active adds the 1-hour reminder plus reschedule alerts. See [pricing](/pricing).
 
@@ -52,6 +52,6 @@ If a badge you expected hasn't appeared, give it some time first. For verificati
 
 **Can I turn off all notifications?** Essential transactional messages (booking, payment, refund) are sent automatically so you stay informed. Marketing/newsletter emails are separate and can be unsubscribed — see [Your profile and email preferences](/help/docs/your-profile-and-email-preferences).
 
-**Are notification templates and providers managed by me?** No — email/WhatsApp templates and providers are configured by Book A Sloth administrators, not individual hosts.
+**Are notification templates and providers managed by me?** No — email/WhatsApp templates and providers are configured by Meeticulous administrators, not individual hosts.
 
-**Still missing important notifications?** With correct contact details and spam checked, contact Book A Sloth Support and include your booking ID so they can verify whether the notification was generated.
+**Still missing important notifications?** With correct contact details and spam checked, contact Meeticulous Support and include your booking ID so they can verify whether the notification was generated.

@@ -55,7 +55,7 @@ L1 categories in `server/config/reservedNamespaces.js` (each normalized into one
 - **INFRA** — `api`, `www`, `cdn`, `static`, `assets`, `public`, `media`, `files`, `img`, `images`, `download(s)`, `webhook(s)`, `oauth`, `sso`, `saml`, `callback`, `well-known`, `healthz`, `ping`, `status`, `metrics`, `debug`, `internal`, `system`, `root`.
 - **FUTURE** (reserved today for tomorrow's launches) — `docs`, `blog(s)`, `pricing`, `plans`, `features`, `changelog`, `roadmap`, `security`, `legal`, `cookies`, `careers`, `jobs`, `press`, `newsroom`, `contact`, `faq`, `guides`, `tutorials`, `resources`, `learn`, `academy`, `courses`, `partners`, `affiliates`, `developers`, `api-docs`, `enterprise`, `teams`/`team`, `org(s)`/`organization(s)`, `workspace(s)`, `community`/`communities`, `marketplace`, `store`, `shop`, `market`.
 - **ACCOUNT** — `account(s)`, `billing`, `invoice(s)`, `checkout`, `cart`, `verify`, `confirm`, `activate`, `welcome`, `onboarding`, `get-started`, `start`, `join`, `invite`, `refer(ral)`, booking/commerce nouns (`book`, `booking(s)`, `schedule`, `appointment(s)`, `slot(s)`, `availability`, `service(s)`, `product(s)`, `order(s)`, `payment(s)`, `subscribe`, `subscription(s)`, `upgrade`, `redeem`, `gift`, `promo`, `coupon`, `deals`, `offers`), plus `notifications`, `campaigns`, `badges`, `categories`, `feedback`.
-- **BRAND / role / safety** — `bookasloth`, `book-a-sloth`, `sloth`, `official`, `verified`, `staff`, `moderator`/`mod`, `administrator`, `superadmin`, `no-reply`/`noreply`, `postmaster`, `abuse`, `hostmaster`, `mail`, `email`, `host(s)`, `users`, `vendors`, `home`, `index`, `me`, `guest`, `app(s)`, `web`, `go`.
+- **BRAND / role / safety** — `meeticulous`, `meeticulous`, `sloth`, `official`, `verified`, `staff`, `moderator`/`mod`, `administrator`, `superadmin`, `no-reply`/`noreply`, `postmaster`, `abuse`, `hostmaster`, `mail`, `email`, `host(s)`, `users`, `vendors`, `home`, `index`, `me`, `guest`, `app(s)`, `web`, `go`.
 - **SHORT** (premium landgrab guard) — `a i u s p c e r o x m`.
 - **HAZARD** — `null`, `undefined`, `true`, `false`, `nan`, `none`, `nil`, `void`.
 
@@ -67,7 +67,7 @@ L1 categories in `server/config/reservedNamespaces.js` (each normalized into one
 
 Run 2026-06-24 against both Supabase projects.
 
-**Production (Mumbai `ayjhlwyzszykqtnaktpb`)** — 31 profiles, 27 hosts:
+**Production (Mumbai `PROD_PROJECT_REF`)** — 31 profiles, 27 hosts:
 
 | Slug | Role | Source | Finding | Recommendation |
 |---|---|---|---|---|
@@ -75,7 +75,7 @@ Run 2026-06-24 against both Supabase projects.
 | `user-7904109359` | guest | auto | Phone-login bypass artifact (now fixed) | Harmless (guests have no marketed profile). Leave. |
 | `user-919284399627` | guest | auto | Same | Leave. |
 
-**Staging (Tokyo `xwvciqkayammbvsidqig`)** — 7 profiles, 3 hosts: zero hard collisions. `user-8637758344` (same artifact). `timewheel-team` is NOT a collision (exact slug ≠ reserved `team`).
+**Staging (Tokyo `STAGING_PROJECT_REF`)** — 7 profiles, 3 hosts: zero hard collisions. `user-8637758344` (same artifact). `timewheel-team` is NOT a collision (exact slug ≠ reserved `team`).
 
 **Policy: enforce on write, grandfather existing.** No data is mutated by this change. Existing `username_history` rows stay valid; the resolver's idempotent self-claim means a user keeping a name that was reserved later still works.
 
@@ -149,6 +149,6 @@ Admin user-edit (`adminController.updateUser`) intentionally does not allow sett
 ## 11. Rollout
 
 1. Apply `server/migrations/v3.33_reserved_slugs.sql` to **staging then production** (idempotent; `IF NOT EXISTS`).
-2. Optionally seed brand/premium L2 rows (`bookasloth`, `sloth`, `official`, short names).
+2. Optionally seed brand/premium L2 rows (`meeticulous`, `sloth`, `official`, short names).
 3. Merge → Render (backend) + Vercel (client) auto-deploy.
 4. Verify: `reserved_slugs` exists, `is_reserved_slug('demo')` is `false` until a row is added, RPCs updated, server + client suites green.

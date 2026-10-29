@@ -20,10 +20,10 @@ the wall when infra time allows.
 
 ## Current state (measured 2026-07-19)
 
-- `book-a-sloth.onrender.com` responds with `Server: cloudflare`, `CF-RAY`, and
+- `meeticulous-api.onrender.com` responds with `Server: cloudflare`, `CF-RAY`, and
   `x-render-origin-server: Render`. That Cloudflare is **Render's managed edge** —
   we get TLS/CDN but **no configurable WAF, Turnstile, or rate rules**.
-- `bookasloth.com` (frontend) is `Server: cloudflare` + Vercel — likely already on
+- `meeticulous.com` (frontend) is `Server: cloudflare` + Vercel — likely already on
   the org's own Cloudflare zone, but the **bot API is not routed through it**.
 
 Net: no edge controls we can configure on the API path today.
@@ -31,28 +31,28 @@ Net: no edge controls we can configure on the API path today.
 ## Target architecture
 
 ```
-Browser (widget on bookasloth.com)
-   │  fetch https://api.bookasloth.com/api/bot/ask(/stream)
+Browser (widget on meeticulous.com)
+   │  fetch https://api.meeticulous.com/api/bot/ask(/stream)
    ▼
-YOUR Cloudflare zone (bookasloth.com)         ← Turnstile verify, rate rules, bot fight, WAF
+YOUR Cloudflare zone (meeticulous.com)         ← Turnstile verify, rate rules, bot fight, WAF
    │  proxied (orange-cloud) DNS: api → Render custom domain
    ▼
-Render origin (book-a-sloth service)          ← app-level cost breaker (companion doc)
+Render origin (meeticulous service)          ← app-level cost breaker (companion doc)
 ```
 
 Move the bot API onto a subdomain of the domain you already control in Cloudflare
-(`api.bookasloth.com`), proxied through your Cloudflare zone, with Render as the
+(`api.meeticulous.com`), proxied through your Cloudflare zone, with Render as the
 origin. Then Cloudflare's bot tools apply to every bot request.
 
 ## Steps
 
 ### 1. Put the API on your Cloudflare zone
-- Add a **custom domain** `api.bookasloth.com` to the Render service (Render →
+- Add a **custom domain** `api.meeticulous.com` to the Render service (Render →
   service → Settings → Custom Domains). Render issues the cert.
-- In Cloudflare DNS for `bookasloth.com`, add `api` as a **proxied** (orange-cloud)
-  CNAME to the Render target. Now `api.bookasloth.com` flows through your Cloudflare.
-- Point the client at it: set `VITE_API_URL=https://api.bookasloth.com/api` (Vercel
-  env) and confirm CORS (`corsOrigins.js`) still allows the `bookasloth.com` origin.
+- In Cloudflare DNS for `meeticulous.com`, add `api` as a **proxied** (orange-cloud)
+  CNAME to the Render target. Now `api.meeticulous.com` flows through your Cloudflare.
+- Point the client at it: set `VITE_API_URL=https://api.meeticulous.com/api` (Vercel
+  env) and confirm CORS (`corsOrigins.js`) still allows the `meeticulous.com` origin.
   No server code change — just the hostname.
 
 ### 2. Turnstile (invisible challenge) on the widget
@@ -67,7 +67,7 @@ origin. Then Cloudflare's bot tools apply to every bot request.
   app cost breaker still bounds spend if verification is temporarily skipped.
 
 ### 3. Cloudflare rate-limiting rules (dashboard, no code)
-- Rule on `api.bookasloth.com/api/bot/*`: e.g. **> N requests / 10s per IP → managed
+- Rule on `api.meeticulous.com/api/bot/*`: e.g. **> N requests / 10s per IP → managed
   challenge**, and a higher **global** threshold → block. These run at the edge
   before Render, so they cost nothing at the origin.
 - Because it's per-IP *at the edge*, combine with Turnstile + bot-fight so rotating
@@ -99,7 +99,7 @@ ever arriving.
 
 - **Effort:** mostly dashboard + DNS + one Turnstile integration (frontend token +
   backend verify). ~half a day, no schema/migration.
-- **Risk:** the API hostname change (`api.bookasloth.com`) must be rolled out with
+- **Risk:** the API hostname change (`api.meeticulous.com`) must be rolled out with
   CORS + `VITE_API_URL` in lockstep, or the widget breaks. Do it in a low-traffic
   window; keep the old `onrender.com` host working during cutover.
 - **Turnstile false-positives** on real users → invisible/managed mode + fail-open
@@ -108,7 +108,7 @@ ever arriving.
 ## Suggested order
 
 1. Ship the app-level cost breaker (companion doc) — floor in place, no infra.
-2. Add `api.bookasloth.com` through Cloudflare (step 1) — no behaviour change yet.
+2. Add `api.meeticulous.com` through Cloudflare (step 1) — no behaviour change yet.
 3. Turn on Cloudflare rate rules + Bot Fight + WAF (steps 3–5) — pure dashboard.
 4. Add Turnstile (step 2) last — the one code change; validate it doesn't hurt real
    users before relying on it.

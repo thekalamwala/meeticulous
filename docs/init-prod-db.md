@@ -21,8 +21,8 @@ real. After this, the everyday flow is [release-pipeline.md](release-pipeline.md
 >
 > | Role going forward | Project ref | Region | Today |
 > |---|---|---|---|
-> | **PRODUCTION** (real, live) | `ayjhlwyzszykqtnaktpb` | Mumbai (ap-south-1) | empty shell — gets schema + config here |
-> | **STAGING** (rehearsal) | `xwvciqkayammbvsidqig` | Tokyo (ap-northeast-1) | your current dev DB (all test data) |
+> | **PRODUCTION** (real, live) | `PROD_PROJECT_REF` | Mumbai (ap-south-1) | empty shell — gets schema + config here |
+> | **STAGING** (rehearsal) | `STAGING_PROJECT_REF` | Tokyo (ap-northeast-1) | your current dev DB (all test data) |
 >
 > **Rename them in Supabase** (Settings → General → project name) so the labels
 > match the roles. Renaming changes nothing technical — refs/keys stay the same.
@@ -31,13 +31,13 @@ real. After this, the everyday flow is [release-pipeline.md](release-pipeline.md
 
 ## Step 1 — Remap your local `.env` files to the new roles
 
-Today `.env.production` points at `xwvciqkayammbvsidqig` — that project is now
+Today `.env.production` points at `STAGING_PROJECT_REF` — that project is now
 **staging**, so the mapping must flip:
 
 | File | Should point at | How |
 |---|---|---|
-| `server/.env.staging`, `client/.env.staging` | `xwvciqkayammbvsidqig` | Copy your current `*.env.production` values into them (same project). Then swap Razorpay to **TEST** keys so staging never charges real cards. |
-| `server/.env.production`, `client/.env.production` | `ayjhlwyzszykqtnaktpb` | Replace only the Supabase values (URL + anon + service-role) with the **Mumbai** project's, from Supabase → Production project → Settings → API. Keep every other secret. |
+| `server/.env.staging`, `client/.env.staging` | `STAGING_PROJECT_REF` | Copy your current `*.env.production` values into them (same project). Then swap Razorpay to **TEST** keys so staging never charges real cards. |
+| `server/.env.production`, `client/.env.production` | `PROD_PROJECT_REF` | Replace only the Supabase values (URL + anon + service-role) with the **Mumbai** project's, from Supabase → Production project → Settings → API. Keep every other secret. |
 
 Then `node scripts/use-env.js staging` puts your laptop on staging (the safe
 default). The `REPLACE_ME` guard stops the switch until the files are filled.
@@ -52,8 +52,8 @@ the URI (it includes the db password). If your network has no IPv6, use the
 (`@`→`%40`, `#`→`%23`).
 
 ```bash
-export STAGING_DB_URL='postgresql://postgres:[PW]@db.xwvciqkayammbvsidqig.supabase.co:5432/postgres'
-export PROD_DB_URL='postgresql://postgres:[PW]@db.ayjhlwyzszykqtnaktpb.supabase.co:5432/postgres'
+export STAGING_DB_URL='postgresql://postgres:[PW]@db.STAGING_PROJECT_REF.supabase.co:5432/postgres'
+export PROD_DB_URL='postgresql://postgres:[PW]@db.PROD_PROJECT_REF.supabase.co:5432/postgres'
 ```
 These live only in your shell — never commit them.
 
@@ -105,9 +105,9 @@ via the anon key, those need RLS + explicit policies before launch.
 ## Step 5 — Point production at the Mumbai DB
 
 When you deploy (DEPLOYMENT.md Phases 2–4), the **prod** Render + Vercel envs use
-the **Mumbai** (`ayjhlwyzszykqtnaktpb`) Supabase URL + keys; the **staging**
-Render + Vercel envs use `xwvciqkayammbvsidqig`. After deploy, verify a test
-booking on `bookasloth.com` lands in the Mumbai project, and prod still shows
+the **Mumbai** (`PROD_PROJECT_REF`) Supabase URL + keys; the **staging**
+Render + Vercel envs use `STAGING_PROJECT_REF`. After deploy, verify a test
+booking on `meeticulous.com` lands in the Mumbai project, and prod still shows
 **0** profiles/bookings until the first real customer.
 
 ---

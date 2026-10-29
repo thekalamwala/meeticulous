@@ -1,4 +1,4 @@
-# Admin Platform Architecture — Book A Sloth
+# Admin Platform Architecture — Meeticulous
 _Phase 1 deliverable: audit, gap analysis, information architecture, RBAC, database impact, module plan, design system, priorities._
 _Date: 2026-06-10. Status: AWAITING APPROVAL — no code written._
 
@@ -78,7 +78,7 @@ This is a genuinely strong base: the four config-driven engines (notifications, 
 1. **`POST /api/admin/cleanup-users`** — deletes every Supabase Auth user except one hardcoded-fallback email (`sndatarkar@gmail.com`). A dev-reset tool exposed on the production admin API behind a single shared admin token. **Remove from `adminRoutes.js`** (keep as an offline script if needed).
 2. **Fake dashboard data** — hardcoded trend %, fake revenue chart, fake pending count. Worse than no data: it misinforms operators. Remove until real.
 3. **Decorative controls** — non-functional search, bell, dark-mode toggle. Remove or implement; dead controls erode trust in an ops tool.
-4. **Hardcoded email fallbacks in code** — `SUPER_ADMIN_EMAIL` defaulting to `book@bookasloth.com`, `PROTECTED_EMAIL` defaulting to a personal Gmail. Fail closed (refuse to boot admin auth without env) instead of failing open to a guessable default.
+4. **Hardcoded email fallbacks in code** — `SUPER_ADMIN_EMAIL` defaulting to `book@meeticulous.com`, `PROTECTED_EMAIL` defaulting to a personal Gmail. Fail closed (refuse to boot admin auth without env) instead of failing open to a guessable default.
 5. **Random JWT-secret fallback** — admin sessions silently die on restart if `SUPER_ADMIN_JWT_SECRET` unset; should be a hard startup error in production.
 
 ## A6. Technical constraints discovered
@@ -232,7 +232,7 @@ ADMIN PLATFORM
 Every section and item carries a `permission` key; the sidebar renders only what the staff member's role grants. Section disappears if all items are hidden.
 
 ```
-[Logo] Book A Sloth — Admin            (role chip: e.g. "Finance Admin")
+[Logo] Meeticulous — Admin            (role chip: e.g. "Finance Admin")
 
 OPERATIONS
   Operations Center        ops.view            /admin            (default)

@@ -1,9 +1,9 @@
-# Book A Sloth — Admin Console Guide
+# Meeticulous — Admin Console Guide
 
 A practical guide for anyone operating the admin console. Read the first three
 sections before your first shift; use the rest as a reference.
 
-> **What this console is:** the internal operator panel for Book A Sloth — where
+> **What this console is:** the internal operator panel for Meeticulous — where
 > staff verify hosts, work bookings and disputes, run payouts, moderate content,
 > and configure the platform. It is separate from the host dashboard
 > (`/dashboard`) and the guest area (`/user`).

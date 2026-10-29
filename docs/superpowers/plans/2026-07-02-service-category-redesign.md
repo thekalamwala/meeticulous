@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Migrations run manually in Supabase SQL Editor on BOTH DBs — staging Tokyo `xwvciqkayammbvsidqig` FIRST, then prod Mumbai `ayjhlwyzszykqtnaktpb`. Keep code-side 42703 schema fallbacks until confirmed applied on both.
+- Migrations run manually in Supabase SQL Editor on BOTH DBs — staging Tokyo `STAGING_PROJECT_REF` FIRST, then prod Mumbai `PROD_PROJECT_REF`. Keep code-side 42703 schema fallbacks until confirmed applied on both.
 - Never rename existing APIs, routes, or DB columns. Code/DB keeps "vendor" naming; UI copy says "Host".
 - UI: existing design tokens only, 4px borders, `rounded-xl` where already used, Plus Jakarta Sans headings, Poppins body. Reuse existing components.
 - Client vitest does NOT load jest-dom — only `toBeInTheDocument/toBeDisabled/toBeEnabled/toBeEmptyDOMElement` matchers; otherwise use `.getAttribute()` / `.textContent`.
@@ -605,7 +605,7 @@ test('GET /api/services-directory/:profession returns services with fallback des
   expect(res.status).toBe(200);
   expect(res.body.profession.label).toBe('Photographer');
   expect(res.body.services[0].description).toBe(
-    'Book trusted Photographer professionals for Wedding Photography on Book A Sloth.'
+    'Book trusted Photographer professionals for Wedding Photography on Meeticulous.'
   );
   expect(res.headers['cache-control']).toMatch(/max-age=300/);
 });
@@ -642,7 +642,7 @@ const DIRECTORY_CACHE_MS = Number(process.env.SERVICES_DIRECTORY_CACHE_MS) || 30
 // SEO copy fallback when admin/seed hasn't written one. Computed at read time —
 // never stored — so improving the template improves every un-curated card.
 const fallbackDescription = (professionLabel, serviceName) =>
-  `Book trusted ${professionLabel} professionals for ${serviceName} on Book A Sloth.`;
+  `Book trusted ${professionLabel} professionals for ${serviceName} on Meeticulous.`;
 
 // GET /api/services-directory
 const listProfessions = async (req, res) => {
@@ -1192,7 +1192,7 @@ export default function ProfessionServices() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
       <Seo
-        title={`${prof.label} Services — Book Online | Book A Sloth`}
+        title={`${prof.label} Services — Book Online | Meeticulous`}
         description={`Browse ${services.length} bookable ${prof.label.toLowerCase()} services — ${services.slice(0, 3).map((s) => s.name).join(', ')} and more. Compare hosts and book online.`}
         canonical={canonical}
         jsonLd={jsonLd}
@@ -1204,7 +1204,7 @@ export default function ProfessionServices() {
         {prof.label} services you can book today
       </h1>
       <p className="mt-3 max-w-2xl text-gray-600 dark:text-gray-300">
-        Every service below is offered by verified {prof.label.toLowerCase()} hosts on Book A Sloth.
+        Every service below is offered by verified {prof.label.toLowerCase()} hosts on Meeticulous.
         Pick one to see professionals, prices and reviews.
       </p>
       <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -1238,7 +1238,7 @@ export default function ServicesDirectory() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
       <Seo
-        title="Browse Services by Profession | Book A Sloth"
+        title="Browse Services by Profession | Meeticulous"
         description="Find bookable services from photographers, coaches, designers, tutors and more — compare professionals and book online."
         canonical={`${SITE_URL}/services`}
       />

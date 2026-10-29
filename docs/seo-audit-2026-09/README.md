@@ -1,6 +1,6 @@
-# Forensic SEO Audit — Book A Sloth Blog
+# Forensic SEO Audit — Meeticulous Blog
 
-**Date:** 2026-09-07 · **Property:** `https://bookasloth.com` (canonical `.com`) · **Analyst:** Claude (Opus 4.8)
+**Date:** 2026-09-07 · **Property:** `https://meeticulous.com` (canonical `.com`) · **Analyst:** Claude (Opus 4.8)
 **Question asked:** *Why aren't our blog posts ranking, and what exactly needs to change to make them competitive?*
 
 > **One-line answer:** The blog is not ranking **poorly** — it is **absent from search**. 50 of 51 posts earned **zero impressions in the last 6 months** because ~78% of them target topics with essentially **zero search demand** (a build-in-public product changelog written in brand voice), on a **young domain with near-zero — and partly toxic — authority**. This is a **content-strategy** failure, **not** a technical-SEO or crawl/index failure (the blog is verifiably indexable). The one thing the domain *does* rank for is a single **host's profile page** — which points to where the real organic opportunity is.
@@ -76,13 +76,13 @@ See §14: 10 of the finding-types map cleanly onto the `feat/seo-audit-engine` r
 
 ## 1. Scope, data sources & limitations
 
-**In scope:** all 51 published posts in the `blogs` table (prod, Mumbai `ayjhlwyzszykqtnaktpb`), the blog's architecture, and its search/authority performance.
+**In scope:** all 51 published posts in the `blogs` table (prod, Mumbai `PROD_PROJECT_REF`), the blog's architecture, and its search/authority performance.
 
 **Data sources (all real, no assumptions):**
 - **Prod DB** — live `blogs` query (51 rows: dates, category, structure).
 - **Content analysis** — every post body parsed from `client/src/data/blogPosts.js` + `blogClusters.js` (word counts, H2 outlines, internal-link graph, intent, thin flags).
 - **Architecture** — code map of routing, prerender, sitemap, canonical, schema, internal linking.
-- **Google Search Console** — Performance export, **last 6 months**, Web (`bookasloth.com`): Queries (282), Pages (46), Countries, Devices, daily trend.
+- **Google Search Console** — Performance export, **last 6 months**, Web (`meeticulous.com`): Queries (282), Pages (46), Countries, Devices, daily trend.
 - **Backlinks** — Semrush export, 322 links / 100 referring domains.
 - **Live crawl** — fetched production HTML for the 2 flagship guides + a control post + an unknown slug + `sitemap-blog.xml`.
 
@@ -100,7 +100,7 @@ Across the **entire domain**, only **46 URLs received any impression in 6 months
 
 Against that, the company's own funnel is invisible: `/pricing` position **32**, `/be-a-sloth` 10.6, `/how-it-works` 17. And the **blog contributes 3 URLs total** to the impression list: `/blog` (10), `/blog/going-live` (4), `/blog?page=2` (1).
 
-**The reframe:** Book A Sloth's *only* working organic engine is **host/professional profile pages ranking for those professionals' local + brand queries** — the marketplace long-tail. That is where demand lives. The blog, as currently conceived, runs parallel to it and targets nothing anyone searches. The strategic recommendation that falls out of the data (§13) is to **make the blog serve that engine** — support the `/for/<vertical>` pages, the profile pages, and the money pages — instead of narrating the changelog.
+**The reframe:** Meeticulous's *only* working organic engine is **host/professional profile pages ranking for those professionals' local + brand queries** — the marketplace long-tail. That is where demand lives. The blog, as currently conceived, runs parallel to it and targets nothing anyone searches. The strategic recommendation that falls out of the data (§13) is to **make the blog serve that engine** — support the `/for/<vertical>` pages, the profile pages, and the money pages — instead of narrating the changelog.
 
 ---
 
@@ -213,7 +213,7 @@ C2 is the highest-value fix: the three top-opportunity posts on the whole blog a
 
 - **175 links (54%) come from one self-owned domain, `shubhamdatarkar.com`**, almost all pointing at the host profile `/sndatarkar`. This is a self-network signal, not earned authority.
 - **Targets:** 141 → homepage, 173 → `/sndatarkar`, 2 → `/theedulocusway`, 1 each → `/how-it-works`, `/pricing`. **0 → any blog post.** The blog has **no external authority whatsoever.**
-- **Toxic footprint:** anchor text includes **"…PBN Network Service"** (×70) and **"Fiverr niche edits, my bookasloth.com outranked competitors"** and "Premium SEO Backlinks" — classic paid/PBN link-scheme fingerprints. This is a **manual-action risk**, independent of the ranking problem.
+- **Toxic footprint:** anchor text includes **"…PBN Network Service"** (×70) and **"Fiverr niche edits, my meeticulous.com outranked competitors"** and "Premium SEO Backlinks" — classic paid/PBN link-scheme fingerprints. This is a **manual-action risk**, independent of the ranking problem.
 - The remaining referring domains are launch/tool directories (`twelve.tools`, `debutly.app`, `stackscope.dev`, `comingup.io`, `findly.tools`) — low value, typical of an indie launch.
 
 **Verdict:** authority is **not the *primary* reason the blog is invisible** (the topics have no demand regardless), but it is the **binding constraint for the 11 posts that *do* target real queries**, and the PBN/Fiverr links are a **liability to clean up (disavow review)** before they cause harm.
@@ -263,7 +263,7 @@ Full deterministic table with all columns is in **`blog-audit-dataset.csv`** (so
 Anchor new content to demand that is **proven to exist on this domain** (host verticals) or **commercially load-bearing** (money-page support). Priority order:
 
 **A. Commercial / alternative cluster (supports `/pricing`, `/be-a-sloth`, existing `/lp/*`):**
-- "Calendly alternative for India" (a `/lp/calendly-alternative` already exists — build the supporting guide) · "Topmate alternative" (`/lp/topmate-vs-bookasloth` exists) · "0% commission booking platform" (the C2 merge) · "How to take advance payments for appointments (India)" · "GST invoice for bookings — what a service business needs".
+- "Calendly alternative for India" (a `/lp/calendly-alternative` already exists — build the supporting guide) · "Topmate alternative" (`/lp/topmate-vs-meeticulous` exists) · "0% commission booking platform" (the C2 merge) · "How to take advance payments for appointments (India)" · "GST invoice for bookings — what a service business needs".
 
 **B. Vertical cluster (mirrors the `/for/<vertical>` pages and the profile pages that already rank):**
 - "Booking / appointment software for **education & study-abroad consultants**" (the exact niche `/theedulocusway` ranks in) · "…for **salons**" · "…for **doctors/clinics**" · "…for **coaches & therapists**" · "…for **lawyers**". Each links to its `/for/` page and to real host profiles as proof.

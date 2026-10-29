@@ -3,7 +3,7 @@
 **Date:** 2026-06-23
 **Status:** Draft, pending user review
 **Branch:** `feat/email-template-redesign`
-**Author:** Book A Sloth + Claude
+**Author:** Meeticulous + Claude
 
 ## Problem
 
@@ -28,7 +28,7 @@ Scope is **header + body only.** The footer (already live in production) is **no
 | 1 | Base visual direction = **D2 "Bold Blocks"** — solid color hero blocks, semantic status tags, high contrast. |
 | 2 | **Radius scale:** outer card `8px`; inner/"sharp" blocks `1px`; CTA button `2px`; **header category chip = true pill (capsule).** Nothing else above `8px`. |
 | 3 | **Header flips:** logo on the **LEFT**, accent **icon + category pill on the RIGHT**. (Today: chip on right, name on left.) |
-| 4 | **Left logo = `https://company-assets.bookasloth.in/images/email/footer-logo.png` for ALL emails** — constant, not host-specific. Overrides the vendor-leads-with-own-logo behaviour from the audience-split layout. |
+| 4 | **Left logo = `https://company-assets.meeticulous.in/images/email/footer-logo.png` for ALL emails** — constant, not host-specific. Overrides the vendor-leads-with-own-logo behaviour from the audience-split layout. |
 | 5 | **CTA stays brand orange** (`settings.brand_color`) on every email — brand recognition. The per-category **accent** colors only the header pill, header glyph, and the body hero block. |
 | 6 | Each email gets a per-category **identity kit** = `{ accent, glyph, hero block }`, driven by one shared registry. |
 | 7 | **Footer untouched** (customer nav+legal / vendor "Powered by" both stay exactly as live). No footer code changes. |
@@ -135,12 +135,12 @@ event → communicationEngine.send → getTemplate → renderEmail
 ```
 
 ### Icon assets (founder dependency — blocks visual completion)
-Header glyphs are **PNG**, hosted on the existing `company-assets.bookasloth.in` CDN, because
+Header glyphs are **PNG**, hosted on the existing `company-assets.meeticulous.in` CDN, because
 Outlook desktop renders neither inline SVG nor icon-fonts. 15 icons needed (one per glyph in
 the registry), exported at 2× (e.g. 32px for 16px display), single-color to match `accent`
 (or a neutral dark that reads on any tint).
 
-- Path convention: `https://company-assets.bookasloth.in/images/email/icons/<name>.png`
+- Path convention: `https://company-assets.meeticulous.in/images/email/icons/<name>.png`
   (e.g. `shield-lock.png`, `calendar-check.png`, `credit-card.png`).
 - Until assets exist, the registry `glyphUrl` falls back to empty → pill shows **text only**
   (no broken-image icon). Ship-blocking for the *full* look, not for function.
@@ -166,8 +166,8 @@ the registry), exported at 2× (e.g. 32px for 16px display), single-color to mat
 ## Re-seed & deploy
 1. Code change to `emailTemplates.js` only re-renders on **re-seed** — run
    `node scripts/seedEmailTemplates.js` (idempotent upsert by `event_key`+`audience`).
-2. **Run against BOTH databases** — Mumbai (`ayjhlwyzszykqtnaktpb`, real prod) **and** Tokyo
-   (`xwvciqkayammbvsidqig`, staging). See the staging/prod-inversion note in project memory.
+2. **Run against BOTH databases** — Mumbai (`PROD_PROJECT_REF`, real prod) **and** Tokyo
+   (`STAGING_PROJECT_REF`, staging). See the staging/prod-inversion note in project memory.
 3. These templates are **LIVE** — the header rewrite + body re-seed change production emails on
    next send. Sequence: merge code → re-seed staging → smoke test → re-seed prod.
 4. `emailLayout.js` / `emailThemes.js` / `emailComponents.js` are code — they ship with the
@@ -204,11 +204,11 @@ the registry), exported at 2× (e.g. 32px for 16px display), single-color to mat
 - `server/tests/unit/` — new `emailThemes` + `emailComponents` tests; updated `emailLayout` test
   (incl. footer-unchanged regression guard).
 - Re-seed both DBs via `server/scripts/seedEmailTemplates.js` (no code change to the seeder).
-- **Asset dependency:** 15 glyph PNGs on `company-assets.bookasloth.in/images/email/icons/`.
+- **Asset dependency:** 15 glyph PNGs on `company-assets.meeticulous.in/images/email/icons/`.
 
 ## Appendix: icon asset manifest (founder/design deliverable)
 
-Upload to `https://company-assets.bookasloth.in/images/email/icons/`.
+Upload to `https://company-assets.meeticulous.in/images/email/icons/`.
 
 **Shared specs (every icon):**
 - **Canvas:** `48 × 48 px` (3× of the 16px display size — crisp on retina).

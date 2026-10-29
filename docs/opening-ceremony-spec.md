@@ -10,7 +10,7 @@
 ## 1. Product intent
 
 Not a confetti gimmick — a **monument**. The feeling to manufacture: *"I was
-there the day Book A Sloth opened, and my name proves it."*
+there the day Meeticulous opened, and my name proves it."*
 
 Three loads every design decision carries:
 1. **Ownership** — your **stone** on the wall, your name on it, placed the day it opened. Yours, permanent. (An ordered number exists under the hood but is never shown — the stone is the keepsake.)
@@ -63,7 +63,7 @@ Vercel deploy. Add `'opening'` and `'inaugurators'` to both, same PR as the rout
 
 ### 4.1 Cold open — `/opening`
 - Full-screen dark. Heavy **velvet curtains** drawn edge-to-edge, gold rope trim.
-- Center headline (glowing): *"Book A Sloth isn't open yet. Someone has to open it. Today, that's you."*
+- Center headline (glowing): *"Meeticulous isn't open yet. Someone has to open it. Today, that's you."*
 - Live counter: **"3,412 people have opened the doors."** (from `GET /count`).
 - Countdown: **"Doors close in 21h 04m."** (client ticks off a server-provided `closes_at`).
 - The **golden ribbon** across the curtains, scissors resting on it, pulsing.
@@ -78,7 +78,7 @@ On cut:
 - Curtains sweep open (CSS transform, both sides translate outward, eased ~1s).
 - **Confetti storm** — full-screen, gold + sloth-green, layered, slow fall, ~4–6s. Not a sprinkle. Optional cheer chime (respect muted/reduced-motion).
 - Behind curtain: the real homepage / brand reveal.
-- Headline lands: **"You opened Book A Sloth."** (Number is allocated server-side but **never shown** — founder call.)
+- Headline lands: **"You opened Meeticulous."** (Number is allocated server-side but **never shown** — founder call.)
 - Behind the curtain: the live site (event day) or a brand splash (standalone model). See §4.6.
 
 `prefers-reduced-motion`: skip curtain physics + confetti storm, still show the

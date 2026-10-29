@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- CDN base (exact): `https://company-assets.bookasloth.in/images/error`
+- CDN base (exact): `https://company-assets.meeticulous.in/images/error`
 - Three image filenames (exact): `sloth-tracks.png`, `sloth-think.png`, `sloth-glass.png`
 - Images are NOT in the repo — code ships before they exist; a missing image renders an empty box, never an error.
 - Only codes 404 and 410 become image-driven. All other codes untouched (copy + line-art).
@@ -24,7 +24,7 @@
   - 410 body: `We looked, but this page was permanently removed and isn't coming back.`
   - Edge title: `No host at this address`
   - Edge body: `We couldn't track anyone down at /{slug}. The link may be mistyped, or the profile has moved on.`
-  - Edge CTA: `Explore hosts` → `https://bookasloth.com/explore`
+  - Edge CTA: `Explore hosts` → `https://meeticulous.com/explore`
 
 ## File Structure
 
@@ -56,12 +56,12 @@ import { ERROR_IMAGE_BASE, ERROR_IMAGE_VARIANTS, pickErrorImage } from '../confi
 
 describe('error image variants', () => {
   it('exposes the CDN base and three variants', () => {
-    expect(ERROR_IMAGE_BASE).toBe('https://company-assets.bookasloth.in/images/error');
+    expect(ERROR_IMAGE_BASE).toBe('https://company-assets.meeticulous.in/images/error');
     expect(ERROR_IMAGE_VARIANTS).toEqual(['sloth-tracks.png', 'sloth-think.png', 'sloth-glass.png']);
   });
   it('pickErrorImage returns a full URL from the variant set', () => {
     const url = pickErrorImage();
-    expect(url.startsWith('https://company-assets.bookasloth.in/images/error/')).toBe(true);
+    expect(url.startsWith('https://company-assets.meeticulous.in/images/error/')).toBe(true);
     expect(ERROR_IMAGE_VARIANTS.some((v) => url.endsWith(v))).toBe(true);
   });
   it('marks 404 and 410 as image-driven', () => {
@@ -86,7 +86,7 @@ Expected: FAIL — `ERROR_IMAGE_BASE` undefined; old 404 title.
 // Detective-sloth art for the `lost` mood (404/410). Hosted on the external CDN
 // (not in-repo); a missing file just renders an empty box. One random variant
 // per visit — see pickErrorImage.
-export const ERROR_IMAGE_BASE = 'https://company-assets.bookasloth.in/images/error';
+export const ERROR_IMAGE_BASE = 'https://company-assets.meeticulous.in/images/error';
 export const ERROR_IMAGE_VARIANTS = Object.freeze([
   'sloth-tracks.png',
   'sloth-think.png',
@@ -155,7 +155,7 @@ describe('ErrorIllustration image mode', () => {
     const { container } = rtlRender(<ErrorIllustration art="lost" image />);
     const img = container.querySelector('img');
     expect(img).toBeTruthy();
-    expect(img.getAttribute('src').startsWith('https://company-assets.bookasloth.in/images/error/')).toBe(true);
+    expect(img.getAttribute('src').startsWith('https://company-assets.meeticulous.in/images/error/')).toBe(true);
     expect(img.getAttribute('alt')).toBe('');
   });
   it('renders the SVG (no img) when image is not set', () => {
@@ -239,7 +239,7 @@ git commit -m "feat(errors): ErrorIllustration renders CDN image variant"
     const { container } = renderAt(<ErrorPage code={404} />);
     const img = container.querySelector('img.bas-error-art');
     expect(img).toBeTruthy();
-    expect(img.getAttribute('src').startsWith('https://company-assets.bookasloth.in/images/error/')).toBe(true);
+    expect(img.getAttribute('src').startsWith('https://company-assets.meeticulous.in/images/error/')).toBe(true);
   });
 ```
 
@@ -303,9 +303,9 @@ const { pickErrorImage, ERROR_IMAGE_BASE } = require('../../utils/brandPage');
 
 describe('brandPage hero image', () => {
   it('renders an <img> with the given absolute src when image is set', () => {
-    const html = brandPage({ code: 404, heading: 'h', body: 'b', image: 'https://company-assets.bookasloth.in/images/error/sloth-glass.png' });
+    const html = brandPage({ code: 404, heading: 'h', body: 'b', image: 'https://company-assets.meeticulous.in/images/error/sloth-glass.png' });
     expect(html).toContain('<img');
-    expect(html).toContain('https://company-assets.bookasloth.in/images/error/sloth-glass.png');
+    expect(html).toContain('https://company-assets.meeticulous.in/images/error/sloth-glass.png');
   });
   it('renders no <img> when image is absent', () => {
     const html = brandPage({ code: 500, heading: 'h', body: 'b' });
@@ -325,7 +325,7 @@ Expected: FAIL — `pickErrorImage` not exported; no `<img>`.
 - [ ] **Step 3: Implement** — `brandPage.js`. After the `SITE` const add:
 
 ```js
-const ERROR_IMAGE_BASE = 'https://company-assets.bookasloth.in/images/error';
+const ERROR_IMAGE_BASE = 'https://company-assets.meeticulous.in/images/error';
 const ERROR_IMAGE_VARIANTS = ['sloth-tracks.png', 'sloth-think.png', 'sloth-glass.png'];
 function pickErrorImage() {
   const i = Math.floor(Math.random() * ERROR_IMAGE_VARIANTS.length);
@@ -342,7 +342,7 @@ Add hero CSS to `BRAND_CSS` (inside the template string, e.g. after the `.logo` 
 Update `brandPage()` to accept + render `image`:
 
 ```js
-function brandPage({ code = '', title = 'Book A Sloth', heading = '', body = '', ctaLabel = 'Go to Book A Sloth', ctaHref = SITE, image = '' } = {}) {
+function brandPage({ code = '', title = 'Meeticulous', heading = '', body = '', ctaLabel = 'Go to Meeticulous', ctaHref = SITE, image = '' } = {}) {
   const inner =
     `${image ? `<img class="hero" src="${esc(image)}" alt="" width="132" height="132">` : ''}` +
     `${code ? `<div class="code">${esc(code)}</div>` : ''}` +
@@ -404,7 +404,7 @@ describe('errorMiddleware 404 branding', () => {
     const res = makeRes();
     errorHandler(Object.assign(new Error('x'), { expose: false }), htmlReq, res, () => {});
     expect(res.statusCode).toBe(404);
-    expect(res.body).toContain('company-assets.bookasloth.in/images/error/');
+    expect(res.body).toContain('company-assets.meeticulous.in/images/error/');
     expect(res.body).toContain('This page pulled a vanishing act');
   });
 });
@@ -475,7 +475,7 @@ describe('edge profile-404 HTML', () => {
     const html = renderProfile404Html('coolhost');
     expect(html).toContain('name="robots"');
     expect(html).toContain('noindex');
-    expect(html).toContain('company-assets.bookasloth.in/images/error/');
+    expect(html).toContain('company-assets.meeticulous.in/images/error/');
     expect(html).toContain('No host at this address');
     expect(html).toContain('/coolhost');
     expect(html).toContain('/explore');
@@ -499,9 +499,9 @@ Expected: FAIL — `renderProfile404Html` not exported.
 // import server/utils/brandPage.js (different runtime) — keep this visually in
 // sync with brandPage.js by hand. Random detective-sloth variant per request.
 const EDGE_ERROR_IMAGES = [
-  'https://company-assets.bookasloth.in/images/error/sloth-tracks.png',
-  'https://company-assets.bookasloth.in/images/error/sloth-think.png',
-  'https://company-assets.bookasloth.in/images/error/sloth-glass.png',
+  'https://company-assets.meeticulous.in/images/error/sloth-tracks.png',
+  'https://company-assets.meeticulous.in/images/error/sloth-think.png',
+  'https://company-assets.meeticulous.in/images/error/sloth-glass.png',
 ];
 export function renderProfile404Html(rawSlug) {
   const slug = String(rawSlug).replace(/[^a-z0-9._-]/gi, '');
@@ -509,7 +509,7 @@ export function renderProfile404Html(rawSlug) {
   return (
     `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">` +
     `<meta name="viewport" content="width=device-width,initial-scale=1">` +
-    `<title>No host at this address · Book A Sloth</title>` +
+    `<title>No host at this address · Meeticulous</title>` +
     `<meta name="robots" content="noindex">` +
     `<link rel="preconnect" href="https://fonts.googleapis.com">` +
     `<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800&family=Poppins:wght@400;500&display=swap" rel="stylesheet">` +
@@ -528,7 +528,7 @@ export function renderProfile404Html(rawSlug) {
     `<img class="hero" src="${img}" alt="" width="132" height="132">` +
     `<h1>No host at this address</h1>` +
     `<p>We couldn't track anyone down at <strong>/${slug}</strong>. The link may be mistyped, or the profile has moved on.</p>` +
-    `<a class="btn" href="https://bookasloth.com/explore">Explore hosts</a>` +
+    `<a class="btn" href="https://meeticulous.com/explore">Explore hosts</a>` +
     `</main></body></html>`
   );
 }

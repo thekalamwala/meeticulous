@@ -1,4 +1,4 @@
-# Deployment — Book A Sloth
+# Deployment — Meeticulous
 
 ## Architecture Overview
 
@@ -167,7 +167,7 @@ The API exposes a basic health endpoint:
 
 ```
 GET /
-→ { "message": "Book A Sloth API v1.4 running" }
+→ { "message": "Meeticulous API v1.4 running" }
 ```
 
 Use this for uptime monitoring.

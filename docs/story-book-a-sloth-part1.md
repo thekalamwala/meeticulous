@@ -1,4 +1,4 @@
-# Book A Sloth — Part 1: The Rebuild
+# Meeticulous — Part 1: The Rebuild
 
 _Memoir draft. First person. Real people, fake-but-true conversations. Built to grow._
 
@@ -18,7 +18,7 @@ So before I press this button, let me tell you about the rooms. And the people i
 
 ## II — The gist of how it started
 
-The first version of Book A Sloth wasn't called Book A Sloth, and it wasn't pretty.
+The first version of Meeticulous wasn't called Meeticulous, and it wasn't pretty.
 
 It was PHP and SQL, held together by Naman and me, two guys who didn't fully know what we were building until people started paying for it. A coach wanted a page where clients could book her time and pay. We built it. Then a tutor wanted the same. Then a physiotherapist. Then a coworking space wanted to rent out desks by the hour.
 
@@ -86,7 +86,7 @@ He took out his phone, did something for thirty seconds, and slid it across the 
 
 A month later, when I hit the wall again, he upgraded it without me asking. No message. I just noticed the limits were gone.
 
-People think funding is term sheets and big rounds. For me, in the season that mattered most, funding was a friend who refused to let me blame my tools, who bought belief in increments of twenty dollars. There's a version of Book A Sloth that dies in a low week without Vishal quietly removing the friction. That version is real. I think about it.
+People think funding is term sheets and big rounds. For me, in the season that mattered most, funding was a friend who refused to let me blame my tools, who bought belief in increments of twenty dollars. There's a version of Meeticulous that dies in a low week without Vishal quietly removing the friction. That version is real. I think about it.
 
 ---
 

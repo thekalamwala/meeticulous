@@ -13,11 +13,11 @@ for one-off booking/product payments.
 - Backend deployed and reachable over **HTTPS** (Render). Razorpay cannot reach
   `localhost`.
 - You know your **API host** — the server, NOT the client:
-  - Client (Vercel): `https://bookasloth.com`
-  - **API (Render): `https://book-a-sloth.onrender.com`** ← webhooks go here
-  - (The API intentionally stays on the Render URL. `api.bookasloth.com` is **not**
+  - Client (Vercel): `https://meeticulous.com`
+  - **API (Render): `https://meeticulous-api.onrender.com`** ← webhooks go here
+  - (The API intentionally stays on the Render URL. `api.meeticulous.com` is **not**
     pointed at Render — it 404s — so do **not** use it for webhooks.)
-- **Verify the host:** open `https://book-a-sloth.onrender.com/api/plans` in a browser.
+- **Verify the host:** open `https://meeticulous-api.onrender.com/api/plans` in a browser.
   - Returns JSON (plan list) → correct host.
   - Returns HTML / 404 → wrong host; use the Render URL above.
 
@@ -26,10 +26,10 @@ for one-off booking/product payments.
 ## 2. The Webhook URL
 
 ```
-https://book-a-sloth.onrender.com/api/payment/webhook
+https://meeticulous-api.onrender.com/api/payment/webhook
 ```
 
-(The API stays on Render; `api.bookasloth.com` is not pointed at Render and 404s.)
+(The API stays on Render; `api.meeticulous.com` is not pointed at Render and 404s.)
 
 This path is fixed in code (`server/routes/paymentRoutes.js` → `POST /webhook`).
 
@@ -56,9 +56,9 @@ Razorpay Dashboard → **Settings → Webhooks → Add New Webhook**.
 
 | Field | Value |
 |-------|-------|
-| **Webhook URL** | `https://book-a-sloth.onrender.com/api/payment/webhook` |
+| **Webhook URL** | `https://meeticulous-api.onrender.com/api/payment/webhook` |
 | **Secret** | A strong random string you choose (e.g. `openssl rand -hex 24`). **Copy it.** |
-| **Alert Email** | `bookasloth@gmail.com` (Razorpay emails you on failures) |
+| **Alert Email** | `meeticulous@gmail.com` (Razorpay emails you on failures) |
 | **Active Events** | The 6 below — nothing else |
 
 ### Active events (must match what the code handles)

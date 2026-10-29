@@ -16,7 +16,7 @@ Go to your [My Bookings](/my-bookings) page (or your [Reviews](/reviews) page fo
 
 ## The host can review you too
 
-Reviews go both ways on Book A Sloth — after a completed booking, the host can also leave a review. It's how both sides build trust.
+Reviews go both ways on Meeticulous — after a completed booking, the host can also leave a review. It's how both sides build trust.
 
 ## Reviews — common questions
 
@@ -24,7 +24,7 @@ Reviews go both ways on Book A Sloth — after a completed booking, the host can
 
 **Can I edit my review?** Yes. Open the review on the completed booking and update the rating and words — the latest saved version replaces the old one, and your rating change is reflected in the host's average.
 
-**Can I delete my review?** No — there's no delete option. If you want to change what you left, **edit** it instead. To have a review removed entirely, contact Book A Sloth Support.
+**Can I delete my review?** No — there's no delete option. If you want to change what you left, **edit** it instead. To have a review removed entirely, contact Meeticulous Support.
 
 **How many reviews per booking?** One per booking, per side. You can't submit a second review for the same booking — edit the existing one. Each separate completed booking (including repeat bookings with the same host) gets its own review.
 
@@ -34,6 +34,6 @@ Reviews go both ways on Book A Sloth — after a completed booking, the host can
 
 **Where do I manage my reviews?** From your [My Bookings](/my-bookings) page (or [Reviews](/reviews) for ones you've left) — open the completed booking to add or edit.
 
-**My review isn't showing / the option is missing.** The booking may not be completed yet. If it's completed and you still can't submit or edit, refresh, then contact Book A Sloth Support.
+**My review isn't showing / the option is missing.** The booking may not be completed yet. If it's completed and you still can't submit or edit, refresh, then contact Meeticulous Support.
 
 **Can the host edit or remove my review?** No. Hosts can't edit or delete customer reviews — you manage your own.

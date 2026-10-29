@@ -1,4 +1,4 @@
-# Infrastructure & Scalability Audit — Book A Sloth
+# Infrastructure & Scalability Audit — Meeticulous
 
 _Date: 2026-07-01 · Branch: `database-architecture` · Author: engineering audit (read-only, no code changed)_
 
@@ -203,7 +203,7 @@ Tests after Phase 2: server **1075/1075** green (+ new `responseCache` unit suit
 | New indexes | Low | Lock on large table (`CREATE INDEX`) | Possible brief | Use `CREATE INDEX CONCURRENTLY`; only after EXPLAIN |
 | Read replica | High | Replication lag → stale/booking-correctness | None | Route ONLY public reads to replica; never booking writes/validation |
 
-**Deploy discipline (per `MEMORY.md`):** apply migrations to BOTH Supabase projects (prod Mumbai `ayjhlwyzszykqtnaktpb` + staging Tokyo `xwvciqkayammbvsidqig`); deploy is native Vercel/Render, not GH-Actions; CI is not a merge gate.
+**Deploy discipline (per `MEMORY.md`):** apply migrations to BOTH Supabase projects (prod Mumbai `PROD_PROJECT_REF` + staging Tokyo `STAGING_PROJECT_REF`); deploy is native Vercel/Render, not GH-Actions; CI is not a merge gate.
 
 ---
 

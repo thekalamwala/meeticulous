@@ -216,7 +216,7 @@ Review your working hours, blocked dates, and booking settings, update them, and
 
 ## Who should I contact if I can't manage my availability?
 
-If you can't update your schedule, contact Book A Sloth Support with details of the issue.
+If you can't update your schedule, contact Meeticulous Support with details of the issue.
 
 ## How can I manage my availability effectively?
 
@@ -226,20 +226,20 @@ Keep working hours updated, block holidays in advance, review your schedule regu
 
 **What does connecting Google Calendar do?** Two things: times you're **busy** on Google are removed from your bookable slots (so you're not double-booked), and every confirmed booking is **written to your Google Calendar** as an event — and updated or removed there if it's rescheduled or cancelled.
 
-**Is it read-only?** No. It reads your busy times *and* adds, updates, and removes your Book A Sloth booking events on your calendar. It doesn't touch your other personal events.
+**Is it read-only?** No. It reads your busy times *and* adds, updates, and removes your Meeticulous booking events on your calendar. It doesn't touch your other personal events.
 
 **Is it optional?** Yes. You can run purely on your Availability schedule without connecting. Connect (or disconnect) any time from your dashboard.
 
 **Do I need a Google account?** Yes — Google Calendar sync requires connecting a Google account.
 
-**Is it limited to certain plans?** No. Google Calendar connection is available to hosts on all plans. Book A Sloth syncs with the **primary calendar** of the Google account you connect.
+**Is it limited to certain plans?** No. Google Calendar connection is available to hosts on all plans. Meeticulous syncs with the **primary calendar** of the Google account you connect.
 
 **Will customers see my calendar events?** No. Your calendar stays private — guests only see open booking slots, never your event details.
 
 **It's not blocking my busy times.** Check the calendar is still connected, then reconnect from your dashboard — authorization can expire. Sync failures are designed to fail safe (they won't wrongly hide your availability), so reconnecting restores busy-time blocking.
 
-**Does it create bookings by itself?** No. It only mirrors Book A Sloth bookings onto your calendar and reads your busy times — it never creates a Book A Sloth booking on its own.
+**Does it create bookings by itself?** No. It only mirrors Meeticulous bookings onto your calendar and reads your busy times — it never creates a Meeticulous booking on its own.
 
 **What happens if I disconnect?** Existing bookings stay. Your availability then relies only on your working hours and blocked dates. Reconnect any time.
 
-**Can Support help me reconnect?** Yes — if you can't reconnect, contact Book A Sloth Support.
+**Can Support help me reconnect?** Yes — if you can't reconnect, contact Meeticulous Support.

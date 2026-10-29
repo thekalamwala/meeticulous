@@ -14,11 +14,11 @@ marketplace, and the MoR legal set (PR #564) was reverted to marketplace on 6 Au
 ## 1. The model in four lines
 
 1. The **host is the seller** of the service. The contract for the service is **between the host and the guest**.
-2. **Book A Sloth is the marketplace.** It lists, books, collects payment, and supports — and charges a booking fee (to the guest) and, on some plans, a commission (to the host).
-3. Book A Sloth invoices **only its own fee + commission**, under its GSTIN. It never invoices the host's service price.
-4. The guest's money for the host's price is **collected and remitted to the host**, net of the payment-gateway charge and statutory TDS/TCS. It is not Book A Sloth's revenue.
+2. **Meeticulous is the marketplace.** It lists, books, collects payment, and supports — and charges a booking fee (to the guest) and, on some plans, a commission (to the host).
+3. Meeticulous invoices **only its own fee + commission**, under its GSTIN. It never invoices the host's service price.
+4. The guest's money for the host's price is **collected and remitted to the host**, net of the payment-gateway charge and statutory TDS/TCS. It is not Meeticulous's revenue.
 
-**Payment runs through Razorpay, an RBI-authorised payment aggregator.** Book A Sloth's own
+**Payment runs through Razorpay, an RBI-authorised payment aggregator.** Meeticulous's own
 revenue is the Platform Fee. The host's price is the host's money, passing through to the host.
 
 ---
@@ -28,7 +28,7 @@ revenue is the Platform Fee. The host's price is the host's money, passing throu
 The RBI *Regulation of Payment Aggregators Directions, 2025* governs entities that collect
 customer money on behalf of merchants and settle it to them. The collection and settlement
 here are performed by **Razorpay, a licensed PA** — the regulated party is Razorpay, not us.
-Book A Sloth is a marketplace whose own revenue is its fee + commission; the host's price is
+Meeticulous is a marketplace whose own revenue is its fee + commission; the host's price is
 collected through the authorised PA and remitted to the host.
 
 The characterisation holds only if the contracts, invoices, books, and product all say the
@@ -90,7 +90,7 @@ Reference constants (`E = ₹1,000`, gateway ≈ ₹20.24 at ~2%):
 | **Host receives** | **₹959.76** | **₹909.76** |
 
 TDS and TCS are the government's, deposited against the host's PAN and claimable in the
-host's returns — not Book A Sloth's revenue.
+host's returns — not Meeticulous's revenue.
 
 ---
 
@@ -125,7 +125,7 @@ window closes.
 
 ### 5.6 — Chargeback
 ₹1,500–2,500 fee plus the full amount reversed. Biggest tail risk. Prevent, don't price in:
-3DS on all cards; statement descriptor must read `BOOKASLOTH`; keep booking confirmation and
+3DS on all cards; statement descriptor must read `meeticulous`; keep booking confirmation and
 attendance mark as evidence. BAS recovers a ₹500 handling charge from the host where the
 chargeback is attributable to them.
 
@@ -159,7 +159,7 @@ These are the guards that keep every booking non-loss-making:
 3. **10% security holdback** for the first 90 days / 20 bookings — the buffer a clawback draws from.
 4. **Broad set-off** (Host Agreement cl 9): refunds, chargebacks, denied ITC, tax demands, handling charges, off-platform liquidated damages.
 5. **PAN gate** before first payout; **GST name-match** before releasing the GST component.
-6. **Chargeback prevention**: 3DS, `BOOKASLOTH` descriptor, evidence retention.
+6. **Chargeback prevention**: 3DS, `meeticulous` descriptor, evidence retention.
 7. **Credit note on refund** issued against the reversed invoice before **30 November** following that FY, or the GST cannot be adjusted.
 
 ---

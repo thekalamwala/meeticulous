@@ -34,7 +34,7 @@ The number of services (and how many can be free) depends on your plan. If you h
 
 Check that it's **active**, and that your profile is complete. If a service is deactivated it won't appear to guests.
 
-## What is a service on Book A Sloth?
+## What is a service on Meeticulous?
 
 A service is an appointment or session offered by a host that customers can book online. Each service includes a title, description, duration, price, inclusions, and available booking times.
 
@@ -232,7 +232,7 @@ Review and update the details immediately. Accurate information avoids confusion
 
 ## Who should I contact if I have problems managing my services?
 
-If you can't create, edit, publish, or manage services, contact Book A Sloth Support with your registered email or phone number and a description of the issue.
+If you can't create, edit, publish, or manage services, contact Meeticulous Support with your registered email or phone number and a description of the issue.
 
 ## Can I create a service without adding a description?
 

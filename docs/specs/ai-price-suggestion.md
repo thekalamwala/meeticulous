@@ -4,7 +4,7 @@ Status: building on branch `feat/price-benchmark` · follows the AI page builder
 
 ## Goal
 When a host sets a price (onboarding `/live` form + dashboard ServiceForm), show what
-comparable hosts on Book A Sloth actually charge, so they don't guess or under-price.
+comparable hosts on Meeticulous actually charge, so they don't guess or under-price.
 Advisory only — never auto-fills.
 
 ## Core decision: benchmark, not LLM

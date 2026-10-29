@@ -1,8 +1,8 @@
-# Book a Sloth `/presentation` Interactive Deck — Implementation Plan
+# Meeticulous `/presentation` Interactive Deck — Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ship a full-screen, shareable `/presentation` deck that tells the Book a Sloth story in 10 slides, with a live-data interactive booking simulation as its centerpiece.
+**Goal:** Ship a full-screen, shareable `/presentation` deck that tells the Meeticulous story in 10 slides, with a live-data interactive booking simulation as its centerpiece.
 
 **Architecture:** One lazy-loaded route `pages/presentation/Presentation.jsx` that calls `useHideChrome()` for a bare canvas. A `SLIDES` registry drives a paged deck (one slide per view, all breakpoints); `useDeckNav` handles keyboard/swipe/hash deep-linking; `usePresentationHost` fetches host `/sndatarkar` with a curated fallback; `BookingDemo` is a client-only simulation. Reuses existing brand components; adds zero dependencies.
 
@@ -405,7 +405,7 @@ function Placeholder({ title }) { return <div className="text-center"><h2 classN
 const P = (title) => () => <Placeholder title={title} />;
 
 export const SLIDES = [
-  { key: 'hook',      title: 'Book a Sloth',        Component: P('Book a Sloth') },
+  { key: 'hook',      title: 'Meeticulous',        Component: P('Meeticulous') },
   { key: 'problem',   title: 'The Problem',         Component: P('The Problem') },
   { key: 'idea',      title: 'The Idea',            Component: P('The Idea') },
   { key: 'how',       title: 'How It Works',        Component: P('How It Works') },
@@ -486,7 +486,7 @@ export default function DeckControls({ index, total, onPrev, onNext, onJump, onT
   const fullscreen = () => { const el = document.documentElement; if (!document.fullscreenElement) el.requestFullscreen?.(); else document.exitFullscreen?.(); };
   const share = async () => {
     const url = window.location.href;
-    try { if (navigator.share) { await navigator.share({ title: 'Book a Sloth', url }); return; } } catch { /* cancelled */ }
+    try { if (navigator.share) { await navigator.share({ title: 'Meeticulous', url }); return; } } catch { /* cancelled */ }
     try { await navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch { /* ignore */ }
   };
   return (
@@ -782,7 +782,7 @@ export default function S01Hook() {
         <Reveal delay={0.2}><a href="/be-a-sloth" className="btn-primary inline-block mt-7">Continue with Google</a></Reveal>
       </div>
       <Reveal delay={0.15} className="justify-self-center">
-        <img src="/sloth.png" alt="Book a Sloth mascot" width={320} height={320} className="w-56 sm:w-72 lg:w-80 h-auto" loading="eager" />
+        <img src="/sloth.png" alt="Meeticulous mascot" width={320} height={320} className="w-56 sm:w-72 lg:w-80 h-auto" loading="eager" />
       </Reveal>
     </div>
   );
@@ -812,7 +812,7 @@ export default function S02Problem() {
 
 - [ ] **Step 3: S03 Idea**
 
-One link replaces the chaos. Headline "One calm link connects all of it." Subtext "Made for India. Not adapted for it." Visual: the eight chips collapsing into a single pill labeled with the host's link `bookasloth.com/{host.username}` (use `hostCtx.host.username`). Mobile stacks chips-arrow-pill vertically.
+One link replaces the chaos. Headline "One calm link connects all of it." Subtext "Made for India. Not adapted for it." Visual: the eight chips collapsing into a single pill labeled with the host's link `meeticulous.com/{host.username}` (use `hostCtx.host.username`). Mobile stacks chips-arrow-pill vertically.
 ```jsx
 import Reveal from '../../../components/home/Reveal';
 export default function S03Idea({ hostCtx }) {
@@ -823,7 +823,7 @@ export default function S03Idea({ hostCtx }) {
       <Reveal delay={0.1}><p className="mt-4 text-muted">Made for India. Not adapted for it.</p></Reveal>
       <Reveal delay={0.2}>
         <div className="mt-8 inline-flex items-center gap-2 rounded-xl bg-ink text-white px-5 py-3 font-mono text-sm sm:text-base">
-          <span className="opacity-60">bookasloth.com/</span><span className="text-[#FFB703]">{u}</span>
+          <span className="opacity-60">meeticulous.com/</span><span className="text-[#FFB703]">{u}</span>
         </div>
       </Reveal>
     </div>
@@ -1037,7 +1037,7 @@ export default function S10Start() {
       <Reveal><h2 className="font-heading text-4xl sm:text-5xl">Live in <span className="text-primary">~42 seconds</span>.</h2></Reveal>
       <Reveal delay={0.1}><p className="mt-4 text-muted">Sign in, add a service, share your link. Keep 100% of what you earn.</p></Reveal>
       <Reveal delay={0.2}><a href="/be-a-sloth" className="btn-primary inline-block mt-8 text-lg">Continue with Google</a></Reveal>
-      <Reveal delay={0.3}><p className="mt-6 text-sm text-muted">bookasloth.com</p></Reveal>
+      <Reveal delay={0.3}><p className="mt-6 text-sm text-muted">meeticulous.com</p></Reveal>
     </div>
   );
 }
@@ -1104,7 +1104,7 @@ git commit -m "feat(presentation): reduced-motion, a11y live region, polish"
 git push -u origin feat/presentation-deck
 gh pr create --title "feat(presentation): shareable interactive /presentation deck" --body "$(cat <<'EOF'
 ## What
-Full-screen shareable `/presentation` deck telling the Book a Sloth story in 10 slides, with a live-data interactive booking simulation.
+Full-screen shareable `/presentation` deck telling the Meeticulous story in 10 slides, with a live-data interactive booking simulation.
 
 ## Highlights
 - Zero new dependencies (framer-motion / canvas-confetti already present)

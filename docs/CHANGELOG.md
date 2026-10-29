@@ -1,4 +1,4 @@
-# Changelog — Book A Sloth
+# Changelog — Meeticulous
 
 All significant changes are recorded here by sprint. Most recent first.
 

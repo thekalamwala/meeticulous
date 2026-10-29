@@ -75,7 +75,7 @@ Auth: a valid `admin_2fa_enroll` pending token ONLY (the mandatory-enrollment pa
 Re-enrollment by an already-enabled admin (switching authenticator app) is out of scope
 this increment — use the break-glass reset, then enroll fresh. Body: none.
 - Generate a TOTP secret (`authenticator.generateSecret()`).
-- Build the otpauth URI (`authenticator.keyuri(staff.email, 'Book A Sloth Admin', secret)`).
+- Build the otpauth URI (`authenticator.keyuri(staff.email, 'Meeticulous Admin', secret)`).
 - Generate a QR data-URL from the URI (`qrcode.toDataURL`).
 - Store the secret **encrypted** on the row in a STAGING column? No — to avoid a second
   column, store the encrypted secret immediately in `totp_secret` but keep

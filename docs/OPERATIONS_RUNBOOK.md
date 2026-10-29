@@ -1,4 +1,4 @@
-# Operations Runbook — Book A Sloth
+# Operations Runbook — Meeticulous
 
 > Single source of truth for running, deploying, and recovering this app in production.
 > Written for **one developer**, optimized for **safety → simplicity → long-term maintainability** over speed.
@@ -61,11 +61,11 @@ What's already mitigated vs. what still needs attention. Update as items close.
 
 One-time bootstrap to connect the repo to its two hosts. Do this once; after that, merges to `main` deploy automatically.
 
-> **The #1 mistake to avoid: Root Directory.** The client lives in `client/`, not the repo root. A Vercel project pointed at the repo root (Root Directory empty/null) builds from a `package.json` that has no frontend and **fails** — that is exactly what caused the duplicate `book-a-sloth-j4zg` project's red checks. Use **one** Vercel project with Root Directory = `client`. Delete any stray duplicates.
+> **The #1 mistake to avoid: Root Directory.** The client lives in `client/`, not the repo root. A Vercel project pointed at the repo root (Root Directory empty/null) builds from a `package.json` that has no frontend and **fails** — that is exactly what caused the duplicate `meeticulous-j4zg` project's red checks. Use **one** Vercel project with Root Directory = `client`. Delete any stray duplicates.
 
 ### Client → Vercel
 
-In the Vercel project → **Settings → Git → Import** `bookasloth/book-a-sloth`, then:
+In the Vercel project → **Settings → Git → Import** `meeticulous/meeticulous`, then:
 
 | Setting | Value | Why |
 |---|---|---|
@@ -80,7 +80,7 @@ In the Vercel project → **Settings → Git → Import** `bookasloth/book-a-slo
 **Environment variables** (set for Production **and** Preview, *before* the first deploy — `VITE_*` are baked at build time, so changing one later needs a redeploy):
 
 ```
-VITE_API_URL=https://<Render API URL>      # e.g. https://book-a-sloth.onrender.com → later https://api.yourdomain.com
+VITE_API_URL=https://<Render API URL>      # e.g. https://meeticulous-api.onrender.com → later https://api.yourdomain.com
 API_ORIGIN=https://<same API base, NO /api>  # NOT VITE_-prefixed — edge-runtime var for username 301s (client/middleware.js). Missing → redirects fail open (old usernames 404 in-app).
 VITE_SUPABASE_URL=...
 VITE_SUPABASE_ANON_KEY=...                   # publishable anon key only — never a secret
@@ -99,7 +99,7 @@ VITE_CLARITY_PROJECT_ID=
 
 The server is provisioned from `render.yaml` (a Blueprint), so its build/start/health/env-keys are defined in-repo:
 
-1. Render → **New → Blueprint** → connect `bookasloth/book-a-sloth`. It reads `render.yaml` and creates the `bookasloth-api` web service (Root Directory `server`, `npm ci` / `npm start`, health `/health`, region Singapore, Node 22, autoDeploy `main`).
+1. Render → **New → Blueprint** → connect `meeticulous/meeticulous`. It reads `render.yaml` and creates the `meeticulous-api` web service (Root Directory `server`, `npm ci` / `npm start`, health `/health`, region Singapore, Node 22, autoDeploy `main`).
 2. Fill every `sync: false` secret in **Render → Environment** (Supabase, Razorpay, SMTP, Google, JWT/OAuth secrets, etc.). `NODE_ENV=production` is set by the blueprint — **verify it stuck** (it gates the payment-verify / OTP fail-safes).
 3. Confirm `https://<service>/health` returns `200`.
 
@@ -218,7 +218,7 @@ Keep the exact Render/Vercel dashboard URLs noted in [`DEPLOYMENT.md`](../DEPLOY
    - *With PITR:* Supabase → Database → Point-in-Time Recovery → choose timestamp → restore.
    - *With a `.dump` artifact:*
      ```
-     gpg --batch --decrypt --passphrase "$BACKUP_PASSPHRASE" -o restore.dump bookasloth-YYYYMMDD-HHMMSS.dump.gpg
+     gpg --batch --decrypt --passphrase "$BACKUP_PASSPHRASE" -o restore.dump meeticulous-YYYYMMDD-HHMMSS.dump.gpg
      pg_restore -d "$TARGET_DATABASE_URL" --clean --if-exists --no-owner restore.dump
      ```
      Restore into a **fresh/staging project first** to verify before touching prod.

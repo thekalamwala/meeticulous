@@ -665,5 +665,5 @@ git commit -m "test(settlement): align fixtures with new balance shape"
 ---
 
 ## Post-implementation (manual, outside the plan)
-- Apply `server/migrations/v3.12_settlement_clearing.sql` to live Supabase (project `xwvciqkayammbvsidqig`).
+- Apply `server/migrations/v3.12_settlement_clearing.sql` to live Supabase (project `STAGING_PROJECT_REF`).
 - Smoke: a completed booking < 7 days old shows in **Clearing**; > 7 days shows in **Available**; a paid-uncompleted booking shows in **Pending Completion**; a withdrawal request cannot exceed **Available**.

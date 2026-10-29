@@ -17,7 +17,7 @@ Out of scope (this spec): notifying hosts on approve/reject (deferred), a third 
 
 ## Data Model
 
-One migration, applied to **both** DBs (prod Mumbai `ayjhlwyzszykqtnaktpb`, staging Tokyo `xwvciqkayammbvsidqig`).
+One migration, applied to **both** DBs (prod Mumbai `PROD_PROJECT_REF`, staging Tokyo `STAGING_PROJECT_REF`).
 
 ```sql
 -- Per-profession opt-in gate. OFF by default protects the curated 74.

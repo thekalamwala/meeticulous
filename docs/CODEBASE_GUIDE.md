@@ -1,4 +1,4 @@
-# Codebase Guide — Book A Sloth
+# Codebase Guide — Meeticulous
 
 This guide explains every module in the codebase. Use it as your map before opening any file.
 

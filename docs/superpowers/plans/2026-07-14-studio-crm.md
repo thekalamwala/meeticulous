@@ -19,7 +19,7 @@
 - **Every endpoint is host-scoped.** Every query filters `.eq('host_id', req.user.id)`. Never trust a `host_id` from the body/query. Respect the past `supabase-anon-api-exposure` incident: CRM tables get RLS ENABLED with NO policies (service-role only; anon/auth can never read).
 - **No PII in URLs.** Routes address clients by the UUID `crm_customers.id` (the handle), never by phone/email. The `customerKey` stays server-side.
 - **Files:** private bucket `customer-files`, multer memory-storage, **2MB cap**, magic-byte sniff against an allowlist (pdf/jpg/png/webp) — reject on mismatch even if the extension/mimetype claims otherwise. Download only via **60s signed URLs** (`SIGNED_URL_TTL_SECONDS = 60`, mirror `productController`). Store only the storage key, never a public URL.
-- **Migrations run manually on BOTH DBs** (staging Tokyo `xwvciqkayammbvsidqig` FIRST, then prod Mumbai `ayjhlwyzszykqtnaktpb`); keep code-side destructure fallback until confirmed applied. Migration file `v3.76_crm.sql` (v3.75 + v3.77 exist; 76 is the free slot reserved for CRM).
+- **Migrations run manually on BOTH DBs** (staging Tokyo `STAGING_PROJECT_REF` FIRST, then prod Mumbai `PROD_PROJECT_REF`); keep code-side destructure fallback until confirmed applied. Migration file `v3.76_crm.sql` (v3.75 + v3.77 exist; 76 is the free slot reserved for CRM).
 - **Server tests:** `server/tests/unit/*.test.js`, jest (`describe`/`test`/`expect`, `require('../../...')`). **Client tests:** Vitest, NO jest-dom — assert with `.getAttribute()` / `.textContent`.
 - Preserve existing behaviour; do not rename routes/columns. Auth middleware is `{ protect, requireHost }` from `server/middleware/authMiddleware.js`. Plan resolution is `req.vendorPlan` / `req.vendorPlanData` via `attachPlan` (`planMiddleware`); Studio slug = `professional`.
 - **Phases 1-5 = v1** (already built by the 2026-07-15 scheduled run). **Phase 6** = Host-360 enrichments + walk-in cash bookings (this addendum). **Do NOT build Phase 8 fast-follows:** custom-fields UI, note encryption (option B), aggregation RPC, and the v1-gap-review backlog.
@@ -90,7 +90,7 @@ UPDATE subscription_plans SET limits = jsonb_set(COALESCE(limits,'{}'), '{crm}',
 UPDATE subscription_plans SET limits = jsonb_set(COALESCE(limits,'{}'), '{crm}', '0')  WHERE slug IN ('starter','creator');
 ```
 
-- [ ] **Step 2: Apply on BOTH DBs via Supabase MCP** — staging Tokyo (`xwvciqkayammbvsidqig`) FIRST, then prod Mumbai (`ayjhlwyzszykqtnaktpb`). Then create the **private** Storage bucket `customer-files` on both (Storage → New bucket → public OFF). Run `get_advisors` (security) on both after applying.
+- [ ] **Step 2: Apply on BOTH DBs via Supabase MCP** — staging Tokyo (`STAGING_PROJECT_REF`) FIRST, then prod Mumbai (`PROD_PROJECT_REF`). Then create the **private** Storage bucket `customer-files` on both (Storage → New bucket → public OFF). Run `get_advisors` (security) on both after applying.
 
 - [ ] **Step 3: Verify** — on BOTH DBs:
   `SELECT slug, limits->>'crm' FROM subscription_plans ORDER BY slug;` → `creator=0, professional=-1, starter=0`. Confirm the three tables exist with `rowsecurity = true` and zero policies.

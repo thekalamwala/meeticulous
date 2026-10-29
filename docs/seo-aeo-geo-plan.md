@@ -1,4 +1,4 @@
-# SEO / AEO / GEO Plan — Book A Sloth
+# SEO / AEO / GEO Plan — Meeticulous
 
 _Last updated: 2026-07-01 • Owner: Shubham • Status: infra shipped, content strategy active_
 
@@ -8,7 +8,7 @@ Qualified organic traffic that converts to bookings, trials, paid customers. Nev
 
 ## Product context
 
-- **Product:** Book A Sloth — online booking / appointment scheduling / business management platform.
+- **Product:** Meeticulous — online booking / appointment scheduling / business management platform.
 - **Audience:** coaches, consultants, therapists, doctors, fitness trainers, tutors, freelancers, agencies, photographers, salons, small businesses.
 - **Geography priority:** 1. India → 2. UAE → 3. UK → 4. Australia → 5. US.
 
@@ -48,8 +48,8 @@ Classify every keyword before writing.
 |---|---|---|
 | Informational | "how to reduce appointment no-shows" | Teach |
 | Commercial | "best scheduling software", "calendly alternative" | Convince |
-| Transactional | "book a sloth pricing", "appointment software india" | Convert |
-| Navigational | "book a sloth login" | Route to destination |
+| Transactional | "Meeticulous pricing", "appointment software india" | Convert |
+| Navigational | "Meeticulous login" | Route to destination |
 
 ---
 
@@ -68,7 +68,7 @@ Classify every keyword before writing.
 1. **Commercial intent pages** — buying keywords: appointment scheduling software, best appointment booking software, calendly alternative, online booking software india, appointment software for coaches.
 2. **Industry pages** — one landing page per profession (booking software for therapists / salons / tutors / photographers / ...).
 3. **Feature pages** — one page per feature: WhatsApp reminders, recurring bookings, online payments, availability management, booking forms, Google Calendar sync.
-4. **Educational blogs** — only publish articles that lead readers toward Book A Sloth; every post connects back to a feature, use case, or landing page. Traffic without a conversion path is a chart, not a strategy.
+4. **Educational blogs** — only publish articles that lead readers toward Meeticulous; every post connects back to a feature, use case, or landing page. Traffic without a conversion path is a chart, not a strategy.
 
 ---
 

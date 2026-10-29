@@ -14,7 +14,7 @@ merely _owed_ as if it were _earned / paid_. This is a systemic gap, not a one-o
 
 ## A. Executive summary
 
-Book A Sloth collects the customer's money correctly (payment capture, ledger, invoice
+Meeticulous collects the customer's money correctly (payment capture, ledger, invoice
 are all sound and idempotent). Where it breaks is **everything downstream of "customer
 paid"**: moving that money to the host.
 
@@ -28,7 +28,7 @@ but (a) computes balances from a different data source that doesn't know the aut
 rail exists, and (b) currently **hard-fails** because the Razorpay account doesn't have
 the transfer feature enabled.
 
-**Proven in prod (Mumbai `ayjhlwyzszykqtnaktpb`, read-only queries):**
+**Proven in prod (Mumbai `PROD_PROJECT_REF`, read-only queries):**
 
 | Metric | Value |
 |---|---|

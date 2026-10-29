@@ -1,6 +1,6 @@
-# System-Level Gap Audit — Book A Sloth
+# System-Level Gap Audit — Meeticulous
 
-_Conducted 2026-09-02 against `main` @ `6043363` and the LIVE production database (`ayjhlwyzszykqtnaktpb`, Mumbai) via read-only introspection._
+_Conducted 2026-09-02 against `main` @ `6043363` and the LIVE production database (`PROD_PROJECT_REF`, Mumbai) via read-only introspection._
 
 **Scope:** full platform sweep. Every finding carries evidence. Findings verified against production data are marked **CONFIRMED**; findings derived from code reading alone are marked **INFERRED**.
 
@@ -10,7 +10,7 @@ _Conducted 2026-09-02 against `main` @ `6043363` and the LIVE production databas
 
 ## 0. Executive summary
 
-Book A Sloth is a genuinely well-built system. The booking core has a GiST exclusion constraint, exactly-once payment capture, immutable pricing snapshots, per-host quota mutexes, signature-verified webhooks, four reconcilers, a double-entry ledger, RBAC with 2FA, IP blocking, and 449 test files. Most of what a competent audit would flag has already been found and fixed by previous audits — the code is dense with `P0-2:`, `M-8:`, `H-3:` comments citing them.
+Meeticulous is a genuinely well-built system. The booking core has a GiST exclusion constraint, exactly-once payment capture, immutable pricing snapshots, per-host quota mutexes, signature-verified webhooks, four reconcilers, a double-entry ledger, RBAC with 2FA, IP blocking, and 449 test files. Most of what a competent audit would flag has already been found and fixed by previous audits — the code is dense with `P0-2:`, `M-8:`, `H-3:` comments citing them.
 
 So the interesting question is not "what is broken." It is **"what did every prior audit share a blind spot about."** The answer:
 
@@ -78,7 +78,7 @@ ef435404-c8b7-49c1-b608-b540ea26b8c6  |     11.80      |    -0.28      | 2026-08
 
 **Recommendation.** (a) Clamp `calculateVendorPayout` at 0, and in `orderPaymentEntry` book the gateway fee as a BAS-borne expense when the host is owed nothing (mirroring the subscription path) and omit the zero-value vendor-payables line — a zero line is rejected too. (b) Give `postSafe` a failure counter — after N consecutive failures for the same `source_id`, `adminAlert` instead of retrying silently. (c) Backfill the three rows to `vendor_amount = 0` so the fixed reconciler posts the real `ORDER_PAYMENT` entry (no manual `ADJUSTMENT` needed). (d) Add a `journalTemplates` unit test asserting the fee-only shape balances with no negative or zero line.
 
-**Update (2026-09-02):** shipped in [#922](https://github.com/bookasloth/book-a-sloth/pull/922) — clamp + BAS-borne fee + `postSafe` dead-letter alert + backfill migration `v3.139`. Full unit suite green (2222).
+**Update (2026-09-02):** shipped in [#922](https://github.com/meeticulous/meeticulous/pull/922) — clamp + BAS-borne fee + `postSafe` dead-letter alert + backfill migration `v3.139`. Full unit suite green (2222).
 
 ---
 
@@ -885,7 +885,7 @@ Checkout state persistence (`sessionStorage`); lead decay (Q7); notification exp
 
 ## Appendix — verification queries
 
-Every **CONFIRMED** finding above is reproducible. Run against prod (`ayjhlwyzszykqtnaktpb`), read-only:
+Every **CONFIRMED** finding above is reproducible. Run against prod (`PROD_PROJECT_REF`), read-only:
 
 ```sql
 -- F1: paid bookings with no ledger entry / negative payout

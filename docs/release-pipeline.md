@@ -1,6 +1,6 @@
 # Release Pipeline — local → staging → production
 
-How a change travels from your laptop to `bookasloth.com` safely, and how to
+How a change travels from your laptop to `meeticulous.com` safely, and how to
 roll back at **every** stage if it breaks. Written for someone doing this for the
 first time. Companion to [DEPLOYMENT.md](../DEPLOYMENT.md) (that file does the
 one-time prod setup; this file is the everyday flow + the staging layer).
@@ -23,9 +23,9 @@ code directly on a higher stage.
   your laptop                   online "testing URL"          the real site
   ───────────────               ──────────────────            ──────────────────
   Vite  :5173                   Vercel (staging branch)       Vercel (production)
-  Express :5000                 Render bookasloth-api-staging Render bookasloth-api
+  Express :5000                 Render meeticulous-api-staging Render meeticulous-api
   staging Supabase  ─────────▶  staging Supabase  ─────────▶  PROD Supabase
-  localhost                     staging.bookasloth.com        bookasloth.com
+  localhost                     staging.meeticulous.com        meeticulous.com
 
   push feature → PR             merge to `staging` branch     merge `staging`→`main`
                                 → auto-deploys staging        → auto-deploys prod
@@ -55,12 +55,12 @@ git push -u origin staging
 This branch is the trigger for the staging deploys below.
 
 ### B. Staging backend (Render)
-`render.yaml` already defines **`bookasloth-api-staging`** (deploys from the
+`render.yaml` already defines **`meeticulous-api-staging`** (deploys from the
 `staging` branch, `plan: free`). To create it:
 1. Render → **Blueprint** → it now proposes *two* services. Apply.
-2. Open **bookasloth-api-staging** → **Environment** → paste the STAGING values
+2. Open **meeticulous-api-staging** → **Environment** → paste the STAGING values
    (see [§6 table](#6-staging-env-values-what-to-paste-in-the-staging-dashboards)).
-3. **Manual Deploy** → verify: `curl https://bookasloth-api-staging.onrender.com/health`
+3. **Manual Deploy** → verify: `curl https://meeticulous-api-staging.onrender.com/health`
    → `{"status":"ok",...}`.
 
 > `plan: free` spins the service down after ~15 min idle; first hit after that is
@@ -69,7 +69,7 @@ This branch is the trigger for the staging deploys below.
 
 ### C. Staging frontend (Vercel)
 Same Vercel project as prod, different branch → different URL:
-1. Vercel project → **Settings → Domains** → add `staging.bookasloth.com`,
+1. Vercel project → **Settings → Domains** → add `staging.meeticulous.com`,
    assign it to the **`staging`** git branch (Vercel calls this a branch domain).
 2. Vercel → **Settings → Environment Variables** → for the **Preview** scope (or
    the `staging` branch specifically) set the STAGING values from §6
@@ -78,14 +78,14 @@ Same Vercel project as prod, different branch → different URL:
 
 ### D. Tell the third parties about the staging URLs
 - **Supabase (staging project)** → Auth → URL Configuration → Site URL =
-  `https://staging.bookasloth.com`.
+  `https://staging.meeticulous.com`.
 - **Google Cloud Console** → OAuth client → Authorized redirect URIs → add
-  `https://bookasloth-api-staging.onrender.com/api/auth/google/callback`.
+  `https://meeticulous-api-staging.onrender.com/api/auth/google/callback`.
 - **Razorpay** → use **TEST mode** for staging. Add a webhook →
-  `https://bookasloth-api-staging.onrender.com/api/payment/webhook` with its own
+  `https://meeticulous-api-staging.onrender.com/api/payment/webhook` with its own
   `RAZORPAY_WEBHOOK_SECRET`.
 
-**Done when:** opening `https://staging.bookasloth.com` loads the app and a test
+**Done when:** opening `https://staging.meeticulous.com` loads the app and a test
 booking with a Razorpay test card completes end-to-end against staging data.
 
 ---
@@ -115,7 +115,7 @@ git push -u origin feat/whatever
 ### Stage 2 — Staging (the online test)
 Open a PR `feat/whatever → staging`. CI runs the test suite. Merge it.
 → Render staging + Vercel staging auto-deploy in ~1–2 min.
-→ Test on **`https://staging.bookasloth.com`** like a real user: log in, book,
+→ Test on **`https://staging.meeticulous.com`** like a real user: log in, book,
    pay with a **Razorpay test card**, check the email arrives.
 
 > Several features can ride on `staging` at once. It's your shared rehearsal
@@ -123,7 +123,7 @@ Open a PR `feat/whatever → staging`. CI runs the test suite. Merge it.
 
 ### Stage 3 — Production
 When staging looks good, open a PR `staging → main`. Merge it.
-→ Render prod + Vercel prod auto-deploy → live on `bookasloth.com`.
+→ Render prod + Vercel prod auto-deploy → live on `meeticulous.com`.
 **Immediately verify** (curl `/health`, load the site, one test booking), then
 **tag the release** so rollback is one command:
 ```bash
@@ -142,7 +142,7 @@ exception** — read §5 before any schema change.
 | What broke | How you roll back | Speed |
 |---|---|---|
 | **Frontend** (bad UI / build) | Vercel → Deployments → last-good → **Promote to Production** | seconds |
-| **Backend** (API erroring) | Render → bookasloth-api → Events → last-good deploy → **Rollback** | ~1 min |
+| **Backend** (API erroring) | Render → meeticulous-api → Events → last-good deploy → **Rollback** | ~1 min |
 | **The code itself** | `git revert <bad-commit>` + push (auto-redeploys), or `git checkout v1.1.0` to inspect the last tagged-good release | minutes |
 | **A whole release** | You tagged it (§3) → `git checkout v1.1.0`, branch from it, redeploy | minutes |
 | **Database** ⚠️ | **No one-click undo.** Restore from backup / PITR — see §5 | slow + careful |
@@ -188,18 +188,18 @@ The full key list is in `server/.env.example` / `client/.env.example`. Staging
 uses the **same keys** as prod; only these **differ**. Everything not listed here
 (SMTP, app secrets, etc.) can reuse the prod values.
 
-**Render — bookasloth-api-staging → Environment**
+**Render — meeticulous-api-staging → Environment**
 
 | Key | Staging value |
 |---|---|
 | `NODE_ENV` | `production` (already set in render.yaml — mirrors prod behaviour) |
-| `CLIENT_URL` | `https://staging.bookasloth.com` |
-| `API_URL` | `https://bookasloth-api-staging.onrender.com` |
+| `CLIENT_URL` | `https://staging.meeticulous.com` |
+| `API_URL` | `https://meeticulous-api-staging.onrender.com` |
 | `SUPABASE_URL` | your **staging** project URL |
 | `SUPABASE_ANON_KEY` | staging anon key |
 | `SUPABASE_SERVICE_ROLE_KEY` | staging service-role key |
 | `SUPABASE_JWT_SECRET` | staging JWT secret |
-| `GOOGLE_REDIRECT_URI` | `https://bookasloth-api-staging.onrender.com/api/auth/google/callback` |
+| `GOOGLE_REDIRECT_URI` | `https://meeticulous-api-staging.onrender.com/api/auth/google/callback` |
 | `RAZORPAY_KEY_ID` / `_SECRET` | Razorpay **TEST**-mode keys |
 | `RAZORPAY_WEBHOOK_SECRET` | the staging webhook's secret |
 
@@ -207,8 +207,8 @@ uses the **same keys** as prod; only these **differ**. Everything not listed her
 
 | Key | Staging value |
 |---|---|
-| `VITE_API_URL` | `https://bookasloth-api-staging.onrender.com` |
-| `API_ORIGIN` | `https://bookasloth-api-staging.onrender.com` (no `/api`, not `VITE_`-prefixed) |
+| `VITE_API_URL` | `https://meeticulous-api-staging.onrender.com` |
+| `API_ORIGIN` | `https://meeticulous-api-staging.onrender.com` (no `/api`, not `VITE_`-prefixed) |
 | `VITE_SUPABASE_URL` | your **staging** project URL |
 | `VITE_SUPABASE_ANON_KEY` | staging anon key |
 
@@ -223,8 +223,8 @@ uses the **same keys** as prod; only these **differ**. Everything not listed her
 # new work
 git checkout main && git pull && git checkout -b feat/x
 
-# promote to staging   → PR feat/x  → staging   (auto-deploys staging.bookasloth.com)
-# promote to prod      → PR staging → main      (auto-deploys bookasloth.com)
+# promote to staging   → PR feat/x  → staging   (auto-deploys staging.meeticulous.com)
+# promote to prod      → PR staging → main      (auto-deploys meeticulous.com)
 
 # after prod is verified healthy:
 node scripts/release.mjs v1.2.0          # tag the release

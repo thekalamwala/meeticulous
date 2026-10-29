@@ -5,7 +5,7 @@ _Date: 2026-07-06 • Branch: `feat/profession-landing-pages` • Status: buildi
 ## Objective
 
 High-converting, profession-specific marketing landing pages at `/for/:profession` that
-sell Book A Sloth to potential **hosts** in each profession. Each page must **feel distinct**
+sell Meeticulous to potential **hosts** in each profession. Each page must **feel distinct**
 — its own color palette, tone of voice, and pain points — while sharing one maintainable
 template. Connected to the main site navbar (not isolated like `/lp/*`).
 
@@ -45,11 +45,11 @@ slate + gold. Doctors = trust blue + green. Photographers = creative slate + ora
 
 Reuse `<Seo>` (client/src/components/common/Seo.jsx). Per page:
 
-- **Title** (Google, commercial intent, 50–60 chars): `Appointment Booking Software for Lawyers | Book A Sloth`
+- **Title** (Google, commercial intent, 50–60 chars): `Appointment Booking Software for Lawyers | Meeticulous`
 - **Meta description** (140–160, keyword + CTA)
 - **OG title/desc** (social-share CLICKBAIT, ₹10/day hook — intentionally distinct from SEO title):
   e.g. `Your law practice runs on WhatsApp. Fix it for ₹10/day.`
-- **OG image**: 1200×630 on `company-assets.bookasloth.in/images/seo/for-lawyers-og-1200x630.png`
+- **OG image**: 1200×630 on `company-assets.meeticulous.in/images/seo/for-lawyers-og-1200x630.png`
   (clickbait creative — **needs founder upload**; URL wired now, falls back gracefully).
 - **JSON-LD graph** (AEO/GEO citation surface for ChatGPT/Claude/Gemini/Perplexity):
   - `SoftwareApplication` — subCategory "Appointment Scheduling Software", `Offer` price 0 INR + paid tier.

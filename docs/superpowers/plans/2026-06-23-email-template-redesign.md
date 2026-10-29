@@ -54,7 +54,7 @@ describe('emailThemes', () => {
     const t = themeForCategory('Security Check');
     expect(t.family).toBe('slate');
     expect(t.accent).toBe('#41506a');
-    expect(t.glyphUrl).toBe('https://company-assets.bookasloth.in/images/email/icons/shield-lock.png');
+    expect(t.glyphUrl).toBe('https://company-assets.meeticulous.in/images/email/icons/shield-lock.png');
   });
   test('unknown category → brand default, empty glyph (no broken image)', () => {
     const t = themeForCategory('Totally Unknown');
@@ -89,7 +89,7 @@ const FAMILIES = {
   pink:   { accent: '#d4537e', tint: '#fbeaf0', text: '#993556' },
 };
 
-const ICON_BASE = 'https://company-assets.bookasloth.in/images/email/icons';
+const ICON_BASE = 'https://company-assets.meeticulous.in/images/email/icons';
 
 // email_category → family + glyph (see spec registry table).
 const CATEGORY_MAP = {
@@ -337,7 +337,7 @@ Run: read `server/services/email/emailLayout.js` (functions `headerBlock`, `rend
 // add to server/tests/unit/emailLayout.test.js
 const { renderLayout } = require('../../services/email/emailLayout');
 
-const baseSettings = { brand_color: '#FE5100', from_name: 'Book A Sloth', logo_url: 'x', website_url: 'https://bookasloth.in', support_email: 's@x.com' };
+const baseSettings = { brand_color: '#FE5100', from_name: 'Meeticulous', logo_url: 'x', website_url: 'https://meeticulous.in', support_email: 's@x.com' };
 
 test('header: footer-logo on the left, accent pill with category on the right', () => {
   const html = renderLayout({ audience: 'customer', bodyHtml: '<p>hi</p>', emailCategory: 'Booking Confirmed', settings: baseSettings, data: {} });
@@ -374,7 +374,7 @@ At the top of `emailLayout.js` add: `const { themeForCategory } = require('./ema
 Replace the `headerBlock(...)` function with:
 
 ```js
-/** Header: constant Book a Sloth logo (left) + accent category pill (right). */
+/** Header: constant Meeticulous logo (left) + accent category pill (right). */
 function headerBlock({ category, theme }) {
   const glyph = theme.glyphUrl
     ? `<img src="${esc(theme.glyphUrl)}" width="14" height="14" alt="" style="vertical-align:-2px;margin-right:5px;border:0;display:inline-block;">`
@@ -388,7 +388,7 @@ function headerBlock({ category, theme }) {
     <td style="padding:18px 28px;border-bottom:1px solid ${D.border};">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
         <td align="left" style="vertical-align:middle;">
-          <img src="${esc(FOOTER_LOGO)}" alt="Book a Sloth" height="26" style="display:block;border:0;height:26px;">
+          <img src="${esc(FOOTER_LOGO)}" alt="Meeticulous" height="26" style="display:block;border:0;height:26px;">
         </td>
         ${pill}
       </tr></table>
@@ -447,7 +447,7 @@ Keep `lead`, `h`, `note` as-is. Remove the old `card`/`detail` only after every 
 const TEMPLATES = require('../../config/emailTemplates');
 const { renderEmail } = require('../../services/email/communicationEngine');
 
-const settings = { brand_color: '#FE5100', from_name: 'Book A Sloth', logo_url: 'x', website_url: 'https://bookasloth.in', support_email: 's@x.com' };
+const settings = { brand_color: '#FE5100', from_name: 'Meeticulous', logo_url: 'x', website_url: 'https://meeticulous.in', support_email: 's@x.com' };
 
 test('every template renders with no leftover {{tokens}} and an orange CTA when it has one', () => {
   for (const t of TEMPLATES) {
@@ -494,7 +494,7 @@ Recipe per template: compute `const t = themeForCategory('<email_category>')`, t
   name: 'Booking Confirmed — Customer', subject: 'Your booking with {{vendor_name}} is confirmed',
   preview_text: 'Your appointment with {{vendor_name}} is confirmed.',
   email_category: 'Booking Confirmed',
-  email_reason: 'You are receiving this email because you made a booking on Book A Sloth.',
+  email_reason: 'You are receiving this email because you made a booking on Meeticulous.',
   html_content:
     eyebrow(t.text, 'Booking confirmed') + h("You're all set, {{first_name}}") +
     lead('Your appointment is confirmed:') +
@@ -513,7 +513,7 @@ Recipe per template: compute `const t = themeForCategory('<email_category>')`, t
   name: 'Premium Activated', subject: 'Your {{plan_name}} plan is active',
   preview_text: 'Welcome to {{plan_name}} — your upgrades are live.',
   email_category: 'Payment Receipt',
-  email_reason: 'You are receiving this email because you made a purchase on Book A Sloth.',
+  email_reason: 'You are receiving this email because you made a purchase on Meeticulous.',
   html_content:
     eyebrow(t.text, 'Subscription') + h('Welcome to {{plan_name}}!') +
     lead('Your {{plan_name}} plan is now active. All features are unlocked on your dashboard.') +
@@ -600,10 +600,10 @@ git commit -am "test(email): suite green after redesign"
 
 Re-seed pushes the new bodies to the `email_templates` table. Run **after merge**, per environment:
 ```bash
-# staging (Tokyo xwvciqkayammbvsidqig) first → smoke test → prod (Mumbai ayjhlwyzszykqtnaktpb)
+# staging (Tokyo STAGING_PROJECT_REF) first → smoke test → prod (Mumbai PROD_PROJECT_REF)
 cd server && node scripts/seedEmailTemplates.js
 ```
-Then send one test email per family from the admin panel and verify in Gmail + Outlook (pill, glyph PNG once uploaded, hero block, 2px CTA, dark mode). Icons: upload the 15 PNGs from the spec appendix to `company-assets.bookasloth.in/images/email/icons/` — until then pills render text-only (expected).
+Then send one test email per family from the admin panel and verify in Gmail + Outlook (pill, glyph PNG once uploaded, hero block, 2px CTA, dark mode). Icons: upload the 15 PNGs from the spec appendix to `company-assets.meeticulous.in/images/email/icons/` — until then pills render text-only (expected).
 
 ---
 

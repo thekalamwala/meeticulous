@@ -41,7 +41,7 @@
 2. **`assign()` extension** (`supportChatService.js`): after setting `assigned`, resolve persona from the assigning admin and:
    - Set/stamp the persona on the thread (add nullable `agent_name` to `support_threads`, or reuse `assigned_admin` + resolve at render — prefer a stored `agent_name` snapshot so historic transcripts stay correct if the roster changes). **→ small migration v3.116: `support_threads.agent_name TEXT`.**
    - Insert one auto-intro `support_messages` row: `sender='admin'`, `sender_name=<persona>`, body from a template:
-     > "Hi{{ , name}} — I'm {{persona}} from the Book A Sloth support team. Give me a moment to read your messages and I'll help you right away."
+     > "Hi{{ , name}} — I'm {{persona}} from the Meeticulous support team. Give me a moment to read your messages and I'll help you right away."
    - **Guard:** only post if the thread has no prior `admin` message (idempotent — re-assign doesn't re-greet). Name-personalization (`{{name}}`) filled from context service (Phase 2) when known; omit gracefully when not.
 3. **Wire "Assign to me"** in `AdminSupportChat.jsx` — call the existing `adminAssignSupport`, optimistic status flip (mirror existing reply-claim at line ~107). No code prompt.
 4. **Tests:** `assign()` posts exactly one intro; re-assign posts none; unmapped admin → "Support Team"; intro persona matches assigning admin.

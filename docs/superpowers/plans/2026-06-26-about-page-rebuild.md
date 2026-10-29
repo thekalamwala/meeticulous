@@ -1115,10 +1115,10 @@ import TrustGrid from "../components/about/TrustGrid";
 const JSON_LD = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "Book A Sloth",
-  url: "https://bookasloth.com",
+  name: "Meeticulous",
+  url: "https://meeticulous.com",
   description:
-    "Book A Sloth helps creators publish services, get booked, and get paid — with 0% commission.",
+    "Meeticulous helps creators publish services, get booked, and get paid — with 0% commission.",
 };
 
 export default function About() {
@@ -1126,7 +1126,7 @@ export default function About() {
   return (
     <main className="bg-[var(--bg)]">
       <Seo
-        title="About Book A Sloth — the calm way to get booked"
+        title="About Meeticulous — the calm way to get booked"
         description="Why we exist, who we are, and how we help creators get booked and paid without commission."
         jsonLd={JSON_LD}
       />

@@ -1,6 +1,6 @@
 # SEO / AEO / GEO Playbook (portable)
 
-_Written 2026-10-09 from what Book A Sloth (BAS) actually built and measured. Use it to set up the same system on another site. The other site is on **Next.js (App Router, SSR)**, so every BAS technique comes with its Next.js equivalent._
+_Written 2026-10-09 from what Meeticulous (BAS) actually built and measured. Use it to set up the same system on another site. The other site is on **Next.js (App Router, SSR)**, so every BAS technique comes with its Next.js equivalent._
 
 **How to use this file:** copy it into the other repo (e.g. `docs/seo-aeo-geo-playbook.md`) and give your coding agent the prompt in [§12](#12-prompt-to-paste-into-the-other-codebase). Work through the [§11 checklist](#11-execution-checklist-phased) in order.
 
