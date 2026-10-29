@@ -33,9 +33,9 @@ const SKIP = new Set(RESERVED_FIRST_SEGMENTS);
 // import server/utils/brandPage.js (different runtime) — keep this visually in
 // sync with brandPage.js by hand. Random detective-sloth variant per request.
 const EDGE_ERROR_IMAGES = [
-  'https://company-assets.bookasloth.in/images/error/sloth-tracks.png',
-  'https://company-assets.bookasloth.in/images/error/sloth-think.png',
-  'https://company-assets.bookasloth.in/images/error/sloth-glass.png',
+  'https://company-assets.meeticulous.in/images/error/sloth-tracks.png',
+  'https://company-assets.meeticulous.in/images/error/sloth-think.png',
+  'https://company-assets.meeticulous.in/images/error/sloth-glass.png',
 ];
 export function renderProfile404Html(rawSlug) {
   const slug = String(rawSlug).replace(/[^a-z0-9._-]/g, '');
@@ -62,7 +62,7 @@ export function renderProfile404Html(rawSlug) {
     `<img class="hero" src="${img}" alt="" width="132" height="132">` +
     `<h1>No host at this address</h1>` +
     `<p>We couldn't track anyone down at <strong>/${slug}</strong>. The link may be mistyped, or the profile has moved on.</p>` +
-    `<a class="btn" href="https://bookasloth.com/explore">Explore hosts</a>` +
+    `<a class="btn" href="https://meeticulous.com/explore">Explore hosts</a>` +
     `</main></body></html>`
   );
 }

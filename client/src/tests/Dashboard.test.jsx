@@ -57,7 +57,7 @@ describe('Dashboard — Vendor (role:host)', () => {
 
   test('shows profile URL pill with correct link', async () => {
     renderDashboard(VENDOR);
-    await waitFor(() => expect(screen.getByText(/bookasloth\.com\/jane-vendor/i)).toBeTruthy());
+    await waitFor(() => expect(screen.getByText(/meeticulous\.com\/jane-vendor/i)).toBeTruthy());
   });
 
   test('shows Google Calendar connect prompt when not connected', async () => {
@@ -113,7 +113,7 @@ describe('Dashboard — new vendor without username', () => {
 
   test('does NOT show profile URL pill (no username)', async () => {
     renderDashboard(NEW_VENDOR);
-    await waitFor(() => expect(screen.queryByText(/bookasloth\.com\//i)).toBeNull());
+    await waitFor(() => expect(screen.queryByText(/meeticulous\.com\//i)).toBeNull());
   });
 
   test('banner links to /dashboard/profile', async () => {
@@ -144,6 +144,6 @@ describe('Dashboard — User (role:guest)', () => {
 
   test('does NOT show profile URL banner', async () => {
     renderDashboard(GUEST);
-    await waitFor(() => expect(screen.queryByText(/bookasloth\.com\//i)).toBeNull());
+    await waitFor(() => expect(screen.queryByText(/meeticulous\.com\//i)).toBeNull());
   });
 });
