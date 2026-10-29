@@ -306,9 +306,9 @@ const NavDropdown = ({ id, label, icon: Icon, align = 'left', wide = false, acti
         aria-expanded={open}
         aria-haspopup="menu"
         className={[
-          'group relative flex items-center gap-1 px-3.5 text-[12.5px] font-medium transition-colors outline-none',
+          'group relative my-2 flex items-center gap-1 rounded-xl px-3.5 text-[12.5px] font-medium transition-colors outline-none',
           'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary',
-          open ? 'text-primary' : 'text-gray-500 hover:text-primary',
+          open ? 'bg-primary-light/60 text-primary' : 'text-gray-500 hover:bg-primary-light/40 hover:text-primary',
         ].join(' ')}
       >
         {Icon && <Icon size={16} className={open ? 'text-primary' : 'text-gray-400 group-hover:text-primary/80'} />}
@@ -365,6 +365,18 @@ const TILE_MAP = {
   red:     { tile: 'bg-red-100 text-red-500',         solid: 'group-hover/mi:bg-red-500 group-hover/mi:text-white',        c1: 'bg-red-50',     c2: 'bg-red-100' },
 };
 
+// PNG icons for the Product / Resources / Compare menu items — drop files in
+// client/public/nav/ (and /nav/compare/). Keyed by item label; a missing file
+// falls back to the lucide glyph behind it (see MegaItem / CompareItem onError).
+// "Who it's for" deliberately keeps the coloured lucide tiles.
+const NAV_PNG = {
+  'Online scheduling': '/nav/online-scheduling.png', 'Booking pages': '/nav/booking-pages.png', 'Payments': '/nav/payments.png', 'Client management': '/nav/client-management.png', 'Digital products': '/nav/digital-products.png', 'Google Calendar': '/nav/google-calendar.png', 'Notifications': '/nav/notifications.png', 'Availability': '/nav/availability.png', 'Reviews & ratings': '/nav/reviews.png', 'Explore': '/nav/explore.png',
+  'How it works': '/nav/how-it-works.png', 'Earnings calculator': '/nav/earnings-calculator.png', 'Documentation': '/nav/documentation.png', 'Blog': '/nav/blog.png', 'Wall of Love': '/nav/wall-of-love.png', 'About': '/nav/about.png', 'Careers': '/nav/careers.png', 'Help center': '/nav/help-center.png', 'FAQ': '/nav/faq.png', 'Contact': '/nav/contact.png',
+};
+const COMPARE_PNG = {
+  'Calendly': '/nav/compare/calendly.png', 'Acuity': '/nav/compare/acuity.png', 'Setmore': '/nav/compare/setmore.png', 'SimplyBook': '/nav/compare/simplybook.png', 'Zoho Bookings': '/nav/compare/zoho-bookings.png', 'Topmate': '/nav/compare/topmate.png',
+};
+
 const MegaItem = ({ item, tone }) => {
   const Icon = item.icon;
   const c = TILE_MAP[tone] || TILE_MAP.orange;
@@ -380,8 +392,11 @@ const MegaItem = ({ item, tone }) => {
       <span aria-hidden="true" className={`pointer-events-none absolute inset-0 -translate-x-full transition-transform duration-300 ease-out group-hover/mi:translate-x-0 motion-reduce:transition-none ${c.c1}`} />
 
       {/* Content sits above the curtain */}
-      <span className={`relative z-10 mt-0.5 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl transition-colors duration-200 ${c.tile} ${c.solid}`}>
+      <span className={`relative z-10 mt-0.5 flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl transition-colors duration-200 ${c.tile} ${c.solid}`}>
         <Icon size={19} strokeWidth={2} />
+        {NAV_PNG[item.label] && (
+          <img src={NAV_PNG[item.label]} alt="" width="24" height="24" loading="lazy" onError={(e) => e.currentTarget.remove()} className="absolute inset-0 m-auto h-6 w-6 object-contain" />
+        )}
       </span>
       <span className="relative z-10 min-w-0">
         <span className="block text-[14px] font-bold text-ink">{item.label}</span>
@@ -453,7 +468,7 @@ const CompareItem = ({ item, active }) => {
         {/* Only fetch the competitor favicon once the menu is actually open — the
             panel now always renders (for crawlable links), so gate the network here. */}
         {active && imgOk ? (
-          <img src={favicon} alt="" width="36" height="36" loading="lazy" onError={() => setImgOk(false)} className="h-9 w-9 rounded-lg bg-gray-50 p-1" />
+          <img src={COMPARE_PNG[item.name] || favicon} alt="" width="36" height="36" loading="lazy" onError={() => setImgOk(false)} className="h-9 w-9 rounded-lg bg-gray-50 p-1" />
         ) : (
           <span className="flex h-9 w-9 items-center justify-center rounded-lg text-[14px] font-bold text-white" style={{ backgroundColor: item.color }}>
             {item.name[0]}
@@ -513,7 +528,7 @@ export const PublicCenterNav = () => {
   return (
     <>
       <NavDropdown id="product" label="Product" {...menuProps}>
-        <MegaMenu sections={PRODUCT_MENU} colClass="w-[23rem]" />
+        <MegaMenu sections={PRODUCT_MENU} colClass="w-[23rem]" promo={{ href: '/explore', title: 'Get discovered on Explore', desc: 'Publish your booking page to the marketplace and let new clients find and book you.', cta: 'Explore the marketplace' }} />
       </NavDropdown>
 
       <NavDropdown id="whofor" label="Who it's for" wide {...menuProps}>
@@ -528,7 +543,7 @@ export const PublicCenterNav = () => {
         <CompareMega active={activeKey === 'compare'} />
       </NavDropdown>
 
-      <Link to="/pricing" className="flex items-center px-3.5 text-[12.5px] font-medium text-gray-500 transition-colors hover:text-primary hover:no-underline">
+      <Link to="/pricing" className="my-2 flex items-center rounded-xl px-3.5 text-[12.5px] font-medium text-gray-500 transition-colors hover:bg-primary-light/40 hover:text-primary hover:no-underline">
         Pricing
       </Link>
     </>
@@ -886,7 +901,7 @@ const Navbar = () => {
                   to="/become-a-host"
                   className="btn hidden md:inline-flex items-center px-4 py-2 text-[13px] font-semibold text-white bg-primary hover:bg-primary-dark transition-colors duration-150 shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 hover:no-underline"
                 >
-                  Let's Get Started
+                  Start for Free
                 </Link>
               </>
             )}
@@ -1007,7 +1022,7 @@ const Navbar = () => {
                   to="/become-a-host"
                   className="btn mt-1 block w-full rounded-lg bg-primary py-2.5 text-center text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-primary-dark hover:no-underline"
                 >
-                  Let's Get Started
+                  Start for Free
                 </Link>
               </div>
             )}
