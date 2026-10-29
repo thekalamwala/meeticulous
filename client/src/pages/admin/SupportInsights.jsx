@@ -41,7 +41,7 @@ export default function SupportInsights() {
       <div className="mb-4 flex gap-2">
         {RANGES.map((r) => (
           <button key={r.d} onClick={() => setDays(r.d)}
-            className={'rounded-lg px-3 py-1.5 text-sm font-medium ' + (days === r.d ? 'bg-[#0079C1] text-white' : 'border adm-border adm-t2')}>
+            className={'rounded-lg px-3 py-1.5 text-sm font-medium ' + (days === r.d ? 'bg-[#2E1065] text-white' : 'border adm-border adm-t2')}>
             {r.label}
           </button>
         ))}
@@ -70,7 +70,7 @@ export default function SupportInsights() {
                       <div key={r.code} className="flex items-center gap-3">
                         <span className="w-52 shrink-0 truncate text-xs adm-t2" title={r.label}>{r.label}</span>
                         <div className="h-4 flex-1 overflow-hidden rounded bg-[#f0ede6]">
-                          <div className={'h-full rounded ' + (['product', 'ux'].includes(r.type) ? 'bg-rose-400' : 'bg-[#0079C1]')}
+                          <div className={'h-full rounded ' + (['product', 'ux'].includes(r.type) ? 'bg-rose-400' : 'bg-[#2E1065]')}
                             style={{ width: `${Math.max(4, (r.count / maxReason) * 100)}%` }} />
                         </div>
                         <span className="w-8 shrink-0 text-right text-xs font-semibold tabular-nums adm-t1">{r.count}</span>
@@ -78,7 +78,7 @@ export default function SupportInsights() {
                     ))}
                   </div>
                 )}
-              <p className="mt-2 text-[11px] adm-t3"><span className="inline-block h-2 w-2 rounded-sm bg-rose-400" /> product/UX-caused &nbsp; <span className="inline-block h-2 w-2 rounded-sm bg-[#0079C1]" /> expected / external</p>
+              <p className="mt-2 text-[11px] adm-t3"><span className="inline-block h-2 w-2 rounded-sm bg-rose-400" /> product/UX-caused &nbsp; <span className="inline-block h-2 w-2 rounded-sm bg-[#2E1065]" /> expected / external</p>
 
               {data.by_category.length > 0 && (
                 <>

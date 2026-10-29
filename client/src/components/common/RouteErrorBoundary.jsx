@@ -94,7 +94,7 @@ class RouteErrorBoundary extends Component {
 
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-white px-6 text-center">
-        <div className="w-12 h-12 mb-5 rounded-full border-4 border-[#0079C1] border-t-transparent" />
+        <div className="w-12 h-12 mb-5 rounded-full border-4 border-[#2E1065] border-t-transparent" />
         <h1 className="text-xl font-semibold text-gray-900">This page didn’t load</h1>
         <p className="mt-2 max-w-sm text-sm text-gray-500">
           Something interrupted the page. This usually fixes itself with a reload.
@@ -102,7 +102,7 @@ class RouteErrorBoundary extends Component {
         <button
           type="button"
           onClick={this.handleReload}
-          className="mt-6 rounded-lg bg-[#0079C1] px-5 py-2.5 text-sm font-medium text-white hover:opacity-90"
+          className="mt-6 rounded-lg bg-[#2E1065] px-5 py-2.5 text-sm font-medium text-white hover:opacity-90"
         >
           Reload page
         </button>

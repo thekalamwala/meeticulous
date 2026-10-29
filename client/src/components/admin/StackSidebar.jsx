@@ -30,7 +30,7 @@ const NavRow = ({ node, area, pathname, counts, onNavigate, onOpen }) => {
   const isBranch = !!node.children;
   const active = !isBranch && itemActive(pathname, node);
   const count = rollupBadge(node, counts);
-  const cls = `w-full flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13.5px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0079C1]/50 ${active ? 'font-semibold' : 'text-gray-300 hover:text-gray-100 hover:bg-white/[0.04]'}`;
+  const cls = `w-full flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13.5px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2E1065]/50 ${active ? 'font-semibold' : 'text-gray-300 hover:text-gray-100 hover:bg-white/[0.04]'}`;
 
   const icon = node.icon
     ? <Ic d={IC[node.icon]} size={16} strokeWidth={active ? 2.1 : 1.75}
@@ -118,7 +118,7 @@ const StackSidebar = ({ nav, pathname, counts, onNavigate, onOpenPalette, onLogo
 
   const isRoot = openKeys.length === 0;
   const node = isRoot ? { children: nav } : (branches[openKeys[openKeys.length - 1]] || { children: nav });
-  const area = isRoot ? { color: '#0079C1' } : (branches[openKeys[0]] || { color: '#0079C1' });
+  const area = isRoot ? { color: '#2E1065' } : (branches[openKeys[0]] || { color: '#2E1065' });
 
   const panels = (
     <div className="relative flex-1 overflow-hidden">
@@ -142,7 +142,7 @@ const StackSidebar = ({ nav, pathname, counts, onNavigate, onOpenPalette, onLogo
       <style>{STYLE}</style>
       <div className="h-[60px] flex items-center gap-2.5 px-4 flex-shrink-0 border-b border-[#191919]">
         <Link to="/super-dashboard" title="Meeticulous Admin"
-          className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#0079C1' }}>
+          className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#2E1065' }}>
           <Ic d={IC.zap} size={13} className="text-white" strokeWidth={2.5} />
         </Link>
         <span className="text-white font-bold text-[13px]">Meeticulous</span>

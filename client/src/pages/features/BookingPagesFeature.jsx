@@ -54,9 +54,9 @@ const DEMO = '/demo';
 const CREAM = '#FBF4E6';      // page paper
 const PAPER = '#FFFCF5';      // lighter alternate sections
 const INK = '#191919';
-const ORANGE = '#0079C1';     // decorative only (doodles, dots, fills behind dark text)
+const ORANGE = '#2E1065';     // decorative only (doodles, dots, fills behind dark text)
 const ORANGE_INK = '#191919'; // orange for text + white-on-orange CTAs (AA on cream)
-const PEACH = '#D6ECF8';      // primary-light tint
+const PEACH = '#EDE9FE';      // primary-light tint
 
 /* ─────────────────────────────  LINK SLUG  ────────────────────────────── */
 
@@ -655,7 +655,7 @@ export default function BookingPagesFeature() {
           <div className="mt-12 space-y-3">
             {FAQ.map((f, i) => (
               <details key={f.q} className="group" open={i === 0}>
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-full border border-black/5 bg-white px-6 py-3.5 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors hover:border-black/15 group-open:border-[#0079C1]/30 group-open:bg-[#D6ECF8] [&::-webkit-details-marker]:hidden">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-full border border-black/5 bg-white px-6 py-3.5 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors hover:border-black/15 group-open:border-[#2E1065]/30 group-open:bg-[#EDE9FE] [&::-webkit-details-marker]:hidden">
                   <span className="font-heading text-[16px] font-bold">{f.q}</span>
                   <span aria-hidden className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#191919] text-base leading-none text-white transition-transform group-open:rotate-45">+</span>
                 </summary>

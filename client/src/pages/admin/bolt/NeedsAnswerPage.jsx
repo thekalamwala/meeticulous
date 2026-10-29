@@ -48,7 +48,7 @@ export default function NeedsAnswerPage() {
             </p>
             <div className="mt-3">
               <button onClick={() => makeFaq(g)}
-                className="rounded-lg bg-[#0079C1] px-3 py-1.5 text-xs font-medium text-white">Make FAQ</button>
+                className="rounded-lg bg-[#2E1065] px-3 py-1.5 text-xs font-medium text-white">Make FAQ</button>
             </div>
           </div>
         ))}

@@ -49,7 +49,7 @@ function DeskLeadRow({ lead, onOpen, onAction }) {
   return (
     <div role="button" tabIndex={0} onClick={open}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } }}
-      className="w-full text-left px-3 py-2.5 rounded-xl adm-hoverable border border-transparent hover:border-[#0079C1]/40 transition cursor-pointer">
+      className="w-full text-left px-3 py-2.5 rounded-xl adm-hoverable border border-transparent hover:border-[#2E1065]/40 transition cursor-pointer">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="text-[13px] font-semibold adm-t1 truncate">{lead.business_name || lead.name || 'Unnamed lead'}</p>
@@ -60,7 +60,7 @@ function DeskLeadRow({ lead, onOpen, onAction }) {
       {lead.reasons?.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-1.5">
           {lead.reasons.map((r, i) => (
-            <span key={i} className="text-[10px] px-1.5 py-0.5 rounded-md bg-[#0079C1]/8 text-[#0079C1]">{r}</span>
+            <span key={i} className="text-[10px] px-1.5 py-0.5 rounded-md bg-[#2E1065]/8 text-[#2E1065]">{r}</span>
           ))}
         </div>
       )}
@@ -71,7 +71,7 @@ function DeskLeadRow({ lead, onOpen, onAction }) {
       <div className="flex flex-wrap gap-1 mt-2">
         {ACTIONS.map((a) => (
           <button key={a.key} type="button" onClick={(e) => fire(e, a)}
-            className={`text-[10px] px-2 py-0.5 rounded-md border border-gray-200 hover:border-[#0079C1]/50 ${a.tone || 'adm-t2'}`}>
+            className={`text-[10px] px-2 py-0.5 rounded-md border border-gray-200 hover:border-[#2E1065]/50 ${a.tone || 'adm-t2'}`}>
             {a.label}
           </button>
         ))}
@@ -148,10 +148,10 @@ export default function SalesDesk() {
         subtitle="Your queues, auto-populated. Work top to bottom — no searching."
         actions={
           <div className="flex gap-3 text-[12px]">
-            <a href="/admin/sales/relationships" className="adm-t2 hover:text-[#0079C1]">Relationships</a>
-            <a href="/admin/sales/leads" className="adm-t2 hover:text-[#0079C1]">All leads</a>
-            <a href="/admin/sales/pipeline" className="adm-t2 hover:text-[#0079C1]">Pipeline</a>
-            <a href="/admin/sales/follow-ups" className="adm-t2 hover:text-[#0079C1]">Follow-ups</a>
+            <a href="/admin/sales/relationships" className="adm-t2 hover:text-[#2E1065]">Relationships</a>
+            <a href="/admin/sales/leads" className="adm-t2 hover:text-[#2E1065]">All leads</a>
+            <a href="/admin/sales/pipeline" className="adm-t2 hover:text-[#2E1065]">Pipeline</a>
+            <a href="/admin/sales/follow-ups" className="adm-t2 hover:text-[#2E1065]">Follow-ups</a>
           </div>
         }
       />
@@ -159,7 +159,7 @@ export default function SalesDesk() {
       {error ? (
         <Card className="rounded-2xl p-8 text-center">
           <p className="adm-t1 font-semibold mb-2">Couldn't load the desk</p>
-          <button onClick={load} className="text-[13px] text-[#0079C1]">Retry</button>
+          <button onClick={load} className="text-[13px] text-[#2E1065]">Retry</button>
         </Card>
       ) : loading ? (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">

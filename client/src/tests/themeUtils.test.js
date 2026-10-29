@@ -50,8 +50,8 @@ describe('getContrastColor', () => {
     expect(getContrastColor('#ffffff')).toBe('#111827');
   });
 
-  test('brand orange (#0079C1) → white text (dark enough)', () => {
-    expect(getContrastColor('#0079C1')).toBe('#ffffff');
+  test('brand orange (#2E1065) → white text (dark enough)', () => {
+    expect(getContrastColor('#2E1065')).toBe('#ffffff');
   });
 
   test('yellow (#EAB308) → dark text (too light)', () => {
@@ -158,8 +158,8 @@ describe('getPlanBorderColor', () => {
     expect(getPlanBorderColor('professional')).toBe('#D4AF37');
   });
 
-  test('creator → brand orange #0079C1', () => {
-    expect(getPlanBorderColor('creator')).toBe('#0079C1');
+  test('creator → brand orange #2E1065', () => {
+    expect(getPlanBorderColor('creator')).toBe('#2E1065');
   });
 
   test('explorer → grey #6B7280', () => {
@@ -175,7 +175,7 @@ describe('getPlanBorderColor', () => {
 
 describe('isValidHex', () => {
   test('valid 6-char hex with #', () => {
-    expect(isValidHex('#0079C1')).toBe(true);
+    expect(isValidHex('#2E1065')).toBe(true);
     expect(isValidHex('#000000')).toBe(true);
     expect(isValidHex('#ffffff')).toBe(true);
     expect(isValidHex('#1A2B3C')).toBe(true);
@@ -204,8 +204,8 @@ describe('isValidHex', () => {
 // ── DEFAULT_THEME_COLOR ───────────────────────────────────────────────────────
 
 describe('DEFAULT_THEME_COLOR', () => {
-  test('is brand orange #0079C1', () => {
-    expect(DEFAULT_THEME_COLOR).toBe('#0079C1');
+  test('is brand orange #2E1065', () => {
+    expect(DEFAULT_THEME_COLOR).toBe('#2E1065');
   });
 
   test('is a valid hex', () => {

@@ -176,7 +176,7 @@ const Guest360Detail = () => {
                     <p className="text-[13px] adm-t1 truncate">{b.service?.title || 'Service'}</p>
                     <p className="text-[11px] adm-t3">
                       {fmtDate(b.scheduled_at)}
-                      {b.host?.id && <> · with <Link to={`/admin/host360/${b.host.id}`} className="text-[#0079C1] hover:underline">{b.host.name || 'host'}</Link></>}
+                      {b.host?.id && <> · with <Link to={`/admin/host360/${b.host.id}`} className="text-[#2E1065] hover:underline">{b.host.name || 'host'}</Link></>}
                     </p>
                   </div>
                   <div className="text-right shrink-0">
@@ -195,7 +195,7 @@ const Guest360Detail = () => {
             <div className="flex flex-wrap gap-2">
               {hosts_booked.map((h) => (
                 <Link key={h.id} to={`/admin/host360/${h.id}`}
-                  className="text-[12px] px-2.5 py-1 rounded-full border adm-border adm-t2 hover:border-[#0079C1] hover:text-[#0079C1] transition">
+                  className="text-[12px] px-2.5 py-1 rounded-full border adm-border adm-t2 hover:border-[#2E1065] hover:text-[#2E1065] transition">
                   {h.name || h.username || 'host'}
                 </Link>
               ))}

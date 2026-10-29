@@ -21,7 +21,7 @@ export function InlineText({ value, onSave, placeholder = '—', mono = false })
         onChange={(e) => setV(e.target.value)}
         onBlur={commit}
         onKeyDown={(e) => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') { setV(value ?? ''); setEditing(false); } }}
-        className={`w-full bg-white border border-[#0079C1]/40 rounded px-1.5 py-0.5 text-[13px] outline-none ${mono ? 'font-mono' : ''}`} />
+        className={`w-full bg-white border border-[#2E1065]/40 rounded px-1.5 py-0.5 text-[13px] outline-none ${mono ? 'font-mono' : ''}`} />
     );
   }
   return (

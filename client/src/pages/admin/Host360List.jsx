@@ -115,7 +115,7 @@ const Host360List = () => {
   const openDetail = (h) => navigate(`/admin/host360/${h.id}`);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const selCls = 'adm-card border rounded-xl px-3 py-2 text-[13px] adm-t1 outline-none focus:border-[#0079C1] focus:ring-2 focus:ring-[#0079C1]/25 transition w-full min-w-0';
+  const selCls = 'adm-card border rounded-xl px-3 py-2 text-[13px] adm-t1 outline-none focus:border-[#2E1065] focus:ring-2 focus:ring-[#2E1065]/25 transition w-full min-w-0';
 
   return (
     <div>
@@ -133,7 +133,7 @@ const Host360List = () => {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search by name, phone, or email…"
-            className="w-full pl-10 pr-9 py-2.5 adm-card border rounded-xl text-sm adm-t1 placeholder:text-[color:var(--adm-text-3)] focus:ring-2 focus:ring-[#0079C1]/25 focus:border-[#0079C1] outline-none transition"
+            className="w-full pl-10 pr-9 py-2.5 adm-card border rounded-xl text-sm adm-t1 placeholder:text-[color:var(--adm-text-3)] focus:ring-2 focus:ring-[#2E1065]/25 focus:border-[#2E1065] outline-none transition"
           />
           {search && (
             <button onClick={() => setSearch('')} aria-label="Clear search"

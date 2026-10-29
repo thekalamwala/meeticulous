@@ -34,7 +34,7 @@
 
 /* ── HERO (About HeroV2) ── */
 .fp-hero { position: relative; overflow: hidden; }
-.fp-hero .aura { position: absolute; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(55% 55% at 28% 32%, #D6ECF8 0%, transparent 70%); }
+.fp-hero .aura { position: absolute; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(55% 55% at 28% 32%, #EDE9FE 0%, transparent 70%); }
 .fp-hero .grid { position: relative; z-index: 1; display: grid; grid-template-columns: 3fr 2fr; gap: 48px; align-items: center; padding: 60px 0 76px; }
 .fp-hero h1 { font-size: clamp(2.1rem, 4.4vw, 3.5rem); font-weight: 800; line-height: 1.1; }
 .fp-hero h1 .type { color: var(--fp-accent); }

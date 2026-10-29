@@ -254,7 +254,7 @@ const Blog = () => {
           </p>
           <Link
             to="/become-a-host"
-            className="btn mt-5 inline-flex items-center px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-[#005E99] transition-colors duration-150 shadow-sm hover:no-underline"
+            className="btn mt-5 inline-flex items-center px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-[#1E0B4D] transition-colors duration-150 shadow-sm hover:no-underline"
           >
             Become a host
           </Link>

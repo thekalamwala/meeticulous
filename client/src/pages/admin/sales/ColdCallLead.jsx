@@ -144,7 +144,7 @@ function LeadCall({ initial, plan, queue, reload }) {
     <div className="space-y-3">
       {/* Top bar: position in today's list · on-call timer · today's numbers */}
       <div className="flex flex-wrap items-center gap-3">
-        <Link to={`${BASE}/today`} className="text-[12.5px] font-semibold text-[#0079C1]">← Today's calls</Link>
+        <Link to={`${BASE}/today`} className="text-[12.5px] font-semibold text-[#2E1065]">← Today's calls</Link>
         <Badge tone="warn">{idx >= 0 ? `Lead ${idx + 1} of ${plan.length}${kindLabel ? ` · ${kindLabel}` : ''}` : 'Opened from search'}</Badge>
         <span className="flex gap-1">
           <Btn size="sm" variant="outline" aria-label="Previous lead" disabled={idx <= 0} onClick={() => goTo(plan[idx - 1]?.lead.id)}>‹</Btn>
@@ -171,7 +171,7 @@ function LeadCall({ initial, plan, queue, reload }) {
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[12.5px] mt-0.5">
                   <span className="adm-t2">{[lead.profession, cc.locality, lead.city].filter(Boolean).join(' · ')}</span>
                   {cc.rating && <span className="adm-t1"><b>{cc.rating} ★</b> <span className="adm-t3">({cc.reviews || 0})</span></span>}
-                  {maps && <a href={maps} target="_blank" rel="noopener noreferrer" className="font-semibold text-[#0079C1] whitespace-nowrap">View on Maps ↗</a>}
+                  {maps && <a href={maps} target="_blank" rel="noopener noreferrer" className="font-semibold text-[#2E1065] whitespace-nowrap">View on Maps ↗</a>}
                 </div>
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -187,7 +187,7 @@ function LeadCall({ initial, plan, queue, reload }) {
               <a href={`tel:+${digits}`} onClick={() => setRunning(true)} className="text-[24px] font-extrabold adm-t1 tracking-wide whitespace-nowrap mr-1" style={HEADING}>{formatPhone(lead.phone)}</a>
               <Btn size="sm" variant="ghost" onClick={() => copy(formatPhone(lead.phone).replace(/\s/g, ''))}>Copy</Btn>
               <span className="text-[12px] adm-t3 mr-auto">{form.alt_phone ? `Alt: ${form.alt_phone}` : ''}</span>
-              <a href={`tel:+${digits}`} onClick={() => setRunning(true)} className="inline-flex items-center rounded-lg px-3 py-1.5 text-[13px] font-semibold bg-[#0079C1] text-white hover:bg-[#e54900]">Open in dialer</a>
+              <a href={`tel:+${digits}`} onClick={() => setRunning(true)} className="inline-flex items-center rounded-lg px-3 py-1.5 text-[13px] font-semibold bg-[#2E1065] text-white hover:bg-[#e54900]">Open in dialer</a>
               <Btn size="sm" variant="outline" onClick={() => setComm({ category: preferTracked(messageFor(cc.last_outcome, cc) || 'cold_call_interested', queue.templates), callbackAt: null, savedOutcome: null, afterSave: false })}>✉ Communicate</Btn>
             </div>
           </Card>
@@ -212,7 +212,7 @@ function LeadCall({ initial, plan, queue, reload }) {
                     </label>
                   ))}
                 </div>
-                {site && <a href={site} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-[12px] font-semibold text-[#0079C1]">Open website ↗</a>}
+                {site && <a href={site} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-[12px] font-semibold text-[#2E1065]">Open website ↗</a>}
               </Card>
               <div className="space-y-3">
                 <Card className="!p-4">
@@ -220,7 +220,7 @@ function LeadCall({ initial, plan, queue, reload }) {
                   {history === null ? <Skeleton className="h-12" /> : history.length === 0 ? <div className="text-[12.5px] adm-t3">No previous calls.</div>
                     : history.slice(0, 3).map((h, i) => (
                       <div key={i} className="flex gap-2 py-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#0079C1] mt-1.5 shrink-0" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#2E1065] mt-1.5 shrink-0" />
                         <div className="min-w-0"><div className="text-[12.5px] adm-t1 line-clamp-2">{h.title}{h.body ? ` — ${h.body}` : ''}</div><div className="text-[11px] adm-t3">{when(h.at)}</div></div>
                       </div>
                     ))}
@@ -229,7 +229,7 @@ function LeadCall({ initial, plan, queue, reload }) {
                   <Card className="!p-4">
                     <h3 className="text-[14px] font-bold adm-t1 mb-2" style={HEADING}>Get them live · {setup.left} left</h3>
                     <ul className="space-y-1 text-[12.5px]">{setup.steps.map((x) => <li key={x.key} className={x.done ? 'adm-t3 line-through' : 'adm-t1 font-semibold'}>{x.done ? '✓' : '○'} {x.label}</li>)}</ul>
-                    {setup.username && <a href={`/${setup.username}`} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-[12px] font-semibold text-[#0079C1]">Open their page ↗</a>}
+                    {setup.username && <a href={`/${setup.username}`} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-[12px] font-semibold text-[#2E1065]">Open their page ↗</a>}
                   </Card>
                 ) : (
                   <Card className="!p-4">
@@ -243,16 +243,16 @@ function LeadCall({ initial, plan, queue, reload }) {
 
           {tab === 'pitch' && (
             <Card className="!p-4 space-y-3">
-              {cc.pitch && <div className="rounded-xl bg-[#0079C1]/[0.07] p-3 text-[13px] adm-t1"><b>For this lead: </b>{cc.pitch}</div>}
+              {cc.pitch && <div className="rounded-xl bg-[#2E1065]/[0.07] p-3 text-[13px] adm-t1"><b>For this lead: </b>{cc.pitch}</div>}
               {pitch && (
                 <div className="rounded-xl border adm-border p-3">
-                  <div className="text-[12px] font-bold uppercase tracking-wide text-[#0079C1] mb-1">{pitch.title} angle</div>
+                  <div className="text-[12px] font-bold uppercase tracking-wide text-[#2E1065] mb-1">{pitch.title} angle</div>
                   <ul className="space-y-1 text-[13px] adm-t1">{pitch.points.map((p) => <li key={p}>• {p}</li>)}</ul>
                 </div>
               )}
               <ol className="space-y-2">
                 {SCRIPT.map(([step, text], i) => (
-                  <li key={step} className="flex gap-3 text-[13px]"><span className="w-6 h-6 rounded-lg bg-[#0079C1] text-white text-[12px] font-bold flex items-center justify-center shrink-0">{i + 1}</span>
+                  <li key={step} className="flex gap-3 text-[13px]"><span className="w-6 h-6 rounded-lg bg-[#2E1065] text-white text-[12px] font-bold flex items-center justify-center shrink-0">{i + 1}</span>
                     <div><b className="adm-t1">{step}.</b> <span className="adm-t2">{text}</span></div></li>
                 ))}
               </ol>
@@ -264,7 +264,7 @@ function LeadCall({ initial, plan, queue, reload }) {
               {OBJECTIONS.map((o) => {
                 const on = objection === o.q;
                 return (
-                  <Card key={o.q} className={`!p-3 ${on ? '!border-[#0079C1]' : ''}`}>
+                  <Card key={o.q} className={`!p-3 ${on ? '!border-[#2E1065]' : ''}`}>
                     <div className="font-semibold adm-t1 text-[13px]">“{o.q}”</div>
                     <div className="adm-t2 text-[12.5px] mt-1">{o.a}</div>
                     <Btn size="sm" variant={on ? 'primary' : 'outline'} className="mt-2" onClick={() => setObjection(on ? '' : o.q)}>{on ? '✓ They said this' : 'They said this'}</Btn>
@@ -297,8 +297,8 @@ function LeadCall({ initial, plan, queue, reload }) {
                 const on = outcome === o.key;
                 return (
                   <button key={o.key} type="button" onClick={() => pick(o.key)}
-                    className={`!min-h-0 flex items-center gap-2 h-8 px-2 rounded-lg border text-[12.5px] text-left transition-colors ${o.key === 'wrong_number' ? 'col-span-2' : ''} ${on ? 'border-[#0079C1] bg-[#0079C1]/[0.08] text-[#c2410c] font-semibold' : 'adm-border adm-t1 adm-hoverable'}`}>
-                    <span className={`w-5 h-5 rounded-md text-[11px] font-bold flex items-center justify-center shrink-0 ${on ? 'bg-[#0079C1] text-white' : 'adm-chip'}`}>{o.hotkey}</span>
+                    className={`!min-h-0 flex items-center gap-2 h-8 px-2 rounded-lg border text-[12.5px] text-left transition-colors ${o.key === 'wrong_number' ? 'col-span-2' : ''} ${on ? 'border-[#2E1065] bg-[#2E1065]/[0.08] text-[#c2410c] font-semibold' : 'adm-border adm-t1 adm-hoverable'}`}>
+                    <span className={`w-5 h-5 rounded-md text-[11px] font-bold flex items-center justify-center shrink-0 ${on ? 'bg-[#2E1065] text-white' : 'adm-chip'}`}>{o.hotkey}</span>
                     <span className="truncate">{o.key === 'callback' ? 'Call back' : o.label}</span>
                   </button>
                 );
@@ -311,7 +311,7 @@ function LeadCall({ initial, plan, queue, reload }) {
             <div className="flex flex-wrap gap-1">
               {callbackPresets(new Date()).map((p) => (
                 <button key={p.label} type="button" onClick={() => setNextAt(p.at.toISOString())}
-                  className={`!min-h-0 px-1.5 py-0.5 rounded-md text-[11px] font-semibold border ${nextAt && +new Date(nextAt) === +p.at ? 'border-[#0079C1] text-[#c2410c] bg-[#0079C1]/[0.08]' : 'adm-border adm-t2 adm-hoverable'}`}>{p.label}</button>
+                  className={`!min-h-0 px-1.5 py-0.5 rounded-md text-[11px] font-semibold border ${nextAt && +new Date(nextAt) === +p.at ? 'border-[#2E1065] text-[#c2410c] bg-[#2E1065]/[0.08]' : 'adm-border adm-t2 adm-hoverable'}`}>{p.label}</button>
               ))}
             </div>
             <div className="flex items-center gap-2">
@@ -372,7 +372,7 @@ export default function ColdCallLead() {
     prefetched.set(nextId, p);
   }, [nextId, leadId]);
 
-  if (missing) return <Card className="p-10 text-center adm-t3">Lead not found. <Link to={`${BASE}/today`} className="text-[#0079C1] font-semibold">Back to today's calls</Link></Card>;
+  if (missing) return <Card className="p-10 text-center adm-t3">Lead not found. <Link to={`${BASE}/today`} className="text-[#2E1065] font-semibold">Back to today's calls</Link></Card>;
   if (!lead) return <Skeleton className="h-96 rounded-2xl" />;
   return <LeadCall key={lead.id} initial={lead} plan={plan} queue={queue} reload={reload} />;
 }

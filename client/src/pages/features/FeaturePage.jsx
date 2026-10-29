@@ -41,7 +41,7 @@ import './featurePage.css';
 
 const ROUTE = '/become-a-host';
 // Brand palette cycled for icon chips / borders so a page never reads one-note.
-const PALETTE = ['#0079C1', '#FF4D93', '#4AB765', '#FFCC1C', '#269CEF', '#8B5CF6'];
+const PALETTE = ['#2E1065', '#FF4D93', '#4AB765', '#FFCC1C', '#269CEF', '#8B5CF6'];
 const soft = (hex) => `color-mix(in srgb, ${hex} 14%, white)`;
 
 // Icon-name → component. featureData refers to icons by string.

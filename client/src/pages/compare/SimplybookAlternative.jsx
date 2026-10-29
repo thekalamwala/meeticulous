@@ -53,7 +53,7 @@ const METER_DEFAULT = 40;
 
 /* ─────────────────────────────  PALETTE  ───────────────────────────── */
 
-const C = { sky: '#EAF3FB', skyDeep: '#CFE2F3', navy: '#12233F', navySoft: '#46587A', steel: '#3B6EA8', orange: '#0079C1', onDark: '#FF9A66' };
+const C = { sky: '#EAF3FB', skyDeep: '#CFE2F3', navy: '#12233F', navySoft: '#46587A', steel: '#3B6EA8', orange: '#2E1065', onDark: '#FF9A66' };
 const THEME = { '--sky': C.sky, '--sky-deep': C.skyDeep, '--navy': C.navy, '--navy-soft': C.navySoft, '--steel': C.steel };
 const CARD = 'rounded-[6px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(18,35,63,0.05)]';
 const H2 = 'font-heading text-4xl font-extrabold leading-[1.08] tracking-tight text-[color:var(--navy)] sm:text-5xl';

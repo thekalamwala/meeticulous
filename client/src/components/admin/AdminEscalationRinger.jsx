@@ -83,7 +83,7 @@ export default function AdminEscalationRinger() {
               <span>🚨 New escalation — <b>{ref}</b> ({who})</span>
               <button
                 onClick={() => { stopRing(); toast.dismiss(tt.id); navigate('/admin/support/chat'); }}
-                className="rounded bg-[#0079C1] px-2 py-1 text-xs font-semibold text-white">
+                className="rounded bg-[#2E1065] px-2 py-1 text-xs font-semibold text-white">
                 Open
               </button>
             </span>

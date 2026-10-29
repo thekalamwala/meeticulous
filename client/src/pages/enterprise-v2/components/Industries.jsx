@@ -49,7 +49,7 @@ const industries = [
     desc: 'Internal scheduling, HR interviews, and facility bookings at scale.',
     feature:
       'Role-based access and approval hierarchy match your reporting structure.',
-    color: '#0079C1',
+    color: '#2E1065',
     softColor: '#EFF6FF',
     shadowColor: 'rgba(37, 99, 235, 0.18)',
   },

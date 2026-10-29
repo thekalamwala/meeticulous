@@ -83,7 +83,7 @@ export default function ColdCallToday() {
       </div>
 
       <Table columns={columns} rows={rows} rowKey={(r) => r.key} onRowClick={(r) => open(r.lead.id)}
-        rowClassName={(r) => (r.state === 'done' ? 'opacity-70' : r.lead.id === firstPending?.lead.id ? 'bg-[#0079C1]/[0.06]' : '')}
+        rowClassName={(r) => (r.state === 'done' ? 'opacity-70' : r.lead.id === firstPending?.lead.id ? 'bg-[#2E1065]/[0.06]' : '')}
         empty={<div className="p-10 text-center adm-t3">Nothing here.</div>} />
     </div>
   );

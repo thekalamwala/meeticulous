@@ -91,7 +91,7 @@ const AdminReviews = () => {
       {STATUS_TABS.map(t => (
         <button key={t.key} onClick={() => setStatus(t.key)}
           className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all
-            ${status === t.key ? 'bg-[#0079C1] text-white' : 'adm-t2 hover:text-gray-700'}`}>
+            ${status === t.key ? 'bg-[#2E1065] text-white' : 'adm-t2 hover:text-gray-700'}`}>
           {t.label}
         </button>
       ))}
@@ -105,18 +105,18 @@ const AdminReviews = () => {
       {/* Filters — direction / rating / search, each ~⅓ width */}
       <div className="flex flex-col sm:flex-row items-stretch gap-2 mb-4">
         <select value={direction} onChange={e => setDirection(e.target.value)}
-          className="flex-1 border adm-border rounded-lg px-3 py-2 text-[12.5px] outline-none focus:ring-2 focus:ring-[#0079C1]/30">
+          className="flex-1 border adm-border rounded-lg px-3 py-2 text-[12.5px] outline-none focus:ring-2 focus:ring-[#2E1065]/30">
           <option value="">All directions</option>
           <option value="guest_to_host">Guest → Host</option>
           <option value="host_to_guest">Host → Guest</option>
         </select>
         <select value={rating} onChange={e => setRating(e.target.value)}
-          className="flex-1 border adm-border rounded-lg px-3 py-2 text-[12.5px] outline-none focus:ring-2 focus:ring-[#0079C1]/30">
+          className="flex-1 border adm-border rounded-lg px-3 py-2 text-[12.5px] outline-none focus:ring-2 focus:ring-[#2E1065]/30">
           <option value="">Any rating</option>
           {[5, 4, 3, 2, 1].map(n => <option key={n} value={n}>{n} ★</option>)}
         </select>
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search comment…"
-          className="flex-1 border adm-border rounded-lg px-3 py-2 text-[12.5px] outline-none focus:ring-2 focus:ring-[#0079C1]/30" />
+          className="flex-1 border adm-border rounded-lg px-3 py-2 text-[12.5px] outline-none focus:ring-2 focus:ring-[#2E1065]/30" />
       </div>
 
       {loading ? (

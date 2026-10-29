@@ -173,7 +173,7 @@ const PlansStep = () => {
           },
         },
         prefill: prefillData,
-        theme: { color: '#0079C1' },
+        theme: { color: '#2E1065' },
       };
       new window.Razorpay(options).open();
     } catch (e) {

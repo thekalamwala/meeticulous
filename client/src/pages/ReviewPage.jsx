@@ -131,7 +131,7 @@ export default function ReviewPage() {
     return (
       <Shell>
         <div className="text-center">
-          <div className="mb-2 text-3xl text-[#0079C1]">★</div>
+          <div className="mb-2 text-3xl text-[#2E1065]">★</div>
           <h1 className="mb-1 text-xl font-bold">Thank you!</h1>
           <p className="mb-4 text-sm text-gray-500">
             Your review has been shared for {host.name || "your host"}.
@@ -179,7 +179,7 @@ export default function ReviewPage() {
             aria-label={`Rate ${n} star${n > 1 ? "s" : ""}`}
             aria-pressed={n <= rating}
             onClick={() => setRating(n)}
-            className={`text-3xl leading-none ${n <= rating ? "text-[#0079C1]" : "text-gray-300"}`}
+            className={`text-3xl leading-none ${n <= rating ? "text-[#2E1065]" : "text-gray-300"}`}
           >
             ★
           </button>

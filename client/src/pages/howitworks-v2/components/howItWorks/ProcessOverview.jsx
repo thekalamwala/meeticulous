@@ -16,7 +16,7 @@ const steps = [
         icon: Pen,
         title: 'Create your page',
         desc: 'Build a professional booking profile for your business.',
-        color: '#0079C1',
+        color: '#2E1065',
         softColor: '#FFF0E8',
     },
     {

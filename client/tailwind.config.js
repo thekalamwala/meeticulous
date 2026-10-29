@@ -4,18 +4,21 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#0079C1",
-        "primary-dark": "#005E99",
+        primary: "#2E1065",
+        "primary-dark": "#1E0B4D",
         // White-text buttons only. #0079C1 + white = 3.26:1 (fails WCAG AA);
         // this darker shade = ~5.3:1. Keep `primary` for accents/large text.
-        "primary-cta": "#00457C",
-        "primary-light": "#D6ECF8",
-        secondary: "#f59e0b",
+        "primary-cta": "#2E1065",
+        "primary-light": "#EDE9FE",
+        secondary: "#A78BFA",
+        "surface-dark": "#2E1065",
+        "surface-darker": "#1E0B4D",
+        "ink-brand": "#1E0B4D",
         surface: "#ffffff",
         muted: "#6b7280",
         ink: "#191919",
-        sand: "#F1F5F9",
-        canvas: "#F8FAFC",
+        sand: "#F5F3FF",
+        canvas: "#F9FAFB",
         // Accent palette — reusable multi-hue accents (Calendly-style colour).
         // Mirrors --c-* in src/styles/design-tokens.css — keep both in sync.
         // Literal hex (not var) so Tailwind's /opacity modifier can compute alpha.
@@ -27,8 +30,8 @@ export default {
         "c-pink": "#db2777",
         // Action accent — reserved for the SINGLE primary conversion CTA so it
         // pops off blue surfaces (see docs/design/03-design-tokens.md).
-        action: "#059669",
-        "action-dark": "#047857",
+        action: "#7C3AED",
+        "action-dark": "#6D28D9",
         // Semantic status (fg = text/icon/solid, bg = subtle tint). Keep in sync
         // with the --*-fg / --*-bg vars in src/styles/design-tokens.css.
         "success-fg": "#15803D",

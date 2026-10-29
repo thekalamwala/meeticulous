@@ -7,16 +7,19 @@
  * docs/design/06-roadmap.md Phase B/C) — do not build new UI on it. */
 :root {
     /* ── Brand ─────────────────────────────────────────────── */
-    --primary: #0079C1;          /* brand blue — accents, active, links-on-light, large text */
-    --primary-dark: #005E99;     /* hover/pressed of primary */
-    --primary-cta: #00457C;      /* AA-safe navy for white-text buttons + body links (~5.3:1) */
-    --primary-light: #D6ECF8;    /* subtle tints, selected bg, info chips */
-    --action: #059669;           /* reserved: the ONE primary conversion CTA (pops off blue) */
-    --action-dark: #047857;      /* hover/pressed of action */
+    --primary: #2E1065;          /* brand blue — accents, active, links-on-light, large text */
+    --primary-dark: #1E0B4D;     /* hover/pressed of primary */
+    --primary-cta: #2E1065;      /* AA-safe navy for white-text buttons + body links (~5.3:1) */
+    --primary-light: #EDE9FE;    /* subtle tints, selected bg, info chips */
+    --action: #7C3AED;           /* vivid purple — links, highlights, the bright accent pop */
+    --action-dark: #6D28D9;      /* hover/pressed of action */
+    --secondary-accent: #A78BFA; /* lavender — secondary accents, highlights, dark-section pops */
+    --surface-dark: #2E1065;     /* immersive dark sections (hero/nav/footer) */
+    --surface-darker: #1E0B4D;   /* deepest sections + marketing dark-purple "ink" */
 
     /* ── Neutrals: surfaces ────────────────────────────────── */
-    --canvas: #F8FAFC;           /* page background */
-    --sand: #F1F5F9;             /* muted bands, table headers */
+    --canvas: #F9FAFB;           /* page background */
+    --sand: #F5F3FF;             /* muted bands, table headers */
     --surface: #FFFFFF;          /* cards, inputs, modals */
 
     /* ── Neutrals: text ramp ───────────────────────────────── */
@@ -26,8 +29,8 @@
     --text-disabled: #94A3B8;
 
     /* ── Neutrals: borders ─────────────────────────────────── */
-    --border-subtle: #E2E8F0;    /* hairline borders, dividers (becomes --border once fb-* is gone) */
-    --border-strong: #CBD5E1;    /* emphasised borders, input hover */
+    --border-subtle: #E6E2F5;    /* hairline borders, dividers (becomes --border once fb-* is gone) */
+    --border-strong: #DDD6FE;    /* emphasised borders, input hover */
 
     /* ── Semantic status (fg = text/icon/solid, bg = subtle) ─ */
     --success-fg: #15803D;  --success-bg: #DCFCE7;
@@ -47,7 +50,7 @@
     --c-pink: #db2777;
 
     /* ── Focus ring (blue — replaces the old orange ring) ──── */
-    --focus-ring: rgba(0, 121, 193, 0.4);
+    --focus-ring: rgba(124, 58, 237, 0.4);
 
     /* ── Radii — global rule: 4px controls, 6px cards ──────── */
     --radius-control: 4px;   /* inputs/buttons/small controls (was UNDEFINED → inputs lost their radius) */

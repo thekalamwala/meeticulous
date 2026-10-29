@@ -11,7 +11,7 @@ const fmtTime = (t) => { const [h, m] = t.split(':').map(Number); const ap = h <
 
 export default function BookingDemo({ host, onConfirmed }) {
   const reduce = useReducedMotion();
-  const tc = host.accent_color || '#0079C1';
+  const tc = host.accent_color || '#2E1065';
   const [step, setStep] = useState('service');
   const [service, setService] = useState(null);
   const [date, setDate] = useState(null);       // ISO yyyy-mm-dd
@@ -29,7 +29,7 @@ export default function BookingDemo({ host, onConfirmed }) {
   const slots = date ? genSlots(date) : [];
 
   const reset = () => { setStep('service'); setService(null); setDate(null); setSlot(null); };
-  const confirm = () => { setStep('confirmed'); if (!reduce) confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 }, colors: [tc, '#FFB703', '#0079C1'] }); onConfirmed?.(); };
+  const confirm = () => { setStep('confirmed'); if (!reduce) confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 }, colors: [tc, '#FFB703', '#2E1065'] }); onConfirmed?.(); };
 
   return (
     <div className="page-card p-5 sm:p-7" style={{ '--tc': tc }}>

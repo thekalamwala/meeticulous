@@ -133,7 +133,7 @@ const AdminStaff = () => {
                   </td>
                   <td className="px-4 py-3 adm-t2">@{row.username}</td>
                   <td className="px-4 py-3 hidden md:table-cell">
-                    <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-[#0079C1]/10 text-[#0079C1]">{roleName(row.role_key)}</span>
+                    <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-[#2E1065]/10 text-[#2E1065]">{roleName(row.role_key)}</span>
                   </td>
                   <td className="px-4 py-3 hidden lg:table-cell text-[12px] adm-t3">{fmtDate(row.last_login_at)}</td>
                   <td className="px-4 py-3">

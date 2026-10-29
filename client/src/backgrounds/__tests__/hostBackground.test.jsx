@@ -6,11 +6,11 @@ afterEach(cleanup);
 
 describe('HostBackground', () => {
   it('renders the masked band wrapper', () => {
-    const { container } = render(<HostBackground typeKey={null} color="#0079C1" />);
+    const { container } = render(<HostBackground typeKey={null} color="#2E1065" />);
     expect(container.querySelector('[data-bg-band]')).toBeInTheDocument();
   });
   it('renders static fallback for any key (no engines registered)', () => {
-    const { container } = render(<HostBackground typeKey="lines" color="#0079C1" />);
+    const { container } = render(<HostBackground typeKey="lines" color="#2E1065" />);
     expect(container.querySelector('[data-bg-static]')).toBeInTheDocument();
     expect(container.querySelector('canvas')).toBeNull();
   });

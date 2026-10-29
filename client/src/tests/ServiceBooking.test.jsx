@@ -31,7 +31,7 @@ import ServiceBooking from '../pages/ServiceBooking';
 const HOST = {
   id: 'v1', name: 'Jane Vendor', username: 'jane-vendor',
   profession: 'Life Coach', bio: 'I help.', profile_image: '',
-  cover_image: '', theme_color: '#0079C1', plan: 'explorer',
+  cover_image: '', theme_color: '#2E1065', plan: 'explorer',
   is_verified: true, google_calendar_connected: false,
 };
 

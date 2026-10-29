@@ -193,7 +193,7 @@ const ServiceCard = ({ service: s, profileSlug, viewMode }) => {
         {bookUrl && (
           <Link to={bookUrl}
             className="btn flex-shrink-0 text-sm font-semibold flex items-center transition-opacity hover:opacity-80"
-            style={{ background: 'var(--profile-accent, #0079C1)', color: 'var(--profile-accent-text, #ffffff)', height: 40, padding: '0 18px' }}>
+            style={{ background: 'var(--profile-accent, #2E1065)', color: 'var(--profile-accent-text, #ffffff)', height: 40, padding: '0 18px' }}>
             Book Now
           </Link>
         )}
@@ -213,7 +213,7 @@ const ServiceCard = ({ service: s, profileSlug, viewMode }) => {
           : <span className="font-semibold text-base leading-snug line-clamp-2 flex-1" style={{ color: C.text }}>{s.title}</span>}
         {tag && (
           <span className="flex-shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full"
-            style={{ background: 'var(--profile-accent-light, #FFEDE5)', color: 'var(--profile-accent, #0079C1)' }}>
+            style={{ background: 'var(--profile-accent-light, #FFEDE5)', color: 'var(--profile-accent, #2E1065)' }}>
             {tag}
           </span>
         )}
@@ -254,7 +254,7 @@ const ServiceCard = ({ service: s, profileSlug, viewMode }) => {
         {bookUrl && (
           <Link to={bookUrl}
             className="btn text-sm font-semibold flex items-center transition-opacity hover:opacity-80"
-            style={{ background: 'var(--profile-accent, #0079C1)', color: 'var(--profile-accent-text, #ffffff)', height: 38, padding: '0 18px' }}>
+            style={{ background: 'var(--profile-accent, #2E1065)', color: 'var(--profile-accent-text, #ffffff)', height: 38, padding: '0 18px' }}>
             Book Now
           </Link>
         )}
@@ -283,12 +283,12 @@ const ProductCard = ({ product: p, profileSlug }) => {
       {/* Thumbnail — left column on mobile, full-width 16:10 on desktop */}
       <Link to={detailUrl}
         className="relative flex-shrink-0 w-28 self-stretch sm:w-full sm:self-auto aspect-[16/9] overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, var(--profile-accent-light, #FFEDE5), var(--profile-accent, #0079C1))' }}>
+        style={{ background: 'linear-gradient(135deg, var(--profile-accent-light, #FFEDE5), var(--profile-accent, #2E1065))' }}>
         {p.thumbnail_url
           ? <img src={p.thumbnail_url} alt={p.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
           : <span className="absolute inset-0 flex items-center justify-center text-4xl opacity-50">{TYPE_ICONS[p.type] || '📦'}</span>}
         <span className="absolute top-2 left-2 text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize"
-          style={{ background: 'rgba(255,255,255,0.92)', color: 'var(--profile-accent, #0079C1)' }}>
+          style={{ background: 'rgba(255,255,255,0.92)', color: 'var(--profile-accent, #2E1065)' }}>
           {typeLabel}
         </span>
       </Link>
@@ -308,7 +308,7 @@ const ProductCard = ({ product: p, profileSlug }) => {
           <div className="font-bold leading-none" style={{ color: C.text, fontSize: 17 }}>{isFree ? 'Free' : `₹${p.price}`}</div>
           <Link to={detailUrl}
             className="btn text-sm font-semibold flex items-center transition-opacity hover:opacity-80"
-            style={{ background: 'var(--profile-accent, #0079C1)', color: 'var(--profile-accent-text, #ffffff)', height: 36, padding: '0 16px' }}>
+            style={{ background: 'var(--profile-accent, #2E1065)', color: 'var(--profile-accent-text, #ffffff)', height: 36, padding: '0 16px' }}>
             {isFree ? 'Get Free' : 'Buy Now'}
           </Link>
         </div>

@@ -69,9 +69,9 @@ const HelpDoc = () => {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-500">
             Still stuck?{' '}
-            <Link to="/help" className="font-semibold text-[#0079C1] hover:underline">Contact support</Link>
+            <Link to="/help" className="font-semibold text-[#2E1065] hover:underline">Contact support</Link>
             {' '}or{' '}
-            <Link to="/help/docs" className="font-semibold text-[#0079C1] hover:underline">browse all articles</Link>.
+            <Link to="/help/docs" className="font-semibold text-[#2E1065] hover:underline">browse all articles</Link>.
           </p>
         </div>
       </div>

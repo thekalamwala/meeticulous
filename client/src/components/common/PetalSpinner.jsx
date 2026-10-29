@@ -6,7 +6,7 @@
 // theme_color to theme it, e.g. on the booking flow.
 export default function PetalSpinner({
   size = 48,
-  color = '#0079C1',
+  color = '#2E1065',
   className = '',
   label = 'Loading',
 }) {

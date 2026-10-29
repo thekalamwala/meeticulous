@@ -51,7 +51,7 @@ export const PREMIUM_PLAN = {
   monthly: 399,
   yearly: 3599,
   recommended: true,
-  accent: "#0079C1",
+  accent: "#2E1065",
   icon: "Rocket",
   persona: { title: "Booked and growing", blurb: "Earning over ₹6,000 a month? This already costs you less than the 5%." },
   intro: "Everything in Sloth, plus:",

@@ -10,7 +10,7 @@ const NODES = [
 
 export default function S03Idea({ hostCtx }) {
   const u = hostCtx?.host?.username || 'you';
-  const tc = hostCtx?.activeHost?.accent_color || '#0079C1';
+  const tc = hostCtx?.activeHost?.accent_color || '#2E1065';
   return (
     <div className="text-center">
       <Reveal><h2 className="font-heading text-3xl sm:text-4xl">One calm link connects <span className="text-primary">all of it</span>.</h2></Reveal>

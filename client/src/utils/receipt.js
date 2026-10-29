@@ -289,10 +289,10 @@ export function buildReceiptHTML(d = {}) {
     --bg:#f5f5f6; --paper:#ffffff;
     --ink:#18181b; --ink-2:#3f3f46; --muted:#71717a; --faint:#a1a1aa;
     --line:#ededee; --line-2:#e4e4e7; --card:#fafafa; --card-line:#ececed;
-    --accent:#0079C1; --accent-soft:rgba(254,81,0,.10);
+    --accent:#2E1065; --accent-soft:rgba(254,81,0,.10);
     --ok-bg:#ecfdf5; --ok-fg:#047857; --ok-line:#a7f3d0;
     --warn-bg:#fffbeb; --warn-fg:#b45309; --warn-line:#fde68a;
-    --info-bg:#eff6ff; --info-fg:#00457C; --info-line:#bfdbfe;
+    --info-bg:#eff6ff; --info-fg:#2E1065; --info-line:#bfdbfe;
     --neutral-bg:#f4f4f5; --neutral-fg:#52525b; --neutral-line:#e4e4e7;
   }
   *{box-sizing:border-box}

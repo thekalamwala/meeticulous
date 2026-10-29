@@ -16,7 +16,7 @@ import {
 
 const ROUTE_START = "/become-a-host";
 const ICON = { free: Sprout, premium: Rocket };
-const ACCENT = { free: "#4AB765", premium: "#0079C1" };
+const ACCENT = { free: "#4AB765", premium: "#2E1065" };
 const CTA_LABEL = { free: "Get Started", premium: "Start on Sloth Active" };
 
 // One-line "who's this for" per plan.

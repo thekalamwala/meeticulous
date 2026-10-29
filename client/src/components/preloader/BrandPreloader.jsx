@@ -29,7 +29,7 @@ export default function BrandPreloader({
   variant = 'homepage',
   ready = false,
   profileName = null,
-  accentColor = '#0079C1',
+  accentColor = '#2E1065',
   minDuration,
   maxDuration,
   onDone,

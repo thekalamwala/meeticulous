@@ -199,7 +199,7 @@ const PaymentPill = ({ status, bookingStatus }) => {
 const IconBtn = ({ icon, label, onClick, href, tone = 'gray' }) => {
   const tones = {
     gray:    'text-gray-500 hover:text-gray-800 hover:bg-gray-100',
-    primary: 'text-[#0079C1] hover:bg-[#0079C1]/10',
+    primary: 'text-[#2E1065] hover:bg-[#2E1065]/10',
     danger:  'text-rose-500 hover:text-rose-700 hover:bg-rose-50',
   };
   const cls = `inline-flex items-center justify-center w-8 h-8 rounded-lg transition-colors ${tones[tone]}`;
@@ -211,7 +211,7 @@ const IconBtn = ({ icon, label, onClick, href, tone = 'gray' }) => {
 const ActionBtn = ({ icon, label, onClick, href, variant = 'default' }) => {
   const variants = {
     default: 'btn--outline text-gray-700 bg-white hover:bg-gray-50',
-    primary: 'bg-[#0079C1] text-white hover:bg-[#e54900] shadow-sm',
+    primary: 'bg-[#2E1065] text-white hover:bg-[#e54900] shadow-sm',
     danger:  'btn--outline text-rose-600 bg-white hover:bg-rose-50',
   };
   const cls = `btn inline-flex items-center justify-center gap-2 px-3 py-2 text-[13px] font-medium transition-colors ${variants[variant]}`;
@@ -648,7 +648,7 @@ const TabBtn = ({ active, label, onClick }) => (
     className={`relative px-3 py-2.5 text-[13px] font-medium transition-colors whitespace-nowrap
       ${active ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}>
     {label}
-    {active && <span className="absolute left-2 right-2 -bottom-px h-0.5 rounded-full bg-[#0079C1]" />}
+    {active && <span className="absolute left-2 right-2 -bottom-px h-0.5 rounded-full bg-[#2E1065]" />}
   </button>
 );
 
@@ -656,7 +656,7 @@ const TabBtn = ({ active, label, onClick }) => (
 const PanelBtn = ({ icon, label, onClick, href, tone = 'default' }) => {
   const tones = {
     default: 'bg-white text-gray-700 hover:bg-gray-50 btn--outline',
-    primary: 'bg-[#0079C1] text-white hover:bg-[#e54900] shadow-sm',
+    primary: 'bg-[#2E1065] text-white hover:bg-[#e54900] shadow-sm',
     success: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm',
     danger:  'bg-white text-rose-600 hover:bg-rose-50 btn--outline',
   };
@@ -768,7 +768,7 @@ const BookingDetailModal = ({ b, status, onClose, onEdit, onCancel, onDelete, on
     { label: 'Host',          value: vendorShare,   color: '#16a34a' }, // green
     { label: 'Razorpay',        value: razorpayShare, color: '#f97316' }, // orange
     { label: 'Govt (All GSTs)', value: govtShare,     color: '#ef4444' }, // red
-    { label: 'Us (Net Income)', value: usShare,       color: '#0079C1' }, // blue
+    { label: 'Us (Net Income)', value: usShare,       color: '#2E1065' }, // blue
   ];
 
   return (
@@ -1059,20 +1059,20 @@ const EditModal = ({ b, onClose, onSave }) => {
         <div className="p-5 space-y-4">
           <label className="block">
             <span className="text-[12px] font-medium text-gray-500 mb-1.5 block">Booking Status</span>
-            <select value={status} onChange={e => setStatus(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0079C1]/30 focus:border-[#0079C1] outline-none">
+            <select value={status} onChange={e => setStatus(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#2E1065]/30 focus:border-[#2E1065] outline-none">
               {['pending', 'confirmed', 'completed', 'cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
             </select>
           </label>
           <label className="block">
             <span className="text-[12px] font-medium text-gray-500 mb-1.5 block">Customer Payment</span>
-            <select value={payment} onChange={e => setPayment(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0079C1]/30 focus:border-[#0079C1] outline-none">
+            <select value={payment} onChange={e => setPayment(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#2E1065]/30 focus:border-[#2E1065] outline-none">
               {[['unpaid', 'Pending'], ['paid', 'Received'], ['refunded', 'Refunded']].map(([v, lbl]) => <option key={v} value={v}>{lbl}</option>)}
             </select>
           </label>
         </div>
         <div className="flex justify-end gap-2 px-5 py-4 border-t border-gray-100">
           <button onClick={onClose} className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">Cancel</button>
-          <button onClick={save} disabled={saving} className="btn px-4 py-2 text-sm font-semibold bg-[#0079C1] text-white hover:bg-[#e54900] disabled:opacity-50 transition-colors">
+          <button onClick={save} disabled={saving} className="btn px-4 py-2 text-sm font-semibold bg-[#2E1065] text-white hover:bg-[#e54900] disabled:opacity-50 transition-colors">
             {saving ? 'Saving…' : 'Save Changes'}
           </button>
         </div>
@@ -1235,7 +1235,7 @@ const AdminBookings = () => {
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Search by Booking ID, phone, or email…"
-            className="w-full pl-10 pr-9 py-2.5 adm-card border rounded-xl text-sm adm-t1 placeholder:text-[color:var(--adm-text-3)] focus:ring-2 focus:ring-[#0079C1]/25 focus:border-[#0079C1] outline-none transition"
+            className="w-full pl-10 pr-9 py-2.5 adm-card border rounded-xl text-sm adm-t1 placeholder:text-[color:var(--adm-text-3)] focus:ring-2 focus:ring-[#2E1065]/25 focus:border-[#2E1065] outline-none transition"
           />
           {query && (
             <button onClick={() => setQuery('')} aria-label="Clear search" className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100">

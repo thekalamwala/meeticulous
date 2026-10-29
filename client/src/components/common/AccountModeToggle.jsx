@@ -24,7 +24,7 @@ const AccountModeToggle = () => {
 
   const seg = (active) =>
     `flex-1 px-4 py-2 text-sm font-semibold rounded-lg transition ${
-      active ? "bg-[#0079C1] text-white shadow-sm" : "text-gray-600 hover:text-gray-900"
+      active ? "bg-[#2E1065] text-white shadow-sm" : "text-gray-600 hover:text-gray-900"
     }`;
 
   return (

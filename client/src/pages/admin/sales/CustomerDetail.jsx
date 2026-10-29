@@ -72,7 +72,7 @@ function Account({ host, billing, profileId }) {
     <Card className="rounded-2xl p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-[11px] uppercase tracking-wide adm-t3 font-semibold">Account &amp; money</h3>
-        <Link to={`/admin/host360/${profileId}`} className="text-[11px] text-[#0079C1] inline-flex items-center gap-1">Host 360 <ExternalLink size={11} /></Link>
+        <Link to={`/admin/host360/${profileId}`} className="text-[11px] text-[#2E1065] inline-flex items-center gap-1">Host 360 <ExternalLink size={11} /></Link>
       </div>
       <div className="grid grid-cols-2 gap-3 mb-3">
         <div><p className="text-[11px] adm-t3">Plan</p><p className="text-[13px] font-semibold adm-t1">{billing?.plan || host?.host?.plan || host?.plan || '—'}</p></div>
@@ -137,7 +137,7 @@ export default function CustomerDetail() {
     <div className="p-6 max-w-5xl">
       {/* Header */}
       <div className="flex items-start gap-4 mb-5">
-        <div className="w-12 h-12 rounded-full bg-[#0079C1]/10 text-[#0079C1] grid place-items-center font-bold shrink-0">{initials(lead.name)}</div>
+        <div className="w-12 h-12 rounded-full bg-[#2E1065]/10 text-[#2E1065] grid place-items-center font-bold shrink-0">{initials(lead.name)}</div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-xl font-bold adm-t1 truncate">{lead.name || 'Unnamed'}</h1>

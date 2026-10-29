@@ -39,7 +39,7 @@ export default function ImgWithSkeleton({
         <div
           role="img"
           aria-label={alt || fallbackLabel}
-          className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#D6ECF8] to-[#FFD2BC]"
+          className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#EDE9FE] to-[#FFD2BC]"
         >
           <span className="font-heading text-3xl font-extrabold text-ink/70">
             {initials}

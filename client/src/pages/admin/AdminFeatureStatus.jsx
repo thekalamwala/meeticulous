@@ -89,7 +89,7 @@ export default function AdminFeatureStatus() {
         aria-label={f.label}
         disabled={busy === f.key}
         onClick={() => toggle(f)}
-        className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${f.enabled ? 'bg-[#0079C1]' : 'bg-gray-300'} disabled:opacity-50`}
+        className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${f.enabled ? 'bg-[#2E1065]' : 'bg-gray-300'} disabled:opacity-50`}
       >
         <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${f.enabled ? 'translate-x-5' : ''}`} />
       </button>

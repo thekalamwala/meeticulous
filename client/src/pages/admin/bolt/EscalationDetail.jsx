@@ -55,7 +55,7 @@ export default function EscalationDetail({ id, onBack, onChanged }) {
 
   return (
     <div>
-      <button onClick={onBack} className="mb-3 text-sm font-medium text-[#0079C1]">← Back to inbox</button>
+      <button onClick={onBack} className="mb-3 text-sm font-medium text-[#2E1065]">← Back to inbox</button>
       <div className="space-y-4">
         <div className="rounded-xl border adm-border p-3">
           <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -91,7 +91,7 @@ export default function EscalationDetail({ id, onBack, onChanged }) {
                   </optgroup>
                 ))}
               </select>
-              <button onClick={() => setEscalationStatus('closed', reasonCode)} className="rounded-lg bg-[#0079C1] px-2.5 py-1 text-xs font-medium text-white">Close</button>
+              <button onClick={() => setEscalationStatus('closed', reasonCode)} className="rounded-lg bg-[#2E1065] px-2.5 py-1 text-xs font-medium text-white">Close</button>
               <button onClick={() => { setCloseOpen(false); setReasonCode(''); }} className="text-xs adm-t3">Cancel</button>
             </div>
           )}
@@ -133,7 +133,7 @@ export default function EscalationDetail({ id, onBack, onChanged }) {
               const label = ch === 'email' ? 'Email reply' : ch === 'whatsapp' ? 'Log WhatsApp' : 'Internal note';
               return (
                 <button key={ch} onClick={() => setReply((r) => ({ ...r, channel: ch }))} disabled={disabled}
-                  className={'rounded-lg px-2.5 py-1 text-xs font-medium ' + (reply.channel === ch ? 'bg-[#0079C1] text-white' : 'border adm-border adm-t2') + (disabled ? ' opacity-40' : '')}>
+                  className={'rounded-lg px-2.5 py-1 text-xs font-medium ' + (reply.channel === ch ? 'bg-[#2E1065] text-white' : 'border adm-border adm-t2') + (disabled ? ' opacity-40' : '')}>
                   {label}
                 </button>
               );
@@ -143,7 +143,7 @@ export default function EscalationDetail({ id, onBack, onChanged }) {
             placeholder={reply.channel === 'email' ? `Reply to ${e.email || 'the visitor'}…` : reply.channel === 'whatsapp' ? 'Paste what you sent on WhatsApp (logs it to the thread)…' : 'Log an internal note (not sent to the visitor)…'}
             className="mb-2 w-full rounded-lg border adm-border px-3 py-2 text-sm" />
           <button onClick={sendReply} disabled={reply.busy || !reply.body.trim()}
-            className="rounded-lg bg-[#0079C1] px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40">
+            className="rounded-lg bg-[#2E1065] px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40">
             {reply.busy ? 'Saving…' : reply.channel === 'email' ? 'Send email' : reply.channel === 'whatsapp' ? 'Log WhatsApp reply' : 'Save note'}
           </button>
           {reply.channel === 'email' && !e.email && <p className="mt-1 text-xs adm-t3">No verified email — use WhatsApp or a note.</p>}

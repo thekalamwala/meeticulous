@@ -138,7 +138,7 @@ function CategoryModal({ open, onClose, onSaved, editing, primary, primaryLabel 
                 aria-checked={isActive}
                 aria-label="Active"
                 onClick={() => setIsActive((v) => !v)}
-                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${isActive ? 'bg-[#0079C1]' : 'bg-gray-300'}`}
+                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${isActive ? 'bg-[#2E1065]' : 'bg-gray-300'}`}
               >
                 <span className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform ${isActive ? 'translate-x-4.5' : 'translate-x-0.5'}`} />
               </button>
@@ -151,7 +151,7 @@ function CategoryModal({ open, onClose, onSaved, editing, primary, primaryLabel 
           <button
             onClick={save}
             disabled={saving}
-            className="btn bg-[#0079C1] text-white px-5 text-sm font-medium hover:bg-[#005E99] disabled:opacity-50"
+            className="btn bg-[#2E1065] text-white px-5 text-sm font-medium hover:bg-[#1E0B4D] disabled:opacity-50"
           >
             {saving ? 'Saving…' : (editing ? 'Save Changes' : 'Create')}
           </button>
@@ -279,7 +279,7 @@ const AdminServiceCategories = () => {
         <button
           onClick={openCreate}
           disabled={!selected}
-          className="btn flex items-center gap-1.5 bg-[#0079C1] text-white px-4 text-sm font-medium hover:bg-[#005E99] shrink-0 disabled:opacity-50"
+          className="btn flex items-center gap-1.5 bg-[#2E1065] text-white px-4 text-sm font-medium hover:bg-[#1E0B4D] shrink-0 disabled:opacity-50"
         >
           <Plus className="w-4 h-4" strokeWidth={3} /> New
         </button>
@@ -360,7 +360,7 @@ const AdminServiceCategories = () => {
                   <td colSpan={5} className="px-4 py-10 text-sm text-gray-400 text-center">
                     No services for this profession yet.{' '}
                     {selected && (
-                      <button onClick={openCreate} className="text-[#0079C1] underline">Add one</button>
+                      <button onClick={openCreate} className="text-[#2E1065] underline">Add one</button>
                     )}
                   </td>
                 </tr>
@@ -382,7 +382,7 @@ const AdminServiceCategories = () => {
                         >
                           {cat.is_active ? 'Deactivate' : 'Activate'}
                         </button>
-                        <button onClick={() => openEdit(cat)} title="Edit" className="text-gray-400 hover:text-[#0079C1] p-1.5 rounded transition-colors">
+                        <button onClick={() => openEdit(cat)} title="Edit" className="text-gray-400 hover:text-[#2E1065] p-1.5 rounded transition-colors">
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button onClick={() => handleDelete(cat)} title="Delete" className="text-gray-400 hover:text-red-600 p-1.5 rounded transition-colors">

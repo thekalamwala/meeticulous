@@ -42,7 +42,7 @@ const ROUTE_START = "/become-a-host";
 // plans.js. Kept as locals so the storytelling sections read the same hues as the
 // cards without re-hardcoding hex all over the file.
 const OPERATE = FREE_PLAN.accent; // #4AB765
-const GROW = PREMIUM_PLAN.accent; // #0079C1
+const GROW = PREMIUM_PLAN.accent; // #2E1065
 
 const JSON_LD = {
   "@context": "https://schema.org",
@@ -411,7 +411,7 @@ const VALUES = [
     icon: BarChart3,
     title: "Understand your business",
     body: "See your earnings, transaction history and exactly what commission you've paid — the numbers behind your bookings.",
-    accent: "#0079C1",
+    accent: "#2E1065",
   },
   {
     icon: TrendingUp,

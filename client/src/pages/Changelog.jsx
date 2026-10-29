@@ -9,7 +9,7 @@ import { SITE_URL, collectionPageJsonLd, breadcrumbJsonLd } from "../utils/seo";
 // Tags drive the colour chip: New / Improved / Fixed / Security.
 const TAG_STYLES = {
   New:      { bg: 'rgba(5,150,105,0.10)',  fg: '#059669' },
-  Improved: { bg: 'rgba(37,99,235,0.10)',  fg: '#0079C1' },
+  Improved: { bg: 'rgba(37,99,235,0.10)',  fg: '#2E1065' },
   Fixed:    { bg: 'rgba(245,158,11,0.12)', fg: '#b45309' },
   Security: { bg: 'rgba(124,58,237,0.10)', fg: '#1DA1F2' },
 };
@@ -911,7 +911,7 @@ const Changelog = () => {
           </p>
           <Link
             to="/become-a-host"
-            className="btn mt-5 inline-flex items-center px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-[#005E99] transition-colors duration-150 shadow-sm hover:no-underline"
+            className="btn mt-5 inline-flex items-center px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-[#1E0B4D] transition-colors duration-150 shadow-sm hover:no-underline"
           >
             Become a host
           </Link>

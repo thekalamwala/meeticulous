@@ -6,7 +6,7 @@
 // Time-bound: the deck also dies on PITCH_DECK_EXPIRES_AT (server 410). Until the
 // viewer clears the gate this file renders only the OTP screen + non-secret prose.
 //
-// Brand: Friendly Brutalism — orange #0079C1, canvas #F8FAFC, ink, hard offset
+// Brand: Friendly Brutalism — orange #2E1065, canvas #F8FAFC, ink, hard offset
 // shadows, 4px borders/radii. Plus Jakarta Sans headings / Poppins body. Charts
 // are hand-rolled SVG and take their data as props (fed from the fetched payload).
 //
@@ -66,7 +66,7 @@ const SHIPPED = [
 const TAGS = {
   actual:     { label: 'ACTUAL',     fg: '#065f46', bg: '#d1fae5', dot: '#059669' },
   estimate:   { label: 'ESTIMATE',   fg: '#92400e', bg: '#fef3c7', dot: '#f59e0b' },
-  projection: { label: 'PROJECTION', fg: '#1e3a8a', bg: '#D6ECF8', dot: '#0079C1' },
+  projection: { label: 'PROJECTION', fg: '#1e3a8a', bg: '#EDE9FE', dot: '#2E1065' },
   assumption: { label: 'ASSUMPTION', fg: '#374151', bg: '#e5e7eb', dot: '#6b7280' },
 };
 function Tag({ k, className = '' }) {
@@ -102,7 +102,7 @@ function Slide({ id, children, className = '', dark = false }) {
       style={dark ? { background: '#141210', color: '#F8FAFC' } : { background: '#F8FAFC', color: '#191919' }}>
       {dark && (
         <motion.div aria-hidden className="pointer-events-none absolute right-[6%] top-[12%] h-72 w-72 rounded-full"
-          style={{ background: 'radial-gradient(circle,#0079C1,transparent 70%)', opacity: 0.1 }}
+          style={{ background: 'radial-gradient(circle,#2E1065,transparent 70%)', opacity: 0.1 }}
           animate={{ scale: [1, 1.18, 1], x: [0, 26, 0], y: [0, -20, 0] }}
           transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }} />
       )}
@@ -111,7 +111,7 @@ function Slide({ id, children, className = '', dark = false }) {
           <motion.div className="mb-5 flex items-center gap-3"
             initial={{ opacity: 0, x: -12 }} whileInView={{ opacity: 1, x: 0 }}
             viewport={{ amount: 0.6 }} transition={{ duration: 0.4 }}>
-            <span className="font-heading text-xs font-extrabold tracking-[0.2em]" style={{ color: '#0079C1' }}>
+            <span className="font-heading text-xs font-extrabold tracking-[0.2em]" style={{ color: '#2E1065' }}>
               {String(num).padStart(2, '0')}
             </span>
             <span className="h-px flex-1 max-w-[64px]" style={{ background: dark ? '#3a352f' : '#e6e1d8' }} />
@@ -128,7 +128,7 @@ function Slide({ id, children, className = '', dark = false }) {
     </section>
   );
 }
-function Stat({ value, label, tag, accent = '#0079C1', sub }) {
+function Stat({ value, label, tag, accent = '#2E1065', sub }) {
   return (
     <motion.div whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 300, damping: 18 }}
       className="rounded-[6px] border-[3px] border-ink bg-white p-5" style={{ boxShadow: '5px 5px 0 rgba(26,26,26,0.9)' }}>
@@ -139,7 +139,7 @@ function Stat({ value, label, tag, accent = '#0079C1', sub }) {
     </motion.div>
   );
 }
-function Card({ title, body, accent = '#0079C1' }) {
+function Card({ title, body, accent = '#2E1065' }) {
   return (
     <motion.div whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 300, damping: 18 }}
       className="rounded-[6px] border-[3px] border-ink bg-white p-5" style={{ boxShadow: '4px 4px 0 rgba(26,26,26,0.9)' }}>
@@ -161,8 +161,8 @@ function MrrChart({ series }) {
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="MRR since launch">
       <defs>
         <linearGradient id="mrrFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#0079C1" stopOpacity="0.28" />
-          <stop offset="100%" stopColor="#0079C1" stopOpacity="0" />
+          <stop offset="0%" stopColor="#2E1065" stopOpacity="0.28" />
+          <stop offset="100%" stopColor="#2E1065" stopOpacity="0" />
         </linearGradient>
       </defs>
       {[0, 5, 10, 15, 20].map((g) => (
@@ -172,14 +172,14 @@ function MrrChart({ series }) {
         </g>
       ))}
       <path d={area} fill="url(#mrrFill)" />
-      <path d={line} fill="none" stroke="#0079C1" strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round" />
+      <path d={line} fill="none" stroke="#2E1065" strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round" />
       {series.map((d, i) => {
         const last = i === series.length - 1;
         return (
           <g key={d.m}>
-            <circle cx={x(i)} cy={y(d.v)} r={last ? 7 : 4.5} fill={last ? '#0079C1' : '#fff'} stroke="#0079C1" strokeWidth="3" />
+            <circle cx={x(i)} cy={y(d.v)} r={last ? 7 : 4.5} fill={last ? '#2E1065' : '#fff'} stroke="#2E1065" strokeWidth="3" />
             <text x={x(i)} y={H - pad + 18} textAnchor="middle" fontSize="11" fill="#6b6459" fontFamily="Poppins">{d.m}</text>
-            {last && <text x={x(i)} y={y(d.v) - 14} textAnchor="middle" fontSize="13" fontWeight="700" fill="#0079C1" fontFamily="Plus Jakarta Sans">₹{lastV}k</text>}
+            {last && <text x={x(i)} y={y(d.v) - 14} textAnchor="middle" fontSize="13" fontWeight="700" fill="#2E1065" fontFamily="Plus Jakarta Sans">₹{lastV}k</text>}
           </g>
         );
       })}
@@ -217,7 +217,7 @@ function MarketRings({ rings }) {
     <svg viewBox="0 0 320 320" className="w-full max-w-[340px]" role="img" aria-label="TAM SAM SOM market sizing">
       {rings.map((m) => <circle key={m.k} cx="160" cy="170" r={m.r} fill={m.fill} stroke="#191919" strokeWidth="2.5" />)}
       <text x="160" y="176" textAnchor="middle" fontSize="15" fontWeight="800" fill="#fff" fontFamily="Plus Jakarta Sans">SOM</text>
-      <text x="160" y="88" textAnchor="middle" fontSize="13" fontWeight="800" fill="#005E99" fontFamily="Plus Jakarta Sans">SAM</text>
+      <text x="160" y="88" textAnchor="middle" fontSize="13" fontWeight="800" fill="#1E0B4D" fontFamily="Plus Jakarta Sans">SAM</text>
       <text x="160" y="42" textAnchor="middle" fontSize="13" fontWeight="800" fill="#1e3a8a" fontFamily="Plus Jakarta Sans">TAM</text>
     </svg>
   );
@@ -255,12 +255,12 @@ function GrowthChart({ series }) {
           <text x={pad - 8} y={y(g) + 4} textAnchor="end" fontSize="11" fill="#8a847a" fontFamily="Poppins">₹{g}L</text>
         </g>
       ))}
-      <path d={line} fill="none" stroke="#0079C1" strokeWidth="3.5" strokeLinejoin="round" />
+      <path d={line} fill="none" stroke="#2E1065" strokeWidth="3.5" strokeLinejoin="round" />
       {series.map((d, i) => {
         const now = i === 0;
         return (
           <g key={d.t}>
-            <circle cx={x(i)} cy={y(d.v)} r={now ? 7 : 5} fill={now ? '#059669' : '#0079C1'} stroke="#141210" strokeWidth="2.5" />
+            <circle cx={x(i)} cy={y(d.v)} r={now ? 7 : 5} fill={now ? '#059669' : '#2E1065'} stroke="#141210" strokeWidth="2.5" />
             <text x={x(i)} y={H - pad + 18} textAnchor="middle" fontSize="11" fill="#b8b2a8" fontFamily="Poppins">{d.t}</text>
             <text x={x(i)} y={y(d.v) - 12} textAnchor="middle" fontSize="11" fontWeight="700" fill={now ? '#34d399' : '#93c5fd'} fontFamily="Plus Jakarta Sans">₹{d.v}L</text>
           </g>
@@ -284,7 +284,7 @@ function BrandLogo({ brand }) {
 }
 const COMP_COLS = ['UPI autopay + payouts', 'GST invoicing', 'Venues + people', 'WhatsApp-native'];
 const COMP_ROWS = [
-  { name: 'Meeticulous', img: '/sloth.png', color: '#0079C1', us: true, cells: [true, true, true, true] },
+  { name: 'Meeticulous', img: '/sloth.png', color: '#2E1065', us: true, cells: [true, true, true, true] },
   { name: 'Topmate', mono: 'T', color: '#5B4CE0', cells: [true, false, false, false] },
   { name: 'Calendly', icon: 'calendly', color: '#006BFF', cells: [false, false, false, false] },
   { name: 'Cal.com', icon: 'calcom', color: '#292929', cells: [false, false, false, false] },
@@ -302,7 +302,7 @@ function CompMatrix() {
         </thead>
         <tbody>
           {COMP_ROWS.map((r) => (
-            <tr key={r.name} style={r.us ? { background: '#D6ECF8' } : undefined}>
+            <tr key={r.name} style={r.us ? { background: '#EDE9FE' } : undefined}>
               <td className={`p-2 ${r.us ? 'text-ink font-extrabold' : 'text-ink/75 font-semibold'}`} style={{ borderTop: '2px solid #191919' }}>
                 <span className="flex items-center gap-2 whitespace-nowrap"><BrandLogo brand={r} />{r.name}</span>
               </td>
@@ -375,8 +375,8 @@ function Gate({ onUnlock }) {
   };
   const back = (to) => { setStep(to); setError(''); };
 
-  const field = 'w-full rounded-[4px] border-[3px] border-white/20 bg-[#1c1a17] px-4 py-3 font-sans text-base text-white outline-none focus:border-[#0079C1]';
-  const btn = 'w-full rounded-[4px] border-[3px] border-[#0079C1] bg-[#0079C1] px-6 py-3 font-heading text-base font-extrabold text-white transition hover:brightness-110 disabled:opacity-50';
+  const field = 'w-full rounded-[4px] border-[3px] border-white/20 bg-[#1c1a17] px-4 py-3 font-sans text-base text-white outline-none focus:border-[#2E1065]';
+  const btn = 'w-full rounded-[4px] border-[3px] border-[#2E1065] bg-[#2E1065] px-6 py-3 font-heading text-base font-extrabold text-white transition hover:brightness-110 disabled:opacity-50';
   const backBtn = 'w-full font-sans text-xs opacity-60 hover:opacity-100';
   const subtitle = { code: 'Enter your access code to continue.', phone: 'Enter your phone — we’ll send a one-time code on WhatsApp.', otp: `Enter the code we sent on WhatsApp to ${phone}.` }[step];
   const anim = { initial: { opacity: 0, x: 24 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: -24 }, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } };
@@ -384,7 +384,7 @@ function Gate({ onUnlock }) {
   return (
     <main className="fixed inset-0 flex items-center justify-center overflow-hidden px-6 py-10 font-sans" style={{ background: '#141210', color: '#F8FAFC' }}>
       <motion.div aria-hidden className="pointer-events-none absolute right-[-6rem] top-[-6rem] h-96 w-96 rounded-full"
-        style={{ background: 'radial-gradient(circle,#0079C1,transparent 70%)', opacity: 0.2 }}
+        style={{ background: 'radial-gradient(circle,#2E1065,transparent 70%)', opacity: 0.2 }}
         animate={{ scale: [1, 1.15, 1] }} transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }} />
       <div className="relative w-full max-w-sm">
         <div className="mb-6 flex items-center gap-2 font-heading text-lg font-extrabold">
@@ -394,7 +394,7 @@ function Gate({ onUnlock }) {
         <div className="mt-3 flex gap-1.5">
           {['code', 'phone', 'otp'].map((s, i) => (
             <span key={s} className="h-1.5 w-6 rounded-full transition"
-              style={{ background: ['code', 'phone', 'otp'].indexOf(step) >= i ? '#0079C1' : '#3a352f' }} />
+              style={{ background: ['code', 'phone', 'otp'].indexOf(step) >= i ? '#2E1065' : '#3a352f' }} />
           ))}
         </div>
         <p className="mt-3 min-h-[2.5rem] font-sans text-sm opacity-70">{subtitle}</p>
@@ -452,9 +452,9 @@ function DeckBody({ d }) {
   const paidPct = Math.round((d.funnel[2].v / d.funnel[0].v) * 100);
   return (
     <main id="deck-scroll" className="fixed inset-0 overflow-x-hidden overflow-y-auto snap-y snap-mandatory scroll-smooth font-sans text-ink">
-      <div className="fixed left-0 top-0 z-30 h-1 bg-[#0079C1] transition-all" style={{ width: `${((active + 1) / SLIDE_META.length) * 100}%` }} />
+      <div className="fixed left-0 top-0 z-30 h-1 bg-[#2E1065] transition-all" style={{ width: `${((active + 1) / SLIDE_META.length) * 100}%` }} />
       <div className="fixed left-4 top-4 z-30 font-heading text-xs font-extrabold tracking-widest">
-        <span style={{ color: '#0079C1' }}>{String(active + 1).padStart(2, '0')}</span>
+        <span style={{ color: '#2E1065' }}>{String(active + 1).padStart(2, '0')}</span>
         <span className="opacity-40"> / {String(SLIDE_META.length).padStart(2, '0')}</span>
       </div>
       <button onClick={toggleFullscreen} aria-label="Toggle fullscreen" title="Toggle fullscreen"
@@ -462,12 +462,12 @@ function DeckBody({ d }) {
 
       {/* COVER */}
       <Slide id="cover" dark className="relative overflow-hidden">
-        <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full opacity-20" style={{ background: 'radial-gradient(circle,#0079C1,transparent 70%)' }} />
+        <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full opacity-20" style={{ background: 'radial-gradient(circle,#2E1065,transparent 70%)' }} />
         <div className="mb-6 inline-flex items-center gap-2 font-heading text-lg font-extrabold">
           <img src="/sloth.png" alt="Meeticulous" width="36" height="36" className="object-contain" /> Meeticulous
         </div>
         <h1 className="font-heading text-4xl font-extrabold leading-[1.05] sm:text-6xl md:text-7xl">
-          The booking + payments<br />OS for India's<br /><span style={{ color: '#0079C1' }}>hourly economy.</span>
+          The booking + payments<br />OS for India's<br /><span style={{ color: '#2E1065' }}>hourly economy.</span>
         </h1>
         <p className="mt-6 max-w-2xl font-sans text-lg opacity-75 sm:text-xl">
           Studios, turfs, coaches, salons, creators — anyone who sells time or space by the slot.
@@ -476,7 +476,7 @@ function DeckBody({ d }) {
         <div className="mt-10 flex flex-wrap items-center gap-3">
           <Stat value={d.cover.hosts} label="paying hosts" tag="actual" sub="live subscriptions" />
           <Stat value={d.cover.mrr} label="MRR" tag="actual" sub="Sep 2026 run-rate" />
-          <Stat value={d.cover.raise} label="raising" accent="#0079C1" sub="angel / pre-seed" />
+          <Stat value={d.cover.raise} label="raising" accent="#2E1065" sub="angel / pre-seed" />
         </div>
         <p className="mt-6 font-sans text-sm opacity-70">{d.cover.subline}</p>
         <p className="mt-6 font-sans text-xs opacity-50">Confidential · not for distribution · {FOUNDER.handle}</p>
@@ -491,10 +491,10 @@ function DeckBody({ d }) {
         </p>
         <div className="mt-10 grid gap-4 sm:grid-cols-3">
           <Card title="Chasing payments" body="“Sir, payment?” DMs. No-shows. Cash at the door. Money leaks everywhere." />
-          <Card title="Double-bookings" body="A diary and three WhatsApp chats can't hold a live calendar. Slots clash." accent="#0079C1" />
+          <Card title="Double-bookings" body="A diary and three WhatsApp chats can't hold a live calendar. Slots clash." accent="#2E1065" />
           <Card title="No system of record" body="No invoices, no GST, no payout trail. Global tools don't speak India's rails." accent="#059669" />
         </div>
-        <p className="mt-8 font-sans text-base font-semibold">The enemy isn't a competitor. It's <span style={{ color: '#0079C1' }}>becoming the admin of your own hustle.</span></p>
+        <p className="mt-8 font-sans text-base font-semibold">The enemy isn't a competitor. It's <span style={{ color: '#2E1065' }}>becoming the admin of your own hustle.</span></p>
       </Slide>
 
       {/* WHY NOW */}
@@ -502,11 +502,11 @@ function DeckBody({ d }) {
         <h2 className="font-heading text-3xl font-extrabold sm:text-5xl">Three curves just crossed.</h2>
         <div className="mt-10 grid gap-4 sm:grid-cols-3">
           <Card title="UPI autopay matured" body="Recurring UPI mandates (2024–26) finally make subscriptions + auto-collect work for tiny businesses." />
-          <Card title="Solo economy boom" body="India's coaches, creators and micro-studios are going independent at scale — each one needs to get paid." accent="#0079C1" />
+          <Card title="Solo economy boom" body="India's coaches, creators and micro-studios are going independent at scale — each one needs to get paid." accent="#2E1065" />
           <Card title="SMB SaaS moment" body="Sub-₹600/mo tools are now a normal purchase for a solo pro. The willingness-to-pay arrived." accent="#059669" />
         </div>
         <p className="mt-8 max-w-3xl font-sans text-lg opacity-75">The payment rails, the audience, and the buying behaviour are all live at the same time — for the first time.</p>
-        <p className="mt-4 max-w-3xl rounded-[6px] border-l-4 border-[#0079C1] bg-white/5 px-4 py-2 font-sans text-sm italic opacity-80">
+        <p className="mt-4 max-w-3xl rounded-[6px] border-l-4 border-[#2E1065] bg-white/5 px-4 py-2 font-sans text-sm italic opacity-80">
           What we've learned from our first {d.proof.hosts} hosts: [add your #1 proprietary insight — the non-obvious thing you now know about why they pay or churn].
         </p>
       </Slide>
@@ -517,7 +517,7 @@ function DeckBody({ d }) {
         <p className="mt-4 max-w-3xl font-sans text-lg text-ink/70">A host publishes services or bookable slots. Guests book and pay in one flow. Money lands, invoice generates, host gets paid out. No chasing.</p>
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Card title="Get booked" body="A shareable profile + live calendar. No clashes, no back-and-forth." />
-          <Card title="Get paid upfront" body="Razorpay checkout at booking. UPI, cards, autopay mandates." accent="#0079C1" />
+          <Card title="Get paid upfront" body="Razorpay checkout at booking. UPI, cards, autopay mandates." accent="#2E1065" />
           <Card title="Stay compliant" body="GST-ready invoices, TDS/TCS handled, KYC built in." accent="#059669" />
           <Card title="Get paid out" body="Automated Route payouts to the host's bank. Fully reconciled." accent="#f59e0b" />
         </div>
@@ -534,7 +534,7 @@ function DeckBody({ d }) {
             ['4', 'Payout', 'Money is split and settled to the host. Fully reconciled.'],
           ].map(([n, t, b]) => (
             <div key={n} className="relative">
-              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-[#0079C1] font-heading text-xl font-extrabold" style={{ color: '#0079C1' }}>{n}</div>
+              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-[#2E1065] font-heading text-xl font-extrabold" style={{ color: '#2E1065' }}>{n}</div>
               <div className="font-heading text-lg font-extrabold">{t}</div>
               <div className="mt-1 font-sans text-sm opacity-70">{b}</div>
             </div>
@@ -551,11 +551,11 @@ function DeckBody({ d }) {
         <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
           <Stat value={d.proof.hosts} label="hosts onboarded" tag="actual" accent="#059669" sub="since Jun 2026" />
           <Stat value={d.proof.paid} label="on a paid plan" tag="actual" sub="paying hosts" />
-          <Stat value={d.proof.leads} label="leads in pipeline" tag="actual" accent="#0079C1" sub={`${d.proof.leads30d} in last 30 days`} />
+          <Stat value={d.proof.leads} label="leads in pipeline" tag="actual" accent="#2E1065" sub={`${d.proof.leads30d} in last 30 days`} />
           <Stat value="Live" label="payments · GST · payouts" tag="actual" accent="#f59e0b" sub="in production" />
         </div>
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          <Card title="[Host name] · [category]" body="[One line on what they use Meeticulous for + a short real quote. Replace with a consented host story before sending.]" accent="#0079C1" />
+          <Card title="[Host name] · [category]" body="[One line on what they use Meeticulous for + a short real quote. Replace with a consented host story before sending.]" accent="#2E1065" />
           <Card title="[Host name] · [category]" body="[Second real host story — ideally a different category, e.g. a turf/studio vs a coach — to show breadth.]" accent="#059669" />
         </div>
         <p className="mt-4 font-sans text-[11px] text-ink/40">Host counts and pipeline are live production data; paid-plan count includes founder-attested off-platform activations. Swap the placeholder cards for consented, named host stories.</p>
@@ -567,9 +567,9 @@ function DeckBody({ d }) {
         <h2 className="font-heading text-3xl font-extrabold sm:text-5xl">Every slot-based business in India.</h2>
         <div className="mt-5 inline-flex flex-wrap items-center gap-x-4 gap-y-1 rounded-[6px] border-[3px] border-ink bg-white px-4 py-2 font-sans text-sm" style={{ boxShadow: '4px 4px 0 rgba(26,26,26,0.9)' }}>
           <span className="font-semibold">India's creator economy:</span>
-          <span className="font-heading text-lg font-extrabold" style={{ color: '#0079C1' }}>{d.market.band.from}</span>
+          <span className="font-heading text-lg font-extrabold" style={{ color: '#2E1065' }}>{d.market.band.from}</span>
           <span className="text-ink/50">→</span>
-          <span className="font-heading text-lg font-extrabold" style={{ color: '#0079C1' }}>{d.market.band.to}</span>
+          <span className="font-heading text-lg font-extrabold" style={{ color: '#2E1065' }}>{d.market.band.to}</span>
           <span className="rounded-[4px] bg-[#d1fae5] px-2 py-0.5 text-xs font-bold" style={{ color: '#065f46' }}>{d.market.band.cagr}</span>
         </div>
         <div className="mt-8 grid items-center gap-8 md:grid-cols-2">
@@ -578,7 +578,7 @@ function DeckBody({ d }) {
             {d.market.rings.map((m) => (
               <div key={m.k} className="rounded-[6px] border-[3px] border-ink bg-white p-4" style={{ boxShadow: '4px 4px 0 rgba(26,26,26,0.9)' }}>
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="font-heading text-sm font-extrabold" style={{ color: m.fg === '#fff' ? '#0079C1' : m.fg }}>{m.k}</span>
+                  <span className="font-heading text-sm font-extrabold" style={{ color: m.fg === '#fff' ? '#2E1065' : m.fg }}>{m.k}</span>
                   <Tag k={m.tag} />
                 </div>
                 <div className="mt-1 font-heading text-2xl font-extrabold">{m.v} <span className="text-sm font-semibold text-ink/50">{m.usd}</span></div>
@@ -624,7 +624,7 @@ function DeckBody({ d }) {
             <Stat value={d.traction.hosts} label="paying hosts" tag="actual" accent="#059669" />
             <Stat value={d.traction.mrr} label="MRR" tag="actual" />
             <Stat value={d.traction.arr} label="ARR run-rate" tag="actual" accent="#1DA1F2" sub="MRR × 12" />
-            <Stat value="Live" label="payments · GST · payouts" tag="actual" accent="#0079C1" sub="in production" />
+            <Stat value="Live" label="payments · GST · payouts" tag="actual" accent="#2E1065" sub="in production" />
           </div>
         </div>
       </Slide>
@@ -637,7 +637,7 @@ function DeckBody({ d }) {
           <div className="self-center space-y-4 font-sans">
             <p className="text-lg opacity-80">~<span className="font-heading font-extrabold text-white">{paidPct}%</span> of onboarded hosts are on a paid plan <Tag k="actual" className="ml-1" /> — strong for self-serve SMB SaaS.</p>
             <p className="text-lg opacity-80">Acquisition is <span className="font-semibold text-white">organic-led</span>: SEO host profiles + word-of-mouth referral, near-zero paid spend today.</p>
-            <p className="text-lg opacity-80">That keeps blended CAC low — the raise is about <span style={{ color: '#0079C1' }}>pouring fuel on a funnel that already works.</span></p>
+            <p className="text-lg opacity-80">That keeps blended CAC low — the raise is about <span style={{ color: '#2E1065' }}>pouring fuel on a funnel that already works.</span></p>
           </div>
         </div>
       </Slide>
@@ -666,7 +666,7 @@ function DeckBody({ d }) {
         <h2 className="font-heading text-3xl font-extrabold sm:text-5xl">The moat is India-shaped.</h2>
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           <Card title="Deep India payment rails" body="UPI autopay, Razorpay Route split-payouts, GST invoicing, TDS/TCS, KYC — months of compliance a global tool won't localise. Even India creator apps like Topmate stop at 1:1 calls." />
-          <Card title="People + venues in one" body="Turfs and studios book by the hour; coaches book 1:1. We handle both — most tools do only calls." accent="#0079C1" />
+          <Card title="People + venues in one" body="Turfs and studios book by the hour; coaches book 1:1. We handle both — most tools do only calls." accent="#2E1065" />
           <Card title="WhatsApp-native" body="OTP login + AiSensy notifications ride India's real channel, not email nobody opens." accent="#059669" />
           <Card title="SEO host profiles" body="Every host is an indexed page that brings its own guests — compounding, owned distribution." accent="#f59e0b" />
         </div>
@@ -677,8 +677,8 @@ function DeckBody({ d }) {
         <h2 className="font-heading text-3xl font-extrabold sm:text-5xl">Land solo, grow by proof.</h2>
         <div className="mt-10 grid gap-6 sm:grid-cols-3">
           {[
-            ['Wedge', 'Solo pros who already sell time and hate chasing payments — coaches, tutors, trainers.', '#0079C1'],
-            ['Expand', 'Their category neighbours + local venues (turfs, studios) via referral and SEO profiles.', '#0079C1'],
+            ['Wedge', 'Solo pros who already sell time and hate chasing payments — coaches, tutors, trainers.', '#2E1065'],
+            ['Expand', 'Their category neighbours + local venues (turfs, studios) via referral and SEO profiles.', '#2E1065'],
             ['Compound', 'Each paid booking is a live demo to the guest — some guests become hosts. Built-in loop.', '#059669'],
           ].map(([t, b, c]) => (
             <div key={t}>
@@ -688,7 +688,7 @@ function DeckBody({ d }) {
           ))}
         </div>
         <p className="mt-8 font-sans text-base opacity-75">Channels: organic SEO (host profiles), referral, WhatsApp-led onboarding, targeted category outbound. Paid stays a lever, not a crutch.</p>
-        <p className="mt-3 font-sans text-base font-semibold" style={{ color: '#0079C1' }}>This round funds one gate: scale the paying base and prove the funnel repeats at ₹60k+ MRR.</p>
+        <p className="mt-3 font-sans text-base font-semibold" style={{ color: '#2E1065' }}>This round funds one gate: scale the paying base and prove the funnel repeats at ₹60k+ MRR.</p>
       </Slide>
 
       {/* ROADMAP */}
@@ -728,7 +728,7 @@ function DeckBody({ d }) {
         <div className="mt-10"><FundsBar funds={d.funds} /></div>
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
           <Card title="Product / engineering" body="First eng hire. Venue/hourly booking, reliability, moat features. Ship faster." />
-          <Card title="Growth / GTM" body="Content + SEO scale, referral engine, targeted category outbound." accent="#0079C1" />
+          <Card title="Growth / GTM" body="Content + SEO scale, referral engine, targeted category outbound." accent="#2E1065" />
           <Card title="Founder runway" body="Buy ~18 focused months to hit the milestone ladder." accent="#059669" />
           <Card title="Ops / support / infra" body="Payments reliability, KYC, support, compliance." accent="#f59e0b" />
         </div>
@@ -738,14 +738,14 @@ function DeckBody({ d }) {
       <Slide id="team" dark>
         <h2 className="font-heading text-3xl font-extrabold sm:text-5xl">Solo founder. The whole stack, shipped.</h2>
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
-          <div className="rounded-[6px] border-[3px] p-6" style={{ borderColor: '#0079C1', background: '#1c1a17' }}>
+          <div className="rounded-[6px] border-[3px] p-6" style={{ borderColor: '#2E1065', background: '#1c1a17' }}>
             <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-[3px] border-[#0079C1] bg-white">
+              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-[3px] border-[#2E1065] bg-white">
                 <img src="/sloth.png" alt="Meeticulous" width="52" height="52" className="object-contain" />
               </div>
               <div>
                 <div className="font-heading text-2xl font-extrabold">{FOUNDER.name}</div>
-                <div className="font-sans text-sm" style={{ color: '#0079C1' }}>{FOUNDER.role}</div>
+                <div className="font-sans text-sm" style={{ color: '#2E1065' }}>{FOUNDER.role}</div>
               </div>
             </div>
             <p className="mt-4 font-sans text-sm opacity-80">{FOUNDER.background}</p>
@@ -765,17 +765,17 @@ function DeckBody({ d }) {
 
       {/* CLOSE */}
       <Slide id="close" className="relative overflow-hidden text-center" dark>
-        <div className="pointer-events-none absolute inset-0 opacity-20" style={{ background: 'radial-gradient(circle at 50% 40%,#0079C1,transparent 60%)' }} />
+        <div className="pointer-events-none absolute inset-0 opacity-20" style={{ background: 'radial-gradient(circle at 50% 40%,#2E1065,transparent 60%)' }} />
         <div className="relative">
           <img src="/sloth.png" alt="Meeticulous" width="72" height="72" className="mx-auto mb-4 object-contain" />
           <h2 className="font-heading text-4xl font-extrabold leading-tight sm:text-6xl">
-            The calm way to sell your time —<br /><span style={{ color: '#0079C1' }}>now raising to scale it.</span>
+            The calm way to sell your time —<br /><span style={{ color: '#2E1065' }}>now raising to scale it.</span>
           </h2>
           <p className="mx-auto mt-6 max-w-xl font-sans text-lg opacity-75">
             Working product, real early traction, India's rails built in. {d.cover.raise} unlocks the funnel we already have.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <a href="mailto:bookasloth@gmail.com" className="rounded-[4px] border-[3px] border-[#0079C1] bg-[#0079C1] px-6 py-3 font-heading text-base font-extrabold text-white transition hover:brightness-110" style={{ boxShadow: '5px 5px 0 rgba(254,81,0,0.35)' }}>Let's talk →</a>
+            <a href="mailto:bookasloth@gmail.com" className="rounded-[4px] border-[3px] border-[#2E1065] bg-[#2E1065] px-6 py-3 font-heading text-base font-extrabold text-white transition hover:brightness-110" style={{ boxShadow: '5px 5px 0 rgba(254,81,0,0.35)' }}>Let's talk →</a>
             <a href="https://meeticulous.com" target="_blank" rel="noreferrer" className="rounded-[4px] border-[3px] border-white/30 px-6 py-3 font-heading text-base font-extrabold text-white transition hover:border-white">See it live</a>
           </div>
           <p className="mt-10 font-sans text-xs opacity-40">Confidential · {FOUNDER.handle}</p>

@@ -385,7 +385,7 @@ const ProductMock = ({ kind }) => {
         <div className="h-2 w-28 rounded bg-neutral-200" />
       </div>
       <div className="grid flex-1 grid-cols-2 gap-2.5">
-        {[["1", "Upcoming", "#0079C1"], ["2", "Completed", "#059669"], ["1", "Cancelled", "#dc2626"], ["₹10", "Earnings", "#f59e0b"]].map(([v, l, c]) => (
+        {[["1", "Upcoming", "#2E1065"], ["2", "Completed", "#059669"], ["1", "Cancelled", "#dc2626"], ["₹10", "Earnings", "#f59e0b"]].map(([v, l, c]) => (
           <div key={l} className="flex flex-col justify-center rounded-[8px] border border-neutral-100 p-3.5">
             <div className="mb-2 flex h-7 w-7 items-center justify-center rounded-lg" style={{ background: c + "1a" }}>
               <span className="h-2.5 w-2.5 rounded-full" style={{ background: c }} />
@@ -523,7 +523,7 @@ const FEATURE_GROUPS = [
 
 /* ── Product mockups (stylised UI placeholders — swap for real screenshots later) ── */
 const PRODUCT_SHOTS = [
-  { tab: "meeticulous.com/you", title: "Public booking page", kind: "booking", color: "#0079C1" },
+  { tab: "meeticulous.com/you", title: "Public booking page", kind: "booking", color: "#2E1065" },
   { tab: "meeticulous.com/you/strategy-call", title: "Service page", kind: "service", color: "#1DA1F2" },
   { tab: "Checkout · Razorpay", title: "Checkout & payment", kind: "checkout", color: "#36D8FF" },
   { tab: "Dashboard", title: "Your dashboard", kind: "dashboard", color: "#059669" },

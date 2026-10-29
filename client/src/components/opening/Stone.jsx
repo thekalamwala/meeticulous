@@ -106,7 +106,7 @@ export default function Stone({ name = '', shade: shadeIdx = 0, shape = 0, class
           {/* small brand-accent carved rule */}
           <span
             className="mt-1.5 h-[2px] w-6 rounded-full opacity-60"
-            style={{ background: 'linear-gradient(90deg, transparent, #0079C1, transparent)' }}
+            style={{ background: 'linear-gradient(90deg, transparent, #2E1065, transparent)' }}
             aria-hidden="true"
           />
         </div>

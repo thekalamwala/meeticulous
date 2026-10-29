@@ -47,7 +47,7 @@ function RecCard({ rec, onOpen, onAction, busy }) {
   return (
     <div role={clickable ? 'button' : undefined} tabIndex={clickable ? 0 : undefined} onClick={open}
       onKeyDown={(e) => { if (clickable && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); open(); } }}
-      className={`w-full text-left px-4 py-3 rounded-xl adm-hoverable border border-transparent transition ${clickable ? 'hover:border-[#0079C1]/40 cursor-pointer' : ''}`}>
+      className={`w-full text-left px-4 py-3 rounded-xl adm-hoverable border border-transparent transition ${clickable ? 'hover:border-[#2E1065]/40 cursor-pointer' : ''}`}>
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex items-center gap-2">
           <span className={`h-2 w-2 rounded-full shrink-0 ${PRIORITY_DOT[rec.priority] || PRIORITY_DOT.low}`} title={`${rec.priority} priority`} />
@@ -65,7 +65,7 @@ function RecCard({ rec, onOpen, onAction, busy }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-1.5 mt-2">
-        <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[#0079C1]/8 text-[#0079C1]">{REASON_LABEL[rec.reason] || rec.reason}</span>
+        <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[#2E1065]/8 text-[#2E1065]">{REASON_LABEL[rec.reason] || rec.reason}</span>
         <span className="text-[10px] adm-t3">→ {rec.touch_type?.replace(/_/g, ' ')}</span>
         {rec.suggested_channel && <span className="text-[10px] adm-t3">· {CHANNEL_LABEL[rec.suggested_channel] || rec.suggested_channel}</span>}
         {rec.suggested_sender === 'founder' && <span className="text-[10px] adm-t3">· founder</span>}
@@ -78,11 +78,11 @@ function RecCard({ rec, onOpen, onAction, busy }) {
         <TwoClock meaningfulAt={rec.last_meaningful_interaction_at} automatedAt={rec.last_automated_touch_at} />
         <div className="flex flex-wrap gap-1">
           <button type="button" disabled={busy} onClick={(e) => fire(e, 'done')}
-            className="text-[10px] px-2 py-0.5 rounded-md border border-gray-200 hover:border-[#0079C1]/50 text-emerald-600 disabled:opacity-50">Mark done</button>
+            className="text-[10px] px-2 py-0.5 rounded-md border border-gray-200 hover:border-[#2E1065]/50 text-emerald-600 disabled:opacity-50">Mark done</button>
           <button type="button" disabled={busy} onClick={(e) => fire(e, 'snooze')}
-            className="text-[10px] px-2 py-0.5 rounded-md border border-gray-200 hover:border-[#0079C1]/50 adm-t2 disabled:opacity-50">Snooze 2d</button>
+            className="text-[10px] px-2 py-0.5 rounded-md border border-gray-200 hover:border-[#2E1065]/50 adm-t2 disabled:opacity-50">Snooze 2d</button>
           <button type="button" disabled={busy} onClick={(e) => fire(e, 'dismiss')}
-            className="text-[10px] px-2 py-0.5 rounded-md border border-gray-200 hover:border-[#0079C1]/50 adm-t3 disabled:opacity-50">Dismiss</button>
+            className="text-[10px] px-2 py-0.5 rounded-md border border-gray-200 hover:border-[#2E1065]/50 adm-t3 disabled:opacity-50">Dismiss</button>
         </div>
       </div>
     </div>
@@ -137,8 +137,8 @@ export default function RelationshipDesk() {
         subtitle="Who to talk to today, and why. Worked top to bottom — the most urgent relationships first."
         actions={
           <div className="flex gap-3 text-[12px]">
-            <a href="/admin/sales/desk" className="adm-t2 hover:text-[#0079C1]">Sales Desk</a>
-            <a href="/admin/sales/leads" className="adm-t2 hover:text-[#0079C1]">All leads</a>
+            <a href="/admin/sales/desk" className="adm-t2 hover:text-[#2E1065]">Sales Desk</a>
+            <a href="/admin/sales/leads" className="adm-t2 hover:text-[#2E1065]">All leads</a>
           </div>
         }
       />
@@ -146,7 +146,7 @@ export default function RelationshipDesk() {
       {error ? (
         <Card className="rounded-2xl p-8 text-center">
           <p className="adm-t1 font-semibold mb-2">Couldn't load the relationship desk</p>
-          <button onClick={load} className="text-[13px] text-[#0079C1]">Retry</button>
+          <button onClick={load} className="text-[13px] text-[#2E1065]">Retry</button>
         </Card>
       ) : loading ? (
         <div className="space-y-2 max-w-2xl">

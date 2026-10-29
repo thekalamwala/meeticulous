@@ -48,7 +48,7 @@ export default function LeadsBoard({ filters = {}, onOpen }) {
       {FUNNEL.map((s) => {
         const col = cols[s] || { rows: [], total: 0 };
         return (
-          <div key={s} className={`flex-shrink-0 w-64 rounded-xl p-1 transition ${over === s ? 'bg-[#0079C1]/10 ring-1 ring-[#0079C1]/40' : ''}`}
+          <div key={s} className={`flex-shrink-0 w-64 rounded-xl p-1 transition ${over === s ? 'bg-[#2E1065]/10 ring-1 ring-[#2E1065]/40' : ''}`}
             onDragOver={(e) => { e.preventDefault(); setOver(s); }}
             onDragLeave={() => setOver((d) => (d === s ? null : d))}
             onDrop={() => onDrop(s)}>

@@ -52,7 +52,7 @@ export default function FaqsPage() {
     <>
       <div className="mb-3">
         <button onClick={() => setModal({ pattern: '', answer: '', category: 'General' })}
-          className="rounded-lg bg-[#0079C1] px-3 py-1.5 text-sm font-medium text-white">+ Add FAQ</button>
+          className="rounded-lg bg-[#2E1065] px-3 py-1.5 text-sm font-medium text-white">+ Add FAQ</button>
       </div>
       {loading ? <div className="space-y-2">{[0, 1].map((i) => <Skeleton key={i} className="h-12" />)}</div>
         : <Table columns={columns} rows={faqs} rowKey={(f) => f.id}

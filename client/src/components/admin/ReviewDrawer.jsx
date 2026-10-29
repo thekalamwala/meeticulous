@@ -90,7 +90,7 @@ const ReviewDrawer = ({ review, busy, onClose, onModerate, onDelete }) => {
             <p className="text-[10px] font-bold uppercase tracking-wider adm-t3">Admin note</p>
             <textarea value={note} onChange={e => setNote(e.target.value)} rows={3}
               placeholder="Internal note (hosts never see this)…"
-              className="mt-1 w-full rounded-lg border adm-border px-3 py-2 text-[13px] outline-none focus:ring-2 focus:ring-[#0079C1]/30" />
+              className="mt-1 w-full rounded-lg border adm-border px-3 py-2 text-[13px] outline-none focus:ring-2 focus:ring-[#2E1065]/30" />
             <Btn size="sm" variant="outline" disabled={busy || !noteChanged}
               onClick={() => onModerate(r, { admin_note: note })} className="mt-1.5">Save note</Btn>
           </div>

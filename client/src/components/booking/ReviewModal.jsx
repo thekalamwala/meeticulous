@@ -42,13 +42,13 @@ export default function ReviewModal({ open, booking, onClose, onDone, direction 
       <div className="flex gap-1 mb-3">
         {[1, 2, 3, 4, 5].map((n) => (
           <button key={n} type="button" aria-label={`rate ${n}`} onClick={() => setRating(n)}
-            className={`text-2xl ${n <= rating ? 'text-[#0079C1]' : 'text-gray-300'}`}>★</button>
+            className={`text-2xl ${n <= rating ? 'text-[#2E1065]' : 'text-gray-300'}`}>★</button>
         ))}
       </div>
       <textarea className="fb-input mb-4" rows={3} placeholder="Optional comment"
         value={comment} onChange={(e) => setComment(e.target.value)} />
       <button type="button" onClick={submit} disabled={busy}
-        className="w-full bg-[#0079C1] text-white py-2.5 rounded-lg text-sm font-medium disabled:opacity-50">
+        className="w-full bg-[#2E1065] text-white py-2.5 rounded-lg text-sm font-medium disabled:opacity-50">
         {busy ? 'Saving…' : (isEdit ? 'Update review' : 'Submit review')}
       </button>
     </Modal>
