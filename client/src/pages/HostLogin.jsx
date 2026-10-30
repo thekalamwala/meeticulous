@@ -30,10 +30,35 @@ const GoogleIcon = () => (
 
 const Logo = ({ className = "" }) => (
   <img
-    src="/web-app-manifest-192x192.png"
+    src="/brand/ee-rounded-primary.svg"
     alt="Meeticulous"
-    className={`block rounded-[6px] object-contain ${className}`}
+    className={`block object-contain ${className}`}
   />
+);
+
+const LinkedInIcon = () => (
+  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.22.79 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/>
+  </svg>
+);
+
+const MailIcon = () => (
+  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect width="20" height="16" x="2" y="4" rx="2" />
+    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+  </svg>
+);
+
+// Shown but inactive ("Soon") — LinkedIn login + email login have no backend yet.
+const SoonBtn = ({ icon, label }) => (
+  <button
+    type="button" disabled aria-disabled="true" title="Coming soon"
+    className="btn btn--outline mt-3 flex w-full cursor-not-allowed items-center justify-center gap-3 border-black/10 bg-gray-100 py-3 text-sm font-semibold text-gray-400"
+  >
+    {icon}
+    {label}
+    <span className="rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-gray-400">Soon</span>
+  </button>
 );
 
 const Check = () => (
@@ -113,6 +138,9 @@ const HostLogin = () => {
           <GoogleIcon />
           {busy ? "Opening Google…" : "Continue with Google"}
         </button>
+
+        <SoonBtn icon={<LinkedInIcon />} label="Continue with LinkedIn" />
+        <SoonBtn icon={<MailIcon />} label="Continue with email" />
 
         <ul className="mt-6 space-y-2 text-left text-xs text-gray-500">
           <li className="flex gap-2">
