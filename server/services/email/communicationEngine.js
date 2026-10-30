@@ -30,6 +30,13 @@ const MARKETING_EVENTS = new Set([
   'PROFILE_COMPLETION_REMINDER',
   'REBOOK_NUDGE_CUSTOMER',
   'UPGRADE_COMMISSION_NUDGE',
+  // Newsletter, cross-sell, cart-recovery and onboarding nudges are promotional/
+  // bulk — they keep the unsubscribe footer (legal opt-out) and may file under
+  // Updates. Everything NOT listed here is transactional → clean footer → Primary.
+  'NEWSLETTER_WELCOME',
+  'GUEST_TO_HOST_INVITE',
+  'BOOKING_ABANDONED_CUSTOMER',
+  'HOST_ADD_SERVICE_NUDGE', 'HOST_SHARE_LINK_NUDGE', 'HOST_FIRST_BOOKING_NUDGE', 'HOST_PAYOUT_WAITING_NUDGE',
 ]);
 
 const isMarketing = (event) => MARKETING_EVENTS.has(event) || String(event).startsWith('CAMPAIGN:');
@@ -108,7 +115,7 @@ async function getTemplate(event, audience = 'all') {
  * `audience` selects the layout shell (vendor vs customer); it is the RECIPIENT
  * audience, not the template row tag. Defaults to 'all' → customer shell.
  */
-function renderEmail(template, { data = {}, user = {}, settings, audience = 'all' }) {
+function renderEmail(template, { data = {}, user = {}, settings, audience = 'all', marketing } = {}) {
   const globals = buildGlobals(settings, user);
   const r = resolveTemplate(template, data, globals);
   // Resolve the preheader too — otherwise raw {{tokens}} leak into the inbox preview.
@@ -119,8 +126,24 @@ function renderEmail(template, { data = {}, user = {}, settings, audience = 'all
     ctaLabel: r.ctaLabel, ctaUrl: r.ctaUrl, settings,
     emailCategory: template.email_category || '',
     data,
+    // Only marketing mail gets the unsubscribe/nav footer; transactional stays
+    // clean so Gmail files it in Primary, not Updates. Campaign/composer sends
+    // pass marketing:true explicitly (no event_key to classify, but always bulk).
+    marketing: marketing ?? isMarketing(template.event_key),
   });
   return { subject: r.subject, html, missing: r.missing };
+}
+
+// Minimal HTML → plain-text for the text/plain alternative. A multipart message
+// (not html-only) is a strong "real/transactional" signal for inbox placement.
+function htmlToText(html) {
+  return String(html || '')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<(?:br|\/p|\/div|\/tr|\/h[1-6])\s*\/?>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&middot;/g, '·')
+    .replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').replace(/^\s+|\s+$/g, '');
 }
 
 async function insertLog(row) {
@@ -137,6 +160,7 @@ async function deliver({ settings, to, subject, html, sender, providerName }) {
   const provider = getProvider(providerName || settings.provider);
   const res = await provider.sendEmail({
     to, subject, html,
+    text: htmlToText(html), // plain-text twin → multipart, better inbox placement
     fromName: sender?.fromName ?? settings.from_name,
     fromEmail: sender?.fromEmail ?? settings.from_email,
     replyTo: sender?.replyTo || null,
@@ -401,7 +425,8 @@ async function enqueueCampaignEmail({
   }
 
   const sendData = { ...data, unsubscribe_token: data.unsubscribe_token || makeToken(to) };
-  const rendered = renderEmail(template, { data: sendData, user, settings, audience: renderAudience });
+  // Campaigns are always bulk marketing → force the unsubscribe/nav footer.
+  const rendered = renderEmail(template, { data: sendData, user, settings, audience: renderAudience, marketing: true });
   const subject = subjectOverride || rendered.subject;
   const logId = await insertLog({
     event_key: `CAMPAIGN:${campaignId || ''}`, template_id: templateId || null, audience: renderAudience,
@@ -490,7 +515,7 @@ async function sendComposedTest({ bodyHtml, subject: composedSubject, previewTex
     cta_label: '', cta_url: '', email_category: '', audience,
   };
   const sendData = { unsubscribe_token: makeToken(to), first_name: 'there', name: 'there' };
-  const { subject, html } = renderEmail(template, { data: sendData, user: {}, settings, audience });
+  const { subject, html } = renderEmail(template, { data: sendData, user: {}, settings, audience, marketing: true });
   const sender = (await senderRegistry.byKey(senderKey)) || { fromName: settings.from_name, fromEmail: settings.from_email, replyTo: null };
   // A composer test IS a campaign send — route it through the marketing SMTP
   // transport so the test proves the real bulk path, not Resend.

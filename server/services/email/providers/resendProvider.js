@@ -10,10 +10,10 @@
 // the request). 10s default, override with EMAIL_TIMEOUT_MS.
 const EMAIL_TIMEOUT_MS = Number(process.env.EMAIL_TIMEOUT_MS) || 10000;
 
-async function sendEmail({ to, subject, html, text, fromName = 'Book A Sloth', fromEmail, replyTo, attachments }) {
+async function sendEmail({ to, subject, html, text, fromName = 'Meeticulous', fromEmail, replyTo, attachments }) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return { success: false, error: 'RESEND_API_KEY not configured' };
-  const from = `${fromName} <${fromEmail || process.env.RESEND_FROM || 'noreply@bookasloth.in'}>`;
+  const from = `${fromName} <${fromEmail || process.env.RESEND_FROM || 'noreply@mail.meeticulous.in'}>`;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), EMAIL_TIMEOUT_MS);
   try {
