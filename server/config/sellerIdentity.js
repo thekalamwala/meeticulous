@@ -35,8 +35,8 @@ const seller = {
   brandName: 'Meeticulous',
   // TODO(pre-deploy): subline names the legal entity — flip with the GST migration.
   brandSubline: 'by Timewheel Internet (P) Ltd',
-  // TODO(pre-deploy): swap to the hosted Meeticulous wordmark once uploaded.
-  logoUrl:   'https://company-assets.bookasloth.in/images/email/meeticulous-wordmark-full-color.png',
+  // Hosted on the site (client/public/images/email → meeticulous.com via Vercel).
+  logoUrl:   'https://meeticulous.com/images/email/meeticulous-wordmark-full-color.png',
 };
 
 // SAC code — CA-confirmed 998314 (IT design & development services). Used for
