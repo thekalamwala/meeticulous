@@ -39,6 +39,7 @@ const CATEGORIES = [
   { icon: Camera,        label: 'Photographers',              sub: 'Photography & Videography',             to: '/for/photographers' },
   { icon: CalendarDays,  label: 'Event Organisers',           sub: 'Planners & Coordinators',               to: '/for/events' },
   { icon: Building2,     label: 'Agencies & Studios',         sub: 'Creative & Professional Teams',         to: '/for/agencies' },
+  { icon: Building2,     label: 'Coworking Spaces',           sub: 'Desks, Cabins & Meeting Rooms',         to: '/for/coworking-spaces' },
   { icon: Moon,          label: 'Astrologers & Consultants',  sub: 'Vedic, Tarot & Numerology',             to: '/for/astrologers' },
   { icon: Brain,         label: 'Therapists & Psychologists', sub: 'Counselling & Mental Health',           to: '/for/therapists' },
   { icon: PersonStanding, label: 'Yoga Instructors',          sub: 'Batches, Classes & Studios',            to: '/for/yoga-instructors' },
