@@ -22,6 +22,9 @@ import {
   // "Who it's for" profession-menu icons
   Calculator, Compass, Smile, Sun, Baby, Ear, Eye,
   Stethoscope, Activity, Apple, Flower2, Target, PawPrint,
+  // Venues & Experiences + Creators column icons
+  Trophy, Car, Presentation, Building2, Camera, Plus,
+  Video, GraduationCap, Music, Languages, Laptop,
 } from 'lucide-react';
 
 // ── Nav item configs (config-driven, no hardcoded HTML) ──────────────────────
@@ -82,6 +85,22 @@ const WHOFOR_MENU = [
     { label: 'Spas',               href: '/for/spa',                  desc: 'Fill slots, kill no-shows',      icon: Flower2, tone: 'teal' },
     { label: 'Life Coaches',       href: '/for/life-coaches',         desc: 'Book paid coaching sessions',    icon: Target, tone: 'emerald' },
     { label: 'Veterinarians',      href: '/for/veterinarians',        desc: 'Book pet visits online',         icon: PawPrint, tone: 'teal' },
+  ] },
+  { header: 'Creators', items: [
+    { label: 'Coaches',          href: '/explore?q=coach',            desc: 'Book paid coaching sessions',    icon: Target, tone: 'emerald' },      // → /for/coaches
+    { label: 'Content Creators', href: '/explore?q=content-creator',  desc: 'Monetise 1:1s & collabs',        icon: Video, tone: 'pink' },          // → /for/content-creators
+    { label: 'Educators',        href: '/explore?q=educator',         desc: 'Fill classes & demo calls',      icon: GraduationCap, tone: 'blue' },  // → /for/educators
+    { label: 'Musicians',        href: '/explore?q=musician',         desc: 'Book lessons & gigs',            icon: Music, tone: 'violet' },        // → /for/musicians
+    { label: 'Language Teachers',href: '/explore?q=language-teacher', desc: 'Fill your lesson calendar',      icon: Languages, tone: 'cyan' },      // → /for/language-teachers
+    { label: 'Freelancers',      href: '/for/freelancers',            desc: 'Book paid discovery calls',      icon: Laptop, tone: 'teal' },
+  ] },
+  { header: 'Venues & Experiences', items: [
+    { label: 'Sports Arena',    href: '/for/sports-turf',             desc: 'Book courts & turf by the hour', icon: Trophy, tone: 'lime' },
+    { label: 'Driving School',  href: '/explore?q=driving-school',    desc: 'Fill every lesson slot',         icon: Car, tone: 'amber' },           // → /for/driving-schools
+    { label: 'Conference Halls',href: '/explore?q=conference-hall',   desc: 'Book your hall online',          icon: Presentation, tone: 'indigo' }, // → /for/conference-halls
+    { label: 'Coworking Space', href: '/explore?q=coworking',         desc: 'Book desks & meeting rooms',     icon: Building2, tone: 'sky' },        // → /for/coworking-spaces
+    { label: 'Photo Studio',    href: '/explore?q=photo-studio',      desc: 'Book studio time & shoots',      icon: Camera, tone: 'fuchsia' },       // → /for/photo-studios
+    { label: 'Coming More',     href: '/solutions',                   desc: 'More industries soon',           icon: Plus, tone: 'violet' },
   ] },
 ];
 
@@ -367,7 +386,7 @@ const TILE_MAP = {
   orange:  { tile: 'bg-orange-100 text-orange-500',   solid: 'group-hover/mi:bg-orange-500 group-hover/mi:text-white',     txt: 'group-hover/mi:text-orange-600',  c1: 'bg-orange-50',  c2: 'bg-orange-100' },
   violet:  { tile: 'bg-violet-100 text-violet-500',   solid: 'group-hover/mi:bg-violet-500 group-hover/mi:text-white',     txt: 'group-hover/mi:text-violet-600',  c1: 'bg-violet-50',  c2: 'bg-violet-100' },
   amber:   { tile: 'bg-amber-100 text-amber-500',     solid: 'group-hover/mi:bg-amber-500 group-hover/mi:text-white',      txt: 'group-hover/mi:text-amber-600',   c1: 'bg-amber-50',   c2: 'bg-amber-100' },
-  teal:    { tile: 'bg-teal-100 text-teal-500',       solid: 'group-hover/mi:bg-teal-500 group-hover/mi:text-white',       txt: 'group-hover/mi:text-teal-600',    c1: 'bg-teal-50',    c2: 'bg-teal-100' },
+  teal:    { tile: 'bg-teal/10 text-teal-ink',        solid: 'group-hover/mi:bg-teal group-hover/mi:text-white',           txt: 'group-hover/mi:text-teal-ink',    c1: 'bg-teal/5',     c2: 'bg-teal/10' },
   rose:    { tile: 'bg-rose-100 text-rose-500',       solid: 'group-hover/mi:bg-rose-500 group-hover/mi:text-white',       txt: 'group-hover/mi:text-rose-600',    c1: 'bg-rose-50',    c2: 'bg-rose-100' },
   sky:     { tile: 'bg-sky-100 text-sky-500',         solid: 'group-hover/mi:bg-sky-500 group-hover/mi:text-white',        txt: 'group-hover/mi:text-sky-600',     c1: 'bg-sky-50',     c2: 'bg-sky-100' },
   indigo:  { tile: 'bg-indigo-100 text-indigo-500',   solid: 'group-hover/mi:bg-indigo-500 group-hover/mi:text-white',     txt: 'group-hover/mi:text-indigo-600',  c1: 'bg-indigo-50',  c2: 'bg-indigo-100' },
@@ -539,7 +558,7 @@ export const PublicCenterNav = () => {
       </NavDropdown>
 
       <NavDropdown id="whofor" label="Industries" wide {...menuProps}>
-        <MegaMenu sections={WHOFOR_MENU} colClass="w-64" compact />
+        <MegaMenu sections={WHOFOR_MENU} colClass="w-52" compact />
       </NavDropdown>
 
       <NavDropdown id="resources" label="Resources" {...menuProps}>
