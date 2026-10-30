@@ -117,6 +117,32 @@ function BookingMock({ mock }) {
   );
 }
 
+/* ── Hero copy block — alignment adapts to the hero variant ── */
+function HeroCopy({ hero, centered = false }) {
+  return (
+    <div className={centered ? 'text-center' : 'text-center lg:text-left'}>
+      <Reveal as="p" className="font-heading text-xs font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--v2-accent-ink)' }}>{hero.eyebrow}</Reveal>
+      <Reveal as="h1" delay={0.05} className="mt-4 font-heading text-[clamp(2rem,5.2vw,3.5rem)] font-extrabold leading-[1.05] tracking-[-0.02em]">
+        {hero.headline}{' '}<span style={{ color: 'var(--v2-accent-ink)' }}>{hero.headlineAccent}</span>{hero.headlineTail ? ` ${hero.headlineTail}` : ''}
+      </Reveal>
+      <Reveal as="p" delay={0.12} className={`mt-5 max-w-xl text-[15.5px] leading-relaxed text-black/60 sm:text-base ${centered ? 'mx-auto' : 'mx-auto lg:mx-0'}`}>{hero.subline}</Reveal>
+      <Reveal delay={0.18} className={`mt-8 flex flex-col items-center gap-3 sm:flex-row ${centered ? 'justify-center' : 'lg:justify-start'}`}>
+        <Link to={ROUTE_START} className="inline-flex w-full items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5 hover:no-underline sm:w-auto" style={{ background: 'var(--v2-accent-cta)' }}>
+          {hero.ctaText} <ArrowRight size={16} />
+        </Link>
+        <span className="flex items-center gap-1.5 text-xs text-black/45"><Check size={13} style={{ color: 'var(--v2-accent)' }} />{hero.microcopy}</span>
+      </Reveal>
+      {hero.audiences && (
+        <Reveal delay={0.24} className={`mt-8 flex flex-wrap gap-2 ${centered ? 'justify-center' : 'justify-center lg:justify-start'}`}>
+          {hero.audiences.map((a) => (
+            <span key={a} className="rounded-full border px-3.5 py-1.5 text-[12.5px] font-semibold" style={{ borderColor: 'var(--v2-wash)', background: '#fff', color: 'var(--v2-accent-ink)' }}>{a}</span>
+          ))}
+        </Reveal>
+      )}
+    </div>
+  );
+}
+
 export default function ProfessionLandingV2() {
   useLenis();
   const { profession } = useParams();
@@ -143,6 +169,7 @@ export default function ProfessionLandingV2() {
     none: 'none',
   }[design.texture || 'none'];
   const textureSize = design.texture === 'grid' ? '26px 26px' : design.texture === 'dots' ? '22px 22px' : 'auto';
+  const heroVariant = design.heroVariant || 'split';
 
   // ── JSON-LD graph — SEO + AEO + GEO (mirrors v1) ──────────────────────────
   const jsonLd = [
@@ -197,32 +224,20 @@ export default function ProfessionLandingV2() {
         </div>
       </header>
 
-      {/* ════════ HERO (light, textured, split) ════════ */}
+      {/* ════════ HERO (light, textured; layout per design.heroVariant) ════════ */}
       <section className="relative px-5 sm:px-8" style={{ backgroundColor: 'var(--v2-canvas)', backgroundImage: texture, backgroundSize: textureSize }}>
         <div className="pointer-events-none absolute inset-x-0 top-0 h-full" style={{ background: 'linear-gradient(180deg, transparent, var(--v2-canvas) 92%)' }} />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-12 py-16 sm:py-20 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="text-center lg:text-left">
-            <Reveal as="p" className="font-heading text-xs font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--v2-accent-ink)' }}>{hero.eyebrow}</Reveal>
-            <Reveal as="h1" delay={0.05} className="mt-4 font-heading text-[clamp(2rem,5.2vw,3.5rem)] font-extrabold leading-[1.05] tracking-[-0.02em]">
-              {hero.headline}{' '}<span style={{ color: 'var(--v2-accent-ink)' }}>{hero.headlineAccent}</span>{hero.headlineTail ? ` ${hero.headlineTail}` : ''}
-            </Reveal>
-            <Reveal as="p" delay={0.12} className="mx-auto mt-5 max-w-xl text-[15.5px] leading-relaxed text-black/60 sm:text-base lg:mx-0">{hero.subline}</Reveal>
-            <Reveal delay={0.18} className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
-              <Link to={ROUTE_START} className="inline-flex w-full items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5 hover:no-underline sm:w-auto" style={{ background: 'var(--v2-accent-cta)' }}>
-                {hero.ctaText} <ArrowRight size={16} />
-              </Link>
-              <span className="flex items-center gap-1.5 text-xs text-black/45"><Check size={13} style={{ color: 'var(--v2-accent)' }} />{hero.microcopy}</span>
-            </Reveal>
-            {hero.audiences && (
-              <Reveal delay={0.24} className="mt-8 flex flex-wrap justify-center gap-2 lg:justify-start">
-                {hero.audiences.map((a) => (
-                  <span key={a} className="rounded-full border px-3.5 py-1.5 text-[12.5px] font-semibold" style={{ borderColor: 'var(--v2-wash)', background: '#fff', color: 'var(--v2-accent-ink)' }}>{a}</span>
-                ))}
-              </Reveal>
-            )}
+        {heroVariant === 'stage' ? (
+          <div className="relative mx-auto max-w-4xl py-16 sm:py-20">
+            <HeroCopy hero={hero} centered />
+            <Reveal delay={0.12} className="mx-auto mt-12 max-w-lg"><BookingMock mock={hero.mock} /></Reveal>
           </div>
-          <Reveal delay={0.1} className="hidden lg:block"><BookingMock mock={hero.mock} /></Reveal>
-        </div>
+        ) : (
+          <div className="relative mx-auto grid max-w-6xl items-center gap-12 py-16 sm:py-20 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className={heroVariant === 'mirror' ? 'lg:order-2' : ''}><HeroCopy hero={hero} /></div>
+            <Reveal delay={0.1} className={`hidden lg:block ${heroVariant === 'mirror' ? 'lg:order-1' : ''}`}><BookingMock mock={hero.mock} /></Reveal>
+          </div>
+        )}
       </section>
 
       {/* ════════ STAT COUNTERS (dark band) ════════ */}
