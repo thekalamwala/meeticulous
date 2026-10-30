@@ -17,7 +17,7 @@ const { renderLayout } = require('../services/email/emailLayout');
 const { themeForCategory } = require('../services/email/emailThemes');
 const { infoCard, FONT } = require('../services/email/emailComponents');
 
-// Comma-separated list supported (e.g. "hello@meeticulous.com, ops@bookasloth.in").
+// Comma-separated list supported (e.g. "hello@mail.meeticulous.in, ops@bookasloth.in").
 // Providers wrap `to` as [to], so a comma string can't be one recipient — split
 // and send one email per address.
 const ADMIN_ALERT_EMAIL =

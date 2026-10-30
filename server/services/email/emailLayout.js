@@ -162,7 +162,7 @@ function shellClose({ bodyHtml, cta, footerRow }) {
 function renderCustomerLayout({ bodyHtml, previewText, ctaLabel, ctaUrl, emailCategory, settings, data }) {
   const brand    = settings.brand_color   || '#960D32';
   const website  = settings.website_url   || 'https://meeticulous.com';
-  const support  = settings.support_email || 'hello@meeticulous.com';
+  const support  = settings.support_email || 'hello@mail.meeticulous.in';
   const fromName = settings.from_name     || 'Meeticulous';
   const year     = new Date().getFullYear();
   const unsubToken = data.unsubscribe_token || '';

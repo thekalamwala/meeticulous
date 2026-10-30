@@ -31,7 +31,7 @@ function buildGlobals(settings = {}, user = {}) {
   const parts = String(name).trim().split(/\s+/).filter(Boolean);
   return {
     current_year: String(new Date().getFullYear()),
-    support_email: settings.support_email || 'hello@meeticulous.com',
+    support_email: settings.support_email || 'hello@mail.meeticulous.in',
     website_url: websiteUrl,
     brand_color: settings.brand_color || '#960D32',
     dashboard_url: `${websiteUrl}/dashboard`,
