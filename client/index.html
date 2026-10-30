@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -8,66 +8,63 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Brand positioning: "the calm way to sell your time" — the machinery-handled
+    <!-- Brand positioning: "the calm way to sell your time" â€” the machinery-handled
          promise, deliberately mode-agnostic (no earnings/commission claim) so it holds in
          both fee-only and full-payments mode. Static site-wide default (scrapers don't run
          JS); per-route <Seo> + the prerender override this for important pages. -->
-    <title>Meeticulous — the calm way to sell your time</title>
-    <meta name="description" content="You sell your time — Meeticulous handles everything around it: booking, payments over UPI, and reminders, in one link. Built for India, live in minutes." />
+    <title>Meeticulous â€” the calm way to sell your time</title>
+    <meta name="description" content="You sell your time â€” Meeticulous handles everything around it: booking, payments over UPI, and reminders, in one link. Built for India, live in minutes." />
     <meta name="theme-color" content="#0079C1" />
     <!-- NO static canonical / og:url here, on purpose. This file is the SPA
-         fallback for EVERY route (via dist/spa-shell.html — see prerender.mjs):
+         fallback for EVERY route (via dist/spa-shell.html â€” see prerender.mjs):
          a hardcoded homepage canonical shipped `canonical=/` in the raw HTML of
          every non-prerendered page. Seo.jsx sets the correct per-route canonical
          at runtime; prerendered routes bake theirs at build time. -->
 
     <!-- Open Graph / social link previews. NOTE: static (scrapers don't run JS).
-         Generic site-wide card only — no og:url, so an unrendered route never
+         Generic site-wide card only â€” no og:url, so an unrendered route never
          claims the homepage's identity. Per-page cards come from Seo.jsx
          (runtime) and the prerender (build time). -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Meeticulous" />
-    <meta property="og:title" content="Meeticulous — the calm way to sell your time" />
-    <meta property="og:description" content="You sell your time. Meeticulous handles the booking, payments and reminders around it — one link, built for India." />
+    <meta property="og:title" content="Meeticulous â€” the calm way to sell your time" />
+    <meta property="og:description" content="You sell your time. Meeticulous handles the booking, payments and reminders around it â€” one link, built for India." />
     <meta property="og:image" content="https://meeticulous.com/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Meeticulous — the calm way to sell your time" />
-    <meta name="twitter:description" content="You sell your time. Meeticulous handles booking, payments and reminders around it — one link, built for India." />
+    <meta name="twitter:title" content="Meeticulous â€” the calm way to sell your time" />
+    <meta name="twitter:description" content="You sell your time. Meeticulous handles booking, payments and reminders around it â€” one link, built for India." />
     <meta name="twitter:image" content="https://meeticulous.com/og-image.png" />
     <!-- Preconnect to the four cross-origin hosts on the critical path, so the
          DNS + TLS handshake overlaps the HTML parse instead of stalling the
          first request to each. Lighthouse measured 660ms (PostHog) / 310ms (API)
          / 300ms (CDN) of LCP sitting in connection setup. Keep this list at four
-         — more preconnects contend for bandwidth and stop paying for themselves.
+         â€” more preconnects contend for bandwidth and stop paying for themselves.
          Values come from the build env (Vite substitutes %VITE_*% in this file);
          an unset var leaves an unparseable href the browser simply ignores. -->
     <link rel="preconnect" href="%VITE_POSTHOG_HOST%" crossorigin />
     <link rel="preconnect" href="%VITE_API_URL%" crossorigin />
     <link rel="preconnect" href="https://company-assets.meeticulous.in" crossorigin />
-    <!-- Supabase Storage — host cover + profile photos, the LCP image on every
+    <!-- Supabase Storage â€” host cover + profile photos, the LCP image on every
          /:username profile page. -->
     <link rel="preconnect" href="%VITE_SUPABASE_URL%" crossorigin />
 
     <!-- Self-hosted fonts (see src/styles/fonts.css). Preload only the two
-         above-the-fold faces — hero H1 (Bricolage Grotesque) + body (Inter Tight),
-         both single variable files — so the hero gets them fastest. -->
+         above-the-fold faces â€” hero H1 (Bricolage Grotesque) + body (Inter Tight),
+         both single variable files â€” so the hero gets them fastest. -->
     <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/bricolage-grotesque-latin-var.woff2" />
     <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/inter-tight-latin-var.woff2" />
-    <!-- Homepage hero (desktop LCP). Mobile uses a text-only hero, so this is
-         media-gated to sm+ and costs mobile nothing. Keep in sync with HERO in
-         src/components/home/images.js. -->
-    <link rel="preload" as="image" type="image/webp" media="(min-width: 640px)" fetchpriority="high"
-          href="/images/banner/hero-book-a-sloth.webp" />
+    <!-- No hero-image preload: the homepage hero is text-only at every breakpoint
+         (the H1 is the LCP element), so preloading a photo would waste bandwidth. -->
     <!-- Razorpay Checkout is loaded on demand at checkout (src/utils/loadRazorpay.js),
-         not here — it used to render-block every page including public marketing pages. -->
+         not here â€” it used to render-block every page including public marketing pages. -->
 
     <!-- Marketing tags (Meta Pixel, GA4, Microsoft Clarity) are loaded by the
          consent-gated analytics bus (src/services/analytics/) ONLY after the user
          grants marketing consent. IDs come from VITE_FB_PIXEL_ID /
          VITE_GA4_MEASUREMENT_ID / VITE_CLARITY_PROJECT_ID. Do NOT hardcode tag
-         <script>s here — that fires them before consent and bypasses the banner.
+         <script>s here â€” that fires them before consent and bypasses the banner.
          PostHog (needsConsent:false) initialises from JS at app boot. -->
 
   </head>
