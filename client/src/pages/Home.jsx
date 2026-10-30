@@ -2,8 +2,6 @@ import { Link } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import {
   motion,
-  useScroll,
-  useTransform,
   useInView,
   AnimatePresence,
   useReducedMotion,
@@ -20,7 +18,6 @@ import {
   IndianRupee,
   Sparkles,
   ArrowRight,
-  Star,
   Check,
   MessageCircle,
   ArrowUpRight,
@@ -48,6 +45,12 @@ import {
   FileCheck,
   Eye,
   CalendarX2,
+  Camera,
+  Dumbbell,
+  Gamepad2,
+  MessageSquare,
+  QrCode,
+  Receipt,
 } from "lucide-react";
 import { searchVendors, subscribeNewsletter } from "../services/api";
 import { useAuth } from "../context/AuthContext";
@@ -55,8 +58,10 @@ import toast from "react-hot-toast";
 import useLenis from "../hooks/useLenis";
 import { HostAvatar } from "../components/common/HostAvatar";
 import Reveal from "../components/home/Reveal";
-import HowItWorks from "../components/home/HowItWorks";
-import { HERO, HERO_FACES, PERSONAS, NEWSLETTER } from "../components/home/images";
+import AppointmentFlow from "../components/home/AppointmentFlow";
+import AudienceCarousel from "../components/home/AudienceCarousel";
+import razorpayLogo from "./enterprise-v2/assets/logo/razorpay.png";
+import { PERSONAS, NEWSLETTER } from "../components/home/images";
 import { TESTIMONIALS } from "../data/testimonials";
 import PricingCards from "../components/pricing/PricingCards";
 import Seo from "../components/common/Seo";
@@ -81,6 +86,18 @@ const ROUTE_LOGIN = "/login-as-vendor";
    on company-assets.meeticulous.in (1200×630 for OG). */
 const SITE_URL = "https://meeticulous.com";
 const OG_IMAGE = ogCard('home');
+
+/* ── Hero honeycomb background (brand: bee + M) ──
+   Pointy-top hexagon tile (side 18 → 31.18 × 54), 1px crimson #960D32 lines at
+   ~5% opacity. Inline SVG data URI: no extra request, no JS, no layout shift,
+   no LCP impact. Scrolls with the page (never background-attachment: fixed).
+   HIVE_HONEY is a sparse 6×3-cell tile aligned to the same grid: a few softly
+   filled "honey" cells + a couple of stronger outlines, so the field reads as
+   organic rather than flat wallpaper. A horizontal mask keeps the pattern fuller
+   at the page edges and lighter behind the central content column. */
+const HIVE_HONEY = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='187.08' height='162' viewBox='0 0 187.08 162'%3E%3Cpath d='M46.77 0.00L62.36 9.00V27.00L46.77 36.00L31.18 27.00V9.00Z' fill='%23960D32' fill-opacity='0.05'/%3E%3Cpath d='M109.13 54.00L124.72 63.00V81.00L109.13 90.00L93.54 81.00V63.00Z' fill='%23960D32' fill-opacity='0.06'/%3E%3Cpath d='M62.36 81.00L77.95 90.00V108.00L62.36 117.00L46.77 108.00V90.00Z' fill='%23960D32' fill-opacity='0.035'/%3E%3Cpath d='M171.49 108.00L187.08 117.00V135.00L171.49 144.00L155.90 135.00V117.00Z' fill='%23960D32' fill-opacity='0.045'/%3E%3Cpath d='M124.72 27.00L140.31 36.00V54.00L124.72 63.00L109.13 54.00V36.00Z' fill='none' stroke='%23960D32' stroke-opacity='0.16' stroke-width='1.25'/%3E%3Cpath d='M15.59 108.00L31.18 117.00V135.00L15.59 144.00L0.00 135.00V117.00Z' fill='none' stroke='%23960D32' stroke-opacity='0.12' stroke-width='1.25'/%3E%3C/svg%3E";
+const HIVE_TILE =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='31.18' height='54' viewBox='0 0 31.18 54'%3E%3Cg fill='none' stroke='%23960D32' stroke-opacity='0.07' stroke-width='1'%3E%3Cpath d='M15.59 0L31.18 9V27L15.59 36L0 27V9Z'/%3E%3Cpath d='M15.59 36V54'/%3E%3C/g%3E%3C/svg%3E";
 const ORG_LOGO = "https://company-assets.meeticulous.in/images/brand/logo.png";
 
 const HOME_JSONLD = [
@@ -93,7 +110,7 @@ const HOME_JSONLD = [
     operatingSystem: "Web",
     url: SITE_URL,
     description:
-      "Meeticulous is the appointment booking and payment system for professionals who sell their time — appointment scheduling, booking and payment, availability, invoices and appointment reminders in one link.",
+      "Meeticulous is appointment booking software for creators, professionals and independent coaches who sell their time — a booking page, online scheduling, upfront UPI payments, GST invoices and WhatsApp & email appointment reminders in one link.",
     offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
     // Users' rating of the product. ratingValue is the (uniformly 5★) sentiment of
     // the real, consented testimonials on /wall-of-love; reviewCount is DERIVED from
@@ -144,7 +161,7 @@ const HOME_JSONLD = [
     "@type": "WebSite",
     name: "Meeticulous",
     url: SITE_URL,
-    description: "Online booking system for people who sell their time — appointment scheduling, booking and payment, and appointment reminders in one link.",
+    description: "Appointment booking software for creators, pros & bros — scheduling, booking and payment, and appointment reminders in one link.",
     potentialAction: {
       "@type": "SearchAction",
       target: `${SITE_URL}/search?q={search_term_string}`,
@@ -258,52 +275,6 @@ const TAvatar = ({ src, name }) => {
   );
 };
 
-/* Hero "5/5" social-proof face — company-CDN photo with a neutral fallback
-   chip, so the row never shows a broken image before the 3 photos are
-   uploaded to company-assets …/images/hero/. */
-const HeroFace = ({ src }) => {
-  const [err, setErr] = useState(false);
-  if (err || !src) {
-    return (
-      <span className="h-10 w-10 flex-shrink-0 rounded-full border-2 border-canvas bg-gradient-to-br from-primary-light to-sand" />
-    );
-  }
-  return (
-    <img
-      src={src}
-      onError={() => setErr(true)}
-      alt=""
-      loading="lazy"
-      width={40}
-      height={40}
-      className="h-10 w-10 flex-shrink-0 rounded-full border-2 border-canvas object-cover"
-    />
-  );
-};
-
-/* ════════════════════════════════════════════════════════════
-   FLOATING glass card (hero)
-   ════════════════════════════════════════════════════════════ */
-const GlassCard = ({ icon: Icon, label, value, accent, className, float }) => (
-  <div
-    className={`sloth-glass ${float} absolute flex items-center gap-3 rounded-2xl px-4 py-3 ${className}`}
-  >
-    <span
-      className={`flex h-10 w-10 items-center justify-center rounded-xl ${
-        accent ? "bg-primary/10 text-primary" : "bg-neutral-900/5 text-neutral-700"
-      }`}
-    >
-      <Icon size={18} />
-    </span>
-    <div>
-      <div className="text-[11px] font-medium text-neutral-400">{label}</div>
-      <div className={`text-sm font-semibold ${accent ? "text-primary-cta" : "text-ink"}`}>
-        {value}
-      </div>
-    </div>
-  </div>
-);
-
 
 /* ════════════════════════════════════════════════════════════
    FEATURES (bento)
@@ -347,30 +318,153 @@ export const STATS = [
 ];
 
 
-/* ── Feature breakdown — grouped by the job it does ── */
-const FEATURE_GROUPS = [
-  { icon: CalendarCheck, title: "Get booked", desc: "Your page is live 24/7. Clients book while you sleep.", items: ["Personal booking page", "Availability management", "Two-way calendar sync"] },
-  { icon: Wallet, title: "Get paid", desc: "Money in before the session. No invoicing, no chasing.", items: ["Razorpay — UPI, cards, netbanking", "Advance & full payments", "Automatic GST invoices"] },
-  { icon: BellRing, title: "Get reminded", desc: "Automatic reminders and confirmations go out for you — no no-shows to chase.", items: ["Email & WhatsApp reminders", "Instant confirmations", "Post-session follow-ups"] },
-  { icon: FolderKanban, title: "Get organized", desc: "Every client, every booking, every rupee — in one place.", items: ["Client history & receipts", "Private notes", "Bookings & revenue reports"] },
+/* ── Audience segmentation — Creators / Pros / Bros ──
+   Rendered by components/home/AudienceCarousel. `learnMore` must point at a
+   /for/<slug> page that exists (bespoke route or professionLandingData) —
+   an unknown /for/<slug> 404s. */
+const AUDIENCES = [
+  {
+    key: "creators",
+    icon: Camera,
+    title: "Creators",
+    tagline: "Turn followers into paying clients.",
+    desc: "Put one link in your bio and let people book shoots, 1:1 calls and paid sessions — or buy a digital download — without a single DM.",
+    who: [
+      { label: "Influencers" },
+      { label: "Photographers", href: "/for/photographers" },
+      { label: "Artists" },
+      { label: "Workshop hosts" },
+    ],
+    points: ["Link-in-bio booking page", "Paid sessions & digital products", "UPI checkout at booking"],
+    learnMore: "/for/photographers",
+    color: "var(--c-pink)",
+  },
+  {
+    key: "pros",
+    icon: Briefcase,
+    title: "Pros",
+    tagline: "Bill for your expertise, not your admin.",
+    desc: "Sell consults, audits and coaching calls that are paid before they start, sync with Google Calendar and come with a GST invoice.",
+    who: [
+      { label: "Consultants", href: "/for/business-consultant" },
+      { label: "Coaches", href: "/for/life-coaches" },
+      { label: "Freelancers", href: "/for/freelancers" },
+      { label: "Designers" },
+    ],
+    points: ["Paid consults, upfront", "Google Calendar + Meet links", "Automatic GST invoices"],
+    learnMore: "/for/freelancers",
+    color: "var(--c-blue)",
+  },
+  {
+    key: "bros",
+    icon: Dumbbell,
+    title: "Bros",
+    tagline: "Run your side hustle like a business.",
+    desc: "Training, coaching and mentoring sessions that fill themselves after work hours — paid by UPI, with WhatsApp reminders so people actually show up.",
+    who: [
+      { label: "Fitness trainers", href: "/for/fitness" },
+      { label: "Gaming coaches" },
+      { label: "Mentors" },
+      { label: "Yoga instructors", href: "/for/yoga-instructors" },
+    ],
+    points: ["Early-morning & evening slots", "WhatsApp + email reminders", "Clients book without an account"],
+    learnMore: "/for/fitness",
+    color: "var(--c-emerald)",
+  },
+];
+
+/* ── Problems → fixes. Each card: a real pain, two fixes that are shipped
+   capabilities (verified in server/), and a link to an existing route. ── */
+const PROBLEMS = [
+  {
+    icon: MessageSquare,
+    title: "Endless DMs to fix one time",
+    fixes: ["Clients see your open slots and book one themselves.", "Busy times from Google Calendar never show up."],
+    link: { to: "/features/online-scheduling", label: "Online scheduling" },
+  },
+  {
+    icon: QrCode,
+    title: "Chasing payments after the call",
+    fixes: ["Clients pay upfront by UPI, card or netbanking.", "Payments run through Razorpay at checkout."],
+    link: { to: "/features/payments", label: "Payments" },
+  },
+  {
+    icon: CalendarX2,
+    title: "No-shows that cost you an hour",
+    fixes: ["Automatic WhatsApp and email reminders before every session.", "A confirmation goes out the moment they book."],
+    link: { to: "/features/notifications", label: "Reminders" },
+  },
+  {
+    icon: Receipt,
+    title: "Making invoices by hand",
+    fixes: ["A GST invoice is generated for every paid booking.", "All your invoices live in one dashboard."],
+    link: { to: "/features/payments", label: "Invoices & GST" },
+  },
+  {
+    icon: Calendar,
+    title: "Double bookings and calendar chaos",
+    fixes: ["Two-way Google Calendar sync keeps one source of truth.", "Bookings land on your calendar with a Meet link."],
+    link: { to: "/features/google-calendar", label: "Google Calendar" },
+  },
+  {
+    icon: Clock,
+    title: "Back-and-forth to reschedule",
+    fixes: ["Reschedule from your dashboard; the client confirms by link.", "Clients can cancel from their own booking link."],
+    link: { to: "/features/online-scheduling", label: "Scheduling" },
+  },
+  {
+    icon: Wind,
+    title: "Back-to-back sessions, no breathing room",
+    fixes: ["Add buffers between sessions automatically.", "Set weekly hours and block out days off."],
+    link: { to: "/features/availability", label: "Availability" },
+  },
+  {
+    icon: IndianRupee,
+    title: "Fees that eat into every booking",
+    fixes: ["Starter is free: we take 5% only when you get paid.", "Pro has 0% commission, so you keep every rupee."],
+    link: { to: "/pricing", label: "Pricing" },
+  },
+];
+
+/* ── Integrations actually wired in server/ (no logo-wall padding) ── */
+const INTEGRATIONS = [
+  { name: "Razorpay", desc: "UPI, cards & netbanking", icon: CreditCard, logo: razorpayLogo, color: "#3395FF" },
+  { name: "Google Calendar & Meet", desc: "Two-way sync + meeting links", icon: Calendar, logo: "/images/logos/google-meet.svg", color: "#4285F4" },
+  { name: "WhatsApp", desc: "Booking reminders", icon: MessageCircle, logo: "/images/logos/whatsapp.svg", color: "#25D366" },
+  // Email goes out over our own SMTP — keep the generic icon, not a Gmail logo.
+  { name: "Email", desc: "Confirmations & receipts", icon: Mail, color: "#F59E0B" },
 ];
 
 
 
 /* ── FAQ ── */
 const FAQS = [
+  { q: "What is appointment booking software?", a: "It's a tool that lets clients book time with you on their own — they see your open slots, pick one and confirm, without messaging back and forth. Meeticulous adds the parts around the booking too: upfront payment, reminders, invoices and a client list." },
+  { q: "Who is Meeticulous for?", a: "Anyone who sells their time or skills: creators like photographers, artists and influencers; pros like consultants, coaches, freelancers and designers; and independents like fitness trainers, gaming coaches and mentors. If you get paid per session, it fits." },
   { q: "Is Meeticulous really free?", a: "Yes. Starter costs nothing and has no time limit — unlimited services and bookings. We take 5% only when you actually get paid. Pro removes that commission for ₹1,179 a year (under ₹4 a day), which pays for itself once you're earning about ₹4,700 a month." },
   { q: "Do you charge commission?", a: "On Pro, no — you keep 100% of every booking. Starter (the free plan) charges 5% per transaction, and nothing when you have no bookings." },
   { q: "Can clients pay while booking?", a: "Yes — that's the whole point. Clients pay via UPI, card or netbanking at checkout. You get paid before the session starts." },
   { q: "Do clients need an account?", a: "No. Clients book and pay without creating an account." },
   { q: "Can I connect Google Calendar?", a: "Yes. Two-way sync — your availability updates automatically and bookings appear in your calendar in real time." },
   { q: "What Google permissions does Meeticulous request?", a: "Only the minimum needed for scheduling: create and manage booking events on your calendar, read your free/busy times so booked slots stay hidden, and read your calendar timezone once. Google data is used solely to provide these features — never for ads, never sold — and you can revoke access anytime from your Google Account settings." },
-  { q: "Can I take deposits or advance payments?", a: "Yes. You can collect a deposit or full payment upfront — your choice per service." },
+  { q: "Can I sell more than live sessions?", a: "Yes. Alongside 1:1 sessions you can list digital products — guides, templates or downloads — on the same booking page." },
   { q: "Is GST handled?", a: "Yes. GST invoices are generated automatically for every booking." },
-  { q: "Will reminders reduce my no-shows?", a: "Consistently. Automated email and WhatsApp reminders go out before every session. Most hosts report a significant drop in no-shows within the first month." },
+  { q: "Will reminders reduce my no-shows?", a: "They help. Automatic email and WhatsApp reminders go out before every session, and because clients pay upfront, they're far more likely to turn up." },
   { q: "Can I cancel anytime?", a: "Yes. No contracts, no lock-in. Cancel from your dashboard whenever you like." },
-  { q: "Can I move from another platform?", a: "Yes. Set up your services and share your new link — most hosts are live the same day." },
+  { q: "Can I move from another platform?", a: "Yes. Set up your services and share your new link — you can be live the same day." },
 ];
+
+/* FAQPage schema — derived from FAQS so the markup can never drift from the
+   answers actually rendered on the page. */
+const FAQ_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQS.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
 
 /* ── Google integration — keep aligned with the consent screen scopes in
    server/config/google.js (3 sensitive scopes, nothing more). Shown in the
@@ -383,11 +477,11 @@ const GOOGLE_SCOPES = [
 
 /* ── Trust & security badges ── */
 const TRUST = [
-  { icon: Lock, title: "Secure payments", desc: "Processed by Razorpay, India's trusted gateway.", color: "var(--c-blue)" },
-  { icon: ShieldCheck, title: "SSL encrypted", desc: "Every page and payment is encrypted end to end.", color: "var(--c-emerald)" },
-  { icon: Eye, title: "Privacy-first", desc: "Your data is yours. Never sold, never shared.", color: "var(--c-violet)" },
-  { icon: FileCheck, title: "You own your data", desc: "Clients, bookings and earnings always belong to you.", color: "var(--c-cyan)" },
-  { icon: Download, title: "Export anytime", desc: "Download your data whenever you want to.", color: "var(--c-amber)" },
+  { icon: Lock, title: "Secure payments", desc: "Processed by Razorpay, India's trusted gateway.", color: "#7C3AED" },
+  { icon: ShieldCheck, title: "SSL encrypted", desc: "Every page and payment is encrypted end to end.", color: "#0891B2" },
+  { icon: Eye, title: "Privacy-first", desc: "Your data is yours. Never sold, never shared.", color: "#DB2777" },
+  { icon: FileCheck, title: "You own your data", desc: "Clients, bookings and earnings always belong to you.", color: "#65A30D" },
+  { icon: Download, title: "Export anytime", desc: "Download your data whenever you want to.", color: "#EA580C" },
 ];
 
 /* ════════════════════════════════════════════════════════════
@@ -397,7 +491,6 @@ const Home = () => {
   useLenis();
   const { startVendorGoogleAuth } = useAuth();
 
-  const featureGroups = FEATURE_GROUPS;
   const faqs = FAQS;
 
   // ── Google-only host funnel — same entry as /be-a-sloth ──
@@ -472,14 +565,6 @@ const Home = () => {
   const hasResults =
     results && (results.vendors?.length > 0 || results.services?.length > 0);
 
-  // ── Hero image parallax ──
-  const heroRef = useRef(null);
-  const { scrollYProgress: heroProg } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const heroImgY = useTransform(heroProg, [0, 1], [0, 80]);
-
   // ── Testimonials carousel: centred active card fills the 28%→72% middle cell.
   //    Transform-based track (the page runs Lenis smooth-scroll, which blocks inner
   //    scrollLeft — so we translate, not scroll). List is tripled; the auto-advance
@@ -544,20 +629,20 @@ const Home = () => {
   ];
 
   return (
-    <main id="top" className="overflow-x-clip bg-canvas text-ink">
+    <main id="top" className="overflow-x-clip bg-white text-ink">
       <Seo
-        title="Appointment Booking & Payment Software for People Who Sell Their Time — Meeticulous"
-        description="Meeticulous is the online booking system for professionals who sell their time. One link handles appointment scheduling, booking and payment, availability, invoices and appointment reminders — clients book and pay themselves, so you skip the admin. Built for India."
-        keywords="appointment booking software, online booking system, appointment scheduling, booking and payment, appointment reminders, appointment scheduling software, online appointment booking, take payments for appointments, booking page, India"
+        title="Appointment Booking Software for Creators, Pros & Bros — Meeticulous"
+        description="Meeticulous is appointment booking software for creators, consultants, coaches, freelancers and fitness trainers. One link handles scheduling, upfront UPI payments, GST invoices and WhatsApp reminders — clients book and pay themselves. Free to start, built for India."
+        keywords="appointment booking software, online booking system, booking software for creators, booking app for coaches, booking software for fitness trainers, appointment scheduling software, take payments for appointments, booking page, UPI booking, India"
         canonical={`${SITE_URL}/`}
         robots="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
         siteName="Meeticulous"
         locale="en_IN"
-        themeColor="#F5B700"
-        ogTitle="Get booked, paid, and reminded. Without the admin."
-        ogDescription="One link for appointments, payments, availability, invoices, and reminders. Built for people who sell their time."
+        themeColor="#960D32"
+        ogTitle="Appointment booking software for creators, pros & bros"
+        ogDescription="Get booked, paid and reminded — without the admin. One link for bookings, UPI payments, invoices and WhatsApp reminders."
         image={OG_IMAGE}
-        jsonLd={HOME_JSONLD}
+        jsonLd={[...HOME_JSONLD, FAQ_JSONLD]}
       />
       {/* ponytail: no BrandPreloader on the homepage — it was a fixed full-screen
           overlay gated on a post-hydration useEffect (fonts.ready + hero decode),
@@ -565,177 +650,72 @@ const Home = () => {
           slow mobile that WAS the LCP (~6-10s). The hero is server-rendered, so
           it now paints immediately. Intro kept on profile pages. */}
 
-      {/* ════════════════ HERO — DESKTOP/TABLET (sm+) ════════════════ */}
-      {/* Mobile gets its own centered section below; this whole block is sm:block. */}
-      <section ref={heroRef} className="relative hidden overflow-hidden bg-gradient-to-br from-surface-dark to-surface-darker px-5 pb-14 pt-8 sm:block sm:px-8 sm:pb-20 sm:pt-12 lg:pb-32 lg:pt-16">
-        {/* Ambient lavender glow for depth on the dark hero */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_55%_at_18%_0%,rgba(167,139,250,0.20),transparent)]" />
+      {/* ════════════════ HERO — centered, light (all breakpoints) ════════════════
+         HubSpot/Calendly-style hierarchy: category eyebrow → keyword H1 →
+         two-line promise → primary + secondary CTA → risk-reversal microcopy,
+         then the product/photo panel below. One H1 for every breakpoint (the
+         old dark split hero needed an h1/h2 mobile twin). */}
+      <section className="relative overflow-hidden border-b border-black/10 px-5 pb-32 pt-16 sm:px-8 sm:pb-44 sm:pt-24 lg:pb-48 lg:pt-28">
+        {/* Honeycomb pattern — hero only (brand: bee + M). Sits under the hero content, which is z-10. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage: `url("${HIVE_HONEY}"), url("${HIVE_TILE}")`,
+            backgroundSize: "187.08px 162px, 31.18px 54px",
+            backgroundRepeat: "repeat, repeat",
+            WebkitMaskImage: "linear-gradient(90deg, #000 0%, rgba(0,0,0,0.45) 28%, rgba(0,0,0,0.45) 72%, #000 100%)",
+            maskImage: "linear-gradient(90deg, #000 0%, rgba(0,0,0,0.45) 28%, rgba(0,0,0,0.45) 72%, #000 100%)",
+          }}
+        />
 
-        <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-10 sm:gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
-          {/* LEFT */}
-          <div>
-            <Reveal instant as="h1" delay={0.05} className="text-[clamp(1.7rem,7vw,2.7rem)] font-semibold leading-[1.1] tracking-[-0.03em] text-white sm:text-[2.7rem] sm:leading-[1.1] lg:text-[3rem]">
-              Get <span className="text-secondary">booked, paid, and reminded.</span>{" "}
-              <span className="font-bold">Without the admin.</span>
-            </Reveal>
+        <div className="relative z-10 mx-auto max-w-5xl text-center">
 
-            <Reveal instant as="p" delay={0.12} className="mt-5 max-w-md text-base leading-relaxed text-white/70 sm:mt-7 sm:text-lg">
-              One link for appointments, payments, availability, invoices, and reminders.
-              Built for people who sell their time.
-            </Reveal>
-
-            {/* Google-only host funnel — fires the same flow as /be-a-sloth */}
-            <Reveal instant delay={0.18} className="mt-6 sm:mt-9">
-              <div className="max-w-[22rem]">
-                <button
-                  onClick={startGoogle}
-                  disabled={googleLoading}
-                  className="btn flex w-full items-center justify-center gap-3 rounded-[5px] bg-white py-3.5 text-sm font-semibold text-[#960D32] shadow-[0_10px_28px_rgba(0,0,0,0.28)] transition-opacity hover:opacity-90 disabled:opacity-50"
-                >
-                  <GoogleIcon />
-                  {googleLoading ? "Opening Google…" : "Create Your Free Booking Page"}
-                </button>
-                <p className="mt-3 text-xs leading-relaxed text-white/55">
-                  By continuing, you agree to our{" "}
-                  <Link to="/terms" className="text-white/75 underline decoration-white/30 underline-offset-2 hover:text-white">Terms &amp; Conditions</Link> and{" "}
-                  <Link to="/privacy" className="text-white/75 underline decoration-white/30 underline-offset-2 hover:text-white">Privacy Policy</Link>.
-                </p>
-              </div>
-            </Reveal>
-
-            {/* Social proof */}
-            <Reveal instant delay={0.24} className="mt-7 flex items-center gap-4 sm:mt-9">
-              <div className="flex -space-x-3">
-                {HERO_FACES.map((f, i) => (
-                  <HeroFace key={i} src={f} />
-                ))}
-              </div>
-              <div>
-                <div className="flex items-center gap-1">
-                  {[0, 1, 2, 3, 4].map((i) => (
-                    <Star key={i} size={13} className="fill-amber-400 text-amber-400" />
-                  ))}
-                  <span className="ml-1 text-sm font-semibold text-white">5/5</span>
-                </div>
-                <p className="text-xs text-white/70">
-                  Loved by India's creators and coaches.
-                </p>
-              </div>
-            </Reveal>
-          </div>
-
-          {/* RIGHT — hero photo (sm+ only; mobile uses the dedicated centered section below) */}
-          <Reveal instant delay={0.1} className="relative hidden sm:block">
-            <div className="relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-[6px] bg-sand shadow-[0_40px_90px_-25px_rgba(26,26,26,0.38)] ring-1 ring-black/5">
-              {/* ponytail: <picture> media-source so the hero is fetched ONLY at
-                  sm+ (where it's shown). The <img> has no src of its own, so on
-                  mobile — where this whole block is `hidden` but an <img src> would
-                  still download — nothing is fetched. Desktop loads the webp. */}
-              <picture>
-                <source media="(min-width: 640px)" srcSet={HERO} type="image/webp" />
-                <motion.img
-                  alt="A calm professional at work"
-                  loading="eager"
-                  style={{ y: heroImgY }}
-                  className="h-[112%] w-full object-cover"
-                />
-              </picture>
-              {/* Subtle inset sheen for a more premium frame */}
-              <div aria-hidden className="pointer-events-none absolute inset-0 rounded-[6px] ring-1 ring-inset ring-white/15" />
-            </div>
-
-            {/* Floating glass cards */}
-            <GlassCard
-              icon={CalendarCheck}
-              label="New booking"
-              value="Confirmed · 4:30 PM"
-              float="sloth-float"
-              className="hidden sm:flex top-10 sm:-left-8"
-            />
-            <GlassCard
-              icon={Wallet}
-              label="Payment received"
-              value="₹2,500"
-              accent
-              float="sloth-float--mid"
-              className="hidden sm:flex top-1/2 sm:-right-6"
-            />
-            <GlassCard
-              icon={Wind}
-              label="Upcoming session"
-              value="Tomorrow · 11 AM"
-              float="sloth-float--slow"
-              className="hidden sm:flex bottom-8 sm:left-6"
-            />
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ════════════════ HERO — MOBILE ONLY (centered) ════════════════ */}
-      {/* Same left-column content as the sm+ hero, centered. Full-viewport
-          height so the hero fills the first screen; content vertically centered. */}
-      <section className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-gradient-to-br from-surface-dark to-surface-darker px-5 pb-14 pt-8 sm:hidden">
-        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_50%_at_50%_0%,rgba(167,139,250,0.20),transparent)]" />
-
-        <div className="relative z-10 mx-auto max-w-md text-center">
-          {/* Mobile hero is the responsive twin of the desktop <h1> above; both
-              render in the DOM (CSS-hidden per breakpoint), so this one is an h2
-              to keep a single H1 per page for crawlers. */}
-          <Reveal instant as="h2" delay={0.05} className="text-[clamp(2.2rem,9vw,3.2rem)] font-semibold leading-[1.08] tracking-[-0.03em] text-white">
-            Get <span className="text-secondary">booked, paid, and reminded.</span>{" "}
-            <span className="font-bold">Without the admin.</span>
+          <Reveal instant as="h1" delay={0.05} className="mx-auto max-w-[17ch] font-heading text-[clamp(2.4rem,8.5vw,4.75rem)] font-extrabold leading-[1.04] tracking-[-0.035em] text-ink">
+            Appointment booking software for creators, pros &amp; bros<span className="text-primary">.</span>
           </Reveal>
 
-          <Reveal instant as="p" delay={0.12} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-white/70">
-            One link for appointments, payments, availability, invoices, and reminders.
-            Built for people who sell their time.
+          <Reveal instant as="p" delay={0.12} className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-neutral-600 sm:mt-8 sm:text-lg">
+            Get booked, paid and reminded — without the admin. One link turns your time, skills
+            and services into paid bookings, with UPI checkout, WhatsApp reminders and GST invoices built in.
           </Reveal>
 
           {/* Google-only host funnel — fires the same flow as /be-a-sloth */}
-          <Reveal instant delay={0.18} className="mt-6">
-            <div className="mx-auto max-w-[22rem]">
+          <Reveal instant delay={0.18} className="mt-8 sm:mt-10">
+            <div className="mx-auto flex max-w-md flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
               <button
                 onClick={startGoogle}
                 disabled={googleLoading}
-                className="btn flex w-full items-center justify-center gap-3 rounded-[5px] bg-white py-3.5 text-sm font-semibold text-[#960D32] shadow-[0_10px_28px_rgba(0,0,0,0.28)] transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="btn inline-flex items-center justify-center gap-3 rounded-[6px] bg-primary px-6 py-3.5 text-sm font-semibold text-white shadow-[0_12px_30px_-12px_rgba(150,13,50,0.55)] transition-opacity hover:opacity-90 disabled:opacity-50 sm:px-7 sm:py-4 sm:text-base"
               >
-                <GoogleIcon />
+                <span className="flex h-7 w-7 items-center justify-center rounded-[4px] bg-white">
+                  <GoogleIcon />
+                </span>
                 {googleLoading ? "Opening Google…" : "Create Your Free Booking Page"}
               </button>
-              <p className="mt-3 text-xs leading-relaxed text-white/55">
-                By continuing, you agree to our{" "}
-                <Link to="/terms" className="text-white/75 underline decoration-white/30 underline-offset-2 hover:text-white">Terms &amp; Conditions</Link> and{" "}
-                <Link to="/privacy" className="text-white/75 underline decoration-white/30 underline-offset-2 hover:text-white">Privacy Policy</Link>.
-              </p>
+              <a
+                href="#how-it-works"
+                className="inline-flex items-center justify-center gap-2 rounded-[6px] border border-primary/40 bg-white px-6 py-3.5 text-sm font-semibold text-primary-cta transition-colors hover:border-primary hover:no-underline sm:px-7 sm:py-4 sm:text-base"
+              >
+                See how it works <ArrowRight size={16} />
+              </a>
             </div>
-          </Reveal>
-
-          {/* Social proof */}
-          <Reveal instant delay={0.24} className="mt-7 flex flex-col items-center gap-3">
-            <div className="flex -space-x-3">
-              {HERO_FACES.map((f, i) => (
-                <HeroFace key={i} src={f} />
-              ))}
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="flex items-center gap-1">
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <Star key={i} size={13} className="fill-amber-400 text-amber-400" />
-                ))}
-                <span className="ml-1 text-sm font-semibold text-white">5/5</span>
-              </div>
-              <p className="text-center text-xs text-white/70">
-                Loved by India's first calm professionals.
-              </p>
-            </div>
+            <p className="mx-auto mt-4 max-w-md text-xs leading-relaxed text-neutral-500">
+              By continuing, you agree to our{" "}
+              <Link to="/terms" className="text-neutral-500 underline decoration-neutral-300 underline-offset-2 hover:text-ink">Terms &amp; Conditions</Link> and{" "}
+              <Link to="/privacy" className="text-neutral-500 underline decoration-neutral-300 underline-offset-2 hover:text-ink">Privacy Policy</Link>.
+            </p>
           </Reveal>
         </div>
       </section>
 
-      {/* ════════════════ STATS STRIP (dark) ════════════════ */}
-      <section className="bg-ink px-5 py-20 text-white sm:px-8 lg:py-28">
+      {/* ════════════════ PROOF STRIP (dark, overlaps the hero) ════════════════
+         Live launch numbers (STATS) in a wide dark panel pulled up into the
+         hero's bottom edge (Calendly-style), so proof sits right after the CTA. */}
+      <section className="relative z-10 -mt-20 px-3 text-white sm:-mt-28 sm:px-5 lg:px-8">
+        <div className="mx-auto max-w-[88rem] rounded-[10px] bg-ink px-5 py-16 shadow-[0_40px_90px_-40px_rgba(42,20,22,0.6)] sm:px-8 lg:py-24">
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" delay={0.05} className="mx-auto mt-3 max-w-[64rem] text-center text-2xl text-white sm:text-3xl">
+          <Reveal as="h2" delay={0.05} className="mx-auto max-w-[64rem] text-center font-heading text-2xl font-bold text-white sm:text-3xl">
             Coaches, Doctors, Consultants, Therapists and Designers already getting appointments booked and paid.
           </Reveal>
           <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4 lg:gap-x-0 lg:divide-x lg:divide-white/10">
@@ -748,8 +728,97 @@ const Home = () => {
             ))}
           </div>
         </div>
+        </div>
       </section>
 
+      {/* ════════════════ WHO IT'S FOR — Creators / Pros / Bros ════════════════
+         Audience carousel on a plain white band: the active audience sits
+         centred and white, its neighbours faded either side (HubSpot-style). */}
+      <section
+        id="who-its-for"
+        className="scroll-mt-24 overflow-hidden px-5 py-20 sm:px-8 lg:py-28"
+      >
+        <div className="mx-auto max-w-7xl">
+          <Reveal as="p" className="text-center text-xs font-semibold uppercase tracking-[0.18em] text-primary-cta">
+            Who it's for
+          </Reveal>
+          <Reveal as="h2" delay={0.05} className="mx-auto mt-3 max-w-[780px] text-center text-4xl font-extrabold leading-tight text-ink sm:text-5xl">
+            If you sell your time, <span className="text-primary-cta">it's bookable.</span>
+          </Reveal>
+          <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-[640px] text-center text-base text-neutral-700">
+            Sessions, shoots, consults, coaching or a downloadable guide. One page, paid before you start.
+          </Reveal>
+
+          <Reveal delay={0.12} className="mt-12 lg:mt-14">
+            <AudienceCarousel audiences={AUDIENCES} />
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ════════════════ PROBLEMS → FIXES ════════════════
+         Names the pain before the product (HubSpot-style problem→solution
+         bridge): the left column stays sticky (lg+) while the problem cards
+         scroll past on the right. Every fix line is a shipped capability. */}
+      <section className="border-y border-black/5 px-5 py-20 sm:px-8 lg:py-28">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+            <div className="lg:sticky lg:top-28 lg:self-start">
+              <Reveal as="p" className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-cta">
+                The problem
+              </Reveal>
+              <Reveal as="h2" delay={0.05} className="mt-3 text-4xl font-extrabold leading-tight text-ink sm:text-5xl">
+                Selling your time shouldn't feel like <span className="text-primary-cta">a second job.</span>
+              </Reveal>
+              <Reveal as="p" delay={0.1} className="mt-5 max-w-md text-base leading-relaxed text-neutral-600 sm:text-lg">
+                Most people who sell sessions run them on DMs, payment screenshots and memory.
+                Meeticulous replaces that admin with one link that does it for you.
+              </Reveal>
+              <Reveal delay={0.15} className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <button
+                  onClick={startGoogle}
+                  disabled={googleLoading}
+                  className="btn inline-flex items-center justify-center gap-2 rounded-[6px] bg-primary px-6 py-3.5 text-sm font-semibold text-white shadow-[0_12px_30px_-12px_rgba(150,13,50,0.55)] transition-opacity hover:opacity-90 disabled:opacity-50"
+                >
+                  {googleLoading ? "Opening Google…" : "Start for free"}
+                </button>
+                <Link
+                  to="/pricing"
+                  className="inline-flex items-center justify-center rounded-[6px] border border-primary/40 bg-white px-6 py-3.5 text-sm font-semibold text-primary-cta transition-colors hover:border-primary hover:no-underline"
+                >
+                  See pricing
+                </Link>
+              </Reveal>
+            </div>
+
+            <ul className="grid gap-5 sm:grid-cols-2">
+              {PROBLEMS.map((p, i) => (
+                <Reveal as="li" key={p.title} delay={(i % 2) * 0.08}>
+                  <div className="flex h-full flex-col rounded-[10px] border border-black/5 bg-white px-6 py-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-shadow duration-300 hover:shadow-[0_24px_60px_-28px_rgba(26,26,26,0.25)] sm:px-7">
+                    <h3 className="flex items-center gap-2.5 font-heading text-lg font-bold leading-snug text-ink">
+                      <p.icon size={20} className="flex-shrink-0 text-primary" />
+                      {p.title}
+                    </h3>
+                    <ul className="mt-5 flex-1 space-y-3 border-t border-black/5 pt-5">
+                      {p.fixes.map((f) => (
+                        <li key={f} className="flex items-start gap-2.5 text-[15px] leading-relaxed text-neutral-600">
+                          <Check size={16} className="mt-1 flex-shrink-0 text-primary" />
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                    <Link
+                      to={p.link.to}
+                      className="group mt-5 inline-flex items-center gap-1.5 border-t border-black/5 pt-5 text-sm font-semibold text-ink hover:text-primary-cta hover:no-underline"
+                    >
+                      {p.link.label} <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-0.5" />
+                    </Link>
+                  </div>
+                </Reveal>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
 
 
       {/* ════════════════ SEARCH — "Find a vendor" ════════════════
@@ -896,16 +965,31 @@ const Home = () => {
 
 
       {/* ════════════════ HOW THE CALM WORKS ════════════════ */}
-      <section id="how-it-works" className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" delay={0.05} className="mx-auto mt-3 max-w-[750px] text-center text-4xl text-ink sm:text-5xl">
-            Everything around the appointment, <span className="font-extrabold text-primary-cta">automated.</span>
+      <section id="how-it-works" className="scroll-mt-24 px-5 py-20 sm:px-8 lg:py-28">
+        <div className="mx-auto max-w-7xl">
+          <Reveal as="p" className="text-center text-xs font-semibold uppercase tracking-[0.18em] text-primary-cta">
+            Appointment automation
           </Reveal>
-          <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-[750px] text-center text-base text-neutral-500">
-            Choose a service → Pick a time → Pay → Get confirmation → Get reminders.
+          <Reveal as="h2" delay={0.05} className="mx-auto mt-3 max-w-[750px] text-center text-4xl font-extrabold leading-tight text-ink sm:text-5xl">
+            Everything around the appointment, <span className="text-primary-cta">automated.</span>
+          </Reveal>
+          <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-[680px] text-center text-base leading-relaxed text-neutral-500 sm:text-lg">
+            Sessions are how you earn, but the admin around them eats your day. Meeticulous handles
+            everything before, during and after each booking, so you can focus on the work itself.
+          </Reveal>
+          <Reveal delay={0.15} className="mt-8 flex justify-center">
+            <button
+              onClick={startGoogle}
+              disabled={googleLoading}
+              className="btn inline-flex items-center justify-center gap-2 rounded-[6px] bg-ink px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(26,26,26,0.12)] transition-opacity hover:opacity-90 disabled:opacity-50"
+            >
+              {googleLoading ? "Opening Google…" : "Start for free"} <ArrowRight size={16} />
+            </button>
           </Reveal>
 
-          <HowItWorks theme="light" />
+          <Reveal delay={0.1} className="mt-12 lg:mt-14">
+            <AppointmentFlow />
+          </Reveal>
         </div>
       </section>
 
@@ -1001,49 +1085,17 @@ const Home = () => {
       )}
 
 
-      {/* ════════════════ FEATURE BREAKDOWN (dark) ════════════════ */}
-      <section className="bg-ink px-5 py-20 text-white sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" delay={0.05} className="mx-auto mt-3 max-w-[750px] text-center text-4xl text-white sm:text-5xl">
-            Get <span className="font-extrabold text-primary-cta">booked</span>. Get <span className="font-extrabold text-primary-cta">paid</span>. Get <span className="font-extrabold text-primary-cta">reminded</span>. Get <span className="font-extrabold text-primary-cta">organized</span>.
-          </Reveal>
-          <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-[750px] text-center text-base text-white/70">
-            Everything around the appointment, handled — so you focus on the actual work.
-          </Reveal>
-          <div className="mt-14 grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
-            {featureGroups.map((g, i) => (
-              <Reveal key={g.title} delay={(i % 4) * 0.07}>
-                {/* Subtle dark-theme hover: card lifts, border warms to orange, bg
-                    brightens slightly, icon chip warms. Text + orange accents stay — no invert. */}
-                <div className="group flex h-full flex-col rounded-[6px] border border-white/10 bg-white/5 p-6 shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1 hover:border-primary hover:bg-white/10 hover:shadow-[0_22px_45px_-18px_rgba(0,0,0,0.6)] sm:p-7">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 text-primary transition-colors duration-300 group-hover:bg-primary/25">
-                    <g.icon size={22} />
-                  </span>
-                  <h3 className="mt-5 font-heading text-lg font-bold text-white">{g.title}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-white/60">{g.desc}</p>
-                  <ul className="mt-5 space-y-2.5 border-t border-white/10 pt-5 transition-colors duration-300 group-hover:border-white/20">
-                    {g.items.map((it) => (
-                      <li key={it} className="flex items-start gap-2 text-sm text-white/80">
-                        <Check size={15} className="mt-0.5 flex-shrink-0 text-primary" />
-                        {it}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ════════════════ TESTIMONIALS (CENTERED CAROUSEL) ════════════════ */}
-      <section id="collective" className="overflow-hidden px-5 pb-20 pt-14 sm:px-8 lg:pb-28 lg:pt-20">
+      <section id="collective" className="overflow-hidden border-t border-black/5 px-5 pb-20 pt-20 sm:px-8 lg:pb-28 lg:pt-28">
         <div className="mx-auto max-w-3xl text-center">
-          <Reveal as="h2" className="text-4xl font-extrabold leading-[1.05] tracking-tight text-ink sm:text-5xl">
+          <Reveal as="p" className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-cta">
+            Loved by hosts
+          </Reveal>
+          <Reveal as="h2" delay={0.05} className="mt-3 text-4xl font-extrabold leading-[1.05] tracking-tight text-ink sm:text-5xl">
             Don't take our word for it.
           </Reveal>
           <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-[750px] text-base text-neutral-500">
-            Real professionals. Real bookings. Real calm.
+            Coaches, consultants, creators and mentors already getting booked and paid.
           </Reveal>
         </div>
 
@@ -1335,42 +1387,6 @@ const Home = () => {
       </section>
       )}
 
-      {/* ════════════════ FAQ ════════════════ */}
-      <section id="faq" className="px-5 pb-20 pt-12 sm:px-8 lg:pb-28 lg:pt-16">
-        <div className="mx-auto max-w-3xl">
-          <Reveal as="h2" delay={0.05} className="mx-auto mt-3 max-w-[750px] text-center text-4xl text-ink sm:text-5xl">
-            Questions, answered.
-          </Reveal>
-          <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-[750px] text-center text-base text-neutral-500">
-            Still stuck? Write to us at{" "}
-            <a href="mailto:bolt@meeticulous.in" className="font-semibold text-primary-cta hover:no-underline">bolt@meeticulous.in</a>{" "}
-            — we reply fast.
-          </Reveal>
-          <div className="mt-12 space-y-3">
-            {faqs.map((f, i) => (
-              <Reveal key={f.q} delay={Math.min(i * 0.04, 0.2)}>
-                <div className="rounded-[6px] border border-black/5 bg-white px-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-                  <button
-                    type="button"
-                    id={`faq-q-${i}`}
-                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                    aria-expanded={openFaq === i}
-                    aria-controls={`faq-a-${i}`}
-                    className="flex w-full cursor-pointer items-center justify-between gap-4 py-5 text-left font-heading text-base font-bold text-ink"
-                  >
-                    {f.q}
-                    <Plus size={18} className={`flex-shrink-0 text-primary transition-transform duration-300 ${openFaq === i ? 'rotate-45' : ''}`} />
-                  </button>
-                  {openFaq === i && (
-                    <p id={`faq-a-${i}`} role="region" aria-labelledby={`faq-q-${i}`} className="-mt-1 pb-5 text-sm leading-relaxed text-neutral-500">{f.a}</p>
-                  )}
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ════════════════ COMPARISON / COMPETITORS (full-width dark band) ════════════════ */}
       {/* Hidden for now — re-enable once all comparison pages are ready by removing the {false && (...)} wrapper. */}
       {false && (
@@ -1460,22 +1476,54 @@ const Home = () => {
       )}
 
       {/* ════════════════ TRUST & SECURITY ════════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-28">
+      <section id="trust" className="border-y border-black/5 px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" delay={0.05} className="mx-auto mt-3 max-w-[750px] text-center text-4xl text-ink sm:text-5xl">
-            Your money and data, <span className="font-extrabold text-primary-cta">handled carefully.</span>
+          <Reveal as="p" className="text-center text-xs font-semibold uppercase tracking-[0.18em] text-primary-cta">
+            Integrations &amp; trust
+          </Reveal>
+          <Reveal as="h2" delay={0.05} className="mx-auto mt-3 max-w-[750px] text-center text-4xl font-extrabold leading-tight text-ink sm:text-5xl">
+            Your money and data, <span className="text-primary-cta">handled carefully.</span>
           </Reveal>
           <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-[750px] text-center text-base text-neutral-500">
-            The unsexy-but-important stuff — done right.
+            Built on the tools you and your clients already use — and the unsexy-but-important stuff, done right.
           </Reveal>
-          <div className="mt-14 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-5">
+
+          {/* Integrations that are actually wired up (server/) — no logo wall. */}
+          <div className="mt-14 grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
+            {INTEGRATIONS.map((it, i) => (
+              <Reveal key={it.name} delay={i * 0.06}>
+                <div
+                  className="flex h-full items-center gap-4 rounded-[6px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_-28px_rgba(26,26,26,0.25)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                >
+                  <span
+                    className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl"
+                    style={{ backgroundColor: `color-mix(in srgb, ${it.color} 14%, white)`, color: it.color }}
+                  >
+                    {it.logo ? (
+                      <img src={it.logo} alt="" width={22} height={22} loading="lazy" className="h-[22px] w-[22px] object-contain" />
+                    ) : (
+                      <it.icon size={20} />
+                    )}
+                  </span>
+                  <div>
+                    <h3 className="font-heading text-sm font-bold text-ink">{it.name}</h3>
+                    <p className="text-xs text-neutral-500">{it.desc}</p>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+
+          <div className="mt-5 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-5">
             {TRUST.map((t, i) => (
               <Reveal key={t.title} delay={(i % 5) * 0.06}>
-                <div className="flex h-full flex-col items-center rounded-[6px] border border-black/5 bg-white p-6 text-center shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+                <div
+                  className="flex h-full flex-col items-center rounded-[6px] border border-black/5 bg-white p-6 text-center shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_-28px_rgba(26,26,26,0.25)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                >
                   <span
                     className="flex h-12 w-12 items-center justify-center rounded-xl"
                     style={{
-                      backgroundColor: `color-mix(in srgb, ${t.color} 12%, transparent)`,
+                      backgroundColor: `color-mix(in srgb, ${t.color} 14%, white)`,
                       color: t.color,
                     }}
                   >
@@ -1518,7 +1566,7 @@ const Home = () => {
                       <Check size={16} className="mt-0.5 shrink-0 text-primary" />
                       <p className="text-sm leading-relaxed text-neutral-500">
                         <span className="font-semibold text-ink">{s.name}</span>{" "}
-                        <span className="rounded-[4px] bg-black/5 px-1.5 py-0.5 font-mono text-[11px] text-neutral-500">{s.scope}</span>{" "}
+                        <span className="rounded-[4px] bg-black/5 px-1.5 py-0.5 font-mono text-[11px] text-neutral-600">{s.scope}</span>{" "}
                         — {s.desc}
                       </p>
                     </li>
@@ -1546,6 +1594,78 @@ const Home = () => {
           <p className="mx-auto mt-10 max-w-[750px] text-center text-sm font-medium text-ink">
             Meeticulous does not sell or share your data with third parties. <span className="text-primary-cta">Ever.</span>
           </p>
+        </div>
+      </section>
+
+      {/* ════════════════ FAQ ════════════════ */}
+      {/* Split view: heading column sticky on lg+, questions scroll with the
+          page. Answers stay mounted and open via the grid-rows 0fr→1fr trick,
+          so height animates smoothly with no layout jump (instant under
+          prefers-reduced-motion). Single-open, same FAQS/FAQ_JSONLD as before. */}
+      <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
+        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[2fr_3fr] lg:gap-16">
+          <div className="lg:sticky lg:top-28 lg:self-start">
+            <Reveal as="p" className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-cta">
+              FAQ
+            </Reveal>
+            <Reveal as="h2" delay={0.05} className="mt-3 text-4xl font-extrabold leading-tight text-ink sm:text-5xl">
+              Questions, <span className="text-primary-cta">answered.</span>
+            </Reveal>
+            <Reveal as="p" delay={0.1} className="mt-5 max-w-sm text-base leading-relaxed text-neutral-600">
+              Still stuck? Write to us at{" "}
+              <a href="mailto:bolt@meeticulous.in" className="font-semibold text-primary-cta hover:no-underline">bolt@meeticulous.in</a>{" "}
+              — we reply fast.
+            </Reveal>
+            <Reveal delay={0.15} className="mt-6">
+              <Link
+                to="/contact"
+                className="group inline-flex items-center gap-1.5 text-sm font-semibold text-ink hover:text-primary-cta hover:no-underline"
+              >
+                Still have questions? Contact us
+                <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-0.5" />
+              </Link>
+            </Reveal>
+          </div>
+
+          <Reveal delay={0.05}>
+            <ul className="border-t border-black/10">
+              {faqs.map((f, i) => {
+                const open = openFaq === i;
+                return (
+                  <li key={f.q} className="border-b border-black/10">
+                    <button
+                      type="button"
+                      id={`faq-q-${i}`}
+                      onClick={() => setOpenFaq(open ? null : i)}
+                      aria-expanded={open}
+                      aria-controls={`faq-a-${i}`}
+                      className="flex w-full cursor-pointer items-center justify-between gap-6 rounded-[4px] py-5 text-left font-heading text-base font-bold text-ink transition-colors hover:text-primary-cta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:text-lg"
+                    >
+                      {f.q}
+                      <Plus
+                        size={20}
+                        className={`flex-shrink-0 text-primary transition-transform duration-300 ease-out motion-reduce:transition-none ${open ? "rotate-45" : ""}`}
+                      />
+                    </button>
+                    <div
+                      id={`faq-a-${i}`}
+                      role="region"
+                      aria-labelledby={`faq-q-${i}`}
+                      aria-hidden={!open}
+                      inert={open ? undefined : ""}
+                      className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none ${
+                        open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                      }`}
+                    >
+                      <div className="overflow-hidden">
+                        <p className="pb-6 pr-10 text-[15px] leading-relaxed text-neutral-600">{f.a}</p>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </Reveal>
         </div>
       </section>
 

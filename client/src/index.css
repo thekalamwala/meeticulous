@@ -63,7 +63,7 @@ body {
                        what created dead scroll space below the footer on /lp. */
   background: #F8FAFC;
   color: var(--color-ink);
-  font-family: 'Poppins', 'Poppins Fallback', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--font-primary);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -85,14 +85,23 @@ h6 {
   line-height: 1.15;
 }
 
-/* Headings: H1/H2/H3 → Plus Jakarta Sans. Everything else inherits Poppins. */
-h1,
+/* Headings: H2/H3 → Inter Tight, like the body. */
 h2,
 h3 {
-  font-family: 'Plus Jakarta Sans', 'Plus Jakarta Sans Fallback', 'Poppins', system-ui, sans-serif;
+  font-family: var(--font-primary);
 }
 
-/* Admin/super-admin dashboard: entirely Poppins, headings included. */
+/* Hero H1 → Bricolage Grotesque. Every page's H1 is its hero headline, so this
+   is the single switch for the display face. `h1.font-heading` / `h1.font-sans`
+   out-specify the Tailwind utility that most hero H1s carry. Admin keeps its own
+   rule below (same specificity, declared later). */
+h1,
+h1.font-heading,
+h1.font-sans {
+  font-family: var(--font-display);
+}
+
+/* Admin/super-admin dashboard: entirely Inter Tight, headings included. */
 .admin-shell,
 .admin-shell h1,
 .admin-shell h2,
@@ -100,7 +109,7 @@ h3 {
 .admin-shell h4,
 .admin-shell h5,
 .admin-shell h6 {
-  font-family: 'Poppins', system-ui, sans-serif;
+  font-family: var(--font-primary);
 }
 
 /* No link underline anywhere in the admin dashboard (incl. hover). */

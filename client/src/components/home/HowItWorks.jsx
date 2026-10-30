@@ -59,7 +59,7 @@ export const STEPS = [
   {
     title: "Just show up",
     desc: "Reminders go out automatically. Receipts are sent. Follow-ups land. You do nothing.",
-    chip: "Near-zero no-shows",
+    chip: "Reminders sent for you",
     color: "var(--c-emerald)",
     draw: (
       <>

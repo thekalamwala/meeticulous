@@ -51,15 +51,12 @@
     <link rel="preconnect" href="%VITE_SUPABASE_URL%" crossorigin />
 
     <!-- Self-hosted fonts (see src/styles/fonts.css). Preload only the two
-         above-the-fold weights — heading (Plus Jakarta Sans) + body (Poppins 400) —
-         so the hero gets them fastest; the rest load on demand via @font-face. -->
-    <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/plus-jakarta-sans-latin-var.woff2" />
-    <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/poppins-latin-400.woff2" />
-    <!-- Homepage hero (desktop LCP). Mobile uses a text-only hero, so this is
-         media-gated to sm+ and costs mobile nothing. Keep in sync with HERO in
-         src/components/home/images.js. -->
-    <link rel="preload" as="image" type="image/webp" media="(min-width: 640px)" fetchpriority="high"
-          href="/images/banner/hero-book-a-sloth.webp" />
+         above-the-fold faces — hero H1 (Bricolage Grotesque) + body (Inter Tight),
+         both single variable files — so the hero gets them fastest. -->
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/bricolage-grotesque-latin-var.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/inter-tight-latin-var.woff2" />
+    <!-- No hero-image preload: the homepage hero is text-only at every breakpoint
+         (the H1 is the LCP element), so preloading a photo would waste bandwidth. -->
     <!-- Razorpay Checkout is loaded on demand at checkout (src/utils/loadRazorpay.js),
          not here — it used to render-block every page including public marketing pages. -->
 
