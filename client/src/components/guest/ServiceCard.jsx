@@ -110,7 +110,7 @@ export default function ServiceCard({ service, rank }) {
           {/* A <span>, not an <a> — the whole card is already a <Link>; nesting anchors is invalid. */}
           <span className="btn inline-flex shrink-0 items-center gap-1.5 bg-primary px-4 py-2
                            text-[13px] font-semibold text-white transition-colors duration-150
-                           group-hover:bg-[#a83400]">
+                           group-hover:bg-[#2A1416]">
             Book Now <ArrowRight size={14} />
           </span>
         </div>

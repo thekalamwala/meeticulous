@@ -96,7 +96,7 @@ const ProductPurchase = () => {
   // instead of the old hardcoded indigo. Falls back to the brand orange.
   const accent = isValidHex(product?.profiles?.theme_color)
     ? product.profiles.theme_color
-    : "#0079C1";
+    : "#960D32";
   // Platform fee comes from the server (never hardcoded here, so it can't drift
   // from what's actually charged).
   const fee = Number(product?.platform_fee ?? 0);
@@ -310,7 +310,7 @@ const ProductPurchase = () => {
   const host = product.profiles;
 
   return (
-    <div className="min-h-screen bg-[#f7f5ef]">
+    <div className="min-h-screen bg-canvas">
       <Seo
         title={`${product.title} — ${host?.name || "Meeticulous"}`}
         description={(product.description || `Buy ${product.title} from ${host?.name || "this creator"} on Meeticulous.`).slice(0, 160)}

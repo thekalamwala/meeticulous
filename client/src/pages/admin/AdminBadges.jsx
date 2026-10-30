@@ -298,7 +298,7 @@ const AdminBadges = () => {
               <h2 className="text-lg font-bold adm-t1">{editingId ? 'Edit Badge' : 'New Badge'}</h2>
               <div className="flex gap-1">
                 {[1, 2, 3, 4].map((s) => (
-                  <span key={s} className={`w-6 h-1.5 rounded-full ${step >= s ? 'bg-[#0079C1]' : 'bg-gray-200'}`} />
+                  <span key={s} className={`w-6 h-1.5 rounded-full ${step >= s ? 'bg-[#960D32]' : 'bg-gray-200'}`} />
                 ))}
               </div>
             </div>
@@ -348,7 +348,7 @@ const AdminBadges = () => {
               <div className="space-y-3">
                 <p className="text-xs font-bold adm-t3 uppercase tracking-wider">Step 2 — Badge type</p>
                 {['automatic', 'manual'].map((t) => (
-                  <label key={t} className={`flex items-start gap-3 border adm-border rounded-xl p-3 cursor-pointer ${form.badge_type === t ? 'border-[#0079C1] bg-orange-50/40' : ''}`}>
+                  <label key={t} className={`flex items-start gap-3 border adm-border rounded-xl p-3 cursor-pointer ${form.badge_type === t ? 'border-[#960D32] bg-orange-50/40' : ''}`}>
                     <input type="radio" checked={form.badge_type === t} onChange={() => setForm((f) => ({ ...f, badge_type: t }))} className="mt-1" />
                     <span>
                       <span className="block text-sm font-semibold capitalize adm-t1">{t}</span>
@@ -402,7 +402,7 @@ const AdminBadges = () => {
               <div className="space-y-3">
                 <p className="text-xs font-bold adm-t3 uppercase tracking-wider">Step 4 — Publish</p>
                 {['draft', 'active', 'archived'].map((s) => (
-                  <label key={s} className={`flex items-start gap-3 border adm-border rounded-xl p-3 cursor-pointer ${form.status === s ? 'border-[#0079C1] bg-orange-50/40' : ''}`}>
+                  <label key={s} className={`flex items-start gap-3 border adm-border rounded-xl p-3 cursor-pointer ${form.status === s ? 'border-[#960D32] bg-orange-50/40' : ''}`}>
                     <input type="radio" checked={form.status === s} onChange={() => setForm((f) => ({ ...f, status: s }))} className="mt-1" />
                     <span>
                       <span className="block text-sm font-semibold capitalize adm-t1">{s}</span>

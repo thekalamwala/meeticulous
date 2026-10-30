@@ -49,7 +49,7 @@ export default function LegalLayout({
   const canonical = current ? `${SITE_URL}${current}` : undefined;
 
   return (
-    <div className="min-h-screen" style={{ background: "#f7f5ef" }}>
+    <div className="min-h-screen" style={{ background: "#F8FAFC" }}>
     <Seo
       title={`${title} | Meeticulous`}
       description={description || `${title} for Meeticulous — the online appointment booking and scheduling platform.`}

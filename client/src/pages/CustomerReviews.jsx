@@ -14,7 +14,7 @@ const fmtDate = (iso) =>
   new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 
 const Stars = ({ n }) => (
-  <span className="text-[#0079C1] text-sm tracking-tight" aria-label={`${n} out of 5`}>
+  <span className="text-[#960D32] text-sm tracking-tight" aria-label={`${n} out of 5`}>
     {"★".repeat(n)}<span className="text-gray-200">{"★".repeat(5 - n)}</span>
   </span>
 );
@@ -52,7 +52,7 @@ const CustomerReviews = () => {
           </div>
           {count > 0 && (
             <div className="text-right">
-              <p className="text-2xl font-bold text-[#0079C1] leading-none">{avg}</p>
+              <p className="text-2xl font-bold text-[#960D32] leading-none">{avg}</p>
               <p className="text-xs text-gray-400 mt-1">{count} review{count === 1 ? "" : "s"}</p>
             </div>
           )}
@@ -74,8 +74,8 @@ const CustomerReviews = () => {
           <div className="text-center py-16"><PetalSpinner size={40} /></div>
         ) : count === 0 ? (
           <div className="bg-white border rounded-2xl p-10 text-center">
-            <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#0079C1]/10 mb-4">
-              <Star className="text-[#0079C1]" size={26} />
+            <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#960D32]/10 mb-4">
+              <Star className="text-[#960D32]" size={26} />
             </span>
             <p className="font-semibold text-gray-900">No reviews yet</p>
             <p className="text-sm text-gray-500 mt-1 max-w-sm mx-auto">
@@ -88,7 +88,7 @@ const CustomerReviews = () => {
             </div>
             {tab === "traveling" && (
               <div className="mt-6">
-                <Link to="/" className="text-sm font-medium text-[#0079C1] hover:underline">Book a session →</Link>
+                <Link to="/" className="text-sm font-medium text-[#960D32] hover:underline">Book a session →</Link>
               </div>
             )}
           </div>
@@ -102,7 +102,7 @@ const CustomerReviews = () => {
                     {author.profile_image ? (
                       <img src={author.profile_image} alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
                     ) : (
-                      <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#0079C1] text-white font-bold flex-shrink-0">
+                      <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#960D32] text-white font-bold flex-shrink-0">
                         {author.name ? author.name[0].toUpperCase() : "U"}
                       </span>
                     )}

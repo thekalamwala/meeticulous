@@ -1,7 +1,7 @@
 import { BACKGROUNDS } from '../../backgrounds/registry';
 import HostBackground from '../../backgrounds/HostBackground';
 
-const SAMPLE = '#0079C1'; // platform accent — shows motion to admin
+const SAMPLE = '#960D32'; // platform accent — shows motion to admin
 
 export default function BackgroundCurator({ value, onChange }) {
   const backgrounds = value?.backgrounds || {};

@@ -51,8 +51,8 @@ export const AUTHOR = {
 // hover colour (--card-hov in Blog.jsx).
 // `light: true` flips band text to ink (Growth / yellow).
 export const CATEGORY_THEME = {
-  News:             { band: '#0079C1', accent: '#FF8A3D', light: false, chipBg: 'rgba(254,81,0,0.10)',  chipFg: '#c2410c' },
-  Product:          { band: '#0079C1', accent: '#FF8A3D', light: false, chipBg: 'rgba(254,81,0,0.10)',  chipFg: '#c2410c' },
+  News:             { band: '#960D32', accent: '#FF8A3D', light: false, chipBg: 'rgba(254,81,0,0.10)',  chipFg: '#c2410c' },
+  Product:          { band: '#960D32', accent: '#FF8A3D', light: false, chipBg: 'rgba(254,81,0,0.10)',  chipFg: '#c2410c' },
   'Feature Update': { band: '#1E63C9', accent: '#5BA8F5', light: false, chipBg: 'rgba(30,99,201,0.10)', chipFg: '#1e63c9' },
   Guide:            { band: '#2E9D58', accent: '#5FD089', light: false, chipBg: 'rgba(46,157,88,0.12)', chipFg: '#1f7a43' },
   Growth:           { band: '#FFCC1C', accent: '#B98900', light: true,  chipBg: 'rgba(255,204,28,0.18)',chipFg: '#9a7400' },

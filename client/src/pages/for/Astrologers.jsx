@@ -204,7 +204,7 @@ function CtaButton({ to, children, variant = 'solid', className = '' }) {
     <Link
       to={to}
       className={`${base} ${styles[variant]} ${className}`}
-      style={variant === 'solid' ? { background: 'linear-gradient(120deg, #6D28D9, var(--ca-primary))' } : undefined}
+      style={variant === 'solid' ? { background: 'linear-gradient(120deg, #7A0A28, var(--ca-primary))' } : undefined}
     >
       {children}
     </Link>
@@ -395,7 +395,7 @@ export default function Astrologers() {
     '--ca-primary': '#4C1D95', // cosmic violet — text/links/fills, ~10:1 on white
     '--ca-accent': '#EAB308',  // gold / star — fills & on-dark accents (not body text on white)
     '--ca-ink': '#1E1633',     // deep indigo-slate text
-    '--ca-cream': '#F5F3FF',   // violet-50 section bg
+    '--ca-cream': '#FFF1F4',   // violet-50 section bg
     '--ca-grey': '#F3F1F8',    // light section bg
     '--ca-deep': '#170F33',    // night-sky base
   };
@@ -568,7 +568,7 @@ export default function Astrologers() {
             <div aria-hidden className="zodiac-spin pointer-events-none absolute left-1/2 top-1/2 rounded-full" style={{ width: 560, height: 560, marginLeft: -280, marginTop: -280, border: '1px dashed color-mix(in srgb, var(--ca-primary) 30%, transparent)' }} />
             <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 rounded-full" style={{ width: 440, height: 440, marginLeft: -220, marginTop: -220, border: '1px dotted color-mix(in srgb, var(--ca-accent) 45%, transparent)' }} />
             {/* center emblem */}
-            <div className="absolute left-1/2 top-1/2 flex h-40 w-40 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full text-center text-white shadow-[0_24px_60px_-24px_rgba(76,29,149,0.6)]" style={{ background: 'radial-gradient(120% 100% at 50% 0%, #6D28D9, var(--ca-deep))' }}>
+            <div className="absolute left-1/2 top-1/2 flex h-40 w-40 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full text-center text-white shadow-[0_24px_60px_-24px_rgba(76,29,149,0.6)]" style={{ background: 'radial-gradient(120% 100% at 50% 0%, #7A0A28, var(--ca-deep))' }}>
               <Sun size={26} style={{ color: 'var(--ca-accent)' }} />
               <div className="mt-1.5 font-heading text-2xl font-extrabold leading-none">8</div>
               <div className="px-4 text-[11px] font-medium leading-tight text-white/75">ways to guide your seekers</div>
@@ -609,7 +609,7 @@ export default function Astrologers() {
                 <div className="flex flex-col items-center text-center">
                   <div className="relative z-10 flex flex-col items-center">
                     <MoonPhase i={i} />
-                    <span className="mt-4 flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-[0_12px_28px_-12px_rgba(76,29,149,0.7)]" style={{ background: 'linear-gradient(135deg, #6D28D9, var(--ca-primary))' }}>
+                    <span className="mt-4 flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-[0_12px_28px_-12px_rgba(76,29,149,0.7)]" style={{ background: 'linear-gradient(135deg, #7A0A28, var(--ca-primary))' }}>
                       <s.icon size={22} />
                     </span>
                   </div>
@@ -727,7 +727,7 @@ export default function Astrologers() {
               </div>
             </div>
             {/* horizon — the dawn line */}
-            <div aria-hidden className="h-1.5 w-full" style={{ background: 'linear-gradient(90deg, #6D28D9, var(--ca-accent), #6D28D9)' }} />
+            <div aria-hidden className="h-1.5 w-full" style={{ background: 'linear-gradient(90deg, #7A0A28, var(--ca-accent), #7A0A28)' }} />
             {/* dawn band — with */}
             <div className="bg-white px-7 py-8 sm:px-10">
               <div className="text-xs font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--ca-primary)' }}>With Meeticulous · a booked dawn</div>
@@ -783,7 +783,7 @@ export default function Astrologers() {
             </Reveal>
             {/* Pro — starlit night card */}
             <Reveal delay={0.08}>
-              <div className="relative flex h-full flex-col overflow-hidden rounded-[20px] p-7 text-white shadow-[0_28px_70px_-30px_rgba(76,29,149,0.7)] sm:p-8" style={{ background: 'radial-gradient(120% 120% at 80% 0%, #6D28D9 0%, var(--ca-deep) 70%)' }}>
+              <div className="relative flex h-full flex-col overflow-hidden rounded-[20px] p-7 text-white shadow-[0_28px_70px_-30px_rgba(76,29,149,0.7)] sm:p-8" style={{ background: 'radial-gradient(120% 120% at 80% 0%, #7A0A28 0%, var(--ca-deep) 70%)' }}>
                 <div className="cosmic-stars" aria-hidden />
                 <div className="relative flex items-center justify-between">
                   <div className="font-heading text-lg font-bold">{PREMIUM_PLAN.name}</div>

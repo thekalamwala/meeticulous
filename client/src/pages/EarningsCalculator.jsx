@@ -16,7 +16,7 @@ import {
 
 const ROUTE_START = "/become-a-host";
 const ICON = { free: Sprout, premium: Rocket };
-const ACCENT = { free: "#4AB765", premium: "#0079C1" };
+const ACCENT = { free: "#4AB765", premium: "#960D32" };
 const CTA_LABEL = { free: "Get Started", premium: "Start on Pro" };
 
 // One-line "who's this for" per plan.
@@ -157,7 +157,7 @@ function PlanCard({ result, winnerKey, cycle }) {
       : `0% commission · ${cycle === "annual" ? `${inr0(yearly)}/yr` : `${inr0(monthly)}/mo`}`;
   return (
     <div className={`relative flex flex-col rounded-[14px] border bg-white p-5 sm:p-6 ${isRec ? "border-2 shadow-[0_12px_40px_rgba(254,81,0,0.12)]" : "border-black/10"}`}
-      style={isRec ? { borderColor: accent, background: "#fff8f4" } : undefined}>
+      style={isRec ? { borderColor: accent, background: "#EFF6FB" } : undefined}>
       {isRec && (
         <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-semibold text-white" style={{ background: accent }}>
           <Crown size={12} fill="#fff" /> Recommended
@@ -175,7 +175,7 @@ function PlanCard({ result, winnerKey, cycle }) {
 
       <p className="mt-4 text-sm font-bold text-ink">{POSITION[plan.key]}</p>
       <div className="mt-2">
-        <p className="text-2xl font-extrabold" style={{ color: isRec ? accent : "#191919" }}>{inr0(result.netAnnual)}</p>
+        <p className="text-2xl font-extrabold" style={{ color: isRec ? accent : "#2A1416" }}>{inr0(result.netAnnual)}</p>
         <p className="text-xs text-neutral-500">you keep per year</p>
       </div>
 
@@ -244,7 +244,7 @@ export default function EarningsCalculator() {
   const canonical = `${SITE_URL}/earnings-calculator`;
 
   return (
-    <div className="min-h-screen" style={{ background: "#f7f5ef" }}>
+    <div className="min-h-screen" style={{ background: "#F8FAFC" }}>
       <Seo
         title="Earnings Calculator — see what you keep | Meeticulous"
         description="Meeticulous earnings calculator: set your price and monthly bookings to see exactly what you keep — and whether Starter or Pro leaves you the most."

@@ -49,7 +49,7 @@ const industries = [
     desc: 'Internal scheduling, HR interviews, and facility bookings at scale.',
     feature:
       'Role-based access and approval hierarchy match your reporting structure.',
-    color: '#0079C1',
+    color: '#960D32',
     softColor: '#EFF6FF',
     shadowColor: 'rgba(37, 99, 235, 0.18)',
   },
@@ -70,7 +70,7 @@ const industries = [
     feature:
       'Advance payments, invoices, and calendar sync handle scheduling and revenue together.',
     color: '#1DA1F2',
-    softColor: '#F5F3FF',
+    softColor: '#FFF1F4',
     shadowColor: 'rgba(124, 58, 237, 0.18)',
   },
   {

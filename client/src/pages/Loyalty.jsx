@@ -34,7 +34,7 @@ const Loyalty = () => {
     <>
       {/* Header / coming soon banner */}
         <div className="rounded-2xl p-6 sm:p-8 mb-6 text-white relative overflow-hidden"
-          style={{ background: "linear-gradient(135deg,#0079C1,#ff7a3c)" }}>
+          style={{ background: "linear-gradient(135deg,#960D32,#960D32)" }}>
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide opacity-90">
             <Sparkles size={14} /> Coming soon
           </div>
@@ -55,7 +55,7 @@ const Loyalty = () => {
               const unlocked = spent >= t.spend;
               return (
                 <div key={t.name}
-                  className={`rounded-xl border p-3 text-center ${unlocked ? "border-[#0079C1]/40 bg-[#0079C1]/5" : "bg-gray-50"}`}>
+                  className={`rounded-xl border p-3 text-center ${unlocked ? "border-[#960D32]/40 bg-[#960D32]/5" : "bg-gray-50"}`}>
                   <span className="inline-flex items-center justify-center w-9 h-9 rounded-full mb-2"
                     style={{ background: `${t.color}22`, color: t.color }}>
                     {unlocked ? <Trophy size={17} /> : <Lock size={15} />}
@@ -81,7 +81,7 @@ const Loyalty = () => {
           <p className="text-sm text-gray-500">
             We're putting the finishing touches on rewards. Keep booking — your spend will count toward your tier the day it goes live.
           </p>
-          <Link to="/explore" className="inline-block text-sm font-medium text-[#0079C1] hover:underline mt-3">Explore creators →</Link>
+          <Link to="/explore" className="inline-block text-sm font-medium text-[#960D32] hover:underline mt-3">Explore creators →</Link>
         </div>
     </>
   );

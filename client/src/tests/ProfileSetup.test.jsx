@@ -35,7 +35,7 @@ const VENDOR = {
   name: 'Jane Vendor', username: 'jane-vendor', email: 'jane@v.com',
   role: 'host', plan: 'explorer', bio: 'Hi there', tagline: 'Coach',
   profession: 'Life Coach', location: 'Mumbai',
-  profile_image: '', cover_image: '', theme_color: '#0079C1',
+  profile_image: '', cover_image: '', theme_color: '#2E1065',
   social_links: { instagram: 'https://instagram.com/jane' },
   google_calendar_connected: false,
 };

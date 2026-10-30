@@ -41,9 +41,9 @@ export default function EscalationsPage() {
           : (
             <div className="space-y-2">
               {escs.map((e) => (
-                <button key={e.id} onClick={() => setSelId(e.id)} className="block w-full rounded-xl border adm-border p-3 text-left hover:border-[#0079C1]">
+                <button key={e.id} onClick={() => setSelId(e.id)} className="block w-full rounded-xl border adm-border p-3 text-left hover:border-[#960D32]">
                   <div className="mb-1 flex flex-wrap items-center gap-2">
-                    <code className="rounded bg-[#FFF4EC] px-1.5 py-0.5 text-xs font-semibold text-[#191919]">{e.reference}</code>
+                    <code className="rounded bg-[#FFF4EC] px-1.5 py-0.5 text-xs font-semibold text-[#2A1416]">{e.reference}</code>
                     <Badge tone={STATUS_TONE[e.status] || 'neutral'}>{e.status}</Badge>
                     <span className="text-xs adm-t3">{e.logged_in ? (e.is_host ? 'Host' : 'Guest') : 'Anon'}</span>
                     {e.contact_verified && <Badge tone="ok">verified</Badge>}

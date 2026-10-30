@@ -175,7 +175,7 @@ const PersonaStep = () => {
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <button
             onClick={() => navigate(`/vendor-register/${slug}/claim`)}
-            className="btn-secondary px-5 py-2.5 text-sm"
+            className="inline-flex items-center justify-center rounded-[6px] border border-black/10 bg-white font-semibold text-ink hover:border-black/20 transition-colors px-5 py-2.5 text-sm"
           >
             ← Back
           </button>
@@ -183,7 +183,7 @@ const PersonaStep = () => {
           <button
             onClick={handleContinue}
             disabled={!selected || saving}
-            className="btn-primary px-7 py-2.5 text-sm disabled:opacity-50"
+            className="inline-flex items-center justify-center rounded-[6px] bg-primary-cta font-semibold text-white hover:opacity-90 transition-opacity px-7 py-2.5 text-sm disabled:opacity-50"
           >
             {saving ? (
               <span className="flex items-center justify-center gap-2">

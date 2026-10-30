@@ -28,7 +28,7 @@ export default function AdminBotSupport() {
     <div className="flex flex-wrap gap-2">
       {PAGES.map(([id, label]) => (
         <button key={id} onClick={() => navigate(`/admin/support/bolt/${id}`)}
-          className={'rounded-lg px-3 py-1.5 text-sm font-medium ' + (active === id ? 'bg-[#0079C1] text-white' : 'border adm-border adm-t2')}>
+          className={'rounded-lg px-3 py-1.5 text-sm font-medium ' + (active === id ? 'bg-[#960D32] text-white' : 'border adm-border adm-t2')}>
           {label}
         </button>
       ))}

@@ -3,7 +3,7 @@ import confetti from 'canvas-confetti';
 // Brand-flavoured confetti burst. Two staggered cones give a fuller shape
 // than a single call. Colours pulled from the primary/accent palette so the
 // burst reads as "us", not stock confetti.
-const COLORS = ['#0079C1', '#FF7A33', '#FFB380', '#FFE4D1', '#5B3AFF'];
+const COLORS = ['#960D32', '#FF7A33', '#FFB380', '#FFE4D1', '#5B3AFF'];
 
 export function fireCelebration() {
   const base = { spread: 70, ticks: 200, gravity: 0.9, decay: 0.94, colors: COLORS };

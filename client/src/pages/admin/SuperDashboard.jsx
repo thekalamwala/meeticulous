@@ -66,9 +66,9 @@ const Empty = ({ icon, title, desc }) => (
 const OverviewTab = ({ stats, ops }) => {
   const s = stats || {};
   const cards = [
-    { label: 'Platform Revenue', value: inr(s.revenue), icon: 'rupee',    hex: '#0079C1', to: '/super-dashboard/revenue' },
+    { label: 'Platform Revenue', value: inr(s.revenue), icon: 'rupee',    hex: '#960D32', to: '/super-dashboard/revenue' },
     { label: 'Total Bookings',   value: (s.bookings || 0).toLocaleString(), icon: 'calendar', hex: '#1DA1F2', to: '/super-dashboard/bookings' },
-    { label: 'Active Hosts',     value: (s.vendors || 0).toLocaleString(),  icon: 'building', hex: '#0079C1', to: '/super-dashboard/providers' },
+    { label: 'Active Hosts',     value: (s.vendors || 0).toLocaleString(),  icon: 'building', hex: '#960D32', to: '/super-dashboard/providers' },
     { label: 'Total Users',      value: (s.users || 0).toLocaleString(),    icon: 'users',    hex: '#059669' },
     { label: 'Active Services',  value: (s.services || 0).toLocaleString(), icon: 'grid',     hex: '#DB2777', to: '/admin/services' },
     { label: 'Pending Actions',  value: (ops?.totalAttention ?? 0).toLocaleString(), icon: 'alert', hex: ops?.totalAttention ? '#DC2626' : '#D97706', to: '/super-dashboard/pending' },
@@ -77,7 +77,7 @@ const OverviewTab = ({ stats, ops }) => {
   const manage = [
     { title: 'Manage Bookings',  desc: 'View, update status, resolve disputes',    to: '/admin/bookings',        icon: 'calendar', hex: '#1DA1F2' },
     { title: 'Manage Services',  desc: 'Review and moderate provider services',    to: '/admin/services',        icon: 'grid',     hex: '#DB2777' },
-    { title: 'Payouts',          desc: 'Approve and release host payout requests', to: '/admin/finance/payouts', icon: 'rupee',    hex: '#0079C1' },
+    { title: 'Payouts',          desc: 'Approve and release host payout requests', to: '/admin/finance/payouts', icon: 'rupee',    hex: '#960D32' },
     { title: 'Platform Settings',desc: 'Configure fees, maintenance, branding',    to: '/admin/settings',        icon: 'activity', hex: '#059669' },
     { title: 'Support Tickets',  desc: 'Respond to user issues and disputes',      to: '/admin/support/tickets', icon: 'clock',    hex: '#D97706' },
   ];
@@ -117,8 +117,8 @@ const ACCENT = '#047857'; // Gross line = same green as the Gross Revenue card
 const TIP_ROWS = [
   { key: 'gross',        label: 'Gross Revenue',        hex: '#047857' },
   { key: 'total',        label: 'Total Revenue',        hex: '#059669' },
-  { key: 'subscription', label: 'Subscription Revenue', hex: '#0079C1' },
-  { key: 'platformFee',  label: 'Platform Fee Revenue', hex: '#0079C1' },
+  { key: 'subscription', label: 'Subscription Revenue', hex: '#960D32' },
+  { key: 'platformFee',  label: 'Platform Fee Revenue', hex: '#960D32' },
   { key: 'tax',          label: 'Govt Tax',             hex: '#DC2626' },
 ];
 // Compact ₹ for axis labels: 1.2k / 3.4L.
@@ -292,8 +292,8 @@ const RevenueTab = ({ stats }) => {
   const revenueCards = [
     { label: 'Gross Revenue',        value: money(b.grossRevenue),        hex: '#047857' },
     { label: 'Total Revenue',        value: money(b.totalRevenue),        hex: '#059669' },
-    { label: 'Subscription Revenue', value: money(b.subscriptionRevenue), hex: '#0079C1' },
-    { label: 'Platform Fee Revenue', value: money(b.platformFeeRevenue),  hex: '#0079C1' },
+    { label: 'Subscription Revenue', value: money(b.subscriptionRevenue), hex: '#960D32' },
+    { label: 'Platform Fee Revenue', value: money(b.platformFeeRevenue),  hex: '#960D32' },
   ];
   // Row 2 — average values (rounded to whole ₹).
   const avgCards = [
@@ -354,7 +354,7 @@ const PLAN_ORDER = ['starter', 'creator', 'professional'];
 const PLAN_META = {
   starter:      { label: 'Starter',  color: '#ffffff' },
   creator:      { label: 'Host+',    color: '#9ca3af' },
-  professional: { label: 'Studio',   color: '#0079C1' },
+  professional: { label: 'Studio',   color: '#960D32' },
 };
 const PIE_BORDER = '#374151'; // gray-700 — keeps the white slice readable on a white card
 const PLAN_NAME = { starter: 'Starter', creator: 'Host+', professional: 'Studio' };
@@ -439,8 +439,8 @@ const PlanEarningsBars = ({ planContracted, planEarnings, period, onPeriod }) =>
     { key: 'professional', label: 'Studio (₹3,650)' },
   ];
   const series = [
-    { key: 'contracted', label: 'Contracted (plan × holders)', color: '#0079C1', data: planContracted },
-    { key: 'collected',  label: 'Collected (paid to us)',      color: '#191919', data: planEarnings },
+    { key: 'contracted', label: 'Contracted (plan × holders)', color: '#960D32', data: planContracted },
+    { key: 'collected',  label: 'Collected (paid to us)',      color: '#2A1416', data: planEarnings },
   ];
   const valueOf = (g, s) => Number(s.data?.[g.key]) || 0;
   const max = Math.max(1, ...groups.flatMap((g) => series.map((s) => valueOf(g, s))));
@@ -554,15 +554,15 @@ const ProvidersTab = () => {
 
   // Row 1 — host overview (all-time; entitlement / verification / suspension independent)
   const row1 = [
-    { label: 'Total Hosts',      value: num(o.totalHosts),      icon: 'users',      hex: '#0079C1' },
-    { label: 'Premium Hosts',    value: num(o.premiumHosts),    icon: 'card',       hex: '#0079C1' },
+    { label: 'Total Hosts',      value: num(o.totalHosts),      icon: 'users',      hex: '#960D32' },
+    { label: 'Premium Hosts',    value: num(o.premiumHosts),    icon: 'card',       hex: '#960D32' },
     { label: 'Free Hosts',       value: num(o.freeHosts),       icon: 'userCheck',  hex: '#64748B' },
     { label: 'Unverified Hosts', value: num(o.unverifiedHosts), icon: 'alert',      hex: '#D97706', to: '/admin/providers/pending' },
   ];
   // Row 2 — business generated (since 30 Jun 2026)
   const row2 = [
     { label: 'Total Revenue',      value: money(o.completedValue),    icon: 'rupee',    hex: '#059669' },
-    { label: 'Completed Bookings', value: num(o.completedBookings),   icon: 'calCheck', hex: '#0079C1' },
+    { label: 'Completed Bookings', value: num(o.completedBookings),   icon: 'calCheck', hex: '#960D32' },
     { label: 'Upcoming Bookings',  value: num(o.upcomingBookings),    icon: 'calendar', hex: '#1DA1F2' },
     { label: 'Cancel / No-show Rate', value: pct(o.failRate),         icon: 'ban',      hex: '#DC2626' },
   ];
@@ -577,8 +577,8 @@ const ProvidersTab = () => {
   const row4 = [
     { label: 'GMV (Booking Value)',  value: money(o.gmv),                icon: 'rupee', hex: '#475569' },
     { label: 'Platform Revenue',     value: money(o.platformRevenue),    icon: 'rupee', hex: '#059669' },
-    { label: 'Subscription Revenue', value: money(o.subscriptionRevenue),icon: 'rupee', hex: '#0079C1' },
-    { label: 'Booking Fee Revenue',  value: money(o.bookingFeeRevenue),  icon: 'rupee', hex: '#0079C1' },
+    { label: 'Subscription Revenue', value: money(o.subscriptionRevenue),icon: 'rupee', hex: '#960D32' },
+    { label: 'Booking Fee Revenue',  value: money(o.bookingFeeRevenue),  icon: 'rupee', hex: '#960D32' },
   ];
 
   return (
@@ -601,7 +601,7 @@ const ProvidersTab = () => {
       <Card className="p-0 overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b adm-border">
           <p className="font-semibold adm-t1 text-sm">Active Hosts</p>
-          <Link to="/admin/providers/active" className="text-[12px] text-[#0079C1] hover:underline font-medium">View all</Link>
+          <Link to="/admin/providers/active" className="text-[12px] text-[#960D32] hover:underline font-medium">View all</Link>
         </div>
         {loading ? (
           <div className="py-10 text-center adm-t3 text-sm">Loading...</div>
@@ -660,7 +660,7 @@ const BookingsTab = ({ stats }) => {
       <Card className="p-0 overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b adm-border">
           <p className="font-semibold adm-t1 text-sm">Recent Bookings</p>
-          <Link to="/admin/bookings" className="text-[12px] text-[#0079C1] hover:underline font-medium">View all</Link>
+          <Link to="/admin/bookings" className="text-[12px] text-[#960D32] hover:underline font-medium">View all</Link>
         </div>
         {loading ? (
           <div className="py-10 text-center adm-t3 text-sm">Loading...</div>
@@ -699,7 +699,7 @@ const BookingsTab = ({ stats }) => {
 // per-browser in localStorage). The card still navigates; only the badge clears.
 const SEVERITY_STYLE = {
   danger:  'bg-red-50 text-red-600',
-  warning: 'bg-[#0079C1]/10 text-[#0079C1]',
+  warning: 'bg-[#960D32]/10 text-[#960D32]',
   ok:      'bg-gray-100 text-gray-400',
 };
 // Per-category tint so the six queues are scannable at a glance (keyed on the
@@ -815,7 +815,7 @@ const SuperDashboard = () => {
             onClick={() => navigate(tab.to)}
             className={`px-3.5 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-150
               ${activeTab === tab.id
-                ? 'bg-[#0079C1] text-white shadow-sm'
+                ? 'bg-[#960D32] text-white shadow-sm'
                 : 'adm-t2 hover:text-gray-700 hover:bg-gray-50'}`}
           >
             {tab.label}
@@ -827,7 +827,7 @@ const SuperDashboard = () => {
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-2 border-[#0079C1] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#960D32] border-t-transparent rounded-full animate-spin" />
             <p className="text-sm adm-t3">Loading dashboard...</p>
           </div>
         </div>

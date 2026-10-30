@@ -279,8 +279,8 @@ const HowItWorksTab = ({ duration, online = true }) => {
       {steps.map((s, i) => (
         <div key={i}>
           <div className="h-0.5 w-full rounded-full mb-3"
-            style={{ background: 'color-mix(in srgb, var(--profile-accent, #0079C1) 35%, #e5e7eb)' }}/>
-          <div className="text-lg font-black mb-1.5" style={{ color: 'var(--profile-accent, #0079C1)' }}>{i + 1}</div>
+            style={{ background: 'color-mix(in srgb, var(--profile-accent, #960D32) 35%, #e5e7eb)' }}/>
+          <div className="text-lg font-black mb-1.5" style={{ color: 'var(--profile-accent, #960D32)' }}>{i + 1}</div>
           <h4 className="text-sm font-bold text-gray-900 mb-1">{s.t}</h4>
           <p className="text-sm text-gray-500 leading-relaxed">{s.d}</p>
         </div>
@@ -320,7 +320,7 @@ const AvailableSlotsPreview = ({ hostId, serviceId, onViewAll }) => {
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold text-gray-900">Available slots</h3>
         <button onClick={onViewAll} className="text-sm font-medium hover:underline"
-          style={{ color: 'var(--profile-accent, #0079C1)' }}>
+          style={{ color: 'var(--profile-accent, #960D32)' }}>
           View all →
         </button>
       </div>
@@ -382,7 +382,7 @@ const ReviewsTab = ({ reviews = [], avgRating, ratingBreakdown = [] }) => {
   const breakdown = ratingBreakdown.length
     ? ratingBreakdown
     : [5, 4, 3, 2, 1].map(star => ({ star, count: 0 }));
-  const accent = 'var(--profile-accent, #0079C1)';
+  const accent = 'var(--profile-accent, #960D32)';
   return (
     <div>
       {/* Summary — score + per-star bars clubbed into one tinted panel */}
@@ -604,7 +604,7 @@ const AdSpaceCard = () => (
     <p className="mt-1 text-xs leading-relaxed text-gray-500">Reach buyers actively booking services.</p>
     <a href="mailto:bolt@meeticulous.in?subject=Ad%20space%20enquiry"
       className="mt-3 inline-flex items-center gap-1 text-sm font-semibold no-underline hover:underline"
-      style={{ color: 'var(--profile-accent, #0079C1)' }}>
+      style={{ color: 'var(--profile-accent, #960D32)' }}>
       Advertise here →
     </a>
   </div>
@@ -666,7 +666,7 @@ const SponsoredCardB = () => (
         <svg className="w-9 h-9" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4.42 0-8 2.69-8 6v2h16v-2c0-3.31-3.58-6-8-6z"/></svg>
       </div>
       <div className="flex h-11 w-11 items-center justify-center rounded-xl text-base font-black text-white"
-        style={{ background: 'var(--profile-accent, #0079C1)' }}>B</div>
+        style={{ background: 'var(--profile-accent, #960D32)' }}>B</div>
     </div>
 
     {/* Headline */}
@@ -722,7 +722,7 @@ const ProfileCard = ({ vendor, rating, reviewCount, bookings }) => {
     .filter(Boolean)
     .filter((v, i, a) => a.indexOf(v) === i);
 
-  const accent = 'var(--profile-accent, #0079C1)';
+  const accent = 'var(--profile-accent, #960D32)';
 
   return (
     <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
@@ -937,7 +937,7 @@ export default function ServiceDetail() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f7f5ef] relative">
+    <div className="min-h-screen bg-canvas relative">
       <Seo {...seo} jsonLd={jsonLd} />
       {/* ── Above-the-fold backdrop — flat dark-grey hero band + calendar-inspired
            accents. Host theme colour no longer paints the hero; it stays on

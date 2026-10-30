@@ -27,7 +27,7 @@ const Modal = ({ title, label, placeholder, confirmText, onClose, onConfirm }) =
         <label className="block mb-3">
           <span className="text-[12px] adm-t3">{label}</span>
           <input autoFocus value={val} onChange={e => setVal(e.target.value)} placeholder={placeholder}
-            className="mt-1.5 w-full border adm-border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0079C1]/30 focus:border-[#0079C1]" />
+            className="mt-1.5 w-full border adm-border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#960D32]/30 focus:border-[#960D32]" />
         </label>
         <div className="flex justify-end gap-2">
           <Btn variant="ghost" size="sm" onClick={onClose}>Cancel</Btn>

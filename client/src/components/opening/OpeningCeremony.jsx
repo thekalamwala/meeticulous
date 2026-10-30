@@ -50,7 +50,7 @@ const LogoTile = ({ size = 60, img = 36 }) => (
 
 // One clean bordered field — single border on the wrapper, input itself has none.
 const Field = ({ icon: Icon, ...props }) => (
-  <label className="mt-3 flex items-center gap-2.5 rounded-xl border border-black/10 bg-white px-4 py-3.5 focus-within:border-primary focus-within:shadow-[0_0_0_3px_#D6ECF8]">
+  <label className="mt-3 flex items-center gap-2.5 rounded-xl border border-black/10 bg-white px-4 py-3.5 focus-within:border-primary focus-within:shadow-[0_0_0_3px_#FBE3E8]">
     <Icon size={18} className="text-primary" />
     <input {...props} className="w-full border-0 bg-transparent p-0 text-[15px] text-ink outline-none placeholder:text-muted" />
   </label>
@@ -213,7 +213,7 @@ export default function OpeningCeremony({ status: statusProp, embedded = false, 
             <form onSubmit={confirm} className="mt-4">
               <input value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                      inputMode="numeric" autoFocus placeholder="• • • • • •" aria-label="6-digit code"
-                     className="w-full rounded-xl border border-black/10 bg-white px-4 py-3.5 text-center font-heading text-2xl font-bold tracking-[.4em] text-ink outline-none focus:border-primary focus:shadow-[0_0_0_3px_#D6ECF8]" />
+                     className="w-full rounded-xl border border-black/10 bg-white px-4 py-3.5 text-center font-heading text-2xl font-bold tracking-[.4em] text-ink outline-none focus:border-primary focus:shadow-[0_0_0_3px_#FBE3E8]" />
               {error && <p className="mt-2 text-sm text-primary">{error}</p>}
               <button type="submit" disabled={busy} className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-primary px-6 py-3.5 font-heading font-bold text-white disabled:opacity-60">
                 {busy && <Loader2 size={18} className="animate-spin" />} Place my stone forever
