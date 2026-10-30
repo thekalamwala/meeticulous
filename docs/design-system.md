@@ -53,8 +53,14 @@ colors: {
 ## Typography
 | Font | Role |
 |---|---|
-| **Plus Jakarta Sans** (500-800) | Headings (h1–h6) |
-| **Poppins** (400-700) | Body, buttons, inputs |
+| **Bricolage Grotesque** (variable 200–800) | Hero H1 only: `font-display` / `--font-display`, applied to every `h1` by `index.css` |
+| **Inter Tight** (variable 100–900) | Everything else: body, buttons, inputs, section H2–H6, card titles, prices (`font-sans`, `font-heading`, `--font-primary`) |
+
+Both are self-hosted variable woff2 files in `client/public/fonts`, declared in
+`src/styles/fonts.css` with metric-matched fallbacks (no layout shift on swap) and
+preloaded in `index.html`. Admin (`.admin-shell`) uses Inter Tight for every heading.
+Poppins / Plus Jakarta Sans faces remain declared only for the OG share cards and
+the printable receipt.
 
 ### Font Scale
 | Element | Size | Weight |

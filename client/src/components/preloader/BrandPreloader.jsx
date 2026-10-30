@@ -128,7 +128,7 @@ export default function BrandPreloader({
             className="pl-greet"
             aria-hidden="true"
             lang={g.lang}
-            style={g.font ? { fontFamily: `'${g.font}', 'Poppins', sans-serif` } : undefined}
+            style={g.font ? { fontFamily: `'${g.font}', 'Inter Tight', sans-serif` } : undefined}
           >
             {g.text}
           </p>
