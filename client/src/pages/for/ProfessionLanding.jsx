@@ -228,7 +228,7 @@ export default function ProfessionLanding() {
   const { profession } = useParams();
   const data = getProfessionLanding(profession);
   // Interim (fee-only): a single honest banner caveats the earn/commission copy
-  // below (which stays as-is), and we drop the free Sloth offer from JSON-LD.
+  // below (which stays as-is), and we drop the free Starter offer from JSON-LD.
   const feeOnly = useFeeOnly();
 
   // Prefer profession-specific testimonials; fall back to weighted shared set.
@@ -248,7 +248,7 @@ export default function ProfessionLanding() {
 
   const { theme, seo, hero, socialProof, trust, stats, painPoints, features, headings, pricing, faq, finalCta, midCtas = {}, madeFor, label } = data;
   const canonical = `${SITE_URL}/for/${data.slug}`;
-  // Headline "₹X/day" sells the paid plan. ₹3,599/yr = ₹9.86/day; rounding UP to
+  // Headline "₹X/day" sells the paid plan. ₹1,179/yr = ₹3.23/day; rounding UP to
   // ₹10 is deliberate — advertise at or above what we actually charge, never below.
   const topPlan = PAID_PLANS[PAID_PLANS.length - 1];
   const perDay = Math.max(1, Math.round(topPlan.yearly / 365));

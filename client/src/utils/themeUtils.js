@@ -112,15 +112,15 @@ export const getPlanBorderColor = (plan) => {
 // ─── Plan display labels (UI ONLY — DB slugs/names are unchanged) ────────────
 // Maps the internal plan slug to the user-facing brand name. Internal code,
 // routes, DB values, feature flags, and analytics keep their original slugs.
-// Two public plans since v3.165: free → "Sloth", premium → "Sloth Active".
+// Two public plans since v3.165: free → "Starter", premium → "Pro".
 // The legacy paid rows are hidden from the catalogue but still renew for their
-// existing subscribers, so they keep a label — they carry Sloth Active
+// existing subscribers, so they keep a label — they carry Pro
 // entitlements at their original price.
 export const PLAN_DISPLAY = {
-  free: 'Sloth', starter: 'Sloth', explorer: 'Sloth', starter_legacy: 'Sloth',
-  premium: 'Sloth Active',
-  creator: 'Sloth Active (Partner)',
-  professional: 'Sloth Active (Legacy Studio)', pro: 'Sloth Active (Legacy Studio)',
+  free: 'Starter', starter: 'Starter', explorer: 'Starter', starter_legacy: 'Starter',
+  premium: 'Pro',
+  creator: 'Pro (Partner)',
+  professional: 'Pro (Legacy Studio)', pro: 'Pro (Legacy Studio)',
   supreme: 'Supreme',
 };
 
@@ -150,7 +150,7 @@ export const isFreePlan = (slug) => normalizePlan(slug) === 'free';
 export const getPlanBorderLabel = (plan) => {
   const canon = normalizePlan(plan);
   if (canon === 'supreme') return 'Supreme';
-  return canon === 'free' ? 'Sloth' : 'Sloth Active';
+  return canon === 'free' ? 'Starter' : 'Pro';
 };
 
 // ─── Social platform brand colors ────────────────────────────────────────────

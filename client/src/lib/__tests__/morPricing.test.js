@@ -42,18 +42,18 @@ describe('monthlyForPlan', () => {
     const free = monthlyForPlan(CALC_PLANS[0], 1000, 10);
     const premium = monthlyForPlan(CALC_PLANS[1], 1000, 10);
     expect(free.netMonthly).toBe(9097.6);       // 909.76 × 10 − 0
-    expect(premium.netMonthly).toBe(9198.6);    // 959.76 × 10 − 399 (GST-incl fee)
+    expect(premium.netMonthly).toBe(9362.6);    // 959.76 × 10 − 235 (GST-incl fee)
   });
 
-  it('Sloth Active overtakes free once volume is high enough', () => {
+  it('Pro overtakes free once volume is high enough', () => {
     // Premium saves the 5% commission (₹50 on ₹1,000) per booking, so its
-    // ₹399/mo pays for itself just under 8 bookings: free wins at 7, premium
-    // from 8 up. The turn has to be checked on BOTH sides — asserting only that
+    // ₹235/mo pays for itself just under 5 bookings: free wins at 4, premium
+    // from 5 up. The turn has to be checked on BOTH sides — asserting only that
     // premium eventually wins would pass for any fee.
-    const at7 = { f: monthlyForPlan(CALC_PLANS[0], 1000, 7).netMonthly, p: monthlyForPlan(CALC_PLANS[1], 1000, 7).netMonthly };
-    const at8 = { f: monthlyForPlan(CALC_PLANS[0], 1000, 8).netMonthly, p: monthlyForPlan(CALC_PLANS[1], 1000, 8).netMonthly };
-    expect(at7.f).toBeGreaterThan(at7.p);
-    expect(at8.p).toBeGreaterThan(at8.f);
+    const at4 = { f: monthlyForPlan(CALC_PLANS[0], 1000, 4).netMonthly, p: monthlyForPlan(CALC_PLANS[1], 1000, 4).netMonthly };
+    const at5 = { f: monthlyForPlan(CALC_PLANS[0], 1000, 5).netMonthly, p: monthlyForPlan(CALC_PLANS[1], 1000, 5).netMonthly };
+    expect(at4.f).toBeGreaterThan(at4.p);
+    expect(at5.p).toBeGreaterThan(at5.f);
   });
 
   it('neither plan caps service price any more', () => {

@@ -35,7 +35,7 @@ const CAL_FREE = C.freePlan.replace(/^Yes:\s*/, ''); // "1 event type, 1 calenda
 const favicon = (domain) => `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
 
 // /host-fees: client pays price + ₹10 booking fee + 18% GST on that fee; on
-// Sloth Active (0%) a ₹1,000 booking pays out ₹959.76 after ~2% gateway + TDS 1% + TCS 1%.
+// Pro (0%) a ₹1,000 booking pays out ₹959.76 after ~2% gateway + TDS 1% + TCS 1%.
 const BOOKING_FEE = 10;
 const BOOKING_FEE_GST = 1.8;
 const EXAMPLE_PRICE = 1000;

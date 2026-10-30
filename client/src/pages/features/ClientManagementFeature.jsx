@@ -21,7 +21,7 @@
 // ClientDetail.jsx. Clients are derived from bookings (keyed by phone, else
 // email; only clients with a confirmed booking, free ₹0 sessions included).
 // Free plan view = 10 most recent clients (planService limits.crm = 10, capped
-// in crmService.listClients, CSV export capped the same); Sloth Active = all
+// in crmService.listClients, CSV export capped the same); Pro = all
 // (-1). Notes max 5,000 chars. Lapsed = 2+ bookings, none upcoming, last one
 // over 60 days ago (LAPSE_DAYS). Host-scoped: hostId always from the auth token.
 // Tags are NOT claimed (no UI to add them yet). No usage stats, no ratings.

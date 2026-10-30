@@ -362,20 +362,20 @@ const computeBadges = (user) => {
 
 /* ------------------------------------------------------------------ *
  *  Bottom slot — one docked card, tier-aware. The upgrade pitch shows
- *  only to hosts who can actually upgrade (Sloth -> Sloth Active); anyone
+ *  only to hosts who can actually upgrade (Starter -> Pro); anyone
  *  already on a paid row gets Refer & Earn (no dead-end upsell) and Supreme
  *  gets a concierge line. Keyed by canonical plan slug. Never advertise Supreme.
  * ------------------------------------------------------------------ */
 const SLOTS = {
-  free:         { variant: 'upgrade',   to: '/dashboard/upgrade',   icon: Sparkles, cta: 'Go Premium',           title: 'Go Sloth Active',     sub: '0% commission, the Clients CRM and follow-ups — under ₹10 a day.' },
+  free:         { variant: 'upgrade',   to: '/dashboard/upgrade',   icon: Sparkles, cta: 'Go Premium',           title: 'Go Pro',              sub: '0% commission, the Clients CRM and follow-ups — under ₹4 a day.' },
   premium:      { variant: 'refer',     to: '/dashboard/referrals', icon: Gift,     cta: 'Invite a host',        title: 'Refer & Earn',        sub: 'Invite a host — you both get paid when they go live.' },
-  // Archived paid rows already hold Sloth Active entitlements — no upsell.
+  // Archived paid rows already hold Pro entitlements — no upsell.
   creator:      { variant: 'refer',     to: '/dashboard/referrals', icon: Gift,     cta: 'Invite a host',        title: 'Refer & Earn',        sub: 'Invite a host — you both get paid when they go live.' },
   professional: { variant: 'refer',     to: '/dashboard/referrals', icon: Gift,     cta: 'Invite a host',        title: 'Refer & Earn',        sub: 'Invite a host — you both get paid when they go live.' },
   supreme:      { variant: 'concierge', href: '/bolt958',           icon: Headset,  cta: 'Talk to your manager', title: 'Priority concierge',  sub: 'Your account manager is one message away.' },
 };
 
-// Reuses the app's plan-badge hues (amber = Sloth Active, primary = brand, violet = Supreme).
+// Reuses the app's plan-badge hues (amber = Pro, primary = brand, violet = Supreme).
 const SLOT_STYLE = {
   upgrade:   { card: 'border-amber-200 bg-amber-50',    title: 'text-amber-700',  cta: 'bg-amber-600 hover:bg-amber-700' },
   refer:     { card: 'border-primary/30 bg-primary/10', title: 'text-primary',    cta: 'bg-primary hover:bg-primary-dark' },

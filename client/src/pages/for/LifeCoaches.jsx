@@ -95,7 +95,7 @@ const TOOLS = [
 // Warm big-numeral impact band.
 const METRICS = [
   { v: '24/7', l: 'Bookings, day or night', note: 'Your booking page never sleeps — clients reserve sessions any time.' },
-  { v: '100%', l: 'Kept on Sloth Active', note: '0% commission — every rupee you earn stays yours.' },
+  { v: '100%', l: 'Kept on Pro', note: '0% commission — every rupee you earn stays yours.' },
   { v: '₹0', l: 'To get started', note: 'Free forever plan — no card, no lock-in.' },
   { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice generated for every paid booking.' },
 ];
@@ -130,7 +130,7 @@ const TRUST_STRIP = [
   { icon: Lock, value: 'Razorpay', label: 'Every payment signature-verified on our servers' },
   { icon: Landmark, value: 'Hosted in India', label: 'Your practice data runs on servers in Mumbai' },
   { icon: ShieldCheck, value: 'DPDP 2023', label: 'Operated under India’s data protection law' },
-  { icon: BadgePercent, value: '0% commission', label: 'On Sloth Active — keep every rupee you earn' },
+  { icon: BadgePercent, value: '0% commission', label: 'On Pro — keep every rupee you earn' },
 ];
 
 const FAQ = [
@@ -141,7 +141,7 @@ const FAQ = [
   { q: 'Can I collect session fees online?', a: 'Yes. Collect fees upfront through Razorpay — UPI, cards or netbanking — before the session. A GST invoice is generated automatically for every paid booking.' },
   { q: 'Can I sell coaching packages or run group sessions?', a: 'Yes. Offer multi-session packages, recurring bookings and group sessions or workshops — each with its own duration, fee and availability.' },
   { q: 'Can I run online sessions?', a: 'Yes. Offer online sessions with automatic Google Meet or Zoom links, or mark a service as in-person — or both. The client picks the mode that suits them.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Sloth plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Sloth Active removes that commission entirely and adds WhatsApp automation and growth tools.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
 ];
 
 const FOOTER_COLS = [
@@ -651,7 +651,7 @@ export default function LifeCoaches() {
           </Reveal>
 
           <div className="mt-10 grid gap-5 sm:grid-cols-2 sm:gap-6">
-            {/* Sloth (free) */}
+            {/* Starter (free) */}
             <Reveal>
               <div className="flex h-full flex-col rounded-[20px] border border-black/[0.08] bg-white p-7">
                 <div className="font-heading text-lg font-bold">{FREE_PLAN.name}</div>
@@ -674,7 +674,7 @@ export default function LifeCoaches() {
               </div>
             </Reveal>
 
-            {/* Sloth Active (premium) — recommended */}
+            {/* Pro (premium) — recommended */}
             <Reveal delay={0.08}>
               <div className="relative flex h-full flex-col overflow-hidden rounded-[20px] border-2 bg-white p-7 shadow-[0_24px_60px_-30px_rgba(16,24,40,0.16)]" style={{ borderColor: 'var(--ca-primary)' }}>
                 <span aria-hidden className="absolute inset-x-0 top-0 h-1" style={{ background: 'linear-gradient(90deg, var(--ca-primary), var(--ca-accent))' }} />
@@ -705,7 +705,7 @@ export default function LifeCoaches() {
                     </li>
                   ))}
                 </ul>
-                <CtaButton to={START} className="mt-7 w-full">Go Sloth Active</CtaButton>
+                <CtaButton to={START} className="mt-7 w-full">Go Pro</CtaButton>
               </div>
             </Reveal>
           </div>
@@ -776,7 +776,7 @@ export default function LifeCoaches() {
               </Link>
             </Reveal>
             <Reveal delay={0.14} className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2">
-              {['No credit card', 'Free forever', '0% on Sloth Active'].map((t) => (
+              {['No credit card', 'Free forever', '0% on Pro'].map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-white/70"><Check size={14} style={{ color: GLOW }} /> {t}</span>
               ))}
             </Reveal>

@@ -27,7 +27,7 @@ describe("SimplybookAlternative (/compare/simplybook-alternative)", () => {
     ctas.forEach((a) => expect(a.getAttribute("href")).toBe("/become-a-host"));
   });
 
-  it("shows SimplyBook's published paid price and Sloth Active's monthly price in the table", () => {
+  it("shows SimplyBook's published paid price and Pro's monthly price in the table", () => {
     renderPage();
     const table = within(screen.getByRole("table"));
     expect(table.getByText(SB.paidFrom)).toBeTruthy();

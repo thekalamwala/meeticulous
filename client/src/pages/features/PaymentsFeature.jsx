@@ -284,7 +284,7 @@ function KeepCalculator() {
       </div>
 
       <p className="mx-auto mt-8 max-w-2xl text-center text-sm leading-relaxed text-[#F5EFE3]/70">
-        Your client pays the same on both plans. Earning more than about ₹6,000 a month? {PREMIUM_PLAN.name} yearly costs less than the 5% it saves you.
+        Your client pays the same on both plans. Earning more than about ₹4,700 a month? {PREMIUM_PLAN.name} yearly costs less than the 5% it saves you.
         {' '}<Link to="/host-fees" className="font-semibold underline decoration-white/30 underline-offset-4 hover:decoration-white" style={{ color: GOLD }}>Full fee breakdown</Link>
       </p>
     </div>
@@ -297,7 +297,7 @@ export default function PaymentsFeature() {
   const canonical = `${SITE_URL}/features/payments`;
   const seo = {
     title: 'Online Payments & GST Invoices for Freelancers in India | Meeticulous',
-    description: 'Collect payment before every session over UPI, cards and netbanking, with a GST invoice on every booking and payouts to your bank. 0% commission on Sloth Active. Start free.',
+    description: 'Collect payment before every session over UPI, cards and netbanking, with a GST invoice on every booking and payouts to your bank. 0% commission on Pro. Start free.',
   };
   const jsonLd = professionGraphJsonLd({
     canonical,

@@ -103,7 +103,7 @@ const TOOLS = [
 // Fuchsia impact band — black numerals.
 const METRICS = [
   { v: '24/7', l: 'Bookings, day or night', note: 'Your booking page never sleeps — clients reserve slots any time.' },
-  { v: '100%', l: 'Kept on Sloth Active', note: '0% commission — every rupee you earn stays yours.' },
+  { v: '100%', l: 'Kept on Pro', note: '0% commission — every rupee you earn stays yours.' },
   { v: '₹0', l: 'To get started', note: 'Free forever plan — no card, no lock-in.' },
   { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice generated for every paid booking.' },
 ];
@@ -115,7 +115,7 @@ const TESTIMONIALS = [
   { quote: 'Automatic WhatsApp reminders mean clients actually turn up on time. Our stylists love the calmer day.', name: 'Anjali Nair', role: 'Founder', company: 'Radiance Beauty, Kochi' },
   { quote: 'Clients book their facials and colour without waiting for us to reply on WhatsApp. Setup took one evening.', name: 'Kavya Reddy', role: 'Owner', company: 'Velvet Salon, Hyderabad' },
   { quote: 'One calendar for the whole salon means no two clients booked into the same chair by mistake.', name: 'Neha Kapoor', role: 'Director', company: 'Bloom Studio, Pune' },
-  { quote: 'A pretty booking page, 0% commission on Active, and payments straight to our account. It just works.', name: 'Sana Khan', role: 'Owner', company: 'Aura Beauty Bar, Bengaluru' },
+  { quote: 'A pretty booking page, 0% commission on Pro, and payments straight to our account. It just works.', name: 'Sana Khan', role: 'Owner', company: 'Aura Beauty Bar, Bengaluru' },
 ];
 
 // Two stacked before/after lists.
@@ -139,7 +139,7 @@ const TRUST_STRIP = [
   { icon: Lock, value: 'Razorpay', label: 'Every payment signature-verified on our servers' },
   { icon: Landmark, value: 'Hosted in India', label: 'Your salon data runs on servers in Mumbai' },
   { icon: FileText, value: 'DPDP 2023', label: 'Operated under India’s data protection law' },
-  { icon: BadgePercent, value: '0% commission', label: 'On Sloth Active — keep every rupee' },
+  { icon: BadgePercent, value: '0% commission', label: 'On Pro — keep every rupee' },
 ];
 
 const FAQ = [
@@ -150,7 +150,7 @@ const FAQ = [
   { q: 'Can I manage multiple stylists and services?', a: 'Yes. Create as many services as you need — hair, skin, nails, makeup, spa — each with its own duration, price and availability, and manage every appointment from one calendar.' },
   { q: 'Do I need any technical knowledge?', a: 'No. Setup takes minutes and needs no technical skills. You add your services and slots, and your booking page is ready to share — your clients need nothing more than the link.' },
   { q: 'Does every booking get a GST invoice?', a: 'Yes. A GST invoice is generated automatically for every paid booking, and payouts go to your bank once KYC is complete.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Sloth plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Sloth Active removes that commission entirely and adds WhatsApp automation and growth tools.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
 ];
 
 const FOOTER_COLS = [
@@ -596,7 +596,7 @@ export default function SalonPage() {
           </Reveal>
 
           <div className="mx-auto mt-10 grid max-w-3xl gap-5 sm:grid-cols-2 sm:gap-6">
-            {/* Sloth (free) */}
+            {/* Starter (free) */}
             <Reveal>
               <div className="flex h-full flex-col rounded-[20px] border-2 border-black/10 bg-white p-7">
                 <div className="font-heading text-lg font-bold">{FREE_PLAN.name}</div>
@@ -620,7 +620,7 @@ export default function SalonPage() {
               </div>
             </Reveal>
 
-            {/* Sloth Active (premium) — black, recommended */}
+            {/* Pro (premium) — black, recommended */}
             <Reveal delay={0.08}>
               <div className="relative flex h-full flex-col overflow-hidden rounded-[20px] p-7 text-white shadow-[0_28px_64px_-30px_rgba(17,17,17,0.55)]" style={{ background: 'var(--ca-primary)' }}>
                 <span aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(214,0,154,0.6), transparent)' }} />
@@ -650,7 +650,7 @@ export default function SalonPage() {
                 </ul>
                 <div className="relative mt-7 flex-1" />
                 <Link to={START} className="relative inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold text-white transition-all hover:no-underline hover:brightness-110" style={{ background: 'var(--ca-accent)' }}>
-                  Go Sloth Active <ArrowRight size={15} />
+                  Go Pro <ArrowRight size={15} />
                 </Link>
               </div>
             </Reveal>
@@ -730,7 +730,7 @@ export default function SalonPage() {
             </Link>
           </Reveal>
           <Reveal as="p" delay={0.18} className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-            {['No credit card', 'Free forever', '0% on Sloth Active'].map((t) => (
+            {['No credit card', 'Free forever', '0% on Pro'].map((t) => (
               <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-white/70"><Check size={14} style={{ color: 'var(--ca-accent)' }} /> {t}</span>
             ))}
           </Reveal>

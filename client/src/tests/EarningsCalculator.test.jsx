@@ -10,7 +10,7 @@ describe('EarningsCalculator', () => {
     setup();
     expect(screen.getByText(/your estimated earnings/i)).toBeTruthy();
     // default ₹5,000 × 12/mo → the 5% commission dwarfs the annual fee
-    expect(screen.getByText(/with sloth active, you keep/i)).toBeTruthy();
+    expect(screen.getByText(/with pro, you keep/i)).toBeTruthy();
     expect(screen.getAllByText(/per year/i).length).toBeGreaterThan(0);
   });
 
@@ -23,7 +23,7 @@ describe('EarningsCalculator', () => {
     setup();
     expect(screen.getAllByText(/you keep per year/i).length).toBe(2);
     expect(screen.getByRole('link', { name: /get started/i })).toBeTruthy();
-    expect(screen.getAllByRole('link', { name: /start on sloth/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole('link', { name: /start on pro/i }).length).toBeGreaterThan(0);
   });
 
   it('billing toggle switches to monthly', () => {
@@ -42,6 +42,6 @@ describe('EarningsCalculator', () => {
     fireEvent.change(price, { target: { value: '600' } });
     fireEvent.change(sessions, { target: { value: '1' } });
     expect(screen.getByText(/free plan keeps the most/i)).toBeTruthy();
-    expect(screen.getByText(/with sloth, you keep/i)).toBeTruthy();
+    expect(screen.getByText(/with starter, you keep/i)).toBeTruthy();
   });
 });

@@ -115,7 +115,7 @@ const TOOLS = [
 
 // Drawing title-block impact readout — honest host stats (no fabricated counts).
 const IMPACT_STATS = [
-  { value: '0%', label: 'Commission on Active', desc: 'Every consultation fee stays with your studio.', icon: BadgePercent },
+  { value: '0%', label: 'Commission on Pro', desc: 'Every consultation fee stays with your studio.', icon: BadgePercent },
   { value: '< 5 min', label: 'To go live', desc: 'Set up your services and share your booking page.', icon: Compass },
   { value: '24/7', label: 'Online booking', desc: 'Clients book any time — no email tag, no calls.', icon: CalendarCheck },
   { value: 'GST', label: 'Auto invoices', desc: 'Generated for every paid booking, automatically.', icon: FileText },
@@ -127,7 +127,7 @@ const TESTIMONIALS = [
   { name: 'Aarav Deshpande', role: 'Studio Verde, Pune', quote: 'Clients used to email for days to fix a time. Now they pick a slot and pay upfront — only serious enquiries book.' },
   { name: 'Meera Krishnan', role: 'Terra Interiors, Chennai', quote: 'Site visits and concept reviews all sit in one calendar now. No more double-booked afternoons or a missed measurement trip.' },
   { name: 'Rohan Kapoor', role: 'Axis Design Co., Gurugram', quote: 'Setup took an evening. The WhatsApp reminders alone cut the no-shows on our discovery calls right down.' },
-  { name: 'Ananya Pillai', role: 'Form & Field, Bengaluru', quote: 'A calm, professional booking page that matches how a studio works — and 0% commission on Active means the fee is ours.' },
+  { name: 'Ananya Pillai', role: 'Form & Field, Bengaluru', quote: 'A calm, professional booking page that matches how a studio works — and 0% commission on Pro means the fee is ours.' },
   { name: 'Vikram Sethi', role: 'Nirman Architects, Jaipur', quote: 'GST invoices for every paid consultation are generated automatically. It tidied up our billing completely.' },
   { name: 'Kabir Menon', role: 'Studio Kaya, Kochi', quote: 'One link handles discovery calls, paid consults and site visits. The front desk stopped living on the phone.' },
 ];
@@ -141,12 +141,12 @@ const TRUST_STRIP = [
   { icon: Lock, value: 'Razorpay', label: 'Every payment signature-verified on our servers' },
   { icon: Landmark, value: 'Hosted in India', label: 'Your studio data runs on servers in Mumbai' },
   { icon: ShieldCheck, value: 'DPDP 2023', label: "Operated under India's data protection law" },
-  { icon: BadgePercent, value: '0% commission', label: 'On Sloth Active — keep every rupee' },
+  { icon: BadgePercent, value: '0% commission', label: 'On Pro — keep every rupee' },
 ];
 
 const ABOUT_FEATURES = [
   { icon: Sparkles, title: 'Built for studios', desc: 'A booking page and diary shaped around how a design practice works.' },
-  { icon: BadgePercent, title: 'Honest pricing', desc: 'A free forever plan and 0% commission on Active — no hidden fees, ever.' },
+  { icon: BadgePercent, title: 'Honest pricing', desc: 'A free forever plan and 0% commission on Pro — no hidden fees, ever.' },
   { icon: MessageCircle, title: 'Real support', desc: 'A team in India by your side, from setup to your first booking.' },
 ];
 
@@ -154,11 +154,11 @@ const FAQ = [
   { q: 'Is Meeticulous suitable for an architecture or interior-design studio?', a: 'Yes — for managing your client meetings: an online booking page for consultations, site visits and reviews, automatic reminders, optional upfront fees and one clear diary. It is a scheduling and reminder tool for your studio, not a client-acquisition or advertising channel.' },
   { q: 'Can clients book a consultation online?', a: 'Yes. A client opens your booking link, chooses a consultation type such as a design consult or site visit, picks a time and confirms — no email back-and-forth to settle a slot.' },
   { q: 'Can I charge for consultations?', a: 'Optionally. Collect your consultation fee upfront through Razorpay — UPI, cards or netbanking — or leave it off and invoice later. A GST invoice is generated automatically for every paid booking, so charging for your time is simple.' },
-  { q: 'Can I send WhatsApp reminders before site visits and meetings?', a: 'Yes. Meeticulous sends automatic confirmations and reminders over WhatsApp and email before each meeting, which cuts no-shows and wasted site trips. WhatsApp reminders are included on the Sloth Active plan (and free for your first two months on the Sloth plan).' },
+  { q: 'Can I send WhatsApp reminders before site visits and meetings?', a: 'Yes. Meeticulous sends automatic confirmations and reminders over WhatsApp and email before each meeting, which cuts no-shows and wasted site trips. WhatsApp reminders are included on the Pro plan (and free for your first two months on the Starter plan).' },
   { q: 'Can I offer different meeting types and lengths?', a: 'Yes. Set up separate services — a 30-minute discovery call, a paid design consultation, a site visit, a concept review — each with its own duration, price and availability, and clients pick the one they need.' },
   { q: 'Can I manage more than one designer’s calendar?', a: 'Right now Meeticulous is best for a single booking calendar per account — two designers on one account share one diary and cannot be booked in parallel. Parallel multi-calendar scheduling is on our roadmap; in the meantime a separate account per designer is the workaround. We would rather tell you upfront than have it surprise you after setup.' },
   { q: 'Does it sync with my Google Calendar?', a: 'Yes. Meeticulous reads the busy times on your Google Calendar, so a slot you have blocked there is not offered to clients, and online bookings are added to your calendar with a Meet link.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Sloth plan is free forever — an online booking page, unlimited consultation types and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Sloth Active removes that commission entirely and adds WhatsApp automation and more.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited consultation types and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and more.' },
 ];
 
 const FOOTER_COLS = [
@@ -797,7 +797,7 @@ export default function ArchitectPage() {
                   ))}
                 </ul>
                 <Link to={START} className="relative mt-7 inline-flex w-full items-center justify-center gap-2 rounded-[6px] px-6 py-3.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-all hover:brightness-95 hover:no-underline" style={{ background: '#fff' }}>
-                  Go Sloth Active <ArrowRight size={15} />
+                  Go Pro <ArrowRight size={15} />
                 </Link>
               </div>
             </Reveal>
@@ -895,7 +895,7 @@ export default function ArchitectPage() {
                 </Link>
               </Reveal>
               <Reveal delay={0.18} className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 lg:justify-start">
-                {['No credit card', 'Free forever', '0% on Sloth Active'].map((t) => (
+                {['No credit card', 'Free forever', '0% on Pro'].map((t) => (
                   <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-white/70"><Check size={14} style={{ color: 'var(--ca-accent)' }} /> {t}</span>
                 ))}
               </Reveal>

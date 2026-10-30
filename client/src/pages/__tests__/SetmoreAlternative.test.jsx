@@ -29,7 +29,7 @@ describe('SetmoreAlternative (/compare/setmore-alternative)', () => {
     ctas.forEach((a) => expect(a.getAttribute('href')).toBe('/become-a-host'));
   });
 
-  it("shows Setmore's paidFrom and Sloth Active's monthly price in the table", () => {
+  it("shows Setmore's paidFrom and Pro's monthly price in the table", () => {
     renderPage();
     const table = screen.getByRole('table');
     expect(table.textContent).toContain(S.paidFrom);

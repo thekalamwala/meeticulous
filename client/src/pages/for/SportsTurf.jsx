@@ -15,9 +15,9 @@
 //     limits plainly. Deposits/partial advance are NOT built → we say "full fee
 //     upfront", never "pay X% to hold".
 //   - Hourly slot booking, flat per-service price, full online payment, WhatsApp
-//     reminders and 0% on Active are all real.
+//     reminders and 0% on Pro are all real.
 //   - Trust strip maps to real behaviour (Razorpay signature verify, Mumbai prod
-//     DB, DPDP Privacy policy, 0% on Active). Testimonials are labelled placeholders.
+//     DB, DPDP Privacy policy, 0% on Pro). Testimonials are labelled placeholders.
 //
 // The legacy --ca-* CSS var names are kept (cosmetic) so shared classNames stay
 // valid; only their values are retuned to the floodlit palette.
@@ -112,7 +112,7 @@ const CA_TESTIMONIALS = [
   { tone: 'blue', quote: 'Collecting the full slot fee online through UPI before they turn up ended the cash-chasing completely.', name: 'Karthik Reddy', role: 'Sports Arena, Bengaluru' },
   { tone: 'blue', quote: 'Players book badminton courts without waiting for a reply. Setup took an evening, not a week.', name: 'Ananya Rao', role: 'Badminton Court, Chennai' },
   { tone: 'ink', quote: 'One clear calendar for my ground means no more two teams turning up for the same slot.', name: 'Harpreet Singh', role: 'Turf Ground, Ludhiana' },
-  { tone: 'white', quote: 'A proper booking page for my turf, 0% commission on Active, and payments straight to my account — exactly what a small arena needs.', name: 'Vishal Nair', role: 'Multi-Sport Turf, Kochi' },
+  { tone: 'white', quote: 'A proper booking page for my turf, 0% commission on Pro, and payments straight to my account — exactly what a small arena needs.', name: 'Vishal Nair', role: 'Multi-Sport Turf, Kochi' },
 ];
 
 // Before / after — the turf owner's day without vs with Meeticulous.
@@ -134,23 +134,23 @@ const NEW_WAY = [
 
 // Honest trust strip — verifiable facts only. Every claim maps to real product
 // behaviour: Razorpay signature-verified payments (razorpaySignature.js), prod DB
-// in Mumbai (CLAUDE.md), DPDP-based Privacy policy (Privacy.jsx), 0% on Active (plans.js).
+// in Mumbai (CLAUDE.md), DPDP-based Privacy policy (Privacy.jsx), 0% on Pro (plans.js).
 const TRUST_STRIP = [
   { icon: Lock, value: 'Razorpay', label: 'Every payment signature-verified on our servers' },
   { icon: Landmark, value: 'Hosted in India', label: 'Your venue data runs on servers in Mumbai' },
   { icon: FileText, value: 'DPDP 2023', label: 'Operated under India’s data protection law' },
-  { icon: BadgePercent, value: '0%', label: 'Commission on Sloth Active — keep every rupee' },
+  { icon: BadgePercent, value: '0%', label: 'Commission on Pro — keep every rupee' },
 ];
 
 const FAQ = [
   { q: 'Is Meeticulous good for a turf or sports arena?', a: 'Yes. If you run a bookable ground or court — box cricket, football turf, a badminton or pickleball court — you get an online booking page where players pick an open slot and pay upfront, with automatic WhatsApp reminders. It works best for a single bookable facility per account (see the multi-court question below).' },
   { q: 'Can players book my ground by the hour?', a: 'Yes. Set your operating hours (say 6 AM to 11 PM) and a slot length such as 60 minutes, and players can book back-to-back hourly slots like 7–8 PM or 8–9 PM themselves — no calls or waiting for a reply.' },
   { q: 'Can I take payment online before they play?', a: 'Yes. Collect the full slot fee upfront through Razorpay — UPI, cards or netbanking — at the time of booking. A GST invoice is generated automatically for every paid booking.' },
-  { q: 'Can I send WhatsApp reminders?', a: 'Yes. Meeticulous sends automatic booking confirmations and reminders over WhatsApp and email before each slot, which cuts no-shows. WhatsApp reminders are included on the Sloth Active plan (and free for your first two months on the Sloth plan).' },
+  { q: 'Can I send WhatsApp reminders?', a: 'Yes. Meeticulous sends automatic booking confirmations and reminders over WhatsApp and email before each slot, which cuts no-shows. WhatsApp reminders are included on the Pro plan (and free for your first two months on the Starter plan).' },
   { q: 'What if I run more than one turf or court?', a: 'Right now Meeticulous is built for a single bookable ground or court per account — two facilities on one account share the same calendar, so they cannot be booked in parallel. If you run a multi-court arena, true parallel-court booking is on our roadmap; in the meantime a separate account per court is the workaround. We would rather tell you this upfront than have it surprise you after setup.' },
   { q: 'Can I set different prices for peak and off-peak hours?', a: 'Each service has its own fixed price, so automatic time-based (peak vs off-peak) pricing is not built yet. You can create separate listings — for example an off-peak morning slot and an evening slot at different prices — as a manual workaround.' },
   { q: 'Do I need any technical knowledge?', a: 'No. Setup takes minutes and needs no technical skills. You add your ground, slots and availability, and your booking page is ready to share — players need nothing more than the link.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Sloth plan is free forever — an online booking page, unlimited slots and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Sloth Active removes that commission entirely and adds WhatsApp automation and growth tools.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited slots and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
 ];
 
 const FOOTER_COLS = [
@@ -583,7 +583,7 @@ export default function SportsTurf() {
           <div className="mt-12 grid gap-px overflow-hidden rounded-[20px] border border-white/10 bg-white/10 sm:grid-cols-3">
             {[
               { v: '24/7', l: 'Bookings taken, day or night', note: 'Your page never sleeps' },
-              { v: '100%', l: 'Kept on Sloth Active', note: '0% commission — every rupee yours' },
+              { v: '100%', l: 'Kept on Pro', note: '0% commission — every rupee yours' },
               { v: '₹0', l: 'To get started', note: 'Free forever, no card' },
             ].map((s, i) => (
               <Reveal key={s.l} delay={i * 0.08} className="bg-[#0B0F12] p-8 text-center">
@@ -752,7 +752,7 @@ export default function SportsTurf() {
             {/* faint grid backdrop */}
             <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(17,17,17,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(17,17,17,0.05) 1px, transparent 1px)', backgroundSize: '38px 38px', maskImage: 'radial-gradient(circle at center, black, transparent 78%)', WebkitMaskImage: 'radial-gradient(circle at center, black, transparent 78%)' }} />
             <div className="relative grid gap-5 sm:grid-cols-2 sm:gap-6">
-              {/* Sloth (free) */}
+              {/* Starter (free) */}
               <Reveal>
                 <div className="flex h-full flex-col rounded-[18px] border border-black/[0.08] bg-white p-7">
                   <div className="font-heading text-lg font-bold">{FREE_PLAN.name}</div>
@@ -775,7 +775,7 @@ export default function SportsTurf() {
                 </div>
               </Reveal>
 
-              {/* Sloth Active (premium) — recommended, dark floodlit */}
+              {/* Pro (premium) — recommended, dark floodlit */}
               <Reveal delay={0.08}>
                 <div className="relative flex h-full flex-col overflow-hidden rounded-[18px] border-2 p-7 text-white shadow-[0_24px_60px_-24px_rgba(21,128,61,0.5)]" style={{ background: 'var(--ca-ink)', borderColor: '#A3E635' }}>
                   <span aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: 'repeating-linear-gradient(135deg, rgba(163,230,53,0.06) 0 1.5px, transparent 1.5px 12px)', maskImage: 'radial-gradient(circle at 90% 8%, #000, transparent 62%)', WebkitMaskImage: 'radial-gradient(circle at 90% 8%, #000, transparent 62%)' }} />

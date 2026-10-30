@@ -112,7 +112,7 @@ const TOOLS = [
 
 // Night-sky impact band — honest, verifiable (no fabricated client counts).
 const IMPACT_STATS = [
-  { value: '0%', desc: 'Commission on Sloth Active — you keep every rupee you earn.', icon: BadgePercent },
+  { value: '0%', desc: 'Commission on Pro — you keep every rupee you earn.', icon: BadgePercent },
   { value: '< 5 min', desc: 'To set up your services and go live with your own page.', icon: Sparkles },
   { value: '24/7', desc: 'Seekers book a reading any time — no phone, no waiting.', icon: CalendarCheck },
 ];
@@ -142,7 +142,7 @@ const WHY = [
 
 // Honest trust strip — verifiable facts only, NOT fabricated reading counts.
 const TRUST_STRIP = [
-  { icon: BadgePercent, value: '0% commission', label: 'On Sloth Active — keep every rupee' },
+  { icon: BadgePercent, value: '0% commission', label: 'On Pro — keep every rupee' },
   { icon: Receipt, value: 'GST invoices', label: 'Tax invoices generated automatically' },
   { icon: Lock, value: 'UPI + Cards', label: 'Razorpay signature-verified payments' },
   { icon: MapPin, value: 'Made in India', label: 'Hosted in Mumbai · DPDP Act 2023 aligned' },
@@ -152,12 +152,12 @@ const FAQ = [
   { q: 'Is Meeticulous suitable for astrologers and tarot readers?', a: 'Yes. Whether you read birth charts, tarot or numbers, Meeticulous manages your services, availability, client bookings, payments and reminders from one place — so solo astrologers and larger practices can run sessions without the manual coordination. It is a scheduling and payment tool.' },
   { q: 'Can seekers book a reading online?', a: 'Yes. Clients open your booking link, choose a service such as a horoscope reading or a Vastu consultation, pick a convenient slot and confirm — no DMs or waiting for a reply.' },
   { q: 'Can I share my booking link on Instagram and WhatsApp?', a: 'Yes. Your booking link works anywhere — put it in your Instagram bio, share it on WhatsApp status, in your email signature or on your website. One link handles every booking request.' },
-  { q: 'Can I send WhatsApp reminders?', a: 'Yes. Meeticulous sends automatic booking confirmations and reminders over WhatsApp and email before each session, which cuts no-shows. WhatsApp reminders are included on the Sloth Active plan (and free for your first two months on the Sloth plan).' },
+  { q: 'Can I send WhatsApp reminders?', a: 'Yes. Meeticulous sends automatic booking confirmations and reminders over WhatsApp and email before each session, which cuts no-shows. WhatsApp reminders are included on the Pro plan (and free for your first two months on the Starter plan).' },
   { q: 'Can I collect the consultation fee upfront?', a: 'Yes. Collect your fee before the session through Razorpay — UPI, cards or netbanking. Upfront payment ends no-shows, and a GST invoice is generated automatically for every paid booking.' },
   { q: 'Can I offer readings online and in person?', a: 'Yes. Offer online sessions with automatic Google Meet or Zoom links, or mark a service as in-person at your space — or both. Seekers pick the mode that suits them.' },
   { q: 'Can I manage multiple services?', a: 'Yes. Create as many services as you need — horoscope readings, love and career guidance, Vastu, numerology, puja and remedies — each with its own duration, price and availability.' },
   { q: 'Do I need any technical knowledge?', a: 'No. Setup takes minutes and needs no technical skills. You add your services and hours, and your booking page is ready to share — your clients need nothing more than the link.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Sloth plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Sloth Active removes that commission entirely and adds WhatsApp automation and growth tools.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
 ];
 
 const FOOTER_COLS = [
@@ -781,7 +781,7 @@ export default function Astrologers() {
                 <CtaButton to={START} variant="ghost" className="mt-7 w-full">Start on the Free Plan</CtaButton>
               </div>
             </Reveal>
-            {/* Sloth Active — starlit night card */}
+            {/* Pro — starlit night card */}
             <Reveal delay={0.08}>
               <div className="relative flex h-full flex-col overflow-hidden rounded-[20px] p-7 text-white shadow-[0_28px_70px_-30px_rgba(76,29,149,0.7)] sm:p-8" style={{ background: 'radial-gradient(120% 120% at 80% 0%, #6D28D9 0%, var(--ca-deep) 70%)' }}>
                 <div className="cosmic-stars" aria-hidden />
@@ -803,7 +803,7 @@ export default function Astrologers() {
                     <li key={f} className="flex items-start gap-2.5 text-sm text-white/90"><Check size={16} className="mt-0.5 shrink-0" style={{ color: 'var(--ca-accent)' }} /><span>{f}</span></li>
                   ))}
                 </ul>
-                <Link to={START} className="relative mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-bold transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline" style={{ color: 'var(--ca-primary)' }}>Go Sloth Active <ArrowRight size={16} /></Link>
+                <Link to={START} className="relative mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-bold transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline" style={{ color: 'var(--ca-primary)' }}>Go Pro <ArrowRight size={16} /></Link>
               </div>
             </Reveal>
           </div>
@@ -892,7 +892,7 @@ export default function Astrologers() {
                 </Link>
               </Reveal>
               <Reveal delay={0.14} className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2">
-                {['No credit card', 'Free forever', '0% on Sloth Active'].map((t) => (
+                {['No credit card', 'Free forever', '0% on Pro'].map((t) => (
                   <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-white/70"><Check size={14} style={{ color: 'var(--ca-accent)' }} /> {t}</span>
                 ))}
               </Reveal>
