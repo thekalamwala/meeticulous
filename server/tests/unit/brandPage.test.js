@@ -36,7 +36,7 @@ describe('brandPage', () => {
     expect(html).toContain('Took a nap');
     expect(html).toContain('Not found here.');
     expect(html).toContain('404');
-    expect(html).toContain('Book A Sloth');
+    expect(html).toContain('Meeticulous');
   });
 
   it('escapes dynamic text to prevent XSS from error messages', () => {
