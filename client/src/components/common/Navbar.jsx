@@ -439,8 +439,8 @@ const MENU_COL = 'w-60'; // 15rem — every column, promo tile and compare cell
 
 // Renders grouped columns + an optional promo tile on the right. `colClass` lets
 // a menu widen its columns (Product uses fewer, wider columns).
-const MegaMenu = ({ sections, promo, colClass = MENU_COL, compact, rootClass = '' }) => (
-  <div className={`flex gap-4 p-4 ${rootClass}`}>
+const MegaMenu = ({ sections, promo, colClass = MENU_COL, compact }) => (
+  <div className="flex gap-4 p-4">
     {sections.map((col, ci) => {
       // Tone index continues across columns so hues keep rotating (never resets).
       const offset = sections.slice(0, ci).reduce((n, s) => n + s.items.length, 0);
@@ -558,7 +558,7 @@ export const PublicCenterNav = () => {
       </NavDropdown>
 
       <NavDropdown id="whofor" label="Industries" wide {...menuProps}>
-        <MegaMenu sections={WHOFOR_MENU} colClass="w-64" compact rootClass="flex-wrap max-w-[52rem]" />
+        <MegaMenu sections={WHOFOR_MENU} colClass="w-52" compact />
       </NavDropdown>
 
       <NavDropdown id="resources" label="Resources" {...menuProps}>
