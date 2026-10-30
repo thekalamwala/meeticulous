@@ -57,11 +57,11 @@ const D = {
 const COMPANY    = 'Rajmudra Media LLP';
 const ADDRESS    = '2nd Floor, Eureka Coworking, Mate Square, Nagpur 440030';
 const TAGLINE    = 'Booking Made Easy';
-// TODO(pre-deploy): swap to the hosted Meeticulous logo URLs once the wordmark +
-// icon are uploaded to a public CDN. Header = icon (~26px), footer = full wordmark
-// (~160px). See docs/current-work.md "Email rebrand — pre-deploy blockers".
-const HEADER_LOGO = 'https://company-assets.bookasloth.in/images/email/meeticulous-icon-color-512.png';
-const FOOTER_LOGO = 'https://company-assets.bookasloth.in/images/email/meeticulous-wordmark-full-color.png';
+// Hosted on the site itself (client/public/images/email → served at
+// meeticulous.com by Vercel), so emails no longer depend on an external CDN.
+// Header = icon (~26px on white), footer = full wordmark (~150px on blush).
+const HEADER_LOGO = 'https://meeticulous.com/images/email/meeticulous-icon-color-512.png';
+const FOOTER_LOGO = 'https://meeticulous.com/images/email/meeticulous-wordmark-full-color.png';
 
 /** Blend a #rrggbb color toward white. ratio 0 = original, 1 = white. */
 function tint(hex, ratio) {
@@ -181,7 +181,7 @@ function renderCustomerLayout({ bodyHtml, previewText, ctaLabel, ctaUrl, emailCa
 
   const footerRow = `<tr>
     <td style="padding:24px 28px 28px;border-top:1px solid ${D.border};background:${D.bg};text-align:center;">
-      <img src="${esc(FOOTER_LOGO)}" alt="${esc(fromName)}" width="60" style="margin:0 auto 14px;display:block;border:0;">
+      <img src="${esc(FOOTER_LOGO)}" alt="${esc(fromName)}" width="150" style="margin:0 auto 14px;display:block;border:0;">
       <p style="margin:0 0 16px;font-size:12px;line-height:2;font-family:${D.font};">${nav}</p>
       <p style="margin:0 0 2px;font-size:12px;font-weight:700;color:${D.dark};font-family:${D.font};">${COMPANY}</p>
       <p style="margin:0 0 2px;font-size:12px;line-height:1.6;color:${D.muted};font-family:${D.font};">${ADDRESS}</p>
@@ -207,7 +207,7 @@ function renderVendorLayout({ bodyHtml, previewText, ctaLabel, ctaUrl, emailCate
   const footerRow = `<tr>
     <td style="padding:22px 20px;border-top:1px solid ${D.border};text-align:center;font-size:11px;line-height:1.7;color:${D.note};font-family:${D.font};">
       Powered by<br>
-      <img src="${esc(FOOTER_LOGO)}" alt="Meeticulous" width="60" style="margin:8px auto;display:block;border:0;">
+      <img src="${esc(FOOTER_LOGO)}" alt="Meeticulous" width="150" style="margin:8px auto;display:block;border:0;">
       ${esc(COMPANY)} &middot; ${esc(TAGLINE)}<br>
       ${esc(ADDRESS)}<br>
       <span style="color:${D.note};">© ${year} Meeticulous</span>
