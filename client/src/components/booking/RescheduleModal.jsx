@@ -79,7 +79,7 @@ export default function RescheduleModal({ open, booking, onClose, onDone }) {
     <Modal open={open} title="Reschedule booking" onClose={onClose}>
       <p className="text-sm text-gray-500 mb-3">
         Currently: {new Date(booking.scheduled_at).toLocaleString('en-IN')}
-        {feeDue > 0 && <> · <span className="text-[#2E1065] font-medium">₹{feeDue} fee applies</span></>}
+        {feeDue > 0 && <> · <span className="text-[#960D32] font-medium">₹{feeDue} fee applies</span></>}
         {count === 0 && vendorFee > 0 && <> · <span className="text-green-600">first reschedule free</span></>}
       </p>
       <label className="block text-sm font-medium mb-1" htmlFor="resched-date">New date</label>
@@ -92,14 +92,14 @@ export default function RescheduleModal({ open, booking, onClose, onDone }) {
         : <div className="grid grid-cols-3 gap-2 mb-4">
             {slots.map((s) => (
               <button key={s} type="button" onClick={() => setPicked(s)}
-                className={`text-sm py-2 rounded-lg border ${picked === s ? 'bg-[#2E1065] text-white border-[#2E1065]' : 'border-gray-200'}`}>
+                className={`text-sm py-2 rounded-lg border ${picked === s ? 'bg-[#960D32] text-white border-[#960D32]' : 'border-gray-200'}`}>
                 {fmtTime(s)}
               </button>
             ))}
           </div>
       )}
       <button type="button" onClick={confirm} disabled={!picked || busy}
-        className="w-full bg-[#2E1065] text-white py-2.5 rounded-lg text-sm font-medium disabled:opacity-50">
+        className="w-full bg-[#960D32] text-white py-2.5 rounded-lg text-sm font-medium disabled:opacity-50">
         {busy ? 'Working…' : feeDue > 0 ? `Pay ₹${feeDue} & Confirm` : 'Confirm reschedule'}
       </button>
     </Modal>

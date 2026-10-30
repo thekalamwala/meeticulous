@@ -96,7 +96,7 @@ const ProductPurchase = () => {
   // instead of the old hardcoded indigo. Falls back to the brand orange.
   const accent = isValidHex(product?.profiles?.theme_color)
     ? product.profiles.theme_color
-    : "#2E1065";
+    : "#960D32";
   // Platform fee comes from the server (never hardcoded here, so it can't drift
   // from what's actually charged).
   const fee = Number(product?.platform_fee ?? 0);

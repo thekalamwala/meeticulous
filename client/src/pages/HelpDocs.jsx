@@ -62,7 +62,7 @@ const HelpDocs = () => {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search all articles…"
             aria-label="Search help articles"
-            className="w-full bg-white border rounded-2xl pl-11 pr-4 py-3 text-sm outline-none focus:border-[#2E1065] focus:ring-1 focus:ring-[#2E1065]"
+            className="w-full bg-white border rounded-2xl pl-11 pr-4 py-3 text-sm outline-none focus:border-[#960D32] focus:ring-1 focus:ring-[#960D32]"
           />
         </div>
 
@@ -78,10 +78,10 @@ const HelpDocs = () => {
                   className="flex items-start gap-3 bg-white border rounded-2xl p-4 hover:shadow-md transition-shadow hover:no-underline group"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-gray-900 group-hover:text-[#2E1065]">{doc.title}</p>
+                    <p className="font-semibold text-gray-900 group-hover:text-[#960D32]">{doc.title}</p>
                     {doc.excerpt && <p className="text-sm text-gray-500 mt-0.5 line-clamp-2">{doc.excerpt}</p>}
                   </div>
-                  <ChevronRight size={18} className="text-gray-300 mt-0.5 flex-shrink-0 group-hover:text-[#2E1065]" />
+                  <ChevronRight size={18} className="text-gray-300 mt-0.5 flex-shrink-0 group-hover:text-[#960D32]" />
                 </Link>
               ))}
             </div>
@@ -97,7 +97,7 @@ const HelpDocs = () => {
         <div className="bg-white border rounded-2xl p-5 text-center">
           <p className="font-semibold text-gray-900">Didn&apos;t find your answer?</p>
           <p className="text-sm text-gray-500 mt-1 mb-3">Ask Bolt, our assistant, or reach our team.</p>
-          <Link to="/help" className="inline-flex text-sm font-semibold text-[#2E1065] hover:underline">
+          <Link to="/help" className="inline-flex text-sm font-semibold text-[#960D32] hover:underline">
             Contact support
           </Link>
         </div>

@@ -35,7 +35,7 @@ export default function MetricStrip({ stats, active, onPick, loading }) {
         return (
           <button key={v.key} type="button" onClick={() => onPick(v.key)}
             className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[12px] transition
-              ${isActive ? 'bg-[#2E1065] text-white border-[#2E1065]' : 'adm-card border-gray-200 hover:border-[#2E1065]/60'}`}>
+              ${isActive ? 'bg-[#960D32] text-white border-[#960D32]' : 'adm-card border-gray-200 hover:border-[#960D32]/60'}`}>
             <span className={isActive ? 'font-semibold' : 'adm-t2'}>{v.label}</span>
             {n != null && (
               <span className={`text-[11px] font-bold tabular-nums ${isActive ? 'text-white' : toneFor(v.key, n)}`}>

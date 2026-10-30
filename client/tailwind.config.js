@@ -4,21 +4,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#2E1065",
-        "primary-dark": "#1E0B4D",
-        // White-text buttons only. #0079C1 + white = 3.26:1 (fails WCAG AA);
-        // this darker shade = ~5.3:1. Keep `primary` for accents/large text.
-        "primary-cta": "#2E1065",
-        "primary-light": "#EDE9FE",
-        secondary: "#A78BFA",
-        "surface-dark": "#2E1065",
-        "surface-darker": "#1E0B4D",
-        "ink-brand": "#1E0B4D",
+        primary: "#960D32",
+        "primary-dark": "#7A0A28",
+        // White-text buttons + body links. Crimson #960D32 on white = ~8.7:1 (AA/AAA).
+        "primary-cta": "#960D32",
+        "primary-light": "#FBE3E8",
+        secondary: "#FF9FB0",
+        teal: "#00C9C6",
+        "teal-ink": "#0E7C7A",
+        "surface-dark": "#5E0820",
+        "surface-darker": "#3D0514",
+        "ink-brand": "#3D0514",
         surface: "#ffffff",
-        muted: "#6b7280",
-        ink: "#1E0B4D",
-        sand: "#F5F3FF",
-        canvas: "#F9FAFB",
+        muted: "#6E5257",
+        ink: "#2A1416",
+        sand: "#FFF1F4",
+        canvas: "#FFF8FA",
         // Accent palette — reusable multi-hue accents (Calendly-style colour).
         // Mirrors --c-* in src/styles/design-tokens.css — keep both in sync.
         // Literal hex (not var) so Tailwind's /opacity modifier can compute alpha.
@@ -28,10 +29,9 @@ export default {
         "c-emerald": "#059669",
         "c-amber": "#f59e0b",
         "c-pink": "#db2777",
-        // Action accent — reserved for the SINGLE primary conversion CTA so it
-        // pops off blue surfaces (see docs/design/03-design-tokens.md).
-        action: "#7C3AED",
-        "action-dark": "#6D28D9",
+        // Action accent — crimson conversion CTA.
+        action: "#960D32",
+        "action-dark": "#7A0A28",
         // Semantic status (fg = text/icon/solid, bg = subtle tint). Keep in sync
         // with the --*-fg / --*-bg vars in src/styles/design-tokens.css.
         "success-fg": "#15803D",

@@ -90,7 +90,7 @@ function BulkSendModal({ mode, count, onClose, onSubmit }) {
         </div>
         <div className="space-y-3">
           {mode === 'wa' && (waTemplates.length === 0
-            ? <p className="text-[13px] adm-t2">No approved WhatsApp templates. Add them in <a href="/admin/sales/templates" className="text-[#2E1065]">Templates</a>.</p>
+            ? <p className="text-[13px] adm-t2">No approved WhatsApp templates. Add them in <a href="/admin/sales/templates" className="text-[#960D32]">Templates</a>.</p>
             : <select className="fb-input text-sm w-full" value={tpl} onChange={(e) => setTpl(e.target.value)}>
                 <option value="">Pick a template…</option>
                 {waTemplates.map((t) => <option key={t.id} value={t.id}>{t.label} ({t.name})</option>)}
@@ -100,7 +100,7 @@ function BulkSendModal({ mode, count, onClose, onSubmit }) {
             <textarea className="fb-input text-sm w-full" rows={6} placeholder="HTML body — {{first_name}}, {{business_name}}…" value={html} onChange={(e) => setHtml(e.target.value)} />
           </>}
           {mode === 'enroll' && (sequences.length === 0
-            ? <p className="text-[13px] adm-t2">No active sequences. <a href="/admin/sales/sequences" className="text-[#2E1065]">Create one</a>.</p>
+            ? <p className="text-[13px] adm-t2">No active sequences. <a href="/admin/sales/sequences" className="text-[#960D32]">Create one</a>.</p>
             : <select className="fb-input text-sm w-full" value={seqId} onChange={(e) => setSeqId(e.target.value)}>
                 <option value="">Pick a sequence…</option>
                 {sequences.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
@@ -323,7 +323,7 @@ export default function SalesLeads() {
         <div className="inline-flex rounded-lg border border-gray-200 overflow-hidden">
           {['table', 'board', 'list'].map((vt) => (
             <button key={vt} type="button" onClick={() => setViewType(vt)}
-              className={`text-[12px] px-3 py-1 capitalize ${viewType === vt ? 'bg-[#2E1065] text-white' : 'adm-t2 hover:bg-black/[0.04]'}`}>
+              className={`text-[12px] px-3 py-1 capitalize ${viewType === vt ? 'bg-[#960D32] text-white' : 'adm-t2 hover:bg-black/[0.04]'}`}>
               {vt}
             </button>
           ))}
@@ -333,16 +333,16 @@ export default function SalesLeads() {
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <div className="flex items-center gap-1.5 overflow-x-auto flex-1 min-w-0 py-0.5" style={{ scrollbarWidth: 'thin' }}>
             {savedViews.map((v) => (
-              <span key={v.id} className="group inline-flex items-center gap-1 text-[12px] px-2 py-1 rounded-full border border-gray-200 adm-t2 hover:border-[#2E1065] whitespace-nowrap shrink-0">
+              <span key={v.id} className="group inline-flex items-center gap-1 text-[12px] px-2 py-1 rounded-full border border-gray-200 adm-t2 hover:border-[#960D32] whitespace-nowrap shrink-0">
                 <button type="button" onClick={() => applyView(v)}>{v.name}</button>
                 <button type="button" onClick={() => deleteView(v.id)} className="opacity-0 group-hover:opacity-100 adm-t3 hover:text-red-500">×</button>
               </span>
             ))}
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
-            <button type="button" onClick={saveView} className="text-[12px] px-2 py-1 rounded-full border border-dashed border-gray-300 adm-t3 hover:border-[#2E1065] whitespace-nowrap">+ Save view</button>
+            <button type="button" onClick={saveView} className="text-[12px] px-2 py-1 rounded-full border border-dashed border-gray-300 adm-t3 hover:border-[#960D32] whitespace-nowrap">+ Save view</button>
             <button type="button" onClick={saveAudience} title="Save the current filter as a reusable campaign audience"
-              className="text-[12px] px-2 py-1 rounded-full border border-dashed border-[#2E1065]/40 text-[#2E1065] hover:border-[#2E1065] whitespace-nowrap">↗ Save as audience</button>
+              className="text-[12px] px-2 py-1 rounded-full border border-dashed border-[#960D32]/40 text-[#960D32] hover:border-[#960D32] whitespace-nowrap">↗ Save as audience</button>
           </div>
         </div>
       </div>
@@ -582,7 +582,7 @@ function ManageTagsModal({ tags, onClose, onChanged }) {
                     className={`w-4 h-4 min-h-0 shrink-0 rounded-full ${swatchClass(c)} ${t.color === c ? 'ring-2 ring-gray-500' : 'opacity-60 hover:opacity-100'}`} />
                 ))}
               </div>
-              <button onClick={() => rename(t)} className="text-[11px] adm-t3 hover:text-[#2E1065]">rename</button>
+              <button onClick={() => rename(t)} className="text-[11px] adm-t3 hover:text-[#960D32]">rename</button>
               <button onClick={() => del(t)} className="text-[11px] text-red-500">delete</button>
             </div>
           ))}

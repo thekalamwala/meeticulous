@@ -21,7 +21,7 @@
    drops to transparent with an offset shadow + accent outline (kept accent,
    not white, so it stays legible on the white card/bottom-bar surfaces). */
 .cta-press {
-    background: var(--profile-accent, #2E1065);
+    background: var(--profile-accent, #960D32);
     color: var(--profile-accent-text, #ffffff);
     border: 0.2px solid transparent;
     transition: transform var(--motion-fast, 0.15s) ease,
@@ -32,9 +32,9 @@
 
 .cta-press:hover {
     background: transparent;
-    color: var(--profile-accent, #2E1065);
+    color: var(--profile-accent, #960D32);
     box-shadow: 5px 5px 0 rgb(36, 36, 36);
-    border: 0.2px solid var(--profile-accent, #2E1065);
+    border: 0.2px solid var(--profile-accent, #960D32);
 }
 
 .cta-press:active {
@@ -45,8 +45,8 @@
 /* Ghost variant — transparent accent outline, fills with accent on hover. */
 .cta-ghost {
     background: transparent;
-    color: var(--profile-accent, #2E1065);
-    border: 1px solid var(--profile-accent, #2E1065);
+    color: var(--profile-accent, #960D32);
+    border: 1px solid var(--profile-accent, #960D32);
     transition: transform var(--motion-fast, 0.15s) ease,
                 box-shadow var(--motion-fast, 0.15s) ease,
                 background var(--motion-fast, 0.15s) ease,
@@ -54,7 +54,7 @@
 }
 
 .cta-ghost:hover {
-    background: var(--profile-accent, #2E1065);
+    background: var(--profile-accent, #960D32);
     color: var(--profile-accent-text, #ffffff);
     box-shadow: 5px 5px 0 rgb(36, 36, 36);
 }

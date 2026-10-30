@@ -156,7 +156,7 @@ export default function ManageBooking() {
                 <span>
                   {booking.location}
                   {booking.map_link && (
-                    <> · <a href={booking.map_link} target="_blank" rel="noreferrer" className="font-medium text-[#2E1065] underline">Directions</a></>
+                    <> · <a href={booking.map_link} target="_blank" rel="noreferrer" className="font-medium text-[#960D32] underline">Directions</a></>
                   )}
                 </span>
               </p>
@@ -164,7 +164,7 @@ export default function ManageBooking() {
             {booking.meeting_mode !== "offline" && booking.meeting_link && (
               <p className="flex items-center gap-2">
                 <Video size={16} className="text-gray-400" />
-                <a href={booking.meeting_link} target="_blank" rel="noreferrer" className="font-medium text-[#2E1065] underline">Join link</a>
+                <a href={booking.meeting_link} target="_blank" rel="noreferrer" className="font-medium text-[#960D32] underline">Join link</a>
               </p>
             )}
           </div>
@@ -180,7 +180,7 @@ export default function ManageBooking() {
                   <button
                     onClick={onPay}
                     disabled={paying}
-                    className="btn flex w-full items-center justify-center gap-2 rounded-xl bg-[#2E1065] py-3 text-sm font-semibold text-white hover:bg-[#1E0B4D] disabled:opacity-60"
+                    className="btn flex w-full items-center justify-center gap-2 rounded-xl bg-[#960D32] py-3 text-sm font-semibold text-white hover:bg-[#2A1416] disabled:opacity-60"
                   >
                     {paying ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard size={16} />}
                     {paying ? "Opening payment…" : "Complete payment"}

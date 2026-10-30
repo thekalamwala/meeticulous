@@ -27,7 +27,7 @@ const OrangeBtn = ({ loading, label, loadingLabel, ...rest }) => (
     type="submit"
     disabled={loading}
     className="btn w-full py-2.5 text-sm font-bold text-white transition-opacity disabled:opacity-50 mt-2"
-    style={{ background: "#2E1065" }}
+    style={{ background: "#960D32" }}
     {...rest}
   >
     {loading ? loadingLabel : label}
@@ -302,7 +302,7 @@ const RecoveryStep = ({ codes, onContinue }) => (
       type="button"
       onClick={onContinue}
       className="btn w-full py-2.5 text-sm font-bold text-white transition-opacity mt-2"
-      style={{ background: "#2E1065" }}
+      style={{ background: "#960D32" }}
     >
       Continue
     </button>
@@ -401,7 +401,7 @@ const AdminLogin = () => {
         {/* Header */}
         <div className="mb-8 text-center">
           <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4"
-               style={{ background: "#2E1065" }}>
+               style={{ background: "#960D32" }}>
             <LockIcon />
           </div>
           <h1 className="text-xl font-bold text-white">Super Admin</h1>

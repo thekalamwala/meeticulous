@@ -76,7 +76,7 @@ const BadgeShowcase = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#FFFBF7] px-6 text-center">
       <h1 className="text-2xl font-extrabold text-gray-900 mb-2">Page not found</h1>
       <p className="text-sm text-gray-500 mb-6">This badge showcase doesn't exist.</p>
-      <Link to="/" className="text-[#2E1065] font-semibold text-sm hover:underline">← Back to Meeticulous</Link>
+      <Link to="/" className="text-[#960D32] font-semibold text-sm hover:underline">← Back to Meeticulous</Link>
     </div>
   );
 
@@ -94,9 +94,9 @@ const BadgeShowcase = () => {
         <header className="flex items-center gap-4 mb-8">
           {vendor.profile_image
             ? <img src={vendor.profile_image} alt={vendor.name} className="w-16 h-16 rounded-2xl object-cover border-2 border-white shadow" />
-            : <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2E1065] to-amber-400 flex items-center justify-center text-white text-2xl font-extrabold">{vendor.name?.[0] || '?'}</div>}
+            : <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#960D32] to-amber-400 flex items-center justify-center text-white text-2xl font-extrabold">{vendor.name?.[0] || '?'}</div>}
           <div>
-            <Link to={`/${vendor.username}`} className="text-xl sm:text-2xl font-extrabold text-gray-900 hover:text-[#2E1065] transition-colors">{vendor.name}</Link>
+            <Link to={`/${vendor.username}`} className="text-xl sm:text-2xl font-extrabold text-gray-900 hover:text-[#960D32] transition-colors">{vendor.name}</Link>
             <p className="text-sm text-gray-500">{total} badge{total === 1 ? '' : 's'} earned</p>
           </div>
         </header>
@@ -108,20 +108,20 @@ const BadgeShowcase = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             {badges.map((b) => (
               <button key={b.id} onClick={() => openModal(b)}
-                className={`bg-white rounded text-left p-4 border shadow-sm hover:shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-[#2E1065] ${b.is_bas_team ? 'border-[#2E1065]/50 ring-1 ring-[#2E1065]/20' : 'border-gray-200'}`}
+                className={`bg-white rounded text-left p-4 border shadow-sm hover:shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-[#960D32] ${b.is_bas_team ? 'border-[#960D32]/50 ring-1 ring-[#960D32]/20' : 'border-gray-200'}`}
                 style={{ borderRadius: 4 }}>
                 {b.image_url
                   ? <img src={b.image_url} alt={`${b.name} badge`} className="w-14 h-14 mx-auto mb-3 object-contain" />
-                  : <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-xl font-extrabold text-[#2E1065]">{b.name[0]}</div>}
+                  : <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-xl font-extrabold text-[#960D32]">{b.name[0]}</div>}
                 <p className="text-xs sm:text-sm font-bold text-gray-800 text-center leading-tight">{b.name}</p>
-                {b.is_bas_team && <p className="text-[9px] text-center font-bold text-[#2E1065] mt-1 uppercase tracking-wider">BAS Team</p>}
+                {b.is_bas_team && <p className="text-[9px] text-center font-bold text-[#960D32] mt-1 uppercase tracking-wider">BAS Team</p>}
               </button>
             ))}
           </div>
         )}
 
         <footer className="mt-12 text-center text-[11px] text-gray-400">
-          Verified by <Link to="/" className="font-semibold text-[#2E1065] hover:underline">Meeticulous</Link>
+          Verified by <Link to="/" className="font-semibold text-[#960D32] hover:underline">Meeticulous</Link>
         </footer>
       </div>
 
@@ -135,9 +135,9 @@ const BadgeShowcase = () => {
               className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 text-lg leading-none">×</button>
             {modal.image_url
               ? <img src={modal.image_url} alt={`${modal.name} badge`} className="w-24 h-24 object-contain mb-4" />
-              : <div className="w-24 h-24 rounded-full bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-4xl font-extrabold text-[#2E1065] mb-4">{modal.name[0]}</div>}
+              : <div className="w-24 h-24 rounded-full bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-4xl font-extrabold text-[#960D32] mb-4">{modal.name[0]}</div>}
             <h2 className="text-xl font-extrabold text-gray-900">{modal.name}</h2>
-            {modal.is_bas_team && <p className="text-[10px] font-bold text-[#2E1065] uppercase tracking-widest mt-1">BAS Team Endorsement</p>}
+            {modal.is_bas_team && <p className="text-[10px] font-bold text-[#960D32] uppercase tracking-widest mt-1">BAS Team Endorsement</p>}
             {modalLoading ? (
               <p className="text-xs text-gray-400 mt-3">Loading…</p>
             ) : (

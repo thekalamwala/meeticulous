@@ -103,7 +103,7 @@ const HeroNext = ({ b, host, count, onDetails }) => {
   const svc = b.services || {};
   return (
     <div className="rounded-2xl p-5 sm:p-6 mb-5 text-white relative overflow-hidden"
-      style={{ background: "linear-gradient(135deg,#2E1065,#2E1065)" }}>
+      style={{ background: "linear-gradient(135deg,#960D32,#960D32)" }}>
       <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide opacity-90">
         <CalendarClock size={14} /> Your next session · {relWhen(b.scheduled_at)}
       </p>
@@ -114,7 +114,7 @@ const HeroNext = ({ b, host, count, onDetails }) => {
       <div className="flex flex-wrap items-center gap-2 mt-4">
         {b.meeting_link && (
           <a href={b.meeting_link} target="_blank" rel="noreferrer"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#2E1065] bg-white rounded-xl px-4 py-2 hover:bg-white/90 hover:no-underline">
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#960D32] bg-white rounded-xl px-4 py-2 hover:bg-white/90 hover:no-underline">
             <Video size={15} /> Join
           </a>
         )}
@@ -233,7 +233,7 @@ const CustomerBookings = () => {
             <p className="font-semibold text-gray-900 truncate">{svc.title || "Service"}</p>
             <p className="text-sm text-gray-500 mt-0.5">
               with {host.username
-                ? <Link to={`/${host.username}`} className="text-[#2E1065] hover:underline">{host.name || "Host"}</Link>
+                ? <Link to={`/${host.username}`} className="text-[#960D32] hover:underline">{host.name || "Host"}</Link>
                 : (host.name || "Host")}
             </p>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-sm text-gray-600">
@@ -249,16 +249,16 @@ const CustomerBookings = () => {
 
         <div className="mt-3 pt-3 border-t flex items-center gap-2">
           <button onClick={() => setDetailsFor(b)}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-[#2E1065] px-2.5 py-1.5 rounded-lg hover:bg-[#2E1065]/5">
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-[#960D32] px-2.5 py-1.5 rounded-lg hover:bg-[#960D32]/5">
             <Eye size={15} /> Details
           </button>
           <Link to="/help"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-[#2E1065] px-2.5 py-1.5 rounded-lg hover:bg-[#2E1065]/5 hover:no-underline">
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-[#960D32] px-2.5 py-1.5 rounded-lg hover:bg-[#960D32]/5 hover:no-underline">
             <HelpCircle size={15} /> Help
           </Link>
           {b.meeting_link && isUpcoming(b) && (
             <a href={b.meeting_link} target="_blank" rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-[#2E1065] hover:underline px-2.5 py-1.5 ml-auto">
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-[#960D32] hover:underline px-2.5 py-1.5 ml-auto">
               <Video size={15} /> Join
             </a>
           )}
@@ -269,7 +269,7 @@ const CustomerBookings = () => {
                 Report a problem
               </button>
               <button onClick={() => handleConfirmComplete(b.id)} disabled={confirming === b.id}
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-[#2E1065] hover:bg-[#1E0B4D] disabled:opacity-60 px-3 py-1.5 rounded-lg">
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-[#960D32] hover:bg-[#2A1416] disabled:opacity-60 px-3 py-1.5 rounded-lg">
                 {confirming === b.id ? "Confirming…" : "Confirm completed"}
               </button>
             </div>
@@ -293,7 +293,7 @@ const CustomerBookings = () => {
           {/* Filter dropdown */}
           <div className="relative" onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setFilterOpen(false); }}>
             <button onClick={() => setFilterOpen((o) => !o)}
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-700 bg-white border rounded-xl px-3.5 py-2 hover:border-[#2E1065]/40 whitespace-nowrap">
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-700 bg-white border rounded-xl px-3.5 py-2 hover:border-[#960D32]/40 whitespace-nowrap">
               {activeFilterLabel}
               <ChevronDown size={15} className={`text-gray-400 transition-transform ${filterOpen ? "rotate-180" : ""}`} />
             </button>
@@ -301,7 +301,7 @@ const CustomerBookings = () => {
               <div className="absolute right-0 top-full mt-1.5 w-44 bg-white border rounded-xl shadow-lg z-20 overflow-hidden py-1">
                 {FILTERS.map((f) => (
                   <button key={f.key} onClick={() => { setFilter(f.key); setFilterOpen(false); }}
-                    className={`flex w-full items-center px-4 py-2.5 text-sm hover:bg-[#2E1065]/5 ${filter === f.key ? "text-[#2E1065] font-medium" : "text-gray-600"}`}>
+                    className={`flex w-full items-center px-4 py-2.5 text-sm hover:bg-[#960D32]/5 ${filter === f.key ? "text-[#960D32] font-medium" : "text-gray-600"}`}>
                     {f.label}
                   </button>
                 ))}
@@ -323,7 +323,7 @@ const CustomerBookings = () => {
           <div className="bg-white border rounded-2xl p-10 text-center">
             <p className="text-gray-500 mb-1">No bookings yet</p>
             <p className="text-sm text-gray-400 mb-4">When you book a session it'll show up here.</p>
-            <Link to="/" className="inline-block text-sm font-medium text-[#2E1065] hover:underline">Find a creator to book →</Link>
+            <Link to="/" className="inline-block text-sm font-medium text-[#960D32] hover:underline">Find a creator to book →</Link>
           </div>
         ) : filtered.length === 0 ? (
           <div className="bg-white border rounded-2xl p-10 text-center text-gray-400 text-sm">
@@ -336,7 +336,7 @@ const CustomerBookings = () => {
         )}
 
         <div className="text-center mt-6">
-          <Link to="/" className="text-sm text-[#2E1065] hover:underline">Browse creators →</Link>
+          <Link to="/" className="text-sm text-[#960D32] hover:underline">Browse creators →</Link>
         </div>
 
       {/* Details drawer/modal */}
@@ -403,7 +403,7 @@ const DetailsModal = ({ b, host, review, onClose, canReschedule, canReview, canC
 
           {b.meeting_link && (
             <a href={b.meeting_link} target="_blank" rel="noreferrer"
-              className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-[#2E1065] hover:underline">
+              className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-[#960D32] hover:underline">
               <Video size={15} /> Join Google Meet
             </a>
           )}
@@ -411,7 +411,7 @@ const DetailsModal = ({ b, host, review, onClose, canReschedule, canReview, canC
           {/* Actions */}
           <div className="mt-5 grid grid-cols-1 gap-2">
             <button onClick={() => downloadInvoice(b, host)}
-              className="btn inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-[#2E1065] hover:bg-[#1E0B4D]">
+              className="btn inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-[#960D32] hover:bg-[#2A1416]">
               <Download size={15} /> Download invoice
             </button>
             {canReschedule && (
@@ -433,12 +433,12 @@ const DetailsModal = ({ b, host, review, onClose, canReschedule, canReview, canC
                     <Star size={14} className="fill-green-600 text-green-600" /> Review submitted
                   </span>
                   {canReview && (
-                    <button onClick={onReview} className="text-xs font-medium text-[#2E1065] hover:underline">
+                    <button onClick={onReview} className="text-xs font-medium text-[#960D32] hover:underline">
                       Edit review
                     </button>
                   )}
                 </div>
-                <p className="mt-1 text-[#2E1065] text-sm tracking-tight">
+                <p className="mt-1 text-[#960D32] text-sm tracking-tight">
                   {"★".repeat(review.rating)}<span className="text-gray-300">{"★".repeat(5 - review.rating)}</span>
                 </p>
                 {review.comment && <p className="mt-1 text-sm text-gray-600 leading-relaxed">{review.comment}</p>}

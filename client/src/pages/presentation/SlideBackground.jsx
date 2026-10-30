@@ -35,7 +35,7 @@ function Rings({ accent }) {
   );
 }
 
-export default function SlideBackground({ pattern = 'dots', accent = '#2E1065', uid = 'x' }) {
+export default function SlideBackground({ pattern = 'dots', accent = '#960D32', uid = 'x' }) {
   const soft = `${accent}14`; // ~8% alpha hex
   return (
     <div className="absolute inset-0 overflow-hidden" style={{ background: '#F8FAFC' }} aria-hidden="true">

@@ -35,7 +35,7 @@ const Input = ({ label, ...props }) => (
   <label className="block">
     <span className="text-xs font-bold adm-t1 uppercase tracking-wide mb-1 block">{label}</span>
     <input className="w-full border-2 adm-border rounded-lg px-3 py-2 text-sm font-medium
-                      adm-card outline-none focus:border-[#2E1065] transition-colors" {...props} />
+                      adm-card outline-none focus:border-[#960D32] transition-colors" {...props} />
   </label>
 );
 
@@ -77,7 +77,7 @@ function FeaturedTab() {
   return (
     <div className="space-y-6">
       <Section>
-        <h3 className="font-bold adm-t1 flex items-center gap-2"><Ic d={IC.star} size={16} className="text-[#2E1065]" /> Add Featured Slot</h3>
+        <h3 className="font-bold adm-t1 flex items-center gap-2"><Ic d={IC.star} size={16} className="text-[#960D32]" /> Add Featured Slot</h3>
         <div className="grid grid-cols-2 gap-3">
           <Input label="Host ID *" value={form.vendor_id} onChange={e => setForm(f => ({ ...f, vendor_id: e.target.value }))} placeholder="profiles.id (UUID)" />
           <div>
@@ -146,7 +146,7 @@ function KeywordsTab() {
   return (
     <div className="space-y-6">
       <Section>
-        <h3 className="font-bold adm-t1 flex items-center gap-2"><Ic d={IC.tag} size={16} className="text-[#2E1065]" /> Add Sponsored Keyword</h3>
+        <h3 className="font-bold adm-t1 flex items-center gap-2"><Ic d={IC.tag} size={16} className="text-[#960D32]" /> Add Sponsored Keyword</h3>
         <div className="grid grid-cols-2 gap-3">
           <Input label="Host ID *" value={form.vendor_id} onChange={e => setForm(f => ({ ...f, vendor_id: e.target.value }))} />
           <Input label="Keyword / Category slug *" value={form.keyword} onChange={e => setForm(f => ({ ...f, keyword: e.target.value }))} placeholder="e.g. yoga, fitness" />
@@ -208,7 +208,7 @@ function CollectionsTab() {
   return (
     <div className="space-y-6">
       <Section>
-        <h3 className="font-bold adm-t1 flex items-center gap-2"><Ic d={IC.bookmark} size={16} className="text-[#2E1065]" /> New Collection</h3>
+        <h3 className="font-bold adm-t1 flex items-center gap-2"><Ic d={IC.bookmark} size={16} className="text-[#960D32]" /> New Collection</h3>
         <div className="grid grid-cols-2 gap-3">
           <Input label="Title *" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} />
           <Input label="Slug *"  value={form.slug}  onChange={e => setForm(f => ({ ...f, slug: e.target.value }))}  placeholder="e.g. top-picks" />
@@ -216,7 +216,7 @@ function CollectionsTab() {
           <Input label="Icon emoji" value={form.icon_emoji} onChange={e => setForm(f => ({ ...f, icon_emoji: e.target.value }))} />
         </div>
         <label className="flex items-center gap-2 text-sm font-semibold cursor-pointer">
-          <input type="checkbox" checked={form.is_paid} onChange={e => setForm(f => ({ ...f, is_paid: e.target.checked }))} className="accent-[#2E1065]" />
+          <input type="checkbox" checked={form.is_paid} onChange={e => setForm(f => ({ ...f, is_paid: e.target.checked }))} className="accent-[#960D32]" />
           Paid collection (hosts paid to be included)
         </label>
         <Btn onClick={create} disabled={saving} icon={IC.plus}>{saving ? 'Saving…' : 'Create Collection'}</Btn>
@@ -229,7 +229,7 @@ function CollectionsTab() {
               <div key={col.id} className="border-2 adm-border rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-bold text-sm adm-t1">{col.icon_emoji} {col.title} {col.is_paid && <span className="text-[10px] bg-[#2E1065] text-white px-1.5 py-0.5 rounded ml-1">Paid</span>}</p>
+                    <p className="font-bold text-sm adm-t1">{col.icon_emoji} {col.title} {col.is_paid && <span className="text-[10px] bg-[#960D32] text-white px-1.5 py-0.5 rounded ml-1">Paid</span>}</p>
                     <p className="text-xs adm-t3">{col.subtitle} · {(col.explore_collection_vendors || []).length} hosts</p>
                   </div>
                   <Btn variant={col.is_active ? 'ghost' : 'primary'} size="sm" onClick={() => toggle(col)}>
@@ -344,7 +344,7 @@ function VerifiedTab() {
   return (
     <div className="space-y-6">
       <Section>
-        <h3 className="font-bold adm-t1 flex items-center gap-2"><Ic d={IC.badgeCheck} size={16} className="text-[#2E1065]" /> Grant Verified Badge</h3>
+        <h3 className="font-bold adm-t1 flex items-center gap-2"><Ic d={IC.badgeCheck} size={16} className="text-[#960D32]" /> Grant Verified Badge</h3>
         <div className="grid grid-cols-2 gap-3">
           <Input label="Host ID *" value={form.vendor_id} onChange={e => setForm(f => ({ ...f, vendor_id: e.target.value }))} />
           <Input label="Expires at (leave blank = never)" type="date" value={form.expires_at} onChange={e => setForm(f => ({ ...f, expires_at: e.target.value }))} />
@@ -359,7 +359,7 @@ function VerifiedTab() {
             {verified.map(v => (
               <div key={v.id} className="flex items-center justify-between p-3 border-2 adm-border rounded-lg">
                 <div className="flex items-center gap-2">
-                  <Ic d={IC.badgeCheck} size={16} className="text-[#2E1065]" />
+                  <Ic d={IC.badgeCheck} size={16} className="text-[#960D32]" />
                   <div>
                     <p className="font-bold text-sm adm-t1">{v.profiles?.name || v.vendor_id}</p>
                     <p className="text-xs adm-t3">
@@ -413,7 +413,7 @@ export default function AdminExplore() {
               className={`flex items-center gap-1.5 px-4 py-2 text-sm font-bold border-2 border-b-0 rounded-t-lg
                           transition-colors
                           ${active
-                            ? 'adm-card adm-border text-[#2E1065]'
+                            ? 'adm-card adm-border text-[#960D32]'
                             : 'adm-chip border-transparent adm-t3 hover:text-[color:var(--adm-text-1)]'
                           }`}
             >

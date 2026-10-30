@@ -1,36 +1,37 @@
 /* Meeticulous — Design Tokens (single source of truth)
  * Full spec + usage rules: docs/design/03-design-tokens.md
- * Design language: soft modern SaaS, brand blue #0079C1.
+ * Design language: soft modern SaaS, brand crimson #960D32 (white-first).
  *
  * The NEW semantic system is at the top. The "Legacy compatibility" block at
  * the bottom is kept ONLY until the fb-* component CSS is migrated off (see
  * docs/design/06-roadmap.md Phase B/C) — do not build new UI on it. */
 :root {
     /* ── Brand ─────────────────────────────────────────────── */
-    --primary: #2E1065;          /* brand blue — accents, active, links-on-light, large text */
-    --primary-dark: #1E0B4D;     /* hover/pressed of primary */
-    --primary-cta: #2E1065;      /* AA-safe navy for white-text buttons + body links (~5.3:1) */
-    --primary-light: #EDE9FE;    /* subtle tints, selected bg, info chips */
-    --action: #7C3AED;           /* vivid purple — links, highlights, the bright accent pop */
-    --action-dark: #6D28D9;      /* hover/pressed of action */
-    --secondary-accent: #A78BFA; /* lavender — secondary accents, highlights, dark-section pops */
-    --surface-dark: #2E1065;     /* immersive dark sections (hero/nav/footer) */
-    --surface-darker: #1E0B4D;   /* deepest sections + marketing dark-purple "ink" */
+    --primary: #960D32;          /* brand crimson — accents, active, links-on-light, large text */
+    --primary-dark: #7A0A28;     /* hover/pressed of primary (darker crimson) */
+    --primary-cta: #960D32;      /* crimson for white-text buttons + body links (~8.7:1 on white) */
+    --primary-light: #FBE3E8;    /* subtle crimson tints, selected bg, info chips */
+    --action: #960D32;           /* crimson — links, highlights, the accent pop */
+    --action-dark: #7A0A28;      /* hover/pressed of action */
+    --secondary-accent: #FF9FB0; /* light coral — accent on deep-crimson sections */
+    --accent-teal: #00C9C6;      /* teal spark — one highlight per page (use #0E7C7A as text) */
+    --surface-dark: #5E0820;     /* immersive deep-crimson sections (reserve to 1 band) */
+    --surface-darker: #3D0514;   /* deepest crimson section */
 
     /* ── Neutrals: surfaces ────────────────────────────────── */
-    --canvas: #F9FAFB;           /* page background */
-    --sand: #F5F3FF;             /* muted bands, table headers */
+    --canvas: #FFF8FA;           /* page background — warm white, fresh */
+    --sand: #FFF1F4;             /* muted crimson-wash bands, table headers */
     --surface: #FFFFFF;          /* cards, inputs, modals */
 
-    /* ── Neutrals: text ramp ───────────────────────────────── */
-    --text-strong: #1E0B4D;      /* primary text / headings */
-    --text-secondary: #334155;   /* body / secondary */
-    --text-muted: #64748B;       /* meta, captions, placeholder */
-    --text-disabled: #94A3B8;
+    /* ── Neutrals: text ramp (warm, crimson-tinted — never cold grey/black) ─ */
+    --text-strong: #2A1416;      /* primary text / headings — warm wine ink (~14:1) */
+    --text-secondary: #432A2E;   /* body / secondary — warm */
+    --text-muted: #6E5257;       /* meta, captions, placeholder — warm mauve (~7:1) */
+    --text-disabled: #A8898E;
 
-    /* ── Neutrals: borders ─────────────────────────────────── */
-    --border-subtle: #E6E2F5;    /* hairline borders, dividers (becomes --border once fb-* is gone) */
-    --border-strong: #DDD6FE;    /* emphasised borders, input hover */
+    /* ── Neutrals: borders (warm) ──────────────────────────── */
+    --border-subtle: #F3E1E5;    /* hairline borders, dividers (becomes --border once fb-* is gone) */
+    --border-strong: #E8CED4;    /* emphasised borders, input hover */
 
     /* ── Semantic status (fg = text/icon/solid, bg = subtle) ─ */
     --success-fg: #15803D;  --success-bg: #DCFCE7;
@@ -50,7 +51,7 @@
     --c-pink: #db2777;
 
     /* ── Focus ring (blue — replaces the old orange ring) ──── */
-    --focus-ring: rgba(124, 58, 237, 0.4);
+    --focus-ring: rgba(150, 13, 50, 0.4);
 
     /* ── Radii — global rule: 4px controls, 6px cards ──────── */
     --radius-control: 4px;   /* inputs/buttons/small controls (was UNDEFINED → inputs lost their radius) */
@@ -102,17 +103,17 @@
        off (Phase B/C). Still consumed by styles/base-fb.css + styles/
        components/*.css + a few global rules. Do not use in new UI. */
     --bg: var(--canvas);
-    --text: #1E0B4D;                        /* legacy strong-ink alias (global h1 color, fb-*) */
-    --secondary: #D8B4FE;                   /* DEPRECATED — Book-A-Sloth purple */
+    --text: #2A1416;                        /* legacy strong-ink alias (global h1 color, fb-*) — warm wine */
+    --secondary: #F3C7D1;                   /* DEPRECATED — crimson tint */
     --accent: #FFB703;                      /* DEPRECATED — amber, only .fb-badge--accent */
     --success: #4CAF50;                     /* legacy alias; prefer --success-fg */
     --danger: #EF4444;                      /* legacy alias; prefer --error-fg */
-    --border: #1E0B4D;                      /* DEPRECATED — brutalist 3px ink border (fb-card/modal) */
+    --border: #2A1416;                      /* DEPRECATED — brutalist 3px ink border (fb-card/modal) */
     --color-ink: var(--text);
-    --color-muted: #64748b;
+    --color-muted: #6E5257;
     --color-soft: var(--canvas);
     --color-surface: var(--surface);
-    --color-line: #e5e7eb;
+    --color-line: #F3E1E5;
     --color-primary: var(--primary);
     --color-primary-dark: var(--primary-dark);   /* was var(--primary) — now a real darken on hover */
     --shadow-hard-1: 6px 6px 0 rgba(30, 30, 30, 0.9);   /* DEPRECATED — brutalist */

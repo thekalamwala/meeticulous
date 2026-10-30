@@ -88,7 +88,7 @@ const CustomerProfile = () => {
   );
 
   const inputCls =
-    "w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 bg-white focus:border-[#2E1065] focus:ring-1 focus:ring-[#2E1065] outline-none disabled:bg-gray-50 disabled:text-gray-400";
+    "w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 bg-white focus:border-[#960D32] focus:ring-1 focus:ring-[#960D32] outline-none disabled:bg-gray-50 disabled:text-gray-400";
 
   return (
     <>
@@ -100,7 +100,7 @@ const CustomerProfile = () => {
           </div>
           {!editing && !loading && (
             <button onClick={() => setEditing(true)}
-              className="text-sm font-medium text-[#2E1065] hover:underline whitespace-nowrap">Edit</button>
+              className="text-sm font-medium text-[#960D32] hover:underline whitespace-nowrap">Edit</button>
           )}
         </div>
 
@@ -116,13 +116,13 @@ const CustomerProfile = () => {
                 {form.profile_image ? (
                   <img src={form.profile_image} alt="" className="w-20 h-20 rounded-full object-cover" />
                 ) : (
-                  <span className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#2E1065] text-white text-2xl font-bold select-none">
+                  <span className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#960D32] text-white text-2xl font-bold select-none">
                     {form.name ? form.name[0].toUpperCase() : "U"}
                   </span>
                 )}
                 {editing && (
                   <button onClick={() => fileRef.current?.click()} disabled={uploading}
-                    className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-white border shadow flex items-center justify-center text-gray-600 hover:text-[#2E1065]">
+                    className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-white border shadow flex items-center justify-center text-gray-600 hover:text-[#960D32]">
                     {uploading ? <Loader2 size={15} className="animate-spin" /> : <Camera size={15} />}
                   </button>
                 )}
@@ -156,7 +156,7 @@ const CustomerProfile = () => {
             {editing && (
               <div className="flex items-center gap-3 pt-2 border-t">
                 <button onClick={onSave} disabled={saving}
-                  className="btn inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#2E1065] hover:bg-[#1E0B4D] disabled:opacity-60">
+                  className="btn inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#960D32] hover:bg-[#2A1416] disabled:opacity-60">
                   {saving && <Loader2 size={15} className="animate-spin" />} Save changes
                 </button>
                 <button onClick={() => setEditing(false)} disabled={saving}

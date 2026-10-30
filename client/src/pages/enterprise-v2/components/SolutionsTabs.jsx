@@ -15,7 +15,7 @@ const tabs = [
     id: 'scheduling',
     label: 'Scheduling',
     icon: CalendarDays,
-    color: '#2E1065',
+    color: '#960D32',
     softColor: '#FFF4ED',
   },
   {
@@ -44,7 +44,7 @@ softColor: '#FDE7F8',
     id: 'security',
     label: 'Security',
     icon: ShieldCheck,
-    color: '#2E1065',
+    color: '#960D32',
     softColor: '#eff6ff',
   },
   {

@@ -97,13 +97,13 @@ function ContextRail({ ctx, thread }) {
         <div className="mb-2 flex items-center justify-between">
           <p className="text-[11px] font-semibold uppercase tracking-wide adm-t3">Customer</p>
           {isHost && thread.user_id && (
-            <a href={`/admin/host360/${thread.user_id}`} target="_blank" rel="noreferrer" className="text-[11px] font-medium text-[#2E1065] hover:underline">Open Host360 ↗</a>
+            <a href={`/admin/host360/${thread.user_id}`} target="_blank" rel="noreferrer" className="text-[11px] font-medium text-[#960D32] hover:underline">Open Host360 ↗</a>
           )}
         </div>
         <div className="flex items-center gap-2.5">
           {/* Real photo when we have one; initials show through if it's missing/broken. */}
           <div className="relative h-9 w-9 shrink-0">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FFF4EC] text-[13px] font-bold text-[#2E1065]">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FFF4EC] text-[13px] font-bold text-[#960D32]">
               {(p.name || '?').trim().slice(0, 2).toUpperCase()}
             </div>
             {p.photo && (
@@ -191,11 +191,11 @@ function Bubble({ m }) {
   return (
     <div className={'flex max-w-[82%] flex-col ' + (mine ? 'self-end items-end' : 'items-start')}>
       <div className={'rounded-2xl px-3 py-2 text-[13.5px] leading-relaxed ' + (
-        mine ? 'rounded-tr-sm bg-[#2E1065] text-white'
+        mine ? 'rounded-tr-sm bg-[#960D32] text-white'
           : isBot ? 'rounded-tl-sm bg-violet-50 text-gray-800'
             : 'rounded-tl-sm bg-[#f0ede6] text-gray-800')}>
         {!mine && (m.sender_name || isBot) && (
-          <p className={'mb-0.5 text-[11px] font-semibold ' + (isBot ? 'text-violet-700' : 'text-[#2E1065]')}>
+          <p className={'mb-0.5 text-[11px] font-semibold ' + (isBot ? 'text-violet-700' : 'text-[#960D32]')}>
             {isBot ? '🦥 Bolt' : m.sender_name}
           </p>
         )}
@@ -360,7 +360,7 @@ export default function AdminSupportChat() {
       <div className="flex flex-col h-[calc(100dvh-6.5rem)] lg:h-[calc(100dvh-7.5rem)]">
         {/* Minimal contextual header — not a card. Back + ticket identity only. */}
         <div className="mb-2.5 flex flex-shrink-0 flex-wrap items-center gap-2 text-[12px]">
-          <button onClick={() => setSel(null)} className="text-sm font-medium text-[#2E1065]">← Back to queue</button>
+          <button onClick={() => setSel(null)} className="text-sm font-medium text-[#960D32]">← Back to queue</button>
           <span className="adm-border ml-1 border-l pl-2.5" />
           <code className="text-sm font-bold tracking-tight adm-t1">{t.reference}</code>
           <span className="adm-t3">· {who(t)}</span>
@@ -397,7 +397,7 @@ export default function AdminSupportChat() {
                 // Unassigned: no composer — take ownership first.
                 <div className="flex flex-col items-center gap-1.5 px-4 py-5">
                   <button onClick={assignToMe} disabled={assigning}
-                    className="rounded-lg bg-[#2E1065] px-6 py-2.5 text-sm font-semibold text-white hover:brightness-95 disabled:opacity-40">
+                    className="rounded-lg bg-[#960D32] px-6 py-2.5 text-sm font-semibold text-white hover:brightness-95 disabled:opacity-40">
                     {assigning ? 'Assigning…' : 'Assign to me'}
                   </button>
                   <p className="text-[12px] adm-t3">Take ownership of this conversation to start replying.</p>
@@ -410,7 +410,7 @@ export default function AdminSupportChat() {
                     {QUICK_REPLIES.map((q) => (
                       <button key={q.label} type="button" title={q.text} onClick={() => postReply(q.text)}
                         disabled={reply.busy}
-                        className="flex-shrink-0 whitespace-nowrap rounded-full bg-[#f0ede6] px-2 py-0.5 text-[11px] font-medium adm-t2 transition-colors hover:bg-[#FFE9DC] hover:text-[#2E1065] disabled:opacity-40">
+                        className="flex-shrink-0 whitespace-nowrap rounded-full bg-[#f0ede6] px-2 py-0.5 text-[11px] font-medium adm-t2 transition-colors hover:bg-[#FFE9DC] hover:text-[#960D32] disabled:opacity-40">
                         {q.label}
                       </button>
                     ))}
@@ -420,12 +420,12 @@ export default function AdminSupportChat() {
                     value={reply.body} onChange={(ev) => setReply((r) => ({ ...r, body: ev.target.value }))}
                     onKeyDown={(ev) => { if (ev.key === 'Enter' && !ev.shiftKey) send(ev); }}
                     rows={2} placeholder={`Reply to ${firstName}…`} aria-label="Reply"
-                    className="w-full resize-none rounded-lg border adm-border px-2.5 py-1.5 text-sm outline-none focus:border-[#2E1065] focus:ring-0" />
+                    className="w-full resize-none rounded-lg border adm-border px-2.5 py-1.5 text-sm outline-none focus:border-[#960D32] focus:ring-0" />
                   <div className="mt-2 flex items-center justify-end gap-2">
                     <button type="button" onClick={() => setResolveOpen((v) => !v)}
-                      className="rounded-lg border adm-border px-3 py-2 text-sm font-medium adm-t2 hover:border-[#2E1065]">Resolve</button>
+                      className="rounded-lg border adm-border px-3 py-2 text-sm font-medium adm-t2 hover:border-[#960D32]">Resolve</button>
                     <button type="submit" disabled={reply.busy || !reply.body.trim()}
-                      className="rounded-lg bg-[#2E1065] px-4 py-2 text-sm font-medium text-white disabled:opacity-40">
+                      className="rounded-lg bg-[#960D32] px-4 py-2 text-sm font-medium text-white disabled:opacity-40">
                       {reply.busy ? 'Sending…' : 'Send →'}
                     </button>
                   </div>
@@ -441,7 +441,7 @@ export default function AdminSupportChat() {
                           </optgroup>
                         ))}
                       </select>
-                      <button type="button" onClick={doResolve} className="rounded-lg bg-[#2E1065] px-2.5 py-1 text-xs font-medium text-white">Resolve ticket</button>
+                      <button type="button" onClick={doResolve} className="rounded-lg bg-[#960D32] px-2.5 py-1 text-xs font-medium text-white">Resolve ticket</button>
                       <button type="button" onClick={() => { setResolveOpen(false); setReasonCode(''); }} className="text-xs adm-t3">Cancel</button>
                     </div>
                   )}
@@ -473,7 +473,7 @@ export default function AdminSupportChat() {
         {FILTERS.map((f) => (
           <button key={f.id} onClick={() => setFilter(f.id)}
             className={'-mb-px border-b-2 pb-2 text-sm font-semibold transition-colors ' +
-              (filter === f.id ? 'border-[#2E1065] text-[#2E1065]' : 'border-transparent adm-t3 hover:adm-t1')}>
+              (filter === f.id ? 'border-[#960D32] text-[#960D32]' : 'border-transparent adm-t3 hover:adm-t1')}>
             {f.label}
           </button>
         ))}
@@ -505,11 +505,11 @@ export default function AdminSupportChat() {
                 const claimable = it._kind === 'thread' ? (it.status === 'waiting' || it.status === 'bot') : it.status === 'open';
                 const ageMins = it.at ? Math.max(0, Math.round((now - new Date(it.at).getTime()) / 60000)) : null;
                 // Left accent = urgency at a glance, scanning down the column.
-                const accent = lvl === 'breach' ? 'bg-rose-500' : it.waitingOnUs ? 'bg-[#2E1065]' : it.agent ? 'bg-blue-500' : 'bg-gray-300';
+                const accent = lvl === 'breach' ? 'bg-rose-500' : it.waitingOnUs ? 'bg-[#960D32]' : it.agent ? 'bg-blue-500' : 'bg-gray-300';
                 return (
                   <button key={`${it._kind}:${it.id}`}
                     onClick={() => (it._kind === 'thread' ? open(it.id) : setSelEsc(it.id))}
-                    className="group relative flex flex-col rounded border adm-border bg-white p-3 pl-3.5 text-left transition hover:border-[#2E1065]">
+                    className="group relative flex flex-col rounded border adm-border bg-white p-3 pl-3.5 text-left transition hover:border-[#960D32]">
                     <span className={'absolute left-0 top-2.5 bottom-2.5 w-[3px] rounded ' + accent} />
                     <div className="mb-1 flex items-center gap-1.5">
                       <span className="flex h-[18px] w-[18px] items-center justify-center rounded bg-[#f0ede6] text-gray-500"
@@ -533,7 +533,7 @@ export default function AdminSupportChat() {
                       <span>·</span>
                       {it.agent ? <span className="font-medium text-blue-600">{it.agent}</span> : <span>Unassigned</span>}
                       {it.unread > 0 && <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[9.5px] font-bold text-amber-700">{it.unread} new</span>}
-                      <span className={'ml-auto rounded px-2 py-1 text-[11px] font-semibold ' + (claimable ? 'bg-[#2E1065] text-white' : 'bg-gray-100 text-gray-500')}>
+                      <span className={'ml-auto rounded px-2 py-1 text-[11px] font-semibold ' + (claimable ? 'bg-[#960D32] text-white' : 'bg-gray-100 text-gray-500')}>
                         {claimable ? 'Open & claim →' : it.agent ? 'View →' : 'Open →'}
                       </span>
                     </div>

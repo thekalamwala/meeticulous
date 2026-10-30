@@ -48,10 +48,10 @@ import PageGuides from '../../components/common/PageGuides';
 
 const START = '/become-a-host';
 const NAVY = '#0B1026';          // page dark base
-const PLUM = '#2E1065';          // gradient end
+const PLUM = '#960D32';          // gradient end
 const VIOLET = '#8B5CF6';        // decorative only (glows, lines, fills)
 const VIOLET_SOFT = '#C4B5FD';   // accent TEXT on dark (AA on navy/plum)
-const VIOLET_INK = '#6D28D9';    // accent text on light + CTA fill (AA with white)
+const VIOLET_INK = '#7A0A28';    // accent text on light + CTA fill (AA with white)
 const MIST = '#EEF0FF';          // body text on dark
 const LILAC = '#F6F5FF';         // light section background
 const GRADIENT = `linear-gradient(140deg, ${NAVY} 0%, #17123F 55%, ${PLUM} 100%)`;

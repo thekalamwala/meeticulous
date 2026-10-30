@@ -15,7 +15,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 const SLOTS = 10;
 // Founder palette (photo), black/white excluded. Cycled by page → across 10
 // slots each colour lands exactly twice. Only the active o shows its colour.
-const PAGE_COLORS = ['#2E1065', '#FF4D93', '#4AB765', '#FFCC1C', '#269CEF'];
+const PAGE_COLORS = ['#960D32', '#FF4D93', '#4AB765', '#FFCC1C', '#269CEF'];
 const colorFor = (p) => PAGE_COLORS[(p - 1) % PAGE_COLORS.length];
 
 const wordBase = 'font-heading text-4xl font-extrabold tracking-tight sm:text-5xl';

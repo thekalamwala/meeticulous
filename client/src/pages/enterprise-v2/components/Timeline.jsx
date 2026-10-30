@@ -17,7 +17,7 @@ const phases = [
   {
     title: 'Discovery',
     desc: 'We understand your business, workflows, and requirements through a structured discovery process.',
-    color: '#2E1065',
+    color: '#960D32',
     softColor: '#FFF0E8',
     icon: Search,
   },
@@ -154,7 +154,7 @@ export function Timeline() {
             <motion.path
               d={pathData}
               fill="none"
-              stroke="#2E1065"
+              stroke="#960D32"
               strokeWidth="5"
               strokeLinecap="round"
               strokeLinejoin="round"

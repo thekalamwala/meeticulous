@@ -27,7 +27,7 @@ export default function StatsPage() {
 
   const p = stats.pct;
   const cards = [
-    { label: 'Total Answers', value: stats.answered,          sub: 'last 30 days',           icon: 'chat',   iconColor: 'bg-[#2E1065]' },
+    { label: 'Total Answers', value: stats.answered,          sub: 'last 30 days',           icon: 'chat',   iconColor: 'bg-[#960D32]' },
     { label: 'Solved without AI', value: `${p.deflected}%`,   sub: 'greetings + FAQs + reused', icon: 'zap',  iconColor: 'bg-emerald-500' },
     { label: 'Used AI', value: `${p.ai}%`,                    sub: 'the goal: shrink this',  icon: 'star',   iconColor: 'bg-violet-500' },
     { label: 'Reused Answers', value: `${p.cache}%`,          sub: `${stats.cacheSize} saved`, icon: 'refresh', iconColor: 'bg-sky-500' },
@@ -53,8 +53,8 @@ export default function StatsPage() {
               return (
                 <div key={d.source_file} className="flex items-center gap-2">
                   <div className="w-48 shrink-0 truncate text-xs adm-t2" title={d.source_file}>{name}</div>
-                  <div className="h-4 flex-1 rounded bg-[#1E0B4D]/5">
-                    <div className="h-4 rounded bg-[#2E1065]" style={{ width: `${Math.round((d.answers / max) * 100)}%` }} />
+                  <div className="h-4 flex-1 rounded bg-[#2A1416]/5">
+                    <div className="h-4 rounded bg-[#960D32]" style={{ width: `${Math.round((d.answers / max) * 100)}%` }} />
                   </div>
                   <div className="w-10 shrink-0 text-right text-xs font-semibold adm-t2">{d.answers}</div>
                 </div>

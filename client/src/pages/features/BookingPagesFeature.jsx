@@ -53,10 +53,10 @@ const START = '/become-a-host';
 const DEMO = '/demo';
 const CREAM = '#FBF4E6';      // page paper
 const PAPER = '#FFFCF5';      // lighter alternate sections
-const INK = '#1E0B4D';
-const ORANGE = '#2E1065';     // decorative only (doodles, dots, fills behind dark text)
-const ORANGE_INK = '#1E0B4D'; // orange for text + white-on-orange CTAs (AA on cream)
-const PEACH = '#EDE9FE';      // primary-light tint
+const INK = '#2A1416';
+const ORANGE = '#960D32';     // decorative only (doodles, dots, fills behind dark text)
+const ORANGE_INK = '#2A1416'; // orange for text + white-on-orange CTAs (AA on cream)
+const PEACH = '#FBE3E8';      // primary-light tint
 
 /* ─────────────────────────────  LINK SLUG  ────────────────────────────── */
 
@@ -228,7 +228,7 @@ function BookingPageDemo() {
             <div className="flex items-center gap-3">
               <div aria-hidden className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full font-heading text-base font-extrabold text-white" style={{ background: ORANGE_INK }}>PN</div>
               <div className="min-w-0">
-                <div className="font-heading text-base font-extrabold text-[#1E0B4D]">Priya Nair</div>
+                <div className="font-heading text-base font-extrabold text-[#2A1416]">Priya Nair</div>
                 <div className="text-xs font-semibold" style={{ color: ORANGE_INK }}>Brand designer · Pune</div>
               </div>
             </div>
@@ -252,12 +252,12 @@ function BookingPageDemo() {
                     className="flex w-full items-center justify-between px-3 py-2.5 text-left"
                   >
                     <span>
-                      <span className="block font-heading text-[13px] font-bold text-[#1E0B4D]">{svc.title}</span>
+                      <span className="block font-heading text-[13px] font-bold text-[#2A1416]">{svc.title}</span>
                       <span className="mt-0.5 flex items-center gap-1 text-[11px] text-neutral-500">
                         <Clock size={10} aria-hidden /> {svc.mins} min · {svc.mode}
                       </span>
                     </span>
-                    <span className="font-heading text-[13px] font-extrabold tabular-nums text-[#1E0B4D]">{svc.price}</span>
+                    <span className="font-heading text-[13px] font-extrabold tabular-nums text-[#2A1416]">{svc.price}</span>
                   </button>
                   {on && (
                     <div className="px-3 pb-3" aria-live="polite">
@@ -331,7 +331,7 @@ function LinkEverywhere() {
       label: 'Instagram bio',
       body: (
         <div className="text-[13px] leading-snug text-neutral-700">
-          <div className="font-heading font-bold text-[#1E0B4D]">{name.trim() || 'Your name'}</div>
+          <div className="font-heading font-bold text-[#2A1416]">{name.trim() || 'Your name'}</div>
           Brand designer · Pune
           <div className="mt-1 font-semibold" style={{ color: ORANGE_INK }}>{link}</div>
         </div>
@@ -351,7 +351,7 @@ function LinkEverywhere() {
       icon: Mail,
       body: (
         <div className="border-l-2 pl-3 text-[13px] leading-snug text-neutral-700" style={{ borderColor: ORANGE }}>
-          <div className="font-semibold text-[#1E0B4D]">{name.trim() || 'Your name'}</div>
+          <div className="font-semibold text-[#2A1416]">{name.trim() || 'Your name'}</div>
           Book a session: <span className="font-semibold" style={{ color: ORANGE_INK }}>{link}</span>
         </div>
       ),
@@ -371,7 +371,7 @@ function LinkEverywhere() {
   return (
     <div className="mt-12">
       <div className="mx-auto max-w-xl">
-        <label htmlFor="bp-name" className="block text-sm font-semibold text-[#1E0B4D]">Type your name</label>
+        <label htmlFor="bp-name" className="block text-sm font-semibold text-[#2A1416]">Type your name</label>
         <div className="mt-2 flex items-center gap-2 rounded-full border border-black/10 bg-white px-5 py-3 shadow-[0_8px_30px_rgba(26,26,26,0.05)]">
           <input
             id="bp-name"
@@ -380,7 +380,7 @@ function LinkEverywhere() {
             maxLength={60}
             autoComplete="off"
             onChange={(e) => setName(e.target.value)}
-            className="w-full bg-transparent text-base text-[#1E0B4D] outline-none placeholder:text-neutral-400"
+            className="w-full bg-transparent text-base text-[#2A1416] outline-none placeholder:text-neutral-400"
             placeholder="Your name or studio"
           />
         </div>
@@ -429,7 +429,7 @@ export default function BookingPagesFeature() {
   });
 
   return (
-    <main className="overflow-x-clip text-[#1E0B4D]" style={{ background: CREAM }}>
+    <main className="overflow-x-clip text-[#2A1416]" style={{ background: CREAM }}>
       <Seo
         title={seo.title}
         description={seo.description}
@@ -449,18 +449,18 @@ export default function BookingPagesFeature() {
         <div className="mx-auto grid w-full max-w-6xl items-start gap-10 lg:items-center lg:gap-14 lg:grid-cols-[1fr_1fr]">
           <div>
             <nav aria-label="Breadcrumb" className="text-xs text-neutral-500">
-              <Link to="/" className="text-neutral-500 hover:text-[#1E0B4D] hover:no-underline">Home</Link>
+              <Link to="/" className="text-neutral-500 hover:text-[#2A1416] hover:no-underline">Home</Link>
               <span aria-hidden className="mx-2">/</span>
               <span>Features</span>
               <span aria-hidden className="mx-2">/</span>
-              <span aria-current="page" className="text-[#1E0B4D]">Booking pages</span>
+              <span aria-current="page" className="text-[#2A1416]">Booking pages</span>
             </nav>
             <Reveal instant className="mt-5">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-black/5 bg-white px-3.5 py-1.5 text-xs font-semibold text-neutral-700 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
                 <Sparkle className="h-3 w-3" /> For freelancers, coaches and creators
               </span>
             </Reveal>
-            <Reveal as="h1" instant delay={0.03} className="mt-4 font-heading text-[clamp(2.5rem,4.8vw,4.1rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[#1E0B4D]">
+            <Reveal as="h1" instant delay={0.03} className="mt-4 font-heading text-[clamp(2.5rem,4.8vw,4.1rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[#2A1416]">
               A free booking page that{' '}
               <span className="relative inline-block whitespace-nowrap" style={{ color: ORANGE_INK }}>
                 feels like you.
@@ -529,7 +529,7 @@ export default function BookingPagesFeature() {
               <BookingMiniMock />
               <ul className="mx-auto mt-7 max-w-sm space-y-2.5">
                 {WITH.map((t) => (
-                  <li key={t} className="flex items-start gap-2.5 text-[15px] font-medium text-[#1E0B4D]">
+                  <li key={t} className="flex items-start gap-2.5 text-[15px] font-medium text-[#2A1416]">
                     <Check size={16} className="mt-1 shrink-0" style={{ color: ORANGE_INK }} aria-hidden /><span><span className="sr-only">With Meeticulous: </span>{t}</span>
                   </li>
                 ))}
@@ -552,7 +552,7 @@ export default function BookingPagesFeature() {
                 <Reveal as="li" key={s.title} delay={i * 0.04} className="relative">
                   <div className={`flex ${right ? 'md:justify-end' : 'md:justify-start'}`}>
                     <div className="flex w-full items-start gap-5 rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] md:w-[62%]">
-                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-heading text-lg font-extrabold text-[#1E0B4D]" style={{ background: PEACH }}>{i + 1}</span>
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-heading text-lg font-extrabold text-[#2A1416]" style={{ background: PEACH }}>{i + 1}</span>
                       <div>
                         <h3 className="font-heading text-xl font-bold">{s.title}</h3>
                         <p className="mt-1.5 text-[15px] leading-relaxed text-neutral-600">{s.desc}</p>
@@ -628,7 +628,7 @@ export default function BookingPagesFeature() {
                     style={{ background: i % 2 ? '#F7EAD3' : PEACH, transform: `rotate(${i % 2 ? 1.4 : -1.4}deg)` }}
                   >
                     <span aria-hidden className="absolute -top-2.5 left-1/2 h-5 w-16 -translate-x-1/2 rotate-[-3deg] rounded-[2px] bg-white/70 shadow-[0_2px_6px_rgba(26,26,26,0.08)]" />
-                    <blockquote className="flex-1 text-[15px] leading-relaxed text-[#1E0B4D]">&ldquo;{t.quote}&rdquo;</blockquote>
+                    <blockquote className="flex-1 text-[15px] leading-relaxed text-[#2A1416]">&ldquo;{t.quote}&rdquo;</blockquote>
                     <figcaption className="mt-5 flex items-center gap-3">
                       <img src={t.avatar} alt="" loading="lazy" className="h-10 w-10 rounded-full object-cover" />
                       <div>
@@ -655,9 +655,9 @@ export default function BookingPagesFeature() {
           <div className="mt-12 space-y-3">
             {FAQ.map((f, i) => (
               <details key={f.q} className="group" open={i === 0}>
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-full border border-black/5 bg-white px-6 py-3.5 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors hover:border-black/15 group-open:border-[#2E1065]/30 group-open:bg-[#EDE9FE] [&::-webkit-details-marker]:hidden">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-full border border-black/5 bg-white px-6 py-3.5 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors hover:border-black/15 group-open:border-[#960D32]/30 group-open:bg-[#FBE3E8] [&::-webkit-details-marker]:hidden">
                   <span className="font-heading text-[16px] font-bold">{f.q}</span>
-                  <span aria-hidden className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#1E0B4D] text-base leading-none text-white transition-transform group-open:rotate-45">+</span>
+                  <span aria-hidden className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#2A1416] text-base leading-none text-white transition-transform group-open:rotate-45">+</span>
                 </summary>
                 <p className="px-6 pb-3 pt-4 text-[15px] leading-relaxed text-neutral-600">{f.a}</p>
               </details>

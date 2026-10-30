@@ -124,7 +124,7 @@ const AdminAppearance = () => {
             {form.navbar_logo_mode === "icon_text" ? (
               <>
                 {form.icon_url && <img src={form.icon_url} alt="" className="h-[26px] w-[26px] rounded block" />}
-                <span className="text-[15px] font-bold text-[#1E0B4D] tracking-tight">Meeticulous</span>
+                <span className="text-[15px] font-bold text-[#2A1416] tracking-tight">Meeticulous</span>
               </>
             ) : activeUrl ? (
               <img src={activeUrl} alt="Meeticulous" className="h-7 w-auto block" />

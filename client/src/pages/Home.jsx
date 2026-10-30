@@ -590,7 +590,7 @@ const Home = () => {
                 <button
                   onClick={startGoogle}
                   disabled={googleLoading}
-                  className="btn flex w-full items-center justify-center gap-3 rounded-[5px] bg-white py-3.5 text-sm font-semibold text-[#2E1065] shadow-[0_10px_28px_rgba(0,0,0,0.28)] transition-opacity hover:opacity-90 disabled:opacity-50"
+                  className="btn flex w-full items-center justify-center gap-3 rounded-[5px] bg-white py-3.5 text-sm font-semibold text-[#960D32] shadow-[0_10px_28px_rgba(0,0,0,0.28)] transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
                   <GoogleIcon />
                   {googleLoading ? "Opening Google…" : "Create Your Free Booking Page"}
@@ -697,7 +697,7 @@ const Home = () => {
               <button
                 onClick={startGoogle}
                 disabled={googleLoading}
-                className="btn flex w-full items-center justify-center gap-3 rounded-[5px] bg-white py-3.5 text-sm font-semibold text-[#2E1065] shadow-[0_10px_28px_rgba(0,0,0,0.28)] transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="btn flex w-full items-center justify-center gap-3 rounded-[5px] bg-white py-3.5 text-sm font-semibold text-[#960D32] shadow-[0_10px_28px_rgba(0,0,0,0.28)] transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 <GoogleIcon />
                 {googleLoading ? "Opening Google…" : "Create Your Free Booking Page"}

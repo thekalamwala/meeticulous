@@ -96,7 +96,7 @@ const AdminStaff = () => {
 
       {/* One-time credential banner */}
       {secret && (
-        <div className="mb-5 rounded-xl border-2 border-[#1E0B4D] bg-[#F8FAFC] p-4">
+        <div className="mb-5 rounded-xl border-2 border-[#2A1416] bg-[#F8FAFC] p-4">
           <p className="text-sm font-bold adm-t1">Temporary password for @{secret.username}</p>
           <p className="text-[12px] adm-t3 mb-2">Share it securely. It cannot be shown again.</p>
           <div className="flex items-center gap-2">
@@ -133,7 +133,7 @@ const AdminStaff = () => {
                   </td>
                   <td className="px-4 py-3 adm-t2">@{row.username}</td>
                   <td className="px-4 py-3 hidden md:table-cell">
-                    <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-[#2E1065]/10 text-[#2E1065]">{roleName(row.role_key)}</span>
+                    <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-[#960D32]/10 text-[#960D32]">{roleName(row.role_key)}</span>
                   </td>
                   <td className="px-4 py-3 hidden lg:table-cell text-[12px] adm-t3">{fmtDate(row.last_login_at)}</td>
                   <td className="px-4 py-3">

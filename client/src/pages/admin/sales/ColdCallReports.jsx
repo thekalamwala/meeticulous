@@ -74,7 +74,7 @@ export default function ColdCallReports() {
                     return (
                       <div key={h.hour} className="flex-1 min-w-[22px] flex flex-col items-center justify-end h-full" title={`${h.connected} of ${h.calls} connected`}>
                         <span className="text-[10.5px] font-semibold adm-t2">{rate}%</span>
-                        <div className="w-full rounded-t-md bg-[#2E1065]" style={{ height: `${Math.max(rate, 3)}%`, opacity: h.calls < 5 ? 0.45 : 1 }} />
+                        <div className="w-full rounded-t-md bg-[#960D32]" style={{ height: `${Math.max(rate, 3)}%`, opacity: h.calls < 5 ? 0.45 : 1 }} />
                         <span className="text-[10.5px] adm-t3 mt-1">{h.hour % 12 || 12}{h.hour < 12 ? 'a' : 'p'}</span>
                       </div>
                     );

@@ -124,7 +124,7 @@ export const PATH_LABELS = {
 // Every `to` is an EXISTING route (App.jsx) — this restructure only regroups the
 // chrome; URLs, deep links and bookmarks are unchanged.
 export const NAV = [
-  { key:'home', label:'Home', icon:'grid', color:'#2E1065', children:[
+  { key:'home', label:'Home', icon:'grid', color:'#960D32', children:[
     { label:'Dashboard',          icon:'grid',      to:'/super-dashboard', exact:true, perm:'ops.view' },
     { label:'Revenue',            icon:'trendUp',   to:'/super-dashboard/revenue', perm:'analytics.view' },
     { label:'Pending Actions',    icon:'clock',     to:'/super-dashboard/pending', perm:'ops.view' },

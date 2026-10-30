@@ -78,7 +78,7 @@ const CommandPalette = ({ open, session, onClose }) => {
           {items.map((it, i) => (
             <li key={it.key} role="option" aria-selected={i === clamped}
               onMouseEnter={() => setActive(i)} onMouseDown={() => it.run()}
-              className={`flex items-center gap-2.5 px-4 py-2 cursor-pointer text-[13px] ${i === clamped ? 'bg-[#2E1065]/10 text-[#2E1065]' : 'adm-t2'}`}>
+              className={`flex items-center gap-2.5 px-4 py-2 cursor-pointer text-[13px] ${i === clamped ? 'bg-[#960D32]/10 text-[#960D32]' : 'adm-t2'}`}>
               <span className="text-[10px] uppercase adm-t3 w-9 flex-shrink-0">{it.kind === 'Lead' || it.kind === 'Cmd' ? it.kind : ''}</span>
               <span className="flex-1 truncate">{it.label}</span>
               {it.hint

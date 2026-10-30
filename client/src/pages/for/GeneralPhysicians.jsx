@@ -273,7 +273,7 @@ export default function GeneralPhysicians() {
 
   // Trust-Blue system — clinical medical blue + cyan. Legacy --ca-* names kept.
   const styleVars = {
-    '--ca-primary': '#2E1065', // blue-700 — text/links/fills, AA on white (~7:1)
+    '--ca-primary': '#960D32', // blue-700 — text/links/fills, AA on white (~7:1)
     '--ca-accent': '#0E7490',  // cyan-700 — secondary accent, AA on white
     '--ca-ink': '#0F1E3D',     // deep navy text
     '--ca-cream': '#EFF4FF',   // blue-50 section bg
@@ -290,7 +290,7 @@ export default function GeneralPhysicians() {
         robots="index, follow, max-image-preview:large, max-snippet:-1"
         siteName="Meeticulous"
         locale="en_IN"
-        themeColor="#2E1065"
+        themeColor="#960D32"
         ogTitle={seo.ogTitle}
         ogDescription={seo.ogDescription}
         jsonLd={jsonLd}
@@ -695,7 +695,7 @@ export default function GeneralPhysicians() {
       </section>
 
       {/* ═══════════════ 13 · FINAL CTA (clean blue band, dotted motif) ═══════════════ */}
-      <section className="relative overflow-hidden px-5 py-24 text-center sm:px-8" style={{ background: 'linear-gradient(160deg, #0F1E3D 0%, #2E1065 100%)' }}>
+      <section className="relative overflow-hidden px-5 py-24 text-center sm:px-8" style={{ background: 'linear-gradient(160deg, #0F1E3D 0%, #960D32 100%)' }}>
         <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.14]" style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.9) 1px, transparent 1px)', backgroundSize: '24px 24px', maskImage: 'radial-gradient(120% 80% at 50% 50%, #000 30%, transparent 75%)', WebkitMaskImage: 'radial-gradient(120% 80% at 50% 50%, #000 30%, transparent 75%)' }} />
         <div className="relative mx-auto max-w-2xl">
           <Reveal as="h2" delay={0.06} className="font-heading text-[clamp(1.9rem,5vw,2.75rem)] font-extrabold leading-[1.08] tracking-tight text-white">

@@ -195,7 +195,7 @@ describe('HostProfile — theme color applied', () => {
     });
   });
 
-  test('falls back to #2E1065 when theme_color is null', async () => {
+  test('falls back to #960D32 when theme_color is null', async () => {
     const hostNoColor = { ...HOST, theme_color: null };
     getHostProfile.mockResolvedValue({ data: { host: hostNoColor, services: [], availability: null } });
     renderProfile();
@@ -203,7 +203,7 @@ describe('HostProfile — theme color applied', () => {
     // Poll for the CSS var (applied by a post-commit useEffect) to avoid a race.
     await waitFor(() => {
       const root = document.querySelector('.host-profile');
-      expect(root?.style?.getPropertyValue('--profile-accent')).toBe('#2E1065');
+      expect(root?.style?.getPropertyValue('--profile-accent')).toBe('#960D32');
     });
   });
 

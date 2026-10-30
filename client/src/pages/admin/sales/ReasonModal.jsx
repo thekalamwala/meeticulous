@@ -43,13 +43,13 @@ export default function ReasonModal({ open, onConfirm, onCancel, busy }) {
           onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submit(); }}
           rows={3}
           placeholder="Why is this lead moving here?"
-          className="w-full rounded-xl border border-[var(--adm-line,#d1d5db)] bg-transparent px-3 py-2 text-[13px] adm-t1 focus:outline-none focus:ring-2 focus:ring-[#2E1065]/40"
+          className="w-full rounded-xl border border-[var(--adm-line,#d1d5db)] bg-transparent px-3 py-2 text-[13px] adm-t1 focus:outline-none focus:ring-2 focus:ring-[#960D32]/40"
         />
         <div className="flex justify-end gap-2 mt-4">
           <button type="button" onClick={onCancel} disabled={busy}
             className="px-3 py-1.5 rounded-lg text-[13px] font-medium adm-t2 hover:bg-black/5 disabled:opacity-50">Cancel</button>
           <button type="button" onClick={submit} disabled={busy || !reason.trim()}
-            className="px-3.5 py-1.5 rounded-lg text-[13px] font-semibold text-white bg-[#2E1065] hover:bg-[#e34800] disabled:opacity-50">
+            className="px-3.5 py-1.5 rounded-lg text-[13px] font-semibold text-white bg-[#960D32] hover:bg-[#e34800] disabled:opacity-50">
             {busy ? 'Moving…' : 'Confirm move'}
           </button>
         </div>

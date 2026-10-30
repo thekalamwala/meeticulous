@@ -55,7 +55,7 @@ export default function RibbonCut({ onCut }) {
         <span className="absolute top-1/2 left-0 h-[26px] rounded-[5px]"
           style={{
             width: `${(cut ? 0.5 : Math.max(progress, 0.001)) * 100}%`,
-            background: 'linear-gradient(180deg,#ff7a3c,#2E1065)',
+            background: 'linear-gradient(180deg,#ff7a3c,#960D32)',
             boxShadow: '0 6px 16px rgba(254,81,0,.35)',
             transform: cut ? 'translateY(-50%) translateX(-64%) rotate(-6deg)' : 'translateY(-50%)',
             opacity: cut ? 0 : 1,
@@ -65,7 +65,7 @@ export default function RibbonCut({ onCut }) {
         <span className="absolute top-1/2 right-0 h-[26px] rounded-[5px]"
           style={{
             width: `${(cut ? 0.5 : Math.max(1 - progress, 0.001)) * 100}%`,
-            background: 'linear-gradient(180deg,#ff7a3c,#2E1065)',
+            background: 'linear-gradient(180deg,#ff7a3c,#960D32)',
             boxShadow: '0 6px 16px rgba(254,81,0,.35)',
             transform: cut ? 'translateY(-50%) translateX(64%) rotate(6deg)' : 'translateY(-50%)',
             opacity: cut ? 0 : 1,

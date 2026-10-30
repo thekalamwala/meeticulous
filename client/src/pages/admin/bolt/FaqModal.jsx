@@ -55,7 +55,7 @@ export default function FaqModal({ initial, onClose, onSaved }) {
         <div className="flex justify-end gap-2">
           <button onClick={onClose} className="rounded-lg border adm-border px-3 py-1.5 text-sm adm-t2">Cancel</button>
           <button onClick={save} disabled={busy}
-            className="rounded-lg bg-[#2E1065] px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40">
+            className="rounded-lg bg-[#960D32] px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40">
             {busy ? 'Saving…' : 'Save'}
           </button>
         </div>

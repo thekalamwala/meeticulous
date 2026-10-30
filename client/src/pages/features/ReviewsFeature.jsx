@@ -48,7 +48,7 @@ const PINK = '#FF4D93';      // decorative accent; text use only on the dark ove
 const PINK_INK = '#BE185D';  // pink for text / fills on white and light pink (AA)
 const BLUSH = '#FFF4F8';     // very light pink surface
 const PLUM = '#1F0F17';      // dark base under the photo tint and final CTA
-const INK = '#1E0B4D';
+const INK = '#2A1416';
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
 
@@ -211,7 +211,7 @@ function ReviewDemo() {
 
   return (
     <div className="relative mx-auto w-full max-w-[23rem]">
-      <div className="rounded-[10px] bg-white p-5 text-[#1E0B4D] shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)] sm:p-6">
+      <div className="rounded-[10px] bg-white p-5 text-[#2A1416] shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)] sm:p-6">
         <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">How was your session?</div>
         <div className="mt-3 flex gap-1.5" role="group" aria-label="Pick a rating">
           {[1, 2, 3, 4, 5].map((n) => (
@@ -333,7 +333,7 @@ export default function ReviewsFeature() {
   });
 
   return (
-    <main className="overflow-x-clip bg-white text-[#1E0B4D]">
+    <main className="overflow-x-clip bg-white text-[#2A1416]">
       <Seo
         title={seo.title}
         description={seo.description}
@@ -446,7 +446,7 @@ export default function ReviewsFeature() {
               </div>
               <ul className="mt-6 space-y-3">
                 {WITH.map((t) => (
-                  <li key={t} className="flex items-start gap-2.5 text-[15px] font-medium text-[#1E0B4D]">
+                  <li key={t} className="flex items-start gap-2.5 text-[15px] font-medium text-[#2A1416]">
                     <Check size={16} className="mt-1 shrink-0" style={{ color: PINK_INK }} aria-hidden /><span><span className="sr-only">With Meeticulous: </span>{t}</span>
                   </li>
                 ))}
@@ -568,7 +568,7 @@ export default function ReviewsFeature() {
                   style={{ background: i % 3 === 0 ? BLUSH : '#FFFFFF' }}
                 >
                   <span aria-hidden className="block font-heading text-5xl leading-[0.6]" style={{ color: PINK }}>&ldquo;</span>
-                  <blockquote className={`mt-3 leading-relaxed text-[#1E0B4D] ${i === 0 ? 'font-heading text-xl font-bold' : 'text-[15px]'}`}>{t.quote}</blockquote>
+                  <blockquote className={`mt-3 leading-relaxed text-[#2A1416] ${i === 0 ? 'font-heading text-xl font-bold' : 'text-[15px]'}`}>{t.quote}</blockquote>
                   <figcaption className="mt-5 flex items-center gap-3">
                     <img src={t.avatar} alt="" loading="lazy" className="h-10 w-10 rounded-full object-cover" />
                     <div>

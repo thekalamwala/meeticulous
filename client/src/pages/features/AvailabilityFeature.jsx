@@ -39,7 +39,7 @@ import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
 
 const START = '/become-a-host';
-const INK = '#1E0B4D';
+const INK = '#2A1416';
 const LIME = '#D9F99D';      // highlighter band, always under ink text
 const LIME_DEEP = '#BEF264'; // markers, open cells, the FAQ bar
 const TEAL = '#0F766E';      // accent text/icons on white (AA, ~5.5:1)
@@ -196,7 +196,7 @@ function ImgSlot({ alt, slot, className = '' }) {
 function SectionHead({ children, sub, center = false }) {
   return (
     <div className={center ? 'text-center' : ''}>
-      <Reveal as="h2" className={`font-heading text-4xl font-extrabold leading-[1.1] tracking-tight text-[#1E0B4D] sm:text-5xl ${center ? 'mx-auto max-w-3xl' : 'max-w-3xl'}`}>
+      <Reveal as="h2" className={`font-heading text-4xl font-extrabold leading-[1.1] tracking-tight text-[#2A1416] sm:text-5xl ${center ? 'mx-auto max-w-3xl' : 'max-w-3xl'}`}>
         {children}
       </Reveal>
       {sub && (
@@ -220,7 +220,7 @@ function HoursGrid() {
     <div className="mx-auto w-full max-w-[30rem]">
       <div className="rounded-[10px] border border-black/5 bg-white p-4 shadow-[0_30px_70px_-30px_rgba(15,118,110,0.35)] sm:p-6">
         <div className="flex items-center justify-between">
-          <div className="font-heading text-sm font-bold text-[#1E0B4D]">Your week</div>
+          <div className="font-heading text-sm font-bold text-[#2A1416]">Your week</div>
           <div className="text-[11px] text-neutral-500">Tap a block or a day</div>
         </div>
 
@@ -232,7 +232,7 @@ function HoursGrid() {
               type="button"
               onClick={() => toggleDay(d)}
               aria-label={`${grid[d].some(Boolean) ? 'Close' : 'Open'} all of ${full}`}
-              className="rounded-[4px] py-1 text-center text-[11px] font-bold text-[#1E0B4D] transition-colors hover:bg-black/5"
+              className="rounded-[4px] py-1 text-center text-[11px] font-bold text-[#2A1416] transition-colors hover:bg-black/5"
             >
               {short}
             </button>
@@ -249,7 +249,7 @@ function HoursGrid() {
                     aria-pressed={open}
                     aria-label={`${full} ${label}`}
                     onClick={() => toggleCell(d, b)}
-                    className={`h-10 rounded-[5px] border text-[10px] font-semibold transition-colors sm:h-11 ${open ? 'border-transparent text-[#1E0B4D]' : 'border-black/5 bg-neutral-50 text-neutral-500 hover:bg-neutral-100'}`}
+                    className={`h-10 rounded-[5px] border text-[10px] font-semibold transition-colors sm:h-11 ${open ? 'border-transparent text-[#2A1416]' : 'border-black/5 bg-neutral-50 text-neutral-500 hover:bg-neutral-100'}`}
                     style={open ? { background: LIME_DEEP } : undefined}
                   >
                     {open ? 'Open' : 'Off'}
@@ -260,7 +260,7 @@ function HoursGrid() {
           ))}
         </div>
 
-        <p className="mt-5 rounded-[6px] px-4 py-3 text-sm text-[#1E0B4D]" style={{ background: LIME_WASH }} aria-live="polite">
+        <p className="mt-5 rounded-[6px] px-4 py-3 text-sm text-[#2A1416]" style={{ background: LIME_WASH }} aria-live="polite">
           Clients can book{' '}
           <span data-testid="week-slots" className="font-heading text-lg font-extrabold tabular-nums" style={{ color: TEAL }}>{total}</span>{' '}
           one-hour slots this week.
@@ -283,7 +283,7 @@ function WeekPanel({ variant }) {
             {messy && MESSY.filter((m) => m.d === d).map((m) => (
               <span
                 key={`${m.top}-${m.label}`}
-                className={`absolute rounded-[4px] border px-1 py-0.5 text-[9px] font-semibold leading-tight sm:text-[10px] ${m.clash ? 'border-[#1E0B4D]/30 bg-white text-[#1E0B4D]' : 'border-dashed border-neutral-400 bg-neutral-200/80 text-neutral-600'}`}
+                className={`absolute rounded-[4px] border px-1 py-0.5 text-[9px] font-semibold leading-tight sm:text-[10px] ${m.clash ? 'border-[#2A1416]/30 bg-white text-[#2A1416]' : 'border-dashed border-neutral-400 bg-neutral-200/80 text-neutral-600'}`}
                 style={{ top: `${m.top}%`, height: `${m.h}%`, left: `${m.x}%`, width: '78%' }}
               >
                 {m.label}
@@ -319,7 +319,7 @@ function Choice({ label, options, value, onChange, fmt }) {
             role="radio"
             aria-checked={value === o}
             onClick={() => onChange(o)}
-            className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${value === o ? 'border-transparent text-[#1E0B4D]' : 'border-black/10 text-neutral-600 hover:border-black/25'}`}
+            className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${value === o ? 'border-transparent text-[#2A1416]' : 'border-black/10 text-neutral-600 hover:border-black/25'}`}
             style={value === o ? { background: LIME_DEEP } : undefined}
           >
             {fmt(o)}
@@ -355,7 +355,7 @@ function BufferControl() {
         </div>
       </div>
 
-      <p className="mt-7 text-center text-lg text-[#1E0B4D]" aria-live="polite">
+      <p className="mt-7 text-center text-lg text-[#2A1416]" aria-live="polite">
         <span data-testid="day-slots" className="font-heading text-4xl font-extrabold tabular-nums" style={{ color: TEAL }}>{starts.length}</span>{' '}
         sessions fit between 9 AM and 5 PM{buffer ? `, each followed by ${buffer} free minutes.` : ', back to back.'}
       </p>
@@ -367,11 +367,11 @@ function BufferControl() {
 function QuoteCard({ t, hidden = false }) {
   return (
     <figure aria-hidden={hidden || undefined} className="flex w-[85%] shrink-0 flex-col justify-between rounded-[10px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:w-[22rem]">
-      <blockquote className="text-[16px] leading-relaxed text-[#1E0B4D]">&ldquo;{t.quote}&rdquo;</blockquote>
+      <blockquote className="text-[16px] leading-relaxed text-[#2A1416]">&ldquo;{t.quote}&rdquo;</blockquote>
       <figcaption className="mt-6 flex items-center gap-3">
         <img src={t.avatar} alt="" loading="lazy" className="h-11 w-11 rounded-full object-cover" />
         <div>
-          <div className="text-sm font-semibold text-[#1E0B4D]">{t.name}</div>
+          <div className="text-sm font-semibold text-[#2A1416]">{t.name}</div>
           <div className="text-xs text-neutral-500">{t.role}</div>
         </div>
       </figcaption>
@@ -466,7 +466,7 @@ export default function AvailabilityFeature() {
   });
 
   return (
-    <main className="overflow-x-clip bg-white text-[#1E0B4D]">
+    <main className="overflow-x-clip bg-white text-[#2A1416]">
       <Seo
         title={seo.title}
         description={seo.description}
@@ -486,13 +486,13 @@ export default function AvailabilityFeature() {
         <div className="mx-auto grid w-full max-w-6xl items-start gap-10 lg:items-center lg:gap-14 lg:grid-cols-[1fr_1fr]">
           <div>
             <nav aria-label="Breadcrumb" className="text-xs text-neutral-500">
-              <Link to="/" className="text-neutral-500 hover:text-[#1E0B4D] hover:no-underline">Home</Link>
+              <Link to="/" className="text-neutral-500 hover:text-[#2A1416] hover:no-underline">Home</Link>
               <span aria-hidden className="mx-2">/</span>
               <span>Features</span>
               <span aria-hidden className="mx-2">/</span>
-              <span aria-current="page" className="text-[#1E0B4D]">Availability</span>
+              <span aria-current="page" className="text-[#2A1416]">Availability</span>
             </nav>
-            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.4rem,4.4vw,3.9rem)] font-extrabold leading-[1.04] tracking-[-0.03em] text-[#1E0B4D]">
+            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.4rem,4.4vw,3.9rem)] font-extrabold leading-[1.04] tracking-[-0.03em] text-[#2A1416]">
               Set your availability for online bookings <Hl>once.</Hl>
             </Reveal>
             <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-neutral-600 lg:text-lg">
@@ -520,7 +520,7 @@ export default function AvailabilityFeature() {
 
       {/* ═══════════════ 2 · PROOF (one sentence, facts highlighted) ═══════════════ */}
       <section className="border-y border-black/5 px-5 py-14 sm:px-8 lg:py-16" style={{ background: LIME_WASH }}>
-        <Reveal as="p" className="mx-auto max-w-4xl text-center font-heading text-xl font-bold leading-[1.7] text-[#1E0B4D] sm:text-2xl sm:leading-[1.7]">
+        <Reveal as="p" className="mx-auto max-w-4xl text-center font-heading text-xl font-bold leading-[1.7] text-[#2A1416] sm:text-2xl sm:leading-[1.7]">
           Hours that <Hl>repeat every week</Hl>, <Hl>more than one window a day</Hl>, <Hl>blocked dates</Hl> for leave, a <Hl>buffer up to an hour</Hl> after each session, and <Hl>Google Calendar busy time</Hl> kept off your page.
         </Reveal>
       </section>
@@ -545,11 +545,11 @@ export default function AvailabilityFeature() {
               </ul>
             </Reveal>
             <Reveal delay={0.06} className="rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-8">
-              <h3 className="font-heading text-lg font-bold text-[#1E0B4D]">Hours on <Hl>Meeticulous</Hl></h3>
+              <h3 className="font-heading text-lg font-bold text-[#2A1416]">Hours on <Hl>Meeticulous</Hl></h3>
               <div className="mt-5"><WeekPanel variant="clean" /></div>
               <ul className="mt-6 space-y-2.5">
                 {WITH.map((t) => (
-                  <li key={t} className="flex items-start gap-2 text-[15px] font-medium text-[#1E0B4D]">
+                  <li key={t} className="flex items-start gap-2 text-[15px] font-medium text-[#2A1416]">
                     <Check size={16} className="mt-0.5 shrink-0" style={{ color: TEAL }} aria-hidden /><span><span className="sr-only">With Meeticulous: </span>{t}</span>
                   </li>
                 ))}
@@ -567,11 +567,11 @@ export default function AvailabilityFeature() {
             {STEPS.map((s, i) => (
               <Reveal as="li" key={s.title} delay={i * 0.05} className="relative grid grid-cols-[3rem_1fr] gap-5 pb-10 last:pb-0">
                 {i < STEPS.length - 1 && <span aria-hidden className="absolute bottom-0 left-6 top-12 w-px bg-black/10" />}
-                <span className="flex h-12 w-12 items-center justify-center rounded-full font-heading text-lg font-extrabold text-[#1E0B4D]" style={{ background: LIME_DEEP }}>
+                <span className="flex h-12 w-12 items-center justify-center rounded-full font-heading text-lg font-extrabold text-[#2A1416]" style={{ background: LIME_DEEP }}>
                   {i + 1}
                 </span>
                 <div className="pt-2">
-                  <h3 className="font-heading text-xl font-bold text-[#1E0B4D]">{s.title}</h3>
+                  <h3 className="font-heading text-xl font-bold text-[#2A1416]">{s.title}</h3>
                   <p className="mt-2 text-[15px] leading-relaxed text-neutral-600">{s.desc}</p>
                 </div>
               </Reveal>
@@ -587,7 +587,7 @@ export default function AvailabilityFeature() {
             <SectionHead>Everything your hours <Hl>need to know.</Hl></SectionHead>
             <ul className="mt-10 grid gap-x-8 gap-y-4 sm:grid-cols-2">
               {CAPS.map((c, i) => (
-                <Reveal as="li" key={c} delay={(i % 4) * 0.04} className="flex items-start gap-3 border-b border-black/5 pb-4 text-[15px] leading-relaxed text-[#1E0B4D]">
+                <Reveal as="li" key={c} delay={(i % 4) * 0.04} className="flex items-start gap-3 border-b border-black/5 pb-4 text-[15px] leading-relaxed text-[#2A1416]">
                   <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: 'rgba(15,118,110,0.1)' }}>
                     <Check size={13} strokeWidth={3} style={{ color: TEAL }} aria-hidden />
                   </span>
@@ -637,7 +637,7 @@ export default function AvailabilityFeature() {
               <details key={f.q} className="group relative overflow-hidden rounded-[6px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]" open={i === 0}>
                 <span aria-hidden className="absolute inset-y-0 left-0 hidden w-1.5 group-open:block" style={{ background: LIME_DEEP }} />
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-5 px-6 py-5 [&::-webkit-details-marker]:hidden">
-                  <span className="font-heading text-[17px] font-bold text-[#1E0B4D]">{f.q}</span>
+                  <span className="font-heading text-[17px] font-bold text-[#2A1416]">{f.q}</span>
                   <span aria-hidden className="text-xl leading-none text-neutral-400 transition-transform group-open:rotate-45">+</span>
                 </summary>
                 <p className="px-6 pb-6 text-[15px] leading-relaxed text-neutral-600">{f.a}</p>
@@ -650,7 +650,7 @@ export default function AvailabilityFeature() {
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
       <section className="border-t border-black/5 px-5 py-20 sm:px-8 lg:py-28" style={{ background: LIME_WASH }}>
         <div className="mx-auto max-w-4xl text-center">
-          <Reveal as="h2" className="font-heading text-[clamp(2.3rem,5.4vw,4rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#1E0B4D]">
+          <Reveal as="h2" className="font-heading text-[clamp(2.3rem,5.4vw,4rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#2A1416]">
             Set your hours once. <Hl>Let the page do the rest.</Hl>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-neutral-600">

@@ -32,7 +32,7 @@ export default function FaqsPage() {
   const columns = [
     { key: 'pattern', label: 'Question', render: (f) => (
       <div className="min-w-0">
-        <code className="rounded bg-[#FFF4EC] px-1.5 py-0.5 text-xs text-[#1E0B4D]">{f.pattern}</code>
+        <code className="rounded bg-[#FFF4EC] px-1.5 py-0.5 text-xs text-[#2A1416]">{f.pattern}</code>
         <p className="mt-1 max-w-md truncate text-xs adm-t3">{f.answer}</p>
       </div>
     ) },
@@ -52,7 +52,7 @@ export default function FaqsPage() {
     <>
       <div className="mb-3">
         <button onClick={() => setModal({ pattern: '', answer: '', category: 'General' })}
-          className="rounded-lg bg-[#2E1065] px-3 py-1.5 text-sm font-medium text-white">+ Add FAQ</button>
+          className="rounded-lg bg-[#960D32] px-3 py-1.5 text-sm font-medium text-white">+ Add FAQ</button>
       </div>
       {loading ? <div className="space-y-2">{[0, 1].map((i) => <Skeleton key={i} className="h-12" />)}</div>
         : <Table columns={columns} rows={faqs} rowKey={(f) => f.id}

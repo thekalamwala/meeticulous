@@ -435,11 +435,11 @@ const DetailsModal = ({ booking, onClose, onAction, review, onReviewDone }) => {
             <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-700">
               <Star size={14} className="fill-green-600 text-green-600" /> Review submitted
             </span>
-            <button onClick={() => setShowReview(true)} className="text-xs font-medium text-[#2E1065] hover:underline">
+            <button onClick={() => setShowReview(true)} className="text-xs font-medium text-[#960D32] hover:underline">
               Edit review
             </button>
           </div>
-          <p className="mt-1 text-[#2E1065] text-sm tracking-tight">
+          <p className="mt-1 text-[#960D32] text-sm tracking-tight">
             {"★".repeat(review.rating)}<span className="text-gray-300">{"★".repeat(5 - review.rating)}</span>
           </p>
           {review.comment && <p className="mt-1 text-sm text-gray-600 leading-relaxed">{review.comment}</p>}

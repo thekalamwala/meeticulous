@@ -28,7 +28,7 @@ export default function SalesTemplates() {
   return (
     <div className="p-6 max-w-4xl">
       <PageHeader title="Message Templates" subtitle="Approved WhatsApp templates + reusable emails the team sends from."
-        actions={<div className="flex items-center gap-3"><a href="/admin/sales/sequences" className="text-[12px] adm-t2 hover:text-[#2E1065]">Sequences →</a><Btn size="sm" onClick={() => setShowNew(true)}>+ New template</Btn></div>} />
+        actions={<div className="flex items-center gap-3"><a href="/admin/sales/sequences" className="text-[12px] adm-t2 hover:text-[#960D32]">Sequences →</a><Btn size="sm" onClick={() => setShowNew(true)}>+ New template</Btn></div>} />
 
       {loading ? <p className="adm-t3">Loading…</p> : (
         <>
@@ -106,7 +106,7 @@ function NewTemplateModal({ onClose, onCreated }) {
             <div className="flex gap-2">
               {['whatsapp', 'email'].map((ch) => (
                 <button key={ch} type="button" onClick={() => setChannel(ch)}
-                  className={`text-[12px] px-3 py-1.5 rounded-full border ${channel === ch ? 'bg-[#2E1065] text-white border-[#2E1065]' : 'adm-t2 border-gray-200'}`}>
+                  className={`text-[12px] px-3 py-1.5 rounded-full border ${channel === ch ? 'bg-[#960D32] text-white border-[#960D32]' : 'adm-t2 border-gray-200'}`}>
                   {ch === 'whatsapp' ? 'WhatsApp' : 'Email'}
                 </button>
               ))}
@@ -138,7 +138,7 @@ function NewTemplateModal({ onClose, onCreated }) {
                     </div>
                   ))}
                 </div>
-                <button type="button" className="text-[12px] text-[#2E1065] mt-2" onClick={() => setVars([...vars, { key: '', label: '', example: '' }])}>+ Add slot</button>
+                <button type="button" className="text-[12px] text-[#960D32] mt-2" onClick={() => setVars([...vars, { key: '', label: '', example: '' }])}>+ Add slot</button>
                 <p className="text-[10px] adm-t3 mt-1">Order must match the approved template's variables exactly.</p>
               </div>
             ) : (

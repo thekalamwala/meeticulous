@@ -21,7 +21,7 @@ describe('emailThemes', () => {
   test('unknown category → brand default, empty glyph (no broken image)', () => {
     const t = themeForCategory('Totally Unknown');
     expect(t.family).toBe('brand');
-    expect(t.accent).toBe('#FE5100');
+    expect(t.accent).toBe('#960D32');
     expect(t.glyphUrl).toBe('');
   });
 });

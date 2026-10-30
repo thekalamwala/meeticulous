@@ -67,7 +67,7 @@ const Guest360List = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, phone, or email…"
-            className="w-full pl-10 pr-9 py-2.5 adm-card border rounded-xl text-sm adm-t1 placeholder:text-[color:var(--adm-text-3)] focus:ring-2 focus:ring-[#2E1065]/25 focus:border-[#2E1065] outline-none transition"
+            className="w-full pl-10 pr-9 py-2.5 adm-card border rounded-xl text-sm adm-t1 placeholder:text-[color:var(--adm-text-3)] focus:ring-2 focus:ring-[#960D32]/25 focus:border-[#960D32] outline-none transition"
           />
           {search && (
             <button onClick={() => setSearch('')} aria-label="Clear search"

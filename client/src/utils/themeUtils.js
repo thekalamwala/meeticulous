@@ -34,13 +34,13 @@ export const getContrastColor = (hex) => {
 
 // Starter (free) tier: brand orange only — no choice, keeps free profiles on-brand.
 export const FREE_COLORS = [
-  { name: 'Brand Orange', hex: '#2E1065' },
+  { name: 'Brand Orange', hex: '#960D32' },
 ];
 
 // Host+ (creator) tier: 8 curated colours.
 export const CREATOR_COLORS = [
-  { name: 'Brand Orange',  hex: '#2E1065' },
-  { name: 'Royal Blue',    hex: '#2E1065' },
+  { name: 'Brand Orange',  hex: '#960D32' },
+  { name: 'Royal Blue',    hex: '#960D32' },
   { name: 'Indigo',        hex: '#4F46E5' },
   { name: 'Purple',        hex: '#1DA1F2' },
   { name: 'Pink',          hex: '#EC4899' },
@@ -58,7 +58,7 @@ export const STUDIO_COLORS = [
   { name: 'Coral',        hex: '#FB7185' },
   { name: 'Red',          hex: '#DC2626' },
   { name: 'Orange',       hex: '#F97316' },
-  { name: 'Brand Orange', hex: '#2E1065' },
+  { name: 'Brand Orange', hex: '#960D32' },
   { name: 'Amber',        hex: '#F59E0B' },
   { name: 'Gold',         hex: '#EAB308' },
   { name: 'Yellow',       hex: '#FACC15' },
@@ -71,7 +71,7 @@ export const STUDIO_COLORS = [
   { name: 'Teal',         hex: '#14B8A6' },
   { name: 'Cyan',         hex: '#06B6D4' },
   { name: 'Sky Blue',     hex: '#0EA5E9' },
-  { name: 'Royal Blue',   hex: '#2E1065' },
+  { name: 'Royal Blue',   hex: '#960D32' },
   { name: 'Indigo',       hex: '#4F46E5' },
   { name: 'Violet',       hex: '#1DA1F2' },
   { name: 'Purple',       hex: '#9333EA' },
@@ -84,7 +84,7 @@ export const STUDIO_COLORS = [
   { name: 'Taupe',        hex: '#A8A29E' },
 ];
 
-export const DEFAULT_THEME_COLOR = '#2E1065';
+export const DEFAULT_THEME_COLOR = '#960D32';
 
 /**
  * Returns the color swatches available for the given plan.
@@ -105,7 +105,7 @@ export const canUseCustomHex = (plan) => plan === 'professional' || plan === 'su
 export const getPlanBorderColor = (plan) => {
   if (plan === 'supreme')      return '#D4AF37'; // gold (top tier, shares Studio)
   if (plan === 'professional') return '#D4AF37'; // gold
-  if (plan === 'creator')      return '#2E1065'; // brand orange
+  if (plan === 'creator')      return '#960D32'; // brand orange
   return '#6B7280';                               // grey
 };
 

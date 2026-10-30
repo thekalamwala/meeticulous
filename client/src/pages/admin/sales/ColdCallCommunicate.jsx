@@ -85,8 +85,8 @@ export default function ColdCallCommunicate({ lead, templates, initialCategory, 
   };
 
   const channelCard = ({ key, title, icon, ready, checked, setChecked, to, pill }) => (
-    <div className={`rounded-2xl border p-4 flex items-center gap-3 ${checked && ready ? 'border-[#2E1065]/30' : 'adm-border'}`}>
-      <input type="checkbox" aria-label={`Send ${title}`} className="!w-5 !h-5 !min-h-0 !p-0 accent-[#2E1065] shrink-0" checked={checked && ready} disabled={!ready}
+    <div className={`rounded-2xl border p-4 flex items-center gap-3 ${checked && ready ? 'border-[#960D32]/30' : 'adm-border'}`}>
+      <input type="checkbox" aria-label={`Send ${title}`} className="!w-5 !h-5 !min-h-0 !p-0 accent-[#960D32] shrink-0" checked={checked && ready} disabled={!ready}
         onChange={(e) => setChecked(e.target.checked)} />
       {icon}
       <div className="min-w-0 flex-1">
@@ -116,12 +116,12 @@ export default function ColdCallCommunicate({ lead, templates, initialCategory, 
         </div>
 
         <div className="rounded-2xl adm-chip p-4 flex items-center gap-4">
-          <span className="w-14 h-14 rounded-full bg-[#2E1065]/15 text-[#2E1065] font-bold text-[18px] flex items-center justify-center shrink-0" style={HEADING}>{initials(business)}</span>
+          <span className="w-14 h-14 rounded-full bg-[#960D32]/15 text-[#960D32] font-bold text-[18px] flex items-center justify-center shrink-0" style={HEADING}>{initials(business)}</span>
           <div className="min-w-0 flex-1">
             <div className="text-[17px] font-bold adm-t1 truncate" style={HEADING}>{business || 'This lead'}</div>
             <div className="text-[13px] adm-t3 truncate">{formatPhone(lead.phone)}{toEmail ? ` · ${toEmail}` : ''}</div>
           </div>
-          {savedOutcome && <span className="shrink-0 rounded-xl border border-[#2E1065]/40 bg-[#2E1065]/10 text-[#c2410c] px-3 py-1.5 text-[13px] font-semibold">{outcomeLabel(savedOutcome)}</span>}
+          {savedOutcome && <span className="shrink-0 rounded-xl border border-[#960D32]/40 bg-[#960D32]/10 text-[#c2410c] px-3 py-1.5 text-[13px] font-semibold">{outcomeLabel(savedOutcome)}</span>}
         </div>
 
         <label className="block">
@@ -152,13 +152,13 @@ export default function ColdCallCommunicate({ lead, templates, initialCategory, 
             })}
           </div>
           {waTpl && !waTpl.is_active && (
-            <div className="text-[12px] adm-t3 mt-2">WhatsApp sends once Meta approves this template. Approved already? <button type="button" className="!min-h-0 font-semibold text-[#2E1065]" onClick={approve}>Mark approved</button></div>
+            <div className="text-[12px] adm-t3 mt-2">WhatsApp sends once Meta approves this template. Approved already? <button type="button" className="!min-h-0 font-semibold text-[#960D32]" onClick={approve}>Mark approved</button></div>
           )}
           {preview && <div className={`mt-3 rounded-xl p-3 text-[13px] leading-relaxed whitespace-pre-wrap max-h-56 overflow-y-auto ${open === 'whatsapp' ? 'bg-[#e7f8e1] text-[#111827]' : 'border adm-border adm-t2'}`}>{preview}</div>}
         </div>
 
         <div className="flex flex-wrap items-center gap-4 pt-4 border-t adm-border">
-          <span className="text-[#2E1065] text-[20px]">⚡</span>
+          <span className="text-[#960D32] text-[20px]">⚡</span>
           <span className="text-[12.5px] adm-t3 flex-1 min-w-[200px]">Sends now (you just spoke, so quiet hours don't apply). Logged to the lead.</span>
           <Btn variant="outline" onClick={() => onDone(afterSave)}>{afterSave ? 'Skip' : 'Cancel'}</Btn>
           <Btn disabled={!count || busy} onClick={send}>{busy ? 'Sending…' : 'Send follow-up'}</Btn>

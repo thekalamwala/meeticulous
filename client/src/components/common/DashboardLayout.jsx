@@ -304,7 +304,7 @@ const ProfileMenu = ({ user, plan, planStyle, initial, logout }) => {
                 <BadgeCheck
                   className="h-4 w-4"
                   strokeWidth={2.2}
-                  style={{ color: kycVerified ? '#2E1065' : '#9ca3af' }}
+                  style={{ color: kycVerified ? '#960D32' : '#9ca3af' }}
                 />
               </Link>
             </div>

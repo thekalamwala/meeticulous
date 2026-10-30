@@ -158,8 +158,8 @@ describe('getPlanBorderColor', () => {
     expect(getPlanBorderColor('professional')).toBe('#D4AF37');
   });
 
-  test('creator → brand orange #2E1065', () => {
-    expect(getPlanBorderColor('creator')).toBe('#2E1065');
+  test('creator → brand crimson #960D32', () => {
+    expect(getPlanBorderColor('creator')).toBe('#960D32');
   });
 
   test('explorer → grey #6B7280', () => {
@@ -204,8 +204,8 @@ describe('isValidHex', () => {
 // ── DEFAULT_THEME_COLOR ───────────────────────────────────────────────────────
 
 describe('DEFAULT_THEME_COLOR', () => {
-  test('is brand orange #2E1065', () => {
-    expect(DEFAULT_THEME_COLOR).toBe('#2E1065');
+  test('is brand crimson #960D32', () => {
+    expect(DEFAULT_THEME_COLOR).toBe('#960D32');
   });
 
   test('is a valid hex', () => {

@@ -180,7 +180,7 @@ const FinalizingScreen = ({ tc, textOnTheme, isPaid, task, onDone }) => {
                   )}
                 </span>
                 <span className="text-sm font-medium"
-                  style={{ color: done || current ? "#1E0B4D" : "#9ca3af" }}>
+                  style={{ color: done || current ? "#2A1416" : "#9ca3af" }}>
                   {label}
                 </span>
               </li>

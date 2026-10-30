@@ -106,7 +106,7 @@ const ProviderEditModal = ({ entity, onClose, onSaved }) => {
     } finally { setSaving(false); }
   };
 
-  const input = 'mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-[#2E1065] focus:outline-none';
+  const input = 'mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-[#960D32] focus:outline-none';
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/30" onClick={onClose} />
@@ -135,7 +135,7 @@ const ProviderEditModal = ({ entity, onClose, onSaved }) => {
         </div>
         <div className="flex justify-end gap-2 border-t border-gray-100 px-5 py-4">
           <button onClick={onClose} className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100">Cancel</button>
-          <button onClick={submit} disabled={saving} className="rounded-lg bg-[#2E1065] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1E0B4D] disabled:opacity-50">
+          <button onClick={submit} disabled={saving} className="rounded-lg bg-[#960D32] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2A1416] disabled:opacity-50">
             {saving ? 'Saving…' : 'Save'}
           </button>
         </div>
@@ -245,7 +245,7 @@ const AdminProviders = () => {
             {TABS.map(t => (
               <Link key={t.key} to={t.to}
                 className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all
-                  ${active === t.key ? 'bg-[#2E1065] text-white' : 'adm-t2 hover:text-gray-700'}`}>
+                  ${active === t.key ? 'bg-[#960D32] text-white' : 'adm-t2 hover:text-gray-700'}`}>
                 {t.label}
               </Link>
             ))}
@@ -262,7 +262,7 @@ const AdminProviders = () => {
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search by name, phone, or email…"
-          className="w-full pl-10 pr-9 py-2.5 adm-card border rounded-xl text-sm adm-t1 placeholder:text-[color:var(--adm-text-3)] focus:ring-2 focus:ring-[#2E1065]/25 focus:border-[#2E1065] outline-none transition"
+          className="w-full pl-10 pr-9 py-2.5 adm-card border rounded-xl text-sm adm-t1 placeholder:text-[color:var(--adm-text-3)] focus:ring-2 focus:ring-[#960D32]/25 focus:border-[#960D32] outline-none transition"
         />
         {search && (
           <button onClick={() => setSearch('')} aria-label="Clear search"

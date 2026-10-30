@@ -76,7 +76,7 @@ const Modal = ({ title, onClose, children, footer }) => {
   );
 };
 
-const inputCls = 'mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-[#2E1065] focus:outline-none';
+const inputCls = 'mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-[#960D32] focus:outline-none';
 
 // ── Modals ───────────────────────────────────────────────────────────────────
 const ChangePlanModal = ({ host, onClose, onDone }) => {
@@ -222,13 +222,13 @@ const OverviewTab = ({ overview, goTab }) => {
         <Card>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-[13px] font-bold adm-t1">Recent activity</h3>
-            <button onClick={() => goTab('timeline')} className="text-[11px] font-medium text-[#2E1065]">View all</button>
+            <button onClick={() => goTab('timeline')} className="text-[11px] font-medium text-[#960D32]">View all</button>
           </div>
           {timeline.length === 0 ? <EmptyText>No recent events.</EmptyText> : (
             <ul className="space-y-2.5">
               {timeline.slice(0, 5).map((ev, i) => (
                 <li key={i} className="flex items-start gap-2 text-[12.5px]">
-                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#2E1065] flex-shrink-0" />
+                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#960D32] flex-shrink-0" />
                   <div>
                     <p className="adm-t1">{ev.label || ev.type}</p>
                     <p className="adm-t3 text-[11px]">{fmtDateTime(ev.ts)}</p>
@@ -340,7 +340,7 @@ const BillingTab = ({ hostId, active }) => {
             { key: 'number', label: 'Number' },
             { key: 'created_at', label: 'Date', render: r => fmtDate(r.created_at) },
             { key: 'amount', label: 'Amount', render: r => inr(r.amount) },
-            { key: 'url', label: '', render: r => r.url ? <a href={r.url} target="_blank" rel="noreferrer" className="text-[#2E1065] font-medium">Download</a> : '—' },
+            { key: 'url', label: '', render: r => r.url ? <a href={r.url} target="_blank" rel="noreferrer" className="text-[#960D32] font-medium">Download</a> : '—' },
           ]}
           rows={invoices} rowKey={r => r.id} empty={<EmptyText>No invoices.</EmptyText>} />
       </div>
@@ -378,7 +378,7 @@ const TimelineTab = ({ hostId, active }) => {
       <ul className="space-y-3">
         {events.map((ev, i) => (
           <li key={i} className="flex items-start gap-3 text-[13px]">
-            <span className="mt-1.5 h-2 w-2 rounded-full bg-[#2E1065] flex-shrink-0" />
+            <span className="mt-1.5 h-2 w-2 rounded-full bg-[#960D32] flex-shrink-0" />
             <div className="min-w-0">
               <p className="adm-t1">{ev.label || ev.type}</p>
               <p className="adm-t3 text-[11px]">{fmtDateTime(ev.ts)}</p>
@@ -430,7 +430,7 @@ const NotesTab = ({ hostId, active }) => {
     <div className="space-y-4">
       <Card>
         <textarea value={draft} onChange={e => setDraft(e.target.value)} rows={3} placeholder="Add an internal note (never shown to the host)…"
-          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-[#2E1065] focus:outline-none" />
+          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-[#960D32] focus:outline-none" />
         <div className="mt-2 flex justify-end">
           <Btn size="sm" onClick={add} disabled={busy || !draft.trim()}>{busy ? 'Saving…' : 'Add note'}</Btn>
         </div>
@@ -442,7 +442,7 @@ const NotesTab = ({ hostId, active }) => {
               {editId === n.id ? (
                 <>
                   <textarea value={editBody} onChange={e => setEditBody(e.target.value)} rows={3}
-                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-[#2E1065] focus:outline-none" />
+                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-[#960D32] focus:outline-none" />
                   <div className="mt-2 flex justify-end gap-2">
                     <button onClick={() => setEditId(null)} className="text-[12px] font-medium text-gray-500">Cancel</button>
                     <Btn size="sm" onClick={() => saveEdit(n.id)}>Save</Btn>
@@ -517,7 +517,7 @@ const KycCard = ({ hostId, kyc }) => {
         {canReveal && (
           <button onClick={toggle} disabled={busy}
             title={real ? 'Hide the full numbers' : 'Reveal the full numbers — this is recorded in the audit log'}
-            className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[#2E1065] disabled:opacity-50">
+            className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[#960D32] disabled:opacity-50">
             <Ic d={IC.eye} size={13} />
             {busy ? 'Revealing…' : real ? 'Hide' : 'Reveal'}
           </button>
@@ -539,7 +539,7 @@ const KycCard = ({ hostId, kyc }) => {
       {Array.isArray(kyc.documents) && kyc.documents.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-3 border-t adm-border pt-3">
           {kyc.documents.map((d, i) => (
-            <a key={i} href={d.url} target="_blank" rel="noreferrer" className="text-[#2E1065] text-[12px] font-medium">{d.label || `Document ${i + 1}`}</a>
+            <a key={i} href={d.url} target="_blank" rel="noreferrer" className="text-[#960D32] text-[12px] font-medium">{d.label || `Document ${i + 1}`}</a>
           ))}
         </div>
       )}
@@ -583,7 +583,7 @@ const DocumentsTab = ({ hostId, active }) => {
         <div className="mb-2 flex items-center justify-between">
           <h3 className="text-[13px] font-bold adm-t1">Documents</h3>
           {canManage && !documents_locked && (
-            <label className={`text-[12px] font-medium ${busy ? 'adm-t3' : 'text-[#2E1065] cursor-pointer'}`}>
+            <label className={`text-[12px] font-medium ${busy ? 'adm-t3' : 'text-[#960D32] cursor-pointer'}`}>
               {busy ? 'Uploading…' : '+ Upload'}
               <input type="file" className="hidden" disabled={busy} onChange={upload}
                 accept=".pdf,.jpg,.jpeg,.png,.webp" />
@@ -605,7 +605,7 @@ const DocumentsTab = ({ hostId, active }) => {
                 label: '',
                 render: r => (
                   <div className="flex justify-end gap-3">
-                    {r.url && <a href={r.url} target="_blank" rel="noreferrer" className="text-[#2E1065] font-medium">Download</a>}
+                    {r.url && <a href={r.url} target="_blank" rel="noreferrer" className="text-[#960D32] font-medium">Download</a>}
                     {canManage && <button onClick={() => remove(r)} className="font-medium text-red-500 hover:text-red-600">Delete</button>}
                   </div>
                 ),
@@ -630,7 +630,7 @@ const SupportTab = ({ hostId, active }) => {
         { key: 'created_at', label: 'Date', render: r => fmtDate(r.created_at) },
         { key: 'type', label: 'Type' },
         { key: 'area', label: 'Area' },
-        { key: 'subject', label: 'Subject', render: r => r.id ? <a href={`/admin/feedback`} className="text-[#2E1065] font-medium">{r.subject || '—'}</a> : (r.subject || '—') },
+        { key: 'subject', label: 'Subject', render: r => r.id ? <a href={`/admin/feedback`} className="text-[#960D32] font-medium">{r.subject || '—'}</a> : (r.subject || '—') },
         { key: 'rating', label: 'Rating', render: r => r.rating ?? '—' },
         { key: 'status', label: 'Status', render: r => <Badge tone={r.status === 'open' ? 'warn' : r.status === 'resolved' ? 'ok' : 'neutral'}>{r.status}</Badge> },
       ]}
@@ -772,7 +772,7 @@ const Host360Detail = () => {
         {visibleTabs.map(t => (
           <button key={t.key} onClick={() => goTab(t.key)}
             className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all
-              ${activeTab === t.key ? 'bg-[#2E1065] text-white' : 'adm-t2 hover:text-gray-700'}`}>
+              ${activeTab === t.key ? 'bg-[#960D32] text-white' : 'adm-t2 hover:text-gray-700'}`}>
             {t.label}
           </button>
         ))}

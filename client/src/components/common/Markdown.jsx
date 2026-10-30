@@ -29,7 +29,7 @@ function trimUrl(url) {
 }
 
 function extLink(key, href, label) {
-  return <a key={key} href={href} target="_blank" rel="noreferrer" className="text-[#2E1065] hover:underline break-words">{label}</a>;
+  return <a key={key} href={href} target="_blank" rel="noreferrer" className="text-[#960D32] hover:underline break-words">{label}</a>;
 }
 
 function renderInline(text, keyBase, externalLinks) {
@@ -46,7 +46,7 @@ function renderInline(text, keyBase, externalLinks) {
       const href = m[2];
       nodes.push(
         href.startsWith('/') && !href.startsWith('//') ? (
-          <Link key={key} to={href} className="text-[#2E1065] hover:underline">{label}</Link>
+          <Link key={key} to={href} className="text-[#960D32] hover:underline">{label}</Link>
         ) : externalLinks === 'strip' ? (
           <span key={key}>{label}</span>
         ) : extLink(key, href, label),

@@ -16,7 +16,7 @@ import {
 
 const ROUTE_START = "/become-a-host";
 const ICON = { free: Sprout, premium: Rocket };
-const ACCENT = { free: "#4AB765", premium: "#2E1065" };
+const ACCENT = { free: "#4AB765", premium: "#960D32" };
 const CTA_LABEL = { free: "Get Started", premium: "Start on Sloth Active" };
 
 // One-line "who's this for" per plan.
@@ -175,7 +175,7 @@ function PlanCard({ result, winnerKey, cycle }) {
 
       <p className="mt-4 text-sm font-bold text-ink">{POSITION[plan.key]}</p>
       <div className="mt-2">
-        <p className="text-2xl font-extrabold" style={{ color: isRec ? accent : "#1E0B4D" }}>{inr0(result.netAnnual)}</p>
+        <p className="text-2xl font-extrabold" style={{ color: isRec ? accent : "#2A1416" }}>{inr0(result.netAnnual)}</p>
         <p className="text-xs text-neutral-500">you keep per year</p>
       </div>
 

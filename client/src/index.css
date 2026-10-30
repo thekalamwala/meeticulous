@@ -120,14 +120,14 @@ h3 {
   --adm-text-1: #111827;
   --adm-text-2: #4b5563;
   --adm-text-3: #9ca3af;
-  --adm-accent: #2E1065;
+  --adm-accent: #960D32;
   --adm-th-bg: #f9fafb;
   --adm-hover: rgba(17, 24, 39, 0.045);
   --adm-header-bg: rgba(255, 255, 255, 0.95);
   --adm-ok: #15803d;      --adm-ok-bg: #f0fdf4;
   --adm-warn: #b45309;    --adm-warn-bg: #fffbeb;
   --adm-danger: #dc2626;  --adm-danger-bg: #fef2f2;
-  --adm-info: #2E1065;    --adm-info-bg: #eff6ff;
+  --adm-info: #960D32;    --adm-info-bg: #eff6ff;
 }
 .admin-shell.dark {
   --adm-bg: #0f0f10;
@@ -433,7 +433,7 @@ button[role='switch'] {
 /* Calm neutral surface palette */
 .sloth-bg-canvas { background: #F8FAFC; }
 .sloth-bg-sand   { background: #F1F5F9; }
-.sloth-ink       { color: #1E0B4D; }
+.sloth-ink       { color: #2A1416; }
 .sloth-muted     { color: #6b6b6b; }
 
 /* Hero ambient aura — soft warm wash on the flat canvas (no palette change).
