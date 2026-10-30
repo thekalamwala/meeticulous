@@ -122,6 +122,11 @@ export default defineConfig({
     root: ROOT,
     environment: 'jsdom',
     globals: true,
+    // CI runners are slower and run test files in parallel; the 5s default timed
+    // out heavy feature-page renders (Availability/Reviews/Scheduling/DigitalProducts)
+    // that pass locally. 20s gives headroom without masking a genuine hang.
+    testTimeout: 20000,
+    hookTimeout: 20000,
     setupFiles: ['./src/tests/setup.js'],
     // Dummy Supabase creds so modules that call createClient() at import time
     // (services/supabaseClient.js) don't throw "supabaseUrl is required" in CI,
