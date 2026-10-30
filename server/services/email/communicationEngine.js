@@ -67,7 +67,7 @@ async function loadSettings() {
   if (_settingsCache.value && now - _settingsCache.at < CACHE_TTL_MS) return _settingsCache.value;
   let value = {
     provider: 'smtp', from_name: 'Meeticulous', from_email: '',
-    support_email: 'hello@meeticulous.com', website_url: 'https://meeticulous.com',
+    support_email: 'hello@mail.meeticulous.in', website_url: 'https://meeticulous.com',
     logo_url: '', brand_color: '#960D32', footer_html: '',
   };
   try {
