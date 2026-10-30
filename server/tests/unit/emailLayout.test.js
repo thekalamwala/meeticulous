@@ -43,8 +43,8 @@ describe('renderLayout — footer distinction (UNCHANGED by redesign)', () => {
     expect(html).not.toMatch(/Unsubscribe/i);
   });
 
-  test("audience 'customer' → nav + legal footer, no Powered by", () => {
-    const html = renderLayout({ audience: 'customer', bodyHtml: '<p>hi</p>', emailCategory: 'Booking Confirmed', settings, data: {} });
+  test("audience 'customer' MARKETING → nav + unsubscribe footer, no Powered by", () => {
+    const html = renderLayout({ audience: 'customer', bodyHtml: '<p>hi</p>', emailCategory: 'Booking Confirmed', settings, data: {}, marketing: true });
     expect(html).toMatch(/My Bookings/i);
     expect(html).toMatch(/Help/i);
     expect(html).toMatch(/Privacy/i);
@@ -52,13 +52,16 @@ describe('renderLayout — footer distinction (UNCHANGED by redesign)', () => {
     expect(html).not.toMatch(/Powered by/i);
   });
 
-  test("audience 'all' and missing → customer footer (safe default with unsubscribe)", () => {
-    expect(renderLayout({ audience: 'all', bodyHtml: '<p>hi</p>', settings, data: {} })).toMatch(/My Bookings/i);
-    expect(renderLayout({ bodyHtml: '<p>hi</p>', settings, data: {} })).toMatch(/Unsubscribe/i);
+  test("audience 'customer' TRANSACTIONAL → clean footer, NO nav/unsubscribe (Primary-inbox)", () => {
+    const html = renderLayout({ audience: 'customer', bodyHtml: '<p>hi</p>', emailCategory: 'Booking Confirmed', settings, data: { unsubscribe_token: 'TOK123' } });
+    expect(html).not.toMatch(/My Bookings/i);
+    expect(html).not.toMatch(/Unsubscribe/i);
+    // but still carries legal footer (company + support)
+    expect(html).toMatch(/Rajmudra/);
   });
 
-  test('customer footer uses real routes and carries the unsubscribe token from data', () => {
-    const html = renderLayout({ audience: 'customer', bodyHtml: '', settings, data: { unsubscribe_token: 'TOK123' } });
+  test('marketing customer footer uses real routes and carries the unsubscribe token from data', () => {
+    const html = renderLayout({ audience: 'customer', bodyHtml: '', settings, data: { unsubscribe_token: 'TOK123' }, marketing: true });
     expect(html).toContain('https://x.test/user/my-bookings');
     expect(html).toContain('https://x.test/help');
     expect(html).toContain('https://x.test/privacy');

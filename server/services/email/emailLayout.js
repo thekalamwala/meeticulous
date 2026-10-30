@@ -159,7 +159,7 @@ function shellClose({ bodyHtml, cta, footerRow }) {
 
 // ── Customer layout ──────────────────────────────────────────────────────────
 
-function renderCustomerLayout({ bodyHtml, previewText, ctaLabel, ctaUrl, emailCategory, settings, data }) {
+function renderCustomerLayout({ bodyHtml, previewText, ctaLabel, ctaUrl, emailCategory, settings, data, marketing = false }) {
   const brand    = settings.brand_color   || '#960D32';
   const website  = settings.website_url   || 'https://meeticulous.com';
   const support  = settings.support_email || 'hello@mail.meeticulous.in';
@@ -172,17 +172,20 @@ function renderCustomerLayout({ bodyHtml, previewText, ctaLabel, ctaUrl, emailCa
   const lk = (href, label) =>
     `<a href="${esc(href)}" style="color:${D.muted};text-decoration:none;font-size:12px;font-family:${D.font};">${label}</a>`;
   const dot = `<span style="color:${D.note};margin:0 6px;">&middot;</span>`;
-  const nav = [
+  // Only MARKETING mail carries the nav + unsubscribe link. On transactional mail
+  // that link is the strongest "this is bulk" signal to Gmail (→ Updates/Promotions
+  // tab), so a confirmation/receipt/welcome ships a clean footer and lands in Primary.
+  const nav = marketing ? [
     lk(`${website}/user/my-bookings`, 'My Bookings'),
     lk(`${website}/help`,        'Help'),
     lk(`${website}/privacy`,     'Privacy'),
     lk(`${website}/unsubscribe?u=${esc(unsubToken)}`, 'Unsubscribe'),
-  ].join(dot);
+  ].join(dot) : '';
 
   const footerRow = `<tr>
     <td style="padding:24px 28px 28px;border-top:1px solid ${D.border};background:${D.bg};text-align:center;">
       <img src="${esc(FOOTER_LOGO)}" alt="${esc(fromName)}" width="150" style="margin:0 auto 14px;display:block;border:0;">
-      <p style="margin:0 0 16px;font-size:12px;line-height:2;font-family:${D.font};">${nav}</p>
+      ${nav ? `<p style="margin:0 0 16px;font-size:12px;line-height:2;font-family:${D.font};">${nav}</p>` : ''}
       <p style="margin:0 0 2px;font-size:12px;font-weight:700;color:${D.dark};font-family:${D.font};">${COMPANY}</p>
       <p style="margin:0 0 2px;font-size:12px;line-height:1.6;color:${D.muted};font-family:${D.font};">${ADDRESS}</p>
       <p style="margin:0;font-size:12px;color:${D.muted};font-family:${D.font};"><a href="mailto:${esc(support)}" style="color:${D.muted};text-decoration:none;">${esc(support)}</a></p>
@@ -281,11 +284,12 @@ function renderLayout({
   headerChip    = '',
   settings      = {},
   data          = {},
+  marketing     = false,
 } = {}) {
   const args = {
     bodyHtml, previewText, ctaLabel, ctaUrl,
     emailCategory,
-    settings, data: data || {},
+    settings, data: data || {}, marketing,
   };
   if (audience === 'vendor') return renderVendorLayout(args);
   if (audience === 'cold')   return renderColdLayout(args);
