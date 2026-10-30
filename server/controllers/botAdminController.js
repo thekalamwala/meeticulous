@@ -342,8 +342,8 @@ const replyEscalation = async (req, res) => {
       const escHtml = (s = '') => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
       await sendEmail({
         to: esc.email,
-        subject: `Re: your Book A Sloth support request (${esc.reference})`,
-        html: `<p>${escHtml(body).replace(/\n/g, '<br/>')}</p><hr/><p style="color:#888;font-size:12px">Reference ${escHtml(esc.reference)} · Book A Sloth support</p>`,
+        subject: `Re: your Meeticulous support request (${esc.reference})`,
+        html: `<p>${escHtml(body).replace(/\n/g, '<br/>')}</p><hr/><p style="color:#888;font-size:12px">Reference ${escHtml(esc.reference)} · Meeticulous support</p>`,
       });
       delivered = true;
     }

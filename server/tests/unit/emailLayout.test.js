@@ -20,7 +20,7 @@ describe('renderLayout — header (logo left, accent pill right)', () => {
   for (const audience of ['customer', 'vendor']) {
     test(`${audience}: footer-logo on the left + accent category pill on the right`, () => {
       const html = renderLayout({ audience, bodyHtml: '<p>hi</p>', emailCategory: 'Booking Confirmed', settings, data: {} });
-      expect(html).toContain('images/email/footer-logo.png');          // constant left logo
+      expect(html).toContain('images/email/meeticulous-wordmark-full-color.png');          // constant left logo
       expect(html).toContain('Booking Confirmed');                     // pill label
       expect(html).toContain('#e8fff1');                               // green tint (pill bg)
       expect(html).toContain('images/email/icons/calendar-check.png'); // glyph PNG
@@ -72,7 +72,7 @@ describe("renderLayout — cold outreach layout", () => {
     // legal floor present
     expect(html).toMatch(/Unsubscribe/i);
     expect(html).toContain('https://x.test/unsubscribe?u=TOK123');
-    expect(html).toContain('Timewheel');            // legal entity sign-off
+    expect(html).toContain('Rajmudra');            // legal entity sign-off
     expect(html).toContain('Book A Sloth');         // sender identity in the footer
     expect(html).toContain('Nagpur');               // postal address (legal floor)
     // plain hand-typed look: white ground, left-aligned, no grey card, no 600px shell
@@ -80,8 +80,8 @@ describe("renderLayout — cold outreach layout", () => {
     expect(html).not.toContain('#f3f5f7');          // no grey page background
     expect(html).not.toContain('width:600px');       // no centered card
     // header chrome + customer clutter stripped
-    expect(html).not.toContain('images/email/header-logo.png');
-    expect(html).not.toContain('images/email/footer-logo.png');
+    expect(html).not.toContain('images/email/meeticulous-icon-color-512.png');
+    expect(html).not.toContain('images/email/meeticulous-wordmark-full-color.png');
     expect(html).not.toMatch(/Booking Confirmed/);  // no category pill
     expect(html).not.toMatch(/My Bookings/i);
     expect(html).not.toMatch(/Powered by/i);

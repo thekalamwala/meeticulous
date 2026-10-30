@@ -17,7 +17,7 @@ const { renderLayout } = require('../services/email/emailLayout');
 const { themeForCategory } = require('../services/email/emailThemes');
 const { infoCard, FONT } = require('../services/email/emailComponents');
 
-// Comma-separated list supported (e.g. "bolt@bookasloth.in, ops@bookasloth.in").
+// Comma-separated list supported (e.g. "hello@meeticulous.com, ops@bookasloth.in").
 // Providers wrap `to` as [to], so a comma string can't be one recipient — split
 // and send one email per address.
 const ADMIN_ALERT_EMAIL =
@@ -36,7 +36,7 @@ const escapeHtml = (s) =>
  * Send a best-effort operational alert email to the founder. Never rejects.
  *
  * @param {object}   opts
- * @param {string}   opts.subject  Short subject (sent prefixed with "[Book A Sloth] ").
+ * @param {string}   opts.subject  Short subject (sent prefixed with "[Meeticulous] ").
  * @param {string[]} [opts.lines]  Body lines; each is HTML-escaped.
  * @param {string}   [opts.key]    Throttle key; defaults to `subject`. Same key
  *                                 within the cooldown window is suppressed.
@@ -57,7 +57,7 @@ async function adminAlert({ subject, lines = [], key, link, category = '' } = {}
   lastSentAt.set(throttleKey, now);
 
   // Render through the SAME branded shell the customer/host emails use
-  // (emailLayout 'vendor' variant: Book a Sloth logo header, accent bar, category
+  // (emailLayout 'vendor' variant: Meeticulous logo header, accent bar, category
   // pill, branded full-width CTA, minimal footer — no unsubscribe nav). This is
   // what makes an ops ping look like a real product email an admin taps into.
   // "K: value" lines become an accent infoCard; the rest render as text.
@@ -110,7 +110,7 @@ async function adminAlert({ subject, lines = [], key, link, category = '' } = {}
   let sentAny = false;
   for (const addr of to) {
     try {
-      await sendEmail({ to: addr, subject: `[Book A Sloth] ${subject}`, html, text });
+      await sendEmail({ to: addr, subject: `[Meeticulous] ${subject}`, html, text });
       sentAny = true;
     } catch (err) {
       logger.error({ event: 'admin_alert_failed', subject, to: addr, message: err.message });

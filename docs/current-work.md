@@ -451,3 +451,29 @@ Each **service** now carries one `category` slug, drawn from the host's own cate
 - Previous: `/profile/service/${s.slug}` (404)
 - Current: `/${user?.username}/booking/${s.slug}`
 - Reason: Route is `/:username/booking/:serviceSlug` per App.jsx
+
+---
+
+## Email rebrand → Meeticulous (branch `feat/email-meeticulous-rebrand`)
+
+Book A Sloth → Meeticulous across the email system: brand copy, maroon palette
+(#960D32, from the style guide), light structure (16px card / 12px boxes / 10px
+buttons, blush #FBF4F5 page), category hues kept, no dark mode, Poppins kept.
+Senders: durga + sujata consolidated into shubham; tithi sends from
+tithi@meeticulous.com; noreply kept. Sending domain → meeticulous.com (verified).
+
+### ⛔ PRE-DEPLOY BLOCKERS — do NOT ship prod without these
+1. **GST / legal entity (Rajmudra Media LLP).** `config/sellerIdentity.js` still
+   stamps Timewheel Internet Pvt Ltd (GSTIN 21AAMCT8270C1ZF, Odisha) on every GST
+   tax invoice. Need Rajmudra's registered GSTIN, PAN, LLPIN/CIN, state, address,
+   contact email/phone, and the BAS-* invoice series prefix decision. Flip via
+   `SELLER_*` env vars or the config defaults. `brandSubline` also pending.
+2. **Hosted logo URLs.** Header icon + footer wordmark are referenced at
+   `company-assets.bookasloth.in/.../meeticulous-*.png` (placeholder host, won't
+   resolve). Upload the two assets to a public CDN and swap the two constants in
+   `services/email/emailLayout.js` (HEADER_LOGO/FOOTER_LOGO) + `sellerIdentity.logoUrl`.
+
+### Deploy steps (both DBs, staging then prod)
+1. Apply `migrations/v3.175_email_meeticulous_rebrand.sql` (email_settings + senders).
+2. Run `node scripts/seedEmailTemplates.js` (re-pushes rebranded template copy + sender_key).
+3. Confirm meeticulous.com SPF/DKIM/DMARC + verified senders (hello@, tithi@, shubham@, noreply@) at the ESP.

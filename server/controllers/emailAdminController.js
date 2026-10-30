@@ -15,7 +15,7 @@ const CATEGORIES = ['Authentication', 'Security', 'Booking', 'Profile', 'Badge',
 // Sample placeholder values for previews + test sends.
 const SAMPLE = {
   user_name: 'Asha Verma', first_name: 'Asha', last_name: 'Verma', email: 'asha@example.com',
-  otp: '123456', service_name: 'SEO Consultation', vendor_name: 'Book A Sloth Studio',
+  otp: '123456', service_name: 'SEO Consultation', vendor_name: 'Meeticulous Studio',
   vendor_phone: '+91 90000 00000', booking_id: 'BK-10293', booking_date: 'Mon, 21 Oct 2026',
   booking_time: '10:00 AM', location: 'Online', badge_name: 'Top Pick by BAS Team',
   badge_description: 'Editorial endorsement of exceptional vendor quality.',
@@ -224,7 +224,7 @@ const testProvider = async (req, res) => {
     const provider = getProvider(settings.provider);
     const r = await provider.sendEmail({
       to,
-      subject: `Book A Sloth — ${settings.provider} provider test`,
+      subject: `Meeticulous — ${settings.provider} provider test`,
       html: `<p>This is a provider connectivity test sent via <b>${settings.provider}</b>.</p>`,
       fromName: settings.from_name, fromEmail: settings.from_email,
     });

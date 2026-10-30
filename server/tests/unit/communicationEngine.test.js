@@ -200,7 +200,7 @@ describe('communicationEngine.renderEmail — recipient-driven layout', () => {
       settings, audience: 'vendor', user: { name: 'Asha' },
       data: { company_logo: 'https://cdn.test/host.png', company_name: 'Asha Studio' },
     });
-    expect(html).toContain('images/email/footer-logo.png'); // constant logo, both audiences
+    expect(html).toContain('images/email/meeticulous-wordmark-full-color.png'); // constant logo, both audiences
     expect(html).toMatch(/Powered by/i);
     expect(html).not.toMatch(/My Bookings/i);
     expect(html).toContain('body Asha'); // same body resolves regardless of shell
@@ -209,7 +209,7 @@ describe('communicationEngine.renderEmail — recipient-driven layout', () => {
   test("audience 'customer' and 'all' → Book A Sloth customer shell with unsubscribe", () => {
     for (const audience of ['customer', 'all', undefined]) {
       const { html } = engine.renderEmail(template, { settings, audience, user: { name: 'Asha' }, data: {} });
-      expect(html).toContain('images/email/footer-logo.png'); // constant logo, both audiences
+      expect(html).toContain('images/email/meeticulous-wordmark-full-color.png'); // constant logo, both audiences
       expect(html).toMatch(/My Bookings/i);
       expect(html).toMatch(/Unsubscribe/i);
       expect(html).not.toMatch(/Powered by/i);
