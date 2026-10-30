@@ -1,5 +1,5 @@
 const { captureException } = require('../utils/sentry');
-const { brandPage, wantsBrandedHtml, pickErrorImage } = require('../utils/brandPage');
+const { brandPage, wantsBrandedHtml } = require('../utils/brandPage');
 
 const errorHandler = (err, req, res, next) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
@@ -27,7 +27,7 @@ const errorHandler = (err, req, res, next) => {
       body: isLost
         ? "We searched high and low — magnifying glass and all — but this page isn't here. It may have moved, or it never existed."
         : message,
-      image: isLost ? pickErrorImage() : '',
+      hero: isLost,
     }));
   }
 

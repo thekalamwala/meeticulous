@@ -9,11 +9,11 @@
 const SITE = 'https://meeticulous.com';
 const SUPPORT = 'mailto:support@meeticulous.com';
 
-const ERROR_IMAGE_BASE = 'https://company-assets.bookasloth.in/images/error';
-const ERROR_IMAGE_VARIANTS = ['sloth-tracks.png', 'sloth-think.png', 'sloth-glass.png'];
-function pickErrorImage() {
-  const i = Math.floor(Math.random() * ERROR_IMAGE_VARIANTS.length);
-  return `${ERROR_IMAGE_BASE}/${ERROR_IMAGE_VARIANTS[i]}`;
+// Error hero: the Meeticulous mark (crimson rounded square + white zap), inline
+// so it has no external dependency. Replaces the old sloth mascot PNGs that
+// hung off a dead host (company-assets.bookasloth.in).
+function heroMark() {
+  return `<svg class="heromark" viewBox="0 0 96 96" role="img" aria-label="Meeticulous" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="88" height="88" rx="22" fill="var(--crimson)"/><g transform="translate(28 28) scale(1.667)" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></g></svg>`;
 }
 
 // Minimal HTML-escape for any dynamic text dropped into the template (error
@@ -61,8 +61,8 @@ const CSS = `
   h1{font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;font-size:clamp(26px,5vw,38px);line-height:1.12;letter-spacing:-.025em;margin:0 0 14px}
   h1 .accent{color:var(--accent)}
   p{color:var(--muted);font-size:14px;line-height:1.7;margin:0 0 24px}
-  /* framed mascot so the white-bg error art reads as intentional on dark */
-  .hero{display:block;margin:0 auto 20px;width:120px;height:120px;object-fit:contain;background:#fff;border-radius:12px;padding:8px;border:1px solid var(--line)}
+  /* inline Meeticulous mark shown on error pages */
+  .heromark{display:block;margin:0 auto 20px;width:92px;height:92px;filter:drop-shadow(0 12px 26px rgba(150,13,50,.5))}
   /* status rows */
   .rows{margin:4px 0 24px;border:1px solid var(--line);border-radius:9px;overflow:hidden}
   .row{display:flex;align-items:center;gap:11px;padding:13px 15px;font-size:13.5px}
@@ -160,10 +160,10 @@ function wordmark() {
 // Single-message page (root, 404, errors). Rendered as terminal output: the code
 // + heading read as an error line, the body as the explanation, with an optional
 // framed mascot and a CTA back to the app.
-function brandPage({ code = '', title = 'Meeticulous', heading = '', body = '', ctaLabel = 'Open app', ctaHref = SITE, image = '' } = {}) {
+function brandPage({ code = '', title = 'Meeticulous', heading = '', body = '', ctaLabel = 'Open app', ctaHref = SITE, hero = false } = {}) {
   const screen =
     wordmark() +
-    `${image ? `<img class="hero" src="${esc(image)}" alt="" width="120" height="120">` : ''}` +
+    `${hero ? heroMark() : ''}` +
     `${code ? `<div class="code">Error ${esc(code)}</div>` : ''}` +
     `<h1>${esc(heading)}</h1>` +
     `<p>${esc(body)}</p>` +
@@ -232,4 +232,4 @@ function wantsBrandedHtml(req) {
   return typeof req.accepts === 'function' && req.accepts(['json', 'html']) === 'html';
 }
 
-module.exports = { brandPage, apiHomePage, statusPage, wantsBrandedHtml, pickErrorImage, ERROR_IMAGE_BASE };
+module.exports = { brandPage, apiHomePage, statusPage, wantsBrandedHtml };
