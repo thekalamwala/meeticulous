@@ -8,10 +8,36 @@
  * font-display: swap → text paints immediately in the fallback, then swaps to the
  * webfont when it arrives (no invisible-text FOIT). The 1–2 above-the-fold weights
  * are <link rel="preload">ed in index.html so the hero gets them fastest.
+ *
+ * Brand type (2026-10): Bricolage Grotesque = hero H1 only (--font-display);
+ * Inter Tight = everything else, section headings included (--font-primary,
+ * Tailwind font-sans / font-heading). Files are the Fontsource variable builds
+ * (latin, wght axis).
  */
 
-/* Plus Jakarta Sans — variable font: one file covers weights 400–800 (used for
-   headings, h1–h3). */
+/* Bricolage Grotesque — variable, weights 200–800. Hero H1 only. */
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('/fonts/bricolage-grotesque-latin-var.woff2') format('woff2');
+}
+
+/* Inter Tight — variable, weights 100–900. Body, UI and section headings. */
+@font-face {
+  font-family: 'Inter Tight';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-tight-latin-var.woff2') format('woff2');
+}
+
+/* Legacy faces below are no longer the site fonts. They stay declared (an unused
+   @font-face downloads nothing) because the server-rendered OG share cards
+   (HostOgCard / ServiceOgCard) and the printable receipt still name Poppins. */
+
+/* Plus Jakarta Sans — variable font: one file covers weights 400–800. */
 @font-face {
   font-family: 'Plus Jakarta Sans';
   font-style: normal;
@@ -62,6 +88,24 @@
   ascent-override: 92.02%;
   descent-override: 30.67%;
   line-gap-override: 8.76%;
+}
+/* Computed from @capsizecss/metrics (xWidthAvg vs Arial; ascent/descent/lineGap
+   divided by size-adjust). */
+@font-face {
+  font-family: 'Bricolage Grotesque Fallback';
+  src: local('Arial'), local('Helvetica'), local('Liberation Sans'), local('Arimo'), local('Roboto');
+  size-adjust: 105.43%;
+  ascent-override: 88.21%;
+  descent-override: 25.61%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Inter Tight Fallback';
+  src: local('Arial'), local('Helvetica'), local('Liberation Sans'), local('Arimo'), local('Roboto');
+  size-adjust: 96.39%;
+  ascent-override: 100.51%;
+  descent-override: 25.03%;
+  line-gap-override: 0%;
 }
 @font-face {
   font-family: 'Plus Jakarta Sans Fallback';

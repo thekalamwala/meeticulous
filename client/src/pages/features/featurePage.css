@@ -14,6 +14,7 @@
   background: var(--bg);
 }
 .fp-page h1, .fp-page h2, .fp-page h3 { font-family: var(--font-primary), sans-serif; letter-spacing: -.02em; line-height: 1.12; }
+.fp-page h1 { font-family: var(--font-display); } /* hero H1 = brand display face */
 .fp-wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
 .fp-sec { padding: 84px 0; }
 .fp-center { text-align: center; }

@@ -233,8 +233,11 @@ solid ink borders (that's the old brutalist look — do not add it).
 lifts with bigger blur + negative spread (`hover:-translate-y-1 hover:shadow-[0_24px_60px_-28px_...]`).
 NEVER hard offset shadows (`shadow-[4px_4px_0_#1E1E1E]`).
 
-**Type:** `font-heading` = Plus Jakarta Sans (card titles, stat numbers, prices,
-wordmark); body inherits `font-sans` = Poppins. Hero H1 uses `clamp()`; section H2 =
+**Type:** hero H1 = **Bricolage Grotesque** (`font-display` / `--font-display`; the
+global `h1` rule in `index.css` applies it to every page's H1 automatically). Everything
+else = **Inter Tight**: body, UI, section H2/H3, card titles, stat numbers, prices
+(`font-sans`; `font-heading` is now an alias of the same face). Fonts are self-hosted
+in `client/public/fonts` (see `styles/fonts.css`). Hero H1 uses `clamp()`; section H2 =
 `text-4xl sm:text-5xl font-extrabold`, often one accent word in `text-primary-cta`.
 
 **CTA pattern:** `rounded-[6px] px-6 py-3 text-sm font-semibold text-white` on
