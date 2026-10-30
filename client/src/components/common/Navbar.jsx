@@ -22,6 +22,9 @@ import {
   // "Who it's for" profession-menu icons
   Calculator, Compass, Smile, Sun, Baby, Ear, Eye,
   Stethoscope, Activity, Apple, Flower2, Target, PawPrint,
+  // Venues & Experiences + Creators column icons
+  Trophy, Car, Presentation, Building2, Camera, Plus,
+  Video, GraduationCap, Music, Languages, Laptop,
 } from 'lucide-react';
 
 // ── Nav item configs (config-driven, no hardcoded HTML) ──────────────────────
@@ -82,6 +85,22 @@ const WHOFOR_MENU = [
     { label: 'Spas',               href: '/for/spa',                  desc: 'Fill slots, kill no-shows',      icon: Flower2, tone: 'teal' },
     { label: 'Life Coaches',       href: '/for/life-coaches',         desc: 'Book paid coaching sessions',    icon: Target, tone: 'emerald' },
     { label: 'Veterinarians',      href: '/for/veterinarians',        desc: 'Book pet visits online',         icon: PawPrint, tone: 'teal' },
+  ] },
+  { header: 'Venues & Experiences', items: [
+    { label: 'Sports Arena',    href: '/for/sports-turf',             desc: 'Book courts & turf by the hour', icon: Trophy, tone: 'lime' },
+    { label: 'Driving School',  href: '/explore?q=driving-school',    desc: 'Fill every lesson slot',         icon: Car, tone: 'amber' },           // → /for/driving-schools
+    { label: 'Conference Halls',href: '/explore?q=conference-hall',   desc: 'Book your hall online',          icon: Presentation, tone: 'indigo' }, // → /for/conference-halls
+    { label: 'Coworking Space', href: '/explore?q=coworking',         desc: 'Book desks & meeting rooms',     icon: Building2, tone: 'sky' },        // → /for/coworking-spaces
+    { label: 'Photo Studio',    href: '/explore?q=photo-studio',      desc: 'Book studio time & shoots',      icon: Camera, tone: 'fuchsia' },       // → /for/photo-studios
+    { label: 'Coming More',     href: '/solutions',                   desc: 'More industries soon',           icon: Plus, tone: 'violet' },
+  ] },
+  { header: 'Creators', items: [
+    { label: 'Coaches',          href: '/explore?q=coach',            desc: 'Book paid coaching sessions',    icon: Target, tone: 'emerald' },      // → /for/coaches
+    { label: 'Content Creators', href: '/explore?q=content-creator',  desc: 'Monetise 1:1s & collabs',        icon: Video, tone: 'pink' },          // → /for/content-creators
+    { label: 'Educators',        href: '/explore?q=educator',         desc: 'Fill classes & demo calls',      icon: GraduationCap, tone: 'blue' },  // → /for/educators
+    { label: 'Musicians',        href: '/explore?q=musician',         desc: 'Book lessons & gigs',            icon: Music, tone: 'violet' },        // → /for/musicians
+    { label: 'Language Teachers',href: '/explore?q=language-teacher', desc: 'Fill your lesson calendar',      icon: Languages, tone: 'cyan' },      // → /for/language-teachers
+    { label: 'Freelancers',      href: '/for/freelancers',            desc: 'Book paid discovery calls',      icon: Laptop, tone: 'teal' },
   ] },
 ];
 
@@ -420,8 +439,8 @@ const MENU_COL = 'w-60'; // 15rem — every column, promo tile and compare cell
 
 // Renders grouped columns + an optional promo tile on the right. `colClass` lets
 // a menu widen its columns (Product uses fewer, wider columns).
-const MegaMenu = ({ sections, promo, colClass = MENU_COL, compact }) => (
-  <div className="flex gap-4 p-4">
+const MegaMenu = ({ sections, promo, colClass = MENU_COL, compact, rootClass = '' }) => (
+  <div className={`flex gap-4 p-4 ${rootClass}`}>
     {sections.map((col, ci) => {
       // Tone index continues across columns so hues keep rotating (never resets).
       const offset = sections.slice(0, ci).reduce((n, s) => n + s.items.length, 0);
@@ -539,7 +558,7 @@ export const PublicCenterNav = () => {
       </NavDropdown>
 
       <NavDropdown id="whofor" label="Industries" wide {...menuProps}>
-        <MegaMenu sections={WHOFOR_MENU} colClass="w-64" compact />
+        <MegaMenu sections={WHOFOR_MENU} colClass="w-64" compact rootClass="flex-wrap max-w-[52rem]" />
       </NavDropdown>
 
       <NavDropdown id="resources" label="Resources" {...menuProps}>
