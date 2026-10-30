@@ -60,28 +60,28 @@ const PRODUCT_MENU = [
 // tone omitted on purpose: MegaMenu auto-rotates the tile colour by index.
 const WHOFOR_MENU = [
   { header: 'Professional Services', items: [
-    { label: 'Chartered Accountants & CA Firms', href: '/for/chartered-accountants', desc: 'Book paid consults instantly', icon: Calculator, tone: 'blue' },
-    { label: 'Architects & Interior Designers',  href: '/for/architects',          desc: 'Win design clients faster',    icon: Compass, tone: 'amber' },
-    { label: 'Astrologers & Vedic Consultants',  href: '/for/astrologers',         desc: 'Fill your reading calendar',   icon: Sparkles, tone: 'violet' },
-    { label: 'Business & Management Consultants',href: '/for/business-consultant', desc: 'Book advisory calls that pay', icon: Briefcase, tone: 'amber' },
-    { label: 'Lawyers & Legal Advisors',         href: '/for/lawyers',             desc: 'Book paid legal consults',     icon: Scale, tone: 'red' },
-    { label: 'Beauticians & Salons',             href: '/for/salon',               desc: 'Fill your chair all week',     icon: Scissors, tone: 'fuchsia' },
+    { label: 'Chartered Accountants', href: '/for/chartered-accountants', desc: 'Book paid consults instantly', icon: Calculator, tone: 'blue' },
+    { label: 'Architects',            href: '/for/architects',          desc: 'Win design clients faster',    icon: Compass, tone: 'amber' },
+    { label: 'Astrologers',           href: '/for/astrologers',         desc: 'Fill your reading calendar',   icon: Sparkles, tone: 'violet' },
+    { label: 'Business Consultants',  href: '/for/business-consultant', desc: 'Book advisory calls that pay', icon: Briefcase, tone: 'amber' },
+    { label: 'Lawyers',               href: '/for/lawyers',             desc: 'Book paid legal consults',     icon: Scale, tone: 'red' },
+    { label: 'Beauticians',           href: '/for/salon',               desc: 'Fill your chair all week',     icon: Scissors, tone: 'fuchsia' },
   ] },
   { header: 'Medical Specialists', items: [
-    { label: 'Dentists & Dental Clinics',       href: '/for/dentists',             desc: 'Cut no-shows, fill chairs',   icon: Smile, tone: 'sky' },
-    { label: 'Dermatologists & Skin Clinics',   href: '/for/dermatologists',       desc: 'Book skin consults 24/7',     icon: Sun, tone: 'cyan' },
-    { label: 'Gynecologists & OB-GYNs',         href: '/for/gynecologists',        desc: 'Book visits around the clock',icon: HeartPulse, tone: 'emerald' },
-    { label: 'Pediatricians & Child Care',      href: '/for/pediatricians',        desc: 'Fill your clinic, skip calls',icon: Baby, tone: 'blue' },
-    { label: 'ENT Specialists & Surgeons',      href: '/for/ent-specialists',      desc: 'Book consults, end phone tag',icon: Ear, tone: 'indigo' },
-    { label: 'Ophthalmologists & Eye Clinics',  href: '/for/ophthalmologists',     desc: 'Book eye exams online',       icon: Eye, tone: 'sky' },
+    { label: 'Dentists',          href: '/for/dentists',             desc: 'Cut no-shows, fill chairs',   icon: Smile, tone: 'sky' },
+    { label: 'Dermatologists',    href: '/for/dermatologists',       desc: 'Book skin consults 24/7',     icon: Sun, tone: 'cyan' },
+    { label: 'Gynecologists',     href: '/for/gynecologists',        desc: 'Book visits around the clock',icon: HeartPulse, tone: 'emerald' },
+    { label: 'Pediatricians',     href: '/for/pediatricians',        desc: 'Fill your clinic, skip calls',icon: Baby, tone: 'blue' },
+    { label: 'ENT Specialists',   href: '/for/ent-specialists',      desc: 'Book consults, end phone tag',icon: Ear, tone: 'indigo' },
+    { label: 'Ophthalmologists',  href: '/for/ophthalmologists',     desc: 'Book eye exams online',       icon: Eye, tone: 'sky' },
   ] },
   { header: 'Health & Wellness', items: [
-    { label: 'General Physicians & Clinics',     href: '/for/doctors',              desc: 'Fill your clinic, cut no-shows', icon: Stethoscope, tone: 'blue' },
-    { label: 'Physiotherapists & Rehab Centres', href: '/for/physiotherapists',     desc: 'Get paid before sessions',       icon: Activity, tone: 'teal' },
-    { label: 'Nutritionists & Dietitians',       href: '/for/nutritionists',        desc: 'Book diet consults that pay',    icon: Apple, tone: 'emerald' },
-    { label: 'Spas & Wellness Centres',          href: '/for/spa',                  desc: 'Fill slots, kill no-shows',      icon: Flower2, tone: 'teal' },
-    { label: 'Life & Wellness Coaches',          href: '/for/life-coaches',         desc: 'Book paid coaching sessions',    icon: Target, tone: 'emerald' },
-    { label: 'Veterinarians & Pet Clinics',      href: '/for/veterinarians',        desc: 'Book pet visits online',         icon: PawPrint, tone: 'teal' },
+    { label: 'General Physicians', href: '/for/doctors',              desc: 'Fill your clinic, cut no-shows', icon: Stethoscope, tone: 'blue' },
+    { label: 'Physiotherapists',   href: '/for/physiotherapists',     desc: 'Get paid before sessions',       icon: Activity, tone: 'teal' },
+    { label: 'Nutritionists',      href: '/for/nutritionists',        desc: 'Book diet consults that pay',    icon: Apple, tone: 'emerald' },
+    { label: 'Spas',               href: '/for/spa',                  desc: 'Fill slots, kill no-shows',      icon: Flower2, tone: 'teal' },
+    { label: 'Life Coaches',       href: '/for/life-coaches',         desc: 'Book paid coaching sessions',    icon: Target, tone: 'emerald' },
+    { label: 'Veterinarians',      href: '/for/veterinarians',        desc: 'Book pet visits online',         icon: PawPrint, tone: 'teal' },
   ] },
 ];
 
@@ -121,10 +121,9 @@ const flat = (cols) => cols.flatMap((c) => c.items);
 
 // Mobile drawer: the same menus as collapsible accordions (flat, no columns).
 const MOBILE_SECTIONS = [
-  { label: 'Product',      icon: Sparkles, items: flat(PRODUCT_MENU) },
-  { label: "Who it's for", icon: Award,    items: flat(WHOFOR_MENU) },
-  { label: 'Resources',    icon: Layers,   items: flat(RESOURCES_MENU) },
-  { label: 'Compare',      icon: BarChart2, items: COMPARE_MENU },
+  { label: 'Features',   icon: Sparkles, items: flat(PRODUCT_MENU) },
+  { label: 'Industries', icon: Award,    items: flat(WHOFOR_MENU) },
+  { label: 'Resources',  icon: Layers,   items: flat(RESOURCES_MENU) },
 ];
 
 // Slim guest profile menu (logged-in guests). The navbar carries nothing but the
@@ -345,20 +344,20 @@ const NavDropdown = ({ id, label, icon: Icon, align = 'left', wide = false, acti
 // runs continuously across columns — see MegaMenu — instead of resetting).
 const TILE_TONES = ['pink', 'blue', 'emerald', 'orange', 'violet', 'amber', 'teal', 'rose', 'sky', 'indigo', 'fuchsia', 'lime', 'cyan', 'red'];
 const TILE_MAP = {
-  pink:    { tile: 'bg-pink-100 text-pink-500',       solid: 'group-hover/mi:bg-pink-500 group-hover/mi:text-white',       c1: 'bg-pink-50',    c2: 'bg-pink-100' },
-  blue:    { tile: 'bg-blue-100 text-blue-500',       solid: 'group-hover/mi:bg-blue-500 group-hover/mi:text-white',       c1: 'bg-blue-50',    c2: 'bg-blue-100' },
-  emerald: { tile: 'bg-emerald-100 text-emerald-500', solid: 'group-hover/mi:bg-emerald-500 group-hover/mi:text-white',    c1: 'bg-emerald-50', c2: 'bg-emerald-100' },
-  orange:  { tile: 'bg-orange-100 text-orange-500',   solid: 'group-hover/mi:bg-orange-500 group-hover/mi:text-white',     c1: 'bg-orange-50',  c2: 'bg-orange-100' },
-  violet:  { tile: 'bg-violet-100 text-violet-500',   solid: 'group-hover/mi:bg-violet-500 group-hover/mi:text-white',     c1: 'bg-violet-50',  c2: 'bg-violet-100' },
-  amber:   { tile: 'bg-amber-100 text-amber-500',     solid: 'group-hover/mi:bg-amber-500 group-hover/mi:text-white',      c1: 'bg-amber-50',   c2: 'bg-amber-100' },
-  teal:    { tile: 'bg-teal-100 text-teal-500',       solid: 'group-hover/mi:bg-teal-500 group-hover/mi:text-white',       c1: 'bg-teal-50',    c2: 'bg-teal-100' },
-  rose:    { tile: 'bg-rose-100 text-rose-500',       solid: 'group-hover/mi:bg-rose-500 group-hover/mi:text-white',       c1: 'bg-rose-50',    c2: 'bg-rose-100' },
-  sky:     { tile: 'bg-sky-100 text-sky-500',         solid: 'group-hover/mi:bg-sky-500 group-hover/mi:text-white',        c1: 'bg-sky-50',     c2: 'bg-sky-100' },
-  indigo:  { tile: 'bg-indigo-100 text-indigo-500',   solid: 'group-hover/mi:bg-indigo-500 group-hover/mi:text-white',     c1: 'bg-indigo-50',  c2: 'bg-indigo-100' },
-  fuchsia: { tile: 'bg-fuchsia-100 text-fuchsia-500', solid: 'group-hover/mi:bg-fuchsia-500 group-hover/mi:text-white',    c1: 'bg-fuchsia-50', c2: 'bg-fuchsia-100' },
-  lime:    { tile: 'bg-lime-100 text-lime-600',       solid: 'group-hover/mi:bg-lime-500 group-hover/mi:text-white',       c1: 'bg-lime-50',    c2: 'bg-lime-100' },
-  cyan:    { tile: 'bg-cyan-100 text-cyan-500',       solid: 'group-hover/mi:bg-cyan-500 group-hover/mi:text-white',       c1: 'bg-cyan-50',    c2: 'bg-cyan-100' },
-  red:     { tile: 'bg-red-100 text-red-500',         solid: 'group-hover/mi:bg-red-500 group-hover/mi:text-white',        c1: 'bg-red-50',     c2: 'bg-red-100' },
+  pink:    { tile: 'bg-pink-100 text-pink-500',       solid: 'group-hover/mi:bg-pink-500 group-hover/mi:text-white',       txt: 'group-hover/mi:text-pink-600',    c1: 'bg-pink-50',    c2: 'bg-pink-100' },
+  blue:    { tile: 'bg-blue-100 text-blue-500',       solid: 'group-hover/mi:bg-blue-500 group-hover/mi:text-white',       txt: 'group-hover/mi:text-blue-600',    c1: 'bg-blue-50',    c2: 'bg-blue-100' },
+  emerald: { tile: 'bg-emerald-100 text-emerald-500', solid: 'group-hover/mi:bg-emerald-500 group-hover/mi:text-white',    txt: 'group-hover/mi:text-emerald-600', c1: 'bg-emerald-50', c2: 'bg-emerald-100' },
+  orange:  { tile: 'bg-orange-100 text-orange-500',   solid: 'group-hover/mi:bg-orange-500 group-hover/mi:text-white',     txt: 'group-hover/mi:text-orange-600',  c1: 'bg-orange-50',  c2: 'bg-orange-100' },
+  violet:  { tile: 'bg-violet-100 text-violet-500',   solid: 'group-hover/mi:bg-violet-500 group-hover/mi:text-white',     txt: 'group-hover/mi:text-violet-600',  c1: 'bg-violet-50',  c2: 'bg-violet-100' },
+  amber:   { tile: 'bg-amber-100 text-amber-500',     solid: 'group-hover/mi:bg-amber-500 group-hover/mi:text-white',      txt: 'group-hover/mi:text-amber-600',   c1: 'bg-amber-50',   c2: 'bg-amber-100' },
+  teal:    { tile: 'bg-teal-100 text-teal-500',       solid: 'group-hover/mi:bg-teal-500 group-hover/mi:text-white',       txt: 'group-hover/mi:text-teal-600',    c1: 'bg-teal-50',    c2: 'bg-teal-100' },
+  rose:    { tile: 'bg-rose-100 text-rose-500',       solid: 'group-hover/mi:bg-rose-500 group-hover/mi:text-white',       txt: 'group-hover/mi:text-rose-600',    c1: 'bg-rose-50',    c2: 'bg-rose-100' },
+  sky:     { tile: 'bg-sky-100 text-sky-500',         solid: 'group-hover/mi:bg-sky-500 group-hover/mi:text-white',        txt: 'group-hover/mi:text-sky-600',     c1: 'bg-sky-50',     c2: 'bg-sky-100' },
+  indigo:  { tile: 'bg-indigo-100 text-indigo-500',   solid: 'group-hover/mi:bg-indigo-500 group-hover/mi:text-white',     txt: 'group-hover/mi:text-indigo-600',  c1: 'bg-indigo-50',  c2: 'bg-indigo-100' },
+  fuchsia: { tile: 'bg-fuchsia-100 text-fuchsia-500', solid: 'group-hover/mi:bg-fuchsia-500 group-hover/mi:text-white',    txt: 'group-hover/mi:text-fuchsia-600', c1: 'bg-fuchsia-50', c2: 'bg-fuchsia-100' },
+  lime:    { tile: 'bg-lime-100 text-lime-600',       solid: 'group-hover/mi:bg-lime-500 group-hover/mi:text-white',       txt: 'group-hover/mi:text-lime-700',    c1: 'bg-lime-50',    c2: 'bg-lime-100' },
+  cyan:    { tile: 'bg-cyan-100 text-cyan-500',       solid: 'group-hover/mi:bg-cyan-500 group-hover/mi:text-white',       txt: 'group-hover/mi:text-cyan-600',    c1: 'bg-cyan-50',    c2: 'bg-cyan-100' },
+  red:     { tile: 'bg-red-100 text-red-500',         solid: 'group-hover/mi:bg-red-500 group-hover/mi:text-white',        txt: 'group-hover/mi:text-red-600',     c1: 'bg-red-50',     c2: 'bg-red-100' },
 };
 
 // PNG icons for the Product / Resources / Compare menu items — drop files in
@@ -380,22 +379,17 @@ const MegaItem = ({ item, tone, compact }) => {
     <Link
       to={item.href}
       role="menuitem"
-      className="group/mi relative flex items-center gap-2.5 overflow-hidden rounded-lg px-2.5 py-1.5 hover:no-underline"
+      className="group/mi flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 hover:no-underline"
     >
-      {/* Two-layer curtain: back layer trails, front leads — both slide in from
-          the left on hover and slide back out on leave (transition reverses). */}
-      <span aria-hidden="true" className={`pointer-events-none absolute inset-0 -translate-x-full transition-transform duration-500 ease-out group-hover/mi:translate-x-0 motion-reduce:transition-none ${c.c2}`} />
-      <span aria-hidden="true" className={`pointer-events-none absolute inset-0 -translate-x-full transition-transform duration-300 ease-out group-hover/mi:translate-x-0 motion-reduce:transition-none ${c.c1}`} />
-
-      {/* Content sits above the curtain */}
-      <span className={`relative z-10 flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg transition-colors duration-200 ${c.tile} ${c.solid}`}>
+      {/* No background on hover — only the label changes to the icon's hue. */}
+      <span className={`relative flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg ${c.tile}`}>
         <Icon size={16} strokeWidth={2} />
         {NAV_PNG[item.label] && (
           <img src={NAV_PNG[item.label]} alt="" width="20" height="20" loading="lazy" onError={(e) => e.currentTarget.remove()} className="absolute inset-0 m-auto h-5 w-5 object-contain" />
         )}
       </span>
-      <span className="relative z-10 min-w-0">
-        <span className="block text-[13px] font-semibold text-ink">{item.label}</span>
+      <span className="min-w-0">
+        <span className={`block text-[13px] font-semibold text-ink transition-colors duration-150 ${c.txt}`}>{item.label}</span>
         {item.desc && !compact && <span className="block text-[12px] leading-snug text-gray-400">{item.desc}</span>}
       </span>
     </Link>
@@ -523,20 +517,16 @@ export const PublicCenterNav = () => {
   const menuProps = { activeKey, onOpen: openMenu, onClose: closeMenu, align: 'center' };
   return (
     <>
-      <NavDropdown id="product" label="Product" {...menuProps}>
+      <NavDropdown id="product" label="Features" {...menuProps}>
         <MegaMenu sections={PRODUCT_MENU} colClass="w-56" compact promo={{ href: '/explore', title: 'Get discovered on Explore', desc: 'Publish your booking page to the marketplace and let new clients find and book you.', cta: 'Explore the marketplace' }} />
       </NavDropdown>
 
-      <NavDropdown id="whofor" label="Who it's for" wide {...menuProps}>
+      <NavDropdown id="whofor" label="Industries" wide {...menuProps}>
         <MegaMenu sections={WHOFOR_MENU} colClass="w-64" compact />
       </NavDropdown>
 
       <NavDropdown id="resources" label="Resources" {...menuProps}>
         <MegaMenu sections={RESOURCES_MENU} compact />
-      </NavDropdown>
-
-      <NavDropdown id="compare" label="Compare" {...menuProps}>
-        <CompareMega active={activeKey === 'compare'} />
       </NavDropdown>
 
       <Link to="/pricing" className="my-2 flex items-center rounded-xl px-3.5 text-[12.5px] font-medium text-gray-500 transition-colors hover:bg-primary-light/40 hover:text-primary hover:no-underline">
@@ -669,8 +659,9 @@ const Navbar = () => {
       className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200/80 shadow-[0_1px_8px_rgba(0,0,0,0.05)]"
       aria-label="Main navigation"
     >
-      <div className="app-container">
-        {/* ── Desktop bar ───────────────────────────────────────────────────── */}
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+        {/* ── Desktop bar — matches the hero container (max-w-7xl) so the logo
+            lines up with the hero heading's left edge. ───────────────────────── */}
         <div className="flex items-stretch h-14">
 
           {/* Logo */}
