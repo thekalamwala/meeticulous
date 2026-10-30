@@ -27,7 +27,7 @@ describe("CalendlyAlternative (/compare/calendly-alternative)", () => {
     expect(ctas.every((a) => a.getAttribute("href") === "/become-a-host")).toBe(true);
   });
 
-  it("table shows Calendly's paidFrom and Sloth Active's monthly price", () => {
+  it("table shows Calendly's paidFrom and Pro's monthly price", () => {
     renderPage();
     const table = within(screen.getByRole("table"));
     expect(table.getByText(COMPETITORS.calendly.paidFrom)).toBeTruthy();

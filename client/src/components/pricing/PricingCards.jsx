@@ -115,9 +115,9 @@ export default function PricingCards() {
   // signup still works — we just don't advertise it. Reverts on Route go-live.
   const feeOnly = useFeeOnly();
 
-  // On the yearly tab we lead with the monthly-equivalent (₹3,599 / 12 = ₹300)
-  // so annual reads as the cheaper per-month price, with the real ₹3,599/year
-  // charge stated underneath. Monthly leads with ₹399. Both are GST-inclusive.
+  // On the yearly tab we lead with the monthly-equivalent (₹1,179 / 12 = ₹300)
+  // so annual reads as the cheaper per-month price, with the real ₹1,179/year
+  // charge stated underneath. Monthly leads with ₹235. Both are GST-inclusive.
   const displayPrice = yearly ? PREMIUM_YEARLY_PER_MONTH : PREMIUM_PLAN.monthly;
 
   return (
@@ -146,7 +146,7 @@ export default function PricingCards() {
       </div>
 
       <div className={`mt-10 grid gap-5 ${feeOnly ? "mx-auto max-w-lg" : "md:grid-cols-2"}`}>
-        {/* Sloth — free (hidden in interim fee-only mode; free signup still works) */}
+        {/* Starter — free (hidden in interim fee-only mode; free signup still works) */}
         {!feeOnly && (
           <PlanCard plan={FREE_PLAN} yearly={yearly}>
             <div className="mt-6 flex items-end gap-2">
@@ -165,7 +165,7 @@ export default function PricingCards() {
           </PlanCard>
         )}
 
-        {/* Sloth Active — premium */}
+        {/* Pro — premium */}
         <PlanCard plan={PREMIUM_PLAN} yearly={yearly}>
           <div className="mt-6 flex items-end gap-2">
             <span className="font-heading text-5xl font-extrabold text-ink">₹{displayPrice.toLocaleString("en-IN")}</span>

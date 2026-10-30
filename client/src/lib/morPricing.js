@@ -69,18 +69,18 @@ export function computeMorBreakdown({
  */
 export const CALC_PLANS = [
   {
-    key: 'free', name: 'Sloth',
+    key: 'free', name: 'Starter',
     charge: { bookingCharge: 10, commissionRate: 0.05, pgRate: 0.02, absorbsPg: false },
     monthly: 0, maxServicePrice: null,
     note: 'Free forever · 5% per booking',
   },
   {
-    key: 'premium', name: 'Sloth Active',
+    key: 'premium', name: 'Pro',
     charge: { bookingCharge: 10, commissionRate: 0, pgRate: 0.02, absorbsPg: false },
     // GST-INCLUSIVE, matching data/plans.js — this is subtracted from monthly
     // income, so it must be the amount actually charged, not the ex-GST base.
-    monthly: 399, maxServicePrice: null,
-    note: '0% commission · ₹399/mo',
+    monthly: 235, maxServicePrice: null,
+    note: '0% commission · ₹235/mo',
   },
 ];
 

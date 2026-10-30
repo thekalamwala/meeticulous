@@ -47,10 +47,10 @@ export function buildNudges(ctx = {}) {
     out.push({ key: 'upgrade', priority: 80, dismissible: true, tone: 'primary', icon: 'IndianRupee',
       title: commissionPaid > 0
         ? `You've paid ${rupees(commissionPaid)} in platform commission`
-        : "You're on Sloth — 5% commission applies as you earn",
+        : "You're on Starter — 5% commission applies as you earn",
       body: commissionPaid > 0
-        ? 'Sloth Active charges 0% commission — upgrade and keep every rupee.'
-        : 'Sloth Active charges 0% commission, for under ₹10 a day.',
+        ? 'Pro charges 0% commission — upgrade and keep every rupee.'
+        : 'Pro charges 0% commission, for under ₹4 a day.',
       cta: 'See plans', to: '/dashboard/upgrade' });
   }
 

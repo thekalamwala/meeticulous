@@ -46,7 +46,7 @@ export const GLOSSARY = [
     details: [
       'A no-show costs more than the fee for that slot. You blocked the time, perhaps travelled or prepared notes, and turned away someone else who wanted it. For a physiotherapist charging ₹800 a session, two no-shows a week is ₹1,600 of time that cannot be sold again. Clients rarely mean harm. They forget, or plans change and messaging you feels awkward.',
       'That is why the fixes are mostly about making it easy to show up or to move the booking. Prepayment gives the client a reason to come. A reminder the day before catches the forgotten ones. A self-serve reschedule gives busy clients a way out that does not leave you with an empty chair.',
-      'Take payment at booking, send reminders, publish a clear cancellation policy, and let clients reschedule themselves within it. Meeticulous handles payment, reminders and rescheduling automatically, with a 24-hour reminder on every plan and an extra 1-hour reminder on Sloth Active.',
+      'Take payment at booking, send reminders, publish a clear cancellation policy, and let clients reschedule themselves within it. Meeticulous handles payment, reminders and rescheduling automatically, with a 24-hour reminder on every plan and an extra 1-hour reminder on Pro.',
     ],
     example: 'A Hyderabad physiotherapist who keeps losing ₹800 evening slots to forgetful patients starts taking UPI payment at booking and sending a reminder the day before, so patients who cannot come reschedule instead of skipping.',
     related: ['advance-payment', 'reminder', 'cancellation-policy'],
@@ -137,7 +137,7 @@ export const GLOSSARY = [
     details: [
       'Rescheduling keeps the booking and its payment intact and only changes the time. Cancelling and rebooking is messier: money has to go back and forth, and the slot may be taken by someone else in between.',
       'For a service business, an easy reschedule is a no-show prevention tool. A client who cannot make Thursday will usually move the booking if it takes two taps. If it needs a phone call or a WhatsApp negotiation, some will simply not turn up. Set limits on how often or how late people can move a booking, so the option is not abused.',
-      'On Meeticulous both the client and the host can reschedule a confirmed booking. The Google Calendar event moves with it and keeps the same Google Meet link, so nobody has to resend joining details. On Sloth Active, both of you also get the reschedule notice on WhatsApp and email. On the free Sloth plan you see it as a notice in your dashboard.',
+      'On Meeticulous both the client and the host can reschedule a confirmed booking. The Google Calendar event moves with it and keeps the same Google Meet link, so nobody has to resend joining details. On Pro, both of you also get the reschedule notice on WhatsApp and email. On the free Starter plan you see it as a notice in your dashboard.',
     ],
     example: 'A Noida client who booked a Tuesday 7 pm career-counselling call gets stuck at the office and moves it to Thursday 7 pm herself; the Meet link stays the same.',
     related: ['cancellation-policy', 'reminder'],
@@ -150,7 +150,7 @@ export const GLOSSARY = [
     details: [
       'An appointment reminder is a short, automatic message that tells the client what, when and where: the service, date and time, and the address or video link. Its job is to catch bookings people made days ago and forgot. It also prompts a client who can no longer make it to reschedule early, while you can still fill the slot.',
       'Timing matters. A reminder a day before gives time to rearrange the day or move the booking. A reminder an hour before catches people who remembered the date but lost track of the time. In India a WhatsApp reminder is more likely to be seen quickly than an email, because WhatsApp is where clients already talk to their doctor, tutor or salon.',
-      'Meeticulous sends reminders automatically to both you and the client. The Sloth plan sends a 24-hour reminder. Sloth Active adds a second reminder 1 hour before. Reminders go out on email and WhatsApp; on the free plan, WhatsApp reminders run for the first 60 days after signup and then continue on email.',
+      'Meeticulous sends reminders automatically to both you and the client. The Starter plan sends a 24-hour reminder. Pro adds a second reminder 1 hour before. Reminders go out on email and WhatsApp; on the free plan, WhatsApp reminders run for the first 60 days after signup and then continue on email.',
     ],
     example: 'At 5 pm on Wednesday, a Lucknow tutor\'s student gets a WhatsApp reminder for Thursday\'s 5 pm physics class with the Google Meet link, and the tutor gets one too.',
     related: ['no-show', 'whatsapp-reminder'],
@@ -163,7 +163,7 @@ export const GLOSSARY = [
     details: [
       'A WhatsApp reminder is an appointment reminder sent on WhatsApp, usually alongside an email. Most Indian clients already talk to their tutor, clinic or salon on WhatsApp, so a reminder there is more likely to be read in time than one sitting in an inbox.',
       'Automated reminders from a business go through the WhatsApp Business Platform using pre-approved message templates. That is why they arrive from a business sender and follow the same format each time. Clients should be able to reply STOP to opt out, and a well-run system honours it.',
-      'Keep the message short: name, service, date, time, and the location or video link. Two reminders per booking is plenty. On Meeticulous reminders go to both you and the client. On the free Sloth plan, WhatsApp reminders run for the first 60 days after signup, and the 24-hour reminder continues by email after that. Sloth Active sends WhatsApp and email reminders 24 hours and 1 hour before every booking. STOP opt-outs are honoured.',
+      'Keep the message short: name, service, date, time, and the location or video link. Two reminders per booking is plenty. On Meeticulous reminders go to both you and the client. On the free Starter plan, WhatsApp reminders run for the first 60 days after signup, and the 24-hour reminder continues by email after that. Pro sends WhatsApp and email reminders 24 hours and 1 hour before every booking. STOP opt-outs are honoured.',
     ],
     example: 'A Bhopal patient gets a WhatsApp message the evening before: "Reminder: skin consultation tomorrow at 11:00 am at the clinic", and replies to the clinic only because she needs to move it.',
     related: ['reminder', 'no-show'],
@@ -189,7 +189,7 @@ export const GLOSSARY = [
     details: [
       'A GST invoice is the bill a GST-registered business issues for a taxable supply. For a service it shows your name, address and GSTIN, the client\'s details, an invoice number and date, a description of the service (usually with its SAC code), the taxable value and the tax charged. For a client in your own state the tax is split into CGST and SGST. For a client in another state it is IGST.',
       'It matters because business clients need it to claim input tax credit, and because your GST returns must match the invoices you issued. Professionals below the registration threshold do not charge GST, but companies and clinics that pay you may still ask for a proper invoice for their records.',
-      'Issuing invoices by hand after every session is easy to fall behind on. A booking system that creates the invoice at payment keeps the numbering, amounts and dates in order. On Meeticulous each paid booking gets an invoice for the client, and on the free Sloth plan you also receive a tax invoice for the commission, so you can claim the input credit.',
+      'Issuing invoices by hand after every session is easy to fall behind on. A booking system that creates the invoice at payment keeps the numbering, amounts and dates in order. On Meeticulous each paid booking gets an invoice for the client, and on the free Starter plan you also receive a tax invoice for the commission, so you can claim the input credit.',
     ],
     example: 'A Kochi chartered accountant\'s client company books a ₹3,000 tax-planning call, pays online and receives the invoice automatically, so their accounts team never has to ask for it.',
     related: ['upi', 'advance-payment'],
@@ -211,11 +211,11 @@ export const GLOSSARY = [
     slug: 'payout',
     term: 'Payout',
     short: 'The transfer of your earned booking money to your bank account.',
-    def: 'A payout is the transfer of money a client paid for a booking into your own bank account. The payment is collected upfront and your share settles to you after the session. On Sloth Active there is 0% commission, so you keep your full price; the client pays a flat ₹10 booking fee (plus GST) on top.',
+    def: 'A payout is the transfer of money a client paid for a booking into your own bank account. The payment is collected upfront and your share settles to you after the session. On Pro there is 0% commission, so you keep your full price; the client pays a flat ₹10 booking fee (plus GST) on top.',
     details: [
       'A payout is the moment money you earned becomes money in your bank. With online bookings the client pays first, the platform or gateway holds it, and then transfers your share to your account. Knowing when that happens, and what is deducted, matters more for cash flow than the headline fee.',
       'Deductions usually include the gateway\'s charge and any platform commission. When payments pass through an e-commerce operator in India, TDS under income tax and TCS under GST can also apply. Both are credited against your PAN, so you can claim them when you file your returns.',
-      'On Meeticulous the transfer is created when the client pays and held until about 24 hours after the scheduled end of the session, then released to your bank. Each payout comes with a statement listing your price, the commission (5% on Sloth, 0% on Sloth Active), the gateway charge, and TDS and TCS. If you cancel, the client is refunded and no payout is made for that booking.',
+      'On Meeticulous the transfer is created when the client pays and held until about 24 hours after the scheduled end of the session, then released to your bank. Each payout comes with a statement listing your price, the commission (5% on Starter, 0% on Pro), the gateway charge, and TDS and TCS. If you cancel, the client is refunded and no payout is made for that booking.',
     ],
     example: 'A Thane fitness trainer\'s Saturday 7 to 8 am session is paid on Wednesday; the money is held until about 8 am Sunday and then released to her bank with a line-by-line statement.',
     related: ['payment-gateway', 'commission', 'advance-payment'],
@@ -224,13 +224,13 @@ export const GLOSSARY = [
     slug: 'commission',
     term: 'Commission',
     short: 'A percentage of each booking the platform keeps.',
-    def: 'Commission is a cut the platform takes from every booking, so the more you earn the more you pay. Many booking and creator platforms charge it. Meeticulous\'s free Sloth plan takes 5% of paid bookings; Sloth Active takes 0% for a flat yearly price, so your price does not scale against you.',
+    def: 'Commission is a cut the platform takes from every booking, so the more you earn the more you pay. Many booking and creator platforms charge it. Meeticulous\'s free Starter plan takes 5% of paid bookings; Pro takes 0% for a flat yearly price, so your price does not scale against you.',
     details: [
       'Commission is a percentage the platform keeps from each booking, so it grows with your price. At 10%, a ₹500 session costs you ₹50 and a ₹5,000 session costs you ₹500, for the same work by the platform. It makes most sense when the platform finds the client for you. When you bring the client yourself, through Instagram, referrals or your own clinic, a percentage cut is harder to justify.',
       'Compare commission with a fixed subscription using your own monthly bookings. At low volume a small percentage can be cheaper. Past a certain point, a flat monthly fee costs less. Work out your break-even before choosing a plan.',
-      'Meeticulous has two plans. The free Sloth plan charges 5% commission per paid booking. Sloth Active costs ₹399 a month or ₹3,599 a year, GST included, and charges 0% commission. On monthly billing the break-even is about ₹8,000 of bookings a month (5% of ₹7,980 is ₹399). On yearly billing, about ₹300 a month, it is ₹6,000. The payment gateway\'s charge applies on both plans.',
+      'Meeticulous has two plans. The free Starter plan charges 5% commission per paid booking. Pro costs ₹235 a month or ₹1,179 a year, GST included, and charges 0% commission. On monthly billing the break-even is about ₹4,700 of bookings a month (5% of ₹4,700 is ₹235). On yearly billing, about ₹98 a month, it is about ₹2,000. The payment gateway\'s charge applies on both plans.',
     ],
-    example: 'A Bengaluru coach earning ₹40,000 a month from bookings would pay ₹2,000 in commission at 5%, against ₹399 for a month of Sloth Active at 0%.',
+    example: 'A Bengaluru coach earning ₹40,000 a month from bookings would pay ₹2,000 in commission at 5%, against ₹235 for a month of Pro at 0%.',
     related: ['payout', 'platform-fee'],
   },
   {
@@ -241,7 +241,7 @@ export const GLOSSARY = [
     details: [
       'A platform fee is a fixed charge per booking or transaction, set in rupees rather than as a percentage. Because it stays the same whether the session costs ₹300 or ₹3,000, it is easier to predict than commission and it does not penalise higher prices.',
       'Check who pays it. Some platforms deduct it from your earnings. Others add it to the client\'s checkout total, like a convenience fee on a movie or train ticket. Either way, show clients the full amount before they pay, so nothing surprises them at checkout and nobody feels misled.',
-      'On Meeticulous the client pays a ₹10 booking fee plus GST on that fee, ₹11.80 in total, on top of your price at checkout. Free (₹0) sessions carry no booking fee. Separately, you pay the payment gateway\'s charge, plus a 5% commission on the free Sloth plan. Sloth Active removes the commission for a flat ₹399 a month or ₹3,599 a year, GST included.',
+      'On Meeticulous the client pays a ₹10 booking fee plus GST on that fee, ₹11.80 in total, on top of your price at checkout. Free (₹0) sessions carry no booking fee. Separately, you pay the payment gateway\'s charge, plus a 5% commission on the free Starter plan. Pro removes the commission for a flat ₹235 a month or ₹1,179 a year, GST included.',
     ],
     example: 'A client booking a ₹1,500 counselling session in Indore pays ₹1,511.80 at checkout: the counsellor\'s ₹1,500 fee, the ₹10 booking fee and ₹1.80 GST on that fee.',
     related: ['commission', 'payout'],
@@ -280,7 +280,7 @@ export const GLOSSARY = [
     details: [
       'An intake form is the set of questions a client answers before the first session. A therapist may ask what brings the client in and whether they have seen a counsellor before. A nutritionist asks about diet and medical conditions. A lawyer asks for the case type and the other party\'s name to check for conflicts.',
       'It saves the first ten minutes of every session, and it lets you decline or redirect clients who are not a fit before you block time for them. It also gives you a written record of what the client told you at the start.',
-      'Ask only what you will use, and keep sensitive questions to what you need before meeting. Do not ask for Aadhaar numbers or full medical records on a booking form. On Meeticulous, Sloth Active lets you add custom intake fields to your booking form, and its client records keep private notes and booking history for each client.',
+      'Ask only what you will use, and keep sensitive questions to what you need before meeting. Do not ask for Aadhaar numbers or full medical records on a booking form. On Meeticulous, Pro lets you add custom intake fields to your booking form, and its client records keep private notes and booking history for each client.',
     ],
     example: 'A Mysuru psychologist asks two questions at booking, "What would you like help with?" and "Have you had therapy before?", and reads the answers before the first online session.',
     related: ['booking-page', 'booking-link'],
@@ -293,7 +293,7 @@ export const GLOSSARY = [
     details: [
       'A digital product is something a client can buy and download without booking your time: a diet plan template, a workbook, a recorded workshop, a practice question set or a photo preset pack. You make it once and sell it many times.',
       'For professionals paid by the hour, it adds income that does not depend on your calendar. It can also work as an entry point. A client who buys a ₹299 guide and finds it useful may come back for a paid session, because they already trust your advice.',
-      'Keep products small and practical, priced so a first-time buyer does not have to think twice. On Meeticulous you list digital products on the same page as your services. Buyers pay upfront and get a download link by email without creating an account. The free Sloth plan includes 3 digital products and Sloth Active has no limit. Products carry no commission; the buyer pays a ₹10 fee plus GST on it, and each file can be up to 2 MB.',
+      'Keep products small and practical, priced so a first-time buyer does not have to think twice. On Meeticulous you list digital products on the same page as your services. Buyers pay upfront and get a download link by email without creating an account. The free Starter plan includes 3 digital products and Pro has no limit. Products carry no commission; the buyer pays a ₹10 fee plus GST on it, and each file can be up to 2 MB.',
     ],
     example: 'A Jaipur dietitian sells a ₹199 seven-day vegetarian meal plan PDF from her booking page, and buyers download it straight away while her consultation slots stay free for paying clients.',
     related: ['booking-page', 'advance-payment'],
@@ -332,7 +332,7 @@ export const GLOSSARY = [
     details: [
       'A lot of one-to-one work runs on a rhythm: weekly therapy, twice-weekly tuition, monthly check-ins with a coach or CA. A fixed slot helps clients build a habit and helps you plan your week. In a calendar app a recurring event is a series, and you can change one occurrence without touching the rest.',
       'Recurring slots need the same care as one-off bookings: payment, reminders, and a plan for missed weeks and holidays. Decide upfront whether clients pay per session or for a block, what happens to a session that falls on Diwali, and how much notice a client gives to skip a week.',
-      'Meeticulous books one session at a time. It does not create a repeating series or bill clients automatically. Clients rebook their usual slot from your link and pay for each session upfront. On Sloth Active, follow-up messages invite clients to book again after a session, and your client list shows who has not booked in a while.',
+      'Meeticulous books one session at a time. It does not create a repeating series or bill clients automatically. Clients rebook their usual slot from your link and pay for each session upfront. On Pro, follow-up messages invite clients to book again after a session, and your client list shows who has not booked in a while.',
     ],
     example: 'A Delhi client in weekly counselling books the following Wednesday at 7 pm from her counsellor\'s link at the end of each session and pays by UPI, keeping the same slot week after week.',
     related: ['availability', 'reminder', 'booking-link', 'preferred-time'],

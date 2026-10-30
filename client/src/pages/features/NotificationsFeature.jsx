@@ -22,15 +22,15 @@
 //     whatsapp_enabled + email_enabled = true. Each event has a _CUSTOMER and a
 //     _VENDOR send, so client AND host are notified.
 //   - Reminder windows: planService.reminderWindowsForPlan (reminder_flows):
-//     Sloth = 24h, Sloth Active = 24h + 1h. Catch-up send for last-minute
+//     Starter = 24h, Pro = 24h + 1h. Catch-up send for last-minute
 //     bookings: bookingController.fireDueReminders.
 //   - Free WhatsApp reminders: bookingController.whatsappRemindersAllowed, 60 days
 //     from signup (anchored no earlier than 1 Oct 2026), then email-only.
 //     Confirmations/cancellations are NOT gated by it.
-//   - Reschedule email/WhatsApp: planService.rescheduleNotifyForPlan (Sloth Active
-//     only); Sloth still gets the in-app notice.
+//   - Reschedule email/WhatsApp: planService.rescheduleNotifyForPlan (Pro
+//     only); Starter still gets the in-app notice.
 //   - Cancellation notices are NOT plan-gated in code (bookingController cancel path).
-//   - Rebook nudge: followups/flowRegistry, days 3 + 21, followup_flows (Sloth Active).
+//   - Rebook nudge: followups/flowRegistry, days 3 + 21, followup_flows (Pro).
 //   - STOP opt-out: notificationEngine honours contacts.whatsapp_suppressed.
 // No usage stats, no open rates, no no-show percentages.
 //
@@ -138,7 +138,7 @@ const FLOW = [
   { k: 'confirm', label: 'Booking confirmation', when: 'The moment they book', free: 'on', note: null },
   { k: '24h', label: '24-hour reminder', when: 'A day before', free: 'on', note: 'WhatsApp for your first 2 months, then by email' },
   { k: '1h', label: '1-hour reminder', when: 'An hour before', free: 'off', note: null },
-  { k: 'resched', label: 'Reschedule on WhatsApp + email', when: 'When a time changes', free: 'off', note: 'Sloth shows an in-app notice instead' },
+  { k: 'resched', label: 'Reschedule on WhatsApp + email', when: 'When a time changes', free: 'off', note: 'Starter shows an in-app notice instead' },
   { k: 'cancel', label: 'Cancellation notice', when: 'When a booking is cancelled', free: 'on', note: null },
   { k: 'thanks', label: 'Thank-you + review link', when: 'After the session', free: 'on', note: null },
   { k: 'rebook', label: 'Rebook nudges', when: 'Day 3 and day 21 after', free: 'off', note: null },
@@ -195,7 +195,7 @@ function ImgSlot({ alt, slot, className = '', dark = false }) {
   );
 }
 
-function ActiveTag({ className = '' }) {
+function ProTag({ className = '' }) {
   return (
     <span className={`inline-flex items-center gap-1 rounded-full border border-white/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#F2F5F3]/70 ${className}`}>
       <Lock size={9} aria-hidden /> {PREMIUM_PLAN.name}
@@ -322,7 +322,7 @@ function PlanToggle() {
                   <Check size={12} aria-hidden /> Fires
                 </span>
               ) : (
-                <ActiveTag />
+                <ProTag />
               )}
             </li>
           );
@@ -342,7 +342,7 @@ export default function NotificationsFeature() {
   const canonical = `${SITE_URL}/features/notifications`;
   const seo = {
     title: 'Automated Appointment Reminder System for India | Meeticulous',
-    description: 'Automatic WhatsApp and email booking confirmations and reminders for you and your clients, 24 hours before every session, plus 1 hour before on Sloth Active. Start free.',
+    description: 'Automatic WhatsApp and email booking confirmations and reminders for you and your clients, 24 hours before every session, plus 1 hour before on Pro. Start free.',
   };
   const jsonLd = professionGraphJsonLd({
     canonical,

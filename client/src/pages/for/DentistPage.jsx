@@ -105,7 +105,7 @@ const TOOLS = [
 
 // Impact — verifiable, admin-focused. No clinical/outcome claims.
 const METRICS = [
-  { value: '0%', label: 'Commission on Sloth Active', desc: 'Every consult fee stays with the practice.', icon: BadgePercent },
+  { value: '0%', label: 'Commission on Pro', desc: 'Every consult fee stays with the practice.', icon: BadgePercent },
   { value: '< 5 min', label: 'To go live', desc: 'Set up your services and share a booking page.', icon: Sparkles },
   { value: '24/7', label: 'Always open to book', desc: 'Patients book or reschedule any time — no calls.', icon: CalendarCheck },
 ];
@@ -116,7 +116,7 @@ const TESTIMONIALS = [
   { quote: 'Our front desk used to spend the whole morning on the phone. Patients now book their own slots and the reminders have cut our no-shows right down.', name: 'Kavya Nair', role: 'Practice Manager', company: 'Nair Dental Care, Kochi' },
   { quote: 'Setup took an evening. One clear diary means no more double-booked chairs — exactly what a busy front desk needs.', name: 'Arjun Mehta', role: 'Clinic Owner', company: 'Smile Studio, Pune' },
   { quote: 'Collecting the consult fee online before the visit tidied up our billing, and the GST invoices are generated for us automatically.', name: 'Sneha Rao', role: 'Front Desk Lead', company: 'DentaCare, Bengaluru' },
-  { quote: 'A calm, professional booking page — and 0% commission on Active means every rupee stays with the practice.', name: 'Imran Sheikh', role: 'Practice Owner', company: 'City Dental, Hyderabad' },
+  { quote: 'A calm, professional booking page — and 0% commission on Pro means every rupee stays with the practice.', name: 'Imran Sheikh', role: 'Practice Owner', company: 'City Dental, Hyderabad' },
   { quote: 'The WhatsApp reminders alone save the reception hours every week that we used to spend chasing confirmations.', name: 'Ananya Gupta', role: 'Clinic Coordinator', company: 'Bright Smile, Delhi' },
 ];
 
@@ -134,18 +134,18 @@ const TRUST_STRIP = [
   { icon: Lock, value: 'Razorpay', label: 'Every payment signature-verified on our servers' },
   { icon: Landmark, value: 'Hosted in India', label: 'Your clinic data runs on servers in Mumbai' },
   { icon: ShieldCheck, value: 'DPDP 2023', label: "Operated under India's data protection law" },
-  { icon: BadgePercent, value: '0% commission', label: 'On Sloth Active — keep every rupee' },
+  { icon: BadgePercent, value: '0% commission', label: 'On Pro — keep every rupee' },
 ];
 
 const FAQ = [
   { q: 'Is Meeticulous suitable for a dental clinic?', a: 'Yes — for managing appointments with your patients: an online booking page, automatic reminders, optional upfront fees and one clear diary. It is a scheduling and reminder tool for your practice, not a dental-records or advertising channel.' },
   { q: 'Does using Meeticulous comply with dental council / NMC advertising norms?', a: 'Medical and dental practitioners are restricted from advertising or soliciting patients (NMC Code of Ethics, Reg. 6–7). Meeticulous is a scheduling and reminder tool — how you use it is your responsibility. We suggest sharing your booking link with your existing patients rather than as public advertising, and following your council’s guidance. We do not advertise your practice, and we never publish patient reviews, ratings or testimonials.' },
   { q: 'Can patients book appointments online?', a: 'Yes. A patient opens your booking link, chooses an appointment type such as a check-up or consultation, picks a time and confirms — no calls to your front desk.' },
-  { q: 'Can I send WhatsApp reminders?', a: 'Yes. Meeticulous sends automatic confirmations and reminders over WhatsApp and email before each appointment, which cuts no-shows. WhatsApp reminders are included on the Sloth Active plan (and free for your first two months on the Sloth plan).' },
+  { q: 'Can I send WhatsApp reminders?', a: 'Yes. Meeticulous sends automatic confirmations and reminders over WhatsApp and email before each appointment, which cuts no-shows. WhatsApp reminders are included on the Pro plan (and free for your first two months on the Starter plan).' },
   { q: 'Can I collect fees online?', a: 'Optionally. Collect a consultation fee upfront through Razorpay — UPI, cards or netbanking — or leave it off and collect at the clinic. A GST invoice is generated automatically for every paid booking.' },
   { q: 'Can I manage multiple dentists or chairs?', a: 'Right now Meeticulous is best for a single appointment calendar per account — two dentists or chairs on one account share one diary and cannot be booked in parallel. Parallel multi-chair scheduling is on our roadmap; in the meantime a separate account per dentist is the workaround. We would rather tell you upfront than have it surprise you after setup.' },
   { q: 'Is patient information kept private?', a: 'Your production data is hosted in India (Mumbai) and the platform operates under India’s DPDP Act 2023. Meeticulous stores appointment and contact details for booking — it is not a dental-records system, and you control what a patient provides when booking. We never display patient reviews or ratings publicly.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Sloth plan is free forever — an online booking page, unlimited appointment types and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Sloth Active removes that commission entirely and adds WhatsApp automation and more.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited appointment types and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and more.' },
 ];
 
 const FOOTER_COLS = [
@@ -750,7 +750,7 @@ export default function DentistPage() {
                       </li>
                     ))}
                   </ul>
-                  <CtaButton to={START} className="mt-7 w-full">Go Sloth Active</CtaButton>
+                  <CtaButton to={START} className="mt-7 w-full">Go Pro</CtaButton>
                 </div>
               </div>
             </Reveal>
@@ -835,7 +835,7 @@ export default function DentistPage() {
               </Link>
             </Reveal>
             <Reveal delay={0.18} className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-              {['No credit card', 'Free forever', '0% on Sloth Active'].map((t) => (
+              {['No credit card', 'Free forever', '0% on Pro'].map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-white/70"><Check size={14} style={{ color: 'color-mix(in srgb, var(--ca-accent) 55%, white)' }} /> {t}</span>
               ))}
             </Reveal>

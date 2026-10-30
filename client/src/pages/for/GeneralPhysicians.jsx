@@ -96,7 +96,7 @@ const TOOLS = [
 // Impact stat cards (middle one dark-highlighted).
 const METRICS = [
   { v: '24/7', l: 'Bookings, day or night', note: 'Your booking page never sleeps — patients reserve slots any time.' },
-  { v: '0%', l: 'Commission on Sloth Active', note: 'Keep every rupee you earn — no cut on your consult fees.' },
+  { v: '0%', l: 'Commission on Pro', note: 'Keep every rupee you earn — no cut on your consult fees.' },
   { v: '₹0', l: 'To get started', note: 'Free forever plan — no card, no lock-in.' },
   { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice generated for every paid booking.' },
 ];
@@ -122,7 +122,7 @@ const TRUST_STRIP = [
   { icon: Lock, value: 'Razorpay', label: 'Every payment signature-verified on our servers' },
   { icon: Landmark, value: 'Hosted in India', label: 'Your clinic data runs on servers in Mumbai' },
   { icon: ShieldCheck, value: 'DPDP 2023', label: "Operated under India's data protection law" },
-  { icon: BadgePercent, value: '0% commission', label: 'On Sloth Active — keep every rupee' },
+  { icon: BadgePercent, value: '0% commission', label: 'On Pro — keep every rupee' },
 ];
 
 const FAQ = [
@@ -133,7 +133,7 @@ const FAQ = [
   { q: 'Can I manage multiple doctors and services?', a: 'Yes. Create as many services as you need — consultation, health check-up, chronic care, vaccination — each with its own duration, fee and availability, and manage every appointment from one clinic calendar.' },
   { q: 'Is our clinic and patient information kept private?', a: 'Meeticulous stores appointment and contact details for booking only — it is not a medical-records system. Your production data is hosted in India (Mumbai) and the platform operates under India’s DPDP Act 2023.' },
   { q: 'Do we need any technical setup?', a: 'No. Setup takes minutes and needs no technical skills. You add your services and clinic hours, and your booking page is ready to share — your patients need nothing more than the link.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Sloth plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Sloth Active removes that commission entirely and adds WhatsApp automation and growth tools.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
 ];
 
 const FOOTER_COLS = [
@@ -635,7 +635,7 @@ export default function GeneralPhysicians() {
                     </li>
                   ))}
                 </ul>
-                <CtaButton to={START} className="mt-7 w-full">Go Sloth Active</CtaButton>
+                <CtaButton to={START} className="mt-7 w-full">Go Pro</CtaButton>
               </div>
             </Reveal>
           </div>
@@ -713,7 +713,7 @@ export default function GeneralPhysicians() {
             </Link>
           </Reveal>
           <Reveal delay={0.18} className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-            {['No credit card required', 'Free forever plan', '0% commission on Sloth Active'].map((t) => (
+            {['No credit card required', 'Free forever plan', '0% commission on Pro'].map((t) => (
               <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-white/70">
                 <Check size={14} style={{ color: '#93C5FD' }} /> {t}
               </span>

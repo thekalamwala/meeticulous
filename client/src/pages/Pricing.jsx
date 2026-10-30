@@ -30,7 +30,7 @@ import { analytics, EVENTS } from "../services/analytics";
 import useUtm from "../hooks/useUtm";
 
 // /pricing — dedicated public pricing page. A product journey, not a spec sheet:
-//   Sloth = Operate (free) → Sloth Active = Grow (premium).
+//   Starter = Operate (free) → Pro = Grow (premium).
 // The plan cards, prices and the full feature comparison are single-sourced from
 // client/src/data/plans.js (mirrors DB migration v3.165), so the table here, the
 // homepage cards and the enforced server limits never drift apart. Only features
@@ -38,7 +38,7 @@ import useUtm from "../hooks/useUtm";
 
 const ROUTE_START = "/become-a-host";
 
-// Green (Sloth / operate) vs orange (Active / grow) — the two plan accents from
+// Green (Starter / operate) vs orange (Pro / grow) — the two plan accents from
 // plans.js. Kept as locals so the storytelling sections read the same hues as the
 // cards without re-hardcoding hex all over the file.
 const OPERATE = FREE_PLAN.accent; // #4AB765
@@ -55,9 +55,9 @@ const JSON_LD = {
   // actually charges. These are indexed into rich results, so a stale number
   // here survives in Google for weeks after the page itself is corrected.
   offers: [
-    { "@type": "Offer", name: "Sloth", price: "0", priceCurrency: "INR", availability: "https://schema.org/InStock" },
-    { "@type": "Offer", name: "Sloth Active (monthly)", price: "399", priceCurrency: "INR", availability: "https://schema.org/InStock" },
-    { "@type": "Offer", name: "Sloth Active (yearly)", price: "3599", priceCurrency: "INR", availability: "https://schema.org/InStock" },
+    { "@type": "Offer", name: "Starter", price: "0", priceCurrency: "INR", availability: "https://schema.org/InStock" },
+    { "@type": "Offer", name: "Pro (monthly)", price: "235", priceCurrency: "INR", availability: "https://schema.org/InStock" },
+    { "@type": "Offer", name: "Pro (yearly)", price: "1179", priceCurrency: "INR", availability: "https://schema.org/InStock" },
   ],
   // No aggregateRating: Google penalises self-serving ratings that aren't
   // backed by real, verifiable reviews. Re-add (with an on-page badge) only
@@ -84,7 +84,7 @@ const Cell = ({ value }) => {
 };
 
 export default function Pricing() {
-  // Interim (fee-only) mode: hide the free Sloth column + soften commission/earn
+  // Interim (fee-only) mode: hide the free Starter column + soften commission/earn
   // copy, and drop the free-vs-paid storytelling (it only makes sense once the
   // free plan is advertised). Reverts automatically when the DB flag flips on
   // Route go-live.
@@ -100,8 +100,8 @@ export default function Pricing() {
   return (
     <main className="bg-white">
       <Seo
-        title={feeOnly ? "Pricing — Meeticulous | Sloth Active for creators & professionals" : "Pricing — Meeticulous | Start as a Sloth. Become Active as you grow."}
-        description={feeOnly ? "Simple, honest pricing for your booking page — scheduling, reminders and automation. Sloth Active is ₹3,599 a year, GST included." : "Two plans, that's it. Sloth is free forever — put your business online and start taking bookings. Sloth Active turns those bookings into a business system. All prices include GST."}
+        title={feeOnly ? "Pricing — Meeticulous | Pro for creators & professionals" : "Pricing — Meeticulous | Start free. Go Pro as you grow."}
+        description={feeOnly ? "Simple, honest pricing for your booking page — scheduling, reminders and automation. Pro is ₹1,179 a year, GST included." : "Two plans, that's it. Starter is free forever — put your business online and start taking bookings. Pro turns those bookings into a business system. All prices include GST."}
         image={ogCard('pricing')}
         canonical={`${SITE_URL}/pricing`}
         jsonLd={JSON_LD}
@@ -113,7 +113,7 @@ export default function Pricing() {
           {!feeOnly && (
             <span className="mb-5 inline-flex items-center gap-2 rounded-full border-2 border-ink/10 bg-canvas px-3.5 py-1.5 text-xs font-semibold text-ink/70">
               <span aria-hidden="true">🦥</span>
-              Start as a Sloth. Become Active when your business grows.
+              Start free. Go Pro when your business grows.
             </span>
           )}
           <h1 className="font-heading text-4xl font-extrabold leading-tight text-ink sm:text-5xl">
@@ -123,7 +123,7 @@ export default function Pricing() {
           <p className="mx-auto mt-4 max-w-[640px] text-neutral-500">
             {feeOnly
               ? "Pick the plan that fits your booking page. Upgrade anytime."
-              : `Start for free. Stay free for as long as you need. When bookings start piling up, Sloth Active gives you the tools to run what happens next — for under ${PREMIUM_PER_DAY} a day.`}
+              : `Start for free. Stay free for as long as you need. When bookings start piling up, Pro gives you the tools to run what happens next — for under ${PREMIUM_PER_DAY} a day.`}
           </p>
           {!feeOnly && <OperateGrowPills />}
         </div>
@@ -157,7 +157,7 @@ export default function Pricing() {
         <div className="mx-auto max-w-[1050px]">
           <h2 className="text-center font-heading text-3xl font-extrabold text-ink sm:text-4xl">Everything you get</h2>
           <p className="mx-auto mt-3 max-w-[620px] text-center text-neutral-500">
-            Everything Sloth gives you free, and everything you unlock with Sloth Active.
+            Everything Starter gives you free, and everything you unlock with Pro.
             Tap any <span className="font-semibold text-primary">Limited</span> tag for the detail.
           </p>
 
@@ -201,7 +201,7 @@ export default function Pricing() {
             {feeOnly ? "Ready when you are." : "Start slow. Grow when it counts."}
           </h2>
           <p className="mx-auto mt-3 max-w-[520px] text-neutral-300">
-            Put your business online for free in minutes. Become Active in one click the day your bookings need it.
+            Put your business online for free in minutes. Become Pro in one click the day your bookings need it.
           </p>
           <Link
             to={ROUTE_START}
@@ -228,21 +228,21 @@ function OperateGrowPills() {
         className="inline-flex items-center gap-2 rounded-full border-2 px-4 py-1.5"
         style={{ color: OPERATE, borderColor: `${OPERATE}55`, background: `${OPERATE}12` }}
       >
-        <Sprout size={16} strokeWidth={2} /> Sloth · Operate
+        <Sprout size={16} strokeWidth={2} /> Starter · Operate
       </span>
       <ArrowRight size={18} className="text-ink/30" aria-hidden="true" />
       <span
         className="inline-flex items-center gap-2 rounded-full border-2 px-4 py-1.5"
         style={{ color: GROW, borderColor: `${GROW}55`, background: `${GROW}12` }}
       >
-        <Rocket size={16} strokeWidth={2} /> Sloth Active · Grow
+        <Rocket size={16} strokeWidth={2} /> Pro · Grow
       </span>
     </div>
   );
 }
 
 // The core distinction, made visual: a calm green "Operate" panel, an arrow, and
-// a bolder orange "Grow" panel. This is the Sloth → Active transition.
+// a bolder orange "Grow" panel. This is the Starter → Pro transition.
 function OperateVsGrow() {
   return (
     <section className="px-5 pt-20 sm:px-8 lg:pt-24">
@@ -251,7 +251,7 @@ function OperateVsGrow() {
           <StatePanel
             accent={OPERATE}
             icon={<Sprout size={22} strokeWidth={2} />}
-            kicker="Sloth"
+            kicker="Starter"
             title="Operate"
             line="Start taking bookings. Put your business online and accept appointments — free forever."
           />
@@ -268,7 +268,7 @@ function OperateVsGrow() {
             accent={GROW}
             emphasised
             icon={<Rocket size={22} strokeWidth={2} />}
-            kicker="Sloth Active"
+            kicker="Pro"
             title="Grow"
             line="Turn bookings into a business system — automation, a real client CRM, and 0% commission so you keep every rupee."
           />
@@ -313,44 +313,44 @@ function GrowingSection() {
           things to manage.
         </p>
         <p className="mt-4 font-heading text-lg font-bold" style={{ color: GROW }}>
-          That's when Sloth Active becomes useful.
+          That's when Pro becomes useful.
         </p>
       </div>
     </section>
   );
 }
 
-// "When should you become Active?" — four stages. No fake numbers: the only
-// figure named (₹6,000/mo) is the real breakeven — 5% commission = the effective
-// ₹300/mo Active price (see plans.js persona blurb + PayForItself calculator).
+// "When should you become Pro?" — four stages. No fake numbers: the only
+// figure named (₹4,700/mo) is the real breakeven — 5% commission = the effective
+// ₹235/mo Pro price (see plans.js persona blurb + PayForItself calculator).
 const STAGES = [
   {
     tag: "Starting out",
     lead: "0 → your first bookings",
-    body: "Sloth is enough. Get your booking page online and start accepting appointments — nothing to pay until you do.",
+    body: "Starter is enough. Get your booking page online and start accepting appointments — nothing to pay until you do.",
     accent: OPERATE,
-    plan: "Sloth",
+    plan: "Starter",
   },
   {
     tag: "Getting busy",
     lead: "Bookings coming in regularly",
     body: "Automation starts saving you time. 1-hour reminders, reschedule alerts and follow-ups keep customers showing up.",
     accent: "#f59e0b",
-    plan: "Sloth Active",
+    plan: "Pro",
   },
   {
     tag: "Growing",
     lead: "More customers. More to manage.",
     body: "You need visibility. A full client CRM with notes and history, plus rebook automation to bring people back.",
     accent: "#db2777",
-    plan: "Sloth Active",
+    plan: "Pro",
   },
   {
     tag: "Running the business",
     lead: "Bookings are your engine",
-    body: "Earning over ₹6,000 a month? At 0% commission, Sloth Active already costs you less than the 5% — and you keep it all.",
+    body: "Earning over ₹4,700 a month? At 0% commission, Pro already costs you less than the 5% — and you keep it all.",
     accent: GROW,
-    plan: "Sloth Active",
+    plan: "Pro",
   },
 ];
 
@@ -359,7 +359,7 @@ function WhenToBecomeActive() {
     <section className="px-5 pt-20 sm:px-8 lg:pt-24">
       <div className="mx-auto max-w-[1050px]">
         <h2 className="text-center font-heading text-3xl font-extrabold text-ink sm:text-4xl">
-          When should you become Active?
+          When should you become Pro?
         </h2>
         <p className="mx-auto mt-3 max-w-[560px] text-center text-neutral-500">
           There's no rush. Move up a stage only when the last one starts to feel busy.
@@ -426,7 +426,7 @@ function ValueSection() {
     <section className="px-5 pt-20 sm:px-8 lg:pt-24">
       <div className="mx-auto max-w-[1050px]">
         <h2 className="text-center font-heading text-3xl font-extrabold text-ink sm:text-4xl">
-          What Active actually does for you
+          What Pro actually does for you
         </h2>
         <p className="mx-auto mt-3 max-w-[560px] text-center text-neutral-500">
           It's not "25 more features." It's four things that matter as you grow.
@@ -459,37 +459,37 @@ function ValueSection() {
   );
 }
 
-// "Does Active pay for itself?" — an honest calculator, not decoration. It uses
-// only real pricing logic: Sloth's 5% commission vs Sloth Active's flat effective
-// ₹300/mo (yearly billing) at 0% commission. Breakeven is ₹6,000/mo of paid
+// "Does Pro pay for itself?" — an honest calculator, not decoration. It uses
+// only real pricing logic: Starter's 5% commission vs Pro's flat effective
+// ₹300/mo (yearly billing) at 0% commission. Breakeven is ₹4,700/mo of paid
 // bookings (0.05 × 6,000 = 300), matching the plans.js persona blurb.
 const COMMISSION_PCT = 5; // FREE_PLAN commission — mirrors subscription_plans
 const inr = (n) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 
 function PayForItself() {
   const [earn, setEarn] = useState(8000);
-  const commission = (earn * COMMISSION_PCT) / 100; // what Sloth's 5% costs this month
+  const commission = (earn * COMMISSION_PCT) / 100; // what Starter's 5% costs this month
   const activeCost = PREMIUM_YEARLY_PER_MONTH; // flat ₹300/mo effective (yearly)
   const activeWins = commission >= activeCost;
   const saved = Math.max(0, commission - activeCost);
 
   let verdict;
   if (earn < 6000) {
-    verdict = "You're just starting out. Sloth is free and the 5% only applies when you actually get paid — stay on Sloth for now.";
+    verdict = "You're just starting out. Starter is free and the 5% only applies when you actually get paid — stay on Starter for now.";
   } else if (earn < 15000) {
-    verdict = "You're getting busy. Sloth Active's flat price already costs less than the 5% here — and you keep every rupee, plus automation and CRM.";
+    verdict = "You're getting busy. Pro's flat price already costs less than the 5% here — and you keep every rupee, plus automation and CRM.";
   } else {
-    verdict = "You're running a real business. Active pays for itself several times over, and the automation and CRM keep the volume manageable.";
+    verdict = "You're running a real business. Pro pays for itself several times over, and the automation and CRM keep the volume manageable.";
   }
 
   return (
     <section className="px-5 pt-20 sm:px-8 lg:pt-24">
       <div className="mx-auto max-w-[1050px]">
         <h2 className="text-center font-heading text-3xl font-extrabold text-ink sm:text-4xl">
-          Does Active pay for itself?
+          Does Pro pay for itself?
         </h2>
         <p className="mx-auto mt-3 max-w-[560px] text-center text-neutral-500">
-          Drag to your rough monthly bookings revenue. We'll compare Sloth's 5% against Sloth Active's flat price.
+          Drag to your rough monthly bookings revenue. We'll compare Starter's 5% against Pro's flat price.
         </p>
 
         <div className="mx-auto mt-10 max-w-[720px] rounded-[10px] border border-ink/10 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.05)] sm:p-8">
@@ -518,7 +518,7 @@ function PayForItself() {
               className="rounded-[6px] border-2 p-4"
               style={{ borderColor: `${OPERATE}44`, background: `${OPERATE}0d` }}
             >
-              <p className="text-xs font-bold uppercase tracking-wide" style={{ color: OPERATE }}>Sloth · 5%</p>
+              <p className="text-xs font-bold uppercase tracking-wide" style={{ color: OPERATE }}>Starter · 5%</p>
               <p className="mt-1 font-heading text-2xl font-extrabold text-ink">{inr(commission)}<span className="text-sm font-semibold text-neutral-400"> /mo</span></p>
               <p className="mt-1 text-xs text-neutral-500">commission on your bookings</p>
             </div>
@@ -526,7 +526,7 @@ function PayForItself() {
               className="rounded-[6px] border-2 p-4"
               style={{ borderColor: `${GROW}55`, background: `${GROW}0d` }}
             >
-              <p className="text-xs font-bold uppercase tracking-wide" style={{ color: GROW }}>Sloth Active · flat</p>
+              <p className="text-xs font-bold uppercase tracking-wide" style={{ color: GROW }}>Pro · flat</p>
               <p className="mt-1 font-heading text-2xl font-extrabold text-ink">{inr(activeCost)}<span className="text-sm font-semibold text-neutral-400"> /mo</span></p>
               <p className="mt-1 text-xs text-neutral-500">0% commission · billed yearly</p>
             </div>
@@ -537,7 +537,7 @@ function PayForItself() {
           >
             {activeWins && saved > 0 && (
               <p className="mb-1 font-heading font-bold" style={{ color: GROW }}>
-                Sloth Active saves you about {inr(saved)} a month — before you count the automation.
+                Pro saves you about {inr(saved)} a month — before you count the automation.
               </p>
             )}
             <p>{verdict}</p>

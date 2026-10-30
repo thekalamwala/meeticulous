@@ -359,8 +359,8 @@ const FEATURE_GROUPS = [
 
 /* ── FAQ ── */
 const FAQS = [
-  { q: "Is Meeticulous really free?", a: "Yes. Sloth costs nothing and has no time limit — unlimited services and bookings. We take 5% only when you actually get paid. Sloth Active removes that commission for ₹3,599 a year (under ₹10 a day), which pays for itself once you're earning about ₹6,000 a month." },
-  { q: "Do you charge commission?", a: "On Sloth Active, no — you keep 100% of every booking. Sloth (the free plan) charges 5% per transaction, and nothing when you have no bookings." },
+  { q: "Is Meeticulous really free?", a: "Yes. Starter costs nothing and has no time limit — unlimited services and bookings. We take 5% only when you actually get paid. Pro removes that commission for ₹1,179 a year (under ₹4 a day), which pays for itself once you're earning about ₹4,700 a month." },
+  { q: "Do you charge commission?", a: "On Pro, no — you keep 100% of every booking. Starter (the free plan) charges 5% per transaction, and nothing when you have no bookings." },
   { q: "Can clients pay while booking?", a: "Yes — that's the whole point. Clients pay via UPI, card or netbanking at checkout. You get paid before the session starts." },
   { q: "Do clients need an account?", a: "No. Clients book and pay without creating an account." },
   { q: "Can I connect Google Calendar?", a: "Yes. Two-way sync — your availability updates automatically and bookings appear in your calendar in real time." },
@@ -1205,14 +1205,14 @@ const Home = () => {
       )}
 
 
-      {/* ════════════ PRICING (shared PricingCards — Sloth + Sloth Active) ════════════ */}
+      {/* ════════════ PRICING (shared PricingCards — Starter + Pro) ════════════ */}
       <section id="pricing" className="px-5 pb-12 pt-20 sm:px-8 lg:pb-16 lg:pt-28">
         <div className="mx-auto max-w-[860px]">
           <Reveal as="h2" className="text-center text-4xl font-extrabold leading-tight text-ink sm:text-5xl">
             Simple pricing. <span className="text-primary-cta">No surprises.</span>
           </Reveal>
           <Reveal as="p" delay={0.06} className="mx-auto mt-4 max-w-[750px] text-center text-neutral-500">
-            Start free — we take 5% only when you get paid. Go Active for 0% commission and keep every rupee.
+            Start free — we take 5% only when you get paid. Go Pro for 0% commission and keep every rupee.
           </Reveal>
 
           <Reveal delay={0.12} className="mt-8">
@@ -1225,7 +1225,7 @@ const Home = () => {
             </Link>
           </p>
           <p className="mt-3 text-center text-xs text-neutral-500">
-            0% commission on Sloth Active · All prices include GST · ~2.4% payment gateway fee applies (not our charge) · Cancel anytime
+            0% commission on Pro · All prices include GST · ~2.4% payment gateway fee applies (not our charge) · Cancel anytime
           </p>
         </div>
       </section>

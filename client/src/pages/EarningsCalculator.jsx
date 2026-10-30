@@ -9,7 +9,7 @@ import {
 } from "../lib/earningsCalc";
 
 // /earnings-calculator — public conversion tool. Host sets price + monthly volume;
-// sees annual take-home per plan as a bar chart (Sloth 5% · Sloth Active 0%),
+// sees annual take-home per plan as a bar chart (Starter 5% · Pro 0%),
 // the plan that keeps the most, and how much more than free. All numbers come from
 // lib/earningsCalc.js + lib/morPricing.js (server mirror) — display only, real
 // pricing computed server-side at booking. No invented tiers, no fake figures.
@@ -17,7 +17,7 @@ import {
 const ROUTE_START = "/become-a-host";
 const ICON = { free: Sprout, premium: Rocket };
 const ACCENT = { free: "#4AB765", premium: "#0079C1" };
-const CTA_LABEL = { free: "Get Started", premium: "Start on Sloth Active" };
+const CTA_LABEL = { free: "Get Started", premium: "Start on Pro" };
 
 // One-line "who's this for" per plan.
 const POSITION = {
@@ -148,7 +148,7 @@ function PlanCard({ result, winnerKey, cycle }) {
   const { plan } = result;
   const Icon = ICON[plan.key] ?? Sparkles;
   const accent = ACCENT[plan.key];
-  const isRec = plan.key === "premium"; // Sloth Active is the recommended plan
+  const isRec = plan.key === "premium"; // Pro is the recommended plan
   const monthly = plan.monthly;
   const yearly = ANNUAL_FEE[plan.key];
   const priceNote =
@@ -247,7 +247,7 @@ export default function EarningsCalculator() {
     <div className="min-h-screen" style={{ background: "#f7f5ef" }}>
       <Seo
         title="Earnings Calculator — see what you keep | Meeticulous"
-        description="Meeticulous earnings calculator: set your price and monthly bookings to see exactly what you keep — and whether Sloth or Sloth Active leaves you the most."
+        description="Meeticulous earnings calculator: set your price and monthly bookings to see exactly what you keep — and whether Starter or Pro leaves you the most."
         canonical={canonical}
         image={ogCard("earnings-calculator", "png")}
       />

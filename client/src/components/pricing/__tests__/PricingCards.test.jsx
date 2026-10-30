@@ -3,7 +3,7 @@ import { render, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import PricingCards from "../PricingCards";
 
-// Control the interim fee-only flag. Default false = full display (incl. Sloth).
+// Control the interim fee-only flag. Default false = full display (incl. Starter).
 const mockFeeOnly = vi.fn(() => false);
 vi.mock("../../../hooks/useFeeOnly", () => ({ default: () => mockFeeOnly() }));
 
@@ -13,8 +13,8 @@ describe("PricingCards", () => {
   it("renders exactly the two plans", () => {
     const { container } = setup();
     const text = container.textContent;
-    expect(text).toContain("Sloth");
-    expect(text).toContain("Sloth Active");
+    expect(text).toContain("Starter");
+    expect(text).toContain("Pro");
     // The retired ladder must not resurface on the page customers actually read.
     for (const dead of ["Host+", "Studio", "Enterprise"]) expect(text).not.toContain(dead);
   });
@@ -22,23 +22,23 @@ describe("PricingCards", () => {
   it("hides the free plan in fee-only mode but keeps the paid one", () => {
     mockFeeOnly.mockReturnValueOnce(true);
     const { container } = setup();
-    expect(container.textContent).toContain("Sloth Active");
+    expect(container.textContent).toContain("Pro");
     expect(container.textContent).not.toContain("forever");
   });
 
   it("leads with the yearly price and the under-₹10-a-day line", () => {
     const { container } = setup();
     const text = container.textContent;
-    expect(text).toContain("₹3,599");
-    expect(text).toContain("₹9.86");
+    expect(text).toContain("₹1,179");
+    expect(text).toContain("₹3.23");
     expect(text).toContain("incl. GST");
-    expect(text).toContain("Save 25%");
+    expect(text).toContain("Save 58%");
   });
 
   it("shows the monthly price when the toggle is switched", () => {
     const { container, getByText } = setup();
     fireEvent.click(getByText("Monthly"));
-    expect(container.textContent).toContain("₹399");
+    expect(container.textContent).toContain("₹235");
   });
 
   it("both CTAs point at the signup route", () => {

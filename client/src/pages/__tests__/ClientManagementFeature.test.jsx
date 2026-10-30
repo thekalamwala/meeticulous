@@ -25,7 +25,7 @@ describe('Client management feature page', () => {
   it('switches the plan comparison note', () => {
     renderPage();
     expect(screen.getByTestId('plan-lens-note').textContent).toMatch(new RegExp(`${FREE_CRM_CLIENTS} most recent`));
-    fireEvent.click(screen.getByRole('button', { name: /sloth active/i }));
+    fireEvent.click(screen.getByRole('button', { name: /pro/i }));
     expect(screen.getByTestId('plan-lens-note').textContent).toMatch(/every client/i);
   });
 });

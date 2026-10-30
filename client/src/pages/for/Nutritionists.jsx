@@ -106,7 +106,7 @@ const TOOLS = [
 // Light-green impact band.
 const METRICS = [
   { v: '24/7', l: 'Bookings, day or night', note: 'Your booking page never sleeps — clients reserve consults any time.' },
-  { v: '100%', l: 'Kept on Sloth Active', note: '0% commission — every rupee you earn stays yours.' },
+  { v: '100%', l: 'Kept on Pro', note: '0% commission — every rupee you earn stays yours.' },
   { v: '₹0', l: 'To get started', note: 'Free forever plan — no card, no lock-in.' },
   { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice generated for every paid booking.' },
 ];
@@ -149,7 +149,7 @@ const TRUST_STRIP = [
   { icon: Lock, value: 'Razorpay', label: 'Every payment signature-verified on our servers' },
   { icon: Landmark, value: 'Hosted in India', label: 'Your practice data runs on servers in Mumbai' },
   { icon: ShieldCheck, value: 'DPDP 2023', label: "Operated under India's data protection law" },
-  { icon: BadgePercent, value: '0% commission', label: 'On Sloth Active — keep every rupee' },
+  { icon: BadgePercent, value: '0% commission', label: 'On Pro — keep every rupee' },
 ];
 
 const FAQ = [
@@ -160,7 +160,7 @@ const FAQ = [
   { q: 'Can I collect consultation fees online?', a: 'Yes. Collect fees upfront through Razorpay — UPI, cards or netbanking — before the consult. A GST invoice is generated automatically for every paid booking.' },
   { q: 'Can I sell diet packages or recurring plans?', a: 'Yes. Offer multi-session packages and recurring bookings, each with its own duration, fee and availability — ideal for an ongoing diet programme.' },
   { q: 'Can I run online consultations?', a: 'Yes. Offer online consults with automatic Google Meet or Zoom links, or mark a service as in-person — the client picks the mode that suits them.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Sloth plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Sloth Active removes that commission entirely and adds WhatsApp automation and growth tools.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
 ];
 
 const FOOTER_COLS = [
@@ -704,7 +704,7 @@ export default function Nutritionists() {
                   ))}
                 </ul>
                 <div className="mt-auto pt-7">
-                  <CtaButton to={START} className="w-full">Go Sloth Active</CtaButton>
+                  <CtaButton to={START} className="w-full">Go Pro</CtaButton>
                 </div>
               </div>
             </Reveal>
@@ -783,7 +783,7 @@ export default function Nutritionists() {
               </Link>
             </Reveal>
             <Reveal delay={0.14} className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2">
-              {['No credit card', 'Free forever', '0% on Sloth Active'].map((t) => (
+              {['No credit card', 'Free forever', '0% on Pro'].map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-white/75"><Check size={14} style={{ color: '#FDE68A' }} /> {t}</span>
               ))}
             </Reveal>

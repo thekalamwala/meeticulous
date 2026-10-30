@@ -109,7 +109,7 @@ const TOOLS = [
 // Case-file impact ledger (figures + notes from the old page's stat rows).
 const METRICS = [
   { v: '24/7', l: 'Bookings, day or night', note: 'Your booking page never sleeps — clients reserve consultations any time.' },
-  { v: '0%', l: 'Commission on Sloth Active', note: 'Keep every rupee you earn — no per-booking cut.' },
+  { v: '0%', l: 'Commission on Pro', note: 'Keep every rupee you earn — no per-booking cut.' },
   { v: '₹0', l: 'To get started', note: 'Free forever plan — no card, no lock-in.' },
   { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice generated for every paid booking.' },
 ];
@@ -121,7 +121,7 @@ const TESTIMONIALS = [
   { quote: 'Collecting the consultation fee upfront over UPI, with a GST invoice generated automatically, cleaned up our billing.', name: 'Adv. Sameer Joshi', role: 'Advocate, Mumbai' },
   { quote: 'Clients book their appointments without waiting for the office to call back. Setup took an evening.', name: 'Adv. Ananya Bose', role: 'Advocate, Kolkata' },
   { quote: 'One clear diary for the whole practice means no two clients penciled into the same hour.', name: 'Adv. Vikram Rao', role: 'Managing Partner, Hyderabad' },
-  { quote: 'A calm, professional booking page for consultations, 0% commission on Active, and payments straight to the practice account.', name: 'Adv. Neha Gupta', role: 'Advocate, Chandigarh' },
+  { quote: 'A calm, professional booking page for consultations, 0% commission on Pro, and payments straight to the practice account.', name: 'Adv. Neha Gupta', role: 'Advocate, Chandigarh' },
 ];
 
 // Redlined comparison — the practice's day marked-up (old) vs the clean copy (new).
@@ -145,7 +145,7 @@ const TRUST_STRIP = [
   { icon: Lock, value: 'Razorpay', label: 'Every payment signature-verified on our servers' },
   { icon: Landmark, value: 'Hosted in India', label: 'Your practice data runs on servers in Mumbai' },
   { icon: FileText, value: 'DPDP 2023', label: "Operated under India's data protection law" },
-  { icon: BadgePercent, value: '0% commission', label: 'On Sloth Active — keep every rupee' },
+  { icon: BadgePercent, value: '0% commission', label: 'On Pro — keep every rupee' },
 ];
 
 const FAQ = [
@@ -156,7 +156,7 @@ const FAQ = [
   { q: 'Can I collect consultation fees online?', a: 'Yes. Collect the fee upfront through Razorpay — UPI, cards or netbanking — before the consultation. A GST invoice is generated automatically for every paid booking.' },
   { q: 'Can I offer virtual consultations?', a: 'Yes. Offer online consultations or mark a service as in-chambers — or both. The client picks the mode that suits the matter.' },
   { q: 'Is my client information kept private?', a: 'Your production data is hosted in India (Mumbai) and the platform operates under India’s DPDP Act 2023. You control what appears on your booking page and what details a client provides when booking.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Sloth plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Sloth Active removes that commission entirely and adds WhatsApp automation and growth tools.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
 ];
 
 const FOOTER_COLS = [
@@ -691,7 +691,7 @@ export default function LawyersPage() {
           </Reveal>
 
           <div className="mx-auto mt-10 grid max-w-3xl gap-5 sm:grid-cols-2 sm:gap-6">
-            {/* Sloth (free) */}
+            {/* Starter (free) */}
             <Reveal>
               <div className="flex h-full flex-col rounded-[16px] border border-black/[0.08] bg-white p-7">
                 <div className="font-heading text-lg font-bold">{FREE_PLAN.name}</div>
@@ -714,7 +714,7 @@ export default function LawyersPage() {
               </div>
             </Reveal>
 
-            {/* Sloth Active (premium) — recommended */}
+            {/* Pro (premium) — recommended */}
             <Reveal delay={0.08}>
               <div className="relative flex h-full flex-col overflow-hidden rounded-[16px] border-2 bg-white p-7 shadow-[0_24px_60px_-30px_rgba(127,29,29,0.28)]" style={{ borderColor: 'var(--ca-primary)' }}>
                 <span aria-hidden className="absolute inset-x-0 top-0 h-1" style={{ background: 'linear-gradient(90deg, var(--ca-primary), var(--ca-accent))' }} />
@@ -742,7 +742,7 @@ export default function LawyersPage() {
                     </li>
                   ))}
                 </ul>
-                <CtaButton to={START} className="mt-7 w-full">Go Sloth Active</CtaButton>
+                <CtaButton to={START} className="mt-7 w-full">Go Pro</CtaButton>
               </div>
             </Reveal>
           </div>
@@ -826,7 +826,7 @@ export default function LawyersPage() {
               Book A Demo
             </Link>
           </Reveal>
-          <Reveal as="p" delay={0.18} className="mt-5 text-xs text-white/60">No credit card required · Free forever · 0% commission on Sloth Active</Reveal>
+          <Reveal as="p" delay={0.18} className="mt-5 text-xs text-white/60">No credit card required · Free forever · 0% commission on Pro</Reveal>
         </div>
       </section>
 

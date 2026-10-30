@@ -139,12 +139,12 @@ describe('Products — thumbnail by URL', () => {
 // Mirrors the prod subscription_plans config: every tier includes products.
 const PLANS_REAL = [
   { slug: 'free',    name: 'Sloth',        sort_order: 1, limits: { digital_products: 3 } },
-  { slug: 'premium', name: 'Sloth Active', sort_order: 2, limits: { digital_products: -1 } },
+  { slug: 'premium', name: 'Pro', sort_order: 2, limits: { digital_products: -1 } },
 ];
 // A config where the free tier is genuinely blocked (0 allowance).
 const PLANS_FREE_BLOCKED = [
   { slug: 'free',    name: 'Sloth',        sort_order: 1, limits: { digital_products: 0 } },
-  { slug: 'premium', name: 'Sloth Active', sort_order: 2, limits: { digital_products: -1 } },
+  { slug: 'premium', name: 'Pro', sort_order: 2, limits: { digital_products: -1 } },
 ];
 
 const renderWithPlan = (plan, plans) => {
@@ -168,19 +168,19 @@ describe('Products — plan-tier upgrade gate', () => {
 
   test('a plan with a 0 product allowance shows the upgrade gate', async () => {
     renderWithPlan('starter', PLANS_FREE_BLOCKED);
-    expect(await screen.findByText(/upgrade to sloth active/i)).toBeTruthy();
+    expect(await screen.findByText(/upgrade to pro/i)).toBeTruthy();
     expect(screen.queryByRole('button', { name: /add product/i })).toBeNull();
   });
 
   test('legacy "explorer" slug resolves to the free tier for gating', async () => {
     renderWithPlan('explorer', PLANS_FREE_BLOCKED);
-    expect(await screen.findByText(/upgrade to sloth active/i)).toBeTruthy();
+    expect(await screen.findByText(/upgrade to pro/i)).toBeTruthy();
   });
 
   test('upgrade CTA names the entry plan and carries no price label', async () => {
     renderWithPlan('explorer', PLANS_FREE_BLOCKED);
-    const cta = await screen.findByText(/upgrade to sloth active/i);
-    expect(cta.textContent.trim()).toBe('Upgrade to Sloth Active');
+    const cta = await screen.findByText(/upgrade to pro/i);
+    expect(cta.textContent.trim()).toBe('Upgrade to Pro');
     expect(cta.textContent).not.toMatch(/₹|\/mo|\/month|999/);
   });
 });
@@ -200,10 +200,10 @@ describe('Products — kill-switch gate (feature off)', () => {
     expect(screen.queryByRole('button', { name: /add product/i })).toBeNull();
   });
 
-  test('kill switch wins over the plan gate — a 0-allowance plan still sees the notice, not "Upgrade to Sloth Active"', async () => {
+  test('kill switch wins over the plan gate — a 0-allowance plan still sees the notice, not "Upgrade to Pro"', async () => {
     useFeature.mockReturnValue(false);
     renderWithPlan('starter', PLANS_FREE_BLOCKED);
     expect(await screen.findByText(/temporarily unavailable/i)).toBeTruthy();
-    expect(screen.queryByText(/upgrade to sloth active/i)).toBeNull();
+    expect(screen.queryByText(/upgrade to pro/i)).toBeNull();
   });
 });

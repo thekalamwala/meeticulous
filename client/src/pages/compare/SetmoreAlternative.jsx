@@ -207,7 +207,7 @@ export const FAQ = [
   },
   {
     q: 'Does Setmore send WhatsApp reminders?',
-    a: `${S.name}'s pricing page doesn't list WhatsApp reminders. It lists SMS reminders on its ${S.sms}. Meeticulous sends WhatsApp reminders on ${PREMIUM_PLAN.name}; the free ${FREE_PLAN.name} plan gets them for your first 2 months, then email reminders.`,
+    a: `${S.name}'s pricing page doesn't list WhatsApp reminders. It lists SMS reminders on its ${S.sms}. Meeticulous sends WhatsApp reminders on ${PREMIUM_PLAN.name}; the free ${FREE_PLAN.name} plan gets them for your first 2 months, then email reminders after that.`,
   },
   {
     q: 'How much does Meeticulous cost?',

@@ -100,7 +100,7 @@ const TOOLS = [
 // Teal impact band.
 const METRICS = [
   { v: '24/7', l: 'Bookings, day or night' },
-  { v: '100%', l: 'Kept on Sloth Active' },
+  { v: '100%', l: 'Kept on Pro' },
   { v: '₹0', l: 'To get started' },
   { v: 'GST', l: 'Invoices, automatic' },
 ];
@@ -135,7 +135,7 @@ const TRUST_STRIP = [
   { icon: Lock, value: 'Razorpay', label: 'Every payment signature-verified on our servers' },
   { icon: Landmark, value: 'Hosted in India', label: 'Your clinic data runs on servers in Mumbai' },
   { icon: ShieldCheck, value: 'DPDP 2023', label: 'Operated under India’s data protection law' },
-  { icon: BadgePercent, value: '0% commission', label: 'On Sloth Active — keep every rupee' },
+  { icon: BadgePercent, value: '0% commission', label: 'On Pro — keep every rupee' },
 ];
 
 const FAQ = [
@@ -146,7 +146,7 @@ const FAQ = [
   { q: 'Can I collect the consultation fee online?', a: 'Yes. Collect the fee upfront through Razorpay — UPI, cards or netbanking — before the appointment. A GST invoice is generated automatically for every paid booking.' },
   { q: 'Is our clinic and client information kept private?', a: 'Meeticulous stores appointment and contact details for booking only — it is not a medical-records system. Your production data is hosted in India (Mumbai) and the platform operates under India’s DPDP Act 2023.' },
   { q: 'Do we need any technical setup?', a: 'No. Setup takes minutes and needs no technical skills. You add your services and clinic hours, and your booking page is ready to share — pet parents need nothing more than the link.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Sloth plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Sloth Active removes that commission entirely and adds WhatsApp automation and growth tools.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
 ];
 
 const FOOTER_COLS = [
@@ -672,7 +672,7 @@ export default function Veterinarians() {
           </Reveal>
 
           <div className="mx-auto mt-10 grid max-w-3xl gap-5 sm:grid-cols-2 sm:gap-6">
-            {/* Sloth (free) */}
+            {/* Starter (free) */}
             <Reveal>
               <div className="flex h-full flex-col rounded-[20px] border border-black/[0.08] bg-white p-7">
                 <div className="font-heading text-lg font-bold">{FREE_PLAN.name}</div>
@@ -695,7 +695,7 @@ export default function Veterinarians() {
               </div>
             </Reveal>
 
-            {/* Sloth Active (premium) — recommended */}
+            {/* Pro (premium) — recommended */}
             <Reveal delay={0.08}>
               <div className="relative flex h-full flex-col overflow-hidden rounded-[20px] border-2 bg-white p-7 shadow-[0_24px_60px_-30px_rgba(21,127,118,0.28)]" style={{ borderColor: 'var(--ca-primary)' }}>
                 <span aria-hidden className="absolute inset-x-0 top-0 h-1" style={{ background: 'linear-gradient(90deg, var(--ca-primary), var(--ca-accent))' }} />
@@ -723,7 +723,7 @@ export default function Veterinarians() {
                     </li>
                   ))}
                 </ul>
-                <CtaButton to={START} className="mt-7 w-full">Go Sloth Active</CtaButton>
+                <CtaButton to={START} className="mt-7 w-full">Go Pro</CtaButton>
               </div>
             </Reveal>
           </div>
@@ -811,7 +811,7 @@ export default function Veterinarians() {
             </Link>
           </Reveal>
           <Reveal as="p" delay={0.18} className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[13px] font-medium text-white/70">
-            {['No credit card', 'Free forever', '0% on Sloth Active'].map((t) => (
+            {['No credit card', 'Free forever', '0% on Pro'].map((t) => (
               <span key={t} className="flex items-center gap-1.5"><Check size={14} style={{ color: '#FDBA74' }} /> {t}</span>
             ))}
           </Reveal>

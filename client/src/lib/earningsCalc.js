@@ -91,8 +91,8 @@ export function platformFeesPerYear(earning, sessionsPerMonth) {
   return [
     { key: 'topmate-own', name: 'Topmate, your own link', fee: topmate(TOPMATE_FEES.ownLink), note: '10% of sales + 18% GST on the fee' },
     { key: 'topmate-marketplace', name: 'Topmate, marketplace sale', fee: topmate(TOPMATE_FEES.marketplace), note: '20% of sales + 18% GST on the fee' },
-    { key: 'free', name: 'Meeticulous · Sloth', fee: freeCommissionPerYear(earning, sessionsPerMonth), note: '5% per paid booking' },
-    { key: 'premium', name: 'Meeticulous · Sloth Active', fee: ANNUAL_FEE.premium, note: 'Flat yearly plan, 0% commission' },
+    { key: 'free', name: 'Meeticulous · Starter', fee: freeCommissionPerYear(earning, sessionsPerMonth), note: '5% per paid booking' },
+    { key: 'premium', name: 'Meeticulous · Pro', fee: ANNUAL_FEE.premium, note: 'Flat yearly plan, 0% commission' },
   ];
 }
 
@@ -105,7 +105,7 @@ export function deltaVsFree(results, winnerKey) {
   return round2(winner.netAnnual - free.netAnnual);
 }
 
-// Sessions/month at which Sloth Active (0% commission, flat annual fee) starts
+// Sessions/month at which Pro (0% commission, flat annual fee) starts
 // beating free for a given per-session price: it wins once a year of saved 5%
 // commission clears the fee → ceil(fee / (rate·price·12)). Powers the honest
 // "stay free until ~N/mo" message when free is the winner.
