@@ -55,14 +55,14 @@ const TEMPLATES = [
     email_reason: 'You are receiving this email because a verification request was made for your account.',
     html_content:
       eyebrow(t.text, 'Welcome') + h('Confirm your email, {{first_name}}') +
-      lead('Tap the button below to verify your email address and activate your Book A Sloth account.') +
+      lead('Tap the button below to verify your email address and activate your Meeticulous account.') +
       note('This link expires in 24 hours.'),
     cta_label: 'Verify email', cta_url: '{{dashboard_url}}',
   }; })(),
 
   (() => { const t = themeForCategory('Security Check'); return {
     event_key: 'PASSWORD_RESET', audience: 'all', category: 'Authentication',
-    name: 'Password Reset', subject: 'Your Book A Sloth password reset code',
+    name: 'Password Reset', subject: 'Your Meeticulous password reset code',
     preview_text: 'Use {{otp}} to reset your password — expires in 10 minutes.',
     email_category: 'Security Check',
     email_reason: 'You are receiving this email because a password reset was requested for your account.',
@@ -79,7 +79,7 @@ const TEMPLATES = [
   (() => { const t = themeForCategory('Security Alert'); return {
     event_key: 'SECURITY_PASSWORD_CHANGED', audience: 'all', category: 'Security',
     name: 'Password Changed', subject: 'Your password was changed',
-    preview_text: 'Your Book A Sloth password was just updated.',
+    preview_text: 'Your Meeticulous password was just updated.',
     email_category: 'Security Alert',
     email_reason: 'You are receiving this email because your account password was recently changed.',
     html_content:
@@ -98,7 +98,7 @@ const TEMPLATES = [
     email_reason: 'You are receiving this email because a new sign-in was detected on your account.',
     html_content:
       eyebrow(t.text, 'Security') + h('New sign-in detected') +
-      lead('We noticed a new sign-in to your Book A Sloth account.') +
+      lead('We noticed a new sign-in to your Meeticulous account.') +
       C.infoCard(t, [['Time', '{{login_time}}'], ['IP address', '{{ip_address}}'], ['Device', '{{device_name}}']]) +
       note("If this was you, no action is needed. Otherwise reset your password and contact {{support_email}}."),
     cta_label: '', cta_url: '',
@@ -111,13 +111,13 @@ const TEMPLATES = [
     name: 'Booking Confirmed — Customer', subject: 'Your booking with {{vendor_name}} is confirmed',
     preview_text: 'Your appointment with {{vendor_name}} is confirmed.',
     email_category: 'Booking Confirmed',
-    email_reason: 'You are receiving this email because you made a booking on Book A Sloth.',
+    email_reason: 'You are receiving this email because you made a booking on Meeticulous.',
     html_content:
       eyebrow(t.text, 'Booking confirmed') + h("You're all set, {{first_name}}") +
       lead('Your appointment is confirmed. Here are the details:') +
       C.heroDate(t, { day: '{{booking_day}}', mon: '{{booking_month}}', year: '{{booking_year}}', title: '{{service_name}}', time: '{{booking_time}}', sub: 'with {{vendor_name}}' }) +
       C.statusTags([{ label: 'Confirmed', tone: 'confirmed' }]) +
-      lead('Your GST tax invoice is ready — <a href="{{invoice_url}}" style="color:#FE5100;font-weight:600;text-decoration:none">view or download the PDF</a>. It is also under My Bookings in your dashboard.'),
+      lead('Your GST tax invoice is ready — <a href="{{invoice_url}}" style="color:#960D32;font-weight:600;text-decoration:none">view or download the PDF</a>. It is also under My Bookings in your dashboard.'),
     // CTA → the public manage/cancel page (works without a login, unlike the
     // dashboard) so anonymous OTP guests can self-serve (#516).
     cta_label: 'View or manage booking', cta_url: '{{manage_url}}',
@@ -128,7 +128,7 @@ const TEMPLATES = [
     name: 'Booking Confirmed — Vendor', subject: 'New booking: {{service_name}}',
     preview_text: 'You have a new booking from {{user_name}}.',
     email_category: 'New Booking',
-    email_reason: 'You are receiving this email because you received a new booking on Book A Sloth.',
+    email_reason: 'You are receiving this email because you received a new booking on Meeticulous.',
     html_content:
       eyebrow(t.text, 'New booking') + h('A new client booked you') +
       lead("You've received a new booking. Please review your schedule.") +
@@ -228,7 +228,7 @@ const TEMPLATES = [
     name: 'Rebook Nudge — Customer', subject: 'Ready for another session with {{vendor_name}}?',
     preview_text: 'Book {{vendor_name}} again in a tap.',
     email_category: 'Session Complete',
-    email_reason: 'You are receiving this because you recently booked a session on Book A Sloth.',
+    email_reason: 'You are receiving this because you recently booked a session on Meeticulous.',
     html_content:
       eyebrow(t.text, 'Come back soon') + h('Hi {{first_name}},') +
       lead('Hope your session with {{vendor_name}} went well. Ready for another?') +
@@ -273,17 +273,17 @@ const TEMPLATES = [
     name: 'Profile Completion Reminder', subject: 'Your page is one step from live',
     preview_text: 'Your page is claimed — finish it and start taking bookings.',
     email_category: 'Onboarding',
-    email_reason: 'You are receiving this email because your Book A Sloth profile is incomplete.',
+    email_reason: 'You are receiving this email because your Meeticulous profile is incomplete.',
     html_content:
       eyebrow(t.text, 'Almost there') + h('One step from live, {{first_name}}') +
-      lead("You claimed <strong>bookasloth.com/{{slug}}</strong> but haven't published yet. It's saved and waiting — the last step takes two minutes.") +
+      lead("You claimed <strong>meeticulous.com/{{slug}}</strong> but haven't published yet. It's saved and waiting — the last step takes two minutes.") +
       C.banner(t, { title: 'Finish & publish', sub: 'Then your link works and people can book you.' }),
     cta_label: 'Publish my page', cta_url: '{{dashboard_url}}',
   }; })(),
 
   (() => { const t = themeForCategory('Account Update'); return {
     event_key: 'PROFILE_VERIFIED', audience: 'all', category: 'Profile',
-    name: 'Verification Approved', subject: "You're verified on Book A Sloth",
+    name: 'Verification Approved', subject: "You're verified on Meeticulous",
     preview_text: 'Your verification was approved.',
     email_category: 'Account Update',
     email_reason: 'You are receiving this email because your account verification status was updated.',
@@ -342,7 +342,7 @@ const TEMPLATES = [
     name: 'Badge Unlocked', subject: 'You earned the {{badge_name}} badge',
     preview_text: 'A new badge just landed on your profile.',
     email_category: 'Achievement Unlocked',
-    email_reason: 'You are receiving this email because you earned a new achievement on Book A Sloth.',
+    email_reason: 'You are receiving this email because you earned a new achievement on Meeticulous.',
     html_content:
       eyebrow(t.text, 'Achievement unlocked') + h('You earned a badge, {{first_name}}!') +
       C.celebration(t, { title: '{{badge_name}}' }) +
@@ -353,11 +353,11 @@ const TEMPLATES = [
   // ── Milestones ───────────────────────────────────────────────────────────────
 
   (() => { const t = themeForCategory('Achievement Unlocked'); return {
-    event_key: 'MILESTONE_FIRST_BOOKING', audience: 'all', category: 'Badge', sender_key: 'durga',
-    name: 'Milestone — First Booking', subject: 'Your first booking on Book A Sloth!',
+    event_key: 'MILESTONE_FIRST_BOOKING', audience: 'all', category: 'Badge', sender_key: 'shubham',
+    name: 'Milestone — First Booking', subject: 'Your first booking on Meeticulous!',
     preview_text: 'You just landed your first booking.',
     email_category: 'Achievement Unlocked',
-    email_reason: 'You are receiving this email because you reached a booking milestone on Book A Sloth.',
+    email_reason: 'You are receiving this email because you reached a booking milestone on Meeticulous.',
     html_content:
       eyebrow(t.text, 'Milestone') + h('Your first booking, {{first_name}}!') +
       C.celebration(t, { title: 'First booking' }) +
@@ -370,7 +370,7 @@ const TEMPLATES = [
     name: 'Milestone — 10 Bookings', subject: '10 bookings and counting!',
     preview_text: "You've reached {{milestone_value}} bookings.",
     email_category: 'Achievement Unlocked',
-    email_reason: 'You are receiving this email because you reached a booking milestone on Book A Sloth.',
+    email_reason: 'You are receiving this email because you reached a booking milestone on Meeticulous.',
     html_content:
       eyebrow(t.text, 'Milestone') + h('10 bookings, {{first_name}}!') +
       C.celebration(t, { title: '{{milestone_value}} bookings' }) +
@@ -383,7 +383,7 @@ const TEMPLATES = [
     name: 'Milestone — 50 Bookings', subject: "50 bookings — you're on a roll",
     preview_text: "You've reached {{milestone_value}} bookings.",
     email_category: 'Achievement Unlocked',
-    email_reason: 'You are receiving this email because you reached a booking milestone on Book A Sloth.',
+    email_reason: 'You are receiving this email because you reached a booking milestone on Meeticulous.',
     html_content:
       eyebrow(t.text, 'Milestone') + h('50 bookings!') +
       C.celebration(t, { title: '{{milestone_value}} bookings' }) +
@@ -396,7 +396,7 @@ const TEMPLATES = [
     name: 'Milestone — 100 Bookings', subject: '100 bookings — incredible!',
     preview_text: "You've reached {{milestone_value}} bookings.",
     email_category: 'Achievement Unlocked',
-    email_reason: 'You are receiving this email because you reached a booking milestone on Book A Sloth.',
+    email_reason: 'You are receiving this email because you reached a booking milestone on Meeticulous.',
     html_content:
       eyebrow(t.text, 'Milestone') + h('100 bookings, {{first_name}}!') +
       C.celebration(t, { title: '{{milestone_value}} bookings' }) +
@@ -411,24 +411,24 @@ const TEMPLATES = [
     name: 'Premium Activated', subject: "You're officially on {{plan_name}} 🎉",
     preview_text: "{{plan_name}} is live — your booking link's ready to get you paid.",
     email_category: 'Payment Receipt',
-    email_reason: 'You are receiving this email because you made a purchase on Book A Sloth.',
+    email_reason: 'You are receiving this email because you made a purchase on Meeticulous.',
     html_content:
-      eyebrow(t.text, "You're in") + h("You're officially a {{plan_name}} Sloth, {{first_name}} 🦥") +
+      eyebrow(t.text, "You're in") + h("You're officially on {{plan_name}}, {{first_name}} 🎉") +
       C.celebration(t, { title: '{{plan_name}} — unlocked' }) +
       lead("Some people spend weeks 'thinking about it.' You just did the thing. Your {{plan_name}} plan is live, and everything you need to get booked and get paid is switched on.") +
       C.banner(t, { title: "Here's what just went live for you", sub: 'Your booking link is ready to share · payments land straight in your account · every guest gets automatic reminders and confirmations' }) +
       lead("Next move: get your page in front of people. One link in your bio beats a hundred “DM me to book” replies — and it works while you sleep.") +
       C.infoCard(t, [['Plan', '{{plan_name}}'], ['Amount paid', '{{amount_charged}}'], ['Renews', '{{expiry_date}}']]) +
-      note('GST tax invoice: <a href="{{invoice_url}}" style="color:#FE5100;font-weight:600;text-decoration:none">view or download the PDF</a> — also filed under Transactions in your dashboard.'),
+      note('GST tax invoice: <a href="{{invoice_url}}" style="color:#960D32;font-weight:600;text-decoration:none">view or download the PDF</a> — also filed under Transactions in your dashboard.'),
     cta_label: 'Set up your page', cta_url: '{{dashboard_url}}',
   }; })(),
 
   (() => { const t = themeForCategory('Renewal'); return {
-    event_key: 'SUBSCRIPTION_EXPIRING', audience: 'all', category: 'Subscription', sender_key: 'sujata',
+    event_key: 'SUBSCRIPTION_EXPIRING', audience: 'all', category: 'Subscription', sender_key: 'shubham',
     name: 'Premium Expiring', subject: 'Your {{plan_name}} plan renews in {{days_left}} days',
     preview_text: "Keep your 0% commission — don't slip back to 5%.",
     email_category: 'Renewal',
-    email_reason: 'You are receiving this email because your Book A Sloth subscription is due to renew soon.',
+    email_reason: 'You are receiving this email because your Meeticulous subscription is due to renew soon.',
     html_content:
       C.heroBand(t, { kick: 'Renews in {{days_left}} days', h2: 'Keep your 0%.', sub: "Don't slip back to 5% commission, {{first_name}}." }) +
       lead('Your <strong>{{plan_name}}</strong> plan renews on <strong>{{expiry_date}}</strong>. Stay on it and every booking stays commission-free.') +
@@ -441,12 +441,12 @@ const TEMPLATES = [
     name: 'Premium Renewed', subject: 'Your {{plan_name}} plan is renewed',
     preview_text: 'Your subscription was renewed successfully.',
     email_category: 'Payment Receipt',
-    email_reason: 'You are receiving this email because your Book A Sloth subscription was renewed.',
+    email_reason: 'You are receiving this email because your Meeticulous subscription was renewed.',
     html_content:
       eyebrow(t.text, 'Subscription') + h("You're renewed, {{first_name}}") +
       lead('Your {{plan_name}} plan has been renewed.') +
       C.infoCard(t, [['Plan', '{{plan_name}}'], ['Amount paid', '{{amount_charged}}'], ['Renews', '{{expiry_date}}']]) +
-      lead('Your GST tax invoice is ready — <a href="{{invoice_url}}" style="color:#FE5100;font-weight:600;text-decoration:none">view or download the PDF</a>. It is also under Transactions in your dashboard.'),
+      lead('Your GST tax invoice is ready — <a href="{{invoice_url}}" style="color:#960D32;font-weight:600;text-decoration:none">view or download the PDF</a>. It is also under Transactions in your dashboard.'),
     cta_label: 'View dashboard', cta_url: '{{dashboard_url}}',
   }; })(),
 
@@ -455,7 +455,7 @@ const TEMPLATES = [
     name: 'Subscription Payment Failed', subject: "Your renewal didn't go through",
     preview_text: 'Update your payment to keep your plan and 0% commission.',
     email_category: 'Renewal',
-    email_reason: 'You are receiving this email because an automatic renewal charge for your Book A Sloth subscription could not be completed.',
+    email_reason: 'You are receiving this email because an automatic renewal charge for your Meeticulous subscription could not be completed.',
     html_content:
       eyebrow(t.text, 'Action needed') + h("Your renewal didn't go through, {{first_name}}") +
       lead("We tried to charge your {{plan_name}} renewal a few times and it didn't go through. Your plan is paused — update your payment method to keep it (and your 0% commission).") +
@@ -468,7 +468,7 @@ const TEMPLATES = [
     name: 'Referral Reward Released', subject: 'You earned a referral reward 🎉',
     preview_text: 'Your referral reward is now in your withdrawable balance.',
     email_category: 'Payment Receipt',
-    email_reason: 'You are receiving this email because a referral reward was credited to your Book A Sloth account.',
+    email_reason: 'You are receiving this email because a referral reward was credited to your Meeticulous account.',
     html_content:
       eyebrow(t.text, 'Referral') + h('Nice — you earned {{reward_amount}}, {{first_name}}') +
       lead('Someone you referred stuck around, so your referral reward has been released to your withdrawable balance.') +
@@ -482,26 +482,26 @@ const TEMPLATES = [
   (() => { const t = themeForCategory('Community Update'); return {
     event_key: 'BIRTHDAY', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
     name: 'Birthday', subject: 'Happy birthday, {{first_name}}!',
-    preview_text: 'A little birthday note from Book A Sloth.',
+    preview_text: 'A little birthday note from Meeticulous.',
     email_category: 'Community Update',
-    email_reason: 'You are receiving this email because you are a valued member of the Book A Sloth community.',
+    email_reason: 'You are receiving this email because you are a valued member of the Meeticulous community.',
     html_content:
       eyebrow(t.text, 'Celebration') + h('Happy birthday, {{first_name}}!') +
       C.celebration(t, { title: 'Happy birthday!' }) +
-      lead('Everyone at Book A Sloth wishes you a wonderful day. Thanks for being part of our community.'),
+      lead('Everyone at Meeticulous wishes you a wonderful day. Thanks for being part of our community.'),
     cta_label: '', cta_url: '',
   }; })(),
 
   (() => { const t = themeForCategory('Community Update'); return {
     event_key: 'ACCOUNT_ANNIVERSARY', audience: 'all', category: 'Celebrations',
-    name: 'Account Anniversary', subject: "It's your Book A Sloth anniversary!",
+    name: 'Account Anniversary', subject: "It's your Meeticulous anniversary!",
     preview_text: 'Celebrating another year with you.',
     email_category: 'Community Update',
-    email_reason: 'You are receiving this email because you are a valued member of the Book A Sloth community.',
+    email_reason: 'You are receiving this email because you are a valued member of the Meeticulous community.',
     html_content:
       eyebrow(t.text, 'Celebration') + h('Happy anniversary, {{first_name}}!') +
       C.celebration(t, { title: 'Another year together' }) +
-      lead("It's been another year with Book A Sloth. Thank you for trusting us with your bookings."),
+      lead("It's been another year with Meeticulous. Thank you for trusting us with your bookings."),
     cta_label: 'View dashboard', cta_url: '{{dashboard_url}}',
   }; })(),
 
@@ -509,14 +509,14 @@ const TEMPLATES = [
 
   (() => { const t = themeForCategory('Welcome'); return {
     event_key: 'VENDOR_WELCOME', audience: 'all', category: 'Profile', sender_key: 'tithi',
-    name: 'Vendor Welcome', subject: 'Welcome to Book A Sloth, {{first_name}}',
+    name: 'Vendor Welcome', subject: 'Welcome to Meeticulous, {{first_name}}',
     preview_text: "Let's get your booking page ready.",
     email_category: 'Welcome',
-    email_reason: 'You are receiving this email because you recently created a Book A Sloth host account.',
+    email_reason: 'You are receiving this email because you recently created a Meeticulous host account.',
     html_content:
       eyebrow(t.text, 'Welcome') + h('Welcome aboard, {{first_name}}!') +
       C.celebration(t, { title: "You're in" }) +
-      lead('Your Book A Sloth account is ready. Set up your services and availability to start taking bookings.'),
+      lead('Your Meeticulous account is ready. Set up your services and availability to start taking bookings.'),
     cta_label: 'Set up my page', cta_url: '{{dashboard_url}}',
   }; })(),
 
@@ -526,13 +526,13 @@ const TEMPLATES = [
 
   (() => { const t = themeForCategory('Welcome'); return {
     event_key: 'GUEST_WELCOME', audience: 'all', category: 'Profile', sender_key: 'shubham',
-    name: 'Guest Welcome', subject: 'Welcome to Book A Sloth, {{first_name}}',
+    name: 'Guest Welcome', subject: 'Welcome to Meeticulous, {{first_name}}',
     preview_text: 'A quick hello from the founder — and three ways to get started.',
     email_category: 'Welcome',
-    email_reason: 'You are receiving this email because you recently created a Book A Sloth account.',
+    email_reason: 'You are receiving this email because you recently created a Meeticulous account.',
     html_content:
-      eyebrow(t.text, 'Welcome') + h('Welcome to Book A Sloth, {{first_name}}') +
-      lead("I'm Shubham, founder of Book A Sloth. I started it because booking time with the people you actually want to meet should feel effortless — no back-and-forth, no friction.") +
+      eyebrow(t.text, 'Welcome') + h('Welcome to Meeticulous, {{first_name}}') +
+      lead("I'm Shubham, founder of Meeticulous. I started it because booking time with the people you actually want to meet should feel effortless — no back-and-forth, no friction.") +
       lead('Three ways to get started:') +
       `<ol style="margin:0 0 18px;padding-left:20px;font-size:16px;line-height:1.7;color:#374151;font-family:'Poppins','Plus Jakarta Sans',Arial,sans-serif;">` +
         `<li><a href="{{website_url}}/explore" style="color:{{brand_color}};font-weight:600;text-decoration:none;">Explore creators</a> and find someone worth your time</li>` +
@@ -540,7 +540,7 @@ const TEMPLATES = [
         `<li>Manage everything from your bookings dashboard</li>` +
       `</ol>` +
       lead('<strong>P.S.</strong> What brought you here? Just hit reply and let me know — I read every email.') +
-      lead('— Shubham<br/>Founder, Book A Sloth'),
+      lead('— Shubham<br/>Founder, Meeticulous'),
     cta_label: 'Explore creators', cta_url: '{{website_url}}/explore',
   }; })(),
 
@@ -551,7 +551,7 @@ const TEMPLATES = [
     name: 'First Earning — Set Up Payouts', subject: "You've earned {{earned_amount}} 🎉",
     preview_text: "It's yours — here's how to get it into your account.",
     email_category: 'Payment Receipt',
-    email_reason: 'You are receiving this email because you have earnings waiting on Book A Sloth.',
+    email_reason: 'You are receiving this email because you have earnings waiting on Meeticulous.',
     html_content:
       eyebrow(t.text, 'Earnings') + h("You've earned {{earned_amount}}, {{first_name}}") +
       lead('Real money, from a real booking. One quick step to receive it — add your PAN and bank details so we can pay you out. About 2 minutes, one time only.') +
@@ -566,7 +566,7 @@ const TEMPLATES = [
     name: 'Payout — On The Way', subject: '{{payout_amount}} is on its way to your bank 💸',
     preview_text: 'Your earnings have been released and are settling to your account.',
     email_category: 'Payment Receipt',
-    email_reason: 'You are receiving this email because you received a payout on Book A Sloth.',
+    email_reason: 'You are receiving this email because you received a payout on Meeticulous.',
     html_content:
       eyebrow(t.text, 'Payout') + h('{{payout_amount}} is on its way, {{first_name}}') +
       lead('Nice work. Your earnings from a completed booking have been released and are settling to your bank account now. Depending on your bank it usually lands within 1–2 working days (a little longer over holidays).') +
@@ -580,7 +580,7 @@ const TEMPLATES = [
     name: 'Payout — Verification Needed', subject: 'One more step to unlock your payouts',
     preview_text: 'Your payment partner needs a little more to verify your account.',
     email_category: 'Account Update',
-    email_reason: 'You are receiving this email because your payout account needs verification on Book A Sloth.',
+    email_reason: 'You are receiving this email because your payout account needs verification on Meeticulous.',
     html_content:
       eyebrow(t.text, 'Action needed') + h('Almost there, {{first_name}}') +
       lead('You have money waiting, but our payments partner needs a little more information to finish verifying your payout account before we can release it. It only takes a few minutes.') +
@@ -593,7 +593,7 @@ const TEMPLATES = [
     name: 'Payout — Could Not Complete', subject: "We couldn't send your payout — quick fix inside",
     preview_text: "Your payout didn't go through. A quick check of your bank details fixes it.",
     email_category: 'Account Update',
-    email_reason: 'You are receiving this email because a payout to you could not be completed on Book A Sloth.',
+    email_reason: 'You are receiving this email because a payout to you could not be completed on Meeticulous.',
     html_content:
       eyebrow(t.text, 'Action needed') + h("Your payout didn't go through, {{first_name}}") +
       lead("We tried to send {{payout_amount}} to your bank but it didn't complete — usually a bank or account detail needs updating. Your money is safe and waiting; confirm your payout details and we'll retry automatically.") +
@@ -603,11 +603,11 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Payment Receipt'); return {
-    event_key: 'EARNING_REVERSED', audience: 'all', category: 'Payments', sender_key: 'durga',
+    event_key: 'EARNING_REVERSED', audience: 'all', category: 'Payments', sender_key: 'shubham',
     name: 'Earning Reversed', subject: 'A booking was refunded — earning reversed',
     preview_text: 'A booking you earned on was refunded, so that payout was reversed.',
     email_category: 'Payment Receipt',
-    email_reason: 'You are receiving this email because a booking you earned on was refunded on Book A Sloth.',
+    email_reason: 'You are receiving this email because a booking you earned on was refunded on Meeticulous.',
     html_content:
       eyebrow(t.text, 'Update') + h('A booking was refunded, {{first_name}}') +
       lead("One of your bookings was cancelled or refunded, so the {{payout_amount}} earning for it has been reversed and won't be paid out. Everything else you've earned is unaffected.") +
@@ -621,7 +621,7 @@ const TEMPLATES = [
     name: 'Payout — Bank Holiday Delay', subject: 'Heads up — {{holiday}} may add a day to your payout',
     preview_text: 'Banks are closed for the holiday, so your payout lands a working day later.',
     email_category: 'Payment Receipt',
-    email_reason: 'You are receiving this email because you have a payout settling around a bank holiday on Book A Sloth.',
+    email_reason: 'You are receiving this email because you have a payout settling around a bank holiday on Meeticulous.',
     html_content:
       eyebrow(t.text, 'Heads up') + h('Your payout may take an extra day, {{first_name}}') +
       lead("Banks are closed for {{holiday}} on {{holiday_date}}, so payouts don't settle that day. Your recent payout of {{payout_amount}} should reach your account by {{expected_date}} instead — nothing's wrong, it's just the bank holiday.") +
@@ -637,10 +637,10 @@ const TEMPLATES = [
     name: 'Feedback Status Update', subject: 'Update on your feedback: {{feedback_subject}}',
     preview_text: 'Your feedback is now {{status_label}}.',
     email_category: 'Product Feedback',
-    email_reason: 'You are receiving this email because you submitted feedback on Book A Sloth.',
+    email_reason: 'You are receiving this email because you submitted feedback on Meeticulous.',
     html_content:
       eyebrow(t.text, 'Your feedback') + h('Your feedback is now {{status_label}}') +
-      lead('Thanks for helping us improve Book A Sloth. Here is where your feedback stands:') +
+      lead('Thanks for helping us improve Meeticulous. Here is where your feedback stands:') +
       C.banner(t, { title: '{{status_label}}', sub: '{{feedback_subject}}' }) +
       lead('{{admin_response}}') +
       note('Have more to share? Open Feedback in your dashboard any time.'),
@@ -648,13 +648,13 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Invitation'); return {
-    event_key: 'GUEST_TO_HOST_INVITE', audience: 'all', category: 'Marketing', sender_key: 'sujata',
+    event_key: 'GUEST_TO_HOST_INVITE', audience: 'all', category: 'Marketing', sender_key: 'shubham',
     name: 'Guest → Host Invite', subject: "You've booked {{completed_count}} times — ever thought about the other side?",
-    preview_text: 'The people you booked earn on Book A Sloth. Your account is ready.',
+    preview_text: 'The people you booked earn on Meeticulous. Your account is ready.',
     email_category: 'Invitation',
-    email_reason: 'You are receiving this email because you are a Book A Sloth guest.',
+    email_reason: 'You are receiving this email because you are a Meeticulous guest.',
     html_content:
-      C.heroBand(t, { kick: "You've booked {{completed_count}} times, {{first_name}}", h2: 'Ever thought about the other side?', sub: 'The people you booked earn on Book A Sloth. So could you.' }) +
+      C.heroBand(t, { kick: "You've booked {{completed_count}} times, {{first_name}}", h2: 'Ever thought about the other side?', sub: 'The people you booked earn on Meeticulous. So could you.' }) +
       lead('You know how smooth booking is from this side. The hosts you paid use the exact same platform to <strong>get paid</strong> — a link they share, bookings that just show up.') +
       C.benefitGrid([{ icon: 'link.png', label: 'Share your link' }, { icon: 'calendar.png', label: 'Take bookings' }, { icon: 'wallet.png', label: 'Get paid' }]) +
       lead('Your account is <strong>already set up</strong> to host. No new signup — start free, no card.'),
@@ -668,7 +668,7 @@ const TEMPLATES = [
     name: 'Abandoned Booking — Recover', subject: 'Your slot with {{vendor_name}} is still held',
     preview_text: '{{service_name}} — finish in one tap.',
     email_category: 'Held Slot',
-    email_reason: 'You are receiving this email because you started a booking on Book A Sloth.',
+    email_reason: 'You are receiving this email because you started a booking on Meeticulous.',
     html_content:
       eyebrow(t.text, 'Almost done') + h('Finish your booking, {{first_name}}') +
       lead("You were almost done booking <strong>{{service_name}}</strong> with {{vendor_name}}. We're holding your slot — but not for long, it'll open back up to others soon.") +
@@ -680,11 +680,11 @@ const TEMPLATES = [
   // ── Marketing ─────────────────────────────────────────────────────────────────
 
   (() => { const t = themeForCategory('Upgrade'); return {
-    event_key: 'UPGRADE_COMMISSION_NUDGE', audience: 'all', category: 'Marketing', sender_key: 'sujata',
+    event_key: 'UPGRADE_COMMISSION_NUDGE', audience: 'all', category: 'Marketing', sender_key: 'shubham',
     name: 'Upgrade — Keep Every Rupee', subject: "You've given up {{commission_total}} in commission",
     preview_text: 'On Host+ that number is zero.',
     email_category: 'Upgrade',
-    email_reason: 'You are receiving this because you are a Book A Sloth host on the free plan.',
+    email_reason: 'You are receiving this because you are a Meeticulous host on the free plan.',
     html_content:
       C.heroBand(t, { kick: 'Commission given up', big: '{{commission_total}}', sub: "On Host+ that's ₹0, {{first_name}}." }) +
       lead("You've earned well — but the free plan takes <strong>5%</strong> of every booking. You've handed back <strong>{{commission_total}}</strong> across {{bookings_count}} bookings.") +
@@ -696,17 +696,17 @@ const TEMPLATES = [
   // ── Newsletter ────────────────────────────────────────────────────────────────
 
   (() => { const t = themeForCategory('Newsletter'); return {
-    event_key: 'NEWSLETTER_WELCOME', audience: 'all', category: 'Newsletter', sender_key: 'sujata',
-    name: 'Newsletter Welcome', subject: 'Welcome to the Collective 🦥',
-    preview_text: 'Calm tips, templates and the occasional truth bomb — straight to your inbox.',
+    event_key: 'NEWSLETTER_WELCOME', audience: 'all', category: 'Newsletter', sender_key: 'shubham',
+    name: 'Newsletter Welcome', subject: 'Welcome to the Collective 🎉',
+    preview_text: 'Practical tips, templates and honest lessons — straight to your inbox.',
     email_category: 'Newsletter',
-    email_reason: 'You are receiving this email because you subscribed to the Book A Sloth newsletter.',
+    email_reason: 'You are receiving this email because you subscribed to the Meeticulous newsletter.',
     html_content:
       eyebrow(t.text, 'The Collective') + h("You're in.") +
-      lead('Thanks for joining the calm side. Every week we send tips, templates and honest lessons on getting booked and paid — without the chaos.') +
-      lead('No noise, no spam. Just the good stuff, quietly.') +
+      lead('Thanks for subscribing. Every week we send tips, templates and honest lessons on getting booked and paid.') +
+      lead('No noise, no spam — just the good stuff.') +
       note('Not for you? You can unsubscribe any time using the link below.'),
-    cta_label: 'Explore Book A Sloth', cta_url: '{{website_url}}',
+    cta_label: 'Explore Meeticulous', cta_url: '{{website_url}}',
   }; })(),
 
 ];

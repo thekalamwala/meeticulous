@@ -17,7 +17,7 @@ const { securityLog } = require('./logger');
 const wrap = (body) => `
   <div style="max-width:520px;margin:0 auto;padding:26px;border-radius:24px;background:#ffffff;font-family:'Plus Jakarta Sans','Poppins',sans-serif;color:#111827;box-shadow:0 24px 60px rgba(15,23,42,0.08);">
     ${body}
-    <div style="margin-top:24px;padding:18px;border-radius:18px;background:#f8fafc;color:#6b7280;font-size:14px;">Book A Sloth — calm booking for busy hosts.</div>
+    <div style="margin-top:24px;padding:18px;border-radius:18px;background:#f8fafc;color:#6b7280;font-size:14px;">Meeticulous — booking made easy.</div>
   </div>`;
 
 const esc = (s) =>
@@ -28,7 +28,7 @@ const esc = (s) =>
 // Build the deep link to the purchase page's download step. productId (not slug)
 // keeps the link stable regardless of slug routing/renames.
 const buildDownloadLink = (username, productId, token) => {
-  const base = (process.env.CLIENT_URL || 'https://bookasloth.com').replace(/\/+$/, '');
+  const base = (process.env.CLIENT_URL || 'https://meeticulous.com').replace(/\/+$/, '');
   return `${base}/${encodeURIComponent(username || '')}/product/${encodeURIComponent(productId)}?dl=${encodeURIComponent(token)}`;
 };
 
@@ -46,8 +46,8 @@ const sendProductDownloadEmail = async ({
     <p style="margin:0 0 6px;font-size:15px;color:#374151;"><strong>Product:</strong> ${title}</p>
     ${hostName ? `<p style="margin:0 0 16px;font-size:15px;color:#374151;"><strong>Seller:</strong> ${esc(hostName)}</p>` : ''}
     <p style="margin:0 0 18px;font-size:15px;color:#374151;">${isFree ? 'Thanks for grabbing this freebie.' : 'Thank you for your purchase.'} Tap below to download. For your security the link is valid for <strong>24 hours</strong> and up to <strong>3 downloads</strong>.</p>
-    <a href="${link}" style="display:inline-block;background:#FE5100;color:#ffffff;text-decoration:none;font-weight:600;padding:13px 24px;border-radius:10px;font-size:15px;">Download now</a>
-    <p style="margin:18px 0 0;font-size:13px;color:#6b7280;line-height:1.5;">If the button doesn't work, paste this link into your browser:<br><span style="word-break:break-all;color:#FE5100;">${link}</span></p>
+    <a href="${link}" style="display:inline-block;background:#960D32;color:#ffffff;text-decoration:none;font-weight:600;padding:13px 24px;border-radius:10px;font-size:15px;">Download now</a>
+    <p style="margin:18px 0 0;font-size:13px;color:#6b7280;line-height:1.5;">If the button doesn't work, paste this link into your browser:<br><span style="word-break:break-all;color:#960D32;">${link}</span></p>
   `);
   try {
     await sendEmail({ to, subject: `Your download: ${productTitle || 'Digital product'}`, html });

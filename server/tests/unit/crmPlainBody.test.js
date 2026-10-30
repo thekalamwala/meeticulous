@@ -5,7 +5,7 @@ jest.mock('../../services/crm/sendGate', () => ({ canSend: jest.fn() }));
 jest.mock('../../services/email/communicationEngine', () => ({ loadSettings: jest.fn() }));
 const { plainBody } = require('../../services/crm/emailService');
 
-const BUTTON = 'display:inline-block;background:#FE5100';
+const BUTTON = 'display:inline-block;background:#960D32';
 
 test('a bare link becomes the orange CTA button', () => {
   expect(plainBody('<a href="https://x.in">Go</a>')).toContain(BUTTON);
@@ -20,5 +20,5 @@ test('class="sig" stays a dark inline link', () => {
 test('class="inline" is an orange underlined text link, not a button', () => {
   const out = plainBody('<a class="inline" href="https://x.in">bookasloth.com</a>');
   expect(out).not.toContain(BUTTON);
-  expect(out).toContain('<a href="https://x.in" style="color:#FE5100;text-decoration:underline;">bookasloth.com</a>');
+  expect(out).toContain('<a href="https://x.in" style="color:#960D32;text-decoration:underline;">bookasloth.com</a>');
 });

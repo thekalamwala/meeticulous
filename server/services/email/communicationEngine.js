@@ -66,9 +66,9 @@ async function loadSettings() {
   const now = Date.now();
   if (_settingsCache.value && now - _settingsCache.at < CACHE_TTL_MS) return _settingsCache.value;
   let value = {
-    provider: 'smtp', from_name: 'Book A Sloth', from_email: '',
-    support_email: 'bolt@bookasloth.in', website_url: 'https://bookasloth.com',
-    logo_url: '', brand_color: '#FE5100', footer_html: '',
+    provider: 'smtp', from_name: 'Meeticulous', from_email: '',
+    support_email: 'hello@mail.meeticulous.in', website_url: 'https://meeticulous.com',
+    logo_url: '', brand_color: '#960D32', footer_html: '',
   };
   try {
     const { data } = await supabaseAdmin.from('email_settings').select('*').eq('id', 1).maybeSingle();

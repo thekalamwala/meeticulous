@@ -5,6 +5,19 @@
 // must change without a deploy.
 const env = process.env;
 
+// ===========================================================================
+// TODO(pre-deploy) — GST / legal entity migration to Rajmudra Media LLP.
+// The brand is now Meeticulous, but the INVOICING ENTITY below is still the
+// old registered entity (Timewheel Internet Private Limited). Every field in
+// this block — legalName, gstin, pan, cin, stateCode/stateName, address,
+// email, phone, website, shortName, brandSubline — AND the BAS-* invoice
+// SERIES prefixes are the registered legal facts stamped on GST tax invoices.
+// DO NOT ship Meeticulous invoices until the founder supplies Rajmudra Media
+// LLP's registered facts (GSTIN, PAN, LLPIN/CIN, state, address, contact).
+// These are env-overridable, so prod can also be flipped via SELLER_* env vars
+// at deploy without a code change. Blocker tracked in docs/current-work.md.
+// Only brandName + logoUrl (product display, not legal) are changed now.
+// ===========================================================================
 const seller = {
   legalName: env.SELLER_LEGAL_NAME || 'Timewheel Internet Private Limited',
   gstin:     env.SELLER_GSTIN      || '21AAMCT8270C1ZF',
@@ -19,9 +32,11 @@ const seller = {
   // Short display name for the invoice header (legalName stays the full registered
   // name used in the From block + legalese).
   shortName: env.SELLER_SHORT_NAME || 'Timewheel Internet Pvt. Ltd.',
-  brandName: 'Book A Sloth',
+  brandName: 'Meeticulous',
+  // TODO(pre-deploy): subline names the legal entity — flip with the GST migration.
   brandSubline: 'by Timewheel Internet (P) Ltd',
-  logoUrl:   'https://company-assets.bookasloth.in/images/email/footer-logo.png',
+  // Hosted on the site (client/public/images/email → meeticulous.com via Vercel).
+  logoUrl:   'https://meeticulous.com/images/email/meeticulous-wordmark-full-color.png',
 };
 
 // SAC code — CA-confirmed 998314 (IT design & development services). Used for
