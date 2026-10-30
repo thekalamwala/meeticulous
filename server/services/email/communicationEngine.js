@@ -30,6 +30,13 @@ const MARKETING_EVENTS = new Set([
   'PROFILE_COMPLETION_REMINDER',
   'REBOOK_NUDGE_CUSTOMER',
   'UPGRADE_COMMISSION_NUDGE',
+  // Newsletter, cross-sell, cart-recovery and onboarding nudges are promotional/
+  // bulk — they keep the unsubscribe footer (legal opt-out) and may file under
+  // Updates. Everything NOT listed here is transactional → clean footer → Primary.
+  'NEWSLETTER_WELCOME',
+  'GUEST_TO_HOST_INVITE',
+  'BOOKING_ABANDONED_CUSTOMER',
+  'HOST_ADD_SERVICE_NUDGE', 'HOST_SHARE_LINK_NUDGE', 'HOST_FIRST_BOOKING_NUDGE', 'HOST_PAYOUT_WAITING_NUDGE',
 ]);
 
 const isMarketing = (event) => MARKETING_EVENTS.has(event) || String(event).startsWith('CAMPAIGN:');
