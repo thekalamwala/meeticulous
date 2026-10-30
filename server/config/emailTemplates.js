@@ -698,13 +698,13 @@ const TEMPLATES = [
   (() => { const t = themeForCategory('Newsletter'); return {
     event_key: 'NEWSLETTER_WELCOME', audience: 'all', category: 'Newsletter', sender_key: 'shubham',
     name: 'Newsletter Welcome', subject: 'Welcome to the Collective 🎉',
-    preview_text: 'Calm tips, templates and the occasional truth bomb — straight to your inbox.',
+    preview_text: 'Practical tips, templates and honest lessons — straight to your inbox.',
     email_category: 'Newsletter',
     email_reason: 'You are receiving this email because you subscribed to the Meeticulous newsletter.',
     html_content:
       eyebrow(t.text, 'The Collective') + h("You're in.") +
-      lead('Thanks for joining the calm side. Every week we send tips, templates and honest lessons on getting booked and paid — without the chaos.') +
-      lead('No noise, no spam. Just the good stuff, quietly.') +
+      lead('Thanks for subscribing. Every week we send tips, templates and honest lessons on getting booked and paid.') +
+      lead('No noise, no spam — just the good stuff.') +
       note('Not for you? You can unsubscribe any time using the link below.'),
     cta_label: 'Explore Meeticulous', cta_url: '{{website_url}}',
   }; })(),
