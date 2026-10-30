@@ -86,14 +86,6 @@ const WHOFOR_MENU = [
     { label: 'Life Coaches',       href: '/for/life-coaches',         desc: 'Book paid coaching sessions',    icon: Target, tone: 'emerald' },
     { label: 'Veterinarians',      href: '/for/veterinarians',        desc: 'Book pet visits online',         icon: PawPrint, tone: 'teal' },
   ] },
-  { header: 'Venues & Experiences', items: [
-    { label: 'Sports Arena',    href: '/for/sports-turf',             desc: 'Book courts & turf by the hour', icon: Trophy, tone: 'lime' },
-    { label: 'Driving School',  href: '/explore?q=driving-school',    desc: 'Fill every lesson slot',         icon: Car, tone: 'amber' },           // → /for/driving-schools
-    { label: 'Conference Halls',href: '/explore?q=conference-hall',   desc: 'Book your hall online',          icon: Presentation, tone: 'indigo' }, // → /for/conference-halls
-    { label: 'Coworking Space', href: '/explore?q=coworking',         desc: 'Book desks & meeting rooms',     icon: Building2, tone: 'sky' },        // → /for/coworking-spaces
-    { label: 'Photo Studio',    href: '/explore?q=photo-studio',      desc: 'Book studio time & shoots',      icon: Camera, tone: 'fuchsia' },       // → /for/photo-studios
-    { label: 'Coming More',     href: '/solutions',                   desc: 'More industries soon',           icon: Plus, tone: 'violet' },
-  ] },
   { header: 'Creators', items: [
     { label: 'Coaches',          href: '/explore?q=coach',            desc: 'Book paid coaching sessions',    icon: Target, tone: 'emerald' },      // → /for/coaches
     { label: 'Content Creators', href: '/explore?q=content-creator',  desc: 'Monetise 1:1s & collabs',        icon: Video, tone: 'pink' },          // → /for/content-creators
@@ -101,6 +93,14 @@ const WHOFOR_MENU = [
     { label: 'Musicians',        href: '/explore?q=musician',         desc: 'Book lessons & gigs',            icon: Music, tone: 'violet' },        // → /for/musicians
     { label: 'Language Teachers',href: '/explore?q=language-teacher', desc: 'Fill your lesson calendar',      icon: Languages, tone: 'cyan' },      // → /for/language-teachers
     { label: 'Freelancers',      href: '/for/freelancers',            desc: 'Book paid discovery calls',      icon: Laptop, tone: 'teal' },
+  ] },
+  { header: 'Venues & Experiences', items: [
+    { label: 'Sports Arena',    href: '/for/sports-turf',             desc: 'Book courts & turf by the hour', icon: Trophy, tone: 'lime' },
+    { label: 'Driving School',  href: '/explore?q=driving-school',    desc: 'Fill every lesson slot',         icon: Car, tone: 'amber' },           // → /for/driving-schools
+    { label: 'Conference Halls',href: '/explore?q=conference-hall',   desc: 'Book your hall online',          icon: Presentation, tone: 'indigo' }, // → /for/conference-halls
+    { label: 'Coworking Space', href: '/explore?q=coworking',         desc: 'Book desks & meeting rooms',     icon: Building2, tone: 'sky' },        // → /for/coworking-spaces
+    { label: 'Photo Studio',    href: '/explore?q=photo-studio',      desc: 'Book studio time & shoots',      icon: Camera, tone: 'fuchsia' },       // → /for/photo-studios
+    { label: 'Coming More',     href: '/solutions',                   desc: 'More industries soon',           icon: Plus, tone: 'violet' },
   ] },
 ];
 
