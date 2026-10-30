@@ -60,7 +60,7 @@ const redactForRequest = async (booking, req, now = Date.now()) => {
 const emailHtml = (body) => `
   <div style="max-width:520px;margin:0 auto;padding:26px;border-radius:24px;background:#ffffff;font-family:'Plus Jakarta Sans','Poppins',sans-serif;color:#111827;box-shadow:0 24px 60px rgba(15,23,42,0.08);">
     ${body}
-    <div style="margin-top:24px;padding:18px;border-radius:18px;background:#f8fafc;color:#6b7280;font-size:14px;">Book A Sloth — calm booking for busy hosts.</div>
+    <div style="margin-top:24px;padding:18px;border-radius:18px;background:#f8fafc;color:#6b7280;font-size:14px;">Meeticulous — booking made easy.</div>
   </div>`;
 
 const row = (label, value) =>
@@ -498,7 +498,7 @@ const createBooking = async (req, res) => {
           decryptToken(host.google_refresh_token),
           {
             title: `${service.title} — ${guest_name || "Guest"}`,
-            description: `Booked via Book A Sloth\n${notes || ""}`,
+            description: `Booked via Meeticulous\n${notes || ""}`,
             startTime: startTime.toISOString(),
             endTime: endTime.toISOString(),
             timezone: hostTimezone,

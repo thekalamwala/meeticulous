@@ -87,16 +87,16 @@ function recapEmailHtml(host, s, base) {
     `<td style="padding:6px 0;text-align:right;font-weight:700;color:#111">${value}</td></tr>`;
   return (
     `<p>Hi ${name},</p>` +
-    `<p>Here's your week on Book A Sloth:</p>` +
+    `<p>Here's your week on Meeticulous:</p>` +
     `<table style="width:100%;max-width:360px;border-collapse:collapse;font-size:15px">` +
     line('Earned this week', inr(s.earnings)) +
     line('Bookings taken', s.bookings) +
     line('Coming up (next 7 days)', s.upcoming) +
     `</table>` +
     `<p style="margin-top:16px"><a href="${base}/dashboard" style="display:inline-block;` +
-    `padding:10px 18px;background:#FE5100;color:#fff;text-decoration:none;border-radius:10px;` +
+    `padding:10px 18px;background:#960D32;color:#fff;text-decoration:none;border-radius:10px;` +
     `font-weight:600">Open your dashboard</a></p>` +
-    `<p style="color:#888;font-size:12px">You get this because you have activity on Book A Sloth.</p>`
+    `<p style="color:#888;font-size:12px">You get this because you have activity on Meeticulous.</p>`
   );
 }
 
@@ -119,7 +119,7 @@ async function sendWeeklyRecaps({ force = false } = {}) {
     .eq('is_host', true)
     .eq('onboarding_completed', true);
 
-  const base = process.env.CLIENT_URL || 'https://bookasloth.com';
+  const base = process.env.CLIENT_URL || 'https://meeticulous.com';
   let sent = 0;
   let skipped = 0;
   for (const host of hosts || []) {
@@ -129,7 +129,7 @@ async function sendWeeklyRecaps({ force = false } = {}) {
       if (!worthSending(s)) { skipped++; continue; } // never nag a dead host
       await sendEmail({
         to: host.email,
-        subject: `Your week on Book A Sloth — ${inr(s.earnings)} earned`,
+        subject: `Your week on Meeticulous — ${inr(s.earnings)} earned`,
         html: recapEmailHtml(host, s, base),
       });
       inAppNotify({

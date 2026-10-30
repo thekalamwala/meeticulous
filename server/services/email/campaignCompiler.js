@@ -24,7 +24,7 @@ const D = {
   border:'#edf0f2',
   font:  "'Poppins','Plus Jakarta Sans',Arial,sans-serif",
 };
-const DEFAULT_BRAND = '#FE5100';
+const DEFAULT_BRAND = '#960D32';
 
 /** Escape text for HTML body/attribute insertion. Leaves {{tokens}} intact. */
 const esc = (s) => String(s == null ? '' : s)
@@ -203,7 +203,7 @@ if (require.main === module) {
       { type: 'divider' },
       { type: 'spacer', size: 24 },
       { type: 'section', background: '#eef', blocks: [{ type: 'text', text: 'nested' }] },
-      { type: 'metric', value: '3,200 hosts', label: 'now on Book A Sloth' },
+      { type: 'metric', value: '3,200 hosts', label: 'now on Meeticulous' },
       { type: 'callout', text: 'One insight <b>here</b>', background: '#fff4ed' },
       { type: 'checklist', items: ['One', 'Two', '', 'Three'], columns: 2 },
       { type: 'beforeAfter', before: 'chasing payments', after: 'auto-paid' },

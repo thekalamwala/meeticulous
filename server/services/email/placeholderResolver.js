@@ -26,14 +26,14 @@ const htmlEscape = (s) =>
 
 /** Build the global placeholder context from email settings + a user object. */
 function buildGlobals(settings = {}, user = {}) {
-  const websiteUrl = settings.website_url || 'https://bookasloth.com';
+  const websiteUrl = settings.website_url || 'https://meeticulous.com';
   const name = user.name || user.user_name || '';
   const parts = String(name).trim().split(/\s+/).filter(Boolean);
   return {
     current_year: String(new Date().getFullYear()),
-    support_email: settings.support_email || 'bolt@bookasloth.in',
+    support_email: settings.support_email || 'hello@meeticulous.com',
     website_url: websiteUrl,
-    brand_color: settings.brand_color || '#FE5100',
+    brand_color: settings.brand_color || '#960D32',
     dashboard_url: `${websiteUrl}/dashboard`,
     profile_url: user.username ? `${websiteUrl}/${user.username}` : websiteUrl,
     user_name: name,

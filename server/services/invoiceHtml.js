@@ -49,8 +49,8 @@ function buildTaxInvoiceHTML(inv = {}) {
   const isSub = type === 'subscription';
   const isCom = type === 'commission';
   const isRsf = type === 'reschedule';
-  const itemDesc = isSub ? 'Book A Sloth — subscription plan'
-    : isCom ? 'Book A Sloth — platform commission'
+  const itemDesc = isSub ? 'Meeticulous — subscription plan'
+    : isCom ? 'Meeticulous — platform commission'
     : isRsf ? 'Booking reschedule fee'
     : 'Booking convenience / platform fee';
 
@@ -87,8 +87,8 @@ function buildTaxInvoiceHTML(inv = {}) {
     : isCom
       ? 'Commission is GST-inclusive: the amount already contains the GST shown. The host claims the GST as input credit.'
       : isRsf
-        ? 'The reschedule fee is GST-inclusive: the amount charged already contains the GST shown. Covers rescheduling your booking on Book A Sloth.'
-        : "Covers Book A Sloth's platform fee only. The booked service is supplied by the host, who invoices separately if GST-registered.";
+        ? 'The reschedule fee is GST-inclusive: the amount charged already contains the GST shown. Covers rescheduling your booking on Meeticulous.'
+        : "Covers Meeticulous's platform fee only. The booked service is supplied by the host, who invoices separately if GST-registered.";
 
   const buyerTaxLine = inv.buyer_gstin
     ? `<div class="gst">GSTIN <b>${esc(inv.buyer_gstin)}</b></div>`
@@ -226,7 +226,7 @@ function buildTaxInvoiceHTML(inv = {}) {
  </div>
  </div>
  <div class="foot">
-   <div class="bas"><img src="${esc(s.logoUrl || seller.logoUrl)}" alt="${esc(s.brandName || 'Book A Sloth')}"><span class="bs">${esc(s.brandSubline)}</span></div>
+   <div class="bas"><img src="${esc(s.logoUrl || seller.logoUrl)}" alt="${esc(s.brandName || 'Meeticulous')}"><span class="bs">${esc(s.brandSubline)}</span></div>
    <div class="legalese"><b>${esc(s.legalName)}</b> is solely responsible for this supply and for issuing this invoice. Issued under the provisions of the CGST Act, 2017.</div>
    <div class="quad"><span class="r"></span><span class="g"></span><span class="b"></span><span class="y"></span></div>
  </div>
