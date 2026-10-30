@@ -6,6 +6,10 @@
 3. **Work → commit → PR.** Do the change, commit, `gh pr create` (any type: feat/fix/docs/chore).
 4. **Stop at the PR.** Hand over the PR link. **Do NOT merge.** The user merges — merge auto-deploys to prod and the user controls timing/limit.
 
+> See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full branch / PR / merge / deploy workflow.
+> CI runs server + client unit tests on every PR. Merging `main` ships prod: the client via the
+> `deploy-vercel.yml` Action (a remote build that re-runs tests → build → prerender), the server via Render.
+
 ## Quick Start (every session)
 Read these 4 files before touching any code:
 1. `docs/ai-context.md` — project snapshot + active rules
