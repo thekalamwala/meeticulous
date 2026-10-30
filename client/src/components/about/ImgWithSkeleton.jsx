@@ -24,7 +24,7 @@ export default function ImgWithSkeleton({
       .filter(Boolean)
       .slice(0, 2)
       .join("")
-      .toUpperCase() || "BAS";
+      .toUpperCase() || "M";
 
   return (
     <div className={`relative h-full w-full overflow-hidden ${className}`}>

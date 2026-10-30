@@ -5,24 +5,38 @@ import { ogCard } from "../config/ogImages";
 import { ORG_SAME_AS, SITE_URL } from "../utils/seo";
 import useAboutMotion from "../components/about/useAboutMotion";
 import HeroV2 from "../components/about/HeroV2";
-import LogoMarquee from "../components/about/LogoMarquee";
-import JoinSplit from "../components/about/JoinSplit";
-import StackingCards from "../components/about/StackingCards";
-import TestimonialsFlip from "../components/about/TestimonialsFlip";
+import { ProblemSection, MissionBand, AudienceSection, DifferenceSection, FinalCta } from "../components/about/StorySections";
+import HostQuotes from "../components/about/HostQuotes";
 import FaqAccordion from "../components/about/FaqAccordion";
 import TeamMasonry from "../components/about/TeamMasonry";
-// Appended (kept) original sections:
 import BeliefGrid from "../components/about/BeliefGrid";
-// Removed: ProblemSplit, BehindProduct, StatStrip, BuildFlow, FinalCta, TrustGrid
+import { faq } from "../components/about/aboutContent";
+// Removed (2026-10 About rework): LogoMarquee (third-party brand logos implied
+// endorsement), StackingCards (duplicated the homepage feature tour), JoinSplit
+// (Careers stays reachable via "More from Meeticulous").
 
+// Organization + FAQPage. The description must stay true for every plan — the
+// free plan takes a commission, so "0% commission" is not an org-level claim.
 const JSON_LD = {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Meeticulous",
-  url: "https://meeticulous.com",
-  description:
-    "Meeticulous helps creators publish services, get booked, and get paid — with 0% commission.",
-  sameAs: ORG_SAME_AS,
+  "@graph": [
+    {
+      "@type": "Organization",
+      name: "Meeticulous",
+      url: "https://meeticulous.com",
+      description:
+        "Meeticulous is an online booking platform for creators, pros & bros: publish your services, take bookings, collect payment upfront and send reminders automatically.",
+      sameAs: ORG_SAME_AS,
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: faq.items.map(({ q, a }) => ({
+        "@type": "Question",
+        name: q,
+        acceptedAnswer: { "@type": "Answer", text: a },
+      })),
+    },
+  ],
 };
 
 // Company / "more from Meeticulous" links. These moved off the footer's old
@@ -70,21 +84,24 @@ export default function About() {
   return (
     <main className="bg-[var(--bg)]">
       <Seo
-        title="About Meeticulous — the calm way to get booked"
-        description="Why we exist, who we are, and how we help creators get booked and paid without commission."
+        title="About Meeticulous — Online Booking Platform for Creators, Pros & Bros"
+        description="Why Meeticulous exists: appointment booking software that lets creators and professionals sell their time — bookings, upfront payments and reminders in one place."
         image={ogCard('about')}
         canonical={`${SITE_URL}/about`}
         jsonLd={JSON_LD}
       />
-      {/* Sequence: Hero → Brands → How it works → Team → Belief → Join → Testimonials → FAQ */}
+      {/* Sequence: Hero → Why we built it → Mission → Who it's for → How we're
+          different → Beliefs → Team → Host quotes → FAQ → Final CTA → More links */}
       <HeroV2 />
-      <LogoMarquee />
-      <StackingCards />
-      <TeamMasonry />
+      <ProblemSection />
+      <MissionBand />
+      <AudienceSection />
+      <DifferenceSection />
       <BeliefGrid />
-      <JoinSplit />
-      <TestimonialsFlip />
+      <TeamMasonry />
+      <HostQuotes />
       <FaqAccordion />
+      <FinalCta />
       <ExploreMore />
     </main>
   );

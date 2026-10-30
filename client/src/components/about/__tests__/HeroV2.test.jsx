@@ -7,17 +7,18 @@ import { hero } from "../aboutContent";
 const setup = () => render(<HeroV2 />, { wrapper: MemoryRouter });
 
 describe("HeroV2", () => {
-  it("renders primary and ghost CTAs", () => {
+  it("renders primary and secondary CTAs", () => {
     setup();
     expect(screen.getByRole("link", { name: hero.ctaPrimary })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: hero.ctaGhost })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: hero.ctaGhost }).getAttribute("href")).toBe(hero.ctaGhostHref);
   });
 
-  it("exposes the full headline to assistive tech (sr-only typed word)", () => {
+  it("renders a static H1 that states the value proposition", () => {
     setup();
-    // NOTE: this suite does not load @testing-library/jest-dom (VM dynamic-import
-    // incompatibility — see src/tests/setup.js), so toHaveTextContent is unavailable.
-    // Assert the same intent (non-empty sr-only headline) via native textContent.
-    expect(screen.getByTestId("hero-typeword").textContent).toMatch(/.+/);
+    // NOTE: this suite does not load @testing-library/jest-dom's text matchers
+    // (see src/tests/setup.js) — assert via native textContent.
+    const h1 = screen.getByRole("heading", { level: 1 });
+    expect(h1.textContent).toContain(hero.title);
+    expect(h1.textContent).toContain(hero.titleAccent);
   });
 });
