@@ -380,7 +380,7 @@ const MegaItem = ({ item, tone, compact }) => {
     <Link
       to={item.href}
       role="menuitem"
-      className="group/mi relative flex items-start gap-3 overflow-hidden rounded-xl px-3 py-2.5 hover:no-underline"
+      className="group/mi relative flex items-center gap-2.5 overflow-hidden rounded-lg px-2.5 py-1.5 hover:no-underline"
     >
       {/* Two-layer curtain: back layer trails, front leads — both slide in from
           the left on hover and slide back out on leave (transition reverses). */}
@@ -388,14 +388,14 @@ const MegaItem = ({ item, tone, compact }) => {
       <span aria-hidden="true" className={`pointer-events-none absolute inset-0 -translate-x-full transition-transform duration-300 ease-out group-hover/mi:translate-x-0 motion-reduce:transition-none ${c.c1}`} />
 
       {/* Content sits above the curtain */}
-      <span className={`relative z-10 mt-0.5 flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl transition-colors duration-200 ${c.tile} ${c.solid}`}>
-        <Icon size={19} strokeWidth={2} />
+      <span className={`relative z-10 flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg transition-colors duration-200 ${c.tile} ${c.solid}`}>
+        <Icon size={16} strokeWidth={2} />
         {NAV_PNG[item.label] && (
-          <img src={NAV_PNG[item.label]} alt="" width="24" height="24" loading="lazy" onError={(e) => e.currentTarget.remove()} className="absolute inset-0 m-auto h-6 w-6 object-contain" />
+          <img src={NAV_PNG[item.label]} alt="" width="20" height="20" loading="lazy" onError={(e) => e.currentTarget.remove()} className="absolute inset-0 m-auto h-5 w-5 object-contain" />
         )}
       </span>
       <span className="relative z-10 min-w-0">
-        <span className="block text-[14px] font-bold text-ink">{item.label}</span>
+        <span className="block text-[13px] font-semibold text-ink">{item.label}</span>
         {item.desc && !compact && <span className="block text-[12px] leading-snug text-gray-400">{item.desc}</span>}
       </span>
     </Link>
@@ -410,13 +410,13 @@ const MENU_COL = 'w-60'; // 15rem — every column, promo tile and compare cell
 // Renders grouped columns + an optional promo tile on the right. `colClass` lets
 // a menu widen its columns (Product uses fewer, wider columns).
 const MegaMenu = ({ sections, promo, colClass = MENU_COL, compact }) => (
-  <div className="flex gap-5 p-5">
+  <div className="flex gap-4 p-4">
     {sections.map((col, ci) => {
       // Tone index continues across columns so hues keep rotating (never resets).
       const offset = sections.slice(0, ci).reduce((n, s) => n + s.items.length, 0);
       return (
         <div key={col.header} className={colClass}>
-          <p className="mb-2 px-3 text-[11px] font-normal uppercase tracking-wider text-gray-400">{col.header}</p>
+          <p className="mb-1 px-2.5 text-[10.5px] font-semibold uppercase tracking-wider text-gray-400">{col.header}</p>
           <div className="space-y-0.5">
             {col.items.map((it, i) => <MegaItem key={it.href} item={it} compact={compact} tone={it.tone || TILE_TONES[(offset + i) % TILE_TONES.length]} />)}
           </div>
@@ -426,9 +426,9 @@ const MegaMenu = ({ sections, promo, colClass = MENU_COL, compact }) => (
     {promo && (
       <Link
         to={promo.href}
-        className={`flex ${MENU_COL} flex-col justify-end rounded-xl bg-gradient-to-br from-primary to-primary-cta p-5 text-white transition-transform hover:scale-[1.01] hover:no-underline`}
+        className={`flex ${MENU_COL} flex-col justify-end rounded-xl bg-gradient-to-br from-primary to-primary-cta p-4 text-white transition-transform hover:scale-[1.01] hover:no-underline`}
       >
-        <p className="text-[15px] font-bold leading-tight">{promo.title}</p>
+        <p className="text-[14px] font-bold leading-tight">{promo.title}</p>
         <p className="mt-1.5 text-[12.5px] leading-snug text-white/85">{promo.desc}</p>
         <span className="mt-4 inline-flex items-center gap-1 text-[13px] font-semibold">
           {promo.cta} <ChevronRight size={15} />
@@ -524,7 +524,7 @@ export const PublicCenterNav = () => {
   return (
     <>
       <NavDropdown id="product" label="Product" {...menuProps}>
-        <MegaMenu sections={PRODUCT_MENU} colClass="w-[23rem]" promo={{ href: '/explore', title: 'Get discovered on Explore', desc: 'Publish your booking page to the marketplace and let new clients find and book you.', cta: 'Explore the marketplace' }} />
+        <MegaMenu sections={PRODUCT_MENU} colClass="w-56" compact promo={{ href: '/explore', title: 'Get discovered on Explore', desc: 'Publish your booking page to the marketplace and let new clients find and book you.', cta: 'Explore the marketplace' }} />
       </NavDropdown>
 
       <NavDropdown id="whofor" label="Who it's for" wide {...menuProps}>
@@ -532,7 +532,7 @@ export const PublicCenterNav = () => {
       </NavDropdown>
 
       <NavDropdown id="resources" label="Resources" {...menuProps}>
-        <MegaMenu sections={RESOURCES_MENU} />
+        <MegaMenu sections={RESOURCES_MENU} compact />
       </NavDropdown>
 
       <NavDropdown id="compare" label="Compare" {...menuProps}>
