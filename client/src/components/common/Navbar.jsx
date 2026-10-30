@@ -386,7 +386,7 @@ const TILE_MAP = {
   orange:  { tile: 'bg-orange-100 text-orange-500',   solid: 'group-hover/mi:bg-orange-500 group-hover/mi:text-white',     txt: 'group-hover/mi:text-orange-600',  c1: 'bg-orange-50',  c2: 'bg-orange-100' },
   violet:  { tile: 'bg-violet-100 text-violet-500',   solid: 'group-hover/mi:bg-violet-500 group-hover/mi:text-white',     txt: 'group-hover/mi:text-violet-600',  c1: 'bg-violet-50',  c2: 'bg-violet-100' },
   amber:   { tile: 'bg-amber-100 text-amber-500',     solid: 'group-hover/mi:bg-amber-500 group-hover/mi:text-white',      txt: 'group-hover/mi:text-amber-600',   c1: 'bg-amber-50',   c2: 'bg-amber-100' },
-  teal:    { tile: 'bg-teal-100 text-teal-500',       solid: 'group-hover/mi:bg-teal-500 group-hover/mi:text-white',       txt: 'group-hover/mi:text-teal-600',    c1: 'bg-teal-50',    c2: 'bg-teal-100' },
+  teal:    { tile: 'bg-teal/10 text-teal-ink',        solid: 'group-hover/mi:bg-teal group-hover/mi:text-white',           txt: 'group-hover/mi:text-teal-ink',    c1: 'bg-teal/5',     c2: 'bg-teal/10' },
   rose:    { tile: 'bg-rose-100 text-rose-500',       solid: 'group-hover/mi:bg-rose-500 group-hover/mi:text-white',       txt: 'group-hover/mi:text-rose-600',    c1: 'bg-rose-50',    c2: 'bg-rose-100' },
   sky:     { tile: 'bg-sky-100 text-sky-500',         solid: 'group-hover/mi:bg-sky-500 group-hover/mi:text-white',        txt: 'group-hover/mi:text-sky-600',     c1: 'bg-sky-50',     c2: 'bg-sky-100' },
   indigo:  { tile: 'bg-indigo-100 text-indigo-500',   solid: 'group-hover/mi:bg-indigo-500 group-hover/mi:text-white',     txt: 'group-hover/mi:text-indigo-600',  c1: 'bg-indigo-50',  c2: 'bg-indigo-100' },
