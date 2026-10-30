@@ -285,6 +285,16 @@ const TagPill = ({ text }) =>
 const NavDropdown = ({ id, label, icon: Icon, align = 'left', wide = false, activeKey, onOpen, onClose, children }) => {
   const open = activeKey === id;
   const centered = align === 'center';
+  const btnRef = useRef(null);
+  const panelRef = useRef(null);
+  const [caretX, setCaretX] = useState(null);
+  // Position the connector triangle under the active trigger (recomputed on open).
+  useEffect(() => {
+    if (!open || !btnRef.current || !panelRef.current) return;
+    const b = btnRef.current.getBoundingClientRect();
+    const p = panelRef.current.getBoundingClientRect();
+    setCaretX(b.left + b.width / 2 - p.left);
+  }, [open]);
   // Panel contents render ALWAYS (not lazy-mounted on first open) so every nav link
   // is in the server-rendered / prerendered HTML — crawlers and Google's first pass
   // follow them even though the panel is visually hidden (opacity-0) until opened.
@@ -300,6 +310,7 @@ const NavDropdown = ({ id, label, icon: Icon, align = 'left', wide = false, acti
       onMouseLeave={() => onClose(false)}
     >
       <button
+        ref={btnRef}
         type="button"
         onClick={() => (open ? onClose(true) : onOpen(id))}
         aria-expanded={open}
@@ -315,18 +326,24 @@ const NavDropdown = ({ id, label, icon: Icon, align = 'left', wide = false, acti
         <ChevronDown size={13} strokeWidth={2.5} className={`text-gray-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
       <div
+        ref={panelRef}
         role="menu"
         aria-hidden={!open}
         onClick={() => onClose(true)}
         className={[
-          'origin-top-left rounded-[16px] border border-gray-200 bg-white shadow-[0_18px_50px_-12px_rgba(30,11,77,0.22)] z-50 overflow-hidden',
-          // Clay-style: one left-aligned card anchored to the container's left
-          // edge, with a small gap below the bar; auto-sizes to its content.
-          'fixed top-[4.1rem] left-[max(1rem,calc((100vw-72rem)/2))] w-max max-w-[calc(100vw-2rem)]',
+          'origin-top-left rounded-[16px] border border-gray-200 bg-white shadow-[0_18px_50px_-12px_rgba(30,11,77,0.22)] z-50',
+          // Left-aligned card below the strip, with a small gap so the connector
+          // triangle can point up into the bar under the active item.
+          'fixed top-[4.15rem] left-[max(1rem,calc((100vw-72rem)/2))] w-max max-w-[calc(100vw-2rem)]',
           'transition duration-200 ease-out motion-reduce:transition-none',
           open ? 'translate-y-0 scale-100 opacity-100' : '-translate-y-1 scale-[0.98] opacity-0 pointer-events-none',
         ].join(' ')}
       >
+        {/* Triangle connector: points up from the menu into the strip, slotting
+            under the active item so bar + menu read as joined. */}
+        {caretX != null && (
+          <span aria-hidden="true" className="pointer-events-none absolute z-10" style={{ left: caretX, top: -12, transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '15px solid transparent', borderRight: '15px solid transparent', borderBottom: '13px solid #fff', filter: 'drop-shadow(0 -1.5px 1.5px rgba(0,0,0,0.06))' }} />
+        )}
         {children}
       </div>
     </div>
