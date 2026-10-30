@@ -26,7 +26,7 @@ const FAMILIES = {
   pink:   { accent: '#d4537e', tint: '#fbeaf0', text: '#993556' },
 };
 
-const ICON_BASE = 'https://company-assets.bookasloth.in/images/email/icons';
+const ICON_BASE = 'https://meeticulous.com/images/email/icons';
 
 // email_category → family + glyph (see redesign spec registry table).
 const CATEGORY_MAP = {
