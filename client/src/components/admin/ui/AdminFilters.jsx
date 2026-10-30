@@ -57,7 +57,7 @@ function ValuePanel({ dim, current, onChange, onClose }) {
         {opts.map((o) => (
           <button key={o.value} type="button" onClick={() => pick(o.value)}
             className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg adm-hoverable text-left text-[13px] adm-t1">
-            <span className={`flex-none w-4 ${has(o.value) ? 'text-[#0079C1]' : 'opacity-0'}`}><Ic d={IC.check} size={14} /></span>
+            <span className={`flex-none w-4 ${has(o.value) ? 'text-[#960D32]' : 'opacity-0'}`}><Ic d={IC.check} size={14} /></span>
             <span className="truncate">{o.label}</span>
           </button>
         ))}
@@ -174,7 +174,7 @@ export default function AdminFilters({ config = [], value = {}, onChange, classN
       {inactive.length > 0 && (
         <div className="relative">
           <button type="button" onClick={() => setAdding((a) => !a)}
-            className="flex items-center gap-1 rounded-lg border border-dashed border-[var(--adm-border)] px-2 py-1 text-[12px] adm-t3 hover:text-[#0079C1] hover:border-[#0079C1]">
+            className="flex items-center gap-1 rounded-lg border border-dashed border-[var(--adm-border)] px-2 py-1 text-[12px] adm-t3 hover:text-[#960D32] hover:border-[#960D32]">
             <Ic d={IC.plus} size={12} /> {shown.length ? 'Filter' : 'Add filter'}
           </button>
           {adding && <AddMenu dims={inactive} onAdd={addDim} onClose={() => setAdding(false)} />}
@@ -182,7 +182,7 @@ export default function AdminFilters({ config = [], value = {}, onChange, classN
       )}
 
       {showClear && shown.length > 0 && (
-        <button type="button" onClick={clearAll} className="text-[12px] adm-t3 hover:text-[#0079C1] px-1.5 py-1">Clear</button>
+        <button type="button" onClick={clearAll} className="text-[12px] adm-t3 hover:text-[#960D32] px-1.5 py-1">Clear</button>
       )}
     </div>
   );

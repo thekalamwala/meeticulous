@@ -17,7 +17,7 @@
 const FAMILIES = {
   slate:  { accent: '#41506a', tint: '#eef1f5', text: '#41506a' },
   green:  { accent: '#1aa463', tint: '#e8fff1', text: '#056800' },
-  brand:  { accent: '#FE5100', tint: '#fff1ea', text: '#b8410f' },
+  brand:  { accent: '#960D32', tint: '#fde9ee', text: '#7A0A28' },
   violet: { accent: '#6b4bb3', tint: '#f1ecfb', text: '#534ab7' },
   red:    { accent: '#d8453f', tint: '#fdeceb', text: '#a32d2d' },
   teal:   { accent: '#0f8a74', tint: '#e2f5f1', text: '#0f6e56' },

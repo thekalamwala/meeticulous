@@ -183,7 +183,7 @@ function NewSequenceModal({ audience, onClose, onCreated }) {
                   )}
                 </div>
               ))}
-              <button type="button" className="text-[12px] text-[#0079C1]" onClick={addStep}>+ Add step</button>
+              <button type="button" className="text-[12px] text-[#960D32]" onClick={addStep}>+ Add step</button>
               <p className="text-[10px] adm-t3">WhatsApp steps send with no variables (template-only). Personalise with email steps.</p>
             </div>
 

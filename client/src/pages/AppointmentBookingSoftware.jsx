@@ -35,7 +35,7 @@ const ASSET_BASE = "/images/abs";
 
 const STATS = [
   { slug: "commission", icon: Percent, value: "0%", label: "Commission on the paid plan" },
-  { slug: "per-day", icon: IndianRupee, value: "₹9.86", label: "A day for Sloth Active" },
+  { slug: "per-day", icon: IndianRupee, value: "₹3.23", label: "A day for Pro" },
   { slug: "reminders", icon: Bell, value: "24×7", label: "Automatic WhatsApp & email reminders" },
   { slug: "setup", icon: Zap, value: "5 min", label: "To set up your booking page" },
 ];
@@ -69,7 +69,7 @@ const FAQ = [
   },
   {
     q: "Is there free appointment booking software?",
-    a: "Yes. Meeticulous's Sloth plan is free forever with unlimited services and bookings — you only pay a 5% fee when you actually get paid, and nothing when you don't. It's genuinely free online appointment booking software, not a time-limited trial. Upgrade to Sloth Active to drop the commission to 0%.",
+    a: "Yes. Meeticulous's Starter plan is free forever with unlimited services and bookings — you only pay a 5% fee when you actually get paid, and nothing when you don't. It's genuinely free online appointment booking software, not a time-limited trial. Upgrade to Pro to drop the commission to 0%.",
   },
   {
     q: "Which is the best appointment booking software for doctors and clinics?",
@@ -101,8 +101,8 @@ const JSON_LD = [
     description:
       "Appointment booking software for Indian doctors, salons, gyms, consultants and creators — online scheduling, upfront payments, reminders and GST invoices in one link.",
     offers: [
-      { "@type": "Offer", price: "0", priceCurrency: "INR", name: "Sloth plan (free)" },
-      { "@type": "Offer", price: "3599", priceCurrency: "INR", name: "Sloth Active plan (yearly)" },
+      { "@type": "Offer", price: "0", priceCurrency: "INR", name: "Starter plan (free)" },
+      { "@type": "Offer", price: "3599", priceCurrency: "INR", name: "Pro plan (yearly)" },
     ],
     // No aggregateRating: platform rating lives only on the homepage node
     // (bas-seo-schema skill). Never a fabricated rating on a marketing page.
@@ -505,9 +505,9 @@ export default function AppointmentBookingSoftware() {
               Free online appointment booking software — <span className="text-primary-cta">not a trial.</span>
             </Reveal>
             <Reveal as="p" delay={0.05} className="mt-4 max-w-md text-neutral-500">
-              Start on the free Sloth plan with unlimited services and bookings. You pay 5% only
+              Start on the free Starter plan with unlimited services and bookings. You pay 5% only
               when a client actually pays you, and nothing when they don't. Ready to keep every
-              rupee? Sloth Active removes the commission for about ₹10 a day.
+              rupee? Pro removes the commission for about ₹3 a day.
             </Reveal>
             <Reveal delay={0.1} className="mt-6 space-y-3">
               {["Unlimited services & bookings on the free plan", "Upfront UPI & card payments", "WhatsApp + email reminders", "GST invoices and bank payouts"].map((t) => (
@@ -549,7 +549,7 @@ export default function AppointmentBookingSoftware() {
             Simple pricing for booking software
           </Reveal>
           <Reveal as="p" delay={0.05} className="mx-auto mb-10 mt-3 max-w-[620px] text-center text-neutral-500">
-            Free to start. 0% commission when you go Active. All prices include GST.
+            Free to start. 0% commission when you go Pro. All prices include GST.
           </Reveal>
           <PricingCards />
           <p className="mt-8 text-center">

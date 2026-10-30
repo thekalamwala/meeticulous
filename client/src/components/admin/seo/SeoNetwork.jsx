@@ -14,7 +14,7 @@ import { adminSeoLinkGraph } from '../../../services/api';
 import SeoInspector from './SeoInspector';
 
 // Muted categorical hues — distinct but restrained so the graph stays airy on both themes.
-const TYPE_COLOR = { static: '#8fa0b8', blog: '#2fb39b', service: '#5b8def', host: '#a78bfa', unknown: '#b6bfca', other: '#b6bfca' };
+const TYPE_COLOR = { static: '#8fa0b8', blog: '#2fb39b', service: '#5b8def', host: '#FF9FB0', unknown: '#b6bfca', other: '#b6bfca' };
 const TYPE_LABEL = { static: 'Static & landing', blog: 'Blog post', service: 'Service page', host: 'Host profile', unknown: 'Other', other: 'Other' };
 const TYPE_ORDER = ['static', 'blog', 'service', 'host', 'other'];
 // Page-type priority for the anchored layout — which pages earn the 8 outer slots.

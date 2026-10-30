@@ -110,7 +110,7 @@ const TOOLS = [
 // Indigo stat band.
 const METRICS = [
   { v: '24/7', l: 'Bookings, day or night', note: 'Your booking page never sleeps.' },
-  { v: '100%', l: 'Kept on Sloth Active', note: '0% commission — every rupee is yours.' },
+  { v: '100%', l: 'Kept on Pro', note: '0% commission — every rupee is yours.' },
   { v: '₹0', l: 'To get started', note: 'Free forever plan — no card, no lock-in.' },
   { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice for every paid booking.' },
 ];
@@ -136,7 +136,7 @@ const TRUST_STRIP = [
   { icon: Lock, value: 'Razorpay', label: 'Every payment signature-verified on our servers' },
   { icon: Landmark, value: 'Hosted in India', label: 'Your clinic data runs on servers in Mumbai' },
   { icon: ShieldCheck, value: 'DPDP 2023', label: "Operated under India's data protection law" },
-  { icon: BadgePercent, value: '0% commission', label: 'On Sloth Active — keep every rupee' },
+  { icon: BadgePercent, value: '0% commission', label: 'On Pro — keep every rupee' },
 ];
 
 const FAQ = [
@@ -147,7 +147,7 @@ const FAQ = [
   { q: 'Can I manage multiple surgeons and services?', a: 'Yes. Create as many services as you need — consultation, audiology, sinus care, surgical reviews — each with its own duration, fee and availability, and manage every appointment from one clinic calendar.' },
   { q: 'Is our clinic and patient information kept private?', a: 'Meeticulous stores appointment and contact details for booking only — it is not a medical-records system. Your production data is hosted in India (Mumbai) and the platform operates under India’s DPDP Act 2023.' },
   { q: 'Do we need any technical setup?', a: 'No. Setup takes minutes and needs no technical skills. You add your services and clinic hours, and your booking page is ready to share — your patients need nothing more than the link.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Sloth plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Sloth Active removes that commission entirely and adds WhatsApp automation and growth tools.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
 ];
 
 const FOOTER_COLS = [
@@ -686,7 +686,7 @@ export default function EntSpecialists() {
           </Reveal>
 
           <div className="mx-auto mt-10 grid max-w-3xl gap-5 sm:grid-cols-2 sm:gap-6">
-            {/* Sloth (free) */}
+            {/* Starter (free) */}
             <Reveal>
               <div className="flex h-full flex-col rounded-[18px] border border-black/[0.08] bg-white p-7">
                 <div className="font-heading text-lg font-bold">{FREE_PLAN.name}</div>
@@ -709,7 +709,7 @@ export default function EntSpecialists() {
               </div>
             </Reveal>
 
-            {/* Sloth Active (premium) — recommended */}
+            {/* Pro (premium) — recommended */}
             <Reveal delay={0.08}>
               <div className="relative flex h-full flex-col overflow-hidden rounded-[18px] border-2 bg-white p-7 shadow-[0_24px_60px_-32px_rgba(30,27,58,0.28)]" style={{ borderColor: 'var(--ca-primary)' }}>
                 <span aria-hidden className="absolute inset-x-0 top-0 h-1" style={{ background: 'linear-gradient(90deg, var(--ca-primary), var(--ca-accent))' }} />
@@ -740,7 +740,7 @@ export default function EntSpecialists() {
                     </li>
                   ))}
                 </ul>
-                <CtaButton to={START} className="mt-7 w-full">Go Sloth Active</CtaButton>
+                <CtaButton to={START} className="mt-7 w-full">Go Pro</CtaButton>
               </div>
             </Reveal>
           </div>
@@ -820,7 +820,7 @@ export default function EntSpecialists() {
               </Link>
             </Reveal>
             <Reveal delay={0.16} className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2">
-              {['No credit card', 'Free forever', '0% on Sloth Active'].map((t) => (
+              {['No credit card', 'Free forever', '0% on Pro'].map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-white/70"><Check size={14} style={{ color: '#67E8F9' }} /> {t}</span>
               ))}
             </Reveal>

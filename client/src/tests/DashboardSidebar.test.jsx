@@ -69,8 +69,8 @@ describe('dashboard topbar profile menu', () => {
     renderLayout({ name: 'Host', plan: 'creator', role: 'host', username: 'hosty' });
     openProfile();
     const menu = within(screen.getByRole('menu', { name: 'Account' }));
-    // Plan chip in the header carries the humanized plan label (creator -> Host+).
-    expect(menu.getByText('Sloth Active')).toBeInTheDocument();
+    // Plan chip in the header carries the humanized plan label (creator -> Pro).
+    expect(menu.getByText('Pro')).toBeInTheDocument();
     ['Account information', 'Plan & billing', 'Verification', 'View public profile', 'Copy link', 'Account manager', 'Log out']
       .forEach((label) => expect(menu.getByText(label)).toBeInTheDocument());
     // The old nav shortcuts no longer live in the menu — they're in the sidebar.
@@ -178,9 +178,9 @@ describe('console sidebar — two-level nav', () => {
 describe('console sidebar — tier-aware bottom slot', () => {
   beforeEach(() => { mockAuth.current = {}; });
 
-  it('pitches Sloth Active to free hosts', () => {
+  it('pitches Pro to free hosts', () => {
     renderAt('/dashboard', { name: 'H', plan: 'free', role: 'host' });
-    expect(screen.getByRole('link', { name: 'Go Sloth Active. Go Premium' }))
+    expect(screen.getByRole('link', { name: 'Go Pro. Go Premium' }))
       .toHaveAttribute('href', '/dashboard/upgrade');
   });
 
@@ -192,7 +192,7 @@ describe('console sidebar — tier-aware bottom slot', () => {
 
   it('shows Refer & Earn (no upsell) for Studio hosts', () => {
     renderAt('/dashboard', { name: 'H', plan: 'professional', role: 'host' });
-    expect(screen.queryByRole('link', { name: /Go Sloth Active/ })).toBeNull();
+    expect(screen.queryByRole('link', { name: /Go Pro/ })).toBeNull();
     expect(screen.getByRole('link', { name: 'Refer & Earn. Invite a host' }))
       .toHaveAttribute('href', '/dashboard/referrals');
   });

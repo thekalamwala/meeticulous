@@ -26,7 +26,7 @@ const AdminLayout = ({ children }) => {
   // ── SECURITY GUARD ────────────────────────────────────────────
   // Reject anything that isn't a valid admin session.
   if (!isValidAdminSession(session)) {
-    return <Navigate to="/hello-sloth" replace />;
+    return <Navigate to="/backstage" replace />;
   }
 
   const [mobileOpen,  setMobileOpen]  = useState(false);
@@ -60,7 +60,7 @@ const AdminLayout = ({ children }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('bas_admin');
-    navigate('/hello-sloth');
+    navigate('/backstage');
   };
 
   useEffect(() => {
@@ -109,9 +109,9 @@ const AdminLayout = ({ children }) => {
       {/* Mobile drawer — every visible section stacked (rail + sidebar collapse into one) */}
       {mobileOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setMobileOpen(false)} />}
       <aside className={`fixed inset-y-0 left-0 z-50 w-[272px] flex flex-col bg-[#17171A] transition-transform duration-300 lg:hidden ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex items-center justify-between px-4 h-[60px] border-b border-[#191919] flex-shrink-0">
+        <div className="flex items-center justify-between px-4 h-[60px] border-b border-[#2A1416] flex-shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background:'#0079C1' }}>
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background:'#960D32' }}>
               <Ic d={IC.zap} size={12} className="text-white" strokeWidth={2.5} />
             </div>
             <span className="text-white font-bold text-sm">Meeticulous</span>
@@ -120,7 +120,7 @@ const AdminLayout = ({ children }) => {
         </div>
         <StackSidebar variant="drawer" nav={nav} pathname={location.pathname} counts={counts}
           onNavigate={() => setMobileOpen(false)} onLogout={handleLogout} />
-        <div className="border-t border-[#191919] flex-shrink-0 p-3 space-y-0.5">
+        <div className="border-t border-[#2A1416] flex-shrink-0 p-3 space-y-0.5">
           <Link to="/dashboard" className="flex items-center gap-2.5 rounded-lg text-gray-600 hover:text-gray-300 hover:bg-white/[0.04] transition-colors text-[12px] px-2.5 py-2">
             <Ic d={IC.external} size={14} /><span>Host Dashboard</span>
           </Link>
@@ -161,7 +161,7 @@ const AdminLayout = ({ children }) => {
 
             <div className="relative" ref={quickRef}>
               <button onClick={() => setShowQuick(o => !o)} title="Quick Actions"
-                className={`p-2 rounded-lg transition-colors ${showQuick ? 'bg-[#0079C1]/10 text-[#0079C1]' : 'adm-t3 adm-hoverable'}`}>
+                className={`p-2 rounded-lg transition-colors ${showQuick ? 'bg-[#960D32]/10 text-[#960D32]' : 'adm-t3 adm-hoverable'}`}>
                 <Ic d={IC.zap} size={16} />
               </button>
               {showQuick && (
@@ -188,7 +188,7 @@ const AdminLayout = ({ children }) => {
             <div className="relative" ref={profileRef}>
               <button onClick={() => setShowProfile(o => !o)}
                 className={`flex items-center gap-2 pl-1 pr-2 py-1 rounded-lg transition-colors ${showProfile ? 'adm-chip' : 'adm-hoverable'}`}>
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0" style={{ background:'#0079C1' }}>
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0" style={{ background:'#960D32' }}>
                   {(session.name || session.username || 'A')[0].toUpperCase()}
                 </div>
                 <div className="hidden md:block text-left leading-none">

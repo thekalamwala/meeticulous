@@ -207,7 +207,7 @@ export const FAQ = [
   },
   {
     q: 'Does Setmore send WhatsApp reminders?',
-    a: `${S.name}'s pricing page doesn't list WhatsApp reminders. It lists SMS reminders on its ${S.sms}. Meeticulous sends WhatsApp reminders on ${PREMIUM_PLAN.name}; the free ${FREE_PLAN.name} plan gets them for your first 2 months, then email reminders.`,
+    a: `${S.name}'s pricing page doesn't list WhatsApp reminders. It lists SMS reminders on its ${S.sms}. Meeticulous sends WhatsApp reminders on ${PREMIUM_PLAN.name}; the free ${FREE_PLAN.name} plan gets them for your first 2 months, then email reminders after that.`,
   },
   {
     q: 'How much does Meeticulous cost?',
@@ -277,7 +277,7 @@ function ReceiptCard({ r, badge }) {
   return (
     <div className="flex flex-col">
       <div className={`${CARD} overflow-hidden rounded-b-none border-b-0`}>
-        <div className="h-1.5 transition-colors motion-reduce:transition-none" style={{ background: fits ? '#191919' : 'var(--mg-tile)' }} aria-hidden />
+        <div className="h-1.5 transition-colors motion-reduce:transition-none" style={{ background: fits ? '#2A1416' : 'var(--mg-tile)' }} aria-hidden />
         <div className="p-6 sm:p-7">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-2.5">

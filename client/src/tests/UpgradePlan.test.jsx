@@ -28,8 +28,8 @@ import UpgradePlan from '../pages/UpgradePlan';
 // Annual prices so paid plans render a clickable CTA (annual is the default cadence).
 const PLANS = [
   { id: '1', slug: 'free',    name: 'Sloth',                  sort_order: 1, annual_price: 0,    monthly_price: 0,      limits: { digital_products: 3 } },
-  { id: '2', slug: 'creator', name: 'Sloth Active (Partner)', sort_order: 2, annual_price: 1499, monthly_price: 229,    limits: { digital_products: -1 } },
-  { id: '3', slug: 'premium', name: 'Sloth Active',           sort_order: 3, annual_price: 3050, monthly_price: 338.13, limits: { digital_products: -1 } },
+  { id: '2', slug: 'creator', name: 'Pro (Partner)', sort_order: 2, annual_price: 1499, monthly_price: 229,    limits: { digital_products: -1 } },
+  { id: '3', slug: 'premium', name: 'Pro',           sort_order: 3, annual_price: 3050, monthly_price: 338.13, limits: { digital_products: -1 } },
 ];
 
 beforeEach(() => {
@@ -40,14 +40,14 @@ beforeEach(() => {
 const renderFor = async (plan) => {
   useAuth.mockReturnValue({ user: { plan }, updateUser: vi.fn() });
   render(<MemoryRouter><UpgradePlan /></MemoryRouter>);
-  await waitFor(() => expect(screen.getAllByText(/Sloth Active/).length).toBeGreaterThan(0));
+  await waitFor(() => expect(screen.getAllByText(/Pro/).length).toBeGreaterThan(0));
 };
 
 describe('UpgradePlan — tier-aware CTAs', () => {
   test('a premium host sees the lower partner tier as a downgrade, not an upgrade', async () => {
     await renderFor('premium');
-    expect(screen.getByRole('button', { name: /downgrade to sloth active \(partner\)/i })).toBeTruthy();
-    expect(screen.queryByRole('button', { name: /upgrade to sloth active \(partner\)/i })).toBeNull();
+    expect(screen.getByRole('button', { name: /downgrade to pro \(partner\)/i })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /upgrade to pro \(partner\)/i })).toBeNull();
   });
 
   test('a premium host sees its own tier as the current plan', async () => {
@@ -57,15 +57,15 @@ describe('UpgradePlan — tier-aware CTAs', () => {
 
   test('a free host sees every paid tier as an upgrade', async () => {
     await renderFor('free');
-    expect(screen.getByRole('button', { name: /upgrade to sloth active \(partner\)/i })).toBeTruthy();
-    expect(screen.getByRole('button', { name: /upgrade to sloth active$/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /upgrade to pro \(partner\)/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /upgrade to pro$/i })).toBeTruthy();
     expect(screen.queryByRole('button', { name: /downgrade/i })).toBeNull();
   });
 
   test('legacy "explorer" alias is treated as the free starter tier (all paid plans are upgrades)', async () => {
     await renderFor('explorer');
-    expect(screen.getByRole('button', { name: /upgrade to sloth active \(partner\)/i })).toBeTruthy();
-    expect(screen.getByRole('button', { name: /upgrade to sloth active$/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /upgrade to pro \(partner\)/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /upgrade to pro$/i })).toBeTruthy();
     expect(screen.queryByRole('button', { name: /downgrade/i })).toBeNull();
   });
 });

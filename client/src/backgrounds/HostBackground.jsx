@@ -16,7 +16,7 @@ function usePrefersReducedMotion() {
 }
 
 // Owns the above-the-fold band (top 70% of fold) + fade-to-transparent mask.
-export default function HostBackground({ typeKey, color = '#0079C1', params = {} }) {
+export default function HostBackground({ typeKey, color = '#960D32', params = {} }) {
   const reduced = usePrefersReducedMotion();
   const entry = getBackground(typeKey);
   const Engine = entry?.Component;

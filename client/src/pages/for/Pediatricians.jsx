@@ -89,7 +89,7 @@ const TOOLS = [
 
 const METRICS = [
   { v: '24/7', l: 'Bookings, day or night' },
-  { v: '0%', l: 'Commission on Sloth Active' },
+  { v: '0%', l: 'Commission on Pro' },
   { v: '₹0', l: 'To get started' },
   { v: 'GST', l: 'Invoices, automatic' },
 ];
@@ -108,7 +108,7 @@ const TRUST_STRIP = [
   { icon: Lock, value: 'Razorpay', label: 'Every payment signature-verified on our servers' },
   { icon: Landmark, value: 'Hosted in India', label: 'Your clinic data runs on servers in Mumbai' },
   { icon: ShieldCheck, value: 'DPDP 2023', label: "Operated under India's data protection law" },
-  { icon: BadgePercent, value: '0% commission', label: 'On Sloth Active — keep every rupee' },
+  { icon: BadgePercent, value: '0% commission', label: 'On Pro — keep every rupee' },
 ];
 
 const FAQ = [
@@ -119,7 +119,7 @@ const FAQ = [
   { q: 'Can I collect the consultation fee online?', a: 'Yes. Collect the fee upfront through Razorpay — UPI, cards or netbanking — before the appointment. A GST invoice is generated automatically for every paid booking.' },
   { q: 'Is our clinic and family information kept private?', a: 'Meeticulous stores appointment and contact details for booking only — it is not a medical-records system. Your production data is hosted in India (Mumbai) and the platform operates under India’s DPDP Act 2023.' },
   { q: 'Do we need any technical setup?', a: 'No. Setup takes minutes and needs no technical skills. You add your services and clinic hours, and your booking page is ready to share — parents need nothing more than the link.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Sloth plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Sloth Active removes that commission entirely and adds WhatsApp automation and growth tools.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
 ];
 
 const FOOTER_COLS = [
@@ -257,7 +257,7 @@ export default function Pediatricians() {
 
   // Friendly blue + warm amber. Legacy --ca-* names kept.
   const styleVars = {
-    '--ca-primary': '#0079C1', // blue-600 — text/links/fills, AA on white (~5.2:1)
+    '--ca-primary': '#960D32', // blue-600 — text/links/fills, AA on white (~5.2:1)
     '--ca-accent': '#B45309',  // amber-700 — accent text, AA on white
     '--ca-amber': '#F59E0B',   // bright amber — decorative fills only
     '--ca-ink': '#172554',     // blue-950 navy text
@@ -277,7 +277,7 @@ export default function Pediatricians() {
         robots="index, follow, max-image-preview:large, max-snippet:-1"
         siteName="Meeticulous"
         locale="en_IN"
-        themeColor="#0079C1"
+        themeColor="#960D32"
         ogTitle={seo.ogTitle}
         ogDescription={seo.ogDescription}
         jsonLd={jsonLd}
@@ -595,7 +595,7 @@ export default function Pediatricians() {
                     </li>
                   ))}
                 </ul>
-                <CtaButton to={START} className="mt-7 w-full">Go Sloth Active</CtaButton>
+                <CtaButton to={START} className="mt-7 w-full">Go Pro</CtaButton>
               </div>
             </Reveal>
           </div>
@@ -636,7 +636,7 @@ export default function Pediatricians() {
       </section>
 
       {/* ═══════════════ 13 · FINAL CTA (blue band, confetti dots) ═══════════════ */}
-      <section className="relative overflow-hidden px-5 py-24 text-center sm:px-8" style={{ background: 'linear-gradient(160deg, #172554 0%, #0079C1 100%)' }}>
+      <section className="relative overflow-hidden px-5 py-24 text-center sm:px-8" style={{ background: 'linear-gradient(160deg, #172554 0%, #960D32 100%)' }}>
         <div aria-hidden className="pointer-events-none absolute left-[12%] top-10 h-3 w-3 rounded-full" style={{ background: 'var(--ca-amber)' }} />
         <div aria-hidden className="pointer-events-none absolute right-[16%] top-20 h-2.5 w-2.5 rounded-full bg-white/50" />
         <div aria-hidden className="pointer-events-none absolute bottom-16 left-[22%] h-2 w-2 rounded-full bg-white/40" />
@@ -657,7 +657,7 @@ export default function Pediatricians() {
             </Link>
           </Reveal>
           <Reveal delay={0.18} className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-            {['No credit card required', 'Free forever plan', '0% commission on Sloth Active'].map((t) => (
+            {['No credit card required', 'Free forever plan', '0% commission on Pro'].map((t) => (
               <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-white/70">
                 <Check size={14} style={{ color: 'var(--ca-amber)' }} /> {t}
               </span>

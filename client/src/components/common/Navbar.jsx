@@ -60,28 +60,28 @@ const PRODUCT_MENU = [
 // tone omitted on purpose: MegaMenu auto-rotates the tile colour by index.
 const WHOFOR_MENU = [
   { header: 'Professional Services', items: [
-    { label: 'Chartered Accountants & CA Firms', href: '/for/chartered-accountants', desc: 'Book paid consults instantly', icon: Calculator, tone: 'blue' },
-    { label: 'Architects & Interior Designers',  href: '/for/architects',          desc: 'Win design clients faster',    icon: Compass, tone: 'amber' },
-    { label: 'Astrologers & Vedic Consultants',  href: '/for/astrologers',         desc: 'Fill your reading calendar',   icon: Sparkles, tone: 'violet' },
-    { label: 'Business & Management Consultants',href: '/for/business-consultant', desc: 'Book advisory calls that pay', icon: Briefcase, tone: 'amber' },
-    { label: 'Lawyers & Legal Advisors',         href: '/for/lawyers',             desc: 'Book paid legal consults',     icon: Scale, tone: 'red' },
-    { label: 'Beauticians & Salons',             href: '/for/salon',               desc: 'Fill your chair all week',     icon: Scissors, tone: 'fuchsia' },
+    { label: 'Chartered Accountants', href: '/for/chartered-accountants', desc: 'Book paid consults instantly', icon: Calculator, tone: 'blue' },
+    { label: 'Architects',            href: '/for/architects',          desc: 'Win design clients faster',    icon: Compass, tone: 'amber' },
+    { label: 'Astrologers',           href: '/for/astrologers',         desc: 'Fill your reading calendar',   icon: Sparkles, tone: 'violet' },
+    { label: 'Business Consultants',  href: '/for/business-consultant', desc: 'Book advisory calls that pay', icon: Briefcase, tone: 'amber' },
+    { label: 'Lawyers',               href: '/for/lawyers',             desc: 'Book paid legal consults',     icon: Scale, tone: 'red' },
+    { label: 'Beauticians',           href: '/for/salon',               desc: 'Fill your chair all week',     icon: Scissors, tone: 'fuchsia' },
   ] },
   { header: 'Medical Specialists', items: [
-    { label: 'Dentists & Dental Clinics',       href: '/for/dentists',             desc: 'Cut no-shows, fill chairs',   icon: Smile, tone: 'sky' },
-    { label: 'Dermatologists & Skin Clinics',   href: '/for/dermatologists',       desc: 'Book skin consults 24/7',     icon: Sun, tone: 'cyan' },
-    { label: 'Gynecologists & OB-GYNs',         href: '/for/gynecologists',        desc: 'Book visits around the clock',icon: HeartPulse, tone: 'emerald' },
-    { label: 'Pediatricians & Child Care',      href: '/for/pediatricians',        desc: 'Fill your clinic, skip calls',icon: Baby, tone: 'blue' },
-    { label: 'ENT Specialists & Surgeons',      href: '/for/ent-specialists',      desc: 'Book consults, end phone tag',icon: Ear, tone: 'indigo' },
-    { label: 'Ophthalmologists & Eye Clinics',  href: '/for/ophthalmologists',     desc: 'Book eye exams online',       icon: Eye, tone: 'sky' },
+    { label: 'Dentists',          href: '/for/dentists',             desc: 'Cut no-shows, fill chairs',   icon: Smile, tone: 'sky' },
+    { label: 'Dermatologists',    href: '/for/dermatologists',       desc: 'Book skin consults 24/7',     icon: Sun, tone: 'cyan' },
+    { label: 'Gynecologists',     href: '/for/gynecologists',        desc: 'Book visits around the clock',icon: HeartPulse, tone: 'emerald' },
+    { label: 'Pediatricians',     href: '/for/pediatricians',        desc: 'Fill your clinic, skip calls',icon: Baby, tone: 'blue' },
+    { label: 'ENT Specialists',   href: '/for/ent-specialists',      desc: 'Book consults, end phone tag',icon: Ear, tone: 'indigo' },
+    { label: 'Ophthalmologists',  href: '/for/ophthalmologists',     desc: 'Book eye exams online',       icon: Eye, tone: 'sky' },
   ] },
   { header: 'Health & Wellness', items: [
-    { label: 'General Physicians & Clinics',     href: '/for/doctors',              desc: 'Fill your clinic, cut no-shows', icon: Stethoscope, tone: 'blue' },
-    { label: 'Physiotherapists & Rehab Centres', href: '/for/physiotherapists',     desc: 'Get paid before sessions',       icon: Activity, tone: 'teal' },
-    { label: 'Nutritionists & Dietitians',       href: '/for/nutritionists',        desc: 'Book diet consults that pay',    icon: Apple, tone: 'emerald' },
-    { label: 'Spas & Wellness Centres',          href: '/for/spa',                  desc: 'Fill slots, kill no-shows',      icon: Flower2, tone: 'teal' },
-    { label: 'Life & Wellness Coaches',          href: '/for/life-coaches',         desc: 'Book paid coaching sessions',    icon: Target, tone: 'emerald' },
-    { label: 'Veterinarians & Pet Clinics',      href: '/for/veterinarians',        desc: 'Book pet visits online',         icon: PawPrint, tone: 'teal' },
+    { label: 'General Physicians', href: '/for/doctors',              desc: 'Fill your clinic, cut no-shows', icon: Stethoscope, tone: 'blue' },
+    { label: 'Physiotherapists',   href: '/for/physiotherapists',     desc: 'Get paid before sessions',       icon: Activity, tone: 'teal' },
+    { label: 'Nutritionists',      href: '/for/nutritionists',        desc: 'Book diet consults that pay',    icon: Apple, tone: 'emerald' },
+    { label: 'Spas',               href: '/for/spa',                  desc: 'Fill slots, kill no-shows',      icon: Flower2, tone: 'teal' },
+    { label: 'Life Coaches',       href: '/for/life-coaches',         desc: 'Book paid coaching sessions',    icon: Target, tone: 'emerald' },
+    { label: 'Veterinarians',      href: '/for/veterinarians',        desc: 'Book pet visits online',         icon: PawPrint, tone: 'teal' },
   ] },
 ];
 
@@ -121,10 +121,9 @@ const flat = (cols) => cols.flatMap((c) => c.items);
 
 // Mobile drawer: the same menus as collapsible accordions (flat, no columns).
 const MOBILE_SECTIONS = [
-  { label: 'Product',      icon: Sparkles, items: flat(PRODUCT_MENU) },
-  { label: "Who it's for", icon: Award,    items: flat(WHOFOR_MENU) },
-  { label: 'Resources',    icon: Layers,   items: flat(RESOURCES_MENU) },
-  { label: 'Compare',      icon: BarChart2, items: COMPARE_MENU },
+  { label: 'Features',   icon: Sparkles, items: flat(PRODUCT_MENU) },
+  { label: 'Industries', icon: Award,    items: flat(WHOFOR_MENU) },
+  { label: 'Resources',  icon: Layers,   items: flat(RESOURCES_MENU) },
 ];
 
 // Slim guest profile menu (logged-in guests). The navbar carries nothing but the
@@ -151,7 +150,7 @@ const VENDOR_MENU = [
 // so the header never renders empty even if the appearance API is unreachable.
 
 const wordmarkText = (always = false) => (
-  <span className={`${always ? '' : 'hidden sm:block '}text-[15px] font-bold text-[#191919] tracking-tight`}>
+  <span className={`${always ? '' : 'hidden sm:block '}text-[15px] font-bold text-ink tracking-tight`}>
     Meeticulous
   </span>
 );
@@ -187,7 +186,7 @@ const PhotoAvatar = ({ user, className = 'h-11 w-11' }) =>
     />
   ) : (
     <span
-      className={`${className} inline-flex items-center justify-center rounded-full bg-[#0079C1] text-white font-bold flex-shrink-0 select-none`}
+      className={`${className} inline-flex items-center justify-center rounded-full bg-primary text-white font-bold flex-shrink-0 select-none`}
       aria-hidden="true"
     >
       {user?.name ? user.name[0].toUpperCase() : 'U'}
@@ -203,7 +202,7 @@ const SlothAvatar = ({ appearance, className = 'h-11 w-11' }) => (
   <img
     src={appearance?.icon_url || '/favicon-96x96.png'}
     alt="Meeticulous"
-    className={`${className} rounded-full object-contain bg-[#0079C1]/10 p-1 flex-shrink-0`}
+    className={`${className} rounded-full object-contain bg-primary/10 p-1 flex-shrink-0`}
   />
 );
 
@@ -212,7 +211,7 @@ const VendorProfileHeader = ({ user }) => (
   <div className="flex items-center gap-3">
     <PhotoAvatar user={user} />
     <div className="min-w-0 flex-1">
-      <p className="text-[14px] font-semibold text-[#191919] truncate">{user?.name || 'Host'}</p>
+      <p className="text-[14px] font-semibold text-ink truncate">{user?.name || 'Host'}</p>
       {user?.username && <p className="text-[12px] text-gray-400 truncate">@{user.username}</p>}
     </div>
   </div>
@@ -224,7 +223,7 @@ const GuestProfileHeader = ({ appearance, name }) => (
     <SlothAvatar appearance={appearance} />
     <div className="min-w-0 flex-1">
       <p className="text-[12px] text-gray-400 leading-tight">Hello,</p>
-      <p className="text-[14px] font-semibold text-[#191919] truncate">{name || 'there'}</p>
+      <p className="text-[14px] font-semibold text-ink truncate">{name || 'there'}</p>
     </div>
   </div>
 );
@@ -233,7 +232,7 @@ const MembershipButton = ({ user, onClick }) => (
   <Link
     to="/dashboard/upgrade"
     onClick={onClick}
-    className="mt-3 flex items-center justify-center gap-1.5 rounded-lg bg-[#0079C1]/10 px-3 py-2 text-[12.5px] font-semibold text-[#0079C1] transition-colors hover:bg-[#0079C1]/15 hover:no-underline"
+    className="mt-3 flex items-center justify-center gap-1.5 rounded-lg bg-primary/10 px-3 py-2 text-[12.5px] font-semibold text-primary transition-colors hover:bg-primary/15 hover:no-underline"
   >
     <Sparkles size={14} className="flex-shrink-0" />
     You are a {getPlanBorderLabel(normalizePlan(user?.plan))} Member
@@ -249,7 +248,7 @@ const MenuLinks = ({ items, user, onNavigate }) =>
       ? (user?.username ? `/${user.username}` : '/dashboard/profile')
       : item.href;
     const cls =
-      'flex items-center gap-3 px-4 py-2.5 text-[13px] text-gray-600 hover:bg-[#0079C1]/5 hover:text-[#0079C1] transition-colors duration-150 hover:no-underline outline-none focus-visible:bg-[#0079C1]/5 focus-visible:text-[#0079C1]';
+      'flex items-center gap-3 px-4 py-2.5 text-[13px] text-gray-600 hover:bg-primary/5 hover:text-primary transition-colors duration-150 hover:no-underline outline-none focus-visible:bg-primary/5 focus-visible:text-primary';
     return item.external ? (
       <a key={item.label} href={href} target="_blank" rel="noreferrer" role="menuitem" onClick={onNavigate} className={cls}>
         <Icon size={15} className="flex-shrink-0 text-gray-400" /> {item.label}
@@ -265,7 +264,7 @@ const MenuLinks = ({ items, user, onNavigate }) =>
 
 const BadgePill = ({ count }) =>
   count > 0 ? (
-    <span className="absolute -top-1.5 -right-2 min-w-[15px] h-[15px] px-0.5 rounded-full bg-[#0079C1] text-white text-[9px] font-bold flex items-center justify-center leading-none pointer-events-none">
+    <span className="absolute -top-1.5 -right-2 min-w-[15px] h-[15px] px-0.5 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center leading-none pointer-events-none">
       {count > 99 ? '99+' : count}
     </span>
   ) : null;
@@ -273,7 +272,7 @@ const BadgePill = ({ count }) =>
 // ── Static label tag (e.g. "Soon") — distinct from numeric BadgePill ──────────
 const TagPill = ({ text }) =>
   text ? (
-    <span className="absolute -top-2 -right-5 px-1 py-px rounded-full bg-amber-400 text-[#191919] text-[8px] font-bold uppercase tracking-wide leading-none pointer-events-none">
+    <span className="absolute -top-2 -right-5 px-1 py-px rounded-full bg-amber-400 text-ink text-[8px] font-bold uppercase tracking-wide leading-none pointer-events-none">
       {text}
     </span>
   ) : null;
@@ -286,6 +285,16 @@ const TagPill = ({ text }) =>
 const NavDropdown = ({ id, label, icon: Icon, align = 'left', wide = false, activeKey, onOpen, onClose, children }) => {
   const open = activeKey === id;
   const centered = align === 'center';
+  const btnRef = useRef(null);
+  const panelRef = useRef(null);
+  const [caretX, setCaretX] = useState(null);
+  // Position the connector triangle under the active trigger (recomputed on open).
+  useEffect(() => {
+    if (!open || !btnRef.current || !panelRef.current) return;
+    const b = btnRef.current.getBoundingClientRect();
+    const p = panelRef.current.getBoundingClientRect();
+    setCaretX(b.left + b.width / 2 - p.left);
+  }, [open]);
   // Panel contents render ALWAYS (not lazy-mounted on first open) so every nav link
   // is in the server-rendered / prerendered HTML — crawlers and Google's first pass
   // follow them even though the panel is visually hidden (opacity-0) until opened.
@@ -301,37 +310,40 @@ const NavDropdown = ({ id, label, icon: Icon, align = 'left', wide = false, acti
       onMouseLeave={() => onClose(false)}
     >
       <button
+        ref={btnRef}
         type="button"
         onClick={() => (open ? onClose(true) : onOpen(id))}
         aria-expanded={open}
         aria-haspopup="menu"
         className={[
-          'group relative flex items-center gap-1 px-3.5 text-[12.5px] font-medium transition-colors outline-none',
-          'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0079C1]',
-          open ? 'text-[#0079C1]' : 'text-gray-500 hover:text-[#0079C1]',
+          'group relative my-2 flex items-center gap-1 rounded-xl px-3.5 text-[12.5px] font-medium transition-colors outline-none',
+          'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary',
+          open ? 'bg-primary-light/60 text-primary' : 'text-gray-500 hover:bg-primary-light/40 hover:text-primary',
         ].join(' ')}
       >
-        {Icon && <Icon size={16} className={open ? 'text-[#0079C1]' : 'text-gray-400 group-hover:text-[#0079C1]/80'} />}
+        {Icon && <Icon size={16} className={open ? 'text-primary' : 'text-gray-400 group-hover:text-primary/80'} />}
         {label}
         <ChevronDown size={13} strokeWidth={2.5} className={`text-gray-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
       <div
+        ref={panelRef}
         role="menu"
         aria-hidden={!open}
         onClick={() => onClose(true)}
         className={[
-          'origin-top rounded-xl border border-gray-200 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.12)] z-50 overflow-hidden',
-          // `wide` breaks out to span the whole bar (logo → CTA): fixed + centered
-          // in the viewport at the container's own width (app-container = 72rem,
-          // margin-auto), so its edges line up with the container. Otherwise the
-          // panel auto-sizes and anchors under its trigger.
-          wide
-            ? 'fixed left-1/2 top-[3.75rem] -translate-x-1/2 w-[min(72rem,calc(100vw-2rem))]'
-            : `absolute top-full mt-1.5 w-max max-w-[calc(100vw-2rem)] ${centered ? 'left-1/2 -translate-x-1/2' : 'left-0'}`,
+          'origin-top-left rounded-[16px] border border-gray-200 bg-white shadow-[0_18px_50px_-12px_rgba(30,11,77,0.22)] z-50',
+          // Left-aligned card below the strip, with a small gap so the connector
+          // triangle can point up into the bar under the active item.
+          'fixed top-[4.15rem] left-[max(1rem,calc((100vw-72rem)/2))] w-max max-w-[calc(100vw-2rem)]',
           'transition duration-200 ease-out motion-reduce:transition-none',
           open ? 'translate-y-0 scale-100 opacity-100' : '-translate-y-1 scale-[0.98] opacity-0 pointer-events-none',
         ].join(' ')}
       >
+        {/* Triangle connector: points up from the menu into the strip, slotting
+            under the active item so bar + menu read as joined. */}
+        {caretX != null && (
+          <span aria-hidden="true" className="pointer-events-none absolute z-10" style={{ left: caretX, top: -12, transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '15px solid transparent', borderRight: '15px solid transparent', borderBottom: '13px solid #fff', filter: 'drop-shadow(0 -1.5px 1.5px rgba(0,0,0,0.06))' }} />
+        )}
         {children}
       </div>
     </div>
@@ -349,43 +361,53 @@ const NavDropdown = ({ id, label, icon: Icon, align = 'left', wide = false, acti
 // runs continuously across columns — see MegaMenu — instead of resetting).
 const TILE_TONES = ['pink', 'blue', 'emerald', 'orange', 'violet', 'amber', 'teal', 'rose', 'sky', 'indigo', 'fuchsia', 'lime', 'cyan', 'red'];
 const TILE_MAP = {
-  pink:    { tile: 'bg-pink-100 text-pink-500',       solid: 'group-hover/mi:bg-pink-500 group-hover/mi:text-white',       c1: 'bg-pink-50',    c2: 'bg-pink-100' },
-  blue:    { tile: 'bg-blue-100 text-blue-500',       solid: 'group-hover/mi:bg-blue-500 group-hover/mi:text-white',       c1: 'bg-blue-50',    c2: 'bg-blue-100' },
-  emerald: { tile: 'bg-emerald-100 text-emerald-500', solid: 'group-hover/mi:bg-emerald-500 group-hover/mi:text-white',    c1: 'bg-emerald-50', c2: 'bg-emerald-100' },
-  orange:  { tile: 'bg-orange-100 text-orange-500',   solid: 'group-hover/mi:bg-orange-500 group-hover/mi:text-white',     c1: 'bg-orange-50',  c2: 'bg-orange-100' },
-  violet:  { tile: 'bg-violet-100 text-violet-500',   solid: 'group-hover/mi:bg-violet-500 group-hover/mi:text-white',     c1: 'bg-violet-50',  c2: 'bg-violet-100' },
-  amber:   { tile: 'bg-amber-100 text-amber-500',     solid: 'group-hover/mi:bg-amber-500 group-hover/mi:text-white',      c1: 'bg-amber-50',   c2: 'bg-amber-100' },
-  teal:    { tile: 'bg-teal-100 text-teal-500',       solid: 'group-hover/mi:bg-teal-500 group-hover/mi:text-white',       c1: 'bg-teal-50',    c2: 'bg-teal-100' },
-  rose:    { tile: 'bg-rose-100 text-rose-500',       solid: 'group-hover/mi:bg-rose-500 group-hover/mi:text-white',       c1: 'bg-rose-50',    c2: 'bg-rose-100' },
-  sky:     { tile: 'bg-sky-100 text-sky-500',         solid: 'group-hover/mi:bg-sky-500 group-hover/mi:text-white',        c1: 'bg-sky-50',     c2: 'bg-sky-100' },
-  indigo:  { tile: 'bg-indigo-100 text-indigo-500',   solid: 'group-hover/mi:bg-indigo-500 group-hover/mi:text-white',     c1: 'bg-indigo-50',  c2: 'bg-indigo-100' },
-  fuchsia: { tile: 'bg-fuchsia-100 text-fuchsia-500', solid: 'group-hover/mi:bg-fuchsia-500 group-hover/mi:text-white',    c1: 'bg-fuchsia-50', c2: 'bg-fuchsia-100' },
-  lime:    { tile: 'bg-lime-100 text-lime-600',       solid: 'group-hover/mi:bg-lime-500 group-hover/mi:text-white',       c1: 'bg-lime-50',    c2: 'bg-lime-100' },
-  cyan:    { tile: 'bg-cyan-100 text-cyan-500',       solid: 'group-hover/mi:bg-cyan-500 group-hover/mi:text-white',       c1: 'bg-cyan-50',    c2: 'bg-cyan-100' },
-  red:     { tile: 'bg-red-100 text-red-500',         solid: 'group-hover/mi:bg-red-500 group-hover/mi:text-white',        c1: 'bg-red-50',     c2: 'bg-red-100' },
+  pink:    { tile: 'bg-pink-100 text-pink-500',       solid: 'group-hover/mi:bg-pink-500 group-hover/mi:text-white',       txt: 'group-hover/mi:text-pink-600',    c1: 'bg-pink-50',    c2: 'bg-pink-100' },
+  blue:    { tile: 'bg-blue-100 text-blue-500',       solid: 'group-hover/mi:bg-blue-500 group-hover/mi:text-white',       txt: 'group-hover/mi:text-blue-600',    c1: 'bg-blue-50',    c2: 'bg-blue-100' },
+  emerald: { tile: 'bg-emerald-100 text-emerald-500', solid: 'group-hover/mi:bg-emerald-500 group-hover/mi:text-white',    txt: 'group-hover/mi:text-emerald-600', c1: 'bg-emerald-50', c2: 'bg-emerald-100' },
+  orange:  { tile: 'bg-orange-100 text-orange-500',   solid: 'group-hover/mi:bg-orange-500 group-hover/mi:text-white',     txt: 'group-hover/mi:text-orange-600',  c1: 'bg-orange-50',  c2: 'bg-orange-100' },
+  violet:  { tile: 'bg-violet-100 text-violet-500',   solid: 'group-hover/mi:bg-violet-500 group-hover/mi:text-white',     txt: 'group-hover/mi:text-violet-600',  c1: 'bg-violet-50',  c2: 'bg-violet-100' },
+  amber:   { tile: 'bg-amber-100 text-amber-500',     solid: 'group-hover/mi:bg-amber-500 group-hover/mi:text-white',      txt: 'group-hover/mi:text-amber-600',   c1: 'bg-amber-50',   c2: 'bg-amber-100' },
+  teal:    { tile: 'bg-teal-100 text-teal-500',       solid: 'group-hover/mi:bg-teal-500 group-hover/mi:text-white',       txt: 'group-hover/mi:text-teal-600',    c1: 'bg-teal-50',    c2: 'bg-teal-100' },
+  rose:    { tile: 'bg-rose-100 text-rose-500',       solid: 'group-hover/mi:bg-rose-500 group-hover/mi:text-white',       txt: 'group-hover/mi:text-rose-600',    c1: 'bg-rose-50',    c2: 'bg-rose-100' },
+  sky:     { tile: 'bg-sky-100 text-sky-500',         solid: 'group-hover/mi:bg-sky-500 group-hover/mi:text-white',        txt: 'group-hover/mi:text-sky-600',     c1: 'bg-sky-50',     c2: 'bg-sky-100' },
+  indigo:  { tile: 'bg-indigo-100 text-indigo-500',   solid: 'group-hover/mi:bg-indigo-500 group-hover/mi:text-white',     txt: 'group-hover/mi:text-indigo-600',  c1: 'bg-indigo-50',  c2: 'bg-indigo-100' },
+  fuchsia: { tile: 'bg-fuchsia-100 text-fuchsia-500', solid: 'group-hover/mi:bg-fuchsia-500 group-hover/mi:text-white',    txt: 'group-hover/mi:text-fuchsia-600', c1: 'bg-fuchsia-50', c2: 'bg-fuchsia-100' },
+  lime:    { tile: 'bg-lime-100 text-lime-600',       solid: 'group-hover/mi:bg-lime-500 group-hover/mi:text-white',       txt: 'group-hover/mi:text-lime-700',    c1: 'bg-lime-50',    c2: 'bg-lime-100' },
+  cyan:    { tile: 'bg-cyan-100 text-cyan-500',       solid: 'group-hover/mi:bg-cyan-500 group-hover/mi:text-white',       txt: 'group-hover/mi:text-cyan-600',    c1: 'bg-cyan-50',    c2: 'bg-cyan-100' },
+  red:     { tile: 'bg-red-100 text-red-500',         solid: 'group-hover/mi:bg-red-500 group-hover/mi:text-white',        txt: 'group-hover/mi:text-red-600',     c1: 'bg-red-50',     c2: 'bg-red-100' },
 };
 
-const MegaItem = ({ item, tone }) => {
+// PNG icons for the Product / Resources / Compare menu items — drop files in
+// client/public/nav/ (and /nav/compare/). Keyed by item label; a missing file
+// falls back to the lucide glyph behind it (see MegaItem / CompareItem onError).
+// "Who it's for" deliberately keeps the coloured lucide tiles.
+const NAV_PNG = {
+  'Online scheduling': '/nav/online-scheduling.png', 'Booking pages': '/nav/booking-pages.png', 'Payments': '/nav/payments.png', 'Client management': '/nav/client-management.png', 'Digital products': '/nav/digital-products.png', 'Google Calendar': '/nav/google-calendar.png', 'Notifications': '/nav/notifications.png', 'Availability': '/nav/availability.png', 'Reviews & ratings': '/nav/reviews.png', 'Explore': '/nav/explore.png',
+  'How it works': '/nav/how-it-works.png', 'Earnings calculator': '/nav/earnings-calculator.png', 'Documentation': '/nav/documentation.png', 'Blog': '/nav/blog.png', 'Wall of Love': '/nav/wall-of-love.png', 'About': '/nav/about.png', 'Careers': '/nav/careers.png', 'Help center': '/nav/help-center.png', 'FAQ': '/nav/faq.png', 'Contact': '/nav/contact.png',
+};
+const COMPARE_PNG = {
+  'Calendly': '/nav/compare/calendly.png', 'Acuity': '/nav/compare/acuity.png', 'Setmore': '/nav/compare/setmore.png', 'SimplyBook': '/nav/compare/simplybook.png', 'Zoho Bookings': '/nav/compare/zoho-bookings.png', 'Topmate': '/nav/compare/topmate.png',
+};
+
+const MegaItem = ({ item, tone, compact }) => {
   const Icon = item.icon;
   const c = TILE_MAP[tone] || TILE_MAP.orange;
   return (
     <Link
       to={item.href}
       role="menuitem"
-      className="group/mi relative flex items-start gap-3 overflow-hidden rounded-xl px-3 py-2.5 hover:no-underline"
+      className="group/mi flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 hover:no-underline"
     >
-      {/* Two-layer curtain: back layer trails, front leads — both slide in from
-          the left on hover and slide back out on leave (transition reverses). */}
-      <span aria-hidden="true" className={`pointer-events-none absolute inset-0 -translate-x-full transition-transform duration-500 ease-out group-hover/mi:translate-x-0 motion-reduce:transition-none ${c.c2}`} />
-      <span aria-hidden="true" className={`pointer-events-none absolute inset-0 -translate-x-full transition-transform duration-300 ease-out group-hover/mi:translate-x-0 motion-reduce:transition-none ${c.c1}`} />
-
-      {/* Content sits above the curtain */}
-      <span className={`relative z-10 mt-0.5 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl transition-colors duration-200 ${c.tile} ${c.solid}`}>
-        <Icon size={19} strokeWidth={2} />
+      {/* No background on hover — only the label changes to the icon's hue. */}
+      <span className={`relative flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg ${c.tile}`}>
+        <Icon size={16} strokeWidth={2} />
+        {NAV_PNG[item.label] && (
+          <img src={NAV_PNG[item.label]} alt="" width="20" height="20" loading="lazy" onError={(e) => e.currentTarget.remove()} className="absolute inset-0 m-auto h-5 w-5 object-contain" />
+        )}
       </span>
-      <span className="relative z-10 min-w-0">
-        <span className="block text-[14px] font-bold text-[#191919]">{item.label}</span>
-        {item.desc && <span className="block text-[12px] leading-snug text-gray-400">{item.desc}</span>}
+      <span className="min-w-0">
+        <span className={`block text-[13px] font-semibold text-ink transition-colors duration-150 ${c.txt}`}>{item.label}</span>
+        {item.desc && !compact && <span className="block text-[12px] leading-snug text-gray-400">{item.desc}</span>}
       </span>
     </Link>
   );
@@ -398,16 +420,16 @@ const MENU_COL = 'w-60'; // 15rem — every column, promo tile and compare cell
 
 // Renders grouped columns + an optional promo tile on the right. `colClass` lets
 // a menu widen its columns (Product uses fewer, wider columns).
-const MegaMenu = ({ sections, promo, colClass = MENU_COL }) => (
-  <div className="flex gap-5 p-5">
+const MegaMenu = ({ sections, promo, colClass = MENU_COL, compact }) => (
+  <div className="flex gap-4 p-4">
     {sections.map((col, ci) => {
       // Tone index continues across columns so hues keep rotating (never resets).
       const offset = sections.slice(0, ci).reduce((n, s) => n + s.items.length, 0);
       return (
         <div key={col.header} className={colClass}>
-          <p className="mb-2 px-3 text-[11px] font-normal uppercase tracking-wider text-gray-400">{col.header}</p>
+          <p className="mb-1 px-2.5 text-[10.5px] font-semibold uppercase tracking-wider text-gray-400">{col.header}</p>
           <div className="space-y-0.5">
-            {col.items.map((it, i) => <MegaItem key={it.href} item={it} tone={it.tone || TILE_TONES[(offset + i) % TILE_TONES.length]} />)}
+            {col.items.map((it, i) => <MegaItem key={it.href} item={it} compact={compact} tone={it.tone || TILE_TONES[(offset + i) % TILE_TONES.length]} />)}
           </div>
         </div>
       );
@@ -415,9 +437,9 @@ const MegaMenu = ({ sections, promo, colClass = MENU_COL }) => (
     {promo && (
       <Link
         to={promo.href}
-        className={`flex ${MENU_COL} flex-col justify-end rounded-xl bg-gradient-to-br from-[#0079C1] to-[#ff8244] p-5 text-white transition-transform hover:scale-[1.01] hover:no-underline`}
+        className={`flex ${MENU_COL} flex-col justify-end rounded-xl bg-gradient-to-br from-primary to-primary-cta p-4 text-white transition-transform hover:scale-[1.01] hover:no-underline`}
       >
-        <p className="text-[15px] font-bold leading-tight">{promo.title}</p>
+        <p className="text-[14px] font-bold leading-tight">{promo.title}</p>
         <p className="mt-1.5 text-[12.5px] leading-snug text-white/85">{promo.desc}</p>
         <span className="mt-4 inline-flex items-center gap-1 text-[13px] font-semibold">
           {promo.cta} <ChevronRight size={15} />
@@ -453,14 +475,14 @@ const CompareItem = ({ item, active }) => {
         {/* Only fetch the competitor favicon once the menu is actually open — the
             panel now always renders (for crawlable links), so gate the network here. */}
         {active && imgOk ? (
-          <img src={favicon} alt="" width="36" height="36" loading="lazy" onError={() => setImgOk(false)} className="h-9 w-9 rounded-lg bg-gray-50 p-1" />
+          <img src={COMPARE_PNG[item.name] || favicon} alt="" width="36" height="36" loading="lazy" onError={() => setImgOk(false)} className="h-9 w-9 rounded-lg bg-gray-50 p-1" />
         ) : (
           <span className="flex h-9 w-9 items-center justify-center rounded-lg text-[14px] font-bold text-white" style={{ backgroundColor: item.color }}>
             {item.name[0]}
           </span>
         )}
       </span>
-      <span className="relative z-10 text-[14px] font-bold text-[#191919] transition-colors group-hover/mi:text-[var(--bc)]">{item.name}</span>
+      <span className="relative z-10 text-[14px] font-bold text-ink transition-colors group-hover/mi:text-[var(--bc)]">{item.name}</span>
     </Link>
   );
 };
@@ -512,23 +534,19 @@ export const PublicCenterNav = () => {
   const menuProps = { activeKey, onOpen: openMenu, onClose: closeMenu, align: 'center' };
   return (
     <>
-      <NavDropdown id="product" label="Product" {...menuProps}>
-        <MegaMenu sections={PRODUCT_MENU} colClass="w-[23rem]" />
+      <NavDropdown id="product" label="Features" {...menuProps}>
+        <MegaMenu sections={PRODUCT_MENU} colClass="w-56" compact promo={{ href: '/explore', title: 'Get discovered on Explore', desc: 'Publish your booking page to the marketplace and let new clients find and book you.', cta: 'Explore the marketplace' }} />
       </NavDropdown>
 
-      <NavDropdown id="whofor" label="Who it's for" wide {...menuProps}>
-        <MegaMenu sections={WHOFOR_MENU} colClass="flex-1" />
+      <NavDropdown id="whofor" label="Industries" wide {...menuProps}>
+        <MegaMenu sections={WHOFOR_MENU} colClass="w-64" compact />
       </NavDropdown>
 
       <NavDropdown id="resources" label="Resources" {...menuProps}>
-        <MegaMenu sections={RESOURCES_MENU} />
+        <MegaMenu sections={RESOURCES_MENU} compact />
       </NavDropdown>
 
-      <NavDropdown id="compare" label="Compare" {...menuProps}>
-        <CompareMega active={activeKey === 'compare'} />
-      </NavDropdown>
-
-      <Link to="/pricing" className="flex items-center px-3.5 text-[12.5px] font-medium text-gray-500 transition-colors hover:text-[#0079C1] hover:no-underline">
+      <Link to="/pricing" className="my-2 flex items-center rounded-xl px-3.5 text-[12.5px] font-medium text-gray-500 transition-colors hover:bg-primary-light/40 hover:text-primary hover:no-underline">
         Pricing
       </Link>
     </>
@@ -658,21 +676,22 @@ const Navbar = () => {
       className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200/80 shadow-[0_1px_8px_rgba(0,0,0,0.05)]"
       aria-label="Main navigation"
     >
-      <div className="app-container">
-        {/* ── Desktop bar ───────────────────────────────────────────────────── */}
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+        {/* ── Desktop bar — matches the hero container (max-w-7xl) so the logo
+            lines up with the hero heading's left edge. ───────────────────────── */}
         <div className="flex items-stretch h-14">
 
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-2.5 shrink-0 pr-4 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0079C1] focus-visible:ring-offset-1 rounded"
+            className="flex items-center gap-2.5 shrink-0 pr-4 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded"
             aria-label="Meeticulous — home"
           >
             <NavbarLogo appearance={appearance} />
           </Link>
 
           {/* Center nav (desktop only) */}
-          <div className="hidden md:flex items-stretch flex-1 justify-center">
+          <div className="hidden md:flex items-stretch flex-1 justify-start">
             {!user ? <PublicCenterNav /> : navItems.map((item) => {
               const active = isActive(item);
               const Icon   = item.icon;
@@ -687,14 +706,14 @@ const Navbar = () => {
                   className={[
                     'group relative flex flex-col items-center justify-center gap-0.5 px-3.5 text-[12.5px] font-medium',
                     'transition-colors duration-150 outline-none',
-                    'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0079C1]',
-                    active ? 'text-[#0079C1]' : 'text-gray-500 hover:text-[#0079C1]',
+                    'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary',
+                    active ? 'text-primary' : 'text-gray-500 hover:text-primary',
                   ].join(' ')}
                 >
                   {/* Hover background pill */}
                   <span className={[
                     'absolute inset-x-1 inset-y-1.5 rounded-lg transition-colors duration-150',
-                    active ? 'bg-[#0079C1]/6' : 'group-hover:bg-[#0079C1]/5',
+                    active ? 'bg-primary/6' : 'group-hover:bg-primary/5',
                   ].join(' ')} aria-hidden="true" />
 
                   {/* Icon + label */}
@@ -703,7 +722,7 @@ const Navbar = () => {
                       <Icon
                         size={19}
                         strokeWidth={active ? 2.2 : 1.7}
-                        className={`transition-colors duration-150 ${active ? 'text-[#0079C1]' : 'text-gray-400 group-hover:text-[#0079C1]/80'}`}
+                        className={`transition-colors duration-150 ${active ? 'text-primary' : 'text-gray-400 group-hover:text-primary/80'}`}
                       />
                       {item.badge && <BadgePill count={badges[item.badge]} />}
                       {item.tag && <TagPill text={item.tag} />}
@@ -713,7 +732,7 @@ const Navbar = () => {
 
                   {/* Active bottom indicator */}
                   <span
-                    className={`absolute bottom-0 left-1 right-1 h-[2.5px] rounded-t-full bg-[#0079C1] transition-all duration-150 ${active ? 'opacity-100' : 'opacity-0'}`}
+                    className={`absolute bottom-0 left-1 right-1 h-[2.5px] rounded-t-full bg-primary transition-all duration-150 ${active ? 'opacity-100' : 'opacity-0'}`}
                     aria-hidden="true"
                   />
                 </NavLink>
@@ -728,7 +747,7 @@ const Navbar = () => {
             <Link
               to="/search"
               aria-label="Search creators"
-              className="p-2.5 rounded-full text-gray-500 hover:text-[#0079C1] hover:bg-[#0079C1]/5 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#0079C1] focus-visible:ring-offset-1 hover:no-underline"
+              className="p-2.5 rounded-full text-gray-500 hover:text-primary hover:bg-primary/5 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 hover:no-underline"
             >
               <Search size={19} strokeWidth={1.7} />
             </Link>
@@ -739,7 +758,7 @@ const Navbar = () => {
                 <div ref={notifRef} className="relative">
                   <button
                     onClick={() => { setNotifOpen(o => !o); setDropdownOpen(false); setMenuOpen(false); }}
-                    className="relative p-2.5 rounded-full text-gray-500 hover:text-[#0079C1] hover:bg-[#0079C1]/5 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#0079C1] focus-visible:ring-offset-1"
+                    className="relative p-2.5 rounded-full text-gray-500 hover:text-primary hover:bg-primary/5 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
                     aria-label={`Notifications${badges.notifications > 0 ? `, ${badges.notifications} unread` : ''}`}
                     aria-expanded={notifOpen}
                     aria-haspopup="dialog"
@@ -756,9 +775,9 @@ const Navbar = () => {
                       aria-label="Notifications"
                     >
                       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                        <span className="text-sm font-semibold text-[#191919]">Notifications</span>
+                        <span className="text-sm font-semibold text-ink">Notifications</span>
                         <button
-                          className="text-[11px] text-[#0079C1] font-medium hover:underline focus:outline-none"
+                          className="text-[11px] text-primary font-medium hover:underline focus:outline-none"
                           onClick={() => markAllNotificationsRead(notifRole).then(loadNotifs).catch(() => {})}
                         >
                           Mark all read
@@ -780,7 +799,7 @@ const Navbar = () => {
                           <button
                             type="button"
                             onClick={loadNotifs}
-                            className="mt-2 text-[11px] font-medium text-[#0079C1] hover:underline focus:outline-none"
+                            className="mt-2 text-[11px] font-medium text-primary hover:underline focus:outline-none"
                           >
                             Try again
                           </button>
@@ -802,9 +821,9 @@ const Navbar = () => {
                                   markNotificationRead(n.id).catch(() => {});
                                   setNotifOpen(false);
                                 }}
-                                className={`block px-4 py-3 hover:bg-gray-50 hover:no-underline ${n.read_at ? '' : 'bg-[#0079C1]/4'}`}
+                                className={`block px-4 py-3 hover:bg-gray-50 hover:no-underline ${n.read_at ? '' : 'bg-primary/4'}`}
                               >
-                                <p className="text-sm font-medium text-[#191919]">{n.title}</p>
+                                <p className="text-sm font-medium text-ink">{n.title}</p>
                                 {n.body && <p className="text-xs text-gray-500 mt-0.5">{n.body}</p>}
                               </Link>
                             </li>
@@ -819,7 +838,7 @@ const Navbar = () => {
                 <div ref={dropdownRef} className="relative">
                   <button
                     onClick={() => { setDropdownOpen(o => !o); setNotifOpen(false); setMenuOpen(false); }}
-                    className="flex items-center gap-1.5 pl-1 pr-2 py-1 rounded-full hover:bg-gray-100 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#0079C1] focus-visible:ring-offset-1"
+                    className="flex items-center gap-1.5 pl-1 pr-2 py-1 rounded-full hover:bg-gray-100 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
                     aria-label="Profile and account menu"
                     aria-expanded={dropdownOpen}
                     aria-haspopup="menu"
@@ -884,16 +903,16 @@ const Navbar = () => {
               <>
                 <Link
                   to="/become-a-host"
-                  className="btn hidden md:inline-flex items-center px-4 py-2 text-[13px] font-semibold text-white bg-primary hover:bg-[#005E99] transition-colors duration-150 shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-[#0079C1] focus-visible:ring-offset-1 hover:no-underline"
+                  className="btn hidden md:inline-flex items-center px-4 py-2 text-[13px] font-semibold text-white bg-primary hover:bg-primary-dark transition-colors duration-150 shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 hover:no-underline"
                 >
-                  Let's Get Started
+                  Start for Free
                 </Link>
               </>
             )}
 
             {/* Mobile hamburger */}
             <button
-              className="md:hidden p-2.5 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#0079C1] ml-1"
+              className="md:hidden p-2.5 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-primary ml-1"
               onClick={() => { setMenuOpen(o => !o); setDropdownOpen(false); setNotifOpen(false); setSignInOpen(false); }}
               aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={menuOpen}
@@ -935,28 +954,28 @@ const Navbar = () => {
                     className={[
                       'flex items-center gap-3 px-3 py-3 text-[13px] font-medium rounded-lg transition-colors duration-150',
                       active
-                        ? 'text-[#0079C1] bg-[#0079C1]/6'
-                        : 'text-gray-600 hover:text-[#0079C1] hover:bg-[#0079C1]/5',
+                        ? 'text-primary bg-primary/6'
+                        : 'text-gray-600 hover:text-primary hover:bg-primary/5',
                     ].join(' ')}
                   >
                     <Icon
                       size={18}
                       strokeWidth={active ? 2.2 : 1.7}
-                      className={`flex-shrink-0 ${active ? 'text-[#0079C1]' : 'text-gray-400'}`}
+                      className={`flex-shrink-0 ${active ? 'text-primary' : 'text-gray-400'}`}
                     />
                     <span className="flex-1">{item.label}</span>
                     {item.tag && (
-                      <span className="px-1.5 h-[16px] rounded-full bg-amber-400 text-[#191919] text-[10px] font-bold uppercase tracking-wide flex items-center">
+                      <span className="px-1.5 h-[16px] rounded-full bg-amber-400 text-ink text-[10px] font-bold uppercase tracking-wide flex items-center">
                         {item.tag}
                       </span>
                     )}
                     {item.badge && badges[item.badge] > 0 && (
-                      <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[#0079C1] text-white text-[10px] font-bold flex items-center justify-center">
+                      <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center">
                         {badges[item.badge]}
                       </span>
                     )}
                     {active && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#0079C1] flex-shrink-0" aria-hidden="true" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" aria-hidden="true" />
                     )}
                   </NavLink>
                 );
@@ -967,11 +986,11 @@ const Navbar = () => {
                 CTA. Industry + info collapsed so the drawer stays short. */}
             {!user && (
               <div className="px-2 pt-2 space-y-1.5">
-                <Link to="/how-it-works" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-[#0079C1]/5 hover:text-[#0079C1] hover:no-underline">
+                <Link to="/how-it-works" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-primary/5 hover:text-primary hover:no-underline">
                   <Sparkles size={16} className="flex-shrink-0 text-gray-400" /> How It Works
                 </Link>
 
-                <Link to="/pricing" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-[#0079C1]/5 hover:text-[#0079C1] hover:no-underline">
+                <Link to="/pricing" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-primary/5 hover:text-primary hover:no-underline">
                   <Tag size={16} className="flex-shrink-0 text-gray-400" /> Pricing
                 </Link>
 
@@ -982,7 +1001,7 @@ const Navbar = () => {
                   const SecIcon = sec.icon;
                   return (
                     <details key={sec.label} className="group rounded-lg">
-                      <summary className="flex cursor-pointer list-none items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-[#0079C1]/5 [&::-webkit-details-marker]:hidden">
+                      <summary className="flex cursor-pointer list-none items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-primary/5 [&::-webkit-details-marker]:hidden">
                         <SecIcon size={16} className="flex-shrink-0 text-gray-400" />
                         <span className="flex-1">{sec.label}</span>
                         <ChevronDown size={15} className="text-gray-400 transition-transform group-open:rotate-180" />
@@ -991,7 +1010,7 @@ const Navbar = () => {
                         {sec.items.map((it) => {
                           const ItIcon = it.icon;
                           return (
-                            <Link key={it.href} to={it.href} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] text-gray-600 hover:bg-[#0079C1]/5 hover:text-[#0079C1] hover:no-underline">
+                            <Link key={it.href} to={it.href} className="flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] text-gray-600 hover:bg-primary/5 hover:text-primary hover:no-underline">
                               {ItIcon && <ItIcon size={15} className="flex-shrink-0 text-gray-400" />}
                               {it.label}
                             </Link>
@@ -1005,9 +1024,9 @@ const Navbar = () => {
                 {/* Primary conversion CTA — last in the sequence */}
                 <Link
                   to="/become-a-host"
-                  className="btn mt-1 block w-full rounded-lg bg-primary py-2.5 text-center text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-[#005E99] hover:no-underline"
+                  className="btn mt-1 block w-full rounded-lg bg-primary py-2.5 text-center text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-primary-dark hover:no-underline"
                 >
-                  Let's Get Started
+                  Start for Free
                 </Link>
               </div>
             )}

@@ -53,12 +53,12 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Replace BOTH with THIS project's IDs after you create the Vercel project
-  # (Vercel → Project → Settings → General → Project ID; Org/Team ID under
-  # Team/Account Settings → General). IDs are NOT secrets. See DEPLOYMENT.md Phase 3.
-  # Until these are real, the production deploy job will fail fast (wrong/empty project).
-  VERCEL_ORG_ID: REPLACE_WITH_VERCEL_ORG_ID
-  VERCEL_PROJECT_ID: REPLACE_WITH_VERCEL_PROJECT_ID
+  # THIS project's Vercel IDs (not secrets; pinned here). From the Vercel dashboard
+  # or `vercel project inspect`. The VERCEL_TOKEN repo secret (GitHub → Settings →
+  # Secrets and variables → Actions) authenticates the deploy and MUST be set, or
+  # this job fails with an auth error and prod never updates.
+  VERCEL_ORG_ID: team_uxnH0xiRg1CUjgcNL1rxf0MJ
+  VERCEL_PROJECT_ID: prj_G0HSyvMvRWt7doXpU7MRImSLgY5u
 
 jobs:
   # Generate OG social cards for any freshly-published blog post BEFORE the deploy.

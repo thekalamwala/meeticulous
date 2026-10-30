@@ -38,13 +38,13 @@ const NotificationBell = () => {
       <button onClick={() => setOpen(o => !o)} aria-label="Notifications"
         className="relative p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors">
         <Ic d={IC.bell} size={16} />
-        {total > 0 && <span data-testid="bell-dot" className="absolute top-[7px] right-[7px] w-[7px] h-[7px] rounded-full bg-[#0079C1] ring-2 ring-white" />}
+        {total > 0 && <span data-testid="bell-dot" className="absolute top-[7px] right-[7px] w-[7px] h-[7px] rounded-full bg-[#960D32] ring-2 ring-white" />}
       </button>
       {open && (
         <div className="absolute right-0 top-full mt-2 adm-card rounded-xl shadow-xl w-72 z-50 overflow-hidden">
           <div className="flex items-center justify-between px-3 pt-2.5 pb-1.5 border-b adm-border">
             <p className="text-[10px] font-bold adm-t3 uppercase tracking-widest">Needs attention</p>
-            {total > 0 && <span className="text-[11px] font-semibold text-[#0079C1]">{total}</span>}
+            {total > 0 && <span className="text-[11px] font-semibold text-[#960D32]">{total}</span>}
           </div>
           {state === 'loading' && <p className="px-3 py-5 text-center text-[12px] adm-t3">Loading…</p>}
           {state === 'error' && <p className="px-3 py-5 text-center text-[12px] text-red-400">Couldn't load</p>}

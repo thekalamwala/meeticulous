@@ -32,7 +32,7 @@ export function TabBar({ tabs, value, onChange }) {
         const on = t.value === value;
         return (
           <button key={t.value} type="button" role="tab" aria-selected={on} onClick={() => onChange(t.value)}
-            className={`!min-h-0 -mb-px py-2 text-[13px] font-semibold border-b-2 transition-colors ${on ? 'border-[#0079C1] text-[#0079C1]' : 'border-transparent adm-t3 hover:adm-t1'}`}>
+            className={`!min-h-0 -mb-px py-2 text-[13px] font-semibold border-b-2 transition-colors ${on ? 'border-[#960D32] text-[#960D32]' : 'border-transparent adm-t3 hover:adm-t1'}`}>
             {t.label}
           </button>
         );
@@ -53,7 +53,7 @@ export function SectionTitle({ children, right }) {
 // KPI card from the mockups: soft orange icon tile, big value, label, optional delta.
 export function Kpi({ icon, value, label, sub, delta, tone = 'orange' }) {
   const tile = {
-    orange: 'bg-[#0079C1]/10 text-[#0079C1]', red: 'bg-red-500/10 text-red-600', green: 'bg-emerald-500/10 text-emerald-600',
+    orange: 'bg-[#960D32]/10 text-[#960D32]', red: 'bg-red-500/10 text-red-600', green: 'bg-emerald-500/10 text-emerald-600',
     blue: 'bg-blue-500/10 text-blue-600', gray: 'adm-chip adm-t2', amber: 'bg-amber-500/10 text-amber-600',
   }[tone];
   return (
@@ -87,7 +87,7 @@ export function TodayStrip({ today, totals, compact = false }) {
   );
 }
 
-export function Bar({ value, color = '#0079C1' }) {
+export function Bar({ value, color = '#960D32' }) {
   return <div className="h-2 rounded-full adm-chip overflow-hidden"><div className="h-2 rounded-full" style={{ width: `${Math.max(0, Math.min(100, value))}%`, background: color }} /></div>;
 }
 

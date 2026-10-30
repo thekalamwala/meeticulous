@@ -21,7 +21,7 @@ export default function CareersHero() {
     <section ref={root} className="relative overflow-hidden px-5 py-24 text-center sm:px-8 lg:py-32">
       <div
         className="pointer-events-none absolute inset-0 -z-10"
-        style={{ background: 'radial-gradient(55% 50% at 50% 30%, #D6ECF8 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(55% 50% at 50% 30%, #FBE3E8 0%, transparent 70%)' }}
         aria-hidden="true"
       />
       <div className="mx-auto max-w-3xl">

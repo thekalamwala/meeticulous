@@ -186,7 +186,7 @@ export const PROFESSION_LANDING = {
       },
       {
         q: 'How much does it cost?',
-        a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹10 a day (billed yearly) and remove all commission, so you keep 100% of every consultation fee.',
+        a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹3 a day (billed yearly) and remove all commission, so you keep 100% of every consultation fee.',
       },
       {
         q: 'Is it suitable for Chartered Accountants and legal consultants too?',
@@ -624,7 +624,7 @@ export const PROFESSION_LANDING = {
       },
       {
         q: 'How much does it cost?',
-        a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹10 a day (billed yearly) and remove all commission, so you keep 100% of every session fee.',
+        a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹3 a day (billed yearly) and remove all commission, so you keep 100% of every session fee.',
       },
       {
         q: 'Is it suitable for coaches, advisors and freelance consultants?',
@@ -1048,7 +1048,7 @@ export const PROFESSION_LANDING = {
       },
       {
         q: 'How much does it cost?',
-        a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹10 a day (billed yearly) and remove all commission, so you keep 100% of every fee.',
+        a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹3 a day (billed yearly) and remove all commission, so you keep 100% of every fee.',
       },
       {
         q: 'Is it suitable for designers, developers, writers and consultants?',
@@ -1382,7 +1382,7 @@ export const PROFESSION_LANDING = {
       { q: 'Can I collect class fees when students book?', a: 'Yes. Your fee is shown on the booking page and collected at checkout through Razorpay (UPI, cards, netbanking) before the class, with a GST invoice generated automatically. You can charge per class or per batch.' },
       { q: 'Can I run both batches and 1:1 lessons?', a: 'Yes. You can set up separate services for group batches and private lessons, each with its own capacity and availability, so bookings never clash.' },
       { q: 'How does it reduce demo-class no-shows?', a: 'Automatic email and WhatsApp reminders go out before every class, and making demos confirmed or paid means only serious students book your time.' },
-      { q: 'How much does it cost?', a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹10 a day (billed yearly) and remove all commission, so you keep 100% of every fee.' },
+      { q: 'How much does it cost?', a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹3 a day (billed yearly) and remove all commission, so you keep 100% of every fee.' },
       { q: 'Is it suitable for coaching institutes and online educators?', a: 'Yes. Tutors, coaching institutes, music and language teachers, exam-prep coaches and online educators can all use Meeticulous to run class bookings and payments from one link.' },
     ],
     finalCta: { icon: GraduationCap, urgency: 'Every empty seat is a student who enrolled elsewhere.', headline: 'More teaching. Less timetabling.', subline: 'Set up your class booking page in minutes. Free to start, no card required — cancel anytime, no lock-in.', ctaText: 'Create My Booking Page' },
@@ -1563,7 +1563,7 @@ export const PROFESSION_LANDING = {
       { q: 'Can clients pay an advance to hold their date?', a: 'Yes. You can collect a consultation fee or a date-hold advance at checkout through Razorpay (UPI, cards, netbanking), with a GST invoice generated automatically — so only committed clients block your calendar.' },
       { q: 'Does it prevent double-booking peak dates?', a: 'Yes. A date locks the moment its advance is paid, and Google Calendar busy-time blocking keeps availability accurate — so two clients can never hold the same date.' },
       { q: 'How does it reduce no-shows for planning meetings?', a: 'Automatic email and WhatsApp reminders go out before every consultation, and paid consultations mean serious clients actually attend.' },
-      { q: 'How much does it cost?', a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹10 a day (billed yearly) and remove all commission, so you keep 100% of every fee.' },
+      { q: 'How much does it cost?', a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹3 a day (billed yearly) and remove all commission, so you keep 100% of every fee.' },
       { q: 'Is it suitable for wedding planners and decorators?', a: 'Yes. Wedding and event planners, decorators, caterers and venue managers can all use Meeticulous for consultation bookings, date holds and payments from one link.' },
     ],
     finalCta: { icon: Sparkles, urgency: 'Every un-held date is an event that went to another planner.', headline: 'More celebrations. Less coordination.', subline: 'Set up your event booking page in minutes. Free to start, no card required — cancel anytime, no lock-in.', ctaText: 'Create My Booking Page' },
@@ -1654,7 +1654,7 @@ export const PROFESSION_LANDING = {
       { q: 'Can I route calls to different team members?', a: 'Yes. Each team member can have their own services and availability, so prospects book the right person and slots never clash across the team.' },
       { q: 'Can I charge for paid strategy sessions or audits?', a: 'Yes. You can offer free discovery calls and paid sessions side by side, collecting fees at checkout through Razorpay with a GST invoice generated automatically.' },
       { q: 'Can I filter out unqualified leads?', a: 'Yes. Intake questions and paid strategy slots filter out tyre-kickers before they ever reach your team’s calendar.' },
-      { q: 'How much does it cost?', a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹10 a day (billed yearly) and remove all commission, so you keep 100% of every fee.' },
+      { q: 'How much does it cost?', a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹3 a day (billed yearly) and remove all commission, so you keep 100% of every fee.' },
       { q: 'Is it suitable for design, marketing and dev studios?', a: 'Yes. Design, branding, marketing, development and creative studios of any size can use Meeticulous to route discovery calls and collect payments from one shared link.' },
     ],
     finalCta: { icon: TrendingUp, urgency: 'Every slow reply is a lead that booked a competitor.', headline: 'More pitches. Less scheduling.', subline: 'Set up your agency booking page in minutes. Free to start, no card required — cancel anytime, no lock-in.', ctaText: 'Create My Booking Page' },
@@ -1726,15 +1726,15 @@ PROFESSION_LANDING.therapists = {
     { icon: Lock, label: 'Razorpay-secured payments' },
     { icon: FileCheck, label: 'Automatic GST invoices' },
     { icon: ShieldCheck, label: 'Client data encrypted & private' },
-    { icon: BadgePercent, label: '0% commission on Sloth Active' },
+    { icon: BadgePercent, label: '0% commission on Pro' },
   ],
 
   // Product facts only: no usage numbers.
   stats: [
     { icon: CalendarClock, value: '24/7', label: 'Clients book a private slot, any hour' },
     { icon: BellRing, value: '24h', label: 'Reminder before every session' },
-    { icon: BadgePercent, value: '0%', label: 'Commission on Sloth Active' },
-    { icon: IndianRupee, value: '₹0', label: 'To start on the free Sloth plan' },
+    { icon: BadgePercent, value: '0%', label: 'Commission on Pro' },
+    { icon: IndianRupee, value: '₹0', label: 'To start on the free Starter plan' },
   ],
 
   painPoints: [
@@ -1756,7 +1756,7 @@ PROFESSION_LANDING.therapists = {
     {
       icon: ClipboardList,
       problem: 'Repeating intake questions in the first session',
-      solution: 'Add intake fields to your booking form on Sloth Active and read the answers before you meet.',
+      solution: 'Add intake fields to your booking form on Pro and read the answers before you meet.',
     },
     {
       icon: Lock,
@@ -1774,7 +1774,7 @@ PROFESSION_LANDING.therapists = {
     {
       icon: CalendarCheck,
       title: 'Weekly slots, easy to rebook',
-      desc: 'Set your weekly hours and blocked dates once. Clients rebook their usual slot from your link, and Sloth Active sends follow-ups that invite them back.',
+      desc: 'Set your weekly hours and blocked dates once. Clients rebook their usual slot from your link, and Pro sends follow-ups that invite them back.',
     },
     {
       icon: Wallet,
@@ -1789,13 +1789,13 @@ PROFESSION_LANDING.therapists = {
     {
       icon: BellRing,
       title: 'Reminders and Meet links, sent for you',
-      desc: 'Email and WhatsApp reminders go out 24 hours before each session, plus 1 hour before on Sloth Active. Online sessions get a Google Meet link automatically.',
+      desc: 'Email and WhatsApp reminders go out 24 hours before each session, plus 1 hour before on Pro. Online sessions get a Google Meet link automatically.',
     },
   ],
 
   pricing: {
     hook: 'Less than a cup of chai a day.',
-    line: 'Start free on Sloth with 5% per paid booking. Sloth Active is ₹399/month or ₹3,599/year, GST included, with 0% commission.',
+    line: 'Start free on Starter with 5% per paid booking. Pro is ₹235/month or ₹1,179/year, GST included, with 0% commission.',
   },
 
   midCtas: {
@@ -1812,7 +1812,7 @@ PROFESSION_LANDING.therapists = {
   faq: [
     {
       q: 'What is the best booking and payment software for therapists in India?',
-      a: 'Meeticulous is built for Indian therapists, psychologists and counsellors. Clients book a private session from your link, pay upfront by UPI, card or netbanking, and get automatic reminders and a Google Meet link for online sessions. It generates GST invoices and charges 0% commission on Sloth Active.',
+      a: 'Meeticulous is built for Indian therapists, psychologists and counsellors. Clients book a private session from your link, pay upfront by UPI, card or netbanking, and get automatic reminders and a Google Meet link for online sessions. It generates GST invoices and charges 0% commission on Pro.',
     },
     {
       q: 'Can clients pay for therapy sessions in advance?',
@@ -1820,11 +1820,11 @@ PROFESSION_LANDING.therapists = {
     },
     {
       q: 'Can I run weekly recurring sessions?',
-      a: 'You set your weekly hours once, and clients rebook their usual slot from your link after each session, paying for each one upfront. Meeticulous does not create an automatic repeating series or charge clients on a subscription. On Sloth Active, follow-up messages invite clients to book their next session.',
+      a: 'You set your weekly hours once, and clients rebook their usual slot from your link after each session, paying for each one upfront. Meeticulous does not create an automatic repeating series or charge clients on a subscription. On Pro, follow-up messages invite clients to book their next session.',
     },
     {
       q: 'Can I collect intake information before the first session?',
-      a: 'Yes. On Sloth Active you can add custom intake fields to your booking form, so you read the client’s answers before you meet. Sloth Active also keeps a client record with private notes and booking history.',
+      a: 'Yes. On Pro you can add custom intake fields to your booking form, so you read the client’s answers before you meet. Pro also keeps a client record with private notes and booking history.',
     },
     {
       q: 'How are client details kept confidential?',
@@ -1836,7 +1836,7 @@ PROFESSION_LANDING.therapists = {
     },
     {
       q: 'How much does it cost?',
-      a: 'You can start free on the Sloth plan, which charges 5% per paid booking. Sloth Active costs ₹399 a month or ₹3,599 a year, GST included, with 0% commission. Clients pay a ₹10 booking fee plus GST on it at checkout, and the payment gateway’s charge applies on both plans.',
+      a: 'You can start free on the Starter plan, which charges 5% per paid booking. Pro costs ₹235 a month or ₹1,179 a year, GST included, with 0% commission. Clients pay a ₹10 booking fee plus GST on it at checkout, and the payment gateway’s charge applies on both plans.',
     },
   ],
 
@@ -1911,15 +1911,15 @@ PROFESSION_LANDING['yoga-instructors'] = {
     { icon: Lock, label: 'Razorpay-secured payments' },
     { icon: FileCheck, label: 'Automatic GST invoices' },
     { icon: ShieldCheck, label: 'Student data encrypted & private' },
-    { icon: BadgePercent, label: '0% commission on Sloth Active' },
+    { icon: BadgePercent, label: '0% commission on Pro' },
   ],
 
   // Product facts only: no usage numbers.
   stats: [
     { icon: CalendarClock, value: '24/7', label: 'Trial and private classes booked, any hour' },
     { icon: BellRing, value: '24h', label: 'Reminder before every class' },
-    { icon: BadgePercent, value: '0%', label: 'Commission on Sloth Active' },
-    { icon: IndianRupee, value: '₹0', label: 'To start on the free Sloth plan' },
+    { icon: BadgePercent, value: '0%', label: 'Commission on Pro' },
+    { icon: IndianRupee, value: '₹0', label: 'To start on the free Starter plan' },
   ],
 
   painPoints: [
@@ -1969,18 +1969,18 @@ PROFESSION_LANDING['yoga-instructors'] = {
     {
       icon: BellRing,
       title: 'Reminders and Meet links',
-      desc: 'Email and WhatsApp reminders 24 hours before class, plus 1 hour before on Sloth Active. Online classes get a Google Meet link automatically.',
+      desc: 'Email and WhatsApp reminders 24 hours before class, plus 1 hour before on Pro. Online classes get a Google Meet link automatically.',
     },
     {
       icon: Users,
       title: 'Know your regulars',
-      desc: 'On Sloth Active, your client list keeps each student’s booking history and notes, and shows who has not booked in a while.',
+      desc: 'On Pro, your client list keeps each student’s booking history and notes, and shows who has not booked in a while.',
     },
   ],
 
   pricing: {
     hook: 'Less than a cup of chai a day.',
-    line: 'Start free on Sloth with 5% per paid booking. Sloth Active is ₹399/month or ₹3,599/year, GST included, with 0% commission.',
+    line: 'Start free on Starter with 5% per paid booking. Pro is ₹235/month or ₹1,179/year, GST included, with 0% commission.',
   },
 
   midCtas: {
@@ -1997,11 +1997,11 @@ PROFESSION_LANDING['yoga-instructors'] = {
   faq: [
     {
       q: 'What is the best yoga class booking software for instructors in India?',
-      a: 'Meeticulous is built for Indian yoga instructors. Students book trial and private classes from your link, pay upfront by UPI, card or netbanking, and get automatic reminders and a Google Meet link for online classes. It generates GST invoices and charges 0% commission on Sloth Active.',
+      a: 'Meeticulous is built for Indian yoga instructors. Students book trial and private classes from your link, pay upfront by UPI, card or netbanking, and get automatic reminders and a Google Meet link for online classes. It generates GST invoices and charges 0% commission on Pro.',
     },
     {
       q: 'Can I offer a free trial class?',
-      a: 'Yes. You can list a free (₹0) trial class next to your paid sessions. The free Sloth plan includes up to 2 free services, and a free booking carries no booking fee or commission.',
+      a: 'Yes. You can list a free (₹0) trial class next to your paid sessions. The free Starter plan includes up to 2 free services, and a free booking carries no booking fee or commission.',
     },
     {
       q: 'Can students pay monthly batch fees by UPI?',
@@ -2013,11 +2013,11 @@ PROFESSION_LANDING['yoga-instructors'] = {
     },
     {
       q: 'Do students get WhatsApp reminders?',
-      a: 'Yes. Reminders go to you and the student 24 hours before class on every plan, and Sloth Active adds a reminder 1 hour before. On the free plan, WhatsApp reminders run for the first 60 days after signup and then continue by email.',
+      a: 'Yes. Reminders go to you and the student 24 hours before class on every plan, and Pro adds a reminder 1 hour before. On the free plan, WhatsApp reminders run for the first 60 days after signup and then continue by email.',
     },
     {
       q: 'How much does it cost?',
-      a: 'You can start free on the Sloth plan, which charges 5% per paid booking. Sloth Active costs ₹399 a month or ₹3,599 a year, GST included, with 0% commission. Students pay a ₹10 booking fee plus GST on it at checkout for paid classes, and the payment gateway’s charge applies on both plans.',
+      a: 'You can start free on the Starter plan, which charges 5% per paid booking. Pro costs ₹235 a month or ₹1,179 a year, GST included, with 0% commission. Students pay a ₹10 booking fee plus GST on it at checkout for paid classes, and the payment gateway’s charge applies on both plans.',
     },
   ],
 

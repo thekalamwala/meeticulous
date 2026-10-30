@@ -4,18 +4,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#0079C1",
-        "primary-dark": "#005E99",
-        // White-text buttons only. #0079C1 + white = 3.26:1 (fails WCAG AA);
-        // this darker shade = ~5.3:1. Keep `primary` for accents/large text.
-        "primary-cta": "#00457C",
-        "primary-light": "#D6ECF8",
-        secondary: "#f59e0b",
+        primary: "#960D32",
+        "primary-dark": "#7A0A28",
+        // White-text buttons + body links. Crimson #960D32 on white = ~8.7:1 (AA/AAA).
+        "primary-cta": "#960D32",
+        "primary-light": "#FBE3E8",
+        secondary: "#FF9FB0",
+        teal: "#00C9C6",
+        "teal-ink": "#0E7C7A",
+        "surface-dark": "#5E0820",
+        "surface-darker": "#3D0514",
+        "ink-brand": "#3D0514",
         surface: "#ffffff",
-        muted: "#6b7280",
-        ink: "#191919",
-        sand: "#F1F5F9",
-        canvas: "#F8FAFC",
+        muted: "#6E5257",
+        ink: "#2A1416",
+        sand: "#FFF1F4",
+        canvas: "#FFF8FA",
         // Accent palette — reusable multi-hue accents (Calendly-style colour).
         // Mirrors --c-* in src/styles/design-tokens.css — keep both in sync.
         // Literal hex (not var) so Tailwind's /opacity modifier can compute alpha.
@@ -25,6 +29,19 @@ export default {
         "c-emerald": "#059669",
         "c-amber": "#f59e0b",
         "c-pink": "#db2777",
+        // Action accent — crimson conversion CTA.
+        action: "#960D32",
+        "action-dark": "#7A0A28",
+        // Semantic status (fg = text/icon/solid, bg = subtle tint). Keep in sync
+        // with the --*-fg / --*-bg vars in src/styles/design-tokens.css.
+        "success-fg": "#15803D",
+        "success-bg": "#DCFCE7",
+        "warning-fg": "#B45309",
+        "warning-bg": "#FEF3C7",
+        "error-fg": "#DC2626",
+        "error-bg": "#FEE2E2",
+        "info-fg": "#0369A1",
+        "info-bg": "#E0F2FE",
       },
       fontFamily: {
         sans: ["Poppins", "Poppins Fallback", "system-ui", "sans-serif"],

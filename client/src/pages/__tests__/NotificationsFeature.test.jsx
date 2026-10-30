@@ -21,10 +21,10 @@ describe('Notifications feature page', () => {
     expect(screen.getByText(/starting in 1 hour/i)).toBeTruthy();
   });
 
-  it('plan toggle lights up the 1-hour reminder on Sloth Active', () => {
+  it('plan toggle lights up the 1-hour reminder on Pro', () => {
     renderPage();
     expect(screen.getByTestId('flow-1h').getAttribute('data-on')).toBe('false');
-    fireEvent.click(screen.getByRole('button', { name: 'Sloth Active' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Pro' }));
     expect(screen.getByTestId('flow-1h').getAttribute('data-on')).toBe('true');
   });
 });

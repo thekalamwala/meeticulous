@@ -10,7 +10,7 @@
 import { useEffect } from 'react';
 import confetti from 'canvas-confetti';
 
-const COLORS = ['#0079C1', '#f59e0b', '#10b981', '#a78bfa', '#ffd166', '#ffffff'];
+const COLORS = ['#960D32', '#f59e0b', '#10b981', '#FF9FB0', '#ffd166', '#ffffff'];
 const FULL_MS = 3000;   // steady phase
 const TOTAL_MS = 6000;  // then taper to zero
 

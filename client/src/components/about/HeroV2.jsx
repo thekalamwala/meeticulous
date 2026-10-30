@@ -6,7 +6,7 @@ import ImgWithSkeleton from "./ImgWithSkeleton";
 
 const WORDS = hero.typeWords;
 // One colour per word — Pink · Blue · Green · Orange · Yellow (PBGOY).
-const TYPE_COLORS = ["#FF4D93", "#269CEF", "#4AB765", "#0079C1", "#FFCC1C"];
+const TYPE_COLORS = ["#FF4D93", "#269CEF", "#4AB765", "#960D32", "#FFCC1C"];
 
 function useTypewriter(words) {
   const [state, setState] = useState({ text: words[0], wi: 0 });
@@ -35,7 +35,7 @@ export default function HeroV2() {
 
   return (
     <section className="relative overflow-hidden px-5 py-12 sm:px-8 lg:py-16">
-      <div ref={aura} aria-hidden className="pointer-events-none absolute inset-0 -z-10" style={{ background: "radial-gradient(55% 50% at 30% 30%, #D6ECF8 0%, transparent 70%)" }} />
+      <div ref={aura} aria-hidden className="pointer-events-none absolute inset-0 -z-10" style={{ background: "radial-gradient(55% 50% at 30% 30%, #FBE3E8 0%, transparent 70%)" }} />
       <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[3fr_2fr]">
         <div>
           <h1 className="font-heading text-4xl font-extrabold leading-[1.12] sm:text-5xl lg:text-6xl">

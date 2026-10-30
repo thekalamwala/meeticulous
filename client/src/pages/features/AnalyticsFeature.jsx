@@ -27,7 +27,7 @@
 //   Customers (pages/ClientsList.jsx, server crmService): bookings, total spent,
 //     last booking, Recurring (2+ bookings), Top Spend sort, Lapsed filter
 //     (2+ bookings, nothing upcoming, none in 60 days), CSV export. limits.crm:
-//     Sloth = 10 most recent clients (v3.167), Sloth Active = all.
+//     Starter = 10 most recent clients (v3.167), Pro = all.
 // NOT claimed (no code behind it): visitor/conversion funnel, live auto-refresh,
 // "advanced reports", rating trends. Hero values are SAMPLE data, labelled so.
 //

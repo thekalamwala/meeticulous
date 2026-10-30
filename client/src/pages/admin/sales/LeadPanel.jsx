@@ -57,13 +57,13 @@ function Stepper({ status, onPick }) {
           <Fragment key={s}>
             <button type="button" onClick={() => onPick(s)} className="flex flex-col items-center gap-1 shrink-0 w-11 group" title={STATUS_LABEL[s]}>
               <span className={`w-6 h-6 rounded-full grid place-items-center border-2 transition
-                ${done ? 'bg-[#0079C1] border-[#0079C1] text-white' : 'adm-card border-gray-300 group-hover:border-[#0079C1]'}
-                ${isCur ? 'ring-2 ring-[#0079C1]/30' : ''}`}>
+                ${done ? 'bg-[#960D32] border-[#960D32] text-white' : 'adm-card border-gray-300 group-hover:border-[#960D32]'}
+                ${isCur ? 'ring-2 ring-[#960D32]/30' : ''}`}>
                 {done ? <Check size={13} /> : <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />}
               </span>
-              <span className={`text-[9px] leading-tight text-center ${isCur ? 'font-semibold text-[#0079C1]' : 'adm-t3'}`}>{STATUS_LABEL[s]}</span>
+              <span className={`text-[9px] leading-tight text-center ${isCur ? 'font-semibold text-[#960D32]' : 'adm-t3'}`}>{STATUS_LABEL[s]}</span>
             </button>
-            {i < STEP_STAGES.length - 1 && <span className={`h-0.5 flex-1 mt-3 ${i < cur ? 'bg-[#0079C1]' : 'bg-gray-200'}`} />}
+            {i < STEP_STAGES.length - 1 && <span className={`h-0.5 flex-1 mt-3 ${i < cur ? 'bg-[#960D32]' : 'bg-gray-200'}`} />}
           </Fragment>
         );
       })}
@@ -97,7 +97,7 @@ function EnrollControl({ leadId, onDone }) {
       {open && (
         <div className="absolute z-20 mt-1 w-60 rounded-xl adm-card shadow-lg max-h-60 overflow-auto">
           {seqs === null ? <p className="px-3 py-2 text-[12px] adm-t3">Loading…</p>
-            : seqs.length === 0 ? <p className="px-3 py-2 text-[12px] adm-t3">No active sequences. <a href="/admin/sales/sequences" className="text-[#0079C1]">Create one</a>.</p>
+            : seqs.length === 0 ? <p className="px-3 py-2 text-[12px] adm-t3">No active sequences. <a href="/admin/sales/sequences" className="text-[#960D32]">Create one</a>.</p>
             : seqs.map((s) => (
               <button key={s.id} type="button" disabled={busy} onClick={() => enroll(s.id)}
                 className="w-full text-left px-3 py-2 adm-hoverable text-[13px] adm-t1 disabled:opacity-50">{s.name}</button>
@@ -128,7 +128,7 @@ function PlanInterestPicker({ value, onPick }) {
   return (
     <div className="relative inline-block">
       <button type="button" onClick={() => setOpen((v) => !v)}
-        className="text-[13px] font-semibold adm-t1 hover:text-[#0079C1] inline-flex items-center gap-1">
+        className="text-[13px] font-semibold adm-t1 hover:text-[#960D32] inline-flex items-center gap-1">
         {label} <ChevronDown size={13} className="adm-t3" />
       </button>
       {open && (
@@ -229,7 +229,7 @@ export default function LeadPanel({ leadId, onChanged, onClose, variant = 'page'
   }, [timeline]);
 
   if (loading && !lead) return <div className="p-6"><p className="adm-t3">Loading…</p></div>;
-  if (!lead) return <div className="p-6"><p className="adm-t3">Lead not found. <Link to="/admin/sales/leads" className="text-[#0079C1]">Back</Link></p></div>;
+  if (!lead) return <div className="p-6"><p className="adm-t3">Lead not found. <Link to="/admin/sales/leads" className="text-[#960D32]">Back</Link></p></div>;
 
   const tagColors = colorMap(tagCatalog);
   const { score, temp } = leadScore(lead);
@@ -246,7 +246,7 @@ export default function LeadPanel({ leadId, onChanged, onClose, variant = 'page'
     </div>
   ) : (
     <button onClick={() => { setValInput(String(Math.round((lead.expected_value_paise || 0) / 100))); setEditVal(true); }}
-      className="text-lg font-bold adm-t1 hover:text-[#0079C1] block">
+      className="text-lg font-bold adm-t1 hover:text-[#960D32] block">
       {lead.expected_value_paise ? rupees(lead.expected_value_paise) : 'Set ✎'}
     </button>
   );
@@ -268,7 +268,7 @@ export default function LeadPanel({ leadId, onChanged, onClose, variant = 'page'
 
   const Identity = (
     <div className="flex items-start gap-3">
-      <div className="w-14 h-14 rounded-full bg-[#0079C1]/10 text-[#0079C1] grid place-items-center font-bold text-lg shrink-0">
+      <div className="w-14 h-14 rounded-full bg-[#960D32]/10 text-[#960D32] grid place-items-center font-bold text-lg shrink-0">
         {initialsOf(lead.name)}
       </div>
       <div className="min-w-0">
@@ -284,15 +284,15 @@ export default function LeadPanel({ leadId, onChanged, onClose, variant = 'page'
           {lead.phone && <p className="flex items-center gap-1.5"><Phone size={12} className="adm-t3" />{lead.phone}</p>}
           {(isHttpUrl(lead.website) || isHttpUrl(lead.linkedin) || isHttpUrl(lead.instagram)) && (
             <p className="flex items-center gap-2 flex-wrap">
-              {isHttpUrl(lead.website) && <a className="text-[#0079C1]" href={lead.website} target="_blank" rel="noreferrer">Website ↗</a>}
-              {isHttpUrl(lead.linkedin) && <a className="text-[#0079C1]" href={lead.linkedin} target="_blank" rel="noreferrer">LinkedIn ↗</a>}
-              {isHttpUrl(lead.instagram) && <a className="text-[#0079C1]" href={lead.instagram} target="_blank" rel="noreferrer">Instagram ↗</a>}
+              {isHttpUrl(lead.website) && <a className="text-[#960D32]" href={lead.website} target="_blank" rel="noreferrer">Website ↗</a>}
+              {isHttpUrl(lead.linkedin) && <a className="text-[#960D32]" href={lead.linkedin} target="_blank" rel="noreferrer">LinkedIn ↗</a>}
+              {isHttpUrl(lead.instagram) && <a className="text-[#960D32]" href={lead.instagram} target="_blank" rel="noreferrer">Instagram ↗</a>}
             </p>
           )}
           <p className="flex items-center gap-1.5 adm-t3"><Clock size={12} />Source: {lead.source}{lead.city ? ` · ${lead.city}` : ''}</p>
         </div>
         <div className="flex items-center gap-3 mt-1.5">
-          <Link to={`/admin/customer/${lead.id}`} className="inline-flex items-center gap-1 text-[12px] text-[#0079C1] font-semibold">Customer 360 <ArrowRight size={12} /></Link>
+          <Link to={`/admin/customer/${lead.id}`} className="inline-flex items-center gap-1 text-[12px] text-[#960D32] font-semibold">Customer 360 <ArrowRight size={12} /></Link>
           {lead.profile_id && <Link to={`/admin/host360/${lead.profile_id}`} className="inline-flex items-center gap-1 text-[12px] adm-t3">Host 360 <ArrowRight size={12} /></Link>}
         </div>
       </div>
@@ -301,9 +301,9 @@ export default function LeadPanel({ leadId, onChanged, onClose, variant = 'page'
 
   const NextAction = (
     <div className="rounded-2xl border border-gray-200 p-3.5 flex items-start gap-3">
-      <span className="w-9 h-9 rounded-lg bg-[#0079C1]/10 text-[#0079C1] grid place-items-center shrink-0"><CalendarClock size={18} /></span>
+      <span className="w-9 h-9 rounded-lg bg-[#960D32]/10 text-[#960D32] grid place-items-center shrink-0"><CalendarClock size={18} /></span>
       <div className="min-w-0 flex-1">
-        <p className="text-[10px] text-[#0079C1] uppercase tracking-wide font-semibold">Next action</p>
+        <p className="text-[10px] text-[#960D32] uppercase tracking-wide font-semibold">Next action</p>
         {nextFu ? (
           <>
             <p className="text-[14px] font-semibold adm-t1 truncate">{nextFu.title || 'Follow up'}</p>
@@ -325,7 +325,7 @@ export default function LeadPanel({ leadId, onChanged, onClose, variant = 'page'
         {(lead.tags || []).map((t) => <TagChip key={t} name={t} color={tagColors[t]} onRemove={() => removeTag(t)} />)}
         <div className="relative">
           <button type="button" onClick={() => setShowTagPicker((v) => !v)}
-            className="text-[11px] px-2 py-0.5 rounded-full border border-dashed border-gray-300 adm-t3 hover:border-[#0079C1]">+ Tag</button>
+            className="text-[11px] px-2 py-0.5 rounded-full border border-dashed border-gray-300 adm-t3 hover:border-[#960D32]">+ Tag</button>
           {showTagPicker && <TagPicker tags={tagCatalog} exclude={lead.tags || []} onSelect={pickTag} onCreate={createTag} onClose={() => setShowTagPicker(false)} />}
         </div>
       </div>
@@ -459,7 +459,7 @@ export default function LeadPanel({ leadId, onChanged, onClose, variant = 'page'
             <p className="text-[11px] adm-t3 mb-0.5">Primary Plan Interest</p>
             <PlanInterestPicker value={lead.plan_interest} onPick={setPlanInterest} />
           </div>
-          <Link to={detailLink} className="inline-flex items-center gap-1 text-[12px] text-[#0079C1] font-semibold pt-1">View full details <ArrowRight size={12} /></Link>
+          <Link to={detailLink} className="inline-flex items-center gap-1 text-[12px] text-[#960D32] font-semibold pt-1">View full details <ArrowRight size={12} /></Link>
         </div>
       </div>
 
@@ -468,7 +468,7 @@ export default function LeadPanel({ leadId, onChanged, onClose, variant = 'page'
         <div className="flex gap-1 border-b border-gray-100">
           {TABS.map(([k, label]) => (
             <button key={k} onClick={() => setTab(k)}
-              className={`text-[13px] px-3 py-2 -mb-px border-b-2 transition ${tab === k ? 'border-[#0079C1] text-[#0079C1] font-semibold' : 'border-transparent adm-t2 hover:adm-t1'}`}>
+              className={`text-[13px] px-3 py-2 -mb-px border-b-2 transition ${tab === k ? 'border-[#960D32] text-[#960D32] font-semibold' : 'border-transparent adm-t2 hover:adm-t1'}`}>
               {label}{k === 'notes' && notes.length ? ` (${notes.length})` : ''}{k === 'followups' && followUps.length ? ` (${followUps.length})` : ''}
             </button>
           ))}
@@ -618,7 +618,7 @@ function MergeModal({ lead, onClose, onDone }) {
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4" onClick={onClose}>
       <div className="w-full max-w-md rounded-2xl adm-card p-5" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center gap-2 mb-1"><GitMerge size={18} className="text-[#0079C1]" /><h3 className="text-base font-bold adm-t1">Merge duplicate</h3></div>
+        <div className="flex items-center gap-2 mb-1"><GitMerge size={18} className="text-[#960D32]" /><h3 className="text-base font-bold adm-t1">Merge duplicate</h3></div>
         <p className="text-[12.5px] adm-t2 mb-3">
           Find the duplicate lead. It gets folded into <span className="font-semibold adm-t1">{lead.name || lead.email || 'this lead'}</span> (kept) and removed. Its notes, tags, timeline and messages move over.
         </p>
@@ -631,12 +631,12 @@ function MergeModal({ lead, onClose, onDone }) {
           {!searching && q.trim().length >= 2 && rows.length === 0 && <p className="px-3 py-2 text-[12px] adm-t3">No other leads match.</p>}
           {rows.map((r) => (
             <button key={r.id} type="button" onClick={() => setPicked(r)}
-              className={`w-full text-left px-3 py-2 flex items-center justify-between gap-2 ${picked?.id === r.id ? 'bg-[#0079C1]/10' : 'adm-hoverable'}`}>
+              className={`w-full text-left px-3 py-2 flex items-center justify-between gap-2 ${picked?.id === r.id ? 'bg-[#960D32]/10' : 'adm-hoverable'}`}>
               <span className="min-w-0">
                 <span className="block text-[13px] adm-t1 truncate">{r.name || 'Unnamed'}</span>
                 <span className="block text-[11px] adm-t3 truncate">{r.email || r.phone || '—'} · {STATUS_LABEL[r.status] || r.status}</span>
               </span>
-              {picked?.id === r.id && <Check size={15} className="text-[#0079C1] shrink-0" />}
+              {picked?.id === r.id && <Check size={15} className="text-[#960D32] shrink-0" />}
             </button>
           ))}
         </div>
@@ -680,7 +680,7 @@ function QuickAction({ icon: Icon, label, onClick, color = 'card', size = 'lg' }
     wa: 'bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600',
     email: 'bg-blue-500 text-white border-blue-500 hover:bg-blue-600',
     call: 'bg-violet-500 text-white border-violet-500 hover:bg-violet-600',
-    card: 'adm-card adm-t2 border-gray-200 hover:border-[#0079C1]',
+    card: 'adm-card adm-t2 border-gray-200 hover:border-[#960D32]',
   };
   const pad = size === 'sm' ? 'py-2 gap-1.5 text-[12px]' : 'py-3 gap-2 text-[13px]';
   return (
@@ -824,7 +824,7 @@ function ActionModal({ type, lead, templates = [], onClose, onDone }) {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-5 pb-5 overflow-auto">
                 {gridTemplates.length === 0 ? (
-                  <p className="col-span-full text-[13px] adm-t2 py-6 text-center">No templates{q ? ' match' : ''}. Add them in <a href="/admin/sales/templates" className="text-[#0079C1]">Templates</a>.</p>
+                  <p className="col-span-full text-[13px] adm-t2 py-6 text-center">No templates{q ? ' match' : ''}. Add them in <a href="/admin/sales/templates" className="text-[#960D32]">Templates</a>.</p>
                 ) : gridTemplates.map((t) => {
                   const wa = t.channel === 'whatsapp';
                   const Icon = wa ? MessageCircle : Mail;

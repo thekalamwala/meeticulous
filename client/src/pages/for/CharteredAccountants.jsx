@@ -120,7 +120,7 @@ const BALANCE = {
   left: {
     title: 'What you stop losing',
     rows: [
-      { fig: '0%', label: 'Commission on Sloth Active' },
+      { fig: '0%', label: 'Commission on Pro' },
       { fig: '₹0', label: 'To get started — free forever' },
       { fig: 'Zero', label: 'Double bookings or clashes' },
     ],
@@ -142,7 +142,7 @@ const TESTIMONIALS = [
   { quote: 'Collecting consultation fees upfront through Razorpay, with GST invoices generated automatically, transformed our cash flow.', name: 'CA Arjun Shah', role: 'Firm Partner, Ahmedabad' },
   { quote: 'Clients schedule income-tax filing appointments without waiting for the office to reply. Setup took minutes, not weeks.', name: 'CA Sneha Iyer', role: 'Chartered Accountant, Bengaluru' },
   { quote: 'From booking to payment to follow-up, Meeticulous handles the admin so our team can focus on advisory work.', name: 'CA Vikram Desai', role: 'Managing Partner, Pune' },
-  { quote: 'A professional booking page our clients love, with 0% commission on Sloth Active — the admin side of the practice finally runs itself.', name: 'CA Ananya Gupta', role: 'Gupta & Co., New Delhi' },
+  { quote: 'A professional booking page our clients love, with 0% commission on Pro — the admin side of the practice finally runs itself.', name: 'CA Ananya Gupta', role: 'Gupta & Co., New Delhi' },
 ];
 
 // COMPARISON — a reconciliation table (manual way vs Meeticulous), copy mined from old page.
@@ -154,25 +154,25 @@ const RECONCILE = [
   { topic: 'Scheduling', icon: CalendarCheck, old: 'Double bookings slip through at deadlines', now: 'Conflict-free calendar, always accurate' },
 ];
 
-// Trust facts — verifiable only (Razorpay signatures, Mumbai hosting, DPDP 2023, 0% on Active).
+// Trust facts — verifiable only (Razorpay signatures, Mumbai hosting, DPDP 2023, 0% on Pro).
 const TRUST = [
   { icon: Lock, value: 'Razorpay', label: 'Every payment signature-verified on our servers' },
   { icon: Landmark, value: 'Hosted in India', label: 'Your practice data runs on servers in Mumbai' },
   { icon: ShieldCheck, value: 'DPDP 2023', label: 'Operated under India’s data protection law' },
-  { icon: BadgePercent, value: '0% commission', label: 'On Sloth Active — keep every rupee' },
+  { icon: BadgePercent, value: '0% commission', label: 'On Pro — keep every rupee' },
 ];
 
 const FAQ = [
   { q: 'Is Meeticulous suitable for CA firms?', a: 'Yes. Whether you are an individual Chartered Accountant or a firm with a team, Meeticulous manages your appointments, services, availability, client bookings and communication from one place — so both solo CAs and larger practices can run client meetings without the manual coordination. It is a scheduling and payment tool, not an accounting or tax-advice system.' },
   { q: 'Can clients book appointments online?', a: 'Yes. Clients open your booking link, choose a service such as a tax or GST consultation, pick a convenient time slot and confirm — no calls or waiting for a reply from your office.' },
   { q: 'Can I share my booking link on WhatsApp?', a: 'Yes. Your booking link works anywhere — share it on WhatsApp, in your email signature, on your website or on social media. One link handles all your appointment requests.' },
-  { q: 'Can I send WhatsApp reminders?', a: 'Yes. Meeticulous sends automatic booking confirmations and reminders over WhatsApp and email before each appointment, which cuts no-shows. WhatsApp reminders are included on the Sloth Active plan (and free for your first two months on the Sloth plan).' },
+  { q: 'Can I send WhatsApp reminders?', a: 'Yes. Meeticulous sends automatic booking confirmations and reminders over WhatsApp and email before each appointment, which cuts no-shows. WhatsApp reminders are included on the Pro plan (and free for your first two months on the Starter plan).' },
   { q: 'Can I accept online payments?', a: 'Yes. Collect your consultation fee upfront through Razorpay — UPI, cards or netbanking — before the meeting. A GST invoice is generated automatically for every paid booking.' },
   { q: 'Can I manage multiple services?', a: 'Yes. Create and manage as many services as you need — tax consultation, GST filing, audit meetings, advisory calls and more — each with its own duration, price and availability.' },
   { q: 'Can I use Meeticulous for virtual consultations?', a: 'Yes. Offer online consultations with automatic Google Meet links, or mark services as in-person at your office — or both. Clients pick the mode that suits them.' },
   { q: 'Do I need technical knowledge?', a: 'No. Setup takes minutes and requires no technical skills. You add your services and availability, and your booking page is ready to share — your clients need nothing more than the link.' },
-  { q: 'Can I upgrade my plan later?', a: 'Yes. Start free on the Sloth plan and upgrade to Sloth Active whenever your practice needs 0% commission, WhatsApp automation, a full client CRM and advanced tools. You can change plans anytime.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Sloth plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Sloth Active removes that commission entirely and adds automation and growth tools.' },
+  { q: 'Can I upgrade my plan later?', a: 'Yes. Start free on the Starter plan and upgrade to Pro whenever your practice needs 0% commission, WhatsApp automation, a full client CRM and advanced tools. You can change plans anytime.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds automation and growth tools.' },
 ];
 
 const FOOTER_COLS = [
@@ -585,7 +585,7 @@ export default function CharteredAccountants() {
             </div>
             <div className="flex flex-col gap-1 border-t-2 border-black/[0.08] px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-4" style={{ background: 'var(--ca-grey)' }}>
               <span className="font-heading text-sm font-bold text-[color:var(--ca-ink)]">Net result</span>
-              <span className="text-sm font-medium text-slate-600">More booked time, less admin, zero commission on Sloth Active.</span>
+              <span className="text-sm font-medium text-slate-600">More booked time, less admin, zero commission on Pro.</span>
             </div>
           </Reveal>
 
@@ -700,7 +700,7 @@ export default function CharteredAccountants() {
           </Reveal>
 
           <div className="mt-10 grid gap-5 sm:grid-cols-2 sm:gap-6">
-            {/* Sloth (free) */}
+            {/* Starter (free) */}
             <Reveal>
               <div className="flex h-full flex-col rounded-[18px] border border-black/[0.08] bg-white p-7">
                 <div className="font-heading text-lg font-bold">{FREE_PLAN.name}</div>
@@ -722,7 +722,7 @@ export default function CharteredAccountants() {
               </div>
             </Reveal>
 
-            {/* Sloth Active (premium) */}
+            {/* Pro (premium) */}
             <Reveal delay={0.08}>
               <div className="relative flex h-full flex-col rounded-[18px] border-2 bg-white p-7 shadow-[0_28px_70px_-40px_rgba(16,26,41,0.4)]" style={{ borderColor: 'var(--ca-primary)' }}>
                 <div className="flex items-center justify-between">
@@ -747,7 +747,7 @@ export default function CharteredAccountants() {
                     </li>
                   ))}
                 </ul>
-                <CtaButton to={START} className="mt-7 w-full">Go Sloth Active</CtaButton>
+                <CtaButton to={START} className="mt-7 w-full">Go Pro</CtaButton>
               </div>
             </Reveal>
           </div>
@@ -843,7 +843,7 @@ export default function CharteredAccountants() {
               </Link>
             </Reveal>
             <Reveal delay={0.18} className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-              {['No credit card', 'Free forever', '0% on Sloth Active'].map((t) => (
+              {['No credit card', 'Free forever', '0% on Pro'].map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-white/70"><Check size={14} style={{ color: '#FBBF24' }} /> {t}</span>
               ))}
             </Reveal>

@@ -98,7 +98,7 @@ export const PATH_LABELS = {
   sales:'Sales', leads:'Leads', lists:'Lists', pipeline:'Pipeline', 'follow-ups':'Follow-ups', reports:'Reports', templates:'Templates', 'cold-calling':'Cold Calling', today:"Today's Calls", lead:'Call', history:'Call History',
   desk:'Desk', sequences:'Sequences', growth:'Growth',
   security:'Security', 'blocked-ips':'Blocked IPs',
-  dept:'Department', cxo:'CXO', marketing:'Marketing', operation:'Operation', engineering:'Engineering', 'sloth-house':'Sloth House',
+  dept:'Department', cxo:'CXO', marketing:'Marketing', operation:'Operation', engineering:'Engineering', 'sloth-house':'The Hive',
 };
 
 // ── NAV TREE ──────────────────────────────────────────────────────────────
@@ -124,7 +124,7 @@ export const PATH_LABELS = {
 // Every `to` is an EXISTING route (App.jsx) — this restructure only regroups the
 // chrome; URLs, deep links and bookmarks are unchanged.
 export const NAV = [
-  { key:'home', label:'Home', icon:'grid', color:'#0079C1', children:[
+  { key:'home', label:'Home', icon:'grid', color:'#960D32', children:[
     { label:'Dashboard',          icon:'grid',      to:'/super-dashboard', exact:true, perm:'ops.view' },
     { label:'Revenue',            icon:'trendUp',   to:'/super-dashboard/revenue', perm:'analytics.view' },
     { label:'Pending Actions',    icon:'clock',     to:'/super-dashboard/pending', perm:'ops.view' },

@@ -17,7 +17,7 @@ const OG_H = 630;
 
 // Design tokens — kept in sync with the OG family (see the founder card spec).
 const C = {
-  orange: '#0079C1',
+  orange: '#960D32',
   orangeSoft: '#FF9A42',
   ink: '#131317',
   panel: '#1A1A1F',

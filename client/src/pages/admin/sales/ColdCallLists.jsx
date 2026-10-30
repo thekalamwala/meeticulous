@@ -20,7 +20,7 @@ export default function ColdCallLists() {
           const called = l.total - l.fresh;
           const on = l.id === listId;
           return (
-            <Card key={l.id} className={`!p-5 space-y-3 ${on ? '!border-[#0079C1]/50' : ''}`}>
+            <Card key={l.id} className={`!p-5 space-y-3 ${on ? '!border-[#960D32]/50' : ''}`}>
               <div className="flex items-start justify-between gap-2">
                 <h3 className="text-[15px] font-bold adm-t1" style={HEADING}>{l.name}</h3>
                 {on ? <Badge tone="ok">In use</Badge> : <Btn size="sm" variant="outline" onClick={() => setListId(l.id)}>Use</Btn>}

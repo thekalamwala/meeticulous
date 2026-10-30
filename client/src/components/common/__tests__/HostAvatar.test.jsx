@@ -38,12 +38,12 @@ describe('HostAvatar', () => {
 
 describe('HostCover', () => {
   it('renders an <img> when a src is given', () => {
-    const { container } = render(<HostCover src="https://x/c.jpg" themeColor="#0079C1" />);
+    const { container } = render(<HostCover src="https://x/c.jpg" themeColor="#2E1065" />);
     expect(container.querySelector('img')).toBeTruthy();
   });
 
   it('renders a gradient div (no img) when src is empty', () => {
-    const { container } = render(<HostCover src="" themeColor="#0079C1" />);
+    const { container } = render(<HostCover src="" themeColor="#2E1065" />);
     expect(container.querySelector('img')).toBeNull();
     expect(container.firstChild.style.background).toContain('linear-gradient');
   });

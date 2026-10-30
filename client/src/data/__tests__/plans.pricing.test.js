@@ -26,14 +26,14 @@ describe("plan data", () => {
 // Prices shown to a customer are GST-INCLUSIVE — what Razorpay actually charges.
 describe("pricing is coherent", () => {
   it("matches the DB ex-GST values grossed up by 18%", () => {
-    expect(Math.round(338.13 * 1.18)).toBe(PREMIUM_PLAN.monthly); // 398.99 → ₹399
-    expect(Math.round(3050 * 1.18)).toBe(PREMIUM_PLAN.yearly);    // 3599.00
+    expect(Math.round(199 * 1.18)).toBe(PREMIUM_PLAN.monthly); // 234.82 → ₹235
+    expect(Math.round(999 * 1.18)).toBe(PREMIUM_PLAN.yearly);  // 1178.82 → ₹1,179
   });
 
   it("a year genuinely costs less than twelve months", () => {
     expect(PREMIUM_PLAN.yearly).toBeLessThan(PREMIUM_PLAN.monthly * 12);
-    expect(PREMIUM_ANNUAL_SAVING).toBe(1189);
-    expect(PREMIUM_ANNUAL_SAVE_PCT).toBe(25);
+    expect(PREMIUM_ANNUAL_SAVING).toBe(1641);
+    expect(PREMIUM_ANNUAL_SAVE_PCT).toBe(58);
   });
 
   it("the per-day headline is under ₹10 and matches the yearly price", () => {
@@ -89,10 +89,11 @@ describe("comparison table", () => {
 });
 
 // The retired ladder must not resurface anywhere a customer can read it.
+// NOTE: "Starter" is the LIVE free-plan name now (was Sloth) — not a retired tier.
 describe("no legacy tiers leak into display copy", () => {
-  it("drops Starter / Host+ / Studio / Enterprise naming and old prices", () => {
+  it("drops Host+ / Studio / Enterprise naming and old prices", () => {
     const blob = JSON.stringify({ ALL_PLANS, PLAN_MATRIX });
-    for (const dead of ["Starter", "Host+", "Studio", "Enterprise", "229", "555", "1,499", "3,650"]) {
+    for (const dead of ["Host+", "Studio", "Enterprise", "229", "555", "1,499", "3,650"]) {
       expect(blob).not.toContain(dead);
     }
   });

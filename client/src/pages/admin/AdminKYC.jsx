@@ -12,7 +12,7 @@ const fmtDate = (iso) => (iso ? new Date(iso).toLocaleDateString('en-IN', { day:
 // Signed document link — opens in a new tab; rel guards against tab-nabbing.
 const DocLink = ({ href, label }) =>
   href ? (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="text-[#0079C1] hover:underline">{label} ↗</a>
+    <a href={href} target="_blank" rel="noopener noreferrer" className="text-[#960D32] hover:underline">{label} ↗</a>
   ) : (
     <span className="adm-t3">{label}: —</span>
   );

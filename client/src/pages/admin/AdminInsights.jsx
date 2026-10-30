@@ -19,7 +19,7 @@ const LAUNCHPAD = [
     label: 'PostHog',
     desc: 'Product funnels, retention, paths, event explorer.',
     href: 'https://us.posthog.com',
-    accent: '#00457C',
+    accent: '#960D32',
     icon: favicon('posthog.com'),
   },
   {
@@ -54,7 +54,7 @@ const delta = (cur, prev) => {
   return pct;
 };
 
-const Tile = ({ label, value, sub, foot, accent = '#0079C1' }) => (
+const Tile = ({ label, value, sub, foot, accent = '#960D32' }) => (
   <div className="rounded-2xl p-4 border" style={{ background: `${accent}0F`, borderColor: `${accent}2E` }}>
     <p className="text-[11px] font-semibold uppercase tracking-wide mb-1" style={{ color: accent }}>{label}</p>
     <p className="text-2xl font-bold adm-t1 tabular-nums">{value}</p>
@@ -101,7 +101,7 @@ const AdminInsights = () => {
       {kpi && (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
           <Tile
-            accent="#0079C1"
+            accent="#960D32"
             label="Platform Revenue"
             value={inr(kpi.revenue?.total)}
             sub={`${inr(kpi.revenue?.last30)} last 30d`}
@@ -120,7 +120,7 @@ const AdminInsights = () => {
             sub={`${kpi.bookings?.last30 ?? 0} last 30d · ${kpi.bookings?.total ?? 0} total`}
           />
           <Tile
-            accent="#0079C1"
+            accent="#960D32"
             label="Booking → Paid"
             value={`${kpi.conversion?.rate ?? 0}%`}
             sub={`${kpi.conversion?.paid ?? 0} of ${kpi.conversion?.created ?? 0} created`}

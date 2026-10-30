@@ -112,7 +112,7 @@ const TOOLS = [
 // Dashboard-style impact metrics.
 const METRICS = [
   { v: '24/7', l: 'Bookings, day or night', note: 'Your booking page never sleeps — clients reserve calls any time.' },
-  { v: '100%', l: 'Kept on Sloth Active', note: '0% commission — every rupee you earn stays yours.' },
+  { v: '100%', l: 'Kept on Pro', note: '0% commission — every rupee you earn stays yours.' },
   { v: '₹0', l: 'To get started', note: 'Free forever plan — no card, no lock-in.' },
   { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice generated for every paid booking.' },
 ];
@@ -125,7 +125,7 @@ const TESTIMONIALS = [
   { quote: 'Collecting the retainer and session fee upfront over UPI, with a GST invoice every time, cleaned up our billing completely.', name: 'Sanjay Rao', role: 'Principal Consultant', company: 'Rao & Associates' },
   { quote: 'Clients book strategy sessions without waiting for the office to reply. Setup took one evening.', name: 'Nandini Shah', role: 'Business Coach', company: 'Shah Growth Partners' },
   { quote: 'One clear calendar for the whole practice means no two clients penciled into the same slot.', name: 'Vikram Nair', role: 'Director', company: 'Peak Strategy Labs' },
-  { quote: 'A professional booking page, 0% commission on Active, and payments straight to the practice account.', name: 'Ritika Sen', role: 'Independent Consultant', company: 'Sen Advisory' },
+  { quote: 'A professional booking page, 0% commission on Pro, and payments straight to the practice account.', name: 'Ritika Sen', role: 'Independent Consultant', company: 'Sen Advisory' },
 ];
 
 // Before / after — the practice's day without vs with Meeticulous.
@@ -153,7 +153,7 @@ const FAQ = [
   { q: 'Can I collect consulting fees online?', a: 'Yes. Collect fees upfront through Razorpay — UPI, cards or netbanking — before the session. A GST invoice is generated automatically for every paid booking.' },
   { q: 'Can I run virtual consultations?', a: 'Yes. Offer online sessions with automatic Google Meet or Zoom links, or mark a service as in-person — or both. The client picks the mode that suits the engagement.' },
   { q: 'Can I manage multiple services and a team?', a: 'Yes. Create as many services as you need — strategy, coaching, advisory, discovery calls — each with its own duration, fee and availability, and manage every client from one dashboard.' },
-  { q: 'Is there a free plan?', a: 'Yes. The Sloth plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Sloth Active removes that commission entirely and adds WhatsApp automation and growth tools.' },
+  { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
 ];
 
 const FOOTER_COLS = [
@@ -873,7 +873,7 @@ export default function BusinessConsultants() {
 
           <div className="relative mx-auto mt-10 max-w-3xl">
             <div className="relative grid gap-5 sm:grid-cols-2 sm:gap-6">
-              {/* Sloth (free) */}
+              {/* Starter (free) */}
               <Reveal>
                 <div className="flex h-full flex-col rounded-[18px] border border-black/[0.08] bg-white p-7">
                   <div className="font-heading text-lg font-bold">{FREE_PLAN.name}</div>
@@ -896,7 +896,7 @@ export default function BusinessConsultants() {
                 </div>
               </Reveal>
 
-              {/* Sloth Active (premium) — recommended */}
+              {/* Pro (premium) — recommended */}
               <Reveal delay={0.08}>
                 <div className="relative flex h-full flex-col overflow-hidden rounded-[18px] border-2 bg-white p-7 shadow-[0_24px_60px_-30px_rgba(16,24,40,0.14)]" style={{ borderColor: 'var(--ca-primary)' }}>
                   <span aria-hidden className="absolute inset-x-0 top-0 h-1" style={{ background: 'linear-gradient(90deg, var(--ca-primary), #B45309)' }} />
@@ -971,7 +971,7 @@ export default function BusinessConsultants() {
                 { icon: ShieldCheck, title: 'Razorpay', sub: 'Every payment signature-verified on our servers.' },
                 { icon: Landmark, title: 'Hosted in India', sub: 'Your practice data runs on servers in Mumbai.' },
                 { icon: Lock, title: 'DPDP 2023', sub: "Operated under India's data protection law." },
-                { icon: BadgePercent, title: '0% commission', sub: 'On Sloth Active — keep every rupee you earn.' },
+                { icon: BadgePercent, title: '0% commission', sub: 'On Pro — keep every rupee you earn.' },
               ].map((it) => (
                 <div key={it.title} className="flex items-start gap-3">
                   <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg text-white" style={{ background: 'var(--ca-primary)' }}>

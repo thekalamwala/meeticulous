@@ -24,7 +24,7 @@ describe('AcuityAlternative (/compare/acuity-alternative)', () => {
     expect(screen.getByRole('link', { name: /see the comparison/i }).getAttribute('href')).toBe('#side-by-side');
   });
 
-  it("shows Acuity's paidFrom and Sloth Active's monthly price in the table", () => {
+  it("shows Acuity's paidFrom and Pro's monthly price in the table", () => {
     renderPage();
     const table = screen.getByRole('table');
     expect(within(table).getByText(ACU.paidFrom)).toBeTruthy();

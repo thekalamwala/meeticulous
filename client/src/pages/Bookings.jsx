@@ -435,11 +435,11 @@ const DetailsModal = ({ booking, onClose, onAction, review, onReviewDone }) => {
             <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-700">
               <Star size={14} className="fill-green-600 text-green-600" /> Review submitted
             </span>
-            <button onClick={() => setShowReview(true)} className="text-xs font-medium text-[#0079C1] hover:underline">
+            <button onClick={() => setShowReview(true)} className="text-xs font-medium text-[#960D32] hover:underline">
               Edit review
             </button>
           </div>
-          <p className="mt-1 text-[#0079C1] text-sm tracking-tight">
+          <p className="mt-1 text-[#960D32] text-sm tracking-tight">
             {"★".repeat(review.rating)}<span className="text-gray-300">{"★".repeat(5 - review.rating)}</span>
           </p>
           {review.comment && <p className="mt-1 text-sm text-gray-600 leading-relaxed">{review.comment}</p>}
@@ -628,7 +628,7 @@ const Bookings = () => {
         ) : (
           groupByDay(paged).map((group) => (
             <section key={group.key}>
-              <div className="sticky top-14 z-10 -mx-1 mb-2 bg-[#f7f5ef]/95 px-1 py-1.5 backdrop-blur">
+              <div className="sticky top-14 z-10 -mx-1 mb-2 bg-canvas/95 px-1 py-1.5 backdrop-blur">
                 <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
                   {group.label}
                   <span className="ml-1.5 font-normal text-gray-400">{group.items.length}</span>

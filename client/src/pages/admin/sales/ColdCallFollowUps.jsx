@@ -71,7 +71,7 @@ export default function ColdCallFollowUps() {
       <div className="flex flex-wrap gap-3">
         <div className="flex-[3_1_620px] grid grid-cols-2 sm:grid-cols-5 gap-3">
           {BUCKETS.map(([k, label, icon, tone, sub]) => (
-            <button key={k} type="button" onClick={() => { setBucket(k); setPage(1); }} className={`!min-h-0 text-left rounded-2xl ${bucket === k ? 'ring-2 ring-[#0079C1]/50' : ''}`}>
+            <button key={k} type="button" onClick={() => { setBucket(k); setPage(1); }} className={`!min-h-0 text-left rounded-2xl ${bucket === k ? 'ring-2 ring-[#960D32]/50' : ''}`}>
               <Kpi icon={icon} tone={tone} value={counts[k] ?? '—'} label={label} sub={sub} />
             </button>
           ))}
@@ -91,19 +91,19 @@ export default function ColdCallFollowUps() {
       <div className="flex flex-wrap xl:flex-nowrap gap-4 items-start">
         <Card className="w-full xl:w-[220px] xl:shrink-0 !p-4 space-y-3">
           <div className="flex items-center justify-between"><span className="text-[14px] font-bold adm-t1" style={HEADING}>Filters</span>
-            <button type="button" className="!min-h-0 text-[12px] font-semibold text-[#0079C1]" onClick={() => { setFilters({ outcome: '', listId: '', category: '', priority: '', q: '' }); setPage(1); }}>Reset</button></div>
+            <button type="button" className="!min-h-0 text-[12px] font-semibold text-[#960D32]" onClick={() => { setFilters({ outcome: '', listId: '', category: '', priority: '', q: '' }); setPage(1); }}>Reset</button></div>
           <label className="block"><span className="text-[11px] font-semibold uppercase tracking-wide adm-t3">Search</span>
             <input className="fb-input text-[13px] !w-full !min-h-0 !py-1.5 mt-1" placeholder="Business or phone" value={filters.q} onChange={(e) => setF('q', e.target.value)} /></label>
           <div>
             <span className="text-[11px] font-semibold uppercase tracking-wide adm-t3">When</span>
             {BUCKETS.map(([k, label]) => (
               <label key={k} className="flex items-center gap-2 text-[13px] adm-t2 py-1 cursor-pointer">
-                <input type="radio" name="bucket" className="!w-4 !h-4 !min-h-0 !p-0 accent-[#0079C1]" checked={bucket === k} onChange={() => { setBucket(k); setPage(1); }} />
+                <input type="radio" name="bucket" className="!w-4 !h-4 !min-h-0 !p-0 accent-[#960D32]" checked={bucket === k} onChange={() => { setBucket(k); setPage(1); }} />
                 <span className="flex-1">{label}</span><span className="adm-t3">{counts[k] ?? ''}</span>
               </label>
             ))}
             <label className="flex items-center gap-2 text-[13px] adm-t2 py-1 cursor-pointer">
-              <input type="radio" name="bucket" className="!w-4 !h-4 !min-h-0 !p-0 accent-[#0079C1]" checked={bucket === 'all'} onChange={() => { setBucket('all'); setPage(1); }} /> All scheduled
+              <input type="radio" name="bucket" className="!w-4 !h-4 !min-h-0 !p-0 accent-[#960D32]" checked={bucket === 'all'} onChange={() => { setBucket('all'); setPage(1); }} /> All scheduled
             </label>
           </div>
           {[
@@ -131,7 +131,7 @@ export default function ColdCallFollowUps() {
             <div className="overflow-x-auto">
               <table className="adm-table w-full text-left min-w-[760px]">
                 <thead><tr className="text-[11px] font-semibold uppercase tracking-wide adm-t3">
-                  <th className="px-3 py-2.5 w-8"><input type="checkbox" aria-label="Select all" className="!w-4 !h-4 !min-h-0 !p-0 accent-[#0079C1]" checked={checked.size === rows.length} onChange={(e) => setChecked(e.target.checked ? new Set(rows.map((r) => r.lead.id)) : new Set())} /></th>
+                  <th className="px-3 py-2.5 w-8"><input type="checkbox" aria-label="Select all" className="!w-4 !h-4 !min-h-0 !p-0 accent-[#960D32]" checked={checked.size === rows.length} onChange={(e) => setChecked(e.target.checked ? new Set(rows.map((r) => r.lead.id)) : new Set())} /></th>
                   <th className="px-3 py-2.5">Business</th><th className="px-3 py-2.5">Last call</th><th className="px-3 py-2.5">Outcome</th>
                   <th className="px-3 py-2.5">Next follow-up</th><th className="px-3 py-2.5">Priority</th><th className="px-3 py-2.5 text-right">Actions</th>
                 </tr></thead>
@@ -141,8 +141,8 @@ export default function ColdCallFollowUps() {
                     const overdue = r.nextAt && new Date(r.nextAt) < now;
                     const on = picked?.lead.id === r.lead.id;
                     return (
-                      <tr key={r.lead.id} onClick={() => setPicked(r)} className={`cursor-pointer adm-hoverable ${on ? 'bg-[#0079C1]/[0.06]' : ''}`}>
-                        <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}><input type="checkbox" aria-label="Select" className="!w-4 !h-4 !min-h-0 !p-0 accent-[#0079C1]" checked={checked.has(r.lead.id)}
+                      <tr key={r.lead.id} onClick={() => setPicked(r)} className={`cursor-pointer adm-hoverable ${on ? 'bg-[#960D32]/[0.06]' : ''}`}>
+                        <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}><input type="checkbox" aria-label="Select" className="!w-4 !h-4 !min-h-0 !p-0 accent-[#960D32]" checked={checked.has(r.lead.id)}
                           onChange={(e) => setChecked((s) => { const n = new Set(s); if (e.target.checked) n.add(r.lead.id); else n.delete(r.lead.id); return n; })} /></td>
                         <td className="px-3 py-2.5"><div className="text-[13px] font-semibold adm-t1 truncate max-w-[220px]">{r.lead.business_name || r.lead.name || 'Lead'}</div>{r.hotAt && <div className="text-[11px] font-semibold text-red-600">🔥 Clicked link {ago(r.hotAt, now)}</div>}{r.lead.profile_id && <div className="text-[11px] font-semibold text-emerald-700">✓ Signed up</div>}<div className="text-[11.5px] adm-t3 truncate max-w-[220px]">{[r.lead.profession, cc.locality].filter(Boolean).join(' · ')}</div></td>
                         <td className="px-3 py-2.5 text-[12.5px] adm-t2 whitespace-nowrap">{fmt(r.lastCallAt)}</td>
@@ -153,7 +153,7 @@ export default function ColdCallFollowUps() {
                             : <span className="text-[12px] text-blue-600 font-semibold">Set a next step</span>}</td>
                         <td className="px-3 py-2.5">{cc.priority ? <Badge tone="warn">{cc.priority}</Badge> : '—'}</td>
                         <td className="px-3 py-2.5 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                          <button type="button" className="!min-h-0 rounded-lg border adm-border px-2 py-1 text-[12px] font-semibold text-[#0079C1] adm-hoverable" onClick={() => navigate(`${BASE}/lead/${r.lead.id}`)}>Call</button>{' '}
+                          <button type="button" className="!min-h-0 rounded-lg border adm-border px-2 py-1 text-[12px] font-semibold text-[#960D32] adm-hoverable" onClick={() => navigate(`${BASE}/lead/${r.lead.id}`)}>Call</button>{' '}
                           <button type="button" className="!min-h-0 rounded-lg border adm-border px-2 py-1 text-[12px] adm-t2 adm-hoverable" onClick={() => setEditing(r.lead.id)}>Reschedule</button>
                         </td>
                       </tr>
@@ -180,7 +180,7 @@ export default function ColdCallFollowUps() {
         {sel && (
           <div className="p-4 space-y-3">
             <div className="flex items-start gap-3">
-              <span className="w-11 h-11 rounded-xl bg-[#0079C1]/15 text-[#0079C1] font-bold flex items-center justify-center shrink-0" style={HEADING}>{String(sel.business_name || sel.name || '?').slice(0, 2).toUpperCase()}</span>
+              <span className="w-11 h-11 rounded-xl bg-[#960D32]/15 text-[#960D32] font-bold flex items-center justify-center shrink-0" style={HEADING}>{String(sel.business_name || sel.name || '?').slice(0, 2).toUpperCase()}</span>
               <div className="min-w-0 flex-1 flex flex-wrap gap-1.5 items-center">{pcc.fit && <Badge tone="ok">High fit · {pcc.fit}</Badge>}{pcc.priority && <Badge tone="warn">{pcc.priority}</Badge>}<Badge tone={outcomeTone(pcc.last_outcome)}>{outcomeLabel(pcc.last_outcome) || '—'}</Badge></div>
             </div>
             <div className="space-y-1.5 text-[12.5px]">
@@ -188,21 +188,21 @@ export default function ColdCallFollowUps() {
                 ['Address', pcc.address || [pcc.locality, sel.city].filter(Boolean).join(', ') || '—'], ['Rating', pcc.rating ? `${pcc.rating} ★ (${pcc.reviews || 0})` : '—']].map(([k, v]) => (
                 <div key={k} className="grid grid-cols-[72px_1fr] gap-2"><span className="adm-t3">{k}</span><span className="adm-t1 break-words">{v}</span></div>
               ))}
-              {safeUrl(pcc.maps_url) && <a href={safeUrl(pcc.maps_url)} target="_blank" rel="noopener noreferrer" className="font-semibold text-[#0079C1]">View on Maps ↗</a>}
+              {safeUrl(pcc.maps_url) && <a href={safeUrl(pcc.maps_url)} target="_blank" rel="noopener noreferrer" className="font-semibold text-[#960D32]">View on Maps ↗</a>}
             </div>
-            <div className="border-l-[3px] border-[#0079C1] pl-2.5">
+            <div className="border-l-[3px] border-[#960D32] pl-2.5">
               <div className="text-[13px] font-bold adm-t1" style={HEADING}>Last call</div>
               <div className="text-[11.5px] adm-t3">{fmt(picked.lastCallAt)} · {outcomeLabel(pcc.last_outcome) || '—'}</div>
             </div>
             {picked.lastNote && <div className="rounded-lg adm-chip p-2.5 text-[12.5px] adm-t2">“{picked.lastNote}”</div>}
-            <div className="border-l-[3px] border-[#0079C1] pl-2.5"><div className="text-[13px] font-bold adm-t1" style={HEADING}>Next follow-up</div></div>
+            <div className="border-l-[3px] border-[#960D32] pl-2.5"><div className="text-[13px] font-bold adm-t1" style={HEADING}>Next follow-up</div></div>
             <div className="flex items-center justify-between gap-2 text-[12.5px]">
               <span className="adm-t1">{picked.nextAt ? fmt(picked.nextAt) : 'Not scheduled'}</span>
               {picked.nextAt && new Date(picked.nextAt) < now && <Badge tone="danger">{countdown(picked.nextAt, now)}</Badge>}
             </div>
             {editing === `p:${sel.id}` && <Reschedule value={picked.nextAt} onSave={(at) => act([sel.id], { at }, 'Rescheduled')} onCancel={() => setEditing(null)} />}
             <div className="grid grid-cols-2 gap-2 pt-1">
-              <Link to={`${BASE}/lead/${sel.id}`} className="col-span-2 inline-flex justify-center items-center rounded-xl py-2 text-[13px] font-semibold bg-[#0079C1] text-white hover:bg-[#e54900]">Call now</Link>
+              <Link to={`${BASE}/lead/${sel.id}`} className="col-span-2 inline-flex justify-center items-center rounded-xl py-2 text-[13px] font-semibold bg-[#960D32] text-white hover:bg-[#e54900]">Call now</Link>
               <Btn variant="outline" className="justify-center" onClick={() => setEditing(`p:${sel.id}`)}>Reschedule</Btn>
               <Btn variant="outline" className="justify-center" onClick={() => act([sel.id], { done: true }, 'Marked done')}>Mark done</Btn>
             </div>

@@ -9,10 +9,10 @@
   place-items: center;
   padding: 6vh 20px;
   overflow: hidden;
-  background: #191919;               /* --ink */
+  background: #3D0514;               /* --surface-darker */
   color: #fff;
 }
-.op-stage--light { background: #F8FAFC; color: #191919; }   /* --canvas */
+.op-stage--light { background: #FFF8FA; color: #2A1416; }   /* --canvas */
 
 /* Headlines on the ink stage must stay white — beat the global unlayered
    h1{color:ink} rule (Tailwind's .text-white utility loses to it). Only h1s

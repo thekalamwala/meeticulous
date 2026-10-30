@@ -231,7 +231,7 @@ function IssueDrawer({ issue, onClose, onMuted }) {
         </div>
         <div className="mt-6 flex justify-end gap-2">
           <button onClick={onClose} className="rounded-lg px-4 py-2 text-sm font-medium adm-t2 adm-hoverable">Cancel</button>
-          <button onClick={mute} disabled={muting} className="rounded-lg bg-[#0079C1] px-4 py-2 text-sm font-semibold text-white hover:bg-[#e04800] disabled:opacity-50">{muting ? 'Muting…' : 'Mute this type'}</button>
+          <button onClick={mute} disabled={muting} className="rounded-lg bg-[#960D32] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2A1416] disabled:opacity-50">{muting ? 'Muting…' : 'Mute this type'}</button>
         </div>
       </div>
     </div>
@@ -373,13 +373,13 @@ function FixDrawer({ fix, onClose, onDecided }) {
           {st === 'proposed' && (
             <>
               <button onClick={() => run(() => adminSeoDecideFix(fix.id, { decision: 'reject' }), 'Rejected')} disabled={busy} className="rounded-lg px-3 py-2 text-sm font-medium adm-t2 adm-hoverable disabled:opacity-50">Reject</button>
-              {canApprove && <button onClick={() => run(() => adminSeoDecideFix(fix.id, { decision: 'approve' }), 'Approved (staged)')} disabled={busy} className="rounded-lg bg-[#0079C1] px-3 py-2 text-sm font-semibold text-white hover:bg-[#e04800] disabled:opacity-50">Approve (stage)</button>}
+              {canApprove && <button onClick={() => run(() => adminSeoDecideFix(fix.id, { decision: 'approve' }), 'Approved (staged)')} disabled={busy} className="rounded-lg bg-[#960D32] px-3 py-2 text-sm font-semibold text-white hover:bg-[#2A1416] disabled:opacity-50">Approve (stage)</button>}
             </>
           )}
           {st === 'approved' && (
             fix.target === 'db_field'
-              ? <button onClick={() => run(() => adminSeoApplyFix(fix.id), 'Applied')} disabled={busy} className="rounded-lg bg-[#0079C1] px-3 py-2 text-sm font-semibold text-white hover:bg-[#e04800] disabled:opacity-50">Apply</button>
-              : <button onClick={() => run(() => adminSeoMarkApplied(fix.id, {}), 'Marked applied')} disabled={busy} className="rounded-lg bg-[#0079C1] px-3 py-2 text-sm font-semibold text-white hover:bg-[#e04800] disabled:opacity-50">Mark applied (PR landed)</button>
+              ? <button onClick={() => run(() => adminSeoApplyFix(fix.id), 'Applied')} disabled={busy} className="rounded-lg bg-[#960D32] px-3 py-2 text-sm font-semibold text-white hover:bg-[#2A1416] disabled:opacity-50">Apply</button>
+              : <button onClick={() => run(() => adminSeoMarkApplied(fix.id, {}), 'Marked applied')} disabled={busy} className="rounded-lg bg-[#960D32] px-3 py-2 text-sm font-semibold text-white hover:bg-[#2A1416] disabled:opacity-50">Mark applied (PR landed)</button>
           )}
           {(st === 'applied' || st === 'failed') && (
             <button onClick={() => run(() => adminSeoRollbackFix(fix.id), 'Rolled back')} disabled={busy} className="rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50">Rollback</button>

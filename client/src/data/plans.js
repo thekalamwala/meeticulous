@@ -4,7 +4,7 @@
  * Imported by the homepage (Home.jsx), the dedicated pricing page (Pricing.jsx),
  * the competitor landing pages (lp/*Alternative) and the profession landings, so
  * prices never drift between surfaces. Display names follow themeUtils
- * PLAN_DISPLAY (DB slugs free / premium → Sloth / Sloth Active).
+ * PLAN_DISPLAY (DB slugs free / premium → Starter / Pro).
  *
  * KEEP IN SYNC with server migration v3.165 (subscription_plans) — the DB is the
  * enforcement authority; this file is the marketing copy that mirrors it.
@@ -13,17 +13,17 @@
  * What the customer is actually charged. The DB stores the ex-GST base and the
  * engine adds 18% on top, so the numbers here are the DB values grossed up:
  *
- *   monthly   DB 338.13  →  ₹399   (charged ₹398.99 — a paisa under, never over)
- *   yearly    DB 3050.00 →  ₹3,599
+ *   monthly   DB 199.00  →  ₹235   (charged ₹234.82 incl. 18% GST)
+ *   yearly    DB 999.00  →  ₹1,179 (charged ₹1,178.82 incl. 18% GST)
  *
- * Yearly saves ₹1,189 = 24.83%, advertised as "Save 25%". ₹3,599 / 365 = ₹9.86,
- * the "under ₹10 a day" headline. Every price shown to a customer must stay on
+ * Yearly saves ₹1,641 = 58.2%, advertised as "Save 58%". ₹1,179 / 365 = ₹3.23,
+ * the "under ₹4 a day" headline. Every price shown to a customer must stay on
  * this one basis — quoting monthly ex-GST against yearly incl-GST is what made
  * the old ₹300/₹3,650 pair read as if annual cost MORE than twelve months.
  */
 
 export const FREE_PLAN = {
-  name: "Sloth",
+  name: "Starter",
   slug: "free",
   tagline: "Everything you need to get booked.",
   badge: "5% per booking",
@@ -44,17 +44,17 @@ export const FREE_PLAN = {
 };
 
 export const PREMIUM_PLAN = {
-  name: "Sloth Active",
+  name: "Pro",
   slug: "premium",
   tagline: "Keep every rupee. Automate the rest.",
-  // GST-inclusive — see the header note.
-  monthly: 399,
-  yearly: 3599,
+  // GST-inclusive display — DB base ₹199/₹999 + 18% (see the header note).
+  monthly: 235,
+  yearly: 1179,
   recommended: true,
-  accent: "#0079C1",
+  accent: "#960D32",
   icon: "Rocket",
-  persona: { title: "Booked and growing", blurb: "Earning over ₹6,000 a month? This already costs you less than the 5%." },
-  intro: "Everything in Sloth, plus:",
+  persona: { title: "Booked and growing", blurb: "Earning over ₹4,700 a month? This already costs you less than the 5%." },
+  intro: "Everything in Starter, plus:",
   features: [
     "0% commission — keep it all",
     "Client CRM with notes & history",
@@ -73,19 +73,19 @@ export const PAID_PLANS = [PREMIUM_PLAN];
 /** Both plans in display order. */
 export const ALL_PLANS = [FREE_PLAN, PREMIUM_PLAN];
 
-/** Headline daily figure for Sloth Active: ₹3,599 / 365 = ₹9.86. */
-export const PREMIUM_PER_DAY = "₹9.86";
+/** Headline daily figure for Pro: ₹1,179 / 365 = ₹3.23. */
+export const PREMIUM_PER_DAY = "₹3.23";
 
 /**
- * Yearly billed as a monthly-equivalent: ₹3,599 / 12 = ₹299.9 → ₹300. Same
+ * Yearly billed as a monthly-equivalent: ₹1,179 / 12 = ₹98.25 → ₹98. Same
  * GST-inclusive basis as the yearly charge (see header note), so it reads as
  * "cheaper per month than monthly", never as annual costing more.
  */
-export const PREMIUM_YEARLY_PER_MONTH = Math.round(PREMIUM_PLAN.yearly / 12); // 300
+export const PREMIUM_YEARLY_PER_MONTH = Math.round(PREMIUM_PLAN.yearly / 12); // 98
 
 /** Annual saving vs 12 × monthly — kept here so no surface recomputes it wrong. */
-export const PREMIUM_ANNUAL_SAVING = PREMIUM_PLAN.monthly * 12 - PREMIUM_PLAN.yearly; // ₹1,189
-export const PREMIUM_ANNUAL_SAVE_PCT = Math.round((PREMIUM_ANNUAL_SAVING / (PREMIUM_PLAN.monthly * 12)) * 100); // 25
+export const PREMIUM_ANNUAL_SAVING = PREMIUM_PLAN.monthly * 12 - PREMIUM_PLAN.yearly; // ₹1,641
+export const PREMIUM_ANNUAL_SAVE_PCT = Math.round((PREMIUM_ANNUAL_SAVING / (PREMIUM_PLAN.monthly * 12)) * 100); // 58
 
 /* ────────────────────────────────────────────────────────────────────────────
  * Full feature comparison — drives the detailed table on /pricing (Pricing.jsx).
@@ -111,16 +111,16 @@ export const PREMIUM_ANNUAL_SAVE_PCT = Math.round((PREMIUM_ANNUAL_SAVING / (PREM
 const limited = (tip) => ({ v: "Limited", tip });
 
 export const PLAN_COLUMNS = [
-  { key: "free", name: "Sloth", slug: "free" },
-  { key: "premium", name: "Sloth Active", slug: "premium", recommended: true },
+  { key: "free", name: "Starter", slug: "free" },
+  { key: "premium", name: "Pro", slug: "premium", recommended: true },
 ];
 
 export const PLAN_MATRIX = [
   {
     group: "Price & commission",
     rows: [
-      { label: "Monthly price", free: "₹0", premium: "₹399" },
-      { label: "Yearly price", free: "₹0", premium: "₹3,599" },
+      { label: "Monthly price", free: "₹0", premium: "₹235" },
+      { label: "Yearly price", free: "₹0", premium: "₹1,179" },
       { label: "Commission on your bookings", free: "5%", premium: "0%" },
     ],
   },

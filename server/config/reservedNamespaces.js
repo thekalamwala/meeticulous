@@ -15,7 +15,7 @@ const ROUTES = [
   'help', 'about', 'privacy', 'terms', 'refund', 'unsubscribe', 'support', 'explore', 'how-it-works',
   'guest-terms', 'host-agreement', 'host-fees', // legal document set
   'be-a-sloth', 'become-a-host', 'login-as-vendor', 'vendor', 'vendor-register', 'auth',
-  'hello-sloth', 'super-dashboard', 'admin', 'dashboard', 'user', 'review', 'manage-booking', 'lp', 'for',
+  'hello-sloth', 'backstage', 'super-dashboard', 'admin', 'dashboard', 'user', 'review', 'manage-booking', 'lp', 'for',
   'og', // /og/blog/:slug — render target for the OG card generator
   'my-bookings', 'profile', 'reviews', 'loyalty', 'settings', 'search', 'wall-of-love', 'moments',
   'opening', 'inaugurators', // "The Opening" launch event + permanent Inaugurators Wall

@@ -3,7 +3,7 @@
 
    HONESTY: Topmate facts come from data/competitors.js (checked against its
    pricing page, CHECKED_LABEL). Meeticulous prices/plan names come from
-   data/plans.js — never type ₹399 / 5% / 0% here. Booking fee, gateway and
+   data/plans.js — never type ₹235 / 5% / 0% here. Booking fee, gateway and
    TDS/TCS figures mirror /host-fees.
 
    PROFILES + COHORTS use real testimonial hosts (data/testimonials.js).
@@ -19,10 +19,10 @@ const COMMISSION = ROW("Commission on your bookings");
 // Free-plan limits as plans.js words them, e.g. "2 free services", "3 digital products".
 const FREE_SERVICES = ROW("Free (₹0) services").free.tip.split(" — ")[0];
 const FREE_PRODUCTS = ROW("Digital products").free.tip;
-// Monthly sales at which a flat Sloth Active fee equals Topmate's 10% cut.
+// Monthly sales at which a flat Pro fee equals Topmate's 10% cut.
 const BREAKEVEN = PREMIUM_PLAN.monthly * 10;
 export const PRICE_LINE = `${inr(PREMIUM_PLAN.monthly)} a month`;
-export const PER_DAY_LINE = `under ₹10 a day billed yearly (${inr(PREMIUM_PLAN.yearly)} a year)`;
+export const PER_DAY_LINE = `under ₹4 a day billed yearly (${inr(PREMIUM_PLAN.yearly)} a year)`;
 
 /* ─── Hero floating columns + creators carousel (placeholder creators) ─── */
 export const PROFILES = [
@@ -127,7 +127,7 @@ export const COMPARE_SOURCE = TM.source;
 export const FAQ = [
   { q: "Is Meeticulous a good Topmate alternative?", a: `Yes, if you want to stop paying commission. Meeticulous takes ${COMMISSION.premium} commission on ${PREMIUM_PLAN.name} for a flat ${PRICE_LINE}, or ${COMMISSION.free} on the free ${FREE_PLAN.name} plan. Clients pay by UPI or card at booking and every paid booking gets a GST invoice. Topmate takes 10% of each sale, with no subscription.` },
   { q: "How much commission does Topmate take?", a: `Topmate's pricing page lists 10% of each sale made through your profile or link, and 20% on marketplace sales to new customers (checked ${CHECKED_LABEL}). Meeticulous takes ${COMMISSION.free} on the free ${FREE_PLAN.name} plan and ${COMMISSION.premium} on ${PREMIUM_PLAN.name}.` },
-  { q: "When does Sloth Active cost less than Topmate?", a: `Once you sell more than about ${inr(BREAKEVEN)} a month. At that point Topmate's 10% equals the flat ${PRICE_LINE} for ${PREMIUM_PLAN.name}, and every rupee above it costs you nothing extra in commission. Below that, the free ${FREE_PLAN.name} plan at ${COMMISSION.free} costs less than Topmate's 10%.` },
+  { q: "When does Pro cost less than Topmate?", a: `Once you sell more than about ${inr(BREAKEVEN)} a month. At that point Topmate's 10% equals the flat ${PRICE_LINE} for ${PREMIUM_PLAN.name}, and every rupee above it costs you nothing extra in commission. Below that, the free ${FREE_PLAN.name} plan at ${COMMISSION.free} costs less than Topmate's 10%.` },
   { q: "Are there any other fees on Meeticulous?", a: `Your client pays a flat ₹10 + GST booking fee on each paid booking. The payment gateway charge (about 2%) is passed through at cost, and TDS 1% and TCS 1% are deducted on payout as Indian tax law requires. On a ₹1,000 booking on ${PREMIUM_PLAN.name} you receive ₹959.76.` },
   { q: "Can my clients pay by UPI, and do I get paid in rupees?", a: "Yes. Clients pay upfront by UPI or card through Razorpay, and your earnings settle to your Indian bank account in rupees after a one-time KYC. There's no foreign-currency conversion." },
   { q: "Do I get GST invoices automatically?", a: `Yes. Meeticulous sends a GST invoice for every paid booking on both the ${FREE_PLAN.name} and ${PREMIUM_PLAN.name} plans, so you don't need a separate billing tool.` },

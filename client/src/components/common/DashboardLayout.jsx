@@ -18,12 +18,12 @@ import '../dashboard/ui/tokens.css';
 // Keyed by canonical plan slug (see normalizePlan) — legacy aliases like
 // `explorer`/`free`/`pro` are collapsed before lookup.
 const PLAN_STYLES = {
-  free: { label: 'Sloth', bg: 'bg-gray-100', text: 'text-gray-600' },
-  premium: { label: 'Sloth Active', bg: 'bg-amber-100', text: 'text-amber-700' },
+  free: { label: 'Starter', bg: 'bg-gray-100', text: 'text-gray-600' },
+  premium: { label: 'Pro', bg: 'bg-amber-100', text: 'text-amber-700' },
   // Archived rows: hidden from the catalogue, but their existing subscribers
-  // still see a badge and carry Sloth Active entitlements at the old price.
-  creator: { label: 'Sloth Active', bg: 'bg-amber-100', text: 'text-amber-700' },
-  professional: { label: 'Sloth Active', bg: 'bg-amber-100', text: 'text-amber-700' },
+  // still see a badge and carry Pro entitlements at the old price.
+  creator: { label: 'Pro', bg: 'bg-amber-100', text: 'text-amber-700' },
+  professional: { label: 'Pro', bg: 'bg-amber-100', text: 'text-amber-700' },
   supreme: { label: 'Supreme', bg: 'bg-violet-100', text: 'text-violet-700' },
 };
 
@@ -304,7 +304,7 @@ const ProfileMenu = ({ user, plan, planStyle, initial, logout }) => {
                 <BadgeCheck
                   className="h-4 w-4"
                   strokeWidth={2.2}
-                  style={{ color: kycVerified ? '#0079C1' : '#9ca3af' }}
+                  style={{ color: kycVerified ? '#960D32' : '#9ca3af' }}
                 />
               </Link>
             </div>
@@ -412,7 +412,7 @@ const DashboardLayout = ({ children }) => {
   const initial = (user?.name || user?.email || 'U').trim().charAt(0).toUpperCase();
 
   return (
-    <div className="dash flex min-h-screen overflow-x-hidden bg-[#f7f5ef]">
+    <div className="dash flex min-h-screen overflow-x-hidden bg-canvas">
       <ConsoleSidebar open={navOpen} onClose={() => setNavOpen(false)} triggerRef={navTriggerRef} />
 
       {/* Main — offset by the fixed rail (56) + panel (220) = 276px on lg+

@@ -7,7 +7,7 @@ import Reveal from "./Reveal";
    LINE-DRAW ICON wrapper — strokes draw themselves on scroll-in
    (CSS keyframe `sloth-draw` in index.css).
    ════════════════════════════════════════════════════════════ */
-const LineIcon = ({ children, color = "#191919" }) => {
+const LineIcon = ({ children, color = "#2A1416" }) => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.6 });
   return (
@@ -138,7 +138,7 @@ export default function HowItWorks({ theme = "dark", lift = true }) {
                 className="mt-5 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold"
                 style={{
                   backgroundColor: `color-mix(in srgb, ${s.color} 26%, transparent)`,
-                  color: light ? `color-mix(in srgb, ${s.color} 55%, #191919)` : `color-mix(in srgb, ${s.color} 30%, white)`,
+                  color: light ? `color-mix(in srgb, ${s.color} 55%, #2A1416)` : `color-mix(in srgb, ${s.color} 30%, white)`,
                   boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${s.color} 45%, transparent)`,
                 }}
               >

@@ -7,7 +7,7 @@ export default function SalesLeadDetail() {
   const { id } = useParams();
   return (
     <div className="p-4 sm:p-6 max-w-4xl">
-      <Link to="/admin/sales/leads" className="text-[12px] text-[#0079C1] font-semibold">← All leads</Link>
+      <Link to="/admin/sales/leads" className="text-[12px] text-[#960D32] font-semibold">← All leads</Link>
       <div className="mt-3"><LeadPanel leadId={id} /></div>
     </div>
   );

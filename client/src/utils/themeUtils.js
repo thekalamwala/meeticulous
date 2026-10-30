@@ -34,13 +34,13 @@ export const getContrastColor = (hex) => {
 
 // Starter (free) tier: brand orange only — no choice, keeps free profiles on-brand.
 export const FREE_COLORS = [
-  { name: 'Brand Orange', hex: '#0079C1' },
+  { name: 'Brand Orange', hex: '#960D32' },
 ];
 
 // Host+ (creator) tier: 8 curated colours.
 export const CREATOR_COLORS = [
-  { name: 'Brand Orange',  hex: '#0079C1' },
-  { name: 'Royal Blue',    hex: '#0079C1' },
+  { name: 'Brand Orange',  hex: '#960D32' },
+  { name: 'Royal Blue',    hex: '#960D32' },
   { name: 'Indigo',        hex: '#4F46E5' },
   { name: 'Purple',        hex: '#1DA1F2' },
   { name: 'Pink',          hex: '#EC4899' },
@@ -58,7 +58,7 @@ export const STUDIO_COLORS = [
   { name: 'Coral',        hex: '#FB7185' },
   { name: 'Red',          hex: '#DC2626' },
   { name: 'Orange',       hex: '#F97316' },
-  { name: 'Brand Orange', hex: '#0079C1' },
+  { name: 'Brand Orange', hex: '#960D32' },
   { name: 'Amber',        hex: '#F59E0B' },
   { name: 'Gold',         hex: '#EAB308' },
   { name: 'Yellow',       hex: '#FACC15' },
@@ -71,7 +71,7 @@ export const STUDIO_COLORS = [
   { name: 'Teal',         hex: '#14B8A6' },
   { name: 'Cyan',         hex: '#06B6D4' },
   { name: 'Sky Blue',     hex: '#0EA5E9' },
-  { name: 'Royal Blue',   hex: '#0079C1' },
+  { name: 'Royal Blue',   hex: '#960D32' },
   { name: 'Indigo',       hex: '#4F46E5' },
   { name: 'Violet',       hex: '#1DA1F2' },
   { name: 'Purple',       hex: '#9333EA' },
@@ -84,7 +84,7 @@ export const STUDIO_COLORS = [
   { name: 'Taupe',        hex: '#A8A29E' },
 ];
 
-export const DEFAULT_THEME_COLOR = '#0079C1';
+export const DEFAULT_THEME_COLOR = '#960D32';
 
 /**
  * Returns the color swatches available for the given plan.
@@ -105,22 +105,22 @@ export const canUseCustomHex = (plan) => plan === 'professional' || plan === 'su
 export const getPlanBorderColor = (plan) => {
   if (plan === 'supreme')      return '#D4AF37'; // gold (top tier, shares Studio)
   if (plan === 'professional') return '#D4AF37'; // gold
-  if (plan === 'creator')      return '#0079C1'; // brand orange
+  if (plan === 'creator')      return '#960D32'; // brand orange
   return '#6B7280';                               // grey
 };
 
 // ─── Plan display labels (UI ONLY — DB slugs/names are unchanged) ────────────
 // Maps the internal plan slug to the user-facing brand name. Internal code,
 // routes, DB values, feature flags, and analytics keep their original slugs.
-// Two public plans since v3.165: free → "Sloth", premium → "Sloth Active".
+// Two public plans since v3.165: free → "Starter", premium → "Pro".
 // The legacy paid rows are hidden from the catalogue but still renew for their
-// existing subscribers, so they keep a label — they carry Sloth Active
+// existing subscribers, so they keep a label — they carry Pro
 // entitlements at their original price.
 export const PLAN_DISPLAY = {
-  free: 'Sloth', starter: 'Sloth', explorer: 'Sloth', starter_legacy: 'Sloth',
-  premium: 'Sloth Active',
-  creator: 'Sloth Active (Partner)',
-  professional: 'Sloth Active (Legacy Studio)', pro: 'Sloth Active (Legacy Studio)',
+  free: 'Starter', starter: 'Starter', explorer: 'Starter', starter_legacy: 'Starter',
+  premium: 'Pro',
+  creator: 'Pro (Partner)',
+  professional: 'Pro (Legacy Studio)', pro: 'Pro (Legacy Studio)',
   supreme: 'Supreme',
 };
 
@@ -150,7 +150,7 @@ export const isFreePlan = (slug) => normalizePlan(slug) === 'free';
 export const getPlanBorderLabel = (plan) => {
   const canon = normalizePlan(plan);
   if (canon === 'supreme') return 'Supreme';
-  return canon === 'free' ? 'Sloth' : 'Sloth Active';
+  return canon === 'free' ? 'Starter' : 'Pro';
 };
 
 // ─── Social platform brand colors ────────────────────────────────────────────

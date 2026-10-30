@@ -10,7 +10,7 @@ import { pendingPlan, outcomeLabel, countdown, fmtTime, ago, OUTCOMES } from './
 
 const BASE = '/admin/sales/cold-calling';
 const OUTCOME_COLOR = {
-  interested: '#16a34a', details: '#3b82f6', callback: '#f59e0b', not_now: '#a78bfa',
+  interested: '#16a34a', details: '#3b82f6', callback: '#f59e0b', not_now: '#FF9FB0',
   not_interested: '#dc2626', no_answer: '#9ca3af', wrong_number: '#4b5563',
 };
 
