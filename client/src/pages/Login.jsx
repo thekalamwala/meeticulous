@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { sendOtp } from "../services/api";
+import AuthBrandPanel from "../components/auth/AuthBrandPanel";
 import WhatsNewLink from "../components/auth/WhatsNewLink";
 import Seo from "../components/common/Seo";
 import toast from "react-hot-toast";
@@ -12,10 +13,9 @@ import toast from "react-hot-toast";
 // booking; this page is the return path.)
 const isPhone = (v) => /^\+?[\d\s\-()]{8,17}$/.test(v.trim());
 
-const WhatsAppMark = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor" aria-hidden="true">
-    <path d="M.06 24l1.69-6.16a11.87 11.87 0 01-1.6-5.95C.15 5.34 5.5 0 12.06 0a11.82 11.82 0 018.42 3.49 11.82 11.82 0 013.48 8.41c0 6.56-5.34 11.9-11.9 11.9a11.9 11.9 0 01-5.69-1.45L.06 24zM6.6 20.13l.36.22a9.86 9.86 0 005.03 1.38 9.9 9.9 0 009.88-9.88 9.82 9.82 0 00-2.9-7 9.82 9.82 0 00-6.99-2.9 9.9 9.9 0 00-9.88 9.88c0 1.86.51 3.66 1.49 5.22l.24.38-1 3.65 3.77-.95zM17.5 14.3c-.07-.11-.25-.18-.53-.32-.27-.14-1.62-.8-1.87-.89-.25-.09-.43-.14-.62.14-.18.27-.71.89-.87 1.07-.16.18-.32.2-.59.07a7.4 7.4 0 01-2.18-1.35 8.16 8.16 0 01-1.51-1.88c-.16-.27-.02-.42.12-.55.12-.12.27-.32.41-.48.14-.16.18-.27.27-.46.09-.18.05-.34-.02-.48-.07-.14-.62-1.49-.85-2.04-.22-.53-.45-.46-.62-.47l-.53-.01c-.18 0-.48.07-.73.34-.25.27-.96.94-.96 2.29s.98 2.66 1.12 2.84c.14.18 1.93 2.95 4.68 4.14.65.28 1.16.45 1.56.58.65.21 1.25.18 1.72.11.52-.08 1.62-.66 1.85-1.3.23-.64.23-1.18.16-1.3z"/>
-  </svg>
+// ee app-icon (crimson tile) — shared brand mark across every auth door.
+const Logo = ({ className = "" }) => (
+  <img src="/brand/ee-rounded-primary.svg" alt="Meeticulous" className={`block ${className}`} />
 );
 
 const Login = () => {
@@ -103,16 +103,23 @@ const Login = () => {
   }, [otp, step]);
 
   return (
-    <div className="app-container flex min-h-[calc(100vh-72px)] flex-col items-center justify-center py-8 sm:py-12">
+    <div className="grid min-h-[calc(100vh-72px)] w-full lg:grid-cols-[1.05fr_1fr]">
       <Seo title="Log in — Meeticulous" robots="noindex,nofollow" />
-      <div className="page-card w-full max-w-md p-5 sm:p-8">
+      {/* ── LEFT · crimson brand-art panel (lg+ only) ── */}
+      <AuthBrandPanel
+        title={<>Welcome back.<br /><span className="text-primary-light">Your bookings, in one place.</span></>}
+        subtitle="Log in to see upcoming appointments, reschedule, and message your hosts."
+        points={['Reschedule anytime', 'WhatsApp reminders', 'No password to remember']}
+      />
+
+      {/* ── RIGHT · OTP card + outside-the-box link ── */}
+      <main className="flex flex-col items-center justify-center px-5 py-10 sm:py-12">
+        <div className="page-card w-full max-w-md p-6 sm:p-8">
+          <Logo className="mb-5 h-12 w-12" />
         {/* STEP: WhatsApp number */}
         {step === "phone" && (
           <>
-            <span className="mb-4 grid h-12 w-12 place-items-center rounded-xl bg-[#25D366]/10 text-[#25D366]">
-              <WhatsAppMark />
-            </span>
-            <h1 className="text-2xl font-bold mb-2">Log in</h1>
+            <h1 className="font-heading text-2xl font-bold mb-2">Log in</h1>
             <p className="mb-6 text-sm text-gray-500">
               Enter your WhatsApp number and we’ll send you a one-time code.
             </p>
@@ -179,10 +186,11 @@ const Login = () => {
             </button>
           </>
         )}
-      </div>
+        </div>
 
-      {/* Outside the card */}
-      <WhatsNewLink className="mt-6" />
+        {/* Outside the card */}
+        <WhatsNewLink className="mt-6" />
+      </main>
     </div>
   );
 };
