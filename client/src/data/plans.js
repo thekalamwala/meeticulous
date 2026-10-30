@@ -51,7 +51,7 @@ export const PREMIUM_PLAN = {
   monthly: 235,
   yearly: 1179,
   recommended: true,
-  accent: "#0079C1",
+  accent: "#960D32",
   icon: "Rocket",
   persona: { title: "Booked and growing", blurb: "Earning over ₹4,700 a month? This already costs you less than the 5%." },
   intro: "Everything in Starter, plus:",

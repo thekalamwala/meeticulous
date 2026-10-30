@@ -54,7 +54,7 @@ const Glyph = ({ children }) => (
 // Creator personas for the left panel — one accent hue each, echoing the
 // colourful logo-grid inspiration. Hues mirror --c-* (design-tokens.css).
 const PERSONAS = [
-  { label: 'Coaches',     hue: '#0079C1', icon: <Glyph><circle cx="12" cy="8" r="6"/><path d="M15.5 12.9 17 22l-5-3-5 3 1.5-9.1"/></Glyph> },
+  { label: 'Coaches',     hue: '#960D32', icon: <Glyph><circle cx="12" cy="8" r="6"/><path d="M15.5 12.9 17 22l-5-3-5 3 1.5-9.1"/></Glyph> },
   { label: 'Consultants', hue: '#1DA1F2', icon: <Glyph><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></Glyph> },
   { label: 'Wellness',    hue: '#059669', icon: <Glyph><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></Glyph> },
   { label: 'Tutors',      hue: '#f59e0b', icon: <Glyph><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></Glyph> },

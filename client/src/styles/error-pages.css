@@ -7,7 +7,7 @@
  * (Tailwind's default `media` strategy — no darkMode override in tailwind.config). */
 
 .bas-error {
-  --bas-error-accent: #0079C1;
+  --bas-error-accent: #960D32;
 }
 
 /* Calm entrance — respects reduced-motion. */

@@ -20,7 +20,7 @@ import HostProfile from '../pages/HostProfile';
 const HOST = {
   id: 'v1', name: 'Jane Vendor', role: 'host', plan: 'creator',
   username: 'jane-vendor', profession: 'Life Coach', bio: 'I help people.',
-  profile_image: '', cover_image: '', theme_color: '#0079C1',
+  profile_image: '', cover_image: '', theme_color: '#2E1065',
   social_links: { linkedin: 'https://linkedin.com/in/jane', instagram: 'https://instagram.com/jane' },
   is_verified: true, badges: [], google_calendar_connected: false, location: 'Mumbai',
 };
@@ -190,12 +190,12 @@ describe('HostProfile — theme color applied', () => {
       // Query the page root specifically — BrandPreloader locks body style,
       // so a bare [style] selector would match <body> instead.
       const root = document.querySelector('.host-profile');
-      expect(root?.style?.getPropertyValue('--profile-accent')).toBe('#0079C1');
+      expect(root?.style?.getPropertyValue('--profile-accent')).toBe('#2E1065');
       expect(root?.style?.getPropertyValue('--profile-accent-text')).toBe('#ffffff');
     });
   });
 
-  test('falls back to #0079C1 when theme_color is null', async () => {
+  test('falls back to #960D32 when theme_color is null', async () => {
     const hostNoColor = { ...HOST, theme_color: null };
     getHostProfile.mockResolvedValue({ data: { host: hostNoColor, services: [], availability: null } });
     renderProfile();
@@ -203,7 +203,7 @@ describe('HostProfile — theme color applied', () => {
     // Poll for the CSS var (applied by a post-commit useEffect) to avoid a race.
     await waitFor(() => {
       const root = document.querySelector('.host-profile');
-      expect(root?.style?.getPropertyValue('--profile-accent')).toBe('#0079C1');
+      expect(root?.style?.getPropertyValue('--profile-accent')).toBe('#960D32');
     });
   });
 

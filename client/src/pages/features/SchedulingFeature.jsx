@@ -45,7 +45,7 @@ import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
 
 const START = '/become-a-host';
-const BLUE = '#00457C';       // accent for text + fills on white (AA, ~6.7:1)
+const BLUE = '#960D32';       // accent for text + fills on white (AA, ~6.7:1)
 const BLUE_DEEP = '#0B2559';  // dark section background
 const BLUE_SKY = '#93C5FD';   // decorative / text on BLUE_DEEP only (AA)
 const PALE = '#F2F6FF';       // tinted section background
@@ -245,7 +245,7 @@ function SlotPicker() {
                       disabled={!!booked}
                       onClick={() => setPicked({ d: d.d, n: d.n, t })}
                       aria-label={booked ? `${t}, booked` : t}
-                      className={`rounded-[6px] border px-3 py-2.5 text-sm font-semibold transition-colors ${booked ? 'cursor-not-allowed border-transparent bg-slate-50 text-slate-400' : 'border-[#00457C]/30 text-[#00457C] hover:border-[#00457C] hover:bg-[#F2F6FF]'}`}
+                      className={`rounded-[6px] border px-3 py-2.5 text-sm font-semibold transition-colors ${booked ? 'cursor-not-allowed border-transparent bg-slate-50 text-slate-400' : 'border-[#960D32]/30 text-[#960D32] hover:border-[#960D32] hover:bg-[#F2F6FF]'}`}
                     >
                       {booked ? <span className="flex items-center justify-between"><span className="line-through">{t}</span><span className="text-[10px] font-medium uppercase tracking-wider no-underline">Booked</span></span> : t}
                     </button>
@@ -327,7 +327,7 @@ function SlotPlanner() {
 
       <ul className="mt-8 flex flex-wrap gap-2" aria-label="Times your clients would see">
         {starts.map((s) => (
-          <li key={s} className="rounded-[6px] border border-[#00457C]/30 px-3 py-1.5 text-sm font-semibold tabular-nums" style={{ color: BLUE }}>{fmtMin(s)}</li>
+          <li key={s} className="rounded-[6px] border border-[#960D32]/30 px-3 py-1.5 text-sm font-semibold tabular-nums" style={{ color: BLUE }}>{fmtMin(s)}</li>
         ))}
       </ul>
       <p className="mt-6 text-sm leading-relaxed text-slate-600">
@@ -451,7 +451,7 @@ export default function SchedulingFeature() {
               <p className="mt-5 border-t border-black/5 pt-4 text-sm text-slate-500">Five messages in, still nothing on the calendar.</p>
             </Reveal>
 
-            <Reveal delay={0.06} className="flex flex-col rounded-[10px] border border-[#00457C]/20 bg-white p-6 shadow-[0_8px_30px_rgba(29,78,216,0.06)] sm:p-7">
+            <Reveal delay={0.06} className="flex flex-col rounded-[10px] border border-[#960D32]/20 bg-white p-6 shadow-[0_8px_30px_rgba(29,78,216,0.06)] sm:p-7">
               <div className="text-xs font-bold uppercase tracking-[0.16em]" style={{ color: BLUE }}>With Meeticulous: one link</div>
               <div className="mt-5 flex justify-end">
                 <span className="flex items-center gap-2 rounded-[6px] px-3.5 py-2 text-sm font-semibold text-white" style={{ background: BLUE }}>
@@ -560,7 +560,7 @@ export default function SchedulingFeature() {
             {[FAQ.slice(0, half), FAQ.slice(half)].map((col, c) => (
               <div key={c} className="space-y-4">
                 {col.map((f, i) => (
-                  <details key={f.q} className="group rounded-[6px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)] open:border-[#00457C]/25" open={c === 0 && i === 0}>
+                  <details key={f.q} className="group rounded-[6px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)] open:border-[#960D32]/25" open={c === 0 && i === 0}>
                     <summary className="flex cursor-pointer list-none items-start justify-between gap-4 px-5 py-4 [&::-webkit-details-marker]:hidden">
                       <span className="font-heading text-[16px] font-bold">{f.q}</span>
                       <span aria-hidden className="text-xl leading-none transition-transform group-open:rotate-45" style={{ color: BLUE }}>+</span>

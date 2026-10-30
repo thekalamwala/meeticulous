@@ -257,7 +257,7 @@ export default function Pediatricians() {
 
   // Friendly blue + warm amber. Legacy --ca-* names kept.
   const styleVars = {
-    '--ca-primary': '#0079C1', // blue-600 — text/links/fills, AA on white (~5.2:1)
+    '--ca-primary': '#960D32', // blue-600 — text/links/fills, AA on white (~5.2:1)
     '--ca-accent': '#B45309',  // amber-700 — accent text, AA on white
     '--ca-amber': '#F59E0B',   // bright amber — decorative fills only
     '--ca-ink': '#172554',     // blue-950 navy text
@@ -277,7 +277,7 @@ export default function Pediatricians() {
         robots="index, follow, max-image-preview:large, max-snippet:-1"
         siteName="Meeticulous"
         locale="en_IN"
-        themeColor="#0079C1"
+        themeColor="#960D32"
         ogTitle={seo.ogTitle}
         ogDescription={seo.ogDescription}
         jsonLd={jsonLd}
@@ -636,7 +636,7 @@ export default function Pediatricians() {
       </section>
 
       {/* ═══════════════ 13 · FINAL CTA (blue band, confetti dots) ═══════════════ */}
-      <section className="relative overflow-hidden px-5 py-24 text-center sm:px-8" style={{ background: 'linear-gradient(160deg, #172554 0%, #0079C1 100%)' }}>
+      <section className="relative overflow-hidden px-5 py-24 text-center sm:px-8" style={{ background: 'linear-gradient(160deg, #172554 0%, #960D32 100%)' }}>
         <div aria-hidden className="pointer-events-none absolute left-[12%] top-10 h-3 w-3 rounded-full" style={{ background: 'var(--ca-amber)' }} />
         <div aria-hidden className="pointer-events-none absolute right-[16%] top-20 h-2.5 w-2.5 rounded-full bg-white/50" />
         <div aria-hidden className="pointer-events-none absolute bottom-16 left-[22%] h-2 w-2 rounded-full bg-white/40" />

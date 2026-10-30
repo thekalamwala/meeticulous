@@ -237,7 +237,7 @@ const ExploreWithBolt = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value.slice(0, 60))}
               placeholder="e.g. 1:1 Strategy Call"
-              className="fb-input w-full"
+              className="rounded-[6px] border border-black/10 bg-white px-3 py-2.5 text-sm text-ink placeholder:text-ink/40 outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 w-full"
               maxLength={60}
               autoFocus
             />
@@ -271,7 +271,7 @@ const ExploreWithBolt = () => {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="fb-input w-full"
+                className="rounded-[6px] border border-black/10 bg-white px-3 py-2.5 text-sm text-ink placeholder:text-ink/40 outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 w-full"
               >
                 {svcCats.map((c) => (
                   <option key={c.slug} value={c.slug}>{c.name}</option>
@@ -286,7 +286,7 @@ const ExploreWithBolt = () => {
               <select
                 value={duration}
                 onChange={(e) => setDuration(Number(e.target.value))}
-                className="fb-input w-full"
+                className="rounded-[6px] border border-black/10 bg-white px-3 py-2.5 text-sm text-ink placeholder:text-ink/40 outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 w-full"
               >
                 {DURATIONS.map((d) => (
                   <option key={d} value={d}>{d} min</option>
@@ -296,7 +296,7 @@ const ExploreWithBolt = () => {
             <div>
               <label className="mb-1.5 block text-sm font-semibold text-gray-800">Price</label>
               {feeOnly ? (
-                <div className="fb-input flex w-full items-center text-sm text-gray-500">Free</div>
+                <div className="rounded-[6px] border border-black/10 bg-white px-3 py-2.5 text-sm text-ink placeholder:text-ink/40 outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 flex w-full items-center text-sm text-gray-500">Free</div>
               ) : (
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
@@ -306,7 +306,7 @@ const ExploreWithBolt = () => {
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     placeholder="1999"
-                    className="fb-input w-full pl-7"
+                    className="rounded-[6px] border border-black/10 bg-white px-3 py-2.5 text-sm text-ink placeholder:text-ink/40 outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 w-full pl-7"
                   />
                 </div>
               )}
@@ -321,7 +321,7 @@ const ExploreWithBolt = () => {
           <button
             onClick={handlePublish}
             disabled={busy}
-            className="btn-primary mt-5 w-full gap-2 py-3 disabled:opacity-50"
+            className="inline-flex items-center justify-center rounded-[6px] bg-primary-cta font-semibold text-white hover:opacity-90 transition-opacity mt-5 w-full gap-2 py-3 disabled:opacity-50"
           >
             {publishing ? (
               <><Loader2 className="h-5 w-5 animate-spin" strokeWidth={2.5} /> Publishing…</>

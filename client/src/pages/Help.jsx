@@ -49,7 +49,7 @@ const ChannelCard = ({ icon: Icon, title, desc, action, onClick, disabled, badge
           {badge}
         </span>
       )}
-      <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#0079C1]/10 text-[#0079C1] mb-3">
+      <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#960D32]/10 text-[#960D32] mb-3">
         <Icon size={20} />
       </span>
       <p className="font-semibold text-gray-900">{title}</p>
@@ -91,7 +91,7 @@ const EmailSupportCard = ({ email }) => {
   };
   return (
     <div className="relative bg-white border rounded-2xl p-5 h-full">
-      <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#0079C1]/10 text-[#0079C1] mb-3">
+      <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#960D32]/10 text-[#960D32] mb-3">
         <Mail size={20} />
       </span>
       <p className="font-semibold text-gray-900">Email support</p>
@@ -100,7 +100,7 @@ const EmailSupportCard = ({ email }) => {
         <button
           type="button"
           onClick={copy}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0079C1] border border-[#0079C1]/30 rounded-lg px-2.5 py-1 hover:bg-[#0079C1]/5"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#960D32] border border-[#960D32]/30 rounded-lg px-2.5 py-1 hover:bg-[#960D32]/5"
         >
           {copied ? <Check size={13} /> : <Copy size={13} />}
           {copied ? "Copied!" : "Copy"}
@@ -117,7 +117,7 @@ const EmailSupportCard = ({ email }) => {
 };
 
 const Help = () => (
-  <div className="min-h-screen" style={{ background: "#f7f5ef" }}>
+  <div className="min-h-screen" style={{ background: "#F8FAFC" }}>
     <Seo
       title="Help & Support — Meeticulous"
       description="Get help with bookings, rescheduling, payments, and becoming a host on Meeticulous. Answers to common questions plus WhatsApp, email, and phone support."
@@ -157,7 +157,7 @@ const Help = () => (
       {/* FAQ */}
       <div className="flex items-baseline justify-between mb-3">
         <h2 className="text-lg font-bold">Frequently asked questions</h2>
-        <Link to="/help/docs" className="text-sm font-semibold text-[#0079C1] hover:underline whitespace-nowrap">
+        <Link to="/help/docs" className="text-sm font-semibold text-[#960D32] hover:underline whitespace-nowrap">
           All help articles →
         </Link>
       </div>
@@ -165,7 +165,7 @@ const Help = () => (
         {FAQ.map(({ q, a }) => (
           <div key={q} className="bg-white border rounded-2xl p-5">
             <h3 className="text-base font-semibold mb-1.5 flex items-start gap-2">
-              <MessageSquare size={16} className="text-[#0079C1] mt-0.5 flex-shrink-0" /> {q}
+              <MessageSquare size={16} className="text-[#960D32] mt-0.5 flex-shrink-0" /> {q}
             </h3>
             <p className="text-sm text-gray-600 leading-relaxed pl-6">{a}</p>
           </div>
@@ -173,8 +173,8 @@ const Help = () => (
       </div>
 
       <div className="text-center mt-8 space-x-4">
-        <Link to="/help/docs" className="text-[#0079C1] hover:underline text-sm">Browse all help articles</Link>
-        <Link to="/" className="text-[#0079C1] hover:underline text-sm">Go home</Link>
+        <Link to="/help/docs" className="text-[#960D32] hover:underline text-sm">Browse all help articles</Link>
+        <Link to="/" className="text-[#960D32] hover:underline text-sm">Go home</Link>
       </div>
     </div>
   </div>

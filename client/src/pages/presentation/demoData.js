@@ -6,7 +6,7 @@ export const FALLBACK_HOST = {
   tagline: 'Calm sessions, booked in seconds.',
   profile_image: '', // HostAvatar renders initials fallback on themeColor
   cover_image: '',   // HostCover renders theme gradient
-  accent_color: '#0079C1',
+  accent_color: '#960D32',
   services: [
     { id: 'd1', title: 'Discovery Call', slug: 'discovery-call', short_description: 'A quick, no-pressure fit check.', price: 0, duration: 20, meeting_mode: 'online' },
     { id: 'd2', title: 'Strategy Session', slug: 'strategy-session', short_description: 'A focused hour on your goals.', price: 1500, duration: 60, meeting_mode: 'online' },

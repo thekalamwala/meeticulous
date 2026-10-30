@@ -292,7 +292,7 @@ const ProductMock = ({ kind }) => {
     return (
       <div className="flex h-full flex-col">
         <div className="relative">
-          <div className="h-16 rounded-[8px]" style={{ background: "linear-gradient(110deg,#fb7185,#f59e0b,#a78bfa,#22d3ee)" }} />
+          <div className="h-16 rounded-[8px]" style={{ background: "linear-gradient(110deg,#fb7185,#f59e0b,#FF9FB0,#22d3ee)" }} />
           <div className="absolute -bottom-6 left-3 h-14 w-14 rounded-2xl border-[3px] border-white bg-gradient-to-br from-neutral-200 to-neutral-300" />
         </div>
         <div className="space-y-1 pl-1 pt-7">
@@ -385,7 +385,7 @@ const ProductMock = ({ kind }) => {
         <div className="h-2 w-28 rounded bg-neutral-200" />
       </div>
       <div className="grid flex-1 grid-cols-2 gap-2.5">
-        {[["1", "Upcoming", "#0079C1"], ["2", "Completed", "#059669"], ["1", "Cancelled", "#dc2626"], ["₹10", "Earnings", "#f59e0b"]].map(([v, l, c]) => (
+        {[["1", "Upcoming", "#960D32"], ["2", "Completed", "#059669"], ["1", "Cancelled", "#dc2626"], ["₹10", "Earnings", "#f59e0b"]].map(([v, l, c]) => (
           <div key={l} className="flex flex-col justify-center rounded-[8px] border border-neutral-100 p-3.5">
             <div className="mb-2 flex h-7 w-7 items-center justify-center rounded-lg" style={{ background: c + "1a" }}>
               <span className="h-2.5 w-2.5 rounded-full" style={{ background: c }} />
@@ -523,7 +523,7 @@ const FEATURE_GROUPS = [
 
 /* ── Product mockups (stylised UI placeholders — swap for real screenshots later) ── */
 const PRODUCT_SHOTS = [
-  { tab: "meeticulous.com/you", title: "Public booking page", kind: "booking", color: "#0079C1" },
+  { tab: "meeticulous.com/you", title: "Public booking page", kind: "booking", color: "#960D32" },
   { tab: "meeticulous.com/you/strategy-call", title: "Service page", kind: "service", color: "#1DA1F2" },
   { tab: "Checkout · Razorpay", title: "Checkout & payment", kind: "checkout", color: "#36D8FF" },
   { tab: "Dashboard", title: "Your dashboard", kind: "dashboard", color: "#059669" },
@@ -1475,7 +1475,7 @@ const HomeArchive = () => {
                     className="border-t px-5 py-3 text-center text-sm font-semibold"
                     style={{
                       borderColor: "color-mix(in srgb, var(--cc) 16%, transparent)",
-                      color: "color-mix(in srgb, var(--cc) 80%, #191919)",
+                      color: "color-mix(in srgb, var(--cc) 80%, #2A1416)",
                     }}
                   >
                     {shot.title}

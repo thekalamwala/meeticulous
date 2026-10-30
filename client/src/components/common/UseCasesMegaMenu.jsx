@@ -73,7 +73,7 @@ const UseCaseFooter = ({ onClose }) => (
     <Link
       to="/explore"
       onClick={onClose}
-      className="flex items-center gap-1 text-[12px] font-semibold text-[#0079C1] hover:underline hover:no-underline focus-visible:outline-none"
+      className="flex items-center gap-1 text-[12px] font-semibold text-[#960D32] hover:underline hover:no-underline focus-visible:outline-none"
     >
       Browse all creators
       <ChevronRight size={13} strokeWidth={2.5} />
@@ -117,13 +117,13 @@ const UseCasesMegaMenu = () => {
         data-megamenu
         className={[
           'group relative flex items-center gap-1 px-3.5 text-[12.5px] font-medium transition-colors outline-none',
-          'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0079C1]',
-          open ? 'text-[#0079C1]' : 'text-gray-500 hover:text-[#0079C1]',
+          'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#960D32]',
+          open ? 'text-[#960D32]' : 'text-gray-500 hover:text-[#960D32]',
         ].join(' ')}
       >
         <Layers
           size={16}
-          className={open ? 'text-[#0079C1]' : 'text-gray-400 group-hover:text-[#0079C1]/80'}
+          className={open ? 'text-[#960D32]' : 'text-gray-400 group-hover:text-[#960D32]/80'}
         />
         Explore
         <ChevronDown

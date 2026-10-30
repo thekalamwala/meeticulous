@@ -1,11 +1,16 @@
 @import './styles/fonts.css';
 @import './styles/design-tokens.css';
 @import './styles/base-fb.css';
-@import './styles/components/button.css';
-@import './styles/components/card.css';
-@import './styles/components/input.css';
-@import './styles/components/badge.css';
-@import './styles/components/modal.css';
+/* Legacy brutalist component CSS, demoted into a cascade layer so Tailwind
+   utilities AND the soft redefinitions in `@layer components` below win over
+   them (fixes the "hard fb-* shadow beats a utility" trap). base-fb.css stays
+   unlayered on purpose — it carries base element styles incl. heading fonts.
+   See docs/design/06-roadmap.md (fb-* migration). */
+@import './styles/components/button.css' layer(legacy);
+@import './styles/components/card.css' layer(legacy);
+@import './styles/components/input.css' layer(legacy);
+@import './styles/components/badge.css' layer(legacy);
+@import './styles/components/modal.css' layer(legacy);
 
 @tailwind base;
 @tailwind components;
@@ -56,7 +61,7 @@ body {
   overflow-x: clip; /* clip (not hidden): stops horizontal scroll WITHOUT making
                        html/body a vertical scroll container — that container is
                        what created dead scroll space below the footer on /lp. */
-  background: #fdfcf9;
+  background: #F8FAFC;
   color: var(--color-ink);
   font-family: 'Poppins', 'Poppins Fallback', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   text-rendering: optimizeLegibility;
@@ -115,14 +120,14 @@ h3 {
   --adm-text-1: #111827;
   --adm-text-2: #4b5563;
   --adm-text-3: #9ca3af;
-  --adm-accent: #0079C1;
+  --adm-accent: #960D32;
   --adm-th-bg: #f9fafb;
   --adm-hover: rgba(17, 24, 39, 0.045);
   --adm-header-bg: rgba(255, 255, 255, 0.95);
   --adm-ok: #15803d;      --adm-ok-bg: #f0fdf4;
   --adm-warn: #b45309;    --adm-warn-bg: #fffbeb;
   --adm-danger: #dc2626;  --adm-danger-bg: #fef2f2;
-  --adm-info: #00457C;    --adm-info-bg: #eff6ff;
+  --adm-info: #960D32;    --adm-info-bg: #eff6ff;
 }
 .admin-shell.dark {
   --adm-bg: #0f0f10;
@@ -283,13 +288,13 @@ textarea:focus,
 select:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px rgba(254, 81, 0, 0.14);
+  box-shadow: 0 0 0 4px rgba(46, 16, 101, 0.14);
 }
 
 button:focus-visible,
 a:focus-visible,
 [role='button']:focus-visible {
-  outline: 3px solid rgba(254, 81, 0, 0.34);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
@@ -305,7 +310,7 @@ table {
 }
 
 ::selection {
-  background: rgba(254, 81, 0, 0.22);
+  background: rgba(46, 16, 101, 0.18);
   color: var(--color-ink);
 }
 
@@ -345,7 +350,7 @@ table {
     background: var(--color-primary);
     color: #ffffff;
     font-weight: 700;
-    box-shadow: 0 12px 26px rgba(254, 81, 0, 0.22);
+    box-shadow: 0 12px 26px rgba(46, 16, 101, 0.22);
   }
 
   .btn-primary:hover,
@@ -428,7 +433,7 @@ button[role='switch'] {
 /* Calm neutral surface palette */
 .sloth-bg-canvas { background: #F8FAFC; }
 .sloth-bg-sand   { background: #F1F5F9; }
-.sloth-ink       { color: #191919; }
+.sloth-ink       { color: #2A1416; }
 .sloth-muted     { color: #6b6b6b; }
 
 /* Hero ambient aura — soft warm wash on the flat canvas (no palette change).

@@ -1,7 +1,9 @@
 # Design System — Meeticulous
 
 ## Design Language
-"Friendly Brutalism" — clean white surfaces with bold typography, hard offset shadows, and warm brand orange. Tailwind utility-first with a custom CSS-variable token layer.
+**Soft modern SaaS** — clean light surfaces, bold typography, soft blurred shadows, and brand **blue #0079C1** (post "Book A Sloth" → "Meeticulous" rebrand). Tailwind utility-first with a CSS-variable token layer.
+
+> **This file is a quick reference. The authoritative, current design system lives in [`docs/design/`](design/README.md)** — token spec (`03-design-tokens.md`), component standards (`04-components.md`), roadmap (`06-roadmap.md`). The older "Friendly Brutalism"/orange values that remain below are being corrected phase by phase; trust `docs/design/` wherever they disagree.
 
 ---
 
@@ -10,24 +12,28 @@
 ### Core Brand
 | Token | Value | Usage |
 |---|---|---|
-| `--primary` | `#FE5100` | Brand orange — primary CTAs, active states, links |
-| `--bg` | `#FFF8EE` | Warm off-white page background |
+| `--primary` | `#0079C1` | Brand blue — accents, active states, links on light, large text |
+| `--primary-cta` | `#00457C` | AA-safe navy for white-text buttons + body links |
+| `--primary-light` | `#D6ECF8` | Subtle tints, selected bg, info chips |
+| `--canvas` (`--bg`) | `#F8FAFC` | Page background |
 | `--surface` | `#FFFFFF` | Card/panel backgrounds |
-| `--text` | `#1E1E1E` | Primary text |
-| `--secondary` | `#D8B4FE` | Purple accent |
-| `--accent` | `#FFB703` | Amber accent |
-| `--success` | `#4CAF50` | Success states |
-| `--danger` | `#EF4444` | Error/delete states |
-| `--border` | `#1E1E1E` | Hard borders (brutalism) |
+| `--text-strong` | `#191919` | Primary text / headings |
+| `--action` | `#059669` | Reserved emerald — the one primary conversion CTA |
+| `--success-fg` | `#15803D` | Success states |
+| `--error-fg` | `#DC2626` | Error/delete states |
+| `--border-subtle` | `#E2E8F0` | Hairline borders (soft) |
 
 ### Tailwind Extensions
 ```js
 colors: {
-  primary: "#FE5100",
-  "primary-dark": "#d94400",
-  secondary: "#f59e0b",
-  surface: "#ffffff",
-  muted: "#6b7280",
+  primary: "#0079C1",
+  "primary-dark": "#005E99",
+  "primary-cta": "#00457C",
+  "primary-light": "#D6ECF8",
+  ink: "#191919",
+  canvas: "#F8FAFC",
+  sand: "#F1F5F9",
+  // + action / semantic / c-* accents — see docs/design/03-design-tokens.md
 }
 ```
 
@@ -75,18 +81,20 @@ colors: {
 ## Border Radius
 | Token | Value | Usage |
 |---|---|---|
-| `--radius-sm` | 12px | Inputs, small cards |
-| `--radius-md` | 16px | Medium cards |
-| `--radius-lg` | 24px | Large modals, feature cards |
+| `--radius-control` / `--radius-sm` / `--radius-md` | 4px | Inputs, buttons, small controls/cards |
+| `--radius-lg` / `--radius-card` | 6px | Cards, panels, modals |
+| (allowed exception) | 10px | the one documented large-card case |
+| `rounded-full` | 9999px | pills, chips, avatars |
 
 ---
 
 ## Shadows
 | Token | Value | Usage |
 |---|---|---|
-| `--shadow-hard-1` | `6px 6px 0 rgba(30,30,30,0.9)` | Brutalism card effect |
-| `--shadow-hard-2` | `8px 8px 0 rgba(30,30,30,0.9)` | Larger brutalism effect |
-| `--shadow-inset-press` | `inset 0 3px 0 rgba(0,0,0,0.12)` | Pressed button state |
+| `--shadow-soft` / `--shadow-1` | `0 8px 30px rgba(23,32,51,.05)` | Card rest (soft) |
+| `--shadow-2` | `0 24px 60px -28px rgba(16,24,40,.18)` | Card hover / raised |
+| `--shadow-3` | `0 24px 48px -12px rgba(16,24,40,.22)` | Modal / popover |
+| _(deprecated)_ `--shadow-hard-*` | `6px/8px 0 …` | Brutalist — being removed (Phase B/C) |
 
 ---
 
@@ -137,7 +145,7 @@ Hosts choose a theme color from a plan-gated palette. Used throughout public pro
 | Creator | Full 16-color palette (blues, purples, greens, etc.) |
 | Professional | Full palette + custom hex input |
 
-**Default:** `#FE5100` (brand orange)
+**Default:** `#0079C1` (brand blue)
 
 ### Theme Application Pattern
 ```js
@@ -152,7 +160,7 @@ const textOnTheme = getContrastColor(tc); // '#ffffff' or '#111827'
 | Plan | Color | Label |
 |---|---|---|
 | explorer | #6B7280 (grey) | Explorer |
-| creator | #FE5100 (orange) | Creator |
+| creator | #0079C1 (blue) | Creator |
 | professional | #D4AF37 (gold) | Pro |
 
 ---

@@ -141,7 +141,8 @@ const PreviewStep = () => {
                 value={tagline}
                 onChange={(e) => setTagline(e.target.value.slice(0, 120))}
                 placeholder="e.g. Helping first-time founders find product-market fit"
-                className="fb-input mt-3 w-full"
+                aria-label="Your tagline"
+                className="rounded-[6px] border border-black/10 bg-white px-3 py-2.5 text-sm text-ink placeholder:text-ink/40 outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 mt-3 w-full"
                 maxLength={120}
               />
               <p className="mt-1 text-xs text-gray-400">{tagline.length}/120</p>
@@ -161,7 +162,8 @@ const PreviewStep = () => {
                 value={city}
                 onChange={(e) => setCity(e.target.value.slice(0, 60))}
                 placeholder="e.g. Nagpur, Maharashtra"
-                className="fb-input mt-3 w-full"
+                aria-label="Your city"
+                className="rounded-[6px] border border-black/10 bg-white px-3 py-2.5 text-sm text-ink placeholder:text-ink/40 outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30 mt-3 w-full"
                 maxLength={60}
               />
             </section>
@@ -260,7 +262,7 @@ const PreviewStep = () => {
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <button
             onClick={() => navigate(`/vendor-register/${slug}/category`)}
-            className="btn-secondary px-5 py-2.5 text-sm"
+            className="inline-flex items-center justify-center rounded-[6px] border border-black/10 bg-white font-semibold text-ink hover:border-black/20 transition-colors px-5 py-2.5 text-sm"
           >
             ← Back
           </button>
@@ -271,7 +273,7 @@ const PreviewStep = () => {
           <button
             onClick={handleContinue}
             disabled={!canContinue}
-            className="btn-primary px-7 py-2.5 text-sm disabled:opacity-50"
+            className="inline-flex items-center justify-center rounded-[6px] bg-primary-cta font-semibold text-white hover:opacity-90 transition-opacity px-7 py-2.5 text-sm disabled:opacity-50"
           >
             {saving ? (
               <span className="flex items-center justify-center gap-2">

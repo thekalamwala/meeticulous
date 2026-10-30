@@ -277,7 +277,7 @@ function ReceiptCard({ r, badge }) {
   return (
     <div className="flex flex-col">
       <div className={`${CARD} overflow-hidden rounded-b-none border-b-0`}>
-        <div className="h-1.5 transition-colors motion-reduce:transition-none" style={{ background: fits ? '#191919' : 'var(--mg-tile)' }} aria-hidden />
+        <div className="h-1.5 transition-colors motion-reduce:transition-none" style={{ background: fits ? '#2A1416' : 'var(--mg-tile)' }} aria-hidden />
         <div className="p-6 sm:p-7">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-2.5">

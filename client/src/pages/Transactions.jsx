@@ -331,7 +331,7 @@ const Transactions = () => {
         ) : (
           groupTxByDay(data).map((group) => (
             <section key={group.key}>
-              <div className="sticky top-14 z-10 -mx-1 mb-2 bg-[#f7f5ef]/95 px-1 py-1.5 backdrop-blur">
+              <div className="sticky top-14 z-10 -mx-1 mb-2 bg-canvas/95 px-1 py-1.5 backdrop-blur">
                 <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">{group.label}</p>
               </div>
               <div className="space-y-2.5">

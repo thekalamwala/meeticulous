@@ -10,7 +10,7 @@
  *   hero, heroMock, heroGlass, stats, benefits, (steps | timeline | automation),
  *   capabilities, product, useCases, testimonials, related, faq, cta, seo
  *
- * Brand palette (design-system.md): #0079C1 orange · #FF4D93 pink · #4AB765 green
+ * Brand palette (design-system.md): #960D32 orange · #FF4D93 pink · #4AB765 green
  * · #F59E0B amber · #269CEF blue · #8B5CF6 violet · #0F1111 / #1A1D24 dark.
  */
 
@@ -118,7 +118,7 @@ export const FEATURES = [
     title: "Booking Pages",
     tagline: "Booking pages",
     description: "Your booking page lives at your own meeticulous.com/username, styled with your colours, photo and bio. Showcase every service and let it double as your creator page.",
-    accent: "#0079C1", accentLight: "rgba(254,81,0,0.10)", darkBg: "#1A1D24",
+    accent: "#960D32", accentLight: "rgba(254,81,0,0.10)", darkBg: "#1A1D24",
     signature: "timeline",
     hero: {
       pre: "A free booking page for", accent: "freelancers", post: "",
@@ -131,7 +131,7 @@ export const FEATURES = [
       { label: "Follow-up, 15 min", value: "Free", tint: "#269CEF" },
     ], go: "Book now" },
     heroGlass: [
-      { icon: "Link2", label: "Your link", value: "meeticulous.com/priya", tint: "#0079C1" },
+      { icon: "Link2", label: "Your link", value: "meeticulous.com/priya", tint: "#960D32" },
       { icon: "Star", label: "Rating", value: "4.9 from 120", tint: "#FFCC1C" },
     ],
     stats: [
@@ -609,7 +609,7 @@ export const FEATURES = [
     title: "Client Management",
     tagline: "Client management",
     description: "Every guest who books is saved automatically with their full booking history, so you always know who is new and who is coming back. No separate CRM to keep updated.",
-    accent: "#0079C1", accentLight: "rgba(254,81,0,0.10)", darkBg: "#1A1D24",
+    accent: "#960D32", accentLight: "rgba(254,81,0,0.10)", darkBg: "#1A1D24",
     signature: "timeline",
     hero: {
       pre: "Free client management for", accent: "coaches", post: "",
@@ -622,7 +622,7 @@ export const FEATURES = [
       { label: "Meera Iyer", value: "3 bookings", tint: "#4AB765" },
     ], go: "Open client" },
     heroGlass: [
-      { icon: "UserPlus", label: "New client", value: "Saved automatically", tint: "#0079C1" },
+      { icon: "UserPlus", label: "New client", value: "Saved automatically", tint: "#960D32" },
       { icon: "Repeat", label: "Repeat client", value: "5th booking", tint: "#4AB765" },
     ],
     stats: [

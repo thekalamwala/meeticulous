@@ -401,7 +401,7 @@ export default function SupportChat() {
             rows={3} autoFocus
             placeholder="What's going on? The more detail, the faster we can solve it."
             aria-label="Describe your problem"
-            className="w-full resize-none rounded-xl border border-gray-200 bg-[#f7f5ef] px-3 py-2 text-sm text-gray-800 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="w-full resize-none rounded-xl border border-gray-200 bg-sand px-3 py-2 text-sm text-gray-800 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
           <div className="mt-2 flex items-center justify-between gap-2">
             <button type="button" onClick={() => setIntake(null)} className="text-xs font-medium text-gray-400 hover:text-gray-600">Cancel</button>
@@ -436,7 +436,7 @@ export default function SupportChat() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Write a message…"
               aria-label="Message"
-              className="flex-1 rounded-full border border-gray-200 bg-[#f7f5ef] px-4 py-2.5 text-sm text-gray-800 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              className="flex-1 rounded-full border border-gray-200 bg-sand px-4 py-2.5 text-sm text-gray-800 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
             <button type="submit" disabled={sending || (!input.trim() && !attach)} aria-label="Send"
               className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary text-white transition-colors hover:bg-primary-dark disabled:opacity-40">

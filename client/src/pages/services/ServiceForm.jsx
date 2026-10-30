@@ -308,11 +308,11 @@ const SuggestSubcategoryModal = ({ primary, onClose }) => {
         <input autoFocus value={name} onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && submit()}
           placeholder="e.g. Wedding Photography"
-          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-[#0079C1] focus:outline-none" />
+          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-[#960D32] focus:outline-none" />
         <div className="mt-4 flex justify-end gap-2">
           <button onClick={onClose} className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100">Cancel</button>
           <button onClick={submit} disabled={saving}
-            className="rounded-lg bg-[#0079C1] px-4 py-2 text-sm font-semibold text-white hover:bg-[#e04800] disabled:opacity-50">
+            className="rounded-lg bg-[#960D32] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2A1416] disabled:opacity-50">
             {saving ? 'Sending…' : 'Send for approval'}
           </button>
         </div>
@@ -578,7 +578,7 @@ export default function ServiceForm({ initialData, serviceId }) {
                   </Select>
                   {allowSuggest && (
                     <button type="button" onClick={() => setSuggestOpen(true)}
-                      className="mt-1.5 text-[12px] font-medium text-[#0079C1] hover:underline">
+                      className="mt-1.5 text-[12px] font-medium text-[#960D32] hover:underline">
                       + Suggest new subcategory
                     </button>
                   )}
@@ -590,9 +590,9 @@ export default function ServiceForm({ initialData, serviceId }) {
                 Required: an offline listing can't be saved without a venue. Saved
                 to the host's profile (shared by all their offline services). */}
             {form.service_type === 'offline' && (
-              <div className="rounded-xl border-2 border-[#0079C1]/20 bg-[#0079C1]/[0.04] p-4">
+              <div className="rounded-xl border-2 border-[#960D32]/20 bg-[#960D32]/[0.04] p-4">
                 <div className="mb-1.5 flex items-center gap-1.5">
-                  <MapPin className="h-4 w-4 text-[#0079C1]" />
+                  <MapPin className="h-4 w-4 text-[#960D32]" />
                   <label className="text-sm font-semibold text-gray-800">Venue map link <span className="text-red-500">*</span></label>
                 </div>
                 <p className="mb-2.5 text-[12px] leading-relaxed text-gray-500">
@@ -608,7 +608,7 @@ export default function ServiceForm({ initialData, serviceId }) {
                   placeholder="https://maps.app.goo.gl/…"
                 />
                 {!mapLink.trim() && (
-                  <div className="mt-2 flex items-start gap-1.5 text-[12px] font-medium text-[#0079C1]">
+                  <div className="mt-2 flex items-start gap-1.5 text-[12px] font-medium text-[#960D32]">
                     <AlertTriangle className="mt-px h-3.5 w-3.5 shrink-0" />
                     <span>
                       {hadMapLink

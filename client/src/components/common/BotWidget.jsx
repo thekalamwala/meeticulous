@@ -22,12 +22,12 @@ const isAllowedPath = (p) =>
 
 // Bolt — Meeticulous's floating support assistant. Mounted app-wide (App.jsx).
 // Blended look: reference-widget layout + polish, on Meeticulous's brand (orange
-// #0079C1 + ink #191919, Plus Jakarta headings / Poppins body, medium borders).
+// #960D32 + ink #2A1416, Plus Jakarta headings / Poppins body, medium borders).
 // The answer STREAMS in over SSE and renders through <Markdown>, so the model's
 // **bold**/links render as formatting — raw HTML tags are never shown.
 
-const PRIMARY = '#0079C1';
-const INK = '#191919';
+const PRIMARY = '#960D32';
+const INK = '#2A1416';
 
 // Post-handoff satisfaction scale — 1..5, coloured worst→best. Click = auto-submit.
 const FEEDBACK = [
@@ -321,19 +321,19 @@ export default function BotWidget() {
           </div>
 
           {/* Messages / Welcome */}
-          <div ref={listRef} onScroll={onListScroll} className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain bg-[#FFF8F4] px-3.5 py-4">
+          <div ref={listRef} onScroll={onListScroll} className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain bg-[#F8FAFC] px-3.5 py-4">
             {messages.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center px-2 text-center">
                 <Avatar size={52} ring />
                 <h2 className="mt-3 font-heading text-lg font-extrabold" style={{ color: INK }}>Hey, I'm Bolt 👋</h2>
-                <p className="mt-1 max-w-[16rem] text-[13px] text-[#191919]/70">
+                <p className="mt-1 max-w-[16rem] text-[13px] text-ink/70">
                   Ask me about bookings, payments, plans, or hosting. If I can't crack it, I'll grab a human.
                 </p>
                 <div className="mt-4 flex flex-wrap justify-center gap-2">
                   {SUGGESTIONS.map((s) => (
                     <button
                       key={s} type="button" onClick={() => send(s)}
-                      className="rounded-md border border-[#0079C1]/70 bg-transparent px-2 py-px text-[10px] font-medium text-[#0079C1] transition-colors hover:bg-[#FFE4D1] hover:border-[#0079C1]"
+                      className="rounded-md border border-primary/70 bg-transparent px-2 py-px text-[10px] font-medium text-primary transition-colors hover:bg-primary-light hover:border-primary"
                     >
                       {s}
                     </button>
@@ -349,7 +349,7 @@ export default function BotWidget() {
                         'rounded-2xl px-3.5 py-2.5 text-[12px] leading-relaxed ' +
                         (m.role === 'user'
                           ? 'text-white'
-                          : 'border-2 border-[#191919]/10 bg-white text-[#191919] shadow-sm')
+                          : 'border-2 border-ink/10 bg-white text-ink shadow-sm')
                       }
                       style={m.role === 'user' ? { background: PRIMARY } : undefined}
                     >
@@ -359,9 +359,9 @@ export default function BotWidget() {
                         <div className="bolt-md [&>div]:text-[12px]"><Markdown source={m.content} externalLinks="strip" /></div>
                       ) : (
                         <div className="flex gap-1 py-1" aria-label="Bolt is typing">
-                          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#191919]/40 [animation-delay:0ms]" />
-                          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#191919]/40 [animation-delay:150ms]" />
-                          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#191919]/40 [animation-delay:300ms]" />
+                          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-ink/40 [animation-delay:0ms]" />
+                          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-ink/40 [animation-delay:150ms]" />
+                          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-ink/40 [animation-delay:300ms]" />
                         </div>
                       )}
 
@@ -373,14 +373,14 @@ export default function BotWidget() {
                         const top = (m.cited_sources || []).find((s) => sourceHref(s));
                         const href = top && sourceHref(top);
                         return (
-                          <div className="mt-2.5 border-t border-dashed border-[#191919]/15 pt-2 text-[11px] leading-snug text-[#191919]/60">
+                          <div className="mt-2.5 border-t border-dashed border-ink/15 pt-2 text-[11px] leading-snug text-ink/60">
                             {href ? <>Want the full details? Read{' '}
                               <a href={href} target="_blank" rel="noopener noreferrer"
-                                className="font-medium text-[#0079C1] underline decoration-[#0079C1]/40 underline-offset-2 hover:text-[#0079C1]/80">
+                                className="font-medium text-primary underline decoration-primary/40 underline-offset-2 hover:text-primary/80">
                                 {sourceLabel(top)}
                               </a>{' or '}</> : <>Still stuck? </>}
                             <button type="button" onClick={startHandoff}
-                              className="font-medium text-[#0079C1] underline decoration-[#0079C1]/40 underline-offset-2 hover:text-[#0079C1]/80">
+                              className="font-medium text-primary underline decoration-primary/40 underline-offset-2 hover:text-primary/80">
                               talk to a human
                             </button>.
                           </div>
@@ -395,17 +395,17 @@ export default function BotWidget() {
                     {m.role === 'assistant' && !m.streaming && m.content && (
                       <div className="mt-1.5 flex items-center gap-1.5 pl-1">
                         <button type="button" onClick={() => copy(m.content)} aria-label="Copy" title="Copy"
-                          className="grid h-6 w-6 place-items-center rounded-md text-[#191919]/40 hover:bg-[#191919]/5 hover:text-[#191919]/70">
+                          className="grid h-6 w-6 place-items-center rounded-md text-ink/40 hover:bg-ink/5 hover:text-ink/70">
                           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
                         </button>
                         {m.messageId && (
                           <>
                             <button type="button" disabled={!!m.feedback} onClick={() => rate(i, 'up')} aria-label="Helpful" title="Helpful"
-                              className={'grid h-6 w-6 place-items-center rounded-md ' + (m.feedback === 'up' ? 'text-[#22c55e]' : 'text-[#191919]/40 hover:bg-[#191919]/5 hover:text-[#191919]/70')}>
+                              className={'grid h-6 w-6 place-items-center rounded-md ' + (m.feedback === 'up' ? 'text-[#22c55e]' : 'text-ink/40 hover:bg-ink/5 hover:text-ink/70')}>
                               <svg width="13" height="13" viewBox="0 0 24 24" fill={m.feedback === 'up' ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2"><path d="M7 10v12" /><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z" /></svg>
                             </button>
                             <button type="button" disabled={!!m.feedback} onClick={() => rate(i, 'down')} aria-label="Not helpful" title="Not helpful"
-                              className={'grid h-6 w-6 place-items-center rounded-md ' + (m.feedback === 'down' ? 'text-[#ef4444]' : 'text-[#191919]/40 hover:bg-[#191919]/5 hover:text-[#191919]/70')}>
+                              className={'grid h-6 w-6 place-items-center rounded-md ' + (m.feedback === 'down' ? 'text-[#ef4444]' : 'text-ink/40 hover:bg-ink/5 hover:text-ink/70')}>
                               <svg width="13" height="13" viewBox="0 0 24 24" fill={m.feedback === 'down' ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2"><path d="M17 14V2" /><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z" /></svg>
                             </button>
                           </>
@@ -419,12 +419,12 @@ export default function BotWidget() {
                         {m.pills.map((p, pi) => (
                           p.action?.type === 'route' ? (
                             <a key={pi} href={p.action.value}
-                              className="rounded-md border border-[#0079C1]/70 px-2 py-0.5 text-[11px] font-medium text-[#0079C1] transition-colors hover:bg-[#FFE4D1]">
+                              className="rounded-md border border-primary/70 px-2 py-0.5 text-[11px] font-medium text-primary transition-colors hover:bg-primary-light">
                               {p.label}
                             </a>
                           ) : (
                             <button key={pi} type="button" disabled={streaming} onClick={() => send(p.action?.value || p.label)}
-                              className="rounded-md border border-[#0079C1]/70 px-2 py-0.5 text-[11px] font-medium text-[#0079C1] transition-colors hover:bg-[#FFE4D1] disabled:opacity-50">
+                              className="rounded-md border border-primary/70 px-2 py-0.5 text-[11px] font-medium text-primary transition-colors hover:bg-primary-light disabled:opacity-50">
                               {p.label}
                             </button>
                           )
@@ -441,27 +441,27 @@ export default function BotWidget() {
                 below the thread. Anonymous visitors pick a channel; logged-in users
                 land straight on the confirmation (escalated server-side already). */}
             {escalation && (
-              <div className="rounded-xl border-2 border-[#191919]/10 bg-white p-3 shadow-sm">
+              <div className="rounded-xl border-2 border-ink/10 bg-white p-3 shadow-sm">
                 {escalation.step === 'done' ? (
                   <div>
                     <div className="flex items-start gap-2.5">
                       <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-[#DCFCE7] text-base">✅</span>
-                      <div className="text-[12px] leading-relaxed text-[#191919]/80">
-                        <strong className="text-[#191919]">Support Request Sent</strong><br />
+                      <div className="text-[12px] leading-relaxed text-ink/80">
+                        <strong className="text-ink">Support Request Sent</strong><br />
                         {escalation.channel === 'whatsapp' || escalation.channel === 'email' ? (
-                          <>We'll contact you on {escalation.channel === 'whatsapp' ? 'WhatsApp' : 'Email'}{escalation.contact ? <> at <span className="font-semibold text-[#191919]">{escalation.contact}</span></> : ''}.</>
+                          <>We'll contact you on {escalation.channel === 'whatsapp' ? 'WhatsApp' : 'Email'}{escalation.contact ? <> at <span className="font-semibold text-ink">{escalation.contact}</span></> : ''}.</>
                         ) : (
                           "We'll contact you via WhatsApp or Email."
                         )}
                         {escalation.reference && (
-                          <><br />Reference: <span className="font-mono font-semibold text-[#191919]">{escalation.reference}</span></>
+                          <><br />Reference: <span className="font-mono font-semibold text-ink">{escalation.reference}</span></>
                         )}
                       </div>
                     </div>
 
                     {!escalation.rated ? (
-                      <div className="mt-3 border-t border-[#191919]/10 pt-2.5">
-                        <p className="mb-1.5 text-[12px] text-[#191919]/70">How was your experience?</p>
+                      <div className="mt-3 border-t border-ink/10 pt-2.5">
+                        <p className="mb-1.5 text-[12px] text-ink/70">How was your experience?</p>
                         <div className="flex justify-between gap-1">
                           {FEEDBACK.map((f) => (
                             <button key={f.n} type="button" onClick={() => rateEscalation(f.n)} disabled={escalation.ratingBusy}
@@ -474,8 +474,8 @@ export default function BotWidget() {
                         </div>
                       </div>
                     ) : (
-                      <div className="mt-3 border-t border-[#191919]/10 pt-2.5">
-                        <p className="text-[12px] text-[#191919]/80">
+                      <div className="mt-3 border-t border-ink/10 pt-2.5">
+                        <p className="text-[12px] text-ink/80">
                           Thanks for the feedback! Our team will reply
                           {escalation.channel === 'whatsapp' ? ' on WhatsApp' : escalation.channel === 'email' ? ' by email' : ' soon'}
                           {escalation.reference ? <> — your reference is <span className="font-semibold">{escalation.reference}</span></> : ''}.
@@ -485,27 +485,27 @@ export default function BotWidget() {
                   </div>
                 ) : escalation.step === 'choose' ? (
                   <div>
-                    <p className="mb-2 text-[12px] leading-snug text-[#191919]/80">
+                    <p className="mb-2 text-[12px] leading-snug text-ink/80">
                       Before I send this to our support team, how would you like us to contact you?
                     </p>
                     <div className="flex flex-col gap-1.5">
                       <button type="button" onClick={() => chooseChannel('whatsapp')}
-                        className="rounded-lg border-2 border-[#0079C1]/70 px-3 py-1.5 text-[12px] font-semibold text-[#0079C1] transition-colors hover:bg-[#FFE4D1]">
+                        className="rounded-lg border-2 border-primary/70 px-3 py-1.5 text-[12px] font-semibold text-primary transition-colors hover:bg-primary-light">
                         Continue with WhatsApp
                       </button>
                       <button type="button" onClick={() => chooseChannel('email')}
-                        className="rounded-lg border-2 border-[#0079C1]/70 px-3 py-1.5 text-[12px] font-semibold text-[#0079C1] transition-colors hover:bg-[#FFE4D1]">
+                        className="rounded-lg border-2 border-primary/70 px-3 py-1.5 text-[12px] font-semibold text-primary transition-colors hover:bg-primary-light">
                         Continue with Email
                       </button>
                       <button type="button" onClick={() => chooseChannel('browsing')}
-                        className="rounded-lg px-3 py-1.5 text-[12px] font-medium text-[#191919]/50 transition-colors hover:bg-[#191919]/5">
+                        className="rounded-lg px-3 py-1.5 text-[12px] font-medium text-ink/50 transition-colors hover:bg-ink/5">
                         I'm just browsing
                       </button>
                     </div>
                   </div>
                 ) : (
                   <div>
-                    <p className="mb-1.5 text-[12px] font-semibold text-[#191919]">
+                    <p className="mb-1.5 text-[12px] font-semibold text-ink">
                       {escalation.channel === 'whatsapp' ? 'Your WhatsApp number' : 'Your email'}
                     </p>
                     {escalation.step === 'form' ? (
@@ -517,38 +517,38 @@ export default function BotWidget() {
                           type={escalation.channel === 'email' ? 'email' : 'tel'}
                           inputMode={escalation.channel === 'email' ? 'email' : 'tel'}
                           placeholder={escalation.channel === 'whatsapp' ? '9876543210' : 'you@email.com'}
-                          className="min-w-0 flex-1 rounded-lg border-2 border-[#191919]/12 px-2.5 py-1.5 text-[12px] outline-none focus:!border-[#0079C1]"
+                          className="min-w-0 flex-1 rounded-lg border-2 border-ink/12 px-2.5 py-1.5 text-[12px] outline-none focus:!border-primary"
                         />
                         <button type="button" onClick={sendContactOtp} disabled={escalation.busy || !(escalation.contact || '').trim()}
-                          className="flex-shrink-0 rounded-lg bg-[#0079C1] px-3 py-1.5 text-[12px] font-semibold text-white disabled:bg-[#191919]/15 disabled:text-[#191919]/40">
+                          className="flex-shrink-0 rounded-lg bg-primary px-3 py-1.5 text-[12px] font-semibold text-white disabled:bg-ink/15 disabled:text-ink/40">
                           {escalation.busy ? '…' : 'Send code'}
                         </button>
                       </div>
                     ) : (
                       <div>
-                        <p className="mb-1.5 text-[11px] text-[#191919]/60">Enter the 6-digit code sent to {escalation.contact}.</p>
+                        <p className="mb-1.5 text-[11px] text-ink/60">Enter the 6-digit code sent to {escalation.contact}.</p>
                         <div className="flex gap-1.5">
                           <input
                             value={escalation.otp || ''}
                             onChange={(e) => patchEsc({ otp: e.target.value.replace(/\D/g, '').slice(0, 6) })}
                             onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); verifyContactOtp(); } }}
                             inputMode="numeric" placeholder="123456"
-                            className="min-w-0 flex-1 rounded-lg border-2 border-[#191919]/12 px-2.5 py-1.5 text-[12px] tracking-widest outline-none focus:!border-[#0079C1]"
+                            className="min-w-0 flex-1 rounded-lg border-2 border-ink/12 px-2.5 py-1.5 text-[12px] tracking-widest outline-none focus:!border-primary"
                           />
                           <button type="button" onClick={verifyContactOtp} disabled={escalation.busy || !/^\d{6}$/.test(escalation.otp || '')}
-                            className="flex-shrink-0 rounded-lg bg-[#0079C1] px-3 py-1.5 text-[12px] font-semibold text-white disabled:bg-[#191919]/15 disabled:text-[#191919]/40">
+                            className="flex-shrink-0 rounded-lg bg-primary px-3 py-1.5 text-[12px] font-semibold text-white disabled:bg-ink/15 disabled:text-ink/40">
                             {escalation.busy ? '…' : 'Verify'}
                           </button>
                         </div>
                         <button type="button" onClick={sendContactOtp} disabled={escalation.busy}
-                          className="mt-1 text-[10px] font-medium text-[#0079C1] hover:underline disabled:opacity-50">
+                          className="mt-1 text-[10px] font-medium text-primary hover:underline disabled:opacity-50">
                           Resend code
                         </button>
                       </div>
                     )}
                     {escalation.error && <p className="mt-1 text-[10px] text-[#ef4444]">{escalation.error}</p>}
                     <button type="button" onClick={() => chooseChannel('browsing')}
-                      className="mt-1.5 text-[10px] font-medium text-[#191919]/40 hover:text-[#191919]/70">
+                      className="mt-1.5 text-[10px] font-medium text-ink/40 hover:text-ink/70">
                       Cancel
                     </button>
                   </div>
@@ -567,11 +567,11 @@ export default function BotWidget() {
               disabled={locked}
               placeholder={locked ? 'Chat paused — email bolt@meeticulous.in' : 'Ask anything…'}
               aria-label="Type your question"
-              className="h-10 min-h-10 max-h-24 flex-1 resize-none rounded-xl border-2 border-[#191919]/12 px-3 pt-[11px] pb-[5px] text-[13px] leading-tight outline-none focus:!border-[#0079C1] focus:!shadow-none focus:!ring-0 focus:!outline-none disabled:cursor-not-allowed disabled:bg-[#191919]/5"
+              className="h-10 min-h-10 max-h-24 flex-1 resize-none rounded-xl border-2 border-ink/12 px-3 pt-[11px] pb-[5px] text-[13px] leading-tight outline-none focus:!border-primary focus:!shadow-none focus:!ring-0 focus:!outline-none disabled:cursor-not-allowed disabled:bg-ink/5"
             />
             <button
               type="button" onClick={() => send()} disabled={locked || streaming || !input.trim()} aria-label="Send"
-              className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl text-white transition-transform active:scale-95 disabled:cursor-not-allowed disabled:bg-[#191919]/15 disabled:text-[#191919]/40"
+              className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl text-white transition-transform active:scale-95 disabled:cursor-not-allowed disabled:bg-ink/15 disabled:text-ink/40"
               style={!streaming && input.trim() ? { background: PRIMARY } : undefined}
             >
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="19" x2="12" y2="5" /><polyline points="5 12 12 5 19 12" /></svg>

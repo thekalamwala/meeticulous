@@ -71,7 +71,7 @@ export default function AdminKycOverview() {
         actions={
           <div className="relative">
             <Btn variant="outline" onClick={openBell}>
-              Notifications{unread > 0 && <span className="ml-1 rounded-full bg-[#0079C1] px-1.5 text-[11px] text-white">{unread}</span>}
+              Notifications{unread > 0 && <span className="ml-1 rounded-full bg-[#960D32] px-1.5 text-[11px] text-white">{unread}</span>}
             </Btn>
             {bellOpen && (
               <div className="adm-card absolute right-0 z-40 mt-2 max-h-96 w-80 overflow-y-auto rounded-2xl p-2 shadow-lg">
@@ -119,7 +119,7 @@ export default function AdminKycOverview() {
         <div>
           <div className="mb-2 flex items-center justify-between">
             <h3 className="text-sm font-semibold adm-t1">Action queue</h3>
-            <Link to="/admin/kyc/pending" className="text-xs text-[#0079C1] hover:underline">View all</Link>
+            <Link to="/admin/kyc/pending" className="text-xs text-[#960D32] hover:underline">View all</Link>
           </div>
           <Table
             columns={[

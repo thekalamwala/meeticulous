@@ -35,16 +35,16 @@ const ModeIcon = ({ mode }) => {
   return (
     <span title={offline ? "Offline" : "Online"} aria-label={offline ? "Offline" : "Online"}
       className="inline-flex items-center justify-center w-7 h-7 rounded-lg"
-      style={{ background: offline ? "#DC26261A" : "#0079C11A" }}>
+      style={{ background: offline ? "#DC26261A" : "#960D321A" }}>
       <Ic d={offline ? IC.mapPin : IC.video} size={15}
-        className={offline ? "text-[#DC2626]" : "text-[#0079C1]"} />
+        className={offline ? "text-[#DC2626]" : "text-[#960D32]"} />
     </span>
   );
 };
 
 const IconBtn = ({ icon, label, onClick, tone = "gray" }) => {
   const tones = {
-    gray:    "adm-t3 hover:text-[#0079C1] hover:bg-[#0079C1]/10",
+    gray:    "adm-t3 hover:text-[#960D32] hover:bg-[#960D32]/10",
     danger:  "text-rose-500 hover:text-rose-700 hover:bg-rose-50",
   };
   return (
@@ -143,7 +143,7 @@ const AdminServices = () => {
         subtitle={`${services.length} services on the platform.`}
         actions={
           <Link to="/admin/services/categories"
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-medium bg-[#0079C1] text-white hover:bg-[#e54900] transition-colors">
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-medium bg-[#960D32] text-white hover:bg-[#e54900] transition-colors">
             <Ic d={IC.layers} size={15} />All Service Categories
           </Link>
         }
@@ -176,7 +176,7 @@ const AdminServices = () => {
                     <td data-label="Service" className="px-4 py-3">
                       {username && s.slug ? (
                         <a href={`/${username}/${s.slug}`} target="_blank" rel="noreferrer"
-                          className="font-medium adm-t1 hover:text-[#0079C1] hover:underline">
+                          className="font-medium adm-t1 hover:text-[#960D32] hover:underline">
                           {s.title}
                         </a>
                       ) : (
@@ -193,7 +193,7 @@ const AdminServices = () => {
                             defaultValue={s.category || ""}
                             disabled={savingId === s.id}
                             onChange={(e) => saveCategory(s, e.target.value)}
-                            className="border border-gray-200 rounded-lg px-2 py-1.5 text-[13px] adm-t1 bg-white focus:ring-2 focus:ring-[#0079C1]/30 focus:border-[#0079C1] outline-none max-w-[200px]">
+                            className="border border-gray-200 rounded-lg px-2 py-1.5 text-[13px] adm-t1 bg-white focus:ring-2 focus:ring-[#960D32]/30 focus:border-[#960D32] outline-none max-w-[200px]">
                             <option value="">— No category —</option>
                             {optionsFor(primary).map((c) => (
                               <option key={c.id} value={c.slug}>{c.name}</option>
@@ -222,7 +222,7 @@ const AdminServices = () => {
                     <td data-label="Host" className="px-4 py-3 text-xs adm-t2">
                       {username ? (
                         <a href={`/${username}`} target="_blank" rel="noreferrer"
-                          className="block hover:text-[#0079C1]">
+                          className="block hover:text-[#960D32]">
                           <span className="font-medium adm-t1">{s.profiles?.name}</span>
                           <span className="block adm-t3">@{username}</span>
                         </a>

@@ -3,7 +3,7 @@
 /* ===== variables.css ===== */
 .hiw-lp {
   /* Brand palette */
-  --primary: #0079C1;
+  --primary: #960D32;
   --primary-light: #ff7a3d;
   --primary-dark: #e04800;
   --primary-soft: #fff4ed;
@@ -12,7 +12,7 @@
   --white: #ffffff;
 
   /* Text */
-  --text-dark: #191919;
+  --text-dark: #2A1416;
   --text-secondary: #666666;
 
   /* UI */
@@ -792,7 +792,7 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 1rem;
-    color: #0079C1;
+    color: #960D32;
     font-size: 0.85rem;
     font-weight: 800;
     text-transform: uppercase;
@@ -805,7 +805,7 @@
     width: 28px;
     height: 2px;
     margin: 0 12px;
-    background: #0079C1;
+    background: #960D32;
     border-radius: 999px;
 }
 
@@ -817,7 +817,7 @@
 }
 
 .hiw-lp .process-main-title span {
-    color: #0079C1;
+    color: #960D32;
 }
 
 .hiw-lp .process-carousel {
@@ -838,7 +838,7 @@
 }
 
 .hiw-lp .process-card {
-    --step-color: #0079C1;
+    --step-color: #960D32;
     --step-soft: #fff0e8;
 
     position: absolute;
@@ -983,7 +983,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: #0079C1;
+    color: #960D32;
     background: #ffffff;
     border: 1px solid #e8e8e8;
     border-radius: 50%;
@@ -996,13 +996,13 @@
 
 .hiw-lp .process-arrow:hover {
     color: #ffffff;
-    background: #0079C1;
+    background: #960D32;
 }
 
 .hiw-lp .process-arrow-next {
     color: #ffffff;
-    background: #0079C1;
-    border-color: #0079C1;
+    background: #960D32;
+    border-color: #960D32;
 }
 
 .hiw-lp .process-arrow-next:hover {
@@ -1016,7 +1016,7 @@
 }
 
 .hiw-lp .process-dot {
-    --dot-color: #0079C1;
+    --dot-color: #960D32;
 
     width: 9px;
     height: 9px;
@@ -1268,7 +1268,7 @@
     justify-content: center;
 
     color: #ffffff;
-    background: #0079C1;
+    background: #960D32;
     border-radius: 50%;
 
     transform: translate(-50%, -50%);
@@ -1375,7 +1375,7 @@
 
 .hiw-lp .video-modal-close:hover {
     color: #ffffff;
-    background: #0079C1;
+    background: #960D32;
     transform: rotate(90deg);
 }
 
@@ -1680,7 +1680,7 @@
     width: 52px;
     height: 4px;
     margin: 1.2rem auto 0;
-    background: #0079C1;
+    background: #960D32;
     border-radius: 999px;
 }
 
@@ -1955,7 +1955,7 @@
 }
 
 .hiw-lp .phone-screen .mockup-row-price {
-    color: #0079C1 !important;
+    color: #960D32 !important;
 }
 
 /* Time chips */
@@ -2036,13 +2036,13 @@
 }
 
 .hiw-lp .customer-step:hover::after {
-    color: #0079C1;
+    color: #960D32;
     transform: translate(3px, -52%);
 }
 
 .hiw-lp .customer-step.active {
      background: #ffffff;
-    border: 2px solid #0079C1;
+    border: 2px solid #960D32;
 }
 
 .hiw-lp .customer-step.active::after {
@@ -2100,7 +2100,7 @@
 }
 
 .hiw-lp .customer-step:nth-child(3).active .customer-step-icon {
-    background: #0079C1;
+    background: #960D32;
     box-shadow: 0 9px 20px rgba(37, 99, 235, 0.22);
 }
 
@@ -2129,7 +2129,7 @@
 
 .hiw-lp .customer-step-num {
     margin-right: 0.4rem;
-    color: #0079C1;
+    color: #960D32;
     font-weight: 800;
 }
 
