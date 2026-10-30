@@ -334,7 +334,7 @@ const NavDropdown = ({ id, label, icon: Icon, align = 'left', wide = false, acti
           'origin-top-left rounded-[16px] border border-gray-200 bg-white shadow-[0_18px_50px_-12px_rgba(30,11,77,0.22)] z-50',
           // Left-aligned card below the strip, with a small gap so the connector
           // triangle can point up into the bar under the active item.
-          'fixed top-[4rem] left-[max(1rem,calc((100vw-72rem)/2))] w-max max-w-[calc(100vw-2rem)]',
+          'fixed top-[4.15rem] left-[max(1rem,calc((100vw-72rem)/2))] w-max max-w-[calc(100vw-2rem)]',
           'transition duration-200 ease-out motion-reduce:transition-none',
           open ? 'translate-y-0 scale-100 opacity-100' : '-translate-y-1 scale-[0.98] opacity-0 pointer-events-none',
         ].join(' ')}
@@ -342,7 +342,7 @@ const NavDropdown = ({ id, label, icon: Icon, align = 'left', wide = false, acti
         {/* Triangle connector: points up from the menu into the strip, slotting
             under the active item so bar + menu read as joined. */}
         {caretX != null && (
-          <span aria-hidden="true" className="pointer-events-none absolute top-0 left-0 z-10 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-tl-[2px] border-l border-t border-gray-200 bg-white" style={{ left: caretX }} />
+          <span aria-hidden="true" className="pointer-events-none absolute z-10" style={{ left: caretX, top: -12, transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '15px solid transparent', borderRight: '15px solid transparent', borderBottom: '13px solid #fff', filter: 'drop-shadow(0 -1.5px 1.5px rgba(0,0,0,0.06))' }} />
         )}
         {children}
       </div>
