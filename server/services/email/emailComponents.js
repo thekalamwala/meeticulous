@@ -108,7 +108,7 @@ function celebration(theme, { iconUrl, title } = {}) {
 
 // ── Marketing blocks (conversion-centered design; CDN icons, no emoji/SVG) ──
 // Icons live on the CDN, called by filename. Upload to /images/email/marketing/icons/.
-const MKT_ICONS = 'https://company-assets.bookasloth.in/images/email/marketing/icons';
+const MKT_ICONS = 'https://meeticulous.com/images/email/marketing/icons';
 
 /** Full-width gradient hero band (the "encapsulation" + big-number pattern).
  *  Pass `big` for a giant stat, or `h2` for a headline. Solid bgcolor fallback
