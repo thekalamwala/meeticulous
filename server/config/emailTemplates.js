@@ -34,7 +34,7 @@ const TEMPLATES = [
   // ── Authentication ──────────────────────────────────────────────────────────
 
   (() => { const t = themeForCategory('Security Check'); return {
-    event_key: 'BOOKING_OTP', audience: 'all', category: 'Authentication',
+    event_key: 'BOOKING_OTP', sender_key: 'verify', audience: 'all', category: 'Authentication',
     name: 'OTP Verification', subject: 'Your verification code is {{otp}}',
     preview_text: 'Use {{otp}} to verify — expires in 10 minutes.',
     email_category: 'Security Check',
@@ -48,7 +48,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Security Check'); return {
-    event_key: 'AUTH_EMAIL_VERIFICATION', audience: 'all', category: 'Authentication',
+    event_key: 'AUTH_EMAIL_VERIFICATION', sender_key: 'verify', audience: 'all', category: 'Authentication',
     name: 'Email Verification', subject: 'Verify your email address',
     preview_text: 'Confirm your email to finish setting up your account.',
     email_category: 'Security Check',
@@ -61,7 +61,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Security Check'); return {
-    event_key: 'PASSWORD_RESET', audience: 'all', category: 'Authentication',
+    event_key: 'PASSWORD_RESET', sender_key: 'verify', audience: 'all', category: 'Authentication',
     name: 'Password Reset', subject: 'Your Meeticulous password reset code',
     preview_text: 'Use {{otp}} to reset your password — expires in 10 minutes.',
     email_category: 'Security Check',
@@ -77,7 +77,7 @@ const TEMPLATES = [
   // ── Security ────────────────────────────────────────────────────────────────
 
   (() => { const t = themeForCategory('Security Alert'); return {
-    event_key: 'SECURITY_PASSWORD_CHANGED', audience: 'all', category: 'Security',
+    event_key: 'SECURITY_PASSWORD_CHANGED', sender_key: 'verify', audience: 'all', category: 'Security',
     name: 'Password Changed', subject: 'Your password was changed',
     preview_text: 'Your Meeticulous password was just updated.',
     email_category: 'Security Alert',
@@ -91,7 +91,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Security Alert'); return {
-    event_key: 'SECURITY_LOGIN_ALERT', audience: 'all', category: 'Security',
+    event_key: 'SECURITY_LOGIN_ALERT', sender_key: 'verify', audience: 'all', category: 'Security',
     name: 'Login Alert', subject: 'New sign-in to your account',
     preview_text: 'A new sign-in was detected on your account.',
     email_category: 'Security Alert',
@@ -107,7 +107,7 @@ const TEMPLATES = [
   // ── Booking — Confirmed ─────────────────────────────────────────────────────
 
   (() => { const t = themeForCategory('Booking Confirmed'); return {
-    event_key: 'BOOKING_CONFIRMED_CUSTOMER', audience: 'all', category: 'Booking',
+    event_key: 'BOOKING_CONFIRMED_CUSTOMER', sender_key: 'bookings', audience: 'all', category: 'Booking',
     name: 'Booking Confirmed — Customer', subject: 'Your booking with {{vendor_name}} is confirmed',
     preview_text: 'Your appointment with {{vendor_name}} is confirmed.',
     email_category: 'Booking Confirmed',
@@ -124,7 +124,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('New Booking'); return {
-    event_key: 'BOOKING_CONFIRMED_VENDOR', audience: 'all', category: 'Booking',
+    event_key: 'BOOKING_CONFIRMED_VENDOR', sender_key: 'bookings', audience: 'all', category: 'Booking',
     name: 'Booking Confirmed — Vendor', subject: 'New booking: {{service_name}}',
     preview_text: 'You have a new booking from {{user_name}}.',
     email_category: 'New Booking',
@@ -140,7 +140,7 @@ const TEMPLATES = [
   // ── Booking — Reminder ──────────────────────────────────────────────────────
 
   (() => { const t = themeForCategory('Reminder'); return {
-    event_key: 'BOOKING_REMINDER_CUSTOMER', audience: 'all', category: 'Booking',
+    event_key: 'BOOKING_REMINDER_CUSTOMER', sender_key: 'bookings', audience: 'all', category: 'Booking',
     name: 'Booking Reminder — Customer', subject: 'Reminder: {{service_name}} is coming up',
     preview_text: 'Your session with {{vendor_name}} is almost here.',
     email_category: 'Reminder',
@@ -153,7 +153,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Reminder'); return {
-    event_key: 'BOOKING_REMINDER_VENDOR', audience: 'all', category: 'Booking',
+    event_key: 'BOOKING_REMINDER_VENDOR', sender_key: 'bookings', audience: 'all', category: 'Booking',
     name: 'Booking Reminder — Vendor', subject: 'Reminder: session with {{user_name}}',
     preview_text: 'You have a session coming up with {{user_name}}.',
     email_category: 'Reminder',
@@ -168,7 +168,7 @@ const TEMPLATES = [
   // ── Booking — Cancelled ─────────────────────────────────────────────────────
 
   (() => { const t = themeForCategory('Booking Cancelled'); return {
-    event_key: 'BOOKING_CANCELLED_CUSTOMER', audience: 'all', category: 'Booking',
+    event_key: 'BOOKING_CANCELLED_CUSTOMER', sender_key: 'bookings', audience: 'all', category: 'Booking',
     name: 'Booking Cancelled — Customer', subject: 'Your booking was cancelled',
     preview_text: 'Your booking with {{vendor_name}} was cancelled.',
     email_category: 'Booking Cancelled',
@@ -182,7 +182,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Booking Cancelled'); return {
-    event_key: 'BOOKING_CANCELLED_VENDOR', audience: 'all', category: 'Booking',
+    event_key: 'BOOKING_CANCELLED_VENDOR', sender_key: 'bookings', audience: 'all', category: 'Booking',
     name: 'Booking Cancelled — Vendor', subject: 'A booking was cancelled',
     preview_text: 'A booking with {{user_name}} was cancelled.',
     email_category: 'Booking Cancelled',
@@ -197,7 +197,7 @@ const TEMPLATES = [
   // ── Booking — Completed ─────────────────────────────────────────────────────
 
   (() => { const t = themeForCategory('Session Complete'); return {
-    event_key: 'BOOKING_COMPLETED_CUSTOMER', audience: 'all', category: 'Booking',
+    event_key: 'BOOKING_COMPLETED_CUSTOMER', sender_key: 'bookings', audience: 'all', category: 'Booking',
     name: 'Booking Completed — Customer', subject: 'Thanks for booking with {{vendor_name}}',
     preview_text: 'How was your session with {{vendor_name}}?',
     email_category: 'Session Complete',
@@ -211,7 +211,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Session Complete'); return {
-    event_key: 'BOOKING_COMPLETED_VENDOR', audience: 'all', category: 'Booking',
+    event_key: 'BOOKING_COMPLETED_VENDOR', sender_key: 'bookings', audience: 'all', category: 'Booking',
     name: 'Booking Completed — Vendor', subject: 'Session with {{user_name}} marked complete',
     preview_text: 'Your session with {{user_name}} is complete.',
     email_category: 'Session Complete',
@@ -240,7 +240,7 @@ const TEMPLATES = [
   // ── Booking — Rescheduled ───────────────────────────────────────────────────
 
   (() => { const t = themeForCategory('Rescheduled'); return {
-    event_key: 'BOOKING_RESCHEDULED_CUSTOMER', audience: 'all', category: 'Booking',
+    event_key: 'BOOKING_RESCHEDULED_CUSTOMER', sender_key: 'bookings', audience: 'all', category: 'Booking',
     name: 'Booking Rescheduled — Customer', subject: 'Please confirm your rescheduled booking',
     preview_text: 'Your appointment time changed — please confirm.',
     email_category: 'Rescheduled',
@@ -254,7 +254,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Rescheduled'); return {
-    event_key: 'BOOKING_RESCHEDULED_VENDOR', audience: 'all', category: 'Booking',
+    event_key: 'BOOKING_RESCHEDULED_VENDOR', sender_key: 'bookings', audience: 'all', category: 'Booking',
     name: 'Booking Rescheduled — Vendor', subject: 'A booking was rescheduled',
     preview_text: 'A booking with {{user_name}} was rescheduled.',
     email_category: 'Rescheduled',
@@ -282,7 +282,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Account Update'); return {
-    event_key: 'PROFILE_VERIFIED', audience: 'all', category: 'Profile',
+    event_key: 'PROFILE_VERIFIED', sender_key: 'account', audience: 'all', category: 'Profile',
     name: 'Verification Approved', subject: "You're verified on Meeticulous",
     preview_text: 'Your verification was approved.',
     email_category: 'Account Update',
@@ -295,7 +295,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Account Update'); return {
-    event_key: 'PROFILE_REJECTED', audience: 'all', category: 'Profile',
+    event_key: 'PROFILE_REJECTED', sender_key: 'account', audience: 'all', category: 'Profile',
     name: 'Verification Rejected', subject: 'Update needed on your verification',
     preview_text: 'Your verification needs another look.',
     email_category: 'Account Update',
@@ -309,7 +309,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Account Update'); return {
-    event_key: 'KYC_APPROVED', audience: 'vendor', category: 'Profile',
+    event_key: 'KYC_APPROVED', sender_key: 'account', audience: 'vendor', category: 'Profile',
     name: 'KYC Approved', subject: 'Your KYC is verified — payouts unlocked',
     preview_text: 'Your identity verification was approved.',
     email_category: 'Account Update',
@@ -322,7 +322,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Account Update'); return {
-    event_key: 'KYC_REJECTED', audience: 'vendor', category: 'Profile',
+    event_key: 'KYC_REJECTED', sender_key: 'account', audience: 'vendor', category: 'Profile',
     name: 'KYC Rejected', subject: 'Action needed on your KYC verification',
     preview_text: 'Your KYC needs another look.',
     email_category: 'Account Update',
@@ -407,7 +407,7 @@ const TEMPLATES = [
   // ── Subscription ─────────────────────────────────────────────────────────────
 
   (() => { const t = themeForCategory('Payment Receipt'); return {
-    event_key: 'SUBSCRIPTION_PURCHASED', audience: 'all', category: 'Subscription',
+    event_key: 'SUBSCRIPTION_PURCHASED', sender_key: 'payments', audience: 'all', category: 'Subscription',
     name: 'Premium Activated', subject: "You're officially on {{plan_name}} 🎉",
     preview_text: "{{plan_name}} is live — your booking link's ready to get you paid.",
     email_category: 'Payment Receipt',
@@ -424,7 +424,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Renewal'); return {
-    event_key: 'SUBSCRIPTION_EXPIRING', audience: 'all', category: 'Subscription', sender_key: 'shubham',
+    event_key: 'SUBSCRIPTION_EXPIRING', audience: 'all', category: 'Subscription', sender_key: 'payments',
     name: 'Premium Expiring', subject: 'Your {{plan_name}} plan renews in {{days_left}} days',
     preview_text: "Keep your 0% commission — don't slip back to 5%.",
     email_category: 'Renewal',
@@ -437,7 +437,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Payment Receipt'); return {
-    event_key: 'SUBSCRIPTION_RENEWED', audience: 'all', category: 'Subscription',
+    event_key: 'SUBSCRIPTION_RENEWED', sender_key: 'payments', audience: 'all', category: 'Subscription',
     name: 'Premium Renewed', subject: 'Your {{plan_name}} plan is renewed',
     preview_text: 'Your subscription was renewed successfully.',
     email_category: 'Payment Receipt',
@@ -451,7 +451,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Renewal'); return {
-    event_key: 'SUBSCRIPTION_HALTED', audience: 'vendor', category: 'Subscription', sender_key: 'tithi',
+    event_key: 'SUBSCRIPTION_HALTED', audience: 'vendor', category: 'Subscription', sender_key: 'payments',
     name: 'Subscription Payment Failed', subject: "Your renewal didn't go through",
     preview_text: 'Update your payment to keep your plan and 0% commission.',
     email_category: 'Renewal',
@@ -464,7 +464,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Payment Receipt'); return {
-    event_key: 'REFERRAL_REWARD_RELEASED', audience: 'vendor', category: 'Payments',
+    event_key: 'REFERRAL_REWARD_RELEASED', sender_key: 'payments', audience: 'vendor', category: 'Payments',
     name: 'Referral Reward Released', subject: 'You earned a referral reward 🎉',
     preview_text: 'Your referral reward is now in your withdrawable balance.',
     email_category: 'Payment Receipt',
@@ -562,7 +562,7 @@ const TEMPLATES = [
 
   // ── Payout / settlement lifecycle (host-facing) ──────────────────────────
   (() => { const t = themeForCategory('Payment Receipt'); return {
-    event_key: 'PAYOUT_SENT', audience: 'all', category: 'Payments', sender_key: 'tithi',
+    event_key: 'PAYOUT_SENT', audience: 'all', category: 'Payments', sender_key: 'payments',
     name: 'Payout — On The Way', subject: '{{payout_amount}} is on its way to your bank 💸',
     preview_text: 'Your earnings have been released and are settling to your account.',
     email_category: 'Payment Receipt',
@@ -576,7 +576,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Account Update'); return {
-    event_key: 'PAYOUT_VERIFICATION_NEEDED', audience: 'all', category: 'Payments', sender_key: 'tithi',
+    event_key: 'PAYOUT_VERIFICATION_NEEDED', audience: 'all', category: 'Payments', sender_key: 'payments',
     name: 'Payout — Verification Needed', subject: 'One more step to unlock your payouts',
     preview_text: 'Your payment partner needs a little more to verify your account.',
     email_category: 'Account Update',
@@ -589,7 +589,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Account Update'); return {
-    event_key: 'PAYOUT_FAILED', audience: 'all', category: 'Payments', sender_key: 'tithi',
+    event_key: 'PAYOUT_FAILED', audience: 'all', category: 'Payments', sender_key: 'payments',
     name: 'Payout — Could Not Complete', subject: "We couldn't send your payout — quick fix inside",
     preview_text: "Your payout didn't go through. A quick check of your bank details fixes it.",
     email_category: 'Account Update',
@@ -603,7 +603,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Payment Receipt'); return {
-    event_key: 'EARNING_REVERSED', audience: 'all', category: 'Payments', sender_key: 'shubham',
+    event_key: 'EARNING_REVERSED', audience: 'all', category: 'Payments', sender_key: 'payments',
     name: 'Earning Reversed', subject: 'A booking was refunded — earning reversed',
     preview_text: 'A booking you earned on was refunded, so that payout was reversed.',
     email_category: 'Payment Receipt',
@@ -617,7 +617,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Payment Receipt'); return {
-    event_key: 'PAYOUT_DELAY_HOLIDAY', audience: 'all', category: 'Payments', sender_key: 'tithi',
+    event_key: 'PAYOUT_DELAY_HOLIDAY', audience: 'all', category: 'Payments', sender_key: 'payments',
     name: 'Payout — Bank Holiday Delay', subject: 'Heads up — {{holiday}} may add a day to your payout',
     preview_text: 'Banks are closed for the holiday, so your payout lands a working day later.',
     email_category: 'Payment Receipt',
@@ -633,7 +633,7 @@ const TEMPLATES = [
   // ── Engagement ───────────────────────────────────────────────────────────────
 
   (() => { const t = themeForCategory('Product Feedback'); return {
-    event_key: 'FEEDBACK_STATUS_CHANGED', audience: 'vendor', category: 'Engagement',
+    event_key: 'FEEDBACK_STATUS_CHANGED', sender_key: 'account', audience: 'vendor', category: 'Engagement',
     name: 'Feedback Status Update', subject: 'Update on your feedback: {{feedback_subject}}',
     preview_text: 'Your feedback is now {{status_label}}.',
     email_category: 'Product Feedback',
