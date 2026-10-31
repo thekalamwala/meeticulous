@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
+import { Check } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Seo from '../../components/common/Seo';
+import { Wordmark } from './OnboardingStepper';
 
 // Inline Google "G" logo SVG — no external file dependency.
 const GoogleIcon = () => (
@@ -24,6 +26,8 @@ const GoogleIcon = () => (
   </svg>
 );
 
+const TRUST = ['Free to start', 'No card needed', 'Google Calendar synced'];
+
 /**
  * GoogleStart — the sole entry point for host onboarding.
  *
@@ -31,59 +35,74 @@ const GoogleIcon = () => (
  * Action: kicks off Google OAuth (identity + calendar scopes) via
  *         useAuth().startVendorGoogleAuth('signup').
  * After Google consent, the server creates the host account (role=host,
- * onboarding_slug=auto-username, stepCompleted=1) and redirects to
- * /auth/google/done → adoptSession. From there, ProtectedRoute (a later
- * unit) routes hosts with step<6 into /vendor-register/:slug/claim.
+ * onboarding_slug = {email-handle}-{4 random}, stepCompleted=1) and redirects
+ * to /auth/google/done → adoptSession. From there, ProtectedRoute routes hosts
+ * with step<6 into /vendor-register/:slug/claim (PageStep).
  *
- * HARD RULE: ≤100vh, no page scroll.
+ * The sample page on the right sets the expectation of what they're about to
+ * own — the very next screen shows it again, filled with THEIR name and photo.
  */
 const GoogleStart = () => {
   const { startVendorGoogleAuth } = useAuth();
 
-  const handleGoogleSignup = () => {
-    startVendorGoogleAuth('signup');
-  };
-
   return (
-    <div className="app-container flex items-center justify-center min-h-screen px-4">
+    <div className="min-h-screen bg-canvas font-sans text-ink">
       <Seo title="Set up your Meeticulous page" robots="noindex,nofollow" />
-      <div className="page-card w-full max-w-sm p-6 sm:p-8 flex flex-col items-center text-center">
-        {/* Sloth brandmark */}
-        <div
-          className="w-12 h-12 rounded-full bg-primary flex items-center justify-center mb-5"
-          aria-hidden="true"
-        >
-          <span className="text-white text-xl font-bold select-none">S</span>
+      <main className="mx-auto flex min-h-screen max-w-6xl flex-wrap items-center gap-14 px-5 py-14 sm:px-8">
+        <div className="onb-rise min-w-0 flex-[999_1_440px]">
+          <Wordmark />
+          <h1 className="mt-7 font-heading text-[clamp(34px,5vw,56px)] font-extrabold leading-[1.06] tracking-tight">
+            Your booking page, <span className="text-primary-cta">live</span> in 2 minutes.
+          </h1>
+          <p className="mt-4 max-w-md text-base text-muted">
+            Sign in with Google. We build your page from your name and photo, you add one service, and guests can book you today.
+          </p>
+
+          <button
+            type="button"
+            onClick={() => startVendorGoogleAuth('signup')}
+            className="mt-8 inline-flex min-h-[48px] items-center justify-center gap-2.5 rounded-[6px] border border-black/10 bg-white px-7 py-3 text-[15px] font-semibold text-ink shadow-[0_8px_30px_rgba(26,26,26,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_60px_-28px_rgba(26,26,26,0.35)]"
+          >
+            <GoogleIcon />
+            Continue with Google
+          </button>
+
+          <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted">
+            {TRUST.map((t) => (
+              <li key={t} className="flex items-center gap-1.5">
+                <Check className="h-4 w-4 text-primary" strokeWidth={3} /> {t}
+              </li>
+            ))}
+          </ul>
+
+          <p className="mt-7 text-xs text-muted">
+            By continuing, you agree to our{' '}
+            <Link to="/host-agreement" className="underline-offset-2 hover:underline">Host Agreement</Link>,{' '}
+            <Link to="/host-fees" className="underline-offset-2 hover:underline">Host Fees</Link>, and{' '}
+            <Link to="/privacy" className="underline-offset-2 hover:underline">Privacy Policy</Link>.
+          </p>
         </div>
 
-        <h1 className="text-2xl font-bold text-gray-900 mb-2 leading-tight">
-          Start hosting on Book&nbsp;A&nbsp;Sloth
-        </h1>
-
-        <p className="text-sm text-gray-500 mb-7 leading-relaxed max-w-[260px]">
-          Google pulls in your name and photo so you skip the forms and go live
-          faster.
-        </p>
-
-        <button
-          onClick={handleGoogleSignup}
-          className="btn w-full flex items-center justify-center gap-2.5 border border-gray-300 bg-white text-gray-800 font-medium py-2.5 text-sm hover:bg-gray-50 transition"
-        >
-          <GoogleIcon />
-          Continue with Google
-        </button>
-
-        <p className="mt-4 text-xs text-gray-400">
-          Free to start. No credit card.
-        </p>
-
-        <p className="mt-2 text-xs text-gray-400">
-          By continuing, you agree to our{' '}
-          <Link to="/host-agreement" className="hover:underline">Host Agreement</Link>,{' '}
-          <Link to="/host-fees" className="hover:underline">Host Fees</Link>, and{' '}
-          <Link to="/privacy" className="hover:underline">Privacy Policy</Link>.
-        </p>
-      </div>
+        {/* Sample page — what they're about to own. */}
+        <div className="relative mx-auto w-full max-w-[340px] flex-[1_1_300px]" aria-hidden="true">
+          <div className="absolute inset-0 translate-x-4 translate-y-4 rounded-[10px] bg-primary-light" />
+          <div className="relative overflow-hidden rounded-[10px] border border-black/5 bg-white shadow-[0_24px_60px_-28px_rgba(26,26,26,0.35)]">
+            <div className="bg-gradient-to-br from-primary/20 to-primary/85" style={{ aspectRatio: '3 / 1' }} />
+            <div className="-mt-9 flex justify-center">
+              <div className="flex h-[72px] w-[72px] items-center justify-center rounded-[10px] border-[3px] border-white bg-primary-light font-heading text-lg font-extrabold text-primary">You</div>
+            </div>
+            <div className="px-5 pb-5 pt-2.5 text-center">
+              <p className="font-heading text-lg font-bold">Your name here</p>
+              <p className="text-sm font-medium text-primary">What you do</p>
+              <div className="mx-auto mt-3.5 flex max-w-[200px] flex-col gap-1.5"><div className="onb-shimmer" /><div className="onb-shimmer mx-auto w-2/3" /></div>
+              <div className="mt-4 flex justify-between rounded-[6px] border border-black/5 px-3 py-2.5 text-sm">
+                <span className="font-semibold">Your first service</span><span className="text-muted">30 min</span>
+              </div>
+              <div className="mt-3 rounded-[6px] bg-primary py-2.5 text-sm font-bold text-white">Book Now</div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   );
 };

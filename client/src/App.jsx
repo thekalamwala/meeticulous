@@ -108,12 +108,10 @@ const GoogleAuthDone = lazy(() => import('./pages/GoogleAuthDone'));
 
 // Vendor Onboarding (Google-first 7-step flow)
 const GoogleStart     = lazy(() => import('./pages/onboarding/GoogleStart'));
-const SlugClaim       = lazy(() => import('./pages/onboarding/SlugClaim'));
-const CategoryStep    = lazy(() => import('./pages/onboarding/CategoryStep'));
-const PersonaStep     = lazy(() => import('./pages/onboarding/PersonaStep'));
-const PreviewStep     = lazy(() => import('./pages/onboarding/PreviewStep'));
+const PageStep        = lazy(() => import('./pages/onboarding/PageStep'));
+const ServiceStep     = lazy(() => import('./pages/onboarding/ServiceStep'));
 const PlansStep       = lazy(() => import('./pages/onboarding/PlansStep'));
-const ExploreWithBolt = lazy(() => import('./pages/onboarding/ExploreWithBolt'));
+const LiveStep        = lazy(() => import('./pages/onboarding/LiveStep'));
 
 // Admin login
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
@@ -524,12 +522,14 @@ function App() {
               resume/upgrade safety net, not a forced step (paywall deferred to
               the dashboard). About + WhatsApp were folded into PreviewStep. */}
           <Route path="/vendor-register" element={<GoogleStart />} />
-          <Route path="/vendor-register/:slug/claim"    element={<SlugClaim />} />
-          <Route path="/vendor-register/:slug/category" element={<PersonaStep />} />
-          <Route path="/vendor-register/:slug/category/all" element={<CategoryStep />} />
-          <Route path="/vendor-register/:slug/preview" element={<PreviewStep />} />
+          {/* 3-screen flow: Your page → First service → Live. /claim, /category and
+              /category/all all render PageStep so old resume links keep working. */}
+          <Route path="/vendor-register/:slug/claim"    element={<PageStep />} />
+          <Route path="/vendor-register/:slug/category" element={<PageStep />} />
+          <Route path="/vendor-register/:slug/category/all" element={<PageStep />} />
+          <Route path="/vendor-register/:slug/preview" element={<ServiceStep />} />
           <Route path="/vendor-register/:slug/plan"     element={<PlansStep />} />
-          <Route path="/vendor-register/:slug/live"     element={<ExploreWithBolt />} />
+          <Route path="/vendor-register/:slug/live"     element={<LiveStep />} />
 
           {/* Admin login (Backstage). Old /hello-sloth path redirects here. */}
           <Route path="/backstage" element={<AdminLogin />} />
