@@ -332,7 +332,7 @@ const enableHostingForProfile = async (profileId) => {
   // host re-signing in already has is_host=true, so this stays quiet). Key is
   // per-profile so distinct signups are never collapsed by the throttle.
   if (!profile.is_host) {
-    const base = process.env.CLIENT_URL || 'https://bookasloth.com';
+    const base = process.env.CLIENT_URL || 'https://meeticulous.com';
     require('../utils/adminAlert').adminAlert({
       key: `new_host:${profileId}`,
       subject: `New host signup: ${updated.name || updated.username || updated.email || profileId}`,

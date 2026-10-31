@@ -670,7 +670,7 @@ async function dailyRecap(now = new Date()) {
 <table>${row('Calls', `${t.calls} / ${rules.DAILY_TARGET}`)}${row('Connected', t.connected)}${row('Interested', t.interested)}${row('Follow-ups sent', t.followUpsSent)}${row('Clicked a link (48h)', s.hot.length)}${row('Signed up, not live yet', s.setup.length)}</table>
 <h3 style="margin:18px 0 6px">Tomorrow's callbacks (${(cbs || []).length})</h3>
 ${(cbs || []).length ? `<ul>${cbs.map((c) => `<li>${esc(rules.formatIst(c.due_at))} — ${esc(names.get(c.lead_id) || 'Lead')}</li>`).join('')}</ul>` : '<p>None booked.</p>'}
-<p><a href="https://bookasloth.com/admin/sales/cold-calling">Open Cold Calling</a></p></div>`;
+<p><a href="https://meeticulous.com/admin/sales/cold-calling">Open Cold Calling</a></p></div>`;
   await sendEmail({ to: RECAP_TO, subject: `Cold calling today: ${t.calls} calls · ${t.interested} interested`, html });
   return { sent: true };
 }

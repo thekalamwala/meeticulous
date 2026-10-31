@@ -13,7 +13,7 @@
  * equivalent of Next.js revalidatePath.
  *
  * Served on the apex domain via a Vercel rewrite (client/vercel.json) so
- * bookasloth.com/sitemap.xml proxies here; robots.txt points crawlers to it.
+ * meeticulous.com/sitemap.xml proxies here; robots.txt points crawlers to it.
  */
 const { buildUrlset, buildSitemapIndex, paginate } = require('../utils/sitemapXml');
 const { sitemapCache } = require('../utils/sitemapCache');
@@ -26,7 +26,7 @@ const { logger } = require('../utils/logger');
 // Google's hard limit is 50,000 URLs / 50MB per sitemap. 45k leaves headroom.
 const PER_SITEMAP = Number(process.env.SITEMAP_PAGE_SIZE) || 45000;
 
-const getSiteUrl = () => trimSlash(process.env.SITE_URL || 'https://bookasloth.com');
+const getSiteUrl = () => trimSlash(process.env.SITE_URL || 'https://meeticulous.com');
 
 // Fetch + map the current host/service rows once, cached as a structured value
 // so the index and every child share a single DB round-trip per TTL window.

@@ -5,7 +5,7 @@
 // the copy in-session. Each generator returns { newValue, reason, confidence,
 // context } — newValue null means "human/Claude Code supplies it".
 
-const SITE_URL = (process.env.SITE_URL || 'https://bookasloth.com').replace(/\/$/, '');
+const SITE_URL = (process.env.SITE_URL || 'https://meeticulous.com').replace(/\/$/, '');
 
 const slugWords = (s) => String(s || '').split(/[\/\-_]/).filter(Boolean).map((w) => w.replace(/[^a-z0-9]/gi, '')).filter(Boolean);
 // Best-effort primary entity/topic from the URL path + title — labelled as a hint,
