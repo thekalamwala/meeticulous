@@ -80,7 +80,7 @@ async function fanOut(rows, now) {
     if (!SEND_ON_DAYS.has(daysLeft)) continue;
     if (await recentlySent(p.email)) continue;
 
-    const base = process.env.CLIENT_URL || 'https://bookasloth.com';
+    const base = process.env.CLIENT_URL || 'https://meeticulous.com';
     await NotificationEngine.send({
       event: EVENT,
       data: {

@@ -13,7 +13,7 @@
 // body page: { headings, links:{internal,external}, images, wordCount, bodyText,
 // entity:{type,name,author,sameAs,dates}, evidence:{reviewCount,avgRating} }.
 
-const SITE_URL = (process.env.SITE_URL || 'https://bookasloth.com').replace(/\/$/, '');
+const SITE_URL = (process.env.SITE_URL || 'https://meeticulous.com').replace(/\/$/, '');
 
 const clean = (s) => (s == null ? null : String(s).replace(/\s+/g, ' ').trim() || null);
 const wc = (parts) => {

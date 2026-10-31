@@ -17,7 +17,7 @@ const { supabaseAdmin } = require('../config/supabase');
 const { isFeatureEnabled } = require('./featureFlags');
 const notificationEngine = require('./notificationEngine');
 
-const BASE = 'https://bookasloth.com';
+const BASE = 'https://meeticulous.com';
 const DEDUPE_DAYS = 14;
 
 // stage → event + link builder. needsUsername = link points at the host's page.

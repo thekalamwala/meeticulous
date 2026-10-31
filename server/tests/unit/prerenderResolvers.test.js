@@ -22,7 +22,7 @@ describe('resolveProfileMeta', () => {
     const m = await resolveProfileMeta('jane');
     expect(m.status).toBe(200);
     expect(m.buildHtmlArgs.title).toContain('Jane');
-    expect(m.buildHtmlArgs.canonical).toBe('https://bookasloth.com/jane');
+    expect(m.buildHtmlArgs.canonical).toBe('https://meeticulous.com/jane');
     expect(m.buildHtmlArgs.robots).toBe('index,follow');
   });
 
@@ -36,7 +36,7 @@ describe('resolveProfileMeta', () => {
     buildHostProfile.mockResolvedValueOnce({ redirect: true, username: 'newname' });
     const m = await resolveProfileMeta('oldname');
     expect(m.status).toBe(301);
-    expect(m.redirectTo).toBe('https://bookasloth.com/newname');
+    expect(m.redirectTo).toBe('https://meeticulous.com/newname');
   });
 
   test('JSON-LD carries sameAs (http socials only) + dateModified for AEO/entity clarity', async () => {
@@ -153,7 +153,7 @@ describe('resolveServiceMeta', () => {
     const m = await resolveServiceMeta('jane', 'intro');
     expect(m.status).toBe(200);
     expect(m.buildHtmlArgs.title).toContain('Intro Call');
-    expect(m.buildHtmlArgs.canonical).toBe('https://bookasloth.com/jane/intro');
+    expect(m.buildHtmlArgs.canonical).toBe('https://meeticulous.com/jane/intro');
     expect(m.buildHtmlArgs.robots).toBe('index,follow');
   });
 

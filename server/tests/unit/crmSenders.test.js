@@ -30,7 +30,7 @@ beforeEach(() => {
 describe('senderRegistry.byKey', () => {
   test('resolves a known active persona', async () => {
     expect(await senderRegistry.byKey('tithi')).toEqual({
-      fromName: 'Tithi | Book A Sloth', fromEmail: 'tithi@bookasloth.in', replyTo: 'tithi@bookasloth.in',
+      fromName: 'Tithi | Book A Sloth', fromEmail: 'tithi@bookasloth.in', replyTo: 'tithi@bookasloth.in', provider: null,
     });
   });
   test('null for unknown key / empty key (→ caller uses global default)', async () => {

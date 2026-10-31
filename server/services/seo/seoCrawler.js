@@ -9,7 +9,7 @@ const persist = require('./seoPersist');
 const { runLocked } = require('../../utils/jobLock');
 const { supabaseAdmin } = require('../../config/supabase');
 
-const SITE_URL = (process.env.SITE_URL || 'https://bookasloth.com').replace(/\/$/, '');
+const SITE_URL = (process.env.SITE_URL || 'https://meeticulous.com').replace(/\/$/, '');
 const CONCURRENCY = Number(process.env.SEO_CRAWL_CONCURRENCY) || 4;
 const DELAY_MS = Number(process.env.SEO_CRAWL_DELAY_MS) || 150;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

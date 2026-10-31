@@ -62,7 +62,7 @@ async function maybeSendFirstEarningKycNudge({ host, booking }) {
       .maybeSingle();
     if (existing) return { sent: false, reason: 'already_nudged' };
 
-    const base = process.env.CLIENT_URL || 'https://bookasloth.com';
+    const base = process.env.CLIENT_URL || 'https://meeticulous.com';
 
     inAppNotify({
       userId: host.id,

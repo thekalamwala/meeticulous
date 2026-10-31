@@ -163,7 +163,7 @@ const decideKyc = async (req, res) => {
           emailData: {
             first_name: (data.full_name || '').split(' ')[0],
             review_note: data.review_note || 'Please review the requirements and resubmit.',
-            support_email: 'hello@mail.meeticulous.in',
+            support_email: 'team@meeticulous.com',
           },
           emailUser: { name: data.full_name, email: data.email },
           recipientUserId: data.user_id,

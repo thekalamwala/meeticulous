@@ -13,20 +13,20 @@
  * (is_active=true). Until then sends are skipped with reason "pending_aisensy".
  */
 // Founder's Refer & Earn link: ?ref is stashed on landing and credited at host signup.
-const SIGNUP = 'https://bookasloth.com/?ref=sndatarkar';
+const SIGNUP = 'https://meeticulous.com/?ref=sndatarkar';
 // WhatsApp previews must match the texts submitted to Meta/AiSensy (no ?ref there).
-const WA_SIGNUP = 'https://bookasloth.com/login-as-vendor';
-const PRICING = 'https://bookasloth.com/pricing';
+const WA_SIGNUP = 'https://meeticulous.com/login-as-vendor';
+const PRICING = 'https://meeticulous.com/pricing';
 // Founder's own Book A Sloth demo page — booking it IS the product experience.
-const DEMO = 'https://bookasloth.com/sndatarkar/book-a-sloth-app-online-demo-30-min-advisory-session';
+const DEMO = 'https://meeticulous.com/sndatarkar/book-a-sloth-app-online-demo-30-min-advisory-session';
 // class="sig" keeps a link inline (emailService.plainBody) so each email has ONE orange button.
 const CALL = (text) => `<a class="sig" href="${DEMO}">${text}</a>`;
 const SIGN = '<p>Shubham<br>Founder, Book A Sloth</p>';
 const BIZ = [{ key: 'business_name', label: 'Business name', example: 'Smile Dental' }];
 // Tracked-link param, filled per lead by coldCallService: the lead's category landing page
-// (or homepage) + ?i=<4-char invite code>, e.g. https://bookasloth.com/for/dentists?i=CX12 —
+// (or homepage) + ?i=<4-char invite code>, e.g. https://meeticulous.com/for/dentists?i=CX12 —
 // the visit logs a tap on the lead and the code rides Google signup. ({ ref: 'code' } = bare code.)
-const INVITE_LINK = { key: 'invite_link', label: 'Invite link', example: 'https://bookasloth.com/for/dentists?i=CX12', ref: 'link' };
+const INVITE_LINK = { key: 'invite_link', label: 'Invite link', example: 'https://meeticulous.com/for/dentists?i=CX12', ref: 'link' };
 
 const COLD_CALL_TEMPLATES = [
   {
@@ -58,10 +58,10 @@ ${SIGN}`,
 <p>Thanks for speaking with me. Here are the details you asked for:</p>
 <ul>
 <li><b>What it is:</b> your own online booking page. Clients pick a service and a time slot, pay online, and get automatic reminders.</li>
-<li><b>Pricing:</b> free to start. Plans are here: <a class="sig" href="${PRICING}">bookasloth.com/pricing</a></li>
+<li><b>Pricing:</b> free to start. Plans are here: <a class="sig" href="${PRICING}">meeticulous.com/pricing</a></li>
 <li><b>Setup:</b> about 3 minutes, and I can do it with you on a call.</li>
 </ul>
-<p>When you're ready, you can create your page here: <a href="${SIGNUP}">bookasloth.com</a></p>
+<p>When you're ready, you can create your page here: <a href="${SIGNUP}">meeticulous.com</a></p>
 <p>Easier to see it live? ${CALL('Book a 30-minute demo with me')}. You'll book it through Book A Sloth itself, so you'll see exactly what your clients experience.</p>
 <p>I'll call you in a few days in case you have questions.</p>
 ${SIGN}`,
@@ -71,7 +71,7 @@ ${SIGN}`,
     subject: "I'll call you on {{callback_time}}",
     body: `<p>Hi {{business_name}} team,</p>
 <p>Thanks for picking up, I know it was a busy moment. As discussed, I'll call you on <b>{{callback_time}}</b>.</p>
-<p>In the meantime, have a quick look: <a class="inline" href="${SIGNUP}">bookasloth.com</a>. Your clients pick a slot and pay online on their own, and get reminded automatically, so you're not answering booking calls in the middle of work.</p>
+<p>In the meantime, have a quick look: <a class="inline" href="${SIGNUP}">meeticulous.com</a>. Your clients pick a slot and pay online on their own, and get reminded automatically, so you're not answering booking calls in the middle of work.</p>
 ${SIGN}`,
   },
   {

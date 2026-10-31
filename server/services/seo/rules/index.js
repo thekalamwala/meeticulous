@@ -21,7 +21,7 @@ function buildContext(pages, sitemapUrls, gscByUrl = new Map()) {
   const internalLinkTargets = new Set();
   let homepageTitle = null;
   let homepageUrl = null;
-  const siteUrl = process.env.SITE_URL || 'https://bookasloth.com';
+  const siteUrl = process.env.SITE_URL || 'https://meeticulous.com';
   for (const p of pages) {
     if (p.title) titleCounts.set(p.title, (titleCounts.get(p.title) || 0) + 1);
     if (p.metaDescription) descCounts.set(p.metaDescription, (descCounts.get(p.metaDescription) || 0) + 1);

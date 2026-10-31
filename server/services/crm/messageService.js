@@ -31,7 +31,7 @@ const BATCH = 50;
 // personas (Tithi/Sujata/Durga) keep the marketing shell.
 const PLAIN_SENDERS = new Set(['shubham']);
 
-const SITE_URL = process.env.SITE_URL || 'https://bookasloth.com';
+const SITE_URL = process.env.SITE_URL || 'https://meeticulous.com';
 
 /** Render {{var}} tokens from a lead. Unknown tokens collapse to ''. */
 function renderVars(str, lead, extra = {}) {

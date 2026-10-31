@@ -7,7 +7,7 @@
 const sendEmail = require('../utils/sendEmail');
 const { supabaseAdmin } = require('../config/supabase');
 
-const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'hello@mail.meeticulous.in';
+const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'team@meeticulous.com';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const esc = (s = '') =>
