@@ -8,22 +8,26 @@ afterEach(cleanup);
 const renderFooter = () => render(<MemoryRouter><Footer /></MemoryRouter>);
 
 describe('<Footer>', () => {
-  test('CTA primary points at the start route', () => {
+  test('brand column + four link columns (Product, Company, Resources, Legal)', () => {
     renderFooter();
-    expect(screen.getByText(/Power up your/i)).toBeTruthy();
-    expect(
-      screen.getByRole('link', { name: "Let's Get Started" }).getAttribute('href'),
-    ).toBe('/become-a-host');
+    expect(screen.getByRole('button', { name: 'Meeticulous' })).toBeTruthy();
+    expect(screen.getByText(/All rights reserved/i)).toBeTruthy();
+    ['Product', 'Company', 'Resources', 'Legal'].forEach((name) => {
+      expect(screen.getByRole('navigation', { name })).toBeTruthy();
+    });
+    expect(screen.getByRole('link', { name: 'Pricing' }).getAttribute('href')).toBe('/pricing');
+    expect(screen.getByRole('link', { name: 'About Us' }).getAttribute('href')).toBe('/about');
+    // The old CTA band is gone.
+    expect(screen.queryByText(/Power up your/i)).toBeNull();
   });
 
-  test('links the Solutions + Compare discovery hubs (not a heavy column sitemap)', () => {
+  test('links the Solutions + Compare discovery hubs (no per-profession sitemap)', () => {
     const { container } = renderFooter();
-    // Discovery now lives on dedicated hub pages; the footer just links into them
-    // in static HTML so the crawler reaches /for/* + /compare/* via those hubs.
+    // Discovery lives on dedicated hub pages; the footer links into them in
+    // static HTML so the crawler reaches /for/* + /compare/* via those hubs.
     expect(screen.getByRole('link', { name: 'Solutions' }).getAttribute('href')).toBe('/solutions');
     expect(screen.getByRole('link', { name: 'Compare' }).getAttribute('href')).toBe('/compare');
-    // The old 5-column discovery grid is gone, and so are the per-profession links.
-    expect(container.querySelector('nav[aria-label="Site"]')).toBeNull();
+    // No per-profession links.
     expect(container.querySelector('a[href="/for/doctors-india"]')).toBeNull();
     // Still no newsletter form.
     expect(screen.queryByRole('button', { name: /join/i })).toBeNull();
@@ -43,14 +47,12 @@ describe('<Footer>', () => {
     expect(screen.getByRole('link', { name: 'Privacy' }).getAttribute('href')).toBe('/privacy');
     expect(screen.getByRole('link', { name: 'Refund' }).getAttribute('href')).toBe('/refund');
     // Company ownership line — required by the Google OAuth verification checklist.
-    // "Timewheel Internet" is a dofollow backlink to Timewheel's web-development page.
-    const operator = screen.getByRole('link', { name: 'Timewheel Internet' });
-    expect(operator.getAttribute('href')).toBe('https://timewheel.co.in/web-development-company-in-nagpur');
-    expect(operator.getAttribute('rel')).toBe('noopener');
-    expect(operator.closest('span').textContent).toMatch(/Operated and Hand crafted by the humans of Timewheel Internet Private Limited/);
+    // Plain text since the move to Rajmudra Media LLP (no backlink any more).
+    expect(screen.getByText('Operated and Hand crafted by the humans of Rajmudra Media LLP')).toBeTruthy();
+    expect(screen.queryByRole('link', { name: /timewheel/i })).toBeNull();
     const mail = screen
       .getAllByRole('link')
-      .find((a) => a.getAttribute('href') === 'mailto:bolt@meeticulous.in');
+      .find((a) => a.getAttribute('href') === 'mailto:hello@meeticulous.com');
     expect(mail).toBeTruthy();
   });
 
@@ -64,13 +66,32 @@ describe('<Footer>', () => {
     });
   });
 
-  test('minimal variant keeps CTA + legal bar but drops columns, socials, newsletter', () => {
+  test('full footer ends with the decorative doodle wordmark (hidden from screen readers)', () => {
+    const { container } = renderFooter();
+    const art = container.querySelector('.dw');
+    expect(art).toBeTruthy();
+    expect(art.getAttribute('aria-hidden')).toBe('true');
+    // The decorative letters spell the brand but add no extra "Meeticulous" button.
+    expect(art.querySelector('.dw-word').textContent).toBe('Meeticulous');
+    expect(screen.getAllByRole('button', { name: 'Meeticulous' })).toHaveLength(1);
+    // Creatures + drifting doodles are rendered.
+    expect(art.querySelectorAll('.dw-critter').length).toBe(5);
+    expect(art.querySelector('.dw-snail')).toBeTruthy();
+    expect(art.querySelectorAll('.dw-doodle').length).toBeGreaterThan(0);
+  });
+
+  test('minimal variant keeps the quiet faint wordmark, not the doodle art', () => {
+    const { container } = render(<MemoryRouter><Footer variant="minimal" /></MemoryRouter>);
+    expect(container.querySelector('.dw')).toBeNull();
+  });
+
+  test('minimal variant keeps brand + legal bar but drops columns, socials, newsletter', () => {
     render(<MemoryRouter><Footer variant="minimal" /></MemoryRouter>);
-    // CTA band survives
-    expect(screen.getByText(/Power up your/i)).toBeTruthy();
-    expect(screen.getByRole('link', { name: "Let's Get Started" })).toBeTruthy();
-    // legal bar survives (operator backlink + a legal link); Bolt attribution removed
-    expect(screen.getByRole('link', { name: 'Timewheel Internet' })).toBeTruthy();
+    // brand + copyright survive
+    expect(screen.getByRole('button', { name: 'Meeticulous' })).toBeTruthy();
+    expect(screen.getByRole('navigation', { name: 'Legal' })).toBeTruthy();
+    // legal bar survives (operator credit + a legal link); Bolt attribution removed
+    expect(screen.getByText('Operated and Hand crafted by the humans of Rajmudra Media LLP')).toBeTruthy();
     expect(screen.queryByRole('link', { name: 'Bolt the Sloth' })).toBeNull();
     expect(screen.getByRole('link', { name: 'Terms' }).getAttribute('href')).toBe('/terms');
     // link columns + socials + newsletter are gone

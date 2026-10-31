@@ -131,7 +131,7 @@ const MATRIX = [
   ['Stress', 'How do I become a host and get paid?', 'clarify'],
 ];
 
-describe('Bolt intent routing matrix', () => {
+describe('Tithi intent routing matrix', () => {
   const rows = [];
   const failures = [];
 

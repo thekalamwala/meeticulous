@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import LegalLayout, { Section } from '../components/common/LegalLayout';
 
 // /privacy — Privacy Policy (India DPDP Act 2023 + DPDP Rules 2025, and GDPR).
-const Mail = () => <a href="mailto:team@timewheel.co.in" className="text-primary hover:underline">team@timewheel.co.in</a>;
+const Mail = () => <a href="mailto:hello@meeticulous.com" className="text-primary hover:underline">hello@meeticulous.com</a>;
 
 const USE_ROWS = [
   ['Provide the Platform', 'Create accounts, publish services, process bookings, generate meeting links', 'Performance of a contract; consent (DPDP)'],
@@ -25,10 +25,8 @@ const Privacy = () => (
     intro={
       <>
         <p>
-          This Privacy Policy explains how <strong>Timewheel Internet Private Limited</strong> (CIN:
-          U62012OD2026PTC052654, GSTIN: 21AAMCT8270C1ZF) ("Meeticulous", "we", "us", or "our"), a company incorporated
-          in India under the Companies Act, 2013 with its registered office at <strong>Ground Floor, Holding No-55,
-          Ward No-19, Natapada, Jajpur Road, Byasanagar, District Jajpur, Odisha – 755019, India</strong>, collects,
+          This Privacy Policy explains how <strong>Rajmudra Media LLP</strong> ("Meeticulous", "we", "us", or "our"),
+          a limited liability partnership registered in India under the Limited Liability Partnership Act, 2008, collects,
           uses, shares, and protects your personal data when you use the Meeticulous platform, website, and related
           services (the "Platform").
         </p>
@@ -118,7 +116,7 @@ const Privacy = () => (
             <li><strong>Analytics &amp; usability</strong> — PostHog (product analytics), Google Analytics 4 and Google Tag Manager, and Microsoft Clarity, which records anonymised session activity (a &ldquo;session replay&rdquo; of clicks, scrolls, and pages). These load per your consent choices (Section 8), except essential product analytics.</li>
             <li><strong>Advertising measurement</strong> — the Meta (Facebook) Pixel and Conversions API and Google Ads. To measure ad campaigns we may send <strong>hashed (irreversible) identifiers</strong>, such as a SHA-256 hash of your email or phone number, to Meta and Google.</li>
             <li><strong>Error monitoring</strong> — Sentry, to detect and diagnose faults.</li>
-            <li><strong>AI features</strong> — Anthropic (Claude) powers the &ldquo;Bolt&rdquo; support assistant and AI writing help, and Voyage AI generates search embeddings; text you enter into those features (including support-chat messages and listing content) is processed by them.</li>
+            <li><strong>AI features</strong> — Anthropic (Claude) powers the &ldquo;Tithi&rdquo; support assistant and AI writing help, and Voyage AI generates search embeddings; text you enter into those features (including support-chat messages and listing content) is processed by them.</li>
           </ul>
         </li>
         <li><strong>Legal and regulatory authorities</strong> when required by law, court order, or to protect our rights, users, or the public.</li>
@@ -201,8 +199,7 @@ const Privacy = () => (
         <li><strong>Grievance Officer:</strong> Shubham Narendra Datarkar</li>
         <li><strong>Email:</strong> <Mail /></li>
         <li><strong>Phone:</strong> +91 8637758344</li>
-        <li><strong>Registered office:</strong> Ground Floor, Holding No-55, Ward No-19, Natapada, Jajpur Road, Byasanagar, District Jajpur, Odisha – 755019, India</li>
-        <li><strong>Operations office:</strong> #6, 2nd Floor, Eureka Coworking, Mate Square, Nagpur, Maharashtra</li>
+        <li><strong>Registered &amp; operations office:</strong> Eureka CoWorking, 2nd &amp; 4th floor, 11, Friends Colony, Mate Square, Pratap Nagar Rd, P &amp; T Colony, Kotwal Nagar, Pratap Nagar, Nagpur, Maharashtra 440022, India</li>
       </ul>
       <p>We will acknowledge and address grievances within the time required by the DPDP Rules (currently <strong>90 days</strong>). For GDPR matters, you may also contact us at the same email. If you are unsatisfied with our response, you may escalate to the Data Protection Board of India or your local data protection authority.</p>
     </Section>

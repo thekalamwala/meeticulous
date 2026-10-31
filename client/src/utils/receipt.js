@@ -458,7 +458,7 @@ export function buildReceiptHTML(d = {}) {
 
     <footer class="footer">
       <strong>Meeticulous</strong> · Powered by Timewheel Internet Pvt. Ltd.<br>
-      <a href="mailto:bolt@meeticulous.in">bolt@meeticulous.in</a> · <a href="https://meeticulous.com">meeticulous.com</a><br>
+      <a href="mailto:hello@meeticulous.com">hello@meeticulous.com</a> · <a href="https://meeticulous.com">meeticulous.com</a><br>
       © ${new Date().getFullYear()} Meeticulous. All rights reserved.
     </footer>
   </main>

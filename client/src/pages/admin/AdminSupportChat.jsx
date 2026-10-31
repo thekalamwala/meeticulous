@@ -47,7 +47,7 @@ const normThread = (t) => ({
 const normEsc = (e) => ({
   _kind: 'esc', id: e.id, reference: e.reference, status: e.status, tone: ESC_TONE[e.status] || 'neutral',
   whoLabel: e.logged_in ? (e.is_host ? 'Host' : 'Guest') : 'Anon',
-  title: e.summary || 'Bolt escalation', preview: e.reason || null, unread: 0, agent: null, at: e.created_at,
+  title: e.summary || 'Tithi escalation', preview: e.reason || null, unread: 0, agent: null, at: e.created_at,
   waitingOnUs: e.status === 'open', waitingSince: e.created_at,
   priority: priorityOf(`${e.summary || ''} ${e.reason || ''}`), team: teamForText(`${e.summary || ''} ${e.reason || ''}`),
 });
@@ -196,7 +196,7 @@ function Bubble({ m }) {
             : 'rounded-tl-sm bg-[#f0ede6] text-gray-800')}>
         {!mine && (m.sender_name || isBot) && (
           <p className={'mb-0.5 text-[11px] font-semibold ' + (isBot ? 'text-violet-700' : 'text-[#960D32]')}>
-            {isBot ? '🦥 Bolt' : m.sender_name}
+            {isBot ? '🦥 Tithi' : m.sender_name}
           </p>
         )}
         {m.attachment_url && (
@@ -379,7 +379,7 @@ export default function AdminSupportChat() {
           <div className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border adm-border bg-white">
             {t.ai_summary && (
               <p className="flex-shrink-0 border-b adm-border bg-violet-50 px-4 py-2 text-[12px] text-violet-900">
-                <span className="font-semibold">🦥 Bolt:</span> {t.ai_summary}
+                <span className="font-semibold">🦥 Tithi:</span> {t.ai_summary}
               </p>
             )}
             <div className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto p-4">
@@ -467,7 +467,7 @@ export default function AdminSupportChat() {
   const breaches = sorted.reduce((n, it) => n + (slaLevel(waitMinutes(it, now)) === 'breach' ? 1 : 0), 0);
   return (
     <div>
-      <PageHeader title="Support Inbox" subtitle="Every conversation in one place — dashboard chats and Bolt widget escalations." />
+      <PageHeader title="Support Inbox" subtitle="Every conversation in one place — dashboard chats and Tithi widget escalations." />
       {/* Underlined pill-tabs */}
       <div className="mb-3 flex flex-wrap items-center gap-5 border-b adm-border">
         {FILTERS.map((f) => (
@@ -495,7 +495,7 @@ export default function AdminSupportChat() {
         </div>
       )}
       {loading ? <div className="space-y-2">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-16" />)}</div>
-        : sorted.length === 0 ? <p className="text-sm adm-t3">{filter === 'waiting' ? 'Nothing waiting — Bolt is handling everything.' : 'Nothing open here.'}</p>
+        : sorted.length === 0 ? <p className="text-sm adm-t3">{filter === 'waiting' ? 'Nothing waiting — Tithi is handling everything.' : 'Nothing open here.'}</p>
           : (
             <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
               {sorted.map((it) => {
@@ -513,7 +513,7 @@ export default function AdminSupportChat() {
                     <span className={'absolute left-0 top-2.5 bottom-2.5 w-[3px] rounded ' + accent} />
                     <div className="mb-1 flex items-center gap-1.5">
                       <span className="flex h-[18px] w-[18px] items-center justify-center rounded bg-[#f0ede6] text-gray-500"
-                        title={it._kind === 'thread' ? 'Dashboard chat' : 'Bolt widget escalation'}>
+                        title={it._kind === 'thread' ? 'Dashboard chat' : 'Tithi widget escalation'}>
                         <Ic d={it._kind === 'thread' ? IC.chat : ICN.robot} size={11} />
                       </span>
                       <code className="text-[12px] font-bold tracking-tight adm-t1">{it.reference}</code>

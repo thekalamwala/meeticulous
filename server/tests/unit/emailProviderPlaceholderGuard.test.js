@@ -38,10 +38,15 @@ test('the wrapper preserves the provider name', () => {
   expect(getProvider('resend').name).toBe('resend');
 });
 
-test('reply-to is forced to the support inbox, overriding any caller/persona value', async () => {
+test('reply-to: caller/per-sender value is honored, env is only the fallback', async () => {
   await getProvider('resend').sendEmail({
-    to: 'ada@gmail.com', subject: 'x', html: 'y', replyTo: 'aastha@bookasloth.in',
+    to: 'ada@gmail.com', subject: 'x', html: 'y', replyTo: 'tithi@team.meeticulous.com',
   });
   expect(resend.sendEmail).toHaveBeenCalledTimes(1);
+  expect(resend.sendEmail.mock.calls[0][0].replyTo).toBe('tithi@team.meeticulous.com');
+});
+
+test('reply-to falls back to SUPPORT_REPLY_TO when the caller sets none', async () => {
+  await getProvider('resend').sendEmail({ to: 'ada@gmail.com', subject: 'x', html: 'y' });
   expect(resend.sendEmail.mock.calls[0][0].replyTo).toBe('reply@meeticulous.test');
 });

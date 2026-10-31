@@ -16,14 +16,14 @@ vi.mock('../config/aiListing', () => ({ BOLT_ENABLED: true }));
 
 const renderForm = () => render(<MemoryRouter><ServiceForm /></MemoryRouter>);
 
-test('Write with Bolt button is present', async () => {
+test('Write with Tithi button is present', async () => {
   renderForm();
-  expect(await screen.findByRole('button', { name: /write with bolt/i })).toBeInTheDocument();
+  expect(await screen.findByRole('button', { name: /write with tithi/i })).toBeInTheDocument();
 });
 
 test('requires a title before generating', async () => {
   renderForm();
-  const btn = await screen.findByRole('button', { name: /write with bolt/i });
+  const btn = await screen.findByRole('button', { name: /write with tithi/i });
   expect(btn).toBeDisabled(); // disabled while title empty
 });
 
@@ -35,7 +35,7 @@ test('fills fields from AI response', async () => {
   renderForm();
   const titleInput = await screen.findByPlaceholderText(/SEO Consultancy by/i);
   fireEvent.change(titleInput, { target: { value: 'SEO' } });
-  fireEvent.click(screen.getByRole('button', { name: /write with bolt/i }));
+  fireEvent.click(screen.getByRole('button', { name: /write with tithi/i }));
   await waitFor(() => expect(screen.getByDisplayValue('Grow traffic.')).toBeInTheDocument());
 });
 
@@ -44,6 +44,6 @@ test('shows cooldown message on 429', async () => {
   renderForm();
   const titleInput = await screen.findByPlaceholderText(/SEO Consultancy by/i);
   fireEvent.change(titleInput, { target: { value: 'SEO' } });
-  fireEvent.click(screen.getByRole('button', { name: /write with bolt/i }));
+  fireEvent.click(screen.getByRole('button', { name: /write with tithi/i }));
   await waitFor(() => expect(screen.getByText(/used your 1 AI generation/i)).toBeInTheDocument());
 });

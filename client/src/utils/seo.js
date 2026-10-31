@@ -270,24 +270,27 @@ export const ORG_SAME_AS = [
   'https://x.com/bookasloth',
 ];
 
-// Registered legal entity + office and a support contact point. Source of truth
-// is the company's own published legal pages (/privacy, /terms — Timewheel
-// Internet Private Limited). Added to the Organization node for NAP consistency
-// and entity disambiguation (Google knowledge panel + GEO). Keep in sync with
-// the legal pages if the registered office ever changes.
-export const ORG_LEGAL_NAME = 'Timewheel Internet Private Limited';
+// Legal entity + a support contact point. Source of truth is the company's own
+// published legal pages (/privacy, /terms) — Rajmudra Media LLP since 2026-10-31
+// (was Timewheel Internet Private Limited). Added to the Organization node for
+// NAP consistency and entity disambiguation (Google knowledge panel + GEO). Keep
+// in sync with the legal pages.
+// ORG_ADDRESS is the Eureka CoWorking office in Nagpur (owner request
+// 2026-10-31; same address as the legal pages). It is still left OUT of the
+// Organization JSON-LD — only the /contact map reads it.
+export const ORG_LEGAL_NAME = 'Rajmudra Media LLP';
 export const ORG_ADDRESS = {
   '@type': 'PostalAddress',
-  streetAddress: 'Ground Floor, Holding No-55, Ward No-19, Natapada, Jajpur Road, Byasanagar',
-  addressLocality: 'Jajpur',
-  addressRegion: 'Odisha',
-  postalCode: '755019',
+  streetAddress: 'Eureka CoWorking, 2nd & 4th floor, 11, Friends Colony, Mate Square, Pratap Nagar Rd, P & T Colony, Kotwal Nagar, Pratap Nagar',
+  addressLocality: 'Nagpur',
+  addressRegion: 'Maharashtra',
+  postalCode: '440022',
   addressCountry: 'IN',
 };
 export const ORG_CONTACT_POINT = {
   '@type': 'ContactPoint',
   contactType: 'customer support',
-  email: 'bolt@meeticulous.in',
+  email: 'hello@meeticulous.com',
   availableLanguage: ['en', 'hi'],
 };
 
@@ -307,7 +310,6 @@ export const organizationJsonLd = ({ siteUrl = SITE_URL } = {}) => {
     // is a real, shipped, genuinely-512px asset.
     logo: `${site}/web-app-manifest-512x512.png`,
     description: 'Online booking and appointment scheduling platform for coaches, consultants, therapists, and small businesses.',
-    address: ORG_ADDRESS,
     contactPoint: ORG_CONTACT_POINT,
     sameAs: ORG_SAME_AS,
   };
@@ -384,7 +386,6 @@ const orgNode = (site) => ({
   url: `${site}/`,
   logo: { '@type': 'ImageObject', '@id': `${site}/#logo`, url: LOGO_URL(site), contentUrl: LOGO_URL(site), width: 512, height: 512 },
   description: 'Online booking and appointment scheduling platform for coaches, consultants, therapists, and small businesses.',
-  address: ORG_ADDRESS,
   contactPoint: ORG_CONTACT_POINT,
   sameAs: ORG_SAME_AS,
 });
@@ -879,7 +880,7 @@ export const glossaryTermJsonLd = ({ siteUrl = SITE_URL, slug, term, definition,
 };
 
 // ContactPage node with the support contact point.
-export const contactPageJsonLd = ({ siteUrl = SITE_URL, email = 'bolt@meeticulous.in' } = {}) => {
+export const contactPageJsonLd = ({ siteUrl = SITE_URL, email = 'hello@meeticulous.com' } = {}) => {
   const site = trimSlash(siteUrl);
   return {
     '@context': 'https://schema.org',

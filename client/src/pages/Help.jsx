@@ -15,7 +15,7 @@ import { SITE_URL, faqJsonLd } from "../utils/seo";
 // TODO: move to admin-configurable support settings.
 const SUPPORT_WHATSAPP = "15559708785"; // support WhatsApp (number hidden; link only)
 const SUPPORT_WHATSAPP_MSG = "Namaste, I want to talk about Meeticulous";
-const SUPPORT_EMAIL = "bolt@meeticulous.in";
+const SUPPORT_EMAIL = "hello@meeticulous.com";
 const SUPPORT_PHONE = "+917904109359";
 
 const FAQ = [
@@ -135,7 +135,7 @@ const Help = () => (
       <div className="grid sm:grid-cols-2 gap-4 mb-10">
         <ChannelCard
           icon={Sparkles}
-          title="Chat with Bolt"
+          title="Chat with Tithi"
           desc="Our assistant answers most questions instantly — tap to start."
           onClick={() => window.dispatchEvent(new Event('bolt:open'))}
         />

@@ -90,7 +90,9 @@
     --space-5: 48px;
 
     /* ── Typography ────────────────────────────────────────── */
-    --font-primary: 'Plus Jakarta Sans', Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-primary: 'Poppins', 'Poppins Fallback', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    /* H1 + section H2 only — see the h1/h2 rule in index.css. */
+    --font-display: 'Bricolage Grotesque', 'Bricolage Grotesque Fallback', 'Poppins', system-ui, sans-serif;
 
     /* ── Motion ────────────────────────────────────────────── */
     --motion-fast: 120ms;

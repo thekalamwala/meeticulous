@@ -30,7 +30,7 @@ export default function NeedsAnswerPage() {
   });
 
   if (loading) return <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-32 rounded-xl" />)}</div>;
-  if (gaps.length === 0) return <p className="text-sm adm-t3">Nothing here — Bolt is answering everything.</p>;
+  if (gaps.length === 0) return <p className="text-sm adm-t3">Nothing here — Tithi is answering everything.</p>;
 
   return (
     <>
@@ -38,7 +38,7 @@ export default function NeedsAnswerPage() {
         {gaps.map((g) => (
           <div key={g.id} className="adm-card flex flex-col rounded-xl p-4">
             <div className="mb-2 flex items-center gap-2">
-              <Badge tone={REASON_TONE[g.reason] || 'neutral'}>{g.reason === 'thumbs_down' ? 'Answer Disliked' : 'Bolt Gave Up'}</Badge>
+              <Badge tone={REASON_TONE[g.reason] || 'neutral'}>{g.reason === 'thumbs_down' ? 'Answer Disliked' : 'Tithi Gave Up'}</Badge>
               <span className="ml-auto text-xs adm-t3">{fmtDate(g.created_at)}</span>
             </div>
             <p className="flex-1 text-sm adm-t1">
