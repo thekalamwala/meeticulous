@@ -15,7 +15,7 @@ describe('emailThemes', () => {
     const t = themeForCategory('Security Check');
     expect(t.family).toBe('slate');
     expect(t.accent).toBe('#41506a');
-    expect(t.glyphUrl).toBe('https://company-assets.bookasloth.in/images/email/icons/shield-lock.png');
+    expect(t.glyphUrl).toBe('https://meeticulous.com/images/email/icons/shield-lock.png');
   });
 
   test('unknown category → brand default, empty glyph (no broken image)', () => {
