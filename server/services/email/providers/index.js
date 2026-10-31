@@ -57,7 +57,9 @@ function getProvider(name) {
     sendEmail: async (opts = {}) => {
       const to = Array.isArray(opts.to) ? opts.to[0] : opts.to;
       if (isPlaceholderEmail(to)) return { success: true, skipped: true, id: null, reason: 'placeholder_recipient' };
-      return provider.sendEmail({ ...opts, replyTo: REPLY_TO });
+      // Honor the per-sender reply_to (verify/bookings... → team@, founder notes → shubham@,
+      // CRM → Hostinger). Fall back to SUPPORT_REPLY_TO env, then team@.
+      return provider.sendEmail({ ...opts, replyTo: opts.replyTo || REPLY_TO });
     },
   };
 }
