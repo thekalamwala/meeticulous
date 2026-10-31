@@ -180,12 +180,12 @@ const upsertProfile = async ({ id, name, email, role, username, first_name, last
   // Resolve the username. This upsert runs on every login (e.g. Google), so we
   // must NEVER regenerate over an existing one. Order: caller-supplied → the
   // row's current username (preserve it) → a fresh permanent username for a
-  // brand-new account ({adjective}-{noun}-{suffix}), recorded as 'auto' in history.
+  // brand-new account ({email-handle}-{4 random}), recorded as 'auto' in history.
   let slug = username;
   if (!slug) {
     const { data: existing } = await supabaseAdmin
       .from("profiles").select("username").eq("id", id).maybeSingle();
-    slug = existing?.username || await usernameService.createInitialUsername();
+    slug = existing?.username || await usernameService.createInitialUsername(email);
   }
 
   const payload = {
