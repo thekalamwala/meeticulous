@@ -338,12 +338,15 @@ async function processQueue(limit = 25) {
     const rowTemplate = await getTemplate(row.event_key, row.audience);
     let rowSender = await senderRegistry.senderFor(rowTemplate, settings);
     // Composer campaigns carry no template — their persona lives on the campaign
-    // row (sender_key, default 'shubham'). Prefer it when present. Schema-safe:
-    // a select error pre-migration leaves camp null → keeps the global fallback.
+    // row (sender_key). Prefer it; otherwise fall back to the 'news' sender, which
+    // is the Brevo-authenticated bulk domain (hello@news.meeticulous.com). Must NOT
+    // fall through to the global verify@notify sender: MARKETING_PROVIDER is Brevo
+    // and Brevo does not authenticate notify.meeticulous.com, so that would bounce.
+    // Schema-safe: byKey returns null pre-migration → keeps the global fallback.
     if (String(row.event_key || '').startsWith('CAMPAIGN:')) {
       const campId = row.event_key.slice('CAMPAIGN:'.length);
       const { data: camp } = await supabaseAdmin.from('email_campaigns').select('sender_key').eq('id', campId).maybeSingle();
-      rowSender = (camp && await senderRegistry.byKey(camp.sender_key)) || rowSender;
+      rowSender = (camp && await senderRegistry.byKey(camp.sender_key)) || (await senderRegistry.byKey('news')) || rowSender;
     }
     // Bulk campaigns go out on the dedicated marketing SMTP transport (off Resend);
     // transactional + lifecycle queued rows keep the global provider.

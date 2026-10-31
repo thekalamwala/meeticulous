@@ -15,9 +15,9 @@ test('brevo provider is registered (carries transactional after the swap)', () =
   expect(getProvider('brevo').name).toBe('brevo');
 });
 
-test('marketing routes to resend (transactional↔marketing swap)', () => {
+test('marketing routes to brevo (news.meeticulous.com bulk domain)', () => {
   const { MARKETING_PROVIDER } = require('../../services/email/providers');
-  expect(MARKETING_PROVIDER).toBe('resend');
+  expect(MARKETING_PROVIDER).toBe('brevo');
 });
 
 test('sends the Brevo payload (persona sender kept) and returns the messageId', async () => {

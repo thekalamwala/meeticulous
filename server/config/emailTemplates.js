@@ -224,7 +224,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Session Complete'); return {
-    event_key: 'REBOOK_NUDGE_CUSTOMER', audience: 'all', category: 'Marketing',
+    event_key: 'REBOOK_NUDGE_CUSTOMER', audience: 'all', category: 'Marketing', sender_key: 'news',
     name: 'Rebook Nudge — Customer', subject: 'Ready for another session with {{vendor_name}}?',
     preview_text: 'Book {{vendor_name}} again in a tap.',
     email_category: 'Session Complete',
@@ -338,7 +338,7 @@ const TEMPLATES = [
   // ── Badge ────────────────────────────────────────────────────────────────────
 
   (() => { const t = themeForCategory('Achievement Unlocked'); return {
-    event_key: 'BADGE_UNLOCKED', audience: 'all', category: 'Badge',
+    event_key: 'BADGE_UNLOCKED', audience: 'all', category: 'Badge', sender_key: 'news',
     name: 'Badge Unlocked', subject: 'You earned the {{badge_name}} badge',
     preview_text: 'A new badge just landed on your profile.',
     email_category: 'Achievement Unlocked',
@@ -366,7 +366,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Achievement Unlocked'); return {
-    event_key: 'MILESTONE_10_BOOKINGS', audience: 'all', category: 'Badge',
+    event_key: 'MILESTONE_10_BOOKINGS', audience: 'all', category: 'Badge', sender_key: 'news',
     name: 'Milestone — 10 Bookings', subject: '10 bookings and counting!',
     preview_text: "You've reached {{milestone_value}} bookings.",
     email_category: 'Achievement Unlocked',
@@ -379,7 +379,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Achievement Unlocked'); return {
-    event_key: 'MILESTONE_50_BOOKINGS', audience: 'all', category: 'Badge',
+    event_key: 'MILESTONE_50_BOOKINGS', audience: 'all', category: 'Badge', sender_key: 'news',
     name: 'Milestone — 50 Bookings', subject: "50 bookings — you're on a roll",
     preview_text: "You've reached {{milestone_value}} bookings.",
     email_category: 'Achievement Unlocked',
@@ -392,7 +392,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Achievement Unlocked'); return {
-    event_key: 'MILESTONE_100_BOOKINGS', audience: 'all', category: 'Badge',
+    event_key: 'MILESTONE_100_BOOKINGS', audience: 'all', category: 'Badge', sender_key: 'news',
     name: 'Milestone — 100 Bookings', subject: '100 bookings — incredible!',
     preview_text: "You've reached {{milestone_value}} bookings.",
     email_category: 'Achievement Unlocked',
@@ -648,7 +648,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Invitation'); return {
-    event_key: 'GUEST_TO_HOST_INVITE', audience: 'all', category: 'Marketing', sender_key: 'shubham',
+    event_key: 'GUEST_TO_HOST_INVITE', audience: 'all', category: 'Marketing', sender_key: 'news',
     name: 'Guest → Host Invite', subject: "You've booked {{completed_count}} times — ever thought about the other side?",
     preview_text: 'The people you booked earn on Meeticulous. Your account is ready.',
     email_category: 'Invitation',
@@ -680,7 +680,7 @@ const TEMPLATES = [
   // ── Marketing ─────────────────────────────────────────────────────────────────
 
   (() => { const t = themeForCategory('Upgrade'); return {
-    event_key: 'UPGRADE_COMMISSION_NUDGE', audience: 'all', category: 'Marketing', sender_key: 'shubham',
+    event_key: 'UPGRADE_COMMISSION_NUDGE', audience: 'all', category: 'Marketing', sender_key: 'news',
     name: 'Upgrade — Keep Every Rupee', subject: "You've given up {{commission_total}} in commission",
     preview_text: 'On Host+ that number is zero.',
     email_category: 'Upgrade',
@@ -696,7 +696,7 @@ const TEMPLATES = [
   // ── Newsletter ────────────────────────────────────────────────────────────────
 
   (() => { const t = themeForCategory('Newsletter'); return {
-    event_key: 'NEWSLETTER_WELCOME', audience: 'all', category: 'Newsletter', sender_key: 'shubham',
+    event_key: 'NEWSLETTER_WELCOME', audience: 'all', category: 'Newsletter', sender_key: 'news',
     name: 'Newsletter Welcome', subject: 'Welcome to the Collective 🎉',
     preview_text: 'Practical tips, templates and honest lessons — straight to your inbox.',
     email_category: 'Newsletter',

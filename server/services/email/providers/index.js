@@ -27,12 +27,14 @@ const PROVIDERS = {
 // The provider for BULK / marketing / sales-automation mail — deliberately the
 // OTHER provider from transactional (email_settings.provider), so the two never
 // share one free-tier daily cap and a marketing burst can't starve booking mail.
-// Current split (both free tiers): transactional → Brevo (300/day, must-deliver
-// booking/OTP mail), marketing → Resend (100/day, bursty but delay-tolerant — the
-// campaign worker throttles, and a big blast fails on THIS non-critical path
-// instead of taking down confirmations). One constant so call sites never drift;
-// swapping providers is a one-line change. HTTP-API only — PaaS blocks outbound SMTP.
-const MARKETING_PROVIDER = 'resend';
+// Current split (both free tiers): transactional → Resend on notify.meeticulous.com
+// (must-deliver booking/OTP mail), marketing → Brevo on news.meeticulous.com (bursty
+// but delay-tolerant — the campaign worker throttles, and a big blast fails on THIS
+// non-critical path instead of taking down confirmations). Normally the provider is
+// driven by the sender row (deliver() prefers sender.provider); this constant is the
+// fallback for marketing sends with no sender provider (sender-less campaigns,
+// composer tests). HTTP-API only — PaaS blocks outbound SMTP.
+const MARKETING_PROVIDER = 'brevo';
 
 // Every outbound email replies to ONE monitored inbox, overriding whatever
 // reply-to a caller/persona set (Aastha, Tithi, Durga, …). Forced here because
