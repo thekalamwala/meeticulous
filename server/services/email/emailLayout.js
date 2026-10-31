@@ -2,10 +2,10 @@
  * emailLayout.js — recipient-driven email shells.
  *
  * Three layouts, selected by the RECIPIENT audience (not the template row tag):
- *   • customer → Book A Sloth-branded header, nav + legal footer (new users:
+ *   • customer → Meeticulous-branded header, nav + legal footer (new users:
  *                build platform trust, give navigation + legal unsubscribe).
  *   • vendor   → host-branded header (host's own logo/name), minimal
- *                "Powered by Book a Sloth" footer (they already know the brand).
+ *                "Powered by Meeticulous" footer (they already know the brand).
  *   • cold     → NO header chrome, legal-floor footer only (sender + address +
  *                unsubscribe). Founder cold outreach: reads like a 1:1 note.
  *
@@ -36,25 +36,32 @@ const { themeForCategory } = require('./emailThemes');
 
 const esc = (s) => String(s == null ? '' : s).replace(/"/g, '&quot;');
 
-// Brand design tokens
+// Brand design tokens — Meeticulous email style guide (light).
+// Ink/Body/Muted/Line are the guide's text + divider tokens; bg is the guide's
+// blush Page color behind the card. Keep Poppins as the body face (brand decision
+// to override the guide's Helvetica).
 const D = {
-  dark:   '#202124',
-  muted:  '#5f6368',
-  sub:    '#80868b',
-  border: '#edf0f2',
-  bg:     '#f3f5f7',
-  cardBg: '#fafafa',
+  dark:   '#2B1218', // Ink — headlines, bold values
+  muted:  '#7D6B70', // Muted — footer, labels, helper text
+  sub:    '#7D6B70',
+  border: '#F1DCE1', // Line — dividers
+  bg:     '#FBF4F5', // Page — outer background behind the card
+  cardBg: '#ffffff',
   white:  '#ffffff',
-  note:   '#9aa0a6',
+  note:   '#7D6B70',
   font:   "'Poppins','Plus Jakarta Sans',Arial,sans-serif",
 };
 
-// Fixed brand constants (legal entity, address, platform footer mark)
-const COMPANY    = 'Timewheel Internet (P) Ltd';
+// Fixed brand constants (legal entity, address, platform footer mark).
+// NOTE: ADDRESS unchanged per founder instruction (postal address stays).
+const COMPANY    = 'Rajmudra Media LLP';
 const ADDRESS    = '2nd Floor, Eureka Coworking, Mate Square, Nagpur 440030';
 const TAGLINE    = 'Booking Made Easy';
-const HEADER_LOGO = 'https://company-assets.bookasloth.in/images/email/header-logo.png';
-const FOOTER_LOGO = 'https://company-assets.bookasloth.in/images/email/footer-logo.png';
+// Hosted on the site itself (client/public/images/email → served at
+// meeticulous.com by Vercel), so emails no longer depend on an external CDN.
+// Header = icon (~26px on white), footer = full wordmark (~150px on blush).
+const HEADER_LOGO = 'https://meeticulous.com/images/email/meeticulous-icon-color-512.png';
+const FOOTER_LOGO = 'https://meeticulous.com/images/email/meeticulous-wordmark-full-color.png';
 
 /** Blend a #rrggbb color toward white. ratio 0 = original, 1 = white. */
 function tint(hex, ratio) {
@@ -74,7 +81,7 @@ function accentBar(brand) {
 }
 
 /**
- * Header: constant Book a Sloth logo (left) + accent category pill (right).
+ * Header: constant Meeticulous logo (left) + accent category pill (right).
  * Header uses HEADER_LOGO; the footer uses FOOTER_LOGO (two distinct CDN assets).
  * The pill is the one true capsule (999px) — its
  * accent/tint/text + glyph come from the category theme.
@@ -93,7 +100,7 @@ function headerBlock({ category, theme }) {
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td align="left" style="vertical-align:middle;">
-            <img src="${esc(HEADER_LOGO)}" alt="Book a Sloth" height="26" style="display:block;border:0;height:26px;">
+            <img src="${esc(HEADER_LOGO)}" alt="Meeticulous" height="26" style="display:block;border:0;height:26px;">
           </td>
           ${pill}
         </tr>
@@ -106,8 +113,8 @@ function headerBlock({ category, theme }) {
 function ctaButton(label, url, brand) {
   if (!label || !url) return '';
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0 4px;">
-    <tr><td style="border-radius:1px;background:${esc(brand)};">
-      <a href="${esc(url)}" style="display:block;text-align:center;padding:15px 24px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:1px;font-family:${D.font};">${esc(label)}</a>
+    <tr><td style="border-radius:10px;background:${esc(brand)};">
+      <a href="${esc(url)}" style="display:block;text-align:center;padding:15px 24px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:10px;font-family:${D.font};">${esc(label)}</a>
     </td></tr>
   </table>`;
 }
@@ -128,7 +135,7 @@ function shellOpen({ previewText, fromName, brand, accent = true }) {
 
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${D.bg};padding:32px 16px;">
     <tr><td align="center">
-      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background:${D.white};border:1px solid ${D.border};border-radius:1px;overflow:hidden;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background:${D.white};border:1px solid ${D.border};border-radius:16px;overflow:hidden;">
         ${accent ? accentBar(brand) : ''}`;
 }
 
@@ -152,11 +159,11 @@ function shellClose({ bodyHtml, cta, footerRow }) {
 
 // ── Customer layout ──────────────────────────────────────────────────────────
 
-function renderCustomerLayout({ bodyHtml, previewText, ctaLabel, ctaUrl, emailCategory, settings, data }) {
-  const brand    = settings.brand_color   || '#FE5100';
-  const website  = settings.website_url   || 'https://bookasloth.com';
-  const support  = settings.support_email || 'bolt@bookasloth.in';
-  const fromName = settings.from_name     || 'Book A Sloth';
+function renderCustomerLayout({ bodyHtml, previewText, ctaLabel, ctaUrl, emailCategory, settings, data, marketing = false }) {
+  const brand    = settings.brand_color   || '#960D32';
+  const website  = settings.website_url   || 'https://meeticulous.com';
+  const support  = settings.support_email || 'hello@mail.meeticulous.in';
+  const fromName = settings.from_name     || 'Meeticulous';
   const year     = new Date().getFullYear();
   const unsubToken = data.unsubscribe_token || '';
 
@@ -165,17 +172,20 @@ function renderCustomerLayout({ bodyHtml, previewText, ctaLabel, ctaUrl, emailCa
   const lk = (href, label) =>
     `<a href="${esc(href)}" style="color:${D.muted};text-decoration:none;font-size:12px;font-family:${D.font};">${label}</a>`;
   const dot = `<span style="color:${D.note};margin:0 6px;">&middot;</span>`;
-  const nav = [
+  // Only MARKETING mail carries the nav + unsubscribe link. On transactional mail
+  // that link is the strongest "this is bulk" signal to Gmail (→ Updates/Promotions
+  // tab), so a confirmation/receipt/welcome ships a clean footer and lands in Primary.
+  const nav = marketing ? [
     lk(`${website}/user/my-bookings`, 'My Bookings'),
     lk(`${website}/help`,        'Help'),
     lk(`${website}/privacy`,     'Privacy'),
     lk(`${website}/unsubscribe?u=${esc(unsubToken)}`, 'Unsubscribe'),
-  ].join(dot);
+  ].join(dot) : '';
 
   const footerRow = `<tr>
     <td style="padding:24px 28px 28px;border-top:1px solid ${D.border};background:${D.bg};text-align:center;">
-      <img src="${esc(FOOTER_LOGO)}" alt="${esc(fromName)}" width="60" style="margin:0 auto 14px;display:block;border:0;">
-      <p style="margin:0 0 16px;font-size:12px;line-height:2;font-family:${D.font};">${nav}</p>
+      <img src="${esc(FOOTER_LOGO)}" alt="${esc(fromName)}" width="150" style="margin:0 auto 14px;display:block;border:0;">
+      ${nav ? `<p style="margin:0 0 16px;font-size:12px;line-height:2;font-family:${D.font};">${nav}</p>` : ''}
       <p style="margin:0 0 2px;font-size:12px;font-weight:700;color:${D.dark};font-family:${D.font};">${COMPANY}</p>
       <p style="margin:0 0 2px;font-size:12px;line-height:1.6;color:${D.muted};font-family:${D.font};">${ADDRESS}</p>
       <p style="margin:0;font-size:12px;color:${D.muted};font-family:${D.font};"><a href="mailto:${esc(support)}" style="color:${D.muted};text-decoration:none;">${esc(support)}</a></p>
@@ -191,8 +201,8 @@ function renderCustomerLayout({ bodyHtml, previewText, ctaLabel, ctaUrl, emailCa
 // ── Vendor layout ────────────────────────────────────────────────────────────
 
 function renderVendorLayout({ bodyHtml, previewText, ctaLabel, ctaUrl, emailCategory, settings, data }) {
-  const brand     = settings.brand_color   || '#FE5100';
-  const fromName  = settings.from_name     || 'Book A Sloth';
+  const brand     = settings.brand_color   || '#960D32';
+  const fromName  = settings.from_name     || 'Meeticulous';
   const year      = new Date().getFullYear();
 
   const header = headerBlock({ category: emailCategory, theme: themeForCategory(emailCategory) });
@@ -200,10 +210,10 @@ function renderVendorLayout({ bodyHtml, previewText, ctaLabel, ctaUrl, emailCate
   const footerRow = `<tr>
     <td style="padding:22px 20px;border-top:1px solid ${D.border};text-align:center;font-size:11px;line-height:1.7;color:${D.note};font-family:${D.font};">
       Powered by<br>
-      <img src="${esc(FOOTER_LOGO)}" alt="Book a Sloth" width="60" style="margin:8px auto;display:block;border:0;">
+      <img src="${esc(FOOTER_LOGO)}" alt="Meeticulous" width="150" style="margin:8px auto;display:block;border:0;">
       ${esc(COMPANY)} &middot; ${esc(TAGLINE)}<br>
       ${esc(ADDRESS)}<br>
-      <span style="color:${D.note};">© ${year} Book A Sloth</span>
+      <span style="color:${D.note};">© ${year} Meeticulous</span>
     </td>
   </tr>`;
 
@@ -225,8 +235,8 @@ function renderVendorLayout({ bodyHtml, previewText, ctaLabel, ctaUrl, emailCate
 // protects sender reputation. `bodyHtml` is pre-styled plain by emailService (links
 // stay inline, not promoted to buttons), so no ctaButton here.
 function renderColdLayout({ bodyHtml, previewText, settings, data }) {
-  const website  = settings.website_url || 'https://bookasloth.com';
-  const fromName = settings.from_name   || 'Book A Sloth';
+  const website  = settings.website_url || 'https://meeticulous.com';
+  const fromName = settings.from_name   || 'Meeticulous';
   const unsubToken = data.unsubscribe_token || '';
   const font = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
   return `<!DOCTYPE html>
@@ -274,11 +284,12 @@ function renderLayout({
   headerChip    = '',
   settings      = {},
   data          = {},
+  marketing     = false,
 } = {}) {
   const args = {
     bodyHtml, previewText, ctaLabel, ctaUrl,
     emailCategory,
-    settings, data: data || {},
+    settings, data: data || {}, marketing,
   };
   if (audience === 'vendor') return renderVendorLayout(args);
   if (audience === 'cold')   return renderColdLayout(args);

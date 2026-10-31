@@ -36,7 +36,7 @@ describe('brandPage', () => {
     expect(html).toContain('Took a nap');
     expect(html).toContain('Not found here.');
     expect(html).toContain('404');
-    expect(html).toContain('Book A Sloth');
+    expect(html).toContain('Meeticulous');
   });
 
   it('escapes dynamic text to prevent XSS from error messages', () => {
@@ -46,20 +46,20 @@ describe('brandPage', () => {
   });
 });
 
-const { pickErrorImage, ERROR_IMAGE_BASE } = require('../../utils/brandPage');
-
-describe('brandPage hero image', () => {
-  it('renders an <img> with the given absolute src when image is set', () => {
-    const html = brandPage({ code: 404, heading: 'h', body: 'b', image: 'https://company-assets.bookasloth.in/images/error/sloth-glass.png' });
-    expect(html).toContain('<img');
-    expect(html).toContain('https://company-assets.bookasloth.in/images/error/sloth-glass.png');
+describe('brandPage hero mark', () => {
+  it('renders the inline Meeticulous mark when hero is set', () => {
+    const html = brandPage({ code: 404, heading: 'h', body: 'b', hero: true });
+    expect(html).toContain('class="heromark"');
+    expect(html).toContain('aria-label="Meeticulous"');
   });
-  it('renders no <img> when image is absent', () => {
+  it('renders no hero mark by default', () => {
     const html = brandPage({ code: 500, heading: 'h', body: 'b' });
-    expect(html).not.toContain('<img');
+    expect(html).not.toContain('class="heromark"');
   });
-  it('pickErrorImage returns a full CDN url', () => {
-    expect(pickErrorImage().startsWith(ERROR_IMAGE_BASE + '/')).toBe(true);
+  it('never references the dead mascot host', () => {
+    const html = brandPage({ code: 404, heading: 'h', body: 'b', hero: true });
+    expect(html).not.toContain('bookasloth.in');
+    expect(html).not.toContain('<img');
   });
 });
 
@@ -77,20 +77,21 @@ const makeRes = () => {
 const htmlReq = { originalUrl: '/nope', method: 'GET', path: '/nope', accepts: () => 'html' };
 
 describe('errorMiddleware 404 branding', () => {
-  it('renders a CDN image + vanishing-act copy on a browser 404', () => {
+  it('renders the Meeticulous mark + vanishing-act copy on a browser 404', () => {
     const res = makeRes();
     errorHandler(Object.assign(new Error('x'), { expose: false }), htmlReq, res, () => {});
     expect(res.statusCode).toBe(404);
-    expect(res.body).toContain('company-assets.bookasloth.in/images/error/');
+    expect(res.body).toContain('class="heromark"');
+    expect(res.body).not.toContain('bookasloth.in');
     expect(res.body).toContain('This page pulled a vanishing act');
   });
 
-  it('gives 410 the same detective-sloth treatment as 404', () => {
+  it('gives 410 the same hero-mark treatment as 404', () => {
     const res = makeRes();
     res.statusCode = 410;
     errorHandler(Object.assign(new Error('x'), { expose: false }), htmlReq, res, () => {});
     expect(res.statusCode).toBe(410);
-    expect(res.body).toContain('company-assets.bookasloth.in/images/error/');
+    expect(res.body).toContain('class="heromark"');
     expect(res.body).toContain('This page pulled a vanishing act');
   });
 });

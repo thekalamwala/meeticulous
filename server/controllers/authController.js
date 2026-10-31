@@ -17,7 +17,7 @@ const planService = require("../services/planService");
 const inviteService = require("../services/inviteService");
 const { SAFETY_KEYS } = require("../config/featureRegistry");
 
-// Book A Sloth is India-first: a Google Calendar left on its default UTC is not
+// Meeticulous is India-first: a Google Calendar left on its default UTC is not
 // a real location signal, and seeding it makes the host's slots render in UTC so
 // guests see times that look hours in the past ("old times" bug). Treat UTC/GMT
 // (or no value) as "no signal" and fall back to the platform default IST; a

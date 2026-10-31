@@ -7,7 +7,7 @@
  * sendGate first (kill-switch + DNC + unsubscribe/suppression + valid email).
  *
  * BRANDING: the CRM body is wrapped in the shared branded template (renderLayout —
- * the same shell transactional email uses) so every send carries the Book A Sloth
+ * the same shell transactional email uses) so every send carries the Meeticulous
  * header, brand colour, legal footer, and a valid unsubscribe link. Inline body
  * links become branded buttons and the copy gets house typography. Fails OPEN: if
  * the layout/settings can't load, it falls back to the raw body rather than blocking.
@@ -21,7 +21,7 @@ const { renderLayout } = require('../email/emailLayout');
 const { makeToken } = require('../email/unsubscribeToken');
 const { loadSettings } = require('../email/communicationEngine');
 
-const BRAND = '#FE5100';
+const BRAND = '#960D32';
 const FONT = "'Poppins','Plus Jakarta Sans',Arial,sans-serif";
 
 // Turn the raw sequence body into house-styled HTML: readable typography + any

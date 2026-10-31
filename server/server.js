@@ -261,7 +261,7 @@ app.use((req, res) => {
       code: 404,
       title: 'Not found',
       heading: 'This page took a nap',
-      body: 'We could not find what you were looking for. Head back to Book A Sloth to book a session or manage your account.',
+      body: 'This address doesn’t exist on the Meeticulous API. The app lives next door — head over to book a session or manage your account.',
     }));
   }
   res.status(404).json({ message: 'Not found' });

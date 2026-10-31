@@ -32,7 +32,7 @@ describe('adminAlert', () => {
     expect(sendEmail).toHaveBeenCalledTimes(1);
     const arg = sendEmail.mock.calls[0][0];
     expect(arg.to).toBe('founder@example.com');
-    expect(arg.subject).toBe('[Book A Sloth] Test alert');
+    expect(arg.subject).toBe('[Meeticulous] Test alert');
     expect(arg.html).toContain('line one');
     expect(arg.html).toContain('line two');
   });

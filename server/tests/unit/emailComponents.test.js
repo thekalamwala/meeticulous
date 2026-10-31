@@ -37,8 +37,9 @@ describe('emailComponents', () => {
     expect(C.banner(slate, { title: '<script>x</script>' })).not.toContain('<script>');
   });
 
-  test('hero blocks use 1px radius only (no rounded inner blocks)', () => {
+  test('inner blocks use the 12px box radius (Meeticulous style guide)', () => {
     const html = C.heroDate(green, { day: '1', mon: 'JAN', year: '2026', title: 'x', time: 'y' });
-    expect(html).not.toMatch(/border-radius:\s*(?:[2-9]|1[0-9])px/);
+    expect(html).toMatch(/border-radius:12px/);
+    expect(html).not.toMatch(/border-radius:1px/);
   });
 });

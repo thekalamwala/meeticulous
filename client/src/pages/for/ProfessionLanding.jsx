@@ -28,6 +28,8 @@ import { TESTIMONIALS } from '../../data/testimonials';
 import { FREE_PLAN, PAID_PLANS } from '../../data/plans';
 import useFeeOnly from '../../hooks/useFeeOnly';
 import { getProfessionLanding } from './professionLandingData';
+import ProfessionLandingV2 from './ProfessionLandingV2';
+import { getV2Landing } from './professionLandingV2Data';
 
 const ROUTE_START = '/become-a-host';
 const YEAR = 2026;
@@ -223,7 +225,15 @@ const HOW_STEPS = [
   { n: '3', title: 'Get booked & paid', desc: 'Clients pick a slot, pay upfront, and get reminded. You just show up.' },
 ];
 
+// Dispatcher: a slug with a v2 entry renders the v2 template; everything else
+// keeps the v1 template. Kept thin (one hook) so switching between a v1 and a v2
+// slug remounts the child cleanly instead of changing hook order.
 export default function ProfessionLanding() {
+  const { profession } = useParams();
+  return getV2Landing(profession) ? <ProfessionLandingV2 /> : <ProfessionLandingV1 />;
+}
+
+function ProfessionLandingV1() {
   useLenis();
   const { profession } = useParams();
   const data = getProfessionLanding(profession);

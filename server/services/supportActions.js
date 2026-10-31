@@ -71,10 +71,10 @@ async function runAction(action, identity) {
     const url = `${base}/api/invoices/${inv.id}?token=${encodeURIComponent(inv.access_token)}`;
     await sendEmail({
       to: b.guest_email,
-      subject: `Your invoice ${inv.invoice_number || ''} — Book A Sloth`.trim(),
+      subject: `Your invoice ${inv.invoice_number || ''} — Meeticulous`.trim(),
       html: `<p>Hi ${b.guest_name || 'there'},</p><p>Here's your invoice for <b>${label}</b>:</p>
-             <p><a href="${url}" style="color:#FE5100;font-weight:600">View / download your invoice →</a></p>
-             <p style="color:#888;font-size:12px">Book A Sloth</p>`,
+             <p><a href="${url}" style="color:#960D32;font-weight:600">View / download your invoice →</a></p>
+             <p style="color:#888;font-size:12px">Meeticulous</p>`,
     });
     return { ok: true, message: `Sent — your invoice for ${label} is on its way to ${b.guest_email}.` };
   }
@@ -83,13 +83,13 @@ async function runAction(action, identity) {
     if (!b.guest_email) return { ok: false, message: `I found ${label}, but there's no email on it to send the calendar invite to. Want me to bring in a teammate?` };
     const ics = buildIcs({
       id: b.id, title: b.service_title, start: b.scheduled_at, end: b.end_at,
-      description: `Your Book A Sloth booking: ${b.service_title}.`, location: 'Online',
+      description: `Your Meeticulous booking: ${b.service_title}.`, location: 'Online',
     });
     if (!ics) return { ok: false, message: `I found ${label}, but its time isn't set yet, so I can't build a calendar invite. A teammate can help — want a human?` };
     await sendEmail({
       to: b.guest_email,
       subject: `Calendar invite — ${b.service_title}`,
-      html: `<p>Hi ${b.guest_name || 'there'},</p><p>Add <b>${label}</b> to your calendar — the invite is attached (open it in Apple/Google/Outlook Calendar).</p><p style="color:#888;font-size:12px">Book A Sloth</p>`,
+      html: `<p>Hi ${b.guest_name || 'there'},</p><p>Add <b>${label}</b> to your calendar — the invite is attached (open it in Apple/Google/Outlook Calendar).</p><p style="color:#888;font-size:12px">Meeticulous</p>`,
       attachments: [{ filename: 'booking.ics', content: Buffer.from(ics, 'utf8').toString('base64') }],
     });
     return { ok: true, message: `Sent — a calendar invite for ${label} is in your inbox (${b.guest_email}). Open the attachment to add it.` };
