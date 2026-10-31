@@ -3,10 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getOnboardingStatus } from '../../services/api';
 
 // Maps stepCompleted → the segment the host should be on next.
-// Redesigned 4-screen flow (PR 2 of the host-onboarding redesign):
-//   1 = Google identity done       → claim slug
-//   2 = slug claimed               → persona (was /about in the 6-step flow)
-//   3 = persona saved              → preview (about + WhatsApp on one screen)
+// 3-screen flow (docs/onboarding-redesign-spec.md). Segments are kept from the
+// older flow so resume links never break; /claim and /category both render
+// PageStep, /preview renders ServiceStep:
+//   1 = Google identity done       → claim    (PageStep: link + what you do)
+//   2 = slug claimed               → category (PageStep, same screen)
+//   3 = persona saved              → preview  (ServiceStep: first service)
 //   4 = legacy: category-in-flight → preview (roll forward — legacy /about
 //                                     hosts still hit persona, which bumps to 3)
 //   5 = details saved              → plan
