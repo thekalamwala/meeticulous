@@ -12,7 +12,7 @@
 //   ClaudeBot         — Anthropic training (decoupled — NOT scored)
 const { fetchUrl } = require('./seoFetch');
 
-const SITE_URL = (process.env.SITE_URL || 'https://bookasloth.com').replace(/\/$/, '');
+const SITE_URL = (process.env.SITE_URL || 'https://meeticulous.com').replace(/\/$/, '');
 const TTL_MS = Number(process.env.SEO_ROBOTS_TTL_MS) || 60 * 60 * 1000;
 
 const TOKENS = {

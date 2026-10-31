@@ -45,7 +45,7 @@ async function processProfileCompletion() {
       const st = await reminderState(p.email);
       if (st.recent || st.count >= MAX_REMINDERS) continue;
 
-      const base = process.env.CLIENT_URL || 'https://bookasloth.com';
+      const base = process.env.CLIENT_URL || 'https://meeticulous.com';
       await NotificationEngine.send({
         event: EVENT,
         data: {

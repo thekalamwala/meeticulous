@@ -13,7 +13,7 @@
  * No React, no JS bundle — just the tags social scrapers and non-JS bots need.
  */
 
-const SITE_URL = process.env.PUBLIC_SITE_URL || 'https://bookasloth.com';
+const SITE_URL = process.env.PUBLIC_SITE_URL || 'https://meeticulous.com';
 
 const { profileFaqs, serviceFaqs } = require('../services/seo/pageContentModel');
 

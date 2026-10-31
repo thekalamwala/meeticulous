@@ -634,7 +634,7 @@ const verifySubscription = async (req, res) => {
           `Amount: ₹${(Number(breakdown?.totalCharged) || 0).toLocaleString('en-IN')}`,
           'New purchase / upgrade.',
         ],
-        link: `${process.env.CLIENT_URL || 'https://bookasloth.com'}/admin/host360/${req.user.id}`,
+        link: `${process.env.CLIENT_URL || 'https://meeticulous.com'}/admin/host360/${req.user.id}`,
       });
     } catch (_) { /* non-fatal */ }
 
