@@ -179,7 +179,7 @@ async function deliver({ settings, to, subject, html, sender, providerName, mark
     text: htmlToText(html), // plain-text twin → multipart, better inbox placement
     fromName: sender?.fromName ?? settings.from_name,
     fromEmail: sender?.fromEmail ?? settings.from_email,
-    replyTo: sender?.replyTo || null,
+    replyTo: sender?.replyTo || settings.support_email || null,
     headers: marketing ? unsubHeaders(settings, to) : undefined,
   });
   return { provider: provider.name, ...res };
