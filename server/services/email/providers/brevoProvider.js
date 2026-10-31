@@ -18,10 +18,10 @@
 
 const EMAIL_TIMEOUT_MS = Number(process.env.EMAIL_TIMEOUT_MS) || 10000;
 
-async function sendEmail({ to, subject, html, text, fromName = 'Book A Sloth', fromEmail, replyTo, attachments }) {
+async function sendEmail({ to, subject, html, text, fromName = 'Meeticulous', fromEmail, replyTo, attachments, headers }) {
   const apiKey = process.env.BREVO_API_KEY;
   if (!apiKey) return { success: false, error: 'BREVO_API_KEY not configured' };
-  const senderEmail = fromEmail || process.env.BREVO_FROM || 'aastha@bookasloth.in';
+  const senderEmail = fromEmail || process.env.BREVO_FROM || 'hello@news.meeticulous.com';
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), EMAIL_TIMEOUT_MS);
   try {
@@ -34,6 +34,7 @@ async function sendEmail({ to, subject, html, text, fromName = 'Book A Sloth', f
     };
     if (text) payload.textContent = text;
     if (replyTo) payload.replyTo = { email: replyTo };
+    if (headers && Object.keys(headers).length) payload.headers = headers;
     // Brevo attachments are { name, content: <base64> } — map from the Resend-shaped
     // { filename, content } callers already pass (.ics invites etc.). No-op otherwise.
     if (Array.isArray(attachments) && attachments.length) {

@@ -156,14 +156,31 @@ async function insertLog(row) {
 // campaigns pass MARKETING_PROVIDER so they leave Resend's transactional quota
 // alone. Omitted → the global provider (Resend in prod). No fallback: a marketing
 // send that fails stays on the marketing provider and is retried by the queue.
-async function deliver({ settings, to, subject, html, sender, providerName }) {
-  const provider = getProvider(providerName || settings.provider);
+// One-click unsubscribe headers (RFC 8058) for marketing mail — Gmail/Yahoo
+// require these on bulk, and they help keep promo out of the spam folder. The
+// token is deterministic from the recipient, so it works for queued rows too.
+function unsubHeaders(settings, to) {
+  const site = settings.website_url || 'https://meeticulous.com';
+  const support = settings.support_email || 'team@meeticulous.com';
+  const url = `${site}/unsubscribe?u=${makeToken(to)}`;
+  return {
+    'List-Unsubscribe': `<${url}>, <mailto:${support}?subject=unsubscribe>`,
+    'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+  };
+}
+
+async function deliver({ settings, to, subject, html, sender, providerName, marketing = false }) {
+  // Provider precedence: the sender's own provider (per-stream split) > an explicit
+  // override > the global transactional default. Lets marketing route to a different
+  // ESP than booking/OTP once sender rows carry a provider.
+  const provider = getProvider(sender?.provider || providerName || settings.provider);
   const res = await provider.sendEmail({
     to, subject, html,
     text: htmlToText(html), // plain-text twin → multipart, better inbox placement
     fromName: sender?.fromName ?? settings.from_name,
     fromEmail: sender?.fromEmail ?? settings.from_email,
     replyTo: sender?.replyTo || null,
+    headers: marketing ? unsubHeaders(settings, to) : undefined,
   });
   return { provider: provider.name, ...res };
 }
@@ -249,7 +266,7 @@ async function send(opts) {
 
   // Test send → deliver now, mark TEST (kept out of the normal logs view)
   if (isTest) {
-    const r = await deliver({ settings, to, subject, html, sender });
+    const r = await deliver({ settings, to, subject, html, sender, marketing: isMarketing(event) });
     await insertLog({ ...baseLog, status: r.success ? 'test' : 'failed',
       provider: r.provider, provider_response: r.response || {}, error: r.error || null,
       attempts: 1, sent_at: new Date().toISOString() });
@@ -258,7 +275,7 @@ async function send(opts) {
 
   // OTP / critical → immediate send (PRD §17)
   if (immediate) {
-    const r = await deliver({ settings, to, subject, html, sender });
+    const r = await deliver({ settings, to, subject, html, sender, marketing: isMarketing(event) });
     const logId = await insertLog({ ...baseLog,
       status: r.success ? 'sent' : 'queued', provider: r.provider,
       provider_response: r.response || {}, error: r.error || null,
@@ -331,7 +348,7 @@ async function processQueue(limit = 25) {
     // Bulk campaigns go out on the dedicated marketing SMTP transport (off Resend);
     // transactional + lifecycle queued rows keep the global provider.
     const providerName = String(row.event_key || '').startsWith('CAMPAIGN:') ? MARKETING_PROVIDER : null;
-    const r = await deliver({ settings, to: row.recipient, subject: row.subject, html: row.html, sender: rowSender, providerName });
+    const r = await deliver({ settings, to: row.recipient, subject: row.subject, html: row.html, sender: rowSender, providerName, marketing: isMarketing(row.event_key) });
 
     if (r.success) {
       await supabaseAdmin.from('email_logs').update({
@@ -519,7 +536,7 @@ async function sendComposedTest({ bodyHtml, subject: composedSubject, previewTex
   const sender = (await senderRegistry.byKey(senderKey)) || { fromName: settings.from_name, fromEmail: settings.from_email, replyTo: null };
   // A composer test IS a campaign send — route it through the marketing SMTP
   // transport so the test proves the real bulk path, not Resend.
-  const r = await deliver({ settings, to, subject: `[TEST] ${subject}`, html, sender, providerName: MARKETING_PROVIDER });
+  const r = await deliver({ settings, to, subject: `[TEST] ${subject}`, html, sender, providerName: MARKETING_PROVIDER, marketing: true });
   await insertLog({
     event_key: 'CAMPAIGN:test', audience, recipient: to, subject, html,
     status: r.success ? 'test' : 'failed', provider: r.provider, provider_response: r.response || {},
