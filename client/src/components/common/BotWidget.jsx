@@ -287,7 +287,7 @@ export default function BotWidget() {
         <div
           ref={panelRef}
           role="dialog"
-          aria-label="Bolt support chat"
+          aria-label="Tithi support chat"
           // Lenis smooth-scroll hijacks wheel at the window level and preventDefaults it,
           // which ate the chat's native scroll. data-lenis-prevent exempts this whole
           // subtree so the messages list scrolls normally (our own wheel handler +
@@ -303,7 +303,7 @@ export default function BotWidget() {
               <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#22c55e]" />
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="font-heading text-sm font-extrabold leading-tight">Bolt 958</h3>
+              <h3 className="font-heading text-sm font-extrabold leading-tight">Tithi</h3>
               <p className="text-[11px] leading-tight text-white/90">Fastest Support Bot Alive · Running</p>
             </div>
             <button
@@ -325,7 +325,7 @@ export default function BotWidget() {
             {messages.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center px-2 text-center">
                 <Avatar size={52} ring />
-                <h2 className="mt-3 font-heading text-lg font-extrabold" style={{ color: INK }}>Hey, I'm Bolt 👋</h2>
+                <h2 className="mt-3 font-heading text-lg font-extrabold" style={{ color: INK }}>Hey, I'm Tithi 👋</h2>
                 <p className="mt-1 max-w-[16rem] text-[13px] text-ink/70">
                   Ask me about bookings, payments, plans, or hosting. If I can't crack it, I'll grab a human.
                 </p>
@@ -358,7 +358,7 @@ export default function BotWidget() {
                       ) : m.content ? (
                         <div className="bolt-md [&>div]:text-[12px]"><Markdown source={m.content} externalLinks="strip" /></div>
                       ) : (
-                        <div className="flex gap-1 py-1" aria-label="Bolt is typing">
+                        <div className="flex gap-1 py-1" aria-label="Tithi is typing">
                           <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-ink/40 [animation-delay:0ms]" />
                           <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-ink/40 [animation-delay:150ms]" />
                           <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-ink/40 [animation-delay:300ms]" />
@@ -583,7 +583,7 @@ export default function BotWidget() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        aria-label={open ? 'Close support chat' : 'Open Bolt support chat'}
+        aria-label={open ? 'Close support chat' : 'Open Tithi support chat'}
         className="ml-auto grid h-14 w-14 place-items-center rounded-full bg-white transition-transform hover:scale-105 active:scale-95"
         style={{ border: `1.5px solid ${PRIMARY}`, color: PRIMARY }}
       >

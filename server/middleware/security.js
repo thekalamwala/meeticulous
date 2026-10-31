@@ -356,7 +356,7 @@ const botGlobalLimiter = rateLimit({
   keyGenerator: () => 'bot-global',
   standardHeaders: true,
   legacyHeaders: false,
-  message: { message: 'Bolt is very busy right now. Please try again in a moment.' },
+  message: { message: 'Tithi is very busy right now. Please try again in a moment.' },
   skip: skipWhenOpen,
 });
 

@@ -171,7 +171,7 @@ app.use('/api/webhooks',      require('./routes/webhookRoutes')); // public prov
 app.use('/api/notifications', require('./routes/notificationRoutes'));         // in-app feed (bell panel, auth-gated)
 app.use('/api/email',         require('./routes/emailRoutes')); // public unsubscribe (signed-token gated)
 app.use('/api/contact',       require('./routes/contactRoutes')); // public contact form → support email
-app.use('/api/bot',           require('./routes/botRoutes')); // public "Bolt 958" support bot (grounded on docs/)
+app.use('/api/bot',           require('./routes/botRoutes')); // public "Tithi" support bot (grounded on docs/)
 app.use('/api/support',       require('./routes/supportRoutes')); // host/guest support chat (Bolt → human handoff)
 app.use('/api/enterprise-lead', require('./routes/enterpriseLeadRoutes')); // public /enterprise page lead form → support email
 app.use('/api/be-a-sloth-lead', require('./routes/beASlothLeadRoutes')); // public /be-a-sloth "Book a Demo" OTP lead form → CRM (source website)

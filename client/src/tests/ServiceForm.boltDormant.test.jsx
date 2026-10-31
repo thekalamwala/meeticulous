@@ -18,7 +18,7 @@ const renderForm = () => render(<MemoryRouter><ServiceForm /></MemoryRouter>);
 
 test('dormant: button is present but greyscaled + inactive', async () => {
   renderForm();
-  const btn = await screen.findByRole('button', { name: /write with bolt/i });
+  const btn = await screen.findByRole('button', { name: /write with tithi/i });
   expect(btn).toBeInTheDocument();
   // Disabled even with a valid title (feature is off, not just missing input).
   const titleInput = screen.getByPlaceholderText(/SEO Consultancy by/i);
@@ -33,7 +33,7 @@ test('dormant: button is present but greyscaled + inactive', async () => {
 test('dormant: clicking does not call the AI endpoint', async () => {
   renderForm();
   const api = await import('../services/api');
-  const btn = await screen.findByRole('button', { name: /write with bolt/i });
+  const btn = await screen.findByRole('button', { name: /write with tithi/i });
   const titleInput = screen.getByPlaceholderText(/SEO Consultancy by/i);
   fireEvent.change(titleInput, { target: { value: 'SEO' } });
   fireEvent.click(btn); // disabled — should be a no-op

@@ -135,7 +135,7 @@ const Help = () => (
       <div className="grid sm:grid-cols-2 gap-4 mb-10">
         <ChannelCard
           icon={Sparkles}
-          title="Chat with Bolt"
+          title="Chat with Tithi"
           desc="Our assistant answers most questions instantly — tap to start."
           onClick={() => window.dispatchEvent(new Event('bolt:open'))}
         />
