@@ -13,7 +13,7 @@ vi.mock('../services/supabaseClient', () => ({
 vi.mock('../services/api', () => ({
   getSupportThread: vi.fn(() => Promise.resolve({ data: {
     thread: { id: 't1', status: 'bot' },
-    messages: [{ id: 'm1', sender: 'bot', body: 'Hi, I am Bolt', created_at: '2026-08-25T10:00:00Z' }],
+    messages: [{ id: 'm1', sender: 'bot', body: 'Hi, I am Tithi', created_at: '2026-08-25T10:00:00Z' }],
   } })),
   sendSupportMessage: vi.fn((id, { body }) => Promise.resolve({ data: { id: 'm2', sender: 'user', body, created_at: '2026-08-25T10:01:00Z' } })),
   escalateSupport: vi.fn(() => Promise.resolve({ data: { thread: { id: 't1', status: 'waiting' }, open: true } })),
@@ -31,15 +31,15 @@ import { getSupportThread, sendSupportMessage, escalateSupport } from '../servic
 beforeAll(() => { window.HTMLElement.prototype.scrollIntoView = vi.fn(); });
 
 describe('SupportChat', () => {
-  it('loads the thread and shows the Bolt message + the "Talk to a human" action', async () => {
+  it('loads the thread and shows the Tithi message + the "Talk to a human" action', async () => {
     render(<SupportChat />);
-    await waitFor(() => expect(screen.getByText('Hi, I am Bolt')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Hi, I am Tithi')).toBeInTheDocument());
     expect(screen.getByRole('button', { name: /talk to a human/i })).toBeInTheDocument();
   });
 
   it('sends a message and appends it', async () => {
     render(<SupportChat />);
-    await waitFor(() => expect(screen.getByText('Hi, I am Bolt')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Hi, I am Tithi')).toBeInTheDocument());
     fireEvent.change(screen.getByLabelText('Message'), { target: { value: 'my payout is late' } });
     fireEvent.click(screen.getByLabelText('Send'));
     await waitFor(() => expect(sendSupportMessage).toHaveBeenCalledWith('t1', { body: 'my payout is late' }));
@@ -48,7 +48,7 @@ describe('SupportChat', () => {
 
   it('collects a detailed problem before escalating to a human', async () => {
     render(<SupportChat />);
-    await waitFor(() => expect(screen.getByText('Hi, I am Bolt')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Hi, I am Tithi')).toBeInTheDocument());
     // The nudge appears only after Bolt has replied.
     fireEvent.click(screen.getByRole('button', { name: /talk to a human/i }));
     // Intake requires real detail — a too-short message can't submit.
@@ -66,7 +66,7 @@ describe('SupportChat', () => {
     const { getSupportHours } = await import('../services/api');
     getSupportHours.mockResolvedValueOnce({ data: { open: false, label: 'Mon–Fri, 10am–6pm IST' } });
     render(<SupportChat />);
-    await waitFor(() => expect(screen.getByText('Hi, I am Bolt')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Hi, I am Tithi')).toBeInTheDocument());
     await waitFor(() => expect(screen.getByRole('button', { name: /raise a ticket/i })).toBeInTheDocument());
   });
 
@@ -81,12 +81,12 @@ describe('SupportChat', () => {
     expect(container.textContent).not.toContain('**');
   });
 
-  it('shows a "Bolt is typing" indicator after the user sends, in the bot phase', async () => {
+  it('shows a "Tithi is typing" indicator after the user sends, in the bot phase', async () => {
     render(<SupportChat />);
-    await waitFor(() => expect(screen.getByText('Hi, I am Bolt')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Hi, I am Tithi')).toBeInTheDocument());
     fireEvent.change(screen.getByLabelText('Message'), { target: { value: 'help me' } });
     fireEvent.click(screen.getByLabelText('Send'));
-    await waitFor(() => expect(screen.getByRole('status', { name: /bolt is typing/i })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole('status', { name: /tithi is typing/i })).toBeInTheDocument());
   });
 
   it('renders bot markdown as formatting, not raw asterisks/link syntax', async () => {
@@ -100,11 +100,11 @@ describe('SupportChat', () => {
     expect(container.textContent).not.toContain('**');
   });
 
-  it('shows a "Bolt is typing" indicator after the user sends, in the bot phase', async () => {
+  it('shows a "Tithi is typing" indicator after the user sends, in the bot phase', async () => {
     render(<SupportChat />);
-    await waitFor(() => expect(screen.getByText('Hi, I am Bolt')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Hi, I am Tithi')).toBeInTheDocument());
     fireEvent.change(screen.getByLabelText('Message'), { target: { value: 'help me' } });
     fireEvent.click(screen.getByLabelText('Send'));
-    await waitFor(() => expect(screen.getByRole('status', { name: /bolt is typing/i })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole('status', { name: /tithi is typing/i })).toBeInTheDocument());
   });
 });

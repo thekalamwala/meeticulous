@@ -90,13 +90,13 @@ const HelpDocs = () => {
 
         {!hasResults && (
           <p className="text-sm text-gray-500 mb-9">
-            No articles match &ldquo;{query}&rdquo;. Try a different word, or ask Bolt below.
+            No articles match &ldquo;{query}&rdquo;. Try a different word, or ask Tithi below.
           </p>
         )}
 
         <div className="bg-white border rounded-2xl p-5 text-center">
           <p className="font-semibold text-gray-900">Didn&apos;t find your answer?</p>
-          <p className="text-sm text-gray-500 mt-1 mb-3">Ask Bolt, our assistant, or reach our team.</p>
+          <p className="text-sm text-gray-500 mt-1 mb-3">Ask Tithi, our assistant, or reach our team.</p>
           <Link to="/help" className="inline-flex text-sm font-semibold text-[#960D32] hover:underline">
             Contact support
           </Link>

@@ -1,13 +1,13 @@
 [
   {
     "pattern": "are you a bot",
-    "answer": "Yep, I'm Bolt 958 — the Book A Sloth assistant and THE FASTEST Sloth Alive, not a human. I can answer most things about booking, payments, plans and hosting. If I hit something I can't, I'll pull in a real person from the team.",
+    "answer": "Yep, I'm Tithi — the Book A Sloth assistant, not a human. I can answer most things about booking, payments, plans and hosting. If I hit something I can't, I'll pull in a real person from the team.",
     "enabled": true,
     "category": "General"
   },
   {
     "pattern": "are you human",
-    "answer": "Nope, I'm Bolt - The Sloth — an assistant, not a person. I'll get you a human the moment something needs one.",
+    "answer": "Nope, I'm Tithi — an assistant, not a person. I'll get you a human the moment something needs one.",
     "enabled": true,
     "category": "General"
   },
@@ -55,7 +55,7 @@
   },
   {
     "pattern": "hello",
-    "answer": "Hey! I'm Bolt. Ask me about booking a service, payments, plans, or becoming a host — I'll get you sorted.",
+    "answer": "Hey! I'm Tithi. Ask me about booking a service, payments, plans, or becoming a host — I'll get you sorted.",
     "enabled": true,
     "category": "General"
   },
@@ -67,7 +67,7 @@
   },
   {
     "pattern": "how do i add a new service to my page",
-    "answer": "Go to your dashboard, hit **Services → Add New**, and fill in the basics:\n\n- **Title and description** — what you're offering. Stuck on what to write? Hit **Write with Bolt** and let it cook.\n- **Price** — charge for it or keep it free\n- **Duration** — how long it takes (this sets your available slots)\n- **Inclusions, exclusions, FAQs** — so people know exactly what they're booking\n- **Thumbnail** — a cover image\n\nSave it and it goes live on your page ready to book. That's it.",
+    "answer": "Go to your dashboard, hit **Services → Add New**, and fill in the basics:\n\n- **Title and description** — what you're offering. Stuck on what to write? Hit **Write with Tithi** and let it cook.\n- **Price** — charge for it or keep it free\n- **Duration** — how long it takes (this sets your available slots)\n- **Inclusions, exclusions, FAQs** — so people know exactly what they're booking\n- **Thumbnail** — a cover image\n\nSave it and it goes live on your page ready to book. That's it.",
     "enabled": true,
     "category": "General"
   },

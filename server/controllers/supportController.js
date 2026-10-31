@@ -40,7 +40,7 @@ async function botAutoReply(thread, question) {
         msg = "I hit a snag doing that just now. Tap 'Talk to a human' and a teammate will sort it out.";
       }
       if (msg) {
-        await chat.postMessage({ threadId: thread.id, sender: 'bot', senderName: 'Bolt', body: msg });
+        await chat.postMessage({ threadId: thread.id, sender: 'bot', senderName: 'Tithi', body: msg });
         return; // handled — skip the FAQ bot
       }
     }
@@ -59,7 +59,7 @@ async function botAutoReply(thread, question) {
 
     const out = await bot.askBot({ question, sessionRef: thread.reference, context: ctx });
     if (!out || !String(out.answer || '').trim()) return;
-    await chat.postMessage({ threadId: thread.id, sender: 'bot', senderName: 'Bolt', body: out.answer });
+    await chat.postMessage({ threadId: thread.id, sender: 'bot', senderName: 'Tithi', body: out.answer });
     // Bolt couldn't answer confidently → hand to a human (flips the banner to 'waiting').
     if (out.escalate) await chat.escalate(thread.id, question);
   } catch (e) {
@@ -103,7 +103,7 @@ const getMyThread = async (req, res) => {
     if (messages.length === 0) {
       await chat.postMessage({
         threadId: thread.id, sender: 'system',
-        body: "Hi! Ask us anything — the Bolt assistant answers instantly, and our team can jump in when you need a person.",
+        body: "Hi! Ask us anything — the Tithi assistant answers instantly, and our team can jump in when you need a person.",
       });
     }
     await chat.markRead(thread.id, 'user');
@@ -130,7 +130,7 @@ const startTopic = async (req, res) => {
     });
     await chat.postMessage({
       threadId: thread.id, sender: 'system',
-      body: "New topic started. Ask away — Bolt replies instantly, and our team can jump in when you need a person.",
+      body: "New topic started. Ask away — Tithi replies instantly, and our team can jump in when you need a person.",
     });
     await chat.markRead(thread.id, 'user');
     res.status(201).json({ thread, messages: await chat.listMessages(thread.id) });
@@ -207,7 +207,7 @@ const escalateThread = async (req, res) => {
     // Honest expectation-setting: a live handoff in hours, a logged ticket after.
     const note = open
       ? 'Thanks — connecting you to the Book A Sloth team. Someone will reply here shortly.'
-      : `Thanks — our team is offline right now (${supportHours.LABEL}). Your ticket ${thread.reference} is logged and we'll reply here as soon as we're back. Bolt can still help meanwhile.`;
+      : `Thanks — our team is offline right now (${supportHours.LABEL}). Your ticket ${thread.reference} is logged and we'll reply here as soon as we're back. Tithi can still help meanwhile.`;
     await chat.postMessage({ threadId: thread.id, sender: 'system', body: note });
     const updated = await chat.escalate(thread.id, summary);
     res.json({ thread: updated, open });

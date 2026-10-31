@@ -37,7 +37,7 @@ export default function AdminBotSupport() {
 
   return (
     <div>
-      <PageHeader title="Bolt Support" subtitle="Review what Bolt couldn't answer, and turn gaps into instant FAQ answers." actions={nav} />
+      <PageHeader title="Tithi Support" subtitle="Review what Tithi couldn't answer, and turn gaps into instant FAQ answers." actions={nav} />
       <Current />
     </div>
   );

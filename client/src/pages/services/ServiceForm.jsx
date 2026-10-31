@@ -521,7 +521,7 @@ export default function ServiceForm({ initialData, serviceId }) {
                       'inline-flex items-center gap-1 text-xs font-semibold text-[color:var(--accent)] disabled:opacity-40',
                       !BOLT_ENABLED && 'grayscale opacity-60 cursor-not-allowed',
                     )}>
-                    {!BOLT_ENABLED ? '✨ Write with Bolt · soon' : (aiLoading ? 'Bolt is writing…' : '✨ Write with Bolt')}
+                    {!BOLT_ENABLED ? '✨ Write with Tithi · soon' : (aiLoading ? 'Tithi is writing…' : '✨ Write with Tithi')}
                   </button>
                 </div>
               </div>
@@ -529,7 +529,7 @@ export default function ServiceForm({ initialData, serviceId }) {
               {aiError && <p className="mt-1 text-xs text-red-500">{aiError}</p>}
               {aiFields.size > 0 && !aiError && !aiLoading && (
                 <p className="mt-1 text-xs text-green-600">
-                  ✨ Bolt filled {aiFields.size} field{aiFields.size === 1 ? '' : 's'} — review and edit before saving.
+                  ✨ Tithi filled {aiFields.size} field{aiFields.size === 1 ? '' : 's'} — review and edit before saving.
                 </p>
               )}
               {aiSession && !aiLoading && (
