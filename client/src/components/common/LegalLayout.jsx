@@ -88,7 +88,7 @@ export default function LegalLayout({
         </div>
 
         <p className="mt-6 text-center text-xs text-gray-400">
-          Operated by Timewheel Internet Private Limited &middot; CIN U62012OD2026PTC052654 &middot; GSTIN 21AAMCT8270C1ZF
+          Operated by Rajmudra Media LLP
         </p>
       </div>
     </div>

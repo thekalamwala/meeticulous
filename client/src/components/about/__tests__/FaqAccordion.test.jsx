@@ -1,13 +1,15 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import FaqAccordion from "../FaqAccordion";
+import { faq } from "../aboutContent";
 
 describe("FaqAccordion", () => {
   const expanded = (el) => el.getAttribute("aria-expanded");
+  const q = (i) => screen.getByRole("button", { name: faq.items[i].q });
 
   it("opens one panel on click and toggles closed", () => {
     render(<FaqAccordion />);
-    const first = screen.getByRole("button", { name: /who are you/i });
+    const first = q(0);
     expect(expanded(first)).toBe("false");
     fireEvent.click(first);
     expect(expanded(first)).toBe("true");
@@ -17,8 +19,8 @@ describe("FaqAccordion", () => {
 
   it("single-open: opening a second closes the first", () => {
     render(<FaqAccordion />);
-    const a = screen.getByRole("button", { name: /who are you/i });
-    const b = screen.getByRole("button", { name: /where are you based/i });
+    const a = q(0);
+    const b = q(1);
     fireEvent.click(a);
     fireEvent.click(b);
     expect(expanded(a)).toBe("false");

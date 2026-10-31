@@ -15,7 +15,7 @@ import { FREE_PLAN, PREMIUM_PLAN } from '../data/plans';
 // computes (₹1000 → guest ₹1,011.80; host ₹959.76 paid / ₹909.76 free). If one
 // changes, change all three.
 
-const Mail = () => <a href="mailto:team@timewheel.co.in" className="text-primary hover:underline">team@timewheel.co.in</a>;
+const Mail = () => <a href="mailto:hello@meeticulous.com" className="text-primary hover:underline">hello@meeticulous.com</a>;
 
 const Th = ({ children, className = '' }) => (
   <th className={`text-left p-2.5 font-semibold text-ink border-b-2 border-gray-200 ${className}`}>{children}</th>
@@ -245,7 +245,7 @@ const HostFees = () => (
         own professional advice &mdash; we can explain what we charge and what we deduct, but we cannot advise you on
         your tax position.
       </p>
-      <p className="pt-1"><strong>Timewheel Internet Private Limited</strong> (CIN: U62012OD2026PTC052654 | GSTIN: 21AAMCT8270C1ZF)</p>
+      <p className="pt-1"><strong>Rajmudra Media LLP</strong></p>
     </Section>
   </LegalLayout>
 );

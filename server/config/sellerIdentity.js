@@ -25,7 +25,10 @@ const seller = {
   cin:       env.SELLER_CIN        || 'U62012OD2026PTC052654',
   stateCode: env.SELLER_STATE_CODE || '21',
   stateName: env.SELLER_STATE      || 'Odisha',
-  address:   env.SELLER_ADDRESS    || 'Natapada, Vyasanagar, Jajpur, Odisha 755019, India',
+  // Address updated 2026-10-31 (owner request) to the Eureka CoWorking office.
+  // stateCode/stateName above still follow the GSTIN (Odisha 21) — they drive the
+  // CGST/SGST vs IGST split, so they change only with the GST registration.
+  address:   env.SELLER_ADDRESS    || 'Eureka CoWorking, 2nd & 4th floor, 11, Friends Colony, Mate Square, Pratap Nagar Rd, P & T Colony, Kotwal Nagar, Pratap Nagar, Nagpur, Maharashtra 440022, India',
   email:     env.SELLER_EMAIL      || 'team@timewheel.co.in',
   phone:     env.SELLER_PHONE      || '+91 8637758344',
   website:   env.SELLER_WEBSITE    || 'timewheel.co.in',

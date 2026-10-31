@@ -22,7 +22,7 @@ const isAllowedPath = (p) =>
 
 // Bolt — Meeticulous's floating support assistant. Mounted app-wide (App.jsx).
 // Blended look: reference-widget layout + polish, on Meeticulous's brand (orange
-// #960D32 + ink #2A1416, Plus Jakarta headings / Poppins body, medium borders).
+// #960D32 + ink #2A1416, Poppins body / Bricolage headings, medium borders).
 // The answer STREAMS in over SSE and renders through <Markdown>, so the model's
 // **bold**/links render as formatting — raw HTML tags are never shown.
 
@@ -192,7 +192,7 @@ export default function BotWidget() {
         },
         onError: () => setMessages((m) => patchLastAssistant(m, (a) => ({
           ...a, streaming: false, escalate: true,
-          content: a.content || "Something went wrong reaching support just now. Email bolt@meeticulous.in and a human will jump in.",
+          content: a.content || "Something went wrong reaching support just now. Email hello@meeticulous.com and a human will jump in.",
         }))),
       },
     );
@@ -565,7 +565,7 @@ export default function BotWidget() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={onKeyDown}
               disabled={locked}
-              placeholder={locked ? 'Chat paused — email bolt@meeticulous.in' : 'Ask anything…'}
+              placeholder={locked ? 'Chat paused — email hello@meeticulous.com' : 'Ask anything…'}
               aria-label="Type your question"
               className="h-10 min-h-10 max-h-24 flex-1 resize-none rounded-xl border-2 border-ink/12 px-3 pt-[11px] pb-[5px] text-[13px] leading-tight outline-none focus:!border-primary focus:!shadow-none focus:!ring-0 focus:!outline-none disabled:cursor-not-allowed disabled:bg-ink/5"
             />

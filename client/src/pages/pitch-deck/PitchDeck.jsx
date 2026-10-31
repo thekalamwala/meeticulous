@@ -7,7 +7,7 @@
 // viewer clears the gate this file renders only the OTP screen + non-secret prose.
 //
 // Brand: Friendly Brutalism — orange #960D32, canvas #F8FAFC, ink, hard offset
-// shadows, 4px borders/radii. Plus Jakarta Sans headings / Poppins body. Charts
+// shadows, 4px borders/radii. Poppins body / Bricolage headings. Charts
 // are hand-rolled SVG and take their data as props (fed from the fetched payload).
 //
 // Number tags (colour-coded): ACTUAL green · ESTIMATE amber · PROJECTION blue ·
@@ -179,7 +179,7 @@ function MrrChart({ series }) {
           <g key={d.m}>
             <circle cx={x(i)} cy={y(d.v)} r={last ? 7 : 4.5} fill={last ? '#960D32' : '#fff'} stroke="#960D32" strokeWidth="3" />
             <text x={x(i)} y={H - pad + 18} textAnchor="middle" fontSize="11" fill="#6b6459" fontFamily="Poppins">{d.m}</text>
-            {last && <text x={x(i)} y={y(d.v) - 14} textAnchor="middle" fontSize="13" fontWeight="700" fill="#960D32" fontFamily="Plus Jakarta Sans">₹{lastV}k</text>}
+            {last && <text x={x(i)} y={y(d.v) - 14} textAnchor="middle" fontSize="13" fontWeight="700" fill="#960D32" fontFamily="Poppins">₹{lastV}k</text>}
           </g>
         );
       })}
@@ -216,9 +216,9 @@ function MarketRings({ rings }) {
   return (
     <svg viewBox="0 0 320 320" className="w-full max-w-[340px]" role="img" aria-label="TAM SAM SOM market sizing">
       {rings.map((m) => <circle key={m.k} cx="160" cy="170" r={m.r} fill={m.fill} stroke="#2A1416" strokeWidth="2.5" />)}
-      <text x="160" y="176" textAnchor="middle" fontSize="15" fontWeight="800" fill="#fff" fontFamily="Plus Jakarta Sans">SOM</text>
-      <text x="160" y="88" textAnchor="middle" fontSize="13" fontWeight="800" fill="#2A1416" fontFamily="Plus Jakarta Sans">SAM</text>
-      <text x="160" y="42" textAnchor="middle" fontSize="13" fontWeight="800" fill="#1e3a8a" fontFamily="Plus Jakarta Sans">TAM</text>
+      <text x="160" y="176" textAnchor="middle" fontSize="15" fontWeight="800" fill="#fff" fontFamily="Poppins">SOM</text>
+      <text x="160" y="88" textAnchor="middle" fontSize="13" fontWeight="800" fill="#2A1416" fontFamily="Poppins">SAM</text>
+      <text x="160" y="42" textAnchor="middle" fontSize="13" fontWeight="800" fill="#1e3a8a" fontFamily="Poppins">TAM</text>
     </svg>
   );
 }
@@ -262,7 +262,7 @@ function GrowthChart({ series }) {
           <g key={d.t}>
             <circle cx={x(i)} cy={y(d.v)} r={now ? 7 : 5} fill={now ? '#059669' : '#960D32'} stroke="#141210" strokeWidth="2.5" />
             <text x={x(i)} y={H - pad + 18} textAnchor="middle" fontSize="11" fill="#b8b2a8" fontFamily="Poppins">{d.t}</text>
-            <text x={x(i)} y={y(d.v) - 12} textAnchor="middle" fontSize="11" fontWeight="700" fill={now ? '#34d399' : '#93c5fd'} fontFamily="Plus Jakarta Sans">₹{d.v}L</text>
+            <text x={x(i)} y={y(d.v) - 12} textAnchor="middle" fontSize="11" fontWeight="700" fill={now ? '#34d399' : '#93c5fd'} fontFamily="Poppins">₹{d.v}L</text>
           </g>
         );
       })}

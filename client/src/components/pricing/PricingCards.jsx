@@ -109,8 +109,12 @@ function PlanCard({ plan, yearly, children }) {
   );
 }
 
-export default function PricingCards() {
+// `freeAccent` optionally re-tints the Starter card for one placement (e.g. the
+// Home section uses a brand shade instead of the green) without changing it
+// on /pricing and the other pages that share this component.
+export default function PricingCards({ freeAccent } = {}) {
   const [yearly, setYearly] = useState(true);
+  const freePlan = freeAccent ? { ...FREE_PLAN, accent: freeAccent } : FREE_PLAN;
   // Interim (fee-only) mode: hide the free plan from the pricing display. Free
   // signup still works — we just don't advertise it. Reverts on Route go-live.
   const feeOnly = useFeeOnly();
@@ -148,7 +152,7 @@ export default function PricingCards() {
       <div className={`mt-10 grid gap-5 ${feeOnly ? "mx-auto max-w-lg" : "md:grid-cols-2"}`}>
         {/* Starter — free (hidden in interim fee-only mode; free signup still works) */}
         {!feeOnly && (
-          <PlanCard plan={FREE_PLAN} yearly={yearly}>
+          <PlanCard plan={freePlan} yearly={yearly}>
             <div className="mt-6 flex items-end gap-2">
               <span className="font-heading text-5xl font-extrabold text-ink">₹0</span>
               <span className="mb-1.5 text-sm text-neutral-400">/ forever</span>

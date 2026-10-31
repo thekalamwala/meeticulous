@@ -8,7 +8,7 @@ import LegalLayout, { Section, MARKETPLACE_EFFECTIVE } from '../components/commo
 // provides grievance redressal + refund facilitation under the Consumer Protection
 // (E-Commerce) Rules, 2020. Consumer rights under the CPA 2019 are NOT excluded.
 
-const Mail = () => <a href="mailto:team@timewheel.co.in" className="text-primary hover:underline">team@timewheel.co.in</a>;
+const Mail = () => <a href="mailto:hello@meeticulous.com" className="text-primary hover:underline">hello@meeticulous.com</a>;
 
 const GuestTerms = () => (
   <LegalLayout
@@ -21,8 +21,8 @@ const GuestTerms = () => (
       <>
         <p>
           These Guest Booking Terms (&ldquo;<strong>Booking Terms</strong>&rdquo;) apply every time you book or buy a
-          service on Meeticulous. Meeticulous is operated by <strong>Timewheel Internet Private Limited</strong>{' '}
-          (CIN: U62012OD2026PTC052654, GSTIN: 21AAMCT8270C1ZF) (&ldquo;<strong>Meeticulous</strong>&rdquo;,
+          service on Meeticulous. Meeticulous is operated by <strong>Rajmudra Media LLP</strong>{' '}
+          (&ldquo;<strong>Meeticulous</strong>&rdquo;,
           &ldquo;we&rdquo;, &ldquo;us&rdquo;).
         </p>
         <p className="rounded-xl border-2 border-primary/20 bg-primary/5 p-4">
@@ -259,12 +259,10 @@ const GuestTerms = () => (
 
     <Section title="11. Marketplace operator details">
       <ul className="list-disc pl-5 space-y-1.5">
-        <li><strong>Marketplace operator:</strong> Timewheel Internet Private Limited, operating Meeticulous</li>
-        <li><strong>CIN:</strong> U62012OD2026PTC052654 &middot; <strong>GSTIN:</strong> 21AAMCT8270C1ZF</li>
+        <li><strong>Marketplace operator:</strong> Rajmudra Media LLP, operating Meeticulous</li>
         <li><strong>Email:</strong> <Mail /> &middot; <strong>Phone:</strong> +91 8637758344</li>
         <li><strong>Grievance Officer:</strong> Shubham Narendra Datarkar</li>
-        <li><strong>Registered office:</strong> Ground Floor, Holding No-55, Ward No-19, Natapada, Jajpur Road, Byasanagar, District Jajpur, Odisha &ndash; 755019, India</li>
-        <li><strong>Operations office:</strong> #6, 2nd Floor, Eureka Coworking, Mate Square, Nagpur, Maharashtra</li>
+        <li><strong>Registered &amp; operations office:</strong> Eureka CoWorking, 2nd &amp; 4th floor, 11, Friends Colony, Mate Square, Pratap Nagar Rd, P &amp; T Colony, Kotwal Nagar, Pratap Nagar, Nagpur, Maharashtra 440022, India</li>
       </ul>
     </Section>
   </LegalLayout>

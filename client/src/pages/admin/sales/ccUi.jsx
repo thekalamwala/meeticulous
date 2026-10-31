@@ -5,7 +5,7 @@
 import Ic from '../../../components/admin/Ic';
 import { IC } from '../../../components/admin/adminNav';
 
-export const HEADING = { fontFamily: "'Plus Jakarta Sans',Poppins,sans-serif" };
+export const HEADING = { fontFamily: "'Poppins',sans-serif" };
 
 /** options: [{ value, label, count? }] */
 export function Chips({ options, value, onChange, label }) {

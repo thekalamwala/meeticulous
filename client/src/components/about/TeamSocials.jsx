@@ -51,7 +51,7 @@ export default function TeamSocials({ socials = [], name = "" }) {
             aria-label={label}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-ink/10 bg-white transition-transform hover:shadow-md"
+            className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-ink/10 bg-white transition-transform"
           >
             {isSloth ? (
               <img src={meta.icon} alt="" className="h-full w-full scale-[1.1] object-cover" />

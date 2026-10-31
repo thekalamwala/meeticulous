@@ -9,7 +9,7 @@ import LegalLayout, { Section, MARKETPLACE_EFFECTIVE } from '../components/commo
 // invoices only its fee + commission. Payment flow (§2.4/§6) runs through Razorpay, an
 // RBI-authorised payment aggregator; GST and consumer-liability positions are stated
 // firmly per the v4 model.
-const Mail = () => <a href="mailto:team@timewheel.co.in" className="text-primary hover:underline">team@timewheel.co.in</a>;
+const Mail = () => <a href="mailto:hello@meeticulous.com" className="text-primary hover:underline">hello@meeticulous.com</a>;
 
 const Terms = () => (
   <LegalLayout
@@ -22,10 +22,9 @@ const Terms = () => (
       <>
         <p>
           These Terms &amp; Conditions ("Terms") govern your access to and use of the Meeticulous platform,
-          website, and related services (the "Platform"), operated by <strong>Timewheel Internet Private Limited</strong>{' '}
-          (CIN: U62012OD2026PTC052654, GSTIN: 21AAMCT8270C1ZF) ("Meeticulous", "we", "us", or "our"), a company
-          incorporated in India under the Companies Act, 2013 with its registered office at <strong>Ground Floor,
-          Holding No-55, Ward No-19, Natapada, Jajpur Road, Byasanagar, District Jajpur, Odisha – 755019, India</strong>.
+          website, and related services (the "Platform"), operated by <strong>Rajmudra Media LLP</strong>{' '}
+          ("Meeticulous", "we", "us", or "our"), a limited liability partnership registered in India under the
+          Limited Liability Partnership Act, 2008.
         </p>
         <p>
           By creating an account, booking a service, listing a service, or otherwise using the Platform, you agree to
@@ -288,10 +287,9 @@ const Terms = () => (
         <li><strong>Grievance Officer:</strong> Shubham Narendra Datarkar</li>
         <li><strong>Email:</strong> <Mail /></li>
         <li><strong>Phone:</strong> +91 8637758344</li>
-        <li><strong>Registered office:</strong> Ground Floor, Holding No-55, Ward No-19, Natapada, Jajpur Road, Byasanagar, District Jajpur, Odisha – 755019, India</li>
-        <li><strong>Operations office:</strong> #6, 2nd Floor, Eureka Coworking, Mate Square, Nagpur, Maharashtra</li>
+        <li><strong>Registered &amp; operations office:</strong> Eureka CoWorking, 2nd &amp; 4th floor, 11, Friends Colony, Mate Square, Pratap Nagar Rd, P &amp; T Colony, Kotwal Nagar, Pratap Nagar, Nagpur, Maharashtra 440022, India</li>
       </ul>
-      <p className="pt-1"><strong>Timewheel Internet Private Limited</strong> (CIN: U62012OD2026PTC052654 | GSTIN: 21AAMCT8270C1ZF)</p>
+      <p className="pt-1"><strong>Rajmudra Media LLP</strong></p>
     </Section>
   </LegalLayout>
 );
