@@ -6,7 +6,7 @@
 
 const sendEmail = require('../utils/sendEmail');
 
-const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'hello@mail.meeticulous.in';
+const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'team@meeticulous.com';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Escape user input before dropping it into the email HTML body.
