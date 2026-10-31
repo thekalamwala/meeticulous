@@ -85,7 +85,7 @@ Google  ──►  ① Your page  ──►  ② Your first service  ──►  
 ### Screen ② — Your first service (replaces `PreviewStep`; service form moves up from `/live`)
 - Headline: **"What can people book with you?"**
 - **Suggested titles per persona** as chips (e.g. Coach → *Discovery call · 1:1 coaching session · Goal-setting session*). One tap fills the title. Free text still allowed.
-- **Bolt by default:** when a title is set (tap or typed + blur), Bolt auto-writes the description once, shown as "✨ Bolt wrote this — edit" (Aha #3). Manual button stays as fallback; failures are silent → title-seed (today's behaviour).
+- **Bolt by default:** when a title is set (tap or typed + blur), Tithi auto-writes the description once, shown as "✨ Bolt wrote this — edit" (Aha #3). Manual button stays as fallback; failures are silent → title-seed (today's behaviour).
 - Duration: segmented pills 15 / 30 / 45 / 60 (not a `<select>`).
 - How you meet: pills Online / In person / Both — **moved here** because it describes the service. In person → city field appears inline (it's what powers local search). First service stays `service_type: online` server-side unless we decide otherwise (see open question 2).
 - Price: hidden entirely in fee-only mode (replaced by one line "Free to book — paid pricing in your dashboard"). Shown as today when not fee-only.

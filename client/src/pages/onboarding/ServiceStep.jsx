@@ -108,7 +108,7 @@ const ServiceStep = () => {
 
   const runBolt = async (seedTitle = title) => {
     const t = seedTitle.trim();
-    if (!t) { toast.error('Type what your service is first, then Bolt writes it.'); return; }
+    if (!t) { toast.error('Type what your service is first, then Tithi writes it.'); return; }
     if (aiBusy) return;
     setAiBusy(true);
     try {
@@ -127,7 +127,7 @@ const ServiceStep = () => {
       const msg = error.response?.data?.message;
       if (status === 429) toast.error(msg || "You've used your AI writing for now — your title works fine on its own.");
       else if (status === 503) toast.error('AI writing is unavailable right now — your title works fine on its own.');
-      else toast.error(msg || 'Bolt could not write that — try a clearer title.');
+      else toast.error(msg || 'Tithi could not write that — try a clearer title.');
     } finally {
       setAiBusy(false);
     }
@@ -233,7 +233,7 @@ const ServiceStep = () => {
               What can people <span className="text-primary-cta">book</span> with you?
             </h1>
             <p className="mt-2.5 text-[15px] text-muted">
-              Pick one to start{BOLT_ENABLED ? '. Bolt writes the description, you just check it.' : '. You can add more later.'}
+              Pick one to start{BOLT_ENABLED ? '. Tithi writes the description, you just check it.' : '. You can add more later.'}
             </p>
 
             {/* Title */}
@@ -265,7 +265,7 @@ const ServiceStep = () => {
                 <div className="mt-3 rounded-[6px] bg-sand p-3.5" aria-live="polite">
                   <p className="flex items-center gap-2 text-sm font-semibold">
                     <Sparkles className="h-4 w-4 text-primary" />
-                    {aiBusy ? 'Bolt is writing your description…' : aiCopy ? 'Bolt wrote this. Edit anytime in your dashboard.' : 'Bolt can write the description for you'}
+                    {aiBusy ? 'Tithi is writing your description…' : aiCopy ? 'Tithi wrote this. Edit anytime in your dashboard.' : 'Tithi can write the description for you'}
                   </p>
                   {aiBusy && (
                     <div className="mt-2.5 flex flex-col gap-2"><div className="onb-shimmer" /><div className="onb-shimmer w-11/12" /><div className="onb-shimmer w-3/5" /></div>
@@ -280,7 +280,7 @@ const ServiceStep = () => {
                       disabled={!title.trim() || !!busy}
                       className="mt-1 min-h-[36px] text-sm font-semibold text-primary-cta hover:opacity-80 disabled:opacity-40"
                     >
-                      Write it with Bolt
+                      Write it with Tithi
                     </button>
                   )}
                 </div>
