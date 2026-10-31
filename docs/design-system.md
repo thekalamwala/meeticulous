@@ -53,14 +53,14 @@ colors: {
 ## Typography
 | Font | Role |
 |---|---|
-| **Bricolage Grotesque** (variable 200–800) | Hero H1 only: `font-display` / `--font-display`, applied to every `h1` by `index.css` |
-| **Inter Tight** (variable 100–900) | Everything else: body, buttons, inputs, section H2–H6, card titles, prices (`font-sans`, `font-heading`, `--font-primary`) |
+| **Bricolage Grotesque** (variable 200–800) | Hero H1 + section H2: `font-display` / `--font-display`, applied to every `h1`/`h2` by `index.css` |
+| **Poppins** (400–700) | Everything else: body, buttons, inputs, card titles (H3–H6), prices, stats (`font-sans`, `font-heading`, `--font-primary`) |
 
-Both are self-hosted variable woff2 files in `client/public/fonts`, declared in
-`src/styles/fonts.css` with metric-matched fallbacks (no layout shift on swap) and
-preloaded in `index.html`. Admin (`.admin-shell`) uses Inter Tight for every heading.
-Poppins / Plus Jakarta Sans faces remain declared only for the OG share cards and
-the printable receipt.
+Both are self-hosted woff2 files in `client/public/fonts`, declared in
+`src/styles/fonts.css` with metric-matched fallbacks (no layout shift on swap); the
+Bricolage file + Poppins 400 are preloaded in `index.html`. Admin (`.admin-shell`)
+uses Poppins for every heading. The Plus Jakarta Sans face is legacy (still declared,
+unused by the site).
 
 ### Font Scale
 | Element | Size | Weight |

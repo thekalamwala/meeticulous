@@ -99,7 +99,7 @@ const AdminLayout = ({ children }) => {
   })();
 
   return (
-    <div className={`admin-shell adm-canvas min-h-screen ${dark ? 'dark' : ''}`} style={{ fontFamily:"'Inter Tight',system-ui,sans-serif" }}>
+    <div className={`admin-shell adm-canvas min-h-screen ${dark ? 'dark' : ''}`} style={{ fontFamily:"'Poppins',system-ui,sans-serif" }}>
       <AdminEscalationRinger />
 
       {/* Desktop stacked sidebar (lg+) */}

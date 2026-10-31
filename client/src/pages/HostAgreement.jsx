@@ -10,7 +10,7 @@ import LegalLayout, { Section } from '../components/common/LegalLayout';
 // monthly cycle / 10% holdback / Payment Advice doc / Form 16A exist in the product —
 // wording matches routeAutoPayoutService.js + payoutAdminController.js.
 
-const Mail = () => <a href="mailto:team@timewheel.co.in" className="text-primary hover:underline">team@timewheel.co.in</a>;
+const Mail = () => <a href="mailto:hello@meeticulous.com" className="text-primary hover:underline">hello@meeticulous.com</a>;
 
 const HostAgreement = () => (
   <LegalLayout
@@ -23,8 +23,8 @@ const HostAgreement = () => (
       <>
         <p>
           This Host Services Agreement (the &ldquo;<strong>Agreement</strong>&rdquo;) is entered into between{' '}
-          <strong>Timewheel Internet Private Limited</strong> (CIN: U62012OD2026PTC052654,
-          GSTIN: 21AAMCT8270C1ZF), a company incorporated in India under the Companies Act, 2013, operating the
+          <strong>Rajmudra Media LLP</strong>, a limited liability partnership registered in India under the Limited Liability
+          Partnership Act, 2008, operating the
           Meeticulous platform (&ldquo;<strong>Meeticulous</strong>&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;,
           &ldquo;our&rdquo;), and you, the person or entity offering services through the Platform (the
           &ldquo;<strong>Host</strong>&rdquo;, &ldquo;you&rdquo;, &ldquo;your&rdquo;).
@@ -489,7 +489,7 @@ const HostAgreement = () => (
 
     <Section title="17. Indemnity">
       <p>
-        You will indemnify, defend, and hold harmless Meeticulous, Timewheel Internet Private Limited, and their
+        You will indemnify, defend, and hold harmless Meeticulous, Rajmudra Media LLP, and their
         directors, officers, employees, and agents from and against all claims, demands, proceedings, losses, damages,
         liabilities, fines, penalties, taxes, and costs (including reasonable legal fees) arising out of or in
         connection with:
@@ -597,10 +597,9 @@ const HostAgreement = () => (
         <li><strong>Grievance Officer:</strong> Shubham Narendra Datarkar</li>
         <li><strong>Email:</strong> <Mail /></li>
         <li><strong>Phone:</strong> +91 8637758344</li>
-        <li><strong>Registered office:</strong> Ground Floor, Holding No-55, Ward No-19, Natapada, Jajpur Road, Byasanagar, District Jajpur, Odisha &ndash; 755019, India</li>
-        <li><strong>Operations office:</strong> #6, 2nd Floor, Eureka Coworking, Mate Square, Nagpur, Maharashtra</li>
+        <li><strong>Registered &amp; operations office:</strong> Eureka CoWorking, 2nd &amp; 4th floor, 11, Friends Colony, Mate Square, Pratap Nagar Rd, P &amp; T Colony, Kotwal Nagar, Pratap Nagar, Nagpur, Maharashtra 440022, India</li>
       </ul>
-      <p className="pt-1"><strong>Timewheel Internet Private Limited</strong> (CIN: U62012OD2026PTC052654 | GSTIN: 21AAMCT8270C1ZF)</p>
+      <p className="pt-1"><strong>Rajmudra Media LLP</strong></p>
     </Section>
   </LegalLayout>
 );

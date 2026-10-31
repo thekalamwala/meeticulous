@@ -7,10 +7,10 @@ import { hero } from "../aboutContent";
 const setup = () => render(<HeroV2 />, { wrapper: MemoryRouter });
 
 describe("HeroV2", () => {
-  it("renders primary and secondary CTAs", () => {
+  it("renders 'Join the team' (→ careers) and 'More about us' (→ in-page story) CTAs", () => {
     setup();
-    expect(screen.getByRole("link", { name: hero.ctaPrimary })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: hero.ctaGhost }).getAttribute("href")).toBe(hero.ctaGhostHref);
+    expect(screen.getByRole("link", { name: /join the team/i }).getAttribute("href")).toBe("/careers");
+    expect(screen.getByRole("link", { name: /more about us/i }).getAttribute("href")).toBe("#our-story");
   });
 
   it("renders a static H1 that states the value proposition", () => {

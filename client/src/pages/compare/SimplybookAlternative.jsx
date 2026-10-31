@@ -218,7 +218,7 @@ function Gauge({ value, label, sub }) {
           <circle cx={pt(value, R)[0]} cy={pt(value, R)[1]} r="5" fill="#fff" stroke={over ? C.orange : C.navy} strokeWidth="2.5" />
         </>
       )}
-      <text x={CX} y={CY - 14} fontSize="26" fontWeight="800" fill={C.navy} textAnchor="middle" fontFamily="'Inter Tight', sans-serif">{label}</text>
+      <text x={CX} y={CY - 14} fontSize="26" fontWeight="800" fill={C.navy} textAnchor="middle" fontFamily="'Poppins', sans-serif">{label}</text>
       <text x={CX} y={CY + 4} fontSize="10" fill={C.navySoft} textAnchor="middle">{sub}</text>
     </svg>
   );

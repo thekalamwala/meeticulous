@@ -12,13 +12,18 @@
 export const ROUTE_START = "/become-a-host";
 
 export const hero = {
-  eyebrow: "About Meeticulous",
   title: "Your time is the product.",
   titleAccent: "We make it bookable.",
   sub: "Meeticulous is an online booking platform for creators, pros & bros — the people who sell sessions, shoots, lessons and expertise. One page to list your services, take bookings, collect payment upfront and send the reminders, so the admin stops eating into the work.",
-  ctaPrimary: "Let's Get Started",
-  ctaGhost: "See pricing",
-  ctaGhostHref: "/pricing",
+  ctaPrimary: "Join the team",
+  ctaPrimaryHref: "/careers",
+  ctaGhost: "More about us",
+  // In-page anchor on the story section right under the hero (ProblemSection).
+  ctaGhostHref: "#our-story",
+  // Right-hand hero photo (Unsplash, same ID as the homepage "studio" persona).
+  // Swap for a real Meeticulous photo when one exists.
+  image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1400&h=1100&q=80",
+  imageAlt: "A small team working together around a laptop",
 };
 
 // Illustrative booking card shown beside the hero (a UI sketch, not customer data).
@@ -37,51 +42,24 @@ export const heroMock = {
 };
 
 export const problem = {
-  eyebrow: "Why we built it",
   heading: "Selling your time shouldn't feel like a second job.",
   intro:
     "Most people who sell their time run their bookings out of WhatsApp chats, Instagram DMs and a UPI QR code. It works — until the week gets busy.",
+  // Before/after cards: each row is one pain ("The old way") and its fix
+  // ("A smoother way"), each with a short title + one line.
   rows: [
-    { pain: "Ten messages to agree on one time slot", fix: "Clients pick an open slot from your booking page." },
-    { pain: "Sending a QR code and waiting for a screenshot", fix: "Payment is collected when they book — UPI, cards or netbanking via Razorpay." },
-    { pain: "Clients who forget and don't turn up", fix: "Confirmations and reminders go out by email and WhatsApp on their own." },
-    { pain: "Bookings and invoices scattered across apps", fix: "Bookings and GST invoices live in one dashboard." },
+    { painTitle: "Endless conversations", pain: "Ten messages just to agree on one time slot.", fixTitle: "Self-service booking", fix: "Clients pick an open slot from your booking page." },
+    { painTitle: "Payment chasing", pain: "Sending a QR code and waiting for a screenshot.", fixTitle: "Automatic payments", fix: "UPI, cards or netbanking via Razorpay, paid at booking." },
+    { painTitle: "Missed appointments", pain: "Clients forget and don't turn up.", fixTitle: "Automatic reminders", fix: "Email and WhatsApp confirmations go out on their own." },
+    { painTitle: "Scattered records", pain: "Bookings and invoices spread across apps.", fixTitle: "One organised dashboard", fix: "Bookings and GST invoices in one place." },
   ],
 };
 
 export const mission = {
-  eyebrow: "Our mission",
   statement: "Make every skill bookable — so the people who create, teach, coach and heal spend their time on the work, not the admin around it.",
 };
 
-export const audiences = {
-  eyebrow: "Who it's for",
-  heading: "Built for creators, pros & bros.",
-  sub: "Meeting schedulers were built for sales calls and team syncs. Meeticulous is appointment scheduling for professionals and creators whose time is what they sell.",
-  groups: [
-    {
-      name: "Creators",
-      who: "Content creators, photographers, artists and workshop hosts.",
-      sells: ["Portrait and product shoots", "1:1 creator calls", "Workshops and classes", "Portfolio reviews"],
-      accent: "var(--c-pink)",
-    },
-    {
-      name: "Pros",
-      who: "Consultants, coaches, freelancers, designers and experts.",
-      sells: ["Consultations", "Coaching sessions", "Audits and strategy calls", "Design reviews"],
-      accent: "var(--c-blue)",
-    },
-    {
-      name: "Bros",
-      who: "Personal trainers, fitness coaches, mentors, gaming coaches and independent pros.",
-      sells: ["Training sessions", "Mentoring calls", "Gaming coaching", "Site visits and walkthroughs"],
-      accent: "var(--c-emerald)",
-    },
-  ],
-};
-
 export const difference = {
-  eyebrow: "How we're different",
   heading: "A booking platform, not just a calendar.",
   sub: "A calendar link helps two people find a time. Selling that time takes more — so that's what we built.",
   items: [
@@ -94,74 +72,76 @@ export const difference = {
   ],
 };
 
-export const beliefs = {
-  heading: "What we believe.",
+// Polaroid gallery (after the team). Stock Unsplash photos of the KINDS of work
+// people sell with Meeticulous — captioned by activity, never as named customers.
+// `id` = Unsplash photo id (checked to load and to match its caption).
+export const gallery = {
+  heading: "Made for every kind of booked time.",
+  sub: "Classes, sessions, shoots and lessons — the work people sell with one booking link.",
   items: [
-    { title: "Time should never be wasted.", body: "Every tap removed is a minute given back." },
-    { title: "Your craft is the valuable part.", body: "The machinery around it isn't your job — that part is ours." },
-    { title: "Your clients are yours.", body: "They book you directly, on your own page, under your name." },
-    { title: "Automation should feel invisible.", body: "The best tool is the one you forget is there." },
-    { title: "Calm beats hustle.", body: "Work slower. Earn smarter." },
-    { title: "Pricing should be honest.", body: "What we charge is on the pricing page — no surprises at payout." },
+    { id: "1544367567-0f2fcb009e0b", title: "Yoga", caption: "Sunrise flows, booked by the slot." },
+    { id: "1571019613454-1cb2f99b2d8b", title: "Fitness", caption: "Personal training, at home or in the studio." },
+    { id: "1427504494785-3a9ca7044f45", title: "Study", caption: "Tutoring and exam prep, one session at a time." },
+    { id: "1516035069371-29a1b244cc32", title: "Photography", caption: "Shoots booked and paid before the day." },
+    { id: "1556761175-5973dc0f32e7", title: "Workshops", caption: "Talks and group sessions with limited seats." },
+    { id: "1531482615713-2afd69097998", title: "Mentoring", caption: "1:1 calls and reviews, scheduled around work." },
+    { id: "1510915361894-db8b60106cb1", title: "Music lessons", caption: "Weekly lessons from a single link." },
+    { id: "1560066984-138dadb4c035", title: "Salons", caption: "Chairs filled without the phone calls." },
   ],
 };
 
-// Order is intentional (4 across, 2 rows):
-//   Durga · Happy · Mohini · Sujata  /  Arjun · Sariga · Aastha · Shubham
+export const beliefs = {
+  heading: "What we believe.",
+  sub: "A few ideas that shape every feature we build.",
+  // Three columns, each paired with an illustration in BeliefGrid (art: time, clients, pricing — keep the order).
+  items: [
+    { art: "time", title: "Time should never be wasted.", body: "Every tap removed is a minute given back." },
+    { art: "clients", title: "Your clients are yours.", body: "They book you directly, on your own page, under your name." },
+    { art: "pricing", title: "Pricing should be honest.", body: "What we charge is on the pricing page — no surprises at payout." },
+  ],
+};
+
+// Order is intentional: Shubham · Shivani · Pranav · Tushar · Aastha.
+// Shivani, Pranav and Tushar carry a neutral "Team Member" title until their
+// real roles are confirmed — update position/role/bio when they are.
 // Photos: the old company-assets.meeticulous.in host does not resolve, so every
 // member renders the initials fallback until real photos are re-hosted — set
 // `photo` per member when they are. Socials resolve to Meeticulous's own pages
 // for now (TeamSocials fills the default per type) until individual links exist.
 export const team = {
   heading: "The people behind Meeticulous.",
-  sub: "A small team, building in India.",
+  sub: "A small team, building in India. Tap a photo to meet the person behind it.",
   members: [
     {
-      name: "Durga Laxne",
-      position: "Social Media Manager",
-      role: "Social",
+      name: "Shubham Datarkar",
+      position: "Founding Engineer",
+      role: "Engineering",
       photo: null,
-      bio: "Durga tells the Meeticulous story across every feed, turning posts, reels and replies into calm moments that help the right creators find their home.",
-      socials: [{ type: "linkedin" }, { type: "instagram" }, { type: "sloth" }],
-    },
-    {
-      name: "Happy Singh",
-      position: "Content Lead",
-      role: "Content",
-      photo: null,
-      bio: "Happy turns the product into words people actually enjoy reading, shaping guides, emails and pages that respect your time and never waste a tap on it.",
-      socials: [{ type: "instagram" }, { type: "x" }, { type: "sloth" }],
-    },
-    {
-      name: "Mohini Daf",
-      position: "Automation Engineer",
-      role: "Automation",
-      photo: null,
-      bio: "Mohini makes the boring parts quietly vanish, wiring up flows so reminders, payouts and follow-ups run by themselves while you focus on the real work.",
+      bio: "Shubham builds all the calm under the hood, shipping fast reliable systems that stay quietly out of your way so booking and payments simply just work.",
       socials: [{ type: "linkedin" }, { type: "x" }, { type: "sloth" }],
     },
     {
-      name: "Sujata Mishra",
-      position: "Director of Ops",
-      role: "Operations",
+      name: "Shivani Kadoo",
+      position: "Team Member",
+      role: "Team",
       photo: null,
-      bio: "Sujata keeps the whole machine humming behind the scenes, steering operations so no one slips through the cracks on any given day, week or quarter.",
+      bio: "Shivani is part of the small team building Meeticulous in India, helping creators and professionals get booked, paid and reminded without the admin.",
       socials: [{ type: "linkedin" }, { type: "sloth" }],
     },
     {
-      name: "Arjun Ravikumar",
-      position: "Performance Marketer",
-      role: "Performance",
+      name: "Pranav Kadoo",
+      position: "Team Member",
+      role: "Team",
       photo: null,
-      bio: "Arjun finds calm creators wherever they scroll and brings them home, tuning every campaign so each rupee spent earns its keep, and then some more too.",
-      socials: [{ type: "linkedin" }, { type: "instagram" }, { type: "x" }, { type: "sloth" }],
+      bio: "Pranav is part of the small team building Meeticulous in India, working to make every booking feel simple for hosts and the people who book them.",
+      socials: [{ type: "linkedin" }, { type: "sloth" }],
     },
     {
-      name: "Sariga Suresh",
-      position: "Admin Executive",
-      role: "Admin",
+      name: "Tushar Malvi",
+      position: "Team Member",
+      role: "Team",
       photo: null,
-      bio: "Sariga keeps the back office spotless so the team stays on creators, handling payouts, paperwork and all the small stuff before it becomes a big mess.",
+      bio: "Tushar is part of the small team building Meeticulous in India, helping turn one booking link into calm, paid sessions for creators and pros.",
       socials: [{ type: "linkedin" }, { type: "sloth" }],
     },
     {
@@ -172,22 +152,14 @@ export const team = {
       bio: "Aastha obsesses over each tap so you never think twice, removing friction for a living and shaping a product that feels calm, quick and humane in use.",
       socials: [{ type: "linkedin" }, { type: "x" }, { type: "sloth" }],
     },
-    {
-      name: "Shubham",
-      position: "Founding Engineer",
-      role: "Engineering",
-      photo: null,
-      bio: "Shubham builds all the calm under the hood, shipping fast reliable systems that stay quietly out of your way so booking and payments simply just work.",
-      socials: [{ type: "linkedin" }, { type: "x" }, { type: "sloth" }],
-    },
   ],
 };
 
 // Real hosts only (avatars in client/public/images/testimonials). Team members'
 // quotes were removed — an About page can't present staff as customers.
 export const testimonials = {
-  eyebrow: "From real hosts",
   heading: "What hosts tell us.",
+  sub: "People who sell their time, on what changed once bookings and payments started running themselves.",
   items: [
     { quote: "Half my day used to go in 'is a cabin free at 4?' WhatsApps. Now people just book it themselves.", name: "Mukesh Tidke", role: "Coworking Space Owner", avatar: "/images/testimonials/mukesh-tidke.webp" },
     { quote: "Clients book site-visit slots straight off my link and pay upfront. No more chasing dates over WhatsApp.", name: "Ar. Pranav Kadoo", role: "Architect", avatar: "/images/testimonials/pranav-kadoo.webp" },
@@ -201,6 +173,7 @@ export const testimonials = {
 // Only questions with verifiable answers. Also emitted as FAQPage JSON-LD (About.jsx).
 export const faq = {
   heading: "Questions, answered.",
+  sub: "The things people usually ask before setting up their booking page.",
   items: [
     {
       q: "What is Meeticulous?",

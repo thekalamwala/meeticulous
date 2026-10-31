@@ -53,9 +53,9 @@ const D = {
 };
 
 // Fixed brand constants (legal entity, address, platform footer mark).
-// NOTE: ADDRESS unchanged per founder instruction (postal address stays).
+// ADDRESS updated 2026-10-31 to the Eureka CoWorking office (owner request).
 const COMPANY    = 'Rajmudra Media LLP';
-const ADDRESS    = '2nd Floor, Eureka Coworking, Mate Square, Nagpur 440030';
+const ADDRESS    = 'Eureka CoWorking, 2nd & 4th floor, 11, Friends Colony, Mate Square, Pratap Nagar Rd, Nagpur, Maharashtra 440022';
 const TAGLINE    = 'Booking Made Easy';
 // Hosted on the site itself (client/public/images/email → served at
 // meeticulous.com by Vercel), so emails no longer depend on an external CDN.

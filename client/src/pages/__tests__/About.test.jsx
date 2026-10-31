@@ -7,17 +7,23 @@ import * as content from "../../components/about/aboutContent";
 describe("About page", () => {
   it("renders the story sections in order with hero CTAs and FAQ", () => {
     render(<About />, { wrapper: MemoryRouter });
-    expect(screen.getAllByRole("link", { name: /let's get started/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("link", { name: /join the team/i }).length).toBeGreaterThan(0);
+    // "More about us" jumps to the story section right under the hero.
+    expect(screen.getByRole("link", { name: /more about us/i }).getAttribute("href")).toBe("#our-story");
+    expect(document.getElementById("our-story")).not.toBeNull();
     const h2s = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
     const order = [
       content.problem.heading,
-      content.audiences.heading,
       content.difference.heading,
       content.faq.heading,
-      content.finalCta.heading,
     ].map((h) => h2s.indexOf(h));
     expect(order.every((i) => i >= 0)).toBe(true);
     expect([...order].sort((a, b) => a - b)).toEqual(order);
+  });
+
+  it("has no closing 'Make your time bookable.' CTA (removed at the owner's request)", () => {
+    render(<About />, { wrapper: MemoryRouter });
+    expect(screen.queryByRole("heading", { name: content.finalCta.heading })).toBeNull();
   });
 
   it("ships no unfinished placeholder copy or unqualified 0% commission claims", () => {

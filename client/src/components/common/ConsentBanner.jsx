@@ -1,11 +1,23 @@
 // Marketing-consent banner (India DPDP / GDPR). Shown until the user accepts or
 // declines. Accept → GA4/Pixel/Clarity load; decline → they never load. PostHog
 // (first-party product analytics) runs regardless and is not gated here.
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { analytics } from '../../services/analytics';
+import CookieDuo from './CookieDuo';
+
+// Re-open the banner after a choice was made (e.g. the bottom-right cookie
+// button, CookieButton.jsx). The banner listens for this window event.
+const OPEN_EVENT = 'consent:open';
+export const openConsentSettings = () => window.dispatchEvent(new Event(OPEN_EVENT));
 
 export default function ConsentBanner({ variant = "full" }) {
   const [decided, setDecided] = useState(() => analytics.hasDecided());
+
+  useEffect(() => {
+    const reopen = () => setDecided(false);
+    window.addEventListener(OPEN_EVENT, reopen);
+    return () => window.removeEventListener(OPEN_EVENT, reopen);
+  }, []);
 
   if (decided) return null;
 
@@ -35,22 +47,11 @@ export default function ConsentBanner({ variant = "full" }) {
     <div
       role="dialog"
       aria-label="Cookie and analytics consent"
-      className="fixed z-[9999] bottom-5 right-5 max-[600px]:bottom-2.5 max-[600px]:right-2.5 max-[600px]:max-w-[90%] max-w-[380px] flex flex-col items-center gap-4 rounded-2xl bg-[whitesmoke] px-5 pt-5 pb-4 text-[#252525] shadow-[0_4px_20px_rgba(0,0,0,0.35)]"
+      className="fixed z-[9999] bottom-5 right-5 max-[600px]:bottom-2.5 max-[600px]:right-2.5 max-[600px]:max-w-[94%] w-[372px] max-w-[372px] flex flex-col items-center gap-3 rounded-[10px] border border-black/5 bg-white px-6 pb-6 pt-5 max-[600px]:px-4 text-[#252525] shadow-[0_24px_60px_-20px_rgba(26,26,26,0.4)]"
     >
-      {/* Cookie pops above the card via negative top margin */}
-      <div className="-mt-16 mb-[-20px] drop-shadow">
-        {/* Self-hosted from client/public (was company-assets.meeticulous.in; the
-            .in CDN was flaky and the .png fallback 404'd — only the webp existed).
-            webp is universally supported, so the <picture>/<source> dance is gone. */}
-        <img
-          src="/images/banner/consent.webp"
-          alt="Meeticulous cookie preferences"
-          width={224}
-          height={201}
-          decoding="async"
-          className="h-auto w-28"
-        />
-      </div>
+      {/* Illustration-led card: two cookie characters (inline SVG, CookieDuo)
+          above a bold headline — replaced the old pop-out cookie photo. */}
+      <CookieDuo className="h-auto w-64" />
 
       <div className="text-center leading-relaxed">
         {/* Not an <h4>: this dialog renders above the page's <h1>, so a heading
@@ -58,14 +59,14 @@ export default function ConsentBanner({ variant = "full" }) {
             outline on every page (semantic.heading_skip on ~195 pages). The dialog
             already has its own accessible name via aria-label above, so this needs
             no heading role — a styled <p> keeps the exact look. */}
-        <p className="mb-1.5 text-base font-semibold">This site uses cookies 🍪</p>
+        <p className="mb-2 font-display text-2xl font-extrabold leading-tight text-ink">We use cookies</p>
         <p className="text-xs text-gray-600">
           We use cookies for analytics &amp; marketing. Essential analytics always
           run — you can decline marketing &amp; ad cookies.
         </p>
       </div>
 
-      <div className="mt-1 flex flex-wrap justify-center gap-2.5">
+      <div className="mt-2 flex flex-wrap justify-center gap-2.5">
         <button
           type="button"
           onClick={() => choose(true)}

@@ -936,7 +936,7 @@ const ServiceBooking = () => {
               transform={`rotate(${i * 45} 50 50)`} />
           ))}
         </svg>
-        <p className="mt-5 font-bold text-lg" style={{ fontFamily: "'Inter Tight', sans-serif", color: '#111' }}>Setting up your booking</p>
+        <p className="mt-5 font-bold text-lg" style={{ fontFamily: "'Poppins', sans-serif", color: '#111' }}>Setting up your booking</p>
         <p className="mt-1 text-sm text-gray-400">Just a moment while we load the calendar…</p>
       </div>
     );
@@ -1212,7 +1212,7 @@ const ServiceBooking = () => {
                     </p>
                   </>
                 )}
-                <a href="mailto:bolt@meeticulous.in"
+                <a href="mailto:hello@meeticulous.com"
                   className="btn w-full py-3 font-bold text-sm transition-opacity hover:opacity-85"
                   style={{ background: tc, color: textOnTheme }}>
                   Contact support

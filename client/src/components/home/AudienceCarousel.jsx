@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { motion, useReducedMotion } from "framer-motion";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 
-const EASE = [0.22, 1, 0.36, 1];
-
-/* "Who it's for" carousel — the active audience sits centred (white, full
-   opacity, "Learn more"), its neighbours sit faded on either side, and the
-   round arrows (or a swipe) rotate through them.
-   Cards move with transforms only (x / scale / opacity), one move at a time.
+/* "Who it's for" — Calendly-style carousel: the current audience is a big card
+   in the centre (horizontal on wide screens), the others sit at the edges as
+   narrow, shorter tinted cards. Click a side card, swipe/drag, the arrows or
+   arrow keys to switch. The blocks stay put — only the content inside them
+   swaps, with a soft fade (instant under prefers-reduced-motion).
    Each `audience`: { key, icon, title, desc, who:[{label,href?}], points:[], color, learnMore }. */
 
 /* Top vignette — a small UI-style card built only from real labels (who it's
@@ -47,7 +46,7 @@ const Vignette = ({ a, on }) => (
     {/* "Book" pill — echoes the reference's floating action button */}
     <span
       aria-hidden
-      className={`absolute bottom-3 right-4 rounded-full px-4 py-1.5 text-xs font-semibold text-white shadow-[0_10px_24px_-10px_rgba(0,0,0,0.5)] transition-opacity ${on ? "opacity-100" : "opacity-70"}`}
+      className={`absolute bottom-3 right-4 rounded-full px-4 py-1.5 text-xs font-semibold text-white ${on ? "opacity-100" : "opacity-70"}`}
       style={{ backgroundColor: a.color }}
     >
       Book a session
@@ -55,53 +54,91 @@ const Vignette = ({ a, on }) => (
   </div>
 );
 
-const DUR = 0.55; // seconds — card glide
 
 export default function AudienceCarousel({ audiences }) {
   const reduce = useReducedMotion();
   const n = audiences.length;
   const [active, setActive] = useState(0);
-  const busyRef = useRef(false);
   const stageRef = useRef(null);
-  const cardRef = useRef(null);
-  const [geo, setGeo] = useState({ stageW: 0, cardW: 0 });
+  const measureRefs = useRef([]);
+  const [stageW, setStageW] = useState(0);
+  const [contentH, setContentH] = useState(0);
+  const [measuredW, setMeasuredW] = useState(-1); // centre width contentH was measured at
 
-  // Measure the stage + one card (offsetWidth ignores transforms) so the side
-  // slots sit just outside the centre card at every breakpoint.
+  // dir: 1 = forward (content slides out left, in from the right), -1 = back.
+  const [dir, setDir] = useState(1);
+  const go = (d) => { setDir(d < 0 ? -1 : 1); setActive((a) => (a + d + n) % n); };
+
+  // Geometry (Calendly-style): a big centre card, then on each side a narrow
+  // card (±1) and a thinner, shorter one further out (±2); anything further is
+  // parked off-stage, invisible. Widths come from the stage; the height is the
+  // tallest card content at the centre width, so the stage never jumps.
+  const big = stageW >= 640;
+  const sideW = big ? 80 : 22;
+  const outerW = big ? 44 : 10;
+  const gap = big ? 16 : 6;
+  const centreW = Math.max(0, Math.min(stageW - 2 * (sideW + outerW + 2 * gap), 820));
+  const wide = centreW >= 600; // centre card goes horizontal (panel | text)
+  const centreH = contentH;
+  const sideH = Math.round(centreH * 0.66);
+  const outerH = Math.round(centreH * 0.42);
+
   useEffect(() => {
     const el = stageRef.current;
     if (!el) return;
-    const measure = () => setGeo({ stageW: el.clientWidth, cardW: cardRef.current?.offsetWidth || 0 });
+    const measure = () => setStageW(el.clientWidth);
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+  useEffect(() => {
+    const hs = measureRefs.current.map((m) => m?.offsetHeight || 0);
+    setContentH(Math.max(0, ...hs));
+    setMeasuredW(centreW);
+  }, [centreW, wide, audiences]);
 
-  // One move at a time: ignore clicks while a glide is in flight.
-  const go = (d) => {
-    if (busyRef.current) return;
-    busyRef.current = true;
-    setActive((a) => (a + d + n) % n);
-    window.setTimeout(() => { busyRef.current = false; }, reduce ? 0 : DUR * 1000);
-  };
-
-  const wide = geo.stageW >= 768; // md+: side cards peek; below: off-stage
-  const sideX = wide ? geo.cardW * 0.95 + 32 : geo.stageW + 24;
-
-  // Swipe (touch / pen / mouse drag)
-  const swipe = useRef(null);
-  const onPointerDown = (e) => { swipe.current = e.clientX; };
+  // Simple swipe / drag: 40px+ horizontal moves one card.
+  const startX = useRef(null);
+  const onPointerDown = (e) => { startX.current = e.clientX; };
   const onPointerUp = (e) => {
-    if (swipe.current == null) return;
-    const dx = e.clientX - swipe.current;
-    swipe.current = null;
+    if (startX.current == null) return;
+    const dx = e.clientX - startX.current;
+    startX.current = null;
     if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
   };
 
+  const centreLeft = (stageW - centreW) / 2;
+  const slot = (off) => {
+    if (off === 0) return { left: centreLeft, width: centreW, height: centreH, opacity: 1 };
+    const dir = Math.sign(off);
+    const nearL = dir < 0 ? centreLeft - gap - sideW : centreLeft + centreW + gap;
+    if (Math.abs(off) === 1) return { left: nearL, width: sideW, height: sideH, opacity: 1 };
+    const outerL = dir < 0 ? nearL - gap - outerW : nearL + sideW + gap;
+    if (Math.abs(off) === 2) return { left: outerL, width: outerW, height: outerH, opacity: 1 };
+    // parked beyond the outer slot, hidden
+    return { left: dir < 0 ? outerL - outerW : outerL + outerW, width: outerW, height: outerH, opacity: 0 };
+  };
+
+  // Card body — identical markup for the measurer and the live card.
+  const Body = ({ a }) => (
+    <div className={wide ? "grid grid-cols-[0.95fr_1.05fr] items-center gap-8 p-6" : "p-4 text-center sm:p-5"}>
+      <Vignette a={a} on />
+      <div className={wide ? "pr-4 text-left" : ""}>
+        <h3 className={`font-heading text-3xl font-bold tracking-tight text-ink ${wide ? "" : "mt-6"}`}>{a.title}</h3>
+        <p className={`mt-3 text-base leading-relaxed text-ink ${wide ? "" : "mx-auto max-w-sm"}`}>{a.desc}</p>
+        <Link
+          to={a.learnMore}
+          className="mt-5 inline-block border-b-2 border-primary pb-0.5 text-sm font-semibold text-ink hover:text-primary-cta hover:no-underline"
+        >
+          Learn more
+        </Link>
+      </div>
+    </div>
+  );
+
   return (
     <div
-      className="relative"
       role="region"
       aria-roledescription="carousel"
       aria-label="Who Meeticulous is for"
@@ -110,80 +147,131 @@ export default function AudienceCarousel({ audiences }) {
         if (e.key === "ArrowLeft") { e.preventDefault(); go(-1); }
       }}
     >
-      {/* Stage: every card shares one grid cell (height = tallest card) and is
-          moved into its slot with transforms only — the centre card glides in,
-          the outgoing one eases to the side. */}
-      <div
-        ref={stageRef}
-        className="relative mx-auto grid max-w-6xl touch-pan-y select-none"
-        onPointerDown={onPointerDown}
-        onPointerUp={onPointerUp}
-        onPointerCancel={() => { swipe.current = null; }}
-      >
-        {audiences.map((a, i) => {
-          let off = (i - active + n) % n; // 0 = centre, 1 = right, n-1 = left
-          if (off > n / 2) off -= n;
-          const on = off === 0;
-          return (
-            <motion.article
-              key={a.key}
-              ref={i === 0 ? cardRef : undefined}
-              initial={false}
-              animate={{
-                x: off * sideX,
-                scale: on ? 1 : 0.9,
-                opacity: on ? 1 : wide ? 0.6 : 0,
-              }}
-              transition={reduce ? { duration: 0 } : { duration: DUR, ease: EASE }}
-              style={{ zIndex: on ? 20 : 10, gridArea: "1 / 1" }}
-              onClick={() => !on && go(off)}
-              aria-hidden={!on}
-              className={`w-full max-w-[26rem] justify-self-center rounded-[10px] bg-white p-4 text-center will-change-transform sm:p-5 lg:max-w-[28rem] lg:py-7 ${
-                on
-                  ? "border border-black/5 shadow-[0_30px_70px_-30px_rgba(61,5,20,0.35)]"
-                  : "cursor-pointer border border-black/10 shadow-[0_8px_30px_rgba(26,26,26,0.04)]"
-              }`}
-            >
-              <Vignette a={a} on={on} />
-              <h3 className={`mt-6 font-heading text-3xl font-bold tracking-tight ${on ? "text-ink" : "text-ink/70"}`}>{a.title}</h3>
-              <p className={`mx-auto mt-3 max-w-sm text-base leading-relaxed ${on ? "text-ink" : "text-neutral-600"}`}>{a.desc}</p>
-              {/* Rendered on every card (keeps heights equal); only the centre one is visible/focusable */}
-              <Link
-                to={a.learnMore}
-                tabIndex={on ? 0 : -1}
-                className={`mt-5 inline-block border-b-2 border-primary pb-0.5 text-sm font-semibold text-ink hover:text-primary-cta hover:no-underline ${on ? "" : "invisible"}`}
-              >
-                Learn more
-              </Link>
-            </motion.article>
-          );
-        })}
+      {/* Off-screen measurer: each card body at the centre width, to size the stage */}
+      <div aria-hidden className="pointer-events-none invisible absolute left-0 top-0 -z-10" style={{ width: centreW }}>
+        {audiences.map((a, i) => (
+          <div key={a.key} ref={(el) => { measureRefs.current[i] = el; }}>
+            <Body a={a} />
+          </div>
+        ))}
       </div>
 
-      {/* Arrows — floating at the sides on md+ */}
-      <button
-        type="button"
-        onClick={() => go(-1)}
-        aria-label="Previous audience"
-        className="absolute left-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-black/10 bg-white text-ink shadow-[0_10px_30px_-12px_rgba(26,26,26,0.35)] transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:h-14 sm:w-14 md:flex lg:left-2"
+      <div
+        ref={stageRef}
+        className="relative w-full touch-pan-y select-none"
+        style={{ height: centreH || undefined }}
+        onPointerDown={onPointerDown}
+        onPointerUp={onPointerUp}
+        onPointerCancel={() => { startX.current = null; }}
       >
-        <ChevronLeft size={24} />
-      </button>
-      <button
-        type="button"
-        onClick={() => go(1)}
-        aria-label="Next audience"
-        className="absolute right-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-black/10 bg-white text-ink shadow-[0_10px_30px_-12px_rgba(26,26,26,0.35)] transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:h-14 sm:w-14 md:flex lg:right-2"
-      >
-        <ChevronRight size={24} />
-      </button>
+        {stageW > 0 && contentH > 0 && measuredW === centreW &&
+          audiences.map((_, i) => {
+            let off = (i - active + n) % n; // 0 centre, 1 right, n-1 left
+            if (off > n / 2) off -= n;
+            return off;
+          }).sort((x, y) => x - y).map((off) => {
+            // Slots are keyed by position, not audience: the blocks never move or
+            // resize — switching only swaps (and fades) what each slot shows.
+            const a = audiences[(active + off + n) % n];
+            const on = off === 0;
+            return (
+              <article
+                key={`slot-${off}`}
+                style={{
+                  ...slot(off),
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  zIndex: on ? 3 : Math.abs(off) === 1 ? 2 : 1,
+                  pointerEvents: Math.abs(off) > 2 ? "none" : undefined,
+                }}
+                onClick={() => !on && go(off)}
+                aria-hidden={!on}
+                className={`absolute overflow-hidden rounded-[10px] border border-black/10 bg-white ${
+                  on ? "shadow-[0_30px_70px_-30px_rgba(26,26,26,0.3)]" : "cursor-pointer shadow-[0_8px_30px_rgba(26,26,26,0.06)]"
+                }`}
+              >
+                {on ? (
+                  // Centre card: old content fades out, then the new one fades up in
+                  // (no hard cut between audiences).
+                  <AnimatePresence mode="wait" initial={false} custom={dir}>
+                    <motion.div
+                      key={a.key}
+                      custom={dir}
+                      variants={{
+                        enter: (d) => ({ opacity: 0, x: 48 * d }),
+                        show: { opacity: 1, x: 0 },
+                        leave: (d) => ({ opacity: 0, x: -48 * d, transition: { duration: 0.35, ease: "easeInOut" } }),
+                      }}
+                      initial={reduce ? false : "enter"}
+                      animate="show"
+                      exit={reduce ? undefined : "leave"}
+                      transition={reduce ? { duration: 0 } : { duration: 0.6, ease: "easeInOut" }}
+                      className="h-full bg-white"
+                      style={{ width: centreW }}
+                    >
+                      <Body a={a} />
+                    </motion.div>
+                  </AnimatePresence>
+                ) : (
+                  // Side sliver: the tint cross-fades into the next audience's
+                  // (gradients can't be CSS-transitioned, so the layers fade instead),
+                  // while the icon slides with the same direction + timing as the
+                  // centre card's text.
+                  <>
+                    <AnimatePresence initial={false}>
+                      <motion.span
+                        key={a.key}
+                        initial={reduce ? false : { opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0 }}
+                        transition={reduce ? { duration: 0 } : { duration: 0.8, ease: "easeInOut" }}
+                        className="absolute inset-0"
+                        style={{
+                          background: `linear-gradient(150deg, color-mix(in srgb, ${a.color} 10%, white), color-mix(in srgb, ${a.color} 26%, white))`,
+                        }}
+                      />
+                    </AnimatePresence>
+                    <AnimatePresence mode="wait" initial={false} custom={dir}>
+                      <motion.span
+                        key={a.key}
+                        custom={dir}
+                        variants={{
+                          enter: (d) => ({ opacity: 0, x: 24 * d }),
+                          show: { opacity: 1, x: 0 },
+                          leave: (d) => ({ opacity: 0, x: -24 * d, transition: { duration: 0.35, ease: "easeInOut" } }),
+                        }}
+                        initial={reduce ? false : "enter"}
+                        animate="show"
+                        exit={reduce ? undefined : "leave"}
+                        transition={reduce ? { duration: 0 } : { duration: 0.6, ease: "easeInOut" }}
+                        className="absolute inset-0 flex items-center justify-center"
+                        style={{ color: a.color }}
+                      >
+                        <a.icon size={Math.abs(off) === 1 ? (big ? 24 : 14) : big ? 18 : 10} />
+                      </motion.span>
+                    </AnimatePresence>
+                  </>
+                )}
+              </article>
+            );
+          })}
+      </div>
 
-      {/* Mobile arrows under the card */}
-      <div className="mt-8 flex items-center justify-center gap-4 md:hidden">
-        <button type="button" onClick={() => go(-1)} aria-label="Previous audience" className="flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white text-ink shadow-[0_8px_24px_-12px_rgba(26,26,26,0.35)]">
+      <div className="mt-8 flex items-center justify-center gap-4">
+        <button
+          type="button"
+          onClick={() => go(-1)}
+          aria-label="Previous audience"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white text-ink"
+        >
           <ChevronLeft size={20} />
         </button>
-        <button type="button" onClick={() => go(1)} aria-label="Next audience" className="flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white text-ink shadow-[0_8px_24px_-12px_rgba(26,26,26,0.35)]">
+        <button
+          type="button"
+          onClick={() => go(1)}
+          aria-label="Next audience"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white text-ink"
+        >
           <ChevronRight size={20} />
         </button>
       </div>

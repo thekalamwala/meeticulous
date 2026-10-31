@@ -255,7 +255,7 @@ export default function SeoNetwork() {
     const drawLabel = (n, color, weight) => {
       const raw = n.__root ? s.rootLabel : (n.title || n.path || '');
       const t = raw.length > 30 ? `${raw.slice(0, 29)}…` : raw;
-      ctx.font = `${weight} ${11.5 / z}px 'Inter Tight', system-ui, sans-serif`;
+      ctx.font = `${weight} ${11.5 / z}px 'Poppins', system-ui, sans-serif`;
       ctx.fillStyle = color; ctx.fillText(t, n.x, n.y - n.r - 3 / z);
     };
     if (!focus && lay === 'anchored') { for (const n of s.nodes) if (n.__anchor) drawLabel(n, rgb(th.ink), 700); }

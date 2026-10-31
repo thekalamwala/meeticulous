@@ -44,12 +44,12 @@ export default {
         "info-bg": "#E0F2FE",
       },
       fontFamily: {
-        // Brand type: Inter Tight everywhere (body + section headings); Bricolage
-        // Grotesque for the hero H1 only (`font-display`, and the global h1 rule
-        // in index.css). `heading` stays as an alias so existing classes keep working.
-        sans: ["Inter Tight", "Inter Tight Fallback", "system-ui", "sans-serif"],
-        heading: ["Inter Tight", "Inter Tight Fallback", "system-ui", "sans-serif"],
-        display: ["Bricolage Grotesque", "Bricolage Grotesque Fallback", "Inter Tight", "system-ui", "sans-serif"],
+        // Brand type: Poppins for body, UI and card titles (H3); Bricolage Grotesque
+        // for H1 + section H2 (`font-display`, and the global h1/h2 rule in
+        // index.css). `heading` stays as an alias so existing classes keep working.
+        sans: ["Poppins", "Poppins Fallback", "system-ui", "sans-serif"],
+        heading: ["Poppins", "Poppins Fallback", "system-ui", "sans-serif"],
+        display: ["Bricolage Grotesque", "Bricolage Grotesque Fallback", "Poppins", "system-ui", "sans-serif"],
       },
       // Global radius rule: 4px max; 6px only for a wrapper that contains a 4px child.
       // `full` kept for pills/avatars. Overrides Tailwind's default rounded-* scale app-wide.

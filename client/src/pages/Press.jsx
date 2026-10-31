@@ -10,14 +10,14 @@ import { SITE_URL, organizationJsonLd, breadcrumbJsonLd, ORG_SAME_AS } from "../
  */
 
 const CANONICAL = `${SITE_URL}/press`;
-const PRESS_EMAIL = "bolt@meeticulous.in";
+const PRESS_EMAIL = "hello@meeticulous.com";
 const LOGO = "https://company-assets.meeticulous.in/images/brand/logo.png";
 
 const FACTS = [
   ["Product", "Meeticulous — a booking link that gets India's professionals booked and paid"],
-  ["Legal entity", "Timewheel Internet Private Limited (CIN U62012OD2026PTC052654)"],
+  ["Legal entity", "Rajmudra Media LLP"],
   ["Founded", "2026"],
-  ["Headquarters", "Jajpur, Odisha, India"],
+  ["Headquarters", "Nagpur, Maharashtra, India"],
   ["Category", "Appointment scheduling & payments (SaaS)"],
   ["Model", "0% commission on paid plans — a flat fee, not a cut of your earnings"],
   ["Payments", "UPI, cards, net banking & wallets via Razorpay; GST-ready invoices"],
@@ -85,12 +85,12 @@ const Press = () => (
         <div className="rounded-[14px] border border-black/10 bg-white p-5">
           <Building2 size={18} className="text-primary" />
           <h3 className="mt-2 font-heading text-sm font-bold">Company</h3>
-          <p className="mt-1 text-sm text-neutral-600">Timewheel Internet Private Limited</p>
+          <p className="mt-1 text-sm text-neutral-600">Rajmudra Media LLP</p>
         </div>
         <div className="rounded-[14px] border border-black/10 bg-white p-5">
           <MapPin size={18} className="text-primary" />
           <h3 className="mt-2 font-heading text-sm font-bold">Registered office</h3>
-          <p className="mt-1 text-sm text-neutral-600">Byasanagar, District Jajpur, Odisha – 755019, India</p>
+          <p className="mt-1 text-sm text-neutral-600">Eureka CoWorking, 2nd &amp; 4th floor, 11, Friends Colony, Mate Square, Pratap Nagar Rd, P &amp; T Colony, Kotwal Nagar, Pratap Nagar, Nagpur, Maharashtra 440022, India</p>
         </div>
       </section>
 

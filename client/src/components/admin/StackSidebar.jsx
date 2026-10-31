@@ -78,7 +78,7 @@ const Panel = ({ node, area, isRoot, pathname, counts, onNavigate, onOpen, onBac
               className="w-[30px] h-[30px] rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/[0.06] transition-colors">
               <Ic d={IC.chevL} size={17} strokeWidth={2.1} />
             </button>
-            <span className="text-[13px] font-bold text-white truncate" style={{ fontFamily: "'Inter Tight',sans-serif" }}>{node.label}</span>
+            <span className="text-[13px] font-bold text-white truncate" style={{ fontFamily: "'Poppins',sans-serif" }}>{node.label}</span>
           </>
         )}
       </div>

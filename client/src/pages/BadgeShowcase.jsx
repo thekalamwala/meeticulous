@@ -83,7 +83,7 @@ const BadgeShowcase = () => {
   const { vendor, badges, total } = data;
 
   return (
-    <div className="min-h-screen bg-[#FFFBF7]" style={{ fontFamily: "'Inter Tight',sans-serif" }}>
+    <div className="min-h-screen bg-[#FFFBF7]" style={{ fontFamily: "'Poppins',sans-serif" }}>
       <Seo
         title={`${vendor.name} — Badges | Meeticulous`}
         description={`Badges and achievements earned by ${vendor.name} on Meeticulous.`}

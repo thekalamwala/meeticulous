@@ -46,11 +46,11 @@ export function renderProfile404Html(rawSlug) {
     `<title>No host at this address · Book A Sloth</title>` +
     `<meta name="robots" content="noindex">` +
     `<link rel="preconnect" href="https://fonts.googleapis.com">` +
-    `<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@800&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">` +
+    `<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">` +
     `<style>` +
     `:root{--orange:#FE5100;--ink:#141416;--muted:#5b5b62;--bg:#fff;--card:#fff;--line:#ececec}` +
     `*{box-sizing:border-box}html,body{margin:0;height:100%}` +
-    `body{background:var(--bg);color:var(--ink);font-family:'Inter Tight',system-ui,sans-serif;display:grid;place-items:center;padding:24px}` +
+    `body{background:var(--bg);color:var(--ink);font-family:'Poppins',system-ui,sans-serif;display:grid;place-items:center;padding:24px}` +
     `.card{background:var(--card);border:1px solid var(--line);border-radius:16px;max-width:460px;width:100%;padding:40px 32px;text-align:center;box-shadow:0 10px 40px rgba(20,20,22,.06)}` +
     `.hero{width:132px;height:132px;object-fit:contain;margin:0 auto 20px;display:block}` +
     `h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;line-height:1.2;margin:0 0 12px}` +

@@ -1875,7 +1875,7 @@ const HomeArchive = () => {
           </Reveal>
           <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-[750px] text-center text-base text-neutral-500">
             Still stuck? Write to us at{" "}
-            <a href="mailto:bolt@meeticulous.in" className="font-semibold text-primary hover:no-underline">bolt@meeticulous.in</a>{" "}
+            <a href="mailto:hello@meeticulous.com" className="font-semibold text-primary hover:no-underline">hello@meeticulous.com</a>{" "}
             — we reply fast.
           </Reveal>
           <div className="mt-12 space-y-3">
@@ -1968,13 +1968,13 @@ const HomeArchive = () => {
 
           <p className="mt-8 text-sm text-white/60">
             More comparisons coming. Want to see one?{" "}
-            <a href="mailto:bolt@meeticulous.in?subject=Comparison%20request" className="font-semibold text-primary hover:no-underline">Tell us →</a>
+            <a href="mailto:hello@meeticulous.com?subject=Comparison%20request" className="font-semibold text-primary hover:no-underline">Tell us →</a>
             <span className="mt-2 block text-xs text-white/40">
               No mail app?{" "}
               <button
                 type="button"
                 onClick={(e) => {
-                  navigator.clipboard?.writeText("bolt@meeticulous.in");
+                  navigator.clipboard?.writeText("hello@meeticulous.com");
                   const b = e.currentTarget;
                   const prev = b.textContent;
                   b.textContent = "Copied!";

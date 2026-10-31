@@ -85,23 +85,25 @@ h6 {
   line-height: 1.15;
 }
 
-/* Headings: H2/H3 → Inter Tight, like the body. */
-h2,
+/* Card titles and smaller headings (H3) → Poppins, like the body. */
 h3 {
   font-family: var(--font-primary);
 }
 
-/* Hero H1 → Bricolage Grotesque. Every page's H1 is its hero headline, so this
-   is the single switch for the display face. `h1.font-heading` / `h1.font-sans`
-   out-specify the Tailwind utility that most hero H1s carry. Admin keeps its own
-   rule below (same specificity, declared later). */
+/* Hero H1 + section H2 → Bricolage Grotesque. This is the single switch for the
+   display face. `h1.font-heading` / `h2.font-sans` etc. out-specify the Tailwind
+   utility most of these headings carry. Admin keeps its own rule below (same
+   specificity, declared later). */
 h1,
+h2,
 h1.font-heading,
-h1.font-sans {
+h2.font-heading,
+h1.font-sans,
+h2.font-sans {
   font-family: var(--font-display);
 }
 
-/* Admin/super-admin dashboard: entirely Inter Tight, headings included. */
+/* Admin/super-admin dashboard: entirely Poppins, headings included. */
 .admin-shell,
 .admin-shell h1,
 .admin-shell h2,
@@ -483,6 +485,26 @@ button[role='switch'] {
   50%      { transform: translateY(-5px); }
 }
 .sloth-bob { display: inline-block; animation: sloth-bob 3s ease-in-out infinite; }
+
+/* Homepage content width: section containers (max-w-6xl / 7xl) span 80% of the
+   window on lg+ instead of the fixed 1152/1280px caps. Narrow text columns
+   (max-w-5xl and below) keep their readable widths; phones/tablets keep the
+   normal px-5/sm:px-8 gutters. Scoped to <main class="home-wide"> in Home.jsx. */
+@media (min-width: 1024px) {
+  .home-wide .max-w-6xl,
+  .home-wide .max-w-7xl {
+    max-width: 80vw;
+  }
+  /* Headings, body copy and their centred header wrappers span the full
+     container instead of their narrow max-w caps (cards/buttons untouched). */
+  .home-wide :is(h1, h2, p)[class*="max-w-"] {
+    max-width: none;
+  }
+  .home-wide div.text-center[class*="max-w-"],
+  .home-wide .home-text-wrap {
+    max-width: 80vw;
+  }
+}
 
 /* Infinite testimonial marquee rows */
 @keyframes sloth-marquee-left {

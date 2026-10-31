@@ -27,9 +27,10 @@ import lazyWithRetry from './utils/lazyWithRetry';
 // fresh build — instead of throwing an unrecoverable white screen.
 const lazy = lazyWithRetry;
 
-// Floating chat bubble — not first-paint content. Lazy so its ~585 lines + the
-// Markdown renderer stay off the initial bundle on every page.
-const BotWidget = lazy(() => import('./components/common/BotWidget'));
+// Bottom-right floating circle: re-opens the cookie/consent banner. It replaced
+// the Bolt support-chat launcher (owner request 2026-10-31) — BotWidget.jsx is
+// kept in the codebase but no longer mounted.
+const CookieButton = lazy(() => import('./components/common/CookieButton'));
 const OpeningTakeover = lazy(() => import('./components/opening/OpeningTakeover'));
 
 // ── Route-level lazy loading ──────────────────────────────────────────────────
@@ -838,7 +839,7 @@ function App() {
         ? !chromeHidden && !location.pathname.startsWith('/admin') && <Footer variant="minimal" />
         : !hideFooter && <Footer variant={isBookingPage ? 'minimal' : 'full'} />}
       </RouteErrorBoundary>
-      {!hideBot && <Suspense fallback={null}><BotWidget /></Suspense>}
+      {!hideBot && <Suspense fallback={null}><CookieButton /></Suspense>}
       {/* Site-wide "The Opening" takeover — self-gates on window + route + one-per-device. */}
       <Suspense fallback={null}><OpeningTakeover /></Suspense>
     </ChromeContext.Provider>

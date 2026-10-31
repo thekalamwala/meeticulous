@@ -2,12 +2,12 @@
 // Brand preloader — greeting data + resolver.
 //
 // Single source of truth for the multilingual welcome. Each greeting carries the
-// Noto Sans family it needs (Inter Tight covers only Latin), so the preloader can
+// Noto Sans family it needs (Poppins covers only Latin), so the preloader can
 // lazy-load just the glyph subsets it actually shows. Extend FESTIVALS / regional
 // sets here later WITHOUT touching <BrandPreloader>.
 // ───────────────────────────────────────────────────────────────────────────
 
-// `font: null` → rendered in the page font (Inter Tight). Otherwise a Noto Sans
+// `font: null` → rendered in the page font (Poppins). Otherwise a Noto Sans
 // family that is subset-loaded on demand (see fontLoader.js).
 export const GREETINGS = [
   { lang: 'Hindi',     text: 'नमस्ते',          font: 'Noto Sans Devanagari' },

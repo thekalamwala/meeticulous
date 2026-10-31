@@ -20,8 +20,8 @@
   --success: #22c55e;
 
   /* Typography */
-  --font-heading: 'Inter Tight', 'Inter Tight Fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-body: 'Inter Tight', 'Inter Tight Fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-heading: 'Poppins', 'Poppins Fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'Poppins', 'Poppins Fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   /* Radii */
   --radius-sm: 1px;
@@ -90,8 +90,9 @@
   color: var(--text-dark);
 }
 
-/* Hero H1 uses the brand display face (--font-display, design-tokens.css). */
-.hiw-lp h1 {
+/* H1 + section H2 use the brand display face (--font-display, design-tokens.css). */
+.hiw-lp h1,
+.hiw-lp h2 {
   font-family: var(--font-display);
 }
 

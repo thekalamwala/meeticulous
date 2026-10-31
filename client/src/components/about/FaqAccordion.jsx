@@ -32,11 +32,13 @@ export default function FaqAccordion() {
   );
 
   return (
-    <section ref={root} className="bg-ink px-5 py-12 text-white sm:px-8 lg:py-16">
-      <div className="mx-auto max-w-3xl">
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-primary">Questions</p>
-        <h2 className="js-head mt-3 font-heading text-3xl font-bold text-white sm:text-4xl">{faq.heading}</h2>
-        <div className="js-list mt-8 divide-y divide-white/10 border-y border-white/10">
+    // Bright section (owner request 2026-10-31) — was a dark bg-ink band.
+    <section ref={root} className="bg-white px-5 py-12 text-ink sm:px-8 lg:py-16">
+      <div className="mx-auto max-w-6xl">
+        {/* Heading spans the full width, centred; the Q&A list stays a readable column */}
+        <h2 className="js-head text-center font-heading text-3xl font-bold text-ink sm:text-4xl">{faq.heading}</h2>
+        <p className="mt-4 text-center text-lg leading-relaxed text-ink/70">{faq.sub}</p>
+        <div className="js-list mx-auto mt-8 max-w-3xl divide-y divide-black/10 border-y border-black/10">
           {faq.items.map((item, i) => {
             const isOpen = open === i;
             return (
@@ -48,10 +50,10 @@ export default function FaqAccordion() {
                   className="flex w-full items-center justify-between gap-4 py-5 text-left"
                 >
                   <span className="font-heading text-lg font-semibold">{item.q}</span>
-                  <Plus className={`h-5 w-5 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-45" : ""}`} />
+                  <Plus className={`h-5 w-5 shrink-0 text-primary transition-transform duration-300 ${isOpen ? "rotate-45" : ""}`} />
                 </button>
                 <div className={`grid transition-all duration-300 ${isOpen ? "grid-rows-[1fr] pb-5 opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
-                  <p className="overflow-hidden text-white/70">{item.a}</p>
+                  <p className="overflow-hidden text-ink/70">{item.a}</p>
                 </div>
               </div>
             );

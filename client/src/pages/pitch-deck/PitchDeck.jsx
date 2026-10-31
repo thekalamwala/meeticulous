@@ -7,7 +7,7 @@
 // viewer clears the gate this file renders only the OTP screen + non-secret prose.
 //
 // Brand: Friendly Brutalism — orange #960D32, canvas #F8FAFC, ink, hard offset
-// shadows, 4px borders/radii. Inter Tight type. Charts
+// shadows, 4px borders/radii. Poppins body / Bricolage headings. Charts
 // are hand-rolled SVG and take their data as props (fed from the fetched payload).
 //
 // Number tags (colour-coded): ACTUAL green · ESTIMATE amber · PROJECTION blue ·
@@ -168,7 +168,7 @@ function MrrChart({ series }) {
       {[0, 5, 10, 15, 20].map((g) => (
         <g key={g}>
           <line x1={pad} x2={W - pad} y1={y(g)} y2={y(g)} stroke="#e6e1d8" strokeWidth="1" />
-          <text x={pad - 8} y={y(g) + 4} textAnchor="end" fontSize="11" fill="#9a948a" fontFamily="Inter Tight">₹{g}k</text>
+          <text x={pad - 8} y={y(g) + 4} textAnchor="end" fontSize="11" fill="#9a948a" fontFamily="Poppins">₹{g}k</text>
         </g>
       ))}
       <path d={area} fill="url(#mrrFill)" />
@@ -178,8 +178,8 @@ function MrrChart({ series }) {
         return (
           <g key={d.m}>
             <circle cx={x(i)} cy={y(d.v)} r={last ? 7 : 4.5} fill={last ? '#960D32' : '#fff'} stroke="#960D32" strokeWidth="3" />
-            <text x={x(i)} y={H - pad + 18} textAnchor="middle" fontSize="11" fill="#6b6459" fontFamily="Inter Tight">{d.m}</text>
-            {last && <text x={x(i)} y={y(d.v) - 14} textAnchor="middle" fontSize="13" fontWeight="700" fill="#960D32" fontFamily="Inter Tight">₹{lastV}k</text>}
+            <text x={x(i)} y={H - pad + 18} textAnchor="middle" fontSize="11" fill="#6b6459" fontFamily="Poppins">{d.m}</text>
+            {last && <text x={x(i)} y={y(d.v) - 14} textAnchor="middle" fontSize="13" fontWeight="700" fill="#960D32" fontFamily="Poppins">₹{lastV}k</text>}
           </g>
         );
       })}
@@ -216,9 +216,9 @@ function MarketRings({ rings }) {
   return (
     <svg viewBox="0 0 320 320" className="w-full max-w-[340px]" role="img" aria-label="TAM SAM SOM market sizing">
       {rings.map((m) => <circle key={m.k} cx="160" cy="170" r={m.r} fill={m.fill} stroke="#2A1416" strokeWidth="2.5" />)}
-      <text x="160" y="176" textAnchor="middle" fontSize="15" fontWeight="800" fill="#fff" fontFamily="Inter Tight">SOM</text>
-      <text x="160" y="88" textAnchor="middle" fontSize="13" fontWeight="800" fill="#2A1416" fontFamily="Inter Tight">SAM</text>
-      <text x="160" y="42" textAnchor="middle" fontSize="13" fontWeight="800" fill="#1e3a8a" fontFamily="Inter Tight">TAM</text>
+      <text x="160" y="176" textAnchor="middle" fontSize="15" fontWeight="800" fill="#fff" fontFamily="Poppins">SOM</text>
+      <text x="160" y="88" textAnchor="middle" fontSize="13" fontWeight="800" fill="#2A1416" fontFamily="Poppins">SAM</text>
+      <text x="160" y="42" textAnchor="middle" fontSize="13" fontWeight="800" fill="#1e3a8a" fontFamily="Poppins">TAM</text>
     </svg>
   );
 }
@@ -252,7 +252,7 @@ function GrowthChart({ series }) {
       {[0, 2, 4, 6, 8, 10].map((g) => (
         <g key={g}>
           <line x1={pad} x2={W - pad} y1={y(g)} y2={y(g)} stroke="#2a2621" strokeWidth="1" />
-          <text x={pad - 8} y={y(g) + 4} textAnchor="end" fontSize="11" fill="#8a847a" fontFamily="Inter Tight">₹{g}L</text>
+          <text x={pad - 8} y={y(g) + 4} textAnchor="end" fontSize="11" fill="#8a847a" fontFamily="Poppins">₹{g}L</text>
         </g>
       ))}
       <path d={line} fill="none" stroke="#960D32" strokeWidth="3.5" strokeLinejoin="round" />
@@ -261,8 +261,8 @@ function GrowthChart({ series }) {
         return (
           <g key={d.t}>
             <circle cx={x(i)} cy={y(d.v)} r={now ? 7 : 5} fill={now ? '#059669' : '#960D32'} stroke="#141210" strokeWidth="2.5" />
-            <text x={x(i)} y={H - pad + 18} textAnchor="middle" fontSize="11" fill="#b8b2a8" fontFamily="Inter Tight">{d.t}</text>
-            <text x={x(i)} y={y(d.v) - 12} textAnchor="middle" fontSize="11" fontWeight="700" fill={now ? '#34d399' : '#93c5fd'} fontFamily="Inter Tight">₹{d.v}L</text>
+            <text x={x(i)} y={H - pad + 18} textAnchor="middle" fontSize="11" fill="#b8b2a8" fontFamily="Poppins">{d.t}</text>
+            <text x={x(i)} y={y(d.v) - 12} textAnchor="middle" fontSize="11" fontWeight="700" fill={now ? '#34d399' : '#93c5fd'} fontFamily="Poppins">₹{d.v}L</text>
           </g>
         );
       })}
