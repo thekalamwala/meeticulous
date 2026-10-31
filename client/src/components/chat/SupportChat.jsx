@@ -20,7 +20,7 @@ const CHAT_MD = 'text-[13.5px] leading-relaxed [&>div]:text-[13.5px] [&>div]:tex
 
 // Three-dot "Bolt is typing" bubble, shown while the async bot reply is in flight.
 const TypingBubble = () => (
-  <div className="flex max-w-[82%] gap-2" role="status" aria-label="Bolt is typing">
+  <div className="flex max-w-[82%] gap-2" role="status" aria-label="Tithi is typing">
     <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-violet-100 text-[11px]">🦥</div>
     <div className="flex items-center gap-1 rounded-2xl rounded-tl-sm bg-violet-50 px-3 py-2.5">
       {[0, 1, 2].map((i) => (
@@ -37,7 +37,7 @@ const TypingBubble = () => (
 // source of truth (the broadcast just pushes new rows in).
 
 const BANNER = {
-  bot:      { text: 'Bolt is here to help. Ask anything — tap "Talk to a human" if you need a person.', cls: 'border-violet-200 bg-violet-50 text-violet-800' },
+  bot:      { text: 'Tithi is here to help. Ask anything — tap "Talk to a human" if you need a person.', cls: 'border-violet-200 bg-violet-50 text-violet-800' },
   waiting:  { text: 'You’re in the queue — the Meeticulous team will reply right here.', cls: 'border-amber-200 bg-amber-50 text-amber-800' },
   assigned: { text: 'A support agent is with you.', cls: 'border-emerald-200 bg-emerald-50 text-emerald-800' },
   resolved: { text: 'This conversation was marked resolved. Send a message to reopen it.', cls: 'border-gray-200 bg-gray-50 text-gray-600' },
@@ -299,7 +299,7 @@ export default function SupportChat() {
         <div className="min-w-0 flex-1">
           <p className="font-heading text-sm font-bold text-gray-900">Meeticulous support</p>
           <p className="truncate text-[11.5px] text-gray-400">
-            {isBotPhase ? 'Bolt assistant · replies instantly' : 'Our team is on it'}
+            {isBotPhase ? 'Tithi assistant · replies instantly' : 'Our team is on it'}
             {thread?.reference && <span className="text-gray-300"> · {thread.reference}</span>}
           </p>
         </div>

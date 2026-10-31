@@ -61,7 +61,7 @@ export default function EscalationDetail({ id, onBack, onChanged }) {
           <div className="mb-2 flex flex-wrap items-center gap-2">
             <code className="rounded bg-[#FFF4EC] px-1.5 py-0.5 text-sm font-semibold text-[#2A1416]">{e.reference}</code>
             <Badge tone={STATUS_TONE[e.status] || 'neutral'}>{e.status}</Badge>
-            <Badge tone="neutral">🦥 Bolt</Badge>
+            <Badge tone="neutral">🦥 Tithi</Badge>
             {e.contact_verified && <Badge tone="ok">verified</Badge>}
             <span className="text-xs adm-t3">{fmtDateTime(e.created_at)}</span>
           </div>
@@ -103,7 +103,7 @@ export default function EscalationDetail({ id, onBack, onChanged }) {
             {sel.transcript.length === 0 ? <p className="text-sm adm-t3">No transcript stored.</p> :
               sel.transcript.map((m, i) => (
                 <div key={i} className={'rounded-lg p-2 text-xs ' + (m.role === 'user' ? 'bg-[#FFF4EC]' : 'border adm-border')}>
-                  <span className="font-semibold adm-t2">{m.role === 'user' ? 'Visitor' : 'Bolt'}:</span> <span className="adm-t1">{m.content}</span>
+                  <span className="font-semibold adm-t2">{m.role === 'user' ? 'Visitor' : 'Tithi'}:</span> <span className="adm-t1">{m.content}</span>
                 </div>
               ))}
           </div>

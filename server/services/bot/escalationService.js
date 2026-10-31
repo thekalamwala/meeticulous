@@ -168,9 +168,9 @@ async function recordAndNotify({ conversationId, question, reason, pageUrl, user
         : 'Anonymous visitor';
       await sendEmail({
         to: SUPPORT_EMAIL,
-        subject: `[Bolt 958] ${reference} — ${esc(summary)}`,
+        subject: `[Tithi] ${reference} — ${esc(summary)}`,
         html: `
-          <h2>Bolt handed a conversation to support</h2>
+          <h2>Tithi handed a conversation to support</h2>
           <p style="font-size:15px"><strong>${esc(summary)}</strong></p>
           <table cellpadding="4" style="border-collapse:collapse;font-size:13px">
             <tr><td><strong>Reference</strong></td><td>${esc(reference)}</td></tr>

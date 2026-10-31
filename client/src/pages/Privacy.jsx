@@ -118,7 +118,7 @@ const Privacy = () => (
             <li><strong>Analytics &amp; usability</strong> — PostHog (product analytics), Google Analytics 4 and Google Tag Manager, and Microsoft Clarity, which records anonymised session activity (a &ldquo;session replay&rdquo; of clicks, scrolls, and pages). These load per your consent choices (Section 8), except essential product analytics.</li>
             <li><strong>Advertising measurement</strong> — the Meta (Facebook) Pixel and Conversions API and Google Ads. To measure ad campaigns we may send <strong>hashed (irreversible) identifiers</strong>, such as a SHA-256 hash of your email or phone number, to Meta and Google.</li>
             <li><strong>Error monitoring</strong> — Sentry, to detect and diagnose faults.</li>
-            <li><strong>AI features</strong> — Anthropic (Claude) powers the &ldquo;Bolt&rdquo; support assistant and AI writing help, and Voyage AI generates search embeddings; text you enter into those features (including support-chat messages and listing content) is processed by them.</li>
+            <li><strong>AI features</strong> — Anthropic (Claude) powers the &ldquo;Tithi&rdquo; support assistant and AI writing help, and Voyage AI generates search embeddings; text you enter into those features (including support-chat messages and listing content) is processed by them.</li>
           </ul>
         </li>
         <li><strong>Legal and regulatory authorities</strong> when required by law, court order, or to protect our rights, users, or the public.</li>
