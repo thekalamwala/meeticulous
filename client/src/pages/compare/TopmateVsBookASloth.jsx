@@ -120,8 +120,8 @@ const TopmateVsBookASloth = () => {
             <Link to="/help" className="hover:text-ink hover:no-underline">
               Help
             </Link>
-            <a href="mailto:bolt@meeticulous.in" className="hover:text-ink hover:no-underline">
-              bolt@meeticulous.in
+            <a href="mailto:hello@meeticulous.com" className="hover:text-ink hover:no-underline">
+              hello@meeticulous.com
             </a>
           </div>
         </div>

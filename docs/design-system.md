@@ -53,8 +53,14 @@ colors: {
 ## Typography
 | Font | Role |
 |---|---|
-| **Plus Jakarta Sans** (500-800) | Headings (h1–h6) |
-| **Poppins** (400-700) | Body, buttons, inputs |
+| **Bricolage Grotesque** (variable 200–800) | Hero H1 + section H2: `font-display` / `--font-display`, applied to every `h1`/`h2` by `index.css` |
+| **Poppins** (400–700) | Everything else: body, buttons, inputs, card titles (H3–H6), prices, stats (`font-sans`, `font-heading`, `--font-primary`) |
+
+Both are self-hosted woff2 files in `client/public/fonts`, declared in
+`src/styles/fonts.css` with metric-matched fallbacks (no layout shift on swap); the
+Bricolage file + Poppins 400 are preloaded in `index.html`. Admin (`.admin-shell`)
+uses Poppins for every heading. The Plus Jakarta Sans face is legacy (still declared,
+unused by the site).
 
 ### Font Scale
 | Element | Size | Weight |

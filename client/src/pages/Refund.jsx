@@ -14,7 +14,7 @@ import LegalLayout, { Section, MARKETPLACE_EFFECTIVE } from '../components/commo
 // non-refundable — the non-refundable position needs the checkout disclosure fixed (product)
 // or the claim softened (lawyer call). Wording below no longer claims a checkout "non-refundable" notice.
 
-const Mail = () => <a href="mailto:team@timewheel.co.in" className="text-primary hover:underline">team@timewheel.co.in</a>;
+const Mail = () => <a href="mailto:hello@meeticulous.com" className="text-primary hover:underline">hello@meeticulous.com</a>;
 
 const Th = ({ children }) => (
   <th className="text-left p-2.5 font-semibold text-ink border-b-2 border-gray-200">{children}</th>
@@ -34,8 +34,8 @@ const Refund = () => (
       <>
         <p>
           This Refund &amp; Cancellation Policy applies to every payment made on the Meeticulous platform (the
-          &ldquo;<strong>Platform</strong>&rdquo;), operated by <strong>Timewheel Internet Private Limited</strong>{' '}
-          (CIN: U62012OD2026PTC052654, GSTIN: 21AAMCT8270C1ZF) (&ldquo;<strong>Meeticulous</strong>&rdquo;,
+          &ldquo;<strong>Platform</strong>&rdquo;), operated by <strong>Rajmudra Media LLP</strong>{' '}
+          (&ldquo;<strong>Meeticulous</strong>&rdquo;,
           &ldquo;we&rdquo;, &ldquo;us&rdquo;). It forms part of our{' '}
           <Link to="/guest-terms" className="text-primary hover:underline">Guest Booking Terms</Link> and our{' '}
           <Link to="/terms" className="text-primary hover:underline">Terms of Use</Link>.
@@ -213,9 +213,8 @@ const Refund = () => (
         <strong>Shubham Narendra Datarkar</strong>, at <Mail />.
       </p>
       <p><strong>Email:</strong> <Mail /> &middot; <strong>Phone:</strong> +91 8637758344</p>
-      <p className="pt-1"><strong>Timewheel Internet Private Limited</strong> (CIN: U62012OD2026PTC052654 | GSTIN: 21AAMCT8270C1ZF)</p>
-      <p>Registered office: Ground Floor, Holding No-55, Ward No-19, Natapada, Jajpur Road, Byasanagar, District Jajpur, Odisha &ndash; 755019, India</p>
-      <p>Operations office: #6, 2nd Floor, Eureka Coworking, Mate Square, Nagpur, Maharashtra</p>
+      <p className="pt-1"><strong>Rajmudra Media LLP</strong></p>
+      <p>Registered &amp; operations office: Eureka CoWorking, 2nd &amp; 4th floor, 11, Friends Colony, Mate Square, Pratap Nagar Rd, P &amp; T Colony, Kotwal Nagar, Pratap Nagar, Nagpur, Maharashtra 440022, India</p>
     </Section>
   </LegalLayout>
 );

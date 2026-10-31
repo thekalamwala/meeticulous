@@ -174,18 +174,29 @@ const wordmarkText = (always = false) => (
   </span>
 );
 
+// Bundled mark — always same-origin, used when an admin/cached logo URL is dead.
+const FALLBACK_ICON = '/favicon-96x96.png';
+
 const NavbarLogo = ({ appearance }) => {
   const mode = appearance?.navbar_logo_mode || 'icon_text';
+  // A configured URL can die (stale localStorage cache, retired CDN host): step
+  // down to the bundled mark, then to text, instead of a broken-image box.
+  const [failed, setFailed] = useState({});
+  useEffect(() => { setFailed({}); }, [appearance?.icon_url, appearance?.logo_image_url, appearance?.festive_logo_url]);
+  const markFailed = (src) => setFailed((f) => ({ ...f, [src]: true }));
+
   const img = (src) => (
-    <img src={src} alt="Meeticulous" className="h-7 w-auto block" />
+    <img src={src} alt="Meeticulous" onError={() => markFailed(src)} className="h-7 w-auto block" />
   );
 
-  if (mode === 'image'   && appearance?.logo_image_url)   return img(appearance.logo_image_url);
-  if (mode === 'festive' && appearance?.festive_logo_url) return img(appearance.festive_logo_url);
-  if (mode === 'icon_text' && appearance?.icon_url) {
+  if (mode === 'image'   && appearance?.logo_image_url   && !failed[appearance.logo_image_url])   return img(appearance.logo_image_url);
+  if (mode === 'festive' && appearance?.festive_logo_url && !failed[appearance.festive_logo_url]) return img(appearance.festive_logo_url);
+  const icon = [appearance?.icon_url, FALLBACK_ICON].find((u) => u && !failed[u]);
+  if (icon) {
     return (
       <>
-        <img src={appearance.icon_url} alt="Meeticulous" width={26} height={26} decoding="async"
+        <img src={icon} alt="Meeticulous" width={26} height={26} decoding="async"
+             onError={() => markFailed(icon)}
              className="h-[26px] w-[26px] rounded block" />
         {wordmarkText()}
       </>

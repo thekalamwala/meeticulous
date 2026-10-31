@@ -2,8 +2,8 @@
 // real compensation bands, and culture photos before public launch.
 import { Rocket, HeartHandshake, Sprout, Clock, Globe2, TrendingUp } from 'lucide-react';
 
-// Live hiring inbox. Footer uses bolt@meeticulous.in; flip here if it changes.
-export const HIRING_EMAIL = 'bolt@meeticulous.in';
+// Live hiring inbox. Footer uses hello@meeticulous.com; flip here if it changes.
+export const HIRING_EMAIL = 'hello@meeticulous.com';
 
 export const company = {
   missionBlurb:
