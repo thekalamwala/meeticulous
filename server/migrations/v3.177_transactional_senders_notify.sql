@@ -25,3 +25,11 @@ on conflict (sender_key) do update set
 update email_settings set from_email = 'verify@notify.meeticulous.com';
 update email_senders set from_email = 'verify@notify.meeticulous.com', reply_to = 'team@meeticulous.com', provider = 'resend'
   where sender_key = 'system';
+
+-- Push the new sender_key onto the live email_templates rows directly, so no
+-- separate seed run is needed (config/emailTemplates.js keeps the same mapping
+-- for future seeds). Idempotent.
+update email_templates set sender_key='verify'   where event_key in ('BOOKING_OTP','AUTH_EMAIL_VERIFICATION','PASSWORD_RESET','SECURITY_PASSWORD_CHANGED','SECURITY_LOGIN_ALERT');
+update email_templates set sender_key='bookings' where event_key in ('BOOKING_CONFIRMED_CUSTOMER','BOOKING_CONFIRMED_VENDOR','BOOKING_REMINDER_CUSTOMER','BOOKING_REMINDER_VENDOR','BOOKING_CANCELLED_CUSTOMER','BOOKING_CANCELLED_VENDOR','BOOKING_COMPLETED_CUSTOMER','BOOKING_COMPLETED_VENDOR','BOOKING_RESCHEDULED_CUSTOMER','BOOKING_RESCHEDULED_VENDOR');
+update email_templates set sender_key='payments' where event_key in ('SUBSCRIPTION_PURCHASED','SUBSCRIPTION_RENEWED','SUBSCRIPTION_EXPIRING','SUBSCRIPTION_HALTED','PAYOUT_SENT','PAYOUT_FAILED','PAYOUT_VERIFICATION_NEEDED','PAYOUT_DELAY_HOLIDAY','EARNING_REVERSED','REFERRAL_REWARD_RELEASED');
+update email_templates set sender_key='account'  where event_key in ('KYC_APPROVED','KYC_REJECTED','PROFILE_VERIFIED','PROFILE_REJECTED','FEEDBACK_STATUS_CHANGED');
