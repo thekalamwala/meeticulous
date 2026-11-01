@@ -46,7 +46,7 @@ const SEQUENCES = [
   //    email opens/clicks counters. Openers/clickers run while status='list';
   //    'New marketing' takes over once a lead is promoted to 'new'. Sujata voice.
   {
-    name: 'Openers nurture', sender_key: 'sujata',
+    name: 'Openers nurture', sender_key: 'tithi',
     description: 'Cold lead opened but has not clicked — nudge them to look properly.',
     is_active: true, stop_on_reply: true, stop_on_convert: true,
     steps: [
@@ -65,7 +65,7 @@ const SEQUENCES = [
     ],
   },
   {
-    name: 'Clickers nurture', sender_key: 'sujata',
+    name: 'Clickers nurture', sender_key: 'tithi',
     description: 'Cold lead clicked once — warm; move them toward creating a page.',
     is_active: true, stop_on_reply: true, stop_on_convert: true,
     steps: [
@@ -80,7 +80,7 @@ const SEQUENCES = [
     ],
   },
   {
-    name: 'New marketing', sender_key: 'sujata',
+    name: 'New marketing', sender_key: 'tithi',
     description: 'Lead promoted to New (engaged past the threshold) — push to sign up.',
     is_active: true, stop_on_reply: true, stop_on_convert: true,
     steps: [
@@ -185,12 +185,12 @@ const SEQUENCES = [
           + p(`What was the biggest reason? — Too expensive · Didn't get enough bookings · Something was missing · Something wasn't working · Other.`)
           + p(`Just hit reply, or:`) + p(`<a href="${BL}/feedback">Share your feedback →</a>`) + SIGN_TITHI },
       // The OFFER — from Sujata. Conditional on renewal; admin adds the 2 bonus months.
-      { step_no: 2, delay_hours: 48, channel: 'email', sender_key: 'sujata',
+      { step_no: 2, delay_hours: 48, channel: 'email', sender_key: 'tithi',
         subject: `Come back. We'll give you 2 months free.`,
         preview: `Pick monthly or yearly — we add 2 extra months.`,
         body: p(`We'd love to have you back, {{first_name}}. Come back and we'll give you <b>2 months free</b> — pick monthly or yearly, we add 2 months on top.`) + p(`<a href="${BL}/dashboard/upgrade">Renew now →</a>`) + p(`Reply <b>DONE</b> once you have and we'll add the 2 months.`) + SIGN_SUJATA },
       // WhatsApp offer — Winback Offer: {{1}} name, {{2}} product, {{3}} offer, {{4}} renewal link.
-      { step_no: 3, delay_hours: 24, channel: 'whatsapp', sender_key: 'sujata', template_key: WA.winback,
+      { step_no: 3, delay_hours: 24, channel: 'whatsapp', sender_key: 'tithi', template_key: WA.winback,
         variables: ['{{first_name}}', 'Meeticulous', '2 Month Addition', '{{booking_link}}/dashboard/upgrade'],
         subject: null, body: `{{first_name}}, renew your Meeticulous plan and we'll add 2 months free on top. Reply RENEW 💛` },
       { step_no: 4, delay_hours: 96, channel: 'email', sender_key: 'tithi',
@@ -249,15 +249,15 @@ const SEQUENCES = [
   {
     // Celebration — Durga. stop_on_convert=false so it isn't cut off the moment the
     // host counts as 'activated' (having a booking is exactly why they're here).
-    name: 'First booking celebration', sender_key: 'durga',
+    name: 'First booking celebration', sender_key: 'tithi',
     description: 'Host just landed their first paid booking — celebrate + teach booking #2.',
     is_active: true, stop_on_reply: false, stop_on_convert: false,
     steps: [
-      { step_no: 1, delay_hours: 0,  channel: 'email', sender_key: 'durga',
+      { step_no: 1, delay_hours: 0,  channel: 'email', sender_key: 'tithi',
         subject: '🎉 Your first booking, {{first_name}}!',
         preview: `The hard part's done — now let's get booking #2.`,
         body: p(`Your first booking is in — congratulations! 🎉 That's the hard part done.`) + p(`Now let's get booking #2: share your link with a few more people who'd book you.`) + p(`<a href="${BL}/dashboard">Share your page →</a>`) + SIGN_DURGA },
-      { step_no: 2, delay_hours: 72, channel: 'email', sender_key: 'durga',
+      { step_no: 2, delay_hours: 72, channel: 'email', sender_key: 'tithi',
         subject: 'How to get booking #2',
         preview: `One WhatsApp, one story, one ask this week.`,
         body: p(`The hosts who grow keep doing one thing: they keep sharing. This week — one WhatsApp broadcast, one Instagram story, one direct ask.`) + SIGN_DURGA },

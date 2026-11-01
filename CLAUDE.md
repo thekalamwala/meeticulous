@@ -128,10 +128,11 @@ Items previously listed here as pending are now live:
     (`health_state` CHECK + `health_score` / `health_signals` / `health_computed_at`). Additive,
     RLS unchanged (service-role only). Code is schema-fallback safe (`guestRelationshipEngine`
     skips the health write, `deskService` guest query fails soft) so it was safe before apply.
-  - **`crm_admin_sends` is LIVE (ON) — CRM outbound is sending to real customers.** The master send
-    kill-switch (a `feature_flags` row, still FAIL-CLOSED in code) is enabled on BOTH DBs: **prod
-    Mumbai since 2026-08-27** (founder-enabled; the flag row reads `enabled=true`, ~100+ real
-    messages sent) and **staging Tokyo since 2026-09-02**. Phase 2 is therefore NOT advisory-only on
+  - **`crm_admin_sends` — the CRM master send switch.** On the current Meeticulous DB
+    (`spquowzrefozmrzoszkf`) it is **OFF** (`enabled=false`, verified 2026-11-01; no CRM email has
+    been sent from this DB). The history below is from the old Mumbai/Tokyo DBs: it was enabled on
+    prod Mumbai since 2026-08-27 (~100+ real messages) and staging Tokyo since 2026-09-02.
+    When it is ON: Phase 2 is therefore NOT advisory-only on
     prod — the governor cap (1/48h per subject), quiet-hours (09–20 IST), do-not-contact and
     email/WhatsApp opt-out gates are the live guardrails on every send (see `sendGate`/`touchGovernor`).
     To pause all CRM sends instantly: `UPDATE feature_flags SET enabled=false WHERE key='crm_admin_sends'`
@@ -142,7 +143,16 @@ Items previously listed here as pending are now live:
   6 CRM templates, a badge slug and 5 column defaults; lead status `'customer'` added (transitional —
   the old value is still accepted). `bot_faqs` re-synced from `botFaqs.json` the same day.
 - **v3.181** (`v3.181_drop_old_lead_status.sql`) — applied 2026-11-01 after the release went live on
-  Render: `leads_status_check` + `merge_lead_rows` now carry only `'customer'`. No migration outstanding.
+  Render: `leads_status_check` + `merge_lead_rows` now carry only `'customer'`.
+- **v3.182** (`v3.182_crm_cold_senders.sql`) — applied 2026-11-01 and **activated**: CRM mail to
+  leads sends via Brevo from `crm_shubham` ("Shubham | CEO, Meeticulous" <shubham@mail.meeticulous.in>,
+  cold outreach on the separate `.in` root; replies → shubham@meeticulous.com) and `crm_tithi`
+  ("Tithi at Meeticulous" <tithi@news.meeticulous.com>, lifecycle to opted-in hosts, kept OFF the cold
+  root; replies → team@meeticulous.com). Brevo-authenticated domains: `mail.meeticulous.in`,
+  `news.meeticulous.com` — NOT `team.meeticulous.com` (Resend only), so a CRM sender must never point
+  there. Durga/Sujata have no sender rows: their sequence steps were moved to Tithi (2026-11-01).
+  Only takes effect while `crm_admin_sends` is ON. Off switch: `UPDATE email_senders SET active=false
+  WHERE sender_key IN ('crm_shubham','crm_tithi');`. No migration outstanding.
 
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
