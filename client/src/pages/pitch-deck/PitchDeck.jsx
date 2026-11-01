@@ -284,7 +284,7 @@ function BrandLogo({ brand }) {
 }
 const COMP_COLS = ['UPI autopay + payouts', 'GST invoicing', 'Venues + people', 'WhatsApp-native'];
 const COMP_ROWS = [
-  { name: 'Meeticulous', img: '/sloth.png', color: '#960D32', us: true, cells: [true, true, true, true] },
+  { name: 'Meeticulous', img: '/brand/meeticulous-icon.svg', color: '#960D32', us: true, cells: [true, true, true, true] },
   { name: 'Topmate', mono: 'T', color: '#5B4CE0', cells: [true, false, false, false] },
   { name: 'Calendly', icon: 'calendly', color: '#006BFF', cells: [false, false, false, false] },
   { name: 'Cal.com', icon: 'calcom', color: '#292929', cells: [false, false, false, false] },
@@ -388,7 +388,7 @@ function Gate({ onUnlock }) {
         animate={{ scale: [1, 1.15, 1] }} transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }} />
       <div className="relative w-full max-w-sm">
         <div className="mb-6 flex items-center gap-2 font-heading text-lg font-extrabold">
-          <img src="/sloth.png" alt="Meeticulous" width="32" height="32" className="object-contain" /> Meeticulous
+          <img src="/brand/meeticulous-icon.svg" alt="Meeticulous" width="32" height="32" className="object-contain" /> Meeticulous
         </div>
         <h1 className="font-heading text-3xl font-extrabold leading-tight text-[#F8FAFC]">Investor access</h1>
         <div className="mt-3 flex gap-1.5">
@@ -439,7 +439,7 @@ function Splash({ text = 'Loading…' }) {
   return (
     <main className="fixed inset-0 flex items-center justify-center font-sans" style={{ background: '#141210', color: '#F8FAFC' }}>
       <div className="flex flex-col items-center gap-3">
-        <img src="/sloth.png" alt="" width="48" height="48" className="animate-pulse object-contain" />
+        <img src="/brand/meeticulous-icon.svg" alt="" width="48" height="48" className="animate-pulse object-contain" />
         <span className="font-sans text-sm opacity-60">{text}</span>
       </div>
     </main>
@@ -464,7 +464,7 @@ function DeckBody({ d }) {
       <Slide id="cover" dark className="relative overflow-hidden">
         <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full opacity-20" style={{ background: 'radial-gradient(circle,#960D32,transparent 70%)' }} />
         <div className="mb-6 inline-flex items-center gap-2 font-heading text-lg font-extrabold">
-          <img src="/sloth.png" alt="Meeticulous" width="36" height="36" className="object-contain" /> Meeticulous
+          <img src="/brand/meeticulous-icon.svg" alt="Meeticulous" width="36" height="36" className="object-contain" /> Meeticulous
         </div>
         <h1 className="font-heading text-4xl font-extrabold leading-[1.05] sm:text-6xl md:text-7xl">
           The booking + payments<br />OS for India's<br /><span style={{ color: '#960D32' }}>hourly economy.</span>
@@ -741,7 +741,7 @@ function DeckBody({ d }) {
           <div className="rounded-[6px] border-[3px] p-6" style={{ borderColor: '#960D32', background: '#1c1a17' }}>
             <div className="flex items-center gap-4">
               <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-[3px] border-[#960D32] bg-white">
-                <img src="/sloth.png" alt="Meeticulous" width="52" height="52" className="object-contain" />
+                <img src="/brand/meeticulous-icon.svg" alt="Meeticulous" width="52" height="52" className="object-contain" />
               </div>
               <div>
                 <div className="font-heading text-2xl font-extrabold">{FOUNDER.name}</div>
@@ -767,7 +767,7 @@ function DeckBody({ d }) {
       <Slide id="close" className="relative overflow-hidden text-center" dark>
         <div className="pointer-events-none absolute inset-0 opacity-20" style={{ background: 'radial-gradient(circle at 50% 40%,#960D32,transparent 60%)' }} />
         <div className="relative">
-          <img src="/sloth.png" alt="Meeticulous" width="72" height="72" className="mx-auto mb-4 object-contain" />
+          <img src="/brand/meeticulous-icon.svg" alt="Meeticulous" width="72" height="72" className="mx-auto mb-4 object-contain" />
           <h2 className="font-heading text-4xl font-extrabold leading-tight sm:text-6xl">
             The calm way to sell your time —<br /><span style={{ color: '#960D32' }}>now raising to scale it.</span>
           </h2>

@@ -152,7 +152,7 @@ export default function Solutions() {
           <Reveal delay={0.1} className="relative hidden lg:block">
             <div className="relative mx-auto flex aspect-[4/3] w-full max-w-md items-center justify-center overflow-hidden rounded-[2rem] bg-sand shadow-[0_40px_90px_-25px_rgba(26,26,26,0.32)] ring-1 ring-black/5">
               <img
-                src="/sloth.png"
+                src="/brand/meeticulous-icon.svg"
                 alt="Meeticulous mascot relaxing with a warm drink"
                 className="h-auto w-2/3 max-w-[16rem]"
                 loading="eager"

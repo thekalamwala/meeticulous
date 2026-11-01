@@ -278,7 +278,7 @@ export function Workflow() {
                   <span className="workflowOrbit__slothGlow" />
 
                   <img
-                    src="/sloth.png"
+                    src="/brand/meeticulous-icon.svg"
                     alt="Meeticulous mascot"
                     className="workflowOrbit__slothImage"
                   />

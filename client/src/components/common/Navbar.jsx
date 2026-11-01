@@ -498,9 +498,9 @@ const CompareItem = ({ item, active }) => {
       <span aria-hidden="true" style={{ backgroundColor: item.color, opacity: 0.1 }} className="pointer-events-none absolute inset-0 -translate-x-full transition-transform duration-500 ease-out group-hover/mi:translate-x-0 motion-reduce:transition-none" />
       <span aria-hidden="true" style={{ backgroundColor: item.color, opacity: 0.16 }} className="pointer-events-none absolute inset-0 -translate-x-full transition-transform duration-300 ease-out group-hover/mi:translate-x-0 motion-reduce:transition-none" />
 
-      {/* Sloth favicon  vs  competitor favicon (sized to match the other menu tiles) */}
+      {/* Meeticulous mark  vs  competitor favicon (sized to match the other menu tiles) */}
       <span className="relative z-10 flex flex-shrink-0 items-center gap-1.5">
-        <img src="/sloth.png" alt="Meeticulous" width="36" height="36" loading="lazy" className="h-9 w-9 rounded-lg bg-gray-50 p-1" />
+        <img src="/brand/meeticulous-icon.svg" alt="Meeticulous" width="36" height="36" loading="lazy" className="h-9 w-9 rounded-lg bg-gray-50 p-1" />
         <span className="text-[10px] font-bold uppercase tracking-wide text-gray-400">vs</span>
         {/* Only fetch the competitor favicon once the menu is actually open — the
             panel now always renders (for crawlable links), so gate the network here. */}

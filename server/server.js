@@ -174,7 +174,7 @@ app.use('/api/contact',       require('./routes/contactRoutes')); // public cont
 app.use('/api/bot',           require('./routes/botRoutes')); // public "Tithi" support bot (grounded on docs/)
 app.use('/api/support',       require('./routes/supportRoutes')); // host/guest support chat (Bolt → human handoff)
 app.use('/api/enterprise-lead', require('./routes/enterpriseLeadRoutes')); // public /enterprise page lead form → support email
-app.use('/api/be-a-sloth-lead', require('./routes/beASlothLeadRoutes')); // public /be-a-sloth "Book a Demo" OTP lead form → CRM (source website)
+app.use('/api/demo-lead', require('./routes/demoLeadRoutes')); // public /be-a-sloth "Book a Demo" OTP lead form → CRM (source website)
 app.use('/api/ingest', require('./routes/ingestRoutes')); // external lead intake (Meta/Zoho/form) → upsertLead, token-gated
 app.use('/api/events',        require('./routes/eventsRoutes')); // public intent-event sink → lead_events
 app.use('/api/opening',       require('./routes/openingRoutes')); // public "The Opening" launch event (ribbon cut + Inaugurators Wall)

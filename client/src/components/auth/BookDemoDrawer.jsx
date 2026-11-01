@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { sendBeASlothOtp, submitBeASlothLead } from '../../services/api';
+import { sendDemoLeadOtp, submitDemoLead } from '../../services/api';
 
 // "Book a Demo" panel for /be-a-sloth. Slides UP from the bottom of the signup
 // card and fills it exactly (rendered as an absolute overlay inside the card,
@@ -72,7 +72,7 @@ export default function BookDemoDrawer({ open, onClose }) {
     }
     setBusy(true);
     try {
-      await sendBeASlothOtp({ phone: form.phone, name: form.name, profession: form.profession });
+      await sendDemoLeadOtp({ phone: form.phone, name: form.name, profession: form.profession });
       setStep('otp');
       toast.success('Code sent on WhatsApp');
     } catch (err) {
@@ -90,7 +90,7 @@ export default function BookDemoDrawer({ open, onClose }) {
     }
     setBusy(true);
     try {
-      await submitBeASlothLead({
+      await submitDemoLead({
         name: form.name, phone: form.phone, profession: form.profession,
         otp: otp.trim(), company_hp: form.company_hp,
       });

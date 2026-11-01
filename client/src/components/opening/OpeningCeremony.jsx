@@ -44,7 +44,7 @@ function Countdown({ to, prefix }) {
 const LogoTile = ({ size = 60, img = 36 }) => (
   <div className="mx-auto grid place-items-center rounded-2xl bg-white shadow-[0_4px_14px_rgba(16,24,40,.18)]"
        style={{ width: size, height: size }}>
-    <img src="/sloth.png" alt="Meeticulous" width={img} height={img} style={{ width: img, height: img }} />
+    <img src="/brand/meeticulous-icon.svg" alt="Meeticulous" width={img} height={img} style={{ width: img, height: img }} />
   </div>
 );
 

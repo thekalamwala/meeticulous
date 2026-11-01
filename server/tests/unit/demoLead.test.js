@@ -25,7 +25,7 @@ jest.mock('../../utils/httpError', () => ({ safeError: (res, e) => res.status(50
 const otpStore = require('../../utils/otpStore');
 const { safeUpsertLead, addTag } = require('../../services/crm/leadService');
 const { sendMetaCrmLead } = require('../../utils/trackServer');
-const { sendLeadOtp, submitLead } = require('../../controllers/beASlothLeadController');
+const { sendLeadOtp, submitLead } = require('../../controllers/demoLeadController');
 
 const mockRes = () => {
   const res = {};
