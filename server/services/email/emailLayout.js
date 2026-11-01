@@ -2,10 +2,9 @@
  * emailLayout.js — recipient-driven email shells.
  *
  * Three layouts, selected by the RECIPIENT audience (not the template row tag):
- *   • customer → Meeticulous-branded header, nav + legal footer (new users:
- *                build platform trust, give navigation + legal unsubscribe).
- *   • vendor   → host-branded header (host's own logo/name), minimal
- *                "Powered by Meeticulous" footer (they already know the brand).
+ *   • customer → wordmark + status pill header, text footer (reply line + legal);
+ *                marketing mail adds the nav + unsubscribe row.
+ *   • vendor   → same frame, footer without nav (hosts already know the brand).
  *   • cold     → NO header chrome, legal-floor footer only (sender + address +
  *                unsubscribe). Founder cold outreach: reads like a 1:1 note.
  *
@@ -15,15 +14,15 @@
  *   'customer' | 'all' | missing  → renderCustomerLayout (safe default; it is
  *                                   platform-branded and carries unsubscribe)
  *
- * Shared private helpers (accent bar, card wrapper, CTA, header block, escaping)
- * keep the two variants from drifting — they differ ONLY in header logo source
- * and footer content.
+ * Shared private helpers (card wrapper, CTA, header block, footer, escaping)
+ * keep the two variants from drifting — they differ ONLY in the footer nav.
+ * Frame (2026-11 redesign): 1.5px crimson card border, no top accent bar.
  *
  * Email-client notes:
  *   • Table-based layout for Outlook / Gmail / Apple Mail / dark-mode.
  *   • Chip tint is a precomputed SOLID hex (brand blended toward white), NOT
  *     8-digit alpha hex — Outlook desktop does not render alpha hex.
- *   • Max width 600px. Design tokens inlined (no CSS custom properties in email).
+ *   • Fluid card, max width 600px; @media rules only widen padding/buttons on phones. Design tokens inlined (no CSS custom properties in email).
  *
  * Placeholders are resolved BEFORE the layout runs (resolver only touches the
  * template body/subject/cta). So values the layout needs — host logo/name,
@@ -41,7 +40,9 @@ const esc = (s) => String(s == null ? '' : s).replace(/"/g, '&quot;');
 // blush Page color behind the card. Keep Poppins as the body face (brand decision
 // to override the guide's Helvetica).
 const D = {
+  brand:  '#960D32', // Crimson — links
   dark:   '#2B1218', // Ink — headlines, bold values
+  body:   '#4A3A3E', // Body copy
   muted:  '#7D6B70', // Muted — footer, labels, helper text
   sub:    '#7D6B70',
   border: '#F1DCE1', // Line — dividers
@@ -56,12 +57,10 @@ const D = {
 // ADDRESS updated 2026-10-31 to the Eureka CoWorking office (owner request).
 const COMPANY    = 'Rajmudra Media LLP';
 const ADDRESS    = 'Eureka CoWorking, 2nd & 4th floor, 11, Friends Colony, Mate Square, Pratap Nagar Rd, Nagpur, Maharashtra 440022';
-const TAGLINE    = 'Booking Made Easy';
 // Hosted on the site itself (client/public/images/email → served at
 // meeticulous.com by Vercel), so emails no longer depend on an external CDN.
-// Header = icon (~26px on white), footer = full wordmark (~150px on blush).
-const HEADER_LOGO = 'https://meeticulous.com/images/email/meeticulous-icon-color-512.png';
-const FOOTER_LOGO = 'https://meeticulous.com/images/email/meeticulous-wordmark-full-color.png';
+// Header = full wordmark (26px tall, left). The footer is text-only.
+const HEADER_LOGO = 'https://meeticulous.com/images/email/meeticulous-wordmark-full-color.png';
 
 /** Blend a #rrggbb color toward white. ratio 0 = original, 1 = white. */
 function tint(hex, ratio) {
@@ -75,32 +74,25 @@ function tint(hex, ratio) {
 
 // ── Shared pieces ──────────────────────────────────────────────────────────
 
-/** 4px brand accent bar at the top of the card. */
-function accentBar(brand) {
-  return `<tr><td style="height:4px;line-height:4px;font-size:0;background:${esc(brand)};">&nbsp;</td></tr>`;
-}
+// Categories that read as good news get a check mark in the header pill.
+const POSITIVE = new Set(['Booking Confirmed', 'New Booking', 'Session Complete', 'Payment Receipt', 'Achievement Unlocked', 'Welcome']);
 
 /**
- * Header: constant Meeticulous logo (left) + accent category pill (right).
- * Header uses HEADER_LOGO; the footer uses FOOTER_LOGO (two distinct CDN assets).
- * The pill is the one true capsule (999px) — its
- * accent/tint/text + glyph come from the category theme.
+ * Header: Meeticulous wordmark (left) + one crimson-tint status pill (right).
+ * The pill is the email's single status label — bodies no longer repeat it.
  */
 function headerBlock({ category, theme }) {
-  const glyph = theme.glyphUrl
-    ? `<img src="${esc(theme.glyphUrl)}" width="14" height="14" alt="" style="vertical-align:-2px;margin-right:5px;border:0;display:inline-block;">`
-    : '';
   const pill = category
     ? `<td align="right" style="vertical-align:middle;white-space:nowrap;padding-left:12px;">
-         <span style="display:inline-block;padding:6px 12px;border-radius:1px;background:${theme.tint};color:${theme.text};font-size:12px;font-weight:600;font-family:${D.font};">${glyph}${esc(category)}</span>
+         <span style="display:inline-block;padding:5px 12px;border-radius:999px;background:${theme.tint};color:${theme.text};font-size:12px;font-weight:600;font-family:${D.font};">${POSITIVE.has(category) ? '&#10003; ' : ''}${esc(category)}</span>
        </td>`
     : '';
   return `<tr>
-    <td style="padding:18px 28px;border-bottom:1px solid ${D.border};">
+    <td class="px" style="padding:22px 32px;border-bottom:1px solid ${D.border};">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td align="left" style="vertical-align:middle;">
-            <img src="${esc(HEADER_LOGO)}" alt="Meeticulous" height="26" style="display:block;border:0;height:26px;">
+            <img src="${esc(HEADER_LOGO)}" alt="Meeticulous" height="26" style="display:block;border:0;height:26px;width:auto;">
           </td>
           ${pill}
         </tr>
@@ -109,43 +101,68 @@ function headerBlock({ category, theme }) {
   </tr>`;
 }
 
-/** Full-width block CTA. Rendered only when both label and url are present. */
+/** CTA button (6px radius). Rendered only when both label and url are present. */
 function ctaButton(label, url, brand) {
   if (!label || !url) return '';
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0 4px;">
-    <tr><td style="border-radius:10px;background:${esc(brand)};">
-      <a href="${esc(url)}" style="display:block;text-align:center;padding:15px 24px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:10px;font-family:${D.font};">${esc(label)}</a>
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:22px 0 6px;">
+    <tr><td style="border-radius:6px;background:${esc(brand)};">
+      <a href="${esc(url)}" style="display:inline-block;padding:13px 26px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:6px;font-family:${D.font};">${esc(label)}</a>
     </td></tr>
   </table>`;
 }
 
-/** Document shell + card open. Returns the HTML up to (and including) the accent bar (omitted when accent=false). */
-function shellOpen({ previewText, fromName, brand, accent = true }) {
+/**
+ * Text footer shared by both branded layouts: reply line + legal entity/address,
+ * with the nav + unsubscribe row on marketing mail only.
+ */
+function footerBlock({ support, fromName, nav = '' }) {
+  const year = new Date().getFullYear();
+  return `<tr>
+    <td class="px" style="padding:22px 32px 26px;border-top:1px solid ${D.border};background:${D.bg};text-align:center;font-size:12px;line-height:1.6;color:${D.muted};font-family:${D.font};">
+      ${nav ? `<p style="margin:0 0 10px;font-size:12px;line-height:2;">${nav}</p>` : ''}
+      Questions? Just reply &mdash; it reaches the ${esc(fromName)} team at <a href="mailto:${esc(support)}" style="color:${D.brand};text-decoration:none;">${esc(support)}</a><br>
+      ${COMPANY} &middot; ${ADDRESS}<br>
+      &copy; ${year} ${esc(fromName)}
+    </td>
+  </tr>`;
+}
+
+/** Document shell + card open (1.5px crimson card border, 10px radius). */
+function shellOpen({ previewText, fromName, brand }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="color-scheme" content="light dark">
+  <meta name="color-scheme" content="light">
   <title>${esc(fromName)}</title>
+  <style>
+    @media (max-width:620px){
+      .outer{padding:16px 6px!important}
+      .px{padding-left:20px!important;padding-right:20px!important}
+    }
+  </style>
 </head>
 <body style="margin:0;padding:0;background:${D.bg};font-family:${D.font};">
 
   <span style="display:none!important;opacity:0;color:transparent;height:0;width:0;max-height:0;max-width:0;overflow:hidden;font-size:1px;">${esc(previewText)}</span>
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${D.bg};padding:32px 16px;">
-    <tr><td align="center">
-      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background:${D.white};border:1px solid ${D.border};border-radius:16px;overflow:hidden;">
-        ${accent ? accentBar(brand) : ''}`;
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${D.bg};">
+    <tr><td class="outer" align="center" style="padding:24px 12px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:${D.white};border:1.5px solid ${esc(brand)};border-radius:10px;overflow:hidden;">`;
 }
 
-/** Body cell + card/document close, with the supplied footer row injected. */
+/**
+ * Body cell + card/document close, with the supplied footer row injected.
+ * The CTA goes at the end of the body, or where the body puts a <!--cta--> marker
+ * (e.g. above a sign-off).
+ */
 function shellClose({ bodyHtml, cta, footerRow }) {
+  const body = bodyHtml.includes('<!--cta-->') ? bodyHtml.replace('<!--cta-->', cta) : bodyHtml + cta;
   return `
         <tr>
-          <td style="padding:34px 28px 18px;">
-            ${bodyHtml}
-            ${cta}
+          <td class="px" style="padding:30px 32px 26px;font-size:15px;line-height:1.65;color:${D.body};font-family:${D.font};">
+            ${body}
           </td>
         </tr>
         ${footerRow}
@@ -164,7 +181,6 @@ function renderCustomerLayout({ bodyHtml, previewText, ctaLabel, ctaUrl, emailCa
   const website  = settings.website_url   || 'https://meeticulous.com';
   const support  = settings.support_email || 'team@meeticulous.com';
   const fromName = settings.from_name     || 'Meeticulous';
-  const year     = new Date().getFullYear();
   const unsubToken = data.unsubscribe_token || '';
 
   const header = headerBlock({ category: emailCategory, theme: themeForCategory(emailCategory) });
@@ -182,16 +198,7 @@ function renderCustomerLayout({ bodyHtml, previewText, ctaLabel, ctaUrl, emailCa
     lk(`${website}/unsubscribe?u=${esc(unsubToken)}`, 'Unsubscribe'),
   ].join(dot) : '';
 
-  const footerRow = `<tr>
-    <td style="padding:24px 28px 28px;border-top:1px solid ${D.border};background:${D.bg};text-align:center;">
-      <img src="${esc(FOOTER_LOGO)}" alt="${esc(fromName)}" width="150" style="margin:0 auto 14px;display:block;border:0;">
-      ${nav ? `<p style="margin:0 0 16px;font-size:12px;line-height:2;font-family:${D.font};">${nav}</p>` : ''}
-      <p style="margin:0 0 2px;font-size:12px;font-weight:700;color:${D.dark};font-family:${D.font};">${COMPANY}</p>
-      <p style="margin:0 0 2px;font-size:12px;line-height:1.6;color:${D.muted};font-family:${D.font};">${ADDRESS}</p>
-      <p style="margin:0;font-size:12px;color:${D.muted};font-family:${D.font};"><a href="mailto:${esc(support)}" style="color:${D.muted};text-decoration:none;">${esc(support)}</a></p>
-      <p style="margin:14px 0 0;font-size:11px;color:${D.note};font-family:${D.font};">© ${year} ${esc(fromName)}. All rights reserved.</p>
-    </td>
-  </tr>`;
+  const footerRow = footerBlock({ support, fromName, nav });
 
   return shellOpen({ previewText, fromName, brand })
     + header
@@ -203,19 +210,11 @@ function renderCustomerLayout({ bodyHtml, previewText, ctaLabel, ctaUrl, emailCa
 function renderVendorLayout({ bodyHtml, previewText, ctaLabel, ctaUrl, emailCategory, settings, data }) {
   const brand     = settings.brand_color   || '#960D32';
   const fromName  = settings.from_name     || 'Meeticulous';
-  const year      = new Date().getFullYear();
+  const support   = settings.support_email || 'team@meeticulous.com';
 
   const header = headerBlock({ category: emailCategory, theme: themeForCategory(emailCategory) });
 
-  const footerRow = `<tr>
-    <td style="padding:22px 20px;border-top:1px solid ${D.border};text-align:center;font-size:11px;line-height:1.7;color:${D.note};font-family:${D.font};">
-      Powered by<br>
-      <img src="${esc(FOOTER_LOGO)}" alt="Meeticulous" width="150" style="margin:8px auto;display:block;border:0;">
-      ${esc(COMPANY)} &middot; ${esc(TAGLINE)}<br>
-      ${esc(ADDRESS)}<br>
-      <span style="color:${D.note};">© ${year} Meeticulous</span>
-    </td>
-  </tr>`;
+  const footerRow = footerBlock({ support, fromName });
 
   return shellOpen({ previewText, fromName, brand })
     + header

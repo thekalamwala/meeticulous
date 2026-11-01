@@ -11,10 +11,11 @@ describe('emailThemes', () => {
     }
   });
 
-  test('Security Check → slate shield-lock', () => {
+  test('every category shares the one crimson palette (2026-11 redesign)', () => {
     const t = themeForCategory('Security Check');
-    expect(t.family).toBe('slate');
-    expect(t.accent).toBe('#41506a');
+    expect(t.family).toBe('brand');
+    expect(t.accent).toBe('#960D32');
+    expect(t.tint).toBe('#FBE3E8');
     expect(t.glyphUrl).toBe('https://meeticulous.com/images/email/icons/shield-lock.png');
   });
 
