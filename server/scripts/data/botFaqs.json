@@ -103,7 +103,7 @@
   },
   {
     "pattern": "how much is host+?",
-    "answer": "Host+ is the mid tier (Studio is the top tier). It's **₹229/month, or ₹1,499/year** (~₹4/day) — prices exclude tax (+18% GST). You get higher limits and more features than Starter, and **0% commission** on paid plans, so you keep the full price your clients pay. See [all plans](/pricing) for the current numbers.",
+    "answer": "Host+ was an older plan — it's retired. Today there are just two:\n\n- **Starter** — ₹0 forever, 5% per paid booking\n- **Pro** — **₹235/month or ₹1,179/year** (about ₹3.23/day), **0% commission**\n\nPrices include GST. Yearly saves 58%. See [both plans](/pricing).",
     "enabled": true,
     "category": "General"
   },
@@ -145,7 +145,7 @@
   },
   {
     "pattern": "is it free",
-    "answer": "Yep, Starter is free forever. No credit card needed.\n\nCatch: there's a small commission per booking to keep the free tier actually free. If you want 0% commission, you'd upgrade to Host+ or Studio — those are paid plans.\n\nCurrent prices are on the [pricing](/pricing) page.",
+    "answer": "Yep — **Starter is free forever**. No credit card needed.\n\nCatch: a **5% commission** per paid booking keeps it free. Want 0% commission? Upgrade to **Pro** (₹235/month or ₹1,179/year, incl. GST).\n\nDetails on the [pricing](/pricing) page.",
     "enabled": true,
     "category": "General"
   },
@@ -163,7 +163,7 @@
   },
   {
     "pattern": "notify",
-    "answer": "Not sure what you're looking for — do you mean notifications or reminders for your bookings? Or something else about Meeticulous?\n\nQuick rundown: **booking confirmations, reschedules, and cancellations** go out automatically by WhatsApp and email. **Reminders before a session** depend on your plan — free tier doesn't have them, Host+ and Studio do.\n\nWhat's the actual issue?",
+    "answer": "Not sure what you're looking for — do you mean notifications or reminders for your bookings? Or something else about Meeticulous?\n\nQuick rundown: **booking confirmations, reschedules, and cancellations** go out automatically by WhatsApp and email. **Reminders:** every plan sends a reminder 24 hours before a session; **Pro** adds a 1-hour reminder and reschedule alerts.\n\nWhat's the actual issue?",
     "enabled": true,
     "category": "General"
   },
@@ -187,13 +187,13 @@
   },
   {
     "pattern": "plans pricing",
-    "answer": "Meeticulous has three plans:\n\n**Starter** — free forever, no credit card needed. You get real payment collection built in, but a small commission applies per booking.\n\n**Host+** — flat annual price, 0% commission, higher limits, custom branding, reminders, and auto invoices.\n\n**Studio** — the top tier. Everything in Host+ plus unlimited services and bookings, advanced analytics, client CRM, and premium branding.\n\nFor exact prices, limits, and what's included in each plan, head to the [pricing](/pricing) page — they can change and we always keep it current there.",
+    "answer": "Meeticulous has two plans:\n\n**Starter** — ₹0 forever, no credit card. Unlimited services and bookings, your booking page with UPI payments, 24-hour reminders, Google Calendar & Meet, 3 digital products. A **5% commission** applies per paid booking.\n\n**Pro** — **₹235/month or ₹1,179/year** (incl. GST; yearly saves 58%). Everything in Starter plus **0% commission**, client CRM with notes and history, 1-hour reminders and reschedule alerts, follow-up and rebook automation, unlimited digital products, 2 calendar integrations, and priority WhatsApp support.\n\nFull comparison on the [pricing](/pricing) page.",
     "enabled": true,
     "category": "General"
   },
   {
     "pattern": "price",
-    "answer": "Price depends on which plan you're asking about.\n\n**Starter** is free forever — no upfront cost, but a small commission applies per booking. **Host+** and **Studio** are paid plans with **0% commission** on bookings. Exact prices for all three are on the [pricing](/pricing) page since they can change.\n\nOn every paid booking there's a flat **₹10 booking fee (+18% GST)** plus the payment gateway's own processing fee (Razorpay's) — both shown at checkout, not charged by us on top of your plan.",
+    "answer": "Depends on the plan.\n\n**Starter** is free forever — no upfront cost, 5% commission per paid booking. **Pro** is ₹235/month or ₹1,179/year (incl. GST) with **0% commission**. Compare both on the [pricing](/pricing) page.\n\nOn every paid booking there's a flat **₹10 booking fee (+18% GST)** plus the payment gateway's own processing fee (Razorpay's) — both shown at checkout, not charged by us on top of your plan.",
     "enabled": true,
     "category": "General"
   },
@@ -223,7 +223,7 @@
   },
   {
     "pattern": "what does it cost",
-    "answer": "Our plans:\n\n- **Starter** — ₹0 forever (+5% per booking)\n- **Host+** — ₹229/mo or ₹1,499/yr (~₹4/day)\n- **Studio** — ₹555/mo or ₹3,650/yr (~₹10/day)\n\nYearly saves ~45%. Prices exclude tax (+ 18% GST). Ask about a specific plan for details, or [see all plans](/pricing).",
+    "answer": "Our plans:\n\n- **Starter** — ₹0 forever (+5% per paid booking)\n- **Pro** — ₹235/mo or ₹1,179/yr (~₹3.23/day), 0% commission\n\nPrices include GST. Yearly saves 58%. Earning over ₹4,700 a month? Pro already costs less than the 5%. [See both plans](/pricing).",
     "enabled": true,
     "category": "General"
   }

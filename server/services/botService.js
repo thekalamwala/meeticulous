@@ -300,10 +300,11 @@ const normalize = (s) => String(s || '').toLowerCase().replace(/[^\w\s]/g, ' ').
 // ── Pricing layer: deterministic, exact figures from the pricing page so Bolt never
 // guesses a price. Answers about the NAMED plan only (or a short overview when none is
 // named), always linking the on-site /pricing page to buy. Per-day = yearly ÷ 365; all
-// prices exclude tax (+ 18% GST). Update here if the pricing page changes.
+// prices are GST-inclusive, matching client/src/data/plans.js (DB ₹199/₹999 + 18%).
+// Update here if the pricing page changes.
 const PRICING = {
   free:    '**Starter — ₹0, free forever.** Unlimited services and bookings, your booking page, UPI payments and 24-hour reminders. We take 5% only when you actually get paid. [Start free](/pricing).',
-  premium: '**Pro — under ₹10 a day.** ₹3,599/year (save 25%), or ₹399/month. Commission drops to 0%, plus the Client CRM, follow-up automation and priority support. All prices include GST. [Go Premium](/pricing).',
+  premium: '**Pro — under ₹4 a day.** ₹1,179/year (save 58%), or ₹235/month. Commission drops to 0%, plus the Client CRM, follow-up automation and priority support. All prices include GST. [Go Premium](/pricing).',
 };
 // Pricing intent — deliberately excludes bare "plan"/"plans" so it doesn't hijack
 // plan-management questions ("how do I change my plan"). Plan name alone isn't enough.
@@ -320,8 +321,8 @@ const pricingReply = (question) => {
   if (nq.includes('free') || nq.includes('starter')) return PRICING.free;
   return 'Two plans, that\'s it:\n\n' +
     '- **Starter** — ₹0 forever. Unlimited services and bookings; we take 5% only when you get paid.\n' +
-    '- **Pro** — under ₹10/day. ₹3,599/yr (save 25%) or ₹399/mo, and commission drops to 0%.\n\n' +
-    'All prices include GST. Earning over ₹6,000 a month? Pro already costs you less than the 5%. [See both plans](/pricing).';
+    '- **Pro** — under ₹4/day. ₹1,179/yr (save 58%) or ₹235/mo, and commission drops to 0%.\n\n' +
+    'All prices include GST. Earning over ₹4,700 a month? Pro already costs you less than the 5%. [See both plans](/pricing).';
 };
 
 // ── FAQ layer: deterministic canned answer, no LLM. Best-effort — a missing table

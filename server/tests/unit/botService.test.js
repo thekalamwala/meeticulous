@@ -142,11 +142,11 @@ describe('pricingReply (deterministic pricing layer)', () => {
     expect(pricingReply('host+ price')).toMatch(/Pro/);
   });
   it('quotes the real charged prices, GST-inclusive', () => {
-    expect(pricingReply('pro yearly cost')).toMatch(/₹3,599/);
-    expect(pricingReply('premium monthly price')).toMatch(/₹399/);
+    expect(pricingReply('pro yearly cost')).toMatch(/₹1,179/);
+    expect(pricingReply('premium monthly price')).toMatch(/₹235/);
     expect(pricingReply('premium price')).toMatch(/include GST/);
     // The old copy quoted ex-GST prices and a stale ₹229/₹555 ladder.
-    expect(pricingReply('premium price')).not.toMatch(/₹229|₹555|₹1,499|₹3,650/);
+    expect(pricingReply('premium price')).not.toMatch(/₹229|₹555|₹1,499|₹3,650|₹399|₹3,599/);
   });
   it('gives an overview when no plan is named', () => {
     const r = pricingReply('what are your prices');
