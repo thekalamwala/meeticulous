@@ -40,6 +40,22 @@ describe('senderRegistry.byKey', () => {
   });
 });
 
+describe('senderRegistry.forCrm', () => {
+  test('uses the active crm_<persona> sender (cold-outreach domain)', async () => {
+    state.senders.push({ sender_key: 'crm_tithi', from_name: 'Tithi | Meeticulous', from_email: 'tithi@mail.meeticulous.in', reply_to: 'tithi@meeticulous.in', provider: 'brevo' });
+    expect(await senderRegistry.forCrm('tithi')).toEqual({
+      fromName: 'Tithi | Meeticulous', fromEmail: 'tithi@mail.meeticulous.in', replyTo: 'tithi@meeticulous.in', provider: 'brevo',
+    });
+  });
+  test('falls back to the normal persona while crm_* is inactive/missing', async () => {
+    expect((await senderRegistry.forCrm('tithi')).fromEmail).toBe('tithi@meeticulous.com');
+  });
+  test('null for no key / unknown persona (→ global default)', async () => {
+    expect(await senderRegistry.forCrm(null)).toBeNull();
+    expect(await senderRegistry.forCrm('ghost')).toBeNull();
+  });
+});
+
 describe('sequenceService.enrollByName guard', () => {
   const sequenceService = require('../../services/crm/sequenceService');
   test('missing sequence → null (no crash)', async () => {

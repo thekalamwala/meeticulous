@@ -149,7 +149,8 @@ async function dispatch(row, leadArg, opts = {}) {
     const subject = renderVars(row.subject, lead, extra);
     const html = renderVars(row.variables?.html || row.body_preview || '', lead, extra);
     // Send FROM the message's persona (Tithi lifecycle / Sujata offers); null → global default.
-    const sender = await senderRegistry.byKey(row.sender_key);
+    // An active crm_<persona> sender moves it onto the cold-outreach domain.
+    const sender = await senderRegistry.forCrm(row.sender_key);
     result = await email.send({
       lead, subject, html, text: renderVars(row.variables?.text, lead, extra),
       category: row.sender_key === 'sujata' ? 'Offer' : '',   // header pill
