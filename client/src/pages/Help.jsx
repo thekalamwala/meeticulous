@@ -37,7 +37,7 @@ const FAQ = [
   },
   {
     q: "How do I become a host?",
-    a: "Head to Be a Sloth to start onboarding — set up your profile, services and availability, then go live.",
+    a: "Head to Become a host to start onboarding — set up your profile, services and availability, then go live.",
   },
 ];
 

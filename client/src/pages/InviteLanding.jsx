@@ -14,7 +14,8 @@ import {
 import { getInviteConfig, recordInviteVisit, getVendorGoogleUrl } from '../services/api';
 import { STATS, Odometer } from './Home';
 import { TESTIMONIALS } from '../data/testimonials';
-import { HERO, HERO_FACES } from '../components/home/images';
+import { HERO_FACES } from '../components/home/images';
+import IconArt from '../components/common/IconArt';
 import PricingCards from '../components/pricing/PricingCards';
 import HowItWorks from '../components/home/HowItWorks';
 import Reveal from '../components/home/Reveal';
@@ -58,7 +59,7 @@ function HeroFace({ src }) {
   return <img src={src} onError={() => setErr(true)} alt="" loading="lazy" className="h-10 w-10 flex-shrink-0 rounded-full border-2 border-canvas object-cover" />;
 }
 
-// Floating frosted card on the hero image (sloth-glass + float keyframes live in index.css).
+// Floating frosted card on the hero art (glass + float keyframes live in index.css).
 function GlassCard({ icon: Icon, label, value, accent, className, float }) {
   return (
     <div className={`sloth-glass ${float} absolute flex items-center gap-3 rounded-2xl px-4 py-3 ${className}`}>
@@ -186,7 +187,7 @@ export default function InviteLanding() {
           {/* LEFT */}
           <div className="text-center lg:text-left">
             <Reveal as="p" className="mb-4 inline-block rounded-full border border-black/5 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-              You're invited 🦥
+              You're invited
             </Reveal>
             <Reveal as="h1" className="font-heading text-[clamp(2rem,6vw,3.4rem)] font-semibold leading-[1.08] tracking-[-0.03em]">
               Welcome, <span className="text-primary-cta">{label}</span>
@@ -217,10 +218,10 @@ export default function InviteLanding() {
             </Reveal>
           </div>
 
-          {/* RIGHT — product photo + floating glass cards (sm+ only) */}
+          {/* RIGHT — icon art + floating glass cards (sm+ only) */}
           <Reveal delay={0.1} className="relative hidden sm:block">
             <div className="relative mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden rounded-[10px] bg-sand shadow-[0_40px_90px_-25px_rgba(26,26,26,0.38)] ring-1 ring-black/5">
-              <img src={HERO} alt="A calm professional at work" loading="eager" className="h-full w-full object-cover" />
+              <IconArt icon={CalendarCheck} label="Bookings, payments and reminders on Meeticulous" className="h-full w-full border-0 shadow-none" iconClassName="h-24 w-24" />
               <div aria-hidden className="pointer-events-none absolute inset-0 rounded-[10px] ring-1 ring-inset ring-white/15" />
             </div>
             <GlassCard icon={CalendarCheck} label="New booking" value="Confirmed · 4:30 PM" float="sloth-float" className="top-10 -left-6" />

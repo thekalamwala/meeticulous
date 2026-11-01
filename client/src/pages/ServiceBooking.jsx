@@ -68,7 +68,7 @@ const buildICS = ({ title, details, location, startISO, durationMin, uid }) => {
   const esc = (s) => String(s || "").replace(/([,;\\])/g, "\\$1").replace(/\n/g, "\\n");
   const lines = [
     "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Meeticulous//Booking//EN",
-    "BEGIN:VEVENT", `UID:${uid || fmt(start)}@bookasloth`, `DTSTAMP:${fmt(new Date())}`,
+    "BEGIN:VEVENT", `UID:${uid || fmt(start)}@meeticulous.com`, `DTSTAMP:${fmt(new Date())}`,
     `DTSTART:${fmt(start)}`, `DTEND:${fmt(end)}`, `SUMMARY:${esc(title)}`,
     `DESCRIPTION:${esc(details)}`, `LOCATION:${esc(location)}`, "END:VEVENT", "END:VCALENDAR",
   ];

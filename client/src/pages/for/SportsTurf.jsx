@@ -6,7 +6,7 @@
 // 14-section structure as its sibling /for/chartered-accountants, re-skinned to a
 // "floodlit night" sporty look (dark stadium hero, turf-green + electric-lime
 // accents, pitch-line textures). Reuses shared infra: Seo, Reveal, useLenis, real
-// plan data, /be-a-sloth funnel, prerender + Solutions hub.
+// plan data, /become-a-host funnel, prerender + Solutions hub.
 //
 // HONESTY (verified against product code — see agent audit):
 //   - Positioned for a SINGLE bookable ground/court per account. The double-book
@@ -37,6 +37,8 @@ import {
   BadgePercent, Lock, Zap, Share2, IndianRupee,
 } from 'lucide-react';
 import Reveal from '../../components/home/Reveal';
+import { Trophy as TrophyArt } from 'lucide-react';
+import IconArt from '../../components/common/IconArt';
 import Seo from '../../components/common/Seo';
 import useLenis from '../../hooks/useLenis';
 import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
@@ -51,7 +53,6 @@ import PageGuides from '../../components/common/PageGuides';
 
 const START = '/become-a-host';      // real host signup funnel
 const LOGIN = '/login-as-vendor'; // host login (Google-only door)
-const MASCOT = '/images/turf-owner.webp'; // sporty sloth mascot — transparent cutout (122KB webp)
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
 
@@ -84,11 +85,10 @@ const USE_CASES = [
 ];
 
 const STEPS = [
-  { title: 'List your ground & slots', icon: LayoutDashboard, image: MASCOT, desc: 'Set your operating hours and slot length, then share your booking link anywhere.' },
-  { title: 'Players book & pay', icon: CalendarCheck, image: MASCOT, desc: 'Players pick an open slot and pay the full fee online — no calls, no back-and-forth.' },
-  { title: 'Everyone gets reminded', icon: BellRing, image: MASCOT, desc: 'You and the player get automatic confirmations and WhatsApp reminders before the slot.' },
+  { title: 'List your ground & slots', icon: LayoutDashboard, desc: 'Set your operating hours and slot length, then share your booking link anywhere.' },
+  { title: 'Players book & pay', icon: CalendarCheck, desc: 'Players pick an open slot and pay the full fee online — no calls, no back-and-forth.' },
+  { title: 'Everyone gets reminded', icon: BellRing, desc: 'You and the player get automatic confirmations and WhatsApp reminders before the slot.' },
 ];
-// ponytail: all steps share MASCOT until distinct per-step art is supplied.
 
 // Integration hub — REAL BAS integrations only. Turf is in-person, so no
 // Meet/Zoom video tools (dropped vs the CA page).
@@ -289,7 +289,7 @@ function ToolCard({ t }) {
   );
 }
 
-/* Turf integrations — a bold, even logo-card grid (no mascot-centre connector hub).
+/* Turf integrations — a bold, even logo-card grid (no centre connector hub).
    Distinct from the CA page's DOM-measured connector diagram. */
 function IntegrationHub() {
   return (
@@ -467,7 +467,7 @@ export default function SportsTurf() {
               >
                 Create a Free Account <ArrowRight size={16} />
               </Link>
-              <Link to="/sndatarkar/booking/book-a-sloth-app-online-demo-30-min-advisory-session" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-white transition-colors hover:text-[#A3E635] hover:no-underline">
+              <Link to="/demo" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-white transition-colors hover:text-[#A3E635] hover:no-underline">
                 Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </Reveal>
@@ -480,10 +480,10 @@ export default function SportsTurf() {
             </Reveal>
           </div>
 
-          {/* RIGHT — mascot + floating glass cards */}
+          {/* RIGHT — icon art + floating glass cards */}
           <Reveal instant delay={0.1} className="relative hidden lg:block">
             <div aria-hidden className="absolute left-1/2 top-1/2 h-[27rem] w-[27rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-[rgba(22,163,74,0.35)] to-[rgba(163,230,53,0.22)] blur-2xl" />
-            <img src={MASCOT} alt="Meeticulous — slot booking for turf and sports arenas" loading="eager" className="relative z-10 mx-auto w-full max-w-[27rem] drop-shadow-[0_28px_46px_rgba(0,0,0,0.5)]" />
+            <IconArt icon={TrophyArt} label="Meeticulous — slot booking for turf and sports arenas" className="relative z-10 mx-auto aspect-square w-full max-w-[27rem]" iconClassName="h-24 w-24" />
             <GlassCard icon={CalendarCheck} label="New booking" value="7–8 PM · Booked" float="sloth-float" className="top-6 -left-4" />
             <GlassCard icon={Wallet} label="Payment received" value="₹1,200" accent float="sloth-float--mid" className="top-1/2 -right-6" />
             <GlassCard icon={BellRing} label="WhatsApp reminder" value="Sent · 1h before" float="sloth-float--slow" className="bottom-10 left-2" />
@@ -823,10 +823,10 @@ export default function SportsTurf() {
       {/* ═══════════════ 11 · ABOUT ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-cream)' }}>
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          {/* LEFT — mascot */}
+          {/* LEFT — icon art */}
           <Reveal className="relative order-2 mx-auto w-full max-w-md lg:order-1 lg:mx-0">
             <div aria-hidden className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#15803D]/15 blur-3xl" />
-            <img src={MASCOT} alt="Meeticulous mascot" loading="lazy" className="relative z-10 mx-auto w-full max-w-[22rem] drop-shadow-[0_24px_32px_rgba(17,17,17,0.16)]" />
+            <IconArt icon={TrophyArt} className="relative z-10 mx-auto aspect-square w-full max-w-[22rem]" />
           </Reveal>
 
           {/* RIGHT — text */}

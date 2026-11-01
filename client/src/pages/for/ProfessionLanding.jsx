@@ -5,7 +5,7 @@
 // properties on the page root, so the pages feel distinct. Design pattern:
 // "Trust & Authority + Conversion" — credibility band, security badges, metric
 // proof, transparent pricing, low-friction CTA. Marketing-only: every CTA hands
-// off to the real host signup funnel (/be-a-sloth).
+// off to the real host signup funnel (/become-a-host).
 //
 // SEO: clean commercial title/meta for Google; clickbait OG for social; full
 // JSON-LD graph (SoftwareApplication + FAQPage + BreadcrumbList + Service) for

@@ -118,7 +118,7 @@ export const team = {
       role: "Engineering",
       photo: null,
       bio: "Shubham builds all the calm under the hood, shipping fast reliable systems that stay quietly out of your way so booking and payments simply just work.",
-      socials: [{ type: "linkedin" }, { type: "x" }, { type: "sloth" }],
+      socials: [{ type: "linkedin" }, { type: "x" }, { type: "meeticulous" }],
     },
     {
       name: "Shivani Kadoo",
@@ -126,7 +126,7 @@ export const team = {
       role: "Team",
       photo: null,
       bio: "Shivani is part of the small team building Meeticulous in India, helping creators and professionals get booked, paid and reminded without the admin.",
-      socials: [{ type: "linkedin" }, { type: "sloth" }],
+      socials: [{ type: "linkedin" }, { type: "meeticulous" }],
     },
     {
       name: "Pranav Kadoo",
@@ -134,7 +134,7 @@ export const team = {
       role: "Team",
       photo: null,
       bio: "Pranav is part of the small team building Meeticulous in India, working to make every booking feel simple for hosts and the people who book them.",
-      socials: [{ type: "linkedin" }, { type: "sloth" }],
+      socials: [{ type: "linkedin" }, { type: "meeticulous" }],
     },
     {
       name: "Tushar Malvi",
@@ -142,7 +142,7 @@ export const team = {
       role: "Team",
       photo: null,
       bio: "Tushar is part of the small team building Meeticulous in India, helping turn one booking link into calm, paid sessions for creators and pros.",
-      socials: [{ type: "linkedin" }, { type: "sloth" }],
+      socials: [{ type: "linkedin" }, { type: "meeticulous" }],
     },
     {
       name: "Aastha Nikhare",
@@ -150,7 +150,7 @@ export const team = {
       role: "Product",
       photo: null,
       bio: "Aastha obsesses over each tap so you never think twice, removing friction for a living and shaping a product that feels calm, quick and humane in use.",
-      socials: [{ type: "linkedin" }, { type: "x" }, { type: "sloth" }],
+      socials: [{ type: "linkedin" }, { type: "x" }, { type: "meeticulous" }],
     },
   ],
 };

@@ -4,7 +4,7 @@
  *
  * DESIGN-ONLY: no live search backend. The bar submits to /explore?q= so the
  * existing Explore page does the real work; the pill shortcuts link to real routes.
- * Styled after the founder reference — orange pill bar, sloth hero, quick pills —
+ * Styled after the founder reference — orange pill bar, hero, quick pills —
  * adapted to our tokens (border-2, rounded, brand #960D32).
  */
 import { useState } from 'react';

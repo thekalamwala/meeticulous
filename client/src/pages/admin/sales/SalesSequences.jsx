@@ -37,7 +37,6 @@ export default function SalesSequences({
 
       {loading ? <p className="adm-t3">Loading…</p> : sequences.length === 0 ? (
         <Card className="rounded-2xl p-10 text-center">
-          <p className="text-2xl mb-2">🦥</p>
           <p className="adm-t1 font-semibold mb-1">No sequences yet</p>
           <p className="adm-t3 text-sm mb-4">Build a nurture journey once; enrol {audience === 'lead' ? 'leads' : 'hosts'} into it from the lead panel.</p>
           <Btn size="sm" onClick={() => setShowNew(true)}>+ New sequence</Btn>

@@ -22,7 +22,7 @@ import { useHideChrome } from "../../context/ChromeContext";
 
 /* ════════════════════════════════════════════════════════════════════
    /compare/topmate-alternative — Topmate-style conversion landing page.
-   Single goal: start a 0%-commission host signup (→ /be-a-sloth).
+   Single goal: start a 0%-commission host signup (→ /become-a-host).
    Keeps its own minimal header/footer BY DESIGN (useHideChrome drops the
    global nav) — the founder chose to keep this page's design as is.
    Blocks live in client/src/components/lp/*; content in lpData.js, which
@@ -30,12 +30,12 @@ import { useHideChrome } from "../../context/ChromeContext";
    ════════════════════════════════════════════════════════════════════ */
 
 // Analytics slug kept from the old /lp URL so LP_VIEWED / LP_CTA_CLICKED history stays continuous.
-const SLUG = "topmate-vs-bookasloth";
+const SLUG = "topmate-vs-meeticulous";
 const CANONICAL = `${SITE_URL}/compare/topmate-alternative`;
 const TITLE = "Topmate Alternative: 0% Commission, UPI + GST | Meeticulous";
 const DESCRIPTION = `Meeticulous is a Topmate alternative for Indian creators: 0% commission on ${PREMIUM_PLAN.name} (${PRICE_LINE}), UPI at booking and GST invoices. Compare the fees.`;
 
-const TopmateVsBookASloth = () => {
+const TopmateVsMeeticulous = () => {
   // This page keeps its own minimal header/footer (design unchanged by choice).
   useHideChrome();
   const utm = useUtm();
@@ -130,4 +130,4 @@ const TopmateVsBookASloth = () => {
   );
 };
 
-export default TopmateVsBookASloth;
+export default TopmateVsMeeticulous;

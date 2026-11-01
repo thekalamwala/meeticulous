@@ -31,7 +31,7 @@ const MailIcon = () => (
   </svg>
 );
 
-// ── Brand logo lockup (replaces the 🦥 emoji) ──────────────────────────────────
+// ── Brand logo lockup (replaces the old emoji mark) ──────────────────────────────────
 // Uses the official manifest icon asset; the wordmark stays in our heading font.
 const Logo = ({ className = '' }) => (
   <img
@@ -58,7 +58,7 @@ const BecomeAHost = () => {
   // Handle typed on the homepage hero — carried via router state, sessionStorage as fallback.
   const desiredUsername =
     location.state?.desiredUsername ||
-    (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('pendingSlothPage')) ||
+    (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('pendingHostPage')) ||
     '';
 
   const handleGoogle = async () => {
