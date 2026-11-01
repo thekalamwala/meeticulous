@@ -30,13 +30,12 @@ const { supabaseAdmin } = require('../config/supabase');
 // {{first_name}} {{name}} {{profession}} {{city}} {{booking_link}} {{username}} {{account_name}}
 const BL = '{{booking_link}}';
 const p = (html) => `<p>${html}</p>`;
+// Every host lifecycle email signs as Tithi (Durga/Sujata have no sender rows — 2026-11-01).
 const SIGN_TITHI = p(`— Tithi`);
-const SIGN_SUJATA = p(`— Sujata`);
-const SIGN_DURGA = p(`— Durga`);
 // Founder's own booking page — his signature name links here. class="sig" keeps it
 // an inline text link (plainBody promotes bare links to buttons; sig links stay inline).
 const FOUNDER_URL = 'https://meeticulous.com/sndatarkar';
-const SIGN_SHUBHAM = p(`— <a href="${FOUNDER_URL}" class="sig">Shubham</a> | Founder @ Meeticulous`);
+const SIGN_SHUBHAM = p(`— <a href="${FOUNDER_URL}" class="sig">Shubham</a> | CEO, Meeticulous`);
 
 // Approved AiSensy Campaign Names (the human name sendCampaign uses).
 const WA = { onboarding: 'Onboarding Nudge', firstBooking: 'Get First Booking', winback: 'Winback Offer - Additional Month' };
@@ -44,62 +43,62 @@ const WA = { onboarding: 'Onboarding Nudge', firstBooking: 'Get First Booking', 
 const SEQUENCES = [
   // ── Cold-pool engagement (B2) — enrolled by listEngagementService off the
   //    email opens/clicks counters. Openers/clickers run while status='list';
-  //    'New marketing' takes over once a lead is promoted to 'new'. Sujata voice.
+  //    'New marketing' takes over once a lead is promoted to 'new'. Tithi voice.
   {
-    name: 'Openers nurture', sender_key: 'sujata',
+    name: 'Openers nurture', sender_key: 'tithi',
     description: 'Cold lead opened but has not clicked — nudge them to look properly.',
     is_active: true, stop_on_reply: true, stop_on_convert: true,
     steps: [
       { step_no: 1, delay_hours: 24, channel: 'email',
         subject: 'Did that land, {{first_name}}?',
         preview: 'One tap to see how Meeticulous actually works.',
-        body: p(`You opened my last note — thanks. In case it got buried: Meeticulous is one link your clients use to book <i>and</i> pay, so you stop chasing times and payments.`) + p(`<a href="${BL}">See how it works →</a>`) + SIGN_SUJATA },
+        body: p(`You opened my last note — thanks. In case it got buried: Meeticulous is one link your clients use to book <i>and</i> pay, so you stop chasing times and payments.`) + p(`<a href="${BL}">See how it works →</a>`) + SIGN_TITHI },
       { step_no: 2, delay_hours: 72, channel: 'email',
         subject: 'The 2-minute version',
         preview: 'Services, calendar and payments in one place.',
-        body: p(`Quick version: you list what you do, set your hours, share one link. Clients pick a slot and pay upfront. That's it.`) + p(`<a href="${BL}">Take a look →</a>`) + SIGN_SUJATA },
+        body: p(`Quick version: you list what you do, set your hours, share one link. Clients pick a slot and pay upfront. That's it.`) + p(`<a href="${BL}">Take a look →</a>`) + SIGN_TITHI },
       { step_no: 3, delay_hours: 120, channel: 'email',
         subject: 'Last nudge from me, {{first_name}}',
         preview: `If it's not for you, no worries at all.`,
-        body: p(`I won't keep emailing. If a cleaner way to take bookings sounds useful, the link's below — if not, all good.`) + p(`<a href="${BL}">Have a look →</a>`) + SIGN_SUJATA },
+        body: p(`I won't keep emailing. If a cleaner way to take bookings sounds useful, the link's below — if not, all good.`) + p(`<a href="${BL}">Have a look →</a>`) + SIGN_TITHI },
     ],
   },
   {
-    name: 'Clickers nurture', sender_key: 'sujata',
+    name: 'Clickers nurture', sender_key: 'tithi',
     description: 'Cold lead clicked once — warm; move them toward creating a page.',
     is_active: true, stop_on_reply: true, stop_on_convert: true,
     steps: [
       { step_no: 1, delay_hours: 24, channel: 'email',
         subject: 'Glad that caught your eye, {{first_name}}',
         preview: 'Your page takes about two minutes to set up.',
-        body: p(`You had a look — nice. Setting up your own page takes about two minutes: add a service, set a price, share the link.`) + p(`<a href="${BL}">Create your page →</a>`) + SIGN_SUJATA },
+        body: p(`You had a look — nice. Setting up your own page takes about two minutes: add a service, set a price, share the link.`) + p(`<a href="${BL}">Create your page →</a>`) + SIGN_TITHI },
       { step_no: 2, delay_hours: 72, channel: 'email',
         subject: 'What happens after you set it up',
         preview: 'One link. Clients book and pay. You get on with the work.',
-        body: p(`Once your page is live, a client picks a service, chooses a time and pays — you just show up. No back-and-forth, no payment chasing.`) + p(`<a href="${BL}">Get started →</a>`) + SIGN_SUJATA },
+        body: p(`Once your page is live, a client picks a service, chooses a time and pays — you just show up. No back-and-forth, no payment chasing.`) + p(`<a href="${BL}">Get started →</a>`) + SIGN_TITHI },
     ],
   },
   {
-    name: 'New marketing', sender_key: 'sujata',
+    name: 'New marketing', sender_key: 'tithi',
     description: 'Lead promoted to New (engaged past the threshold) — push to sign up.',
     is_active: true, stop_on_reply: true, stop_on_convert: true,
     steps: [
       { step_no: 1, delay_hours: 0,   channel: 'email',
         subject: 'Ready when you are, {{first_name}}',
         preview: 'Create your booking page — free to start.',
-        body: p(`You clearly liked what you saw — so let's get you a page. It's free to start, and you can be taking bookings today.`) + p(`<a href="${BL}">Create your page →</a>`) + SIGN_SUJATA },
+        body: p(`You clearly liked what you saw — so let's get you a page. It's free to start, and you can be taking bookings today.`) + p(`<a href="${BL}">Create your page →</a>`) + SIGN_TITHI },
       { step_no: 2, delay_hours: 48,  channel: 'email',
         subject: 'How {{profession}}s use Meeticulous',
         preview: 'From enquiry to a paid booking, no chasing.',
-        body: p(`Someone asks to book you. Instead of trading messages and sharing UPI details, you send one link — they choose, book and pay.`) + p(`<a href="${BL}">See it in action →</a>`) + SIGN_SUJATA },
+        body: p(`Someone asks to book you. Instead of trading messages and sharing UPI details, you send one link — they choose, book and pay.`) + p(`<a href="${BL}">See it in action →</a>`) + SIGN_TITHI },
       { step_no: 3, delay_hours: 96,  channel: 'email',
         subject: 'Want me to set it up with you?',
         preview: `Reply "HELP" and I'll get your page live with you.`,
-        body: p(`If you'd rather not do it alone, reply <b>HELP</b> and I'll walk your page to live with you. Won't take long.`) + SIGN_SUJATA },
+        body: p(`If you'd rather not do it alone, reply <b>HELP</b> and I'll walk your page to live with you. Won't take long.`) + SIGN_TITHI },
       { step_no: 4, delay_hours: 168, channel: 'email',
         subject: 'Closing the loop, {{first_name}}',
         preview: 'Your page is one step away whenever you want it.',
-        body: p(`Last one from me on this. Your page is a couple of taps away whenever the time's right.`) + p(`<a href="${BL}">Create your page →</a>`) + SIGN_SUJATA },
+        body: p(`Last one from me on this. Your page is a couple of taps away whenever the time's right.`) + p(`<a href="${BL}">Create your page →</a>`) + SIGN_TITHI },
     ],
   },
   {
@@ -172,10 +171,10 @@ const SEQUENCES = [
   },
   {
     // NEW — enrolled by subscriptionService.markCancelled for hosts who CANCELLED a
-    // paid plan. Carries the win-back OFFER (from Sujata). Redemption is manual:
+    // paid plan. Carries the win-back OFFER (from Tithi). Redemption is manual:
     // the host renews and an admin adds the 2 bonus months via Host360.
     name: 'Churn-winback', sender_key: 'tithi',
-    description: 'Host cancelled a paid subscription — win them back with an offer (Sujata).',
+    description: 'Host cancelled a paid subscription — win them back with an offer (Tithi).',
     is_active: true, stop_on_reply: true, stop_on_convert: true,
     steps: [
       { step_no: 1, delay_hours: 0, channel: 'email', sender_key: 'tithi',
@@ -184,13 +183,13 @@ const SEQUENCES = [
         body: p(`You cancelled your plan, and I'd genuinely like to know why.`)
           + p(`What was the biggest reason? — Too expensive · Didn't get enough bookings · Something was missing · Something wasn't working · Other.`)
           + p(`Just hit reply, or:`) + p(`<a href="${BL}/feedback">Share your feedback →</a>`) + SIGN_TITHI },
-      // The OFFER — from Sujata. Conditional on renewal; admin adds the 2 bonus months.
-      { step_no: 2, delay_hours: 48, channel: 'email', sender_key: 'sujata',
+      // The OFFER — from Tithi. Conditional on renewal; admin adds the 2 bonus months.
+      { step_no: 2, delay_hours: 48, channel: 'email', sender_key: 'tithi',
         subject: `Come back. We'll give you 2 months free.`,
         preview: `Pick monthly or yearly — we add 2 extra months.`,
-        body: p(`We'd love to have you back, {{first_name}}. Come back and we'll give you <b>2 months free</b> — pick monthly or yearly, we add 2 months on top.`) + p(`<a href="${BL}/dashboard/upgrade">Renew now →</a>`) + p(`Reply <b>DONE</b> once you have and we'll add the 2 months.`) + SIGN_SUJATA },
+        body: p(`We'd love to have you back, {{first_name}}. Come back and we'll give you <b>2 months free</b> — pick monthly or yearly, we add 2 months on top.`) + p(`<a href="${BL}/dashboard/upgrade">Renew now →</a>`) + p(`Reply <b>DONE</b> once you have and we'll add the 2 months.`) + SIGN_TITHI },
       // WhatsApp offer — Winback Offer: {{1}} name, {{2}} product, {{3}} offer, {{4}} renewal link.
-      { step_no: 3, delay_hours: 24, channel: 'whatsapp', sender_key: 'sujata', template_key: WA.winback,
+      { step_no: 3, delay_hours: 24, channel: 'whatsapp', sender_key: 'tithi', template_key: WA.winback,
         variables: ['{{first_name}}', 'Meeticulous', '2 Month Addition', '{{booking_link}}/dashboard/upgrade'],
         subject: null, body: `{{first_name}}, renew your Meeticulous plan and we'll add 2 months free on top. Reply RENEW 💛` },
       { step_no: 4, delay_hours: 96, channel: 'email', sender_key: 'tithi',
@@ -247,72 +246,71 @@ const SEQUENCES = [
     ],
   },
   {
-    // Celebration — Durga. stop_on_convert=false so it isn't cut off the moment the
+    // Celebration — Tithi. stop_on_convert=false so it isn't cut off the moment the
     // host counts as 'activated' (having a booking is exactly why they're here).
-    name: 'First booking celebration', sender_key: 'durga',
+    name: 'First booking celebration', sender_key: 'tithi',
     description: 'Host just landed their first paid booking — celebrate + teach booking #2.',
     is_active: true, stop_on_reply: false, stop_on_convert: false,
     steps: [
-      { step_no: 1, delay_hours: 0,  channel: 'email', sender_key: 'durga',
+      { step_no: 1, delay_hours: 0,  channel: 'email', sender_key: 'tithi',
         subject: '🎉 Your first booking, {{first_name}}!',
         preview: `The hard part's done — now let's get booking #2.`,
-        body: p(`Your first booking is in — congratulations! 🎉 That's the hard part done.`) + p(`Now let's get booking #2: share your link with a few more people who'd book you.`) + p(`<a href="${BL}/dashboard">Share your page →</a>`) + SIGN_DURGA },
-      { step_no: 2, delay_hours: 72, channel: 'email', sender_key: 'durga',
+        body: p(`Your first booking is in — congratulations! 🎉 That's the hard part done.`) + p(`Now let's get booking #2: share your link with a few more people who'd book you.`) + p(`<a href="${BL}/dashboard">Share your page →</a>`) + SIGN_TITHI },
+      { step_no: 2, delay_hours: 72, channel: 'email', sender_key: 'tithi',
         subject: 'How to get booking #2',
         preview: `One WhatsApp, one story, one ask this week.`,
-        body: p(`The hosts who grow keep doing one thing: they keep sharing. This week — one WhatsApp broadcast, one Instagram story, one direct ask.`) + SIGN_DURGA },
+        body: p(`The hosts who grow keep doing one thing: they keep sharing. This week — one WhatsApp broadcast, one Instagram story, one direct ask.`) + SIGN_TITHI },
     ],
   },
   {
     // Cold acquisition (audience 'lead'). Founder voice (Shubham) — sent PLAIN, no
     // brand shell (messageService PLAIN_SENDERS → 'cold' layout), so it reads like a
-    // 1:1 note from someone who lived the pain. SEEDED INACTIVE.
+    // 1:1 note. Same calm, helpful tone as the cold-call follow-ups. SEEDED INACTIVE.
     name: 'New Lead nurture', sender_key: 'shubham', audience: 'lead',
     description: 'Cold lead (event/import/website). Founder voice, plain 1:1 style. SEEDED INACTIVE — switch on when ready.',
     is_active: false, stop_on_reply: true, stop_on_convert: true,
     steps: [
       { step_no: 1, delay_hours: 0,   channel: 'email',
-        subject: '{{first_name}}, the WhatsApp booking dance is insane and you know it',
-        preview: `I did it for two years. Never again.`,
-        body: p(`{{first_name}} — can we talk about the madness for a sec?`)
-          + p(`"Are you free Thursday?" "How much?" "Can you do 4 instead?" "Sent the UPI — did it come?" Fifteen messages, three days, and half of them ghost you anyway.`)
-          + p(`I ran my own bookings like this for way too long. It's not a business — it's a part-time job as your own receptionist.`)
-          + p(`Meeticulous ends it. One link. They pick, they book, they <b>pay</b> — before they can flake.`)
-          + p(`<a href="${BL}">See the thing that saved my sanity →</a>`) + SIGN_SHUBHAM
-          + p(`P.S. Reply <b>SHOW ME</b> and I'll send you a 30-second walkthrough. No signup. Just look.`) },
+        subject: 'Bookings without the back-and-forth, {{first_name}}',
+        preview: `One link for booking, payment and reminders.`,
+        body: p(`Hi {{first_name}},`)
+          + p(`I'm Shubham, founder of Meeticulous. If your bookings happen over WhatsApp and phone calls today, you know how much time goes into "Are you free Thursday?", sharing prices and checking whether the payment came in.`)
+          + p(`Meeticulous gives you one booking page. Clients pick a service and a time, pay online, and get an automatic reminder, so fewer people miss their appointment.`)
+          + p(`It's free to start and takes about 3 minutes to set up.`)
+          + p(`<a href="${BL}">Create your free booking page →</a>`) + SIGN_SHUBHAM
+          + p(`P.S. Want to see it first? Reply to this email and I'll send you a short walkthrough.`) },
       { step_no: 2, delay_hours: 48,  channel: 'email',
-        subject: 'three apps to get paid once. what are we doing.',
-        preview: `WhatsApp, UPI, and your memory holding it together.`,
-        body: p(`Be honest, {{first_name}} — your booking "system" right now is WhatsApp for times, UPI for money, and your brain praying you didn't double-book.`)
-          + p(`I lived in that mess. One client paid twice, another never paid, and I found out at 11pm.`)
-          + p(`One link fixes the whole circus. Services, calendar, payment — clients handle it themselves in two taps.`)
-          + p(`<a href="${BL}">Grab your link →</a>`) + SIGN_SHUBHAM
-          + p(`P.S. It'd be yours the second you sign up.`) },
+        subject: 'Get paid when they book, {{first_name}}',
+        preview: `No more chasing payments after the session.`,
+        body: p(`Hi {{first_name}},`)
+          + p(`The thing our hosts say saves them the most time: getting paid when the client books, not after.`)
+          + p(`On your Meeticulous page, clients pay online by UPI or card while they book. No screenshots to check, no payment reminders to send, and fewer last-minute cancellations.`)
+          + p(`<a href="${BL}">Set up your booking page →</a>`) + SIGN_SHUBHAM
+          + p(`P.S. Your page link is yours the moment you sign up, ready to share on WhatsApp and Instagram.`) },
       { step_no: 3, delay_hours: 72,  channel: 'email',
-        subject: 'the enquiry-to-ghost pipeline (you know it)',
-        preview: `Every step is a place they drop off.`,
-        body: p(`The dance, one more time, because it still makes me twitch:`)
-          + p(`"free Thursday?" → you check → you reply → silence → you follow up feeling needy → maybe they pay.`)
-          + p(`Every step is a place they ghost. Every step is you doing unpaid admin.`)
-          + p(`Your Meeticulous link deletes all of it. They choose, book, pay — one move, while they're still excited.`)
-          + p(`<a href="${BL}">Try it →</a>`) + SIGN_SHUBHAM
-          + p(`P.S. The people who blow up do ONE thing — link in bio, link in story, link in every WhatsApp status. That's the whole trick.`) },
+        subject: 'Fewer no-shows, without the follow-ups',
+        preview: `Automatic reminders before every appointment.`,
+        body: p(`Hi {{first_name}},`)
+          + p(`Most no-shows happen because a client simply forgot. Meeticulous sends a reminder before every appointment, and each booking lands on your Google Calendar, so you're never double-booked.`)
+          + p(`You keep doing the work you're good at. The page handles booking, payment and reminders.`)
+          + p(`<a href="${BL}">Try it free →</a>`) + SIGN_SHUBHAM
+          + p(`P.S. The hosts who get the most bookings put their link in their Instagram bio and WhatsApp status.`) },
       { step_no: 4, delay_hours: 120, channel: 'email',
-        subject: '{{first_name}} I\'ll literally set it up for you',
-        preview: `Reply and we do it together, right now.`,
-        body: p(`Okay {{first_name}}, I'm done watching you suffer the WhatsApp gauntlet.`)
-          + p(`Reply <b>HELP</b> and I'll set your page up with you. One quick back-and-forth, and you walk away with a booking link that gets you paid while you sleep.`)
-          + p(`No pitch. I just remember how much time I wasted on this — and I don't want you wasting yours.`) + SIGN_SHUBHAM
-          + p(`P.S. Want to nose around first? Reply and I'll send you a live example page.`) },
+        subject: 'Want me to set it up with you, {{first_name}}?',
+        preview: `Reply and we'll set up your page together.`,
+        body: p(`Hi {{first_name}},`)
+          + p(`If you haven't had time to set things up, I'm happy to help. Reply to this email and we'll set up your booking page together: your services, timings and payments, in one short call.`)
+          + p(`<a href="${BL}">Or set it up yourself here →</a>`)
+          + p(`No pressure. If the timing isn't right, just let me know and I won't keep emailing you.`) + SIGN_SHUBHAM },
     ],
   },
 ];
 
-// The offer, also stored in the crm_templates library for manual sends (Sujata).
+// The offer, also stored in the crm_templates library for manual sends (signed Tithi).
 const OFFER_TEMPLATES = [
   { channel: 'email', name: 'offer_two_months_on_renewal', label: 'Offer · 2 months free on renewal', category: 'offer',
     subject: `Come back — 2 months free, {{first_name}}`,
-    body: p(`Come back to Meeticulous and we'll give you <b>2 months free</b>, {{first_name}} — pick monthly or yearly, we add 2 months on top.`) + p(`<a href="{{booking_link}}/dashboard/upgrade">Renew now →</a>`) + p(`Reply <b>DONE</b> once you have and we'll add them.`) + SIGN_SUJATA },
+    body: p(`Come back to Meeticulous and we'll give you <b>2 months free</b>, {{first_name}} — pick monthly or yearly, we add 2 months on top.`) + p(`<a href="{{booking_link}}/dashboard/upgrade">Renew now →</a>`) + p(`Reply <b>DONE</b> once you have and we'll add them.`) + SIGN_TITHI },
 ];
 
 async function upsertSequence(seq) {

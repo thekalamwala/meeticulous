@@ -22,7 +22,7 @@ describe('emailComponents', () => {
   test('statusTags maps tones; empty array → empty string', () => {
     const html = C.statusTags([{ label: 'Paid', tone: 'paid' }, { label: 'Online', tone: 'online' }]);
     expect(html).toContain('Paid');
-    expect(html).toContain('#fff4ed'); // paid tone bg
+    expect(html).toContain('#FBE3E8'); // paid tone bg (crimson tint)
     expect(C.statusTags([])).toBe('');
   });
 
@@ -33,13 +33,31 @@ describe('emailComponents', () => {
     expect(C.celebration(green, { title: 'Nice!' })).toContain('Nice!');
   });
 
+  test('bookingCard shows mark, title, sub and rows', () => {
+    const html = C.bookingCard({ title: 'Consult', sub: 'with Asha', rows: [['Date', 'Mon'], ['Time', '10 AM']] });
+    expect(html).toContain('meeticulous-icon-color-512.png');
+    expect(html).toContain('Consult');
+    expect(html).toContain('with Asha');
+    expect(html).toContain('10 AM');
+  });
+
+  test('signOff: Tithi gets her photo; others get the initial avatar, escaped', () => {
+    const html = C.signOff('Tithi', 'Meeticulous team');
+    expect(html).toContain('images/team/tithi.jpg');
+    expect(html).not.toContain('>T<');
+    expect(C.signOff('Shubham', 'CEO')).toContain('images/team/shubham.jpg');
+    expect(C.signOff('Durga', 'Team')).toContain('>D<');
+    expect(html).toContain('Meeticulous team');
+    expect(C.signOff('<b>', 'x')).not.toContain('<b><');
+  });
+
   test('helpers escape HTML in user-supplied values', () => {
     expect(C.banner(slate, { title: '<script>x</script>' })).not.toContain('<script>');
   });
 
-  test('inner blocks use the 12px box radius (Meeticulous style guide)', () => {
+  test('inner blocks use the 10px box radius (2026-11 redesign)', () => {
     const html = C.heroDate(green, { day: '1', mon: 'JAN', year: '2026', title: 'x', time: 'y' });
-    expect(html).toMatch(/border-radius:12px/);
+    expect(html).toMatch(/border-radius:10px/);
     expect(html).not.toMatch(/border-radius:1px/);
   });
 });

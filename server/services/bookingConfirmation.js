@@ -106,6 +106,8 @@ async function sendBookingConfirmation({ bookingId, invoiceRef = null }) {
     vendor_phone: host.phone || '',
     user_name: booking.guest_name || 'Customer',
     booking_id: booking.id,
+    // Short human reference shown above the email title ("Booking #1A2B3C4D").
+    booking_ref: String(booking.id || '').slice(0, 8).toUpperCase(),
     manage_url: `${process.env.CLIENT_URL || 'https://meeticulous.com'}/manage-booking/${manageBookingToken.sign(booking.id)}`,
     location: isOnline
       ? (meetingLink ? 'Online (link in your dashboard)' : 'Online')
