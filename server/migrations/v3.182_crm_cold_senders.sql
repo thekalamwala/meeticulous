@@ -12,5 +12,5 @@
 INSERT INTO email_senders (sender_key, from_name, from_email, reply_to, stream, list_unsubscribe, active, provider)
 VALUES
   ('crm_shubham', 'Shubham | CEO, Meeticulous', 'shubham@mail.meeticulous.in', 'shubham@meeticulous.com', 'crm', true, false, 'brevo'),
-  ('crm_tithi',   'Tithi at Meeticulous',       'tithi@mail.meeticulous.in',   'team@meeticulous.com',   'crm', true, false, 'brevo')
+  ('crm_tithi',   'Tithi at Meeticulous',       'tithi@news.meeticulous.com',   'team@meeticulous.com',   'crm', true, false, 'brevo')
 ON CONFLICT (sender_key) DO NOTHING;

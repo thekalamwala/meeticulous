@@ -145,11 +145,14 @@ Items previously listed here as pending are now live:
 - **v3.181** (`v3.181_drop_old_lead_status.sql`) — applied 2026-11-01 after the release went live on
   Render: `leads_status_check` + `merge_lead_rows` now carry only `'customer'`.
 - **v3.182** (`v3.182_crm_cold_senders.sql`) — applied 2026-11-01 and **activated**: CRM mail to
-  leads sends from `crm_shubham` ("Shubham | CEO, Meeticulous" <shubham@mail.meeticulous.in>, replies
-  → shubham@meeticulous.com) and `crm_tithi` ("Tithi at Meeticulous" <tithi@mail.meeticulous.in>,
-  replies → team@meeticulous.com) via Brevo (`mail.meeticulous.in` authenticated). Only takes effect
-  while `crm_admin_sends` is ON. Off switch: `UPDATE email_senders SET active=false WHERE sender_key
-  IN ('crm_shubham','crm_tithi');`. No migration outstanding.
+  leads sends via Brevo from `crm_shubham` ("Shubham | CEO, Meeticulous" <shubham@mail.meeticulous.in>,
+  cold outreach on the separate `.in` root; replies → shubham@meeticulous.com) and `crm_tithi`
+  ("Tithi at Meeticulous" <tithi@news.meeticulous.com>, lifecycle to opted-in hosts, kept OFF the cold
+  root; replies → team@meeticulous.com). Brevo-authenticated domains: `mail.meeticulous.in`,
+  `news.meeticulous.com` — NOT `team.meeticulous.com` (Resend only), so a CRM sender must never point
+  there. Durga/Sujata have no sender rows: their sequence steps were moved to Tithi (2026-11-01).
+  Only takes effect while `crm_admin_sends` is ON. Off switch: `UPDATE email_senders SET active=false
+  WHERE sender_key IN ('crm_shubham','crm_tithi');`. No migration outstanding.
 
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
