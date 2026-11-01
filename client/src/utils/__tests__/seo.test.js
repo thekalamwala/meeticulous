@@ -326,7 +326,7 @@ describe('professionGraphJsonLd — one @graph for /for pages, HowTo + linked or
     serviceType: 'Appointment booking software for business and management consultants',
     steps: [{ title: 'Set up', desc: 'Add services.' }, { title: 'Share', desc: 'Send your link.' }],
     faqs: [{ q: 'Is it for consultants?', a: 'Yes.' }, { q: 'Online?', a: 'Yes.' }],
-    appOffers: [{ price: 0, name: 'Sloth plan' }, { price: 3600, name: 'Sloth Active plan (yearly)' }],
+    appOffers: [{ price: 0, name: 'Starter plan' }, { price: 3600, name: 'Pro plan (yearly)' }],
   };
   const typesOf = (g) => g['@graph'].map((n) => n['@type']);
 
@@ -365,7 +365,7 @@ describe('professionGraphJsonLd — one @graph for /for pages, HowTo + linked or
     const g = professionGraphJsonLd({ siteUrl: SITE, ...base });
     const app = g['@graph'].find((n) => n['@type'] === 'SoftwareApplication');
     expect(app.offers).toHaveLength(2);
-    expect(app.offers[0]).toMatchObject({ '@type': 'Offer', price: '0', priceCurrency: 'INR', name: 'Sloth plan' });
+    expect(app.offers[0]).toMatchObject({ '@type': 'Offer', price: '0', priceCurrency: 'INR', name: 'Starter plan' });
   });
 
   test('omits HowTo / FAQPage when no steps / faqs are passed', () => {

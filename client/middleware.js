@@ -18,7 +18,7 @@
 //
 // Requirements:
 //   - Env var API_ORIGIN = your API base WITHOUT trailing /api
-//     (e.g. https://book-a-sloth.onrender.com). Falls back to the live API origin.
+//     (e.g. https://<your-api>.onrender.com). Falls back to the live API origin.
 //
 // Fail-open: any error simply continues to the SPA.
 
@@ -31,7 +31,7 @@ const SKIP = new Set(RESERVED_FIRST_SEGMENTS);
 
 // Branded profile-404 card. Inlined here because the Vercel edge bundle can't
 // import server/utils/brandPage.js (different runtime) — keep this visually in
-// sync with brandPage.js by hand. Random detective-sloth variant per request.
+// sync with brandPage.js by hand. Random error-art variant per request.
 const EDGE_ERROR_IMAGES = [
   'https://company-assets.meeticulous.in/images/error/sloth-tracks.png',
   'https://company-assets.meeticulous.in/images/error/sloth-think.png',
@@ -43,7 +43,7 @@ export function renderProfile404Html(rawSlug) {
   return (
     `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">` +
     `<meta name="viewport" content="width=device-width,initial-scale=1">` +
-    `<title>No host at this address · Book A Sloth</title>` +
+    `<title>No host at this address · Meeticulous</title>` +
     `<meta name="robots" content="noindex">` +
     `<link rel="preconnect" href="https://fonts.googleapis.com">` +
     `<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">` +
@@ -56,7 +56,7 @@ export function renderProfile404Html(rawSlug) {
     `h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;line-height:1.2;margin:0 0 12px}` +
     `p{color:var(--muted);font-size:15px;line-height:1.6;margin:0 0 28px}` +
     `a.btn{display:inline-block;background:var(--orange);color:#fff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 24px;border-radius:12px}` +
-    // Always white — the white-bg sloth art would box out on a dark card.
+    // Always white — the white-bg error art would box out on a dark card.
     `</style></head>` +
     `<body><main class="card">` +
     `<img class="hero" src="${img}" alt="" width="132" height="132">` +

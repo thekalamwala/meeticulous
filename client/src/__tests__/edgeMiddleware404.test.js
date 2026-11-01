@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { renderProfile404Html } from '../../middleware.js';
 
 describe('edge profile-404 HTML', () => {
-  it('is branded, noindex, and carries a CDN sloth image + new copy', () => {
+  it('is branded, noindex, and carries a CDN error image + new copy', () => {
     const html = renderProfile404Html('coolhost');
     expect(html).toContain('name="robots"');
     expect(html).toContain('noindex');
