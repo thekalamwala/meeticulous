@@ -41,9 +41,11 @@ describe('emailComponents', () => {
     expect(html).toContain('10 AM');
   });
 
-  test('signOff renders the initial avatar + name/role, escaped', () => {
+  test('signOff: Tithi gets her photo; others get the initial avatar, escaped', () => {
     const html = C.signOff('Tithi', 'Meeticulous team');
-    expect(html).toContain('>T<');
+    expect(html).toContain('images/team/tithi.jpg');
+    expect(html).not.toContain('>T<');
+    expect(C.signOff('Shubham', 'CEO')).toContain('>S<');
     expect(html).toContain('Meeticulous team');
     expect(C.signOff('<b>', 'x')).not.toContain('<b><');
   });

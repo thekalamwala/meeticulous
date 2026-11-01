@@ -189,11 +189,18 @@ function bookingCard({ title, sub, rows = [] } = {}) {
   </table>`;
 }
 
-/** Avatar sign-off: crimson initial circle + name and role (Tithi, Shubham…). */
+// Team photos for sign-offs (hosted JPG — email clients don't all render WebP).
+const TEAM_PHOTOS = { Tithi: 'https://meeticulous.com/images/team/tithi.jpg' };
+
+/** Avatar sign-off: profile photo (or crimson initial circle when none) + name and role. */
 function signOff(name, role) {
   const n = String(name || '');
+  const photo = TEAM_PHOTOS[n];
+  const avatar = photo
+    ? `<td style="width:40px;vertical-align:middle;"><img src="${photo}" alt="${esc(n)}" width="40" height="40" style="display:block;width:40px;height:40px;border-radius:999px;border:0;"></td>`
+    : `<td style="width:40px;height:40px;border-radius:999px;background:#960D32;color:#ffffff;font-weight:700;font-size:16px;text-align:center;vertical-align:middle;font-family:${FONT};">${esc(n.charAt(0))}</td>`;
   return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px 0 0;"><tr>
-    <td style="width:40px;height:40px;border-radius:999px;background:#960D32;color:#ffffff;font-weight:700;font-size:16px;text-align:center;vertical-align:middle;font-family:${FONT};">${esc(n.charAt(0))}</td>
+    ${avatar}
     <td style="padding-left:12px;font-size:14px;line-height:1.4;font-family:${FONT};"><b style="color:#2B1218;">${esc(n)}</b><br><span style="color:#7D6B70;font-size:13px;">${esc(role)}</span></td>
   </tr></table>`;
 }

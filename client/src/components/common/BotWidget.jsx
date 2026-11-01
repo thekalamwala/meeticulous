@@ -94,10 +94,10 @@ const patchLastAssistant = (msgs, fn) => {
 function Avatar({ size = 28, ring = false }) {
   return (
     <span
-      className="grid place-items-center overflow-hidden rounded-lg bg-white"
+      className="grid shrink-0 place-items-center overflow-hidden rounded-full bg-white"
       style={{ width: size, height: size, border: ring ? `2px solid ${INK}` : 'none' }}
     >
-      <img src="/favicon.svg" alt="" className="h-full w-full object-contain p-0.5" />
+      <img src="/images/team/tithi.webp" alt="Tithi" className="h-full w-full object-cover" />
     </span>
   );
 }
