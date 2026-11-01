@@ -107,12 +107,6 @@ const HOME_JSONLD = [
     logo: ORG_LOGO,
     description:
       "The booking link that gets India's creators and professionals paid — bookings, UPI payments and reminders in one link.",
-    sameAs: [
-      "https://www.linkedin.com/company/meeticulous/",
-      "https://www.instagram.com/meeticulous",
-      "https://www.facebook.com/meeticulous",
-      "https://x.com/meeticulous",
-    ],
   },
   {
     "@context": "https://schema.org",

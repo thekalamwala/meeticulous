@@ -134,12 +134,6 @@ const HOME_JSONLD = [
       email: "team@meeticulous.com",
       availableLanguage: ["en", "hi"],
     },
-    sameAs: [
-      "https://www.linkedin.com/company/meeticulous/",
-      "https://www.instagram.com/meeticulous",
-      "https://www.facebook.com/meeticulous",
-      "https://x.com/meeticulous",
-    ],
   },
   {
     "@context": "https://schema.org",

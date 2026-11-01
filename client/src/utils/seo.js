@@ -262,13 +262,10 @@ export const resolveBlogSeo = ({ post = {}, siteUrl = SITE_URL } = {}) => {
 // ── Shared brand / page builders ─────────────────────────────────────────────
 
 // Official brand profiles — used for Organization.sameAs (entity disambiguation
-// for SEO/GEO). Keep in sync with the Footer social links.
-export const ORG_SAME_AS = [
-  'https://www.linkedin.com/company/meeticulous/',
-  'https://www.instagram.com/meeticulous',
-  'https://www.facebook.com/meeticulous',
-  'https://x.com/meeticulous',
-];
+// for SEO/GEO).
+// Empty until the company accounts exist (planned for the next deployment):
+// LinkedIn, Instagram, Facebook, X. Keep in sync with the Footer social links.
+export const ORG_SAME_AS = [];
 
 // Legal entity + a support contact point. Source of truth is the company's own
 // published legal pages (/privacy, /terms) — Rajmudra Media LLP since 2026-10-31
@@ -311,7 +308,7 @@ export const organizationJsonLd = ({ siteUrl = SITE_URL } = {}) => {
     logo: `${site}/web-app-manifest-512x512.png`,
     description: 'Online booking and appointment scheduling platform for coaches, consultants, therapists, and small businesses.',
     contactPoint: ORG_CONTACT_POINT,
-    sameAs: ORG_SAME_AS,
+    ...(ORG_SAME_AS.length ? { sameAs: ORG_SAME_AS } : {}),
   };
 };
 
@@ -387,7 +384,7 @@ const orgNode = (site) => ({
   logo: { '@type': 'ImageObject', '@id': `${site}/#logo`, url: LOGO_URL(site), contentUrl: LOGO_URL(site), width: 512, height: 512 },
   description: 'Online booking and appointment scheduling platform for coaches, consultants, therapists, and small businesses.',
   contactPoint: ORG_CONTACT_POINT,
-  sameAs: ORG_SAME_AS,
+  ...(ORG_SAME_AS.length ? { sameAs: ORG_SAME_AS } : {}),
 });
 
 /**

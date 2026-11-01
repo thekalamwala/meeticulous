@@ -20,7 +20,10 @@ describe("TeamMasonry", () => {
     fireEvent.click(screen.getByRole("button", { name: new RegExp(`${m.name}.*${m.role}`, "i") }));
     const dialog = screen.getByRole("dialog");
     expect(within(dialog).getByText(m.bio)).toBeInTheDocument();
-    expect(within(dialog).getAllByRole("link").length).toBe(m.socials.length);
+    // Company social accounts aren't live yet: only the Meeticulous link (or a
+    // member's own link) renders.
+    const live = m.socials.filter((s) => s.type === "meeticulous" || (s.href && s.href !== "#"));
+    expect(within(dialog).getAllByRole("link").length).toBe(live.length);
   });
 
   it("renders one shaped portrait per member with name + position, shapes cycling", () => {
