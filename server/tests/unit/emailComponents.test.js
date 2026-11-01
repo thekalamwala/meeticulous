@@ -45,7 +45,8 @@ describe('emailComponents', () => {
     const html = C.signOff('Tithi', 'Meeticulous team');
     expect(html).toContain('images/team/tithi.jpg');
     expect(html).not.toContain('>T<');
-    expect(C.signOff('Shubham', 'CEO')).toContain('>S<');
+    expect(C.signOff('Shubham', 'CEO')).toContain('images/team/shubham.jpg');
+    expect(C.signOff('Durga', 'Team')).toContain('>D<');
     expect(html).toContain('Meeticulous team');
     expect(C.signOff('<b>', 'x')).not.toContain('<b><');
   });

@@ -190,7 +190,10 @@ function bookingCard({ title, sub, rows = [] } = {}) {
 }
 
 // Team photos for sign-offs (hosted JPG — email clients don't all render WebP).
-const TEAM_PHOTOS = { Tithi: 'https://meeticulous.com/images/team/tithi.jpg' };
+const TEAM_PHOTOS = {
+  Tithi:   'https://meeticulous.com/images/team/tithi.jpg',
+  Shubham: 'https://meeticulous.com/images/team/shubham.jpg',
+};
 
 /** Avatar sign-off: profile photo (or crimson initial circle when none) + name and role. */
 function signOff(name, role) {

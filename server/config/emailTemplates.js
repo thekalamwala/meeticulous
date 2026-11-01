@@ -547,7 +547,7 @@ const TEMPLATES = [
         `<li>Manage everything from your bookings dashboard</li>` +
       `</ol>` +
       lead('<strong>P.S.</strong> What brought you here? Just hit reply and let me know — I read every email.') +
-      lead('— Shubham<br/>Founder, Meeticulous'),
+      C.signOff('Shubham', 'Founder, Meeticulous'),
     cta_label: 'Explore creators', cta_url: '{{website_url}}/explore',
   }; })(),
 
