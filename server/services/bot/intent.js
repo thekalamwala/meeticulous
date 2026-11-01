@@ -14,11 +14,6 @@
 const normalize = (s) =>
   String(s || '').toLowerCase().replace(/[^\w\s]/g, ' ').replace(/\s+/g, ' ').trim();
 
-// The brand name literally contains "book", so "what is Book A Sloth" would trip the
-// booking intent. Strip the brand phrase before matching so a question ABOUT the
-// product falls through to retrieval, while a real "book a service" request still hits.
-const BRAND_RE = /\bbook ?a ?sloth\b/g;
-
 // Specific topics, most-specific first. Word-boundary anchored so mid-word hits
 // don't leak (e.g. booking's \bschedul\w* can't match "reschedule").
 const SPECIFIC = [
@@ -36,7 +31,7 @@ const BOOKING_RE = /\b(book\w*|appointment\w*|schedul\w*|slot\w*)\b/;
 //   'low'  — two+ specific topics matched → ambiguous, ask a clarifying question.
 //   'none' — nothing matched → let the retrieval/Claude path handle it.
 function classify(query) {
-  const nq = normalize(query).replace(BRAND_RE, ' ').replace(/\s+/g, ' ').trim();
+  const nq = normalize(query);
   if (!nq) return { intent: null, candidates: [], confidence: 'none' };
 
   const specific = SPECIFIC.filter((r) => r.re.test(nq)).map((r) => r.name);

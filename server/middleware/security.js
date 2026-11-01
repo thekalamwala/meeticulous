@@ -1,5 +1,5 @@
 /**
- * Centralized security middleware for BookASloth API
+ * Centralized security middleware for Meeticulous API
  * Covers: Helmet, CSP, HSTS, rate limiting, XSS, HPP, request hardening
  */
 const helmet = require('helmet');

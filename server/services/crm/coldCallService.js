@@ -578,9 +578,9 @@ async function reports(opts = {}, now = new Date()) {
 // ── Invite link (public, via inviteService) ───────────────────
 // The tracked link is the lead's category landing page (or the homepage) with ?i=<code>:
 // any page with ?i= logs the visit and stashes the code for Google signup (client
-// AuthContext → /api/invite/<code>/visit). bookasloth.com/invite/<code> also still works:
+// AuthContext → /api/invite/<code>/visit). meeticulous.com/invite/<code> also still works:
 // inviteService falls back here when a slug isn't an invite_links row.
-const inviteUrl = (code, profession) => `https://bookasloth.com${rules.landingPath(profession)}?i=${code}`;
+const inviteUrl = (code, profession) => `https://meeticulous.com${rules.landingPath(profession)}?i=${code}`;
 
 // ponytail: ref_code lookups scan leads' JSONB (no index) — fine at ~10k leads; add an
 // expression index on attributes->cold_call->>ref_code if clicks or leads grow a lot.
@@ -650,7 +650,7 @@ async function callbackReminders(now = new Date()) {
 }
 
 // ── 6 pm recap email (cron) ───────────────────────────────────
-const RECAP_TO = process.env.COLD_CALL_RECAP_EMAIL || 'bookasloth@gmail.com';
+const RECAP_TO = process.env.COLD_CALL_RECAP_EMAIL || 'hello@meeticulous.com';
 async function dailyRecap(now = new Date()) {
   const s = await stats({ days: 1 }, now);
   const t = s.today;

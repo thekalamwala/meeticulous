@@ -26,7 +26,7 @@ test('isConfigured is false when env vars are unset', () => {
 
 test('isConfigured is true when both env vars are set', () => {
   process.env.GSC_SA_KEY = JSON.stringify({ client_email: 'a@b.iam.gserviceaccount.com', private_key: 'x' });
-  process.env.GSC_PROPERTY = 'sc-domain:bookasloth.com';
+  process.env.GSC_PROPERTY = 'sc-domain:meeticulous.com';
   const gscClient = require('../../services/seo/gscClient');
   expect(gscClient.isConfigured()).toBe(true);
 });
@@ -38,7 +38,7 @@ test('getClient returns null when unconfigured', () => {
 
 test('getClient returns null (no throw) on malformed GSC_SA_KEY', () => {
   process.env.GSC_SA_KEY = 'not-json';
-  process.env.GSC_PROPERTY = 'sc-domain:bookasloth.com';
+  process.env.GSC_PROPERTY = 'sc-domain:meeticulous.com';
   const gscClient = require('../../services/seo/gscClient');
   expect(() => gscClient.getClient()).not.toThrow();
   expect(gscClient.getClient()).toBeNull();
@@ -46,13 +46,13 @@ test('getClient returns null (no throw) on malformed GSC_SA_KEY', () => {
 
 test('getClient returns a searchconsole client when configured', () => {
   process.env.GSC_SA_KEY = JSON.stringify({ client_email: 'a@b.iam.gserviceaccount.com', private_key: 'x' });
-  process.env.GSC_PROPERTY = 'sc-domain:bookasloth.com';
+  process.env.GSC_PROPERTY = 'sc-domain:meeticulous.com';
   const gscClient = require('../../services/seo/gscClient');
   expect(gscClient.getClient()).toEqual({ mockSearchConsole: true });
 });
 
 test('siteUrl returns GSC_PROPERTY', () => {
-  process.env.GSC_PROPERTY = 'sc-domain:bookasloth.com';
+  process.env.GSC_PROPERTY = 'sc-domain:meeticulous.com';
   const gscClient = require('../../services/seo/gscClient');
-  expect(gscClient.siteUrl()).toBe('sc-domain:bookasloth.com');
+  expect(gscClient.siteUrl()).toBe('sc-domain:meeticulous.com');
 });

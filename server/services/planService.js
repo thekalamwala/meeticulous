@@ -9,7 +9,7 @@
  * - Fallback defaults if the v2.1 migration hasn't been applied, so production
  *   never breaks (schema fallback pattern from docs/ai-context.md)
  *
- * Two public plans (v3.165): `free` ("Sloth") and `premium` ("Sloth Active").
+ * Two public plans (v3.165): `free` ("Starter") and `premium` ("Pro").
  * Every legacy slug survives and still reads its own row — see FREE_SLUGS.
  */
 
@@ -32,21 +32,21 @@ const FREE_PLAN = 'free';
 const PREMIUM_LIMITS = { services: -1, free_services: -1, bookings_per_year: -1, digital_products: -1, calendar_integrations: 2, profile_theme_colors: -1, reminder_flows: -1, followup_flows: -1, categories: -1, crm: -1, ai_generations: -1 };
 
 const FALLBACK_PLANS = {
-  free:         { name: 'Sloth', slug: 'free', annual_price: 0, monthly_price: 0, commission_percentage: 5, active: true,
+  free:         { name: 'Starter', slug: 'free', annual_price: 0, monthly_price: 0, commission_percentage: 5, active: true,
     razorpay_plan_id_monthly: null, razorpay_plan_id_annual: null,
     limits: { services: -1, free_services: 2, bookings_per_year: -1, digital_products: 3, calendar_integrations: 1, profile_theme_colors: -1, reminder_flows: 1, followup_flows: 0, categories: -1, crm: 10, ai_generations: 10 },
     features: {}, integrations: { calendar_apps: ['google_calendar'] }, support_type: 'standard', sort_order: 1 },
-  premium:      { name: 'Sloth Active', slug: 'premium', annual_price: 3050, monthly_price: 338.13, commission_percentage: 0, active: true,
+  premium:      { name: 'Pro', slug: 'premium', annual_price: 3050, monthly_price: 338.13, commission_percentage: 0, active: true,
     razorpay_plan_id_monthly: null, razorpay_plan_id_annual: null,
     limits: { ...PREMIUM_LIMITS },
     features: {}, integrations: { calendar_apps: ['google_calendar', 'ical'] }, support_type: 'priority', sort_order: 2 },
   // Legacy paid tiers: hidden from the catalogue, but 3 live mandates still
   // renew on `creator`, so a missing table must not read them as free.
-  creator:      { name: 'Sloth Active (Partner)', slug: 'creator', annual_price: 1499, monthly_price: 229, commission_percentage: 0, active: false,
+  creator:      { name: 'Pro (Partner)', slug: 'creator', annual_price: 1499, monthly_price: 229, commission_percentage: 0, active: false,
     razorpay_plan_id_monthly: null, razorpay_plan_id_annual: null,
     limits: { ...PREMIUM_LIMITS },
     features: {}, integrations: { calendar_apps: ['google_calendar'] }, support_type: 'priority', sort_order: 3 },
-  professional: { name: 'Sloth Active (Legacy Studio)', slug: 'professional', annual_price: 3650, monthly_price: 555, commission_percentage: 0, active: false,
+  professional: { name: 'Pro (Legacy Studio)', slug: 'professional', annual_price: 3650, monthly_price: 555, commission_percentage: 0, active: false,
     razorpay_plan_id_monthly: null, razorpay_plan_id_annual: null,
     limits: { ...PREMIUM_LIMITS },
     features: {}, integrations: { calendar_apps: ['google_calendar', 'ical'] }, support_type: 'priority', sort_order: 4 },
@@ -126,7 +126,7 @@ const rescheduleNotifyForPlan = async (slug) => {
 
 /** Resolve a vendor's effective plan slug — expired paid plan falls back to free tier.
  *  Data is never touched: the host keeps every service, booking and client, and
- *  simply loses the Sloth Active capabilities until they resubscribe. */
+ *  simply loses the Pro capabilities until they resubscribe. */
 const resolveVendorPlan = (profile) => {
   const raw = normalizeSlug(profile?.plan);
   const expired = profile?.plan_expires_at && new Date(profile.plan_expires_at) < new Date();
@@ -134,7 +134,7 @@ const resolveVendorPlan = (profile) => {
 };
 
 // Every free-tier slug, so "is this host on the paid track?" checks treat all
-// free variants alike: canonical `free` ("Sloth"), the retired `starter`, the
+// free variants alike: canonical `free` ("Starter"), the retired `starter`, the
 // legacy alias `explorer`, and `starter_legacy` (pre-v3.55 free users — see
 // migration v3.56). starter_legacy is NOT aliased in normalizeSlug because it
 // must read its OWN plan row rather than collapse onto `free`.

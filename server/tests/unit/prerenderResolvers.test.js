@@ -71,7 +71,7 @@ describe('resolveProfileMeta', () => {
     });
     const m = await resolveProfileMeta('jane');
     const ld = m.buildHtmlArgs.jsonLd;
-    expect(ld.publisher).toEqual({ '@type': 'Organization', name: 'Book A Sloth', url: expect.any(String) });
+    expect(ld.publisher).toEqual({ '@type': 'Organization', name: 'Meeticulous', url: expect.any(String) });
     expect(ld.mainEntity.hasOccupation).toEqual({
       '@type': 'Occupation', name: 'Startup Advisor', occupationalCategory: 'Startup Advisor',
     });

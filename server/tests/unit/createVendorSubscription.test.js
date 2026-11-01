@@ -39,7 +39,7 @@ jest.mock('../../services/planService', () => ({
   // Archived rows are never self-serve purchasable (v3.165).
   isSelfServable: (p) => !!p && p.active !== false,
   getPlan: jest.fn(() =>
-    Promise.resolve({ slug: 'premium', name: 'Sloth Active', monthly_price: 338.13, annual_price: 3050, active: true })
+    Promise.resolve({ slug: 'premium', name: 'Pro', monthly_price: 338.13, annual_price: 3050, active: true })
   ),
 }));
 jest.mock('../../services/platformConfig', () => ({
@@ -230,7 +230,7 @@ describe('createVendorSubscription — archived plans are not self-serve purchas
       razorpay_subscription_id: null, billing_cadence: null,
     });
     planService.getPlan.mockResolvedValueOnce({
-      slug: 'creator', name: 'Sloth Active (Partner)',
+      slug: 'creator', name: 'Pro (Partner)',
       monthly_price: 229, annual_price: 1499, active: false,
     });
 

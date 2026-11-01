@@ -8,18 +8,18 @@ const {
   fetchProfessions, fetchBlogs,
 } = require('../../services/sitemapService');
 
-const SITE = 'https://bookasloth.com';
+const SITE = 'https://meeticulous.com';
 
 describe('url builders', () => {
   test('hostUrl joins site + username', () => {
-    expect(hostUrl(SITE, 'john-doe')).toBe('https://bookasloth.com/john-doe');
+    expect(hostUrl(SITE, 'john-doe')).toBe('https://meeticulous.com/john-doe');
   });
   test('serviceUrl joins site + username + slug', () => {
     expect(serviceUrl(SITE, 'john-doe', 'business-consultation'))
-      .toBe('https://bookasloth.com/john-doe/business-consultation');
+      .toBe('https://meeticulous.com/john-doe/business-consultation');
   });
   test('trailing slash on site is normalised away', () => {
-    expect(hostUrl('https://bookasloth.com/', 'jane')).toBe('https://bookasloth.com/jane');
+    expect(hostUrl('https://meeticulous.com/', 'jane')).toBe('https://meeticulous.com/jane');
   });
 });
 
@@ -36,11 +36,11 @@ describe('toLastmod', () => {
 describe('staticEntries', () => {
   test('includes the homepage as an absolute URL', () => {
     const entries = staticEntries(SITE);
-    expect(entries.some(e => e.loc === 'https://bookasloth.com/')).toBe(true);
+    expect(entries.some(e => e.loc === 'https://meeticulous.com/')).toBe(true);
   });
   test('every entry is an absolute URL under the site', () => {
     for (const e of staticEntries(SITE)) {
-      expect(e.loc.startsWith('https://bookasloth.com/')).toBe(true);
+      expect(e.loc.startsWith('https://meeticulous.com/')).toBe(true);
     }
   });
   test('includes the marketing clusters (LPs, features, help docs, wall of love)', () => {
@@ -51,7 +51,7 @@ describe('staticEntries', () => {
       '/help/docs', '/help/docs/what-is-book-a-sloth', '/wall-of-love',
       '/careers/mern-stack-developer',
     ]) {
-      expect(locs.has(`https://bookasloth.com${path}`)).toBe(true);
+      expect(locs.has(`https://meeticulous.com${path}`)).toBe(true);
     }
   });
 });
@@ -60,7 +60,7 @@ describe('hostEntries', () => {
   test('maps a host row to a profile URL with lastmod', () => {
     const entries = hostEntries([{ username: 'john-doe', updated_at: '2026-06-20T10:00:00Z' }], SITE);
     expect(entries).toEqual([
-      { loc: 'https://bookasloth.com/john-doe', lastmod: '2026-06-20', changefreq: 'weekly', priority: '0.7' },
+      { loc: 'https://meeticulous.com/john-doe', lastmod: '2026-06-20', changefreq: 'weekly', priority: '0.7' },
     ]);
   });
   test('skips rows with no username', () => {
@@ -76,7 +76,7 @@ describe('serviceEntries', () => {
   ];
   test('maps a service to /username/slug and skips unresolvable rows', () => {
     expect(serviceEntries(rows, SITE)).toEqual([
-      { loc: 'https://bookasloth.com/john-doe/consult', lastmod: '2026-06-20', changefreq: 'weekly', priority: '0.8' },
+      { loc: 'https://meeticulous.com/john-doe/consult', lastmod: '2026-06-20', changefreq: 'weekly', priority: '0.8' },
     ]);
   });
 });
@@ -85,7 +85,7 @@ describe('professionEntries', () => {
   test('leads with the /services root entry (no lastmod)', () => {
     const entries = professionEntries([], SITE);
     expect(entries).toEqual([
-      { loc: 'https://bookasloth.com/services', changefreq: 'weekly', priority: '0.6' },
+      { loc: 'https://meeticulous.com/services', changefreq: 'weekly', priority: '0.6' },
     ]);
   });
   test('adds one URL per profession row with lastmod', () => {
@@ -94,9 +94,9 @@ describe('professionEntries', () => {
       { slug: 'coaching', updated_at: '2026-06-15T10:00:00Z' },
     ];
     expect(professionEntries(rows, SITE)).toEqual([
-      { loc: 'https://bookasloth.com/services', changefreq: 'weekly', priority: '0.6' },
-      { loc: 'https://bookasloth.com/services/therapy', lastmod: '2026-06-20', changefreq: 'weekly', priority: '0.6' },
-      { loc: 'https://bookasloth.com/services/coaching', lastmod: '2026-06-15', changefreq: 'weekly', priority: '0.6' },
+      { loc: 'https://meeticulous.com/services', changefreq: 'weekly', priority: '0.6' },
+      { loc: 'https://meeticulous.com/services/therapy', lastmod: '2026-06-20', changefreq: 'weekly', priority: '0.6' },
+      { loc: 'https://meeticulous.com/services/coaching', lastmod: '2026-06-15', changefreq: 'weekly', priority: '0.6' },
     ]);
   });
 });
@@ -107,7 +107,7 @@ describe('blogEntries', () => {
       { slug: 'zero-commission-bet', published_at: '2026-06-25T10:00:00Z', updated_at: '2026-06-28T10:00:00Z' },
     ];
     expect(blogEntries(rows, SITE)).toEqual([
-      { loc: 'https://bookasloth.com/blog/zero-commission-bet', lastmod: '2026-06-28', changefreq: 'monthly', priority: '0.6' },
+      { loc: 'https://meeticulous.com/blog/zero-commission-bet', lastmod: '2026-06-28', changefreq: 'monthly', priority: '0.6' },
     ]);
   });
 

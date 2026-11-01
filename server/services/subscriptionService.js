@@ -161,7 +161,7 @@ async function activateFromSubscription({ rzpSub, rzpPayment = null }) {
         meta: { plan: planSlug, cadence, payment_id: paymentId }, promoteToPaid: true,
       });
     }
-    // Resolve to the fullest earned status now (Subscribed→Onboarded→Won→Sloth→
+    // Resolve to the fullest earned status now (Subscribed→Onboarded→Won→ROI→
     // Retained on renewal) instead of waiting up to 15 min for the engine tick.
     await leadService.recomputeFromAccount(vendorId);
   } catch (e) { console.error('[crm] subscription event hook failed (non-fatal):', e.message); }

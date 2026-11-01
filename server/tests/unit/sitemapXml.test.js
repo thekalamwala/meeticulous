@@ -14,16 +14,16 @@ describe('xmlEscape', () => {
 
 describe('buildUrlset', () => {
   test('wraps entries in a urlset with the sitemap namespace', () => {
-    const xml = buildUrlset([{ loc: 'https://bookasloth.com/john-doe' }]);
+    const xml = buildUrlset([{ loc: 'https://meeticulous.com/john-doe' }]);
     expect(xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>')).toBe(true);
     expect(xml).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
-    expect(xml).toContain('<url><loc>https://bookasloth.com/john-doe</loc></url>');
+    expect(xml).toContain('<url><loc>https://meeticulous.com/john-doe</loc></url>');
     expect(xml.trimEnd().endsWith('</urlset>')).toBe(true);
   });
 
   test('includes optional lastmod/changefreq/priority only when provided', () => {
     const xml = buildUrlset([
-      { loc: 'https://bookasloth.com/a', lastmod: '2026-06-20', changefreq: 'weekly', priority: 0.8 },
+      { loc: 'https://meeticulous.com/a', lastmod: '2026-06-20', changefreq: 'weekly', priority: 0.8 },
     ]);
     expect(xml).toContain('<lastmod>2026-06-20</lastmod>');
     expect(xml).toContain('<changefreq>weekly</changefreq>');
@@ -31,8 +31,8 @@ describe('buildUrlset', () => {
   });
 
   test('escapes loc values (e.g. query ampersands)', () => {
-    const xml = buildUrlset([{ loc: 'https://bookasloth.com/a?x=1&y=2' }]);
-    expect(xml).toContain('<loc>https://bookasloth.com/a?x=1&amp;y=2</loc>');
+    const xml = buildUrlset([{ loc: 'https://meeticulous.com/a?x=1&y=2' }]);
+    expect(xml).toContain('<loc>https://meeticulous.com/a?x=1&amp;y=2</loc>');
     expect(xml).not.toContain('x=1&y=2');
   });
 
@@ -46,12 +46,12 @@ describe('buildUrlset', () => {
 describe('buildSitemapIndex', () => {
   test('wraps child sitemaps in a sitemapindex', () => {
     const xml = buildSitemapIndex([
-      { loc: 'https://bookasloth.com/sitemap-hosts.xml', lastmod: '2026-06-20' },
-      { loc: 'https://bookasloth.com/sitemap-services-1.xml' },
+      { loc: 'https://meeticulous.com/sitemap-hosts.xml', lastmod: '2026-06-20' },
+      { loc: 'https://meeticulous.com/sitemap-services-1.xml' },
     ]);
     expect(xml).toContain('<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
-    expect(xml).toContain('<sitemap><loc>https://bookasloth.com/sitemap-hosts.xml</loc><lastmod>2026-06-20</lastmod></sitemap>');
-    expect(xml).toContain('<sitemap><loc>https://bookasloth.com/sitemap-services-1.xml</loc></sitemap>');
+    expect(xml).toContain('<sitemap><loc>https://meeticulous.com/sitemap-hosts.xml</loc><lastmod>2026-06-20</lastmod></sitemap>');
+    expect(xml).toContain('<sitemap><loc>https://meeticulous.com/sitemap-services-1.xml</loc></sitemap>');
     expect(xml.trimEnd().endsWith('</sitemapindex>')).toBe(true);
   });
 });

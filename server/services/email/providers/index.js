@@ -45,7 +45,7 @@ const REPLY_TO = process.env.SUPPORT_REPLY_TO || 'team@meeticulous.com';
 /**
  * Resolve a provider by name (default SMTP), wrapped with the universal
  * placeholder-recipient guard: a phone-only user's synthetic
- * p<phone>@users.bookasloth.app address can't receive mail, so we short-circuit to
+ * p<phone> placeholder address can't receive mail, so we short-circuit to
  * a benign no-op success (never call the real provider → no bounce) for EVERY email
  * path — CRM, transactional and campaign alike — from this one chokepoint. Success
  * (not an error) so inline callers that throw on failure aren't broken.

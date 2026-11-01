@@ -20,7 +20,7 @@ const SEND_ON_DAYS = new Set([7, 1]);
 const DAY_MS = 86400000;
 
 // Read the plan's display name straight from subscription_plans so a rename
-// (Host+ → Sloth Active (Partner), etc.) never leaves a stale label in a
+// (Host+ → Pro (Partner), etc.) never leaves a stale label in a
 // customer-facing email. Falls back to a neutral phrase if the row is gone.
 const planLabel = async (slug) => {
   try {

@@ -1813,7 +1813,7 @@ const reminderFlagFor = (windowHours) =>
 // Send the guest + host reminder pair for one booking. Content is identical for
 // every lead-time (it shows the actual scheduled time), so callers don't pass
 // the window — only the cron's flag bookkeeping differs.
-// WhatsApp booking reminders are a paid perk. Free (Sloth) hosts get them for a
+// WhatsApp booking reminders are a paid perk. Free (Starter) hosts get them for a
 // grace window — their first 2 months — after which their reminders fall back to
 // email; paid/comped plans always keep WhatsApp. The window is anchored no earlier
 // than WHATSAPP_FREE_LAUNCH so EXISTING free hosts (all already >2 months old) are

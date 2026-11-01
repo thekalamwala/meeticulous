@@ -63,8 +63,8 @@ const ACCOUNT = [
 
 // Brand / role / safety / impersonation-prevention.
 const BRAND = [
-  'bookasloth', 'book-a-sloth', 'sloth', 'slothofficial', 'official', 'verified', 'staff',
-  'moderator', 'mod', 'administrator', 'superadmin', 'team-sloth', 'no-reply', 'noreply',
+  'meeticulous', 'meeticulousofficial', 'official', 'verified', 'staff',
+  'moderator', 'mod', 'administrator', 'superadmin', 'team-meeticulous', 'no-reply', 'noreply',
   'postmaster', 'abuse', 'hostmaster', 'mail', 'email', 'hosts', 'host', 'users', 'vendors',
   'home', 'index', 'me', 'guest', 'app', 'apps', 'web', 'go',
 ];

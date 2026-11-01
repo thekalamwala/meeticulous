@@ -1,6 +1,6 @@
 'use strict';
 /**
- * attribution.js — connect a lead to its Book A Sloth account and revenue.
+ * attribution.js — connect a lead to its Meeticulous account and revenue.
  *
  * Two passes (run hourly by cron, or on demand):
  *   1. link  — leads with no profile_id are matched to a profiles row by phone
@@ -82,7 +82,7 @@ function isPaidSubscriber(profile, hasSubPayment) {
 // Pure: converted_at backfill only. Lead STATUS is owned by the lifecycle engine
 // + real-time resolver (services/crm/lifecycleRules.resolveAccountStatus) and the
 // churn hook — a single writer. Attribution used to promote/demote status too,
-// which would now regress the new downstream money states (won/sloth/…) back to
+// which would now regress the new downstream money states (won/ROI/…) back to
 // 'paid' every hour. It no longer touches status: it only stamps converted_at on a
 // won lead that reached a money state without one.
 function conversionPatch({ won, status, convertedAt, wonAt }) {

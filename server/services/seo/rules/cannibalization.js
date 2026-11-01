@@ -4,7 +4,7 @@
 // the same query. Advisory (P3, autoFixable:false): the system NEVER merges,
 // redirects or deletes a page automatically. Query/ranking-overlap signals are
 // deferred until GSC history is mature (per plan §1g / §1i).
-const STOP = new Set(['the', 'a', 'an', 'and', 'or', 'for', 'to', 'of', 'in', 'on', 'with', 'your', 'you', 'book', 'sloth']);
+const STOP = new Set(['the', 'a', 'an', 'and', 'or', 'for', 'to', 'of', 'in', 'on', 'with', 'your', 'you', 'book', 'meeticulous']);
 const OVERLAP_MIN = Number(process.env.SEO_CANNIBAL_OVERLAP) || 0.7;
 
 function tokens(s) {

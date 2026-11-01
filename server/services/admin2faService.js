@@ -10,7 +10,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const speakeasy = require('speakeasy');
 
-const ISSUER = 'Book A Sloth Admin';
+const ISSUER = 'Meeticulous Admin';
 
 // ---------------------------------------------------------------------------
 // Public API

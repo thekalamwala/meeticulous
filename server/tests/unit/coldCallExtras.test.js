@@ -138,7 +138,7 @@ describe('dailyRecap', () => {
     };
     expect(await svc.dailyRecap(NOW)).toEqual({ sent: true });
     const mail = sendEmail.mock.calls[0][0];
-    expect(mail.to).toBe('bookasloth@gmail.com');
+    expect(mail.to).toBe('hello@meeticulous.com');
     expect(mail.subject).toBe('Cold calling today: 2 calls · 1 interested');
     expect(mail.html).toContain('Sunrise &lt;Dental&gt;');
   });
@@ -160,7 +160,7 @@ describe('invite link (category page + ?i=<code>)', () => {
       crm_templates: { data: { channel: 'whatsapp', name: 'Cold Call Link - Vendor', is_active: true, variables: [{ key: 'business_name' }, { key: 'invite_code', ref: 'code' }, { key: 'invite_link', ref: 'link' }] } },
     };
     await svc.send(LEAD.id, { whatsapp: { category: 'cold_call_link' } }, 'adm', NOW);
-    expect(messageService.enqueue.mock.calls[0][0].variables.params).toEqual(['{{business_name}}', 'CX12', 'https://bookasloth.com/?i=CX12']);
+    expect(messageService.enqueue.mock.calls[0][0].variables.params).toEqual(['{{business_name}}', 'CX12', 'https://meeticulous.com/?i=CX12']);
   });
   test('signup from the invite links the account to that lead, never re-pointing a linked one', async () => {
     mockData = { leads: (o) => (o._ops.some(([m]) => m === 'update') ? { data: null } : { data: { id: 'A', profile_id: null } }) };
@@ -197,5 +197,5 @@ test('the tracked link goes to the lead category page with ?i=<code>', async () 
     crm_templates: { data: { channel: 'whatsapp', name: 'Cold Call Link - Vendor', is_active: true, variables: [{ key: 'business_name' }, { key: 'invite_link', ref: 'link' }] } },
   };
   await svc.send(LEAD.id, { whatsapp: { category: 'cold_call_link' } }, 'adm', NOW);
-  expect(messageService.enqueue.mock.calls[0][0].variables.params).toEqual(['{{business_name}}', 'https://bookasloth.com/for/dentists?i=CX12']);
+  expect(messageService.enqueue.mock.calls[0][0].variables.params).toEqual(['{{business_name}}', 'https://meeticulous.com/for/dentists?i=CX12']);
 });
