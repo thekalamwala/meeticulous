@@ -346,7 +346,7 @@ const SERVICE_CATEGORY_SEED = {
   // DB rows verbatim; the DB has NULL descriptions for these, so they are
   // name-only arrays like the rest of the string-form entries above. All are
   // professional/advisory services — OUTSIDE GST §9(5). (The internal
-  // `office-of-book-a-sloth` category is deliberately NOT mirrored: it is BAS's
+  // platform's own internal "office" category is deliberately NOT mirrored: it is BAS's
   // own office account, not a public profession.) Verified vs prod 2026-09-23.
   'advocate': ['1:1 Legal Consultation', 'Case Evaluation', 'Civil Case Advisory', 'Contract Review', 'Corporate Legal Advisory', 'Criminal Case Advisory', 'Divorce Consultation', 'Family Law Consultation', 'Legal Document Drafting', 'Legal Notice Drafting', 'Property Legal Advice', 'Startup Legal Advisory', 'Tax Law Consultation', 'Will & Estate Consultation'],
   'chartered-accountant': ['1:1 Consultation', 'Audit Advisory', 'Bookkeeping Guidance', 'Business Registration Advisory', 'CA Exam Mentorship', 'Company Incorporation Guidance', 'Financial Statement Review', 'GST Consultation', 'Income Tax Planning', 'Investment & Tax Saving', 'ROC Compliance Advisory', 'Startup Compliance Advisory', 'Tax Filing Assistance', 'TDS Consultation'],

@@ -3,7 +3,7 @@
 // object the SEO and GEO scorers read. Pure — no I/O. See docs/seo-scoring-framework.md.
 
 const ENTITY_TYPES = ['Organization', 'Person', 'ProfilePage', 'Service', 'LocalBusiness', 'Product', 'Article', 'BlogPosting'];
-const GENERIC_H1 = new Set(['book a sloth', 'home', 'welcome', 'untitled', 'services', 'profile']);
+const GENERIC_H1 = new Set(['meeticulous', 'home', 'welcome', 'untitled', 'services', 'profile']);
 
 const lc = (s) => String(s || '').toLowerCase();
 const uniqueHosts = (urls = []) => {

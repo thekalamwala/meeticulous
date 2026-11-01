@@ -9,7 +9,7 @@
  *   1. the state set + which board owns each state + their order (RANK),
  *   2. `resolveAccountStatus` — the most-advanced status a lead's linked account
  *      *earns* from verifiable facts (payment, onboarding, first booking, the
- *      Sloth ROI gate, renewals, referrals, enterprise). Both the 15-min engine
+ *      ROI gate, renewals, referrals, enterprise). Both the 15-min engine
  *      and the real-time hooks call this so they can never disagree, and
  *   3. `manualTransition` — whether a human's drag is allowed and whether it must
  *      carry a reason (backward moves and exits do).
@@ -23,13 +23,17 @@
  *  - a TERMINAL / do_not_contact lead is never auto-resurrected,
  *  - an UNPAID host never leaves Presale via account facts (Relations is paid-only),
  *  - a MONEY state is never auto-regressed (only churn/manual can pull it back),
- *  - Marketing states are gated behind the Sloth milestone (strict funnel).
+ *  - Marketing states are gated behind the ROI milestone (strict funnel).
  */
 
 // ── Boards (order matters — index within a board is its column order) ──────────
+// The ROI-milestone status. Its stored value is a legacy name kept for existing
+// leads.status rows and the admin client's salesConstants — rename both together.
+const ROI = 'sloth';
+
 const PRESALE   = ['new', 'contacted', 'replied', 'qualified', 'demo'];
-const RELATIONS = ['paid', 'activated', 'won', 'sloth'];        // Subscribed · Onboarded · Won · The Sloth
-const MARKETING = ['sloth', 'retained', 'ambassador', 'enterprised', 'champion']; // sloth = shared handoff column
+const RELATIONS = ['paid', 'activated', 'won', ROI];           // Subscribed · Onboarded · Won · ROI milestone
+const MARKETING = [ROI, 'retained', 'ambassador', 'enterprised', 'champion']; // ROI = shared handoff column
 const EXIT      = ['not_reachable', 'not_interested', 'disqualified', 'lost', 'churned'];
 const DNC       = 'do_not_contact';                             // orthogonal send-gate, not a board column
 const LIST      = 'list';   // cold pool — a lead not yet in the pipeline (flat Lists table, no board)
@@ -37,27 +41,27 @@ const LIST      = 'list';   // cold pool — a lead not yet in the pipeline (fla
 const STATUSES = [
   LIST,
   ...PRESALE,
-  ...RELATIONS.filter((s) => s !== 'sloth'), 'sloth',           // sloth once
-  ...MARKETING.filter((s) => s !== 'sloth'),
+  ...RELATIONS.filter((s) => s !== ROI), ROI,                   // ROI once
+  ...MARKETING.filter((s) => s !== ROI),
   ...EXIT, DNC,
 ];
 
-// Board a status is *owned* by (sloth hands off to marketing the moment it's set).
+// Board a status is *owned* by (ROI hands off to marketing the moment it's set).
 const PIPELINE_OF = {};
 for (const s of PRESALE) PIPELINE_OF[s] = 'presale';
 for (const s of ['paid', 'activated', 'won']) PIPELINE_OF[s] = 'relations';
-for (const s of ['sloth', 'retained', 'ambassador', 'enterprised', 'champion']) PIPELINE_OF[s] = 'marketing';
+for (const s of [ROI, 'retained', 'ambassador', 'enterprised', 'champion']) PIPELINE_OF[s] = 'marketing';
 for (const s of EXIT) PIPELINE_OF[s] = 'exit';
 PIPELINE_OF[DNC] = 'exit';
 PIPELINE_OF[LIST] = 'lists';   // its own group; NOT in BOARD_COLUMNS, so no kanban column renders it
 
-// Columns each board renders (Relations shows sloth as its read-only handoff tail).
+// Columns each board renders (Relations shows ROI as its read-only handoff tail).
 const BOARD_COLUMNS = { presale: PRESALE, relations: RELATIONS, marketing: MARKETING, exit: EXIT };
 
 // Advancement order. Higher = further along. Terminals + dnc = 0 (off the funnel).
 const RANK = {
   new: 1, contacted: 2, replied: 3, qualified: 4, demo: 5,
-  paid: 6, activated: 7, won: 8, sloth: 9,
+  paid: 6, activated: 7, won: 8, [ROI]: 9,
   retained: 10, ambassador: 11, enterprised: 12, champion: 13,
 };
 for (const s of EXIT) RANK[s] = 0;
@@ -66,7 +70,7 @@ RANK[LIST] = 0;   // below 'new' (1) — a cold lead is pre-pipeline
 
 // A lead that has produced revenue / is a paying customer. Never auto-regressed;
 // a manual move out of one requires a reason. converted_at is stamped on entry.
-const MONEY = new Set(['paid', 'activated', 'won', 'sloth', 'retained', 'ambassador', 'enterprised', 'champion']);
+const MONEY = new Set(['paid', 'activated', 'won', ROI, 'retained', 'ambassador', 'enterprised', 'champion']);
 const CONVERTED = MONEY;                                  // alias: entering any stamps converted_at
 const TERMINAL = new Set(EXIT);                           // lost · churned · not_reachable · not_interested · disqualified
 const NO_AUTO = new Set([...TERMINAL, DNC, LIST]);        // auto never moves a cold/terminal/dnc lead
@@ -79,19 +83,19 @@ const CLOSED_SQL = `(${CLOSED.join(',')})`;              // for supabase `.not('
 
 // The reporting funnel spine (acquisition → success). Marketing/exit are excluded
 // from step-retention — they are post-conversion / terminal, not funnel steps.
-const FUNNEL = ['new', 'contacted', 'replied', 'qualified', 'demo', 'paid', 'activated', 'won', 'sloth'];
+const FUNNEL = ['new', 'contacted', 'replied', 'qualified', 'demo', 'paid', 'activated', 'won', ROI];
 
 const rankOf = (s) => (RANK[s] == null ? -1 : RANK[s]);
 const higher = (a, b) => (rankOf(a) >= rankOf(b) ? a : b);
 const pipelineOf = (status) => PIPELINE_OF[status] || 'exit';
 
 /**
- * The Sloth ROI gate: the host has earned, on-platform, at least 2× what their
+ * The ROI gate: the host has earned, on-platform, at least 2× what their
  * plan costs over its tenure AND is still active (≥5 paid bookings in 30d).
  * @param {object} ctx
  * @returns {boolean}
  */
-function meetsSlothGate(ctx = {}) {
+function meetsRoiGate(ctx = {}) {
   const earnings = Number(ctx.earningsPaise) || 0;
   const planPrice = Number(ctx.planPricePaise) || 0;
   const last30 = Number(ctx.bookingsLast30d) || 0;
@@ -126,8 +130,8 @@ function resolveAccountStatus(current, ctx = {}) {
   if (ctx.onboardingComplete) target = 'activated';         // Onboarded
   if (ctx.hasBooking) target = 'won';                       // Won (first paid booking)
 
-  if (meetsSlothGate(ctx)) {
-    target = 'sloth';                                        // Marketing gated behind the Sloth milestone
+  if (meetsRoiGate(ctx)) {
+    target = ROI;                                            // Marketing gated behind the ROI milestone
     // Retained: a renewal, OR a paying host past one full billing cycle (long tenure —
     // covers legacy annual subscribers with no second charge row).
     if (Number(ctx.renewals) >= 1 || ctx.longTenure) target = higher(target, 'retained');
@@ -171,5 +175,5 @@ module.exports = {
   PRESALE, RELATIONS, MARKETING, EXIT, DNC, LIST,
   STATUSES, PIPELINE_OF, BOARD_COLUMNS, RANK, FUNNEL,
   MONEY, CONVERTED, TERMINAL, NO_AUTO, CLOSED, CLOSED_SQL,
-  rankOf, pipelineOf, meetsSlothGate, resolveAccountStatus, manualTransition,
+  rankOf, pipelineOf, meetsRoiGate, ROI, resolveAccountStatus, manualTransition,
 };

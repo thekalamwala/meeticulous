@@ -206,7 +206,7 @@ const escalateThread = async (req, res) => {
     const open = supportHours.isOpen();
     // Honest expectation-setting: a live handoff in hours, a logged ticket after.
     const note = open
-      ? 'Thanks — connecting you to the Book A Sloth team. Someone will reply here shortly.'
+      ? 'Thanks — connecting you to the Meeticulous team. Someone will reply here shortly.'
       : `Thanks — our team is offline right now (${supportHours.LABEL}). Your ticket ${thread.reference} is logged and we'll reply here as soon as we're back. Tithi can still help meanwhile.`;
     await chat.postMessage({ threadId: thread.id, sender: 'system', body: note });
     const updated = await chat.escalate(thread.id, summary);

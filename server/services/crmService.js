@@ -79,7 +79,7 @@ const shape = (c, crmRow) => ({
 
 // List a host's clients. Options: { q, page, pageSize, sort:'ltv'|'recent', filter:'lapsed', maxClients }
 // maxClients: -1 = unlimited (paid plans + admin callers). A positive N caps the
-// result to the N most-recent clients — the free Sloth plan's "your 10 most recent
+// result to the N most-recent clients — the free Starter plan's "your 10 most recent
 // clients". This is a MONETIZATION gate on the host's OWN customers, not a privacy
 // boundary, so a soft view cap is correct.
 const listClients = async (hostId, { q = '', page = 1, pageSize = 50, sort = 'recent', filter = null, maxClients = -1 } = {}) => {

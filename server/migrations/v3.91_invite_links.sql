@@ -1,7 +1,7 @@
 -- v3.91_invite_links.sql
 -- Lead-source attribution "Invite Links". Attribution-only — NO payouts, fully
 -- separate from Refer & Earn (referrals table). Sales/marketing share pretty
--- links like bookasloth.com/invite/social; new HOST signups get stamped with the
+-- links like meeticulous.com/invite/social; new HOST signups get stamped with the
 -- slug so acquisition source is queryable in admin.
 --
 --   invite_links         — one row per shareable link (admin-created, slug immutable).

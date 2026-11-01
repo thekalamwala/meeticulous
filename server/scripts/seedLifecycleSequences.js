@@ -35,8 +35,8 @@ const SIGN_SUJATA = p(`— Sujata`);
 const SIGN_DURGA = p(`— Durga`);
 // Founder's own booking page — his signature name links here. class="sig" keeps it
 // an inline text link (plainBody promotes bare links to buttons; sig links stay inline).
-const FOUNDER_URL = 'https://bookasloth.com/sndatarkar';
-const SIGN_SHUBHAM = p(`— <a href="${FOUNDER_URL}" class="sig">Shubham</a> | Founder @ Book A Sloth`);
+const FOUNDER_URL = 'https://meeticulous.com/sndatarkar';
+const SIGN_SHUBHAM = p(`— <a href="${FOUNDER_URL}" class="sig">Shubham</a> | Founder @ Meeticulous`);
 
 // Approved AiSensy Campaign Names (the human name sendCampaign uses).
 const WA = { onboarding: 'Onboarding Nudge', firstBooking: 'Get First Booking', winback: 'Winback Offer - Additional Month' };
@@ -52,8 +52,8 @@ const SEQUENCES = [
     steps: [
       { step_no: 1, delay_hours: 24, channel: 'email',
         subject: 'Did that land, {{first_name}}?',
-        preview: 'One tap to see how Book A Sloth actually works.',
-        body: p(`You opened my last note — thanks. In case it got buried: Book A Sloth is one link your clients use to book <i>and</i> pay, so you stop chasing times and payments.`) + p(`<a href="${BL}">See how it works →</a>`) + SIGN_SUJATA },
+        preview: 'One tap to see how Meeticulous actually works.',
+        body: p(`You opened my last note — thanks. In case it got buried: Meeticulous is one link your clients use to book <i>and</i> pay, so you stop chasing times and payments.`) + p(`<a href="${BL}">See how it works →</a>`) + SIGN_SUJATA },
       { step_no: 2, delay_hours: 72, channel: 'email',
         subject: 'The 2-minute version',
         preview: 'Services, calendar and payments in one place.',
@@ -89,7 +89,7 @@ const SEQUENCES = [
         preview: 'Create your booking page — free to start.',
         body: p(`You clearly liked what you saw — so let's get you a page. It's free to start, and you can be taking bookings today.`) + p(`<a href="${BL}">Create your page →</a>`) + SIGN_SUJATA },
       { step_no: 2, delay_hours: 48,  channel: 'email',
-        subject: 'How {{profession}}s use Book A Sloth',
+        subject: 'How {{profession}}s use Meeticulous',
         preview: 'From enquiry to a paid booking, no chasing.',
         body: p(`Someone asks to book you. Instead of trading messages and sharing UPI details, you send one link — they choose, book and pay.`) + p(`<a href="${BL}">See it in action →</a>`) + SIGN_SUJATA },
       { step_no: 3, delay_hours: 96,  channel: 'email',
@@ -108,7 +108,7 @@ const SEQUENCES = [
     is_active: true, stop_on_reply: true, stop_on_convert: true,
     steps: [
       { step_no: 1, delay_hours: 0,  channel: 'email',
-        subject: 'Welcome to Book A Sloth, {{first_name}} 🦥',
+        subject: 'Welcome to Meeticulous, {{first_name}}',
         preview: `Your page is almost ready — let's get you live today.`,
         body: p(`You're in. Your page is almost ready — let's get you live today.`) + p(`<a href="${BL}/dashboard">Finish setup →</a>`) + SIGN_TITHI },
       { step_no: 2, delay_hours: 24, channel: 'email',
@@ -118,7 +118,7 @@ const SEQUENCES = [
       // WhatsApp nudge at ~48h quiet — Onboarding Nudge: {{1}} name, {{2}} account name, {{3}} link.
       { step_no: 3, delay_hours: 48, channel: 'whatsapp', template_key: WA.onboarding,
         variables: ['{{first_name}}', '{{account_name}}', '{{booking_link}}/dashboard/'],
-        subject: null, body: `Hi {{first_name}} 👋 Your Book A Sloth page is one service away from live. Want a hand finishing it?` },
+        subject: null, body: `Hi {{first_name}} 👋 Your Meeticulous page is one service away from live. Want a hand finishing it?` },
       { step_no: 4, delay_hours: 24, channel: 'email',
         subject: 'Add your first service',
         preview: `Add one service, set the price, you're ready to share.`,
@@ -163,7 +163,7 @@ const SEQUENCES = [
       { step_no: 1, delay_hours: 0,   channel: 'email',
         subject: 'Your booking page is still waiting for you',
         preview: `Pick up where you left off whenever you're ready.`,
-        body: p(`Your Book A Sloth page is still here. Pick up where you left off — about two minutes.`) + p(`<a href="${BL}/dashboard">Pick up where you left off →</a>`) + SIGN_TITHI },
+        body: p(`Your Meeticulous page is still here. Pick up where you left off — about two minutes.`) + p(`<a href="${BL}/dashboard">Pick up where you left off →</a>`) + SIGN_TITHI },
       { step_no: 2, delay_hours: 120, channel: 'email',
         subject: 'A few things got better',
         preview: `Faster payouts, WhatsApp reminders, a cleaner page.`,
@@ -191,10 +191,10 @@ const SEQUENCES = [
         body: p(`We'd love to have you back, {{first_name}}. Come back and we'll give you <b>2 months free</b> — pick monthly or yearly, we add 2 months on top.`) + p(`<a href="${BL}/dashboard/upgrade">Renew now →</a>`) + p(`Reply <b>DONE</b> once you have and we'll add the 2 months.`) + SIGN_SUJATA },
       // WhatsApp offer — Winback Offer: {{1}} name, {{2}} product, {{3}} offer, {{4}} renewal link.
       { step_no: 3, delay_hours: 24, channel: 'whatsapp', sender_key: 'sujata', template_key: WA.winback,
-        variables: ['{{first_name}}', 'Book A Sloth', '2 Month Addition', '{{booking_link}}/dashboard/upgrade'],
-        subject: null, body: `{{first_name}}, renew your Book A Sloth plan and we'll add 2 months free on top. Reply RENEW 💛` },
+        variables: ['{{first_name}}', 'Meeticulous', '2 Month Addition', '{{booking_link}}/dashboard/upgrade'],
+        subject: null, body: `{{first_name}}, renew your Meeticulous plan and we'll add 2 months free on top. Reply RENEW 💛` },
       { step_no: 4, delay_hours: 96, channel: 'email', sender_key: 'tithi',
-        subject: 'What stopped Book A Sloth from working for you?',
+        subject: 'What stopped Meeticulous from working for you?',
         preview: `Tell me what got in the way — I'll look into it.`,
         body: p(`If it wasn't price, tell me what didn't work. Reply to this email — I'll look into it personally.`) + SIGN_TITHI },
     ],
@@ -277,7 +277,7 @@ const SEQUENCES = [
         body: p(`{{first_name}} — can we talk about the madness for a sec?`)
           + p(`"Are you free Thursday?" "How much?" "Can you do 4 instead?" "Sent the UPI — did it come?" Fifteen messages, three days, and half of them ghost you anyway.`)
           + p(`I ran my own bookings like this for way too long. It's not a business — it's a part-time job as your own receptionist.`)
-          + p(`Book A Sloth ends it. One link. They pick, they book, they <b>pay</b> — before they can flake.`)
+          + p(`Meeticulous ends it. One link. They pick, they book, they <b>pay</b> — before they can flake.`)
           + p(`<a href="${BL}">See the thing that saved my sanity →</a>`) + SIGN_SHUBHAM
           + p(`P.S. Reply <b>SHOW ME</b> and I'll send you a 30-second walkthrough. No signup. Just look.`) },
       { step_no: 2, delay_hours: 48,  channel: 'email',
@@ -294,7 +294,7 @@ const SEQUENCES = [
         body: p(`The dance, one more time, because it still makes me twitch:`)
           + p(`"free Thursday?" → you check → you reply → silence → you follow up feeling needy → maybe they pay.`)
           + p(`Every step is a place they ghost. Every step is you doing unpaid admin.`)
-          + p(`Your Book A Sloth link deletes all of it. They choose, book, pay — one move, while they're still excited.`)
+          + p(`Your Meeticulous link deletes all of it. They choose, book, pay — one move, while they're still excited.`)
           + p(`<a href="${BL}">Try it →</a>`) + SIGN_SHUBHAM
           + p(`P.S. The people who blow up do ONE thing — link in bio, link in story, link in every WhatsApp status. That's the whole trick.`) },
       { step_no: 4, delay_hours: 120, channel: 'email',
@@ -312,7 +312,7 @@ const SEQUENCES = [
 const OFFER_TEMPLATES = [
   { channel: 'email', name: 'offer_two_months_on_renewal', label: 'Offer · 2 months free on renewal', category: 'offer',
     subject: `Come back — 2 months free, {{first_name}}`,
-    body: p(`Come back to Book A Sloth and we'll give you <b>2 months free</b>, {{first_name}} — pick monthly or yearly, we add 2 months on top.`) + p(`<a href="{{booking_link}}/dashboard/upgrade">Renew now →</a>`) + p(`Reply <b>DONE</b> once you have and we'll add them.`) + SIGN_SUJATA },
+    body: p(`Come back to Meeticulous and we'll give you <b>2 months free</b>, {{first_name}} — pick monthly or yearly, we add 2 months on top.`) + p(`<a href="{{booking_link}}/dashboard/upgrade">Renew now →</a>`) + p(`Reply <b>DONE</b> once you have and we'll add them.`) + SIGN_SUJATA },
 ];
 
 async function upsertSequence(seq) {

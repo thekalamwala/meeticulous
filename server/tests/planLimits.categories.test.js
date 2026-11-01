@@ -6,13 +6,13 @@ const { FALLBACK_PLANS } = require('../services/planService');
 // discovery/SEO surface that costs us nothing, so they are uncapped on both
 // plans — the fallback must not re-introduce a limit the live DB doesn't enforce.
 describe('plan category caps (fallback)', () => {
-  it('free (Sloth) is unlimited (-1)', () => {
+  it('free (Starter) is unlimited (-1)', () => {
     expect(FALLBACK_PLANS.free.limits.categories).toBe(-1);
   });
-  it('premium (Sloth Active) is unlimited (-1)', () => {
+  it('premium (Pro) is unlimited (-1)', () => {
     expect(FALLBACK_PLANS.premium.limits.categories).toBe(-1);
   });
-  it('legacy paid rows carry Sloth Active entitlements', () => {
+  it('legacy paid rows carry Pro entitlements', () => {
     expect(FALLBACK_PLANS.creator.limits.categories).toBe(-1);
     expect(FALLBACK_PLANS.professional.limits.categories).toBe(-1);
   });

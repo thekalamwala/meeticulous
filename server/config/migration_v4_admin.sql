@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS platform_settings (
 
 -- Insert default settings
 INSERT INTO platform_settings (key, value) VALUES
-  ('platform_name', '"Book A Sloth"'),
+  ('platform_name', '"Meeticulous"'),
   ('platform_fee_percent', '0'),
   ('maintenance_mode', 'false')
 ON CONFLICT (key) DO NOTHING;

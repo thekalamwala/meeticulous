@@ -26,7 +26,7 @@ const isEmail       = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 
 // Generate a readable one-time temp password when the creator doesn't supply one.
 const genTempPassword = () =>
-  'Sloth-' + crypto.randomBytes(4).toString('hex') + '-' + crypto.randomBytes(2).toString('hex').toUpperCase();
+  'Meet-' + crypto.randomBytes(4).toString('hex') + '-' + crypto.randomBytes(2).toString('hex').toUpperCase();
 
 const countActiveSupers = async (excludeId) => {
   let q = supabaseAdmin.from('admin_users')

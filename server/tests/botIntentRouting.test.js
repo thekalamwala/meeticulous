@@ -91,10 +91,10 @@ const MATRIX = [
   ['Host', 'I want to sell my services', 'intent:host'],
   ['Host', 'How do I list my services', 'intent:host'],
   // ── General FAQ (→ retrieval in this harness; FAQ/retrieval at runtime) ──
-  // Brand-name collision regression: "Book A Sloth" contains "book" but must NOT
-  // trip the booking intent — it's a question ABOUT the product.
-  ['General', 'What is Book A Sloth', 'retrieval'],
-  ['General', 'Is Book A Sloth free', 'retrieval'],
+  // Brand-name regression: a question ABOUT the product must NOT
+  // trip the booking intent.
+  ['General', 'What is Meeticulous', 'retrieval'],
+  ['General', 'Is Meeticulous free', 'retrieval'],
   ['General', 'What is your privacy policy', 'retrieval'],
   ['General', 'Where are you located', 'retrieval'],
   ['General', 'Do you have a mobile app', 'retrieval'],

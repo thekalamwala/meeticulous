@@ -40,7 +40,7 @@ function buildIcs(b = {}) {
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Book A Sloth//Booking//EN',
+    'PRODID:-//Meeticulous//Booking//EN',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',
@@ -48,7 +48,7 @@ function buildIcs(b = {}) {
     `DTSTAMP:${dtStamp || dtStart}`,
     `DTSTART:${dtStart}`,
     `DTEND:${dtEnd}`,
-    `SUMMARY:${esc(b.title || 'Your Book A Sloth booking')}`,
+    `SUMMARY:${esc(b.title || 'Your Meeticulous booking')}`,
     b.description ? `DESCRIPTION:${esc(b.description)}` : null,
     `LOCATION:${esc(b.location || 'Online')}`,
     b.organizer ? `ORGANIZER;CN=${esc(b.organizer)}:mailto:team@meeticulous.com` : null,

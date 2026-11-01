@@ -295,7 +295,7 @@ const ensureGuestProfile = async (email, name = "Guest") => {
 // Add the hosting capability to an EXISTING account and seed onboarding state
 // (idempotent). Returns the updated profile row. Shared by becomeHost (logged-in
 // self-serve) and the Google vendor-auth upgrade path (a customer who signs in
-// via "Be a Sloth" / vendor-login) so both routes flip is_host + seed onboarding
+// via "Become a host" / vendor-login) so both routes flip is_host + seed onboarding
 // identically. Never resets a host who already finished onboarding.
 const enableHostingForProfile = async (profileId) => {
   const { data: profile, error } = await supabaseAdmin
@@ -639,7 +639,7 @@ const googleCallback = async (req, res) => {
         .from("profiles").select("id, role, is_host, email, google_calendar_connected").eq("email", googleEmail).maybeSingle();
 
       let profileId = existing?.id || null;
-      // Unified identity: an existing CUSTOMER signing in via "Be a Sloth" /
+      // Unified identity: an existing CUSTOMER signing in via "Become a host" /
       // vendor-login is no longer a dead-end. Attach hosting to their SAME
       // account (flip is_host + seed onboarding) — exactly what becomeHost does,
       // but in-flow. Superadmin is excluded (the role↔is_host trigger forces it
@@ -969,7 +969,7 @@ const verifyOtp = async (req, res) => {
 // the user never sees or types it. Deterministic from the e164 digits so it is
 // idempotent across create-or-resolve.
 const syntheticPhoneEmail = (phone) =>
-  `p${String(phone).replace(/\D/g, "")}@users.bookasloth.app`;
+  `p${String(phone).replace(/\D/g, "")}${require("../services/email/placeholderEmail").PLACEHOLDER_EMAIL_DOMAIN}`;
 
 // Find the guest profile for a phone, creating one if none exists. Order matters
 // to avoid duplicate accounts:
@@ -1091,7 +1091,7 @@ const loginWithPhone = async (req, res) => {
       // Equalize response time with the real wrong-password path (which makes a
       // signInWithPassword round-trip) so an attacker can't time-distinguish a
       // registered guest from an unknown/non-guest number.
-      await signInWithPassword("nonexistent@bookasloth.invalid", String(password)).catch(() => {});
+      await signInWithPassword("nonexistent@meeticulous.invalid", String(password)).catch(() => {});
       return res.status(401).json({ message: "Invalid phone or password" });
     }
     if (!profile.password_set) {
@@ -1248,7 +1248,7 @@ const loginUnified = async (req, res) => {
 
     if (!profile) {
       // Equalize timing with the real signin round-trip (enumeration resistance).
-      await signInWithPassword("nonexistent@bookasloth.invalid", String(password)).catch(() => {});
+      await signInWithPassword("nonexistent@meeticulous.invalid", String(password)).catch(() => {});
       return res.status(401).json({ message: "Invalid login or password" });
     }
     // A phone-only account that never set a password → actionable prompt (the

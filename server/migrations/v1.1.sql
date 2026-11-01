@@ -1,5 +1,5 @@
 -- ============================================================
--- Book A Sloth — v1.1 Migration
+-- Meeticulous — v1.1 Migration
 -- Run this in your Supabase SQL Editor before deploying v1.1
 -- ============================================================
 

@@ -124,7 +124,7 @@ const resolveAudience = async (req, res) => {
 const testCampaign = async (req, res) => {
   try {
     const { design_json, blocks, subject, preview_text, audience, to } = req.body || {};
-    const dest = String(to || req.admin?.email || 'shubham@bookasloth.in').trim();
+    const dest = String(to || req.admin?.email || 'hello@meeticulous.com').trim();
     const { bodyHtml } = campaignCompiler.compile(design_json || { blocks: blocks || [] });
     const r = await communicationEngine.sendComposedTest({
       bodyHtml, subject, previewText: preview_text,

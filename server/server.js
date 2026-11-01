@@ -174,7 +174,7 @@ app.use('/api/contact',       require('./routes/contactRoutes')); // public cont
 app.use('/api/bot',           require('./routes/botRoutes')); // public "Tithi" support bot (grounded on docs/)
 app.use('/api/support',       require('./routes/supportRoutes')); // host/guest support chat (Bolt → human handoff)
 app.use('/api/enterprise-lead', require('./routes/enterpriseLeadRoutes')); // public /enterprise page lead form → support email
-app.use('/api/demo-lead', require('./routes/demoLeadRoutes')); // public /be-a-sloth "Book a Demo" OTP lead form → CRM (source website)
+app.use('/api/demo-lead', require('./routes/demoLeadRoutes')); // public /become-a-host "Book a Demo" OTP lead form → CRM (source website)
 app.use('/api/ingest', require('./routes/ingestRoutes')); // external lead intake (Meta/Zoho/form) → upsertLead, token-gated
 app.use('/api/events',        require('./routes/eventsRoutes')); // public intent-event sink → lead_events
 app.use('/api/opening',       require('./routes/openingRoutes')); // public "The Opening" launch event (ribbon cut + Inaugurators Wall)
@@ -197,7 +197,7 @@ app.get('/api/config/public', async (req, res) => {
 });
 
 // Dynamic sitemap — root-mounted (NOT /api) so the public URLs are
-// bookasloth.com/sitemap*.xml via the Vercel rewrite. DB-driven, cached, busted
+// meeticulous.com/sitemap*.xml via the Vercel rewrite. DB-driven, cached, busted
 // on service/profile mutations. Bypasses the /api rate limiter + maintenance 503.
 app.use(require('./routes/sitemapRoutes'));
 
@@ -229,15 +229,15 @@ app.get('/status', async (req, res) => {
 
 // Google Search Console site-ownership proof for OAuth verification. Served as a
 // route (no static dir on this API-only server). ponytail: onrender.com is a
-// shared/free-tier host — move OAuth redirect + this proof to api.bookasloth.in
+// shared/free-tier host — move OAuth redirect + this proof to api.meeticulous.com
 // once we own that subdomain.
 app.get('/google7afa06c4734ff5fc.html', (req, res) =>
   res.type('text/html').send('google-site-verification: google7afa06c4734ff5fc.html')
 );
 
-// This origin (book-a-sloth.onrender.com) is an API host, never a site to
+// This origin (meeticulous-api.onrender.com) is an API host, never a site to
 // index — sitemap + prerender HTML reach crawlers only via the Vercel proxy on
-// bookasloth.com, whose own robots.txt governs them. Blanket-disallow direct
+// meeticulous.com, whose own robots.txt governs them. Blanket-disallow direct
 // crawling here so the raw origin can't become a duplicate "site" in an index.
 app.get('/robots.txt', (req, res) =>
   res.type('text/plain').send('User-agent: *\nDisallow: /\n')

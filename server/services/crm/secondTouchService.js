@@ -32,13 +32,13 @@ const DEDUP_DAYS = Number(process.env.SECOND_TOUCH_DEDUP_DAYS) || 14; // ≤ 1 a
 const BATCH = Number(process.env.SECOND_TOUCH_BATCH) || 100;
 
 const SUBJECT = 'Still weighing it up, {{first_name}}?';
-const PREVIEW = 'A quick follow-up on Book A Sloth';
+const PREVIEW = 'A quick follow-up on Meeticulous';
 const HTML = [
   '<p>Hi {{first_name}},</p>',
-  "<p>Noticed you took a look at Book A Sloth — thought I'd follow up in case a question got in the way.</p>",
+  "<p>Noticed you took a look at Meeticulous — thought I'd follow up in case a question got in the way.</p>",
   '<p>Setting up your page and taking your first booking takes about two minutes. If anything is unclear, just reply to this email — it comes straight to me.</p>',
   '<p><a href="{{booking_link}}">Pick up where you left off →</a></p>',
-  '<p>— Shubham, Book A Sloth</p>',
+  '<p>— Shubham, Meeticulous</p>',
 ].join('\n');
 
 async function run({ dryRun = true } = {}) {

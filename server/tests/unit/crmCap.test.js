@@ -1,7 +1,7 @@
 /**
  * tests/unit/crmCap.test.js
  *
- * Free (Sloth) hosts get a CAPPED CRM view — their N most-recent clients (N from
+ * Free (Starter) hosts get a CAPPED CRM view — their N most-recent clients (N from
  * limits.crm, passed through as maxClients). Paid plans / admin callers pass -1
  * (unlimited). The cap must keep the MOST-recent N and report a matching total so
  * pagination doesn't page into hidden clients.

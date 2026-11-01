@@ -1,5 +1,5 @@
 -- ============================================================
--- Book A Sloth — v1.6 CATCH-UP MIGRATION
+-- Meeticulous — v1.6 CATCH-UP MIGRATION
 -- Includes: v1.1, v1.2, v1.3, v1.4 (partial), v1.5 (BUG-15)
 -- All statements use IF NOT EXISTS — safe to run multiple times.
 -- Run this in Supabase SQL Editor.

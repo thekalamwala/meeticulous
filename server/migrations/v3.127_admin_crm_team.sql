@@ -4,7 +4,7 @@
 -- PROD (Mumbai ayjhlwyzszykqtnaktpb). Additive + idempotent.
 --
 -- Tags each admin with the CRM pipeline team they belong to. When a lead crosses
--- INTO Relations (first payment) or Marketing (becomes The Sloth), handoffService
+-- INTO Relations (first payment) or Marketing (reaches the ROI milestone), handoffService
 -- reassigns it to the least-loaded active member of the receiving team, opens an
 -- SLA follow-up, and records the handoff on the lead timeline.
 --

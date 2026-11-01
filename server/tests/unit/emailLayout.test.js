@@ -1,6 +1,6 @@
 /**
  * tests/unit/emailLayout.test.js
- * Redesigned header: constant Book a Sloth logo (left) + accent category pill
+ * Redesigned header: constant Meeticulous logo (left) + accent category pill
  * (right), identical across audiences. The customer/vendor distinction now lives
  * ONLY in the footer (unchanged by the redesign — guarded below).
  */
@@ -12,7 +12,7 @@ const settings = {
   brand_color: '#FE5100',
   website_url: 'https://x.test',
   support_email: 's@x.test',
-  from_name: 'Book A Sloth',
+  from_name: 'Meeticulous',
   logo_url: 'https://cdn.test/bas-logo.png',
 };
 
@@ -76,7 +76,7 @@ describe("renderLayout — cold outreach layout", () => {
     expect(html).toMatch(/Unsubscribe/i);
     expect(html).toContain('https://x.test/unsubscribe?u=TOK123');
     expect(html).toContain('Rajmudra');            // legal entity sign-off
-    expect(html).toContain('Book A Sloth');         // sender identity in the footer
+    expect(html).toContain('Meeticulous');         // sender identity in the footer
     expect(html).toContain('Nagpur');               // postal address (legal floor)
     // plain hand-typed look: white ground, left-aligned, no grey card, no 600px shell
     expect(html).toContain('background:#ffffff');

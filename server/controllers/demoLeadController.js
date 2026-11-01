@@ -1,6 +1,6 @@
 'use strict';
 /**
- * demoLeadController — public "Book a Demo" lead form on /be-a-sloth.
+ * demoLeadController — public "Book a Demo" lead form on /become-a-host.
  *
  * Two steps, both public + rate-limited at the route:
  *   POST /api/demo-lead/send-otp  { name, phone, profession, attribution }

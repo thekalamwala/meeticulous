@@ -23,7 +23,7 @@ const transporter = () => {
   return _transporter;
 };
 
-async function sendEmail({ to, subject, html, text, fromName = 'Book A Sloth', fromEmail, replyTo }) {
+async function sendEmail({ to, subject, html, text, fromName = 'Meeticulous', fromEmail, replyTo }) {
   try {
     const from = `"${fromName}" <${fromEmail || process.env.SMTP_USER}>`;
     const info = await transporter().sendMail({ from, to, subject, html, ...(text ? { text } : {}), ...(replyTo ? { replyTo } : {}) });

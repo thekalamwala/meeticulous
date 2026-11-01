@@ -58,7 +58,7 @@ describe('brandPage hero mark', () => {
   });
   it('never references the dead mascot host', () => {
     const html = brandPage({ code: 404, heading: 'h', body: 'b', hero: true });
-    expect(html).not.toContain('bookasloth.in');
+    expect(html).not.toContain('company-assets.');
     expect(html).not.toContain('<img');
   });
 });
@@ -82,7 +82,7 @@ describe('errorMiddleware 404 branding', () => {
     errorHandler(Object.assign(new Error('x'), { expose: false }), htmlReq, res, () => {});
     expect(res.statusCode).toBe(404);
     expect(res.body).toContain('class="heromark"');
-    expect(res.body).not.toContain('bookasloth.in');
+    expect(res.body).not.toContain('company-assets.');
     expect(res.body).toContain('This page pulled a vanishing act');
   });
 
