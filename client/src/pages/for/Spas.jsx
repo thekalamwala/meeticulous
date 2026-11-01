@@ -28,6 +28,8 @@
 // focus, NO hover uplift anywhere, Reveal guards its own motion.
 
 import { useState } from 'react';
+import { Flower2 as Flower2Icon } from 'lucide-react';
+import IconArt from '../../components/common/IconArt';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -62,7 +64,7 @@ const NAV = [
   { label: 'FAQ', href: '#faq' },
 ];
 
-const MASCOT = '/for/spa/hero.webp';
+const SLOT_ICON = Flower2Icon; // stands in for the removed mascot art
 const HERO_TRUST = ['No credit card required', 'Setup in minutes', 'Built for Indian spas'];
 
 // Spa treatment MENU — grouped, leader-dot rows (not cards, not bento).
@@ -210,14 +212,7 @@ function ImgSlot({ alt, className = '', rounded = 'rounded-[20px]' }) {
     .replace(/\bborder\b(-[^\s]+)?/g, '')
     .replace(/bg-\[[^\]]*\]/g, '');
   const pos = /\b(absolute|fixed)\b/.test(layout) ? '' : 'relative';
-  return (
-    <div
-      {...(alt ? { role: 'img', 'aria-label': alt } : { 'aria-hidden': true })}
-      className={`${pos} z-40 flex items-center justify-center ${layout}`}
-    >
-      <img src={MASCOT} alt={alt || ''} loading="lazy" decoding="async" className="h-full w-full object-contain" />
-    </div>
-  );
+  return <IconArt icon={SLOT_ICON} label={alt} rounded={rounded} className={`${pos} z-40 ${layout}`} />;
 }
 
 function FaqAccordion() {
@@ -366,7 +361,7 @@ export default function Spas() {
           </Reveal>
           <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-5">
             <CtaButton to={START} className="w-full sm:w-auto">Create Your Booking Page <ArrowRight size={16} /></CtaButton>
-            <Link to="/sndatarkar/booking/book-a-sloth-app-online-demo-30-min-advisory-session" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
+            <Link to="/demo" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
               Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
             </Link>
           </Reveal>
@@ -707,7 +702,7 @@ export default function Spas() {
               <Link to={START} className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.45)] hover:no-underline sm:w-auto" style={{ color: 'var(--ca-primary)' }}>
                 Launch My Page — Free <ArrowRight size={16} />
               </Link>
-              <Link to="/sndatarkar/booking/book-a-sloth-app-online-demo-30-min-advisory-session" className="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline sm:w-auto">
+              <Link to="/demo" className="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline sm:w-auto">
                 Book A Demo
               </Link>
             </Reveal>

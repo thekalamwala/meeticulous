@@ -77,7 +77,7 @@ const Press = () => (
           </div>
         </div>
         <p className="mt-3 text-xs text-neutral-500">
-          Please use the name <strong>Meeticulous</strong> (not "BookASloth" or "Book-a-Sloth") and the orange #960D32 as the accent.
+          Please use the name <strong>Meeticulous</strong> and the crimson #960D32 as the accent.
         </p>
       </section>
 

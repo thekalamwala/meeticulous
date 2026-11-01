@@ -33,7 +33,7 @@ const LineIcon = ({ children, color = "#2A1416" }) => {
 export const STEPS = [
   {
     title: "Share one link",
-    desc: "Your services, availability and pricing — all in one SlothPage. Send it once, let it work forever.",
+    desc: "Your services, availability and pricing — all on one booking page. Send it once, let it work forever.",
     chip: "Replaces 20+ DMs",
     color: "var(--c-blue)",
     draw: (

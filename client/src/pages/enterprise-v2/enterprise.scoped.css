@@ -1572,10 +1572,10 @@
 }
 
 /* ==========================================
-   CENTRE SLOTH BUTTON
+   CENTRE LOGO BUTTON
 ========================================== */
 
-.ent-lp .workflowOrbit__slothButton {
+.ent-lp .workflowOrbit__centerButton {
   position: relative;
   z-index: 6;
 
@@ -1606,7 +1606,7 @@
   cursor: pointer;
 }
 
-.ent-lp .workflowOrbit__slothButton::before {
+.ent-lp .workflowOrbit__centerButton::before {
   content: "";
 
   position: absolute;
@@ -1620,12 +1620,12 @@
   animation: workflowReverseRing 20s linear infinite;
 }
 
-.ent-lp .workflowOrbit__slothButton:focus-visible {
+.ent-lp .workflowOrbit__centerButton:focus-visible {
   outline: 3px solid rgba(254, 81, 0, 0.28);
   outline-offset: 8px;
 }
 
-.ent-lp .workflowOrbit__slothGlow {
+.ent-lp .workflowOrbit__centerGlow {
   position: absolute;
   inset: 22%;
 
@@ -1636,7 +1636,7 @@
   filter: blur(28px);
 }
 
-.ent-lp .workflowOrbit__slothImage {
+.ent-lp .workflowOrbit__centerImage {
   position: relative;
   z-index: 2;
 
@@ -1648,12 +1648,12 @@
   transition: transform 0.35s ease;
 }
 
-.ent-lp .workflowOrbit__slothButton:hover
-  .workflowOrbit__slothImage {
+.ent-lp .workflowOrbit__centerButton:hover
+  .workflowOrbit__centerImage {
   transform: translateY(-3px) scale(1.04);
 }
 
-.ent-lp .workflowOrbit__slothLabel {
+.ent-lp .workflowOrbit__centerLabel {
   position: relative;
   z-index: 2;
 
@@ -2140,12 +2140,12 @@
     font-size: 8px;
   }
 
-  .ent-lp .workflowOrbit__slothButton {
+  .ent-lp .workflowOrbit__centerButton {
     width: 190px;
     height: 190px;
   }
 
-  .ent-lp .workflowOrbit__slothImage {
+  .ent-lp .workflowOrbit__centerImage {
     width: 96px;
     height: 96px;
   }
@@ -2300,14 +2300,14 @@
 @media (prefers-reduced-motion: reduce) {
   .ent-lp .workflowOrbit__rotator,
   .ent-lp .workflowOrbit__middleRing,
-  .ent-lp .workflowOrbit__slothButton::before,
+  .ent-lp .workflowOrbit__centerButton::before,
   .ent-lp .workflowOrbit__counterRotate {
     animation: none;
   }
 
   .ent-lp .workflowOrbit__exploreButton,
   .ent-lp .workflowOrbit__node,
-  .ent-lp .workflowOrbit__slothImage,
+  .ent-lp .workflowOrbit__centerImage,
   .ent-lp .workflowModal__next {
     transition: none;
   }
@@ -5219,12 +5219,12 @@
     --node-size: 72px;
   }
 
-  .ent-lp .workflowOrbit__slothButton {
+  .ent-lp .workflowOrbit__centerButton {
     width: 180px;
     height: 180px;
   }
 
-  .ent-lp .workflowOrbit__slothImage {
+  .ent-lp .workflowOrbit__centerImage {
     width: 92px;
     height: 92px;
   }

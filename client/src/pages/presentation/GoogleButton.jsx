@@ -1,4 +1,4 @@
-// Canonical "Continue with Google" button (matches BeASloth.jsx signup):
+// Canonical "Continue with Google" button (matches BecomeAHost.jsx signup):
 // dark ink bg + real Google glyph + proper padding. The deck's old buttons used
 // the global .btn-primary, which has no horizontal padding, so the label clipped
 // the edge and read as a plain orange block instead of a Google sign-in button.

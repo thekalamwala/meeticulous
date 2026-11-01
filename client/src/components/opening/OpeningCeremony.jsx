@@ -239,7 +239,7 @@ export default function OpeningCeremony({ status: statusProp, embedded = false, 
         {phase === 'already' && (
           <Card>
             <div className="mx-auto mb-1 grid h-11 w-11 place-items-center rounded-full bg-c-emerald/15 text-c-emerald"><CheckCircle2 size={26} /></div>
-            <h2 className="font-heading text-2xl font-extrabold">You’re already on the wall. 🦥</h2>
+            <h2 className="font-heading text-2xl font-extrabold">You’re already on the wall.</h2>
             <p className="mt-2 text-sm text-muted">This number already has a stone — it’s there for life.</p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Link to="/inaugurators" onClick={() => exit('placed')} className="rounded-md bg-primary px-6 py-3 font-heading font-bold text-white">See the wall</Link>

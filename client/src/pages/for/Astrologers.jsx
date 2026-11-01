@@ -16,10 +16,9 @@
 // starlit pricing cards · editorial about with a real image. Only nav/hero-shell/
 // footer (shared shell) resemble sibling pages.
 //
-// IMAGES: real, mined from the previous /for/astrologers page — hero-sloth.webp
-// (hero), astro-about.webp (about), the six real integration logos, and the two
-// astrologer avatar SVGs (initial-disc fallback for the rest). Descriptive alt on
-// each; no empty placeholders.
+// IMAGES: the six real integration logos and the two astrologer avatar SVGs
+// (initial-disc fallback for the rest). Hero + about use icon art (no mascot
+// illustrations). Descriptive alt on each; no empty placeholders.
 //
 // HONESTY: Meeticulous is a scheduling + payment tool. NO prediction-accuracy or
 // outcome claims. Testimonials are labelled PLACEHOLDER quotes from astrologers /
@@ -43,6 +42,7 @@ import {
 } from 'lucide-react';
 import Reveal from '../../components/home/Reveal';
 import Seo from '../../components/common/Seo';
+import IconArt from '../../components/common/IconArt';
 import useLenis from '../../hooks/useLenis';
 import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
 import { FREE_PLAN, PREMIUM_PLAN, PREMIUM_ANNUAL_SAVE_PCT } from '../../data/plans';
@@ -58,8 +58,6 @@ const WHATSAPP_LOGO = '/for/astrologers/whatsapp.svg'; // green WhatsApp mark (p
 
 const START = '/become-a-host';      // real host signup funnel
 const LOGIN = '/login-as-vendor'; // host login (Google-only door)
-const HERO_IMG = '/for/astrologers/hero-sloth.webp';
-const ABOUT_IMG = '/for/astrologers/astro-about.webp';
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
 
@@ -500,7 +498,7 @@ export default function Astrologers() {
             </Reveal>
             <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
               <CtaButton to={START} className="w-full sm:w-auto">Create Your Free Page <ArrowRight size={16} /></CtaButton>
-              <Link to="/sndatarkar/booking/book-a-sloth-app-online-demo-30-min-advisory-session" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
+              <Link to="/demo" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
                 Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </Reveal>
@@ -519,7 +517,7 @@ export default function Astrologers() {
               <div aria-hidden className="pointer-events-none absolute -inset-3 rounded-full" style={{ background: 'linear-gradient(135deg, var(--ca-accent), rgba(234,179,8,0.15))' }} />
               <div className="relative h-full w-full rounded-full border-[6px] border-white shadow-[0_30px_70px_-30px_rgba(76,29,149,0.55)]">
                 <div className="h-full w-full overflow-hidden rounded-full" style={{ background: 'radial-gradient(120% 100% at 70% 0%, #2c2166 0%, var(--ca-deep) 70%)' }}>
-                  <img src={HERO_IMG} alt="Meeticulous booking dashboard for an astrology practice" loading="eager" fetchpriority="high" decoding="async" width="1100" height="852" className="h-full w-full object-cover" />
+                  <div role="img" aria-label="Meeticulous booking for an astrology practice" className="grid h-full w-full place-items-center"><Moon className="h-1/3 w-1/3 text-white/90" strokeWidth={1} aria-hidden="true" /></div>
                 </div>
               </div>
               {/* floating chips */}
@@ -821,7 +819,7 @@ export default function Astrologers() {
             <Reveal className="relative mx-auto w-full max-w-md lg:mx-0">
               <div aria-hidden className="pointer-events-none absolute -inset-6 rounded-[32px] blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(76,29,149,0.18), transparent)' }} />
               <div className="relative overflow-hidden rounded-[24px] border border-white bg-white p-4 shadow-[0_30px_70px_-34px_rgba(76,29,149,0.5)]">
-                <img src={ABOUT_IMG} alt="An astrologer running their practice on Meeticulous" loading="lazy" decoding="async" width="1100" height="619" className="w-full rounded-[16px] object-contain" />
+                <IconArt icon={Sparkles} label="An astrologer running their practice on Meeticulous" rounded="rounded-[6px]" className="aspect-[16/9] w-full" />
               </div>
             </Reveal>
             {/* editorial + facts */}
@@ -887,7 +885,7 @@ export default function Astrologers() {
                 <Link to={START} className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline sm:w-auto" style={{ color: 'var(--ca-primary)' }}>
                   Launch My Page — Free <ArrowRight size={16} />
                 </Link>
-                <Link to="/sndatarkar/booking/book-a-sloth-app-online-demo-30-min-advisory-session" className="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline sm:w-auto">
+                <Link to="/demo" className="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline sm:w-auto">
                   Book A Demo
                 </Link>
               </Reveal>

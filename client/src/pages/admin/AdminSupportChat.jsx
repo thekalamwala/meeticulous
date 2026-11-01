@@ -196,7 +196,7 @@ function Bubble({ m }) {
             : 'rounded-tl-sm bg-[#f0ede6] text-gray-800')}>
         {!mine && (m.sender_name || isBot) && (
           <p className={'mb-0.5 text-[11px] font-semibold ' + (isBot ? 'text-violet-700' : 'text-[#960D32]')}>
-            {isBot ? '🦥 Tithi' : m.sender_name}
+            {isBot ? 'Tithi' : m.sender_name}
           </p>
         )}
         {m.attachment_url && (
@@ -338,7 +338,7 @@ export default function AdminSupportChat() {
     } catch { toast.error('Could not resolve'); }
   };
 
-  // Bolt-escalation detail — shared component, opened from a 🦥 row in the queue.
+  // Bolt-escalation detail — shared component, opened from a Tithi row in the queue.
   if (selEsc) {
     return <EscalationDetail id={selEsc} onBack={() => { setSelEsc(null); loadQueue(); }} onChanged={loadQueue} />;
   }
@@ -379,7 +379,7 @@ export default function AdminSupportChat() {
           <div className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border adm-border bg-white">
             {t.ai_summary && (
               <p className="flex-shrink-0 border-b adm-border bg-violet-50 px-4 py-2 text-[12px] text-violet-900">
-                <span className="font-semibold">🦥 Tithi:</span> {t.ai_summary}
+                <span className="font-semibold">Tithi:</span> {t.ai_summary}
               </p>
             )}
             <div className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto p-4">

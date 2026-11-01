@@ -4,7 +4,7 @@
 
 // ── Boards (column order = array order) ───────────────────────────────────────
 export const PRESALE   = ['new', 'contacted', 'replied', 'qualified', 'demo'];
-export const RELATIONS = ['paid', 'activated', 'won', 'sloth'];                  // Subscribed · Onboarded · Won · The Sloth
+export const RELATIONS = ['paid', 'activated', 'won', 'sloth'];                  // Subscribed · Onboarded · Won · Customer
 export const MARKETING = ['sloth', 'retained', 'ambassador', 'enterprised', 'champion']; // sloth = shared handoff
 export const EXIT      = ['not_reachable', 'not_interested', 'disqualified', 'lost', 'churned'];
 
@@ -16,7 +16,7 @@ export const ALL_STATUSES = [...new Set([...PRESALE, ...RELATIONS, ...MARKETING,
 // activated→"Onboarded", replied→"Responded" — so the live leads never need a rename.
 export const STATUS_LABEL = {
   new: 'New', contacted: 'Contacted', replied: 'Responded', qualified: 'Qualified', demo: 'Demo',
-  paid: 'Subscribed', activated: 'Onboarded', won: 'Won', sloth: 'The Sloth',
+  paid: 'Subscribed', activated: 'Onboarded', won: 'Won', sloth: 'Customer',
   retained: 'Retained', ambassador: 'Ambassador', enterprised: 'Enterprised', champion: 'Champion',
   not_reachable: 'Not Reachable', not_interested: 'Not Interested', disqualified: 'Disqualified',
   lost: 'Lost', churned: 'Churned', do_not_contact: 'Do Not Contact', list: 'List',
@@ -51,11 +51,11 @@ export function needsReason(from, to) {
 // The four boards for the pipeline switcher. A column can DISPLAY more than one
 // status: `key` is the drop target + label, `statuses` is what it gathers. This is
 // how Presale's Contacted absorbs `replied` (a "Responded" signal, not its own
-// column) and how the shared handoff columns (`paid` = Subscribed, `sloth` = The
-// Sloth) appear as the tail of one board and the head of the next.
+// column) and how the shared handoff columns (`paid` = Subscribed, `sloth` = Customer;
+// the DB status key is legacy and unchanged) appear as the tail of one board and the head of the next.
 //   Presale:   New · Contacted(+Responded) · Qualified · Demo · Subscribed↗
-//   Relations: ↗Subscribed · Onboarded · Won · The Sloth↗
-//   Marketing: ↗The Sloth · Retained · Ambassador · Enterprised · Champion
+//   Relations: ↗Subscribed · Onboarded · Won · Customer↗
+//   Marketing: ↗Customer · Retained · Ambassador · Enterprised · Champion
 //   Exit:      Not Reachable · Not Interested · Disqualified · Lost · Churned
 const col = (key, statuses = [key], handoff = false) => ({ key, label: STATUS_LABEL[key], statuses, handoff });
 export const BOARDS = [

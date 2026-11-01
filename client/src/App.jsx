@@ -80,7 +80,7 @@ const Compare        = lazy(() => import('./pages/Compare'));
 
 // Competitor comparison pages (/compare/*, formerly /lp/*). Pages not yet rebuilt
 // still draw their own header/footer and call useHideChrome() to drop the global nav.
-const TopmateVsBookASloth = lazy(() => import('./pages/compare/TopmateVsBookASloth'));
+const TopmateVsMeeticulous = lazy(() => import('./pages/compare/TopmateVsMeeticulous'));
 const CalendlyAlternative  = lazy(() => import('./pages/compare/CalendlyAlternative'));
 const SetmoreAlternative   = lazy(() => import('./pages/compare/SetmoreAlternative'));
 const AcuityAlternative    = lazy(() => import('./pages/compare/AcuityAlternative'));
@@ -334,7 +334,7 @@ function DashboardWrapper({ children }) {
 
 // SECURITY: AdminWrapper does NOT use ProtectedRoute (which checks vendor/user session).
 // AdminLayout has its own isolated guard that checks the 'bas_admin' session only.
-// A vendor/user with no admin session is redirected to /hello-sloth, not /login.
+// A vendor/user with no admin session is redirected to /backstage, not /login.
 function AdminWrapper({ children }) {
   return <AdminLayout>{children}</AdminLayout>;
 }
@@ -444,7 +444,7 @@ function App() {
           {/* Public */}
           <Route path="/" element={<HomeGate />} />
           {/* Competitor comparison pages — live under the /compare hub. */}
-          <Route path="/compare/topmate-alternative" element={<TopmateVsBookASloth />} />
+          <Route path="/compare/topmate-alternative" element={<TopmateVsMeeticulous />} />
           <Route path="/compare/calendly-alternative" element={<CalendlyAlternative />} />
           <Route path="/compare/setmore-alternative" element={<SetmoreAlternative />} />
           <Route path="/compare/acuity-alternative" element={<AcuityAlternative />} />
@@ -452,7 +452,6 @@ function App() {
           <Route path="/compare/zoho-bookings-alternative" element={<ZohoBookingsAlternative />} />
           {/* Old /lp/* URLs (Oct 2026 move). vercel.json 301s them at the edge;
               these cover in-app navigation from a stale link or cached bundle. */}
-          <Route path="/lp/topmate-vs-bookasloth" element={<Navigate to="/compare/topmate-alternative" replace />} />
           {['calendly', 'setmore', 'acuity', 'simplybook', 'zoho-bookings'].map((c) => (
             <Route key={c} path={`/lp/${c}-alternative`} element={<Navigate to={`/compare/${c}-alternative`} replace />} />
           ))}
@@ -512,8 +511,6 @@ function App() {
 
           {/* Host signup — Google-only */}
           <Route path="/become-a-host" element={<BecomeAHost />} />
-          {/* Old /be-a-sloth URL → permanent redirect to the renamed route. */}
-          <Route path="/be-a-sloth" element={<Navigate to="/become-a-host" replace />} />
           {/* Host login door (Google-only) — also the Google-callback error target. */}
           <Route path="/login-as-vendor" element={<HostLogin />} />
           <Route path="/auth/google/done" element={<GoogleAuthDone />} />
@@ -532,9 +529,8 @@ function App() {
           <Route path="/vendor-register/:slug/plan"     element={<PlansStep />} />
           <Route path="/vendor-register/:slug/live"     element={<LiveStep />} />
 
-          {/* Admin login (Backstage). Old /hello-sloth path redirects here. */}
+          {/* Admin login (Backstage). */}
           <Route path="/backstage" element={<AdminLogin />} />
-          <Route path="/hello-sloth" element={<Navigate to="/backstage" replace />} />
 
           {/* Vendor dashboard */}
           <Route path="/dashboard" element={<DashboardWrapper><Dashboard /></DashboardWrapper>} />

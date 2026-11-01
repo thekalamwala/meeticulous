@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { sendDemoLeadOtp, submitDemoLead } from '../../services/api';
 
-// "Book a Demo" panel for /be-a-sloth. Slides UP from the bottom of the signup
+// "Book a Demo" panel for /become-a-host. Slides UP from the bottom of the signup
 // card and fills it exactly (rendered as an absolute overlay inside the card,
 // which is position:relative + overflow-hidden). Captures a verified inbound lead:
 // Name + Phone + Profession, phone confirmed by WhatsApp OTP. On success the server
@@ -191,7 +191,7 @@ export default function BookDemoDrawer({ open, onClose }) {
 
             {/* Secondary, low-emphasis: try the real product live (opens in a new tab). */}
             <a
-              href="https://meeticulous.com/sndatarkar/booking/book-a-sloth-app-online-demo-30-min-advisory-session"
+              href="https://meeticulous.com/demo"
               target="_blank"
               rel="noopener noreferrer"
               className="mt-1 block w-full text-center text-xs font-medium text-gray-400 underline decoration-gray-300 underline-offset-2 transition-colors hover:text-ink"

@@ -15,9 +15,8 @@
 // comparison · engagement-terms pricing · a framed editorial about. Only nav/hero
 // chrome/footer (shared shell) may resemble sibling pages.
 //
-// IMAGES: real photos/mascot reused from the previous /for/lawyers page — the
-// advocate sloth mascot (/images/lawyer.webp) in the hero + about, real brand
-// logos in the integrations schedule. No empty placeholders.
+// IMAGES: real brand logos in the integrations schedule; hero + about use icon
+// art (mascot illustrations removed). No empty placeholders.
 //
 // HONESTY — the BCI advertising constraint (this page's defining rule):
 //   Advocates are bound by Bar Council of India Rules on advertising and
@@ -47,6 +46,7 @@ import {
   Lock, BadgePercent,
 } from 'lucide-react';
 import Reveal from '../../components/home/Reveal';
+import { Scale as ScaleArt } from 'lucide-react';
 import Seo from '../../components/common/Seo';
 import useLenis from '../../hooks/useLenis';
 import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
@@ -61,8 +61,8 @@ import PageGuides from '../../components/common/PageGuides';
 
 const START = '/become-a-host';        // real host signup funnel
 const LOGIN = '/login-as-vendor';   // host login (Google-only door)
-const DEMO = '/sndatarkar/booking/book-a-sloth-app-online-demo-30-min-advisory-session';               // real demo page
-const MASCOT = '/images/lawyer.webp'; // advocate sloth mascot — transparent cutout (107KB webp)
+const DEMO = '/demo';               // real demo page
+const ART_ICON = ScaleArt; // stands in for the removed mascot art
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
 
@@ -431,7 +431,7 @@ export default function LawyersPage() {
             <div aria-hidden className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(194,137,26,0.22), transparent)' }} />
             <div className="relative rounded-[20px] border-[3px] p-2.5 shadow-[0_30px_60px_-34px_rgba(31,19,21,0.55)]" style={{ borderColor: 'var(--ca-primary)', background: '#fff' }}>
               <div className="relative overflow-hidden rounded-[13px] border" style={{ borderColor: 'rgba(194,137,26,0.5)', background: 'var(--ca-cream)' }}>
-                <img src={MASCOT} alt="Meeticulous — appointment booking for advocates and law firms" loading="eager" width="480" height="480" className="mx-auto block w-full max-w-[24rem] p-6" />
+                <div role="img" aria-label="Meeticulous — appointment booking for advocates and law firms" className="mx-auto grid aspect-square w-full max-w-[24rem] place-items-center p-6"><ART_ICON className="h-24 w-24" style={{ color: 'var(--ca-primary)' }} strokeWidth={1.25} aria-hidden="true" /></div>
               </div>
             </div>
             {/* floating "Consultation booked" card */}
@@ -759,12 +759,12 @@ export default function LawyersPage() {
       {/* ═══════════════ 10 · ABOUT (framed editorial + trust facts) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          {/* LEFT — framed mascot */}
+          {/* LEFT — framed icon art */}
           <Reveal className="relative order-2 mx-auto w-full max-w-sm lg:order-1 lg:mx-0">
             <div aria-hidden className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(127,29,29,0.14), transparent)' }} />
             <div className="relative rounded-[18px] border-2 p-2 shadow-[0_24px_50px_-32px_rgba(31,19,21,0.5)]" style={{ borderColor: 'var(--ca-primary)', background: '#fff' }}>
               <div className="overflow-hidden rounded-[12px] border" style={{ borderColor: 'rgba(194,137,26,0.5)', background: 'var(--ca-cream)' }}>
-                <img src={MASCOT} alt="Meeticulous mascot dressed as an advocate" loading="lazy" width="384" height="384" className="mx-auto block w-full max-w-[20rem] p-5" />
+                <div aria-hidden="true" className="mx-auto grid aspect-square w-full max-w-[20rem] place-items-center p-5"><ART_ICON className="h-20 w-20" style={{ color: 'var(--ca-primary)' }} strokeWidth={1.25} /></div>
               </div>
             </div>
           </Reveal>

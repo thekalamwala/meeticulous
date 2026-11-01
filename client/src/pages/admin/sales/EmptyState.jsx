@@ -13,7 +13,6 @@ export default function EmptyState({ filtered, onAdd, onImport, onClear }) {
   }
   return (
     <div className="p-12 text-center max-w-md mx-auto">
-      <p className="text-2xl mb-2">🦥</p>
       <p className="adm-t1 font-semibold mb-1">No leads yet</p>
       <p className="adm-t3 text-sm mb-5">Your future customers are out there somewhere. Add one, or import your list to get started.</p>
       <div className="flex justify-center gap-2">

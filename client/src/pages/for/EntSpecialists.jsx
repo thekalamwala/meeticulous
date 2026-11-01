@@ -27,6 +27,8 @@
 // VALUES change per palette.
 
 import { useState } from 'react';
+import { Ear as EarIcon } from 'lucide-react';
+import IconArt from '../../components/common/IconArt';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -61,7 +63,7 @@ const NAV = [
   { label: 'FAQ', href: '#faq' },
 ];
 
-const MASCOT = '/for/ent-specialists/hero.webp';
+const SLOT_ICON = EarIcon; // stands in for the removed mascot art
 const HERO_TRUST = ['No credit card required', 'Setup in minutes', 'Built for Indian clinics'];
 
 // Services grouped for the segmented-tab switcher (Ear / Nose & Throat / Consult & Surgery).
@@ -206,14 +208,7 @@ function ImgSlot({ alt, className = '', rounded = 'rounded-[16px]' }) {
     .replace(/\bborder\b(-[^\s]+)?/g, '')
     .replace(/bg-\[[^\]]*\]/g, '');
   const pos = /\b(absolute|fixed)\b/.test(layout) ? '' : 'relative';
-  return (
-    <div
-      {...(alt ? { role: 'img', 'aria-label': alt } : { 'aria-hidden': true })}
-      className={`${pos} z-40 flex items-center justify-center ${layout}`}
-    >
-      <img src={MASCOT} alt={alt || ''} loading="lazy" decoding="async" className="h-full w-full object-contain" />
-    </div>
-  );
+  return <IconArt icon={SLOT_ICON} label={alt} rounded={rounded} className={`${pos} z-40 ${layout}`} />;
 }
 
 /* Decorative audiogram / frequency readout — the hero's "instrument panel" motif. */
@@ -815,7 +810,7 @@ export default function EntSpecialists() {
               <Link to={START} className="inline-flex items-center justify-center gap-2 rounded-[10px] bg-white px-7 py-3.5 text-sm font-bold transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
                 Launch My Page — Free <ArrowRight size={16} />
               </Link>
-              <Link to="/sndatarkar/booking/book-a-sloth-app-online-demo-30-min-advisory-session" className="inline-flex items-center justify-center gap-2 rounded-[10px] border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline">
+              <Link to="/demo" className="inline-flex items-center justify-center gap-2 rounded-[10px] border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline">
                 Book A Demo
               </Link>
             </Reveal>

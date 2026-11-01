@@ -1,8 +1,8 @@
 // Curated fallback so an externally shared link never shows an empty demo.
 // Category personas re-skin the booking demo on slide 08.
 export const FALLBACK_HOST = {
-  username: 'slothstudio',
-  name: 'Sloth Studio',
+  username: 'calmstudio',
+  name: 'Calm Studio',
   tagline: 'Calm sessions, booked in seconds.',
   profile_image: '', // HostAvatar renders initials fallback on themeColor
   cover_image: '',   // HostCover renders theme gradient

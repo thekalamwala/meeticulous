@@ -91,12 +91,12 @@ const MenuSurface = ({ open, onClose, isMobile, title, align = 'right', width = 
   );
 };
 
-/** Sloth Support — leftmost topbar action. Routes to the Help centre. */
+/** Support — leftmost topbar action. Routes to the Help centre. */
 const SupportButton = () => (
   <Link
     to="/help"
-    title="Sloth Support"
-    aria-label="Sloth Support"
+    title="Support"
+    aria-label="Support"
     className="grid h-9 w-9 place-items-center rounded-full text-gray-500 transition-colors hover:bg-primary/5 hover:text-primary"
   >
     <LifeBuoy className="h-[19px] w-[19px]" strokeWidth={1.7} />

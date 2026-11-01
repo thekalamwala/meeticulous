@@ -775,7 +775,7 @@ function DeckBody({ d }) {
             Working product, real early traction, India's rails built in. {d.cover.raise} unlocks the funnel we already have.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <a href="mailto:bookasloth@gmail.com" className="rounded-[4px] border-[3px] border-[#960D32] bg-[#960D32] px-6 py-3 font-heading text-base font-extrabold text-white transition hover:brightness-110" style={{ boxShadow: '5px 5px 0 rgba(254,81,0,0.35)' }}>Let's talk →</a>
+            <a href="mailto:hello@meeticulous.com" className="rounded-[4px] border-[3px] border-[#960D32] bg-[#960D32] px-6 py-3 font-heading text-base font-extrabold text-white transition hover:brightness-110" style={{ boxShadow: '5px 5px 0 rgba(254,81,0,0.35)' }}>Let's talk →</a>
             <a href="https://meeticulous.com" target="_blank" rel="noreferrer" className="rounded-[4px] border-[3px] border-white/30 px-6 py-3 font-heading text-base font-extrabold text-white transition hover:border-white">See it live</a>
           </div>
           <p className="mt-10 font-sans text-xs opacity-40">Confidential · {FOUNDER.handle}</p>

@@ -695,7 +695,7 @@ const DisplayAdCard = () => (
       </div>
       {/* yellow bubble, overlapping */}
       <div className="-mt-1 rounded-2xl bg-[#FFC400] px-4 py-3.5">
-        <p className="text-2xl font-black leading-[1.05] tracking-tight text-[#0A2A66]">But a Sloth can run your calendar for you.</p>
+        <p className="text-2xl font-black leading-[1.05] tracking-tight text-[#0A2A66]">But Meeticulous can run your calendar for you.</p>
       </div>
 
       {/* bottom row — pill CTA + wordmark */}
@@ -706,7 +706,7 @@ const DisplayAdCard = () => (
             <svg className="w-4 h-4 text-[#0A2A66]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
           </span>
         </span>
-        <span className="text-sm font-extrabold leading-tight text-white text-right">Book A<br/>Sloth Pro</span>
+        <span className="text-sm font-extrabold leading-tight text-white text-right">Meeticulous<br/>Pro</span>
       </div>
     </div>
   </Link>

@@ -1,5 +1,5 @@
 // Auto-generated SVG thumbnails for blog post heroes.
-// Replaces the sloth-emoji fallback in BlogPost.jsx HeroVisual.
+// Replaces the old emoji fallback in BlogPost.jsx HeroVisual.
 // Uses SVG <pattern> for grids/dots to keep DOM node count low.
 
 const ICONS = {

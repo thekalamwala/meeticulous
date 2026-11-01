@@ -112,7 +112,6 @@ export default function Pricing() {
         <div className="mx-auto max-w-3xl text-center">
           {!feeOnly && (
             <span className="mb-5 inline-flex items-center gap-2 rounded-full border-2 border-ink/10 bg-canvas px-3.5 py-1.5 text-xs font-semibold text-ink/70">
-              <span aria-hidden="true">🦥</span>
               Start free. Go Pro when your business grows.
             </span>
           )}

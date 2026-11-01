@@ -35,8 +35,8 @@ const GoogleAuthDone = () => {
     adoptSession({ token, refresh_token: refresh })
       .then(() => {
         toast.success(
-          isNew ? 'Welcome to Meeticulous! 🦥'
-            : isUpgrade ? "Let's set up your hosting 🦥"
+          isNew ? 'Welcome to Meeticulous!'
+            : isUpgrade ? "Let's set up your hosting"
             : 'Welcome back!'
         );
         // /dashboard is onboarding-guarded — a new or just-upgraded host is
