@@ -2,7 +2,7 @@
 // business & management consultants and advisory firms in India.
 //
 // STANDALONE page (not the data-driven ProfessionLanding template). Same shared
-// infra as its siblings (Seo, Reveal, useLenis, real plan data, /be-a-sloth
+// infra as its siblings (Seo, Reveal, useLenis, real plan data, /become-a-host
 // funnel, prerender + Solutions hub). This bespoke route PRECEDES
 // /for/:profession in App.jsx, so it replaces the generic template that
 // previously served /for/business-consultant. Navbar, Solutions.jsx,
@@ -39,6 +39,8 @@ import {
   BadgePercent, Lock, Zap, Share2,
 } from 'lucide-react';
 import Reveal from '../../components/home/Reveal';
+import { Briefcase as BriefcaseArt, TrendingUp as TrendingUpArt, Handshake as HandshakeArt } from 'lucide-react';
+import IconArt from '../../components/common/IconArt';
 import Seo from '../../components/common/Seo';
 import useLenis from '../../hooks/useLenis';
 import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
@@ -53,8 +55,6 @@ import PageGuides from '../../components/common/PageGuides';
 
 const START = '/become-a-host';      // real host signup funnel
 const LOGIN = '/login-as-vendor'; // host login (Google-only door)
-const HERO_ART = '/for/business-consultant/hero.webp'; // consulting/analytics illustration
-const ABOUT_ART = '/for/business-consultant/hero.webp';
 const AMBER = '#F59E0B'; // bright amber — used only on the dark hero/CTA where contrast is high
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
@@ -207,7 +207,7 @@ function CtaButton({ to, children, variant = 'solid', className = '' }) {
 /* Floating glass card over the hero. */
 function GlassCard({ icon: Icon, label, value, accent, className = '', float = '' }) {
   return (
-    <div className={`sloth-glass ${float} absolute z-20 flex items-center gap-3 rounded-2xl px-4 py-3 ${className}`}>
+    <div className={`brand-glass ${float} absolute z-20 flex items-center gap-3 rounded-2xl px-4 py-3 ${className}`}>
       <span
         className="flex h-10 w-10 items-center justify-center rounded-xl"
         style={accent
@@ -610,7 +610,7 @@ export default function BusinessConsultants() {
               >
                 Create a Free Account <ArrowRight size={16} />
               </Link>
-              <Link to="/sndatarkar/booking/book-a-sloth-app-online-demo-30-min-advisory-session" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
+              <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
                 Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </Reveal>
@@ -626,10 +626,10 @@ export default function BusinessConsultants() {
           {/* RIGHT — illustration + floating glass cards */}
           <Reveal instant delay={0.1} className="relative hidden lg:block">
             <div aria-hidden className="absolute left-1/2 top-1/2 h-[27rem] w-[27rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-[rgba(30,41,59,0.1)] to-[rgba(180,83,9,0.12)] blur-2xl" />
-            <img src={HERO_ART} alt="Meeticulous — appointment booking for business and management consultants" loading="eager" className="relative z-30 mx-auto w-full max-w-[27rem] drop-shadow-[0_28px_40px_rgba(15,23,42,0.2)]" />
-            <GlassCard icon={CalendarCheck} label="New booking" value="Strategy Call · 4:30 PM" float="sloth-float" className="top-[-26px] -right-[26px]" />
-            <GlassCard icon={Wallet} label="Fee received" value="₹5,000" accent float="sloth-float--mid" className="top-[calc(50%-90px)] -left-6" />
-            <GlassCard icon={BellRing} label="WhatsApp reminder" value="Sent · 1h before" float="sloth-float--slow" className="bottom-10 -right-2" />
+            <IconArt icon={BriefcaseArt} label="Meeticulous — appointment booking for business and management consultants" className="relative z-30 mx-auto aspect-square w-full max-w-[27rem]" iconClassName="h-24 w-24" />
+            <GlassCard icon={CalendarCheck} label="New booking" value="Strategy Call · 4:30 PM" float="brand-float" className="top-[-26px] -right-[26px]" />
+            <GlassCard icon={Wallet} label="Fee received" value="₹5,000" accent float="brand-float--mid" className="top-[calc(50%-90px)] -left-6" />
+            <GlassCard icon={BellRing} label="WhatsApp reminder" value="Sent · 1h before" float="brand-float--slow" className="bottom-10 -right-2" />
           </Reveal>
         </div>
 
@@ -775,7 +775,7 @@ export default function BusinessConsultants() {
             </div>
             <Reveal delay={0.08} className="relative mx-auto w-full max-w-md">
               <div aria-hidden className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#1E293B]/10 blur-3xl" />
-              <img src={ABOUT_ART} alt="" loading="lazy" className="relative z-10 mx-auto w-full max-w-sm object-contain drop-shadow-[0_24px_40px_rgba(15,23,42,0.16)]" />
+              <IconArt icon={TrendingUpArt} className="relative z-10 mx-auto aspect-[4/3] w-full max-w-sm" />
             </Reveal>
           </div>
 
@@ -783,7 +783,7 @@ export default function BusinessConsultants() {
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <Reveal delay={0.08} className="relative order-2 mx-auto w-full max-w-md lg:order-1">
               <div aria-hidden className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#B45309]/12 blur-3xl" />
-              <img src={HERO_ART} alt="" loading="lazy" className="relative z-10 mx-auto w-full max-w-sm object-contain drop-shadow-[0_24px_40px_rgba(15,23,42,0.16)]" />
+              <IconArt icon={HandshakeArt} className="relative z-10 mx-auto aspect-[4/3] w-full max-w-sm" />
             </Reveal>
             <div className="order-1 text-center lg:order-2 lg:text-left">
               <Reveal as="h2" className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
@@ -949,7 +949,7 @@ export default function BusinessConsultants() {
           <Reveal delay={0.05} className="relative order-2 mx-auto w-full max-w-md lg:order-1 lg:mx-0 lg:max-w-none">
             <div aria-hidden className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#1E293B]/10 blur-3xl" />
             <div className="relative overflow-hidden rounded-[22px] bg-white shadow-[0_28px_60px_-30px_rgba(15,23,42,0.4)]">
-              <img src={ABOUT_ART} alt="Meeticulous — one calm platform for consultants" loading="lazy" className="w-full object-contain" />
+              <IconArt icon={BriefcaseArt} label="Meeticulous — one calm platform for consultants" rounded="rounded-none" className="aspect-[4/3] w-full border-0 shadow-none" />
             </div>
             <div className="absolute bottom-5 left-5 z-20 max-w-[17rem] rounded-2xl px-5 py-4 text-white shadow-[0_20px_44px_-20px_rgba(15,23,42,0.8)]" style={{ background: 'var(--ca-ink)' }}>
               <div className="font-heading text-lg font-extrabold leading-tight">One calm platform for your whole practice</div>

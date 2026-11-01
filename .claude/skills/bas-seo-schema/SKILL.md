@@ -1,9 +1,9 @@
 ---
 name: bas-seo-schema
-description: Use when adding, editing, or reviewing JSON-LD / structured data / aggregateRating / prerender SEO for Book A Sloth's public pages (host profiles, services, professions, org, home) — the AEO/GEO schema layer that is NOT blog. Enforces the two-path (client seo.js ↔ server prerender shell) sync rule, the real-reviews-only rating guard, sameAs mirroring, and the prerender/ipGuard/reservedSegments landmines. Trigger: "add JSON-LD", "schema for host/service", "aggregateRating", "structured data", "AEO schema", "prerender SEO", "/bas-seo-schema". (For blog posts use blog-seo-optimizer instead.)
+description: Use when adding, editing, or reviewing JSON-LD / structured data / aggregateRating / prerender SEO for Meeticulous's public pages (host profiles, services, professions, org, home) — the AEO/GEO schema layer that is NOT blog. Enforces the two-path (client seo.js ↔ server prerender shell) sync rule, the real-reviews-only rating guard, sameAs mirroring, and the prerender/ipGuard/reservedSegments landmines. Trigger: "add JSON-LD", "schema for host/service", "aggregateRating", "structured data", "AEO schema", "prerender SEO", "/bas-seo-schema". (For blog posts use blog-seo-optimizer instead.)
 ---
 
-# Book A Sloth — SEO/AEO/GEO Schema (non-blog)
+# Meeticulous — SEO/AEO/GEO Schema (non-blog)
 
 Structured data for public pages lives in **two hand-mirrored implementations**. The #1 failure
 mode is editing one and forgetting the other → Google sees different schema for bots vs users.

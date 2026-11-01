@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import TopmateVsBookASloth from "../compare/TopmateVsBookASloth";
+import TopmateVsMeeticulous from "../compare/TopmateVsMeeticulous";
 import { FAQ } from "../../components/lp/lpData";
 import { PREMIUM_PLAN } from "../../data/plans";
 
@@ -13,9 +13,9 @@ vi.mock("../../services/analytics", () => ({
   EVENTS: { LP_VIEWED: "LP_VIEWED", LEAD_CAPTURED: "LEAD_CAPTURED", LP_CTA_CLICKED: "LP_CTA_CLICKED" },
 }));
 
-const renderPage = () => render(<MemoryRouter><TopmateVsBookASloth /></MemoryRouter>);
+const renderPage = () => render(<MemoryRouter><TopmateVsMeeticulous /></MemoryRouter>);
 
-describe("TopmateVsBookASloth (Topmate-style rebuild)", () => {
+describe("TopmateVsMeeticulous (Topmate-style rebuild)", () => {
   it("renders a keyword-led hero with the live plan price", () => {
     renderPage();
     const h1 = screen.getByRole("heading", { level: 1 });

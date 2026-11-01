@@ -219,8 +219,8 @@ const checkBookingReceiveLimit = async (hostId) => {
   }
 };
 
-// Client CRM gate (limits.crm: -1 = full/unlimited on Sloth Active and the legacy
-// paid tiers, a POSITIVE N = a capped view — the free Sloth plan gets its N most
+// Client CRM gate (limits.crm: -1 = full/unlimited on Pro and the legacy
+// paid tiers, a POSITIVE N = a capped view — the free Starter plan gets its N most
 // recent clients, N enforced downstream in crmService.listClients — and 0/absent
 // = fully blocked). Requires attachPlan to have run first. Fails CLOSED.
 const requireCrm = async (req, res, next) => {
@@ -230,7 +230,7 @@ const requireCrm = async (req, res, next) => {
     const limit = planData.limits?.crm ?? 0;
     if (limit === -1 || limit > 0) return next();
     return blockResponse(res, {
-      message: 'The Client CRM is a Sloth Active feature. Upgrade to manage client records.',
+      message: 'The Client CRM is a Pro feature. Upgrade to manage client records.',
       plan, limit,
     });
   } catch (err) {

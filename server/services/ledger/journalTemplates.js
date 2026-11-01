@@ -7,7 +7,7 @@
  * LEDGER LEGEND — whose money is in each account, and its normal balance.
  * Read this once and every entry below is self-explanatory. Full worked examples
  * (booking + subscription) live in docs/ledger.md. The four owners are:
- *   • BAS revenue        — Book A Sloth keeps it (fee + commission + subs, ex-GST)
+ *   • BAS revenue        — Meeticulous keeps it (fee + commission + subs, ex-GST)
  *   • Host pass-through  — the host's money, a liability we owe on to the host
  *   • Government payable  — GST / TDS(194-O) / TCS(§52); collected, never revenue
  *   • Razorpay cost      — gateway MDR; host-borne on bookings, BAS-borne on subs

@@ -19,7 +19,7 @@ This audit is a one-time, human-grade diagnosis. It is the qualitative counterpa
 | **2** | **Near-zero + partly toxic off-site authority** | Authority | **0 backlinks** point to *any* blog post; 54% of all 322 links are self-referential (`shubhamdatarkar.com`); toxic PBN/Fiverr anchors present |
 | **3** | **Young domain / low crawl priority** | Time/authority | GSC data begins ~June 2026; the 2 genuine guides are only ~2 months old and have 0 authority to rank competitive terms |
 | **4** | **No topical authority structure** — clusters are shaped by product features, not searchable topics | Structure | 18/51 posts are orphans (0 inbound internal links); the 2 real guides are themselves orphans; 7 cannibalization groups |
-| **5** | **Blog is disconnected from the money pages it should lift** | Structure/commercial | 19/51 posts have **0** links to `/pricing` or `/be-a-sloth`; those pages themselves rank poorly (`/pricing` position **32**) |
+| **5** | **Blog is disconnected from the money pages it should lift** | Structure/commercial | 19/51 posts have **0** links to `/pricing` or `/become-a-host`; those pages themselves rank poorly (`/pricing` position **32**) |
 
 **Not a root cause:** Technical indexability. Live-verified — posts return HTTP 200, no `noindex`, correct canonical, full `BlogPosting`+`BreadcrumbList` JSON-LD, and all 51 are in `sitemap-blog.xml`. Google *can* index the blog; it simply has almost nothing worth surfacing for a real query.
 
@@ -41,7 +41,7 @@ Rough attribution of "why is the blog invisible": **Strategy/topic ~65% · Autho
 3. **Invest in the 6 posts that target real demand** (§10): the commission page, `what-a-booking-page-needs-in-india`, `advance-payments-without-the-screenshot-dance`, `digital-marketing-strategy-vibe-coders`. Expand, add FAQ schema, internal-link them, and earn real links.
 4. **Fix the toxic-link footprint.** Review and **disavow** the PBN/Fiverr links (§9) before they draw a manual action.
 5. **Add `FAQPage` schema** to the two flagship guides — they render FAQs as `<h2>` and emit no FAQ structured data (verified live). Cheap SERP-feature win.
-6. **Build real internal links** from the 2 guides + commission page to `/pricing`, `/be-a-sloth`, and the `/for/<vertical>` pages; and from those money pages back into the guides.
+6. **Build real internal links** from the 2 guides + commission page to `/pricing`, `/become-a-host`, and the `/for/<vertical>` pages; and from those money pages back into the guides.
 7. **Fix the blog soft-404**: unknown `/blog/<slug>` returns 200 + an indexable shell with **no `noindex`** (the `#954` soft-404 fix skipped `/blog`). Make it a real 404/`noindex`.
 8. **Give posts a real author identity.** `author` is an Organization ("Bolt 958"); use a `Person` with an author page for E-E-A-T (matters for money/tax/payments topics).
 9. **Point new content at the demand that actually exists** (§12): the `/for/<vertical>` local/professional queries the host profiles already prove (e.g. "education/study-abroad/salon/doctor booking"), plus the commercial "calendly/topmate alternative", "0% commission", "advance payment" terms.
@@ -98,7 +98,7 @@ See §14: 10 of the finding-types map cleanly onto the `feat/seo-audit-engine` r
 
 Across the **entire domain**, only **46 URLs received any impression in 6 months**, and a **single host profile page — `/theedulocusway` — accounts for 14,181 of ~14,438 total impressions (~98%)**. Every meaningful query is that host's education-consultancy business (`edulocus` 11,468 impr; `education consultants in nagpur`; `study abroad consultants`; `neet counsellor in nagpur`). **Nepal alone = 11,593 impressions** (the host does MBBS-abroad counselling).
 
-Against that, the company's own funnel is invisible: `/pricing` position **32**, `/be-a-sloth` 10.6, `/how-it-works` 17. And the **blog contributes 3 URLs total** to the impression list: `/blog` (10), `/blog/going-live` (4), `/blog?page=2` (1).
+Against that, the company's own funnel is invisible: `/pricing` position **32**, `/become-a-host` 10.6, `/how-it-works` 17. And the **blog contributes 3 URLs total** to the impression list: `/blog` (10), `/blog/going-live` (4), `/blog?page=2` (1).
 
 **The reframe:** Meeticulous's *only* working organic engine is **host/professional profile pages ranking for those professionals' local + brand queries** — the marketplace long-tail. That is where demand lives. The blog, as currently conceived, runs parallel to it and targets nothing anyone searches. The strategic recommendation that falls out of the data (§13) is to **make the blog serve that engine** — support the `/for/<vertical>` pages, the profile pages, and the money pages — instead of narrating the changelog.
 
@@ -152,7 +152,7 @@ Secondary defects (do **not** explain the invisibility, but worth fixing):
 
 **Scenario classification (spec §4):** the blog is overwhelmingly **Scenario C (almost no impressions)** — investigated and traced to **demand + authority + youth**, not indexing (verified) or intent-mismatch on a query it already surfaces for. The 2 real guides are a special case of C: indexable, but 0 impressions at ~2 months old with 0 authority → they have not yet earned surface for competitive terms.
 
-**Money pages (for contrast):** `/enterprise` 44 impr (pos 8.4), `/pricing` 31 (pos **32**), `/be-a-sloth` 13 (pos 10.6), `/how-it-works` 5 (pos 17), `/explore` 2 (pos 2). These are the pages the blog *should* be lifting; they are themselves stranded.
+**Money pages (for contrast):** `/enterprise` 44 impr (pos 8.4), `/pricing` 31 (pos **32**), `/become-a-host` 13 (pos 10.6), `/how-it-works` 5 (pos 17), `/explore` 2 (pos 2). These are the pages the blog *should* be lifting; they are themselves stranded.
 
 ---
 
@@ -262,7 +262,7 @@ Full deterministic table with all columns is in **`blog-audit-dataset.csv`** (so
 
 Anchor new content to demand that is **proven to exist on this domain** (host verticals) or **commercially load-bearing** (money-page support). Priority order:
 
-**A. Commercial / alternative cluster (supports `/pricing`, `/be-a-sloth`, existing `/lp/*`):**
+**A. Commercial / alternative cluster (supports `/pricing`, `/become-a-host`, existing `/lp/*`):**
 - "Calendly alternative for India" (a `/lp/calendly-alternative` already exists — build the supporting guide) · "Topmate alternative" (`/lp/topmate-vs-meeticulous` exists) · "0% commission booking platform" (the C2 merge) · "How to take advance payments for appointments (India)" · "GST invoice for bookings — what a service business needs".
 
 **B. Vertical cluster (mirrors the `/for/<vertical>` pages and the profile pages that already rank):**

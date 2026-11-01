@@ -15,9 +15,9 @@ You set up your services once, share one link, and clients pick a time and pay i
 
 - **Get paid at the moment of booking**, not chased for it afterward.
 - **Phone-first for guests, Google for hosts** — identity that matches how people actually work, no extra passwords.
-- **0% commission on paid plans** — on a paid plan, you keep the full price your client pays.
+- **0% commission on Pro** — on the Pro plan, you keep the full price your client pays.
 - **Built for India** — payments through Razorpay (UPI, cards, netbanking), and confirmations on WhatsApp and email.
 
 ## Getting started
 
-Guests: just open a host's link and book. Hosts: start free from the [Be a Sloth](/be-a-sloth) page. See [Plans and upgrading](/help/docs/plans-and-upgrading) for what each plan includes.
+Guests: just open a host's link and book. Hosts: start free from the [Become a Host](/become-a-host) page. See [Plans and upgrading](/help/docs/plans-and-upgrading) for what each plan includes.

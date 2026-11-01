@@ -27,7 +27,7 @@
 - `client/src/pages/Login.jsx` — default post-login redirect.
 - `client/src/pages/CustomerProfile.jsx` — back link.
 - `client/src/pages/ReviewPage.jsx` — two back links.
-- `client/src/pages/BeASloth.jsx` — drop become-host flip; always Google signup.
+- `client/src/pages/BecomeAHost.jsx` — drop become-host flip; always Google signup.
 - `client/src/pages/Dashboard.jsx` — drop become-host; redirect dead guest branch.
 - `client/src/context/AuthContext.jsx` — remove `activateHost` helper.
 - `client/src/services/api.js` — remove `activateHost`.
@@ -443,7 +443,7 @@ git commit -m "feat(client): point guest nav + back links at /user/*"
 **Files:**
 - Modify: `client/src/services/api.js`
 - Modify: `client/src/context/AuthContext.jsx`
-- Modify: `client/src/pages/BeASloth.jsx`
+- Modify: `client/src/pages/BecomeAHost.jsx`
 - Modify: `client/src/pages/Dashboard.jsx`
 - Test: `client/src/tests/AuthContext.test.jsx`
 
@@ -485,9 +485,9 @@ Delete the helper:
 
 In the context provider `value={{ ... }}`, remove `activateHost,` from the list (it sits next to `adoptSession`).
 
-- [ ] **Step 4: BeASloth — always Google signup (no flip)**
+- [ ] **Step 4: BecomeAHost — always Google signup (no flip)**
 
-In `client/src/pages/BeASloth.jsx`:
+In `client/src/pages/BecomeAHost.jsx`:
 
 Change the destructure:
 ```jsx
@@ -599,7 +599,7 @@ Expected: build succeeds — no unused-import or unresolved-symbol errors (`Gues
 - [ ] **Step 7: Commit**
 
 ```bash
-git add client/src/services/api.js client/src/context/AuthContext.jsx client/src/pages/BeASloth.jsx client/src/pages/Dashboard.jsx client/src/tests/AuthContext.test.jsx
+git add client/src/services/api.js client/src/context/AuthContext.jsx client/src/pages/BecomeAHost.jsx client/src/pages/Dashboard.jsx client/src/tests/AuthContext.test.jsx
 git commit -m "refactor(client): remove in-place become-host flip; host signup is a separate account"
 ```
 
@@ -777,4 +777,4 @@ gh pr create --title "feat: guest/host URL separation (/user/* namespace + two-w
 
 **Placeholder scan:** No TBD/TODO; every code step shows exact before/after. PR body `<summary …>` is an intentional author fill at submit time, not a code placeholder. ✓
 
-**Type/name consistency:** `hostPathToGuestPath` used identically in Task 1, 2, and HostRoute. Guard names `HostRoute`/`GuestRoute` consistent across Tasks 2–3. `activateHost` removed everywhere it was referenced (api.js, AuthContext, BeASloth, Dashboard, AuthContext.test). `becomeHost` removed from routes + controller + deleted test. ✓
+**Type/name consistency:** `hostPathToGuestPath` used identically in Task 1, 2, and HostRoute. Guard names `HostRoute`/`GuestRoute` consistent across Tasks 2–3. `activateHost` removed everywhere it was referenced (api.js, AuthContext, BecomeAHost, Dashboard, AuthContext.test). `becomeHost` removed from routes + controller + deleted test. ✓

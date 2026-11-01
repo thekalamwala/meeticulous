@@ -156,7 +156,7 @@ Before going live:
 - [ ] Supabase: production project URL + service role key
 - [ ] Email: working SMTP or Resend/SES credentials in `email_settings` table
 - [ ] Test a full booking flow end-to-end
-- [ ] Test admin login at `/hello-sloth`
+- [ ] Test admin login at `/backstage`
 - [ ] Maintenance mode OFF in platform settings
 
 ---

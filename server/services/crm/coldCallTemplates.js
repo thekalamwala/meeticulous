@@ -17,11 +17,11 @@ const SIGNUP = 'https://meeticulous.com/?ref=sndatarkar';
 // WhatsApp previews must match the texts submitted to Meta/AiSensy (no ?ref there).
 const WA_SIGNUP = 'https://meeticulous.com/login-as-vendor';
 const PRICING = 'https://meeticulous.com/pricing';
-// Founder's own Book A Sloth demo page — booking it IS the product experience.
-const DEMO = 'https://meeticulous.com/sndatarkar/book-a-sloth-app-online-demo-30-min-advisory-session';
+// Founder's own Meeticulous demo page — booking it IS the product experience.
+const DEMO = 'https://meeticulous.com/contact';
 // class="sig" keeps a link inline (emailService.plainBody) so each email has ONE orange button.
 const CALL = (text) => `<a class="sig" href="${DEMO}">${text}</a>`;
-const SIGN = '<p>Shubham<br>Founder, Book A Sloth</p>';
+const SIGN = '<p>Shubham<br>Founder, Meeticulous</p>';
 const BIZ = [{ key: 'business_name', label: 'Business name', example: 'Smile Dental' }];
 // Tracked-link param, filled per lead by coldCallService: the lead's category landing page
 // (or homepage) + ?i=<4-char invite code>, e.g. https://meeticulous.com/for/dentists?i=CX12 —
@@ -53,7 +53,7 @@ ${SIGN}`,
   },
   {
     channel: 'email', name: 'cold_call_details_email', label: 'Cold call · Wants details → info pack', category: 'cold_call_details', variables: [], is_active: true,
-    subject: 'Book A Sloth — the details you asked for',
+    subject: 'Meeticulous — the details you asked for',
     body: `<p>Hi {{business_name}} team,</p>
 <p>Thanks for speaking with me. Here are the details you asked for:</p>
 <ul>
@@ -62,7 +62,7 @@ ${SIGN}`,
 <li><b>Setup:</b> about 3 minutes, and I can do it with you on a call.</li>
 </ul>
 <p>When you're ready, you can create your page here: <a href="${SIGNUP}">meeticulous.com</a></p>
-<p>Easier to see it live? ${CALL('Book a 30-minute demo with me')}. You'll book it through Book A Sloth itself, so you'll see exactly what your clients experience.</p>
+<p>Easier to see it live? ${CALL('Book a 30-minute demo with me')}. You'll book it through Meeticulous itself, so you'll see exactly what your clients experience.</p>
 <p>I'll call you in a few days in case you have questions.</p>
 ${SIGN}`,
   },
@@ -87,7 +87,7 @@ ${SIGN}`,
     channel: 'email', name: 'cold_call_missed_email', label: 'Cold call · No answer → missed call', category: 'cold_call_missed', variables: [], is_active: true,
     subject: 'Tried calling you today',
     body: `<p>Hi {{business_name}} team,</p>
-<p>I tried calling you today but couldn't get through. I'm Shubham, founder of Book A Sloth.</p>
+<p>I tried calling you today but couldn't get through. I'm Shubham, founder of Meeticulous.</p>
 <p>We help businesses like yours take bookings and payments online, with automatic reminders so fewer clients miss their appointments. It's free to start and setup takes about 3 minutes:</p>
 <p><a href="${SIGNUP}">Create your free booking page</a></p>
 <p>Rather talk first? ${CALL('Pick a time that suits you')} and I'll call you then.</p>
@@ -105,7 +105,7 @@ ${SIGN}`,
   },
   {
     channel: 'whatsapp', name: 'Cold Call Interested - Vendor', label: 'Cold call · Interested → signup link (WA)', category: 'cold_call_interested', variables: BIZ, is_active: false, subject: null,
-    body: `Hi {{1}} team, Shubham from Book A Sloth here. Thanks for your time today!
+    body: `Hi {{1}} team, Shubham from Meeticulous here. Thanks for your time today!
 You can create your free booking page here:
 ${WA_SIGNUP}
 Clients can book, pay, and get reminders automatically. Setup takes about 3 minutes.
@@ -113,7 +113,7 @@ Reply here if you want me to help you set it up.`,
   },
   {
     channel: 'whatsapp', name: 'Cold Call Details - Vendor', label: 'Cold call · Wants details → info pack (WA)', category: 'cold_call_details', variables: BIZ, is_active: false, subject: null,
-    body: `Hi {{1}} team, Shubham from Book A Sloth here. As discussed, here’s the quick overview:
+    body: `Hi {{1}} team, Shubham from Meeticulous here. As discussed, here’s the quick overview:
 • Online booking page
 • Online payments
 • Automatic reminders
@@ -125,13 +125,13 @@ I’ll check in with you in a few days. Feel free to message me anytime.`,
   {
     channel: 'whatsapp', name: 'Cold Call Callback - Vendor', label: 'Cold call · Busy → callback reminder (WA)', category: 'cold_call_callback',
     variables: [...BIZ, { key: 'callback_time', label: 'Callback time', example: 'Tue, 7 Oct, 5:00 pm' }], is_active: false, subject: null,
-    body: `Hi {{1}} team, Shubham from Book A Sloth here. Thanks for taking my call!
+    body: `Hi {{1}} team, Shubham from Meeticulous here. Thanks for taking my call!
 As discussed, I’ll call you on {{2}}.
 Talk soon!`,
   },
   {
     channel: 'whatsapp', name: 'Cold Call Nurture - Vendor', label: 'Cold call · Not now → soft nurture (WA)', category: 'cold_call_nurture', variables: BIZ, is_active: false, subject: null,
-    body: `Hi {{1}} team, Shubham from Book A Sloth here. Thanks for your time today.
+    body: `Hi {{1}} team, Shubham from Meeticulous here. Thanks for your time today.
 Whenever you're ready, you can create your free booking page here:
 ${WA_SIGNUP}
 It takes about 3 minutes, and I’m happy to help you set it up.
@@ -139,14 +139,14 @@ Just reply here whenever you’re ready.`,
   },
   {
     channel: 'whatsapp', name: 'Cold Call Missed - Vendor', label: 'Cold call · No answer → missed call (WA)', category: 'cold_call_missed', variables: BIZ, is_active: false, subject: null,
-    body: `Hi {{1}} team, Shubham from Book A Sloth here. I tried calling you today but couldn't reach you.
+    body: `Hi {{1}} team, Shubham from Meeticulous here. I tried calling you today but couldn't reach you.
 We help businesses like yours take bookings and payments online, with automatic reminders. It's free to start and setup takes about 3 minutes.
 Have a look: ${WA_SIGNUP}
 Reply here with a good time and I'll call you back.`,
   },
   {
     channel: 'whatsapp', name: 'Cold Call Setup Help - Vendor', label: 'Cold call · Setup help (WA)', category: 'cold_call_setup_help', variables: BIZ, is_active: false, subject: null,
-    body: `Hi {{1}} team, Shubham from Book A Sloth here. Just checking in: were you able to set up your booking page?
+    body: `Hi {{1}} team, Shubham from Meeticulous here. Just checking in: were you able to set up your booking page?
 If you got stuck anywhere, reply here and I'll help you finish it in a few minutes.
 You can continue here: ${WA_SIGNUP}`,
   },
@@ -158,7 +158,7 @@ You can continue here: ${WA_SIGNUP}`,
     variables: [...BIZ, INVITE_LINK], is_active: false, subject: null,
     body: `Hi {{1}} team,
 
-Shubham from Book A Sloth here. Here's your link to create your free booking page, as we discussed:
+Shubham from Meeticulous here. Here's your link to create your free booking page, as we discussed:
 {{2}}
 
 
@@ -172,7 +172,7 @@ If you'd like help setting it up, just reply here and I'll help you get started.
     // Sent by the reminder cron ~15 min before a promised callback — no call-outcome button.
     channel: 'whatsapp', name: 'Cold Call Callback Reminder - Vendor', label: 'Cold call · Callback in 15 min (WA, automatic)', category: 'cold_call_callback_reminder',
     variables: [...BIZ, { key: 'callback_time', label: 'Callback time', example: 'Tue, 7 Oct, 5:00 pm' }], is_active: false, subject: null,
-    body: `Hi {{1}} team, Shubham from Book A Sloth here. A quick heads-up: I'll be calling you at {{2}}, as we discussed.
+    body: `Hi {{1}} team, Shubham from Meeticulous here. A quick heads-up: I'll be calling you at {{2}}, as we discussed.
 Talk soon!`,
   },
 ];

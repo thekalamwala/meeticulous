@@ -38,7 +38,7 @@ export const HELP_DOCS = [
   { slug: 'reminders-notifications-and-badges', category: 'Hosts' },
   { slug: 'kyc-and-verification', category: 'Hosts' },
   // General / Trust
-  { slug: 'what-is-book-a-sloth', category: 'General' },
+  { slug: 'what-is-meeticulous', category: 'General' },
   { slug: 'pricing-and-commission', category: 'General' },
   { slug: 'is-my-payment-and-data-safe', category: 'General' },
   { slug: 'whats-not-supported-yet', category: 'General' },

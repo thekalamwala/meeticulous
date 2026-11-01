@@ -1,9 +1,9 @@
 -- ============================================================
--- v3.166 — Re-cap free (₹0) services on the Sloth (free) plan
+-- v3.166 — Re-cap free (₹0) services on the Starter (free) plan
 -- ------------------------------------------------------------
 -- v3.165 set the free plan's `free_services` limit to -1 (unlimited) along with
--- everything else it made generous. That was a mistake: a ₹0 service earns Book
--- A Sloth NOTHING — 5% commission of ₹0 is ₹0, and platform_settings.fee_only_mode
+-- everything else it made generous. That was a mistake: a ₹0 service earns the
+-- platform NOTHING — 5% commission of ₹0 is ₹0, and platform_settings.fee_only_mode
 -- is false in prod so a ₹0 service also carries no booking fee. Unlimited free
 -- services therefore let a host run their entire business on our infrastructure
 -- at zero revenue, forever, with no pressure to charge or upgrade.
@@ -16,7 +16,7 @@
 -- the "list at ₹1 to dodge fees" dodge. free_services is the one limit that
 -- protects the floor, and it is the one v3.165 wrongly switched off.
 --
--- Premium (Sloth Active) keeps free_services = -1: those hosts already paid, so
+-- Premium (Pro) keeps free_services = -1: those hosts already paid, so
 -- unlimited free offerings cost us nothing we didn't collect up front.
 --
 -- Enforcement already exists (middleware/planMiddleware.js canAddFreeService),

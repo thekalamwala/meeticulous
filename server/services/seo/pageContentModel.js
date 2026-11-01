@@ -58,7 +58,7 @@ function profileFaqs(host = {}, services = []) {
   if (host.profession) {
     faqs.push({
       q: `What does ${name} do?`,
-      a: `${name} is a ${clean(host.profession)}${host.location ? ` based in ${clean(host.location)}` : ''} taking bookings on Book A Sloth.`,
+      a: `${name} is a ${clean(host.profession)}${host.location ? ` based in ${clean(host.location)}` : ''} taking bookings on Meeticulous.`,
     });
   }
   faqs.push({
@@ -88,7 +88,7 @@ function serviceFaqs(service = {}, vendor = {}) {
   if (price > 0) {
     faqs.push({ q: `How much does ${name} cost?`, a: `${name} costs ₹${price.toLocaleString('en-IN')}, paid securely online when you book.` });
   } else if (service.price === 0) {
-    faqs.push({ q: `Is ${name} free?`, a: `Yes — ${name} is free to book on Book A Sloth.` });
+    faqs.push({ q: `Is ${name} free?`, a: `Yes — ${name} is free to book on Meeticulous.` });
   }
   if (service.duration) {
     faqs.push({ q: `How long is ${name}?`, a: `${name} runs for about ${service.duration} minutes, held ${service.meeting_mode === 'offline' ? 'in person' : 'online'}.` });

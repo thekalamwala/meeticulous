@@ -89,7 +89,7 @@ describe("comparison table", () => {
 });
 
 // The retired ladder must not resurface anywhere a customer can read it.
-// NOTE: "Starter" is the LIVE free-plan name now (was Sloth) — not a retired tier.
+// NOTE: "Starter" is the LIVE free-plan name now — not a retired tier.
 describe("no legacy tiers leak into display copy", () => {
   it("drops Host+ / Studio / Enterprise naming and old prices", () => {
     const blob = JSON.stringify({ ALL_PLANS, PLAN_MATRIX });

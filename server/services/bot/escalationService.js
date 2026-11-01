@@ -18,7 +18,7 @@ const notify = require('../../utils/notify');
 const sendEmail = require('../../utils/sendEmail');
 const { getRecentMessages, redactPii } = require('../botService');
 
-const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'bolt@bookasloth.in';
+const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'team@meeticulous.com';
 
 const esc = (s = '') =>
   String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -86,7 +86,7 @@ async function sendContactOtp({ channel, contact, name }) {
     } else {
       await sendEmail({
         to: contact,
-        subject: 'Your Book A Sloth verification code',
+        subject: 'Your Meeticulous verification code',
         html: `<p>Your verification code is <strong style="font-size:18px">${esc(otp)}</strong>.</p>
                <p>It expires in 10 minutes. Enter it in the chat to reach our support team.</p>`,
       });

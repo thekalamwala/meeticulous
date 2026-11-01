@@ -1,6 +1,6 @@
 /**
  * sitemapRoutes.js — root-mounted (NOT under /api) so the public URLs are
- * bookasloth.com/sitemap*.xml after the Vercel rewrite proxies them here.
+ * meeticulous.com/sitemap*.xml after the Vercel rewrite proxies them here.
  *
  * Regex routes avoid path-to-regexp's `.`/`:param` ambiguity around the `.xml`
  * suffix and capture the optional page number as group 1.

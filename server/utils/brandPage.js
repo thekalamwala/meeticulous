@@ -10,8 +10,8 @@ const SITE = 'https://meeticulous.com';
 const SUPPORT = 'mailto:support@meeticulous.com';
 
 // Error hero: the Meeticulous mark (crimson rounded square + white zap), inline
-// so it has no external dependency. Replaces the old sloth mascot PNGs that
-// hung off a dead host (company-assets.bookasloth.in).
+// so it has no external dependency. Replaces the old mascot PNGs that
+// hung off a dead legacy asset host.
 function heroMark() {
   return `<svg class="heromark" viewBox="0 0 96 96" role="img" aria-label="Meeticulous" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="88" height="88" rx="22" fill="var(--crimson)"/><g transform="translate(28 28) scale(1.667)" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></g></svg>`;
 }

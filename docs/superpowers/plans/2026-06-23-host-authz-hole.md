@@ -37,7 +37,7 @@
 | `client/src/services/api.js` | Add `activateHost` |
 | `client/src/context/AuthContext.jsx` | Add `activateHost` helper |
 | `client/src/pages/Dashboard.jsx` | Wire guest "Become a host" CTA |
-| `client/src/pages/BeASloth.jsx` | If logged-in guest, CTA calls `activateHost` |
+| `client/src/pages/BecomeAHost.jsx` | If logged-in guest, CTA calls `activateHost` |
 | `client/src/tests/AuthContext.test.jsx` | Add `activateHost` test |
 
 ---
@@ -534,7 +534,7 @@ git commit -m "refactor(auth): generic existing-account message (unified role mo
 - Modify: `client/src/services/api.js`
 - Modify: `client/src/context/AuthContext.jsx`
 - Modify: `client/src/pages/Dashboard.jsx`
-- Modify: `client/src/pages/BeASloth.jsx`
+- Modify: `client/src/pages/BecomeAHost.jsx`
 - Test: `client/src/tests/AuthContext.test.jsx`
 
 - [ ] **Step 1: Add the API function**
@@ -611,9 +611,9 @@ In `client/src/pages/Dashboard.jsx`, in the `if (!isHost)` guest branch (around 
 ```
 > Reuse the page's existing `toast`/`useNavigate`/`useState` imports if present; add any that are missing.
 
-- [ ] **Step 5: Wire BeASloth for logged-in guests**
+- [ ] **Step 5: Wire BecomeAHost for logged-in guests**
 
-In `client/src/pages/BeASloth.jsx`: if `user` exists and `user.role !== 'host'`, the primary "Become a host" CTA should call `activateHost()` (then navigate to `/dashboard`) instead of routing to the signup form. If `user` is a host already, route to `/dashboard`. Logged-out visitors keep the existing signup flow.
+In `client/src/pages/BecomeAHost.jsx`: if `user` exists and `user.role !== 'host'`, the primary "Become a host" CTA should call `activateHost()` (then navigate to `/dashboard`) instead of routing to the signup form. If `user` is a host already, route to `/dashboard`. Logged-out visitors keep the existing signup flow.
 
 - [ ] **Step 6: Run client tests + build**
 
@@ -625,7 +625,7 @@ Expected: build succeeds.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add client/src/services/api.js client/src/context/AuthContext.jsx client/src/pages/Dashboard.jsx client/src/pages/BeASloth.jsx client/src/tests/AuthContext.test.jsx
+git add client/src/services/api.js client/src/context/AuthContext.jsx client/src/pages/Dashboard.jsx client/src/pages/BecomeAHost.jsx client/src/tests/AuthContext.test.jsx
 git commit -m "feat(client): Become-a-host opt-in CTA + activateHost"
 ```
 

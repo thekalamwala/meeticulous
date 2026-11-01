@@ -5,15 +5,15 @@ const robotsAudit = require('../../services/seo/robotsAudit');
 
 // A healthy content page: 200, indexable, good meta, real body, schema, links.
 const goodPage = (over = {}) => ({
-  page_type: 'static', url: 'https://bookasloth.com/pricing', http_status: 200, indexable: true,
-  robots: 'index,follow', title: 'Simple pricing for creators | Book A Sloth',
-  meta_description: 'Transparent pricing with no hidden fees — pick a plan that fits how you sell your time on Book A Sloth today.',
-  canonical: 'https://bookasloth.com/pricing', h1: ['Simple pricing for creators'], word_count: 900,
+  page_type: 'static', url: 'https://meeticulous.com/pricing', http_status: 200, indexable: true,
+  robots: 'index,follow', title: 'Simple pricing for creators | Meeticulous',
+  meta_description: 'Transparent pricing with no hidden fees — pick a plan that fits how you sell your time on Meeticulous today.',
+  canonical: 'https://meeticulous.com/pricing', h1: ['Simple pricing for creators'], word_count: 900,
   raw_signals: {
     headings: [{ tag: 'h1', text: 'Simple pricing for creators' }, { tag: 'h2', text: 'Plans' }, { tag: 'h2', text: 'FAQ' }, { tag: 'h2', text: 'Compare' }],
-    links: { internal: ['https://bookasloth.com/a', 'https://bookasloth.com/b', 'https://bookasloth.com/c'], external: ['https://stripe.com', 'https://razorpay.com'] },
+    links: { internal: ['https://meeticulous.com/a', 'https://meeticulous.com/b', 'https://meeticulous.com/c'], external: ['https://stripe.com', 'https://razorpay.com'] },
     images: [{ src: '/a.png', alt: 'plan table' }],
-    jsonLd: [{ '@type': 'Organization', name: 'Book A Sloth', author: { name: 'Team' } }],
+    jsonLd: [{ '@type': 'Organization', name: 'Meeticulous', author: { name: 'Team' } }],
     bodyText: 'We charge a 10% fee. Over 45 creators earn ₹18000 monthly. "This is the best scheduling tool I have used all year" said a happy user. Pricing is flat.',
     contentModel: null,
   },
@@ -91,14 +91,14 @@ describe('GEO score', () => {
 describe('content model integration', () => {
   it('a host page with a content model is scored on real body signals, not meta-only', () => {
     const host = {
-      page_type: 'host', url: 'https://bookasloth.com/asha', http_status: 200, indexable: true,
-      robots: 'index,follow', title: 'Asha — Career Coach | Book A Sloth', meta_description: 'Book career coaching sessions with Asha, a career coach helping people switch jobs and grow.',
-      canonical: 'https://bookasloth.com/asha', h1: [], word_count: 0,
+      page_type: 'host', url: 'https://meeticulous.com/asha', http_status: 200, indexable: true,
+      robots: 'index,follow', title: 'Asha — Career Coach | Meeticulous', meta_description: 'Book career coaching sessions with Asha, a career coach helping people switch jobs and grow.',
+      canonical: 'https://meeticulous.com/asha', h1: [], word_count: 0,
       raw_signals: {
         headings: [], links: { internal: [], external: [] }, images: [], jsonLd: [{ '@type': 'ProfilePage' }],
         contentModel: {
           headings: [{ tag: 'h1', text: 'Asha' }, { tag: 'h2', text: 'Career Coaching' }],
-          links: { internal: ['https://bookasloth.com/asha/career-coaching', 'https://bookasloth.com/asha'], external: ['https://linkedin.com/in/asha'] },
+          links: { internal: ['https://meeticulous.com/asha/career-coaching', 'https://meeticulous.com/asha'], external: ['https://linkedin.com/in/asha'] },
           images: [{ src: '/asha.png', alt: 'Asha' }], wordCount: 220,
           bodyText: 'Asha is a career coach with 10 years experience helping 200 clients.',
           entity: { type: 'Person', name: 'Asha', author: 'Asha', sameAs: ['https://linkedin.com/in/asha'], dates: { updated: '2026-09-01' } },
@@ -115,8 +115,8 @@ describe('content model integration', () => {
 
   it('a host page without a content model is flagged meta-only and loses extractability', () => {
     const host = {
-      page_type: 'host', url: 'https://bookasloth.com/x', http_status: 200, indexable: true, robots: 'index,follow',
-      title: 'X', meta_description: null, canonical: 'https://bookasloth.com/x', h1: [], word_count: 0,
+      page_type: 'host', url: 'https://meeticulous.com/x', http_status: 200, indexable: true, robots: 'index,follow',
+      title: 'X', meta_description: null, canonical: 'https://meeticulous.com/x', h1: [], word_count: 0,
       raw_signals: { headings: [], links: { internal: [], external: [] }, images: [], jsonLd: [], contentModel: null },
     };
     const r = v2.scorePage(host, { robots: allow });
@@ -140,16 +140,16 @@ describe('robotsAudit parser', () => {
 describe('signals: referenced author (@graph)', () => {
   const signals = require('../../services/seo/scoring/signals');
   const blogPage = (over = {}) => ({
-    page_type: 'static', url: 'https://bookasloth.com/blog/x', http_status: 200, indexable: true,
-    robots: 'index,follow', title: 'X', meta_description: 'd', canonical: 'https://bookasloth.com/blog/x',
+    page_type: 'static', url: 'https://meeticulous.com/blog/x', http_status: 200, indexable: true,
+    robots: 'index,follow', title: 'X', meta_description: 'd', canonical: 'https://meeticulous.com/blog/x',
     h1: ['X'], word_count: 900,
     raw_signals: {
       headings: [{ tag: 'h1', text: 'X' }], links: { internal: [], external: [] }, images: [], bodyText: 'body',
       contentModel: null,
       jsonLd: [
-        { '@type': 'Organization', '@id': 'https://bookasloth.com/#organization', name: 'Book A Sloth', sameAs: ['https://x.com/bookasloth'] },
-        { '@type': 'Person', '@id': 'https://bookasloth.com/sndatarkar#author', name: 'Shubham N Datarkar', sameAs: ['https://x.com/sndatarkar', 'https://www.instagram.com/sndatarkar'] },
-        { '@type': 'BlogPosting', '@id': 'https://bookasloth.com/blog/x#article', author: { '@id': 'https://bookasloth.com/sndatarkar#author' } },
+        { '@type': 'Organization', '@id': 'https://meeticulous.com/#organization', name: 'Meeticulous', sameAs: ['https://x.com/meeticulous'] },
+        { '@type': 'Person', '@id': 'https://meeticulous.com/sndatarkar#author', name: 'Shubham N Datarkar', sameAs: ['https://x.com/sndatarkar', 'https://www.instagram.com/sndatarkar'] },
+        { '@type': 'BlogPosting', '@id': 'https://meeticulous.com/blog/x#article', author: { '@id': 'https://meeticulous.com/sndatarkar#author' } },
       ],
     },
     ...over,
@@ -165,7 +165,7 @@ describe('signals: referenced author (@graph)', () => {
     const s = signals.extract(blogPage());
     expect(s.hasSameAs).toBe(true);
     expect(s.sameAs).toEqual(expect.arrayContaining([
-      'https://x.com/sndatarkar', 'https://www.instagram.com/sndatarkar', 'https://x.com/bookasloth',
+      'https://x.com/sndatarkar', 'https://www.instagram.com/sndatarkar', 'https://x.com/meeticulous',
     ]));
   });
 
@@ -178,7 +178,7 @@ describe('signals: referenced author (@graph)', () => {
 });
 
 describe('Google-chosen canonical cap', () => {
-  const gsc = (last) => ({ google_canonical: 'https://bookasloth.com/blog', last_crawl_time: last, impressions: 0, clicks: 0 });
+  const gsc = (last) => ({ google_canonical: 'https://meeticulous.com/blog', last_crawl_time: last, impressions: 0, clicks: 0 });
   const page = goodPage({ created_at: '2026-10-06T03:53:00Z' });
 
   it('caps at 55 when Google crawled after our crawl', () => {
@@ -195,7 +195,7 @@ describe('Google-chosen canonical cap', () => {
   });
 
   it('treats trailing-slash / case differences as the same URL', () => {
-    const r = v2.scorePage(page, { robots: allow, gsc: { ...gsc('2026-10-07T00:00:00Z'), google_canonical: 'https://bookasloth.com/Pricing/' } });
+    const r = v2.scorePage(page, { robots: allow, gsc: { ...gsc('2026-10-07T00:00:00Z'), google_canonical: 'https://meeticulous.com/Pricing/' } });
     expect(r.seo.caps.some((c) => c.cap === 55)).toBe(false);
   });
 });

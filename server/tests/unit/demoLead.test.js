@@ -1,5 +1,5 @@
 /**
- * /be-a-sloth "Book a Demo" lead form — capture model + verify semantics:
+ * /become-a-host "Book a Demo" lead form — capture model + verify semantics:
  *  - the lead is captured on send-otp (Meta suppressed) so drop-offs are kept,
  *  - a valid OTP on submit tags the lead `phone-verified` and fires the Meta Lead,
  *  - an invalid OTP never tags/fires,
@@ -25,7 +25,7 @@ jest.mock('../../utils/httpError', () => ({ safeError: (res, e) => res.status(50
 const otpStore = require('../../utils/otpStore');
 const { safeUpsertLead, addTag } = require('../../services/crm/leadService');
 const { sendMetaCrmLead } = require('../../utils/trackServer');
-const { sendLeadOtp, submitLead } = require('../../controllers/beASlothLeadController');
+const { sendLeadOtp, submitLead } = require('../../controllers/demoLeadController');
 
 const mockRes = () => {
   const res = {};

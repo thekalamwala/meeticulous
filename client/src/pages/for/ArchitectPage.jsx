@@ -16,9 +16,9 @@
 //     editorial about.
 // Only nav/hero-shell/footer (shared shell) may resemble sibling pages.
 //
-// IMAGES: REAL images ported from the old ArchitectPage, reused as framed <img>
-// tags (hero, project gallery, about, final CTA) + real tool logos in the
-// integrations row. No empty placeholders. Every image has a descriptive alt.
+// IMAGES: REAL photos ported from the old ArchitectPage in the project gallery,
+// framed icon art in the hero / about / final CTA (mascot illustrations removed),
+// + real tool logos in the integrations row. No empty placeholders. Every image has a descriptive alt.
 //
 // HONESTY: Meeticulous is a scheduling + payment tool for a studio — NOT a
 // client-acquisition/advertising channel. No fabricated project/rating counts.
@@ -40,6 +40,8 @@ import {
   ClipboardCheck, HardHat, Palette, Video, Sparkles,
 } from 'lucide-react';
 import Reveal from '../../components/home/Reveal';
+import { PencilRuler as PencilRulerArt, Building2 as BuildingArt } from 'lucide-react';
+import IconArt from '../../components/common/IconArt';
 import Seo from '../../components/common/Seo';
 import useLenis from '../../hooks/useLenis';
 import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
@@ -54,7 +56,7 @@ import PageGuides from '../../components/common/PageGuides';
 
 const START = '/become-a-host';
 const LOGIN = '/login-as-vendor';
-const DEMO = '/sndatarkar/booking/book-a-sloth-app-online-demo-30-min-advisory-session';
+const DEMO = '/contact';
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
 
@@ -221,18 +223,24 @@ function Eyebrow({ children, className = '' }) {
 /* Real image framed like an architectural drawing: thin frame + bronze corner
    ticks, and an optional mono corner label. Used for hero / gallery / about /
    final CTA imagery. */
-function Framed({ src, alt, className = '', imgClassName = '', priority = false, label }) {
+function Framed({ src, icon: Icon, alt, className = '', imgClassName = '', priority = false, label }) {
   const tick = 'pointer-events-none absolute h-4 w-4';
   return (
     <div className={`relative ${className}`}>
       <div className="relative overflow-hidden bg-white" style={{ border: '1px solid rgba(26,34,48,0.16)' }}>
-        <img
-          src={src}
-          alt={alt}
-          {...(priority ? { loading: 'eager', fetchpriority: 'high' } : { loading: 'lazy' })}
-          decoding="async"
-          className={`block h-full w-full object-cover ${imgClassName}`}
-        />
+        {Icon ? (
+          <div role="img" aria-label={alt} className={`grid w-full place-items-center bg-[color:var(--ca-cream)] ${imgClassName}`}>
+            <Icon className="h-24 w-24" style={{ color: 'var(--ca-primary)' }} strokeWidth={1.25} aria-hidden="true" />
+          </div>
+        ) : (
+          <img
+            src={src}
+            alt={alt}
+            {...(priority ? { loading: 'eager', fetchpriority: 'high' } : { loading: 'lazy' })}
+            decoding="async"
+            className={`block h-full w-full object-cover ${imgClassName}`}
+          />
+        )}
       </div>
       {/* bronze drafting corner ticks */}
       <span aria-hidden className={`${tick} -left-[3px] -top-[3px] border-l-2 border-t-2`} style={{ borderColor: 'var(--ca-accent)' }} />
@@ -436,10 +444,10 @@ export default function ArchitectPage() {
             </Reveal>
           </div>
 
-          {/* RIGHT — real hero image framed like a drawing sheet + floating card */}
+          {/* RIGHT — icon art framed like a drawing sheet + floating card */}
           <Reveal instant delay={0.1} className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
             <Framed
-              src="/for/architects/architect.webp"
+              icon={PencilRulerArt}
               alt="Meeticulous booking software shown on screen for an architecture and interior-design studio"
               label="Fig. 01 · Studio Booking"
               priority
@@ -846,7 +854,7 @@ export default function ArchitectPage() {
           </div>
           <Reveal className="order-2">
             <Framed
-              src="/for/architects/about-archi.webp"
+              icon={BuildingArt}
               alt="Meeticulous, a calm booking platform for architecture and interior-design studios in India"
               label="Fig. 02 · One Calm Diary"
               className="mx-auto max-w-md"
@@ -901,13 +909,7 @@ export default function ArchitectPage() {
               </Reveal>
             </div>
             <Reveal delay={0.1} className="relative hidden lg:block">
-              <img
-                src="/for/architects/choose-archi.webp"
-                alt="An architect choosing Meeticulous to schedule studio consultations"
-                loading="lazy"
-                decoding="async"
-                className="mx-auto h-auto w-full max-w-sm object-contain drop-shadow-[0_28px_44px_rgba(0,0,0,0.4)]"
-              />
+              <IconArt icon={PencilRulerArt} label="An architect choosing Meeticulous to schedule studio consultations" className="mx-auto aspect-square w-full max-w-sm" iconClassName="h-24 w-24" />
             </Reveal>
           </div>
         </div>

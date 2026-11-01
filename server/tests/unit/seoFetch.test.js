@@ -10,18 +10,18 @@ describe('seoFetch', () => {
       sentHeaders = init.headers;
       return { status: 200, url, headers: new Map([['content-type', 'text/html']]), text: async () => '<title>ok</title>' };
     });
-    const r = await fetchUrl('https://bookasloth.com/');
+    const r = await fetchUrl('https://meeticulous.com/');
     expect(r.status).toBe(200);
     expect(r.body).toContain('ok');
     expect(r.responseMs).toBeGreaterThanOrEqual(0);
     expect(String(sentHeaders['User-Agent'])).toMatch(/Chrome/);
-    expect(String(sentHeaders['User-Agent'])).toContain('BookASlothSEOBot');
+    expect(String(sentHeaders['User-Agent'])).toContain('MeeticulousSEOBot');
     expect(String(sentHeaders['User-Agent'])).not.toMatch(/ClaudeBot/i);
   });
 
   test('captures fetch errors without throwing', async () => {
     global.fetch = jest.fn(async () => { throw new Error('ECONNREFUSED'); });
-    const r = await fetchUrl('https://bookasloth.com/x');
+    const r = await fetchUrl('https://meeticulous.com/x');
     expect(r.status).toBeNull();
     expect(r.error).toMatch(/ECONNREFUSED/);
   });

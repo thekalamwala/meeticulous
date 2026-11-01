@@ -150,7 +150,7 @@ function InstagramCard({ r }) {
       <div className={`flex aspect-[1/0.83] items-center p-6 ${r.bg}`}>
         <div className="max-w-[85%] whitespace-pre-line font-heading text-xl font-bold leading-tight">
           {r.copy}
-          <span className={`mt-2.5 block text-[10px] font-medium ${r.tag}`}>@bookasloth</span>
+          <span className={`mt-2.5 block text-[10px] font-medium ${r.tag}`}>@meeticulous</span>
         </div>
       </div>
       <div className="flex items-center justify-between px-4 py-3.5">

@@ -24,7 +24,7 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SRC = join(__dirname, '..', 'src');
 
-const OG_BASE = 'https://company-assets.bookasloth.in/images/seo';
+const OG_BASE = 'https://company-assets.meeticulous.in/images/seo';
 const card = (name, ext = 'jpg') => `${OG_BASE}/${name}-og-1200x630.${ext}`;
 
 // The static marketing pages, by the ogCard() name each one wires in. Kept here
@@ -34,14 +34,14 @@ const STATIC_NAMES = [
   'pricing', 'enterprise', 'about', 'help', 'contact', 'support',
   'blog-index', 'careers', 'changelog', 'privacy', 'terms', 'refund',
   'services', 'explore',
-  'lp-calendly-alternative', 'lp-topmate-vs-bookasloth', 'lp-setmore-alternative',
+  'lp-calendly-alternative', 'lp-topmate-alternative', 'lp-setmore-alternative',
   'lp-acuity-alternative', 'lp-simplybook-alternative', 'lp-zoho-bookings-alternative',
 ];
 
 // Cards uploaded as PNG (the convention is JPG; these pages pass ext='png' to
 // ogCard). Keep in sync with the ogCard(..., 'png') call sites.
 const PNG_NAMES = [
-  'how-it-works', 'be-a-sloth', 'earnings-calculator', 'invite',
+  'how-it-works', 'become-a-host', 'earnings-calculator', 'invite',
   'inaugurators', 'opening',
 ];
 

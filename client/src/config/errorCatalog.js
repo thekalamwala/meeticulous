@@ -12,7 +12,7 @@
 //   art      — illustration key (see ErrorIllustration.jsx)
 //   cta      — the SINGLE primary action. action ∈ ACTIONS below.
 //
-// Copy voice: calm and reassuring, lightly on-brand (sloth = unhurried). Reads as
+// Copy voice: calm and reassuring, lightly on-brand (unhurried). Reads as
 // part of the product, not a server stack trace.
 
 // CTA behaviours. ErrorPage maps each to a handler — keep this list and the
@@ -25,19 +25,6 @@ export const ACTIONS = Object.freeze({
   RELOAD: 'reload',    // re-request the current URL
 });
 
-// Detective-sloth art for the `lost` mood (404/410). Hosted on the external CDN
-// (not in-repo); a missing file just renders an empty box. One random variant
-// per visit — see pickErrorImage.
-export const ERROR_IMAGE_BASE = 'https://company-assets.meeticulous.in/images/error';
-export const ERROR_IMAGE_VARIANTS = Object.freeze([
-  'sloth-tracks.png',
-  'sloth-think.png',
-  'sloth-glass.png',
-]);
-export function pickErrorImage() {
-  const i = Math.floor(Math.random() * ERROR_IMAGE_VARIANTS.length);
-  return `${ERROR_IMAGE_BASE}/${ERROR_IMAGE_VARIANTS[i]}`;
-}
 
 export const ERROR_CATALOG = Object.freeze({
   400: {

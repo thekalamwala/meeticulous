@@ -7,7 +7,7 @@
  * outbound SMTP ports, which is why the earlier Gmail-SMTP attempt timed out.
  *
  * Unlike Gmail SMTP, Brevo sends AS any address on a domain you've authenticated,
- * so the marketing persona (aastha@bookasloth.in) keeps its own From/Reply-To.
+ * so the marketing persona (aastha@meeticulous.com) keeps its own From/Reply-To.
  *
  * Same interface as every provider:
  *   sendEmail({ to, subject, html, ... }) → { success, id?, response?, error? }

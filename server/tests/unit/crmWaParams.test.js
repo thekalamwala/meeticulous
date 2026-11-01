@@ -18,8 +18,8 @@ test('account_name comes from the profile (business/display name)', () => {
 });
 
 test('literal params pass through unchanged', () => {
-  expect(renderParams(['Book A Sloth', '2 Month Addition'], {}, {}))
-    .toEqual(['Book A Sloth', '2 Month Addition']);
+  expect(renderParams(['Meeticulous', '2 Month Addition'], {}, {}))
+    .toEqual(['Meeticulous', '2 Month Addition']);
 });
 
 test('missing token → empty string (never undefined)', () => {

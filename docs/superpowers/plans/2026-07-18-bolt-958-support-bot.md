@@ -72,7 +72,7 @@ Integration tests (supertest + `makeSbMock`): missing question→400; bad feedba
 - [ ] Failing tests → implement → pass → commit
 
 ## Task 5: Client widget + api + mount
-`api.js`: `askBot=(d)=>API.post('/bot/ask',d)`, `sendBotFeedback=(d)=>API.post('/bot/feedback',d)`. `BotWidget.jsx`: fixed bottom-right bubble; panel with message list, textarea, send; renders answer + `cited_sources` chips + 👍/👎 (calls feedback); `escalate` → human-handoff card (WhatsApp/email) instead of a fake answer; tracks `conversationId` across turns. Tokens: `font-heading`, `rounded-xl`, `border-4`, existing colors. Mount in `App.jsx` before `</ChromeContext.Provider>`, hidden on `/admin*`, `/hello-sloth`, auth pages.
+`api.js`: `askBot=(d)=>API.post('/bot/ask',d)`, `sendBotFeedback=(d)=>API.post('/bot/feedback',d)`. `BotWidget.jsx`: fixed bottom-right bubble; panel with message list, textarea, send; renders answer + `cited_sources` chips + 👍/👎 (calls feedback); `escalate` → human-handoff card (WhatsApp/email) instead of a fake answer; tracks `conversationId` across turns. Tokens: `font-heading`, `rounded-xl`, `border-4`, existing colors. Mount in `App.jsx` before `</ChromeContext.Provider>`, hidden on `/admin*`, `/backstage`, auth pages.
 Test (`vi.mock('../../../services/api')`): renders bubble; open+send renders answer+citation; escalate response renders handoff state. Inline matchers only.
 - [ ] Failing test → implement → pass → commit
 

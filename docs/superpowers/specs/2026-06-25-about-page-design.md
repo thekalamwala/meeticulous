@@ -28,7 +28,7 @@ The page must reuse — not reinvent — the existing visual language. Ground tr
 | Section shell | `<section className="px-5 py-20 sm:px-8 lg:py-28"><div className="mx-auto max-w-6xl">…</div></section>` |
 | Icons | lucide-react |
 | Motion | Framer Motion v12.40 + `components/home/Reveal.jsx` scroll fade-up |
-| Keyframes | `sloth-float` (floating cards), `sloth-draw` (SVG line-draw on visible) |
+| Keyframes | `brand-float` (floating cards), `brand-draw` (SVG line-draw on visible) |
 | Button hover | `hover:-translate-y-0.5` lift |
 
 **No new dependencies.** Framer Motion + lucide already present.
@@ -54,7 +54,7 @@ client/src/components/about/
   aboutContent.js        # all copy + data arrays (single edit point for round-2 swap)
 ```
 
-**Reuse as-is:** `components/home/Reveal.jsx`, `.btn` / `.btn--outline`, section shell pattern, `--c-*` palette, lucide icons, `sloth-float` / `sloth-draw` keyframes.
+**Reuse as-is:** `components/home/Reveal.jsx`, `.btn` / `.btn--outline`, section shell pattern, `--c-*` palette, lucide icons, `brand-float` / `brand-draw` keyframes.
 
 **Lift-and-localize (copy the pattern, do NOT refactor `Home.jsx`):**
 - Odometer rolling-digit counter → inside `StatStrip.jsx`.
@@ -71,12 +71,12 @@ Rationale for B: spec asks for reusable components; keeps blast radius off the l
 Alternating warm-white (W) / ink-dark (D) rhythm: 1W 2W 3D 4W 5W 6D 7W 8D 9W 10W 11D 12W.
 
 ### §1 Hero — W, floating glass cards
-- **UX reasoning:** Lead with *why we exist*, not "we are". Headline = purpose. Establishes homepage continuity instantly (same hero motif: big Plus-Jakarta headline + floating `sloth-glass` cards).
+- **UX reasoning:** Lead with *why we exist*, not "we are". Headline = purpose. Establishes homepage continuity instantly (same hero motif: big Plus-Jakarta headline + floating `brand-glass` cards).
 - **Copy:**
   - H1: "Your time is worth protecting. So we built the calm way to get booked."
   - Sub: "Meeticulous helps creators publish their services, get booked, and get paid — without chasing DMs or losing a cut to commission."
   - CTA primary: "Let's Get Started" (→ host/get-started route, match homepage CTA target). Ghost: "See how it works" (anchor to §8 or home how-it-works).
-- **Layout:** 2-col desktop (text left, floating placeholder cards right with `sloth-float`); centered single column mobile. Warm ambient aura bg (reuse hero aura).
+- **Layout:** 2-col desktop (text left, floating placeholder cards right with `brand-float`); centered single column mobile. Warm ambient aura bg (reuse hero aura).
 
 ### §2 The Problem — W, strikethrough→solution
 - **UX:** Describe the creator's world before introducing us. Builds empathy + the 0%-commission wedge.
@@ -95,7 +95,7 @@ Alternating warm-white (W) / ink-dark (D) rhythm: 1W 2W 3D 4W 5W 6D 7W 8D 9W 10W
   - The prototype — "First booking link, built in a weekend."
   - First host — "Someone got paid before the first message. It worked."
   - Today — "Building the calmest way to run a booking business."
-- **Layout:** Vertical timeline, `sloth-draw` connecting line/nodes animate on visible. Alternating left/right on desktop, single rail on mobile.
+- **Layout:** Vertical timeline, `brand-draw` connecting line/nodes animate on visible. Alternating left/right on desktop, single rail on mobile.
 
 ### §4 What We Believe — W, icon grid `--c-*`
 - **UX:** Real product philosophies, not generic values. Each = belief + one-line why.
@@ -155,8 +155,8 @@ Alternating warm-white (W) / ink-dark (D) rhythm: 1W 2W 3D 4W 5W 6D 7W 8D 9W 10W
 
 - Every section heading + card group: `Reveal` fade-up (`opacity 0→1, y 24→0, scale .985→1`, dur .7, ease `[0.22,1,0.36,1]`, staggered delay, `viewport once amount .25`). Respects `prefers-reduced-motion` (Reveal already does).
 - `StatStrip`: Odometer rolling digits trigger on scroll-into-view; reduced-motion → instant final value.
-- `StoryTimeline` + `BuildFlow`: `sloth-draw` stroke-dash line animation on `is-visible`.
-- `AboutHero`: floating placeholder cards use `sloth-float` / `--slow` / `--mid`.
+- `StoryTimeline` + `BuildFlow`: `brand-draw` stroke-dash line animation on `is-visible`.
+- `AboutHero`: floating placeholder cards use `brand-float` / `--slow` / `--mid`.
 - Hover: cards `hover:-translate-y-0.5/1`; CTAs lift + color shift (existing `.btn`).
 - No new animation library; no parallax-heavy scroll JS beyond existing patterns. Keep 60fps (transform/opacity only).
 

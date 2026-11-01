@@ -70,7 +70,7 @@ const queueFrom = (...chains) => {
 };
 
 const GUEST = {
-  id: 'guest-uuid', name: 'Bob', email: 'p919876543210@users.bookasloth.app',
+  id: 'guest-uuid', name: 'Bob', email: `p919876543210${require('../../services/email/placeholderEmail').PLACEHOLDER_EMAIL_DOMAIN}`,
   role: 'guest', plan: 'explorer', username: 'bob', phone: '+919876543210',
   password_set: true, bio: '', tagline: '', profession: '', location: '',
   profile_image: '', cover_image: '', social_links: {}, theme_color: null,

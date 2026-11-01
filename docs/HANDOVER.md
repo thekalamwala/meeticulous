@@ -139,7 +139,7 @@ Crons run as `setInterval` in `server.js`: reminders every 5 min, OTP cleanup + 
 
 - **Guest:** phone/OTP identity. Auto-created on first booking.
 - **Host:** Google-only at `/login-as-vendor`. (A dual-login path lets a host also enter their guest space via WhatsApp OTP — one identity, two "modes": traveling vs hosting.)
-- **Admin:** completely separate JWT, separate table (`admin_users`), login at `/hello-sloth`. **Admin is never reachable by phone OTP.** Admin permissions are embedded in the JWT at sign-in — so a permission change only takes effect on the admin's *next login*.
+- **Admin:** completely separate JWT, separate table (`admin_users`), login at `/backstage`. **Admin is never reachable by phone OTP.** Admin permissions are embedded in the JWT at sign-in — so a permission change only takes effect on the admin's *next login*.
 
 Server auth: `protect` middleware verifies the Supabase JWT and sets `req.user`. `api.js` auto-refreshes on 401. `supabaseAdmin` (service role key) bypasses RLS and is **server-only, never in client code**.
 

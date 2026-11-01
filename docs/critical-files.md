@@ -118,7 +118,7 @@ High-risk files. Always understand the full impact before modifying.
 
 ### `client/src/App.jsx`
 **Owns:** All client-side routes
-**Risk:** Route order matters — specific literal paths (`/hello-sloth`) must come before dynamic ones (`/:slug`)
+**Risk:** Route order matters — specific literal paths (`/backstage`) must come before dynamic ones (`/:slug`)
 **Key rule:** `/:profileSlug/booking/:serviceSlug` must be declared BEFORE `/:profileSlug/:serviceSlug`
 
 ### `server/migrations/v1.7_pricing_snapshot.sql`

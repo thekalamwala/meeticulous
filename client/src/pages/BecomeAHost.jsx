@@ -31,7 +31,7 @@ const MailIcon = () => (
   </svg>
 );
 
-// ── Brand logo lockup (replaces the 🦥 emoji) ──────────────────────────────────
+// ── Brand logo lockup (replaces the old emoji mark) ──────────────────────────────────
 // Uses the official manifest icon asset; the wordmark stays in our heading font.
 const Logo = ({ className = '' }) => (
   <img
@@ -58,7 +58,7 @@ const BecomeAHost = () => {
   // Handle typed on the homepage hero — carried via router state, sessionStorage as fallback.
   const desiredUsername =
     location.state?.desiredUsername ||
-    (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('pendingSlothPage')) ||
+    (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('pendingHostPage')) ||
     '';
 
   const handleGoogle = async () => {
@@ -77,7 +77,7 @@ const BecomeAHost = () => {
         title="Get booked and paid — become a host on Meeticulous"
         description="Start taking bookings in minutes. Create your Meeticulous host page, publish services, and get paid — sign up free with Google."
         canonical={`${SITE_URL}/become-a-host`}
-        image={ogCard('be-a-sloth', 'png')}
+        image={ogCard('become-a-host', 'png')}
       />
       {/* ── LEFT · crimson brand-art panel (lg+ only) ──────────────────────────── */}
       <AuthBrandPanel

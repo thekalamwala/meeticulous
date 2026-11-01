@@ -101,7 +101,7 @@ list only.)
     sessionStorage — is the durable gate, so the two stores can't diverge on source.)
   - Fire-and-forget `POST /api/invite/:slug/visit`.
 - Dynamic greeting: inject `label` into the hero headline, e.g.
-  *"Welcome, {label} 🦥"*. One line; no per-slug design.
+  *"Welcome, {label}"*. One line; no per-slug design.
 - CTA → existing host onboarding (Google-only). **At CTA click, read `bas_invite`
   and pass it into the Google OAuth `state`** (see Attribution capture). No new
   auth flow — same vendor-auth OAuth start, one extra field in `state`.

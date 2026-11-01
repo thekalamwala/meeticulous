@@ -52,7 +52,7 @@ test('active term (future expiry) → NOT churned (cancel keeps them paid till i
 });
 
 test('no plan_expires_at → not churned', async () => {
-  mockState.leads = [{ id: 'L1', status: 'sloth', profile_id: 'p1' }];
+  mockState.leads = [{ id: 'L1', status: require('../../services/crm/lifecycleRules').ROI, profile_id: 'p1' }];
   mockState.profiles = [{ id: 'p1', plan_expires_at: null }];
   expect((await churnLapsedLeads(NOW)).churned).toBe(0);
 });

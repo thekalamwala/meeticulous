@@ -95,7 +95,7 @@ describe('buildCrmLeadPayload (Meta CRM Lead offline event)', () => {
     expect(ev.action_source).toBe('system_generated');
     expect(ev.event_name).toBe('Lead');
     expect(ev.event_time).toBe(1673035686);
-    expect(ev.custom_data).toEqual({ event_source: 'crm', lead_event_source: 'Book A Sloth' });
+    expect(ev.custom_data).toEqual({ event_source: 'crm', lead_event_source: 'Meeticulous' });
     expect(ev.event_id).toBe('crm_lead_42');
     expect(ev.user_data.em).toEqual([_internal.sha256('jane@x.com')]);
     expect(ev.user_data.ph).toEqual([_internal.sha256('919876543210')]);

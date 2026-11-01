@@ -1,4 +1,4 @@
-# blog-autopost.ps1 — headless daily blog publisher (Book A Sloth)
+# blog-autopost.ps1 — headless daily blog publisher (Meeticulous)
 # Run by Windows Task Scheduler. Runs the whole pipeline inside a DEDICATED git
 # worktree so the scheduled job never shares a branch with an interactive/peer
 # Claude session (that collision landed a commit on the wrong branch during the

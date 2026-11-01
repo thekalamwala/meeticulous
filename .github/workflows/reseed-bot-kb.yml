@@ -1,6 +1,6 @@
-name: Reseed Bolt KB
+name: Reseed Tithi KB
 
-# Rebuilds the two prod tables the Bolt support bot answers from — which a normal
+# Rebuilds the two prod tables the Tithi support bot answers from — which a normal
 # deploy does NOT touch, so editing the sources changes nothing until this runs:
 #   - kb_chunks  ← docs/help/*.md            (retrieval corpus, via seedKnowledgeBase.js)
 #   - bot_faqs   ← server/scripts/data/botFaqs.json (canned FAQ layer, via seedBotFaqs.js)
@@ -35,7 +35,7 @@ jobs:
     name: Reseed kb_chunks + bot_faqs (prod)
     runs-on: ubuntu-latest
     # Never run on forks — the secrets aren't there and it would just fail noisily.
-    if: github.repository == 'bookasloth/book-a-sloth'
+    if: github.repository == 'thekalamwala/meeticulous'
     defaults:
       run:
         working-directory: server

@@ -16,8 +16,8 @@
 // FAQ · navy+gold CTA) are all fresh, none on the shared forbidden-mechanics list.
 // Only nav / hero shell chrome / footer may resemble sibling pages.
 //
-// IMAGES: this page KEEPS the real production images (CA sloth mascot + real tool
-// logos) — every image path is mined verbatim from the previous version.
+// IMAGES: real tool logos only — every logo path is mined verbatim from the
+// previous version. Hero + about use icon art (mascot illustrations removed).
 //
 // HONESTY: Meeticulous is a scheduling + PAYMENT tool, NOT tax/financial advice or
 // an accounting system. No tax-outcome claims. Testimonials are labelled placeholder
@@ -40,6 +40,7 @@ import {
   Lock, ShieldCheck, BadgePercent, Zap,
 } from 'lucide-react';
 import Reveal from '../../components/home/Reveal';
+import { Calculator as CalculatorArt } from 'lucide-react';
 import Seo from '../../components/common/Seo';
 import useLenis from '../../hooks/useLenis';
 import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
@@ -55,7 +56,7 @@ import PageGuides from '../../components/common/PageGuides';
 
 const START = '/become-a-host';      // real host signup funnel
 const LOGIN = '/login-as-vendor'; // host login (Google-only door)
-const MASCOT = '/images/ca-sloth.webp'; // CA sloth mascot (800px webp, ~103KB)
+const ART_ICON = CalculatorArt; // stands in for the removed mascot art
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
 
@@ -423,7 +424,7 @@ export default function CharteredAccountants() {
             </Reveal>
             <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
               <CtaButton to={START} className="w-full sm:w-auto">Create a Free Account <ArrowRight size={16} /></CtaButton>
-              <Link to="/sndatarkar/booking/book-a-sloth-app-online-demo-30-min-advisory-session" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
+              <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
                 Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </Reveal>
@@ -436,7 +437,7 @@ export default function CharteredAccountants() {
             </Reveal>
           </div>
 
-          {/* RIGHT — real mascot image, framed like a ledger card + floating stat cards */}
+          {/* RIGHT — icon art, framed like a ledger card + floating stat cards */}
           <Reveal instant delay={0.1} className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
             <div aria-hidden className="pointer-events-none absolute -bottom-6 -right-6 h-32 w-32 rounded-[16px]" style={{ background: 'color-mix(in srgb, var(--ca-accent) 16%, transparent)' }} />
             <div className="relative rounded-[20px] border border-black/[0.08] bg-white p-4 shadow-[0_34px_80px_-40px_rgba(16,26,41,0.6)]">
@@ -447,12 +448,9 @@ export default function CharteredAccountants() {
                 </span>
               </div>
               <div className="relative flex items-center justify-center overflow-hidden rounded-[14px] py-4" style={{ background: 'radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--ca-primary) 8%, transparent), transparent 70%)' }}>
-                <img
-                  src={MASCOT}
-                  alt="Meeticulous mascot — appointment booking for chartered accountants"
-                  loading="eager"
-                  className="mx-auto w-full max-w-[20rem] object-contain drop-shadow-[0_24px_32px_rgba(16,26,41,0.18)]"
-                />
+                <div role="img" aria-label="Meeticulous — appointment booking for chartered accountants" className="mx-auto grid aspect-square w-full max-w-[20rem] place-items-center">
+                  <ART_ICON className="h-24 w-24" style={{ color: 'var(--ca-primary)' }} strokeWidth={1.25} aria-hidden="true" />
+                </div>
               </div>
             </div>
             <StatCard icon={Receipt} label="GST filed" value="Invoice sent" className="-left-3 top-8 hidden sm:flex" />
@@ -764,16 +762,13 @@ export default function CharteredAccountants() {
       {/* ═══════════════ 10 · ABOUT (split — real image + trust facts) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-cream)' }}>
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          {/* LEFT — real mascot image, framed */}
+          {/* LEFT — framed icon art */}
           <Reveal className="relative order-2 mx-auto w-full max-w-sm lg:order-1 lg:mx-0">
             <div aria-hidden className="pointer-events-none absolute -left-5 -top-5 h-28 w-28 rounded-[16px]" style={{ background: 'color-mix(in srgb, var(--ca-accent) 16%, transparent)' }} />
             <div className="relative rounded-[20px] border border-black/[0.08] bg-white p-5 shadow-[0_30px_70px_-42px_rgba(16,26,41,0.55)]">
-              <img
-                src={MASCOT}
-                alt="Meeticulous mascot"
-                loading="lazy"
-                className="mx-auto w-full max-w-[18rem] object-contain drop-shadow-[0_22px_30px_rgba(16,26,41,0.16)]"
-              />
+              <div aria-hidden="true" className="mx-auto grid aspect-square w-full max-w-[18rem] place-items-center">
+                <ART_ICON className="h-20 w-20" style={{ color: 'var(--ca-primary)' }} strokeWidth={1.25} />
+              </div>
             </div>
           </Reveal>
 
@@ -838,7 +833,7 @@ export default function CharteredAccountants() {
               <Link to={START} className="inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-white px-7 py-3.5 text-sm font-bold transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline sm:w-auto" style={{ color: 'var(--ca-primary)' }}>
                 Launch My Practice Page <ArrowRight size={16} />
               </Link>
-              <Link to="/sndatarkar/booking/book-a-sloth-app-online-demo-30-min-advisory-session" className="inline-flex w-full items-center justify-center gap-2 rounded-[8px] border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline sm:w-auto">
+              <Link to="/contact" className="inline-flex w-full items-center justify-center gap-2 rounded-[8px] border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline sm:w-auto">
                 Book A Demo
               </Link>
             </Reveal>

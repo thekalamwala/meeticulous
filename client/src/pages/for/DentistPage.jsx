@@ -44,6 +44,8 @@ import {
   Lock, Landmark, BadgePercent, Zap,
 } from 'lucide-react';
 import Reveal from '../../components/home/Reveal';
+import { Smile as SmileArt, CalendarCheck as CalendarArt, BellRing as BellArt } from 'lucide-react';
+import IconArt from '../../components/common/IconArt';
 import Seo from '../../components/common/Seo';
 import useLenis from '../../hooks/useLenis';
 import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
@@ -408,7 +410,7 @@ export default function DentistPage() {
             </Reveal>
             <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
               <CtaButton to={START} className="w-full sm:w-auto">Create Your Booking Page <ArrowRight size={16} /></CtaButton>
-              <Link to="/sndatarkar/booking/book-a-sloth-app-online-demo-30-min-advisory-session" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
+              <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
                 Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </Reveal>
@@ -421,19 +423,10 @@ export default function DentistPage() {
             </Reveal>
           </div>
 
-          {/* RIGHT — single real hero image + floating confirmation card + mint reminder chip */}
+          {/* RIGHT — icon art + floating confirmation card + mint reminder chip */}
           <Reveal instant delay={0.1} className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
             <div className="relative overflow-hidden rounded-[24px] border border-black/[0.06] bg-white shadow-[0_30px_60px_-32px_rgba(12,34,49,0.45)]">
-              <img
-                src="/for/dentists/dentist-sloth.webp"
-                alt="Meeticulous appointment booking for a dental clinic"
-                loading="eager"
-                fetchpriority="high"
-                decoding="async"
-                width="1100"
-                height="852"
-                className="h-auto w-full object-cover"
-              />
+              <IconArt icon={SmileArt} label="Meeticulous appointment booking for a dental clinic" rounded="rounded-none" className="aspect-[1100/852] w-full border-0 shadow-none" iconClassName="h-24 w-24" />
             </div>
             {/* floating "Appointment confirmed" card */}
             <div className="absolute -bottom-5 left-4 z-20 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_16px_36px_-18px_rgba(12,34,49,0.5)] ring-1 ring-black/5 sm:left-6">
@@ -767,18 +760,18 @@ export default function DentistPage() {
       {/* ═══════════════ 11 · ABOUT (editorial + real photo gallery) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-cream)' }}>
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          {/* real photo gallery: one main image + a two-up thumbnail rail */}
+          {/* icon-art gallery: one main tile + a two-up thumbnail rail */}
           <Reveal className="relative order-2 lg:order-1">
             <div aria-hidden className="pointer-events-none absolute -left-8 -top-8 h-56 w-56 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(20,184,166,0.2), transparent)' }} />
             <div className="relative overflow-hidden rounded-[22px] border border-black/[0.06] bg-white shadow-[0_28px_60px_-36px_rgba(12,34,49,0.4)]">
-              <img src="/for/dentists/about-dent.webp" alt="Meeticulous booking dashboard for a dental practice" loading="lazy" decoding="async" width="1100" height="825" className="h-auto w-full object-cover" />
+              <IconArt icon={CalendarArt} label="Meeticulous booking dashboard for a dental practice" rounded="rounded-none" className="aspect-[4/3] w-full border-0 shadow-none" />
             </div>
             <div className="relative mt-4 grid grid-cols-2 gap-4">
               <div className="overflow-hidden rounded-[16px] border border-black/[0.06] bg-white shadow-[0_18px_40px_-30px_rgba(12,34,49,0.4)]">
-                <img src="/for/dentists/choose-dent.webp" alt="A dentist choosing Meeticulous for clinic bookings" loading="lazy" decoding="async" width="1100" height="825" className="h-full w-full object-cover" />
+                <IconArt icon={SmileArt} rounded="rounded-none" className="aspect-[4/3] h-full w-full border-0 shadow-none" iconClassName="h-10 w-10" />
               </div>
               <div className="overflow-hidden rounded-[16px] border border-black/[0.06] bg-white shadow-[0_18px_40px_-30px_rgba(12,34,49,0.4)]">
-                <img src="/for/dentists/dental-cta.webp" alt="A calm dental clinic front desk running on Meeticulous" loading="lazy" decoding="async" width="1100" height="514" className="h-full w-full object-cover" />
+                <IconArt icon={BellArt} rounded="rounded-none" className="aspect-[4/3] h-full w-full border-0 shadow-none" iconClassName="h-10 w-10" />
               </div>
             </div>
           </Reveal>
@@ -830,7 +823,7 @@ export default function DentistPage() {
               <Link to={START} className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline sm:w-auto" style={{ color: 'var(--ca-primary)' }}>
                 Set Up My Clinic Page <ArrowRight size={16} />
               </Link>
-              <Link to="/sndatarkar/booking/book-a-sloth-app-online-demo-30-min-advisory-session" className="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline sm:w-auto">
+              <Link to="/contact" className="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline sm:w-auto">
                 Book A Demo
               </Link>
             </Reveal>

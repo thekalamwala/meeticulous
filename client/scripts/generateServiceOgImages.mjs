@@ -5,7 +5,7 @@
  * screenshot the REAL /og/service/:username/:slug React route at 1200x630 and
  * upload the PNG to Supabase Storage (images bucket, service-og/ prefix), writing
  * the URL to services.og_image. prerenderController serves it as og:image so a
- * shared bookasloth.com/:username/:slug link previews as a proper wide card
+ * shared meeticulous.com/:username/:slug link previews as a proper wide card
  * naming the service + price instead of the thumbnail letterboxed inside one.
  *
  * State machine (services.og_status, migration v3.154):

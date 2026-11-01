@@ -8,9 +8,6 @@
 // Adding art for a new category = add a case here + reference its key in the
 // catalog. No other wiring.
 
-import { useState } from 'react';
-import { pickErrorImage } from '../../config/errorCatalog';
-
 const SIZE = 132;
 
 function Frame({ children, label }) {
@@ -41,25 +38,6 @@ const stroke = {
 };
 const accent = { stroke: 'var(--bas-error-accent)' };
 const accentFill = { fill: 'var(--bas-error-accent)' };
-
-// A small hanging sloth — the recurring brand motif, reused where it fits.
-function Sloth({ x = 0, y = 0 }) {
-  return (
-    <g transform={`translate(${x} ${y})`} style={stroke}>
-      <ellipse cx="70" cy="78" rx="20" ry="23" />
-      <circle cx="63" cy="74" r="3.2" style={{ ...stroke, ...accentFill, strokeWidth: 0 }} />
-      <circle cx="77" cy="74" r="3.2" style={{ ...stroke, ...accentFill, strokeWidth: 0 }} />
-      <path d="M64 86 q6 5 12 0" />
-      {/* arms gripping the branch above */}
-      <path d="M56 64 q-8 -14 4 -20" />
-      <path d="M84 64 q8 -14 -4 -20" />
-    </g>
-  );
-}
-
-function Branch() {
-  return <path d="M22 40 q48 -10 96 0" style={{ ...stroke, ...accent }} />;
-}
 
 const ART = {
   // 404 / 410 — lost: a signpost with a wandering dotted trail.
@@ -135,11 +113,10 @@ const ART = {
     </Frame>
   ),
 
-  // 500 / 502 — napping: the sloth asleep on a branch with zzz.
+  // 500 / 502 — napping: a crescent moon with zzz.
   napping: (
     <Frame label="Taking a nap">
-      <Branch />
-      <Sloth />
+      <path d="M80 46 a30 30 0 1 0 12 50 a24 24 0 1 1 -12 -50 z" style={stroke} />
       <path d="M96 44 h10 l-10 10 h10" style={{ ...stroke, ...accent, strokeWidth: 2.4 }} />
       <path d="M108 30 h7 l-7 7 h7" style={{ ...stroke, ...accent, strokeWidth: 2 }} />
     </Frame>
@@ -165,20 +142,9 @@ const ART = {
   ),
 };
 
+// `image` is accepted for API compatibility but ignored: the CDN mascot art it
+// used to pick was removed, so every page renders the line-art.
+// eslint-disable-next-line no-unused-vars
 export default function ErrorIllustration({ art, image = false }) {
-  // Stable within a mount, fresh per visit — never pick in render body.
-  const [src] = useState(() => (image ? pickErrorImage() : null));
-  if (image) {
-    return (
-      <img
-        src={src}
-        alt=""
-        width={SIZE}
-        height={SIZE}
-        loading="eager"
-        className="bas-error-art"
-      />
-    );
-  }
   return ART[art] || ART.confused;
 }

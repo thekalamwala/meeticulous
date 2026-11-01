@@ -146,7 +146,7 @@ None currently. The only "blocker" for full production readiness:
 
 ## 🔑 Credentials & Access
 
-- Admin login: `/hello-sloth` — 4 accounts created (superadmin, ops, finance, support). Credentials delivered in chat session on 2026-06-11.
+- Admin login: `/backstage` — 4 accounts created (superadmin, ops, finance, support). Credentials delivered in chat session on 2026-06-11.
 - Supabase: production project URL in `server/.env`
 - Razorpay: keys in `server/.env`
 

@@ -11,7 +11,7 @@
  *   settlement_clearing_days  default 7 (days after completion before a vendor payout matures)
  *   fee_only_mode             default TRUE — INTERIM (no Razorpay Route yet). Hosts cannot
  *                             list a paid service (prices forced to ₹0) and every booking
- *                             collects only Book A Sloth's own booking fee + GST, with a
+ *                             collects only Meeticulous's own booking fee + GST, with a
  *                             guest invoice; NO host money moves, so no payment-aggregator
  *                             exposure. Flip to false on Route go-live to enable host pricing
  *                             + payouts. Defaults true so a DB blip fails SAFE (never

@@ -25,7 +25,7 @@ async function main() {
       excerpt: p.excerpt || null,
       body: p.body || [],
       category: p.category || null,
-      author: p.author || 'Book A Sloth Team',
+      author: p.author || 'Meeticulous Team',
       image: p.image || null,
       icons: p.icons || [],
       read_mins: p.readMins || null,

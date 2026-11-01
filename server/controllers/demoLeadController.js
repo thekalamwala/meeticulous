@@ -1,10 +1,10 @@
 'use strict';
 /**
- * beASlothLeadController — public "Book a Demo" lead form on /be-a-sloth.
+ * demoLeadController — public "Book a Demo" lead form on /become-a-host.
  *
  * Two steps, both public + rate-limited at the route:
- *   POST /api/be-a-sloth-lead/send-otp  { name, phone, profession, attribution }
- *   POST /api/be-a-sloth-lead           { name, phone, profession, otp }
+ *   POST /api/demo-lead/send-otp  { name, phone, profession, attribution }
+ *   POST /api/demo-lead           { name, phone, profession, otp }
  *
  * Capture model: the lead is stored the moment they tap "Book A Demo" (send-otp),
  * so a drop-off at the OTP step is still captured as a warm lead. The Meta Lead
@@ -29,7 +29,7 @@ const OTP_TYPE = 'lead';                       // isolates this code from login/
 const VERIFIED_TAG = 'phone-verified';
 const cap = (s = '', n) => String(s).trim().slice(0, n);
 
-// POST /api/be-a-sloth-lead/send-otp — captures the (unverified) lead, then sends OTP.
+// POST /api/demo-lead/send-otp — captures the (unverified) lead, then sends OTP.
 async function sendLeadOtp(req, res) {
   try {
     const b = req.body || {};
@@ -46,17 +46,17 @@ async function sendLeadOtp(req, res) {
     // — never block OTP delivery on a CRM hiccup.
     await safeUpsertLead(
       { name: cap(b.name, 120), phone, profession: cap(b.profession, 120) },
-      { source: 'website', createdBy: 'be_a_sloth_form', attribution: b.attribution, skipMetaLead: true }
+      { source: 'website', createdBy: 'book_demo_form', attribution: b.attribution, skipMetaLead: true }
     );
 
     // Respond immediately; WhatsApp delivery is slow (~6s) + best-effort.
     res.json({ message: 'Verification code sent' });
     Promise.resolve(sendOtpNotification({ phone, name: cap(b.name, 120), otp }))
-      .catch((e) => console.error('[be-a-sloth] send-otp notify (non-fatal):', e.message));
+      .catch((e) => console.error('[demo-lead] send-otp notify (non-fatal):', e.message));
   } catch (e) { safeError(res, e); }
 }
 
-// POST /api/be-a-sloth-lead — verifies the OTP, tags the lead verified, fires Meta.
+// POST /api/demo-lead — verifies the OTP, tags the lead verified, fires Meta.
 async function submitLead(req, res) {
   try {
     const b = req.body || {};
@@ -79,24 +79,24 @@ async function submitLead(req, res) {
     // fire it explicitly below so the eventId de-dupes and it counts as verified.
     const result = await safeUpsertLead(
       { name, phone, profession },
-      { source: 'website', createdBy: 'be_a_sloth_form', attribution: b.attribution, skipMetaLead: true }
+      { source: 'website', createdBy: 'book_demo_form', attribution: b.attribution, skipMetaLead: true }
     );
     const lead = result && result.lead;
 
     if (lead && lead.id) {
       // Quality marker: sales filters on this; the tag + timeline record the verify.
-      try { await addTag(lead.id, VERIFIED_TAG); } catch (e) { console.warn('[be-a-sloth] tag failed:', e.message); }
+      try { await addTag(lead.id, VERIFIED_TAG); } catch (e) { console.warn('[demo-lead] tag failed:', e.message); }
       // Meta Lead now — verified only, with EMQ (IP/UA/fbp/fbc) from this request.
       try {
         require('../utils/trackServer').sendMetaCrmLead({
           phone, leadId: lead.meta_lead_id, eventId: `crm_lead_${lead.id}`, req,
         });
-      } catch (e) { console.warn('[be-a-sloth] meta lead skipped:', e.message); }
+      } catch (e) { console.warn('[demo-lead] meta lead skipped:', e.message); }
     }
 
     // High-intent verified inbound → feed the lead score. Best-effort.
     require('../services/crm/intentEvents')
-      .record({ event: 'demo_request', phone, meta: { profession, page: 'be_a_sloth', verified: true }, source: 'website' })
+      .record({ event: 'demo_request', phone, meta: { profession, page: 'book_demo', verified: true }, source: 'website' })
       .catch(() => {});
 
     return res.status(201).json({ ok: true, lead_id: lead && lead.id });

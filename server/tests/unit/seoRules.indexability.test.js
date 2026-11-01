@@ -16,15 +16,15 @@ describe('technical + indexability rules', () => {
     expect(idx.check(base({ robots: 'noindex, follow' }), ctx).map((i) => i.ruleKey)).toContain('indexability.unexpected_noindex');
   });
   test('prerender_regression fires when title equals homepage title', () => {
-    const home = { url: 'https://meeticulous.com/', pageType: 'static', title: 'Book A Sloth' };
-    const p = base({ title: 'Book A Sloth', pageType: 'service' });
+    const home = { url: 'https://meeticulous.com/', pageType: 'static', title: 'Meeticulous' };
+    const p = base({ title: 'Meeticulous', pageType: 'service' });
     const ctx = buildContext([home, p], new Set());
     expect(idx.check(p, ctx).map((i) => i.ruleKey)).toContain('indexability.prerender_regression');
   });
   // Shell title = a title shared by >= 5 pages (the un-prerendered SPA fallback).
-  const shellPages = (n) => Array.from({ length: n }, (_, i) => ({ url: `https://meeticulous.com/services/p${i}`, pageType: 'static', httpStatus: 200, bodyCrawled: true, title: 'Book A Sloth — the calm way to sell your time' }));
+  const shellPages = (n) => Array.from({ length: n }, (_, i) => ({ url: `https://meeticulous.com/services/p${i}`, pageType: 'static', httpStatus: 200, bodyCrawled: true, title: 'Meeticulous — the calm way to sell your time' }));
   test('unrendered_title fires for a page serving the shared shell title (>=5 pages)', () => {
-    const home = { url: 'https://meeticulous.com/', pageType: 'static', httpStatus: 200, title: 'Book A Sloth — home (prerendered)' };
+    const home = { url: 'https://meeticulous.com/', pageType: 'static', httpStatus: 200, title: 'Meeticulous — home (prerendered)' };
     const pages = shellPages(6);
     const ctx = buildContext([home, ...pages], new Set());
     expect(idx.check(pages[0], ctx).map((i) => i.ruleKey)).toContain('onpage.unrendered_title');
@@ -35,7 +35,7 @@ describe('technical + indexability rules', () => {
     expect(idx.check(pages[0], ctx).map((i) => i.ruleKey)).not.toContain('onpage.unrendered_title');
   });
   test('unrendered_title does NOT fire for the prerendered homepage (unique title)', () => {
-    const home = base({ url: 'https://meeticulous.com/', pageType: 'static', title: 'Book A Sloth — home (prerendered)', bodyCrawled: true });
+    const home = base({ url: 'https://meeticulous.com/', pageType: 'static', title: 'Meeticulous — home (prerendered)', bodyCrawled: true });
     const ctx = buildContext([home, ...shellPages(6)], new Set());
     expect(idx.check(home, ctx).map((i) => i.ruleKey)).not.toContain('onpage.unrendered_title');
   });

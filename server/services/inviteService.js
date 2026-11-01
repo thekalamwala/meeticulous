@@ -13,7 +13,7 @@ const isSchemaMiss = (e) =>
 
 const norm = (s) => normalizeSlug(String(s || '').trim());
 
-// Cold-call invite codes (bookasloth.com/invite/CX12) share this landing page; an
+// Cold-call invite codes (meeticulous.com/invite/CX12) share this landing page; an
 // invite_links slug always wins. Lazy require — coldCallService pulls in the CRM.
 const coldCall = () => require('./crm/coldCallService');
 

@@ -1,7 +1,7 @@
 // Production CORS allowlist.
 //
 // The app is served by Vercel on several live hostnames at once (apex
-// `bookasloth.com`, `www.bookasloth.com`, and the `*.vercel.app` alias). The
+// `meeticulous.com`, `www.meeticulous.com`, and the `*.vercel.app` alias). The
 // previous lock matched ONE exact CLIENT_URL, so visitors who landed on `www.`
 // (or an old vercel link) loaded a normal-looking site whose every /api call
 // was CORS-rejected — the "Sign in with Google does nothing / button doesn't
@@ -11,7 +11,7 @@
 //   - CLIENT_URLS         : optional comma-separated extra origins (e.g. the
 //                           vercel.app alias) for hosts we can't sibling-derive.
 //   - and for every origin above we auto-include its www/apex SIBLING, so
-//     bookasloth.com ⇄ www.bookasloth.com both pass with no extra config.
+//     meeticulous.com ⇄ www.meeticulous.com both pass with no extra config.
 
 const stripSlash = (s) => String(s || '').trim().replace(/\/+$/, '');
 
@@ -31,7 +31,7 @@ const sibling = (origin) => {
 
 // Build the set of allowed origins from env (CLIENT_URL + CLIENT_URLS + their
 // www/apex siblings). Trailing slashes are normalised away so a stray
-// "https://bookasloth.com/" still matches.
+// "https://meeticulous.com/" still matches.
 const buildAllowedOrigins = (env = process.env) => {
   const raw = [env.CLIENT_URL, ...String(env.CLIENT_URLS || '').split(',')]
     .map(stripSlash)

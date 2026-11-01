@@ -55,7 +55,7 @@ function renderDigest(ins) {
       ${rows ? `<h3 style="margin:0 0 6px;font-size:14px">Top reasons</h3><table style="border-collapse:collapse;width:100%">${rows}</table>
       <p style="color:#999;font-size:11px;margin-top:8px">🔴 = product/UX-caused (preventable)</p>`
         : `<p style="color:#666">No tagged conversations yet — pick a reason when resolving to build this.</p>`}
-      <p style="color:#999;font-size:11px;margin-top:16px">Book A Sloth · automated weekly support digest</p>
+      <p style="color:#999;font-size:11px;margin-top:16px">Meeticulous · automated weekly support digest</p>
     </div>`;
 }
 

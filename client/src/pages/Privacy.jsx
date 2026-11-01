@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import LegalLayout, { Section } from '../components/common/LegalLayout';
 
 // /privacy — Privacy Policy (India DPDP Act 2023 + DPDP Rules 2025, and GDPR).
-const Mail = () => <a href="mailto:hello@meeticulous.com" className="text-primary hover:underline">hello@meeticulous.com</a>;
+const Mail = () => <a href="mailto:team@meeticulous.com" className="text-primary hover:underline">team@meeticulous.com</a>;
 
 const USE_ROWS = [
   ['Provide the Platform', 'Create accounts, publish services, process bookings, generate meeting links', 'Performance of a contract; consent (DPDP)'],

@@ -25,16 +25,16 @@ test('sends the Brevo payload (persona sender kept) and returns the messageId', 
   const provider = require('../../services/email/providers/brevoProvider');
   const r = await provider.sendEmail({
     to: 'lead@gmail.com', subject: 'Hi', html: '<p>x</p>',
-    fromName: 'Aastha | Marketing', fromEmail: 'aastha@bookasloth.in', replyTo: 'aastha@bookasloth.in',
+    fromName: 'Aastha | Marketing', fromEmail: 'aastha@meeticulous.com', replyTo: 'aastha@meeticulous.com',
   });
   expect(r).toMatchObject({ success: true, id: '<abc@brevo>' });
   const [url, opts] = global.fetch.mock.calls[0];
   expect(url).toBe('https://api.brevo.com/v3/smtp/email');
   expect(opts.headers['api-key']).toBe('test-key');
   const sent = JSON.parse(opts.body);
-  expect(sent.sender).toEqual({ name: 'Aastha | Marketing', email: 'aastha@bookasloth.in' });
+  expect(sent.sender).toEqual({ name: 'Aastha | Marketing', email: 'aastha@meeticulous.com' });
   expect(sent.to).toEqual([{ email: 'lead@gmail.com' }]);
-  expect(sent.replyTo).toEqual({ email: 'aastha@bookasloth.in' });
+  expect(sent.replyTo).toEqual({ email: 'aastha@meeticulous.com' });
 });
 
 test('a Brevo error returns success:false and never throws (no provider fallback)', async () => {

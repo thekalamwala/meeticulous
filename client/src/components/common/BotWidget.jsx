@@ -192,7 +192,7 @@ export default function BotWidget() {
         },
         onError: () => setMessages((m) => patchLastAssistant(m, (a) => ({
           ...a, streaming: false, escalate: true,
-          content: a.content || "Something went wrong reaching support just now. Email hello@meeticulous.com and a human will jump in.",
+          content: a.content || "Something went wrong reaching support just now. Email team@meeticulous.com and a human will jump in.",
         }))),
       },
     );
@@ -565,7 +565,7 @@ export default function BotWidget() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={onKeyDown}
               disabled={locked}
-              placeholder={locked ? 'Chat paused — email hello@meeticulous.com' : 'Ask anything…'}
+              placeholder={locked ? 'Chat paused — email team@meeticulous.com' : 'Ask anything…'}
               aria-label="Type your question"
               className="h-10 min-h-10 max-h-24 flex-1 resize-none rounded-xl border-2 border-ink/12 px-3 pt-[11px] pb-[5px] text-[13px] leading-tight outline-none focus:!border-primary focus:!shadow-none focus:!ring-0 focus:!outline-none disabled:cursor-not-allowed disabled:bg-ink/5"
             />

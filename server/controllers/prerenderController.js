@@ -65,7 +65,7 @@ function buildHtml({ title, description, canonical, ogTitle, ogDescription, imag
 <meta name="robots" content="${rob}">
 <link rel="canonical" href="${esc(canonical)}">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Book A Sloth">
+<meta property="og:site_name" content="Meeticulous">
 <meta property="og:title" content="${esc(ogTitle || title)}">
 <meta property="og:description" content="${esc(ogDescription || description)}">
 <meta property="og:url" content="${esc(canonical)}">
@@ -220,14 +220,14 @@ async function resolveProfileMeta(username) {
   const composeTitle = () => {
     const base = `${name}${host.profession ? ` — ${host.profession}` : ''}`;
     const withCity = city ? `${base} in ${city}` : base;
-    const full = `${withCity} | Book A Sloth`;
+    const full = `${withCity} | Meeticulous`;
     if (full.length <= 60) return full;
     if (withCity.length <= 60) return withCity;
     return base;
   };
   const title = host.seo_title || composeTitle();
   const description = host.seo_description
-    || truncate(host.bio || `Book sessions with ${name}${city ? ` in ${city}` : ''} on Book A Sloth.`);
+    || truncate(host.bio || `Book sessions with ${name}${city ? ` in ${city}` : ''} on Meeticulous.`);
   const canonical = `${site}/${host.username}`;
   // Resolved once: the OG tag and the JSON-LD both point at the host's photo,
   // and upscaling only one of them is how you get a card that works next to
@@ -256,7 +256,7 @@ async function resolveProfileMeta(username) {
     ...(host.updated_at ? { dateModified: host.updated_at } : {}),
     // BAS publishes the profile page (accurate — NOT the person's employer, so never
     // Person.worksFor). Links the page to the Organization entity for the graph.
-    publisher: { '@type': 'Organization', name: 'Book A Sloth', url: site },
+    publisher: { '@type': 'Organization', name: 'Meeticulous', url: site },
     mainEntity: {
       '@type': 'Person',
       name,
@@ -299,7 +299,7 @@ async function resolveProfileMeta(username) {
     // profile, deliberately NOT derived from bio/profession. The <title>/meta
     // description above stay SEO-flavoured for Google; these OG tags carry the
     // brand share line. Explicit og_/seo_ fields still override when set.
-    ogTitle: host.og_title || host.seo_title || `${name} — now taking bookings on Book A Sloth.`,
+    ogTitle: host.og_title || host.seo_title || `${name} — now taking bookings on Meeticulous.`,
     ogDescription: host.og_description || host.seo_description
       || `Skip the back-and-forth — ${name}'s calendar is open. Book a slot with them.`,
     image: ogCard,
@@ -352,7 +352,7 @@ async function resolveServiceMeta(username, serviceSlug) {
   const baseTitle = service.title || 'Service';
 
   // Compose progressively so the title isn't truncated in results (Google cuts
-  // ~60 chars): full → drop " | Book A Sloth" → drop " with {host}" → the bare
+  // ~60 chars): full → drop " | Meeticulous" → drop " with {host}" → the bare
   // service title. The service title is host-authored (UGC) and never truncated.
   // Mirrors client resolveServiceSeo (utils/seo.js) — this server path is what the
   // SEO crawler and bots audit, so it must apply the same guard.
@@ -362,7 +362,7 @@ async function resolveServiceMeta(username, serviceSlug) {
   const composeTitle = () => {
     const base = city ? `${baseTitle} in ${city}` : baseTitle;
     const withName = vendor.name ? `${base} with ${vendor.name}` : base;
-    const full = `${withName} | Book A Sloth`;
+    const full = `${withName} | Meeticulous`;
     if (full.length <= 60) return full;
     if (withName.length <= 60) return withName;
     if (base.length <= 60) return base;
@@ -371,7 +371,7 @@ async function resolveServiceMeta(username, serviceSlug) {
   const title = service.seo_title || composeTitle();
   const description = service.seo_description
     || truncate(service.short_description || service.description
-      || `Book ${baseTitle}${city ? ` in ${city}` : ''} on Book A Sloth.`);
+      || `Book ${baseTitle}${city ? ` in ${city}` : ''} on Meeticulous.`);
   const canonical = vendor.username && service.slug
     ? `${site}/${vendor.username}/${service.slug}`
     : site;

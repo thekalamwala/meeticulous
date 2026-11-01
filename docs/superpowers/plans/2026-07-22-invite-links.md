@@ -615,7 +615,7 @@ git commit -m "feat(invite): carry slug in OAuth state, stamp on new-host creati
 
 In `client/src/config/reservedSegments.js`, add `'invite'` to `RESERVED_FIRST_SEGMENTS` (near `'refer'`-adjacent marketing routes / the `'for'`, `'lp'` line):
 ```js
-  'hello-sloth', 'super-dashboard', 'admin', 'dashboard', 'user', 'review', 'lp', 'for', 'invite',
+  'backstage', 'super-dashboard', 'admin', 'dashboard', 'user', 'review', 'lp', 'for', 'invite',
 ```
 
 - [ ] **Step 2: Add api.js helpers**
@@ -798,7 +798,7 @@ export default function InviteLanding() {
       {/* Hero — dynamic greeting */}
       <section className="mx-auto max-w-3xl px-6 pt-20 pb-14 text-center">
         <Reveal as="p" className="mb-3 text-sm font-medium uppercase tracking-widest text-primary">
-          You're invited 🦥
+          You're invited
         </Reveal>
         <Reveal as="h1" className="text-[clamp(2rem,7vw,3.4rem)] font-heading font-semibold leading-[1.08] tracking-[-0.03em]">
           Welcome, {label}

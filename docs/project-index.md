@@ -22,7 +22,7 @@
 | `UserSignup.jsx` | `/signup` | Guest registration |
 | `ForgotPassword.jsx` | `/forgot-password` | Password reset request |
 | `ResetPassword.jsx` | `/reset-password` | Password reset confirm |
-| `AdminLogin.jsx` | `/hello-sloth` | Admin login (hidden) |
+| `AdminLogin.jsx` | `/backstage` | Admin login (hidden) |
 | `Dashboard.jsx` | `/dashboard` | Host dashboard home |
 | `Bookings.jsx` | `/dashboard/bookings` | Host booking management |
 | `Earnings.jsx` | `/dashboard/earnings` | Revenue overview |

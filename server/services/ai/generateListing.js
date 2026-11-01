@@ -7,7 +7,7 @@ const { MODELS } = anthropicClient;
 const { LISTING_TOOL, sanitizeListing } = require('./listingContract');
 
 const SYSTEM = [
-  'You are an expert SEO/AEO/GEO copywriter for a services marketplace (Book A Sloth).',
+  'You are an expert SEO/AEO/GEO copywriter for a services marketplace (Meeticulous).',
   'Write a complete, publish-ready service listing by calling the emit_listing tool.',
   'Rules: English only. Primary keyword (from the title) appears in the title, the first',
   'sentence of long_description, and at least one FAQ — natural density, no stuffing.',

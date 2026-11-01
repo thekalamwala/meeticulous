@@ -269,25 +269,25 @@ export function Workflow() {
 
                 <motion.button
                   type="button"
-                  className="workflowOrbit__slothButton"
+                  className="workflowOrbit__centerButton"
                   onClick={openModal}
                   aria-label="Open Meeticulous workflow details"
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                 >
-                  <span className="workflowOrbit__slothGlow" />
+                  <span className="workflowOrbit__centerGlow" />
 
                   <img
-                    src="/sloth.png"
-                    alt="Meeticulous mascot"
-                    className="workflowOrbit__slothImage"
+                    src="/brand/meeticulous-icon.svg"
+                    alt="Meeticulous"
+                    className="workflowOrbit__centerImage"
                   />
                   
                 </motion.button>
               </div>
 
               <p className="workflowOrbit__helper">
-                Select a workflow step or click the sloth to see how it works.
+                Select a workflow step or click the Meeticulous logo to see how it works.
               </p>
             </motion.div>
           </div>
