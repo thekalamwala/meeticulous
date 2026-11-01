@@ -28,9 +28,12 @@ import lazyWithRetry from './utils/lazyWithRetry';
 const lazy = lazyWithRetry;
 
 // Bottom-right floating circle: re-opens the cookie/consent banner. It replaced
-// the Bolt support-chat launcher (owner request 2026-10-31) — BotWidget.jsx is
-// kept in the codebase but no longer mounted.
+// the Bolt (now Tithi) support-chat launcher site-wide (owner request 2026-10-31).
+// Exception: the Help pages mount the Tithi widget in that same corner instead,
+// because their "Chat with Tithi" card opens it via the 'bolt:open' event.
 const CookieButton = lazy(() => import('./components/common/CookieButton'));
+const BotWidget = lazy(() => import('./components/common/BotWidget'));
+const HELP_PAGE = /^\/help(\/|$)/;
 const OpeningTakeover = lazy(() => import('./components/opening/OpeningTakeover'));
 
 // ── Route-level lazy loading ──────────────────────────────────────────────────
@@ -835,7 +838,11 @@ function App() {
         ? !chromeHidden && !location.pathname.startsWith('/admin') && <Footer variant="minimal" />
         : !hideFooter && <Footer variant={isBookingPage ? 'minimal' : 'full'} />}
       </RouteErrorBoundary>
-      {!hideBot && <Suspense fallback={null}><CookieButton /></Suspense>}
+      {!hideBot && (
+        <Suspense fallback={null}>
+          {HELP_PAGE.test(location.pathname) ? <BotWidget /> : <CookieButton />}
+        </Suspense>
+      )}
       {/* Site-wide "The Opening" takeover — self-gates on window + route + one-per-device. */}
       <Suspense fallback={null}><OpeningTakeover /></Suspense>
     </ChromeContext.Provider>
