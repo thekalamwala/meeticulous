@@ -24,13 +24,13 @@
  *   - Endpoint takes no Express auth middleware: the signed SET *is* the auth.
  *
  * ── MANUAL GOOGLE CLOUD STEPS (do these before mounting the route) ────────────
- *   1. Enable the "RISC API" on the Book A Sloth Google Cloud project.
+ *   1. Enable the "RISC API" on the Meeticulous Google Cloud project.
  *   2. Create a dedicated service account with role
  *      roles/riscconfigs.editor (RISC Configuration Admin).
  *   3. Set RISC_AUDIENCE below to the receiver audience Google assigns
  *      (the service-account issuer / configured audience for the stream).
  *   4. Register this endpoint as the stream delivery URL:
- *        POST https://book-a-sloth.onrender.com/api/security/risc
+ *        POST https://meeticulous-api.onrender.com/api/security/risc
  *      via the RISC stream config API, using the service account above.
  *   5. Send a verification/test event from Google and confirm 200.
  *   No secrets are stored in code — audience comes from env (RISC_AUDIENCE).

@@ -58,7 +58,8 @@ import { HostAvatar } from "../components/common/HostAvatar";
 import Reveal from "../components/home/Reveal";
 import HowItWorks from "../components/home/HowItWorks";
 import BrandPreloader from "../components/preloader/BrandPreloader";
-import { HERO, HERO_FACES, PERSONAS, NEWSLETTER } from "../components/home/images";
+import { HERO_FACES, PERSONAS, NEWSLETTER } from "../components/home/images";
+import IconArt from "../components/common/IconArt";
 import { TESTIMONIALS } from "../data/testimonials";
 import PricingCards from "../components/pricing/PricingCards";
 import Seo from "../components/common/Seo";
@@ -73,8 +74,6 @@ const ROUTE_LOGIN = "/login-as-vendor";
 /* `dark:true` = the badge art is light-on-transparent (needs a dark chip); the
    rest are dark-on-light (light chip). Uniform chip size keeps the row tidy. */
 const FEATURED_ON = [
-  { href: "https://www.producthunt.com/products/book-a-sloth-2?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-book-a-sloth-2", src: "https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1227352&theme=light&t=1787277679258", alt: "Meeticulous on Product Hunt" },
-  { href: "https://findly.tools/book-a-sloth-1?utm_source=book-a-sloth-1", src: "https://findly.tools/badges/findly-tools-badge-light.svg", alt: "Featured on Findly.tools" },
   { href: "https://saasgrow.app?ref=meeticulous.com", src: "https://saasgrow.app/api/badge?type=top&style=light", alt: "Meeticulous on SaaSGrow" },
   { href: "https://startuptrusted.com?ref=meeticulous.com", src: "https://startuptrusted.com/api/badge?type=top&style=light", alt: "Meeticulous on StartupTrusted" },
   { href: "https://twelve.tools", src: "https://twelve.tools/badge3-white.svg", alt: "Featured on Twelve Tools", dark: true },
@@ -108,12 +107,6 @@ const HOME_JSONLD = [
     logo: ORG_LOGO,
     description:
       "The booking link that gets India's creators and professionals paid — bookings, UPI payments and reminders in one link.",
-    sameAs: [
-      "https://www.linkedin.com/company/book-a-sloth/",
-      "https://www.instagram.com/bookasloth",
-      "https://www.facebook.com/bookasloth",
-      "https://x.com/bookasloth",
-    ],
   },
   {
     "@context": "https://schema.org",
@@ -131,7 +124,7 @@ const HOME_JSONLD = [
 
 const EASE = [0.22, 1, 0.36, 1];
 
-/* Google "G" mark — matches the button on /be-a-sloth. */
+/* Google "G" mark — matches the button on /become-a-host. */
 const GoogleIcon = () => (
   <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z" />
@@ -261,7 +254,7 @@ const HeroFace = ({ src }) => {
    ════════════════════════════════════════════════════════════ */
 const GlassCard = ({ icon: Icon, label, value, accent, className, float }) => (
   <div
-    className={`sloth-glass ${float} absolute flex items-center gap-3 rounded-2xl px-4 py-3 ${className}`}
+    className={`brand-glass ${float} absolute flex items-center gap-3 rounded-2xl px-4 py-3 ${className}`}
   >
     <span
       className={`flex h-10 w-10 items-center justify-center rounded-xl ${
@@ -405,7 +398,7 @@ const ProductMock = ({ kind }) => {
 const FEATURES = [
   { icon: CreditCard, title: "Payments Built In", desc: "Clients pay up-front. Your time finally bills itself." },
   { icon: Mail, title: "Email Reminders", desc: "Gentle nudges so no session is ever forgotten." },
-  { icon: Globe, title: "Personal SlothPage", desc: "A mini-site that books and bills on your behalf." },
+  { icon: Globe, title: "Personal booking page", desc: "A mini-site that books and bills on your behalf." },
   { icon: Users, title: "Light CRM", desc: "Notes, history, receipts — zero spreadsheets." },
   { icon: IndianRupee, title: "India First", desc: "GST, INR, UPI — built for how India pays." },
   { icon: Sparkles, title: "AI Assistant", desc: "Suggests slots, drafts briefs, sends thank-yous." },
@@ -603,7 +596,7 @@ const HomeArchive = () => {
       })
     : FAQS;
 
-  // ── Google-only host funnel — same entry as /be-a-sloth ──
+  // ── Google-only host funnel — same entry as /become-a-host ──
   const [googleLoading, setGoogleLoading] = useState(false);
   const startGoogle = async () => {
     setGoogleLoading(true);
@@ -615,26 +608,15 @@ const HomeArchive = () => {
     }
   };
 
-  // ── Preloader readiness: fonts loaded + hero image decoded (real, not timed) ──
+  // ── Preloader readiness: fonts loaded (real, not timed) ──
   const [assetsReady, setAssetsReady] = useState(false);
   const [openFaq, setOpenFaq] = useState(null); // FAQ: single-open accordion
   useEffect(() => {
     let done = false;
     const finish = () => { if (!done) { done = true; setAssetsReady(true); } };
     const fontsP = document.fonts ? document.fonts.ready : Promise.resolve();
-    // The hero banner only renders at >= sm (640px). The mobile hero is text-only,
-    // so on phones don't block the preloader decoding an image the device never
-    // shows — that just delayed perceived load for ~90% of (mobile) traffic.
-    const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches;
-    let imgP = Promise.resolve();
-    if (!isMobile) {
-      const img = new Image();
-      img.src = HERO;
-      imgP = img.decode
-        ? img.decode().catch(() => {})
-        : new Promise((r) => { img.onload = r; img.onerror = r; });
-    }
-    Promise.all([fontsP, imgP]).then(finish);
+    // The hero has no banner image any more, so only fonts gate the preloader.
+    fontsP.then(finish, finish);
     const safety = setTimeout(finish, 4000); // never strand the preloader
     return () => clearTimeout(safety);
   }, []);
@@ -807,7 +789,7 @@ const HomeArchive = () => {
       {/* Mobile gets its own centered section below; this whole block is sm:block. */}
       <section ref={heroRef} className="relative hidden px-5 pb-14 pt-8 sm:block sm:px-8 sm:pb-20 sm:pt-12 lg:pb-32 lg:pt-16">
         {/* Ambient warm aura — adds depth on the flat canvas without changing the palette */}
-        <div aria-hidden className="sloth-hero-aura" />
+        <div aria-hidden className="brand-hero-aura" />
 
         <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-10 sm:gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
           {/* LEFT */}
@@ -823,7 +805,7 @@ const HomeArchive = () => {
               invoice or run your own front desk again. Built for India. Set up in ~42 seconds.
             </Reveal>
 
-            {/* Google-only host funnel — fires the same flow as /be-a-sloth */}
+            {/* Google-only host funnel — fires the same flow as /become-a-host */}
             <Reveal delay={0.18} className="mt-6 sm:mt-9">
               <div className="max-w-[22rem]">
                 <button
@@ -865,16 +847,12 @@ const HomeArchive = () => {
             </Reveal>
           </div>
 
-          {/* RIGHT — hero photo (sm+ only; mobile uses the dedicated centered section below) */}
+          {/* RIGHT — hero icon art (sm+ only; mobile uses the dedicated centered section below) */}
           <Reveal delay={0.1} className="relative hidden sm:block">
             <div className="relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-[6px] bg-sand shadow-[0_40px_90px_-25px_rgba(26,26,26,0.38)] ring-1 ring-black/5">
-              <motion.img
-                src={HERO}
-                alt="A calm professional at work"
-                loading="eager"
-                style={{ y: heroImgY }}
-                className="h-[112%] w-full object-cover"
-              />
+              <motion.div style={{ y: heroImgY }} className="h-full w-full">
+                <IconArt icon={CalendarCheck} label="Bookings, payments and reminders on Meeticulous" rounded="rounded-[6px]" className="h-full w-full border-0 shadow-none" iconClassName="h-24 w-24" />
+              </motion.div>
               {/* Subtle inset sheen for a more premium frame */}
               <div aria-hidden className="pointer-events-none absolute inset-0 rounded-[6px] ring-1 ring-inset ring-white/15" />
             </div>
@@ -884,7 +862,7 @@ const HomeArchive = () => {
               icon={CalendarCheck}
               label="New booking"
               value="Confirmed · 4:30 PM"
-              float="sloth-float"
+              float="brand-float"
               className="hidden sm:flex top-10 sm:-left-8"
             />
             <GlassCard
@@ -892,14 +870,14 @@ const HomeArchive = () => {
               label="Payment received"
               value="₹2,500"
               accent
-              float="sloth-float--mid"
+              float="brand-float--mid"
               className="hidden sm:flex top-1/2 sm:-right-6"
             />
             <GlassCard
               icon={Wind}
               label="Upcoming session"
               value="Tomorrow · 11 AM"
-              float="sloth-float--slow"
+              float="brand-float--slow"
               className="hidden sm:flex bottom-8 sm:left-6"
             />
           </Reveal>
@@ -910,7 +888,7 @@ const HomeArchive = () => {
       {/* Same left-column content as the sm+ hero, centered. Full-viewport
           height so the hero fills the first screen; content vertically centered. */}
       <section className="relative flex min-h-screen flex-col justify-center px-5 pb-14 pt-8 sm:hidden">
-        <div aria-hidden className="sloth-hero-aura" />
+        <div aria-hidden className="brand-hero-aura" />
 
         <div className="relative z-10 mx-auto max-w-md text-center">
           {/* Mobile hero is the responsive twin of the desktop <h1> above; both
@@ -927,7 +905,7 @@ const HomeArchive = () => {
             invoice or run your own front desk again. Built for India. Set up in ~42 seconds.
           </Reveal>
 
-          {/* Google-only host funnel — fires the same flow as /be-a-sloth */}
+          {/* Google-only host funnel — fires the same flow as /become-a-host */}
           <Reveal delay={0.18} className="mt-6">
             <div className="mx-auto max-w-[22rem]">
               <button
@@ -1778,12 +1756,12 @@ const HomeArchive = () => {
           <div className="mt-14 grid gap-5 md:grid-cols-2">
             {[
               {
-                tier: "Pro Sloth",
+                tier: "Pro",
                 tagline: "For growing freelancers & coaches.",
                 price: "₹499",
                 period: "/ month",
                 popular: true,
-                perks: ["Unlimited bookings", "Payments + reminders", "Custom SlothPage", "AI calm assistant"],
+                perks: ["Unlimited bookings", "Payments + reminders", "Custom booking page", "AI calm assistant"],
               },
               {
                 tier: "Studio Plan",
@@ -1875,7 +1853,7 @@ const HomeArchive = () => {
           </Reveal>
           <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-[750px] text-center text-base text-neutral-500">
             Still stuck? Write to us at{" "}
-            <a href="mailto:hello@meeticulous.com" className="font-semibold text-primary hover:no-underline">hello@meeticulous.com</a>{" "}
+            <a href="mailto:team@meeticulous.com" className="font-semibold text-primary hover:no-underline">team@meeticulous.com</a>{" "}
             — we reply fast.
           </Reveal>
           <div className="mt-12 space-y-3">
@@ -1946,7 +1924,7 @@ const HomeArchive = () => {
                       />
                       <span className="text-xs font-medium text-white/40">vs</span>
                       <img
-                        src="https://company-assets.meeticulous.in/images/email/sloth-icon-sqr.png"
+                        src="/brand/meeticulous-icon.svg"
                         alt="Meeticulous"
                         loading="lazy"
                         className="h-7 w-7 rounded-[6px] object-contain"
@@ -1968,13 +1946,13 @@ const HomeArchive = () => {
 
           <p className="mt-8 text-sm text-white/60">
             More comparisons coming. Want to see one?{" "}
-            <a href="mailto:hello@meeticulous.com?subject=Comparison%20request" className="font-semibold text-primary hover:no-underline">Tell us →</a>
+            <a href="mailto:team@meeticulous.com?subject=Comparison%20request" className="font-semibold text-primary hover:no-underline">Tell us →</a>
             <span className="mt-2 block text-xs text-white/40">
               No mail app?{" "}
               <button
                 type="button"
                 onClick={(e) => {
-                  navigator.clipboard?.writeText("hello@meeticulous.com");
+                  navigator.clipboard?.writeText("team@meeticulous.com");
                   const b = e.currentTarget;
                   const prev = b.textContent;
                   b.textContent = "Copied!";

@@ -13,7 +13,7 @@ const DIRECTORY_CACHE_MS = Number(process.env.SERVICES_DIRECTORY_CACHE_MS) || 30
 // SEO copy fallback when admin/seed hasn't written one. Computed at read time —
 // never stored — so improving the template improves every un-curated card.
 const fallbackDescription = (professionLabel, serviceName) =>
-  `Book trusted ${professionLabel} professionals for ${serviceName} on Book A Sloth.`;
+  `Book trusted ${professionLabel} professionals for ${serviceName} on Meeticulous.`;
 
 // GET /api/services-directory
 const listProfessions = async (req, res) => {

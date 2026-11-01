@@ -20,12 +20,12 @@ function client() {
   }
 }
 
-async function sendEmail({ to, subject, html, text, fromName = 'Book A Sloth', fromEmail }) {
+async function sendEmail({ to, subject, html, text, fromName = 'Meeticulous', fromEmail }) {
   const c = client();
   if (!c) return { success: false, error: 'SES not configured (install @aws-sdk/client-sesv2 and set AWS creds)' };
   try {
     const { SendEmailCommand } = require('@aws-sdk/client-sesv2');
-    const from = `${fromName} <${fromEmail || process.env.SES_FROM || 'noreply@bookasloth.in'}>`;
+    const from = `${fromName} <${fromEmail || process.env.SES_FROM || 'team@meeticulous.com'}>`;
     const body = { Html: { Data: html }, ...(text ? { Text: { Data: text } } : {}) };
     const out = await c.send(new SendEmailCommand({
       FromEmailAddress: from,

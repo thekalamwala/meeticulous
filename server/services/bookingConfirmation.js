@@ -68,7 +68,7 @@ async function sendBookingConfirmation({ bookingId, invoiceRef = null }) {
           decryptToken(host.google_refresh_token),
           {
             title: `${svc.title || 'Service'} — ${booking.guest_name || 'Guest'}`,
-            description: `Booked via Book A Sloth\n${booking.notes || ''}`,
+            description: `Booked via Meeticulous\n${booking.notes || ''}`,
             startTime: startTime.toISOString(),
             endTime: endTime.toISOString(),
             timezone: tz,

@@ -14,8 +14,8 @@ const ROUTES = [
   'login', 'logout', 'signin', 'signup', 'register', 'forgot-password', 'reset-password',
   'help', 'about', 'privacy', 'terms', 'refund', 'unsubscribe', 'support', 'explore', 'how-it-works',
   'guest-terms', 'host-agreement', 'host-fees', // legal document set
-  'be-a-sloth', 'become-a-host', 'login-as-vendor', 'vendor', 'vendor-register', 'auth',
-  'hello-sloth', 'backstage', 'super-dashboard', 'admin', 'dashboard', 'user', 'review', 'manage-booking', 'lp', 'for',
+  'become-a-host', 'login-as-vendor', 'vendor', 'vendor-register', 'auth',
+  'backstage', 'super-dashboard', 'admin', 'dashboard', 'user', 'review', 'manage-booking', 'lp', 'for',
   'og', // /og/blog/:slug — render target for the OG card generator
   'my-bookings', 'profile', 'reviews', 'loyalty', 'settings', 'search', 'wall-of-love', 'moments',
   'opening', 'inaugurators', // "The Opening" launch event + permanent Inaugurators Wall
@@ -63,8 +63,8 @@ const ACCOUNT = [
 
 // Brand / role / safety / impersonation-prevention.
 const BRAND = [
-  'bookasloth', 'book-a-sloth', 'sloth', 'slothofficial', 'official', 'verified', 'staff',
-  'moderator', 'mod', 'administrator', 'superadmin', 'team-sloth', 'no-reply', 'noreply',
+  'meeticulous', 'meeticulousofficial', 'official', 'verified', 'staff',
+  'moderator', 'mod', 'administrator', 'superadmin', 'team-meeticulous', 'no-reply', 'noreply',
   'postmaster', 'abuse', 'hostmaster', 'mail', 'email', 'hosts', 'host', 'users', 'vendors',
   'home', 'index', 'me', 'guest', 'app', 'apps', 'web', 'go',
 ];

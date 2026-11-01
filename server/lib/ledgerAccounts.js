@@ -5,7 +5,7 @@
 'use strict';
 
 // Owner of each account (full legend + worked examples in journalTemplates.js
-// header and docs/ledger.md). BAS = Book A Sloth. "Host pass-through" = the
+// header and docs/ledger.md). BAS = Meeticulous. "Host pass-through" = the
 // host's money we merely hold and owe on; "Government payable" = GST/TDS/TCS we
 // collect and remit, never revenue.
 const ACCOUNTS = Object.freeze({

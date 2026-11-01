@@ -1,9 +1,9 @@
 /**
- * Pagination.jsx — "Slooooooooooth" doodle pager for Explore, à la Google's
- * "Goooogle". The word always spells sloth with a fixed TEN o's — one per page
- * slot, left→right = pages 1‥10. The current page's 'o' lights up in a palette
- * colour; o's for pages that exist stay clickable greyscale; o's past the real
- * page count are dimmed and dead. S/l/t/h are decoration. Arrows carry
+ * Pagination.jsx — "Meeeeeeeeeet" doodle pager for Explore, à la Google's
+ * "Goooogle". The word always spells "Meet" with a fixed TEN e's — one per page
+ * slot, left→right = pages 1‥10. The current page's 'e' lights up in a palette
+ * colour; e's for pages that exist stay clickable greyscale; e's past the real
+ * page count are dimmed and dead. M/t are decoration. Arrows carry
  * rel="prev"/"next" and scroll to top on change.
  *
  * Props: page, totalPages, hrefFor(pageNum) => string
@@ -11,7 +11,7 @@
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-// Ten fixed slots so the brand word is always "Slooooooooooth".
+// Ten fixed slots so the brand word is always "Meeeeeeeeeet".
 const SLOTS = 10;
 // Founder palette (photo), black/white excluded. Cycled by page → across 10
 // slots each colour lands exactly twice. Only the active o shows its colour.
@@ -23,7 +23,7 @@ const arrowBase =
   'flex h-9 w-9 items-center justify-center rounded-lg transition-colors duration-150';
 
 export default function Pagination({ page, totalPages, hrefFor }) {
-  // Show the full "Slooooooooooth" word from the first page on as brand
+  // Show the full "Meeeeeeeeeet" word from the first page on as brand
   // decoration — only truly empty results (no pages) hide it.
   if (!totalPages) return null;
   const toTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -44,15 +44,15 @@ export default function Pagination({ page, totalPages, hrefFor }) {
         <ChevronLeft size={18} />
       </Link>
 
-      {/* Sl-oooooooooo-th. Ten o's: real pages link, the rest are dead word. */}
+      {/* M-eeeeeeeeee-t. Ten e's: real pages link, the rest are dead word. */}
       <span className={`${wordBase} select-none flex items-baseline`}>
-        <span className="text-gray-300" aria-hidden="true">Sl</span>
+        <span className="text-gray-300" aria-hidden="true">M</span>
         {slots.map((p) => {
           const real = p <= totalPages;
           const active = p === page;
-          // Past the real page count: decorative dim 'o', not a link.
+          // Past the real page count: decorative dim 'e', not a link.
           if (!real) {
-            return <span key={p} className="text-gray-200" aria-hidden="true">o</span>;
+            return <span key={p} className="text-gray-200" aria-hidden="true">e</span>;
           }
           return (
             <Link
@@ -66,11 +66,11 @@ export default function Pagination({ page, totalPages, hrefFor }) {
                 ? ''
                 : 'text-gray-300 hover:text-gray-500'}`}
             >
-              o
+              e
             </Link>
           );
         })}
-        <span className="text-gray-300" aria-hidden="true">th</span>
+        <span className="text-gray-300" aria-hidden="true">t</span>
       </span>
 
       <Link

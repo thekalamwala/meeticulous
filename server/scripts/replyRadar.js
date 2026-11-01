@@ -1,5 +1,5 @@
 /**
- * replyRadar.js — find fresh Reddit + Quora posts where Book A Sloth is a
+ * replyRadar.js — find fresh Reddit + Quora posts where Meeticulous is a
  * genuinely useful answer, and draft a reply for each. It NEVER posts.
  *
  * Flow: Reddit search RSS (per subreddit, last N days) + Quora
@@ -55,37 +55,37 @@ const SEARCH_TOPICS = [
   'Topmate alternative',
 ];
 const REDDIT_DELAY_MS = 15000;
-const UA = 'bookasloth-reply-radar/1.0 (manual review tool)';
+const UA = 'meeticulous-reply-radar/1.0 (manual review tool)';
 const MODEL = process.env.REPLY_RADAR_MODEL || 'claude-sonnet-5-5';
 
 // Product facts the drafter may use. Keep in sync with Pricing.jsx — a wrong
 // price in a public comment is worse than no comment.
-const PRODUCT_FACTS = `Book A Sloth (bookasloth.com) — booking page + payments for Indian creators,
+const PRODUCT_FACTS = `Meeticulous (meeticulous.com) — booking page + payments for Indian creators,
 consultants, coaches, therapists, tutors, doctors, salons.
-- Hosts publish services (1:1 calls, sessions, packages, digital products) on a page like bookasloth.com/<username>.
+- Hosts publish services (1:1 calls, sessions, packages, digital products) on a page like meeticulous.com/<username>.
 - Guests book with WhatsApp OTP (no account/password), pay via Razorpay (UPI, cards, netbanking).
 - Google Calendar sync, Google Meet links, WhatsApp + email reminders, payouts to the host's bank.
-- Plans (prices include GST): Sloth = free forever, 5% commission only when you get paid.
-  Sloth Active = ₹3,599/year (~₹300/month), 0% commission, adds automation + client CRM.
+- Plans (prices include GST): Starter = free forever, 5% commission only when you get paid.
+  Pro = ₹3,599/year (~₹300/month), 0% commission, adds automation + client CRM.
   ~2.4% payment-gateway fee applies on both (Razorpay's charge, not ours).
-- Breakeven: above ~₹6,000/month in bookings, Sloth Active costs less than the 5%.`;
+- Breakeven: above ~₹6,000/month in bookings, Pro costs less than the 5%.`;
 
-const SYSTEM = `You help the founder of Book A Sloth find online threads worth replying to,
+const SYSTEM = `You help the founder of Meeticulous find online threads worth replying to,
 and draft the reply they will post by hand from their own account.
 
 ${PRODUCT_FACTS}
 
 For each post decide a route:
-- "lead": the poster (or readers) need a way to take bookings/payments for their time — Book A Sloth directly solves it.
-- "brand": a broader question (pricing your time, freelancing in India, tools for consultants) where a genuinely useful answer can mention Book A Sloth as one option among others.
+- "lead": the poster (or readers) need a way to take bookings/payments for their time — Meeticulous directly solves it.
+- "brand": a broader question (pricing your time, freelancing in India, tools for consultants) where a genuinely useful answer can mention Meeticulous as one option among others.
 - "skip": off-topic, a rant, a job post, already solved, hostile to self-promotion, or a mention would feel forced.
 
 score: 1–10, how worth the founder's time this reply is (relevance × reach × buying intent).
 
 Reply rules (only when route is not "skip"; empty string for skip):
 - Answer the actual question first, with specific, practical help. The answer must be useful even with the product mention removed.
-- Mention Book A Sloth at most once, near the end, with plain disclosure ("I'm building Book A Sloth, so I'm biased"). For "brand", name 1–2 alternatives too.
-- No link unless route is "lead" — then at most one bare bookasloth.com.
+- Mention Meeticulous at most once, near the end, with plain disclosure ("I'm building Meeticulous, so I'm biased"). For "brand", name 1–2 alternatives too.
+- No link unless route is "lead" — then at most one bare meeticulous.com.
 - Reddit: casual, first person, 60–150 words, no headings, no emoji, no marketing words ("seamless", "game-changer", "unlock").
 - Quora: 120–250 words, can use a short list.
 - Never invent facts about the poster or the product. Only use the product facts above.`;
@@ -268,10 +268,10 @@ async function triage(client, post) {
 // Bare homepage mentions → UTM-tagged link, so sign-ups show under "By UTM
 // source" (utils/attribution.js). NOT ?ref= — that's Refer & Earn: it would be
 // stashed as a referrer username (AuthContext) and credit whoever owns it.
-// Host-page links (bookasloth.com/<username>) are left alone.
+// Host-page links (meeticulous.com/<username>) are left alone.
 const tagLinks = (reply, platform) => reply.replace(
-  /\b(?:https?:\/\/)?(?:www\.)?bookasloth\.com\/?(?![\w/?#-])/gi,
-  `https://bookasloth.com/?utm_source=${platform}&utm_medium=comment&utm_campaign=reply-radar`,
+  /\b(?:https?:\/\/)?(?:www\.)?meeticulous\.com\/?(?![\w/?#-])/gi,
+  `https://meeticulous.com/?utm_source=${platform}&utm_medium=comment&utm_campaign=reply-radar`,
 );
 
 function toMarkdown(rows, date) {

@@ -18,7 +18,7 @@
 //   CTA ............... About JoinSplit
 //
 // Global Navbar + Footer come from App.jsx (/features is not in hideNavbar).
-// All CTAs hand off to the real host signup funnel (/be-a-sloth).
+// All CTAs hand off to the real host signup funnel (/become-a-host).
 
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';

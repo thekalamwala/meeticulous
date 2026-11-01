@@ -10,8 +10,8 @@ const paidBase = {
   bookingsLast30d: 0, earningsPaise: 0, planPricePaise: 365000, renewals: 0,
   referralsQualified: 0, isEnterprise: false,
 };
-// Facts that clear the Sloth ROI gate: earned ≥2× a ₹3,650 plan AND ≥5 bookings/30d.
-const slothFacts = { ...paidBase, onboardingComplete: true, hasBooking: true, earningsPaise: 730000, bookingsLast30d: 5 };
+// Facts that clear the ROI gate: earned ≥2× a ₹3,650 plan AND ≥5 bookings/30d.
+const roiFacts = { ...paidBase, onboardingComplete: true, hasBooking: true, earningsPaise: 730000, bookingsLast30d: 5 };
 
 describe('state set integrity', () => {
   test('every status has a RANK and a PIPELINE_OF', () => {
@@ -27,10 +27,10 @@ describe('state set integrity', () => {
     for (const s of R.MONEY) expect(R.RANK[s]).toBeGreaterThanOrEqual(6);
     for (const s of R.TERMINAL) expect(R.RANK[s]).toBe(0);
   });
-  test('sloth is owned by marketing (handoff), rendered in both boards', () => {
-    expect(R.PIPELINE_OF.sloth).toBe('marketing');
-    expect(R.BOARD_COLUMNS.relations).toContain('sloth');
-    expect(R.BOARD_COLUMNS.marketing).toContain('sloth');
+  test('ROI is owned by marketing (handoff), rendered in both boards', () => {
+    expect(R.PIPELINE_OF[R.ROI]).toBe('marketing');
+    expect(R.BOARD_COLUMNS.relations).toContain(R.ROI);
+    expect(R.BOARD_COLUMNS.marketing).toContain(R.ROI);
   });
 });
 
@@ -57,47 +57,47 @@ describe('resolveAccountStatus — paid progression', () => {
   });
 });
 
-describe('resolveAccountStatus — the Sloth gate', () => {
-  test('meets gate → sloth', () => {
-    expect(R.resolveAccountStatus('won', slothFacts)).toBe('sloth');
+describe('resolveAccountStatus — the ROI gate', () => {
+  test('meets gate → ROI', () => {
+    expect(R.resolveAccountStatus('won', roiFacts)).toBe(R.ROI);
   });
-  test('earnings below 2× plan → not sloth (stays won)', () => {
-    expect(R.resolveAccountStatus('won', { ...slothFacts, earningsPaise: 729999 })).toBe('won');
+  test('earnings below 2× plan → not ROI (stays won)', () => {
+    expect(R.resolveAccountStatus('won', { ...roiFacts, earningsPaise: 729999 })).toBe('won');
   });
-  test('fewer than 5 bookings last 30d → not sloth', () => {
-    expect(R.resolveAccountStatus('won', { ...slothFacts, bookingsLast30d: 4 })).toBe('won');
+  test('fewer than 5 bookings last 30d → not ROI', () => {
+    expect(R.resolveAccountStatus('won', { ...roiFacts, bookingsLast30d: 4 })).toBe('won');
   });
   test('no plan price → gate cannot pass (no divide-by-zero win)', () => {
-    expect(R.meetsSlothGate({ ...slothFacts, planPricePaise: 0 })).toBe(false);
+    expect(R.meetsRoiGate({ ...roiFacts, planPricePaise: 0 })).toBe(false);
   });
 });
 
-describe('resolveAccountStatus — Marketing gated behind Sloth (strict funnel)', () => {
-  test('renewal WITHOUT sloth stays won (not retained)', () => {
+describe('resolveAccountStatus — Marketing gated behind ROI (strict funnel)', () => {
+  test('renewal WITHOUT ROI stays won (not retained)', () => {
     const ctx = { ...paidBase, onboardingComplete: true, hasBooking: true, renewals: 3 };
     expect(R.resolveAccountStatus('won', ctx)).toBe('won');
   });
-  test('sloth + renewal → retained', () => {
-    expect(R.resolveAccountStatus('sloth', { ...slothFacts, renewals: 1 })).toBe('retained');
+  test('ROI + renewal → retained', () => {
+    expect(R.resolveAccountStatus(R.ROI, { ...roiFacts, renewals: 1 })).toBe('retained');
   });
-  test('sloth + 1 referral → ambassador', () => {
-    expect(R.resolveAccountStatus('sloth', { ...slothFacts, referralsQualified: 1 })).toBe('ambassador');
+  test('ROI + 1 referral → ambassador', () => {
+    expect(R.resolveAccountStatus(R.ROI, { ...roiFacts, referralsQualified: 1 })).toBe('ambassador');
   });
   test('Champion + Enterprised are MANUAL-only — never auto-set, even at high referrals/enterprise', () => {
-    const ctx = { ...slothFacts, referralsQualified: 5, renewals: 5, isEnterprise: true };
+    const ctx = { ...roiFacts, referralsQualified: 5, renewals: 5, isEnterprise: true };
     // Highest AUTO status is Ambassador (≥1 referral); Champion/Enterprised are manual designations.
-    expect(R.resolveAccountStatus('sloth', ctx)).toBe('ambassador');
-    expect(R.resolveAccountStatus('sloth', { ...slothFacts, isEnterprise: true })).toBe('sloth');
+    expect(R.resolveAccountStatus(R.ROI, ctx)).toBe('ambassador');
+    expect(R.resolveAccountStatus(R.ROI, { ...roiFacts, isEnterprise: true })).toBe(R.ROI);
   });
   test('long-tenure paying host (no 2nd charge row) → retained', () => {
-    expect(R.resolveAccountStatus('sloth', { ...slothFacts, renewals: 0, longTenure: true })).toBe('retained');
+    expect(R.resolveAccountStatus(R.ROI, { ...roiFacts, renewals: 0, longTenure: true })).toBe('retained');
   });
 });
 
 describe('resolveAccountStatus — invariants', () => {
   test('never auto-resurrects a terminal or dnc lead', () => {
     for (const s of [...R.TERMINAL, R.DNC]) {
-      expect(R.resolveAccountStatus(s, slothFacts)).toBe(s);
+      expect(R.resolveAccountStatus(s, roiFacts)).toBe(s);
     }
   });
   test('never auto-regresses a money state below where it is', () => {
@@ -106,8 +106,8 @@ describe('resolveAccountStatus — invariants', () => {
     expect(R.resolveAccountStatus('won', paidBase)).toBe('won');
   });
   test('idempotent: applying twice is stable', () => {
-    const once = R.resolveAccountStatus('won', slothFacts);
-    expect(R.resolveAccountStatus(once, slothFacts)).toBe(once);
+    const once = R.resolveAccountStatus('won', roiFacts);
+    expect(R.resolveAccountStatus(once, roiFacts)).toBe(once);
   });
 });
 

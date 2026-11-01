@@ -9,7 +9,7 @@ import LegalLayout, { Section, MARKETPLACE_EFFECTIVE } from '../components/commo
 // invoices only its fee + commission. Payment flow (§2.4/§6) runs through Razorpay, an
 // RBI-authorised payment aggregator; GST and consumer-liability positions are stated
 // firmly per the v4 model.
-const Mail = () => <a href="mailto:hello@meeticulous.com" className="text-primary hover:underline">hello@meeticulous.com</a>;
+const Mail = () => <a href="mailto:team@meeticulous.com" className="text-primary hover:underline">team@meeticulous.com</a>;
 
 const Terms = () => (
   <LegalLayout
@@ -64,8 +64,8 @@ const Terms = () => (
         seller and supplier</strong> of the service.
       </p>
       <p>
-        <strong>2.2</strong> The contract for the service is <strong>between the host and the guest</strong>. Book A
-        Sloth is not a party to that contract and does not itself perform the service.
+        <strong>2.2</strong> The contract for the service is <strong>between the host and the guest</strong>. Meeticulous
+        is not a party to that contract and does not itself perform the service.
       </p>
       <p>
         <strong>2.3</strong> Meeticulous&rsquo;s own service is operating the Platform &mdash; listing, discovery,

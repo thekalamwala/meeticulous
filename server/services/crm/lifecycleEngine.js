@@ -86,7 +86,7 @@ function decide(lead, ctx = {}, now = Date.now()) {
     hasPhoto = false, hasService = false, hasAvailability = false,
   } = ctx;
 
-  // 1. Account-derived promotion (paid hosts): Subscribed → Onboarded → Won → Sloth
+  // 1. Account-derived promotion (paid hosts): Subscribed → Onboarded → Won → ROI
   //    → Marketing, via the shared pure resolver (same one the real-time hooks use).
   //    An unpaid host gets `cur` back and falls through to the acquisition rules
   //    below, so a free onboarded host stays in Presale (O-1).
@@ -373,7 +373,7 @@ async function run() {
       await writeScoring(lead, d);
 
       // Relationship layer: compute health once, persist it, and emit the touch rec.
-      const healthCtx = { ...(ctxMap.get(lead.profile_id) || {}), meetsSloth: rules.meetsSlothGate(ctxMap.get(lead.profile_id) || {}) };
+      const healthCtx = { ...(ctxMap.get(lead.profile_id) || {}), meetsRoi: rules.meetsRoiGate(ctxMap.get(lead.profile_id) || {}) };
       const health = relationshipHealth.compute(lead, healthCtx, now);
       await writeHealth(lead, health);
       await upsertTouchRecs(lead, health, healthCtx, now);

@@ -30,6 +30,8 @@
 // VALUES change per palette.
 
 import { useState } from 'react';
+import { Apple as AppleIcon } from 'lucide-react';
+import IconArt from '../../components/common/IconArt';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -64,7 +66,7 @@ const NAV = [
   { label: 'FAQ', href: '#faq' },
 ];
 
-const MASCOT = '/for/nutritionists/hero.webp';
+const SLOT_ICON = AppleIcon; // stands in for the removed mascot art
 const HERO_TRUST = ['No credit card required', 'Setup in minutes', 'Built for Indian practices'];
 
 // Balanced-plate wedges (hero). Soft green → citrus tones.
@@ -219,14 +221,7 @@ function ImgSlot({ alt, className = '', rounded = 'rounded-[18px]' }) {
     .replace(/\bborder\b(-[^\s]+)?/g, '')
     .replace(/bg-\[[^\]]*\]/g, '');
   const pos = /\b(absolute|fixed)\b/.test(layout) ? '' : 'relative';
-  return (
-    <div
-      {...(alt ? { role: 'img', 'aria-label': alt } : { 'aria-hidden': true })}
-      className={`${pos} z-40 flex items-center justify-center ${layout}`}
-    >
-      <img src={MASCOT} alt={alt || ''} loading="lazy" decoding="async" className="h-full w-full object-contain" />
-    </div>
-  );
+  return <IconArt icon={SLOT_ICON} label={alt} rounded={rounded} className={`${pos} z-40 ${layout}`} />;
 }
 
 function FaqAccordion() {
@@ -375,7 +370,7 @@ export default function Nutritionists() {
             </Reveal>
             <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
               <CtaButton to={START} className="w-full sm:w-auto">Create Your Booking Page <ArrowRight size={16} /></CtaButton>
-              <Link to="/sndatarkar/booking/book-a-sloth-app-online-demo-30-min-advisory-session" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
+              <Link to="/contact" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
                 Book A Demo <ArrowRight size={15} />
               </Link>
             </Reveal>

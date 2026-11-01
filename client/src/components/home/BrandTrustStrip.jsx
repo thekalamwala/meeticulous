@@ -6,7 +6,7 @@
    client/public/images/brands/. Icon-only marks get the brand name beside them;
    wordmarks (`wordmark: true`) stand alone — their SVG viewBoxes are cropped to
    the artwork so they don't render tiny.
-   Uses the shared .sloth-marquee CSS (pauses on hover, static under
+   Uses the shared .brand-marquee CSS (pauses on hover, static under
    prefers-reduced-motion). */
 
 const BRANDS = [
@@ -55,8 +55,8 @@ export default function BrandTrustStrip() {
           <li key={b.name}>{b.name}</li>
         ))}
       </ul>
-      <div aria-hidden className="sloth-marquee-wrap sloth-edge-fade overflow-hidden">
-        <ul className="sloth-marquee sloth-marquee--left" style={{ animationDuration: "48s" }}>
+      <div aria-hidden className="brand-marquee-wrap brand-edge-fade overflow-hidden">
+        <ul className="brand-marquee brand-marquee--left" style={{ animationDuration: "48s" }}>
           {[...BRANDS, ...BRANDS].map((b, i) => (
             <Brand key={`${b.name}-${i}`} item={b} />
           ))}

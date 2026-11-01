@@ -411,7 +411,7 @@ const PanelSlot = ({ plan, onNavigate }) => {
 // Brand + active-section title, spanning rail + panel under one bottom border.
 // The logo cell shares the rail's ground (bg-gray-50) so there's no two-tone seam.
 const SidebarTopBar = ({ label, withLogoLink, trailing }) => {
-  const logo = <img src="/sloth.png" alt="Meeticulous" className="h-8 w-8 object-contain" />;
+  const logo = <img src="/brand/meeticulous-icon.svg" alt="Meeticulous" className="h-8 w-8 object-contain" />;
   return (
     <div className="flex h-14 shrink-0 items-stretch border-b border-gray-200">
       {withLogoLink ? (

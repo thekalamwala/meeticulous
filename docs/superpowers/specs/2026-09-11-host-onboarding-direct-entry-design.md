@@ -142,7 +142,7 @@ There is **no slug-choosing step anywhere**. At provisioning the slug is auto-as
 the host's **Google display name**:
 
 - Seed = `slugify(name)` (lowercase, spaces/punct → `-`, strip unsafe chars).
-- **Collision ladder:** `base` → `base-sloth` → `base-2` → `base-3` … first free wins.
+- **Collision ladder:** `base` → `base-host` → `base-2` → `base-3` … first free wins.
 - Each candidate is checked against the existing machinery `generateUnique` already runs:
   history-uniqueness (`username_history`), reserved namespace (L1 + L2), adult-content
   filter. So an unavailable/reserved/blocked base just advances the ladder.
@@ -151,7 +151,7 @@ the host's **Google display name**:
   provisioning on slug.
 
 Implementation = change the **seed** passed into `createInitialUsername()`/`generateUnique`
-(`usernameService.js:82-101`) from adjective-noun to name-based, plus the `-sloth`/`-N`
+(`usernameService.js:82-101`) from adjective-noun to name-based, plus the `-host`/`-N`
 ladder. Everything downstream (history record `source='auto'`, `onboarding_slug`) is
 unchanged.
 
@@ -212,7 +212,7 @@ an empty auto-provisioned host could render an indexable thin page. Two guards:
 - **`authController` provisioning** — now also: activate free plan, set
   `onboarding_completed=true`. (already creates host + auto-slug)
 - **`usernameService.createInitialUsername`** — seed the auto-slug from the Google display
-  name with the `-sloth` / `-N` ladder instead of adjective-noun (§5.4).
+  name with the `-host` / `-N` ladder instead of adjective-noun (§5.4).
 - **`ProtectedRoute`** — drop onboarding force-resume; auth + role only.
 - **Category modal** — new small component wrapping the extracted `CategoryStep` picker;
   shown over `/dashboard` when `primary_category` is null; persists via `savePersona`.
@@ -230,7 +230,7 @@ an empty auto-provisioned host could render an indexable thin page. Two guards:
 Google auth (vendor_auth)
   └─ authController Flow A:
        create auth user → upsertProfile(role=host)  [is_host via trigger]
-       auto-slug = slugify(name) → -sloth → -N       ← name-seeded (source='auto')
+       auto-slug = slugify(name) → -host → -N       ← name-seeded (source='auto')
        activateFreePlan (plan='explorer')          ← relocated from PreviewStep
        onboarding_completed = true                 ← set here, not via markComplete
   └─ redirect → /dashboard   (ProtectedRoute no longer bounces)
@@ -265,7 +265,7 @@ so touched/renamed tests are release-blocking — run `npx vitest run` before th
   — rewrite/delete for "host always reaches /dashboard, no resume redirect."
 - **Provisioning:** assert a fresh Google host lands with `plan='explorer'` +
   `onboarding_completed=true` + a name-seeded slug (extend `AuthContextBecomeHost.test.jsx`).
-- **Slug ladder (new):** `slugify(name)` free → `base`; taken → `base-sloth`; both taken →
+- **Slug ladder (new):** `slugify(name)` free → `base`; taken → `base-host`; both taken →
   `base-2`; reserved/adult base → advances ladder; empty name → email/random fallback.
   One small unit test on `createInitialUsername`.
 - **SEO guardrail (new):** host with 0 active services → `noindex`; ≥1 → `index`. Assert on

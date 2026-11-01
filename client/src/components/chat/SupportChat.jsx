@@ -21,7 +21,7 @@ const CHAT_MD = 'text-[13.5px] leading-relaxed [&>div]:text-[13.5px] [&>div]:tex
 // Three-dot "Bolt is typing" bubble, shown while the async bot reply is in flight.
 const TypingBubble = () => (
   <div className="flex max-w-[82%] gap-2" role="status" aria-label="Tithi is typing">
-    <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-violet-100 text-[11px]">🦥</div>
+    <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-violet-100 text-[11px] font-bold text-violet-700">T</div>
     <div className="flex items-center gap-1 rounded-2xl rounded-tl-sm bg-violet-50 px-3 py-2.5">
       {[0, 1, 2].map((i) => (
         <span key={i} className="h-1.5 w-1.5 animate-bounce rounded-full bg-violet-400"
@@ -63,7 +63,7 @@ const Bubble = ({ m }) => {
       {!mine && (
         <div className={cn('grid h-7 w-7 shrink-0 place-items-center rounded-full text-[11px] font-bold',
           isBot ? 'bg-violet-100 text-violet-700' : 'bg-primary/15 text-primary')}>
-          {isBot ? '🦥' : (m.sender_name?.[0]?.toUpperCase() || 'S')}
+          {isBot ? 'T' : (m.sender_name?.[0]?.toUpperCase() || 'S')}
         </div>
       )}
       <div className={cn('rounded-2xl px-3 py-2 text-[13.5px] leading-relaxed',
@@ -295,7 +295,7 @@ export default function SupportChat() {
     <div className="flex h-[calc(100vh-9rem)] min-h-[440px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-gray-100 bg-gray-50/70 px-4 py-3">
-        <div className="grid h-9 w-9 place-items-center rounded-full bg-violet-100 text-lg">🦥</div>
+        <div className="grid h-9 w-9 place-items-center rounded-full bg-violet-100 text-base font-bold text-violet-700">T</div>
         <div className="min-w-0 flex-1">
           <p className="font-heading text-sm font-bold text-gray-900">Meeticulous support</p>
           <p className="truncate text-[11.5px] text-gray-400">

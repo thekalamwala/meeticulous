@@ -100,7 +100,7 @@ async function ensureRazorpayPlan(planRow, cadence) {
       name: `${planRow.name} (${c})`,
       amount,
       currency: 'INR',
-      description: `Book A Sloth ${planRow.name} — ${c} billing (incl. GST)`,
+      description: `Meeticulous ${planRow.name} — ${c} billing (incl. GST)`,
     },
     notes: { plan_slug: planRow.slug, cadence: c },
   });

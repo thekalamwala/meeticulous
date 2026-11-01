@@ -123,7 +123,7 @@ const RESOURCES_MENU = [
   ] },
 ];
 
-// Compare — a mega-menu of "Sloth vs <competitor>" cards. Each carries the
+// Compare — a mega-menu of "Meeticulous vs <competitor>" cards. Each carries the
 // competitor's domain (favicon) and primary brand colour (hover tint). Only LPs
 // that exist. `label` (mobile) kept alongside name/domain/color (desktop cards).
 const COMPARE_MENU = [
@@ -223,12 +223,12 @@ const PhotoAvatar = ({ user, className = 'h-11 w-11' }) =>
     </span>
   );
 
-// ── Sloth avatar (guest) — always the brand mark, never initials/photo ───────
-// Guests have no profile image; the spec calls for the Sloth mark every time.
-// Uses the admin-managed icon, falling back to the bundled favicon (also Sloth).
+// ── Brand avatar (guest) — always the brand mark, never initials/photo ───────
+// Guests have no profile image; the spec calls for the brand mark every time.
+// Uses the admin-managed icon, falling back to the bundled favicon (also the brand mark).
 // The fallback is favicon-96x96.png, not favicon.svg — the SVG is a 126 KiB
 // traced export, far heavier than the raster for a 44px avatar.
-const SlothAvatar = ({ appearance, className = 'h-11 w-11' }) => (
+const BrandAvatar = ({ appearance, className = 'h-11 w-11' }) => (
   <img
     src={appearance?.icon_url || '/favicon-96x96.png'}
     alt="Meeticulous"
@@ -247,10 +247,10 @@ const VendorProfileHeader = ({ user }) => (
   </div>
 );
 
-// Guest header: Sloth mark + "Hello," + the name from their most recent booking.
+// Guest header: brand mark + "Hello," + the name from their most recent booking.
 const GuestProfileHeader = ({ appearance, name }) => (
   <div className="flex items-center gap-3">
-    <SlothAvatar appearance={appearance} />
+    <BrandAvatar appearance={appearance} />
     <div className="min-w-0 flex-1">
       <p className="text-[12px] text-gray-400 leading-tight">Hello,</p>
       <p className="text-[14px] font-semibold text-ink truncate">{name || 'there'}</p>
@@ -479,7 +479,7 @@ const MegaMenu = ({ sections, promo, colClass = MENU_COL, compact }) => (
   </div>
 );
 
-// ── Compare mega-menu: "Sloth vs <competitor>" cards ─────────────────────────
+// ── Compare mega-menu: "Meeticulous vs <competitor>" cards ─────────────────────────
 // Favicons come from Google's favicon service (reliable, avoids pinging the
 // competitor); if that is blocked the img hides and a brand-colour monogram
 // shows instead. The competitor's primary brand colour (--bc) drives the
@@ -498,9 +498,9 @@ const CompareItem = ({ item, active }) => {
       <span aria-hidden="true" style={{ backgroundColor: item.color, opacity: 0.1 }} className="pointer-events-none absolute inset-0 -translate-x-full transition-transform duration-500 ease-out group-hover/mi:translate-x-0 motion-reduce:transition-none" />
       <span aria-hidden="true" style={{ backgroundColor: item.color, opacity: 0.16 }} className="pointer-events-none absolute inset-0 -translate-x-full transition-transform duration-300 ease-out group-hover/mi:translate-x-0 motion-reduce:transition-none" />
 
-      {/* Sloth favicon  vs  competitor favicon (sized to match the other menu tiles) */}
+      {/* Meeticulous mark  vs  competitor favicon (sized to match the other menu tiles) */}
       <span className="relative z-10 flex flex-shrink-0 items-center gap-1.5">
-        <img src="/sloth.png" alt="Meeticulous" width="36" height="36" loading="lazy" className="h-9 w-9 rounded-lg bg-gray-50 p-1" />
+        <img src="/brand/meeticulous-icon.svg" alt="Meeticulous" width="36" height="36" loading="lazy" className="h-9 w-9 rounded-lg bg-gray-50 p-1" />
         <span className="text-[10px] font-bold uppercase tracking-wide text-gray-400">vs</span>
         {/* Only fetch the competitor favicon once the menu is actually open — the
             panel now always renders (for crawlable links), so gate the network here. */}
@@ -875,7 +875,7 @@ const Navbar = () => {
                   >
                     {hostingView
                       ? <PhotoAvatar user={user} className="h-8 w-8 text-sm" />
-                      : <SlothAvatar appearance={appearance} className="h-8 w-8" />}
+                      : <BrandAvatar appearance={appearance} className="h-8 w-8" />}
                     <ChevronDown
                       size={13}
                       strokeWidth={2.5}
@@ -903,7 +903,7 @@ const Navbar = () => {
                         </>
                       ) : (
                         <>
-                          {/* Guest header: Sloth mark + "Hello," + last-booking name */}
+                          {/* Guest header: brand mark + "Hello," + last-booking name */}
                           <div className="px-4 py-3.5 border-b border-gray-100">
                             <GuestProfileHeader appearance={appearance} name={guestName} />
                           </div>
@@ -1077,7 +1077,7 @@ const Navbar = () => {
                   </>
                 ) : (
                   <>
-                    {/* Guest: Sloth mark + "Hello," + last-booking name */}
+                    {/* Guest: brand mark + "Hello," + last-booking name */}
                     <div className="px-3 py-2 mb-1">
                       <GuestProfileHeader appearance={appearance} name={guestName} />
                     </div>

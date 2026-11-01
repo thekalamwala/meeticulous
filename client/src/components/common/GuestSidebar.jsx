@@ -69,7 +69,7 @@ const GuestSidebar = ({ open, onClose, triggerRef }) => {
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-56 flex-col border-r border-gray-200 bg-white lg:flex">
         <div className="flex h-14 items-center px-5">
           <span className="text-lg font-bold text-gray-900">
-            Book<span className="text-primary">a</span>Sloth
+            Mee<span className="text-primary">ticulous</span>
           </span>
         </div>
         <div className="flex-1 overflow-y-auto px-3 py-2">
@@ -95,7 +95,7 @@ const GuestSidebar = ({ open, onClose, triggerRef }) => {
           >
             <div className="flex h-14 items-center justify-between px-5">
               <span className="text-lg font-bold text-gray-900">
-                Book<span className="text-primary">a</span>Sloth
+                Mee<span className="text-primary">ticulous</span>
               </span>
               <button
                 type="button"

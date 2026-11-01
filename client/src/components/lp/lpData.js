@@ -74,7 +74,7 @@ export const CAPABILITIES = [
   },
   {
     title: "Sell digital products",
-    body: `Add a PDF, template or recording to your SlothPage and sell it next to your sessions. ${FREE_PLAN.name} includes ${FREE_PRODUCTS}.`,
+    body: `Add a PDF, template or recording to your booking page and sell it next to your sessions. ${FREE_PLAN.name} includes ${FREE_PRODUCTS}.`,
     preview: { kind: "product", title: "GST Filing Playbook (PDF)", meta: "Download after payment", price: "₹799", accent: "c-blue" },
   },
 ];
@@ -87,7 +87,7 @@ export const TESTIMONIALS = [
   { quote: "Set up my weekend mentoring in one evening and kind of forgot about it. Slots fill, money's already in.", name: "Sangharata Somkuvar", role: "DevOps Engineer", avatar: `${CDN}/sangharata-somkuvar.webp` },
   { quote: "My patients forget appointments easily. The reminder texts have honestly been a lifesaver.", name: "Dr. Yukta Bawankar", role: "Physiotherapist", avatar: `${CDN}/yukta-bawankar.webp` },
   { quote: "Stuck the link in my Insta bio. Looks way better than sending a GPay QR after the call.", name: "Happy Singh", role: "Creative Lead", avatar: `${CDN}/happy-singh.webp` },
-  { quote: "Honestly I picked it because 0% commission. I charge for audits and Sloth doesn't take a cut.", name: "Arjun Ravikumar", role: "Performance Marketeer", avatar: `${CDN}/arjun-ravikumar.webp` },
+  { quote: "Honestly I picked it because 0% commission. I charge for audits and Meeticulous doesn't take a cut.", name: "Arjun Ravikumar", role: "Performance Marketeer", avatar: `${CDN}/arjun-ravikumar.webp` },
   { quote: "I run mentoring calls on the side — slots fill, payment's sorted, zero admin after work hours.", name: "Tushar Malvi", role: "Management Trainee, ECL", avatar: `${CDN}/tushar-malvi.webp` },
 ];
 
@@ -116,7 +116,7 @@ export const COMPARE_TM = [
   { f: "Payments at booking", bas: "UPI and cards via Razorpay", tm: "Built in", win: null },
   { f: "Payout timing", bas: "After the session", tm: "Instant payouts", win: false },
   { f: "1:1 sessions and digital products", bas: "Yes", tm: "Yes", win: null },
-  { f: "Public creator page", bas: "Yes (SlothPage)", tm: "Yes", win: null },
+  { f: "Public creator page", bas: "Yes (booking page)", tm: "Yes", win: null },
   { f: "Creator marketplace", bas: "Explore page, growing", tm: "Yes, larger today", win: false },
 ];
 
@@ -132,6 +132,6 @@ export const FAQ = [
   { q: "Can my clients pay by UPI, and do I get paid in rupees?", a: "Yes. Clients pay upfront by UPI or card through Razorpay, and your earnings settle to your Indian bank account in rupees after a one-time KYC. There's no foreign-currency conversion." },
   { q: "Do I get GST invoices automatically?", a: `Yes. Meeticulous sends a GST invoice for every paid booking on both the ${FREE_PLAN.name} and ${PREMIUM_PLAN.name} plans, so you don't need a separate billing tool.` },
   { q: "How do payouts work?", a: "Clients pay upfront when they book. Meeticulous settles your earnings to your bank account after the session, once your one-time KYC is done. Topmate advertises instant payouts, so if same-day money matters most to you, that is a real difference." },
-  { q: "How do I switch from Topmate?", a: "Sign in with Google, add your services and availability, then share your new SlothPage link. You can keep your Topmate page running while your clients move over." },
+  { q: "How do I switch from Topmate?", a: "Sign in with Google, add your services and availability, then share your new booking page link. You can keep your Topmate page running while your clients move over." },
   { q: "Is Topmate better than Meeticulous for anything?", a: `Yes. Topmate has a larger creator marketplace today and advertises instant payouts, and it charges no subscription, which can suit you if you sell very little each month. Meeticulous suits you once commission starts to add up: ${COMMISSION.premium} commission for a flat ${PRICE_LINE}, GST invoices and WhatsApp reminders on ${PREMIUM_PLAN.name}.` },
 ];

@@ -3,7 +3,7 @@ require('dotenv').config();
 const { supabaseAdmin } = require('../config/supabase');
 const { assertNotProd } = require('./lib/guard');
 
-const TAG_DOMAIN = '@loadtest.bookasloth.local';
+const TAG_DOMAIN = '@loadtest.meeticulous.local';
 const PASSWORD = process.env.LOADTEST_VENDOR_PASSWORD || 'LoadTest!2026';
 const VENDORS = [
   { key: 'rules', username: 'loadtest-vendor-rules', gcal: false },

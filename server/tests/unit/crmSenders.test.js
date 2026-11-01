@@ -22,7 +22,7 @@ jest.mock('../../config/supabase', () => ({
 const senderRegistry = require('../../services/email/senderRegistry');
 
 beforeEach(() => {
-  state.senders = [{ sender_key: 'tithi', from_name: 'Tithi | Book A Sloth', from_email: 'tithi@bookasloth.in', reply_to: 'tithi@bookasloth.in' }];
+  state.senders = [{ sender_key: 'tithi', from_name: 'Tithi | Meeticulous', from_email: 'tithi@meeticulous.com', reply_to: 'tithi@meeticulous.com' }];
   state.seq = null;
   senderRegistry.clearCache();
 });
@@ -30,7 +30,7 @@ beforeEach(() => {
 describe('senderRegistry.byKey', () => {
   test('resolves a known active persona', async () => {
     expect(await senderRegistry.byKey('tithi')).toEqual({
-      fromName: 'Tithi | Book A Sloth', fromEmail: 'tithi@bookasloth.in', replyTo: 'tithi@bookasloth.in', provider: null,
+      fromName: 'Tithi | Meeticulous', fromEmail: 'tithi@meeticulous.com', replyTo: 'tithi@meeticulous.com', provider: null,
     });
   });
   test('null for unknown key / empty key (→ caller uses global default)', async () => {

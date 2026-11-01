@@ -47,7 +47,7 @@ const maintenanceMiddleware = async (req, res, next) => {
 
   if (await isEnabled()) {
     return res.status(503).json({
-      message: 'Book A Sloth is temporarily down for maintenance. Please try again shortly.',
+      message: 'Meeticulous is temporarily down for maintenance. Please try again shortly.',
       maintenance: true,
     });
   }

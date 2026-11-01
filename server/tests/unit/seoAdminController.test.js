@@ -42,12 +42,12 @@ test('postCrawl kicks off a crawl and returns the id', async () => {
 
 test('getGsc returns gsc rows + configured flag', async () => {
   supabaseAdmin.from.mockImplementation((t) => {
-    if (t === 'seo_gsc_urls') return makeQuery({ data: [{ url: 'https://bookasloth.com/x', impressions: 42 }], error: null });
+    if (t === 'seo_gsc_urls') return makeQuery({ data: [{ url: 'https://meeticulous.com/x', impressions: 42 }], error: null });
     return makeQuery({ data: [], error: null });
   });
   const r = res();
   await ctrl.getGsc({ query: {} }, r);
-  expect(r.json).toHaveBeenCalledWith({ gsc: [{ url: 'https://bookasloth.com/x', impressions: 42 }], configured: true });
+  expect(r.json).toHaveBeenCalledWith({ gsc: [{ url: 'https://meeticulous.com/x', impressions: 42 }], configured: true });
 });
 
 test('getGsc fails soft to an empty array when the query errors', async () => {

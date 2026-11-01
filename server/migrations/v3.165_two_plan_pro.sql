@@ -1,18 +1,20 @@
 -- ============================================================
--- v3.165 — Two-plan model: Sloth (free) + Sloth Active (premium)
+-- v3.165 — Two-plan model: Starter (free) + Pro (premium)
+-- NOTE: the SQL literals below use the plans' original names; the live rows are
+-- now named Starter / Pro (renamed outside this file). Applied history: do not edit SQL.
 -- ------------------------------------------------------------
 -- Collapses the Starter / Host+ / Studio ladder into exactly two public plans.
 -- Every legacy plan row SURVIVES (nobody is migrated off their slug) and is
 -- simply hidden from the public catalogue via active=false.
 --
---   free     "Sloth"         ₹0            commission 5%   PUBLIC
---   premium  "Sloth Active"  ₹399 / ₹3,599 commission 0%   PUBLIC
+--   free     "Starter"         ₹0            commission 5%   PUBLIC
+--   premium  "Pro"  ₹399 / ₹3,599 commission 0%   PUBLIC
 --
 --   starter / starter_legacy   → same generous limits as `free`, hidden
---   creator                    → Sloth Active entitlements at the OLD price,
+--   creator                    → Pro entitlements at the OLD price,
 --                                hidden but still sellable by direct link
 --                                (partner / custom-offer channel)
---   professional               → Sloth Active entitlements, hidden
+--   professional               → Pro entitlements, hidden
 --   supreme                    → UNTOUCHED (internal god tier)
 --
 -- ── PRICING: why the *_price numbers look odd ───────────────────────────────
@@ -55,7 +57,7 @@ ALTER TABLE profiles ADD CONSTRAINT profiles_plan_check
     'explorer','starter','starter_legacy','creator','professional','supreme'
   ]));
 
--- 2) Sloth — the free plan. Generous by design: it is the acquisition engine.
+-- 2) Starter — the free plan. Generous by design: it is the acquisition engine.
 --    Only the two limits with real marginal cost stay capped (ai_generations
 --    burns Anthropic credits, digital_products burns storage). Commission is
 --    5%, so a free host who earns nothing costs nothing and a free host who
@@ -71,7 +73,7 @@ VALUES
    'standard', 1, true)
 ON CONFLICT (slug) DO NOTHING;
 
--- 3) Sloth Active — the paid plan. Everything unlimited except the second
+-- 3) Pro — the paid plan. Everything unlimited except the second
 --    calendar integration, which is a genuine per-account integration cost.
 INSERT INTO subscription_plans
   (name, slug, annual_price, monthly_price, billing_cycle, commission_percentage,
@@ -102,7 +104,7 @@ UPDATE subscription_plans SET
 WHERE slug = 'free';
 
 -- 4) Existing free hosts (35 on 'explorer' → reads the `starter` row, 31 on
---    'starter_legacy') get the SAME new Sloth limits. Nobody is moved; their
+--    'starter_legacy') get the SAME new Starter limits. Nobody is moved; their
 --    row is simply upgraded underneath them, and both rows leave the catalogue.
 UPDATE subscription_plans SET
   limits = '{"services":-1,"free_services":-1,"bookings_per_year":-1,"digital_products":3,"categories":-1,"calendar_integrations":1,"profile_theme_colors":-1,"reminder_flows":1,"followup_flows":0,"crm":0,"ai_generations":10}'::jsonb,
@@ -112,7 +114,7 @@ WHERE slug IN ('starter', 'starter_legacy');
 
 -- 5) Legacy paid tiers keep their PRICE (live Razorpay mandates debit a fixed
 --    amount and cannot be repriced without fresh customer authorisation) but
---    gain full Sloth Active entitlements. `creator` stays sellable by direct
+--    gain full Pro entitlements. `creator` stays sellable by direct
 --    link as the partner / custom-offer price; `professional` is comps only.
 UPDATE subscription_plans SET
   name = 'Sloth Active (Partner)',
@@ -133,7 +135,7 @@ WHERE slug = 'professional';
 ALTER TABLE profiles ALTER COLUMN plan SET DEFAULT 'free';
 
 -- ── Verify ──────────────────────────────────────────────────────────────────
--- Public catalogue must be exactly Sloth + Sloth Active:
+-- Public catalogue must be exactly Starter + Pro:
 SELECT slug, name, active, sort_order, monthly_price, annual_price,
        commission_percentage,
        round(monthly_price * 1.18, 2) AS monthly_charged,

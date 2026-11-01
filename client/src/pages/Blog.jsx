@@ -191,7 +191,7 @@ const Blog = () => {
           </div>
         ) : posts.length === 0 ? (
           <p className="mt-16 text-center text-[15px] text-gray-500">
-            No posts yet — check back soon. 🦥
+            No posts yet — check back soon.
           </p>
         ) : (
           <>

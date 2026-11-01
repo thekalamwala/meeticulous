@@ -35,7 +35,7 @@ function toCsv(header, rows) {
 // ── XLSX helper: sheets = [{ name, header, rows }] → Buffer ──
 async function toXlsx(sheets) {
   const wb = new ExcelJS.Workbook();
-  wb.creator = 'Book A Sloth GST';
+  wb.creator = 'Meeticulous GST';
   for (const s of sheets) {
     const ws = wb.addWorksheet(s.name);
     ws.addRow(s.header);
@@ -155,7 +155,7 @@ async function financialTxnCsv(range) {
 
 function readme({ range, packType, actorEmail, summary, issues, rec }) {
   return [
-    `Book A Sloth — GST ${packType} pack`,
+    `Meeticulous — GST ${packType} pack`,
     `Entity: ${seller.legalName} (${seller.gstin})`,
     `Period: ${range.label}  [${range.from} .. ${range.to})`,
     `Generated: ${new Date().toISOString()} by ${actorEmail || 'admin'}`,

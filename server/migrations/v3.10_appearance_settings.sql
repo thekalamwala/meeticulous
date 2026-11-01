@@ -5,7 +5,7 @@
 -- the source of truth for which one is shown.
 --
 -- navbar_logo_mode:
---   'icon_text' — square mark (icon_url) + "Book A Sloth" wordmark  [default]
+--   'icon_text' — square mark (icon_url) + "Meeticulous" wordmark  [default]
 --   'image'     — single full lockup image (logo_image_url)
 --   'festive'   — seasonal lockup image (festive_logo_url), manual toggle
 --

@@ -149,9 +149,9 @@ export const subscribeNewsletter = (email)     => API.post('/email/subscribe', {
 export const sendContactMessage = (data) => API.post('/contact', data);
 export const submitEnterpriseLead = (data) => API.post('/enterprise-lead', { ...data, attribution: getAttribution() });
 
-// ── /be-a-sloth "Book a Demo" lead form (public, phone-OTP) ────
-export const sendBeASlothOtp   = (data) => API.post('/be-a-sloth-lead/send-otp', { ...data, attribution: getAttribution() });
-export const submitBeASlothLead = (data) => API.post('/be-a-sloth-lead', { ...data, attribution: getAttribution() });
+// ── /become-a-host "Book a Demo" lead form (public, phone-OTP) ────
+export const sendDemoLeadOtp   = (data) => API.post('/demo-lead/send-otp', { ...data, attribution: getAttribution() });
+export const submitDemoLead = (data) => API.post('/demo-lead', { ...data, attribution: getAttribution() });
 
 // ── Bolt support bot (public) ─────────────────────────────────
 export const askBot = (data) => API.post('/bot/ask', data);
@@ -238,7 +238,7 @@ export const getUnsubscribeStatus = (token)    => API.get('/email/unsubscribe', 
 export const unsubscribeEmail     = (token)    => API.post('/email/unsubscribe', { token });
 export const resubscribeEmail     = (token)    => API.post('/email/resubscribe', { token });
 
-// ── Admin Auth (separate endpoint — /hello-sloth login) ───────
+// ── Admin Auth (separate endpoint — /backstage login) ───────
 // Single-step login: username/email + password -> isolated admin session token.
 export const adminLoginUser   = (data)         => API.post('/admin-auth/login', data);
 export const adminChangePassword = (data)      => API.post('/admin-auth/change-password', data);

@@ -8,12 +8,12 @@ jest.mock('../../services/seo/seoFetch', () => ({
 jest.mock('../../controllers/prerenderController', () => ({
   resolveProfileMeta: jest.fn(async (username) => ({
     status: 200,
-    buildHtmlArgs: { title: `host:${username}`, description: 'd'.repeat(150), canonical: `https://bookasloth.com/${username}`, robots: 'index,follow', jsonLd: { '@type': 'ProfilePage' } },
+    buildHtmlArgs: { title: `host:${username}`, description: 'd'.repeat(150), canonical: `https://meeticulous.com/${username}`, robots: 'index,follow', jsonLd: { '@type': 'ProfilePage' } },
     payload: { host: { name: 'Jane', username, bio: 'I coach founders on hiring and early team building.' }, services: [] },
   })),
   resolveServiceMeta: jest.fn(async (username, slug) => ({
     status: 200,
-    buildHtmlArgs: { title: `service:${username}/${slug}`, description: 'd'.repeat(150), canonical: `https://bookasloth.com/${username}/${slug}`, robots: 'index,follow', jsonLd: { '@type': 'Service' } },
+    buildHtmlArgs: { title: `service:${username}/${slug}`, description: 'd'.repeat(150), canonical: `https://meeticulous.com/${username}/${slug}`, robots: 'index,follow', jsonLd: { '@type': 'Service' } },
   })),
 }));
 jest.mock('../../services/seo/seoPersist', () => ({
@@ -23,7 +23,7 @@ jest.mock('../../services/seo/seoPersist', () => ({
 }));
 jest.mock('../../services/sitemapService', () => ({
   STATIC_ROUTES: [{ path: '/', changefreq: 'daily', priority: 1 }],
-  staticEntries: () => [{ loc: 'https://bookasloth.com/' }],
+  staticEntries: () => [{ loc: 'https://meeticulous.com/' }],
   hostUrl: (s, u) => `${s}/${u}`, serviceUrl: (s, u, sl) => `${s}/${u}/${sl}`,
   fetchHosts: async () => [{ username: 'jane', updated_at: null }],
   fetchServices: async () => [{ slug: 'intro', profiles: { username: 'jane' } }],
@@ -51,14 +51,14 @@ describe('seoCrawler', () => {
   test('seedUrls includes static, host, service, blog URLs', async () => {
     const urls = await seedUrls();
     const list = urls.map((u) => u.url);
-    expect(list).toContain('https://bookasloth.com/'); // homepage keeps its trailing slash (no bare-apex 301)
-    expect(list).toContain('https://bookasloth.com/jane');
-    expect(list).toContain('https://bookasloth.com/jane/intro');
-    expect(list).toContain('https://bookasloth.com/blog/post-1');
+    expect(list).toContain('https://meeticulous.com/'); // homepage keeps its trailing slash (no bare-apex 301)
+    expect(list).toContain('https://meeticulous.com/jane');
+    expect(list).toContain('https://meeticulous.com/jane/intro');
+    expect(list).toContain('https://meeticulous.com/blog/post-1');
     // Professions audit /services/:slug (the published sitemap URL), not /for/:slug.
-    expect(list).toContain('https://bookasloth.com/services/life-coach');
-    expect(list).toContain('https://bookasloth.com/services'); // hub that links all /services/:slug (de-orphans them)
-    expect(list).not.toContain('https://bookasloth.com/for/life-coach');
+    expect(list).toContain('https://meeticulous.com/services/life-coach');
+    expect(list).toContain('https://meeticulous.com/services'); // hub that links all /services/:slug (de-orphans them)
+    expect(list).not.toContain('https://meeticulous.com/for/life-coach');
   });
   test('run() crawls, scores and persists', async () => {
     const id = await run({ trigger: 'manual' });
@@ -76,7 +76,7 @@ describe('seoCrawler', () => {
   test('seedUrls seeds the homepage exactly once (no static+explicit dupe)', async () => {
     const urls = await seedUrls();
     const list = urls.map((u) => u.url);
-    const homepageHits = list.filter((u) => u === 'https://bookasloth.com' || u === 'https://bookasloth.com/');
+    const homepageHits = list.filter((u) => u === 'https://meeticulous.com' || u === 'https://meeticulous.com/');
     expect(homepageHits.length).toBe(1);
   });
 
@@ -128,15 +128,15 @@ describe('seoCrawler', () => {
     expect(resolveServiceMeta).toHaveBeenCalledWith('jane', 'intro');
 
     const fetchedUrls = fetchUrl.mock.calls.map((c) => c[0]);
-    expect(fetchedUrls).toContain('https://bookasloth.com/');
-    expect(fetchedUrls).toContain('https://bookasloth.com/blog/post-1');
-    expect(fetchedUrls).not.toContain('https://bookasloth.com/jane');
-    expect(fetchedUrls).not.toContain('https://bookasloth.com/jane/intro');
+    expect(fetchedUrls).toContain('https://meeticulous.com/');
+    expect(fetchedUrls).toContain('https://meeticulous.com/blog/post-1');
+    expect(fetchedUrls).not.toContain('https://meeticulous.com/jane');
+    expect(fetchedUrls).not.toContain('https://meeticulous.com/jane/intro');
 
     const calls = persist.saveResults.mock.calls;
     const pages = calls[calls.length - 1][1];
-    const hostPage = pages.find((p) => p.url === 'https://bookasloth.com/jane');
-    const servicePage = pages.find((p) => p.url === 'https://bookasloth.com/jane/intro');
+    const hostPage = pages.find((p) => p.url === 'https://meeticulous.com/jane');
+    const servicePage = pages.find((p) => p.url === 'https://meeticulous.com/jane/intro');
     expect(hostPage.title).toBe('host:jane');
     expect(hostPage.httpStatus).toBe(200);
     expect(hostPage.indexable).toBe(true);
@@ -151,9 +151,9 @@ describe('seoCrawler', () => {
     await run({ trigger: 'manual' });
     const calls = persist.saveResults.mock.calls;
     const pages = calls[calls.length - 1][1];
-    const hostPage = pages.find((p) => p.url === 'https://bookasloth.com/jane');
-    const servicePage = pages.find((p) => p.url === 'https://bookasloth.com/jane/intro');
-    const blogPage = pages.find((p) => p.url === 'https://bookasloth.com/blog/post-1');
+    const hostPage = pages.find((p) => p.url === 'https://meeticulous.com/jane');
+    const servicePage = pages.find((p) => p.url === 'https://meeticulous.com/jane/intro');
+    const blogPage = pages.find((p) => p.url === 'https://meeticulous.com/blog/post-1');
     expect(hostPage.bodyCrawled).toBe(false);
     expect(servicePage.bodyCrawled).toBe(false);
     expect(blogPage.bodyCrawled).toBe(true);
@@ -166,7 +166,7 @@ describe('seoCrawler', () => {
     const calls = persist.saveResults.mock.calls;
     const pages = calls[calls.length - 1][1];
     const issues = calls[calls.length - 1][2];
-    const hostPage = pages.find((p) => p.url === 'https://bookasloth.com/jane');
+    const hostPage = pages.find((p) => p.url === 'https://meeticulous.com/jane');
     expect(hostPage.wordCount).toBe(hostPage.contentModel.wordCount);
     expect(hostPage.wordCount).toBeGreaterThan(0);
     const hostRules = issues.filter((i) => i.affectedUrl === hostPage.url).map((i) => i.ruleKey);
@@ -178,14 +178,14 @@ describe('seoCrawler', () => {
   test('a seo_gsc_urls row for a crawled url produces a gsc.* issue', async () => {
     supabaseAdmin.from.mockImplementation((table) => {
       if (table === 'seo_gsc_urls') {
-        return selectResolves({ data: [{ url: 'https://bookasloth.com/jane', coverage_state: 'Soft 404' }], error: null });
+        return selectResolves({ data: [{ url: 'https://meeticulous.com/jane', coverage_state: 'Soft 404' }], error: null });
       }
       return selectResolves({ data: [], error: null });
     });
     await run({ trigger: 'manual' });
     const calls = persist.saveResults.mock.calls;
     const issues = calls[calls.length - 1][2];
-    const hostIssues = issues.filter((i) => i.affectedUrl === 'https://bookasloth.com/jane');
+    const hostIssues = issues.filter((i) => i.affectedUrl === 'https://meeticulous.com/jane');
     expect(hostIssues.map((i) => i.ruleKey)).toContain('gsc.soft_404');
   });
 

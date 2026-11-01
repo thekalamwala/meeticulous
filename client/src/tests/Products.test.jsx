@@ -138,12 +138,12 @@ describe('Products — thumbnail by URL', () => {
 
 // Mirrors the prod subscription_plans config: every tier includes products.
 const PLANS_REAL = [
-  { slug: 'free',    name: 'Sloth',        sort_order: 1, limits: { digital_products: 3 } },
+  { slug: 'free',    name: 'Starter',      sort_order: 1, limits: { digital_products: 3 } },
   { slug: 'premium', name: 'Pro', sort_order: 2, limits: { digital_products: -1 } },
 ];
 // A config where the free tier is genuinely blocked (0 allowance).
 const PLANS_FREE_BLOCKED = [
-  { slug: 'free',    name: 'Sloth',        sort_order: 1, limits: { digital_products: 0 } },
+  { slug: 'free',    name: 'Starter',      sort_order: 1, limits: { digital_products: 0 } },
   { slug: 'premium', name: 'Pro', sort_order: 2, limits: { digital_products: -1 } },
 ];
 

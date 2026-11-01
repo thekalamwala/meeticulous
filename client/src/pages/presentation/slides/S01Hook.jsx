@@ -13,7 +13,7 @@ export default function S01Hook() {
       <div>
         {/* wordmark — tells a cold shared-link viewer what this is */}
         <Reveal as="div" y={12} className="mb-6 flex items-center gap-2">
-          <img src="/sloth.png" alt="" width={28} height={28} className="h-7 w-7" />
+          <img src="/brand/meeticulous-icon.svg" alt="" width={28} height={28} className="h-7 w-7" />
           <span className="font-heading text-sm font-bold tracking-tight">Meeticulous</span>
         </Reveal>
 
@@ -32,7 +32,7 @@ export default function S01Hook() {
       <Reveal delay={0.25} className="justify-self-center">
         <div className="relative">
           <motion.img
-            src="/sloth.png" alt="Meeticulous mascot" width={320} height={320}
+            src="/brand/meeticulous-icon.svg" alt="Meeticulous" width={320} height={320}
             className="h-auto w-56 sm:w-72 lg:w-80" loading="eager" {...float}
           />
           {/* money beat — makes "gets you paid" concrete in the first frame */}

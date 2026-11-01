@@ -1,6 +1,6 @@
 'use strict';
 process.env.NODE_ENV = 'test';
-process.env.PUBLIC_SITE_URL = 'https://bookasloth.com';
+process.env.PUBLIC_SITE_URL = 'https://meeticulous.com';
 
 // The controller lazily require()s these inside the handler, so a module mock is
 // enough — no Supabase, no network.
@@ -59,7 +59,7 @@ describe('profile OG card', () => {
     wireHost({ og_status: 'none', og_image: null, profile_image: 'https://cdn.example.com/pic.png' });
     const html = await render();
 
-    expect(ogImageContent(html)).toBe('https://bookasloth.com/og-image.png');
+    expect(ogImageContent(html)).toBe('https://meeticulous.com/og-image.png');
     expect(html).not.toContain('content="https://cdn.example.com/pic.png"'); // avatar is NOT the og:image
   });
 

@@ -84,7 +84,7 @@ export default function BookingDemo({ host, onConfirmed }) {
                     className="btn btn--outline" style={slot === t ? { background: tc, color: '#fff', borderColor: tc } : {}}>{fmtTime(t)}</button>
                 ))}
               </div>
-            ) : <p className="text-muted text-sm">No open times that day 🦥</p>
+            ) : <p className="text-muted text-sm">No open times that day</p>
           )}
           {slot && (
             <div className="mt-6">

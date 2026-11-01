@@ -198,7 +198,7 @@ function buildCrmLeadPayload({ email, phone, leadId, eventName = 'Lead', eventId
     event_name: eventName,
     event_time: ts || Math.floor(Date.now() / 1000),
     action_source: 'system_generated',
-    custom_data: { event_source: 'crm', lead_event_source: 'Book A Sloth' },
+    custom_data: { event_source: 'crm', lead_event_source: 'Meeticulous' },
     user_data,
   };
   if (eventId) event.event_id = eventId; // de-dupe re-sends of the same lead stage

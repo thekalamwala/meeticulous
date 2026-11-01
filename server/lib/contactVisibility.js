@@ -25,7 +25,7 @@ const windowOpen = (booking, now) =>
   now >= new Date(booking.scheduled_at).getTime() - GRACE_MS;
 
 // Free tiers never see the counterparty's number; every paid tier does, once
-// the window opens. Since v3.165 that means Sloth Active AND the legacy paid
+// the window opens. Since v3.165 that means Pro AND the legacy paid
 // rows (creator/professional), which now carry the same entitlements.
 // Kept as a local set rather than importing planService so this module stays
 // pure and DB-free — keep it in lockstep with planService.FREE_SLUGS.

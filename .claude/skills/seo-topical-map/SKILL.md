@@ -1,9 +1,9 @@
 ---
 name: seo-topical-map
-description: Use to turn a money keyword into a plan — build the ideal topical map (hub/supporting/definitional/question), run the AI-search query fan-out (6-10 sub-questions per keyword), map Book A Sloth's existing public pages onto it, and emit ready-to-write page briefs (slug/role/target query/5-line brief). Reconciles targeting against ACTUAL host supply in the DB so you don't plan pages for professions with no hosts. Trigger "topical map", "content plan", "query fan-out", "what pages should we build", "/seo-topical-map". This is the PLAN step of audit→plan→write(blog-seo-optimizer)→measure; hand briefs to blog-seo-optimizer / bas-seo-schema to build.
+description: Use to turn a money keyword into a plan — build the ideal topical map (hub/supporting/definitional/question), run the AI-search query fan-out (6-10 sub-questions per keyword), map Meeticulous's existing public pages onto it, and emit ready-to-write page briefs (slug/role/target query/5-line brief). Reconciles targeting against ACTUAL host supply in the DB so you don't plan pages for professions with no hosts. Trigger "topical map", "content plan", "query fan-out", "what pages should we build", "/seo-topical-map". This is the PLAN step of audit→plan→write(blog-seo-optimizer)→measure; hand briefs to blog-seo-optimizer / bas-seo-schema to build.
 ---
 
-# Book A Sloth — Topical Map & Query Fan-out Planner
+# Meeticulous — Topical Map & Query Fan-out Planner
 
 Input: one or more **money keywords** (ask for them; infer from `docs/seo-aeo-geo-plan.md` + pricing
 copy if blank). Output: a topical map with coverage gaps + page briefs you can hand to the writer.

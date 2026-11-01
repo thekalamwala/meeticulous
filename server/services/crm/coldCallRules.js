@@ -219,7 +219,7 @@ function hourMix(calls = []) {
   return hours.filter((h) => h.calls);
 }
 
-// Per-lead invite code in the tracked WhatsApp link (bookasloth.com/invite/CX12): 4 chars,
+// Per-lead invite code in the tracked WhatsApp link (meeticulous.com/invite/CX12): 4 chars,
 // capital letters + digits (36^4 ≈ 1.68M). Random, stored on the lead the first time it's
 // sent (attributes.cold_call.ref_code); coldCallService checks it's unused.
 const REF_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';

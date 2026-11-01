@@ -10,7 +10,7 @@ import { SITE_URL, organizationJsonLd, breadcrumbJsonLd, ORG_SAME_AS } from "../
  */
 
 const CANONICAL = `${SITE_URL}/press`;
-const PRESS_EMAIL = "hello@meeticulous.com";
+const PRESS_EMAIL = "team@meeticulous.com";
 const LOGO = "https://company-assets.meeticulous.in/images/brand/logo.png";
 
 const FACTS = [
@@ -77,7 +77,7 @@ const Press = () => (
           </div>
         </div>
         <p className="mt-3 text-xs text-neutral-500">
-          Please use the name <strong>Meeticulous</strong> (not "BookASloth" or "Book-a-Sloth") and the orange #960D32 as the accent.
+          Please use the name <strong>Meeticulous</strong> and the crimson #960D32 as the accent.
         </p>
       </section>
 

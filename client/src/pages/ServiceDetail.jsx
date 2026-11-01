@@ -602,7 +602,7 @@ const AdSpaceCard = () => (
     <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-400">Sponsored</p>
     <h3 className="mt-2 text-sm font-bold text-gray-900">Ad space available</h3>
     <p className="mt-1 text-xs leading-relaxed text-gray-500">Reach buyers actively booking services.</p>
-    <a href="mailto:hello@meeticulous.com?subject=Ad%20space%20enquiry"
+    <a href="mailto:team@meeticulous.com?subject=Ad%20space%20enquiry"
       className="mt-3 inline-flex items-center gap-1 text-sm font-semibold no-underline hover:underline"
       style={{ color: 'var(--profile-accent, #960D32)' }}>
       Advertise here →
@@ -695,7 +695,7 @@ const DisplayAdCard = () => (
       </div>
       {/* yellow bubble, overlapping */}
       <div className="-mt-1 rounded-2xl bg-[#FFC400] px-4 py-3.5">
-        <p className="text-2xl font-black leading-[1.05] tracking-tight text-[#0A2A66]">But a Sloth can run your calendar for you.</p>
+        <p className="text-2xl font-black leading-[1.05] tracking-tight text-[#0A2A66]">But Meeticulous can run your calendar for you.</p>
       </div>
 
       {/* bottom row — pill CTA + wordmark */}
@@ -706,7 +706,7 @@ const DisplayAdCard = () => (
             <svg className="w-4 h-4 text-[#0A2A66]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
           </span>
         </span>
-        <span className="text-sm font-extrabold leading-tight text-white text-right">Book A<br/>Sloth Pro</span>
+        <span className="text-sm font-extrabold leading-tight text-white text-right">Meeticulous<br/>Pro</span>
       </div>
     </div>
   </Link>

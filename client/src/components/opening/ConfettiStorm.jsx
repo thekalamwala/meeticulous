@@ -5,7 +5,7 @@
  * = same but tapering down (fewer, slower) to a calm stop. Skipped entirely under
  * prefers-reduced-motion.
  *
- * Brand colours: sloth orange + gold + greens + violet.
+ * Brand colours: crimson + gold + greens + violet.
  */
 import { useEffect } from 'react';
 import confetti from 'canvas-confetti';

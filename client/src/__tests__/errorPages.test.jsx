@@ -12,7 +12,6 @@ import ErrorPage from '../pages/ErrorPage';
 import Offline from '../pages/Offline';
 import ErrorIllustration from '../components/error/ErrorIllustration';
 import { ERROR_CATALOG, ACTIONS, getErrorEntry, FALLBACK_CODE } from '../config/errorCatalog';
-import { ERROR_IMAGE_BASE, ERROR_IMAGE_VARIANTS, pickErrorImage } from '../config/errorCatalog';
 
 const renderAt = (ui) => render(<MemoryRouter>{ui}</MemoryRouter>);
 
@@ -48,11 +47,10 @@ describe('ErrorPage renders from config', () => {
     expect(screen.getByRole('button', { name: 'Go Home' })).toBeInTheDocument();
   });
 
-  it('renders a CDN image for the 404 page', () => {
+  it('renders inline line-art (no CDN image) for the 404 page', () => {
     const { container } = renderAt(<ErrorPage code={404} />);
-    const img = container.querySelector('img.bas-error-art');
-    expect(img).toBeTruthy();
-    expect(img.getAttribute('src').startsWith('https://company-assets.meeticulous.in/images/error/')).toBe(true);
+    expect(container.querySelector('img.bas-error-art')).toBeNull();
+    expect(container.querySelector('svg')).toBeTruthy();
   });
 
   it('renders the 403 access-denied CTA', () => {
@@ -74,16 +72,7 @@ describe('Offline page', () => {
   });
 });
 
-describe('error image variants', () => {
-  it('exposes the CDN base and three variants', () => {
-    expect(ERROR_IMAGE_BASE).toBe('https://company-assets.meeticulous.in/images/error');
-    expect(ERROR_IMAGE_VARIANTS).toEqual(['sloth-tracks.png', 'sloth-think.png', 'sloth-glass.png']);
-  });
-  it('pickErrorImage returns a full URL from the variant set', () => {
-    const url = pickErrorImage();
-    expect(url.startsWith('https://company-assets.meeticulous.in/images/error/')).toBe(true);
-    expect(ERROR_IMAGE_VARIANTS.some((v) => url.endsWith(v))).toBe(true);
-  });
+describe('404/410 catalog entries', () => {
   it('marks 404 and 410 as image-driven', () => {
     expect(ERROR_CATALOG[404].image).toBe(true);
     expect(ERROR_CATALOG[410].image).toBe(true);
@@ -95,12 +84,10 @@ describe('error image variants', () => {
 });
 
 describe('ErrorIllustration image mode', () => {
-  it('renders a CDN <img> when image is set', () => {
+  it('ignores image mode and still renders line-art', () => {
     const { container } = rtlRender(<ErrorIllustration art="lost" image />);
-    const img = container.querySelector('img');
-    expect(img).toBeTruthy();
-    expect(img.getAttribute('src').startsWith('https://company-assets.meeticulous.in/images/error/')).toBe(true);
-    expect(img.getAttribute('alt')).toBe('');
+    expect(container.querySelector('img')).toBeNull();
+    expect(container.querySelector('svg')).toBeTruthy();
   });
   it('renders the SVG (no img) when image is not set', () => {
     const { container } = rtlRender(<ErrorIllustration art="lost" />);

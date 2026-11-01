@@ -18,7 +18,7 @@ test('class="sig" stays a dark inline link', () => {
 });
 
 test('class="inline" is an orange underlined text link, not a button', () => {
-  const out = plainBody('<a class="inline" href="https://x.in">bookasloth.com</a>');
+  const out = plainBody('<a class="inline" href="https://x.in">meeticulous.com</a>');
   expect(out).not.toContain(BUTTON);
-  expect(out).toContain('<a href="https://x.in" style="color:#960D32;text-decoration:underline;">bookasloth.com</a>');
+  expect(out).toContain('<a href="https://x.in" style="color:#960D32;text-decoration:underline;">meeticulous.com</a>');
 });

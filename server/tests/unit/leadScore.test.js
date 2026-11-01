@@ -12,6 +12,7 @@
 // `?? 10` default on BOTH sides, so parity still holds for them.
 
 const { compute, intentOf } = require('../../services/crm/leadScore');
+const { ROI } = require('../../services/crm/lifecycleRules');
 
 const NOW = new Date('2025-06-01T12:00:00Z').getTime();
 const daysAgo = (n) => new Date(NOW - n * 864e5).toISOString();
@@ -21,7 +22,7 @@ function clientLeadScore(lead, now) {
   if (!lead) return { score: 0, temp: 'cold' };
   const STAGE = {
     new: 5, contacted: 20, replied: 45, qualified: 60, demo: 70,
-    paid: 90, activated: 92, won: 95, sloth: 98, retained: 98, ambassador: 99, enterprised: 99, champion: 100,
+    paid: 90, activated: 92, won: 95, [ROI]: 98, retained: 98, ambassador: 99, enterprised: 99, champion: 100,
     lost: 0, churned: 0, not_reachable: 0, not_interested: 0, disqualified: 0, do_not_contact: 0,
   };
   let s = STAGE[lead.status] ?? 10;
@@ -48,7 +49,7 @@ const FIXTURES = [
   { status: 'paid', revenue_paise: 50000 },
   { status: 'activated' },
   { status: 'won' },
-  { status: 'sloth' },
+  { status: ROI },
   { status: 'retained' },
   { status: 'ambassador' },
   { status: 'enterprised' },
@@ -77,7 +78,7 @@ test('post-conversion statuses score off their real stage, not the fallback', ()
   // Regression guard for the drift: bare relationship-ladder leads must score high,
   // not the old `?? 10` default.
   expect(compute({ status: 'won' }, NOW).score).toBeGreaterThan(90);
-  expect(compute({ status: 'sloth' }, NOW).score).toBeGreaterThanOrEqual(98);
+  expect(compute({ status: ROI }, NOW).score).toBeGreaterThanOrEqual(98);
   expect(compute({ status: 'champion' }, NOW).score).toBe(100);
   expect(compute({ status: 'retained' }, NOW).score).toBeGreaterThanOrEqual(98);
 });
@@ -93,7 +94,7 @@ test('clamps stay within 0..100', () => {
 test('intentOf: every money/advocacy status is activated regardless of score', () => {
   // Reuses lifecycleRules.MONEY, so a high raw score on a customer never floods
   // the High Intent acquisition queue.
-  for (const status of ['paid', 'activated', 'won', 'sloth', 'retained', 'ambassador', 'enterprised', 'champion']) {
+  for (const status of ['paid', 'activated', 'won', ROI, 'retained', 'ambassador', 'enterprised', 'champion']) {
     expect(intentOf({ status }, 5)).toBe('activated');
   }
   expect(intentOf({ status: 'new', converted_at: '2025-01-01' }, 5)).toBe('activated');

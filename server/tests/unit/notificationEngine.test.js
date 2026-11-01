@@ -81,7 +81,7 @@ describe('NotificationEngine', () => {
       event: 'BOOKING_CONFIRMED_CUSTOMER',
       data: {
         phone: '919876543210', name: 'Shubham',
-        templateParams: ['Shubham', 'SEO Consultation', 'Book A Sloth', '21/10 10:00'],
+        templateParams: ['Shubham', 'SEO Consultation', 'Meeticulous', '21/10 10:00'],
         email: 'guest@example.com', emailData: { service_name: 'SEO Consultation' },
       },
     });
