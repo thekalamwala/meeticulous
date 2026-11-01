@@ -141,8 +141,8 @@ Items previously listed here as pending are now live:
   (`spquowzrefozmrzoszkf`, the only DB reachable now): old brand removed from 98 published blogs,
   6 CRM templates, a badge slug and 5 column defaults; lead status `'customer'` added (transitional —
   the old value is still accepted). `bot_faqs` re-synced from `botFaqs.json` the same day.
-- **v3.181** (`v3.181_drop_old_lead_status.sql`) — **OUTSTANDING**: apply only after the release
-  carrying `lifecycleRules` ROI = `'customer'` is live on Render.
+- **v3.181** (`v3.181_drop_old_lead_status.sql`) — applied 2026-11-01 after the release went live on
+  Render: `leads_status_check` + `merge_lead_rows` now carry only `'customer'`. No migration outstanding.
 
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
