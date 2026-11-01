@@ -27,7 +27,7 @@ import UpgradePlan from '../pages/UpgradePlan';
 
 // Annual prices so paid plans render a clickable CTA (annual is the default cadence).
 const PLANS = [
-  { id: '1', slug: 'free',    name: 'Sloth',                  sort_order: 1, annual_price: 0,    monthly_price: 0,      limits: { digital_products: 3 } },
+  { id: '1', slug: 'free',    name: 'Starter',                sort_order: 1, annual_price: 0,    monthly_price: 0,      limits: { digital_products: 3 } },
   { id: '2', slug: 'creator', name: 'Pro (Partner)', sort_order: 2, annual_price: 1499, monthly_price: 229,    limits: { digital_products: -1 } },
   { id: '3', slug: 'premium', name: 'Pro',           sort_order: 3, annual_price: 3050, monthly_price: 338.13, limits: { digital_products: -1 } },
 ];

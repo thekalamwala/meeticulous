@@ -5,7 +5,7 @@
  * screenshot the REAL /og/host/:username React route at 1200x630 and upload the
  * PNG to Supabase Storage (images bucket, host-og/ prefix), writing the URL to
  * profiles.og_image. prerenderController serves it as og:image so a shared
- * bookasloth.com/:username link previews as a proper wide card instead of the
+ * meeticulous.com/:username link previews as a proper wide card instead of the
  * host's square avatar letterboxed inside one.
  *
  * State machine (profiles.og_status, migration v3.88):
@@ -81,7 +81,7 @@ const cardFields = (p, services) => {
   const hasRating = reviews > 0 && rating > 0;
   const online = services.some((s) => s.meeting_mode === 'online');
   return {
-    name: p.name || 'Book A Sloth Host',
+    name: p.name || 'Meeticulous Host',
     profession: p.profession || '',
     bio: (p.seo_description || p.bio || '').slice(0, 140),
     username: p.username || '',

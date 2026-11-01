@@ -46,7 +46,7 @@ if (process.env.VERCEL && process.env.VERCEL_ENV !== 'production') {
 const PORT = 4173;
 const ORIGIN = `http://localhost:${PORT}`;
 
-const DEFAULT_TITLE = 'Book A Sloth — booked & paid at 0% commission';
+const DEFAULT_TITLE = 'Meeticulous — booked & paid at 0% commission';
 
 // 15s was enough locally and timed out on a cold Vercel builder. A first pass at
 // 30s runs 4-wide; anything that misses is retried serially at 60s on a now-idle
@@ -446,7 +446,7 @@ async function prerender() {
   // rate-ban the build IP); the data can't meaningfully change inside one build.
   // Only successes are kept, so a failed call is refetched by the next page.
   // Never baked into #__bas_data: slot/availability answers must be live. Matched
-  // by endpoint, not substring — /slot/ also hits every "book-a-SLOTH" slug.
+  // by endpoint, not substring — /slot/ also hits any slug containing "slot".
   const LIVE_ONLY_API = /^\/bookings\/|\/availability(\/|\?|$)/;
   const apiCache = new Map(); // url → Promise<{ status, contentType, body }>
   const fetchApi = (url) => {

@@ -92,7 +92,7 @@ describe('<Footer>', () => {
     expect(screen.getByRole('navigation', { name: 'Legal' })).toBeTruthy();
     // legal bar survives (operator credit + a legal link); Bolt attribution removed
     expect(screen.getByText('Operated and Hand crafted by the humans of Rajmudra Media LLP')).toBeTruthy();
-    expect(screen.queryByRole('link', { name: 'Bolt the Sloth' })).toBeNull();
+    expect(screen.queryByRole('link', { name: /^Bolt/ })).toBeNull();
     expect(screen.getByRole('link', { name: 'Terms' }).getAttribute('href')).toBe('/terms');
     // link columns + socials + newsletter are gone
     expect(screen.queryByRole('link', { name: 'About' })).toBeNull();

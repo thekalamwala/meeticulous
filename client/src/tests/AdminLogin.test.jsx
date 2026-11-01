@@ -59,12 +59,12 @@ describe('AdminLogin — password step', () => {
     adminLoginUser.mockResolvedValueOnce({ data: ADMIN_SESSION });
     renderComponent();
     await userEvent.type(screen.getByLabelText(/username/i), 'superadmin');
-    await userEvent.type(screen.getByLabelText(/password/i), 'Sloth$Super#2026');
+    await userEvent.type(screen.getByLabelText(/password/i), 'Meet$Super#2026');
     fireEvent.submit(screen.getByRole('button', { name: /grant access/i }));
     await waitFor(() =>
       expect(adminLoginUser).toHaveBeenCalledWith({
         identifier: 'superadmin',
-        password: 'Sloth$Super#2026',
+        password: 'Meet$Super#2026',
       })
     );
   });
@@ -74,7 +74,7 @@ describe('AdminLogin — password step', () => {
     adminLoginUser.mockResolvedValueOnce({ data: ADMIN_SESSION });
     renderComponent();
     await userEvent.type(screen.getByLabelText(/username/i), 'superadmin');
-    await userEvent.type(screen.getByLabelText(/password/i), 'Sloth$Super#2026');
+    await userEvent.type(screen.getByLabelText(/password/i), 'Meet$Super#2026');
     await userEvent.click(screen.getByRole('button', { name: /grant access/i }));
     await waitFor(() => {
       const stored = JSON.parse(localStorage.getItem('bas_admin') || 'null');
@@ -110,7 +110,7 @@ describe('AdminLogin — twofa_required flow', () => {
     });
     renderComponent();
     await userEvent.type(screen.getByLabelText(/username/i), 'superadmin');
-    await userEvent.type(screen.getByLabelText(/password/i), 'Sloth$Super#2026');
+    await userEvent.type(screen.getByLabelText(/password/i), 'Meet$Super#2026');
     await userEvent.click(screen.getByRole('button', { name: /grant access/i }));
     await waitFor(() => {
       // A code input must appear (6-digit authenticator code)
@@ -134,7 +134,7 @@ describe('AdminLogin — twofa_required flow', () => {
 
     renderComponent();
     await userEvent.type(screen.getByLabelText(/username/i), 'superadmin');
-    await userEvent.type(screen.getByLabelText(/password/i), 'Sloth$Super#2026');
+    await userEvent.type(screen.getByLabelText(/password/i), 'Meet$Super#2026');
     await userEvent.click(screen.getByRole('button', { name: /grant access/i }));
 
     // Wait for code step to render
@@ -188,7 +188,7 @@ describe('AdminLogin — enroll_required flow', () => {
 
     renderComponent();
     await userEvent.type(screen.getByLabelText(/username/i), 'superadmin');
-    await userEvent.type(screen.getByLabelText(/password/i), 'Sloth$Super#2026');
+    await userEvent.type(screen.getByLabelText(/password/i), 'Meet$Super#2026');
     await userEvent.click(screen.getByRole('button', { name: /grant access/i }));
 
     await waitFor(() =>
@@ -218,7 +218,7 @@ describe('AdminLogin — enroll_required flow', () => {
 
     renderComponent();
     await userEvent.type(screen.getByLabelText(/username/i), 'superadmin');
-    await userEvent.type(screen.getByLabelText(/password/i), 'Sloth$Super#2026');
+    await userEvent.type(screen.getByLabelText(/password/i), 'Meet$Super#2026');
     await userEvent.click(screen.getByRole('button', { name: /grant access/i }));
 
     // Wait for enroll step
