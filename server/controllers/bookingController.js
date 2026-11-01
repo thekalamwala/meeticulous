@@ -132,6 +132,7 @@ const bookingEmailData = ({ serviceTitle, hostName, hostPhone, guestName, schedu
     vendor_phone: hostPhone || "",
     user_name: guestName || "Customer",
     booking_id: bookingId || "",
+    booking_ref: String(bookingId || "").slice(0, 8).toUpperCase(),
     // Location line: "Online" for online; the host's city text for offline (or a
     // neutral "In person" when only a map link is set). Empty when the caller
     // passes no venue info at all — preserves the lifecycle emails (cancel /

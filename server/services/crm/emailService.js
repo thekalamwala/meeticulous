@@ -20,21 +20,26 @@ const { canSend } = require('./sendGate');
 const { renderLayout } = require('../email/emailLayout');
 const { makeToken } = require('../email/unsubscribeToken');
 const { loadSettings } = require('../email/communicationEngine');
+const { signOff } = require('../email/emailComponents');
 
 const BRAND = '#960D32';
 const FONT = "'Poppins','Plus Jakarta Sans',Arial,sans-serif";
 
 // Turn the raw sequence body into house-styled HTML: readable typography + any
 // inline link promoted to a branded button (email clients need inline styles).
+// A closing "— Tithi" paragraph becomes the avatar sign-off.
 function styleBody(html) {
   const withButtons = String(html || '').replace(
+    /<p>\s*(?:—|&mdash;)\s*Tithi\s*<\/p>/gi,
+    () => signOff('Tithi', 'Meeticulous team'),
+  ).replace(
     /<a\s+href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi,
     (_m, href, label) =>
       `<a href="${href}" style="display:inline-block;background:${BRAND};color:#ffffff;` +
       `text-decoration:none;font-weight:600;font-size:14px;padding:12px 22px;border-radius:6px;` +
       `margin:8px 0;font-family:${FONT};">${label}</a>`,
   );
-  return `<div style="font-family:${FONT};font-size:15px;line-height:1.65;color:#3c4043;">${withButtons}</div>`;
+  return `<div style="font-family:${FONT};font-size:15px;line-height:1.65;color:#4A3A3E;">${withButtons}</div>`;
 }
 
 // Plain (founder cold) styling: keep links INLINE and underlined — never promote to

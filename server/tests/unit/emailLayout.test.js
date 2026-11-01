@@ -1,8 +1,7 @@
 /**
  * tests/unit/emailLayout.test.js
- * Redesigned header: constant Meeticulous logo (left) + accent category pill
- * (right), identical across audiences. The customer/vendor distinction now lives
- * ONLY in the footer (unchanged by the redesign — guarded below).
+ * 2026-11 frame: wordmark (left) + crimson status pill (right), 1.5px brand card
+ * border, no top accent bar. Customer vs vendor differ ONLY in the footer nav.
  */
 'use strict';
 
@@ -22,9 +21,9 @@ describe('renderLayout — header (logo left, accent pill right)', () => {
       const html = renderLayout({ audience, bodyHtml: '<p>hi</p>', emailCategory: 'Booking Confirmed', settings, data: {} });
       expect(html).toContain('images/email/meeticulous-wordmark-full-color.png');          // constant left logo
       expect(html).toContain('Booking Confirmed');                     // pill label
-      expect(html).toContain('#e8fff1');                               // green tint (pill bg)
-      expect(html).toContain('images/email/icons/calendar-check.png'); // glyph PNG
-      expect(html).toContain('border-radius:1px');                     // squared pill (radius capped at 1px)
+      expect(html).toContain('#FBE3E8');                               // crimson tint (pill bg)
+      expect(html).toContain('&#10003; Booking Confirmed');            // check on positive pills
+      expect(html).toContain('border-radius:999px');                   // capsule pill
     });
   }
 
@@ -36,9 +35,9 @@ describe('renderLayout — header (logo left, accent pill right)', () => {
 });
 
 describe('renderLayout — footer distinction (UNCHANGED by redesign)', () => {
-  test("audience 'vendor' → minimal Powered-by footer, no customer nav", () => {
+  test("audience 'vendor' → text footer, no customer nav", () => {
     const html = renderLayout({ audience: 'vendor', bodyHtml: '<p>hi</p>', emailCategory: 'New Booking', settings, data: {} });
-    expect(html).toMatch(/Powered by/i);
+    expect(html).toContain('Questions? Just reply');
     expect(html).not.toMatch(/My Bookings/i);
     expect(html).not.toMatch(/Unsubscribe/i);
   });
@@ -95,10 +94,11 @@ describe("renderLayout — cold outreach layout", () => {
 });
 
 describe('renderLayout — shared structure', () => {
-  test('both layouts carry the 4px brand accent and the 600px card with the body', () => {
+  test('both layouts carry the 1.5px brand border, no accent bar, and the 600px card with the body', () => {
     for (const audience of ['customer', 'vendor']) {
       const html = renderLayout({ audience, bodyHtml: '<p>x</p>', emailCategory: 'New Booking', settings, data: {} });
-      expect(html).toContain('#FE5100'); // accent bar / CTA brand
+      expect(html).toContain('border:1.5px solid #FE5100'); // card border = brand
+      expect(html).not.toContain('height:4px;line-height:4px'); // accent bar gone
       expect(html).toContain('600');     // card width
       expect(html).toContain('<p>x</p>'); // body injected
     }

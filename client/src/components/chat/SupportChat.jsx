@@ -18,10 +18,13 @@ const CHAT_MD = 'text-[13.5px] leading-relaxed [&>div]:text-[13.5px] [&>div]:tex
   + '[&_p]:mb-1.5 [&_p:last-child]:mb-0 [&_ul]:my-1 [&_ul]:pl-4 [&_ol]:my-1 [&_ol]:pl-4 [&_li]:mb-0.5 '
   + '[&_h1]:text-sm [&_h1]:mt-0 [&_h1]:mb-1 [&_h2]:text-sm [&_h2]:mt-2 [&_h2]:mb-1 [&_h3]:text-[13px] [&_h3]:mt-2 [&_h3]:mb-0.5';
 
+// Tithi's profile photo (replaces the old violet "T" initial).
+const TITHI_PHOTO = '/images/team/tithi.webp';
+
 // Three-dot "Bolt is typing" bubble, shown while the async bot reply is in flight.
 const TypingBubble = () => (
   <div className="flex max-w-[82%] gap-2" role="status" aria-label="Tithi is typing">
-    <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-violet-100 text-[11px] font-bold text-violet-700">T</div>
+    <img src={TITHI_PHOTO} alt="Tithi" className="h-7 w-7 shrink-0 rounded-full object-cover" />
     <div className="flex items-center gap-1 rounded-2xl rounded-tl-sm bg-violet-50 px-3 py-2.5">
       {[0, 1, 2].map((i) => (
         <span key={i} className="h-1.5 w-1.5 animate-bounce rounded-full bg-violet-400"
@@ -60,12 +63,13 @@ const Bubble = ({ m }) => {
   const isBot = m.sender === 'bot';
   return (
     <div className={cn('flex max-w-[82%] gap-2', mine && 'flex-row-reverse self-end')}>
-      {!mine && (
-        <div className={cn('grid h-7 w-7 shrink-0 place-items-center rounded-full text-[11px] font-bold',
-          isBot ? 'bg-violet-100 text-violet-700' : 'bg-primary/15 text-primary')}>
-          {isBot ? 'T' : (m.sender_name?.[0]?.toUpperCase() || 'S')}
+      {!mine && (isBot ? (
+        <img src={TITHI_PHOTO} alt="Tithi" className="h-7 w-7 shrink-0 rounded-full object-cover" />
+      ) : (
+        <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary/15 text-[11px] font-bold text-primary">
+          {m.sender_name?.[0]?.toUpperCase() || 'S'}
         </div>
-      )}
+      ))}
       <div className={cn('rounded-2xl px-3 py-2 text-[13.5px] leading-relaxed',
         mine ? 'rounded-tr-sm bg-primary text-white' : isBot ? 'rounded-tl-sm bg-violet-50 text-gray-800' : 'rounded-tl-sm bg-[#f0ede6] text-gray-800')}>
         {!mine && !isBot && m.sender_name && <p className="mb-0.5 text-[11px] font-semibold text-primary">{m.sender_name}</p>}
@@ -295,7 +299,7 @@ export default function SupportChat() {
     <div className="flex h-[calc(100vh-9rem)] min-h-[440px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-gray-100 bg-gray-50/70 px-4 py-3">
-        <div className="grid h-9 w-9 place-items-center rounded-full bg-violet-100 text-base font-bold text-violet-700">T</div>
+        <img src={TITHI_PHOTO} alt="Tithi" className="h-9 w-9 shrink-0 rounded-full object-cover" />
         <div className="min-w-0 flex-1">
           <p className="font-heading text-sm font-bold text-gray-900">Meeticulous support</p>
           <p className="truncate text-[11.5px] text-gray-400">

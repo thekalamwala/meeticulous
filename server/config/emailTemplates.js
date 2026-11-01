@@ -5,11 +5,10 @@
  * and footer (company info, links, address) are added by emailLayout.js. No
  * template carries its own layout chrome.
  *
- * Bodies compose accent-aware hero blocks from emailComponents (otpBox, heroDate,
- * statusTags, infoCard, countdown, banner, celebration, amountRow), keyed by the
- * category theme from emailThemes — so each email reads distinct without bespoke
- * markup. The CTA stays brand orange (added by the layout); per-category accent
- * colors the eyebrow + hero only.
+ * Bodies compose hero blocks from emailComponents (otpBox, bookingCard, infoCard,
+ * countdown, banner, celebration, amountRow). Since the 2026-11 redesign every
+ * category resolves to the same crimson theme and the header pill is the one
+ * status label. The crimson CTA is added by the layout.
  *
  * Placeholders use {{snake_case}} and are resolved at send time.
  * See placeholderResolver.js for globals always available.
@@ -22,12 +21,16 @@
 const { themeForCategory } = require('../services/email/emailThemes');
 const C = require('../services/email/emailComponents');
 
-// Prose helpers — keep seed readable and markup consistent.
-// eyebrow takes the per-category accent color (not {{brand_color}}, which the CTA owns).
-const lead    = (t) => `<p style="margin:0 0 18px;font-size:16px;line-height:1.6;color:#374151;font-family:'Poppins','Plus Jakarta Sans',Arial,sans-serif;">${t}</p>`;
-const eyebrow = (color, t) => `<p style="margin:0 0 10px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:${color};font-family:'Poppins','Plus Jakarta Sans',Arial,sans-serif;">${t}</p>`;
-const h       = (t) => `<h1 style="margin:0 0 18px;font-size:24px;font-weight:800;line-height:1.25;color:#111827;font-family:'Poppins','Plus Jakarta Sans',Arial,sans-serif;">${t}</h1>`;
-const note    = (t) => `<p style="margin:18px 0 0;font-size:13px;color:#9ca3af;font-family:'Poppins','Plus Jakarta Sans',Arial,sans-serif;">${t}</p>`;
+// Prose helpers — keep seed readable and markup consistent. One crimson palette
+// (2026-11 redesign); the header pill is the only status label, so bodies carry
+// no eyebrow/chip repeating it.
+const lead    = (t) => `<p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#4A3A3E;font-family:'Poppins','Plus Jakarta Sans',Arial,sans-serif;">${t}</p>`;
+const h       = (t) => `<h1 style="margin:0 0 12px;font-size:26px;font-weight:700;line-height:1.25;color:#2B1218;font-family:'Poppins','Plus Jakarta Sans',Arial,sans-serif;">${t}</h1>`;
+const note    = (t) => `<p style="margin:16px 0 0;font-size:13px;color:#7D6B70;font-family:'Poppins','Plus Jakarta Sans',Arial,sans-serif;">${t}</p>`;
+const ref     = (t) => `<p style="margin:0 0 4px;font-size:12px;letter-spacing:.02em;color:#7D6B70;font-family:'Poppins','Plus Jakarta Sans',Arial,sans-serif;">${t}</p>`;
+// Numbered setup step (host welcome checklist).
+const step    = (n, title, sub) => `<tr><td style="width:34px;vertical-align:top;padding:10px 0;"><div style="width:26px;height:26px;line-height:26px;border-radius:999px;background:#FBE3E8;color:#960D32;font-weight:700;font-size:13px;text-align:center;font-family:'Poppins','Plus Jakarta Sans',Arial,sans-serif;">${n}</div></td><td style="padding:10px 0;border-bottom:1px solid #F1DCE1;font-family:'Poppins','Plus Jakarta Sans',Arial,sans-serif;"><div style="font-size:14px;font-weight:600;color:#2B1218;">${title}</div><div style="font-size:13px;color:#7D6B70;">${sub}</div></td></tr>`;
+const steps   = (...rows) => `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 4px;">${rows.join('')}</table>`;
 
 const TEMPLATES = [
 
@@ -40,7 +43,7 @@ const TEMPLATES = [
     email_category: 'Security Check',
     email_reason: 'You are receiving this email because a sign-in verification was requested for your account.',
     html_content:
-      eyebrow(t.text, 'Verification') + h('Your verification code') +
+      h('Your verification code') +
       lead('Enter this code to verify your identity. It expires in <strong>10 minutes</strong>.') +
       C.otpBox(t, '{{otp}}') +
       note("If you didn't request this, you can safely ignore this email."),
@@ -54,7 +57,7 @@ const TEMPLATES = [
     email_category: 'Security Check',
     email_reason: 'You are receiving this email because a verification request was made for your account.',
     html_content:
-      eyebrow(t.text, 'Welcome') + h('Confirm your email, {{first_name}}') +
+      h('Confirm your email, {{first_name}}') +
       lead('Tap the button below to verify your email address and activate your Meeticulous account.') +
       note('This link expires in 24 hours.'),
     cta_label: 'Verify email', cta_url: '{{dashboard_url}}',
@@ -67,7 +70,7 @@ const TEMPLATES = [
     email_category: 'Security Check',
     email_reason: 'You are receiving this email because a password reset was requested for your account.',
     html_content:
-      eyebrow(t.text, 'Password reset') + h('Reset your password') +
+      h('Reset your password') +
       lead('Use this code to reset your password. It expires in <strong>10 minutes</strong>.') +
       C.otpBox(t, '{{otp}}') +
       note("If you didn't request this, your password stays unchanged — no action needed."),
@@ -83,7 +86,7 @@ const TEMPLATES = [
     email_category: 'Security Alert',
     email_reason: 'You are receiving this email because your account password was recently changed.',
     html_content:
-      eyebrow(t.text, 'Security') + h('Your password was changed') +
+      h('Your password was changed') +
       lead('This is a confirmation that the password for your account was just changed.') +
       C.banner(t, { title: 'Password updated', sub: '{{email}}' }) +
       note("If this wasn't you, reset your password immediately and contact {{support_email}}."),
@@ -97,7 +100,7 @@ const TEMPLATES = [
     email_category: 'Security Alert',
     email_reason: 'You are receiving this email because a new sign-in was detected on your account.',
     html_content:
-      eyebrow(t.text, 'Security') + h('New sign-in detected') +
+      h('New sign-in detected') +
       lead('We noticed a new sign-in to your Meeticulous account.') +
       C.infoCard(t, [['Time', '{{login_time}}'], ['IP address', '{{ip_address}}'], ['Device', '{{device_name}}']]) +
       note("If this was you, no action is needed. Otherwise reset your password and contact {{support_email}}."),
@@ -113,11 +116,10 @@ const TEMPLATES = [
     email_category: 'Booking Confirmed',
     email_reason: 'You are receiving this email because you made a booking on Meeticulous.',
     html_content:
-      eyebrow(t.text, 'Booking confirmed') + h("You're all set, {{first_name}}") +
-      lead('Your appointment is confirmed. Here are the details:') +
-      C.heroDate(t, { day: '{{booking_day}}', mon: '{{booking_month}}', year: '{{booking_year}}', title: '{{service_name}}', time: '{{booking_time}}', sub: 'with {{vendor_name}}' }) +
-      C.statusTags([{ label: 'Confirmed', tone: 'confirmed' }]) +
-      lead('Your GST tax invoice is ready — <a href="{{invoice_url}}" style="color:#960D32;font-weight:600;text-decoration:none">view or download the PDF</a>. It is also under My Bookings in your dashboard.'),
+      ref('Booking #{{booking_ref}}') + h("You're all set, {{first_name}}") +
+      lead('{{vendor_name}} is expecting you. Everything you need is below.') +
+      C.bookingCard({ title: '{{service_name}}', sub: 'with {{vendor_name}}', rows: [['Date', '{{booking_date}}'], ['Time', '{{booking_time}}'], ['Where', '{{location}}']] }) +
+      note('Your GST tax invoice is ready — <a href="{{invoice_url}}" style="color:#960D32;font-weight:600;text-decoration:none">view or download the PDF</a>. It is also under My Bookings in your dashboard.'),
     // CTA → the public manage/cancel page (works without a login, unlike the
     // dashboard) so anonymous OTP guests can self-serve (#516).
     cta_label: 'View or manage booking', cta_url: '{{manage_url}}',
@@ -130,10 +132,9 @@ const TEMPLATES = [
     email_category: 'New Booking',
     email_reason: 'You are receiving this email because you received a new booking on Meeticulous.',
     html_content:
-      eyebrow(t.text, 'New booking') + h('A new client booked you') +
+      h('A new client booked you') +
       lead("You've received a new booking. Please review your schedule.") +
-      C.infoCard(t, [['Service', '{{service_name}}'], ['Client', '{{user_name}}'], ['When', '{{booking_date}} at {{booking_time}}']]) +
-      C.statusTags([{ label: 'Confirmed', tone: 'confirmed' }]),
+      C.bookingCard({ title: '{{service_name}}', sub: 'with {{user_name}}', rows: [['Date', '{{booking_date}}'], ['Time', '{{booking_time}}'], ['Where', '{{location}}']] }),
     cta_label: 'Open dashboard', cta_url: '{{dashboard_url}}',
   }; })(),
 
@@ -146,7 +147,7 @@ const TEMPLATES = [
     email_category: 'Reminder',
     email_reason: 'You are receiving this email as a reminder about your upcoming appointment.',
     html_content:
-      eyebrow(t.text, 'Upcoming appointment') + h('See you soon, {{first_name}}') +
+      h('See you soon, {{first_name}}') +
       C.countdown(t, { lead: 'Your appointment is coming up at', big: '{{booking_time}}' }) +
       C.infoCard(t, [['Service', '{{service_name}}'], ['Host', '{{vendor_name}}'], ['When', '{{booking_date}}']]),
     cta_label: '{{action_label}}', cta_url: '{{action_link}}',
@@ -159,7 +160,7 @@ const TEMPLATES = [
     email_category: 'Reminder',
     email_reason: 'You are receiving this email as a reminder about an upcoming session.',
     html_content:
-      eyebrow(t.text, 'Upcoming session') + h('You have a session soon') +
+      h('You have a session soon') +
       C.countdown(t, { lead: 'Your session is coming up at', big: '{{booking_time}}' }) +
       C.infoCard(t, [['Client', '{{user_name}}'], ['Service', '{{service_name}}'], ['When', '{{booking_date}}']]),
     cta_label: '{{action_label}}', cta_url: '{{action_link}}',
@@ -174,7 +175,7 @@ const TEMPLATES = [
     email_category: 'Booking Cancelled',
     email_reason: 'You are receiving this email because a booking on your account was cancelled.',
     html_content:
-      eyebrow(t.text, 'Booking cancelled') + h('Your booking was cancelled') +
+      h('Your booking was cancelled') +
       lead('The following booking has been cancelled:') +
       C.banner(t, { title: '{{service_name}}', sub: '{{booking_date}} at {{booking_time}} · with {{vendor_name}}' }) +
       note('Questions? Reach us at {{support_email}}.'),
@@ -188,7 +189,7 @@ const TEMPLATES = [
     email_category: 'Booking Cancelled',
     email_reason: 'You are receiving this email because a booking was cancelled.',
     html_content:
-      eyebrow(t.text, 'Booking cancelled') + h('A booking was cancelled') +
+      h('A booking was cancelled') +
       lead('This booking has been cancelled:') +
       C.banner(t, { title: '{{service_name}}', sub: '{{booking_date}} at {{booking_time}} · {{user_name}}' }),
     cta_label: 'Open dashboard', cta_url: '{{dashboard_url}}',
@@ -203,7 +204,7 @@ const TEMPLATES = [
     email_category: 'Session Complete',
     email_reason: 'You are receiving this email because your session was marked as complete.',
     html_content:
-      eyebrow(t.text, 'Session complete') + h('Thanks, {{first_name}}!') +
+      h('Thanks, {{first_name}}!') +
       lead('We hope your session with {{vendor_name}} went well.') +
       C.infoCard(t, [['Service', '{{service_name}}'], ['When', '{{booking_date}} at {{booking_time}}']]) +
       lead("We'd love your feedback — share a quick review of your session with {{vendor_name}}."),
@@ -217,7 +218,7 @@ const TEMPLATES = [
     email_category: 'Session Complete',
     email_reason: 'You are receiving this email because a session was marked complete on your account.',
     html_content:
-      eyebrow(t.text, 'Session complete') + h('Session completed') +
+      h('Session completed') +
       lead('Your session has been marked complete:') +
       C.infoCard(t, [['Client', '{{user_name}}'], ['Service', '{{service_name}}'], ['When', '{{booking_date}} at {{booking_time}}']]),
     cta_label: 'View earnings', cta_url: '{{dashboard_url}}',
@@ -230,7 +231,7 @@ const TEMPLATES = [
     email_category: 'Session Complete',
     email_reason: 'You are receiving this because you recently booked a session on Meeticulous.',
     html_content:
-      eyebrow(t.text, 'Come back soon') + h('Hi {{first_name}},') +
+      h('Hi {{first_name}},') +
       lead('Hope your session with {{vendor_name}} went well. Ready for another?') +
       C.infoCard(t, [['Last service', '{{service_name}}']]) +
       lead('Booking your next session takes just a tap.'),
@@ -246,7 +247,7 @@ const TEMPLATES = [
     email_category: 'Rescheduled',
     email_reason: 'You are receiving this email because your booking was rescheduled.',
     html_content:
-      eyebrow(t.text, 'Rescheduled') + h('Please confirm the new time') +
+      h('Please confirm the new time') +
       lead('Your appointment with {{vendor_name}} has been rescheduled:') +
       C.infoCard(t, [['Service', '{{service_name}}'], ['New time', '{{booking_date}} at {{booking_time}}']]) +
       lead('Please confirm the new time works for you.'),
@@ -260,7 +261,7 @@ const TEMPLATES = [
     email_category: 'Rescheduled',
     email_reason: 'You are receiving this email because a booking was rescheduled.',
     html_content:
-      eyebrow(t.text, 'Rescheduled') + h('A booking was rescheduled') +
+      h('A booking was rescheduled') +
       lead('This booking has a new time:') +
       C.infoCard(t, [['Client', '{{user_name}}'], ['Service', '{{service_name}}'], ['New time', '{{booking_date}} at {{booking_time}}']]),
     cta_label: 'Open dashboard', cta_url: '{{dashboard_url}}',
@@ -275,7 +276,7 @@ const TEMPLATES = [
     email_category: 'Onboarding',
     email_reason: 'You are receiving this email because your Meeticulous profile is incomplete.',
     html_content:
-      eyebrow(t.text, 'Almost there') + h('One step from live, {{first_name}}') +
+      h('One step from live, {{first_name}}') +
       lead("You claimed <strong>meeticulous.com/{{slug}}</strong> but haven't published yet. It's saved and waiting — the last step takes two minutes.") +
       C.banner(t, { title: 'Finish & publish', sub: 'Then your link works and people can book you.' }),
     cta_label: 'Publish my page', cta_url: '{{dashboard_url}}',
@@ -288,7 +289,7 @@ const TEMPLATES = [
     email_category: 'Account Update',
     email_reason: 'You are receiving this email because your account verification status was updated.',
     html_content:
-      eyebrow(t.text, 'Verified') + h("You're verified, {{first_name}}!") +
+      h("You're verified, {{first_name}}!") +
       lead('A verified badge now appears on your public profile.') +
       C.banner(t, { title: 'Verified', sub: 'Status: {{verification_status}}' }),
     cta_label: 'View profile', cta_url: '{{profile_url}}',
@@ -301,7 +302,7 @@ const TEMPLATES = [
     email_category: 'Account Update',
     email_reason: 'You are receiving this email because action is required on your account verification.',
     html_content:
-      eyebrow(t.text, 'Verification') + h('Your verification needs attention') +
+      h('Your verification needs attention') +
       lead("We couldn't approve your verification this time. Review the requirements and resubmit.") +
       C.banner(t, { title: 'Needs attention', sub: 'Status: {{verification_status}}' }) +
       note('Questions? Email {{support_email}}.'),
@@ -315,7 +316,7 @@ const TEMPLATES = [
     email_category: 'Account Update',
     email_reason: 'You are receiving this email because your KYC verification status was updated.',
     html_content:
-      eyebrow(t.text, 'KYC verified') + h("You're verified, {{first_name}}!") +
+      h("You're verified, {{first_name}}!") +
       lead('Your identity verification was approved. You can now request payouts from your dashboard.') +
       C.banner(t, { title: 'Verified', sub: 'Payouts are now unlocked' }),
     cta_label: 'Go to payouts', cta_url: '{{dashboard_url}}',
@@ -328,7 +329,7 @@ const TEMPLATES = [
     email_category: 'Account Update',
     email_reason: 'You are receiving this email because action is required on your KYC verification.',
     html_content:
-      eyebrow(t.text, 'KYC verification') + h('Your KYC needs attention') +
+      h('Your KYC needs attention') +
       lead("We couldn't approve your KYC this time. Review the reason below and resubmit.") +
       C.banner(t, { title: 'Needs attention', sub: '{{review_note}}' }) +
       note('Questions? Email {{support_email}}.'),
@@ -344,7 +345,7 @@ const TEMPLATES = [
     email_category: 'Achievement Unlocked',
     email_reason: 'You are receiving this email because you earned a new achievement on Meeticulous.',
     html_content:
-      eyebrow(t.text, 'Achievement unlocked') + h('You earned a badge, {{first_name}}!') +
+      h('You earned a badge, {{first_name}}!') +
       C.celebration(t, { title: '{{badge_name}}' }) +
       lead('{{badge_description}}'),
     cta_label: 'See my badges', cta_url: '{{profile_url}}/badges',
@@ -359,7 +360,7 @@ const TEMPLATES = [
     email_category: 'Achievement Unlocked',
     email_reason: 'You are receiving this email because you reached a booking milestone on Meeticulous.',
     html_content:
-      eyebrow(t.text, 'Milestone') + h('Your first booking, {{first_name}}!') +
+      h('Your first booking, {{first_name}}!') +
       C.celebration(t, { title: 'First booking' }) +
       lead('Congratulations on your first booking. This is the start of something good.'),
     cta_label: 'View dashboard', cta_url: '{{dashboard_url}}',
@@ -372,7 +373,7 @@ const TEMPLATES = [
     email_category: 'Achievement Unlocked',
     email_reason: 'You are receiving this email because you reached a booking milestone on Meeticulous.',
     html_content:
-      eyebrow(t.text, 'Milestone') + h('10 bookings, {{first_name}}!') +
+      h('10 bookings, {{first_name}}!') +
       C.celebration(t, { title: '{{milestone_value}} bookings' }) +
       lead('Momentum is building.'),
     cta_label: 'View dashboard', cta_url: '{{dashboard_url}}',
@@ -385,7 +386,7 @@ const TEMPLATES = [
     email_category: 'Achievement Unlocked',
     email_reason: 'You are receiving this email because you reached a booking milestone on Meeticulous.',
     html_content:
-      eyebrow(t.text, 'Milestone') + h('50 bookings!') +
+      h('50 bookings!') +
       C.celebration(t, { title: '{{milestone_value}} bookings' }) +
       lead('Your clients clearly love working with you.'),
     cta_label: 'View dashboard', cta_url: '{{dashboard_url}}',
@@ -398,7 +399,7 @@ const TEMPLATES = [
     email_category: 'Achievement Unlocked',
     email_reason: 'You are receiving this email because you reached a booking milestone on Meeticulous.',
     html_content:
-      eyebrow(t.text, 'Milestone') + h('100 bookings, {{first_name}}!') +
+      h('100 bookings, {{first_name}}!') +
       C.celebration(t, { title: '{{milestone_value}} bookings' }) +
       lead("That's a serious achievement."),
     cta_label: 'View dashboard', cta_url: '{{dashboard_url}}',
@@ -413,7 +414,7 @@ const TEMPLATES = [
     email_category: 'Payment Receipt',
     email_reason: 'You are receiving this email because you made a purchase on Meeticulous.',
     html_content:
-      eyebrow(t.text, "You're in") + h("You're officially on {{plan_name}}, {{first_name}} 🎉") +
+      h("You're officially on {{plan_name}}, {{first_name}} 🎉") +
       C.celebration(t, { title: '{{plan_name}} — unlocked' }) +
       lead("Some people spend weeks 'thinking about it.' You just did the thing. Your {{plan_name}} plan is live, and everything you need to get booked and get paid is switched on.") +
       C.banner(t, { title: "Here's what just went live for you", sub: 'Your booking link is ready to share · payments land straight in your account · every guest gets automatic reminders and confirmations' }) +
@@ -443,7 +444,7 @@ const TEMPLATES = [
     email_category: 'Payment Receipt',
     email_reason: 'You are receiving this email because your Meeticulous subscription was renewed.',
     html_content:
-      eyebrow(t.text, 'Subscription') + h("You're renewed, {{first_name}}") +
+      h("You're renewed, {{first_name}}") +
       lead('Your {{plan_name}} plan has been renewed.') +
       C.infoCard(t, [['Plan', '{{plan_name}}'], ['Amount paid', '{{amount_charged}}'], ['Renews', '{{expiry_date}}']]) +
       lead('Your GST tax invoice is ready — <a href="{{invoice_url}}" style="color:#960D32;font-weight:600;text-decoration:none">view or download the PDF</a>. It is also under Transactions in your dashboard.'),
@@ -457,7 +458,7 @@ const TEMPLATES = [
     email_category: 'Renewal',
     email_reason: 'You are receiving this email because an automatic renewal charge for your Meeticulous subscription could not be completed.',
     html_content:
-      eyebrow(t.text, 'Action needed') + h("Your renewal didn't go through, {{first_name}}") +
+      h("Your renewal didn't go through, {{first_name}}") +
       lead("We tried to charge your {{plan_name}} renewal a few times and it didn't go through. Your plan is paused — update your payment method to keep it (and your 0% commission).") +
       note('If you meant to cancel, no action is needed — your plan simply ends at the current period.'),
     cta_label: 'Update payment', cta_url: '{{dashboard_url}}',
@@ -470,7 +471,7 @@ const TEMPLATES = [
     email_category: 'Payment Receipt',
     email_reason: 'You are receiving this email because a referral reward was credited to your Meeticulous account.',
     html_content:
-      eyebrow(t.text, 'Referral') + h('Nice — you earned {{reward_amount}}, {{first_name}}') +
+      h('Nice — you earned {{reward_amount}}, {{first_name}}') +
       lead('Someone you referred stuck around, so your referral reward has been released to your withdrawable balance.') +
       C.infoCard(t, [['Reward', '{{reward_amount}}'], ['Status', 'Added to withdrawable balance']]) +
       lead('Refer more hosts and keep earning.'),
@@ -486,7 +487,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this email because you are a valued member of the Meeticulous community.',
     html_content:
-      eyebrow(t.text, 'Celebration') + h('Happy birthday, {{first_name}}!') +
+      h('Happy birthday, {{first_name}}!') +
       C.celebration(t, { title: 'Happy birthday!' }) +
       lead('Everyone at Meeticulous wishes you a wonderful day. Thanks for being part of our community.'),
     cta_label: '', cta_url: '',
@@ -499,7 +500,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this email because you are a valued member of the Meeticulous community.',
     html_content:
-      eyebrow(t.text, 'Celebration') + h('Happy anniversary, {{first_name}}!') +
+      h('Happy anniversary, {{first_name}}!') +
       C.celebration(t, { title: 'Another year together' }) +
       lead("It's been another year with Meeticulous. Thank you for trusting us with your bookings."),
     cta_label: 'View dashboard', cta_url: '{{dashboard_url}}',
@@ -514,9 +515,15 @@ const TEMPLATES = [
     email_category: 'Welcome',
     email_reason: 'You are receiving this email because you recently created a Meeticulous host account.',
     html_content:
-      eyebrow(t.text, 'Welcome') + h('Welcome aboard, {{first_name}}!') +
-      C.celebration(t, { title: "You're in" }) +
-      lead('Your Meeticulous account is ready. Set up your services and availability to start taking bookings.'),
+      h('Welcome to Meeticulous, {{first_name}}') +
+      lead('Your account is ready. Three quick steps and clients can book and pay you — about 5 minutes in total.') +
+      steps(
+        step(1, 'Add your first service', 'Name, duration and price · 2 min'),
+        step(2, 'Set your availability', 'The hours clients can book · 1 min'),
+        step(3, 'Share your link', '{{profile_url}} · WhatsApp, Instagram bio'),
+      ) +
+      '<!--cta-->' +
+      C.signOff('Tithi', 'Meeticulous team · just reply if you get stuck'),
     cta_label: 'Set up my page', cta_url: '{{dashboard_url}}',
   }; })(),
 
@@ -531,16 +538,16 @@ const TEMPLATES = [
     email_category: 'Welcome',
     email_reason: 'You are receiving this email because you recently created a Meeticulous account.',
     html_content:
-      eyebrow(t.text, 'Welcome') + h('Welcome to Meeticulous, {{first_name}}') +
+      h('Welcome to Meeticulous, {{first_name}}') +
       lead("I'm Shubham, founder of Meeticulous. I started it because booking time with the people you actually want to meet should feel effortless — no back-and-forth, no friction.") +
       lead('Three ways to get started:') +
-      `<ol style="margin:0 0 18px;padding-left:20px;font-size:16px;line-height:1.7;color:#374151;font-family:'Poppins','Plus Jakarta Sans',Arial,sans-serif;">` +
+      `<ol style="margin:0 0 18px;padding-left:20px;font-size:16px;line-height:1.7;color:#4A3A3E;font-family:'Poppins','Plus Jakarta Sans',Arial,sans-serif;">` +
         `<li><a href="{{website_url}}/explore" style="color:{{brand_color}};font-weight:600;text-decoration:none;">Explore creators</a> and find someone worth your time</li>` +
         `<li>Book your first session in a couple of taps</li>` +
         `<li>Manage everything from your bookings dashboard</li>` +
       `</ol>` +
       lead('<strong>P.S.</strong> What brought you here? Just hit reply and let me know — I read every email.') +
-      lead('— Shubham<br/>Founder, Meeticulous'),
+      C.signOff('Shubham', 'Founder, Meeticulous'),
     cta_label: 'Explore creators', cta_url: '{{website_url}}/explore',
   }; })(),
 
@@ -553,7 +560,7 @@ const TEMPLATES = [
     email_category: 'Payment Receipt',
     email_reason: 'You are receiving this email because you have earnings waiting on Meeticulous.',
     html_content:
-      eyebrow(t.text, 'Earnings') + h("You've earned {{earned_amount}}, {{first_name}}") +
+      h("You've earned {{earned_amount}}, {{first_name}}") +
       lead('Real money, from a real booking. One quick step to receive it — add your PAN and bank details so we can pay you out. About 2 minutes, one time only.') +
       C.amountRow(t, 'Ready to withdraw', '{{earned_amount}}') +
       lead('After this, every rupee you earn lands in your account automatically.'),
@@ -568,7 +575,7 @@ const TEMPLATES = [
     email_category: 'Payment Receipt',
     email_reason: 'You are receiving this email because you received a payout on Meeticulous.',
     html_content:
-      eyebrow(t.text, 'Payout') + h('{{payout_amount}} is on its way, {{first_name}}') +
+      h('{{payout_amount}} is on its way, {{first_name}}') +
       lead('Nice work. Your earnings from a completed booking have been released and are settling to your bank account now. Depending on your bank it usually lands within 1–2 working days (a little longer over holidays).') +
       C.amountRow(t, 'Paid to you', '{{payout_amount}}') +
       lead('You can see every payout and its status in your dashboard.'),
@@ -582,7 +589,7 @@ const TEMPLATES = [
     email_category: 'Account Update',
     email_reason: 'You are receiving this email because your payout account needs verification on Meeticulous.',
     html_content:
-      eyebrow(t.text, 'Action needed') + h('Almost there, {{first_name}}') +
+      h('Almost there, {{first_name}}') +
       lead('You have money waiting, but our payments partner needs a little more information to finish verifying your payout account before we can release it. It only takes a few minutes.') +
       lead('Open your dashboard to see exactly what is needed and complete it.'),
     cta_label: 'Complete verification', cta_url: '{{dashboard_url}}',
@@ -595,7 +602,7 @@ const TEMPLATES = [
     email_category: 'Account Update',
     email_reason: 'You are receiving this email because a payout to you could not be completed on Meeticulous.',
     html_content:
-      eyebrow(t.text, 'Action needed') + h("Your payout didn't go through, {{first_name}}") +
+      h("Your payout didn't go through, {{first_name}}") +
       lead("We tried to send {{payout_amount}} to your bank but it didn't complete — usually a bank or account detail needs updating. Your money is safe and waiting; confirm your payout details and we'll retry automatically.") +
       C.amountRow(t, 'Waiting to be paid', '{{payout_amount}}') +
       lead('Update your details and the next payout run picks it up.'),
@@ -609,7 +616,7 @@ const TEMPLATES = [
     email_category: 'Payment Receipt',
     email_reason: 'You are receiving this email because a booking you earned on was refunded on Meeticulous.',
     html_content:
-      eyebrow(t.text, 'Update') + h('A booking was refunded, {{first_name}}') +
+      h('A booking was refunded, {{first_name}}') +
       lead("One of your bookings was cancelled or refunded, so the {{payout_amount}} earning for it has been reversed and won't be paid out. Everything else you've earned is unaffected.") +
       C.amountRow(t, 'Reversed', '{{payout_amount}}') +
       lead('You can see the details in your transactions.'),
@@ -623,7 +630,7 @@ const TEMPLATES = [
     email_category: 'Payment Receipt',
     email_reason: 'You are receiving this email because you have a payout settling around a bank holiday on Meeticulous.',
     html_content:
-      eyebrow(t.text, 'Heads up') + h('Your payout may take an extra day, {{first_name}}') +
+      h('Your payout may take an extra day, {{first_name}}') +
       lead("Banks are closed for {{holiday}} on {{holiday_date}}, so payouts don't settle that day. Your recent payout of {{payout_amount}} should reach your account by {{expected_date}} instead — nothing's wrong, it's just the bank holiday.") +
       C.amountRow(t, 'On the way', '{{payout_amount}}') +
       lead('We follow the bank settlement schedule, so this catches up automatically.'),
@@ -639,7 +646,7 @@ const TEMPLATES = [
     email_category: 'Product Feedback',
     email_reason: 'You are receiving this email because you submitted feedback on Meeticulous.',
     html_content:
-      eyebrow(t.text, 'Your feedback') + h('Your feedback is now {{status_label}}') +
+      h('Your feedback is now {{status_label}}') +
       lead('Thanks for helping us improve Meeticulous. Here is where your feedback stands:') +
       C.banner(t, { title: '{{status_label}}', sub: '{{feedback_subject}}' }) +
       lead('{{admin_response}}') +
@@ -670,9 +677,9 @@ const TEMPLATES = [
     email_category: 'Held Slot',
     email_reason: 'You are receiving this email because you started a booking on Meeticulous.',
     html_content:
-      eyebrow(t.text, 'Almost done') + h('Finish your booking, {{first_name}}') +
+      h('Finish your booking, {{first_name}}') +
       lead("You were almost done booking <strong>{{service_name}}</strong> with {{vendor_name}}. We're holding your slot — but not for long, it'll open back up to others soon.") +
-      C.heroDate(t, { day: '{{booking_day}}', mon: '{{booking_month}}', year: '{{booking_year}}', title: '{{service_name}}', time: '{{booking_time}}', sub: 'with {{vendor_name}}' }) +
+      C.bookingCard({ title: '{{service_name}}', sub: 'with {{vendor_name}}', rows: [['Date', '{{booking_date}}'], ['Time', '{{booking_time}}']] }) +
       C.countdown(t, { lead: 'Held for you', big: 'A few more minutes' }),
     cta_label: 'Complete your booking', cta_url: '{{resume_url}}',
   }; })(),
@@ -702,7 +709,7 @@ const TEMPLATES = [
     email_category: 'Newsletter',
     email_reason: 'You are receiving this email because you subscribed to the Meeticulous newsletter.',
     html_content:
-      eyebrow(t.text, 'The Collective') + h("You're in.") +
+      h("You're in.") +
       lead('Thanks for subscribing. Every week we send tips, templates and honest lessons on getting booked and paid.') +
       lead('No noise, no spam — just the good stuff.') +
       note('Not for you? You can unsubscribe any time using the link below.'),

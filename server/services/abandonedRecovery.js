@@ -69,6 +69,7 @@ async function processAbandonedRecovery() {
             first_name: (b.guest_name || '').split(' ')[0] || 'there',
             service_name: (svc && svc.title) || 'your service',
             vendor_name: (host && host.name) || 'your host',
+            booking_date: d.toLocaleDateString('en-IN', { timeZone: tz, weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }),
             booking_day: d.toLocaleDateString('en-IN', { timeZone: tz, day: '2-digit' }),
             booking_month: d.toLocaleDateString('en-IN', { timeZone: tz, month: 'short' }).toUpperCase(),
             booking_year: d.toLocaleDateString('en-IN', { timeZone: tz, year: 'numeric' }),
