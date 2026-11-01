@@ -1,7 +1,7 @@
 # Design System — Meeticulous
 
 ## Design Language
-**Soft modern SaaS** — clean light surfaces, bold typography, soft blurred shadows, and brand **blue #0079C1** (post "Book A Sloth" → "Meeticulous" rebrand). Tailwind utility-first with a CSS-variable token layer.
+**Soft modern SaaS** — clean light surfaces, bold typography, soft blurred shadows, and brand **blue #0079C1** (post "Meeticulous" → "Meeticulous" rebrand). Tailwind utility-first with a CSS-variable token layer.
 
 > **This file is a quick reference. The authoritative, current design system lives in [`docs/design/`](design/README.md)** — token spec (`03-design-tokens.md`), component standards (`04-components.md`), roadmap (`06-roadmap.md`). The older "Friendly Brutalism"/orange values that remain below are being corrected phase by phase; trust `docs/design/` wherever they disagree.
 

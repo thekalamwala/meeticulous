@@ -138,7 +138,7 @@ Orchestration instructions (no app code). Pipeline:
 5. **Internal-link planning (topic cluster + intent).** From the `blogs` query, map the draft
    into a topic cluster (pillar ↔ spokes) and pick internal targets by **shared cluster +
    compatible intent**, not raw count: link up to the pillar, sideways to sibling spokes, and to
-   intent-matched product pages (`/be-a-sloth`, host profiles, pricing). Classify marketing vs
+   intent-matched product pages (`/become-a-host`, host profiles, pricing). Classify marketing vs
    product-update by content/slug inference. Target 3–5 internal links **when cluster-justified**;
    fewer is fine if the cluster is thin — never pad to hit a number.
 

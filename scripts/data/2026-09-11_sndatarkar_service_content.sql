@@ -52,84 +52,84 @@ begin;
 
 -- ── 1. Talk about Shubham Datarkar Dot Com  (₹0, 30 min) ────────────────────
 update services set
-  short_description = $b$A free, no-agenda 30-minute conversation with Shubham Datarkar — the person behind shubhamdatarkar.com and the founder of Book A Sloth. Come with a question, an idea, a bit of feedback, or nothing in particular. This is simply time to talk.$b$,
-  description = $b$Talk about Shubham Datarkar Dot Com is an open, one-on-one video call with Shubham Datarkar — founder of Book A Sloth and the maker behind shubhamdatarkar.com. There is no fixed agenda and nothing to buy. It is a relaxed thirty minutes to connect directly with Shubham.
+  short_description = $b$A free, no-agenda 30-minute conversation with Shubham Datarkar — the person behind shubhamdatarkar.com and the founder of Meeticulous. Come with a question, an idea, a bit of feedback, or nothing in particular. This is simply time to talk.$b$,
+  description = $b$Talk about Shubham Datarkar Dot Com is an open, one-on-one video call with Shubham Datarkar — founder of Meeticulous and the maker behind shubhamdatarkar.com. There is no fixed agenda and nothing to buy. It is a relaxed thirty minutes to connect directly with Shubham.
 
-People usually book this call after finding Shubham through his website, his writing, or his work on Book A Sloth. Some come to share feedback on the product, some to explore a collaboration or partnership, some to bounce around an idea for their own project, and some just to say hello and see how the platform works from the inside.
+People usually book this call after finding Shubham through his website, his writing, or his work on Meeticulous. Some come to share feedback on the product, some to explore a collaboration or partnership, some to bounce around an idea for their own project, and some just to say hello and see how the platform works from the inside.
 
 Bring whatever is on your mind. Shubham will listen, share honest thoughts, and point you toward something useful wherever he can. If it turns into something bigger, great — and if it is just a good conversation, that is fine too.$b$,
-  long_description = $b$<p><strong>Talk about Shubham Datarkar Dot Com</strong> is an open, one-on-one video call with <strong>Shubham Datarkar</strong> — founder of Book A Sloth and the maker behind shubhamdatarkar.com. No fixed agenda, nothing to buy. Just a relaxed thirty minutes to talk.</p>
-<p>Most people book this after finding Shubham through his website, his writing, or his work on Book A Sloth. Come to:</p>
+  long_description = $b$<p><strong>Talk about Shubham Datarkar Dot Com</strong> is an open, one-on-one video call with <strong>Shubham Datarkar</strong> — founder of Meeticulous and the maker behind shubhamdatarkar.com. No fixed agenda, nothing to buy. Just a relaxed thirty minutes to talk.</p>
+<p>Most people book this after finding Shubham through his website, his writing, or his work on Meeticulous. Come to:</p>
 <ul>
-<li>Share feedback on Book A Sloth, or an idea to make it better</li>
+<li>Share feedback on Meeticulous, or an idea to make it better</li>
 <li>Explore a collaboration, partnership, or piece of work together</li>
 <li>Get an honest second opinion on something you are building</li>
 <li>Simply connect and see how the platform works from the inside</li>
 </ul>
 <p>Bring whatever is on your mind. Shubham will listen, share honest thoughts, and point you toward something useful where he can. If it grows into something bigger, wonderful — and if it is just a good conversation, that is a win too.</p>$b$,
   important_note = $b$This is a free, informal conversation. Please join on time from a device with a stable connection and working video. If you have something specific to discuss, send a line or two beforehand so we can make the most of the thirty minutes.$b$,
-  included_items = $j$["A free 30-minute one-on-one video call with Shubham","Honest feedback on your idea, product, or question","A relaxed, no-agenda conversation","Pointers to useful resources, people, or next steps","A first-hand look at how Book A Sloth works"]$j$::jsonb,
-  excluded_items = $j$["Not paid consulting or a formal advisory session","No written notes, report, or recording by default","Not technical support for Book A Sloth accounts","No guarantee of partnership, investment, or hiring","Not a sales or pricing negotiation"]$j$::jsonb,
+  included_items = $j$["A free 30-minute one-on-one video call with Shubham","Honest feedback on your idea, product, or question","A relaxed, no-agenda conversation","Pointers to useful resources, people, or next steps","A first-hand look at how Meeticulous works"]$j$::jsonb,
+  excluded_items = $j$["Not paid consulting or a formal advisory session","No written notes, report, or recording by default","Not technical support for Meeticulous accounts","No guarantee of partnership, investment, or hiring","Not a sales or pricing negotiation"]$j$::jsonb,
   faqs = $j$[
-    {"question":"What is this call about?","answer":"It is an open, free 30-minute video conversation with Shubham Datarkar — founder of Book A Sloth and the maker behind shubhamdatarkar.com. There is no fixed agenda; you can talk about whatever is on your mind."},
-    {"question":"Who usually books this?","answer":"People who found Shubham through his website, his writing, or Book A Sloth and want to share feedback, explore a collaboration, get a second opinion, or simply connect."},
+    {"question":"What is this call about?","answer":"It is an open, free 30-minute video conversation with Shubham Datarkar — founder of Meeticulous and the maker behind shubhamdatarkar.com. There is no fixed agenda; you can talk about whatever is on your mind."},
+    {"question":"Who usually books this?","answer":"People who found Shubham through his website, his writing, or Meeticulous and want to share feedback, explore a collaboration, get a second opinion, or simply connect."},
     {"question":"Does it cost anything?","answer":"No. This session is completely free — it is just time to talk, with nothing to buy."},
     {"question":"Do I need to prepare anything?","answer":"Not at all. If you have a specific topic, sending a short note beforehand helps, but coming with an open mind is perfectly fine."},
-    {"question":"Is this technical support for my Book A Sloth account?","answer":"No. For account or booking help, please use Book A Sloth support. This call is a general conversation, not a support session."}
+    {"question":"Is this technical support for my Meeticulous account?","answer":"No. For account or booking help, please use Meeticulous support. This call is a general conversation, not a support session."}
   ]$j$::jsonb,
   seo_title = $b$Talk with Shubham Datarkar — Free 30-Min 1:1 Call$b$,
-  seo_description = $b$Book a free 30-minute one-on-one call with Shubham Datarkar, founder of Book A Sloth. No agenda — share feedback, explore ideas, or just connect.$b$,
+  seo_description = $b$Book a free 30-minute one-on-one call with Shubham Datarkar, founder of Meeticulous. No agenda — share feedback, explore ideas, or just connect.$b$,
   og_title = $b$Talk with Shubham Datarkar — Free 1:1 Call$b$,
-  og_description = $b$A free, no-agenda 30-minute video call with the founder of Book A Sloth. Share feedback, explore a collaboration, or simply connect.$b$,
+  og_description = $b$A free, no-agenda 30-minute video call with the founder of Meeticulous. Share feedback, explore a collaboration, or simply connect.$b$,
   seo_updated_at = now(), seo_updated_by = 'sql:sndatarkar-content-2026-09-11', updated_at = now()
 where id = 'aa65524b-9519-4fff-8f03-9a05a72d2f17';
 
--- ── 2. Video KYC for Book A Sloth  (₹0, 15 min) ─────────────────────────────
+-- ── 2. Video KYC for Meeticulous  (₹0, 15 min) ─────────────────────────────
 update services set
-  short_description = $b$A quick, guided 15-minute video call to complete identity verification (KYC) for your Book A Sloth host account. Verifying your identity keeps the platform trusted and unlocks payouts, so you can start getting paid for your bookings.$b$,
-  description = $b$Video KYC for Book A Sloth is a short, guided identity-verification call for hosts on the platform. KYC (Know Your Customer) is a standard, one-time check that confirms you are who you say you are — it keeps Book A Sloth safe for guests and is required before your earnings can be paid out.
+  short_description = $b$A quick, guided 15-minute video call to complete identity verification (KYC) for your Meeticulous host account. Verifying your identity keeps the platform trusted and unlocks payouts, so you can start getting paid for your bookings.$b$,
+  description = $b$Video KYC for Meeticulous is a short, guided identity-verification call for hosts on the platform. KYC (Know Your Customer) is a standard, one-time check that confirms you are who you say you are — it keeps Meeticulous safe for guests and is required before your earnings can be paid out.
 
-In about fifteen minutes over video, a member of the Book A Sloth team will verify your identity and confirm the details on your host account. You will be asked to show a valid government ID and to confirm a few basic details already on file. The process is straightforward, and the team will guide you through each step.
+In about fifteen minutes over video, a member of the Meeticulous team will verify your identity and confirm the details on your host account. You will be asked to show a valid government ID and to confirm a few basic details already on file. The process is straightforward, and the team will guide you through each step.
 
 Once your KYC is approved, payouts are unlocked on your account and you can begin receiving settlements for your paid bookings without further verification delays.$b$,
-  long_description = $b$<p><strong>Video KYC for Book A Sloth</strong> is a short, guided identity-verification call for hosts. KYC (Know Your Customer) is a standard, one-time check that confirms your identity — it keeps the platform trusted for guests and is <strong>required before your earnings can be paid out</strong>.</p>
-<p>In about fifteen minutes over video, a member of the Book A Sloth team will:</p>
+  long_description = $b$<p><strong>Video KYC for Meeticulous</strong> is a short, guided identity-verification call for hosts. KYC (Know Your Customer) is a standard, one-time check that confirms your identity — it keeps the platform trusted for guests and is <strong>required before your earnings can be paid out</strong>.</p>
+<p>In about fifteen minutes over video, a member of the Meeticulous team will:</p>
 <ul>
 <li>Verify your identity against a valid government-issued ID</li>
 <li>Confirm the key details on your host account</li>
 <li>Answer any questions you have about the payout process</li>
 </ul>
 <p>The process is simple and fully guided. Once your KYC is approved, <strong>payouts are unlocked</strong> on your account and you can start receiving settlements for your paid bookings without further delays.</p>$b$,
-  important_note = $b$Please keep a valid government-issued photo ID ready and join from a well-lit space with a stable internet connection and a working camera. Make sure the name and details on your ID match your Book A Sloth host account to avoid delays in approval.$b$,
+  important_note = $b$Please keep a valid government-issued photo ID ready and join from a well-lit space with a stable internet connection and a working camera. Make sure the name and details on your ID match your Meeticulous host account to avoid delays in approval.$b$,
   included_items = $j$["A guided 15-minute video verification call","Identity check against a valid government-issued ID","Confirmation of your host account details","Help with any payout or verification questions","KYC approval that unlocks payouts on your account"]$j$::jsonb,
   excluded_items = $j$["Not a product demo or training session","Does not include tax, GST, or accounting advice","No document editing or account changes on your behalf","Not technical support for bookings or the app","Approval is subject to valid, matching documents"]$j$::jsonb,
   faqs = $j$[
-    {"question":"What is Video KYC and why is it needed?","answer":"KYC (Know Your Customer) is a one-time identity check required before payouts can be enabled on your host account. It keeps Book A Sloth safe and trusted for everyone."},
+    {"question":"What is Video KYC and why is it needed?","answer":"KYC (Know Your Customer) is a one-time identity check required before payouts can be enabled on your host account. It keeps Meeticulous safe and trusted for everyone."},
     {"question":"What documents should I keep ready?","answer":"A valid government-issued photo ID such as Aadhaar, PAN, passport, or driving licence. Make sure the details match your host account."},
     {"question":"How long does the call take?","answer":"Around 15 minutes. The team guides you through each step, so there is nothing to prepare beyond having your ID ready."},
     {"question":"What happens after I am verified?","answer":"Once your KYC is approved, payouts are unlocked on your account and you can start receiving settlements for your paid bookings."},
     {"question":"Is my information safe?","answer":"Yes. Your details are used only for identity verification and handled securely as part of the platform's standard KYC process."}
   ]$j$::jsonb,
-  seo_title = $b$Video KYC for Book A Sloth Hosts — Verify & Get Paid$b$,
-  seo_description = $b$Complete your Book A Sloth host KYC in a quick 15-minute guided video call. Verify your identity to unlock payouts and start getting paid for bookings.$b$,
-  og_title = $b$Video KYC for Book A Sloth Hosts$b$,
-  og_description = $b$A quick 15-minute guided video call to verify your identity and unlock payouts on your Book A Sloth host account.$b$,
+  seo_title = $b$Video KYC for Meeticulous Hosts — Verify & Get Paid$b$,
+  seo_description = $b$Complete your Meeticulous host KYC in a quick 15-minute guided video call. Verify your identity to unlock payouts and start getting paid for bookings.$b$,
+  og_title = $b$Video KYC for Meeticulous Hosts$b$,
+  og_description = $b$A quick 15-minute guided video call to verify your identity and unlock payouts on your Meeticulous host account.$b$,
   seo_updated_at = now(), seo_updated_by = 'sql:sndatarkar-content-2026-09-11', updated_at = now()
 where id = '6e0ddb63-e82a-457d-8c2b-14ea4f297fde';
 
--- ── 3. Book A Sloth App Online Demo (30-Min)  (₹1, 30 min) ──────────────────
+-- ── 3. Meeticulous App Online Demo (30-Min)  (₹1, 30 min) ──────────────────
 --    long_description / included / excluded / faqs / important_note already good
 --    (left untouched). Only expand the thin `description` + set seo_*.
 update services set
-  description = $b$The Book A Sloth App Online Demo is a live, one-on-one walkthrough of the platform, run over a thirty-minute video call. Instead of reading documentation, you see the app in action and ask questions as you go.
+  description = $b$The Meeticulous App Online Demo is a live, one-on-one walkthrough of the platform, run over a thirty-minute video call. Instead of reading documentation, you see the app in action and ask questions as you go.
 
-During the session, a host shares their screen and shows you how Book A Sloth actually works: creating and setting up a profile, browsing and booking services, managing your listings and calendar, and using the scheduling and payment tools. It is built for anyone evaluating the platform — new users, creators and professionals thinking of offering their services, or businesses comparing options before they commit.
+During the session, a host shares their screen and shows you how Meeticulous actually works: creating and setting up a profile, browsing and booking services, managing your listings and calendar, and using the scheduling and payment tools. It is built for anyone evaluating the platform — new users, creators and professionals thinking of offering their services, or businesses comparing options before they commit.
 
-The demo is tailored to your use case. Come with questions about your own situation and you will leave with a clear picture of whether Book A Sloth fits your needs and how to get started. You will also see how a real booking, payment, and confirmation flow works from end to end, so nothing about the platform stays a mystery.$b$,
-  seo_title = $b$Book A Sloth App Demo — Live 30-Min Walkthrough$b$,
-  seo_description = $b$See Book A Sloth in action in a live 30-minute demo. A host walks you through booking, scheduling, listings, and payments, with time for your questions.$b$,
-  og_title = $b$Book A Sloth App Online Demo$b$,
-  og_description = $b$A live 30-minute walkthrough of Book A Sloth — booking, scheduling, listings, and payments — with time for your questions.$b$,
+The demo is tailored to your use case. Come with questions about your own situation and you will leave with a clear picture of whether Meeticulous fits your needs and how to get started. You will also see how a real booking, payment, and confirmation flow works from end to end, so nothing about the platform stays a mystery.$b$,
+  seo_title = $b$Meeticulous App Demo — Live 30-Min Walkthrough$b$,
+  seo_description = $b$See Meeticulous in action in a live 30-minute demo. A host walks you through booking, scheduling, listings, and payments, with time for your questions.$b$,
+  og_title = $b$Meeticulous App Online Demo$b$,
+  og_description = $b$A live 30-minute walkthrough of Meeticulous — booking, scheduling, listings, and payments — with time for your questions.$b$,
   seo_updated_at = now(), seo_updated_by = 'sql:sndatarkar-content-2026-09-11', updated_at = now()
 where id = 'd7b2768c-acd2-447e-9b8d-9cafb3fef151';
 

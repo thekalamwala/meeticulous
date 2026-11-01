@@ -42,7 +42,7 @@ jobs:
     name: Generate host OG cards
     runs-on: ubuntu-latest
     # Never run on forks — the secrets aren't there and it would just fail noisily.
-    if: github.repository == 'bookasloth/book-a-sloth'
+    if: github.repository == 'thekalamwala/meeticulous'
     defaults:
       run:
         working-directory: client

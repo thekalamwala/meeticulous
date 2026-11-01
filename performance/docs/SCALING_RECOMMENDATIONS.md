@@ -1,4 +1,4 @@
-# Scaling Recommendations — Book A Sloth
+# Scaling Recommendations — Meeticulous
 
 _2026-06-18. Derived from `PERFORMANCE_AUDIT.md` + the JMeter baseline (`BENCHMARKS.md`). Prioritized by impact-to-effort._
 

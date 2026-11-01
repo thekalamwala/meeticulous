@@ -1,9 +1,9 @@
 ---
 name: blog-seo-optimizer
-description: Use when optimizing or publishing a Book A Sloth blog post from a Markdown file — takes the MD, classifies search intent, checks cannibalization, runs a SERP/content-gap analysis, adds cluster-based internal links and verified outbound citations, optimizes for SEO/GEO/AEO, scores it with the live production scorer (server/scripts/scoreBlogDraft.mjs), gates on a multi-condition quality check, and opens a PR. Trigger: "optimize this blog post", "blog SEO", "/blog-seo".
+description: Use when optimizing or publishing a Meeticulous blog post from a Markdown file — takes the MD, classifies search intent, checks cannibalization, runs a SERP/content-gap analysis, adds cluster-based internal links and verified outbound citations, optimizes for SEO/GEO/AEO, scores it with the live production scorer (server/scripts/scoreBlogDraft.mjs), gates on a multi-condition quality check, and opens a PR. Trigger: "optimize this blog post", "blog SEO", "/blog-seo".
 ---
 
-# Blog SEO/GEO/AEO Optimizer (Book A Sloth)
+# Blog SEO/GEO/AEO Optimizer (Meeticulous)
 
 Takes one blog-post Markdown file → an optimized, scored, PR-ready post written into
 `client/src/data/blogPosts.js`. Scoring uses the live production scorer; this skill never
@@ -42,13 +42,13 @@ reimplements the rubric. Spec: `docs/superpowers/specs/2026-09-10-blog-seo-geo-a
 
 5. **Internal-link plan (cluster + intent).** From the posts list, map the draft into a
    pillar↔spoke cluster; pick internal targets by shared cluster + compatible intent (link up to
-   pillar, sideways to siblings, to intent-matched product pages `/be-a-sloth`, host profiles,
+   pillar, sideways to siblings, to intent-matched product pages `/become-a-host`, host profiles,
    `/pricing`). 3–5 when justified; never pad.
    **Only link `/blog/<slug>` targets that are ALREADY published** (present in the step-2 posts
    list). An incoming draft often links *forward* to sibling drafts not yet posted (they publish
    later on the daily cadence) — those are broken links and fail the gate. For each internal
    `/blog/` link in the draft, if the slug is not published: **delink it** (keep the sentence as
-   plain text) or **repoint** it to an intent-matched published page (`/be-a-sloth`, `/pricing`,
+   plain text) or **repoint** it to an intent-matched published page (`/become-a-host`, `/pricing`,
    the cluster pillar). Never emit an internal `/blog/<slug>` that is not live.
 
 6. **Optimize** the post object: title ≤60 (keyword front-loaded); excerpt 140–160; format

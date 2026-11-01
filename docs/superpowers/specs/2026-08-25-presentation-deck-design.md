@@ -30,7 +30,7 @@ Keynote + product demo — **not** a PowerPoint clone, not a long marketing webp
   Soft editorial card shadow `0 8px 30px rgba(23,32,51,0.05)`; brutalist hard shadow
   `6px 6px 0 rgba(30,30,30,0.9)` for accents. Borders 1px light on soft cards, up to 3px black on brutalist accents.
 - Existing classes reusable anywhere: `.btn`, `.btn--outline`, `.btn-primary`, `.page-card`,
-  `.fb-card`, `.fb-badge`, `.sloth-glass`.
+  `.fb-card`, `.fb-badge`, `.brand-glass`.
 - Motion tokens `--motion-fast 120ms`, `--motion-base 180ms`. `prefers-reduced-motion`
   already killed globally — new work must inherit that.
 
@@ -43,7 +43,7 @@ Each slide answers one question. `key` is the deep-link hash.
 
 | # | key | Slide | ONE thing | Primary source |
 |---|-----|-------|-----------|----------------|
-| 01 | `hook` | Hook | What it is | Hero copy `Home.jsx:816` "Your booking link that actually gets you paid" + Sloth SVG |
+| 01 | `hook` | Hook | What it is | Hero copy `Home.jsx:816` "Your booking link that actually gets you paid" + brand mark |
 | 02 | `problem` | The Problem | Today is fragmented | `PROBLEMS` `Home.jsx:507`, About `problem.rows` |
 | 03 | `idea` | The Idea | A calmer system | About beliefs, "Made for India. Not adapted for it." |
 | 04 | `how` | How It Works | 3-step flow | `components/home/HowItWorks.jsx` (Share link → book & pay → just show up) |
@@ -52,7 +52,7 @@ Each slide answers one question. `key` is the deep-link hash.
 | 07 | `transform` | Before vs After | Dramatic transformation | `BenefitsComparison` / `PROBLEMS` pairs; toggle |
 | 08 | `who` | Who It's For | It's for you | `businessCategories` (10) `howItWorksData.js:91`; chips re-skin demo |
 | 09 | `pricing` | Pricing | Simple, keep your money | `PricingCards` + `plans.js` (Starter ₹0 / Host+ ₹229·₹1,499 / Studio ₹555·₹3,650) |
-| 10 | `start` | Getting Started + CTA | Start now | `processSteps`, "Live in ~42 seconds", Continue with Google → `/be-a-sloth` |
+| 10 | `start` | Getting Started + CTA | Start now | `processSteps`, "Live in ~42 seconds", Continue with Google → `/become-a-host` |
 
 Deliberately cut: standalone "business value", "product walkthrough", "customer/host
 experience" as separate slides — folded into 06/07 so no slide restates another.
@@ -91,7 +91,7 @@ Recognition (02) → relief (03) → clarity (04) → **engagement** (05) → co
 (`components/pricing/PricingCards.jsx`), `Button`+`buttonClasses` (`dashboard/ui/Button.jsx`),
 `Badge`/`StatusBadge`/`StatusChip`, `Reveal` (`components/home/Reveal.jsx`), `Tabs`/
 `SegmentedControl` (`dashboard/ui/*`), `Modal` (`booking/Modal.jsx`), `Odometer` (`Home.jsx:169`),
-`Sloth()` SVG (`components/error/ErrorIllustration.jsx`).
+the brand mark.
 
 ### Routing (the safe-add checklist — both CI sync tests must pass)
 1. `App.jsx`: lazy import + `<Route path="/presentation" element={<Presentation/>}/>` placed

@@ -1,5 +1,5 @@
 {
-  "name": "book-a-sloth-smoke",
+  "name": "meeticulous-smoke",
   "private": true,
   "version": "0.0.1",
   "description": "Playwright smoke tests. Isolated from client/server npm graphs.",

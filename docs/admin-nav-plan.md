@@ -1,6 +1,6 @@
 # Admin Two-Level Navigation Rail — Plan
 
-**Surface:** admin panel (`/admin/*`, `/super-dashboard`, `/hello-sloth`).
+**Surface:** admin panel (`/admin/*`, `/super-dashboard`, `/backstage`).
 **Status:** Phase 1 (audit) + Phase 2 (plan) complete. **Phase 3 build not started — awaiting review.**
 **Branch:** `docs/admin-nav-rail-plan`.
 
@@ -57,7 +57,7 @@ merging.
 - `/super-dashboard` — no sidebar entry since 2026-07-03 (`adminNav.js:95-98`);
   reached only via `/admin` redirect + breadcrumbs
 - Parked routeless: SuperDashboard tabs (Operations Center / Revenue / Marketing
-  Insights / Pending Actions) exist only as `inactive` Sloth-House cards
+  Insights / Pending Actions) exist only as `inactive` Admin-House cards
   (`deptRegistry.js:28-31`).
 
 **Dead links:** none in the active nav — every active target resolves.
@@ -139,10 +139,10 @@ reserved for badge dots and is NOT a section accent** — Support & Moderation u
 | 8 | **System** | neutral (`--adm-text-3` slate) | Config, low-stakes, rare | General Settings, Payment Settings, Audit Logs, Reserved Slugs, Blocked IPs |
 
 **Reconciliation with the existing 7 departments:** the current dept model
-(cxo/support/marketing/finance/operation/engineering/sloth-house) is org-team-based.
+(cxo/support/marketing/finance/operation/engineering/admin-house) is org-team-based.
 This taxonomy is work-type-based, which is what the target pattern asks for. Mapping:
 Operation→Operations, Support→Support & Moderation, Finance→Revenue,
-Marketing→Growth, Engineering→System, CXO→Overview, Sloth-House dissolves (its
+Marketing→Growth, Engineering→System, CXO→Overview, Admin-House dissolves (its
 inactive parked cards become real Overview/Revenue tab links). Sales/CRM (previously
 its own sidebar block) stays its own section.
 

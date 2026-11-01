@@ -72,7 +72,7 @@ ALTER TABLE public.leads DROP CONSTRAINT IF EXISTS leads_status_check;
 ALTER TABLE public.leads ADD CONSTRAINT leads_status_check CHECK (status IN (
   'list',                                    -- NEW: cold pool (in a lead_list, not in the pipeline)
   'new','contacted','replied','qualified','demo',
-  'paid','activated','won','sloth',
+  'paid','activated','won','loyal',
   'retained','ambassador','enterprised','champion',
   'not_reachable','not_interested','disqualified','lost','churned',
   'do_not_contact',
