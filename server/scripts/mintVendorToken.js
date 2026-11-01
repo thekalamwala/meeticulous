@@ -12,7 +12,7 @@ require('dotenv').config();
 const { signInWithPassword } = require('../config/supabase');
 const { assertNotProd } = require('./lib/guard');
 
-const EMAIL = process.env.LOADTEST_VENDOR_EMAIL || 'loadtest-vendor-rules@loadtest.bookasloth.local';
+const EMAIL = process.env.LOADTEST_VENDOR_EMAIL || 'loadtest-vendor-rules@loadtest.meeticulous.local';
 const PASSWORD = process.env.LOADTEST_VENDOR_PASSWORD || 'LoadTest!2026';
 
 (async () => {

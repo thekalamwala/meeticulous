@@ -1212,7 +1212,7 @@ const ServiceBooking = () => {
                     </p>
                   </>
                 )}
-                <a href="mailto:hello@meeticulous.com"
+                <a href="mailto:team@meeticulous.com"
                   className="btn w-full py-3 font-bold text-sm transition-opacity hover:opacity-85"
                   style={{ background: tc, color: textOnTheme }}>
                   Contact support

@@ -262,12 +262,12 @@ export const resolveBlogSeo = ({ post = {}, siteUrl = SITE_URL } = {}) => {
 // ── Shared brand / page builders ─────────────────────────────────────────────
 
 // Official brand profiles — used for Organization.sameAs (entity disambiguation
-// for SEO/GEO). Source of truth mirrors client/src/components/about/TeamSocials.jsx.
+// for SEO/GEO). Keep in sync with the Footer social links.
 export const ORG_SAME_AS = [
-  'https://www.linkedin.com/company/book-a-sloth/',
-  'https://www.instagram.com/bookasloth',
-  'https://www.facebook.com/bookasloth',
-  'https://x.com/bookasloth',
+  'https://www.linkedin.com/company/meeticulous/',
+  'https://www.instagram.com/meeticulous',
+  'https://www.facebook.com/meeticulous',
+  'https://x.com/meeticulous',
 ];
 
 // Legal entity + a support contact point. Source of truth is the company's own
@@ -290,7 +290,7 @@ export const ORG_ADDRESS = {
 export const ORG_CONTACT_POINT = {
   '@type': 'ContactPoint',
   contactType: 'customer support',
-  email: 'hello@meeticulous.com',
+  email: 'team@meeticulous.com',
   availableLanguage: ['en', 'hi'],
 };
 
@@ -880,7 +880,7 @@ export const glossaryTermJsonLd = ({ siteUrl = SITE_URL, slug, term, definition,
 };
 
 // ContactPage node with the support contact point.
-export const contactPageJsonLd = ({ siteUrl = SITE_URL, email = 'hello@meeticulous.com' } = {}) => {
+export const contactPageJsonLd = ({ siteUrl = SITE_URL, email = 'team@meeticulous.com' } = {}) => {
   const site = trimSlash(siteUrl);
   return {
     '@context': 'https://schema.org',

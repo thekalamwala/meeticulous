@@ -10,7 +10,7 @@ import LegalLayout, { Section } from '../components/common/LegalLayout';
 // monthly cycle / 10% holdback / Payment Advice doc / Form 16A exist in the product —
 // wording matches routeAutoPayoutService.js + payoutAdminController.js.
 
-const Mail = () => <a href="mailto:hello@meeticulous.com" className="text-primary hover:underline">hello@meeticulous.com</a>;
+const Mail = () => <a href="mailto:team@meeticulous.com" className="text-primary hover:underline">team@meeticulous.com</a>;
 
 const HostAgreement = () => (
   <LegalLayout

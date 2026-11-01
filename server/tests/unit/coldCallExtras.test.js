@@ -138,7 +138,7 @@ describe('dailyRecap', () => {
     };
     expect(await svc.dailyRecap(NOW)).toEqual({ sent: true });
     const mail = sendEmail.mock.calls[0][0];
-    expect(mail.to).toBe('hello@meeticulous.com');
+    expect(mail.to).toBe('team@meeticulous.com');
     expect(mail.subject).toBe('Cold calling today: 2 calls · 1 interested');
     expect(mail.html).toContain('Sunrise &lt;Dental&gt;');
   });

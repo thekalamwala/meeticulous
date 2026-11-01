@@ -53,7 +53,7 @@ const TopmateVsMeeticulous = () => {
       <Seo
         title={TITLE}
         description={DESCRIPTION}
-        image={ogCard('lp-topmate-vs-bookasloth')}
+        image={ogCard('lp-topmate-alternative')}
         canonical={CANONICAL}
         jsonLd={comparisonGraphJsonLd({
           canonical: CANONICAL,
@@ -120,8 +120,8 @@ const TopmateVsMeeticulous = () => {
             <Link to="/help" className="hover:text-ink hover:no-underline">
               Help
             </Link>
-            <a href="mailto:hello@meeticulous.com" className="hover:text-ink hover:no-underline">
-              hello@meeticulous.com
+            <a href="mailto:team@meeticulous.com" className="hover:text-ink hover:no-underline">
+              team@meeticulous.com
             </a>
           </div>
         </div>

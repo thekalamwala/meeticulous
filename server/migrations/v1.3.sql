@@ -23,11 +23,11 @@ CREATE INDEX IF NOT EXISTS idx_otp_codes_email_type ON otp_codes(email, type);
 
 -- ── Admin user seed ──────────────────────────────────────────
 -- IMPORTANT: Run this separately via Supabase Auth Admin API or Dashboard.
--- The admin user (admin@bookasloth.in / Sloth@1995) must be created manually
+-- The admin user (credentials kept out of the repo) must be created manually
 -- in Supabase Auth then given role 'superadmin' via:
 --
---   UPDATE profiles SET role = 'superadmin' WHERE email = 'admin@bookasloth.in';
+--   UPDATE profiles SET role = 'superadmin' WHERE email = '<admin email>';
 --
 -- Or run the helper below AFTER the auth user has been created:
 -- UPDATE profiles SET role = 'superadmin', name = 'Super Admin'
---   WHERE email = 'admin@bookasloth.in';
+--   WHERE email = '<admin email>';

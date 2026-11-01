@@ -29,7 +29,7 @@
 // ── Boards (order matters — index within a board is its column order) ──────────
 // The ROI-milestone status. Its stored value is a legacy name kept for existing
 // leads.status rows and the admin client's salesConstants — rename both together.
-const ROI = 'sloth';
+const ROI = 'customer';
 
 const PRESALE   = ['new', 'contacted', 'replied', 'qualified', 'demo'];
 const RELATIONS = ['paid', 'activated', 'won', ROI];           // Subscribed · Onboarded · Won · ROI milestone

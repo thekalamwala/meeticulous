@@ -19,8 +19,8 @@ test('intro greets by first name when known, generically otherwise', () => {
   expect(introMessage('Tithi', null)).toMatch(/^Hi — I'm Tithi from the Meeticulous support team\./);
 });
 
-test('founder logs in as bookasloth@gmail.com and appears as Shubham', () => {
-  expect(personaFor('bookasloth@gmail.com')).toBe('Shubham');
+test('founder logs in as sndatarkar@gmail.com and appears as Shubham', () => {
+  expect(personaFor('sndatarkar@gmail.com')).toBe('Shubham');
 });
 
 test('a titled persona introduces by role, not "from the support team"', () => {

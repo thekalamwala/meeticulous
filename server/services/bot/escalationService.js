@@ -18,7 +18,7 @@ const notify = require('../../utils/notify');
 const sendEmail = require('../../utils/sendEmail');
 const { getRecentMessages, redactPii } = require('../botService');
 
-const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'hello@meeticulous.com';
+const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'team@meeticulous.com';
 
 const esc = (s = '') =>
   String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));

@@ -270,7 +270,7 @@ const SidebarCta = ({ theme }) => {
         style={{ backgroundColor: theme.band, color: theme.light ? '#141416' : '#FFFFFF' }}>
         {loading ? 'Opening Google…' : 'Create free account'}
       </button>
-      <Link to="/demo"
+      <Link to="/contact"
         className="btn mt-2.5 flex w-full items-center justify-center rounded-[8px] py-3 text-sm font-semibold transition-colors hover:no-underline"
         style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: HEAD_TX }}>
         Book a demo

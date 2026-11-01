@@ -15,7 +15,7 @@ import { SITE_URL, faqJsonLd } from "../utils/seo";
 // TODO: move to admin-configurable support settings.
 const SUPPORT_WHATSAPP = "15559708785"; // support WhatsApp (number hidden; link only)
 const SUPPORT_WHATSAPP_MSG = "Namaste, I want to talk about Meeticulous";
-const SUPPORT_EMAIL = "hello@meeticulous.com";
+const SUPPORT_EMAIL = "team@meeticulous.com";
 const SUPPORT_PHONE = "+917904109359";
 
 const FAQ = [

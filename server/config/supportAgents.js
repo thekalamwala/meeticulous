@@ -18,7 +18,7 @@
 
 // email (lower-cased) → display name shown to customers.
 const PERSONAS = {
-  'bookasloth@gmail.com': 'Shubham', // founder's admin login (see admin_users)
+  'sndatarkar@gmail.com': 'Shubham', // founder's admin login (see admin_users)
   'tithi@meeticulous.com': 'Tithi',
   // 8 team members from the About page — fill real login emails when provisioned.
   'durga@meeticulous.com': 'Durga',

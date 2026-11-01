@@ -207,7 +207,7 @@ function CtaButton({ to, children, variant = 'solid', className = '' }) {
 /* Floating glass card over the hero. */
 function GlassCard({ icon: Icon, label, value, accent, className = '', float = '' }) {
   return (
-    <div className={`sloth-glass ${float} absolute z-20 flex items-center gap-3 rounded-2xl px-4 py-3 ${className}`}>
+    <div className={`brand-glass ${float} absolute z-20 flex items-center gap-3 rounded-2xl px-4 py-3 ${className}`}>
       <span
         className="flex h-10 w-10 items-center justify-center rounded-xl"
         style={accent
@@ -610,7 +610,7 @@ export default function BusinessConsultants() {
               >
                 Create a Free Account <ArrowRight size={16} />
               </Link>
-              <Link to="/demo" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
+              <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
                 Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </Reveal>
@@ -627,9 +627,9 @@ export default function BusinessConsultants() {
           <Reveal instant delay={0.1} className="relative hidden lg:block">
             <div aria-hidden className="absolute left-1/2 top-1/2 h-[27rem] w-[27rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-[rgba(30,41,59,0.1)] to-[rgba(180,83,9,0.12)] blur-2xl" />
             <IconArt icon={BriefcaseArt} label="Meeticulous — appointment booking for business and management consultants" className="relative z-30 mx-auto aspect-square w-full max-w-[27rem]" iconClassName="h-24 w-24" />
-            <GlassCard icon={CalendarCheck} label="New booking" value="Strategy Call · 4:30 PM" float="sloth-float" className="top-[-26px] -right-[26px]" />
-            <GlassCard icon={Wallet} label="Fee received" value="₹5,000" accent float="sloth-float--mid" className="top-[calc(50%-90px)] -left-6" />
-            <GlassCard icon={BellRing} label="WhatsApp reminder" value="Sent · 1h before" float="sloth-float--slow" className="bottom-10 -right-2" />
+            <GlassCard icon={CalendarCheck} label="New booking" value="Strategy Call · 4:30 PM" float="brand-float" className="top-[-26px] -right-[26px]" />
+            <GlassCard icon={Wallet} label="Fee received" value="₹5,000" accent float="brand-float--mid" className="top-[calc(50%-90px)] -left-6" />
+            <GlassCard icon={BellRing} label="WhatsApp reminder" value="Sent · 1h before" float="brand-float--slow" className="bottom-10 -right-2" />
           </Reveal>
         </div>
 

@@ -650,7 +650,7 @@ async function callbackReminders(now = new Date()) {
 }
 
 // ── 6 pm recap email (cron) ───────────────────────────────────
-const RECAP_TO = process.env.COLD_CALL_RECAP_EMAIL || 'hello@meeticulous.com';
+const RECAP_TO = process.env.COLD_CALL_RECAP_EMAIL || 'team@meeticulous.com';
 async function dailyRecap(now = new Date()) {
   const s = await stats({ days: 1 }, now);
   const t = s.today;

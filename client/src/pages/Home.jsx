@@ -131,7 +131,7 @@ const HOME_JSONLD = [
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer support",
-      email: "hello@meeticulous.com",
+      email: "team@meeticulous.com",
       availableLanguage: ["en", "hi"],
     },
     sameAs: [
@@ -1454,13 +1454,13 @@ const Home = () => {
 
           <p className="mt-8 text-sm text-white/60">
             More comparisons coming. Want to see one?{" "}
-            <a href="mailto:hello@meeticulous.com?subject=Comparison%20request" className="font-semibold text-primary-cta hover:no-underline">Tell us →</a>
+            <a href="mailto:team@meeticulous.com?subject=Comparison%20request" className="font-semibold text-primary-cta hover:no-underline">Tell us →</a>
             <span className="mt-2 block text-xs text-white/40">
               No mail app?{" "}
               <button
                 type="button"
                 onClick={(e) => {
-                  navigator.clipboard?.writeText("hello@meeticulous.com");
+                  navigator.clipboard?.writeText("team@meeticulous.com");
                   const b = e.currentTarget;
                   const prev = b.textContent;
                   b.textContent = "Copied!";
@@ -1584,7 +1584,7 @@ const Home = () => {
             </Reveal>
             <Reveal as="p" delay={0.1} className="mt-5 max-w-sm text-base leading-relaxed text-neutral-600">
               Still stuck? Write to us at{" "}
-              <a href="mailto:hello@meeticulous.com" className="font-semibold text-primary-cta hover:no-underline">hello@meeticulous.com</a>{" "}
+              <a href="mailto:team@meeticulous.com" className="font-semibold text-primary-cta hover:no-underline">team@meeticulous.com</a>{" "}
               — we reply fast.
             </Reveal>
             <Reveal delay={0.15} className="mt-6">

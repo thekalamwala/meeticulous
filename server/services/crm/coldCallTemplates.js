@@ -18,7 +18,7 @@ const SIGNUP = 'https://meeticulous.com/?ref=sndatarkar';
 const WA_SIGNUP = 'https://meeticulous.com/login-as-vendor';
 const PRICING = 'https://meeticulous.com/pricing';
 // Founder's own Meeticulous demo page — booking it IS the product experience.
-const DEMO = 'https://meeticulous.com/sndatarkar/book-a-sloth-app-online-demo-30-min-advisory-session';
+const DEMO = 'https://meeticulous.com/contact';
 // class="sig" keeps a link inline (emailService.plainBody) so each email has ONE orange button.
 const CALL = (text) => `<a class="sig" href="${DEMO}">${text}</a>`;
 const SIGN = '<p>Shubham<br>Founder, Meeticulous</p>';

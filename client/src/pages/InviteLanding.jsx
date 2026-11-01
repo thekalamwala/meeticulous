@@ -62,7 +62,7 @@ function HeroFace({ src }) {
 // Floating frosted card on the hero art (glass + float keyframes live in index.css).
 function GlassCard({ icon: Icon, label, value, accent, className, float }) {
   return (
-    <div className={`sloth-glass ${float} absolute flex items-center gap-3 rounded-2xl px-4 py-3 ${className}`}>
+    <div className={`brand-glass ${float} absolute flex items-center gap-3 rounded-2xl px-4 py-3 ${className}`}>
       <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${accent ? 'bg-primary/10 text-primary' : 'bg-neutral-900/5 text-neutral-700'}`}>
         <Icon size={18} />
       </span>
@@ -182,7 +182,7 @@ export default function InviteLanding() {
 
       {/* ── HERO — 2-col: copy + CTA left, product photo w/ floating cards right ── */}
       <section className="relative overflow-hidden px-5 pb-16 pt-12 sm:px-8 sm:pb-20 sm:pt-16 lg:pb-28">
-        <div aria-hidden className="sloth-hero-aura" />
+        <div aria-hidden className="brand-hero-aura" />
         <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
           {/* LEFT */}
           <div className="text-center lg:text-left">
@@ -224,9 +224,9 @@ export default function InviteLanding() {
               <IconArt icon={CalendarCheck} label="Bookings, payments and reminders on Meeticulous" className="h-full w-full border-0 shadow-none" iconClassName="h-24 w-24" />
               <div aria-hidden className="pointer-events-none absolute inset-0 rounded-[10px] ring-1 ring-inset ring-white/15" />
             </div>
-            <GlassCard icon={CalendarCheck} label="New booking" value="Confirmed · 4:30 PM" float="sloth-float" className="top-10 -left-6" />
-            <GlassCard icon={Wallet} label="Payment received" value="₹2,500" accent float="sloth-float--mid" className="top-1/2 -right-5" />
-            <GlassCard icon={Wind} label="Upcoming session" value="Tomorrow · 11 AM" float="sloth-float--slow" className="bottom-8 left-4" />
+            <GlassCard icon={CalendarCheck} label="New booking" value="Confirmed · 4:30 PM" float="brand-float" className="top-10 -left-6" />
+            <GlassCard icon={Wallet} label="Payment received" value="₹2,500" accent float="brand-float--mid" className="top-1/2 -right-5" />
+            <GlassCard icon={Wind} label="Upcoming session" value="Tomorrow · 11 AM" float="brand-float--slow" className="bottom-8 left-4" />
           </Reveal>
         </div>
       </section>

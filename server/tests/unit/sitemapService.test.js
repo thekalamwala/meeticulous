@@ -48,7 +48,7 @@ describe('staticEntries', () => {
     for (const path of [
       '/compare/setmore-alternative', '/compare/acuity-alternative', '/compare/simplybook-alternative',
       '/compare/zoho-bookings-alternative', '/features/payments', '/features/online-scheduling',
-      '/help/docs', '/help/docs/what-is-book-a-sloth', '/wall-of-love',
+      '/help/docs', '/help/docs/what-is-meeticulous', '/wall-of-love',
       '/careers/mern-stack-developer',
     ]) {
       expect(locs.has(`https://meeticulous.com${path}`)).toBe(true);

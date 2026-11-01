@@ -25,19 +25,6 @@ export const ACTIONS = Object.freeze({
   RELOAD: 'reload',    // re-request the current URL
 });
 
-// Detective art for the `lost` mood (404/410). Hosted on the external CDN
-// (not in-repo); a missing file just renders an empty box. One random variant
-// per visit — see pickErrorImage.
-export const ERROR_IMAGE_BASE = 'https://company-assets.meeticulous.in/images/error';
-export const ERROR_IMAGE_VARIANTS = Object.freeze([
-  'sloth-tracks.png',
-  'sloth-think.png',
-  'sloth-glass.png',
-]);
-export function pickErrorImage() {
-  const i = Math.floor(Math.random() * ERROR_IMAGE_VARIANTS.length);
-  return `${ERROR_IMAGE_BASE}/${ERROR_IMAGE_VARIANTS[i]}`;
-}
 
 export const ERROR_CATALOG = Object.freeze({
   400: {

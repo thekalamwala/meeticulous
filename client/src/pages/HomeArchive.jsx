@@ -260,7 +260,7 @@ const HeroFace = ({ src }) => {
    ════════════════════════════════════════════════════════════ */
 const GlassCard = ({ icon: Icon, label, value, accent, className, float }) => (
   <div
-    className={`sloth-glass ${float} absolute flex items-center gap-3 rounded-2xl px-4 py-3 ${className}`}
+    className={`brand-glass ${float} absolute flex items-center gap-3 rounded-2xl px-4 py-3 ${className}`}
   >
     <span
       className={`flex h-10 w-10 items-center justify-center rounded-xl ${
@@ -795,7 +795,7 @@ const HomeArchive = () => {
       {/* Mobile gets its own centered section below; this whole block is sm:block. */}
       <section ref={heroRef} className="relative hidden px-5 pb-14 pt-8 sm:block sm:px-8 sm:pb-20 sm:pt-12 lg:pb-32 lg:pt-16">
         {/* Ambient warm aura — adds depth on the flat canvas without changing the palette */}
-        <div aria-hidden className="sloth-hero-aura" />
+        <div aria-hidden className="brand-hero-aura" />
 
         <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-10 sm:gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
           {/* LEFT */}
@@ -868,7 +868,7 @@ const HomeArchive = () => {
               icon={CalendarCheck}
               label="New booking"
               value="Confirmed · 4:30 PM"
-              float="sloth-float"
+              float="brand-float"
               className="hidden sm:flex top-10 sm:-left-8"
             />
             <GlassCard
@@ -876,14 +876,14 @@ const HomeArchive = () => {
               label="Payment received"
               value="₹2,500"
               accent
-              float="sloth-float--mid"
+              float="brand-float--mid"
               className="hidden sm:flex top-1/2 sm:-right-6"
             />
             <GlassCard
               icon={Wind}
               label="Upcoming session"
               value="Tomorrow · 11 AM"
-              float="sloth-float--slow"
+              float="brand-float--slow"
               className="hidden sm:flex bottom-8 sm:left-6"
             />
           </Reveal>
@@ -894,7 +894,7 @@ const HomeArchive = () => {
       {/* Same left-column content as the sm+ hero, centered. Full-viewport
           height so the hero fills the first screen; content vertically centered. */}
       <section className="relative flex min-h-screen flex-col justify-center px-5 pb-14 pt-8 sm:hidden">
-        <div aria-hidden className="sloth-hero-aura" />
+        <div aria-hidden className="brand-hero-aura" />
 
         <div className="relative z-10 mx-auto max-w-md text-center">
           {/* Mobile hero is the responsive twin of the desktop <h1> above; both
@@ -1859,7 +1859,7 @@ const HomeArchive = () => {
           </Reveal>
           <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-[750px] text-center text-base text-neutral-500">
             Still stuck? Write to us at{" "}
-            <a href="mailto:hello@meeticulous.com" className="font-semibold text-primary hover:no-underline">hello@meeticulous.com</a>{" "}
+            <a href="mailto:team@meeticulous.com" className="font-semibold text-primary hover:no-underline">team@meeticulous.com</a>{" "}
             — we reply fast.
           </Reveal>
           <div className="mt-12 space-y-3">
@@ -1952,13 +1952,13 @@ const HomeArchive = () => {
 
           <p className="mt-8 text-sm text-white/60">
             More comparisons coming. Want to see one?{" "}
-            <a href="mailto:hello@meeticulous.com?subject=Comparison%20request" className="font-semibold text-primary hover:no-underline">Tell us →</a>
+            <a href="mailto:team@meeticulous.com?subject=Comparison%20request" className="font-semibold text-primary hover:no-underline">Tell us →</a>
             <span className="mt-2 block text-xs text-white/40">
               No mail app?{" "}
               <button
                 type="button"
                 onClick={(e) => {
-                  navigator.clipboard?.writeText("hello@meeticulous.com");
+                  navigator.clipboard?.writeText("team@meeticulous.com");
                   const b = e.currentTarget;
                   const prev = b.textContent;
                   b.textContent = "Copied!";

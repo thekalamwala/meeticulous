@@ -77,7 +77,7 @@ const BecomeAHost = () => {
         title="Get booked and paid — become a host on Meeticulous"
         description="Start taking bookings in minutes. Create your Meeticulous host page, publish services, and get paid — sign up free with Google."
         canonical={`${SITE_URL}/become-a-host`}
-        image={ogCard('be-a-sloth', 'png')}
+        image={ogCard('become-a-host', 'png')}
       />
       {/* ── LEFT · crimson brand-art panel (lg+ only) ──────────────────────────── */}
       <AuthBrandPanel

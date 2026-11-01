@@ -52,7 +52,7 @@ describe('<Footer>', () => {
     expect(screen.queryByRole('link', { name: /timewheel/i })).toBeNull();
     const mail = screen
       .getAllByRole('link')
-      .find((a) => a.getAttribute('href') === 'mailto:hello@meeticulous.com');
+      .find((a) => a.getAttribute('href') === 'mailto:team@meeticulous.com');
     expect(mail).toBeTruthy();
   });
 

@@ -19,7 +19,7 @@ describe('Booking pages feature page', () => {
   it('renders one h1 and real CTA targets', () => {
     renderPage();
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
-    expect(screen.getByRole('link', { name: /see a live booking page/i }).getAttribute('href')).toBe('/demo');
+    expect(screen.getByRole('link', { name: /see a live booking page/i }).getAttribute('href')).toBe('/contact');
     expect(screen.getByRole('link', { name: /see pricing/i }).getAttribute('href')).toBe('/pricing');
     expect(screen.getAllByRole('link', { name: /claim your free link/i })[0].getAttribute('href')).toBe('/become-a-host');
   });

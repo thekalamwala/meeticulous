@@ -25,21 +25,15 @@
 import { RESERVED_FIRST_SEGMENTS } from './src/config/reservedSegments.js';
 import { VANITY_SLUGS, VANITY_TARGET } from './src/config/vanityRedirects.js';
 
-const API_ORIGIN = process.env.API_ORIGIN || 'https://book-a-sloth.onrender.com';
+const API_ORIGIN = process.env.API_ORIGIN || 'https://meeticulous-api.onrender.com';
 
 const SKIP = new Set(RESERVED_FIRST_SEGMENTS);
 
 // Branded profile-404 card. Inlined here because the Vercel edge bundle can't
 // import server/utils/brandPage.js (different runtime) — keep this visually in
-// sync with brandPage.js by hand. Random error-art variant per request.
-const EDGE_ERROR_IMAGES = [
-  'https://company-assets.meeticulous.in/images/error/sloth-tracks.png',
-  'https://company-assets.meeticulous.in/images/error/sloth-think.png',
-  'https://company-assets.meeticulous.in/images/error/sloth-glass.png',
-];
+// sync with brandPage.js by hand.
 export function renderProfile404Html(rawSlug) {
   const slug = String(rawSlug).replace(/[^a-z0-9._-]/g, '');
-  const img = EDGE_ERROR_IMAGES[Math.floor(Math.random() * EDGE_ERROR_IMAGES.length)];
   return (
     `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">` +
     `<meta name="viewport" content="width=device-width,initial-scale=1">` +
@@ -52,14 +46,12 @@ export function renderProfile404Html(rawSlug) {
     `*{box-sizing:border-box}html,body{margin:0;height:100%}` +
     `body{background:var(--bg);color:var(--ink);font-family:'Poppins',system-ui,sans-serif;display:grid;place-items:center;padding:24px}` +
     `.card{background:var(--card);border:1px solid var(--line);border-radius:16px;max-width:460px;width:100%;padding:40px 32px;text-align:center;box-shadow:0 10px 40px rgba(20,20,22,.06)}` +
-    `.hero{width:132px;height:132px;object-fit:contain;margin:0 auto 20px;display:block}` +
     `h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;line-height:1.2;margin:0 0 12px}` +
     `p{color:var(--muted);font-size:15px;line-height:1.6;margin:0 0 28px}` +
     `a.btn{display:inline-block;background:var(--orange);color:#fff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 24px;border-radius:12px}` +
     // Always white — the white-bg error art would box out on a dark card.
     `</style></head>` +
     `<body><main class="card">` +
-    `<img class="hero" src="${img}" alt="" width="132" height="132">` +
     `<h1>No host at this address</h1>` +
     `<p>We couldn't track anyone down at <strong>/${slug}</strong>. The link may be mistyped, or the profile has moved on.</p>` +
     `<a class="btn" href="https://meeticulous.com/explore">Explore hosts</a>` +

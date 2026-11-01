@@ -9,7 +9,7 @@ import LegalLayout, { Section, MARKETPLACE_EFFECTIVE } from '../components/commo
 // invoices only its fee + commission. Payment flow (§2.4/§6) runs through Razorpay, an
 // RBI-authorised payment aggregator; GST and consumer-liability positions are stated
 // firmly per the v4 model.
-const Mail = () => <a href="mailto:hello@meeticulous.com" className="text-primary hover:underline">hello@meeticulous.com</a>;
+const Mail = () => <a href="mailto:team@meeticulous.com" className="text-primary hover:underline">team@meeticulous.com</a>;
 
 const Terms = () => (
   <LegalLayout

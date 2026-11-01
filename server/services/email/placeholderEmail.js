@@ -15,7 +15,7 @@
  */
 // Legacy-brand domain, kept verbatim: it is baked into every existing phone-only
 // auth/profile row, and login resolves accounts by this exact address.
-const PLACEHOLDER_EMAIL_DOMAIN = '@users.bookasloth.app';
+const PLACEHOLDER_EMAIL_DOMAIN = '@users.meeticulous.app';
 
 /** True if `email` is a synthetic phone-only placeholder address (can't receive mail). */
 function isPlaceholderEmail(email) {

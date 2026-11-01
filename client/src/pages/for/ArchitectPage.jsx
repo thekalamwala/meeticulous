@@ -56,7 +56,7 @@ import PageGuides from '../../components/common/PageGuides';
 
 const START = '/become-a-host';
 const LOGIN = '/login-as-vendor';
-const DEMO = '/demo';
+const DEMO = '/contact';
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
 

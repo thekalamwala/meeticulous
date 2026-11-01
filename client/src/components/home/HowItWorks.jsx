@@ -5,7 +5,7 @@ import Reveal from "./Reveal";
 
 /* ════════════════════════════════════════════════════════════
    LINE-DRAW ICON wrapper — strokes draw themselves on scroll-in
-   (CSS keyframe `sloth-draw` in index.css).
+   (CSS keyframe `brand-draw` in index.css).
    ════════════════════════════════════════════════════════════ */
 const LineIcon = ({ children, color = "#2A1416" }) => {
   const ref = useRef(null);
@@ -19,7 +19,7 @@ const LineIcon = ({ children, color = "#2A1416" }) => {
       strokeLinecap="round"
       strokeLinejoin="round"
       style={{ stroke: color }}
-      className={`sloth-draw h-9 w-9 ${inView ? "is-visible" : ""}`}
+      className={`brand-draw h-9 w-9 ${inView ? "is-visible" : ""}`}
     >
       {children}
     </svg>

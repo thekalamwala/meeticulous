@@ -602,7 +602,7 @@ const AdSpaceCard = () => (
     <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-400">Sponsored</p>
     <h3 className="mt-2 text-sm font-bold text-gray-900">Ad space available</h3>
     <p className="mt-1 text-xs leading-relaxed text-gray-500">Reach buyers actively booking services.</p>
-    <a href="mailto:hello@meeticulous.com?subject=Ad%20space%20enquiry"
+    <a href="mailto:team@meeticulous.com?subject=Ad%20space%20enquiry"
       className="mt-3 inline-flex items-center gap-1 text-sm font-semibold no-underline hover:underline"
       style={{ color: 'var(--profile-accent, #960D32)' }}>
       Advertise here →

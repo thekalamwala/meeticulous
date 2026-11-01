@@ -16,5 +16,5 @@ test('real addresses are not placeholders', () => {
 });
 
 test('domain constant is the users subdomain', () => {
-  expect(PLACEHOLDER_EMAIL_DOMAIN).toBe('@users.bookasloth.app');
+  expect(PLACEHOLDER_EMAIL_DOMAIN).toBe('@users.meeticulous.app');
 });

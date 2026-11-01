@@ -206,7 +206,7 @@ function CtaButton({ to, children, variant = 'solid', className = '' }) {
 /* Floating glass card over the hero — mirrors the homepage hero. */
 function GlassCard({ icon: Icon, label, value, accent, className = '', float = '' }) {
   return (
-    <div className={`sloth-glass ${float} absolute flex items-center gap-3 rounded-2xl px-4 py-3 ${className}`}>
+    <div className={`brand-glass ${float} absolute flex items-center gap-3 rounded-2xl px-4 py-3 ${className}`}>
       <span
         className="flex h-10 w-10 items-center justify-center rounded-xl"
         style={accent
@@ -467,7 +467,7 @@ export default function SportsTurf() {
               >
                 Create a Free Account <ArrowRight size={16} />
               </Link>
-              <Link to="/demo" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-white transition-colors hover:text-[#A3E635] hover:no-underline">
+              <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-white transition-colors hover:text-[#A3E635] hover:no-underline">
                 Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </Reveal>
@@ -484,9 +484,9 @@ export default function SportsTurf() {
           <Reveal instant delay={0.1} className="relative hidden lg:block">
             <div aria-hidden className="absolute left-1/2 top-1/2 h-[27rem] w-[27rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-[rgba(22,163,74,0.35)] to-[rgba(163,230,53,0.22)] blur-2xl" />
             <IconArt icon={TrophyArt} label="Meeticulous — slot booking for turf and sports arenas" className="relative z-10 mx-auto aspect-square w-full max-w-[27rem]" iconClassName="h-24 w-24" />
-            <GlassCard icon={CalendarCheck} label="New booking" value="7–8 PM · Booked" float="sloth-float" className="top-6 -left-4" />
-            <GlassCard icon={Wallet} label="Payment received" value="₹1,200" accent float="sloth-float--mid" className="top-1/2 -right-6" />
-            <GlassCard icon={BellRing} label="WhatsApp reminder" value="Sent · 1h before" float="sloth-float--slow" className="bottom-10 left-2" />
+            <GlassCard icon={CalendarCheck} label="New booking" value="7–8 PM · Booked" float="brand-float" className="top-6 -left-4" />
+            <GlassCard icon={Wallet} label="Payment received" value="₹1,200" accent float="brand-float--mid" className="top-1/2 -right-6" />
+            <GlassCard icon={BellRing} label="WhatsApp reminder" value="Sent · 1h before" float="brand-float--slow" className="bottom-10 left-2" />
           </Reveal>
         </div>
 

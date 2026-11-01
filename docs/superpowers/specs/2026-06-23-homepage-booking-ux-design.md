@@ -55,9 +55,9 @@ Final values: `20+`, `100+`, `₹40K+`, `5 / 5` — animated numerics 20 / 100 /
 
 **Changes:**
 1. **Robust + copyable email card** — render the address as visible, selectable text with a one-click **Copy** button (clipboard + "Copied!" feedback). Keep the `mailto:` anchor for users who do have a mail app. Clicking always does something useful; no dead blank page. Implemented as a small dedicated treatment for the email card (the other channel cards keep current behavior).
-2. **Standardize support address** to `bolt@meeticulous.in` — update the homepage **footer "Contact"**, the **FAQ "write to us"** line, and the **comparison "Tell us"** mailto (all currently `hello@meeticulous.com`) to `bolt@meeticulous.in`.
+2. **Standardize support address** to `bolt@meeticulous.in` — update the homepage **footer "Contact"**, the **FAQ "write to us"** line, and the **comparison "Tell us"** mailto (all currently `team@meeticulous.com`) to `bolt@meeticulous.in`.
 
-> ⚠️ **Memory override flag:** project memory records support/marketing email as `hello@meeticulous.com` (legal stays `team@timewheel.co.in`). This spec **intentionally overrides** that for support/contact → `bolt@meeticulous.in`, per the user's explicit instruction. Legal/Privacy `team@timewheel.co.in` is unchanged.
+> ⚠️ **Memory override flag:** project memory records support/marketing email as `team@meeticulous.com` (legal stays `team@timewheel.co.in`). This spec **intentionally overrides** that for support/contact → `bolt@meeticulous.in`, per the user's explicit instruction. Legal/Privacy `team@timewheel.co.in` is unchanged.
 
 ---
 

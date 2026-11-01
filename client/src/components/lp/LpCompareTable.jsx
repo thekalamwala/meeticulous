@@ -83,7 +83,7 @@ export default function LpCompareTable() {
             See Topmate&apos;s pricing
           </a>
           . Topmate is a trademark of its owner; Meeticulous isn&apos;t affiliated with Topmate.
-          Spot something out of date? Tell us at hello@meeticulous.com.
+          Spot something out of date? Tell us at team@meeticulous.com.
         </p>
       </div>
     </section>

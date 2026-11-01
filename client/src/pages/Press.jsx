@@ -10,7 +10,7 @@ import { SITE_URL, organizationJsonLd, breadcrumbJsonLd, ORG_SAME_AS } from "../
  */
 
 const CANONICAL = `${SITE_URL}/press`;
-const PRESS_EMAIL = "hello@meeticulous.com";
+const PRESS_EMAIL = "team@meeticulous.com";
 const LOGO = "https://company-assets.meeticulous.in/images/brand/logo.png";
 
 const FACTS = [

@@ -8,7 +8,7 @@ import LegalLayout, { Section, MARKETPLACE_EFFECTIVE } from '../components/commo
 // provides grievance redressal + refund facilitation under the Consumer Protection
 // (E-Commerce) Rules, 2020. Consumer rights under the CPA 2019 are NOT excluded.
 
-const Mail = () => <a href="mailto:hello@meeticulous.com" className="text-primary hover:underline">hello@meeticulous.com</a>;
+const Mail = () => <a href="mailto:team@meeticulous.com" className="text-primary hover:underline">team@meeticulous.com</a>;
 
 const GuestTerms = () => (
   <LegalLayout

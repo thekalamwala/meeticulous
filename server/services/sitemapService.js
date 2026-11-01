@@ -51,7 +51,7 @@ const HELP_DOC_SLUGS = [
   'getting-paid', 'plans-and-upgrading', 'why-am-i-not-getting-bookings',
   'your-username-and-booking-link', 'branding-and-theme-colours', 'selling-digital-products',
   'reminders-notifications-and-badges', 'kyc-and-verification',
-  'what-is-book-a-sloth', 'pricing-and-commission',
+  'what-is-meeticulous', 'pricing-and-commission',
   'is-my-payment-and-data-safe', 'whats-not-supported-yet',
   'troubleshooting-and-errors', 'contact-support',
 ];

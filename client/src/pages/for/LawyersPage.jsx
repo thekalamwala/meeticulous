@@ -61,7 +61,7 @@ import PageGuides from '../../components/common/PageGuides';
 
 const START = '/become-a-host';        // real host signup funnel
 const LOGIN = '/login-as-vendor';   // host login (Google-only door)
-const DEMO = '/demo';               // real demo page
+const DEMO = '/contact';               // real demo page
 const ART_ICON = ScaleArt; // stands in for the removed mascot art
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */

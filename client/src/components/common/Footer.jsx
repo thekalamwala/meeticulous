@@ -4,7 +4,7 @@ import { ArrowRight, ArrowUp, ChevronDown, CreditCard, Gift, Zap } from 'lucide-
 import OperatorCredit from './OperatorCredit';
 import DoodleWordmark from './footer/DoodleWordmark';
 
-const EMAIL = 'hello@meeticulous.com';
+const EMAIL = 'team@meeticulous.com';
 const ROUTE_START = '/become-a-host';
 
 // Faint honeycomb (white lines ~4%) — same hex tile as the homepage hero, so the
