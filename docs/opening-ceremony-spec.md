@@ -76,7 +76,7 @@ Vercel deploy. Add `'opening'` and `'inaugurators'` to both, same PR as the rout
 ### 4.3 The reveal
 On cut:
 - Curtains sweep open (CSS transform, both sides translate outward, eased ~1s).
-- **Confetti storm** — full-screen, gold + sloth-green, layered, slow fall, ~4–6s. Not a sprinkle. Optional cheer chime (respect muted/reduced-motion).
+- **Confetti storm** — full-screen, gold + brand-green, layered, slow fall, ~4–6s. Not a sprinkle. Optional cheer chime (respect muted/reduced-motion).
 - Behind curtain: the real homepage / brand reveal.
 - Headline lands: **"You opened Meeticulous."** (Number is allocated server-side but **never shown** — founder call.)
 - Behind the curtain: the live site (event day) or a brand splash (standalone model). See §4.6.
@@ -108,7 +108,7 @@ Shown **after they place their stone OR skip** (never blocks the moment):
 
 ### 4.7 The Wall — `/inaugurators`
 - Permanent public page, lives on the site forever.
-- **Mosaic of SVG stones** — each opener is one stone in a **random shade** (palette of sloth-brand tones), **name rendered on the stone**. Ordered by hidden number (earliest first / seed layout). No numbers shown, no links, no per-stone pages.
+- **Mosaic of SVG stones** — each opener is one stone in a **random shade** (palette of brand tones), **name rendered on the stone**. Ordered by hidden number (earliest first / seed layout). No numbers shown, no links, no per-stone pages.
 - Zoom/scroll the field; **search** highlights your stone.
 - Stones render from a small SVG set × shade variants (deterministic shade per row, e.g. hash of number → palette index — stable across reloads).
 - Windowed render (could be thousands) — server paginates, client lazy-loads tiles.

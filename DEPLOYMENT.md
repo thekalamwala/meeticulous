@@ -1,7 +1,7 @@
 # Meeticulous — Deployment Runbook
 
 Plain-English guide to taking Meeticulous from your laptop to a live, secure,
-production deployment. The topology is the proven Book A Sloth one:
+production deployment. The topology is the proven Meeticulous one:
 
 ```
                  ┌──────────────┐   push main    ┌─────────────────────┐

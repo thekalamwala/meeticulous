@@ -512,7 +512,7 @@ Route (beside other `/admin/*` routes):
 ]},
 ```
 
-- [ ] **Step 6: Run — expect PASS**; then manual: log into `/hello-sloth`, open `/admin/features`, toggle reschedule, confirm `select * from feature_flags` reflects it.
+- [ ] **Step 6: Run — expect PASS**; then manual: log into `/backstage`, open `/admin/features`, toggle reschedule, confirm `select * from feature_flags` reflects it.
 
 - [ ] **Step 7: Commit**
 

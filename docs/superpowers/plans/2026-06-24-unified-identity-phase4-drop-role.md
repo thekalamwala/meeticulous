@@ -47,7 +47,7 @@ Known consumers to migrate (confirm none remain that still need `role`):
 - `server/controllers/vendorOnboardingController.js` — `createVendorAccount` inserts `role:'host'` → switch to `is_host:true`.
 - Admin: `server/controllers/adminController.js` + any provider/user list filters keyed on `role`.
 - `server/config/featureRegistry.js` scope values are unrelated (leave).
-- Client: `client/src/utils/roleRoutes.js` `isHost` (drop the role fallback), `Navbar.jsx`, `Dashboard.jsx`, `Login.jsx`, `CustomerProfile.jsx`, `BeASloth.jsx`, `ReviewPage.jsx`, `components/booking/ReviewModal.jsx`, admin pages (`AdminUsers/AdminPlans/AdminBadges`).
+- Client: `client/src/utils/roleRoutes.js` `isHost` (drop the role fallback), `Navbar.jsx`, `Dashboard.jsx`, `Login.jsx`, `CustomerProfile.jsx`, `BecomeAHost.jsx`, `ReviewPage.jsx`, `components/booking/ReviewModal.jsx`, admin pages (`AdminUsers/AdminPlans/AdminBadges`).
 - **RLS:** confirm via the Supabase dashboard / `pg_policies` whether any policy references `role`. Most sensitive tables are service-role-only (server bypasses RLS), so the dependency is expected to be app-layer — **verify, don't assume**:
   ```sql
   SELECT schemaname, tablename, policyname, qual, with_check

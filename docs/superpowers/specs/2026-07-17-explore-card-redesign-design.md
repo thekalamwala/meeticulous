@@ -67,7 +67,7 @@ Selecting `service_type` would 42703.
 
 Full relayout. Structure, top to bottom:
 
-- **Cover** — 4:3, `object-cover`, existing 🦥 fallback when `coverImage` is null.
+- **Cover** — 4:3, `object-cover`, existing placeholder fallback when `coverImage` is null.
   - NEW badge, top-left, existing amber pill, with a `Sparkles` glyph added.
   - **Host chip**, overlaid bottom-left, over a `bg-gradient-to-t from-black/70`
     scrim. Avatar + host name + `BadgeCheck`. Star rating and review count

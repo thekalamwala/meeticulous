@@ -140,7 +140,7 @@ per-session cap warning.
 ## 10. Technical notes
 
 - Keep `Seo`, canonical, `ogCard('earnings-calculator','png')`, `ROUTE_START`
-  (`/be-a-sloth`), existing design tokens (accents, `rounded-[6px]`, ink/neutral,
+  (`/become-a-host`), existing design tokens (accents, `rounded-[6px]`, ink/neutral,
   4px borders per UI rules), and the `#f7f5ef` / `bg-white` surface language.
 - Extend `CALC_PLANS` consumption to include annual fee: import `PAID_PLANS`
   yearly values from `data/plans.js` (single source) rather than adding numbers to

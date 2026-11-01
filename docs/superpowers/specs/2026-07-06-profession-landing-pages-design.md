@@ -39,7 +39,7 @@ slate + gold. Doctors = trust blue + green. Photographers = creative slate + ora
 8. Testimonials — reuse `TESTIMONIALS`, weight profession-relevant roles first
 9. Pricing teaser — Starter free + paid, "₹10/day" framing, reuse `plans.js`
 10. FAQ — profession-specific objection handling (drives FAQPage schema)
-11. Final CTA — urgency + themed button → `/be-a-sloth`
+11. Final CTA — urgency + themed button → `/become-a-host`
 
 ## SEO / OG / AEO / GEO
 

@@ -1,4 +1,4 @@
-# Performance Audit — Book A Sloth backend
+# Performance Audit — Meeticulous backend
 
 _2026-06-18 — pre-launch baseline analysis. Source: `server/` Express app._
 

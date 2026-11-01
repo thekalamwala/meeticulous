@@ -25,10 +25,10 @@
 begin;
 
 update profiles set
-  bio = $b$I'm Shubham Datarkar, founder of Book A Sloth — the calm, zero-commission way for India's creators and professionals to sell their time. I build the product, write about what I learn along the way, and help creators turn scattered bookings into a real business. Based in Nagpur. Book a call if you'd like a walkthrough of the platform, straight-talking SEO and growth advice, or just to swap ideas — I'd rather handle your onboarding while you handle the applause. Off the clock: games.$b$,
-  seo_title = $b$Shubham Datarkar — Creator of Book A Sloth$b$,
-  og_title = $b$Shubham Datarkar — Creator of Book A Sloth$b$,
-  og_description = $b$Founder of Book A Sloth, the zero-commission booking platform for India's creators & pros. Book a walkthrough, SEO advice, or a chat.$b$,
+  bio = $b$I'm Shubham Datarkar, founder of Meeticulous — the calm, zero-commission way for India's creators and professionals to sell their time. I build the product, write about what I learn along the way, and help creators turn scattered bookings into a real business. Based in Nagpur. Book a call if you'd like a walkthrough of the platform, straight-talking SEO and growth advice, or just to swap ideas — I'd rather handle your onboarding while you handle the applause. Off the clock: games.$b$,
+  seo_title = $b$Shubham Datarkar — Creator of Meeticulous$b$,
+  og_title = $b$Shubham Datarkar — Creator of Meeticulous$b$,
+  og_description = $b$Founder of Meeticulous, the zero-commission booking platform for India's creators & pros. Book a walkthrough, SEO advice, or a chat.$b$,
   seo_updated_at = now(), seo_updated_by = 'sql:sndatarkar-content-2026-09-11', updated_at = now()
 where id = '6dbf6aac-6580-41d9-a8dd-6ba3b9609f32';
 

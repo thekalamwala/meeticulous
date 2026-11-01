@@ -201,7 +201,7 @@ Separate-account model enforced at the routing layer (**supersedes** the unified
 - **Guest space → `/user/*`:** `/user/my-bookings`, `/user/profile`, `/user/reviews`, `/user/loyalty`. Old flat paths are bare `<Navigate replace>` redirects (in-flight email links / bookmarks keep working).
 - **Two-way role wall:** new `HostRoute`/`GuestRoute` (`client/src/components/common/`) compose the existing `ProtectedRoute` (auth + onboarding-resume untouched) and add a role gate. Guest on `/dashboard/*` → guest equivalent (`hostPathToGuestPath`); host on `/user/*` → `/dashboard`. Shared `isHost(user)` + path map in `client/src/utils/roleRoutes.js`. No feature flag — the wall is un-toggleable.
 - **Leave-review `/review/:bookingId` stays shared** (role-agnostic, ownership-checked, top-level — NOT under /user) so either party can use the booking-completed email CTA.
-- **`become-host` in-place role flip removed** (client `activateHost` + CTAs in BeASloth/Dashboard; server `POST /auth/become-host` route + `becomeHost` handler + its test). "Become a host" now routes to host signup (separate email/Google account). Dashboard's dead guest branch → `<Navigate to="/user/my-bookings">`.
+- **`become-host` in-place role flip removed** (client `activateHost` + CTAs in BecomeAHost/Dashboard; server `POST /auth/become-host` route + `becomeHost` handler + its test). "Become a host" now routes to host signup (separate email/Google account). Dashboard's dead guest branch → `<Navigate to="/user/my-bookings">`.
 - **Server/static:** email footer link → `/user/my-bookings`; `robots.txt` → `Disallow: /user/`; removed the auth-gated `/reviews` entry from the sitemap.
 - **Reserved usernames** extended (`review`, `refund`, `lp`) so a host slug can't shadow a top-level route (`user` was already reserved).
 - **Verification note:** E2E preview of the wall is blocked headlessly — `supabase.auth.onAuthStateChange` emits `SIGNED_OUT` and wipes any injected `localStorage` session. Covered instead by `RouteGuards.test.jsx` (real guard components, both directions + superadmin) + `roleRoutes.test.js`.
@@ -297,10 +297,10 @@ Each **service** now carries one `category` slug, drawn from the host's own cate
 - **Open confirmations before/within execution:** vendor phone source (P2 pre-task — may scope WhatsApp to guests first), AiSensy Pro webhook payload shape (P2 Task 18), `RESEND_API_KEY` + verified sender for the email e2e.
 
 ## Sprint: Auth Split + Availability Engine + Theme/Media Fixes (DONE 2026-06-11)
-- **Vendor Google-only auth**: `GET /api/auth/google/vendor?intent=signup|login` (public) → callback auto-creates/logs-in vendor with ONE consent screen (identity + full calendar scopes). Session minted password-less via `mintSessionForEmail()` (admin generateLink → disposable-client verifyOtp — same poisoning rule as signInWithPassword). Tokens delivered in URL fragment to `/auth/google/done`. New pages: `/be-a-sloth` (signup), `/login-as-vendor` (login), `GoogleAuthDone.jsx`. Legacy `/login` email/password kept for pre-migration vendors (back-compat).
+- **Vendor Google-only auth**: `GET /api/auth/google/vendor?intent=signup|login` (public) → callback auto-creates/logs-in vendor with ONE consent screen (identity + full calendar scopes). Session minted password-less via `mintSessionForEmail()` (admin generateLink → disposable-client verifyOtp — same poisoning rule as signInWithPassword). Tokens delivered in URL fragment to `/auth/google/done`. New pages: `/become-a-host` (signup), `/login-as-vendor` (login), `GoogleAuthDone.jsx`. Legacy `/login` email/password kept for pre-migration vendors (back-compat).
 - **OAuth state JWT**: both flows now carry signed state (`OAUTH_STATE_SECRET` env, falls back to service-role key) — fixes CSRF gap + email-collision token attach. Legacy calendar-connect identifies vendor by `state.uid`, not email match. Callback stores `google_id` (v2.5 column, schema fallback) and seeds `availability.timezone` from Google Calendar settings (only when no availability row exists).
 - **CalendarStep fixed**: was `window.location='/api/auth/google?onboarding=true'` → 401 JSON (protected endpoint, no header). Now uses `connectGoogleCalendar()`; auto-skips when `google_calendar_connected`.
-- **Customer identity = mobile**: booking phone now required; OTP keyed by normalised phone (email fallback for old clients) in `otp_codes` (email PK column stores the identifier — no migration needed); delivery via WhatsApp (AiSensy engine) + email backup. `verify-otp` accepts `{email, phone, otp}`. `/signup` route → redirect home (no customer registration); Navbar → "Be a Sloth"/"Vendor Login". Guest account still auto-created by email server-side (notifications/receipts stay email-driven).
+- **Customer identity = mobile**: booking phone now required; OTP keyed by normalised phone (email fallback for old clients) in `otp_codes` (email PK column stores the identifier — no migration needed); delivery via WhatsApp (AiSensy engine) + email backup. `verify-otp` accepts `{email, phone, otp}`. `/signup` route → redirect home (no customer registration); Navbar → "Become a Host"/"Vendor Login". Guest account still auto-created by email server-side (notifications/receipts stay email-driven).
 - **Availability engine** (`server/services/availabilityService.js`): slots = working hours − blocked_dates − platform bookings (grace-padded) − **Google FreeBusy** − buffers. Google failures fail-OPEN (outage must not block bookings). New `GET /api/bookings/available-slots?host_id&service_id&date` — ServiceBooking renders the server list (legacy client computation kept as deploy-skew fallback). `createBooking` validates via `validateSlot` (replaces inline conflict loop); `createOrder` re-validates BEFORE charging (excludeBookingId=self); reschedule keeps `end_at` in sync.
 - **Migration `v2.5_google_auth_availability.sql` (APPLIED via MCP)**: `profiles.google_id`, `bookings.end_at` (backfilled), `bookings_no_overlap` EXCLUDE USING gist (host_id =, tstzrange(scheduled_at,end_at) &&) partial: non-cancelled + end_at NOT NULL + scheduled_at > 2026-06-11. Insert/reschedule catch 23P01 → 409. Grace padding stays app-level by design.
 - **Blocked dates**: column existed but was never written/read anywhere. Added editor in Availability.jsx (date list, save includes blocked_dates), enforced in engine + client calendar `isDateSelectable`.
@@ -329,7 +329,7 @@ Each **service** now carries one `category` slug, drawn from the host's own cate
 - **New modules**: staffAdminController (CRUD/invite/reset/activate, last-super + self-deactivate guards), opsAdminController (`/admin/ops/summary` real attention queue), auditAdminController (`/admin/audit` viewer).
 - **Frontend**: AdminLogin → username field; AdminLayout guard → `type==='admin'`, permission-aware nav (hides items the role lacks), sidebar recolored to brand ink `#1E1E1E`; new AdminStaff + AdminAudit pages (routes `/admin/staff`, `/admin/system/audit`); SuperDashboard Operations Center now uses real `/ops/summary` (removed fake trends/chart/pending=0).
 - **Verified live**: all 4 logins work; RBAC enforced (finance 403 on staff, 200 on ops); audit rows written; revenue now ₹2 (real). Tests: server 205/205, client 112/112.
-- **Admin logins** (credentials delivered in chat, NOT committed): superadmin/ops/finance/support at `/hello-sloth`. Change passwords after first login.
+- **Admin logins** (credentials delivered in chat, NOT committed): superadmin/ops/finance/support at `/backstage`. Change passwords after first login.
 
 
 ## Sprint: Email Communication Engine (DONE 2026-06-10)
@@ -456,7 +456,7 @@ Each **service** now carries one `category` slug, drawn from the host's own cate
 
 ## Email rebrand → Meeticulous (branch `feat/email-meeticulous-rebrand`)
 
-Book A Sloth → Meeticulous across the email system: brand copy, maroon palette
+The old brand → Meeticulous across the email system: brand copy, maroon palette
 (#960D32, from the style guide), light structure (16px card / 12px boxes / 10px
 buttons, blush #FBF4F5 page), category hues kept, no dark mode, Poppins kept.
 Senders: durga + sujata consolidated into shubham; tithi sends from
@@ -469,7 +469,7 @@ tithi@meeticulous.com; noreply kept. Sending domain → meeticulous.com (verifie
    contact email/phone, and the BAS-* invoice series prefix decision. Flip via
    `SELLER_*` env vars or the config defaults. `brandSubline` also pending.
 2. **Hosted logo URLs.** Header icon + footer wordmark are referenced at
-   `company-assets.bookasloth.in/.../meeticulous-*.png` (placeholder host, won't
+   `company-assets.<old-brand-domain>/.../meeticulous-*.png` (placeholder host, won't
    resolve). Upload the two assets to a public CDN and swap the two constants in
    `services/email/emailLayout.js` (HEADER_LOGO/FOOTER_LOGO) + `sellerIdentity.logoUrl`.
 

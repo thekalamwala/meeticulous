@@ -23,7 +23,7 @@ Scope: host onboarding `/vendor-register/*` (web + mobile web). Guest OTP flow u
 ## 2. Why it feels dull, lifeless and unintuitive
 
 ### A. Trust & brand breaks (felt in the first 3 seconds)
-1. **Two brands on one screen.** `GoogleStart` headline says *"Start hosting on Book A Sloth"* with an **"S"** brandmark, while every URL says `meeticulous.com/…`. The stepper repeats the "S". A new host can't tell whose product this is.
+1. **Two brands on one screen.** `GoogleStart` headline says *"Start hosting on Meeticulous"* with an **"S"** brandmark, while every URL says `meeticulous.com/…`. The stepper repeats the "S". A new host can't tell whose product this is.
 2. **Off-palette preview.** `LivePreviewCard` cover is hardcoded orange `rgba(254,81,0,…)` — not a token, not the brand blue. The "this is your page" moment looks like someone else's page.
 3. **Old visual language.** `bg-gray-50`, `border-gray-200`, `border-2` selected states, `text-3xl font-bold` H1s, gray spinners. None of the soft-modern-SaaS system (Plus Jakarta headings, `border-black/5`, soft blurred shadows, accent words in `text-primary-cta`) that the public site uses. The jump from a polished marketing page into a grey form wizard is where the "lifeless" feeling starts.
 

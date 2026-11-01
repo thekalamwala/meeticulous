@@ -93,7 +93,7 @@ Items previously listed here as pending are now live:
   (blog pipeline clone) → Supabase images/host-og/.
 
 - **v3.89** (`v3.89_bot_escalations.sql`) — applied 2026-07-20 on BOTH DBs. Adds
-  `bot_escalations` + `bot_escalation_replies` (Bolt human-handoff records + admin reply
+  `bot_escalations` + `bot_escalation_replies` (Tithi, formerly Bolt, human-handoff records + admin reply
   thread; additive, RLS-on/no-policy/service_role-only). escalationService keeps the
   code-side schema fallback (degrades to email-only on "table/column missing"). See
   `docs/bolt-escalation-flow.md`.
@@ -214,10 +214,10 @@ old docs is stale). The shipped public pages (Home, Pricing, /for/* landings,
 Navbar, Footer) are the source of truth; match them.
 
 **Tokens only — never invent colors.** Use the Tailwind token classes:
-`bg-ink`/`text-ink` (#191919), `bg-canvas` (#F8FAFC, page bg), `bg-sand` (#F1F5F9),
-`text-primary`/`bg-primary` (#0079C1), `text-primary-cta`/`bg-primary-cta` (#00457C —
-the WCAG-safe navy for white-on-blue CTAs and accent headline words),
-`primary-light` (#D6ECF8), and the multi-hue `--c-*` / `text-c-*` accents. Per-landing
+`bg-ink`/`text-ink` (#2A1416), `bg-canvas` (#FFF8FA, page bg), `bg-sand` (#FFF1F4),
+`text-primary`/`bg-primary` (#960D32, brand crimson), `text-primary-cta`/`bg-primary-cta` (#960D32 —
+used for white-on-crimson CTAs and accent headline words),
+`primary-light` (#FBE3E8), and the multi-hue `--c-*` / `text-c-*` accents. Per-landing
 pages drive accents off CSS vars (`--lp-accent`) via inline `style`.
 
 **Radius:** 4–6px on cards/buttons, `rounded-full` on chips/pills/avatars. NOTE

@@ -97,8 +97,8 @@ The flip contradicts one-identity-one-type (a phone-guest cannot become an email
 a column).
 
 - `client/src/pages/Dashboard.jsx`: the guest "Want to offer services? / Become a host" action no
-  longer calls `activateHost()`. It links to `/be-a-sloth` (host signup with a separate account).
-- `client/src/pages/BeASloth.jsx`: when a logged-in **guest** views it, the CTA starts the
+  longer calls `activateHost()`. It links to `/become-a-host` (host signup with a separate account).
+- `client/src/pages/BecomeAHost.jsx`: when a logged-in **guest** views it, the CTA starts the
   **host Google signup** (separate account) rather than `activateHost()`. A logged-in **host**
   still routes to `/dashboard`.
 - `client/src/context/AuthContext.jsx`: remove the `activateHost` helper (and its export from
