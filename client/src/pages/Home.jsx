@@ -85,12 +85,15 @@ const ROUTE_LOGIN = "/login-as-vendor";
 const SITE_URL = "https://meeticulous.com";
 const OG_IMAGE = ogCard('home');
 
-/* ── Hero honeycomb background (brand: bee + M) ──
-   Pointy-top hexagon tile (side 18 → 31.18 × 54), 1px crimson #960D32 lines at
-   ~5% opacity. Inline SVG data URI: no extra request, no JS, no layout shift,
-   no LCP impact. Scrolls with the page (never background-attachment: fixed). */
-const HIVE_TILE =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='31.18' height='54' viewBox='0 0 31.18 54'%3E%3Cg fill='none' stroke='%23960D32' stroke-opacity='0.05' stroke-width='1'%3E%3Cpath d='M15.59 0L31.18 9V27L15.59 36L0 27V9Z'/%3E%3Cpath d='M15.59 36V54'/%3E%3C/g%3E%3C/svg%3E";
+// Hero slot-grid composition (design-system slot states: empty · open · booked · busy).
+const HERO_SLOTS = [
+  { state: "booked", time: "09:30", label: "Paid ₹1,200" },
+  { state: "open", time: "11:00", label: "Open" },
+  { state: "busy", time: "12:30" },
+  { time: "14:00" },
+  { state: "booked", time: "15:30", label: "Paid ₹800" },
+  { state: "open", time: "17:00", label: "Open", selected: true },
+];
 const ORG_LOGO = "https://company-assets.meeticulous.in/images/brand/logo.png";
 
 const HOME_JSONLD = [
@@ -650,7 +653,7 @@ const Home = () => {
   ];
 
   return (
-    <main id="top" className="home-wide overflow-x-clip bg-white text-ink">
+    <main id="top" className="home-wide overflow-x-clip bg-canvas text-ink">
       <Seo
         title="Appointment Booking Software for Creators, Pros & Bros — Meeticulous"
         description="Meeticulous is appointment booking software for creators, consultants, coaches, freelancers and fitness trainers. One link handles scheduling, upfront UPI payments, GST invoices and WhatsApp reminders — clients book and pay themselves. Free to start, built for India."
@@ -671,56 +674,54 @@ const Home = () => {
           slow mobile that WAS the LCP (~6-10s). The hero is server-rendered, so
           it now paints immediately. Intro kept on profile pages. */}
 
-      {/* ════════════════ HERO — centered, light (all breakpoints) ════════════════
-         HubSpot/Calendly-style hierarchy: category eyebrow → keyword H1 →
-         two-line promise → primary + secondary CTA → risk-reversal microcopy,
-         then the product/photo panel below. One H1 for every breakpoint (the
-         old dark split hero needed an h1/h2 mobile twin). */}
-      <section className="relative overflow-hidden border-b border-black/10 px-5 pb-20 pt-16 sm:px-8 sm:pb-28 sm:pt-24 lg:pb-32 lg:pt-28">
-        {/* Honeycomb pattern — hero only (brand: bee + M). Sits under the hero content, which is z-10. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            backgroundImage: `url("${HIVE_TILE}")`,
-            backgroundSize: "31.18px 54px",
-            backgroundRepeat: "repeat",
-          }}
-        />
+      {/* ════════════════ HERO — design-system "Loop & Slot" ════════════════
+         Keyword H1 (SEO) + serif human half, primary Google CTA + ghost pricing
+         link, slot-grid composition on the right (below on phones). */}
+      <section className="relative overflow-hidden bg-canvas px-5 pb-20 pt-16 sm:px-8 sm:pb-24 sm:pt-20 lg:pb-28 lg:pt-24">
+        {/* Design-system hero: cream ground, two-beat headline, primary + ghost CTA,
+            live slot-grid composition with ONE rose ee thread behind it. */}
+        <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12">
+          <div className="text-center lg:text-left">
+            <Reveal instant as="h1" delay={0.05} className="mx-auto max-w-[17ch] font-display text-[clamp(2.4rem,7vw,4.25rem)] font-extrabold leading-[1.02] tracking-[-0.04em] text-maroon lg:mx-0">
+              Appointment booking software for creators, pros &amp; bros.{" "}
+              <span className="font-serif text-[1.08em] font-normal italic tracking-[-0.01em] text-rose">Keep your calm.</span>
+            </Reveal>
 
-        <div className="relative z-10 mx-auto max-w-5xl text-center">
+            <Reveal instant as="p" delay={0.12} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-ink sm:text-lg lg:mx-0">
+              Get booked, paid and reminded without the admin. One link turns your time, skills
+              and services into paid bookings, with UPI checkout, WhatsApp reminders and GST invoices built in.
+            </Reveal>
 
-          {/* sm+: "Appointment booking software" holds one line (font scales with the
-              viewport so it fits); phones wrap naturally at a readable size. */}
-          <Reveal instant as="h1" delay={0.05} className="mx-auto max-w-[17ch] font-heading text-[clamp(2.4rem,8.5vw,4.75rem)] font-extrabold leading-[1.04] tracking-[-0.035em] text-ink sm:max-w-none sm:text-[clamp(2rem,5.5vw,4.25rem)]">
-            <span className="sm:block sm:whitespace-nowrap">Appointment booking software</span>{" "}
-            for creators, pros &amp; bros<span className="text-primary">.</span>
-          </Reveal>
+            {/* Google-only host funnel — fires the same flow as /become-a-host */}
+            <Reveal instant delay={0.18} className="mt-8 sm:mt-10">
+              <div className="flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center lg:justify-start">
+                <button onClick={startGoogle} disabled={googleLoading} className="mt-btn mt-btn--l">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white">
+                    <GoogleIcon />
+                  </span>
+                  {googleLoading ? "Opening Google…" : "Get your free booking page"}
+                </button>
+                <Link to="/pricing" className="mt-btn mt-btn--ghost mt-btn--l">See pricing</Link>
+              </div>
+              <p className="mx-auto mt-4 max-w-md text-xs leading-relaxed text-muted lg:mx-0">
+                By continuing, you agree to our{" "}
+                <Link to="/terms" className="text-muted underline underline-offset-2 hover:text-ink">Terms &amp; Conditions</Link> and{" "}
+                <Link to="/privacy" className="text-muted underline underline-offset-2 hover:text-ink">Privacy Policy</Link>.
+              </p>
+            </Reveal>
+          </div>
 
-          <Reveal instant as="p" delay={0.12} className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-neutral-600 sm:mt-8 sm:text-lg">
-            Get booked, paid and reminded — without the admin. One link turns your time, skills
-            and services into paid bookings, with UPI checkout, WhatsApp reminders and GST invoices built in.
-          </Reveal>
-
-          {/* Google-only host funnel — fires the same flow as /become-a-host */}
-          <Reveal instant delay={0.18} className="mt-8 sm:mt-10">
-            <div className="mx-auto flex max-w-md flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
-              <button
-                onClick={startGoogle}
-                disabled={googleLoading}
-                className="btn inline-flex items-center justify-center gap-3 rounded-[6px] bg-primary px-6 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50 sm:px-7 sm:py-4 sm:text-base"
-              >
-                <span className="flex h-7 w-7 items-center justify-center rounded-[4px] bg-white">
-                  <GoogleIcon />
-                </span>
-                {googleLoading ? "Opening Google…" : "Create Your Free Booking Page"}
-              </button>
+          <Reveal instant delay={0.22} className="relative mx-auto w-full max-w-[420px]">
+            <img src="/brand/ds/02-ee/mt-ee-thread-rose.svg" alt="" aria-hidden="true"
+                 className="pointer-events-none absolute -right-48 top-1/2 hidden w-[760px] max-w-none -translate-y-1/2 lg:block" />
+            <div className="relative grid grid-cols-3 gap-[10px]" aria-label="Example week of slots" role="img">
+              {HERO_SLOTS.map((c, k) => (
+                <div key={k} className={`mt-slot${c.state ? ` mt-slot--${c.state}` : ""}${c.selected ? " mt-slot--selected" : ""}`}>
+                  {c.state === "booked" ? <span className="mt-slot__dot" /> : <span />}
+                  {c.time && <span><b>{c.time}</b>{c.label && <><br />{c.label}</>}</span>}
+                </div>
+              ))}
             </div>
-            <p className="mx-auto mt-4 max-w-md text-xs leading-relaxed text-neutral-500">
-              By continuing, you agree to our{" "}
-              <Link to="/terms" className="text-neutral-500 underline decoration-neutral-300 underline-offset-2 hover:text-ink">Terms &amp; Conditions</Link> and{" "}
-              <Link to="/privacy" className="text-neutral-500 underline decoration-neutral-300 underline-offset-2 hover:text-ink">Privacy Policy</Link>.
-            </p>
           </Reveal>
         </div>
       </section>
@@ -770,13 +771,13 @@ const Home = () => {
                 <button
                   onClick={startGoogle}
                   disabled={googleLoading}
-                  className="btn inline-flex items-center justify-center gap-2 rounded-[6px] bg-primary px-6 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                  className="btn inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
                   {googleLoading ? "Opening Google…" : "Start for free"}
                 </button>
                 <Link
                   to="/pricing"
-                  className="inline-flex items-center justify-center rounded-[6px] border border-primary/40 bg-white px-6 py-3.5 text-sm font-semibold text-primary-cta transition-colors hover:border-primary hover:no-underline"
+                  className="inline-flex items-center justify-center rounded-full border border-primary/40 bg-white px-6 py-3.5 text-sm font-semibold text-primary-cta transition-colors hover:border-primary hover:no-underline"
                 >
                   See pricing
                 </Link>
@@ -786,7 +787,7 @@ const Home = () => {
             <ul className="grid gap-5 sm:grid-cols-2">
               {PROBLEMS.map((p, i) => (
                 <Reveal as="li" key={p.title} delay={(i % 2) * 0.08}>
-                  <div className="flex h-full flex-col overflow-hidden rounded-[10px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-shadow duration-300 hover:shadow-[0_24px_60px_-28px_rgba(26,26,26,0.25)]">
+                  <div className="flex h-full flex-col overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-shadow duration-300 hover:shadow-[0_24px_60px_-28px_rgba(26,26,26,0.25)]">
                     {/* Dark header band — only the part above the first divider,
                         tinted with the dark (-900) shade of the card's icon colour */}
                     <h3 className={`flex items-center gap-3 ${p.band} px-6 py-5 font-heading text-lg font-bold leading-snug text-white sm:px-7`}>
@@ -975,7 +976,7 @@ const Home = () => {
             <button
               onClick={startGoogle}
               disabled={googleLoading}
-              className="btn inline-flex items-center justify-center gap-2 rounded-[6px] bg-ink px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="btn inline-flex items-center justify-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             >
               {googleLoading ? "Opening Google…" : "Start for free"} <ArrowRight size={16} />
             </button>
@@ -1150,7 +1151,7 @@ const Home = () => {
               setDragDX(0);
               tPausedRef.current = false;
             }}
-            className="relative z-10 cursor-grab touch-pan-y select-none overflow-hidden rounded-[6px] py-12 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:cursor-grabbing"
+            className="relative z-10 cursor-grab touch-pan-y select-none overflow-hidden rounded-[16px] py-12 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:cursor-grabbing"
           >
             <div
               className={`flex ${tAnim && !dragging ? "transition-transform duration-700 ease-out motion-reduce:transition-none" : ""}`}
@@ -1429,7 +1430,7 @@ const Home = () => {
                         src="/brand/meeticulous-icon.svg"
                         alt="Meeticulous"
                         loading="lazy"
-                        className="h-7 w-7 rounded-[6px] object-contain"
+                        className="h-7 w-7 rounded-[16px] object-contain"
                       />
                     </div>
                     {c.soon ? (
@@ -1486,7 +1487,7 @@ const Home = () => {
             {TRUST.map((t, i) => (
               <Reveal key={t.title} delay={(i % 5) * 0.06}>
                 <div
-                  className="flex h-full flex-col items-center rounded-[6px] border border-black/5 bg-white p-6 text-center shadow-[0_8px_30px_rgba(26,26,26,0.04)]"
+                  className="flex h-full flex-col items-center rounded-[24px] border border-black/5 bg-white p-6 text-center shadow-[0_8px_30px_rgba(26,26,26,0.04)]"
                 >
                   <span
                     className="flex h-12 w-12 items-center justify-center rounded-xl"
@@ -1507,7 +1508,7 @@ const Home = () => {
           {/* How we use Google — plain-language version of the OAuth consent
               screen, for hosts (and Google's verification reviewers). */}
           <Reveal delay={0.1} className="mt-12">
-            <div id="how-google" className="mx-auto max-w-6xl scroll-mt-24 rounded-[6px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-8 lg:p-10">
+            <div id="how-google" className="mx-auto max-w-6xl scroll-mt-24 rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-8 lg:p-10">
               <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
                 {/* LEFT — icon + headline + intro */}
                 <div className="flex items-start gap-4">
@@ -1534,7 +1535,7 @@ const Home = () => {
                       <Check size={16} className="mt-0.5 shrink-0 text-primary" />
                       <p className="text-sm leading-relaxed text-neutral-500">
                         <span className="font-semibold text-ink">{s.name}</span>{" "}
-                        <span className="rounded-[4px] bg-black/5 px-1.5 py-0.5 font-mono text-[11px] text-neutral-600">{s.scope}</span>{" "}
+                        <span className="rounded-[16px] bg-black/5 px-1.5 py-0.5 font-mono text-[11px] text-neutral-600">{s.scope}</span>{" "}
                         — {s.desc}
                       </p>
                     </li>
@@ -1604,7 +1605,7 @@ const Home = () => {
                       onClick={() => setOpenFaq(open ? null : i)}
                       aria-expanded={open}
                       aria-controls={`faq-a-${i}`}
-                      className="flex w-full cursor-pointer items-center justify-between gap-6 rounded-[4px] py-5 text-left font-heading text-base font-bold text-ink transition-colors hover:text-primary-cta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:text-lg"
+                      className="flex w-full cursor-pointer items-center justify-between gap-6 rounded-[16px] py-5 text-left font-heading text-base font-bold text-ink transition-colors hover:text-primary-cta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:text-lg"
                     >
                       {f.q}
                       <Plus

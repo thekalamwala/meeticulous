@@ -195,7 +195,7 @@ function NavLink({ item, className, onClick }) {
 }
 
 function CtaButton({ to, children, variant = 'solid', className = '' }) {
-  const base = 'inline-flex items-center justify-center gap-2 rounded-[6px] px-6 py-3.5 text-sm font-semibold transition-all hover:no-underline';
+  const base = 'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold transition-all hover:no-underline';
   const styles = {
     solid: 'text-white shadow-[0_4px_14px_rgba(127,29,29,0.24)] hover:brightness-110',
     ghost: 'border-2 border-[color:var(--ca-ink)]/15 bg-white text-[color:var(--ca-ink)] hover:border-[color:var(--ca-primary)]/50',
@@ -225,7 +225,7 @@ function TestimonialRoster() {
               role="tab"
               aria-selected={on}
               onClick={() => setActive(i)}
-              className="flex w-full items-center gap-3 rounded-[10px] px-3.5 py-3 text-left transition-colors"
+              className="flex w-full items-center gap-3 rounded-[16px] px-3.5 py-3 text-left transition-colors"
               style={on ? { background: 'var(--ca-primary)' } : undefined}
             >
               <span
@@ -268,7 +268,7 @@ function FaqAccordion() {
   const renderItem = (f, i) => {
     const isOpen = open === i;
     return (
-      <div key={f.q} className="overflow-hidden rounded-[12px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'var(--ca-primary)' : 'rgba(17,17,17,0.08)' }}>
+      <div key={f.q} className="overflow-hidden rounded-[16px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'var(--ca-primary)' : 'rgba(17,17,17,0.08)' }}>
         <button
           type="button"
           onClick={() => setOpen(isOpen ? -1 : i)}
@@ -385,7 +385,7 @@ export default function LawyersPage() {
                   <NavLink key={item.label} item={item} onClick={() => setMenuOpen(false)} className="rounded-lg px-2 py-2.5 text-sm font-medium text-[color:var(--ca-ink)] hover:bg-[color:var(--ca-cream)] hover:no-underline" />
                 ))}
                 <div className="mt-2 flex items-center gap-3 border-t border-black/5 pt-3">
-                  <Link to={LOGIN} className="flex-1 rounded-[6px] border-2 border-black/10 py-2.5 text-center text-sm font-semibold text-[color:var(--ca-ink)] hover:no-underline">Login</Link>
+                  <Link to={LOGIN} className="flex-1 rounded-[16px] border-2 border-black/10 py-2.5 text-center text-sm font-semibold text-[color:var(--ca-ink)] hover:no-underline">Login</Link>
                   <CtaButton to={START} className="flex-1">Start Free <ArrowRight size={15} /></CtaButton>
                 </div>
               </div>
@@ -763,7 +763,7 @@ export default function LawyersPage() {
           <Reveal className="relative order-2 mx-auto w-full max-w-sm lg:order-1 lg:mx-0">
             <div aria-hidden className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(127,29,29,0.14), transparent)' }} />
             <div className="relative rounded-[18px] border-2 p-2 shadow-[0_24px_50px_-32px_rgba(31,19,21,0.5)]" style={{ borderColor: 'var(--ca-primary)', background: '#fff' }}>
-              <div className="overflow-hidden rounded-[12px] border" style={{ borderColor: 'rgba(194,137,26,0.5)', background: 'var(--ca-cream)' }}>
+              <div className="overflow-hidden rounded-[16px] border" style={{ borderColor: 'rgba(194,137,26,0.5)', background: 'var(--ca-cream)' }}>
                 <div aria-hidden="true" className="mx-auto grid aspect-square w-full max-w-[20rem] place-items-center p-5"><ART_ICON className="h-20 w-20" style={{ color: 'var(--ca-primary)' }} strokeWidth={1.25} /></div>
               </div>
             </div>
@@ -819,10 +819,10 @@ export default function LawyersPage() {
             Set up your booking page today and give your clients a simpler way to meet with you.
           </Reveal>
           <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-            <Link to={START} className="inline-flex items-center justify-center gap-2 rounded-[6px] px-8 py-4 text-sm font-bold transition-all hover:brightness-105 hover:no-underline" style={{ background: 'var(--ca-accent)', color: 'var(--ca-ink)' }}>
+            <Link to={START} className="inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 text-sm font-bold transition-all hover:brightness-105 hover:no-underline" style={{ background: 'var(--ca-accent)', color: 'var(--ca-ink)' }}>
               Claim Your Booking Link <ArrowRight size={16} />
             </Link>
-            <Link to={DEMO} className="inline-flex items-center justify-center gap-2 rounded-[6px] border-2 border-white/30 px-6 py-4 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline">
+            <Link to={DEMO} className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-white/30 px-6 py-4 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline">
               Book A Demo
             </Link>
           </Reveal>

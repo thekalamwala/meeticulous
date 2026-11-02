@@ -41,7 +41,7 @@ const AuthBrandPanel = ({
         <img
           src="/brand/ee-rounded-blush.svg"
           alt="Meeticulous"
-          className="h-10 w-10 rounded-[10px] shadow-[0_2px_8px_-2px_rgba(0,0,0,.4)]"
+          className="h-10 w-10 rounded-[16px] shadow-[0_2px_8px_-2px_rgba(0,0,0,.4)]"
         />
         <span className="font-heading text-lg font-bold tracking-tight">Meeticulous</span>
       </div>

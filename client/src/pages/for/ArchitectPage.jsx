@@ -199,7 +199,7 @@ function NavLink({ item, className, onClick }) {
 }
 
 function CtaButton({ to, children, variant = 'solid', className = '' }) {
-  const base = 'inline-flex items-center justify-center gap-2 rounded-[6px] px-6 py-3.5 text-sm font-semibold transition-all hover:no-underline';
+  const base = 'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold transition-all hover:no-underline';
   const styles = {
     solid: 'text-white shadow-[0_4px_14px_rgba(51,65,85,0.24)] hover:brightness-110',
     ghost: 'border-2 border-[color:var(--ca-ink)]/12 bg-white text-[color:var(--ca-ink)] hover:border-[color:var(--ca-ink)]/30',
@@ -267,7 +267,7 @@ function SpecCard({ s, i }) {
       {/* drafting corner-mark (top-right) */}
       <span aria-hidden className="pointer-events-none absolute right-3 top-3 h-3.5 w-3.5 border-r border-t" style={{ borderColor: 'var(--ca-accent)' }} />
       <Eyebrow>{`SVC-${String(i + 1).padStart(2, '0')}`}</Eyebrow>
-      <span className="mt-3 flex h-11 w-11 items-center justify-center rounded-[6px]" style={{ background: 'color-mix(in srgb, var(--ca-primary) 8%, transparent)', color: 'var(--ca-primary)' }}>
+      <span className="mt-3 flex h-11 w-11 items-center justify-center rounded-[16px]" style={{ background: 'color-mix(in srgb, var(--ca-primary) 8%, transparent)', color: 'var(--ca-primary)' }}>
         <s.icon size={20} />
       </span>
       <h3 className="mt-3.5 font-heading text-[15px] font-bold text-[color:var(--ca-ink)]">{s.label}</h3>
@@ -282,7 +282,7 @@ function FaqAccordion() {
   const renderItem = (f, i) => {
     const isOpen = open === i;
     return (
-      <div key={f.q} className="overflow-hidden rounded-[8px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'var(--ca-accent)' : 'rgba(26,34,48,0.12)' }}>
+      <div key={f.q} className="overflow-hidden rounded-[16px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'var(--ca-accent)' : 'rgba(26,34,48,0.12)' }}>
         <button
           type="button"
           onClick={() => setOpen(isOpen ? -1 : i)}
@@ -403,7 +403,7 @@ export default function ArchitectPage() {
                   <NavLink key={item.label} item={item} onClick={() => setMenuOpen(false)} className="rounded-lg px-2 py-2.5 text-sm font-medium text-[color:var(--ca-ink)] hover:bg-[color:var(--ca-cream)] hover:no-underline" />
                 ))}
                 <div className="mt-2 flex items-center gap-3 border-t border-black/5 pt-3">
-                  <Link to={LOGIN} className="flex-1 rounded-[6px] border-2 border-black/10 py-2.5 text-center text-sm font-semibold text-[color:var(--ca-ink)] hover:no-underline">Login</Link>
+                  <Link to={LOGIN} className="flex-1 rounded-[16px] border-2 border-black/10 py-2.5 text-center text-sm font-semibold text-[color:var(--ca-ink)] hover:no-underline">Login</Link>
                   <CtaButton to={START} className="flex-1">Start Free <ArrowRight size={15} /></CtaButton>
                 </div>
               </div>
@@ -455,7 +455,7 @@ export default function ArchitectPage() {
               imgClassName="aspect-square"
             />
             <div className="absolute -bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-3 border bg-white px-4 py-3 shadow-[0_18px_40px_-18px_rgba(26,34,48,0.55)]" style={{ borderColor: 'rgba(26,34,48,0.12)' }}>
-              <span className="flex h-9 w-9 items-center justify-center rounded-[6px] text-white" style={{ background: 'var(--ca-primary)' }}><CalendarCheck size={17} /></span>
+              <span className="flex h-9 w-9 items-center justify-center rounded-[16px] text-white" style={{ background: 'var(--ca-primary)' }}><CalendarCheck size={17} /></span>
               <div>
                 <div className="text-[11px] text-slate-500">Consultation booked</div>
                 <div className="text-sm font-bold text-[color:var(--ca-ink)]">Site visit · Fri 4:30</div>
@@ -470,7 +470,7 @@ export default function ArchitectPage() {
             <Reveal key={b.title} delay={(i % 4) * 0.06}>
               <div className="flex h-full flex-col bg-white p-4 transition-colors hover:border-[color:var(--ca-accent)]" style={{ border: '1px solid rgba(26,34,48,0.1)' }}>
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[6px]" style={{ background: 'color-mix(in srgb, var(--ca-primary) 8%, transparent)', color: 'var(--ca-primary)' }}>
+                  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[16px]" style={{ background: 'color-mix(in srgb, var(--ca-primary) 8%, transparent)', color: 'var(--ca-primary)' }}>
                     <b.icon size={18} />
                   </span>
                   <div className="text-sm font-bold text-[color:var(--ca-ink)]">{b.title}</div>
@@ -555,7 +555,7 @@ export default function ArchitectPage() {
             <div className="grid gap-12 md:grid-cols-3 md:gap-6">
               {STEPS.map((s, i) => (
                 <Reveal key={s.title} delay={i * 0.1} className="relative text-center">
-                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-[8px] font-mono text-lg font-bold text-white shadow-[0_10px_24px_-12px_rgba(26,34,48,0.8)] ring-[6px] ring-[color:var(--ca-cream)]" style={{ background: 'var(--ca-primary)' }}>
+                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-[16px] font-mono text-lg font-bold text-white shadow-[0_10px_24px_-12px_rgba(26,34,48,0.8)] ring-[6px] ring-[color:var(--ca-cream)]" style={{ background: 'var(--ca-primary)' }}>
                     {s.step}
                   </div>
                   <div className="mt-5 flex items-center justify-center gap-2">
@@ -586,7 +586,7 @@ export default function ArchitectPage() {
             {TOOLS.map((t, i) => (
               <Reveal key={t.name} delay={(i % 3) * 0.05}>
                 <div className="flex h-full items-center gap-3.5 bg-white px-4 py-4 transition-colors hover:border-[color:var(--ca-accent)]" style={{ border: '1px solid rgba(26,34,48,0.1)' }}>
-                  <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[6px] bg-[color:var(--ca-grey)]">
+                  <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[16px] bg-[color:var(--ca-grey)]">
                     {t.logo
                       ? <img src={t.logo} alt={`${t.name} logo`} loading="lazy" className="h-6 w-6 object-contain" />
                       : t.lucide
@@ -634,7 +634,7 @@ export default function ArchitectPage() {
                   }}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-[6px]" style={{ background: 'rgba(255,255,255,0.08)', color: 'var(--ca-accent)' }}><s.icon size={18} /></span>
+                    <span className="flex h-10 w-10 items-center justify-center rounded-[16px]" style={{ background: 'rgba(255,255,255,0.08)', color: 'var(--ca-accent)' }}><s.icon size={18} /></span>
                     <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/35">{`0${i + 1}`}</span>
                   </div>
                   <div className="mt-5 font-heading text-4xl font-extrabold tracking-tight text-white sm:text-5xl">{s.value}</div>
@@ -678,7 +678,7 @@ export default function ArchitectPage() {
                     <blockquote className="mt-3 text-sm leading-relaxed text-slate-700">&ldquo;{t.quote}&rdquo;</blockquote>
                   </div>
                   <figcaption className="flex items-center gap-3 border-t pt-4" style={{ borderColor: 'rgba(26,34,48,0.08)' }}>
-                    <span className="flex h-9 w-9 items-center justify-center rounded-[6px] text-sm font-bold text-white" style={{ background: 'var(--ca-primary)' }}>{t.name.charAt(0)}</span>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-[16px] text-sm font-bold text-white" style={{ background: 'var(--ca-primary)' }}>{t.name.charAt(0)}</span>
                     <div>
                       <div className="text-[13px] font-bold text-[color:var(--ca-ink)]">{t.name}</div>
                       <div className="text-[11px] text-slate-500">{t.role}</div>
@@ -713,7 +713,7 @@ export default function ArchitectPage() {
                 <ul className="mt-6 space-y-4">
                   {WITHOUT.map((w) => (
                     <li key={w} className="flex items-start gap-3 text-[15px] text-slate-500">
-                      <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] bg-slate-100 text-slate-400"><X size={13} /></span>
+                      <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[16px] bg-slate-100 text-slate-400"><X size={13} /></span>
                       {w}
                     </li>
                   ))}
@@ -729,7 +729,7 @@ export default function ArchitectPage() {
                 <ul className="relative mt-6 space-y-4">
                   {WITH_BAS.map((w) => (
                     <li key={w} className="flex items-start gap-3 text-[15px] font-medium text-white">
-                      <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px]" style={{ background: 'var(--ca-accent)', color: '#fff' }}><Check size={13} /></span>
+                      <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[16px]" style={{ background: 'var(--ca-accent)', color: '#fff' }}><Check size={13} /></span>
                       {w}
                     </li>
                   ))}
@@ -787,7 +787,7 @@ export default function ArchitectPage() {
                 <div aria-hidden className="pointer-events-none absolute -right-12 -top-14 h-48 w-48 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(180,83,9,0.5), transparent)' }} />
                 <div className="relative flex items-center gap-2">
                   <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em]" style={{ color: 'var(--ca-accent)' }}>Plan B</span>
-                  <span className="rounded-[4px] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide" style={{ background: 'var(--ca-accent)', color: '#fff' }}>Recommended</span>
+                  <span className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide" style={{ background: 'var(--ca-accent)', color: '#fff' }}>Recommended</span>
                 </div>
                 <div className="relative mt-3 font-heading text-lg font-bold">{PREMIUM_PLAN.name}</div>
                 <p className="relative mt-1 text-sm text-white/70">Keep every rupee. Automate the rest.</p>
@@ -804,7 +804,7 @@ export default function ArchitectPage() {
                     <li key={f} className="flex items-start gap-2.5 text-sm text-white/85"><Check size={16} className="mt-0.5 shrink-0" style={{ color: 'var(--ca-accent)' }} /><span>{f}</span></li>
                   ))}
                 </ul>
-                <Link to={START} className="relative mt-7 inline-flex w-full items-center justify-center gap-2 rounded-[6px] px-6 py-3.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-all hover:brightness-95 hover:no-underline" style={{ background: '#fff' }}>
+                <Link to={START} className="relative mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-all hover:brightness-95 hover:no-underline" style={{ background: '#fff' }}>
                   Go Pro <ArrowRight size={15} />
                 </Link>
               </div>
@@ -832,7 +832,7 @@ export default function ArchitectPage() {
             <div className="mt-8 flex flex-col gap-5 text-left">
               {ABOUT_FEATURES.map((f, i) => (
                 <Reveal key={f.title} delay={0.1 + i * 0.06} className="flex items-start gap-3.5">
-                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[6px]" style={{ background: 'color-mix(in srgb, var(--ca-primary) 8%, transparent)', color: 'var(--ca-primary)' }}><f.icon size={18} /></span>
+                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[16px]" style={{ background: 'color-mix(in srgb, var(--ca-primary) 8%, transparent)', color: 'var(--ca-primary)' }}><f.icon size={18} /></span>
                   <div>
                     <p className="text-[15px] font-bold text-[color:var(--ca-ink)]">{f.title}</p>
                     <p className="mt-0.5 text-sm leading-relaxed text-slate-500">{f.desc}</p>
@@ -885,7 +885,7 @@ export default function ArchitectPage() {
             <div aria-hidden className="pointer-events-none absolute -left-16 -top-16 h-72 w-72 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(180,83,9,0.55), transparent)' }} />
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-40 [mask-image:radial-gradient(circle_at_20%_20%,black,transparent_60%)]" style={gridBg} />
             <div className="relative text-center lg:text-left">
-              <Reveal className="mx-auto flex h-14 w-14 items-center justify-center rounded-[8px] lg:mx-0" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
+              <Reveal className="mx-auto flex h-14 w-14 items-center justify-center rounded-[16px] lg:mx-0" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
                 <Zap size={26} style={{ color: 'var(--ca-accent)' }} />
               </Reveal>
               <Reveal as="h2" delay={0.06} className="mt-6 font-heading text-[clamp(1.8rem,4.5vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight text-white">
@@ -895,10 +895,10 @@ export default function ArchitectPage() {
                 Set up your studio&apos;s booking page today — free forever, ready to share in minutes.
               </Reveal>
               <Reveal delay={0.14} className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4 lg:justify-start">
-                <Link to={START} className="inline-flex items-center justify-center gap-2 rounded-[6px] bg-white px-7 py-3.5 text-sm font-bold text-[color:var(--ca-ink)] transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline">
+                <Link to={START} className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold text-[color:var(--ca-ink)] transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline">
                   Launch My Studio Page — Free <ArrowRight size={16} />
                 </Link>
-                <Link to={DEMO} className="inline-flex items-center justify-center gap-2 rounded-[6px] border-2 border-white/25 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline">
+                <Link to={DEMO} className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-white/25 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline">
                   Book A Demo
                 </Link>
               </Reveal>

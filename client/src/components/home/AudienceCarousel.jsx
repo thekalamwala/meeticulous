@@ -14,10 +14,10 @@ import { Check, ChevronLeft, ChevronRight } from "lucide-react";
    for + what they get), on the audience's tint. */
 const Vignette = ({ a, on }) => (
   <div
-    className="relative overflow-hidden rounded-[10px] p-5 sm:p-6"
+    className="relative overflow-hidden rounded-[24px] p-5 sm:p-6"
     style={{ background: `linear-gradient(150deg, color-mix(in srgb, ${a.color} 8%, white), color-mix(in srgb, ${a.color} 22%, white))` }}
   >
-    <div className="rounded-[6px] bg-white p-4 shadow-[0_18px_40px_-24px_rgba(26,26,26,0.35)]">
+    <div className="rounded-[24px] bg-white p-4 shadow-[0_18px_40px_-24px_rgba(26,26,26,0.35)]">
       <div className="flex items-center gap-2.5">
         <span
           className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full"

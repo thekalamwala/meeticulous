@@ -1,6 +1,6 @@
 // IconArt — a soft card holding one lucide icon. Stands in wherever a page used
 // to show a mascot illustration, so the layout keeps its shape without art.
-export default function IconArt({ icon: Icon, label, className = '', rounded = 'rounded-[10px]', iconClassName = 'h-16 w-16 sm:h-20 sm:w-20' }) {
+export default function IconArt({ icon: Icon, label, className = '', rounded = 'rounded-[16px]', iconClassName = 'h-16 w-16 sm:h-20 sm:w-20' }) {
   return (
     <div
       {...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true })}

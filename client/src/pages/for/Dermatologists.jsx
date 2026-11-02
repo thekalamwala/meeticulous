@@ -215,7 +215,7 @@ function FaqAccordion() {
   const renderItem = (f, i) => {
     const isOpen = open === i;
     return (
-      <div key={f.q} className="overflow-hidden rounded-[12px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'var(--ca-primary)' : 'rgba(17,17,17,0.08)' }}>
+      <div key={f.q} className="overflow-hidden rounded-[16px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'var(--ca-primary)' : 'rgba(17,17,17,0.08)' }}>
         <button
           type="button"
           onClick={() => setOpen(isOpen ? -1 : i)}
@@ -277,7 +277,7 @@ function BeforeAfter() {
           className="mt-8 grid gap-3 sm:grid-cols-2"
         >
           {data.points.map((p) => (
-            <li key={p} className="flex items-start gap-3 rounded-[12px] border border-black/[0.07] bg-white px-4 py-3.5 text-sm">
+            <li key={p} className="flex items-start gap-3 rounded-[16px] border border-black/[0.07] bg-white px-4 py-3.5 text-sm">
               {isNow
                 ? <Check size={17} className="mt-0.5 flex-shrink-0" style={{ color: 'var(--ca-primary)' }} />
                 : <X size={17} className="mt-0.5 flex-shrink-0 text-slate-300" />}

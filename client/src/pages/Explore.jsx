@@ -199,7 +199,7 @@ function ExploreFull() {
                 </button>
               )}
               <button type="submit" aria-label="Search"
-                className="bg-primary px-5 text-white transition-colors hover:bg-[#2A1416]">
+                className="bg-primary px-5 text-white transition-colors hover:bg-[#2B0A14]">
                 <Search size={18} />
               </button>
             </div>
@@ -220,7 +220,7 @@ function ExploreFull() {
         </div>
 
         {fallbackNote && (
-          <p role="status" className="rounded-[6px] border border-black/5 bg-sand px-4 py-3 text-sm text-ink">
+          <p role="status" className="rounded-[16px] border border-black/5 bg-sand px-4 py-3 text-sm text-ink">
             {fallbackNote}
           </p>
         )}
@@ -274,7 +274,7 @@ function ExploreFull() {
             {(q || category || service) && (
               <button
                 onClick={() => setSearchParams({}, { replace: true })}
-                className="btn mt-5 inline-flex items-center bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-[#2A1416] hover:no-underline">
+                className="btn mt-5 inline-flex items-center bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-[#2B0A14] hover:no-underline">
                 Clear filters
               </button>
             )}
@@ -308,7 +308,7 @@ function ExploreFull() {
             <p className="mt-1 text-sm text-muted">Join coaches, mentors &amp; experts on Meeticulous</p>
           </div>
           <Link to="/become-a-host"
-            className="btn inline-flex shrink-0 items-center bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-[#2A1416] hover:no-underline">
+            className="btn inline-flex shrink-0 items-center bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-[#2B0A14] hover:no-underline">
             Become a host →
           </Link>
         </section>
@@ -359,7 +359,7 @@ function ExploreComingSoon() {
         </p>
         <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link to="/categories"
-            className="btn inline-flex w-full items-center justify-center bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-[#2A1416] hover:no-underline sm:w-auto">
+            className="btn inline-flex w-full items-center justify-center bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-[#2B0A14] hover:no-underline sm:w-auto">
             Browse Categories
           </Link>
           <Link to="/become-a-host"

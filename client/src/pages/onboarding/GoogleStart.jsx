@@ -61,7 +61,7 @@ const GoogleStart = () => {
           <button
             type="button"
             onClick={() => startVendorGoogleAuth('signup')}
-            className="mt-8 inline-flex min-h-[48px] items-center justify-center gap-2.5 rounded-[6px] border border-black/10 bg-white px-7 py-3 text-[15px] font-semibold text-ink shadow-[0_8px_30px_rgba(26,26,26,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_60px_-28px_rgba(26,26,26,0.35)]"
+            className="mt-8 inline-flex min-h-[48px] items-center justify-center gap-2.5 rounded-full border border-black/10 bg-white px-7 py-3 text-[15px] font-semibold text-ink shadow-[0_8px_30px_rgba(26,26,26,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_60px_-28px_rgba(26,26,26,0.35)]"
           >
             <GoogleIcon />
             Continue with Google
@@ -85,20 +85,20 @@ const GoogleStart = () => {
 
         {/* Sample page — what they're about to own. */}
         <div className="relative mx-auto w-full max-w-[340px] flex-[1_1_300px]" aria-hidden="true">
-          <div className="absolute inset-0 translate-x-4 translate-y-4 rounded-[10px] bg-primary-light" />
-          <div className="relative overflow-hidden rounded-[10px] border border-black/5 bg-white shadow-[0_24px_60px_-28px_rgba(26,26,26,0.35)]">
+          <div className="absolute inset-0 translate-x-4 translate-y-4 rounded-[16px] bg-primary-light" />
+          <div className="relative overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_24px_60px_-28px_rgba(26,26,26,0.35)]">
             <div className="bg-gradient-to-br from-primary/20 to-primary/85" style={{ aspectRatio: '3 / 1' }} />
             <div className="-mt-9 flex justify-center">
-              <div className="flex h-[72px] w-[72px] items-center justify-center rounded-[10px] border-[3px] border-white bg-primary-light font-heading text-lg font-extrabold text-primary">You</div>
+              <div className="flex h-[72px] w-[72px] items-center justify-center rounded-[16px] border-[3px] border-white bg-primary-light font-heading text-lg font-extrabold text-primary">You</div>
             </div>
             <div className="px-5 pb-5 pt-2.5 text-center">
               <p className="font-heading text-lg font-bold">Your name here</p>
               <p className="text-sm font-medium text-primary">What you do</p>
               <div className="mx-auto mt-3.5 flex max-w-[200px] flex-col gap-1.5"><div className="onb-shimmer" /><div className="onb-shimmer mx-auto w-2/3" /></div>
-              <div className="mt-4 flex justify-between rounded-[6px] border border-black/5 px-3 py-2.5 text-sm">
+              <div className="mt-4 flex justify-between rounded-[16px] border border-black/5 px-3 py-2.5 text-sm">
                 <span className="font-semibold">Your first service</span><span className="text-muted">30 min</span>
               </div>
-              <div className="mt-3 rounded-[6px] bg-primary py-2.5 text-sm font-bold text-white">Book Now</div>
+              <div className="mt-3 rounded-[16px] bg-primary py-2.5 text-sm font-bold text-white">Book Now</div>
             </div>
           </div>
         </div>

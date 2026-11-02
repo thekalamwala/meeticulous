@@ -231,7 +231,7 @@ const PageStep = () => {
             </p>
 
             {/* Link */}
-            <section className="mt-7 rounded-[10px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+            <section className="mt-7 rounded-[24px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted">Your link</p>
               {!editing ? (
                 <div className="mt-2.5 flex flex-wrap items-center gap-2.5">
@@ -248,7 +248,7 @@ const PageStep = () => {
                 </div>
               ) : (
                 <div className="mt-2.5">
-                  <div className="flex items-stretch overflow-hidden rounded-[6px] border border-black/10 bg-white focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+                  <div className="flex items-stretch overflow-hidden rounded-[16px] border border-black/10 bg-white focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
                     <span className="select-none whitespace-nowrap bg-sand px-3 py-2.5 text-sm text-muted" aria-hidden="true">
                       {window.location.host}/
                     </span>
@@ -276,7 +276,7 @@ const PageStep = () => {
                       type="button"
                       onClick={saveEdit}
                       disabled={!available || checking}
-                      className="rounded-[6px] bg-ink px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       Save link
                     </button>
@@ -289,7 +289,7 @@ const PageStep = () => {
             </section>
 
             {/* What do you do */}
-            <section className="mt-4 rounded-[10px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+            <section className="mt-4 rounded-[24px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted">What do you do?</p>
               <div role="radiogroup" aria-label="What do you do" className="mt-3 flex flex-wrap gap-2">
                 {PERSONAS.map((p) => {
@@ -340,7 +340,7 @@ const PageStep = () => {
                     placeholder="e.g. Yoga instructor, Astrologer, Lawyer"
                     autoComplete="off"
                     autoFocus
-                    className="w-full rounded-[6px] border border-black/10 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="w-full rounded-[16px] border border-black/10 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
                   <div className="mt-3 flex flex-wrap gap-2">
                     {!categories && <PetalSpinner size={28} />}
@@ -390,7 +390,7 @@ const PageStep = () => {
             type="button"
             onClick={handleContinue}
             disabled={!picked || editing || saving}
-            className="ml-auto inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[6px] bg-primary-cta px-7 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(150,13,50,0.18)] transition hover:-translate-y-0.5 hover:opacity-90 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+            className="ml-auto inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-primary-cta px-7 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(150,13,50,0.18)] transition hover:-translate-y-0.5 hover:opacity-90 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
           >
             {saving ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving…</> : <>Looks good <ArrowRight className="h-4 w-4" /></>}
           </button>

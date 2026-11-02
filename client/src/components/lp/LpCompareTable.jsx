@@ -17,7 +17,7 @@ export default function LpCompareTable() {
           Topmate&apos;s edges included.
         </p>
 
-        <div className="mt-10 overflow-x-auto rounded-[8px] border border-black/5 bg-white shadow-sm">
+        <div className="mt-10 overflow-x-auto rounded-[16px] border border-black/5 bg-white shadow-sm">
           <table className="w-full min-w-[520px] text-left text-sm">
             <caption className="sr-only">Meeticulous compared with Topmate</caption>
             <thead>

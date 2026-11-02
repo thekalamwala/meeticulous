@@ -47,7 +47,7 @@ export default function ConsentBanner({ variant = "full" }) {
     <div
       role="dialog"
       aria-label="Cookie and analytics consent"
-      className="fixed z-[9999] bottom-5 right-5 max-[600px]:bottom-2.5 max-[600px]:right-2.5 max-[600px]:max-w-[94%] w-[372px] max-w-[372px] flex flex-col items-center gap-3 rounded-[10px] border border-black/5 bg-white px-6 pb-6 pt-5 max-[600px]:px-4 text-[#252525] shadow-[0_24px_60px_-20px_rgba(26,26,26,0.4)]"
+      className="fixed z-[9999] bottom-5 right-5 max-[600px]:bottom-2.5 max-[600px]:right-2.5 max-[600px]:max-w-[94%] w-[372px] max-w-[372px] flex flex-col items-center gap-3 rounded-[16px] border border-black/5 bg-white px-6 pb-6 pt-5 max-[600px]:px-4 text-[#252525] shadow-[0_24px_60px_-20px_rgba(26,26,26,0.4)]"
     >
       {/* Illustration-led card: two cookie characters (inline SVG, CookieDuo)
           above a bold headline — replaced the old pop-out cookie photo. */}
@@ -70,20 +70,20 @@ export default function ConsentBanner({ variant = "full" }) {
         <button
           type="button"
           onClick={() => choose(true)}
-          className="rounded-[4px] border-2 border-current bg-[whitesmoke] px-3.5 py-2 text-sm text-[#2e7d32] transition-all duration-300 hover:bg-[#2e7d32]/15"
+          className="rounded-[16px] border-2 border-current bg-[whitesmoke] px-3.5 py-2 text-sm text-[#2e7d32] transition-all duration-300 hover:bg-[#2e7d32]/15"
         >
           Agree
         </button>
         <button
           type="button"
           onClick={() => choose(false)}
-          className="rounded-[4px] border-2 border-current bg-[whitesmoke] px-3.5 py-2 text-sm text-[#c62828] transition-all duration-300 hover:bg-[#c62828]/15"
+          className="rounded-[16px] border-2 border-current bg-[whitesmoke] px-3.5 py-2 text-sm text-[#c62828] transition-all duration-300 hover:bg-[#c62828]/15"
         >
           Disagree
         </button>
         <a
           href="/privacy"
-          className="rounded-[4px] border-2 border-current bg-[whitesmoke] px-3.5 py-2 text-sm text-[#1565c0] no-underline transition-all duration-300 hover:bg-[#1565c0]/15"
+          className="rounded-[16px] border-2 border-current bg-[whitesmoke] px-3.5 py-2 text-sm text-[#1565c0] no-underline transition-all duration-300 hover:bg-[#1565c0]/15"
         >
           Privacy Policy
         </a>

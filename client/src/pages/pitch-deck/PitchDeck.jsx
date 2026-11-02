@@ -72,7 +72,7 @@ const TAGS = {
 function Tag({ k, className = '' }) {
   const t = TAGS[k];
   return (
-    <span className={`inline-flex items-center gap-1 rounded-[4px] px-1.5 py-0.5 text-[10px] font-bold tracking-wide font-sans ${className}`}
+    <span className={`inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-bold tracking-wide font-sans ${className}`}
       style={{ color: t.fg, background: t.bg }}>
       <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: t.dot }} />
       {t.label}
@@ -99,7 +99,7 @@ function Slide({ id, children, className = '', dark = false }) {
   return (
     <section id={id} data-slide={id}
       className={`relative overflow-hidden snap-start min-h-[100dvh] w-full flex flex-col justify-center px-6 py-16 sm:px-10 md:px-16 lg:px-24 ${className}`}
-      style={dark ? { background: '#141210', color: '#F8FAFC' } : { background: '#F8FAFC', color: '#2A1416' }}>
+      style={dark ? { background: '#141210', color: '#F8FAFC' } : { background: '#F8FAFC', color: '#2B0A14' }}>
       {dark && (
         <motion.div aria-hidden className="pointer-events-none absolute right-[6%] top-[12%] h-72 w-72 rounded-full"
           style={{ background: 'radial-gradient(circle,#960D32,transparent 70%)', opacity: 0.1 }}
@@ -131,7 +131,7 @@ function Slide({ id, children, className = '', dark = false }) {
 function Stat({ value, label, tag, accent = '#960D32', sub }) {
   return (
     <motion.div whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 300, damping: 18 }}
-      className="rounded-[6px] border-[3px] border-ink bg-white p-5" style={{ boxShadow: '5px 5px 0 rgba(26,26,26,0.9)' }}>
+      className="rounded-[24px] border-[3px] border-ink bg-white p-5" style={{ boxShadow: '5px 5px 0 rgba(26,26,26,0.9)' }}>
       <div className="font-heading text-4xl font-extrabold leading-none sm:text-5xl" style={{ color: accent }}>{value}</div>
       <div className="mt-2 font-sans text-sm font-semibold text-ink">{label}</div>
       {sub && <div className="mt-1 font-sans text-xs text-ink/60">{sub}</div>}
@@ -142,7 +142,7 @@ function Stat({ value, label, tag, accent = '#960D32', sub }) {
 function Card({ title, body, accent = '#960D32' }) {
   return (
     <motion.div whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 300, damping: 18 }}
-      className="rounded-[6px] border-[3px] border-ink bg-white p-5" style={{ boxShadow: '4px 4px 0 rgba(26,26,26,0.9)' }}>
+      className="rounded-[24px] border-[3px] border-ink bg-white p-5" style={{ boxShadow: '4px 4px 0 rgba(26,26,26,0.9)' }}>
       <div className="mb-1 font-heading text-base font-extrabold" style={{ color: accent }}>{title}</div>
       <div className="font-sans text-sm text-ink/75 leading-snug">{body}</div>
     </motion.div>
@@ -200,7 +200,7 @@ function FunnelChart({ items, pct }) {
               <span className="flex items-center gap-2"><Tag k={f.tag} />
                 <span className="font-heading text-lg font-extrabold" style={{ color: accent }}>~{f.v}</span></span>
             </div>
-            <div className="h-9 w-full rounded-[4px] border-2 border-ink bg-white overflow-hidden">
+            <div className="h-9 w-full rounded-[16px] border-2 border-ink bg-white overflow-hidden">
               <div className="h-full flex items-center justify-end pr-2 font-sans text-xs font-bold text-white"
                 style={{ width: `${Math.max(p, 14)}%`, background: accent }}>
                 {i === items.length - 1 ? pct : ''}
@@ -215,9 +215,9 @@ function FunnelChart({ items, pct }) {
 function MarketRings({ rings }) {
   return (
     <svg viewBox="0 0 320 320" className="w-full max-w-[340px]" role="img" aria-label="TAM SAM SOM market sizing">
-      {rings.map((m) => <circle key={m.k} cx="160" cy="170" r={m.r} fill={m.fill} stroke="#2A1416" strokeWidth="2.5" />)}
+      {rings.map((m) => <circle key={m.k} cx="160" cy="170" r={m.r} fill={m.fill} stroke="#2B0A14" strokeWidth="2.5" />)}
       <text x="160" y="176" textAnchor="middle" fontSize="15" fontWeight="800" fill="#fff" fontFamily="Poppins">SOM</text>
-      <text x="160" y="88" textAnchor="middle" fontSize="13" fontWeight="800" fill="#2A1416" fontFamily="Poppins">SAM</text>
+      <text x="160" y="88" textAnchor="middle" fontSize="13" fontWeight="800" fill="#2B0A14" fontFamily="Poppins">SAM</text>
       <text x="160" y="42" textAnchor="middle" fontSize="13" fontWeight="800" fill="#1e3a8a" fontFamily="Poppins">TAM</text>
     </svg>
   );
@@ -225,7 +225,7 @@ function MarketRings({ rings }) {
 function FundsBar({ funds }) {
   return (
     <div>
-      <div className="flex h-14 w-full overflow-hidden rounded-[6px] border-[3px] border-ink" style={{ boxShadow: '5px 5px 0 rgba(26,26,26,0.9)' }}>
+      <div className="flex h-14 w-full overflow-hidden rounded-[16px] border-[3px] border-ink" style={{ boxShadow: '5px 5px 0 rgba(26,26,26,0.9)' }}>
         {funds.map((f) => (
           <div key={f.k} className="flex items-center justify-center font-heading text-sm font-extrabold text-white"
             style={{ width: `${f.pct}%`, background: f.c }}>{f.pct}%</div>
@@ -280,7 +280,7 @@ const ICON = {
 function BrandLogo({ brand }) {
   if (brand.img) return <img src={brand.img} alt="" width="22" height="22" className="shrink-0 object-contain" />;
   if (brand.icon) return <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" className="shrink-0"><path d={ICON[brand.icon]} fill={brand.color} /></svg>;
-  return <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-[4px] font-heading text-[11px] font-extrabold text-white" style={{ background: brand.color }}>{brand.mono}</span>;
+  return <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-[16px] font-heading text-[11px] font-extrabold text-white" style={{ background: brand.color }}>{brand.mono}</span>;
 }
 const COMP_COLS = ['UPI autopay + payouts', 'GST invoicing', 'Venues + people', 'WhatsApp-native'];
 const COMP_ROWS = [
@@ -303,11 +303,11 @@ function CompMatrix() {
         <tbody>
           {COMP_ROWS.map((r) => (
             <tr key={r.name} style={r.us ? { background: '#FBE3E8' } : undefined}>
-              <td className={`p-2 ${r.us ? 'text-ink font-extrabold' : 'text-ink/75 font-semibold'}`} style={{ borderTop: '2px solid #2A1416' }}>
+              <td className={`p-2 ${r.us ? 'text-ink font-extrabold' : 'text-ink/75 font-semibold'}`} style={{ borderTop: '2px solid #2B0A14' }}>
                 <span className="flex items-center gap-2 whitespace-nowrap"><BrandLogo brand={r} />{r.name}</span>
               </td>
               {r.cells.map((v, i) => (
-                <td key={i} className="p-2 text-center text-lg" style={{ borderTop: '2px solid #2A1416' }}>
+                <td key={i} className="p-2 text-center text-lg" style={{ borderTop: '2px solid #2B0A14' }}>
                   {v ? <span style={{ color: '#059669' }}>✓</span> : <span className="text-ink/25">—</span>}
                 </td>
               ))}
@@ -375,8 +375,8 @@ function Gate({ onUnlock }) {
   };
   const back = (to) => { setStep(to); setError(''); };
 
-  const field = 'w-full rounded-[4px] border-[3px] border-white/20 bg-[#1c1a17] px-4 py-3 font-sans text-base text-white outline-none focus:border-[#960D32]';
-  const btn = 'w-full rounded-[4px] border-[3px] border-[#960D32] bg-[#960D32] px-6 py-3 font-heading text-base font-extrabold text-white transition hover:brightness-110 disabled:opacity-50';
+  const field = 'w-full rounded-[16px] border-[3px] border-white/20 bg-[#1c1a17] px-4 py-3 font-sans text-base text-white outline-none focus:border-[#960D32]';
+  const btn = 'w-full rounded-[16px] border-[3px] border-[#960D32] bg-[#960D32] px-6 py-3 font-heading text-base font-extrabold text-white transition hover:brightness-110 disabled:opacity-50';
   const backBtn = 'w-full font-sans text-xs opacity-60 hover:opacity-100';
   const subtitle = { code: 'Enter your access code to continue.', phone: 'Enter your phone — we’ll send a one-time code on WhatsApp.', otp: `Enter the code we sent on WhatsApp to ${phone}.` }[step];
   const anim = { initial: { opacity: 0, x: 24 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: -24 }, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } };
@@ -458,7 +458,7 @@ function DeckBody({ d }) {
         <span className="opacity-40"> / {String(SLIDE_META.length).padStart(2, '0')}</span>
       </div>
       <button onClick={toggleFullscreen} aria-label="Toggle fullscreen" title="Toggle fullscreen"
-        className="fixed right-4 top-4 z-30 rounded-[4px] border-2 border-ink/20 bg-white/70 px-2 py-1 font-sans text-xs font-bold text-ink backdrop-blur transition hover:border-ink">⛶</button>
+        className="fixed right-4 top-4 z-30 rounded-full border-2 border-ink/20 bg-white/70 px-2 py-1 font-sans text-xs font-bold text-ink backdrop-blur transition hover:border-ink">⛶</button>
 
       {/* COVER */}
       <Slide id="cover" dark className="relative overflow-hidden">
@@ -506,7 +506,7 @@ function DeckBody({ d }) {
           <Card title="SMB SaaS moment" body="Sub-₹600/mo tools are now a normal purchase for a solo pro. The willingness-to-pay arrived." accent="#059669" />
         </div>
         <p className="mt-8 max-w-3xl font-sans text-lg opacity-75">The payment rails, the audience, and the buying behaviour are all live at the same time — for the first time.</p>
-        <p className="mt-4 max-w-3xl rounded-[6px] border-l-4 border-[#960D32] bg-white/5 px-4 py-2 font-sans text-sm italic opacity-80">
+        <p className="mt-4 max-w-3xl rounded-[16px] border-l-4 border-[#960D32] bg-white/5 px-4 py-2 font-sans text-sm italic opacity-80">
           What we've learned from our first {d.proof.hosts} hosts: [add your #1 proprietary insight — the non-obvious thing you now know about why they pay or churn].
         </p>
       </Slide>
@@ -565,18 +565,18 @@ function DeckBody({ d }) {
       <Slide id="market">
         <div className="mb-3"><Legend /></div>
         <h2 className="font-heading text-3xl font-extrabold sm:text-5xl">Every slot-based business in India.</h2>
-        <div className="mt-5 inline-flex flex-wrap items-center gap-x-4 gap-y-1 rounded-[6px] border-[3px] border-ink bg-white px-4 py-2 font-sans text-sm" style={{ boxShadow: '4px 4px 0 rgba(26,26,26,0.9)' }}>
+        <div className="mt-5 inline-flex flex-wrap items-center gap-x-4 gap-y-1 rounded-[16px] border-[3px] border-ink bg-white px-4 py-2 font-sans text-sm" style={{ boxShadow: '4px 4px 0 rgba(26,26,26,0.9)' }}>
           <span className="font-semibold">India's creator economy:</span>
           <span className="font-heading text-lg font-extrabold" style={{ color: '#960D32' }}>{d.market.band.from}</span>
           <span className="text-ink/50">→</span>
           <span className="font-heading text-lg font-extrabold" style={{ color: '#960D32' }}>{d.market.band.to}</span>
-          <span className="rounded-[4px] bg-[#d1fae5] px-2 py-0.5 text-xs font-bold" style={{ color: '#065f46' }}>{d.market.band.cagr}</span>
+          <span className="rounded-full bg-[#d1fae5] px-2 py-0.5 text-xs font-bold" style={{ color: '#065f46' }}>{d.market.band.cagr}</span>
         </div>
         <div className="mt-8 grid items-center gap-8 md:grid-cols-2">
           <div className="flex justify-center"><MarketRings rings={d.market.rings} /></div>
           <div className="space-y-4">
             {d.market.rings.map((m) => (
-              <div key={m.k} className="rounded-[6px] border-[3px] border-ink bg-white p-4" style={{ boxShadow: '4px 4px 0 rgba(26,26,26,0.9)' }}>
+              <div key={m.k} className="rounded-[24px] border-[3px] border-ink bg-white p-4" style={{ boxShadow: '4px 4px 0 rgba(26,26,26,0.9)' }}>
                 <div className="flex items-baseline justify-between gap-2">
                   <span className="font-heading text-sm font-extrabold" style={{ color: m.fg === '#fff' ? '#960D32' : m.fg }}>{m.k}</span>
                   <Tag k={m.tag} />
@@ -597,7 +597,7 @@ function DeckBody({ d }) {
         <p className="mt-3 max-w-3xl font-sans text-lg opacity-75">Predictable subscription revenue is the core. A tiny per-booking fee rides along.</p>
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
           {d.model.tiers.map((t) => (
-            <div key={t.n} className="rounded-[6px] border-[3px] p-5" style={{ borderColor: t.c, background: '#1c1a17' }}>
+            <div key={t.n} className="rounded-[24px] border-[3px] p-5" style={{ borderColor: t.c, background: '#1c1a17' }}>
               <div className="font-heading text-lg font-extrabold" style={{ color: t.c }}>{t.n}</div>
               <div className="mt-2 font-heading text-3xl font-extrabold">{t.p}</div>
               <div className="mt-1 font-sans text-xs opacity-70">{t.s}</div>
@@ -605,8 +605,8 @@ function DeckBody({ d }) {
           ))}
         </div>
         <div className="mt-6 flex flex-wrap gap-3">
-          <span className="rounded-[4px] border-2 border-white/20 px-3 py-1 font-sans text-sm">{d.model.fee} <Tag k="actual" className="ml-1" /></span>
-          <span className="rounded-[4px] border-2 border-white/20 px-3 py-1 font-sans text-sm">{d.model.arpu} <Tag k="estimate" className="ml-1" /></span>
+          <span className="rounded-[16px] border-2 border-white/20 px-3 py-1 font-sans text-sm">{d.model.fee} <Tag k="actual" className="ml-1" /></span>
+          <span className="rounded-[16px] border-2 border-white/20 px-3 py-1 font-sans text-sm">{d.model.arpu} <Tag k="estimate" className="ml-1" /></span>
         </div>
       </Slide>
 
@@ -633,7 +633,7 @@ function DeckBody({ d }) {
       <Slide id="growth" dark>
         <h2 className="font-heading text-3xl font-extrabold sm:text-5xl">The funnel already converts.</h2>
         <div className="mt-8 grid gap-10 lg:grid-cols-2">
-          <div><div className="rounded-[6px] border-[3px] border-white/15 bg-[#1c1a17] p-5"><FunnelChart items={d.funnel} pct={d.funnelPct} /></div></div>
+          <div><div className="rounded-[24px] border-[3px] border-white/15 bg-[#1c1a17] p-5"><FunnelChart items={d.funnel} pct={d.funnelPct} /></div></div>
           <div className="self-center space-y-4 font-sans">
             <p className="text-lg opacity-80">~<span className="font-heading font-extrabold text-white">{paidPct}%</span> of onboarded hosts are on a paid plan <Tag k="actual" className="ml-1" /> — strong for self-serve SMB SaaS.</p>
             <p className="text-lg opacity-80">Acquisition is <span className="font-semibold text-white">organic-led</span>: SEO host profiles + word-of-mouth referral, near-zero paid spend today.</p>
@@ -657,7 +657,7 @@ function DeckBody({ d }) {
       {/* COMPETITION */}
       <Slide id="competition" dark>
         <h2 className="font-heading text-3xl font-extrabold sm:text-5xl">Nobody covers India's rails end-to-end.</h2>
-        <div className="mt-8 rounded-[6px] border-[3px] border-white/15 bg-[#F8FAFC] p-4 text-ink"><CompMatrix /></div>
+        <div className="mt-8 rounded-[24px] border-[3px] border-white/15 bg-[#F8FAFC] p-4 text-ink"><CompMatrix /></div>
         <p className="mt-5 font-sans text-sm opacity-70">Global schedulers (Calendly ~33%, Acuity ~21% of the category) stop at the calendar. Topmate nails creator 1:1 calls but not venues, GST or offline slots. Practo is health-only. The real incumbent is manual WhatsApp — which can't collect money or invoice.</p>
       </Slide>
 
@@ -697,8 +697,8 @@ function DeckBody({ d }) {
         <h2 className="font-heading text-3xl font-extrabold sm:text-5xl">18 months, four gates.</h2>
         <div className="mt-8 space-y-3">
           {d.roadmap.map(([t, b, c]) => (
-            <div key={t} className="flex items-stretch gap-4 rounded-[6px] border-[3px] border-ink bg-white p-4" style={{ boxShadow: '4px 4px 0 rgba(26,26,26,0.9)' }}>
-              <div className="flex w-20 shrink-0 items-center justify-center rounded-[4px] font-heading text-sm font-extrabold text-white" style={{ background: c }}>{t}</div>
+            <div key={t} className="flex items-stretch gap-4 rounded-[24px] border-[3px] border-ink bg-white p-4" style={{ boxShadow: '4px 4px 0 rgba(26,26,26,0.9)' }}>
+              <div className="flex w-20 shrink-0 items-center justify-center rounded-[16px] font-heading text-sm font-extrabold text-white" style={{ background: c }}>{t}</div>
               <div className="self-center font-sans text-sm font-medium">{b}</div>
             </div>
           ))}
@@ -713,7 +713,7 @@ function DeckBody({ d }) {
         <div className="mt-8 grid gap-8 lg:grid-cols-2">
           <div>
             <div className="mb-2 font-sans text-sm font-semibold opacity-60">Projected MRR → 18 months</div>
-            <div className="rounded-[6px] border-[3px] border-white/15 bg-[#1c1a17] p-4"><GrowthChart series={d.growth} /></div>
+            <div className="rounded-[24px] border-[3px] border-white/15 bg-[#1c1a17] p-4"><GrowthChart series={d.growth} /></div>
             <div className="mt-2 font-sans text-xs opacity-50"><Tag k="actual" /> now · <Tag k="projection" className="ml-1" /> forward path</div>
           </div>
           <div className="grid grid-cols-2 gap-3 self-center">
@@ -738,7 +738,7 @@ function DeckBody({ d }) {
       <Slide id="team" dark>
         <h2 className="font-heading text-3xl font-extrabold sm:text-5xl">Solo founder. The whole stack, shipped.</h2>
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
-          <div className="rounded-[6px] border-[3px] p-6" style={{ borderColor: '#960D32', background: '#1c1a17' }}>
+          <div className="rounded-[24px] border-[3px] p-6" style={{ borderColor: '#960D32', background: '#1c1a17' }}>
             <div className="flex items-center gap-4">
               <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-[3px] border-[#960D32] bg-white">
                 <img src="/brand/meeticulous-icon.svg" alt="Meeticulous" width="52" height="52" className="object-contain" />
@@ -754,7 +754,7 @@ function DeckBody({ d }) {
           <div>
             <div className="mb-3 font-sans text-sm font-semibold opacity-60">Shipped solo, live in production:</div>
             <div className="flex flex-wrap gap-2">
-              {SHIPPED.map((s) => <span key={s} className="rounded-[4px] border-2 border-white/20 px-2.5 py-1 font-sans text-xs">{s}</span>)}
+              {SHIPPED.map((s) => <span key={s} className="rounded-[16px] border-2 border-white/20 px-2.5 py-1 font-sans text-xs">{s}</span>)}
             </div>
           </div>
         </div>
@@ -775,8 +775,8 @@ function DeckBody({ d }) {
             Working product, real early traction, India's rails built in. {d.cover.raise} unlocks the funnel we already have.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <a href="mailto:team@meeticulous.com" className="rounded-[4px] border-[3px] border-[#960D32] bg-[#960D32] px-6 py-3 font-heading text-base font-extrabold text-white transition hover:brightness-110" style={{ boxShadow: '5px 5px 0 rgba(254,81,0,0.35)' }}>Let's talk →</a>
-            <a href="https://meeticulous.com" target="_blank" rel="noreferrer" className="rounded-[4px] border-[3px] border-white/30 px-6 py-3 font-heading text-base font-extrabold text-white transition hover:border-white">See it live</a>
+            <a href="mailto:team@meeticulous.com" className="rounded-[16px] border-[3px] border-[#960D32] bg-[#960D32] px-6 py-3 font-heading text-base font-extrabold text-white transition hover:brightness-110" style={{ boxShadow: '5px 5px 0 rgba(254,81,0,0.35)' }}>Let's talk →</a>
+            <a href="https://meeticulous.com" target="_blank" rel="noreferrer" className="rounded-[16px] border-[3px] border-white/30 px-6 py-3 font-heading text-base font-extrabold text-white transition hover:border-white">See it live</a>
           </div>
           <p className="mt-10 font-sans text-xs opacity-40">Confidential · {FOUNDER.handle}</p>
         </div>

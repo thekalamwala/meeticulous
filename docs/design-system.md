@@ -1,3 +1,5 @@
+> **SUPERSEDED (2026-11-02).** The design system now lives in [`design-system/`](../design-system/BRAND_RULES.md) (direction "Loop & Slot"). Values below are historical; where they disagree, `design-system/` wins.
+
 # Design System — Meeticulous
 
 ## Design Language

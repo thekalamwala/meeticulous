@@ -39,7 +39,7 @@ export default function WorkGallery() {
           showBar={false}
           showLabels={false}
           background="#ffffff"
-          ink="#2A1416"
+          ink="#2B0A14"
           ariaLabel="Gallery: the work people sell with Meeticulous"
         />
       </div>

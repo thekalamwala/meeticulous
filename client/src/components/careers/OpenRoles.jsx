@@ -15,7 +15,7 @@ export default function OpenRoles() {
         <h2 className="js-head font-heading text-3xl font-bold sm:text-4xl">Open roles</h2>
 
         {roles.length === 0 ? (
-          <p className="js-item mt-8 rounded-[6px] border border-ink/10 bg-[var(--bg)] p-8 text-ink/60">
+          <p className="js-item mt-8 rounded-[24px] border border-ink/10 bg-[var(--bg)] p-8 text-ink/60">
             No open roles right now — but we're always glad to hear from great people. Say hi anytime.
           </p>
         ) : (
@@ -24,7 +24,7 @@ export default function OpenRoles() {
               <li key={j.slug} className="js-item">
                 <Link
                   to={`/careers/${j.slug}`}
-                  className="group flex flex-col gap-3 rounded-[6px] border border-ink/10 bg-[var(--bg)] p-6 transition-colors hover:border-ink/25 hover:no-underline sm:flex-row sm:items-center sm:justify-between"
+                  className="group flex flex-col gap-3 rounded-[24px] border border-ink/10 bg-[var(--bg)] p-6 transition-colors hover:border-ink/25 hover:no-underline sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
                     <h3 className="font-heading text-lg font-semibold text-ink">{j.title}</h3>

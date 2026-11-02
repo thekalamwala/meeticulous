@@ -14,7 +14,7 @@ export default function LpBento() {
             return (
               <div
                 key={b.label}
-                className="rounded-[8px] p-7"
+                className="rounded-[24px] p-7"
                 style={{ backgroundColor: `color-mix(in srgb, ${accent} 16%, white)` }}
               >
                 <div

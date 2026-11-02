@@ -42,7 +42,7 @@ function Field({ label, hint, value, onChange, min, max, step, prefix, suffix })
     <label className="block">
       <span className="text-sm font-bold text-ink">{label}</span>
       {hint && <span className="mt-0.5 block text-xs text-neutral-500">{hint}</span>}
-      <span className="mt-2 flex items-center gap-2 rounded-[12px] border border-black/10 bg-white px-3 py-2.5 focus-within:ring-2 focus-within:ring-primary/25">
+      <span className="mt-2 flex items-center gap-2 rounded-[16px] border border-black/10 bg-white px-3 py-2.5 focus-within:ring-2 focus-within:ring-primary/25">
         {prefix && <span className="text-neutral-400">{prefix}</span>}
         <input
           type="number"
@@ -143,13 +143,13 @@ const NoShowCalculator = () => {
             reminders before every appointment — the two things that cut no-shows most.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
-            <Link to="/become-a-host" className="inline-flex items-center gap-1.5 rounded-[10px] bg-primary px-5 py-2.5 font-semibold text-white hover:no-underline">
+            <Link to="/become-a-host" className="inline-flex items-center gap-1.5 rounded-full bg-primary px-5 py-2.5 font-semibold text-white hover:no-underline">
               Create your booking page <ArrowRight size={16} />
             </Link>
-            <Link to="/features/notifications" className="inline-flex items-center gap-1.5 rounded-[10px] border border-black/10 px-5 py-2.5 font-semibold text-ink hover:no-underline">
+            <Link to="/features/notifications" className="inline-flex items-center gap-1.5 rounded-full border border-black/10 px-5 py-2.5 font-semibold text-ink hover:no-underline">
               How reminders work
             </Link>
-            <Link to="/pricing" className="inline-flex items-center gap-1.5 rounded-[10px] border border-black/10 px-5 py-2.5 font-semibold text-ink hover:no-underline">
+            <Link to="/pricing" className="inline-flex items-center gap-1.5 rounded-full border border-black/10 px-5 py-2.5 font-semibold text-ink hover:no-underline">
               See pricing
             </Link>
           </div>

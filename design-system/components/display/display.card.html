@@ -1,0 +1,21 @@
+<!-- @dsCard group="Components" viewport="700x360" name="Display" subtitle="Card, Badge, Tag, Tooltip" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.26.2/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{background:var(--bg-page);padding:24px}.r{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.c{display:flex;flex-direction:column;gap:16px}.l{font:500 11px/1 var(--font-body);letter-spacing:.08em;text-transform:uppercase;color:var(--fg-3)}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.Meeticulous_Design_System || window.MeeticulousDesignSystem || window.Meeticulous || Object.keys(window).map(k => { try { const v = window[k]; return v && typeof v === 'object' && v.SlotCell && v.Button ? v : null; } catch (e) { return null; } }).find(Boolean) || {};
+const { Button, IconButton, Icon, Input, Select, Checkbox, Radio, Switch, Card, Badge, Tag, Tooltip, Tabs, Dialog, Toast, Logo, Thread, Illustration, SlotCell } = NS;
+function App(){ return (<div className="c">
+<div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:12}}>
+<Card size="s" kicker="This week" title="12 sessions">Up 3 from last week.</Card>
+<Card size="s" variant="blush" kicker="Payouts" title="£1,840">Next payout Friday.</Card>
+<Card size="s" variant="brand" kicker="New" title="Group sessions">Sell seats from one link.</Card>
+</div>
+<div className="r"><Badge tone="booked">Booked</Badge><Badge tone="open">3 slots open</Badge><Badge tone="busy">Busy</Badge><Badge tone="brand">Pro</Badge><Badge tone="success">Paid</Badge><Badge tone="warning">Unpaid</Badge><Badge tone="danger">Cancelled</Badge><Badge tone="info">Rescheduled</Badge></div>
+<div className="r"><Tag selected>1:1 coaching</Tag><Tag>Workshops</Tag><Tag>Discovery call</Tag><Tag onRemove={()=>{}}>Europe/London</Tag><span style={{marginLeft:'auto',paddingTop:30}}><Tooltip content="Copy booking link" open><IconButton label="Copy" variant="secondary" icon={<Icon name="link"/>}/></Tooltip></span></div>
+</div>); }
+ReactDOM.createRoot(document.getElementById('root')).render(NS.Button ? <App/> : <p style={{fontFamily:'sans-serif'}}>Design-system bundle not compiled yet.</p>);
+</script></body></html>

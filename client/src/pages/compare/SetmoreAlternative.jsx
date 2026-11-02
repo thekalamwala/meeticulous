@@ -72,7 +72,7 @@ const INK = 'text-[color:var(--mg-ink)]';
 const MUTED = 'text-[color:var(--mg-muted)]';
 const GREEN = 'text-[color:var(--mg-green)]';
 const H2 = `font-heading text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl ${INK}`;
-const CARD = 'rounded-[6px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]';
+const CARD = 'rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]';
 const TEXT_LINK = `font-semibold underline underline-offset-4 ${GREEN} hover:text-[color:var(--mg-ink)]`;
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
@@ -223,7 +223,7 @@ function Cta({ slot, children = 'Start free', className = '' }) {
     <Link
       to={START}
       onClick={() => analytics.track(EVENTS.LP_CTA_CLICKED, { slug: SLUG, slot, ...utm })}
-      className={`inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[6px] bg-primary px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(194,61,0,0.22)] transition-opacity hover:text-white hover:no-underline hover:opacity-90 motion-reduce:transition-none ${className}`}
+      className={`inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(194,61,0,0.22)] transition-opacity hover:text-white hover:no-underline hover:opacity-90 motion-reduce:transition-none ${className}`}
     >
       {children} <ArrowRight size={16} aria-hidden />
     </Link>
@@ -251,17 +251,17 @@ function HeroTiles() {
           <div className={`mt-3 font-heading text-3xl font-extrabold ${INK}`}>Free</div>
           <div className={`mt-1 text-xs leading-snug ${MUTED}`}>{cap(SET_FREE[0])}, priced in {S.currency}</div>
         </div>
-        <div className="aspect-square rounded-[6px] p-4 text-white shadow-[0_8px_30px_rgba(15,59,46,0.18)] sm:p-5" style={{ background: 'var(--mg-ink)' }}>
+        <div className="aspect-square rounded-[24px] p-4 text-white shadow-[0_8px_30px_rgba(15,59,46,0.18)] sm:p-5" style={{ background: 'var(--mg-ink)' }}>
           <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/70">{FREE_PLAN.name} · Free</div>
           <div className="mt-3 font-heading text-3xl font-extrabold text-white">{inr(FREE_PLAN.monthly)}</div>
           <div className="mt-1 text-xs leading-snug text-white/80">UPI at booking, GST invoices</div>
         </div>
-        <div className="aspect-square rounded-[6px] border border-black/5 p-4 sm:p-5" style={{ background: 'var(--mg-tile)' }}>
+        <div className="aspect-square rounded-[24px] border border-black/5 p-4 sm:p-5" style={{ background: 'var(--mg-tile)' }}>
           <Globe size={20} className={GREEN} aria-hidden />
           <div className={`mt-3 text-xs leading-snug ${MUTED}`}>Clients pay by card from abroad?</div>
           <div className={`mt-1 font-heading text-base font-bold ${INK}`}>{S.name} fits</div>
         </div>
-        <div className="aspect-square rounded-[6px] border border-primary/20 bg-primary-light p-4 sm:p-5">
+        <div className="aspect-square rounded-[24px] border border-primary/20 bg-primary-light p-4 sm:p-5">
           <Smartphone size={20} className="text-primary-cta" aria-hidden />
           <div className="mt-3 text-xs leading-snug text-neutral-700">Clients pay by UPI?</div>
           <div className="mt-1 font-heading text-base font-bold text-ink">Meeticulous fits</div>
@@ -277,7 +277,7 @@ function ReceiptCard({ r, badge }) {
   return (
     <div className="flex flex-col">
       <div className={`${CARD} overflow-hidden rounded-b-none border-b-0`}>
-        <div className="h-1.5 transition-colors motion-reduce:transition-none" style={{ background: fits ? '#2A1416' : 'var(--mg-tile)' }} aria-hidden />
+        <div className="h-1.5 transition-colors motion-reduce:transition-none" style={{ background: fits ? '#2B0A14' : 'var(--mg-tile)' }} aria-hidden />
         <div className="p-6 sm:p-7">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-2.5">
@@ -395,7 +395,7 @@ const SetmoreAlternative = () => {
             <p className={`mt-4 max-w-xl text-[15px] leading-relaxed sm:text-base lg:text-[17px] ${MUTED}`}>{HERO_SUB}</p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <Cta slot="hero" />
-              <a href="#side-by-side" className={`inline-flex min-h-[44px] items-center gap-1.5 rounded-[6px] border border-black/10 bg-white px-5 py-3 text-sm font-semibold ${INK} hover:text-[color:var(--mg-ink)] hover:no-underline hover:opacity-90`}>
+              <a href="#side-by-side" className={`inline-flex min-h-[44px] items-center gap-1.5 rounded-full border border-black/10 bg-white px-5 py-3 text-sm font-semibold ${INK} hover:text-[color:var(--mg-ink)] hover:no-underline hover:opacity-90`}>
                 See the side-by-side
               </a>
             </div>
@@ -417,7 +417,7 @@ const SetmoreAlternative = () => {
             <p className={`font-heading text-lg font-bold leading-snug sm:text-xl ${INK}`}>{SHORT_ANSWER}</p>
             <div className="mt-8 grid gap-5 sm:grid-cols-2">
               {[[`Pick ${S.name} if…`, PICK_SETMORE, 'var(--mg-mint)'], ['Pick Meeticulous if…', PICK_BAS, '#FFF4ED']].map(([h, items, bg]) => (
-                <div key={h} className="rounded-[6px] border border-black/5 p-6" style={{ background: bg }}>
+                <div key={h} className="rounded-[24px] border border-black/5 p-6" style={{ background: bg }}>
                   <h3 className={`font-heading text-lg font-bold ${INK}`}>{h}</h3>
                   <ul className="mt-3 space-y-2.5 text-sm leading-relaxed">
                     {items.map((t) => (
@@ -475,7 +475,7 @@ const SetmoreAlternative = () => {
           <div className="mt-12 grid gap-5 sm:grid-cols-2 sm:gap-6">
             {DIFFERENT.map(({ Icon, title, body, link }) => (
               <div key={title} className={`${CARD} p-7`}>
-                <span className={`flex h-11 w-11 items-center justify-center rounded-[6px] ${GREEN}`} style={{ background: 'var(--mg-tile)' }}><Icon size={20} aria-hidden /></span>
+                <span className={`flex h-11 w-11 items-center justify-center rounded-[16px] ${GREEN}`} style={{ background: 'var(--mg-tile)' }}><Icon size={20} aria-hidden /></span>
                 <h3 className={`mt-5 font-heading text-xl font-bold ${INK}`}>{title}</h3>
                 <p className={`mt-2 text-[15px] leading-relaxed ${MUTED}`}>{body}</p>
                 {link && <Link to={link.to} className={`mt-4 inline-flex min-h-[44px] items-center gap-1.5 text-sm ${TEXT_LINK}`}>{link.label} <ArrowRight size={14} aria-hidden /></Link>}
@@ -498,7 +498,7 @@ const SetmoreAlternative = () => {
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/80">Plenty of people should stay on {S.name}. Here&rsquo;s when it&rsquo;s the better fit.</p>
           <div className="mt-12 grid gap-5 sm:gap-6 md:grid-cols-3">
             {BETTER.map(({ Icon, title, body }) => (
-              <div key={title} className="rounded-[6px] border border-white/10 bg-white/[0.04] p-7">
+              <div key={title} className="rounded-[24px] border border-white/10 bg-white/[0.04] p-7">
                 <Icon size={22} className="text-[color:var(--mg-glow)]" aria-hidden />
                 <h3 className="mt-5 font-heading text-xl font-bold text-white">{title}</h3>
                 <p className="mt-2 text-[15px] leading-relaxed text-white/80">{body}</p>
@@ -526,7 +526,7 @@ const SetmoreAlternative = () => {
               <li key={title} className={`${CARD} p-7`}>
                 <div className="flex items-center justify-between">
                   <span className="font-heading text-4xl font-extrabold tabular-nums text-primary-cta">{String(i + 1).padStart(2, '0')}</span>
-                  <span className={`flex h-11 w-11 items-center justify-center rounded-[6px] ${GREEN}`} style={{ background: 'var(--mg-tile)' }}><Icon size={20} aria-hidden /></span>
+                  <span className={`flex h-11 w-11 items-center justify-center rounded-[16px] ${GREEN}`} style={{ background: 'var(--mg-tile)' }}><Icon size={20} aria-hidden /></span>
                 </div>
                 <h3 className={`mt-6 font-heading text-xl font-bold ${INK}`}>{title}</h3>
                 <p className={`mt-2 text-[15px] leading-relaxed ${MUTED}`}>{body}</p>
@@ -599,7 +599,7 @@ const SetmoreAlternative = () => {
               </li>
             ))}
             <li>
-              <Link to="/compare" className={`flex min-h-[56px] items-center gap-3 rounded-[6px] border border-dashed border-black/15 p-4 text-sm font-semibold ${INK} hover:text-[color:var(--mg-ink)] hover:no-underline`}>
+              <Link to="/compare" className={`flex min-h-[56px] items-center gap-3 rounded-[24px] border border-dashed border-black/15 p-4 text-sm font-semibold ${INK} hover:text-[color:var(--mg-ink)] hover:no-underline`}>
                 All booking tool comparisons
                 <ArrowRight size={15} className="ml-auto text-primary-cta" aria-hidden />
               </Link>

@@ -17,9 +17,9 @@ export default function WhyWorkHere() {
             const Icon = v.icon;
             const accent = ACCENTS[i % ACCENTS.length];
             return (
-              <div key={v.title} className="js-item rounded-[6px] border border-ink/10 bg-surface p-6">
+              <div key={v.title} className="js-item rounded-[24px] border border-ink/10 bg-surface p-6">
                 <span
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-[6px]"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-[16px]"
                   style={{ background: `color-mix(in srgb, ${accent} 14%, white)`, color: accent }}
                 >
                   <Icon className="h-5 w-5" />

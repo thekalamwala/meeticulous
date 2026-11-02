@@ -41,7 +41,7 @@ export default function HeroV2() {
           <div className="mt-9 flex flex-wrap gap-3">
             <Link
               to={hero.ctaPrimaryHref}
-              className="inline-flex items-center justify-center gap-1.5 rounded-[6px] bg-primary-cta px-6 py-3 text-sm font-semibold text-white hover:no-underline hover:opacity-90"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full bg-primary-cta px-6 py-3 text-sm font-semibold text-white hover:no-underline hover:opacity-90"
             >
               {hero.ctaPrimary}
               <ArrowRight size={16} />
@@ -55,7 +55,7 @@ export default function HeroV2() {
                 e.preventDefault();
                 target.scrollIntoView({ behavior: "smooth", block: "start" });
               }}
-              className="inline-flex items-center justify-center rounded-[6px] border border-black/10 bg-white px-6 py-3 text-sm font-semibold text-ink hover:no-underline hover:opacity-90"
+              className="inline-flex items-center justify-center rounded-full border border-black/10 bg-white px-6 py-3 text-sm font-semibold text-ink hover:no-underline hover:opacity-90"
             >
               {hero.ctaGhost}
             </a>
@@ -63,7 +63,7 @@ export default function HeroV2() {
         </div>
 
         {/* Mobile / tablet photo — stacked under the copy */}
-        <div className="mt-10 aspect-[4/3] overflow-hidden rounded-[10px] bg-sand lg:hidden">
+        <div className="mt-10 aspect-[4/3] overflow-hidden rounded-[16px] bg-sand lg:hidden">
           <ImgWithSkeleton src={hero.image} alt="" fallbackLabel="Meeticulous" />
         </div>
       </div>

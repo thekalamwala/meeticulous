@@ -70,23 +70,12 @@ describe('<Footer>', () => {
     });
   });
 
-  test('full footer ends with the decorative doodle wordmark (hidden from screen readers)', () => {
+  test('uses the official inverse wordmark and closes on the binder-tab divider', () => {
     const { container } = renderFooter();
-    const art = container.querySelector('.dw');
-    expect(art).toBeTruthy();
-    expect(art.getAttribute('aria-hidden')).toBe('true');
-    // The decorative letters spell the brand but add no extra "Meeticulous" button.
-    expect(art.querySelector('.dw-word').textContent).toBe('Meeticulous');
-    expect(screen.getAllByRole('button', { name: 'Meeticulous' })).toHaveLength(1);
-    // Creatures + drifting doodles are rendered.
-    expect(art.querySelectorAll('.dw-critter').length).toBe(5);
-    expect(art.querySelector('.dw-snail')).toBeTruthy();
-    expect(art.querySelectorAll('.dw-doodle').length).toBeGreaterThan(0);
-  });
-
-  test('minimal variant keeps the quiet faint wordmark, not the doodle art', () => {
-    const { container } = render(<MemoryRouter><Footer variant="minimal" /></MemoryRouter>);
-    expect(container.querySelector('.dw')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Meeticulous' }).querySelector('img').getAttribute('src'))
+      .toBe('/brand/ds/01-logo/wordmark/mt-wordmark-inverse.svg');
+    const divider = container.querySelector('img[src$="mt-divider-tabs-pink.svg"]');
+    expect(divider.getAttribute('aria-hidden')).toBe('true');
   });
 
   test('minimal variant keeps brand + legal bar but drops columns, socials, newsletter', () => {

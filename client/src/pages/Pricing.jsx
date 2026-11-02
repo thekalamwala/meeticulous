@@ -160,7 +160,7 @@ export default function Pricing() {
             Tap any <span className="font-semibold text-primary">Limited</span> tag for the detail.
           </p>
 
-          <div className="mt-10 overflow-x-auto rounded-[6px] border-2 border-ink/10 bg-white p-1 sm:p-2">
+          <div className="mt-10 overflow-x-auto rounded-[16px] border-2 border-ink/10 bg-white p-1 sm:p-2">
             <table className="w-full min-w-[720px] border-collapse text-left">
               <thead>
                 <tr className="border-b border-black/10">
@@ -195,7 +195,7 @@ export default function Pricing() {
 
       {/* ── Closing CTA ────────────────────────────────────── */}
       <section className="px-5 pb-24 pt-4 sm:px-8">
-        <div className="mx-auto max-w-3xl rounded-[10px] bg-ink px-8 py-12 text-center text-white shadow-[0_24px_60px_-30px_rgba(26,26,26,0.6)]">
+        <div className="mx-auto max-w-3xl rounded-[16px] bg-ink px-8 py-12 text-center text-white shadow-[0_24px_60px_-30px_rgba(26,26,26,0.6)]">
           <h2 className="font-heading text-3xl font-extrabold text-primary sm:text-4xl">
             {feeOnly ? "Ready when you are." : "Start slow. Grow when it counts."}
           </h2>
@@ -204,7 +204,7 @@ export default function Pricing() {
           </p>
           <Link
             to={ROUTE_START}
-            className="mt-7 inline-flex items-center justify-center gap-1.5 rounded-[6px] bg-primary px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-dark hover:no-underline"
+            className="mt-7 inline-flex items-center justify-center gap-1.5 rounded-full bg-primary px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-dark hover:no-underline"
           >
             Start for free <ArrowRight size={16} />
           </Link>
@@ -280,14 +280,14 @@ function OperateVsGrow() {
 function StatePanel({ accent, icon, kicker, title, line, emphasised }) {
   return (
     <div
-      className="group flex h-full flex-col rounded-[10px] border bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.05)] transition-shadow duration-300 hover:shadow-[0_24px_60px_-28px_var(--glow)] sm:p-8"
+      className="group flex h-full flex-col rounded-[24px] border bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.05)] transition-shadow duration-300 hover:shadow-[0_24px_60px_-28px_var(--glow)] sm:p-8"
       style={{
         borderColor: emphasised ? `${accent}4d` : "rgba(0,0,0,0.06)",
         "--glow": emphasised ? `${accent}80` : "rgba(26,26,26,0.16)",
       }}
     >
       <span
-        className="inline-flex h-11 w-11 items-center justify-center rounded-[6px]"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-[16px]"
         style={{ color: accent, background: `${accent}14` }}
       >
         {icon}
@@ -304,7 +304,7 @@ function GrowingSection() {
   return (
     <section className="px-5 pt-20 sm:px-8 lg:pt-24">
       <div
-        className="mx-auto max-w-[1050px] rounded-[6px] border-2 border-ink/10 bg-sand px-6 py-12 text-center sm:px-12"
+        className="mx-auto max-w-[1050px] rounded-[16px] border-2 border-ink/10 bg-sand px-6 py-12 text-center sm:px-12"
       >
         <h2 className="font-heading text-3xl font-extrabold text-ink sm:text-4xl">Your business is growing.</h2>
         <p className="mx-auto mt-4 max-w-[620px] text-neutral-600">
@@ -368,10 +368,10 @@ function WhenToBecomeActive() {
           {STAGES.map((s, i) => (
             <li
               key={s.tag}
-              className="group relative flex flex-col rounded-[6px] border-2 border-ink/10 bg-white p-6 transition-transform hover:-translate-y-1"
+              className="group relative flex flex-col rounded-[24px] border-2 border-ink/10 bg-white p-6 transition-transform hover:-translate-y-1"
             >
               <span
-                className="grid h-8 w-8 place-items-center rounded-[4px] font-heading text-sm font-extrabold text-white"
+                className="grid h-8 w-8 place-items-center rounded-[16px] font-heading text-sm font-extrabold text-white"
                 style={{ background: s.accent }}
               >
                 {i + 1}
@@ -437,10 +437,10 @@ function ValueSection() {
             return (
               <div
                 key={v.title}
-                className="group flex items-start gap-4 rounded-[6px] border-2 border-ink/10 bg-white p-6 transition-transform hover:-translate-y-1 sm:p-7"
+                className="group flex items-start gap-4 rounded-[24px] border-2 border-ink/10 bg-white p-6 transition-transform hover:-translate-y-1 sm:p-7"
               >
                 <span
-                  className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[6px]"
+                  className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[16px]"
                   style={{ color: v.accent, background: `${v.accent}14` }}
                 >
                   <Icon size={20} strokeWidth={2} />
@@ -491,7 +491,7 @@ function PayForItself() {
           Drag to your rough monthly bookings revenue. We'll compare Starter's 5% against Pro's flat price.
         </p>
 
-        <div className="mx-auto mt-10 max-w-[720px] rounded-[10px] border border-ink/10 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.05)] sm:p-8">
+        <div className="mx-auto mt-10 max-w-[720px] rounded-[24px] border border-ink/10 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.05)] sm:p-8">
           <label htmlFor="earn" className="flex items-baseline justify-between">
             <span className="text-sm font-semibold text-ink">Your monthly bookings revenue</span>
             <span className="font-heading text-2xl font-extrabold text-ink">{inr(earn)}</span>
@@ -514,7 +514,7 @@ function PayForItself() {
 
           <div className="mt-7 grid gap-3 sm:grid-cols-2">
             <div
-              className="rounded-[6px] border-2 p-4"
+              className="rounded-[24px] border-2 p-4"
               style={{ borderColor: `${OPERATE}44`, background: `${OPERATE}0d` }}
             >
               <p className="text-xs font-bold uppercase tracking-wide" style={{ color: OPERATE }}>Starter · 5%</p>
@@ -522,7 +522,7 @@ function PayForItself() {
               <p className="mt-1 text-xs text-neutral-500">commission on your bookings</p>
             </div>
             <div
-              className="rounded-[6px] border-2 p-4"
+              className="rounded-[24px] border-2 p-4"
               style={{ borderColor: `${GROW}55`, background: `${GROW}0d` }}
             >
               <p className="text-xs font-bold uppercase tracking-wide" style={{ color: GROW }}>Pro · flat</p>
@@ -532,7 +532,7 @@ function PayForItself() {
           </div>
 
           <div
-            className="mt-5 rounded-[6px] border-2 border-ink/10 bg-canvas p-4 text-sm text-neutral-700"
+            className="mt-5 rounded-[24px] border-2 border-ink/10 bg-canvas p-4 text-sm text-neutral-700"
           >
             {activeWins && saved > 0 && (
               <p className="mb-1 font-heading font-bold" style={{ color: GROW }}>

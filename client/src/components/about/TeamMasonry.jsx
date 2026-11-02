@@ -112,7 +112,7 @@ function JoinCard({ i }) {
       <Link
         to="/careers"
         aria-label={`Join the team${roles ? ` — ${roles}` : ""}`}
-        className="absolute inset-0 rounded-[6px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4"
+        className="absolute inset-0 rounded-[16px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4"
       />
     </div>
   );

@@ -67,7 +67,7 @@ const ChaosDoodle = () => (
 // "A smoother way" mini app: bookings week view + a payment toast.
 const MiniDashboard = () => (
   <div className="relative">
-    <div className="overflow-hidden rounded-[6px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.06)]">
+    <div className="overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.06)]">
       <div className="flex gap-1.5 border-b border-black/5 px-3 py-2">
         <span className="h-2 w-2 rounded-full bg-[#FF5F57]" />
         <span className="h-2 w-2 rounded-full bg-[#FEBC2E]" />
@@ -75,7 +75,7 @@ const MiniDashboard = () => (
       </div>
       <div className="flex">
         <div className="hidden w-14 flex-col items-center gap-2 border-r border-black/5 py-3 sm:flex">
-          <span className="flex h-7 w-7 items-center justify-center rounded-[5px] bg-primary text-xs font-extrabold text-white">M</span>
+          <span className="flex h-7 w-7 items-center justify-center rounded-[16px] bg-primary text-xs font-extrabold text-white">M</span>
           {[0, 1, 2, 3].map((i) => (
             <span key={i} className="h-1.5 w-7 rounded-full bg-black/[0.06]" />
           ))}
@@ -83,7 +83,7 @@ const MiniDashboard = () => (
         <div className="flex-1 p-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-ink">Bookings</span>
-            <span className="inline-flex items-center gap-0.5 rounded-[4px] bg-primary px-1.5 py-0.5 text-[9px] font-semibold text-white">
+            <span className="inline-flex items-center gap-0.5 rounded-full bg-primary px-1.5 py-0.5 text-[9px] font-semibold text-white">
               <Plus size={9} strokeWidth={3} /> New booking
             </span>
           </div>
@@ -106,7 +106,7 @@ const MiniDashboard = () => (
       </div>
     </div>
     {/* payment toast */}
-    <div className="absolute -right-3 top-1/2 flex items-center gap-1.5 rounded-[6px] border border-black/5 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-ink shadow-[0_12px_30px_-10px_rgba(26,26,26,0.35)] sm:-right-6">
+    <div className="absolute -right-3 top-1/2 flex items-center gap-1.5 rounded-full border border-black/5 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-ink shadow-[0_12px_30px_-10px_rgba(26,26,26,0.35)] sm:-right-6">
       <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-white">
         <Check size={10} strokeWidth={3.5} />
       </span>
@@ -140,7 +140,7 @@ export default function ProblemCompare() {
         <div className="relative z-10 lg:-rotate-[3deg]">
           {/* lg:h-full + flex column: stretches to the row height so its bottom lines up
               with "A smoother way" (which sits lower via lg:mt-3); rows spread evenly. */}
-          <div className="relative flex flex-col rounded-[6px] border border-neutral-200 bg-neutral-100 px-5 pb-4 pt-8 shadow-[0_24px_60px_-28px_rgba(26,26,26,0.35)] sm:px-6 lg:mr-[-12px] lg:h-full lg:pb-2 lg:pt-6">
+          <div className="relative flex flex-col rounded-[16px] border border-neutral-200 bg-neutral-100 px-5 pb-4 pt-8 shadow-[0_24px_60px_-28px_rgba(26,26,26,0.35)] sm:px-6 lg:mr-[-12px] lg:h-full lg:pb-2 lg:pt-6">
             <span aria-hidden className="absolute -top-3 left-1/2 h-7 w-24 -translate-x-1/2 -rotate-2 rounded-[2px] bg-neutral-300/80" />
             <h3 className="text-center font-display text-2xl font-extrabold italic text-neutral-600 lg:text-xl">The old way</h3>
             <Underline className="mx-auto mt-1 h-2.5 w-36 text-neutral-400" />
@@ -157,7 +157,7 @@ export default function ProblemCompare() {
 
         {/* A smoother way */}
         <div className="relative z-20 lg:mt-3 lg:rotate-[2deg]">
-          <div className="relative rounded-[6px] border border-primary/15 bg-white px-5 pb-4 pt-7 shadow-[0_24px_60px_-28px_rgba(26,26,26,0.35)] sm:px-6 lg:ml-[-12px] lg:h-full lg:pb-2 lg:pt-5">
+          <div className="relative rounded-[16px] border border-primary/15 bg-white px-5 pb-4 pt-7 shadow-[0_24px_60px_-28px_rgba(26,26,26,0.35)] sm:px-6 lg:ml-[-12px] lg:h-full lg:pb-2 lg:pt-5">
             <div className="relative text-center">
               <h3 className="font-display text-2xl font-extrabold italic text-primary lg:text-xl">A smoother way</h3>
               <Underline className="mx-auto mt-1 h-2.5 w-44 text-primary" />

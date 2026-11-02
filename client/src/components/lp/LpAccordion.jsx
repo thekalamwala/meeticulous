@@ -10,17 +10,17 @@ function Preview({ item }) {
   return (
     <div
       key={preview.title}
-      className="lp-fade grid place-items-center rounded-[8px] p-8 sm:p-12"
+      className="lp-fade grid place-items-center rounded-[24px] p-8 sm:p-12"
       style={{ backgroundColor: `color-mix(in srgb, ${accent} 18%, white)` }}
     >
-      <div className="w-full max-w-xs overflow-hidden rounded-[6px] bg-white shadow-[0_20px_60px_-25px_rgba(26,26,26,0.4)]">
+      <div className="w-full max-w-xs overflow-hidden rounded-[16px] bg-white shadow-[0_20px_60px_-25px_rgba(26,26,26,0.4)]">
         <div className="h-24" style={{ background: `linear-gradient(135deg, ${accent}, color-mix(in srgb, ${accent} 55%, white))` }} />
         <div className="p-5">
           <h4 className="font-heading text-lg font-bold text-ink">{preview.title}</h4>
           <p className="mt-1 text-sm text-neutral-500">{preview.meta}</p>
           <div className="mt-5 flex items-center justify-between">
             <span className="text-lg font-extrabold text-ink">{preview.price}</span>
-            <span className="rounded-[6px] bg-ink px-4 py-2 text-sm font-semibold text-white">Book</span>
+            <span className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">Book</span>
           </div>
         </div>
       </div>

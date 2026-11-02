@@ -113,7 +113,7 @@ export default function Stone({ name = '', shade: shadeIdx = 0, shape = 0, class
 
         {/* two-tier plinth so the stone reads planted, not floating */}
         <div
-          className="relative z-10 -mt-[3px] h-[15px] w-[82%] rounded-[4px]"
+          className="relative z-10 -mt-[3px] h-[15px] w-[82%] rounded-[16px]"
           style={{
             background: `linear-gradient(180deg, ${top}, ${mid} 55%, ${foot})`,
             boxShadow: '0 6px 10px -4px rgba(60,45,20,.45), inset 0 2px 0 rgba(255,255,255,.24), inset 0 -3px 5px rgba(0,0,0,.30)',
