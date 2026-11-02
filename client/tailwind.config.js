@@ -21,6 +21,8 @@ export default {
         maroon: { DEFAULT: "#960D32", dark: "#7A0A28", 50: "#FDF2F4", 100: "#FBE3E8", 200: "#F5C2CD", 300: "#EB93A6", 400: "#D65A79", 500: "#B8224C", 600: "#960D32", 700: "#7A0A28", 800: "#5C0820", 900: "#3D0516" },
         rose: { DEFAULT: "#E0506F", 400: "#E87A92", 500: "#E0506F", 600: "#C43A59", 700: "#A12A47" },
         pink: { DEFAULT: "#FF9FB0", 50: "#FFF7F9", 100: "#FFF1F4", 200: "#FFE4EA", 300: "#FFC9D3", 400: "#FF9FB0" },
+        // Warm neutral ramp (cream → ink) replaces Tailwind's cold greys site-wide.
+        neutral: { 0: "#FFFFFF", 50: "#FBF5F3", 100: "#F5ECEA", 200: "#EBDCD9", 300: "#D9C4C0", 400: "#B39A96", 500: "#8C716D", 600: "#6B524F", 700: "#4D3634", 800: "#34201F", 900: "#2B0A14" },
         blush: "#FFE4EA",
         cream: "#FBF5F3",
         marigold: { DEFAULT: "#F6C35A", 100: "#FDF0D2", 300: "#F9D684", 600: "#C68A12", 800: "#5A3A00" },
