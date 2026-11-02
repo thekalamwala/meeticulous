@@ -316,6 +316,7 @@ const TEMPLATES = [
     email_category: 'Account Update',
     email_reason: 'You are receiving this email because your KYC verification status was updated.',
     html_content:
+      C.heroImage('kyc-approved', 'Verified — payouts unlocked') +
       h("You're verified, {{first_name}}!") +
       lead('Your identity verification was approved. You can now request payouts from your dashboard.') +
       C.banner(t, { title: 'Verified', sub: 'Payouts are now unlocked' }),
@@ -345,8 +346,8 @@ const TEMPLATES = [
     email_category: 'Achievement Unlocked',
     email_reason: 'You are receiving this email because you earned a new achievement on Meeticulous.',
     html_content:
-      h('You earned a badge, {{first_name}}!') +
-      C.celebration(t, { title: '{{badge_name}}' }) +
+      C.heroImage('badge-unlocked', 'A new badge') +
+      h('You earned the {{badge_name}} badge, {{first_name}}!') +
       lead('{{badge_description}}'),
     cta_label: 'See my badges', cta_url: '{{profile_url}}/badges',
   }; })(),
@@ -360,8 +361,8 @@ const TEMPLATES = [
     email_category: 'Achievement Unlocked',
     email_reason: 'You are receiving this email because you reached a booking milestone on Meeticulous.',
     html_content:
+      C.heroImage('milestone-1', 'First booking') +
       h('Your first booking, {{first_name}}!') +
-      C.celebration(t, { title: 'First booking' }) +
       lead('Congratulations on your first booking. This is the start of something good.'),
     cta_label: 'View dashboard', cta_url: '{{dashboard_url}}',
   }; })(),
@@ -373,8 +374,8 @@ const TEMPLATES = [
     email_category: 'Achievement Unlocked',
     email_reason: 'You are receiving this email because you reached a booking milestone on Meeticulous.',
     html_content:
+      C.heroImage('milestone-10', '10 bookings') +
       h('10 bookings, {{first_name}}!') +
-      C.celebration(t, { title: '{{milestone_value}} bookings' }) +
       lead('Momentum is building.'),
     cta_label: 'View dashboard', cta_url: '{{dashboard_url}}',
   }; })(),
@@ -386,8 +387,8 @@ const TEMPLATES = [
     email_category: 'Achievement Unlocked',
     email_reason: 'You are receiving this email because you reached a booking milestone on Meeticulous.',
     html_content:
+      C.heroImage('milestone-50', '50 bookings') +
       h('50 bookings!') +
-      C.celebration(t, { title: '{{milestone_value}} bookings' }) +
       lead('Your clients clearly love working with you.'),
     cta_label: 'View dashboard', cta_url: '{{dashboard_url}}',
   }; })(),
@@ -399,8 +400,8 @@ const TEMPLATES = [
     email_category: 'Achievement Unlocked',
     email_reason: 'You are receiving this email because you reached a booking milestone on Meeticulous.',
     html_content:
+      C.heroImage('milestone-100', '100 bookings') +
       h('100 bookings, {{first_name}}!') +
-      C.celebration(t, { title: '{{milestone_value}} bookings' }) +
       lead("That's a serious achievement."),
     cta_label: 'View dashboard', cta_url: '{{dashboard_url}}',
   }; })(),
@@ -414,8 +415,8 @@ const TEMPLATES = [
     email_category: 'Payment Receipt',
     email_reason: 'You are receiving this email because you made a purchase on Meeticulous.',
     html_content:
+      C.heroImage('premium-active', 'Premium unlocked') +
       h("You're officially on {{plan_name}}, {{first_name}} 🎉") +
-      C.celebration(t, { title: '{{plan_name}} — unlocked' }) +
       lead("Some people spend weeks 'thinking about it.' You just did the thing. Your {{plan_name}} plan is live, and everything you need to get booked and get paid is switched on.") +
       C.banner(t, { title: "Here's what just went live for you", sub: 'Your booking link is ready to share · payments land straight in your account · every guest gets automatic reminders and confirmations' }) +
       lead("Next move: get your page in front of people. One link in your bio beats a hundred “DM me to book” replies — and it works while you sleep.") +
@@ -431,6 +432,7 @@ const TEMPLATES = [
     email_category: 'Renewal',
     email_reason: 'You are receiving this email because your Meeticulous subscription is due to renew soon.',
     html_content:
+      C.heroImage('premium-expiring', 'Your plan renews soon') +
       C.heroBand(t, { kick: 'Renews in {{days_left}} days', h2: 'Keep your 0%.', sub: "Don't slip back to 5% commission, {{first_name}}." }) +
       lead('Your <strong>{{plan_name}}</strong> plan renews on <strong>{{expiry_date}}</strong>. Stay on it and every booking stays commission-free.') +
       lead('If it lapses, you drop to Starter — 5% per booking comes back.'),
@@ -444,6 +446,7 @@ const TEMPLATES = [
     email_category: 'Payment Receipt',
     email_reason: 'You are receiving this email because your Meeticulous subscription was renewed.',
     html_content:
+      C.heroImage('premium-active', 'Plan renewed') +
       h("You're renewed, {{first_name}}") +
       lead('Your {{plan_name}} plan has been renewed.') +
       C.infoCard(t, [['Plan', '{{plan_name}}'], ['Amount paid', '{{amount_charged}}'], ['Renews', '{{expiry_date}}']]) +
@@ -471,6 +474,7 @@ const TEMPLATES = [
     email_category: 'Payment Receipt',
     email_reason: 'You are receiving this email because a referral reward was credited to your Meeticulous account.',
     html_content:
+      C.heroImage('referral-reward', 'Referral reward') +
       h('Nice — you earned {{reward_amount}}, {{first_name}}') +
       lead('Someone you referred stuck around, so your referral reward has been released to your withdrawable balance.') +
       C.infoCard(t, [['Reward', '{{reward_amount}}'], ['Status', 'Added to withdrawable balance']]) +
@@ -487,8 +491,8 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this email because you are a valued member of the Meeticulous community.',
     html_content:
+      C.heroImage('birthday', 'Birthday cake') +
       h('Happy birthday, {{first_name}}!') +
-      C.celebration(t, { title: 'Happy birthday!' }) +
       lead('Everyone at Meeticulous wishes you a wonderful day. Thanks for being part of our community.'),
     cta_label: '', cta_url: '',
   }; })(),
@@ -500,8 +504,10 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this email because you are a valued member of the Meeticulous community.',
     html_content:
+      // ponytail: always the 1-year banner — nothing sends this event yet, so no
+      // years value exists. anniversary-2/-3.png are shipped; pick by years once a sender passes it.
+      C.heroImage('anniversary-1', 'Another year together') +
       h('Happy anniversary, {{first_name}}!') +
-      C.celebration(t, { title: 'Another year together' }) +
       lead("It's been another year with Meeticulous. Thank you for trusting us with your bookings."),
     cta_label: 'View dashboard', cta_url: '{{dashboard_url}}',
   }; })(),
@@ -515,6 +521,7 @@ const TEMPLATES = [
     email_category: 'Welcome',
     email_reason: 'You are receiving this email because you recently created a Meeticulous host account.',
     html_content:
+      C.heroImage('host-welcome', 'Welcome to Meeticulous') +
       h('Welcome to Meeticulous, {{first_name}}') +
       lead('Your account is ready. Three quick steps and clients can book and pay you — about 5 minutes in total.') +
       steps(
@@ -538,6 +545,7 @@ const TEMPLATES = [
     email_category: 'Welcome',
     email_reason: 'You are receiving this email because you recently created a Meeticulous account.',
     html_content:
+      C.heroImage('guest-welcome', 'Welcome to Meeticulous') +
       h('Welcome to Meeticulous, {{first_name}}') +
       lead("I'm Shubham, founder of Meeticulous. I started it because booking time with the people you actually want to meet should feel effortless — no back-and-forth, no friction.") +
       lead('Three ways to get started:') +
@@ -575,6 +583,7 @@ const TEMPLATES = [
     email_category: 'Payment Receipt',
     email_reason: 'You are receiving this email because you received a payout on Meeticulous.',
     html_content:
+      C.heroImage('payout-sent', 'Payout on its way') +
       h('{{payout_amount}} is on its way, {{first_name}}') +
       lead('Nice work. Your earnings from a completed booking have been released and are settling to your bank account now. Depending on your bank it usually lands within 1–2 working days (a little longer over holidays).') +
       C.amountRow(t, 'Paid to you', '{{payout_amount}}') +
@@ -661,6 +670,7 @@ const TEMPLATES = [
     email_category: 'Invitation',
     email_reason: 'You are receiving this email because you are a Meeticulous guest.',
     html_content:
+      C.heroImage('guest-to-host-invite', 'Your own booking page') +
       C.heroBand(t, { kick: "You've booked {{completed_count}} times, {{first_name}}", h2: 'Ever thought about the other side?', sub: 'The people you booked earn on Meeticulous. So could you.' }) +
       lead('You know how smooth booking is from this side. The hosts you paid use the exact same platform to <strong>get paid</strong> — a link they share, bookings that just show up.') +
       C.benefitGrid([{ icon: 'link.png', label: 'Share your link' }, { icon: 'calendar.png', label: 'Take bookings' }, { icon: 'wallet.png', label: 'Get paid' }]) +
@@ -721,13 +731,13 @@ const TEMPLATES = [
   (() => { const t = themeForCategory('Upgrade'); return {
     event_key: 'UPGRADE_COMMISSION_NUDGE', audience: 'all', category: 'Marketing', sender_key: 'news',
     name: 'Upgrade — Keep Every Rupee', subject: "You've given up {{commission_total}} in commission",
-    preview_text: 'On Host+ that number is zero.',
+    preview_text: 'On Pro that number is zero.',
     email_category: 'Upgrade',
     email_reason: 'You are receiving this because you are a Meeticulous host on the free plan.',
     html_content:
-      C.heroBand(t, { kick: 'Commission given up', big: '{{commission_total}}', sub: "On Host+ that's ₹0, {{first_name}}." }) +
+      C.heroBand(t, { kick: 'Commission given up', big: '{{commission_total}}', sub: "On Pro that's ₹0, {{first_name}}." }) +
       lead("You've earned well — but the free plan takes <strong>5%</strong> of every booking. You've handed back <strong>{{commission_total}}</strong> across {{bookings_count}} bookings.") +
-      C.compareRow(t, { leftLabel: 'Starter', leftPct: '5%', leftCap: 'per booking', rightLabel: 'Host+', rightPct: '0%', rightCap: 'you keep it all' }) +
+      C.compareRow(t, { leftLabel: 'Starter', leftPct: '5%', leftCap: 'per booking', rightLabel: 'Pro', rightPct: '0%', rightCap: 'you keep it all' }) +
       C.stars({ rating: 5, text: 'Hosts who upgraded keep every rupee they earn.' }),
     cta_label: 'Upgrade to 0% commission', cta_url: '{{upgrade_url}}',
   }; })(),
@@ -741,6 +751,7 @@ const TEMPLATES = [
     email_category: 'Newsletter',
     email_reason: 'You are receiving this email because you subscribed to the Meeticulous newsletter.',
     html_content:
+      C.heroImage('newsletter-welcome', 'Welcome to the newsletter') +
       h("You're in.") +
       lead('Thanks for subscribing. Every week we send tips, templates and honest lessons on getting booked and paid.') +
       lead('No noise, no spam — just the good stuff.') +

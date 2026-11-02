@@ -19,7 +19,7 @@ const SAMPLE = {
   vendor_phone: '+91 90000 00000', booking_id: 'BK-10293', booking_date: 'Mon, 21 Oct 2026',
   booking_time: '10:00 AM', location: 'Online', badge_name: 'Top Pick by BAS Team',
   badge_description: 'Editorial endorsement of exceptional vendor quality.',
-  milestone_name: '10 Bookings', milestone_value: '10', plan_name: 'Host+',
+  milestone_name: '10 Bookings', milestone_value: '10', plan_name: 'Pro',
   expiry_date: '10 June 2027', completion_percentage: '80', verification_status: 'Approved',
   ip_address: '49.36.x.x', device_name: 'Chrome on Windows', login_time: 'Today, 9:14 AM',
 };
