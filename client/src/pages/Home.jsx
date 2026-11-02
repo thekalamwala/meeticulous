@@ -58,6 +58,7 @@ import AppointmentFlow from "../components/home/AppointmentFlow";
 import AudienceCarousel from "../components/home/AudienceCarousel";
 import IntegrationsMarquee from "../components/home/IntegrationsMarquee";
 import BrandTrustStrip from "../components/home/BrandTrustStrip";
+import HomeHero from "../components/home/HomeHero";
 import ProblemGlyph from "../components/home/ProblemGlyph";
 import { PERSONAS, NEWSLETTER } from "../components/home/images";
 import { TESTIMONIALS } from "../data/testimonials";
@@ -658,57 +659,9 @@ const Home = () => {
           slow mobile that WAS the LCP (~6-10s). The hero is server-rendered, so
           it now paints immediately. Intro kept on profile pages. */}
 
-      {/* ════════════════ HERO — design-system "Loop & Slot" ════════════════
-         Keyword H1 (SEO) + serif human half, primary Google CTA + ghost pricing
-         link, slot-grid composition on the right (below on phones). */}
-      <section className="relative overflow-hidden bg-canvas px-5 pb-20 pt-16 sm:px-8 sm:pb-24 sm:pt-20 lg:pb-28 lg:pt-24">
-        {/* Design-system hero: cream ground, two-beat headline, primary + ghost CTA,
-            live slot-grid composition with ONE rose ee thread behind it. */}
-        <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12">
-          <div className="text-center lg:text-left">
-            <Reveal instant as="h1" delay={0.05} className="mx-auto max-w-[17ch] font-display text-[clamp(2.4rem,7vw,4.25rem)] font-extrabold leading-[1.02] tracking-[-0.04em] text-maroon lg:mx-0">
-              Appointment booking software for creators, pros &amp; bros.{" "}
-              <span className="font-serif text-[1.08em] font-normal italic tracking-[-0.01em] text-rose">Keep your calm.</span>
-            </Reveal>
-
-            <Reveal instant as="p" delay={0.12} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-ink sm:text-lg lg:mx-0">
-              Get booked, paid and reminded without the admin. One link turns your time, skills
-              and services into paid bookings, with UPI checkout, WhatsApp reminders and GST invoices built in.
-            </Reveal>
-
-            {/* Google-only host funnel — fires the same flow as /become-a-host */}
-            <Reveal instant delay={0.18} className="mt-8 sm:mt-10">
-              <div className="flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center lg:justify-start">
-                <button onClick={startGoogle} disabled={googleLoading} className="mt-btn mt-btn--l">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white">
-                    <GoogleIcon />
-                  </span>
-                  {googleLoading ? "Opening Google…" : "Get your free booking page"}
-                </button>
-                <Link to="/pricing" className="mt-btn mt-btn--ghost mt-btn--l">See pricing</Link>
-              </div>
-              <p className="mx-auto mt-4 max-w-md text-xs leading-relaxed text-muted lg:mx-0">
-                By continuing, you agree to our{" "}
-                <Link to="/terms" className="text-muted underline underline-offset-2 hover:text-ink">Terms &amp; Conditions</Link> and{" "}
-                <Link to="/privacy" className="text-muted underline underline-offset-2 hover:text-ink">Privacy Policy</Link>.
-              </p>
-            </Reveal>
-          </div>
-
-          <Reveal instant delay={0.22} className="relative mx-auto w-full max-w-[420px]">
-            <img src="/brand/ds/02-ee/mt-ee-thread-rose.svg" alt="" aria-hidden="true"
-                 className="pointer-events-none absolute -right-48 top-1/2 hidden w-[760px] max-w-none -translate-y-1/2 lg:block" />
-            <div className="relative grid grid-cols-3 gap-[10px]" aria-label="Example week of slots" role="img">
-              {HERO_SLOTS.map((c, k) => (
-                <div key={k} className={`mt-slot${c.state ? ` mt-slot--${c.state}` : ""}${c.selected ? " mt-slot--selected" : ""}`}>
-                  {c.state === "booked" ? <span className="mt-slot__dot" /> : <span />}
-                  {c.time && <span><b>{c.time}</b>{c.label && <><br />{c.label}</>}</span>}
-                </div>
-              ))}
-            </div>
-          </Reveal>
-        </div>
-      </section>
+      {/* ════════════════ HERO ════════════════ Aastha's HomeHero
+         (claim-my-link box + sample booking card) — replaces the DS slot-grid hero. */}
+      <HomeHero onStart={startGoogle} loading={googleLoading} />
 
       {/* ════════════════ COMPANY TRUST STRIP ════════════════
          Brand marquee right under the hero. Replaces the STATS proof strip
