@@ -151,7 +151,7 @@ function CategoryModal({ open, onClose, onSaved, editing, primary, primaryLabel 
           <button
             onClick={save}
             disabled={saving}
-            className="btn bg-[#960D32] text-white px-5 text-sm font-medium hover:bg-[#2A1416] disabled:opacity-50"
+            className="btn bg-[#960D32] text-white px-5 text-sm font-medium hover:bg-[#2B0A14] disabled:opacity-50"
           >
             {saving ? 'Saving…' : (editing ? 'Save Changes' : 'Create')}
           </button>
@@ -279,7 +279,7 @@ const AdminServiceCategories = () => {
         <button
           onClick={openCreate}
           disabled={!selected}
-          className="btn flex items-center gap-1.5 bg-[#960D32] text-white px-4 text-sm font-medium hover:bg-[#2A1416] shrink-0 disabled:opacity-50"
+          className="btn flex items-center gap-1.5 bg-[#960D32] text-white px-4 text-sm font-medium hover:bg-[#2B0A14] shrink-0 disabled:opacity-50"
         >
           <Plus className="w-4 h-4" strokeWidth={3} /> New
         </button>

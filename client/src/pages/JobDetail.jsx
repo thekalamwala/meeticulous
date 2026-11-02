@@ -99,7 +99,7 @@ export default function JobDetail() {
         <List title="What we're looking for" items={job.requirements} />
         <List title="Nice to have" items={job.niceToHaves} />
 
-        <div className="mt-10 rounded-[6px] border border-ink/10 bg-surface p-6">
+        <div className="mt-10 rounded-[24px] border border-ink/10 bg-surface p-6">
           <h2 className="font-heading text-lg font-semibold">About the team</h2>
           <p className="mt-2 text-ink/70">{company.aboutTeam}</p>
         </div>

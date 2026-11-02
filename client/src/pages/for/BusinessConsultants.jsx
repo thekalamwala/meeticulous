@@ -192,7 +192,7 @@ function NavLink({ item, className, onClick }) {
 }
 
 function CtaButton({ to, children, variant = 'solid', className = '' }) {
-  const base = 'inline-flex items-center justify-center gap-2 rounded-[5px] px-6 py-3.5 text-sm font-semibold transition-all hover:no-underline';
+  const base = 'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold transition-all hover:no-underline';
   const styles = {
     solid: 'text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] hover:brightness-110',
     ghost: 'border-2 border-[color:var(--ca-ink)]/12 bg-white text-[color:var(--ca-ink)] hover:border-[color:var(--ca-ink)]/25',
@@ -233,7 +233,7 @@ function ServiceCard({ s }) {
       </span>
       <h3 className="mt-1 font-heading text-[15px] font-bold text-[color:var(--ca-ink)]">{s.label}</h3>
       <p className="mb-6 mt-2 text-[13px] leading-relaxed text-neutral-500">{s.desc}</p>
-      <span className="mt-auto inline-flex items-center gap-1.5 rounded-[6px] border-2 border-[color:var(--ca-primary)] px-4 py-2 text-[13px] font-semibold text-[color:var(--ca-primary)] transition-colors duration-300 group-hover:bg-[color:var(--ca-primary)] group-hover:text-white">
+      <span className="mt-auto inline-flex items-center gap-1.5 rounded-full border-2 border-[color:var(--ca-primary)] px-4 py-2 text-[13px] font-semibold text-[color:var(--ca-primary)] transition-colors duration-300 group-hover:bg-[color:var(--ca-primary)] group-hover:text-white">
         Get Started <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
       </span>
     </Link>
@@ -264,7 +264,7 @@ function HowItWorks({ steps }) {
 /* One integration row — logo + label + note (rule-separated). */
 function ToolRow({ t }) {
   return (
-    <div className="flex items-center gap-3.5 rounded-[12px] border border-black/[0.08] bg-white px-4 py-3.5">
+    <div className="flex items-center gap-3.5 rounded-[16px] border border-black/[0.08] bg-white px-4 py-3.5">
       <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[color:var(--ca-grey)]">
         {t.logo
           ? <img src={t.logo} alt="" loading="lazy" className="h-5 w-5 object-contain" />
@@ -459,7 +459,7 @@ function FaqAccordion() {
   const renderItem = (f, i) => {
     const isOpen = open === i;
     return (
-      <div key={f.q} className="overflow-hidden rounded-[12px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'rgba(30,41,59,0.35)' : 'rgba(17,17,17,0.08)' }}>
+      <div key={f.q} className="overflow-hidden rounded-[16px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'rgba(30,41,59,0.35)' : 'rgba(17,17,17,0.08)' }}>
         <button
           type="button"
           onClick={() => setOpen(isOpen ? -1 : i)}
@@ -580,7 +580,7 @@ export default function BusinessConsultants() {
                   <NavLink key={item.label} item={item} onClick={() => setMenuOpen(false)} className="rounded-lg px-2 py-2.5 text-sm font-medium text-[color:var(--ca-ink)] hover:bg-[color:var(--ca-cream)] hover:no-underline" />
                 ))}
                 <div className="mt-2 flex items-center gap-3 border-t border-black/5 pt-3">
-                  <Link to={LOGIN} className="flex-1 rounded-[5px] border-2 border-black/10 py-2.5 text-center text-sm font-semibold text-[color:var(--ca-ink)] hover:no-underline">Login</Link>
+                  <Link to={LOGIN} className="flex-1 rounded-[16px] border-2 border-black/10 py-2.5 text-center text-sm font-semibold text-[color:var(--ca-ink)] hover:no-underline">Login</Link>
                   <CtaButton to={START} className="flex-1">Start for Free <ArrowRight size={15} /></CtaButton>
                 </div>
               </div>
@@ -605,7 +605,7 @@ export default function BusinessConsultants() {
             <Reveal instant delay={0.1} className="mt-6 flex flex-col items-center gap-3 sm:mt-9 sm:flex-row sm:gap-5 lg:justify-start">
               <Link
                 to={START}
-                className="btn flex w-full items-center justify-center gap-2 rounded-[5px] px-7 py-3.5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] transition-opacity hover:opacity-90 hover:no-underline sm:w-auto"
+                className="btn flex w-full items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] transition-opacity hover:opacity-90 hover:no-underline sm:w-auto"
                 style={{ background: 'var(--ca-primary)' }}
               >
                 Create a Free Account <ArrowRight size={16} />
@@ -637,7 +637,7 @@ export default function BusinessConsultants() {
         <div className="mx-auto mt-14 grid max-w-6xl gap-3 sm:mt-16 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4">
           {BENEFITS.map((b, i) => (
             <Reveal key={b.title} delay={(i % 4) * 0.06}>
-              <div className="group flex h-full flex-col rounded-[10px] border border-black/[0.06] bg-white p-4 transition-colors hover:border-[color:var(--ca-primary)]/30">
+              <div className="group flex h-full flex-col rounded-[24px] border border-black/[0.06] bg-white p-4 transition-colors hover:border-[color:var(--ca-primary)]/30">
                 <div className="flex items-center gap-2.5">
                   <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg text-white transition-colors duration-300" style={{ background: 'var(--ca-primary)' }}>
                     <b.icon size={18} />
@@ -745,7 +745,7 @@ export default function BusinessConsultants() {
                 <div className="font-heading text-lg font-extrabold sm:text-xl">Ready to fill your calendar with paid calls?</div>
                 <p className="mt-1 text-sm text-white/70">Set up your booking page today — free forever, no card required.</p>
               </div>
-              <Link to={START} className="inline-flex flex-shrink-0 items-center justify-center gap-2 rounded-[5px] px-6 py-3.5 text-sm font-semibold shadow-lg transition-opacity hover:opacity-90 hover:no-underline" style={{ background: AMBER, color: 'var(--ca-ink)' }}>
+              <Link to={START} className="inline-flex flex-shrink-0 items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold shadow-lg transition-opacity hover:opacity-90 hover:no-underline" style={{ background: AMBER, color: 'var(--ca-ink)' }}>
                 Start for Free <ArrowRight size={16} />
               </Link>
             </div>
@@ -988,7 +988,7 @@ export default function BusinessConsultants() {
             <Reveal delay={0.16} className="mt-9">
               <Link
                 to={START}
-                className="inline-flex items-center gap-2 rounded-[5px] px-6 py-3.5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] transition-opacity hover:opacity-90 hover:no-underline"
+                className="inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] transition-opacity hover:opacity-90 hover:no-underline"
                 style={{ background: 'var(--ca-primary)' }}
               >
                 Start Your Practice on Meeticulous <ArrowRight size={16} />
@@ -1024,7 +1024,7 @@ export default function BusinessConsultants() {
             Set up your booking page today and give your clients a simpler way to work with you.
           </Reveal>
           <Reveal delay={0.14} className="mt-8">
-            <Link to={START} className="inline-flex items-center justify-center gap-2 rounded-[5px] px-8 py-4 text-sm font-semibold shadow-[0_10px_30px_-8px_rgba(245,158,11,0.6)] transition-opacity hover:opacity-90 hover:no-underline" style={{ background: AMBER, color: 'var(--ca-ink)' }}>
+            <Link to={START} className="inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 text-sm font-semibold shadow-[0_10px_30px_-8px_rgba(245,158,11,0.6)] transition-opacity hover:opacity-90 hover:no-underline" style={{ background: AMBER, color: 'var(--ca-ink)' }}>
               Start for Free <ArrowRight size={16} />
             </Link>
           </Reveal>

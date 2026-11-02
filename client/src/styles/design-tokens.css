@@ -1,4 +1,5 @@
-/* Meeticulous — Design Tokens (single source of truth)
+/* Meeticulous — site tokens. Values now follow the design system in design-system/
+ * (brand.css loads after this file and wins on shared names: radii, focus, spacing).
  * Full spec + usage rules: docs/design/03-design-tokens.md
  * Design language: soft modern SaaS, brand crimson #960D32 (white-first).
  *
@@ -14,19 +15,19 @@
     --action: #960D32;           /* crimson — links, highlights, the accent pop */
     --action-dark: #7A0A28;      /* hover/pressed of action */
     --secondary-accent: #FF9FB0; /* light coral — accent on deep-crimson sections */
-    --accent-teal: #00C9C6;      /* teal spark — one highlight per page (use #0E7C7A as text) */
-    --surface-dark: #5E0820;     /* immersive deep-crimson sections (reserve to 1 band) */
-    --surface-darker: #3D0514;   /* deepest crimson section */
+    --accent-teal: #E0506F;      /* teal spark — one highlight per page (use #0E7C7A as text) */
+    --surface-dark: #960D32;     /* immersive deep-crimson sections (reserve to 1 band) */
+    --surface-darker: #7A0A28;   /* deepest crimson section */
 
     /* ── Neutrals: surfaces ────────────────────────────────── */
-    --canvas: #FFF8FA;           /* page background — warm white, fresh */
-    --sand: #FFF1F4;             /* muted crimson-wash bands, table headers */
+    --canvas: #FBF5F3;           /* page background — warm white, fresh */
+    --sand: #FFE4EA;             /* muted crimson-wash bands, table headers */
     --surface: #FFFFFF;          /* cards, inputs, modals */
 
     /* ── Neutrals: text ramp (warm, crimson-tinted — never cold grey/black) ─ */
-    --text-strong: #2A1416;      /* primary text / headings — warm wine ink (~14:1) */
+    --text-strong: #2B0A14;      /* primary text / headings — warm wine ink (~14:1) */
     --text-secondary: #432A2E;   /* body / secondary — warm */
-    --text-muted: #6E5257;       /* meta, captions, placeholder — warm mauve (~7:1) */
+    --text-muted: #6B524F;       /* meta, captions, placeholder — warm mauve (~7:1) */
     --text-disabled: #A8898E;
 
     /* ── Neutrals: borders (warm) ──────────────────────────── */
@@ -43,12 +44,12 @@
        Reusable multi-hue accents. Mirrored as Tailwind `c-*` colours in
        client/tailwind.config.js — keep both in sync. Literal hex (not var)
        so Tailwind's /opacity modifier can compute alpha. */
-    --c-blue: #0079C1;
-    --c-violet: #1DA1F2;
-    --c-cyan: #36D8FF;
-    --c-emerald: #059669;
-    --c-amber: #f59e0b;
-    --c-pink: #db2777;
+    --c-blue: #960D32;
+    --c-violet: #E0506F;
+    --c-cyan: #FF9FB0;
+    --c-emerald: #1F7A4D;
+    --c-amber: #C68A12;
+    --c-pink: #C43A59;
 
     /* ── Focus ring (blue — replaces the old orange ring) ──── */
     --focus-ring: rgba(150, 13, 50, 0.4);
@@ -59,7 +60,7 @@
     --radius-md: 4px;
     --radius-lg: 6px;
     --radius-card: 6px;
-    --radius-nested: 6px;
+    --radius-nested: 24px;
 
     /* ── Elevation — soft only ─────────────────────────────── */
     --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
@@ -78,7 +79,7 @@
     --z-toast: 1060;
 
     /* ── Buttons — geometry source of truth (colors stay per-button) ── */
-    --btn-radius: 4px;
+    --btn-radius: 999px;   /* design system: buttons are pills */
     --btn-border-width: 1px;
     --btn-border-color: #E5E5E5;
 
@@ -105,14 +106,14 @@
        off (Phase B/C). Still consumed by styles/base-fb.css + styles/
        components/*.css + a few global rules. Do not use in new UI. */
     --bg: var(--canvas);
-    --text: #2A1416;                        /* legacy strong-ink alias (global h1 color, fb-*) — warm wine */
+    --text: #2B0A14;                        /* legacy strong-ink alias (global h1 color, fb-*) — warm wine */
     --secondary: #F3C7D1;                   /* DEPRECATED — crimson tint */
     --accent: #FFB703;                      /* DEPRECATED — amber, only .fb-badge--accent */
     --success: #4CAF50;                     /* legacy alias; prefer --success-fg */
     --danger: #EF4444;                      /* legacy alias; prefer --error-fg */
-    --border: #2A1416;                      /* DEPRECATED — brutalist 3px ink border (fb-card/modal) */
+    --border: #2B0A14;                      /* DEPRECATED — brutalist 3px ink border (fb-card/modal) */
     --color-ink: var(--text);
-    --color-muted: #6E5257;
+    --color-muted: #6B524F;
     --color-soft: var(--canvas);
     --color-surface: var(--surface);
     --color-line: #F3E1E5;

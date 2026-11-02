@@ -188,7 +188,7 @@ function NavLink({ item, className, onClick }) {
 }
 
 function CtaButton({ to, children, variant = 'solid', className = '' }) {
-  const base = 'inline-flex items-center justify-center gap-2 rounded-[10px] px-6 py-3.5 text-sm font-semibold transition-all hover:no-underline';
+  const base = 'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold transition-all hover:no-underline';
   const styles = {
     solid: 'text-white shadow-[0_4px_14px_rgba(67,56,202,0.24)] hover:brightness-110',
     ghost: 'border-2 border-[color:var(--ca-ink)]/12 bg-white text-[color:var(--ca-ink)] hover:border-[color:var(--ca-ink)]/25',
@@ -218,7 +218,7 @@ function ServiceCard({ s }) {
   return (
     <Link to={START} className="group flex h-full flex-col rounded-[14px] border border-black/[0.08] bg-white p-6 transition-all hover:border-[color:var(--ca-primary)]/40 hover:shadow-[0_18px_40px_-28px_rgba(67,56,202,0.4)] hover:no-underline">
       <div className="flex items-start justify-between">
-        <span className="flex h-12 w-12 items-center justify-center rounded-[10px]" style={{ background: 'color-mix(in srgb, var(--ca-primary) 9%, transparent)', color: 'var(--ca-primary)' }}>
+        <span className="flex h-12 w-12 items-center justify-center rounded-[16px]" style={{ background: 'color-mix(in srgb, var(--ca-primary) 9%, transparent)', color: 'var(--ca-primary)' }}>
           <s.icon size={22} />
         </span>
         <ArrowRight size={16} className="mt-1 text-slate-300 transition-colors group-hover:text-[color:var(--ca-primary)]" />
@@ -247,7 +247,7 @@ function ServicesTabs() {
               aria-selected={active}
               aria-controls={`svpanel-${g.id}`}
               onClick={() => setTab(i)}
-              className="flex flex-1 items-center justify-center gap-2 rounded-[10px] px-4 py-2.5 text-[13px] font-bold transition-colors"
+              className="flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-2.5 text-[13px] font-bold transition-colors"
               style={active ? { background: 'var(--ca-primary)', color: '#fff' } : { color: '#64748b' }}
             >
               <g.icon size={16} /> {g.label}
@@ -285,7 +285,7 @@ function StepsRail() {
             {String(i + 1).padStart(2, '0')}
           </span>
           <div className="mt-5 flex w-full flex-col items-center rounded-[14px] border border-black/[0.08] bg-white p-6">
-            <span className="flex h-10 w-10 items-center justify-center rounded-[10px]" style={{ background: 'color-mix(in srgb, var(--ca-accent) 12%, transparent)', color: 'var(--ca-accent)' }}>
+            <span className="flex h-10 w-10 items-center justify-center rounded-[16px]" style={{ background: 'color-mix(in srgb, var(--ca-accent) 12%, transparent)', color: 'var(--ca-accent)' }}>
               <s.icon size={18} />
             </span>
             <h3 className="mt-3 font-heading text-[15px] font-bold text-[color:var(--ca-ink)]">{s.title}</h3>
@@ -300,7 +300,7 @@ function StepsRail() {
 /* One bordered-panel integration item. */
 function ToolItem({ t }) {
   return (
-    <div className="flex items-center gap-3 rounded-[12px] border border-black/[0.07] bg-white px-4 py-3.5 transition-colors hover:border-[color:var(--ca-primary)]/30">
+    <div className="flex items-center gap-3 rounded-[16px] border border-black/[0.07] bg-white px-4 py-3.5 transition-colors hover:border-[color:var(--ca-primary)]/30">
       <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[color:var(--ca-grey)]">
         {t.logo
           ? <img src={t.logo} alt="" loading="lazy" className="h-5 w-5 object-contain" />
@@ -368,7 +368,7 @@ function FaqAccordion() {
   const renderItem = (f, i) => {
     const isOpen = open === i;
     return (
-      <div key={f.q} className="overflow-hidden rounded-[12px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'var(--ca-primary)' : 'rgba(17,17,17,0.08)' }}>
+      <div key={f.q} className="overflow-hidden rounded-[16px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'var(--ca-primary)' : 'rgba(17,17,17,0.08)' }}>
         <button
           type="button"
           onClick={() => setOpen(isOpen ? -1 : i)}
@@ -492,7 +492,7 @@ export default function EntSpecialists() {
                   <NavLink key={item.label} item={item} onClick={() => setMenuOpen(false)} className="rounded-lg px-2 py-2.5 text-sm font-medium text-[color:var(--ca-ink)] hover:bg-[color:var(--ca-cream)] hover:no-underline" />
                 ))}
                 <div className="mt-2 flex items-center gap-3 border-t border-black/5 pt-3">
-                  <Link to={LOGIN} className="flex-1 rounded-[10px] border-2 border-black/10 py-2.5 text-center text-sm font-semibold text-[color:var(--ca-ink)] hover:no-underline">Login</Link>
+                  <Link to={LOGIN} className="flex-1 rounded-[16px] border-2 border-black/10 py-2.5 text-center text-sm font-semibold text-[color:var(--ca-ink)] hover:no-underline">Login</Link>
                   <CtaButton to={START} className="flex-1">Start Free <ArrowRight size={15} /></CtaButton>
                 </div>
               </div>
@@ -533,7 +533,7 @@ export default function EntSpecialists() {
           <Reveal instant delay={0.1} className="relative mx-auto mt-6 mb-10 w-full max-w-md lg:mx-0 lg:my-0 lg:max-w-none">
             <div aria-hidden className="pointer-events-none absolute -right-10 -top-10 h-72 w-72 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(67,56,202,0.22), transparent)' }} />
             <ImgSlot alt="An ENT specialist reviewing a patient's hearing results" className="aspect-[4/5] w-full" />
-            <div className="absolute top-[58%] -left-4 z-20 flex items-center gap-2.5 rounded-[12px] border border-black/[0.06] bg-white px-3.5 py-2.5 shadow-[0_16px_36px_-18px_rgba(30,27,58,0.5)]">
+            <div className="absolute top-[58%] -left-4 z-20 flex items-center gap-2.5 rounded-[16px] border border-black/[0.06] bg-white px-3.5 py-2.5 shadow-[0_16px_36px_-18px_rgba(30,27,58,0.5)]">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg text-white" style={{ background: 'var(--ca-primary)' }}><CalendarCheck size={16} /></span>
               <div>
                 <div className="text-[10px] text-slate-500">Appointment confirmed</div>
@@ -761,7 +761,7 @@ export default function EntSpecialists() {
             </Reveal>
             <Reveal delay={0.12} className="mt-8 grid gap-3 sm:grid-cols-2">
               {TRUST_STRIP.map((it) => (
-                <div key={it.value} className="flex items-start gap-3 rounded-[12px] border border-black/[0.08] bg-white px-4 py-3.5 text-left">
+                <div key={it.value} className="flex items-start gap-3 rounded-[16px] border border-black/[0.08] bg-white px-4 py-3.5 text-left">
                   <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg" style={{ background: 'color-mix(in srgb, var(--ca-primary) 9%, transparent)', color: 'var(--ca-primary)' }}>
                     <it.icon size={17} />
                   </span>
@@ -807,10 +807,10 @@ export default function EntSpecialists() {
               Set up your clinic&apos;s booking page today — free forever, ready to share in minutes.
             </Reveal>
             <Reveal delay={0.12} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-              <Link to={START} className="inline-flex items-center justify-center gap-2 rounded-[10px] bg-white px-7 py-3.5 text-sm font-bold transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+              <Link to={START} className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
                 Launch My Page — Free <ArrowRight size={16} />
               </Link>
-              <Link to="/contact" className="inline-flex items-center justify-center gap-2 rounded-[10px] border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline">
+              <Link to="/contact" className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline">
                 Book A Demo
               </Link>
             </Reveal>

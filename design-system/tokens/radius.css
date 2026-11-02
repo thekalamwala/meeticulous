@@ -1,0 +1,8 @@
+:root{
+  /* Derived from the icon body: corner ≈ 18% of the short side */
+  --radius-xs:6px; --radius-sm:10px; --radius-md:16px; --radius-lg:20px;
+  --radius-xl:24px; --radius-2xl:32px; --radius-pill:999px; --radius-round:50%;
+  --radius-control:var(--radius-pill);
+  --radius-card:var(--radius-xl);
+  --radius-input:var(--radius-md);
+}

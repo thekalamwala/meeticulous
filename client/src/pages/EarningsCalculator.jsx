@@ -76,7 +76,7 @@ function StepperInput({ n, title, sublabel, value, min, max, step, prefix, onCha
           <p className="text-xs text-neutral-500">{sublabel}</p>
         </div>
       </div>
-      <div className="mt-3 flex items-center gap-2 rounded-[10px] border border-black/10 bg-white px-3 py-2 transition-all duration-150 hover:border-black/20 focus-within:ring-2 focus-within:ring-primary/25">
+      <div className="mt-3 flex items-center gap-2 rounded-[16px] border border-black/10 bg-white px-3 py-2 transition-all duration-150 hover:border-black/20 focus-within:ring-2 focus-within:ring-primary/25">
         {prefix && <span className="text-neutral-400">{prefix}</span>}
         <input
           type="number" inputMode="numeric" min={min} max={max} step={step}
@@ -164,7 +164,7 @@ function PlanCard({ result, winnerKey, cycle }) {
         </span>
       )}
       <div className="flex items-center gap-2.5">
-        <span className="inline-flex h-10 w-10 items-center justify-center rounded-[10px]" style={{ color: accent, background: `${accent}14` }}>
+        <span className="inline-flex h-10 w-10 items-center justify-center rounded-[16px]" style={{ color: accent, background: `${accent}14` }}>
           <Icon size={20} strokeWidth={1.75} />
         </span>
         <div>
@@ -175,7 +175,7 @@ function PlanCard({ result, winnerKey, cycle }) {
 
       <p className="mt-4 text-sm font-bold text-ink">{POSITION[plan.key]}</p>
       <div className="mt-2">
-        <p className="text-2xl font-extrabold" style={{ color: isRec ? accent : "#2A1416" }}>{inr0(result.netAnnual)}</p>
+        <p className="text-2xl font-extrabold" style={{ color: isRec ? accent : "#2B0A14" }}>{inr0(result.netAnnual)}</p>
         <p className="text-xs text-neutral-500">you keep per year</p>
       </div>
 
@@ -188,12 +188,12 @@ function PlanCard({ result, winnerKey, cycle }) {
       </ul>
 
       {result.capped && (
-        <p className="mt-3 rounded-[8px] bg-amber-50 px-2.5 py-2 text-[11px] text-amber-700">
+        <p className="mt-3 rounded-[16px] bg-amber-50 px-2.5 py-2 text-[11px] text-amber-700">
           This plan caps at {inr0(plan.maxServicePrice)} per session.
         </p>
       )}
       {result.outgrows && (
-        <p className="mt-3 rounded-[8px] bg-amber-50 px-2.5 py-2 text-[11px] text-amber-700">
+        <p className="mt-3 rounded-[16px] bg-amber-50 px-2.5 py-2 text-[11px] text-amber-700">
           Caps at {result.bookingCap.toLocaleString("en-IN")} bookings/year — {result.uncollectedBookings.toLocaleString("en-IN")} you couldn&rsquo;t take.
         </p>
       )}
@@ -332,7 +332,7 @@ export default function EarningsCalculator() {
             <p className="mt-2 max-w-2xl text-sm text-neutral-600">
               At {inr0(earning)} a session and {bookings} sessions a month, this is what each option takes in platform fees over a year.
             </p>
-            <div className="mt-5 overflow-x-auto rounded-[6px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+            <div className="mt-5 overflow-x-auto rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
               <table className="w-full text-left text-sm">
                 <thead className="bg-[#F8FAFC] text-xs uppercase tracking-wide text-neutral-500">
                   <tr><th className="px-4 py-3">Option</th><th className="px-4 py-3">How it charges</th><th className="px-4 py-3 text-right">Fees per year</th></tr>
@@ -380,7 +380,7 @@ export default function EarningsCalculator() {
 
       {/* Sticky CTA on mobile */}
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur sm:hidden">
-        <Link to={ROUTE_START} className="flex items-center justify-center gap-1.5 rounded-[10px] bg-primary px-5 py-3 text-sm font-semibold text-white">
+        <Link to={ROUTE_START} className="flex items-center justify-center gap-1.5 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white">
           Start on {winner.plan.name} <ArrowRight size={16} />
         </Link>
       </div>

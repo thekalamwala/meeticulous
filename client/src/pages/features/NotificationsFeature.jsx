@@ -171,7 +171,7 @@ function PrimaryCta({ to = START, children, onDark = true }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-[6px] px-6 py-3 text-sm font-semibold shadow-[0_8px_30px_rgba(26,26,26,0.12)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold shadow-[0_8px_30px_rgba(26,26,26,0.12)] transition-opacity hover:no-underline hover:opacity-90"
       style={onDark ? { background: GREEN, color: INK } : { background: INK, color: PAPER }}
     >
       {children}
@@ -222,7 +222,7 @@ function ReminderPhone() {
 
   return (
     <div className="mx-auto w-full max-w-[30rem]">
-      <div className="overflow-hidden rounded-[10px] border border-white/10 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.7)]" style={{ background: CHAT_BG }}>
+      <div className="overflow-hidden rounded-[16px] border border-white/10 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.7)]" style={{ background: CHAT_BG }}>
         <div className="flex items-center gap-3 px-4 py-3" style={{ background: CHAT_BUBBLE }}>
           <span className="flex h-8 w-8 items-center justify-center rounded-full font-heading text-xs font-extrabold" style={{ background: GREEN, color: INK }}>BS</span>
           <div className="min-w-0">
@@ -233,7 +233,7 @@ function ReminderPhone() {
         <div className="flex min-h-[23rem] flex-col justify-end gap-2.5 px-3 py-4" aria-live="polite">
           <AnimatePresence initial={false}>
             {shown.map((m) => (
-              <motion.div key={m.key} {...pop} className="max-w-[86%] rounded-[6px] px-3.5 py-2.5 text-[14px] leading-snug" style={{ background: CHAT_BUBBLE, color: CHAT_TEXT }}>
+              <motion.div key={m.key} {...pop} className="max-w-[86%] rounded-[16px] px-3.5 py-2.5 text-[14px] leading-snug" style={{ background: CHAT_BUBBLE, color: CHAT_TEXT }}>
                 {m.text}
                 <div className="mt-1 flex items-center justify-end gap-1 text-[10px] text-[#E9EDEF]/50">
                   {m.time} <CheckCheck size={12} style={{ color: CHAT_TICK }} aria-hidden />
@@ -286,7 +286,7 @@ function PlanToggle() {
   const isActive = plan === 'premium';
   return (
     <div className="mt-12">
-      <div className="mx-auto flex w-full max-w-sm rounded-[6px] border border-white/10 p-1" role="group" aria-label="Choose a plan">
+      <div className="mx-auto flex w-full max-w-sm rounded-[16px] border border-white/10 p-1" role="group" aria-label="Choose a plan">
         {[{ k: 'free', name: FREE_PLAN.name }, { k: 'premium', name: PREMIUM_PLAN.name }].map((p) => (
           <button
             key={p.k}
@@ -417,7 +417,7 @@ export default function NotificationsFeature() {
       <section className="px-5 pb-20 sm:px-8 lg:pb-28">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {PROOF.map((p, i) => (
-            <Reveal key={p.n} delay={i * 0.05} className="flex min-h-[11rem] flex-col justify-between sm:aspect-square rounded-[6px] border border-white/10 bg-[#171A1A] p-4 sm:p-6">
+            <Reveal key={p.n} delay={i * 0.05} className="flex min-h-[11rem] flex-col justify-between sm:aspect-square rounded-[24px] border border-white/10 bg-[#171A1A] p-4 sm:p-6">
               <span className="font-heading text-4xl font-extrabold tabular-nums sm:text-6xl" style={{ color: GREEN }}>{p.n}</span>
               <div>
                 <div className="font-heading text-lg font-extrabold leading-tight text-[#F2F5F3] sm:text-2xl">{p.big}</div>
@@ -439,13 +439,13 @@ export default function NotificationsFeature() {
           </Reveal>
 
           <div className="mt-14 grid gap-5 sm:gap-6 lg:grid-cols-2">
-            <Reveal className="rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-8">
+            <Reveal className="rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-8">
               <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-neutral-400">
                 <X size={14} aria-hidden /> You, typing each one
               </div>
               <div className="mt-6 flex flex-col items-end gap-2.5">
                 {BY_HAND.map((b) => (
-                  <div key={b} className="max-w-[85%] rounded-[6px] bg-neutral-100 px-3.5 py-2.5 text-sm text-neutral-600">{b}</div>
+                  <div key={b} className="max-w-[85%] rounded-[16px] bg-neutral-100 px-3.5 py-2.5 text-sm text-neutral-600">{b}</div>
                 ))}
               </div>
               <p className="mt-6 border-t border-black/5 pt-5 text-sm leading-relaxed text-neutral-500">
@@ -453,14 +453,14 @@ export default function NotificationsFeature() {
               </p>
             </Reveal>
 
-            <Reveal delay={0.06} className="rounded-[10px] bg-[#0F1111] p-6 text-[#F2F5F3] sm:p-8">
+            <Reveal delay={0.06} className="rounded-[24px] bg-[#0F1111] p-6 text-[#F2F5F3] sm:p-8">
               <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: GREEN }}>
                 <Check size={14} aria-hidden /> Meeticulous, automatically
               </div>
               <ul className="mt-6 space-y-3">
                 {AUTOMATED.map((a) => (
-                  <li key={a.t} className="flex items-center gap-3.5 rounded-[6px] border border-white/10 px-4 py-3.5">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[5px]" style={{ background: 'rgba(37,211,102,0.14)', color: GREEN }}><a.icon size={17} aria-hidden /></span>
+                  <li key={a.t} className="flex items-center gap-3.5 rounded-[16px] border border-white/10 px-4 py-3.5">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[16px]" style={{ background: 'rgba(37,211,102,0.14)', color: GREEN }}><a.icon size={17} aria-hidden /></span>
                     <span className="text-sm font-medium text-[#F2F5F3]">{a.t}</span>
                   </li>
                 ))}
@@ -481,7 +481,7 @@ export default function NotificationsFeature() {
           </Reveal>
           <ol className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((s, i) => (
-              <Reveal as="li" key={s.title} delay={i * 0.05} className="flex flex-col rounded-[10px] border border-white/10 bg-[#171A1A] p-6 sm:p-7">
+              <Reveal as="li" key={s.title} delay={i * 0.05} className="flex flex-col rounded-[24px] border border-white/10 bg-[#171A1A] p-6 sm:p-7">
                 <span className="font-heading text-6xl font-extrabold leading-none tabular-nums text-[#F2F5F3]/10">{String(i + 1).padStart(2, '0')}</span>
                 <span className="mt-5 h-1 w-10 rounded-full" style={{ background: GREEN }} aria-hidden />
                 <h3 className="mt-5 font-heading text-xl font-bold text-[#F2F5F3]">{s.title}</h3>
@@ -505,7 +505,7 @@ export default function NotificationsFeature() {
             What goes out, where it goes, and who gets it.
           </Reveal>
 
-          <Reveal delay={0.08} className="mt-12 overflow-x-auto rounded-[10px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+          <Reveal delay={0.08} className="mt-12 overflow-x-auto rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
             <table className="w-full min-w-[40rem] text-left text-sm">
               <caption className="sr-only">Which notifications go out on WhatsApp and email, to whom, and on which plan</caption>
               <thead>
@@ -522,7 +522,7 @@ export default function NotificationsFeature() {
                   <tr key={r.event} className="border-b border-black/5 last:border-b-0">
                     <th scope="row" className="px-5 py-4 font-heading font-bold">
                       <span className="flex items-center gap-3">
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[5px] bg-[#0F1111] text-[#25D366]"><r.icon size={15} aria-hidden /></span>
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[16px] bg-[#0F1111] text-[#25D366]"><r.icon size={15} aria-hidden /></span>
                         {r.event}
                       </span>
                     </th>
@@ -543,8 +543,8 @@ export default function NotificationsFeature() {
 
           <div className="mt-12 grid gap-5 sm:gap-6 md:grid-cols-3">
             {EXTRAS.map((c, i) => (
-              <Reveal key={c.title} delay={i * 0.05} className="rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-                <span className="flex h-10 w-10 items-center justify-center rounded-[5px] bg-[#0F1111] text-[#25D366]"><c.icon size={18} aria-hidden /></span>
+              <Reveal key={c.title} delay={i * 0.05} className="rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+                <span className="flex h-10 w-10 items-center justify-center rounded-[16px] bg-[#0F1111] text-[#25D366]"><c.icon size={18} aria-hidden /></span>
                 <h3 className="mt-4 font-heading text-lg font-bold text-[#0F1111]">{c.title}</h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-neutral-600">{c.body}</p>
               </Reveal>
@@ -587,7 +587,7 @@ export default function NotificationsFeature() {
             {QUOTES.length > 1 && (
               <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-2">
                 {QUOTES.slice(1).map((t, i) => (
-                  <Reveal as="figure" key={t.name} delay={i * 0.05} className="rounded-[10px] border border-white/10 p-6 sm:p-7">
+                  <Reveal as="figure" key={t.name} delay={i * 0.05} className="rounded-[24px] border border-white/10 p-6 sm:p-7">
                     <blockquote className="text-[15px] leading-relaxed text-[#F2F5F3]/85">&ldquo;{t.quote}&rdquo;</blockquote>
                     <figcaption className="mt-5 flex items-center gap-3">
                       <img src={t.avatar} alt="" loading="lazy" className="h-9 w-9 rounded-full object-cover" />
@@ -614,9 +614,9 @@ export default function NotificationsFeature() {
           </Reveal>
           <div className="mt-12 grid gap-3">
             {FAQ.map((f, i) => (
-              <details key={f.q} className="group rounded-[6px] border border-white/10 bg-[#171A1A] open:border-white/20" open={i === 0}>
+              <details key={f.q} className="group rounded-[16px] border border-white/10 bg-[#171A1A] open:border-white/20" open={i === 0}>
                 <summary className="flex cursor-pointer list-none items-start gap-4 px-5 py-5 [&::-webkit-details-marker]:hidden">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[5px] font-heading text-[11px] font-extrabold tabular-nums" style={{ background: 'rgba(37,211,102,0.14)', color: GREEN }}>{String(i + 1).padStart(2, '0')}</span>
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[16px] font-heading text-[11px] font-extrabold tabular-nums" style={{ background: 'rgba(37,211,102,0.14)', color: GREEN }}>{String(i + 1).padStart(2, '0')}</span>
                   <span className="flex-1 pt-0.5 font-heading text-[16px] font-bold text-[#F2F5F3]">{f.q}</span>
                   <span aria-hidden className="pt-0.5 text-xl leading-none text-[#F2F5F3]/50 transition-transform group-open:rotate-45">+</span>
                 </summary>

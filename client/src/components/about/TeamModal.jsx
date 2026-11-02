@@ -19,7 +19,7 @@ export default function TeamModal({ member, onClose }) {
         <button type="button" onClick={onClose} aria-label="Close" className="absolute right-4 top-4 z-10 text-ink/50 hover:text-ink">
           <X className="h-5 w-5" />
         </button>
-        <div className="aspect-square overflow-hidden rounded-[12px] bg-sand ring-1 ring-black/5" data-swap={member.swap}>
+        <div className="aspect-square overflow-hidden rounded-[16px] bg-sand ring-1 ring-black/5" data-swap={member.swap}>
           <ImgWithSkeleton src={member.photo} alt={`${member.name} — ${member.role}`} fallbackLabel={member.name} loading="eager" />
         </div>
         <div className="flex flex-col">

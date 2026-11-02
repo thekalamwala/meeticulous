@@ -325,7 +325,7 @@ function FaqAccordion() {
   const renderItem = (f, i) => {
     const isOpen = open === i;
     return (
-      <div key={f.q} className="overflow-hidden rounded-[12px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'var(--ca-primary)' : 'rgba(17,17,17,0.08)' }}>
+      <div key={f.q} className="overflow-hidden rounded-[16px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'var(--ca-primary)' : 'rgba(17,17,17,0.08)' }}>
         <button
           type="button"
           onClick={() => setOpen(isOpen ? -1 : i)}
@@ -819,7 +819,7 @@ export default function Astrologers() {
             <Reveal className="relative mx-auto w-full max-w-md lg:mx-0">
               <div aria-hidden className="pointer-events-none absolute -inset-6 rounded-[32px] blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(76,29,149,0.18), transparent)' }} />
               <div className="relative overflow-hidden rounded-[24px] border border-white bg-white p-4 shadow-[0_30px_70px_-34px_rgba(76,29,149,0.5)]">
-                <IconArt icon={Sparkles} label="An astrologer running their practice on Meeticulous" rounded="rounded-[6px]" className="aspect-[16/9] w-full" />
+                <IconArt icon={Sparkles} label="An astrologer running their practice on Meeticulous" rounded="rounded-[16px]" className="aspect-[16/9] w-full" />
               </div>
             </Reveal>
             {/* editorial + facts */}

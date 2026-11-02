@@ -6,8 +6,12 @@ const express = require('express');
 const router = express.Router();
 const { handleResendWebhook } = require('../controllers/resendWebhookController');
 const { verifyMetaLeadgen, handleMetaLeadgen } = require('../controllers/metaLeadgenController');
+const { handleInbound } = require('../controllers/brevoInboundController');
 
 router.post('/resend', handleResendWebhook);
+
+// Brevo inbound parsing — CRM email replies (secret-gated, JSON body).
+router.post('/brevo/inbound', handleInbound);
 
 // Facebook/Instagram Lead Ads. GET = one-time subscribe handshake; POST = signed
 // leadgen notifications (raw body mounted in server.js for signature verify).

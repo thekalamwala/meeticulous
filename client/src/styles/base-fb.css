@@ -23,7 +23,7 @@ h5,
 h6 {
     font-family: var(--font-primary);
     line-height: 1.12;
-    margin: 0 0 var(--space-2) 0;
+    margin: 0 0 16px 0;
     color: var(--text);
 }
 
@@ -106,7 +106,7 @@ button {
 .fb-row {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-3);
+    gap: 24px;
 }
 
 .fb-col {
@@ -117,11 +117,11 @@ button {
 .fb-stack {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
+    gap: 16px;
 }
 
 .fb-stack-sm {
-    gap: var(--space-1);
+    gap: 8px;
 }
 
 .fb-table {

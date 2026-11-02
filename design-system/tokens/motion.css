@@ -1,0 +1,7 @@
+:root{
+  --ease-out:cubic-bezier(.2,.8,.2,1);
+  --ease-in-out:cubic-bezier(.65,0,.35,1);
+  --ease-loop:cubic-bezier(.45,.05,.25,1);
+  --dur-instant:80ms; --dur-fast:140ms; --dur-base:220ms; --dur-slow:360ms; --dur-thread:1200ms;
+}
+@media (prefers-reduced-motion:reduce){:root{--dur-fast:0ms;--dur-base:0ms;--dur-slow:0ms;--dur-thread:0ms}}

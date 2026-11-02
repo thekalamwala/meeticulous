@@ -1,0 +1,13 @@
+:root{
+  /* 4px base */
+  --space-0:0; --space-1:2px; --space-2:4px; --space-3:8px; --space-4:12px; --space-5:16px;
+  --space-6:20px; --space-7:24px; --space-8:32px; --space-9:40px; --space-10:48px;
+  --space-11:64px; --space-12:80px; --space-13:96px; --space-14:128px;
+  /* Layout */
+  --container:1280px; --container-narrow:880px;
+  --grid-columns:12; --grid-gutter:24px; --grid-margin:80px; --grid-margin-mobile:20px;
+  /* Slot grid — the calendar cell as layout module */
+  --slot-size:96px; --slot-gap:10px; --slot-radius:20px;
+  /* Control heights */
+  --control-s:36px; --control-m:44px; --control-l:52px;
+}

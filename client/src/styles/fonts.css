@@ -94,3 +94,13 @@
   descent-override: 20.93%;
   line-gap-override: 0%;
 }
+
+/* Instrument Serif italic (OFL, @fontsource 5.3.0 latin subset) — the design-system
+   script accent (Tailwind `font-serif`). One human phrase per layout only. */
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/instrument-serif-latin-400-italic.woff2') format('woff2');
+}

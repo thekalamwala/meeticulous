@@ -3,7 +3,7 @@
 // is pure and tested here. Query wrappers are thin and trusted.
 jest.mock('../../config/supabase', () => ({ supabaseAdmin: { from: () => ({}) }, supabase: {} }));
 
-const { isUnansweredReply, activationReason, mergeById, shape } = require('../../services/crm/deskService');
+const { isUnansweredReply, activationReason, mergeById, shape, intentRank, replyReason } = require('../../services/crm/deskService');
 
 describe('isUnansweredReply', () => {
   test('no lead / no reply → false', () => {
@@ -56,5 +56,17 @@ describe('shape', () => {
   });
   test('falls back to _reasons when no reasons passed', () => {
     expect(shape({ id: 'a', _reasons: ['x'] }).reasons).toEqual(['x']);
+  });
+});
+
+describe('reply intent triage (v3.183)', () => {
+  test('warm replies sort first, unlabelled ranks as other, auto-replies last', () => {
+    const rows = [{ last_reply_intent: 'not_now' }, {}, { last_reply_intent: 'auto_reply' }, { last_reply_intent: 'interested' }, { last_reply_intent: 'angry' }];
+    expect(rows.sort((a, b) => intentRank(a) - intentRank(b)).map((r) => r.last_reply_intent))
+      .toEqual(['interested', 'angry', undefined, 'not_now', 'auto_reply']);
+  });
+  test('reason shows the label, or the old text when unlabelled', () => {
+    expect(replyReason({ last_reply_intent: 'not_now' })).toBe('Replied — not now');
+    expect(replyReason({})).toBe('Replied — unanswered');
   });
 });

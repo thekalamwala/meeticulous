@@ -285,7 +285,7 @@ const ProductMock = ({ kind }) => {
     return (
       <div className="flex h-full flex-col">
         <div className="relative">
-          <div className="h-16 rounded-[8px]" style={{ background: "linear-gradient(110deg,#fb7185,#f59e0b,#FF9FB0,#22d3ee)" }} />
+          <div className="h-16 rounded-[16px]" style={{ background: "linear-gradient(110deg,#fb7185,#f59e0b,#FF9FB0,#22d3ee)" }} />
           <div className="absolute -bottom-6 left-3 h-14 w-14 rounded-2xl border-[3px] border-white bg-gradient-to-br from-neutral-200 to-neutral-300" />
         </div>
         <div className="space-y-1 pl-1 pt-7">
@@ -295,14 +295,14 @@ const ProductMock = ({ kind }) => {
         </div>
         <div className="mt-4 space-y-2.5">
           {[["My First Free Service", "Free"], ["My First Paid Service", "₹1,500"]].map(([name, price]) => (
-            <div key={name} className="flex items-center justify-between rounded-[6px] border border-neutral-100 bg-white p-3">
+            <div key={name} className="flex items-center justify-between rounded-[16px] border border-neutral-100 bg-white p-3">
               <div>
                 <div className="text-xs font-semibold text-ink">{name}</div>
                 <div className="mt-0.5 text-[9px] text-neutral-400">20 min · Online</div>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-ink">{price}</span>
-                <span className="rounded-[5px] bg-primary px-2.5 py-1 text-[9px] font-bold text-white">Book</span>
+                <span className="rounded-full bg-primary px-2.5 py-1 text-[9px] font-bold text-white">Book</span>
               </div>
             </div>
           ))}
@@ -313,7 +313,7 @@ const ProductMock = ({ kind }) => {
   if (kind === "service") {
     return (
       <div className="space-y-3">
-        <div className="rounded-[8px] p-4" style={{ background: "linear-gradient(135deg,#ffd2bf,#fff2ec)" }}>
+        <div className="rounded-[24px] p-4" style={{ background: "linear-gradient(135deg,#ffd2bf,#fff2ec)" }}>
           <span className="text-[9px] font-bold uppercase tracking-wide text-primary">New · 20 min · Online</span>
           <div className="mt-1.5 font-heading text-base font-extrabold leading-tight text-ink">
             Let&apos;s talk about your <span className="text-primary">booking page</span>
@@ -323,9 +323,9 @@ const ProductMock = ({ kind }) => {
           <div className="h-6 w-6 rounded-full bg-gradient-to-br from-neutral-200 to-neutral-300" />
           <div className="h-2 w-24 rounded bg-neutral-200" />
         </div>
-        <div className="flex items-center justify-between rounded-[6px] border border-neutral-100 p-3">
+        <div className="flex items-center justify-between rounded-[16px] border border-neutral-100 p-3">
           <span className="text-base font-extrabold text-ink">Free</span>
-          <span className="rounded-[6px] bg-primary px-4 py-1.5 text-[10px] font-bold text-white">Book a Slot</span>
+          <span className="rounded-full bg-primary px-4 py-1.5 text-[10px] font-bold text-white">Book a Slot</span>
         </div>
         <div className="flex gap-4 pl-0.5 text-[9px] font-medium text-neutral-500">
           <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />Verified host</span>
@@ -379,7 +379,7 @@ const ProductMock = ({ kind }) => {
       </div>
       <div className="grid flex-1 grid-cols-2 gap-2.5">
         {[["1", "Upcoming", "#960D32"], ["2", "Completed", "#059669"], ["1", "Cancelled", "#dc2626"], ["₹10", "Earnings", "#f59e0b"]].map(([v, l, c]) => (
-          <div key={l} className="flex flex-col justify-center rounded-[8px] border border-neutral-100 p-3.5">
+          <div key={l} className="flex flex-col justify-center rounded-[16px] border border-neutral-100 p-3.5">
             <div className="mb-2 flex h-7 w-7 items-center justify-center rounded-lg" style={{ background: c + "1a" }}>
               <span className="h-2.5 w-2.5 rounded-full" style={{ background: c }} />
             </div>
@@ -811,7 +811,7 @@ const HomeArchive = () => {
                 <button
                   onClick={startGoogle}
                   disabled={googleLoading}
-                  className="btn flex w-full items-center justify-center gap-3 rounded-[5px] bg-ink py-3.5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] transition-opacity hover:opacity-90 disabled:opacity-50"
+                  className="btn flex w-full items-center justify-center gap-3 rounded-[16px] bg-ink py-3.5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
                   <GoogleIcon />
                   {googleLoading ? "Opening Google…" : "Continue with Google Account"}
@@ -849,12 +849,12 @@ const HomeArchive = () => {
 
           {/* RIGHT — hero icon art (sm+ only; mobile uses the dedicated centered section below) */}
           <Reveal delay={0.1} className="relative hidden sm:block">
-            <div className="relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-[6px] bg-sand shadow-[0_40px_90px_-25px_rgba(26,26,26,0.38)] ring-1 ring-black/5">
+            <div className="relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-[16px] bg-sand shadow-[0_40px_90px_-25px_rgba(26,26,26,0.38)] ring-1 ring-black/5">
               <motion.div style={{ y: heroImgY }} className="h-full w-full">
-                <IconArt icon={CalendarCheck} label="Bookings, payments and reminders on Meeticulous" rounded="rounded-[6px]" className="h-full w-full border-0 shadow-none" iconClassName="h-24 w-24" />
+                <IconArt icon={CalendarCheck} label="Bookings, payments and reminders on Meeticulous" rounded="rounded-[16px]" className="h-full w-full border-0 shadow-none" iconClassName="h-24 w-24" />
               </motion.div>
               {/* Subtle inset sheen for a more premium frame */}
-              <div aria-hidden className="pointer-events-none absolute inset-0 rounded-[6px] ring-1 ring-inset ring-white/15" />
+              <div aria-hidden className="pointer-events-none absolute inset-0 rounded-[16px] ring-1 ring-inset ring-white/15" />
             </div>
 
             {/* Floating glass cards */}
@@ -911,7 +911,7 @@ const HomeArchive = () => {
               <button
                 onClick={startGoogle}
                 disabled={googleLoading}
-                className="btn btn--outline flex w-full items-center justify-center gap-3 rounded-[5px] border border-black/[0.12] bg-white py-3.5 text-sm font-semibold text-ink shadow-[0_1px_2px_rgba(16,24,40,0.05)] transition-colors hover:border-black/20 disabled:opacity-50"
+                className="btn btn--outline flex w-full items-center justify-center gap-3 rounded-[16px] border border-black/[0.12] bg-white py-3.5 text-sm font-semibold text-ink shadow-[0_1px_2px_rgba(16,24,40,0.05)] transition-colors hover:border-black/20 disabled:opacity-50"
               >
                 <GoogleIcon />
                 {googleLoading ? "Opening Google…" : "Continue with Google Account"}
@@ -1067,7 +1067,7 @@ const HomeArchive = () => {
                   tabIndex={0}
                   role="group"
                   aria-label={`${ind.name} — show popular professions`}
-                  className="group relative h-full min-h-[233px] overflow-hidden rounded-[6px] border border-white/10 bg-white/5 shadow-[0_8px_30px_rgba(0,0,0,0.3)] outline-none ring-1 ring-inset ring-white/10 backdrop-blur-xl transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-20px_rgba(0,0,0,0.6)] focus-visible:-translate-y-1 focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
+                  className="group relative h-full min-h-[233px] overflow-hidden rounded-[16px] border border-white/10 bg-white/5 shadow-[0_8px_30px_rgba(0,0,0,0.3)] outline-none ring-1 ring-inset ring-white/10 backdrop-blur-xl transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-20px_rgba(0,0,0,0.6)] focus-visible:-translate-y-1 focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
                 >
                   {/* Big line icon anchored to the top-left corner — card background */}
                   <ind.icon
@@ -1110,7 +1110,7 @@ const HomeArchive = () => {
                     </div>
                     <Link
                       to={`${ROUTE_START}?industry=${ind.slug}`}
-                      className="mt-auto inline-flex w-fit items-center gap-1.5 rounded-[6px] bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:bg-primary-dark hover:no-underline"
+                      className="mt-auto inline-flex w-fit items-center gap-1.5 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:bg-primary-dark hover:no-underline"
                     >
                       See professions <ArrowRight size={15} />
                     </Link>
@@ -1280,7 +1280,7 @@ const HomeArchive = () => {
           <div className="mt-10 grid gap-5 sm:grid-cols-2 sm:gap-6">
             {PROBLEMS.map((p, i) => (
               <Reveal key={p.problem} delay={(i % 2) * 0.08}>
-                <div className="h-full rounded-[6px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-black/10 hover:shadow-[0_22px_45px_-18px_rgba(26,26,26,0.16)] sm:p-7">
+                <div className="h-full rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-black/10 hover:shadow-[0_22px_45px_-18px_rgba(26,26,26,0.16)] sm:p-7">
                   <div className="flex items-center gap-3">
                     <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                       <p.icon size={18} />
@@ -1421,7 +1421,7 @@ const HomeArchive = () => {
             {PRODUCT_SHOTS.map((shot, i) => (
               <figure key={shot.title} className="home-shot" style={{ "--cc": shot.color, "--i": i }}>
                 <div
-                  className="flex min-h-[22rem] flex-col overflow-hidden rounded-[10px] bg-white transition-all duration-300 hover:-translate-y-1 sm:h-[24rem]"
+                  className="flex min-h-[22rem] flex-col overflow-hidden rounded-[16px] bg-white transition-all duration-300 hover:-translate-y-1 sm:h-[24rem]"
                   style={{
                     border: "1px solid color-mix(in srgb, var(--cc) 40%, transparent)",
                     boxShadow: "0 18px 40px -26px color-mix(in srgb, var(--cc) 48%, transparent)",
@@ -1453,7 +1453,7 @@ const HomeArchive = () => {
                     className="border-t px-5 py-3 text-center text-sm font-semibold"
                     style={{
                       borderColor: "color-mix(in srgb, var(--cc) 16%, transparent)",
-                      color: "color-mix(in srgb, var(--cc) 80%, #2A1416)",
+                      color: "color-mix(in srgb, var(--cc) 80%, #2B0A14)",
                     }}
                   >
                     {shot.title}
@@ -1487,7 +1487,7 @@ const HomeArchive = () => {
               <Reveal key={g.title} delay={(i % 4) * 0.07}>
                 {/* Subtle dark-theme hover: card lifts, border warms to orange, bg
                     brightens slightly, icon chip warms. Text + orange accents stay — no invert. */}
-                <div className="group flex h-full flex-col rounded-[6px] border border-white/10 bg-white/5 p-6 shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1 hover:border-primary hover:bg-white/10 hover:shadow-[0_22px_45px_-18px_rgba(0,0,0,0.6)] sm:p-7">
+                <div className="group flex h-full flex-col rounded-[24px] border border-white/10 bg-white/5 p-6 shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1 hover:border-primary hover:bg-white/10 hover:shadow-[0_22px_45px_-18px_rgba(0,0,0,0.6)] sm:p-7">
                   <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 text-primary transition-colors duration-300 group-hover:bg-primary/25">
                     <g.icon size={22} />
                   </span>
@@ -1574,7 +1574,7 @@ const HomeArchive = () => {
               setDragDX(0);
               tPausedRef.current = false;
             }}
-            className="relative z-10 cursor-grab touch-pan-y select-none overflow-hidden rounded-[6px] py-12 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:cursor-grabbing"
+            className="relative z-10 cursor-grab touch-pan-y select-none overflow-hidden rounded-[16px] py-12 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:cursor-grabbing"
           >
             <div
               className={`flex ${tAnim && !dragging ? "transition-transform duration-700 ease-out motion-reduce:transition-none" : ""}`}
@@ -1688,7 +1688,7 @@ const HomeArchive = () => {
           <div className="mt-14 grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {whyCards.map((w, i) => (
               <Reveal key={w.title} delay={(i % 3) * 0.07}>
-                <div className="flex h-full flex-col rounded-[6px] border border-white/10 bg-white/5 p-6 shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_45px_-18px_rgba(0,0,0,0.6)] sm:p-7">
+                <div className="flex h-full flex-col rounded-[24px] border border-white/10 bg-white/5 p-6 shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_45px_-18px_rgba(0,0,0,0.6)] sm:p-7">
                   <span
                     className="flex h-12 w-12 items-center justify-center rounded-xl"
                     style={{
@@ -1859,7 +1859,7 @@ const HomeArchive = () => {
           <div className="mt-12 space-y-3">
             {faqs.map((f, i) => (
               <Reveal key={f.q} delay={Math.min(i * 0.04, 0.2)}>
-                <div className="rounded-[6px] border border-black/5 bg-white px-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+                <div className="rounded-[16px] border border-black/5 bg-white px-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
                   <button
                     type="button"
                     id={`faq-q-${i}`}
@@ -1927,7 +1927,7 @@ const HomeArchive = () => {
                         src="/brand/meeticulous-icon.svg"
                         alt="Meeticulous"
                         loading="lazy"
-                        className="h-7 w-7 rounded-[6px] object-contain"
+                        className="h-7 w-7 rounded-[16px] object-contain"
                       />
                     </div>
                     {c.soon ? (
@@ -1985,7 +1985,7 @@ const HomeArchive = () => {
           <div className="mt-14 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-5">
             {TRUST.map((t, i) => (
               <Reveal key={t.title} delay={(i % 5) * 0.06}>
-                <div className="flex h-full flex-col items-center rounded-[6px] border border-black/5 bg-white p-6 text-center shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+                <div className="flex h-full flex-col items-center rounded-[24px] border border-black/5 bg-white p-6 text-center shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
                   <span
                     className="flex h-12 w-12 items-center justify-center rounded-xl"
                     style={{
@@ -2005,7 +2005,7 @@ const HomeArchive = () => {
           {/* How we use Google — plain-language version of the OAuth consent
               screen, for hosts (and Google's verification reviewers). */}
           <Reveal delay={0.1} className="mt-12">
-            <div id="how-google" className="mx-auto max-w-6xl scroll-mt-24 rounded-[6px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-8 lg:p-10">
+            <div id="how-google" className="mx-auto max-w-6xl scroll-mt-24 rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-8 lg:p-10">
               <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
                 {/* LEFT — icon + headline + intro */}
                 <div className="flex items-start gap-4">
@@ -2032,7 +2032,7 @@ const HomeArchive = () => {
                       <Check size={16} className="mt-0.5 shrink-0 text-primary" />
                       <p className="text-sm leading-relaxed text-neutral-500">
                         <span className="font-semibold text-ink">{s.name}</span>{" "}
-                        <span className="rounded-[4px] bg-black/5 px-1.5 py-0.5 font-mono text-[11px] text-neutral-500">{s.scope}</span>{" "}
+                        <span className="rounded-[16px] bg-black/5 px-1.5 py-0.5 font-mono text-[11px] text-neutral-500">{s.scope}</span>{" "}
                         — {s.desc}
                       </p>
                     </li>

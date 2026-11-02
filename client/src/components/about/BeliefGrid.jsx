@@ -7,7 +7,7 @@ import useGsapReveal from "./useGsapReveal";
 // original ink line art with brand-crimson fills (matches the white + crimson
 // About page). No transition on .js-item opacity/transform (GSAP owns those).
 
-const INK = "#2A1416";
+const INK = "#2B0A14";
 const RED = "#960D32";
 const LINE = { fill: "none", stroke: INK, strokeWidth: 2.4, strokeLinecap: "round", strokeLinejoin: "round" };
 

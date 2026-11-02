@@ -55,7 +55,7 @@ const GlossaryTerm = () => {
         )}
 
         {entry.example && (
-          <div className="mt-8 rounded-[6px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+          <div className="mt-8 rounded-[24px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
             <h2 className="font-heading text-sm font-bold uppercase tracking-wide text-neutral-500">Example</h2>
             <p className="mt-2 leading-relaxed text-neutral-700">{entry.example}</p>
           </div>
@@ -80,10 +80,10 @@ const GlossaryTerm = () => {
             invoices and automatic reminders.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
-            <Link to="/become-a-host" className="inline-flex items-center gap-1.5 rounded-[10px] bg-primary px-5 py-2.5 font-semibold text-white hover:no-underline">
+            <Link to="/become-a-host" className="inline-flex items-center gap-1.5 rounded-full bg-primary px-5 py-2.5 font-semibold text-white hover:no-underline">
               Create your booking page
             </Link>
-            <Link to="/glossary" className="inline-flex items-center gap-1.5 rounded-[10px] border border-black/10 px-5 py-2.5 font-semibold text-ink hover:no-underline">
+            <Link to="/glossary" className="inline-flex items-center gap-1.5 rounded-full border border-black/10 px-5 py-2.5 font-semibold text-ink hover:no-underline">
               <ArrowLeft size={15} /> All terms ({GLOSSARY.length})
             </Link>
           </div>

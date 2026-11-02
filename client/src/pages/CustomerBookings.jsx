@@ -269,7 +269,7 @@ const CustomerBookings = () => {
                 Report a problem
               </button>
               <button onClick={() => handleConfirmComplete(b.id)} disabled={confirming === b.id}
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-[#960D32] hover:bg-[#2A1416] disabled:opacity-60 px-3 py-1.5 rounded-lg">
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-[#960D32] hover:bg-[#2B0A14] disabled:opacity-60 px-3 py-1.5 rounded-lg">
                 {confirming === b.id ? "Confirming…" : "Confirm completed"}
               </button>
             </div>
@@ -411,7 +411,7 @@ const DetailsModal = ({ b, host, review, onClose, canReschedule, canReview, canC
           {/* Actions */}
           <div className="mt-5 grid grid-cols-1 gap-2">
             <button onClick={() => downloadInvoice(b, host)}
-              className="btn inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-[#960D32] hover:bg-[#2A1416]">
+              className="btn inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-[#960D32] hover:bg-[#2B0A14]">
               <Download size={15} /> Download invoice
             </button>
             {canReschedule && (

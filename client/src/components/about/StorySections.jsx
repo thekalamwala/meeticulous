@@ -87,7 +87,7 @@ export function DifferenceSection() {
                 // Transition colour/border/shadow ONLY: the GSAP reveal animates this
                 // card's opacity + transform, and a CSS transition on those makes
                 // gsap.from capture a mid-fade value (cards stuck invisible).
-                className={`js-item group rounded-[6px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-[background-color,border-color,box-shadow] duration-300 hover:shadow-[0_24px_60px_-28px_rgba(26,26,26,0.25)] sm:p-8 ${accent.card}`}
+                className={`js-item group rounded-[24px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-[background-color,border-color,box-shadow] duration-300 hover:shadow-[0_24px_60px_-28px_rgba(26,26,26,0.25)] sm:p-8 ${accent.card}`}
               >
                 {/* Icon + heading side by side; description below */}
                 <div className="flex items-center gap-4">
@@ -111,20 +111,20 @@ export function DifferenceSection() {
 export function FinalCta() {
   return (
     <section className="px-5 py-20 sm:px-8 lg:py-24">
-      <div className="mx-auto max-w-3xl rounded-[10px] bg-ink px-6 py-14 text-center text-white sm:px-12">
+      <div className="mx-auto max-w-3xl rounded-[16px] bg-ink px-6 py-14 text-center text-white sm:px-12">
         <h2 className="font-heading text-4xl font-extrabold text-white sm:text-5xl">{finalCta.heading}</h2>
         <p className="mx-auto mt-4 max-w-xl text-lg text-white/70">{finalCta.sub}</p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link
             to={ROUTE_START}
-            className="inline-flex items-center gap-1.5 rounded-[6px] bg-primary-cta px-6 py-3 text-sm font-semibold text-white hover:no-underline hover:opacity-90"
+            className="inline-flex items-center gap-1.5 rounded-full bg-primary-cta px-6 py-3 text-sm font-semibold text-white hover:no-underline hover:opacity-90"
           >
             {finalCta.ctaPrimary}
             <ArrowRight size={16} />
           </Link>
           <Link
             to={finalCta.ctaSecondaryHref}
-            className="inline-flex items-center rounded-[6px] border border-white/10 px-6 py-3 text-sm font-semibold text-white hover:no-underline hover:opacity-90"
+            className="inline-flex items-center rounded-full border border-white/10 px-6 py-3 text-sm font-semibold text-white hover:no-underline hover:opacity-90"
           >
             {finalCta.ctaSecondary}
           </Link>

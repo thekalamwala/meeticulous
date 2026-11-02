@@ -204,7 +204,7 @@ function CtaButton({ to, children, variant = 'solid', className = '' }) {
 }
 
 /* Empty image placeholder — warm cream → fuchsia-tint. */
-function ImgSlot({ alt, className = '', rounded = 'rounded-[10px]' }) {
+function ImgSlot({ alt, className = '', rounded = 'rounded-[16px]' }) {
   const layout = className
     .replace(/shadow-\[[^\]]*\]/g, '')
     .replace(/shadow-\w+/g, '')
@@ -221,7 +221,7 @@ function FaqAccordion() {
   const renderItem = (f, i) => {
     const isOpen = open === i;
     return (
-      <div key={f.q} className="overflow-hidden rounded-[12px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'var(--ca-accent)' : 'rgba(17,17,17,0.1)' }}>
+      <div key={f.q} className="overflow-hidden rounded-[16px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'var(--ca-accent)' : 'rgba(17,17,17,0.1)' }}>
         <button
           type="button"
           onClick={() => setOpen(isOpen ? -1 : i)}
@@ -377,7 +377,7 @@ export default function SalonPage() {
           {/* RIGHT — rotated overlapping collage + fuchsia frame + floating card */}
           <Reveal instant delay={0.1} className="relative mx-auto w-full max-w-sm lg:mx-0 lg:max-w-md">
             <div className="relative aspect-[5/6] w-full">
-              <div aria-hidden className="absolute inset-x-8 inset-y-10 rotate-[7deg] rounded-[8px] border-2" style={{ borderColor: 'var(--ca-accent)' }} />
+              <div aria-hidden className="absolute inset-x-8 inset-y-10 rotate-[7deg] rounded-[16px] border-2" style={{ borderColor: 'var(--ca-accent)' }} />
               <ImgSlot alt="A stylist finishing a client's blow-dry at the salon chair" className="absolute inset-0 h-full w-full" />
               <div className="absolute -bottom-3 left-[6%] z-20 flex items-center gap-3 rounded-xl bg-white px-4 py-3 shadow-[0_18px_40px_-18px_rgba(17,17,17,0.5)]">
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg text-white" style={{ background: 'var(--ca-accent)' }}><Star size={17} /></span>

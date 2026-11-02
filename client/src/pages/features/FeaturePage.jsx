@@ -335,7 +335,7 @@ function Timeline({ timeline }) {
       <div className="fp-tl-mobile">
         {nodes.map((n, i) => (
           <div key={n.title} className="fp-tl-step">
-            <span className="n" style={{ background: tlColor(i), color: tlColor(i) === '#FFCC1C' ? '#2A1416' : '#fff' }}>{i + 1}</span>
+            <span className="n" style={{ background: tlColor(i), color: tlColor(i) === '#FFCC1C' ? '#2B0A14' : '#fff' }}>{i + 1}</span>
             <div><div style={{ fontWeight: 700 }}>{n.title}</div><div style={{ fontSize: 13, color: 'var(--fp-muted)', marginTop: 2 }}>{n.desc}</div></div>
           </div>
         ))}
@@ -505,7 +505,7 @@ function Testimonials() {
             e.currentTarget.releasePointerCapture?.(e.pointerId);
           }}
           onPointerCancel={() => { dragRef.current.active = false; setDragging(false); setDragDX(0); tPausedRef.current = false; }}
-          className="relative z-10 cursor-grab touch-pan-y select-none overflow-hidden rounded-[6px] py-12 outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--fp-accent)] focus-visible:ring-offset-2 active:cursor-grabbing"
+          className="relative z-10 cursor-grab touch-pan-y select-none overflow-hidden rounded-[16px] py-12 outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--fp-accent)] focus-visible:ring-offset-2 active:cursor-grabbing"
         >
           <div
             className={`flex ${tAnim && !dragging ? "transition-transform duration-700 ease-out motion-reduce:transition-none" : ""}`}

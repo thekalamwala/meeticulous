@@ -125,7 +125,7 @@ function PrimaryCta({ to = START, children, dark = false }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-[6px] px-6 py-3 text-sm font-semibold shadow-[0_8px_30px_rgba(26,26,26,0.12)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold shadow-[0_8px_30px_rgba(26,26,26,0.12)] transition-opacity hover:no-underline hover:opacity-90"
       style={dark ? { background: GOLD, color: '#12261D' } : { background: '#0E3B2C', color: '#F5EFE3' }}
     >
       {children}
@@ -141,7 +141,7 @@ function ImgSlot({ alt, slot, className = '', dark = false }) {
       role="img"
       aria-label={alt}
       data-img-slot={slot}
-      className={`flex items-center justify-center rounded-[10px] border border-black/5 ${className}`}
+      className={`flex items-center justify-center rounded-[16px] border border-black/5 ${className}`}
       style={{ background: `repeating-linear-gradient(135deg, rgba(${ink},0.04) 0 10px, rgba(${ink},0.08) 10px 20px)` }}
     >
       <ImageIcon size={28} style={{ color: `rgba(${ink},0.3)` }} aria-hidden />
@@ -170,7 +170,7 @@ function CheckoutDemo() {
 
   return (
     <div className="relative mx-auto w-full max-w-[22rem]">
-      <div className="overflow-hidden rounded-[10px] bg-[#FFFDF8] text-[#12261D] shadow-[0_40px_80px_-30px_rgba(0,0,0,0.55)]">
+      <div className="overflow-hidden rounded-[16px] bg-[#FFFDF8] text-[#12261D] shadow-[0_40px_80px_-30px_rgba(0,0,0,0.55)]">
         <div className="flex items-center justify-between border-b border-black/5 px-5 py-3.5">
           <div>
             <div className="text-[11px] uppercase tracking-[0.14em] text-neutral-500">Discovery call · 30 min</div>
@@ -191,7 +191,7 @@ function CheckoutDemo() {
                     <span key={m} className={`rounded-[5px] border px-1 py-1.5 ${i === 0 ? 'border-[#1F6B4A] bg-[#1F6B4A]/10 text-[#1F6B4A]' : 'border-black/10 text-neutral-500'}`}>{m}</span>
                   ))}
                 </div>
-                <div className="mt-4 rounded-[6px] bg-[#0E3B2C] py-2.5 text-center text-sm font-semibold text-[#F5EFE3]">Pay {inr(DEMO.guestPays)}</div>
+                <div className="mt-4 rounded-[16px] bg-[#0E3B2C] py-2.5 text-center text-sm font-semibold text-[#F5EFE3]">Pay {inr(DEMO.guestPays)}</div>
             </div>
             <div className={`${panel(1)} flex flex-col items-center justify-center text-center`} aria-hidden={step !== 1}>
                 <CheckCircle2 size={44} className="text-[#1F6B4A]" aria-hidden />
@@ -203,7 +203,7 @@ function CheckoutDemo() {
             </div>
             <div className={panel(2)} aria-hidden={step !== 2}>
                 <div className="flex items-center gap-2 font-heading text-sm font-bold"><Receipt size={16} className="text-[#1F6B4A]" aria-hidden /> Tax invoice</div>
-                <div className="mt-3 space-y-2 rounded-[6px] border border-dashed border-black/15 p-3.5 text-[13px]">
+                <div className="mt-3 space-y-2 rounded-[16px] border border-dashed border-black/15 p-3.5 text-[13px]">
                   <div className="flex justify-between"><span className="text-neutral-500">Billed to</span><span>Priya Nair</span></div>
                   <div className="flex justify-between"><span className="text-neutral-500">Discovery call</span><span className="tabular-nums">{inr(1500)}</span></div>
                   <div className="flex justify-between"><span className="text-neutral-500">Booking fee</span><span className="tabular-nums">{inr(BOOKING_FEE)}</span></div>
@@ -436,17 +436,17 @@ export default function PaymentsFeature() {
             The money admin, <span className="text-[#1F6B4A]">already done.</span>
           </Reveal>
           <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-3">
-            <Reveal className="flex flex-col justify-between rounded-[10px] bg-[#0E3B2C] p-7 text-[#F5EFE3] md:col-span-2 md:row-span-2">
+            <Reveal className="flex flex-col justify-between rounded-[24px] bg-[#0E3B2C] p-7 text-[#F5EFE3] md:col-span-2 md:row-span-2">
               <div>
-                <span className="flex h-11 w-11 items-center justify-center rounded-[6px]" style={{ background: 'rgba(233,196,106,0.15)', color: GOLD }}><Wallet size={21} aria-hidden /></span>
+                <span className="flex h-11 w-11 items-center justify-center rounded-[16px]" style={{ background: 'rgba(233,196,106,0.15)', color: GOLD }}><Wallet size={21} aria-hidden /></span>
                 <h3 className="mt-5 font-heading text-2xl font-bold text-[#F5EFE3]">Paid, held, then released</h3>
                 <p className="mt-2 max-w-md text-[15px] leading-relaxed text-[#F5EFE3]/70">The transfer is created the moment your client pays, held until about a day after the session, then released to your bank. Each one shows up in your Payouts dashboard.</p>
               </div>
               <ImgSlot slot="payouts-dashboard" alt="The Meeticulous payouts dashboard showing held and released payouts" className="mt-7 aspect-[16/9] w-full" dark />
             </Reveal>
             {CAPS.map((c, i) => (
-              <Reveal key={c.title} delay={(i % 3) * 0.05} className="rounded-[10px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-                <span className="flex h-10 w-10 items-center justify-center rounded-[6px] bg-[#1F6B4A]/10 text-[#1F6B4A]"><c.icon size={19} aria-hidden /></span>
+              <Reveal key={c.title} delay={(i % 3) * 0.05} className="rounded-[24px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+                <span className="flex h-10 w-10 items-center justify-center rounded-[16px] bg-[#1F6B4A]/10 text-[#1F6B4A]"><c.icon size={19} aria-hidden /></span>
                 <h3 className="mt-4 font-heading text-lg font-bold">{c.title}</h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-neutral-500">{c.body}</p>
               </Reveal>

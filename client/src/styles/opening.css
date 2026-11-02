@@ -12,7 +12,7 @@
   background: #3D0514;               /* --surface-darker */
   color: #fff;
 }
-.op-stage--light { background: #FFF8FA; color: #2A1416; }   /* --canvas */
+.op-stage--light { background: #FBF5F3; color: #2B0A14; }   /* --canvas */
 
 /* Headlines on the ink stage must stay white — beat the global unlayered
    h1{color:ink} rule (Tailwind's .text-white utility loses to it). Only h1s

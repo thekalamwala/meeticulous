@@ -49,8 +49,8 @@ const LivePreviewCard = ({
 
   if (compact) {
     return (
-      <div className={`flex items-center gap-3 rounded-[6px] border border-black/5 bg-white p-2.5 shadow-[0_8px_30px_rgba(26,26,26,0.06)] ${pulseClass(pulseKey)}`}>
-        <Avatar photoUrl={photoUrl} initial={initial} className="h-11 w-11 shrink-0 rounded-[6px] text-lg" />
+      <div className={`flex items-center gap-3 rounded-[16px] border border-black/5 bg-white p-2.5 shadow-[0_8px_30px_rgba(26,26,26,0.06)] ${pulseClass(pulseKey)}`}>
+        <Avatar photoUrl={photoUrl} initial={initial} className="h-11 w-11 shrink-0 rounded-[16px] text-lg" />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-ink">
             {displayName || 'Your name'}
@@ -68,12 +68,12 @@ const LivePreviewCard = ({
   }
 
   return (
-    <div className={`overflow-hidden rounded-[10px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.06)] ${pulseClass(pulseKey)}`}>
+    <div className={`overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.06)] ${pulseClass(pulseKey)}`}>
       {/* Cover — 3:1, like the real page; brand crimson until they pick a theme */}
       <div className="bg-gradient-to-br from-primary/20 to-primary/85" style={{ aspectRatio: '3 / 1' }} />
 
       <div className="-mt-10 flex justify-center">
-        <Avatar photoUrl={photoUrl} initial={initial} className="h-20 w-20 rounded-[10px] border-[3px] border-white text-2xl" />
+        <Avatar photoUrl={photoUrl} initial={initial} className="h-20 w-20 rounded-[16px] border-[3px] border-white text-2xl" />
       </div>
 
       <div className="px-5 pb-5 pt-3 text-center">
@@ -90,20 +90,20 @@ const LivePreviewCard = ({
         <p className="mx-auto mt-2.5 line-clamp-3 min-h-[2.5rem] max-w-[36ch] text-sm leading-relaxed text-muted">{bio}</p>
 
         {serviceTitle ? (
-          <div className="onb-rise mt-4 flex items-center justify-between rounded-[6px] border border-primary/30 bg-canvas px-3 py-2.5 text-left">
+          <div className="onb-rise mt-4 flex items-center justify-between rounded-[16px] border border-primary/30 bg-canvas px-3 py-2.5 text-left">
             <span className="min-w-0 flex-1 truncate text-sm font-semibold text-ink">{serviceTitle}</span>
             <span className="ml-2 shrink-0 text-xs font-medium text-muted">
               {serviceDuration ? `${serviceDuration} min · ` : ''}Free
             </span>
           </div>
         ) : showServiceSlot ? (
-          <div className="mt-4 rounded-[6px] border border-dashed border-black/15 px-3 py-2.5 text-sm text-muted">
+          <div className="mt-4 rounded-[16px] border border-dashed border-black/15 px-3 py-2.5 text-sm text-muted">
             Your first service shows here
           </div>
         ) : null}
 
         {/* CTA — matches the real page wording; visual only in preview */}
-        <div className="mt-4 flex w-full items-center justify-center rounded-[6px] bg-primary py-2.5 text-sm font-bold text-white">
+        <div className="mt-4 flex w-full items-center justify-center rounded-[16px] bg-primary py-2.5 text-sm font-bold text-white">
           Book Now
         </div>
 

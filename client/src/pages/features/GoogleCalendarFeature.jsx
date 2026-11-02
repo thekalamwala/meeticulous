@@ -206,7 +206,7 @@ function PrimaryCta({ to = START, children }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-[6px] px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(26,115,232,0.22)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(26,115,232,0.22)] transition-opacity hover:no-underline hover:opacity-90"
       style={{ background: LINK }}
     >
       {children}
@@ -221,7 +221,7 @@ function ImgSlot({ alt, slot, className = '' }) {
       role="img"
       aria-label={alt}
       data-img-slot={slot}
-      className={`flex items-center justify-center rounded-[10px] border border-black/5 ${className}`}
+      className={`flex items-center justify-center rounded-[16px] border border-black/5 ${className}`}
       style={{ background: 'repeating-linear-gradient(135deg, rgba(32,33,36,0.03) 0 10px, rgba(32,33,36,0.06) 10px 20px)' }}
     >
       <ImageIcon size={28} style={{ color: 'rgba(32,33,36,0.3)' }} aria-hidden />
@@ -267,7 +267,7 @@ function SyncDemo() {
 
   return (
     <div className="mx-auto w-full max-w-[34rem]">
-      <div className="overflow-hidden rounded-[10px] border border-black/5 bg-white shadow-[0_24px_60px_-28px_rgba(32,33,36,0.28)]">
+      <div className="overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_24px_60px_-28px_rgba(32,33,36,0.28)]">
         <div className="grid grid-cols-2 border-b border-black/5 text-[11px] font-bold uppercase tracking-[0.12em]" style={{ color: MUTED }}>
           <div className="flex items-center gap-2 px-3 py-3 sm:px-4"><Dot color={BLUE} size={7} /> Your Google Calendar</div>
           <div className="flex items-center gap-2 border-l border-black/5 px-3 py-3 sm:px-4"><Dot color={GREEN} size={7} /> Your Meeticulous page</div>
@@ -304,7 +304,7 @@ function SyncDemo() {
                 {/* Meeticulous side */}
                 <div className="flex items-center">
                   {!ev && (
-                    <span className="flex w-full items-center justify-between rounded-[5px] border border-black/10 px-2 py-1.5 text-[11px] font-semibold" style={{ color: INK }}>
+                    <span className="flex w-full items-center justify-between rounded-full border border-black/10 px-2 py-1.5 text-[11px] font-semibold" style={{ color: INK }}>
                       {hourLabel(h)} <span className="flex items-center gap-1 font-medium" style={{ color: MUTED }}><Dot color={GREEN} size={6} /> Open</span>
                     </span>
                   )}
@@ -327,13 +327,13 @@ function SyncDemo() {
       </div>
 
       <div className="mt-4 flex flex-wrap justify-center gap-2">
-        <button type="button" onClick={() => click('google')} disabled={full('google')} className="inline-flex items-center gap-1.5 rounded-[6px] border border-black/10 bg-white px-3.5 py-2 text-xs font-semibold transition-colors hover:bg-[#F1F3F4] disabled:opacity-40" style={{ color: INK }}>
+        <button type="button" onClick={() => click('google')} disabled={full('google')} className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white px-3.5 py-2 text-xs font-semibold transition-colors hover:bg-[#F1F3F4] disabled:opacity-40" style={{ color: INK }}>
           <Dot color={YELLOW} size={7} /> <Plus size={13} aria-hidden /> Add a meeting in Google
         </button>
-        <button type="button" onClick={() => click('booking')} disabled={full('booking')} className="inline-flex items-center gap-1.5 rounded-[6px] border border-black/10 bg-white px-3.5 py-2 text-xs font-semibold transition-colors hover:bg-[#F1F3F4] disabled:opacity-40" style={{ color: INK }}>
+        <button type="button" onClick={() => click('booking')} disabled={full('booking')} className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white px-3.5 py-2 text-xs font-semibold transition-colors hover:bg-[#F1F3F4] disabled:opacity-40" style={{ color: INK }}>
           <Dot color={BLUE} size={7} /> <Plus size={13} aria-hidden /> Client books on Meeticulous
         </button>
-        <button type="button" onClick={() => click('reset')} className="inline-flex items-center gap-1.5 rounded-[6px] px-3 py-2 text-xs font-semibold transition-colors hover:bg-[#F1F3F4]" style={{ color: MUTED }}>
+        <button type="button" onClick={() => click('reset')} className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold transition-colors hover:bg-[#F1F3F4]" style={{ color: MUTED }}>
           <RotateCcw size={13} aria-hidden /> Reset
         </button>
       </div>
@@ -345,7 +345,7 @@ function SyncDemo() {
 /* Without vs with — the same Thursday, drawn as a three-lane scenario. */
 function Scenario({ title, steps, good }) {
   return (
-    <div className="rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-7">
+    <div className="rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-7">
       <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: MUTED }}>
         <Dot color={good ? GREEN : RED} /> {title}
       </div>
@@ -361,7 +361,7 @@ function Scenario({ title, steps, good }) {
           </li>
         ))}
       </ol>
-      <div className="mt-1 flex items-start gap-2.5 rounded-[6px] px-4 py-3 text-sm leading-relaxed" style={{ background: good ? '#E6F4EA' : '#FCE8E6', color: INK }}>
+      <div className="mt-1 flex items-start gap-2.5 rounded-[16px] px-4 py-3 text-sm leading-relaxed" style={{ background: good ? '#E6F4EA' : '#FCE8E6', color: INK }}>
         {good ? <Check size={16} className="mt-0.5 shrink-0" aria-hidden /> : <Minus size={16} className="mt-0.5 shrink-0" aria-hidden />}
         <span>
           {good
@@ -405,7 +405,7 @@ function ConnectFlow() {
       </ol>
 
       <div className="lg:pt-2">
-        <div className="mx-auto max-w-sm overflow-hidden rounded-[10px] border border-black/5 bg-white shadow-[0_24px_60px_-28px_rgba(32,33,36,0.28)]" aria-live="polite">
+        <div className="mx-auto max-w-sm overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_24px_60px_-28px_rgba(32,33,36,0.28)]" aria-live="polite">
           <div className="flex items-center gap-2 border-b border-black/5 px-5 py-3 text-xs" style={{ color: MUTED }}>
             <Lock size={12} aria-hidden /> {step === 2 ? 'Meeticulous dashboard' : 'Sign-in with your Google account'}
           </div>
@@ -415,7 +415,7 @@ function ConnectFlow() {
                 <FourDots size={9} />
                 <div className="mt-4 font-heading text-xl font-bold" style={{ color: INK }}>Become a host</div>
                 <p className="mt-1 text-sm" style={{ color: MUTED }}>One Google sign-in sets up your account and your calendar.</p>
-                <div className="mt-6 rounded-[6px] border border-black/10 py-2.5 text-sm font-semibold" style={{ color: INK }}>Continue with Google</div>
+                <div className="mt-6 rounded-[16px] border border-black/10 py-2.5 text-sm font-semibold" style={{ color: INK }}>Continue with Google</div>
                 <p className="mt-4 text-xs" style={{ color: MUTED }}>Hosts sign in with Google only. No password to remember.</p>
               </div>
             )}
@@ -643,7 +643,7 @@ export default function GoogleCalendarFeature() {
             No fuzzy &ldquo;two-way sync&rdquo; promise. This is exactly what moves between Google Calendar and your bookings.
           </Reveal>
 
-          <Reveal delay={0.08} className="mt-12 overflow-hidden rounded-[10px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+          <Reveal delay={0.08} className="mt-12 overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
             <div className="hidden grid-cols-[0.8fr_1.1fr_1.1fr] gap-8 border-b border-black/5 px-6 py-4 text-[11px] font-bold uppercase tracking-[0.14em] md:grid" style={{ color: MUTED }}>
               <span />
               <span className="flex items-center gap-2"><Dot color={BLUE} size={7} /> Google Calendar &rarr; Meeticulous</span>
@@ -674,7 +674,7 @@ export default function GoogleCalendarFeature() {
             </Reveal>
             <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
               {QUOTES.map((t, i) => (
-                <Reveal as="figure" key={t.name} delay={i * 0.05} className="flex flex-col justify-between rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+                <Reveal as="figure" key={t.name} delay={i * 0.05} className="flex flex-col justify-between rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
                   <div>
                     <Dot color={HUES[i % 4]} size={10} />
                     <blockquote className="mt-4 text-[15px] leading-relaxed">&ldquo;{t.quote}&rdquo;</blockquote>
@@ -704,7 +704,7 @@ export default function GoogleCalendarFeature() {
           </Reveal>
           <div className="mt-12 space-y-3">
             {FAQ.map((f, i) => (
-              <details key={f.q} className="group rounded-[6px] border border-black/5 bg-white open:shadow-[0_8px_30px_rgba(26,26,26,0.05)]" open={i === 0}>
+              <details key={f.q} className="group rounded-[16px] border border-black/5 bg-white open:shadow-[0_8px_30px_rgba(26,26,26,0.05)]" open={i === 0}>
                 <summary className="flex cursor-pointer list-none items-center gap-4 px-5 py-4 [&::-webkit-details-marker]:hidden">
                   <Dot color={HUES[i % 4]} size={9} />
                   <span className="flex-1 font-heading text-[16px] font-bold">{f.q}</span>

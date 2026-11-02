@@ -173,7 +173,7 @@ function NavLink({ item, className, onClick }) {
 }
 
 function CtaButton({ to, children, variant = 'solid', className = '' }) {
-  const base = 'inline-flex items-center justify-center gap-2 rounded-[8px] px-6 py-3.5 text-sm font-semibold transition-all hover:no-underline';
+  const base = 'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold transition-all hover:no-underline';
   const styles = {
     solid: 'text-white shadow-[0_4px_14px_rgba(29,78,216,0.22)] hover:brightness-110',
     ghost: 'border-2 border-[color:var(--ca-ink)]/12 bg-white text-[color:var(--ca-ink)] hover:border-[color:var(--ca-ink)]/25',
@@ -203,7 +203,7 @@ function FaqAccordion() {
   const renderItem = (f, i) => {
     const isOpen = open === i;
     return (
-      <div key={f.q} className="overflow-hidden rounded-[12px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'var(--ca-primary)' : 'rgba(17,17,17,0.08)' }}>
+      <div key={f.q} className="overflow-hidden rounded-[16px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'var(--ca-primary)' : 'rgba(17,17,17,0.08)' }}>
         <button
           type="button"
           onClick={() => setOpen(isOpen ? -1 : i)}
@@ -319,7 +319,7 @@ export default function GeneralPhysicians() {
                   <NavLink key={item.label} item={item} onClick={() => setMenuOpen(false)} className="rounded-lg px-2 py-2.5 text-sm font-medium text-[color:var(--ca-ink)] hover:bg-[color:var(--ca-cream)] hover:no-underline" />
                 ))}
                 <div className="mt-2 flex items-center gap-3 border-t border-black/5 pt-3">
-                  <Link to={LOGIN} className="flex-1 rounded-[8px] border-2 border-black/10 py-2.5 text-center text-sm font-semibold text-[color:var(--ca-ink)] hover:no-underline">Login</Link>
+                  <Link to={LOGIN} className="flex-1 rounded-[16px] border-2 border-black/10 py-2.5 text-center text-sm font-semibold text-[color:var(--ca-ink)] hover:no-underline">Login</Link>
                   <CtaButton to={START} className="flex-1">Start Free <ArrowRight size={15} /></CtaButton>
                 </div>
               </div>
@@ -384,7 +384,7 @@ export default function GeneralPhysicians() {
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {SERVICES.map((s, i) => (
               <Reveal key={s.label} delay={(i % 3) * 0.05}>
-                <Link to={START} className="group flex h-full items-start gap-4 rounded-[12px] border border-black/[0.08] bg-white p-5 pl-4 transition-colors hover:border-[color:var(--ca-primary)]/30 hover:no-underline" style={{ borderLeft: '4px solid var(--ca-primary)' }}>
+                <Link to={START} className="group flex h-full items-start gap-4 rounded-[24px] border border-black/[0.08] bg-white p-5 pl-4 transition-colors hover:border-[color:var(--ca-primary)]/30 hover:no-underline" style={{ borderLeft: '4px solid var(--ca-primary)' }}>
                   <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg" style={{ background: 'color-mix(in srgb, var(--ca-primary) 8%, transparent)', color: 'var(--ca-primary)' }}>
                     <s.icon size={20} />
                   </span>
@@ -439,7 +439,7 @@ export default function GeneralPhysicians() {
           <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {TOOLS.map((t, i) => (
               <Reveal key={t.name} delay={(i % 3) * 0.05}>
-                <div className="flex items-center gap-3 rounded-[12px] border border-black/[0.08] bg-white px-4 py-4">
+                <div className="flex items-center gap-3 rounded-[16px] border border-black/[0.08] bg-white px-4 py-4">
                   <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg bg-[color:var(--ca-grey)]">
                     {t.logo ? <img src={t.logo} alt={t.name} loading="lazy" className="h-6 w-6 object-contain" /> : <ToolLogo name={t.icon} size={24} className="h-6 w-6" />}
                   </span>
@@ -700,10 +700,10 @@ export default function GeneralPhysicians() {
             Set up your clinic&apos;s booking page today — free forever, and ready to share in minutes.
           </Reveal>
           <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-            <Link to={START} className="inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-white px-8 py-4 text-sm font-bold shadow-[0_12px_34px_-10px_rgba(0,0,0,0.5)] transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.65)] hover:no-underline sm:w-auto" style={{ color: 'var(--ca-primary)' }}>
+            <Link to={START} className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-sm font-bold shadow-[0_12px_34px_-10px_rgba(0,0,0,0.5)] transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.65)] hover:no-underline sm:w-auto" style={{ color: 'var(--ca-primary)' }}>
               Launch My Clinic Page <ArrowRight size={16} />
             </Link>
-            <Link to="/contact" className="inline-flex w-full items-center justify-center gap-2 rounded-[8px] border-2 border-white/30 px-7 py-4 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline sm:w-auto">
+            <Link to="/contact" className="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-white/30 px-7 py-4 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline sm:w-auto">
               Book A Demo
             </Link>
           </Reveal>

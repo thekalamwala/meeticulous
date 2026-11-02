@@ -32,7 +32,7 @@ export default function FaqsPage() {
   const columns = [
     { key: 'pattern', label: 'Question', render: (f) => (
       <div className="min-w-0">
-        <code className="rounded bg-[#FFF4EC] px-1.5 py-0.5 text-xs text-[#2A1416]">{f.pattern}</code>
+        <code className="rounded bg-[#FFF4EC] px-1.5 py-0.5 text-xs text-[#2B0A14]">{f.pattern}</code>
         <p className="mt-1 max-w-md truncate text-xs adm-t3">{f.answer}</p>
       </div>
     ) },

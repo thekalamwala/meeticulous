@@ -191,7 +191,7 @@ function NavLink({ item, className, onClick }) {
 }
 
 function CtaButton({ to, children, variant = 'solid', className = '' }) {
-  const base = 'inline-flex items-center justify-center gap-2 rounded-[5px] px-6 py-3.5 text-sm font-semibold transition-all hover:no-underline';
+  const base = 'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold transition-all hover:no-underline';
   const styles = {
     solid: 'text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] hover:brightness-105',
     ghost: 'border-2 border-[color:var(--ca-ink)]/12 bg-white text-[color:var(--ca-ink)] hover:border-[color:var(--ca-ink)]/25',
@@ -312,7 +312,7 @@ function FaqAccordion() {
   const renderItem = (f, i) => {
     const isOpen = open === i;
     return (
-      <div key={f.q} className="overflow-hidden rounded-[12px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'rgba(22,163,74,0.35)' : 'rgba(17,17,17,0.08)' }}>
+      <div key={f.q} className="overflow-hidden rounded-[16px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'rgba(22,163,74,0.35)' : 'rgba(17,17,17,0.08)' }}>
         <button
           type="button"
           onClick={() => setOpen(isOpen ? -1 : i)}
@@ -433,7 +433,7 @@ export default function SportsTurf() {
                   <NavLink key={item.label} item={item} onClick={() => setMenuOpen(false)} className="rounded-lg px-2 py-2.5 text-sm font-medium text-neutral-700 hover:bg-[color:var(--ca-cream)] hover:no-underline" />
                 ))}
                 <div className="mt-2 flex items-center gap-3 border-t border-black/5 pt-3">
-                  <Link to={LOGIN} className="flex-1 rounded-[5px] border-2 border-black/10 py-2.5 text-center text-sm font-semibold text-[color:var(--ca-ink)] hover:no-underline">Login</Link>
+                  <Link to={LOGIN} className="flex-1 rounded-[16px] border-2 border-black/10 py-2.5 text-center text-sm font-semibold text-[color:var(--ca-ink)] hover:no-underline">Login</Link>
                   <CtaButton to={START} className="flex-1">Start for Free <ArrowRight size={15} /></CtaButton>
                 </div>
               </div>
@@ -462,7 +462,7 @@ export default function SportsTurf() {
             <Reveal instant delay={0.1} className="mt-6 flex flex-col items-center gap-3 sm:mt-9 sm:flex-row sm:gap-5 lg:justify-start">
               <Link
                 to={START}
-                className="btn flex w-full items-center justify-center gap-2 rounded-[5px] px-7 py-3.5 text-sm font-semibold text-white shadow-[0_10px_30px_-8px_rgba(22,163,74,0.7)] transition-opacity hover:opacity-90 hover:no-underline sm:w-auto"
+                className="btn flex w-full items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-white shadow-[0_10px_30px_-8px_rgba(22,163,74,0.7)] transition-opacity hover:opacity-90 hover:no-underline sm:w-auto"
                 style={{ background: 'var(--ca-primary)' }}
               >
                 Create a Free Account <ArrowRight size={16} />
@@ -494,7 +494,7 @@ export default function SportsTurf() {
         <div className="relative mx-auto mt-12 grid max-w-7xl gap-3 sm:mt-16 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4">
           {BENEFITS.map((b, i) => (
             <Reveal key={b.title} delay={(i % 4) * 0.06}>
-              <div className="group flex h-full flex-col rounded-[10px] border border-white/10 bg-white/[0.06] p-4 backdrop-blur-sm transition-colors hover:border-[#A3E635]/40">
+              <div className="group flex h-full flex-col rounded-[24px] border border-white/10 bg-white/[0.06] p-4 backdrop-blur-sm transition-colors hover:border-[#A3E635]/40">
                 <div className="flex items-center gap-2.5">
                   <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[rgba(163,230,53,0.14)] text-[#A3E635] transition-colors duration-300 group-hover:bg-[#A3E635] group-hover:text-[#12321f]">
                     <b.icon size={18} />
@@ -803,7 +803,7 @@ export default function SportsTurf() {
                       </li>
                     ))}
                   </ul>
-                  <Link to={START} className="relative mt-7 inline-flex w-full items-center justify-center gap-2 rounded-[5px] px-6 py-3.5 text-sm font-semibold text-[#0B0F12] transition-opacity hover:opacity-90 hover:no-underline" style={{ background: '#A3E635' }}>
+                  <Link to={START} className="relative mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold text-[#0B0F12] transition-opacity hover:opacity-90 hover:no-underline" style={{ background: '#A3E635' }}>
                     Get Started Now <ArrowRight size={15} />
                   </Link>
                 </div>

@@ -199,7 +199,7 @@ const RELATED = COMPETITOR_LIST.filter((c) => c.key !== 'zoho');
 
 const H2 = 'font-heading text-4xl font-extrabold leading-[1.08] tracking-tight text-[color:var(--zb-ink)] sm:text-5xl';
 const SECTION = 'px-5 py-20 sm:px-8 lg:py-28';
-const CARD = 'rounded-[6px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]';
+const CARD = 'rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]';
 const INLINE_LINK = 'font-semibold text-[color:var(--zb-crimson)] underline decoration-[color:var(--zb-line)] underline-offset-4 hover:decoration-[color:var(--zb-crimson)]';
 
 function StartCta({ slot, track }) {
@@ -207,7 +207,7 @@ function StartCta({ slot, track }) {
     <Link
       to={START}
       onClick={() => track(slot)}
-      className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[6px] bg-primary px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(194,61,0,0.22)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(194,61,0,0.22)] transition-opacity hover:no-underline hover:opacity-90"
     >
       Start free <ArrowRight size={16} aria-hidden />
     </Link>
@@ -293,7 +293,7 @@ function PaymentLanes() {
   const keys = Object.keys(LANES);
   return (
     <>
-      <div role="group" aria-label="Choose a product" className="mt-8 inline-flex rounded-[6px] border border-black/10 bg-white p-1">
+      <div role="group" aria-label="Choose a product" className="mt-8 inline-flex rounded-[16px] border border-black/10 bg-white p-1">
         {keys.map((k) => (
           <button
             key={k}
@@ -367,7 +367,7 @@ export default function ZohoBookingsAlternative() {
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <StartCta slot="hero" track={track} />
-              <a href="#side-by-side" className="inline-flex min-h-[44px] items-center justify-center rounded-[6px] border border-black/10 bg-white px-6 py-3 text-sm font-semibold text-[color:var(--zb-ink)] transition-opacity hover:no-underline hover:opacity-90">
+              <a href="#side-by-side" className="inline-flex min-h-[44px] items-center justify-center rounded-full border border-black/10 bg-white px-6 py-3 text-sm font-semibold text-[color:var(--zb-ink)] transition-opacity hover:no-underline hover:opacity-90">
                 See the side-by-side
               </a>
             </div>
@@ -390,7 +390,7 @@ export default function ZohoBookingsAlternative() {
           </div>
           <div className="mt-8 grid gap-5 sm:grid-cols-2 sm:gap-6">
             {[[`Pick ${Z.name} if…`, PICK_ZOHO], ['Pick Meeticulous if…', PICK_BAS]].map(([h, items]) => (
-              <div key={h} className="rounded-[6px] border border-black/10 p-6">
+              <div key={h} className="rounded-[24px] border border-black/10 p-6">
                 <h3 className="font-heading text-lg font-bold text-[color:var(--zb-ink)]">{h}</h3>
                 <ul className="mt-4 space-y-2.5">
                   {items.map((t) => (
@@ -487,7 +487,7 @@ export default function ZohoBookingsAlternative() {
           <div className="mt-12 grid gap-5 sm:grid-cols-2 sm:gap-6">
             {ZOHO_WINS.map((w) => (
               <div key={w.title} className={`${CARD} p-7`}>
-                <span aria-hidden className="flex h-10 w-10 items-center justify-center rounded-[6px] bg-[var(--zb-paper)] text-[color:var(--zb-crimson)]">
+                <span aria-hidden className="flex h-10 w-10 items-center justify-center rounded-[16px] bg-[var(--zb-paper)] text-[color:var(--zb-crimson)]">
                   <w.icon size={19} />
                 </span>
                 <h3 className="mt-4 font-heading text-lg font-bold text-[color:var(--zb-ink)]">{w.title}</h3>
@@ -591,14 +591,14 @@ export default function ZohoBookingsAlternative() {
           <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {RELATED.map((c) => (
               <li key={c.key}>
-                <Link to={c.path} className="flex min-h-[44px] items-center gap-3 rounded-[6px] border border-black/5 bg-white px-4 py-3 text-sm font-semibold text-[color:var(--zb-ink)] transition-colors hover:border-[color:var(--zb-line)] hover:no-underline">
+                <Link to={c.path} className="flex min-h-[44px] items-center gap-3 rounded-full border border-black/5 bg-white px-4 py-3 text-sm font-semibold text-[color:var(--zb-ink)] transition-colors hover:border-[color:var(--zb-line)] hover:no-underline">
                   <img src={favicon(c.domain)} alt="" width="20" height="20" loading="lazy" className="h-5 w-5" />
                   Meeticulous vs {c.name}
                 </Link>
               </li>
             ))}
             <li>
-              <Link to="/compare" className="flex min-h-[44px] items-center gap-2 rounded-[6px] border border-black/5 bg-white px-4 py-3 text-sm font-semibold text-[color:var(--zb-crimson)] transition-colors hover:border-[color:var(--zb-line)] hover:no-underline">
+              <Link to="/compare" className="flex min-h-[44px] items-center gap-2 rounded-full border border-black/5 bg-white px-4 py-3 text-sm font-semibold text-[color:var(--zb-crimson)] transition-colors hover:border-[color:var(--zb-line)] hover:no-underline">
                 All booking tool comparisons <ArrowRight size={14} aria-hidden />
               </Link>
             </li>
