@@ -1,6 +1,12 @@
 import { useRef } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import { gsap, useGSAP, EASE } from '../about/gsapSetup';
 import { company } from './careersContent';
+
+// Centred hero: eyebrow, heading, mission line and the two CTAs. (The photo
+// composition — portraits, fact chips, icon tiles — was removed 2026-11-02 at
+// the owner's request.)
 
 export default function CareersHero() {
   const root = useRef(null);
@@ -18,25 +24,26 @@ export default function CareersHero() {
   );
 
   return (
-    <section ref={root} className="relative overflow-hidden px-5 py-24 text-center sm:px-8 lg:py-32">
-      <div
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{ background: 'radial-gradient(55% 50% at 50% 30%, #FBE3E8 0%, transparent 70%)' }}
-        aria-hidden="true"
-      />
-      <div className="mx-auto max-w-3xl">
-        <p className="js-rise font-heading text-sm font-semibold uppercase tracking-wide text-primary">Careers</p>
-        <h1 className="js-rise mt-3 font-heading text-4xl font-extrabold leading-[1.08] sm:text-5xl lg:text-6xl">
-          Build the calm way to get booked.
+    <section ref={root} className="relative overflow-hidden bg-canvas px-5 py-20 sm:px-8 lg:py-28">
+      <div className="mx-auto max-w-3xl text-center">
+        <p className="js-rise text-sm font-semibold uppercase tracking-[0.2em] text-primary">Careers</p>
+        <h1 className="js-rise mt-3 font-display font-extrabold leading-[1.08] text-maroon text-[clamp(2.4rem,5vw,3.75rem)]">
+          Build the calm way to <span className="text-rose">get booked.</span>
         </h1>
-        <p className="js-rise mx-auto mt-5 max-w-xl text-lg text-ink/70">{company.missionBlurb}</p>
-        <div className="js-rise mt-9 flex justify-center">
+        <p className="js-rise mx-auto mt-6 max-w-xl text-lg leading-relaxed text-ink/70">{company.missionBlurb}</p>
+        <div className="js-rise mt-9 flex flex-wrap items-center justify-center gap-6">
           <a
             href="#open-roles"
-            className="btn inline-flex items-center justify-center bg-primary px-7 py-3.5 text-white shadow-[var(--shadow-hard-1)] transition-colors hover:bg-primary-dark hover:no-underline"
+            className="inline-flex items-center gap-1.5 rounded-full bg-primary-cta px-6 py-3 text-sm font-semibold text-white hover:no-underline hover:opacity-90"
           >
-            See open roles
+            See open roles <ArrowRight size={16} aria-hidden="true" />
           </a>
+          <Link
+            to="/about"
+            className="border-b-2 border-ink pb-0.5 text-sm font-semibold text-ink hover:border-primary hover:text-primary-cta hover:no-underline"
+          >
+            Meet the team
+          </Link>
         </div>
       </div>
     </section>

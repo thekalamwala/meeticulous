@@ -31,7 +31,7 @@ Counts are from `client/src` on 2026-11-02, after the first migration PR.
 | Shadows | 441 arbitrary `shadow-[…]` | Kit: cards are flat fills; shadows only for overlays + hover lift (`--shadow-*`, maroon-tinted). |
 | Borders | 396 `border-black/5` | Kit: 2px (`--border-1/2`), 3px selected, 2px ink rule between major sections. |
 | Radius stragglers | 44 arbitrary radii | Inside template expressions the codemod skipped. |
-| Section patterns | `/for/*` landings, `/features/*`, Pricing page (+ shared `PricingCards`: recommended plan as a `brand` card) | Rebuild per WEBSITE_MIGRATION Phase 4: feature grid on maroon with dark illustrations, how-it-works on blush with the ribbon, pricing with a `brand` card. |
+| Section patterns | `/for/*` landings, `/features/*`. About, Careers, Pricing done (Aastha's #71 layouts + brand pass); `PricingCards` still needs the recommended plan as a `brand` card | Rebuild per WEBSITE_MIGRATION Phase 4: feature grid on maroon with dark illustrations, how-it-works on blush with the ribbon, pricing with a `brand` card. |
 | Components | No shared `Button`/`Input`/`Card` in `components/ui` yet | Port `design-system/components/*` into `client/src/components/ds/` and replace call sites area by area. |
 | Copy (Phase 5) | Title Case buttons ("Start for Free"), hype words | Sentence case, verb-first ("Get your booking link"). |
 | Legacy CSS | `styles/base-fb.css`, `styles/components/*.css`, `howitworks.scoped.css`, `enterprise.scoped.css` | Migrate off or delete once their pages are rebuilt. |

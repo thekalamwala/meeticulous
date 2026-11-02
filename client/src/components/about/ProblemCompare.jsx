@@ -33,12 +33,12 @@ const Underline = ({ className = "" }) => (
 // envelope and a QR-code note — grey line art (the old way is all greys).
 const ChaosDoodle = () => (
   <svg viewBox="0 0 300 150" aria-hidden="true" className="h-auto w-full">
-    <g fill="none" stroke="#6B7280" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <g fill="none" stroke="#8C716D" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
       {/* chat bubble */}
       <path d="M22 44c0-11 9-19 22-19h12c13 0 22 8 22 19s-9 19-22 19h-9l-12 9v-9c-8-2-13-10-13-19z" fill="#fff" />
-      <circle cx="40" cy="44" r="2" fill="#6B7280" />
-      <circle cx="50" cy="44" r="2" fill="#6B7280" />
-      <circle cx="60" cy="44" r="2" fill="#6B7280" />
+      <circle cx="40" cy="44" r="2" fill="#8C716D" />
+      <circle cx="50" cy="44" r="2" fill="#8C716D" />
+      <circle cx="60" cy="44" r="2" fill="#8C716D" />
       {/* scribble knot */}
       <path d="M128 30c-14 2-18 14-8 20 12 7 30-4 22-14-7-9-26-2-24 10 1 9 18 12 26 3 6-7-2-17-12-15-9 2-12 12-4 15" />
       <path d="M118 52c4 6 8 9 14 10M146 50c-2 6-6 10-12 12" opacity=".7" />
@@ -53,7 +53,7 @@ const ChaosDoodle = () => (
       <rect x="118" y="70" width="58" height="76" rx="9" fill="#fff" />
       <path d="M140 78h14" />
       <path d="M128 96h38M128 108h30M128 120h34" opacity=".55" />
-      <circle cx="176" cy="72" r="11" fill="#4B5563" stroke="#4B5563" />
+      <circle cx="176" cy="72" r="11" fill="#6B524F" stroke="#6B524F" />
       <text x="176" y="76" textAnchor="middle" fontSize="10" fontWeight="700" fill="#fff" stroke="none" fontFamily="Poppins, sans-serif">9+</text>
       {/* buzz lines */}
       <path d="M106 86l-8-4M104 100h-10M106 114l-8 4M188 96l8-3M190 110h9" />
@@ -67,14 +67,14 @@ const ChaosDoodle = () => (
 // "A smoother way" mini app: bookings week view + a payment toast.
 const MiniDashboard = () => (
   <div className="relative">
-    <div className="overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.06)]">
-      <div className="flex gap-1.5 border-b border-black/5 px-3 py-2">
+    <div className="overflow-hidden rounded-[16px] border-2 border-neutral-200 bg-white">
+      <div className="flex gap-1.5 border-b border-neutral-200 px-3 py-2">
         <span className="h-2 w-2 rounded-full bg-[#FF5F57]" />
         <span className="h-2 w-2 rounded-full bg-[#FEBC2E]" />
         <span className="h-2 w-2 rounded-full bg-[#28C840]" />
       </div>
       <div className="flex">
-        <div className="hidden w-14 flex-col items-center gap-2 border-r border-black/5 py-3 sm:flex">
+        <div className="hidden w-14 flex-col items-center gap-2 border-r border-neutral-200 py-3 sm:flex">
           <span className="flex h-7 w-7 items-center justify-center rounded-[16px] bg-primary text-xs font-extrabold text-white">M</span>
           {[0, 1, 2, 3].map((i) => (
             <span key={i} className="h-1.5 w-7 rounded-full bg-black/[0.06]" />
@@ -106,7 +106,7 @@ const MiniDashboard = () => (
       </div>
     </div>
     {/* payment toast */}
-    <div className="absolute -right-3 top-1/2 flex items-center gap-1.5 rounded-full border border-black/5 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-ink shadow-[0_12px_30px_-10px_rgba(26,26,26,0.35)] sm:-right-6">
+    <div className="absolute -right-3 top-1/2 flex items-center gap-1.5 rounded-full border-2 border-neutral-200 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-ink sm:-right-6">
       <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-white">
         <Check size={10} strokeWidth={3.5} />
       </span>
@@ -120,7 +120,7 @@ function Row({ Icon, title, body, tone }) {
   const pain = tone === "pain";
   const tile = pain ? "bg-neutral-200 text-neutral-500" : "bg-primary/10 text-primary";
   return (
-    <li className={`flex items-start gap-3.5 border-b py-3 last:border-0 lg:gap-3 lg:py-2 ${pain ? "border-neutral-200" : "border-black/5"}`}>
+    <li className={`flex items-start gap-3.5 border-b py-3 last:border-0 lg:gap-3 lg:py-2 ${pain ? "border-neutral-200" : "border-neutral-200"}`}>
       <span className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full lg:h-8 lg:w-8 ${tile}`}>
         <Icon size={16} aria-hidden="true" />
       </span>
@@ -140,7 +140,7 @@ export default function ProblemCompare() {
         <div className="relative z-10 lg:-rotate-[3deg]">
           {/* lg:h-full + flex column: stretches to the row height so its bottom lines up
               with "A smoother way" (which sits lower via lg:mt-3); rows spread evenly. */}
-          <div className="relative flex flex-col rounded-[16px] border border-neutral-200 bg-neutral-100 px-5 pb-4 pt-8 shadow-[0_24px_60px_-28px_rgba(26,26,26,0.35)] sm:px-6 lg:mr-[-12px] lg:h-full lg:pb-2 lg:pt-6">
+          <div className="relative flex flex-col rounded-[16px] border border-neutral-200 bg-neutral-100 px-5 pb-4 pt-8 sm:px-6 lg:mr-[-12px] lg:h-full lg:pb-2 lg:pt-6">
             <span aria-hidden className="absolute -top-3 left-1/2 h-7 w-24 -translate-x-1/2 -rotate-2 rounded-[2px] bg-neutral-300/80" />
             <h3 className="text-center font-display text-2xl font-extrabold italic text-neutral-600 lg:text-xl">The old way</h3>
             <Underline className="mx-auto mt-1 h-2.5 w-36 text-neutral-400" />
@@ -157,7 +157,7 @@ export default function ProblemCompare() {
 
         {/* A smoother way */}
         <div className="relative z-20 lg:mt-3 lg:rotate-[2deg]">
-          <div className="relative rounded-[16px] border border-primary/15 bg-white px-5 pb-4 pt-7 shadow-[0_24px_60px_-28px_rgba(26,26,26,0.35)] sm:px-6 lg:ml-[-12px] lg:h-full lg:pb-2 lg:pt-5">
+          <div className="relative rounded-[16px] border border-primary/15 bg-white px-5 pb-4 pt-7 sm:px-6 lg:ml-[-12px] lg:h-full lg:pb-2 lg:pt-5">
             <div className="relative text-center">
               <h3 className="font-display text-2xl font-extrabold italic text-primary lg:text-xl">A smoother way</h3>
               <Underline className="mx-auto mt-1 h-2.5 w-44 text-primary" />

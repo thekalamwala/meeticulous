@@ -20,7 +20,7 @@ function AccentIcon({ name, accent, size = 20 }) {
   const Icon = ICONS[name] ?? Rocket;
   return (
     <span
-      className="inline-flex h-10 w-10 items-center justify-center rounded-[16px] transition-shadow duration-300 group-hover:shadow-[0_0_18px_var(--ig)]"
+      className="inline-flex h-10 w-10 items-center justify-center rounded-[16px] transition-shadow duration-300"
       style={{ color: accent, background: `${accent}14`, "--ig": `${accent}66` }}
     >
       <Icon size={size} strokeWidth={1.75} />
@@ -30,7 +30,7 @@ function AccentIcon({ name, accent, size = 20 }) {
 
 function Persona({ plan }) {
   return (
-    <div className="mt-7 flex items-start gap-3 border-t border-black/5 pt-5">
+    <div className="mt-7 flex items-start gap-3 border-t border-neutral-200 pt-5">
       <AccentIcon name={plan.icon} accent={plan.accent} size={18} />
       <div>
         <p className="text-sm font-semibold text-ink">{plan.persona.title}</p>
@@ -88,7 +88,7 @@ function PlanCard({ plan, yearly, children }) {
   const glow = recommended ? `${plan.accent}80` : "rgba(26,26,26,0.16)";
   return (
     <div
-      className="group relative flex h-full flex-col rounded-[24px] border bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.05)] transition-shadow duration-300 hover:shadow-[0_24px_60px_-28px_var(--glow)] sm:p-8"
+      className="group relative flex h-full flex-col rounded-[24px] border bg-white p-7 transition-shadow duration-300 sm:p-8"
       style={{ borderColor: recommended ? `${plan.accent}4d` : "rgba(0,0,0,0.06)", "--glow": glow }}
     >
       <div className="flex items-center justify-between">
@@ -128,7 +128,7 @@ export default function PricingCards({ freeAccent } = {}) {
     <div>
       {/* Billing toggle */}
       <div className="flex justify-center">
-        <div className="inline-flex items-center gap-1 rounded-full border border-black/5 bg-white p-1 shadow-sm">
+        <div className="inline-flex items-center gap-1 rounded-full border-2 border-neutral-200 bg-white p-1 shadow-sm">
           <button
             type="button"
             onClick={() => setYearly(false)}

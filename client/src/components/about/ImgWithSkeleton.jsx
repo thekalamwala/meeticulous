@@ -31,7 +31,7 @@ export default function ImgWithSkeleton({
       {status === "loading" && (
         <div
           aria-hidden
-          className="absolute inset-0 animate-pulse bg-gradient-to-br from-sand to-ink/5"
+          className="absolute inset-0 animate-pulse bg-blush"
         />
       )}
 
@@ -39,7 +39,7 @@ export default function ImgWithSkeleton({
         <div
           role="img"
           aria-label={alt || fallbackLabel}
-          className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#FBE3E8] to-[#FFD2BC]"
+          className="flex h-full w-full items-center justify-center bg-blush"
         >
           <span className="font-heading text-3xl font-extrabold text-ink/70">
             {initials}

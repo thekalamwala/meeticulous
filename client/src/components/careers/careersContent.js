@@ -24,6 +24,11 @@ export const company = {
     { img: '', alt: 'Creators we serve', caption: 'For India’s creators.' },
     { img: '', alt: 'Calm by design', caption: 'Calm by design.' },
   ],
+  // Stand-in Unsplash photo (same CDN the homepage uses) for the Perks section —
+  // swap for a real team photo.
+  photos: {
+    perks: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=900&h=760&q=80',
+  },
   aboutTeam:
     'Meeticulous is a small, remote-first team building booking pages + payments for India’s creators and professionals. We move fast, care about craft, and keep things calm.',
 };
