@@ -4,7 +4,6 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import AuthBrandPanel from '../components/auth/AuthBrandPanel';
 import WhatsNewLink from '../components/auth/WhatsNewLink';
-import BookDemoDrawer from '../components/auth/BookDemoDrawer';
 import Seo from '../components/common/Seo';
 import { ogCard } from '../config/ogImages';
 import { SITE_URL } from '../utils/seo';
@@ -46,7 +45,6 @@ const Logo = ({ className = '' }) => (
 const BecomeAHost = () => {
   const { startVendorGoogleAuth, user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [demoOpen, setDemoOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -148,33 +146,12 @@ const BecomeAHost = () => {
               <Check />
               <span>Calendar connected instantly — busy times never get booked</span>
             </li>
-            <li className="flex gap-2">
-              <Check />
-              <span>Google Meet links created for every online booking</span>
-            </li>
           </ul>
-
-          {/* Book a demo — 1:1 onboarding call with the founder */}
-          <div className="my-3 flex items-center gap-3">
-            <span className="h-px flex-1 bg-maroon/10" />
-            <span className="text-xs font-medium uppercase tracking-wide text-muted">Or</span>
-            <span className="h-px flex-1 bg-maroon/10" />
-          </div>
-          <button
-            type="button"
-            onClick={() => setDemoOpen(true)}
-            className="btn flex w-full items-center justify-center gap-3 border-2 border-primary-cta bg-primary py-3 text-sm font-semibold text-white shadow-[0_1px_2px_rgba(16,24,40,0.05)] transition-colors hover:bg-black hover:text-primary-cta"
-          >
-            Book A Demo
-          </button>
 
           <p className="mt-5 text-sm text-muted">
             Already a host?{' '}
             <Link to="/login-as-vendor" className="font-semibold text-primary hover:underline">Log in</Link>
           </p>
-
-          {/* Book-a-demo panel slides up from the bottom of this card, filling it. */}
-          <BookDemoDrawer open={demoOpen} onClose={() => setDemoOpen(false)} />
         </div>
 
         {/* Outside the card */}
