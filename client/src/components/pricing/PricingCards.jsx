@@ -112,7 +112,8 @@ function PlanCard({ plan, yearly, children }) {
 // `freeAccent` optionally re-tints the Starter card for one placement (e.g. the
 // Home section uses a brand shade instead of the green) without changing it
 // on /pricing and the other pages that share this component.
-export default function PricingCards({ freeAccent } = {}) {
+// `startLabel` renames the Starter button for one placement (homepage CTA copy).
+export default function PricingCards({ freeAccent, startLabel = "Start free" } = {}) {
   const [yearly, setYearly] = useState(true);
   const freePlan = freeAccent ? { ...FREE_PLAN, accent: freeAccent } : FREE_PLAN;
   // Interim (fee-only) mode: hide the free plan from the pricing display. Free
@@ -164,7 +165,7 @@ export default function PricingCards({ freeAccent } = {}) {
               to={ROUTE_START}
               className="mt-6 inline-flex items-center justify-center rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 hover:no-underline"
             >
-              Start free
+              {startLabel}
             </Link>
           </PlanCard>
         )}

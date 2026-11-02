@@ -729,7 +729,7 @@ const Home = () => {
                   disabled={googleLoading}
                   className="btn inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
-                  {googleLoading ? "Opening Google…" : "Start for free"}
+                  {googleLoading ? "Opening Google…" : "Get Started - Free"}
                 </button>
                 <Link
                   to="/pricing"
@@ -934,7 +934,7 @@ const Home = () => {
               disabled={googleLoading}
               className="mt-btn"
             >
-              {googleLoading ? "Opening Google…" : "Get your booking link"} <ArrowRight size={16} />
+              {googleLoading ? "Opening Google…" : "Get Started - Free"} <ArrowRight size={16} />
             </button>
           </Reveal>
 
@@ -1218,7 +1218,7 @@ const Home = () => {
 
           <Reveal delay={0.12} className="mt-8">
             {/* Starter card in a brand shade (primary-dark) instead of the green */}
-            <PricingCards freeAccent="#7A0A28" />
+            <PricingCards freeAccent="#7A0A28" startLabel="Get Started - Free" />
           </Reveal>
 
           <p className="mt-8 text-center">
