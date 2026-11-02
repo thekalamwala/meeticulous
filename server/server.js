@@ -182,7 +182,6 @@ app.use('/api/ingest', require('./routes/ingestRoutes')); // external lead intak
 app.use('/api/events',        require('./routes/eventsRoutes')); // public intent-event sink → lead_events
 app.use('/api/opening',       require('./routes/openingRoutes')); // public "The Opening" launch event (ribbon cut + Inaugurators Wall)
 app.use('/api/whatsapp',      require('./routes/whatsappRoutes'));
-app.use('/api/pitch-deck',    require('./routes/pitchDeckRoutes')); // gated investor deck (passcode + WhatsApp OTP → confidential figures)
 app.use('/api/username',      require('./routes/usernameRoutes')); // public resolve (edge 301) + auth check
 app.get('/api/appearance',  require('./controllers/appearanceController').getPublic); // public navbar logo
 app.get('/api/plans',       require('./controllers/planAdminController').publicPlans);

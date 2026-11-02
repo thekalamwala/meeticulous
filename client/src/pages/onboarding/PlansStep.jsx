@@ -212,7 +212,7 @@ const PlansStep = () => {
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold mb-1">You're one click from live</h1>
             <p className="text-gray-500 text-sm">
-              Go live with everything unlocked on Studio — or start free below.
+              Go live with everything unlocked on Pro — or start free below.
             </p>
           </div>
 

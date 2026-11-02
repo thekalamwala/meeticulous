@@ -30,7 +30,7 @@ import {
   Cpu,
   Target,
   HeartPulse,
-  GraduationCap,
+  Stethoscope,
   Briefcase,
   Plus,
   TrendingUp,
@@ -42,7 +42,7 @@ import {
   FileCheck,
   Eye,
   Camera,
-  Dumbbell,
+  Building2,
   Gamepad2,
   Bell,
   Clock,
@@ -288,85 +288,88 @@ export const STATS = [
    /for/<slug> page that exists (bespoke route or professionLandingData) —
    an unknown /for/<slug> 404s. */
 const AUDIENCES = [
+  // The five industry archetypes from the navbar's Industries menu (same
+  // groups, real /for/* routes). Each slide has its own hue (owner request: a
+  // multi-colour section); all are dark enough to carry white pill text.
+  {
+    key: "professional",
+    icon: Briefcase,
+    title: "Professional Services",
+    tagline: "Bill for your expertise, not your admin.",
+    desc: "Chartered accountants, lawyers, consultants and architects sell consults that are paid before they start, sync with Google Calendar and come with a GST invoice.",
+    who: [
+      { label: "Chartered Accountants", href: "/for/chartered-accountants" },
+      { label: "Lawyers", href: "/for/lawyers" },
+      { label: "Business Consultants", href: "/for/business-consultant" },
+      { label: "Architects", href: "/for/architects" },
+    ],
+    points: ["Paid consults, upfront", "Google Calendar + Meet links", "Automatic GST invoices"],
+    learnMore: "/for/business-consultant",
+    color: "#2563EB",
+  },
+  {
+    key: "medical",
+    icon: Stethoscope,
+    title: "Medical Specialists",
+    tagline: "Fill your clinic, skip the phone tag.",
+    desc: "Dentists, dermatologists and other specialists let patients book visits around the clock, with WhatsApp reminders so the chair is never empty.",
+    who: [
+      { label: "Dentists", href: "/for/dentists" },
+      { label: "Dermatologists", href: "/for/dermatologists" },
+      { label: "Pediatricians", href: "/for/pediatricians" },
+      { label: "ENT Specialists", href: "/for/ent-specialists" },
+    ],
+    points: ["Online booking, 24/7", "WhatsApp + email reminders", "Patients book without an account"],
+    learnMore: "/for/dentists",
+    color: "#0E7490",
+  },
+  {
+    key: "wellness",
+    icon: HeartPulse,
+    title: "Health & Wellness",
+    tagline: "A calm, private way to book.",
+    desc: "Physiotherapists, nutritionists, spas and life coaches let clients book and pay privately, with notes and history kept in one place.",
+    who: [
+      { label: "Physiotherapists", href: "/for/physiotherapists" },
+      { label: "Nutritionists", href: "/for/nutritionists" },
+      { label: "Spas", href: "/for/spa" },
+      { label: "Life Coaches", href: "/for/life-coaches" },
+    ],
+    points: ["Private 1:1 bookings", "Client notes & history", "WhatsApp + email reminders"],
+    learnMore: "/for/physiotherapists",
+    color: "#047857",
+  },
   {
     key: "creators",
     icon: Camera,
     title: "Creators",
     tagline: "Turn followers into paying clients.",
-    desc: "Put one link in your bio and let people book shoots, 1:1 calls and paid sessions — or buy a digital download — without a single DM.",
+    desc: "Put one link in your bio and let people book 1:1 calls, lessons and paid sessions — or buy a digital download — without a single DM.",
     who: [
-      { label: "Influencers" },
-      { label: "Photographers", href: "/for/photographers" },
-      { label: "Artists" },
-      { label: "Workshop hosts" },
+      { label: "Content Creators", href: "/for/content-creators" },
+      { label: "Coaches", href: "/for/coaches" },
+      { label: "Educators", href: "/for/educators" },
+      { label: "Musicians", href: "/for/musicians" },
     ],
     points: ["Link-in-bio booking page", "Paid sessions & digital products", "UPI checkout at booking"],
-    learnMore: "/for/photographers",
-    color: "var(--c-pink)",
+    learnMore: "/for/content-creators",
+    color: "#BE185D",
   },
   {
-    key: "pros",
-    icon: Briefcase,
-    title: "Pros",
-    tagline: "Bill for your expertise, not your admin.",
-    desc: "Sell consults, audits and coaching calls that are paid before they start, sync with Google Calendar and come with a GST invoice.",
+    key: "venues",
+    icon: Building2,
+    title: "Venues & Experiences",
+    tagline: "Rent your space by the hour.",
+    desc: "Turfs, studios, halls and coworking spaces take hourly bookings online, paid by UPI before anyone walks in.",
     who: [
-      { label: "Consultants", href: "/for/business-consultant" },
-      { label: "Coaches", href: "/for/life-coaches" },
-      { label: "Freelancers", href: "/for/freelancers" },
-      { label: "Designers" },
+      { label: "Sports Arenas", href: "/for/sports-turf" },
+      { label: "Photo Studios", href: "/for/photo-studios" },
+      { label: "Conference Halls", href: "/for/conference-halls" },
+      { label: "Coworking Spaces", href: "/for/coworking-spaces" },
     ],
-    points: ["Paid consults, upfront", "Google Calendar + Meet links", "Automatic GST invoices"],
-    learnMore: "/for/freelancers",
-    color: "var(--c-blue)",
-  },
-  {
-    key: "bros",
-    icon: Dumbbell,
-    title: "Bros",
-    tagline: "Run your side hustle like a business.",
-    desc: "Training, coaching and mentoring sessions that fill themselves after work hours — paid by UPI, with WhatsApp reminders so people actually show up.",
-    who: [
-      { label: "Fitness trainers", href: "/for/fitness" },
-      { label: "Gaming coaches" },
-      { label: "Mentors" },
-      { label: "Yoga instructors", href: "/for/yoga-instructors" },
-    ],
-    points: ["Early-morning & evening slots", "WhatsApp + email reminders", "Clients book without an account"],
-    learnMore: "/for/fitness",
-    color: "var(--c-emerald)",
-  },
-  {
-    key: "educators",
-    icon: GraduationCap,
-    title: "Educators",
-    tagline: "Fill your class calendar.",
-    desc: "Tutors and teachers share one link for trial classes and regular sessions — online or in person, paid before the class starts.",
-    who: [
-      { label: "Tutors", href: "/for/tutors" },
-      { label: "Music teachers" },
-      { label: "Language coaches" },
-      { label: "Exam mentors" },
-    ],
-    points: ["Online or in-person sessions", "Reminders for every class", "UPI checkout at booking"],
-    learnMore: "/for/tutors",
-    color: "var(--c-violet)",
-  },
-  {
-    key: "wellness",
-    icon: HeartPulse,
-    title: "Wellness",
-    tagline: "A calm, private way to book.",
-    desc: "Therapists, yoga instructors and nutritionists let clients book and pay privately, with notes and history kept in one place.",
-    who: [
-      { label: "Therapists", href: "/for/therapists" },
-      { label: "Yoga instructors", href: "/for/yoga-instructors" },
-      { label: "Nutritionists", href: "/for/nutritionists" },
-      { label: "Life coaches", href: "/for/life-coaches" },
-    ],
-    points: ["Private 1:1 bookings", "Client notes & history", "WhatsApp + email reminders"],
-    learnMore: "/for/therapists",
-    color: "var(--c-cyan)",
+    points: ["Hourly slots, booked online", "UPI checkout at booking", "Reminders before every booking"],
+    learnMore: "/for/sports-turf",
+    color: "#C2410C",
   },
 ];
 
@@ -726,7 +729,7 @@ const Home = () => {
                   disabled={googleLoading}
                   className="btn inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
-                  {googleLoading ? "Opening Google…" : "Start for free"}
+                  {googleLoading ? "Opening Google…" : "Get Started - Free"}
                 </button>
                 <Link
                   to="/pricing"
@@ -931,7 +934,7 @@ const Home = () => {
               disabled={googleLoading}
               className="mt-btn"
             >
-              {googleLoading ? "Opening Google…" : "Get your booking link"} <ArrowRight size={16} />
+              {googleLoading ? "Opening Google…" : "Get Started - Free"} <ArrowRight size={16} />
             </button>
           </Reveal>
 
@@ -1215,7 +1218,7 @@ const Home = () => {
 
           <Reveal delay={0.12} className="mt-8">
             {/* Starter card in a brand shade (primary-dark) instead of the green */}
-            <PricingCards freeAccent="#7A0A28" />
+            <PricingCards freeAccent="#7A0A28" startLabel="Get Started - Free" />
           </Reveal>
 
           <p className="mt-8 text-center">

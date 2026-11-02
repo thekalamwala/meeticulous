@@ -41,7 +41,7 @@ const INFRA = [
 const FUTURE = [
   'docs', 'doc', 'blog', 'blogs', 'pricing', 'plans', 'plan', 'features', 'feature',
   'presentation', // full-screen product pitch deck — client /presentation route
-  'pitch-deck', // investor pitch deck — client /pitch-deck route (noindex, unlinked)
+  'pitch-deck', // retired investor deck — kept reserved so old shared links can't be claimed as a host URL
 
   'changelog', 'roadmap', 'security', 'legal', 'cookies', 'careers', 'jobs', 'press',
   'newsroom', 'contact', 'faq', 'guides', 'guide', 'tutorials', 'tutorial', 'resources',

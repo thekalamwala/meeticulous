@@ -18,13 +18,12 @@ import {
   isValidHex,
   FREE_COLORS,
   CREATOR_COLORS,
+  planLabel,
 } from "../utils/themeUtils";
 import {
   PageHeader, Card, Button, FormField, Input, Select, Textarea, StickyActionBar, Tabs, cn,
 } from "../components/dashboard/ui";
 
-// ─── Minimal plan label for display ─────────────────────────────────────────
-const PLAN_LABEL = { starter: 'Starter', explorer: 'Starter', creator: 'Host+', professional: 'Studio', supreme: 'Supreme' };
 
 // Canonical cover-photo aspect ratio. Cropped to this on upload and rendered at
 // this ratio in every place the cover shows (here, HostProfile, ServiceBooking)
@@ -289,7 +288,7 @@ const ProfileSetup = () => {
       <AccountModeToggle />
       <PageHeader
         title="Host Profile"
-        subtitle={<>How guests discover and book you. Plan: <span className="font-semibold text-gray-700">{PLAN_LABEL[plan]}</span></>}
+        subtitle={<>How guests discover and book you. Plan: <span className="font-semibold text-gray-700">{planLabel(plan, 'Starter')}</span></>}
       />
 
       {/* Secondary rail — Plan now lives in the sidebar's Settings section, so it's
@@ -491,7 +490,7 @@ const ProfileSetup = () => {
                       <h3 className="text-sm font-semibold text-gray-800">Theme Color</h3>
                       <p className="mt-0.5 text-xs text-gray-400">Applied to buttons, accents, and CTAs on your profile</p>
                     </div>
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">{PLAN_LABEL[plan]}</span>
+                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">{planLabel(plan, 'Starter')}</span>
                   </div>
 
                   {/* Swatches */}
@@ -525,7 +524,7 @@ const ProfileSetup = () => {
                     </FeatureGate>
                   ) : (
                     <p className="mt-1 text-xs text-gray-400">
-                      {plan === 'creator' ? '16 colours available. Upgrade to Studio for the full palette + custom hex.' : 'Starter uses the brand colour. Upgrade to Host+ for 16 colours.'}
+                      {plan === 'creator' ? '16 colours available on your plan.' : 'Starter uses the brand colour. Upgrade to Pro for more colours.'}
                     </p>
                   )}
                 </div>
@@ -539,7 +538,7 @@ const ProfileSetup = () => {
                   <div>
                     <p className="text-xs text-gray-600">
                       Your border is <span className="font-semibold" style={{ color: getPlanBorderColor(plan) }}>
-                        {plan === 'supreme' ? 'Gold (Supreme)' : plan === 'professional' ? 'Gold (Studio)' : plan === 'creator' ? 'Orange (Host+)' : 'Grey (Starter)'}
+                        {plan === 'supreme' || plan === 'professional' ? 'Gold' : plan === 'creator' ? 'Orange' : 'Grey'} ({planLabel(plan, 'Starter')})
                       </span>
                     </p>
                     <p className="mt-0.5 text-[10px] text-gray-400">Border updates automatically with your plan tier</p>

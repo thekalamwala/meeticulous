@@ -68,7 +68,7 @@ const HANDLERS = {
   host: {
     answer:
       "Becoming a host is free to start — sign up with Google, set up your profile and " +
-      "services, and share your booking page. Paid plans (Host+/Studio) unlock more services " +
+      "services, and share your booking page. The Pro plan unlocks more services " +
       "and features.",
     cards: [
       { label: 'Become a host',        action: { type: 'route', value: '/become-a-host' } },

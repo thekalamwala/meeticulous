@@ -15977,7 +15977,7 @@ export const BLOG_POSTS = [
           },
           {
             "q": "What is deducted from a booking before the host is paid?",
-            "a": "A small flat platform fee, a commission only if you are on the free plan (0% on Host+ and Studio), the payment-gateway charge, and statutory TDS (194-O) and TCS (GST §52) that are deposited against your PAN for you to claim back at filing. For how commission adds up over a year, see [the arithmetic of commission](/blog/the-arithmetic-of-commission)."
+            "a": "A small flat platform fee, a commission only if you are on the free plan (0% on Pro), the payment-gateway charge, and statutory TDS (194-O) and TCS (GST §52) that are deposited against your PAN for you to claim back at filing. For how commission adds up over a year, see [the arithmetic of commission](/blog/the-arithmetic-of-commission)."
           },
           {
             "q": "What happens if a payout fails or gets stuck?",
@@ -16190,8 +16190,8 @@ export const BLOG_POSTS = [
             "a": "No. You can list services and take bookings on the free plan with no monthly charge and no card. We take a small flat platform fee per booking; the subscription is optional and only worth it once you are earning enough that the free-plan commission exceeds the plan price."
           },
           {
-            "q": "What do the paid plans (Host+ and Studio) actually remove?",
-            "a": "The commission. Free hosts pay a small percentage as they earn; Host+ and Studio charge 0% commission, plus unlock reminders, custom branding and more. The dashboard shows what commission you have paid so the upgrade is a calculation, not a guess."
+            "q": "What does the paid plan (Pro) actually remove?",
+            "a": "The commission. Free hosts pay a small percentage as they earn; Pro charges 0% commission, plus unlock reminders, custom branding and more. The dashboard shows what commission you have paid so the upgrade is a calculation, not a guess."
           },
           {
             "q": "Is the free plan a limited trial?",

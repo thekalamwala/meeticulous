@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ArrowRight, ArrowUp, ChevronDown, CreditCard, Gift, Zap } from 'lucide-react';
 import OperatorCredit from './OperatorCredit';
 import DoodleWordmark from './footer/DoodleWordmark';
@@ -127,6 +127,8 @@ const Socials = () => (
 export default function Footer({ variant = 'full' }) {
   const year = new Date().getFullYear();
   const minimal = variant === 'minimal';
+  // Homepage CTAs all read "Get Started - Free"; other pages keep the brand copy.
+  const ctaLabel = useLocation().pathname === '/' ? 'Get Started - Free' : 'Get your booking link';
   const [open, setOpen] = useState({}); // mobile accordion state per column
 
   return (
@@ -169,7 +171,7 @@ export default function Footer({ variant = 'full' }) {
                 to={ROUTE_START}
                 className="group inline-flex items-center justify-center gap-2 rounded-full bg-pink px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-pink-300 hover:no-underline active:translate-y-px"
               >
-                Get your booking link
+                {ctaLabel}
                 <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-0.5" />
               </Link>
               <Link

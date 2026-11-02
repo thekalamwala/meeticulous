@@ -5,6 +5,7 @@ import Ic from '../../components/admin/Ic';
 import { IC } from '../../components/admin/adminNav';
 import AdminInsights from './AdminInsights';
 import { PageHeader, Card, Badge } from '../../components/admin/ui';
+import { planLabel } from '../../utils/themeUtils';
 
 const TABS = [
   { id: 'overview',   label: 'Overview',        to: '/super-dashboard' },
@@ -26,7 +27,7 @@ const inr = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`;
 
 // Host plan → display label. normalizeSlug already collapses explorer/legacy to
 // the free tier, so anything not creator/professional/supreme reads as Starter.
-const planLabelOf = (p) => ({ creator: 'Host+', professional: 'Studio', supreme: 'Supreme' }[(p || '').toLowerCase()] || 'Starter');
+const planLabelOf = (p) => planLabel(p, 'Starter');
 
 // ── Color-coded stat card ─────────────────────────────────────
 // Mini title on top, then a linear icon chip (pastel tint of the hue) beside the
@@ -349,15 +350,15 @@ const RevenueTab = ({ stats }) => {
 };
 
 // ══ Provider plan charts (dependency-free SVG) ════════════════
-// Plan visual identity. Starter = white (needs border), Host+ = grey, Studio = brand orange.
+// Plan visual identity. Starter = white (needs border), creator = grey, professional = brand orange.
 const PLAN_ORDER = ['starter', 'creator', 'professional'];
 const PLAN_META = {
   starter:      { label: 'Starter',  color: '#ffffff' },
-  creator:      { label: 'Host+',    color: '#9ca3af' },
-  professional: { label: 'Studio',   color: '#960D32' },
+  creator:      { label: planLabel('creator'),      color: '#9ca3af' },
+  professional: { label: planLabel('professional'), color: '#960D32' },
 };
 const PIE_BORDER = '#374151'; // gray-700 — keeps the white slice readable on a white card
-const PLAN_NAME = { starter: 'Starter', creator: 'Host+', professional: 'Studio' };
+const PLAN_NAME = { starter: 'Starter', creator: planLabel('creator'), professional: planLabel('professional') };
 
 const polar = (cx, cy, r, deg) => {
   const rad = ((deg - 90) * Math.PI) / 180;
@@ -435,8 +436,8 @@ const EARN_PERIODS = [['all', 'All'], ['12m', '12m'], ['6m', '6m'], ['3m', '3m']
 
 const PlanEarningsBars = ({ planContracted, planEarnings, period, onPeriod }) => {
   const groups = [
-    { key: 'creator',      label: 'Host+ (₹1,499)' },
-    { key: 'professional', label: 'Studio (₹3,650)' },
+    { key: 'creator',      label: planLabel('creator') },
+    { key: 'professional', label: planLabel('professional') },
   ];
   const series = [
     { key: 'contracted', label: 'Contracted (plan × holders)', color: '#960D32', data: planContracted },

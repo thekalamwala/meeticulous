@@ -28,7 +28,7 @@ export const RESERVED_FIRST_SEGMENTS = [
   'my-bookings', 'profile', 'reviews', 'loyalty', 'sitemap', 'robots', 'health',
   'search', 'wall-of-love', 'moments', 'opening', 'inaugurators',
   'presentation', // full-screen product pitch deck (pages/presentation/)
-  'pitch-deck', // investor pitch deck (pages/pitch-deck/) — noindex, unlinked, not in sitemap/prerender
+  'pitch-deck', // retired investor deck — kept reserved so old shared links can't be claimed as a host URL
   '_attic', // hidden pre-compaction homepage snapshot (pages/HomeArchive.jsx) — noindex, unlinked, not in sitemap/prerender
   // Branded error pages (config/errorCatalog.js) + offline/maintenance. Each has
   // its own /<code> route, so the first segment must be reserved here too.

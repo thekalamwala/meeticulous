@@ -145,8 +145,8 @@ const Host360List = () => {
         <select value={plan} onChange={e => setPlan(e.target.value)} className={selCls}>
           <option value="">All plans</option>
           <option value="starter">Starter</option>
-          <option value="creator">Host+</option>
-          <option value="professional">Studio</option>
+          <option value="creator">Pro (Partner)</option>
+          <option value="professional">Pro (Legacy Studio)</option>
           <option value="supreme">Supreme</option>
         </select>
         <select value={statusF} onChange={e => setStatusF(e.target.value)} className={selCls}>

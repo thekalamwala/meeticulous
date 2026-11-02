@@ -55,6 +55,25 @@ describe('emailComponents', () => {
     expect(C.banner(slate, { title: '<script>x</script>' })).not.toContain('<script>');
   });
 
+  test('heroImage points at the hosted banner with alt text and an Outlook width', () => {
+    const html = C.heroImage('birthday', 'Birthday cake');
+    expect(html).toContain('https://meeticulous.com/images/email/banners/birthday.png');
+    expect(html).toContain('alt="Birthday cake"');
+    expect(html).toContain('width="536"');
+    expect(C.heroImage('x', '"><script>')).not.toContain('<script>');
+  });
+
+  test('every banner a template or the weekly recap uses ships in client/public', () => {
+    const fs = require('fs');
+    const path = require('path');
+    const dir = path.resolve(__dirname, '../../../client/public/images/email/banners');
+    const bodies = require('../../config/emailTemplates').map((t) => t.html_content || '').join('')
+      + fs.readFileSync(path.resolve(__dirname, '../../services/weeklyHostRecap.js'), 'utf8');
+    const names = [...bodies.matchAll(/(?:banners\/|heroImage\(')([a-z0-9-]+)/g)].map((m) => m[1]);
+    expect(names.length).toBeGreaterThan(10);
+    expect(names.filter((n) => !fs.existsSync(path.join(dir, `${n}.png`)))).toEqual([]);
+  });
+
   test('inner blocks use the 10px box radius (2026-11 redesign)', () => {
     const html = C.heroDate(green, { day: '1', mon: 'JAN', year: '2026', title: 'x', time: 'y' });
     expect(html).toMatch(/border-radius:10px/);

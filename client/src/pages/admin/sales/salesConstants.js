@@ -98,12 +98,13 @@ export const SMART_VIEWS = [
 ];
 
 // Plan the lead is interested in — admin-set on the lead panel (leads.plan_interest,
-// v3.125). NULL/unset shows as "—". Keys match the DB CHECK constraint.
+// v3.125). NULL/unset shows as "—". Keys match the DB CHECK constraint, so the
+// legacy hostplus_/studio_ VALUES stay; only the labels follow the Pro rename.
 export const PLAN_INTEREST = [
-  { value: 'hostplus_monthly', label: 'Host+ Monthly' },
-  { value: 'hostplus_yearly', label: 'Host+ Yearly' },
-  { value: 'studio_monthly', label: 'Studio Monthly' },
-  { value: 'studio_yearly', label: 'Studio Yearly' },
+  { value: 'hostplus_monthly', label: 'Pro Monthly' },
+  { value: 'hostplus_yearly', label: 'Pro Yearly' },
+  { value: 'studio_monthly', label: 'Pro Monthly (Legacy Studio)' },
+  { value: 'studio_yearly', label: 'Pro Yearly (Legacy Studio)' },
   { value: 'enterprise', label: 'Enterprise' },
 ];
 export const PLAN_INTEREST_LABEL = Object.fromEntries(PLAN_INTEREST.map((p) => [p.value, p.label]));

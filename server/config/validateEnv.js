@@ -42,8 +42,6 @@ const RECOMMENDED = [
   ['SMTP_USER',            'Outbound email auth.'],
   ['SMTP_PASS',            'Outbound email auth.'],
   ['ADMIN_ALERT_EMAIL',    'Admin notifications (e.g. new-category suggestions).'],
-  ['PITCH_DECK_PASSCODE',  'Investor pitch deck access (unset = /pitch-deck gate closed / 503).'],
-  ['PITCH_DECK_EXPIRES_AT','Investor pitch deck expiry (ISO date; unset = never expires).'],
   // Razorpay keys are admin-managed in the DB (razorpayConfig.js) with env as a
   // fallback, so they are recommended-not-critical here.
   ['RAZORPAY_KEY_ID',      'Razorpay fallback (admin DB config preferred).'],

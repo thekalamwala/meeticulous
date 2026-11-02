@@ -481,6 +481,9 @@ async function prerender() {
   const renderOnce = async (route, navTimeout = NAV_TIMEOUT_MS) => {
     const page = await browser.newPage();
     try {
+      // Vercel's builder runs in UTC; without this lib/pricingRegion.js would read
+      // the build box as "outside India" and bake USD Pro prices into the HTML.
+      await page.emulateTimezone('Asia/Kolkata');
       // Block analytics/tracking requests — avoids phantom pageviews and speeds up render
       await page.setRequestInterception(true);
       // In-flight requests, so a nav timeout can say what it was waiting on.

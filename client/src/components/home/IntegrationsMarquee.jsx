@@ -96,7 +96,7 @@ export default function IntegrationsMarquee({ onStart, loading }) {
             disabled={loading}
             className="mt-btn flex-shrink-0"
           >
-            {loading ? "Opening Google…" : "Get your booking link"} <ArrowUpRight size={16} />
+            {loading ? "Opening Google…" : "Get Started - Free"} <ArrowUpRight size={16} />
           </button>
         </div>
       </Reveal>

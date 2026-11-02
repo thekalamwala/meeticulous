@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { PageHeader, Card, Btn, Badge } from '../../components/admin/ui';
 import { adminGetReferralRules, adminUpdateReferralRule, adminGetReferrals } from '../../services/api';
+import { planLabel as displayPlan } from '../../utils/themeUtils';
 
-const PLAN_LABEL = { creator: 'Host+', professional: 'Studio' };
-const planLabel = (s) => PLAN_LABEL[s] || s || '—';
+const planLabel = (s) => displayPlan(s) || '—';
 const fmtDate = (s) => {
   if (!s) return '—';
   try { return new Date(s).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); }
