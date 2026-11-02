@@ -6,8 +6,9 @@ import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 /* "Who it's for" — Calendly-style carousel: the current audience is a big card
    in the centre (horizontal on wide screens), the others sit at the edges as
    narrow, shorter tinted cards. Click a side card, swipe/drag, the arrows or
-   arrow keys to switch. The blocks stay put — only the content inside them
-   swaps, with a soft fade (instant under prefers-reduced-motion).
+   arrow keys to switch. The blocks stay put; their content push-slides: the
+   old content travels out one side while the new one travels in from the other,
+   in sync, with no fade (instant under prefers-reduced-motion).
    Each `audience`: { key, icon, title, desc, who:[{label,href?}], points:[], color, learnMore }. */
 
 /* Top vignette — a small UI-style card built only from real labels (who it's
@@ -54,6 +55,15 @@ const Vignette = ({ a, on }) => (
   </div>
 );
 
+
+// Push-slide: content enters from the side it is travelling from and leaves out
+// the other, both at once (no opacity, no "wait" gap). d: 1 = forward.
+const PUSH = {
+  enter: (d) => ({ x: `${100 * d}%` }),
+  show: { x: "0%" },
+  leave: (d) => ({ x: `${-100 * d}%` }),
+};
+const EASE = [0.32, 0.72, 0, 1]; // fast out, soft landing
 
 export default function AudienceCarousel({ audiences }) {
   const reduce = useReducedMotion();
@@ -191,66 +201,43 @@ export default function AudienceCarousel({ audiences }) {
                 }`}
               >
                 {on ? (
-                  // Centre card: old content fades out, then the new one fades up in
-                  // (no hard cut between audiences).
-                  <AnimatePresence mode="wait" initial={false} custom={dir}>
+                  // Centre card: the new audience pushes the old one out.
+                  <AnimatePresence initial={false} custom={dir}>
                     <motion.div
                       key={a.key}
                       custom={dir}
-                      variants={{
-                        enter: (d) => ({ opacity: 0, x: 48 * d }),
-                        show: { opacity: 1, x: 0 },
-                        leave: (d) => ({ opacity: 0, x: -48 * d, transition: { duration: 0.35, ease: "easeInOut" } }),
-                      }}
+                      variants={PUSH}
                       initial={reduce ? false : "enter"}
                       animate="show"
                       exit={reduce ? undefined : "leave"}
-                      transition={reduce ? { duration: 0 } : { duration: 0.6, ease: "easeInOut" }}
-                      className="h-full bg-white"
+                      transition={reduce ? { duration: 0 } : { duration: 0.6, ease: EASE }}
+                      className="absolute inset-y-0 left-0 bg-white"
                       style={{ width: centreW }}
                     >
                       <Body a={a} />
                     </motion.div>
                   </AnimatePresence>
                 ) : (
-                  // Side sliver: the tint cross-fades into the next audience's
-                  // (gradients can't be CSS-transitioned, so the layers fade instead),
-                  // while the icon slides with the same direction + timing as the
-                  // centre card's text.
-                  <>
-                    <AnimatePresence initial={false}>
-                      <motion.span
-                        key={a.key}
-                        initial={reduce ? false : { opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0 }}
-                        transition={reduce ? { duration: 0 } : { duration: 0.8, ease: "easeInOut" }}
-                        className="absolute inset-0"
-                        style={{
-                          background: `linear-gradient(150deg, color-mix(in srgb, ${a.color} 10%, white), color-mix(in srgb, ${a.color} 26%, white))`,
-                        }}
-                      />
-                    </AnimatePresence>
-                    <AnimatePresence mode="wait" initial={false} custom={dir}>
-                      <motion.span
-                        key={a.key}
-                        custom={dir}
-                        variants={{
-                          enter: (d) => ({ opacity: 0, x: 24 * d }),
-                          show: { opacity: 1, x: 0 },
-                          leave: (d) => ({ opacity: 0, x: -24 * d, transition: { duration: 0.35, ease: "easeInOut" } }),
-                        }}
-                        initial={reduce ? false : "enter"}
-                        animate="show"
-                        exit={reduce ? undefined : "leave"}
-                        transition={reduce ? { duration: 0 } : { duration: 0.6, ease: "easeInOut" }}
-                        className="absolute inset-0 flex items-center justify-center"
-                        style={{ color: a.color }}
-                      >
-                        <a.icon size={Math.abs(off) === 1 ? (big ? 24 : 14) : big ? 18 : 10} />
-                      </motion.span>
-                    </AnimatePresence>
-                  </>
+                  // Side sliver: tint + icon push-slide together, same direction
+                  // and timing as the centre card.
+                  <AnimatePresence initial={false} custom={dir}>
+                    <motion.span
+                      key={a.key}
+                      custom={dir}
+                      variants={PUSH}
+                      initial={reduce ? false : "enter"}
+                      animate="show"
+                      exit={reduce ? undefined : "leave"}
+                      transition={reduce ? { duration: 0 } : { duration: 0.6, ease: EASE }}
+                      className="absolute inset-0 flex items-center justify-center"
+                      style={{
+                        color: a.color,
+                        background: `linear-gradient(150deg, color-mix(in srgb, ${a.color} 10%, white), color-mix(in srgb, ${a.color} 26%, white))`,
+                      }}
+                    >
+                      <a.icon size={Math.abs(off) === 1 ? (big ? 24 : 14) : big ? 18 : 10} />
+                    </motion.span>
+                  </AnimatePresence>
                 )}
               </article>
             );

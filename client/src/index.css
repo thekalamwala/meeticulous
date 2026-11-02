@@ -570,28 +570,41 @@ button[role='switch'] {
 .home-shot:last-child { position: relative; top: 0; }
 
 /* ════════════════════════════════════════════════════════════
-   HOMEPAGE HERO (components/home/HomeHero.jsx) — full-screen maroon block.
-   --ee-w sizes the pink ribbon's ee loop, --ee-r/--ee-b place it; the grid's
-   bottom padding keeps copy + card clear of the ribbon at every width.
+   HOMEPAGE HERO (components/home/HomeHero.jsx) — full-screen maroon block with
+   the pink ribbon sitting on its foot. --ee-w sizes the ee loop, --ee-r places
+   it. The ee svg box is 220 units tall (1 unit = --ee-w/400): the loops' lowest
+   edge is at ~y=200, the straight band's top at y=113. --ee-b drops the box so
+   the maroon ends 5px under the loops.
    ════════════════════════════════════════════════════════════ */
 .home-hero {
-  --ee-w: 190px; --ee-r: 0px; --ee-b: 20px;
+  --ee-w: 190px; --ee-r: 0px;
+  --ee-b: calc(5px - var(--ee-w) * 20 / 400);
   display: flex; flex-direction: column; justify-content: center;
   min-height: calc(100svh - 57px);
 }
+/* Phones/tablets: copy spans the full width, so clear the whole ee. */
 .home-hero-grid {
   display: grid; gap: 3rem; align-items: center;
-  padding-bottom: calc(var(--ee-w) * 0.55 + var(--ee-b) + 2rem);
+  padding-bottom: calc(var(--ee-w) * 200 / 400 + 5px + 1.5rem);
 }
 .home-hero-h1 { font-size: clamp(2.4rem, 6.5vw, 4.25rem); max-width: 17ch; }
 .home-hero-sub { font-size: 1rem; }
 @media (min-width: 640px) {
-  .home-hero { --ee-w: 260px; --ee-b: 28px; }
+  .home-hero { --ee-w: 260px; }
   .home-hero-sub { font-size: 1.125rem; }
 }
 @media (min-width: 1024px) {
-  .home-hero { --ee-w: 340px; --ee-r: 6vw; --ee-b: 36px; }
-  .home-hero-grid { grid-template-columns: 1.15fr 0.85fr; }
+  .home-hero { --ee-w: 280px; --ee-r: 6vw; }
+  /* Copy keeps the left column; the right one stays empty (owner call). */
+  .home-hero-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); }
+}
+/* Wide desktop: the loops sit clear of the copy, under the card, so the copy
+   only has to clear the straight band (top = 87 units above the loops' foot
+   + 5px). Below 1280 the loops reach under the copy's column, so keep the full
+   clearance above. */
+@media (min-width: 1280px) {
+  .home-hero { --ee-w: 340px; }
+  .home-hero-grid { padding-bottom: calc(var(--ee-w) * 87 / 400 + 5px + 1.5rem); }
 }
 
 /* ── Host onboarding micro-interactions (pages/onboarding/*) ───────────────

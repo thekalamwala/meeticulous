@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, ChevronRight, Video } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Reveal from "./Reveal";
 import { cleanSlug, saveHeroSlug } from "../../utils/heroSlug";
 
 /* Homepage hero — owner reference (2026-11-02): full-screen crimson block, copy
-   + "Claim my link" box on the left, a sample booking-page card on the right,
-   and a thick pink ribbon that runs in from the left edge, loops into a cursive
-   "ee" under the card and exits right. Sizing lives in `.home-hero` (index.css)
+   + "Claim my link" box on the left, the right column left empty (owner call)
+   so the thick pink ribbon that runs in from the left edge, loops into a
+   cursive "ee" and exits right carries that side. Sizing lives in `.home-hero` (index.css)
    so the ribbon, padding and full-screen height stay in one place.
 
    "Claim my link" stashes the typed slug and starts the existing Google sign-up;
@@ -23,55 +23,6 @@ const EE_PATH =
   "C50,175 95,195 140,170 C170,150 200,110 225,95 C255,72 265,40 235,35 " +
   "C200,30 172,75 178,120 C185,170 230,195 280,175 C320,160 360,150 400,150 L4000,150";
 const RIBBON = "var(--mt-pink)"; // the pink ee from the app icon
-const BLUSH = "var(--mt-blush)"; // the blush app-icon background
-
-// Sample services for the preview card (illustrative, INR).
-const SAMPLE_SERVICES = [
-  { name: "Discovery call", meta: "20 min · Free" },
-  { name: "1:1 consultation", meta: "60 min · ₹1,500", popular: true },
-  { name: "Group workshop", meta: "90 min · ₹499 per seat" },
-];
-
-function PreviewCard({ slug }) {
-  const handle = slug || "yourname";
-  return (
-    <div className="w-full max-w-[360px] overflow-hidden rounded-[24px] bg-white text-ink">
-      <div className="flex items-center gap-3 px-5 py-4" style={{ background: BLUSH }}>
-        <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
-          {handle.slice(0, 2).toUpperCase()}
-        </span>
-        <div className="min-w-0">
-          <p className="truncate text-lg font-bold text-primary-cta">Your booking page</p>
-          <p className="truncate text-xs text-neutral-600">meeticulous.com/{handle}</p>
-        </div>
-      </div>
-      <ul className="space-y-2.5 bg-cream p-4">
-        {SAMPLE_SERVICES.map((s) => (
-          <li
-            key={s.name}
-            className={`flex items-center gap-3 rounded-[16px] px-4 py-3 ${
-              s.popular ? "bg-primary text-white" : "border-2 border-neutral-100 bg-white"
-            }`}
-          >
-            <Video size={18} className={s.popular ? "text-white" : "text-primary"} />
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold">{s.name}</p>
-              <p className={`text-xs ${s.popular ? "text-white/80" : "text-neutral-500"}`}>{s.meta}</p>
-            </div>
-            {s.popular ? (
-              <span className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold text-primary-cta" style={{ background: RIBBON }}>
-                Popular
-              </span>
-            ) : (
-              <ChevronRight size={16} className="text-neutral-400" />
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 export default function HomeHero({ onStart, loading }) {
   const [slug, setSlug] = useState("");
 
@@ -149,11 +100,6 @@ export default function HomeHero({ onStart, loading }) {
             </p>
           </Reveal>
         </div>
-
-        {/* Sample booking page — desktop only (it would push the CTA down on phones) */}
-        <Reveal instant delay={0.22} className="hidden justify-end lg:flex">
-          <PreviewCard slug={slug} />
-        </Reveal>
       </div>
     </section>
   );
