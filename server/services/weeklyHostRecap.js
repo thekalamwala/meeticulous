@@ -22,6 +22,7 @@
 const { supabaseAdmin } = require('../config/supabase');
 const sendEmail = require('../utils/sendEmail');
 const { inAppNotify } = require('../utils/inAppNotify');
+const { heroImage } = require('./email/emailComponents');
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEK_MS = 7 * DAY_MS;
@@ -86,6 +87,7 @@ function recapEmailHtml(host, s, base) {
     `<tr><td style="padding:6px 0;color:#666">${label}</td>` +
     `<td style="padding:6px 0;text-align:right;font-weight:700;color:#111">${value}</td></tr>`;
   return (
+    heroImage('weekly-recap', 'Your week on Meeticulous') +
     `<p>Hi ${name},</p>` +
     `<p>Here's your week on Meeticulous:</p>` +
     `<table style="width:100%;max-width:360px;border-collapse:collapse;font-size:15px">` +

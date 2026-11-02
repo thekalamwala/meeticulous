@@ -107,6 +107,19 @@ function celebration(theme, { iconUrl, title } = {}) {
   </td></tr></table>`;
 }
 
+// Event header banners: 1200×480 PNGs flattened onto canvas pink (no alpha, so
+// dark-mode clients don't show them on black). Files live in
+// client/public/images/email/banners, served by Vercel.
+const BANNERS = 'https://meeticulous.com/images/email/banners';
+
+/** Full-width illustrated banner at the top of an email body. `name` = file
+ *  basename (e.g. 'birthday'); alt carries the meaning when images are blocked.
+ *  width attr = body column (600 card − 2×32 padding) so Outlook, which ignores
+ *  max-width, still sizes it. */
+function heroImage(name, alt) {
+  return `<img src="${BANNERS}/${esc(name)}.png" width="536" alt="${esc(alt)}" style="display:block;width:100%;max-width:536px;height:auto;margin:0 0 22px;border:0;border-radius:6px;">`;
+}
+
 // ── Marketing blocks (conversion-centered design; CDN icons, no emoji/SVG) ──
 // Icons live on the CDN, called by filename. Upload to /images/email/marketing/icons/.
 const MKT_ICONS = 'https://meeticulous.com/images/email/marketing/icons';
@@ -117,8 +130,8 @@ const MKT_ICONS = 'https://meeticulous.com/images/email/marketing/icons';
 function heroBand(theme, { kick, big, sub, h2 } = {}) {
   const accent = theme.accent;
   const inner = big
-    ? `<div style="font-family:${FONT};font-size:46px;line-height:1;font-weight:800;letter-spacing:-.02em;">${esc(big)}</div>`
-    : (h2 ? `<div style="font-family:${FONT};font-size:28px;line-height:1.12;font-weight:800;">${esc(h2)}</div>` : '');
+    ? `<div style="font-family:${FONT};font-size:46px;line-height:1;font-weight:800;letter-spacing:-.02em;color:#ffffff;">${esc(big)}</div>`
+    : (h2 ? `<div style="font-family:${FONT};font-size:28px;line-height:1.12;font-weight:800;color:#ffffff;">${esc(h2)}</div>` : '');
   // Solid accent band (no gradient — the style guide forbids gradients). White
   // text reads on every category accent + the brand maroon.
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${accent}" style="margin:8px 0 16px;background:${accent};border-radius:10px;"><tr><td align="center" style="padding:30px 24px;">
@@ -208,4 +221,4 @@ function signOff(name, role) {
   </tr></table>`;
 }
 
-module.exports = { signOff, statusTags, otpBox, heroDate, amountRow, infoCard, countdown, banner, celebration, heroBand, compareRow, benefitGrid, stars, bookingCard, TONES, FONT, MKT_ICONS };
+module.exports = { signOff, statusTags, otpBox, heroDate, amountRow, infoCard, countdown, banner, celebration, heroImage, heroBand, compareRow, benefitGrid, stars, bookingCard, TONES, FONT, MKT_ICONS };
