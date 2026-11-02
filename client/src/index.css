@@ -569,6 +569,31 @@ button[role='switch'] {
    after it — kills the large empty gap a fully-pinned stack leaves below. */
 .home-shot:last-child { position: relative; top: 0; }
 
+/* ════════════════════════════════════════════════════════════
+   HOMEPAGE HERO (components/home/HomeHero.jsx) — full-screen maroon block.
+   --ee-w sizes the pink ribbon's ee loop, --ee-r/--ee-b place it; the grid's
+   bottom padding keeps copy + card clear of the ribbon at every width.
+   ════════════════════════════════════════════════════════════ */
+.home-hero {
+  --ee-w: 190px; --ee-r: 0px; --ee-b: 20px;
+  display: flex; flex-direction: column; justify-content: center;
+  min-height: calc(100svh - 57px);
+}
+.home-hero-grid {
+  display: grid; gap: 3rem; align-items: center;
+  padding-bottom: calc(var(--ee-w) * 0.55 + var(--ee-b) + 2rem);
+}
+.home-hero-h1 { font-size: clamp(2.4rem, 6.5vw, 4.25rem); max-width: 17ch; }
+.home-hero-sub { font-size: 1rem; }
+@media (min-width: 640px) {
+  .home-hero { --ee-w: 260px; --ee-b: 28px; }
+  .home-hero-sub { font-size: 1.125rem; }
+}
+@media (min-width: 1024px) {
+  .home-hero { --ee-w: 340px; --ee-r: 6vw; --ee-b: 36px; }
+  .home-hero-grid { grid-template-columns: 1.15fr 0.85fr; }
+}
+
 /* ── Host onboarding micro-interactions (pages/onboarding/*) ───────────────
    CSS-only, no deps. Pulse uses the crimson primary at low alpha. */
 @keyframes onb-pop { 0% { transform: scale(.92) } 60% { transform: scale(1.04) } 100% { transform: scale(1) } }

@@ -15,6 +15,7 @@ import OnboardingStepper from './OnboardingStepper';
 import LivePreviewCard from './LivePreviewCard';
 import { PERSONAS } from './personas';
 import PetalSpinner from '../../components/common/PetalSpinner';
+import { takeHeroSlug } from '../../utils/heroSlug';
 
 // Persona chip dot — one hue per persona. Static class strings so Tailwind's
 // JIT keeps them; do NOT build these class names dynamically.
@@ -120,6 +121,17 @@ const PageStep = () => {
   }, []);
 
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current); }, []);
+
+  // Link typed into the homepage hero's "Claim my link" box: open the editor
+  // pre-filled and run the real availability check; the host still hits Save.
+  useEffect(() => {
+    const wanted = takeHeroSlug();
+    if (!wanted || wanted === urlSlug) return;
+    setDraft(wanted);
+    setEditing(true);
+    setChecking(true);
+    checkSlug(wanted);
+  }, [checkSlug, urlSlug]);
 
   const onDraft = (e) => {
     const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 30);

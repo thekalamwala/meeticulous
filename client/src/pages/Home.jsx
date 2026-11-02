@@ -58,6 +58,7 @@ import AppointmentFlow from "../components/home/AppointmentFlow";
 import AudienceCarousel from "../components/home/AudienceCarousel";
 import IntegrationsMarquee from "../components/home/IntegrationsMarquee";
 import BrandTrustStrip from "../components/home/BrandTrustStrip";
+import HomeHero from "../components/home/HomeHero";
 import ProblemGlyph from "../components/home/ProblemGlyph";
 import { PERSONAS, NEWSLETTER } from "../components/home/images";
 import { TESTIMONIALS } from "../data/testimonials";
@@ -382,7 +383,9 @@ const PROBLEMS = [
     fixes: ["Clients see your open slots and book one themselves.", "Busy times from Google Calendar never show up."],
     icon: CalendarCheck,
     tile: "bg-blue-100 text-blue-500",
+    band: "bg-blue-900",
     glyph: "dms",
+    pastel: "text-blue-200",
     link: { to: "/features/online-scheduling", label: "Online scheduling" },
   },
   {
@@ -390,7 +393,9 @@ const PROBLEMS = [
     fixes: ["Clients pay upfront by UPI, card or netbanking.", "Payments run through Razorpay at checkout."],
     icon: Wallet,
     tile: "bg-emerald-100 text-emerald-500",
+    band: "bg-emerald-900",
     glyph: "wallet",
+    pastel: "text-emerald-200",
     link: { to: "/features/payments", label: "Payments" },
   },
   {
@@ -398,7 +403,9 @@ const PROBLEMS = [
     fixes: ["Automatic WhatsApp and email reminders before every session.", "A confirmation goes out the moment they book."],
     icon: Bell,
     tile: "bg-amber-100 text-amber-500",
+    band: "bg-amber-900",
     glyph: "bell",
+    pastel: "text-amber-200",
     link: { to: "/features/notifications", label: "Notifications" },
   },
   {
@@ -406,7 +413,9 @@ const PROBLEMS = [
     fixes: ["A GST invoice is generated for every paid booking.", "All your invoices live in one dashboard."],
     icon: Users,
     tile: "bg-red-100 text-red-500",
+    band: "bg-red-900",
     glyph: "receipt",
+    pastel: "text-red-200",
     link: { to: "/features/client-management", label: "Client management" },
   },
   {
@@ -414,7 +423,9 @@ const PROBLEMS = [
     fixes: ["Two-way Google Calendar sync keeps one source of truth.", "Bookings land on your calendar with a Meet link."],
     icon: CalendarCheck,
     tile: "bg-pink-100 text-pink-500",
+    band: "bg-pink-900",
     glyph: "clash",
+    pastel: "text-pink-200",
     link: { to: "/features/google-calendar", label: "Google Calendar" },
   },
   {
@@ -422,7 +433,9 @@ const PROBLEMS = [
     fixes: ["Reschedule from your dashboard; the client confirms by link.", "Clients can cancel from their own booking link."],
     icon: LayoutDashboard,
     tile: "bg-lime-100 text-lime-500",
+    band: "bg-lime-900",
     glyph: "reschedule",
+    pastel: "text-lime-200",
     link: { to: "/features/booking-pages", label: "Booking pages" },
   },
   {
@@ -430,7 +443,9 @@ const PROBLEMS = [
     fixes: ["Add buffers between sessions automatically.", "Set weekly hours and block out days off."],
     icon: Clock,
     tile: "bg-violet-100 text-violet-500",
+    band: "bg-violet-900",
     glyph: "break",
+    pastel: "text-violet-200",
     link: { to: "/features/availability", label: "Availability" },
   },
   {
@@ -438,7 +453,9 @@ const PROBLEMS = [
     fixes: ["Starter is free: we take 5% only when you get paid.", "Pro has 0% commission, so you keep every rupee."],
     icon: IndianRupee,
     tile: "bg-cyan-100 text-cyan-500",
+    band: "bg-cyan-900",
     glyph: "fees",
+    pastel: "text-cyan-200",
     link: { to: "/pricing", label: "Pricing" },
   },
 ];
@@ -658,57 +675,9 @@ const Home = () => {
           slow mobile that WAS the LCP (~6-10s). The hero is server-rendered, so
           it now paints immediately. Intro kept on profile pages. */}
 
-      {/* ════════════════ HERO — design-system "Loop & Slot" ════════════════
-         Keyword H1 (SEO) + serif human half, primary Google CTA + ghost pricing
-         link, slot-grid composition on the right (below on phones). */}
-      <section className="relative overflow-hidden bg-canvas px-5 pb-20 pt-16 sm:px-8 sm:pb-24 sm:pt-20 lg:pb-28 lg:pt-24">
-        {/* Design-system hero: cream ground, two-beat headline, primary + ghost CTA,
-            live slot-grid composition with ONE rose ee thread behind it. */}
-        <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12">
-          <div className="text-center lg:text-left">
-            <Reveal instant as="h1" delay={0.05} className="mx-auto max-w-[17ch] font-display text-[clamp(2.4rem,7vw,4.25rem)] font-extrabold leading-[1.02] tracking-[-0.04em] text-maroon lg:mx-0">
-              Appointment booking software for creators, pros &amp; bros.{" "}
-              <span className="font-serif text-[1.08em] font-normal italic tracking-[-0.01em] text-rose">Keep your calm.</span>
-            </Reveal>
-
-            <Reveal instant as="p" delay={0.12} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-ink sm:text-lg lg:mx-0">
-              Get booked, paid and reminded without the admin. One link turns your time, skills
-              and services into paid bookings, with UPI checkout, WhatsApp reminders and GST invoices built in.
-            </Reveal>
-
-            {/* Google-only host funnel — fires the same flow as /become-a-host */}
-            <Reveal instant delay={0.18} className="mt-8 sm:mt-10">
-              <div className="flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center lg:justify-start">
-                <button onClick={startGoogle} disabled={googleLoading} className="mt-btn mt-btn--l">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white">
-                    <GoogleIcon />
-                  </span>
-                  {googleLoading ? "Opening Google…" : "Get your free booking page"}
-                </button>
-                <Link to="/pricing" className="mt-btn mt-btn--ghost mt-btn--l">See pricing</Link>
-              </div>
-              <p className="mx-auto mt-4 max-w-md text-xs leading-relaxed text-muted lg:mx-0">
-                By continuing, you agree to our{" "}
-                <Link to="/terms" className="text-muted underline underline-offset-2 hover:text-ink">Terms &amp; Conditions</Link> and{" "}
-                <Link to="/privacy" className="text-muted underline underline-offset-2 hover:text-ink">Privacy Policy</Link>.
-              </p>
-            </Reveal>
-          </div>
-
-          <Reveal instant delay={0.22} className="relative mx-auto w-full max-w-[420px]">
-            <img src="/brand/ds/02-ee/mt-ee-thread-rose.svg" alt="" aria-hidden="true"
-                 className="pointer-events-none absolute -right-48 top-1/2 hidden w-[760px] max-w-none -translate-y-1/2 lg:block" />
-            <div className="relative grid grid-cols-3 gap-[10px]" aria-label="Example week of slots" role="img">
-              {HERO_SLOTS.map((c, k) => (
-                <div key={k} className={`mt-slot${c.state ? ` mt-slot--${c.state}` : ""}${c.selected ? " mt-slot--selected" : ""}`}>
-                  {c.state === "booked" ? <span className="mt-slot__dot" /> : <span />}
-                  {c.time && <span><b>{c.time}</b>{c.label && <><br />{c.label}</>}</span>}
-                </div>
-              ))}
-            </div>
-          </Reveal>
-        </div>
-      </section>
+      {/* ════════════════ HERO ════════════════ Aastha's HomeHero
+         (claim-my-link box + sample booking card) — replaces the DS slot-grid hero. */}
+      <HomeHero onStart={startGoogle} loading={googleLoading} />
 
       {/* ════════════════ COMPANY TRUST STRIP ════════════════
          Brand marquee right under the hero. Replaces the STATS proof strip
@@ -740,14 +709,14 @@ const Home = () => {
          Names the pain before the product (HubSpot-style problem→solution
          bridge): the left column stays sticky (lg+) while the problem cards
          scroll past on the right. Every fix line is a shipped capability. */}
-      <section className="bg-maroon px-5 py-20 text-white sm:px-8 lg:py-28">
+      <section className="border-y border-black/5 px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
             <div className="lg:sticky lg:top-28 lg:self-start">
-              <Reveal as="h2" delay={0.05} className="text-4xl font-extrabold leading-tight text-white sm:text-5xl">
-                Selling your time shouldn't feel like <span className="text-pink">a second job.</span>
+              <Reveal as="h2" delay={0.05} className="text-4xl font-extrabold leading-tight text-ink sm:text-5xl">
+                Selling your time shouldn't feel like <span className="text-primary-cta">a second job.</span>
               </Reveal>
-              <Reveal as="p" delay={0.1} className="mt-5 max-w-md text-base leading-relaxed text-blush sm:text-lg">
+              <Reveal as="p" delay={0.1} className="mt-5 max-w-md text-base leading-relaxed text-neutral-600 sm:text-lg">
                 Most people who sell sessions run them on DMs, payment screenshots and memory.
                 Meeticulous replaces that admin with one link that does it for you.
               </Reveal>
@@ -755,13 +724,13 @@ const Home = () => {
                 <button
                   onClick={startGoogle}
                   disabled={googleLoading}
-                  className="mt-btn mt-btn--onbrand"
+                  className="btn inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
-                  {googleLoading ? "Opening Google…" : "Get your booking link"}
+                  {googleLoading ? "Opening Google…" : "Start for free"}
                 </button>
                 <Link
                   to="/pricing"
-                  className="inline-flex h-11 items-center justify-center rounded-full border-2 border-white/40 px-6 text-sm font-semibold text-white transition-colors hover:border-white hover:bg-white/10 hover:no-underline"
+                  className="inline-flex items-center justify-center rounded-full border border-primary/40 bg-white px-6 py-3.5 text-sm font-semibold text-primary-cta transition-colors hover:border-primary hover:no-underline"
                 >
                   See pricing
                 </Link>
@@ -771,24 +740,25 @@ const Home = () => {
             <ul className="grid gap-5 sm:grid-cols-2">
               {PROBLEMS.map((p, i) => (
                 <Reveal as="li" key={p.title} delay={(i % 2) * 0.08}>
-                  <div className="flex h-full flex-col overflow-hidden rounded-[24px] bg-maroon-dark transition-transform duration-200 hover:-translate-y-0.5 motion-reduce:transition-none">
-                    {/* Design-system feature card: dark card on the maroon field */}
-                    <h3 className="flex items-center gap-3 px-6 pt-6 font-display text-lg font-extrabold leading-snug tracking-[-0.01em] text-white sm:px-7">
-                      <ProblemGlyph name={p.glyph} size={30} className="flex-shrink-0 text-pink" />
+                  <div className="flex h-full flex-col overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-shadow duration-300 hover:shadow-[0_24px_60px_-28px_rgba(26,26,26,0.25)]">
+                    {/* Dark header band — only the part above the first divider,
+                        tinted with the dark (-900) shade of the card's icon colour */}
+                    <h3 className={`flex items-center gap-3 ${p.band} px-6 py-5 font-heading text-lg font-bold leading-snug text-white sm:px-7`}>
+                      <ProblemGlyph name={p.glyph} size={30} className={`flex-shrink-0 ${p.pastel}`} />
                       {p.title}
                     </h3>
                     <div className="flex flex-1 flex-col px-6 pb-6 sm:px-7">
                     <ul className="flex-1 space-y-3 pt-5">
                       {p.fixes.map((f) => (
-                        <li key={f} className="flex items-start gap-2.5 text-[15px] leading-relaxed text-blush">
-                          <Check size={16} className="mt-1 flex-shrink-0 text-pink" />
+                        <li key={f} className="flex items-start gap-2.5 text-[15px] leading-relaxed text-neutral-600">
+                          <Check size={16} className="mt-1 flex-shrink-0 text-primary" />
                           {f}
                         </li>
                       ))}
                     </ul>
                     <Link
                       to={p.link.to}
-                      className="group mt-5 inline-flex items-center gap-1.5 border-t border-white/15 pt-5 text-sm font-semibold text-pink hover:text-white hover:no-underline"
+                      className="group mt-5 inline-flex items-center gap-1.5 border-t border-black/5 pt-5 text-sm font-semibold text-ink hover:text-primary-cta hover:no-underline"
                     >
                       {p.link.label} <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-0.5" />
                     </Link>
