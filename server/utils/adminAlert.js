@@ -122,4 +122,4 @@ async function adminAlert({ subject, lines = [], key, link, category = '' } = {}
 // Test-only: clear the throttle map between cases.
 adminAlert._resetThrottle = () => lastSentAt.clear();
 
-module.exports = { adminAlert };
+module.exports = { adminAlert, escapeHtml };

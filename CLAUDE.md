@@ -152,7 +152,10 @@ Items previously listed here as pending are now live:
   `news.meeticulous.com` — NOT `team.meeticulous.com` (Resend only), so a CRM sender must never point
   there. Durga/Sujata have no sender rows: their sequence steps were moved to Tithi (2026-11-01).
   Only takes effect while `crm_admin_sends` is ON. Off switch: `UPDATE email_senders SET active=false
-  WHERE sender_key IN ('crm_shubham','crm_tithi');`. No migration outstanding.
+  WHERE sender_key IN ('crm_shubham','crm_tithi');`.
+- **v3.183** (`v3.183_lead_reply_intent.sql`) — applied 2026-11-02 on the Meeticulous DB:
+  `leads.last_reply_intent` (AI label on the latest CRM email reply, written by
+  `brevoInboundController` via Brevo inbound parsing on `reply.meeticulous.in`). No migration outstanding.
 
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
