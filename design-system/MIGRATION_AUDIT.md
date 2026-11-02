@@ -13,6 +13,16 @@ Counts are from `client/src` on 2026-11-02, after the first migration PR.
 | 3 Components | Navbar default logo → official wordmark SVG (admin `image`/`festive` modes still honoured). Hero CTAs use `.mt-btn`. |
 | 4 Sections | **Home hero**: cream, two-beat H1 with serif human half, primary + ghost CTA, slot-grid composition with one rose thread (lg+ only). **Footer**: maroon-dark, inverse wordmark, maroon CTA band with pink thread + onBrand button, binder-tab divider. Bee honeycomb + doodle wordmark removed (bee retired). |
 
+## Done (second PR: rest of Home)
+
+- Problems → maroon feature grid: dark `maroon-dark` cards, Bricolage titles, blush body, pink checks, `onBrand` CTA.
+- How it works → blush ground; flow cards flat white, 24px.
+- Integrations panel → blush, maroon headline, rose accent (teal gone).
+- Who-it's-for, testimonials, trust, FAQ → cream; maroon H2 with rose accent word; flat white cards (no shadows); 2px ink/warm rules on trust + FAQ.
+- Tailwind `neutral` = kit warm ramp, so every `text-/border-/bg-neutral-*` on the site is warm, not cold grey.
+- Copy: Home CTAs "Start for free" → "Get your booking link".
+- Pricing section heading restyled; `PricingCards` itself left for the Pricing PR (shared with /pricing).
+
 ## Remaining (follow-up PRs, one area each)
 
 | Area | Debt | Notes |
@@ -21,7 +31,7 @@ Counts are from `client/src` on 2026-11-02, after the first migration PR.
 | Shadows | 441 arbitrary `shadow-[…]` | Kit: cards are flat fills; shadows only for overlays + hover lift (`--shadow-*`, maroon-tinted). |
 | Borders | 396 `border-black/5` | Kit: 2px (`--border-1/2`), 3px selected, 2px ink rule between major sections. |
 | Radius stragglers | 44 arbitrary radii | Inside template expressions the codemod skipped. |
-| Section patterns | Rest of Home (who-it's-for, problems, how-it-works, pricing, trust, FAQ), `/for/*` landings, `/features/*`, Pricing page | Rebuild per WEBSITE_MIGRATION Phase 4: feature grid on maroon with dark illustrations, how-it-works on blush with the ribbon, pricing with a `brand` card. |
+| Section patterns | `/for/*` landings, `/features/*`, Pricing page (+ shared `PricingCards`: recommended plan as a `brand` card) | Rebuild per WEBSITE_MIGRATION Phase 4: feature grid on maroon with dark illustrations, how-it-works on blush with the ribbon, pricing with a `brand` card. |
 | Components | No shared `Button`/`Input`/`Card` in `components/ui` yet | Port `design-system/components/*` into `client/src/components/ds/` and replace call sites area by area. |
 | Copy (Phase 5) | Title Case buttons ("Start for Free"), hype words | Sentence case, verb-first ("Get your booking link"). |
 | Legacy CSS | `styles/base-fb.css`, `styles/components/*.css`, `howitworks.scoped.css`, `enterprise.scoped.css` | Migrate off or delete once their pages are rebuilt. |
