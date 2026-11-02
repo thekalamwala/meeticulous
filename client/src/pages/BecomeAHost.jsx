@@ -4,7 +4,6 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import AuthBrandPanel from '../components/auth/AuthBrandPanel';
 import WhatsNewLink from '../components/auth/WhatsNewLink';
-import BookDemoDrawer from '../components/auth/BookDemoDrawer';
 import Seo from '../components/common/Seo';
 import { ogCard } from '../config/ogImages';
 import { SITE_URL } from '../utils/seo';
@@ -46,7 +45,6 @@ const Logo = ({ className = '' }) => (
 const BecomeAHost = () => {
   const { startVendorGoogleAuth, user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [demoOpen, setDemoOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -72,7 +70,7 @@ const BecomeAHost = () => {
   };
 
   return (
-    <div className="grid min-h-[calc(100vh-72px)] w-full lg:grid-cols-[1.05fr_1fr]">
+    <div className="grid h-[100dvh] w-full overflow-hidden lg:grid-cols-[1.05fr_1fr]">
       <Seo
         title="Get booked and paid — become a host on Meeticulous"
         description="Start taking bookings in minutes. Create your Meeticulous host page, publish services, and get paid — sign up free with Google."
@@ -86,22 +84,16 @@ const BecomeAHost = () => {
       />
 
       {/* ── RIGHT · signup card ──────────────────────────────────────────────── */}
-      <main className="flex flex-col items-center justify-center px-5 py-10 sm:py-12">
-        <div className="page-card relative w-full max-w-lg overflow-hidden p-6 text-center sm:p-8">
+      <main className="flex flex-col items-center justify-center overflow-y-auto px-5 py-4">
+        <div className="page-card relative w-full max-w-lg overflow-hidden p-5 text-center sm:p-7">
           <Link to="/" aria-label="Meeticulous — home" className="inline-block">
-            <Logo className="mx-auto h-14 w-14" />
+            <Logo className="mx-auto h-12 w-12" />
           </Link>
 
-          <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-cta">
-            Become a host
-          </p>
-          <h1 className="mt-1.5 font-heading text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+          <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-maroon sm:text-3xl">
             Become a host
           </h1>
-          <p className="mt-1 text-base font-semibold text-gray-700">
-            Get booked. Get paid.
-          </p>
-          <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-gray-500">
+          <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted">
             Publish your services, share your booking page and get paid — calendar and Google Meet links set up automatically.
           </p>
 
@@ -114,13 +106,13 @@ const BecomeAHost = () => {
           <button
             onClick={handleGoogle}
             disabled={loading}
-            className="btn mt-7 flex w-full items-center justify-center gap-3 rounded-[16px] bg-ink py-3.5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="btn mt-5 flex w-full items-center justify-center gap-3 rounded-[16px] bg-ink py-3 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] transition-opacity hover:opacity-90 disabled:opacity-50"
           >
             <GoogleIcon />
             {loading ? 'Opening Google…' : 'Continue with Google'}
           </button>
 
-          <p className="mt-3 text-xs leading-relaxed text-gray-400">
+          <p className="mt-2 text-xs leading-relaxed text-muted">
             By continuing, you agree to our{' '}
             <Link to="/terms" className="hover:underline">Terms &amp; Conditions</Link> and{' '}
             <Link to="/privacy" className="hover:underline">Privacy Policy</Link>.
@@ -130,22 +122,22 @@ const BecomeAHost = () => {
               email sign-up have no backend yet; enable when those flows land. */}
           <button
             type="button" disabled aria-disabled="true" title="Coming soon"
-            className="btn btn--outline mt-3 flex w-full cursor-not-allowed items-center justify-center gap-3 border-black/10 bg-gray-100 py-3 text-sm font-semibold text-gray-400"
+            className="btn btn--outline mt-3 flex w-full cursor-not-allowed items-center justify-center gap-3 border-maroon/10 bg-neutral-50 py-2.5 text-sm font-semibold text-muted"
           >
             <LinkedInIcon />
             Sign up with LinkedIn
-            <span className="rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-gray-400">Soon</span>
+            <span className="rounded-full bg-maroon/5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted">Soon</span>
           </button>
           <button
             type="button" disabled aria-disabled="true" title="Coming soon"
-            className="btn btn--outline mt-3 flex w-full cursor-not-allowed items-center justify-center gap-3 border-black/10 bg-gray-100 py-3 text-sm font-semibold text-gray-400"
+            className="btn btn--outline mt-3 flex w-full cursor-not-allowed items-center justify-center gap-3 border-maroon/10 bg-neutral-50 py-2.5 text-sm font-semibold text-muted"
           >
             <MailIcon />
             Sign up with email
-            <span className="rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-gray-400">Soon</span>
+            <span className="rounded-full bg-maroon/5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted">Soon</span>
           </button>
 
-          <ul className="mt-6 space-y-2 text-left text-xs text-gray-500">
+          <ul className="mt-4 space-y-1.5 text-left text-xs text-muted">
             <li className="flex gap-2">
               <Check />
               <span>No password to remember — your Google account is your login</span>
@@ -154,44 +146,23 @@ const BecomeAHost = () => {
               <Check />
               <span>Calendar connected instantly — busy times never get booked</span>
             </li>
-            <li className="flex gap-2">
-              <Check />
-              <span>Google Meet links created for every online booking</span>
-            </li>
           </ul>
 
-          {/* Book a demo — 1:1 onboarding call with the founder */}
-          <div className="my-4 flex items-center gap-3">
-            <span className="h-px flex-1 bg-black/10" />
-            <span className="text-xs font-medium uppercase tracking-wide text-gray-400">Or</span>
-            <span className="h-px flex-1 bg-black/10" />
-          </div>
-          <button
-            type="button"
-            onClick={() => setDemoOpen(true)}
-            className="btn flex w-full items-center justify-center gap-3 border-2 border-primary-cta bg-primary py-3 text-sm font-semibold text-white shadow-[0_1px_2px_rgba(16,24,40,0.05)] transition-colors hover:bg-black hover:text-primary-cta"
-          >
-            Book A Demo
-          </button>
-
-          <p className="mt-8 text-sm text-gray-500">
+          <p className="mt-5 text-sm text-muted">
             Already a host?{' '}
             <Link to="/login-as-vendor" className="font-semibold text-primary hover:underline">Log in</Link>
           </p>
-
-          {/* Book-a-demo panel slides up from the bottom of this card, filling it. */}
-          <BookDemoDrawer open={demoOpen} onClose={() => setDemoOpen(false)} />
         </div>
 
         {/* Outside the card */}
-        <WhatsNewLink className="mt-6" />
+        <WhatsNewLink className="mt-4" />
       </main>
     </div>
   );
 };
 
 const Check = () => (
-  <svg viewBox="0 0 24 24" className="mt-0.5 h-3.5 w-3.5 shrink-0 text-c-emerald" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg viewBox="0 0 24 24" className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success-fg" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M20 6 9 17l-5-5" />
   </svg>
 );

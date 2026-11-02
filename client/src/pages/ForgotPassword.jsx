@@ -26,12 +26,12 @@ const ForgotPassword = () => {
 
   if (sent) {
     return (
-      <div className="app-container flex min-h-[calc(100vh-72px)] items-center justify-center py-8 sm:py-12">
+      <div className="app-container flex h-[calc(100dvh-57px)] items-center justify-center overflow-hidden py-4">
         <Seo title="Forgot password — Meeticulous" robots="noindex,nofollow" />
-        <div className="page-card w-full max-w-md p-5 sm:p-8 text-center">
-          <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+        <div className="page-card w-full max-w-md max-h-full overflow-y-auto p-5 sm:p-8 text-center">
+          <div className="w-14 h-14 rounded-full bg-success-bg flex items-center justify-center mx-auto mb-4">
             <svg
-              className="w-7 h-7 text-green-600"
+              className="w-7 h-7 text-success-fg"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -44,8 +44,8 @@ const ForgotPassword = () => {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold mb-2">Check your email</h2>
-          <p className="text-sm text-gray-500 mb-6">
+          <h2 className="font-display text-maroon text-xl font-bold mb-2">Check your email</h2>
+          <p className="text-sm text-muted mb-6">
             If <strong>{email}</strong> has an account, we've sent a 6-digit
             reset code. It expires in 10 minutes.
           </p>
@@ -55,7 +55,7 @@ const ForgotPassword = () => {
           >
             Enter reset code
           </button>
-          <p className="mt-4 text-sm text-gray-500">
+          <p className="mt-4 text-sm text-muted">
             Didn't get it?{" "}
             <button
               onClick={() => setSent(false)}
@@ -70,11 +70,12 @@ const ForgotPassword = () => {
   }
 
   return (
-    <div className="app-container flex min-h-[calc(100vh-72px)] items-center justify-center py-8 sm:py-12">
+    <div className="app-container flex h-[calc(100dvh-57px)] items-center justify-center overflow-hidden py-4">
       <Seo title="Forgot password — Meeticulous" robots="noindex,nofollow" />
-      <div className="page-card w-full max-w-md p-5 sm:p-8">
-        <h1 className="text-2xl font-bold mb-2">Forgot password?</h1>
-        <p className="mb-6 text-sm text-gray-500">
+      <div className="page-card w-full max-w-md max-h-full overflow-y-auto p-5 sm:p-8">
+        <img src="/brand/ee-rounded-primary.svg" alt="Meeticulous" className="mb-5 h-11 w-11" />
+        <h1 className="font-display text-maroon text-2xl font-bold mb-2">Forgot password?</h1>
+        <p className="mb-6 text-sm text-muted">
           Enter your email and we'll send you a 6-digit code to reset your
           password.
         </p>
@@ -98,7 +99,7 @@ const ForgotPassword = () => {
             {loading ? "Sending..." : "Send reset code"}
           </button>
         </form>
-        <p className="mt-5 text-center text-sm text-gray-500">
+        <p className="mt-5 text-center text-sm text-muted">
           Remembered it?{" "}
           <Link to="/login" className="text-primary hover:underline">
             Back to login
