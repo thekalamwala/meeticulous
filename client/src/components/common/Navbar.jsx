@@ -169,7 +169,7 @@ const VENDOR_MENU = [
 // so the header never renders empty even if the appearance API is unreachable.
 
 const wordmarkText = (always = false) => (
-  <span className={`${always ? '' : 'hidden sm:block '}text-[15px] font-bold text-ink tracking-tight`}>
+  <span className={`${always ? '' : 'hidden sm:block '}text-[13.2px] font-bold text-ink tracking-tight`}>
     Meeticulous
   </span>
 );
@@ -186,7 +186,7 @@ const NavbarLogo = ({ appearance }) => {
   const markFailed = (src) => setFailed((f) => ({ ...f, [src]: true }));
 
   const img = (src) => (
-    <img src={src} alt="Meeticulous" onError={() => markFailed(src)} className="h-7 w-auto block" />
+    <img src={src} alt="Meeticulous" onError={() => markFailed(src)} className="h-[24.5px] w-auto block" />
   );
 
   if (mode === 'image'   && appearance?.logo_image_url   && !failed[appearance.logo_image_url])   return img(appearance.logo_image_url);
@@ -195,8 +195,8 @@ const NavbarLogo = ({ appearance }) => {
   // (design-system/BRAND_RULES.md → Logo). Bundled, same-origin, never recoloured.
   if (!failed[WORDMARK]) {
     return (
-      <img src={WORDMARK} alt="Meeticulous" height={28} decoding="async"
-           onError={() => markFailed(WORDMARK)} className="h-7 w-auto block" />
+      <img src={WORDMARK} alt="Meeticulous" height={25} decoding="async"
+           onError={() => markFailed(WORDMARK)} className="h-[24.5px] w-auto block" />
     );
   }
   return wordmarkText(true); // fallback: text only, always visible
@@ -343,9 +343,9 @@ const NavDropdown = ({ id, label, icon: Icon, align = 'left', wide = false, acti
         aria-expanded={open}
         aria-haspopup="menu"
         className={[
-          'group relative my-2 flex items-center gap-1 rounded-xl px-3.5 text-[12.5px] font-medium transition-colors outline-none',
+          'group relative my-2 flex items-center gap-1.5 rounded-xl px-3 text-[11.9px] font-medium transition-colors outline-none lg:px-4 lg:text-[13.2px]',
           'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary',
-          open ? 'bg-primary-light/60 text-primary' : 'text-gray-500 hover:bg-primary-light/40 hover:text-primary',
+          open ? 'bg-primary-light/60 text-primary' : 'text-gray-600 hover:bg-primary-light/40 hover:text-primary',
         ].join(' ')}
       >
         {Icon && <Icon size={16} className={open ? 'text-primary' : 'text-gray-400 group-hover:text-primary/80'} />}
@@ -573,7 +573,7 @@ export const PublicCenterNav = () => {
         <MegaMenu sections={RESOURCES_MENU} compact />
       </NavDropdown>
 
-      <Link to="/pricing" className="my-2 flex items-center rounded-xl px-3.5 text-[12.5px] font-medium text-gray-500 transition-colors hover:bg-primary-light/40 hover:text-primary hover:no-underline">
+      <Link to="/pricing" className="my-2 flex items-center rounded-xl px-3 text-[11.9px] font-medium text-gray-600 lg:px-4 lg:text-[13.2px] transition-colors hover:bg-primary-light/40 hover:text-primary hover:no-underline">
         Pricing
       </Link>
     </>
@@ -930,9 +930,9 @@ const Navbar = () => {
               <>
                 <Link
                   to="/become-a-host"
-                  className="btn hidden md:inline-flex items-center px-4 py-2 text-[13px] font-semibold text-white bg-primary hover:bg-primary-dark transition-colors duration-150 shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 hover:no-underline"
+                  className="btn hidden md:inline-flex items-center whitespace-nowrap px-4 py-2 text-[11.9px] lg:px-5 lg:py-2.5 lg:text-[12.75px] font-semibold text-white bg-primary hover:bg-primary-dark transition-colors duration-150 shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 hover:no-underline"
                 >
-                  Start for Free
+                  Get Started - Free
                 </Link>
               </>
             )}
@@ -1053,7 +1053,7 @@ const Navbar = () => {
                   to="/become-a-host"
                   className="btn mt-1 block w-full rounded-lg bg-primary py-2.5 text-center text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-primary-dark hover:no-underline"
                 >
-                  Start for Free
+                  Get Started - Free
                 </Link>
               </div>
             )}
