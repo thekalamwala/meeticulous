@@ -595,7 +595,9 @@ button[role='switch'] {
 }
 @media (min-width: 1024px) {
   .home-hero { --ee-w: 280px; --ee-r: 6vw; }
-  .home-hero-grid { grid-template-columns: 1.15fr 0.85fr; }
+  /* minmax(0, …): the photo stack must not widen its column and squeeze the
+     headline onto an extra line (it scales down instead, see HomeHero). */
+  .home-hero-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); }
 }
 /* Wide desktop: the loops sit clear of the copy, under the card, so the copy
    only has to clear the straight band (top = 87 units above the loops' foot
