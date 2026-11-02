@@ -5,7 +5,7 @@
 const DOUGH = "#E9A23B";
 const DOUGH_EDGE = "#C9781E";
 const CHIP = "#5B3216";
-const INK = "#2A1416";
+const INK = "#2B0A14";
 
 const Chips = ({ pts }) =>
   pts.map(([x, y, r = 3.4], i) => <ellipse key={i} cx={x} cy={y} rx={r} ry={r * 0.82} fill={CHIP} />);

@@ -137,7 +137,7 @@ function PrimaryCta({ to = START, children, light = false }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-[6px] px-6 py-3 text-sm font-semibold shadow-[0_8px_30px_rgba(29,78,216,0.18)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold shadow-[0_8px_30px_rgba(29,78,216,0.18)] transition-opacity hover:no-underline hover:opacity-90"
       style={light ? { background: '#FFFFFF', color: BLUE_DEEP } : { background: BLUE, color: '#FFFFFF' }}
     >
       {children}
@@ -152,7 +152,7 @@ function ImgSlot({ alt, slot, className = '' }) {
       role="img"
       aria-label={alt}
       data-img-slot={slot}
-      className={`flex items-center justify-center rounded-[10px] border border-black/5 ${className}`}
+      className={`flex items-center justify-center rounded-[16px] border border-black/5 ${className}`}
       style={{ background: 'repeating-linear-gradient(135deg, rgba(29,78,216,0.04) 0 10px, rgba(29,78,216,0.08) 10px 20px)' }}
     >
       <ImageIcon size={28} style={{ color: 'rgba(29,78,216,0.3)' }} aria-hidden />
@@ -190,7 +190,7 @@ function SlotPicker() {
 
   return (
     <div className="mx-auto w-full max-w-[28rem]">
-      <div className="overflow-hidden rounded-[10px] border border-black/5 bg-white shadow-[0_30px_70px_-30px_rgba(11,37,89,0.35)]">
+      <div className="overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_30px_70px_-30px_rgba(11,37,89,0.35)]">
         <div className="flex items-center justify-between border-b border-black/5 px-5 py-4">
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Discovery call · 30 min</div>
@@ -205,7 +205,7 @@ function SlotPicker() {
               <motion.div key="done" {...fade} className="flex flex-col items-center pt-2 text-center">
                 <CheckCircle2 size={44} style={{ color: BLUE }} aria-hidden />
                 <div className="mt-3 font-heading text-lg font-extrabold" style={{ color: INK }}>Booking confirmed</div>
-                <dl className="mt-4 w-full space-y-2 rounded-[6px] p-4 text-left text-sm" style={{ background: PALE }}>
+                <dl className="mt-4 w-full space-y-2 rounded-[24px] p-4 text-left text-sm" style={{ background: PALE }}>
                   <div className="flex justify-between gap-3"><dt className="text-slate-500">Service</dt><dd className="font-semibold">Discovery call, 30 min</dd></div>
                   <div className="flex justify-between gap-3"><dt className="text-slate-500">Date</dt><dd className="font-semibold">{FULL_DAY[picked.d]}, {picked.n} Oct</dd></div>
                   <div className="flex justify-between gap-3"><dt className="text-slate-500">Time</dt><dd className="font-semibold">{picked.t} (IST)</dd></div>
@@ -229,7 +229,7 @@ function SlotPicker() {
                       type="button"
                       aria-pressed={day === i}
                       onClick={() => setDay(i)}
-                      className="rounded-[6px] border py-2 text-center transition-colors"
+                      className="rounded-[16px] border py-2 text-center transition-colors"
                       style={day === i ? { background: BLUE, borderColor: BLUE, color: '#FFFFFF' } : { borderColor: 'rgba(15,23,42,0.08)', color: INK }}
                     >
                       <span className="block text-[10px] font-semibold uppercase tracking-wider opacity-80">{x.d}</span>
@@ -292,7 +292,7 @@ function SlotPlanner() {
   const pct = (m) => `${((m - WINDOW.start) / span) * 100}%`;
 
   return (
-    <div className="mt-14 rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-9">
+    <div className="mt-14 rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-9">
       <div className="grid gap-8 md:grid-cols-2">
         <Chips label="Session length" values={LENGTHS} value={len} onPick={setLen} fmt={(v) => `${v} min`} />
         <Chips label="Buffer after each booking" values={BUFFERS} value={buf} onPick={setBuf} fmt={(v) => (v === 0 ? 'None' : v === 60 ? '1 hour' : `${v} min`)} />
@@ -306,10 +306,10 @@ function SlotPlanner() {
           </span>
           <span>{fmtMin(WINDOW.end)}</span>
         </div>
-        <div className="relative mt-2 h-12 overflow-hidden rounded-[6px] border border-black/5" style={{ background: PALE }} aria-hidden>
+        <div className="relative mt-2 h-12 overflow-hidden rounded-[16px] border border-black/5" style={{ background: PALE }} aria-hidden>
           {starts.map((s) => (
             <div key={s}>
-              <div className="absolute inset-y-1 rounded-[4px]" style={{ left: pct(s), width: `calc(${(len / span) * 100}% - 2px)`, background: BLUE }} />
+              <div className="absolute inset-y-1 rounded-[16px]" style={{ left: pct(s), width: `calc(${(len / span) * 100}% - 2px)`, background: BLUE }} />
               {buf > 0 && s + len < WINDOW.end && (
                 <div
                   className="absolute inset-y-1"
@@ -327,7 +327,7 @@ function SlotPlanner() {
 
       <ul className="mt-8 flex flex-wrap gap-2" aria-label="Times your clients would see">
         {starts.map((s) => (
-          <li key={s} className="rounded-[6px] border border-[#960D32]/30 px-3 py-1.5 text-sm font-semibold tabular-nums" style={{ color: BLUE }}>{fmtMin(s)}</li>
+          <li key={s} className="rounded-full border border-[#960D32]/30 px-3 py-1.5 text-sm font-semibold tabular-nums" style={{ color: BLUE }}>{fmtMin(s)}</li>
         ))}
       </ul>
       <p className="mt-6 text-sm leading-relaxed text-slate-600">
@@ -419,8 +419,8 @@ export default function SchedulingFeature() {
       <section className="px-5 py-14 sm:px-8">
         <div className="mx-auto grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {PROOF.map((p, i) => (
-            <Reveal key={p.k} delay={i * 0.04} className="flex gap-4 rounded-[6px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[6px]" style={{ background: PALE, color: BLUE }}><p.icon size={19} aria-hidden /></span>
+            <Reveal key={p.k} delay={i * 0.04} className="flex gap-4 rounded-[24px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[16px]" style={{ background: PALE, color: BLUE }}><p.icon size={19} aria-hidden /></span>
               <div>
                 <div className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: BLUE }}>{p.k}</div>
                 <div className="mt-1 text-sm leading-snug text-slate-700">{p.v}</div>
@@ -439,7 +439,7 @@ export default function SchedulingFeature() {
             lead="Booking over WhatsApp works until it doesn’t. Here is the same booking, both ways."
           />
           <div className="mt-14 grid gap-6 md:grid-cols-2">
-            <Reveal className="rounded-[10px] border border-black/5 bg-white p-6 sm:p-7">
+            <Reveal className="rounded-[24px] border border-black/5 bg-white p-6 sm:p-7">
               <div className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Without: the chat</div>
               <div className="mt-5 space-y-2.5" aria-label="A WhatsApp conversation trying to fix a time">
                 {THREAD.map((m, i) => (
@@ -451,14 +451,14 @@ export default function SchedulingFeature() {
               <p className="mt-5 border-t border-black/5 pt-4 text-sm text-slate-500">Five messages in, still nothing on the calendar.</p>
             </Reveal>
 
-            <Reveal delay={0.06} className="flex flex-col rounded-[10px] border border-[#960D32]/20 bg-white p-6 shadow-[0_8px_30px_rgba(29,78,216,0.06)] sm:p-7">
+            <Reveal delay={0.06} className="flex flex-col rounded-[24px] border border-[#960D32]/20 bg-white p-6 shadow-[0_8px_30px_rgba(29,78,216,0.06)] sm:p-7">
               <div className="text-xs font-bold uppercase tracking-[0.16em]" style={{ color: BLUE }}>With Meeticulous: one link</div>
               <div className="mt-5 flex justify-end">
-                <span className="flex items-center gap-2 rounded-[6px] px-3.5 py-2 text-sm font-semibold text-white" style={{ background: BLUE }}>
+                <span className="flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-semibold text-white" style={{ background: BLUE }}>
                   <Link2 size={15} aria-hidden /> meeticulous.com/priya
                 </span>
               </div>
-              <div className="mt-4 flex items-start gap-3 rounded-[6px] p-4" style={{ background: PALE }}>
+              <div className="mt-4 flex items-start gap-3 rounded-[24px] p-4" style={{ background: PALE }}>
                 <CheckCircle2 size={20} className="mt-0.5 shrink-0" style={{ color: BLUE }} aria-hidden />
                 <div className="text-sm">
                   <div className="font-heading font-bold">Booked: Thursday, 4:30 PM (IST)</div>
@@ -504,8 +504,8 @@ export default function SchedulingFeature() {
           <SectionHead title="Everything a booking calendar" accent="should just do." />
           <div className="mt-14 grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {CAPS.map((c, i) => (
-              <Reveal key={c.title} delay={(i % 3) * 0.05} className="rounded-[10px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-                <span className="flex h-11 w-11 items-center justify-center rounded-[6px] text-white" style={{ background: BLUE }}><c.icon size={20} aria-hidden /></span>
+              <Reveal key={c.title} delay={(i % 3) * 0.05} className="rounded-[24px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+                <span className="flex h-11 w-11 items-center justify-center rounded-[16px] text-white" style={{ background: BLUE }}><c.icon size={20} aria-hidden /></span>
                 <h3 className="mt-5 font-heading text-lg font-bold">{c.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-slate-600">{c.body}</p>
               </Reveal>
@@ -534,7 +534,7 @@ export default function SchedulingFeature() {
             <SectionHead center title="Fewer “is 4 okay?” messages," accent="in their words." />
             <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-3">
               {QUOTES.map((t, i) => (
-                <Reveal as="figure" key={t.name} delay={i * 0.05} className="flex flex-col rounded-[10px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+                <Reveal as="figure" key={t.name} delay={i * 0.05} className="flex flex-col rounded-[24px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
                   <blockquote className="flex-1 text-[15px] leading-relaxed text-slate-700">&ldquo;{t.quote}&rdquo;</blockquote>
                   <figcaption className="mt-6 flex items-center gap-3 border-t border-black/5 pt-5">
                     <img src={t.avatar} alt="" loading="lazy" className="h-11 w-11 rounded-full object-cover" />
@@ -560,7 +560,7 @@ export default function SchedulingFeature() {
             {[FAQ.slice(0, half), FAQ.slice(half)].map((col, c) => (
               <div key={c} className="space-y-4">
                 {col.map((f, i) => (
-                  <details key={f.q} className="group rounded-[6px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)] open:border-[#960D32]/25" open={c === 0 && i === 0}>
+                  <details key={f.q} className="group rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)] open:border-[#960D32]/25" open={c === 0 && i === 0}>
                     <summary className="flex cursor-pointer list-none items-start justify-between gap-4 px-5 py-4 [&::-webkit-details-marker]:hidden">
                       <span className="font-heading text-[16px] font-bold">{f.q}</span>
                       <span aria-hidden className="text-xl leading-none transition-transform group-open:rotate-45" style={{ color: BLUE }}>+</span>

@@ -9,13 +9,13 @@ export default function CultureStrip() {
   return (
     <section ref={root} className="px-5 py-20 sm:px-8 lg:py-28">
       <div className="mx-auto max-w-6xl">
-        <h2 className="js-head font-heading text-3xl font-bold sm:text-4xl">Life at Meeticulous</h2>
+        <h2 className="js-head font-display text-3xl font-bold sm:text-4xl">Life at Meeticulous</h2>
         <div className="mt-10 grid gap-5 sm:grid-cols-3">
           {company.culture.map((c, i) => (
             <figure
               key={i}
               data-swap="careers-culture-photo"
-              className="js-item overflow-hidden rounded-[6px] border border-ink/10 bg-surface"
+              className="js-item overflow-hidden rounded-[16px] border border-ink/10 bg-surface"
             >
               <div className="flex aspect-[4/3] items-center justify-center bg-ink/5 text-ink/30" aria-hidden={!c.img}>
                 {c.img ? (

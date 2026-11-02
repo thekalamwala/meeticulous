@@ -71,7 +71,7 @@ const Press = () => (
         <div className="mt-4 flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-4 rounded-[16px] border border-black/10 bg-white p-5">
             <img src={LOGO} alt="Meeticulous logo" width={56} height={56} className="h-14 w-14 object-contain" loading="lazy" />
-            <a href={LOGO} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-[10px] bg-primary px-4 py-2 text-sm font-semibold text-white hover:no-underline">
+            <a href={LOGO} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white hover:no-underline">
               <Download size={15} /> Logo (PNG)
             </a>
           </div>

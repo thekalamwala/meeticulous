@@ -96,7 +96,7 @@ const AdminStaff = () => {
 
       {/* One-time credential banner */}
       {secret && (
-        <div className="mb-5 rounded-xl border-2 border-[#2A1416] bg-[#F8FAFC] p-4">
+        <div className="mb-5 rounded-xl border-2 border-[#2B0A14] bg-[#F8FAFC] p-4">
           <p className="text-sm font-bold adm-t1">Temporary password for @{secret.username}</p>
           <p className="text-[12px] adm-t3 mb-2">Share it securely. It cannot be shown again.</p>
           <div className="flex items-center gap-2">

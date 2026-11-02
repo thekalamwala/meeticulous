@@ -1,0 +1,18 @@
+<!-- @dsCard group="Components" viewport="700x380" name="Brand" subtitle="SlotCell, Logo, Thread, Illustration, Icon" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.26.2/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{background:var(--bg-page);padding:24px}.r{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.c{display:flex;flex-direction:column;gap:16px}.l{font:500 11px/1 var(--font-body);letter-spacing:.08em;text-transform:uppercase;color:var(--fg-3)}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.Meeticulous_Design_System || window.MeeticulousDesignSystem || window.Meeticulous || Object.keys(window).map(k => { try { const v = window[k]; return v && typeof v === 'object' && v.SlotCell && v.Button ? v : null; } catch (e) { return null; } }).find(Boolean) || {};
+const { Button, IconButton, Icon, Input, Select, Checkbox, Radio, Switch, Card, Badge, Tag, Tooltip, Tabs, Dialog, Toast, Logo, Thread, Illustration, SlotCell } = NS;
+function App(){ return (<div className="c">
+<div style={{display:'grid',gridTemplateColumns:'repeat(6,1fr)',gap:'var(--slot-gap)'}}><SlotCell/><SlotCell state="booked" time="10:30" label="Priya"/><SlotCell state="open" label="Open" onClick={()=>{}}/><SlotCell state="busy"/><SlotCell state="open" label="Open" selected onClick={()=>{}}/><SlotCell state="booked" time="15:00" label="Group · 6"/></div>
+<div className="r"><SlotCell compact state="open" time="09:00" label="45 min" onClick={()=>{}} style={{width:200}}/><SlotCell compact state="booked" time="10:30" label="Priya" style={{width:200}}/></div>
+<div className="r" style={{gap:20}}><Logo height={24}/><Logo kind="icon" height={28}/><Logo kind="ee" height={24}/><Logo kind="monogram" height={26}/><div style={{background:'var(--bg-brand)',padding:'10px 14px',borderRadius:12}}><Logo tone="inverse" height={20}/></div><Illustration name="reminder" width={120}/><Icon name="calendar-check" size={24} color="var(--fg-brand)"/></div>
+<div style={{background:'var(--bg-brand)',borderRadius:'var(--radius-lg)',height:70,position:'relative',overflow:'hidden'}}><Thread color="pink" width={900} style={{position:'absolute',left:-120,top:-6}}/></div>
+</div>); }
+ReactDOM.createRoot(document.getElementById('root')).render(NS.Button ? <App/> : <p style={{fontFamily:'sans-serif'}}>Design-system bundle not compiled yet.</p>);
+</script></body></html>

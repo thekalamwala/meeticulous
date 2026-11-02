@@ -95,10 +95,10 @@ export default function Compare() {
             as each company publishes them, checked in {CHECKED_LABEL}.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/become-a-host" className="rounded-[6px] bg-ink px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(26,26,26,0.12)] hover:no-underline hover:opacity-90">
+            <Link to="/become-a-host" className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(26,26,26,0.12)] hover:no-underline hover:opacity-90">
               Start free
             </Link>
-            <a href="#side-by-side" className="rounded-[6px] border border-black/10 bg-white px-6 py-3 text-sm font-semibold text-ink hover:no-underline hover:opacity-90">
+            <a href="#side-by-side" className="rounded-full border border-black/10 bg-white px-6 py-3 text-sm font-semibold text-ink hover:no-underline hover:opacity-90">
               See the side-by-side
             </a>
           </div>
@@ -114,7 +114,7 @@ export default function Compare() {
               <li key={c.key}>
                 <Link
                   to={c.path}
-                  className="group flex h-full flex-col rounded-[6px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors hover:border-primary/30 hover:no-underline"
+                  className="group flex h-full flex-col rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors hover:border-primary/30 hover:no-underline"
                 >
                   <span className="flex items-center gap-3">
                     <img src={favicon(c.domain)} alt="" width="28" height="28" loading="lazy" className="h-7 w-7 rounded-full border border-black/5 bg-white p-0.5" />
@@ -144,7 +144,7 @@ export default function Compare() {
           <p className="mt-4 max-w-2xl text-neutral-600">
             &ldquo;Not listed&rdquo; means the company&rsquo;s pricing page doesn&rsquo;t say. It doesn&rsquo;t mean they can&rsquo;t.
           </p>
-          <div className="mt-10 overflow-x-auto rounded-[6px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+          <div className="mt-10 overflow-x-auto rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
             <table className="w-full min-w-[960px] border-collapse text-left text-sm">
               <caption className="sr-only">Meeticulous compared with six booking tools</caption>
               <thead>
@@ -193,7 +193,7 @@ export default function Compare() {
               <li key={href}>
                 <Link
                   to={href}
-                  className="group flex h-full items-start justify-between gap-3 rounded-[6px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors hover:border-primary/30 hover:no-underline"
+                  className="group flex h-full items-start justify-between gap-3 rounded-[24px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors hover:border-primary/30 hover:no-underline"
                 >
                   <span className="font-heading text-[15px] font-bold leading-snug text-ink">{title}</span>
                   <ArrowRight size={16} className="mt-0.5 shrink-0 text-primary-cta transition group-hover:translate-x-0.5" aria-hidden />

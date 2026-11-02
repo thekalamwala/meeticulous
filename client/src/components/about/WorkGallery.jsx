@@ -23,7 +23,7 @@ export default function WorkGallery() {
   return (
     <section ref={root} className="py-16 lg:py-24">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
-        <h2 className="js-head text-center font-heading text-4xl font-extrabold sm:text-5xl">{gallery.heading}</h2>
+        <h2 className="js-head text-center font-display text-4xl font-extrabold sm:text-5xl">{gallery.heading}</h2>
         <p className="mx-auto mt-5 max-w-2xl text-center text-lg leading-relaxed text-ink/70">{gallery.sub}</p>
       </div>
       <div className="js-item mt-6">
@@ -39,7 +39,7 @@ export default function WorkGallery() {
           showBar={false}
           showLabels={false}
           background="#ffffff"
-          ink="#2A1416"
+          ink="#2B0A14"
           ariaLabel="Gallery: the work people sell with Meeticulous"
         />
       </div>

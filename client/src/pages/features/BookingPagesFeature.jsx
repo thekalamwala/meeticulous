@@ -53,9 +53,9 @@ const START = '/become-a-host';
 const DEMO = '/contact';
 const CREAM = '#FBF4E6';      // page paper
 const PAPER = '#FFFCF5';      // lighter alternate sections
-const INK = '#2A1416';
+const INK = '#2B0A14';
 const ORANGE = '#960D32';     // decorative only (doodles, dots, fills behind dark text)
-const ORANGE_INK = '#2A1416'; // orange for text + white-on-orange CTAs (AA on cream)
+const ORANGE_INK = '#2B0A14'; // orange for text + white-on-orange CTAs (AA on cream)
 const PEACH = '#FBE3E8';      // primary-light tint
 
 /* ─────────────────────────────  LINK SLUG  ────────────────────────────── */
@@ -172,7 +172,7 @@ function PrimaryCta({ to = START, children, onDark = false }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-[6px] px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(194,61,0,0.22)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(194,61,0,0.22)] transition-opacity hover:no-underline hover:opacity-90"
       style={{ background: onDark ? ORANGE_INK : INK }}
     >
       {children}
@@ -187,7 +187,7 @@ function ImgSlot({ alt, slot, className = '' }) {
       role="img"
       aria-label={alt}
       data-img-slot={slot}
-      className={`flex items-center justify-center rounded-[10px] border border-black/5 ${className}`}
+      className={`flex items-center justify-center rounded-[16px] border border-black/5 ${className}`}
       style={{ background: 'repeating-linear-gradient(135deg, rgba(26,26,26,0.035) 0 10px, rgba(26,26,26,0.07) 10px 20px)' }}
     >
       <ImageIcon size={28} style={{ color: 'rgba(26,26,26,0.28)' }} aria-hidden />
@@ -217,9 +217,9 @@ function BookingPageDemo() {
     <div className="relative mx-auto w-full max-w-[27rem]">
       <Sparkle className="absolute -left-6 top-10 h-6 w-6" />
       <Sparkle className="absolute -right-4 top-48 h-4 w-4" />
-      <div className="rounded-[10px] border border-black/5 bg-white p-2.5 shadow-[0_30px_70px_-30px_rgba(26,26,26,0.35)]">
+      <div className="rounded-[16px] border border-black/5 bg-white p-2.5 shadow-[0_30px_70px_-30px_rgba(26,26,26,0.35)]">
         <div className="mx-auto mb-2 h-1.5 w-16 rounded-full bg-black/10" aria-hidden />
-        <div className="overflow-hidden rounded-[6px] border border-black/5" style={{ background: PAPER }}>
+        <div className="overflow-hidden rounded-[16px] border border-black/5" style={{ background: PAPER }}>
           <div className="flex items-center gap-1.5 border-b border-black/5 bg-white px-3 py-2 text-[11px] text-neutral-500">
             <Link2 size={11} aria-hidden /> meeticulous.com/priya
           </div>
@@ -228,7 +228,7 @@ function BookingPageDemo() {
             <div className="flex items-center gap-3">
               <div aria-hidden className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full font-heading text-base font-extrabold text-white" style={{ background: ORANGE_INK }}>PN</div>
               <div className="min-w-0">
-                <div className="font-heading text-base font-extrabold text-[#2A1416]">Priya Nair</div>
+                <div className="font-heading text-base font-extrabold text-[#2B0A14]">Priya Nair</div>
                 <div className="text-xs font-semibold" style={{ color: ORANGE_INK }}>Brand designer · Pune</div>
               </div>
             </div>
@@ -244,7 +244,7 @@ function BookingPageDemo() {
             {DEMO_SERVICES.map((svc, i) => {
               const on = i === active;
               return (
-                <div key={svc.title} className="overflow-hidden rounded-[6px] border transition-colors" style={{ borderColor: on ? ORANGE : 'rgba(0,0,0,0.06)', background: on ? PEACH : '#fff' }}>
+                <div key={svc.title} className="overflow-hidden rounded-[16px] border transition-colors" style={{ borderColor: on ? ORANGE : 'rgba(0,0,0,0.06)', background: on ? PEACH : '#fff' }}>
                   <button
                     type="button"
                     aria-pressed={on}
@@ -252,12 +252,12 @@ function BookingPageDemo() {
                     className="flex w-full items-center justify-between px-3 py-2.5 text-left"
                   >
                     <span>
-                      <span className="block font-heading text-[13px] font-bold text-[#2A1416]">{svc.title}</span>
+                      <span className="block font-heading text-[13px] font-bold text-[#2B0A14]">{svc.title}</span>
                       <span className="mt-0.5 flex items-center gap-1 text-[11px] text-neutral-500">
                         <Clock size={10} aria-hidden /> {svc.mins} min · {svc.mode}
                       </span>
                     </span>
-                    <span className="font-heading text-[13px] font-extrabold tabular-nums text-[#2A1416]">{svc.price}</span>
+                    <span className="font-heading text-[13px] font-extrabold tabular-nums text-[#2B0A14]">{svc.price}</span>
                   </button>
                   {on && (
                     <div className="px-3 pb-3" aria-live="polite">
@@ -265,7 +265,7 @@ function BookingPageDemo() {
                         {svc.mode === 'Online' ? <Video size={12} className="mt-0.5 shrink-0 text-neutral-500" aria-hidden /> : <MapPin size={12} className="mt-0.5 shrink-0 text-neutral-500" aria-hidden />}
                         {svc.desc}
                       </p>
-                      <div className="mt-2 rounded-[6px] py-2 text-center text-[13px] font-semibold text-white" style={{ background: ORANGE_INK }}>
+                      <div className="mt-2 rounded-[16px] py-2 text-center text-[13px] font-semibold text-white" style={{ background: ORANGE_INK }}>
                         Book · {svc.price}
                       </div>
                     </div>
@@ -284,12 +284,12 @@ function BookingPageDemo() {
 /* Without vs with: a plain link-in-bio list next to the booking page. */
 function LinkInBioMock() {
   return (
-    <div className="mx-auto w-full max-w-[17rem] rounded-[10px] border border-black/5 bg-white p-5 text-center shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+    <div className="mx-auto w-full max-w-[17rem] rounded-[24px] border border-black/5 bg-white p-5 text-center shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
       <div aria-hidden className="mx-auto h-11 w-11 rounded-full bg-black/10" />
       <div className="mx-auto mt-2 h-2.5 w-24 rounded-full bg-black/10" aria-hidden />
       <div className="mt-4 space-y-2">
         {LINK_IN_BIO.map((l) => (
-          <div key={l} className="rounded-[6px] border border-black/10 py-2 text-[12px] font-semibold text-neutral-500">{l}</div>
+          <div key={l} className="rounded-[16px] border border-black/10 py-2 text-[12px] font-semibold text-neutral-500">{l}</div>
         ))}
       </div>
     </div>
@@ -298,7 +298,7 @@ function LinkInBioMock() {
 
 function BookingMiniMock() {
   return (
-    <div className="mx-auto w-full max-w-[17rem] rounded-[10px] border bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.06)]" style={{ borderColor: `${ORANGE}4d` }}>
+    <div className="mx-auto w-full max-w-[17rem] rounded-[24px] border bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.06)]" style={{ borderColor: `${ORANGE}4d` }}>
       <div className="flex items-center gap-3">
         <div aria-hidden className="flex h-11 w-11 items-center justify-center rounded-full font-heading text-sm font-extrabold text-white" style={{ background: ORANGE_INK }}>PN</div>
         <div className="text-left">
@@ -308,13 +308,13 @@ function BookingMiniMock() {
       </div>
       <div className="mt-4 space-y-2">
         {DEMO_SERVICES.map((svc) => (
-          <div key={svc.title} className="flex items-center justify-between rounded-[6px] border border-black/5 px-3 py-2 text-[12px]">
+          <div key={svc.title} className="flex items-center justify-between rounded-[16px] border border-black/5 px-3 py-2 text-[12px]">
             <span className="font-semibold">{svc.title} <span className="font-normal text-neutral-500">· {svc.mins} min</span></span>
             <span className="font-heading font-extrabold tabular-nums">{svc.price}</span>
           </div>
         ))}
       </div>
-      <div className="mt-3 rounded-[6px] py-2 text-center text-[12px] font-semibold text-white" style={{ background: ORANGE_INK }}>Pick a time</div>
+      <div className="mt-3 rounded-[16px] py-2 text-center text-[12px] font-semibold text-white" style={{ background: ORANGE_INK }}>Pick a time</div>
     </div>
   );
 }
@@ -331,7 +331,7 @@ function LinkEverywhere() {
       label: 'Instagram bio',
       body: (
         <div className="text-[13px] leading-snug text-neutral-700">
-          <div className="font-heading font-bold text-[#2A1416]">{name.trim() || 'Your name'}</div>
+          <div className="font-heading font-bold text-[#2B0A14]">{name.trim() || 'Your name'}</div>
           Brand designer · Pune
           <div className="mt-1 font-semibold" style={{ color: ORANGE_INK }}>{link}</div>
         </div>
@@ -341,7 +341,7 @@ function LinkEverywhere() {
       label: 'WhatsApp reply',
       icon: MessageCircle,
       body: (
-        <div className="ml-auto max-w-[15rem] rounded-[6px] bg-[#F1F5F9] px-3 py-2 text-[13px] leading-snug text-neutral-800">
+        <div className="ml-auto max-w-[15rem] rounded-[16px] bg-[#F1F5F9] px-3 py-2 text-[13px] leading-snug text-neutral-800">
           Hi! You can see my services and pick a time here: <span className="font-semibold underline" style={{ color: ORANGE_INK }}>{link}</span>
         </div>
       ),
@@ -351,7 +351,7 @@ function LinkEverywhere() {
       icon: Mail,
       body: (
         <div className="border-l-2 pl-3 text-[13px] leading-snug text-neutral-700" style={{ borderColor: ORANGE }}>
-          <div className="font-semibold text-[#2A1416]">{name.trim() || 'Your name'}</div>
+          <div className="font-semibold text-[#2B0A14]">{name.trim() || 'Your name'}</div>
           Book a session: <span className="font-semibold" style={{ color: ORANGE_INK }}>{link}</span>
         </div>
       ),
@@ -360,7 +360,7 @@ function LinkEverywhere() {
       label: 'Visiting card',
       icon: Phone,
       body: (
-        <div className="rounded-[6px] px-4 py-3 text-white" style={{ background: INK }}>
+        <div className="rounded-[16px] px-4 py-3 text-white" style={{ background: INK }}>
           <div className="font-heading text-sm font-extrabold">{name.trim() || 'Your name'}</div>
           <div className="mt-2 text-[12px] text-white/75">{link}</div>
         </div>
@@ -371,7 +371,7 @@ function LinkEverywhere() {
   return (
     <div className="mt-12">
       <div className="mx-auto max-w-xl">
-        <label htmlFor="bp-name" className="block text-sm font-semibold text-[#2A1416]">Type your name</label>
+        <label htmlFor="bp-name" className="block text-sm font-semibold text-[#2B0A14]">Type your name</label>
         <div className="mt-2 flex items-center gap-2 rounded-full border border-black/10 bg-white px-5 py-3 shadow-[0_8px_30px_rgba(26,26,26,0.05)]">
           <input
             id="bp-name"
@@ -380,7 +380,7 @@ function LinkEverywhere() {
             maxLength={60}
             autoComplete="off"
             onChange={(e) => setName(e.target.value)}
-            className="w-full bg-transparent text-base text-[#2A1416] outline-none placeholder:text-neutral-400"
+            className="w-full bg-transparent text-base text-[#2B0A14] outline-none placeholder:text-neutral-400"
             placeholder="Your name or studio"
           />
         </div>
@@ -392,7 +392,7 @@ function LinkEverywhere() {
 
       <div className="mt-10 grid gap-5 sm:grid-cols-2 sm:gap-6">
         {places.map((p) => (
-          <div key={p.label} className="rounded-[10px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+          <div key={p.label} className="rounded-[24px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
             <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em]" style={{ background: PEACH, color: ORANGE_INK }}>
               {p.icon && <p.icon size={11} aria-hidden />}{p.label}
             </span>
@@ -429,7 +429,7 @@ export default function BookingPagesFeature() {
   });
 
   return (
-    <main className="overflow-x-clip text-[#2A1416]" style={{ background: CREAM }}>
+    <main className="overflow-x-clip text-[#2B0A14]" style={{ background: CREAM }}>
       <Seo
         title={seo.title}
         description={seo.description}
@@ -449,18 +449,18 @@ export default function BookingPagesFeature() {
         <div className="mx-auto grid w-full max-w-6xl items-start gap-10 lg:items-center lg:gap-14 lg:grid-cols-[1fr_1fr]">
           <div>
             <nav aria-label="Breadcrumb" className="text-xs text-neutral-500">
-              <Link to="/" className="text-neutral-500 hover:text-[#2A1416] hover:no-underline">Home</Link>
+              <Link to="/" className="text-neutral-500 hover:text-[#2B0A14] hover:no-underline">Home</Link>
               <span aria-hidden className="mx-2">/</span>
               <span>Features</span>
               <span aria-hidden className="mx-2">/</span>
-              <span aria-current="page" className="text-[#2A1416]">Booking pages</span>
+              <span aria-current="page" className="text-[#2B0A14]">Booking pages</span>
             </nav>
             <Reveal instant className="mt-5">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-black/5 bg-white px-3.5 py-1.5 text-xs font-semibold text-neutral-700 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
                 <Sparkle className="h-3 w-3" /> For freelancers, coaches and creators
               </span>
             </Reveal>
-            <Reveal as="h1" instant delay={0.03} className="mt-4 font-heading text-[clamp(2.5rem,4.8vw,4.1rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[#2A1416]">
+            <Reveal as="h1" instant delay={0.03} className="mt-4 font-heading text-[clamp(2.5rem,4.8vw,4.1rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[#2B0A14]">
               A free booking page that{' '}
               <span className="relative inline-block whitespace-nowrap" style={{ color: ORANGE_INK }}>
                 feels like you.
@@ -529,7 +529,7 @@ export default function BookingPagesFeature() {
               <BookingMiniMock />
               <ul className="mx-auto mt-7 max-w-sm space-y-2.5">
                 {WITH.map((t) => (
-                  <li key={t} className="flex items-start gap-2.5 text-[15px] font-medium text-[#2A1416]">
+                  <li key={t} className="flex items-start gap-2.5 text-[15px] font-medium text-[#2B0A14]">
                     <Check size={16} className="mt-1 shrink-0" style={{ color: ORANGE_INK }} aria-hidden /><span><span className="sr-only">With Meeticulous: </span>{t}</span>
                   </li>
                 ))}
@@ -551,8 +551,8 @@ export default function BookingPagesFeature() {
               return (
                 <Reveal as="li" key={s.title} delay={i * 0.04} className="relative">
                   <div className={`flex ${right ? 'md:justify-end' : 'md:justify-start'}`}>
-                    <div className="flex w-full items-start gap-5 rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] md:w-[62%]">
-                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-heading text-lg font-extrabold text-[#2A1416]" style={{ background: PEACH }}>{i + 1}</span>
+                    <div className="flex w-full items-start gap-5 rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] md:w-[62%]">
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-heading text-lg font-extrabold text-[#2B0A14]" style={{ background: PEACH }}>{i + 1}</span>
                       <div>
                         <h3 className="font-heading text-xl font-bold">{s.title}</h3>
                         <p className="mt-1.5 text-[15px] leading-relaxed text-neutral-600">{s.desc}</p>
@@ -581,7 +581,7 @@ export default function BookingPagesFeature() {
             {STICKERS.map((c, i) => (
               <Reveal key={c.title} delay={(i % 3) * 0.05}>
                 <div
-                  className="h-full rounded-[10px] border border-black/5 bg-white p-7 shadow-[0_12px_34px_-14px_rgba(26,26,26,0.18)]"
+                  className="h-full rounded-[24px] border border-black/5 bg-white p-7 shadow-[0_12px_34px_-14px_rgba(26,26,26,0.18)]"
                   style={{ transform: `rotate(${c.tilt}deg)` }}
                 >
                   <span className="flex h-10 w-10 items-center justify-center rounded-full" style={{ background: PEACH, color: ORANGE_INK }}><c.icon size={18} aria-hidden /></span>
@@ -624,11 +624,11 @@ export default function BookingPagesFeature() {
               {QUOTES.map((t, i) => (
                 <Reveal as="figure" key={t.name} delay={i * 0.05}>
                   <div
-                    className="relative flex h-full flex-col rounded-[4px] p-6 pt-8 shadow-[0_14px_30px_-16px_rgba(26,26,26,0.25)]"
+                    className="relative flex h-full flex-col rounded-[24px] p-6 pt-8 shadow-[0_14px_30px_-16px_rgba(26,26,26,0.25)]"
                     style={{ background: i % 2 ? '#F7EAD3' : PEACH, transform: `rotate(${i % 2 ? 1.4 : -1.4}deg)` }}
                   >
                     <span aria-hidden className="absolute -top-2.5 left-1/2 h-5 w-16 -translate-x-1/2 rotate-[-3deg] rounded-[2px] bg-white/70 shadow-[0_2px_6px_rgba(26,26,26,0.08)]" />
-                    <blockquote className="flex-1 text-[15px] leading-relaxed text-[#2A1416]">&ldquo;{t.quote}&rdquo;</blockquote>
+                    <blockquote className="flex-1 text-[15px] leading-relaxed text-[#2B0A14]">&ldquo;{t.quote}&rdquo;</blockquote>
                     <figcaption className="mt-5 flex items-center gap-3">
                       <img src={t.avatar} alt="" loading="lazy" className="h-10 w-10 rounded-full object-cover" />
                       <div>
@@ -657,7 +657,7 @@ export default function BookingPagesFeature() {
               <details key={f.q} className="group" open={i === 0}>
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-full border border-black/5 bg-white px-6 py-3.5 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors hover:border-black/15 group-open:border-[#960D32]/30 group-open:bg-[#FBE3E8] [&::-webkit-details-marker]:hidden">
                   <span className="font-heading text-[16px] font-bold">{f.q}</span>
-                  <span aria-hidden className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#2A1416] text-base leading-none text-white transition-transform group-open:rotate-45">+</span>
+                  <span aria-hidden className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#2B0A14] text-base leading-none text-white transition-transform group-open:rotate-45">+</span>
                 </summary>
                 <p className="px-6 pb-3 pt-4 text-[15px] leading-relaxed text-neutral-600">{f.a}</p>
               </details>
@@ -686,7 +686,7 @@ export default function BookingPagesFeature() {
             </Reveal>
           </div>
           <Reveal delay={0.08}>
-            <div className="rounded-[10px] border border-white/10 p-2">
+            <div className="rounded-[16px] border border-white/10 p-2">
               <ImgSlot slot="booking-pages-creator-sharing" alt="A creator adding their booking link to their Instagram bio on a phone" className="aspect-[4/3] w-full border-white/10" />
             </div>
           </Reveal>

@@ -55,7 +55,7 @@ const METER_DEFAULT = 40;
 
 const C = { sky: '#EAF3FB', skyDeep: '#CFE2F3', navy: '#12233F', navySoft: '#46587A', steel: '#3B6EA8', orange: '#960D32', onDark: '#FF9A66' };
 const THEME = { '--sky': C.sky, '--sky-deep': C.skyDeep, '--navy': C.navy, '--navy-soft': C.navySoft, '--steel': C.steel };
-const CARD = 'rounded-[6px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(18,35,63,0.05)]';
+const CARD = 'rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(18,35,63,0.05)]';
 const H2 = 'font-heading text-4xl font-extrabold leading-[1.08] tracking-tight text-[color:var(--navy)] sm:text-5xl';
 const LINK = 'font-semibold text-[color:var(--navy)] underline underline-offset-2 hover:text-primary-cta';
 
@@ -177,7 +177,7 @@ function StartCta({ slot, children = 'Start free' }) {
     <Link
       to={START}
       onClick={() => analytics.track(EVENTS.LP_CTA_CLICKED, { slug: SLUG, slot, ...utm })}
-      className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[6px] bg-primary px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(194,61,0,0.22)] transition-opacity hover:text-white hover:no-underline hover:opacity-90"
+      className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(194,61,0,0.22)] transition-opacity hover:text-white hover:no-underline hover:opacity-90"
     >
       {children} <ArrowRight size={16} aria-hidden="true" />
     </Link>
@@ -347,7 +347,7 @@ const SimplybookAlternative = () => {
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <StartCta slot="hero" />
-              <a href="#side-by-side" className="inline-flex min-h-[44px] items-center rounded-[6px] border border-[color:var(--sky-deep)] bg-white px-4 py-3 text-sm font-semibold text-[color:var(--navy)] hover:text-[color:var(--navy)] hover:no-underline hover:opacity-90">
+              <a href="#side-by-side" className="inline-flex min-h-[44px] items-center rounded-full border border-[color:var(--sky-deep)] bg-white px-4 py-3 text-sm font-semibold text-[color:var(--navy)] hover:text-[color:var(--navy)] hover:no-underline hover:opacity-90">
                 See the comparison
               </a>
             </div>
@@ -387,7 +387,7 @@ const SimplybookAlternative = () => {
           </div>
           <div className="mt-8 grid gap-5 sm:grid-cols-2 sm:gap-6">
             {[[`Pick ${SB.name} if…`, PICK_SB, C.steel], ['Pick Meeticulous if…', PICK_BAS, C.orange]].map(([title, items, color]) => (
-              <div key={title} className="rounded-[6px] bg-[color:var(--sky)] p-6">
+              <div key={title} className="rounded-[24px] bg-[color:var(--sky)] p-6">
                 <h3 className="font-heading text-lg font-bold text-[color:var(--navy)]">{title}</h3>
                 <ul className="mt-4 space-y-3">
                   {items.map((t) => (
@@ -483,7 +483,7 @@ const SimplybookAlternative = () => {
           </p>
           <div className="mt-12 grid gap-5 md:grid-cols-3 md:gap-6">
             {BETTER.map(({ icon: Icon, title, body }) => (
-              <div key={title} className="rounded-[6px] border border-white/10 bg-white/[0.04] p-6 sm:p-7">
+              <div key={title} className="rounded-[24px] border border-white/10 bg-white/[0.04] p-6 sm:p-7">
                 <Icon size={20} style={{ color: C.onDark }} aria-hidden="true" />
                 <h3 className="mt-4 font-heading text-lg font-bold text-white">{title}</h3>
                 <p className="mt-2 text-[15px] leading-relaxed text-white/75">{body}</p>

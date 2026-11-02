@@ -114,7 +114,7 @@ const BecomeAHost = () => {
           <button
             onClick={handleGoogle}
             disabled={loading}
-            className="btn mt-7 flex w-full items-center justify-center gap-3 rounded-[5px] bg-ink py-3.5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="btn mt-7 flex w-full items-center justify-center gap-3 rounded-[16px] bg-ink py-3.5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] transition-opacity hover:opacity-90 disabled:opacity-50"
           >
             <GoogleIcon />
             {loading ? 'Opening Google…' : 'Continue with Google'}

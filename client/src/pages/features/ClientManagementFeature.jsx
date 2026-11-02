@@ -8,7 +8,7 @@
 //   1 Hero + live demo · 2 Proof strip · 3 Without vs with · 4 How it works ·
 //   5 Capabilities · 6 The difference · 7 Testimonials · 8 FAQ · 9 Final CTA
 //
-// Design system B "Calm cream": soft cream grounds, warm orange accent (#2A1416
+// Design system B "Calm cream": soft cream grounds, warm orange accent (#2B0A14
 // for text and CTA fills, peach tints for surfaces), pill chips, an avatar-count
 // pill motif. Gentle and human, not dashboardy. Mechanics unique to this page:
 // clickable client list + client card (hero) · avatar-stack pill with fact chips ·
@@ -50,7 +50,7 @@ const START = '/become-a-host';
 const CREAM = '#FBF6EE';      // page ground
 const CREAM_DEEP = '#F4EBDD'; // alternate section ground
 const PEACH = '#FCE7DA';      // soft accent surface
-const ACCENT = '#2A1416';     // text + CTA fill (AA on cream and with white text)
+const ACCENT = '#2B0A14';     // text + CTA fill (AA on cream and with white text)
 const INK = '#2A211B';        // warm ink
 const MUTED = '#6B5D52';      // body copy on cream (AA)
 const TINTS = ['#FCE3D3', '#F7E6C4', '#F9D9CF', '#EFE4D6']; // avatar backgrounds
@@ -170,7 +170,7 @@ function PrimaryCta({ to = START, children }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-[6px] px-6 py-3 text-sm font-semibold text-white shadow-[0_10px_30px_-10px_rgba(194,61,0,0.45)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white shadow-[0_10px_30px_-10px_rgba(194,61,0,0.45)] transition-opacity hover:no-underline hover:opacity-90"
       style={{ background: ACCENT }}
     >
       {children}
@@ -209,7 +209,7 @@ function ImgSlot({ alt, slot, className = '' }) {
       role="img"
       aria-label={alt}
       data-img-slot={slot}
-      className={`flex items-center justify-center rounded-[10px] border border-black/5 ${className}`}
+      className={`flex items-center justify-center rounded-[16px] border border-black/5 ${className}`}
       style={{ background: 'repeating-linear-gradient(135deg, rgba(194,61,0,0.04) 0 10px, rgba(194,61,0,0.08) 10px 20px)' }}
     >
       <ImageIcon size={28} style={{ color: 'rgba(194,61,0,0.35)' }} aria-hidden />
@@ -237,7 +237,7 @@ function ClientCardDemo() {
 
   return (
     <div className="mx-auto w-full max-w-[34rem]">
-      <div className="overflow-hidden rounded-[10px] border border-black/5 bg-white shadow-[0_30px_70px_-35px_rgba(122,60,20,0.35)]">
+      <div className="overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_30px_70px_-35px_rgba(122,60,20,0.35)]">
         <div className="flex items-center justify-between border-b border-black/5 px-5 py-3.5">
           <span className="font-heading text-sm font-bold" style={{ color: INK }}>Clients</span>
           <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold" style={{ background: PEACH, color: ACCENT }}>
@@ -285,7 +285,7 @@ function ClientCardDemo() {
                     ['Last visit', c.bookings[0].date],
                     ['Bookings', String(c.bookings.length)],
                   ].map(([k, v]) => (
-                    <div key={k} className="rounded-[6px] px-2 py-2.5" style={{ background: CREAM }}>
+                    <div key={k} className="rounded-[16px] px-2 py-2.5" style={{ background: CREAM }}>
                       <dt className="text-[10px] uppercase tracking-[0.12em]" style={{ color: MUTED }}>{k}</dt>
                       <dd className="mt-0.5 font-heading text-[15px] font-bold tabular-nums" style={{ color: INK }}>{v}</dd>
                     </div>
@@ -312,7 +312,7 @@ function ClientCardDemo() {
                   placeholder="Add a private note about this client"
                   onFocus={() => setPaused(true)}
                   onChange={(e) => { const v = e.target.value; setNotes((n) => n.map((x, i) => (i === active ? v : x))); }}
-                  className="mt-1.5 w-full resize-none rounded-[6px] border border-black/10 bg-white px-3 py-2 text-[13px] focus:outline-none focus:ring-2"
+                  className="mt-1.5 w-full resize-none rounded-[16px] border border-black/10 bg-white px-3 py-2 text-[13px] focus:outline-none focus:ring-2"
                   style={{ color: INK, '--tw-ring-color': 'rgba(194,61,0,0.3)' }}
                 />
               </motion.div>
@@ -345,7 +345,7 @@ function PlanLens() {
 
   return (
     <div className="mt-12 grid items-start gap-8 lg:grid-cols-[1fr_1.1fr]">
-      <div className="rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-7">
+      <div className="rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-7">
         <div className="inline-flex rounded-full p-1" style={{ background: CREAM_DEEP }} role="group" aria-label="Compare plans">
           {[['free', FREE_PLAN.name], ['premium', PREMIUM_PLAN.name]].map(([k, label]) => (
             <button
@@ -378,7 +378,7 @@ function PlanLens() {
         <p className="mt-2 text-[11px]" style={{ color: MUTED }}>Illustration: a host with 14 sample clients</p>
       </div>
 
-      <div className="overflow-hidden rounded-[10px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+      <div className="overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
         <table className="w-full text-left text-sm">
           <thead>
             <tr style={{ background: CREAM }}>
@@ -487,7 +487,7 @@ export default function ClientManagementFeature() {
 
       {/* ═══════════════ 2 · PROOF (avatar-stack pill + fact chips) ═══════════════ */}
       <section className="px-5 pb-6 sm:px-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-5 rounded-[10px] px-6 py-8 text-center sm:px-10 lg:flex-row lg:justify-between lg:text-left" style={{ background: PEACH }}>
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-5 rounded-[16px] px-6 py-8 text-center sm:px-10 lg:flex-row lg:justify-between lg:text-left" style={{ background: PEACH }}>
           <AvatarStackPill names={['Asha Example', 'Rohan Sample', 'Meera Demo']} label="Every client who books, saved" />
           <ul className="flex flex-wrap justify-center gap-2 lg:justify-end">
             {HERO_TRUST.map((f) => (
@@ -510,13 +510,13 @@ export default function ClientManagementFeature() {
           </Reveal>
 
           <div className="mt-14 grid gap-6 lg:grid-cols-2">
-            <Reveal className="rounded-[10px] border border-dashed border-black/10 p-6" style={{ background: 'rgba(255,255,255,0.45)' }}>
+            <Reveal className="rounded-[24px] border border-dashed border-black/10 p-6" style={{ background: 'rgba(255,255,255,0.45)' }}>
               <div className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: MUTED }}>Without</div>
               <div className="relative mt-4 h-[22rem]">
                 {SCATTERED.map((s) => (
                   <div
                     key={s.label}
-                    className={`absolute ${s.pos} flex max-w-[15rem] items-start gap-2.5 rounded-[6px] border border-black/5 bg-white px-3.5 py-2.5 shadow-[0_8px_24px_-12px_rgba(26,26,26,0.18)]`}
+                    className={`absolute ${s.pos} flex max-w-[15rem] items-start gap-2.5 rounded-[16px] border border-black/5 bg-white px-3.5 py-2.5 shadow-[0_8px_24px_-12px_rgba(26,26,26,0.18)]`}
                     style={{ transform: `rotate(${s.rot})` }}
                   >
                     <s.icon size={16} className="mt-0.5 shrink-0" style={{ color: MUTED }} aria-hidden />
@@ -529,7 +529,7 @@ export default function ClientManagementFeature() {
               </div>
             </Reveal>
 
-            <Reveal delay={0.06} className="rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+            <Reveal delay={0.06} className="rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
               <div className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: ACCENT }}>With Meeticulous</div>
               <div className="mt-5 flex items-center gap-3.5">
                 <Avatar name="Asha Example" size="h-14 w-14 text-base" />
@@ -570,7 +570,7 @@ export default function ClientManagementFeature() {
           </div>
           <ol className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-3">
             {STEPS.map((s, i) => (
-              <Reveal as="li" key={s.title} delay={i * 0.06} className="relative rounded-[10px] bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+              <Reveal as="li" key={s.title} delay={i * 0.06} className="relative rounded-[24px] bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
                 <div className="flex items-center justify-between">
                   <span className="flex h-12 w-12 items-center justify-center rounded-full" style={{ background: PEACH, color: ACCENT }}><s.icon size={21} aria-hidden /></span>
                   <span className="rounded-full px-2.5 py-1 font-heading text-xs font-bold" style={{ background: CREAM, color: MUTED }}>Step {i + 1}</span>
@@ -642,7 +642,7 @@ export default function ClientManagementFeature() {
             </Reveal>
             <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-3">
               {QUOTES.map((t, i) => (
-                <Reveal as="figure" key={t.name} delay={i * 0.06} className="flex flex-col items-center rounded-[10px] border border-black/5 bg-white px-7 pb-8 pt-9 text-center shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+                <Reveal as="figure" key={t.name} delay={i * 0.06} className="flex flex-col items-center rounded-[16px] border border-black/5 bg-white px-7 pb-8 pt-9 text-center shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
                   <img src={t.avatar} alt="" loading="lazy" className="h-20 w-20 rounded-full object-cover ring-4" style={{ '--tw-ring-color': PEACH }} />
                   <blockquote className="mt-6 text-[15px] leading-relaxed" style={{ color: INK }}>&ldquo;{t.quote}&rdquo;</blockquote>
                   <figcaption className="mt-5">
@@ -664,7 +664,7 @@ export default function ClientManagementFeature() {
           <Reveal as="h2" className={`text-center ${h2}`}>
             Questions, <span style={{ color: ACCENT }}>gently answered.</span>
           </Reveal>
-          <div className="mt-12 divide-y divide-black/5 overflow-hidden rounded-[10px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+          <div className="mt-12 divide-y divide-black/5 overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
             {FAQ.map((f, i) => (
               <details key={f.q} className="group open:bg-[#FFF8F2]" open={i === 0}>
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 [&::-webkit-details-marker]:hidden">
@@ -682,7 +682,7 @@ export default function ClientManagementFeature() {
 
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-4xl rounded-[10px] px-6 py-14 text-center sm:px-12" style={{ background: PEACH }}>
+        <div className="mx-auto max-w-4xl rounded-[16px] px-6 py-14 text-center sm:px-12" style={{ background: PEACH }}>
           <Reveal className="flex justify-center">
             <AvatarStackPill names={SAMPLE_CLIENTS.map((c) => c.name)} label="Your next client, already remembered" />
           </Reveal>
@@ -700,7 +700,7 @@ export default function ClientManagementFeature() {
           </Reveal>
           <nav aria-label="Related features" className="mt-12 flex flex-wrap justify-center gap-2 border-t border-black/5 pt-8">
             {RELATED.map((r) => (
-              <Link key={r.to} to={r.to} className="rounded-full border border-black/5 bg-white px-3.5 py-1.5 text-[13px] font-semibold transition-colors hover:no-underline hover:border-[#2A1416]/40" style={{ color: INK }}>
+              <Link key={r.to} to={r.to} className="rounded-full border border-black/5 bg-white px-3.5 py-1.5 text-[13px] font-semibold transition-colors hover:no-underline hover:border-[#2B0A14]/40" style={{ color: INK }}>
                 {r.label}
               </Link>
             ))}

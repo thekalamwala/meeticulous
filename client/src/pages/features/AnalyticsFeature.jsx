@@ -207,7 +207,7 @@ function PrimaryCta({ to = START, children, dark = false }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-[6px] px-6 py-3 text-sm font-semibold shadow-[0_8px_30px_rgba(15,23,42,0.18)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold shadow-[0_8px_30px_rgba(15,23,42,0.18)] transition-opacity hover:no-underline hover:opacity-90"
       style={dark ? { background: AMBER, color: CHARCOAL } : { background: CHARCOAL, color: '#FFFFFF' }}
     >
       {children}
@@ -249,7 +249,7 @@ function DashboardDemo() {
 
   return (
     <div className="mx-auto w-full max-w-[30rem]">
-      <div className="overflow-hidden rounded-[10px] border border-white/10 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)]" style={{ background: SLATE }}>
+      <div className="overflow-hidden rounded-[16px] border border-white/10 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)]" style={{ background: SLATE }}>
         {/* window bar */}
         <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
           <div className="flex items-center gap-2 text-[12px] font-semibold text-[#CBD5E1]">
@@ -283,7 +283,7 @@ function DashboardDemo() {
           {/* KPI tiles */}
           <div className="grid grid-cols-3 gap-2">
             {t.tiles.map((k) => (
-              <div key={k.label} className="rounded-[6px] border border-white/10 px-2.5 py-2.5" style={{ background: CHARCOAL }}>
+              <div key={k.label} className="rounded-[16px] border border-white/10 px-2.5 py-2.5" style={{ background: CHARCOAL }}>
                 <div className="truncate text-[10px] uppercase tracking-[0.1em] text-[#94A3B8]">{k.label}</div>
                 <div className="mt-1 font-mono text-[15px] font-bold tabular-nums text-[#F1F5F9] sm:text-base">{k.value}</div>
                 <div className="mt-0.5 truncate text-[10px] text-[#94A3B8]">{k.delta}</div>
@@ -292,7 +292,7 @@ function DashboardDemo() {
           </div>
 
           {/* chart */}
-          <div className="mt-4 rounded-[6px] border border-white/10 p-3.5" style={{ background: CHARCOAL }}>
+          <div className="mt-4 rounded-[16px] border border-white/10 p-3.5" style={{ background: CHARCOAL }}>
             <div className="flex items-center justify-between text-[11px] text-[#94A3B8]">
               <span className="font-semibold text-[#CBD5E1]">{t.chartTitle}</span>
               <span className="font-mono">{horizontal ? 'Top spend' : '6M'}</span>
@@ -338,7 +338,7 @@ function DashboardDemo() {
 /* Without: a hand-kept spreadsheet. */
 function SheetMock() {
   return (
-    <div className="overflow-hidden rounded-[10px] border border-black/10 bg-white font-mono text-[11px] shadow-[0_8px_30px_rgba(15,23,42,0.05)]">
+    <div className="overflow-hidden rounded-[16px] border border-black/10 bg-white font-mono text-[11px] shadow-[0_8px_30px_rgba(15,23,42,0.05)]">
       <div className="flex items-center gap-2 border-b border-black/10 bg-[#F8FAFC] px-3 py-2 text-[11px] text-[#64748B]">
         <Table2 size={13} aria-hidden /> bookings_sept_FINAL(2).xlsx
       </div>
@@ -378,7 +378,7 @@ function SheetMock() {
 function DashMock() {
   const rows = [['Strategy call', 4, inr(5700)], ['Audit', 1, inr(2380)], ['Follow-up', 1, inr(760)]];
   return (
-    <div className="overflow-hidden rounded-[10px] text-[#F1F5F9] shadow-[0_24px_60px_-28px_rgba(15,23,42,0.5)]" style={{ background: CHARCOAL }}>
+    <div className="overflow-hidden rounded-[16px] text-[#F1F5F9] shadow-[0_24px_60px_-28px_rgba(15,23,42,0.5)]" style={{ background: CHARCOAL }}>
       <div className="flex items-center justify-between border-b border-white/10 px-3 py-2 text-[11px] text-[#94A3B8]">
         <span className="flex items-center gap-2"><BarChart3 size={13} aria-hidden /> Earnings · September</span>
         <span className="font-mono text-[10px] uppercase tracking-[0.12em]" style={{ color: AMBER }}>Sample</span>
@@ -427,7 +427,7 @@ function QuestionMap() {
       </div>
 
       <div>
-        <div className="grid gap-px overflow-hidden rounded-[10px] border border-white/10 bg-white/10 sm:grid-cols-2">
+        <div className="grid gap-px overflow-hidden rounded-[16px] border border-white/10 bg-white/10 sm:grid-cols-2">
           {MAP.map((group) => (
             <div key={group.screen} className="p-4" style={{ background: SLATE }}>
               <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#94A3B8]">{group.screen}</div>
@@ -450,7 +450,7 @@ function QuestionMap() {
             </div>
           ))}
         </div>
-        <div aria-live="polite" className="mt-5 rounded-[10px] border border-white/10 p-5" style={{ background: SLATE }}>
+        <div aria-live="polite" className="mt-5 rounded-[24px] border border-white/10 p-5" style={{ background: SLATE }}>
           <div className="font-mono text-[11px] uppercase tracking-[0.14em]" style={{ color: AMBER }}>Where: {q.where}</div>
           <p className="mt-2 text-[15px] leading-relaxed text-[#E2E8F0]">{q.a}</p>
         </div>
@@ -463,7 +463,7 @@ function QuestionMap() {
 function FaqRows() {
   const [open, setOpen] = useState(0);
   return (
-    <div className="mt-12 overflow-hidden rounded-[10px] border border-black/10">
+    <div className="mt-12 overflow-hidden rounded-[16px] border border-black/10">
       <div className="hidden grid-cols-[5rem_1fr_2.5rem] border-b border-black/10 bg-[#F8FAFC] px-5 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#64748B] sm:grid">
         <span>Ref</span><span>Question</span><span />
       </div>
@@ -583,7 +583,7 @@ export default function AnalyticsFeature() {
       <section className="border-b border-black/5 bg-[#F8FAFC] px-5 py-10 sm:px-8">
         <div className="mx-auto grid max-w-6xl gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {PROOF.map((p) => (
-            <div key={p.k} className="rounded-[6px] border border-black/5 bg-white px-5 py-4 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+            <div key={p.k} className="rounded-[16px] border border-black/5 bg-white px-5 py-4 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
               <div className="flex items-center justify-between">
                 <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#64748B]">{p.k}</span>
                 <span className="h-1.5 w-1.5 rounded-full" style={{ background: AMBER_INK }} aria-hidden />
@@ -640,7 +640,7 @@ export default function AnalyticsFeature() {
           <ol className="mt-14 grid gap-3 lg:grid-cols-4 lg:gap-0">
             {FLOW.map((s, i) => (
               <Reveal as="li" key={s.tag} delay={i * 0.06} className="relative flex lg:pr-6">
-                <div className="flex-1 rounded-[6px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+                <div className="flex-1 rounded-[24px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: AMBER_INK }}>{String(i + 1).padStart(2, '0')} · {s.tag}</span>
                     <s.icon size={16} className="text-[#64748B]" aria-hidden />
@@ -676,7 +676,7 @@ export default function AnalyticsFeature() {
             </Reveal>
           </div>
 
-          <div className="mt-12 grid gap-px overflow-hidden rounded-[10px] border border-black/10 bg-black/10 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-12 grid gap-px overflow-hidden rounded-[16px] border border-black/10 bg-black/10 sm:grid-cols-2 lg:grid-cols-4">
             {SPECS.map((s) => (
               <div key={s.title} className="bg-white p-5">
                 <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: AMBER_INK }}>{s.area}</div>
@@ -714,7 +714,7 @@ export default function AnalyticsFeature() {
             </Reveal>
             <div className="mt-12 grid gap-5 sm:gap-6 md:grid-cols-3">
               {QUOTES.map((t, i) => (
-                <Reveal as="figure" key={t.name} delay={i * 0.05} className="flex flex-col justify-between rounded-[6px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+                <Reveal as="figure" key={t.name} delay={i * 0.05} className="flex flex-col justify-between rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
                   <blockquote className="text-[15px] leading-relaxed text-[#0F172A]">&ldquo;{t.quote}&rdquo;</blockquote>
                   <figcaption className="mt-6 flex items-center gap-3 border-t border-black/5 pt-4">
                     <img src={t.avatar} alt="" loading="lazy" className="h-9 w-9 rounded-full object-cover" />

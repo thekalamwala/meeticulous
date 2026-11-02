@@ -684,6 +684,38 @@ const TEMPLATES = [
     cta_label: 'Complete your booking', cta_url: '{{resume_url}}',
   }; })(),
 
+  // ── Host activation nudges (sent by services/activationNudges.js) ──────────────
+  // First seeded by migration v3.164; owned here since the 2026-11 redesign so a
+  // reseed keeps them in step with the other templates. {{link}} is per-nudge.
+
+  ...[
+    ['HOST_ADD_SERVICE_NUDGE', 'Host — Add First Service', 'Onboarding', 'Your Meeticulous page is empty, {{first_name}}',
+      "Add one service with a price and you're live.", 'Getting Started', 'You are receiving this because you signed up as a host on Meeticulous.',
+      'Add your first service, {{first_name}}',
+      'Your account is ready — but there is nothing on your page to book yet. Add one service with a price and you are live. Takes about two minutes.',
+      'Add my service'],
+    ['HOST_SHARE_LINK_NUDGE', 'Host — Share Booking Link', 'Onboarding', 'Your page is live — now share it, {{first_name}}',
+      'A page nobody sees gets no bookings.', 'Getting Started', 'You are receiving this because you have a live booking page on Meeticulous.',
+      'Your booking page is live, {{first_name}} 🎉',
+      'The only thing between you and your first booking is people seeing your link. Share it with 5 people today — WhatsApp, your Instagram bio, anywhere your clients already are.',
+      'Copy my link'],
+    ['HOST_FIRST_BOOKING_NUDGE', 'Host — Get First Booking', 'Onboarding', "Still no bookings? Here's the fastest fix",
+      'The first booking usually comes from your own circle.', 'Getting Started', 'You are receiving this because you have a live booking page on Meeticulous.',
+      'No bookings yet is normal, {{first_name}}',
+      'The first one is the hardest. Fastest path: send your link to 3 people who have paid you before, or share it once in a group you are in. First bookings almost always come from your own circle, not strangers.',
+      'Share my link'],
+    ['HOST_PAYOUT_WAITING_NUDGE', 'Host — Payout Waiting (KYC)', 'Payments', 'You have a payout waiting, {{first_name}}',
+      "Finish KYC and we'll send it to your bank.", 'Payment Receipt', 'You are receiving this because you have earnings waiting on Meeticulous.',
+      'Your money is waiting, {{first_name}} 💰',
+      'You have earned on Meeticulous. To send it to your bank we need a quick KYC (PAN + bank details) — a regulatory requirement, about three minutes.',
+      'Finish KYC'],
+  ].map(([event_key, name, category, subject, preview_text, email_category, email_reason, title, body, cta_label]) => ({
+    event_key, name, category, subject, preview_text, email_category, email_reason,
+    audience: 'vendor', sender_key: 'tithi',
+    html_content: h(title) + lead(body) + '<!--cta-->' + C.signOff('Tithi', 'Meeticulous team · just reply if you get stuck'),
+    cta_label, cta_url: '{{link}}',
+  })),
+
   // ── Marketing ─────────────────────────────────────────────────────────────────
 
   (() => { const t = themeForCategory('Upgrade'); return {

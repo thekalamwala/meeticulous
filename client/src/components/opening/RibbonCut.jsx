@@ -52,7 +52,7 @@ export default function RibbonCut({ onCut }) {
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doCut(); } }}
       >
         {/* left half */}
-        <span className="absolute top-1/2 left-0 h-[26px] rounded-[5px]"
+        <span className="absolute top-1/2 left-0 h-[26px] rounded-[16px]"
           style={{
             width: `${(cut ? 0.5 : Math.max(progress, 0.001)) * 100}%`,
             background: 'linear-gradient(180deg,#ff7a3c,#960D32)',
@@ -62,7 +62,7 @@ export default function RibbonCut({ onCut }) {
             transition: cut ? halfEase : 'none',
           }} />
         {/* right half */}
-        <span className="absolute top-1/2 right-0 h-[26px] rounded-[5px]"
+        <span className="absolute top-1/2 right-0 h-[26px] rounded-[16px]"
           style={{
             width: `${(cut ? 0.5 : Math.max(1 - progress, 0.001)) * 100}%`,
             background: 'linear-gradient(180deg,#ff7a3c,#960D32)',

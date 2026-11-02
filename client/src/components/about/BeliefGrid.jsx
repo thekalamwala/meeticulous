@@ -7,7 +7,7 @@ import useGsapReveal from "./useGsapReveal";
 // original ink line art with brand-crimson fills (matches the white + crimson
 // About page). No transition on .js-item opacity/transform (GSAP owns those).
 
-const INK = "#2A1416";
+const INK = "#2B0A14";
 const RED = "#960D32";
 const LINE = { fill: "none", stroke: INK, strokeWidth: 2.4, strokeLinecap: "round", strokeLinejoin: "round" };
 
@@ -93,7 +93,7 @@ export default function BeliefGrid() {
   return (
     <section ref={root} className="px-5 py-16 sm:px-8 lg:py-24">
       <div className="mx-auto max-w-6xl">
-        <h2 className="js-head text-center font-heading text-4xl font-extrabold sm:text-5xl">{beliefs.heading}</h2>
+        <h2 className="js-head text-center font-display text-4xl font-extrabold sm:text-5xl">{beliefs.heading}</h2>
         <p className="mt-5 text-center text-lg leading-relaxed text-ink/70">{beliefs.sub}</p>
 
         <div className="mt-12 grid gap-y-12 md:mt-16 md:grid-cols-3">

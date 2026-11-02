@@ -138,7 +138,7 @@ function Cta({ slot, children = 'Start free', className = '' }) {
     <Link
       to={START}
       onClick={() => analytics.track(EVENTS.LP_CTA_CLICKED, { slug: SLUG, slot, ...utm })}
-      className={`inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[6px] bg-primary px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(194,61,0,0.2)] transition-opacity hover:no-underline hover:opacity-90 ${className}`}
+      className={`inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(194,61,0,0.2)] transition-opacity hover:no-underline hover:opacity-90 ${className}`}
     >
       {children} <ArrowRight size={16} aria-hidden />
     </Link>
@@ -161,7 +161,7 @@ function HeroLedger() {
     ['Commission', C.commission, `${COMMISSION.free} or ${COMMISSION.premium}`],
   ];
   return (
-    <figure className={`relative mx-auto w-full max-w-md rounded-[6px] border ${RULE} bg-white py-5 pl-12 pr-5 shadow-[0_8px_30px_rgba(20,33,61,0.06)]`}>
+    <figure className={`relative mx-auto w-full max-w-md rounded-[16px] border ${RULE} bg-white py-5 pl-12 pr-5 shadow-[0_8px_30px_rgba(20,33,61,0.06)]`}>
       <span aria-hidden className="absolute inset-y-0 left-8 w-px bg-primary/40" />
       <div className={`flex items-baseline justify-between border-b ${RULE} pb-3 ${KICKER} ${FAINT}`}>
         <span>At a glance</span>
@@ -232,7 +232,7 @@ function CardHead({ children, note }) {
 
 function TwoCheckouts() {
   const [plan, setPlan] = useState('standard'); // deterministic first paint (prerender-safe)
-  const card = `overflow-hidden rounded-[6px] bg-[color:var(--lg-paper)] ${INK} shadow-[0_30px_70px_-30px_rgba(0,0,0,0.5)]`;
+  const card = `overflow-hidden rounded-[16px] bg-[color:var(--lg-paper)] ${INK} shadow-[0_30px_70px_-30px_rgba(0,0,0,0.5)]`;
   return (
     <div className="mt-12 grid gap-8 md:grid-cols-2 md:gap-6">
       <div>
@@ -244,7 +244,7 @@ function TwoCheckouts() {
               aria-pressed={plan === p.key}
               aria-controls="cal-checkout"
               onClick={() => setPlan(p.key)}
-              className={`min-h-[44px] flex-1 rounded-[6px] border px-3 text-xs font-semibold transition-colors sm:text-sm ${plan === p.key ? `border-transparent bg-[#FBF8F2] ${INK}` : `border-white/20 bg-transparent ${PAPER_TXT} hover:bg-white/5`}`}
+              className={`min-h-[44px] flex-1 rounded-[16px] border px-3 text-xs font-semibold transition-colors sm:text-sm ${plan === p.key ? `border-transparent bg-[#FBF8F2] ${INK}` : `border-white/20 bg-transparent ${PAPER_TXT} hover:bg-white/5`}`}
             >
               {p.label}
             </button>
@@ -300,7 +300,7 @@ function TwoCheckouts() {
                 <div className="mt-2 text-xs">{inr(EXAMPLE_PRICE)} session + {inr(BOOKING_FEE + BOOKING_FEE_GST, 2)} booking fee and GST</div>
               </StepRow>
               <StepRow title="GST invoice sent">
-                <div className={`mt-1 rounded-[5px] border border-dashed ${RULE} bg-white p-2.5 text-xs`}>
+                <div className={`mt-1 rounded-[16px] border border-dashed ${RULE} bg-white p-2.5 text-xs`}>
                   <div className={`mb-1 flex items-center gap-1.5 font-semibold ${INK}`}><Receipt size={13} aria-hidden /> Tax invoice</div>
                   <div className="flex justify-between"><span>Session</span><span className="tabular-nums">{inr(EXAMPLE_PRICE, 2)}</span></div>
                   <div className="flex justify-between"><span>Booking fee</span><span className="tabular-nums">{inr(BOOKING_FEE, 2)}</span></div>
@@ -361,7 +361,7 @@ export default function CalendlyAlternative() {
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <Cta slot="hero" />
-              <a href="#side-by-side" className={`inline-flex min-h-[44px] items-center justify-center rounded-[6px] border ${RULE} bg-white px-6 py-3 text-sm font-semibold ${INK} hover:no-underline hover:opacity-90`}>
+              <a href="#side-by-side" className={`inline-flex min-h-[44px] items-center justify-center rounded-full border ${RULE} bg-white px-6 py-3 text-sm font-semibold ${INK} hover:no-underline hover:opacity-90`}>
                 Compare side by side
               </a>
             </div>
@@ -377,7 +377,7 @@ export default function CalendlyAlternative() {
 
       {/* ═══════════ 2 · THE SHORT ANSWER ═══════════ */}
       <section id="short-answer" aria-labelledby="short-answer-title" className="px-5 pb-20 sm:px-8 lg:pb-28">
-        <div className={`relative mx-auto max-w-3xl rounded-[6px] border ${RULE} bg-white py-8 pl-10 pr-6 shadow-[0_8px_30px_rgba(20,33,61,0.04)] sm:py-10 sm:pl-14 sm:pr-10`}>
+        <div className={`relative mx-auto max-w-3xl rounded-[16px] border ${RULE} bg-white py-8 pl-10 pr-6 shadow-[0_8px_30px_rgba(20,33,61,0.04)] sm:py-10 sm:pl-14 sm:pr-10`}>
           <span aria-hidden className="absolute inset-y-0 left-6 w-px bg-primary/40 sm:left-9" />
           <h2 id="short-answer-title" className={`font-heading text-2xl font-extrabold sm:text-3xl ${INK}`}>The short <span className="text-primary-cta">answer</span></h2>
           <p className={`mt-4 font-heading text-lg font-bold leading-snug sm:text-xl ${INK}`}>{SHORT_ANSWER}</p>
@@ -405,7 +405,7 @@ export default function CalendlyAlternative() {
             {' '}<Link to="/blog/calendly-pricing-india" className="font-semibold text-primary-cta underline underline-offset-4">Calendly pricing in India, worked out in rupees</Link>.
           </p>
           <p className={`mt-8 ${KICKER} ${FAINT}`}>Last checked {CHECKED_LABEL}</p>
-          <div className={`mt-3 overflow-x-auto rounded-[6px] border ${RULE}`}>
+          <div className={`mt-3 overflow-x-auto rounded-[16px] border ${RULE}`}>
             <table className="w-full min-w-[640px] border-collapse text-left text-sm">
               <caption className="sr-only">Calendly compared with Meeticulous, checked {CHECKED_LABEL}</caption>
               <thead>
@@ -468,7 +468,7 @@ export default function CalendlyAlternative() {
           <p className={`mt-5 max-w-2xl text-base leading-relaxed ${MUTED}`}>No tool fits everyone. Calendly is the better pick when:</p>
           <div className="mt-12 grid gap-5 sm:gap-6 md:grid-cols-3">
             {BETTER.map((b) => (
-              <div key={b.title} className={`rounded-[6px] border ${RULE} bg-[color:var(--lg-paper)] p-6`}>
+              <div key={b.title} className={`rounded-[24px] border ${RULE} bg-[color:var(--lg-paper)] p-6`}>
                 <h3 className={`font-heading text-lg font-bold ${INK}`}>{b.title}</h3>
                 <p className={`mt-2 text-[15px] leading-relaxed ${MUTED}`}>{b.body}</p>
               </div>

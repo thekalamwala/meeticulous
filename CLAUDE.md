@@ -4,6 +4,9 @@
 1. **Ask first.** Before starting any task, ask at least one clarifying question. Never dive in cold.
 2. **Fresh branch from main.** `git fetch origin && git switch -c <type>/<slug> origin/main`. Never work directly on `main` or reuse an old branch unless told to.
 3. **Work → commit → PR.** Do the change, commit, `gh pr create` (any type: feat/fix/docs/chore).
+   **PR base = the open release train**, not `main`: check `git branch -r | grep release/` and use
+   `--base release/YYYY-MM` (CI runs on `release/**`). The train ships to `main` in one merge
+   (`/ship-release`). Only a hotfix the user asks for targets `main` directly.
 4. **Stop at the PR.** Hand over the PR link. **Do NOT merge.** The user merges — merge auto-deploys to prod and the user controls timing/limit.
 
 > See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full branch / PR / merge / deploy workflow.
@@ -227,49 +230,29 @@ Studio
 Limits always come from: subscription_plans.limits
 
 
-## UI Rules
+## UI Rules — Design system (mandatory)
 
-Design language = **soft modern SaaS** (NOT "friendly brutalism" — that label in
-old docs is stale). The shipped public pages (Home, Pricing, /for/* landings,
-Navbar, Footer) are the source of truth; match them.
-
-**Tokens only — never invent colors.** Use the Tailwind token classes:
-`bg-ink`/`text-ink` (#2A1416), `bg-canvas` (#FFF8FA, page bg), `bg-sand` (#FFF1F4),
-`text-primary`/`bg-primary` (#960D32, brand crimson), `text-primary-cta`/`bg-primary-cta` (#960D32 —
-used for white-on-crimson CTAs and accent headline words),
-`primary-light` (#FBE3E8), and the multi-hue `--c-*` / `text-c-*` accents. Per-landing
-pages drive accents off CSS vars (`--lp-accent`) via inline `style`.
-
-**Radius:** 4–6px on cards/buttons, `rounded-full` on chips/pills/avatars. NOTE
-`tailwind.config.js` overrides the scale — `rounded-lg/md/sm` = 4px and
-`rounded-xl/2xl/3xl` = 6px (NOT 12/16/24). So reach for `rounded-[6px]`/`rounded-[5px]`;
-`rounded-[10px]` is the one allowed card exception. Never 16px+ radii.
-
-**Borders:** 1px, low-alpha — `border border-black/5`, `border border-white/10` (dark
-sections), or accent at ~30% alpha (`${accent}4d`). NEVER `border-4 border-ink` or
-solid ink borders (that's the old brutalist look — do not add it).
-
-**Shadows:** soft and blurred — base `shadow-[0_8px_30px_rgba(26,26,26,0.04)]`, hover
-lifts with bigger blur + negative spread (`hover:-translate-y-1 hover:shadow-[0_24px_60px_-28px_...]`).
-NEVER hard offset shadows (`shadow-[4px_4px_0_#1E1E1E]`).
-
-**Type:** hero H1 + section H2 = **Bricolage Grotesque** (`font-display` /
-`--font-display`; the global `h1, h2` rule in `index.css` applies it automatically).
-Everything else = **Poppins**: body, UI, buttons, card titles (H3), stat numbers, prices
-(`font-sans`; `font-heading` is now an alias of the same face). Fonts are self-hosted
-in `client/public/fonts` (see `styles/fonts.css`). Hero H1 uses `clamp()`; section H2 =
-`text-4xl sm:text-5xl font-extrabold`, often one accent word in `text-primary-cta`.
-
-**CTA pattern:** `rounded-[6px] px-6 py-3 text-sm font-semibold text-white` on
-`bg-ink` or an accent fill, soft shadow, `hover:opacity-90`. Not pill-shaped, no border.
-
-**Rhythm:** sections `px-5 py-20 sm:px-8 lg:py-28`, containers `max-w-6xl`/`max-w-3xl mx-auto`,
-card grids `gap-5 sm:gap-6`, gutters `px-5 → sm:px-8`.
-
-**Reuse existing components before creating new ones.** `docs/design-system.md` is the
-long-form guide (keep it and this section in sync).
-
-
+All UI, pages, emails and graphics MUST follow the Meeticulous design system in `design-system/`
+(direction **"Loop & Slot"**; this replaces the old "soft modern SaaS" 4–6px-radius rules).
+- Read `design-system/BRAND_RULES.md` before any UI work and run its checklist before finishing.
+  The `meeticulous-design` skill loads the same kit.
+- Use tokens from `design-system/styles.css`. Never hard-code colours, fonts, radii or shadows.
+  In the client the kit is wired as `client/src/styles/brand.css` (generated copy of
+  `design-system/tokens/*` + `components/components.css` — edit `design-system/` first, then re-sync)
+  and mapped into `client/tailwind.config.js`: `maroon`, `maroon-dark`, `rose`, `pink`, `blush`,
+  `cream`, `marigold` (open slots ONLY), `ink`; legacy names repointed (`canvas` = cream,
+  `sand` = blush, `primary` = maroon). `font-display` (Bricolage 800), `font-sans` (Poppins),
+  `font-serif` (Instrument Serif italic — one human phrase per layout).
+- Radius scale (Tailwind overridden to match): `rounded-md` 16 inputs · `rounded-lg` 20 slots ·
+  `rounded-xl`/`2xl` 24 cards · `rounded-3xl` 32 dialogs · `rounded-full` buttons/tags/badges.
+  Nothing is square-cornered.
+- Use components from `design-system/components/` or their classes (`.mt-btn`, `.mt-card`,
+  `.mt-slot`, …) and official files from `design-system/assets/` (served at `/brand/ds/…`).
+  Never redraw or recolour the logo, ee, camera+calendar icon or illustrations.
+- Website restructuring follows `design-system/WEBSITE_MIGRATION.md`; remaining work is
+  tracked in `design-system/MIGRATION_AUDIT.md`.
+- If a need isn't covered, extend the system (new token/component in the same style), document
+  it in `design-system/readme.md`, then use it. Never one-off styles.
 
 ## Quick Search
 

@@ -304,7 +304,7 @@
 .ent-lp .text-green-700 { color: #15803d; }
 .ent-lp .text-red-500 { color: #ef4444; }
 .ent-lp .text-blue-600 { color: #960D32; }
-.ent-lp .text-blue-700 { color: #2A1416; }
+.ent-lp .text-blue-700 { color: #2B0A14; }
 .ent-lp .bg-white { background-color: #ffffff; }
 .ent-lp .bg-transparent { background-color: transparent; }
 .ent-lp .bg-\[\#960D32\] { background-color: #960D32; }
@@ -365,7 +365,7 @@
 .ent-lp .hover\:text-\[\#6B7280\]:hover { color: #6B7280; }
 .ent-lp .hover\:text-green-600:hover { color: #16a34a; }
 .ent-lp .hover\:text-blue-600:hover { color: #960D32; }
-.ent-lp .hover\:text-blue-700:hover { color: #2A1416; }
+.ent-lp .hover\:text-blue-700:hover { color: #2B0A14; }
 .ent-lp .hover\:bg-\[\#960D32\]\/15:hover { background-color: rgba(254,81,0,0.15); }
 .ent-lp .hover\:bg-\[\#960D32\]\/20:hover { background-color: rgba(254,81,0,0.2); }
 .ent-lp .hover\:bg-\[\#FF7A3D\]\/15:hover { background-color: rgba(255,122,61,0.15); }
@@ -759,7 +759,7 @@
   .ent-lp .lg\:text-green-600 { color: #16a34a; }
   .ent-lp .lg\:text-green-700 { color: #15803d; }
   .ent-lp .lg\:text-blue-600 { color: #960D32; }
-  .ent-lp .lg\:text-blue-700 { color: #2A1416; }
+  .ent-lp .lg\:text-blue-700 { color: #2B0A14; }
   .ent-lp .lg\:text-purple-600 { color: #9333ea; }
   .ent-lp .lg\:shadow-sm { box-shadow: var(--shadow-sm); }
   .ent-lp .lg\:shadow-lg { box-shadow: var(--shadow-lg); }

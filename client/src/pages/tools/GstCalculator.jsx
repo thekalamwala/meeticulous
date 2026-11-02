@@ -79,7 +79,7 @@ const GstCalculator = () => {
           <div className="space-y-5 rounded-[16px] border border-black/10 bg-sand/40 p-5 sm:p-6">
             <label className="block">
               <span className="text-sm font-bold text-ink">Service fee</span>
-              <span className="mt-2 flex items-center gap-2 rounded-[12px] border border-black/10 bg-white px-3 py-2.5 focus-within:ring-2 focus-within:ring-primary/25">
+              <span className="mt-2 flex items-center gap-2 rounded-[16px] border border-black/10 bg-white px-3 py-2.5 focus-within:ring-2 focus-within:ring-primary/25">
                 <span className="text-neutral-400">₹</span>
                 <input
                   type="number" inputMode="decimal" min={0} step={50} value={amount}
@@ -109,7 +109,7 @@ const GstCalculator = () => {
 
             <div>
               <span className="text-sm font-bold text-ink">Is the fee GST-inclusive?</span>
-              <div className="mt-2 inline-flex rounded-[10px] border border-black/10 bg-white p-1">
+              <div className="mt-2 inline-flex rounded-[16px] border border-black/10 bg-white p-1">
                 <button type="button" onClick={() => setInclusive(false)} aria-pressed={!inclusive}
                   className={`rounded-[8px] px-4 py-1.5 text-sm font-semibold ${!inclusive ? "bg-primary text-white" : "text-ink"}`}>
                   Add GST
@@ -123,20 +123,20 @@ const GstCalculator = () => {
           </div>
 
           <div className="space-y-3">
-            <div className="flex items-center justify-between rounded-[12px] border border-black/10 bg-white px-5 py-3.5">
+            <div className="flex items-center justify-between rounded-[16px] border border-black/10 bg-white px-5 py-3.5">
               <span className="text-sm text-neutral-600">Base amount</span>
               <span className="font-heading text-xl font-extrabold text-ink">{inr(r.base)}</span>
             </div>
-            <div className="flex items-center justify-between rounded-[12px] border border-black/10 bg-white px-5 py-3.5">
+            <div className="flex items-center justify-between rounded-[16px] border border-black/10 bg-white px-5 py-3.5">
               <span className="text-sm text-neutral-600">GST ({r.ratePct}%)</span>
               <span className="font-heading text-xl font-extrabold text-ink">{inr(r.gst)}</span>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-[12px] border border-black/10 bg-white px-5 py-3">
+              <div className="rounded-[16px] border border-black/10 bg-white px-5 py-3">
                 <span className="text-xs text-neutral-500">CGST</span>
                 <p className="font-heading text-lg font-bold text-ink">{inr(r.cgst)}</p>
               </div>
-              <div className="rounded-[12px] border border-black/10 bg-white px-5 py-3">
+              <div className="rounded-[16px] border border-black/10 bg-white px-5 py-3">
                 <span className="text-xs text-neutral-500">SGST</span>
                 <p className="font-heading text-lg font-bold text-ink">{inr(r.sgst)}</p>
               </div>
@@ -156,10 +156,10 @@ const GstCalculator = () => {
             collects payment over UPI at the time of booking — no separate accounting tool.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
-            <Link to="/become-a-host" className="inline-flex items-center gap-1.5 rounded-[10px] bg-primary px-5 py-2.5 font-semibold text-white hover:no-underline">
+            <Link to="/become-a-host" className="inline-flex items-center gap-1.5 rounded-full bg-primary px-5 py-2.5 font-semibold text-white hover:no-underline">
               Start taking bookings <ArrowRight size={16} />
             </Link>
-            <Link to="/host-fees" className="inline-flex items-center gap-1.5 rounded-[10px] border border-black/10 px-5 py-2.5 font-semibold text-ink hover:no-underline">
+            <Link to="/host-fees" className="inline-flex items-center gap-1.5 rounded-full border border-black/10 px-5 py-2.5 font-semibold text-ink hover:no-underline">
               Host fees & GST
             </Link>
           </div>

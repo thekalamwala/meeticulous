@@ -91,7 +91,7 @@ const TemplatesIndex = () => (
               <Link
                 key={t.slug}
                 to={`/blog/${t.slug}`}
-                className="group rounded-[6px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors hover:border-primary/30 hover:no-underline"
+                className="group rounded-[24px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors hover:border-primary/30 hover:no-underline"
               >
                 <h3 className="font-heading text-base font-bold text-ink">{t.title}</h3>
                 <p className="mt-1.5 text-sm text-neutral-600">{t.desc}</p>

@@ -27,7 +27,10 @@ describe('Scheduling feature page', () => {
     renderPage();
     expect(screen.getByRole('button', { name: '2:00 PM, booked' }).disabled).toBe(true);
     fireEvent.click(screen.getByRole('button', { name: '11:30 AM' }));
-    expect(await screen.findByText('Booking confirmed')).toBeTruthy();
+    // The confirmation mounts only after the slot grid's exit animation
+    // (AnimatePresence mode="wait"), which runs slow on a loaded runner; the
+    // default 1s findBy window flaked there, so wait up to 5s.
+    expect(await screen.findByText('Booking confirmed', {}, { timeout: 5000 })).toBeTruthy();
     expect(screen.getByText('11:30 AM (IST)')).toBeTruthy();
   });
 

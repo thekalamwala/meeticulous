@@ -130,7 +130,7 @@ function Faq() {
       {FAQS.map((f, i) => {
         const isOpen = open === i;
         return (
-          <div key={f.q} className="overflow-hidden rounded-[10px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+          <div key={f.q} className="overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
             <button
               onClick={() => setOpen(isOpen ? -1 : i)}
               className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
@@ -220,9 +220,9 @@ export default function InviteLanding() {
 
           {/* RIGHT — icon art + floating glass cards (sm+ only) */}
           <Reveal delay={0.1} className="relative hidden sm:block">
-            <div className="relative mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden rounded-[10px] bg-sand shadow-[0_40px_90px_-25px_rgba(26,26,26,0.38)] ring-1 ring-black/5">
+            <div className="relative mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden rounded-[16px] bg-sand shadow-[0_40px_90px_-25px_rgba(26,26,26,0.38)] ring-1 ring-black/5">
               <IconArt icon={CalendarCheck} label="Bookings, payments and reminders on Meeticulous" className="h-full w-full border-0 shadow-none" iconClassName="h-24 w-24" />
-              <div aria-hidden className="pointer-events-none absolute inset-0 rounded-[10px] ring-1 ring-inset ring-white/15" />
+              <div aria-hidden className="pointer-events-none absolute inset-0 rounded-[16px] ring-1 ring-inset ring-white/15" />
             </div>
             <GlassCard icon={CalendarCheck} label="New booking" value="Confirmed · 4:30 PM" float="brand-float" className="top-10 -left-6" />
             <GlassCard icon={Wallet} label="Payment received" value="₹2,500" accent float="brand-float--mid" className="top-1/2 -right-5" />
@@ -276,7 +276,7 @@ export default function InviteLanding() {
           <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {VALUE.map((f) => (
               <Reveal key={f.title}>
-                <div className="group flex h-full flex-col rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition hover:shadow-[0_24px_60px_-28px_rgba(26,26,26,0.16)]">
+                <div className="group flex h-full flex-col rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition hover:shadow-[0_24px_60px_-28px_rgba(26,26,26,0.16)]">
                   <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-black/5 bg-white shadow-sm" style={{ color: f.color }}>
                     <f.icon size={22} strokeWidth={1.75} />
                   </span>
@@ -311,7 +311,7 @@ export default function InviteLanding() {
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {TESTIMONIALS.slice(0, 6).map((t, i) => (
               <Reveal key={i}>
-                <figure className="flex h-full flex-col rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition hover:shadow-[0_24px_60px_-28px_rgba(26,26,26,0.16)]">
+                <figure className="flex h-full flex-col rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition hover:shadow-[0_24px_60px_-28px_rgba(26,26,26,0.16)]">
                   <blockquote className="flex-1 text-sm leading-relaxed text-neutral-700">“{t.quote}”</blockquote>
                   <figcaption className="mt-5 flex items-center gap-3">
                     <TAvatar src={t.avatar} name={t.name} />
@@ -342,7 +342,7 @@ export default function InviteLanding() {
         <div className="mx-auto max-w-5xl">
           <div className="grid grid-cols-2 gap-5 sm:gap-6 lg:grid-cols-4">
             {TRUST.map((t) => (
-              <div key={t.title} className="rounded-[10px] border border-black/5 bg-white p-5 text-center shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+              <div key={t.title} className="rounded-[24px] border border-black/5 bg-white p-5 text-center shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
                 <span className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
                   <t.icon size={20} />
                 </span>
