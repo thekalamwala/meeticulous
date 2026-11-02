@@ -59,7 +59,7 @@ Work top to bottom.
 Integrations in use: **Supabase, Razorpay, SMTP email, Brevo (HTTP bulk email),
 Google Calendar OAuth, Sentry, PostHog.** Everything else in `server/.env.example`
 (GA4/Meta CAPI server fan-out, Resend, GSC, AiSensy, Redis, rate-limit store,
-pitch-deck, bot flags, CRM governor) is **off by default** — leave blank until
+bot flags, CRM governor) is **off by default** — leave blank until
 you deliberately turn it on.
 
 ---
