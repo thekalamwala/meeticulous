@@ -101,8 +101,8 @@ const ChangePlanModal = ({ host, onClose, onDone }) => {
         <span className="text-[12px] font-semibold text-gray-700">Plan</span>
         <select value={plan} onChange={e => setPlan(e.target.value)} className={inputCls}>
           <option value="starter">Starter</option>
-          <option value="creator">Host+</option>
-          <option value="professional">Studio</option>
+          <option value="creator">Pro (Partner)</option>
+          <option value="professional">Pro (Legacy Studio)</option>
           <option value="supreme">Supreme</option>
         </select>
       </label>

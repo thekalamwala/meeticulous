@@ -181,9 +181,9 @@ const ClientDetail = () => {
         <Card className="border-2 border-dashed border-primary/30 text-center">
           <div className="mb-3 text-3xl">🗂️</div>
           <h3 className="mb-1 font-semibold text-gray-900">Unlock Customers</h3>
-          <p className="mb-4 text-sm text-gray-500">This is a Studio feature.</p>
+          <p className="mb-4 text-sm text-gray-500">This is a Pro feature.</p>
           <Link to="/dashboard/upgrade" className={buttonClasses({ variant: 'primary' })}>
-            Upgrade to Studio
+            Upgrade to Pro
           </Link>
         </Card>
       </div>

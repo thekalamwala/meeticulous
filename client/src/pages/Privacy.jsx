@@ -19,7 +19,7 @@ const USE_ROWS = [
 const Privacy = () => (
   <LegalLayout
     title="Privacy Policy"
-    updated="12 August 2026"
+    updated="2 November 2026"
     current="/privacy"
     description="How Meeticulous collects, uses, and protects your data under India's DPDP Act 2023 and GDPR. Read our full privacy policy."
     intro={
@@ -105,7 +105,7 @@ const Privacy = () => (
     <Section title="4. How we share your data">
       <p>We share personal data only as needed to run the Platform:</p>
       <ul className="list-disc pl-5 space-y-1.5">
-        <li><strong>Between hosts and guests.</strong> When you book a service, the host receives your name, email, phone, scheduled time, and booking notes so they can deliver the service. Hosts must use this data only to fulfil the booking. Hosts on our <strong>Studio</strong> plan have a client-management tool that lets them see and <strong>export as a CSV the contact details of guests who have booked them</strong> — name, phone, email, and booking history — to manage their own client relationships.</li>
+        <li><strong>Between hosts and guests.</strong> When you book a service, the host receives your name, email, phone, scheduled time, and booking notes so they can deliver the service. Hosts must use this data only to fulfil the booking. Hosts on our <strong>Pro</strong> plan have a client-management tool that lets them see and <strong>export as a CSV the contact details of guests who have booked them</strong> — name, phone, email, and booking history — to manage their own client relationships.</li>
         <li><strong>Service providers (processors)</strong> who act on our instructions:
           <ul className="list-disc pl-5 pt-1 space-y-1">
             <li><strong>Razorpay</strong> — payment collection and, via Razorpay Route, host payouts (including host KYC / linked-account onboarding).</li>
