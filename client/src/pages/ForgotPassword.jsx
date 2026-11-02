@@ -26,7 +26,7 @@ const ForgotPassword = () => {
 
   if (sent) {
     return (
-      <div className="app-container flex h-[calc(100dvh-72px)] items-center justify-center overflow-hidden py-4">
+      <div className="app-container flex h-[calc(100dvh-57px)] items-center justify-center overflow-hidden py-4">
         <Seo title="Forgot password — Meeticulous" robots="noindex,nofollow" />
         <div className="page-card w-full max-w-md max-h-full overflow-y-auto p-5 sm:p-8 text-center">
           <div className="w-14 h-14 rounded-full bg-success-bg flex items-center justify-center mx-auto mb-4">
@@ -70,7 +70,7 @@ const ForgotPassword = () => {
   }
 
   return (
-    <div className="app-container flex h-[calc(100dvh-72px)] items-center justify-center overflow-hidden py-4">
+    <div className="app-container flex h-[calc(100dvh-57px)] items-center justify-center overflow-hidden py-4">
       <Seo title="Forgot password — Meeticulous" robots="noindex,nofollow" />
       <div className="page-card w-full max-w-md max-h-full overflow-y-auto p-5 sm:p-8">
         <img src="/brand/ee-rounded-primary.svg" alt="Meeticulous" className="mb-5 h-11 w-11" />

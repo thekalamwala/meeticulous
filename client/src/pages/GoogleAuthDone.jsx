@@ -52,7 +52,7 @@ const GoogleAuthDone = () => {
   }, []);
 
   return (
-    <div className="h-[100dvh] overflow-hidden flex items-center justify-center bg-cream">
+    <div className="h-[calc(100dvh-57px)] overflow-hidden flex items-center justify-center bg-cream">
       <Seo title="Signing you in — Meeticulous" robots="noindex,nofollow" />
       <div className="text-center">
         <div className="mb-4 flex justify-center"><PetalSpinner size={48} /></div>

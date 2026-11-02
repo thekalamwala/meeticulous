@@ -110,7 +110,7 @@ const HostLogin = () => {
   };
 
   return (
-    <div className="grid h-[calc(100dvh-72px)] w-full overflow-hidden lg:grid-cols-[1.05fr_1fr]">
+    <div className="grid h-[calc(100dvh-57px)] w-full overflow-hidden lg:grid-cols-[1.05fr_1fr]">
       <Seo title="Host login — Meeticulous" robots="noindex,nofollow" />
       {/* ── LEFT · colourful brand panel (lg+ only) ──────────────────────────── */}
       <AuthBrandPanel />
