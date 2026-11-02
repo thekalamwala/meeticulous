@@ -37,6 +37,8 @@ const EMAIL_MAP = {
   'email.clicked': { activity: 'email_clicked', engaged: true },
   'email.bounced': { status: 'bounced', stamp: 'failed_at', suppressEmail: true },
   'email.complained': { status: 'bounced', stamp: 'failed_at', suppressEmail: true },
+  // Inbound reply captured by Brevo inbound parsing (brevoInboundController).
+  'email.replied': { activity: 'email_reply', engaged: true, reply: true },
 };
 const WA_MAP = {
   sent: { status: 'sent', stamp: 'sent_at' },
@@ -108,7 +110,9 @@ async function maybeClickFollowUp(leadId) {
   }
 }
 
-async function recordDeliveryEvent({ channel, event, providerMessageId, payload = {}, phone, email }) {
+// activityMeta/activityBody: extra context for the lead_activity row (e.g. the
+// reply's AI label + text) — merged into meta, never overriding message_id/channel.
+async function recordDeliveryEvent({ channel, event, providerMessageId, payload = {}, phone, email, activityMeta, activityBody }) {
   try {
     const map = channel === 'email' ? EMAIL_MAP[event] : WA_MAP[event];
     const { message: msg, leadId } = await findTarget({ providerMessageId, channel, phone, email });
@@ -159,7 +163,8 @@ async function recordDeliveryEvent({ channel, event, providerMessageId, payload 
       if (map.activity) {
         await supabaseAdmin.from('lead_activities').insert({
           lead_id: leadId, type: map.activity, title: activityTitle(map.activity),
-          meta: { message_id: msg?.id || null, channel }, occurred_at: now,
+          body: activityBody || null,
+          meta: { ...activityMeta, message_id: msg?.id || null, channel }, occurred_at: now,
         });
         if (map.activity === 'email_clicked') await maybeClickFollowUp(leadId);
       }
@@ -175,7 +180,7 @@ async function recordDeliveryEvent({ channel, event, providerMessageId, payload 
       }
     }
 
-    return { ok: true, matched: !!(msg || leadId) };
+    return { ok: true, matched: !!(msg || leadId), leadId: leadId || null };
   } catch (err) {
     console.error('[crm] recordDeliveryEvent failed:', err.message);
     return { ok: false };
@@ -183,7 +188,7 @@ async function recordDeliveryEvent({ channel, event, providerMessageId, payload 
 }
 
 function activityTitle(a) {
-  return { email_opened: 'Email opened', email_clicked: 'Email link clicked', whatsapp_read: 'WhatsApp read', whatsapp_reply: 'WhatsApp reply received' }[a] || a;
+  return { email_opened: 'Email opened', email_clicked: 'Email link clicked', whatsapp_read: 'WhatsApp read', whatsapp_reply: 'WhatsApp reply received', email_reply: 'Email reply received' }[a] || a;
 }
 
 module.exports = { recordDeliveryEvent };
