@@ -23,9 +23,23 @@ import {
   PREMIUM_YEARLY_PER_MONTH,
   PREMIUM_PLAN,
   FREE_PLAN,
+  PREMIUM_PLAN_USD,
+  PREMIUM_USD_ANNUAL_SAVE_PCT,
 } from "../data/plans";
 import PricingCards from "../components/pricing/PricingCards";
 import useFeeOnly from "../hooks/useFeeOnly";
+import { getPricingRegion } from "../lib/pricingRegion";
+
+// Outside India: swap the matrix's two ₹ price rows for USD (everything else in
+// the matrix is currency-free).
+const USD_PRICE_ROWS = {
+  "Monthly price": { free: "$0", premium: `$${PREMIUM_PLAN_USD.monthly}` },
+  "Yearly price": { free: "$0", premium: `$${PREMIUM_PLAN_USD.yearly}` },
+};
+const PLAN_MATRIX_USD = PLAN_MATRIX.map((s) => ({
+  ...s,
+  rows: s.rows.map((r) => (USD_PRICE_ROWS[r.label] ? { ...r, ...USD_PRICE_ROWS[r.label] } : r)),
+}));
 import { analytics, EVENTS } from "../services/analytics";
 import useUtm from "../hooks/useUtm";
 
@@ -94,6 +108,9 @@ export default function Pricing() {
   // Route go-live.
   const feeOnly = useFeeOnly();
   const columns = feeOnly ? PLAN_COLUMNS.filter((c) => c.key !== "free") : PLAN_COLUMNS;
+  // USD visitors: USD prices, and no ₹ growth/calculator band (its maths is ₹
+  // bookings revenue vs the GST-inclusive INR price).
+  const [intl] = useState(() => getPricingRegion() === "INTL");
 
   // plan_viewed — the pricing-visitor retargeting audience (Meta/GA4). Fire once
   // on mount, carrying first-touch ad attribution so the audience ties back to the
@@ -122,7 +139,7 @@ export default function Pricing() {
           <p className="mx-auto mt-5 max-w-[640px] text-lg leading-relaxed text-ink/70">
             {feeOnly
               ? "Pick the plan that fits your booking page. Upgrade anytime."
-              : `Start for free. Stay free for as long as you need. When bookings pile up, Pro gives you the tools to run what happens next — for under ${PREMIUM_PER_DAY} a day.`}
+              : `Start for free. Stay free for as long as you need. When bookings pile up, Pro gives you the tools to run what happens next — for under ${intl ? "$5 a month" : `${PREMIUM_PER_DAY} a day`}.`}
           </p>
           {!feeOnly && <OperateGrowPills />}
         </div>
@@ -131,7 +148,9 @@ export default function Pricing() {
         <div className="mx-auto mt-12 max-w-[1050px]">
           <PricingCards />
           <p className="mt-6 text-center text-xs text-neutral-400">
-            {feeOnly
+            {intl
+              ? `Prices in USD · Yearly saves ${PREMIUM_USD_ANNUAL_SAVE_PCT}% · Cancel anytime`
+              : feeOnly
               ? "All prices include GST · Cancel anytime"
               : `All prices include GST · Yearly saves ${PREMIUM_ANNUAL_SAVE_PCT}% · ~2.4% payment gateway fee applies (not our charge) · Cancel anytime`}
           </p>
@@ -139,7 +158,7 @@ export default function Pricing() {
       </section>
 
       {/* ── Growth journey (two-plan world only) ─────────────────────── */}
-      {!feeOnly && (
+      {!feeOnly && !intl && (
         <>
           <GrowthTimeline />
           <ProValueAndCalculator />
@@ -173,7 +192,7 @@ export default function Pricing() {
                 </tr>
               </thead>
               <tbody>
-                {PLAN_MATRIX.map((section) => (
+                {(intl ? PLAN_MATRIX_USD : PLAN_MATRIX).map((section) => (
                   <FragmentSection key={section.group} section={section} columns={columns} />
                 ))}
               </tbody>

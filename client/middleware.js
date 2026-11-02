@@ -98,7 +98,28 @@ async function fetchPrerender(pathname) {
   }
 }
 
+// ── Pricing country cookie ──────────────────────────────────────────────────
+// The API lives on Render and never sees Vercel's geo header, so the edge hands
+// the visitor's country to the SPA as `mt_cc` (read by src/lib/pricingRegion.js
+// to show INR vs USD Pro pricing). Display only — never trusted for charging.
+// Set only when the request continues to the SPA, and only when it changed.
+function withCountryCookie(request) {
+  const cc = (request.headers.get('x-vercel-ip-country') || '').toUpperCase();
+  if (!/^[A-Z]{2}$/.test(cc)) return;
+  if ((request.headers.get('cookie') || '').includes(`mt_cc=${cc}`)) return;
+  return new Response(null, {
+    headers: {
+      'x-middleware-next': '1',
+      'set-cookie': `mt_cc=${cc}; Path=/; Max-Age=86400; SameSite=Lax; Secure`,
+    },
+  });
+}
+
 export default async function middleware(request) {
+  return (await route(request)) ?? withCountryCookie(request);
+}
+
+async function route(request) {
   const url = new URL(request.url);
   const segments = url.pathname.split('/').filter(Boolean);
 
