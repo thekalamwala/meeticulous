@@ -116,6 +116,17 @@ describe('PageStep — your page', () => {
     expect((await screen.findAllByText('priya-coach')).length).toBeGreaterThan(0);
   });
 
+  test('a link claimed in the homepage hero opens the editor pre-filled and checked', async () => {
+    sessionStorage.setItem('meet_hero_slug', 'priya-yoga');
+    api.checkOnboardingSlug.mockResolvedValueOnce({ data: { available: true } });
+    renderAt('/vendor-register/priya-x4k9/claim');
+    expect((await screen.findByLabelText('Your link')).value).toBe('priya-yoga');
+    await waitFor(() => expect(api.checkOnboardingSlug).toHaveBeenCalledWith('priya-yoga'));
+    expect(sessionStorage.getItem('meet_hero_slug')).toBeNull(); // read once
+    const save = screen.getByRole('button', { name: /Save link/i });
+    await waitFor(() => expect(save).not.toBeDisabled());
+  });
+
   test('"Something else" searches the full list inline and can pick from it', async () => {
     renderAt('/vendor-register/priya-x4k9/claim');
     fireEvent.click(await screen.findByRole('button', { name: /Something else/i }));

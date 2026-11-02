@@ -20,8 +20,8 @@ const EE_PATH =
   "M0,130 C40,130 70,128 95,110 C125,88 135,50 105,40 C70,30 40,75 45,120 " +
   "C50,175 95,195 140,170 C170,150 200,110 225,95 C255,72 265,40 235,35 " +
   "C200,30 172,75 178,120 C185,170 230,195 280,175 C320,160 360,150 400,150 L560,150";
-const RIBBON = "#FF9FB0"; // the pink ee from the app icon
-const BLUSH = "#FFE4EA"; // the blush app-icon background
+const RIBBON = "var(--mt-pink)"; // the pink ee from the app icon
+const BLUSH = "var(--mt-blush)"; // the blush app-icon background
 
 // Sample services for the preview card (illustrative, INR).
 const SAMPLE_SERVICES = [
@@ -33,7 +33,7 @@ const SAMPLE_SERVICES = [
 function PreviewCard({ slug }) {
   const handle = slug || "yourname";
   return (
-    <div className="w-full max-w-[360px] overflow-hidden rounded-[10px] bg-white text-ink shadow-[0_30px_70px_-30px_rgba(0,0,0,0.45)]">
+    <div className="w-full max-w-[360px] overflow-hidden rounded-[24px] bg-white text-ink">
       <div className="flex items-center gap-3 px-5 py-4" style={{ background: BLUSH }}>
         <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
           {handle.slice(0, 2).toUpperCase()}
@@ -43,12 +43,12 @@ function PreviewCard({ slug }) {
           <p className="truncate text-xs text-neutral-600">meeticulous.com/{handle}</p>
         </div>
       </div>
-      <ul className="space-y-2.5 bg-[#FBF7F7] p-4">
+      <ul className="space-y-2.5 bg-cream p-4">
         {SAMPLE_SERVICES.map((s) => (
           <li
             key={s.name}
-            className={`flex items-center gap-3 rounded-[6px] px-4 py-3 ${
-              s.popular ? "bg-primary text-white" : "bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]"
+            className={`flex items-center gap-3 rounded-[16px] px-4 py-3 ${
+              s.popular ? "bg-primary text-white" : "border-2 border-neutral-100 bg-white"
             }`}
           >
             <Video size={18} className={s.popular ? "text-white" : "text-primary"} />
@@ -131,11 +131,11 @@ export default function HomeHero({ onStart, loading }) {
             and services into paid bookings, with UPI checkout, WhatsApp reminders and GST invoices built in.
           </Reveal>
 
-          {/* Claim my link → Google sign-up (same flow as /be-a-sloth) */}
+          {/* Claim my link → Google sign-up (same flow as /become-a-host) */}
           <Reveal instant delay={0.18} className="home-hero-cta mt-8">
             <form
               onSubmit={claim}
-              className="flex w-full max-w-[34rem] flex-col gap-2 rounded-[6px] bg-white p-1.5 ring-2 ring-white/30 sm:flex-row sm:items-center"
+              className="flex w-full max-w-[34rem] flex-col gap-2 rounded-[16px] bg-white p-1.5 ring-2 ring-white/30 focus-within:ring-[3px] focus-within:ring-pink sm:flex-row sm:items-center"
             >
               <label htmlFor="hero-slug" className="flex min-w-0 flex-1 items-center px-3 py-2 text-sm sm:text-base">
                 <span className="flex-shrink-0 text-neutral-500">meeticulous.com/</span>
@@ -147,13 +147,13 @@ export default function HomeHero({ onStart, loading }) {
                   autoComplete="off"
                   spellCheck={false}
                   aria-label="Your booking link"
-                  className="min-w-0 flex-1 bg-transparent font-semibold text-ink outline-none placeholder:font-normal placeholder:text-neutral-400"
+                  className="min-w-0 flex-1 rounded-none border-0 bg-transparent p-0 font-semibold shadow-none text-ink outline-none placeholder:font-normal placeholder:text-neutral-400"
                 />
               </label>
               <button
                 type="submit"
                 disabled={loading}
-                className="btn inline-flex flex-shrink-0 items-center justify-center gap-2 rounded-[6px] bg-primary px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="btn inline-flex flex-shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 {loading ? "Opening Google…" : "Claim my link"}
                 {!loading && <ArrowRight size={16} />}

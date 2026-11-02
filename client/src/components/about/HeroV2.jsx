@@ -19,34 +19,34 @@ const PANEL = "M0,0 H0.76 C0.885,0.06 1,0.28 0.99,0.55 C0.985,0.75 0.967,0.9 0.9
 
 export default function HeroV2() {
   return (
-    <section className="relative overflow-hidden bg-white">
+    <section className="relative overflow-hidden bg-canvas">
       <svg aria-hidden width="0" height="0" className="absolute">
         <clipPath id="about-hero-panel" clipPathUnits="objectBoundingBox">
           <path d={PANEL} />
         </clipPath>
       </svg>
 
-      {/* Desktop: full-bleed photo behind everything, then the curved white panel */}
+      {/* Desktop: full-bleed photo behind everything, then the curved cream panel */}
       <div className="absolute inset-0 hidden lg:block">
-        {/* Focus right of centre — the left part sits under the white panel */}
+        {/* Focus right of centre — the left part sits under the cream panel */}
         <ImgWithSkeleton src={hero.image} alt={hero.imageAlt} fallbackLabel="Meeticulous" loading="eager" imgClassName="object-[75%_50%]" />
       </div>
       <div
         aria-hidden
-        className="absolute inset-y-0 left-0 hidden w-[58%] bg-white lg:block"
+        className="absolute inset-y-0 left-0 hidden w-[58%] bg-canvas lg:block"
         style={{ clipPath: "url(#about-hero-panel)" }}
       />
 
       <div className="relative mx-auto max-w-6xl px-5 pb-12 pt-12 sm:px-8 lg:flex lg:min-h-[calc(100svh-57px)] lg:items-center lg:py-20">
         <div className="lg:max-w-[52%] lg:pr-6">
-          <h1 className="font-heading font-extrabold leading-[1.08] text-[clamp(2.4rem,5vw,3.75rem)]">
-            {hero.title} <span className="text-primary-cta">{hero.titleAccent}</span>
+          <h1 className="font-display font-extrabold leading-[1.08] text-[clamp(2.4rem,5vw,3.75rem)]">
+            {hero.title} <span className="text-rose">{hero.titleAccent}</span>
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink/70">{hero.sub}</p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Link
               to={hero.ctaPrimaryHref}
-              className="inline-flex items-center justify-center gap-1.5 rounded-[6px] bg-primary-cta px-6 py-3 text-sm font-semibold text-white hover:no-underline hover:opacity-90"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full bg-primary-cta px-6 py-3 text-sm font-semibold text-white hover:no-underline hover:opacity-90"
             >
               {hero.ctaPrimary}
               <ArrowRight size={16} />
@@ -60,7 +60,7 @@ export default function HeroV2() {
                 e.preventDefault();
                 target.scrollIntoView({ behavior: "smooth", block: "start" });
               }}
-              className="inline-flex items-center justify-center rounded-[6px] border border-black/10 bg-white px-6 py-3 text-sm font-semibold text-ink hover:no-underline hover:opacity-90"
+              className="inline-flex items-center justify-center rounded-full border border-black/10 bg-white px-6 py-3 text-sm font-semibold text-ink hover:no-underline hover:opacity-90"
             >
               {hero.ctaGhost}
             </a>
@@ -68,7 +68,7 @@ export default function HeroV2() {
         </div>
 
         {/* Mobile / tablet photo — stacked under the copy */}
-        <div className="mt-10 aspect-[4/3] overflow-hidden rounded-[10px] bg-sand lg:hidden">
+        <div className="mt-10 aspect-[4/3] overflow-hidden rounded-[16px] bg-sand lg:hidden">
           <ImgWithSkeleton src={hero.image} alt="" fallbackLabel="Meeticulous" />
         </div>
       </div>
