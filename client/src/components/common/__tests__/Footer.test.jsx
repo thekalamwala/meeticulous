@@ -70,12 +70,12 @@ describe('<Footer>', () => {
     });
   });
 
-  test('uses the official inverse wordmark and closes on the binder-tab divider', () => {
+  test('uses the official inverse wordmark and closes on the doodle wordmark', () => {
     const { container } = renderFooter();
     expect(screen.getByRole('button', { name: 'Meeticulous' }).querySelector('img').getAttribute('src'))
       .toBe('/brand/ds/01-logo/wordmark/mt-wordmark-inverse.svg');
-    const divider = container.querySelector('img[src$="mt-divider-tabs-pink.svg"]');
-    expect(divider.getAttribute('aria-hidden')).toBe('true');
+    // Decorative chalk "Meeticulous" signature, hidden from assistive tech.
+    expect(container.querySelector('.dw-word').closest('[aria-hidden="true"]')).toBeTruthy();
   });
 
   test('minimal variant keeps brand + legal bar but drops columns, socials, newsletter', () => {

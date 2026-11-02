@@ -2,12 +2,21 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowUp, ChevronDown, CreditCard, Gift, Zap } from 'lucide-react';
 import OperatorCredit from './OperatorCredit';
+import DoodleWordmark from './footer/DoodleWordmark';
 
 const EMAIL = 'team@meeticulous.com';
-const ROUTE_START = '/become-a-host';
 
 // Design-system assets (design-system/assets, served from /brand/ds).
 const DS = '/brand/ds';
+const ROUTE_START = '/become-a-host';
+
+// Faint square grid (white lines ~5%) — same 40px graph-paper tile as the
+// homepage hero, so the page opens and closes on the same motif; a radial mask
+// fades it toward the edges. Inline SVG: no request, no layout cost.
+// (Was a hexagon honeycomb.)
+const GRID_TILE =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M40 0V40H0' fill='none' stroke='%23FFFFFF' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E";
+const GRID_FADE = 'radial-gradient(ellipse 80% 75% at 50% 40%, #000 35%, transparent 100%)';
 
 // Column footer: brand + copyright on the left, then four link columns.
 // Every link points at a real route. Solutions + Compare stay in Resources:
@@ -122,6 +131,7 @@ export default function Footer({ variant = 'full' }) {
 
   return (
     <footer className="relative overflow-hidden bg-maroon-dark px-5 pb-4 pt-7 text-white sm:px-8 sm:pt-9 lg:pt-10">
+      <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: `url("${GRID_TILE}")`, backgroundSize: '40px 40px', backgroundPosition: 'center top', maskImage: GRID_FADE, WebkitMaskImage: GRID_FADE }} />
 
       {/* Closing CTA — a full-width band across the top of the footer (bleeds
           past the footer's side + top padding); its content stays aligned with
@@ -131,14 +141,10 @@ export default function Footer({ variant = 'full' }) {
           is the site description) — keep them in sync. */}
       {!minimal && (
         <div className="relative -mx-5 -mt-7 mb-8 overflow-hidden bg-maroon px-5 py-9 sm:-mx-8 sm:-mt-9 sm:mb-10 sm:px-8 sm:py-11 lg:-mt-10 lg:py-12">
-          {/* CTA band: maroon field, ONE pink ee thread bleeding off the right edge, behind content. */}
-          <img src={`${DS}/02-ee/mt-ee-thread-pink.svg`} alt="" aria-hidden="true" loading="lazy"
-               className="pointer-events-none absolute -bottom-24 -right-40 hidden w-[620px] max-w-none opacity-90 lg:block" />
           <div className="relative mx-auto flex max-w-6xl flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="font-display text-2xl font-extrabold leading-tight text-white sm:text-3xl lg:text-4xl">
-                Get booked and paid.{' '}
-                <span className="font-serif text-[1.08em] font-normal italic tracking-normal text-pink">Keep your calm.</span>
+                Ready to get booked and paid?
               </p>
               <p className="mt-2 max-w-xl text-sm leading-relaxed text-blush sm:text-base">
                 One link for bookings, UPI payments and reminders. Set it up once and let it run.
@@ -249,8 +255,21 @@ export default function Footer({ variant = 'full' }) {
           </button>
         </div>
 
-        {/* Binder-tab divider closes the page (design-system footer pattern). */}
-        <img src={`${DS}/05-dividers/mt-divider-tabs-pink.svg`} alt="" aria-hidden="true" loading="lazy" className="mt-6 h-auto w-full opacity-60" />
+        {/* Brand signature. Full footer: chalk "Meeticulous" with the doodle crew
+            living on the letters (DoodleWordmark). Minimal (booking/profile):
+            the quiet faint wordmark, so nothing competes with the booking flow. */}
+        {minimal ? (
+          <p
+            aria-hidden
+            className="pointer-events-none mt-3 select-none text-center font-display text-[clamp(2.75rem,10vw,7.5rem)] font-extrabold leading-[0.85] tracking-tight text-white/[0.05]"
+          >
+            Meeticulous
+          </p>
+        ) : (
+          <div className="mt-6 sm:mt-8">
+            <DoodleWordmark />
+          </div>
+        )}
       </div>
     </footer>
   );
