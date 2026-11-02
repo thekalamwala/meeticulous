@@ -6,12 +6,12 @@ import { PREMIUM_PLAN } from "../../data/plans";
 function FloatCard({ p }) {
   const accent = `var(--${p.accent})`;
   return (
-    <div className="overflow-hidden rounded-[8px] border border-black/5 bg-white shadow-[0_18px_50px_-24px_rgba(26,26,26,0.3)]">
+    <div className="overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_18px_50px_-24px_rgba(26,26,26,0.3)]">
       <div className="relative aspect-[5/4]" style={{ backgroundColor: accent }}>
         <Avatar
           src={p.img}
           name={p.name}
-          className="h-full w-full rounded-[4px] object-cover mix-blend-luminosity opacity-90"
+          className="h-full w-full rounded-[16px] object-cover mix-blend-luminosity opacity-90"
         />
         <div className="pointer-events-none absolute inset-0 mix-blend-color opacity-60" style={{ backgroundColor: accent }} />
       </div>
@@ -55,7 +55,7 @@ export default function LpHero() {
       <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
         {/* ── Left: copy + CTA ── */}
         <div className="text-center lg:text-left">
-          <span className="inline-flex items-center gap-1.5 rounded-[4px] border border-black/5 bg-white/70 px-3.5 py-1.5 text-xs font-medium text-neutral-700 backdrop-blur">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-black/5 bg-white/70 px-3.5 py-1.5 text-xs font-medium text-neutral-700 backdrop-blur">
             The Topmate alternative · Built for India
           </span>
 
@@ -75,7 +75,7 @@ export default function LpHero() {
           <div className="mt-8 flex flex-col items-center gap-5 sm:flex-row lg:items-center">
             <CtaButton slot="hero" />
             <div className="flex flex-col gap-1.5 text-sm">
-              <span className="inline-flex items-center justify-center rounded-[4px] border border-black/5 bg-white/70 px-3 py-1 font-medium text-neutral-700">
+              <span className="inline-flex items-center justify-center rounded-full border border-black/5 bg-white/70 px-3 py-1 font-medium text-neutral-700">
                 0% commission · {PRICE_LINE}
               </span>
             </div>

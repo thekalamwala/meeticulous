@@ -47,7 +47,7 @@ export default function Tooltip({ content, children, className = "" }) {
         <span
           role="tooltip"
           id={id}
-          className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 w-max max-w-[220px] -translate-x-1/2 rounded-[6px] bg-ink px-3 py-2 text-xs font-medium leading-snug text-white shadow-lg"
+          className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 w-max max-w-[220px] -translate-x-1/2 rounded-full bg-ink px-3 py-2 text-xs font-medium leading-snug text-white shadow-lg"
         >
           {content}
           <span

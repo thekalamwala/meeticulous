@@ -2,15 +2,12 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowUp, ChevronDown, CreditCard, Gift, Zap } from 'lucide-react';
 import OperatorCredit from './OperatorCredit';
-import DoodleWordmark from './footer/DoodleWordmark';
 
 const EMAIL = 'team@meeticulous.com';
 const ROUTE_START = '/become-a-host';
 
-// Faint honeycomb (white lines ~4%) — same hex tile as the homepage hero, so the
-// page opens and closes on the bee motif. Inline SVG: no request, no layout cost.
-const HIVE_TILE =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='31.18' height='54' viewBox='0 0 31.18 54'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-opacity='0.045' stroke-width='1'%3E%3Cpath d='M15.59 0L31.18 9V27L15.59 36L0 27V9Z'/%3E%3Cpath d='M15.59 36V54'/%3E%3C/g%3E%3C/svg%3E";
+// Design-system assets (design-system/assets, served from /brand/ds).
+const DS = '/brand/ds';
 
 // Column footer: brand + copyright on the left, then four link columns.
 // Every link points at a real route. Solutions + Compare stay in Resources:
@@ -108,7 +105,7 @@ const Socials = () => (
       return (
         <a key={s.name} href={s.href} aria-label={s.name} {...(ext ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
           style={{ '--brand': s.color }}
-          className="flex h-8 w-8 items-center justify-center rounded-[5px] border border-white/15 text-white/55 transition-colors hover:border-[var(--brand)] hover:text-[var(--brand)] hover:no-underline">
+          className="flex h-8 w-8 items-center justify-center rounded-[16px] border border-white/15 text-white/55 transition-colors hover:border-[var(--brand)] hover:text-[var(--brand)] hover:no-underline">
           <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true">
             <path d={s.d} />
           </svg>
@@ -124,8 +121,7 @@ export default function Footer({ variant = 'full' }) {
   const [open, setOpen] = useState({}); // mobile accordion state per column
 
   return (
-    <footer className="relative overflow-hidden bg-ink px-5 pb-4 pt-7 text-white sm:px-8 sm:pt-9 lg:pt-10">
-      <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: `url("${HIVE_TILE}")`, backgroundSize: '31.18px 54px' }} />
+    <footer className="relative overflow-hidden bg-maroon-dark px-5 pb-4 pt-7 text-white sm:px-8 sm:pt-9 lg:pt-10">
 
       {/* Closing CTA — a full-width band across the top of the footer (bleeds
           past the footer's side + top padding); its content stays aligned with
@@ -134,14 +130,17 @@ export default function Footer({ variant = 'full' }) {
           Forever · No card, no catch" on the pricing section; "live in minutes"
           is the site description) — keep them in sync. */}
       {!minimal && (
-        <div className="relative -mx-5 -mt-7 mb-8 overflow-hidden border-b border-white/10 bg-white/[0.04] px-5 py-9 sm:-mx-8 sm:-mt-9 sm:mb-10 sm:px-8 sm:py-11 lg:-mt-10 lg:py-12">
-          <div aria-hidden className="pointer-events-none absolute -right-24 -top-32 h-80 w-80 rounded-full bg-primary/30 blur-3xl" />
+        <div className="relative -mx-5 -mt-7 mb-8 overflow-hidden bg-maroon px-5 py-9 sm:-mx-8 sm:-mt-9 sm:mb-10 sm:px-8 sm:py-11 lg:-mt-10 lg:py-12">
+          {/* CTA band: maroon field, ONE pink ee thread bleeding off the right edge, behind content. */}
+          <img src={`${DS}/02-ee/mt-ee-thread-pink.svg`} alt="" aria-hidden="true" loading="lazy"
+               className="pointer-events-none absolute -bottom-24 -right-40 hidden w-[620px] max-w-none opacity-90 lg:block" />
           <div className="relative mx-auto flex max-w-6xl flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="font-display text-2xl font-extrabold leading-tight text-white sm:text-3xl lg:text-4xl">
-                Ready to get booked and paid?
+                Get booked and paid.{' '}
+                <span className="font-serif text-[1.08em] font-normal italic tracking-normal text-pink">Keep your calm.</span>
               </p>
-              <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/70 sm:text-base">
+              <p className="mt-2 max-w-xl text-sm leading-relaxed text-blush sm:text-base">
                 One link for bookings, UPI payments and reminders. Set it up once and let it run.
               </p>
               <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-sm text-white/85">
@@ -162,14 +161,14 @@ export default function Footer({ variant = 'full' }) {
             <div className="flex flex-shrink-0 flex-col gap-3 sm:flex-row sm:items-center">
               <Link
                 to={ROUTE_START}
-                className="group inline-flex items-center justify-center gap-2 rounded-[6px] bg-white px-6 py-3 text-sm font-semibold text-ink shadow-[0_12px_30px_-12px_rgba(0,0,0,0.6)] transition-opacity hover:no-underline hover:opacity-90"
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-pink px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-pink-300 hover:no-underline active:translate-y-px"
               >
-                Start for free
+                Get your booking link
                 <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-0.5" />
               </Link>
               <Link
                 to="/pricing"
-                className="inline-flex items-center justify-center rounded-[6px] px-4 py-3 text-sm font-semibold text-white/80 transition-colors hover:text-white hover:no-underline"
+                className="inline-flex items-center justify-center rounded-full px-4 py-3 text-sm font-semibold text-white/80 transition-colors hover:text-white hover:no-underline"
               >
                 See pricing
               </Link>
@@ -182,8 +181,8 @@ export default function Footer({ variant = 'full' }) {
         {minimal ? (
           /* Booking / profile pages: brand + a compact legal bar only */
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-            <button type="button" onClick={scrollTop} className="text-left font-heading text-base font-bold text-white transition-colors hover:text-white/80">
-              Meeticulous
+            <button type="button" onClick={scrollTop} className="text-left">
+              <img src={`${DS}/01-logo/wordmark/mt-wordmark-inverse.svg`} alt="Meeticulous" className="h-6 w-auto" />
             </button>
             <nav aria-label="Legal" className="flex flex-wrap gap-x-5 gap-y-2 sm:max-w-xl sm:justify-end">
               {LEGAL.map((l) => (
@@ -197,8 +196,8 @@ export default function Footer({ variant = 'full' }) {
           <>
             <div className="grid sm:grid-cols-2 sm:gap-8 lg:grid-cols-[1.2fr_repeat(4,1fr)] lg:gap-8">
               <div className="pb-4 sm:pb-0">
-                <button type="button" onClick={scrollTop} className="font-heading text-base font-bold text-white transition-colors hover:text-white/80">
-                  Meeticulous
+                <button type="button" onClick={scrollTop}>
+                  <img src={`${DS}/01-logo/wordmark/mt-wordmark-inverse.svg`} alt="Meeticulous" className="h-7 w-auto" />
                 </button>
                 <div className="mt-4">
                   <Socials />
@@ -250,21 +249,8 @@ export default function Footer({ variant = 'full' }) {
           </button>
         </div>
 
-        {/* Brand signature. Full footer: chalk "Meeticulous" with the doodle crew
-            living on the letters (DoodleWordmark). Minimal (booking/profile):
-            the quiet faint wordmark, so nothing competes with the booking flow. */}
-        {minimal ? (
-          <p
-            aria-hidden
-            className="pointer-events-none mt-3 select-none text-center font-display text-[clamp(2.75rem,10vw,7.5rem)] font-extrabold leading-[0.85] tracking-tight text-white/[0.05]"
-          >
-            Meeticulous
-          </p>
-        ) : (
-          <div className="mt-6 sm:mt-8">
-            <DoodleWordmark />
-          </div>
-        )}
+        {/* Binder-tab divider closes the page (design-system footer pattern). */}
+        <img src={`${DS}/05-dividers/mt-divider-tabs-pink.svg`} alt="" aria-hidden="true" loading="lazy" className="mt-6 h-auto w-full opacity-60" />
       </div>
     </footer>
   );

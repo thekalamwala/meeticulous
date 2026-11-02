@@ -4,7 +4,7 @@
     border: 3px solid var(--border);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-hard-2);
-    padding: var(--space-3);
+    padding: 24px;
 }
 
 .fb-card--elevated {
@@ -12,12 +12,12 @@
 }
 
 .fb-card--compact {
-    padding: var(--space-2);
+    padding: 16px;
     border-radius: var(--radius-md);
 }
 
 .fb-card__title {
-    margin: 0 0 var(--space-2) 0;
+    margin: 0 0 16px 0;
     font-weight: 700;
 }
 
@@ -27,6 +27,6 @@
 
 @media (max-width: 640px) {
     .fb-card {
-        padding: var(--space-2);
+        padding: 16px;
     }
 }

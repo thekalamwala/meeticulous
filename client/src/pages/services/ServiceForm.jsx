@@ -312,7 +312,7 @@ const SuggestSubcategoryModal = ({ primary, onClose }) => {
         <div className="mt-4 flex justify-end gap-2">
           <button onClick={onClose} className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100">Cancel</button>
           <button onClick={submit} disabled={saving}
-            className="rounded-lg bg-[#960D32] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2A1416] disabled:opacity-50">
+            className="rounded-lg bg-[#960D32] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2B0A14] disabled:opacity-50">
             {saving ? 'Sending…' : 'Send for approval'}
           </button>
         </div>

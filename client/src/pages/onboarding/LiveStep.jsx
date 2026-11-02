@@ -10,7 +10,7 @@ import OnboardingStepper from './OnboardingStepper';
 import WhatsAppVerify from '../../components/whatsapp/WhatsAppVerify';
 import PetalSpinner from '../../components/common/PetalSpinner';
 
-const card = 'rounded-[10px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]';
+const card = 'rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]';
 
 /**
  * LiveStep — screen 3 of the host onboarding ("You're live").
@@ -140,14 +140,14 @@ const LiveStep = () => {
             This is the #1 activation step, so it leads the screen. */}
         <section className={`${card} onb-rise mt-8 p-5`}>
           <p className="text-xs font-semibold uppercase tracking-wider text-muted">Share your link. Every booking starts here.</p>
-          <div className="mt-3 flex items-center gap-2 rounded-[6px] border border-black/10 bg-canvas px-3 py-2">
+          <div className="mt-3 flex items-center gap-2 rounded-[16px] border border-black/10 bg-canvas px-3 py-2">
             <span className="min-w-0 flex-1 truncate font-mono text-sm">
               {window.location.host}/<span className="font-semibold text-primary">{slug}</span>
             </span>
             <button
               type="button"
               onClick={handleCopy}
-              className="inline-flex min-h-[40px] shrink-0 items-center gap-1.5 rounded-[6px] border border-black/10 bg-white px-3 text-xs font-semibold text-ink transition hover:border-primary/40"
+              className="inline-flex min-h-[40px] shrink-0 items-center gap-1.5 rounded-[16px] border border-black/10 bg-white px-3 text-xs font-semibold text-ink transition hover:border-primary/40"
             >
               {copied ? <Check className="h-3.5 w-3.5 text-success-fg" strokeWidth={3} /> : <Copy className="h-3.5 w-3.5" />}
               {copied ? 'Copied' : 'Copy'}
@@ -158,14 +158,14 @@ const LiveStep = () => {
               href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-[44px] flex-1 basis-44 items-center justify-center gap-2 rounded-[6px] bg-[#128C4B] px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+              className="inline-flex min-h-[44px] flex-1 basis-44 items-center justify-center gap-2 rounded-full bg-[#128C4B] px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"
             >
               <MessageCircle className="h-4 w-4" /> Share on WhatsApp
             </a>
             <button
               type="button"
               onClick={handleShare}
-              className="inline-flex min-h-[44px] flex-1 basis-44 items-center justify-center gap-2 rounded-[6px] border border-black/10 bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:border-primary/40"
+              className="inline-flex min-h-[44px] flex-1 basis-44 items-center justify-center gap-2 rounded-full border border-black/10 bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:border-primary/40"
             >
               <Share2 className="h-4 w-4" /> More ways to share
             </button>
@@ -195,7 +195,7 @@ const LiveStep = () => {
                   <button
                     type="button"
                     onClick={t.action.onClick}
-                    className="min-h-[38px] shrink-0 rounded-[6px] border border-black/10 bg-white px-3.5 text-xs font-semibold text-ink transition hover:border-primary/40"
+                    className="min-h-[38px] shrink-0 rounded-[16px] border border-black/10 bg-white px-3.5 text-xs font-semibold text-ink transition hover:border-primary/40"
                   >
                     {t.action.label}
                   </button>
@@ -214,7 +214,7 @@ const LiveStep = () => {
           <button
             type="button"
             onClick={() => navigate('/dashboard')}
-            className="inline-flex min-h-[44px] min-w-[260px] items-center justify-center gap-2 rounded-[6px] bg-ink px-7 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(26,26,26,0.12)] transition hover:-translate-y-0.5 hover:opacity-90"
+            className="inline-flex min-h-[44px] min-w-[260px] items-center justify-center gap-2 rounded-full bg-ink px-7 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(26,26,26,0.12)] transition hover:-translate-y-0.5 hover:opacity-90"
           >
             Go to my dashboard <ArrowRight className="h-4 w-4" />
           </button>

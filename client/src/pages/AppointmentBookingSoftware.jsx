@@ -283,7 +283,7 @@ export default function AppointmentBookingSoftware() {
             <Reveal delay={0.16} className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
               <Link
                 to={ROUTE_START}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-[6px] bg-primary px-7 py-4 text-sm font-semibold text-white shadow-lg transition-transform hover:bg-primary-dark hover:no-underline sm:w-auto"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-7 py-4 text-sm font-semibold text-white shadow-lg transition-transform hover:bg-primary-dark hover:no-underline sm:w-auto"
               >
                 Create your free booking page <ArrowRight size={16} />
               </Link>
@@ -385,7 +385,7 @@ export default function AppointmentBookingSoftware() {
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((f, i) => (
               <Reveal key={f.title} delay={(i % 3) * 0.06}>
-                <div className="group flex h-full flex-col rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors duration-300 hover:border-primary/30">
+                <div className="group flex h-full flex-col rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors duration-300 hover:border-primary/30">
                   <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-110 group-hover:bg-primary/20">
                     <IconSlot slug={f.slug} Icon={f.icon} size={22} />
                   </span>
@@ -413,7 +413,7 @@ export default function AppointmentBookingSoftware() {
               Now button. Open a live appointment booking page and book it this second.
             </Reveal>
             <Reveal delay={0.14} className="mt-7">
-              <Link to="/sndatarkar" className="inline-flex items-center justify-center gap-2 rounded-[6px] border border-primary-cta px-6 py-3.5 text-sm font-semibold text-primary-cta transition-all hover:bg-primary-dark hover:text-white hover:no-underline">
+              <Link to="/sndatarkar" className="inline-flex items-center justify-center gap-2 rounded-full border border-primary-cta px-6 py-3.5 text-sm font-semibold text-primary-cta transition-all hover:bg-primary-dark hover:text-white hover:no-underline">
                 Open a real page <ArrowRight size={16} />
               </Link>
             </Reveal>
@@ -449,7 +449,7 @@ export default function AppointmentBookingSoftware() {
               <Reveal key={p.kw} delay={(i % 2) * 0.06}>
                 <Link
                   to={p.to}
-                  className="group flex h-full items-start gap-4 rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors duration-300 hover:border-primary/30 hover:bg-primary/[0.02] hover:no-underline"
+                  className="group flex h-full items-start gap-4 rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors duration-300 hover:border-primary/30 hover:bg-primary/[0.02] hover:no-underline"
                 >
                   <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors duration-300 group-hover:bg-primary/20">
                     <IconSlot slug={p.slug} Icon={p.icon} size={20} />
@@ -477,7 +477,7 @@ export default function AppointmentBookingSoftware() {
           <div className="mt-12 grid gap-5 sm:grid-cols-3 sm:gap-6">
             {testimonials.map((t, i) => (
               <Reveal key={t.name} delay={(i % 3) * 0.08}>
-                <figure className="flex h-full flex-col justify-between rounded-[10px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.05)]">
+                <figure className="flex h-full flex-col justify-between rounded-[24px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.05)]">
                   <span aria-hidden className="block h-[3px] w-10 rounded-full bg-primary" />
                   <blockquote className="mt-4 flex-1 text-[15px] font-semibold leading-snug text-ink">
                     “{t.quote}”
@@ -519,7 +519,7 @@ export default function AppointmentBookingSoftware() {
             <Reveal delay={0.14} className="mt-7">
               <Link
                 to={ROUTE_START}
-                className="inline-flex items-center justify-center gap-2 rounded-[6px] bg-ink px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 hover:no-underline"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 hover:no-underline"
               >
                 Start free <ArrowRight size={16} />
               </Link>
@@ -532,7 +532,7 @@ export default function AppointmentBookingSoftware() {
               { icon: Sparkles, t: "Runs itself", d: "Reminders and invoices, automatic." },
               { icon: Clock, t: "Any device", d: "Works on every phone and browser." },
             ].map((c) => (
-              <div key={c.t} className="rounded-[10px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+              <div key={c.t} className="rounded-[24px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
                 <c.icon size={20} className="text-primary-cta" />
                 <p className="mt-3 font-heading text-sm font-bold text-ink">{c.t}</p>
                 <p className="mt-1 text-xs leading-relaxed text-neutral-500">{c.d}</p>
@@ -584,7 +584,7 @@ export default function AppointmentBookingSoftware() {
             </p>
             <Link
               to={ROUTE_START}
-              className="mt-7 inline-flex items-center justify-center gap-2 rounded-[6px] bg-primary px-7 py-3.5 text-sm font-semibold text-white shadow-lg transition-transform hover:bg-primary-dark hover:no-underline"
+              className="mt-7 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-white shadow-lg transition-transform hover:bg-primary-dark hover:no-underline"
             >
               Create your free booking page <ArrowRight size={16} />
             </Link>

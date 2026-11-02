@@ -45,7 +45,7 @@ function ForHeader({ ctaText }) {
         </Link>
         <Link
           to={ROUTE_START}
-          className="hidden items-center gap-1.5 rounded-[6px] px-5 py-2.5 text-sm font-semibold text-white transition-all hover:no-underline sm:inline-flex"
+          className="hidden items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-semibold text-white transition-all hover:no-underline sm:inline-flex"
           style={{ background: 'var(--lp-accent-cta)' }}
         >
           {ctaText} <ArrowRight size={15} />
@@ -83,7 +83,7 @@ function FaqAccordion({ faq }) {
       {faq.map((f, i) => {
         const isOpen = open === i;
         return (
-          <div key={f.q} className="overflow-hidden rounded-[6px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'color-mix(in srgb, var(--lp-accent) 40%, transparent)' : 'rgba(0,0,0,0.06)' }}>
+          <div key={f.q} className="overflow-hidden rounded-[16px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'color-mix(in srgb, var(--lp-accent) 40%, transparent)' : 'rgba(0,0,0,0.06)' }}>
             <button
               type="button"
               onClick={() => setOpen(isOpen ? null : i)}
@@ -127,7 +127,7 @@ function MidCta({ text, ctaText }) {
         <p className="text-lg font-bold text-white sm:text-xl">{text}</p>
         <Link
           to={ROUTE_START}
-          className="inline-flex flex-shrink-0 items-center gap-2 rounded-[6px] px-6 py-3.5 text-sm font-semibold text-white shadow-lg transition-all hover:no-underline"
+          className="inline-flex flex-shrink-0 items-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold text-white shadow-lg transition-all hover:no-underline"
           style={{ background: 'var(--lp-accent-cta)' }}
         >
           {ctaText} <ArrowRight size={16} />
@@ -163,7 +163,7 @@ function BookingMock({ mock, label }) {
   return (
     <div className="relative mx-auto w-full max-w-sm">
       {/* Browser chrome */}
-      <div className="overflow-hidden rounded-[12px] bg-white shadow-[0_40px_90px_-30px_rgba(0,0,0,0.55)] ring-1 ring-black/10">
+      <div className="overflow-hidden rounded-[16px] bg-white shadow-[0_40px_90px_-30px_rgba(0,0,0,0.55)] ring-1 ring-black/10">
         <div className="flex items-center gap-2 border-b border-black/5 bg-neutral-50 px-4 py-2.5">
           <span className="flex gap-1.5" aria-hidden>
             <span className="h-2.5 w-2.5 rounded-full bg-neutral-300" />
@@ -178,7 +178,7 @@ function BookingMock({ mock, label }) {
         <div className="p-5">
           {/* Banner + avatar */}
           <div className="relative">
-            <div className="h-14 rounded-[8px]" style={{ background: 'linear-gradient(110deg, var(--lp-hero-from), var(--lp-accent))' }} />
+            <div className="h-14 rounded-[16px]" style={{ background: 'linear-gradient(110deg, var(--lp-hero-from), var(--lp-accent))' }} />
             <div className="absolute -bottom-5 left-3 flex h-12 w-12 items-center justify-center rounded-2xl border-[3px] border-white text-sm font-bold text-white" style={{ background: 'var(--lp-accent-cta)' }}>
               {mock.practice.split(' ').slice(-1)[0].charAt(0)}
             </div>
@@ -192,14 +192,14 @@ function BookingMock({ mock, label }) {
           {/* Services */}
           <div className="mt-4 space-y-2.5">
             {mock.services.map((s) => (
-              <div key={s.name} className="flex items-center justify-between rounded-[8px] border border-neutral-100 bg-white p-3">
+              <div key={s.name} className="flex items-center justify-between rounded-[16px] border border-neutral-100 bg-white p-3">
                 <div className="min-w-0">
                   <div className="truncate text-xs font-semibold text-[color:var(--lp-primary)]">{s.name}</div>
                   <div className="mt-0.5 text-[10px] text-neutral-400">{s.meta}</div>
                 </div>
                 <div className="flex items-center gap-2 pl-2">
                   <span className="text-xs font-bold text-[color:var(--lp-primary)]">{s.price}</span>
-                  <span className="rounded-[6px] px-2.5 py-1 text-[10px] font-bold text-white" style={{ background: 'var(--lp-accent-cta)' }}>Book</span>
+                  <span className="rounded-full px-2.5 py-1 text-[10px] font-bold text-white" style={{ background: 'var(--lp-accent-cta)' }}>Book</span>
                 </div>
               </div>
             ))}
@@ -363,7 +363,7 @@ function ProfessionLandingV1() {
             <Reveal delay={0.18} className="mt-9 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
               <Link
                 to={ROUTE_START}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-[6px] px-7 py-4 text-sm font-semibold text-white shadow-lg transition-all hover:no-underline sm:w-auto"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full px-7 py-4 text-sm font-semibold text-white shadow-lg transition-all hover:no-underline sm:w-auto"
                 style={{ background: 'var(--lp-accent-cta)' }}
               >
                 {hero.ctaText}
@@ -402,7 +402,7 @@ function ProfessionLandingV1() {
         <Reveal delay={0.3} className="mx-auto mt-14 max-w-5xl">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {trust.map((t) => (
-              <div key={t.label} className="flex items-center gap-2.5 rounded-[6px] border border-white/10 bg-white/10 px-3.5 py-3">
+              <div key={t.label} className="flex items-center gap-2.5 rounded-[16px] border border-white/10 bg-white/10 px-3.5 py-3">
                 <t.icon size={17} className="flex-shrink-0" style={{ color: 'var(--lp-accent)' }} />
                 <span className="text-[12.5px] font-medium leading-tight text-white/80">{t.label}</span>
               </div>
@@ -436,7 +436,7 @@ function ProfessionLandingV1() {
           <div className="mt-12 grid gap-5 sm:grid-cols-2 sm:gap-6">
             {painPoints.map((p, i) => (
               <Reveal key={p.problem} delay={(i % 2) * 0.08}>
-                <div className="h-full rounded-[6px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_45px_-18px_rgba(26,26,26,0.16)] sm:p-7">
+                <div className="h-full rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_45px_-18px_rgba(26,26,26,0.16)] sm:p-7">
                   <div className="flex items-center gap-3">
                     <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: 'color-mix(in srgb, var(--lp-accent) 12%, transparent)', color: 'var(--lp-accent-cta)' }}>
                       <p.icon size={18} />
@@ -471,7 +471,7 @@ function ProfessionLandingV1() {
           <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4 sm:gap-6">
             {features.map((f, i) => (
               <Reveal key={f.title} delay={(i % 4) * 0.07}>
-                <div className="flex h-full flex-col rounded-[6px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_45px_-18px_rgba(26,26,26,0.16)] sm:p-7">
+                <div className="flex h-full flex-col rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_45px_-18px_rgba(26,26,26,0.16)] sm:p-7">
                   <span className="flex h-12 w-12 items-center justify-center rounded-xl" style={{ backgroundColor: 'color-mix(in srgb, var(--lp-accent) 12%, transparent)', color: 'var(--lp-accent-cta)' }}>
                     <f.icon size={22} />
                   </span>
@@ -493,7 +493,7 @@ function ProfessionLandingV1() {
           <div className="mt-14 grid gap-6 sm:grid-cols-3">
             {HOW_STEPS.map((s, i) => (
               <Reveal key={s.n} delay={i * 0.08}>
-                <div className="h-full rounded-[6px] border border-white/10 bg-white/5 p-7">
+                <div className="h-full rounded-[24px] border border-white/10 bg-white/5 p-7">
                   <span className="flex h-11 w-11 items-center justify-center rounded-full text-lg font-bold text-white" style={{ background: 'var(--lp-accent-cta)' }}>
                     {s.n}
                   </span>
@@ -518,7 +518,7 @@ function ProfessionLandingV1() {
           <div className="mt-12 grid gap-5 sm:grid-cols-3 sm:gap-6">
             {testimonials.map((t, i) => (
               <Reveal key={t.name} delay={(i % 3) * 0.08}>
-                <figure className="flex h-full flex-col justify-between rounded-[6px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.05)]">
+                <figure className="flex h-full flex-col justify-between rounded-[24px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.05)]">
                   <span aria-hidden className="block h-[3px] w-10 rounded-full" style={{ background: 'var(--lp-accent-cta)' }} />
                   <blockquote className="mt-4 flex-1 text-[15px] font-semibold leading-snug text-[color:var(--lp-primary)]">
                     “{t.quote}”
@@ -556,7 +556,7 @@ function ProfessionLandingV1() {
               Everything you have seen is the actual product — profile, services, prices and a working Book Now button. Here is a live page you can open and book this second.
             </Reveal>
             <Reveal delay={0.14} className="mt-7">
-              <Link to="/sndatarkar" className="inline-flex items-center justify-center gap-2 rounded-[6px] border px-6 py-3.5 text-sm font-semibold transition-all hover:no-underline" style={{ borderColor: 'var(--lp-accent-cta)', color: 'var(--lp-accent-cta)' }}>
+              <Link to="/sndatarkar" className="inline-flex items-center justify-center gap-2 rounded-full border px-6 py-3.5 text-sm font-semibold transition-all hover:no-underline" style={{ borderColor: 'var(--lp-accent-cta)', color: 'var(--lp-accent-cta)' }}>
                 Open a real page <ArrowRight size={16} />
               </Link>
             </Reveal>
@@ -594,7 +594,7 @@ function ProfessionLandingV1() {
             {pricing.line}
           </Reveal>
           <Reveal delay={0.16} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link to={ROUTE_START} className="inline-flex items-center justify-center gap-2 rounded-[6px] px-7 py-4 text-sm font-semibold text-white transition-all hover:no-underline" style={{ background: 'var(--lp-accent-cta)' }}>
+            <Link to={ROUTE_START} className="inline-flex items-center justify-center gap-2 rounded-full px-7 py-4 text-sm font-semibold text-white transition-all hover:no-underline" style={{ background: 'var(--lp-accent-cta)' }}>
               Start free <ArrowRight size={16} />
             </Link>
             <Link to="/pricing" className="text-sm font-semibold text-[color:var(--lp-primary)] underline-offset-4 hover:underline">
@@ -639,7 +639,7 @@ function ProfessionLandingV1() {
             {finalCta.subline}
           </Reveal>
           <Reveal delay={0.18} className="mt-8">
-            <Link to={ROUTE_START} className="inline-flex items-center justify-center gap-2 rounded-[6px] px-8 py-4 text-sm font-semibold text-white shadow-lg transition-all hover:no-underline" style={{ background: 'var(--lp-accent-cta)' }}>
+            <Link to={ROUTE_START} className="inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 text-sm font-semibold text-white shadow-lg transition-all hover:no-underline" style={{ background: 'var(--lp-accent-cta)' }}>
               {finalCta.ctaText} <ArrowRight size={16} />
             </Link>
           </Reveal>

@@ -83,7 +83,7 @@ function BookingMock({ mock }) {
       </div>
       <div className="p-5">
         <div className="flex items-center gap-3">
-          <span className="h-11 w-11 flex-shrink-0 rounded-[12px]" style={{ background: 'linear-gradient(135deg, var(--v2-accent), var(--v2-accent-ink))' }} />
+          <span className="h-11 w-11 flex-shrink-0 rounded-[16px]" style={{ background: 'linear-gradient(135deg, var(--v2-accent), var(--v2-accent-ink))' }} />
           <div className="min-w-0">
             <div className="truncate text-[15px] font-bold text-[color:var(--v2-ink)]">{mock.brand}</div>
             <div className="truncate text-[12px] text-black/40">{mock.tag}</div>
@@ -96,7 +96,7 @@ function BookingMock({ mock }) {
               type="button"
               key={s.name}
               onClick={() => setActive(i)}
-              className="flex w-full items-center justify-between gap-2 rounded-[12px] border px-3 py-2.5 text-left transition-colors"
+              className="flex w-full items-center justify-between gap-2 rounded-[16px] border px-3 py-2.5 text-left transition-colors"
               style={active === i
                 ? { borderColor: 'var(--v2-accent)', background: 'var(--v2-wash)' }
                 : { borderColor: 'rgba(0,0,0,0.08)', background: 'transparent' }}
@@ -109,7 +109,7 @@ function BookingMock({ mock }) {
             </button>
           ))}
         </div>
-        <div className="mt-4 flex items-center justify-center gap-2 rounded-[10px] py-3 text-[13px] font-semibold text-white" style={{ background: 'var(--v2-accent-cta)' }}>
+        <div className="mt-4 flex items-center justify-center gap-2 rounded-[16px] py-3 text-[13px] font-semibold text-white" style={{ background: 'var(--v2-accent-cta)' }}>
           Confirm &amp; pay <ArrowRight size={15} />
         </div>
       </div>

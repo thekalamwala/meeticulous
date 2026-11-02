@@ -70,13 +70,13 @@ const TopmateVsMeeticulous = () => {
             <span className="font-heading text-base font-extrabold tracking-tight text-ink">
               Meeticulous
             </span>
-            <span className="hidden rounded-[4px] bg-primary/10 px-2.5 py-0.5 text-[11px] font-semibold text-primary sm:inline">
+            <span className="hidden rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-semibold text-primary sm:inline">
               0% commission
             </span>
           </div>
           <CtaButton
             slot="header"
-            className="!rounded-[6px] !px-4 !py-2 !text-[13px]"
+            className="!rounded-[16px] !px-4 !py-2 !text-[13px]"
           >
             Start My Page
           </CtaButton>
@@ -95,7 +95,7 @@ const TopmateVsMeeticulous = () => {
 
       {/* ───── Final CTA ───── */}
       <section className="px-5 py-16 sm:px-8">
-        <div className="mx-auto max-w-4xl rounded-[8px] bg-ink px-6 py-16 text-center text-white sm:py-20">
+        <div className="mx-auto max-w-4xl rounded-[16px] bg-ink px-6 py-16 text-center text-white sm:py-20">
           <h2 className="mx-auto max-w-xl text-3xl leading-tight text-white sm:text-5xl">
             Stop paying commission on your own work.
           </h2>

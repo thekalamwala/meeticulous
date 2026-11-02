@@ -150,7 +150,7 @@ function StartCta({ onClick, children = 'Start free' }) {
     <Link
       to={START}
       onClick={onClick}
-      className="inline-flex items-center justify-center gap-2 rounded-[6px] bg-primary px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(194,61,0,0.22)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(194,61,0,0.22)] transition-opacity hover:no-underline hover:opacity-90"
     >
       {children} <ArrowRight size={16} aria-hidden />
     </Link>
@@ -171,7 +171,7 @@ const SLIP = ['Paid by UPI at booking', 'GST invoice sent', 'WhatsApp reminder s
 function AppointmentSlip() {
   return (
     <figure className="mx-auto w-full max-w-[21rem]">
-      <div aria-hidden className="overflow-hidden rounded-[10px] border border-black/5 bg-white shadow-[0_24px_60px_-28px_rgba(13,71,68,0.4)]">
+      <div aria-hidden className="overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_24px_60px_-28px_rgba(13,71,68,0.4)]">
         <div className="bg-[var(--ct-deep)] px-5 py-4">
           <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--ct-soft)]">Follow-up consultation</div>
           <div className="mt-1 font-heading text-base font-bold text-[var(--ct-light)]">45 min · Thu, 10:30 AM</div>
@@ -262,7 +262,7 @@ function FirstYearCost() {
   return (
     <div className="mt-10">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div role="group" aria-label="Billing period" className="inline-flex gap-1 rounded-[6px] border border-white/15 p-1">
+        <div role="group" aria-label="Billing period" className="inline-flex gap-1 rounded-[16px] border border-white/15 p-1">
           {toggle(false, 'Monthly')}
           {toggle(true, 'Yearly')}
         </div>
@@ -341,7 +341,7 @@ export default function AcuityAlternative() {
             <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-[var(--ct-body)] sm:text-base lg:text-[17px]">{HERO_SUB}</p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <StartCta onClick={track('hero')} />
-              <a href="#side-by-side" className="inline-flex items-center justify-center gap-2 rounded-[6px] border border-black/10 bg-white px-6 py-3 text-sm font-semibold text-ink transition-opacity hover:no-underline hover:opacity-80">
+              <a href="#side-by-side" className="inline-flex items-center justify-center gap-2 rounded-full border border-black/10 bg-white px-6 py-3 text-sm font-semibold text-ink transition-opacity hover:no-underline hover:opacity-80">
                 See the comparison
               </a>
             </div>
@@ -358,7 +358,7 @@ export default function AcuityAlternative() {
       {/* ═══════════ 2 · THE SHORT ANSWER ═══════════ */}
       <section id="short-answer" className="scroll-mt-20 px-5 pb-20 sm:px-8 lg:pb-28">
         <div className="mx-auto max-w-3xl">
-          <div className="relative overflow-hidden rounded-[10px] border border-[var(--ct-line)] bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-10">
+          <div className="relative overflow-hidden rounded-[24px] border border-[var(--ct-line)] bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-10">
             <span aria-hidden className="absolute inset-y-0 left-0 w-1 bg-[var(--ct-mid)]" />
             <h2 className={H2}>The <span className="text-primary-cta">short</span> answer</h2>
             <p className="mt-6 font-heading text-lg font-bold leading-snug text-ink sm:text-xl">{SHORT_ANSWER}</p>
@@ -385,7 +385,7 @@ export default function AcuityAlternative() {
             <h2 className={`${H2} max-w-3xl`}>Acuity Scheduling vs Meeticulous, <span className="text-primary-cta">side by side</span></h2>
             <span className="rounded-full border border-[var(--ct-line)] bg-white px-3 py-1.5 text-xs font-semibold text-[var(--ct-ink)]">Last checked {CHECKED_LABEL}</span>
           </div>
-          <div className="mt-10 overflow-hidden rounded-[6px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+          <div className="mt-10 overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
             <div className="overflow-x-auto" role="region" aria-labelledby="acu-table-caption" tabIndex={0}>
               <table className="w-full min-w-[640px] text-left text-sm">
                 <caption id="acu-table-caption" className="px-5 pt-5 text-left text-xs text-[var(--ct-body)]">
@@ -431,8 +431,8 @@ export default function AcuityAlternative() {
           <h2 className={`${H2} max-w-3xl`}>What&rsquo;s different for a business in <span className="text-primary-cta">India?</span></h2>
           <div className="mt-12 grid gap-5 sm:grid-cols-2 sm:gap-6">
             {DIFFS.map((d) => (
-              <article key={d.title} className="rounded-[6px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-                <span className="flex h-11 w-11 items-center justify-center rounded-[6px] bg-[var(--ct-mint)] text-[var(--ct-ink)]"><d.icon size={20} aria-hidden /></span>
+              <article key={d.title} className="rounded-[24px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+                <span className="flex h-11 w-11 items-center justify-center rounded-[16px] bg-[var(--ct-mint)] text-[var(--ct-ink)]"><d.icon size={20} aria-hidden /></span>
                 <h3 className="mt-5 font-heading text-xl font-bold">{d.title}</h3>
                 <p className="mt-2 text-[15px] leading-relaxed text-[var(--ct-body)]">{d.body}</p>
                 {d.link && (
@@ -453,7 +453,7 @@ export default function AcuityAlternative() {
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-[var(--ct-body)]">It depends on where your clients are and how they pay. Acuity is a good fit when:</p>
           <ol className="mt-12 grid gap-5 sm:gap-6 md:grid-cols-3">
             {WINS.map((w, i) => (
-              <li key={w.title} className="rounded-[6px] border border-[var(--ct-line)] bg-white p-7">
+              <li key={w.title} className="rounded-[24px] border border-[var(--ct-line)] bg-white p-7">
                 <span className="font-heading text-sm font-extrabold tabular-nums text-[var(--ct-ink)]">{String(i + 1).padStart(2, '0')}</span>
                 <h3 className="mt-3 font-heading text-lg font-bold">{w.title}</h3>
                 <p className="mt-2 text-[15px] leading-relaxed text-[var(--ct-body)]">{w.body}</p>
@@ -480,7 +480,7 @@ export default function AcuityAlternative() {
           <h2 className={`${H2} max-w-3xl`}>How do I <span className="text-primary-cta">switch</span> from Acuity?</h2>
           <ol className="mt-12 grid gap-5 sm:gap-6 md:grid-cols-3">
             {STEPS.map((s, i) => (
-              <li key={s.title} className="rounded-[6px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+              <li key={s.title} className="rounded-[24px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
                 <div className="flex items-center gap-3">
                   <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--ct-deep)] font-heading text-sm font-extrabold text-[var(--ct-light)]">{i + 1}</span>
                   <s.icon size={20} className="text-[var(--ct-mid)]" aria-hidden />
@@ -501,7 +501,7 @@ export default function AcuityAlternative() {
             <h2 className={`${H2} max-w-3xl`}>What <span className="text-primary-cta">hosts</span> say</h2>
             <div className="mt-12 grid gap-5 sm:gap-6 md:grid-cols-3">
               {QUOTES.map((t) => (
-                <figure key={t.name} className="flex flex-col rounded-[6px] border border-[var(--ct-line)] bg-white p-7">
+                <figure key={t.name} className="flex flex-col rounded-[24px] border border-[var(--ct-line)] bg-white p-7">
                   <blockquote className="flex-1 text-[15px] leading-relaxed text-ink">&ldquo;{t.quote}&rdquo;</blockquote>
                   <figcaption className="mt-6 flex items-center gap-3">
                     <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--ct-mint)] font-heading text-sm font-bold text-[var(--ct-ink)]">{initials(t.name)}</span>
@@ -542,7 +542,7 @@ export default function AcuityAlternative() {
           <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {RELATED.map((c) => (
               <li key={c.key}>
-                <Link to={c.path} className="flex min-h-[56px] items-center gap-3 rounded-[6px] border border-black/5 bg-white px-5 py-3 text-sm font-semibold text-ink hover:no-underline hover:opacity-80">
+                <Link to={c.path} className="flex min-h-[56px] items-center gap-3 rounded-full border border-black/5 bg-white px-5 py-3 text-sm font-semibold text-ink hover:no-underline hover:opacity-80">
                   <img src={favicon(c.domain)} alt="" width="20" height="20" loading="lazy" className="h-5 w-5 rounded-[3px]" />
                   <span className="flex-1">Meeticulous vs {c.name}</span>
                   <ArrowRight size={15} className="text-[var(--ct-mid)]" aria-hidden />
@@ -550,7 +550,7 @@ export default function AcuityAlternative() {
               </li>
             ))}
             <li>
-              <Link to="/compare" className="flex min-h-[56px] items-center gap-3 rounded-[6px] border border-[var(--ct-line)] bg-[var(--ct-mint)] px-5 py-3 text-sm font-semibold text-[var(--ct-ink)] hover:no-underline hover:opacity-80">
+              <Link to="/compare" className="flex min-h-[56px] items-center gap-3 rounded-full border border-[var(--ct-line)] bg-[var(--ct-mint)] px-5 py-3 text-sm font-semibold text-[var(--ct-ink)] hover:no-underline hover:opacity-80">
                 <span className="flex-1">All booking tool comparisons</span>
                 <ArrowRight size={15} aria-hidden />
               </Link>
@@ -571,7 +571,7 @@ export default function AcuityAlternative() {
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <StartCta onClick={track('final')} />
-            <Link to="/pricing" className="inline-flex items-center justify-center gap-2 rounded-[6px] border border-white/15 px-6 py-3 text-sm font-semibold text-[var(--ct-light)] hover:no-underline hover:opacity-80">
+            <Link to="/pricing" className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-6 py-3 text-sm font-semibold text-[var(--ct-light)] hover:no-underline hover:opacity-80">
               See pricing
             </Link>
           </div>

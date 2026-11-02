@@ -3,7 +3,7 @@ import { HIRING_EMAIL } from './careersContent';
 export default function CareersCta() {
   return (
     <section className="px-5 py-20 sm:px-8 lg:py-28">
-      <div className="mx-auto max-w-3xl rounded-[6px] border border-ink/10 bg-surface px-6 py-12 text-center sm:px-10">
+      <div className="mx-auto max-w-3xl rounded-[16px] border border-ink/10 bg-surface px-6 py-12 text-center sm:px-10">
         <h2 className="font-heading text-3xl font-bold sm:text-4xl">Don't see your role?</h2>
         <p className="mx-auto mt-3 max-w-xl text-ink/70">
           We're a small team that grows fast. If you're great at what you do, tell us how you'd help.

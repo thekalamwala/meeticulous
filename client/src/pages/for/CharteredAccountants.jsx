@@ -212,7 +212,7 @@ function NavLink({ item, className, onClick }) {
 }
 
 function CtaButton({ to, children, variant = 'solid', className = '' }) {
-  const base = 'inline-flex items-center justify-center gap-2 rounded-[8px] px-6 py-3.5 text-sm font-semibold transition-all hover:no-underline';
+  const base = 'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold transition-all hover:no-underline';
   const styles = {
     solid: 'text-white shadow-[0_4px_14px_rgba(30,58,95,0.24)] hover:brightness-110',
     ghost: 'border-2 border-[color:var(--ca-ink)]/12 bg-white text-[color:var(--ca-ink)] hover:border-[color:var(--ca-primary)]/40',
@@ -227,8 +227,8 @@ function CtaButton({ to, children, variant = 'solid', className = '' }) {
 /* Small floating "ledger" stat card that sits over the hero image. */
 function StatCard({ icon: Icon, label, value, className = '' }) {
   return (
-    <div className={`absolute z-20 flex items-center gap-3 rounded-[12px] border border-black/[0.06] bg-white px-4 py-3 shadow-[0_18px_40px_-20px_rgba(16,26,41,0.55)] ${className}`}>
-      <span className="flex h-9 w-9 items-center justify-center rounded-[8px] text-white" style={{ background: 'var(--ca-primary)' }}>
+    <div className={`absolute z-20 flex items-center gap-3 rounded-[16px] border border-black/[0.06] bg-white px-4 py-3 shadow-[0_18px_40px_-20px_rgba(16,26,41,0.55)] ${className}`}>
+      <span className="flex h-9 w-9 items-center justify-center rounded-[16px] text-white" style={{ background: 'var(--ca-primary)' }}>
         <Icon size={17} />
       </span>
       <div>
@@ -245,7 +245,7 @@ function FaqAccordion() {
   const renderItem = (f, i) => {
     const isOpen = open === i;
     return (
-      <div key={f.q} className="overflow-hidden rounded-[12px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'var(--ca-primary)' : 'rgba(16,26,41,0.08)' }}>
+      <div key={f.q} className="overflow-hidden rounded-[16px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'var(--ca-primary)' : 'rgba(16,26,41,0.08)' }}>
         <button
           type="button"
           onClick={() => setOpen(isOpen ? -1 : i)}
@@ -293,7 +293,7 @@ function LedgerPanel({ group, items }) {
               <span aria-hidden className="w-6 text-right font-heading text-[13px] font-bold tabular-nums" style={{ color: 'var(--ca-accent)' }}>
                 {String(i + 1).padStart(2, '0')}
               </span>
-              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[8px]" style={{ background: 'color-mix(in srgb, var(--ca-primary) 8%, transparent)', color: 'var(--ca-primary)' }}>
+              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[16px]" style={{ background: 'color-mix(in srgb, var(--ca-primary) 8%, transparent)', color: 'var(--ca-primary)' }}>
                 <s.icon size={18} />
               </span>
               <span className="min-w-0 flex-1">
@@ -397,7 +397,7 @@ export default function CharteredAccountants() {
                   <NavLink key={item.label} item={item} onClick={() => setMenuOpen(false)} className="rounded-lg px-2 py-2.5 text-sm font-medium text-[color:var(--ca-ink)] hover:bg-[color:var(--ca-cream)] hover:no-underline" />
                 ))}
                 <div className="mt-2 flex items-center gap-3 border-t border-black/5 pt-3">
-                  <Link to={LOGIN} className="flex-1 rounded-[8px] border-2 border-black/10 py-2.5 text-center text-sm font-semibold text-[color:var(--ca-ink)] hover:no-underline">Login</Link>
+                  <Link to={LOGIN} className="flex-1 rounded-[16px] border-2 border-black/10 py-2.5 text-center text-sm font-semibold text-[color:var(--ca-ink)] hover:no-underline">Login</Link>
                   <CtaButton to={START} className="flex-1">Start Free <ArrowRight size={15} /></CtaButton>
                 </div>
               </div>
@@ -500,7 +500,7 @@ export default function CharteredAccountants() {
                 <div className="h-full rounded-[16px] border border-black/[0.08] bg-white p-6 transition-shadow hover:shadow-[0_18px_44px_-28px_rgba(16,26,41,0.45)]" style={{ borderTop: '3px solid var(--ca-accent)' }}>
                   <div className="flex items-center justify-between">
                     <span className="font-heading text-[13px] font-bold uppercase tracking-[0.16em]" style={{ color: 'var(--ca-accent)' }}>Step {s.n}</span>
-                    <span className="flex h-11 w-11 items-center justify-center rounded-[10px] text-white" style={{ background: 'var(--ca-primary)' }}>
+                    <span className="flex h-11 w-11 items-center justify-center rounded-[16px] text-white" style={{ background: 'var(--ca-primary)' }}>
                       <s.icon size={19} />
                     </span>
                   </div>
@@ -528,7 +528,7 @@ export default function CharteredAccountants() {
             {TOOLS.map((t, i) => (
               <Reveal key={t.name} delay={(i % 3) * 0.05}>
                 <div className="flex h-full flex-col rounded-[14px] border border-black/[0.08] bg-white p-5 transition-all hover:border-[color:var(--ca-primary)]/30 hover:shadow-[0_14px_34px_-24px_rgba(16,26,41,0.45)]">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-[10px] bg-[color:var(--ca-grey)]">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-[16px] bg-[color:var(--ca-grey)]">
                     {t.logo
                       ? <img src={t.logo} alt={`${t.name} logo`} loading="lazy" className="h-6 w-6 object-contain" />
                       : <ToolLogo name={t.icon} size={24} className="h-6 w-6" />}
@@ -651,7 +651,7 @@ export default function CharteredAccountants() {
               {RECONCILE.map((r) => (
                 <li key={r.topic} className="grid gap-3 px-6 py-5 sm:grid-cols-[0.9fr_1.3fr_1.3fr] sm:items-center sm:gap-4">
                   <div className="flex items-center gap-2.5">
-                    <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[8px]" style={{ background: 'color-mix(in srgb, var(--ca-primary) 8%, transparent)', color: 'var(--ca-primary)' }}>
+                    <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[16px]" style={{ background: 'color-mix(in srgb, var(--ca-primary) 8%, transparent)', color: 'var(--ca-primary)' }}>
                       <r.icon size={17} />
                     </span>
                     <span className="font-heading text-[15px] font-bold text-[color:var(--ca-ink)]">{r.topic}</span>
@@ -662,7 +662,7 @@ export default function CharteredAccountants() {
                       <span className="mr-1 font-semibold text-slate-400 sm:hidden">Manual:</span>{r.old}
                     </span>
                   </div>
-                  <div className="flex items-start gap-2 rounded-[10px] px-3 py-2.5 sm:bg-[color:var(--ca-grey)]">
+                  <div className="flex items-start gap-2 rounded-[16px] px-3 py-2.5 sm:bg-[color:var(--ca-grey)]">
                     <Check size={16} className="mt-0.5 flex-shrink-0" style={{ color: 'var(--ca-accent)' }} />
                     <span className="text-sm font-medium text-[color:var(--ca-ink)]">
                       <span className="mr-1 font-semibold" style={{ color: 'var(--ca-accent)' }}>Meeticulous:</span>{r.now}
@@ -782,8 +782,8 @@ export default function CharteredAccountants() {
             </Reveal>
             <Reveal delay={0.12} className="mt-8 grid gap-3 sm:grid-cols-2">
               {TRUST.map((it) => (
-                <div key={it.value} className="flex items-start gap-3 rounded-[12px] border border-black/[0.08] bg-white p-4 text-left">
-                  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[8px]" style={{ background: 'color-mix(in srgb, var(--ca-primary) 8%, transparent)', color: 'var(--ca-primary)' }}>
+                <div key={it.value} className="flex items-start gap-3 rounded-[24px] border border-black/[0.08] bg-white p-4 text-left">
+                  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[16px]" style={{ background: 'color-mix(in srgb, var(--ca-primary) 8%, transparent)', color: 'var(--ca-primary)' }}>
                     <it.icon size={17} />
                   </span>
                   <div>
@@ -830,10 +830,10 @@ export default function CharteredAccountants() {
               Set up your booking page today and give your clients a simpler way to meet with you.
             </Reveal>
             <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-              <Link to={START} className="inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-white px-7 py-3.5 text-sm font-bold transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline sm:w-auto" style={{ color: 'var(--ca-primary)' }}>
+              <Link to={START} className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline sm:w-auto" style={{ color: 'var(--ca-primary)' }}>
                 Launch My Practice Page <ArrowRight size={16} />
               </Link>
-              <Link to="/contact" className="inline-flex w-full items-center justify-center gap-2 rounded-[8px] border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline sm:w-auto">
+              <Link to="/contact" className="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline sm:w-auto">
                 Book A Demo
               </Link>
             </Reveal>

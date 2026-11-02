@@ -26,7 +26,7 @@ export default function PageGuides({ pathname }) {
             <li key={g.slug}>
               <Link
                 to={`/blog/${g.slug}`}
-                className="group flex h-full items-start justify-between gap-3 rounded-[6px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors hover:border-primary/30 hover:no-underline"
+                className="group flex h-full items-start justify-between gap-3 rounded-[24px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors hover:border-primary/30 hover:no-underline"
               >
                 <span className="font-heading text-[15px] font-bold leading-snug text-ink">{g.title}</span>
                 <ArrowRight size={16} className="mt-0.5 flex-shrink-0 text-primary-cta transition group-hover:translate-x-0.5" />

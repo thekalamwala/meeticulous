@@ -48,7 +48,7 @@ const PINK = '#FF4D93';      // decorative accent; text use only on the dark ove
 const PINK_INK = '#BE185D';  // pink for text / fills on white and light pink (AA)
 const BLUSH = '#FFF4F8';     // very light pink surface
 const PLUM = '#1F0F17';      // dark base under the photo tint and final CTA
-const INK = '#2A1416';
+const INK = '#2B0A14';
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
 
@@ -167,7 +167,7 @@ function PrimaryCta({ to = START, children, onDark = false }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-[6px] px-6 py-3 text-sm font-semibold shadow-[0_8px_30px_rgba(26,26,26,0.12)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold shadow-[0_8px_30px_rgba(26,26,26,0.12)] transition-opacity hover:no-underline hover:opacity-90"
       style={onDark ? { background: '#FFFFFF', color: PINK_INK } : { background: PINK_INK, color: '#FFFFFF' }}
     >
       {children}
@@ -211,7 +211,7 @@ function ReviewDemo() {
 
   return (
     <div className="relative mx-auto w-full max-w-[23rem]">
-      <div className="rounded-[10px] bg-white p-5 text-[#2A1416] shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)] sm:p-6">
+      <div className="rounded-[24px] bg-white p-5 text-[#2B0A14] shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)] sm:p-6">
         <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">How was your session?</div>
         <div className="mt-3 flex gap-1.5" role="group" aria-label="Pick a rating">
           {[1, 2, 3, 4, 5].map((n) => (
@@ -221,14 +221,14 @@ function ReviewDemo() {
               aria-label={`Rate ${n} star${n > 1 ? 's' : ''}`}
               aria-pressed={n === rating}
               onClick={() => setRating(n)}
-              className="rounded-[6px] p-1.5 transition-colors hover:bg-[#FFF4F8]"
+              className="rounded-[16px] p-1.5 transition-colors hover:bg-[#FFF4F8]"
             >
               <Star size={26} aria-hidden style={n <= rating ? { color: PINK, fill: PINK } : { color: '#D4D4D4' }} />
             </button>
           ))}
         </div>
 
-        <div className="mt-5 min-h-[9.5rem] rounded-[6px] border border-black/5 p-4" style={{ background: BLUSH }} aria-live="polite">
+        <div className="mt-5 min-h-[9.5rem] rounded-[24px] border border-black/5 p-4" style={{ background: BLUSH }} aria-live="polite">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div key={rating} {...fade}>
               <div className="flex items-center justify-between gap-3">
@@ -272,7 +272,7 @@ function VerifyTrack() {
               type="button"
               aria-pressed={i === active}
               onClick={() => setActive(i)}
-              className="flex w-full flex-col items-center gap-2.5 rounded-[6px] py-2 text-center transition-colors"
+              className="flex w-full flex-col items-center gap-2.5 rounded-[16px] py-2 text-center transition-colors"
             >
               <span
                 className="relative flex h-12 w-12 items-center justify-center rounded-full border transition-colors"
@@ -291,13 +291,13 @@ function VerifyTrack() {
       </ol>
 
       <div className="mt-8 grid gap-5 md:grid-cols-2" aria-live="polite">
-        <div className="rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-7">
+        <div className="rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-7">
           <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: PINK_INK }}>
             <ShieldCheck size={14} aria-hidden /> What we check at {s.stage.toLowerCase()}
           </div>
           <p className="mt-3 text-[15px] leading-relaxed text-neutral-700">{s.check}</p>
         </div>
-        <div className="rounded-[10px] border border-black/5 p-6 sm:p-7" style={{ background: BLUSH }}>
+        <div className="rounded-[24px] border border-black/5 p-6 sm:p-7" style={{ background: BLUSH }}>
           <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-neutral-500">
             <X size={14} aria-hidden /> What stops here
           </div>
@@ -333,7 +333,7 @@ export default function ReviewsFeature() {
   });
 
   return (
-    <main className="overflow-x-clip bg-white text-[#2A1416]">
+    <main className="overflow-x-clip bg-white text-[#2B0A14]">
       <Seo
         title={seo.title}
         description={seo.description}
@@ -392,7 +392,7 @@ export default function ReviewsFeature() {
 
         {/* 2 · PROOF — a white fact row over the same photo */}
         <section aria-label="Review facts" className="relative px-5 pb-14 sm:px-8 lg:pb-16">
-          <dl className="mx-auto grid max-w-6xl gap-px overflow-hidden rounded-[10px] border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
+          <dl className="mx-auto grid max-w-6xl gap-px overflow-hidden rounded-[16px] border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
             {PROOF.map((p) => (
               <div key={p.k} className="px-6 py-6 backdrop-blur-sm" style={{ background: 'rgba(31,15,23,0.55)' }}>
                 <dt className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: PINK }}>{p.k}</dt>
@@ -414,13 +414,13 @@ export default function ReviewsFeature() {
           </Reveal>
 
           <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-2">
-            <Reveal className="rounded-[10px] border border-black/5 bg-neutral-50 p-6 sm:p-8">
+            <Reveal className="rounded-[24px] border border-black/5 bg-neutral-50 p-6 sm:p-8">
               <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-neutral-400">Testimonial screenshots</div>
-              <div aria-hidden className="mt-5 space-y-2 rounded-[6px] border border-black/5 bg-neutral-100 p-4">
+              <div aria-hidden className="mt-5 space-y-2 rounded-[24px] border border-black/5 bg-neutral-100 p-4">
                 <div className="h-2 w-24 rounded-full bg-neutral-300" />
-                <div className="max-w-[80%] rounded-[6px] bg-white px-3 py-2 text-[13px] text-neutral-600">thank you so much, the session was great!!</div>
-                <div className="max-w-[60%] rounded-[6px] bg-white px-3 py-2 text-[13px] text-neutral-600">will recommend you to my friends</div>
-                <div className="ml-auto max-w-[45%] rounded-[6px] bg-neutral-200 px-3 py-2 text-right text-[13px] text-neutral-500">can I post this?</div>
+                <div className="max-w-[80%] rounded-[16px] bg-white px-3 py-2 text-[13px] text-neutral-600">thank you so much, the session was great!!</div>
+                <div className="max-w-[60%] rounded-[16px] bg-white px-3 py-2 text-[13px] text-neutral-600">will recommend you to my friends</div>
+                <div className="ml-auto max-w-[45%] rounded-[16px] bg-neutral-200 px-3 py-2 text-right text-[13px] text-neutral-500">can I post this?</div>
               </div>
               <ul className="mt-6 space-y-3">
                 {WITHOUT.map((t) => (
@@ -431,9 +431,9 @@ export default function ReviewsFeature() {
               </ul>
             </Reveal>
 
-            <Reveal delay={0.06} className="rounded-[10px] border bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-8" style={{ borderColor: `${PINK}4d` }}>
+            <Reveal delay={0.06} className="rounded-[24px] border bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-8" style={{ borderColor: `${PINK}4d` }}>
               <div className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: PINK_INK }}>Reviews tied to real bookings</div>
-              <div aria-hidden className="mt-5 rounded-[6px] border border-black/5 p-4" style={{ background: BLUSH }}>
+              <div aria-hidden className="mt-5 rounded-[24px] border border-black/5 p-4" style={{ background: BLUSH }}>
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold">Rohan M.</span>
                   <Stars n={5} size={12} />
@@ -446,7 +446,7 @@ export default function ReviewsFeature() {
               </div>
               <ul className="mt-6 space-y-3">
                 {WITH.map((t) => (
-                  <li key={t} className="flex items-start gap-2.5 text-[15px] font-medium text-[#2A1416]">
+                  <li key={t} className="flex items-start gap-2.5 text-[15px] font-medium text-[#2B0A14]">
                     <Check size={16} className="mt-1 shrink-0" style={{ color: PINK_INK }} aria-hidden /><span><span className="sr-only">With Meeticulous: </span>{t}</span>
                   </li>
                 ))}
@@ -468,12 +468,12 @@ export default function ReviewsFeature() {
           </Reveal>
           <ol className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-3">
             {STEPS.map((s, i) => (
-              <Reveal as="li" key={s.title} delay={i * 0.06} className="flex flex-col overflow-hidden rounded-[10px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+              <Reveal as="li" key={s.title} delay={i * 0.06} className="flex flex-col overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
                 {s.slot ? (
                   <ImgSlot slot={s.slot} alt={s.alt} className="aspect-[4/3] w-full border-b border-black/5" />
                 ) : (
                   <div className="flex aspect-[4/3] w-full items-center justify-center border-b border-black/5 p-6" style={{ background: `linear-gradient(160deg, ${BLUSH}, #FFFFFF)` }} aria-hidden>
-                    <div className="w-full max-w-[15rem] rounded-[6px] border border-black/5 bg-white p-3.5 shadow-[0_8px_30px_rgba(26,26,26,0.06)]">
+                    <div className="w-full max-w-[15rem] rounded-[16px] border border-black/5 bg-white p-3.5 shadow-[0_8px_30px_rgba(26,26,26,0.06)]">
                       <div className="flex items-center justify-between">
                         <span className="text-[13px] font-semibold">Reviews</span>
                         <Star size={13} style={{ color: PINK, fill: PINK }} />
@@ -520,7 +520,7 @@ export default function ReviewsFeature() {
           <ul className="grid gap-x-10 sm:grid-cols-2 lg:grid-cols-1">
             {CAPS.map((c, i) => (
               <Reveal as="li" key={c.title} delay={(i % 2) * 0.05} className="flex gap-4 border-t border-black/5 py-6">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[6px]" style={{ background: BLUSH, color: PINK_INK }}>
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[16px]" style={{ background: BLUSH, color: PINK_INK }}>
                   <c.icon size={19} aria-hidden />
                 </span>
                 <div>
@@ -564,11 +564,11 @@ export default function ReviewsFeature() {
                   as="figure"
                   key={t.name}
                   delay={i * 0.05}
-                  className="mb-5 break-inside-avoid rounded-[10px] border border-black/5 p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:mb-6 sm:p-7"
+                  className="mb-5 break-inside-avoid rounded-[24px] border border-black/5 p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:mb-6 sm:p-7"
                   style={{ background: i % 3 === 0 ? BLUSH : '#FFFFFF' }}
                 >
                   <span aria-hidden className="block font-heading text-5xl leading-[0.6]" style={{ color: PINK }}>&ldquo;</span>
-                  <blockquote className={`mt-3 leading-relaxed text-[#2A1416] ${i === 0 ? 'font-heading text-xl font-bold' : 'text-[15px]'}`}>{t.quote}</blockquote>
+                  <blockquote className={`mt-3 leading-relaxed text-[#2B0A14] ${i === 0 ? 'font-heading text-xl font-bold' : 'text-[15px]'}`}>{t.quote}</blockquote>
                   <figcaption className="mt-5 flex items-center gap-3">
                     <img src={t.avatar} alt="" loading="lazy" className="h-10 w-10 rounded-full object-cover" />
                     <div>
@@ -593,7 +593,7 @@ export default function ReviewsFeature() {
           </Reveal>
           <div className="mt-12 space-y-3">
             {FAQ.map((f, i) => (
-              <details key={f.q} className="group rounded-[6px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]" open={i === 0}>
+              <details key={f.q} className="group rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]" open={i === 0}>
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 sm:px-6 [&::-webkit-details-marker]:hidden">
                   <span className="font-heading text-[16px] font-bold">{f.q}</span>
                   <ChevronDown size={18} aria-hidden className="shrink-0 text-neutral-400 transition-transform group-open:rotate-180" />

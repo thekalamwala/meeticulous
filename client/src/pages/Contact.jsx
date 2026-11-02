@@ -26,7 +26,7 @@ const WHATSAPP = 'https://wa.me/15559708785?text=Hi%2C%20I%20want%20to%20talk%20
 // Tokenised form field (soft-modern: white surface, low-alpha border, 6px radius,
 // crimson focus ring).
 const inputCls =
-  'w-full rounded-[6px] border border-black/10 bg-white px-3.5 py-2.5 text-sm text-ink ' +
+  'w-full rounded-[16px] border border-black/10 bg-white px-3.5 py-2.5 text-sm text-ink ' +
   'placeholder:text-ink/40 outline-none transition-colors ' +
   'focus:border-primary focus:ring-2 focus:ring-primary/20';
 const labelCls = 'mb-1.5 block text-sm font-medium text-ink';
@@ -48,7 +48,7 @@ const CHANNELS = [
 function Channel({ c }) {
   const inner = (
     <>
-      <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[6px] bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-white">
+      <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[16px] bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-white">
         <c.Icon size={20} aria-hidden="true" />
       </span>
       <span className="min-w-0 flex-1">
@@ -59,7 +59,7 @@ function Channel({ c }) {
     </>
   );
   const cls =
-    'group flex items-center gap-4 rounded-[6px] border border-black/5 bg-white px-4 py-3.5 ' +
+    'group flex items-center gap-4 rounded-[16px] border border-black/5 bg-white px-4 py-3.5 ' +
     'shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-[border-color,box-shadow] hover:border-primary/30 ' +
     'hover:no-underline hover:shadow-[0_24px_60px_-28px_rgba(26,26,26,0.25)]';
   if (c.to) return <Link to={c.to} className={cls}>{inner}</Link>;
@@ -128,7 +128,7 @@ const Contact = () => {
         </div>
 
         {/* Right: the form */}
-        <div className="rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_24px_60px_-28px_rgba(26,26,26,0.25)] sm:p-8">
+        <div className="rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_24px_60px_-28px_rgba(26,26,26,0.25)] sm:p-8">
           {sent ? (
             <div className="py-10 text-center">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -182,7 +182,7 @@ const Contact = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-[6px] bg-primary-cta py-3 text-sm font-semibold text-white shadow-[0_12px_30px_-12px_rgba(150,13,50,0.55)] transition-opacity hover:opacity-90 disabled:opacity-50"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-[16px] bg-primary-cta py-3 text-sm font-semibold text-white shadow-[0_12px_30px_-12px_rgba(150,13,50,0.55)] transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
                   {loading ? 'Sending…' : 'Send message'}
                   {!loading && <Send size={16} aria-hidden="true" />}
@@ -202,7 +202,7 @@ const Contact = () => {
           <p className="mt-4 text-center text-lg leading-relaxed text-ink/70">
             {OFFICE_ADDRESS}
           </p>
-          <div className="mt-8 overflow-hidden rounded-[10px] border border-black/5 bg-sand shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+          <div className="mt-8 overflow-hidden rounded-[16px] border border-black/5 bg-sand shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
             <iframe
               title={`Map: ${OFFICE_ADDRESS}`}
               src={`https://www.google.com/maps?q=${encodeURIComponent(OFFICE_ADDRESS)}&output=embed`}

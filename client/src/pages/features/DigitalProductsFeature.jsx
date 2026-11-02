@@ -126,7 +126,7 @@ function PrimaryCta({ to = START, children }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-[6px] px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(109,40,217,0.35)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(109,40,217,0.35)] transition-opacity hover:no-underline hover:opacity-90"
       style={{ background: VIOLET_INK }}
     >
       {children}
@@ -141,7 +141,7 @@ function ImgSlot({ alt, slot, className = '' }) {
       role="img"
       aria-label={alt}
       data-img-slot={slot}
-      className={`flex items-center justify-center rounded-[10px] border border-white/10 ${className}`}
+      className={`flex items-center justify-center rounded-[16px] border border-white/10 ${className}`}
       style={{ background: 'repeating-linear-gradient(135deg, rgba(238,240,255,0.04) 0 10px, rgba(238,240,255,0.08) 10px 20px)' }}
     >
       <ImageIcon size={28} style={{ color: 'rgba(238,240,255,0.3)' }} aria-hidden />
@@ -183,7 +183,7 @@ function ShelfDemo() {
 
   return (
     <div className="relative mx-auto w-full max-w-[26rem]">
-      <div className={`overflow-hidden rounded-[10px] ${glass} shadow-[0_40px_90px_-30px_rgba(46,16,101,0.9)]`}>
+      <div className={`overflow-hidden rounded-[16px] ${glass} shadow-[0_40px_90px_-30px_rgba(46,16,101,0.9)]`}>
         <div className="flex items-center justify-between border-b border-white/10 px-5 py-3.5">
           <div className="font-heading text-sm font-bold text-[#EEF0FF]">Digital products</div>
           <span className="text-[11px] text-[#EEF0FF]/55">meeticulous.com/you</span>
@@ -200,7 +200,7 @@ function ShelfDemo() {
                 onClick={() => go({ k: i, stage: 'checkout' })}
                 className={`flex flex-col items-start rounded-[6px] border p-2.5 text-left transition-colors ${on ? 'border-[#8B5CF6] bg-[#8B5CF6]/15' : 'border-white/10 bg-white/[0.03] hover:border-white/25'}`}
               >
-                <span className="flex h-8 w-8 items-center justify-center rounded-[5px]" style={{ background: 'rgba(139,92,246,0.18)', color: VIOLET_SOFT }}>
+                <span className="flex h-8 w-8 items-center justify-center rounded-[16px]" style={{ background: 'rgba(139,92,246,0.18)', color: VIOLET_SOFT }}>
                   <item.icon size={16} aria-hidden />
                 </span>
                 <span className="mt-2 text-[10px] uppercase tracking-[0.12em] text-[#EEF0FF]/50">{item.kind}</span>
@@ -234,7 +234,7 @@ function ShelfDemo() {
                 <button
                   type="button"
                   onClick={() => go({ k: demo.k, stage: 'done' })}
-                  className="mt-4 w-full rounded-[6px] py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                  className="mt-4 w-full rounded-[16px] py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
                   style={{ background: VIOLET_INK }}
                 >
                   {free ? 'Get it free' : `Buy for ${inr(buyerTotal(p.price))}`}
@@ -246,7 +246,7 @@ function ShelfDemo() {
                 <CheckCircle2 size={40} style={{ color: VIOLET_SOFT }} aria-hidden />
                 <div className="mt-2.5 font-heading text-lg font-extrabold text-[#EEF0FF]">{free ? 'Done.' : 'Purchased.'} Your download is ready.</div>
                 <div className="mt-1 text-xs text-[#EEF0FF]/55">{p.title}</div>
-                <span className="mt-4 inline-flex items-center gap-2 rounded-[6px] border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-[#EEF0FF]">
+                <span className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-[#EEF0FF]">
                   <Download size={15} aria-hidden /> Download
                 </span>
                 <div className="mt-3 text-[11px] text-[#EEF0FF]/50">Link valid 24 hours · up to 3 downloads · a copy sent to email</div>
@@ -284,21 +284,21 @@ function PlanCounter() {
 
   return (
     <div className="mt-12">
-      <div className="mx-auto flex max-w-md items-center justify-between gap-4 rounded-[10px] border border-black/5 bg-white px-5 py-4 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+      <div className="mx-auto flex max-w-md items-center justify-between gap-4 rounded-[16px] border border-black/5 bg-white px-5 py-4 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
         <span className="text-sm text-neutral-600" id="dp-count-label">Products you want live</span>
         <div className="flex items-center gap-3" role="group" aria-labelledby="dp-count-label">
-          <button type="button" aria-label="Fewer products" onClick={() => setN((v) => Math.max(1, v - 1))} className="flex h-9 w-9 items-center justify-center rounded-[6px] border border-black/10 text-neutral-700 transition-colors hover:border-black/25 disabled:opacity-40" disabled={n <= 1}>
+          <button type="button" aria-label="Fewer products" onClick={() => setN((v) => Math.max(1, v - 1))} className="flex h-9 w-9 items-center justify-center rounded-[16px] border border-black/10 text-neutral-700 transition-colors hover:border-black/25 disabled:opacity-40" disabled={n <= 1}>
             <Minus size={15} aria-hidden />
           </button>
           <output aria-live="polite" className="w-8 text-center font-heading text-3xl font-extrabold tabular-nums" style={{ color: VIOLET_INK }}>{n}</output>
-          <button type="button" aria-label="More products" onClick={() => setN((v) => Math.min(12, v + 1))} className="flex h-9 w-9 items-center justify-center rounded-[6px] border border-black/10 text-neutral-700 transition-colors hover:border-black/25 disabled:opacity-40" disabled={n >= 12}>
+          <button type="button" aria-label="More products" onClick={() => setN((v) => Math.min(12, v + 1))} className="flex h-9 w-9 items-center justify-center rounded-[16px] border border-black/10 text-neutral-700 transition-colors hover:border-black/25 disabled:opacity-40" disabled={n >= 12}>
             <Plus size={15} aria-hidden />
           </button>
         </div>
       </div>
 
       <div className="mt-8 grid gap-5 sm:gap-6 md:grid-cols-2">
-        <div className="rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-7">
+        <div className="rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-7">
           <div className="flex items-baseline justify-between gap-3">
             <h3 className="font-heading text-lg font-bold text-[#0B1026]">{FREE_PLAN.name}</h3>
             <span className="text-xs text-neutral-500">₹0 / month</span>
@@ -312,14 +312,14 @@ function PlanCounter() {
                 : `All ${n} live. Room for ${FREE_PRODUCT_LIMIT - n} more.`}
           </p>
         </div>
-        <div className="rounded-[10px] p-6 text-[#EEF0FF] shadow-[0_24px_60px_-28px_rgba(46,16,101,0.7)] sm:p-7" style={{ background: GRADIENT }}>
+        <div className="rounded-[24px] p-6 text-[#EEF0FF] shadow-[0_24px_60px_-28px_rgba(46,16,101,0.7)] sm:p-7" style={{ background: GRADIENT }}>
           <div className="flex items-baseline justify-between gap-3">
             <h3 className="font-heading text-lg font-bold text-[#EEF0FF]">{PREMIUM_PLAN.name}</h3>
             <span className="text-xs text-[#EEF0FF]/60">₹{PREMIUM_PLAN.monthly} / month or ₹{PREMIUM_PLAN.yearly.toLocaleString('en-IN')} / year</span>
           </div>
           <div className="mt-5 grid grid-cols-6 gap-2">
             {Array.from({ length: n }, (_, i) => (
-              <span key={i} className="flex aspect-square items-center justify-center rounded-[5px] text-white" style={{ background: `linear-gradient(140deg, ${VIOLET}, ${VIOLET_INK})` }}>
+              <span key={i} className="flex aspect-square items-center justify-center rounded-[16px] text-white" style={{ background: `linear-gradient(140deg, ${VIOLET}, ${VIOLET_INK})` }}>
                 <Check size={14} aria-hidden />
               </span>
             ))}
@@ -438,13 +438,13 @@ export default function DigitalProductsFeature() {
           </Reveal>
 
           <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-2">
-            <Reveal className="rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-7">
+            <Reveal className="rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-7">
               <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-neutral-400"><QrCode size={14} aria-hidden /> A Drive link + a UPI QR</div>
-              <div className="mt-5 space-y-2.5 rounded-[6px] bg-neutral-50 p-4 text-[13px]" aria-hidden>
-                <p className="ml-auto w-fit max-w-[80%] rounded-[6px] bg-neutral-200 px-3 py-2 text-neutral-700">Hi, is the pricing guide still ₹499?</p>
-                <p className="w-fit max-w-[80%] rounded-[6px] border border-black/5 bg-white px-3 py-2 text-neutral-600">Yes! Scan this QR and send a screenshot</p>
-                <p className="ml-auto w-fit max-w-[80%] rounded-[6px] bg-neutral-200 px-3 py-2 text-neutral-700">Sent. Where do I download?</p>
-                <p className="flex w-fit max-w-[85%] items-center gap-1.5 rounded-[6px] border border-black/5 bg-white px-3 py-2 text-neutral-500"><Link2 size={13} /> drive.google.com/… anyone with the link</p>
+              <div className="mt-5 space-y-2.5 rounded-[24px] bg-neutral-50 p-4 text-[13px]" aria-hidden>
+                <p className="ml-auto w-fit max-w-[80%] rounded-[16px] bg-neutral-200 px-3 py-2 text-neutral-700">Hi, is the pricing guide still ₹499?</p>
+                <p className="w-fit max-w-[80%] rounded-[16px] border border-black/5 bg-white px-3 py-2 text-neutral-600">Yes! Scan this QR and send a screenshot</p>
+                <p className="ml-auto w-fit max-w-[80%] rounded-[16px] bg-neutral-200 px-3 py-2 text-neutral-700">Sent. Where do I download?</p>
+                <p className="flex w-fit max-w-[85%] items-center gap-1.5 rounded-[16px] border border-black/5 bg-white px-3 py-2 text-neutral-500"><Link2 size={13} /> drive.google.com/… anyone with the link</p>
               </div>
               <ul className="mt-6 space-y-3">
                 {['You match every UPI screenshot to a buyer by hand', 'The Drive link works for anyone it is forwarded to', 'Every sale is a chat you have to answer yourself'].map((t) => (
@@ -453,16 +453,16 @@ export default function DigitalProductsFeature() {
               </ul>
             </Reveal>
 
-            <Reveal delay={0.06} className="rounded-[10px] border p-6 shadow-[0_24px_60px_-30px_rgba(109,40,217,0.35)] sm:p-7" style={{ borderColor: `${VIOLET_INK}4d`, background: '#FFFFFF' }}>
+            <Reveal delay={0.06} className="rounded-[24px] border p-6 shadow-[0_24px_60px_-30px_rgba(109,40,217,0.35)] sm:p-7" style={{ borderColor: `${VIOLET_INK}4d`, background: '#FFFFFF' }}>
               <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: VIOLET_INK }}><Store size={14} aria-hidden /> A product page with checkout</div>
-              <div className="mt-5 overflow-hidden rounded-[6px] border border-black/5" aria-hidden>
+              <div className="mt-5 overflow-hidden rounded-[16px] border border-black/5" aria-hidden>
                 <div className="flex h-20 items-center justify-center" style={{ background: GRADIENT }}><FileText size={26} style={{ color: VIOLET_SOFT }} /></div>
                 <div className="p-4">
                   <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-400">PDF guide</div>
                   <div className="font-heading text-[15px] font-bold">Freelance pricing guide</div>
                   <div className="mt-3 flex items-center justify-between">
                     <span className="font-heading text-lg font-extrabold" style={{ color: VIOLET_INK }}>₹499</span>
-                    <span className="rounded-[6px] px-3.5 py-1.5 text-xs font-semibold text-white" style={{ background: VIOLET_INK }}>Buy now</span>
+                    <span className="rounded-full px-3.5 py-1.5 text-xs font-semibold text-white" style={{ background: VIOLET_INK }}>Buy now</span>
                   </div>
                 </div>
               </div>
@@ -509,15 +509,15 @@ export default function DigitalProductsFeature() {
             A small shop, <span style={{ color: VIOLET_SOFT }}>built into your page.</span>
           </Reveal>
           <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-3">
-            <Reveal className={`rounded-[10px] p-7 md:col-span-2 ${glass}`}>
-              <span className="flex h-10 w-10 items-center justify-center rounded-[6px]" style={{ background: 'rgba(139,92,246,0.18)', color: VIOLET_SOFT }}><Upload size={19} aria-hidden /></span>
+            <Reveal className={`rounded-[24px] p-7 md:col-span-2 ${glass}`}>
+              <span className="flex h-10 w-10 items-center justify-center rounded-[16px]" style={{ background: 'rgba(139,92,246,0.18)', color: VIOLET_SOFT }}><Upload size={19} aria-hidden /></span>
               <h3 className="mt-4 font-heading text-xl font-bold text-[#EEF0FF]">Your products, on your booking page</h3>
               <p className="mt-1.5 max-w-lg text-sm leading-relaxed text-[#EEF0FF]/65">Visitors see your services and your products together, with how many people have already bought each one.</p>
               <ImgSlot slot="digital-products-profile-shelf" alt="A host's Meeticulous booking page showing the Digital Products section beside their services" className="mt-6 aspect-[16/7] w-full" />
             </Reveal>
             {CAPS.map((c, i) => (
-              <Reveal key={c.title} delay={(i % 3) * 0.05} className={`rounded-[10px] p-7 ${glass}`}>
-                <span className="flex h-10 w-10 items-center justify-center rounded-[6px]" style={{ background: 'rgba(139,92,246,0.18)', color: VIOLET_SOFT }}><c.icon size={19} aria-hidden /></span>
+              <Reveal key={c.title} delay={(i % 3) * 0.05} className={`rounded-[24px] p-7 ${glass}`}>
+                <span className="flex h-10 w-10 items-center justify-center rounded-[16px]" style={{ background: 'rgba(139,92,246,0.18)', color: VIOLET_SOFT }}><c.icon size={19} aria-hidden /></span>
                 <h3 className="mt-4 font-heading text-lg font-bold text-[#EEF0FF]">{c.title}</h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-[#EEF0FF]/65">{c.body}</p>
               </Reveal>
@@ -550,7 +550,7 @@ export default function DigitalProductsFeature() {
             </Reveal>
             <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-3">
               {QUOTES.map((t, i) => (
-                <Reveal as="figure" key={t.name} delay={i * 0.06} className={`flex flex-col justify-between rounded-[10px] p-7 ${glass}`}>
+                <Reveal as="figure" key={t.name} delay={i * 0.06} className={`flex flex-col justify-between rounded-[24px] p-7 ${glass}`}>
                   <blockquote className="text-[15px] leading-relaxed text-[#EEF0FF]/85">
                     <span aria-hidden className="mb-3 block font-heading text-4xl leading-none" style={{ color: VIOLET_SOFT }}>&ldquo;</span>
                     {t.quote}

@@ -1,5 +1,6 @@
 @import './styles/fonts.css';
 @import './styles/design-tokens.css';
+@import './styles/brand.css';
 @import './styles/base-fb.css';
 /* Legacy brutalist component CSS, demoted into a cascade layer so Tailwind
    utilities AND the soft redefinitions in `@layer components` below win over
@@ -305,7 +306,7 @@ select:focus {
 button:focus-visible,
 a:focus-visible,
 [role='button']:focus-visible {
-  outline: 3px solid var(--focus-ring);
+  outline: 3px solid var(--focus-ring-color);
   outline-offset: 3px;
 }
 
@@ -444,7 +445,7 @@ button[role='switch'] {
 /* Calm neutral surface palette */
 .brand-bg-canvas { background: #F8FAFC; }
 .brand-bg-sand   { background: #F1F5F9; }
-.brand-ink       { color: #2A1416; }
+.brand-ink       { color: #2B0A14; }
 .brand-muted     { color: #6b6b6b; }
 
 /* Hero ambient aura — soft warm wash on the flat canvas (no palette change).
@@ -579,7 +580,7 @@ button[role='switch'] {
 .onb-pulse-b { animation: onb-pulse-b .7s ease }
 .onb-shimmer {
   height: 10px; border-radius: 4px;
-  background: linear-gradient(90deg, #F5E9EC 0%, #FFF8FA 50%, #F5E9EC 100%);
+  background: linear-gradient(90deg, #F5E9EC 0%, #FBF5F3 50%, #F5E9EC 100%);
   background-size: 200% 100%; animation: onb-shimmer 1.1s linear infinite;
 }
 @media (prefers-reduced-motion: reduce) {

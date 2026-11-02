@@ -156,7 +156,7 @@ const CustomerProfile = () => {
             {editing && (
               <div className="flex items-center gap-3 pt-2 border-t">
                 <button onClick={onSave} disabled={saving}
-                  className="btn inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#960D32] hover:bg-[#2A1416] disabled:opacity-60">
+                  className="btn inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#960D32] hover:bg-[#2B0A14] disabled:opacity-60">
                   {saving && <Loader2 size={15} className="animate-spin" />} Save changes
                 </button>
                 <button onClick={() => setEditing(false)} disabled={saving}

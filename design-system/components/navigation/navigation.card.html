@@ -1,0 +1,13 @@
+<!-- @dsCard group="Components" viewport="700x150" name="Navigation" subtitle="Tabs — pill and underline" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.26.2/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{background:var(--bg-page);padding:24px}.r{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.c{display:flex;flex-direction:column;gap:16px}.l{font:500 11px/1 var(--font-body);letter-spacing:.08em;text-transform:uppercase;color:var(--fg-3)}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.Meeticulous_Design_System || window.MeeticulousDesignSystem || window.Meeticulous || Object.keys(window).map(k => { try { const v = window[k]; return v && typeof v === 'object' && v.SlotCell && v.Button ? v : null; } catch (e) { return null; } }).find(Boolean) || {};
+const { Button, IconButton, Icon, Input, Select, Checkbox, Radio, Switch, Card, Badge, Tag, Tooltip, Tabs, Dialog, Toast, Logo, Thread, Illustration, SlotCell } = NS;
+function App(){ return (<div className="c"><Tabs items={['Day','Week','Month']} defaultValue="Week"/><Tabs variant="underline" items={[{value:'up',label:'Upcoming',count:4},{value:'past',label:'Past'},{value:'cx',label:'Cancelled'}]}/></div>); }
+ReactDOM.createRoot(document.getElementById('root')).render(NS.Button ? <App/> : <p style={{fontFamily:'sans-serif'}}>Design-system bundle not compiled yet.</p>);
+</script></body></html>

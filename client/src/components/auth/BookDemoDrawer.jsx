@@ -137,7 +137,7 @@ export default function BookDemoDrawer({ open, onClose }) {
             {HERO_POINTS.map((p) => (
               <li key={p.label} className="flex items-center gap-3">
                 <span
-                  className="grid h-8 w-8 shrink-0 place-items-center rounded-[8px] ring-1 ring-white/10"
+                  className="grid h-8 w-8 shrink-0 place-items-center rounded-[16px] ring-1 ring-white/10"
                   style={{ backgroundColor: `${p.hue}26`, color: p.hue }}
                 >
                   {p.icon}

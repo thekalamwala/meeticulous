@@ -35,11 +35,11 @@ export default function LpFlash() {
         </div>
 
         {/* ── Right mockup ── */}
-        <div className="rounded-[8px] bg-[#f6dccd] p-5 sm:p-7">
+        <div className="rounded-[24px] bg-[#f6dccd] p-5 sm:p-7">
           {/* profile card */}
-          <div className="flex items-center justify-between gap-4 rounded-[6px] bg-white p-4">
+          <div className="flex items-center justify-between gap-4 rounded-[24px] bg-white p-4">
             <div className="flex min-w-0 items-center gap-3">
-              <Avatar src={me.img} name={me.name} className="h-12 w-12 rounded-[6px]" />
+              <Avatar src={me.img} name={me.name} className="h-12 w-12 rounded-[16px]" />
               <div className="min-w-0">
                 <div className="truncate font-heading text-sm font-bold text-ink">{me.name}</div>
                 <div className="truncate text-xs text-neutral-500">meeticulous.com/{me.name.split(" ")[0].toLowerCase()}</div>
@@ -47,24 +47,24 @@ export default function LpFlash() {
             </div>
             <div className="flex flex-col gap-1.5">
               {SWATCHES.map((c) => (
-                <span key={c} className="h-3 w-3 rounded-[4px]" style={{ backgroundColor: c }} />
+                <span key={c} className="h-3 w-3 rounded-[16px]" style={{ backgroundColor: c }} />
               ))}
             </div>
           </div>
 
           {/* lightning tile + notifications */}
           <div className="mt-4 grid grid-cols-[1fr_1.3fr] gap-4">
-            <div className="grid place-items-center rounded-[6px] bg-primary">
+            <div className="grid place-items-center rounded-[16px] bg-primary">
               <Zap size={44} className="fill-white text-white" />
             </div>
             <div className="flex flex-col gap-2.5">
               {NOTES.map((n, i) => (
                 <div
                   key={n.t}
-                  className="flex items-center gap-2.5 rounded-[6px] bg-white px-3 py-2.5 shadow-sm"
+                  className="flex items-center gap-2.5 rounded-[16px] bg-white px-3 py-2.5 shadow-sm"
                   style={{ opacity: 1 - i * 0.18 }}
                 >
-                  <span className="h-2.5 w-2.5 flex-none rounded-[4px]" style={{ backgroundColor: n.c }} />
+                  <span className="h-2.5 w-2.5 flex-none rounded-[16px]" style={{ backgroundColor: n.c }} />
                   <span className="flex-1 text-[13px] font-semibold text-ink">{n.t}</span>
                   <span className="text-[13px] font-bold text-neutral-500">{n.v}</span>
                 </div>

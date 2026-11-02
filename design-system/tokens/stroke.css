@@ -1,0 +1,9 @@
+:root{
+  /* One stroke family. Ratios come from the logo: icon = 6u on a 76u body; ee = 19u on a 101u height. */
+  --stroke-hairline:1px;
+  --stroke-ui:2px;         /* borders, Lucide icons @24px */
+  --stroke-ui-strong:3px;  /* slot cells, selected states */
+  --stroke-illo:6px;       /* illustrations on a 240×160 grid */
+  --stroke-thread-ratio:.19;/* ee thread weight ÷ loop height */
+  --icon-s:16px; --icon-m:20px; --icon-l:24px; --icon-xl:32px;
+}

@@ -59,7 +59,7 @@ const ToolsIndex = () => (
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         {TOOLS.map(({ to, icon: Icon, title, desc }) => (
           <Link key={to} to={to} className="group rounded-[16px] border border-black/10 bg-white p-6 transition hover:border-primary/40 hover:no-underline">
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] bg-primary/10 text-primary">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-[16px] bg-primary/10 text-primary">
               <Icon size={22} />
             </span>
             <h2 className="mt-4 font-heading text-lg font-bold text-ink">{title}</h2>

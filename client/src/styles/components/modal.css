@@ -15,5 +15,5 @@
     border: 3px solid var(--border);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-hard-2);
-    padding: var(--space-3);
+    padding: 24px;
 }

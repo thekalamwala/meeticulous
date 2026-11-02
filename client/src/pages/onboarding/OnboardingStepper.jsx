@@ -79,7 +79,7 @@ const OnboardingStepper = ({ current }) => {
             type="button"
             onClick={() => setConfirm(true)}
             disabled={leaving}
-            className="flex min-h-[40px] shrink-0 items-center gap-1 rounded-[6px] px-2 text-xs font-medium text-muted transition-colors hover:bg-sand hover:text-ink disabled:opacity-50"
+            className="flex min-h-[40px] shrink-0 items-center gap-1 rounded-[16px] px-2 text-xs font-medium text-muted transition-colors hover:bg-sand hover:text-ink disabled:opacity-50"
           >
             <X size={15} /> {leaving ? 'Exiting…' : 'Exit'}
           </button>

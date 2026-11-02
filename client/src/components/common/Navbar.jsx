@@ -175,7 +175,7 @@ const wordmarkText = (always = false) => (
 );
 
 // Bundled mark — always same-origin, used when an admin/cached logo URL is dead.
-const FALLBACK_ICON = '/favicon-96x96.png';
+const WORDMARK = '/brand/ds/01-logo/wordmark/mt-wordmark-full-color.svg';
 
 const NavbarLogo = ({ appearance }) => {
   const mode = appearance?.navbar_logo_mode || 'icon_text';
@@ -191,15 +191,12 @@ const NavbarLogo = ({ appearance }) => {
 
   if (mode === 'image'   && appearance?.logo_image_url   && !failed[appearance.logo_image_url])   return img(appearance.logo_image_url);
   if (mode === 'festive' && appearance?.festive_logo_url && !failed[appearance.festive_logo_url]) return img(appearance.festive_logo_url);
-  const icon = [appearance?.icon_url, FALLBACK_ICON].find((u) => u && !failed[u]);
-  if (icon) {
+  // Default (icon_text): the official design-system wordmark is the header sign-off
+  // (design-system/BRAND_RULES.md → Logo). Bundled, same-origin, never recoloured.
+  if (!failed[WORDMARK]) {
     return (
-      <>
-        <img src={icon} alt="Meeticulous" width={26} height={26} decoding="async"
-             onError={() => markFailed(icon)}
-             className="h-[26px] w-[26px] rounded block" />
-        {wordmarkText()}
-      </>
+      <img src={WORDMARK} alt="Meeticulous" height={28} decoding="async"
+           onError={() => markFailed(WORDMARK)} className="h-7 w-auto block" />
     );
   }
   return wordmarkText(true); // fallback: text only, always visible

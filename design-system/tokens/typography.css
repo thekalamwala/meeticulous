@@ -1,0 +1,26 @@
+:root{
+  --font-display:'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif;
+  --font-body:'Poppins','Helvetica Neue',Arial,sans-serif;
+  --font-script:'Instrument Serif',Georgia,serif;
+
+  --weight-regular:400; --weight-medium:500; --weight-semibold:600; --weight-bold:700; --weight-black:800;
+
+  /* Display — Bricolage 800, tight */
+  --text-display-2xl:128px; --lh-display-2xl:.92; --ls-display-2xl:-.045em;
+  --text-display-xl:96px;   --lh-display-xl:.92;  --ls-display-xl:-.045em;
+  --text-display-l:72px;    --lh-display-l:.95;   --ls-display-l:-.04em;
+  --text-display-m:56px;    --lh-display-m:1;     --ls-display-m:-.03em;
+  /* Headings — Bricolage 800/700 */
+  --text-h1:44px; --lh-h1:1.05; --ls-h1:-.03em;
+  --text-h2:36px; --lh-h2:1.1;  --ls-h2:-.025em;
+  --text-h3:28px; --lh-h3:1.15; --ls-h3:-.02em;
+  --text-h4:22px; --lh-h4:1.2;  --ls-h4:-.01em;
+  /* Body — Poppins */
+  --text-body-l:18px; --lh-body-l:1.6;
+  --text-body:16px;   --lh-body:1.6;
+  --text-body-s:14px; --lh-body-s:1.55;
+  --text-caption:12px; --lh-caption:1.4;
+  --text-overline:12px; --ls-overline:.08em;
+  /* Script accent — Instrument Serif italic, set ~8% larger than the grotesk it sits beside */
+  --script-scale:1.08;
+}
