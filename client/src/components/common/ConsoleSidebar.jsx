@@ -1,11 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import {
-  LayoutDashboard, CalendarDays, Users, Clock, LayoutGrid, Package,
-  LineChart, Banknote, Receipt, Gift, Sparkles, User, FileText,
-  Compass, Boxes, Wallet, Settings, X, Headset, ArrowRight, MessageCircle,
-} from 'lucide-react';
+import { Gift, Sparkles, X, Headset, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import useIsMobile from '../../hooks/useIsMobile';
 import useSupportUnread from '../../hooks/useSupportUnread';
@@ -21,19 +17,18 @@ const SB = {
   radius: 3,       // row corner radius (px)
   railIcon: 20,    // rail glyph size
   itemIcon: 17,    // panel item icon size
-  strokeIn: 1.8,   // inactive line weight
-  strokeOn: 2.4,   // active "fill-weight" approximation (see note below)
 };
-// ponytail: the app ships lucide everywhere; lucide has no filled variants, so
-// "fill-weight when active" is approximated with heavier stroke + accent color.
-// Want true Phosphor fill? add @phosphor-icons/react and swap the <Icon/> here —
-// nothing else changes. Not worth a second icon lib for this alone.
+// Nav glyphs are pre-coloured PNGs (one file per state) exported from
+// design-system/icons/dashboard/*.svg by its export-png.js. A PNG can't recolour,
+// so hover only tints the row background. Recolour = edit the SVG + re-export.
+const ICON_DIR = '/icons/dashboard';
 
 // Accent per section — all deliberately non-rose so the rose badge never clashes.
+// Must match the active-state colours baked into the PNGs.
 const ACCENT = {
   overview: '#4f46e5', // indigo
   bookings: '#059669', // emerald
-  catalog:  '#1DA1F2', // violet
+  catalog:  '#7c3aed', // violet
   earnings: '#d97706', // amber
   chat:     '#0284c7', // sky
   settings: '#475569', // slate
@@ -44,54 +39,56 @@ const ROSE = '#e11d48';
  *  Nav config — sections → items. Adding a page = one entry here.
  *  Routes are the real host dashboard routes (unchanged).
  *
+ *  icon         → PNG basename in ICON_DIR; files are <icon>-<state>@2x/@3x.png.
  *  item.locked  → plan slug(s) that unlock it; others see a lock (upsell kept).
+ *                 A lockable item needs a <icon>-locked PNG too.
  *  item.visible → hard permission gate; false = hidden entirely.
  *  item.badgeKey→ key into the runtime `badges` map (attention count).
  * ------------------------------------------------------------------ */
 export const NAV = [
   {
-    id: 'overview', label: 'Overview', icon: Compass,
+    id: 'overview', label: 'Overview', icon: 'rail-overview',
     items: [
-      { to: '/dashboard', label: 'Overview', icon: LayoutDashboard, exact: true },
+      { to: '/dashboard', label: 'Overview', icon: 'nav-overview', exact: true },
     ],
   },
   {
-    id: 'bookings', label: 'Bookings', icon: CalendarDays,
+    id: 'bookings', label: 'Bookings', icon: 'rail-bookings',
     items: [
-      { to: '/dashboard/bookings', label: 'Bookings', icon: CalendarDays },
-      { to: '/dashboard/clients', label: 'Customers', icon: Users, matchPrefix: '/dashboard/clients', locked: ['professional', 'supreme'] },
-      { to: '/dashboard/payments/transactions', label: 'Transactions', icon: Receipt, matchPrefix: '/dashboard/payments/transactions' },
-      { to: '/dashboard/availability', label: 'Availability', icon: Clock },
+      { to: '/dashboard/bookings', label: 'Bookings', icon: 'nav-bookings' },
+      { to: '/dashboard/clients', label: 'Customers', icon: 'nav-customers', matchPrefix: '/dashboard/clients', locked: ['professional', 'supreme'] },
+      { to: '/dashboard/payments/transactions', label: 'Transactions', icon: 'nav-transactions', matchPrefix: '/dashboard/payments/transactions' },
+      { to: '/dashboard/availability', label: 'Availability', icon: 'nav-availability' },
     ],
   },
   {
-    id: 'catalog', label: 'Catalog', icon: Boxes,
+    id: 'catalog', label: 'Catalog', icon: 'rail-catalog',
     items: [
-      { to: '/dashboard/services', label: 'Services', icon: LayoutGrid, matchPrefix: '/dashboard/service' },
-      { to: '/dashboard/products', label: 'Products', icon: Package, locked: 'supreme' },
+      { to: '/dashboard/services', label: 'Services', icon: 'nav-services', matchPrefix: '/dashboard/service' },
+      { to: '/dashboard/products', label: 'Products', icon: 'nav-products', locked: 'supreme' },
     ],
   },
   {
-    id: 'earnings', label: 'Earnings', icon: Wallet,
+    id: 'earnings', label: 'Earnings', icon: 'rail-earnings',
     items: [
-      { to: '/dashboard/earnings', label: 'Earnings', icon: LineChart },
+      { to: '/dashboard/earnings', label: 'Earnings', icon: 'nav-earnings' },
       // KYC gates payouts, so a pending verification surfaces its attention here.
-      { to: '/dashboard/payments/payouts', label: 'Payouts', icon: Banknote, matchPrefix: '/dashboard/payments/payouts', badgeKey: 'verification', badgeNoun: 'verify to get paid' },
-      { to: '/dashboard/invoices', label: 'Invoices', icon: FileText, matchPrefix: '/dashboard/invoices' },
-      { to: '/dashboard/referrals', label: 'Refer & Earn', icon: Gift },
+      { to: '/dashboard/payments/payouts', label: 'Payouts', icon: 'nav-payouts', matchPrefix: '/dashboard/payments/payouts', badgeKey: 'verification', badgeNoun: 'verify to get paid' },
+      { to: '/dashboard/invoices', label: 'Invoices', icon: 'nav-invoices', matchPrefix: '/dashboard/invoices' },
+      { to: '/dashboard/referrals', label: 'Refer & Earn', icon: 'nav-refer' },
     ],
   },
   {
-    id: 'chat', label: 'Chat', icon: MessageCircle,
+    id: 'chat', label: 'Chat', icon: 'rail-chat',
     items: [
-      { to: '/dashboard/chat', label: 'Chat', icon: MessageCircle, badgeKey: 'chatUnread', badgeNoun: 'new reply' },
+      { to: '/dashboard/chat', label: 'Chat', icon: 'nav-chat', badgeKey: 'chatUnread', badgeNoun: 'new reply' },
     ],
   },
   {
-    id: 'settings', label: 'Settings', icon: Settings,
+    id: 'settings', label: 'Settings', icon: 'rail-settings',
     items: [
-      { to: '/dashboard/profile', label: 'Profile', icon: User, matchPrefix: '/dashboard/profile' },
-      { to: '/dashboard/upgrade', label: 'Plan', icon: Sparkles },
+      { to: '/dashboard/profile', label: 'Profile', icon: 'nav-profile', matchPrefix: '/dashboard/profile' },
+      { to: '/dashboard/upgrade', label: 'Plan', icon: 'nav-plan' },
     ],
   },
 ];
@@ -182,6 +179,21 @@ const useFocusTrap = (ref, active, trigger) => {
  * ------------------------------------------------------------------ */
 const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-primary';
 
+// Decorative nav glyph — the row/button carries the accessible name. @2x is the
+// src so 1x screens downsample (sharper than a 1x file).
+const NavIcon = ({ name, state, size }) => (
+  <img
+    src={`${ICON_DIR}/${name}-${state}@2x.png`}
+    srcSet={`${ICON_DIR}/${name}-${state}@2x.png 2x, ${ICON_DIR}/${name}-${state}@3x.png 3x`}
+    width={size}
+    height={size}
+    alt=""
+    aria-hidden="true"
+    draggable={false}
+    className="shrink-0 select-none"
+  />
+);
+
 // Rose attention pill on an item row. Count exposed to SR via the row's aria-label,
 // so the pill itself is decorative.
 const BadgePill = ({ count }) => (
@@ -196,7 +208,6 @@ const BadgePill = ({ count }) => (
 
 /** Far-left rail: one glyph per section. Click navigates to that section. */
 const RailButton = ({ section, active, hasAttention, onSelect }) => {
-  const Icon = section.icon;
   const accent = ACCENT[section.id];
   return (
     <div className="group relative flex justify-center">
@@ -224,7 +235,7 @@ const RailButton = ({ section, active, hasAttention, onSelect }) => {
             style={{ backgroundColor: accent }}
           />
         )}
-        <Icon size={SB.railIcon} strokeWidth={active ? SB.strokeOn : SB.strokeIn} />
+        <NavIcon name={section.icon} state={active ? 'active' : 'inactive'} size={SB.railIcon} />
         {/* attention dot */}
         {hasAttention && (
           <span
@@ -247,7 +258,6 @@ const RailButton = ({ section, active, hasAttention, onSelect }) => {
 
 /** Panel row: a real navigable item. Selection reads louder than the section. */
 const PanelItem = ({ item, sectionId, active, locked, count, onNavigate }) => {
-  const Icon = item.icon;
   const accent = ACCENT[sectionId];
   const noun = item.badgeNoun || 'pending';
   const srLabel = count
@@ -279,12 +289,7 @@ const PanelItem = ({ item, sectionId, active, locked, count, onNavigate }) => {
       {active && (
         <span aria-hidden="true" className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full" style={{ backgroundColor: accent }} />
       )}
-      <Icon
-        size={SB.itemIcon}
-        strokeWidth={active ? SB.strokeOn : SB.strokeIn}
-        className="shrink-0"
-        style={{ color: active ? accent : undefined }}
-      />
+      <NavIcon name={item.icon} state={locked ? 'locked' : active ? 'active' : 'inactive'} size={SB.itemIcon} />
       <span className="flex-1 truncate">{item.label}</span>
       {locked && <span aria-hidden="true" className="text-[10px] font-semibold uppercase tracking-wide text-gray-300">Locked</span>}
       {count > 0 && <BadgePill count={count} />}
