@@ -4,7 +4,7 @@ const planService = require('../../services/planService');
 test('followup_flows fallback: free 0, premium/creator/professional unlimited', async () => {
   expect(await planService.getLimit('free', 'followup_flows')).toBe(0);
   expect(await planService.getLimit('premium', 'followup_flows')).toBe(-1);
-  // Legacy paid rows were lifted to Sloth Active entitlements in v3.165.
+  // Legacy paid rows were lifted to Pro entitlements in v3.165.
   expect(await planService.getLimit('creator', 'followup_flows')).toBe(-1);
   expect(await planService.getLimit('professional', 'followup_flows')).toBe(-1);
 });

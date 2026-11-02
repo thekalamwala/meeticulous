@@ -7,7 +7,7 @@ import Reveal from "./Reveal";
    works with (no logo-wall padding): Razorpay checkout (UPI, cards, netbanking;
    Google Pay / PhonePe are UPI apps paid through it), GST invoices, Google
    sign-in + Calendar + Meet, WhatsApp and email reminders, the booking link.
-   Uses the shared .sloth-marquee CSS (static under prefers-reduced-motion);
+   Uses the shared .brand-marquee CSS (static under prefers-reduced-motion);
    the card pauses both rows together on hover. */
 
 const Img = ({ src }) => <img src={src} alt="" width={26} height={26} loading="lazy" className="h-[26px] w-[26px] object-contain" />;
@@ -44,8 +44,8 @@ const Pill = ({ item }) => (
 
 /* One infinite row: the list is rendered twice and the track slides by 50%. */
 const Row = ({ items, dir, seconds }) => (
-  <div className="sloth-marquee-wrap sloth-edge-fade overflow-hidden">
-    <ul className={`sloth-marquee sloth-marquee--${dir}`} style={{ animationDuration: `${seconds}s` }}>
+  <div className="brand-marquee-wrap brand-edge-fade overflow-hidden">
+    <ul className={`brand-marquee brand-marquee--${dir}`} style={{ animationDuration: `${seconds}s` }}>
       {[...items, ...items].map((it, i) => (
         <Pill key={`${it.name}-${i}`} item={it} />
       ))}
@@ -60,7 +60,7 @@ export default function IntegrationsMarquee({ onStart, loading }) {
     // `teal` #00C9C6, `teal-ink` #0E7C7A), ink headline with the accent words
     // in teal-ink, and the CTA left in the page's crimson. Hovering anywhere on
     // the card pauses BOTH rows (not just the one under the cursor).
-    <div className="mx-auto max-w-7xl overflow-hidden rounded-[10px] border border-teal/30 bg-teal/[0.08] px-5 py-9 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:px-10 lg:px-14 lg:py-11 [&:hover_.sloth-marquee]:[animation-play-state:paused]">
+    <div className="mx-auto max-w-7xl overflow-hidden rounded-[10px] border border-teal/30 bg-teal/[0.08] px-5 py-9 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:px-10 lg:px-14 lg:py-11 [&:hover_.brand-marquee]:[animation-play-state:paused]">
       <Reveal as="h2" className="max-w-3xl text-3xl font-extrabold leading-tight text-ink sm:text-4xl">
         Plugged into the tools <span className="text-teal-ink">your clients already use.</span>
       </Reveal>

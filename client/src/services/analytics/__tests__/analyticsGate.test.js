@@ -32,7 +32,7 @@ describe('analyticsEnabled (production-host gate)', () => {
   it('is false on localhost and Vercel preview domains', () => {
     setHostname('localhost');
     expect(analyticsEnabled()).toBe(false);
-    setHostname('book-a-sloth-abc123-bookasloths-projects.vercel.app');
+    setHostname('meeticulous-abc123-meeticulous-projects.vercel.app');
     expect(analyticsEnabled()).toBe(false);
     setHostname('127.0.0.1');
     expect(analyticsEnabled()).toBe(false);

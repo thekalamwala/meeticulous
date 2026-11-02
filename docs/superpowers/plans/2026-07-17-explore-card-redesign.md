@@ -278,7 +278,7 @@ export default function ServiceCard({ service, rank }) {
           <img src={coverImage} alt={title} loading="lazy"
                className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-[1.03]" />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-4xl" aria-hidden="true">🦥</div>
+          <div className="flex h-full w-full items-center justify-center text-4xl" aria-hidden="true" />
         )}
 
         {badges.isNew && (

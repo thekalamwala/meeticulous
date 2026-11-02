@@ -4,7 +4,7 @@
 
 **Goal:** Replace the placeholder `client/src/pages/About.jsx` with a 12-section, story-driven About page that reuses the homepage design system, all content placeholder-grade and swappable round-2.
 
-**Architecture:** Approach B — `About.jsx` composes 12 focused components under `client/src/components/about/`. Reuse `components/home/Reveal.jsx`, `.btn`, section shell, `--c-*` palette, lucide icons, `sloth-float`/`sloth-draw` keyframes as-is. Lift-and-localize the Odometer counter and FAQ accordion patterns from `Home.jsx` (do NOT refactor Home). All copy/data centralized in `aboutContent.js`; placeholders carry `data-swap` markers.
+**Architecture:** Approach B — `About.jsx` composes 12 focused components under `client/src/components/about/`. Reuse `components/home/Reveal.jsx`, `.btn`, section shell, `--c-*` palette, lucide icons, `brand-float`/`brand-draw` keyframes as-is. Lift-and-localize the Odometer counter and FAQ accordion patterns from `Home.jsx` (do NOT refactor Home). All copy/data centralized in `aboutContent.js`; placeholders carry `data-swap` markers.
 
 **Tech Stack:** React 18 + Vite, Tailwind, Framer Motion v12.40, lucide-react, Vitest + @testing-library/react. No new dependencies.
 
@@ -368,7 +368,7 @@ export default function StatStrip() {
 **Files:**
 - Create: `client/src/components/about/AboutHero.jsx`
 
-- [ ] **Step 1: Implement.** Warm-canvas 2-col hero. Reuse homepage CTA target (inspect Home hero CTA for the exact `to`). Floating placeholder cards with `sloth-float`.
+- [ ] **Step 1: Implement.** Warm-canvas 2-col hero. Reuse homepage CTA target (inspect Home hero CTA for the exact `to`). Floating placeholder cards with `brand-float`.
 
 ```jsx
 import { Link } from "react-router-dom";
@@ -394,9 +394,9 @@ export default function AboutHero() {
           </Reveal>
         </div>
         <div className="relative hidden h-80 lg:block" aria-hidden="true">
-          <Placeholder swap="hero-main" label="Hero" className="absolute inset-6 sloth-float--slow" />
-          <Placeholder swap="hero-card-1" label="Paid" className="sloth-float absolute left-0 top-4 h-24 w-40 shadow-[var(--shadow-hard-1)]" />
-          <Placeholder swap="hero-card-2" label="Booked" className="sloth-float--mid absolute bottom-2 right-0 h-24 w-44 shadow-[var(--shadow-hard-1)]" />
+          <Placeholder swap="hero-main" label="Hero" className="absolute inset-6 brand-float--slow" />
+          <Placeholder swap="hero-card-1" label="Paid" className="brand-float absolute left-0 top-4 h-24 w-40 shadow-[var(--shadow-hard-1)]" />
+          <Placeholder swap="hero-card-2" label="Booked" className="brand-float--mid absolute bottom-2 right-0 h-24 w-44 shadow-[var(--shadow-hard-1)]" />
         </div>
       </div>
     </section>

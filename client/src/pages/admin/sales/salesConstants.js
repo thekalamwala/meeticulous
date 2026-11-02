@@ -4,19 +4,19 @@
 
 // ── Boards (column order = array order) ───────────────────────────────────────
 export const PRESALE   = ['new', 'contacted', 'replied', 'qualified', 'demo'];
-export const RELATIONS = ['paid', 'activated', 'won', 'sloth'];                  // Subscribed · Onboarded · Won · The Sloth
-export const MARKETING = ['sloth', 'retained', 'ambassador', 'enterprised', 'champion']; // sloth = shared handoff
+export const RELATIONS = ['paid', 'activated', 'won', 'customer'];                  // Subscribed · Onboarded · Won · Customer
+export const MARKETING = ['customer', 'retained', 'ambassador', 'enterprised', 'champion']; // customer = shared handoff
 export const EXIT      = ['not_reachable', 'not_interested', 'disqualified', 'lost', 'churned'];
 
 // The acquisition→success spine (reporting funnel). Kept as FUNNEL for importers.
-export const FUNNEL = ['new', 'contacted', 'replied', 'qualified', 'demo', 'paid', 'activated', 'won', 'sloth'];
+export const FUNNEL = ['new', 'contacted', 'replied', 'qualified', 'demo', 'paid', 'activated', 'won', 'customer'];
 export const ALL_STATUSES = [...new Set([...PRESALE, ...RELATIONS, ...MARKETING, ...EXIT, 'do_not_contact'])];
 
 // Display labels. DB keys are kept; we only relabel for the UI — paid→"Subscribed",
 // activated→"Onboarded", replied→"Responded" — so the live leads never need a rename.
 export const STATUS_LABEL = {
   new: 'New', contacted: 'Contacted', replied: 'Responded', qualified: 'Qualified', demo: 'Demo',
-  paid: 'Subscribed', activated: 'Onboarded', won: 'Won', sloth: 'The Sloth',
+  paid: 'Subscribed', activated: 'Onboarded', won: 'Won', customer: 'Customer',
   retained: 'Retained', ambassador: 'Ambassador', enterprised: 'Enterprised', champion: 'Champion',
   not_reachable: 'Not Reachable', not_interested: 'Not Interested', disqualified: 'Disqualified',
   lost: 'Lost', churned: 'Churned', do_not_contact: 'Do Not Contact', list: 'List',
@@ -24,17 +24,17 @@ export const STATUS_LABEL = {
 
 export const STATUS_TONE = {
   new: 'neutral', contacted: 'info', replied: 'info', qualified: 'warn', demo: 'warn',
-  paid: 'ok', activated: 'ok', won: 'ok', sloth: 'ok',
+  paid: 'ok', activated: 'ok', won: 'ok', customer: 'ok',
   retained: 'ok', ambassador: 'ok', enterprised: 'ok', champion: 'ok',
   not_reachable: 'danger', not_interested: 'danger', disqualified: 'danger', lost: 'danger', churned: 'danger',
   do_not_contact: 'danger', list: 'neutral',
 };
 
 // Advancement order (parity with server RANK). Terminals + dnc = 0.
-export const RANK = { new: 1, contacted: 2, replied: 3, qualified: 4, demo: 5, paid: 6, activated: 7, won: 8, sloth: 9, retained: 10, ambassador: 11, enterprised: 12, champion: 13, list: 0 };
+export const RANK = { new: 1, contacted: 2, replied: 3, qualified: 4, demo: 5, paid: 6, activated: 7, won: 8, customer: 9, retained: 10, ambassador: 11, enterprised: 12, champion: 13, list: 0 };
 [...EXIT, 'do_not_contact'].forEach((s) => { RANK[s] = 0; });
 
-export const MONEY = new Set(['paid', 'activated', 'won', 'sloth', 'retained', 'ambassador', 'enterprised', 'champion']);
+export const MONEY = new Set(['paid', 'activated', 'won', 'customer', 'retained', 'ambassador', 'enterprised', 'champion']);
 export const TERMINAL = new Set(EXIT);
 
 // A manual move needs a reason when it's backward or an exit — mirrors the server
@@ -51,11 +51,11 @@ export function needsReason(from, to) {
 // The four boards for the pipeline switcher. A column can DISPLAY more than one
 // status: `key` is the drop target + label, `statuses` is what it gathers. This is
 // how Presale's Contacted absorbs `replied` (a "Responded" signal, not its own
-// column) and how the shared handoff columns (`paid` = Subscribed, `sloth` = The
-// Sloth) appear as the tail of one board and the head of the next.
+// column) and how the shared handoff columns (`paid` = Subscribed, `customer` = Customer;
+// the DB status key is legacy and unchanged) appear as the tail of one board and the head of the next.
 //   Presale:   New · Contacted(+Responded) · Qualified · Demo · Subscribed↗
-//   Relations: ↗Subscribed · Onboarded · Won · The Sloth↗
-//   Marketing: ↗The Sloth · Retained · Ambassador · Enterprised · Champion
+//   Relations: ↗Subscribed · Onboarded · Won · Customer↗
+//   Marketing: ↗Customer · Retained · Ambassador · Enterprised · Champion
 //   Exit:      Not Reachable · Not Interested · Disqualified · Lost · Churned
 const col = (key, statuses = [key], handoff = false) => ({ key, label: STATUS_LABEL[key], statuses, handoff });
 export const BOARDS = [
@@ -63,10 +63,10 @@ export const BOARDS = [
     col('new'), col('contacted', ['contacted', 'replied']), col('qualified'), col('demo'), col('paid', ['paid'], true),
   ] },
   { key: 'relations', label: 'Relations', owner: 'Relations', accent: '#0C9E70', columns: [
-    col('paid', ['paid'], true), col('activated'), col('won'), col('sloth', ['sloth'], true),
+    col('paid', ['paid'], true), col('activated'), col('won'), col('customer', ['customer'], true),
   ] },
   { key: 'marketing', label: 'Marketing', owner: 'Marketing', accent: '#7048E8', columns: [
-    col('sloth', ['sloth'], true), col('retained'), col('ambassador'), col('enterprised'), col('champion'),
+    col('customer', ['customer'], true), col('retained'), col('ambassador'), col('enterprised'), col('champion'),
   ] },
   { key: 'exit',      label: 'Exit',      owner: 'Any',       accent: '#D6303A', columns: [
     col('not_reachable'), col('not_interested'), col('disqualified'), col('lost'), col('churned'),
@@ -76,7 +76,7 @@ export const BOARDS = [
 export const pipelineOf = (status) => {
   if (PRESALE.includes(status)) return 'presale';
   if (['paid', 'activated', 'won'].includes(status)) return 'relations';
-  if (['sloth', 'retained', 'ambassador', 'enterprised', 'champion'].includes(status)) return 'marketing';
+  if (['customer', 'retained', 'ambassador', 'enterprised', 'champion'].includes(status)) return 'marketing';
   return 'exit';
 };
 
@@ -117,7 +117,7 @@ export function leadScore(lead) {
   if (!lead) return { score: 0, temp: 'cold' };
   const STAGE = {
     new: 5, contacted: 20, replied: 45, qualified: 60, demo: 70,
-    paid: 90, activated: 92, won: 95, sloth: 98, retained: 98, ambassador: 99, enterprised: 99, champion: 100,
+    paid: 90, activated: 92, won: 95, customer: 98, retained: 98, ambassador: 99, enterprised: 99, champion: 100,
     lost: 0, churned: 0, not_reachable: 0, not_interested: 0, disqualified: 0, do_not_contact: 0,
   };
   let s = STAGE[lead.status] ?? 10;

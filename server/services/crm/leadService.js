@@ -96,7 +96,7 @@ async function upsertLead(patch = {}, { source, createdBy = '', attribution, met
   // Meta CRM Lead offline event (action_source system_generated, event_source crm).
   // Matched on hashed em/ph; lead_id added once Facebook Lead Ads are captured.
   // Fire-and-forget — CRM capture must never break on an analytics hiccup.
-  // skipMetaLead defers the event (e.g. the /be-a-sloth form fires it only after
+  // skipMetaLead defers the event (e.g. the Book-a-Demo form fires it only after
   // the phone is OTP-verified, so Meta optimizes toward quality leads).
   if (!skipMetaLead) {
     try {
@@ -214,7 +214,7 @@ async function recordAccountEvent({ profileId, type, title, meta = {}, promoteTo
 
 /**
  * Real-time backstop: resolve a linked host's lead to the most-advanced status its
- * account has earned (Subscribed → Onboarded → Won → Sloth → Marketing) and apply
+ * account has earned (Subscribed → Onboarded → Won → ROI → Marketing) and apply
  * it. Runs the SAME pure resolver the 15-min engine uses, so a hook and the cron
  * can never disagree. Never throws — a CRM write must not break a payment/booking.
  *
@@ -243,7 +243,7 @@ async function recomputeFromAccount(profileId) {
 const DEAD_BOOKING = new Set(['cancelled', 'no_show', 'refunded']);
 
 // Host GROSS booking revenue (customer_total) on non-dead paid bookings, in paise —
-// what the host took payment for. This is the number the Sloth ROI gate compares to
+// what the host took payment for. This is the number the ROI gate compares to
 // 2× their plan price (NOT the platform fee, which is our cut).
 function grossEarningsPaise(bookings = []) {
   return (bookings || [])

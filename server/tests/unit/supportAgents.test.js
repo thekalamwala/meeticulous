@@ -3,8 +3,8 @@
 const { personaFor, introMessage, FALLBACK } = require('../../config/supportAgents');
 
 test('maps a known admin email to its persona (case/space-insensitive)', () => {
-  expect(personaFor('tithi@bookasloth.in')).toBe('Tithi');
-  expect(personaFor('  Tithi@BookASloth.in ')).toBe('Tithi');
+  expect(personaFor('tithi@meeticulous.com')).toBe('Tithi');
+  expect(personaFor('  Tithi@meeticulous.com ')).toBe('Tithi');
 });
 
 test('unmapped or empty email falls back to a safe generic name (never leaks the email)', () => {
@@ -15,24 +15,24 @@ test('unmapped or empty email falls back to a safe generic name (never leaks the
 });
 
 test('intro greets by first name when known, generically otherwise', () => {
-  expect(introMessage('Tithi', 'Rahul')).toMatch(/^Hi Rahul — I'm Tithi from the Book A Sloth support team\./);
-  expect(introMessage('Tithi', null)).toMatch(/^Hi — I'm Tithi from the Book A Sloth support team\./);
+  expect(introMessage('Tithi', 'Rahul')).toMatch(/^Hi Rahul — I'm Tithi from the Meeticulous support team\./);
+  expect(introMessage('Tithi', null)).toMatch(/^Hi — I'm Tithi from the Meeticulous support team\./);
 });
 
-test('founder logs in as bookasloth@gmail.com and appears as Shubham', () => {
-  expect(personaFor('bookasloth@gmail.com')).toBe('Shubham');
+test('founder logs in as sndatarkar@gmail.com and appears as Shubham', () => {
+  expect(personaFor('sndatarkar@gmail.com')).toBe('Shubham');
 });
 
 test('a titled persona introduces by role, not "from the support team"', () => {
   const intro = introMessage('Shubham', 'Rahul');
-  expect(intro).toBe("Hi Rahul — I'm Shubham, Founder & Engineer at Book A Sloth. "
+  expect(intro).toBe("Hi Rahul — I'm Shubham, Founder & Engineer at Meeticulous. "
     + "Give me a moment to read your messages and I'll help you right away.");
   expect(intro).not.toContain('support team');
 });
 
 test('the generic fallback never doubles the name ("Support Team from the ... support team")', () => {
   const intro = introMessage(FALLBACK, 'Rahul');
-  expect(intro).toBe("Hi Rahul — I'm from the Book A Sloth support team. "
+  expect(intro).toBe("Hi Rahul — I'm from the Meeticulous support team. "
     + "Give me a moment to read your messages and I'll help you right away.");
   expect(intro).not.toContain('Support Team from');
 });

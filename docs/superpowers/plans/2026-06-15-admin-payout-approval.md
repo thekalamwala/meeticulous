@@ -781,8 +781,8 @@ Expected: all green (includes AdminPayouts).
 
 - [ ] **Step 3: Manual smoke (requires admin login — cannot be automated)**
 
-The admin UI is gated by `/hello-sloth` login (finance or super account). Preview tools cannot reach it without creds, so the implementer hands this to the user:
-1. Log in at `/hello-sloth`, go to `/admin/finance/payouts`.
+The admin UI is gated by `/backstage` login (finance or super account). Preview tools cannot reach it without creds, so the implementer hands this to the user:
+1. Log in at `/backstage`, go to `/admin/finance/payouts`.
 2. Create a test `payout_requests` row (vendor requests a payout, or insert one via SQL) → it appears under Pending.
 3. Approve → moves to Approved tab.
 4. Mark Paid with a reference → moves to Paid; verify a `SETTLEMENT` journal entry exists:

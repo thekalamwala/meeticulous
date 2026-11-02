@@ -1,24 +1,31 @@
-import { Check, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
+import ConfirmSheet from '../../components/dashboard/ui/ConfirmSheet';
 
-// Shared top stepper for the 4 host-onboarding screens. Named nodes on sm+,
-// a compact "Step N of 4" + segmented track on mobile. `current` is 1-indexed.
-const STEPS = [
-  { n: 1, label: 'Claim URL' },
-  { n: 2, label: 'Category' },
-  { n: 3, label: 'Profile' },
-  { n: 4, label: 'Go live' },
-];
+// Shared top bar for the 3 host-onboarding screens. `current` is 1-indexed
+// (1 = Your page, 2 = First service, 3 = Live).
+//
+// Endowed progress: Google sign-in is real work already done, so it renders as
+// the first, already-filled segment — the host starts ~25% in, not at zero.
+const STEPS = ['Your page', 'First service', 'Live'];
+const HINT = {
+  1: 'Signed in with Google. 2 quick steps left.',
+  2: 'One step from bookable.',
+  3: 'All set',
+};
 
-// Truthful right-rail hint per step — no "almost there" on step 1.
-const HINT = { 1: 'Getting started', 2: 'Halfway there', 3: 'Almost there', 4: 'Last step' };
+export const Wordmark = ({ className = '' }) => (
+  <span className={`inline-flex select-none items-center gap-1.5 font-heading text-lg font-extrabold tracking-tight text-ink ${className}`}>
+    Meeticulous<span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
+  </span>
+);
 
 const OnboardingStepper = ({ current }) => {
   const step = Math.min(Math.max(current, 1), STEPS.length);
-  const percent = Math.round((step / STEPS.length) * 100);
+  const label = step === 3 ? 'Done · You’re live' : `Step ${step} of 2 · ${STEPS[step - 1]}`;
 
   // Exit door: reverses the in-progress hosting upgrade so a guest who opened
   // onboarding and changed their mind isn't left stuck as a half-host (which
@@ -27,9 +34,9 @@ const OnboardingStepper = ({ current }) => {
   const navigate = useNavigate();
   // Tolerate a missing AuthProvider: the step-page unit tests render the stepper
   // bare (no context), and this is presentational chrome — never crash the whole
-  // onboarding screen just because the exit door can't wire up. `?.` keeps the
-  // button inert in that case; in the real app the provider is always present.
+  // onboarding screen just because the exit door can't wire up.
   const { cancelHosting } = useAuth() || {};
+  const [confirm, setConfirm] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const exitHosting = async () => {
     if (leaving || !cancelHosting) return;
@@ -44,96 +51,51 @@ const OnboardingStepper = ({ current }) => {
   };
 
   return (
-    <div className="sticky top-0 z-20 border-b border-gray-200 bg-white/95 pt-[env(safe-area-inset-top)] backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:py-3.5">
-        {/* Brandmark */}
-        <div className="hidden sm:flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-white select-none">
-          S
-        </div>
+    <div className="sticky top-0 z-30 border-b border-black/5 bg-white/90 pt-[env(safe-area-inset-top)] backdrop-blur">
+      <div className="mx-auto flex max-w-6xl items-center gap-4 px-5 py-3 sm:gap-6 sm:px-8">
+        <Wordmark className="hidden sm:inline-flex" />
 
-        {/* ── Desktop: named nodes ── */}
-        <ol className="hidden sm:flex flex-1 items-center">
-          {STEPS.map(({ n, label }, i) => {
-            const done = n < step;
-            const active = n === step;
-            return (
-              <li key={n} className="flex flex-1 items-center last:flex-none">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold transition ${
-                      done
-                        ? 'bg-primary text-white'
-                        : active
-                        ? 'bg-primary text-white ring-4 ring-primary-light'
-                        : 'border border-gray-300 bg-white text-gray-400'
-                    }`}
-                  >
-                    {done ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : n}
-                  </span>
-                  <span
-                    className={`text-sm font-semibold whitespace-nowrap ${
-                      active ? 'text-gray-900' : done ? 'text-gray-600' : 'text-gray-400'
-                    }`}
-                  >
-                    {label}
-                  </span>
-                </div>
-                {i < STEPS.length - 1 && (
-                  <span className="mx-3 h-px flex-1 bg-gray-200">
-                    <span
-                      className={`block h-px bg-primary transition-all duration-300 ${done ? 'w-full' : 'w-0'}`}
-                    />
-                  </span>
-                )}
-              </li>
-            );
-          })}
-        </ol>
-
-        {/* ── Mobile: compact label + segmented track ── */}
-        <div className="flex-1 sm:hidden">
-          <div className="mb-1.5 flex items-center justify-between">
-            <p className="text-sm font-semibold text-gray-900">
-              {STEPS[step - 1].label}
-            </p>
-            <p className="text-xs font-medium text-gray-500">Step {step} of {STEPS.length}</p>
+        <div className="min-w-0 flex-1">
+          <div className="mb-1.5 flex items-center justify-between gap-3 text-xs">
+            <span className="font-semibold text-ink">{label}</span>
+            <span className="hidden text-muted sm:inline">{HINT[step]}</span>
           </div>
-          <div className="flex gap-1.5">
-            {STEPS.map(({ n }) => (
-              <span key={n} className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-200">
-                <span className={`block h-full rounded-full bg-primary ${n <= step ? 'w-full' : 'w-0'}`} />
+          <div className="flex gap-1.5" aria-hidden="true">
+            {/* Segment 0 = Google (always done), then one per step. */}
+            {[0, 1, 2, 3].map((i) => (
+              <span key={i} className="h-1.5 flex-1 overflow-hidden rounded-full bg-black/10">
+                <span
+                  className={`block h-full rounded-full bg-primary transition-all duration-500 ease-out ${
+                    i < step || (step === 3 && i === 3) ? 'w-full' : 'w-0'
+                  }`}
+                />
               </span>
             ))}
           </div>
         </div>
 
-        {/* Right rail — progress readout (desktop only) */}
-        <div className="hidden sm:flex shrink-0 flex-col items-end gap-1">
-          <span className="text-xs font-medium text-gray-500">{HINT[step]}</span>
-          <div className="flex items-center gap-2">
-            <span className="h-1.5 w-24 overflow-hidden rounded-full bg-gray-200">
-              <span
-                className="block h-full rounded-full bg-primary transition-all duration-300"
-                style={{ width: `${percent}%` }}
-              />
-            </span>
-            <span className="text-sm font-bold tabular-nums text-gray-900">{percent}%</span>
-          </div>
-        </div>
-
-        {/* Exit door — leave onboarding and go back to browsing as a guest.
-            Reverses the hosting upgrade so the account isn't trapped as a half-host. */}
-        <button
-          type="button"
-          onClick={exitHosting}
-          disabled={leaving}
-          title="Exit — keep browsing as a guest"
-          className="flex shrink-0 items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:opacity-50"
-        >
-          <X size={15} />
-          <span className="hidden sm:inline">{leaving ? 'Exiting…' : 'Exit'}</span>
-        </button>
+        {step < 3 && (
+          <button
+            type="button"
+            onClick={() => setConfirm(true)}
+            disabled={leaving}
+            className="flex min-h-[40px] shrink-0 items-center gap-1 rounded-[6px] px-2 text-xs font-medium text-muted transition-colors hover:bg-sand hover:text-ink disabled:opacity-50"
+          >
+            <X size={15} /> {leaving ? 'Exiting…' : 'Exit'}
+          </button>
+        )}
       </div>
+
+      <ConfirmSheet
+        open={confirm}
+        title="Stop setting up?"
+        message="You can come back anytime and pick up where you left off. You’ll keep browsing as a guest."
+        confirmLabel="Exit setup"
+        cancelLabel="Keep going"
+        busy={leaving}
+        onConfirm={exitHosting}
+        onClose={() => setConfirm(false)}
+      />
     </div>
   );
 };

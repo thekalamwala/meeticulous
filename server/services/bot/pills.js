@@ -63,7 +63,7 @@ async function llmPills({ question, answer } = {}) {
     const resp = await client.messages.create({
       model: anthropicClient.MODELS.generate,
       max_tokens: 128,
-      system: 'Pick up to 3 pill keys that are the most useful next actions for this Book A Sloth support answer. Only choose from: book, pricing, how, payments, host, ticket.',
+      system: 'Pick up to 3 pill keys that are the most useful next actions for this Meeticulous support answer. Only choose from: book, pricing, how, payments, host, ticket.',
       tools: [TOOL],
       tool_choice: { type: 'tool', name: 'emit_pills' },
       messages: [

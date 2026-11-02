@@ -68,7 +68,7 @@ async function sendBookingConfirmation({ bookingId, invoiceRef = null }) {
           decryptToken(host.google_refresh_token),
           {
             title: `${svc.title || 'Service'} — ${booking.guest_name || 'Guest'}`,
-            description: `Booked via Book A Sloth\n${booking.notes || ''}`,
+            description: `Booked via Meeticulous\n${booking.notes || ''}`,
             startTime: startTime.toISOString(),
             endTime: endTime.toISOString(),
             timezone: tz,
@@ -106,7 +106,9 @@ async function sendBookingConfirmation({ bookingId, invoiceRef = null }) {
     vendor_phone: host.phone || '',
     user_name: booking.guest_name || 'Customer',
     booking_id: booking.id,
-    manage_url: `${process.env.CLIENT_URL || 'https://bookasloth.com'}/manage-booking/${manageBookingToken.sign(booking.id)}`,
+    // Short human reference shown above the email title ("Booking #1A2B3C4D").
+    booking_ref: String(booking.id || '').slice(0, 8).toUpperCase(),
+    manage_url: `${process.env.CLIENT_URL || 'https://meeticulous.com'}/manage-booking/${manageBookingToken.sign(booking.id)}`,
     location: isOnline
       ? (meetingLink ? 'Online (link in your dashboard)' : 'Online')
       : (host.location || 'In person'),
@@ -120,7 +122,7 @@ async function sendBookingConfirmation({ bookingId, invoiceRef = null }) {
     booking_year: d.toLocaleDateString('en-IN', { timeZone: tz, year: 'numeric' }),
     invoice_url: (invoiceRef && process.env.API_URL)
       ? `${process.env.API_URL.replace(/\/$/, '')}/api/invoices/${invoiceRef.id}?token=${encodeURIComponent(invoiceRef.token)}`
-      : `${process.env.CLIENT_URL || 'https://bookasloth.com'}/user/my-bookings`,
+      : `${process.env.CLIENT_URL || 'https://meeticulous.com'}/user/my-bookings`,
   };
   // AiSensy "Booking Confirmed" templates take exactly 4 body variables (no link):
   //   Customer: {{1}} guest, {{2}} service, {{3}} host, {{4}} date/time

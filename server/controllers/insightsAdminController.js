@@ -215,10 +215,10 @@ const getActivationFunnel = async (req, res) => {
 // before flipping the real events on. Sends ONLY to the given recipient — no
 // host query, never touches the cron. Admin-gated (settings.manage).
 const NUDGE_TEST = [
-  { event: 'HOST_ADD_SERVICE_NUDGE',    campaign: 'Add Your First Service - Vendor',  link: 'https://bookasloth.com/dashboard' },
-  { event: 'HOST_SHARE_LINK_NUDGE',     campaign: 'Share Your Booking Link - Vendor', link: 'https://bookasloth.com/dashboard' },
-  { event: 'HOST_FIRST_BOOKING_NUDGE',  campaign: 'Get Your First Booking - Vendor',  link: 'https://bookasloth.com/dashboard' },
-  { event: 'HOST_PAYOUT_WAITING_NUDGE', campaign: 'Payout Waiting - Vendor',          link: 'https://bookasloth.com/dashboard' },
+  { event: 'HOST_ADD_SERVICE_NUDGE',    campaign: 'Add Your First Service - Vendor',  link: 'https://meeticulous.com/dashboard' },
+  { event: 'HOST_SHARE_LINK_NUDGE',     campaign: 'Share Your Booking Link - Vendor', link: 'https://meeticulous.com/dashboard' },
+  { event: 'HOST_FIRST_BOOKING_NUDGE',  campaign: 'Get Your First Booking - Vendor',  link: 'https://meeticulous.com/dashboard' },
+  { event: 'HOST_PAYOUT_WAITING_NUDGE', campaign: 'Payout Waiting - Vendor',          link: 'https://meeticulous.com/dashboard' },
 ];
 
 const testSendActivationNudges = async (req, res) => {

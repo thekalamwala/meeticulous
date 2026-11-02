@@ -96,33 +96,33 @@ describe('adminAlert', () => {
 
   test('sends one email per recipient for a comma-separated list', async () => {
     const { adminAlert, sendEmail } = loadFresh({
-      ADMIN_ALERT_EMAIL: 'bolt@bookasloth.in, sndatarkar@gmail.com',
+      ADMIN_ALERT_EMAIL: 'bolt@meeticulous.com, sndatarkar@gmail.com',
     });
     const r = await adminAlert({ key: 'multi', subject: 'New host' });
 
     expect(r).toEqual({ sent: true });
     expect(sendEmail).toHaveBeenCalledTimes(2);
     expect(sendEmail.mock.calls.map((c) => c[0].to)).toEqual(
-      ['bolt@bookasloth.in', 'sndatarkar@gmail.com']);
+      ['bolt@meeticulous.com', 'sndatarkar@gmail.com']);
   });
 
   test('renders a Review button when a link is passed', async () => {
     const { adminAlert, sendEmail } = loadFresh({ ADMIN_ALERT_EMAIL: 'founder@example.com' });
-    await adminAlert({ key: 'lnk', subject: 'X', link: 'https://bookasloth.com/admin/kyc/pending' });
+    await adminAlert({ key: 'lnk', subject: 'X', link: 'https://meeticulous.com/admin/kyc/pending' });
 
     const html = sendEmail.mock.calls[0][0].html;
-    expect(html).toContain('href="https://bookasloth.com/admin/kyc/pending"');
+    expect(html).toContain('href="https://meeticulous.com/admin/kyc/pending"');
     expect(html).toContain('Open in admin');
   });
 
   test('sends a text/plain twin alongside the html (inbox-placement signal)', async () => {
     const { adminAlert, sendEmail } = loadFresh({ ADMIN_ALERT_EMAIL: 'founder@example.com' });
-    await adminAlert({ key: 'txt', subject: 'New subscription', lines: ['Eureka', 'Amount: ₹270'], link: 'https://bookasloth.com/admin/host360/x' });
+    await adminAlert({ key: 'txt', subject: 'New subscription', lines: ['Eureka', 'Amount: ₹270'], link: 'https://meeticulous.com/admin/host360/x' });
 
     const arg = sendEmail.mock.calls[0][0];
     expect(arg.text).toContain('New subscription');
     expect(arg.text).toContain('Eureka');
-    expect(arg.text).toContain('Open: https://bookasloth.com/admin/host360/x');
+    expect(arg.text).toContain('Open: https://meeticulous.com/admin/host360/x');
     expect(arg.text).not.toContain('<'); // plain text, no markup
   });
 

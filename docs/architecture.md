@@ -170,8 +170,8 @@ Vendor dashboard (/dashboard/*):
   /availability  /earnings  /payments/payouts  /payments/transactions
   /profile  /products  /upgrade
 
-Admin (/admin/* + /hello-sloth + /super-dashboard):
-  /hello-sloth          Admin login
+Admin (/admin/* + /backstage + /super-dashboard):
+  /backstage          Admin login
   /super-dashboard      Operations center
   /admin/bookings       Bookings
   /admin/users          Users

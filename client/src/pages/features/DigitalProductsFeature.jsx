@@ -620,7 +620,7 @@ export default function DigitalProductsFeature() {
             <Link to="/pricing" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#EEF0FF] hover:no-underline hover:opacity-80">
               See pricing <ArrowRight size={15} />
             </Link>
-            <Link to="/demo" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#EEF0FF]/80 hover:no-underline hover:opacity-80">
+            <Link to="/contact" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#EEF0FF]/80 hover:no-underline hover:opacity-80">
               See a live host page <ArrowRight size={15} />
             </Link>
           </Reveal>

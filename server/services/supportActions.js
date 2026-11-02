@@ -67,7 +67,7 @@ async function runAction(action, identity) {
       .from('invoices').select('id, access_token, invoice_number')
       .eq('source_type', 'booking').eq('source_id', b.id).maybeSingle();
     if (!inv) return { ok: false, message: `I found ${label}, but its invoice isn't generated yet. If the booking is paid, a teammate can sort this — want a human?` };
-    const base = (process.env.API_URL || 'https://book-a-sloth.onrender.com').replace(/\/$/, '');
+    const base = (process.env.API_URL || 'https://meeticulous-api.onrender.com').replace(/\/$/, '');
     const url = `${base}/api/invoices/${inv.id}?token=${encodeURIComponent(inv.access_token)}`;
     await sendEmail({
       to: b.guest_email,

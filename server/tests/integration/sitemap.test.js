@@ -3,7 +3,7 @@
  * Root-mounted dynamic sitemap: index + children, pagination, content-type.
  * DB fetchers are mocked; the pure mappers + XML builders run for real.
  */
-process.env.SITE_URL = 'https://bookasloth.com';
+process.env.SITE_URL = 'https://meeticulous.com';
 
 jest.mock('../../config/supabase', () => ({ supabaseAdmin: {} }));
 jest.mock('../../services/sitemapService', () => {
@@ -46,11 +46,11 @@ describe('GET /sitemap.xml (index)', () => {
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toMatch(/application\/xml/);
     expect(res.text).toContain('<sitemapindex');
-    expect(res.text).toContain('https://bookasloth.com/sitemap-pages.xml');
-    expect(res.text).toContain('https://bookasloth.com/sitemap-hosts-1.xml');
-    expect(res.text).toContain('https://bookasloth.com/sitemap-services-1.xml');
-    expect(res.text).toContain('https://bookasloth.com/sitemap-professions.xml');
-    expect(res.text).toContain('https://bookasloth.com/sitemap-blog.xml');
+    expect(res.text).toContain('https://meeticulous.com/sitemap-pages.xml');
+    expect(res.text).toContain('https://meeticulous.com/sitemap-hosts-1.xml');
+    expect(res.text).toContain('https://meeticulous.com/sitemap-services-1.xml');
+    expect(res.text).toContain('https://meeticulous.com/sitemap-professions.xml');
+    expect(res.text).toContain('https://meeticulous.com/sitemap-blog.xml');
   });
 });
 
@@ -59,7 +59,7 @@ describe('child sitemaps', () => {
     const res = await request(app).get('/sitemap-blog.xml');
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toMatch(/application\/xml/);
-    expect(res.text).toContain('<loc>https://bookasloth.com/blog/zero-commission-bet</loc>');
+    expect(res.text).toContain('<loc>https://meeticulous.com/blog/zero-commission-bet</loc>');
     expect(res.text).toContain('<lastmod>2026-06-28</lastmod>');
   });
 
@@ -67,33 +67,33 @@ describe('child sitemaps', () => {
     const res = await request(app).get('/sitemap-pages.xml');
     expect(res.status).toBe(200);
     expect(res.text).toContain('<urlset');
-    expect(res.text).toContain('<loc>https://bookasloth.com/</loc>');
+    expect(res.text).toContain('<loc>https://meeticulous.com/</loc>');
   });
 
   test('professions sitemap lists /services plus one URL per profession', async () => {
     const res = await request(app).get('/sitemap-professions.xml');
     expect(res.status).toBe(200);
     expect(res.text).toContain('<urlset');
-    expect(res.text).toContain('<loc>https://bookasloth.com/services</loc>');
-    expect(res.text).toContain('<loc>https://bookasloth.com/services/therapy</loc>');
+    expect(res.text).toContain('<loc>https://meeticulous.com/services</loc>');
+    expect(res.text).toContain('<loc>https://meeticulous.com/services/therapy</loc>');
   });
 
   test('hosts sitemap lists the verified host profile URL', async () => {
     const res = await request(app).get('/sitemap-hosts-1.xml');
     expect(res.status).toBe(200);
-    expect(res.text).toContain('<loc>https://bookasloth.com/john-doe</loc>');
+    expect(res.text).toContain('<loc>https://meeticulous.com/john-doe</loc>');
   });
 
   test('services sitemap lists the /username/slug URL', async () => {
     const res = await request(app).get('/sitemap-services-1.xml');
     expect(res.status).toBe(200);
-    expect(res.text).toContain('<loc>https://bookasloth.com/john-doe/business-consultation</loc>');
+    expect(res.text).toContain('<loc>https://meeticulous.com/john-doe/business-consultation</loc>');
   });
 
   test('the non-numbered alias resolves to page 1', async () => {
     const res = await request(app).get('/sitemap-hosts.xml');
     expect(res.status).toBe(200);
-    expect(res.text).toContain('<loc>https://bookasloth.com/john-doe</loc>');
+    expect(res.text).toContain('<loc>https://meeticulous.com/john-doe</loc>');
   });
 
   test('an out-of-range page is a 404', async () => {

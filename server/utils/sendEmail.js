@@ -30,7 +30,7 @@ const sendEmail = async ({ to, subject, html, text, attachments, fromName, fromE
     fromName: fromName || settings.from_name,
     fromEmail: fromEmail || settings.from_email,
     // Replies route to the only monitored inbox (bolt@) even when From is a persona.
-    replyTo: replyTo || settings.support_email || 'bolt@bookasloth.in',
+    replyTo: replyTo || settings.support_email || 'team@meeticulous.com',
   });
   // Preserve the old raw-SMTP behaviour: a failed send throws so inline callers
   // (contactController etc.) still return their 5xx; fire-and-forget callers

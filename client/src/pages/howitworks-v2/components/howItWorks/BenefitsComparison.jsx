@@ -12,7 +12,7 @@ const BenefitsComparison = () => {
         { icon: FolderX, title: 'Scattered customer details', desc: 'Client info lives across chats, calls, and notebooks.' }
     ];
 
-    const withSloth = [
+    const withMeeticulous = [
         { icon: Link2, title: 'One self-service booking link', desc: 'Customers pick a slot themselves—24/7, no messages needed.' },
         { icon: CalendarCheck2, title: 'Real-time availability', desc: 'Your live calendar is always up to date and accurate.' },
         { icon: BellRing, title: 'Automated reminders', desc: 'SMS and email reminders drastically cut no-shows.' },
@@ -75,7 +75,7 @@ const BenefitsComparison = () => {
                             <h3 className="benefit-head-title">With Meeticulous</h3>
                         </div>
                         <div className="benefit-items">
-                            {withSloth.map((item, index) => (
+                            {withMeeticulous.map((item, index) => (
                                 <div className="benefit-item" key={index}>
                                     <span className="benefit-item-icon">
                                         {React.createElement(item.icon, { className: 'w-5 h-5' })}

@@ -5,7 +5,7 @@ import Reveal from "./Reveal";
 
 /* ════════════════════════════════════════════════════════════
    LINE-DRAW ICON wrapper — strokes draw themselves on scroll-in
-   (CSS keyframe `sloth-draw` in index.css).
+   (CSS keyframe `brand-draw` in index.css).
    ════════════════════════════════════════════════════════════ */
 const LineIcon = ({ children, color = "#2A1416" }) => {
   const ref = useRef(null);
@@ -19,7 +19,7 @@ const LineIcon = ({ children, color = "#2A1416" }) => {
       strokeLinecap="round"
       strokeLinejoin="round"
       style={{ stroke: color }}
-      className={`sloth-draw h-9 w-9 ${inView ? "is-visible" : ""}`}
+      className={`brand-draw h-9 w-9 ${inView ? "is-visible" : ""}`}
     >
       {children}
     </svg>
@@ -33,7 +33,7 @@ const LineIcon = ({ children, color = "#2A1416" }) => {
 export const STEPS = [
   {
     title: "Share one link",
-    desc: "Your services, availability and pricing — all in one SlothPage. Send it once, let it work forever.",
+    desc: "Your services, availability and pricing — all on one booking page. Send it once, let it work forever.",
     chip: "Replaces 20+ DMs",
     color: "var(--c-blue)",
     draw: (

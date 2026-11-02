@@ -1,7 +1,7 @@
 /**
  * tests/unit/whatsappRemindersGrace.test.js
  *
- * WhatsApp booking reminders are a paid perk. Free (Sloth) hosts get them for a
+ * WhatsApp booking reminders are a paid perk. Free (Starter) hosts get them for a
  * grace window (their first 2 months, anchored no earlier than the scaling launch
  * so existing free hosts aren't cut off), then reminders fall back to email. Paid
  * plans always keep WhatsApp.

@@ -60,7 +60,7 @@ Consequence: `role='host'` is a **superset** — a host can also book. The singl
 - Keep the existing-account *block* itself (auth email uniqueness still holds); only the messaging/intent changes.
 
 ### D. Client
-- "Become a host" CTA where a logged-in guest can see it: guest [Dashboard](../../../client/src/pages/Dashboard.jsx) view (the existing "Want to offer services?" area) and `/be-a-sloth` when already logged in.
+- "Become a host" CTA where a logged-in guest can see it: guest [Dashboard](../../../client/src/pages/Dashboard.jsx) view (the existing "Want to offer services?" area) and `/become-a-host` when already logged in.
 - CTA → `activate()` API → on success re-`getMe()` and update AuthContext → `role==='host'` → ProtectedRoute drives onboarding.
 - New API fn in [client/src/services/api.js](../../../client/src/services/api.js): `activateHost = () => API.post('/host/activate')`.
 - AuthContext: add an `activateHost` helper that calls the API then refreshes the user.

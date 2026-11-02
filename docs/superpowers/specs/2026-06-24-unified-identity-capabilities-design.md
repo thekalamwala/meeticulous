@@ -81,7 +81,7 @@ To be enumerated exactly in the plan; known surfaces today:
 - **Server middleware:** `requireHost` (`middleware/authMiddleware.js`) — fail-closed host gate on `/api/host/*`, `/api/services`, etc.
 - **Auth login paths:** `login-phone` + `verify-otp-login` reject `role !== 'guest'`; `googleCallback` rejects `role !== 'host'` for vendor flow.
 - **Controllers:** any `req.user.role` / `profile.role` checks.
-- **Client guards:** `HostRoute`, `GuestRoute`, `roleRoutes.isHost`, `hostPathToGuestPath`; `Navbar`, `Dashboard`, `Login`, `CustomerProfile`, `BeASloth`, etc.
+- **Client guards:** `HostRoute`, `GuestRoute`, `roleRoutes.isHost`, `hostPathToGuestPath`; `Navbar`, `Dashboard`, `Login`, `CustomerProfile`, `BecomeAHost`, etc.
 - **Serialization:** `serializeProfile` returns `role` (keep returning it during shim phases; also return `is_host`).
 - **Admin:** user/provider list filters by `role`.
 - **RLS:** audit which policies (if any) reference `role`; most sensitive tables are service-role-only, so the dependency is expected to be mostly app-layer, not RLS — confirm during the plan.

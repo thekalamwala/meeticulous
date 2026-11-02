@@ -15,7 +15,7 @@ vi.mock('../../../services/api', () => ({
 
 // Markdown renders <Link>, so the widget must sit inside a router.
 const renderWidget = () => render(<BotWidget />, { wrapper: MemoryRouter });
-const open = () => fireEvent.click(screen.getByRole('button', { name: /open bolt support/i }));
+const open = () => fireEvent.click(screen.getByRole('button', { name: /open tithi support/i }));
 const ask = (text) => {
   fireEvent.change(screen.getByLabelText(/type your question/i), { target: { value: text } });
   fireEvent.click(screen.getByRole('button', { name: /^send$/i }));
@@ -26,13 +26,13 @@ beforeEach(() => vi.clearAllMocks());
 describe('BotWidget', () => {
   it('renders the launcher button', () => {
     renderWidget();
-    expect(screen.getByRole('button', { name: /open bolt support/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /open tithi support/i })).toBeInTheDocument();
   });
 
   it('shows the welcome screen with starter suggestions when opened', () => {
     renderWidget();
     open();
-    expect(screen.getByText(/hey, i'm bolt/i)).toBeInTheDocument();
+    expect(screen.getByText(/hey, i'm tithi/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /how do i book a service/i })).toBeInTheDocument();
   });
 

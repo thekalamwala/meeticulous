@@ -26,7 +26,7 @@ const JSON_LD = {
       url: "https://meeticulous.com",
       description:
         "Meeticulous is an online booking platform for creators, pros & bros: publish your services, take bookings, collect payment upfront and send reminders automatically.",
-      sameAs: ORG_SAME_AS,
+      ...(ORG_SAME_AS.length ? { sameAs: ORG_SAME_AS } : {}),
     },
     {
       "@type": "FAQPage",

@@ -4,7 +4,7 @@
 
 **Goal:** Replace the Home-only inline footer with one reusable `<Footer/>` component rendered globally on all public/marketing pages.
 
-**Architecture:** A presentational `Footer.jsx` whose content lives in module-scope config objects (drop-in for a future DB-driven Footer Builder). It is rendered once in `App.jsx`, gated by a `hideFooter` flag that mirrors the existing `hideNavbar` boundary (off on dashboard/admin/super-dashboard/vendor-register/lp/hello-sloth). The inline footer + `FOOTER_COLS` const are deleted from `Home.jsx`. On-page section links use full-navigation anchors (`<a href="/#pricing">`) so they scroll natively from any page — no JS scroll handler needed.
+**Architecture:** A presentational `Footer.jsx` whose content lives in module-scope config objects (drop-in for a future DB-driven Footer Builder). It is rendered once in `App.jsx`, gated by a `hideFooter` flag that mirrors the existing `hideNavbar` boundary (off on dashboard/admin/super-dashboard/vendor-register/lp/backstage). The inline footer + `FOOTER_COLS` const are deleted from `Home.jsx`. On-page section links use full-navigation anchors (`<a href="/#pricing">`) so they scroll natively from any page — no JS scroll handler needed.
 
 **Tech Stack:** React 18, react-router-dom v6 (`Link`), Tailwind CSS, Vitest + @testing-library/react (jsdom).
 
@@ -53,12 +53,12 @@ describe('<Footer>', () => {
     expect(screen.getByText(/Power up your/i)).toBeTruthy();
     expect(
       screen.getByRole('link', { name: "Let's Get Started" }).getAttribute('href'),
-    ).toBe('/be-a-sloth');
+    ).toBe('/become-a-host');
   });
 
   test('renders representative links from each column', () => {
     renderFooter();
-    expect(screen.getByRole('link', { name: 'Be a Host' }).getAttribute('href')).toBe('/be-a-sloth');
+    expect(screen.getByRole('link', { name: 'Be a Host' }).getAttribute('href')).toBe('/become-a-host');
     expect(screen.getByRole('link', { name: 'About' }).getAttribute('href')).toBe('/about');
     expect(screen.getByRole('link', { name: 'Help' }).getAttribute('href')).toBe('/help');
     expect(screen.getByRole('link', { name: 'Explore' }).getAttribute('href')).toBe('/explore');
@@ -106,7 +106,7 @@ Create `client/src/components/common/Footer.jsx`:
 ```jsx
 import { Link } from 'react-router-dom';
 
-const ROUTE_START = '/be-a-sloth';
+const ROUTE_START = '/become-a-host';
 const EMAIL = 'bolt@meeticulous.in';
 
 const COLUMNS = [
@@ -114,7 +114,7 @@ const COLUMNS = [
     { t: 'How it works', href: '/#how-it-works' },
     { t: 'Pricing', href: '/#pricing' },
     { t: 'FAQ', href: '/#faq' },
-    { t: 'Be a Host', href: '/be-a-sloth' },
+    { t: 'Be a Host', href: '/become-a-host' },
     { t: 'Explore', href: '/explore' },
   ] },
   { h: 'Company', links: [
@@ -288,7 +288,7 @@ Find the `hideNavbar` declaration (~line 165):
     location.pathname.startsWith('/super-dashboard') ||
     location.pathname.startsWith('/vendor-register') ||
     location.pathname.startsWith('/lp') ||
-    location.pathname === '/hello-sloth';
+    location.pathname === '/backstage';
 ```
 Add directly below it:
 ```jsx
@@ -323,7 +323,7 @@ const FOOTER_COLS = [
     { t: "How it works", href: "#how-it-works" },
     { t: "Pricing", href: "#pricing" },
     { t: "FAQ", href: "#faq" },
-    { t: "Be a Host", href: "/be-a-sloth" },
+    { t: "Be a Host", href: "/become-a-host" },
   ]},
   { h: "Company", links: [
     { t: "About", href: "/about" },
@@ -377,7 +377,7 @@ Start the dev server (`cd client && npm run dev`) and verify in the preview:
 2. `/about` — the same footer renders.
 3. Click footer **Pricing** from `/about` — it navigates to the Home page and scrolls to the pricing section.
 4. `/lp/calendly-alternative` — footer is **absent** (excluded route).
-5. `/hello-sloth` — footer is **absent** (excluded route).
+5. `/backstage` — footer is **absent** (excluded route).
 6. Narrow the viewport to ~375px — columns collapse to 2-up, the CTA band stacks, the social row wraps; nothing overflows.
 
 - [ ] **Step 9: Commit**
@@ -393,7 +393,7 @@ git commit -m "feat(footer): render Footer globally on public pages; drop inline
 
 - **Spec coverage:** reusable component (Task 1) ✓; global public-only render via `hideFooter` (Task 2 steps 1–3) ✓; remove inline Home footer + `FOOTER_COLS` (Task 2 steps 4–5) ✓; refined-A content — CTA, blurb, socials, 3 columns, trust, legal (Task 1 component) ✓; root-relative anchors (config uses `/#…`; verified by test + preview step 8.3) ✓; keep `bolt@meeticulous.in` ✓; 5 socials with aria-labels + safe external rels ✓; config-object shape for Phase-2 DB swap ✓. Phase 2 is intentionally out of scope.
 - **Placeholder scan:** no plan-instruction placeholders. The only `TODO` is a code comment for genuinely-pending business inputs (social handles + WhatsApp number) flagged in spec §12; tests do not assert those URL values, so they don't block the build.
-- **Type/name consistency:** `FLink`, `COLUMNS`, `SOCIALS`, `LEGAL`, `ROUTE_START`, `EMAIL`, `hideFooter` are used consistently across tasks. Test queries (`getByRole` exact names, `getByLabelText`) match the rendered markup. `ROUTE_START` value `/be-a-sloth` matches Home's constant.
+- **Type/name consistency:** `FLink`, `COLUMNS`, `SOCIALS`, `LEGAL`, `ROUTE_START`, `EMAIL`, `hideFooter` are used consistently across tasks. Test queries (`getByRole` exact names, `getByLabelText`) match the rendered markup. `ROUTE_START` value `/become-a-host` matches Home's constant.
 
 ---
 

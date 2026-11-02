@@ -21,7 +21,7 @@
 // in-app prompt on completion; no-shows never complete), reviewAdminController
 // (admin moderation hides from public reads) and HostProfile/ServiceDetail
 // (where reviews render). NO aggregate rating, average or review count for Book
-// A Sloth or any host, on the page or in JSON-LD. The hero card is a sample.
+// Meeticulous or any host, on the page or in JSON-LD. The hero card is a sample.
 // Testimonials are the real, consented quotes from data/testimonials.js; they
 // are hosts on Meeticulous in general, and the section says so.
 //

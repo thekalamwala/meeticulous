@@ -241,7 +241,7 @@ const AuthorLink = ({ name, className, style }) => (
 // Sits beside the article on lg+ and stays in view while reading (position:
 // sticky, offset clears the top-0 navbar). Hidden on mobile — the bottom CTA
 // band already covers small screens. "Create free account" reuses the vendor
-// Google OAuth flow (same as /be-a-sloth); "Book a demo" points at the live
+// Google OAuth flow (same as /become-a-host); "Book a demo" points at the live
 // /demo host page. Primary button takes the post's page (band) colour; text
 // flips dark/light off the theme so it stays readable on any category.
 const SidebarCta = ({ theme }) => {
@@ -270,7 +270,7 @@ const SidebarCta = ({ theme }) => {
         style={{ backgroundColor: theme.band, color: theme.light ? '#141416' : '#FFFFFF' }}>
         {loading ? 'Opening Google…' : 'Create free account'}
       </button>
-      <Link to="/demo"
+      <Link to="/contact"
         className="btn mt-2.5 flex w-full items-center justify-center rounded-[8px] py-3 text-sm font-semibold transition-colors hover:no-underline"
         style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: HEAD_TX }}>
         Book a demo

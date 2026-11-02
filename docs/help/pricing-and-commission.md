@@ -10,24 +10,24 @@ Full, current prices and limits are always on the [pricing](/pricing) page — t
 
 ## The plans
 
-- **Sloth** — free forever, no credit card, with real online payment collection included. A 5% commission applies per booking.
-- **Sloth Active** — a flat subscription that drops commission to 0% and adds the Client CRM, more automation and priority support.
+- **Starter** — free forever, no credit card, with real online payment collection included. A 5% commission applies per booking.
+- **Pro** — a flat subscription that drops commission to 0% and adds the Client CRM, more automation and priority support.
 
 ## How much does each plan cost?
 
-If you're wondering how much Meeticulous costs, or what Sloth Active comes to monthly or yearly — the current prices are listed on the [pricing](/pricing) page.
+If you're wondering how much Meeticulous costs, or what Pro comes to monthly or yearly — the current prices are listed on the [pricing](/pricing) page.
 
 Here's the shape of it:
 
-- **Sloth** costs nothing — it's free forever (a 5% per-booking commission applies).
-- **Sloth Active** is ₹399 a month or ₹3,599 a year, GST included — under ₹10 a day, and about 25% cheaper paid yearly.
+- **Starter** costs nothing — it's free forever (a 5% per-booking commission applies).
+- **Pro** is ₹399 a month or ₹3,599 a year, GST included — under ₹10 a day, and about 25% cheaper paid yearly.
 
 Prices can change and are set by Meeticulous, so check the [pricing](/pricing) page for the up-to-date figure.
 
 ## Commission
 
-- On **Sloth Active, commission is 0%** — you keep the full service price your client pays.
-- On the **free Sloth plan**, a 5% commission applies per booking. That's what funds a genuinely free tier instead of a limited trial — we only earn when you do.
+- On **Pro, commission is 0%** — you keep the full service price your client pays.
+- On the **free Starter plan**, a 5% commission applies per booking. That's what funds a genuinely free tier instead of a limited trial — we only earn when you do.
 
 The exact percentage and prices are on the [pricing](/pricing) page.
 

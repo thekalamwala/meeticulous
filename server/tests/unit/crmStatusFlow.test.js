@@ -16,7 +16,7 @@ function mockResolve(table, isCount) {
     case 'availability': return { count: 1, error: null };
     case 'bookings': return isCount
       ? { count: 6, error: null }                                                        // last-30d recency
-      : { data: [{ platform_fee_amount: 4000, status: null, created_at: '2026-08-01' }], error: null }; // ₹4000 fee (below sloth gate)
+      : { data: [{ platform_fee_amount: 4000, status: null, created_at: '2026-08-01' }], error: null }; // ₹4000 fee (below ROI gate)
     case 'subscription_payments': return { data: [{ total_charged: 3650, status: 'paid' }], error: null };
     case 'referrals': return { count: 0, error: null };
     default: return { data: null, count: 0, error: null };

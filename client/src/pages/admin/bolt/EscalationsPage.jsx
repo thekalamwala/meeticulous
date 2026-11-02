@@ -37,7 +37,7 @@ export default function EscalationsPage() {
         </select>
       </div>
       {loading ? <div className="space-y-2">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-16" />)}</div>
-        : escs.length === 0 ? <p className="text-sm adm-t3">No escalations — Bolt is handling everything.</p>
+        : escs.length === 0 ? <p className="text-sm adm-t3">No escalations — Tithi is handling everything.</p>
           : (
             <div className="space-y-2">
               {escs.map((e) => (

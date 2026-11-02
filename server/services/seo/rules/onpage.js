@@ -26,7 +26,7 @@ function check(p, ctx) {
   if (p.bodyCrawled !== false) {
     if (!p.h1 || p.h1.length === 0) push('onpage.missing_h1', {});
     else if (p.h1.length > 1) push('onpage.multiple_h1', { count: p.h1.length });
-    // A brand/section suffix in the title ("Heading | Book A Sloth") is correct SEO,
+    // A brand/section suffix in the title ("Heading | Meeticulous") is correct SEO,
     // not a mismatch — flag only when neither string contains the other (they're
     // about genuinely different things).
     if (p.title && p.h1 && p.h1.length === 1) {

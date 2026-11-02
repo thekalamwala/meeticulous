@@ -43,7 +43,7 @@ function onKycApproved({ userId, email, fullName, reviewNote } = {}) {
       emailData: {
         first_name: (fullName || '').split(' ')[0],
         review_note: reviewNote || 'Please review the requirements and resubmit.',
-        support_email: 'bolt@bookasloth.in',
+        support_email: 'team@meeticulous.com',
       },
       emailUser: { name: fullName, email },
       recipientUserId: userId,

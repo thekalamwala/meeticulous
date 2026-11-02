@@ -7,7 +7,7 @@ jest.mock('../../services/planService', () => ({
   isFreeSlug: (s) => ['free', 'starter', 'explorer', 'starter_legacy'].includes(String(s || '').toLowerCase()),
   // The renewal email reads the plan's display name straight from the row, so a
   // rename never leaves a stale label in a customer-facing send.
-  getPlan: jest.fn(async (slug) => ({ slug, name: slug === 'premium' ? 'Sloth Active' : 'Sloth Active (Partner)' })),
+  getPlan: jest.fn(async (slug) => ({ slug, name: slug === 'premium' ? 'Pro' : 'Pro (Partner)' })),
 }));
 
 const { supabaseAdmin } = require('../../config/supabase');
@@ -40,7 +40,7 @@ test('paid host 7 days out → sends renewal nudge', async () => {
   expect(r).toEqual({ sent: 1 });
   const sent = NotificationEngine.send.mock.calls[0][0];
   expect(sent.event).toBe('SUBSCRIPTION_EXPIRING');
-  expect(sent.data.emailData).toMatchObject({ plan_name: 'Sloth Active (Partner)', days_left: 7, first_name: 'Aarav' });
+  expect(sent.data.emailData).toMatchObject({ plan_name: 'Pro (Partner)', days_left: 7, first_name: 'Aarav' });
 });
 
 test('free host → skipped', async () => {

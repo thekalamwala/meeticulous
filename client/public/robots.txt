@@ -6,7 +6,7 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /super-dashboard
-Disallow: /hello-sloth
+Disallow: /backstage
 Disallow: /dashboard
 Disallow: /user/
 Disallow: /vendor-register

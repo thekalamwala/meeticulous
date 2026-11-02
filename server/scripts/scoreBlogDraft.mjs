@@ -50,7 +50,7 @@ export function analyzeBody(body = []) {
   };
 }
 
-export function buildPageRow(post, { siteUrl = 'https://bookasloth.com', jsonLdGraph = [] } = {}) {
+export function buildPageRow(post, { siteUrl = 'https://meeticulous.com', jsonLdGraph = [] } = {}) {
   const a = analyzeBody(post.body || []);
   const images = post.image ? [{ src: post.image, alt: post.imageAlt || '' }] : [];
   return {
@@ -74,7 +74,7 @@ export function buildPageRow(post, { siteUrl = 'https://bookasloth.com', jsonLdG
   };
 }
 
-export function scoreDraft(post, { siteUrl = 'https://bookasloth.com', queries = [] } = {}) {
+export function scoreDraft(post, { siteUrl = 'https://meeticulous.com', queries = [] } = {}) {
   const graph = articleGraphJsonLd({
     siteUrl,
     url: `${siteUrl}/blog/${post.slug}`,
@@ -112,17 +112,17 @@ function selfcheck() {
   assert.ok(a.wordCount > 5, 'word count counted');
   assert.ok(a.bodyText.includes('Is it free?'), 'faq text included in body');
 
-  const row = buildPageRow({ slug: 's', title: 'T', excerpt: 'E', body }, { siteUrl: 'https://bookasloth.com', jsonLdGraph: [{ '@type': 'BlogPosting' }] });
+  const row = buildPageRow({ slug: 's', title: 'T', excerpt: 'E', body }, { siteUrl: 'https://meeticulous.com', jsonLdGraph: [{ '@type': 'BlogPosting' }] });
   assert.equal(row.page_type, 'blog');
   assert.equal(row.http_status, 200);
-  assert.equal(row.canonical, 'https://bookasloth.com/blog/s');
+  assert.equal(row.canonical, 'https://meeticulous.com/blog/s');
   assert.deepEqual(row.h1, ['T']);
   assert.equal(row.raw_signals.jsonLd[0]['@type'], 'BlogPosting');
   assert.equal(row.raw_signals.headings.length, 2, 'h1 (title) + one h2');
   console.log('selfcheck (analyze+row): PASS');
 
   // Import sanity — both app modules must resolve under Node ESM.
-  const graph = articleGraphJsonLd({ url: 'https://bookasloth.com/blog/s', headline: 'T', description: 'E' });
+  const graph = articleGraphJsonLd({ url: 'https://meeticulous.com/blog/s', headline: 'T', description: 'E' });
   assert.ok(Array.isArray(graph['@graph']) && graph['@graph'].length, 'articleGraphJsonLd returns a @graph');
   assert.equal(typeof scorePage, 'function', 'scorePage imported');
 
@@ -153,7 +153,7 @@ if (isMain) {
   if (process.argv.includes('--selfcheck')) {
     selfcheck();
   } else {
-    const siteUrl = process.env.SITE_URL || 'https://bookasloth.com';
+    const siteUrl = process.env.SITE_URL || 'https://meeticulous.com';
     readPost()
       .then((post) => { process.stdout.write(JSON.stringify(scoreDraft(post, { siteUrl }), null, 2)); })
       .catch((e) => { console.error('scoreBlogDraft error:', e.message); process.exit(1); });

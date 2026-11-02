@@ -180,12 +180,12 @@ const upsertProfile = async ({ id, name, email, role, username, first_name, last
   // Resolve the username. This upsert runs on every login (e.g. Google), so we
   // must NEVER regenerate over an existing one. Order: caller-supplied → the
   // row's current username (preserve it) → a fresh permanent username for a
-  // brand-new account ({adjective}-{noun}-{suffix}), recorded as 'auto' in history.
+  // brand-new account ({email-handle}-{4 random}), recorded as 'auto' in history.
   let slug = username;
   if (!slug) {
     const { data: existing } = await supabaseAdmin
       .from("profiles").select("username").eq("id", id).maybeSingle();
-    slug = existing?.username || await usernameService.createInitialUsername();
+    slug = existing?.username || await usernameService.createInitialUsername(email);
   }
 
   const payload = {
@@ -295,7 +295,7 @@ const ensureGuestProfile = async (email, name = "Guest") => {
 // Add the hosting capability to an EXISTING account and seed onboarding state
 // (idempotent). Returns the updated profile row. Shared by becomeHost (logged-in
 // self-serve) and the Google vendor-auth upgrade path (a customer who signs in
-// via "Be a Sloth" / vendor-login) so both routes flip is_host + seed onboarding
+// via "Become a host" / vendor-login) so both routes flip is_host + seed onboarding
 // identically. Never resets a host who already finished onboarding.
 const enableHostingForProfile = async (profileId) => {
   const { data: profile, error } = await supabaseAdmin
@@ -332,7 +332,7 @@ const enableHostingForProfile = async (profileId) => {
   // host re-signing in already has is_host=true, so this stays quiet). Key is
   // per-profile so distinct signups are never collapsed by the throttle.
   if (!profile.is_host) {
-    const base = process.env.CLIENT_URL || 'https://bookasloth.com';
+    const base = process.env.CLIENT_URL || 'https://meeticulous.com';
     require('../utils/adminAlert').adminAlert({
       key: `new_host:${profileId}`,
       subject: `New host signup: ${updated.name || updated.username || updated.email || profileId}`,
@@ -639,7 +639,7 @@ const googleCallback = async (req, res) => {
         .from("profiles").select("id, role, is_host, email, google_calendar_connected").eq("email", googleEmail).maybeSingle();
 
       let profileId = existing?.id || null;
-      // Unified identity: an existing CUSTOMER signing in via "Be a Sloth" /
+      // Unified identity: an existing CUSTOMER signing in via "Become a host" /
       // vendor-login is no longer a dead-end. Attach hosting to their SAME
       // account (flip is_host + seed onboarding) — exactly what becomeHost does,
       // but in-flow. Superadmin is excluded (the role↔is_host trigger forces it
@@ -969,7 +969,7 @@ const verifyOtp = async (req, res) => {
 // the user never sees or types it. Deterministic from the e164 digits so it is
 // idempotent across create-or-resolve.
 const syntheticPhoneEmail = (phone) =>
-  `p${String(phone).replace(/\D/g, "")}@users.bookasloth.app`;
+  `p${String(phone).replace(/\D/g, "")}${require("../services/email/placeholderEmail").PLACEHOLDER_EMAIL_DOMAIN}`;
 
 // Find the guest profile for a phone, creating one if none exists. Order matters
 // to avoid duplicate accounts:
@@ -1091,7 +1091,7 @@ const loginWithPhone = async (req, res) => {
       // Equalize response time with the real wrong-password path (which makes a
       // signInWithPassword round-trip) so an attacker can't time-distinguish a
       // registered guest from an unknown/non-guest number.
-      await signInWithPassword("nonexistent@bookasloth.invalid", String(password)).catch(() => {});
+      await signInWithPassword("nonexistent@meeticulous.invalid", String(password)).catch(() => {});
       return res.status(401).json({ message: "Invalid phone or password" });
     }
     if (!profile.password_set) {
@@ -1248,7 +1248,7 @@ const loginUnified = async (req, res) => {
 
     if (!profile) {
       // Equalize timing with the real signin round-trip (enumeration resistance).
-      await signInWithPassword("nonexistent@bookasloth.invalid", String(password)).catch(() => {});
+      await signInWithPassword("nonexistent@meeticulous.invalid", String(password)).catch(() => {});
       return res.status(401).json({ message: "Invalid login or password" });
     }
     // A phone-only account that never set a password → actionable prompt (the

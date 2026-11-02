@@ -104,7 +104,7 @@ describe('GET /api/services-directory/:profession', () => {
     expect(res.status).toBe(200);
     expect(res.body.profession.label).toBe('Photographer');
     expect(res.body.services[0].description).toBe(
-      'Book trusted Photographer professionals for Wedding Photography on Book A Sloth.'
+      'Book trusted Photographer professionals for Wedding Photography on Meeticulous.'
     );
     expect(res.headers['cache-control']).toMatch(/max-age=300/);
   });
@@ -162,7 +162,7 @@ describe('GET /api/services-directory/:profession', () => {
 
     expect(res.status).toBe(200);
     expect(res.body.services[0].description).toBe(
-      'Book trusted Photographer professionals for Wedding Photography on Book A Sloth.'
+      'Book trusted Photographer professionals for Wedding Photography on Meeticulous.'
     );
   });
 

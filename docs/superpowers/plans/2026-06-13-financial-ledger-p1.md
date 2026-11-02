@@ -2461,7 +2461,7 @@ cd client && npm run build              # clean build
 3. Buy a plan with a test account → verify GST charged on top (Razorpay modal total = price × 1.18), `subscription_payments` row, SUBSCRIPTION_PAYMENT entry.
 4. `SELECT sum(debit), sum(credit) FROM journal_lines;` — totals MUST be equal.
 
-- [ ] **Step 4: gstack browser QA** — run the finance pages at `/hello-sloth` login → `/admin/finance`, `/admin/finance/journal` (expand an entry, post a ₹1 adjustment + its reversal), `/admin/finance/ledger` (check running balance column). Responsive at 375px. Screenshot evidence. (gstack browse: one-time `./setup` build needed — NEEDS_SETUP was reported this session.)
+- [ ] **Step 4: gstack browser QA** — run the finance pages at `/backstage` login → `/admin/finance`, `/admin/finance/journal` (expand an entry, post a ₹1 adjustment + its reversal), `/admin/finance/ledger` (check running balance column). Responsive at 375px. Screenshot evidence. (gstack browse: one-time `./setup` build needed — NEEDS_SETUP was reported this session.)
 
 - [ ] **Step 5: Docs + memory**
 - Update `docs/current-state.md` + `docs/current-work.md` (new sprint section) + `docs/database-schema.md` (v2.8 tables).

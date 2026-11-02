@@ -26,7 +26,7 @@ the website navbar and pulled into email templates.
 |---|----------|
 | 1 | Navbar logo is **admin-managed** via Admin → Appearance. |
 | 2 | **Three modes**, one active: `icon_text` (mark + wordmark), `image` (full lockup), `festive` (seasonal lockup). No plain text-only mode. |
-| 3 | Email logo is **fixed and decoupled** from the navbar — a stable image (`sloth-icon-sqr.png`), never festive, never text. |
+| 3 | Email logo is **fixed and decoupled** from the navbar — a stable image (`meeticulous-icon-sqr.png`), never festive, never text. |
 | 4 | Festive is a **manual toggle** (admin sets mode = festive when wanted). No date-scheduling (phase 2). |
 | 5 | Source of truth = a single DB row (`appearance_settings`); image files live in Supabase Storage / CDN; both website and admin read the row. |
 | 6 | Navbar **fails safe**: if the appearance fetch fails or is empty, render the current text wordmark. |
@@ -36,11 +36,11 @@ the website navbar and pulled into email templates.
 ### Email (trivial — no code)
 
 Set `email_settings.logo_url` to the hosted stable mark:
-`https://company-assets.meeticulous.in/images/email/sloth-icon-sqr.png`
+`https://company-assets.meeticulous.in/images/email/meeticulous-icon-sqr.png`
 
 The email header (`emailLayout.js`) already renders `settings.logo_url` as a 48px image
 with a text fallback, so this is a one-time value set via the existing admin email-settings
-UI (or a seed). No engine change. **Action item:** confirm `sloth-icon-sqr.png` is live at
+UI (or a seed). No engine change. **Action item:** confirm `meeticulous-icon-sqr.png` is live at
 that URL before setting it.
 
 ### Navbar — data model
@@ -51,7 +51,7 @@ New single-row table `appearance_settings` (migration `v3.8_appearance_settings.
 |--------|------|---------|-------|
 | `id` | int PK | 1 | enforced single row (`check (id = 1)`) |
 | `navbar_logo_mode` | text | `'icon_text'` | `icon_text` \| `image` \| `festive` |
-| `icon_url` | text | `sloth-icon-sqr.png` CDN url | square mark for icon_text mode |
+| `icon_url` | text | `meeticulous-icon-sqr.png` CDN url | square mark for icon_text mode |
 | `logo_image_url` | text | `''` | full lockup for image mode |
 | `festive_logo_url` | text | `''` | seasonal lockup |
 | `updated_at` | timestamptz | `now()` | |

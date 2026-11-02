@@ -5,7 +5,7 @@
 // steps · testimonials · FAQ · related comparisons + final CTA.
 //
 // Design system "Clinic Teal": deep teal + soft mint tint + warm paper, Book A
-// Sloth orange on CTAs only. Mechanics unique to this page: an appointment-slip
+// Brand crimson on CTAs only. Mechanics unique to this page: an appointment-slip
 // hero visual, and a Monthly / Yearly "first year" ledger with 12-month billing bars.
 //
 // HONESTY: Acuity facts come ONLY from data/competitors.js (null renders "Not

@@ -78,7 +78,7 @@ Orange-era page backgrounds `#f7f5ef` / `#fdfcf9` / `#fffaf3` across guest funne
 | P2-1 | guest/dashboard/help: `#f7f5ef`/`#fdfcf9`/`#fffaf3` | Stale warm-cream canvas under blue brand | → `bg-canvas` |
 | P2-2 | onboarding: `CategoryStep/PreviewStep/PlansStep/SlugClaim` | Parallel styling world (`fb-input`+`btn-*`), two progress indicators, unlabeled inputs | migrate to `dashboard/ui` primitives; one stepper |
 | P2-3 | `ProductPurchase.jsx:108-127,609` | OTP sent to WhatsApp but UI says "Check your email" | fix copy to WhatsApp + masked phone |
-| P2-4 | `ServiceDetail.jsx:683` | "Book A Sloth Pro" dead-brand ad copy + non-token palette; 4 ad cards clutter a conversion page | rebrand to Meeticulous; cut to 1 ad slot |
+| P2-4 | `ServiceDetail.jsx:683` | old-brand "Pro" ad copy + non-token palette; 4 ad cards clutter a conversion page | rebrand to Meeticulous; cut to 1 ad slot |
 | P2-5 | `ServiceBooking.jsx:1506` | Platform-fee tooltip hover-only (no focus/tap) — invisible to keyboard+mobile | focusable click-toggle (reuse ServiceDetail's) |
 | P2-6 | `Bookings.jsx:648` | Hand-rolls desktop table instead of shared `DataTable` | refactor to `DataTable` |
 | P2-7 | bespoke marketing (features/for/compare, ~36 pages) | Each re-implements hero/FAQ/testimonials/CTA; 245 arbitrary radii across 31 files; 3 testimonial UIs | extract shared section primitives (SectionHeader/FaqAccordion/FinalCta) the bespoke pages opt into |
@@ -104,7 +104,7 @@ Orange-era page backgrounds `#f7f5ef` / `#fdfcf9` / `#fffaf3` across guest funne
 ## 5. Decisions needed from the founder
 
 1. **P1-3 fabricated social proof** on the payment page — remove, or wire to real data? (Trust/legal; design can't decide this.)
-2. **Dead-brand cleanup** (`bookasloth` social handles in Footer, "Book A Sloth Pro" ad copy, "Sloth" wordmarks) — in scope for this initiative or a separate rebrand ticket?
+2. **Dead-brand cleanup** (old-brand social handles in Footer, old-brand "Pro" ad copy, old-brand wordmarks) — in scope for this initiative or a separate rebrand ticket?
 3. **Bespoke marketing pages** (~36) — keep per-page bespoke designs (SEO value) and only add shared primitives, or consolidate harder? (Default recommendation: keep + add opt-in primitives.)
 
 → Prioritized remediation is sequenced in `06-roadmap.md`. Phase A tackles the token foundation + the shared-code dead-orange (P1-1, parts of P1-2/P1-5).

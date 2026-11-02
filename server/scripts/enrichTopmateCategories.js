@@ -47,7 +47,7 @@ async function fetchHeadline(url) {
   const res = await fetch(url, {
     redirect: 'follow',
     signal: AbortSignal.timeout(20000),
-    headers: { 'User-Agent': 'Mozilla/5.0 (BookASloth lead research)' },
+    headers: { 'User-Agent': 'Mozilla/5.0 (Meeticulous lead research)' },
   });
   if (!res.ok) return { error: `HTTP ${res.status}` };
   const html = await res.text();

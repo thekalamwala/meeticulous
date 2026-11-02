@@ -1,5 +1,5 @@
 /**
- * Centralized security middleware for BookASloth API
+ * Centralized security middleware for Meeticulous API
  * Covers: Helmet, CSP, HSTS, rate limiting, XSS, HPP, request hardening
  */
 const helmet = require('helmet');
@@ -356,7 +356,7 @@ const botGlobalLimiter = rateLimit({
   keyGenerator: () => 'bot-global',
   standardHeaders: true,
   legacyHeaders: false,
-  message: { message: 'Bolt is very busy right now. Please try again in a moment.' },
+  message: { message: 'Tithi is very busy right now. Please try again in a moment.' },
   skip: skipWhenOpen,
 });
 

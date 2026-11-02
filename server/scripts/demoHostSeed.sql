@@ -27,7 +27,7 @@ insert into auth.users (
 ) values (
   'de510000-0000-4000-8000-000000000001',
   '00000000-0000-0000-0000-000000000000',
-  'authenticated', 'authenticated', 'demo-host@bookasloth.in', now(),
+  'authenticated', 'authenticated', 'demo-host@meeticulous.com', now(),
   now(), now(), '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false, false
 )
 on conflict (id) do nothing;
@@ -42,7 +42,7 @@ insert into profiles (
 ) values (
   'de510000-0000-4000-8000-000000000001',
   'Aanya Kapoor', 'Aanya', 'Kapoor',
-  'demo-host@bookasloth.in', 'demo-studio', 'host', true,
+  'demo-host@meeticulous.com', 'demo-studio', 'host', true,
   true, 'professional', true, true,
   'individual', 'both',
   'Career & confidence coach helping early-career professionals land roles they actually want. 8 years, 500+ sessions. Book a slot below — first call is where it clicks.',

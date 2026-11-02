@@ -48,7 +48,7 @@ export default function ErrorLayout({
 
       {/* No card box — content sits directly on the page ground. */}
       <div className="bas-error__card w-full max-w-3xl text-center px-7 py-10 sm:px-10 sm:py-12">
-        {/* Sloth art — random PNG variant on 404/410, line-art elsewhere. No
+        {/* Line-art illustration per error category. No
             wordmark beside it. */}
         <div className="flex justify-center mb-6 text-[#2A1416]">
           <ErrorIllustration art={art} image={image} />

@@ -1,9 +1,9 @@
 ---
 name: blog-autopost
-description: Unattended daily blog publisher for Book A Sloth. Orchestrates the full pipeline around blog-seo-optimizer — selects the next draft, runs the optimizer, and ONLY if the quality gate passes, auto-merges the blog-only PR and seeds both DBs so the post goes live. Two modes — marketing (drain a drafts folder) and recap (build-in-public post from merged PRs). Designed to be run headless via `claude -p "/blog-autopost <mode>"` from Windows Task Scheduler. Trigger: "/blog-autopost", "autopost the blog", "run the daily blog job".
+description: Unattended daily blog publisher for Meeticulous. Orchestrates the full pipeline around blog-seo-optimizer — selects the next draft, runs the optimizer, and ONLY if the quality gate passes, auto-merges the blog-only PR and seeds both DBs so the post goes live. Two modes — marketing (drain a drafts folder) and recap (build-in-public post from merged PRs). Designed to be run headless via `claude -p "/blog-autopost <mode>"` from Windows Task Scheduler. Trigger: "/blog-autopost", "autopost the blog", "run the daily blog job".
 ---
 
-# Blog Autopost (Book A Sloth) — unattended publisher
+# Blog Autopost (Meeticulous) — unattended publisher
 
 Wraps [blog-seo-optimizer](../blog-seo-optimizer/SKILL.md). That skill stops at the PR by design;
 THIS skill is the only thing allowed to merge + publish, and only behind the gate below.
@@ -15,8 +15,8 @@ auto-merges beyond a blog-only diff. If anything is ambiguous, STOP and leave th
 `/blog-autopost marketing` — publish the next unposted draft from the drafts folder.
 `/blog-autopost recap` — publish a "what we shipped" post built from recently merged PRs.
 
-Drafts folder (marketing): `D:\My Marketing\Book A Sloth\Blog` (Windows) /
-`/d/My Marketing/Book A Sloth/Blog` (Git-Bash). Archive subfolder: `.../Blog/_posted`.
+Drafts folder (marketing): `D:\My Marketing\Meeticulous\Blog` (Windows) /
+`/d/My Marketing/Meeticulous/Blog` (Git-Bash). Archive subfolder: `.../Blog/_posted`.
 
 ## Preconditions (abort the run if any fail)
 - Runs in the DEDICATED worktree set up by `scripts/blog-autopost.ps1` (isolated from any

@@ -93,7 +93,7 @@ Items previously listed here as pending are now live:
   (blog pipeline clone) → Supabase images/host-og/.
 
 - **v3.89** (`v3.89_bot_escalations.sql`) — applied 2026-07-20 on BOTH DBs. Adds
-  `bot_escalations` + `bot_escalation_replies` (Bolt human-handoff records + admin reply
+  `bot_escalations` + `bot_escalation_replies` (Tithi, formerly Bolt, human-handoff records + admin reply
   thread; additive, RLS-on/no-policy/service_role-only). escalationService keeps the
   code-side schema fallback (degrades to email-only on "table/column missing"). See
   `docs/bolt-escalation-flow.md`.
@@ -128,16 +128,33 @@ Items previously listed here as pending are now live:
     (`health_state` CHECK + `health_score` / `health_signals` / `health_computed_at`). Additive,
     RLS unchanged (service-role only). Code is schema-fallback safe (`guestRelationshipEngine`
     skips the health write, `deskService` guest query fails soft) so it was safe before apply.
-  - **`crm_admin_sends` is LIVE (ON) — CRM outbound is sending to real customers.** The master send
-    kill-switch (a `feature_flags` row, still FAIL-CLOSED in code) is enabled on BOTH DBs: **prod
-    Mumbai since 2026-08-27** (founder-enabled; the flag row reads `enabled=true`, ~100+ real
-    messages sent) and **staging Tokyo since 2026-09-02**. Phase 2 is therefore NOT advisory-only on
+  - **`crm_admin_sends` — the CRM master send switch.** On the current Meeticulous DB
+    (`spquowzrefozmrzoszkf`) it is **OFF** (`enabled=false`, verified 2026-11-01; no CRM email has
+    been sent from this DB). The history below is from the old Mumbai/Tokyo DBs: it was enabled on
+    prod Mumbai since 2026-08-27 (~100+ real messages) and staging Tokyo since 2026-09-02.
+    When it is ON: Phase 2 is therefore NOT advisory-only on
     prod — the governor cap (1/48h per subject), quiet-hours (09–20 IST), do-not-contact and
     email/WhatsApp opt-out gates are the live guardrails on every send (see `sendGate`/`touchGovernor`).
     To pause all CRM sends instantly: `UPDATE feature_flags SET enabled=false WHERE key='crm_admin_sends'`
     (fail-closed; effective within the 60s flag cache). Runbook + flip history in `docs/current-work.md`.
 
-No migration is currently outstanding. Workflow for any NEW migration: run it on BOTH DBs, and keep the
+- **v3.180** (`v3.180_remove_old_brand.sql`) — applied 2026-11-01 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`, the only DB reachable now): old brand removed from 98 published blogs,
+  6 CRM templates, a badge slug and 5 column defaults; lead status `'customer'` added (transitional —
+  the old value is still accepted). `bot_faqs` re-synced from `botFaqs.json` the same day.
+- **v3.181** (`v3.181_drop_old_lead_status.sql`) — applied 2026-11-01 after the release went live on
+  Render: `leads_status_check` + `merge_lead_rows` now carry only `'customer'`.
+- **v3.182** (`v3.182_crm_cold_senders.sql`) — applied 2026-11-01 and **activated**: CRM mail to
+  leads sends via Brevo from `crm_shubham` ("Shubham | CEO, Meeticulous" <shubham@mail.meeticulous.in>,
+  cold outreach on the separate `.in` root; replies → shubham@meeticulous.com) and `crm_tithi`
+  ("Tithi at Meeticulous" <tithi@news.meeticulous.com>, lifecycle to opted-in hosts, kept OFF the cold
+  root; replies → team@meeticulous.com). Brevo-authenticated domains: `mail.meeticulous.in`,
+  `news.meeticulous.com` — NOT `team.meeticulous.com` (Resend only), so a CRM sender must never point
+  there. Durga/Sujata have no sender rows: their sequence steps were moved to Tithi (2026-11-01).
+  Only takes effect while `crm_admin_sends` is ON. Off switch: `UPDATE email_senders SET active=false
+  WHERE sender_key IN ('crm_shubham','crm_tithi');`. No migration outstanding.
+
+Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
 
 ## Documentation Map
@@ -214,10 +231,10 @@ old docs is stale). The shipped public pages (Home, Pricing, /for/* landings,
 Navbar, Footer) are the source of truth; match them.
 
 **Tokens only — never invent colors.** Use the Tailwind token classes:
-`bg-ink`/`text-ink` (#191919), `bg-canvas` (#F8FAFC, page bg), `bg-sand` (#F1F5F9),
-`text-primary`/`bg-primary` (#0079C1), `text-primary-cta`/`bg-primary-cta` (#00457C —
-the WCAG-safe navy for white-on-blue CTAs and accent headline words),
-`primary-light` (#D6ECF8), and the multi-hue `--c-*` / `text-c-*` accents. Per-landing
+`bg-ink`/`text-ink` (#2A1416), `bg-canvas` (#FFF8FA, page bg), `bg-sand` (#FFF1F4),
+`text-primary`/`bg-primary` (#960D32, brand crimson), `text-primary-cta`/`bg-primary-cta` (#960D32 —
+used for white-on-crimson CTAs and accent headline words),
+`primary-light` (#FBE3E8), and the multi-hue `--c-*` / `text-c-*` accents. Per-landing
 pages drive accents off CSS vars (`--lp-accent`) via inline `style`.
 
 **Radius:** 4–6px on cards/buttons, `rounded-full` on chips/pills/avatars. NOTE

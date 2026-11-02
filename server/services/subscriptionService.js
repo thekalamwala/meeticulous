@@ -161,7 +161,7 @@ async function activateFromSubscription({ rzpSub, rzpPayment = null }) {
         meta: { plan: planSlug, cadence, payment_id: paymentId }, promoteToPaid: true,
       });
     }
-    // Resolve to the fullest earned status now (Subscribed→Onboarded→Won→Sloth→
+    // Resolve to the fullest earned status now (Subscribed→Onboarded→Won→ROI→
     // Retained on renewal) instead of waiting up to 15 min for the engine tick.
     await leadService.recomputeFromAccount(vendorId);
   } catch (e) { console.error('[crm] subscription event hook failed (non-fatal):', e.message); }
@@ -399,7 +399,7 @@ async function sendSubscriptionReceiptEmail({ event, vendorId, plan, planSlug, c
     const totalCharged = computeSubscriptionBreakdown({ planPrice, gstRate }).totalCharged;
 
     // Direct token-gated invoice link (the page prints itself to PDF).
-    let invoice_url = `${process.env.CLIENT_URL || 'https://bookasloth.com'}/dashboard`;
+    let invoice_url = `${process.env.CLIENT_URL || 'https://meeticulous.com'}/dashboard`;
     try {
       const apiBase = process.env.API_URL;
       if (apiBase && paymentId) {
@@ -441,7 +441,7 @@ async function sendSubscriptionReceiptEmail({ event, vendorId, plan, planSlug, c
         `Amount: ₹${Number(totalCharged).toLocaleString('en-IN')}`,
         isRenewal ? 'Auto-renewal charge.' : 'New purchase / upgrade.',
       ],
-      link: `${process.env.CLIENT_URL || 'https://bookasloth.com'}/admin/host360/${vendorId}`,
+      link: `${process.env.CLIENT_URL || 'https://meeticulous.com'}/admin/host360/${vendorId}`,
     });
   } catch (_) { /* non-fatal */ }
 }

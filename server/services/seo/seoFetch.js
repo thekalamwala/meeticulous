@@ -1,13 +1,13 @@
 // server/services/seo/seoFetch.js
 // Single-URL fetch for the SEO crawler. Global fetch (Node 22). Never throws.
-// Normal browser UA: Cloudflare (fronting bookasloth.com) 403s AI-crawler UAs
+// Normal browser UA: Cloudflare (fronting meeticulous.com) 403s AI-crawler UAs
 // (ClaudeBot etc), so a bot UA here got every page blocked. Host/service pages
 // no longer go through this fetch at all (seoCrawler resolves their meta
 // in-process via prerenderController) — this UA now only hits static/blog
 // pages, which are plain Vercel-prerendered HTML any browser UA can read.
 const DEFAULT_UA =
   process.env.SEO_CRAWLER_UA ||
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 BookASlothSEOBot';
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MeeticulousSEOBot';
 const TIMEOUT_MS = Number(process.env.SEO_CRAWLER_TIMEOUT_MS) || 15000;
 
 const headersToObject = (h) => {

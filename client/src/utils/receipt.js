@@ -418,7 +418,7 @@ export function buildReceiptHTML(d = {}) {
     <header class="head">
       <div class="brand">
         <div class="brand-lock">
-          <img class="logo" src="https://company-assets.meeticulous.in/images/email/sloth-icon-sqr.png" alt="Meeticulous logo" width="40" height="40">
+          <img class="logo" src="https://meeticulous.com/brand/meeticulous-icon.svg" alt="Meeticulous logo" width="40" height="40">
           <span>
             <div class="wordmark">Meeticulous</div>
             <div class="doc-kind">${esc(docTitle)}</div>
@@ -458,7 +458,7 @@ export function buildReceiptHTML(d = {}) {
 
     <footer class="footer">
       <strong>Meeticulous</strong> · Powered by Timewheel Internet Pvt. Ltd.<br>
-      <a href="mailto:hello@meeticulous.com">hello@meeticulous.com</a> · <a href="https://meeticulous.com">meeticulous.com</a><br>
+      <a href="mailto:team@meeticulous.com">team@meeticulous.com</a> · <a href="https://meeticulous.com">meeticulous.com</a><br>
       © ${new Date().getFullYear()} Meeticulous. All rights reserved.
     </footer>
   </main>

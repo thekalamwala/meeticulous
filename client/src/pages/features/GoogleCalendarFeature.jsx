@@ -731,7 +731,7 @@ export default function GoogleCalendarFeature() {
           </Reveal>
           <Reveal delay={0.1} className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
             <PrimaryCta>Connect your calendar free <ArrowRight size={16} /></PrimaryCta>
-            <Link to="/demo" className="inline-flex items-center gap-1.5 text-sm font-semibold hover:no-underline hover:opacity-80" style={{ color: LINK }}>
+            <Link to="/contact" className="inline-flex items-center gap-1.5 text-sm font-semibold hover:no-underline hover:opacity-80" style={{ color: LINK }}>
               See a live booking page <ArrowRight size={15} />
             </Link>
             <Link to="/pricing" className="inline-flex items-center gap-1.5 text-sm font-semibold hover:no-underline hover:opacity-80" style={{ color: INK }}>

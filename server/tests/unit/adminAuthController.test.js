@@ -59,7 +59,7 @@ const mockRes = () => {
 
 const seedStaff = (over = {}) => {
   globalThis.__staff = {
-    id: 'staff-1', email: 'ops@bookasloth.com', username: 'ops', name: 'Ops Admin',
+    id: 'staff-1', email: 'ops@meeticulous.com', username: 'ops', name: 'Ops Admin',
     password_hash: HASH, role_key: 'operations', is_active: true,
     failed_attempts: 0, locked_until: null, ...over,
   };
@@ -130,7 +130,7 @@ describe('adminLogin (credential store)', () => {
 
   test('200 — login by email (no 2FA enrolled) also returns pending token', async () => {
     const res = mockRes();
-    await adminLogin(mockReq({ email: 'ops@bookasloth.com', password: PASSWORD }), res);
+    await adminLogin(mockReq({ email: 'ops@meeticulous.com', password: PASSWORD }), res);
     expect(res.status).not.toHaveBeenCalledWith(401);
     const payload = res.json.mock.calls[0][0];
     expect(payload.enroll_required).toBe(true);

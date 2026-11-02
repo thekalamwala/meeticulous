@@ -178,7 +178,7 @@ function ExploreFull() {
       <div className="border-b border-black/5">
         <div className="app-container py-12 text-center sm:py-16">
           <h1 className="font-heading text-3xl font-bold tracking-tight text-ink sm:text-5xl">
-            Find Your Perfect Sloth
+            Find Your Perfect Expert
           </h1>
           <p className="mt-3 text-base text-muted">
             Book 1:1 services with coaches, therapists, mentors &amp; more
@@ -267,7 +267,6 @@ function ExploreFull() {
           </div>
         ) : services.length === 0 ? (
           <div className="rounded-2xl border border-black/5 bg-[#F8FAFC] px-6 py-16 text-center">
-            <div className="mb-4 text-5xl">🦥</div>
             <p className="font-heading text-lg font-bold text-ink">No services found</p>
             <p className="mt-1 text-sm text-muted">
               {q ? 'Try a different search' : 'Try a different category'} or clear your filters.
@@ -302,15 +301,15 @@ function ExploreFull() {
 
         <Pagination page={page} totalPages={meta.totalPages} hrefFor={hrefFor} />
 
-        {/* BE A SLOTH CTA */}
+        {/* BECOME A HOST CTA */}
         <section className="flex flex-col items-center justify-between gap-4 rounded-2xl border border-black/5 bg-[#F8FAFC] p-8 md:flex-row">
           <div className="text-center md:text-left">
-            <p className="font-heading text-xl font-bold text-ink">You could be on this page 🦥</p>
+            <p className="font-heading text-xl font-bold text-ink">You could be on this page</p>
             <p className="mt-1 text-sm text-muted">Join coaches, mentors &amp; experts on Meeticulous</p>
           </div>
           <Link to="/become-a-host"
             className="btn inline-flex shrink-0 items-center bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-[#2A1416] hover:no-underline">
-            Become a Sloth →
+            Become a host →
           </Link>
         </section>
       </div>
@@ -352,7 +351,6 @@ function ExploreComingSoon() {
         <span className="mb-6 inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-amber-800">
           <Sparkles size={13} /> Coming Soon
         </span>
-        <div className="mb-5 text-6xl" aria-hidden="true">🦥</div>
         <h1 className="mb-3 font-heading text-3xl font-bold leading-tight tracking-tight text-ink md:text-4xl">
           Explore is on its way
         </h1>
@@ -366,7 +364,7 @@ function ExploreComingSoon() {
           </Link>
           <Link to="/become-a-host"
             className="btn btn--outline inline-flex w-full items-center justify-center border border-black/10 bg-white px-5 py-2.5 text-sm font-semibold text-ink transition-colors duration-150 hover:bg-black/[0.04] hover:no-underline sm:w-auto">
-            Become a Sloth →
+            Become a host →
           </Link>
         </div>
       </div>

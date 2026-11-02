@@ -25,7 +25,7 @@ jest.mock('../../services/planService', () => ({
 }));
 jest.mock('../../services/platformConfig', () => ({ getConfig: jest.fn(() => Promise.resolve({ clearingDays: 7 })) }));
 jest.mock('../../services/email/communicationEngine', () => ({
-  loadSettings: jest.fn(() => Promise.resolve({ provider: 'smtp', from_name: 'Sloth', from_email: 'bolt@bookasloth.in' })),
+  loadSettings: jest.fn(() => Promise.resolve({ provider: 'smtp', from_name: 'Meeticulous', from_email: 'bolt@meeticulous.com' })),
 }));
 jest.mock('../../services/email/providers', () => ({ getProvider: jest.fn() }));
 
@@ -40,11 +40,11 @@ const HOST = 'aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa';
 const AM = 'bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb';
 const NOTE = 'cccccccc-3333-4333-8333-cccccccccccc';
 const admin = {
-  id: 'adm1', email: 'ops@bookasloth.in', role: 'operations',
+  id: 'adm1', email: 'ops@meeticulous.com', role: 'operations',
   permissions: ['users.view', 'users.edit', 'kyc.view', 'documents.view', 'documents.manage'],
 };
 // A KYC reviewer with no documents grant — support's shape after v3.81.
-const kycOnlyAdmin = { id: 'adm2', email: 'support@bookasloth.in', role: 'support', permissions: ['kyc.view'] };
+const kycOnlyAdmin = { id: 'adm2', email: 'support@meeticulous.com', role: 'support', permissions: ['kyc.view'] };
 const mockRes = () => { const r = {}; r.status = jest.fn(() => r); r.json = jest.fn(() => r); return r; };
 
 // Supabase query builders are chainable and awaitable. One thenable stub covers
@@ -280,7 +280,7 @@ test('getDocuments does not even query host_documents without the grant', async 
 });
 
 // ── reveal (unmasked PII) ───────────────────────────────────────
-const revealAdmin = { id: 'adm3', email: 'kyc@bookasloth.in', role: 'operations', permissions: ['kyc.view', 'kyc.decide'] };
+const revealAdmin = { id: 'adm3', email: 'kyc@meeticulous.com', role: 'operations', permissions: ['kyc.view', 'kyc.decide'] };
 
 test('revealKycPii returns the decrypted values and audits who revealed what', async () => {
   setTables({

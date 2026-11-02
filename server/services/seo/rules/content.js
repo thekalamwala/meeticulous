@@ -6,7 +6,7 @@
 // host/service pages.
 const GENERIC_H1 = new Set([
   'home', 'welcome', 'welcome!', 'services', 'service', 'profile', 'blog',
-  'dashboard', 'page', 'untitled', 'book a sloth',
+  'dashboard', 'page', 'untitled', 'meeticulous',
 ]);
 
 function check(p, ctx) {

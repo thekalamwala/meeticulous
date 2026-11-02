@@ -1,6 +1,6 @@
 # Design Strategy & Philosophy — Meeticulous
 
-_Deliverable 3. The visual direction and UX principles that unify the product. Built on `00-reference-research.md` and the confirmed live brand (blue `#0079C1`, post–"Book A Sloth" rebrand). This is a **refinement** of the shipped system, not a reinvention._
+_Deliverable 3. The visual direction and UX principles that unify the product. Built on `00-reference-research.md` and the confirmed live brand (blue `#0079C1`, post–"Meeticulous" rebrand). This is a **refinement** of the shipped system, not a reinvention._
 
 ---
 

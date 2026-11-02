@@ -1,4 +1,4 @@
-# Benchmarks — Book A Sloth (localhost baseline)
+# Benchmarks — Meeticulous (localhost baseline)
 
 _Run 2026-06-18. **Real JMeter output — nothing fabricated.** Companion: `PERFORMANCE_AUDIT.md`, `SCALING_RECOMMENDATIONS.md`._
 

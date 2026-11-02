@@ -134,7 +134,7 @@ export default function ManageBooking() {
           <p className="mt-3 font-semibold text-red-800">{error}</p>
           <p className="mt-1 text-sm text-red-600">
             Need help? Email{" "}
-            <a href="mailto:hello@meeticulous.com" className="font-medium underline">hello@meeticulous.com</a>.
+            <a href="mailto:team@meeticulous.com" className="font-medium underline">team@meeticulous.com</a>.
           </p>
         </div>
       ) : (
@@ -208,7 +208,7 @@ export default function ManageBooking() {
               )}
               <p className="mt-3 text-center text-xs text-gray-400">
                 Need to reschedule instead? Email{" "}
-                <a href="mailto:hello@meeticulous.com" className="underline">hello@meeticulous.com</a>.
+                <a href="mailto:team@meeticulous.com" className="underline">team@meeticulous.com</a>.
               </p>
             </div>
           ) : (

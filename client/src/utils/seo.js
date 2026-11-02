@@ -262,13 +262,10 @@ export const resolveBlogSeo = ({ post = {}, siteUrl = SITE_URL } = {}) => {
 // ── Shared brand / page builders ─────────────────────────────────────────────
 
 // Official brand profiles — used for Organization.sameAs (entity disambiguation
-// for SEO/GEO). Source of truth mirrors client/src/components/about/TeamSocials.jsx.
-export const ORG_SAME_AS = [
-  'https://www.linkedin.com/company/book-a-sloth/',
-  'https://www.instagram.com/bookasloth',
-  'https://www.facebook.com/bookasloth',
-  'https://x.com/bookasloth',
-];
+// for SEO/GEO).
+// Empty until the company accounts exist (planned for the next deployment):
+// LinkedIn, Instagram, Facebook, X. Keep in sync with the Footer social links.
+export const ORG_SAME_AS = [];
 
 // Legal entity + a support contact point. Source of truth is the company's own
 // published legal pages (/privacy, /terms) — Rajmudra Media LLP since 2026-10-31
@@ -290,7 +287,7 @@ export const ORG_ADDRESS = {
 export const ORG_CONTACT_POINT = {
   '@type': 'ContactPoint',
   contactType: 'customer support',
-  email: 'hello@meeticulous.com',
+  email: 'team@meeticulous.com',
   availableLanguage: ['en', 'hi'],
 };
 
@@ -311,7 +308,7 @@ export const organizationJsonLd = ({ siteUrl = SITE_URL } = {}) => {
     logo: `${site}/web-app-manifest-512x512.png`,
     description: 'Online booking and appointment scheduling platform for coaches, consultants, therapists, and small businesses.',
     contactPoint: ORG_CONTACT_POINT,
-    sameAs: ORG_SAME_AS,
+    ...(ORG_SAME_AS.length ? { sameAs: ORG_SAME_AS } : {}),
   };
 };
 
@@ -387,7 +384,7 @@ const orgNode = (site) => ({
   logo: { '@type': 'ImageObject', '@id': `${site}/#logo`, url: LOGO_URL(site), contentUrl: LOGO_URL(site), width: 512, height: 512 },
   description: 'Online booking and appointment scheduling platform for coaches, consultants, therapists, and small businesses.',
   contactPoint: ORG_CONTACT_POINT,
-  sameAs: ORG_SAME_AS,
+  ...(ORG_SAME_AS.length ? { sameAs: ORG_SAME_AS } : {}),
 });
 
 /**
@@ -880,7 +877,7 @@ export const glossaryTermJsonLd = ({ siteUrl = SITE_URL, slug, term, definition,
 };
 
 // ContactPage node with the support contact point.
-export const contactPageJsonLd = ({ siteUrl = SITE_URL, email = 'hello@meeticulous.com' } = {}) => {
+export const contactPageJsonLd = ({ siteUrl = SITE_URL, email = 'team@meeticulous.com' } = {}) => {
   const site = trimSlash(siteUrl);
   return {
     '@context': 'https://schema.org',

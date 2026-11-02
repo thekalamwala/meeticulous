@@ -3,7 +3,7 @@ const { check } = require('../../services/seo/rules/onpage');
 const { buildContext } = require('../../services/seo/rules/index');
 
 const page = (over = {}) => ({
-  url: 'https://bookasloth.com/jane', pageType: 'host', httpStatus: 200,
+  url: 'https://meeticulous.com/jane', pageType: 'host', httpStatus: 200,
   title: 'A Great Coach You Should Book Today Right Now Here', metaDescription: 'x'.repeat(150),
   h1: ['A Great Coach You Should Book Today Right Now Here'], ...over,
 });
@@ -32,8 +32,8 @@ describe('onpage rules', () => {
   });
 
   test('flags duplicate titles across pages', () => {
-    const p1 = page({ url: 'https://bookasloth.com/a', title: 'Same Title Here For Both Pages OK Yes Sure Indeed' });
-    const p2 = page({ url: 'https://bookasloth.com/b', title: 'Same Title Here For Both Pages OK Yes Sure Indeed' });
+    const p1 = page({ url: 'https://meeticulous.com/a', title: 'Same Title Here For Both Pages OK Yes Sure Indeed' });
+    const p2 = page({ url: 'https://meeticulous.com/b', title: 'Same Title Here For Both Pages OK Yes Sure Indeed' });
     const ctx = buildContext([p1, p2], new Set());
     expect(check(p1, ctx).map((i) => i.ruleKey)).toContain('onpage.duplicate_title');
   });

@@ -21,11 +21,11 @@ test('resolves the authenticated context and passes it to askBot', async () => {
   await botAutoReply(thread, 'how do payouts work?');
   expect(supportContext.getSupportContext).toHaveBeenCalledWith({ userId: 'u1', phone: null, isHost: true });
   expect(bot.askBot).toHaveBeenCalledWith({ question: 'how do payouts work?', sessionRef: 'SUP-ABC123', context: CTX });
-  expect(chat.postMessage).toHaveBeenCalledWith({ threadId: 't1', sender: 'bot', senderName: 'Bolt', body: 'You get paid via Razorpay Route.' });
+  expect(chat.postMessage).toHaveBeenCalledWith({ threadId: 't1', sender: 'bot', senderName: 'Tithi', body: 'You get paid via Razorpay Route.' });
   expect(chat.escalate).not.toHaveBeenCalled();
 });
 
-test('escalates to a human when Bolt returns escalate=true', async () => {
+test('escalates to a human when Tithi returns escalate=true', async () => {
   bot.askBot.mockResolvedValue({ answer: 'Let me connect you to the team.', escalate: true });
   await botAutoReply(thread, 'my dispute is unresolved');
   expect(chat.postMessage).toHaveBeenCalledTimes(1);

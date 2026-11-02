@@ -21,7 +21,7 @@
  *     at `cooling`, so the state doesn't cry wolf.
  *
  * ctx (all optional; supplied by lifecycleEngine.loadAccountCtx facts):
- *   isPaid, hasBooking, bookingsLast30d, referralsQualified, meetsSloth,
+ *   isPaid, hasBooking, bookingsLast30d, referralsQualified, meetsRoi,
  *   lapsed (paid term expired / subscription halted),
  *   supportOpen, negativeFeedback (soft risk signals — wired in a follow-up).
  */
@@ -39,7 +39,7 @@ const W = {
   base: 50,
   meaningful: { d7: 28, d21: 12, d45: -2, d90: -18, stale: -28 },
   usage: { active: 14, some: 7, idleWithHistory: -2, never: -6 },
-  paid: 8, sloth: 6, referral: 4, reply: 6,
+  paid: 8, roi: 6, referral: 4, reply: 6,
   activity: { silent60: -12, silent30: -6 },
   softNegative: -18, hardNegative: -30,
 };
@@ -71,7 +71,7 @@ function compute(lead, ctx = {}, now = Date.now()) {
 
   // ── Paying + positive signals ──
   if (ctx.isPaid) score += add('paying', 'yes', W.paid);
-  if (ctx.meetsSloth) score += add('sloth_gate', 'met', W.sloth);
+  if (ctx.meetsRoi) score += add('roi_gate', 'met', W.roi);
   if ((Number(ctx.referralsQualified) || 0) >= 1) score += add('referral', 'made', W.referral);
 
   // ── Inbound reply = they engaged back ──

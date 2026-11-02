@@ -23,23 +23,23 @@ describe('CRM board layout (pinned to spec)', () => {
     expect(keys('presale')).not.toContain('replied');
   });
 
-  it('Relations = Subscribed · Onboarded · Won · The Sloth', () => {
-    expect(keys('relations')).toEqual(['paid', 'activated', 'won', 'sloth']);
+  it('Relations = Subscribed · Onboarded · Won · Customer', () => {
+    expect(keys('relations')).toEqual(['paid', 'activated', 'won', 'customer']);
   });
 
-  it('Marketing = The Sloth · Retained · Ambassador · Enterprised · Champion', () => {
-    expect(keys('marketing')).toEqual(['sloth', 'retained', 'ambassador', 'enterprised', 'champion']);
+  it('Marketing = Customer · Retained · Ambassador · Enterprised · Champion', () => {
+    expect(keys('marketing')).toEqual(['customer', 'retained', 'ambassador', 'enterprised', 'champion']);
   });
 
   it('Exit = Not Reachable · Not Interested · Disqualified · Lost · Churned', () => {
     expect(keys('exit')).toEqual(['not_reachable', 'not_interested', 'disqualified', 'lost', 'churned']);
   });
 
-  it('shared handoff columns are marked (Subscribed on Presale+Relations, The Sloth on Relations+Marketing)', () => {
+  it('shared handoff columns are marked (Subscribed on Presale+Relations, Customer on Relations+Marketing)', () => {
     expect(colOf('presale', 'paid').handoff).toBe(true);
     expect(colOf('relations', 'paid').handoff).toBe(true);
-    expect(colOf('relations', 'sloth').handoff).toBe(true);
-    expect(colOf('marketing', 'sloth').handoff).toBe(true);
+    expect(colOf('relations', 'customer').handoff).toBe(true);
+    expect(colOf('marketing', 'customer').handoff).toBe(true);
   });
 
   it('no board exceeds 5 columns; every column has a label + valid statuses', () => {

@@ -1,4 +1,4 @@
--- v3.175 — Email rebrand: Book A Sloth → Meeticulous
+-- v3.175 — Email rebrand: Meeticulous → Meeticulous
 -- ---------------------------------------------------------------------------
 -- Global email settings + sender personas move to the Meeticulous brand, the
 -- maroon palette (#960D32) and the VERIFIED Resend sending domain

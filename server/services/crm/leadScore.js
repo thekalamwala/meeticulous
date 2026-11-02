@@ -19,16 +19,16 @@
 // redesigned; the post-conversion ladder (won…champion) was added. A status
 // absent here falls to the shared `?? 10` default on BOTH sides, so retired
 // statuses stay in parity. See docs/crm-relationship-engine-audit.md (PR-0).
+const { MONEY: CONVERTED, ROI } = require('./lifecycleRules');
 const STAGE = {
   new: 5, contacted: 20, replied: 45, qualified: 60, demo: 70,
-  paid: 90, activated: 92, won: 95, sloth: 98, retained: 98, ambassador: 99, enterprised: 99, champion: 100,
+  paid: 90, activated: 92, won: 95, [ROI]: 98, retained: 98, ambassador: 99, enterprised: 99, champion: 100,
   lost: 0, churned: 0, not_reachable: 0, not_interested: 0, disqualified: 0, do_not_contact: 0,
 };
 // A converted/paying customer is `intent: 'activated'` regardless of raw score, so
 // a high-scoring customer never floods the High Intent acquisition queue. Reuse the
-// single lifecycle source of truth (paid, activated, won, sloth, retained,
+// single lifecycle source of truth (paid, activated, won, ROI, retained,
 // ambassador, enterprised, champion) rather than re-listing the money states here.
-const { MONEY: CONVERTED } = require('./lifecycleRules');
 
 /** @returns {{ score:number, temp:'hot'|'warm'|'cold' }} — parity with the client. */
 function compute(lead, now = Date.now()) {

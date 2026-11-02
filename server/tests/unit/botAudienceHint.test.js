@@ -11,15 +11,15 @@ const { _inferAudienceFromUrl } = require('../../controllers/botController');
 
 describe('inferAudienceFromUrl', () => {
   test.each([
-    ['https://bookasloth.com/dashboard/services', 'host'],
-    ['https://bookasloth.com/login-as-vendor', 'host'],
-    ['https://bookasloth.com/pricing', 'host'],
+    ['https://meeticulous.com/dashboard/services', 'host'],
+    ['https://meeticulous.com/login-as-vendor', 'host'],
+    ['https://meeticulous.com/pricing', 'host'],
     ['https://meeticulous.com/become-a-host', 'host'],
-    ['https://bookasloth.com/for/therapists', 'host'],
-    ['https://bookasloth.com/user/my-bookings', 'guest'],
-    ['https://bookasloth.com/explore', 'guest'],
-    ['https://bookasloth.com/some-host-slug/haircut', null], // a host profile / booking page — ambiguous, stay neutral
-    ['https://bookasloth.com/', null],
+    ['https://meeticulous.com/for/therapists', 'host'],
+    ['https://meeticulous.com/user/my-bookings', 'guest'],
+    ['https://meeticulous.com/explore', 'guest'],
+    ['https://meeticulous.com/some-host-slug/haircut', null], // a host profile / booking page — ambiguous, stay neutral
+    ['https://meeticulous.com/', null],
     ['', null],
     [null, null],
   ])('%s → %s', (url, expected) => {

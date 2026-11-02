@@ -38,8 +38,7 @@ between the host and the guest."*
   is host↔guest; BAS invoices only its fee + commission; guest money for the service is
   collected on the host's behalf and paid onward net of PG/TDS/TCS.
 - **§1 Definitions** — "Host = supplies services **to Meeticulous** for onward sale" → "Host =
-  seller who supplies services **to guests** via the Platform." "Guest = buys **from Book A
-  Sloth**" → "buys **from the host** via the Platform."
+  seller who supplies services **to guests** via the Platform." "Guest = buys **from the Platform**" → "buys **from the host** via the Platform."
 - **§4/§5** — remove "you supply to Meeticulous / you buy from Meeticulous"; restate as
   host-sells-to-guest, BAS facilitates.
 - **§6 Bookings/payments/taxes** — "we issue the guest a tax invoice for the full amount" →

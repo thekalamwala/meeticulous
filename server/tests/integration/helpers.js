@@ -75,7 +75,7 @@ const USER_PROFILE = {
 };
 
 const ADMIN_PROFILE = {
-  id: 'admin-uuid', name: 'Admin', email: 'book@bookasloth.com',
+  id: 'admin-uuid', name: 'Admin', email: 'book@meeticulous.com',
   role: 'superadmin',
 };
 

@@ -22,7 +22,7 @@ jest.mock('../../config/supabase', () => ({
 const senderRegistry = require('../../services/email/senderRegistry');
 
 beforeEach(() => {
-  state.senders = [{ sender_key: 'tithi', from_name: 'Tithi | Book A Sloth', from_email: 'tithi@bookasloth.in', reply_to: 'tithi@bookasloth.in' }];
+  state.senders = [{ sender_key: 'tithi', from_name: 'Tithi | Meeticulous', from_email: 'tithi@meeticulous.com', reply_to: 'tithi@meeticulous.com' }];
   state.seq = null;
   senderRegistry.clearCache();
 });
@@ -30,13 +30,29 @@ beforeEach(() => {
 describe('senderRegistry.byKey', () => {
   test('resolves a known active persona', async () => {
     expect(await senderRegistry.byKey('tithi')).toEqual({
-      fromName: 'Tithi | Book A Sloth', fromEmail: 'tithi@bookasloth.in', replyTo: 'tithi@bookasloth.in',
+      fromName: 'Tithi | Meeticulous', fromEmail: 'tithi@meeticulous.com', replyTo: 'tithi@meeticulous.com', provider: null,
     });
   });
   test('null for unknown key / empty key (→ caller uses global default)', async () => {
     expect(await senderRegistry.byKey('ghost')).toBeNull();
     expect(await senderRegistry.byKey(null)).toBeNull();
     expect(await senderRegistry.byKey('')).toBeNull();
+  });
+});
+
+describe('senderRegistry.forCrm', () => {
+  test('uses the active crm_<persona> sender (cold-outreach domain)', async () => {
+    state.senders.push({ sender_key: 'crm_tithi', from_name: 'Tithi | Meeticulous', from_email: 'tithi@mail.meeticulous.in', reply_to: 'tithi@meeticulous.in', provider: 'brevo' });
+    expect(await senderRegistry.forCrm('tithi')).toEqual({
+      fromName: 'Tithi | Meeticulous', fromEmail: 'tithi@mail.meeticulous.in', replyTo: 'tithi@meeticulous.in', provider: 'brevo',
+    });
+  });
+  test('falls back to the normal persona while crm_* is inactive/missing', async () => {
+    expect((await senderRegistry.forCrm('tithi')).fromEmail).toBe('tithi@meeticulous.com');
+  });
+  test('null for no key / unknown persona (→ global default)', async () => {
+    expect(await senderRegistry.forCrm(null)).toBeNull();
+    expect(await senderRegistry.forCrm('ghost')).toBeNull();
   });
 });
 

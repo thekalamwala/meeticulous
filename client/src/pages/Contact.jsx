@@ -19,7 +19,7 @@ import { sendContactMessage } from '../services/api';
  * background, crimson as the single accent (matches the About page).
  */
 
-const EMAIL = 'hello@meeticulous.com';
+const EMAIL = 'team@meeticulous.com';
 // Same WhatsApp number as the footer's WhatsApp link.
 const WHATSAPP = 'https://wa.me/15559708785?text=Hi%2C%20I%20want%20to%20talk%20about%20Meeticulous';
 

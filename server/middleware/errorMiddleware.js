@@ -17,7 +17,7 @@ const errorHandler = (err, req, res, next) => {
   // Browsers on non-API paths get the branded error page; API/JSON clients keep
   // the machine payload (the React app + integrations parse this).
   if (wantsBrandedHtml(req)) {
-    // 404/410 get the detective-sloth treatment matching the client + edge;
+    // 404/410 get the branded not-found treatment matching the client + edge;
     // other codes keep the generic branded card.
     const isLost = statusCode === 404 || statusCode === 410;
     return res.status(statusCode).type('html').send(brandPage({

@@ -37,7 +37,7 @@ Three layers, unioned by one service; normalization applied before every check.
 ## 3. Full route inventory (Phase 1)
 
 ### Client routes (React Router) — first segments
-`/` · `help` · `about` · `privacy` · `terms` · `refund` · `unsubscribe` · `support` · `explore` · `login` · `forgot-password` · `reset-password` · `signup` · `be-a-sloth` · `login-as-vendor` · `vendor` (`/vendor/signup`) · `vendor-register` (+ `/:slug/claim|about|category|whatsapp|plan|live`) · `auth` (`/auth/google/done`) · `lp` (`/lp/*`) · `hello-sloth` · `super-dashboard` · `admin` (`/admin/*`, ~60 sub-routes) · `dashboard` (`/dashboard/*`) · `user` (`/user/*`) · `review` (`/review/:bookingId`) · `my-bookings` · `profile` · `reviews` · `loyalty` · **`/:profileSlug`** (+ `/:profileSlug/badges|product/:id|booking/:slug|:serviceSlug`) · `*` (NotFound).
+`/` · `help` · `about` · `privacy` · `terms` · `refund` · `unsubscribe` · `support` · `explore` · `login` · `forgot-password` · `reset-password` · `signup` · `become-a-host` · `login-as-vendor` · `vendor` (`/vendor/signup`) · `vendor-register` (+ `/:slug/claim|about|category|whatsapp|plan|live`) · `auth` (`/auth/google/done`) · `lp` (`/lp/*`) · `backstage` · `super-dashboard` · `admin` (`/admin/*`, ~60 sub-routes) · `dashboard` (`/dashboard/*`) · `user` (`/user/*`) · `review` (`/review/:bookingId`) · `my-bookings` · `profile` · `reviews` · `loyalty` · **`/:profileSlug`** (+ `/:profileSlug/badges|product/:id|booking/:slug|:serviceSlug`) · `*` (NotFound).
 
 The single collision surface is **`/:profileSlug`** and its children. Everything above it must be reserved.
 
@@ -55,7 +55,7 @@ L1 categories in `server/config/reservedNamespaces.js` (each normalized into one
 - **INFRA** — `api`, `www`, `cdn`, `static`, `assets`, `public`, `media`, `files`, `img`, `images`, `download(s)`, `webhook(s)`, `oauth`, `sso`, `saml`, `callback`, `well-known`, `healthz`, `ping`, `status`, `metrics`, `debug`, `internal`, `system`, `root`.
 - **FUTURE** (reserved today for tomorrow's launches) — `docs`, `blog(s)`, `pricing`, `plans`, `features`, `changelog`, `roadmap`, `security`, `legal`, `cookies`, `careers`, `jobs`, `press`, `newsroom`, `contact`, `faq`, `guides`, `tutorials`, `resources`, `learn`, `academy`, `courses`, `partners`, `affiliates`, `developers`, `api-docs`, `enterprise`, `teams`/`team`, `org(s)`/`organization(s)`, `workspace(s)`, `community`/`communities`, `marketplace`, `store`, `shop`, `market`.
 - **ACCOUNT** — `account(s)`, `billing`, `invoice(s)`, `checkout`, `cart`, `verify`, `confirm`, `activate`, `welcome`, `onboarding`, `get-started`, `start`, `join`, `invite`, `refer(ral)`, booking/commerce nouns (`book`, `booking(s)`, `schedule`, `appointment(s)`, `slot(s)`, `availability`, `service(s)`, `product(s)`, `order(s)`, `payment(s)`, `subscribe`, `subscription(s)`, `upgrade`, `redeem`, `gift`, `promo`, `coupon`, `deals`, `offers`), plus `notifications`, `campaigns`, `badges`, `categories`, `feedback`.
-- **BRAND / role / safety** — `meeticulous`, `meeticulous`, `sloth`, `official`, `verified`, `staff`, `moderator`/`mod`, `administrator`, `superadmin`, `no-reply`/`noreply`, `postmaster`, `abuse`, `hostmaster`, `mail`, `email`, `host(s)`, `users`, `vendors`, `home`, `index`, `me`, `guest`, `app(s)`, `web`, `go`.
+- **BRAND / role / safety** — `meeticulous`, `official`, `verified`, `staff`, `moderator`/`mod`, `administrator`, `superadmin`, `no-reply`/`noreply`, `postmaster`, `abuse`, `hostmaster`, `mail`, `email`, `host(s)`, `users`, `vendors`, `home`, `index`, `me`, `guest`, `app(s)`, `web`, `go`.
 - **SHORT** (premium landgrab guard) — `a i u s p c e r o x m`.
 - **HAZARD** — `null`, `undefined`, `true`, `false`, `nan`, `none`, `nil`, `void`.
 
@@ -149,6 +149,6 @@ Admin user-edit (`adminController.updateUser`) intentionally does not allow sett
 ## 11. Rollout
 
 1. Apply `server/migrations/v3.33_reserved_slugs.sql` to **staging then production** (idempotent; `IF NOT EXISTS`).
-2. Optionally seed brand/premium L2 rows (`meeticulous`, `sloth`, `official`, short names).
+2. Optionally seed brand/premium L2 rows (`meeticulous`, `official`, short names).
 3. Merge → Render (backend) + Vercel (client) auto-deploy.
 4. Verify: `reserved_slugs` exists, `is_reserved_slug('demo')` is `false` until a row is added, RPCs updated, server + client suites green.

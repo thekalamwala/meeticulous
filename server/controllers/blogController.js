@@ -22,7 +22,7 @@ const toSummary = (r) => ({
   title: r.title,
   excerpt: r.excerpt || '',
   category: r.category || 'News',
-  author: r.author || 'Book A Sloth Team',
+  author: r.author || 'Meeticulous Team',
   // `image` = on-page hero; when set it REPLACES the icon thumbnail on the post
   // page and the index card. `ogImage` is the social share card and is read only
   // by the og:image meta tag — never render it as the hero.

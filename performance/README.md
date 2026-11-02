@@ -1,4 +1,4 @@
-# Performance Testing — Book A Sloth
+# Performance Testing — Meeticulous
 
 JMeter load-testing harness. Test plans in `jmeter/test-plans/`, driven by a Node wrapper (`scripts/run.js`) + `perf:*` npm scripts. Design: `../docs/superpowers/specs/2026-06-18-jmeter-performance-testing-design.md`.
 

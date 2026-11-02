@@ -1,7 +1,7 @@
 # Meeticulous — Deployment Runbook
 
 Plain-English guide to taking Meeticulous from your laptop to a live, secure,
-production deployment. The topology is the proven Book A Sloth one:
+production deployment. The topology is the proven Meeticulous one:
 
 ```
                  ┌──────────────┐   push main    ┌─────────────────────┐
@@ -121,7 +121,7 @@ encryption throws at boot.
      (`GOOGLE_REDIRECT_URI` = `https://api.meeticulous.com/api/auth/google/callback`)
    - `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` / `RAZORPAY_WEBHOOK_SECRET` → Razorpay **live** keys
    - `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` → your transactional SMTP
-   - `BREVO_API_KEY` / `BREVO_FROM` → Brevo v3 key + an authenticated sender (e.g. `hello@meeticulous.com`)
+   - `BREVO_API_KEY` / `BREVO_FROM` → Brevo v3 key + an authenticated sender (e.g. `team@meeticulous.com`)
    - `SENTRY_DSN` → your Sentry project DSN (blank = disabled)
    - `POSTHOG_PROJECT_TOKEN` → PostHog project token (`POSTHOG_HOST` is inline already)
    - `ADMIN_ALERT_EMAIL` / `SUPER_ADMIN_EMAIL` → your addresses

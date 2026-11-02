@@ -8,7 +8,7 @@
  *
  * The money model (marketplace, final v4 — docs/payment-model.md v4):
  *
- * Book A Sloth is an INTERMEDIARY. The host's listed price is the host's revenue,
+ * Meeticulous is an INTERMEDIARY. The host's listed price is the host's revenue,
  * NOT a sale on our books. We invoice only our own fee + commission.
  *
  *   Customer pays  = servicePrice + platformFee + gstOnPlatformFee
@@ -54,7 +54,7 @@ const assertNonNegative = (value, label) => {
  * @param {number} servicePrice  service amount (≥ 0)
  * @param {object} [opts]        { platformFee, chargeFeeOnFree } override (e.g. from settings)
  *   chargeFeeOnFree — when true, a ₹0 service STILL carries the flat fee. Used by the
- *   interim fee-only mode (host prices forced to ₹0, no Route yet): Book A Sloth collects
+ *   interim fee-only mode (host prices forced to ₹0, no Route yet): Meeticulous collects
  *   only its own booking fee + GST and no host money moves. Default false (₹0 → no fee).
  * @returns {number} flat platform fee in ₹ (0 for a free service unless chargeFeeOnFree)
  */

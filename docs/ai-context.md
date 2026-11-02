@@ -62,7 +62,7 @@ result = await supabaseAdmin.from('table').insert(safePayload);
 - Booking flow: `/:username/booking/:serviceSlug`
 - Product purchase: `/:username/product/:productId`
 - Dashboard: `/dashboard/*`
-- Admin: `/admin/*` (login at `/hello-sloth`)
+- Admin: `/admin/*` (login at `/backstage`)
 
 ## Known Issues / Constraints
 - WhatsApp is live via AiSensy — `notify.js` routes through `notificationEngine.js`, DB-configured per event/provider

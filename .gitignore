@@ -97,10 +97,10 @@ staging_schema.sql
 # (roadmaps, decks, research notes). Not code; excluded so they don't show up as
 # uncommitted changes / trigger PR prompts.
 autoresearch/
-book-a-sloth-messaging-bible.md
-BookASloth_12Month_Roadmap_Tracker.xlsx
-BookASloth_12Month_Value_Roadmap.docx
-BookASloth_12Month_Value_Roadmap.pdf
+meeticulous-messaging-bible.md
+Meeticulous_12Month_Roadmap_Tracker.xlsx
+Meeticulous_12Month_Value_Roadmap.docx
+Meeticulous_12Month_Value_Roadmap.pdf
 
 # Local-only OG card previews from client/scripts/generateBlogOgImages.mjs --dry
 client/scripts/.og-preview/

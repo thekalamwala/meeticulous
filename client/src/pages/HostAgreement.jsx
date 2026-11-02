@@ -10,7 +10,7 @@ import LegalLayout, { Section } from '../components/common/LegalLayout';
 // monthly cycle / 10% holdback / Payment Advice doc / Form 16A exist in the product —
 // wording matches routeAutoPayoutService.js + payoutAdminController.js.
 
-const Mail = () => <a href="mailto:hello@meeticulous.com" className="text-primary hover:underline">hello@meeticulous.com</a>;
+const Mail = () => <a href="mailto:team@meeticulous.com" className="text-primary hover:underline">team@meeticulous.com</a>;
 
 const HostAgreement = () => (
   <LegalLayout
@@ -70,13 +70,13 @@ const HostAgreement = () => (
         resell, or supply your Services and is not the seller of record for them.
       </p>
       <p>
-        <strong>2.2 Contract with the Guest.</strong> The contract for the Service is between you and the Guest. Book A
-        Sloth is not a party to it. You are responsible to the Guest for supplying the Service.
+        <strong>2.2 Contract with the Guest.</strong> The contract for the Service is between you and the Guest. Meeticulous
+        is not a party to it. You are responsible to the Guest for supplying the Service.
       </p>
       <p>
         <strong>2.3 Independent provider.</strong> You are an independent service provider. Nothing in this Agreement
-        creates an agency, partnership, joint venture, franchise, or employment relationship between you and Book A
-        Sloth. You are not entitled to any employment benefit, and you are responsible for your own establishment,
+        creates an agency, partnership, joint venture, franchise, or employment relationship between you and
+        Meeticulous. You are not entitled to any employment benefit, and you are responsible for your own establishment,
         staff, equipment, insurance, and statutory obligations.
       </p>
       <p>

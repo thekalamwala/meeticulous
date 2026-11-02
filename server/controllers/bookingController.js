@@ -123,7 +123,7 @@ const splitWhen = (scheduledAt, tz = "Asia/Kolkata") => {
 };
 // Placeholder map shared by customer + vendor booking emails.
 const bookingEmailData = ({ serviceTitle, hostName, hostPhone, guestName, scheduledAt, tz, bookingId, online, actionLink, mapLink, hostLocation }) => {
-  const dashboard = `${process.env.CLIENT_URL || "https://bookasloth.com"}/dashboard`;
+  const dashboard = `${process.env.CLIENT_URL || "https://meeticulous.com"}/dashboard`;
   // Online → Meet link (or dashboard). Offline → the host's map link (or dashboard).
   const link = online ? (actionLink || dashboard) : (mapLink || dashboard);
   return {
@@ -132,6 +132,7 @@ const bookingEmailData = ({ serviceTitle, hostName, hostPhone, guestName, schedu
     vendor_phone: hostPhone || "",
     user_name: guestName || "Customer",
     booking_id: bookingId || "",
+    booking_ref: String(bookingId || "").slice(0, 8).toUpperCase(),
     // Location line: "Online" for online; the host's city text for offline (or a
     // neutral "In person" when only a map link is set). Empty when the caller
     // passes no venue info at all — preserves the lifecycle emails (cancel /
@@ -147,7 +148,7 @@ const bookingEmailData = ({ serviceTitle, hostName, hostPhone, guestName, schedu
     // confirmed-customer email CTA points here so anonymous guests (no login)
     // aren't stranded. Falls back to the dashboard if no booking id.
     manage_url: bookingId
-      ? `${process.env.CLIENT_URL || "https://bookasloth.com"}/manage-booking/${manageBookingToken.sign(bookingId)}`
+      ? `${process.env.CLIENT_URL || "https://meeticulous.com"}/manage-booking/${manageBookingToken.sign(bookingId)}`
       : dashboard,
     ...splitWhen(scheduledAt, tz),
   };
@@ -1081,7 +1082,7 @@ const markBookingCompleted = async (booking, { notify = true } = {}) => {
       });
       // The review CTA ({{review_url}}) opens the dedicated review page for THIS
       // booking. Keep profile_url too (still referenced elsewhere / as fallback).
-      const websiteBase = process.env.CLIENT_URL || "https://bookasloth.com";
+      const websiteBase = process.env.CLIENT_URL || "https://meeticulous.com";
       const completedCustomerData = {
         ...emailData,
         review_url: `${websiteBase}/review/${booking.id}`,
@@ -1813,7 +1814,7 @@ const reminderFlagFor = (windowHours) =>
 // Send the guest + host reminder pair for one booking. Content is identical for
 // every lead-time (it shows the actual scheduled time), so callers don't pass
 // the window — only the cron's flag bookkeeping differs.
-// WhatsApp booking reminders are a paid perk. Free (Sloth) hosts get them for a
+// WhatsApp booking reminders are a paid perk. Free (Starter) hosts get them for a
 // grace window — their first 2 months — after which their reminders fall back to
 // email; paid/comped plans always keep WhatsApp. The window is anchored no earlier
 // than WHATSAPP_FREE_LAUNCH so EXISTING free hosts (all already >2 months old) are
@@ -1837,7 +1838,7 @@ const sendBookingReminder = async (b, host, tz) => {
   // Mode of truth = service.meeting_mode (NOT meeting_link presence — the Meet
   // link may not be minted yet). Online → join link; offline → dashboard for now.
   const isOnline = (s?.meeting_mode || (b.meeting_link ? "online" : "offline")) === "online";
-  const dashboard = `${process.env.CLIENT_URL || "https://bookasloth.com"}/dashboard`;
+  const dashboard = `${process.env.CLIENT_URL || "https://meeticulous.com"}/dashboard`;
   // WhatsApp reminder templates carry a 5th "join/directions" var: Meet link when
   // online, the host's map link when offline (falls back to the dashboard).
   const directions = host.map_link || "";

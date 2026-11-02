@@ -207,7 +207,7 @@ const submitKyc = async (req, res) => {
       .from('kyc_submissions').upsert(payload, { onConflict: 'user_id' });
     if (error) throw error;
 
-    const base = process.env.CLIENT_URL || 'https://bookasloth.com';
+    const base = process.env.CLIENT_URL || 'https://meeticulous.com';
     if (autopilot) {
       // No human review needed — notify the host + kick off Route onboarding now.
       // A failed create is retried by the payout reconciler's account sweep.

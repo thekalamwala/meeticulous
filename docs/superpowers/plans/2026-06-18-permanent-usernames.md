@@ -142,7 +142,7 @@ On failure return a clear reason, including next-eligible date when blocked by g
 - [ ] Write `v3.17_username_history.sql` (above). Apply in Supabase SQL Editor. Verify backfill row count == non-null usernames.
 
 ### Task 2: Reserved list + generator
-- [ ] `reservedUsernames.js` — include `login, signup, register, dashboard, admin, api, u, host, hello-sloth, settings, search, explore, about, privacy, help, unsubscribe` + route names. Export `isReserved()`.
+- [ ] `reservedUsernames.js` — include `login, signup, register, dashboard, admin, api, u, host, backstage, settings, search, explore, about, privacy, help, unsubscribe` + route names. Export `isReserved()`.
 - [ ] `usernameGenerator.js` — `{adjective}-{noun}-{suffix}`, lowercase. Suffix = base36 of crypto-random, ~5 chars. Retry on history collision and reserved hit. Unit tests: shape, lowercase, reserved-avoidance, collision-retry.
 
 ### Task 3: usernameService (resolve + atomic change)

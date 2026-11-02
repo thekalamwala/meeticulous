@@ -20,7 +20,7 @@ test('at_risk → high-priority winback; valued customer routes to a human found
   });
   expect(normal[0].explanation).toContain('40d');
 
-  const valued = recommendationsFor(lead, H('at_risk'), { meetsSloth: true }, NOW);
+  const valued = recommendationsFor(lead, H('at_risk'), { meetsRoi: true }, NOW);
   expect(valued[0]).toMatchObject({ suggested_sender: 'founder', mode: 'human' });
 });
 

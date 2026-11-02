@@ -54,7 +54,7 @@ test('unsubscribed email blocks send', async () => {
 });
 
 test('placeholder phone-only email is skipped (never emailed → no bounce)', async () => {
-  const r = await canSend({ email: 'p919876543210@users.bookasloth.app' }, 'email');
+  const r = await canSend({ email: `p919876543210${require('../../services/email/placeholderEmail').PLACEHOLDER_EMAIL_DOMAIN}` }, 'email');
   expect(r).toEqual({ ok: false, reason: 'placeholder_email' });
 });
 

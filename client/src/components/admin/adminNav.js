@@ -88,7 +88,7 @@ export const PATH_LABELS = {
   content:'Content', pages:'Pages', blogs:'Blogs', newsletter:'Newsletter',
   faq:'FAQ', testimonials:'Testimonials',
   support:'Support', tickets:'Tickets', disputes:'Disputes', reviews:'Reviews', feedback:'Host Feedback',
-  chat:'Support Inbox', bolt:'Bolt Support',
+  chat:'Support Inbox', bolt:'Tithi Support',
   platform:'Platform', appearance:'Appearance', menu:'Menu Builder',
   footer:'Footer Builder', communication:'Communication', campaigns:'Campaigns', notifications:'Notification Settings', badges:'Badges',
   confirmed:'Confirmed', completed:'Completed', cancelled:'Cancelled', disputed:'Disputed',
@@ -98,7 +98,7 @@ export const PATH_LABELS = {
   sales:'Sales', leads:'Leads', lists:'Lists', pipeline:'Pipeline', 'follow-ups':'Follow-ups', reports:'Reports', templates:'Templates', 'cold-calling':'Cold Calling', today:"Today's Calls", lead:'Call', history:'Call History',
   desk:'Desk', sequences:'Sequences', growth:'Growth',
   security:'Security', 'blocked-ips':'Blocked IPs',
-  dept:'Department', cxo:'CXO', marketing:'Marketing', operation:'Operation', engineering:'Engineering', 'sloth-house':'The Hive',
+  dept:'Department', cxo:'CXO', marketing:'Marketing', operation:'Operation', engineering:'Engineering', hive:'The Hive',
 };
 
 // ── NAV TREE ──────────────────────────────────────────────────────────────
@@ -246,7 +246,7 @@ export const NAV = [
     { label:'Disputes',           icon:'alert',     to:'/admin/support/disputes', perm:'disputes.view' },
     { label:'Reviews',            icon:'msgSq',     to:'/admin/support/reviews', perm:'reviews.moderate', badge:'pending_reviews' },
     { label:'Host Feedback',      icon:'msgSq',     to:'/admin/feedback', perm:'feedback.view' },
-    { label:'Bolt Support',       icon:'chat',      to:'/admin/support/bolt', perm:'support.view' },
+    { label:'Tithi Support',       icon:'chat',      to:'/admin/support/bolt', perm:'support.view' },
     { label:'Insights',           icon:'bars',      to:'/admin/support/insights', perm:'support.view' },
   ]},
   { key:'system', label:'System', icon:'gear', color:'#6b7280', children:[

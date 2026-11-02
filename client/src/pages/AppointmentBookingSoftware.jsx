@@ -308,8 +308,8 @@ export default function AppointmentBookingSoftware() {
           {/* RIGHT — hero illustration + floating payment chip */}
           <Reveal delay={0.12} className="relative mx-auto w-full max-w-md">
             <AssetPhoto
-              file="illustrations/sloth-laptop-booking.webp"
-              alt="A relaxed sloth at a laptop getting a New Booking notification"
+              file="illustrations/laptop-book-time.webp"
+              alt="A booking page on a laptop with a time slot being picked"
               w={1320}
               h={1040}
               className="w-full rounded-[16px] ring-1 ring-black/5 shadow-[0_40px_90px_-30px_rgba(26,26,26,0.5)]"
@@ -357,14 +357,14 @@ export default function AppointmentBookingSoftware() {
               Appointment booking software lets your clients see when you're free and book a slot
               online, instead of messaging back and forth. Good software also takes the payment
               upfront, sends automatic reminders, syncs your calendar and issues an invoice — so
-              an appointment is booked, paid and confirmed without you lifting a finger. Book A
-              Sloth does all of that from a single shareable link.
+              an appointment is booked, paid and confirmed without you lifting a finger.
+              Meeticulous does all of that from a single shareable link.
             </Reveal>
           </div>
           <Reveal delay={0.1} className="mx-auto w-full max-w-xs">
             <AssetPhoto
-              file="illustrations/sloth-orbit-icons.webp"
-              alt="A sloth at a laptop surrounded by calendar, payment, reminder and email icons"
+              file="illustrations/checklist-features.webp"
+              alt="A checklist of bookings, payments, reminders and invoicing"
               w={1320}
               h={1040}
               className="w-full rounded-[16px] ring-1 ring-black/5 shadow-[0_24px_60px_-30px_rgba(26,26,26,0.35)]"
@@ -578,13 +578,6 @@ export default function AppointmentBookingSoftware() {
           <Orb className="-left-16 -top-16 h-56 w-56 bg-primary/25" />
           <Orb className="-right-16 -bottom-16 h-56 w-56 bg-primary/20" />
           <div className="relative">
-            <AssetPhoto
-              file="illustrations/sloth-sleeping-cat.webp"
-              alt="A sloth napping with a cat — more time for what matters"
-              w={1320}
-              h={1040}
-              className="mx-auto mb-6 w-full max-w-[240px] rounded-[16px] ring-1 ring-white/10"
-            />
             <h2 className="text-3xl font-extrabold text-primary sm:text-4xl">Get booked, paid and reminded.</h2>
             <p className="mx-auto mt-3 max-w-[520px] text-neutral-300">
               Set up your appointment booking software in minutes. Free to start, upgrade whenever your bookings grow.

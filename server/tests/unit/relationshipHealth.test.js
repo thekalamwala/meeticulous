@@ -13,7 +13,7 @@ const daysAgo = (n) => new Date(NOW - n * 864e5).toISOString();
 test('recent meaningful contact + real outcomes → thriving', () => {
   const { state, score } = compute(
     { status: 'won', last_meaningful_interaction_at: daysAgo(3), last_activity_at: daysAgo(3) },
-    { isPaid: true, hasBooking: true, bookingsLast30d: 6, meetsSloth: true },
+    { isPaid: true, hasBooking: true, bookingsLast30d: 6, meetsRoi: true },
     NOW,
   );
   expect(state).toBe('thriving');
@@ -78,7 +78,7 @@ test('churned, or long two-way silence + lapsed → dormant', () => {
 test('signals explain the state (top contributors, meaningful recency always present)', () => {
   const { signals } = compute(
     { status: 'won', last_meaningful_interaction_at: daysAgo(3), last_activity_at: daysAgo(3) },
-    { isPaid: true, hasBooking: true, bookingsLast30d: 6, meetsSloth: true },
+    { isPaid: true, hasBooking: true, bookingsLast30d: 6, meetsRoi: true },
     NOW,
   );
   expect(signals.length).toBeGreaterThan(0);

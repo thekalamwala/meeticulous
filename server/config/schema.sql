@@ -9,7 +9,7 @@
 --     scripts/migrate.js (which only runs server/migrations/).
 --
 -- Run this in the Supabase SQL Editor (Dashboard → SQL Editor → New Query)
--- This creates all the tables for the Book A Sloth app.
+-- This creates all the tables for the Meeticulous app.
 
 -- ============================================
 -- 1. PROFILES (extends Supabase auth.users)

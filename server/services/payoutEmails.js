@@ -15,7 +15,7 @@
 const { supabaseAdmin } = require('../config/supabase');
 const NotificationEngine = require('./notificationEngine');
 
-const BASE = process.env.CLIENT_URL || 'https://bookasloth.com';
+const BASE = process.env.CLIENT_URL || 'https://meeticulous.com';
 const firstName = (name) => (String(name || '').trim().split(' ')[0] || 'there');
 const rupees = (n) => `₹${(Number(n) || 0).toFixed(2)}`;
 const fmtDate = (ymd) => {

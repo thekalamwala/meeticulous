@@ -25,7 +25,7 @@ beforeEach(() => {
 test('claims the thread, snapshots the persona, and posts one warm intro when no human has replied', async () => {
   chat.hasAdminMessage.mockResolvedValue(false);
   const res = mkRes();
-  await assign(req('tithi@bookasloth.in'), res);
+  await assign(req('tithi@meeticulous.com'), res);
 
   expect(chat.assign).toHaveBeenCalledWith('t1', 'adm-uuid');   // real id for the 'mine' filter
   expect(chat.setAgentName).toHaveBeenCalledWith('t1', 'Tithi'); // persona for display
@@ -40,7 +40,7 @@ test('claims the thread, snapshots the persona, and posts one warm intro when no
 test('re-assign does NOT re-greet once a human has already replied', async () => {
   chat.hasAdminMessage.mockResolvedValue(true);
   const res = mkRes();
-  await assign(req('tithi@bookasloth.in'), res);
+  await assign(req('tithi@meeticulous.com'), res);
   expect(chat.postMessage).not.toHaveBeenCalled();
 });
 
@@ -48,7 +48,7 @@ test('intro still posts (name-less) when context lookup fails', async () => {
   chat.hasAdminMessage.mockResolvedValue(false);
   context.getSupportContext.mockRejectedValue(new Error('db down'));
   const res = mkRes();
-  await assign(req('tithi@bookasloth.in'), res);
+  await assign(req('tithi@meeticulous.com'), res);
   expect(chat.postMessage).toHaveBeenCalledTimes(1);
   expect(chat.postMessage.mock.calls[0][0].body).toContain('Tithi');
 });

@@ -15,7 +15,7 @@
 - No invented pricing numbers: annual fees derive from `client/src/data/plans.js` (`PAID_PLANS[].yearly`).
 - No new npm dependencies. No animation library.
 - UI rules: existing design tokens only, `rounded-[6px]`, 4px borders where already used, ink/neutral colors, accents `starter #4AB765 / hostplus #269CEF / studio #FE5100`, surface `#f7f5ef` + `bg-white`. Plus Jakarta Sans headings / Poppins body inherited from global CSS — do not override.
-- Keep `Seo`, `canonical`, `ogCard('earnings-calculator','png')`, `ROUTE_START = "/be-a-sloth"`.
+- Keep `Seo`, `canonical`, `ogCard('earnings-calculator','png')`, `ROUTE_START = "/become-a-host"`.
 - Honesty rule: winner = highest annual take-home among non-capped plans. Studio is NEVER shown as higher take-home; it surfaces via the booking-ceiling rule only.
 - Host+ annual booking cap = 1,000. Studio unlimited.
 - Respect `prefers-reduced-motion` (snap to final values).
@@ -301,7 +301,7 @@ import {
 // number. Math: lib/earningsCalc.js + lib/morPricing.js (server mirror). Display
 // only; real pricing computed server-side at booking.
 
-const ROUTE_START = "/be-a-sloth";
+const ROUTE_START = "/become-a-host";
 const ICON = { starter: Sprout, hostplus: Sparkles, studio: Rocket };
 const ACCENT = { starter: "#4AB765", hostplus: "#269CEF", studio: "#FE5100" };
 

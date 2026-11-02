@@ -2,7 +2,7 @@
 const { check } = require('../../services/seo/rules/gsc');
 const { buildContext } = require('../../services/seo/rules/index');
 
-const url = 'https://bookasloth.com/jane';
+const url = 'https://meeticulous.com/jane';
 const page = (over = {}) => ({ url, pageType: 'host', httpStatus: 200, indexable: true, ...over });
 
 const ctxFor = (gscRow) => buildContext([page()], new Set(), gscRow ? new Map([[url, gscRow]]) : new Map());
@@ -14,7 +14,7 @@ describe('gsc rules', () => {
   });
 
   test('Google chose a different canonical', () => {
-    const ctx = ctxFor({ google_canonical: 'https://bookasloth.com/other', user_canonical: null });
+    const ctx = ctxFor({ google_canonical: 'https://meeticulous.com/other', user_canonical: null });
     const keys = check(page(), ctx).map((i) => i.ruleKey);
     expect(keys).toContain('gsc.google_chose_different_canonical');
   });

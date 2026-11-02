@@ -25,7 +25,7 @@ describe('requireCrm (Studio gate)', () => {
     expect(next).toHaveBeenCalled();
   });
 
-  test('free Sloth (limits.crm=10, capped view) → next()', async () => {
+  test('free Starter (limits.crm=10, capped view) → next()', async () => {
     const next = jest.fn();
     const res = mockRes();
     await requireCrm({ vendorPlan: 'free', vendorPlanData: { limits: { crm: 10 } } }, res, next);

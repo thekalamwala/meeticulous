@@ -130,7 +130,7 @@ scaffolding anything — I may be pointing you at code that lives elsewhere.
 ---
 
 **Notes for you (not part of the prompt):**
-- This reproduces the Book A Sloth topology: Vercel (prod frontend via GH
+- This reproduces the Meeticulous topology: Vercel (prod frontend via GH
   Action, git-integration off) + Render Blueprint (prod `starter` always-on,
   `free` staging) + Supabase (separate prod/staging) + path-filtered CI.
 - The real env lists are longer (Brevo/Resend, Meta/GA4 CAPI, Redis, GSC,

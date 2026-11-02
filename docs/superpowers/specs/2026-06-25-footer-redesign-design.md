@@ -42,7 +42,7 @@ Replace the Home-only, inline-hardcoded footer with a single **reusable, refined
 - Real site footer is **inline in `client/src/pages/Home.jsx`** (`<footer>` block near the end) with a `FOOTER_COLS` const (~L504). (Line numbers approximate — `Home.jsx` shifted after #167.)
 - It is **Home-only** — profile/service/about/help/legal pages render no footer.
 - `client/src/pages/admin/AdminFooterBuilder.jsx` is a **"coming soon" empty-state stub**; route `/admin/platform/footer` is wired but non-functional.
-- `App.jsx` renders `<Navbar/>` globally via `{!hideNavbar && <Navbar/>}`; `hideNavbar` excludes `/dashboard`, `/admin`, `/super-dashboard`, `/vendor-register`, `/lp`, and `/hello-sloth`.
+- `App.jsx` renders `<Navbar/>` globally via `{!hideNavbar && <Navbar/>}`; `hideNavbar` excludes `/dashboard`, `/admin`, `/super-dashboard`, `/vendor-register`, `/lp`, and `/backstage`.
 - `HostProfile.jsx`'s `{/* Footer */}` comment is a **service-card row**, not a page footer — no conflict.
 
 ## 5. Architecture
@@ -96,7 +96,7 @@ Wordmark "Meeticulous" + blurb (§5.1) + social icon row (§6.4).
 ### 6.3 Link columns (3)
 | Column | Links (label → href) |
 |---|---|
-| **Product** | How it works → `/#how-it-works` · Pricing → `/#pricing` · FAQ → `/#faq` · Be a Host → `/be-a-sloth` · Explore → `/explore` |
+| **Product** | How it works → `/#how-it-works` · Pricing → `/#pricing` · FAQ → `/#faq` · Be a Host → `/become-a-host` · Explore → `/explore` |
 | **Company** | About → `/about` · Reviews → `/#collective` · Log in → `/login-as-vendor` |
 | **Support** | Help → `/help` · Contact → `mailto:bolt@meeticulous.in` · Support → `/support` |
 

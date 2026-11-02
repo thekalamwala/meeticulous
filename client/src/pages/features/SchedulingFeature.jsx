@@ -397,7 +397,7 @@ export default function SchedulingFeature() {
             </Reveal>
             <Reveal instant delay={0.1} className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
               <PrimaryCta>Start free <ArrowRight size={16} /></PrimaryCta>
-              <Link to="/demo" className="inline-flex items-center gap-1.5 text-sm font-semibold hover:no-underline hover:opacity-80" style={{ color: BLUE }}>
+              <Link to="/contact" className="inline-flex items-center gap-1.5 text-sm font-semibold hover:no-underline hover:opacity-80" style={{ color: BLUE }}>
                 See a live booking page <ArrowRight size={15} />
               </Link>
             </Reveal>

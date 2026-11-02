@@ -1,33 +1,33 @@
 # Plans and upgrading
 
-Meeticulous has two plans: **Sloth** and **Sloth Active**. See the [pricing](/pricing) page for the current comparison.
+Meeticulous has two plans: **Starter** and **Pro**. See the [pricing](/pricing) page for the current comparison.
 
 ## The plans
 
-- **Sloth** — free forever. Unlimited services and bookings, your booking page, online payments, 24-hour booking reminders, and GST invoices. We take a **5% commission** when you actually get paid, and nothing when you don't.
-- **Sloth Active** — **₹399 a month**, or **₹3,599 a year** (under ₹10 a day, and about 25% cheaper than paying monthly). Commission drops to **0%**, and you get the Client CRM, 1-hour reminders and reschedule alerts, follow-up and rebook automation, unlimited digital products, a second calendar integration, unlimited AI service writing, and priority WhatsApp support.
+- **Starter** — free forever. Unlimited services and bookings, your booking page, online payments, 24-hour booking reminders, and GST invoices. We take a **5% commission** when you actually get paid, and nothing when you don't.
+- **Pro** — **₹399 a month**, or **₹3,599 a year** (under ₹10 a day, and about 25% cheaper than paying monthly). Commission drops to **0%**, and you get the Client CRM, 1-hour reminders and reschedule alerts, follow-up and rebook automation, unlimited digital products, a second calendar integration, unlimited AI service writing, and priority WhatsApp support.
 
 All prices include GST. Exact figures and the full comparison live on the [pricing](/pricing) page.
 
 ## Which plan should I choose?
 
-Start on Sloth. It is a complete booking business, not a trial — there is no time limit and no card required.
+Start on the free Starter plan. It is a complete booking business, not a trial — there is no time limit and no card required.
 
-Sloth Active pays for itself once the 5% commission costs more than the subscription. That happens at roughly **₹6,000 a month** in bookings on the yearly plan. Below that, staying free genuinely keeps you more money, and your dashboard shows exactly how much commission you have paid so far so the decision is a calculation rather than a guess.
+Pro pays for itself once the 5% commission costs more than the subscription. That happens at roughly **₹6,000 a month** in bookings on the yearly plan. Below that, staying free genuinely keeps you more money, and your dashboard shows exactly how much commission you have paid so far so the decision is a calculation rather than a guess.
 
 ## Is there a free plan?
 
-Yes. Sloth is free forever, with real online payment collection built in.
+Yes. Starter is free forever, with real online payment collection built in.
 
 ## Does the free plan limit my services or bookings?
 
 No. Both plans include unlimited services, unlimited bookings, and unlimited service categories.
 
-Sloth caps three things: **digital products** (3), **AI service writing** (10 generations every 6 months), and **free (₹0) services** (2). A free service is meant as a taster — a free discovery call — rather than a way to run a whole business at no cost; list more than a couple and you either set a price or move to Sloth Active. Sloth Active removes all three caps.
+Starter caps three things: **digital products** (3), **AI service writing** (10 generations every 6 months), and **free (₹0) services** (2). A free service is meant as a taster — a free discovery call — rather than a way to run a whole business at no cost; list more than a couple and you either set a price or move to Pro. Pro removes all three caps.
 
 ## What does "0% commission" mean?
 
-On Sloth Active we take no percentage of your booking price — you keep the full amount, minus the payment-gateway fee and any statutory taxes. On Sloth, a 5% commission applies per booking. A separate flat booking fee is paid by your guest on both plans; see [pricing and commission](/help/pricing-and-commission).
+On Pro we take no percentage of your booking price — you keep the full amount, minus the payment-gateway fee and any statutory taxes. On Starter, a 5% commission applies per booking. A separate flat booking fee is paid by your guest on both plans; see [pricing and commission](/help/pricing-and-commission).
 
 ## Upgrading
 
@@ -43,15 +43,15 @@ Yes. Switching applies your unused time as free days on the new cadence, so you 
 
 ## Does my subscription renew automatically?
 
-Yes. Sloth Active renews automatically at the end of each period until you cancel. You will get a reminder email before it renews.
+Yes. Pro renews automatically at the end of each period until you cancel. You will get a reminder email before it renews.
 
 ## Cancelling
 
-You can cancel any time — there is no lock-in beyond the billing period you have already paid for. Your plan stays active until that period ends, then your account returns to Sloth.
+You can cancel any time — there is no lock-in beyond the billing period you have already paid for. Your plan stays active until that period ends, then your account returns to Starter.
 
 ## What happens when my plan expires or I cancel?
 
-Your account returns to the free Sloth plan. **Nothing is deleted.** Your services, bookings, clients, digital products, earnings history, and booking link all stay exactly as they are — you simply lose the Sloth Active features (0% commission, the Client CRM, the extra automation) until you resubscribe.
+Your account returns to the free Starter plan. **Nothing is deleted.** Your services, bookings, clients, digital products, earnings history, and booking link all stay exactly as they are — you simply lose the Pro features (0% commission, the Client CRM, the extra automation) until you resubscribe.
 
 ## Will I lose my services, clients or digital products?
 
@@ -61,11 +61,11 @@ If you had more digital products than the free plan includes, the existing ones 
 
 ## Can I keep accepting bookings after my plan expires?
 
-Yes. Bookings are unlimited on both plans. The 5% commission applies again while you are on Sloth.
+Yes. Bookings are unlimited on both plans. The 5% commission applies again while you are on Starter.
 
 ## Can I renew after it has expired?
 
-Yes, any time from the **Upgrade** page. Renewing restores your Sloth Active features immediately.
+Yes, any time from the **Upgrade** page. Renewing restores your Pro features immediately.
 
 ## Can I renew before it expires?
 
@@ -121,11 +121,11 @@ No. Existing bookings are unaffected and you can keep taking new ones throughout
 
 ## Can I upgrade during onboarding?
 
-Yes. You can choose Sloth Active while setting up, or publish on Sloth and upgrade later from your dashboard.
+Yes. You can choose Pro while setting up, or publish on Starter and upgrade later from your dashboard.
 
 ## Can I use Meeticulous without paying?
 
-Yes, indefinitely. Sloth is a complete booking business — page, payments, reminders, invoices — with a 5% commission on what you earn.
+Yes, indefinitely. Starter is a complete booking business — page, payments, reminders, invoices — with a 5% commission on what you earn.
 
 ## Is my subscription linked to my account?
 
@@ -137,7 +137,7 @@ There is nothing to upgrade through — there is one paid plan. You can cancel a
 
 ## I am on an older plan (Host+ or Studio)
 
-Those plans are no longer sold, but if you are on one **nothing changes for you**: you keep your original price, your subscription renews as normal, and you have the full Sloth Active feature set. There is nothing you need to do.
+Those plans are no longer sold, but if you are on one **nothing changes for you**: you keep your original price, your subscription renews as normal, and you have the full Pro feature set. There is nothing you need to do.
 
 ## Who do I contact about a subscription or billing issue?
 

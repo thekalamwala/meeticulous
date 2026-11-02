@@ -240,11 +240,11 @@ CI and the Render build run **`npm run test:unit`** only — integration tests t
 | `/:username/badges` | Host badge showcase |
 | `/dashboard` | Host dashboard (auth required) |
 | `/vendor-register` | Multi-step host onboarding |
-| `/hello-sloth` | Admin login |
+| `/backstage` | Admin login |
 | `/super-dashboard` | Admin operations center |
 | `/admin/*` | Admin panel sections |
 
-> `/hello-sloth` is the real, deliberately obscure admin login path (defined in `client/src/App.jsx` and the reserved-namespace config). It is a route, not branding — leave it unless you intend to change it in code everywhere it appears.
+> `/backstage` is the real, deliberately obscure admin login path (defined in `client/src/App.jsx` and the reserved-namespace config). It is a route, not branding — leave it unless you intend to change it in code everywhere it appears.
 
 ---
 
@@ -256,7 +256,7 @@ CI and the Render build run **`npm run test:unit`** only — integration tests t
 | **Guest / User** | Books services; may or may not have an account |
 | **Admin** | Platform staff, with RBAC-scoped permissions |
 
-Admin sub-roles: `superadmin`, `operations`, `finance`, `support`, `content`, `technical`. Admins sign in at `/hello-sloth`.
+Admin sub-roles: `superadmin`, `operations`, `finance`, `support`, `content`, `technical`. Admins sign in at `/backstage`.
 
 ---
 

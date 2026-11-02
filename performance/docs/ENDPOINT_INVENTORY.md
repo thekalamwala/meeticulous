@@ -1,4 +1,4 @@
-# Endpoint Inventory — Book A Sloth
+# Endpoint Inventory — Meeticulous
 
 Hot + auth-relevant endpoints for load testing. Source: Express route map (June 2026).
 

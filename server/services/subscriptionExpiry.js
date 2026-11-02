@@ -20,7 +20,7 @@ const SEND_ON_DAYS = new Set([7, 1]);
 const DAY_MS = 86400000;
 
 // Read the plan's display name straight from subscription_plans so a rename
-// (Host+ → Sloth Active (Partner), etc.) never leaves a stale label in a
+// (Host+ → Pro (Partner), etc.) never leaves a stale label in a
 // customer-facing email. Falls back to a neutral phrase if the row is gone.
 const planLabel = async (slug) => {
   try {
@@ -80,7 +80,7 @@ async function fanOut(rows, now) {
     if (!SEND_ON_DAYS.has(daysLeft)) continue;
     if (await recentlySent(p.email)) continue;
 
-    const base = process.env.CLIENT_URL || 'https://bookasloth.com';
+    const base = process.env.CLIENT_URL || 'https://meeticulous.com';
     await NotificationEngine.send({
       event: EVENT,
       data: {

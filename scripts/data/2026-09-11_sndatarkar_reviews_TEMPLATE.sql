@@ -33,8 +33,8 @@
 --     host_id / subject_id = '6dbf6aac-6580-41d9-a8dd-6ba3b9609f32'  (Shubham)
 --     service_id options:
 --       talk-about-shubham-datarkar-dot-com                    aa65524b-9519-4fff-8f03-9a05a72d2f17
---       video-kyc-for-book-a-sloth                             6e0ddb63-e82a-457d-8c2b-14ea4f297fde
---       book-a-sloth-app-online-demo-30-min-advisory-session   d7b2768c-acd2-447e-9b8d-9cafb3fef151
+--       video-kyc-for-meeticulous                             6e0ddb63-e82a-457d-8c2b-14ea4f297fde
+--       meeticulous-app-online-demo-30-min-advisory-session   d7b2768c-acd2-447e-9b8d-9cafb3fef151
 --       seo-consultancy-by-shubham-30-minute-advisory-session  42c0acca-63ab-4c24-8c16-dcdcd9b7bd17
 --
 -- ── OPTIONAL: find a real client's profile id (to show their name) ───────────
@@ -68,7 +68,7 @@
 --    now()),
 --
 --   ('6dbf6aac-6580-41d9-a8dd-6ba3b9609f32', '6dbf6aac-6580-41d9-a8dd-6ba3b9609f32',
---    'd7b2768c-acd2-447e-9b8d-9cafb3fef151',        -- service: Book A Sloth App Demo
+--    'd7b2768c-acd2-447e-9b8d-9cafb3fef151',        -- service: Meeticulous App Demo
 --    NULL, NULL, 'guest_to_host', 'visible',
 --    5,
 --    $c$<< paste the client's real words here >>$c$,

@@ -69,7 +69,7 @@ _Deliverables 7 + 8. How the design system is implemented in the existing stack,
 
 ## Non-design items escalated to the founder (not auto-fixed)
 1. **Fabricated social proof** on ServiceDetail payment page (trust/legal) — remove or wire to real data?
-2. **Dead-brand cleanup** (`bookasloth` handles, "Book A Sloth Pro" copy, "Sloth" wordmarks) — this initiative or a separate rebrand ticket?
+2. **Dead-brand cleanup** (old-brand handles, old-brand "Pro" copy, old-brand wordmarks) — this initiative or a separate rebrand ticket?
 3. **Bespoke marketing strategy** — keep per-page designs + add primitives (recommended) or consolidate harder?
 
 ## Risk register

@@ -34,7 +34,7 @@ import PlansStep from '../pages/onboarding/PlansStep';
 // Two plans since v3.165. Pro (premium) is the only paid row → the
 // hero, chosen by price rather than a hardcoded slug. Starter is the free fallback.
 const PLANS = [
-  { slug: 'free', name: 'Sloth', monthly_price: 0, annual_price: 0, limits: { services: -1, bookings_per_year: -1 }, commission_percentage: 5 },
+  { slug: 'free', name: 'Starter', monthly_price: 0, annual_price: 0, limits: { services: -1, bookings_per_year: -1 }, commission_percentage: 5 },
   { slug: 'premium', name: 'Pro', monthly_price: 338.13, annual_price: 3050, limits: { services: -1, bookings_per_year: -1 }, commission_percentage: 0 },
 ];
 

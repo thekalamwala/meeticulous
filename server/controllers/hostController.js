@@ -376,10 +376,10 @@ const updateProfile = async (req, res) => {
     // `username` field in this body is ignored. Safety net: a legacy account with
     // no username gets an auto-generated one — an INITIAL assignment, not a change.
     const { data: existingProfile } = await supabaseAdmin
-      .from('profiles').select('username, profile_image, cover_image').eq('id', req.user.id).single();
+      .from('profiles').select('username, email, profile_image, cover_image').eq('id', req.user.id).single();
     let initialUsername;
     if (!existingProfile?.username) {
-      initialUsername = await usernameService.createInitialUsername();
+      initialUsername = await usernameService.createInitialUsername(existingProfile?.email);
     }
 
     const updates = { updated_at: new Date().toISOString() }; // BUG-05 fixed: removed forced role:"host"

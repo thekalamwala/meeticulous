@@ -742,7 +742,7 @@ Expected: no output (or only justified hits — e.g. white text-on-accent button
 - [ ] **Step 1: Full client suite** — `cd client && npx vitest run` → all green.
 - [ ] **Step 2: Client build** — `cd client && npm run build` → clean.
 - [ ] **Step 3: Server suite** (untouched code, regression gate) — `cd server && npm test` → green (only pre-existing failures acceptable, must be reported).
-- [ ] **Step 4: Preview verification** — start client dev server via preview tools; log in at `/hello-sloth` (founder does auth if needed; otherwise seed a `bas_admin` localStorage session via preview_eval for layout inspection only). Verify + screenshot:
+- [ ] **Step 4: Preview verification** — start client dev server via preview tools; log in at `/backstage` (founder does auth if needed; otherwise seed a `bas_admin` localStorage session via preview_eval for layout inspection only). Verify + screenshot:
   1. `/super-dashboard` light mode — new shell, sizes, stat cards.
   2. Toggle dark — full page dark (canvas, cards, tables, header), no white flashes.
   3. Sidebar — 8 sections + single Coming Soon group; no duplicate Staff entry; active pill styling.

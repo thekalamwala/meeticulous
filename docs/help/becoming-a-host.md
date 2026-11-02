@@ -10,7 +10,7 @@ Hosts (also called creators) are the people who publish services and take bookin
 
 ## Sign in with Google
 
-Hosts sign in with **Google** — there's no separate password to create or remember. Start from the [Be a Sloth](/be-a-sloth) page and continue with your Google account. If you already booked something as a guest, you can turn that into a host account the same way.
+Hosts sign in with **Google** — there's no separate password to create or remember. Start from the [Become a Host](/become-a-host) page and continue with your Google account. If you already booked something as a guest, you can turn that into a host account the same way.
 
 Using Google also lets you connect your Google Calendar later, so your bookings land on the calendar you already use.
 
@@ -23,7 +23,7 @@ A guided setup walks you through everything you need to go live:
 3. **Tell us about you** — individual or business, and whether you work online, offline, or both.
 4. **Pick your category / profession** — so you show up in the right place.
 5. **Verify your WhatsApp number** — so booking alerts and confirmations reach you (this is the one step you can skip for now).
-6. **Choose a plan** — start free on Sloth, or pick Sloth Active for 0% commission and more automation.
+6. **Choose a plan** — start free on Starter, or pick Pro for 0% commission and more automation.
 
 Then you launch and you're live. Your profile, working hours, and first service are set up from the dashboard right after launch.
 
@@ -43,7 +43,7 @@ Stuck on a step? Reach us from the [Help](/help) page.
 
 **Is the WhatsApp step required?** It's the one step you can **skip for now** — but verifying means booking alerts and confirmations reach you, so it's worth doing. The code is valid for 10 minutes; you get 3 tries per channel, then a short lockout before you can retry. Didn't get it? Check WhatsApp and email (incl. spam) and request a new one.
 
-**Can I skip other steps?** No — every other step is required and must be done in order; you can't jump ahead. Choosing a plan is mandatory to finish (start free on Sloth or pick Sloth Active).
+**Can I skip other steps?** No — every other step is required and must be done in order; you can't jump ahead. Choosing a plan is mandatory to finish (start free on Starter or pick Pro).
 
 **Is my progress saved / can I continue later?** Yes. Each completed step is saved. Sign back in any time and you resume at the step you left off — you can't reach the full dashboard until onboarding is complete.
 
@@ -51,7 +51,7 @@ Stuck on a step? Reach us from the [Help](/help) page.
 
 **What happens after I launch?** Your host account is active — add services, set your working hours, take bookings, and track earnings from the dashboard. Most of it (profile, availability, services, pricing, contact details) is editable any time.
 
-**What if my paid plan expires?** Your account automatically falls back to the free **Sloth** plan until you renew — nothing is deleted. Renew from the Plans section.
+**What if my paid plan expires?** Your account automatically falls back to the free **Starter** plan until you renew — nothing is deleted. Renew from the Plans section.
 
 **Can I book my own service?** No — you can't book your own service from your own host account; the system blocks it. To test your booking flow, open your page from a different phone number or a guest account.
 

@@ -131,15 +131,9 @@ const HOME_JSONLD = [
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer support",
-      email: "hello@meeticulous.com",
+      email: "team@meeticulous.com",
       availableLanguage: ["en", "hi"],
     },
-    sameAs: [
-      "https://www.linkedin.com/company/book-a-sloth/",
-      "https://www.instagram.com/bookasloth",
-      "https://www.facebook.com/bookasloth",
-      "https://x.com/bookasloth",
-    ],
   },
   {
     "@context": "https://schema.org",
@@ -157,7 +151,7 @@ const HOME_JSONLD = [
 
 const EASE = [0.22, 1, 0.36, 1];
 
-/* Google "G" mark — matches the button on /be-a-sloth. */
+/* Google "G" mark — matches the button on /become-a-host. */
 const GoogleIcon = () => (
   <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z" />
@@ -249,7 +243,7 @@ const TAvatar = ({ src, name }) => {
 const FEATURES = [
   { icon: CreditCard, title: "Payments Built In", desc: "Clients pay up-front. Your time finally bills itself." },
   { icon: Mail, title: "Email Reminders", desc: "Gentle nudges so no session is ever forgotten." },
-  { icon: Globe, title: "Personal SlothPage", desc: "A mini-site that books and bills on your behalf." },
+  { icon: Globe, title: "Personal booking page", desc: "A mini-site that books and bills on your behalf." },
   { icon: Users, title: "Light CRM", desc: "Notes, history, receipts — zero spreadsheets." },
   { icon: IndianRupee, title: "India First", desc: "GST, INR, UPI — built for how India pays." },
   { icon: Sparkles, title: "AI Assistant", desc: "Suggests slots, drafts briefs, sends thank-yous." },
@@ -520,7 +514,7 @@ const Home = () => {
 
   const faqs = FAQS;
 
-  // ── Google-only host funnel — same entry as /be-a-sloth ──
+  // ── Google-only host funnel — same entry as /become-a-host ──
   const [googleLoading, setGoogleLoading] = useState(false);
   const startGoogle = async () => {
     setGoogleLoading(true);
@@ -708,7 +702,7 @@ const Home = () => {
             and services into paid bookings, with UPI checkout, WhatsApp reminders and GST invoices built in.
           </Reveal>
 
-          {/* Google-only host funnel — fires the same flow as /be-a-sloth */}
+          {/* Google-only host funnel — fires the same flow as /become-a-host */}
           <Reveal instant delay={0.18} className="mt-8 sm:mt-10">
             <div className="mx-auto flex max-w-md flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
               <button
@@ -1304,12 +1298,12 @@ const Home = () => {
           <div className="mt-14 grid gap-5 md:grid-cols-2">
             {[
               {
-                tier: "Pro Sloth",
+                tier: "Pro",
                 tagline: "For growing freelancers & coaches.",
                 price: "₹499",
                 period: "/ month",
                 popular: true,
-                perks: ["Unlimited bookings", "Payments + reminders", "Custom SlothPage", "AI calm assistant"],
+                perks: ["Unlimited bookings", "Payments + reminders", "Custom booking page", "AI calm assistant"],
               },
               {
                 tier: "Studio Plan",
@@ -1432,7 +1426,7 @@ const Home = () => {
                       />
                       <span className="text-xs font-medium text-white/40">vs</span>
                       <img
-                        src="https://company-assets.meeticulous.in/images/email/sloth-icon-sqr.png"
+                        src="/brand/meeticulous-icon.svg"
                         alt="Meeticulous"
                         loading="lazy"
                         className="h-7 w-7 rounded-[6px] object-contain"
@@ -1454,13 +1448,13 @@ const Home = () => {
 
           <p className="mt-8 text-sm text-white/60">
             More comparisons coming. Want to see one?{" "}
-            <a href="mailto:hello@meeticulous.com?subject=Comparison%20request" className="font-semibold text-primary-cta hover:no-underline">Tell us →</a>
+            <a href="mailto:team@meeticulous.com?subject=Comparison%20request" className="font-semibold text-primary-cta hover:no-underline">Tell us →</a>
             <span className="mt-2 block text-xs text-white/40">
               No mail app?{" "}
               <button
                 type="button"
                 onClick={(e) => {
-                  navigator.clipboard?.writeText("hello@meeticulous.com");
+                  navigator.clipboard?.writeText("team@meeticulous.com");
                   const b = e.currentTarget;
                   const prev = b.textContent;
                   b.textContent = "Copied!";
@@ -1584,7 +1578,7 @@ const Home = () => {
             </Reveal>
             <Reveal as="p" delay={0.1} className="mt-5 max-w-sm text-base leading-relaxed text-neutral-600">
               Still stuck? Write to us at{" "}
-              <a href="mailto:hello@meeticulous.com" className="font-semibold text-primary-cta hover:no-underline">hello@meeticulous.com</a>{" "}
+              <a href="mailto:team@meeticulous.com" className="font-semibold text-primary-cta hover:no-underline">team@meeticulous.com</a>{" "}
               — we reply fast.
             </Reveal>
             <Reveal delay={0.15} className="mt-6">

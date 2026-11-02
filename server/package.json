@@ -1,7 +1,7 @@
 {
   "name": "appointment-booking-server",
   "version": "1.1.0",
-  "description": "Backend for BookASloth",
+  "description": "Backend for Meeticulous",
   "main": "server.js",
   "engines": {
     "node": "22.x"

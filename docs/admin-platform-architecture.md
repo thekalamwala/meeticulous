@@ -10,7 +10,7 @@ _Date: 2026-06-10. Status: AWAITING APPROVAL — no code written._
 
 | Area | What works | Where |
 |---|---|---|
-| Admin auth | Single-step email+password login at `/hello-sloth`. Allow-listed email (`SUPER_ADMIN_EMAIL`) + `profiles.role='superadmin'` check. Isolated HS256 JWT (8h TTL, `SUPER_ADMIN_JWT_SECRET`), stored in `localStorage['bas_admin']`. Fully isolated from vendor/user sessions. | `adminAuthController.js`, `adminMiddleware.js`, `AdminLayout.jsx` guard |
+| Admin auth | Single-step email+password login at `/backstage`. Allow-listed email (`SUPER_ADMIN_EMAIL`) + `profiles.role='superadmin'` check. Isolated HS256 JWT (8h TTL, `SUPER_ADMIN_JWT_SECRET`), stored in `localStorage['bas_admin']`. Fully isolated from vendor/user sessions. | `adminAuthController.js`, `adminMiddleware.js`, `AdminLayout.jsx` guard |
 | Dashboard stats | Counts for users/vendors/bookings/services; paid/refunded counts. | `adminController.getStats`, `SuperDashboard.jsx` |
 | Users | List with role filter, search, pagination. Detail view with booking/service counts. Update role, `is_verified`, `is_banned`, `admin_notes`, name, email (synced to Supabase Auth). Delete (cascade). | `adminController.js`, `AdminUsers.jsx` |
 | Bookings | List with status filter + pagination, joined service + host. Update status / payment_status. Delete. | `adminController.js`, `AdminBookings.jsx` |

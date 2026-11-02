@@ -12,7 +12,7 @@ sections before your first shift; use the rest as a reference.
 
 ## 1. Signing in
 
-- Admin sign-in is at **`/hello-sloth`** (not the normal login page).
+- Admin sign-in is at **`/backstage`** (not the normal login page).
 - Your admin session is completely separate from any host/guest login — it lives
   under its own key and cannot be reached from a host account.
 - **2FA (authenticator code) is mandatory** for admins. Keep your recovery codes

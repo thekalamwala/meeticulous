@@ -3,7 +3,7 @@
 The **code + webhook** are done and validated (see below). This checklist tracks the
 remaining **Meta-side account/review work** needed before *real* Facebook/Instagram
 Lead Ad submissions flow into the CRM. **None of this blocks the website lead form**
-(`/be-a-sloth`), which is a fully independent production lead path.
+(`/become-a-host`), which is a fully independent production lead path.
 
 App: **Timewheel BAS Com Web** — App ID `1769255080737297`
 Dataset/Pixel: `3530370983781569` · Page: **meeticulous** `908528999000335` · Ad account `805768188521643`

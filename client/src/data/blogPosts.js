@@ -300,7 +300,7 @@ export const BLOG_POSTS = [
       "h2": "Where Meeticulous fits"
     },
     {
-      "p": "Meeticulous gives therapists a booking page at meeticulous.com/yourname with fixed-price sessions. Clients pay up-front by UPI, card or netbanking and the booking confirms automatically on payment. Online sessions get auto-generated Google Meet links, Google Calendar syncs both ways, and email and WhatsApp reminders go out on their own. On Sloth Active you can keep client notes and history in a private CRM; send your intake form as a link in the booking confirmation. See the [Meeticulous page for therapists](/for/therapists) for details."
+      "p": "Meeticulous gives therapists a booking page at meeticulous.com/yourname with fixed-price sessions. Clients pay up-front by UPI, card or netbanking and the booking confirms automatically on payment. Online sessions get auto-generated Google Meet links, Google Calendar syncs both ways, and email and WhatsApp reminders go out on their own. On Pro you can keep client notes and history in a private CRM; send your intake form as a link in the booking confirmation. See the [Meeticulous page for therapists](/for/therapists) for details."
     },
     {
       "h2": "Private practice FAQs"
@@ -1266,10 +1266,10 @@ export const BLOG_POSTS = [
           [
             "Meeticulous",
             "Yes, 5% per paid booking",
-            "₹399 (Sloth Active, GST included)",
+            "₹399 (Pro, GST included)",
             "Yes, via Razorpay",
             "Yes, plus email",
-            "5% free plan, 0% Sloth Active",
+            "5% free plan, 0% Pro",
             "Yes"
           ],
           [
@@ -1351,7 +1351,7 @@ export const BLOG_POSTS = [
       "h2": "2. Meeticulous: best for solo professionals paid by UPI"
     },
     {
-      "p": "Meeticulous is an India-first booking page for coaches, therapists, tutors, trainers, consultants, doctors and salons. Clients pick a slot, verify by phone OTP and pay upfront by UPI, card or netbanking through Razorpay; the booking confirms on payment. Email and WhatsApp confirmations and reminders, two-way Google Calendar sync, Google Meet links and GST invoices are included. The free plan has no subscription and takes 5% per paid booking; Sloth Active is ₹399 a month or ₹3,599 a year, GST included, with 0% commission. Razorpay's gateway fee of about 2.4% applies on both. Limits: no multi-staff calendars, rupee payments only, and no recurring or subscription billing."
+      "p": "Meeticulous is an India-first booking page for coaches, therapists, tutors, trainers, consultants, doctors and salons. Clients pick a slot, verify by phone OTP and pay upfront by UPI, card or netbanking through Razorpay; the booking confirms on payment. Email and WhatsApp confirmations and reminders, two-way Google Calendar sync, Google Meet links and GST invoices are included. The free plan has no subscription and takes 5% per paid booking; Pro is ₹399 a month or ₹3,599 a year, GST included, with 0% commission. Razorpay's gateway fee of about 2.4% applies on both. Limits: no multi-staff calendars, rupee payments only, and no recurring or subscription billing."
     },
     {
       "h2": "3. Calendly: best free scheduler for meetings and global clients"
@@ -1433,7 +1433,7 @@ export const BLOG_POSTS = [
         },
         {
           "q": "Do I pay GST on a booking app subscription in India?",
-          "a": "Usually yes, at 18%. Foreign tools such as Calendly say they charge GST to certain customers in India; if you are GST-registered and add your GSTIN, you typically pay it yourself under reverse charge and may claim input tax credit. Meeticulous's ₹399 Sloth Active price already includes GST."
+          "a": "Usually yes, at 18%. Foreign tools such as Calendly say they charge GST to certain customers in India; if you are GST-registered and add your GSTIN, you typically pay it yourself under reverse charge and may claim input tax credit. Meeticulous's ₹399 Pro price already includes GST."
         },
         {
           "q": "Is Zoho Bookings or Calendly better for India?",
@@ -1586,7 +1586,7 @@ export const BLOG_POSTS = [
       "p": "Listing on Airbnb turns a spare room or a second property into income. It is real, and for the right space it works well. But it comes with cleaning, key handovers, damaged towels, and the occasional 2am message. There is upkeep in renting a place."
     },
     {
-      "p": "If you have a skill instead of a spare room — coaching, consulting, tutoring, design — you can rent your time the same way. Someone picks a slot, pays, and shows up. There is nothing to clean and no linen to replace. If that sounds like you, look at [how to make money from home in India](/blog/how-to-make-money-from-home-india) and set up [how to book an appointment online](/blog/how-to-book-an-appointment-online) so people can book and pay you in one link. [Become a Sloth](/become-a-host) and see [pricing](/pricing) — the craft is yours, the machinery is ours."
+      "p": "If you have a skill instead of a spare room — coaching, consulting, tutoring, design — you can rent your time the same way. Someone picks a slot, pays, and shows up. There is nothing to clean and no linen to replace. If that sounds like you, look at [how to make money from home in India](/blog/how-to-make-money-from-home-india) and set up [how to book an appointment online](/blog/how-to-book-an-appointment-online) so people can book and pay you in one link. [Become a host](/become-a-host) and see [pricing](/pricing) — the craft is yours, the machinery is ours."
     },
     {
       "faq": [
@@ -2031,7 +2031,7 @@ export const BLOG_POSTS = [
             "7.4%"
           ],
           [
-            "Meeticulous Sloth Active",
+            "Meeticulous Pro",
             "₹399",
             "about ₹720",
             "₹1,119",
@@ -2047,7 +2047,7 @@ export const BLOG_POSTS = [
       "h2": "If you mainly need paid 1:1 bookings in rupees"
     },
     {
-      "p": "Calendly is a strong scheduler, especially for teams that work in dollars. If your clients are in India and pay in rupees, Meeticulous was built for that case. Clients book at meeticulous.com/yourname and pay upfront by UPI, card or netbanking through Razorpay, and the booking confirms on payment. Confirmations and reminders go out on email and WhatsApp, and it syncs both ways with Google Calendar and creates Google Meet links. The free plan has no subscription and takes 5% per paid booking; Sloth Active is ₹399 a month or ₹3,599 a year, GST included, with 0% commission. Razorpay's gateway fee of about 2.4% applies on both. It does not do multi-staff calendars or charge in foreign currencies. See [pricing](/pricing) or the [Calendly alternative](/compare/calendly-alternative) page for a side-by-side."
+      "p": "Calendly is a strong scheduler, especially for teams that work in dollars. If your clients are in India and pay in rupees, Meeticulous was built for that case. Clients book at meeticulous.com/yourname and pay upfront by UPI, card or netbanking through Razorpay, and the booking confirms on payment. Confirmations and reminders go out on email and WhatsApp, and it syncs both ways with Google Calendar and creates Google Meet links. The free plan has no subscription and takes 5% per paid booking; Pro is ₹399 a month or ₹3,599 a year, GST included, with 0% commission. Razorpay's gateway fee of about 2.4% applies on both. It does not do multi-staff calendars or charge in foreign currencies. See [pricing](/pricing) or the [Calendly alternative](/compare/calendly-alternative) page for a side-by-side."
     },
     {
       "p": "Comparing more tools? Our [best appointment booking apps in India](/blog/best-appointment-booking-apps-india) list puts Calendly, Zoho Bookings, Cal.com, Setmore and others in one ₹ table. If you sell sessions on Topmate, see [Topmate's commission and fees](/blog/topmate-commission)."
@@ -2258,7 +2258,7 @@ export const BLOG_POSTS = [
             "about ₹1,776"
           ],
           [
-            "Meeticulous Sloth Active",
+            "Meeticulous Pro",
             "₹399",
             "about ₹576 gateway",
             "about ₹975"
@@ -2283,7 +2283,7 @@ export const BLOG_POSTS = [
       "h2": "How Meeticulous handles UPI at booking"
     },
     {
-      "p": "Meeticulous is an India-first booking page. Clients choose a slot at meeticulous.com/yourname, verify their phone by OTP, and pay upfront by UPI, card or netbanking through Razorpay. The booking confirms automatically on payment, and email and WhatsApp confirmations and reminders follow. It syncs both ways with Google Calendar and creates Google Meet links. The free plan has no subscription and takes 5% per paid booking; Sloth Active is ₹399 a month (GST included) with 0% commission. Razorpay's gateway fee of about 2.4% applies on both. It works in rupees only and does not offer multi-staff calendars. See how [payments](/features/payments) work, or the [Calendly alternative](/compare/calendly-alternative) comparison."
+      "p": "Meeticulous is an India-first booking page. Clients choose a slot at meeticulous.com/yourname, verify their phone by OTP, and pay upfront by UPI, card or netbanking through Razorpay. The booking confirms automatically on payment, and email and WhatsApp confirmations and reminders follow. It syncs both ways with Google Calendar and creates Google Meet links. The free plan has no subscription and takes 5% per paid booking; Pro is ₹399 a month (GST included) with 0% commission. Razorpay's gateway fee of about 2.4% applies on both. It works in rupees only and does not offer multi-staff calendars. See how [payments](/features/payments) work, or the [Calendly alternative](/compare/calendly-alternative) comparison."
     },
     {
       "faq": [
@@ -2556,7 +2556,7 @@ export const BLOG_POSTS = [
             "None"
           ],
           [
-            "Meeticulous, Sloth Active",
+            "Meeticulous, Pro",
             "₹0",
             "about ₹24 (Razorpay)",
             "about ₹976",
@@ -2566,13 +2566,13 @@ export const BLOG_POSTS = [
       }
     },
     {
-      "p": "Sloth Active's ₹399 pays for itself once you bill about ₹8,000 a month compared with the 5% free plan. Run your own numbers in the [earnings calculator](/earnings-calculator)."
+      "p": "Pro's ₹399 pays for itself once you bill about ₹8,000 a month compared with the 5% free plan. Run your own numbers in the [earnings calculator](/earnings-calculator)."
     },
     {
       "h2": "Where Meeticulous fits"
     },
     {
-      "p": "Meeticulous is a booking page for Indian professionals who already have clients and want to keep more of each fee. Clients book at meeticulous.com/yourname and pay upfront by UPI, card or netbanking through Razorpay, and the booking confirms on payment. You get email and WhatsApp confirmations and reminders, two-way Google Calendar sync, Google Meet links and GST invoices. The free plan takes 5% per paid booking with no subscription; Sloth Active is ₹399 a month or ₹3,599 a year, GST included, with 0% commission. Razorpay's gateway fee of about 2.4% applies to both. It is India-focused (rupee payments only) and has no multi-staff calendars. See [pricing](/pricing) or the full [Topmate vs Meeticulous](/compare/topmate-alternative) comparison, and our [best appointment booking apps in India](/blog/best-appointment-booking-apps-india) list for other options."
+      "p": "Meeticulous is a booking page for Indian professionals who already have clients and want to keep more of each fee. Clients book at meeticulous.com/yourname and pay upfront by UPI, card or netbanking through Razorpay, and the booking confirms on payment. You get email and WhatsApp confirmations and reminders, two-way Google Calendar sync, Google Meet links and GST invoices. The free plan takes 5% per paid booking with no subscription; Pro is ₹399 a month or ₹3,599 a year, GST included, with 0% commission. Razorpay's gateway fee of about 2.4% applies to both. It is India-focused (rupee payments only) and has no multi-staff calendars. See [pricing](/pricing) or the full [Topmate vs Meeticulous](/compare/topmate-alternative) comparison, and our [best appointment booking apps in India](/blog/best-appointment-booking-apps-india) list for other options."
     },
     {
       "faq": [
@@ -3443,7 +3443,7 @@ export const BLOG_POSTS = [
       "h2": "Where Meeticulous fits"
     },
     {
-      "p": "Once you have a fee, publish it. On Meeticulous each service has a fixed price on your booking page, and [clients pay upfront by UPI](/blog/advance-payment-for-appointments), card or netbanking through Razorpay before the slot is confirmed. The free Sloth plan charges 5% only on paid bookings. Sloth Active is ₹399 a month with 0% commission. Razorpay's gateway fee of about 2.4% applies on both. Compare the plans on the [pricing page](/pricing) or estimate your take-home with the [earnings calculator](/earnings-calculator)."
+      "p": "Once you have a fee, publish it. On Meeticulous each service has a fixed price on your booking page, and [clients pay upfront by UPI](/blog/advance-payment-for-appointments), card or netbanking through Razorpay before the slot is confirmed. The free Starter plan charges 5% only on paid bookings. Pro is ₹399 a month with 0% commission. Razorpay's gateway fee of about 2.4% applies on both. Compare the plans on the [pricing page](/pricing) or estimate your take-home with the [earnings calculator](/earnings-calculator)."
     },
     {
       "h2": "Consultation fees FAQs"
@@ -4231,7 +4231,7 @@ export const BLOG_POSTS = [
       "h2": "Where Meeticulous fits"
     },
     {
-      "p": "On Meeticulous you list each coaching offer, such as a clarity call or a paid first session, as a fixed-price service on your booking page. Clients pick a slot, pay upfront by UPI, card or netbanking through Razorpay, and the booking confirms on payment with a Google Meet link and WhatsApp reminders. Sloth Active adds a client CRM with notes and history. It does not run recurring billing, so monthly retainers are collected as separate payments. See how it works for [life coaches](/for/life-coaches). The free plan charges 5% only on paid bookings; Sloth Active is ₹399 a month with 0% commission, plus Razorpay's fee of about 2.4% on both."
+      "p": "On Meeticulous you list each coaching offer, such as a clarity call or a paid first session, as a fixed-price service on your booking page. Clients pick a slot, pay upfront by UPI, card or netbanking through Razorpay, and the booking confirms on payment with a Google Meet link and WhatsApp reminders. Pro adds a client CRM with notes and history. It does not run recurring billing, so monthly retainers are collected as separate payments. See how it works for [life coaches](/for/life-coaches). The free plan charges 5% only on paid bookings; Pro is ₹399 a month with 0% commission, plus Razorpay's fee of about 2.4% on both."
     },
     {
       "h2": "Coaching pricing FAQs"
@@ -4475,7 +4475,7 @@ export const BLOG_POSTS = [
       "h2": "Where Meeticulous fits"
     },
     {
-      "p": "Meeticulous gives trainers a booking page with fixed-price services, so a client can pick a slot and pay by UPI, card or netbanking upfront. The booking confirms on payment, reminders go out on WhatsApp and email, and Google Calendar syncs both ways. It works for gym, home and online sessions. It does not run automatic recurring billing, so each month's pack is a fresh payment. See the setup for [fitness trainers](/for/fitness). The free Sloth plan charges 5% only on paid bookings; Sloth Active is ₹399 a month with 0% commission, and Razorpay's gateway fee of about 2.4% applies on both."
+      "p": "Meeticulous gives trainers a booking page with fixed-price services, so a client can pick a slot and pay by UPI, card or netbanking upfront. The booking confirms on payment, reminders go out on WhatsApp and email, and Google Calendar syncs both ways. It works for gym, home and online sessions. It does not run automatic recurring billing, so each month's pack is a fresh payment. See the setup for [fitness trainers](/for/fitness). The free Starter plan charges 5% only on paid bookings; Pro is ₹399 a month with 0% commission, and Razorpay's gateway fee of about 2.4% applies on both."
     },
     {
       "h2": "Personal trainer charges FAQs"
@@ -5333,7 +5333,7 @@ export const BLOG_POSTS = [
       "p": "Meeticulous is built for the pay-at-booking model. You get a booking page at meeticulous.com/yourname with fixed-price services. Clients pay up-front through Razorpay by UPI, card or netbanking, and the booking confirms automatically once the payment succeeds. Confirmations and reminders go out on email and WhatsApp, and GST invoices are generated for you. You can read how it works on the [payments feature page](/features/payments)."
     },
     {
-      "p": "The free Sloth plan charges 5% only on paid bookings. Sloth Active costs ₹399 a month or ₹3,599 a year with 0% commission. Razorpay's gateway fee of about 2.4% applies on both. Compare the two on the [pricing page](/pricing). A [payment gateway](/glossary/payment-gateway) fee is unavoidable for automatic confirmation, so the real choice is how much of the admin you want to keep doing yourself."
+      "p": "The free Starter plan charges 5% only on paid bookings. Pro costs ₹399 a month or ₹3,599 a year with 0% commission. Razorpay's gateway fee of about 2.4% applies on both. Compare the two on the [pricing page](/pricing). A [payment gateway](/glossary/payment-gateway) fee is unavoidable for automatic confirmation, so the real choice is how much of the admin you want to keep doing yourself."
     },
     {
       "faq": [
@@ -5994,7 +5994,7 @@ export const BLOG_POSTS = [
       "p": "Meeticulous was built around the two fixes with the strongest case: payment at booking and reminders. Clients book from your page at meeticulous.com/yourname, pay up-front by UPI, card or netbanking through Razorpay, and the booking confirms on payment. Confirmations and a 24-hour reminder go out by email and WhatsApp, and clients can reschedule or cancel from the link instead of disappearing. See how [booking notifications and reminders](/features/notifications) work."
     },
     {
-      "p": "The free Sloth plan charges 5% only on paid bookings; Sloth Active is ₹399 a month with 0% commission. Razorpay's gateway fee of about 2.4% applies on both. Details are on the [pricing page](/pricing)."
+      "p": "The free Starter plan charges 5% only on paid bookings; Pro is ₹399 a month with 0% commission. Razorpay's gateway fee of about 2.4% applies on both. Details are on the [pricing page](/pricing)."
     },
     {
       "faq": [
@@ -6249,7 +6249,7 @@ export const BLOG_POSTS = [
       "h2": "Where Meeticulous fits"
     },
     {
-      "p": "Meeticulous gives you a booking page at meeticulous.com/yourname with fixed-price services. Clients book with a phone OTP, pay upfront through Razorpay by UPI, card or netbanking, and the booking confirms on payment. Confirmations and reminders go out on WhatsApp and email, Google Calendar syncs both ways, and online sessions get a Google Meet link automatically. See how [booking pages](/features/booking-pages) work, or [set up your page](/become-a-host) on the free Sloth plan, which charges 5% only on paid bookings. Sloth Active is ₹399 a month with 0% commission. Razorpay's gateway fee of about 2.4% applies on both plans."
+      "p": "Meeticulous gives you a booking page at meeticulous.com/yourname with fixed-price services. Clients book with a phone OTP, pay upfront through Razorpay by UPI, card or netbanking, and the booking confirms on payment. Confirmations and reminders go out on WhatsApp and email, Google Calendar syncs both ways, and online sessions get a Google Meet link automatically. See how [booking pages](/features/booking-pages) work, or [set up your page](/become-a-host) on the free Starter plan, which charges 5% only on paid bookings. Pro is ₹399 a month with 0% commission. Razorpay's gateway fee of about 2.4% applies on both plans."
     },
     {
       "h2": "Online consultation business FAQs"
@@ -7175,10 +7175,10 @@ export const BLOG_POSTS = [
       "p": "September was about simplifying. Meeticulous is the booking and payment system for professionals who sell their time — coaches, tutors, consultants, therapists, designers — and this month's update cut the plan choices from three to two, added an AI that writes your first service page, and made prices read the same on every screen. Here is what actually shipped."
     },
     {
-      "h2": "Two plans, not three: Sloth and Sloth Active"
+      "h2": "Two plans, not three: Starter and Pro"
     },
     {
-      "p": "The old Starter / Host+ / Studio ladder is gone. In its place are two public plans. Sloth is free — unlimited services, unlimited bookings, unlimited categories, 24-hour reminders and [offline (in-person) appointments](/blog/refer-earn-studio-crm-offline-bookings) — with a 5% commission. Sloth Active is ₹399/month or ₹3,599/year with zero commission plus the paid perks."
+      "p": "The old three-tier ladder is gone. In its place are two public plans. Starter is free — unlimited services, unlimited bookings, unlimited categories, 24-hour reminders and [offline (in-person) appointments](/blog/refer-earn-studio-crm-offline-bookings) — with a 5% commission. Pro is ₹399/month or ₹3,599/year with zero commission plus the paid perks."
     },
     {
       "table": {
@@ -7190,13 +7190,13 @@ export const BLOG_POSTS = [
         ],
         "rows": [
           [
-            "Sloth",
+            "Starter",
             "₹0",
             "5%",
             "Getting booked and paid with no monthly fee"
           ],
           [
-            "Sloth Active",
+            "Pro",
             "₹399/mo · ₹3,599/yr",
             "0%",
             "High-volume hosts who want to keep every rupee"
@@ -7208,7 +7208,7 @@ export const BLOG_POSTS = [
       "p": "Only the two things with real marginal cost stay capped on the free plan: digital products (storage) and AI generations (model spend). The 5% commission is what lets the free plan stay genuinely useful instead of a crippled trial. If you want to understand why zero-commission sits behind a paid tier, we wrote about [the 0% commission bet](/blog/zero-commission-bet)."
     },
     {
-      "p": "Two changes make Sloth more generous than a typical free tier. The free plan now keeps a Client CRM of your 10 most recent clients instead of blocking it entirely, and WhatsApp reminders come with a two-month free grace period before falling back to email. Reminders are one of the highest-leverage things a booking tool does: controlled studies find automated appointment reminders cut no-shows by roughly a third ([JAMA](https://jamanetwork.com/journals/jama/fullarticle/388161))."
+      "p": "Two changes make Starter more generous than a typical free tier. The free plan now keeps a Client CRM of your 10 most recent clients instead of blocking it entirely, and WhatsApp reminders come with a two-month free grace period before falling back to email. Reminders are one of the highest-leverage things a booking tool does: controlled studies find automated appointment reminders cut no-shows by roughly a third ([JAMA](https://jamanetwork.com/journals/jama/fullarticle/388161))."
     },
     {
       "p": "We also fixed a long-standing confusion: prices now show GST-inclusive everywhere — the number Razorpay actually charges. Previously the dashboard led with the ex-GST base while the marketing page showed the inclusive price, which made an annual plan look more expensive than twelve monthly payments. One price basis, every surface. See it on the [pricing page](/pricing)."
@@ -7244,7 +7244,7 @@ export const BLOG_POSTS = [
       "h2": "Local SEO for in-person hosts"
     },
     {
-      "p": "If you offer in-person appointments, your city now appears in the page title and meta description — so searches like “physiotherapist in Nagpur” can find you. Online-only pages are unchanged. To feed this, hosts are gently nudged to add their city, both in the dashboard setup checklist and during onboarding, and it never blocks going live. In-person hosts can also put a [booking link on their Google Business Profile](/blog/book-button-google-business-profile). Ready to claim your page? [Become a Sloth](/become-a-host)."
+      "p": "If you offer in-person appointments, your city now appears in the page title and meta description — so searches like “physiotherapist in Nagpur” can find you. Online-only pages are unchanged. To feed this, hosts are gently nudged to add their city, both in the dashboard setup checklist and during onboarding, and it never blocks going live. In-person hosts can also put a [booking link on their Google Business Profile](/blog/book-button-google-business-profile). Ready to claim your page? [Become a Starter](/become-a-host)."
     },
     {
       "h2": "A quieter fix: reschedule-fee tax invoices"
@@ -7259,15 +7259,15 @@ export const BLOG_POSTS = [
       "faq": [
         {
           "q": "How much does Meeticulous cost?",
-          "a": "Meeticulous has two plans. Sloth is free with a 5% commission and includes unlimited services, bookings, categories, 24-hour reminders and offline appointments. Sloth Active is ₹399/month or ₹3,599/year (GST inclusive) with zero commission."
+          "a": "Meeticulous has two plans. Starter is free with a 5% commission and includes unlimited services, bookings, categories, 24-hour reminders and offline appointments. Pro is ₹399/month or ₹3,599/year (GST inclusive) with zero commission."
         },
         {
-          "q": "What is the difference between Sloth and Sloth Active?",
-          "a": "Sloth is free and charges a 5% commission on earnings. Sloth Active removes the commission entirely for a flat monthly or yearly fee and adds paid perks. Both include unlimited services and bookings."
+          "q": "What is the difference between Starter and Pro?",
+          "a": "Starter is free and charges a 5% commission on earnings. Pro removes the commission entirely for a flat monthly or yearly fee and adds paid perks. Both include unlimited services and bookings."
         },
         {
           "q": "Is the free plan actually usable?",
-          "a": "Yes. The free Sloth plan has unlimited services, bookings and categories, plus reminders and offline appointments. Only digital products and AI generations are capped, and it now includes a Client CRM of your 10 most recent clients."
+          "a": "Yes. The free Starter plan has unlimited services, bookings and categories, plus reminders and offline appointments. Only digital products and AI generations are capped, and it now includes a Client CRM of your 10 most recent clients."
         },
         {
           "q": "What is Build with Bolt?",
@@ -7485,7 +7485,7 @@ export const BLOG_POSTS = [
       "h2": "Sending confirmations automatically with Meeticulous"
     },
     {
-      "p": "On Meeticulous, a client books from your page at meeticulous.com/yourname and pays up front by UPI, card or netbanking through Razorpay. The booking confirms automatically when the payment goes through, and the client gets an email and WhatsApp confirmation with the date, time, place or auto-generated Google Meet link. Reminders, reschedule and cancel links follow from the same booking. See how the [booking notifications](/features/notifications) work. The free Sloth plan charges 5% per paid booking only, and you can [create your booking page](/become-a-host) in a few minutes."
+      "p": "On Meeticulous, a client books from your page at meeticulous.com/yourname and pays up front by UPI, card or netbanking through Razorpay. The booking confirms automatically when the payment goes through, and the client gets an email and WhatsApp confirmation with the date, time, place or auto-generated Google Meet link. Reminders, reschedule and cancel links follow from the same booking. See how the [booking notifications](/features/notifications) work. The free Starter plan charges 5% per paid booking only, and you can [create your booking page](/become-a-host) in a few minutes."
     },
     {
       "faq": [
@@ -8340,7 +8340,7 @@ export const BLOG_POSTS = [
       "p": "An away message without a next step tells the customer to wait. Many will message the next business on their list instead. A [booking link](/glossary/booking-link) gives them something to do while you are offline: see open slots, pick one, and pay. For more on handling the whole flow on WhatsApp, read [how to manage appointments on WhatsApp](/blog/manage-appointments-on-whatsapp), and use the [WhatsApp appointment reminder templates](/blog/appointment-reminder-templates) once the booking is in."
     },
     {
-      "p": "On Meeticulous, your [booking page](/features/booking-pages) lives at meeticulous.com/yourname. Clients pick a slot, verify with a phone OTP and pay up front by UPI, card or netbanking, with no app to download. The booking confirms on payment and the client gets email and WhatsApp confirmations and a reminder. That is the link to paste at the end of every template above. The free Sloth plan has no monthly fee and charges 5% per paid booking only. Add the same link as a Book button on Google too, using [this Google Business Profile guide](/blog/book-button-google-business-profile)."
+      "p": "On Meeticulous, your [booking page](/features/booking-pages) lives at meeticulous.com/yourname. Clients pick a slot, verify with a phone OTP and pay up front by UPI, card or netbanking, with no app to download. The booking confirms on payment and the client gets email and WhatsApp confirmations and a reminder. That is the link to paste at the end of every template above. The free Starter plan has no monthly fee and charges 5% per paid booking only. Add the same link as a Book button on Google too, using [this Google Business Profile guide](/blog/book-button-google-business-profile)."
     },
     {
       "faq": [
@@ -9728,7 +9728,7 @@ export const BLOG_POSTS = [
       "h2": "Sending appointment reminders automatically with Meeticulous"
     },
     {
-      "p": "Copying templates every evening works until a busy week. On Meeticulous, clients book and pay up front from your page, and each booking gets an email and WhatsApp confirmation plus a [WhatsApp reminder](/glossary/whatsapp-reminder), with a 24-hour reminder included on the free plan. Reschedule and cancel links come with every booking, and online sessions get an auto-generated Google Meet link. See how [booking notifications](/features/notifications) work. The free Sloth plan charges 5% per paid booking only; Sloth Active is ₹399 a month with 0% commission."
+      "p": "Copying templates every evening works until a busy week. On Meeticulous, clients book and pay up front from your page, and each booking gets an email and WhatsApp confirmation plus a [WhatsApp reminder](/glossary/whatsapp-reminder), with a 24-hour reminder included on the free plan. Reschedule and cancel links come with every booking, and online sessions get an auto-generated Google Meet link. See how [booking notifications](/features/notifications) work. The free Starter plan charges 5% per paid booking only; Pro is ₹399 a month with 0% commission."
     },
     {
       "faq": [
@@ -10816,7 +10816,7 @@ export const BLOG_POSTS = [
       "p": "If you need a booking page to put in your bio, [Meeticulous booking pages](/features/booking-pages) give you a link at meeticulous.com/yourname. You list services with fixed prices, clients pick a slot and pay up-front through Razorpay by UPI, card or netbanking, and the booking confirms automatically on payment. Clients book with a phone OTP and do not need to download an app. Confirmations and reminders go out on WhatsApp and email, and rescheduling and cancellation are built in."
     },
     {
-      "p": "The free Sloth plan charges 5% only on paid bookings. Sloth Active costs ₹399 a month with 0% commission. Razorpay's gateway fee of about 2.4% applies on both. See [pricing](/pricing) for details."
+      "p": "The free Starter plan charges 5% only on paid bookings. Pro costs ₹399 a month with 0% commission. Razorpay's gateway fee of about 2.4% applies on both. See [pricing](/pricing) for details."
     },
     {
       "faq": [
@@ -11043,7 +11043,7 @@ export const BLOG_POSTS = [
       "p": "If you need a booking page to link, [Meeticulous booking pages](/features/booking-pages) give you one at meeticulous.com/yourname. You list services with fixed prices, the client picks a slot in your availability and pays up-front through Razorpay by UPI, card or netbanking, and the booking confirms automatically on payment. Clients get WhatsApp and email confirmations and reminders, can reschedule from the link, and book with a phone OTP without downloading an app. Two-way Google Calendar sync keeps your Google slots and offline appointments from clashing."
     },
     {
-      "p": "The free Sloth plan charges 5% only on paid bookings. Sloth Active is ₹399 a month with 0% commission. Razorpay's gateway fee of about 2.4% applies on both. Details are on the [pricing page](/pricing)."
+      "p": "The free Starter plan charges 5% only on paid bookings. Pro is ₹399 a month with 0% commission. Razorpay's gateway fee of about 2.4% applies on both. Details are on the [pricing page](/pricing)."
     },
     {
       "faq": [
@@ -16077,7 +16077,7 @@ export const BLOG_POSTS = [
     "excerpt": "For a while we called ourselves the calm booking platform. Calm is a nice mood and a terrible promise. Here is why we changed what the whole site says.",
     "body": [
       {
-        "p": "We used to introduce ourselves as the calm booking platform for India. I liked writing it. It was gentle, it fit the sloth, and it was, on reflection, almost useless. Nobody wakes up wanting calm booking. They wake up wanting to be paid for the thing they are good at, with less hassle than a Google Form and [a screenshot of a UPI transfer](/blog/advance-payments-without-the-screenshot-dance)."
+        "p": "We used to introduce ourselves as the calm booking platform for India. I liked writing it. It was gentle, it fit the mood, and it was, on reflection, almost useless. Nobody wakes up wanting calm booking. They wake up wanting to be paid for the thing they are good at, with less hassle than a Google Form and [a screenshot of a UPI transfer](/blog/advance-payments-without-the-screenshot-dance)."
       },
       {
         "p": "Calm is a mood. A mood is not a promise, and a promise is what a homepage is for. So we changed the sentence the whole site is built around. Meeticulous is now, in plain words, the booking link that gets you paid."
@@ -16091,11 +16091,11 @@ export const BLOG_POSTS = [
       {
         "info": {
           "title": "What actually changed",
-          "text": "[The homepage headline](/blog/homepage-emails-and-downloadable-products), the meta titles and social cards, the how-it-works hero, the become-a-host page — everywhere the site declares what it is, it now leads with getting paid. We left the warmth in the supporting copy on purpose. Money-first does not mean cold; the sloth still writes the small print."
+          "text": "[The homepage headline](/blog/homepage-emails-and-downloadable-products), the meta titles and social cards, the how-it-works hero, the become-a-host page — everywhere the site declares what it is, it now leads with getting paid. We left the warmth in the supporting copy on purpose. Money-first does not mean cold; the same friendly voice still writes the small print."
         }
       },
       {
-        "p": "We did not strip the character out. The friendly voice, the calm, the sloth that refuses to be in a hurry — that is still who we are in the sentences underneath the promise. The change is only about which sentence goes first. Lead with the money the host makes; keep the warmth for the paragraph after. A brand can be kind and still be honest about what it is for."
+        "p": "We did not strip the character out. The friendly voice, the calm, the refusal to be in a hurry — that is still who we are in the sentences underneath the promise. The change is only about which sentence goes first. Lead with the money the host makes; keep the warmth for the paragraph after. A brand can be kind and still be honest about what it is for."
       },
       {
         "h2": "Why now"
@@ -16111,7 +16111,7 @@ export const BLOG_POSTS = [
         "cite": "The bit worth keeping"
       },
       {
-        "p": "So the site reads differently today. Same product, same sloth, sharper promise. If you [make things worth paying for](/become-a-host), the link that gets you paid is the one thing we want to be known for — the same bet as [going 0% on commission](/blog/zero-commission-bet), just said out loud on the homepage. And now the whole website says so."
+        "p": "So the site reads differently today. Same product, same voice, sharper promise. If you [make things worth paying for](/become-a-host), the link that gets you paid is the one thing we want to be known for — the same bet as [going 0% on commission](/blog/zero-commission-bet), just said out loud on the homepage. And now the whole website says so."
       },
       {
         "faq": [
@@ -16630,7 +16630,7 @@ export const BLOG_POSTS = [
         "p": "Most products launch once, quietly, and hope. [We launched, and then we did something slightly odd](/blog/going-live): we reopened the doors a second time, on purpose, as an event. A short window, a small ceremony, a wall where the first people to walk through get their names set in stone. This is a note about [why a launch is worth doing more than once](/blog/hello-world), and what we kept from the first time."
       },
       {
-        "p": "The first Opening gave us our [founding hosts](/blog/the-first-host-who-paid) — the handful of people who backed a booking tool made by a sloth before there was much to back. The second Opening was not a reset. We kept every one of them. Reopening the doors was never about pretending the first crowd did not exist; it was about widening the room without erasing the people already in it."
+        "p": "The first Opening gave us our [founding hosts](/blog/the-first-host-who-paid) — the handful of people who backed a brand-new booking tool before there was much to back. The second Opening was not a reset. We kept every one of them. Reopening the doors was never about pretending the first crowd did not exist; it was about widening the room without erasing the people already in it."
       },
       {
         "h2": "A wall of names that does not get wiped"
@@ -16794,7 +16794,7 @@ export const BLOG_POSTS = [
         "p": "When you asked me something, I answered, and then we both sat there. You knew what you wanted next; I did not, so I waited. That is a small friction that adds up over a day."
       },
       {
-        "p": "Now, under most answers, there are a couple of small suggestions — the next thing people usually want. Ask about a plan and one of them takes you to [pricing](/pricing). Ask how hosting works and one of them starts you at [Be a Sloth](/become-a-host). They are guesses, not a menu, so when they are wrong you ignore them and keep typing. When they are right, you save a sentence. Most of the time they are right, because most questions come in the same handful of shapes."
+        "p": "Now, under most answers, there are a couple of small suggestions — the next thing people usually want. Ask about a plan and one of them takes you to [pricing](/pricing). Ask how hosting works and one of them starts you at [Become a host](/become-a-host). They are guesses, not a menu, so when they are wrong you ignore them and keep typing. When they are right, you save a sentence. Most of the time they are right, because most questions come in the same handful of shapes."
       },
       {
         "h2": "I don't argue anymore"
@@ -16934,7 +16934,7 @@ export const BLOG_POSTS = [
           "\"When do I get paid as a host?\"",
           "\"How much is a paid plan?\" — I'll point you at the [pricing page](/pricing).",
           "\"Do you send WhatsApp reminders?\"",
-          "\"How do I become a host?\" — that one starts at [Be a Sloth](/become-a-host)."
+          "\"How do I become a host?\" — that one starts at [Become a host](/become-a-host)."
         ]
       },
       {
@@ -20130,10 +20130,10 @@ export const BLOG_POSTS = [
         }
       },
       {
-        "h2": "Why “Sloth”?"
+        "h2": "Why “Meeticulous”?"
       },
       {
-        "p": "People ask us this a lot, and the answer surprises them. The sloth is not slow because it is lazy. It is deliberate. It wastes almost no energy, and every movement has a purpose."
+        "p": "People ask us this a lot. The name is about care: being meticulous with the details so you do not have to be. No wasted steps, and every feature has a purpose."
       },
       {
         "p": "That is the philosophy we want for business software. Not more dashboards, not more notifications, not more complexity. Just thoughtful software that gets out of your way."
@@ -20152,7 +20152,7 @@ export const BLOG_POSTS = [
         "h2": "What’s next?"
       },
       {
-        "p": "Next, the first major milestone: [how we build services that take under five minutes to publish](/blog/the-first-booking). The journey starts here. Months after launch we even [reopened the doors as an event](/blog/the-opening-again). Welcome aboard, and if you would rather jump in than read along, [claim your page](/become-a-host). 🦥"
+        "p": "Next, the first major milestone: [how we build services that take under five minutes to publish](/blog/the-first-booking). The journey starts here. Months after launch we even [reopened the doors as an event](/blog/the-opening-again). Welcome aboard, and if you would rather jump in than read along, [claim your page](/become-a-host)."
       }
     ]
   },
@@ -20191,7 +20191,7 @@ export const BLOG_POSTS = [
         "p": "If you are reading this early, thank you for being here. The product you see today is the worst it will ever be, and the best is still ahead. Eleven days later, [the first host paid us](/blog/the-first-host-who-paid). You can watch it get better week by week in the [changelog](/changelog), or just [come build your page](/become-a-host) and grow with it."
       },
       {
-        "quote": "Hello, Meeticulous. 🦥",
+        "quote": "Hello, Meeticulous.",
         "cite": "Day one"
       }
     ]

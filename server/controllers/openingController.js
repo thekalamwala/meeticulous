@@ -93,7 +93,7 @@ exports.startVerify = async (req, res) => {
   // already placed? tell them, don't send another OTP.
   const { data: existing } = await supabaseAdmin
     .from('openers').select('name').eq('phone', phone).maybeSingle();
-  if (existing) return res.status(409).json({ message: 'This number already has a stone on the wall. 🦥', placed: true });
+  if (existing) return res.status(409).json({ message: 'This number already has a stone on the wall.', placed: true });
 
   const otp = otpStore.generate();
   const stored = await otpStore.set(phone, otp, OTP_TYPE);

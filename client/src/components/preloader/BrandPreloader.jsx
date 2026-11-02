@@ -144,7 +144,7 @@ export default function BrandPreloader({
         ) : (
           // Homepage / fallback: brand lockup.
           <div className="pl-brand" aria-hidden="true">
-            <span className="pl-brand__mark">🦥</span>
+            <span className="pl-brand__mark"><img src="/brand/meeticulous-icon.svg" alt="" style={{ width: '1em', height: '1em' }} /></span>
             <h2 className="pl-brand__word">Meeticulous</h2>
             <span className="pl-brand__dot" />
           </div>

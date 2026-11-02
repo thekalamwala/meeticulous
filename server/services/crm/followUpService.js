@@ -99,7 +99,7 @@ async function processReminders() {
       await sendEmail({
         to: owner.email,
         subject: `Follow-up due: ${f.title}`,
-        html: `<p>Hi ${owner.name || 'there'},</p><p>Reminder to follow up with <b>${who}</b>:</p><blockquote>${f.title}</blockquote><p>Open the lead in the Book A Sloth admin to continue.</p>`,
+        html: `<p>Hi ${owner.name || 'there'},</p><p>Reminder to follow up with <b>${who}</b>:</p><blockquote>${f.title}</blockquote><p>Open the lead in the Meeticulous admin to continue.</p>`,
         text: `Follow up with ${who}: ${f.title}`,
       });
       await supabaseAdmin.from('lead_follow_ups').update({ reminded_at: new Date().toISOString() }).eq('id', f.id);

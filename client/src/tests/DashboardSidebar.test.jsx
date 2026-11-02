@@ -104,9 +104,9 @@ describe('dashboard topbar profile menu', () => {
 describe('dashboard topbar actions', () => {
   beforeEach(() => { mockAuth.current = {}; });
 
-  it('exposes Sloth Support + Notifications controls', () => {
+  it('exposes Support + Notifications controls', () => {
     renderLayout({ name: 'Host', plan: 'creator', role: 'host' });
-    expect(screen.getByLabelText('Sloth Support')).toBeInTheDocument();
+    expect(screen.getByLabelText('Support')).toBeInTheDocument();
     expect(screen.getByLabelText(/Notifications/)).toBeInTheDocument();
   });
 });

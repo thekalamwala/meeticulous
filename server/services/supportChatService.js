@@ -218,7 +218,7 @@ async function escalate(threadId, aiSummary) {
         aiSummary ? `Details: ${aiSummary}` : 'They asked to talk to a person.',
         open ? '' : `Raised outside support hours (${supportHours.LABEL}).`,
       ].filter(Boolean),
-      link: `${process.env.CLIENT_URL || 'https://bookasloth.com'}/admin/support/chat`,
+      link: `${process.env.CLIENT_URL || 'https://meeticulous.com'}/admin/support/chat`,
       category: 'Support Alert',
     }).catch(() => {});
   }

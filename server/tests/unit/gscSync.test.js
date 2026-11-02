@@ -28,7 +28,7 @@ test('run() no-ops and never touches supabase when unconfigured', async () => {
 
 test('run() upserts page + query analytics first, then inspects and upserts each seeded URL', async () => {
   gscClient.isConfigured.mockReturnValue(true);
-  gscClient.siteUrl.mockReturnValue('sc-domain:bookasloth.com');
+  gscClient.siteUrl.mockReturnValue('sc-domain:meeticulous.com');
   const inspect = jest.fn().mockImplementation(({ requestBody }) => Promise.resolve({
     data: {
       inspectionResult: {
@@ -50,8 +50,8 @@ test('run() upserts page + query analytics first, then inspects and upserts each
     return Promise.resolve({
       data: {
         rows: isQuery
-          ? [{ keys: ['https://bookasloth.com/a', 'career coach'], clicks: 2, impressions: 8, ctr: 0.25, position: 5.1 }]
-          : [{ keys: ['https://bookasloth.com/a'], clicks: 3, impressions: 10, ctr: 0.3, position: 4.2 }],
+          ? [{ keys: ['https://meeticulous.com/a', 'career coach'], clicks: 2, impressions: 8, ctr: 0.25, position: 5.1 }]
+          : [{ keys: ['https://meeticulous.com/a'], clicks: 3, impressions: 10, ctr: 0.3, position: 4.2 }],
       },
     });
   });
@@ -64,7 +64,7 @@ test('run() upserts page + query analytics first, then inspects and upserts each
   const upsertQueries = jest.fn().mockResolvedValue({ error: null });
   supabaseAdmin.from.mockImplementation((table) => {
     if (table === 'seo_crawls') return makeQuery({ data: [{ id: 'crawl-1' }], error: null });
-    if (table === 'seo_crawl_pages') return makeQuery({ data: [{ url: 'https://bookasloth.com/a' }, { url: 'https://bookasloth.com/b' }], error: null });
+    if (table === 'seo_crawl_pages') return makeQuery({ data: [{ url: 'https://meeticulous.com/a' }, { url: 'https://meeticulous.com/b' }], error: null });
     if (table === 'seo_gsc_urls') return { upsert };
     if (table === 'seo_gsc_queries') return { upsert: upsertQueries };
     return makeQuery({ data: [], error: null });
@@ -75,7 +75,7 @@ test('run() upserts page + query analytics first, then inspects and upserts each
   // page(cur) + page(prev) + page+query(cur) + page+query(prev)
   expect(query).toHaveBeenCalledTimes(4);
   expect(query).toHaveBeenCalledWith(expect.objectContaining({
-    siteUrl: 'sc-domain:bookasloth.com',
+    siteUrl: 'sc-domain:meeticulous.com',
     requestBody: expect.objectContaining({ dimensions: ['page'], rowLimit: 25000 }),
   }));
   expect(inspect).toHaveBeenCalledTimes(2);
@@ -87,18 +87,18 @@ test('run() upserts page + query analytics first, then inspects and upserts each
   // First upsert is the analytics batch (impressions + prev_* trend, no coverage columns).
   const analyticsPayload = upsert.mock.calls[0][0];
   expect(analyticsPayload).toHaveLength(1);
-  expect(analyticsPayload[0]).toMatchObject({ url: 'https://bookasloth.com/a', impressions: 10, clicks: 3, ctr: 0.3, position: 4.2, prev_impressions: 10 });
+  expect(analyticsPayload[0]).toMatchObject({ url: 'https://meeticulous.com/a', impressions: 10, clicks: 3, ctr: 0.3, position: 4.2, prev_impressions: 10 });
   expect(analyticsPayload[0]).not.toHaveProperty('coverage_state');
 
   // Query-level rows go to seo_gsc_queries keyed on url+query, with prev trend.
   expect(upsertQueries).toHaveBeenCalledTimes(1);
   expect(upsertQueries.mock.calls[0][1]).toMatchObject({ onConflict: 'url,query' });
-  expect(upsertQueries.mock.calls[0][0][0]).toMatchObject({ url: 'https://bookasloth.com/a', query: 'career coach', impressions: 8, prev_position: 5.1 });
+  expect(upsertQueries.mock.calls[0][0][0]).toMatchObject({ url: 'https://meeticulous.com/a', query: 'career coach', impressions: 8, prev_position: 5.1 });
 
   // Subsequent seo_gsc_urls upserts are per-URL inspection rows (coverage, no impressions).
   const inspectPayloads = upsert.mock.calls.slice(1).map(([rows]) => rows);
   const inspectedUrls = inspectPayloads.map((row) => row.url).sort();
-  expect(inspectedUrls).toEqual(['https://bookasloth.com/a', 'https://bookasloth.com/b']);
+  expect(inspectedUrls).toEqual(['https://meeticulous.com/a', 'https://meeticulous.com/b']);
   expect(inspectPayloads[0]).toMatchObject({ coverage_state: 'Submitted and indexed' });
   expect(inspectPayloads[0]).not.toHaveProperty('impressions');
 
@@ -107,7 +107,7 @@ test('run() upserts page + query analytics first, then inspects and upserts each
 
 test('run() isolates a single URL inspection failure — other URLs still upsert', async () => {
   gscClient.isConfigured.mockReturnValue(true);
-  gscClient.siteUrl.mockReturnValue('sc-domain:bookasloth.com');
+  gscClient.siteUrl.mockReturnValue('sc-domain:meeticulous.com');
   const inspect = jest.fn()
     .mockRejectedValueOnce(new Error('quota exceeded'))
     .mockResolvedValueOnce({
@@ -122,7 +122,7 @@ test('run() isolates a single URL inspection failure — other URLs still upsert
   const upsert = jest.fn().mockResolvedValue({ error: null });
   supabaseAdmin.from.mockImplementation((table) => {
     if (table === 'seo_crawls') return makeQuery({ data: [{ id: 'crawl-1' }], error: null });
-    if (table === 'seo_crawl_pages') return makeQuery({ data: [{ url: 'https://bookasloth.com/bad' }, { url: 'https://bookasloth.com/good' }], error: null });
+    if (table === 'seo_crawl_pages') return makeQuery({ data: [{ url: 'https://meeticulous.com/bad' }, { url: 'https://meeticulous.com/good' }], error: null });
     if (table === 'seo_gsc_urls') return { upsert };
     return makeQuery({ data: [], error: null });
   });
@@ -132,14 +132,14 @@ test('run() isolates a single URL inspection failure — other URLs still upsert
   expect(inspect).toHaveBeenCalledTimes(2);
   // Analytics had no rows → no analytics upsert. Only the good URL's inspection upserts.
   expect(upsert).toHaveBeenCalledTimes(1);
-  expect(upsert.mock.calls[0][0]).toMatchObject({ url: 'https://bookasloth.com/good' });
+  expect(upsert.mock.calls[0][0]).toMatchObject({ url: 'https://meeticulous.com/good' });
   expect(result).toMatchObject({ analyticsUpserted: 0, inspected: 1, inspectUpserted: 1 });
 });
 
 test('run() survives a hung/slow inspection call via the per-call timeout', async () => {
   jest.useFakeTimers();
   gscClient.isConfigured.mockReturnValue(true);
-  gscClient.siteUrl.mockReturnValue('sc-domain:bookasloth.com');
+  gscClient.siteUrl.mockReturnValue('sc-domain:meeticulous.com');
   // First inspect never resolves (hung); timeout must reject it and move on.
   const inspect = jest.fn()
     .mockImplementationOnce(() => new Promise(() => {}))
@@ -150,7 +150,7 @@ test('run() survives a hung/slow inspection call via the per-call timeout', asyn
   const upsert = jest.fn().mockResolvedValue({ error: null });
   supabaseAdmin.from.mockImplementation((table) => {
     if (table === 'seo_crawls') return makeQuery({ data: [{ id: 'crawl-1' }], error: null });
-    if (table === 'seo_crawl_pages') return makeQuery({ data: [{ url: 'https://bookasloth.com/hang' }, { url: 'https://bookasloth.com/ok' }], error: null });
+    if (table === 'seo_crawl_pages') return makeQuery({ data: [{ url: 'https://meeticulous.com/hang' }, { url: 'https://meeticulous.com/ok' }], error: null });
     if (table === 'seo_gsc_urls') return { upsert };
     return makeQuery({ data: [], error: null });
   });
@@ -162,7 +162,7 @@ test('run() survives a hung/slow inspection call via the per-call timeout', asyn
 
   expect(inspect).toHaveBeenCalledTimes(2);
   expect(upsert).toHaveBeenCalledTimes(1); // only /ok upserts; /hang timed out
-  expect(upsert.mock.calls[0][0]).toMatchObject({ url: 'https://bookasloth.com/ok' });
+  expect(upsert.mock.calls[0][0]).toMatchObject({ url: 'https://meeticulous.com/ok' });
   expect(result).toMatchObject({ inspected: 1, inspectUpserted: 1, urls: 2 });
   jest.useRealTimers();
 });

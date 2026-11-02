@@ -23,7 +23,7 @@ Every future reading is judged against this, not against zero.
 1. **Indexing → Sitemaps.** All 5 children still "Success". `sitemap-pages.xml` discovered count should read **71** once Google re-reads the post-#435 file (was 28). If a child shows an error → escalate (§4).
 2. **Indexing → Pages.** Note two numbers in a running log (bottom of this file): **Indexed** and **Discovered – currently not indexed**. Healthy motion = Indexed climbing, queue draining.
 3. **Read the "Why pages aren't indexed" table** against §2 below. Only act when a row is marked ACT.
-4. **Performance tab** (once impressions exist): note total impressions + clicks weekly. Watch the brand query `Meeticulous` — the namesake booksloth.com (book app) owns the near-name SERP today.
+4. **Performance tab** (once impressions exist): note total impressions + clicks weekly. Watch the brand query `Meeticulous` and note any near-name competitors in the SERP.
 5. **Request indexing** (§3) for any newly published high-value page (new LP, feature page, blog post).
 
 ## 2. How to read "Why pages aren't indexed"

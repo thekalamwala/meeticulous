@@ -4,7 +4,7 @@
 -- SEO fields are ADMIN-controlled (set in /admin/services and /admin/providers).
 -- Vendors keep control of title + URL slug; they never see/edit these columns.
 -- Canonical URLs are NOT stored — they are derived from the live public URL
--- (https://bookasloth.com/<username>[/<slug>]) at render time.
+-- (https://meeticulous.com/<username>[/<slug>]) at render time.
 --
 -- is_indexable gates two things: (1) robots <meta> on the public page, and
 -- (2) inclusion in the dynamic sitemap. Default TRUE so a newly-verified vendor

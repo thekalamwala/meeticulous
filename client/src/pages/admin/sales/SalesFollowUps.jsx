@@ -30,7 +30,7 @@ export default function SalesFollowUps() {
     <div className="p-6 max-w-4xl">
       <PageHeader title="Follow-ups" subtitle={`${items.length} open`} />
       {loading ? <p className="adm-t3">Loading…</p> : items.length === 0 ? (
-        <Card className="rounded-2xl p-10 text-center adm-t3">All clear. 🦥</Card>
+        <Card className="rounded-2xl p-10 text-center adm-t3">All clear.</Card>
       ) : groups.filter((g) => g.items.length).map((g) => (
         <div key={g.key} className="mb-6">
           <h2 className={`text-sm font-bold uppercase tracking-wide mb-2 ${g.key === 'overdue' ? 'text-red-500' : 'adm-t2'}`}>{g.label} ({g.items.length})</h2>

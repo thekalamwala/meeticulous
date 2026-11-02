@@ -9,7 +9,7 @@ const { safeError } = require('../utils/httpError');
 // Rolling-window (days) a plan must wait before its "generate" quota renews.
 // Shorter = more generous (resets sooner). Keys are the real DB plan slugs
 // (see server/services/planService.js FALLBACK_PLANS) — NOT the marketing
-// names ("Sloth" / "Sloth Active"). `free` inherits the old Starter window.
+// names ("Starter" / "Pro"). `free` inherits the old Starter window.
 // Any plan with ai_generations: -1 (premium, supreme, and the legacy paid
 // tiers since v3.165) short-circuits before the window is ever consulted.
 const WINDOW_DAYS = { free: 182, premium: 0, starter: 182, starter_legacy: 182, creator: 91, professional: 30, supreme: 0 };

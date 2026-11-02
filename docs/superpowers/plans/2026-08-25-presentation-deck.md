@@ -147,8 +147,8 @@ Curated fallback and a never-throws live fetch of `/sndatarkar`. Deliverable: `u
 // Curated fallback so an externally shared link never shows an empty demo.
 // Category personas re-skin the booking demo on slide 08.
 export const FALLBACK_HOST = {
-  username: 'slothstudio',
-  name: 'Sloth Studio',
+  username: 'meeticulousstudio',
+  name: 'Meeticulous Studio',
   tagline: 'Calm sessions, booked in seconds.',
   profile_image: '', // HostAvatar renders initials fallback on themeColor
   cover_image: '',   // HostCover renders theme gradient
@@ -718,7 +718,7 @@ export default function BookingDemo({ host, onConfirmed }) {
                     className="btn btn--outline" style={slot === t ? { background: tc, color: '#fff', borderColor: tc } : {}}>{fmtTime(t)}</button>
                 ))}
               </div>
-            ) : <p className="text-muted text-sm">No open times that day 🦥</p>
+            ) : <p className="text-muted text-sm">No open times that day</p>
           )}
           {slot && (
             <div className="mt-6">
@@ -770,7 +770,7 @@ Each slide MUST provide an explicit mobile vertical order. Use this contract: ou
 
 - [ ] **Step 1: S01 Hook**
 
-Copy (verbatim from `Home.jsx:816/821`): headline "Your booking link that **actually gets you paid**." sub "Share one link — clients book, pay over UPI, and the money lands in your account." CTA button "Continue with Google" (visual only — `href="/be-a-sloth"`). Include the inline `Sloth()` SVG (copy from `components/error/ErrorIllustration.jsx`) or `client/public/sloth.png` as the illustration.
+Copy (verbatim from `Home.jsx:816/821`): headline "Your booking link that **actually gets you paid**." sub "Share one link — clients book, pay over UPI, and the money lands in your account." CTA button "Continue with Google" (visual only — `href="/become-a-host"`). Include the brand mark as the illustration.
 ```jsx
 import Reveal from '../../../components/home/Reveal';
 export default function S01Hook() {
@@ -779,10 +779,10 @@ export default function S01Hook() {
       <div>
         <Reveal><h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl leading-[1.05]">Your booking link that <span className="text-primary">actually gets you paid</span>.</h1></Reveal>
         <Reveal delay={0.1}><p className="mt-5 text-lg text-muted max-w-md">Share one link — clients book, pay over UPI, and the money lands in your account.</p></Reveal>
-        <Reveal delay={0.2}><a href="/be-a-sloth" className="btn-primary inline-block mt-7">Continue with Google</a></Reveal>
+        <Reveal delay={0.2}><a href="/become-a-host" className="btn-primary inline-block mt-7">Continue with Google</a></Reveal>
       </div>
       <Reveal delay={0.15} className="justify-self-center">
-        <img src="/sloth.png" alt="Meeticulous mascot" width={320} height={320} className="w-56 sm:w-72 lg:w-80 h-auto" loading="eager" />
+        <img src="/brand-mark.png" alt="Meeticulous" width={320} height={320} className="w-56 sm:w-72 lg:w-80 h-auto" loading="eager" />
       </Reveal>
     </div>
   );
@@ -1028,7 +1028,7 @@ export default function S09Pricing() {
 
 - [ ] **Step 6: S10 Start + CTA**
 
-"Live in ~42 seconds." Three micro-steps + big CTA "Continue with Google" → `/be-a-sloth`. Final calm line from `aboutContent.js:174`: "Keep 100% of what you earn."
+"Live in ~42 seconds." Three micro-steps + big CTA "Continue with Google" → `/become-a-host`. Final calm line from `aboutContent.js:174`: "Keep 100% of what you earn."
 ```jsx
 import Reveal from '../../../components/home/Reveal';
 export default function S10Start() {
@@ -1036,7 +1036,7 @@ export default function S10Start() {
     <div className="text-center">
       <Reveal><h2 className="font-heading text-4xl sm:text-5xl">Live in <span className="text-primary">~42 seconds</span>.</h2></Reveal>
       <Reveal delay={0.1}><p className="mt-4 text-muted">Sign in, add a service, share your link. Keep 100% of what you earn.</p></Reveal>
-      <Reveal delay={0.2}><a href="/be-a-sloth" className="btn-primary inline-block mt-8 text-lg">Continue with Google</a></Reveal>
+      <Reveal delay={0.2}><a href="/become-a-host" className="btn-primary inline-block mt-8 text-lg">Continue with Google</a></Reveal>
       <Reveal delay={0.3}><p className="mt-6 text-sm text-muted">meeticulous.com</p></Reveal>
     </div>
   );

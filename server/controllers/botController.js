@@ -63,7 +63,7 @@ async function resolveIdentity(req, visitorUuid) {
 // Logged-in → real is_host (one indexed single-row read; cheap next to the embed +
 // model call the same request makes). Anonymous → inferred from the page they're on,
 // null when the page is ambiguous (the model then stays neutral).
-const HOST_URL_RE  = /\/(dashboard|login-as-vendor|be-a-sloth|become-a-host|pricing|for)\b/i;
+const HOST_URL_RE  = /\/(dashboard|login-as-vendor|become-a-host|pricing|for)\b/i;
 const GUEST_URL_RE = /\/(user|my-bookings|book|explore)\b/i;
 function inferAudienceFromUrl(pageUrl) {
   const u = String(pageUrl || '');

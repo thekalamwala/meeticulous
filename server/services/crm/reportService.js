@@ -17,7 +17,7 @@ const { FUNNEL } = require('./leadService');
 const { MONEY } = require('./lifecycleRules');
 
 // A "paying customer" is a lead in ANY money state (Subscribed → Champion), not
-// only the literal 'paid' — a host who progressed to won/sloth is still paying.
+// only the literal 'paid' — a host who progressed to won/ROI is still paying.
 const isPaying = (status) => MONEY.has(status);
 const PAGE = 1000;
 const MAX_ROWS = 20000; // safety bound; leads are ~hundreds today

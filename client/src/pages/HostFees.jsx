@@ -15,7 +15,7 @@ import { FREE_PLAN, PREMIUM_PLAN } from '../data/plans';
 // computes (₹1000 → guest ₹1,011.80; host ₹959.76 paid / ₹909.76 free). If one
 // changes, change all three.
 
-const Mail = () => <a href="mailto:hello@meeticulous.com" className="text-primary hover:underline">hello@meeticulous.com</a>;
+const Mail = () => <a href="mailto:team@meeticulous.com" className="text-primary hover:underline">team@meeticulous.com</a>;
 
 const Th = ({ children, className = '' }) => (
   <th className={`text-left p-2.5 font-semibold text-ink border-b-2 border-gray-200 ${className}`}>{children}</th>

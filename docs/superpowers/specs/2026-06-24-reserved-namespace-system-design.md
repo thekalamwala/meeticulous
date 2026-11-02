@@ -183,7 +183,7 @@ Schema fields already present (`premium`, `assignable`, `assigned_to`). Supporte
 ## 12. Rollout
 
 - Migration `v3.33_reserved_slugs.sql` + RPC hardening applied to **both DBs** post-merge via Supabase MCP (project norm), idempotent (`IF NOT EXISTS`).
-- Seed a handful of L2 brand/premium rows (`meeticulous`, `sloth`, `official`, short names) — optional, most coverage is L1.
+- Seed a handful of L2 brand/premium rows (`meeticulous`, `official`, short names) — optional, most coverage is L1.
 - Grandfather existing usernames (no writes).
 - PR from `worktree-feat+reserved-slugs` → `main`; Render auto-deploys backend, Vercel auto-deploys client on merge.
 

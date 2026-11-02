@@ -104,7 +104,7 @@
 **Purpose:** Platform management — users, bookings, services, settings.
 - **Primary Server:** `adminController.js`, `adminAuthController.js`
 - **Primary Client:** `pages/admin/` (AdminOverview, AdminUsers, AdminBookings, AdminServices, AdminSettings)
-- **Login:** `/hello-sloth` → OTP-based admin auth → `bas_admin` localStorage key
+- **Login:** `/backstage` → OTP-based admin auth → `bas_admin` localStorage key
 - **Routes:** `/api/admin/*`, `/api/admin-auth/*`
 - **Middleware:** `adminMiddleware.js` (separate JWT from host auth)
 - **Related:** Platform Settings

@@ -10,7 +10,7 @@ const crawler = require('../../services/seo/seoCrawler');
 const OLD_ENV = process.env.SEO_FIX_DRY_RUN;
 afterEach(() => { process.env.SEO_FIX_DRY_RUN = OLD_ENV; jest.clearAllMocks(); });
 
-const fix = (over = {}) => ({ id: 'f1', status: 'approved', target: 'meta_builder', page_type: 'static', field: 'canonical', url: 'https://bookasloth.com/pricing', old_value: null, new_value: 'https://bookasloth.com/pricing', rule_key: 'technical.missing_canonical', ...over });
+const fix = (over = {}) => ({ id: 'f1', status: 'approved', target: 'meta_builder', page_type: 'static', field: 'canonical', url: 'https://meeticulous.com/pricing', old_value: null, new_value: 'https://meeticulous.com/pricing', rule_key: 'technical.missing_canonical', ...over });
 
 describe('resolved()', () => {
   test('true when the fix rule no longer fires', () => {
@@ -44,12 +44,12 @@ describe('applyFix guards', () => {
 describe('retest', () => {
   test('re-crawls one URL and returns status/health/ruleKeys', async () => {
     crawler.crawlOne.mockResolvedValue({
-      url: 'https://bookasloth.com/pricing', pageType: 'static', httpStatus: 200, bodyCrawled: true,
-      title: 'Pricing — Book A Sloth', metaDescription: 'd'.repeat(150), canonical: 'https://bookasloth.com/pricing',
+      url: 'https://meeticulous.com/pricing', pageType: 'static', httpStatus: 200, bodyCrawled: true,
+      title: 'Pricing — Meeticulous', metaDescription: 'd'.repeat(150), canonical: 'https://meeticulous.com/pricing',
       robots: 'index', h1: ['Our pricing'], headings: [{ tag: 'h1', text: 'Our pricing' }], wordCount: 400,
       links: { internal: [], external: [] }, images: [], jsonLd: [{ '@type': 'WebPage' }], inSitemap: true,
     });
-    const r = await apply.retest('https://bookasloth.com/pricing', 'static', true);
+    const r = await apply.retest('https://meeticulous.com/pricing', 'static', true);
     expect(r.status).toBeDefined();
     expect(typeof r.health).toBe('number');
     expect(Array.isArray(r.ruleKeys)).toBe(true);

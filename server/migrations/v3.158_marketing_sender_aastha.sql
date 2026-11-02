@@ -1,7 +1,7 @@
 -- v3.158_marketing_sender_aastha.sql
 -- (v3.157 taken by PR #1066 campaign open/click metrics — bumped to avoid a clash.)
 -- Point the marketing persona at the real Google Workspace mailbox that now sends
--- all bulk / sales-automation mail over SMTP (aastha@bookasloth.in), and rename its
+-- all bulk / sales-automation mail over SMTP (aastha@meeticulous.com), and rename its
 -- visible identity Sujata → Aastha.
 --
 -- The sender_key stays 'sujata' on purpose: every email_templates row, lifecycle

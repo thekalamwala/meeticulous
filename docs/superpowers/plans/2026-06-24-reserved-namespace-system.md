@@ -180,8 +180,8 @@ const { normalizeSlug } = require('../utils/slugNormalize');
 const ROUTES = [
   'login','logout','signin','signup','register','forgot-password','reset-password',
   'help','about','privacy','terms','refund','unsubscribe','support','explore',
-  'be-a-sloth','login-as-vendor','vendor','vendor-register','auth',
-  'hello-sloth','super-dashboard','admin','dashboard','user','review','lp',
+  'become-a-host','login-as-vendor','vendor','vendor-register','auth',
+  'backstage','super-dashboard','admin','dashboard','user','review','lp',
   'my-bookings','profile','reviews','loyalty','settings','search',
   'sitemap','robots','health','manifest','favicon',
 ];
@@ -212,8 +212,8 @@ const ACCOUNT = [
 ];
 // Brand / role / safety / impersonation.
 const BRAND = [
-  'meeticulous','meeticulous','sloth','slothofficial','official','verified','staff',
-  'moderator','mod','administrator','superadmin','team-sloth','no-reply','noreply',
+  'meeticulous','meeticulousofficial','official','verified','staff',
+  'moderator','mod','administrator','superadmin','team-meeticulous','no-reply','noreply',
   'postmaster','abuse','hostmaster','mail','email','hosts','host','users','vendors',
   'home','index','me','guest','app','apps','web','go',
 ];
@@ -278,8 +278,8 @@ Expected PASS. Checks: `isReserved('login')` true; `isReserved('Dashboard')` tru
 export const RESERVED_FIRST_SEGMENTS = [
   'login','logout','signin','signup','register','forgot-password','reset-password',
   'help','about','privacy','terms','refund','unsubscribe','support','explore',
-  'be-a-sloth','login-as-vendor','vendor','vendor-register','auth',
-  'hello-sloth','super-dashboard','admin','dashboard','user','review','lp',
+  'become-a-host','login-as-vendor','vendor','vendor-register','auth',
+  'backstage','super-dashboard','admin','dashboard','user','review','lp',
   'my-bookings','profile','reviews','loyalty','sitemap','robots','health',
 ];
 ```

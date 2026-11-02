@@ -3,7 +3,7 @@
  * handoffService.js — cross-board team handoffs (P3).
  *
  * When a lead crosses a pipeline boundary INTO Customer Relations (on first
- * payment) or Marketing (on becoming The Sloth), the receiving team should own it.
+ * payment) or Marketing (on reaching the ROI milestone), the receiving team should own it.
  * onCrossBoard reassigns the lead to the least-loaded active member of that team,
  * records the handoff on the timeline (prev→new owner, trigger), and opens an SLA
  * follow-up whose existing reminder cron pings the new owner — so the handoff both

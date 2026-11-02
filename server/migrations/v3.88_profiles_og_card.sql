@@ -1,7 +1,7 @@
 -- v3.88_profiles_og_card.sql
 -- Generated 1200x630 social share cards for host profiles.
 --
--- A shared bookasloth.com/:username link previews as og:image. Today that is the
+-- A shared meeticulous.com/:username link previews as og:image. Today that is the
 -- host's Google avatar — a SQUARE image that letterboxes under a
 -- summary_large_image card. This adds a per-host generated card (the same
 -- pattern blogs.og_image uses) plus the state machine to keep it fresh without

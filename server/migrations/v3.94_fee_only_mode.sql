@@ -1,10 +1,10 @@
 -- v3.94 — Interim fee-only mode (no Razorpay Route yet)
 --
--- Book A Sloth is not yet a licensed payment aggregator and Razorpay Route is
+-- Meeticulous is not yet a licensed payment aggregator and Razorpay Route is
 -- pending approval, so no host money may be collected-and-remitted. Until Route
 -- goes live the platform runs in FEE-ONLY mode:
 --   • hosts cannot list a paid service — all service prices are ₹0;
---   • every booking still collects Book A Sloth's own booking fee + GST, with a
+--   • every booking still collects Meeticulous's own booking fee + GST, with a
 --     guest tax invoice, into the BAS account — no host money moves.
 --
 -- This migration does two things:

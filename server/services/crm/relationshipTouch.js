@@ -25,9 +25,9 @@ function recommendationsFor(lead, health, ctx = {}, now = Date.now()) {
   if (!lead || !health) return [];
   const state = health.state;
   const dMean = daysSince(lead.last_meaningful_interaction_at, now);
-  // High-value = the same ROI signal the lifecycle uses for the Sloth gate, or a
+  // High-value = the same ROI signal the lifecycle uses for the ROI gate, or a
   // paying host who has already earned back ≥2× their plan cost.
-  const highValue = !!ctx.meetsSloth
+  const highValue = !!ctx.meetsRoi
     || ((Number(ctx.earningsPaise) || 0) > 0
         && (Number(ctx.planPricePaise) || 0) > 0
         && Number(ctx.earningsPaise) >= 2 * Number(ctx.planPricePaise));

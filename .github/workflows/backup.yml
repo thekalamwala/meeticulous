@@ -18,7 +18,7 @@ name: Daily DB Backup
 #
 # RESTORE: download the artifact, then:
 #   gpg --batch --decrypt --passphrase "$BACKUP_PASSPHRASE" \
-#       -o restore.dump bookasloth-YYYYMMDD-HHMMSS.dump.gpg
+#       -o restore.dump meeticulous-YYYYMMDD-HHMMSS.dump.gpg
 #   pg_restore -d "$TARGET_DATABASE_URL" --clean --if-exists --no-owner restore.dump
 #   (restore into a STAGING project first to verify — never test-restore on prod.)
 #
@@ -82,7 +82,7 @@ jobs:
         run: |
           set -euo pipefail
           STAMP="$(date -u +%Y%m%d-%H%M%S)"
-          FILE="bookasloth-${STAMP}.dump"
+          FILE="meeticulous-${STAMP}.dump"
           echo "Dumping production database to ${FILE} ..."
           # -Fc = compressed custom format (best for pg_restore --clean / selective restore)
           pg_dump "$DATABASE_URL" -Fc --no-owner --no-privileges -f "$FILE"

@@ -77,7 +77,7 @@ const fail = (m) => console.log(`  \x1b[31m✗\x1b[0m ${m}`);
     const start = new Date(Date.now() + 365 * 864e5);
     const end = new Date(start.getTime() + 30 * 60000);
     const ev = await createCalendarEvent(accessToken, refreshToken, {
-      title: '[SMOKE TEST — safe to ignore] Book A Sloth googleapis bump',
+      title: '[SMOKE TEST — safe to ignore] Meeticulous googleapis bump',
       description: 'Automated smoke test for PR #34. Auto-deleted within seconds.',
       startTime: start.toISOString(),
       endTime: end.toISOString(),

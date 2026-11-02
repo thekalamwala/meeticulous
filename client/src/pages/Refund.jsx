@@ -14,7 +14,7 @@ import LegalLayout, { Section, MARKETPLACE_EFFECTIVE } from '../components/commo
 // non-refundable — the non-refundable position needs the checkout disclosure fixed (product)
 // or the claim softened (lawyer call). Wording below no longer claims a checkout "non-refundable" notice.
 
-const Mail = () => <a href="mailto:hello@meeticulous.com" className="text-primary hover:underline">hello@meeticulous.com</a>;
+const Mail = () => <a href="mailto:team@meeticulous.com" className="text-primary hover:underline">team@meeticulous.com</a>;
 
 const Th = ({ children }) => (
   <th className="text-left p-2.5 font-semibold text-ink border-b-2 border-gray-200">{children}</th>

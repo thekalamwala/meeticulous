@@ -52,17 +52,21 @@ describe('<Footer>', () => {
     expect(screen.queryByRole('link', { name: /timewheel/i })).toBeNull();
     const mail = screen
       .getAllByRole('link')
-      .find((a) => a.getAttribute('href') === 'mailto:hello@meeticulous.com');
+      .find((a) => a.getAttribute('href') === 'mailto:team@meeticulous.com');
     expect(mail).toBeTruthy();
   });
 
   test('social links are safe external links with aria-labels', () => {
     renderFooter();
-    ['Instagram', 'X', 'LinkedIn', 'Facebook', 'WhatsApp'].forEach((name) => {
+    ['WhatsApp'].forEach((name) => {
       const link = screen.getByLabelText(name);
       expect(link.tagName).toBe('A');
       expect(link.getAttribute('target')).toBe('_blank');
       expect(link.getAttribute('rel')).toContain('noopener');
+    });
+    // Held until the accounts exist.
+    ['Instagram', 'X', 'LinkedIn', 'Facebook'].forEach((name) => {
+      expect(screen.queryByLabelText(name)).toBeNull();
     });
   });
 
@@ -92,7 +96,7 @@ describe('<Footer>', () => {
     expect(screen.getByRole('navigation', { name: 'Legal' })).toBeTruthy();
     // legal bar survives (operator credit + a legal link); Bolt attribution removed
     expect(screen.getByText('Operated and Hand crafted by the humans of Rajmudra Media LLP')).toBeTruthy();
-    expect(screen.queryByRole('link', { name: 'Bolt the Sloth' })).toBeNull();
+    expect(screen.queryByRole('link', { name: /^Bolt/ })).toBeNull();
     expect(screen.getByRole('link', { name: 'Terms' }).getAttribute('href')).toBe('/terms');
     // link columns + socials + newsletter are gone
     expect(screen.queryByRole('link', { name: 'About' })).toBeNull();

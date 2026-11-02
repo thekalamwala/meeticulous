@@ -5,7 +5,7 @@
 'use strict';
 
 const db = {
-  email_settings: { id: 1, provider: 'smtp', from_name: 'Book A Sloth', support_email: 's@x.test', website_url: 'https://x.test', brand_color: '#FE5100' },
+  email_settings: { id: 1, provider: 'smtp', from_name: 'Meeticulous', support_email: 's@x.test', website_url: 'https://x.test', brand_color: '#FE5100' },
   email_templates: [
     { id: 't1', event_key: 'BOOKING_CONFIRMED_CUSTOMER', audience: 'all', status: 'active',
       subject: 'Confirmed: {{service_name}}', preview_text: 'hi', html_content: '<p>Hi {{first_name}}</p>', cta_label: '', cta_url: '' },
@@ -192,16 +192,16 @@ describe('communicationEngine — marketing unsubscribe', () => {
 });
 
 describe('communicationEngine.renderEmail — recipient-driven layout', () => {
-  const settings = { brand_color: '#FE5100', website_url: 'https://x.test', support_email: 's@x.test', from_name: 'Book A Sloth', logo_url: 'https://cdn.test/bas.png' };
+  const settings = { brand_color: '#FE5100', website_url: 'https://x.test', support_email: 's@x.test', from_name: 'Meeticulous', logo_url: 'https://cdn.test/bas.png' };
   const template = { subject: 'Hi', html_content: '<p>body {{first_name}}</p>', cta_label: '', cta_url: '', email_category: 'Booking', preview_text: '' };
 
-  test("audience 'vendor' → minimal Powered-by footer (constant logo header)", () => {
+  test("audience 'vendor' → text footer without nav (constant logo header)", () => {
     const { html } = engine.renderEmail(template, {
       settings, audience: 'vendor', user: { name: 'Asha' },
       data: { company_logo: 'https://cdn.test/host.png', company_name: 'Asha Studio' },
     });
     expect(html).toContain('images/email/meeticulous-wordmark-full-color.png'); // constant logo, both audiences
-    expect(html).toMatch(/Powered by/i);
+    expect(html).toContain('Questions? Just reply');
     expect(html).not.toMatch(/My Bookings/i);
     expect(html).toContain('body Asha'); // same body resolves regardless of shell
   });

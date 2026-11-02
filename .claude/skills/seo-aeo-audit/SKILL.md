@@ -1,9 +1,9 @@
 ---
 name: seo-aeo-audit
-description: Use to run a repeatable, evidence-gated technical-SEO + AEO/GEO audit of Book A Sloth against 6 pillars (technical baseline, topical authority, query fan-out, backlink-worthiness, digital-PR readiness, SEO automation). Produces docs/seo-aeo-audit.md with a scorecard, Gap→Evidence→Fix→Impact/Effort findings, P0/P1/P2 priorities, and missing-page briefs. Every finding must cite a file:line or a prod/DB observation. Trigger "SEO audit", "AEO audit", "technical SEO review", "/seo-aeo-audit". This is the AUDIT step of the chain audit→plan(seo-topical-map)→write(blog-seo-optimizer)→measure.
+description: Use to run a repeatable, evidence-gated technical-SEO + AEO/GEO audit of Meeticulous against 6 pillars (technical baseline, topical authority, query fan-out, backlink-worthiness, digital-PR readiness, SEO automation). Produces docs/seo-aeo-audit.md with a scorecard, Gap→Evidence→Fix→Impact/Effort findings, P0/P1/P2 priorities, and missing-page briefs. Every finding must cite a file:line or a prod/DB observation. Trigger "SEO audit", "AEO audit", "technical SEO review", "/seo-aeo-audit". This is the AUDIT step of the chain audit→plan(seo-topical-map)→write(blog-seo-optimizer)→measure.
 ---
 
-# Book A Sloth — SEO/AEO Audit (repeatable)
+# Meeticulous — SEO/AEO Audit (repeatable)
 
 Audit the **codebase AND prod config** against the 6 pillars below. Output is a single report at
 `docs/seo-aeo-audit.md`. The rule that makes this useful: **evidence or it didn't happen** — every

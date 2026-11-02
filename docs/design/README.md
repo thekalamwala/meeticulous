@@ -3,7 +3,7 @@
 _A comprehensive UI/UX audit + design strategy + token/component system + implementation roadmap, informed by Kit, Salesforce, Semrush, and beehiiv. Created 2026-10-29 on branch `feat/design-system-foundation`._
 
 ## Confirmed facts this is built on
-- **Live brand = blue `#0079C1`** (post "Book A Sloth" → "Meeticulous" rebrand). Orange `#FE5100` is dead in code (0 occurrences); only old docs were stale. "Refine the existing blue system" — not a reinvention.
+- **Live brand = blue `#0079C1`** (post "Meeticulous" → "Meeticulous" rebrand). Orange `#FE5100` is dead in code (0 occurrences); only old docs were stale. "Refine the existing blue system" — not a reinvention.
 - Stack: React 18 + Vite + Tailwind + CSS custom properties. Fonts (self-hosted): Plus Jakarta Sans (display) + Poppins (body).
 - Design language: **soft modern SaaS** — soft shadows, 4–6px radii, token-driven.
 
@@ -35,5 +35,5 @@ Admin **A−** · Dashboard **A−** · Guest funnel **B+** · Marketing flagshi
 
 ## Founder decisions pending (see `01` §5 / `06`)
 1. Fabricated social proof on ServiceDetail payment page — remove or wire to real data? (trust/legal)
-2. Dead-brand cleanup (`bookasloth` handles, "Book A Sloth Pro", "Sloth" wordmarks) — here or separate ticket?
+2. Dead-brand cleanup (old-brand handles, old-brand "Pro" copy, old-brand wordmarks) — here or separate ticket?
 3. Bespoke marketing (~36 pages) — keep + add primitives (recommended) or consolidate harder?

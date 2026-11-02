@@ -69,7 +69,7 @@ async function maybeSendUpgradeNudge({ host, booking }) {
     if (prior) return { sent: false, reason: 'already_sent' };
 
     const bookingsCount = list.length;
-    const base = process.env.CLIENT_URL || 'https://bookasloth.com';
+    const base = process.env.CLIENT_URL || 'https://meeticulous.com';
 
     await NotificationEngine.send({
       event: EVENT,

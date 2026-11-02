@@ -26,6 +26,8 @@
 // uplift, Reveal guards its own motion.
 
 import { useState } from 'react';
+import { Compass as CompassIcon } from 'lucide-react';
+import IconArt from '../../components/common/IconArt';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -61,7 +63,7 @@ const NAV = [
   { label: 'FAQ', href: '#faq' },
 ];
 
-const MASCOT = '/for/life-coaches/hero.webp';
+const SLOT_ICON = CompassIcon; // stands in for the removed mascot art
 const HERO_TRUST = ['No credit card required', 'Setup in minutes', 'Built for Indian coaches'];
 
 // Editorial numbered offering rows — the sessions a coach sells.
@@ -200,14 +202,7 @@ function ImgSlot({ alt, className = '', rounded = 'rounded-[18px]' }) {
     .replace(/\bborder\b(-[^\s]+)?/g, '')
     .replace(/bg-\[[^\]]*\]/g, '');
   const pos = /\b(absolute|fixed)\b/.test(layout) ? '' : 'relative';
-  return (
-    <div
-      {...(alt ? { role: 'img', 'aria-label': alt } : { 'aria-hidden': true })}
-      className={`${pos} z-40 flex items-center justify-center ${layout}`}
-    >
-      <img src={MASCOT} alt={alt || ''} loading="lazy" decoding="async" className="h-full w-full object-contain" />
-    </div>
-  );
+  return <IconArt icon={SLOT_ICON} label={alt} rounded={rounded} className={`${pos} z-40 ${layout}`} />;
 }
 
 /* Rising "journey" — milestone dots on a gently rising line (desktop), stacked on mobile. */
@@ -771,7 +766,7 @@ export default function LifeCoaches() {
               <Link to={START} className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
                 Launch My Page — Free <ArrowRight size={16} />
               </Link>
-              <Link to="/sndatarkar/booking/book-a-sloth-app-online-demo-30-min-advisory-session" className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline">
+              <Link to="/contact" className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline">
                 Book A Demo
               </Link>
             </Reveal>

@@ -4,8 +4,8 @@
 
 Key facts:
 
-- **Plans:** Sloth (free forever, 5% commission per paid booking) and Sloth Active (₹399/month or ₹3,599/year, 0% commission). Prices in INR, GST included. A payment gateway fee of about 2.4% applies (Razorpay's, not Meeticulous's).
-- **0% commission on Sloth Active** — hosts keep what they earn, minus the gateway fee.
+- **Plans:** Starter (free forever, 5% commission per paid booking) and Pro (₹399/month or ₹3,599/year, 0% commission). Prices in INR, GST included. A payment gateway fee of about 2.4% applies (Razorpay's, not Meeticulous's).
+- **0% commission on Pro** — hosts keep what they earn, minus the gateway fee.
 - **India-native:** INR pricing, GST invoicing and UPI built in.
 - **Runs the whole booking:** payments up-front, email + WhatsApp reminders, two-way Google Calendar sync, and auto-generated video-call links.
 - **Personal page:** every host gets `meeticulous.com/their-username` — a mini-site that books, bills and brands them.

@@ -30,7 +30,7 @@ const { createBooking } = require('../controllers/bookingController');
 
 const PROD_REF = 'ayjhlwyzszykqtnaktpb';     // Mumbai — NEVER write-burst this
 const STAGING_REF = 'xwvciqkayammbvsidqig';  // Tokyo — the only allowed target
-const TAG_DOMAIN = '@loadtest.bookasloth.local';
+const TAG_DOMAIN = '@loadtest.meeticulous.local';
 const HOST_USERNAME = 'loadtest-vendor-rules';
 const SERVICE_SLUG = 'loadtest-rules-free';  // price 0 → confirmed/paid, no payment, no gcal
 const N = Number(process.env.BURST_N || 50);

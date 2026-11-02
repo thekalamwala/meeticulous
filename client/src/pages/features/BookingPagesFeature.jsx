@@ -50,7 +50,7 @@ import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
 
 const START = '/become-a-host';
-const DEMO = '/demo';
+const DEMO = '/contact';
 const CREAM = '#FBF4E6';      // page paper
 const PAPER = '#FFFCF5';      // lighter alternate sections
 const INK = '#2A1416';

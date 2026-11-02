@@ -61,7 +61,7 @@ app.use('/api/admin-auth', adminAuthRoutes);
 
 const seedStaff = () => {
   globalThis.__staff = {
-    id: 'staff-1', email: 'ops@bookasloth.com', username: 'ops', name: 'Ops Admin',
+    id: 'staff-1', email: 'ops@meeticulous.com', username: 'ops', name: 'Ops Admin',
     password_hash: HASH, role_key: 'operations', is_active: true, failed_attempts: 0, locked_until: null,
   };
   globalThis.__rolePerms = ['ops.view'];
@@ -108,7 +108,7 @@ describe('GET /api/admin-auth/me', () => {
   });
 
   test('200 — echoes the admin identity for a valid token', async () => {
-    const token = jwtSign({ type: 'admin', sub: 's1', email: 'ops@bookasloth.com', username: 'ops', name: 'Ops Admin', role: 'operations', permissions: ['ops.view'] });
+    const token = jwtSign({ type: 'admin', sub: 's1', email: 'ops@meeticulous.com', username: 'ops', name: 'Ops Admin', role: 'operations', permissions: ['ops.view'] });
     const res = await request(app).get('/api/admin-auth/me').set({ Authorization: `Bearer ${token}` });
     expect(res.status).toBe(200);
     expect(res.body.admin).toMatchObject({ username: 'ops', role: 'operations' });

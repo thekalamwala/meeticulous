@@ -5,7 +5,7 @@ const path = require('path');
 const { supabaseAdmin } = require('../config/supabase');
 const { assertNotProd } = require('./lib/guard');
 
-const TAG_DOMAIN = '@loadtest.bookasloth.local';
+const TAG_DOMAIN = '@loadtest.meeticulous.local';
 const DATA_DIR = path.resolve(__dirname, '../../performance/jmeter/data');
 
 (async () => {

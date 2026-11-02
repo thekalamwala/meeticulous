@@ -279,7 +279,7 @@ Writing for keyword density, copying competitors, invented stats, fake reviews, 
    - *Alternate with proper canonical* / *Excluded by noindex* → working as intended.
    - **Any new Soft 404, "Duplicate without user-selected canonical", or entity pages under "Google chose different canonical" → investigate the same day.**
 5. **Request indexing** (~10 a day) for new high-value pages: home → pricing → comparisons → top profession pages → newest posts.
-6. Track the brand query. Name collisions are real (BAS competes with "booksloth").
+6. Track the brand query. Watch for near-name collisions in the SERP.
 
 ### 8.2 Scoring framework (optional, for a later admin tool)
 BAS gives every page two diagnostic 0–100 scores. **These are internal scores, not Google's formula.**

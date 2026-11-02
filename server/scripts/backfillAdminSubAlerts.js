@@ -21,7 +21,7 @@ const DRY = process.argv.includes('--dry-run');
 const { supabaseAdmin } = require('../config/supabase');
 const { adminAlert } = require('../utils/adminAlert');
 
-const CLIENT = process.env.CLIENT_URL || 'https://bookasloth.com';
+const CLIENT = process.env.CLIENT_URL || 'https://meeticulous.com';
 const inr = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`;
 
 (async () => {

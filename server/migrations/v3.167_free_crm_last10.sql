@@ -1,13 +1,13 @@
 -- ============================================================
--- v3.167 — Give the free Sloth plan a capped Client CRM (last 10 clients)
+-- v3.167 — Give the free Starter plan a capped Client CRM (last 10 clients)
 -- ------------------------------------------------------------
 -- The free plan previously had limits.crm = 0, which requireCrm treats as a hard
 -- block: free hosts saw NO CRM at all. The two-plan model instead gives free hosts
 -- a taste of the CRM — their 10 most recent clients — so they feel the value before
--- upgrading to Sloth Active for the full, unlimited history.
+-- upgrading to Pro for the full, unlimited history.
 --
 -- Semantics of limits.crm (planService / planMiddleware.requireCrm):
---   -1        = full / unlimited  (Sloth Active + legacy paid tiers)
+--   -1        = full / unlimited  (Pro + legacy paid tiers)
 --   positive  = a capped VIEW; free = 10 most-recent, enforced in
 --               crmService.listClients (covers the list AND the CSV export)
 --   0 / absent = fully blocked

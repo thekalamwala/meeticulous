@@ -21,8 +21,8 @@ export const RESERVED_FIRST_SEGMENTS = [
   'press', // press / media kit (pages/Press.jsx)
   'stats', // "by the numbers" fast-facts page (pages/Stats.jsx)
   'appointment-booking-software', // SEO landing (pages/AppointmentBookingSoftware.jsx)
-  'be-a-sloth', 'become-a-host', 'login-as-vendor', 'vendor', 'vendor-register', 'auth',
-  'hello-sloth', 'backstage', 'super-dashboard', 'admin', 'dashboard', 'user', 'review', 'manage-booking', 'lp', 'for', 'invite',
+  'become-a-host', 'login-as-vendor', 'vendor', 'vendor-register', 'auth',
+  'backstage', 'super-dashboard', 'admin', 'dashboard', 'user', 'review', 'manage-booking', 'lp', 'for', 'invite',
   // /og/blog/:slug — render target for the OG card generator (see pages/OgCard.jsx).
   'og',
   'my-bookings', 'profile', 'reviews', 'loyalty', 'sitemap', 'robots', 'health',

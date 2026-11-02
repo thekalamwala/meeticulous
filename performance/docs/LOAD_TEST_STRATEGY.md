@@ -1,4 +1,4 @@
-# Load Test Strategy — Book A Sloth
+# Load Test Strategy — Meeticulous
 
 _2026-06-18. Companions: `ENDPOINT_INVENTORY.md`, `PERFORMANCE_AUDIT.md`. Full design: `docs/superpowers/specs/2026-06-18-jmeter-performance-testing-design.md`._
 
@@ -40,7 +40,7 @@ Stub only irreversible / costly / spammy side-effects; keep latency real where s
 Off by default; fail-safe to OFF when `NODE_ENV=production`.
 
 ## Safety
-- Test data tagged by guest email domain `@loadtest.bookasloth.local` + vendor usernames `loadtest-*`. No schema change.
+- Test data tagged by guest email domain `@loadtest.meeticulous.local` + vendor usernames `loadtest-*`. No schema change.
 - Seed/cleanup scripts refuse to run when `NODE_ENV=production`.
 - FreeBusy cache-effectiveness plan needs a Google-connected test vendor (`TEST_VENDOR_GOOGLE_REFRESH_TOKEN`); absent → that plan is skipped, never faked.
 

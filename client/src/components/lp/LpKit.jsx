@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { analytics, EVENTS } from "../../services/analytics";
 
-const SLUG = "topmate-vs-bookasloth";
+const SLUG = "topmate-vs-meeticulous";
 const DEST = "/become-a-host";
 
 /* Primary CTA — fires LP_CTA_CLICKED then routes to host signup.

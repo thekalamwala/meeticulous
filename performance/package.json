@@ -1,8 +1,8 @@
 {
-  "name": "bookasloth-performance",
+  "name": "meeticulous-performance",
   "version": "1.0.0",
   "private": true,
-  "description": "JMeter load-testing harness for Book A Sloth. See README.md.",
+  "description": "JMeter load-testing harness for Meeticulous. See README.md.",
   "scripts": {
     "perf:local": "node scripts/run.js local smoke",
     "perf:staging": "node scripts/run.js staging smoke",

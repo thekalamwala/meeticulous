@@ -28,9 +28,12 @@ import lazyWithRetry from './utils/lazyWithRetry';
 const lazy = lazyWithRetry;
 
 // Bottom-right floating circle: re-opens the cookie/consent banner. It replaced
-// the Bolt support-chat launcher (owner request 2026-10-31) — BotWidget.jsx is
-// kept in the codebase but no longer mounted.
+// the Bolt (now Tithi) support-chat launcher site-wide (owner request 2026-10-31).
+// Exception: the Help pages mount the Tithi widget in that same corner instead,
+// because their "Chat with Tithi" card opens it via the 'bolt:open' event.
 const CookieButton = lazy(() => import('./components/common/CookieButton'));
+const BotWidget = lazy(() => import('./components/common/BotWidget'));
+const HELP_PAGE = /^\/help(\/|$)/;
 const OpeningTakeover = lazy(() => import('./components/opening/OpeningTakeover'));
 
 // ── Route-level lazy loading ──────────────────────────────────────────────────
@@ -80,7 +83,7 @@ const Compare        = lazy(() => import('./pages/Compare'));
 
 // Competitor comparison pages (/compare/*, formerly /lp/*). Pages not yet rebuilt
 // still draw their own header/footer and call useHideChrome() to drop the global nav.
-const TopmateVsBookASloth = lazy(() => import('./pages/compare/TopmateVsBookASloth'));
+const TopmateVsMeeticulous = lazy(() => import('./pages/compare/TopmateVsMeeticulous'));
 const CalendlyAlternative  = lazy(() => import('./pages/compare/CalendlyAlternative'));
 const SetmoreAlternative   = lazy(() => import('./pages/compare/SetmoreAlternative'));
 const AcuityAlternative    = lazy(() => import('./pages/compare/AcuityAlternative'));
@@ -109,12 +112,10 @@ const GoogleAuthDone = lazy(() => import('./pages/GoogleAuthDone'));
 
 // Vendor Onboarding (Google-first 7-step flow)
 const GoogleStart     = lazy(() => import('./pages/onboarding/GoogleStart'));
-const SlugClaim       = lazy(() => import('./pages/onboarding/SlugClaim'));
-const CategoryStep    = lazy(() => import('./pages/onboarding/CategoryStep'));
-const PersonaStep     = lazy(() => import('./pages/onboarding/PersonaStep'));
-const PreviewStep     = lazy(() => import('./pages/onboarding/PreviewStep'));
+const PageStep        = lazy(() => import('./pages/onboarding/PageStep'));
+const ServiceStep     = lazy(() => import('./pages/onboarding/ServiceStep'));
 const PlansStep       = lazy(() => import('./pages/onboarding/PlansStep'));
-const ExploreWithBolt = lazy(() => import('./pages/onboarding/ExploreWithBolt'));
+const LiveStep        = lazy(() => import('./pages/onboarding/LiveStep'));
 
 // Admin login
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
@@ -336,7 +337,7 @@ function DashboardWrapper({ children }) {
 
 // SECURITY: AdminWrapper does NOT use ProtectedRoute (which checks vendor/user session).
 // AdminLayout has its own isolated guard that checks the 'bas_admin' session only.
-// A vendor/user with no admin session is redirected to /hello-sloth, not /login.
+// A vendor/user with no admin session is redirected to /backstage, not /login.
 function AdminWrapper({ children }) {
   return <AdminLayout>{children}</AdminLayout>;
 }
@@ -446,7 +447,7 @@ function App() {
           {/* Public */}
           <Route path="/" element={<HomeGate />} />
           {/* Competitor comparison pages — live under the /compare hub. */}
-          <Route path="/compare/topmate-alternative" element={<TopmateVsBookASloth />} />
+          <Route path="/compare/topmate-alternative" element={<TopmateVsMeeticulous />} />
           <Route path="/compare/calendly-alternative" element={<CalendlyAlternative />} />
           <Route path="/compare/setmore-alternative" element={<SetmoreAlternative />} />
           <Route path="/compare/acuity-alternative" element={<AcuityAlternative />} />
@@ -454,7 +455,6 @@ function App() {
           <Route path="/compare/zoho-bookings-alternative" element={<ZohoBookingsAlternative />} />
           {/* Old /lp/* URLs (Oct 2026 move). vercel.json 301s them at the edge;
               these cover in-app navigation from a stale link or cached bundle. */}
-          <Route path="/lp/topmate-vs-bookasloth" element={<Navigate to="/compare/topmate-alternative" replace />} />
           {['calendly', 'setmore', 'acuity', 'simplybook', 'zoho-bookings'].map((c) => (
             <Route key={c} path={`/lp/${c}-alternative`} element={<Navigate to={`/compare/${c}-alternative`} replace />} />
           ))}
@@ -514,8 +514,6 @@ function App() {
 
           {/* Host signup — Google-only */}
           <Route path="/become-a-host" element={<BecomeAHost />} />
-          {/* Old /be-a-sloth URL → permanent redirect to the renamed route. */}
-          <Route path="/be-a-sloth" element={<Navigate to="/become-a-host" replace />} />
           {/* Host login door (Google-only) — also the Google-callback error target. */}
           <Route path="/login-as-vendor" element={<HostLogin />} />
           <Route path="/auth/google/done" element={<GoogleAuthDone />} />
@@ -525,16 +523,17 @@ function App() {
               resume/upgrade safety net, not a forced step (paywall deferred to
               the dashboard). About + WhatsApp were folded into PreviewStep. */}
           <Route path="/vendor-register" element={<GoogleStart />} />
-          <Route path="/vendor-register/:slug/claim"    element={<SlugClaim />} />
-          <Route path="/vendor-register/:slug/category" element={<PersonaStep />} />
-          <Route path="/vendor-register/:slug/category/all" element={<CategoryStep />} />
-          <Route path="/vendor-register/:slug/preview" element={<PreviewStep />} />
+          {/* 3-screen flow: Your page → First service → Live. /claim, /category and
+              /category/all all render PageStep so old resume links keep working. */}
+          <Route path="/vendor-register/:slug/claim"    element={<PageStep />} />
+          <Route path="/vendor-register/:slug/category" element={<PageStep />} />
+          <Route path="/vendor-register/:slug/category/all" element={<PageStep />} />
+          <Route path="/vendor-register/:slug/preview" element={<ServiceStep />} />
           <Route path="/vendor-register/:slug/plan"     element={<PlansStep />} />
-          <Route path="/vendor-register/:slug/live"     element={<ExploreWithBolt />} />
+          <Route path="/vendor-register/:slug/live"     element={<LiveStep />} />
 
-          {/* Admin login (Backstage). Old /hello-sloth path redirects here. */}
+          {/* Admin login (Backstage). */}
           <Route path="/backstage" element={<AdminLogin />} />
-          <Route path="/hello-sloth" element={<Navigate to="/backstage" replace />} />
 
           {/* Vendor dashboard */}
           <Route path="/dashboard" element={<DashboardWrapper><Dashboard /></DashboardWrapper>} />
@@ -839,7 +838,11 @@ function App() {
         ? !chromeHidden && !location.pathname.startsWith('/admin') && <Footer variant="minimal" />
         : !hideFooter && <Footer variant={isBookingPage ? 'minimal' : 'full'} />}
       </RouteErrorBoundary>
-      {!hideBot && <Suspense fallback={null}><CookieButton /></Suspense>}
+      {!hideBot && (
+        <Suspense fallback={null}>
+          {HELP_PAGE.test(location.pathname) ? <BotWidget /> : <CookieButton />}
+        </Suspense>
+      )}
       {/* Site-wide "The Opening" takeover — self-gates on window + route + one-per-device. */}
       <Suspense fallback={null}><OpeningTakeover /></Suspense>
     </ChromeContext.Provider>

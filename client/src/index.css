@@ -442,15 +442,15 @@ button[role='switch'] {
    ════════════════════════════════════════════════════════════ */
 
 /* Calm neutral surface palette */
-.sloth-bg-canvas { background: #F8FAFC; }
-.sloth-bg-sand   { background: #F1F5F9; }
-.sloth-ink       { color: #2A1416; }
-.sloth-muted     { color: #6b6b6b; }
+.brand-bg-canvas { background: #F8FAFC; }
+.brand-bg-sand   { background: #F1F5F9; }
+.brand-ink       { color: #2A1416; }
+.brand-muted     { color: #6b6b6b; }
 
 /* Hero ambient aura — soft warm wash on the flat canvas (no palette change).
    Painted inside the hero <section> box; gradients fade out before the edges,
    so nothing bleeds into neighbouring sections. */
-.sloth-hero-aura {
+.brand-hero-aura {
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -461,7 +461,7 @@ button[role='switch'] {
 }
 
 /* Frosted glass cards (hero floating cards) */
-.sloth-glass {
+.brand-glass {
   background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(14px) saturate(150%);
   -webkit-backdrop-filter: blur(14px) saturate(150%);
@@ -470,21 +470,21 @@ button[role='switch'] {
 }
 
 /* Slow vertical float for hero glass cards */
-@keyframes sloth-float {
+@keyframes brand-float {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-14px); }
 }
-.sloth-float       { animation: sloth-float 6s ease-in-out infinite; }
-.sloth-float--slow { animation: sloth-float 8s ease-in-out infinite; }
-.sloth-float--mid  { animation: sloth-float 7s ease-in-out infinite; animation-delay: -2s; }
+.brand-float       { animation: brand-float 6s ease-in-out infinite; }
+.brand-float--slow { animation: brand-float 8s ease-in-out infinite; }
+.brand-float--mid  { animation: brand-float 7s ease-in-out infinite; animation-delay: -2s; }
 
 /* Gentle 5px bob for homepage stat icons. CSS (compositor) instead of a
    framer-motion `repeat: Infinity` — that ran a JS rAF tick every frame forever. */
-@keyframes sloth-bob {
+@keyframes brand-bob {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-5px); }
 }
-.sloth-bob { display: inline-block; animation: sloth-bob 3s ease-in-out infinite; }
+.brand-bob { display: inline-block; animation: brand-bob 3s ease-in-out infinite; }
 
 /* Homepage content width: section containers (max-w-6xl / 7xl) span 80% of the
    window on lg+ instead of the fixed 1152/1280px caps. Narrow text columns
@@ -507,50 +507,50 @@ button[role='switch'] {
 }
 
 /* Infinite testimonial marquee rows */
-@keyframes sloth-marquee-left {
+@keyframes brand-marquee-left {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
 }
-@keyframes sloth-marquee-right {
+@keyframes brand-marquee-right {
   from { transform: translateX(-50%); }
   to   { transform: translateX(0); }
 }
-.sloth-marquee {
+.brand-marquee {
   display: flex;
   width: max-content;
   gap: 1.25rem;
 }
-.sloth-marquee--left  { animation: sloth-marquee-left  64s linear infinite; }
-.sloth-marquee--right { animation: sloth-marquee-right 64s linear infinite; }
-.sloth-marquee-wrap:hover .sloth-marquee { animation-play-state: paused; }
+.brand-marquee--left  { animation: brand-marquee-left  64s linear infinite; }
+.brand-marquee--right { animation: brand-marquee-right 64s linear infinite; }
+.brand-marquee-wrap:hover .brand-marquee { animation-play-state: paused; }
 
 /* Animated SVG line-draw for "How it works" icons */
-@keyframes sloth-draw {
+@keyframes brand-draw {
   to { stroke-dashoffset: 0; }
 }
-.sloth-draw path,
-.sloth-draw circle,
-.sloth-draw rect,
-.sloth-draw line {
+.brand-draw path,
+.brand-draw circle,
+.brand-draw rect,
+.brand-draw line {
   stroke-dasharray: 220;
   stroke-dashoffset: 220;
 }
-.sloth-draw.is-visible path,
-.sloth-draw.is-visible circle,
-.sloth-draw.is-visible rect,
-.sloth-draw.is-visible line {
-  animation: sloth-draw 1.4s ease forwards;
+.brand-draw.is-visible path,
+.brand-draw.is-visible circle,
+.brand-draw.is-visible rect,
+.brand-draw.is-visible line {
+  animation: brand-draw 1.4s ease forwards;
 }
 
 /* Edge fade mask for marquee + scrollers */
-.sloth-edge-fade {
+.brand-edge-fade {
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sloth-float, .sloth-float--slow, .sloth-float--mid, .sloth-bob,
-  .sloth-marquee--left, .sloth-marquee--right { animation: none !important; }
+  .brand-float, .brand-float--slow, .brand-float--mid, .brand-bob,
+  .brand-marquee--left, .brand-marquee--right { animation: none !important; }
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -564,3 +564,24 @@ button[role='switch'] {
 /* Last card scrolls normally over the pinned stack so the section ends right
    after it — kills the large empty gap a fully-pinned stack leaves below. */
 .home-shot:last-child { position: relative; top: 0; }
+
+/* ── Host onboarding micro-interactions (pages/onboarding/*) ───────────────
+   CSS-only, no deps. Pulse uses the crimson primary at low alpha. */
+@keyframes onb-pop { 0% { transform: scale(.92) } 60% { transform: scale(1.04) } 100% { transform: scale(1) } }
+@keyframes onb-rise { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+/* Two identical pulses so alternating the class name restarts the animation. */
+@keyframes onb-pulse-a { 0% { box-shadow: 0 0 0 0 rgba(150,13,50,.35) } 100% { box-shadow: 0 0 0 14px rgba(150,13,50,0) } }
+@keyframes onb-pulse-b { 0% { box-shadow: 0 0 0 0 rgba(150,13,50,.35) } 100% { box-shadow: 0 0 0 14px rgba(150,13,50,0) } }
+@keyframes onb-shimmer { from { background-position: 200% 0 } to { background-position: -200% 0 } }
+.onb-pop { animation: onb-pop .28s ease }
+.onb-rise { animation: onb-rise .35s ease both }
+.onb-pulse-a { animation: onb-pulse-a .7s ease }
+.onb-pulse-b { animation: onb-pulse-b .7s ease }
+.onb-shimmer {
+  height: 10px; border-radius: 4px;
+  background: linear-gradient(90deg, #F5E9EC 0%, #FFF8FA 50%, #F5E9EC 100%);
+  background-size: 200% 100%; animation: onb-shimmer 1.1s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .onb-pop, .onb-rise, .onb-pulse-a, .onb-pulse-b, .onb-shimmer { animation: none }
+}

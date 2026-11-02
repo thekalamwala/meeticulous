@@ -26,7 +26,7 @@ describe('isPaidSubscriber', () => {
 
 // conversionPatch now ONLY backfills converted_at. Lead STATUS is owned by the
 // lifecycle engine/resolver + churn hook (single writer) — attribution no longer
-// promotes/demotes status, so it can't regress the new money states (won/sloth/…).
+// promotes/demotes status, so it can't regress the new money states (won/ROI/…).
 describe('conversionPatch (converted_at backfill only)', () => {
   test('won + a money state missing converted_at → backfill it', () => {
     expect(conversionPatch({ won: true, status: 'paid', convertedAt: null, wonAt: '2025-01-01' })).toEqual({ converted_at: '2025-01-01' });
@@ -34,7 +34,7 @@ describe('conversionPatch (converted_at backfill only)', () => {
   });
   test('won + a money state that already has converted_at → no change', () => {
     expect(conversionPatch({ won: true, status: 'paid', convertedAt: '2024-12-01', wonAt: '2025-01-01' })).toEqual({});
-    expect(conversionPatch({ won: true, status: 'sloth', convertedAt: '2024-12-01', wonAt: '2025-01-01' })).toEqual({});
+    expect(conversionPatch({ won: true, status: require('../../services/crm/lifecycleRules').ROI, convertedAt: '2024-12-01', wonAt: '2025-01-01' })).toEqual({});
   });
   test('won but still in a Presale stage → NO status write (engine promotes it)', () => {
     expect(conversionPatch({ won: true, status: 'qualified', convertedAt: null, wonAt: '2025-01-01' })).toEqual({});

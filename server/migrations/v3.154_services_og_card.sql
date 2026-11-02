@@ -2,7 +2,7 @@
 -- Generated 1200x630 social share cards for individual SERVICES.
 --
 -- The per-service sibling of v3.88 (profiles.og_image). A shared
--- bookasloth.com/:username/:slug link should preview as a proper wide card
+-- meeticulous.com/:username/:slug link should preview as a proper wide card
 -- naming the service, its price and the host — not the service thumbnail
 -- letterboxed under a summary_large_image card. This adds a per-service
 -- generated card (same pattern as v3.88) plus the state machine to keep it

@@ -3,8 +3,8 @@
 const { parse: parseHtml } = require('node-html-parser');
 
 const SITE_HOST = (() => {
-  try { return new URL(process.env.SITE_URL || 'https://bookasloth.com').host; }
-  catch { return 'bookasloth.com'; }
+  try { return new URL(process.env.SITE_URL || 'https://meeticulous.com').host; }
+  catch { return 'meeticulous.com'; }
 })();
 
 const attr = (el, name) => (el ? el.getAttribute(name) || null : null);
@@ -34,7 +34,7 @@ function parse(html, headers = {}) {
     const href = a.getAttribute('href');
     if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) continue;
     let abs;
-    try { abs = new URL(href, process.env.SITE_URL || 'https://bookasloth.com').toString(); } catch { continue; }
+    try { abs = new URL(href, process.env.SITE_URL || 'https://meeticulous.com').toString(); } catch { continue; }
     // WHATWG URL forces a trailing slash on bare-origin URLs (e.g. "https://google.com" -> ".../"); undo it.
     abs = abs.replace(/^([a-z][a-z0-9+.-]*:\/\/[^/]+)\/$/i, '$1');
     let host; try { host = new URL(abs).host; } catch { continue; }

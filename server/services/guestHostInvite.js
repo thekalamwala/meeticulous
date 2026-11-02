@@ -58,7 +58,7 @@ async function processGuestHostInvites() {
       if ((count || 0) < MIN_BOOKINGS) continue;
       if (await alreadyInvited(email)) continue;
 
-      const base = process.env.CLIENT_URL || 'https://bookasloth.com';
+      const base = process.env.CLIENT_URL || 'https://meeticulous.com';
       const name = prof.name || r.guest_name || '';
       await NotificationEngine.send({
         event: EVENT,

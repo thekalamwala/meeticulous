@@ -12,13 +12,8 @@
 export const u = (id, w = 800, h = 1000) =>
   `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&h=${h}&q=80`;
 
-// Hero — Meeticulous branded banner. Self-hosted from client/public (was on
-// company-assets.meeticulous.in; moved same-origin for reliability + caching —
-// the .in CDN was flaky/timing out in audits). Served by Vercel, long-cached
-// via the /images/*.png rule in vercel.json.
-export const HERO = "/images/banner/hero-book-a-sloth.webp";
 
-// Hero "5/5" social-proof faces. Self-hosted from client/public (see HERO).
+// Hero "5/5" social-proof faces. Self-hosted from client/public.
 // 80×80 webp (2× the 40px display) — was 128px PNG (PageSpeed image-delivery).
 export const HERO_FACES = [
   "/images/hero/face-1.webp",

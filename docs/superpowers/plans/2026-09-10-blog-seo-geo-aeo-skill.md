@@ -372,7 +372,7 @@ Append the full numbered pipeline. Copy the spec's 12 steps, and for the mechani
 
 5. **Internal-link plan (cluster + intent).** From the posts list, map the draft into a
    pillar↔spoke cluster; pick internal targets by shared cluster + compatible intent (link up to
-   pillar, sideways to siblings, to intent-matched product pages `/be-a-sloth`, host profiles,
+   pillar, sideways to siblings, to intent-matched product pages `/become-a-host`, host profiles,
    `/pricing`). 3–5 when justified; never pad.
 
 6. **Optimize** the post object: title ≤60 (keyword front-loaded); excerpt 140–160; format

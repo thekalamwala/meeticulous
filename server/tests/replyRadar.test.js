@@ -40,11 +40,11 @@ describe('replyRadar helpers', () => {
   });
 
   test('tagLinks UTM-tags homepage mentions (never ?ref=), leaves host pages alone', () => {
-    const tagged = 'https://bookasloth.com/?utm_source=reddit&utm_medium=comment&utm_campaign=reply-radar';
-    expect(tagLinks('Try bookasloth.com.', 'reddit')).toBe(`Try ${tagged}.`);
-    expect(tagLinks('see https://www.bookasloth.com/ and BookASloth.com', 'reddit')).toBe(`see ${tagged} and ${tagged}`);
-    expect(tagLinks('bookasloth.com', 'quora')).toContain('utm_source=quora');
-    expect(tagLinks('my page bookasloth.com/jane', 'reddit')).toBe('my page bookasloth.com/jane');
+    const tagged = 'https://meeticulous.com/?utm_source=reddit&utm_medium=comment&utm_campaign=reply-radar';
+    expect(tagLinks('Try meeticulous.com.', 'reddit')).toBe(`Try ${tagged}.`);
+    expect(tagLinks('see https://www.meeticulous.com/ and meeticulous.com', 'reddit')).toBe(`see ${tagged} and ${tagged}`);
+    expect(tagLinks('meeticulous.com', 'quora')).toContain('utm_source=quora');
+    expect(tagLinks('my page meeticulous.com/jane', 'reddit')).toBe('my page meeticulous.com/jane');
     expect(tagLinks('x', 'reddit')).not.toContain('ref=');
   });
 
