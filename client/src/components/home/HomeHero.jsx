@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, CalendarDays } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Reveal from "./Reveal";
 import { cleanSlug, saveHeroSlug } from "../../utils/heroSlug";
 
 /* Homepage hero — owner reference (2026-11-02): full-screen crimson block, copy
-   + "Claim my link" box on the left; on the right (desktop) a host photo in an
-   arch with three floating notification pills, pinned to the top so it stays
-   clear of the thick pink ribbon that runs in from the left edge, loops into a
-   cursive "ee" and exits right. Sizing lives in `.home-hero` (index.css)
+   + "Claim my link" box on the left, the right column left empty (owner call)
+   so the thick pink ribbon that runs in from the left edge, loops into a
+   cursive "ee" and exits right carries that side. Sizing lives in `.home-hero` (index.css)
    so the ribbon, padding and full-screen height stay in one place.
 
    "Claim my link" stashes the typed slug and starts the existing Google sign-up;
@@ -24,38 +23,6 @@ const EE_PATH =
   "C50,175 95,195 140,170 C170,150 200,110 225,95 C255,72 265,40 235,35 " +
   "C200,30 172,75 178,120 C185,170 230,195 280,175 C320,160 360,150 400,150 L4000,150";
 const RIBBON = "var(--mt-pink)"; // the pink ee from the app icon
-// Host photo in the arch. ponytail: the 256px team photo until the full-size
-// portrait lands in public/images/hero/ — swap the path, nothing else changes.
-const HERO_PHOTO = "/images/team/tithi.webp";
-const PILL = "absolute bg-white text-ink shadow-[0_18px_40px_-18px_rgba(43,10,20,0.55)]";
-
-// Right-hand composition: arch photo + three illustrative pills (payment,
-// WhatsApp reminder, new booking). Decorative, so hidden from assistive tech.
-function HostStack() {
-  return (
-    <div aria-hidden className="relative h-[430px] w-[430px] flex-shrink-0 origin-top-right scale-[0.8] select-none xl:scale-[0.88] min-[1400px]:scale-100">
-      <div className="absolute left-1/2 top-0 h-[360px] w-[270px] -translate-x-1/2 overflow-hidden rounded-t-full rounded-b-[28px] border-[5px] border-blush bg-maroon-dark">
-        <img src={HERO_PHOTO} alt="" loading="eager" className="h-full w-full object-cover object-[50%_25%]" />
-      </div>
-      <div className={`${PILL} left-0 top-12 flex items-center gap-3 rounded-[20px] px-4 py-3`}>
-        <span className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-[#E6F4EC] text-lg font-bold text-[#1F7A4D]">₹</span>
-        <span>
-          <span className="block font-bold">₹1,500 received</span>
-          <span className="block text-sm text-neutral-600">via UPI · just now</span>
-        </span>
-      </div>
-      <div className={`${PILL} right-0 top-[190px] w-[240px] rounded-[20px] bg-blush px-4 py-3`}>
-        <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-primary">WhatsApp reminder</span>
-        <span className="mt-1 block text-sm leading-snug">Your 1:1 consultation starts in 1 hour. Join link inside.</span>
-      </div>
-      <div className={`${PILL} left-4 top-[332px] flex items-center gap-3 rounded-full px-5 py-3 text-sm`}>
-        <CalendarDays size={24} className="text-primary" />
-        <span><b className="font-bold">New booking</b> · Thu, 4:00 pm</span>
-      </div>
-    </div>
-  );
-}
-
 export default function HomeHero({ onStart, loading }) {
   const [slug, setSlug] = useState("");
 
@@ -133,12 +100,6 @@ export default function HomeHero({ onStart, loading }) {
             </p>
           </Reveal>
         </div>
-
-        {/* Host photo + pills — desktop only (it would push the CTA down on
-            phones); top-aligned so it never sits on the ee. */}
-        <Reveal instant delay={0.22} className="hidden justify-end lg:flex lg:self-start">
-          <HostStack />
-        </Reveal>
       </div>
     </section>
   );
