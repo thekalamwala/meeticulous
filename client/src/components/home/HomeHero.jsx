@@ -87,7 +87,8 @@ export default function HomeHero({ onStart, loading }) {
         className="pointer-events-none absolute left-0"
         style={{
           right: "calc(var(--ee-r, 0px) + var(--ee-w, 200px) * 1.4 - 2px)",
-          bottom: "calc(var(--ee-b, 0px) + var(--ee-w, 200px) * 73 / 400)",
+          // +1px: sub-pixel rounding left the band a hair below the ee's start.
+          bottom: "calc(var(--ee-b, 0px) + var(--ee-w, 200px) * 73 / 400 + 1px)",
           height: "calc(var(--ee-w, 200px) * 34 / 400)",
           background: RIBBON,
         }}
