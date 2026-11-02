@@ -52,11 +52,11 @@ const GoogleAuthDone = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
+    <div className="h-[100dvh] overflow-hidden flex items-center justify-center bg-cream">
       <Seo title="Signing you in — Meeticulous" robots="noindex,nofollow" />
       <div className="text-center">
         <div className="mb-4 flex justify-center"><PetalSpinner size={48} /></div>
-        <p className="text-sm text-gray-500">Setting up your account…</p>
+        <p className="text-sm text-muted">Setting up your account…</p>
       </div>
     </div>
   );
