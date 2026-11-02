@@ -33,11 +33,14 @@ const SLOTH = { label: "Meeticulous", href: "https://meeticulous.com", icon: "/f
  * Social icon row — full brand colours, opens in a new tab. Each member picks
  * a set by `type`; an optional per-social `href` overrides the Meeticulous default.
  */
-export default function TeamSocials({ socials = [], name = "" }) {
+export default function TeamSocials({ socials = [], name = "", compact = false, className = "" }) {
   if (!socials.length) return null;
+  // compact: the smaller row used inside the team tiles' hover panel.
+  const dot = compact ? "h-7 w-7" : "h-9 w-9";
+  const glyph = compact ? "h-[14px] w-[14px]" : "h-[17px] w-[17px]";
 
   return (
-    <div className="mt-4 flex items-center gap-2.5">
+    <div className={`flex items-center ${compact ? "gap-2" : "mt-4 gap-2.5"} ${className}`}>
       {socials.map((s) => {
         const isSloth = s.type === "sloth";
         const meta = isSloth ? SLOTH : ICONS[s.type];
@@ -51,12 +54,12 @@ export default function TeamSocials({ socials = [], name = "" }) {
             aria-label={label}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-ink/10 bg-white transition-transform"
+            className={`flex ${dot} items-center justify-center overflow-hidden rounded-full border border-ink/10 bg-white transition-transform`}
           >
             {isSloth ? (
               <img src={meta.icon} alt="" className="h-full w-full scale-[1.1] object-cover" />
             ) : (
-              <svg viewBox="0 0 24 24" className="h-[17px] w-[17px]" fill={meta.color} aria-hidden="true">
+              <svg viewBox="0 0 24 24" className={glyph} fill={meta.color} aria-hidden="true">
                 <path d={meta.d} />
               </svg>
             )}

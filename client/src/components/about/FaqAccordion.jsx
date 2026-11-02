@@ -34,11 +34,14 @@ export default function FaqAccordion() {
   return (
     // Bright section (owner request 2026-10-31) — was a dark bg-ink band.
     <section ref={root} className="bg-white px-5 py-12 text-ink sm:px-8 lg:py-16">
-      <div className="mx-auto max-w-6xl">
-        {/* Heading spans the full width, centred; the Q&A list stays a readable column */}
-        <h2 className="js-head text-center font-heading text-3xl font-bold text-ink sm:text-4xl">{faq.heading}</h2>
-        <p className="mt-4 text-center text-lg leading-relaxed text-ink/70">{faq.sub}</p>
-        <div className="js-list mx-auto mt-8 max-w-3xl divide-y divide-black/10 border-y border-black/10">
+      {/* lg+: two columns — heading + sub on the left (sticky while you scroll
+          the answers), the Q&A list on the right. Stacked on smaller screens. */}
+      <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <h2 className="js-head font-heading text-3xl font-bold text-ink sm:text-4xl">{faq.heading}</h2>
+          <p className="mt-4 text-lg leading-relaxed text-ink/70">{faq.sub}</p>
+        </div>
+        <div className="js-list divide-y divide-black/10 border-y border-black/10">
           {faq.items.map((item, i) => {
             const isOpen = open === i;
             return (

@@ -23,23 +23,32 @@ describe("TeamMasonry", () => {
     expect(within(dialog).getAllByRole("link").length).toBe(m.socials.length);
   });
 
-  it("renders one shaped portrait per member with name + position, shapes cycling", () => {
-    const { container } = setup();
+  it("renders one photo tile per member with a hidden [ position ] / name / bio panel", () => {
+    setup();
     const gallery = screen.getByRole("list", { name: /meeticulous team/i });
     // One tile per member, plus the trailing "open seat" join card.
     const all = within(gallery).getAllByRole("listitem");
     expect(all).toHaveLength(team.members.length + 1);
     const tiles = all.slice(0, team.members.length);
-    team.members.forEach((m) => {
-      expect(within(gallery).getByText(m.name)).toBeInTheDocument();
-      expect(within(gallery).getAllByText(m.position).length).toBeGreaterThan(0);
+    team.members.forEach((m, i) => {
+      const tile = within(tiles[i]);
+      expect(tile.getByText(m.name)).toBeInTheDocument();
+      expect(tile.getByText(`[ ${m.position} ]`)).toBeInTheDocument();
+      expect(tile.getByText(m.bio)).toBeInTheDocument();
+      // The hover panel carries the member's social icons (own links, new tab)…
+      const socials = tile.getAllByRole("link", { name: new RegExp(`^${m.name} on `) });
+      expect(socials).toHaveLength(m.socials.length);
+      socials.forEach((a) => expect(a.getAttribute("target")).toBe("_blank"));
+      // …and they are NOT nested inside the "View bio" button (invalid HTML).
+      expect(tile.getByRole("button", { name: /view bio/i }).querySelector("a")).toBeNull();
     });
-    // Every portrait is clipped to one of the 4 shapes, which repeat in order.
-    const clips = tiles.map((t) => t.querySelector('[style*="clip-path"]').style.clipPath);
-    expect(clips[0]).toContain("team-shape-0");
-    expect(clips[3]).toContain("team-shape-3");
-    expect(clips[4]).toContain("team-shape-0");
-    expect(container.querySelectorAll("clipPath")).toHaveLength(4);
+    // On hover the photo shrinks (never slides out — that cropped faces),
+    // alternating: even tiles anchor to the top (panel underneath), odd tiles
+    // to the bottom (panel on top).
+    const photoLayer = (t) => t.querySelector('[class*="group-hover:h-[58%]"]');
+    expect(photoLayer(tiles[0]).className).toMatch(/\btop-0\b/);
+    expect(photoLayer(tiles[1]).className).toMatch(/\bbottom-0\b/);
+    tiles.forEach((t) => expect(t.innerHTML).not.toContain("translate-y-[42%]"));
     // No carousel controls any more.
     expect(screen.queryByRole("region", { name: /meeticulous team/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /next/i })).not.toBeInTheDocument();
@@ -51,7 +60,7 @@ describe("TeamMasonry", () => {
     const last = within(gallery).getAllByRole("listitem").pop();
     const link = within(last).getByRole("link", { name: /join the team/i });
     expect(link.getAttribute("href")).toBe("/careers");
-    expect(within(last).getByText("Your seat is open")).toBeInTheDocument();
+    expect(within(last).getByText("This could be you")).toBeInTheDocument();
     // Only one Join link on the section (the old standalone button is gone).
     expect(screen.getAllByRole("link", { name: /join the team/i })).toHaveLength(1);
   });

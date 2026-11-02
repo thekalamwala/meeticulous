@@ -3,10 +3,8 @@ import { ogCard } from '../config/ogImages';
 import useAboutMotion from '../components/about/useAboutMotion';
 import CareersHero from '../components/careers/CareersHero';
 import WhyWorkHere from '../components/careers/WhyWorkHere';
-import Perks from '../components/careers/Perks';
-import CultureStrip from '../components/careers/CultureStrip';
+import CareersFacts from '../components/careers/CareersFacts';
 import OpenRoles from '../components/careers/OpenRoles';
-import CareersCta from '../components/careers/CareersCta';
 
 const JSON_LD = {
   '@context': 'https://schema.org',
@@ -19,7 +17,11 @@ const JSON_LD = {
 export default function Careers() {
   useAboutMotion();
   return (
-    <main className="bg-[var(--bg)]">
+    // Sequence: split hero → fact strip → why build with us (pastel cards) →
+    // open roles (cards). (The "Don't see your role?" CTA band and the "Work that
+    // fits your life" Perks section were removed 2026-11-02 at the owner's request.)
+    // (The empty-photo CultureStrip was dropped in the 2026-11 redesign.)
+    <main className="bg-white">
       <Seo
         title="Careers at Meeticulous — build the calm way to get booked"
         description="Join Meeticulous. Open roles across marketing, engineering, and sales. Remote-first, creators-first."
@@ -28,11 +30,9 @@ export default function Careers() {
         jsonLd={JSON_LD}
       />
       <CareersHero />
+      <CareersFacts />
       <WhyWorkHere />
-      <Perks />
-      <CultureStrip />
       <OpenRoles />
-      <CareersCta />
     </main>
   );
 }

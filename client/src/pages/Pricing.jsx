@@ -35,12 +35,16 @@ import useUtm from "../hooks/useUtm";
 // client/src/data/plans.js (mirrors DB migration v3.165), so the table here, the
 // homepage cards and the enforced server limits never drift apart. Only features
 // the server actually enforces are shown (honesty rule — see plans.js).
+//
+// 2026-11 structural redesign: soft-modern aesthetic to match About/Careers.
+// Hero on a tinted band → framed plan cards → a single 4-step growth timeline
+// (was 3 separate bands) → "What Pro does" + the pay-for-itself calculator side
+// by side → feature comparison → crimson closing CTA.
 
 const ROUTE_START = "/become-a-host";
 
-// Green (Starter / operate) vs orange (Pro / grow) — the two plan accents from
-// plans.js. Kept as locals so the storytelling sections read the same hues as the
-// cards without re-hardcoding hex all over the file.
+// Green (Starter / operate) vs crimson (Pro / grow) — the two plan accents from
+// plans.js, kept as locals so the storytelling reads the same hues as the cards.
 const OPERATE = FREE_PLAN.accent; // #4AB765
 const GROW = PREMIUM_PLAN.accent; // #960D32
 
@@ -107,61 +111,59 @@ export default function Pricing() {
         jsonLd={JSON_LD}
       />
 
-      {/* ── Hero ───────────────────────────────────────────── */}
+      {/* ── Hero (tinted band) + plan cards overlapping it ───────────── */}
       <section className="relative overflow-hidden px-5 pb-10 pt-16 sm:px-8 lg:pt-24">
+        {/* soft radial crimson wash — hero backdrop, fades out */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[520px]"
+          style={{ background: "radial-gradient(70% 90% at 50% 0%, color-mix(in srgb, var(--primary, #960D32) 9%, white) 0%, white 72%)" }}
+        />
         <div className="mx-auto max-w-3xl text-center">
-          {!feeOnly && (
-            <span className="mb-5 inline-flex items-center gap-2 rounded-full border-2 border-ink/10 bg-canvas px-3.5 py-1.5 text-xs font-semibold text-ink/70">
-              <span aria-hidden="true">🦥</span>
-              Start free. Go Pro when your business grows.
-            </span>
-          )}
-          <h1 className="font-heading text-4xl font-extrabold leading-tight text-ink sm:text-5xl">
-            Pricing that grows{" "}
-            <span className="text-primary">with your {feeOnly ? "practice" : "business"}.</span>
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Pricing</p>
+          <h1 className="mt-3 font-heading font-extrabold leading-[1.08] text-ink text-[clamp(2.4rem,5vw,3.75rem)]">
+            Simple pricing that grows{" "}
+            <span className="text-primary-cta">with your {feeOnly ? "practice" : "business"}.</span>
           </h1>
-          <p className="mx-auto mt-4 max-w-[640px] text-neutral-500">
+          <p className="mx-auto mt-5 max-w-[640px] text-lg leading-relaxed text-ink/70">
             {feeOnly
               ? "Pick the plan that fits your booking page. Upgrade anytime."
-              : `Start for free. Stay free for as long as you need. When bookings start piling up, Pro gives you the tools to run what happens next — for under ${PREMIUM_PER_DAY} a day.`}
+              : `Start for free. Stay free for as long as you need. When bookings pile up, Pro gives you the tools to run what happens next — for under ${PREMIUM_PER_DAY} a day.`}
           </p>
           {!feeOnly && <OperateGrowPills />}
         </div>
-      </section>
 
-      {/* ── Plan cards ─────────────────────────────────────── */}
-      <section className="px-5 sm:px-8">
-        <div className="mx-auto max-w-[1050px]">
+        {/* Plan cards — framed on a soft panel so they lift off the hero band */}
+        <div className="mx-auto mt-12 max-w-[1050px]">
           <PricingCards />
+          <p className="mt-6 text-center text-xs text-neutral-400">
+            {feeOnly
+              ? "All prices include GST · Cancel anytime"
+              : `All prices include GST · Yearly saves ${PREMIUM_ANNUAL_SAVE_PCT}% · ~2.4% payment gateway fee applies (not our charge) · Cancel anytime`}
+          </p>
         </div>
-        <p className="mx-auto mt-6 max-w-[1050px] text-center text-xs text-neutral-400">
-          {feeOnly
-            ? "All prices include GST · Cancel anytime"
-            : `All prices include GST · Yearly saves ${PREMIUM_ANNUAL_SAVE_PCT}% · ~2.4% payment gateway fee applies (not our charge) · Cancel anytime`}
-        </p>
       </section>
 
-      {/* ── Growth journey — only in the two-plan (non-interim) world ── */}
+      {/* ── Growth journey (two-plan world only) ─────────────────────── */}
       {!feeOnly && (
         <>
-          <OperateVsGrow />
-          <GrowingSection />
-          <WhenToBecomeActive />
-          <ValueSection />
-          <PayForItself />
+          <GrowthTimeline />
+          <ProValueAndCalculator />
         </>
       )}
 
-      {/* ── Full feature comparison ────────────────────────── */}
-      <section className="bg-canvas px-5 pb-20 pt-16 sm:px-8 lg:pt-24">
+      {/* ── Full feature comparison ──────────────────────────────────── */}
+      <section className="bg-white px-5 pb-20 pt-16 sm:px-8 lg:pt-24">
         <div className="mx-auto max-w-[1050px]">
-          <h2 className="text-center font-heading text-3xl font-extrabold text-ink sm:text-4xl">Everything you get</h2>
-          <p className="mx-auto mt-3 max-w-[620px] text-center text-neutral-500">
+          <h2 className="text-center font-heading text-4xl font-extrabold text-ink sm:text-5xl">
+            Everything <span className="text-primary-cta">you get</span>
+          </h2>
+          <p className="mx-auto mt-4 max-w-[620px] text-center text-lg leading-relaxed text-ink/70">
             Everything Starter gives you free, and everything you unlock with Pro.
             Tap any <span className="font-semibold text-primary">Limited</span> tag for the detail.
           </p>
 
-          <div className="mt-10 overflow-x-auto rounded-[6px] border-2 border-ink/10 bg-white p-1 sm:p-2">
+          <div className="mt-10 overflow-x-auto rounded-[10px] border border-black/5 bg-white p-1 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-2">
             <table className="w-full min-w-[720px] border-collapse text-left">
               <thead>
                 <tr className="border-b border-black/10">
@@ -183,29 +185,27 @@ export default function Pricing() {
               </tbody>
             </table>
           </div>
+
+          {/* Teams / agencies — no self-serve tier, one line to sales */}
+          <p className="mt-10 text-center text-sm text-neutral-500">
+            Teams, agencies or multi-location practices?{" "}
+            <Link to="/enterprise" className="font-semibold text-primary">Talk to sales →</Link>
+          </p>
         </div>
       </section>
 
-      {/* ── Teams / agencies — no self-serve tier, one line to sales ── */}
-      <section className="bg-canvas px-5 pb-14 sm:px-8">
-        <p className="mx-auto max-w-[1050px] text-center text-sm text-neutral-500">
-          Teams, agencies or multi-location practices?{" "}
-          <Link to="/enterprise" className="font-semibold text-primary">Talk to sales →</Link>
-        </p>
-      </section>
-
-      {/* ── Closing CTA ────────────────────────────────────── */}
-      <section className="px-5 pb-24 pt-4 sm:px-8">
-        <div className="mx-auto max-w-3xl rounded-[10px] bg-ink px-8 py-12 text-center text-white shadow-[0_24px_60px_-30px_rgba(26,26,26,0.6)]">
-          <h2 className="font-heading text-3xl font-extrabold text-primary sm:text-4xl">
+      {/* ── Closing CTA (crimson band) ───────────────────────────────── */}
+      <section className="px-5 pb-24 pt-16 sm:px-8 lg:pt-20">
+        <div className="mx-auto max-w-5xl overflow-hidden rounded-[10px] bg-primary-cta px-8 py-14 text-center text-white sm:px-12">
+          <h2 className="font-heading text-3xl font-extrabold text-white sm:text-4xl">
             {feeOnly ? "Ready when you are." : "Start slow. Grow when it counts."}
           </h2>
-          <p className="mx-auto mt-3 max-w-[520px] text-neutral-300">
+          <p className="mx-auto mt-4 max-w-[520px] text-lg text-white/80">
             Put your business online for free in minutes. Become Pro in one click the day your bookings need it.
           </p>
           <Link
             to={ROUTE_START}
-            className="mt-7 inline-flex items-center justify-center gap-1.5 rounded-[6px] bg-primary px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-dark hover:no-underline"
+            className="mt-8 inline-flex items-center justify-center gap-1.5 rounded-[6px] bg-white px-6 py-3 text-sm font-semibold text-ink shadow-[0_12px_30px_-12px_rgba(0,0,0,0.5)] transition-opacity hover:opacity-90 hover:no-underline"
           >
             Start for free <ArrowRight size={16} />
           </Link>
@@ -216,23 +216,23 @@ export default function Pricing() {
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
- * Storytelling sections (two-plan world only). All copy maps to real, enforced
- * gates from plans.js — no invented features, no fake booking thresholds.
+ * Storytelling (two-plan world only). All copy maps to real, enforced gates
+ * from plans.js — no invented features, no fake booking thresholds.
  * ──────────────────────────────────────────────────────────────────────────── */
 
-// Two little pills under the hero that name the whole idea in three words each.
+// Two pills under the hero that name the whole idea in three words each.
 function OperateGrowPills() {
   return (
     <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-sm font-semibold">
       <span
-        className="inline-flex items-center gap-2 rounded-full border-2 px-4 py-1.5"
+        className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
         style={{ color: OPERATE, borderColor: `${OPERATE}55`, background: `${OPERATE}12` }}
       >
         <Sprout size={16} strokeWidth={2} /> Starter · Operate
       </span>
       <ArrowRight size={18} className="text-ink/30" aria-hidden="true" />
       <span
-        className="inline-flex items-center gap-2 rounded-full border-2 px-4 py-1.5"
+        className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
         style={{ color: GROW, borderColor: `${GROW}55`, background: `${GROW}12` }}
       >
         <Rocket size={16} strokeWidth={2} /> Pro · Grow
@@ -241,88 +241,10 @@ function OperateGrowPills() {
   );
 }
 
-// The core distinction, made visual: a calm green "Operate" panel, an arrow, and
-// a bolder orange "Grow" panel. This is the Starter → Pro transition.
-function OperateVsGrow() {
-  return (
-    <section className="px-5 pt-20 sm:px-8 lg:pt-24">
-      <div className="mx-auto max-w-[1050px]">
-        <div className="grid items-stretch gap-4 md:grid-cols-[1fr_auto_1fr]">
-          <StatePanel
-            accent={OPERATE}
-            icon={<Sprout size={22} strokeWidth={2} />}
-            kicker="Starter"
-            title="Operate"
-            line="Start taking bookings. Put your business online and accept appointments — free forever."
-          />
-          <div className="flex items-center justify-center py-2 md:py-0">
-            <span
-              className="grid h-11 w-11 place-items-center rounded-full border border-ink/10 bg-white text-ink/50 shadow-[0_8px_24px_-12px_rgba(26,26,26,0.4)]"
-              aria-hidden="true"
-            >
-              <ArrowRight size={20} className="md:block hidden" />
-              <TrendingUp size={20} className="md:hidden block" />
-            </span>
-          </div>
-          <StatePanel
-            accent={GROW}
-            emphasised
-            icon={<Rocket size={22} strokeWidth={2} />}
-            kicker="Pro"
-            title="Grow"
-            line="Turn bookings into a business system — automation, a real client CRM, and 0% commission so you keep every rupee."
-          />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function StatePanel({ accent, icon, kicker, title, line, emphasised }) {
-  return (
-    <div
-      className="group flex h-full flex-col rounded-[10px] border bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.05)] transition-shadow duration-300 hover:shadow-[0_24px_60px_-28px_var(--glow)] sm:p-8"
-      style={{
-        borderColor: emphasised ? `${accent}4d` : "rgba(0,0,0,0.06)",
-        "--glow": emphasised ? `${accent}80` : "rgba(26,26,26,0.16)",
-      }}
-    >
-      <span
-        className="inline-flex h-11 w-11 items-center justify-center rounded-[6px]"
-        style={{ color: accent, background: `${accent}14` }}
-      >
-        {icon}
-      </span>
-      <p className="mt-5 text-xs font-bold uppercase tracking-wide" style={{ color: accent }}>{kicker}</p>
-      <h3 className="mt-1 font-heading text-3xl font-extrabold text-ink">{title}</h3>
-      <p className="mt-3 text-sm leading-relaxed text-neutral-600">{line}</p>
-    </div>
-  );
-}
-
-// "Your business is growing." — the emotional bridge from free to paid.
-function GrowingSection() {
-  return (
-    <section className="px-5 pt-20 sm:px-8 lg:pt-24">
-      <div
-        className="mx-auto max-w-[1050px] rounded-[6px] border-2 border-ink/10 bg-sand px-6 py-12 text-center sm:px-12"
-      >
-        <h2 className="font-heading text-3xl font-extrabold text-ink sm:text-4xl">Your business is growing.</h2>
-        <p className="mx-auto mt-4 max-w-[620px] text-neutral-600">
-          You started with bookings. Now you're getting repeat customers, more appointments and more
-          things to manage.
-        </p>
-        <p className="mt-4 font-heading text-lg font-bold" style={{ color: GROW }}>
-          That's when Pro becomes useful.
-        </p>
-      </div>
-    </section>
-  );
-}
-
-// "When should you become Pro?" — four stages. No fake numbers: the only
-// figure named (₹4,700/mo) is the real breakeven — 5% commission = the effective
-// ₹235/mo Pro price (see plans.js persona blurb + PayForItself calculator).
+// The four growth stages as one horizontal, connected timeline — replaces the
+// old Operate-vs-Grow panels, the "Your business is growing" band and the stage
+// grid. No fake numbers: the only figure named (₹4,700/mo) is the real breakeven
+// (5% commission = the effective ₹235/mo Pro price — see plans.js + the calc).
 const STAGES = [
   {
     tag: "Starting out",
@@ -330,6 +252,7 @@ const STAGES = [
     body: "Starter is enough. Get your booking page online and start accepting appointments — nothing to pay until you do.",
     accent: OPERATE,
     plan: "Starter",
+    icon: Sprout,
   },
   {
     tag: "Getting busy",
@@ -337,6 +260,7 @@ const STAGES = [
     body: "Automation starts saving you time. 1-hour reminders, reschedule alerts and follow-ups keep customers showing up.",
     accent: "#f59e0b",
     plan: "Pro",
+    icon: Zap,
   },
   {
     tag: "Growing",
@@ -344,6 +268,7 @@ const STAGES = [
     body: "You need visibility. A full client CRM with notes and history, plus rebook automation to bring people back.",
     accent: "#db2777",
     plan: "Pro",
+    icon: Users,
   },
   {
     tag: "Running the business",
@@ -351,40 +276,43 @@ const STAGES = [
     body: "Earning over ₹4,700 a month? At 0% commission, Pro already costs you less than the 5% — and you keep it all.",
     accent: GROW,
     plan: "Pro",
+    icon: Rocket,
   },
 ];
 
-function WhenToBecomeActive() {
+function GrowthTimeline() {
   return (
-    <section className="px-5 pt-20 sm:px-8 lg:pt-24">
-      <div className="mx-auto max-w-[1050px]">
-        <h2 className="text-center font-heading text-3xl font-extrabold text-ink sm:text-4xl">
-          When should you become Pro?
+    <section className="px-5 py-20 sm:px-8 lg:py-28">
+      <div className="mx-auto max-w-6xl">
+        <h2 className="text-center font-heading text-4xl font-extrabold text-ink sm:text-5xl">
+          How Meeticulous <span className="text-primary-cta">grows with you</span>
         </h2>
-        <p className="mx-auto mt-3 max-w-[560px] text-center text-neutral-500">
-          There's no rush. Move up a stage only when the last one starts to feel busy.
+        <p className="mx-auto mt-4 max-w-[620px] text-center text-lg leading-relaxed text-ink/70">
+          Start free on Starter. Move up to Pro only when the last stage starts to feel busy — there's no rush.
         </p>
 
-        <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {STAGES.map((s, i) => (
-            <li
-              key={s.tag}
-              className="group relative flex flex-col rounded-[6px] border-2 border-ink/10 bg-white p-6 transition-transform hover:-translate-y-1"
-            >
-              <span
-                className="grid h-8 w-8 place-items-center rounded-[4px] font-heading text-sm font-extrabold text-white"
-                style={{ background: s.accent }}
-              >
-                {i + 1}
-              </span>
-              <p className="mt-4 font-heading text-lg font-extrabold text-ink">{s.tag}</p>
-              <p className="mt-1 text-xs font-semibold" style={{ color: s.accent }}>{s.lead}</p>
-              <p className="mt-3 flex-1 text-sm leading-relaxed text-neutral-600">{s.body}</p>
-              <p className="mt-4 border-t border-black/5 pt-3 text-xs font-semibold text-neutral-500">
-                On <span style={{ color: s.accent }}>{s.plan}</span>
-              </p>
-            </li>
-          ))}
+        <ol className="relative mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+          {/* connecting line across the top row (lg only) */}
+          <span aria-hidden className="pointer-events-none absolute left-0 right-0 top-6 hidden border-t border-dashed border-ink/15 lg:block" />
+          {STAGES.map((s, i) => {
+            const Icon = s.icon;
+            return (
+              <li key={s.tag} className="relative flex flex-col">
+                <span
+                  className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full text-white shadow-[0_8px_24px_-10px_rgba(26,26,26,0.5)]"
+                  style={{ background: s.accent }}
+                >
+                  <Icon size={20} strokeWidth={2} aria-hidden="true" />
+                </span>
+                <span className="mt-5 text-xs font-bold uppercase tracking-wide" style={{ color: s.accent }}>
+                  Step {i + 1} · {s.plan}
+                </span>
+                <h3 className="mt-1 font-heading text-lg font-extrabold text-ink">{s.tag}</h3>
+                <p className="mt-0.5 text-xs font-semibold text-ink/50">{s.lead}</p>
+                <p className="mt-3 text-sm leading-relaxed text-neutral-600">{s.body}</p>
+              </li>
+            );
+          })}
         </ol>
       </div>
     </section>
@@ -421,38 +349,44 @@ const VALUES = [
   },
 ];
 
-function ValueSection() {
+// "What Pro does" (left, value list) + the pay-for-itself calculator (right),
+// side by side on large screens — was two stacked full-width sections.
+function ProValueAndCalculator() {
   return (
-    <section className="px-5 pt-20 sm:px-8 lg:pt-24">
-      <div className="mx-auto max-w-[1050px]">
-        <h2 className="text-center font-heading text-3xl font-extrabold text-ink sm:text-4xl">
-          What Pro actually does for you
-        </h2>
-        <p className="mx-auto mt-3 max-w-[560px] text-center text-neutral-500">
-          It's not "25 more features." It's four things that matter as you grow.
-        </p>
+    <section className="bg-sand/60 px-5 py-20 sm:px-8 lg:py-28">
+      <div className="mx-auto grid max-w-6xl items-start gap-12 lg:grid-cols-2 lg:gap-16">
+        {/* Left — what Pro does */}
+        <div>
+          <h2 className="font-heading text-4xl font-extrabold leading-tight text-ink sm:text-5xl">
+            What <span className="text-primary-cta">Pro</span> actually does
+          </h2>
+          <p className="mt-4 text-lg leading-relaxed text-ink/70">
+            It's not "25 more features." It's four things that matter as you grow.
+          </p>
+          <ul className="mt-8 space-y-5">
+            {VALUES.map((v) => {
+              const Icon = v.icon;
+              return (
+                <li key={v.title} className="flex items-start gap-4">
+                  <span
+                    className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[6px]"
+                    style={{ color: v.accent, background: `${v.accent}14` }}
+                  >
+                    <Icon size={20} strokeWidth={2} />
+                  </span>
+                  <div>
+                    <h3 className="font-heading text-lg font-extrabold text-ink">{v.title}</h3>
+                    <p className="mt-1 text-sm leading-relaxed text-neutral-600">{v.body}</p>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-2">
-          {VALUES.map((v) => {
-            const Icon = v.icon;
-            return (
-              <div
-                key={v.title}
-                className="group flex items-start gap-4 rounded-[6px] border-2 border-ink/10 bg-white p-6 transition-transform hover:-translate-y-1 sm:p-7"
-              >
-                <span
-                  className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[6px]"
-                  style={{ color: v.accent, background: `${v.accent}14` }}
-                >
-                  <Icon size={20} strokeWidth={2} />
-                </span>
-                <div>
-                  <h3 className="font-heading text-lg font-extrabold text-ink">{v.title}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-neutral-600">{v.body}</p>
-                </div>
-              </div>
-            );
-          })}
+        {/* Right — the calculator */}
+        <div className="lg:sticky lg:top-24">
+          <PayForItself />
         </div>
       </div>
     </section>
@@ -483,72 +417,58 @@ function PayForItself() {
   }
 
   return (
-    <section className="px-5 pt-20 sm:px-8 lg:pt-24">
-      <div className="mx-auto max-w-[1050px]">
-        <h2 className="text-center font-heading text-3xl font-extrabold text-ink sm:text-4xl">
-          Does Pro pay for itself?
-        </h2>
-        <p className="mx-auto mt-3 max-w-[560px] text-center text-neutral-500">
-          Drag to your rough monthly bookings revenue. We'll compare Starter's 5% against Pro's flat price.
-        </p>
+    <div className="rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.05)] sm:p-8">
+      <h3 className="font-heading text-2xl font-extrabold text-ink">Does <span className="text-primary-cta">Pro</span> pay for itself?</h3>
+      <p className="mt-2 text-sm leading-relaxed text-neutral-500">
+        Drag to your rough monthly bookings revenue — we'll compare Starter's 5% against Pro's flat price.
+      </p>
 
-        <div className="mx-auto mt-10 max-w-[720px] rounded-[10px] border border-ink/10 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.05)] sm:p-8">
-          <label htmlFor="earn" className="flex items-baseline justify-between">
-            <span className="text-sm font-semibold text-ink">Your monthly bookings revenue</span>
-            <span className="font-heading text-2xl font-extrabold text-ink">{inr(earn)}</span>
-          </label>
-          <input
-            id="earn"
-            type="range"
-            min={0}
-            max={50000}
-            step={1000}
-            value={earn}
-            onChange={(e) => setEarn(Number(e.target.value))}
-            className="mt-4 h-2 w-full cursor-pointer appearance-none rounded-full bg-sand accent-primary"
-            style={{ accentColor: GROW }}
-          />
-          <div className="mt-1 flex justify-between text-[11px] text-neutral-400">
-            <span>₹0</span>
-            <span>₹50,000+</span>
-          </div>
+      <label htmlFor="earn" className="mt-7 flex items-baseline justify-between">
+        <span className="text-sm font-semibold text-ink">Monthly bookings revenue</span>
+        <span className="font-heading text-2xl font-extrabold text-ink">{inr(earn)}</span>
+      </label>
+      <input
+        id="earn"
+        type="range"
+        min={0}
+        max={50000}
+        step={1000}
+        value={earn}
+        onChange={(e) => setEarn(Number(e.target.value))}
+        className="mt-4 h-2 w-full cursor-pointer appearance-none rounded-full bg-sand accent-primary"
+        style={{ accentColor: GROW }}
+      />
+      <div className="mt-1 flex justify-between text-[11px] text-neutral-400">
+        <span>₹0</span>
+        <span>₹50,000+</span>
+      </div>
 
-          <div className="mt-7 grid gap-3 sm:grid-cols-2">
-            <div
-              className="rounded-[6px] border-2 p-4"
-              style={{ borderColor: `${OPERATE}44`, background: `${OPERATE}0d` }}
-            >
-              <p className="text-xs font-bold uppercase tracking-wide" style={{ color: OPERATE }}>Starter · 5%</p>
-              <p className="mt-1 font-heading text-2xl font-extrabold text-ink">{inr(commission)}<span className="text-sm font-semibold text-neutral-400"> /mo</span></p>
-              <p className="mt-1 text-xs text-neutral-500">commission on your bookings</p>
-            </div>
-            <div
-              className="rounded-[6px] border-2 p-4"
-              style={{ borderColor: `${GROW}55`, background: `${GROW}0d` }}
-            >
-              <p className="text-xs font-bold uppercase tracking-wide" style={{ color: GROW }}>Pro · flat</p>
-              <p className="mt-1 font-heading text-2xl font-extrabold text-ink">{inr(activeCost)}<span className="text-sm font-semibold text-neutral-400"> /mo</span></p>
-              <p className="mt-1 text-xs text-neutral-500">0% commission · billed yearly</p>
-            </div>
-          </div>
-
-          <div
-            className="mt-5 rounded-[6px] border-2 border-ink/10 bg-canvas p-4 text-sm text-neutral-700"
-          >
-            {activeWins && saved > 0 && (
-              <p className="mb-1 font-heading font-bold" style={{ color: GROW }}>
-                Pro saves you about {inr(saved)} a month — before you count the automation.
-              </p>
-            )}
-            <p>{verdict}</p>
-          </div>
-
-          <p className="mt-4 text-center text-[11px] text-neutral-400">
-            Commission applies only to paid bookings. Yearly billing shown ({inr(PREMIUM_PLAN.yearly)}/year, under {PREMIUM_PER_DAY} a day, incl. GST).
-          </p>
+      <div className="mt-7 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-[6px] border p-4" style={{ borderColor: `${OPERATE}44`, background: `${OPERATE}0d` }}>
+          <p className="text-xs font-bold uppercase tracking-wide" style={{ color: OPERATE }}>Starter · 5%</p>
+          <p className="mt-1 font-heading text-2xl font-extrabold text-ink">{inr(commission)}<span className="text-sm font-semibold text-neutral-400"> /mo</span></p>
+          <p className="mt-1 text-xs text-neutral-500">commission on your bookings</p>
+        </div>
+        <div className="rounded-[6px] border p-4" style={{ borderColor: `${GROW}55`, background: `${GROW}0d` }}>
+          <p className="text-xs font-bold uppercase tracking-wide" style={{ color: GROW }}>Pro · flat</p>
+          <p className="mt-1 font-heading text-2xl font-extrabold text-ink">{inr(activeCost)}<span className="text-sm font-semibold text-neutral-400"> /mo</span></p>
+          <p className="mt-1 text-xs text-neutral-500">0% commission · billed yearly</p>
         </div>
       </div>
-    </section>
+
+      <div className="mt-5 rounded-[6px] border border-black/5 bg-sand p-4 text-sm text-neutral-700">
+        {activeWins && saved > 0 && (
+          <p className="mb-1 font-heading font-bold" style={{ color: GROW }}>
+            Pro saves you about {inr(saved)} a month — before you count the automation.
+          </p>
+        )}
+        <p>{verdict}</p>
+      </div>
+
+      <p className="mt-4 text-center text-[11px] text-neutral-400">
+        Commission applies only to paid bookings. Yearly billing shown ({inr(PREMIUM_PLAN.yearly)}/year, under {PREMIUM_PER_DAY} a day, incl. GST).
+      </p>
+    </div>
   );
 }
 

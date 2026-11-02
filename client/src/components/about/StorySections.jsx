@@ -89,13 +89,16 @@ export function DifferenceSection() {
                 // gsap.from capture a mid-fade value (cards stuck invisible).
                 className={`js-item group rounded-[6px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-[background-color,border-color,box-shadow] duration-300 hover:shadow-[0_24px_60px_-28px_rgba(26,26,26,0.25)] sm:p-8 ${accent.card}`}
               >
-                <span
-                  className={`inline-flex h-14 w-14 items-center justify-center rounded-[6px] transition-colors duration-300 group-hover:text-white ${accent.tile}`}
-                >
-                  <Icon className="h-6 w-6" aria-hidden="true" />
-                </span>
-                <h3 className="mt-6 font-heading text-xl font-bold text-ink">{d.title}</h3>
-                <p className="mt-3 leading-relaxed text-ink/60">{d.body}</p>
+                {/* Icon + heading side by side; description below */}
+                <div className="flex items-center gap-4">
+                  <span
+                    className={`inline-flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-[6px] transition-colors duration-300 group-hover:text-white ${accent.tile}`}
+                  >
+                    <Icon className="h-6 w-6" aria-hidden="true" />
+                  </span>
+                  <h3 className="font-heading text-xl font-bold leading-snug text-ink">{d.title}</h3>
+                </div>
+                <p className="mt-5 leading-relaxed text-ink/60">{d.body}</p>
               </div>
             );
           })}

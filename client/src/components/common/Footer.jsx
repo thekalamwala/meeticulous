@@ -7,10 +7,13 @@ import DoodleWordmark from './footer/DoodleWordmark';
 const EMAIL = 'hello@meeticulous.com';
 const ROUTE_START = '/become-a-host';
 
-// Faint honeycomb (white lines ~4%) — same hex tile as the homepage hero, so the
-// page opens and closes on the bee motif. Inline SVG: no request, no layout cost.
-const HIVE_TILE =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='31.18' height='54' viewBox='0 0 31.18 54'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-opacity='0.045' stroke-width='1'%3E%3Cpath d='M15.59 0L31.18 9V27L15.59 36L0 27V9Z'/%3E%3Cpath d='M15.59 36V54'/%3E%3C/g%3E%3C/svg%3E";
+// Faint square grid (white lines ~5%) — same 40px graph-paper tile as the
+// homepage hero, so the page opens and closes on the same motif; a radial mask
+// fades it toward the edges. Inline SVG: no request, no layout cost.
+// (Was a hexagon honeycomb.)
+const GRID_TILE =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M40 0V40H0' fill='none' stroke='%23FFFFFF' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E";
+const GRID_FADE = 'radial-gradient(ellipse 80% 75% at 50% 40%, #000 35%, transparent 100%)';
 
 // Column footer: brand + copyright on the left, then four link columns.
 // Every link points at a real route. Solutions + Compare stay in Resources:
@@ -124,7 +127,7 @@ export default function Footer({ variant = 'full' }) {
 
   return (
     <footer className="relative overflow-hidden bg-ink px-5 pb-4 pt-7 text-white sm:px-8 sm:pt-9 lg:pt-10">
-      <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: `url("${HIVE_TILE}")`, backgroundSize: '31.18px 54px' }} />
+      <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: `url("${GRID_TILE}")`, backgroundSize: '40px 40px', backgroundPosition: 'center top', maskImage: GRID_FADE, WebkitMaskImage: GRID_FADE }} />
 
       {/* Closing CTA — a full-width band across the top of the footer (bleeds
           past the footer's side + top padding); its content stays aligned with
