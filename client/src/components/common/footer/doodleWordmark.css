@@ -1,0 +1,264 @@
+/* DoodleWordmark — chalk wordmark + doodle crew at the foot of the dark footer.
+   Everything is scoped under .dw. Sizes are in em off .dw-stage's font-size so
+   letters, creatures and doodles scale together. Soft-SaaS rules still apply to
+   the UI bits (speech bubble = 6px radius, soft blurred shadow, no hard offsets). */
+
+.dw { position: relative; user-select: none; -webkit-tap-highlight-color: transparent; }
+.dw-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.dw-stage {
+  position: relative;
+  /* "Meeticulous" ≈ 6.4em wide in Bricolage 800 → fits max-w-6xl at 9rem and a
+     phone gutter at 13vw */
+  font-size: clamp(3rem, 13vw, 9rem);
+  padding-top: 0.6em;
+}
+
+/* ── Wordmark ── */
+.dw-word {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+  white-space: nowrap;
+}
+.dw-letter { position: relative; display: inline-block; isolation: isolate; }
+.dw-glyph {
+  display: inline-block;
+  color: rgba(248, 250, 252, 0.92);
+  filter: url(#dw-chalk);
+}
+.dw-letter:has(.dw-glyph:hover) { animation: dw-jiggle 0.6s cubic-bezier(0.3, 1.5, 0.5, 1); }
+
+.dw.is-armed .dw-glyph { opacity: 0; }
+.dw.is-in .dw-glyph {
+  animation: dw-stamp 0.5s cubic-bezier(0.2, 1.5, 0.45, 1) both;
+  animation-delay: calc(var(--i) * 70ms);
+}
+
+/* ── Creatures ── */
+.dw-critter {
+  position: absolute;
+  z-index: 2;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.dw-critter--ribbit { z-index: -1; }
+.dw-hit { position: absolute; z-index: 3; height: 0.26em; cursor: pointer; }
+.dw-critter-body { display: block; transform-origin: 50% 100%; }
+.dw-critter-body svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+.dw.is-armed .dw-critter,
+.dw.is-armed .dw-snail { opacity: 0; }
+.dw.is-in .dw-critter,
+.dw.is-in .dw-snail { animation: dw-popin 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) 1s both; }
+
+/* idle loops */
+.dw-critter--puff .dw-critter-body { animation: dw-bob 3.2s ease-in-out infinite; }
+.dw-critter--ribbit .dw-critter-body { animation: dw-peek 6s ease-in-out infinite; }
+.dw-critter--tick .dw-critter-body { animation: dw-bounce 3.4s ease-in-out infinite; }
+.dw-critter.is-talking .dw-critter-body,
+.dw-snail.is-talking .dw-critter-body { animation: dw-hop 0.55s cubic-bezier(0.3, 1.6, 0.5, 1); }
+
+.dw .dw-blink { transform-box: fill-box; transform-origin: center; animation: dw-blink 4.6s infinite; }
+.dw-critter--mira .dw-blink { animation-delay: 1.3s; }
+.dw-critter--ribbit .dw-blink { animation-delay: 2.1s; }
+.dw-critter--tick .dw-blink { animation-delay: 0.6s; }
+/* Mira kicks her dangling legs; Biscuit breathes, swings his tail and snores;
+   Tick's antenna glows and he waves; Puff jiggles his calendar */
+.dw .dw-legs { transform-box: fill-box; transform-origin: 50% 0%; animation: dw-kick 1.8s ease-in-out infinite; }
+.dw .dw-tail { transform-box: fill-box; transform-origin: 0% 0%; animation: dw-tailswing 2.6s ease-in-out infinite; }
+.dw .dw-breathe { transform-box: fill-box; transform-origin: 50% 100%; animation: dw-breathe 3.6s ease-in-out infinite; }
+.dw .dw-zzz { animation: dw-zzz 3.6s ease-in-out infinite; }
+.dw .dw-zzz--late { animation-delay: 1.8s; }
+.dw .dw-bulb { animation: dw-glow 2.2s ease-in-out infinite; }
+.dw .dw-wave { transform-box: fill-box; transform-origin: 0% 100%; animation: dw-wave 3.2s ease-in-out infinite; }
+.dw .dw-prop { transform-box: fill-box; transform-origin: 50% 100%; animation: dw-sway-sm 3.2s ease-in-out infinite; }
+.dw .dw-stalks { transform-box: fill-box; transform-origin: 50% 100%; animation: dw-sway 3s ease-in-out infinite; }
+
+/* snail crawls the baseline, turning round at each end */
+.dw-snail {
+  position: absolute;
+  z-index: 2;
+  bottom: 0.02em;
+  left: 4%;
+  width: 0.3em;
+  cursor: pointer;
+}
+.dw.is-in .dw-snail {
+  animation: dw-popin 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) 1.2s both, dw-crawl 46s linear 1.7s infinite;
+}
+.dw-snail > .dw-critter-body { animation: dw-turn 46s steps(1, end) 1.7s infinite; }
+.dw-snail.is-talking > .dw-critter-body { animation: dw-hop 0.55s cubic-bezier(0.3, 1.6, 0.5, 1); }
+
+/* ── Speech bubble ── */
+.dw-bubble {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  z-index: 5;
+  transform: translateX(-50%);
+  padding: 6px 11px;
+  border-radius: 6px;
+  background: #fff;
+  color: #191919;
+  font-family: var(--font-primary, "Poppins", sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.3;
+  white-space: nowrap;
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.45);
+  animation: dw-bubble 0.32s cubic-bezier(0.2, 1.5, 0.45, 1) both;
+  pointer-events: none;
+}
+.dw-bubble::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -6px;
+  border: 6px solid transparent;
+  border-top-color: #fff;
+}
+/* edge creatures: anchor the bubble inwards so it never clips off-screen */
+.dw-critter--puff .dw-bubble,
+.dw-snail .dw-bubble { left: 0; transform: none; --bx: 0; }
+.dw-critter--puff .dw-bubble::after,
+.dw-snail .dw-bubble::after { left: 22px; }
+.dw-critter--tick .dw-bubble { left: auto; right: 0; transform: none; --bx: 0; }
+.dw-critter--tick .dw-bubble::after { left: auto; right: 16px; margin-left: 0; }
+
+/* ── Chalk baseline ── */
+.dw-baseline {
+  display: block;
+  width: 100%;
+  height: 0.07em;
+  margin-top: -0.02em;
+  overflow: visible;
+}
+.dw-baseline path {
+  fill: none;
+  stroke: rgba(248, 250, 252, 0.55);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+.dw.is-armed .dw-baseline path { stroke-dashoffset: 1; }
+.dw.is-in .dw-baseline path { animation: dw-draw 1.1s ease-out 0.15s both; }
+
+/* ── Drifting doodles ── */
+.dw-doodles {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  container-type: size;
+}
+.dw-doodle {
+  position: absolute;
+  top: 0;
+  pointer-events: auto;
+  cursor: pointer;
+  will-change: transform;
+  animation-name: dw-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  opacity: 0.85;
+}
+.dw-doodle-in { display: block; width: 100%; height: 100%; }
+.dw-doodle-in svg { display: block; width: 100%; height: 100%; }
+.dw-doodle.is-popped { animation-play-state: paused; }
+.dw-doodle.is-popped .dw-doodle-in { animation: dw-pop 0.42s ease-out forwards; }
+
+@media (max-width: 639px) {
+  .dw-glyph { filter: url(#dw-chalk-sm); }
+  .dw-doodle:nth-child(2n) { display: none; }
+  .dw-bubble { font-size: 12px; }
+}
+
+/* ── Keyframes ── */
+@keyframes dw-stamp {
+  0% { opacity: 0; transform: translateY(-0.18em) scale(1.25) rotate(-4deg); }
+  60% { opacity: 1; transform: translateY(0.02em) scale(0.96) rotate(1deg); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes dw-jiggle {
+  0%, 100% { transform: none; }
+  25% { transform: rotate(-5deg) translateY(-0.03em); }
+  55% { transform: rotate(4deg); }
+  80% { transform: rotate(-2deg); }
+}
+@keyframes dw-popin {
+  0% { opacity: 0; transform: translateY(0.12em) scale(0.6); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes dw-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4%); } }
+@keyframes dw-bounce {
+  0%, 60%, 100% { transform: translateY(0) scaleY(1); }
+  68% { transform: translateY(0) scaleY(0.88); }
+  80% { transform: translateY(-22%) scaleY(1.04); }
+  90% { transform: translateY(0) scaleY(0.94); }
+}
+@keyframes dw-peek {
+  0%, 12%, 100% { transform: translateY(58%); }
+  28%, 70% { transform: translateY(0); }
+  84% { transform: translateY(58%); }
+}
+@keyframes dw-hop {
+  0% { transform: none; }
+  35% { transform: translateY(-28%) rotate(-6deg); }
+  65% { transform: translateY(0) scaleY(0.9); }
+  100% { transform: none; }
+}
+@keyframes dw-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+@keyframes dw-sway { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+@keyframes dw-sway-sm { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+@keyframes dw-wave { 0%, 30%, 70%, 100% { transform: rotate(0); } 40% { transform: rotate(-22deg); } 50% { transform: rotate(6deg); } 60% { transform: rotate(-18deg); } }
+@keyframes dw-kick { 0%, 100% { transform: skewX(0) rotate(0); } 25% { transform: skewX(-8deg) rotate(4deg); } 75% { transform: skewX(8deg) rotate(-4deg); } }
+@keyframes dw-tailswing { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(10deg); } }
+@keyframes dw-breathe { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.06); } }
+@keyframes dw-zzz {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.7); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translate(6px, -12px) scale(1.25); }
+}
+@keyframes dw-glow { 0%, 100% { fill: #fde68a; } 50% { fill: #fef9c3; filter: drop-shadow(0 0 3px #fde68a); } }
+@keyframes dw-crawl { 0% { left: 4%; } 50% { left: 84%; } 100% { left: 4%; } }
+@keyframes dw-turn { 0% { transform: scaleX(1); } 50% { transform: scaleX(-1); } }
+@keyframes dw-bubble {
+  0% { opacity: 0; transform: translateX(var(--bx, -50%)) translateY(6px) scale(0.85); }
+  100% { opacity: 1; transform: translateX(var(--bx, -50%)) translateY(0) scale(1); }
+}
+@keyframes dw-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes dw-fall {
+  0% { transform: translate(0, -1.2em) rotate(0deg); opacity: 0; }
+  8% { opacity: 0.85; }
+  30% { transform: translate(0.1em, 30cqh) rotate(70deg); }
+  60% { transform: translate(-0.08em, 60cqh) rotate(150deg); }
+  92% { opacity: 0.85; }
+  100% { transform: translate(0.06em, 100cqh) rotate(240deg); opacity: 0; }
+}
+@keyframes dw-pop {
+  0% { transform: scale(1); opacity: 1; }
+  40% { transform: scale(1.5); opacity: 1; }
+  100% { transform: scale(0); opacity: 0; }
+}
+
+/* Reduced motion: no loops, no entrance — everything simply sits there. */
+@media (prefers-reduced-motion: reduce) {
+  .dw *, .dw *::after { animation: none !important; transition: none !important; }
+  .dw.is-armed .dw-glyph,
+  .dw.is-armed .dw-critter,
+  .dw.is-armed .dw-snail { opacity: 1; }
+  .dw.is-armed .dw-baseline path { stroke-dashoffset: 0; }
+  .dw-doodles { display: none; }
+}
