@@ -26,7 +26,7 @@ const Td = ({ children, className = '' }) => (
 const Refund = () => (
   <LegalLayout
     title="Refund & Cancellation Policy"
-    updated="12 August 2026"
+    updated="2 November 2026"
     effective={MARKETPLACE_EFFECTIVE}
     current="/refund"
     description="Meeticulous refund and cancellation policy — cancellation windows, what is refundable, host cancellations, timelines, and how to claim."
@@ -128,7 +128,7 @@ const Refund = () => (
         <li><strong>Services already delivered</strong> as described.</li>
         <li><strong>Sessions ended early</strong> because of abusive, threatening, discriminatory, or unsafe behaviour.</li>
         <li><strong>Booking and payment processing charges</strong> on a cancellation you initiate (Section 2).</li>
-        <li><strong>Subscription and plan fees</strong> paid by hosts (Host+, Studio, Enterprise), including GST, once the plan is activated. These give immediate access to plan features. If you cancel a subscription, it stops renewing at the end of the paid period; the remainder of that period is not refunded.</li>
+        <li><strong>Subscription and plan fees</strong> paid by hosts (Pro), including GST, once the plan is activated. These give immediate access to plan features. If you cancel a subscription, it stops renewing at the end of the paid period; the remainder of that period is not refunded.</li>
         <li><strong>Digital products</strong> once delivered or once a download link has been issued.</li>
         <li><strong>Your own costs</strong> &mdash; travel, data, equipment, time, or any other expense connected with a booking.</li>
         <li><strong>Bank or card conversion charges</strong> on international payments.</li>

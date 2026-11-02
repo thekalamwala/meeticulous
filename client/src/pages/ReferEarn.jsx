@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Users, Gift, Hourglass, Copy, Check, Share2, Banknote } from "lucide-react";
 import { getMyReferrals } from "../services/api";
 import toast from "react-hot-toast";
+import { planLabel as displayPlan } from "../utils/themeUtils";
 import {
   PageHeader, Section, StatCard, DataTable, Badge, Button,
   EmptyState, ErrorState, SkeletonCard, fmtMoney,
@@ -11,9 +12,7 @@ import {
 const fmtDate = (iso) =>
   new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 
-// Public plan labels (DB slugs → what hosts see on the pricing page).
-const PLAN_LABEL = { creator: "Host+", professional: "Studio" };
-const planLabel = (slug) => PLAN_LABEL[slug] || slug || "—";
+const planLabel = (slug) => displayPlan(slug) || "—";
 
 const COLUMNS = [
   { key: "date", header: "Date", render: (r) => <span className="text-gray-600">{fmtDate(r.created_at)}</span> },

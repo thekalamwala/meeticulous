@@ -15,7 +15,7 @@ const Mail = () => <a href="mailto:team@meeticulous.com" className="text-primary
 const HostAgreement = () => (
   <LegalLayout
     title="Host Services Agreement"
-    updated="12 August 2026"
+    updated="2 November 2026"
     effective="on your acceptance during host onboarding"
     current="/host-agreement"
     description="The agreement between Meeticulous and its Hosts — how you sell your services to Guests through the Platform, and how you are priced, invoiced, and paid. Read before you list a service."
@@ -58,7 +58,7 @@ const HostAgreement = () => (
         <li><strong>&ldquo;Your Payout&rdquo;</strong> or <strong>&ldquo;H&rdquo;</strong> — the amount payable to you for a Booking, being Your Price less the Platform Fee, the payment-gateway charge, and tax deducted/collected at source, computed under clause 5.</li>
         <li><strong>&ldquo;Guest Price&rdquo;</strong> — the total amount payable by the Guest for a Booking (Your Price plus the booking fee and applicable tax).</li>
         <li><strong>&ldquo;Linked Account&rdquo;</strong> — your Razorpay Route account, activated from your KYC, to which Your Payout is transferred under clause 7.</li>
-        <li><strong>&ldquo;Plan&rdquo;</strong> — the subscription tier applicable to your Host account (Starter, Host+, Studio, or Enterprise).</li>
+        <li><strong>&ldquo;Plan&rdquo;</strong> — the subscription tier applicable to your Host account (Starter or Pro).</li>
       </ul>
     </Section>
 
@@ -185,7 +185,7 @@ const HostAgreement = () => (
       </p>
       <p>
         <strong>5.8 Minimum price.</strong> A paid Service must be priced at <strong>₹100 or more</strong> on the
-        Starter, Host+, and Studio Plans. Free (₹0) Services are permitted on every Plan, and the Supreme Plan is not
+        Starter and Pro Plans. Free (₹0) Services are permitted on every Plan, and the Supreme Plan is not
         subject to this minimum. Meeticulous may decline to publish, or may unpublish, a paid Service priced below the
         applicable minimum.
       </p>

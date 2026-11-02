@@ -144,7 +144,7 @@ describe('ProfileSetup — Appearance (explorer plan)', () => {
   test('shows upgrade hint for explorer', async () => {
     renderSetup('explorer');
     await userEvent.click(screen.getByRole('tab', { name: /appearance/i }));
-    expect(screen.getByText(/upgrade to host\+ for 16 colours/i)).toBeTruthy();
+    expect(screen.getByText(/upgrade to pro for more colours/i)).toBeTruthy();
   });
 
   test('shows "Book a Session" CTA preview button', async () => {

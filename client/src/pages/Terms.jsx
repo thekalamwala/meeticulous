@@ -14,7 +14,7 @@ const Mail = () => <a href="mailto:team@meeticulous.com" className="text-primary
 const Terms = () => (
   <LegalLayout
     title="Terms of Use"
-    updated="12 August 2026"
+    updated="2 November 2026"
     effective={MARKETPLACE_EFFECTIVE}
     current="/terms"
     description="The terms governing your use of Meeticulous — accounts, acceptable use, content, and liability. Read before you book or list a service."
@@ -145,7 +145,7 @@ const Terms = () => (
         <li><strong>Price.</strong> The price shown at checkout is the total payable and is inclusive of GST. It is itemised before you pay. We issue the guest a tax invoice for our booking fee; the host is responsible for invoicing their own service price where they are GST-registered.</li>
         <li><strong>Payments to hosts.</strong> We collect the guest's payment and pay the host their price, net of our commission (if any), the payment-gateway charge, and tax deducted at source, on the cycle set out in the <Link to="/host-fees" className="text-primary hover:underline">Host Fee &amp; Payment Schedule</Link>.</li>
         <li><strong>Charges.</strong> Our booking fee, platform commission, and subscription prices for paid plans are published in the Fee Schedule and on the <Link to="/pricing" className="text-primary hover:underline">Pricing page</Link>. The charges applicable to a booking are recorded as a snapshot when it is confirmed.</li>
-        <li><strong>Minimum price.</strong> A paid service must be priced at ₹100 or more on the Starter, Host+, and Studio plans; free (₹0) services are allowed on every plan, and the Supreme plan has no minimum. See the <Link to="/host-fees" className="text-primary hover:underline">Host Fee &amp; Payment Schedule</Link>.</li>
+        <li><strong>Minimum price.</strong> A paid service must be priced at ₹100 or more on the Starter and Pro plans; free (₹0) services are allowed on every plan, and the Supreme plan has no minimum. See the <Link to="/host-fees" className="text-primary hover:underline">Host Fee &amp; Payment Schedule</Link>.</li>
         <li><strong>Taxes.</strong> We charge and account for GST on our own fee and commission. The host is responsible for GST on their service. As an e-commerce operator we deduct TDS (section 194-O) and TCS (section 52) from host payments and issue the applicable certificates.</li>
         <li><strong>Refunds.</strong> Governed by the <Link to="/refund" className="text-primary hover:underline">Refund &amp; Cancellation Policy</Link>. We facilitate refunds to guests directly.</li>
       </ul>
