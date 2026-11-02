@@ -4,6 +4,9 @@
 1. **Ask first.** Before starting any task, ask at least one clarifying question. Never dive in cold.
 2. **Fresh branch from main.** `git fetch origin && git switch -c <type>/<slug> origin/main`. Never work directly on `main` or reuse an old branch unless told to.
 3. **Work → commit → PR.** Do the change, commit, `gh pr create` (any type: feat/fix/docs/chore).
+   **PR base = the open release train**, not `main`: check `git branch -r | grep release/` and use
+   `--base release/YYYY-MM` (CI runs on `release/**`). The train ships to `main` in one merge
+   (`/ship-release`). Only a hotfix the user asks for targets `main` directly.
 4. **Stop at the PR.** Hand over the PR link. **Do NOT merge.** The user merges — merge auto-deploys to prod and the user controls timing/limit.
 
 > See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full branch / PR / merge / deploy workflow.
