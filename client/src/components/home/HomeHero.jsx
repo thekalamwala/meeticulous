@@ -127,7 +127,7 @@ export default function HomeHero({ onStart, loading }) {
                   autoComplete="off"
                   spellCheck={false}
                   aria-label="Your booking link"
-                  className="min-w-0 flex-1 rounded-none border-0 bg-transparent p-0 font-semibold shadow-none text-ink outline-none placeholder:font-normal placeholder:text-neutral-400"
+                  className="min-w-0 flex-1 rounded-none border-0 bg-transparent p-0 font-semibold text-primary caret-primary shadow-none outline-none focus:shadow-none focus-visible:outline-none placeholder:font-normal placeholder:text-neutral-400"
                 />
               </label>
               <button
