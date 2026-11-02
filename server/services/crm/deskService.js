@@ -53,7 +53,7 @@ function mergeById(entries) {
 }
 
 const FIELDS = ['id', 'name', 'business_name', 'status', 'score', 'intent', 'next_action',
-  'owner_admin_id', 'last_contacted_at', 'last_reply_at', 'expected_value_paise'];
+  'owner_admin_id', 'last_contacted_at', 'last_reply_at', 'last_reply_intent', 'expected_value_paise'];
 
 function shape(lead, reasons) {
   const out = {};
@@ -80,12 +80,20 @@ function endOfTodayIso() {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1).toISOString();
 }
 
+// Reply triage order (v3.183 last_reply_intent, set by the AI reply label): warm
+// replies first, angry next (needs a careful human answer), unlabelled after,
+// polite no's last. Array.sort is stable, so oldest-first holds within a rank.
+const INTENT_RANK = { interested: 0, question: 1, angry: 2, other: 3, not_now: 4, unsubscribe: 5, auto_reply: 6 };
+const intentRank = (l) => INTENT_RANK[l.last_reply_intent] ?? INTENT_RANK.other;
+const replyReason = (l) =>
+  (l.last_reply_intent ? `Replied — ${l.last_reply_intent.replace('_', ' ')}` : 'Replied — unanswered');
+
 async function replies(limit) {
   const { data } = await openBase()
     .not('last_reply_at', 'is', null)
     .order('last_reply_at', { ascending: true }).limit(CANDIDATE_CAP);
-  const rows = (data || []).filter(isUnansweredReply);
-  return pack(rows, limit, () => ['Replied — unanswered']);
+  const rows = (data || []).filter(isUnansweredReply).sort((a, b) => intentRank(a) - intentRank(b));
+  return pack(rows, limit, (l) => [replyReason(l)]);
 }
 
 async function highIntent(limit) {
@@ -154,7 +162,8 @@ async function needsAttention(limit) {
   // 1. unanswered replies
   const { data: repCand } = await openBase()
     .not('last_reply_at', 'is', null).order('last_reply_at', { ascending: true }).limit(CANDIDATE_CAP);
-  const replyRows = (repCand || []).filter(isUnansweredReply).map((l) => ({ lead: l, reason: 'Replied — unanswered' }));
+  const replyRows = (repCand || []).filter(isUnansweredReply)
+    .sort((a, b) => intentRank(a) - intentRank(b)).map((l) => ({ lead: l, reason: replyReason(l) }));
 
   // 2. overdue follow-ups — union tasks with a past next_action_at.
   const [{ data: ovf }, { data: ovNa }] = await Promise.all([
@@ -255,5 +264,5 @@ async function getRelationships(limit = DEFAULT_LIMIT) {
 
 module.exports = {
   getDesk, getRelationships, rankRecommendations, flattenRec,
-  isUnansweredReply, activationReason, mergeById, shape,
+  isUnansweredReply, activationReason, mergeById, shape, intentRank, replyReason,
 };
