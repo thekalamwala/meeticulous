@@ -82,7 +82,6 @@ store in Render env, never commit.
 | `KYC_ENCRYPTION_KEY` | encrypts host KYC documents at rest |
 | `METRICS_TOKEN`, `INGEST_TOKEN` | protect internal metrics/ingest endpoints |
 | `SUPER_ADMIN_USERNAME`, `SUPER_ADMIN_PASSWORD`, `SUPER_ADMIN_EMAIL`, `SUPER_ADMIN_OTP_EMAIL` | superadmin login (separate door, never phone OTP) |
-| `PITCH_DECK_PASSCODE` | investor deck gate (optional; unset = gate closed) |
 
 ### B. Supabase — new project (free tier, or ~$25/mo prod)
 Create a fresh project, then **run every migration v1.1 → v3.139 plus the seed
@@ -182,8 +181,7 @@ Domain must pass **SPF/DKIM** in the sending provider or mail lands in spam.
 
 **RECOMMENDED — boots, but feature dead if missing:**
 `SUPABASE_JWT_SECRET`, `GOOGLE_CLIENT_ID/SECRET/REDIRECT_URI`,
-`SMTP_HOST/USER/PASS`, `ADMIN_ALERT_EMAIL`, `RAZORPAY_KEY_ID/SECRET`,
-`PITCH_DECK_PASSCODE/EXPIRES_AT`.
+`SMTP_HOST/USER/PASS`, `ADMIN_ALERT_EMAIL`, `RAZORPAY_KEY_ID/SECRET`.
 
 Everything else degrades gracefully (code/schema fallbacks) — the clone runs
 without it, but a marketed, full-feature product needs the lot.

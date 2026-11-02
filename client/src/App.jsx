@@ -309,7 +309,6 @@ const AdminGstExports      = lazy(() => import('./pages/admin/AdminGstExports'))
 // Admin — SEO audit dashboard
 const AdminSeo = lazy(() => import('./pages/admin/AdminSeo'));
 const Presentation = lazy(() => import('./pages/presentation/Presentation'));
-const PitchDeck = lazy(() => import('./pages/pitch-deck/PitchDeck'));
 
 // ── Fallback shown while a route chunk downloads ──────────────────────────────
 const PageLoader = () => (
@@ -757,8 +756,6 @@ function App() {
           <Route path="/how-it-works" element={<HowItWorks />} />
           {/* Full-screen shareable product pitch deck (pages/presentation/). */}
           <Route path="/presentation" element={<Presentation />} />
-          {/* Investor pitch deck (pages/pitch-deck/) — noindex, unlinked, share-by-link. */}
-          <Route path="/pitch-deck" element={<PitchDeck />} />
 
           {/* Branded error pages — config-driven (see config/errorCatalog.js).
               One <ErrorPage> component renders all of them; adding a code = a
