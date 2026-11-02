@@ -87,6 +87,21 @@ export const PREMIUM_YEARLY_PER_MONTH = Math.round(PREMIUM_PLAN.yearly / 12); //
 export const PREMIUM_ANNUAL_SAVING = PREMIUM_PLAN.monthly * 12 - PREMIUM_PLAN.yearly; // ₹1,641
 export const PREMIUM_ANNUAL_SAVE_PCT = Math.round((PREMIUM_ANNUAL_SAVING / (PREMIUM_PLAN.monthly * 12)) * 100); // 58
 
+/**
+ * Pro outside India (USD). Shown to visitors whose country isn't IN (see
+ * lib/pricingRegion.js). Priced under Calendly Standard ($12) and Cal.com ($15).
+ * No GST — exports of services are zero-rated, so the sticker is the charge.
+ *
+ * DISPLAY ONLY for now: Razorpay International Payments is not enabled, there
+ * are no USD Razorpay plans, and subscription_plans has no USD column. So the
+ * USD card shows "Get early access" (→ /contact) instead of checkout. To go
+ * live: enable International on Razorpay, add USD plans + server pricing, then
+ * swap the CTA in PricingCards.
+ */
+export const PREMIUM_PLAN_USD = { monthly: 7, yearly: 59 };
+export const PREMIUM_USD_YEARLY_PER_MONTH = Math.round((PREMIUM_PLAN_USD.yearly / 12) * 100) / 100; // 4.92
+export const PREMIUM_USD_ANNUAL_SAVE_PCT = Math.round((1 - PREMIUM_PLAN_USD.yearly / (PREMIUM_PLAN_USD.monthly * 12)) * 100); // 30
+
 /* ────────────────────────────────────────────────────────────────────────────
  * Full feature comparison — drives the detailed table on /pricing (Pricing.jsx).
  *
