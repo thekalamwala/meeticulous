@@ -39,8 +39,11 @@ describe("TeamMasonry", () => {
       expect(tile.getByText(`[ ${m.position} ]`)).toBeInTheDocument();
       expect(tile.getByText(m.bio)).toBeInTheDocument();
       // The hover panel carries the member's social icons (own links, new tab)…
+      // Company social accounts aren't live yet: only the Meeticulous link (or a
+      // member's own link) renders — same rule as the modal test above.
+      const live = m.socials.filter((s) => s.type === "meeticulous" || (s.href && s.href !== "#"));
       const socials = tile.getAllByRole("link", { name: new RegExp(`^${m.name} on `) });
-      expect(socials).toHaveLength(m.socials.length);
+      expect(socials).toHaveLength(live.length);
       socials.forEach((a) => expect(a.getAttribute("target")).toBe("_blank"));
       // …and they are NOT nested inside the "View bio" button (invalid HTML).
       expect(tile.getByRole("button", { name: /view bio/i }).querySelector("a")).toBeNull();

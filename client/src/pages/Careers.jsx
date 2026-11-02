@@ -21,7 +21,7 @@ export default function Careers() {
     // open roles (cards). (The "Don't see your role?" CTA band and the "Work that
     // fits your life" Perks section were removed 2026-11-02 at the owner's request.)
     // (The empty-photo CultureStrip was dropped in the 2026-11 redesign.)
-    <main className="bg-white">
+    <main className="bg-canvas">
       <Seo
         title="Careers at Meeticulous — build the calm way to get booked"
         description="Join Meeticulous. Open roles across marketing, engineering, and sales. Remote-first, creators-first."

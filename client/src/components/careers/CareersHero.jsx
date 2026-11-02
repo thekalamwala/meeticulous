@@ -24,17 +24,17 @@ export default function CareersHero() {
   );
 
   return (
-    <section ref={root} className="relative overflow-hidden bg-white px-5 py-20 sm:px-8 lg:py-28">
+    <section ref={root} className="relative overflow-hidden bg-canvas px-5 py-20 sm:px-8 lg:py-28">
       <div className="mx-auto max-w-3xl text-center">
         <p className="js-rise text-sm font-semibold uppercase tracking-[0.2em] text-primary">Careers</p>
-        <h1 className="js-rise mt-3 font-heading font-extrabold leading-[1.08] text-ink text-[clamp(2.4rem,5vw,3.75rem)]">
-          Build the calm way to <span className="text-primary-cta">get booked.</span>
+        <h1 className="js-rise mt-3 font-display font-extrabold leading-[1.08] text-maroon text-[clamp(2.4rem,5vw,3.75rem)]">
+          Build the calm way to <span className="text-rose">get booked.</span>
         </h1>
         <p className="js-rise mx-auto mt-6 max-w-xl text-lg leading-relaxed text-ink/70">{company.missionBlurb}</p>
         <div className="js-rise mt-9 flex flex-wrap items-center justify-center gap-6">
           <a
             href="#open-roles"
-            className="inline-flex items-center gap-1.5 rounded-[6px] bg-primary-cta px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_-12px_rgba(150,13,50,0.55)] hover:no-underline hover:opacity-90"
+            className="inline-flex items-center gap-1.5 rounded-full bg-primary-cta px-6 py-3 text-sm font-semibold text-white hover:no-underline hover:opacity-90"
           >
             See open roles <ArrowRight size={16} aria-hidden="true" />
           </a>

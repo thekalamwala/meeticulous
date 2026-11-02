@@ -53,9 +53,9 @@ const dirFor = (i) => (i % 2 === 0 ? SLIDE.up : SLIDE.down);
 
 // Shared tile frame so portraits and the open seat line up exactly.
 const TILE =
-  "relative block aspect-[3/4] w-full overflow-hidden rounded-[6px] border border-black/5 bg-white text-left shadow-[0_8px_30px_rgba(26,26,26,0.04)]";
+  "relative block aspect-[3/4] w-full overflow-hidden rounded-[16px] border-2 border-neutral-200 bg-white text-left";
 const PHOTO_LAYER =
-  "absolute inset-x-0 z-10 h-full overflow-hidden rounded-[6px] transition-[height] duration-500 ease-out motion-reduce:transition-none";
+  "absolute inset-x-0 z-10 h-full overflow-hidden rounded-[16px] transition-[height] duration-500 ease-out motion-reduce:transition-none";
 
 function Panel({ dir, label, title, body, extra = null }) {
   return (
@@ -97,7 +97,7 @@ function Card({ m, i, onOpen }) {
         aria-label={`${m.name} — ${m.role}. View bio`}
         // transition-none: the global `button { transition: transform … }` rule
         // (index.css) would animate this full-tile layer.
-        className="absolute inset-0 z-20 rounded-[6px] transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+        className="absolute inset-0 z-20 rounded-[16px] transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       />
     </div>
   );
@@ -130,7 +130,7 @@ function JoinCard({ i }) {
       <Link
         to="/careers"
         aria-label={`Join the team${roles ? ` — ${roles}` : ""}`}
-        className="absolute inset-0 z-20 rounded-[6px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+        className="absolute inset-0 z-20 rounded-[16px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       />
     </div>
   );
@@ -144,7 +144,7 @@ export default function TeamMasonry() {
   return (
     <section ref={root} className="px-5 py-12 sm:px-8 lg:py-16">
       <div className="mx-auto max-w-6xl">
-        <h2 className="js-head text-center font-heading text-3xl font-bold sm:text-4xl">{team.heading}</h2>
+        <h2 className="js-head text-center font-display text-3xl font-bold sm:text-4xl">{team.heading}</h2>
         <p className="mt-4 text-center text-lg leading-relaxed text-ink/70">{team.sub}</p>
 
         <div

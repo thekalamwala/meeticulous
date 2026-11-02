@@ -102,6 +102,9 @@ h2.font-heading,
 h1.font-sans,
 h2.font-sans {
   font-family: var(--font-display);
+  /* design-system/BRAND_RULES.md: display + headings are maroon. A text-* utility
+     on the heading (e.g. text-white on a maroon band) still wins. */
+  color: var(--mt-maroon);
 }
 
 /* Admin/super-admin dashboard: entirely Poppins, headings included. */

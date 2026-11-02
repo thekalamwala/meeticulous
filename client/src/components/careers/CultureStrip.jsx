@@ -9,7 +9,7 @@ export default function CultureStrip() {
   return (
     <section ref={root} className="px-5 py-20 sm:px-8 lg:py-28">
       <div className="mx-auto max-w-6xl">
-        <h2 className="js-head font-heading text-3xl font-bold sm:text-4xl">Life at Meeticulous</h2>
+        <h2 className="js-head font-display text-3xl font-bold sm:text-4xl">Life at Meeticulous</h2>
         <div className="mt-10 grid gap-5 sm:grid-cols-3">
           {company.culture.map((c, i) => (
             <figure

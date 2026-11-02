@@ -14,7 +14,7 @@ export default function CareersFacts() {
   ];
 
   return (
-    <section aria-label="Working at Meeticulous" className="border-y border-black/5 bg-white px-5 py-8 sm:px-8">
+    <section aria-label="Working at Meeticulous" className="border-y border-neutral-200 bg-canvas px-5 py-8 sm:px-8">
       <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-ink/40">Working at Meeticulous</p>
       <ul className="mx-auto mt-5 flex max-w-5xl flex-wrap items-center justify-center gap-x-10 gap-y-4">
         {facts.map(({ Icon, label }) => (

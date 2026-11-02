@@ -102,7 +102,7 @@ export default function Pricing() {
   useEffect(() => { analytics.track(EVENTS.PLAN_VIEWED, { ...utm }); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <main className="bg-white">
+    <main className="bg-canvas">
       <Seo
         title={feeOnly ? "Pricing — Meeticulous | Pro for creators & professionals" : "Pricing — Meeticulous | Start free. Go Pro as you grow."}
         description={feeOnly ? "Simple, honest pricing for your booking page — scheduling, reminders and automation. Pro is ₹1,179 a year, GST included." : "Two plans, that's it. Starter is free forever — put your business online and start taking bookings. Pro turns those bookings into a business system. All prices include GST."}
@@ -111,19 +111,13 @@ export default function Pricing() {
         jsonLd={JSON_LD}
       />
 
-      {/* ── Hero (tinted band) + plan cards overlapping it ───────────── */}
+      {/* ── Hero (cream ground) + plan cards overlapping it ───────────── */}
       <section className="relative overflow-hidden px-5 pb-10 pt-16 sm:px-8 lg:pt-24">
-        {/* soft radial crimson wash — hero backdrop, fades out */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[520px]"
-          style={{ background: "radial-gradient(70% 90% at 50% 0%, color-mix(in srgb, var(--primary, #960D32) 9%, white) 0%, white 72%)" }}
-        />
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Pricing</p>
-          <h1 className="mt-3 font-heading font-extrabold leading-[1.08] text-ink text-[clamp(2.4rem,5vw,3.75rem)]">
+          <h1 className="mt-3 font-display font-extrabold leading-[1.08] text-maroon text-[clamp(2.4rem,5vw,3.75rem)]">
             Simple pricing that grows{" "}
-            <span className="text-primary-cta">with your {feeOnly ? "practice" : "business"}.</span>
+            <span className="text-rose">with your {feeOnly ? "practice" : "business"}.</span>
           </h1>
           <p className="mx-auto mt-5 max-w-[640px] text-lg leading-relaxed text-ink/70">
             {feeOnly
@@ -153,17 +147,17 @@ export default function Pricing() {
       )}
 
       {/* ── Full feature comparison ──────────────────────────────────── */}
-      <section className="bg-white px-5 pb-20 pt-16 sm:px-8 lg:pt-24">
+      <section className="bg-canvas px-5 pb-20 pt-16 sm:px-8 lg:pt-24">
         <div className="mx-auto max-w-[1050px]">
-          <h2 className="text-center font-heading text-4xl font-extrabold text-ink sm:text-5xl">
-            Everything <span className="text-primary-cta">you get</span>
+          <h2 className="text-center font-display text-4xl font-extrabold text-maroon sm:text-5xl">
+            Everything <span className="text-rose">you get</span>
           </h2>
           <p className="mx-auto mt-4 max-w-[620px] text-center text-lg leading-relaxed text-ink/70">
             Everything Starter gives you free, and everything you unlock with Pro.
             Tap any <span className="font-semibold text-primary">Limited</span> tag for the detail.
           </p>
 
-          <div className="mt-10 overflow-x-auto rounded-[10px] border border-black/5 bg-white p-1 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-2">
+          <div className="mt-10 overflow-x-auto rounded-[16px] border-2 border-neutral-200 bg-white p-1 sm:p-2">
             <table className="w-full min-w-[720px] border-collapse text-left">
               <thead>
                 <tr className="border-b border-black/10">
@@ -194,20 +188,20 @@ export default function Pricing() {
         </div>
       </section>
 
-      {/* ── Closing CTA (crimson band) ───────────────────────────────── */}
+      {/* ── Closing CTA (design-system maroon band) ───────────────────────────────── */}
       <section className="px-5 pb-24 pt-16 sm:px-8 lg:pt-20">
-        <div className="mx-auto max-w-5xl overflow-hidden rounded-[10px] bg-primary-cta px-8 py-14 text-center text-white sm:px-12">
-          <h2 className="font-heading text-3xl font-extrabold text-white sm:text-4xl">
+        <div className="mx-auto max-w-5xl overflow-hidden rounded-[24px] bg-maroon px-8 py-14 text-center text-white sm:px-12">
+          <h2 className="font-display text-3xl font-extrabold text-white sm:text-4xl">
             {feeOnly ? "Ready when you are." : "Start slow. Grow when it counts."}
           </h2>
-          <p className="mx-auto mt-4 max-w-[520px] text-lg text-white/80">
+          <p className="mx-auto mt-4 max-w-[520px] text-lg text-blush">
             Put your business online for free in minutes. Become Pro in one click the day your bookings need it.
           </p>
           <Link
             to={ROUTE_START}
-            className="mt-8 inline-flex items-center justify-center gap-1.5 rounded-[6px] bg-white px-6 py-3 text-sm font-semibold text-ink shadow-[0_12px_30px_-12px_rgba(0,0,0,0.5)] transition-opacity hover:opacity-90 hover:no-underline"
+            className="mt-btn mt-btn--onbrand mt-8"
           >
-            Start for free <ArrowRight size={16} />
+            Get your booking link <ArrowRight size={16} />
           </Link>
         </div>
       </section>
@@ -258,7 +252,7 @@ const STAGES = [
     tag: "Getting busy",
     lead: "Bookings coming in regularly",
     body: "Automation starts saving you time. 1-hour reminders, reschedule alerts and follow-ups keep customers showing up.",
-    accent: "#f59e0b",
+    accent: "#C43A59",
     plan: "Pro",
     icon: Zap,
   },
@@ -266,7 +260,7 @@ const STAGES = [
     tag: "Growing",
     lead: "More customers. More to manage.",
     body: "You need visibility. A full client CRM with notes and history, plus rebook automation to bring people back.",
-    accent: "#db2777",
+    accent: "#E0506F",
     plan: "Pro",
     icon: Users,
   },
@@ -284,8 +278,8 @@ function GrowthTimeline() {
   return (
     <section className="px-5 py-20 sm:px-8 lg:py-28">
       <div className="mx-auto max-w-6xl">
-        <h2 className="text-center font-heading text-4xl font-extrabold text-ink sm:text-5xl">
-          How Meeticulous <span className="text-primary-cta">grows with you</span>
+        <h2 className="text-center font-display text-4xl font-extrabold text-maroon sm:text-5xl">
+          How Meeticulous <span className="text-rose">grows with you</span>
         </h2>
         <p className="mx-auto mt-4 max-w-[620px] text-center text-lg leading-relaxed text-ink/70">
           Start free on Starter. Move up to Pro only when the last stage starts to feel busy — there's no rush.
@@ -299,7 +293,7 @@ function GrowthTimeline() {
             return (
               <li key={s.tag} className="relative flex flex-col">
                 <span
-                  className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full text-white shadow-[0_8px_24px_-10px_rgba(26,26,26,0.5)]"
+                  className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full text-white"
                   style={{ background: s.accent }}
                 >
                   <Icon size={20} strokeWidth={2} aria-hidden="true" />
@@ -333,7 +327,7 @@ const VALUES = [
     icon: Users,
     title: "Know your customers",
     body: "A full client CRM — records, notes and history for everyone you've served, not just your last ten.",
-    accent: "#db2777",
+    accent: "#E0506F",
   },
   {
     icon: BarChart3,
@@ -357,8 +351,8 @@ function ProValueAndCalculator() {
       <div className="mx-auto grid max-w-6xl items-start gap-12 lg:grid-cols-2 lg:gap-16">
         {/* Left — what Pro does */}
         <div>
-          <h2 className="font-heading text-4xl font-extrabold leading-tight text-ink sm:text-5xl">
-            What <span className="text-primary-cta">Pro</span> actually does
+          <h2 className="font-display text-4xl font-extrabold leading-tight text-maroon sm:text-5xl">
+            What <span className="text-rose">Pro</span> actually does
           </h2>
           <p className="mt-4 text-lg leading-relaxed text-ink/70">
             It's not "25 more features." It's four things that matter as you grow.
@@ -369,7 +363,7 @@ function ProValueAndCalculator() {
               return (
                 <li key={v.title} className="flex items-start gap-4">
                   <span
-                    className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[6px]"
+                    className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[16px]"
                     style={{ color: v.accent, background: `${v.accent}14` }}
                   >
                     <Icon size={20} strokeWidth={2} />
@@ -417,7 +411,7 @@ function PayForItself() {
   }
 
   return (
-    <div className="rounded-[10px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.05)] sm:p-8">
+    <div className="rounded-[24px] border-2 border-neutral-200 bg-white p-6 sm:p-8">
       <h3 className="font-heading text-2xl font-extrabold text-ink">Does <span className="text-primary-cta">Pro</span> pay for itself?</h3>
       <p className="mt-2 text-sm leading-relaxed text-neutral-500">
         Drag to your rough monthly bookings revenue — we'll compare Starter's 5% against Pro's flat price.
@@ -444,19 +438,19 @@ function PayForItself() {
       </div>
 
       <div className="mt-7 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-[6px] border p-4" style={{ borderColor: `${OPERATE}44`, background: `${OPERATE}0d` }}>
+        <div className="rounded-[24px] border p-4" style={{ borderColor: `${OPERATE}44`, background: `${OPERATE}0d` }}>
           <p className="text-xs font-bold uppercase tracking-wide" style={{ color: OPERATE }}>Starter · 5%</p>
           <p className="mt-1 font-heading text-2xl font-extrabold text-ink">{inr(commission)}<span className="text-sm font-semibold text-neutral-400"> /mo</span></p>
           <p className="mt-1 text-xs text-neutral-500">commission on your bookings</p>
         </div>
-        <div className="rounded-[6px] border p-4" style={{ borderColor: `${GROW}55`, background: `${GROW}0d` }}>
+        <div className="rounded-[24px] border p-4" style={{ borderColor: `${GROW}55`, background: `${GROW}0d` }}>
           <p className="text-xs font-bold uppercase tracking-wide" style={{ color: GROW }}>Pro · flat</p>
           <p className="mt-1 font-heading text-2xl font-extrabold text-ink">{inr(activeCost)}<span className="text-sm font-semibold text-neutral-400"> /mo</span></p>
           <p className="mt-1 text-xs text-neutral-500">0% commission · billed yearly</p>
         </div>
       </div>
 
-      <div className="mt-5 rounded-[6px] border border-black/5 bg-sand p-4 text-sm text-neutral-700">
+      <div className="mt-5 rounded-[24px] border-2 border-neutral-200 bg-sand p-4 text-sm text-neutral-700">
         {activeWins && saved > 0 && (
           <p className="mb-1 font-heading font-bold" style={{ color: GROW }}>
             Pro saves you about {inr(saved)} a month — before you count the automation.
@@ -482,7 +476,7 @@ function FragmentSection({ section, columns = PLAN_COLUMNS }) {
         </td>
       </tr>
       {section.rows.map((row) => (
-        <tr key={row.label} className="border-b border-black/5">
+        <tr key={row.label} className="border-b border-neutral-200">
           <td className="py-3 pl-3 pr-4 text-sm text-neutral-700">{row.label}</td>
           {columns.map((c) => (
             <td key={c.key} className="px-3 py-3 text-center"><Cell value={row[c.key]} /></td>

@@ -15,8 +15,8 @@ export default function WhyWorkHere() {
   return (
     <section ref={root} className="px-5 py-20 sm:px-8 lg:py-28">
       <div className="mx-auto max-w-6xl">
-        <h2 className="js-head text-center font-heading text-4xl font-extrabold sm:text-5xl">
-          Why build <span className="text-primary-cta">with us</span>
+        <h2 className="js-head text-center font-display text-4xl font-extrabold sm:text-5xl">
+          Why build <span className="text-rose">with us</span>
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-center text-lg leading-relaxed text-ink/70">
           A small team with real ownership, building for the people who sell their time.
@@ -28,7 +28,7 @@ export default function WhyWorkHere() {
             return (
               <div
                 key={v.title}
-                className="js-item relative flex min-h-[260px] flex-col overflow-hidden rounded-[6px] p-7"
+                className="js-item relative flex min-h-[260px] flex-col overflow-hidden rounded-[24px] p-7"
                 style={{ background: `color-mix(in srgb, ${accent} 10%, white)` }}
               >
                 <h3 className="font-heading text-xl font-bold text-ink">{v.title}</h3>

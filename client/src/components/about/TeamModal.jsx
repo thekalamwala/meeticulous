@@ -14,7 +14,7 @@ export default function TeamModal({ member, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} aria-hidden />
+      <div className="absolute inset-0 bg-[var(--bg-overlay)]" onClick={onClose} aria-hidden />
       <div role="dialog" aria-modal="true" aria-label={member.name} className="relative grid w-full max-w-2xl gap-6 overflow-hidden rounded-[16px] bg-surface p-6 shadow-2xl sm:grid-cols-[2fr_3fr] sm:p-8">
         <button type="button" onClick={onClose} aria-label="Close" className="absolute right-4 top-4 z-10 text-ink/50 hover:text-ink">
           <X className="h-5 w-5" />

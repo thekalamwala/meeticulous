@@ -22,7 +22,7 @@ export function ProblemSection() {
           right (owner request — keep this split, not a centred stack). */}
       <div className="mx-auto grid w-full max-w-6xl items-center gap-14 lg:grid-cols-[2fr_3fr] lg:gap-12">
         <div>
-          <h2 className="js-head font-heading text-4xl font-extrabold sm:text-5xl">{problem.heading}</h2>
+          <h2 className="js-head font-display text-4xl font-extrabold sm:text-5xl">{problem.heading}</h2>
           <p className="mt-5 text-lg leading-relaxed text-ink/70">{problem.intro}</p>
         </div>
         <ProblemCompare />
@@ -60,12 +60,12 @@ export function DifferenceSection() {
   const root = useRef(null);
   useGsapReveal(root);
   return (
-    <section ref={root} className="bg-white px-5 py-20 sm:px-8 lg:py-28">
+    <section ref={root} className="bg-canvas px-5 py-20 sm:px-8 lg:py-28">
       <div className="mx-auto max-w-6xl">
         {/* Header: full width, centred, with a quiet text link underneath */}
         <div className="flex flex-col items-center gap-6 text-center">
           <div className="w-full">
-            <h2 className="js-head font-heading text-4xl font-extrabold sm:text-5xl">{difference.heading}</h2>
+            <h2 className="js-head font-display text-4xl font-extrabold sm:text-5xl">{difference.heading}</h2>
             <p className="mt-5 text-lg leading-relaxed text-ink/70">{difference.sub}</p>
           </div>
           <Link
@@ -87,12 +87,12 @@ export function DifferenceSection() {
                 // Transition colour/border/shadow ONLY: the GSAP reveal animates this
                 // card's opacity + transform, and a CSS transition on those makes
                 // gsap.from capture a mid-fade value (cards stuck invisible).
-                className={`js-item group rounded-[24px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-[background-color,border-color,box-shadow] duration-300 hover:shadow-[0_24px_60px_-28px_rgba(26,26,26,0.25)] sm:p-8 ${accent.card}`}
+                className={`js-item group rounded-[24px] border-2 border-neutral-200 bg-white p-7 transition-[background-color,border-color,box-shadow] duration-300 sm:p-8 ${accent.card}`}
               >
                 {/* Icon + heading side by side; description below */}
                 <div className="flex items-center gap-4">
                   <span
-                    className={`inline-flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-[6px] transition-colors duration-300 group-hover:text-white ${accent.tile}`}
+                    className={`inline-flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-[16px] transition-colors duration-300 group-hover:text-white ${accent.tile}`}
                   >
                     <Icon className="h-6 w-6" aria-hidden="true" />
                   </span>
@@ -112,7 +112,7 @@ export function FinalCta() {
   return (
     <section className="px-5 py-20 sm:px-8 lg:py-24">
       <div className="mx-auto max-w-3xl rounded-[16px] bg-ink px-6 py-14 text-center text-white sm:px-12">
-        <h2 className="font-heading text-4xl font-extrabold text-white sm:text-5xl">{finalCta.heading}</h2>
+        <h2 className="font-display text-4xl font-extrabold text-white sm:text-5xl">{finalCta.heading}</h2>
         <p className="mx-auto mt-4 max-w-xl text-lg text-white/70">{finalCta.sub}</p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link

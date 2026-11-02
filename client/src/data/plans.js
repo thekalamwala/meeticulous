@@ -27,7 +27,7 @@ export const FREE_PLAN = {
   slug: "free",
   tagline: "Everything you need to get booked.",
   badge: "5% per booking",
-  accent: "#4AB765",
+  accent: "#7A0A28", // --mt-maroon-dark (design system: no green brand accent)
   icon: "Sprout",
   persona: { title: "Just starting out", blurb: "Your booking page, your first customers, at zero cost." },
   monthly: 0,

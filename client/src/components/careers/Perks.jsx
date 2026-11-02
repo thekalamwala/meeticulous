@@ -12,11 +12,11 @@ export default function Perks() {
   const open = getOpenJobs().length;
 
   return (
-    <section ref={root} className="bg-white px-5 py-20 sm:px-8 lg:py-28">
+    <section ref={root} className="bg-canvas px-5 py-20 sm:px-8 lg:py-28">
       <div className="mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-2 lg:gap-16">
         <div>
-          <h2 className="js-head font-heading text-4xl font-extrabold leading-tight sm:text-5xl">
-            Work that fits <span className="text-primary-cta">your life</span>
+          <h2 className="js-head font-display text-4xl font-extrabold leading-tight sm:text-5xl">
+            Work that fits <span className="text-rose">your life</span>
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-ink/70">{company.aboutTeam}</p>
           <ul className="mt-8 space-y-4">
@@ -33,20 +33,20 @@ export default function Perks() {
 
         <div className="js-item relative mx-auto w-full max-w-[520px] px-6 pb-8 pt-6" aria-hidden="true">
           <div
-            className="aspect-[6/5] overflow-hidden rounded-[10px]"
+            className="aspect-[6/5] overflow-hidden rounded-[16px]"
             style={{ background: 'color-mix(in srgb, var(--primary, #960D32) 12%, white)' }}
           >
             <ImgWithSkeleton src={company.photos.perks} alt="" fallbackLabel="Meeticulous" />
           </div>
-          <div className="absolute right-0 top-0 rounded-[6px] border border-black/5 bg-white p-4 shadow-[0_18px_40px_-20px_rgba(26,26,26,0.35)]">
-            <span className="flex h-8 w-8 items-center justify-center rounded-[6px] bg-primary/10 text-primary">
+          <div className="absolute right-0 top-0 rounded-[24px] border-2 border-neutral-200 bg-white p-4">
+            <span className="flex h-8 w-8 items-center justify-center rounded-[16px] bg-primary/10 text-primary">
               <Briefcase className="h-4 w-4" />
             </span>
             <p className="mt-2 text-xs text-ink/50">Open roles</p>
             <p className="font-heading text-2xl font-bold text-ink">{open}</p>
           </div>
-          <div className="absolute bottom-0 left-0 flex items-center gap-2.5 rounded-[6px] border border-black/5 bg-white px-4 py-3 shadow-[0_18px_40px_-20px_rgba(26,26,26,0.35)]">
-            <span className="flex h-8 w-8 items-center justify-center rounded-[6px] text-[var(--c-violet)]" style={{ background: 'color-mix(in srgb, var(--c-violet) 14%, white)' }}>
+          <div className="absolute bottom-0 left-0 flex items-center gap-2.5 rounded-[16px] border-2 border-neutral-200 bg-white px-4 py-3">
+            <span className="flex h-8 w-8 items-center justify-center rounded-[16px] text-[var(--c-violet)]" style={{ background: 'color-mix(in srgb, var(--c-violet) 14%, white)' }}>
               <Globe2 className="h-4 w-4" />
             </span>
             <div>

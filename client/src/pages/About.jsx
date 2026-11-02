@@ -44,7 +44,7 @@ export default function About() {
   return (
     // About page background is plain white (owner request 2026-10-31) — not the
     // site-wide --bg/canvas tint, which is a pale pink after the crimson rebrand.
-    <main className="bg-white">
+    <main className="bg-canvas">
       <Seo
         title="About Meeticulous — Online Booking Platform for Creators, Pros & Bros"
         description="Why Meeticulous exists: appointment booking software that lets creators and professionals sell their time — bookings, upfront payments and reminders in one place."
