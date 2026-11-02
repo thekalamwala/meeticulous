@@ -14,12 +14,14 @@ import { cleanSlug, saveHeroSlug } from "../../utils/heroSlug";
    onboarding's SlugClaim step pre-fills it and does the real availability check
    (there is no public slug-check endpoint, so the hero doesn't claim to know). */
 
-// The ee is drawn in a 560×220 box: band centred at y=130 (stroke 34) enters at
-// x=0, loops twice, and the tail runs flat out to x=560 (the hero's right edge).
+// The ee is drawn in a 560×220 box: band centred at y=130 (stroke 34) loops
+// twice and the tail runs flat at y=150. The straight runs are part of the SAME
+// stroke, extended far past the box (svg overflow: visible; the section clips
+// them), so the band and the loop can never drift apart by a sub-pixel seam.
 const EE_PATH =
-  "M0,130 C40,130 70,128 95,110 C125,88 135,50 105,40 C70,30 40,75 45,120 " +
+  "M-4000,130 L0,130 C40,130 70,128 95,110 C125,88 135,50 105,40 C70,30 40,75 45,120 " +
   "C50,175 95,195 140,170 C170,150 200,110 225,95 C255,72 265,40 235,35 " +
-  "C200,30 172,75 178,120 C185,170 230,195 280,175 C320,160 360,150 400,150 L560,150";
+  "C200,30 172,75 178,120 C185,170 230,195 280,175 C320,160 360,150 400,150 L4000,150";
 const RIBBON = "var(--mt-pink)"; // the pink ee from the app icon
 const BLUSH = "var(--mt-blush)"; // the blush app-icon background
 
@@ -81,23 +83,11 @@ export default function HomeHero({ onStart, loading }) {
 
   return (
     <section className="home-hero relative overflow-hidden bg-primary px-5 pt-14 text-white sm:px-8 sm:pt-20">
-      {/* Ribbon: straight band from the left edge … */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute left-0"
-        style={{
-          right: "calc(var(--ee-r, 0px) + var(--ee-w, 200px) * 1.4 - 2px)",
-          // +1px: sub-pixel rounding left the band a hair below the ee's start.
-          bottom: "calc(var(--ee-b, 0px) + var(--ee-w, 200px) * 73 / 400 + 1px)",
-          height: "calc(var(--ee-w, 200px) * 34 / 400)",
-          background: RIBBON,
-        }}
-      />
-      {/* … that loops into the ee and runs its tail out to the right edge. */}
+      {/* Ribbon: one pink stroke in from the left edge, through the ee, out right. */}
       <svg
         aria-hidden
         viewBox="0 0 560 220"
-        className="pointer-events-none absolute"
+        className="pointer-events-none absolute overflow-visible"
         style={{
           right: "var(--ee-r, 0px)",
           width: "calc(var(--ee-w, 200px) * 1.4)",
@@ -106,17 +96,6 @@ export default function HomeHero({ onStart, loading }) {
       >
         <path d={EE_PATH} fill="none" stroke={RIBBON} strokeWidth="34" strokeLinecap="butt" strokeLinejoin="round" />
       </svg>
-      {/* Tail beyond the svg (when it sits in from the right edge) */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute right-0"
-        style={{
-          width: "calc(var(--ee-r, 0px) + 2px)",
-          bottom: "calc(var(--ee-b, 0px) + var(--ee-w, 200px) * 53 / 400)",
-          height: "calc(var(--ee-w, 200px) * 34 / 400)",
-          background: RIBBON,
-        }}
-      />
 
       <div className="home-hero-grid relative z-10 mx-auto w-full max-w-6xl">
         <div>
