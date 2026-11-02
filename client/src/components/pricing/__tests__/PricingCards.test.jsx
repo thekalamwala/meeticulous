@@ -7,6 +7,10 @@ import PricingCards from "../PricingCards";
 const mockFeeOnly = vi.fn(() => false);
 vi.mock("../../../hooks/useFeeOnly", () => ({ default: () => mockFeeOnly() }));
 
+// Pin the price region — otherwise it follows the runner's timezone (CI is UTC → USD).
+const mockRegion = vi.fn(() => "IN");
+vi.mock("../../../lib/pricingRegion", () => ({ getPricingRegion: () => mockRegion() }));
+
 const setup = () => render(<MemoryRouter><PricingCards /></MemoryRouter>);
 
 describe("PricingCards", () => {
@@ -39,6 +43,15 @@ describe("PricingCards", () => {
     const { container, getByText } = setup();
     fireEvent.click(getByText("Monthly"));
     expect(container.textContent).toContain("₹235");
+  });
+
+  it("shows USD and early access outside India", () => {
+    mockRegion.mockReturnValueOnce("INTL");
+    const { container } = setup();
+    const text = container.textContent;
+    expect(text).toContain("$59/year");
+    expect(text).toContain("Get early access");
+    expect(text).not.toContain("₹1,179");
   });
 
   it("both CTAs point at the signup route", () => {
