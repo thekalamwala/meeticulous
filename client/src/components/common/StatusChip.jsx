@@ -5,12 +5,15 @@ import { Clock, Check, CheckCircle2, X, UserX } from "lucide-react";
  * never clip "Cancelled"; icon + label from sm up. title/aria-label carry the
  * full status at every size.
  */
+// Loop & Slot status palette (brand ramp only). pending = marigold (an awaiting
+// slot the host must act on — data, not decoration); confirmed = maroon (booked);
+// completed = c-emerald; cancelled = neutral ink; no-show = rose.
 const STATUS_MAP = {
-  pending:   { label: "Pending",   Icon: Clock,        cls: "bg-yellow-100 text-yellow-700 border-yellow-200" },
-  confirmed: { label: "Confirmed", Icon: Check,        cls: "bg-green-100 text-green-700 border-green-200" },
-  completed: { label: "Completed", Icon: CheckCircle2, cls: "bg-blue-100 text-blue-600 border-blue-200" },
-  cancelled: { label: "Cancelled", Icon: X,            cls: "bg-red-100 text-red-600 border-red-200" },
-  no_show:   { label: "No-show",   Icon: UserX,        cls: "bg-orange-100 text-orange-700 border-orange-200" },
+  pending:   { label: "Pending",   Icon: Clock,        cls: "bg-marigold-100 text-marigold-800 border-marigold-300" },
+  confirmed: { label: "Confirmed", Icon: Check,        cls: "bg-maroon-100 text-maroon-700 border-maroon-200" },
+  completed: { label: "Completed", Icon: CheckCircle2, cls: "bg-c-emerald/10 text-c-emerald border-c-emerald/20" },
+  cancelled: { label: "Cancelled", Icon: X,            cls: "bg-ink/5 text-ink/50 border-ink/10" },
+  no_show:   { label: "No-show",   Icon: UserX,        cls: "bg-rose/10 text-rose-700 border-rose/20" },
 };
 
 const StatusChip = ({ status, className = "" }) => {

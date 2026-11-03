@@ -1,11 +1,13 @@
 import { cn } from './cn';
 
+// Loop & Slot tones (no blue/green/amber/red hexes — brand ramp only). info has
+// no brand blue, so it collapses onto maroon; success uses the c-emerald token.
 const TONES = {
-  neutral: 'bg-gray-100 text-gray-600',
-  success: 'bg-emerald-100 text-emerald-700',
-  warning: 'bg-amber-100 text-amber-800',
-  danger: 'bg-red-100 text-red-700',
-  info: 'bg-blue-100 text-blue-700',
+  neutral: 'bg-ink/5 text-ink/60',
+  success: 'bg-c-emerald/10 text-c-emerald',
+  warning: 'bg-marigold-100 text-marigold-800',
+  danger: 'bg-rose/10 text-rose-700',
+  info: 'bg-maroon-100 text-maroon-700',
   primary: 'bg-primary/10 text-primary',
 };
 
