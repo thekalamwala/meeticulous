@@ -77,36 +77,35 @@ describe('ServiceBooking — loading/error', () => {
   });
 });
 
-// ── Profile card (persistent left panel) ─────────────────────────────────────
+// ── Summary strip (replaces the old left profile panel) ──────────────────────
 
-describe('ServiceBooking — profile card', () => {
+describe('ServiceBooking — summary strip', () => {
   beforeEach(() => {
     getServiceBySlug.mockResolvedValue({
       data: { host: HOST, service: SERVICE, availability: AVAILABILITY },
     });
   });
 
-  // Section 1 redesign: vendor/service/pricing details live in a permanent
-  // "Profile Information" sidebar, expanded by default — just wait for it.
-  const openProfile = async () => {
-    await waitFor(() => screen.getByText('Profile Information'));
+  // Redesign: the side profile is dropped during booking; vendor / service /
+  // when / total now live in a compact summary strip above the stepper.
+  const waitForStrip = async () => {
+    await waitFor(() => screen.getByText(/with Jane Vendor/i));
   };
 
-  test('shows vendor name in left panel', async () => {
+  test('shows vendor name in the summary strip', async () => {
     renderBooking();
-    await openProfile();
-    await waitFor(() => expect(screen.getByText('Jane Vendor')).toBeTruthy());
+    await waitFor(() => expect(screen.getByText(/with Jane Vendor/i)).toBeTruthy());
   });
 
-  test('shows service title in the booking summary card', async () => {
+  test('shows service title in the summary strip', async () => {
     renderBooking();
-    await openProfile();
+    await waitForStrip();
     await waitFor(() => expect(screen.getByText('Consultation')).toBeTruthy());
   });
 
-  test('shows service duration in left panel', async () => {
+  test('shows service duration in the summary strip', async () => {
     renderBooking();
-    await openProfile();
+    await waitForStrip();
     await waitFor(() => expect(screen.getByText(/30 min/i)).toBeTruthy());
   });
 

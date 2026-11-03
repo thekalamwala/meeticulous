@@ -9,10 +9,10 @@ import {
 } from '../components/dashboard/ui';
 
 const TYPES = [
-  { v: 'idea', label: '💡 Idea' },
-  { v: 'bug', label: '🐞 Bug' },
-  { v: 'complaint', label: '😕 Complaint' },
-  { v: 'praise', label: '🎉 Praise' },
+  { v: 'idea', label: 'Idea' },
+  { v: 'bug', label: 'Bug' },
+  { v: 'complaint', label: 'Complaint' },
+  { v: 'praise', label: 'Praise' },
   { v: 'other', label: 'Other' },
 ];
 const AREAS = ['booking', 'payments', 'dashboard', 'profile', 'availability', 'other'];
@@ -67,7 +67,7 @@ export default function Feedback() {
                   'rounded-full border px-3 py-1.5 text-sm transition-colors',
                   type === t.v
                     ? 'border-primary bg-primary text-white'
-                    : 'border-gray-200 text-gray-600 hover:bg-gray-50',
+                    : 'border-maroon/15 text-muted hover:bg-blush/40',
                 )}
               >
                 {t.label}
@@ -114,12 +114,12 @@ export default function Feedback() {
             {items.map((f) => (
               <Card as="li" key={f.id}>
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-sm font-medium text-gray-900">{f.subject || f.type}</span>
+                  <span className="text-sm font-medium text-ink">{f.subject || f.type}</span>
                   <StatusBadge status={f.status} />
                 </div>
-                <p className="mt-1 whitespace-pre-wrap text-sm text-gray-600">{f.body}</p>
+                <p className="mt-1 whitespace-pre-wrap text-sm text-muted">{f.body}</p>
                 {f.admin_response && (
-                  <p className="mt-2 border-l-2 border-primary/40 pl-2 text-xs text-gray-500">
+                  <p className="mt-2 border-l-2 border-primary/40 pl-2 text-xs text-muted">
                     <span className="font-semibold">Team:</span> {f.admin_response}
                   </p>
                 )}

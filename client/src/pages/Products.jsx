@@ -45,8 +45,8 @@ const formatBytes = (n) => {
 
 // Native file inputs keep their testids + accept attrs; styled to match the kit.
 const fileInputCls =
-  "block w-full rounded border border-gray-300 bg-white text-sm text-gray-700 shadow-sm " +
-  "file:mr-3 file:border-0 file:bg-gray-100 file:px-3 file:py-2 file:text-sm file:font-medium file:text-gray-600 " +
+  "block w-full rounded border border-maroon/15 bg-white text-sm text-ink shadow-sm " +
+  "file:mr-3 file:border-0 file:bg-blush file:px-3 file:py-2 file:text-sm file:font-medium file:text-muted " +
   "focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-60";
 
 const emptyForm = {
@@ -276,18 +276,20 @@ const Products = () => {
             cheapest higher tier (price lives on the Upgrade page, never here). */}
       {!canCreate && (
         <Card className="mb-6 border-2 border-dashed border-primary/30 text-center">
-          <div className="mb-3 text-3xl">📦</div>
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blush text-maroon">
+            <Package className="h-6 w-6" strokeWidth={2} />
+          </div>
           {!digitalProductsOn ? (
             <>
-              <h3 className="mb-1 font-semibold text-gray-900">Digital Products are temporarily unavailable</h3>
-              <p className="text-sm text-gray-500">
+              <h3 className="mb-1 font-semibold text-ink">Digital Products are temporarily unavailable</h3>
+              <p className="text-sm text-muted">
                 This feature is switched off right now. It’ll be back soon — no plan change needed.
               </p>
             </>
           ) : (
             <>
-              <h3 className="mb-1 font-semibold text-gray-900">Unlock Digital Products</h3>
-              <p className="mb-4 text-sm text-gray-500">
+              <h3 className="mb-1 font-semibold text-ink">Unlock Digital Products</h3>
+              <p className="mb-4 text-sm text-muted">
                 Sell PDFs, templates, ebooks, and resources directly from your profile.
               </p>
               <Link to="/dashboard/upgrade" className={buttonClasses({ variant: "primary" })}>
@@ -300,7 +302,7 @@ const Products = () => {
 
       {showForm && (
         <Card as="form" onSubmit={handleSubmit} className="mb-6 space-y-4">
-          <h2 className="font-semibold text-gray-900">{editingId ? "Edit Product" : "New Product"}</h2>
+          <h2 className="font-semibold text-ink">{editingId ? "Edit Product" : "New Product"}</h2>
 
           <FormField label="Title" htmlFor="prod-title" className="mb-0">
             <Input id="prod-title" type="text" required placeholder="e.g. UI Component Kit" value={form.title} onChange={(e) => handleChange("title", e.target.value)} />
@@ -322,7 +324,7 @@ const Products = () => {
           </div>
 
           <FormField
-            label={<>Product URL <span className="font-normal text-gray-400">(optional)</span></>}
+            label={<>Product URL <span className="font-normal text-ink/40">(optional)</span></>}
             htmlFor="prod-url"
             hint="A landing page or external store link for this product."
             className="mb-0"
@@ -331,7 +333,7 @@ const Products = () => {
           </FormField>
 
           <FormField
-            label={<>File URL <span className="font-normal text-gray-400">(Google Drive, Notion, Gumroad, Dropbox, etc.)</span></>}
+            label={<>File URL <span className="font-normal text-ink/40">(Google Drive, Notion, Gumroad, Dropbox, etc.)</span></>}
             htmlFor="prod-file-url"
             hint="Paste any shareable link — or upload a file below."
             className="mb-0"
@@ -339,12 +341,12 @@ const Products = () => {
             <Input id="prod-file-url" type="url" placeholder="https://drive.google.com/..." value={form.file_url} onChange={(e) => handleChange("file_url", e.target.value)} />
           </FormField>
 
-          <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-800">
+          <div className="rounded-lg border border-marigold-300 bg-marigold-100 p-3 text-xs leading-relaxed text-marigold-800">
             <strong>Heads up:</strong> an external <em>File URL</em> is public — anyone with the link can open it, and it never expires. The secure 24-hour, single-link, max-3-downloads protection only applies to files you <strong>upload below</strong> (max 2&nbsp;MB). For paid products, prefer uploading the file here.
           </div>
 
           <FormField
-            label={<>Upload File <span className="font-normal text-gray-400">(PDF, DOC, PPT, XLS, ZIP, EPUB, MP3, PNG, JPG — max 2 MB)</span></>}
+            label={<>Upload File <span className="font-normal text-ink/40">(PDF, DOC, PPT, XLS, ZIP, EPUB, MP3, PNG, JPG — max 2 MB)</span></>}
             className="mb-0"
           >
             <input
@@ -356,18 +358,18 @@ const Products = () => {
               onChange={(e) => handleFilePick(e.target.files?.[0])}
             />
             {fileUploading && <p className="mt-1 animate-pulse text-xs text-primary">Uploading…</p>}
-            {fileError && <p className="mt-1 text-xs text-red-500">{fileError}</p>}
+            {fileError && <p className="mt-1 text-xs text-rose-700">{fileError}</p>}
             {!fileUploading && form.file_name && (
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-muted">
                 {form.file_name}{form.file_size_bytes ? ` · ${formatBytes(form.file_size_bytes)}` : ""}
               </p>
             )}
           </FormField>
 
-          <FormField label={<>Cover image — 16:9 <span className="font-normal text-gray-400">(optional)</span></>} className="mb-0">
+          <FormField label={<>Cover image — 16:9 <span className="font-normal text-ink/40">(optional)</span></>} className="mb-0">
             <div className="mb-2 flex gap-2">
-              <button type="button" onClick={() => setThumbMode("url")} className={cn("rounded px-3 py-1 text-xs", thumbMode === "url" ? "bg-primary text-white" : "bg-gray-100 text-gray-500")}>Paste URL</button>
-              <button type="button" onClick={() => setThumbMode("upload")} className={cn("rounded px-3 py-1 text-xs", thumbMode === "upload" ? "bg-primary text-white" : "bg-gray-100 text-gray-500")}>Upload</button>
+              <button type="button" onClick={() => setThumbMode("url")} className={cn("rounded px-3 py-1 text-xs", thumbMode === "url" ? "bg-primary text-white" : "bg-blush text-muted")}>Paste URL</button>
+              <button type="button" onClick={() => setThumbMode("upload")} className={cn("rounded px-3 py-1 text-xs", thumbMode === "upload" ? "bg-primary text-white" : "bg-blush text-muted")}>Upload</button>
             </div>
             {thumbMode === "url" ? (
               <>
@@ -414,12 +416,12 @@ const Products = () => {
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="truncate font-medium text-gray-900">{p.title}</h3>
+                        <h3 className="truncate font-medium text-ink">{p.title}</h3>
                         <Badge tone="neutral">{p.type.replace("_", " ")}</Badge>
                         <StatusBadge status={p.is_active ? "active" : "inactive"} label={p.is_active ? "Active" : "Inactive"} />
                       </div>
-                      {p.description && <p className="mt-0.5 line-clamp-1 text-sm text-gray-400">{p.description}</p>}
-                      <p className="mt-1 text-xs text-gray-400">{p.purchase_count} purchase{p.purchase_count !== 1 ? "s" : ""}</p>
+                      {p.description && <p className="mt-0.5 line-clamp-1 text-sm text-ink/40">{p.description}</p>}
+                      <p className="mt-1 text-xs text-ink/40">{p.purchase_count} purchase{p.purchase_count !== 1 ? "s" : ""}</p>
                     </div>
                     <p className="flex-shrink-0 font-semibold text-primary">{p.price === 0 ? "Free" : `₹${p.price}`}</p>
                   </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Phone, Mail, Tag, Repeat, UserX, MessageSquare, Trash2, CalendarClock } from 'lucide-react';
+import { ArrowLeft, Phone, Mail, Tag, Repeat, UserX, MessageSquare, Trash2, CalendarClock, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { crmGetCustomer, crmGetNotes, crmAddNote, crmDeleteNote, svcGetAll } from '../services/api';
 import {
@@ -15,25 +15,25 @@ const fmtDate = (iso) =>
 // avoids pulling in another icon.
 const Stars = ({ n }) => (
   <span className="text-primary text-sm tracking-tight" aria-label={`${n} out of 5`}>
-    {'★'.repeat(n)}<span className="text-gray-200">{'★'.repeat(5 - n)}</span>
+    {'★'.repeat(n)}<span className="text-ink/20">{'★'.repeat(5 - n)}</span>
   </span>
 );
 
 const Meta = ({ label, value }) => (
   <div>
-    <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400">{label}</p>
-    <p className="mt-0.5 text-sm font-medium text-gray-800">{value}</p>
+    <p className="text-[11px] font-medium uppercase tracking-wide text-ink/40">{label}</p>
+    <p className="mt-0.5 text-sm font-medium text-ink">{value}</p>
   </div>
 );
 
 const HistoryItem = ({ b, serviceMap }) => (
-  <div className="flex items-start justify-between gap-3 border-b border-gray-100 py-3 last:border-0">
+  <div className="flex items-start justify-between gap-3 border-b border-maroon/5 py-3 last:border-0">
     <div className="min-w-0">
-      <p className="truncate text-sm font-medium text-gray-800">{serviceMap[b.service_id] || 'Service'}</p>
-      <p className="text-xs text-gray-400">{fmtDate(b.scheduled_at || b.created_at)}</p>
+      <p className="truncate text-sm font-medium text-ink">{serviceMap[b.service_id] || 'Service'}</p>
+      <p className="text-xs text-ink/40">{fmtDate(b.scheduled_at || b.created_at)}</p>
     </div>
     <div className="shrink-0 text-right">
-      <p className="text-sm font-semibold text-gray-800">{fmtMoney(b.customer_total)}</p>
+      <p className="text-sm font-semibold text-ink">{fmtMoney(b.customer_total)}</p>
       <div className="mt-1"><StatusBadge status={b.status} /></div>
     </div>
   </div>
@@ -84,8 +84,8 @@ const NotesSection = ({ customerId }) => {
 
   return (
     <Card>
-      <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-900">
-        <MessageSquare className="h-4 w-4 text-gray-400" /> Notes
+      <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-ink">
+        <MessageSquare className="h-4 w-4 text-ink/40" /> Notes
       </h3>
       <form onSubmit={handleAdd} className="mb-4 flex flex-col gap-2 sm:flex-row">
         <Textarea
@@ -102,20 +102,20 @@ const NotesSection = ({ customerId }) => {
       {loading ? (
         <SkeletonText lines={3} />
       ) : notes.length === 0 ? (
-        <p className="text-sm text-gray-400">No notes yet.</p>
+        <p className="text-sm text-ink/40">No notes yet.</p>
       ) : (
         <ul className="space-y-2">
           {notes.map((n) => (
-            <li key={n.id} className="flex items-start justify-between gap-3 rounded-lg bg-gray-50/60 p-3">
+            <li key={n.id} className="flex items-start justify-between gap-3 rounded-lg bg-blush/40 p-3">
               <div className="min-w-0">
-                <p className="whitespace-pre-wrap text-sm text-gray-700">{n.body}</p>
-                <p className="mt-1 text-xs text-gray-400">{fmtDate(n.created_at)}</p>
+                <p className="whitespace-pre-wrap text-sm text-ink">{n.body}</p>
+                <p className="mt-1 text-xs text-ink/40">{fmtDate(n.created_at)}</p>
               </div>
               <button
                 type="button"
                 onClick={() => handleDelete(n.id)}
                 title="Delete note"
-                className="shrink-0 rounded p-1 text-gray-300 transition-colors hover:bg-red-50 hover:text-red-500"
+                className="shrink-0 rounded p-1 text-ink/30 transition-colors hover:bg-rose/10 hover:text-rose-700"
               >
                 <Trash2 className="h-4 w-4" />
               </button>
@@ -179,9 +179,11 @@ const ClientDetail = () => {
       <div>
         <PageHeader title="Customer" subtitle="Your customers" />
         <Card className="border-2 border-dashed border-primary/30 text-center">
-          <div className="mb-3 text-3xl">🗂️</div>
-          <h3 className="mb-1 font-semibold text-gray-900">Unlock Customers</h3>
-          <p className="mb-4 text-sm text-gray-500">This is a Pro feature.</p>
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blush text-maroon">
+            <Lock className="h-6 w-6" strokeWidth={2} />
+          </div>
+          <h3 className="mb-1 font-display font-bold text-maroon">Unlock Customers</h3>
+          <p className="mb-4 text-sm text-muted">This is a Pro feature.</p>
           <Link to="/dashboard/upgrade" className={buttonClasses({ variant: 'primary' })}>
             Upgrade to Pro
           </Link>
@@ -201,7 +203,7 @@ const ClientDetail = () => {
 
   return (
     <div>
-      <Link to="/dashboard/clients" className="mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
+      <Link to="/dashboard/clients" className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-maroon">
         <ArrowLeft className="h-4 w-4" /> Back to Customers
       </Link>
 
@@ -209,7 +211,7 @@ const ClientDetail = () => {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-xl font-bold text-gray-900">{customer.name || 'Unknown Client'}</h2>
+              <h2 className="text-xl font-bold text-ink">{customer.name || 'Unknown Client'}</h2>
               {customer.is_recurring && <Badge tone="primary"><Repeat className="h-3 w-3" />Recurring</Badge>}
               {customer.no_show_count > 0 && (
                 <Badge tone="warning">
@@ -218,7 +220,7 @@ const ClientDetail = () => {
                 </Badge>
               )}
             </div>
-            <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
+            <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted">
               {customer.phone && <span className="inline-flex items-center gap-1"><Phone className="h-3.5 w-3.5" />{customer.phone}</span>}
               {customer.email && <span className="inline-flex items-center gap-1"><Mail className="h-3.5 w-3.5" />{customer.email}</span>}
             </div>
@@ -232,18 +234,18 @@ const ClientDetail = () => {
           </div>
           <div className="shrink-0 text-left sm:text-right">
             <p className="text-2xl font-bold text-primary">{fmtMoney(customer.total_spent)}</p>
-            <p className="text-xs text-gray-400">Total spent · {customer.bookings_count} bookings</p>
+            <p className="text-xs text-ink/40">Total spent · {customer.bookings_count} bookings</p>
           </div>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-3 border-t border-gray-100 pt-4 sm:grid-cols-3">
+        <div className="mt-4 grid grid-cols-2 gap-3 border-t border-maroon/5 pt-4 sm:grid-cols-3">
           <Meta label="Client since" value={fmtDate(customer.first_booked_at)} />
           <Meta label="Last seen" value={fmtDate(customer.last_booking_at)} />
           <Meta
             label="Next upcoming"
             value={
               customer.next_upcoming_at ? (
-                <span className="inline-flex items-center gap-1"><CalendarClock className="h-3.5 w-3.5 text-gray-400" />{fmtDate(customer.next_upcoming_at)}</span>
+                <span className="inline-flex items-center gap-1"><CalendarClock className="h-3.5 w-3.5 text-ink/40" />{fmtDate(customer.next_upcoming_at)}</span>
               ) : '—'
             }
           />
@@ -252,7 +254,7 @@ const ClientDetail = () => {
 
       <div className="grid gap-5 lg:grid-cols-2">
         <Card>
-          <h3 className="mb-3 text-sm font-semibold text-gray-900">Booking History</h3>
+          <h3 className="mb-3 text-sm font-semibold text-ink">Booking History</h3>
           {history.length === 0 ? (
             <EmptyState title="No bookings yet" description="This client's bookings will show up here." />
           ) : (
@@ -260,13 +262,13 @@ const ClientDetail = () => {
           )}
 
           {reviews.length > 0 && (
-            <div className="mt-5 border-t border-gray-100 pt-4">
-              <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Reviews</h4>
+            <div className="mt-5 border-t border-maroon/5 pt-4">
+              <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink/40">Reviews</h4>
               <div className="space-y-3">
                 {reviews.map((r) => (
-                  <div key={r.id} className="rounded-lg bg-gray-50/60 p-3">
+                  <div key={r.id} className="rounded-lg bg-blush/40 p-3">
                     <Stars n={r.rating} />
-                    {r.comment && <p className="mt-1 text-sm text-gray-600">{r.comment}</p>}
+                    {r.comment && <p className="mt-1 text-sm text-muted">{r.comment}</p>}
                   </div>
                 ))}
               </div>
