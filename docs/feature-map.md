@@ -221,3 +221,12 @@
 - **DB Tables:** `in_app_notifications` (v3.39; `dedupe_key` v3.131; `resolved_at` v3.132), `notification_events` (`in_app_enabled` v3.130), `notification_logs`, `email_logs`.
 - **Migrations:** `v3.130_notification_in_app_channel`, `v3.131_in_app_notifications_dedupe`, `v3.132_in_app_notifications_resolution` (all applied BOTH DBs 2026-08-29).
 - **Related:** Booking Reminders, Payments, KYC, Subscriptions, Admin Panel
+
+## 20. Community (`/community`) — Phase 1 built 2026-11-03 (v3.185)
+- **Spec / plan:** `docs/superpowers/specs/2026-11-03-community-design.md`, `docs/superpowers/plans/2026-11-03-community-phase-1.md`. Mockups: `docs/design/community-mockups.html`.
+- **Server:** `routes/communityRoutes.js` → `controllers/communityController.js`; admin `controllers/communityAdminController.js` (routes in `adminRoutes.js`, perms `community.view` / `community.moderate`); bots `controllers/prerenderCommunity.js`.
+- **Services:** `services/community/` — `store.js` (all DB access), `adminStore.js`, `text.js` (limits, phone/email/link guard, slugs, mentions), `visibility.js` (the ONE who-can-see rule), `serialize.js` (the ONE author serializer — guests: first name only), `indexable.js`, `cursor.js`, `jsonLd.js`, `notify.js`.
+- **Gate:** `middleware/communityGate.js` — flags `community` / `community_writes` / `community_tithi` / `community_ads` (all OFF + fail-closed); early access via `community_members.early_access` or badge official/staff; terms version `2026-11-v1`; per-account limiters.
+- **Client:** `pages/community/*`, `components/community/*`, `services/communityApi.js`, `utils/communitySeo.js` (JSON-LD, parity-tested against `server/tests/fixtures/community-jsonld.json`); admin `pages/admin/community/*`; edge bot routing for `/community` in `client/middleware.js`.
+- **DB:** 18 `community_*` tables (v3.185). Counters are trigger-owned — never write them from app code.
+- **Launch checklist:** name Grievance Officer (`CommunityGuidelines.jsx` placeholders), daily moderation owner, seed 20–30 posts with early access, re-add the llms.txt community line, then flip `community` + `community_writes`.
