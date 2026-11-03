@@ -28,9 +28,6 @@ const assetBase = () =>
   // Where the committed brand assets are served (client/public/brand/og/*).
   // Overridable so a pre-deploy preview can point Cloudinary at a reachable host.
   String(process.env.OG_ASSET_BASE || `${siteRoot()}/brand/og`).replace(/\/+$/, '');
-// No-photo fallback mark = the site favicon (the small 'ee' brand mark, NOT the
-// wordmark), served at the site root. Lives in prod already, so it needs no deploy.
-const faviconUrl = () => `${siteRoot()}/favicon.svg`;
 
 // Kit colours (tokens/colors.css). RING is the template-02 photo-ring accent — the
 // kit's profession-colour placeholder until the BRIGHT map lands.
@@ -75,29 +72,30 @@ function cloudinaryHostCard({ name, avatar, profession, city, handle, bio } = {}
   L.push(`l_fetch:${b64url(`${ASSET_BASE}/ee-mark.svg`)}/c_scale,w_150/fl_layer_apply,g_north_east,x_64,y_80`);
 
   // Avatar — circle with the profession-colour ring (left identity block). With no
-  // photo, fall back to the 'ee' favicon mark on a blush disc with the same ring
-  // (the kit's empty-slot treatment) — never the wordmark.
+  // photo, fall back to the 'ee' loop mark on a maroon disc with the same ring —
+  // the brand mark, never the wordmark. Maroon disc (not blush) so the pink ee
+  // loop keeps contrast.
   if (avatar) {
-    L.push(`l_fetch:${b64url(upscale(avatar))}/c_fill,g_face,w_132,h_132,r_max,bo_6px_solid_rgb:${RING}/fl_layer_apply,g_west,x_64,y_-40`);
+    L.push(`l_fetch:${b64url(upscale(avatar))}/c_fill,g_face,w_132,h_132,r_max,bo_6px_solid_rgb:${RING}/fl_layer_apply,g_north_west,x_64,y_300`);
   } else {
-    L.push(`l_fetch:${b64url(faviconUrl())}/c_fit,w_72,h_72/c_pad,w_132,h_132,b_rgb:FFE4EA,r_max,bo_6px_solid_rgb:${RING}/fl_layer_apply,g_west,x_64,y_-40`);
+    L.push(`l_fetch:${b64url(`${ASSET_BASE}/ee-mark.svg`)}/c_fit,w_92,h_92/c_pad,w_132,h_132,b_rgb:${MAROON},r_max,bo_6px_solid_rgb:${RING}/fl_layer_apply,g_north_west,x_64,y_300`);
   }
 
   // Name — Poppins 700. The kit's display face is Bricolage Grotesque 800, but
   // Cloudinary has no built-in Bricolage ("Unsupported font family"); Poppins bold
   // is the closest built-in. ponytail: upload the Bricolage TTF to Cloudinary and
   // switch this to Bricolage%20Grotesque_84_800 for an exact kit match before bulk.
-  L.push(`l_text:Poppins_84_700:${txt(clip(name, 22))},co_rgb:${INK}/fl_layer_apply,g_south_west,x_220,y_210`);
+  L.push(`l_text:Poppins_84_700:${txt(clip(name, 22))},co_rgb:${INK}/fl_layer_apply,g_north_west,x_64,y_452`);
 
   // Profession · city.
   const sub = [profession, city].filter(Boolean).join(' · ');
   if (sub) {
-    L.push(`l_text:Poppins_30_600:${txt(clip(sub, 40))},co_rgb:${MAROON}/fl_layer_apply,g_south_west,x_220,y_300`);
+    L.push(`l_text:Poppins_30_600:${txt(clip(sub, 40))},co_rgb:${MAROON}/fl_layer_apply,g_north_west,x_220,y_318`);
   }
 
   // Handle.
   if (handle) {
-    L.push(`l_text:Poppins_24_500:${txt(`meeticulous.com/${handle}`)},co_rgb:${MUTE}/fl_layer_apply,g_south_west,x_220,y_255`);
+    L.push(`l_text:Poppins_24_500:${txt(`meeticulous.com/${handle}`)},co_rgb:${MUTE}/fl_layer_apply,g_north_west,x_220,y_362`);
   }
 
   // bio reserved for the pre-bulk refinement (kept in the signature so callers

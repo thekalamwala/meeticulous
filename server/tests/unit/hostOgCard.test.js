@@ -45,18 +45,18 @@ describe('cloudinaryHostCard', () => {
       expect(avatar).not.toContain('=s96-c');
     });
 
-    test('no photo → falls back to the favicon ee mark, not the wordmark', () => {
+    test('no photo → falls back to the ee loop mark, not the wordmark', () => {
       const withPhoto = cloudinaryHostCard(H);
       const noPhoto = cloudinaryHostCard({ ...H, avatar: '' });
       // Same overlay count — the ring slot is filled either way (photo or mark).
       expect(noPhoto.match(/l_fetch:/g).length).toBe(withPhoto.match(/l_fetch:/g).length);
       const fetched = [...noPhoto.matchAll(/l_fetch:([A-Za-z0-9_-]+)/g)]
         .map((m) => Buffer.from(m[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8'));
-      // The RING slot is the favicon mark, on a blush disc (b_rgb:FFE4EA) with the
+      // The RING slot is the ee loop mark, on a maroon disc (b_rgb:960D32) with the
       // ring — NOT the host avatar and NOT the wordmark (the wordmark is a separate
       // top-left brand overlay, present on every card).
-      expect(fetched).toContain('https://meeticulous.com/favicon.svg');
-      expect(noPhoto).toContain('b_rgb:FFE4EA,r_max');
+      expect(fetched).toContain('https://meeticulous.com/brand/og/ee-mark.svg');
+      expect(noPhoto).toContain('b_rgb:960D32,r_max');
     });
 
     test('OG_ASSET_BASE overrides where Cloudinary fetches the committed assets', () => {
