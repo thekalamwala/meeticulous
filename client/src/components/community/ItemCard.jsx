@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import {
   Briefcase, CircleCheck, CircleHelp, Lightbulb, Megaphone, MessageCircle, MessagesSquare, Pin, Share2,
 } from 'lucide-react';
-import { relTime } from '../../pages/admin/sales/salesConstants';
+import { relTime } from '../../utils/relTime';
 import AuthorChip, { Avatar } from './AuthorChip';
 import LikeButton from './LikeButton';
 import LinkifiedText from './LinkifiedText';

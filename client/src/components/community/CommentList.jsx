@@ -1,5 +1,5 @@
 import { CircleCheck, CornerDownRight } from 'lucide-react';
-import { relTime } from '../../pages/admin/sales/salesConstants';
+import { relTime } from '../../utils/relTime';
 import AuthorChip, { Avatar } from './AuthorChip';
 import LikeButton from './LikeButton';
 import LinkifiedText from './LinkifiedText';
