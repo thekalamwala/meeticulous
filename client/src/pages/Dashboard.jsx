@@ -93,6 +93,7 @@ const Dashboard = () => {
   const [whatsappModalOpen, setWhatsappModalOpen] = useState(false);
   const [whatsappEntry, setWhatsappEntry] = useState(undefined); // { country, number } preserved across close
   const [linkedinBusy, setLinkedinBusy] = useState(false);
+  const calTracked = useRef(false); // StrictMode guard so CALENDAR_CONNECTED fires once
   const linkedinRan = useRef(false); // StrictMode double-invoke guard for the return handler
 
   // Start LinkedIn verification: link the LinkedIn identity to the CURRENT host's
@@ -139,9 +140,10 @@ const Dashboard = () => {
     hasPaymentMandate: user?.has_payment_mandate,
     pendingEarnings, payoutsReady: !!kyc?.payouts_ready,
     commissionPaid, hasRealEarning,
+    isHost, calendarConnected: !!user?.google_calendar_connected,
     hasUsername: !!user?.username, servicesCount: services.length, bookingsCount: bookings.length,
     taste,
-  }), snoozed), [onFreePlan, user, kyc, pendingEarnings, commissionPaid, hasRealEarning, services.length, bookings.length, snoozed, taste]);
+  }), snoozed), [isHost, onFreePlan, user, kyc, pendingEarnings, commissionPaid, hasRealEarning, services.length, bookings.length, snoozed, taste]);
 
   const dismissNudge = (key) => {
     setSnoozed((s) => ({ ...s, [key]: new Date(Date.now() + 3650 * 86400000).toISOString() })); // optimistic hide
@@ -169,7 +171,11 @@ const Dashboard = () => {
     const g = searchParams.get('google');
     if (g === 'connected') {
       toast.success('Google Calendar connected!');
+      if (!calTracked.current) { calTracked.current = true; analytics.track(EVENTS.CALENDAR_CONNECTED, { source: 'dashboard' }); }
       updateUser({ google_calendar_connected: true });
+      window.history.replaceState({}, '', '/dashboard');
+    } else if (g === 'denied') {
+      toast.error("Calendar access wasn't granted. Tick the calendar boxes on Google's screen and try again.");
       window.history.replaceState({}, '', '/dashboard');
     } else if (g === 'error') {
       toast.error('Failed to connect Google Calendar.');
@@ -449,7 +455,8 @@ const Dashboard = () => {
           </div>
         </div>
       ) : nextStep ? (
-        <NextStepCard nudge={nextStep} onDismiss={() => dismissNudge(nextStep.key)} />
+        <NextStepCard nudge={nextStep} onDismiss={() => dismissNudge(nextStep.key)}
+          onAction={(a) => { if (a === 'connectCalendar') connectGoogleCalendar('/dashboard'); }} />
       ) : null}
 
       {loading ? <DashboardSkeleton /> : (
