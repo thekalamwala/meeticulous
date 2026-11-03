@@ -1,15 +1,26 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { Link } from "react-router-dom";
+import { Wallet, Infinity as InfinityIcon, Package, BarChart3, Sparkles, Building2, ArrowRight } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { getPublicPlans, createSubscription, syncSubscription, cancelSubscription } from "../services/api";
 import toast from "react-hot-toast";
 import BackButton from "../components/common/BackButton";
-import { PageHeader, Card, Button, cn, Modal, Sheet, ConfirmSheet, Input, Select, FormField } from "../components/dashboard/ui";
+import { PageHeader, Card, Button, buttonClasses, cn, Modal, Sheet, ConfirmSheet, Input, Select, FormField } from "../components/dashboard/ui";
 import { planLabel, normalizePlan } from "../utils/themeUtils";
 import loadRazorpay from "../utils/loadRazorpay";
 import { INDIAN_STATES } from "../lib/indianStates";
 
 const GST_RATE = 0.18; // display only — server is authoritative
 const inr = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
+
+// Why-upgrade reasons shown to free-plan hosts (curated benefit copy, true to the
+// paid-plan feature set). Kept short so a free host sees the whole case at a glance.
+const UPGRADE_REASONS = [
+  { Icon: Wallet,       title: "Keep 100% of earnings", body: "Drop to 0% commission — every rupee from every booking stays yours." },
+  { Icon: InfinityIcon, title: "No limits",             body: "Unlimited services and bookings, so growth never hits a wall." },
+  { Icon: Package,      title: "Sell digital products", body: "Add courses, templates and downloads alongside your sessions." },
+  { Icon: BarChart3,    title: "Analytics + priority support", body: "See what converts, and get help fast when it matters." },
+];
 
 
 
@@ -72,6 +83,18 @@ const UpgradePlan = () => {
   const priceFor = (plan, c) => (c === "monthly" ? Number(plan.monthly_price) || 0 : Number(plan.annual_price) || 0);
   const isPaid = (plan) => priceFor(plan, "monthly") > 0 || priceFor(plan, "annual") > 0;
 
+  // Is the host already on a paid tier? Drives the Enterprise CTA (paid) vs the
+  // upgrade-reasons band (free). Derive from the plan row, not the slug alias.
+  const myPlanRow = plans.find((p) => p.slug === currentPlan);
+  const onPaidPlan = myPlanRow ? isPaid(myPlanRow) : myOrder > 0;
+  // Entry paid tier = the strongest upsell target → flagged "Most Popular".
+  const recommendedSlug = useMemo(() => {
+    const paid = plans
+      .filter((p) => (Number(p.monthly_price) || 0) > 0 || (Number(p.annual_price) || 0) > 0)
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+    return paid[0]?.slug || null;
+  }, [plans]);
+
   const handleUpgrade = useCallback(async (plan) => {
     const price = priceFor(plan, cadence);
     if (!(price > 0)) {
@@ -109,7 +132,7 @@ const UpgradePlan = () => {
           }
         },
         prefill: { name: user?.name, email: user?.email },
-        theme: { color: "#4f46e5" },
+        theme: { color: "#960D32" },
       };
       new window.Razorpay(options).open();
     } catch (err) {
@@ -142,7 +165,7 @@ const UpgradePlan = () => {
   const hasActiveSub = user?.has_payment_mandate && (status === "active" || status === "cancelled") && currentPlan !== "starter";
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto max-w-6xl">
       <BackButton />
       <PageHeader
         title="Upgrade Your Plan"
@@ -177,6 +200,32 @@ const UpgradePlan = () => {
         </Card>
       )}
 
+      {/* Free-plan hosts: lay out the whole case to upgrade, right away. */}
+      {!loading && !onPaidPlan && (
+        <div className="mb-7 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-5 sm:p-6">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-primary" strokeWidth={2.25} />
+            <h2 className="text-base font-bold text-gray-900 sm:text-lg">Why hosts upgrade</h2>
+          </div>
+          <p className="mt-1 text-sm text-gray-600">
+            You're on the free plan. Here's what a paid plan unlocks — most hosts earn it back in their first few bookings.
+          </p>
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {UPGRADE_REASONS.map(({ Icon, title, body }) => (
+              <div key={title} className="flex gap-3 rounded-xl border border-primary/10 bg-white/70 p-3">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+                  <Icon className="h-5 w-5" strokeWidth={2.25} />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-gray-900">{title}</p>
+                  <p className="mt-0.5 text-xs leading-snug text-gray-500">{body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Cadence toggle */}
       <div className="mb-7 flex items-center justify-center gap-2">
         <div className="inline-flex rounded-full bg-gray-100 p-1">
@@ -193,12 +242,13 @@ const UpgradePlan = () => {
       {loading ? (
         <p className="py-10 text-center text-sm text-gray-400">Loading plans…</p>
       ) : (
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {plans.map((plan) => {
             const isCurrentTier = currentPlan === plan.slug;
             // "Current Plan" only when tier AND cadence match — otherwise the
             // vendor can switch cadence on their current tier.
             const isCurrentExact = isCurrentTier && (!user?.billing_cadence || user.billing_cadence === cadence);
+            const isRecommended = plan.slug === recommendedSlug && !isCurrentTier;
             const paid = isPaid(plan);
             const price = priceFor(plan, cadence);
             const cadenceAvailable = price > 0;
@@ -207,7 +257,15 @@ const UpgradePlan = () => {
               ? annualEquivOfMonthly - Number(plan.annual_price) : 0;
 
             return (
-              <div key={plan.slug} className={cn("relative flex flex-col rounded-2xl border-2 bg-white p-6 dash-elev-1", isCurrentTier ? "border-primary ring-2 ring-primary/20" : "border-gray-200")}>
+              <div key={plan.slug} className={cn("relative flex flex-col rounded-2xl border-2 bg-white p-6 dash-elev-1",
+                isCurrentTier ? "border-primary ring-2 ring-primary/20"
+                  : isRecommended ? "border-primary shadow-lg ring-2 ring-primary/30"
+                  : "border-gray-200")}>
+                {isRecommended && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-3 py-0.5 text-[11px] font-bold text-white shadow">
+                    Most Popular
+                  </span>
+                )}
                 <div className="mb-4">
                   <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">{planLabel(plan.slug, plan.name)}</span>
                   <div className="mt-3">
@@ -256,6 +314,26 @@ const UpgradePlan = () => {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Paid hosts: route custom / high-volume needs to Enterprise. */}
+      {!loading && onPaidPlan && (
+        <div className="mt-8 flex flex-col items-start justify-between gap-4 rounded-2xl border border-gray-200 bg-gradient-to-br from-gray-50 to-white p-5 sm:flex-row sm:items-center sm:p-6">
+          <div className="flex items-start gap-3">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+              <Building2 className="h-6 w-6" strokeWidth={2} />
+            </span>
+            <div>
+              <h3 className="text-base font-bold text-gray-900">Need more than your current plan?</h3>
+              <p className="mt-0.5 text-sm text-gray-600">
+                Custom limits, dedicated support, onboarding and SLAs for teams and high-volume hosts — let's build a plan around you.
+              </p>
+            </div>
+          </div>
+          <Link to="/enterprise" className={cn(buttonClasses({ variant: "primary" }), "shrink-0 whitespace-nowrap")}>
+            Talk to us <ArrowRight className="ml-1.5 inline h-4 w-4" strokeWidth={2.25} />
+          </Link>
         </div>
       )}
 
