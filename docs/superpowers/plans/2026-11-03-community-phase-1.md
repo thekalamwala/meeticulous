@@ -244,6 +244,7 @@
   - a guest creating `announcement` → 403
   - a body with a phone number → 400 `CONTACT_NOT_ALLOWED`
   - a valid post → 201, and the insert payload has `slug` matching the slug regex and `author_id === req.user.id`
+  - `linksAllowed`: an account 8 days old with 3 posts → true; 8 days old with 2 posts → false; 2 days old with 10 posts → false
   - editing someone else's item → 403
   - deleting your own item → update called with `status:'deleted'`
   - a comment on a `host-corner` thread by a guest → 403
