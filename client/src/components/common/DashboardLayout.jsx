@@ -403,8 +403,14 @@ const DashboardLayout = ({ children }) => {
 
   const [navOpen, setNavOpen] = useState(false);
   const navTriggerRef = useRef(null);
-  // Route change closes the mobile drawer.
-  useEffect(() => { setNavOpen(false); }, [pathname]);
+  const mainRef = useRef(null);
+  // Route change closes the mobile drawer, and resets scroll to the top. The
+  // dashboard scrolls INSIDE <main> (overflow-y-auto), so the global window-based
+  // ScrollToTop can't reset it — without this you land mid-page after navigating.
+  useEffect(() => {
+    setNavOpen(false);
+    mainRef.current?.scrollTo?.({ top: 0 });
+  }, [pathname]);
   useBodyScrollLock(navOpen);
 
   const plan = normalizePlan(user?.plan);
@@ -417,7 +423,7 @@ const DashboardLayout = ({ children }) => {
 
       {/* Main — offset by the fixed rail (56) + panel (220) = 276px on lg+
           (the sidebar is out of flow). */}
-      <main className="flex min-w-0 flex-1 flex-col overflow-y-auto lg:pl-[276px]">
+      <main ref={mainRef} className="flex min-w-0 flex-1 flex-col overflow-y-auto lg:pl-[276px]">
         <DashTopbar
           user={user}
           plan={plan}
