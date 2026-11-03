@@ -198,6 +198,19 @@ const Block = ({ block, accent }) => {
       </div>
     );
   }
+  // Inline figure: {img:{src,alt,caption}}. Rounded + hairline border (nothing
+  // square), lazy-loaded; optional caption in the dim body colour.
+  if (block.img) {
+    return (
+      <figure className="mt-10">
+        <img src={block.img.src} alt={block.img.alt || ''} loading="lazy"
+          className="w-full rounded-2xl" style={{ border: `1px solid ${RULE}` }} />
+        {block.img.caption && (
+          <figcaption className="mt-3 text-sm italic" style={{ color: BODY_DIM }}>{block.img.caption}</figcaption>
+        )}
+      </figure>
+    );
+  }
   return <p className="mt-6 text-base leading-[1.75] sm:text-[17px]" style={{ color: BODY_TX }}>{rich(block.p, accent)}</p>;
 };
 
