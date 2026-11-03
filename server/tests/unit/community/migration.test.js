@@ -10,7 +10,7 @@ const tables = ['community_members', 'community_spaces', 'community_posts', 'com
 
 describe('v3.185 community migration (static)', () => {
   test.each(tables)('creates %s', (t) => {
-    expect(sql).toMatch(new RegExp(`CREATE TABLE IF NOT EXISTS ${t}\b`));
+    expect(sql).toContain(`CREATE TABLE IF NOT EXISTS ${t} (`);
   });
   test('RLS on all 18, no policies', () => {
     expect(sql.match(/ENABLE ROW LEVEL SECURITY/g)).toHaveLength(18);
