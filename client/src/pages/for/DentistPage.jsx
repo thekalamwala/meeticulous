@@ -79,7 +79,7 @@ const SERVICES = [
   { icon: Sparkles, label: 'Cleaning & Whitening', desc: 'Scaling, polishing and whitening.' },
   { icon: Stethoscope, label: 'Consultation', desc: 'First-visit assessments.' },
   { icon: Activity, label: 'Root Canal Consult', desc: 'Endodontic planning appointments.' },
-  { icon: ShieldCheck, label: 'Implant Consult', desc: 'Implant assessment bookings.' },
+  { icon: ShieldCheck, label: 'Implant Consult', desc: 'Implant assessment appointments.' },
   { icon: Syringe, label: 'Orthodontic Consult', desc: 'Braces and aligner consults.' },
   { icon: Baby, label: 'Kids Dentistry', desc: 'Gentle care for children.' },
   { icon: Clock3, label: 'Emergency Slot', desc: 'Same-day urgent appointments.' },
@@ -97,7 +97,7 @@ const STEPS = [
 // logos the previous page shipped (favicon + brand logos are excepted from the
 // image rule; these are the tool-logo row).
 const TOOLS = [
-  { name: 'Google Calendar', icon: 'google-calendar', sub: 'Busy times blocked, bookings added to your calendar' },
+  { name: 'Google Calendar', icon: 'google-calendar', sub: 'Busy times blocked, appointments added to your calendar' },
   { name: 'Google Meet', logo: '/images/logos/google-meet.svg', sub: 'Auto Meet links for online consults' },
   { name: 'WhatsApp', logo: '/images/logos/whatsapp.svg', sub: 'Appointment reminders on autopilot' },
   { name: 'Razorpay', logo: razorpayLogo, sub: 'Online payments, refunds & GST invoices' },
@@ -144,7 +144,7 @@ const FAQ = [
   { q: 'Does using Meeticulous comply with dental council / NMC advertising norms?', a: 'Medical and dental practitioners are restricted from advertising or soliciting patients (NMC Code of Ethics, Reg. 6–7). Meeticulous is a scheduling and reminder tool — how you use it is your responsibility. We suggest sharing your booking link with your existing patients rather than as public advertising, and following your council’s guidance. We do not advertise your practice, and we never publish patient reviews, ratings or testimonials.' },
   { q: 'Can patients book appointments online?', a: 'Yes. A patient opens your booking link, chooses an appointment type such as a check-up or consultation, picks a time and confirms — no calls to your front desk.' },
   { q: 'Can I send WhatsApp reminders?', a: 'Yes. Meeticulous sends automatic confirmations and reminders over WhatsApp and email before each appointment, which cuts no-shows. WhatsApp reminders are included on the Pro plan (and free for your first two months on the Starter plan).' },
-  { q: 'Can I collect fees online?', a: 'Optionally. Collect a consultation fee upfront through Razorpay — UPI, cards or netbanking — or leave it off and collect at the clinic. A GST invoice is generated automatically for every paid booking.' },
+  { q: 'Can I collect fees online?', a: 'Optionally. Collect a consultation fee upfront through Razorpay — UPI, cards or netbanking — or leave it off and collect at the clinic. A GST invoice is generated automatically for every paid appointment.' },
   { q: 'Can I manage multiple dentists or chairs?', a: 'Right now Meeticulous is best for a single appointment calendar per account — two dentists or chairs on one account share one diary and cannot be booked in parallel. Parallel multi-chair scheduling is on our roadmap; in the meantime a separate account per dentist is the workaround. We would rather tell you upfront than have it surprise you after setup.' },
   { q: 'Is patient information kept private?', a: 'Your production data is hosted in India (Mumbai) and the platform operates under India’s DPDP Act 2023. Meeticulous stores appointment and contact details for booking — it is not a dental-records system, and you control what a patient provides when booking. We never display patient reviews or ratings publicly.' },
   { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited appointment types and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and more.' },
@@ -842,7 +842,7 @@ export default function DentistPage() {
           <div className="grid gap-10 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
             <div>
               <div className="font-heading text-lg font-extrabold text-[color:var(--ca-ink)]">Meeticulous</div>
-              <p className="mt-2 max-w-xs text-sm text-slate-500">The simpler way to run your dental clinic&apos;s bookings.</p>
+              <p className="mt-2 max-w-xs text-sm text-slate-500">The simpler way to run your dental clinic&apos;s appointments.</p>
               <CtaButton to={START} className="mt-5">Create Your Page — Free <ArrowRight size={15} /></CtaButton>
             </div>
             {FOOTER_COLS.map((col) => (
