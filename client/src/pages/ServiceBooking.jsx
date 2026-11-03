@@ -990,6 +990,21 @@ const ServiceBooking = () => {
           Scope it to this page so booking inputs get a slim on-brand orange ring
           + orange border instead. */}
       <style>{`
+        /* Compact field sizing. The global input{min-height:44px;padding:0.78rem;
+           line-height:1.6} rule is UNLAYERED, so it beat the layered
+           .fb-input--sm padding — leaving the booking fields chunky. This
+           .bk-page .fb-input selector (higher specificity, also unlayered) wins
+           and restores the intended slim height across every field + the phone. */
+        .bk-page .fb-input {
+          min-height: 40px;
+          padding-top: 0.5rem;
+          padding-bottom: 0.5rem;
+          font-size: 13px;
+          line-height: 1.35;
+        }
+        .bk-page .bk-phone-wrap { min-height: 40px; }
+        .bk-page .bk-phone-wrap input,
+        .bk-page .bk-phone-wrap select { min-height: 0; font-size: 13px; }
         .bk-page .fb-input:focus {
           border-color: ${tc};
           box-shadow: 0 0 0 3px color-mix(in srgb, ${tc} 22%, transparent);
