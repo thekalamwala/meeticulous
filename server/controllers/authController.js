@@ -778,6 +778,18 @@ const googleCallback = async (req, res) => {
       }
 
       if (!profileId) {
+        // A Google account connected as another host's CALENDAR (profiles.google_id,
+        // e.g. an assistant's account) never grants login nor spawns a duplicate host.
+        const { data: calOwner, error: calErr } = await supabaseAdmin
+          .from("profiles").select("id").eq("google_id", googleUser.id).eq("is_host", true).maybeSingle();
+        if (calOwner?.id) {
+          return res.redirect(`${clientUrl}/login-as-vendor?error=calendar_account`);
+        }
+        // Missing google_id column → skip the check; any other DB error must not block signups.
+        if (calErr && !/Could not find the|column.*does not exist/i.test(calErr.message || "")) {
+          console.error("google calendar-account lookup error:", calErr.message);
+        }
+
         // Auto-create the vendor: auth user (no usable password) + host profile
         const { data: created, error: createErr } =
           await supabaseAdmin.auth.admin.createUser({
