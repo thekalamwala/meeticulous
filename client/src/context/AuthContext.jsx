@@ -3,6 +3,7 @@ import { analytics, EVENTS } from '../services/analytics';
 import { registerUser, loginUser, loginUnified as apiLoginUnified, loginWithPhone as apiLoginWithPhone, verifyOtpLogin as apiVerifyOtpLogin, setUserPassword, getGoogleAuthUrl, getVendorGoogleUrl, recordInviteVisit, getMe, becomeHost as apiBecomeHost, cancelHosting as apiCancelHosting } from '../services/api';
 import { readInvite, stashInvite, inviteCodeFromUrl } from '../utils/inviteStash';
 import { getSupabase } from '../services/supabaseClient';
+import { getAttribution } from '../utils/attribution';
 
 const AuthContext = createContext();
 
@@ -204,6 +205,30 @@ export const AuthProvider = ({ children }) => {
     window.location.href = data.url;
   };
 
+  // Host LinkedIn door: Supabase linkedin_oidc sign-in. Returns on
+  // /auth/linkedin/done (LinkedinAuthDone), which calls POST /auth/linkedin/host
+  // with the context stashed here (OAuth can't carry it for us).
+  const startLinkedinHostAuth = async (intent = 'login') => {
+    const sb = await getSupabase();
+    // Door-crossing rule: never stack the LinkedIn session on top of another one.
+    let stored = null;
+    try { stored = JSON.parse(localStorage.getItem('user') || 'null'); } catch { /* corrupt */ }
+    const { data } = await sb.auth.getSession();
+    if (stored?.token || data?.session) await clearSession();
+
+    if (intent === 'signup') analytics.track(EVENTS.SIGNUP_STARTED, {});
+    let tz;
+    try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || undefined; } catch { /* old browser */ }
+    sessionStorage.setItem('li_host_auth', JSON.stringify({
+      intent, invite: readInvite() || undefined, att: getAttribution() || undefined, tz,
+    }));
+    const { error } = await sb.auth.signInWithOAuth({
+      provider: 'linkedin_oidc',
+      options: { redirectTo: `${window.location.origin}/auth/linkedin/done` },
+    });
+    if (error) { sessionStorage.removeItem('li_host_auth'); throw error; }
+  };
+
   // Adopt a session minted server-side (Google vendor auth): store tokens,
   // hydrate the profile via /auth/me, persist the merged shape.
   const adoptSession = async ({ token, refresh_token }) => {
@@ -247,6 +272,13 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
+  // Clear both session stores (Supabase + localStorage.user) without navigating.
+  const clearSession = async () => {
+    await (await getSupabase()).auth.signOut();
+    localStorage.removeItem('user');
+    setUser(null);
+  };
+
   const logout = async (opts = {}) => {
     // Route by capability BEFORE clearing: a host always lands back on the
     // host login door (never the generic guest /login); everyone else → home.
@@ -254,9 +286,7 @@ export const AuthProvider = ({ children }) => {
     // destination is the door being switched INTO, not the capability of the
     // session being left.
     const wasHost = user?.is_host === true || user?.role === 'host' || user?.role === 'superadmin';
-    await (await getSupabase()).auth.signOut();
-    localStorage.removeItem('user');
-    setUser(null);
+    await clearSession();
     window.location.assign(opts.to || (wasHost ? '/login-as-vendor' : '/'));
   };
 
@@ -273,7 +303,7 @@ export const AuthProvider = ({ children }) => {
       loginWithPhone, loginWithOtp, setPassword,
       registerAsUser,
       connectGoogleCalendar,
-      startVendorGoogleAuth, adoptSession,
+      startVendorGoogleAuth, startLinkedinHostAuth, adoptSession,
       becomeHost, cancelHosting,
       logout, updateUser,
     }}>

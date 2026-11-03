@@ -112,6 +112,7 @@ const CommunityGuidelines = lazy(() => import('./pages/community/CommunityGuidel
 const Moments        = lazy(() => import('./pages/Moments'));
 const MomentPage     = lazy(() => import('./pages/MomentPage'));
 const GoogleAuthDone = lazy(() => import('./pages/GoogleAuthDone'));
+const LinkedinAuthDone = lazy(() => import('./pages/LinkedinAuthDone'));
 
 // Vendor Onboarding (Google-first 7-step flow)
 const GoogleStart     = lazy(() => import('./pages/onboarding/GoogleStart'));
@@ -530,6 +531,7 @@ function App() {
           {/* Host login door (Google-only) — also the Google-callback error target. */}
           <Route path="/login-as-vendor" element={<HostLogin />} />
           <Route path="/auth/google/done" element={<GoogleAuthDone />} />
+          <Route path="/auth/linkedin/done" element={<LinkedinAuthDone />} />
 
           {/* Vendor Onboarding (Google-first flow):
               claim → category (persona) → preview → live. The plan screen is a
