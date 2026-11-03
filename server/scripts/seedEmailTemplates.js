@@ -41,6 +41,7 @@ const EMAIL_ONLY_EVENTS = [
   ['PRO_TASTE_STARTED', 'Pro Taste — Started'],
   ['PRO_TASTE_ENDING', 'Pro Taste — Ending Soon'],
   ['PRO_TASTE_ENDED', 'Pro Taste — Ended'],
+  ['FOUNDING_SPOTS_LOW', 'Upgrade — Founding Spots Low'],
   ['BOOKING_ABANDONED_CUSTOMER', 'Abandoned Booking — Recover'],
   ['GUEST_TO_HOST_INVITE', 'Guest → Host Invite'],
   ['BIRTHDAY', 'Birthday'],

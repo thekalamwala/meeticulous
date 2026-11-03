@@ -183,6 +183,10 @@ async function sendBookingConfirmation({ bookingId, invoiceRef = null }) {
   //        (Sujata). Free-plan only, deduped, never throws.
   await require('./upgradeNudge').maybeSendUpgradeNudge({ host, booking });
 
+  // 2a-v) First repeat client on a free plan → one bell nudge for rebook
+  //       automation (docs/host-lifecycle-nurture.md stage 10). Never throws.
+  await require('./repeatClientNudge').maybeNudgeRepeatClient({ host, booking });
+
   // 2a-iii) Real-time CRM: a paid booking is the HOST's Won signal — resolve the
   //         host's lead now (a paid host → Won; an unpaid host stays in Presale per
   //         O-1). Guests are NOT captured as leads (excluded from the host pipeline).

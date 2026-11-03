@@ -9,6 +9,7 @@ const { adminAlert } = require("../utils/adminAlert");
 const NotificationEngine = require("../services/notificationEngine");
 const { computeBreakdown, calculateVendorPayout, calculatePlatformFee, calculateGst, computeSubscriptionBreakdown, round2 } = require("../lib/pricingEngine");
 const planService = require("../services/planService");
+const foundingSpots = require("../services/foundingSpots");
 const platformConfig = require("../services/platformConfig");
 const stateService = require("../services/stateService");
 const razorpaySubscriptions = require("../services/razorpaySubscriptions");
@@ -651,11 +652,17 @@ const verifySubscription = async (req, res) => {
 // subscription.activated/charged webhook (or the sync endpoint) activates it.
 const createVendorSubscription = async (req, res) => {
   try {
-    const { plan } = req.body;
+    let { plan } = req.body;
     const cadence = normCadence(req.body.cadence);
     if (!['monthly', 'annual'].includes(cadence)) {
       return res.status(400).json({ message: "cadence must be 'monthly' or 'annual'" });
     }
+    // Founding-100 lock: a request for Pro lands on the archived founding row while
+    // spots are open, or when the host already holds it (a cadence switch must not
+    // cost a founding member the locked price). The client never names the slug.
+    const founding = planService.normalizeSlug(plan) === 'premium'
+      && await foundingSpots.routesToFounding(req.user.id);
+    if (founding) plan = foundingSpots.FOUNDING_SLUG;
     const planRecord = await planService.getPlan(plan);
     if (!planRecord || planRecord.slug !== planService.normalizeSlug(plan)) {
       return res.status(404).json({ message: "Plan not found" });
@@ -663,7 +670,8 @@ const createVendorSubscription = async (req, res) => {
     // Archived rows (legacy partner price, internal Supreme) still renew for
     // their existing subscribers but are never self-serve purchasable. Without
     // this, anyone who guessed an archived slug could buy at its old price.
-    if (!planService.isSelfServable(planRecord)) {
+    // The founding row is reachable only through the routing above.
+    if (!founding && !planService.isSelfServable(planRecord)) {
       return res.status(404).json({ message: "Plan not found" });
     }
     if (!(cadencePrice(planRecord, cadence) > 0)) {

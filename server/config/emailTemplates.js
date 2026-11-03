@@ -587,7 +587,8 @@ const TEMPLATES = [
       h('{{payout_amount}} is on its way, {{first_name}}') +
       lead('Nice work. Your earnings from a completed booking have been released and are settling to your bank account now. Depending on your bank it usually lands within 1–2 working days (a little longer over holidays).') +
       C.amountRow(t, 'Paid to you', '{{payout_amount}}') +
-      lead('You can see every payout and its status in your dashboard.'),
+      lead('You can see every payout and its status in your dashboard.') +
+      note('{{commission_line}}'),
     cta_label: 'View payouts', cta_url: '{{dashboard_url}}',
   }; })(),
 
@@ -757,16 +758,29 @@ const TEMPLATES = [
 
   (() => { const t = themeForCategory('Upgrade'); return {
     event_key: 'UPGRADE_COMMISSION_NUDGE', audience: 'all', category: 'Marketing', sender_key: 'news',
-    name: 'Upgrade — Keep Every Rupee', subject: "You've given up {{commission_total}} in commission",
-    preview_text: 'On Pro that number is zero.',
+    name: 'Upgrade — Keep Every Rupee', subject: "You paid {{commission_total}} in commission this month",
+    preview_text: 'Pro costs less than that — and takes 0%.',
     email_category: 'Upgrade',
     email_reason: 'You are receiving this because you are a Meeticulous host on the free plan.',
     html_content:
       C.heroBand(t, { kick: 'Commission given up', big: '{{commission_total}}', sub: "On Pro that's ₹0, {{first_name}}." }) +
-      lead("You've earned well — but the free plan takes <strong>5%</strong> of every booking. You've handed back <strong>{{commission_total}}</strong> across {{bookings_count}} bookings.") +
+      lead("You've earned well — but the free plan takes <strong>5%</strong> of every booking. In the last 30 days you handed back <strong>{{commission_total}}</strong> across {{bookings_count}} bookings. Pro yearly works out to ₹98 a month and takes 0%.") +
       C.compareRow(t, { leftLabel: 'Starter', leftPct: '5%', leftCap: 'per booking', rightLabel: 'Pro', rightPct: '0%', rightCap: 'you keep it all' }) +
       C.stars({ rating: 5, text: 'Hosts who upgraded keep every rupee they earn.' }),
     cta_label: 'Upgrade to 0% commission', cta_url: '{{upgrade_url}}',
+  }; })(),
+
+  (() => { const t = themeForCategory('Upgrade'); return {
+    event_key: 'FOUNDING_SPOTS_LOW', audience: 'vendor', category: 'Marketing', sender_key: 'news',
+    name: 'Upgrade — Founding Spots Low', subject: '{{spots_left}} founding Pro spots left',
+    preview_text: 'Founding price ₹999/yr, locked for life — then Pro is ₹1,499.',
+    email_category: 'Upgrade',
+    email_reason: 'You are receiving this because you are a Meeticulous host on the free plan.',
+    html_content:
+      C.heroBand(t, { kick: 'Founding spots left', big: '{{spots_left}}', sub: 'of 100, {{first_name}}.' }) +
+      lead('The founding Pro price — <strong>₹999/yr, locked for life</strong> — closes after the first 100 hosts. After that, Pro is ₹1,499/yr.') +
+      lead("You've paid <strong>{{commission_total}}</strong> in commission so far. Pro takes 0%, keeps WhatsApp reminders on for every guest, and rebooks your regulars automatically."),
+    cta_label: 'Claim a founding spot', cta_url: '{{upgrade_url}}',
   }; })(),
 
   // ── Newsletter ────────────────────────────────────────────────────────────────

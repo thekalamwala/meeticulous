@@ -1961,9 +1961,9 @@ const processReminders = async () => {
 
     for (const b of bookings || []) {
       const host = hostOf(b);
-      // Plan gate (DB-driven reminder_flows): Starter gets none, Host+/Creator
-      // gets 24h, Studio/Professional gets 24h + 1h. Not entitled → leave the
-      // flag false and let the booking age out of the ±10-min band naturally.
+      // Plan gate (DB-driven reminder_flows): Starter gets the 24h reminder, Pro
+      // gets 24h + 1h. Not entitled → leave the flag false and let the booking age
+      // out of the ±10-min band naturally.
       const windows = await windowsFor(planService.resolveVendorPlan(host));
       if (!windows.includes(windowHours)) continue;
       try {

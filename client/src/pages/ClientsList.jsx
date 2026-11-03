@@ -36,6 +36,7 @@ const ClientsList = () => {
   const navigate = useNavigate();
   const [clients, setClients] = useState([]);
   const [total, setTotal] = useState(0);
+  const [hidden, setHidden] = useState(0); // clients past the free-plan cap
   const [q, setQ] = useState('');
   const [sort, setSort] = useState('recent');
   const [filter, setFilter] = useState(null);
@@ -51,6 +52,7 @@ const ClientsList = () => {
       const { data } = await crmGetCustomers({ q, sort, filter: filter || undefined });
       setClients(data.clients || []);
       setTotal(data.total || 0);
+      setHidden(data.hidden_count || 0);
       setGated(false);
     } catch (err) {
       if (err.response?.status === 403 && err.response?.data?.upgrade_required) {
@@ -171,6 +173,18 @@ const ClientsList = () => {
             />
           }
         />
+      )}
+
+      {hidden > 0 && (
+        <Card className="mt-4 flex flex-wrap items-center justify-between gap-3 border-2 border-dashed border-primary/30">
+          <p className="text-sm text-muted">
+            You have <strong className="text-maroon">{total + hidden} customers</strong> — you're seeing your {total} most recent.
+            See every one, with notes and history, on {PREMIUM_PLAN.name}.
+          </p>
+          <Link to="/dashboard/upgrade?src=crm_cap" className={buttonClasses({ variant: 'primary' })}>
+            See all customers
+          </Link>
+        </Card>
       )}
     </div>
   );
