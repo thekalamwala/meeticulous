@@ -1,0 +1,47 @@
+name: Smoke
+
+# Renders a few public routes in a real headless browser against the DEPLOYED
+# Vercel URL and fails on a white screen, a severe console error, or the CSS
+# cascade bug (transparent .cta-press / 0px .btn--outline) — the class of break
+# that unit tests miss and that shipped to prod when component CSS lost to
+# Tailwind preflight.
+#
+# Triggered by Vercel's deployment_status, so it runs against a bundle Vercel
+# actually built (with the Sensitive env the client needs — which CI itself can't
+# read, which is why we never build the client in CI). Two roles from one file:
+#   - Preview deploy (every PR)  -> a pre-merge gate; the check lands on the PR.
+#   - Production deploy (ship)   -> a post-ship canary on prod.
+#
+# Also runnable by hand before shipping:  cd client && npm run smoke -- <url>
+
+on:
+  deployment_status:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: smoke-${{ github.event.deployment_status.target_url }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    # Only successful deploys with a reachable URL. Vercel sets environment to
+    # "Preview" or "Production"; skip anything else (e.g. a failed build).
+    if: >-
+      github.event.deployment_status.state == 'success' &&
+      github.event.deployment_status.target_url != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      # Puppeteer (a devDependency) downloads its Chromium on install.
+      - run: npm ci
+        working-directory: client
+      - name: Smoke the deployment
+        working-directory: client
+        run: node scripts/smoke.mjs "${{ github.event.deployment_status.target_url }}"

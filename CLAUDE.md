@@ -172,9 +172,17 @@ Items previously listed here as pending are now live:
   18 `community_*` tables (schema for ALL community phases), counter triggers, 5 seeded spaces,
   3 `COMMUNITY_*` notification_events. RLS on, no policies. The 3 matching `email_templates` rows were
   inserted on their own (NOT via `seedEmailTemplates.js`, which overwrites every template). All four
-  `community*` flags ship OFF + fail-closed. No migration outstanding.
+  `community*` flags ship OFF + fail-closed.
   **Filename note:** number collides with `v3.185_platform_reviews.sql` — cosmetic only, both applied
   (Supabase names migrations independently; this one is `v3_185_community`).
+- **v3.186** (`v3.186_lockdown_anon_rpc_and_views.sql`) — applied 2026-11-03 on the Meeticulous DB
+  (founder-approved, verified + advisor clean): revoked anon/authenticated EXECUTE on all 13 `SECURITY
+  DEFINER` functions (service_role only) and made `host_activation` / `host_activation_funnel` /
+  `vendor_metrics` `security_invoker` with no anon/auth access — before this the public anon key could
+  read every host's name/email/phone via `host_activation`. New postgres-owned functions no longer get
+  anon EXECUTE by default: **a function the browser must call needs an explicit GRANT**, and every new
+  view must set `security_invoker = true` (guarded by `tests/unit/lockdownAnonRpcMigration.test.js`).
+  No migration outstanding.
 
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
