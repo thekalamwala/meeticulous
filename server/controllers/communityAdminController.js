@@ -44,7 +44,7 @@ const listReports = handle(async (req, res) => {
   const groups = new Map();
   for (const r of await admin.listReports(status)) {
     const key = `${r.target_type}:${r.target_id}`;
-    const g = groups.get(key) || { target_type: r.target_type, target_id: r.target_id, count: 0, reasons: {}, first_reported_at: r.created_at, latest_reported_at: r.created_at };
+    const g = groups.get(key) || { target_type: r.target_type, target_id: r.target_id, report_id: r.id, count: 0, reasons: {}, first_reported_at: r.created_at, latest_reported_at: r.created_at };
     g.count += 1;
     g.reasons[r.reason] = (g.reasons[r.reason] || 0) + 1;
     if (r.created_at < g.first_reported_at) g.first_reported_at = r.created_at;

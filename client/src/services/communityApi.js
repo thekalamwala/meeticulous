@@ -26,3 +26,13 @@ export const acceptAnswer = (itemId, commentId) => body(API.post(`/community/ite
 export const like = (targetType, id) => body(API.post('/community/reactions', { target_type: targetType, target_id: id }));
 export const unlike = (targetType, id) => body(API.delete('/community/reactions', { data: { target_type: targetType, target_id: id } }));
 export const report = (payload) => body(API.post('/community/reports', payload));
+
+// Admin moderation (/admin paths get the admin key from the api.js interceptor).
+export const adminGetReports = ({ status = 'open', limit } = {}) => body(API.get('/admin/community/reports', { params: { status, ...(limit && { limit }) } }));
+export const adminResolveReport = (id, status, note) => body(API.post(`/admin/community/reports/${id}/resolve`, { status, ...(note && { note }) }));
+export const adminSearchContent = ({ q, type = 'posts', status, cursor } = {}) => body(API.get('/admin/community/content', { params: { type, ...(q && { q }), ...(status && { status }), ...page(cursor) } }));
+export const adminModerate = (type, id, action, note) => body(API.post(`/admin/community/content/${type}/${id}/moderate`, { action, ...(note && { note }) }));
+export const adminPin = (id, pinned) => body(API.post(`/admin/community/content/posts/${id}/pin`, { pinned }));
+export const adminGetMembers = (q) => body(API.get('/admin/community/members', { params: q ? { q } : {} }));
+export const adminPatchMember = (userId, patch) => body(API.patch(`/admin/community/members/${userId}`, patch));
+export const adminPatchSpace = (key, patch) => body(API.patch(`/admin/community/spaces/${encodeURIComponent(key)}`, patch));
