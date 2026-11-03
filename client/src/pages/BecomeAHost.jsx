@@ -79,10 +79,7 @@ const BecomeAHost = () => {
         image={ogCard('become-a-host', 'png')}
       />
       {/* ── LEFT · crimson brand-art panel (lg+ only) ──────────────────────────── */}
-      <AuthBrandPanel
-        title={<>Whatever you’re great at,<br /><span className="text-primary-light">get booked &amp; paid for it.</span></>}
-        subtitle="Coaches, consultants, tutors and more get booked and paid on Meeticulous — one link, money over UPI, 0% commission."
-      />
+      <AuthBrandPanel />
 
       {/* ── RIGHT · signup card ──────────────────────────────────────────────── */}
       <main className="relative z-10 flex flex-col items-center justify-center overflow-y-auto px-5 py-4">

@@ -6,7 +6,7 @@
 const HOST_POINTS = ['0% commission', 'Calendar synced', 'Paid instantly', 'Google Meet built-in'];
 
 const AuthBrandPanel = ({
-  title = (<>Whatever you’re great at,<br /><span className="font-serif italic text-primary-light">get booked for it.</span></>),
+  title = (<><span className="whitespace-nowrap">Whatever you’re great at,</span><br /><span className="font-serif italic text-primary-light">get booked for it.</span></>),
   subtitle = 'Coaches, consultants, tutors and more run their whole booking business on Meeticulous — at 0% commission.',
   points = HOST_POINTS,
 }) => (
