@@ -1,5 +1,7 @@
 const { supabaseAdmin } = require('../config/supabase');
 const { safeError } = require('../utils/httpError');
+const { isFeatureEnabled } = require('../services/featureFlags');
+const { isEarlyAccess } = require('../middleware/communityGate');
 
 const MAX_SIZE_BYTES = 2 * 1024 * 1024; // 2MB
 const ALLOWED_FOLDERS = ['profiles', 'covers', 'services', 'branding', 'products', 'community'];
@@ -70,9 +72,14 @@ const uploadImage = async (req, res) => {
     // Authorization: only vendors (hosts) and admins may upload — stops a guest
     // account being used as free file hosting. Admin sessions (req.admin) pass.
     // Exception: folder=community lets any logged-in account attach images to
-    // community posts (guests included); the file-content, size and folder
-    // allowlist checks below still apply.
-    const communityUpload = req.query.folder === 'community' && !!req.user?.id;
+    // community posts (guests included) once the community is live (flag on) or
+    // for early-access/staff testers; otherwise the normal host check applies.
+    // The file-content, size and folder allowlist checks below still apply.
+    let communityUpload = false;
+    if (req.query.folder === 'community' && req.user?.id) {
+      communityUpload = (await isFeatureEnabled('community').catch(() => false))
+        || (await isEarlyAccess(req.user.id).catch(() => false));
+    }
     if (!req.admin && !communityUpload) {
       const { data: prof } = await supabaseAdmin
         .from('profiles').select('is_host, role').eq('id', req.user?.id).maybeSingle();
@@ -132,11 +139,7 @@ const uploadProductFile = async (req, res) => {
     const { size, buffer, originalname } = req.file;
 
     // Authorization: only vendors (hosts) and admins may upload.
-    // Exception: folder=community lets any logged-in account attach images to
-    // community posts (guests included); the file-content, size and folder
-    // allowlist checks below still apply.
-    const communityUpload = req.query.folder === 'community' && !!req.user?.id;
-    if (!req.admin && !communityUpload) {
+    if (!req.admin) {
       const { data: prof } = await supabaseAdmin
         .from('profiles').select('is_host, role').eq('id', req.user?.id).maybeSingle();
       if (!prof || !(prof.is_host || prof.role === 'host')) {

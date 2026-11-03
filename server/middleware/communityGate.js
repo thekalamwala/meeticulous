@@ -58,12 +58,13 @@ const requireWrites = async (req, res, next) => {
 const requireTerms = async (req, res, next) => {
   try {
     const m = await loadMember(req);
+    // Ban first, so a banned user always sees COMMUNITY_BANNED.
+    if (m && m.banned_until && new Date(m.banned_until).getTime() > Date.now()) {
+      return res.status(403).json({ code: 'COMMUNITY_BANNED' });
+    }
     // NULL terms_version (trigger-created row) or no row = terms not accepted.
     if (!m || m.terms_version !== CURRENT_TERMS_VERSION) {
       return res.status(403).json({ code: 'COMMUNITY_TERMS_REQUIRED', terms_version: CURRENT_TERMS_VERSION });
-    }
-    if (m.banned_until && new Date(m.banned_until).getTime() > Date.now()) {
-      return res.status(403).json({ code: 'COMMUNITY_BANNED' });
     }
     return next();
   } catch (_) {

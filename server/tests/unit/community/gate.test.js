@@ -101,6 +101,12 @@ describe('requireTerms', () => {
     await requireTerms({ user: { id: 'u1' } }, r, jest.fn());
     expect(r.json).toHaveBeenCalledWith({ code: 'COMMUNITY_BANNED' });
   });
+  test('banned + old terms -> BANNED wins', async () => {
+    member({ terms_version: 'old', banned_until: new Date(Date.now() + 3600e3).toISOString() });
+    const r = res();
+    await requireTerms({ user: { id: 'u1' } }, r, jest.fn());
+    expect(r.json).toHaveBeenCalledWith({ code: 'COMMUNITY_BANNED' });
+  });
   test('accepted + ban expired -> next', async () => {
     member({ terms_version: CURRENT_TERMS_VERSION, banned_until: new Date(Date.now() - 1000).toISOString() });
     const next = jest.fn();
