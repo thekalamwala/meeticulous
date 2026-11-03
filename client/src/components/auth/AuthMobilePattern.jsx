@@ -12,7 +12,7 @@ const AuthMobilePattern = () => (
     aria-hidden
     viewBox="0 0 560 220"
     preserveAspectRatio="xMidYMax slice"
-    className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-14 w-full overflow-hidden opacity-40 lg:hidden"
+    className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-16 w-full overflow-hidden opacity-70 lg:hidden"
   >
     <path d={EE_PATH} fill="none" stroke="var(--mt-pink)" strokeWidth="20" strokeLinecap="butt" strokeLinejoin="round" />
   </svg>

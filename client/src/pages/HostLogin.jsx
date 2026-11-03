@@ -53,7 +53,7 @@ const MailIcon = () => (
 const SoonBtn = ({ icon, label }) => (
   <button
     type="button" disabled aria-disabled="true" title="Coming soon"
-    className="btn btn--outline mt-3 flex w-full cursor-not-allowed items-center justify-center gap-3 border-maroon/10 bg-neutral-50 py-3 text-sm font-semibold text-muted"
+    className="btn btn--outline mt-3 flex w-full cursor-not-allowed items-center justify-center gap-3 border-maroon/10 bg-neutral-50 py-2.5 text-sm font-semibold text-muted"
   >
     {icon}
     {label}
@@ -134,7 +134,7 @@ const HostLogin = () => {
         <button
           onClick={handleGoogle}
           disabled={busy}
-          className="btn btn--outline mt-7 flex w-full items-center justify-center gap-3 bg-white py-3 text-sm font-semibold shadow-[0_1px_2px_rgba(16,24,40,0.05)] transition disabled:opacity-50"
+          className="btn mt-7 flex w-full items-center justify-center gap-3 rounded-[16px] bg-ink py-3 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           <GoogleIcon />
           {busy ? "Opening Google…" : "Continue with Google"}
