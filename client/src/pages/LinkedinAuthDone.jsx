@@ -52,8 +52,16 @@ const LinkedinAuthDone = () => {
           token = data?.session?.access_token;
           refresh = data?.session?.refresh_token;
         } else {
-          token = hash.get('access_token');
-          refresh = hash.get('refresh_token');
+          const at = hash.get('access_token');
+          const rt = hash.get('refresh_token');
+          if (!at || !rt) throw new Error('no_session');
+          // Hand the hash tokens to Supabase (validates them) so the client owns
+          // this session exactly like the PKCE path — a failure's signOut then
+          // actually revokes it server-side instead of a local no-op.
+          const { data, error } = await sb.auth.setSession({ access_token: at, refresh_token: rt });
+          if (error) throw error;
+          token = data?.session?.access_token;
+          refresh = data?.session?.refresh_token;
         }
         if (!token || !refresh) throw new Error('no_session');
 

@@ -13,14 +13,18 @@ const h = vi.hoisted(() => {
   return {
     calls,
     exchange: vi.fn(async () => { calls.push('exchange'); return { data: { session: { access_token: 'xat', refresh_token: 'xrt' } }, error: null }; }),
-    signOut: vi.fn(async () => ({ error: null })),
+    signOut: vi.fn(async () => { calls.push('signOut'); return { error: null }; }),
+    setSession: vi.fn(async ({ access_token, refresh_token }) => {
+      calls.push('setSession');
+      return { data: { session: { access_token, refresh_token } }, error: null };
+    }),
     linkedinHostAuth: vi.fn(async () => { calls.push('api'); return { data: { profile: { id: 'p1' }, new: '0' } }; }),
     adoptSession: vi.fn(async () => { calls.push('adopt'); return {}; }),
   };
 });
 
 vi.mock('../services/supabaseClient', () => ({
-  getSupabase: () => Promise.resolve({ auth: { exchangeCodeForSession: h.exchange, signOut: h.signOut } }),
+  getSupabase: () => Promise.resolve({ auth: { exchangeCodeForSession: h.exchange, signOut: h.signOut, setSession: h.setSession } }),
 }));
 vi.mock('../services/api', () => ({ linkedinHostAuth: h.linkedinHostAuth }));
 vi.mock('../context/AuthContext', () => ({ useAuth: () => ({ adoptSession: h.adoptSession }) }));
@@ -73,10 +77,12 @@ describe('success', () => {
     expect(h.signOut).not.toHaveBeenCalled();
   });
 
-  test('hash tokens (implicit flow) work without an exchange', async () => {
+  test('hash tokens (implicit flow) → setSession, then API, then adoptSession', async () => {
     renderAt('/auth/linkedin/done#access_token=hat&refresh_token=hrt&token_type=bearer');
     await landedAt('/dashboard');
     expect(h.exchange).not.toHaveBeenCalled();
+    expect(h.setSession).toHaveBeenCalledWith({ access_token: 'hat', refresh_token: 'hrt' });
+    expect(h.calls).toEqual(['setSession', 'api', 'adopt']);
     expect(h.linkedinHostAuth).toHaveBeenCalledWith({}, 'hat');
     expect(h.adoptSession).toHaveBeenCalledWith({ token: 'hat', refresh_token: 'hrt' });
     // tokens scrubbed from the address bar
@@ -127,6 +133,21 @@ describe('failure → redirect, signOut, no adopt', () => {
     renderAt('/auth/linkedin/done?code=abc');
     await expectFailed(error);
     expect(sessionStorage.getItem('li_host_auth')).toBeNull();
+  });
+
+  test('hash path: setSession runs before the API and before signOut, so failure revokes', async () => {
+    h.linkedinHostAuth.mockImplementationOnce(async () => { h.calls.push('api'); throw apiError(409, 'email_has_account'); });
+    renderAt('/auth/linkedin/done#access_token=hat&refresh_token=hrt');
+    await expectFailed('email_has_account');
+    expect(h.calls).toEqual(['setSession', 'api', 'signOut']);
+    expect(h.signOut).toHaveBeenCalledWith({ scope: 'local' });
+  });
+
+  test('hash path: setSession error → auth_failed, API never called', async () => {
+    h.setSession.mockResolvedValueOnce({ data: { session: null }, error: new Error('invalid JWT') });
+    renderAt('/auth/linkedin/done#access_token=bad&refresh_token=bad');
+    await expectFailed('auth_failed');
+    expect(h.linkedinHostAuth).not.toHaveBeenCalled();
   });
 
   test('network error → auth_failed', async () => {
