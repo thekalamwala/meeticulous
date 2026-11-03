@@ -10,11 +10,11 @@ const EE_PATH =
 const AuthMobilePattern = () => (
   <svg
     aria-hidden
-    viewBox="0 0 560 220"
-    preserveAspectRatio="xMidYMax slice"
-    className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-16 w-full overflow-hidden opacity-70 lg:hidden"
+    viewBox="20 20 520 180"
+    preserveAspectRatio="xMidYMax meet"
+    className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-24 w-full overflow-visible opacity-70 lg:hidden"
   >
-    <path d={EE_PATH} fill="none" stroke="var(--mt-pink)" strokeWidth="20" strokeLinecap="butt" strokeLinejoin="round" />
+    <path d={EE_PATH} fill="none" stroke="var(--mt-pink)" strokeWidth="18" strokeLinecap="butt" strokeLinejoin="round" />
   </svg>
 );
 
