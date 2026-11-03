@@ -1528,18 +1528,23 @@ const LINKEDIN_BADGE_SLUG = "linkedin-verified";
 
 // Stamp LinkedIn ownership on the profile from a Supabase-held linkedin_oidc
 // identity (idempotent). Schema fallback: pre-v3.170 DBs lack the columns —
-// skip the stamp but still award the badge (the visible outcome). Non-fatal.
+// skip the stamp but still award the badge (the visible outcome). Never throws:
+// a stamp failure must not block a login or a verify.
 const stampLinkedinVerified = async (userId, li) => {
-  const { error } = await supabaseAdmin
-    .from("profiles")
-    .update({
-      linkedin_verified_at: new Date().toISOString(),
-      linkedin_sub: li.identity_data?.sub || li.identity_id || li.id || null,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", userId);
-  if (error && !/Could not find the|column.*does not exist/i.test(error.message || "")) {
-    console.error("linkedin verified stamp error (non-fatal):", error.message);
+  try {
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update({
+        linkedin_verified_at: new Date().toISOString(),
+        linkedin_sub: li.identity_data?.sub || li.identity_id || li.id || null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", userId);
+    if (error && !/Could not find the|column.*does not exist/i.test(error.message || "")) {
+      console.error("linkedin verified stamp error (non-fatal):", error.message);
+    }
+  } catch (e) {
+    console.error("linkedin verified stamp threw (non-fatal):", e.message);
   }
 };
 
@@ -1636,8 +1641,16 @@ const linkedinHostAuth = async (req, res) => {
       newFlag = "upgrade";
     } else if (!existing) {
       const claims = li.identity_data || {};
-      const email = (authData.user.email || claims.email || "").toLowerCase().trim();
+      // Email comes ONLY from Supabase's auth user record, never the claims/body.
+      const email = (authData.user.email || "").toLowerCase().trim();
       if (!email) return res.status(400).json({ code: "no_email" });
+      // Pre-account-takeover guard: Google Flow A finds hosts BY EMAIL, so a
+      // host profile created under an unverified email would later be handed to
+      // that email's real owner's Google sign-in (or squat it). Require Supabase
+      // to have confirmed this exact email before creating anything.
+      const emailVerified = !!authData.user.email_confirmed_at ||
+        (claims.email_verified === true && String(claims.email || "").toLowerCase().trim() === email);
+      if (!emailVerified) return res.status(400).json({ code: "email_unverified" });
 
       // Duplicate-account guard: a LinkedIn sign-in that Supabase did NOT link to
       // the existing auth user (different user id, same email) must never spawn a

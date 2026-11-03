@@ -123,7 +123,7 @@ beforeEach(() => {
   mockDb.row = null;
   mockDb.emailOwner = null;
   mockDb.calls = [];
-  mockDb.authUser = { id: 'u-1', email: 'Li@Host.com', identities: [{ provider: 'email' }, LI_IDENTITY] };
+  mockDb.authUser = { id: 'u-1', email: 'Li@Host.com', email_confirmed_at: '2026-11-03T00:00:00Z', identities: [{ provider: 'email' }, LI_IDENTITY] };
   isFeatureEnabled.mockResolvedValue(true);
 });
 
@@ -161,7 +161,7 @@ describe('new host', () => {
   });
 
   test('name falls back to the email local-part when LinkedIn gives none', async () => {
-    mockDb.authUser = { id: 'u-1', email: 'li@host.com', identities: [{ provider: 'linkedin_oidc', identity_data: { sub: 's' } }] };
+    mockDb.authUser = { id: 'u-1', email: 'li@host.com', email_confirmed_at: '2026-11-03T00:00:00Z', identities: [{ provider: 'linkedin_oidc', identity_data: { sub: 's' } }] };
     const r = await post({});
     expect(r.status).toBe(200);
     expect(writes('profiles', 'upsert')[0]).toEqual(expect.objectContaining({ name: 'li' }));
@@ -251,11 +251,13 @@ describe('refusals', () => {
 
   test('profile lookup error → 500 and nothing created (never upsert over an unread row)', async () => {
     const realFrom = supa.supabaseAdmin.from.getMockImplementation();
-    let n = 0;
     supa.supabaseAdmin.from.mockImplementation((t) => {
       const c = realFrom(t);
-      // 1st profiles read = accountGate (tolerated); 2nd = the controller's id lookup.
-      if (t === 'profiles' && ++n === 2) c.maybeSingle = jest.fn(async () => ({ data: null, error: { message: 'db down' } }));
+      // Fail only the controller's profile-by-id lookup (accountGate reads other columns).
+      const orig = c.maybeSingle;
+      c.maybeSingle = jest.fn(async () => (c.cols === 'id, role, is_host'
+        ? { data: null, error: { message: 'db down' } }
+        : orig()));
       return c;
     });
     const errSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -265,6 +267,37 @@ describe('refusals', () => {
     expect(writes('profiles', 'upsert')).toEqual([]);
     supa.supabaseAdmin.from.mockImplementation(realFrom);
     errSpy.mockRestore();
+  });
+
+  test('unverified email → 400 email_unverified, nothing created (pre-account-takeover guard)', async () => {
+    mockDb.authUser = { id: 'u-1', email: 'victim@x.com', email_confirmed_at: null, identities: [LI_IDENTITY] };
+    const r = await post({ intent: 'signup' });
+    expect(r.status).toBe(400);
+    expect(r.body).toEqual({ code: 'email_unverified' });
+    expect(writes('profiles', 'upsert')).toEqual([]);
+    expect(writes('profiles', 'update')).toEqual([]);
+    expect(NotificationEngine.send).not.toHaveBeenCalled();
+  });
+
+  test('email_verified claim only counts for the SAME email as the auth user', async () => {
+    // Claim verifies li@host.com but the auth user's (unconfirmed) email differs.
+    mockDb.authUser = { id: 'u-1', email: 'victim@x.com', email_confirmed_at: null,
+      identities: [{ ...LI_IDENTITY, identity_data: { ...LI_IDENTITY.identity_data, email_verified: true } }] };
+    expect((await post({})).body).toEqual({ code: 'email_unverified' });
+    // Same email + verified claim → allowed.
+    mockDb.authUser = { id: 'u-1', email: 'li@host.com', email_confirmed_at: null,
+      identities: [{ ...LI_IDENTITY, identity_data: { ...LI_IDENTITY.identity_data, email_verified: true } }] };
+    const ok = await post({});
+    expect(ok.status).toBe(200);
+    expect(ok.body.new).toBe('1');
+  });
+
+  test('no auth-user email → 400 no_email (LinkedIn claim email is never used)', async () => {
+    mockDb.authUser = { id: 'u-1', email: '', email_confirmed_at: '2026-11-03T00:00:00Z', identities: [LI_IDENTITY] };
+    const r = await post({});
+    expect(r.status).toBe(400);
+    expect(r.body).toEqual({ code: 'no_email' });
+    expect(writes('profiles', 'upsert')).toEqual([]);
   });
 
   test('flag off → 503 from requireFeature, controller never runs', async () => {
