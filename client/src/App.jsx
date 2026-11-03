@@ -401,6 +401,11 @@ function App() {
     location.pathname.startsWith('/lp') ||
     location.pathname.startsWith('/for/') ||
     location.pathname === '/become-a-host' ||
+    // Auth doors are full-bleed (brand panel + card, no global chrome).
+    location.pathname === '/login' ||
+    location.pathname === '/login-as-vendor' ||
+    location.pathname === '/forgot-password' ||
+    location.pathname === '/reset-password' ||
     location.pathname === '/opening' ||
     location.pathname === '/backstage';
 

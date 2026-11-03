@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { resetPassword } from "../services/api";
 import toast from "react-hot-toast";
+import AuthBrandPanel from "../components/auth/AuthBrandPanel";
+import AuthMobilePattern from "../components/auth/AuthMobilePattern";
 import Seo from "../components/common/Seo";
 
 const ResetPassword = () => {
@@ -43,10 +45,17 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="app-container flex h-[calc(100dvh-57px)] items-center justify-center overflow-hidden py-4">
+    <div className="relative grid h-[100dvh] w-full overflow-hidden lg:grid-cols-[1.05fr_1fr]">
       <Seo title="Reset password — Meeticulous" robots="noindex,nofollow" />
-      <div className="page-card w-full max-w-md max-h-full overflow-y-auto p-5 sm:p-8">
-        <img src="/brand/ee-rounded-primary.svg" alt="Meeticulous" className="mb-5 h-11 w-11" />
+      <AuthMobilePattern />
+      <AuthBrandPanel
+        title={<>Almost there.<br /><span className="font-serif italic text-primary-light">Set a new password.</span></>}
+        subtitle="Enter the 6-digit code from your email and choose a new password — then you’re back in."
+        points={["Secure reset", "Code expires in 10 min", "8+ chars, 1 upper, 1 number"]}
+      />
+      <main className="relative z-10 flex flex-col items-center justify-center overflow-y-auto px-5 py-4">
+      <div className="w-full max-w-md p-6 sm:p-8">
+        <img src="/brand/ee-rounded-primary.svg" alt="Meeticulous" className="mb-5 h-11 w-11 lg:hidden" />
         <h1 className="font-display text-maroon text-2xl font-bold mb-2">Reset password</h1>
         <p className="mb-6 text-sm text-muted">
           Enter the 6-digit code from your email and choose a new password.
@@ -123,6 +132,7 @@ const ResetPassword = () => {
           </Link>
         </p>
       </div>
+      </main>
     </div>
   );
 };

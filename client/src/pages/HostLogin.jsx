@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AuthBrandPanel from "../components/auth/AuthBrandPanel";
-import WhatsNewLink from "../components/auth/WhatsNewLink";
+import AuthMobilePattern from "../components/auth/AuthMobilePattern";
 import Seo from "../components/common/Seo";
 import toast from "react-hot-toast";
 
@@ -53,7 +53,7 @@ const MailIcon = () => (
 const SoonBtn = ({ icon, label }) => (
   <button
     type="button" disabled aria-disabled="true" title="Coming soon"
-    className="btn btn--outline mt-3 flex w-full cursor-not-allowed items-center justify-center gap-3 border-maroon/10 bg-neutral-50 py-3 text-sm font-semibold text-muted"
+    className="btn btn--outline mt-3 flex w-full cursor-not-allowed items-center justify-center gap-3 border-maroon/10 bg-neutral-50 py-2.5 text-sm font-semibold text-muted"
   >
     {icon}
     {label}
@@ -110,15 +110,16 @@ const HostLogin = () => {
   };
 
   return (
-    <div className="grid h-[calc(100dvh-57px)] w-full overflow-hidden lg:grid-cols-[1.05fr_1fr]">
+    <div className="relative grid h-[100dvh] w-full overflow-hidden lg:grid-cols-[1.05fr_1fr]">
       <Seo title="Host login — Meeticulous" robots="noindex,nofollow" />
+      <AuthMobilePattern />
       {/* ── LEFT · colourful brand panel (lg+ only) ──────────────────────────── */}
       <AuthBrandPanel />
 
       {/* ── RIGHT · login card + outside-the-box link ────────────────────────── */}
-      <main className="flex flex-col items-center justify-center overflow-y-auto px-5 py-4">
-        <div className="page-card w-full max-w-md p-6 text-center sm:p-8">
-          <Logo className="mx-auto h-14 w-14" />
+      <main className="relative z-10 flex flex-col items-center justify-center overflow-y-auto px-5 py-4">
+        <div className="w-full max-w-md p-6 text-center sm:p-8">
+          <Logo className="mx-auto h-14 w-14 lg:hidden" />
 
         <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-cta">
           Host login
@@ -133,7 +134,7 @@ const HostLogin = () => {
         <button
           onClick={handleGoogle}
           disabled={busy}
-          className="btn btn--outline mt-7 flex w-full items-center justify-center gap-3 bg-white py-3 text-sm font-semibold shadow-[0_1px_2px_rgba(16,24,40,0.05)] transition disabled:opacity-50"
+          className="btn mt-7 flex w-full items-center justify-center gap-3 rounded-[16px] bg-ink py-3 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           <GoogleIcon />
           {busy ? "Opening Google…" : "Continue with Google"}
@@ -158,9 +159,6 @@ const HostLogin = () => {
             <Link to="/become-a-host" className="font-semibold text-primary hover:underline">Sign up as a Host</Link>
           </p>
         </div>
-
-        {/* Outside the card */}
-        <WhatsNewLink className="mt-6" />
       </main>
     </div>
   );
