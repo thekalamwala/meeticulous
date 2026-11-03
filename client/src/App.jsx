@@ -105,6 +105,10 @@ const SubmitReview   = lazy(() => import('./pages/SubmitReview'));
 const Opening        = lazy(() => import('./pages/Opening'));
 const Inaugurators   = lazy(() => import('./pages/Inaugurators'));
 const BlogPost       = lazy(() => import('./pages/BlogPost'));
+const CommunityFeed  = lazy(() => import('./pages/community/CommunityFeed'));
+const CommunitySpace = lazy(() => import('./pages/community/CommunitySpace'));
+const CommunityItem  = lazy(() => import('./pages/community/CommunityItem'));
+const CommunityGuidelines = lazy(() => import('./pages/community/CommunityGuidelines'));
 const Moments        = lazy(() => import('./pages/Moments'));
 const MomentPage     = lazy(() => import('./pages/MomentPage'));
 const GoogleAuthDone = lazy(() => import('./pages/GoogleAuthDone'));
@@ -202,6 +206,7 @@ const AdminTestimonials = lazy(() => import('./pages/admin/AdminTestimonials'));
 const AdminTickets   = lazy(() => import('./pages/admin/AdminTickets'));
 const AdminDisputes  = lazy(() => import('./pages/admin/AdminDisputes'));
 const AdminReviews   = lazy(() => import('./pages/admin/AdminReviews'));
+const AdminCommunity = lazy(() => import('./pages/admin/AdminCommunity'));
 const AdminFeedback  = lazy(() => import('./pages/admin/AdminFeedback'));
 const AdminBotSupport = lazy(() => import('./pages/admin/AdminBotSupport'));
 const AdminSupportChat = lazy(() => import('./pages/admin/AdminSupportChat'));
@@ -481,6 +486,12 @@ function App() {
           <Route path="/inaugurators" element={<Inaugurators />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
+          {/* Community: the API gate 404s while the flag is off, and the pages render NotFound. */}
+          <Route path="/community" element={<CommunityFeed />} />
+          <Route path="/community/guidelines" element={<CommunityGuidelines />} />
+          <Route path="/community/s/:key" element={<CommunitySpace />} />
+          <Route path="/community/t/:slug" element={<CommunityItem />} />
+          <Route path="/community/p/:slug" element={<CommunityItem />} />
           <Route path="/moments" element={<Moments />} />
           <Route path="/moments/:slug" element={<MomentPage />} />
           <Route path="/blogs" element={<BlogsRedirect />} />
@@ -620,6 +631,7 @@ function App() {
           <Route path="/admin/support/tickets" element={<AdminWrapper><AdminTickets /></AdminWrapper>} />
           <Route path="/admin/support/disputes" element={<AdminWrapper><AdminDisputes /></AdminWrapper>} />
           <Route path="/admin/support/reviews" element={<AdminWrapper><AdminReviews /></AdminWrapper>} />
+          <Route path="/admin/community" element={<AdminWrapper><AdminCommunity /></AdminWrapper>} />
           <Route path="/admin/feedback" element={<AdminWrapper><AdminFeedback /></AdminWrapper>} />
           <Route path="/admin/support/bolt" element={<AdminWrapper><AdminBotSupport /></AdminWrapper>} />
           <Route path="/admin/support/bolt/:page" element={<AdminWrapper><AdminBotSupport /></AdminWrapper>} />

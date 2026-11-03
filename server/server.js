@@ -168,6 +168,7 @@ app.use('/api/admin/guest360', adminLimiter, require('./routes/guest360Routes'))
 app.use('/api/admin/crm', adminLimiter, require('./routes/adminCrmRoutes')); // Sales CRM command center (leads.* gated)
 app.use('/api/explore',     require('./routes/exploreRoutes'));
 app.use('/api/blogs',       require('./routes/blogRoutes'));
+app.use('/api/community', require('./routes/communityRoutes')); // community feed + threads (flag-gated, writes need terms)
 app.use('/api/vendors',        require('./routes/badgePublicRoutes'));
 app.use('/api/feature-flags',  require('./routes/featureFlagRoutes'));
 app.use('/api/notifications', require('./routes/notificationWebhookRoutes')); // public AiSensy webhook (secret-gated)

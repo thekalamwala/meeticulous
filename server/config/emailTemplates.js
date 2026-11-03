@@ -800,6 +800,51 @@ const TEMPLATES = [
     cta_label: 'Explore Meeticulous', cta_url: '{{website_url}}',
   }; })(),
 
+  // ── Community (reply / mention / removal) ────────────────────────────────────
+
+  (() => { const t = themeForCategory('Community Update'); return {
+    event_key: 'COMMUNITY_REPLY', audience: 'all', category: 'Community', sender_key: 'tithi',
+    name: 'Community Reply', subject: '{{actor_name}} replied to your {{target_label}}',
+    preview_text: '{{actor_name}} replied in the Meeticulous community.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this email because someone replied to you in the Meeticulous community. To stop these emails, use the unsubscribe link in this email.',
+    html_content:
+      h('{{actor_name}} replied to your {{target_label}}') +
+      lead('Hi {{first_name}}, here is what they said:') +
+      C.infoCard(t, [['Reply', '{{excerpt}}']]) +
+      lead('Join the conversation whenever you are ready.') +
+      // In the body, not just the footer: the vendor (host) shell has no unsubscribe row.
+      note('Prefer not to get these emails? <a href="{{website_url}}/unsubscribe?u={{unsubscribe_token}}" style="color:#7D6B70;">Unsubscribe</a>.'),
+    cta_label: 'View the reply', cta_url: '{{community_url}}',
+  }; })(),
+
+  (() => { const t = themeForCategory('Community Update'); return {
+    event_key: 'COMMUNITY_MENTION', audience: 'all', category: 'Community', sender_key: 'tithi',
+    name: 'Community Mention', subject: '{{actor_name}} mentioned you',
+    preview_text: '{{actor_name}} mentioned you in the Meeticulous community.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this email because someone mentioned you in the Meeticulous community. To stop these emails, use the unsubscribe link in this email.',
+    html_content:
+      h('{{actor_name}} mentioned you') +
+      lead('Hi {{first_name}}, you were mentioned in the community:') +
+      C.infoCard(t, [['Message', '{{excerpt}}']]) +
+      note('Prefer not to get these emails? <a href="{{website_url}}/unsubscribe?u={{unsubscribe_token}}" style="color:#7D6B70;">Unsubscribe</a>.'),
+    cta_label: 'See the mention', cta_url: '{{community_url}}',
+  }; })(),
+
+  {
+    event_key: 'COMMUNITY_CONTENT_REMOVED', audience: 'all', category: 'Community', sender_key: 'tithi',
+    name: 'Community Content Removed', subject: 'Your community {{target_label}} was removed',
+    preview_text: 'A moderator removed your community {{target_label}}.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this email because a moderator removed your content from the Meeticulous community.',
+    html_content:
+      h('Your {{target_label}} was removed') +
+      lead('Hi {{first_name}}, a moderator removed your {{target_label}} because it did not follow our community guidelines.') +
+      lead('If you think this was a mistake, reply to this email and we will take another look.'),
+    cta_label: 'Read the guidelines', cta_url: '{{community_url}}',
+  },
+
 ];
 
 module.exports = TEMPLATES;

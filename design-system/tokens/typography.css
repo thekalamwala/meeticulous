@@ -20,6 +20,7 @@
   --text-body:16px;   --lh-body:1.6;
   --text-body-s:14px; --lh-body-s:1.55;
   --text-caption:12px; --lh-caption:1.4;
+  --text-micro:11px; --lh-micro:1.3;    /* badge-s labels only; never body copy */
   --text-overline:12px; --ls-overline:.08em;
   /* Script accent — Instrument Serif italic, set ~8% larger than the grotesk it sits beside */
   --script-scale:1.08;

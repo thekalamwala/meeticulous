@@ -1,0 +1,1003 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Community mockups</title>
+<!-- Static review file for the founder. Opens straight from disk: kit CSS and assets are relative. -->
+<link rel="stylesheet" href="../../design-system/styles.css">
+<link rel="icon" href="../../design-system/assets/06-favicon/favicon.svg">
+<style>
+/* Lucide icons through the kit's .mt-icon mask (lucide-static@0.460.0, as Icon.jsx does). */
+.i16{width:var(--icon-s);height:var(--icon-s)}.i20{width:var(--icon-m);height:var(--icon-m)}.i24{width:var(--icon-l);height:var(--icon-l)}.i32{width:var(--icon-xl);height:var(--icon-xl)}
+.ic-heart{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/heart.svg')}
+.ic-msg{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/message-circle.svg')}
+.ic-share{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/share-2.svg')}
+.ic-flag{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/flag.svg')}
+.ic-bookmark{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/bookmark.svg')}
+.ic-more{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/ellipsis.svg')}
+.ic-pin{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/pin.svg')}
+.ic-image{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/image.svg')}
+.ic-image-plus{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/image-plus.svg')}
+.ic-plus{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/plus.svg')}
+.ic-search{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/search.svg')}
+.ic-house{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/house.svg')}
+.ic-help{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/circle-help.svg')}
+.ic-idea{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/lightbulb.svg')}
+.ic-briefcase{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/briefcase.svg')}
+.ic-megaphone{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/megaphone.svg')}
+.ic-general{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/messages-square.svg')}
+.ic-lock{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/lock.svg')}
+.ic-x{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/x.svg')}
+.ic-sparkles{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/sparkles.svg')}
+.ic-official{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/badge-check.svg')}
+.ic-chev-down{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/chevron-down.svg')}
+.ic-chev-right{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/chevron-right.svg')}
+.ic-reply-to{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/corner-down-right.svg')}
+.ic-login{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/log-in.svg')}
+.ic-eye-off{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/eye-off.svg')}
+.ic-trash{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/trash-2.svg')}
+.ic-ban{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/ban.svg')}
+.ic-support{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/life-buoy.svg')}
+.ic-users{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/users.svg')}
+.ic-dashboard{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/layout-dashboard.svg')}
+.ic-calendar{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/calendar-days.svg')}
+.ic-filter{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/list-filter.svg')}
+.ic-bell{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/bell.svg')}
+.ic-text{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/text.svg')}
+.ic-check{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/circle-check.svg')}
+.ic-alert{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/circle-alert.svg')}
+.ic-pen{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/square-pen.svg')}
+.ic-scale{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/scale.svg')}
+.ic-msg-plus{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/message-square-plus.svg')}
+.ic-shield{--_src:url('https://unpkg.com/lucide-static@0.460.0/icons/shield.svg')}
+
+/* ── Review document chrome (not product UI) ───────────────────────── */
+.doc-nav{position:sticky;top:0;z-index:var(--z-sticky);background:var(--bg-page);border-bottom:var(--stroke-ui) solid var(--border-1)}
+.doc-nav__in{max-width:var(--container);margin:0 auto;padding:var(--space-4) var(--grid-margin-mobile);display:flex;gap:var(--space-3);overflow-x:auto;align-items:center;scrollbar-width:none}
+.doc-nav__in img{height:20px;width:auto;margin-right:var(--space-4);flex-shrink:0}
+.doc-nav a{text-decoration:none;flex-shrink:0}
+.doc-cover{position:relative;overflow:hidden;max-width:var(--container);margin:0 auto;padding:var(--space-11) var(--grid-margin-mobile) var(--space-14)}
+.doc-cover__thread{position:absolute;right:-200px;bottom:var(--space-6);width:820px;height:auto;pointer-events:none;opacity:.9}
+.doc-cover > *:not(.doc-cover__thread){position:relative;max-width:720px}
+.doc-cover h1{font-size:var(--text-display-m);line-height:var(--lh-display-m);letter-spacing:var(--ls-display-m)}
+.doc-cover p{margin-top:var(--space-5);color:var(--fg-2);font-size:var(--text-body-l);line-height:var(--lh-body-l)}
+.doc-sec{max-width:var(--container);margin:0 auto;padding:var(--space-10) var(--grid-margin-mobile);border-top:var(--stroke-ui) solid var(--border-strong);scroll-margin-top:64px}
+.doc-sec__head{display:flex;flex-direction:column;gap:var(--space-3);margin-bottom:var(--space-7);max-width:760px}
+.doc-sec__head p{color:var(--fg-2);font-size:var(--text-body-s)}
+.cm-note{border:var(--stroke-ui) dashed var(--border-2);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);font-size:var(--text-caption);line-height:var(--lh-caption);color:var(--fg-2);background:transparent}
+.cm-note b{color:var(--fg-1)}
+.doc-scroll{overflow-x:auto;padding-bottom:var(--space-3)}
+.doc-frame{border:var(--stroke-ui) solid var(--border-1);border-radius:var(--radius-2xl);background:var(--bg-page);overflow:hidden}
+.doc-pair{display:flex;flex-wrap:wrap;gap:var(--space-8);align-items:flex-start}
+.doc-pair > *{flex:1 1 420px;min-width:0}
+.doc-caption{font-size:var(--text-caption);color:var(--fg-2);margin-bottom:var(--space-3);font-weight:var(--weight-medium)}
+
+/* ── Shared community atoms ───────────────────────────────────────── */
+.cm-row{display:flex;align-items:center;gap:var(--space-3)}
+.cm-grow{flex:1;min-width:0}
+.cm-avatar{width:40px;height:40px;border-radius:var(--radius-round);display:grid;place-items:center;flex-shrink:0;font:var(--weight-semibold) var(--text-body-s)/1 var(--font-body)}
+.cm-avatar--s{width:32px;height:32px;font-size:var(--text-caption)}
+.cm-av-maroon{background:var(--bg-brand);color:var(--fg-on-brand)}
+.cm-av-pink{background:var(--pink-300);color:var(--mt-maroon-dark)}
+.cm-av-blush{background:var(--bg-blush);color:var(--fg-brand)}
+.cm-av-ink{background:var(--bg-inverse);color:var(--mt-pink)}
+.cm-av-neutral{background:var(--neutral-200);color:var(--fg-1)}
+.cm-author{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);font-size:var(--text-body-s);line-height:1.3}
+.cm-author__name{font-weight:var(--weight-semibold);color:var(--fg-1);text-decoration:none}
+a.cm-author__name:hover{color:var(--fg-brand);text-decoration:underline}
+.cm-author__handle{color:var(--fg-2);text-decoration:none}
+.cm-meta{font-size:var(--text-caption);color:var(--fg-2);line-height:var(--lh-caption)}
+.cm-meta a{color:var(--fg-2)}
+.cm-badge-s{height:20px;padding:0 8px;font-size:11px}
+.cm-badge--official{background:var(--bg-brand);color:var(--fg-on-brand)}
+.cm-badge--ai{background:var(--bg-inverse);color:var(--mt-white)}
+.cm-body{font-size:var(--text-body-s);line-height:var(--lh-body-s);color:var(--fg-1);white-space:pre-line}
+.cm-body a{color:var(--fg-brand)}
+.cm-post{padding:var(--space-7);gap:var(--space-4)}
+.cm-pinned{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-caption);font-weight:var(--weight-medium);color:var(--fg-brand)}
+.cm-actions{display:flex;align-items:center;gap:var(--space-1);margin:0 calc(var(--space-3) * -1) calc(var(--space-3) * -1)}
+.cm-actions .mt-btn{font-weight:var(--weight-medium);color:var(--fg-2);gap:var(--space-2)}
+.cm-actions .mt-btn:hover{color:var(--fg-brand)}
+.cm-actions .is-on{color:var(--fg-brand)}
+.cm-actions .cm-push{margin-left:auto}
+.cm-photos{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3)}
+.cm-photo{aspect-ratio:4/3;border-radius:var(--radius-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--space-3);background:var(--bg-blush);color:var(--fg-brand);font-size:var(--text-caption);text-align:center;padding:var(--space-4)}
+.cm-photo--alt{background:var(--pink-300);color:var(--mt-maroon-dark)}
+.cm-space-chip{display:inline-flex;align-items:center;gap:var(--space-2);height:24px;padding:0 10px;border-radius:var(--radius-pill);background:var(--bg-sunken);color:var(--fg-1);font:var(--weight-medium) var(--text-caption)/1 var(--font-body);text-decoration:none}
+.cm-space-chip:hover{background:var(--pink-200);color:var(--fg-brand)}
+.cm-thread-title{font:var(--weight-black) var(--text-h4)/var(--lh-h4) var(--font-display);letter-spacing:var(--ls-h4);color:var(--fg-brand);text-decoration:none}
+.cm-thread-title:hover{text-decoration:underline}
+.cm-previews{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border-radius:var(--radius-lg);background:var(--bg-page)}
+.cm-preview{display:flex;gap:var(--space-3);font-size:var(--text-caption);line-height:var(--lh-caption);color:var(--fg-1)}
+.cm-tomb{color:var(--fg-2);font-weight:var(--weight-medium)}
+.cm-tabs-full{display:flex}.cm-tabs-full .mt-tab{flex:1;justify-content:center}
+.mt-tab[aria-disabled=true]{opacity:.55;cursor:not-allowed}
+.cm-input-btn{all:unset;box-sizing:border-box;flex:1;height:var(--control-m);padding:0 var(--space-5);display:flex;align-items:center;border-radius:var(--radius-pill);border:var(--stroke-ui) solid var(--border-1);background:var(--bg-page);color:var(--fg-2);font-size:var(--text-body-s);cursor:text}
+.cm-input-btn:hover{border-color:var(--border-2)}
+.cm-input-btn:focus-visible{box-shadow:var(--focus-ring)}
+.cm-textarea{height:auto;align-items:flex-start;padding:var(--space-4) var(--space-5)}
+.cm-textarea textarea{all:unset;flex:1;min-width:0;min-height:120px;font:var(--weight-regular) var(--text-body-s)/var(--lh-body-s) var(--font-body);color:var(--fg-1);white-space:pre-wrap}
+.cm-textarea textarea::placeholder{color:var(--fg-3)}
+.cm-field-foot{display:flex;justify-content:space-between;gap:var(--space-4);align-items:flex-start}
+.cm-counter{font-size:var(--text-caption);color:var(--fg-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.cm-hint-row{display:flex;gap:var(--space-2);align-items:flex-start}
+
+/* ── Desktop shell ─────────────────────────────────────────────────── */
+.cm-topbar{display:flex;align-items:center;gap:var(--space-7);height:72px;padding:0 var(--space-7);background:var(--bg-surface);border-bottom:var(--stroke-ui) solid var(--border-1)}
+.cm-topbar img{height:22px;width:auto}
+.cm-topbar nav{display:flex;gap:var(--space-6);font-size:var(--text-body-s);font-weight:var(--weight-medium)}
+.cm-topbar nav a{text-decoration:none;color:var(--fg-2)}
+.cm-topbar nav a[aria-current=page]{color:var(--fg-brand)}
+.cm-topbar .mt-input{width:280px;height:var(--control-s);margin-left:auto}
+.cm-shell{display:grid;grid-template-columns:240px 640px 320px;gap:var(--space-7);justify-content:center;padding:var(--space-7) var(--space-5) var(--space-10);align-items:start}
+.cm-rail{position:sticky;top:var(--space-12);display:flex;flex-direction:column;gap:var(--space-5)}
+.cm-feed{display:flex;flex-direction:column;gap:var(--space-5);min-width:0}
+.cm-nav{display:flex;flex-direction:column;gap:var(--space-1)}
+.cm-nav__h{padding:var(--space-4) var(--space-4) var(--space-2)}
+.cm-nav a{display:flex;align-items:center;gap:var(--space-4);height:40px;padding:0 var(--space-4);border-radius:var(--radius-pill);text-decoration:none;color:var(--fg-1);font-size:var(--text-body-s);font-weight:var(--weight-medium);transition:background var(--dur-fast) var(--ease-out)}
+.cm-nav a:hover{background:var(--action-secondary-hover);color:var(--fg-brand)}
+.cm-nav a[aria-current=page]{background:var(--bg-surface);color:var(--fg-brand);font-weight:var(--weight-semibold)}
+.cm-nav a .mt-icon{color:var(--fg-2)}
+.cm-nav a[aria-current=page] .mt-icon{color:var(--fg-brand)}
+.cm-nav__lock{margin-left:auto;color:var(--fg-3)}
+.cm-rail-foot{display:flex;flex-wrap:wrap;gap:var(--space-2) var(--space-4);padding:0 var(--space-4);font-size:var(--text-caption)}
+.cm-rail-foot a{color:var(--fg-2)}
+.cm-feed-head{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-2) 0 var(--space-2)}
+.cm-feed-head h1{font-size:var(--text-h2);line-height:var(--lh-h2);letter-spacing:var(--ls-h2)}
+.cm-feed-head .mt-script{font-size:calc(var(--text-h2) * var(--script-scale))}
+.cm-feed-head p{color:var(--fg-2);font-size:var(--text-body-s)}
+.cm-host-row{display:flex;align-items:center;gap:var(--space-4)}
+.cm-host-row + .cm-host-row{padding-top:var(--space-4);border-top:var(--stroke-hairline) solid var(--border-1)}
+.cm-ad-slot{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--space-3);min-height:250px;border-radius:var(--radius-lg);border:var(--stroke-ui) dashed var(--border-2);color:var(--fg-2);font-size:var(--text-caption);text-align:center;padding:var(--space-6)}
+
+/* ── Mobile ────────────────────────────────────────────────────────── */
+.cm-phone{position:relative;width:375px;height:780px;flex:0 0 375px;border:var(--stroke-ui-strong) solid var(--mt-ink);border-radius:var(--radius-2xl);background:var(--bg-page);overflow:hidden}
+.cm-phone__scroll{height:100%;overflow-y:auto;padding-bottom:var(--space-13);scrollbar-width:none}
+.cm-phone .mt-tab{padding:0 var(--space-3)}
+.cm-phone__bar{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:var(--space-3);height:56px;padding:0 var(--space-4) 0 var(--grid-margin-mobile);background:var(--bg-surface);border-bottom:var(--stroke-ui) solid var(--border-1)}
+.cm-phone__bar img{width:24px;height:auto}
+.cm-phone__bar b{font:var(--weight-black) var(--text-h4)/1 var(--font-display);letter-spacing:var(--ls-h4);color:var(--fg-brand)}
+.cm-chips{display:flex;gap:var(--space-3);overflow-x:auto;padding:var(--space-4) var(--grid-margin-mobile);scrollbar-width:none}
+.cm-chips .mt-tag{flex-shrink:0;text-decoration:none}
+.cm-phone .cm-feed{padding:0 var(--space-4);gap:var(--space-4)}
+.cm-phone .cm-post{padding:var(--space-6)}
+.cm-fab{position:absolute;right:var(--space-5);bottom:var(--space-6);box-shadow:var(--shadow-md);z-index:3}
+
+/* ── Thread detail ─────────────────────────────────────────────────── */
+.cm-detail{display:grid;grid-template-columns:720px 320px;gap:var(--space-7);justify-content:center;padding:var(--space-7) var(--space-5) var(--space-10);align-items:start}
+.cm-crumbs{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-body-s);color:var(--fg-2)}
+.cm-crumbs a{color:var(--fg-2);text-decoration:none}
+.cm-crumbs a:hover{color:var(--fg-brand);text-decoration:underline}
+.cm-detail h1{font-size:var(--text-h1);line-height:var(--lh-h1);letter-spacing:var(--ls-h1)}
+.cm-replies{display:flex;flex-direction:column;gap:var(--space-4)}
+.cm-reply{display:flex;gap:var(--space-4);padding:var(--space-6);border-radius:var(--radius-xl);background:var(--bg-surface)}
+.cm-reply__main{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-3)}
+.cm-reply--accepted{border:var(--stroke-ui-strong) solid var(--success)}
+.cm-reply--tomb{background:var(--bg-sunken)}
+.cm-replying{display:inline-flex;align-items:center;gap:var(--space-2);font-size:var(--text-caption);color:var(--fg-2)}
+.cm-replying a{color:var(--fg-brand);font-weight:var(--weight-medium);text-decoration:none}
+.cm-reply .cm-actions{margin-top:0}
+.cm-replybox{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);border-radius:var(--radius-xl);background:var(--bg-surface)}
+.cm-replybox--out{flex-direction:row;align-items:center;justify-content:space-between;gap:var(--space-5);background:var(--bg-blush)}
+
+/* ── Dialog stages (inline backdrops) ──────────────────────────────── */
+.cm-stage{position:relative;min-height:760px;border-radius:var(--radius-2xl);overflow:hidden;background:var(--bg-page)}
+.cm-stage .mt-dialog-backdrop{align-items:flex-start;padding-top:var(--space-9)}
+.cm-dialog-wide{max-width:560px}
+.cm-seg{display:inline-flex}
+.cm-photostrip{display:flex;gap:var(--space-3);flex-wrap:wrap}
+.cm-thumb{position:relative;width:80px;height:80px;border-radius:var(--radius-md);background:var(--bg-blush);display:grid;place-items:center;color:var(--fg-brand)}
+.cm-thumb--alt{background:var(--pink-300);color:var(--mt-maroon-dark)}
+.cm-thumb .mt-btn{position:absolute;top:-6px;right:-6px;width:24px;height:24px;padding:0;box-shadow:var(--shadow-sm)}
+.cm-thumb-add{all:unset;box-sizing:border-box;width:80px;height:80px;border-radius:var(--radius-md);border:var(--stroke-ui) dashed var(--border-2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--space-1);color:var(--fg-brand);font-size:11px;font-weight:var(--weight-medium);cursor:pointer}
+.cm-thumb-add:hover{border-color:var(--border-brand);background:var(--action-secondary-hover)}
+.cm-thumb-add:focus-visible{box-shadow:var(--focus-ring)}
+.cm-toolbar{position:relative;display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;margin-top:var(--space-3)}
+.cm-menu{position:absolute;left:0;top:calc(100% + var(--space-3));width:280px;padding:var(--space-3);border-radius:var(--radius-lg);background:var(--bg-surface);box-shadow:var(--shadow-lg);display:flex;flex-direction:column;gap:var(--space-1);z-index:var(--z-dropdown)}
+.cm-menu button{all:unset;box-sizing:border-box;display:flex;gap:var(--space-4);align-items:flex-start;padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);cursor:pointer;font-size:var(--text-body-s);color:var(--fg-1)}
+.cm-menu button:hover{background:var(--action-secondary-hover)}
+.cm-menu button:focus-visible{box-shadow:var(--focus-ring)}
+.cm-menu button[aria-checked=true]{background:var(--pink-100);color:var(--fg-brand);font-weight:var(--weight-semibold)}
+.cm-menu button[aria-disabled=true]{opacity:.55;cursor:not-allowed}
+.cm-menu small{display:block;font-size:var(--text-caption);color:var(--fg-2);font-weight:var(--weight-regular)}
+.cm-nudge{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);background:var(--bg-blush);font-size:var(--text-body-s);color:var(--fg-1)}
+.cm-nudge a{font-weight:var(--weight-semibold);text-decoration:none}
+.cm-nudge a:hover{text-decoration:underline}
+.cm-mention{color:var(--fg-brand);font-weight:var(--weight-medium)}
+.cm-rules{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-4)}
+.cm-rules li{display:flex;gap:var(--space-4);align-items:flex-start;color:var(--fg-1)}
+.cm-rules .mt-icon{color:var(--fg-brand);margin-top:2px}
+.cm-reasons{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4) var(--space-5);border:0;margin:0;padding:0}
+.cm-reasons legend{padding:0;margin-bottom:var(--space-4)}
+
+/* ── Empty states ──────────────────────────────────────────────────── */
+.cm-empty{align-items:center;text-align:center;padding:var(--space-10) var(--space-8);gap:var(--space-5)}
+.cm-empty img{width:240px;height:auto}
+.cm-empty h3{font-size:var(--text-h3);line-height:var(--lh-h3)}
+.cm-empty .mt-script{font-size:calc(var(--text-h3) * var(--script-scale))}
+.cm-empty p{color:var(--fg-2);font-size:var(--text-body-s);max-width:360px}
+.cm-space-head{display:flex;align-items:center;gap:var(--space-5);padding:var(--space-6) var(--space-7)}
+.cm-space-head .cm-avatar{border-radius:var(--radius-md)}
+
+/* ── Admin mirror ──────────────────────────────────────────────────
+   The admin app has its own token set (--adm-*, client/src/index.css:131-145),
+   not in design-system/. Values mirrored here, scoped to this frame only. */
+.adm{--adm-bg:#F6F7F9;--adm-card:#ffffff;--adm-border:rgba(229,231,235,.8);--adm-text-1:#111827;--adm-text-2:#4b5563;--adm-text-3:#9ca3af;--adm-accent:var(--mt-maroon);--adm-th-bg:#f9fafb;--adm-hover:rgba(17,24,39,.045);--adm-ok:#15803d;--adm-ok-bg:#f0fdf4;--adm-warn:#b45309;--adm-warn-bg:#fffbeb;--adm-danger:#dc2626;--adm-danger-bg:#fef2f2;
+  display:grid;grid-template-columns:200px 1fr;background:var(--adm-bg);font-family:var(--font-body);color:var(--adm-text-2)}
+.adm-side{background:var(--adm-card);border-right:1px solid var(--adm-border);padding:var(--space-6) var(--space-4);display:flex;flex-direction:column;gap:var(--space-1)}
+.adm-side img{height:18px;width:auto;margin:0 var(--space-3) var(--space-6)}
+.adm-side a{display:flex;align-items:center;gap:var(--space-3);height:36px;padding:0 var(--space-3);border-radius:var(--radius-sm);font-size:13px;color:var(--adm-text-2);text-decoration:none}
+.adm-side a:hover{background:var(--adm-hover)}
+.adm-side a[aria-current=page]{background:var(--adm-hover);color:var(--adm-text-1);font-weight:var(--weight-semibold)}
+.adm-side .adm-sub{padding-left:var(--space-9)}
+.adm-side__h{font-size:11px;font-weight:var(--weight-semibold);color:var(--adm-text-3);padding:var(--space-4) var(--space-3) var(--space-2);letter-spacing:var(--ls-overline);text-transform:uppercase}
+.adm-count{margin-left:auto;font-size:11px;font-weight:var(--weight-semibold);color:var(--adm-danger);background:var(--adm-danger-bg);border-radius:var(--radius-pill);padding:1px 7px}
+.adm-main{padding:var(--space-7)}
+.adm-h1{font:var(--weight-bold) 22px/28px var(--font-body);color:var(--adm-text-1);letter-spacing:-.01em}
+.adm-sub-t{font-size:13px;color:var(--adm-text-3);margin-top:var(--space-1)}
+.adm-card{background:var(--adm-card);border:1px solid var(--adm-border);border-radius:var(--radius-xl)}
+.adm-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:var(--radius-pill);font-size:11px;font-weight:var(--weight-semibold);line-height:1.4;white-space:nowrap}
+.adm-badge-danger{color:var(--adm-danger);background:var(--adm-danger-bg)}
+.adm-badge-warn{color:var(--adm-warn);background:var(--adm-warn-bg)}
+.adm-badge-ok{color:var(--adm-ok);background:var(--adm-ok-bg)}
+.adm-badge-neutral{color:var(--adm-text-2);background:var(--adm-hover)}
+.adm-btn{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--radius-lg);font-size:12.5px;font-weight:var(--weight-medium);cursor:pointer;color:var(--adm-text-2);background:var(--adm-card);border:1px solid var(--adm-border);transition:background var(--dur-fast) var(--ease-out)}
+.adm-btn:hover{background:var(--adm-hover)}
+.adm-btn:focus-visible{box-shadow:var(--focus-ring)}
+.adm-btn--danger{background:var(--adm-danger);border-color:var(--adm-danger);color:var(--mt-white)}
+.adm-btn--danger:hover{background:var(--red-700)}
+.adm-btn--primary{background:var(--adm-accent);border-color:var(--adm-accent);color:var(--mt-white)}
+.adm-btn--primary:hover{background:var(--mt-ink)}
+.adm-btn--ghost{background:transparent;border-color:transparent}
+.adm-btn[disabled]{opacity:.5;cursor:not-allowed}
+.adm-pills{display:flex;gap:var(--space-2);margin:var(--space-6) 0 var(--space-5)}
+.adm-pill{all:unset;cursor:pointer;padding:6px 14px;border-radius:var(--radius-pill);font-size:13px;font-weight:var(--weight-medium);color:var(--adm-text-2)}
+.adm-pill[aria-selected=true]{background:var(--adm-text-1);color:var(--mt-white)}
+.adm-pill:focus-visible{box-shadow:var(--focus-ring)}
+.adm-table{width:100%;border-collapse:collapse;font-size:13px}
+.adm-table th{background:var(--adm-th-bg);text-align:left;font-size:11.5px;font-weight:var(--weight-semibold);color:var(--adm-text-3);padding:10px 12px;letter-spacing:.02em}
+.adm-table th:first-child{border-top-left-radius:var(--radius-xl)}.adm-table th:last-child{border-top-right-radius:var(--radius-xl)}
+.adm-table td{padding:14px 12px;vertical-align:top;border-top:1px solid var(--adm-border)}
+.adm-table tr.adm-sub-row td{border-top:0;padding-top:0;background:var(--adm-th-bg)}
+.adm-t1{color:var(--adm-text-1)}.adm-t3{color:var(--adm-text-3)}
+.adm-item{display:flex;flex-direction:column;gap:4px;min-width:240px;max-width:300px}
+.adm-actions{display:flex;flex-wrap:wrap;gap:6px}
+td:last-child .adm-actions{flex-wrap:nowrap}
+.adm-reporters{display:flex;flex-direction:column;gap:6px;padding:12px 16px;border-radius:var(--radius-md);background:var(--adm-card);border:1px solid var(--adm-border);font-size:12.5px}
+</style>
+</head>
+<body>
+
+<header class="doc-nav" aria-label="Mockup sections">
+  <nav class="doc-nav__in">
+    <img src="../../design-system/assets/01-logo/wordmark/mt-wordmark-full-color.svg" alt="Meeticulous">
+    <a class="mt-tag" href="#feed">1 · Desktop feed</a>
+    <a class="mt-tag" href="#mobile">2 · Mobile feed</a>
+    <a class="mt-tag" href="#thread">3 · Thread</a>
+    <a class="mt-tag" href="#composer">4 · Composer</a>
+    <a class="mt-tag" href="#terms">5 · Terms</a>
+    <a class="mt-tag" href="#report">6 · Report</a>
+    <a class="mt-tag" href="#empty">7 · Empty states</a>
+    <a class="mt-tag" href="#admin">8 · Admin queue</a>
+  </nav>
+</header>
+
+<main>
+<section class="doc-cover" aria-labelledby="cover-h">
+  <img class="doc-cover__thread" src="../../design-system/assets/02-ee/mt-ee-thread-pink.svg" alt="" aria-hidden="true">
+  <p class="mt-overline">For founder review · 3 Nov 2026 · Phase 1</p>
+  <h1 id="cover-h">Community mockups</h1>
+  <p>Static screens for <b>/community</b> before any React is written. Spec sections 6, 7, 12, 13, 16 and 19. Dashed boxes are review notes, not product UI.</p>
+</section>
+
+<!-- ═════════════ 1. DESKTOP FEED ═════════════ -->
+<section class="doc-sec" id="feed" aria-labelledby="feed-h" style="max-width:1360px">
+  <div class="doc-sec__head">
+    <p class="mt-overline">01 · /community · ≥1200px</p>
+    <h2 id="feed-h">Desktop feed</h2>
+    <p>Three columns: spaces rail 240, feed 640, suggestions rail 320. Both rails are sticky. Everyone tab selected; Following is disabled until follows ship.</p>
+  </div>
+  <div class="doc-scroll"><div class="doc-frame" style="min-width:1280px">
+    <div class="cm-topbar">
+      <img src="../../design-system/assets/01-logo/wordmark/mt-wordmark-full-color.svg" alt="Meeticulous">
+      <nav aria-label="Site">
+        <a href="#feed">Explore hosts</a>
+        <a href="#feed" aria-current="page">Community</a>
+        <a href="#feed">Pricing</a>
+      </nav>
+      <label class="mt-input"><span class="mt-icon i16 ic-search" aria-hidden="true"></span><input type="search" aria-label="Search community" placeholder="Search posts, threads, people"></label>
+      <button class="mt-btn mt-btn--ghost mt-iconbtn" aria-label="Notifications"><span class="mt-icon i20 ic-bell"></span></button>
+      <button class="cm-avatar cm-av-pink" style="border:0;cursor:pointer" aria-label="Your account">M</button>
+    </div>
+
+    <div class="cm-shell">
+      <!-- Left rail -->
+      <aside class="cm-rail" aria-label="Community navigation">
+        <button class="mt-btn mt-btn--block"><span class="mt-icon i20 ic-pen" aria-hidden="true"></span>New post</button>
+        <nav class="cm-nav" aria-label="Spaces">
+          <a href="#feed" aria-current="page"><span class="mt-icon i20 ic-house" aria-hidden="true"></span>Feed</a>
+          <a href="#feed"><span class="mt-icon i20 ic-bookmark" aria-hidden="true"></span>Saved</a>
+          <span class="mt-overline cm-nav__h">Spaces</span>
+          <a href="#feed"><span class="mt-icon i20 ic-megaphone" aria-hidden="true"></span>Meeticulous Updates</a>
+          <a href="#feed"><span class="mt-icon i20 ic-help" aria-hidden="true"></span>Help &amp; Questions</a>
+          <a href="#feed"><span class="mt-icon i20 ic-idea" aria-hidden="true"></span>Ideas &amp; Feedback</a>
+          <a href="#feed"><span class="mt-icon i20 ic-briefcase" aria-hidden="true"></span>Host Corner<span class="mt-icon i16 ic-lock cm-nav__lock" role="img" aria-label="Hosts post here"></span></a>
+          <a href="#feed"><span class="mt-icon i20 ic-general" aria-hidden="true"></span>General</a>
+        </nav>
+        <div class="cm-rail-foot"><a href="/community/guidelines">Guidelines</a><a href="#feed">Help centre</a></div>
+        <div class="cm-note"><b>Sidebar ad slot</b> sits here in Phase 2 (desktop only).</div>
+      </aside>
+
+      <!-- Centre feed -->
+      <div class="cm-feed">
+        <div class="cm-feed-head">
+          <h1>Ask, share, learn. <span class="mt-script">Find your people.</span></h1>
+          <p>Hosts and guests talking about sessions, pricing and the craft.</p>
+        </div>
+
+        <div class="mt-tabs cm-tabs-full" role="tablist" aria-label="Feed">
+          <button class="mt-tab" role="tab" aria-selected="true">Everyone</button>
+          <button class="mt-tab" role="tab" aria-selected="false" aria-disabled="true" title="Following arrives soon">Following <span class="mt-tab__count">soon</span></button>
+          <button class="mt-tab" role="tab" aria-selected="false">Updates</button>
+        </div>
+
+        <div class="mt-card cm-post">
+          <div class="cm-row">
+            <span class="cm-avatar cm-av-pink" aria-hidden="true">M</span>
+            <button class="cm-input-btn">Share something with the community</button>
+          </div>
+          <div class="cm-row" style="justify-content:flex-end;gap:var(--space-2)">
+            <button class="mt-btn mt-btn--ghost mt-btn--s"><span class="mt-icon i16 ic-image" aria-hidden="true"></span>Photo</button>
+            <button class="mt-btn mt-btn--ghost mt-btn--s"><span class="mt-icon i16 ic-help" aria-hidden="true"></span>Ask a question</button>
+            <button class="mt-btn mt-btn--ghost mt-btn--s"><span class="mt-icon i16 ic-general" aria-hidden="true"></span>Start a thread</button>
+          </div>
+        </div>
+
+        <!-- Pinned announcement -->
+        <article class="mt-card mt-card--blush cm-post" aria-label="Pinned announcement">
+          <div class="cm-pinned"><span class="mt-icon i16 ic-pin" aria-hidden="true"></span>Pinned in Meeticulous Updates</div>
+          <div class="cm-row">
+            <span class="cm-avatar cm-av-maroon" aria-hidden="true">SD</span>
+            <div class="cm-grow">
+              <div class="cm-author"><a class="cm-author__name" href="#feed">Shubham Datarkar</a><a class="cm-author__handle" href="#feed">@shubham</a><span class="mt-badge cm-badge-s cm-badge--official"><span class="mt-icon i16 ic-official" aria-hidden="true"></span>Meeticulous</span></div>
+              <div class="cm-meta">Announcement · 2 days ago</div>
+            </div>
+            <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s" aria-label="More actions"><span class="mt-icon i20 ic-more"></span></button>
+          </div>
+          <p class="cm-body">Community is open. Ask questions, share what's working in your practice and meet other hosts. Read the <a href="/community/guidelines">guidelines</a> before your first post, and keep bookings on your page so every guest is covered.</p>
+          <div class="cm-actions">
+            <button class="mt-btn mt-btn--ghost mt-btn--s is-on" aria-pressed="true" aria-label="Liked, 128 likes"><span class="mt-icon i16 ic-heart"></span>128</button>
+            <button class="mt-btn mt-btn--ghost mt-btn--s" aria-label="34 replies"><span class="mt-icon i16 ic-msg"></span>34</button>
+            <button class="mt-btn mt-btn--ghost mt-btn--s"><span class="mt-icon i16 ic-share" aria-hidden="true"></span>Share</button>
+            <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s cm-push" aria-label="Save"><span class="mt-icon i16 ic-bookmark"></span></button>
+          </div>
+        </article>
+
+        <!-- Host post with 2 photos -->
+        <article class="mt-card cm-post" aria-label="Post by Ananya Iyer">
+          <div class="cm-row">
+            <span class="cm-avatar cm-av-blush" aria-hidden="true">A</span>
+            <div class="cm-grow">
+              <div class="cm-author"><a class="cm-author__name" href="#feed">Ananya Iyer</a><a class="cm-author__handle" href="#feed">@ananyayoga</a><span class="mt-badge mt-badge--brand cm-badge-s">Host</span></div>
+              <div class="cm-meta">Yoga teacher · Bengaluru · 3h</div>
+            </div>
+            <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s" aria-label="More actions"><span class="mt-icon i20 ic-more"></span></button>
+          </div>
+          <p class="cm-body">Fourteen of us at Cubbon Park for sunrise flow today. Half were first-timers who booked the ₹499 drop-in.
+
+What helped: a 5-minute intro before we started, and mats laid out before anyone arrived. Next one is Sunday 6:15 am.</p>
+          <div class="cm-photos">
+            <div class="cm-photo" role="img" aria-label="Photo: students in a circle on mats at sunrise"><span class="mt-icon i24 ic-image" aria-hidden="true"></span>Photo 1 of 2<br>Mats in a circle at sunrise</div>
+            <div class="cm-photo cm-photo--alt" role="img" aria-label="Photo: group in warrior pose under trees"><span class="mt-icon i24 ic-image" aria-hidden="true"></span>Photo 2 of 2<br>Warrior pose under the trees</div>
+          </div>
+          <div class="cm-actions">
+            <button class="mt-btn mt-btn--ghost mt-btn--s" aria-pressed="false" aria-label="Like, 42 likes"><span class="mt-icon i16 ic-heart"></span>42</button>
+            <button class="mt-btn mt-btn--ghost mt-btn--s" aria-label="8 replies"><span class="mt-icon i16 ic-msg"></span>8</button>
+            <button class="mt-btn mt-btn--ghost mt-btn--s"><span class="mt-icon i16 ic-share" aria-hidden="true"></span>Share</button>
+            <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s cm-push" aria-label="Save"><span class="mt-icon i16 ic-bookmark"></span></button>
+          </div>
+        </article>
+
+        <!-- Thread title card from Help, with reply previews incl. [deleted] -->
+        <article class="mt-card cm-post" aria-label="Thread in Help and Questions">
+          <div class="cm-row">
+            <a class="cm-space-chip" href="#thread"><span class="mt-icon i16 ic-help" aria-hidden="true"></span>Help &amp; Questions</a>
+            <span class="cm-meta">Thread · last reply 20 min ago</span>
+          </div>
+          <a class="cm-thread-title" href="#thread">How do you handle no-shows for paid 1:1 sessions?</a>
+          <p class="cm-body" style="color:var(--fg-2)">Two guests skipped ₹1,500 career sessions this month without a word. Do you refund, reschedule, or keep the fee? Curious what's fair and what keeps people coming back.</p>
+          <div class="cm-row">
+            <span class="cm-avatar cm-avatar--s cm-av-maroon" aria-hidden="true">RM</span>
+            <div class="cm-author"><a class="cm-author__name" href="#feed">Rohan Mehta</a><a class="cm-author__handle" href="#feed">@rohancareers</a><span class="mt-badge mt-badge--brand cm-badge-s">Host</span></div>
+          </div>
+          <div class="cm-previews" aria-label="Latest replies">
+            <div class="cm-preview"><span class="cm-avatar cm-avatar--s cm-av-blush" aria-hidden="true">A</span><div><b>Ananya Iyer</b> <span class="mt-badge mt-badge--success cm-badge-s"><span class="mt-icon i16 ic-check" aria-hidden="true"></span>Accepted</span><br>I keep the fee but offer one free reschedule if they message within 24 hours. Put it on your booking page so it's never a surprise.</div></div>
+            <div class="cm-preview"><span class="cm-avatar cm-avatar--s cm-av-neutral" aria-hidden="true">–</span><div><span class="cm-tomb">[deleted]</span> <span class="cm-meta">· 1h</span></div></div>
+          </div>
+          <div class="cm-actions">
+            <button class="mt-btn mt-btn--ghost mt-btn--s" aria-label="Like, 19 likes"><span class="mt-icon i16 ic-heart"></span>19</button>
+            <a class="mt-btn mt-btn--ghost mt-btn--s" href="#thread" aria-label="12 replies, open thread"><span class="mt-icon i16 ic-msg"></span>12 replies</a>
+            <button class="mt-btn mt-btn--ghost mt-btn--s"><span class="mt-icon i16 ic-share" aria-hidden="true"></span>Share</button>
+            <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s cm-push" aria-label="Save"><span class="mt-icon i16 ic-bookmark"></span></button>
+          </div>
+        </article>
+
+        <!-- Guest question, Tithi answered -->
+        <article class="mt-card cm-post" aria-label="Question by Priya">
+          <div class="cm-row">
+            <span class="cm-avatar cm-av-neutral" aria-hidden="true">P</span>
+            <div class="cm-grow">
+              <div class="cm-author"><span class="cm-author__name">Priya</span><span class="mt-badge cm-badge-s">Guest</span></div>
+              <div class="cm-meta">5h</div>
+            </div>
+            <span class="mt-badge cm-badge-s"><span class="mt-icon i16 ic-help" aria-hidden="true"></span>Question</span>
+            <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s" aria-label="More actions"><span class="mt-icon i20 ic-more"></span></button>
+          </div>
+          <p class="cm-body">First marathon in February. Has anyone booked a nutrition consult before race training? What should I ask in the first session so it's worth the ₹1,200?</p>
+          <div class="cm-previews" aria-label="Latest reply">
+            <div class="cm-preview"><span class="cm-avatar cm-avatar--s cm-av-ink" aria-hidden="true">T</span><div><b>Tithi</b> <span class="mt-badge cm-badge-s cm-badge--ai"><span class="mt-icon i16 ic-sparkles" aria-hidden="true"></span>AI</span><br>Bring a 3-day food log and your training plan. Most nutritionists here offer a 15-minute intro call, so you can ask about race-week fuelling before you pay.</div></div>
+          </div>
+          <div class="cm-actions">
+            <button class="mt-btn mt-btn--ghost mt-btn--s" aria-label="Like, 6 likes"><span class="mt-icon i16 ic-heart"></span>6</button>
+            <button class="mt-btn mt-btn--ghost mt-btn--s" aria-label="5 replies"><span class="mt-icon i16 ic-msg"></span>5</button>
+            <button class="mt-btn mt-btn--ghost mt-btn--s"><span class="mt-icon i16 ic-share" aria-hidden="true"></span>Share</button>
+            <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s cm-push" aria-label="Save"><span class="mt-icon i16 ic-bookmark"></span></button>
+          </div>
+        </article>
+
+        <div class="cm-note"><b>In-feed ad</b> (Phase 2) lands after the 5th item, then every 8th. Infinite scroll loads 20 at a time.</div>
+      </div>
+
+      <!-- Right rail -->
+      <aside class="cm-rail" aria-label="Suggestions">
+        <section class="mt-card mt-card--s" aria-labelledby="htf-h">
+          <h3 id="htf-h" class="mt-card__kicker">Hosts to follow</h3>
+          <div class="cm-host-row">
+            <span class="cm-avatar cm-av-blush" aria-hidden="true">KN</span>
+            <div class="cm-grow"><a class="cm-author__name" href="#feed" style="font-size:var(--text-body-s)">Dr. Kavya Nair</a><div class="cm-meta">Nutritionist · from ₹1,200</div></div>
+            <a class="mt-btn mt-btn--secondary mt-btn--s" href="#feed">View</a>
+          </div>
+          <div class="cm-host-row">
+            <span class="cm-avatar cm-av-maroon" aria-hidden="true">RM</span>
+            <div class="cm-grow"><a class="cm-author__name" href="#feed" style="font-size:var(--text-body-s)">Rohan Mehta</a><div class="cm-meta">Career coach · from ₹1,500</div></div>
+            <a class="mt-btn mt-btn--secondary mt-btn--s" href="#feed">View</a>
+          </div>
+          <div class="cm-host-row">
+            <span class="cm-avatar cm-av-pink" aria-hidden="true">SK</span>
+            <div class="cm-grow"><a class="cm-author__name" href="#feed" style="font-size:var(--text-body-s)">Sneha Kulkarni</a><div class="cm-meta">Tabla teacher · from ₹800</div></div>
+            <a class="mt-btn mt-btn--secondary mt-btn--s" href="#feed">View</a>
+          </div>
+          <div class="cm-note">Placeholder. "View" opens the profile; becomes <b>Follow</b> when follows ship.</div>
+        </section>
+        <section class="mt-card mt-card--s" aria-labelledby="ad-h">
+          <h3 id="ad-h" class="mt-card__kicker">Sponsored</h3>
+          <div class="cm-ad-slot"><span class="mt-icon i24 ic-megaphone" aria-hidden="true"></span><b style="color:var(--fg-1)">Rail ad · 320 wide · sticky</b>House ads only. Ships in Phase 2. Links carry rel="sponsored".</div>
+        </section>
+      </aside>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═════════════ 2. MOBILE FEED ═════════════ -->
+<section class="doc-sec" id="mobile" aria-labelledby="mobile-h">
+  <div class="doc-sec__head">
+    <p class="mt-overline">02 · /community · 375px</p>
+    <h2 id="mobile-h">Mobile feed</h2>
+    <p>One column. Spaces become a horizontal chip row that scrolls sideways. "New post" floats bottom right and opens the composer full screen.</p>
+  </div>
+  <div class="doc-pair">
+    <div class="cm-phone" role="region" aria-label="Mobile feed preview">
+      <div class="cm-phone__scroll">
+        <div class="cm-phone__bar">
+          <img src="../../design-system/assets/01-logo/icon/mt-icon-color.svg" alt="Meeticulous">
+          <b>Community</b>
+          <span class="cm-grow"></span>
+          <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s" aria-label="Search"><span class="mt-icon i20 ic-search"></span></button>
+          <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s" aria-label="Notifications"><span class="mt-icon i20 ic-bell"></span></button>
+        </div>
+        <nav class="cm-chips" aria-label="Spaces">
+          <a class="mt-tag mt-tag--selected" href="#mobile" aria-current="page">All</a>
+          <a class="mt-tag" href="#mobile">Updates</a>
+          <a class="mt-tag" href="#mobile">Help &amp; Questions</a>
+          <a class="mt-tag" href="#mobile">Ideas</a>
+          <a class="mt-tag" href="#mobile">Host Corner</a>
+          <a class="mt-tag" href="#mobile">General</a>
+        </nav>
+        <div class="cm-feed">
+          <div class="mt-tabs cm-tabs-full" role="tablist" aria-label="Feed">
+            <button class="mt-tab" role="tab" aria-selected="true">Everyone</button>
+            <button class="mt-tab" role="tab" aria-selected="false" aria-disabled="true">Following <span class="mt-tab__count">soon</span></button>
+            <button class="mt-tab" role="tab" aria-selected="false">Updates</button>
+          </div>
+          <article class="mt-card mt-card--blush cm-post" aria-label="Pinned announcement">
+            <div class="cm-pinned"><span class="mt-icon i16 ic-pin" aria-hidden="true"></span>Pinned</div>
+            <div class="cm-row">
+              <span class="cm-avatar cm-avatar--s cm-av-maroon" aria-hidden="true">SD</span>
+              <div class="cm-author"><span class="cm-author__name">Shubham Datarkar</span><span class="mt-badge cm-badge-s cm-badge--official"><span class="mt-icon i16 ic-official" aria-hidden="true"></span>Meeticulous</span></div>
+            </div>
+            <p class="cm-body">Community is open. Read the <a href="/community/guidelines">guidelines</a> before your first post.</p>
+          </article>
+          <article class="mt-card cm-post" aria-label="Post by Ananya Iyer">
+            <div class="cm-row">
+              <span class="cm-avatar cm-avatar--s cm-av-blush" aria-hidden="true">A</span>
+              <div class="cm-grow">
+                <div class="cm-author"><a class="cm-author__name" href="#mobile">Ananya Iyer</a><span class="mt-badge mt-badge--brand cm-badge-s">Host</span></div>
+                <div class="cm-meta">@ananyayoga · 3h</div>
+              </div>
+              <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s" aria-label="More actions"><span class="mt-icon i20 ic-more"></span></button>
+            </div>
+            <p class="cm-body">Fourteen of us at Cubbon Park for sunrise flow today. Half were first-timers on the ₹499 drop-in.</p>
+            <div class="cm-photos">
+              <div class="cm-photo" role="img" aria-label="Photo: mats in a circle at sunrise"><span class="mt-icon i20 ic-image" aria-hidden="true"></span></div>
+              <div class="cm-photo cm-photo--alt" role="img" aria-label="Photo: warrior pose under the trees"><span class="mt-icon i20 ic-image" aria-hidden="true"></span></div>
+            </div>
+            <div class="cm-actions">
+              <button class="mt-btn mt-btn--ghost mt-btn--s" aria-label="Like, 42 likes"><span class="mt-icon i16 ic-heart"></span>42</button>
+              <button class="mt-btn mt-btn--ghost mt-btn--s" aria-label="8 replies"><span class="mt-icon i16 ic-msg"></span>8</button>
+              <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s" aria-label="Share"><span class="mt-icon i16 ic-share"></span></button>
+              <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s cm-push" aria-label="Save"><span class="mt-icon i16 ic-bookmark"></span></button>
+            </div>
+          </article>
+          <article class="mt-card cm-post" aria-label="Thread in Help and Questions">
+            <a class="cm-space-chip" href="#thread" style="align-self:flex-start"><span class="mt-icon i16 ic-help" aria-hidden="true"></span>Help &amp; Questions</a>
+            <a class="cm-thread-title" href="#thread">How do you handle no-shows for paid 1:1 sessions?</a>
+            <div class="cm-meta">Rohan Mehta · Host · 12 replies · 20 min ago</div>
+          </article>
+        </div>
+      </div>
+      <button class="mt-btn cm-fab"><span class="mt-icon i20 ic-pen" aria-hidden="true"></span>New post</button>
+    </div>
+    <div class="cm-note" style="flex:0 1 320px"><b>Mobile ads:</b> only the in-feed card and the space banner (Phase 2). No rails. The chip row replaces the left rail; "Saved" moves to the account menu.</div>
+  </div>
+</section>
+
+<!-- ═════════════ 3. THREAD DETAIL ═════════════ -->
+<section class="doc-sec" id="thread" aria-labelledby="thread-h" style="max-width:1360px">
+  <div class="doc-sec__head">
+    <p class="mt-overline">03 · /community/t/:slug</p>
+    <h2 id="thread-h">Thread detail</h2>
+    <p>Replies are flat with "Replying to @name" (the true parent is stored). The author's accepted answer is pinned to the top of replies and outlined. Deleted replies stay as tombstones so the thread still reads.</p>
+  </div>
+  <div class="doc-scroll"><div class="doc-frame" style="min-width:1112px">
+    <div class="cm-detail">
+      <article class="cm-feed" aria-labelledby="t-title">
+        <nav class="cm-crumbs" aria-label="Breadcrumb"><a href="#feed">Community</a><span class="mt-icon i16 ic-chev-right" aria-hidden="true"></span><a href="#feed">Help &amp; Questions</a></nav>
+        <div class="mt-card cm-post">
+          <div class="cm-row">
+            <span class="mt-badge cm-badge-s"><span class="mt-icon i16 ic-help" aria-hidden="true"></span>Question</span>
+            <span class="mt-badge mt-badge--success cm-badge-s"><span class="mt-icon i16 ic-check" aria-hidden="true"></span>Answered</span>
+          </div>
+          <h1 id="t-title">How do you handle no-shows for paid 1:1 sessions?</h1>
+          <div class="cm-row">
+            <span class="cm-avatar cm-av-maroon" aria-hidden="true">RM</span>
+            <div class="cm-grow">
+              <div class="cm-author"><a class="cm-author__name" href="#thread">Rohan Mehta</a><a class="cm-author__handle" href="#thread">@rohancareers</a><span class="mt-badge mt-badge--brand cm-badge-s">Host</span></div>
+              <div class="cm-meta">Career coach · Pune · posted yesterday</div>
+            </div>
+          </div>
+          <p class="cm-body">Two guests skipped ₹1,500 career sessions this month without a word. Both had paid upfront.
+
+I've been refunding in full because it feels awkward not to, but I'm blocking an hour of prep for each one. Do you refund, reschedule, or keep the fee? Curious what's fair and what keeps people coming back.</p>
+          <div class="cm-actions">
+            <button class="mt-btn mt-btn--ghost mt-btn--s" aria-pressed="false" aria-label="Like, 19 likes"><span class="mt-icon i16 ic-heart"></span>19</button>
+            <button class="mt-btn mt-btn--ghost mt-btn--s"><span class="mt-icon i16 ic-msg" aria-hidden="true"></span>Reply</button>
+            <button class="mt-btn mt-btn--ghost mt-btn--s"><span class="mt-icon i16 ic-share" aria-hidden="true"></span>Share</button>
+            <button class="mt-btn mt-btn--ghost mt-btn--s"><span class="mt-icon i16 ic-flag" aria-hidden="true"></span>Report</button>
+            <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s cm-push" aria-label="Save"><span class="mt-icon i16 ic-bookmark"></span></button>
+          </div>
+        </div>
+
+        <h2 class="mt-overline" style="margin-top:var(--space-3)">12 replies</h2>
+        <div class="cm-replies">
+          <div class="cm-reply cm-reply--accepted">
+            <span class="cm-avatar cm-av-blush" aria-hidden="true">A</span>
+            <div class="cm-reply__main">
+              <div class="cm-row" style="flex-wrap:wrap">
+                <div class="cm-author"><a class="cm-author__name" href="#thread">Ananya Iyer</a><a class="cm-author__handle" href="#thread">@ananyayoga</a><span class="mt-badge mt-badge--brand cm-badge-s">Host</span></div>
+                <span class="cm-meta">· 22h</span>
+                <span class="mt-badge mt-badge--success cm-badge-s cm-push" style="margin-left:auto"><span class="mt-icon i16 ic-check" aria-hidden="true"></span>Accepted answer</span>
+              </div>
+              <p class="cm-body">I keep the fee but offer one free reschedule if they message within 24 hours. The key is putting that on your booking page, so it's agreed before they pay and never a surprise. No-shows dropped by half once I did.</p>
+              <div class="cm-actions">
+                <button class="mt-btn mt-btn--ghost mt-btn--s is-on" aria-pressed="true" aria-label="Liked, 27 likes"><span class="mt-icon i16 ic-heart"></span>27</button>
+                <button class="mt-btn mt-btn--ghost mt-btn--s">Reply</button>
+                <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s cm-push" aria-label="Report reply"><span class="mt-icon i16 ic-flag"></span></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="cm-reply">
+            <span class="cm-avatar cm-av-neutral" aria-hidden="true">M</span>
+            <div class="cm-reply__main">
+              <span class="cm-replying"><span class="mt-icon i16 ic-reply-to" aria-hidden="true"></span>Replying to <a href="#thread">@ananyayoga</a></span>
+              <div class="cm-row"><div class="cm-author"><span class="cm-author__name">Meera</span><span class="mt-badge cm-badge-s">Guest</span></div><span class="cm-meta">· 20h</span></div>
+              <p class="cm-body">As a guest this is fair. I just want to know the rule before I book.</p>
+              <div class="cm-actions">
+                <button class="mt-btn mt-btn--ghost mt-btn--s" aria-label="Like, 8 likes"><span class="mt-icon i16 ic-heart"></span>8</button>
+                <button class="mt-btn mt-btn--ghost mt-btn--s">Reply</button>
+                <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s cm-push" aria-label="Report reply"><span class="mt-icon i16 ic-flag"></span></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="cm-reply cm-reply--tomb">
+            <span class="cm-avatar cm-av-neutral" aria-hidden="true">–</span>
+            <div class="cm-reply__main">
+              <span class="cm-tomb">[deleted]</span>
+              <span class="cm-meta">This reply was deleted by its author · 19h</span>
+            </div>
+          </div>
+
+          <div class="cm-reply">
+            <span class="cm-avatar cm-av-ink" aria-hidden="true">T</span>
+            <div class="cm-reply__main">
+              <div class="cm-row"><div class="cm-author"><span class="cm-author__name">Tithi</span><span class="mt-badge cm-badge-s cm-badge--ai"><span class="mt-icon i16 ic-sparkles" aria-hidden="true"></span>AI</span></div><span class="cm-meta">· 18h</span></div>
+              <p class="cm-body">You can set a cancellation window and a no-show rule on each service under Settings → Policies. Guests see it on the booking page before they pay.</p>
+              <div class="cm-row" style="gap:var(--space-4)"><span class="cm-meta">Was this helpful?</span><button class="mt-btn mt-btn--secondary mt-btn--s">Yes</button><button class="mt-btn mt-btn--ghost mt-btn--s">No</button></div>
+            </div>
+          </div>
+
+          <div class="cm-reply">
+            <span class="cm-avatar cm-av-blush" aria-hidden="true">KN</span>
+            <div class="cm-reply__main">
+              <span class="cm-replying"><span class="mt-icon i16 ic-reply-to" aria-hidden="true"></span>Replying to <a href="#thread">Meera</a></span>
+              <div class="cm-row"><div class="cm-author"><a class="cm-author__name" href="#thread">Dr. Kavya Nair</a><a class="cm-author__handle" href="#thread">@kavyaeats</a><span class="mt-badge mt-badge--brand cm-badge-s">Host</span></div><span class="cm-meta">· 6h</span></div>
+              <p class="cm-body">Same here. I send a reminder the evening before and almost nobody misses now.</p>
+              <div class="cm-actions">
+                <button class="mt-btn mt-btn--ghost mt-btn--s" aria-label="Like, 3 likes"><span class="mt-icon i16 ic-heart"></span>3</button>
+                <button class="mt-btn mt-btn--ghost mt-btn--s">Reply</button>
+                <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s cm-push" aria-label="Report reply"><span class="mt-icon i16 ic-flag"></span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="doc-caption" style="margin:var(--space-5) 0 0">Reply box, logged in</p>
+        <form class="cm-replybox" onsubmit="return false">
+          <div class="cm-field-foot"><span class="cm-replying"><span class="mt-icon i16 ic-reply-to" aria-hidden="true"></span>Replying to <a href="#thread">@rohancareers</a></span><button type="button" class="mt-btn mt-btn--ghost mt-btn--s">Cancel</button></div>
+          <div class="mt-field">
+            <label class="mt-label" for="reply-body">Your reply</label>
+            <div class="mt-input cm-textarea"><textarea id="reply-body" data-max="2000" data-counter="reply-count" placeholder="Share what's worked for you"></textarea></div>
+            <div class="cm-field-foot"><span class="mt-hint">Be kind. No phone numbers or emails.</span><span class="cm-counter" id="reply-count" aria-live="polite">0 / 2,000</span></div>
+          </div>
+          <div class="cm-row" style="justify-content:flex-end"><button class="mt-btn">Reply</button></div>
+        </form>
+
+        <p class="doc-caption" style="margin:var(--space-5) 0 0">Reply box, logged out</p>
+        <div class="cm-replybox cm-replybox--out">
+          <p class="cm-body">Join the conversation. It takes a minute.</p>
+          <a class="mt-btn" href="#thread"><span class="mt-icon i20 ic-login" aria-hidden="true"></span>Log in to reply</a>
+        </div>
+      </article>
+
+      <aside class="cm-rail" aria-label="About this space">
+        <section class="mt-card mt-card--s">
+          <span class="mt-card__kicker">Space</span>
+          <h3 class="mt-card__title">Help &amp; Questions</h3>
+          <p class="mt-card__body">Ask anything about running sessions. Tithi answers first when it can; hosts and the team fill in the rest.</p>
+          <button class="mt-btn mt-btn--secondary mt-btn--block mt-btn--s"><span class="mt-icon i16 ic-plus" aria-hidden="true"></span>Ask a question</button>
+        </section>
+        <div class="cm-note"><b>No ads</b> on detail pages near replies (spec §16). <b>[removed]</b> renders the same as [deleted] with "Removed by a moderator".</div>
+      </aside>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═════════════ 4. COMPOSER ═════════════ -->
+<section class="doc-sec" id="composer" aria-labelledby="composer-h">
+  <div class="doc-sec__head">
+    <p class="mt-overline">04 · Modal on desktop, full screen on mobile</p>
+    <h2 id="composer-h">Composer</h2>
+    <p>Left: a host writing a post with photos and the format menu open; the body breaks the contact rule. Right: a guest starting a thread that names a host with a complaint, so the support nudge shows. Counters are live: type in either box.</p>
+  </div>
+  <div class="doc-pair">
+    <!-- A: host post, error, format menu open -->
+    <div>
+      <p class="doc-caption">A · Host, Post, inline error</p>
+      <div class="cm-stage" style="min-height:900px">
+        <div class="mt-dialog-backdrop mt-dialog-backdrop--inline">
+          <div class="mt-dialog cm-dialog-wide" role="dialog" aria-modal="true" aria-labelledby="compA-h">
+            <div class="mt-dialog__head">
+              <h3 class="mt-dialog__title" id="compA-h">New post</h3>
+              <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s" aria-label="Close"><span class="mt-icon i20 ic-x"></span></button>
+            </div>
+            <div class="mt-tabs cm-seg" role="tablist" aria-label="Type">
+              <button class="mt-tab" role="tab" aria-selected="true">Post</button>
+              <button class="mt-tab" role="tab" aria-selected="false">Thread</button>
+            </div>
+            <div class="mt-field">
+              <label class="mt-label" for="a-space">Space <span class="mt-hint">(optional for posts)</span></label>
+              <div class="mt-input mt-select"><select id="a-space"><option>Feed only, no space</option><option>Help &amp; Questions</option><option>Ideas &amp; Feedback</option><option>Host Corner</option><option>General</option></select><span class="mt-icon i16 ic-chev-down" aria-hidden="true"></span></div>
+            </div>
+            <div class="mt-field mt-field--error">
+              <label class="mt-label" for="a-body">What's on your mind?</label>
+              <div class="mt-input cm-textarea"><textarea id="a-body" data-max="1000" data-counter="a-count" aria-describedby="a-err">New weekend batch starts 16 Nov at Cubbon Park, ₹499 per class. Email me at ananya.yoga@example.com to save a spot.</textarea></div>
+              <div class="cm-field-foot">
+                <span class="mt-hint cm-hint-row" id="a-err" role="alert"><span class="mt-icon i16 ic-alert" aria-hidden="true"></span>Phone numbers and emails aren't allowed — guests book through your page.</span>
+                <span class="cm-counter" id="a-count" aria-live="polite">0 / 1,000</span>
+              </div>
+            </div>
+            <div class="mt-field">
+              <span class="mt-label">Photos <span class="mt-hint">2 of 4 · JPG, PNG or WEBP, up to 2 MB</span></span>
+              <div class="cm-photostrip">
+                <div class="cm-thumb" role="img" aria-label="Photo 1: mats at sunrise"><span class="mt-icon i24 ic-image" aria-hidden="true"></span><button class="mt-btn mt-btn--secondary" style="background:var(--bg-surface)" aria-label="Remove photo 1"><span class="mt-icon i16 ic-x"></span></button></div>
+                <div class="cm-thumb cm-thumb--alt" role="img" aria-label="Photo 2: warrior pose"><span class="mt-icon i24 ic-image" aria-hidden="true"></span><button class="mt-btn mt-btn--secondary" style="background:var(--bg-surface)" aria-label="Remove photo 2"><span class="mt-icon i16 ic-x"></span></button></div>
+                <button class="cm-thumb-add"><span class="mt-icon i20 ic-image-plus" aria-hidden="true"></span>Add photo</button>
+              </div>
+            </div>
+            <div class="cm-toolbar">
+              <button class="mt-btn mt-btn--secondary mt-btn--s" aria-haspopup="menu" aria-expanded="true">Format: Text<span class="mt-icon i16 ic-chev-down" aria-hidden="true"></span></button>
+              <div class="cm-menu" role="menu" aria-label="Format">
+                <button role="menuitemradio" aria-checked="true"><span class="mt-icon i20 ic-text" aria-hidden="true"></span><span>Text<small>A post with up to 4 photos</small></span></button>
+                <button role="menuitemradio" aria-checked="false"><span class="mt-icon i20 ic-help" aria-hidden="true"></span><span>Question<small>You can mark the best answer</small></span></button>
+                <button role="menuitemradio" aria-checked="false" aria-disabled="true"><span class="mt-icon i20 ic-megaphone" aria-hidden="true"></span><span>Announcement<small>Official accounts only</small></span></button>
+              </div>
+              <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s" aria-label="Add photo"><span class="mt-icon i20 ic-image-plus"></span></button>
+              <span class="cm-grow"></span>
+              <button class="mt-btn" aria-disabled="true">Post</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- B: guest thread, support nudge -->
+    <div>
+      <p class="doc-caption">B · Guest, Thread, support nudge</p>
+      <div class="cm-stage" style="min-height:900px">
+        <div class="mt-dialog-backdrop mt-dialog-backdrop--inline">
+          <div class="mt-dialog cm-dialog-wide" role="dialog" aria-modal="true" aria-labelledby="compB-h">
+            <div class="mt-dialog__head">
+              <h3 class="mt-dialog__title" id="compB-h">New thread</h3>
+              <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s" aria-label="Close"><span class="mt-icon i20 ic-x"></span></button>
+            </div>
+            <div class="mt-tabs cm-seg" role="tablist" aria-label="Type">
+              <button class="mt-tab" role="tab" aria-selected="false">Post</button>
+              <button class="mt-tab" role="tab" aria-selected="true">Thread</button>
+            </div>
+            <div class="mt-field">
+              <label class="mt-label" for="b-space">Space</label>
+              <div class="mt-input mt-select"><select id="b-space" required><option>Help &amp; Questions</option><option>Ideas &amp; Feedback</option><option>General</option></select><span class="mt-icon i16 ic-chev-down" aria-hidden="true"></span></div>
+              <span class="mt-hint">Required for threads. Host Corner and Updates aren't open to guests.</span>
+            </div>
+            <div class="mt-field">
+              <label class="mt-label" for="b-title">Title</label>
+              <div class="mt-input"><input id="b-title" data-max="150" data-counter="b-tcount" value="My diet plan never arrived after the session"></div>
+              <div class="cm-field-foot"><span class="mt-hint">Ask it like a question people can answer.</span><span class="cm-counter" id="b-tcount">0 / 150</span></div>
+            </div>
+            <div class="mt-field">
+              <label class="mt-label" for="b-body">Details</label>
+              <div class="mt-input cm-textarea"><textarea id="b-body" data-max="10000" data-counter="b-count">Booked a consult with @kavyaeats last week. The session was good but the plan she promised still hasn't come and she isn't replying. Has this happened to anyone else?</textarea></div>
+              <div class="cm-field-foot"><span class="mt-hint">Plain text. Links are added automatically.</span><span class="cm-counter" id="b-count" aria-live="polite">0 / 10,000</span></div>
+            </div>
+            <div class="cm-nudge" role="status"><span class="mt-icon i20 ic-support" aria-hidden="true" style="color:var(--fg-brand)"></span><span class="cm-grow">Problem with a booking? <a href="#composer">Support can help →</a></span></div>
+            <div class="cm-toolbar">
+              <button class="mt-btn mt-btn--secondary mt-btn--s" aria-haspopup="menu" aria-expanded="false"><span class="mt-icon i16 ic-help" aria-hidden="true"></span>Format: Question<span class="mt-icon i16 ic-chev-down" aria-hidden="true"></span></button>
+              <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s" aria-label="Add photo"><span class="mt-icon i20 ic-image-plus"></span></button>
+              <span class="cm-grow"></span>
+              <button class="mt-btn">Post thread</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ 5. TERMS ═════════════ -->
+<section class="doc-sec" id="terms" aria-labelledby="terms-h">
+  <div class="doc-sec__head">
+    <p class="mt-overline">05 · First write action</p>
+    <h2 id="terms-h">Terms dialog</h2>
+    <p>Shown once, on the first post, reply, like or report. The server rejects writes until accepted (403 COMMUNITY_TERMS_REQUIRED).</p>
+  </div>
+  <div class="cm-stage" style="min-height:620px">
+    <div class="mt-dialog-backdrop mt-dialog-backdrop--inline">
+      <div class="mt-dialog cm-dialog-wide" role="dialog" aria-modal="true" aria-labelledby="terms-d-h">
+        <div class="mt-dialog__head">
+          <h3 class="mt-dialog__title" id="terms-d-h">Before you post, <span class="mt-script">a few house rules.</span></h3>
+          <button class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s" aria-label="Close"><span class="mt-icon i20 ic-x"></span></button>
+        </div>
+        <ul class="cm-rules mt-dialog__body">
+          <li><span class="mt-icon i20 ic-heart" aria-hidden="true"></span><span><b>Be kind.</b> No harassment, hate or sexual content.</span></li>
+          <li><span class="mt-icon i20 ic-lock" aria-hidden="true"></span><span><b>Keep bookings on Meeticulous.</b> No phone numbers, emails or outside payment links.</span></li>
+          <li><span class="mt-icon i20 ic-scale" aria-hidden="true"></span><span><b>Don't name and shame.</b> Problems with a session go to Support, not the feed.</span></li>
+          <li><span class="mt-icon i20 ic-flag" aria-hidden="true"></span><span><b>No spam or ads.</b> Share your work; don't sell in every post.</span></li>
+          <li><span class="mt-icon i20 ic-users" aria-hidden="true"></span><span><b>Posts are public.</b> Anyone can read them, and they may show up in search.</span></li>
+        </ul>
+        <p class="mt-dialog__body"><a href="/community/guidelines">Read the full community guidelines</a>, including how to reach our grievance officer.</p>
+        <div class="mt-dialog__actions">
+          <button class="mt-btn mt-btn--ghost">Not now</button>
+          <button class="mt-btn">Accept and continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ 6. REPORT ═════════════ -->
+<section class="doc-sec" id="report" aria-labelledby="report-h">
+  <div class="doc-sec__head">
+    <p class="mt-overline">06 · Report a post, thread or reply</p>
+    <h2 id="report-h">Report dialog</h2>
+    <p>Nine reasons, one required. Defamation reports go to the top of the admin queue. Three reports from different people hide the item until reviewed.</p>
+  </div>
+  <div class="cm-stage" style="min-height:700px">
+    <div class="mt-dialog-backdrop mt-dialog-backdrop--inline">
+      <form class="mt-dialog cm-dialog-wide" role="dialog" aria-modal="true" aria-labelledby="rep-d-h" onsubmit="return false">
+        <div class="mt-dialog__head">
+          <h3 class="mt-dialog__title" id="rep-d-h">Report this reply</h3>
+          <button type="button" class="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s" aria-label="Close"><span class="mt-icon i20 ic-x"></span></button>
+        </div>
+        <fieldset class="cm-reasons">
+          <legend class="mt-label">What's wrong with it?</legend>
+          <label class="mt-check mt-check--radio"><input type="radio" name="reason" value="spam"><span class="mt-check__box"></span><span>Spam</span></label>
+          <label class="mt-check mt-check--radio"><input type="radio" name="reason" value="harassment"><span class="mt-check__box"></span><span>Harassment</span></label>
+          <label class="mt-check mt-check--radio"><input type="radio" name="reason" value="hate"><span class="mt-check__box"></span><span>Hate</span></label>
+          <label class="mt-check mt-check--radio"><input type="radio" name="reason" value="sexual"><span class="mt-check__box"></span><span>Sexual content</span></label>
+          <label class="mt-check mt-check--radio"><input type="radio" name="reason" value="violence"><span class="mt-check__box"></span><span>Violence</span></label>
+          <label class="mt-check mt-check--radio"><input type="radio" name="reason" value="off_platform" checked><span class="mt-check__box"></span><span>Off-platform booking<span class="mt-check__desc">Asks to book or pay outside Meeticulous</span></span></label>
+          <label class="mt-check mt-check--radio"><input type="radio" name="reason" value="defamation"><span class="mt-check__box"></span><span>Defamation<span class="mt-check__desc">False claims about a named person</span></span></label>
+          <label class="mt-check mt-check--radio"><input type="radio" name="reason" value="illegal"><span class="mt-check__box"></span><span>Illegal content</span></label>
+          <label class="mt-check mt-check--radio"><input type="radio" name="reason" value="other"><span class="mt-check__box"></span><span>Something else</span></label>
+        </fieldset>
+        <div class="mt-field">
+          <label class="mt-label" for="rep-details">Details <span class="mt-hint">(optional)</span></label>
+          <div class="mt-input cm-textarea"><textarea id="rep-details" data-max="500" data-counter="rep-count" style="min-height:80px" placeholder="Anything that helps us review it faster"></textarea></div>
+          <div class="cm-field-foot"><span class="mt-hint">The author won't see who reported.</span><span class="cm-counter" id="rep-count" aria-live="polite">0 / 500</span></div>
+        </div>
+        <div class="mt-dialog__actions">
+          <button type="button" class="mt-btn mt-btn--ghost">Cancel</button>
+          <button class="mt-btn">Send report</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ 7. EMPTY STATES ═════════════ -->
+<section class="doc-sec" id="empty" aria-labelledby="empty-h">
+  <div class="doc-sec__head">
+    <p class="mt-overline">07 · One warm line plus an action</p>
+    <h2 id="empty-h">Empty states</h2>
+    <p>Each is its own layout, so each carries its one serif phrase.</p>
+  </div>
+  <div class="doc-pair">
+    <div>
+      <p class="doc-caption">Empty feed (/community, Everyone)</p>
+      <div class="mt-card cm-empty">
+        <img src="../../design-system/assets/04-illustrations/mt-illo-group-light.svg" alt="">
+        <h3>It's quiet in here. <span class="mt-script">Say hello first.</span></h3>
+        <p>Share a win, ask a question or tell people what you teach.</p>
+        <button class="mt-btn"><span class="mt-icon i20 ic-pen" aria-hidden="true"></span>Write the first post</button>
+      </div>
+    </div>
+    <div>
+      <p class="doc-caption">Empty space (/community/s/ideas)</p>
+      <div class="mt-card" style="padding:0;gap:0;overflow:hidden">
+        <div class="cm-space-head">
+          <span class="cm-avatar cm-av-blush" aria-hidden="true"><span class="mt-icon i20 ic-idea"></span></span>
+          <div class="cm-grow"><h3 style="font-size:var(--text-h4)">Ideas &amp; Feedback</h3><p class="cm-meta">Tell us what to build next. Everyone can start a thread.</p></div>
+        </div>
+        <div class="cm-empty" style="display:flex;flex-direction:column;border-top:var(--stroke-ui) solid var(--border-1)">
+          <img src="../../design-system/assets/04-illustrations/mt-illo-reminder-light.svg" alt="">
+          <h3>No threads yet. <span class="mt-script">Start the first one.</span></h3>
+          <p>What would make Meeticulous better for you?</p>
+          <button class="mt-btn"><span class="mt-icon i20 ic-msg-plus" aria-hidden="true"></span>Start a thread</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ 8. ADMIN ═════════════ -->
+<section class="doc-sec" id="admin" aria-labelledby="admin-h">
+  <div class="doc-sec__head">
+    <p class="mt-overline">08 · /admin/community/reports</p>
+    <h2 id="admin-h">Admin reports queue</h2>
+    <p>Inside the existing admin look (--adm-* tokens). One row per reported item; defamation first, then most reported. The first group is expanded to show who reported and why.</p>
+  </div>
+  <div class="doc-scroll"><div class="doc-frame" style="min-width:1240px">
+    <div class="adm">
+      <nav class="adm-side" aria-label="Admin">
+        <img src="../../design-system/assets/01-logo/wordmark/mt-wordmark-full-color.svg" alt="Meeticulous admin">
+        <a href="#admin"><span class="mt-icon i16 ic-dashboard" aria-hidden="true"></span>Dashboard</a>
+        <a href="#admin"><span class="mt-icon i16 ic-calendar" aria-hidden="true"></span>Bookings</a>
+        <a href="#admin"><span class="mt-icon i16 ic-users" aria-hidden="true"></span>Hosts</a>
+        <span class="adm-side__h">Community</span>
+        <a href="#admin" aria-current="page"><span class="mt-icon i16 ic-flag" aria-hidden="true"></span>Reports<span class="adm-count">7</span></a>
+        <a href="#admin"><span class="mt-icon i16 ic-general" aria-hidden="true"></span>Content</a>
+        <a href="#admin"><span class="mt-icon i16 ic-shield" aria-hidden="true"></span>Members</a>
+        <a href="#admin"><span class="mt-icon i16 ic-megaphone" aria-hidden="true"></span>Ads</a>
+      </nav>
+      <div class="adm-main">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:var(--space-4)">
+          <div><h3 class="adm-h1">Community reports</h3><p class="adm-sub-t">Acknowledge within 24h, resolve within 15 days (IT Rules 2021).</p></div>
+          <button class="adm-btn"><span class="mt-icon i16 ic-filter" aria-hidden="true"></span>Filter</button>
+        </div>
+        <div class="adm-pills" role="tablist" aria-label="Report status">
+          <button class="adm-pill" role="tab" aria-selected="true">Open · 7</button>
+          <button class="adm-pill" role="tab" aria-selected="false">Resolved</button>
+          <button class="adm-pill" role="tab" aria-selected="false">Dismissed</button>
+        </div>
+        <div class="adm-card">
+          <table class="adm-table">
+            <thead><tr><th scope="col">Reported item</th><th scope="col">Reasons</th><th scope="col">Reports</th><th scope="col">Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><div class="adm-item"><span class="adm-t3">Reply · Help &amp; Questions</span><span class="adm-t1">"This coach is a fraud, took ₹1,500 and vanished. Don't book him."</span><span class="adm-t3">by Kabir (Guest) on "Is it normal for a coach to cancel twice?"</span></div></td>
+                <td><div class="adm-actions"><span class="adm-badge adm-badge-danger"><span class="mt-icon i16 ic-scale" aria-hidden="true"></span>Defamation ×2</span><span class="adm-badge adm-badge-neutral">Harassment ×1</span></div></td>
+                <td><div class="adm-item" style="min-width:0"><span class="adm-t1">3 reports</span><span class="adm-t3">latest 12 min ago</span><span><span class="adm-badge adm-badge-warn">Auto-hidden</span></span></div></td>
+                <td><div class="adm-actions">
+                  <button class="adm-btn" disabled><span class="mt-icon i16 ic-eye-off" aria-hidden="true"></span>Hide</button>
+                  <button class="adm-btn adm-btn--danger"><span class="mt-icon i16 ic-trash" aria-hidden="true"></span>Remove</button>
+                  <button class="adm-btn adm-btn--ghost">Dismiss</button>
+                  <button class="adm-btn"><span class="mt-icon i16 ic-ban" aria-hidden="true"></span>Ban</button>
+                </div></td>
+              </tr>
+              <tr class="adm-sub-row"><td colspan="4"><div class="adm-reporters">
+                <span><b class="adm-t1">Rohan Mehta</b> (Host) · Defamation · "Names me with a false claim. That booking was refunded in full." · 12 min ago</span>
+                <span><b class="adm-t1">Ananya Iyer</b> (Host) · Defamation · no details · 40 min ago</span>
+                <span><b class="adm-t1">Meera</b> (Guest) · Harassment · "Aggressive tone in every reply." · 1h ago</span>
+              </div></td></tr>
+              <tr>
+                <td><div class="adm-item"><span class="adm-t3">Post · Feed</span><span class="adm-t1">"Book me direct and save 30%. Ask for my number in DMs."</span><span class="adm-t3">by Vikram Singh @vikramfit (Host)</span></div></td>
+                <td><div class="adm-actions"><span class="adm-badge adm-badge-neutral">Off-platform booking ×4</span></div></td>
+                <td><div class="adm-item" style="min-width:0"><span class="adm-t1">4 reports</span><span class="adm-t3">latest 1h ago</span><span><span class="adm-badge adm-badge-warn">Auto-hidden</span></span></div></td>
+                <td><div class="adm-actions">
+                  <button class="adm-btn" disabled><span class="mt-icon i16 ic-eye-off" aria-hidden="true"></span>Hide</button>
+                  <button class="adm-btn adm-btn--danger"><span class="mt-icon i16 ic-trash" aria-hidden="true"></span>Remove</button>
+                  <button class="adm-btn adm-btn--ghost">Dismiss</button>
+                  <button class="adm-btn"><span class="mt-icon i16 ic-ban" aria-hidden="true"></span>Ban</button>
+                </div></td>
+              </tr>
+              <tr>
+                <td><div class="adm-item"><span class="adm-t3">Thread · General</span><span class="adm-t1">"Daily stock tips group, guaranteed returns, link in bio"</span><span class="adm-t3">by Arjun (Guest)</span></div></td>
+                <td><div class="adm-actions"><span class="adm-badge adm-badge-neutral">Spam ×2</span></div></td>
+                <td><div class="adm-item" style="min-width:0"><span class="adm-t1">2 reports</span><span class="adm-t3">latest 3h ago</span><span><span class="adm-badge adm-badge-ok">Visible</span></span></div></td>
+                <td><div class="adm-actions">
+                  <button class="adm-btn"><span class="mt-icon i16 ic-eye-off" aria-hidden="true"></span>Hide</button>
+                  <button class="adm-btn adm-btn--danger"><span class="mt-icon i16 ic-trash" aria-hidden="true"></span>Remove</button>
+                  <button class="adm-btn adm-btn--ghost">Dismiss</button>
+                  <button class="adm-btn"><span class="mt-icon i16 ic-ban" aria-hidden="true"></span>Ban</button>
+                </div></td>
+              </tr>
+              <tr>
+                <td><div class="adm-item"><span class="adm-t3">Reply · Host Corner</span><span class="adm-t1">"Honestly this pricing advice is useless."</span><span class="adm-t3">by Sneha Kulkarni @snehatabla (Host)</span></div></td>
+                <td><div class="adm-actions"><span class="adm-badge adm-badge-neutral">Other ×1</span></div></td>
+                <td><div class="adm-item" style="min-width:0"><span class="adm-t1">1 report</span><span class="adm-t3">latest 2 days ago</span><span><span class="adm-badge adm-badge-ok">Visible</span></span></div></td>
+                <td><div class="adm-actions">
+                  <button class="adm-btn"><span class="mt-icon i16 ic-eye-off" aria-hidden="true"></span>Hide</button>
+                  <button class="adm-btn adm-btn--danger"><span class="mt-icon i16 ic-trash" aria-hidden="true"></span>Remove</button>
+                  <button class="adm-btn adm-btn--ghost">Dismiss</button>
+                  <button class="adm-btn"><span class="mt-icon i16 ic-ban" aria-hidden="true"></span>Ban</button>
+                </div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="cm-note" style="margin-top:var(--space-5)"><b>Ban</b> opens a small dialog: 7 days, 30 days or permanent, plus a reason (audit-logged). <b>Warn</b> and <b>Resolve</b> live in the row's expanded view.</div>
+      </div>
+    </div>
+  </div></div>
+</section>
+</main>
+
+<script>
+// Live counters for every field with data-max / data-counter (mockup only).
+document.querySelectorAll('[data-counter]').forEach(function (el) {
+  var out = document.getElementById(el.dataset.counter);
+  var max = Number(el.dataset.max);
+  function render() {
+    var n = el.value.length;
+    out.textContent = n.toLocaleString('en-IN') + ' / ' + max.toLocaleString('en-IN');
+    out.style.color = n > max ? 'var(--danger)' : '';
+  }
+  el.addEventListener('input', render);
+  render();
+});
+</script>
+</body>
+</html>

@@ -88,6 +88,12 @@ const REGISTRY = [
   // (a clicker who hasn't replied/converted gets one governed follow-up). Off =
   // the job no-ops. The actual send is still gated by crm_admin_sends above.
   { key: 'crm_second_touch',     label: 'CRM Auto Second-Touch', category: 'Sales CRM', scope: 'both', enabled: false, description: 'Automated warm follow-up to campaign clickers who have not replied/converted. Ships OFF. Off = no auto second-touch is queued. Sends still require CRM Outbound Sends.' },
+
+  // ── Community (ships OFF + FAIL-CLOSED, services/featureFlags.js) ──
+  { key: 'community',            label: 'Community',            category: 'Community', scope: 'both', enabled: false, description: 'Community board (read access). Ships OFF. Off = 404 for everyone except early-access members and staff/official badges.' },
+  { key: 'community_writes',     label: 'Community Writes',     category: 'Community', scope: 'both', enabled: false, description: 'Posting, commenting, reacting and reporting. Ships OFF. Off = 503 for everyone except early-access members and staff/official badges.' },
+  { key: 'community_tithi',      label: 'Community Tithi',      category: 'Community', scope: 'both', enabled: false, description: 'Tithi bot replies in the community. Ships OFF. Off = no bot replies.' },
+  { key: 'community_ads',        label: 'Community Ads',        category: 'Community', scope: 'both', enabled: false, description: 'Sponsored placements in the community. Ships OFF. Off = no ads shown.' },
 ];
 
 const KEYS = REGISTRY.map((f) => f.key);
