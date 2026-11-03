@@ -19,6 +19,7 @@ import { loadEnv } from 'vite';
 import { FEATURES } from '../src/pages/features/featureData.js';
 import { HELP_SLUGS } from '../src/content/helpDocsList.js';
 import { MOMENTS } from '../src/data/moments.js';
+import { RELEASES } from '../src/data/changelog.js';
 import { GLOSSARY_SLUGS } from '../src/data/glossaryData.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -90,6 +91,7 @@ const PRERENDER_ROUTES = [
   '/blog',
   '/careers',
   '/changelog',
+  ...RELEASES.map((r) => `/changelog/${r.version}`),
   '/privacy',
   '/terms',
   '/refund',
