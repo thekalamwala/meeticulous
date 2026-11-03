@@ -10,7 +10,7 @@
 // Data-only descriptors (icon is a NAME, not a component) so this stays a pure,
 // testable function with no React/lucide import.
 
-export const NUDGE_KEYS = ['kyc', 'legacy', 'upgrade', 'share'];
+export const NUDGE_KEYS = ['kyc', 'legacy', 'taste', 'upgrade', 'share'];
 
 const rupees = (n) => `₹${Math.round(Number(n) || 0).toLocaleString('en-IN')}`;
 
@@ -20,6 +20,7 @@ export function buildNudges(ctx = {}) {
     pendingEarnings = 0, payoutsReady = false,
     commissionPaid = 0, hasRealEarning = false,
     hasUsername = false, servicesCount = 0, bookingsCount = 0,
+    taste = null, // { endsAt, daysLeft, endedDaysAgo } from GET /host/nudges (free hosts only)
   } = ctx;
 
   const out = [];
@@ -39,6 +40,24 @@ export function buildNudges(ctx = {}) {
       title: "Your plan won't auto-renew",
       body: 'Set up auto-renew so you never lose access when your current period ends.',
       cta: 'Set up auto-renew', to: '/dashboard/upgrade' });
+  }
+
+  // 2b. The 60-day Pro taste is ending / just ended (docs/host-lifecycle-nurture.md
+  //     stages 5–7). Above the commission pitch: losing WhatsApp reminders is the
+  //     moment the host actually feels Pro's value.
+  if (isFreePlan && taste) {
+    const endsOn = new Date(taste.endsAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    if (taste.daysLeft > 0 && taste.daysLeft <= 15) {
+      out.push({ key: 'taste', priority: 85, dismissible: true, tone: 'primary', icon: 'MessageCircle',
+        title: `${taste.daysLeft} day${taste.daysLeft === 1 ? '' : 's'} left of WhatsApp reminders`,
+        body: `On ${endsOn} your guests' reminders switch to email. Pro keeps WhatsApp on — founding price ₹999/yr, locked for life.`,
+        cta: 'Keep WhatsApp reminders', to: '/dashboard/upgrade?src=taste_card' });
+    } else if (taste.endedDaysAgo != null && taste.endedDaysAgo <= 30) {
+      out.push({ key: 'taste', priority: 85, dismissible: true, tone: 'primary', icon: 'MessageCircle',
+        title: 'WhatsApp reminders are off',
+        body: 'Your guests get email reminders only, and reschedule alerts are off. Pro turns them back on.',
+        cta: 'Turn WhatsApp back on', to: '/dashboard/upgrade?src=taste_ended_card' });
+    }
   }
 
   // 3. Conversion — free plan with real earnings/commission → the 0% pitch, quoting

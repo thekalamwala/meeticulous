@@ -726,6 +726,33 @@ const TEMPLATES = [
     cta_label, cta_url: '{{link}}',
   })),
 
+  // ── 60-day Pro taste (sent by services/proTasteNudges.js) ───────────────────────
+  // Free hosts get WhatsApp reminders + reschedule alerts for 60 days from their
+  // first booking. {{link}} is the dashboard / upgrade URL for each stage.
+
+  ...[
+    ['PRO_TASTE_STARTED', 'Pro Taste — Started', 'Upgrade', 'Your first booking is in, {{first_name}} 🎉',
+      'WhatsApp reminders are on for 60 days.', 'Your plan', 'You are receiving this because you are a Meeticulous host on the free plan.',
+      'Your first booking is in, {{first_name}} 🎉',
+      'For the next 60 days your guests get <strong>WhatsApp reminders</strong>, and you both get <strong>reschedule alerts</strong> — that is Pro, on us. After {{taste_ends_on}} they switch to email unless you go Pro.',
+      'See my bookings'],
+    ['PRO_TASTE_ENDING', 'Pro Taste — Ending Soon', 'Upgrade', '{{days_left}} days left of WhatsApp reminders',
+      'They switch to email on {{taste_ends_on}}.', 'Your plan', 'You are receiving this because you are a Meeticulous host on the free plan.',
+      '{{days_left}} days left of WhatsApp reminders',
+      'Since your first booking, Meeticulous has sent WhatsApp reminders for <strong>{{reminded_count}}</strong> of your bookings. On {{taste_ends_on}} they switch to email. Keep them on with Pro — founding price ₹999/yr, locked for life. {{spots_line}}',
+      'Keep WhatsApp reminders'],
+    ['PRO_TASTE_ENDED', 'Pro Taste — Ended', 'Upgrade', 'WhatsApp reminders are now off',
+      'Your guests now get email reminders only.', 'Your plan', 'You are receiving this because you are a Meeticulous host on the free plan.',
+      'WhatsApp reminders are now off',
+      'Your guests now get email reminders only, and reschedule alerts are off for you. Everything else stays the same — your page, bookings and payments keep working. Turn WhatsApp back on any time with Pro.',
+      'Turn WhatsApp back on'],
+  ].map(([event_key, name, category, subject, preview_text, email_category, email_reason, title, body, cta_label]) => ({
+    event_key, name, category, subject, preview_text, email_category, email_reason,
+    audience: 'vendor', sender_key: 'tithi',
+    html_content: h(title) + lead(body) + '<!--cta-->' + C.signOff('Tithi', 'Meeticulous team · just reply with any question'),
+    cta_label, cta_url: '{{link}}',
+  })),
+
   // ── Marketing ─────────────────────────────────────────────────────────────────
 
   (() => { const t = themeForCategory('Upgrade'); return {

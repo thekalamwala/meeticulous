@@ -11,6 +11,7 @@ const { runExclusive } = require("../utils/keyedMutex");
 const crypto = require("crypto");
 const { computeBreakdown } = require("../lib/pricingEngine");
 const planService = require("../services/planService");
+const proTaste = require("../services/proTaste");
 const { redactBookingContact } = require("../lib/contactVisibility");
 const platformConfig = require("../services/platformConfig");
 const stateService = require("../services/stateService");
@@ -1627,12 +1628,12 @@ const rescheduleBooking = async (req, res) => {
 
     const s = booking.services;
     const host = hostOf(booking);
-    // Studio-tier perk: reschedule notifications (email/WhatsApp) only fire for
-    // plans entitled to the full reminder set. Lower tiers still get the in-app
-    // notice below, so the guest is never left unaware of the new time.
-    const rescheduleNotify = await planService.rescheduleNotifyForPlan(
-      planService.resolveVendorPlan(host),
-    );
+    // Pro perk: reschedule alerts (WhatsApp + the host's email) fire for plans
+    // entitled to the full reminder set, and for free hosts inside their 60-day
+    // Pro taste (services/proTaste.js). Outside it the GUEST still gets a plain
+    // email — their booking moved, they must hear about it — and both sides get
+    // the in-app notice below.
+    const rescheduleNotify = await rescheduleAlertsAllowed(host, booking.host_id);
     const oldWhen = new Date(booking.scheduled_at).toLocaleString("en-IN", {
       timeZone: hostTimezone,
     });
@@ -1655,11 +1656,12 @@ const rescheduleBooking = async (req, res) => {
       // [host, guest, service, newTime] (same shape as customerParams/vendorParams,
       // no actionLink → exactly 4). The ack/confirm link stays in email + in-app.
       const rescheduleCtx = { guestName: booking.guest_name, serviceTitle: s?.title, hostName: host.name, when: newWhen };
-      if (rescheduleNotify && (booking.guest_email || booking.guest_phone)) {
+      // Guest email always goes; the WhatsApp leg (phone) only inside the Pro gate.
+      if (booking.guest_email || (rescheduleNotify && booking.guest_phone)) {
         await NotificationEngine.send({
           event: "BOOKING_RESCHEDULED_CUSTOMER",
           data: {
-            email: booking.guest_email, phone: booking.guest_phone, name: booking.guest_name,
+            email: booking.guest_email, phone: rescheduleNotify ? booking.guest_phone : null, name: booking.guest_name,
             templateParams: customerParams(rescheduleCtx),
             emailData: { ...rescheduleData, ack_url: isHostReschedule ? ackUrl : "" },
             emailUser: { name: booking.guest_name, email: booking.guest_email },
@@ -1764,9 +1766,7 @@ const confirmReschedule = async (req, res) => {
 
     const s = booking.services;
     const host = hostOf(booking);
-    const rescheduleNotify = await planService.rescheduleNotifyForPlan(
-      planService.resolveVendorPlan(host),
-    );
+    const rescheduleNotify = await rescheduleAlertsAllowed(host, booking.host_id);
     const tz = await resolveHostTz(booking.host_id);
     const when = new Date(booking.scheduled_at).toLocaleString("en-IN", { timeZone: tz });
 
@@ -1814,23 +1814,19 @@ const reminderFlagFor = (windowHours) =>
 // Send the guest + host reminder pair for one booking. Content is identical for
 // every lead-time (it shows the actual scheduled time), so callers don't pass
 // the window — only the cron's flag bookkeeping differs.
-// WhatsApp booking reminders are a paid perk. Free (Starter) hosts get them for a
-// grace window — their first 2 months — after which their reminders fall back to
-// email; paid/comped plans always keep WhatsApp. The window is anchored no earlier
-// than WHATSAPP_FREE_LAUNCH so EXISTING free hosts (all already >2 months old) are
-// grandfathered a fresh window from the scaling launch rather than being cut off the
-// day this ships. Suppressing `phone` on a reminder send makes NotificationEngine
-// skip the WhatsApp attempt (it only fires when data.phone is set) while the email
-// send is untouched. Applies to both the guest and the host reminder.
-const WHATSAPP_FREE_DAYS = 60;
-const WHATSAPP_FREE_LAUNCH_MS = Date.parse("2026-10-01T00:00:00+05:30");
-const whatsappRemindersAllowed = (host) => {
-  const plan = planService.resolveVendorPlan(host);
-  if (!planService.isFreeSlug(plan)) return true;   // paid / comped → always WhatsApp
-  if (!host?.created_at) return true;               // unknown signup → don't downgrade
-  const anchor = Math.max(new Date(host.created_at).getTime(), WHATSAPP_FREE_LAUNCH_MS);
-  return Date.now() < anchor + WHATSAPP_FREE_DAYS * 86400000;
-};
+// WhatsApp booking reminders are a paid perk. Free (Starter) hosts get them during
+// their 60-day "Pro taste", counted from their first confirmed booking (see
+// services/proTaste.js); after that their reminders fall back to email. Paid/comped
+// plans always keep WhatsApp. Suppressing `phone` on a reminder send makes
+// NotificationEngine skip the WhatsApp attempt (it only fires when data.phone is set)
+// while the email send is untouched. Applies to both the guest and the host reminder.
+const whatsappRemindersAllowed = (host, hostId) => proTaste.tasteActive(host, hostId);
+
+// Reschedule alerts (WhatsApp + host email): plans entitled to every reminder
+// window, or a free host inside their 60-day Pro taste.
+const rescheduleAlertsAllowed = async (host, hostId) =>
+  (await planService.rescheduleNotifyForPlan(planService.resolveVendorPlan(host)))
+  || proTaste.tasteActive(host, hostId);
 
 const sendBookingReminder = async (b, host, tz) => {
   const s = b.services;
@@ -1853,7 +1849,7 @@ const sendBookingReminder = async (b, host, tz) => {
     mapLink: directions, hostLocation: host.location,
   });
   // Gate WhatsApp behind the plan/grace window; null phone → email-only send.
-  const waOk = whatsappRemindersAllowed(host);
+  const waOk = await whatsappRemindersAllowed(host, b.host_id);
   await NotificationEngine.send({
     event: "BOOKING_REMINDER_CUSTOMER",
     data: {
@@ -2150,5 +2146,5 @@ module.exports = {
   processReminders,
   fireDueReminders,
   bookingEmailData, // exported for unit testing (offline map-link surfacing)
-  whatsappRemindersAllowed, // exported for unit testing (free 2-month WhatsApp grace)
+  whatsappRemindersAllowed, rescheduleAlertsAllowed, // exported for unit testing (60-day Pro taste)
 };

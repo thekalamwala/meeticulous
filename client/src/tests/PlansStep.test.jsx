@@ -66,11 +66,11 @@ beforeEach(() => {
   });
 });
 
-test('Pro is the preselected hero; free Starter is a fallback', async () => {
+test('Starter is the primary card; Pro is offered below it', async () => {
   renderStep();
-  await waitFor(() => screen.getByText('Pro'));           // hero card
+  await waitFor(() => screen.getByText('Pro'));           // Pro card
   expect(screen.getByText('₹3,599')).toBeInTheDocument();    // annual price
-  expect(screen.getByRole('button', { name: /Publish on Starter/ })).toBeInTheDocument(); // free fallback
+  expect(screen.getByRole('button', { name: /Publish on Starter/ })).toBeInTheDocument(); // free primary
 });
 
 test('hero "go live" opens a Pro ANNUAL subscription', async () => {

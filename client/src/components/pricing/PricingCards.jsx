@@ -12,6 +12,7 @@ import {
   PREMIUM_USD_ANNUAL_SAVE_PCT,
 } from "../../data/plans";
 import useFeeOnly from "../../hooks/useFeeOnly";
+import FoundingNote from "./FoundingNote";
 import { getPricingRegion } from "../../lib/pricingRegion";
 
 const ROUTE_START = "/become-a-host"; // must match Home.jsx
@@ -194,6 +195,7 @@ export default function PricingCards({ freeAccent, startLabel = "Start free" } =
             <span className="mb-1.5 text-sm text-neutral-400">/ month</span>
           </div>
           <p className="mt-1 text-xs text-neutral-400">{priceNote}</p>
+          {!intl && <FoundingNote className="mt-3" />}
           <Link
             to={intl ? "/contact" : ROUTE_START}
             className="mt-6 inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 hover:no-underline"

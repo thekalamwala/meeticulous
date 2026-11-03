@@ -4,29 +4,52 @@
 // nudges a host has snoozed and until when, so a dismiss sticks across devices (the
 // old localStorage dismissals re-nagged per browser). All access via supabaseAdmin.
 const { supabaseAdmin } = require('../config/supabase');
+const planService = require('../services/planService');
+const proTaste = require('../services/proTaste');
 
 // How long a dismiss hides each nudge before it may resurface. Conversion/activation
 // nudges come back (the host's situation changes); the legacy one-time billing nudge
 // effectively never does. Server-authoritative — the client just says "dismiss".
-const COOLDOWN_DAYS = { upgrade: 14, share: 30, legacy: 3650 };
+const COOLDOWN_DAYS = { upgrade: 14, share: 30, legacy: 3650, taste: 5 };
 const DEFAULT_COOLDOWN = 14;
 // `kyc` is never dismissible — money is stuck until payouts are set up, so it stays.
-const DISMISSIBLE = new Set(['upgrade', 'share', 'legacy']);
+const DISMISSIBLE = new Set(['upgrade', 'share', 'legacy', 'taste']);
 
-// GET /api/host/nudges → { snoozed: { <key>: <iso until> } } for still-active snoozes.
+// The free host's 60-day Pro taste, for the dashboard countdown card
+// (services/proTaste.js). null for paid hosts and hosts with no booking yet.
+// endedDaysAgo lets the card say "WhatsApp reminders are off" for a while after.
+async function tasteFor(hostId) {
+  try {
+    const { data: profile } = await supabaseAdmin
+      .from('profiles').select('plan, plan_expires_at').eq('id', hostId).maybeSingle();
+    if (!planService.isFreeSlug(planService.resolveVendorPlan(profile || {}))) return null;
+    const firstAt = await proTaste.firstBookingAt(hostId);
+    if (!firstAt) return null;
+    const endsAt = proTaste.tasteEndsAt(firstAt);
+    const endedDaysAgo = Math.floor((Date.now() - endsAt.getTime()) / 86400000);
+    return { endsAt: endsAt.toISOString(), daysLeft: proTaste.daysLeft(firstAt), endedDaysAgo: endedDaysAgo >= 0 ? endedDaysAgo : null };
+  } catch (_) {
+    return null; // fail soft — no card beats a broken dashboard
+  }
+}
+
+// GET /api/host/nudges → { snoozed: { <key>: <iso until> }, taste } for still-active snoozes.
 const getHostNudges = async (req, res) => {
-  const { data, error } = await supabaseAdmin
-    .from('host_nudges')
-    .select('nudge_key, snooze_until')
-    .eq('host_id', req.user.id)
-    .gt('snooze_until', new Date().toISOString());
+  const [{ data, error }, taste] = await Promise.all([
+    supabaseAdmin
+      .from('host_nudges')
+      .select('nudge_key, snooze_until')
+      .eq('host_id', req.user.id)
+      .gt('snooze_until', new Date().toISOString()),
+    tasteFor(req.user.id),
+  ]);
   if (error) {
     console.error('getHostNudges:', error.message);
-    return res.json({ snoozed: {} }); // fail soft — showing a nudge beats a broken dashboard
+    return res.json({ snoozed: {}, taste }); // fail soft — showing a nudge beats a broken dashboard
   }
   const snoozed = {};
   for (const r of data || []) snoozed[r.nudge_key] = r.snooze_until;
-  return res.json({ snoozed });
+  return res.json({ snoozed, taste });
 };
 
 // POST /api/host/nudges/:key/dismiss → snooze this nudge for its cooldown.
