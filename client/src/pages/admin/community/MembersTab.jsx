@@ -42,7 +42,7 @@ function Row({ m, can, save }) {
           </label>
           <span className="inline-flex items-center gap-1 ml-auto">
             {isBanned(m) ? (
-              <Btn size="sm" variant="outline" onClick={() => save(m, { banned_until: null })}>Unban</Btn>
+              <Btn size="sm" variant="outline" onClick={() => save(m, { banned_until: null, ban_reason: null })}>Unban</Btn>
             ) : (
               <>
                 <select aria-label="Ban length" value={days === 'permanent' ? 'permanent' : 'days'} onChange={(e) => setDays(e.target.value === 'permanent' ? 'permanent' : '7')} className={fld}>

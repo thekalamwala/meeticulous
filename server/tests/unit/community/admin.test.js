@@ -194,5 +194,6 @@ describe('ops summary', () => {
     const res = await run(getSummary);
     const row = res.json.mock.calls[0][0].attention.find((a) => a.key === 'open_community_reports');
     expect(row.count).toBe(0);
+    expect(row.to).toBe('/admin/community');
   });
 });

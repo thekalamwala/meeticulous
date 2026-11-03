@@ -83,3 +83,13 @@ test('Members tab: early access toggle patches the member', async () => {
   await userEvent.click(await screen.findByRole('checkbox', { name: /early access/i }));
   await waitFor(() => expect(api.adminPatchMember).toHaveBeenCalledWith('u9', { early_access: true }));
 });
+
+test('Unban clears banned_until and ban_reason', async () => {
+  setPerms(['community.moderate']);
+  api.adminGetMembers.mockResolvedValue({ members: [{ user_id: 'u9', display_name: 'Ravi', role: 'host', badge: null, early_access: false, links_allowed: false, banned_until: '9999-12-31T00:00:00Z', post_count: 0, comment_count: 0 }] });
+  api.adminPatchMember.mockResolvedValue({});
+  renderPage();
+  await userEvent.click(await screen.findByRole('tab', { name: 'Members' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Unban' }));
+  await waitFor(() => expect(api.adminPatchMember).toHaveBeenCalledWith('u9', { banned_until: null, ban_reason: null }));
+});

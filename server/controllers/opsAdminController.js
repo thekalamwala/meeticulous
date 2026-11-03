@@ -72,7 +72,7 @@ const getSummary = async (req, res) => {
       { key: 'failed_notifications',  label: 'Failed WhatsApp/notifs', count: failedNotifications,  to: '/admin/notifications?tab=logs&status=failed', severity: failedNotifications ? 'danger' : 'ok' },
       { key: 'stale_unpaid_bookings', label: 'Abandoned bookings',     count: staleUnpaidBookings,  to: '/admin/bookings/abandoned',                 severity: staleUnpaidBookings ? 'warning' : 'ok' },
       { key: 'pending_reviews',       label: 'Reviews to moderate',    count: pendingReviews,       to: '/admin/support/reviews?status=flagged',     severity: pendingReviews ? 'warning' : 'ok' },
-      { key: 'open_community_reports', label: 'Community reports',      count: openCommunityReports, to: '/admin/community/reports',               severity: openCommunityReports ? 'warning' : 'ok' },
+      { key: 'open_community_reports', label: 'Community reports',      count: openCommunityReports, to: '/admin/community',               severity: openCommunityReports ? 'warning' : 'ok' },
       { key: 'pending_verifications', label: 'Pending verifications',  count: pendingVerifications, to: '/admin/providers/pending',       severity: pendingVerifications ? 'warning' : 'ok' },
     ];
 
