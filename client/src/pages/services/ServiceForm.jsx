@@ -14,6 +14,7 @@ import { PageHeader, Card, Button, Input, Select, Textarea, cn } from '../../com
 import { BOLT_ENABLED } from '../../config/aiListing';
 import { useAuth } from '../../context/AuthContext';
 import { normalizePlan } from '../../utils/themeUtils';
+import { fieldError } from '../../utils/apiError';
 
 // ₹ floor for paid services on the self-serve plans; Supreme is exempt, ₹0 free is
 // always allowed. Mirrors the server's planMiddleware.MIN_SERVICE_PRICE.
@@ -483,11 +484,10 @@ export default function ServiceForm({ initialData, serviceId }) {
       }
       navigate('/dashboard/services');
     } catch (err) {
-      // Surface the first field-level validation error (server returns
-      // errors:[{field,message}]) instead of the generic "Validation failed",
-      // so a save that trips a field cap tells the host which field + why.
-      const fieldErr = err.response?.data?.errors?.[0];
-      toast.error(fieldErr?.message || err.response?.data?.message || 'Failed to save');
+      // Surface the first field-level validation error instead of the generic
+      // "Validation failed", so a save that trips a field cap tells the host
+      // which field + why. (shared helper — see utils/apiError.js)
+      toast.error(fieldError(err, 'Failed to save'));
     } finally {
       setSaving(false);
     }
