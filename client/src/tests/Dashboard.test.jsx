@@ -73,26 +73,24 @@ describe('Dashboard — Vendor (role:host)', () => {
     expect(label.className).toMatch(/line-through/);
   });
 
-  test('shows stat cards (Upcoming, Completed, Total Bookings, Total Earnings)', async () => {
+  test('shows at-a-glance stats (Upcoming, Pending, Completed)', async () => {
     const { container } = renderDashboard(VENDOR);
     await waitFor(() => {
-      // Stats live in two sub-grids inside the outer 2-column grid (first .grid),
-      // so scoping to the outer grid still finds all four labels.
+      // Cockpit redesign: vanity tiles (Total Bookings / Total Earnings / Cancelled)
+      // are gone; earnings moved to the money hero. The first .grid is the
+      // at-a-glance strip with the three figures that matter.
       const statsGrid = container.querySelector('.grid');
       expect(within(statsGrid).getByText('Upcoming')).toBeTruthy();
+      expect(within(statsGrid).getByText('Pending')).toBeTruthy();
       expect(within(statsGrid).getByText('Completed')).toBeTruthy();
-      expect(within(statsGrid).getByText('Total Bookings')).toBeTruthy();
-      expect(within(statsGrid).getByText('Total Earnings')).toBeTruthy();
     });
   });
 
-  test('shows dashboard sections (Bookings overview, Your business, Finish setup)', async () => {
-    // Redesign replaced the old quick-action link row with stat sections + a
-    // setup checklist. Assert the stable section headings instead.
+  test('shows dashboard sections (Upcoming bookings, Recent bookings, Finish setup)', async () => {
     renderDashboard(VENDOR);
     await waitFor(() => {
-      expect(screen.getByText('Bookings overview')).toBeTruthy();
-      expect(screen.getByText('Your business')).toBeTruthy();
+      expect(screen.getByText('Upcoming bookings')).toBeTruthy();
+      expect(screen.getByText('Recent bookings')).toBeTruthy();
       expect(screen.getByText('Finish setup')).toBeTruthy();
     });
   });

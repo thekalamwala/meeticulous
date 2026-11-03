@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Link, Navigate, useSearchParams, useNavigate } from 'react-router-dom';
 import {
-  CalendarClock, CheckCircle2, XCircle, CalendarDays, LayoutGrid, IndianRupee,
-  UserCheck, Hourglass, Camera, UserCog, Tag, CalendarCheck, ShieldCheck, MapPin,
-  Check, ArrowRight, Copy, Link2, MessageCircle, Wallet, Share2,
+  CalendarClock, CheckCircle2, XCircle, LayoutGrid, Camera, UserCog, Tag,
+  CalendarCheck, ShieldCheck, MapPin, Check, ArrowRight, Copy, Link2,
+  MessageCircle, Wallet, Share2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getHostBookings, getMyServices, getPayoutBalance, getMyKyc, markLinkShared, getHostNudges, dismissHostNudge, verifyLinkedin } from '../services/api';
@@ -16,7 +16,7 @@ import toast from 'react-hot-toast';
 import Modal from '../components/booking/Modal';
 import WhatsAppVerify from '../components/whatsapp/WhatsAppVerify';
 import StatusChip from '../components/common/StatusChip';
-import { PageHeader, Card, buttonClasses, fmtMoney, cn } from '../components/dashboard/ui';
+import { Card, buttonClasses, fmtMoney, cn } from '../components/dashboard/ui';
 
 const fmtDate = (d) =>
   new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
@@ -32,64 +32,40 @@ const relWhen = (iso) => {
   return d === 1 ? 'tomorrow' : `in ${d} days`;
 };
 
-// ── Stat tile (flat — lives inside a Card panel). Clickable when `to` is set:
-// a count should lead somewhere, not just sit there. ─────────────────────────
-const Stat = ({ Icon, label, value, tint, to, title }) => {
-  const inner = (
-    <>
-      {/* Compact: icon + number share a row, title sits under — shorter card. */}
-      <div className="flex items-center gap-2">
-        <span className={cn('inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md', tint)}>
-          <Icon className="h-4 w-4" strokeWidth={2.25} />
-        </span>
-        <span className="text-lg font-bold leading-none text-gray-900 sm:text-xl">{value}</span>
-      </div>
-      <p className="mt-1.5 text-xs text-gray-500">{label}</p>
-    </>
-  );
-  const base = 'block rounded-md border border-gray-100 bg-gray-50/60 p-3 min-h-[4.5rem]';
-  if (!to) return <div className={base} title={title}>{inner}</div>;
-  return (
-    <Link to={to} title={title} className={cn(base, 'block transition hover:border-primary/30 hover:bg-primary-light/40 hover:no-underline')}>
-      {inner}
-    </Link>
-  );
-};
-
-// ── Money bit (one figure in the money-clarity strip) ────────────────────
-const MoneyBit = ({ label, value, tone }) => (
-  <span className="inline-flex flex-col">
-    <span className={cn('text-sm font-bold leading-none', tone)}>{value}</span>
-    <span className="mt-0.5 text-[11px] text-gray-400">{label}</span>
-  </span>
+// ── At-a-glance stat — one quiet figure that links somewhere. No rainbow tints;
+// the number (Bricolage, maroon) is the signal. ──────────────────────────────
+const GlanceStat = ({ label, value, to }) => (
+  <Link
+    to={to}
+    className="block rounded-2xl border-2 border-maroon/10 bg-white p-4 transition hover:border-maroon/25 hover:no-underline focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose/50"
+  >
+    <p className="font-display text-2xl font-extrabold leading-none text-maroon">{value}</p>
+    <p className="mt-1.5 text-xs text-ink/60">{label}</p>
+  </Link>
 );
 
-// ── Booking row (compact) ───────────────────────────────────────────────
+// ── Booking row — pink dot = a live/booked session (brand data mark). ─────────
 const BookingRow = ({ b }) => (
   <div className="flex items-center justify-between gap-3 py-2.5">
-    <div className="min-w-0">
-      <p className="truncate text-sm font-medium text-gray-900">{b.guest_name || 'Guest'}</p>
-      <p className="truncate text-xs text-gray-400">{b.services?.title} · {fmtDate(b.scheduled_at)}</p>
+    <div className="flex min-w-0 items-center gap-2.5">
+      <span className="h-2 w-2 shrink-0 rounded-full bg-pink" aria-hidden="true" />
+      <div className="min-w-0">
+        <p className="truncate text-sm font-medium text-ink">{b.guest_name || 'Guest'}</p>
+        <p className="truncate text-xs text-ink/50">{b.services?.title} · {fmtDate(b.scheduled_at)}</p>
+      </div>
     </div>
     <StatusChip status={b.status} className="shrink-0" />
   </div>
 );
 
-// ── Loading skeleton — shown while bookings/services load, so a mid-fetch
-// dashboard never looks like an empty (zeros) new account. ────────────────
-const Bar = ({ className }) => <div className={cn('animate-pulse rounded bg-gray-100', className)} />;
+// ── Loading skeleton — mirrors the cockpit shape so a mid-fetch dashboard never
+// flashes an empty (zeros) new account. ──────────────────────────────────────
+const Bar = ({ className }) => <div className={cn('animate-pulse rounded-lg bg-blush/60', className)} />;
 const DashboardSkeleton = () => (
   <>
-    <Bar className="mb-5 h-16 w-full" />
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5">
-      {[0, 1, 2, 3].map((i) => (
-        <Card key={i} as="section">
-          <Bar className="mb-3 h-4 w-32" />
-          <div className="grid grid-cols-2 gap-3">
-            {[0, 1, 2, 3].map((j) => <Bar key={j} className="h-20 w-full" />)}
-          </div>
-        </Card>
-      ))}
+    <div className="mb-5 grid grid-cols-3 gap-3">{[0, 1, 2].map((i) => <Bar key={i} className="h-20 w-full" />)}</div>
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+      {[0, 1].map((i) => <Bar key={i} className="h-56 w-full" />)}
     </div>
   </>
 );
@@ -327,71 +303,56 @@ const Dashboard = () => {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <PageHeader title={`Welcome back, ${user?.name?.split(' ')[0]}`} subtitle="Here's what's happening — we're handling the rest." />
+      {/* Header — Bricolage maroon, one serif human phrase (brand voice). */}
+      <header className="mb-6">
+        <h1 className="font-display text-2xl font-extrabold tracking-tight text-maroon sm:text-3xl">
+          Welcome back, {user?.name?.split(' ')[0] || 'there'}.
+        </h1>
+        <p className="mt-1 text-sm text-ink/70">
+          Here's where things stand — <span className="font-serif italic text-rose">you focus on the sessions.</span>
+        </p>
+      </header>
 
-      {/* P2-9: data load failed — distinct from an empty (new) account */}
+      {/* Data load failed — distinct from an empty (new) account. */}
       {loadErr && (
-        <div className="mb-5 flex items-center justify-between gap-3 rounded-md border border-red-200 bg-red-50 px-4 py-3">
-          <p className="text-sm font-medium text-red-700">Couldn't load your dashboard. Check your connection and retry.</p>
-          <button onClick={loadData} className="shrink-0 rounded bg-red-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-red-700">Retry</button>
+        <div className="mb-5 flex items-center justify-between gap-3 rounded-2xl border-2 border-rose/30 bg-blush px-4 py-3">
+          <p className="text-sm font-medium text-maroon">Couldn't load your dashboard. Check your connection and retry.</p>
+          <button onClick={loadData} className="shrink-0 rounded-full bg-maroon px-4 py-1.5 text-xs font-bold text-white transition hover:bg-maroon-dark">Retry</button>
         </div>
       )}
 
-      {/* Next step — ONE ranked, server-dismissed nudge. Sharing is the top activation
-          priority and keeps its rich hero; KYC / upgrade / legacy render via NextStepCard. */}
-      {nextStep?.key === 'share' ? (
-        <div className="mb-5 rounded-xl border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-5">
-          <div className="flex items-start justify-between gap-3">
+      {/* Money hero — the one thing a host logs in for, loud. Maroon ground, pink
+          accent; folds lifetime earnings in as the secondary line. */}
+      {balance && (balance.available != null || balance.clearing != null || balance.pendingCompletion != null) && (
+        <Link
+          to="/dashboard/payments/payouts"
+          className="mb-5 block rounded-2xl bg-maroon p-5 text-white transition hover:bg-maroon-dark hover:no-underline focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose/60 sm:p-6"
+        >
+          <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <p className="text-base font-bold text-gray-900">You're live! 🎉 Now share your link to get your first booking</p>
-              <p className="mt-1 text-sm text-gray-600">
-                Bookings come from people who see your link. Send it to your followers, groups and DMs — this is the one thing that gets you booked.
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-pink">Available to withdraw</p>
+              <p className="mt-1.5 font-display text-3xl font-extrabold leading-none sm:text-4xl">
+                {fmtMoney(balance.available, { decimals: true })}
+              </p>
+              <p className="mt-2.5 text-xs text-white/70">
+                {fmtMoney(balance.clearing, { decimals: true })} clearing · {fmtMoney(balance.pendingCompletion, { decimals: true })} pending
+                {m.earnings > 0 && <> · {fmtMoney(m.earnings)} earned all-time</>}
               </p>
             </div>
-            <button onClick={() => dismissNudge('share')} aria-label="Dismiss" className="p-1 text-primary/50 hover:text-primary">
-              <XCircle className="h-4 w-4" strokeWidth={2.25} />
-            </button>
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10">
+              <Wallet className="h-5 w-5" strokeWidth={2} />
+            </span>
           </div>
+        </Link>
+      )}
 
-          <div className="mt-3 flex items-center gap-2 rounded-lg border border-primary/20 bg-white px-3 py-2">
-            <Link2 className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.25} />
-            <span className="truncate text-sm font-semibold text-gray-800">{profileUrl.replace(/^https?:\/\//, '')}</span>
-          </div>
-
-          <div className="mt-3 flex flex-wrap gap-2">
-            <a
-              href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
-              target="_blank" rel="noreferrer"
-              onClick={() => trackShare('whatsapp')}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#25D366] px-3.5 py-2 text-sm font-bold text-white transition-opacity hover:opacity-90 hover:no-underline"
-            >
-              <MessageCircle className="h-4 w-4" strokeWidth={2.25} /> Share on WhatsApp
-            </a>
-            <button
-              onClick={shareNative}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 text-sm font-bold text-white transition-opacity hover:opacity-90"
-            >
-              <Share2 className="h-4 w-4" strokeWidth={2.25} /> Share
-            </button>
-            <button
-              onClick={() => { navigator.clipboard.writeText(profileUrl); toast.success('Link copied!'); trackShare('copy'); }}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-primary/30 hover:text-primary"
-            >
-              <Copy className="h-4 w-4" strokeWidth={2.25} /> Copy link
-            </button>
-          </div>
-        </div>
-      ) : nextStep ? (
-        <NextStepCard nudge={nextStep} onDismiss={() => dismissNudge(nextStep.key)} />
-      ) : null}
-
-      {/* Profile URL + Money — side by side on desktop, stacked on mobile */}
-      <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-stretch">
+      {/* Public page link / set-username prompt. */}
+      <div className="mb-5">
       {user?.username ? (
-        <div className="flex flex-1 items-center gap-2 rounded-md border border-gray-200 bg-white px-4 py-2.5">
-          <Link2 className="h-3.5 w-3.5 shrink-0 text-gray-400" strokeWidth={2.25} />
-          <span className="shrink-0 text-xs text-gray-400">Your profile:</span>
-          <a href={`/${user.username}`} target="_blank" rel="noreferrer" className="truncate text-xs font-semibold text-primary hover:underline">
+        <div className="flex items-center gap-2 rounded-full border-2 border-maroon/10 bg-white px-4 py-2.5">
+          <Link2 className="h-3.5 w-3.5 shrink-0 text-maroon" strokeWidth={2} />
+          <span className="shrink-0 text-xs text-ink/50">Your page:</span>
+          <a href={`/${user.username}`} target="_blank" rel="noreferrer" className="truncate text-xs font-semibold text-maroon hover:underline">
             meeticulous.com/{user.username}
           </a>
           <div className="ml-auto flex shrink-0 items-center gap-0.5">
@@ -411,9 +372,9 @@ const Dashboard = () => {
                   analytics.track(EVENTS.PROFILE_LINK_SHARED, { method: 'copy', source: 'dashboard' });
                 } catch { toast.error('Could not share link'); }
               }}
-              className="shrink-0 p-1 text-gray-400 transition-colors hover:text-primary" title="Share"
+              className="shrink-0 rounded-full p-1.5 text-ink/40 transition-colors hover:bg-blush hover:text-maroon" title="Share"
             >
-              <Share2 className="h-3.5 w-3.5" strokeWidth={2.25} />
+              <Share2 className="h-3.5 w-3.5" strokeWidth={2} />
             </button>
             <button
               onClick={() => {
@@ -421,51 +382,87 @@ const Dashboard = () => {
                 toast.success('Link copied!');
                 analytics.track(EVENTS.PROFILE_LINK_SHARED, { method: 'copy', source: 'dashboard' });
               }}
-              className="shrink-0 p-1 text-gray-400 transition-colors hover:text-gray-700" title="Copy link"
+              className="shrink-0 rounded-full p-1.5 text-ink/40 transition-colors hover:bg-blush hover:text-maroon" title="Copy link"
             >
-              <Copy className="h-3.5 w-3.5" strokeWidth={2.25} />
+              <Copy className="h-3.5 w-3.5" strokeWidth={2} />
             </button>
           </div>
         </div>
       ) : (
-        <div className="flex flex-1 items-start gap-3 rounded-md border border-primary/30 bg-primary-light p-4">
-          <Link2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" strokeWidth={2.25} />
+        <div className="flex items-start gap-3 rounded-2xl border-2 border-maroon/20 bg-blush p-4">
+          <Link2 className="mt-0.5 h-5 w-5 shrink-0 text-maroon" strokeWidth={2} />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-gray-900">Set up your public profile</p>
-            <p className="mt-0.5 text-xs text-gray-500">Add a username so clients can find and book you.</p>
+            <p className="text-sm font-semibold text-ink">Set up your public profile</p>
+            <p className="mt-0.5 text-xs text-ink/60">Add a username so clients can find and book you.</p>
           </div>
           <Link to="/dashboard/profile" className={cn(buttonClasses({ variant: 'primary', size: 'sm' }), 'shrink-0 whitespace-nowrap')}>
             Set username
           </Link>
         </div>
       )}
-      {balance && (balance.available != null || balance.clearing != null || balance.pendingCompletion != null) && (
-        <Link to="/dashboard/payments/payouts"
-          className="flex flex-1 flex-wrap items-center gap-x-6 gap-y-2 rounded-md border border-gray-200 bg-white px-4 py-3 transition-colors hover:border-primary/30 hover:no-underline">
-          <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
-            <Wallet className="h-4 w-4 text-primary" strokeWidth={2.25} /> Money
-          </span>
-          <MoneyBit label="Available" value={fmtMoney(balance.available, { decimals: true })} tone="text-primary" />
-          <MoneyBit label="Clearing" value={fmtMoney(balance.clearing, { decimals: true })} tone="text-amber-600" />
-          <MoneyBit label="Pending" value={fmtMoney(balance.pendingCompletion, { decimals: true })} tone="text-gray-700" />
-          <ArrowRight className="ml-auto h-4 w-4 text-gray-300" strokeWidth={2.25} />
-        </Link>
-      )}
       </div>
+
+      {/* Next step — ONE ranked nudge. Share keeps its rich card (flat blush, no
+          gradient per brand); KYC / upgrade / legacy render via NextStepCard. */}
+      {nextStep?.key === 'share' ? (
+        <div className="mb-5 rounded-2xl border-2 border-maroon/15 bg-blush p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="font-display text-base font-bold text-maroon">You're live. Share your link to get your first booking.</p>
+              <p className="mt-1 text-sm text-ink/70">
+                Bookings come from people who see your link. Send it to your followers, groups and DMs — this is the one thing that gets you booked.
+              </p>
+            </div>
+            <button onClick={() => dismissNudge('share')} aria-label="Dismiss" className="rounded-full p-1 text-maroon/40 transition hover:bg-white hover:text-maroon">
+              <XCircle className="h-4 w-4" strokeWidth={2} />
+            </button>
+          </div>
+
+          <div className="mt-3 flex items-center gap-2 rounded-full border-2 border-maroon/10 bg-white px-3 py-2">
+            <Link2 className="h-4 w-4 shrink-0 text-maroon" strokeWidth={2} />
+            <span className="truncate text-sm font-semibold text-ink">{profileUrl.replace(/^https?:\/\//, '')}</span>
+          </div>
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
+              target="_blank" rel="noreferrer"
+              onClick={() => trackShare('whatsapp')}
+              className="inline-flex items-center gap-1.5 rounded-full bg-maroon px-4 py-2 text-sm font-semibold text-white transition hover:bg-maroon-dark hover:no-underline"
+            >
+              <MessageCircle className="h-4 w-4" strokeWidth={2} /> Share on WhatsApp
+            </a>
+            <button
+              onClick={shareNative}
+              className="inline-flex items-center gap-1.5 rounded-full border-2 border-maroon/20 bg-white px-4 py-2 text-sm font-semibold text-maroon transition hover:bg-blush"
+            >
+              <Share2 className="h-4 w-4" strokeWidth={2} /> Share
+            </button>
+            <button
+              onClick={() => { navigator.clipboard.writeText(profileUrl); toast.success('Link copied!'); trackShare('copy'); }}
+              className="inline-flex items-center gap-1.5 rounded-full border-2 border-maroon/20 bg-white px-4 py-2 text-sm font-semibold text-maroon transition hover:bg-blush"
+            >
+              <Copy className="h-4 w-4" strokeWidth={2} /> Copy link
+            </button>
+          </div>
+        </div>
+      ) : nextStep ? (
+        <NextStepCard nudge={nextStep} onDismiss={() => dismissNudge(nextStep.key)} />
+      ) : null}
 
       {loading ? <DashboardSkeleton /> : (
       <>
-      {/* Next session — the host's "what now" at a glance */}
+      {/* Next session — the host's "what now". Pink dot = a live booked slot. */}
       {m.nextUp && (
-        <div className="mb-5 flex flex-col gap-3 rounded-md border border-primary/20 bg-primary-light/50 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-5 flex flex-col gap-3 rounded-2xl border-2 border-maroon/15 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-primary">
-              <CalendarClock className="h-3.5 w-3.5" strokeWidth={2.5} /> Next session · {relWhen(m.nextUp.scheduled_at)}
+            <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-maroon">
+              <span className="h-2 w-2 rounded-full bg-pink" aria-hidden="true" /> Next session · {relWhen(m.nextUp.scheduled_at)}
             </p>
-            <p className="mt-1 truncate text-sm font-semibold text-gray-900">
+            <p className="mt-1 truncate text-sm font-semibold text-ink">
               {m.nextUp.guest_name || 'Guest'} · {m.nextUp.services?.title || 'Session'}
             </p>
-            <p className="text-xs text-gray-500">{fmtDate(m.nextUp.scheduled_at)}</p>
+            <p className="text-xs text-ink/50">{fmtDate(m.nextUp.scheduled_at)}</p>
           </div>
           <div className="flex w-full shrink-0 items-center gap-2 sm:w-auto">
             {m.nextUp.meeting_link && (
@@ -475,106 +472,87 @@ const Dashboard = () => {
               </a>
             )}
             <Link to="/dashboard/bookings"
-              className="inline-flex min-h-11 flex-1 items-center justify-center whitespace-nowrap rounded-md border border-gray-200 bg-white px-3 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-50 hover:no-underline sm:min-h-0 sm:flex-none sm:py-1.5">
+              className="inline-flex min-h-11 flex-1 items-center justify-center whitespace-nowrap rounded-full border-2 border-maroon/20 bg-white px-4 text-xs font-semibold text-maroon transition hover:bg-blush hover:no-underline sm:min-h-0 sm:flex-none sm:py-2">
               View
             </Link>
           </div>
         </div>
       )}
 
-      {/* Past sessions still open — needs-action nudge */}
+      {/* Past sessions still open — needs-action alert (rose = attention). */}
       {m.needsAction > 0 && (
-        <div className="mb-5 flex items-center justify-between gap-3 rounded-md border border-amber-200 bg-amber-50 px-4 py-3">
-          <p className="text-sm font-medium text-amber-800">
+        <div className="mb-5 flex items-center justify-between gap-3 rounded-2xl border-2 border-rose/30 bg-blush px-4 py-3">
+          <p className="text-sm font-medium text-maroon">
             {m.needsAction} {m.needsAction === 1 ? 'session has' : 'sessions have'} passed and need wrapping up.
           </p>
           <Link to="/dashboard/bookings"
-            className="shrink-0 whitespace-nowrap rounded bg-amber-600 px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-amber-700 hover:no-underline">
+            className="shrink-0 whitespace-nowrap rounded-full bg-maroon px-4 py-1.5 text-xs font-bold text-white transition hover:bg-maroon-dark hover:no-underline">
             Review
           </Link>
         </div>
       )}
 
-      {/* 2 rows × 2 columns */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5">
-        {/* Top-Left: bookings stats (2×2) */}
-        <Card as="section">
-          <h2 className="mb-3 text-sm font-semibold text-gray-700">Bookings overview</h2>
-          <div className="grid grid-cols-2 gap-3">
-            <Stat Icon={CalendarClock} label="Upcoming"       value={m.upcoming}  tint="bg-blue-50 text-blue-600"   to="/dashboard/bookings" />
-            <Stat Icon={CheckCircle2}  label="Completed"      value={m.completed} tint="bg-green-50 text-green-600" to="/dashboard/bookings" />
-            <Stat Icon={XCircle}       label="Cancelled"      value={m.cancelled} tint="bg-red-50 text-red-600"     to="/dashboard/bookings" />
-            <Stat Icon={CalendarDays}  label="Total Bookings" value={m.total}     tint="bg-gray-100 text-gray-600"  to="/dashboard/bookings" />
-          </div>
-        </Card>
+      {/* At a glance — three figures that matter, no rainbow tiles. */}
+      <div className="mb-5 grid grid-cols-3 gap-3">
+        <GlanceStat label="Upcoming"  value={m.upcoming}  to="/dashboard/bookings" />
+        <GlanceStat label="Pending"   value={m.pending}   to="/dashboard/bookings" />
+        <GlanceStat label="Completed" value={m.completed} to="/dashboard/bookings" />
+      </div>
 
-        {/* Top-Right: business stats (2×2) */}
-        <Card as="section">
-          <h2 className="mb-3 text-sm font-semibold text-gray-700">Your business</h2>
-          <div className="grid grid-cols-2 gap-3">
-            <Stat Icon={LayoutGrid}  label="Total Services"      value={m.services}            tint="bg-purple-50 text-purple-600" to="/dashboard/services" />
-            <Stat Icon={IndianRupee} label="Total Earnings"      value={fmtMoney(m.earnings)}  tint="bg-primary-light text-primary" to="/dashboard/earnings"
-              title="Lifetime gross from paid bookings. See Money for your settlement balance (available / clearing / pending)." />
-            <Stat Icon={UserCheck}   label="Profile Completion"  value={`${completion}%`}      tint="bg-amber-50 text-amber-600"   to="/dashboard/profile" />
-            <Stat Icon={Hourglass}   label="Pending Requests"    value={m.pending}             tint="bg-teal-50 text-teal-600"     to="/dashboard/bookings"
-              title="Bookings awaiting your confirmation." />
-          </div>
-        </Card>
-
-        {/* Bottom-Left: upcoming + recent (1 col, 2 rows) */}
-        <Card as="section" className="flex flex-col gap-4">
+      {/* Bookings list + Finish setup. */}
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <Card as="section" className="flex flex-col gap-4 rounded-2xl">
           <div>
             <div className="mb-1 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-gray-700">Upcoming Bookings</h2>
-              <Link to="/dashboard/bookings" className="text-xs text-primary hover:underline">View all</Link>
+              <h2 className="font-display text-sm font-bold text-maroon">Upcoming bookings</h2>
+              <Link to="/dashboard/bookings" className="text-xs font-semibold text-maroon hover:underline">View all</Link>
             </div>
             {m.upcomingList.length === 0 ? (
-              <p className="py-3 text-xs text-gray-400">No upcoming bookings. Share your profile to get booked.</p>
+              <p className="py-3 text-xs text-ink/50">No upcoming bookings. Share your page to get booked.</p>
             ) : (
-              <div className="divide-y divide-gray-100">{m.upcomingList.map((b) => <BookingRow key={b.id} b={b} />)}</div>
+              <div className="divide-y divide-maroon/5">{m.upcomingList.map((b) => <BookingRow key={b.id} b={b} />)}</div>
             )}
           </div>
-          <div className="border-t border-gray-100 pt-3">
-            <h2 className="mb-1 text-sm font-semibold text-gray-700">Recent Bookings</h2>
+          <div className="border-t-2 border-maroon/5 pt-3">
+            <h2 className="mb-1 font-display text-sm font-bold text-maroon">Recent bookings</h2>
             {m.recentList.length === 0 ? (
-              <p className="py-3 text-xs text-gray-400">No past bookings yet — they&rsquo;ll gather here as you go.</p>
+              <p className="py-3 text-xs text-ink/50">No past bookings yet — they&rsquo;ll gather here as you go.</p>
             ) : (
-              <div className="divide-y divide-gray-100">{m.recentList.map((b) => <BookingRow key={b.id} b={b} />)}</div>
+              <div className="divide-y divide-maroon/5">{m.recentList.map((b) => <BookingRow key={b.id} b={b} />)}</div>
             )}
           </div>
         </Card>
 
-        {/* Bottom-Right: checklist or success */}
-        <Card as="section">
+        <Card as="section" className="rounded-2xl">
           {allDone ? (
             <div className="flex h-full flex-col items-center justify-center py-6 text-center">
-              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-green-50">
-                <CheckCircle2 className="h-7 w-7 text-green-600" strokeWidth={2} />
+              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-success-fg/10">
+                <CheckCircle2 className="h-7 w-7 text-success-fg" strokeWidth={2} />
               </div>
-              <p className="font-semibold text-gray-900">Everything is set.</p>
-              <p className="mt-1 text-xs text-gray-500">Your account is fully configured. You're ready to grow.</p>
+              <p className="font-display font-bold text-maroon">Everything is set.</p>
+              <p className="mt-1 text-xs text-ink/60">Your account is fully configured. You're ready to grow.</p>
             </div>
           ) : (
             <>
               <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-sm font-semibold text-gray-700">Finish setup</h2>
-                <span className="text-xs font-medium text-gray-500">{completion}%</span>
+                <h2 className="font-display text-sm font-bold text-maroon">Finish setup</h2>
+                <span className="text-xs font-semibold text-ink/60">{completion}%</span>
               </div>
-              <div className="mb-4 h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
-                <div className="h-full bg-primary transition-all" style={{ width: `${completion}%` }} />
+              <div className="mb-4 h-2 w-full overflow-hidden rounded-full bg-blush">
+                <div className="h-full rounded-full bg-maroon transition-all" style={{ width: `${completion}%` }} />
               </div>
               <ul className="space-y-1.5">
                 {checklist.map((c) => {
                   const inner = (
                     <>
-                      <span className={cn('flex h-7 w-7 shrink-0 items-center justify-center rounded-md', c.done ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500')}>
-                        {c.done ? <Check className="h-4 w-4" strokeWidth={3} /> : <c.Icon className="h-4 w-4" strokeWidth={2.25} />}
+                      <span className={cn('flex h-7 w-7 shrink-0 items-center justify-center rounded-full', c.done ? 'bg-success-fg/10 text-success-fg' : 'bg-blush text-maroon')}>
+                        {c.done ? <Check className="h-4 w-4" strokeWidth={3} /> : <c.Icon className="h-4 w-4" strokeWidth={2} />}
                       </span>
-                      <span className={cn('flex-1 text-sm', c.done ? 'text-gray-400 line-through' : 'text-gray-700')}>{c.label}</span>
-                      {!c.done && <ArrowRight className="h-4 w-4 shrink-0 text-gray-300" strokeWidth={2.25} />}
+                      <span className={cn('flex-1 text-sm', c.done ? 'text-ink/40 line-through' : 'text-ink')}>{c.label}</span>
+                      {!c.done && <ArrowRight className="h-4 w-4 shrink-0 text-maroon/30" strokeWidth={2} />}
                     </>
                   );
-                  const cls = 'flex w-full items-center gap-3 rounded p-1.5 text-left transition hover:bg-gray-50 disabled:hover:bg-transparent';
+                  const cls = 'flex w-full items-center gap-3 rounded-xl p-1.5 text-left transition hover:bg-blush/60 disabled:hover:bg-transparent';
                   if (c.done) return <li key={c.key}><div className="flex items-center gap-3 p-1.5">{inner}</div></li>;
                   return (
                     <li key={c.key}>
@@ -594,7 +572,7 @@ const Dashboard = () => {
 
       {/* Only render the modal when the host is not yet verified — belt-and-suspenders guard */}
       <Modal open={whatsappModalOpen && !user?.whatsapp_verified} title="Verify WhatsApp" onClose={() => setWhatsappModalOpen(false)}>
-        <p className="mb-4 text-sm text-gray-500">
+        <p className="mb-4 text-sm text-ink/60">
           Receive booking confirmations and important updates directly on WhatsApp.
         </p>
         <WhatsAppVerify
