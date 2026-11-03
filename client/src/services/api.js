@@ -122,7 +122,7 @@ export const loginUser        = (data)         => API.post('/auth/login', data);
 export const loginUnified     = (data)         => API.post('/auth/login-unified', data);
 export const getMe            = ()             => API.get('/auth/me');
 export const updateMe         = (data)         => API.put('/auth/me', data);
-export const getGoogleAuthUrl = ()             => API.get('/auth/google');
+export const getGoogleAuthUrl = (returnPath)  => API.get('/auth/google', returnPath ? { params: { return: returnPath } } : undefined);
 // Vendor Google auth (public): one consent screen = identity + calendar scopes.
 // Attribution rides along as query params so a host who arrived from an ad/campaign
 // is stamped with their acquisition source (CRM Phase 2b).

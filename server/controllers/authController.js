@@ -421,9 +421,16 @@ const registerVendor = async (req, res) => {
 // calendar from the dashboard/onboarding. Returns the consent URL.
 // State is signed so the callback can verify origin (CSRF) and knows which
 // vendor to attach the tokens to (no more email-collision risk).
+// Where Google may send the host back to after calendar connect. The path comes
+// from the client, so it is an open-redirect vector: exact-match allowlist only
+// (no query, fragment, encoding or traversal can satisfy these anchored regexes).
+const safeReturnPath = (p) =>
+  typeof p === "string" && /^\/(dashboard|vendor-register\/[a-z0-9-]{1,40}\/calendar)$/.test(p) ? p : null;
+
 const googleAuth = (req, res) => {
+  const ret = safeReturnPath(req.query?.return);
   const state = jwt.sign(
-    { flow: "calendar_connect", uid: req.user.id },
+    { flow: "calendar_connect", uid: req.user.id, ...(ret && { ret }) },
     OAUTH_STATE_SECRET,
     { expiresIn: "15m" },
   );
@@ -802,8 +809,10 @@ const googleCallback = async (req, res) => {
     }
 
     await attachGoogleToProfile(targetId, tokens, googleUser, { calendarOk, alreadyConnected: targetConnected });
-    if (!calendarOk) trackServer(targetId, "calendar_scope_denied", { source: "dashboard" }, { req });
-    res.redirect(`${clientUrl}/dashboard?google=${calendarOk ? "connected" : "denied"}`);
+    // Re-validate: state is signed, but the redirect target is cheap to re-check.
+    const ret = statePayload?.flow === "calendar_connect" ? safeReturnPath(statePayload.ret) : null;
+    if (!calendarOk) trackServer(targetId, "calendar_scope_denied", { source: ret && ret !== "/dashboard" ? "onboarding" : "dashboard" }, { req });
+    res.redirect(`${clientUrl}${ret || "/dashboard"}?google=${calendarOk ? "connected" : "denied"}`);
   } catch (error) {
     console.error("google callback error:", error.message);
     // Vendor-auth failures (e.g. session mint failed) → back to vendor login,

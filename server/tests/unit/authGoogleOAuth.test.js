@@ -108,7 +108,7 @@ const profileUpdates = () =>
   supa.supabaseAdmin.from.mock.results
     .filter((r, i) => supa.supabaseAdmin.from.mock.calls[i][0] === 'profiles')
     .flatMap((r) => r.value.update.mock.calls.map((c) => c[0]));
-const { googleVendorAuth, googleCallback } = require('../../controllers/authController');
+const { googleVendorAuth, googleAuth, googleCallback } = require('../../controllers/authController');
 
 const res = () => {
   const r = {};
@@ -304,5 +304,52 @@ describe('googleCallback — granted calendar scopes', () => {
     await googleCallback({ query: { code: 'abc', state: signState({ flow: 'calendar_connect', uid: 'host-9' }) } }, r);
     expect(r.redirect.mock.calls[0][0]).toBe('https://app.test/dashboard?google=denied');
     expect(trackServer).toHaveBeenCalledWith('host-9', 'calendar_scope_denied', { source: 'dashboard' }, expect.anything());
+  });
+});
+
+describe('calendar connect return path', () => {
+  const stateFor = (ret) => {
+    const r = res();
+    googleAuth({ user: { id: 'host-9' }, query: ret === undefined ? {} : { return: ret } }, r);
+    return jwt.verify(new URL(r.json.mock.calls[0][0].url).searchParams.get('state'), 'test-oauth-secret');
+  };
+  const NO_CAL = { access_token: 'at', refresh_token: 'rt', scope: 'openid email profile' };
+
+  test('onboarding calendar path → ret in state, callback redirects there', async () => {
+    const st = stateFor('/vendor-register/my-page/calendar');
+    expect(st.ret).toBe('/vendor-register/my-page/calendar');
+    const r = res();
+    await googleCallback({ query: { code: 'abc', state: signState({ flow: st.flow, uid: st.uid, ret: st.ret }) } }, r);
+    expect(r.redirect.mock.calls[0][0]).toBe('https://app.test/vendor-register/my-page/calendar?google=connected');
+  });
+
+  test.each([
+    '//evil.com', 'https://evil.com', '/dashboard/../x', '/vendor-register/x/calendar?next=/y',
+    '/vendor-register/x/calendar#f', '/vendor-register/x%2Fy/calendar', '/vendor-register/X/calendar',
+    '/vendor-register//calendar', '/dashboard\evil', '/vendor-register/x/calendar/', ['/dashboard'], { a: 1 }, '',
+  ])('rejects %p → no ret, dashboard redirect', async (bad) => {
+    const st = stateFor(bad);
+    expect(st.ret).toBeUndefined();
+    const r = res();
+    await googleCallback({ query: { code: 'abc', state: signState({ flow: st.flow, uid: st.uid, ret: st.ret }) } }, r);
+    expect(r.redirect.mock.calls[0][0]).toBe('https://app.test/dashboard?google=connected');
+  });
+
+  test('no return param → no ret', () => {
+    expect(stateFor(undefined).ret).toBeUndefined();
+  });
+
+  test('callback re-validates a forged ret in signed state', async () => {
+    const r = res();
+    await googleCallback({ query: { code: 'abc', state: signState({ flow: 'calendar_connect', uid: 'host-9', ret: '//evil.com' }) } }, r);
+    expect(r.redirect.mock.calls[0][0]).toBe('https://app.test/dashboard?google=connected');
+  });
+
+  test('denied from onboarding → denied redirect there, source onboarding', async () => {
+    getTokensFromCode.mockResolvedValue(NO_CAL);
+    const r = res();
+    await googleCallback({ query: { code: 'abc', state: signState({ flow: 'calendar_connect', uid: 'host-9', ret: '/vendor-register/my-page/calendar' }) } }, r);
+    expect(r.redirect.mock.calls[0][0]).toBe('https://app.test/vendor-register/my-page/calendar?google=denied');
+    expect(trackServer).toHaveBeenCalledWith('host-9', 'calendar_scope_denied', { source: 'onboarding' }, expect.anything());
   });
 });

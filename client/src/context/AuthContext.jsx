@@ -184,8 +184,9 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  const connectGoogleCalendar = async () => {
-    const { data } = await getGoogleAuthUrl();
+  const connectGoogleCalendar = async (returnPath) => {
+    // Some callers use this as an onClick handler (event arg) — only a string is a path.
+    const { data } = await getGoogleAuthUrl(typeof returnPath === 'string' ? returnPath : undefined);
     window.location.href = data.url;
   };
 
