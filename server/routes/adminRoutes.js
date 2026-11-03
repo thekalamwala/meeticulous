@@ -144,6 +144,17 @@ router.get('/reviews',           requireAdmin('reviews.moderate'), reviewsAdmin.
 router.patch('/reviews/:id',     requireAdmin('reviews.moderate'), reviewsAdmin.moderateReview);
 router.delete('/reviews/:id',    requireAdmin('reviews.moderate'), reviewsAdmin.deleteReview);
 
+// ── Community moderation ───────────────────────────────────────
+const communityAdmin = require('../controllers/communityAdminController');
+router.get('/community/reports',                       requireAdmin('community.view'),     communityAdmin.listReports);
+router.post('/community/reports/:id/resolve',          requireAdmin('community.moderate'), communityAdmin.resolveReport);
+router.get('/community/content',                       requireAdmin('community.view'),     communityAdmin.searchContent);
+router.post('/community/content/posts/:id/pin',        requireAdmin('community.moderate'), communityAdmin.pin);
+router.post('/community/content/:type/:id/moderate',   requireAdmin('community.moderate'), communityAdmin.moderate);
+router.get('/community/members',                       requireAdmin('community.view'),     communityAdmin.listMembers);
+router.patch('/community/members/:userId',             requireAdmin('community.moderate'), communityAdmin.patchMember);
+router.patch('/community/spaces/:key',                 requireAdmin('community.moderate'), communityAdmin.patchSpace);
+
 // ── Vendor feedback (triage) ───────────────────────────────────
 const feedbackAdmin = require('../controllers/feedbackAdminController');
 router.get('/feedback',         requireAdmin('feedback.view'),   feedbackAdmin.listFeedback);

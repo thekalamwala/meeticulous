@@ -243,5 +243,5 @@ module.exports = {
   linksAllowed, getProfile, getMember, acceptTerms, getSpaceByKey, getSpaceById,
   insertPost, getPost, updatePost, insertMedia, listMedia, resolveUsernames, insertMentions,
   getComment, insertComment, updateComment, addReaction, removeReaction,
-  insertReport, countOpenReports, viewContext, refreshIndexable,
+  insertReport, countOpenReports, viewContext, refreshIndexable, run, runCount,
 };

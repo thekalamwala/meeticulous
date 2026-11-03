@@ -20,7 +20,7 @@ const displayName = (p) => (!p ? 'Someone' : p.is_host ? (p.name?.trim() || p.us
 const firstName = (p) => (p.is_host ? (p.name || '').trim().split(/\s+/)[0] : p.first_name?.trim()) || 'there';
 
 // Eligible recipients among `ids`: has a profile, not banned, not an AI account. -> Map id -> {profile, member}
-async function loadRecipients(ids, extraProfileIds = []) {
+async function loadRecipients(ids, extraProfileIds = [], { allowBanned = false } = {}) {
   const all = [...new Set([...ids, ...extraProfileIds].filter(Boolean))];
   if (!all.length) return { byId: new Map(), profiles: new Map() };
   const [profiles, members] = await Promise.all([
@@ -34,7 +34,7 @@ async function loadRecipients(ids, extraProfileIds = []) {
     const profile = pMap.get(id);
     const member = mMap.get(id) || null;
     const banned = !!member?.banned_until && new Date(member.banned_until).getTime() > Date.now();
-    if (!profile || profile.is_banned || banned || member?.badge === 'ai') continue;
+    if (!profile || member?.badge === 'ai' || (!allowBanned && (profile.is_banned || banned))) continue;
     byId.set(id, { profile, member });
   }
   return { byId, profiles: pMap };
@@ -123,7 +123,7 @@ async function onRemoved({ targetType, item, comment } = {}) {
   try {
     const row = comment || item;
     if (!row?.author_id) return;
-    const { byId } = await loadRecipients([row.author_id]);
+    const { byId } = await loadRecipients([row.author_id], [], { allowBanned: true }); // moderators often ban + remove together
     const r = byId.get(row.author_id);
     if (!r) return;
     const what = comment || targetType === 'comment' ? 'reply' : 'post';

@@ -113,3 +113,13 @@ test('never rejects', async () => {
   expect(spy).toHaveBeenCalledWith('[community-notify]', 'boom');
   inAppNotify.mockReset(); spy.mockRestore();
 });
+
+test('removed: still notifies a banned author, never ai or deleted accounts', async () => {
+  setup({ profiles: [prof('B', { is_banned: true })], members: [{ user_id: 'B', banned_until: new Date(Date.now() + 1e9).toISOString() }] });
+  await onRemoved({ targetType: 'post', item, comment: null });
+  expect(inAppNotify).toHaveBeenCalledTimes(1);
+  setup({ profiles: [prof('B')], members: [{ user_id: 'B', badge: 'ai' }] });
+  await onRemoved({ targetType: 'post', item: { ...item, id: 'P2' }, comment: null });
+  await onRemoved({ targetType: 'post', item: { ...item, id: 'P3', author_id: null }, comment: null });
+  expect(inAppNotify).toHaveBeenCalledTimes(1);
+});
