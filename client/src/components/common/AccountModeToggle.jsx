@@ -23,24 +23,23 @@ const AccountModeToggle = () => {
   };
 
   const seg = (active) =>
-    `flex-1 px-4 py-2 text-sm font-semibold rounded-lg transition ${
-      active ? "bg-[#960D32] text-white shadow-sm" : "text-gray-600 hover:text-gray-900"
+    `px-3 py-1 text-xs font-semibold rounded-full transition ${
+      active ? "bg-[#960D32] text-white shadow-sm" : "text-gray-500 hover:text-gray-800"
     }`;
 
+  // Compact: one slim row. "Viewing as" + the two labels already say what it does,
+  // so the explanatory paragraph (and the oversized card) are gone.
   return (
-    <div className="bg-white border rounded-2xl p-5 sm:p-6 mb-6">
-      <div className="flex items-center gap-1.5 text-xs font-medium text-gray-500 mb-2">
-        <Repeat size={13} /> Account mode
-      </div>
-      <p className="text-sm text-gray-500 mb-3">
-        You own both a host and a guest space. Switch which one you're using.
-      </p>
-      <div className="flex gap-1 p-1 rounded-xl bg-gray-100">
+    <div className="mb-5 flex items-center justify-between gap-3 rounded-xl border bg-white px-4 py-2">
+      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500">
+        <Repeat size={13} /> Viewing as
+      </span>
+      <div className="flex gap-1 rounded-full bg-gray-100 p-0.5">
         <button type="button" className={seg(mode === "hosting")} onClick={() => switchTo("hosting")}>
-          As a Host
+          Host
         </button>
         <button type="button" className={seg(mode === "traveling")} onClick={() => switchTo("traveling")}>
-          As a Guest
+          Guest
         </button>
       </div>
     </div>
