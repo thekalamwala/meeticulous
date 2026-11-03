@@ -100,7 +100,8 @@ jest.mock('../../services/usernameService', () => ({
 
 const jwt = require('jsonwebtoken');
 const supa = require('../../config/supabase');
-const { getTokensFromCode } = require('../../config/google');
+const { getTokensFromCode, getCalendarTimezone } = require('../../config/google');
+const profileSecrets = require('../../utils/profileSecrets');
 const { trackServer } = require('../../utils/trackServer');
 const FULL_SCOPE = 'openid email profile https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.freebusy https://www.googleapis.com/auth/calendar.settings.readonly';
 // Every update() payload passed on a from('profiles') chain.
@@ -121,6 +122,8 @@ const signState = (payload) => jwt.sign(payload, 'test-oauth-secret', { expiresI
 
 beforeEach(() => {
   jest.clearAllMocks();
+  jest.spyOn(profileSecrets, 'setGoogleTokens').mockResolvedValue(undefined);
+  jest.spyOn(profileSecrets, 'getGoogleTokens').mockResolvedValue({});
   getTokensFromCode.mockResolvedValue({ access_token: 'at', refresh_token: 'rt', scope: FULL_SCOPE });
   supa.__state.existing = null;
   supa.__state.profile = { id: 'p-1', username: 'new-vendor', name: 'New Vendor', email: 'new@vendor.com', role: 'host' };
@@ -212,6 +215,49 @@ describe('googleCallback — CSRF / errors', () => {
     expect(r.status).toHaveBeenCalledWith(400);
   });
 
+  test('vendor_auth cancel (error, no code) → /login-as-vendor?error=cancelled', async () => {
+    const r = res();
+    await googleCallback({ query: { error: 'access_denied', state: signState({ flow: 'vendor_auth' }) } }, r);
+    expect(r.redirect.mock.calls[0][0]).toBe('https://app.test/login-as-vendor?error=cancelled');
+    expect(r.status).not.toHaveBeenCalled();
+  });
+
+  test('calendar_connect cancel from onboarding → back to the calendar screen, denied', async () => {
+    const r = res();
+    await googleCallback({ query: { error: 'access_denied', state: signState({ flow: 'calendar_connect', uid: 'h', ret: '/vendor-register/my-page/calendar' }) } }, r);
+    expect(r.redirect.mock.calls[0][0]).toBe('https://app.test/vendor-register/my-page/calendar?google=denied');
+  });
+
+  test('calendar_connect cancel with unsafe ret → /dashboard?google=denied', async () => {
+    const r = res();
+    await googleCallback({ query: { error: 'access_denied', state: signState({ flow: 'calendar_connect', uid: 'h', ret: '//evil.com' }) } }, r);
+    expect(r.redirect.mock.calls[0][0]).toBe('https://app.test/dashboard?google=denied');
+  });
+
+  test('error with forged state and no code → still 400', async () => {
+    const r = res();
+    await googleCallback({ query: { error: 'access_denied', state: 'nope' } }, r);
+    expect(r.status).toHaveBeenCalledWith(400);
+  });
+
+  test('calendar_connect exchange failure from onboarding → returns to the calendar screen with google=error', async () => {
+    getTokensFromCode.mockRejectedValueOnce(new Error('exchange boom'));
+    const errSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const r = res();
+    await googleCallback({ query: { code: 'abc', state: signState({ flow: 'calendar_connect', uid: 'h', ret: '/vendor-register/my-page/calendar' }) } }, r);
+    expect(r.redirect.mock.calls[0][0]).toBe('https://app.test/vendor-register/my-page/calendar?google=error&reason=auth_failed');
+    errSpy.mockRestore();
+  });
+
+  test('calendar_connect exchange failure without ret → /dashboard?google=error', async () => {
+    getTokensFromCode.mockRejectedValueOnce(new Error('exchange boom'));
+    const errSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const r = res();
+    await googleCallback({ query: { code: 'abc', state: signState({ flow: 'calendar_connect', uid: 'h' }) } }, r);
+    expect(r.redirect.mock.calls[0][0]).toBe('https://app.test/dashboard?google=error&reason=auth_failed');
+    errSpy.mockRestore();
+  });
+
   test('session mint failure routes vendor back to /login-as-vendor (not /dashboard)', async () => {
     mockMintSession.mockRejectedValueOnce(new Error('mint boom'));
     const r = res();
@@ -246,8 +292,21 @@ describe('googleCallback — granted calendar scopes', () => {
     expect(u).toContainEqual(expect.objectContaining({ google_calendar_connected: false, calendar_skipped: false }));
     expect(u.some((p) => p.calendar_skipped === true)).toBe(false);
     expect(trackServer).toHaveBeenCalledWith('p-1', 'calendar_scope_denied', { source: 'signup' }, expect.anything());
+    // Denied: no tokens stored, no legacy revoke read, no Google timezone call.
+    expect(profileSecrets.setGoogleTokens).not.toHaveBeenCalled();
+    expect(profileSecrets.getGoogleTokens).not.toHaveBeenCalled();
+    expect(getCalendarTimezone).not.toHaveBeenCalled();
+    // Flow A is the login identity: google_id IS recorded.
+    expect(u).toContainEqual(expect.objectContaining({ google_id: 'g-1' }));
     expect(mockMintSession).toHaveBeenCalled();
     expect(r.redirect.mock.calls[0][0]).toContain('new=1');
+  });
+
+  test('returning (not yet connected) host denied calendar → source login', async () => {
+    getTokensFromCode.mockResolvedValue(NO_CAL);
+    supa.__state.existing = { id: 'p-1', role: 'host', is_host: true, email: 'new@vendor.com', google_calendar_connected: false };
+    await googleCallback({ query: { code: 'abc', state: vendorState('login') } }, res());
+    expect(trackServer).toHaveBeenCalledWith('p-1', 'calendar_scope_denied', { source: 'login' }, expect.anything());
   });
 
   test('signup with full scopes → calendar_skipped:true and connected:true', async () => {
@@ -276,7 +335,7 @@ describe('googleCallback — granted calendar scopes', () => {
     await googleCallback({ query: { code: 'abc', state: vendorState('login') } }, r);
     const u = profileUpdates();
     expect(u.some((p) => 'google_calendar_connected' in p || 'calendar_skipped' in p)).toBe(false);
-    expect(trackServer).toHaveBeenCalledWith('p-1', 'calendar_scope_denied', { source: 'signup' }, expect.anything());
+    expect(trackServer).toHaveBeenCalledWith('p-1', 'calendar_scope_denied', { source: 'login' }, expect.anything());
     expect(r.redirect.mock.calls[0][0]).toContain('new=0');
   });
 
@@ -304,6 +363,11 @@ describe('googleCallback — granted calendar scopes', () => {
     await googleCallback({ query: { code: 'abc', state: signState({ flow: 'calendar_connect', uid: 'host-9' }) } }, r);
     expect(r.redirect.mock.calls[0][0]).toBe('https://app.test/dashboard?google=denied');
     expect(trackServer).toHaveBeenCalledWith('host-9', 'calendar_scope_denied', { source: 'dashboard' }, expect.anything());
+    // Nothing was attached, so the calendar account's google_id must not be written.
+    expect(profileUpdates().some((p) => 'google_id' in p)).toBe(false);
+    expect(profileSecrets.setGoogleTokens).not.toHaveBeenCalled();
+    expect(profileSecrets.getGoogleTokens).not.toHaveBeenCalled();
+    expect(getCalendarTimezone).not.toHaveBeenCalled();
   });
 });
 
@@ -326,7 +390,7 @@ describe('calendar connect return path', () => {
   test.each([
     '//evil.com', 'https://evil.com', '/dashboard/../x', '/vendor-register/x/calendar?next=/y',
     '/vendor-register/x/calendar#f', '/vendor-register/x%2Fy/calendar', '/vendor-register/X/calendar',
-    '/vendor-register//calendar', '/dashboard\evil', '/vendor-register/x/calendar/', ['/dashboard'], { a: 1 }, '',
+    '/vendor-register//calendar', '/dashboard\\evil', '/vendor-register/x/calendar/', ['/dashboard'], { a: 1 }, '',
   ])('rejects %p → no ret, dashboard redirect', async (bad) => {
     const st = stateFor(bad);
     expect(st.ret).toBeUndefined();
@@ -385,6 +449,25 @@ describe('browser timezone fallback', () => {
     getTokensFromCode.mockResolvedValue(NO_CAL);
     await googleCallback({ query: { code: 'abc', state: signState({ flow: 'vendor_auth', intent: 'signup' }) } }, res());
     expect(availUpserts()).toContainEqual(expect.objectContaining({ timezone: 'Asia/Kolkata' }));
+  });
+
+  test.each(['UTC', 'GMT', 'Etc/UTC'])('Google reporting %s does not beat the browser tz', async (g) => {
+    getCalendarTimezone.mockResolvedValueOnce(g);
+    await googleCallback({ query: { code: 'abc', state: signState({ flow: 'vendor_auth', intent: 'signup', tz: 'Asia/Dubai' }) } }, res());
+    expect(availUpserts()).toContainEqual(expect.objectContaining({ timezone: 'Asia/Dubai' }));
+  });
+
+  test('availability read error → no upsert (never overwrite a chosen timezone)', async () => {
+    const realFrom = supa.supabaseAdmin.from.getMockImplementation();
+    supa.supabaseAdmin.from.mockImplementation((t) => {
+      const c = realFrom(t);
+      if (t === 'availability') c.maybeSingle = jest.fn().mockResolvedValue({ data: null, error: { message: 'db down' } });
+      return c;
+    });
+    getTokensFromCode.mockResolvedValue(NO_CAL);
+    await googleCallback({ query: { code: 'abc', state: signState({ flow: 'vendor_auth', intent: 'signup', tz: 'Asia/Dubai' }) } }, res());
+    expect(availUpserts()).toEqual([]);
+    supa.supabaseAdmin.from.mockImplementation(realFrom);
   });
 
   test('browser UTC is normalised to Asia/Kolkata', async () => {

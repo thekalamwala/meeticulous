@@ -37,6 +37,9 @@ const CalendarStep = () => {
 
   const google = params.get('google');
   const denied = google === 'denied';
+  // Server-side failure on the Google return (token exchange etc.) — same screen,
+  // different copy, so a mid-onboarding host never silently skips to Live.
+  const failed = google === 'error';
   const goLive = () => navigate(`/vendor-register/${slug}/live`, { replace: true });
 
   useEffect(() => {
@@ -118,6 +121,12 @@ const CalendarStep = () => {
               ))}
             </ul>
             <p className="text-sm text-muted">Any Google account works — it doesn’t have to be the one you signed in with.</p>
+
+            {failed && (
+              <p role="alert" className="rounded-md bg-blush px-4 py-3 text-sm text-ink">
+                We couldn’t connect your calendar. Try again, or skip for now.
+              </p>
+            )}
 
             {denied && (
               <p role="alert" className="rounded-md bg-blush px-4 py-3 text-sm text-ink">

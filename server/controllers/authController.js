@@ -527,11 +527,16 @@ const exchangeGoogleCode = async (code) => {
 // normalizeSeedTimezone. Non-fatal: a timezone problem must never block login.
 async function seedAvailabilityTimezone(profileId, getGoogleTz, seedTz) {
   try {
-    const { data: avail } = await supabaseAdmin
+    // A failed read must NOT fall through to the upsert: it could overwrite a
+    // timezone the host already chose.
+    const { data: avail, error: availErr } = await supabaseAdmin
       .from("availability").select("host_id").eq("host_id", profileId).maybeSingle();
-    if (avail) return;
+    if (availErr || avail) return;
     let googleTz = null;
     try { googleTz = await getGoogleTz(); } catch (e) { console.error("google timezone read (non-fatal):", e.message); }
+    // Google reporting UTC/GMT usually means "never set", not a real zone — it
+    // must not beat the browser timezone.
+    if (/^(utc|gmt|etc\/utc|etc\/gmt)$/i.test(String(googleTz || "").trim())) googleTz = null;
     await supabaseAdmin.from("availability").upsert(
       { host_id: profileId, timezone: normalizeSeedTimezone(googleTz || seedTz), updated_at: new Date().toISOString() },
       { onConflict: "host_id" },
@@ -547,19 +552,21 @@ async function seedAvailabilityTimezone(profileId, getGoogleTz, seedTz) {
 // legacy revoke and timezone call, and record connected=false / skipped=false so
 // onboarding still asks for the calendar. seedTz (browser timezone from the signed
 // state) seeds availability when Google's settings can't (denied / call failed).
-const attachGoogleToProfile = async (profileId, tokens, googleUser, { calendarOk, seedTz, alreadyConnected } = {}) => {
+const attachGoogleToProfile = async (profileId, tokens, googleUser, { calendarOk, seedTz, alreadyConnected, identity } = {}) => {
   if (!calendarOk) {
     // An already-connected host keeps their stored (still valid) token and flags:
     // a narrower re-consent must not disconnect them. availabilityService
-    // self-heals if that token later fails. Only google_id is (re)written.
+    // self-heals if that token later fails. google_id is (re)written only for the
+    // login-identity flow (Flow A, identity=true): on a calendar-connect denial
+    // nothing was attached, so the calendar account's id must not be recorded.
     const denied = alreadyConnected
       ? { updated_at: new Date().toISOString() }
       : { google_calendar_connected: false, calendar_skipped: false, updated_at: new Date().toISOString() };
     let { error } = await supabaseAdmin
       .from("profiles")
-      .update({ ...denied, google_id: googleUser.id || null })
+      .update(identity ? { ...denied, google_id: googleUser.id || null } : denied)
       .eq("id", profileId);
-    if (error && /Could not find the|column.*does not exist/i.test(error.message)) {
+    if (identity && error && /Could not find the|column.*does not exist/i.test(error.message)) {
       ({ error } = await supabaseAdmin.from("profiles").update(denied).eq("id", profileId));
     }
     if (error) throw error;
@@ -665,11 +672,24 @@ const googleCallback = async (req, res) => {
   // a vendor-auth user is NOT logged in, so bouncing them to /dashboard is a
   // dead-end — they must land back on /login-as-vendor.
   let isVendorAuthFlow = false;
+  let statePayload = null; // hoisted: the catch routes calendar_connect errors via its ret
   try {
     const { code, state } = req.query;
+    // Google sends Cancel as ?error=access_denied&state=… with NO code. Send the
+    // host back to where they started instead of raw JSON (state must verify).
+    if (!code && req.query.error && state) {
+      try {
+        const p = jwt.verify(state, OAUTH_STATE_SECRET);
+        if (p.flow === "calendar_connect") {
+          return res.redirect(`${clientUrl}${safeReturnPath(p.ret) || "/dashboard"}?google=denied`);
+        }
+        if (p.flow === "vendor_auth") {
+          return res.redirect(`${clientUrl}/login-as-vendor?error=cancelled`);
+        }
+      } catch (_) { /* bad state: fall through to the generic 400 */ }
+    }
     if (!code) return res.status(400).json({ message: "No code provided" });
 
-    let statePayload = null;
     if (state) {
       try {
         statePayload = jwt.verify(state, OAUTH_STATE_SECRET);
@@ -777,8 +797,8 @@ const googleCallback = async (req, res) => {
       const needsAttach =
         !existing || upgraded || !existing.google_calendar_connected || !!tokens.refresh_token;
       if (needsAttach) {
-        await attachGoogleToProfile(profileId, tokens, googleUser, { calendarOk, seedTz: validTz(statePayload?.tz), alreadyConnected: !!existing?.google_calendar_connected });
-        if (!calendarOk) trackServer(profileId, "calendar_scope_denied", { source: "signup" }, { req });
+        await attachGoogleToProfile(profileId, tokens, googleUser, { calendarOk, seedTz: validTz(statePayload?.tz), alreadyConnected: !!existing?.google_calendar_connected, identity: true });
+        if (!calendarOk) trackServer(profileId, "calendar_scope_denied", { source: existing ? "login" : "signup" }, { req });
       }
 
       // This host authenticated via Google → has_google_identity is now true.
@@ -842,7 +862,10 @@ const googleCallback = async (req, res) => {
     if (isVendorAuthFlow) {
       return res.redirect(`${clientUrl}/login-as-vendor?error=auth_failed`);
     }
-    res.redirect(`${clientUrl}/dashboard?google=error&reason=auth_failed`);
+    // Calendar connect started from onboarding must return there, not skip the
+    // Live screen via /dashboard (ret re-validated through the allowlist).
+    const ret = statePayload?.flow === "calendar_connect" ? safeReturnPath(statePayload.ret) : null;
+    res.redirect(`${clientUrl}${ret || "/dashboard"}?google=error&reason=auth_failed`);
   }
 };
 

@@ -74,6 +74,14 @@ describe('CalendarStep', () => {
     expect(screen.getByRole('button', { name: /skip for now/i })).toBeInTheDocument();
   });
 
+  test('?google=error -> shows the retry message, stays on the screen with both buttons', async () => {
+    renderAt('?google=error&reason=auth_failed');
+    expect(await screen.findByText(/We couldn.t connect your calendar\. Try again, or skip for now\./)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /connect google calendar/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /skip for now/i })).toBeInTheDocument();
+    expect(screen.queryByTestId('where')).toBeNull();
+  });
+
   test('user turning connected after first render (stale -> fresh) redirects to /live once', async () => {
     const tree = () => (
       <MemoryRouter initialEntries={['/vendor-register/test/calendar']}>
