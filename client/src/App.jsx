@@ -104,6 +104,9 @@ const WallOfLove     = lazy(() => import('./pages/WallOfLove'));
 const Opening        = lazy(() => import('./pages/Opening'));
 const Inaugurators   = lazy(() => import('./pages/Inaugurators'));
 const BlogPost       = lazy(() => import('./pages/BlogPost'));
+const CommunityFeed  = lazy(() => import('./pages/community/CommunityFeed'));
+const CommunitySpace = lazy(() => import('./pages/community/CommunitySpace'));
+const CommunityItem  = lazy(() => import('./pages/community/CommunityItem'));
 const Moments        = lazy(() => import('./pages/Moments'));
 const MomentPage     = lazy(() => import('./pages/MomentPage'));
 const GoogleAuthDone = lazy(() => import('./pages/GoogleAuthDone'));
@@ -478,6 +481,11 @@ function App() {
           <Route path="/inaugurators" element={<Inaugurators />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
+          {/* Community: the API gate 404s while the flag is off, and the pages render NotFound. */}
+          <Route path="/community" element={<CommunityFeed />} />
+          <Route path="/community/s/:key" element={<CommunitySpace />} />
+          <Route path="/community/t/:slug" element={<CommunityItem />} />
+          <Route path="/community/p/:slug" element={<CommunityItem />} />
           <Route path="/moments" element={<Moments />} />
           <Route path="/moments/:slug" element={<MomentPage />} />
           <Route path="/blogs" element={<BlogsRedirect />} />
