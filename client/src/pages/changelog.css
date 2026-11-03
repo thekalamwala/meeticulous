@@ -1,0 +1,92 @@
+/* /changelog road trip + /changelog/:version. Loop & Slot tokens only (brand.css). */
+
+/* ── Road ─────────────────────────────────────────────────────────────── */
+.cl-road__base   { fill: none; stroke: var(--mt-blush); stroke-linecap: round; stroke-linejoin: round; }
+.cl-road__paved  { fill: none; stroke: var(--mt-maroon); stroke-linecap: round; stroke-linejoin: round; }
+.cl-road__centre { fill: none; stroke: var(--mt-pink); stroke-linecap: round; }
+
+/* ── Signs: shared ────────────────────────────────────────────────────── */
+.cl-sign {
+  display: flex; flex-direction: column; align-items: center;
+  width: 264px; max-width: 100%;
+  color: var(--fg-1); text-decoration: none;
+  border-radius: var(--radius-card);
+  transition: transform var(--dur-base) var(--ease-out), opacity var(--dur-base) var(--ease-out);
+}
+.cl-sign:hover { text-decoration: none; transform: translateY(-2px); }
+.cl-sign:focus-visible { outline: none; }
+.cl-sign:focus-visible .cl-plate { box-shadow: var(--focus-ring); }
+
+.cl-plate {
+  display: flex; flex-direction: column; gap: var(--space-1);
+  width: 100%; padding: var(--space-5) var(--space-6);
+  background: var(--bg-page); border: 2px solid var(--mt-maroon);
+  border-radius: var(--radius-card);
+  transition: box-shadow var(--dur-base) var(--ease-out);
+}
+.cl-sign:hover .cl-plate { box-shadow: var(--shadow-md); }
+.cl-plate__v {
+  font: var(--weight-black) 28px/1 var(--font-display);
+  letter-spacing: -0.03em; color: var(--mt-maroon);
+}
+.cl-plate__title { font-weight: var(--weight-semibold); font-size: var(--text-body-s); line-height: 1.35; color: var(--mt-ink); }
+.cl-plate__meta {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-2);
+  font-size: var(--text-caption); color: var(--fg-2);
+}
+
+/* posts: one by default, two under the destination board */
+.cl-posts { display: flex; justify-content: center; gap: 120px; height: 40px; }
+.cl-posts::before, .cl-posts::after {
+  content: ""; width: 6px; height: 100%;
+  background: var(--mt-maroon-dark); border-radius: var(--radius-pill);
+}
+.cl-posts::after { display: none; }
+
+/* New → destination board (maroon, like a highway gantry board) */
+.cl-sign--board .cl-plate { background: var(--mt-maroon); border-color: var(--mt-maroon-dark); }
+.cl-sign--board .cl-plate__v { color: var(--mt-white); }
+.cl-sign--board .cl-plate__title { color: var(--mt-pink); }
+.cl-sign--board .cl-plate__meta { color: var(--fg-on-brand-2); }
+.cl-sign--board .cl-posts::after { display: block; }
+
+/* Improved → KM milestone stone: maroon cap, cream body, sits on the verge */
+.cl-sign--stone { width: 200px; }
+.cl-stone-cap {
+  width: 100%; padding: var(--space-3) 0 var(--space-2);
+  background: var(--mt-maroon); color: var(--mt-pink);
+  border-radius: var(--radius-pill) var(--radius-pill) 0 0;
+  text-align: center; font: var(--weight-semibold) var(--text-caption)/1 var(--font-body);
+  letter-spacing: var(--ls-overline); text-transform: uppercase;
+}
+.cl-sign--stone .cl-plate { border-top: 0; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+
+/* Fixed → diamond turn sign · Security → round shield sign, both on a plate */
+.cl-diamond, .cl-shield {
+  display: grid; place-items: center; width: 56px; height: 56px; margin: 8px 0 var(--space-2);
+  color: var(--mt-maroon);
+}
+.cl-diamond { transform: rotate(45deg); background: var(--pink-200); border: 2px solid var(--mt-maroon); border-radius: var(--radius-md); }
+.cl-diamond > svg { transform: rotate(-45deg); }
+.cl-shield { background: var(--mt-maroon); color: var(--mt-pink); border-radius: var(--radius-pill); }
+
+/* Non-link stops: road ahead + start */
+.cl-marker {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-2) var(--space-5);
+  background: var(--mt-blush); color: var(--mt-maroon-dark);
+  border: 2px solid var(--mt-maroon); border-radius: var(--radius-pill);
+  font: var(--weight-semibold) var(--text-body-s)/1.2 var(--font-body);
+  white-space: nowrap;
+}
+.cl-marker--start { background: var(--mt-maroon); color: var(--mt-white); border-color: var(--mt-maroon-dark); }
+
+/* ── Scroll reveal (only once JS opts in, so prerendered HTML is visible) ── */
+.cl-anim .cl-stop > * { transition: opacity var(--dur-slow, 220ms) var(--ease-out), transform var(--dur-slow, 220ms) var(--ease-out); }
+.cl-anim .cl-stop:not(.is-in) > * { opacity: 0; transform: translateY(8px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .cl-sign, .cl-plate, .cl-anim .cl-stop > * { transition: none; }
+  .cl-sign:hover { transform: none; }
+  .cl-anim .cl-stop:not(.is-in) > * { opacity: 1; transform: none; }
+}
