@@ -10,10 +10,10 @@ const proTaste = require('../services/proTaste');
 // How long a dismiss hides each nudge before it may resurface. Conversion/activation
 // nudges come back (the host's situation changes); the legacy one-time billing nudge
 // effectively never does. Server-authoritative — the client just says "dismiss".
-const COOLDOWN_DAYS = { upgrade: 14, share: 30, legacy: 3650, taste: 5 };
+const COOLDOWN_DAYS = { upgrade: 14, share: 30, legacy: 3650, taste: 5, calendar: 7 };
 const DEFAULT_COOLDOWN = 14;
 // `kyc` is never dismissible — money is stuck until payouts are set up, so it stays.
-const DISMISSIBLE = new Set(['upgrade', 'share', 'legacy', 'taste']);
+const DISMISSIBLE = new Set(['upgrade', 'share', 'legacy', 'taste', 'calendar']);
 
 // The free host's 60-day Pro taste, for the dashboard countdown card
 // (services/proTaste.js). null for paid hosts and hosts with no booking yet.

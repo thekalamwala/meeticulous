@@ -5,6 +5,7 @@ const { isBlocked } = require("../utils/adultContentFilter");
 const usernameService = require("../services/usernameService");
 const planService = require("../services/planService");
 const { capture: phCapture } = require("../utils/posthog");
+const { trackServer } = require("../utils/trackServer");
 const { MIN: SLUG_MIN, MAX: SLUG_MAX } = require("../utils/slugFormat");
 
 // ─── Slug validation & generation ───────────────────────────────────────
@@ -369,7 +370,7 @@ const markComplete = async (vendorId) => {
 const getOnboardingStatus = async (vendorId) => {
   const { data: profile, error } = await supabaseAdmin
     .from("profiles")
-    .select("onboarding_slug, onboarding_step_completed, onboarding_completed, name, profile_image, primary_category")
+    .select("onboarding_slug, onboarding_step_completed, onboarding_completed, name, profile_image, primary_category, google_calendar_connected, calendar_skipped")
     .eq("id", vendorId)
     .maybeSingle();
 
@@ -384,7 +385,21 @@ const getOnboardingStatus = async (vendorId) => {
     name: profile.name || null,
     profileImage: profile.profile_image || null,
     primaryCategory: profile.primary_category || null,
+    calendarConnected: !!profile.google_calendar_connected,
+    calendarSkipped: !!profile.calendar_skipped,
   };
+};
+
+// ─── Skip the calendar-connect step ─────────────────────────────────────
+// Writes ONLY calendar_skipped. Not gated on onboarding step (the dashboard
+// may reuse it); the route's `protect` is the only requirement.
+const skipCalendar = async (vendorId) => {
+  const { error } = await supabaseAdmin
+    .from("profiles")
+    .update({ calendar_skipped: true, updated_at: new Date().toISOString() })
+    .eq("id", vendorId);
+  if (error) throw error;
+  trackServer(vendorId, "calendar_step_skipped", {});
 };
 
 module.exports = {
@@ -400,4 +415,5 @@ module.exports = {
   activateFreePlan,
   markComplete,
   getOnboardingStatus,
+  skipCalendar,
 };

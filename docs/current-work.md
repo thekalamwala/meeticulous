@@ -1,6 +1,20 @@
 # Current Work — Meeticulous
 _Last updated: 2026-11-03_
 
+## Host calendar guarantee (Phase 1) — 2026-11-03
+
+> **Status: PR on `feat/host-calendar-guarantee` → `release/2026-11`, not merged.** Spec: `docs/superpowers/specs/2026-11-03-host-calendar-and-linkedin-login-design.md`. Plan: `docs/superpowers/plans/2026-11-03-host-calendar-and-linkedin-login.md`. No DB migration.
+
+- **OAuth callback:** `google_calendar_connected` is set only when calendar scopes are actually granted (`hasCalendarScopes` in `server/config/google.js`). An already-connected host is never disconnected by a later login. Tracks `auth_completed` and `calendar_scope_denied` (source: signup/login/dashboard/onboarding).
+- **Return path + cancel:** `GET /api/auth/google?return=…` only honours allowlisted paths (`/dashboard` or `/vendor-register/<slug>/calendar`). Google Cancel/errors now redirect to `?google=denied|error` there instead of raw JSON or the dashboard.
+- **Timezone seed:** browser `tz` rides in the signed OAuth state and seeds availability when the calendar can't be read (fallback Asia/Kolkata).
+- **Skip:** `calendar_skipped` is exposed on `/auth/me` and onboarding status (`calendarConnected`, `calendarSkipped`); new `POST /api/onboarding/skip-calendar`.
+- **Onboarding screen:** `client/src/pages/onboarding/CalendarStep.jsx` at `/vendor-register/:slug/calendar`, between Plan and Live. Shown only when `needsCalendar(user)` (`client/src/pages/onboarding/needsCalendar.js`); skippable; no step renumbering.
+- **Dashboard nudge:** `calendar` item in `client/src/lib/hostNudges.js` (priority 75, dismissible). `NextStepCard` action has a busy guard and error toast. `?google=denied` shows a toast.
+- **One-off audit:** `server/scripts/auditCalendarScopes.js`. Dry run lists hosts flagged connected whose stored token lacks calendar scopes (`ok|missing_scopes|token_error|transient_error`). `--apply` flips only `missing_scopes`/`token_error` to disconnected.
+- **Post-merge:** founder runs the audit script dry run, reviews the output, then runs `--apply`. Not run yet.
+- **Next:** Phase 2 LinkedIn host login (`feat/host-linkedin-login`), after this merges.
+
 ## Community Phase 1 (`/community`) — 2026-11-03
 
 > **Status: PR open (`feat/community` → `release/2026-11`), not merged. Migration v3.185 APPLIED to the Meeticulous DB. All community flags OFF.**

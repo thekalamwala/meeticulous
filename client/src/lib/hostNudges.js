@@ -12,7 +12,7 @@
 
 import { PREMIUM_PLAN } from '../data/plans';
 
-export const NUDGE_KEYS = ['kyc', 'legacy', 'taste', 'upgrade', 'share'];
+export const NUDGE_KEYS = ['kyc', 'legacy', 'taste', 'upgrade', 'calendar', 'share'];
 
 const rupees = (n) => `₹${Math.round(Number(n) || 0).toLocaleString('en-IN')}`;
 
@@ -21,6 +21,7 @@ export function buildNudges(ctx = {}) {
     isFreePlan = false, plan, subscriptionStatus, hasPaymentMandate,
     pendingEarnings = 0, payoutsReady = false,
     commissionPaid = 0, hasRealEarning = false,
+    isHost = false, calendarConnected = false,
     hasUsername = false, servicesCount = 0, bookingsCount = 0,
     taste = null, // { endsAt, daysLeft, endedDaysAgo } from GET /host/nudges (free hosts only)
   } = ctx;
@@ -73,6 +74,17 @@ export function buildNudges(ctx = {}) {
         ? 'Pro charges 0% commission — upgrade and keep every rupee.'
         : 'Pro charges 0% commission, for under ₹4 a day.',
       cta: 'See plans', to: '/dashboard/upgrade' });
+  }
+
+  // 3b. Calendar not connected — a double-booking risk, so it outranks the share
+  //     nudge (70) but stays under the paid-conversion pitches (80+). Dismissible
+  //     (7-day snooze server-side) so a host who skipped it isn't nagged daily.
+  //     `action` (not `to`): the card runs the Google OAuth connect, not a route.
+  if (isHost && !calendarConnected) {
+    out.push({ key: 'calendar', priority: 75, dismissible: true, tone: 'primary', icon: 'CalendarCheck',
+      title: "Connect your calendar so guests never book you when you're busy",
+      body: 'We check your Google Calendar before offering slots, so you never get double-booked.',
+      cta: 'Connect', action: 'connectCalendar', to: null });
   }
 
   // 4. Activation — live (username + a service) but zero bookings → share the link.
