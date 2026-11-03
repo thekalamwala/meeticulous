@@ -16,30 +16,32 @@
     border: var(--btn-border-width) solid var(--btn-border-color);
 }
 
-/* Accent CTA — lifted hard-shadow on hover, press-down on click.
-   Background/colour come from the per-vendor theme tokens. On hover the fill
-   drops to transparent with an offset shadow + accent outline (kept accent,
-   not white, so it stays legible on the white card/bottom-bar surfaces). */
+/* Accent CTA — Loop & Slot interaction: solid accent fill (per-vendor theme),
+   darken one step + soft lift on hover, translateY(1px) press, rose focus ring.
+   No neo-brutalist hard offset shadow. */
 .cta-press {
     background: var(--profile-accent, #960D32);
     color: var(--profile-accent-text, #ffffff);
-    border: 0.2px solid transparent;
+    border: none;
     transition: transform var(--motion-fast, 0.15s) ease,
                 box-shadow var(--motion-fast, 0.15s) ease,
-                background var(--motion-fast, 0.15s) ease,
-                color var(--motion-fast, 0.15s) ease;
+                filter var(--motion-fast, 0.15s) ease;
 }
 
 .cta-press:hover {
-    background: transparent;
-    color: var(--profile-accent, #960D32);
-    box-shadow: 5px 5px 0 rgb(36, 36, 36);
-    border: 0.2px solid var(--profile-accent, #960D32);
+    filter: brightness(0.9);
+    box-shadow: 0 6px 16px -6px rgba(43, 10, 20, 0.4);
 }
 
 .cta-press:active {
-    transform: translateY(4px);
-    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    transform: translateY(1px);
+    filter: brightness(0.82);
+    box-shadow: none;
+}
+
+.cta-press:focus-visible {
+    outline: 3px solid var(--mt-rose, #E0506F);
+    outline-offset: 2px;
 }
 
 /* Ghost variant — transparent accent outline, fills with accent on hover. */
