@@ -24,10 +24,10 @@ const settlementOf = (b) => {
 };
 
 const TONE = {
-  green: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  amber: "bg-amber-50 text-amber-700 border-amber-200",
-  rose:  "bg-rose-50 text-rose-700 border-rose-200",
-  gray:  "bg-gray-100 text-gray-600 border-gray-200",
+  green: "bg-c-emerald/10 text-c-emerald border-c-emerald/20",
+  amber: "bg-marigold-100 text-marigold-800 border-marigold-300",
+  rose:  "bg-rose/10 text-rose-700 border-rose/30",
+  gray:  "bg-ink/5 text-ink/60 border-ink/10",
 };
 
 const SettleBadge = ({ s }) => (
@@ -37,17 +37,17 @@ const SettleBadge = ({ s }) => (
 );
 
 const COLUMNS = [
-  { key: "date", header: "Date", render: (r) => <span className="text-gray-600">{fmtDate(r.scheduled_at || r.created_at)}</span> },
+  { key: "date", header: "Date", render: (r) => <span className="text-muted">{fmtDate(r.scheduled_at || r.created_at)}</span> },
   {
     key: "booking", header: "Booking",
     render: (r) => (
       <div className="min-w-0">
-        <p className="truncate font-medium text-gray-800">{r.services?.title || "Service"}</p>
-        <p className="truncate text-xs text-gray-400">{r.guest_name || r.guest_email || "Guest"}</p>
+        <p className="truncate font-medium text-ink">{r.services?.title || "Service"}</p>
+        <p className="truncate text-xs text-ink/40">{r.guest_name || r.guest_email || "Guest"}</p>
       </div>
     ),
   },
-  { key: "amount", header: "Payout", render: (r) => <span className="font-semibold text-gray-800">{fmtMoney(r.vendor_amount, { decimals: true })}</span> },
+  { key: "amount", header: "Payout", render: (r) => <span className="font-semibold text-ink">{fmtMoney(r.vendor_amount, { decimals: true })}</span> },
   {
     key: "status", header: "Status",
     render: (r) => {
@@ -55,7 +55,7 @@ const COLUMNS = [
       return (
         <div>
           <SettleBadge s={s} />
-          {s.whenLabel && s.when && <p className="mt-0.5 text-xs text-gray-400">{s.whenLabel} {fmtDate(s.when)}</p>}
+          {s.whenLabel && s.when && <p className="mt-0.5 text-xs text-ink/40">{s.whenLabel} {fmtDate(s.when)}</p>}
         </div>
       );
     },
@@ -123,18 +123,18 @@ const Payouts = () => {
 
       {/* KYC gate — payouts only release once verification is approved. */}
       {kycApproved ? (
-        <div className="mb-4 flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3">
-          <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600" />
-          <p className="text-sm font-medium text-emerald-800">Verified — payouts settle automatically to your bank.</p>
+        <div className="mb-4 flex items-center gap-3 rounded-xl border border-c-emerald/20 bg-c-emerald/10 p-3">
+          <CheckCircle2 className="h-5 w-5 shrink-0 text-c-emerald" />
+          <p className="text-sm font-medium text-c-emerald">Verified — payouts settle automatically to your bank.</p>
         </div>
       ) : (
-        <Link to="/dashboard/kyc" className="mb-4 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 hover:bg-amber-100">
-          <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+        <Link to="/dashboard/kyc" className="mb-4 flex items-start gap-3 rounded-xl border border-marigold-300 bg-marigold-100 p-4 hover:bg-marigold-100/70">
+          <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-marigold-800" />
           <div>
-            <p className="text-sm font-semibold text-amber-800">
+            <p className="text-sm font-semibold text-marigold-800">
               {kycStatus === "pending" ? "Verification under review" : "Complete verification to get paid"}
             </p>
-            <p className="text-xs text-amber-700">
+            <p className="text-xs text-marigold-800">
               {kycStatus === "pending"
                 ? "Payouts release automatically once your KYC is approved."
                 : "You must complete identity verification (KYC) before any payout can be released. Tap to start."}

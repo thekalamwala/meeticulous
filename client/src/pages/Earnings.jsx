@@ -104,12 +104,12 @@ const Earnings = () => {
               {serviceBreakdown.map(([title, data]) => (
                 <div key={title} className="flex items-start justify-between gap-4">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-gray-900">{title}</p>
-                    <p className="text-xs text-gray-400">{data.count} booking{data.count !== 1 ? "s" : ""}</p>
+                    <p className="truncate text-sm font-medium text-ink">{title}</p>
+                    <p className="text-xs text-ink/40">{data.count} booking{data.count !== 1 ? "s" : ""}</p>
                   </div>
                   <div className="flex-shrink-0 text-right">
-                    <p className="text-sm font-semibold text-gray-900">{fmtMoney(data.net)}</p>
-                    {data.gross !== data.net && <p className="text-xs text-gray-400">{fmtMoney(data.gross)} gross</p>}
+                    <p className="text-sm font-semibold text-ink">{fmtMoney(data.net)}</p>
+                    {data.gross !== data.net && <p className="text-xs text-ink/40">{fmtMoney(data.gross)} gross</p>}
                   </div>
                 </div>
               ))}

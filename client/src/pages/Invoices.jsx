@@ -11,21 +11,21 @@ const fmtDate = (iso) =>
 // One host-facing invoice row — reused for both booking (BAS-BKG) and
 // subscription (BAS-SUB) invoices; the badge tells them apart.
 const InvoiceRow = ({ inv }) => (
-  <div className="flex items-center justify-between gap-3 rounded-lg border border-gray-100 bg-white px-3 py-2.5">
+  <div className="flex items-center justify-between gap-3 rounded-lg border border-maroon/5 bg-white px-3 py-2.5">
     <div className="min-w-0">
       <div className="flex items-center gap-2">
-        <p className="truncate font-mono text-xs font-medium text-gray-800">{inv.invoice_number}</p>
+        <p className="truncate font-mono text-xs font-medium text-ink">{inv.invoice_number}</p>
         <span className={cn(
           "shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-semibold",
-          inv.source_type === "subscription" ? "bg-indigo-50 text-indigo-600" : "bg-emerald-50 text-emerald-600"
+          inv.source_type === "subscription" ? "bg-maroon-100 text-maroon-700" : "bg-c-emerald/10 text-c-emerald"
         )}>
           {inv.source_type === "subscription" ? "Plan" : "Booking"}
         </span>
       </div>
-      <p className="text-[11px] text-gray-400">{fmtDate(inv.issued_at)}</p>
+      <p className="text-[11px] text-ink/40">{fmtDate(inv.issued_at)}</p>
     </div>
     <div className="flex shrink-0 items-center gap-3">
-      <span className="text-xs font-semibold text-gray-700">{fmtMoney(inv.total, { decimals: true })}</span>
+      <span className="text-xs font-semibold text-ink">{fmtMoney(inv.total, { decimals: true })}</span>
       <a href={invoiceUrl(inv.id, inv.access_token)} target="_blank" rel="noreferrer"
         className="text-xs font-semibold text-primary hover:opacity-80">
         Download

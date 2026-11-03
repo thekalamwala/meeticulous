@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, Clock, XCircle, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Clock, XCircle, CheckCircle2, Banknote } from 'lucide-react';
 import { getMyKyc } from '../../services/api';
 import { PageHeader, Card, Button, SkeletonCard } from '../../components/dashboard/ui';
 
 const STATE = {
-  pending:  { icon: Clock,        color: 'text-amber-500',  bg: 'bg-amber-50',  title: 'Verification in review', desc: "Your documents are being reviewed. Payouts unlock once approved." },
-  approved: { icon: CheckCircle2, color: 'text-green-500',  bg: 'bg-green-50',  title: 'Verified', desc: 'Your identity is verified. You can request payouts.' },
-  rejected: { icon: XCircle,      color: 'text-red-500',    bg: 'bg-red-50',    title: 'Verification rejected', desc: 'Please review the note below and re-submit.' },
+  pending:  { icon: Clock,        color: 'text-marigold-800', bg: 'bg-marigold-100', title: 'Verification in review', desc: "Your documents are being reviewed. Payouts unlock once approved." },
+  approved: { icon: CheckCircle2, color: 'text-c-emerald',    bg: 'bg-c-emerald/10', title: 'Verified', desc: 'Your identity is verified. You can request payouts.' },
+  rejected: { icon: XCircle,      color: 'text-rose-700',     bg: 'bg-rose/10',      title: 'Verification rejected', desc: 'Please review the note below and re-submit.' },
 };
 
 export default function KycHome() {
@@ -31,9 +31,9 @@ export default function KycHome() {
     <div>
       <PageHeader title="Verification" subtitle="Verify your identity to receive payouts." />
       {pending > 0 && !payoutsReady && (
-        <div className="mb-4 flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
-          <span className="text-2xl">💰</span>
-          <p className="text-sm text-amber-800">
+        <div className="mb-4 flex items-center gap-3 rounded-xl border border-marigold-300 bg-marigold-100 p-4">
+          <Banknote className="h-6 w-6 shrink-0 text-marigold-800" />
+          <p className="text-sm text-marigold-800">
             You have <span className="font-bold">₹{pending.toLocaleString('en-IN')}</span> in pending earnings.
             {status === 'approved'
               ? ' Your payout account is being set up — you’ll receive them automatically once it’s active.'
@@ -42,9 +42,9 @@ export default function KycHome() {
         </div>
       )}
       {status === 'approved' && !payoutsReady && (
-        <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 p-4">
-          <p className="text-sm font-semibold text-blue-800">Finish your payout setup</p>
-          <p className="mt-1 text-sm text-blue-700">
+        <div className="mb-4 rounded-xl border border-maroon/20 bg-maroon-100 p-4">
+          <p className="text-sm font-semibold text-maroon-700">Finish your payout setup</p>
+          <p className="mt-1 text-sm text-maroon-700">
             Add your registered address and payout details so we can pay you via Razorpay Route. Tap “Update KYC details” below.
           </p>
         </div>
@@ -54,8 +54,8 @@ export default function KycHome() {
           <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
             <ShieldCheck className="h-7 w-7" />
           </span>
-          <h2 className="mb-1 text-lg font-bold text-gray-900">Complete your KYC</h2>
-          <p className="mb-6 max-w-sm text-sm text-gray-500">
+          <h2 className="mb-1 text-lg font-bold text-ink">Complete your KYC</h2>
+          <p className="mb-6 max-w-sm text-sm text-muted">
             A quick 3-step check — personal details, bank account, and your registered address. Required before your first payout.
           </p>
           <div className="w-full max-w-xs">
@@ -69,16 +69,16 @@ export default function KycHome() {
               <s.icon className="h-6 w-6" />
             </span>
             <div className="flex-1">
-              <h2 className="text-base font-semibold text-gray-900">{s.title}</h2>
-              <p className="mt-1 text-sm text-gray-500">{s.desc}</p>
+              <h2 className="text-base font-semibold text-ink">{s.title}</h2>
+              <p className="mt-1 text-sm text-muted">{s.desc}</p>
               {status === 'rejected' && kyc?.review_note && (
-                <p className="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-700"><span className="font-medium">Reason:</span> {kyc.review_note}</p>
+                <p className="mt-3 rounded-lg bg-rose/10 p-3 text-sm text-rose-700"><span className="font-medium">Reason:</span> {kyc.review_note}</p>
               )}
               <dl className="mt-4 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
-                <div><dt className="text-gray-400">PAN</dt><dd className="text-gray-800">{kyc?.pan_number || '—'}</dd></div>
-                <div><dt className="text-gray-400">Aadhaar</dt><dd className="text-gray-800">{kyc?.aadhaar_number || '—'}</dd></div>
-                <div><dt className="text-gray-400">Bank</dt><dd className="text-gray-800">{kyc?.bank_name || '—'}</dd></div>
-                <div><dt className="text-gray-400">Account</dt><dd className="text-gray-800">{kyc?.account_number || '—'}</dd></div>
+                <div><dt className="text-ink/40">PAN</dt><dd className="text-ink">{kyc?.pan_number || '—'}</dd></div>
+                <div><dt className="text-ink/40">Aadhaar</dt><dd className="text-ink">{kyc?.aadhaar_number || '—'}</dd></div>
+                <div><dt className="text-ink/40">Bank</dt><dd className="text-ink">{kyc?.bank_name || '—'}</dd></div>
+                <div><dt className="text-ink/40">Account</dt><dd className="text-ink">{kyc?.account_number || '—'}</dd></div>
               </dl>
               {(status === 'rejected' || status === 'approved') && (
                 <div className="mt-5 max-w-xs">
