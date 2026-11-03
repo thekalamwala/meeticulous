@@ -34,7 +34,8 @@ jest.mock('googleapis', () => ({
 
 jest.mock('../../config/google', () => ({
   getAuthUrl: jest.fn((state) => `https://accounts.google.com/o/oauth2/v2/auth?state=${state || ''}`),
-  getTokensFromCode: jest.fn().mockResolvedValue({ access_token: 'at', refresh_token: 'rt' }),
+  getTokensFromCode: jest.fn(),
+  hasCalendarScopes: jest.requireActual('../../config/google').hasCalendarScopes,
   getCalendarTimezone: jest.fn().mockResolvedValue('Asia/Kolkata'),
   oauth2Client: {},
 }));
@@ -45,6 +46,7 @@ jest.mock('../../utils/cryptoTokens', () => ({
   isEncrypted: (v) => typeof v === 'string' && v.startsWith('enc:'),
 }));
 
+jest.mock('../../utils/trackServer', () => ({ trackServer: jest.fn() }));
 jest.mock('../../utils/sendEmail', () => jest.fn().mockResolvedValue(true));
 jest.mock('../../utils/notify', () => ({ sendOtpNotification: jest.fn().mockResolvedValue({ emailSent: true }) }));
 jest.mock('../../utils/otpStore', () => ({ set: jest.fn(), verify: jest.fn(), generate: jest.fn(() => '123456') }));
@@ -98,6 +100,14 @@ jest.mock('../../services/usernameService', () => ({
 
 const jwt = require('jsonwebtoken');
 const supa = require('../../config/supabase');
+const { getTokensFromCode } = require('../../config/google');
+const { trackServer } = require('../../utils/trackServer');
+const FULL_SCOPE = 'openid email profile https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.freebusy https://www.googleapis.com/auth/calendar.settings.readonly';
+// Every update() payload passed on a from('profiles') chain.
+const profileUpdates = () =>
+  supa.supabaseAdmin.from.mock.results
+    .filter((r, i) => supa.supabaseAdmin.from.mock.calls[i][0] === 'profiles')
+    .flatMap((r) => r.value.update.mock.calls.map((c) => c[0]));
 const { googleVendorAuth, googleCallback } = require('../../controllers/authController');
 
 const res = () => {
@@ -111,6 +121,7 @@ const signState = (payload) => jwt.sign(payload, 'test-oauth-secret', { expiresI
 
 beforeEach(() => {
   jest.clearAllMocks();
+  getTokensFromCode.mockResolvedValue({ access_token: 'at', refresh_token: 'rt', scope: FULL_SCOPE });
   supa.__state.existing = null;
   supa.__state.profile = { id: 'p-1', username: 'new-vendor', name: 'New Vendor', email: 'new@vendor.com', role: 'host' };
   supa.__state.createUserResult = { data: { user: { id: 'p-1', email: 'new@vendor.com' } }, error: null };
@@ -219,5 +230,59 @@ describe('googleCallback — calendar connect (legacy, logged-in vendor)', () =>
     await googleCallback({ query: { code: 'abc', state: signState({ flow: 'calendar_connect', uid: 'host-9' }) } }, r);
     expect(mockMintSession).not.toHaveBeenCalled();
     expect(r.redirect.mock.calls[0][0]).toBe('https://app.test/dashboard?google=connected');
+  });
+});
+
+describe('googleCallback — granted calendar scopes', () => {
+  const NO_CAL = { access_token: 'at', refresh_token: 'rt', scope: 'openid email profile' };
+  const vendorState = (intent = 'signup') => signState({ flow: 'vendor_auth', intent });
+
+  test('signup without calendar scopes → not connected, not skipped, still logs in (new=1)', async () => {
+    getTokensFromCode.mockResolvedValue(NO_CAL);
+    const r = res();
+    await googleCallback({ query: { code: 'abc', state: vendorState() } }, r);
+    const u = profileUpdates();
+    expect(u.some((p) => p.google_calendar_connected === true)).toBe(false);
+    expect(u).toContainEqual(expect.objectContaining({ google_calendar_connected: false, calendar_skipped: false }));
+    expect(u.some((p) => p.calendar_skipped === true)).toBe(false);
+    expect(trackServer).toHaveBeenCalledWith('p-1', 'calendar_scope_denied', { source: 'signup' }, expect.anything());
+    expect(mockMintSession).toHaveBeenCalled();
+    expect(r.redirect.mock.calls[0][0]).toContain('new=1');
+  });
+
+  test('signup with full scopes → calendar_skipped:true and connected:true', async () => {
+    const r = res();
+    await googleCallback({ query: { code: 'abc', state: vendorState() } }, r);
+    const u = profileUpdates();
+    expect(u).toContainEqual(expect.objectContaining({ calendar_skipped: true }));
+    expect(u).toContainEqual(expect.objectContaining({ google_calendar_connected: true }));
+    expect(trackServer).toHaveBeenCalledWith('p-1', 'auth_completed', { method: 'google', new: '1' }, expect.anything());
+    expect(trackServer).not.toHaveBeenCalledWith('p-1', 'calendar_scope_denied', expect.anything(), expect.anything());
+  });
+
+  test('existing connected host, plain login without refresh token/scopes → never flipped to disconnected', async () => {
+    getTokensFromCode.mockResolvedValue({ access_token: 'at', scope: 'openid email profile' });
+    supa.__state.existing = { id: 'p-1', role: 'host', is_host: true, email: 'new@vendor.com', google_calendar_connected: true };
+    const r = res();
+    await googleCallback({ query: { code: 'abc', state: vendorState('login') } }, r);
+    expect(profileUpdates().some((p) => p.google_calendar_connected === false)).toBe(false);
+    expect(r.redirect.mock.calls[0][0]).toContain('new=0');
+  });
+
+  test('upgraded customer without calendar scopes → calendar_skipped:false written', async () => {
+    getTokensFromCode.mockResolvedValue(NO_CAL);
+    supa.__state.existing = { id: 'u-1', role: 'guest', is_host: false, email: 'new@vendor.com' };
+    const r = res();
+    await googleCallback({ query: { code: 'abc', state: vendorState('login') } }, r);
+    expect(profileUpdates()).toContainEqual(expect.objectContaining({ google_calendar_connected: false, calendar_skipped: false }));
+    expect(r.redirect.mock.calls[0][0]).toContain('new=upgrade');
+  });
+
+  test('calendar_connect without calendar scopes → ?google=denied', async () => {
+    getTokensFromCode.mockResolvedValue(NO_CAL);
+    const r = res();
+    await googleCallback({ query: { code: 'abc', state: signState({ flow: 'calendar_connect', uid: 'host-9' }) } }, r);
+    expect(r.redirect.mock.calls[0][0]).toBe('https://app.test/dashboard?google=denied');
+    expect(trackServer).toHaveBeenCalledWith('host-9', 'calendar_scope_denied', { source: 'dashboard' }, expect.anything());
   });
 });

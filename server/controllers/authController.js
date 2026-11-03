@@ -6,6 +6,7 @@ const {
   getCalendarTimezone,
   revokeToken,
   oauth2Client,
+  hasCalendarScopes,
 } = require("../config/google");
 const { google } = require("googleapis");
 const jwt = require("jsonwebtoken");
@@ -464,10 +465,12 @@ const googleVendorAuth = (req, res) => {
 // Seed onboarding state for a brand-new Google vendor. Step 1 = Google identity
 // confirmed. The next step (2) is slug claim, handled by the authed claim-slug
 // endpoint. onboarding_slug is pre-seeded with the auto-generated username so
-// the client can resume before they pick a custom slug. calendar_skipped=true
-// because they connected Google OAuth here. Schema-guarded: if the onboarding
+// the client can resume before they pick a custom slug. calendar_skipped mirrors
+// calendarOk: true only when Google actually granted the calendar scopes (the
+// consent screen lets a host untick them); false keeps the calendar step in
+// onboarding so they get asked again. Schema-guarded: if the onboarding
 // columns don't exist (pre-onboarding DB) the vendor lands on dashboard — no crash.
-const markGoogleVendorOnboarding = async (profileId, username) => {
+const markGoogleVendorOnboarding = async (profileId, username, { calendarOk }) => {
   try {
     const { error } = await supabaseAdmin
       .from("profiles")
@@ -475,7 +478,7 @@ const markGoogleVendorOnboarding = async (profileId, username) => {
         onboarding_slug: username,
         onboarding_step_completed: 1, // step 1 = Google identity done; next = claim slug
         onboarding_completed: false,
-        calendar_skipped: true,
+        calendar_skipped: calendarOk,
         updated_at: new Date().toISOString(),
       })
       .eq("id", profileId);
@@ -503,7 +506,22 @@ const exchangeGoogleCode = async (code) => {
 
 // Persist Google tokens (+ google_id when the column exists) on a profile and
 // best-effort seed the vendor's timezone from their Google Calendar settings.
-const attachGoogleToProfile = async (profileId, tokens, googleUser) => {
+// calendarOk=false (host unticked the calendar boxes): store NO tokens, skip the
+// legacy revoke and timezone call, and record connected=false / skipped=false so
+// onboarding still asks for the calendar. seedTz is accepted for a later task.
+const attachGoogleToProfile = async (profileId, tokens, googleUser, { calendarOk, seedTz } = {}) => {
+  if (!calendarOk) {
+    const denied = { google_calendar_connected: false, calendar_skipped: false, updated_at: new Date().toISOString() };
+    let { error } = await supabaseAdmin
+      .from("profiles")
+      .update({ ...denied, google_id: googleUser.id || null })
+      .eq("id", profileId);
+    if (error && /Could not find the|column.*does not exist/i.test(error.message)) {
+      ({ error } = await supabaseAdmin.from("profiles").update({ google_calendar_connected: false, updated_at: denied.updated_at }).eq("id", profileId));
+    }
+    if (error) throw error;
+    return;
+  }
   // Tokens are encrypted at rest (AES-256-GCM). Reads decrypt at point of use
   // in availabilityService + bookingController.
   const encAccess = encryptToken(tokens.access_token);
@@ -628,6 +646,9 @@ const googleCallback = async (req, res) => {
     isVendorAuthFlow = statePayload?.flow === "vendor_auth";
 
     const { tokens, googleUser } = await exchangeGoogleCode(code);
+    // Google's consent screen lets the host untick the calendar boxes; only the
+    // scopes actually granted count as "calendar connected".
+    const calendarOk = hasCalendarScopes(tokens);
     const googleEmail = (googleUser.email || "").toLowerCase().trim();
     if (!googleEmail) {
       return res.redirect(`${clientUrl}/login-as-vendor?error=no_email`);
@@ -676,8 +697,8 @@ const googleCallback = async (req, res) => {
 
         // Drop the new Google vendor into onboarding at step 1 (Google identity
         // confirmed). Next step (2) is slug claim via the authed claim-slug
-        // endpoint. calendar_skipped=true because they connected via Google here.
-        await markGoogleVendorOnboarding(profileId, profile.username);
+        // endpoint. calendar_skipped = calendarOk (see markGoogleVendorOnboarding).
+        await markGoogleVendorOnboarding(profileId, profile.username, { calendarOk });
 
         // Invite-link attribution — new host ONLY, write-once, never a referrals row.
         await maybeStampInvite(profileId, statePayload);
@@ -722,7 +743,8 @@ const googleCallback = async (req, res) => {
       const needsAttach =
         !existing || upgraded || !existing.google_calendar_connected || !!tokens.refresh_token;
       if (needsAttach) {
-        await attachGoogleToProfile(profileId, tokens, googleUser);
+        await attachGoogleToProfile(profileId, tokens, googleUser, { calendarOk });
+        if (!calendarOk) trackServer(profileId, "calendar_scope_denied", { source: "signup" }, { req });
       }
 
       // This host authenticated via Google → has_google_identity is now true.
@@ -746,6 +768,7 @@ const googleCallback = async (req, res) => {
       // hosting · new=0 returning host. The client routes new!=0 through
       // onboarding (ProtectedRoute does the slug-based redirect either way).
       const newFlag = !existing ? "1" : (upgraded ? "upgrade" : "0");
+      trackServer(profileId, "auth_completed", { method: "google", new: newFlag }, { req });
       return res.redirect(
         `${clientUrl}/auth/google/done#access_token=${encodeURIComponent(session.access_token)}` +
         `&refresh_token=${encodeURIComponent(session.refresh_token)}&new=${newFlag}`,
@@ -766,8 +789,9 @@ const googleCallback = async (req, res) => {
       targetId = byEmail.id;
     }
 
-    await attachGoogleToProfile(targetId, tokens, googleUser);
-    res.redirect(`${clientUrl}/dashboard?google=connected`);
+    await attachGoogleToProfile(targetId, tokens, googleUser, { calendarOk });
+    if (!calendarOk) trackServer(targetId, "calendar_scope_denied", { source: "dashboard" }, { req });
+    res.redirect(`${clientUrl}/dashboard?google=${calendarOk ? "connected" : "denied"}`);
   } catch (error) {
     console.error("google callback error:", error.message);
     // Vendor-auth failures (e.g. session mint failed) → back to vendor login,
