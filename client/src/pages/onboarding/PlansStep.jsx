@@ -10,6 +10,7 @@ import ProgressBar from './ProgressBar';
 import loadRazorpay from '../../utils/loadRazorpay';
 import { INDIAN_STATES } from '../../lib/indianStates';
 import PetalSpinner from '../../components/common/PetalSpinner';
+import FoundingNote from '../../components/pricing/FoundingNote';
 
 const GST_RATE = 0.18; // display only — server is authoritative
 const inr = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`;
@@ -212,7 +213,7 @@ const PlansStep = () => {
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold mb-1">You're one click from live</h1>
             <p className="text-gray-500 text-sm">
-              Go live with everything unlocked on Pro — or start free below.
+              Start free — WhatsApp reminders are included for your first 60 days of bookings.
             </p>
           </div>
 
@@ -251,12 +252,43 @@ const PlansStep = () => {
             </div>
           ) : (
             <>
-              {/* Primary CTA card — Studio (top paid), sold annual */}
-              {heroPlan && (
-                <div className="relative rounded-2xl border-2 border-primary bg-primary-light/60 p-6 sm:p-7 shadow-sm">
-                  <div className="absolute -top-3 left-6">
-                    <span className="bg-primary-cta text-white text-xs font-bold px-3 py-1 rounded-full">Recommended</span>
+              {/* Free first (Free = the front door; founder strategy 2026-11-03).
+                  Pro is the next step once they're earning, not the first ask. */}
+              {freePlan && (
+                <div className="rounded-2xl border-2 border-primary bg-primary-light/60 p-6 sm:p-7 shadow-sm">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                    <div>
+                      <h2 className="text-xl font-bold">{planLabel(freePlan.slug, freePlan.name)}</h2>
+                      <p className="mt-1"><span className="text-2xl font-bold text-primary">₹0</span>
+                        <span className="text-sm font-normal text-gray-500"> · 5% only when you get paid</span></p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={chooseFree}
+                      disabled={busy !== null}
+                      className="btn bg-primary-cta text-white py-3 px-6 text-sm font-semibold hover:opacity-90 disabled:opacity-60 transition inline-flex items-center justify-center gap-2 whitespace-nowrap"
+                    >
+                      {busy === 'free' ? (
+                        <><Loader2 className="w-4 h-4 animate-spin" strokeWidth={2.5} /> Publishing…</>
+                      ) : (
+                        <><Rocket className="w-4 h-4" strokeWidth={2.5} /> Publish on {planLabel(freePlan.slug, freePlan.name)}</>
+                      )}
+                    </button>
                   </div>
+                  <ul className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                    {['Unlimited services & bookings', 'UPI & card payments', 'WhatsApp reminders for 60 days', 'Google Calendar & Meet'].map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-sm text-gray-700">
+                        <Check className="w-4 h-4 text-primary mt-0.5 shrink-0" strokeWidth={3} />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Pro — the founding offer, one step down from Free */}
+              {heroPlan && (
+                <div className="mt-4 rounded-2xl border border-gray-200 bg-white p-6 sm:p-7">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                     <div>
                       <h2 className="text-xl font-bold">{planLabel(heroPlan.slug, heroPlan.name)}</h2>
@@ -267,12 +299,13 @@ const PlansStep = () => {
                       <p className="text-[11px] text-gray-500">
                         incl. GST · billed today · auto-renews yearly
                       </p>
+                      <FoundingNote className="mt-2" />
                     </div>
                     <button
                       type="button"
                       onClick={() => choosePaid(heroPlan, 'annual')}
                       disabled={busy !== null}
-                      className="btn bg-primary-cta text-white py-3 px-6 text-sm font-semibold hover:opacity-90 disabled:opacity-60 transition inline-flex items-center justify-center gap-2 whitespace-nowrap"
+                      className="btn border border-primary text-primary py-3 px-6 text-sm font-semibold hover:bg-primary hover:text-white disabled:opacity-60 transition inline-flex items-center justify-center gap-2 whitespace-nowrap"
                     >
                       {busy === heroPlan.slug ? (
                         <>
@@ -298,27 +331,6 @@ const PlansStep = () => {
                       ))}
                     </ul>
                   )}
-                </div>
-              )}
-
-              {/* Free fallback — keep the no-credit-card escape */}
-              {freePlan && (
-                <div className="mt-4 text-center">
-                  <button
-                    type="button"
-                    onClick={chooseFree}
-                    disabled={busy !== null}
-                    className="text-sm text-gray-600 hover:text-primary font-medium disabled:opacity-50 transition inline-flex items-center gap-1.5"
-                  >
-                    {busy === 'free' ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2.5} />
-                        Publishing…
-                      </>
-                    ) : (
-                      <>Prefer to start free? Publish on {planLabel(freePlan.slug, freePlan.name)} →</>
-                    )}
-                  </button>
                 </div>
               )}
 

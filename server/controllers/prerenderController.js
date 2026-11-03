@@ -16,6 +16,7 @@
 const SITE_URL = process.env.PUBLIC_SITE_URL || 'https://meeticulous.com';
 
 const { profileFaqs, serviceFaqs } = require('../services/seo/pageContentModel');
+const { cloudinaryHostCard, cloudinaryServiceCard } = require('../services/seo/hostOgCard');
 
 const trimSlash = (s) => String(s || '').replace(/\/+$/, '');
 const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -236,15 +237,22 @@ async function resolveProfileMeta(username) {
   const avatar = upscaleAvatar(host.seo_image || host.profile_image) || undefined;
 
   // og:image is a SHARE CARD, not the avatar. A square Google photo letterboxes
-  // inside a summary_large_image card, so we serve the generated 1200x630 host
-  // card whenever one EXISTS — including a 'dirty' one (a visible field changed
-  // and a regen is queued): a slightly-stale personal card beats dropping to the
-  // generic site card, which is exactly the design's "dirty => serve old image".
-  // Only a host with no card yet ('none') gets the site-wide default.
-  // The avatar still feeds JSON-LD Person.image below, which is correct there.
-  // ponytail: default = the existing site card; swap for a host-flavoured
-  // default 1200x630 when one's designed.
-  const ogCard = host.og_image || `${site}/og-image.png`;
+  // inside a summary_large_image card, so we serve a 1200x630 host card instead.
+  // The card is a Cloudinary URL composited on first crawl from the committed
+  // background + brand marks + this host's photo (services/seo/hostOgCard) — no
+  // pre-generation, no storage, never stale. Order: admin override (og_image) ->
+  // Cloudinary card -> static site default (when CLOUDINARY_CLOUD is unset or the
+  // card can't be built). The avatar still feeds JSON-LD Person.image below.
+  const ogCard = host.og_image
+    || cloudinaryHostCard({
+      name,
+      avatar: host.profile_image,
+      profession: host.profession,
+      city: cityForSeo(host.location),
+      handle: host.username,
+      bio: host.seo_description || host.bio,
+    })
+    || `${site}/og-image.png`;
 
   // sameAs (external identity links) + dateModified are AEO/entity-clarity signals:
   // they tell answer engines who this Person is and how fresh the page is.
@@ -424,16 +432,27 @@ async function resolveServiceMeta(username, serviceSlug) {
   // 1200x630 assets → flag cardImage so buildHtml emits the og:image size hints. A
   // real seo_image/thumbnail is whatever size the host uploaded, so it stays hint-less.
   const hostImage = service.seo_image || service.thumbnail_url;
+  // Share card: admin override (og_image) -> composited Cloudinary service card
+  // (services/seo/hostOgCard) -> host's own seo_image/thumbnail -> static floor.
+  // The first two are known 1200x630 cards (size hints honest); a host image is
+  // whatever size they uploaded, so it stays hint-less.
+  const svcCard = service.og_image || cloudinaryServiceCard({
+    title: baseTitle,
+    hostName: vendor.name,
+    hostAvatar: vendor.profile_image,
+    price: service.price,
+    priceOnRequest: service.price_on_request,
+    duration: service.duration,
+    mode: service.meeting_mode,
+  });
   const buildHtmlArgs = {
     title,
     description,
     canonical,
     ogTitle: service.og_title || service.seo_title || baseTitle,
     ogDescription: service.og_description || description,
-    // Ordered fallback mirroring client resolveServiceSeo (utils/seo.js): generated
-    // service card -> admin override -> host thumbnail -> static default floor.
-    image: service.og_image || hostImage || `${site}/service-og-default.png`,
-    cardImage: Boolean(service.og_image) || !hostImage,
+    image: svcCard || hostImage || `${site}/service-og-default.png`,
+    cardImage: Boolean(svcCard) || !hostImage,
     // Honest signal matching the sitemap gate (server/services/sitemapService.js):
     // explicit noindex wins (nofollow too); otherwise an unverified host's service
     // is excluded from the sitemap, so the page falls to noindex,follow (links still

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { Wallet, Infinity as InfinityIcon, Package, BarChart3, Sparkles, Building2, ArrowRight } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import { Wallet, MessageCircle, BellRing, Users, Sparkles, Building2, ArrowRight } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { getPublicPlans, createSubscription, syncSubscription, cancelSubscription } from "../services/api";
 import toast from "react-hot-toast";
@@ -9,17 +9,20 @@ import { PageHeader, Card, Button, buttonClasses, cn, Modal, Sheet, ConfirmSheet
 import { planLabel, normalizePlan } from "../utils/themeUtils";
 import loadRazorpay from "../utils/loadRazorpay";
 import { INDIAN_STATES } from "../lib/indianStates";
+import { analytics, EVENTS } from "../services/analytics";
+import FoundingNote from "../components/pricing/FoundingNote";
 
 const GST_RATE = 0.18; // display only — server is authoritative
 const inr = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
 
 // Why-upgrade reasons shown to free-plan hosts (curated benefit copy, true to the
-// paid-plan feature set). Kept short so a free host sees the whole case at a glance.
+// paid-plan feature set — only perks the server actually gates; Starter already has
+// unlimited services and bookings). Kept short so the whole case reads at a glance.
 const UPGRADE_REASONS = [
-  { Icon: Wallet,       title: "Keep 100% of earnings", body: "Drop to 0% commission — every rupee from every booking stays yours." },
-  { Icon: InfinityIcon, title: "No limits",             body: "Unlimited services and bookings, so growth never hits a wall." },
-  { Icon: Package,      title: "Sell digital products", body: "Add courses, templates and downloads alongside your sessions." },
-  { Icon: BarChart3,    title: "Analytics + priority support", body: "See what converts, and get help fast when it matters." },
+  { Icon: Wallet,        title: "Keep 100% of earnings", body: "Drop to 0% commission — every rupee from every booking stays yours." },
+  { Icon: MessageCircle, title: "WhatsApp reminders, always", body: "Every guest gets a WhatsApp reminder — not just for your first 60 days." },
+  { Icon: BellRing,      title: "1-hour + reschedule alerts", body: "A last-minute nudge before each session, and an alert whenever a booking moves." },
+  { Icon: Users,         title: "Your full client list", body: "Every client with notes and history, plus automatic rebook follow-ups." },
 ];
 
 
@@ -49,6 +52,10 @@ const Check = () => (
 
 const UpgradePlan = () => {
   const { user, updateUser } = useAuth();
+  // Which prompt sent the host here (?src=taste_ending, commission, …) — the
+  // conversion funnel's trigger key (docs/host-lifecycle-nurture.md).
+  const [params] = useSearchParams();
+  const trigger = params.get("src") || "direct";
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cadence, setCadence] = useState("annual"); // 'monthly' | 'annual'
@@ -95,6 +102,10 @@ const UpgradePlan = () => {
     return paid[0]?.slug || null;
   }, [plans]);
 
+  useEffect(() => {
+    if (!loading && !onPaidPlan) analytics.track(EVENTS.UPGRADE_PROMPT_VIEWED, { trigger });
+  }, [loading, onPaidPlan, trigger]);
+
   const handleUpgrade = useCallback(async (plan) => {
     const price = priceFor(plan, cadence);
     if (!(price > 0)) {
@@ -104,6 +115,7 @@ const UpgradePlan = () => {
     const loaded = await loadRazorpay();
     if (!loaded) return toast.error("Payment gateway failed to load");
 
+    analytics.track(EVENTS.UPGRADE_STARTED, { trigger, cadence, plan: plan.slug });
     setPaying(plan.slug);
     try {
       const { data: sub } = await createSubscription({ plan: plan.slug, cadence, billing });
@@ -126,6 +138,7 @@ const UpgradePlan = () => {
                 subscription_status: data.profile.subscription_status,
               });
             }
+            analytics.track(EVENTS.UPGRADE_COMPLETED, { trigger, cadence, plan: plan.slug });
             toast.success(`🎉 ${planLabel(plan.slug, plan.name)} active — renews ${cadence}.`);
           } catch {
             toast.success("Mandate set up. Activation may take a moment — refresh shortly.");
@@ -140,7 +153,7 @@ const UpgradePlan = () => {
     } finally {
       setPaying(null);
     }
-  }, [cadence, user, updateUser, billing]);
+  }, [cadence, user, updateUser, billing, trigger]);
 
   const doCancel = async () => {
     setConfirmCancel(false);
@@ -282,6 +295,7 @@ const UpgradePlan = () => {
                           <span className="ml-1 text-sm font-normal text-gray-400">/ {cadence === "monthly" ? "month" : "year"}</span>
                         </p>
                         <p className="mt-1 text-[11px] text-gray-500">incl. GST · {inr(price)} + 18% GST</p>
+                        {cadence === "annual" && !onPaidPlan && <FoundingNote className="mt-2" />}
                         {cadence === "annual" && savings > 0 && (
                           <p className="mt-0.5 text-[11px] font-semibold text-emerald-600">Save {inr(Math.round(savings * (1 + GST_RATE)))}/yr vs monthly</p>
                         )}

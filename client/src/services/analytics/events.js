@@ -37,6 +37,11 @@ export const EVENTS = Object.freeze({
   FIRST_SERVICE_SKIPPED:'first_service_skipped', // host dismissed the /live skip-confirm and finished with 0 services
   PROFILE_LINK_SHARED:'profile_link_shared',  // host copied/shared their profile link (activation funnel)
   PLAN_VIEWED:        'plan_viewed',         // pricing/plans seen
+  // ── Pro upgrade funnel (props: { trigger, cadence?, founding? }) ──
+  //   trigger = where the host came from (?src= on /dashboard/upgrade, e.g. taste_ending)
+  UPGRADE_PROMPT_VIEWED: 'upgrade_prompt_viewed', // free host opened the upgrade page
+  UPGRADE_STARTED:    'upgrade_started',      // opened Razorpay checkout for Pro
+  UPGRADE_COMPLETED:  'upgrade_completed',    // mandate set up + plan synced
 
   // ── Host activation funnel (all keyed to the HOST distinct_id) ──
   //   user_registered → service_published → profile_link_shared → host_first_booking

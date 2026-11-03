@@ -35,7 +35,8 @@ export const FREE_PLAN = {
   features: [
     "Unlimited services & bookings",
     "Booking page + UPI payments",
-    "24-hour booking reminders",
+    "24-hour email reminders",
+    "WhatsApp reminders for your first 60 days of bookings",
     "Online & in-person appointments",
     "Google Calendar & Meet",
     "3 digital products",
@@ -57,8 +58,9 @@ export const PREMIUM_PLAN = {
   intro: "Everything in Starter, plus:",
   features: [
     "0% commission — keep it all",
-    "Client CRM with notes & history",
+    "WhatsApp reminders on every booking",
     "1-hour reminders + reschedule alerts",
+    "Client CRM with notes & history",
     "Follow-up & rebook automation",
     "Unlimited digital products",
     "2 calendar integrations",
@@ -66,6 +68,14 @@ export const PREMIUM_PLAN = {
     "Priority WhatsApp support",
   ],
 };
+
+/**
+ * Founding-100 offer (founder decision 2026-11-03, docs/free-vs-pro-audit.md §0):
+ * the first 100 paying Pro hosts keep today's yearly price for life; after that
+ * Pro yearly rises to ₹1,499 ex-GST = ₹1,769 charged. Display only — the live
+ * count comes from GET /api/plans/founding and the price from subscription_plans.
+ */
+export const FOUNDING = { limit: 100, nextYearly: 1769 };
 
 /** Array form — several surfaces index into this ([0] / [length-1]). */
 export const PAID_PLANS = [PREMIUM_PLAN];
@@ -108,8 +118,8 @@ export const PREMIUM_USD_ANNUAL_SAVE_PCT = Math.round((1 - PREMIUM_PLAN_USD.year
  * Every row maps to a REAL, enforced gate (honesty rule — never list what the
  * server doesn't enforce):
  *   commission_percentage · limits.free_services · limits.crm (free = 10 most
- *   recent) · limits.reminder_flows (1h + reschedule alerts) · WhatsApp reminders
- *   (free 2-month grace then email — bookingController.whatsappRemindersAllowed) ·
+ *   recent) · limits.reminder_flows (1h + reschedule alerts) · WhatsApp reminders +
+ *   reschedule alerts (free 60-day taste from first booking — services/proTaste.js) ·
  *   limits.followup_flows · limits.digital_products · limits.calendar_integrations ·
  *   limits.ai_generations · support_type.
  *
@@ -166,8 +176,8 @@ export const PLAN_MATRIX = [
       { label: "Booking confirmations (email + WhatsApp)", free: true, premium: true },
       { label: "24-hour reminder", free: true, premium: true },
       { label: "1-hour reminder", free: false, premium: true },
-      { label: "WhatsApp reminders", free: limited("Free for your first 2 months, then email reminders"), premium: true },
-      { label: "Reschedule & cancellation alerts", free: false, premium: true },
+      { label: "WhatsApp reminders", free: limited("Free for 60 days from your first booking, then email reminders"), premium: true },
+      { label: "Reschedule alerts (WhatsApp + host email)", free: limited("Free for 60 days from your first booking. Guests always get an email."), premium: true },
     ],
   },
   {
