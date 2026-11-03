@@ -42,7 +42,7 @@ const knowsAboutFrom = (host = {}) => [...new Set(
     .filter(Boolean).map(humanizeSlug),
 )];
 
-function buildHtml({ title, description, canonical, ogTitle, ogDescription, image, robots, jsonLd, faqJsonLd, cardImage, bodyHtml }) {
+function buildHtml({ title, description, canonical, ogTitle, ogDescription, image, robots, jsonLd, faqJsonLd, breadcrumbJsonLd, cardImage, bodyHtml }) {
   const site = trimSlash(SITE_URL);
   const img = image || `${site}/og-image.png`;
   const rob = robots || 'index,follow';
@@ -76,6 +76,7 @@ function buildHtml({ title, description, canonical, ogTitle, ogDescription, imag
 <meta name="twitter:image" content="${esc(img)}">
 ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>` : ''}
 ${faqJsonLd ? `<script type="application/ld+json">${JSON.stringify(faqJsonLd)}</script>` : ''}
+${breadcrumbJsonLd ? `<script type="application/ld+json">${JSON.stringify(breadcrumbJsonLd)}</script>` : ''}
 </head>
 <body>
 ${bodyHtml || `<p>Redirecting to <a href="${esc(canonical)}">${esc(title)}</a>...</p>`}
@@ -306,7 +307,10 @@ async function resolveProfileMeta(username) {
     cardImage: true, // ogCard is always a known 1200x630 card (generated or site default)
     // No bookable service = thin profile: noindex but keep links followable.
     // Mirrors client resolveProfileSeo + the sitemap host filter.
+    // Honest signal matching the sitemap host filter: unverified hosts are excluded
+    // from the sitemap, so their profile must not say "index me" either.
     robots: host.is_indexable === false ? 'noindex,nofollow'
+      : host.is_verified !== true ? 'noindex,follow'
       : (services || []).length ? 'index,follow' : 'noindex,follow',
     jsonLd,
     // Same templated FAQ the client renders (utils/profileFaqs mirror) — emitted as
@@ -347,9 +351,11 @@ async function resolveServiceMeta(username, serviceSlug) {
     return { status: 404 };
   }
 
+  const { sameAsFrom } = require('../services/seo/pageContentModel');
   const { service, vendor } = outcome.payload;
   const site = trimSlash(SITE_URL);
   const baseTitle = service.title || 'Service';
+  const providerSameAs = sameAsFrom(vendor);
 
   // Compose progressively so the title isn't truncated in results (Google cuts
   // ~60 chars): full → drop " | Meeticulous" → drop " with {host}" → the bare
@@ -385,8 +391,14 @@ async function resolveServiceMeta(username, serviceSlug) {
     name: baseTitle,
     description: service.seo_description || service.short_description || service.description || undefined,
     url: canonical,
+    ...(service.updated_at ? { dateModified: service.updated_at } : {}),
     provider: vendor.name
-      ? { '@type': 'Person', name: vendor.name, url: vendor.username ? `${site}/${vendor.username}` : undefined }
+      ? {
+          '@type': 'Person',
+          name: vendor.name,
+          url: vendor.username ? `${site}/${vendor.username}` : undefined,
+          ...(providerSameAs.length ? { sameAs: providerSameAs } : {}),
+        }
       : undefined,
     // Price-on-request: omit the numeric price so the fee never leaks to crawlers
     // (Offer stays valid via availByRequest). Otherwise expose the real price.
@@ -422,11 +434,28 @@ async function resolveServiceMeta(username, serviceSlug) {
     // service card -> admin override -> host thumbnail -> static default floor.
     image: service.og_image || hostImage || `${site}/service-og-default.png`,
     cardImage: Boolean(service.og_image) || !hostImage,
-    robots: service.is_indexable === false ? 'noindex,nofollow' : 'index,follow',
+    // Honest signal matching the sitemap gate (server/services/sitemapService.js):
+    // explicit noindex wins (nofollow too); otherwise an unverified host's service
+    // is excluded from the sitemap, so the page falls to noindex,follow (links still
+    // followable) until the host is verified; a verified, indexable page indexes.
+    robots: service.is_indexable === false ? 'noindex,nofollow'
+      : (vendor.is_verified === true && vendor.is_indexable !== false) ? 'index,follow'
+      : 'noindex,follow',
     jsonLd,
     // Visible FAQ (host-authored ∪ templated) is now rendered in the body, so emit the
     // matching FAQPage schema — mirrors the host shell and the client ServiceDetail.
     faqJsonLd: faqPageLd(serviceFaqs(service, vendor)),
+    // Breadcrumb (Home > host > service) — the client renders this; the prerendered
+    // bot HTML previously omitted it, so AI/search crawlers never saw the trail.
+    breadcrumbJsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: site },
+        { '@type': 'ListItem', position: 2, name: vendor.name || vendor.username, item: `${site}/${vendor.username}` },
+        { '@type': 'ListItem', position: 3, name: baseTitle, item: canonical },
+      ],
+    },
   };
 
   // payload passed through (additive) for the crawler's content model (see profile).

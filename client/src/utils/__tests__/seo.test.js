@@ -2,7 +2,7 @@ import { describe, test, expect } from 'vitest';
 import { resolveServiceSeo, resolveProfileSeo, resolveBlogSeo, serviceJsonLd, profileJsonLd, articleGraphJsonLd, professionGraphJsonLd, comparisonGraphJsonLd, toolAppJsonLd, definedTermSetJsonLd, glossaryTermJsonLd, cityForSeo } from '../seo';
 
 const SITE = 'https://meeticulous.com';
-const VENDOR = { name: 'John Doe', username: 'john-doe', profile_image: 'https://img/john.jpg' };
+const VENDOR = { name: 'John Doe', username: 'john-doe', profile_image: 'https://img/john.jpg', is_verified: true };
 
 describe('resolveServiceSeo — admin overrides win, fallbacks otherwise', () => {
   const base = { title: 'Business Consultation', slug: 'business-consultation', short_description: 'A 1:1 call.' };
@@ -81,7 +81,7 @@ describe('resolveServiceSeo — admin overrides win, fallbacks otherwise', () =>
 });
 
 describe('resolveProfileSeo', () => {
-  const host = { name: 'John Doe', username: 'john-doe', profession: 'Consultant', bio: 'I help founders.' };
+  const host = { name: 'John Doe', username: 'john-doe', profession: 'Consultant', bio: 'I help founders.', is_verified: true };
 
   test('builds title from name + profession when no override', () => {
     expect(resolveProfileSeo({ host, siteUrl: SITE }).title).toBe('John Doe — Consultant | Meeticulous');
