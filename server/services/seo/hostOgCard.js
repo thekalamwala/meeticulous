@@ -76,7 +76,10 @@ function cloudinaryHostCard({ name, avatar, profession, city, handle, bio } = {}
   // the brand mark, never the wordmark. Maroon disc (not blush) so the pink ee
   // loop keeps contrast.
   if (avatar) {
-    L.push(`l_fetch:${b64url(upscale(avatar))}/c_fill,g_face,w_132,h_132,r_max,bo_6px_solid_rgb:${RING}/fl_layer_apply,g_north_west,x_64,y_300`);
+    // Photo clipped to a circle INSIDE the ring: crop to a 112 circle, pad out to
+    // 132 on a cream disc (a clean gap), then the 6px colour ring around that — so
+    // the ring frames the photo instead of hugging its edge.
+    L.push(`l_fetch:${b64url(upscale(avatar))}/c_fill,g_face,w_112,h_112,r_max/c_pad,w_132,h_132,b_rgb:FBF5F3,r_max,bo_6px_solid_rgb:${RING}/fl_layer_apply,g_north_west,x_64,y_300`);
   } else {
     L.push(`l_fetch:${b64url(`${ASSET_BASE}/ee-mark.svg`)}/c_fit,w_92,h_92/c_pad,w_132,h_132,b_rgb:${MAROON},r_max,bo_6px_solid_rgb:${RING}/fl_layer_apply,g_north_west,x_64,y_300`);
   }
