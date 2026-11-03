@@ -158,7 +158,11 @@ Items previously listed here as pending are now live:
   WHERE sender_key IN ('crm_shubham','crm_tithi');`.
 - **v3.183** (`v3.183_lead_reply_intent.sql`) — applied 2026-11-02 on the Meeticulous DB:
   `leads.last_reply_intent` (AI label on the latest CRM email reply, written by
-  `brevoInboundController` via Brevo inbound parsing on `reply.meeticulous.in`). No migration outstanding.
+  `brevoInboundController` via Brevo inbound parsing on `reply.meeticulous.in`).
+- **v3.185** (`v3.185_platform_reviews.sql`) — applied 2026-11-03 on the Meeticulous DB and verified
+  (14 cols, RLS on / no policies, checks + 2 indexes): `platform_reviews` = reviews OF Meeticulous from
+  `/submit-review` (one per signed-in account). Public only when `status='approved'` AND
+  `consent_public`; approved in Admin → Content → Testimonials (`cms.manage`). No migration outstanding.
 
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.

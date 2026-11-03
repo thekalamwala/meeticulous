@@ -101,6 +101,7 @@ const AppointmentBookingSoftware = lazy(() => import('./pages/AppointmentBooking
 const Blog           = lazy(() => import('./pages/Blog'));
 const Search         = lazy(() => import('./pages/Search'));
 const WallOfLove     = lazy(() => import('./pages/WallOfLove'));
+const SubmitReview   = lazy(() => import('./pages/SubmitReview'));
 const Opening        = lazy(() => import('./pages/Opening'));
 const Inaugurators   = lazy(() => import('./pages/Inaugurators'));
 const BlogPost       = lazy(() => import('./pages/BlogPost'));
@@ -474,6 +475,8 @@ function App() {
           <Route path="/appointment-booking-software" element={<AppointmentBookingSoftware />} />
           <Route path="/search" element={<Search />} />
           <Route path="/wall-of-love" element={<WallOfLove />} />
+          {/* Review Meeticulous itself — page handles its own sign-in (host Google / guest OTP). */}
+          <Route path="/submit-review" element={<SubmitReview />} />
           <Route path="/opening" element={<Opening />} />
           <Route path="/inaugurators" element={<Inaugurators />} />
           <Route path="/blog" element={<Blog />} />

@@ -147,6 +147,7 @@ app.use('/api/invoices',   require('./routes/invoiceRoutes'));
 app.use('/api/kyc',         require('./routes/kycRoutes'));
 app.use('/api/admin',       adminLimiter, require('./routes/adminRoutes'));
 app.use('/api/reviews',     require('./routes/reviewRoutes'));
+app.use('/api/platform-reviews', require('./routes/platformReviewRoutes'));
 app.use('/api/feedback',    require('./routes/feedbackRoutes'));
 app.use('/api/products',    require('./routes/productRoutes'));
 app.use('/api/crm',         require('./routes/crmRoutes'));
