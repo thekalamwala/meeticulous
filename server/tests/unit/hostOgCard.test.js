@@ -56,7 +56,7 @@ describe('cloudinaryHostCard', () => {
       // ring — NOT the host avatar and NOT the wordmark (the wordmark is a separate
       // top-left brand overlay, present on every card).
       expect(fetched).toContain('https://meeticulous.com/brand/og/ee-mark.svg');
-      expect(noPhoto).toContain('b_rgb:960D32,r_max');
+      expect(noPhoto).toContain('b_rgb:FFFFFF,r_max'); // ee on a white disc, pops off the maroon card
     });
 
     test('OG_ASSET_BASE overrides where Cloudinary fetches the committed assets', () => {

@@ -31,10 +31,13 @@ const assetBase = () =>
 
 // Kit colours (tokens/colors.css). RING is the template-02 photo-ring accent — the
 // kit's profession-colour placeholder until the BRIGHT map lands.
-const RING = 'FF9F5A';
-const INK = '2B0A14';
-const MAROON = '960D32';
-const MUTE = '6B524F';
+// Card is on a maroon (brand) ground — see host-og-bg.svg. Text is white/pink;
+// the photo gap and no-photo disc are white so they pop off the maroon.
+const RING = 'FF9F5A';   // photo-ring accent (marigold)
+const NAME = 'FFFFFF';   // host name
+const SUB = 'FF9FB0';    // profession · city (pink)
+const META = 'FFE4EA';   // handle (blush)
+const DISC = 'FFFFFF';   // photo gap + no-photo disc
 
 // Google avatars come back at =s96-c (96px); ask for 512 so the ring photo isn't
 // upscaled mush. Mirrors prerenderController.upscaleAvatar.
@@ -70,7 +73,7 @@ function cloudinaryHostCard({ name, avatar, profession, city, handle, bio } = {}
   const base = encodeURIComponent(`${ASSET_BASE}/host-og-bg.svg`);
   const L = ['w_1200,h_630,c_fill,q_auto,f_auto'];
 
-  L.push(`l_fetch:${b64url(`${ASSET_BASE}/wordmark.svg`)}/c_scale,h_36/fl_layer_apply,g_north_west,x_64,y_64`);
+  L.push(`l_fetch:${b64url(`${ASSET_BASE}/wordmark-inverse.svg`)}/c_scale,h_36/fl_layer_apply,g_north_west,x_64,y_64`);
 
   // Avatar — circle with the profession-colour ring (left identity block). With no
   // photo, fall back to the 'ee' loop mark on a maroon disc with the same ring —
@@ -80,26 +83,26 @@ function cloudinaryHostCard({ name, avatar, profession, city, handle, bio } = {}
     // Photo clipped to a circle INSIDE the ring: crop to a 112 circle, pad out to
     // 132 on a cream disc (a clean gap), then the 6px colour ring around that — so
     // the ring frames the photo instead of hugging its edge.
-    L.push(`l_fetch:${b64url(upscale(avatar))}/c_fill,g_face,w_112,h_112,r_max/c_pad,w_132,h_132,b_rgb:FBF5F3,r_max,bo_6px_solid_rgb:${RING}/fl_layer_apply,g_north_west,x_64,y_300`);
+    L.push(`l_fetch:${b64url(upscale(avatar))}/c_fill,g_face,w_112,h_112,r_max/c_pad,w_132,h_132,b_rgb:${DISC},r_max,bo_6px_solid_rgb:${RING}/fl_layer_apply,g_north_west,x_64,y_300`);
   } else {
-    L.push(`l_fetch:${b64url(`${ASSET_BASE}/ee-mark.svg`)}/c_fit,w_92,h_92/c_pad,w_132,h_132,b_rgb:${MAROON},r_max,bo_6px_solid_rgb:${RING}/fl_layer_apply,g_north_west,x_64,y_300`);
+    L.push(`l_fetch:${b64url(`${ASSET_BASE}/ee-mark.svg`)}/c_fit,w_92,h_92/c_pad,w_132,h_132,b_rgb:${DISC},r_max,bo_6px_solid_rgb:${RING}/fl_layer_apply,g_north_west,x_64,y_300`);
   }
 
   // Name — Poppins 700. The kit's display face is Bricolage Grotesque 800, but
   // Cloudinary has no built-in Bricolage ("Unsupported font family"); Poppins bold
   // is the closest built-in. ponytail: upload the Bricolage TTF to Cloudinary and
   // switch this to Bricolage%20Grotesque_84_800 for an exact kit match before bulk.
-  L.push(`l_text:Poppins_84_700:${txt(clip(name, 22))},co_rgb:${INK}/fl_layer_apply,g_north_west,x_64,y_452`);
+  L.push(`l_text:Poppins_84_700:${txt(clip(name, 22))},co_rgb:${NAME}/fl_layer_apply,g_north_west,x_64,y_452`);
 
   // Profession · city.
   const sub = [profession, city].filter(Boolean).join(' · ');
   if (sub) {
-    L.push(`l_text:Poppins_30_600:${txt(clip(sub, 40))},co_rgb:${MAROON}/fl_layer_apply,g_north_west,x_220,y_318`);
+    L.push(`l_text:Poppins_30_600:${txt(clip(sub, 40))},co_rgb:${SUB}/fl_layer_apply,g_north_west,x_220,y_318`);
   }
 
   // Handle.
   if (handle) {
-    L.push(`l_text:Poppins_24_500:${txt(`meeticulous.com/${handle}`)},co_rgb:${MUTE}/fl_layer_apply,g_north_west,x_220,y_362`);
+    L.push(`l_text:Poppins_24_500:${txt(`meeticulous.com/${handle}`)},co_rgb:${META}/fl_layer_apply,g_north_west,x_220,y_362`);
   }
 
   // bio reserved for the pre-bulk refinement (kept in the signature so callers

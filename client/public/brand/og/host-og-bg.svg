@@ -1,9 +1,31 @@
 <svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
-  <rect width="1200" height="630" fill="#FBF5F3"/>
-  <!-- ee ribbon (home hero): one pink stroke sweeping in diagonally from the
-       bottom-left, looping into the cursive 'ee', the loop resting in the
-       top-right corner. Loop centre (~75,55 in the path's own coords) is mapped
-       to (1010,150) on the card. -->
+  <!-- Brand (maroon) ground for the host share card. White logo + text overlay on
+       top; the home-hero 'ee' ribbon in pink sweeps bottom-left -> top-right with
+       the loop in the top-right corner. Faint white dot grid + a few outline
+       shapes are decorative filler ("there, but not there"), never structural. -->
+  <defs>
+    <pattern id="dots" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="2" fill="#FFFFFF" fill-opacity="0.05"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="#960D32"/>
+  <rect width="1200" height="630" fill="url(#dots)"/>
+
+  <!-- Filler shapes: faint outline circles + a rounded slot, low opacity. -->
+  <g fill="none" stroke="#FFFFFF" stroke-opacity="0.06" stroke-width="2">
+    <circle cx="1100" cy="520" r="120"/>
+    <circle cx="150" cy="120" r="70"/>
+    <rect x="860" y="470" width="150" height="70" rx="20"/>
+  </g>
+  <g fill="#FFFFFF" fill-opacity="0.04">
+    <circle cx="300" cy="560" r="10"/>
+    <circle cx="560" cy="80" r="14"/>
+    <circle cx="1160" cy="300" r="8"/>
+  </g>
+
+  <!-- ee ribbon (home hero) in pink: one stroke sweeping in diagonally from the
+       bottom-left, looping into the cursive 'ee', the loop resting top-right.
+       Loop centre (~75,55 in the path's own coords) maps to (1010,150). -->
   <g transform="translate(1010,150) rotate(-22) scale(1.35) translate(-75,-55)">
     <path transform="translate(-4.8 0) skewX(5)"
       d="M-1200 63 L14 63 C30 62 55 56 62 44 C68 30 55 18 42 22 C25 27 18 50 22 68 C26 86 50 92 72 78 C90 66 110 58 122 46 C130 34 118 18 104 22 C88 27 80 50 84 68 C88 86 112 92 138 74 C150 66 164 63 190 63 L480 63"
