@@ -9,7 +9,7 @@
 -- moderated_by / resolved_by are plain uuid (no FK to admin_users) so deleting an
 -- admin never touches the moderation trail.
 -- accepted_comment_id is a plain uuid (no FK) to avoid a posts<->comments cycle.
--- APPLY TO the Meeticulous DB. Idempotent.
+-- APPLY TO the Meeticulous DB (spquowzrefozmrzoszkf). Idempotent.
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS community_members (
@@ -72,7 +72,9 @@ CREATE TABLE IF NOT EXISTS community_posts (
   admin_note          text,
   CONSTRAINT community_posts_thread_req CHECK ((kind <> 'thread') OR (title IS NOT NULL AND space_id IS NOT NULL))
 );
-CREATE UNIQUE INDEX IF NOT EXISTS uq_community_repost ON community_posts (author_id, quoted_post_id) WHERE format = 'repost';
+-- Un-repost = status 'deleted' (never hard-deleted, spec 7.4); excluded here so the user can re-repost.
+CREATE UNIQUE INDEX IF NOT EXISTS uq_community_repost ON community_posts (author_id, quoted_post_id) WHERE format = 'repost' AND status <> 'deleted';
+CREATE INDEX IF NOT EXISTS idx_community_posts_quoted ON community_posts (quoted_post_id) WHERE quoted_post_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_community_posts_feed ON community_posts (status, created_at DESC, id DESC) WHERE status = 'visible';
 CREATE INDEX IF NOT EXISTS idx_community_posts_space ON community_posts (space_id, last_activity_at DESC, id DESC) WHERE kind = 'thread' AND status = 'visible';
 CREATE INDEX IF NOT EXISTS idx_community_posts_author ON community_posts (author_id, created_at DESC);
@@ -94,6 +96,8 @@ CREATE TABLE IF NOT EXISTS community_comments (
   admin_note    text
 );
 CREATE INDEX IF NOT EXISTS idx_community_comments_post ON community_comments (post_id, created_at, id);
+CREATE INDEX IF NOT EXISTS idx_community_comments_author ON community_comments (author_id);
+CREATE INDEX IF NOT EXISTS idx_community_comments_parent ON community_comments (parent_id) WHERE parent_id IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS community_media (
   id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -137,17 +141,21 @@ CREATE TABLE IF NOT EXISTS community_poll_options (
   post_id     uuid NOT NULL REFERENCES community_polls(post_id) ON DELETE CASCADE,
   label       text NOT NULL,
   position    smallint NOT NULL DEFAULT 0,
-  vote_count  int NOT NULL DEFAULT 0
+  vote_count  int NOT NULL DEFAULT 0,
+  UNIQUE (id, post_id)
 );
 CREATE INDEX IF NOT EXISTS idx_community_poll_options_post ON community_poll_options (post_id, position);
 
 CREATE TABLE IF NOT EXISTS community_poll_votes (
   post_id     uuid NOT NULL REFERENCES community_polls(post_id) ON DELETE CASCADE,
   user_id     uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-  option_id   uuid NOT NULL REFERENCES community_poll_options(id) ON DELETE CASCADE,
+  option_id   uuid NOT NULL,
   created_at  timestamptz NOT NULL DEFAULT now(),
-  PRIMARY KEY (post_id, user_id)
+  PRIMARY KEY (post_id, user_id),
+  -- composite FK: the option must belong to the same poll
+  FOREIGN KEY (option_id, post_id) REFERENCES community_poll_options(id, post_id) ON DELETE CASCADE
 );
+CREATE INDEX IF NOT EXISTS idx_community_poll_votes_option ON community_poll_votes (option_id);
 
 CREATE TABLE IF NOT EXISTS community_reactions (
   user_id      uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
@@ -182,6 +190,7 @@ CREATE TABLE IF NOT EXISTS community_saves (
   created_at  timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (user_id, post_id)
 );
+CREATE INDEX IF NOT EXISTS idx_community_saves_post ON community_saves (post_id);
 
 CREATE TABLE IF NOT EXISTS community_mentions (
   id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -191,6 +200,8 @@ CREATE TABLE IF NOT EXISTS community_mentions (
   created_at         timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT community_mentions_one_target CHECK ((post_id IS NULL) <> (comment_id IS NULL))
 );
+CREATE INDEX IF NOT EXISTS idx_community_mentions_post ON community_mentions (post_id) WHERE post_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_community_mentions_comment ON community_mentions (comment_id) WHERE comment_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_community_mentions_user ON community_mentions (mentioned_user_id, created_at DESC);
 
 CREATE TABLE IF NOT EXISTS community_hashtags (
@@ -279,7 +290,7 @@ BEGIN
     END IF;
   END IF;
   RETURN NEW;
-END $$ LANGUAGE plpgsql;
+END $$ LANGUAGE plpgsql SET search_path = public;
 
 CREATE OR REPLACE FUNCTION community_reaction_count() RETURNS trigger AS $$
 DECLARE
@@ -293,7 +304,7 @@ BEGIN
     UPDATE community_comments SET like_count = GREATEST(like_count + d, 0) WHERE id = r.target_id;
   END IF;
   RETURN NULL;
-END $$ LANGUAGE plpgsql;
+END $$ LANGUAGE plpgsql SET search_path = public;
 
 DROP TRIGGER IF EXISTS trg_community_reaction_check ON community_reactions;
 CREATE TRIGGER trg_community_reaction_check BEFORE INSERT ON community_reactions
@@ -321,12 +332,14 @@ BEGIN
     END IF;
   END IF;
   RETURN NULL;
-END $$ LANGUAGE plpgsql;
+END $$ LANGUAGE plpgsql SET search_path = public;
 
 DROP TRIGGER IF EXISTS trg_community_comment_post_count ON community_comments;
 CREATE TRIGGER trg_community_comment_post_count AFTER INSERT OR UPDATE OF status OR DELETE ON community_comments
   FOR EACH ROW EXECUTE FUNCTION community_comment_post_count();
 
+-- NOTE: community_members.post_count / comment_count = items EVER authored (all statuses),
+-- an increment-only stat. The post-level community_posts.comment_count = VISIBLE replies only.
 -- 3. Member post_count / comment_count (+1 on insert; upsert the member row; skip deleted authors)
 CREATE OR REPLACE FUNCTION community_member_post_count() RETURNS trigger AS $$
 BEGIN
@@ -335,7 +348,7 @@ BEGIN
     ON CONFLICT (user_id) DO UPDATE SET post_count = community_members.post_count + 1;
   END IF;
   RETURN NULL;
-END $$ LANGUAGE plpgsql;
+END $$ LANGUAGE plpgsql SET search_path = public;
 
 CREATE OR REPLACE FUNCTION community_member_comment_count() RETURNS trigger AS $$
 BEGIN
@@ -344,7 +357,7 @@ BEGIN
     ON CONFLICT (user_id) DO UPDATE SET comment_count = community_members.comment_count + 1;
   END IF;
   RETURN NULL;
-END $$ LANGUAGE plpgsql;
+END $$ LANGUAGE plpgsql SET search_path = public;
 
 DROP TRIGGER IF EXISTS trg_community_member_post_count ON community_posts;
 CREATE TRIGGER trg_community_member_post_count AFTER INSERT ON community_posts
@@ -368,7 +381,7 @@ BEGIN
     UPDATE community_members SET following_count = GREATEST(following_count - 1, 0) WHERE user_id = OLD.follower_id;
   END IF;
   RETURN NULL;
-END $$ LANGUAGE plpgsql;
+END $$ LANGUAGE plpgsql SET search_path = public;
 
 DROP TRIGGER IF EXISTS trg_community_follow_count ON community_follows;
 CREATE TRIGGER trg_community_follow_count AFTER INSERT OR DELETE ON community_follows
@@ -383,27 +396,36 @@ BEGIN
     UPDATE community_posts SET save_count = GREATEST(save_count - 1, 0) WHERE id = OLD.post_id;
   END IF;
   RETURN NULL;
-END $$ LANGUAGE plpgsql;
+END $$ LANGUAGE plpgsql SET search_path = public;
 
 DROP TRIGGER IF EXISTS trg_community_save_count ON community_saves;
 CREATE TRIGGER trg_community_save_count AFTER INSERT OR DELETE ON community_saves
   FOR EACH ROW EXECUTE FUNCTION community_save_count();
 
--- 6. Reposts: repost_count on the original
+-- 6. Reposts: repost_count on the original. Status-aware: reposts are never hard-deleted,
+-- un-repost sets status 'deleted'. Only visible format='repost' rows count.
 CREATE OR REPLACE FUNCTION community_repost_count() RETURNS trigger AS $$
 BEGIN
   IF TG_OP = 'INSERT' THEN
-    IF NEW.format = 'repost' AND NEW.quoted_post_id IS NOT NULL THEN
+    IF NEW.format = 'repost' AND NEW.quoted_post_id IS NOT NULL AND NEW.status = 'visible' THEN
       UPDATE community_posts SET repost_count = repost_count + 1 WHERE id = NEW.quoted_post_id;
     END IF;
-  ELSIF OLD.format = 'repost' AND OLD.quoted_post_id IS NOT NULL THEN
+  ELSIF TG_OP = 'UPDATE' THEN
+    IF NEW.format = 'repost' AND NEW.quoted_post_id IS NOT NULL THEN
+      IF OLD.status = 'visible' AND NEW.status <> 'visible' THEN
+        UPDATE community_posts SET repost_count = GREATEST(repost_count - 1, 0) WHERE id = NEW.quoted_post_id;
+      ELSIF OLD.status <> 'visible' AND NEW.status = 'visible' THEN
+        UPDATE community_posts SET repost_count = repost_count + 1 WHERE id = NEW.quoted_post_id;
+      END IF;
+    END IF;
+  ELSIF OLD.format = 'repost' AND OLD.quoted_post_id IS NOT NULL AND OLD.status = 'visible' THEN
     UPDATE community_posts SET repost_count = GREATEST(repost_count - 1, 0) WHERE id = OLD.quoted_post_id;
   END IF;
   RETURN NULL;
-END $$ LANGUAGE plpgsql;
+END $$ LANGUAGE plpgsql SET search_path = public;
 
 DROP TRIGGER IF EXISTS trg_community_repost_count ON community_posts;
-CREATE TRIGGER trg_community_repost_count AFTER INSERT OR DELETE ON community_posts
+CREATE TRIGGER trg_community_repost_count AFTER INSERT OR UPDATE OF status OR DELETE ON community_posts
   FOR EACH ROW EXECUTE FUNCTION community_repost_count();
 
 -- 7. Poll votes: option vote_count + poll total_votes
@@ -417,11 +439,21 @@ BEGIN
     UPDATE community_polls SET total_votes = GREATEST(total_votes - 1, 0) WHERE post_id = OLD.post_id;
   END IF;
   RETURN NULL;
-END $$ LANGUAGE plpgsql;
+END $$ LANGUAGE plpgsql SET search_path = public;
 
 DROP TRIGGER IF EXISTS trg_community_poll_vote_count ON community_poll_votes;
 CREATE TRIGGER trg_community_poll_vote_count AFTER INSERT OR DELETE ON community_poll_votes
   FOR EACH ROW EXECUTE FUNCTION community_poll_vote_count();
+
+-- Votes are immutable: changing a vote must be DELETE + INSERT so counters cannot drift.
+CREATE OR REPLACE FUNCTION community_poll_vote_no_update() RETURNS trigger AS $$
+BEGIN
+  RAISE EXCEPTION 'community_poll_votes: change a vote with DELETE + INSERT, not UPDATE';
+END $$ LANGUAGE plpgsql SET search_path = public;
+
+DROP TRIGGER IF EXISTS trg_community_poll_vote_no_update ON community_poll_votes;
+CREATE TRIGGER trg_community_poll_vote_no_update BEFORE UPDATE ON community_poll_votes
+  FOR EACH ROW EXECUTE FUNCTION community_poll_vote_no_update();
 
 -- ============================================================
 -- Seeds
