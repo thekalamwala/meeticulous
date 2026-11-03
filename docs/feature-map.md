@@ -163,8 +163,13 @@
 **Purpose:** Auto-create Google Meet events for confirmed online bookings.
 - **Primary:** `config/google.js` → `createCalendarEvent()`
 - **Used in:** `bookingController.createBooking`, `paymentController.verifyPayment`
-- **Profile fields:** `google_calendar_connected`, `google_access_token`, `google_refresh_token`
-- **OAuth route:** `GET /api/auth/google`, `GET /api/auth/google/callback`
+- **Tokens:** live in `profile_private` (since v3.24), not `profiles`. `profiles` keeps `google_calendar_connected`, `calendar_skipped`, `google_id`.
+- **OAuth route:** `GET /api/auth/google?return=…` (return allowlist: `/dashboard`, `/vendor-register/<slug>/calendar`), `GET /api/auth/google/callback`
+- **Scope check:** `hasCalendarScopes` in `config/google.js`. The callback sets `google_calendar_connected` only when calendar scopes are granted; cancel/errors redirect with `?google=denied|error`.
+- **Skip endpoint:** `POST /api/onboarding/skip-calendar` (sets `calendar_skipped`; exposed as `calendarSkipped` in onboarding status and `/auth/me`).
+- **Onboarding step:** `client/src/pages/onboarding/CalendarStep.jsx` at `/vendor-register/:slug/calendar`; gated by `client/src/pages/onboarding/needsCalendar.js`.
+- **Dashboard nudge:** `calendar` item in `client/src/lib/hostNudges.js`, rendered by `NextStepCard`.
+- **Audit script (one-off):** `server/scripts/auditCalendarScopes.js` (dry run by default; `--apply` disconnects hosts with missing scopes or token errors).
 - **Related:** Service Booking, Payments
 
 ---
