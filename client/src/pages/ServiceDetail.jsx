@@ -323,7 +323,7 @@ const AvailableSlotsPreview = ({ hostId, serviceId, onViewAll }) => {
               <div className="flex flex-wrap gap-2">
                 {slots.map(t => (
                   <button key={t} onClick={onViewAll}
-                    className="btn btn--outline px-3.5 py-1.5 text-sm font-medium hover:border-gray-300">
+                    className="rounded-full border border-gray-200 px-3.5 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-maroon hover:bg-blush hover:text-maroon">
                     {fmt12(t)}
                   </button>
                 ))}
@@ -350,7 +350,10 @@ const FAQTab = ({ faqs = [] }) => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
             </svg>
           </button>
-          {open === i && <p className="mt-3 text-sm text-gray-600 leading-relaxed pr-8">{faq.answer}</p>}
+          {/* Smooth accordion — grid 0fr→1fr animates height with no JS measuring. */}
+          <div className={`grid overflow-hidden transition-all duration-300 ease-out ${open === i ? 'mt-3 grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+            <p className="min-h-0 overflow-hidden text-sm text-gray-600 leading-relaxed pr-8">{faq.answer}</p>
+          </div>
         </div>
       ))}
     </div>
@@ -565,8 +568,11 @@ const BookingCard = ({ service, onBookNow, bookingFee = 0, bookingFeeBreakdown =
         </div>
 
         {/* Primary CTA */}
+        {/* Brand maroon via Tailwind utilities (unlayered) — the .cta-press class
+            lives in @layer legacy and loses to Tailwind preflight, so relying on
+            it alone rendered a transparent, off-brand button here. */}
         <button onClick={onBookNow}
-          className="btn cta-press w-full py-3.5 font-bold text-sm mt-4">
+          className="mt-4 w-full rounded-full bg-maroon py-3.5 text-sm font-bold text-white transition-colors hover:bg-maroon-dark">
           Book a Slot
         </button>
 
@@ -614,14 +620,13 @@ const BookingCard = ({ service, onBookNow, bookingFee = 0, bookingFeeBreakdown =
 const HOSTINGER_URL = 'https://www.hostinger.com/in?REFERRALCODE=meeticulous';
 const HostingerCard = () => (
   <a href={HOSTINGER_URL} target="_blank" rel="noreferrer sponsored"
-    className="relative flex items-center gap-3.5 overflow-hidden rounded-2xl p-4 no-underline"
+    className="relative flex items-center gap-3 overflow-hidden rounded-2xl px-3.5 py-2.5 no-underline"
     style={{ background: '#673DE6' }}>
-    <span className="absolute right-3 top-2 text-[11px] text-white/70">Ad</span>
-    <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-[14px] bg-white text-[26px] font-black" style={{ color: '#673DE6' }}>H</span>
-    <span className="min-w-0">
-      <span className="block text-[15px] font-black leading-tight text-white">Buy yourname.com for ₹1</span>
-      <span className="mt-0.5 block text-xs text-white/80">Domain + hosting on Hostinger</span>
-      <span className="mt-2 inline-block rounded-full bg-white px-3 py-1 text-xs font-bold" style={{ color: '#673DE6' }}>Claim offer →</span>
+    <span className="absolute right-2.5 top-1.5 text-[10px] text-white/70">Ad</span>
+    <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[11px] bg-white text-[20px] font-black" style={{ color: '#673DE6' }}>H</span>
+    <span className="min-w-0 flex-1">
+      <span className="block text-[13px] font-black leading-tight text-white">Buy yourname.com for ₹1</span>
+      <span className="block text-[11px] text-white/80">Domain + hosting on Hostinger →</span>
     </span>
   </a>
 );
@@ -991,7 +996,7 @@ export default function ServiceDetail() {
                       {vendor.profile_image && (
                         <img src={vendor.profile_image} alt="" className="w-[23px] h-[23px] rounded-full object-cover ring-1 ring-primary" />
                       )}
-                      <Link to={`/${vendor.username}`} className="font-semibold hover:text-primary transition-colors underline decoration-white/40 hover:decoration-current underline-offset-2">
+                      <Link to={`/${vendor.username}`} className="font-semibold text-white hover:text-pink transition-colors underline decoration-white/50 hover:decoration-white underline-offset-2">
                         {vendor.name}
                       </Link>
                     </span>
@@ -1003,8 +1008,11 @@ export default function ServiceDetail() {
             </section>
 
             {/* Sections — sticky scrollspy nav + stacked panels (replaces tabs) */}
-            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
-              <nav className="sticky top-16 z-20 flex gap-1 overflow-x-auto border-b border-gray-100 bg-white px-2 scrollbar-hide" aria-label="Sections">
+            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm">
+              {/* No overflow-hidden on this wrapper — it confines position:sticky to
+                  the card box, which stops the nav from sticking. The sections
+                  container below keeps the bottom rounding clipped instead. */}
+              <nav className="sticky top-14 z-20 flex gap-1 overflow-x-auto rounded-t-2xl border-b border-gray-100 bg-white px-2 scrollbar-hide" aria-label="Sections">
                 {sections.map(s => (
                   <a key={s.id} href={`#${s.id}`}
                     onClick={(e) => { e.preventDefault(); scrollToSection(s.id); }}
@@ -1014,7 +1022,7 @@ export default function ServiceDetail() {
                   </a>
                 ))}
               </nav>
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-gray-100 overflow-hidden rounded-b-2xl">
                 {sections.map(s => (
                   <section key={s.id} id={s.id} data-section className="scroll-mt-28 p-6">
                     <h2 className="mb-4 text-base font-bold text-gray-900">{s.heading}</h2>
@@ -1055,7 +1063,7 @@ export default function ServiceDetail() {
           )}
         </div>
         <button onClick={handleBookNow}
-          className="btn cta-press flex-shrink-0 inline-flex items-center gap-2 px-6 py-3 font-bold text-sm">
+          className="flex-shrink-0 inline-flex items-center gap-2 rounded-full bg-maroon px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-maroon-dark">
           Book a Slot
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
         </button>

@@ -483,7 +483,11 @@ export default function ServiceForm({ initialData, serviceId }) {
       }
       navigate('/dashboard/services');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to save');
+      // Surface the first field-level validation error (server returns
+      // errors:[{field,message}]) instead of the generic "Validation failed",
+      // so a save that trips a field cap tells the host which field + why.
+      const fieldErr = err.response?.data?.errors?.[0];
+      toast.error(fieldErr?.message || err.response?.data?.message || 'Failed to save');
     } finally {
       setSaving(false);
     }
