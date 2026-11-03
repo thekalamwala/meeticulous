@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import AuthBrandPanel from '../components/auth/AuthBrandPanel';
+import AuthMobilePattern from '../components/auth/AuthMobilePattern';
 import WhatsNewLink from '../components/auth/WhatsNewLink';
 import Seo from '../components/common/Seo';
 import { ogCard } from '../config/ogImages';
@@ -70,7 +71,8 @@ const BecomeAHost = () => {
   };
 
   return (
-    <div className="grid h-[100dvh] w-full overflow-hidden lg:grid-cols-[1.05fr_1fr]">
+    <div className="relative grid h-[100dvh] w-full overflow-hidden lg:grid-cols-[1.05fr_1fr]">
+      <AuthMobilePattern />
       <Seo
         title="Get booked and paid — become a host on Meeticulous"
         description="Start taking bookings in minutes. Create your Meeticulous host page, publish services, and get paid — sign up free with Google."
@@ -84,7 +86,7 @@ const BecomeAHost = () => {
       />
 
       {/* ── RIGHT · signup card ──────────────────────────────────────────────── */}
-      <main className="flex flex-col items-center justify-center overflow-y-auto px-5 py-4">
+      <main className="relative z-10 flex flex-col items-center justify-center overflow-y-auto px-5 py-4">
         <div className="page-card relative w-full max-w-lg overflow-hidden p-5 text-center sm:p-7">
           <Link to="/" aria-label="Meeticulous — home" className="inline-block">
             <Logo className="mx-auto h-12 w-12" />
