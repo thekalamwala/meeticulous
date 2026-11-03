@@ -509,15 +509,20 @@ const exchangeGoogleCode = async (code) => {
 // calendarOk=false (host unticked the calendar boxes): store NO tokens, skip the
 // legacy revoke and timezone call, and record connected=false / skipped=false so
 // onboarding still asks for the calendar. seedTz is accepted for a later task.
-const attachGoogleToProfile = async (profileId, tokens, googleUser, { calendarOk, seedTz } = {}) => {
+const attachGoogleToProfile = async (profileId, tokens, googleUser, { calendarOk, seedTz, alreadyConnected } = {}) => {
   if (!calendarOk) {
-    const denied = { google_calendar_connected: false, calendar_skipped: false, updated_at: new Date().toISOString() };
+    // An already-connected host keeps their stored (still valid) token and flags:
+    // a narrower re-consent must not disconnect them. availabilityService
+    // self-heals if that token later fails. Only google_id is (re)written.
+    const denied = alreadyConnected
+      ? { updated_at: new Date().toISOString() }
+      : { google_calendar_connected: false, calendar_skipped: false, updated_at: new Date().toISOString() };
     let { error } = await supabaseAdmin
       .from("profiles")
       .update({ ...denied, google_id: googleUser.id || null })
       .eq("id", profileId);
     if (error && /Could not find the|column.*does not exist/i.test(error.message)) {
-      ({ error } = await supabaseAdmin.from("profiles").update({ google_calendar_connected: false, updated_at: denied.updated_at }).eq("id", profileId));
+      ({ error } = await supabaseAdmin.from("profiles").update(denied).eq("id", profileId));
     }
     if (error) throw error;
     return;
@@ -743,7 +748,7 @@ const googleCallback = async (req, res) => {
       const needsAttach =
         !existing || upgraded || !existing.google_calendar_connected || !!tokens.refresh_token;
       if (needsAttach) {
-        await attachGoogleToProfile(profileId, tokens, googleUser, { calendarOk });
+        await attachGoogleToProfile(profileId, tokens, googleUser, { calendarOk, alreadyConnected: !!existing?.google_calendar_connected });
         if (!calendarOk) trackServer(profileId, "calendar_scope_denied", { source: "signup" }, { req });
       }
 
@@ -780,16 +785,23 @@ const googleCallback = async (req, res) => {
     // No state at all = pre-deploy URL or forged request → fall back to the
     // old email match ONLY when a host profile exists for that email.
     let targetId = statePayload?.flow === "calendar_connect" ? statePayload.uid : null;
+    let targetConnected = null;
     if (!targetId) {
       const { data: byEmail } = await supabaseAdmin
-        .from("profiles").select("id, role").eq("email", googleEmail).maybeSingle();
+        .from("profiles").select("id, role, google_calendar_connected").eq("email", googleEmail).maybeSingle();
       if (!byEmail || byEmail.role !== "host") {
         return res.redirect(`${clientUrl}/dashboard?google=error&reason=profile_not_found`);
       }
       targetId = byEmail.id;
+      targetConnected = !!byEmail.google_calendar_connected;
+    }
+    if (targetConnected === null) {
+      const { data: tgt } = await supabaseAdmin
+        .from("profiles").select("id, role, google_calendar_connected").eq("id", targetId).maybeSingle();
+      targetConnected = !!tgt?.google_calendar_connected;
     }
 
-    await attachGoogleToProfile(targetId, tokens, googleUser, { calendarOk });
+    await attachGoogleToProfile(targetId, tokens, googleUser, { calendarOk, alreadyConnected: targetConnected });
     if (!calendarOk) trackServer(targetId, "calendar_scope_denied", { source: "dashboard" }, { req });
     res.redirect(`${clientUrl}/dashboard?google=${calendarOk ? "connected" : "denied"}`);
   } catch (error) {

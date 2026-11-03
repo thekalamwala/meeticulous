@@ -269,6 +269,26 @@ describe('googleCallback — granted calendar scopes', () => {
     expect(r.redirect.mock.calls[0][0]).toContain('new=0');
   });
 
+  test('already-connected host re-consents with a refresh_token but no calendar scopes → no profiles update sets google_calendar_connected:false', async () => {
+    getTokensFromCode.mockResolvedValue(NO_CAL);
+    supa.__state.existing = { id: 'p-1', role: 'host', is_host: true, email: 'new@vendor.com', google_calendar_connected: true };
+    const r = res();
+    await googleCallback({ query: { code: 'abc', state: vendorState('login') } }, r);
+    const u = profileUpdates();
+    expect(u.some((p) => 'google_calendar_connected' in p || 'calendar_skipped' in p)).toBe(false);
+    expect(trackServer).toHaveBeenCalledWith('p-1', 'calendar_scope_denied', { source: 'signup' }, expect.anything());
+    expect(r.redirect.mock.calls[0][0]).toContain('new=0');
+  });
+
+  test('calendar_connect denied for an already-connected host → denied redirect, connection untouched', async () => {
+    getTokensFromCode.mockResolvedValue(NO_CAL);
+    supa.__state.existing = { id: 'host-9', role: 'host', google_calendar_connected: true };
+    const r = res();
+    await googleCallback({ query: { code: 'abc', state: signState({ flow: 'calendar_connect', uid: 'host-9' }) } }, r);
+    expect(profileUpdates().some((p) => 'google_calendar_connected' in p)).toBe(false);
+    expect(r.redirect.mock.calls[0][0]).toBe('https://app.test/dashboard?google=denied');
+  });
+
   test('upgraded customer without calendar scopes → calendar_skipped:false written', async () => {
     getTokensFromCode.mockResolvedValue(NO_CAL);
     supa.__state.existing = { id: 'u-1', role: 'guest', is_host: false, email: 'new@vendor.com' };
