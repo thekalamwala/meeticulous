@@ -175,6 +175,10 @@ Items previously listed here as pending are now live:
   read every host's name/email/phone via `host_activation`. New postgres-owned functions no longer get
   anon EXECUTE by default: **a function the browser must call needs an explicit GRANT**, and every new
   view must set `security_invoker = true` (guarded by `tests/unit/lockdownAnonRpcMigration.test.js`).
+- **v3.187** (`v3.187_email_template_seed_hash.sql`) — applied 2026-11-03 on the Meeticulous DB:
+  `email_templates.seed_hash` (nullable). Production boot runs `services/email/templateSync.js`, which
+  pushes `config/emailTemplates.js` copy into the DB and KEEPS rows edited in the admin editor
+  (row content ≠ its seed_hash). Off switch: `EMAIL_TEMPLATE_SYNC=off`. Manual: `node scripts/seedEmailTemplates.js [--force]`.
   No migration outstanding.
 
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
