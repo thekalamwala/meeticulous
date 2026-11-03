@@ -107,7 +107,7 @@ const TOOLS = [
 
 // Light-weight numeral impact band.
 const METRICS = [
-  { v: '24/7', l: 'Bookings, day or night' },
+  { v: '24/7', l: 'Appointments, day or night' },
   { v: '0%', l: 'Commission on Pro' },
   { v: '₹0', l: 'To get started' },
   { v: 'GST', l: 'Invoices, automatic' },
@@ -134,7 +134,7 @@ const NEW_WAY = [
   'Advance at booking keeps rooms full',
   'Fees collected upfront over UPI or card',
   'One calm, calendar-synced spa view',
-  'Conflict-free rooms — no double bookings',
+  'Conflict-free rooms — no double-booked appointments',
 ];
 
 // Trust facts — verifiable only.
@@ -146,13 +146,13 @@ const TRUST = [
 ];
 
 const FAQ = [
-  { q: 'Is Meeticulous suitable for spas and wellness centres?', a: 'Yes. Whether you are a boutique spa or a wellness centre with a team of therapists, Meeticulous manages your services, availability, guest bookings and communication from one place — so your front desk runs without the constant phone calls.' },
+  { q: 'Is Meeticulous suitable for spas and wellness centres?', a: 'Yes. Whether you are a boutique spa or a wellness centre with a team of therapists, Meeticulous manages your services, availability, guest appointments and communication from one place — so your front desk runs without the constant phone calls.' },
   { q: 'Can guests book treatments online?', a: 'Yes. A guest opens your booking link, chooses a treatment such as a massage or facial, picks a convenient time and confirms — no calls or waiting for the desk to reply.' },
   { q: 'Can I take an advance to cut no-shows?', a: 'Yes. Collect a booking amount or the full price upfront through Razorpay — UPI, cards or netbanking — when the guest books. Taking an advance is the simplest way to reduce no-shows.' },
-  { q: 'Can I sell spa packages and memberships?', a: 'Yes. Offer half-day and full-day spa journeys, multi-session packages and recurring bookings, each with its own duration, price and availability.' },
+  { q: 'Can I sell spa packages and memberships?', a: 'Yes. Offer half-day and full-day spa journeys, multi-session packages and recurring appointments, each with its own duration, price and availability.' },
   { q: 'Can I share my booking link on Instagram?', a: 'Yes. Your link works anywhere — put it in your Instagram bio, on WhatsApp, on Google or on your reception desk. One link handles all your appointment requests.' },
   { q: 'Can I manage multiple therapists and rooms?', a: 'Yes. Create as many services as you need and manage every appointment from one calm calendar, so no two guests are booked into the same therapist or room.' },
-  { q: 'Does every booking get a GST invoice?', a: 'Yes. A GST invoice is generated automatically for every paid booking, and payouts go to your bank once KYC is complete.' },
+  { q: 'Does every appointment get a GST invoice?', a: 'Yes. A GST invoice is generated automatically for every paid appointment, and payouts go to your bank once KYC is complete.' },
   { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
 ];
 
@@ -648,7 +648,7 @@ export default function Spas() {
               Wellness businesses deserve tools as calm as the care they give.
             </Reveal>
             <Reveal as="p" delay={0.08} className="mt-5 text-base leading-relaxed text-slate-600">
-              Meeticulous was built to make appointment-based businesses easier to run. Instead of a ringing phone, a paper diary and scattered payments, spas manage their bookings, guests and money from one serene platform — built for the way Indian practices actually work.
+              Meeticulous was built to make appointment-based businesses easier to run. Instead of a ringing phone, a paper diary and scattered payments, spas manage their appointments, guests and money from one serene platform — built for the way Indian practices actually work.
             </Reveal>
             <Reveal delay={0.12} className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
               {TRUST.map((f) => (
@@ -721,7 +721,7 @@ export default function Spas() {
           <div className="grid gap-10 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
             <div>
               <div className="font-heading text-lg font-extrabold text-[color:var(--ca-ink)]">Meeticulous</div>
-              <p className="mt-2 max-w-xs text-sm text-slate-500">The serene way to run your spa&apos;s bookings.</p>
+              <p className="mt-2 max-w-xs text-sm text-slate-500">The serene way to run your spa&apos;s appointments.</p>
               <CtaButton to={START} className="mt-5">Create Your Page — Free <ArrowRight size={15} /></CtaButton>
             </div>
             {FOOTER_COLS.map((col) => (

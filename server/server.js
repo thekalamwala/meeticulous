@@ -168,6 +168,7 @@ app.use('/api/admin/guest360', adminLimiter, require('./routes/guest360Routes'))
 app.use('/api/admin/crm', adminLimiter, require('./routes/adminCrmRoutes')); // Sales CRM command center (leads.* gated)
 app.use('/api/explore',     require('./routes/exploreRoutes'));
 app.use('/api/blogs',       require('./routes/blogRoutes'));
+app.use('/api/community', require('./routes/communityRoutes')); // community feed + threads (flag-gated, writes need terms)
 app.use('/api/vendors',        require('./routes/badgePublicRoutes'));
 app.use('/api/feature-flags',  require('./routes/featureFlagRoutes'));
 app.use('/api/notifications', require('./routes/notificationWebhookRoutes')); // public AiSensy webhook (secret-gated)
@@ -472,6 +473,19 @@ setInterval(async () => {
 require('./controllers/featureFlagController').syncRegistry()
   .then(() => console.log('Feature flags synced'))
   .catch((err) => console.error('Feature flag sync error:', err.message));
+
+// Email templates — push the copy in config/emailTemplates.js into the DB rows
+// emails are sent from, keeping anything edited in the admin editor
+// (services/email/templateSync). PRODUCTION ONLY: a local boot points at the same
+// live DB and must never publish unmerged copy. Best-effort, never blocks boot.
+if (isProd && process.env.EMAIL_TEMPLATE_SYNC !== 'off') {
+  require('./services/email/templateSync').syncTemplates()
+    .then((r) => console.log(r.skipped
+      ? `Email template sync skipped: ${r.skipped}`
+      : `Email templates synced: ${r.inserted} inserted, ${r.updated} updated, ${r.unchanged} unchanged`
+        + (r.kept.length ? `, kept admin edits: ${r.kept.join(', ')}` : '')))
+    .catch((err) => console.error('Email template sync error:', err.message));
+}
 
 // IP blocklist — load active bans + allowlist into memory and start the periodic
 // re-sync. Best-effort: if the tables don't exist yet (pre-migration) it logs and

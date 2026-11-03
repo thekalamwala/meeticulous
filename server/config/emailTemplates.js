@@ -740,7 +740,7 @@ const TEMPLATES = [
     ['PRO_TASTE_ENDING', 'Pro Taste — Ending Soon', 'Upgrade', '{{days_left}} days left of WhatsApp reminders',
       'They switch to email on {{taste_ends_on}}.', 'Your plan', 'You are receiving this because you are a Meeticulous host on the free plan.',
       '{{days_left}} days left of WhatsApp reminders',
-      'Since your first booking, Meeticulous has sent WhatsApp reminders for <strong>{{reminded_count}}</strong> of your bookings. On {{taste_ends_on}} they switch to email. Keep them on with Pro — founding price ₹999/yr, locked for life. {{spots_line}}',
+      'Since your first booking, Meeticulous has sent WhatsApp reminders for <strong>{{reminded_count}}</strong> of your bookings. On {{taste_ends_on}} they switch to email. Keep them on with Pro — founding price ₹1,179/yr incl. GST, locked for life. {{spots_line}}',
       'Keep WhatsApp reminders'],
     ['PRO_TASTE_ENDED', 'Pro Taste — Ended', 'Upgrade', 'WhatsApp reminders are now off',
       'Your guests now get email reminders only.', 'Your plan', 'You are receiving this because you are a Meeticulous host on the free plan.',
@@ -773,12 +773,12 @@ const TEMPLATES = [
   (() => { const t = themeForCategory('Upgrade'); return {
     event_key: 'FOUNDING_SPOTS_LOW', audience: 'vendor', category: 'Marketing', sender_key: 'news',
     name: 'Upgrade — Founding Spots Low', subject: '{{spots_left}} founding Pro spots left',
-    preview_text: 'Founding price ₹999/yr, locked for life — then Pro is ₹1,499.',
+    preview_text: 'Founding price ₹1,179/yr incl. GST, locked for life — then Pro is ₹1,769.',
     email_category: 'Upgrade',
     email_reason: 'You are receiving this because you are a Meeticulous host on the free plan.',
     html_content:
       C.heroBand(t, { kick: 'Founding spots left', big: '{{spots_left}}', sub: 'of 100, {{first_name}}.' }) +
-      lead('The founding Pro price — <strong>₹999/yr, locked for life</strong> — closes after the first 100 hosts. After that, Pro is ₹1,499/yr.') +
+      lead('The founding Pro price — <strong>₹1,179/yr incl. GST, locked for life</strong> — closes after the first 100 hosts. After that, Pro is ₹1,769/yr.') +
       lead("You've paid <strong>{{commission_total}}</strong> in commission so far. Pro takes 0%, keeps WhatsApp reminders on for every guest, and rebooks your regulars automatically."),
     cta_label: 'Claim a founding spot', cta_url: '{{upgrade_url}}',
   }; })(),
@@ -799,6 +799,51 @@ const TEMPLATES = [
       note('Not for you? You can unsubscribe any time using the link below.'),
     cta_label: 'Explore Meeticulous', cta_url: '{{website_url}}',
   }; })(),
+
+  // ── Community (reply / mention / removal) ────────────────────────────────────
+
+  (() => { const t = themeForCategory('Community Update'); return {
+    event_key: 'COMMUNITY_REPLY', audience: 'all', category: 'Community', sender_key: 'tithi',
+    name: 'Community Reply', subject: '{{actor_name}} replied to your {{target_label}}',
+    preview_text: '{{actor_name}} replied in the Meeticulous community.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this email because someone replied to you in the Meeticulous community. To stop these emails, use the unsubscribe link in this email.',
+    html_content:
+      h('{{actor_name}} replied to your {{target_label}}') +
+      lead('Hi {{first_name}}, here is what they said:') +
+      C.infoCard(t, [['Reply', '{{excerpt}}']]) +
+      lead('Join the conversation whenever you are ready.') +
+      // In the body, not just the footer: the vendor (host) shell has no unsubscribe row.
+      note('Prefer not to get these emails? <a href="{{website_url}}/unsubscribe?u={{unsubscribe_token}}" style="color:#7D6B70;">Unsubscribe</a>.'),
+    cta_label: 'View the reply', cta_url: '{{community_url}}',
+  }; })(),
+
+  (() => { const t = themeForCategory('Community Update'); return {
+    event_key: 'COMMUNITY_MENTION', audience: 'all', category: 'Community', sender_key: 'tithi',
+    name: 'Community Mention', subject: '{{actor_name}} mentioned you',
+    preview_text: '{{actor_name}} mentioned you in the Meeticulous community.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this email because someone mentioned you in the Meeticulous community. To stop these emails, use the unsubscribe link in this email.',
+    html_content:
+      h('{{actor_name}} mentioned you') +
+      lead('Hi {{first_name}}, you were mentioned in the community:') +
+      C.infoCard(t, [['Message', '{{excerpt}}']]) +
+      note('Prefer not to get these emails? <a href="{{website_url}}/unsubscribe?u={{unsubscribe_token}}" style="color:#7D6B70;">Unsubscribe</a>.'),
+    cta_label: 'See the mention', cta_url: '{{community_url}}',
+  }; })(),
+
+  {
+    event_key: 'COMMUNITY_CONTENT_REMOVED', audience: 'all', category: 'Community', sender_key: 'tithi',
+    name: 'Community Content Removed', subject: 'Your community {{target_label}} was removed',
+    preview_text: 'A moderator removed your community {{target_label}}.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this email because a moderator removed your content from the Meeticulous community.',
+    html_content:
+      h('Your {{target_label}} was removed') +
+      lead('Hi {{first_name}}, a moderator removed your {{target_label}} because it did not follow our community guidelines.') +
+      lead('If you think this was a mistake, reply to this email and we will take another look.'),
+    cta_label: 'Read the guidelines', cta_url: '{{community_url}}',
+  },
 
 ];
 

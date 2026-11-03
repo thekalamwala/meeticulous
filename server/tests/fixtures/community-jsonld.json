@@ -1,0 +1,244 @@
+{
+  "cases": [
+    {
+      "name": "host thread with 2 replies (and one deleted tombstone)",
+      "siteUrl": "https://meeticulous.com",
+      "item": {
+        "id": "p1", "kind": "thread", "format": "text", "slug": "pricing-tips-ab12", "url": "/community/t/pricing-tips-ab12",
+        "title": "How do you price a first consultation?",
+        "body": "I am new here.\nWhat do you charge?",
+        "space": { "key": "host-corner", "name": "Host Corner" },
+        "author": { "id": "u-host", "display_name": "Priya Sharma", "avatar_url": null, "role": "host", "badge": null, "profile_url": "/priya" },
+        "like_count": 4, "comment_count": 2,
+        "created_at": "2026-11-01T10:00:00.000Z", "edited_at": null, "last_activity_at": "2026-11-02T09:30:00.000Z",
+        "is_pinned": false, "status": "visible", "is_indexable": true, "accepted_comment_id": null,
+        "media": [{ "url": "https://cdn.example.com/storage/v1/object/public/images/community/a.jpg", "width": 800, "height": 600, "alt": null }],
+        "viewer": { "liked": false }
+      },
+      "comments": [
+        {
+          "id": "c1", "post_id": "p1", "parent_id": null, "body": "I charge 500 for 30 minutes.",
+          "author": { "id": "u-guest", "display_name": "Asha", "avatar_url": null, "role": "guest", "badge": null, "profile_url": null },
+          "like_count": 1, "created_at": "2026-11-01T11:00:00.000Z", "edited_at": null, "status": "visible", "viewer": { "liked": false }
+        },
+        {
+          "id": "c2", "post_id": "p1", "parent_id": null, "body": "",
+          "author": { "id": null, "display_name": "Deleted account", "avatar_url": null, "role": "deleted", "badge": null, "profile_url": null },
+          "like_count": 0, "created_at": "2026-11-01T12:00:00.000Z", "edited_at": null, "status": "deleted", "viewer": { "liked": false }
+        },
+        {
+          "id": "c3", "post_id": "p1", "parent_id": "c1", "body": "Start low, raise after reviews.",
+          "author": { "id": "u-host2", "display_name": "Ravi Kumar", "avatar_url": null, "role": "host", "badge": null, "profile_url": "/ravi" },
+          "like_count": 0, "created_at": "2026-11-02T09:30:00.000Z", "edited_at": null, "status": "visible", "viewer": { "liked": false }
+        }
+      ],
+      "space": { "key": "host-corner", "name": "Host Corner" },
+      "expected": {
+        "posting": {
+          "@context": "https://schema.org",
+          "@type": "DiscussionForumPosting",
+          "headline": "How do you price a first consultation?",
+          "text": "I am new here.\nWhat do you charge?",
+          "url": "https://meeticulous.com/community/t/pricing-tips-ab12",
+          "datePublished": "2026-11-01T10:00:00.000Z",
+          "dateModified": "2026-11-02T09:30:00.000Z",
+          "author": { "@type": "Person", "name": "Priya Sharma", "url": "https://meeticulous.com/priya" },
+          "interactionStatistic": [
+            { "@type": "InteractionCounter", "interactionType": "https://schema.org/LikeAction", "userInteractionCount": 4 },
+            { "@type": "InteractionCounter", "interactionType": "https://schema.org/CommentAction", "userInteractionCount": 2 }
+          ],
+          "comment": [
+            {
+              "@type": "Comment", "text": "I charge 500 for 30 minutes.",
+              "author": { "@type": "Person", "name": "Asha" },
+              "datePublished": "2026-11-01T11:00:00.000Z",
+              "url": "https://meeticulous.com/community/t/pricing-tips-ab12#c-c1"
+            },
+            {
+              "@type": "Comment", "text": "Start low, raise after reviews.",
+              "author": { "@type": "Person", "name": "Ravi Kumar", "url": "https://meeticulous.com/ravi" },
+              "datePublished": "2026-11-02T09:30:00.000Z",
+              "url": "https://meeticulous.com/community/t/pricing-tips-ab12#c-c3"
+            }
+          ],
+          "image": "https://cdn.example.com/storage/v1/object/public/images/community/a.jpg"
+        },
+        "qaPage": null,
+        "breadcrumb": {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Community", "item": "https://meeticulous.com/community" },
+            { "@type": "ListItem", "position": 2, "name": "Host Corner", "item": "https://meeticulous.com/community/s/host-corner" },
+            { "@type": "ListItem", "position": 3, "name": "How do you price a first consultation?", "item": "https://meeticulous.com/community/t/pricing-tips-ab12" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "guest question (untitled post) with an accepted answer and a removed reply",
+      "siteUrl": "https://meeticulous.com",
+      "item": {
+        "id": "p2", "kind": "post", "format": "question", "slug": "can-i-reschedule-cd34", "url": "/community/p/can-i-reschedule-cd34",
+        "title": null,
+        "body": "Can I reschedule a booking after I have already paid?\nMy session is tomorrow morning and something urgent came up at work.",
+        "space": null,
+        "author": { "id": "u-neha", "display_name": "Neha", "avatar_url": null, "role": "guest", "badge": null, "profile_url": null },
+        "like_count": 2, "comment_count": 3,
+        "created_at": "2026-11-01T08:00:00.000Z", "edited_at": "2026-11-01T08:05:00.000Z", "last_activity_at": "2026-11-01T15:00:00.000Z",
+        "is_pinned": false, "status": "visible", "is_indexable": true, "accepted_comment_id": "c11",
+        "media": [],
+        "viewer": { "liked": false }
+      },
+      "comments": [
+        {
+          "id": "c10", "post_id": "p2", "parent_id": null, "body": "Yes, from My bookings.",
+          "author": { "id": "u-guest2", "display_name": "Member", "avatar_url": null, "role": "guest", "badge": null, "profile_url": null },
+          "like_count": 0, "created_at": "2026-11-01T09:00:00.000Z", "edited_at": null, "status": "visible", "viewer": { "liked": false }
+        },
+        {
+          "id": "c11", "post_id": "p2", "parent_id": null, "body": "Open My bookings, pick the booking, then Reschedule. The host is notified.",
+          "author": { "id": "u-staff", "display_name": "Shubham", "avatar_url": null, "role": "host", "badge": "official", "profile_url": "/shubham" },
+          "like_count": 5, "created_at": "2026-11-01T10:00:00.000Z", "edited_at": null, "status": "visible", "viewer": { "liked": false }
+        },
+        {
+          "id": "c12", "post_id": "p2", "parent_id": null, "body": "",
+          "author": { "id": "u-spam", "display_name": "Spam", "avatar_url": null, "role": "guest", "badge": null, "profile_url": null },
+          "like_count": 0, "created_at": "2026-11-01T11:00:00.000Z", "edited_at": null, "status": "removed", "viewer": { "liked": false }
+        },
+        {
+          "id": "c13", "post_id": "p2", "parent_id": "c11", "body": "Thanks, worked for me too.",
+          "author": { "id": "u-guest3", "display_name": "Ira", "avatar_url": null, "role": "guest", "badge": null, "profile_url": null },
+          "like_count": 1, "created_at": "2026-11-01T15:00:00.000Z", "edited_at": null, "status": "visible", "viewer": { "liked": false }
+        }
+      ],
+      "space": null,
+      "expected": {
+        "posting": {
+          "@context": "https://schema.org",
+          "@type": "DiscussionForumPosting",
+          "headline": "Can I reschedule a booking after I have already paid? My session is tomorrow morning and something urgent came",
+          "text": "Can I reschedule a booking after I have already paid?\nMy session is tomorrow morning and something urgent came up at work.",
+          "url": "https://meeticulous.com/community/p/can-i-reschedule-cd34",
+          "datePublished": "2026-11-01T08:00:00.000Z",
+          "dateModified": "2026-11-01T08:05:00.000Z",
+          "author": { "@type": "Person", "name": "Neha" },
+          "interactionStatistic": [
+            { "@type": "InteractionCounter", "interactionType": "https://schema.org/LikeAction", "userInteractionCount": 2 },
+            { "@type": "InteractionCounter", "interactionType": "https://schema.org/CommentAction", "userInteractionCount": 3 }
+          ],
+          "comment": [
+            {
+              "@type": "Comment", "text": "Yes, from My bookings.",
+              "author": { "@type": "Person", "name": "Member" },
+              "datePublished": "2026-11-01T09:00:00.000Z",
+              "url": "https://meeticulous.com/community/p/can-i-reschedule-cd34#c-c10"
+            },
+            {
+              "@type": "Comment", "text": "Open My bookings, pick the booking, then Reschedule. The host is notified.",
+              "author": { "@type": "Person", "name": "Shubham", "url": "https://meeticulous.com/shubham" },
+              "datePublished": "2026-11-01T10:00:00.000Z",
+              "url": "https://meeticulous.com/community/p/can-i-reschedule-cd34#c-c11"
+            },
+            {
+              "@type": "Comment", "text": "Thanks, worked for me too.",
+              "author": { "@type": "Person", "name": "Ira" },
+              "datePublished": "2026-11-01T15:00:00.000Z",
+              "url": "https://meeticulous.com/community/p/can-i-reschedule-cd34#c-c13"
+            }
+          ]
+        },
+        "qaPage": {
+          "@context": "https://schema.org",
+          "@type": "QAPage",
+          "mainEntity": {
+            "@type": "Question",
+            "name": "Can I reschedule a booking after I have already paid? My session is tomorrow morning and something urgent came",
+            "text": "Can I reschedule a booking after I have already paid?\nMy session is tomorrow morning and something urgent came up at work.",
+            "answerCount": 3,
+            "dateCreated": "2026-11-01T08:00:00.000Z",
+            "author": { "@type": "Person", "name": "Neha" },
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Open My bookings, pick the booking, then Reschedule. The host is notified.",
+              "author": { "@type": "Person", "name": "Shubham", "url": "https://meeticulous.com/shubham" },
+              "dateCreated": "2026-11-01T10:00:00.000Z",
+              "url": "https://meeticulous.com/community/p/can-i-reschedule-cd34#c-c11",
+              "upvoteCount": 5
+            },
+            "suggestedAnswer": [
+              {
+                "@type": "Answer",
+                "text": "Yes, from My bookings.",
+                "author": { "@type": "Person", "name": "Member" },
+                "dateCreated": "2026-11-01T09:00:00.000Z",
+                "url": "https://meeticulous.com/community/p/can-i-reschedule-cd34#c-c10",
+                "upvoteCount": 0
+              },
+              {
+                "@type": "Answer",
+                "text": "Thanks, worked for me too.",
+                "author": { "@type": "Person", "name": "Ira" },
+                "dateCreated": "2026-11-01T15:00:00.000Z",
+                "url": "https://meeticulous.com/community/p/can-i-reschedule-cd34#c-c13",
+                "upvoteCount": 1
+              }
+            ]
+          }
+        },
+        "breadcrumb": {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Community", "item": "https://meeticulous.com/community" },
+            { "@type": "ListItem", "position": 2, "name": "Can I reschedule a booking after I have already paid? My session is tomorrow morning and something urgent came", "item": "https://meeticulous.com/community/p/can-i-reschedule-cd34" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "deleted-account post with no replies",
+      "siteUrl": "https://meeticulous.com",
+      "item": {
+        "id": "p3", "kind": "post", "format": "text", "slug": "loved-calendar-sync-ef56", "url": "/community/p/loved-calendar-sync-ef56",
+        "title": null,
+        "body": "Loved the new calendar sync.",
+        "space": { "key": "general", "name": "General" },
+        "author": { "id": null, "display_name": "Deleted account", "avatar_url": null, "role": "deleted", "badge": null, "profile_url": null },
+        "like_count": 0, "comment_count": 0,
+        "created_at": "2026-10-30T07:00:00.000Z", "edited_at": null, "last_activity_at": "2026-10-30T07:00:00.000Z",
+        "is_pinned": false, "status": "visible", "is_indexable": false, "accepted_comment_id": null,
+        "media": [],
+        "viewer": { "liked": false }
+      },
+      "comments": [],
+      "space": { "key": "general", "name": "General" },
+      "expected": {
+        "posting": {
+          "@context": "https://schema.org",
+          "@type": "DiscussionForumPosting",
+          "headline": "Loved the new calendar sync.",
+          "text": "Loved the new calendar sync.",
+          "url": "https://meeticulous.com/community/p/loved-calendar-sync-ef56",
+          "datePublished": "2026-10-30T07:00:00.000Z",
+          "dateModified": "2026-10-30T07:00:00.000Z",
+          "author": { "@type": "Person", "name": "Deleted account" },
+          "interactionStatistic": [
+            { "@type": "InteractionCounter", "interactionType": "https://schema.org/LikeAction", "userInteractionCount": 0 },
+            { "@type": "InteractionCounter", "interactionType": "https://schema.org/CommentAction", "userInteractionCount": 0 }
+          ]
+        },
+        "qaPage": null,
+        "breadcrumb": {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Community", "item": "https://meeticulous.com/community" },
+            { "@type": "ListItem", "position": 2, "name": "General", "item": "https://meeticulous.com/community/s/general" },
+            { "@type": "ListItem", "position": 3, "name": "Loved the new calendar sync.", "item": "https://meeticulous.com/community/p/loved-calendar-sync-ef56" }
+          ]
+        }
+      }
+    }
+  ]
+}

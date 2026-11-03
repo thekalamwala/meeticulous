@@ -13,6 +13,7 @@
     "vercel-build": "node scripts/vercelBuildOnce.mjs",
     "build:no-prerender": "vite build",
     "preview": "vite preview",
+    "smoke": "node scripts/smoke.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",

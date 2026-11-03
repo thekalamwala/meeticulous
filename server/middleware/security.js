@@ -463,7 +463,17 @@ const blockSuspiciousRequests = (req, res, next) => {
   const bodyStr = Buffer.isBuffer(req.body) ? '' : JSON.stringify(req.body);
   const urlStr = req.url + JSON.stringify(req.query);
   const payload = bodyStr + urlStr;
-  if (traversal.test(urlStr) || suspicious.some(p => p.test(payload))) {
+  // Community posts are free prose: "insert into my calendar" or "drop table talk"
+  // is ordinary English and, since a hit is an instant 24h IP ban, must not trip
+  // the SQL-keyword hint. Narrow exemption: /api/community writes only, SQL pattern
+  // only, and only against the BODY. XSS, path traversal and the URL/query scan
+  // (SQL hint included) are unchanged. The API uses parameterised Supabase queries.
+  const communityWrite = req.method !== 'GET' && /^\/api\/community(?:[/?]|$)/.test(req.originalUrl || req.url || '');
+  const [sqlHint, xss] = suspicious;
+  const hit = communityWrite
+    ? sqlHint.test(urlStr) || xss.test(payload)
+    : suspicious.some(p => p.test(payload));
+  if (traversal.test(urlStr) || hit) {
     // Unambiguous attack signature (SQLi/XSS/path-traversal) → auto-ban the source
     // IP immediately (no repeat threshold). Fire-and-forget; never block the 400.
     ipBlocklist.recordAttack(getClientIp(req), 'pattern').catch(() => {});

@@ -90,7 +90,7 @@ const TOOLS = [
 ];
 
 const METRICS = [
-  { v: '24/7', l: 'Bookings, day or night' },
+  { v: '24/7', l: 'Appointments, day or night' },
   { v: '0%', l: 'Commission on Pro' },
   { v: '₹0', l: 'To get started' },
   { v: 'GST', l: 'Invoices, automatic' },
@@ -114,11 +114,11 @@ const TRUST_STRIP = [
 ];
 
 const FAQ = [
-  { q: 'Is Meeticulous suitable for paediatricians and child-care clinics?', a: 'Yes. Whether you are a solo paediatrician or a children’s clinic with a team, Meeticulous manages your services, availability, bookings and communication from one place — so parents can book without calling and your reception stays calm. It is a scheduling and payment tool, not a medical-records system.' },
+  { q: 'Is Meeticulous suitable for paediatricians and child-care clinics?', a: 'Yes. Whether you are a solo paediatrician or a children’s clinic with a team, Meeticulous manages your services, availability, appointments and communication from one place — so parents can book without calling and your reception stays calm. It is a scheduling and payment tool, not a medical-records system.' },
   { q: 'Can parents book appointments online?', a: 'Yes. A parent opens your booking link, chooses a service such as a consultation or vaccination, picks a convenient time and confirms — in under a minute, no calls needed.' },
   { q: 'Can I send vaccination reminders?', a: 'Yes. Meeticulous sends automatic WhatsApp and email reminders before every appointment, which helps parents keep their child’s immunisation schedule on track.' },
   { q: 'Can I offer same-day sick visits and online consultations?', a: 'Yes. Open same-day slots for sick visits, and offer online consultations with automatic Google Meet links for quick follow-ups — or mark a service as in-clinic.' },
-  { q: 'Can I collect the consultation fee online?', a: 'Yes. Collect the fee upfront through Razorpay — UPI, cards or netbanking — before the appointment. A GST invoice is generated automatically for every paid booking.' },
+  { q: 'Can I collect the consultation fee online?', a: 'Yes. Collect the fee upfront through Razorpay — UPI, cards or netbanking — before the appointment. A GST invoice is generated automatically for every paid appointment.' },
   { q: 'Is our clinic and family information kept private?', a: 'Meeticulous stores appointment and contact details for booking only — it is not a medical-records system. Your production data is hosted in India (Mumbai) and the platform operates under India’s DPDP Act 2023.' },
   { q: 'Do we need any technical setup?', a: 'No. Setup takes minutes and needs no technical skills. You add your services and clinic hours, and your booking page is ready to share — parents need nothing more than the link.' },
   { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
@@ -667,7 +667,7 @@ export default function Pediatricians() {
           <div className="grid gap-10 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
             <div>
               <div className="font-heading text-lg font-extrabold text-[color:var(--ca-ink)]">Meeticulous</div>
-              <p className="mt-2 max-w-xs text-sm text-slate-500">A friendly way to run your children&apos;s clinic bookings.</p>
+              <p className="mt-2 max-w-xs text-sm text-slate-500">A friendly way to run your children&apos;s clinic appointments.</p>
               <CtaButton to={START} className="mt-5">Create Your Page — Free <ArrowRight size={15} /></CtaButton>
             </div>
             {FOOTER_COLS.map((col) => (

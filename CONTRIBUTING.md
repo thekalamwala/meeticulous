@@ -26,6 +26,7 @@ If your branch goes stale, rebase before opening the PR: `git fetch && git rebas
 - **Client → Vercel.** On a push to `main` touching `client/**`, `.github/workflows/deploy-vercel.yml` runs `vercel deploy --prod` — a **remote build** (`vitest → vite build → prerender`). Any test/build failure **fails the deploy**, so broken client code can't reach prod. Requires the **`VERCEL_TOKEN`** repo secret (GitHub → Settings → Secrets and variables → Actions).
 - **Server → Render.** Render auto-deploys `main`; its build runs `npm run test:unit`, so a failing server test blocks the server release.
 - **DB / env changes ship WITH the deploy.** If a PR needs a `subscription_plans` change, a new env var, or a migration, call it out in the PR and apply it at merge time — display and data must flip together (lesson from the plan reprice).
+- **Smoke test (automated).** `.github/workflows/smoke.yml` fires on Vercel's `deployment_status` and loads a few public routes in a real headless browser, failing on a white screen, a severe console error, or the CSS-cascade class of bug (a transparent `.cta-press` / 0px `.btn--outline` — what unit tests miss). It runs on **every PR's Vercel preview** (a pre-merge signal) and on the **production deploy** (post-ship canary). Run it by hand before shipping too: `cd client && npm run smoke -- https://<preview-or-prod-url>`.
 - **Hotfix:** same loop, just urgent — branch off `main`, PR, merge, deploy.
 
 ## Working with Claude Code

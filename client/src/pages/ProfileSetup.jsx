@@ -9,6 +9,7 @@ import UsernameField from "../components/dashboard/UsernameField";
 import CategoriesSection from "../components/dashboard/CategoriesSection";
 import AccountModeToggle from "../components/common/AccountModeToggle";
 import toast from "react-hot-toast";
+import { fieldError } from "../utils/apiError";
 import {
   getColorsForPlan,
   canUseCustomHex,
@@ -314,7 +315,7 @@ const ProfileSetup = () => {
       setDirty(false);
       navigate("/dashboard");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to save profile");
+      toast.error(fieldError(err, "Failed to save profile"));
     } finally {
       setLoading(false);
     }

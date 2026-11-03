@@ -15,6 +15,16 @@ _Last updated: 2026-11-03_
 - **Post-merge:** founder runs the audit script dry run, reviews the output, then runs `--apply`. Not run yet.
 - **Next:** Phase 2 LinkedIn host login (`feat/host-linkedin-login`), after this merges.
 
+## Community Phase 1 (`/community`) — 2026-11-03
+
+> **Status: PR open (`feat/community` → `release/2026-11`), not merged. Migration v3.185 APPLIED to the Meeticulous DB. All community flags OFF.**
+
+Public, SEO-indexed feed + forum threads (reading is public, interaction needs login). Built via 14-task plan with per-task review + final whole-branch review.
+- **Shipped in Phase 1:** posts + threads (text/question/announcement, up to 4 photos), flat replies with accepted answers, likes, 5 spaces (Host Corner hosts-only posting), reports (3 → auto-hide; dismiss restores), admin moderation (reports/content/members/spaces, bans, badges, early access), reply/mention/removal notifications (in-app + email, honours unsubscribe), prerender + JSON-LD (DiscussionForumPosting / QAPage) + `sitemap-community.xml`, edge routing for crawlers incl. Googlebot on `/community` only.
+- **Pre-launch:** with `community` off, everything 404s to the public and crawlers; early-access members (admin → Community → Members) can seed.
+- **Not yet verified live:** browser smoke test (local server can't be booted against the live DB without running customer-facing crons) — do it on prod after merge, flags still off, as an early-access member.
+- **Phase 2/3 next:** follows/Following tab, blocks, saves, hashtags, search, service cards + slot drops, verified-booking badge, house ads, polls/quotes/reposts, link previews, Tithi first responder.
+
 ## SEO: Google WRS fetch-failure root cause (ipGuard/rate-limit) — 2026-09-10
 
 > **Status: PR open (`fix/api-fetch-google-wrs-root-cause`), not merged.** Follow-on to #1004/#1006/#1008 (which stopped a transient public-API fetch failure from forcing `noindex` on the BlogPost/HostProfile/ServiceDetail prerendered pages). This PR addresses the *server-side* root cause of those fetch failures.

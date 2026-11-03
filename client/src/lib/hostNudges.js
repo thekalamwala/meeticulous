@@ -10,6 +10,8 @@
 // Data-only descriptors (icon is a NAME, not a component) so this stays a pure,
 // testable function with no React/lucide import.
 
+import { PREMIUM_PLAN } from '../data/plans';
+
 export const NUDGE_KEYS = ['kyc', 'legacy', 'taste', 'upgrade', 'calendar', 'share'];
 
 const rupees = (n) => `₹${Math.round(Number(n) || 0).toLocaleString('en-IN')}`;
@@ -51,7 +53,7 @@ export function buildNudges(ctx = {}) {
     if (taste.daysLeft > 0 && taste.daysLeft <= 15) {
       out.push({ key: 'taste', priority: 85, dismissible: true, tone: 'primary', icon: 'MessageCircle',
         title: `${taste.daysLeft} day${taste.daysLeft === 1 ? '' : 's'} left of WhatsApp reminders`,
-        body: `On ${endsOn} your guests' reminders switch to email. Pro keeps WhatsApp on — founding price ₹999/yr, locked for life.`,
+        body: `On ${endsOn} your guests' reminders switch to email. Pro keeps WhatsApp on — founding price ${rupees(PREMIUM_PLAN.yearly)}/yr incl. GST, locked for life.`,
         cta: 'Keep WhatsApp reminders', to: '/dashboard/upgrade?src=taste_card' });
     } else if (taste.endedDaysAgo != null && taste.endedDaysAgo <= 30) {
       out.push({ key: 'taste', priority: 85, dismissible: true, tone: 'primary', icon: 'MessageCircle',

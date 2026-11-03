@@ -39,6 +39,7 @@ const getSummary = async (req, res) => {
       failedNotifications,
       staleUnpaidBookings,
       pendingReviews,
+      openCommunityReports,
       pendingVerifications,
       totalUsers,
       totalVendors,
@@ -52,6 +53,8 @@ const getSummary = async (req, res) => {
       // "Reviews to moderate" = reviews an admin has flagged (v3.64 reviews.status).
       // 'flagged' is the only actionable state; visible/hidden are resolved.
       countWhere('reviews',         q => q.eq('status', 'flagged')),
+      // Open community reports (v3.185); countWhere fails soft to 0 if the table is missing.
+      countWhere('community_reports', q => q.eq('status', 'open')),
       // Pending hosts = unverified, non-banned hosts who FINISHED onboarding — i.e.
       // real profiles awaiting the admin's is_verified toggle to go live in Explore +
       // the sitemap. Scoped to onboarding_completed so abandoned/incomplete signups
@@ -69,6 +72,7 @@ const getSummary = async (req, res) => {
       { key: 'failed_notifications',  label: 'Failed WhatsApp/notifs', count: failedNotifications,  to: '/admin/notifications?tab=logs&status=failed', severity: failedNotifications ? 'danger' : 'ok' },
       { key: 'stale_unpaid_bookings', label: 'Abandoned bookings',     count: staleUnpaidBookings,  to: '/admin/bookings/abandoned',                 severity: staleUnpaidBookings ? 'warning' : 'ok' },
       { key: 'pending_reviews',       label: 'Reviews to moderate',    count: pendingReviews,       to: '/admin/support/reviews?status=flagged',     severity: pendingReviews ? 'warning' : 'ok' },
+      { key: 'open_community_reports', label: 'Community reports',      count: openCommunityReports, to: '/admin/community',               severity: openCommunityReports ? 'warning' : 'ok' },
       { key: 'pending_verifications', label: 'Pending verifications',  count: pendingVerifications, to: '/admin/providers/pending',       severity: pendingVerifications ? 'warning' : 'ok' },
     ];
 

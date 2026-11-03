@@ -13,6 +13,16 @@ const express = require('express');
 const router = express.Router();
 const { renderProfileMeta, renderServiceMeta } = require('../controllers/prerenderController');
 
+// /prerender/community/... — MUST stay above /:username, or /community would resolve as a
+// host profile. Anything else under /community (search, saved, unknown) is a bot 404.
+const community = require('../controllers/prerenderCommunity');
+router.get('/community', community.renderHome);
+router.get('/community/guidelines', community.renderGuidelines);
+router.get('/community/s/:key', community.renderSpace);
+router.get('/community/t/:slug', community.renderThread);
+router.get('/community/p/:slug', community.renderPost);
+router.use('/community', community.renderNotFound);
+
 // GET /prerender/:username — host profile meta shell
 router.get('/:username', renderProfileMeta);
 

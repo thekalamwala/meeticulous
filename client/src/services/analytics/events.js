@@ -68,6 +68,14 @@ export const EVENTS = Object.freeze({
   ENTERPRISE_FAQ_OPENED:   'enterprise_faq_opened',
   ENTERPRISE_SCROLL_DEPTH: 'enterprise_scroll_depth',
 
+  // ── Community (/community) — client-only ──
+  COMMUNITY_VIEWED:         'community_viewed',          // feed tab / space / item page loaded ({tab} | {space})
+  COMMUNITY_POST_CREATED:   'community_post_created',
+  COMMUNITY_REPLY_CREATED:  'community_reply_created',
+  COMMUNITY_LIKED:          'community_liked',           // { target_type: 'post' | 'comment' }
+  COMMUNITY_REPORTED:       'community_reported',
+  COMMUNITY_TERMS_ACCEPTED: 'community_terms_accepted',
+
   // ── System / reliability (client-only) ──
   ERROR_PAGE_VIEWED:  'error_page_viewed',   // a branded error/offline page rendered
   APP_ERROR:          'app_error_boundary',  // an uncaught render error hit RouteErrorBoundary

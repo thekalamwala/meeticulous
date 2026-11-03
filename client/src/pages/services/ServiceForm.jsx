@@ -14,6 +14,7 @@ import { PageHeader, Card, Button, Input, Select, Textarea, cn } from '../../com
 import { BOLT_ENABLED } from '../../config/aiListing';
 import { useAuth } from '../../context/AuthContext';
 import { normalizePlan } from '../../utils/themeUtils';
+import { fieldError } from '../../utils/apiError';
 
 // ₹ floor for paid services on the self-serve plans; Supreme is exempt, ₹0 free is
 // always allowed. Mirrors the server's planMiddleware.MIN_SERVICE_PRICE.
@@ -483,7 +484,10 @@ export default function ServiceForm({ initialData, serviceId }) {
       }
       navigate('/dashboard/services');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to save');
+      // Surface the first field-level validation error instead of the generic
+      // "Validation failed", so a save that trips a field cap tells the host
+      // which field + why. (shared helper — see utils/apiError.js)
+      toast.error(fieldError(err, 'Failed to save'));
     } finally {
       setSaving(false);
     }
@@ -703,6 +707,11 @@ export default function ServiceForm({ initialData, serviceId }) {
               <h2 className="mb-1 text-base font-bold text-gray-800">Overview</h2>
               <p className="mb-4 text-xs text-gray-400">Shown on the Overview tab of your public service page</p>
               <RichEditor value={form.long_description} onChange={v => set('long_description', v)}/>
+              {/* Parity with the server cap (serviceWriteRules long_description = 20000);
+                  the editor is HTML so this counts markup too. Server still enforces. */}
+              <div className={`mt-2 text-right text-xs ${(form.long_description?.length || 0) > 20000 ? 'text-red-500' : 'text-gray-400'}`}>
+                {(form.long_description?.length || 0).toLocaleString()} / 20,000
+              </div>
             </Card>
           </FeatureGate>
 

@@ -60,6 +60,15 @@ Direction: **Loop & Slot**. A rounded calendar slot is the layout module, the ee
 - Verb-first buttons ("Get your booking link"). Facts in product ("Tue 14 Nov · 10:30 · Paid £120").
 - No emoji. No hype words (seamless, revolutionary, supercharge).
 
+## Words: booking, appointment, session
+- **Booking** is the product word: dashboard, emails, pricing ("5% per booking"), product names ("booking page", "booking link"). It is the one word that fits everything hosts sell: reserve + pay.
+- On a profession page, call the visit what that customer calls it:
+  - **Appointment**: clinics (doctors, dentists, vets, eye, ENT, skin), salons, spas.
+  - **Session**: coaches, physiotherapists, therapists.
+  - **Booking** stays for slot-like things (turf, desks, workshop seats).
+- **Meeting** only for an actual video call ("Google Meet link"). It hides that the guest pays.
+- Never rename code or data for this: the `bookings` table and API stay.
+
 ## Before shipping any page, check
 - [ ] Only tokens, no stray hexes or fonts
 - [ ] At most one thread, at most one serif phrase
@@ -68,3 +77,4 @@ Direction: **Loop & Slot**. A rounded calendar slot is the layout module, the ee
 - [ ] Contrast ≥4.5:1 for body text
 - [ ] Focus ring visible on every interactive element
 - [ ] Official logo files used, untouched
+- [ ] Visit is called what the customer calls it (appointment / session / booking)

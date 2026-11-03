@@ -13,6 +13,8 @@ const db = {
       subject: 'Code {{otp}}', preview_text: '', html_content: '<p>{{otp}}</p>', cta_label: '', cta_url: '' },
     { id: 't3', event_key: 'BADGE_UNLOCKED', audience: 'all', status: 'active',
       subject: 'Badge!', preview_text: '', html_content: '<p>nice</p>', cta_label: '', cta_url: '' },
+    { id: 't4', event_key: 'COMMUNITY_MENTION', audience: 'all', status: 'active',
+      subject: 'Mentioned', preview_text: '', html_content: '<p>hi</p>', cta_label: '', cta_url: '' },
   ],
   email_logs: [],
   email_unsubscribes: [], // list of opted-out emails
@@ -168,6 +170,15 @@ describe('communicationEngine — marketing unsubscribe', () => {
     const r = await engine.send({ event: 'BADGE_UNLOCKED', to: 'ok@x.test', data: {}, user: {} });
     expect(r.status).toBe('queued');
     expect(db.email_logs[0].status).toBe('queued');
+  });
+
+  test('community reply/mention honour the unsubscribe list; removal notices do not', async () => {
+    expect(engine.isMarketing('COMMUNITY_REPLY')).toBe(true);
+    expect(engine.isMarketing('COMMUNITY_MENTION')).toBe(true);
+    expect(engine.isMarketing('COMMUNITY_CONTENT_REMOVED')).toBe(false);
+    db.email_unsubscribes = ['opted@x.test'];
+    const r = await engine.send({ event: 'COMMUNITY_MENTION', to: 'opted@x.test', data: {}, user: {} });
+    expect(r.status).toBe('suppressed');
   });
 
   test('transactional event to an opted-out address still sends (carve-out)', async () => {

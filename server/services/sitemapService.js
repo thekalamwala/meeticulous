@@ -15,6 +15,9 @@
  * filters are dropped and everything active/verified is treated as indexable.
  */
 const { supabaseAdmin } = require('../config/supabase');
+const { isFeatureEnabled } = require('./featureFlags');
+const communityStore = require('./community/store');
+const { logger } = require('../utils/logger');
 
 // ── Pure helpers ─────────────────────────────────────────────────────────────
 
@@ -200,6 +203,27 @@ const blogEntries = (rows, siteUrl) => {
     }));
 };
 
+// Community (spec §15): /community, /community/guidelines, active spaces, indexable items.
+// Items carry {kind, slug, last_activity_at}; spaces carry {key}. No rows -> no URLs at all
+// (flag off / table missing), so the hub pages never reach the sitemap before launch.
+const communityEntries = (rows, siteUrl) => {
+  const list = (rows || []).filter(Boolean);
+  if (!list.length) return [];
+  const site = trimSlash(siteUrl);
+  return [
+    { loc: `${site}/community`, changefreq: 'daily', priority: '0.6' },
+    { loc: `${site}/community/guidelines`, changefreq: 'monthly', priority: '0.3' },
+    ...list.map((r) => (r.key
+      ? { loc: `${site}/community/s/${r.key}`, changefreq: 'daily', priority: '0.5' }
+      : r.slug && {
+        loc: `${site}/community/${r.kind === 'thread' ? 't' : 'p'}/${r.slug}`,
+        lastmod: toLastmod(r.last_activity_at),
+        changefreq: 'weekly',
+        priority: '0.5',
+      })).filter(Boolean),
+  ];
+};
+
 // ── DB fetchers ──────────────────────────────────────────────────────────────
 
 const schemaMissing = (err) => err && /Could not find the|column.*does not exist/i.test(err.message || '');
@@ -301,9 +325,29 @@ const fetchBlogs = async () => {
   return r.data || [];
 };
 
+// Active spaces + indexable visible items, minus banned authors (a ban doesn't recompute
+// is_indexable, so it is filtered here at query time). [] while the `community` flag is off
+// (a flag read failure counts as off) or before the community tables exist.
+const fetchCommunity = async () => {
+  if (!(await isFeatureEnabled('community').catch(() => false))) return [];
+  try {
+    const [spaces, items, banned] = await Promise.all([
+      communityStore.listSpaces(), communityStore.listIndexableRows(), communityStore.bannedAuthorIds(),
+    ]);
+    return [
+      ...spaces.map((s) => ({ key: s.key })),
+      ...items.filter((i) => !(i.author_id && banned.has(i.author_id))),
+    ];
+  } catch (e) {
+    // Never rethrow: a community failure must not 500 the host/service/blog sitemaps.
+    if (e.code !== 'COMMUNITY_UNAVAILABLE') logger.error({ event: 'sitemap.community_error', message: e.message });
+    return [];
+  }
+};
+
 module.exports = {
   // pure
-  trimSlash, hostUrl, serviceUrl, toLastmod, STATIC_ROUTES, staticEntries, hostEntries, serviceEntries, professionEntries, blogEntries,
+  trimSlash, hostUrl, serviceUrl, toLastmod, STATIC_ROUTES, staticEntries, hostEntries, serviceEntries, professionEntries, blogEntries, communityEntries,
   // db
-  fetchHosts, fetchServices, fetchProfessions, fetchBlogs,
+  fetchHosts, fetchServices, fetchProfessions, fetchBlogs, fetchCommunity,
 };

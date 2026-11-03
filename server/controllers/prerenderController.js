@@ -43,6 +43,10 @@ const knowsAboutFrom = (host = {}) => [...new Set(
     .filter(Boolean).map(humanizeSlug),
 )];
 
+// JSON for a <script type="application/ld+json"> body. `<` -> the JSON escape \u003c so user
+// text such as "</script>" in a bio or community post can never close the script element (XSS).
+const ldJson = (o) => JSON.stringify(o).replace(/</g, '\\u003c');
+
 function buildHtml({ title, description, canonical, ogTitle, ogDescription, image, robots, jsonLd, faqJsonLd, breadcrumbJsonLd, cardImage, bodyHtml }) {
   const site = trimSlash(SITE_URL);
   const img = image || `${site}/og-image.png`;
@@ -75,9 +79,9 @@ function buildHtml({ title, description, canonical, ogTitle, ogDescription, imag
 <meta name="twitter:title" content="${esc(ogTitle || title)}">
 <meta name="twitter:description" content="${esc(ogDescription || description)}">
 <meta name="twitter:image" content="${esc(img)}">
-${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>` : ''}
-${faqJsonLd ? `<script type="application/ld+json">${JSON.stringify(faqJsonLd)}</script>` : ''}
-${breadcrumbJsonLd ? `<script type="application/ld+json">${JSON.stringify(breadcrumbJsonLd)}</script>` : ''}
+${jsonLd ? `<script type="application/ld+json">${ldJson(jsonLd)}</script>` : ''}
+${faqJsonLd ? `<script type="application/ld+json">${ldJson(faqJsonLd)}</script>` : ''}
+${breadcrumbJsonLd ? `<script type="application/ld+json">${ldJson(breadcrumbJsonLd)}</script>` : ''}
 </head>
 <body>
 ${bodyHtml || `<p>Redirecting to <a href="${esc(canonical)}">${esc(title)}</a>...</p>`}
@@ -497,4 +501,8 @@ const renderServiceMeta = async (req, res) => {
   }
 };
 
-module.exports = { renderProfileMeta, renderServiceMeta, resolveProfileMeta, resolveServiceMeta };
+module.exports = {
+  renderProfileMeta, renderServiceMeta, resolveProfileMeta, resolveServiceMeta,
+  // shared with prerenderCommunity.js
+  buildHtml, esc, SITE_URL,
+};
