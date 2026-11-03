@@ -26,6 +26,13 @@ const { SAFETY_KEYS } = require("../config/featureRegistry");
 const normalizeSeedTimezone = (googleTz) =>
   (!googleTz || /^(Etc\/)?(UTC|GMT)$/i.test(googleTz)) ? "Asia/Kolkata" : googleTz;
 
+// Browser-reported IANA timezone from the sign-in URL: accept only a string of
+// <=64 chars that Intl recognises (query parsing can hand us arrays/objects).
+const validTz = (tz) => {
+  if (typeof tz !== "string" || !tz || tz.length > 64) return null;
+  try { new Intl.DateTimeFormat("en", { timeZone: tz }); return tz; } catch (_) { return null; }
+};
+
 // Invite-link attribution: stamp only in the brand-new-profile branch (caller
 // guarantees profileId was just created). Existing accounts never reach here.
 // No-ops when state carries no slug or the slug is unknown (service-validated).
@@ -453,8 +460,10 @@ const googleVendorAuth = (req, res) => {
   // Marketing attribution — carried through the signed OAuth state so the
   // callback can stamp UTM/source on the brand-new host lead (CRM Phase 2b).
   const att = require("../services/crm/attributionInput").cleanAttribution(req.query || {});
+  // Browser timezone: fallback seed when Google Calendar can't supply one.
+  const tz = validTz(req.query.tz);
   const state = jwt.sign(
-    { flow: "vendor_auth", intent, ...(invite ? { invite } : {}), ...(att ? { att } : {}) },
+    { flow: "vendor_auth", intent, ...(invite ? { invite } : {}), ...(att ? { att } : {}), ...(tz ? { tz } : {}) },
     OAUTH_STATE_SECRET,
     { expiresIn: "15m" },
   );
@@ -511,11 +520,32 @@ const exchangeGoogleCode = async (code) => {
   return { tokens, googleUser };
 };
 
+// Timezone: only seed if the vendor has no availability row yet (never
+// overwrite a timezone the vendor chose in the dashboard). Preference: Google
+// Calendar settings → browser tz (seedTz) → platform default; all via
+// normalizeSeedTimezone. Non-fatal: a timezone problem must never block login.
+async function seedAvailabilityTimezone(profileId, getGoogleTz, seedTz) {
+  try {
+    const { data: avail } = await supabaseAdmin
+      .from("availability").select("host_id").eq("host_id", profileId).maybeSingle();
+    if (avail) return;
+    let googleTz = null;
+    try { googleTz = await getGoogleTz(); } catch (e) { console.error("google timezone read (non-fatal):", e.message); }
+    await supabaseAdmin.from("availability").upsert(
+      { host_id: profileId, timezone: normalizeSeedTimezone(googleTz || seedTz), updated_at: new Date().toISOString() },
+      { onConflict: "host_id" },
+    );
+  } catch (tzErr) {
+    console.error("timezone seed (non-fatal):", tzErr.message);
+  }
+}
+
 // Persist Google tokens (+ google_id when the column exists) on a profile and
 // best-effort seed the vendor's timezone from their Google Calendar settings.
 // calendarOk=false (host unticked the calendar boxes): store NO tokens, skip the
 // legacy revoke and timezone call, and record connected=false / skipped=false so
-// onboarding still asks for the calendar. seedTz is accepted for a later task.
+// onboarding still asks for the calendar. seedTz (browser timezone from the signed
+// state) seeds availability when Google's settings can't (denied / call failed).
 const attachGoogleToProfile = async (profileId, tokens, googleUser, { calendarOk, seedTz, alreadyConnected } = {}) => {
   if (!calendarOk) {
     // An already-connected host keeps their stored (still valid) token and flags:
@@ -532,6 +562,9 @@ const attachGoogleToProfile = async (profileId, tokens, googleUser, { calendarOk
       ({ error } = await supabaseAdmin.from("profiles").update(denied).eq("id", profileId));
     }
     if (error) throw error;
+    // Connected hosts already have availability; only a not-yet-connected host
+    // gets the browser-timezone seed.
+    if (!alreadyConnected) await seedAvailabilityTimezone(profileId, () => null, seedTz);
     return;
   }
   // Tokens are encrypted at rest (AES-256-GCM). Reads decrypt at point of use
@@ -606,20 +639,8 @@ const attachGoogleToProfile = async (profileId, tokens, googleUser, { calendarOk
 
   // Timezone: only seed if the vendor has no availability row yet (never
   // overwrite a timezone the vendor chose in the dashboard).
-  try {
-    const { data: avail } = await supabaseAdmin
-      .from("availability").select("host_id").eq("host_id", profileId).maybeSingle();
-    if (!avail) {
-      const googleTz = await getCalendarTimezone(tokens.access_token, tokens.refresh_token);
-      const tz = normalizeSeedTimezone(googleTz);
-      await supabaseAdmin.from("availability").upsert(
-        { host_id: profileId, timezone: tz, updated_at: new Date().toISOString() },
-        { onConflict: "host_id" },
-      );
-    }
-  } catch (tzErr) {
-    console.error("google timezone seed (non-fatal):", tzErr.message);
-  }
+  await seedAvailabilityTimezone(
+    profileId, () => getCalendarTimezone(tokens.access_token, tokens.refresh_token), seedTz);
 };
 
 // GET /api/auth/google/callback — single callback for BOTH flows, branched on
@@ -755,7 +776,7 @@ const googleCallback = async (req, res) => {
       const needsAttach =
         !existing || upgraded || !existing.google_calendar_connected || !!tokens.refresh_token;
       if (needsAttach) {
-        await attachGoogleToProfile(profileId, tokens, googleUser, { calendarOk, alreadyConnected: !!existing?.google_calendar_connected });
+        await attachGoogleToProfile(profileId, tokens, googleUser, { calendarOk, seedTz: validTz(statePayload?.tz), alreadyConnected: !!existing?.google_calendar_connected });
         if (!calendarOk) trackServer(profileId, "calendar_scope_denied", { source: "signup" }, { req });
       }
 

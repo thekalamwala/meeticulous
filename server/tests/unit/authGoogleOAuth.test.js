@@ -353,3 +353,58 @@ describe('calendar connect return path', () => {
     expect(trackServer).toHaveBeenCalledWith('host-9', 'calendar_scope_denied', { source: 'onboarding' }, expect.anything());
   });
 });
+
+describe('browser timezone fallback', () => {
+  const NO_CAL = { access_token: 'at', refresh_token: 'rt', scope: 'openid email profile' };
+  const stateTz = (tz) => {
+    const r = res();
+    googleVendorAuth({ query: { intent: 'signup', tz } }, r);
+    return jwt.verify(r.json.mock.calls[0][0].url.split('state=')[1], 'test-oauth-secret');
+  };
+  // Every upsert payload written on a from('availability') chain.
+  const availUpserts = () =>
+    supa.supabaseAdmin.from.mock.results
+      .filter((r, i) => supa.supabaseAdmin.from.mock.calls[i][0] === 'availability')
+      .flatMap((r) => r.value.upsert.mock.calls.map((c) => c[0]));
+
+  test('valid tz is carried in the signed state', () => {
+    expect(stateTz('Europe/London').tz).toBe('Europe/London');
+  });
+
+  test.each(['Not/AZone', '', ['Asia/Dubai'], { a: 1 }, 'A'.repeat(65)])('rejects %p → no tz in state', (bad) => {
+    expect(stateTz(bad).tz).toBeUndefined();
+  });
+
+  test('signup without calendar scopes and state tz Asia/Dubai → availability timezone Asia/Dubai', async () => {
+    getTokensFromCode.mockResolvedValue(NO_CAL);
+    await googleCallback({ query: { code: 'abc', state: signState({ flow: 'vendor_auth', intent: 'signup', tz: 'Asia/Dubai' }) } }, res());
+    expect(availUpserts()).toContainEqual(expect.objectContaining({ host_id: 'p-1', timezone: 'Asia/Dubai' }));
+  });
+
+  test('signup without calendar scopes and no tz → Asia/Kolkata', async () => {
+    getTokensFromCode.mockResolvedValue(NO_CAL);
+    await googleCallback({ query: { code: 'abc', state: signState({ flow: 'vendor_auth', intent: 'signup' }) } }, res());
+    expect(availUpserts()).toContainEqual(expect.objectContaining({ timezone: 'Asia/Kolkata' }));
+  });
+
+  test('browser UTC is normalised to Asia/Kolkata', async () => {
+    getTokensFromCode.mockResolvedValue(NO_CAL);
+    await googleCallback({ query: { code: 'abc', state: signState({ flow: 'vendor_auth', intent: 'signup', tz: 'UTC' }) } }, res());
+    expect(availUpserts()).toContainEqual(expect.objectContaining({ timezone: 'Asia/Kolkata' }));
+  });
+
+  test('calendar granted but Google settings call fails → falls back to state tz', async () => {
+    require('../../config/google').getCalendarTimezone.mockRejectedValueOnce(new Error('boom'));
+    const errSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    await googleCallback({ query: { code: 'abc', state: signState({ flow: 'vendor_auth', intent: 'signup', tz: 'Asia/Dubai' }) } }, res());
+    expect(availUpserts()).toContainEqual(expect.objectContaining({ timezone: 'Asia/Dubai' }));
+    errSpy.mockRestore();
+  });
+
+  test('already-connected host with calendar denied → no availability write', async () => {
+    getTokensFromCode.mockResolvedValue(NO_CAL);
+    supa.__state.existing = { id: 'p-1', role: 'host', is_host: true, email: 'new@vendor.com', google_calendar_connected: true };
+    await googleCallback({ query: { code: 'abc', state: signState({ flow: 'vendor_auth', intent: 'login', tz: 'Asia/Dubai' }) } }, res());
+    expect(availUpserts()).toEqual([]);
+  });
+});
