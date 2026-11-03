@@ -382,11 +382,12 @@ const BlogPost = () => {
   const canonical = `${SITE_URL}/blog/${post.slug}`;
   // Share card only. Deliberately NOT `post.image` first: `image` is the on-page
   // hero and setting it suppresses the icon thumbnail, so the two must stay
-  // separate concerns. Falls back to a real hero photo, then the site-wide card.
+  // separate concerns. Blogs supply their own og:image (post.ogImage), then a real
+  // hero photo, then the site-wide card — no auto-generated card.
   const ogImage = post.ogImage || post.image || `${SITE_URL}/og-image.png`;
-  // The generated per-post card and the site-wide card are both 1200x630; only a
-  // raw hero photo (post.image, used when no card exists) has unknown dimensions,
-  // so we emit width/height only for the cards rather than invent them.
+  // post.ogImage and the site-wide card are both 1200x630; only a raw hero photo
+  // (post.image, used when no og card) has unknown dimensions, so we emit
+  // width/height only for the cards rather than invent them.
   const cardDims = post.ogImage || !post.image ? { width: 1200, height: 630 } : {};
   const blogSeo = resolveBlogSeo({ post });
   const faqs = faqsFrom(post.body);

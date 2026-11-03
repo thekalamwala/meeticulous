@@ -1,23 +1,22 @@
 /**
- * hostOgCard.js — build the host profile's og:image as a Cloudinary URL.
+ * hostOgCard.js — build host & service og:image share cards as Cloudinary URLs.
  *
- * Replaces the old generate-and-store pipeline (v3.88: Puppeteer screenshots on a
- * nightly GitHub Action → Supabase storage → profiles.og_image). This is a PURE
- * string builder: no network, no DB, no cron, no secret. Cloudinary fetches the
- * committed background + brand marks + the host's avatar and composites the
+ * Replaces the old generate-and-store pipelines (v3.88 host / v3.154 service:
+ * Puppeteer screenshots on nightly GitHub Actions → Supabase storage → og_image).
+ * Pure string builders: no network, no DB, no cron, no secret. Cloudinary fetches
+ * the committed brand background + marks + the subject's avatar and composites the
  * 1200x630 card on first crawl, then serves it from its CDN. Same inputs => same
- * URL => cache hit, so each card renders once and never goes stale on a profile
- * edit (the URL just re-resolves).
+ * URL => cache hit, so each card renders once and never goes stale on an edit
+ * (the URL just re-resolves).
  *
  * Needs CLOUDINARY_CLOUD — the cloud NAME only (public, not a secret). Without it
- * the function returns null and the caller falls back to the static site card, so
- * the code ships safe before the env var exists. profiles.og_image still wins as a
- * manual admin override.
+ * the builders return null and the caller falls back to the static site card, so
+ * the code ships safe before the env var exists. An admin og_image still wins.
  *
- * ponytail: single accent ring + no profession→colour map yet, and no bio/next-
- * slots line. Matches OG kit template 02's core (photo, name, profession·city,
- * handle); add the BRIGHT profession-colour map + bio before rolling this pattern
- * out to services/blogs.
+ * ponytail: single accent ring, no profession→colour map, single-line title (long
+ * service titles ellipsis rather than wrap), no bio line. Good enough to prove the
+ * card system; richer layout (2-line title, profession colours, Bricolage font via
+ * a Cloudinary upload) is the pre-bulk polish.
  */
 
 // Read env at call time (not module load) so it's injectable in tests and picks up
@@ -29,14 +28,12 @@ const assetBase = () =>
   // Overridable so a pre-deploy preview can point Cloudinary at a reachable host.
   String(process.env.OG_ASSET_BASE || `${siteRoot()}/brand/og`).replace(/\/+$/, '');
 
-// Kit colours (tokens/colors.css). RING is the template-02 photo-ring accent — the
-// kit's profession-colour placeholder until the BRIGHT map lands.
 // Card is on a maroon (brand) ground — see host-og-bg.svg. Text is white/pink;
 // the photo gap and no-photo disc are white so they pop off the maroon.
 const RING = 'FF9F5A';   // photo-ring accent (marigold)
-const NAME = 'FFFFFF';   // host name
-const SUB = 'FF9FB0';    // profession · city (pink)
-const META = 'FFE4EA';   // handle (blush)
+const NAME = 'FFFFFF';   // title (name / service title)
+const SUB = 'FF9FB0';    // sub line (pink)
+const META = 'FFE4EA';   // meta line (blush)
 const DISC = 'FFFFFF';   // photo gap + no-photo disc
 
 // Google avatars come back at =s96-c (96px); ask for 512 so the ring photo isn't
@@ -48,7 +45,7 @@ const b64url = (s) => Buffer.from(String(s), 'utf8').toString('base64')
   .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 
 // l_text payload: URL-encode, then double-encode the ,/ that delimit a Cloudinary
-// transformation component (a name like "A, B/C" must not split the URL).
+// transformation component (a value like "A, B/C" must not split the URL).
 const txt = (s) => encodeURIComponent(String(s == null ? '' : s))
   .replace(/%2C/gi, '%252C').replace(/%2F/gi, '%252F');
 
@@ -58,58 +55,69 @@ const clip = (s, n) => {
 };
 
 /**
- * @returns {string|null} the Cloudinary og:image URL, or null when CLOUDINARY_CLOUD
- *   is unset or there's no name to render (caller falls back to the site card).
+ * Layout A — the shared brand card used for host profiles and service pages:
+ * maroon ground + vertical ee ribbon (host-og-bg.svg), white wordmark, a circular
+ * subject photo (or the ee mark when there's none) in the left identity block, a
+ * big title, a pink sub line and a blush meta line.
+ *
+ * @returns {string|null} the Cloudinary URL, or null when the cloud/title is missing.
  */
-function cloudinaryHostCard({ name, avatar, profession, city, handle, bio } = {}) {
+function layoutA({ title, titleSize = 84, titleClip = 22, avatar, sub, meta } = {}) {
   const CLOUD = cloudName();
-  if (!CLOUD || !name) return null;
+  if (!CLOUD || !title) return null;
   const ASSET_BASE = assetBase();
 
-  // Base = the committed cream background with the diagonal 'ee' ribbon baked in
-  // (host-og-bg.svg — the home-hero ribbon sweeping bottom-left → top-right, loop
-  // in the top-right corner). The wordmark is overlaid so it stays one source of
-  // truth; everything else dynamic is layered on top.
   const base = encodeURIComponent(`${ASSET_BASE}/host-og-bg.svg`);
   const L = ['w_1200,h_630,c_fill,q_auto,f_auto'];
 
+  // Wordmark (white) top-left — overlaid so it stays one source of truth in the repo.
   L.push(`l_fetch:${b64url(`${ASSET_BASE}/wordmark-inverse.svg`)}/c_scale,h_36/fl_layer_apply,g_north_west,x_64,y_64`);
 
-  // Avatar — circle with the profession-colour ring (left identity block). With no
-  // photo, fall back to the 'ee' loop mark on a maroon disc with the same ring —
-  // the brand mark, never the wordmark. Maroon disc (not blush) so the pink ee
-  // loop keeps contrast.
+  // Subject photo clipped to a circle INSIDE the ring (crop to 112, pad to 132 on a
+  // white disc for a clean gap, then the 6px ring). No photo → the 'ee' brand mark
+  // on a white disc, never the wordmark.
   if (avatar) {
-    // Photo clipped to a circle INSIDE the ring: crop to a 112 circle, pad out to
-    // 132 on a cream disc (a clean gap), then the 6px colour ring around that — so
-    // the ring frames the photo instead of hugging its edge.
     L.push(`l_fetch:${b64url(upscale(avatar))}/c_fill,g_face,w_112,h_112,r_max/c_pad,w_132,h_132,b_rgb:${DISC},r_max,bo_6px_solid_rgb:${RING}/fl_layer_apply,g_north_west,x_64,y_300`);
   } else {
     L.push(`l_fetch:${b64url(`${ASSET_BASE}/ee-mark.svg`)}/c_fit,w_92,h_92/c_pad,w_132,h_132,b_rgb:${DISC},r_max,bo_6px_solid_rgb:${RING}/fl_layer_apply,g_north_west,x_64,y_300`);
   }
 
-  // Name — Poppins 700. The kit's display face is Bricolage Grotesque 800, but
-  // Cloudinary has no built-in Bricolage ("Unsupported font family"); Poppins bold
-  // is the closest built-in. ponytail: upload the Bricolage TTF to Cloudinary and
-  // switch this to Bricolage%20Grotesque_84_800 for an exact kit match before bulk.
-  L.push(`l_text:Poppins_84_700:${txt(clip(name, 22))},co_rgb:${NAME}/fl_layer_apply,g_north_west,x_64,y_452`);
+  // Title — Poppins 700 (the kit's Bricolage 800 isn't a built-in Cloudinary font).
+  L.push(`l_text:Poppins_${titleSize}_700:${txt(clip(title, titleClip))},co_rgb:${NAME}/fl_layer_apply,g_north_west,x_64,y_452`);
 
-  // Profession · city.
-  const sub = [profession, city].filter(Boolean).join(' · ');
-  if (sub) {
-    L.push(`l_text:Poppins_30_600:${txt(clip(sub, 40))},co_rgb:${SUB}/fl_layer_apply,g_north_west,x_220,y_318`);
-  }
-
-  // Handle.
-  if (handle) {
-    L.push(`l_text:Poppins_24_500:${txt(`meeticulous.com/${handle}`)},co_rgb:${META}/fl_layer_apply,g_north_west,x_220,y_362`);
-  }
-
-  // bio reserved for the pre-bulk refinement (kept in the signature so callers
-  // already pass it). ponytail: wire the bio line in before services/blogs.
-  void bio;
+  if (sub) L.push(`l_text:Poppins_30_600:${txt(clip(sub, 40))},co_rgb:${SUB}/fl_layer_apply,g_north_west,x_220,y_318`);
+  if (meta) L.push(`l_text:Poppins_24_500:${txt(clip(meta, 44))},co_rgb:${META}/fl_layer_apply,g_north_west,x_220,y_362`);
 
   return `https://res.cloudinary.com/${CLOUD}/image/fetch/${L.join('/')}/${base}`;
 }
 
-module.exports = { cloudinaryHostCard };
+/** Host profile card (meeticulous.com/[handle]). */
+function cloudinaryHostCard({ name, avatar, profession, city, handle } = {}) {
+  return layoutA({
+    title: name,
+    avatar,
+    sub: [profession, city].filter(Boolean).join(' · '),
+    meta: handle ? `meeticulous.com/${handle}` : '',
+  });
+}
+
+const inr = (n) => `₹${Number(n).toLocaleString('en-IN')}`;
+
+/** Service page card (meeticulous.com/[handle]/[service]). */
+function cloudinaryServiceCard({ title, hostName, hostAvatar, price, priceOnRequest, duration, mode } = {}) {
+  const metaBits = [
+    priceOnRequest ? 'Price on request' : (Number(price) > 0 ? inr(price) : (price === 0 ? 'Free' : null)),
+    duration ? `${duration} min` : null,
+    mode === 'offline' ? 'In person' : 'Online',
+  ].filter(Boolean);
+  return layoutA({
+    title,
+    titleSize: 60,   // service titles run longer than a name
+    titleClip: 34,
+    avatar: hostAvatar,
+    sub: hostName ? `with ${hostName}` : '',
+    meta: metaBits.join('  ·  '),
+  });
+}
+
+module.exports = { cloudinaryHostCard, cloudinaryServiceCard };
