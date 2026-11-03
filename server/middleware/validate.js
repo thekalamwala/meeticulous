@@ -177,7 +177,10 @@ const serviceWriteRules = [
   body('title').optional().trim().isLength({ min: 3, max: 200 }).withMessage('Title must be 3–200 characters'),
   body('description').optional().trim().isLength({ max: 2000 }),
   body('short_description').optional().trim().isLength({ max: 2000 }),
-  body('long_description').optional().trim().isLength({ max: 5000 }),
+  // Rich-text editor output is HTML, so formatting markup inflates the length
+  // well past the visible text — 5000 clipped legitimate service writeups and
+  // 422'd the save (no client cap on the editor). 20000 ≈ a long formatted page.
+  body('long_description').optional().trim().isLength({ max: 20000 }).withMessage('Long description is too long (max 20000 characters of formatted text)'),
   body('duration').optional().isInt({ min: 5, max: 480 }).withMessage('Duration must be 5–480 minutes'),
   body('price').optional().isFloat({ min: 0, max: 500000 }).withMessage('Price must be 0–500000'),
   body('grace_period').optional().isInt({ min: 0, max: 1440 }).withMessage('Grace period must be 0–1440 minutes'),
