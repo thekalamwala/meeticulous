@@ -54,9 +54,11 @@ const D = {
 };
 
 // Fixed brand constants (legal entity, address, platform footer mark).
-// ADDRESS updated 2026-10-31 to the Eureka CoWorking office (owner request).
+// COMPANY = registered legal entity (shown on the legal line). The © line
+// carries the BRAND, not the entity (owner decision 2026-11-03).
+// ADDRESS updated 2026-11-03 to the short Eureka office line (owner request).
 const COMPANY    = 'Rajmudra Media LLP';
-const ADDRESS    = 'Eureka CoWorking, 2nd & 4th floor, 11, Friends Colony, Mate Square, Pratap Nagar Rd, Nagpur, Maharashtra 440022';
+const ADDRESS    = 'Eureka Coworking, 2nd Floor, Mate Square, Nagpur, MH - 22';
 // Hosted on the site itself (client/public/images/email → served at
 // meeticulous.com by Vercel), so emails no longer depend on an external CDN.
 // Header = full wordmark (26px tall, left). The footer is text-only.
@@ -117,12 +119,17 @@ function ctaButton(label, url, brand) {
  */
 function footerBlock({ support, fromName, nav = '' }) {
   const year = new Date().getFullYear();
+  // Stacked blocks with an even margin rhythm (the old one crammed every line
+  // into <br>s). Order: nav → reply → [socials slot] → legal entity → address → ©.
+  // Socials row is deferred until the icon art lands; drop it at the marked slot.
   return `<tr>
-    <td class="px" style="padding:22px 32px 26px;border-top:1px solid ${D.border};background:${D.bg};text-align:center;font-size:12px;line-height:1.6;color:${D.muted};font-family:${D.font};">
-      ${nav ? `<p style="margin:0 0 10px;font-size:12px;line-height:2;">${nav}</p>` : ''}
-      Questions? Just reply &mdash; it reaches the ${esc(fromName)} team at <a href="mailto:${esc(support)}" style="color:${D.brand};text-decoration:none;">${esc(support)}</a><br>
-      ${COMPANY} &middot; ${ADDRESS}<br>
-      &copy; ${year} ${esc(fromName)}
+    <td class="px" style="padding:28px 32px 30px;border-top:1px solid ${D.border};background:${D.bg};text-align:center;font-size:12px;line-height:1.6;color:${D.muted};font-family:${D.font};">
+      ${nav ? `<p style="margin:0 0 18px;font-size:12px;line-height:2;">${nav}</p>` : ''}
+      <p style="margin:0 0 18px;font-size:13px;line-height:1.6;color:${D.body};">Questions? Just reply &mdash; it reaches the ${esc(fromName)} team at <a href="mailto:${esc(support)}" style="color:${D.brand};text-decoration:none;font-weight:600;">${esc(support)}</a></p>
+      <!-- socials row slots here (pending icon art) -->
+      <p style="margin:0 0 4px;">${esc(COMPANY)}</p>
+      <p style="margin:0 0 14px;">${esc(ADDRESS)}</p>
+      <p style="margin:0;color:${D.note};">&copy; ${year} ${esc(fromName)}</p>
     </td>
   </tr>`;
 }
