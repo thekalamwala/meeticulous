@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Pencil, MapPin, Camera } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { updateProfile } from "../services/api";
-import BackButton from "../components/common/BackButton";
 import ImageCropper from "../components/common/ImageCropper";
 import FeatureGate from "../components/common/FeatureGate";
 import UsernameField from "../components/dashboard/UsernameField";
@@ -21,7 +21,7 @@ import {
   planLabel,
 } from "../utils/themeUtils";
 import {
-  PageHeader, Card, Button, FormField, Input, Select, Textarea, StickyActionBar, Tabs, cn,
+  PageHeader, Card, Button, FormField, Input, Select, StickyActionBar, Tabs, cn,
 } from "../components/dashboard/ui";
 
 
@@ -170,6 +170,41 @@ const ProfilePreview = ({ form, themeColor }) => {
   );
 };
 
+// ─── Inline (click-to-edit) field ────────────────────────────────────────────
+// Facebook/Twitter-style: shows the value; click (or the hover pencil) swaps to an
+// input/textarea that commits on Enter/blur and cancels on Esc. Edits write to the
+// page form state — the sticky Save bar persists everything, so there is no
+// per-field API call. ponytail: reuses the page's existing save instead of adding one.
+const InlineField = ({ value, onCommit, placeholder, multiline = false, textClass = '', inputClass = '', maxLength, label }) => {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value || '');
+  useEffect(() => { setDraft(value || ''); }, [value]);
+
+  const commit = () => { setEditing(false); if (draft !== (value || '')) onCommit(draft); };
+  const cancel = () => { setDraft(value || ''); setEditing(false); };
+
+  if (!editing) {
+    return (
+      <button type="button" onClick={() => setEditing(true)}
+        className={cn('group flex w-full items-start gap-1.5 text-left', textClass)}>
+        <span className={cn(!value && 'font-normal text-gray-400')}>{value || placeholder}</span>
+        <Pencil className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gray-300 opacity-0 transition group-hover:opacity-100" strokeWidth={2.25} />
+      </button>
+    );
+  }
+  const common = {
+    autoFocus: true, value: draft, maxLength, 'aria-label': label,
+    onChange: (e) => setDraft(e.target.value),
+    onBlur: commit,
+    onKeyDown: (e) => {
+      if (e.key === 'Escape') cancel();
+      if (e.key === 'Enter' && !multiline) { e.preventDefault(); commit(); }
+    },
+    className: cn('w-full rounded-md border border-primary/40 bg-white px-2 py-1 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/25', inputClass),
+  };
+  return multiline ? <textarea rows={3} {...common} /> : <input type="text" {...common} />;
+};
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const ProfileSetup = () => {
@@ -261,8 +296,13 @@ const ProfileSetup = () => {
     }
   };
 
+  // Commit one inline-edited field into form state (the Save bar persists it).
+  const commitField = (key, v) => { setForm((f) => ({ ...f, [key]: v })); setDirty(true); };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Name is required — inline edit has no HTML `required`, so guard here.
+    if (!form.name.trim()) { toast.error('Please add your name.'); return; }
     setLoading(true);
     try {
       // Strip any non-http(s) scheme (javascript:, data:, …) before persisting —
@@ -282,9 +322,17 @@ const ProfileSetup = () => {
 
   const tc = isValidHex(form.theme_color) ? form.theme_color : DEFAULT_THEME_COLOR;
 
+  // Back-button removed; keep the unsaved-changes guard it used to carry so a
+  // refresh/tab-close with pending edits still warns.
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (e) => { e.preventDefault(); e.returnValue = ''; };
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [dirty]);
+
   return (
     <div className="mx-auto max-w-5xl">
-      <BackButton hasUnsavedChanges={dirty} />
       <AccountModeToggle />
       <PageHeader
         title="Host Profile"
@@ -325,98 +373,94 @@ const ProfileSetup = () => {
                 onClose={() => setCropper(null)} label="Cover Photo" />
             )}
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Profile Photo</label>
-                <div className="flex items-center gap-3">
-                  <div
-                    className="h-16 w-16 flex-shrink-0 cursor-pointer overflow-hidden rounded-xl border-2 bg-gray-50 transition-opacity hover:opacity-80"
-                    style={{ borderColor: getPlanBorderColor(plan) }}
-                    onClick={() => setCropper("profile")}
-                  >
-                    {form.profile_image
-                      ? <img src={form.profile_image} alt="" className="h-full w-full object-cover" />
-                      : <svg className="m-5 h-6 w-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <Button type="button" variant="outline" size="sm" onClick={() => setCropper("profile")}>
-                        {form.profile_image ? "Change photo" : "Upload photo"}
-                      </Button>
-                      {form.profile_image && (
-                        <button
-                          type="button"
-                          onClick={() => { if (window.confirm("Remove your profile photo? Your fallback avatar will show instead.")) { setForm(f => ({ ...f, profile_image: "" })); setDirty(true); } }}
-                          className="text-xs font-medium text-gray-400 hover:text-red-600"
-                        >
-                          Remove
-                        </button>
-                      )}
-                    </div>
-                    <p className="mt-1 text-[10px] text-gray-400">Border colour reflects your plan tier</p>
-                  </div>
+            {/* ── WYSIWYG profile card — click any piece to edit in place ── */}
+            <Card padded={false} className="overflow-hidden">
+              {/* Cover (click to crop). Gated plans fall back to a static banner. */}
+              <FeatureGate flag="cover_photo" fallback={<div className="aspect-[3/1] bg-gradient-to-br from-gray-100 to-gray-50" />}>
+                <button
+                  type="button"
+                  onClick={() => setCropper("cover")}
+                  className="group relative block aspect-[3/1] w-full overflow-hidden bg-gray-100"
+                  title="JPG/PNG/WebP up to 2MB — cropped to a 3:1 banner"
+                >
+                  {form.cover_image
+                    ? <img src={form.cover_image} alt="" className="h-full w-full object-cover" />
+                    : <span className="flex h-full items-center justify-center text-xs text-gray-400">Add a cover photo</span>}
+                  <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-black/55 px-2.5 py-1 text-[11px] font-medium text-white opacity-0 transition group-hover:opacity-100">
+                    <Camera className="h-3.5 w-3.5" strokeWidth={2.25} /> {form.cover_image ? "Change" : "Add cover"}
+                  </span>
+                </button>
+              </FeatureGate>
+
+              <div className="px-5 pb-5">
+                {/* Avatar (click to crop) — border colour reflects the plan tier. */}
+                <button
+                  type="button"
+                  onClick={() => setCropper("profile")}
+                  className="group relative -mt-10 block h-20 w-20 overflow-hidden rounded-2xl border-4 bg-gray-50 shadow-sm"
+                  style={{ borderColor: getPlanBorderColor(plan) }}
+                  title="Change profile photo — border reflects your plan tier"
+                >
+                  {form.profile_image
+                    ? <img src={form.profile_image} alt="" className="h-full w-full object-cover" />
+                    : <span className="flex h-full w-full items-center justify-center text-2xl font-bold text-gray-300">{form.name?.charAt(0)?.toUpperCase() || '?'}</span>}
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
+                    <Camera className="h-5 w-5 text-white" strokeWidth={2.25} />
+                  </span>
+                </button>
+
+                {/* Name */}
+                <div className="mt-3">
+                  <InlineField value={form.name} onCommit={(v) => commitField('name', v)}
+                    placeholder="Your name" label="Host name" maxLength={80}
+                    textClass="text-xl font-bold text-gray-900" inputClass="text-xl font-bold" />
+                </div>
+                {/* Title */}
+                <div className="mt-0.5">
+                  <InlineField value={form.profession} onCommit={(v) => commitField('profession', v)}
+                    placeholder="Add a title — e.g. Founder & Developer" label="Host title" maxLength={80}
+                    textClass="text-sm font-medium text-primary" inputClass="text-sm font-medium" />
+                </div>
+                {/* Location */}
+                <div className="mt-1.5 flex items-start gap-1.5">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" strokeWidth={2.25} />
+                  <InlineField value={form.location} onCommit={(v) => commitField('location', v)}
+                    placeholder="Add your city" label="Location" maxLength={80}
+                    textClass="text-sm text-gray-600" inputClass="text-sm" />
+                </div>
+                {/* Handle — display only; change it in Details below */}
+                {form.username && (
+                  <p className="mt-1 text-xs text-gray-400">meeticulous.com/{form.username}</p>
+                )}
+                {/* Bio */}
+                <div className="mt-3 border-t border-gray-100 pt-3">
+                  <InlineField value={form.bio} onCommit={(v) => commitField('bio', v)} multiline
+                    placeholder="Tell people about yourself…" label="Bio" maxLength={500}
+                    textClass="text-sm leading-relaxed text-gray-600 whitespace-pre-wrap" inputClass="text-sm leading-relaxed" />
+                  <p className="mt-1 text-right text-[11px] text-gray-400">{form.bio.length}/500</p>
                 </div>
               </div>
-              <FeatureGate flag="cover_photo">
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">Cover Photo</label>
-                  <div
-                    className="relative aspect-[3/1] cursor-pointer overflow-hidden rounded-xl border bg-gray-50 transition-opacity hover:opacity-80"
-                    onClick={() => setCropper("cover")}
-                  >
-                    {form.cover_image
-                      ? <img src={form.cover_image} alt="" className="h-full w-full object-cover" />
-                      : <div className="flex h-full items-center justify-center text-xs text-gray-400">Click to upload cover photo</div>}
-                  </div>
-                  <div className="mt-1 flex items-center justify-between">
-                    <p className="text-[10px] text-gray-400">JPG/PNG/WebP up to 2MB — crop to a 3:1 banner, shown the same everywhere</p>
-                    {form.cover_image && (
-                      <button
-                        type="button"
-                        onClick={() => { if (window.confirm("Remove your cover photo?")) { setForm(f => ({ ...f, cover_image: "" })); setDirty(true); } }}
-                        className="ml-2 flex-shrink-0 text-xs font-medium text-gray-400 hover:text-red-600"
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </FeatureGate>
-            </div>
+            </Card>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormField label="Host Name" htmlFor="ps-name" className="mb-0">
-                <Input id="ps-name" type="text" name="name" required value={form.name} onChange={handleChange} />
-              </FormField>
-              <UsernameField user={user} onChanged={(u) => updateUser({ ...user, username: u })} />
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormField label="Host Title" className="mb-0">
-                <Input type="text" name="profession" placeholder="e.g. Founder and Developer" value={form.profession} onChange={handleChange} />
-              </FormField>
-              <FormField label="Location" className="mb-0">
-                <Input type="text" name="location" placeholder="e.g. Nagpur, Maharashtra" value={form.location} onChange={handleChange} />
-              </FormField>
-              <FormField label="Date of birth" hint="Private — only used to send you a birthday wish. Never shown on your public profile." className="mb-0">
-                <Input type="date" name="date_of_birth" value={form.date_of_birth || ''} max={new Date().toISOString().slice(0, 10)} onChange={handleChange} />
-              </FormField>
-            </div>
-
-            <FormField
-              label="Google Maps link"
-              hint="Shown to guests who book an in-person (offline) service — in their confirmation, reminder, and calendar. Leave blank if all your services are online."
-            >
-              <Input type="url" name="map_link" placeholder="https://maps.app.goo.gl/…" value={form.map_link} onChange={handleChange} />
-            </FormField>
-
-            <FormField label="Tagline" className="mb-0">
-              <Input type="text" name="tagline" placeholder="Short one-liner about you" value={form.tagline} onChange={handleChange} maxLength={100} />
-            </FormField>
-
-            <FormField label={<>Bio <span className="text-gray-400">({form.bio.length}/500)</span></>} className="mb-0">
-              <Textarea name="bio" rows={4} placeholder="Tell people about yourself..." value={form.bio} onChange={handleChange} maxLength={500} />
-            </FormField>
+            {/* ── Details — the handle plus private / config fields not shown on the card ── */}
+            <Card>
+              <div className="space-y-4">
+                <UsernameField user={user} onChanged={(u) => updateUser({ ...user, username: u })} />
+                <FormField label="Tagline" className="mb-0">
+                  <Input type="text" name="tagline" placeholder="Short one-liner about you" value={form.tagline} onChange={handleChange} maxLength={100} />
+                </FormField>
+                <FormField label="Date of birth" hint="Private — only used to send you a birthday wish. Never shown on your public profile." className="mb-0">
+                  <Input type="date" name="date_of_birth" value={form.date_of_birth || ''} max={new Date().toISOString().slice(0, 10)} onChange={handleChange} />
+                </FormField>
+                <FormField
+                  label="Google Maps link"
+                  hint="Shown to guests who book an in-person (offline) service — in their confirmation, reminder, and calendar. Leave blank if all your services are online."
+                  className="mb-0"
+                >
+                  <Input type="url" name="map_link" placeholder="https://maps.app.goo.gl/…" value={form.map_link} onChange={handleChange} />
+                </FormField>
+              </div>
+            </Card>
           </div>
         )}
 
