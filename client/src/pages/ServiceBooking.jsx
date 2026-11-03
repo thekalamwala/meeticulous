@@ -1357,18 +1357,22 @@ const ServiceBooking = () => {
           {/* STEP: details */}
           {!finalizing && step === "details" && (
             <div className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl p-4 sm:p-6" style={{ "--tc": tc }}>
-              <button
-                onClick={() => setStep("time")}
-                className="text-sm text-gray-500 hover:text-gray-800 flex items-center gap-1 font-medium mb-3"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                Back
-              </button>
-              <div className="mb-5">
-                <h2 className="text-xl sm:text-2xl font-bold leading-tight">Tell us who's coming</h2>
-                <p className="text-sm text-gray-400 mt-1">We just need a few quick details to confirm your booking.</p>
+              {/* Title + Back on one row — Back pulled to the right so the heading
+                  rises into the top space instead of sitting below a Back row. */}
+              <div className="mb-5 flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-bold leading-tight">Tell us who's coming</h2>
+                  <p className="text-sm text-gray-400 mt-1">We just need a few quick details to confirm your booking.</p>
+                </div>
+                <button
+                  onClick={() => setStep("time")}
+                  className="shrink-0 text-sm text-gray-500 hover:text-gray-800 flex items-center gap-1 font-medium"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Back
+                </button>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] gap-5">
