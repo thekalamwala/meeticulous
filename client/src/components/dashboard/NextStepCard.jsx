@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { Wallet, CreditCard, IndianRupee, MessageCircle, CalendarCheck, XCircle } from 'lucide-react';
 
 // The single ranked "Next step" nudge on the host dashboard. Content is a data-only
@@ -12,6 +14,15 @@ const TONE = {
 };
 
 export default function NextStepCard({ nudge, onDismiss, onAction }) {
+  // Busy while an action (Google connect) is starting: blocks double-clicks. On success
+  // the page redirects away, so it stays busy; on failure we toast and re-enable.
+  const [busy, setBusy] = useState(false);
+  const runAction = async () => {
+    if (busy) return;
+    setBusy(true);
+    try { await onAction?.(nudge.action); }
+    catch { toast.error('Could not start Google connection. Try again.'); setBusy(false); }
+  };
   const Icon = ICONS[nudge.icon] || IndianRupee;
   const t = TONE[nudge.tone] || TONE.primary;
   return (
@@ -23,7 +34,7 @@ export default function NextStepCard({ nudge, onDismiss, onAction }) {
       </div>
       <div className="flex shrink-0 items-center gap-2">
         {nudge.action ? (
-          <button onClick={() => onAction?.(nudge.action)} className={`whitespace-nowrap rounded px-3 py-1.5 text-xs font-bold text-white transition-colors ${t.cta}`}>
+          <button type="button" disabled={busy} onClick={runAction} className={`whitespace-nowrap rounded px-3 py-1.5 text-xs font-bold text-white transition-colors disabled:opacity-60 ${t.cta}`}>
             {nudge.cta}
           </button>
         ) : (

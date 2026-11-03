@@ -456,7 +456,7 @@ const Dashboard = () => {
         </div>
       ) : nextStep ? (
         <NextStepCard nudge={nextStep} onDismiss={() => dismissNudge(nextStep.key)}
-          onAction={(a) => { if (a === 'connectCalendar') connectGoogleCalendar('/dashboard'); }} />
+          onAction={(a) => (a === 'connectCalendar' ? connectGoogleCalendar('/dashboard') : undefined)} />
       ) : null}
 
       {loading ? <DashboardSkeleton /> : (
