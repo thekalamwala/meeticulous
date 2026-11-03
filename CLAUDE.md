@@ -159,11 +159,22 @@ Items previously listed here as pending are now live:
 - **v3.183** (`v3.183_lead_reply_intent.sql`) — applied 2026-11-02 on the Meeticulous DB:
   `leads.last_reply_intent` (AI label on the latest CRM email reply, written by
   `brevoInboundController` via Brevo inbound parsing on `reply.meeticulous.in`).
-- **v3.185** (`v3.185_community.sql`) — applied 2026-11-03 on the Meeticulous DB (founder-approved):
+- **v3.184** (`v3.184_founding_plan.sql`) — applied 2026-11-03 on the Meeticulous DB after release #116
+  shipped: archived `premium_founding` plan row (copy of Pro at today's price; Pro checkouts land there
+  while founding spots are open), `vendor_metrics.is_founding_member` + automatic "Founding Member" badge,
+  phantom `subscription_plans.features` keys dropped. Email templates reseeded the same day (Pro Taste ×3
+  + FOUNDING_SPOTS_LOW inserted, 22 refreshed to the banner designs; all 54 md5-match `config/emailTemplates.js`).
+- **v3.185** (`v3.185_platform_reviews.sql`) — applied 2026-11-03 on the Meeticulous DB and verified
+  (14 cols, RLS on / no policies, checks + 2 indexes): `platform_reviews` = reviews OF Meeticulous from
+  `/submit-review` (one per signed-in account). Public only when `status='approved'` AND
+  `consent_public`; approved in Admin → Content → Testimonials (`cms.manage`).
+- **v3.185** (`v3.185_community.sql`, community) — applied 2026-11-03 on the Meeticulous DB (founder-approved):
   18 `community_*` tables (schema for ALL community phases), counter triggers, 5 seeded spaces,
   3 `COMMUNITY_*` notification_events. RLS on, no policies. The 3 matching `email_templates` rows were
   inserted on their own (NOT via `seedEmailTemplates.js`, which overwrites every template). All four
   `community*` flags ship OFF + fail-closed. No migration outstanding.
+  **Filename note:** number collides with `v3.185_platform_reviews.sql` — cosmetic only, both applied
+  (Supabase names migrations independently; this one is `v3_185_community`).
 
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.

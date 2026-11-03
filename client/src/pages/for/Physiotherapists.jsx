@@ -77,7 +77,7 @@ const SERVICES = [
   { icon: Bone, label: 'Post-Surgery Rehab', desc: 'Structured rehabilitation after surgery.' },
   { icon: PersonStanding, label: 'Back & Neck Pain', desc: 'Relief and mobility for spine-related pain.' },
   { icon: Footprints, label: 'Posture & Ergonomics', desc: 'Posture correction and movement coaching.' },
-  { icon: Video, label: 'Home & Online Sessions', desc: 'Tele-rehab and home-visit bookings.' },
+  { icon: Video, label: 'Home & Online Sessions', desc: 'Tele-rehab and home-visit sessions.' },
 ];
 
 // Recovery journey track (4-step).
@@ -90,7 +90,7 @@ const STEPS = [
 
 // Integration logos — REAL BAS integrations only.
 const TOOLS = [
-  { name: 'Google Calendar', icon: 'google-calendar', sub: 'Busy times blocked, bookings added to your calendar' },
+  { name: 'Google Calendar', icon: 'google-calendar', sub: 'Busy times blocked, sessions added to your calendar' },
   { name: 'Google Meet', logo: '/images/logos/google-meet.svg', sub: 'Video link on every online session' },
   { name: 'WhatsApp', logo: '/images/logos/whatsapp.svg', sub: 'Reminders on autopilot' },
   { name: 'Razorpay', logo: razorpayLogo, sub: 'Payments, refunds & GST invoices' },
@@ -100,10 +100,10 @@ const TOOLS = [
 
 // Bento impact metrics.
 const METRICS = [
-  { v: '24/7', l: 'Bookings, day or night', note: 'Your booking page never sleeps — patients reserve sessions any time.' },
+  { v: '24/7', l: 'Sessions, day or night', note: 'Your booking page never sleeps — patients reserve sessions any time.' },
   { v: '100%', l: 'Kept on Pro', note: '0% commission — every rupee you earn stays yours.' },
   { v: '₹0', l: 'To get started', note: 'Free forever plan — no card, no lock-in.' },
-  { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice generated for every paid booking.' },
+  { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice generated for every paid session.' },
 ];
 
 // Placeholder testimonials — swap for real quotes when available.
@@ -128,7 +128,7 @@ const NEW_WAY = [
   'Automatic WhatsApp reminders cut no-shows',
   'Fees collected upfront over UPI or card',
   'One clean, calendar-synced clinic view',
-  'Conflict-free slots — no double bookings',
+  'Conflict-free slots — no double-booked sessions',
 ];
 
 // Trust facts — verifiable only.
@@ -140,11 +140,11 @@ const TRUST_STRIP = [
 ];
 
 const FAQ = [
-  { q: 'Is Meeticulous suitable for physiotherapists and rehab centres?', a: 'Yes. Whether you are a solo physiotherapist or a rehab centre with a team, Meeticulous manages your services, availability, patient bookings and communication from one place — so your reception runs without constant phone calls. It is a scheduling and payment tool, not a medical-records system.' },
+  { q: 'Is Meeticulous suitable for physiotherapists and rehab centres?', a: 'Yes. Whether you are a solo physiotherapist or a rehab centre with a team, Meeticulous manages your services, availability, patient sessions and communication from one place — so your reception runs without constant phone calls. It is a scheduling and payment tool, not a medical-records system.' },
   { q: 'Can patients book sessions online?', a: 'Yes. A patient opens your booking link, chooses a service such as a physiotherapy assessment or rehab session, picks a convenient time and confirms — no calls or waiting for the desk to reply.' },
-  { q: 'Can I take recurring or package bookings?', a: 'Yes. Offer multi-session rehab packages and recurring bookings, each with its own duration, fee and availability — ideal for a structured recovery programme.' },
+  { q: 'Can I offer recurring sessions or packages?', a: 'Yes. Offer multi-session rehab packages and recurring sessions, each with its own duration, fee and availability — ideal for a structured recovery programme.' },
   { q: 'Can I offer home visits or online sessions?', a: 'Yes. Offer online tele-rehab with automatic Google Meet links, or mark a service as an in-centre or home visit — the patient picks the mode that suits them.' },
-  { q: 'Can I collect the session fee online?', a: 'Yes. Collect the fee upfront through Razorpay — UPI, cards or netbanking — before the session. A GST invoice is generated automatically for every paid booking.' },
+  { q: 'Can I collect the session fee online?', a: 'Yes. Collect the fee upfront through Razorpay — UPI, cards or netbanking — before the session. A GST invoice is generated automatically for every paid session.' },
   { q: 'Is our clinic and patient information kept private?', a: 'Meeticulous stores appointment and contact details for booking only — it is not a medical-records system. Your production data is hosted in India (Mumbai) and the platform operates under India’s DPDP Act 2023.' },
   { q: 'Do we need any technical setup?', a: 'No. Setup takes minutes and needs no technical skills. You add your services and centre hours, and your booking page is ready to share — your patients need nothing more than the link.' },
   { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },

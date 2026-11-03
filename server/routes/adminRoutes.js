@@ -143,6 +143,11 @@ const reviewsAdmin = require('../controllers/reviewAdminController');
 router.get('/reviews',           requireAdmin('reviews.moderate'), reviewsAdmin.listReviews);
 router.patch('/reviews/:id',     requireAdmin('reviews.moderate'), reviewsAdmin.moderateReview);
 router.delete('/reviews/:id',    requireAdmin('reviews.moderate'), reviewsAdmin.deleteReview);
+// Reviews OF Meeticulous (v3.185) — admin Testimonials page; approve before any
+// marketing/public use. cms.manage = same perm as the Testimonials nav entry.
+const platformReviews = require('../controllers/platformReviewController');
+router.get('/platform-reviews',       requireAdmin('cms.manage'), platformReviews.adminList);
+router.patch('/platform-reviews/:id', requireAdmin('cms.manage'), platformReviews.adminModerate);
 
 // ── Community moderation ───────────────────────────────────────
 const communityAdmin = require('../controllers/communityAdminController');

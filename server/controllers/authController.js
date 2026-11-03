@@ -297,6 +297,27 @@ const ensureGuestProfile = async (email, name = "Guest") => {
 // self-serve) and the Google vendor-auth upgrade path (a customer who signs in
 // via "Become a host" / vendor-login) so both routes flip is_host + seed onboarding
 // identically. Never resets a host who already finished onboarding.
+// Founder heads-up for every new host, so the founder can review who signed up.
+// Two entry points: a brand-new Google host (googleCallback) and an existing
+// guest turning on hosting (enableHostingForProfile). Key is per-profile so
+// distinct signups are never collapsed by the throttle. Fire-and-forget:
+// adminAlert never throws.
+const alertNewHost = (p, via) => {
+  const base = process.env.CLIENT_URL || 'https://meeticulous.com';
+  require('../utils/adminAlert').adminAlert({
+    key: `new_host:${p.id}`,
+    subject: `New host signup: ${p.name || p.username || p.email || p.id}`,
+    lines: [
+      `Name: ${p.name || '—'}`,
+      `Username: ${p.username || '—'}`,
+      `Email: ${p.email || '—'}`,
+      `Phone: ${p.phone || '—'}`,
+      `Signed up via: ${via}`,
+    ],
+    link: `${base}/admin/host360/${p.id}`,
+  });
+};
+
 const enableHostingForProfile = async (profileId) => {
   const { data: profile, error } = await supabaseAdmin
     .from("profiles")
@@ -329,22 +350,8 @@ const enableHostingForProfile = async (profileId) => {
   if (upErr || !updated) throw upErr || new Error("Could not enable hosting");
 
   // New-host alert: fire once, only on the false→true transition (a returning
-  // host re-signing in already has is_host=true, so this stays quiet). Key is
-  // per-profile so distinct signups are never collapsed by the throttle.
-  if (!profile.is_host) {
-    const base = process.env.CLIENT_URL || 'https://meeticulous.com';
-    require('../utils/adminAlert').adminAlert({
-      key: `new_host:${profileId}`,
-      subject: `New host signup: ${updated.name || updated.username || updated.email || profileId}`,
-      lines: [
-        `Name: ${updated.name || '—'}`,
-        `Username: ${updated.username || '—'}`,
-        `Email: ${updated.email || '—'}`,
-        `Phone: ${updated.phone || '—'}`,
-      ],
-      link: `${base}/admin/host360/${profileId}`,
-    });
-  }
+  // host re-signing in already has is_host=true, so this stays quiet).
+  if (!profile.is_host) alertNewHost(updated, 'existing guest account turned on hosting');
   return updated;
 };
 
@@ -678,6 +685,7 @@ const googleCallback = async (req, res) => {
         // confirmed). Next step (2) is slug claim via the authed claim-slug
         // endpoint. calendar_skipped=true because they connected via Google here.
         await markGoogleVendorOnboarding(profileId, profile.username);
+        alertNewHost(profile, 'Google (new account)');
 
         // Invite-link attribution — new host ONLY, write-once, never a referrals row.
         await maybeStampInvite(profileId, statePayload);
