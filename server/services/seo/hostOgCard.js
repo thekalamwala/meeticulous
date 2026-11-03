@@ -23,12 +23,14 @@
 // Read env at call time (not module load) so it's injectable in tests and picks up
 // a late-set CLOUDINARY_CLOUD. CLOUD is the cloud NAME only — public, not a secret.
 const cloudName = () => process.env.CLOUDINARY_CLOUD;
-const assetBase = () => {
-  const site = String(process.env.PUBLIC_SITE_URL || 'https://meeticulous.com').replace(/\/+$/, '');
+const siteRoot = () => String(process.env.PUBLIC_SITE_URL || 'https://meeticulous.com').replace(/\/+$/, '');
+const assetBase = () =>
   // Where the committed brand assets are served (client/public/brand/og/*).
   // Overridable so a pre-deploy preview can point Cloudinary at a reachable host.
-  return String(process.env.OG_ASSET_BASE || `${site}/brand/og`).replace(/\/+$/, '');
-};
+  String(process.env.OG_ASSET_BASE || `${siteRoot()}/brand/og`).replace(/\/+$/, '');
+// No-photo fallback mark = the site favicon (the small 'ee' brand mark, NOT the
+// wordmark), served at the site root. Lives in prod already, so it needs no deploy.
+const faviconUrl = () => `${siteRoot()}/favicon.svg`;
 
 // Kit colours (tokens/colors.css). RING is the template-02 photo-ring accent — the
 // kit's profession-colour placeholder until the BRIGHT map lands.
@@ -72,9 +74,13 @@ function cloudinaryHostCard({ name, avatar, profession, city, handle, bio } = {}
   L.push(`l_fetch:${b64url(`${ASSET_BASE}/wordmark.svg`)}/c_scale,h_36/fl_layer_apply,g_north_west,x_64,y_64`);
   L.push(`l_fetch:${b64url(`${ASSET_BASE}/ee-mark.svg`)}/c_scale,w_150/fl_layer_apply,g_north_east,x_64,y_80`);
 
-  // Avatar — circle with the profession-colour ring (left identity block).
+  // Avatar — circle with the profession-colour ring (left identity block). With no
+  // photo, fall back to the 'ee' favicon mark on a blush disc with the same ring
+  // (the kit's empty-slot treatment) — never the wordmark.
   if (avatar) {
     L.push(`l_fetch:${b64url(upscale(avatar))}/c_fill,g_face,w_132,h_132,r_max,bo_6px_solid_rgb:${RING}/fl_layer_apply,g_west,x_64,y_-40`);
+  } else {
+    L.push(`l_fetch:${b64url(faviconUrl())}/c_fit,w_72,h_72/c_pad,w_132,h_132,b_rgb:FFE4EA,r_max,bo_6px_solid_rgb:${RING}/fl_layer_apply,g_west,x_64,y_-40`);
   }
 
   // Name — Poppins 700. The kit's display face is Bricolage Grotesque 800, but
