@@ -94,8 +94,24 @@ const resolveReport = handle(async (req, res) => {
   if (!report) return fail(res, 404, 'NOT_FOUND');
   await admin.resolveOpenReports(report.target_type, report.target_id, resolvedPatch(req, status, note));
   await audit(req, { action: 'community.report_resolve', resource_type: 'community_report', resource_id: report.id, before: { status: report.status }, after: { status, note, target_type: report.target_type, target_id: report.target_id } });
+  if (report.target_type !== 'member') await restoreAutoHidden(req, report.target_type, report.target_id, status, note);
   res.json({ ok: true });
 });
+
+// Spec §18: auto-hide holds content "until reviewed", and resolving/dismissing the reports is
+// that review. Only auto-hidden rows (moderated_by null) come back; a moderator's Hide stays.
+async function restoreAutoHidden(req, type, id, status, note) {
+  const isPost = type === 'post';
+  const row = await (isPost ? store.getPost : store.getComment)(id);
+  if (!row || row.status !== 'hidden' || row.moderated_by) return;
+  const patch = { status: 'visible', moderated_by: req.admin.id, moderated_at: new Date().toISOString(), admin_note: note };
+  const updated = await (isPost ? store.updatePost : store.updateComment)(row.id, patch, { status: 'hidden' });
+  if (!updated) return;
+  await audit(req, { action: 'community.restore', resource_type: `community_${type}`, resource_id: row.id, before: { status: 'hidden' }, after: { status: 'visible', note, via: `report_${status}` } });
+  try { await store.refreshIndexable(isPost ? row.id : row.post_id); } catch (e) { console.error('[community-admin] indexable', e.message); }
+  bustSitemapCache();
+  store.resetReadCaches();
+}
 const resolvedPatch = (req, status, note) => ({ status, resolved_by: req.admin.id, resolved_at: new Date().toISOString(), resolution_note: note });
 
 // ---- Content ----
@@ -138,6 +154,8 @@ const moderate = handle(async (req, res) => {
   const patch = { status: next, moderated_by: req.admin.id, moderated_at: new Date().toISOString(), admin_note: note };
   const updated = await (isPost ? store.updatePost : store.updateComment)(row.id, patch, { status: row.status }); // guard vs racing writers
   if (!updated) return fail(res, 409, 'CONFLICT');
+  // Audit right after the status change (IT Rules trail), before anything else can throw.
+  await audit(req, { action: `community.${action}`, resource_type: `community_${type}`, resource_id: row.id, before: { status: row.status }, after: { status: next, note } });
 
   const postId = isPost ? row.id : row.post_id;
   await admin.resolveOpenReports(type, row.id, resolvedPatch(req, 'resolved', note ? `${action}: ${note}` : action));
@@ -147,7 +165,6 @@ const moderate = handle(async (req, res) => {
   if (action === 'remove') {
     bg(async () => notify.onRemoved(isPost ? { targetType: 'post', item: updated } : { targetType: 'comment', item: await store.getPost(row.post_id), comment: updated }));
   }
-  await audit(req, { action: `community.${action}`, resource_type: `community_${type}`, resource_id: row.id, before: { status: row.status }, after: { status: next, note } });
   res.json({ ok: true, status: next });
 });
 

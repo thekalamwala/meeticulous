@@ -53,12 +53,23 @@ test('cancelling the note prompt aborts a destructive action', async () => {
   expect(api.adminModerate).not.toHaveBeenCalled();
 });
 
+test('Restore shows only on hidden targets and calls moderate with restore', async () => {
+  setPerms(['community.moderate']);
+  api.adminGetReports.mockResolvedValue({ groups: [groups[0], { ...groups[1], preview: { body: 'buy now', status: 'hidden' } }] });
+  renderPage();
+  const [visible, hidden] = await screen.findAllByTestId('report-group');
+  expect(within(visible).queryByRole('button', { name: 'Restore' })).toBeNull();
+  await userEvent.click(within(hidden).getByRole('button', { name: 'Restore' }));
+  await waitFor(() => expect(api.adminModerate).toHaveBeenCalledWith('comments', 'c1', 'restore', ''));
+});
+
 test('view-only admin sees no action buttons', async () => {
   setPerms(['community.view']);
   renderPage();
   await screen.findAllByTestId('report-group');
   expect(screen.queryByRole('button', { name: 'Remove' })).toBeNull();
   expect(screen.queryByRole('button', { name: 'Hide' })).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Restore' })).toBeNull();
   expect(screen.queryByRole('button', { name: 'Ban author' })).toBeNull();
 });
 

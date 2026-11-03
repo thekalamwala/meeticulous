@@ -88,11 +88,70 @@ describe('moderate', () => {
     expect(callsOn('community_posts', 'update')).toHaveLength(0);
   });
 
+  test('audit is written even if resolving the reports then fails', async () => {
+    const state = { post: mkPost() };
+    db.on('community_posts', (ops) => {
+      if (has(ops, 'update')) Object.assign(state.post, arg(ops, 'update'));
+      return { data: state.post, error: null };
+    });
+    db.on('community_reports', () => ({ data: null, error: { code: 'XX000', message: 'boom' } }));
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    const res = await run(ctrl.moderate, { params: { type: 'posts', id: POST_ID }, body: { action: 'hide' } });
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(audit).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ action: 'community.hide', resource_id: POST_ID }));
+    console.error.mockRestore();
+  });
+
   test('missing table -> 503', async () => {
     db.on('community_posts', () => ({ data: null, error: { code: '42P01', message: 'relation "community_posts" does not exist' } }));
     const res = await run(ctrl.moderate, { params: { type: 'posts', id: POST_ID }, body: { action: 'hide' } });
     expect(res.status).toHaveBeenCalledWith(503);
     expect(code(res)).toBe('COMMUNITY_UNAVAILABLE');
+  });
+});
+
+describe('resolveReport restores auto-hidden targets', () => {
+  const REPORT_ID = '33333333-3333-4333-8333-333333333333';
+  const { bustSitemapCache } = require('../../../utils/sitemapCache');
+  const wire = (target, type = 'post') => {
+    const state = { row: target };
+    db.on('community_reports', (ops) => (has(ops, 'update')
+      ? { data: null, error: null }
+      : { data: { id: REPORT_ID, target_type: type, target_id: target.id, status: 'open' }, error: null }));
+    const table = type === 'post' ? 'community_posts' : 'community_comments';
+    db.on(table, (ops) => {
+      if (has(ops, 'update')) Object.assign(state.row, arg(ops, 'update'));
+      return { data: state.row, error: null };
+    });
+    if (type === 'comment') db.on('community_posts', () => ({ data: mkPost(), error: null }));
+    return table;
+  };
+
+  test.each(['dismissed', 'resolved'])('%s on an auto-hidden post -> visible, audited, caches busted', async (status) => {
+    const table = wire(mkPost({ status: 'hidden', moderated_by: null }));
+    const res = await run(ctrl.resolveReport, { params: { id: REPORT_ID }, body: { status } });
+    expect(res.json).toHaveBeenCalledWith({ ok: true });
+    const upd = callsOn(table, 'update')[0];
+    expect(arg(upd.ops, 'update')).toMatchObject({ status: 'visible', moderated_by: 'adm-1' });
+    expect(upd.ops).toContainEqual(['eq', 'status', 'hidden']);
+    expect(audit).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ action: 'community.restore', resource_id: POST_ID }));
+    expect(bustSitemapCache).toHaveBeenCalled();
+  });
+
+  test('auto-hidden comment is restored too', async () => {
+    const table = wire({ id: COMMENT_ID, post_id: POST_ID, author_id: USER, body: 'x', status: 'hidden', moderated_by: null }, 'comment');
+    await run(ctrl.resolveReport, { params: { id: REPORT_ID }, body: { status: 'dismissed' } });
+    expect(arg(callsOn(table, 'update')[0].ops, 'update')).toMatchObject({ status: 'visible' });
+  });
+
+  test('moderator-hidden or visible targets are left alone', async () => {
+    let table = wire(mkPost({ status: 'hidden', moderated_by: 'adm-2' }));
+    await run(ctrl.resolveReport, { params: { id: REPORT_ID }, body: { status: 'dismissed' } });
+    expect(callsOn(table, 'update')).toHaveLength(0);
+    table = wire(mkPost({ status: 'visible' }));
+    await run(ctrl.resolveReport, { params: { id: REPORT_ID }, body: { status: 'dismissed' } });
+    expect(callsOn(table, 'update')).toHaveLength(0);
+    expect(audit).not.toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ action: 'community.restore' }));
   });
 });
 

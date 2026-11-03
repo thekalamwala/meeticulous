@@ -34,6 +34,7 @@ function Group({ g, busy, run, moderate }) {
       {canModerate() && (
         <div className="flex flex-wrap items-center gap-2 mt-3">
           {content && status === 'visible' && <Btn size="sm" variant="outline" disabled={busy} onClick={() => moderate(type, g.target_id, 'hide')}>Hide</Btn>}
+          {content && status === 'hidden' && <Btn size="sm" variant="outline" disabled={busy} onClick={() => moderate(type, g.target_id, 'restore')}>Restore</Btn>}
           {content && ['visible', 'hidden'].includes(status) && <Btn size="sm" variant="danger" disabled={busy} onClick={() => moderate(type, g.target_id, 'remove')}>Remove</Btn>}
           <Btn size="sm" variant="ghost" disabled={busy} onClick={() => run(() => adminResolveReport(g.report_id, 'dismissed'), 'Dismissed')}>Dismiss</Btn>
           {g.author.id && (
@@ -68,10 +69,11 @@ export default function ReportsTab() {
     setBusy(true);
     try { await fn(); toast.success(ok); await load(); } catch (e) { toast.error(errMsg(e)); } finally { setBusy(false); }
   };
+  const COPY = { remove: ['Remove this from the community?', 'Removed'], hide: ['Hide this item?', 'Hidden'], restore: ['Restore this item so everyone can see it again?', 'Restored'] };
   const moderate = (type, id, action) => {
-    const note = askNote(action === 'remove' ? 'Remove this from the community?' : 'Hide this item?');
+    const note = askNote(COPY[action][0]);
     if (note === null) return;
-    run(() => adminModerate(type, id, action, note), action === 'remove' ? 'Removed' : 'Hidden');
+    run(() => adminModerate(type, id, action, note), COPY[action][1]);
   };
 
   if (!groups) return <Skeleton className="h-40" />;

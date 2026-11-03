@@ -1,6 +1,11 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Seo from '../../components/common/Seo';
 import { SITE_URL } from '../../utils/seo';
+import { useFeatures } from '../../context/FeatureContext';
+import { useAuth } from '../../context/AuthContext';
+import { getMe } from '../../services/communityApi';
+import ErrorPage from '../ErrorPage';
 
 // ── FOUNDER: fill these before launch (spec §23). Draft copy below is yours to edit. ──
 const GRIEVANCE_OFFICER_NAME = '{{GRIEVANCE_OFFICER_NAME}}';
@@ -26,7 +31,26 @@ const DONTS = [
 const H2 = 'font-display text-xl text-maroon mt-10 mb-3';
 const LI = 'pl-1';
 
+// Pre-launch secrecy: 404 unless the flag is truly on (same raw read as the Navbar, not the
+// fail-open isOn) or /community/me shows early access / an official or staff badge.
 export default function CommunityGuidelines() {
+  const { flags, ready } = useFeatures();
+  const live = flags?.community === true;
+  const { user } = useAuth() || {};
+  const [early, setEarly] = useState(null); // null = still asking
+  useEffect(() => {
+    if (live || !user) return undefined;
+    let on = true;
+    getMe()
+      .then((d) => on && setEarly(!!d.member && (!!d.member.early_access || ['official', 'staff'].includes(d.member.badge))))
+      .catch(() => on && setEarly(false));
+    return () => { on = false; };
+  }, [live, user]);
+
+  if (!live) {
+    if (!ready || (user && early === null)) return null; // no 404 flash while flags or /me load
+    if (!early) return <ErrorPage code={404} />;
+  }
   return (
     <main className="bg-cream min-h-screen">
       <Seo title="Community Guidelines — Meeticulous Community" description={DESC}
