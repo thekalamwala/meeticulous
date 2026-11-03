@@ -19,7 +19,6 @@ import toast from "react-hot-toast";
 import {
   DEFAULT_THEME_COLOR,
   getContrastColor,
-  getPlanBorderColor,
   SOCIAL_BRAND_COLORS,
   isValidHex,
   applyProfileTheme,
@@ -340,7 +339,6 @@ const ServiceBooking = () => {
   const [confirmation, setConfirmation] = useState(null);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const utm = useUtm(); // first-touch ad attribution → carried into the paid conversion event
-  const [profileOpen, setProfileOpen] = useState(true); // permanent sidebar, expanded by default
   const [slotsLoading, setSlotsLoading] = useState(false); // skeleton while slots fetch
   const [finalizing, setFinalizing] = useState(false);     // labour-illusion screen
   const [finalizeMsg, setFinalizeMsg] = useState("");
@@ -897,7 +895,6 @@ const ServiceBooking = () => {
     ? host.theme_color
     : (seededTheme || DEFAULT_THEME_COLOR);
   const textOnTheme = getContrastColor(tc);
-  const borderColor = getPlanBorderColor(host?.plan || 'explorer');
 
   // OTP resend cooldown tick.
   useEffect(() => {
@@ -1009,121 +1006,8 @@ const ServiceBooking = () => {
       )}
       <div className="app-container py-4 sm:py-5 max-w-3xl mx-auto">
 
-        {/* Profile sidebar is dropped during booking — full-width engine with a
-            compact summary strip below. Kept hidden (not deleted) so the restyle
-            stays a low-risk diff on this critical file; prune in a follow-up. */}
-        <div className="hidden">
-          <div className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl overflow-hidden lg:sticky lg:top-24">
-            {/* Header toggle */}
-            <button
-              onClick={() => setProfileOpen((o) => !o)}
-              className="w-full flex items-center justify-between px-4 py-3 text-left"
-            >
-              <span className="flex items-center gap-2 text-sm font-semibold text-gray-900">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: tc }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                Profile Information
-              </span>
-              <svg className={`w-4 h-4 text-gray-400 transition-transform ${profileOpen ? "rotate-180" : ""}`}
-                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-
-            {profileOpen && (
-              <div className="border-t">
-                {/* Section 1: Vendor Profile — cover at 3:1, same ratio everywhere */}
-                <div className="aspect-[3/1] relative z-0 overflow-hidden"
-                  style={{ background: host.cover_image ? undefined : `linear-gradient(135deg, ${tc}26, ${tc}55)` }}>
-                  {host.cover_image && <img src={host.cover_image} alt="" className="w-full h-full object-cover" />}
-                </div>
-                <div className="flex justify-center -mt-7 relative z-10">
-                  <div className="w-14 h-14 rounded-full border-2 overflow-hidden bg-white" style={{ borderColor }}>
-                    {host.profile_image
-                      ? <img src={host.profile_image} alt={host.name} className="w-full h-full object-cover" />
-                      : <div className="w-full h-full flex items-center justify-center text-xl font-bold" style={{ color: tc }}>
-                          {host.name?.charAt(0)?.toUpperCase()}
-                        </div>}
-                  </div>
-                </div>
-                <div className="px-4 pt-2 pb-4 text-center">
-                  <h2 className="text-base font-bold text-gray-900">{host.name}</h2>
-                  {(host.tagline || host.profession) && (
-                    <p className="text-xs text-gray-500 mt-0.5">{host.tagline || host.profession}</p>
-                  )}
-                </div>
-
-                {/* Service being booked — eyebrow, prominent title, then a clean
-                    price · duration · mode meta row. */}
-                <div className="px-4 py-4 border-t text-left">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-gray-400 mb-1.5">You're booking</div>
-                  <h3 className="text-[15px] font-bold text-gray-900 leading-snug">{service.title}</h3>
-                  <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-2.5 text-sm text-gray-600">
-                    <span className="font-bold" style={{ color: tc }}>
-                      {priceOnRequest ? "On request" : service.price === 0 ? "Free" : `₹${service.price}`}
-                    </span>
-                    <span className="w-1 h-1 rounded-full bg-gray-300" />
-                    <span className="flex items-center gap-1.5">
-                      <svg className="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" />
-                      </svg>
-                      {service.duration} min
-                    </span>
-                    <span className="w-1 h-1 rounded-full bg-gray-300" />
-                    <span className="flex items-center gap-1.5">
-                      {service.meeting_mode === "offline" ? (
-                        <svg className="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
-                      ) : (
-                        <svg className="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" ry="2" /></svg>
-                      )}
-                      {service.meeting_mode === "offline" ? "In-person" : "Online"}
-                    </span>
-                  </div>
-                  {selectedDate && selectedTime && (
-                    <div className="flex items-center gap-2 mt-3 pt-3 border-t text-sm font-semibold text-gray-900">
-                      <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: tc }} fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M3 9h18M8 2v4M16 2v4" /></svg>
-                      {selectedDate.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" })} · {formatTime(selectedTime)}
-                    </div>
-                  )}
-                </div>
-
-                {/* Assurances — set expectations up front, reduce abandonment.
-                    Only claims we can stand behind (no reschedule-policy promise). */}
-                <div className="px-4 py-3 border-t space-y-2">
-                  {[
-                    'Instant confirmation',
-                    'Calendar invite + reminders',
-                    ...(isPaid ? ['Secure payment via Razorpay'] : []),
-                  ].map((t) => (
-                    <div key={t} className="flex items-center gap-2 text-xs text-gray-500">
-                      <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#16A34A' }} fill="none"
-                        stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                        <path d="M5 13l4 4L19 7" />
-                      </svg>
-                      {t}
-                    </div>
-                  ))}
-                </div>
-
-                {/* View full profile */}
-                <div className="px-4 pb-4 border-t pt-4">
-                  <Link to={`/${profileSlug}`}
-                    className="flex items-center gap-2 text-sm font-semibold hover:opacity-75 transition-opacity"
-                    style={{ color: tc }}>
-                    <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8}
-                      strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                      <polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
-                    </svg>
-                    View full page
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        {/* Profile sidebar removed during booking — full-width engine with a
+            compact summary strip (host · service · when · total) below. */}
 
         {/* ── Booking Engine (full width) ── */}
         <div className="flex-1 min-w-0 flex flex-col">
