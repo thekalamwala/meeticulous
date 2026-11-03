@@ -53,6 +53,7 @@ const MEMBER = { user_id: ME, terms_version: '2026-11-v1', badge: null, banned_u
 const SPACES = {
   general: { id: 'sp-gen', key: 'general', name: 'General', post_policy: 'everyone', reply_policy: 'everyone', is_active: true },
   'host-corner': { id: 'sp-hc', key: 'host-corner', name: 'Host Corner', post_policy: 'hosts', reply_policy: 'hosts', is_active: true },
+  updates: { id: 'sp-up', key: 'updates', name: 'Updates', post_policy: 'official', reply_policy: 'everyone', is_active: true },
 };
 const post = (over = {}) => ({ id: POST_ID, kind: 'thread', format: 'text', author_id: ME, space_id: 'sp-gen', title: 'Hello', body: 'Body text', slug: 'hello-abc123', status: 'visible', accepted_comment_id: null, comment_count: 0, like_count: 0, ...over });
 const comment = (over = {}) => ({ id: COMMENT_ID, post_id: POST_ID, parent_id: null, author_id: ME, body: 'Nice', status: 'visible', like_count: 0, ...over });
@@ -121,6 +122,26 @@ describe('createItem', () => {
     const r = res();
     await ctrl.createItem(req({ kind: 'post', format: 'announcement', body: 'Big news' }), r);
     expect(statusOf(r)).toBe(403);
+  });
+
+  test('staff badge: no announcement, no thread in updates (official only)', async () => {
+    const staff = { ...MEMBER, badge: 'staff' };
+    let r = res();
+    await ctrl.createItem(req({ kind: 'post', format: 'announcement', body: 'Big news' }, {}, staff), r);
+    expect(statusOf(r)).toBe(403);
+    expect(bodyOf(r).code).toBe('FORMAT_NOT_ALLOWED');
+    r = res();
+    await ctrl.createItem(req({ kind: 'thread', title: 'Release notes', body: 'What changed', space_key: 'updates' }, {}, staff), r);
+    expect(statusOf(r)).toBe(403);
+    expect(bodyOf(r).code).toBe('SPACE_NOT_ALLOWED');
+    expect(callsOn('community_posts', 'insert')).toHaveLength(0);
+  });
+
+  test('official badge: announcement thread in updates is created', async () => {
+    const r = res();
+    await ctrl.createItem(req({ kind: 'thread', format: 'announcement', title: 'Release notes', body: 'What changed', space_key: 'updates' }, {}, { ...MEMBER, badge: 'official' }), r);
+    expect(statusOf(r)).toBe(201);
+    expect(callsOn('community_posts', 'insert')).toHaveLength(1);
   });
 
   test('phase-2 format -> 400 FORMAT_NOT_AVAILABLE', async () => {

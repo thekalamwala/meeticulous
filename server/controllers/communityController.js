@@ -14,7 +14,9 @@ const { CURRENT_TERMS_VERSION } = require('../middleware/communityGate');
 const { bustSitemapCache } = require('../utils/sitemapCache');
 
 const PHASE1_FORMATS = ['text', 'question', 'announcement'];
-const BADGED = ['official', 'staff'];
+// Spec §6/§13: the `official` space policy and announcements are for badge 'official' only.
+// Staff keep early access and moderation (communityGate), not announcement rights.
+const isOfficial = (member) => member?.badge === 'official';
 const EDITABLE = ['visible', 'hidden'];
 const REPORT_REASONS = ['spam', 'harassment', 'hate', 'sexual', 'violence', 'off_platform', 'defamation', 'illegal', 'other'];
 const AUTO_HIDE_AT = 3; // distinct open reports before a visible target is hidden for review
@@ -75,7 +77,7 @@ async function loadOwned(res, load, id, uid) {
 }
 
 function mayPost(space, profile, member) {
-  if (space.post_policy === 'official') return BADGED.includes(member?.badge);
+  if (space.post_policy === 'official') return isOfficial(member);
   if (space.post_policy === 'hosts') return !!profile?.is_host;
   return true;
 }
@@ -128,7 +130,7 @@ const createItem = handle(async (req, res) => {
   if (!['post', 'thread'].includes(kind)) return fail(res, 400, 'INVALID_KIND');
   if (!PHASE1_FORMATS.includes(format)) return fail(res, 400, 'FORMAT_NOT_AVAILABLE');
   const member = req.communityMember || null;
-  if (format === 'announcement' && !BADGED.includes(member?.badge)) return fail(res, 403, 'FORMAT_NOT_ALLOWED');
+  if (format === 'announcement' && !isOfficial(member)) return fail(res, 403, 'FORMAT_NOT_ALLOWED');
   const mediaRows = parseMedia(media);
   if (!mediaRows) return fail(res, 400, 'MEDIA_NOT_ALLOWED');
 

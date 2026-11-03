@@ -52,7 +52,7 @@ function serializeComment(row, { author = null, member = null, viewer = { liked:
     post_id: row.post_id,
     parent_id: row.parent_id ?? null,
     body: GONE.includes(row.status) ? '' : row.body,
-    author: serializeAuthor(author, member),
+    author: GONE.includes(row.status) ? null : serializeAuthor(author, member), // tombstones never name the author
     like_count: row.like_count,
     created_at: row.created_at,
     edited_at: row.edited_at,

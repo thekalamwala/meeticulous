@@ -17,6 +17,7 @@
 const { supabaseAdmin } = require('../config/supabase');
 const { isFeatureEnabled } = require('./featureFlags');
 const communityStore = require('./community/store');
+const { logger } = require('../utils/logger');
 
 // ── Pure helpers ─────────────────────────────────────────────────────────────
 
@@ -338,8 +339,9 @@ const fetchCommunity = async () => {
       ...items.filter((i) => !(i.author_id && banned.has(i.author_id))),
     ];
   } catch (e) {
-    if (e.code === 'COMMUNITY_UNAVAILABLE') return [];
-    throw e;
+    // Never rethrow: a community failure must not 500 the host/service/blog sitemaps.
+    if (e.code !== 'COMMUNITY_UNAVAILABLE') logger.error({ event: 'sitemap.community_error', message: e.message });
+    return [];
   }
 };
 

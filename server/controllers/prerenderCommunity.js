@@ -111,16 +111,21 @@ const resolveCommunitySpace = gated(async (key) => {
   };
 });
 
-function itemBody(item, replies) {
+// `comments` = the first REPLIES visible replies, plus the accepted answer appended when it
+// falls past them; that one gets its own block so the HTML matches the QAPage JSON-LD.
+function itemBody(item, comments) {
   const back = item.space ? abs(`/community/s/${item.space.key}`) : abs('/community');
-  const replyHtml = replies.map((c) => `<div id="c-${esc(c.id)}"><p>${authorHtml(c.author)} · <time datetime="${esc(c.created_at)}">${day(c.created_at)}</time>${
+  const replies = comments.slice(0, REPLIES);
+  const lateAccepted = comments.slice(REPLIES).filter((c) => c.id === item.accepted_comment_id);
+  const replyHtml = (list) => list.map((c) => `<div id="c-${esc(c.id)}"><p>${authorHtml(c.author)} · <time datetime="${esc(c.created_at)}">${day(c.created_at)}</time>${
     c.id === item.accepted_comment_id ? ' · Accepted answer' : ''}</p><p>${text(c.body)}</p></div>`).join('\n');
   return [
     '<article>',
     `<h1>${esc(label(item))}</h1>`,
     `<p>By ${authorHtml(item.author)} · <time datetime="${esc(item.created_at)}">${day(item.created_at)}</time></p>`,
     `<p>${text(item.body)}</p>`,
-    replies.length ? `<section><h2>Replies</h2>\n${replyHtml}\n</section>` : '',
+    lateAccepted.length ? `<section><h2>Accepted answer</h2>\n${replyHtml(lateAccepted)}\n</section>` : '',
+    replies.length ? `<section><h2>Replies</h2>\n${replyHtml(replies)}\n</section>` : '',
     `<p><a href="${esc(back)}">Back to ${esc(item.space ? item.space.name : 'the community')}</a></p>`,
     '</article>',
   ].filter(Boolean).join('\n');
@@ -155,7 +160,7 @@ const resolveCommunityItem = gated(async (prefix, slug) => {
       // Google: a Q&A page uses QAPage instead of (not alongside) DiscussionForumPosting.
       jsonLd: qaPageJsonLd(item, comments, SITE) || discussionForumPostingJsonLd(item, comments, SITE),
       breadcrumbJsonLd: communityBreadcrumbJsonLd(item, item.space, SITE),
-      bodyHtml: itemBody(item, comments.slice(0, REPLIES)),
+      bodyHtml: itemBody(item, comments),
     },
   };
 });

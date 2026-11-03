@@ -93,6 +93,15 @@ describe('fetchCommunity', () => {
     setup({ missing: true });
     expect(await fetchCommunity()).toEqual([]);
   });
+
+  test('any other DB error -> empty and logged, never thrown', async () => {
+    setup();
+    db.on('community_posts', () => ({ data: null, error: { code: 'XX000', message: 'boom' } }));
+    const spy = jest.spyOn(require('../../../utils/logger').logger, 'error').mockImplementation(() => {});
+    await expect(fetchCommunity()).resolves.toEqual([]);
+    expect(spy).toHaveBeenCalled();
+    spy.mockRestore();
+  });
 });
 
 describe('GET /sitemap-community.xml', () => {
@@ -107,6 +116,13 @@ describe('GET /sitemap-community.xml', () => {
     expect(res.status).toBe(200);
     expect(res.text).toContain(`<loc>${SITE}/community/t/pricing-ab12</loc><lastmod>2026-11-02</lastmod>`);
     expect(res.text).not.toContain('hello-cd34');
+  });
+
+  test('flag off -> not listed in the index', async () => {
+    setup({ flag: false });
+    const index = await request(app).get('/sitemap.xml');
+    expect(index.status).toBe(200);
+    expect(index.text).not.toContain('sitemap-community.xml');
   });
 
   test('flag off -> empty urlset', async () => {

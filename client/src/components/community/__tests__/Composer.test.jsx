@@ -128,4 +128,49 @@ describe('Composer', () => {
     await userEvent.type(box, '@priya great session');
     expect(screen.queryByRole('link', { name: /Support can help/ })).not.toBeInTheDocument();
   });
+
+  it('nudges for hyphenated usernames but not for an email address', async () => {
+    setup();
+    const box = await screen.findByLabelText(/on your mind/i);
+    await userEvent.type(box, '@priya-sharma total scam');
+    expect(screen.getByRole('link', { name: /Support can help/ })).toBeInTheDocument();
+    await userEvent.clear(box);
+    await userEvent.type(box, 'wrote to priya@x.com, total scam');
+    expect(screen.queryByRole('link', { name: /Support can help/ })).not.toBeInTheDocument();
+  });
+
+  it('Updates space and Announcement are for official accounts only, not staff', async () => {
+    getMe.mockResolvedValue({ member: { badge: 'staff' } });
+    const { unmount } = setup({ defaultKind: 'thread' });
+    await screen.findByRole('option', { name: 'Help & Questions' });
+    await waitFor(() => expect(getMe).toHaveBeenCalled());
+    expect(screen.queryByRole('option', { name: 'Updates' })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: /Format:/ }));
+    expect(screen.queryByRole('menuitemradio', { name: /Announcement/ })).not.toBeInTheDocument();
+    unmount();
+    getMe.mockResolvedValue({ member: { badge: 'official' } });
+    setup({ defaultKind: 'thread' });
+    expect(await screen.findByRole('option', { name: 'Updates' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: /Format:/ }));
+    expect(screen.getByRole('menuitemradio', { name: /Announcement/ })).toBeInTheDocument();
+  });
+
+  it('asks before discarding a draft on Esc or backdrop; closes freely when empty', async () => {
+    const onClose = vi.fn();
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    const { container } = setup({ onClose });
+    const box = await screen.findByLabelText(/on your mind/i);
+    await userEvent.keyboard('{Escape}');
+    expect(confirm).not.toHaveBeenCalled();
+    expect(onClose).toHaveBeenCalledTimes(1);
+    await userEvent.type(box, 'half a thought');
+    await userEvent.keyboard('{Escape}');
+    expect(confirm).toHaveBeenCalledWith('Discard this draft?');
+    expect(onClose).toHaveBeenCalledTimes(1);
+    confirm.mockReturnValue(true);
+    await userEvent.pointer({ keys: '[MouseLeft]', target: container.querySelector('.mt-dialog-backdrop') });
+    expect(confirm).toHaveBeenCalledTimes(2);
+    expect(onClose).toHaveBeenCalledTimes(2);
+    confirm.mockRestore();
+  });
 });

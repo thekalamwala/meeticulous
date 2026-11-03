@@ -159,6 +159,18 @@ describe('resolveCommunityItem', () => {
     expect([].concat(a.jsonLd).find((x) => x['@type'] === 'QAPage').mainEntity.acceptedAnswer.text).toBe(c.body);
   });
 
+  test('accepted answer past the first 20 replies is in the HTML body too', async () => {
+    const p = post({ format: 'question' });
+    const replies = Array.from({ length: 20 }, () => comment(p.id));
+    const acc = comment(p.id, { author_id: HOST, body: 'The accepted fix is here' });
+    p.accepted_comment_id = acc.id;
+    setup({ posts: [p], comments: [...replies, acc] });
+    const { buildHtmlArgs: a } = await resolveCommunityItem('t', p.slug);
+    expect(a.bodyHtml).toContain('<h2>Accepted answer</h2>');
+    expect(a.bodyHtml).toContain('The accepted fix is here');
+    expect(a.bodyHtml.indexOf('The accepted fix is here')).toBeLessThan(a.bodyHtml.indexOf('<h2>Replies</h2>'));
+  });
+
   test('user HTML is escaped, and </script> in text cannot break out of JSON-LD', async () => {
     const p = post({ title: '<i>t</i>', body: '<b>x</b>\nline2 </script><script>alert(1)</script>' });
     setup({ posts: [p], comments: [comment(p.id, { body: '<img src=x onerror=alert(1)>' })] });

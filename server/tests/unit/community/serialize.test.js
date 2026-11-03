@@ -37,3 +37,11 @@ test('serializeComment blanks deleted/removed', () => {
   expect(serializeComment(c, { author: guest }).body).toBe('');
   expect(serializeComment({ ...c, status: 'visible' }, { author: guest }).body).toBe('hi');
 });
+
+test('serializeComment: tombstones expose no author', () => {
+  const guest = { id: 'g1', is_host: false, first_name: 'Asha', name: 'Asha S', username: null };
+  for (const status of ['deleted', 'removed']) {
+    expect(serializeComment({ id: 'c', post_id: 'p', body: 'x', status }, { author: guest }).author).toBeNull();
+  }
+  expect(serializeComment({ id: 'c', post_id: 'p', body: 'x', status: 'visible' }, { author: guest }).author).toMatchObject({ id: 'g1' });
+});

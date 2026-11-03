@@ -96,8 +96,9 @@ const sitemapIndex = (req, res) => serveCached(req, res, (entries) => {
   servicePages.forEach((pg, i) => children.push({ loc: `${site}/sitemap-services-${i + 1}.xml`, lastmod: newestLastmod(pg) }));
   children.push({ loc: `${site}/sitemap-professions.xml`, lastmod: newestLastmod(entries.professions) });
   children.push({ loc: `${site}/sitemap-blog.xml`, lastmod: newestLastmod(entries.blog) });
-  // Always listed, like professions/blog: an empty urlset (flag off) is valid and cheap.
-  children.push({ loc: `${site}/sitemap-community.xml`, lastmod: newestLastmod(entries.community) });
+  // Listed only while the community flag is on (fetchCommunity returns [] when it is off),
+  // so the index never advertises the community before launch.
+  if (entries.community.length) children.push({ loc: `${site}/sitemap-community.xml`, lastmod: newestLastmod(entries.community) });
 
   return buildSitemapIndex(children);
 });

@@ -18,13 +18,15 @@ const FORMATS = {
   question: { label: 'Question', hint: 'You can mark the best answer', Icon: CircleHelp },
   announcement: { label: 'Announcement', hint: 'Official accounts only', Icon: Megaphone },
 };
-const BADGED = ['official', 'staff'];
+// Spec §13: the Updates space and announcements are for official accounts only (not staff).
+const isOfficial = (member) => member?.badge === 'official';
 // Defamation nudge (spec 10.7): an @mention plus a complaint word. Advice only, never blocks.
-const MENTION = /@[a-z0-9_.]+/i;
+// Mirrors the server mention parser (text.js) without lookbehind (older Safari can't parse it).
+const MENTION = /(^|[^\w.@-])@[a-z0-9][a-z0-9-]*(?![\w@-])/i;
 const COMPLAINT = /(scam|fraud|cheat|refund|worst|rude|no-show|didn['’]t show)/i;
 
 const canPost = (space, user, member) => {
-  if (space.post_policy === 'official') return BADGED.includes(member?.badge);
+  if (space.post_policy === 'official') return isOfficial(member);
   if (space.post_policy === 'hosts') return !!user?.is_host;
   return true;
 };
@@ -71,7 +73,7 @@ function ComposerInner({ onClose, onCreated, defaultKind, defaultSpaceKey }) {
 
   const eligible = spaces.filter((s) => canPost(s, user, member));
   const effSpace = eligible.some((s) => s.key === space) ? space : (kind === 'thread' ? eligible[0]?.key || '' : '');
-  const formats = Object.keys(FORMATS).filter((f) => f !== 'announcement' || BADGED.includes(member?.badge));
+  const formats = Object.keys(FORMATS).filter((f) => f !== 'announcement' || isOfficial(member));
   const thread = kind === 'thread';
   const max = thread ? LIMITS.THREAD : LIMITS.POST;
   const uploading = photos.some((p) => p.busy);
@@ -79,6 +81,11 @@ function ComposerInner({ onClose, onCreated, defaultKind, defaultSpaceKey }) {
   const ready = body.trim() && (!thread || (title.trim() && effSpace)) && !over && !uploading && !busy && !banned;
   const text = `${title} ${body}`;
   const nudge = MENTION.test(text) && COMPLAINT.test(text);
+  // Esc, backdrop and Close ask before throwing away a draft.
+  const dismiss = () => {
+    if ((title.trim() || body.trim() || photos.length) && !window.confirm('Discard this draft?')) return;
+    onClose();
+  };
 
   const addFiles = async (list) => {
     setPhotoErr('');
@@ -133,7 +140,7 @@ function ComposerInner({ onClose, onCreated, defaultKind, defaultSpaceKey }) {
   const F = FORMATS[format];
   return (
     <>
-      <Dialog title={thread ? 'New thread' : 'New post'} onClose={onClose}>
+      <Dialog title={thread ? 'New thread' : 'New post'} onClose={dismiss}>
         <form onSubmit={submit} className="flex flex-col gap-5">
           <div role="tablist" aria-label="Type" className="mt-tabs self-start">
             {[['post', 'Post'], ['thread', 'Thread']].map(([k, label]) => (
