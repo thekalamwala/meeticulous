@@ -530,7 +530,7 @@ const TEMPLATES = [
         step(3, 'Share your link', '{{profile_url}} · WhatsApp, Instagram bio'),
       ) +
       '<!--cta-->' +
-      C.signOff('Tithi', 'Meeticulous team · just reply if you get stuck'),
+      C.signOff('Tithi', 'Meeticulous'),
     cta_label: 'Set up my page', cta_url: '{{dashboard_url}}',
   }; })(),
 
@@ -722,7 +722,7 @@ const TEMPLATES = [
   ].map(([event_key, name, category, subject, preview_text, email_category, email_reason, title, body, cta_label]) => ({
     event_key, name, category, subject, preview_text, email_category, email_reason,
     audience: 'vendor', sender_key: 'tithi',
-    html_content: h(title) + lead(body) + '<!--cta-->' + C.signOff('Tithi', 'Meeticulous team · just reply if you get stuck'),
+    html_content: h(title) + lead(body) + '<!--cta-->' + C.signOff('Tithi', 'Meeticulous'),
     cta_label, cta_url: '{{link}}',
   })),
 
