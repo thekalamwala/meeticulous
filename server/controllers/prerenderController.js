@@ -16,7 +16,7 @@
 const SITE_URL = process.env.PUBLIC_SITE_URL || 'https://meeticulous.com';
 
 const { profileFaqs, serviceFaqs } = require('../services/seo/pageContentModel');
-const { cloudinaryHostCard } = require('../services/seo/hostOgCard');
+const { cloudinaryHostCard, cloudinaryServiceCard } = require('../services/seo/hostOgCard');
 
 const trimSlash = (s) => String(s || '').replace(/\/+$/, '');
 const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -420,16 +420,27 @@ async function resolveServiceMeta(username, serviceSlug) {
   // 1200x630 assets → flag cardImage so buildHtml emits the og:image size hints. A
   // real seo_image/thumbnail is whatever size the host uploaded, so it stays hint-less.
   const hostImage = service.seo_image || service.thumbnail_url;
+  // Share card: admin override (og_image) -> composited Cloudinary service card
+  // (services/seo/hostOgCard) -> host's own seo_image/thumbnail -> static floor.
+  // The first two are known 1200x630 cards (size hints honest); a host image is
+  // whatever size they uploaded, so it stays hint-less.
+  const svcCard = service.og_image || cloudinaryServiceCard({
+    title: baseTitle,
+    hostName: vendor.name,
+    hostAvatar: vendor.profile_image,
+    price: service.price,
+    priceOnRequest: service.price_on_request,
+    duration: service.duration,
+    mode: service.meeting_mode,
+  });
   const buildHtmlArgs = {
     title,
     description,
     canonical,
     ogTitle: service.og_title || service.seo_title || baseTitle,
     ogDescription: service.og_description || description,
-    // Ordered fallback mirroring client resolveServiceSeo (utils/seo.js): generated
-    // service card -> admin override -> host thumbnail -> static default floor.
-    image: service.og_image || hostImage || `${site}/service-og-default.png`,
-    cardImage: Boolean(service.og_image) || !hostImage,
+    image: svcCard || hostImage || `${site}/service-og-default.png`,
+    cardImage: Boolean(svcCard) || !hostImage,
     robots: service.is_indexable === false ? 'noindex,nofollow' : 'index,follow',
     jsonLd,
     // Visible FAQ (host-authored ∪ templated) is now rendered in the body, so emit the

@@ -8,6 +8,7 @@ import { isNotFoundError } from '../utils/fetchError';
 import ErrorPage from './ErrorPage';
 import Seo from '../components/common/Seo';
 import { SITE_URL, resolveBlogSeo, articleGraphJsonLd } from '../utils/seo';
+import { cloudinaryBlogCard } from '../utils/ogCard';
 import BlogHeroThumbnail from '../components/blog/BlogHeroThumbnail';
 import RelatedPosts from '../components/blog/RelatedPosts';
 import PetalSpinner from '../components/common/PetalSpinner';
@@ -353,12 +354,16 @@ const BlogPost = () => {
   const canonical = `${SITE_URL}/blog/${post.slug}`;
   // Share card only. Deliberately NOT `post.image` first: `image` is the on-page
   // hero and setting it suppresses the icon thumbnail, so the two must stay
-  // separate concerns. Falls back to a real hero photo, then the site-wide card.
-  const ogImage = post.ogImage || post.image || `${SITE_URL}/og-image.png`;
-  // The generated per-post card and the site-wide card are both 1200x630; only a
-  // raw hero photo (post.image, used when no card exists) has unknown dimensions,
-  // so we emit width/height only for the cards rather than invent them.
-  const cardDims = post.ogImage || !post.image ? { width: 1200, height: 630 } : {};
+  // separate concerns. Order: admin override (post.ogImage) -> composited Cloudinary
+  // card -> a real hero photo -> the site-wide card.
+  const blogCard = post.ogImage || cloudinaryBlogCard({
+    title: post.title, category: post.category, author: post.author, readMins: post.readMins,
+  });
+  const ogImage = blogCard || post.image || `${SITE_URL}/og-image.png`;
+  // The composited card and the site-wide card are both 1200x630; only a raw hero
+  // photo (post.image, used when no card) has unknown dimensions, so we emit
+  // width/height only for the cards rather than invent them.
+  const cardDims = blogCard || !post.image ? { width: 1200, height: 630 } : {};
   const blogSeo = resolveBlogSeo({ post });
   const faqs = faqsFrom(post.body);
   // One trail for both the visible breadcrumb and the BreadcrumbList JSON-LD.

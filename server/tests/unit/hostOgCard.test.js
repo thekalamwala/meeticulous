@@ -1,6 +1,6 @@
 'use strict';
 
-const { cloudinaryHostCard } = require('../../services/seo/hostOgCard');
+const { cloudinaryHostCard, cloudinaryServiceCard } = require('../../services/seo/hostOgCard');
 
 const H = { name: 'Ketaki Dhande', avatar: 'https://lh3.googleusercontent.com/a/xyz=s96-c', profession: 'Coach', city: 'Pune', handle: 'ketaki' };
 
@@ -64,6 +64,50 @@ describe('cloudinaryHostCard', () => {
       const url = cloudinaryHostCard(H);
       const base = decodeURIComponent(url.split('/').pop());
       expect(base).toBe('https://raw.example.com/brand/og/host-og-bg.svg');
+    });
+  });
+});
+
+describe('cloudinaryServiceCard', () => {
+  const S = { title: 'Residential design consultation', hostName: 'Ana Ruiz', hostAvatar: 'https://cdn.example.com/ana.jpg', price: 1500, duration: 45, mode: 'online' };
+
+  beforeEach(() => {
+    delete process.env.CLOUDINARY_CLOUD;
+    delete process.env.OG_ASSET_BASE;
+    process.env.PUBLIC_SITE_URL = 'https://meeticulous.com';
+  });
+
+  test('returns null without a cloud (safe fallback)', () => {
+    expect(cloudinaryServiceCard(S)).toBeNull();
+  });
+
+  describe('with a cloud configured', () => {
+    beforeEach(() => { process.env.CLOUDINARY_CLOUD = 't5vsmb6w'; });
+
+    test('renders title, "with <host>", and price·duration·mode', () => {
+      const url = cloudinaryServiceCard(S);
+      expect(url).toContain('/image/fetch/');
+      expect(url).toContain('Residential'); // service title in the big text
+      expect(url).toContain('with%20Ana%20Ruiz'); // host sub line
+      expect(url).toContain('45%20min'); // duration in the meta line
+      expect(url).toContain('Online'); // mode
+    });
+
+    test('price_on_request hides the number', () => {
+      const url = cloudinaryServiceCard({ ...S, priceOnRequest: true, price: 1500 });
+      expect(url).toContain('Price%20on%20request');
+      expect(url).not.toContain('1%2C500'); // the rupee figure never leaks
+    });
+
+    test('offline service reads "In person"', () => {
+      expect(cloudinaryServiceCard({ ...S, mode: 'offline' })).toContain('In%20person');
+    });
+
+    test('no host photo → ee mark fallback in the ring (not the avatar)', () => {
+      const url = cloudinaryServiceCard({ ...S, hostAvatar: '' });
+      const fetched = [...url.matchAll(/l_fetch:([A-Za-z0-9_-]+)/g)]
+        .map((m) => Buffer.from(m[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8'));
+      expect(fetched.some((u) => u.endsWith('/ee-mark.svg'))).toBe(true);
     });
   });
 });
