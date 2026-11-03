@@ -673,6 +673,51 @@ const reconcileBadges = (profileId) => {
     .catch((e) => console.error("reconcileBadges (non-fatal):", e.message));
 };
 
+// Side effects of a brand-new host account, shared by every host sign-in door
+// (Google Flow A, LinkedIn). Callers seed onboarding themselves first. Each
+// effect is best-effort; the outer catch guarantees this never blocks login.
+const onNewHostCreated = async ({ profile, email, method, statePayload, req }) => {
+  const profileId = profile.id;
+  try {
+    alertNewHost(profile, method === "linkedin" ? "LinkedIn (new account)" : "Google (new account)");
+
+    // Invite-link attribution — new host ONLY, write-once, never a referrals row.
+    await maybeStampInvite(profileId, statePayload);
+
+    // Acquisition conversion: brand-new host account created. Server-side so
+    // the signup survives ad-blockers; fans out to GA4 (sign_up) + Meta
+    // (CompleteRegistration). Fire-and-forget — never blocks the redirect.
+    trackServer(profileId, "user_registered", { method, role: "host" }, { email, req });
+    // A brand-new host is also a Lead for the host-acquisition funnel (fuels
+    // Meta lookalike audiences). Same moment, separate standard event.
+    trackServer(profileId, "lead_captured", { method, role: "host" }, { email, req });
+
+    // Welcome the brand-new host — one email nudging them to finish setup +
+    // publish. Reuses the existing VENDOR_WELCOME template (Tithi);
+    // NotificationEngine never throws and routes to the vendor shell.
+    await require("../services/notificationEngine").send({
+      event: "VENDOR_WELCOME",
+      data: {
+        email,
+        name: profile.name,
+        emailUser: { name: profile.name, email, username: profile.username },
+        emailData: { first_name: profile.first_name || (profile.name || "").split(" ")[0] || "there" },
+        recipientUserId: profileId,
+      },
+    });
+
+    // Real-time CRM: brand-new host becomes a lead immediately (source
+    // host_signup), so Sales sees signups live instead of waiting on the
+    // manual backfill script. Never throws / never blocks the signup.
+    await require("../services/crm/leadService").safeUpsertLead(
+      { name: profile.name, email, profile_id: profileId },
+      { source: "host_signup", createdBy: "signup", attribution: statePayload?.att }
+    );
+  } catch (e) {
+    console.error("onNewHostCreated (non-fatal):", e.message);
+  }
+};
+
 const googleCallback = async (req, res) => {
   const clientUrl = process.env.CLIENT_URL || "";
   // Tracked outside the try so the catch can route failures to the right place:
@@ -760,40 +805,7 @@ const googleCallback = async (req, res) => {
         // confirmed). Next step (2) is slug claim via the authed claim-slug
         // endpoint. calendar_skipped = calendarOk (see markGoogleVendorOnboarding).
         await markGoogleVendorOnboarding(profileId, profile.username, { calendarOk });
-        alertNewHost(profile, 'Google (new account)');
-
-        // Invite-link attribution — new host ONLY, write-once, never a referrals row.
-        await maybeStampInvite(profileId, statePayload);
-
-        // Acquisition conversion: brand-new host account created. Server-side so
-        // the signup survives ad-blockers; fans out to GA4 (sign_up) + Meta
-        // (CompleteRegistration). Fire-and-forget — never blocks the redirect.
-        trackServer(profileId, "user_registered", { method: "google", role: "host" }, { email: googleEmail, req });
-        // A brand-new host is also a Lead for the host-acquisition funnel (fuels
-        // Meta lookalike audiences). Same moment, separate standard event.
-        trackServer(profileId, "lead_captured", { method: "google", role: "host" }, { email: googleEmail, req });
-
-        // Welcome the brand-new host — one email nudging them to finish setup +
-        // publish. Reuses the existing VENDOR_WELCOME template (Tithi);
-        // NotificationEngine never throws and routes to the vendor shell.
-        await require("../services/notificationEngine").send({
-          event: "VENDOR_WELCOME",
-          data: {
-            email: googleEmail,
-            name: profile.name,
-            emailUser: { name: profile.name, email: googleEmail, username: profile.username },
-            emailData: { first_name: profile.first_name || (profile.name || "").split(" ")[0] || "there" },
-            recipientUserId: profileId,
-          },
-        });
-
-        // Real-time CRM: brand-new host becomes a lead immediately (source
-        // host_signup), so Sales sees signups live instead of waiting on the
-        // manual backfill script. Never throws / never blocks the signup.
-        await require("../services/crm/leadService").safeUpsertLead(
-          { name: profile.name, email: googleEmail, profile_id: profileId },
-          { source: "host_signup", createdBy: "signup", attribution: statePayload?.att }
-        );
+        await onNewHostCreated({ profile, email: googleEmail, method: "google", statePayload, req });
       }
 
       // Re-attach Google tokens only when there's something to (re)store: a

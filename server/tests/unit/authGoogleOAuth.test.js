@@ -305,6 +305,11 @@ describe('googleCallback — granted calendar scopes', () => {
     expect(u).toContainEqual(expect.objectContaining({ google_calendar_connected: false, calendar_skipped: false }));
     expect(u.some((p) => p.calendar_skipped === true)).toBe(false);
     expect(trackServer).toHaveBeenCalledWith('p-1', 'calendar_scope_denied', { source: 'signup' }, expect.anything());
+    expect(trackServer).toHaveBeenCalledWith('p-1', 'user_registered', { method: 'google', role: 'host' }, expect.anything());
+    expect(require('../../utils/adminAlert').adminAlert).toHaveBeenCalledWith(expect.objectContaining({
+      key: 'new_host:p-1',
+      lines: expect.arrayContaining(['Signed up via: Google (new account)']),
+    }));
     // Denied: no tokens stored, no legacy revoke read, no Google timezone call.
     expect(profileSecrets.setGoogleTokens).not.toHaveBeenCalled();
     expect(profileSecrets.getGoogleTokens).not.toHaveBeenCalled();
