@@ -63,7 +63,7 @@ describe('cloudinaryHostCard', () => {
       process.env.OG_ASSET_BASE = 'https://raw.example.com/brand/og';
       const url = cloudinaryHostCard(H);
       const base = decodeURIComponent(url.split('/').pop());
-      expect(base).toBe('https://raw.example.com/brand/og/host-bg-cream.png');
+      expect(base).toBe('https://raw.example.com/brand/og/host-og-bg.svg');
     });
   });
 });
