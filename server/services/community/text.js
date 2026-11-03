@@ -30,8 +30,18 @@ const fail = (code) => ({ ok: false, code, message: MESSAGES[code] });
 // so "5.30pm" and "Rs.1499" are not links. Emails are caught earlier as contact.
 const URL_RE = /\b(?:https?:\/\/)?(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s]*)?/gi;
 
+// Bare domains only count with a common TLD, else "done.Thanks" / "Dr.Sharma" (missing
+// space after a full stop) would read as links. Schemed and www. forms always count.
+const BARE_TLDS = new Set(['com', 'in', 'io', 'me', 'co', 'org', 'net', 'app', 'ly', 'tv', 'xyz', 'ai', 'dev', 'info', 'biz', 'link', 'site', 'online', 'store', 'shop', 'page', 'to', 'gg', 'us', 'uk']);
+
 function extractUrls(text) {
-  return (String(text ?? '').match(URL_RE) || []).map((u) => u.replace(/[.,;:!?)\]}'"]+$/, ''));
+  return (String(text ?? '').match(URL_RE) || [])
+    .map((u) => u.replace(/[.,;:!?)\]}'"]+$/, ''))
+    .filter((u) => {
+      if (/^(?:https?:\/\/|www\.)/i.test(u)) return true;
+      const host = hostOf(u);
+      return hostMatches(host, BLOCKED_LINK_HOSTS) || BARE_TLDS.has(host.split('.').pop());
+    });
 }
 
 function hostOf(url) {

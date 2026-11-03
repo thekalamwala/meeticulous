@@ -20,7 +20,6 @@ describe('validateDraft', () => {
   test('runs safety on title+body', () => {
     expect(draft({ body: 'call 9876543210' }).code).toBe('CONTACT_NOT_ALLOWED');
     expect(draft({ title: 'see example.com' }).code).toBe('LINK_NOT_ALLOWED');
-    expect(draft({ body: 'see example.com' }, { linksAllowed: true })).toBeDefined();
     expect(t.validateDraft({ kind: 'post', body: 'see example.com' }, { linksAllowed: true }).ok).toBe(true);
   });
 });
@@ -51,6 +50,16 @@ describe('checkSafety', () => {
     expect(t.checkSafety('see https://example.com', { linksAllowed: false }).code).toBe('LINK_NOT_ALLOWED');
     expect(t.checkSafety('see https://example.com', { linksAllowed: true })).toBeNull();
     expect(t.checkSafety('see www.example.com')).not.toBeNull();
+  });
+  test('missing space after a full stop is not a link', () => {
+    for (const s of ['done.Thanks', 'Hi.How are you', 'Dr.Sharma said hi', 'Mumbai.Thanks', 'e.g.this', 'Ph.D.holder']) {
+      expect(t.checkSafety(s, { linksAllowed: false })).toBeNull();
+    }
+    expect(t.checkSafety('visit example.com', { linksAllowed: false }).code).toBe('LINK_NOT_ALLOWED');
+    expect(t.checkSafety('WA.ME/919876543210', { linksAllowed: true }).code).toBe('BLOCKED_LINK');
+  });
+  test('12-digit run is treated as contact (Aadhaar pattern, intentional)', () => {
+    expect(t.checkSafety('booking id 123456789012').code).toBe('CONTACT_NOT_ALLOWED');
   });
   test('meeticulous.com always allowed', () => {
     expect(t.checkSafety('https://meeticulous.com/priya.', { linksAllowed: false })).toBeNull();
