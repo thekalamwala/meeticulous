@@ -15,6 +15,7 @@
  */
 
 const { supabaseAdmin } = require('../config/supabase');
+const planService = require('./planService');
 
 const FOUNDING_LIMIT = 100;
 const FOUNDING_PRICE_ANNUAL = 999;   // ex-GST, display only — the DB row is the authority
@@ -48,6 +49,59 @@ async function getFoundingStatus({ fresh = false } = {}) {
   }
 }
 
+const FOUNDING_SLUG = 'premium_founding';
+
+/**
+ * Should this host's Pro checkout use the founding row? True when they already
+ * hold it (live, not lapsed — cancelling and lapsing forfeits the price), or when
+ * spots are still open. Only when the row exists (v3.184) — otherwise Pro checkout
+ * stays on `premium`, which carries the founding price until the cutover anyway.
+ */
+async function routesToFounding(hostId) {
+  try {
+    const plans = await planService.loadPlans();
+    if (!plans.has(FOUNDING_SLUG)) return false;
+    const { data: prof } = await supabaseAdmin
+      .from('profiles').select('plan, plan_expires_at').eq('id', hostId).maybeSingle();
+    if (planService.resolveVendorPlan(prof || {}) === FOUNDING_SLUG) return true;
+    const status = await getFoundingStatus({ fresh: true });
+    return !!status?.open;
+  } catch (err) {
+    console.error('founding routing (non-fatal):', err.message);
+    return false;
+  }
+}
+
+const MILESTONES = [90, FOUNDING_LIMIT];
+const MILESTONE_KEY = 'founding_milestone_alerted';
+
+/**
+ * Daily: alert the founder once each when paying Pro crosses 90 and 100 (time to
+ * run docs/founding-cutover-runbook.md). The highest milestone alerted is kept in
+ * platform_settings so a redeploy never re-sends.
+ */
+async function checkFoundingMilestones() {
+  const status = await getFoundingStatus({ fresh: true });
+  if (!status) return { alerted: null };
+  const { data: row } = await supabaseAdmin
+    .from('platform_settings').select('value').eq('key', MILESTONE_KEY).maybeSingle();
+  const done = Number(row?.value) || 0;
+  const hit = MILESTONES.filter((m) => status.taken >= m && m > done).pop();
+  if (!hit) return { alerted: null };
+  await supabaseAdmin.from('platform_settings').upsert({ key: MILESTONE_KEY, value: String(hit) }, { onConflict: 'key' });
+  require('../utils/adminAlert').adminAlert({
+    key: `founding_${hit}`,
+    subject: hit >= FOUNDING_LIMIT ? 'Founding 100 is full — run the Pro price cutover' : `${hit} founding Pro spots taken`,
+    lines: [
+      `Paying Pro hosts: ${status.taken} of ${FOUNDING_LIMIT}.`,
+      hit >= FOUNDING_LIMIT
+        ? 'New Pro checkouts now land on `premium`. Raise its yearly price to ₹1,499 — see docs/founding-cutover-runbook.md.'
+        : 'Ten spots to go. Prepare the cutover — docs/founding-cutover-runbook.md.',
+    ],
+  });
+  return { alerted: hit };
+}
+
 const clearCache = () => { _cache = { at: 0, value: null }; };
 
-module.exports = { FOUNDING_LIMIT, FOUNDING_PRICE_ANNUAL, POST_FOUNDING_PRICE_ANNUAL, PRO_SLUGS, getFoundingStatus, clearCache };
+module.exports = { FOUNDING_LIMIT, FOUNDING_PRICE_ANNUAL, POST_FOUNDING_PRICE_ANNUAL, PRO_SLUGS, FOUNDING_SLUG, getFoundingStatus, routesToFounding, checkFoundingMilestones, clearCache };

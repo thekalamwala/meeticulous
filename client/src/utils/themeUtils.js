@@ -118,7 +118,7 @@ export const getPlanBorderColor = (plan) => {
 // entitlements at their original price.
 export const PLAN_DISPLAY = {
   free: 'Starter', starter: 'Starter', explorer: 'Starter', starter_legacy: 'Starter',
-  premium: 'Pro',
+  premium: 'Pro', premium_founding: 'Pro (Founding)',
   creator: 'Pro (Partner)',
   professional: 'Pro (Legacy Studio)', pro: 'Pro (Legacy Studio)',
   supreme: 'Supreme',
@@ -135,6 +135,8 @@ export const planLabel = (slug, fallback) =>
 const PLAN_ALIASES = {
   explorer: 'free', starter: 'free', starter_legacy: 'free',
   pro: 'professional',
+  // Founding-100 members hold an archived copy of Pro (v3.184) — same tier.
+  premium_founding: 'premium',
 };
 export const CANONICAL_PLANS = ['free', 'premium', 'creator', 'professional', 'supreme'];
 export const normalizePlan = (slug) => {

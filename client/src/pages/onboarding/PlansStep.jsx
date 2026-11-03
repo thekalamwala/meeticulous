@@ -24,7 +24,6 @@ const featureLines = (plan) => {
     L.bookings_per_year === -1 ? 'Unlimited bookings' : `${(L.bookings_per_year ?? 0).toLocaleString('en-IN')} bookings / year`,
     Number(plan.commission_percentage) > 0 ? `${Number(plan.commission_percentage)}% commission` : '0% commission',
   ];
-  if (plan.features?.advanced_reports) lines.push('Advanced analytics');
   if (plan.support_type) lines.push(`${plan.support_type.replace(/_/g, ' ')} support`);
   return lines;
 };

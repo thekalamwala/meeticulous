@@ -39,7 +39,6 @@ const featureLines = (plan) => {
   ];
   const cals = plan.integrations?.calendar_apps || [];
   if (cals.length) lines.push(`Calendars: ${cals.map((c) => c.replace(/_/g, " ")).join(", ")}`);
-  if (plan.features?.advanced_reports) lines.push("Advanced analytics");
   if (plan.support_type) lines.push(`${plan.support_type.replace(/_/g, " ")} support`);
   return lines;
 };
@@ -296,6 +295,9 @@ const UpgradePlan = () => {
                         </p>
                         <p className="mt-1 text-[11px] text-gray-500">incl. GST · {inr(price)} + 18% GST</p>
                         {cadence === "annual" && !onPaidPlan && <FoundingNote className="mt-2" />}
+                        {user?.plan === "premium_founding" && isCurrentTier && (
+                          <p className="mt-2 text-[11px] font-semibold text-maroon">Founding member — your price is locked for life.</p>
+                        )}
                         {cadence === "annual" && savings > 0 && (
                           <p className="mt-0.5 text-[11px] font-semibold text-emerald-600">Save {inr(Math.round(savings * (1 + GST_RATE)))}/yr vs monthly</p>
                         )}

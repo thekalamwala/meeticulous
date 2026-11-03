@@ -62,13 +62,13 @@ const SNAP = {
   repeat_customers: 12, customer_count: 90, cancellation_count: 2,
   inactive_days: 3, account_age_days: 400,
   // Attribute metrics (0/1) — see v3.173 (Google/LinkedIn verification badges).
-  has_google_identity: 1, linkedin_verified: 0,
+  has_google_identity: 1, linkedin_verified: 0, is_founding_member: 0,
 };
 
 describe('badgeEngine — rule evaluation', () => {
   test('all metric fields (14 PRD + 2 attribute) are supported', () => {
-    expect(METRIC_FIELDS).toHaveLength(16);
-    expect(METRIC_FIELDS).toEqual(expect.arrayContaining(['has_google_identity', 'linkedin_verified']));
+    expect(METRIC_FIELDS).toHaveLength(17);
+    expect(METRIC_FIELDS).toEqual(expect.arrayContaining(['has_google_identity', 'linkedin_verified', 'is_founding_member']));
     METRIC_FIELDS.forEach((f) => expect(SNAP).toHaveProperty(f));
   });
 

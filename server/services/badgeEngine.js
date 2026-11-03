@@ -29,6 +29,9 @@ const METRIC_FIELDS = [
   // Attribute metrics (0/1) — account facts, not activity counts. Power the
   // Google/LinkedIn verification badges (rule: field = 1). See v3.173.
   'has_google_identity', 'linkedin_verified',
+  // Founding-100 Pro member with a live subscription (v3.184) — drives the
+  // automatic "Founding Member" badge, revoked if they cancel and lapse.
+  'is_founding_member',
 ];
 
 const OPERATORS = {

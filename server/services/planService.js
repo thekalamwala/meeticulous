@@ -40,6 +40,13 @@ const FALLBACK_PLANS = {
     razorpay_plan_id_monthly: null, razorpay_plan_id_annual: null,
     limits: { ...PREMIUM_LIMITS },
     features: {}, integrations: { calendar_apps: ['google_calendar', 'ical'] }, support_type: 'priority', sort_order: 2 },
+  // Founding-100 Pro (v3.184): archived copy of Pro at the founding price. Pro
+  // checkouts land here while founding spots are open; it keeps renewing at that
+  // price after `premium` is repriced. Never in the public catalogue.
+  premium_founding: { name: 'Pro (Founding)', slug: 'premium_founding', annual_price: 999, monthly_price: 199, commission_percentage: 0, active: false,
+    razorpay_plan_id_monthly: null, razorpay_plan_id_annual: null,
+    limits: { ...PREMIUM_LIMITS },
+    features: {}, integrations: { calendar_apps: ['google_calendar', 'ical'] }, support_type: 'priority', sort_order: 2 },
   // Legacy paid tiers: hidden from the catalogue, but 3 live mandates still
   // renew on `creator`, so a missing table must not read them as free.
   creator:      { name: 'Pro (Partner)', slug: 'creator', annual_price: 1499, monthly_price: 229, commission_percentage: 0, active: false,
