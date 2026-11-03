@@ -79,7 +79,7 @@ const MOMENT_SLUGS = ['fifa-2026-winners-spain'];
 
 // Release pages (/changelog/:version). KEEP IN SYNC with RELEASES[].version in
 // client/src/data/changelog.js (ESM data file, mirrored here by hand like above).
-const CHANGELOG_VERSIONS = ['1.0.0'];
+const CHANGELOG_VERSIONS = ['1.1.0', '1.0.0'];
 
 // Public, crawlable static routes. Host/service URLs come from the DB below.
 const STATIC_ROUTES = [
