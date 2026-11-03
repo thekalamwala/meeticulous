@@ -11,7 +11,6 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { Search, X, Sparkles } from 'lucide-react';
 import ServiceCard from '../components/guest/ServiceCard';
 import Pagination from '../components/guest/Pagination';
-import CategoryFilter from '../components/guest/CategoryFilter';
 import Seo from '../components/common/Seo';
 import { ogCard } from '../config/ogImages';
 import { SITE_URL, collectionPageJsonLd, breadcrumbJsonLd } from '../utils/seo';
@@ -208,7 +207,6 @@ function ExploreFull() {
       </div>
 
       <div className="app-container space-y-8 py-8">
-        <CategoryFilter categories={categories} selected={category} onChange={handleCategory} />
 
         {/* Toolbar */}
         <div>
