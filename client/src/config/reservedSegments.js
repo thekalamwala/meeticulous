@@ -26,7 +26,7 @@ export const RESERVED_FIRST_SEGMENTS = [
   // /og/blog/:slug — render target for the OG card generator (see pages/OgCard.jsx).
   'og',
   'my-bookings', 'profile', 'reviews', 'loyalty', 'sitemap', 'robots', 'health',
-  'search', 'wall-of-love', 'moments', 'opening', 'inaugurators',
+  'search', 'wall-of-love', 'submit-review', 'moments', 'opening', 'inaugurators',
   'presentation', // full-screen product pitch deck (pages/presentation/)
   'pitch-deck', // retired investor deck — kept reserved so old shared links can't be claimed as a host URL
   '_attic', // hidden pre-compaction homepage snapshot (pages/HomeArchive.jsx) — noindex, unlinked, not in sitemap/prerender

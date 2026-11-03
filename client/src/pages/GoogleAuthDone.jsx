@@ -41,7 +41,12 @@ const GoogleAuthDone = () => {
         );
         // /dashboard is onboarding-guarded — a new or just-upgraded host is
         // auto-routed into the /vendor-register steps by ProtectedRoute.
-        navigate('/dashboard', { replace: true });
+        // A returning host who started from a page that asked for sign-in (e.g.
+        // /submit-review) goes back there. Internal single-slash paths only.
+        let back = null;
+        try { back = sessionStorage.getItem('mt_after_host_login'); sessionStorage.removeItem('mt_after_host_login'); } catch { /* storage blocked */ }
+        const resume = !isNew && !isUpgrade && /^\/(?!\/)/.test(back || '') ? back : null;
+        navigate(resume || '/dashboard', { replace: true });
       })
       .catch(() => {
         // Tokens were valid (account exists) — adopting the session failed, so
