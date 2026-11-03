@@ -7,7 +7,9 @@ const store = require('../services/community/store');
 const notify = require('../services/community/notify');
 const { validateDraft, validateComment, checkSafety, makeSlug, extractMentions } = require('../services/community/text');
 const { serializeItem, serializeComment } = require('../services/community/serialize');
-const { canView } = require('../services/community/visibility');
+const { canView, filterVisible, filterVisibleComments } = require('../services/community/visibility');
+const { encodeCursor, decodeCursor } = require('../services/community/cursor');
+const { setPublicCache } = require('../utils/httpCache');
 const { CURRENT_TERMS_VERSION } = require('../middleware/communityGate');
 const { bustSitemapCache } = require('../utils/sitemapCache');
 
@@ -320,7 +322,169 @@ const createReport = handle(async (req, res) => {
   return res.status(201).json({ ok: true });
 });
 
+// ---------------------------------------------------------------------------------------
+// Reads (spec §11). Chain: optionalProtect, communityGate. A missing table fails soft.
+// ---------------------------------------------------------------------------------------
+const FEED_LIMIT = 20;
+const FEED_FETCH = FEED_LIMIT + 5; // SQL filters status; the author-ban check is JS, so over-fetch
+const COMMENT_LIMIT = 50;
+
+// handle() for reads: missing table -> `soft` body (or 404 when no soft body) instead of 503.
+const handleRead = (fn, soft) => async (req, res) => {
+  try {
+    await fn(req, res);
+  } catch (e) {
+    if (e.code === 'COMMUNITY_UNAVAILABLE') return soft ? res.json(soft) : fail(res, 404, 'NOT_FOUND');
+    console.error('[community]', e.message);
+    return fail(res, 500, 'SERVER_ERROR');
+  }
+};
+
+// Anonymous = shared cache 60s; logged-in responses carry viewer state, never shared.
+const setCache = (req, res) => (req.user?.id ? res.set('Cache-Control', 'private, no-store') : setPublicCache(res, 60));
+
+// ponytail: blockedPairs empty in Phase 1 (blocking UI ships later).
+const ctxFor = async (req) => ({ viewerId: req.user?.id || null, bannedAuthorIds: await store.bannedAuthorIds(), blockedPairs: new Set() });
+
+const spaceView = ({ key, name, description, post_policy: postPolicy, reply_policy: replyPolicy }) => ({
+  key, name, description, post_policy: postPolicy, reply_policy: replyPolicy,
+});
+
+// Batch-hydrate rows -> serialized items: one query each for authors, members, media, likes (+ cached spaces).
+async function hydrateItems(rows, viewerId) {
+  const ids = rows.map((r) => r.id);
+  const [{ profiles, members }, spaces, media, liked] = await Promise.all([
+    store.loadAuthors(rows.map((r) => r.author_id)), store.listSpaces(), store.loadMediaByPost(ids), store.likedIds(viewerId, 'post', ids),
+  ]);
+  const spaceById = new Map(spaces.map((s) => [s.id, s]));
+  return rows.map((r) => serializeItem(r, {
+    author: profiles.get(r.author_id) || null,
+    member: members.get(r.author_id) || null,
+    space: spaceById.get(r.space_id) || null,
+    media: media.get(r.id) || [],
+    viewer: { liked: liked.has(r.id) },
+  }));
+}
+
+async function hydrateComments(rows, viewerId) {
+  const [{ profiles, members }, liked] = await Promise.all([
+    store.loadAuthors(rows.map((r) => r.author_id)), store.likedIds(viewerId, 'comment', rows.map((r) => r.id)),
+  ]);
+  return rows.map((r) => serializeComment(r, {
+    author: profiles.get(r.author_id) || null, member: members.get(r.author_id) || null, viewer: { liked: liked.has(r.id) },
+  }));
+}
+
+// One over-fetched page -> up to 20 visible rows (after `lead`) and the cursor of the last one.
+function pageOf(raw, ctx, lead = []) {
+  const visible = filterVisible(raw, ctx);
+  const rows = visible.slice(0, FEED_LIMIT);
+  const more = visible.length > FEED_LIMIT || raw.length >= FEED_FETCH;
+  const last = rows[rows.length - 1] || raw[raw.length - 1];
+  return { rows: [...lead, ...rows], next: more && last ? encodeCursor(last.created_at, last.id) : null };
+}
+
+// -> {cur} (null when absent) or null after answering 400 BAD_CURSOR.
+const readCursor = (req, res) => {
+  if (req.query.cursor == null || req.query.cursor === '') return { cur: null };
+  const cur = decodeCursor(String(req.query.cursor));
+  if (!cur) { fail(res, 400, 'BAD_CURSOR', 'Invalid cursor.'); return null; }
+  return { cur };
+};
+
+const listSpaces = handleRead(async (req, res) => {
+  const spaces = await store.listSpaces();
+  setCache(req, res);
+  return res.json({ spaces: spaces.map(spaceView) });
+}, { spaces: [] });
+
+const feed = handleRead(async (req, res) => {
+  const tab = req.query.tab || 'everyone';
+  if (!['everyone', 'updates'].includes(tab)) return fail(res, 400, 'BAD_TAB', 'Unknown tab.');
+  const c = readCursor(req, res);
+  if (!c) return null;
+  const ctx = await ctxFor(req);
+  const updates = tab === 'updates';
+  const updatesSpace = updates ? (await store.listSpaces()).find((s) => s.key === 'updates') : null;
+  const raw = await store.listFeedRows({ cur: c.cur, limit: FEED_FETCH, updates, updatesSpaceId: updatesSpace?.id });
+  // Pinned prefix: page 1 of "everyone" only; pinned ids leave the regular page so nothing shows twice.
+  const pinned = !c.cur && !updates ? filterVisible(await store.listPinned(), ctx) : [];
+  const pinnedIds = new Set(pinned.map((p) => p.id));
+  const { rows, next } = pageOf(raw.filter((r) => !pinnedIds.has(r.id)), ctx, pinned);
+  const items = await hydrateItems(rows, req.user?.id || null);
+  setCache(req, res);
+  return res.json({ items, next_cursor: next });
+}, { items: [], next_cursor: null });
+
+const spaceThreads = handleRead(async (req, res) => {
+  const space = (await store.listSpaces()).find((s) => s.key === req.params.key);
+  if (!space) return fail(res, 404, 'NOT_FOUND');
+  const c = readCursor(req, res);
+  if (!c) return null;
+  const raw = await store.listFeedRows({ cur: c.cur, limit: FEED_FETCH, spaceId: space.id });
+  const { rows, next } = pageOf(raw, await ctxFor(req));
+  const items = await hydrateItems(rows, req.user?.id || null);
+  setCache(req, res);
+  return res.json({ space: spaceView(space), items, next_cursor: next });
+}, { space: null, items: [], next_cursor: null });
+
+// Oldest-first comment page. Tombstones stay (filterVisibleComments), so no over-fetch needed.
+async function commentPage(req, postId, cur) {
+  const raw = await store.listCommentRows(postId, cur, COMMENT_LIMIT + 1);
+  const page = raw.slice(0, COMMENT_LIMIT);
+  const shown = filterVisibleComments(page, await ctxFor(req));
+  const last = page[page.length - 1];
+  return {
+    comments: await hydrateComments(shown, req.user?.id || null),
+    next: raw.length > COMMENT_LIMIT ? encodeCursor(last.created_at, last.id) : null,
+  };
+}
+
+// Load by slug and apply the 410 / 404 rulings. Answers and returns null on failure.
+async function loadReadable(req, res) {
+  const row = await store.getPostBySlug(req.params.slug);
+  if (!row) { fail(res, 404, 'NOT_FOUND'); return null; }
+  if (['removed', 'deleted'].includes(row.status)) { fail(res, 410, 'GONE', 'This content is no longer available.'); return null; }
+  if (!canView(row, await ctxFor(req))) { fail(res, 404, 'NOT_FOUND'); return null; }
+  return row;
+}
+
+const itemDetail = handleRead(async (req, res) => {
+  const row = await loadReadable(req, res);
+  if (!row) return null;
+  const [[item], { comments, next }, spaces] = await Promise.all([
+    hydrateItems([row], req.user?.id || null), commentPage(req, row.id, null), store.listSpaces(),
+  ]);
+  const space = spaces.find((s) => s.id === row.space_id);
+  setCache(req, res);
+  return res.json({ item, space: space ? spaceView(space) : null, comments, next_comment_cursor: next });
+});
+
+const itemComments = handleRead(async (req, res) => {
+  const c = readCursor(req, res);
+  if (!c) return null;
+  const row = await loadReadable(req, res);
+  if (!row) return null;
+  const { comments, next } = await commentPage(req, row.id, c.cur);
+  setCache(req, res);
+  return res.json({ comments, next_cursor: next });
+});
+
+// GET /me — the gate already loaded the member row when it could.
+const me = handleRead(async (req, res) => {
+  const m = req.communityMember !== undefined ? req.communityMember : await store.getMember(req.user.id);
+  res.set('Cache-Control', 'private, no-store');
+  return res.json({
+    member: m ? {
+      badge: m.badge, early_access: m.early_access, links_allowed: m.links_allowed, terms_version: m.terms_version,
+      terms_accepted_at: m.terms_accepted_at, banned_until: m.banned_until, email_replies: m.email_replies,
+    } : null,
+    terms_version_required: CURRENT_TERMS_VERSION,
+  });
+}, { member: null, terms_version_required: CURRENT_TERMS_VERSION });
+
 module.exports = {
+  listSpaces, feed, spaceThreads, itemDetail, itemComments, me,
   acceptTerms, createItem, updateItem, deleteItem, createComment, updateComment, deleteComment,
   acceptAnswer, addReaction, removeReaction, createReport,
 };

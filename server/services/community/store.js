@@ -140,7 +140,101 @@ async function refreshIndexable(postId) {
   return next;
 }
 
+// ---- Reads (feed / spaces / detail / comments) ----
+const uniq = (a) => [...new Set(a.filter(Boolean))];
+const TTL = 60 * 1000;
+const cache = { spaces: null, banned: null };
+const fresh = (c) => c && Date.now() - c.at < TTL;
+const resetReadCaches = () => { cache.spaces = null; cache.banned = null; };
+
+// All active spaces, cached 60s.
+async function listSpaces() {
+  if (fresh(cache.spaces)) return cache.spaces.v;
+  const v = (await run(db('community_spaces').select('*').eq('is_active', true).order('position'))) || [];
+  cache.spaces = { at: Date.now(), v };
+  return v;
+}
+
+// Banned author ids (community ban window OR account ban), cached 60s. Ids only, never more.
+async function bannedAuthorIds() {
+  if (fresh(cache.banned)) return cache.banned.v;
+  const [m, p] = await Promise.all([
+    run(db('community_members').select('user_id').gt('banned_until', new Date().toISOString())),
+    run(db('profiles').select('id').eq('is_banned', true)),
+  ]);
+  const v = new Set([...(m || []).map((r) => r.user_id), ...(p || []).map((r) => r.id)]);
+  cache.banned = { at: Date.now(), v };
+  return v;
+}
+
+// `cur` is a decodeCursor() result (strict ISO + UUID), so interpolating it here is safe.
+const keyset = (q, cur, op) => (cur
+  ? q.or(`created_at.${op}.${cur.ts},and(created_at.eq.${cur.ts},id.${op}.${cur.id})`)
+  : q);
+
+// Feed pages, newest first. spaceId = one space's threads; updates = updates space OR announcements.
+async function listFeedRows({ cur, limit, spaceId, updates, updatesSpaceId }) {
+  let q = db('community_posts').select('*').eq('status', 'visible');
+  if (spaceId) q = q.eq('space_id', spaceId).eq('kind', 'thread');
+  if (updates) {
+    const scope = updatesSpaceId ? `or(space_id.eq.${updatesSpaceId},format.eq.announcement)` : 'format.eq.announcement';
+    // One .or() so the scope and keyset groups are ANDed explicitly.
+    q = cur
+      ? q.or(`and(${scope},or(created_at.lt.${cur.ts},and(created_at.eq.${cur.ts},id.lt.${cur.id})))`)
+      : q.or(scope);
+  } else {
+    q = keyset(q, cur, 'lt');
+  }
+  return (await run(q.order('created_at', { ascending: false }).order('id', { ascending: false }).limit(limit))) || [];
+}
+
+async function listPinned(limit = 5) {
+  const nowIso = new Date().toISOString();
+  return (await run(db('community_posts').select('*').eq('status', 'visible').eq('is_pinned', true)
+    .or(`pinned_until.is.null,pinned_until.gt.${nowIso}`)
+    .order('created_at', { ascending: false }).limit(limit))) || [];
+}
+
+const getPostBySlug = (slug) => run(db('community_posts').select('*').eq('slug', slug).maybeSingle());
+
+// Oldest first; tombstones (deleted/removed) are returned, visibility is applied by the caller.
+async function listCommentRows(postId, cur, limit) {
+  const q = keyset(db('community_comments').select('*').eq('post_id', postId), cur, 'gt');
+  return (await run(q.order('created_at', { ascending: true }).order('id', { ascending: true }).limit(limit))) || [];
+}
+
+// One profiles + one members query per page. Never selects phone/email.
+async function loadAuthors(ids) {
+  const list = uniq(ids);
+  if (!list.length) return { profiles: new Map(), members: new Map() };
+  const [p, m] = await Promise.all([
+    run(db('profiles').select('id, name, first_name, username, profile_image, is_host, is_banned').in('id', list)),
+    run(db('community_members').select('user_id, badge').in('user_id', list)),
+  ]);
+  return { profiles: new Map((p || []).map((r) => [r.id, r])), members: new Map((m || []).map((r) => [r.user_id, r])) };
+}
+
+async function loadMediaByPost(postIds) {
+  const map = new Map();
+  if (!postIds.length) return map;
+  for (const m of (await run(db('community_media').select('*').in('post_id', postIds).order('position'))) || []) {
+    if (!map.has(m.post_id)) map.set(m.post_id, []);
+    map.get(m.post_id).push(m);
+  }
+  return map;
+}
+
+// Exactly one query per call; anonymous viewers never reach the table.
+async function likedIds(userId, targetType, ids) {
+  if (!userId || !ids.length) return new Set();
+  const rows = await run(db('community_reactions').select('target_id')
+    .eq('user_id', userId).eq('target_type', targetType).in('target_id', ids));
+  return new Set((rows || []).map((r) => r.target_id));
+}
+
 module.exports = {
+  listSpaces, bannedAuthorIds, listFeedRows, listPinned, getPostBySlug, listCommentRows,
+  loadAuthors, loadMediaByPost, likedIds, resetReadCaches,
   linksAllowed, getProfile, getMember, acceptTerms, getSpaceByKey, getSpaceById,
   insertPost, getPost, updatePost, insertMedia, listMedia, resolveUsernames, insertMentions,
   getComment, insertComment, updateComment, addReaction, removeReaction,

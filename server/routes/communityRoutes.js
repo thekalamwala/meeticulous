@@ -4,11 +4,20 @@
  * POST /terms skips requireTerms (it is how terms get accepted).
  */
 const router = require('express').Router();
-const { protect } = require('../middleware/authMiddleware');
+const { protect, optionalProtect } = require('../middleware/authMiddleware');
 const {
   communityGate, requireWrites, requireTerms, postLimiter, commentLimiter, reactionLimiter, reportLimiter,
 } = require('../middleware/communityGate');
 const c = require('../controllers/communityController');
+
+const read = [optionalProtect, communityGate];
+
+router.get('/spaces', ...read, c.listSpaces);
+router.get('/feed', ...read, c.feed);
+router.get('/spaces/:key/threads', ...read, c.spaceThreads);
+router.get('/items/:slug', ...read, c.itemDetail);
+router.get('/items/:slug/comments', ...read, c.itemComments);
+router.get('/me', protect, communityGate, c.me);
 
 const write = [protect, communityGate, requireWrites, requireTerms];
 
