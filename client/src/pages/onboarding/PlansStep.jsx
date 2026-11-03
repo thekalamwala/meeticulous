@@ -11,6 +11,7 @@ import loadRazorpay from '../../utils/loadRazorpay';
 import { INDIAN_STATES } from '../../lib/indianStates';
 import PetalSpinner from '../../components/common/PetalSpinner';
 import FoundingNote from '../../components/pricing/FoundingNote';
+import { needsCalendar } from './needsCalendar';
 
 const GST_RATE = 0.18; // display only — server is authoritative
 const inr = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`;
@@ -84,7 +85,11 @@ const PlansStep = () => {
   // monthly/annual choice.
   const otherPaid = paidPlans;
 
-  const goNext = () => navigate(`/vendor-register/${slug}/live`);
+  // Hosts without a working Google Calendar get the (skippable) calendar screen
+  // first. Only runs after the plan save awaited (server step is already 6), so
+  // the guard lets /calendar through and there's no calendar<->plan loop.
+  const goNext = (profile = me) =>
+    navigate(`/vendor-register/${slug}/${needsCalendar(profile) ? 'calendar' : 'live'}`);
 
   // Free plan: activate, fire celebration, navigate. The /live screen fires
   // a second, larger burst on mount — this one is the "your click did
@@ -148,7 +153,7 @@ const PlansStep = () => {
         await advanceToLive();
         fireCelebration();
         toast.success(`${planLabel(plan.slug, plan.name)} active — renews ${payCadence}.`);
-        goNext();
+        goNext(freshMe);
         return true;
       };
 

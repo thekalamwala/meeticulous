@@ -114,6 +114,7 @@ const GoogleStart     = lazy(() => import('./pages/onboarding/GoogleStart'));
 const PageStep        = lazy(() => import('./pages/onboarding/PageStep'));
 const ServiceStep     = lazy(() => import('./pages/onboarding/ServiceStep'));
 const PlansStep       = lazy(() => import('./pages/onboarding/PlansStep'));
+const CalendarStep    = lazy(() => import('./pages/onboarding/CalendarStep'));
 const LiveStep        = lazy(() => import('./pages/onboarding/LiveStep'));
 
 // Admin login
@@ -531,6 +532,8 @@ function App() {
           <Route path="/vendor-register/:slug/category/all" element={<PageStep />} />
           <Route path="/vendor-register/:slug/preview" element={<ServiceStep />} />
           <Route path="/vendor-register/:slug/plan"     element={<PlansStep />} />
+          {/* Conditional detour between plan and live: only hosts without a working Google Calendar land here (skippable). */}
+          <Route path="/vendor-register/:slug/calendar" element={<CalendarStep />} />
           <Route path="/vendor-register/:slug/live"     element={<LiveStep />} />
 
           {/* Admin login (Backstage). */}
