@@ -88,6 +88,11 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
 
         {aside && <aside aria-label="About" className="sticky top-24 hidden flex-col gap-5 self-start xl:flex">{aside}</aside>}
       </div>
+
+      {/* Mobile "New post": bottom-LEFT, because the support-bot launcher (BotWidget) owns bottom-right. */}
+      <button type="button" onClick={() => onCompose?.('post')} className="mt-btn mt-fab lg:hidden">
+        <SquarePen size={20} aria-hidden="true" />New post
+      </button>
     </main>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CircleHelp, Image, MessagesSquare, SquarePen } from 'lucide-react';
 import Seo from '../../components/common/Seo';
@@ -12,6 +12,7 @@ import { communityBreadcrumbJsonLd, headlineOf } from '../../utils/communitySeo'
 import ItemCard from '../../components/community/ItemCard';
 import { Avatar } from '../../components/community/AuthorChip';
 import useRequireLogin from '../../components/community/useRequireLogin';
+import Composer from '../../components/community/Composer';
 import CommunityLayout, { EmptyState, ListStatus, SITE_DESC, useCursorList } from './CommunityLayout';
 
 const TABS = [
@@ -36,8 +37,8 @@ export default function CommunityFeed() {
     }
   }, [list.status, tab]);
 
-  // Task 12 mounts <Composer defaultKind={kind}> here; until then this only gates login.
-  const compose = () => { requireLogin(); };
+  const [composeKind, setComposeKind] = useState(null);
+  const compose = (kind = 'post') => { if (requireLogin()) setComposeKind(kind); };
 
   if (list.status === 404) return <ErrorPage code={404} />;
 
@@ -108,6 +109,7 @@ export default function CommunityFeed() {
         />
       )}
       <div ref={sentinel} aria-hidden="true" />
+      <Composer open={!!composeKind} defaultKind={composeKind} onClose={() => setComposeKind(null)} />
     </CommunityLayout>
   );
 }

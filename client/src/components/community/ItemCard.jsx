@@ -47,7 +47,8 @@ function Photos({ media, author }) {
 }
 
 // One feed/detail card. `detail` = full text, h1 title, Reply action (onReply).
-export default function ItemCard({ item, detail = false, onReply }) {
+// `actions` (detail only) = node for the More menu, built by the page that owns edit/delete/report.
+export default function ItemCard({ item, detail = false, onReply, actions }) {
   if (TOMBSTONE[item.status]) {
     return (
       <article data-testid="item-card" className="mt-card p-5 sm:p-6">
@@ -139,6 +140,7 @@ export default function ItemCard({ item, detail = false, onReply }) {
         <button type="button" onClick={() => share(item)} className="mt-btn mt-btn--ghost mt-btn--s gap-2 font-medium text-muted hover:text-maroon">
           <Share2 size={16} aria-hidden="true" />Share
         </button>
+        {detail && actions && <span className="ml-auto">{actions}</span>}
       </div>
     </article>
   );

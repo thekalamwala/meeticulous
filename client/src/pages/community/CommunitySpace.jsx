@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { MessageSquarePlus } from 'lucide-react';
 import Seo from '../../components/common/Seo';
@@ -11,6 +11,7 @@ import { SITE_URL, collectionPageJsonLd } from '../../utils/seo';
 import { communityBreadcrumbJsonLd, headlineOf } from '../../utils/communitySeo';
 import ItemCard, { SpaceIcon } from '../../components/community/ItemCard';
 import useRequireLogin from '../../components/community/useRequireLogin';
+import Composer from '../../components/community/Composer';
 import CommunityLayout, { EmptyState, ListStatus, TITLE_SUFFIX, useCursorList } from './CommunityLayout';
 
 const POLICY = {
@@ -35,8 +36,9 @@ export default function CommunitySpace() {
     }
   }, [space, key]);
 
-  // Task 12 mounts <Composer defaultKind="thread" defaultSpaceKey={key}> here.
-  const compose = () => { requireLogin(); };
+  const [composing, setComposing] = useState(false);
+  // Every "start" button here (and the layout's New post) opens a thread in this space.
+  const compose = () => { if (requireLogin()) setComposing(true); };
   const canStart = space && (space.post_policy === 'everyone' || (space.post_policy === 'hosts' && (!user || user.is_host)));
 
   // 404 = gate closed or unknown space; a 200 with no space = tables not there yet (soft-fail).
@@ -88,6 +90,7 @@ export default function CommunitySpace() {
         />
       )}
       <div ref={sentinel} aria-hidden="true" />
+      <Composer open={composing} defaultKind="thread" defaultSpaceKey={key} onClose={() => setComposing(false)} />
     </CommunityLayout>
   );
 }
