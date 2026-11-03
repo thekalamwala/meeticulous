@@ -8,7 +8,6 @@ import { isNotFoundError } from '../utils/fetchError';
 import ErrorPage from './ErrorPage';
 import Seo from '../components/common/Seo';
 import { SITE_URL, resolveBlogSeo, articleGraphJsonLd } from '../utils/seo';
-import BlogHeroThumbnail from '../components/blog/BlogHeroThumbnail';
 import RelatedPosts from '../components/blog/RelatedPosts';
 import PetalSpinner from '../components/common/PetalSpinner';
 import { prerendered } from '../services/prerenderData';
@@ -41,14 +40,21 @@ const bandText = () => ({
   rule: 'rgba(255,255,255,0.22)',
 });
 
-// Right-hand hero visual: the post image, or a branded fallback panel.
+// Right-hand hero visual: the post image in a rounded slot, inset on the maroon
+// band (Loop & Slot — nothing full-bleed or square-cornered). No image → a blush
+// slot with the camera+calendar illustration, not the old dark fallback panel.
 const HeroVisual = ({ post, t }) => (
-  <div className="relative hidden overflow-hidden lg:block" style={{ backgroundColor: t.band }}>
-    {post.image ? (
-      <img src={post.image} alt={post.title} className="absolute inset-0 h-full w-full object-cover" />
-    ) : (
-      <BlogHeroThumbnail post={post} theme={t} />
-    )}
+  <div className="relative z-10 hidden items-stretch p-6 lg:flex xl:p-8" style={{ backgroundColor: t.band }}>
+    <div className="relative w-full overflow-hidden rounded-3xl" style={{ backgroundColor: post.image ? undefined : SUNK }}>
+      {post.image ? (
+        <img src={post.image} alt={post.title} className="absolute inset-0 h-full w-full object-cover" />
+      ) : (
+        <div className="flex h-full min-h-[18rem] w-full items-center justify-center p-10">
+          <img src="/brand/ds/04-illustrations/mt-illo-availability-light.svg" alt="" aria-hidden="true"
+            className="h-auto w-full max-w-sm" />
+        </div>
+      )}
+    </div>
   </div>
 );
 
@@ -411,8 +417,11 @@ const BlogPost = () => {
       />
       <article>
       {/* ── Split hero: left colour + text, right image (hidden on mobile) ── */}
-      <header className="grid items-stretch lg:grid-cols-2" style={{ backgroundColor: t.band }}>
-        <div className="app-container py-14 sm:py-20">
+      <header className="relative grid items-stretch overflow-hidden lg:grid-cols-2" style={{ backgroundColor: t.band }}>
+        {/* ee thread — one per layout, bleeding off an edge, behind content (BRAND_RULES). */}
+        <img src="/brand/ds/02-ee/mt-ee-thread-white.svg" alt="" aria-hidden="true"
+          className="blog-hero-thread pointer-events-none absolute bottom-8 -left-12 z-0 w-[40rem] max-w-[80%] opacity-25" />
+        <div className="app-container relative z-10 py-14 sm:py-20">
           <div className="mx-auto max-w-xl lg:mx-0 lg:ml-auto lg:pr-10">
             {/* Visible breadcrumb — same trail as the BreadcrumbList JSON-LD (crumbs). */}
             <nav aria-label="Breadcrumb">
@@ -425,13 +434,17 @@ const BlogPost = () => {
               </ol>
             </nav>
 
-            <p className="mt-8 text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: tt.faint }}>
+            {/* Category pill with the pink live-dot (post is published = live). */}
+            <span className="mt-8 inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em]"
+              style={{ backgroundColor: 'rgba(255,255,255,0.12)', color: '#FFFFFF' }}>
+              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: '#FF9FB0' }} />
               {post.category}
-            </p>
-            <h1 className="mt-3 font-heading text-3xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl" style={{ color: tt.title }}>
+            </span>
+            <h1 className="mt-4 font-heading text-3xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl" style={{ color: tt.title }}>
               {post.title}
             </h1>
-            <p className="mt-5 text-base leading-relaxed sm:text-lg" style={{ color: tt.soft }}>
+            {/* The one serif phrase per layout — Instrument Serif italic, the human half. */}
+            <p className="mt-5 font-serif text-xl italic leading-snug sm:text-[26px]" style={{ color: tt.soft }}>
               {post.excerpt}
             </p>
 
