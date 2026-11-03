@@ -34,7 +34,7 @@ const AuthBrandPanel = ({
         <span className="font-display text-lg font-bold tracking-tight">Meeticulous</span>
       </div>
 
-      <h2 className="mt-9 font-display text-[2.1rem] font-extrabold leading-[1.12] tracking-tight xl:text-[2.6rem]">
+      <h2 className="mt-9 font-display text-[2.1rem] font-extrabold leading-[1.12] tracking-tight text-white xl:text-[2.6rem]">
         {title}
       </h2>
       <p className="mt-4 max-w-sm text-[15px] leading-relaxed text-white/80 xl:text-base">
