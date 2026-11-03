@@ -63,13 +63,14 @@ function cloudinaryHostCard({ name, avatar, profession, city, handle, bio } = {}
   if (!CLOUD || !name) return null;
   const ASSET_BASE = assetBase();
 
-  const base = encodeURIComponent(`${ASSET_BASE}/host-bg-cream.png`);
+  // Base = the committed cream background with the diagonal 'ee' ribbon baked in
+  // (host-og-bg.svg — the home-hero ribbon sweeping bottom-left → top-right, loop
+  // in the top-right corner). The wordmark is overlaid so it stays one source of
+  // truth; everything else dynamic is layered on top.
+  const base = encodeURIComponent(`${ASSET_BASE}/host-og-bg.svg`);
   const L = ['w_1200,h_630,c_fill,q_auto,f_auto'];
 
-  // Static brand marks baked into the committed bg would drift from the kit on a
-  // redesign; overlaying the SVGs keeps one source of truth in the repo.
   L.push(`l_fetch:${b64url(`${ASSET_BASE}/wordmark.svg`)}/c_scale,h_36/fl_layer_apply,g_north_west,x_64,y_64`);
-  L.push(`l_fetch:${b64url(`${ASSET_BASE}/ee-mark.svg`)}/c_scale,w_150/fl_layer_apply,g_north_east,x_64,y_80`);
 
   // Avatar — circle with the profession-colour ring (left identity block). With no
   // photo, fall back to the 'ee' loop mark on a maroon disc with the same ring —
