@@ -153,10 +153,10 @@ const Availability = () => {
       <Card className="mb-5">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">Weekly schedule</h2>
-            <p className="text-xs text-gray-400">Set the days and times you are available for bookings.</p>
+            <h2 className="text-base font-semibold text-ink">Weekly schedule</h2>
+            <p className="text-xs text-ink/40">Set the days and times you are available for bookings.</p>
           </div>
-          <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-muted">
             <span className="inline-flex items-center gap-1"><Globe className="h-3.5 w-3.5" /> {timezone}</span>
             {bufferMinutes > 0 && <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {bufferMinutes} min buffer</span>}
             <Button type="button" variant="secondary" size="sm" onClick={scrollToSettings}>
@@ -166,11 +166,11 @@ const Availability = () => {
         </div>
 
         {/* Column headers (sm+) */}
-        <div className="hidden border-b border-gray-100 pb-2 text-xs font-medium text-gray-400 sm:grid sm:grid-cols-[8rem_9rem_1fr_2.5rem]">
+        <div className="hidden border-b border-maroon/5 pb-2 text-xs font-medium text-ink/40 sm:grid sm:grid-cols-[8rem_9rem_1fr_2.5rem]">
           <span>Day</span><span>Availability</span><span>Time slots</span><span />
         </div>
 
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-maroon/5">
           {DAYS.map((day) => {
             const open = isDayOpen(day);
             const slots = open ? schedule[day] : [null]; // one row even when closed
@@ -180,7 +180,7 @@ const Availability = () => {
                 className="grid grid-cols-1 items-center gap-2 py-3 sm:grid-cols-[8rem_9rem_1fr_2.5rem]"
               >
                 {/* Day name — only on first row of the day */}
-                <span className="font-medium capitalize text-gray-900">{i === 0 ? day : ""}</span>
+                <span className="font-medium capitalize text-ink">{i === 0 ? day : ""}</span>
 
                 {/* Availability toggle — only first row */}
                 {i === 0 ? (
@@ -193,12 +193,12 @@ const Availability = () => {
                       onClick={() => toggleDay(day)}
                       className={cn(
                         "relative inline-flex h-[22px] min-h-0 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40",
-                        open ? "bg-primary" : "bg-gray-200",
+                        open ? "bg-primary" : "bg-ink/15",
                       )}
                     >
                       <span className={cn("inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform", open ? "translate-x-[22px]" : "translate-x-[2px]")} />
                     </button>
-                    <span className={cn("text-sm", open ? "text-gray-700" : "text-gray-400")}>{open ? "Available" : "Unavailable"}</span>
+                    <span className={cn("text-sm", open ? "text-ink" : "text-ink/40")}>{open ? "Available" : "Unavailable"}</span>
                   </div>
                 ) : <span className="hidden sm:block" />}
 
@@ -206,10 +206,10 @@ const Availability = () => {
                 {open ? (
                   <div className="grid items-center gap-2 sm:grid-cols-[1fr_auto_1fr]">
                     <TimeSelect value={slot.start} onChange={(e) => updateSlot(day, i, "start", e.target.value)} />
-                    <span className="hidden text-center text-gray-400 sm:block">–</span>
+                    <span className="hidden text-center text-ink/40 sm:block">–</span>
                     <TimeSelect value={slot.end} onChange={(e) => updateSlot(day, i, "end", e.target.value)} />
                   </div>
-                ) : <span className="text-sm text-gray-400">Closed</span>}
+                ) : <span className="text-sm text-ink/40">Closed</span>}
 
                 {/* Row menu */}
                 {open ? (
@@ -218,7 +218,7 @@ const Availability = () => {
                     title={`${day} slot`}
                     items={rowMenu(day, i)}
                     trigger={
-                      <button type="button" aria-label={`${day} slot options`} className="justify-self-end rounded-lg p-2 text-gray-400 hover:bg-gray-50 hover:text-gray-600">
+                      <button type="button" aria-label={`${day} slot options`} className="justify-self-end rounded-lg p-2 text-ink/40 hover:bg-blush/40 hover:text-muted">
                         <MoreHorizontal className="h-5 w-5" />
                       </button>
                     }
@@ -230,7 +230,7 @@ const Availability = () => {
         </div>
 
         {/* Apply Monday's hours to… */}
-        <div className="mt-4 flex justify-end border-t border-gray-100 pt-4">
+        <div className="mt-4 flex justify-end border-t border-maroon/5 pt-4">
           <Select
             value=""
             onChange={(e) => { if (e.target.value) applyMondayTo(e.target.value); e.target.value = ""; }}
@@ -247,8 +247,8 @@ const Availability = () => {
 
       {/* Blocked dates — full days guests can never book */}
       <Card className="mb-5">
-        <h2 className="mb-1 text-base font-semibold text-gray-900">Blocked dates</h2>
-        <p className="mb-3 text-xs text-gray-400">Holidays, time off — these dates show no slots regardless of your weekly schedule.</p>
+        <h2 className="mb-1 text-base font-semibold text-ink">Blocked dates</h2>
+        <p className="mb-3 text-xs text-ink/40">Holidays, time off — these dates show no slots regardless of your weekly schedule.</p>
         <div className="mb-3 flex gap-2">
           <Input
             type="date"
@@ -272,16 +272,16 @@ const Availability = () => {
           </Button>
         </div>
         {blockedDates.length === 0 ? (
-          <p className="text-sm text-gray-400">No blocked dates</p>
+          <p className="text-sm text-ink/40">No blocked dates</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {blockedDates.map((d) => (
-              <span key={d} className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-2.5 py-1 text-xs text-red-700">
+              <span key={d} className="inline-flex items-center gap-1.5 rounded-lg border border-rose/30 bg-rose/10 px-2.5 py-1 text-xs text-rose-700">
                 {d}
                 <button
                   type="button"
                   onClick={() => { setBlockedDates(blockedDates.filter((x) => x !== d)); setDirty(true); }}
-                  className="font-bold text-red-400 hover:text-red-600"
+                  className="font-bold text-rose/60 hover:text-rose-700"
                   aria-label={`Unblock ${d}`}
                 >
                   ×
@@ -294,8 +294,8 @@ const Availability = () => {
 
       {/* Schedule settings — timezone + buffer */}
       <Card id="schedule-settings" className="mb-5">
-        <h2 className="mb-1 text-base font-semibold text-gray-900">Schedule settings</h2>
-        <p className="mb-4 text-xs text-gray-400">Update your timezone and buffer between bookings.</p>
+        <h2 className="mb-1 text-base font-semibold text-ink">Schedule settings</h2>
+        <p className="mb-4 text-xs text-ink/40">Update your timezone and buffer between bookings.</p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField label="Time zone" htmlFor="av-tz" className="mb-0">
             <Select id="av-tz" value={timezone} onChange={(e) => { setTimezone(e.target.value); setDirty(true); }}>
@@ -319,11 +319,11 @@ const Availability = () => {
             </Select>
           </FormField>
         </div>
-        <p className="mt-2 text-xs text-gray-400">A buffer is the gap between the end of one booking and the start of the next.</p>
+        <p className="mt-2 text-xs text-ink/40">A buffer is the gap between the end of one booking and the start of the next.</p>
       </Card>
 
       <StickyActionBar>
-        {dirty && <span className="mr-auto text-sm text-gray-500">You have unsaved changes</span>}
+        {dirty && <span className="mr-auto text-sm text-muted">You have unsaved changes</span>}
         <Button
           type="button"
           variant="secondary"
