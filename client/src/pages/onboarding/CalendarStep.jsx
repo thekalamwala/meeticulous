@@ -57,12 +57,15 @@ const CalendarStep = () => {
       return;
     }
     // Already connected/skipped (resume link, back button): nothing to ask.
+    // Re-runs when the flags change because AuthContext seeds `user` from a
+    // possibly stale localStorage copy and refreshes it async. handledRef keeps
+    // this (and the ?google= branch above) to a single navigation.
     if (!google && !needsCalendar(user)) {
       handledRef.current = true;
       goLive();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready]);
+  }, [ready, user?.google_calendar_connected, user?.calendar_skipped]);
 
   const connect = async () => {
     setBusy(true);
@@ -76,7 +79,12 @@ const CalendarStep = () => {
 
   const skip = async () => {
     setBusy(true);
-    try { await skipCalendar(); } catch { /* skipping must never block going live */ }
+    handledRef.current = true; // the context update below must not trigger a second redirect
+    try {
+      await skipCalendar();
+      // Mirror the server flag so Back from /live doesn't re-show this screen.
+      updateUser?.({ calendar_skipped: true });
+    } catch { /* skipping must never block going live */ }
     goLive();
   };
 

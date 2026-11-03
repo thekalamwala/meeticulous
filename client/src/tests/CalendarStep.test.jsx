@@ -15,6 +15,7 @@ vi.mock('../services/analytics', () => ({ analytics: { track: vi.fn() } }));
 const auth = { user: {}, updateUser: vi.fn(), connectGoogleCalendar: vi.fn() };
 vi.mock('../context/AuthContext', () => ({ useAuth: () => auth }));
 
+import toast from 'react-hot-toast';
 import { skipCalendar, getMe } from '../services/api';
 import { analytics } from '../services/analytics';
 import CalendarStep from '../pages/onboarding/CalendarStep';
@@ -71,6 +72,45 @@ describe('CalendarStep', () => {
     expect(await screen.findByText(/Calendar access wasn.t granted — tick the calendar boxes on Google.s screen, or skip for now\./)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /connect google calendar/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /skip for now/i })).toBeInTheDocument();
+  });
+
+  test('user turning connected after first render (stale -> fresh) redirects to /live once', async () => {
+    const tree = () => (
+      <MemoryRouter initialEntries={['/vendor-register/test/calendar']}>
+        <Routes>
+          <Route path="/vendor-register/:slug/calendar" element={<CalendarStep />} />
+          <Route path="/vendor-register/:slug/live" element={<Where />} />
+        </Routes>
+      </MemoryRouter>
+    );
+    const { rerender } = render(tree());
+    await screen.findByRole('button', { name: /connect google calendar/i });
+    auth.user = { google_calendar_connected: true };
+    rerender(tree()); // fresh element so React re-renders and re-reads auth.user
+    await waitFor(() => expect(screen.getByTestId('where').textContent).toBe('/vendor-register/test/live'));
+  });
+
+  test('skipCalendar rejecting still reaches /live', async () => {
+    skipCalendar.mockRejectedValueOnce(new Error('net'));
+    renderAt();
+    fireEvent.click(await screen.findByRole('button', { name: /skip for now/i }));
+    await waitFor(() => expect(screen.getByTestId('where').textContent).toBe('/vendor-register/test/live'));
+  });
+
+  test('after skip, context gets calendar_skipped true', async () => {
+    renderAt();
+    fireEvent.click(await screen.findByRole('button', { name: /skip for now/i }));
+    await waitFor(() => expect(auth.updateUser).toHaveBeenCalledWith({ calendar_skipped: true }));
+  });
+
+  test('connectGoogleCalendar rejecting toasts and re-enables the buttons', async () => {
+    auth.connectGoogleCalendar.mockRejectedValueOnce(new Error('x'));
+    renderAt();
+    const btn = await screen.findByRole('button', { name: /connect google calendar/i });
+    fireEvent.click(btn);
+    await waitFor(() => expect(toast.error).toHaveBeenCalled());
+    await waitFor(() => expect(btn.disabled).toBe(false));
+    expect(screen.getByRole('button', { name: /skip for now/i }).disabled).toBe(false);
   });
 
   test('Skip for now -> skipCalendar then /live', async () => {
