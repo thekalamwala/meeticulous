@@ -1525,6 +1525,24 @@ const cancelHosting = async (req, res) => {
 // confirm linkedin_oidc is actually present, then stamp the profile and award
 // the manual "LinkedIn Verified" badge. Idempotent — re-verifying is a no-op.
 const LINKEDIN_BADGE_SLUG = "linkedin-verified";
+
+// Stamp LinkedIn ownership on the profile from a Supabase-held linkedin_oidc
+// identity (idempotent). Schema fallback: pre-v3.170 DBs lack the columns —
+// skip the stamp but still award the badge (the visible outcome). Non-fatal.
+const stampLinkedinVerified = async (userId, li) => {
+  const { error } = await supabaseAdmin
+    .from("profiles")
+    .update({
+      linkedin_verified_at: new Date().toISOString(),
+      linkedin_sub: li.identity_data?.sub || li.identity_id || li.id || null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", userId);
+  if (error && !/Could not find the|column.*does not exist/i.test(error.message || "")) {
+    console.error("linkedin verified stamp error (non-fatal):", error.message);
+  }
+};
+
 const verifyLinkedin = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -1543,21 +1561,7 @@ const verifyLinkedin = async (req, res) => {
         message: "LinkedIn isn't linked yet. Please try connecting again.",
       });
     }
-    const linkedinSub = li.identity_data?.sub || li.identity_id || li.id || null;
-
-    // Stamp verification (idempotent). Schema fallback: pre-v3.170 DBs lack the
-    // columns — skip the stamp but still award the badge (the visible outcome).
-    let { error: upErr } = await supabaseAdmin
-      .from("profiles")
-      .update({
-        linkedin_verified_at: new Date().toISOString(),
-        linkedin_sub: linkedinSub,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", userId);
-    if (upErr && !/Could not find the|column.*does not exist/i.test(upErr.message || "")) {
-      console.error("verifyLinkedin: profile stamp error (non-fatal):", upErr.message);
-    }
+    await stampLinkedinVerified(userId, li);
 
     // "LinkedIn Verified" is an automatic (engine-owned) badge keyed off the
     // linkedin_verified attribute metric (= linkedin_verified_at IS NOT NULL,
@@ -1583,6 +1587,94 @@ const verifyLinkedin = async (req, res) => {
     const { data: profile } = await supabaseAdmin
       .from("profiles").select("*").eq("id", userId).single();
     res.json({ ...(await serializeProfile(profile, null)), badgeAwarded });
+  } catch (error) {
+    safeError(res, error);
+  }
+};
+
+// POST /api/auth/linkedin/host — host sign-up / login through LinkedIn. The
+// client did supabase.auth.signInWithOAuth({ provider: 'linkedin_oidc' }) and
+// holds that Supabase session; `protect` verified its JWT (req.user.id). We trust
+// ONLY that id + the identities/email Supabase holds for it — never identity or
+// email from the body. Mirrors Google Flow A: new host → '1', customer → hosting
+// attached to the SAME account → 'upgrade', returning host → '0'. No session is
+// minted here: the client already has one.
+const linkedinHostAuth = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const body = req.body || {};
+    // Shaped like Google's signed OAuth state so the shared new-host helper
+    // (invite stamp, CRM lead attribution) reads it the same way.
+    const statePayload = {
+      intent: body.intent === "signup" ? "signup" : "login",
+      invite: typeof body.invite === "string" && body.invite.trim()
+        ? body.invite.trim().toLowerCase().slice(0, 40)
+        : undefined,
+      att: require("../services/crm/attributionInput").cleanAttribution(body.att || {}),
+    };
+    const tz = validTz(body.tz);
+
+    // Source of truth: the identities Supabase actually holds for this auth user.
+    const { data: authData, error: auErr } = await supabaseAdmin.auth.admin.getUserById(userId);
+    if (auErr || !authData?.user) return res.status(404).json({ message: "Account not found" });
+    const li = (authData.user.identities || []).find((i) => i.provider === "linkedin_oidc");
+    if (!li) return res.status(400).json({ code: "no_linkedin_identity" });
+
+    // Fail CLOSED on a read error: upsertProfile on an unread row would
+    // overwrite an existing account's name/role (e.g. turn an admin into a host).
+    const { data: existing, error: exErr } = await supabaseAdmin
+      .from("profiles").select("id, role, is_host").eq("id", userId).maybeSingle();
+    if (exErr) throw exErr;
+
+    // The LinkedIn door never signs in a superadmin (admin login is its own door).
+    if (existing?.role === "superadmin") return res.status(403).json({ code: "superadmin" });
+
+    let newFlag = "0";
+    if (existing && !existing.is_host) {
+      // Unified identity: a customer gains hosting on the same account.
+      await enableHostingForProfile(userId);
+      newFlag = "upgrade";
+    } else if (!existing) {
+      const claims = li.identity_data || {};
+      const email = (authData.user.email || claims.email || "").toLowerCase().trim();
+      if (!email) return res.status(400).json({ code: "no_email" });
+
+      // Duplicate-account guard: a LinkedIn sign-in that Supabase did NOT link to
+      // the existing auth user (different user id, same email) must never spawn a
+      // second profile for that email — the host signs in with their original door.
+      const { data: sameEmail, error: emErr } = await supabaseAdmin
+        .from("profiles").select("id").eq("email", email).limit(1);
+      if (emErr) throw emErr;
+      if (sameEmail?.length) return res.status(409).json({ code: "email_has_account" });
+
+      const profile = await upsertProfile({
+        id: userId,
+        name: claims.name || email.split("@")[0],
+        email,
+        role: "host",
+        first_name: claims.given_name || null,
+        last_name: claims.family_name || null,
+        avatar: claims.picture || null,
+      });
+      // Onboarding step 1; calendar_skipped=false (no calendar yet) so the
+      // calendar screen shows before Live.
+      await markGoogleVendorOnboarding(userId, profile.username, { calendarOk: false });
+      await onNewHostCreated({ profile, email, method: "linkedin", statePayload, req });
+      newFlag = "1";
+    }
+    // New or upgraded host: seed availability timezone from the browser tz (no
+    // Google read). Only writes when no availability row exists yet.
+    if (newFlag !== "0") await seedAvailabilityTimezone(userId, () => null, tz);
+
+    // LinkedIn login also proves LinkedIn ownership → stamp + badge reconcile.
+    await stampLinkedinVerified(userId, li);
+    reconcileBadges(userId);
+    trackServer(userId, "auth_completed", { method: "linkedin", new: newFlag }, { req });
+
+    const { data: profile, error: pErr } = await supabaseAdmin
+      .from("profiles").select("*").eq("id", userId).single();
+    if (pErr || !profile) throw pErr || new Error("Profile not found");
+    res.json({ profile: await serializeProfile(profile, null), new: newFlag });
   } catch (error) {
     safeError(res, error);
   }
@@ -1803,6 +1895,7 @@ module.exports = {
   becomeHost,
   cancelHosting,
   verifyLinkedin,
+  linkedinHostAuth,
   forgotPassword,
   resetPassword,
   maybeStampInvite,
