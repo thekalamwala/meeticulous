@@ -38,12 +38,12 @@ const Icon = ({ d, className = 'w-4 h-4' }) => (
 
 const EmptyServices = ({ filter, search }) => (
   <div className="py-14 text-center">
-    <div className="mb-3 text-gray-300">
+    <div className="mb-3 text-ink/30">
       <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
       </svg>
     </div>
-    <p className="text-sm text-gray-400">No services here yet.</p>
+    <p className="text-sm text-ink/40">No services here yet.</p>
     {filter === 'all' && !search && (
       <Link to="/dashboard/service/add-new" className="mt-3 inline-block text-sm font-medium text-primary hover:underline">
         Create your first service →
@@ -172,7 +172,7 @@ export default function ServicesList() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
+              <tr className="border-b bg-blush/40 text-xs uppercase tracking-wider text-muted">
                 <th className="w-12 px-4 py-3 text-left">Thumb</th>
                 <th className="px-4 py-3 text-left">Title</th>
                 <th className="hidden px-4 py-3 text-left sm:table-cell">Type</th>
@@ -184,54 +184,54 @@ export default function ServicesList() {
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-maroon/5">
               {filtered.length === 0 ? (
                 <tr><td colSpan={9}><EmptyServices filter={filter} search={search} /></td></tr>
               ) : filtered.map(s => (
-                <tr key={s.id} className={cn('transition-colors hover:bg-gray-50', !s.is_active && 'opacity-60')}>
+                <tr key={s.id} className={cn('transition-colors hover:bg-blush/40', !s.is_active && 'opacity-60')}>
                   <td className="px-4 py-3">
                     {s.thumbnail_url
                       ? <img src={s.thumbnail_url} alt="" className="h-10 w-10 rounded-lg object-cover" />
-                      : <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 text-xs font-bold text-gray-300">{(s.title || '?').charAt(0).toUpperCase()}</div>}
+                      : <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blush text-xs font-bold text-ink/30">{(s.title || '?').charAt(0).toUpperCase()}</div>}
                   </td>
                   <td className="max-w-[200px] px-4 py-3">
-                    <p className="truncate font-medium text-gray-800">{s.title}</p>
+                    <p className="truncate font-medium text-ink">{s.title}</p>
                     {(s.short_description || s.description) && (
-                      <p className="truncate text-xs text-gray-400">{s.short_description || s.description}</p>
+                      <p className="truncate text-xs text-ink/40">{s.short_description || s.description}</p>
                     )}
                   </td>
-                  <td className="hidden px-4 py-3 text-xs text-gray-500 sm:table-cell">
+                  <td className="hidden px-4 py-3 text-xs text-muted sm:table-cell">
                     {TYPE_LABEL[s.meeting_mode] || TYPE_LABEL[s.service_type] || s.meeting_mode || '—'}
                   </td>
                   <td className="px-4 py-3 font-semibold text-primary">{s.price === 0 ? 'Free' : `₹${s.price}`}</td>
-                  <td className="hidden px-4 py-3 text-xs text-gray-500 md:table-cell">{fmtDuration(s.duration)}</td>
-                  <td className="hidden px-4 py-3 text-xs text-gray-500 lg:table-cell">{s.total_bookings || 0}</td>
+                  <td className="hidden px-4 py-3 text-xs text-muted md:table-cell">{fmtDuration(s.duration)}</td>
+                  <td className="hidden px-4 py-3 text-xs text-muted lg:table-cell">{s.total_bookings || 0}</td>
                   <td className="px-4 py-3"><Status active={s.is_active} /></td>
-                  <td className="hidden px-4 py-3 text-xs text-gray-400 lg:table-cell">
+                  <td className="hidden px-4 py-3 text-xs text-ink/40 lg:table-cell">
                     {new Date(s.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">
                       {s.slug && s.is_active && (
                         <a href={`/${user?.username}/booking/${s.slug}`} target="_blank" rel="noreferrer" title="View public page"
-                          className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-blue-600">
+                          className="rounded-lg p-1.5 text-ink/40 transition-colors hover:bg-blush hover:text-maroon">
                           <Icon d={PATHS.view} />
                         </a>
                       )}
                       <button onClick={() => navigate(`/dashboard/service/edit/${s.id}`)} title="Edit"
-                        className="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary">
+                        className="rounded-lg p-1.5 text-muted transition-colors hover:bg-blush hover:text-primary">
                         <Icon d={PATHS.edit} />
                       </button>
                       <button onClick={() => handleDuplicate(s)} title="Duplicate"
-                        className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700">
+                        className="rounded-lg p-1.5 text-ink/40 transition-colors hover:bg-blush hover:text-ink">
                         <Icon d={PATHS.dup} />
                       </button>
                       <button onClick={() => handleToggle(s)} title={s.is_active ? 'Disable' : 'Enable'}
-                        className={cn('rounded-lg p-1.5 transition-colors', s.is_active ? 'text-red-400 hover:bg-red-50 hover:text-red-600' : 'text-green-500 hover:bg-green-50 hover:text-green-700')}>
+                        className={cn('rounded-lg p-1.5 transition-colors', s.is_active ? 'text-rose/70 hover:bg-rose/10 hover:text-rose-700' : 'text-c-emerald/70 hover:bg-c-emerald/10 hover:text-c-emerald')}>
                         <Icon d={s.is_active ? PATHS.disable : PATHS.enable} />
                       </button>
                       <button onClick={() => setConfirmDelete(s)} title="Delete"
-                        className="rounded-lg p-1.5 text-red-300 transition-colors hover:bg-red-50 hover:text-red-600">
+                        className="rounded-lg p-1.5 text-rose/50 transition-colors hover:bg-rose/10 hover:text-rose-700">
                         <Icon d={PATHS.del} />
                       </button>
                     </div>
@@ -241,7 +241,7 @@ export default function ServicesList() {
             </tbody>
           </table>
         </div>
-        <div className="border-t bg-gray-50 px-4 py-3 text-xs text-gray-400">
+        <div className="border-t bg-blush/40 px-4 py-3 text-xs text-ink/40">
           Disabled services remain in historical booking records.
         </div>
       </Card>
@@ -261,16 +261,16 @@ export default function ServicesList() {
               >
                 {s.thumbnail_url
                   ? <img src={s.thumbnail_url} alt="" className="h-12 w-12 flex-shrink-0 rounded-lg object-cover" />
-                  : <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-gray-100 text-sm font-bold text-gray-300">{(s.title || '?').charAt(0).toUpperCase()}</div>}
+                  : <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-blush text-sm font-bold text-ink/30">{(s.title || '?').charAt(0).toUpperCase()}</div>}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="truncate font-semibold text-gray-800">{s.title}</p>
+                    <p className="truncate font-semibold text-ink">{s.title}</p>
                     <Status active={s.is_active} />
                   </div>
                   {(s.short_description || s.description) && (
-                    <p className="mt-0.5 truncate text-xs text-gray-400">{s.short_description || s.description}</p>
+                    <p className="mt-0.5 truncate text-xs text-ink/40">{s.short_description || s.description}</p>
                   )}
-                  <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-gray-500">
+                  <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted">
                     <span className="font-semibold text-primary">{s.price === 0 ? 'Free' : `₹${s.price}`}</span>
                     <span>{typeLabel}</span>
                     <span>{fmtDuration(s.duration)}</span>
@@ -280,30 +280,30 @@ export default function ServicesList() {
               </button>
 
               {/* Secondary actions (tap the card to edit). Delete sits apart. */}
-              <div className="mt-3 grid grid-cols-2 gap-2 border-t border-gray-100 pt-3">
+              <div className="mt-3 grid grid-cols-2 gap-2 border-t border-maroon/5 pt-3">
                 {s.slug && s.is_active && (
                   <a href={`/${user?.username}/booking/${s.slug}`} target="_blank" rel="noreferrer"
-                    className="col-span-2 inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-gray-200 px-3 text-sm font-medium text-gray-600 hover:bg-gray-50 active:bg-gray-100">
+                    className="col-span-2 inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-maroon/10 px-3 text-sm font-medium text-muted hover:bg-blush/40 active:bg-blush">
                     <Icon d={PATHS.view} /> View public page
                   </a>
                 )}
                 <button onClick={() => handleDuplicate(s)}
-                  className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-gray-200 px-3 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100">
+                  className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-maroon/10 px-3 text-sm font-medium text-ink hover:bg-blush/40 active:bg-blush">
                   <Icon d={PATHS.dup} /> Duplicate
                 </button>
                 <button onClick={() => handleToggle(s)}
-                  className={cn('inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg border px-3 text-sm font-medium', s.is_active ? 'border-red-200 text-red-600 hover:bg-red-50 active:bg-red-100' : 'border-green-200 text-green-700 hover:bg-green-50 active:bg-green-100')}>
+                  className={cn('inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg border px-3 text-sm font-medium', s.is_active ? 'border-rose/30 text-rose-700 hover:bg-rose/10 active:bg-rose/20' : 'border-c-emerald/30 text-c-emerald hover:bg-c-emerald/10 active:bg-c-emerald/20')}>
                   <Icon d={s.is_active ? PATHS.disable : PATHS.enable} /> {s.is_active ? 'Disable' : 'Enable'}
                 </button>
                 <button onClick={() => setConfirmDelete(s)}
-                  className="col-span-2 inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-red-200 px-3 text-sm font-medium text-red-600 hover:bg-red-50 active:bg-red-100">
+                  className="col-span-2 inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-rose/30 px-3 text-sm font-medium text-rose-700 hover:bg-rose/10 active:bg-rose/20">
                   <Icon d={PATHS.del} /> Delete
                 </button>
               </div>
             </Card>
           );
         })}
-        <p className="px-1 pt-1 text-xs text-gray-400">Disabled services remain in historical booking records.</p>
+        <p className="px-1 pt-1 text-xs text-ink/40">Disabled services remain in historical booking records.</p>
       </div>
 
       {/* Confirm delete */}
@@ -320,7 +320,7 @@ export default function ServicesList() {
         }
       >
         {confirmDelete && (
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted">
             "<strong>{confirmDelete.title}</strong>" will be permanently deleted. This cannot be undone.
           </p>
         )}
