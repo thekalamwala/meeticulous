@@ -20,9 +20,11 @@ const SIGN_KIND = { New: 'board', Improved: 'stone', Fixed: 'turn', Security: 's
 const VB_W = 1000;
 const LEG = 280;            // vertical distance between legs
 const TOP = 110;            // first leg's y (stop 0 is the short "road ahead" marker)
-const X_LEFT = 150;
-const X_RIGHT = 850;
 const ROAD_W = 56;
+// U-turn arcs bulge LEG/2 past the straights; keep the whole road (+ half its
+// width) inside the viewBox so the turns aren't cropped at either side.
+const X_LEFT = LEG / 2 + ROAD_W / 2 + 12;
+const X_RIGHT = VB_W - X_LEFT;
 const EDGE = 40;            // road runs in/out this close to the edges (round caps, no clipping)
 
 const STOPS = [{ kind: 'ahead' }, ...SORTED_RELEASES.map((r) => ({ kind: 'release', r })), { kind: 'start' }];
