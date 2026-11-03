@@ -260,29 +260,35 @@ const PageStep = () => {
                 </div>
               ) : (
                 <div className="mt-2.5">
-                  <div className="flex items-stretch overflow-hidden rounded-[16px] border border-black/10 bg-white focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
-                    <span className="select-none whitespace-nowrap bg-sand px-3 py-2.5 text-sm text-muted" aria-hidden="true">
+                  {/* No box — type inline on an underline that turns brand on focus. */}
+                  <div className="flex items-center gap-1 border-b-2 border-black/15 pb-1.5 focus-within:border-primary">
+                    <span className="select-none whitespace-nowrap font-mono text-[15px] text-muted" aria-hidden="true">
                       {window.location.host}/
                     </span>
                     <input
                       id="slug-input"
                       aria-label="Your link"
                       aria-describedby="slug-hint"
-                      className="w-full px-3 py-2.5 text-sm font-medium outline-none"
+                      className="min-w-0 flex-1 bg-transparent font-mono text-[15px] font-semibold text-primary outline-none placeholder:font-sans placeholder:font-normal placeholder:text-muted/60"
                       placeholder="yourname"
                       value={draft}
                       onChange={onDraft}
                       maxLength={30}
                       autoFocus
                     />
-                    <span className="flex items-center pr-3">
-                      {checking && <Loader2 className="h-4 w-4 animate-spin text-muted" />}
-                      {!checking && available === true && <Check className="h-4 w-4 text-success-fg" strokeWidth={3} aria-label="Available" />}
-                    </span>
+                    {checking && <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted" />}
+                    {!checking && available === true && (
+                      <span className="onb-pop flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-success-fg" aria-label="Available" title="Available">
+                        <Check className="h-3 w-3 text-white" strokeWidth={3.5} />
+                      </span>
+                    )}
                   </div>
-                  <p id="slug-hint" aria-live="polite" className={`mt-2 min-h-[1.25rem] text-sm ${msg ? msg.tone : 'text-success-fg'}`}>
-                    {msg ? msg.text : !checking && available ? 'This URL is available.' : ''}
-                  </p>
+                  <div className="mt-2 flex items-center justify-between gap-2">
+                    <p id="slug-hint" aria-live="polite" className={`min-h-[1.25rem] text-sm ${msg ? msg.tone : 'text-success-fg'}`}>
+                      {msg ? msg.text : !checking && available ? 'This URL is available.' : ''}
+                    </p>
+                    <span className="shrink-0 text-xs tabular-nums text-muted">{draft.length}/30</span>
+                  </div>
                   <div className="mt-1 flex gap-2">
                     <button
                       type="button"
