@@ -354,31 +354,6 @@ const spaceView = ({ key, name, description, post_policy: postPolicy, reply_poli
   key, name, description, post_policy: postPolicy, reply_policy: replyPolicy,
 });
 
-// Batch-hydrate rows -> serialized items: one query each for authors, members, media, likes (+ cached spaces).
-async function hydrateItems(rows, viewerId) {
-  const ids = rows.map((r) => r.id);
-  const [{ profiles, members }, spaces, media, liked] = await Promise.all([
-    store.loadAuthors(rows.map((r) => r.author_id)), store.listSpaces(), store.loadMediaByPost(ids), store.likedIds(viewerId, 'post', ids),
-  ]);
-  const spaceById = new Map(spaces.map((s) => [s.id, s]));
-  return rows.map((r) => serializeItem(r, {
-    author: profiles.get(r.author_id) || null,
-    member: members.get(r.author_id) || null,
-    space: spaceById.get(r.space_id) || null,
-    media: media.get(r.id) || [],
-    viewer: { liked: liked.has(r.id) },
-  }));
-}
-
-async function hydrateComments(rows, viewerId) {
-  const [{ profiles, members }, liked] = await Promise.all([
-    store.loadAuthors(rows.map((r) => r.author_id)), store.likedIds(viewerId, 'comment', rows.map((r) => r.id)),
-  ]);
-  return rows.map((r) => serializeComment(r, {
-    author: profiles.get(r.author_id) || null, member: members.get(r.author_id) || null, viewer: { liked: liked.has(r.id) },
-  }));
-}
-
 // One over-fetched page -> up to 20 visible rows (after `lead`) and the next cursor.
 // `more` comes from the RAW fetch size (a short raw page is the true end), never from the filtered array.
 // Cursor: if visible overflowed 20, resume after the 20th row (rows 21+ are re-fetched, none skipped);
@@ -419,7 +394,7 @@ const feed = handleRead(async (req, res) => {
   const allPinned = updates ? [] : await store.listPinned();
   const lead = c.cur ? [] : filterVisible(allPinned, ctx);
   const { rows, next } = pageOf(raw, ctx, { exclude: new Set(allPinned.map((p) => p.id)), lead });
-  const items = await hydrateItems(rows, req.user?.id || null);
+  const items = await store.hydrateItems(rows, req.user?.id || null);
   setCache(req, res);
   return res.json({ items, next_cursor: next });
 }, { items: [], next_cursor: null });
@@ -431,7 +406,7 @@ const spaceThreads = handleRead(async (req, res) => {
   if (!c) return null;
   const raw = await store.listFeedRows({ cur: c.cur, limit: FEED_FETCH, spaceId: space.id, sortCol: 'last_activity_at' });
   const { rows, next } = pageOf(raw, await ctxFor(req), { sortCol: 'last_activity_at' });
-  const items = await hydrateItems(rows, req.user?.id || null);
+  const items = await store.hydrateItems(rows, req.user?.id || null);
   setCache(req, res);
   return res.json({ space: spaceView(space), items, next_cursor: next });
 }, { space: null, items: [], next_cursor: null });
@@ -443,7 +418,7 @@ async function commentPage(req, postId, cur) {
   const shown = filterVisibleComments(page, await ctxFor(req));
   const last = page[page.length - 1];
   return {
-    comments: await hydrateComments(shown, req.user?.id || null),
+    comments: await store.hydrateComments(shown, req.user?.id || null),
     next: raw.length > COMMENT_LIMIT ? encodeCursor(last.created_at, last.id) : null,
   };
 }
@@ -461,7 +436,7 @@ const itemDetail = handleRead(async (req, res) => {
   const row = await loadReadable(req, res);
   if (!row) return null;
   const [[item], { comments, next }, spaces] = await Promise.all([
-    hydrateItems([row], req.user?.id || null), commentPage(req, row.id, null), store.listSpaces(),
+    store.hydrateItems([row], req.user?.id || null), commentPage(req, row.id, null), store.listSpaces(),
   ]);
   const space = spaces.find((s) => s.id === row.space_id);
   setCache(req, res);

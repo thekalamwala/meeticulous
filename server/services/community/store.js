@@ -6,6 +6,7 @@
 const { supabaseAdmin } = require('../../config/supabase');
 const { computeIndexable } = require('./indexable');
 const { bustSitemapCache } = require('../../utils/sitemapCache');
+const { serializeItem, serializeComment } = require('./serialize');
 
 const MISSING = /relation .* does not exist|Could not find the table/i;
 const PROFILE_COLS = 'id, is_host, is_verified, created_at, username, name, first_name, profile_image, is_banned';
@@ -237,7 +238,40 @@ async function likedIds(userId, targetType, ids) {
   return new Set((rows || []).map((r) => r.target_id));
 }
 
+// Batch-hydrate rows -> serialized items: one query each for authors, members, media, likes (+ cached spaces).
+async function hydrateItems(rows, viewerId) {
+  const ids = rows.map((r) => r.id);
+  const [{ profiles, members }, spaces, media, liked] = await Promise.all([
+    loadAuthors(rows.map((r) => r.author_id)), listSpaces(), loadMediaByPost(ids), likedIds(viewerId, 'post', ids),
+  ]);
+  const spaceById = new Map(spaces.map((s) => [s.id, s]));
+  return rows.map((r) => serializeItem(r, {
+    author: profiles.get(r.author_id) || null,
+    member: members.get(r.author_id) || null,
+    space: spaceById.get(r.space_id) || null,
+    media: media.get(r.id) || [],
+    viewer: { liked: liked.has(r.id) },
+  }));
+}
+
+async function hydrateComments(rows, viewerId) {
+  const [{ profiles, members }, liked] = await Promise.all([
+    loadAuthors(rows.map((r) => r.author_id)), likedIds(viewerId, 'comment', rows.map((r) => r.id)),
+  ]);
+  return rows.map((r) => serializeComment(r, {
+    author: profiles.get(r.author_id) || null, member: members.get(r.author_id) || null, viewer: { liked: liked.has(r.id) },
+  }));
+}
+
+// Sitemap rows (spec §15): indexable visible items. Banned authors are filtered by the caller
+// (a ban doesn't recompute is_indexable). ponytail: one query, capped by PostgREST max-rows;
+// page with .range() once the community outgrows a single sitemap fetch.
+const listIndexableRows = async () => (await run(db('community_posts')
+  .select('kind, slug, author_id, last_activity_at').eq('status', 'visible').eq('is_indexable', true)
+  .order('last_activity_at', { ascending: false }))) || [];
+
 module.exports = {
+  hydrateItems, hydrateComments, listIndexableRows,
   listSpaces, bannedAuthorIds, listFeedRows, listPinned, getPostBySlug, listCommentRows,
   loadAuthors, loadMediaByPost, likedIds, resetReadCaches,
   linksAllowed, getProfile, getMember, acceptTerms, getSpaceByKey, getSpaceById,

@@ -22,6 +22,10 @@ Disallow: /reset-password
 Disallow: /*/booking/
 # Social-card render target (/og/blog/:slug) — an art board, not a page.
 Disallow: /og/
+# Community: threads/posts/spaces are public; search + saved are per-user/thin.
+Allow: /community/
+Disallow: /community/search
+Disallow: /community/saved
 
 # AI crawlers — explicitly welcomed for PUBLIC content (GEO / AI-search citation),
 # but blocked from the same private + funnel surfaces as everyone else. robots.txt
@@ -52,5 +56,8 @@ Disallow: /forgot-password
 Disallow: /reset-password
 Disallow: /*/booking/
 Disallow: /og/
+Allow: /community/
+Disallow: /community/search
+Disallow: /community/saved
 
 Sitemap: https://meeticulous.com/sitemap.xml

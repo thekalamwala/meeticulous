@@ -21,6 +21,7 @@ Key facts:
 - [Enterprise](https://meeticulous.com/enterprise): For teams, studios and larger practices.
 - [About](https://meeticulous.com/about): The company, mission and the "calm economy" positioning.
 - [Blog](https://meeticulous.com/blog): Product updates and guides.
+- [Community](https://meeticulous.com/community): Public questions, tips and product updates from hosts and guests, organised into spaces (Help, Ideas, Host Corner, General, Updates).
 - [Help](https://meeticulous.com/help): Common questions for hosts and guests, with a full article index at [/help/docs](https://meeticulous.com/help/docs).
 - [Templates](https://meeticulous.com/templates): Free WhatsApp, SMS and email templates for service businesses (confirmations, reminders, payment follow-ups, cancellation policies), including Hindi.
 - [Glossary](https://meeticulous.com/glossary): Plain-English definitions of booking and scheduling terms (buffer time, no-show, advance payment, UPI, GST invoice and more).
