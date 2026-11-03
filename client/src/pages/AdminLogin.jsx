@@ -91,7 +91,7 @@ const PasswordStep = ({ onResult }) => {
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
       </div>
-      <OrangeBtn loading={loading} label="Grant Access" loadingLabel="Verifying…" />
+      <SubmitBtn loading={loading} label="Grant access" loadingLabel="Verifying…" />
     </form>
   );
 };
@@ -141,7 +141,7 @@ const CodeStep = ({ pendingToken, onSuccess }) => {
           Enter the 6-digit code from your authenticator app, or a recovery code.
         </p>
       </div>
-      <OrangeBtn loading={loading} label="Verify" loadingLabel="Verifying…" />
+      <SubmitBtn loading={loading} label="Verify" loadingLabel="Verifying…" />
     </form>
   );
 };
@@ -212,7 +212,7 @@ const EnrollStep = ({ qrDataUrl, secret, pendingToken, onSuccess }) => {
             onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
           />
         </div>
-        <OrangeBtn loading={loading} label="Activate 2FA" loadingLabel="Confirming…" />
+        <SubmitBtn loading={loading} label="Activate 2FA" loadingLabel="Confirming…" />
       </form>
     </div>
   );
@@ -275,7 +275,7 @@ const ChangePasswordStep = ({ changeToken, currentPassword, onDone }) => {
           onChange={(e) => setPw({ ...pw, confirm: e.target.value })}
         />
       </div>
-      <OrangeBtn loading={loading} label="Set password" loadingLabel="Saving…" />
+      <SubmitBtn loading={loading} label="Set password" loadingLabel="Saving…" />
     </form>
   );
 };
