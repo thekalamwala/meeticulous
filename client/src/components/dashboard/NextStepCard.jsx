@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
-import { Wallet, CreditCard, IndianRupee, XCircle } from 'lucide-react';
+import { Wallet, CreditCard, IndianRupee, MessageCircle, XCircle } from 'lucide-react';
 
 // The single ranked "Next step" nudge on the host dashboard. Content is a data-only
 // descriptor from lib/hostNudges.buildNudges. The share nudge renders its own rich
 // hero in Dashboard, so this handles the KYC / legacy / upgrade descriptors.
-const ICONS = { Wallet, CreditCard, IndianRupee };
+const ICONS = { Wallet, CreditCard, IndianRupee, MessageCircle };
 const TONE = {
   emerald: { box: 'border-emerald-200 bg-emerald-50', icon: 'text-emerald-600', cta: 'bg-emerald-600 hover:bg-emerald-700', x: 'text-emerald-500 hover:text-emerald-700' },
   amber:   { box: 'border-amber-200 bg-amber-50',     icon: 'text-amber-600',   cta: 'bg-amber-600 hover:bg-amber-700',     x: 'text-amber-500 hover:text-amber-700' },

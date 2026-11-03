@@ -120,6 +120,7 @@ const Dashboard = () => {
   // / share). Ranking is a pure function over signals already loaded below; `snoozed`
   // (server-tracked) makes a dismiss stick across devices instead of re-nagging. ───
   const [snoozed, setSnoozed] = useState({});
+  const [taste, setTaste] = useState(null); // 60-day Pro taste countdown (free hosts)
   const onFreePlan = isHost && isFreePlan(user?.plan);
   const pendingEarnings = Number(kyc?.pending_earnings) || 0;
   const commissionPaid = useMemo(
@@ -139,7 +140,8 @@ const Dashboard = () => {
     pendingEarnings, payoutsReady: !!kyc?.payouts_ready,
     commissionPaid, hasRealEarning,
     hasUsername: !!user?.username, servicesCount: services.length, bookingsCount: bookings.length,
-  }), snoozed), [onFreePlan, user, kyc, pendingEarnings, commissionPaid, hasRealEarning, services.length, bookings.length, snoozed]);
+    taste,
+  }), snoozed), [onFreePlan, user, kyc, pendingEarnings, commissionPaid, hasRealEarning, services.length, bookings.length, snoozed, taste]);
 
   const dismissNudge = (key) => {
     setSnoozed((s) => ({ ...s, [key]: new Date(Date.now() + 3650 * 86400000).toISOString() })); // optimistic hide
@@ -237,7 +239,7 @@ const Dashboard = () => {
     // Deferred-KYC nudge signal: pending_earnings + payouts_ready. Best-effort.
     getMyKyc().then(({ data }) => setKyc(data)).catch(() => {});
     // Server-tracked nudge snoozes (so a dismiss sticks across devices). Best-effort.
-    getHostNudges().then(({ data }) => setSnoozed(data?.snoozed || {})).catch(() => {});
+    getHostNudges().then(({ data }) => { setSnoozed(data?.snoozed || {}); setTaste(data?.taste || null); }).catch(() => {});
   };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { loadData(); }, [isHost]);

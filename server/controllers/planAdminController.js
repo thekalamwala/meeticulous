@@ -285,4 +285,12 @@ const publicPlans = async (req, res) => {
   }
 };
 
-module.exports = { listPlans, createPlan, updatePlan, setPlanActive, clonePlan, reorderPlans, assignPlan, publicPlans, RULES };
+// ── GET /api/plans/founding (public) — "X of 100 founding spots left" ──
+const foundingSpots = async (req, res) => {
+  const status = await require('../services/foundingSpots').getFoundingStatus();
+  if (!status) return res.status(503).json({ message: 'Founding status unavailable.' });
+  setPublicCache(res, 300);
+  res.json(status);
+};
+
+module.exports = { listPlans, createPlan, updatePlan, setPlanActive, clonePlan, reorderPlans, assignPlan, publicPlans, foundingSpots, RULES };

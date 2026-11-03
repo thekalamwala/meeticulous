@@ -1,42 +1,85 @@
 /**
  * tests/unit/whatsappRemindersGrace.test.js
  *
- * WhatsApp booking reminders are a paid perk. Free (Starter) hosts get them for a
- * grace window (their first 2 months, anchored no earlier than the scaling launch
- * so existing free hosts aren't cut off), then reminders fall back to email. Paid
- * plans always keep WhatsApp.
+ * WhatsApp booking reminders + reschedule alerts are Pro perks. Free (Starter)
+ * hosts get them for a 60-day "Pro taste" counted from their FIRST confirmed
+ * booking (services/proTaste.js). Paid plans always keep them.
  */
-jest.mock('../../config/supabase', () => ({ supabaseAdmin: { from: jest.fn() } }));
+const mockBookings = { rows: [] };
+const mockProfile = { row: null };
+jest.mock('../../config/supabase', () => {
+  const chain = (table) => {
+    const q = {
+      select: () => q, eq: () => q, in: () => q, order: () => q,
+      limit: async () => ({ data: table === 'bookings' ? mockBookings.rows : [] }),
+      maybeSingle: async () => ({ data: mockProfile.row }),
+    };
+    return q;
+  };
+  return { supabaseAdmin: { from: jest.fn((t) => chain(t)) } };
+});
 jest.mock('../../services/notificationEngine', () => ({ send: jest.fn() }));
 jest.mock('../../utils/inAppNotify', () => ({ inAppNotify: jest.fn() }));
 
-const { whatsappRemindersAllowed } = require('../../controllers/bookingController');
+const proTaste = require('../../services/proTaste');
+const { whatsappRemindersAllowed, rescheduleAlertsAllowed } = require('../../controllers/bookingController');
 
-// Fixed "now" AFTER the launch grace window (launch anchor 2026-10-01 + 60d = 2026-11-30).
-// Re-applied per test — the jest config restores mocks between tests, so a beforeAll
-// spy would be wiped before the later cases run.
 const NOW = Date.parse('2027-03-01T00:00:00+05:30');
 let nowSpy;
-beforeEach(() => { nowSpy = jest.spyOn(Date, 'now').mockReturnValue(NOW); });
+beforeEach(() => {
+  nowSpy = jest.spyOn(Date, 'now').mockReturnValue(NOW);
+  proTaste.clearCache();
+  mockBookings.rows = [];
+  mockProfile.row = null;
+});
 afterEach(() => nowSpy.mockRestore());
 
-describe('whatsappRemindersAllowed (free 2-month WhatsApp grace)', () => {
-  test('paid plan → always WhatsApp, regardless of signup age', () => {
-    expect(whatsappRemindersAllowed({ plan: 'premium', created_at: '2020-01-01' })).toBe(true);
-    expect(whatsappRemindersAllowed({ plan: 'creator', created_at: '2020-01-01' })).toBe(true);
+describe('proTaste pure helpers', () => {
+  test('taste ends 60 days after the first booking', () => {
+    expect(proTaste.tasteEndsAt('2027-01-01T00:00:00Z').toISOString()).toBe('2027-03-02T00:00:00.000Z');
+    expect(proTaste.tasteEndsAt(null)).toBeNull();
+  });
+  test('daysLeft counts down and floors at 0', () => {
+    expect(proTaste.daysLeft(new Date(NOW - 55 * 86400000).toISOString(), NOW)).toBe(5);
+    expect(proTaste.daysLeft(new Date(NOW - 90 * 86400000).toISOString(), NOW)).toBe(0);
+    expect(proTaste.daysLeft(null, NOW)).toBeNull();
+  });
+});
+
+describe('whatsappRemindersAllowed (60-day Pro taste from first booking)', () => {
+  test('paid plan → always WhatsApp', async () => {
+    mockBookings.rows = [{ created_at: '2020-01-01' }];
+    expect(await whatsappRemindersAllowed({ plan: 'premium' }, 'h1')).toBe(true);
+    expect(await whatsappRemindersAllowed({ plan: 'creator' }, 'h1')).toBe(true);
   });
 
-  test('free host past the grace window → email fallback (false)', () => {
-    // Created before launch → anchored to 2026-10-01; window ended 2026-11-30, now is later.
-    expect(whatsappRemindersAllowed({ plan: 'free', created_at: '2026-01-01' })).toBe(false);
+  test('free host with no booking yet → taste not started → WhatsApp', async () => {
+    expect(await whatsappRemindersAllowed({ plan: 'free' }, 'h1')).toBe(true);
   });
 
-  test('free host inside their 2-month window → WhatsApp (true)', () => {
-    // Signed up 2027-02-15, within 60 days of the fixed "now" (2027-03-01).
-    expect(whatsappRemindersAllowed({ plan: 'free', created_at: '2027-02-15' })).toBe(true);
+  test('free host inside 60 days of first booking → WhatsApp', async () => {
+    mockBookings.rows = [{ created_at: '2027-02-15T00:00:00+05:30' }];
+    expect(await whatsappRemindersAllowed({ plan: 'free' }, 'h1')).toBe(true);
   });
 
-  test('unknown signup date → do not downgrade (true)', () => {
-    expect(whatsappRemindersAllowed({ plan: 'free' })).toBe(true);
+  test('free host past 60 days of first booking → email fallback', async () => {
+    mockBookings.rows = [{ created_at: '2026-11-01T00:00:00+05:30' }];
+    expect(await whatsappRemindersAllowed({ plan: 'free' }, 'h1')).toBe(false);
+  });
+
+  test('host row without plan column → plan is loaded, Pro keeps WhatsApp', async () => {
+    mockBookings.rows = [{ created_at: '2026-11-01T00:00:00+05:30' }];
+    mockProfile.row = { plan: 'premium', plan_expires_at: null };
+    expect(await whatsappRemindersAllowed({ name: 'x' }, 'h1')).toBe(true);
+  });
+});
+
+describe('rescheduleAlertsAllowed', () => {
+  test('free host past taste → no alerts; inside taste → alerts', async () => {
+    mockBookings.rows = [{ created_at: '2026-11-01T00:00:00+05:30' }];
+    expect(await rescheduleAlertsAllowed({ plan: 'free' }, 'h1')).toBe(false);
+    proTaste.clearCache();
+    mockBookings.rows = [{ created_at: '2027-02-20T00:00:00+05:30' }];
+    expect(await rescheduleAlertsAllowed({ plan: 'free' }, 'h1')).toBe(true);
   });
 });

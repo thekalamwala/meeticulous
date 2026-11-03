@@ -185,6 +185,7 @@ app.use('/api/whatsapp',      require('./routes/whatsappRoutes'));
 app.use('/api/username',      require('./routes/usernameRoutes')); // public resolve (edge 301) + auth check
 app.get('/api/appearance',  require('./controllers/appearanceController').getPublic); // public navbar logo
 app.get('/api/plans',       require('./controllers/planAdminController').publicPlans);
+app.get('/api/plans/founding', require('./controllers/planAdminController').foundingSpots);
 // Public platform config — non-secret flags the client (incl. logged-out marketing
 // pages) reads to gate interim UI. feeOnlyMode drives the "payments launching soon"
 // copy + free-plan hiding; it auto-reverts when the DB flag flips on Route go-live.
@@ -423,6 +424,8 @@ const SCHEDULED_JOBS = [
   { name: 'guest-host-invite', min: 24 * 60, run: () => require('./services/guestHostInvite').processGuestHostInvites() },
   { name: 'profile-completion', min: 12 * 60, run: () => require('./services/profileCompletion').processProfileCompletion() },
   { name: 'birthday', min: 12 * 60, run: () => require('./services/birthdayGreetings').processBirthdays() },
+  // 60-day Pro taste countdown (stages 4–7 of docs/host-lifecycle-nurture.md). Daytime IST only.
+  { name: 'pro-taste-nudges', min: 6 * 60, when: () => { const h = require('./services/crm/coldCallRules').istHour(); return h >= 10 && h < 19; }, run: () => require('./services/proTasteNudges').processProTasteNudges() },
   { name: 'weekly-recap', min: 24 * 60, run: async () => { const r = await require('./services/weeklyHostRecap').sendWeeklyRecaps(); if (r.sent) console.log(`Weekly recap: ${r.sent} sent, ${r.skipped} skipped`); } },
   { name: 'support-insights-digest', min: 24 * 60, run: async () => { const r = await require('./services/supportInsightsDigest').sendWeeklyInsightsDigest(); if (r.sent) console.log(`Support digest: sent to ${r.recipients} recipient(s)`); } },
   { name: 'crm-attribution', min: Number(process.env.CRM_ATTRIBUTION_INTERVAL_MIN) || 60, run: async () => { const r = await crmAttribution.run(); if (r.linked || r.updated) console.log(`CRM attribution: ${r.linked} linked, ${r.updated} refreshed`); } },

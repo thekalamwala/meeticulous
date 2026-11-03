@@ -598,6 +598,7 @@ export const adminGetRazorpay    = ()     => API.get('/admin/settings/payment/ra
 export const adminUpdateRazorpay = (data) => API.put('/admin/settings/payment/razorpay', data);
 export const adminTestRazorpay   = (data) => API.post('/admin/settings/payment/razorpay/test', data);
 export const getPublicPlans    = ()         => API.get('/plans');
+export const getFoundingSpots  = ()         => API.get('/plans/founding');
 
 // ── Admin: Reserved Slugs ────────────────────────────────────
 export const getReservedSlugs     = ()      => API.get('/admin/reserved-slugs');
