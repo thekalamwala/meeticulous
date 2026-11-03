@@ -1374,7 +1374,9 @@ const ServiceBooking = () => {
               <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] gap-5">
                 {/* LEFT: Booking Summary — icon-chip card */}
                 <div className="order-2 lg:order-1">
-                  <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden">
+                  {/* No overflow-hidden: it clipped the Platform-Fee tooltip. The
+                      rounded corners hold via the border — no child bleeds to the edge. */}
+                  <div className="rounded-2xl border border-gray-200 bg-white">
                     <div className="p-4 space-y-0.5">
                       {/* Service */}
                       <div className="flex items-center gap-3 py-2.5">
