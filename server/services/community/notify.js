@@ -7,6 +7,8 @@
 const { supabaseAdmin } = require('../../config/supabase');
 const { inAppNotify } = require('../../utils/inAppNotify');
 const notificationEngine = require('../notificationEngine');
+const { isFeatureEnabled } = require('../featureFlags');
+const { isEarlyAccess } = require('../../middleware/communityGate');
 
 const MAX_MENTIONS = 10;
 const BASE = () => process.env.CLIENT_URL || 'https://meeticulous.com';
@@ -65,6 +67,14 @@ async function deliver(jobs, type) {
   }
 }
 
+// Pre-launch (spec §21: seeding is "unseen"): while `community` is off, only early-access
+// members hear about replies/mentions. One flag read per call; failures fail closed.
+async function launchFilter(ids) {
+  if (await isFeatureEnabled('community').catch(() => false)) return ids;
+  const ok = await Promise.all(ids.map((id) => isEarlyAccess(id).catch(() => false)));
+  return ids.filter((_, i) => ok[i]);
+}
+
 const wantsEmail = (member) => member?.email_replies !== false; // missing member row counts as true
 
 async function parentAuthor(comment) {
@@ -78,7 +88,7 @@ async function onComment({ item, comment, actorId } = {}) {
   try {
     if (!item || !comment) return;
     const parentAuthorId = await parentAuthor(comment);
-    const ids = [...new Set([item.author_id, parentAuthorId].filter((id) => id && id !== actorId))];
+    const ids = await launchFilter([...new Set([item.author_id, parentAuthorId].filter((id) => id && id !== actorId))]);
     if (!ids.length) return;
     const { byId, profiles } = await loadRecipients(ids, [actorId]);
     const actor = displayName(profiles.get(actorId));
@@ -103,14 +113,15 @@ async function onMentions({ item, comment, usernames, actorId } = {}) {
     const found = await rows(supabaseAdmin.from('profiles').select('id, username').in('username', usernames.slice(0, MAX_MENTIONS)));
     // A reply notification for this same comment wins over a mention.
     const replyIds = comment ? new Set([item.author_id, await parentAuthor(comment)]) : new Set();
-    const ids = [...new Set(found.map((p) => p.id))].filter((id) => id !== actorId && !replyIds.has(id)).slice(0, MAX_MENTIONS);
+    const ids = await launchFilter([...new Set(found.map((p) => p.id))].filter((id) => id !== actorId && !replyIds.has(id)).slice(0, MAX_MENTIONS));
     if (!ids.length) return;
     const { byId, profiles } = await loadRecipients(ids, [actorId]);
     const actor = displayName(profiles.get(actorId));
     const link = comment ? `${itemPath(item)}#c-${comment.id}` : itemPath(item);
     const text = comment ? comment.body : (item.title || item.body);
     const jobs = [...byId].map(([userId, { profile, member }]) => ({
-      userId, profile, link, dedupeKey: `community_mention:${userId}:${comment?.id || item.id}`,
+      // Per recipient per hour (not per comment): caps mention-email amplification.
+      userId, profile, link, dedupeKey: `community_mention:${userId}:${hourKey()}`,
       title: `${actor} mentioned you`, body: snippet(text), emailOk: wantsEmail(member),
       emailData: { actor_name: actor, excerpt: snippet(text) },
     }));
@@ -130,7 +141,7 @@ async function onRemoved({ targetType, item, comment } = {}) {
     await deliver([{
       userId: row.author_id, profile: r.profile, dedupeKey: `community_removed:${row.id}`,
       title: `Your ${what} was removed`, body: 'It did not follow the community guidelines.',
-      link: item ? itemPath(item) : '/community', emailOk: true,
+      link: '/community/guidelines', emailOk: true, // the removed item itself 404s/410s
       emailData: { target_label: what },
     }], 'COMMUNITY_CONTENT_REMOVED');
   } catch (e) { console.error('[community-notify]', e.message); }

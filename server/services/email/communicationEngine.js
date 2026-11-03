@@ -38,6 +38,9 @@ const MARKETING_EVENTS = new Set([
   'GUEST_TO_HOST_INVITE',
   'BOOKING_ABANDONED_CUSTOMER',
   'HOST_ADD_SERVICE_NUDGE', 'HOST_SHARE_LINK_NUDGE', 'HOST_FIRST_BOOKING_NUDGE', 'HOST_PAYOUT_WAITING_NUDGE',
+  // Community reply/mention mail honours the unsubscribe list (spec §14); the bell is
+  // separate and stays. COMMUNITY_CONTENT_REMOVED is a moderation notice: always sends.
+  'COMMUNITY_REPLY', 'COMMUNITY_MENTION',
 ]);
 
 const isMarketing = (event) => MARKETING_EVENTS.has(event) || String(event).startsWith('CAMPAIGN:');

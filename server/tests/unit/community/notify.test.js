@@ -13,9 +13,14 @@ jest.mock('../../../config/supabase', () => ({
 }));
 jest.mock('../../../utils/inAppNotify', () => ({ inAppNotify: jest.fn() }));
 jest.mock('../../../services/notificationEngine', () => ({ send: jest.fn(async () => ({})) }));
+jest.mock('../../../services/featureFlags', () => ({ isFeatureEnabled: jest.fn(async () => true) }));
+jest.mock('../../../middleware/communityGate', () => ({ isEarlyAccess: jest.fn(async () => false) }));
 
 const { inAppNotify } = require('../../../utils/inAppNotify');
 const engine = require('../../../services/notificationEngine');
+const { isFeatureEnabled } = require('../../../services/featureFlags');
+const { isEarlyAccess } = require('../../../middleware/communityGate');
+const HK = () => new Date().toISOString().slice(0, 13).replace(/\D/g, '');
 const { onComment, onMentions, onRemoved } = require('../../../services/community/notify');
 
 const prof = (id, o = {}) => ({ id, is_host: false, is_banned: false, first_name: id.toUpperCase(), name: null, username: id, email: `${id.toLowerCase()}@x.com`, ...o });
@@ -25,7 +30,7 @@ const setup = ({ profiles, members = [], comments = [] }) => {
   mockTables.profiles = profiles; mockTables.community_members = members; mockTables.community_comments = comments;
   mockTables.in_app_notifications = [];
 };
-beforeEach(() => { jest.clearAllMocks(); });
+beforeEach(() => { jest.clearAllMocks(); isFeatureEnabled.mockResolvedValue(true); isEarlyAccess.mockResolvedValue(false); });
 
 test('reply: in-app + email for item author', async () => {
   setup({ profiles: [prof('A'), prof('B')] });
@@ -87,7 +92,7 @@ test('mentions: actor skipped, 2 in-app', async () => {
   setup({ profiles: [prof('a'), prof('b'), prof('actor')] });
   await onMentions({ item, comment: null, usernames: ['a', 'b', 'actor'], actorId: 'actor' });
   expect(inAppNotify).toHaveBeenCalledTimes(2);
-  expect(inAppNotify.mock.calls[0][0].dedupeKey).toBe('community_mention:a:P1');
+  expect(inAppNotify.mock.calls[0][0].dedupeKey).toBe(`community_mention:a:${HK()}`);
   expect(engine.send.mock.calls[0][0].event).toBe('COMMUNITY_MENTION');
 });
 
@@ -95,7 +100,7 @@ test('mention of someone who gets the reply: reply wins', async () => {
   setup({ profiles: [prof('B'), prof('x')] });
   await onMentions({ item, comment, usernames: ['B', 'x'], actorId: 'A' });
   expect(inAppNotify.mock.calls.map(([c]) => c.userId)).toEqual(['x']);
-  expect(inAppNotify.mock.calls[0][0].dedupeKey).toBe('community_mention:x:C1');
+  expect(inAppNotify.mock.calls[0][0].dedupeKey).toBe(`community_mention:x:${HK()}`);
 });
 
 test('removed: always emails, dedupe by target', async () => {
@@ -103,6 +108,7 @@ test('removed: always emails, dedupe by target', async () => {
   await onRemoved({ targetType: 'post', item, comment: null });
   expect(inAppNotify.mock.calls[0][0].dedupeKey).toBe('community_removed:P1');
   expect(engine.send.mock.calls[0][0].event).toBe('COMMUNITY_CONTENT_REMOVED');
+  expect(engine.send.mock.calls[0][0].data.emailData.community_url).toMatch(/\/community\/guidelines$/);
 });
 
 test('never rejects', async () => {
@@ -122,4 +128,48 @@ test('removed: still notifies a banned author, never ai or deleted accounts', as
   await onRemoved({ targetType: 'post', item: { ...item, id: 'P2' }, comment: null });
   await onRemoved({ targetType: 'post', item: { ...item, id: 'P3', author_id: null }, comment: null });
   expect(inAppNotify).toHaveBeenCalledTimes(1);
+});
+
+test('mention dedupe is per recipient per hour: a second mention this hour is skipped', async () => {
+  setup({ profiles: [prof('x')] });
+  mockTables.in_app_notifications = [{ dedupe_key: `community_mention:x:${HK()}` }];
+  await onMentions({ item: { ...item, id: 'P9' }, comment: { ...comment, id: 'C9' }, usernames: ['x'], actorId: 'A' });
+  expect(inAppNotify).not.toHaveBeenCalled();
+  expect(engine.send).not.toHaveBeenCalled();
+});
+
+describe('pre-launch (community flag off)', () => {
+  beforeEach(() => { isFeatureEnabled.mockResolvedValue(false); });
+
+  test('mention of a non-early-access user: nothing sent', async () => {
+    setup({ profiles: [prof('x'), prof('A')] });
+    await onMentions({ item, comment, usernames: ['x'], actorId: 'A' });
+    expect(inAppNotify).not.toHaveBeenCalled();
+    expect(engine.send).not.toHaveBeenCalled();
+    expect(isFeatureEnabled).toHaveBeenCalledTimes(1);
+  });
+
+  test('mention of an early-access user: delivered', async () => {
+    isEarlyAccess.mockImplementation(async (id) => id === 'x');
+    setup({ profiles: [prof('x'), prof('y'), prof('A')] });
+    await onMentions({ item, comment, usernames: ['x', 'y'], actorId: 'A' });
+    expect(inAppNotify.mock.calls.map(([c]) => c.userId)).toEqual(['x']);
+    expect(engine.send).toHaveBeenCalledTimes(1);
+  });
+
+  test('reply to a non-early-access author: nothing; early-access author: delivered', async () => {
+    setup({ profiles: [prof('A'), prof('B')] });
+    await onComment({ item, comment, actorId: 'A' });
+    expect(inAppNotify).not.toHaveBeenCalled();
+    isEarlyAccess.mockResolvedValue(true);
+    await onComment({ item, comment, actorId: 'A' });
+    expect(inAppNotify).toHaveBeenCalledTimes(1);
+  });
+
+  test('isEarlyAccess failure counts as not early access', async () => {
+    isEarlyAccess.mockRejectedValue(new Error('db down'));
+    setup({ profiles: [prof('A'), prof('B')] });
+    await onComment({ item, comment, actorId: 'A' });
+    expect(inAppNotify).not.toHaveBeenCalled();
+  });
 });

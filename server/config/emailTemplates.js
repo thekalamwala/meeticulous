@@ -807,12 +807,14 @@ const TEMPLATES = [
     name: 'Community Reply', subject: '{{actor_name}} replied to your {{target_label}}',
     preview_text: '{{actor_name}} replied in the Meeticulous community.',
     email_category: 'Community Update',
-    email_reason: 'You are receiving this email because someone replied to you in the Meeticulous community. You can turn these emails off in your community settings.',
+    email_reason: 'You are receiving this email because someone replied to you in the Meeticulous community. To stop these emails, use the unsubscribe link in this email.',
     html_content:
       h('{{actor_name}} replied to your {{target_label}}') +
       lead('Hi {{first_name}}, here is what they said:') +
       C.infoCard(t, [['Reply', '{{excerpt}}']]) +
-      lead('Join the conversation whenever you are ready.'),
+      lead('Join the conversation whenever you are ready.') +
+      // In the body, not just the footer: the vendor (host) shell has no unsubscribe row.
+      note('Prefer not to get these emails? <a href="{{website_url}}/unsubscribe?u={{unsubscribe_token}}" style="color:#7D6B70;">Unsubscribe</a>.'),
     cta_label: 'View the reply', cta_url: '{{community_url}}',
   }; })(),
 
@@ -821,11 +823,12 @@ const TEMPLATES = [
     name: 'Community Mention', subject: '{{actor_name}} mentioned you',
     preview_text: '{{actor_name}} mentioned you in the Meeticulous community.',
     email_category: 'Community Update',
-    email_reason: 'You are receiving this email because someone mentioned you in the Meeticulous community. You can turn these emails off in your community settings.',
+    email_reason: 'You are receiving this email because someone mentioned you in the Meeticulous community. To stop these emails, use the unsubscribe link in this email.',
     html_content:
       h('{{actor_name}} mentioned you') +
       lead('Hi {{first_name}}, you were mentioned in the community:') +
-      C.infoCard(t, [['Message', '{{excerpt}}']]),
+      C.infoCard(t, [['Message', '{{excerpt}}']]) +
+      note('Prefer not to get these emails? <a href="{{website_url}}/unsubscribe?u={{unsubscribe_token}}" style="color:#7D6B70;">Unsubscribe</a>.'),
     cta_label: 'See the mention', cta_url: '{{community_url}}',
   }; })(),
 
