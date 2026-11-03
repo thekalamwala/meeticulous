@@ -167,7 +167,15 @@ Items previously listed here as pending are now live:
 - **v3.185** (`v3.185_platform_reviews.sql`) — applied 2026-11-03 on the Meeticulous DB and verified
   (14 cols, RLS on / no policies, checks + 2 indexes): `platform_reviews` = reviews OF Meeticulous from
   `/submit-review` (one per signed-in account). Public only when `status='approved'` AND
-  `consent_public`; approved in Admin → Content → Testimonials (`cms.manage`). No migration outstanding.
+  `consent_public`; approved in Admin → Content → Testimonials (`cms.manage`).
+- **v3.186** (`v3.186_lockdown_anon_rpc_and_views.sql`) — applied 2026-11-03 on the Meeticulous DB
+  (founder-approved, verified + advisor clean): revoked anon/authenticated EXECUTE on all 13 `SECURITY
+  DEFINER` functions (service_role only) and made `host_activation` / `host_activation_funnel` /
+  `vendor_metrics` `security_invoker` with no anon/auth access — before this the public anon key could
+  read every host's name/email/phone via `host_activation`. New postgres-owned functions no longer get
+  anon EXECUTE by default: **a function the browser must call needs an explicit GRANT**, and every new
+  view must set `security_invoker = true` (guarded by `tests/unit/lockdownAnonRpcMigration.test.js`).
+  No migration outstanding.
 
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
