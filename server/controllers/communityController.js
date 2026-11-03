@@ -341,7 +341,11 @@ const handleRead = (fn, soft) => async (req, res) => {
 };
 
 // Anonymous = shared cache 60s; logged-in responses carry viewer state, never shared.
-const setCache = (req, res) => (req.user?.id ? res.set('Cache-Control', 'private, no-store') : setPublicCache(res, 60));
+const setCache = (req, res) => {
+  if (req.user?.id) return res.set('Cache-Control', 'private, no-store');
+  res.vary('Authorization'); // a shared cache must not serve this anonymous body to a logged-in caller
+  return setPublicCache(res, 60);
+};
 
 // ponytail: blockedPairs empty in Phase 1 (blocking UI ships later).
 const ctxFor = async (req) => ({ viewerId: req.user?.id || null, bannedAuthorIds: await store.bannedAuthorIds(), blockedPairs: new Set() });
@@ -375,13 +379,17 @@ async function hydrateComments(rows, viewerId) {
   }));
 }
 
-// One over-fetched page -> up to 20 visible rows (after `lead`) and the cursor of the last one.
-function pageOf(raw, ctx, lead = []) {
-  const visible = filterVisible(raw, ctx);
+// One over-fetched page -> up to 20 visible rows (after `lead`) and the next cursor.
+// `more` comes from the RAW fetch size (a short raw page is the true end), never from the filtered array.
+// Cursor: if visible overflowed 20, resume after the 20th row (rows 21+ are re-fetched, none skipped);
+// otherwise every raw row was scanned, so resume after the last RAW row (skipping only invisible ones).
+function pageOf(raw, ctx, { exclude = new Set(), lead = [], sortCol = 'created_at' } = {}) {
+  const visible = filterVisible(raw, ctx).filter((r) => !exclude.has(r.id));
   const rows = visible.slice(0, FEED_LIMIT);
-  const more = visible.length > FEED_LIMIT || raw.length >= FEED_FETCH;
-  const last = rows[rows.length - 1] || raw[raw.length - 1];
-  return { rows: [...lead, ...rows], next: more && last ? encodeCursor(last.created_at, last.id) : null };
+  const overflow = visible.length > FEED_LIMIT;
+  const more = overflow || raw.length >= FEED_FETCH;
+  const last = overflow ? rows[rows.length - 1] : raw[raw.length - 1];
+  return { rows: [...lead, ...rows], next: more && last ? encodeCursor(last[sortCol], last.id) : null };
 }
 
 // -> {cur} (null when absent) or null after answering 400 BAD_CURSOR.
@@ -407,10 +415,10 @@ const feed = handleRead(async (req, res) => {
   const updates = tab === 'updates';
   const updatesSpace = updates ? (await store.listSpaces()).find((s) => s.key === 'updates') : null;
   const raw = await store.listFeedRows({ cur: c.cur, limit: FEED_FETCH, updates, updatesSpaceId: updatesSpace?.id });
-  // Pinned prefix: page 1 of "everyone" only; pinned ids leave the regular page so nothing shows twice.
-  const pinned = !c.cur && !updates ? filterVisible(await store.listPinned(), ctx) : [];
-  const pinnedIds = new Set(pinned.map((p) => p.id));
-  const { rows, next } = pageOf(raw.filter((r) => !pinnedIds.has(r.id)), ctx, pinned);
+  // Pinned prefix: page 1 of "everyone" only; pinned ids leave the regular list on EVERY page so nothing shows twice.
+  const allPinned = updates ? [] : await store.listPinned();
+  const lead = c.cur ? [] : filterVisible(allPinned, ctx);
+  const { rows, next } = pageOf(raw, ctx, { exclude: new Set(allPinned.map((p) => p.id)), lead });
   const items = await hydrateItems(rows, req.user?.id || null);
   setCache(req, res);
   return res.json({ items, next_cursor: next });
@@ -421,8 +429,8 @@ const spaceThreads = handleRead(async (req, res) => {
   if (!space) return fail(res, 404, 'NOT_FOUND');
   const c = readCursor(req, res);
   if (!c) return null;
-  const raw = await store.listFeedRows({ cur: c.cur, limit: FEED_FETCH, spaceId: space.id });
-  const { rows, next } = pageOf(raw, await ctxFor(req));
+  const raw = await store.listFeedRows({ cur: c.cur, limit: FEED_FETCH, spaceId: space.id, sortCol: 'last_activity_at' });
+  const { rows, next } = pageOf(raw, await ctxFor(req), { sortCol: 'last_activity_at' });
   const items = await hydrateItems(rows, req.user?.id || null);
   setCache(req, res);
   return res.json({ space: spaceView(space), items, next_cursor: next });

@@ -32,7 +32,8 @@ const SPACE = { id: 'sp-gen', key: 'general', name: 'General', description: 'd',
 const row = (n, over = {}) => ({
   id: uuid(n), kind: 'post', format: 'text', author_id: ME, space_id: null, title: null, body: `b${n}`, slug: `s${n}`,
   status: 'visible', like_count: 0, comment_count: 0, is_pinned: false, is_indexable: false,
-  created_at: new Date(Date.UTC(2026, 10, 1, 0, 0, 100 - n)).toISOString(), ...over,
+  created_at: new Date(Date.UTC(2026, 10, 1, 0, 0, 100 - n)).toISOString(),
+  last_activity_at: new Date(Date.UTC(2026, 10, 2, 0, 0, 100 - n)).toISOString(), ...over,
 });
 
 function setup({ posts = [], comments = [], banned = [] } = {}) {
@@ -43,7 +44,7 @@ function setup({ posts = [], comments = [], banned = [] } = {}) {
     const pinnedQ = ops.some((o) => o[0] === 'eq' && o[1] === 'is_pinned');
     const slug = (ops.find((o) => o[0] === 'eq' && o[1] === 'slug') || [])[2];
     if (slug) return { data: posts.find((p) => p.slug === slug) || null, error: null };
-    return { data: posts.filter((p) => !!p.is_pinned === pinnedQ), error: null };
+    return { data: pinnedQ ? posts.filter((p) => p.is_pinned) : posts, error: null };
   });
   db.on('community_comments', () => ({ data: comments, error: null }));
   db.on('community_members', (ops) => (ops.some((o) => o[0] === 'gt')
@@ -61,6 +62,7 @@ function call(handler, { user = null, query = {}, params = {} } = {}) {
     const res = { headers: {}, statusCode: 200 };
     res.status = (c) => { res.statusCode = c; return res; };
     res.set = (k, v) => { res.headers[k] = v; return res; };
+    res.vary = (v) => { res.headers.Vary = v; return res; };
     res.json = (body) => resolve({ status: res.statusCode, body, headers: res.headers });
     handler({ user, query, params }, res);
   });
@@ -92,6 +94,7 @@ describe('GET /feed', () => {
     expect(r.body.items.every((i) => i.viewer.liked === false)).toBe(true);
     expect(callsOn('community_reactions')).toHaveLength(0);
     expect(r.headers['Cache-Control']).toMatch(/^public, max-age=60/);
+    expect(r.headers.Vary).toBe('Authorization');
   });
 
   test('logged in: reactions queried exactly once, private cache, liked reflected', async () => {
@@ -105,7 +108,7 @@ describe('GET /feed', () => {
 
   test('page 1 prefixes pinned items without duplicating them; page 2 has no pinned prefix', async () => {
     const pin = row(5, { is_pinned: true });
-    setup({ posts: [pin, row(1), row(5, { is_pinned: false })] });
+    setup({ posts: [pin, row(1)] });
     const p1 = await call(ctrl.feed);
     expect(p1.body.items.map((i) => i.id)).toEqual([uuid(5), uuid(1)]);
     const cursor = encodeCursor(row(1).created_at, uuid(1));
@@ -134,6 +137,61 @@ describe('GET /feed', () => {
     const r = await call(ctrl.feed);
     expect(r.status).toBe(200);
     expect(r.body).toEqual({ items: [], next_cursor: null });
+  });
+});
+
+describe('feed pagination (fix round 1)', () => {
+  test('pins excluded from the regular page do not end pagination', async () => {
+    const posts = Array.from({ length: 25 }, (_, i) => row(i + 1, i < 5 ? { is_pinned: true } : {}));
+    setup({ posts });
+    const { body } = await call(ctrl.feed);
+    expect(body.items).toHaveLength(25); // 5 pinned + 20 regular
+    expect(body.next_cursor).not.toBeNull();
+  });
+
+  test('page 2 excludes a currently-pinned id in its window, and adds no pinned prefix', async () => {
+    setup({ posts: [row(2, { is_pinned: true }), row(3)] });
+    const cursor = encodeCursor(row(1).created_at, uuid(1));
+    const { body } = await call(ctrl.feed, { query: { cursor } });
+    expect(body.items.map((i) => i.id)).toEqual([uuid(3)]);
+  });
+
+  test('short-by-filtering page with a full fetch cursors on the last RAW row, skipping nothing visible', async () => {
+    // 25 raw rows, the last 5 by a banned author -> 20 visible; the cursor must be the 25th raw row.
+    const posts = Array.from({ length: 25 }, (_, i) => row(i + 1, i >= 20 ? { author_id: BAD } : {}));
+    setup({ posts, banned: [BAD] });
+    const { body } = await call(ctrl.feed);
+    expect(body.items).toHaveLength(20);
+    expect(decodeCursor(body.next_cursor).id).toBe(uuid(25));
+  });
+
+  test('tab=updates applies the announcement filter (and the updates space)', async () => {
+    setup({ posts: [row(1, { format: 'announcement' })] });
+    db.on('community_spaces', () => ({ data: [SPACE, { ...SPACE, id: 'sp-up', key: 'updates' }], error: null }));
+    await call(ctrl.feed, { query: { tab: 'updates' } });
+    const ors = callsOn('community_posts').flatMap((c) => c.ops).filter((o) => o[0] === 'or').map((o) => o[1]);
+    expect(ors).toContain('or(space_id.eq.sp-up,format.eq.announcement)');
+  });
+});
+
+describe('GET /spaces/:key/threads', () => {
+  test('orders by last_activity_at and cursors on it', async () => {
+    setup({ posts: Array.from({ length: 25 }, (_, i) => row(i + 1, { kind: 'thread', space_id: 'sp-gen' })) });
+    const { body } = await call(ctrl.spaceThreads, { params: { key: 'general' } });
+    expect(body.space.key).toBe('general');
+    expect(body.items).toHaveLength(20);
+    const q = callsOn('community_posts')[0].ops;
+    expect(q.find((o) => o[0] === 'order')[1]).toBe('last_activity_at');
+    const last = row(20);
+    expect(decodeCursor(body.next_cursor)).toEqual({ ts: last.last_activity_at, id: last.id });
+    await call(ctrl.spaceThreads, { params: { key: 'general' }, query: { cursor: body.next_cursor } });
+    const ors = callsOn('community_posts').flatMap((c) => c.ops).filter((o) => o[0] === 'or').map((o) => o[1]);
+    expect(ors[0]).toContain(`last_activity_at.lt.${last.last_activity_at}`);
+  });
+
+  test('unknown space -> 404', async () => {
+    setup();
+    expect((await call(ctrl.spaceThreads, { params: { key: 'nope' } })).status).toBe(404);
   });
 });
 
@@ -195,6 +253,15 @@ describe('GET /items/:slug', () => {
     setup({ posts: [row(1), row(2, { status: 'deleted' })] });
     expect((await call(ctrl.itemComments, { params: { slug: 's1' }, query: { cursor: '!!' } })).body.code).toBe('BAD_CURSOR');
     expect((await call(ctrl.itemComments, { params: { slug: 's2' } })).status).toBe(410);
+  });
+
+  test('cursored comments page uses an ascending keyset', async () => {
+    setup({ posts: [row(1)], comments: [] });
+    const cursor = encodeCursor(row(1).created_at, uuid(7));
+    const r = await call(ctrl.itemComments, { params: { slug: 's1' }, query: { cursor } });
+    expect(r.body).toEqual({ comments: [], next_cursor: null });
+    const ors = callsOn('community_comments').flatMap((c) => c.ops).filter((o) => o[0] === 'or').map((o) => o[1]);
+    expect(ors).toContain(`created_at.gt.${row(1).created_at},and(created_at.eq.${row(1).created_at},id.gt.${uuid(7)})`);
   });
 
   test('missing table -> 404', async () => {

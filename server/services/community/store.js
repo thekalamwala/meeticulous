@@ -143,9 +143,9 @@ async function refreshIndexable(postId) {
 // ---- Reads (feed / spaces / detail / comments) ----
 const uniq = (a) => [...new Set(a.filter(Boolean))];
 const TTL = 60 * 1000;
-const cache = { spaces: null, banned: null };
+const cache = { spaces: null, banned: null, pinned: null };
 const fresh = (c) => c && Date.now() - c.at < TTL;
-const resetReadCaches = () => { cache.spaces = null; cache.banned = null; };
+const resetReadCaches = () => { cache.spaces = null; cache.banned = null; cache.pinned = null; };
 
 // All active spaces, cached 60s.
 async function listSpaces() {
@@ -168,31 +168,36 @@ async function bannedAuthorIds() {
 }
 
 // `cur` is a decodeCursor() result (strict ISO + UUID), so interpolating it here is safe.
-const keyset = (q, cur, op) => (cur
-  ? q.or(`created_at.${op}.${cur.ts},and(created_at.eq.${cur.ts},id.${op}.${cur.id})`)
+const keyset = (q, cur, op, col = 'created_at') => (cur
+  ? q.or(`${col}.${op}.${cur.ts},and(${col}.eq.${cur.ts},id.${op}.${cur.id})`)
   : q);
 
 // Feed pages, newest first. spaceId = one space's threads; updates = updates space OR announcements.
-async function listFeedRows({ cur, limit, spaceId, updates, updatesSpaceId }) {
+// sortCol: 'created_at' (feed) or 'last_activity_at' (space threads); the cursor encodes that column.
+async function listFeedRows({ cur, limit, spaceId, updates, updatesSpaceId, sortCol = 'created_at' }) {
   let q = db('community_posts').select('*').eq('status', 'visible');
   if (spaceId) q = q.eq('space_id', spaceId).eq('kind', 'thread');
   if (updates) {
     const scope = updatesSpaceId ? `or(space_id.eq.${updatesSpaceId},format.eq.announcement)` : 'format.eq.announcement';
     // One .or() so the scope and keyset groups are ANDed explicitly.
     q = cur
-      ? q.or(`and(${scope},or(created_at.lt.${cur.ts},and(created_at.eq.${cur.ts},id.lt.${cur.id})))`)
+      ? q.or(`and(${scope},or(${sortCol}.lt.${cur.ts},and(${sortCol}.eq.${cur.ts},id.lt.${cur.id})))`)
       : q.or(scope);
   } else {
-    q = keyset(q, cur, 'lt');
+    q = keyset(q, cur, 'lt', sortCol);
   }
-  return (await run(q.order('created_at', { ascending: false }).order('id', { ascending: false }).limit(limit))) || [];
+  return (await run(q.order(sortCol, { ascending: false }).order('id', { ascending: false }).limit(limit))) || [];
 }
 
+// Currently pinned posts, cached 60s (a pin expiring mid-window is fine for a minute).
 async function listPinned(limit = 5) {
+  if (fresh(cache.pinned)) return cache.pinned.v;
   const nowIso = new Date().toISOString();
-  return (await run(db('community_posts').select('*').eq('status', 'visible').eq('is_pinned', true)
+  const v = (await run(db('community_posts').select('*').eq('status', 'visible').eq('is_pinned', true)
     .or(`pinned_until.is.null,pinned_until.gt.${nowIso}`)
     .order('created_at', { ascending: false }).limit(limit))) || [];
+  cache.pinned = { at: Date.now(), v };
+  return v;
 }
 
 const getPostBySlug = (slug) => run(db('community_posts').select('*').eq('slug', slug).maybeSingle());
