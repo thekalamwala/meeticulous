@@ -290,7 +290,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full rules. Key rules:
 | Add a new admin section | `controllers/adminController.js` + `routes/adminRoutes.js` + `pages/admin/` |
 | Change platform fee | `platform_settings` table (admin UI) → `platformConfig.js` |
 | Add a notification event | `notification_events` DB table + `notificationEngine.js` |
-| Add an email template | `emailTemplates.js` + `seedEmailTemplates.js` + run seed |
+| Add an email template | `emailTemplates.js` — synced to the DB on every prod deploy (`services/email/templateSync.js`) |
 | Add a badge rule | Admin UI → `AdminBadges.jsx` → badge rule builder |
 | Debug slow queries | `server/coverage/lcov-report/` or Supabase dashboard |
 
