@@ -36,6 +36,17 @@ const hasEarlyAccess = (m) => !!m && (!!m.early_access || BADGED.includes(m.badg
 
 const isEarlyAccess = async (userId) => hasEarlyAccess(await loadMember({ user: { id: userId } }));
 
+const isBanned = (m) => !!m?.banned_until && new Date(m.banned_until).getTime() > Date.now();
+
+// Upload exemption for folder=community: the write chain (communityGate + requireWrites +
+// ban) minus terms. Early access passes both flags; a community ban always blocks.
+const canCommunityUpload = async (userId) => {
+  const m = await loadMember({ user: { id: userId } });
+  if (isBanned(m)) return false;
+  if (hasEarlyAccess(m)) return true;
+  return (await isFeatureEnabled('community')) && (await isFeatureEnabled('community_writes'));
+};
+
 const communityGate = async (req, res, next) => {
   try {
     if (await isFeatureEnabled('community')) return next();
@@ -59,7 +70,7 @@ const requireTerms = async (req, res, next) => {
   try {
     const m = await loadMember(req);
     // Ban first, so a banned user always sees COMMUNITY_BANNED.
-    if (m && m.banned_until && new Date(m.banned_until).getTime() > Date.now()) {
+    if (isBanned(m)) {
       return res.status(403).json({ code: 'COMMUNITY_BANNED' });
     }
     // NULL terms_version (trigger-created row) or no row = terms not accepted.
@@ -95,6 +106,7 @@ module.exports = {
   requireWrites,
   requireTerms,
   isEarlyAccess,
+  canCommunityUpload,
   postLimiter,
   commentLimiter,
   reactionLimiter,

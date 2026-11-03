@@ -55,6 +55,33 @@ describe('uploadImage community folder', () => {
     await uploadImage(req('services'), r);
     expect(r.status).toHaveBeenCalledWith(403);
   });
+  test('community on but community_writes off + plain guest -> 403', async () => {
+    isFeatureEnabled.mockImplementation(async (k) => k === 'community');
+    const r = res();
+    await uploadImage(req('community'), r);
+    expect(r.status).toHaveBeenCalledWith(403);
+  });
+  test('community_writes off + early-access guest -> not 403', async () => {
+    isFeatureEnabled.mockImplementation(async (k) => k === 'community');
+    supabaseAdmin.__state.member = { early_access: true };
+    const r = res();
+    await uploadImage(req('community'), r);
+    expect(r.status).not.toHaveBeenCalledWith(403);
+  });
+  test('flags on + community-banned member -> 403 (even with early access)', async () => {
+    isFeatureEnabled.mockResolvedValue(true);
+    supabaseAdmin.__state.member = { early_access: true, banned_until: new Date(Date.now() + 864e5).toISOString() };
+    const r = res();
+    await uploadImage(req('community'), r);
+    expect(r.status).toHaveBeenCalledWith(403);
+  });
+  test('flags on + expired ban -> not 403', async () => {
+    isFeatureEnabled.mockResolvedValue(true);
+    supabaseAdmin.__state.member = { banned_until: new Date(Date.now() - 864e5).toISOString() };
+    const r = res();
+    await uploadImage(req('community'), r);
+    expect(r.status).not.toHaveBeenCalledWith(403);
+  });
   test('flag on + no user + community -> 403', async () => {
     isFeatureEnabled.mockResolvedValue(true);
     const r = res();

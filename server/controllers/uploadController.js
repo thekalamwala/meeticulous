@@ -1,7 +1,6 @@
 const { supabaseAdmin } = require('../config/supabase');
 const { safeError } = require('../utils/httpError');
-const { isFeatureEnabled } = require('../services/featureFlags');
-const { isEarlyAccess } = require('../middleware/communityGate');
+const { canCommunityUpload } = require('../middleware/communityGate');
 
 const MAX_SIZE_BYTES = 2 * 1024 * 1024; // 2MB
 const ALLOWED_FOLDERS = ['profiles', 'covers', 'services', 'branding', 'products', 'community'];
@@ -72,13 +71,13 @@ const uploadImage = async (req, res) => {
     // Authorization: only vendors (hosts) and admins may upload — stops a guest
     // account being used as free file hosting. Admin sessions (req.admin) pass.
     // Exception: folder=community lets any logged-in account attach images to
-    // community posts (guests included) once the community is live (flag on) or
-    // for early-access/staff testers; otherwise the normal host check applies.
+    // community posts (guests included) under the same rule as community writes
+    // (community + community_writes flags, or early access/staff) unless
+    // community-banned; otherwise the normal host check applies.
     // The file-content, size and folder allowlist checks below still apply.
     let communityUpload = false;
     if (req.query.folder === 'community' && req.user?.id) {
-      communityUpload = (await isFeatureEnabled('community').catch(() => false))
-        || (await isEarlyAccess(req.user.id).catch(() => false));
+      communityUpload = await canCommunityUpload(req.user.id).catch(() => false);
     }
     if (!req.admin && !communityUpload) {
       const { data: prof } = await supabaseAdmin
