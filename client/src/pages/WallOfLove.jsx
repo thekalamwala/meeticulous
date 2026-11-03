@@ -1,25 +1,23 @@
 /**
- * WallOfLove.jsx — multi-platform social-proof wall.
+ * WallOfLove.jsx — social proof wall.
  * Route: /wall-of-love (renders inside app chrome — global <Navbar/>).
  *
- * Content comes from client/src/data/wallOfLove.js — REAL, CONSENTED hosts only.
- * YouTube is intentionally rendered as empty placeholder boxes until real video
- * stories exist (no fabricated videos). Do not hardcode invented testimonials
- * here; edit the data file.
+ * Two honest sources only:
+ *   1. Verified reviews — signed-in accounts via /submit-review, admin-approved,
+ *      published with consent (GET /api/platform-reviews).
+ *   2. Host stories — client/src/data/wallOfLove.js: real hosts, quotes written
+ *      with them and approved word-for-word. Shown as plain cards, never styled
+ *      as X / Google / LinkedIn / Instagram posts (they weren't posted there),
+ *      with no stars, likes or other engagement numbers.
+ * Do not hardcode invented testimonials here; edit the data file.
  */
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Heart, MessageCircle, Repeat2, ThumbsUp, Share2, Send, Bookmark, Play, ArrowRight, BadgeCheck,
-} from 'lucide-react';
+import { Heart, BadgeCheck } from 'lucide-react';
 import Seo from '../components/common/Seo';
 import { getPlatformReviews } from '../services/api';
 import { collectionPageJsonLd, breadcrumbJsonLd, SITE_URL } from '../utils/seo';
-import {
-  WALL_TWEETS, WALL_GOOGLE, WALL_LINKEDIN, WALL_INSTAGRAM, WALL_YOUTUBE_PLACEHOLDERS,
-} from '../data/wallOfLove';
-
-const BRAND = (name) => `/assets/brands/${name}.svg`;
+import { WALL_STORIES } from '../data/wallOfLove';
 
 // Avatar tint → our accent tokens (design-tokens.css / tailwind c-*).
 const TINT = {
@@ -29,14 +27,6 @@ const TINT = {
   blue: 'bg-c-blue/10 text-c-blue',
 };
 
-const PLATFORMS = [
-  { key: 'twitter', label: 'Twitter / X', brand: 'x' },
-  { key: 'google', label: 'Google', brand: 'google' },
-  { key: 'linkedin', label: 'LinkedIn', brand: 'linkedin' },
-  { key: 'youtube', label: 'YouTube', brand: 'youtube' },
-  { key: 'instagram', label: 'Instagram', brand: 'instagram' },
-];
-
 function Avatar({ children, tint, size = 'h-9 w-9 text-[11px]' }) {
   return (
     <span className={`grid ${size} shrink-0 place-items-center rounded-full font-heading font-bold ${TINT[tint]}`}>
@@ -45,123 +35,22 @@ function Avatar({ children, tint, size = 'h-9 w-9 text-[11px]' }) {
   );
 }
 
-function UserRow({ r, sub }) {
-  return (
-    <div className="flex items-center gap-2.5">
-      <Avatar tint={r.tint}>{r.avatar}</Avatar>
-      <div className="min-w-0 flex-1">
-        <div className="truncate font-heading text-[13px] font-bold text-ink">{r.name}</div>
-        <div className="truncate text-[11px] text-muted">{sub}</div>
-      </div>
-    </div>
-  );
-}
-
 const CARD = 'rounded-xl border-2 border-ink/10 bg-surface shadow-sm transition hover:-translate-y-0.5 hover:shadow-md';
 
-function TweetCard({ r }) {
+// Host story — a real host's approved quote. Plain card on purpose: no platform
+// branding, stars or engagement numbers (see the header note).
+function StoryCard({ r }) {
   return (
-    <article className={`flex min-h-[280px] flex-col p-5 ${CARD}`}>
-      <div className="flex items-start justify-between gap-4">
-        <UserRow r={r} sub={r.handle} />
-        <img src={BRAND('x')} alt="X" className="h-5 w-5 shrink-0" />
-      </div>
-      <p className="mt-5 text-[13px] leading-relaxed text-ink">{r.text}</p>
-      <div className="mt-auto pt-5 text-[11px] text-muted">{r.date}</div>
-      <div className="mt-3 flex items-center gap-6 border-t-2 border-ink/5 pt-3 text-[11px] text-muted">
-        <span className="inline-flex items-center gap-1.5"><MessageCircle className="h-3.5 w-3.5" />{r.stats.r}</span>
-        <span className="inline-flex items-center gap-1.5"><Repeat2 className="h-3.5 w-3.5" />{r.stats.rt}</span>
-        <span className="inline-flex items-center gap-1.5"><Heart className="h-3.5 w-3.5" />{r.stats.l}</span>
-      </div>
-    </article>
-  );
-}
-
-function GoogleCard({ r }) {
-  return (
-    <article className={`flex min-h-[280px] flex-col p-5 ${CARD}`}>
-      <div className="flex items-start justify-between gap-4">
-        <UserRow r={r} sub={r.meta} />
-        <img src={BRAND('google')} alt="Google" className="h-5 w-5 shrink-0" />
-      </div>
-      <div className="mt-4 flex items-center gap-2">
-        <span className="text-sm tracking-wide text-secondary">{'★★★★★'}</span>
-        <span className="text-[11px] text-muted">{r.age}</span>
-      </div>
-      <p className="mt-3 text-[13px] leading-relaxed text-ink">{r.text}</p>
-      <div className="mt-auto flex justify-between pt-5 text-[11px] text-muted">
-        <span className="inline-flex items-center gap-1.5"><ThumbsUp className="h-3.5 w-3.5" />{r.helpful}</span>
-        <span className="inline-flex items-center gap-1.5"><Share2 className="h-3.5 w-3.5" />Share</span>
-      </div>
-    </article>
-  );
-}
-
-function LinkedinCard({ r }) {
-  return (
-    <article className={`flex min-h-[330px] flex-col p-5 ${CARD}`}>
-      <div className="flex items-start justify-between gap-4">
-        <UserRow r={{ ...r, name: `${r.name} · 2nd` }} sub={r.role} />
-        <img src={BRAND('linkedin')} alt="LinkedIn" className="h-5 w-5 shrink-0" />
-      </div>
-      <p className="mt-5 whitespace-pre-line text-[13px] leading-relaxed text-ink">{r.text}</p>
-      <div className="mt-auto flex justify-between pt-5 text-[11px] text-muted">
-        <div className="flex items-center gap-1.5">
-          <span className="grid h-4 w-4 place-items-center rounded-full bg-c-blue text-[7px] text-white">{'♥'}</span>
-          <span className="grid h-4 w-4 place-items-center rounded-full bg-c-pink text-[7px] text-white">{'♥'}</span>
-          <span>{r.likes}</span>
+    <figure className={`flex min-h-[200px] flex-col p-5 ${CARD}`}>
+      <blockquote className="text-[13px] leading-relaxed text-ink">&ldquo;{r.text}&rdquo;</blockquote>
+      <figcaption className="mt-auto flex items-center gap-2.5 pt-5">
+        <Avatar tint={r.tint}>{r.avatar}</Avatar>
+        <div className="min-w-0 flex-1">
+          <div className="truncate font-heading text-[13px] font-bold text-ink">{r.name}</div>
+          <div className="truncate text-[11px] text-muted">{r.role}</div>
         </div>
-        <span>{r.comments} comments</span>
-      </div>
-      <div className="mt-3 flex justify-between border-t-2 border-ink/5 pt-3 text-[11px] font-medium text-muted">
-        <span>Like</span><span>Comment</span><span>Share</span>
-      </div>
-    </article>
-  );
-}
-
-// YouTube placeholder — an empty, clearly-unpopulated tile. No fabricated video.
-// Rendered until real video stories exist (see WALL_YOUTUBE_PLACEHOLDERS).
-function YoutubePlaceholder() {
-  return (
-    <div className="group block" aria-hidden="true">
-      <div className="relative flex aspect-video items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-ink/10 bg-ink/[0.03]">
-        <span className="grid h-12 w-12 place-items-center rounded-full bg-ink/5 text-muted">
-          <Play className="h-5 w-5" />
-        </span>
-      </div>
-      <div className="pt-3">
-        <div className="h-3 w-3/4 rounded bg-ink/5" />
-        <div className="mt-2 h-2.5 w-1/2 rounded bg-ink/5" />
-      </div>
-    </div>
-  );
-}
-
-function InstagramCard({ r }) {
-  return (
-    <article className={`overflow-hidden ${CARD}`}>
-      <div className="flex h-12 items-center justify-between gap-2.5 px-3.5">
-        <div className="flex items-center gap-2.5">
-          <Avatar tint={r.tint} size="h-7 w-7 text-[8px]">{r.avatar}</Avatar>
-          <span className="font-heading text-[11px] font-bold text-ink">{r.handle}</span>
-        </div>
-        <img src={BRAND('instagram')} alt="Instagram" className="h-5 w-5 shrink-0" />
-      </div>
-      <div className={`flex aspect-[1/0.83] items-center p-6 ${r.bg}`}>
-        <div className="max-w-[85%] whitespace-pre-line font-heading text-xl font-bold leading-tight">
-          {r.copy}
-          <span className={`mt-2.5 block text-[10px] font-medium ${r.tag}`}>@meeticulous</span>
-        </div>
-      </div>
-      <div className="flex items-center justify-between px-4 py-3.5">
-        <div className="flex gap-3 text-ink">
-          <Heart className="h-[18px] w-[18px]" /><MessageCircle className="h-[18px] w-[18px]" /><Send className="h-[18px] w-[18px]" />
-        </div>
-        <Bookmark className="h-[18px] w-[18px] text-ink" />
-      </div>
-      <div className="px-4 pb-3.5 text-[11px] font-medium text-ink">{r.likes} likes</div>
-    </article>
+      </figcaption>
+    </figure>
   );
 }
 
@@ -215,39 +104,7 @@ function VerifiedReviews({ data }) {
   );
 }
 
-function Section({ platform, children }) {
-  return (
-    <section className="mt-16 first:mt-0">
-      <div className="mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <img src={BRAND(platform.brand)} alt={platform.label} className="h-7 w-7" />
-          <h2 className="font-heading text-xl font-bold tracking-tight text-ink sm:text-2xl">{platform.label}</h2>
-        </div>
-        {platform.key === 'youtube' ? (
-          <span className="text-[11px] font-medium text-muted">Video stories coming soon</span>
-        ) : (
-          <a href="#" className="inline-flex items-center gap-2 text-[11px] font-medium text-muted transition hover:text-ink">
-            <span className="hidden sm:inline">View more on {platform.label}</span>
-            <ArrowRight className="h-3.5 w-3.5" />
-          </a>
-        )}
-      </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">{children}</div>
-    </section>
-  );
-}
-
-const RENDERERS = {
-  twitter: () => WALL_TWEETS.map((r) => <TweetCard key={r.name} r={r} />),
-  google: () => WALL_GOOGLE.map((r) => <GoogleCard key={r.name} r={r} />),
-  linkedin: () => WALL_LINKEDIN.map((r) => <LinkedinCard key={r.name} r={r} />),
-  youtube: () => Array.from({ length: WALL_YOUTUBE_PLACEHOLDERS }, (_, i) => <YoutubePlaceholder key={i} />),
-  instagram: () => WALL_INSTAGRAM.map((r) => <InstagramCard key={r.handle} r={r} />),
-};
-
 export default function WallOfLove() {
-  const [filter, setFilter] = useState('all');
-  const visible = PLATFORMS.filter((p) => filter === 'all' || filter === p.key);
   const [verified, setVerified] = useState(null);
   useEffect(() => {
     getPlatformReviews().then(({ data }) => setVerified(data)).catch(() => { /* wall still renders */ });
@@ -257,7 +114,7 @@ export default function WallOfLove() {
     <div className="min-h-screen bg-canvas px-4 pb-24 pt-12 sm:pt-16">
       <Seo
         title="Wall of Love — Meeticulous"
-        description="Real words from Meeticulous hosts who publish services, get booked, and get paid — across X, Google, LinkedIn and Instagram."
+        description="Verified reviews and real stories from Meeticulous hosts who publish services, get booked, and get paid."
         canonical={`${SITE_URL}/wall-of-love`}
         jsonLd={[
           collectionPageJsonLd({
@@ -283,35 +140,19 @@ export default function WallOfLove() {
         </p>
       </header>
 
-      {/* Filters */}
-      <div className="mx-auto mt-10 flex max-w-4xl flex-nowrap items-center justify-start gap-2 overflow-x-auto pb-2 [scrollbar-width:none] sm:flex-wrap sm:justify-center sm:overflow-visible [&::-webkit-scrollbar]:hidden">
-        <button
-          type="button"
-          onClick={() => setFilter('all')}
-          className={`inline-flex h-10 shrink-0 items-center gap-2 rounded-full border-2 bg-surface px-4 font-heading text-xs font-semibold text-ink transition hover:-translate-y-0.5 ${filter === 'all' ? 'border-primary shadow-sm' : 'border-ink/10'}`}
-        >
-          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-          All
-        </button>
-        {PLATFORMS.map((p) => (
-          <button
-            key={p.key}
-            type="button"
-            onClick={() => setFilter(p.key)}
-            className={`inline-flex h-10 shrink-0 items-center gap-2 rounded-full border-2 bg-surface px-4 font-heading text-xs font-semibold text-ink transition hover:-translate-y-0.5 ${filter === p.key ? 'border-primary shadow-sm' : 'border-ink/10'}`}
-          >
-            <img src={BRAND(p.brand)} alt="" className="h-4 w-4" />
-            {p.label}
-          </button>
-        ))}
-      </div>
-
       {/* Wall */}
       <main className="mx-auto mt-14 max-w-6xl">
-        {filter === 'all' && verified?.count > 0 && <VerifiedReviews data={verified} />}
-        {visible.map((p) => (
-          <Section key={p.key} platform={p}>{RENDERERS[p.key]()}</Section>
-        ))}
+        {verified?.count > 0 && <VerifiedReviews data={verified} />}
+
+        <section>
+          <div className="mb-6">
+            <h2 className="font-heading text-xl font-bold tracking-tight text-ink sm:text-2xl">Host stories</h2>
+            <p className="mt-1 text-[12px] text-muted">Written with each host and published with their approval.</p>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {WALL_STORIES.map((r) => <StoryCard key={r.name} r={r} />)}
+          </div>
+        </section>
 
         {/* Bottom CTA */}
         <section className="relative mt-20 rounded-xl border-2 border-ink/10 bg-sand px-8 pb-10 pt-12 text-center">
