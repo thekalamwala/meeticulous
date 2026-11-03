@@ -476,15 +476,10 @@ const updateProfile = async (req, res) => {
     // admin SEO route is unchanged — this only lets a host set their own flag.
     if (is_indexable !== undefined) updates.is_indexable = !!is_indexable;
 
-    // A change to any field the OG share card renders marks it stale; the next
-    // generateHostOgImages sweep regenerates. Safe to set on a 'none' row too:
-    // the generator gates on card-ready and skips non-ready rows, and og_hash
-    // resets an unchanged row back to 'ready' without re-rendering.
-    // ponytail: doesn't diff old vs new value — a same-value save marks dirty,
-    // but og_hash makes that a cheap no-op regen, not a wasted render.
-    const OG_CARD_FIELDS = ['name', 'profile_image', 'profession', 'bio', 'username'];
-    if (OG_CARD_FIELDS.some((f) => f in updates)) updates.og_status = 'dirty';
-
+    // No OG-card dirty-marking: the host share card is now a stateless Cloudinary
+    // URL (services/seo/hostOgCard), composited on crawl from live profile fields,
+    // so a profile edit needs no regen — the URL just re-resolves. (The old v3.88
+    // og_status/og_hash state machine + generateHostOgImages sweep are gone.)
     let result = await supabaseAdmin
       .from("profiles")
       .update(updates)
