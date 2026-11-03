@@ -3,7 +3,6 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AuthBrandPanel from "../components/auth/AuthBrandPanel";
 import AuthMobilePattern from "../components/auth/AuthMobilePattern";
-import WhatsNewLink from "../components/auth/WhatsNewLink";
 import Seo from "../components/common/Seo";
 import toast from "react-hot-toast";
 
@@ -111,7 +110,7 @@ const HostLogin = () => {
   };
 
   return (
-    <div className="relative grid h-[calc(100dvh-57px)] w-full overflow-hidden lg:grid-cols-[1.05fr_1fr]">
+    <div className="relative grid h-[100dvh] w-full overflow-hidden lg:grid-cols-[1.05fr_1fr]">
       <Seo title="Host login — Meeticulous" robots="noindex,nofollow" />
       <AuthMobilePattern />
       {/* ── LEFT · colourful brand panel (lg+ only) ──────────────────────────── */}
@@ -119,8 +118,8 @@ const HostLogin = () => {
 
       {/* ── RIGHT · login card + outside-the-box link ────────────────────────── */}
       <main className="relative z-10 flex flex-col items-center justify-center overflow-y-auto px-5 py-4">
-        <div className="page-card w-full max-w-md p-6 text-center sm:p-8">
-          <Logo className="mx-auto h-14 w-14" />
+        <div className="w-full max-w-md p-6 text-center sm:p-8">
+          <Logo className="mx-auto h-14 w-14 lg:hidden" />
 
         <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-cta">
           Host login
@@ -160,9 +159,6 @@ const HostLogin = () => {
             <Link to="/become-a-host" className="font-semibold text-primary hover:underline">Sign up as a Host</Link>
           </p>
         </div>
-
-        {/* Outside the card */}
-        <WhatsNewLink className="mt-6" />
       </main>
     </div>
   );

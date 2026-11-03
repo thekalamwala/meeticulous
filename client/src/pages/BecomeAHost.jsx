@@ -4,7 +4,6 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import AuthBrandPanel from '../components/auth/AuthBrandPanel';
 import AuthMobilePattern from '../components/auth/AuthMobilePattern';
-import WhatsNewLink from '../components/auth/WhatsNewLink';
 import Seo from '../components/common/Seo';
 import { ogCard } from '../config/ogImages';
 import { SITE_URL } from '../utils/seo';
@@ -87,8 +86,8 @@ const BecomeAHost = () => {
 
       {/* ── RIGHT · signup card ──────────────────────────────────────────────── */}
       <main className="relative z-10 flex flex-col items-center justify-center overflow-y-auto px-5 py-4">
-        <div className="page-card relative w-full max-w-lg overflow-hidden p-5 text-center sm:p-7">
-          <Link to="/" aria-label="Meeticulous — home" className="inline-block">
+        <div className="w-full max-w-lg p-5 text-center sm:p-7">
+          <Link to="/" aria-label="Meeticulous — home" className="inline-block lg:hidden">
             <Logo className="mx-auto h-12 w-12" />
           </Link>
 
@@ -155,9 +154,6 @@ const BecomeAHost = () => {
             <Link to="/login-as-vendor" className="font-semibold text-primary hover:underline">Log in</Link>
           </p>
         </div>
-
-        {/* Outside the card */}
-        <WhatsNewLink className="mt-4" />
       </main>
     </div>
   );

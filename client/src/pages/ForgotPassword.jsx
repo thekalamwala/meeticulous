@@ -4,13 +4,12 @@ import { forgotPassword } from "../services/api";
 import toast from "react-hot-toast";
 import AuthBrandPanel from "../components/auth/AuthBrandPanel";
 import AuthMobilePattern from "../components/auth/AuthMobilePattern";
-import WhatsNewLink from "../components/auth/WhatsNewLink";
 import Seo from "../components/common/Seo";
 
 // Shared split-panel shell so this page reads as one family with the login
 // doors: crimson brand panel on lg+, card on the right, ee ribbon on mobile.
 const Shell = ({ children }) => (
-  <div className="relative grid h-[calc(100dvh-57px)] w-full overflow-hidden lg:grid-cols-[1.05fr_1fr]">
+  <div className="relative grid h-[100dvh] w-full overflow-hidden lg:grid-cols-[1.05fr_1fr]">
     <Seo title="Forgot password — Meeticulous" robots="noindex,nofollow" />
     <AuthMobilePattern />
     <AuthBrandPanel
@@ -19,8 +18,7 @@ const Shell = ({ children }) => (
       points={["Secure reset", "Code expires in 10 min", "Prefer Google? Just log in"]}
     />
     <main className="relative z-10 flex flex-col items-center justify-center overflow-y-auto px-5 py-4">
-      <div className="page-card w-full max-w-md p-6 sm:p-8">{children}</div>
-      <WhatsNewLink className="mt-6" />
+      <div className="w-full max-w-md p-6 sm:p-8">{children}</div>
     </main>
   </div>
 );
@@ -79,7 +77,7 @@ const ForgotPassword = () => {
 
   return (
     <Shell>
-      <img src="/brand/ee-rounded-primary.svg" alt="Meeticulous" className="mb-5 h-11 w-11" />
+      <img src="/brand/ee-rounded-primary.svg" alt="Meeticulous" className="mb-5 h-11 w-11 lg:hidden" />
       <h1 className="font-display text-maroon text-2xl font-bold mb-2">Forgot password?</h1>
       <p className="mb-6 text-sm text-muted">
         Enter your email and we'll send you a 6-digit code to reset your password.

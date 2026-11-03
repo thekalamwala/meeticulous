@@ -4,7 +4,6 @@ import { useAuth } from "../context/AuthContext";
 import { sendOtp } from "../services/api";
 import AuthBrandPanel from "../components/auth/AuthBrandPanel";
 import AuthMobilePattern from "../components/auth/AuthMobilePattern";
-import WhatsNewLink from "../components/auth/WhatsNewLink";
 import Seo from "../components/common/Seo";
 import toast from "react-hot-toast";
 
@@ -104,7 +103,7 @@ const Login = () => {
   }, [otp, step]);
 
   return (
-    <div className="relative grid h-[calc(100dvh-57px)] w-full overflow-hidden lg:grid-cols-[1.05fr_1fr]">
+    <div className="relative grid h-[100dvh] w-full overflow-hidden lg:grid-cols-[1.05fr_1fr]">
       <Seo title="Log in — Meeticulous" robots="noindex,nofollow" />
       <AuthMobilePattern />
       {/* ── LEFT · crimson brand-art panel (lg+ only) ── */}
@@ -116,8 +115,8 @@ const Login = () => {
 
       {/* ── RIGHT · OTP card + outside-the-box link ── */}
       <main className="relative z-10 flex flex-col items-center justify-center overflow-y-auto px-5 py-4">
-        <div className="page-card w-full max-w-md p-6 sm:p-8">
-          <Logo className="mb-5 h-12 w-12" />
+        <div className="w-full max-w-md p-6 sm:p-8">
+          <Logo className="mb-5 h-12 w-12 lg:hidden" />
         {/* STEP: WhatsApp number */}
         {step === "phone" && (
           <>
@@ -189,9 +188,6 @@ const Login = () => {
           </>
         )}
         </div>
-
-        {/* Outside the card */}
-        <WhatsNewLink className="mt-6" />
       </main>
     </div>
   );
