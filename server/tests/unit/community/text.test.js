@@ -81,7 +81,11 @@ describe('makeSlug / mentions / urls', () => {
     expect(t.makeSlug('a'.repeat(100)).length).toBeLessThanOrEqual(60 + 7);
   });
   test('mentions', () => {
-    expect(t.extractMentions('hi @Priya_K and @priya_k')).toEqual(['priya_k']);
+    expect(t.extractMentions('hi @Priya-K and @priya-k')).toEqual(['priya-k']);
+    expect(t.extractMentions('@priya-sharma and @user-98765')).toEqual(['priya-sharma', 'user-98765']);
+    expect(t.extractMentions('hi @Priya-K.')).toEqual(['priya-k']);
+    expect(t.extractMentions('thanks @priya-, see you')).toEqual(['priya']);
+    expect(t.extractMentions('@priya_k is not a username')).toEqual([]);
     expect(t.extractMentions('mail a@b.co @ab')).toEqual([]);
   });
   test('urls', () => {

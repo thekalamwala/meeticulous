@@ -100,9 +100,13 @@ function makeSlug(source) {
   return `${base || 'post'}-${suffix}`;
 }
 
+// Usernames are [a-z0-9-] (slugNormalize maps _ . and spaces to -; guests are user-<digits>).
 function extractMentions(text) {
   const out = new Set();
-  for (const m of String(text ?? '').matchAll(/(?<![\w.@])@([a-z0-9_.]{3,30})(?![\w@])/gi)) out.add(m[1].toLowerCase());
+  for (const m of String(text ?? '').matchAll(/(?<![\w.@-])@([a-z0-9][a-z0-9-]*)(?![\w@-])/gi)) {
+    const name = m[1].toLowerCase().replace(/-+$/, ''); // "@priya-," -> priya
+    if (name.length >= 3 && name.length <= 30) out.add(name);
+  }
   return [...out];
 }
 

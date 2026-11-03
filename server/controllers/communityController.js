@@ -131,7 +131,7 @@ const createItem = handle(async (req, res) => {
   if (!mediaRows) return fail(res, 400, 'MEDIA_NOT_ALLOWED');
 
   const profile = await store.getProfile(uid);
-  const linksAllowed = store.linksAllowed(profile, member);
+  const linksAllowed = await store.linksAllowed(profile, member);
   const draft = validateDraft({ kind, format, title, body }, { linksAllowed });
   if (!draft.ok) return fail(res, 400, draft.code, draft.message);
   const altIssue = checkSafety(mediaRows.map((m) => m.alt || '').join('\n'), { linksAllowed });
@@ -149,7 +149,14 @@ const createItem = handle(async (req, res) => {
     { kind, format, author_id: uid, space_id: space?.id || null, title: draft.title, body: draft.body },
     () => makeSlug(draft.title || draft.body),
   );
-  const savedMedia = await store.insertMedia(mediaRows.map((m, i) => ({ post_id: item.id, kind: 'image', ...m, position: i })));
+  let savedMedia;
+  try {
+    savedMedia = await store.insertMedia(mediaRows.map((m, i) => ({ post_id: item.id, kind: 'image', ...m, position: i })));
+  } catch (e) {
+    // No half-posts: retire the row (never visible/indexable) before the 500.
+    await store.updatePost(item.id, { status: 'deleted', deleted_at: now() }).catch(() => null);
+    throw e;
+  }
   await recordMentions({ item, comment: null, text: `${draft.title || ''}\n${draft.body}`, actorId: uid });
   item.is_indexable = await safeRefresh(item.id);
   bustSitemapCache();
@@ -165,7 +172,7 @@ const updateItem = handle(async (req, res) => {
   const member = req.communityMember || null;
   const profile = await store.getProfile(uid);
   const { title = item.title, body = item.body } = req.body || {};
-  const draft = validateDraft({ kind: item.kind, format: item.format, title, body }, { linksAllowed: store.linksAllowed(profile, member) });
+  const draft = validateDraft({ kind: item.kind, format: item.format, title, body }, { linksAllowed: await store.linksAllowed(profile, member) });
   if (!draft.ok) return fail(res, 400, draft.code, draft.message);
 
   const patch = { body: draft.body, edited_at: now() };
@@ -183,7 +190,8 @@ const deleteItem = handle(async (req, res) => {
   if (!item) return null;
   if (item.status === 'deleted') return res.json({ ok: true });
   if (item.status === 'removed') return fail(res, 409, 'NOT_EDITABLE');
-  await store.updatePost(item.id, { status: 'deleted', deleted_at: now() }, { status: item.status });
+  const deleted = await store.updatePost(item.id, { status: 'deleted', deleted_at: now() }, { status: item.status });
+  if (!deleted) return fail(res, 409, 'NOT_EDITABLE'); // lost a race with moderation
   await safeRefresh(item.id);
   bustSitemapCache();
   return res.json({ ok: true });
@@ -202,7 +210,7 @@ const createComment = handle(async (req, res) => {
     const space = await store.getSpaceById(item.space_id);
     if (space?.reply_policy === 'hosts' && !profile?.is_host) return fail(res, 403, 'REPLY_NOT_ALLOWED');
   }
-  const v = validateComment(req.body?.body, { linksAllowed: store.linksAllowed(profile, member) });
+  const v = validateComment(req.body?.body, { linksAllowed: await store.linksAllowed(profile, member) });
   if (!v.ok) return fail(res, 400, v.code, v.message);
 
   let parentId = null;
@@ -227,7 +235,7 @@ const updateComment = handle(async (req, res) => {
   if (!EDITABLE.includes(c.status)) return fail(res, 409, 'NOT_EDITABLE');
   const member = req.communityMember || null;
   const profile = await store.getProfile(uid);
-  const v = validateComment(req.body?.body, { linksAllowed: store.linksAllowed(profile, member) });
+  const v = validateComment(req.body?.body, { linksAllowed: await store.linksAllowed(profile, member) });
   if (!v.ok) return fail(res, 400, v.code, v.message);
   const updated = await store.updateComment(c.id, { body: v.body, edited_at: now() }, { status: c.status });
   if (!updated) return fail(res, 409, 'NOT_EDITABLE');
@@ -240,7 +248,8 @@ const deleteComment = handle(async (req, res) => {
   if (!c) return null;
   if (c.status === 'deleted') return res.json({ ok: true });
   if (c.status === 'removed') return fail(res, 409, 'NOT_EDITABLE');
-  await store.updateComment(c.id, { status: 'deleted', deleted_at: now() }, { status: c.status });
+  const deleted = await store.updateComment(c.id, { status: 'deleted', deleted_at: now() }, { status: c.status });
+  if (!deleted) return fail(res, 409, 'NOT_EDITABLE'); // lost a race with moderation
   await store.updatePost(c.post_id, { accepted_comment_id: null }, { accepted_comment_id: c.id });
   await safeRefresh(c.post_id);
   return res.json({ ok: true });

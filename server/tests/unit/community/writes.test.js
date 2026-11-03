@@ -188,6 +188,20 @@ describe('createItem', () => {
     expect(n).toBe(2);
   });
 
+  test('media insert failure soft-deletes the new post, then 500', async () => {
+    process.env.SUPABASE_URL = 'https://proj.supabase.co';
+    db.on('community_media', () => ({ data: null, error: { code: 'XX000', message: 'boom' } }));
+    const r = res();
+    const url = 'https://proj.supabase.co/storage/v1/object/public/images/community/a.png';
+    await ctrl.createItem(req({ kind: 'post', body: 'Look at this', media: [{ url }] }), r);
+    expect(statusOf(r)).toBe(500);
+    const retire = callsOn('community_posts', 'update').map((c) => c.ops).find((ops) => arg(ops, 'update').status === 'deleted');
+    expect(retire).toBeTruthy();
+    expect(eqVal(retire, 'id')).toBe(POST_ID);
+    expect(arg(retire, 'update').deleted_at).toBeTruthy();
+    expect(bustSitemapCache).not.toHaveBeenCalled();
+  });
+
   test('missing table -> 503 COMMUNITY_UNAVAILABLE', async () => {
     db.on('community_posts', () => ({ data: null, error: { code: '42P01', message: 'relation "community_posts" does not exist' } }));
     const r = res();
@@ -197,20 +211,41 @@ describe('createItem', () => {
   });
 });
 
-describe('linksAllowed', () => {
+describe('linksAllowed (visible posts/comments only)', () => {
   const ago = (d) => new Date(Date.now() - d * DAY).toISOString();
-  test('8 days old with 3 posts -> true', () => {
-    expect(store.linksAllowed({ created_at: ago(8) }, { post_count: 3, comment_count: 0 })).toBe(true);
+  // Rows per table; the mock counts only rows matching the query's status filter.
+  const rows = (posts, comments = []) => {
+    const count = (list) => (ops) => {
+      const status = eqVal(ops, 'status');
+      return { data: null, count: list.filter((r) => !status || r.status === status).length, error: null };
+    };
+    db.on('community_posts', count(posts));
+    db.on('community_comments', count(comments));
+  };
+  const v = (n) => Array.from({ length: n }, () => ({ status: 'visible' }));
+  const removed = (n) => Array.from({ length: n }, () => ({ status: 'removed' }));
+
+  test('8 days old with 3 visible -> true', async () => {
+    rows(v(2), v(1));
+    expect(await store.linksAllowed({ id: ME, created_at: ago(8) }, { post_count: 0 })).toBe(true);
   });
-  test('8 days old with 2 posts -> false', () => {
-    expect(store.linksAllowed({ created_at: ago(8) }, { post_count: 2, comment_count: 0 })).toBe(false);
+  test('8 days old with 2 visible + 5 removed -> false', async () => {
+    rows([...v(2), ...removed(5)]);
+    expect(await store.linksAllowed({ id: ME, created_at: ago(8) }, { post_count: 7, comment_count: 0 })).toBe(false);
   });
-  test('2 days old with 10 posts -> false', () => {
-    expect(store.linksAllowed({ created_at: ago(2) }, { post_count: 10, comment_count: 0 })).toBe(false);
+  test('2 days old with 10 visible -> false, no count query', async () => {
+    rows(v(10));
+    expect(await store.linksAllowed({ id: ME, created_at: ago(2) }, { post_count: 10 })).toBe(false);
+    expect(db.calls).toHaveLength(0);
   });
-  test('verified host or member flag -> true', () => {
-    expect(store.linksAllowed({ created_at: ago(0), is_host: true, is_verified: true }, null)).toBe(true);
-    expect(store.linksAllowed({ created_at: ago(0) }, { links_allowed: true })).toBe(true);
+  test('stops counting once 3 visible posts found', async () => {
+    rows(v(3), v(5));
+    expect(await store.linksAllowed({ id: ME, created_at: ago(8) }, null)).toBe(true);
+    expect(db.calls.map((c) => c.table)).toEqual(['community_posts']);
+  });
+  test('verified host or member flag -> true', async () => {
+    expect(await store.linksAllowed({ id: ME, created_at: ago(0), is_host: true, is_verified: true }, null)).toBe(true);
+    expect(await store.linksAllowed({ id: ME, created_at: ago(0) }, { links_allowed: true })).toBe(true);
   });
 });
 
@@ -249,6 +284,14 @@ describe('edit / delete item', () => {
     expect(patch.status).toBe('deleted');
     expect(patch.deleted_at).toBeTruthy();
     expect(bustSitemapCache).toHaveBeenCalled();
+  });
+
+  test('delete loses a race with moderation -> 409 NOT_EDITABLE', async () => {
+    db.on('community_posts', (ops) => ({ data: has(ops, 'update') ? null : post(), error: null }));
+    const r = res();
+    await ctrl.deleteItem(req({}, { id: POST_ID }), r);
+    expect(statusOf(r)).toBe(409);
+    expect(bodyOf(r).code).toBe('NOT_EDITABLE');
   });
 
   test("deleting someone else's item -> 403", async () => {
@@ -306,6 +349,14 @@ describe('comments', () => {
     await ctrl.deleteComment(req({}, { id: COMMENT_ID }), r);
     expect(statusOf(r)).toBe(200);
     expect(arg(callsOn('community_comments', 'update')[0].ops, 'update').status).toBe('deleted');
+  });
+
+  test('comment delete loses a race with moderation -> 409 NOT_EDITABLE', async () => {
+    db.on('community_comments', (ops) => ({ data: has(ops, 'update') ? null : comment(), error: null }));
+    const r = res();
+    await ctrl.deleteComment(req({}, { id: COMMENT_ID }), r);
+    expect(statusOf(r)).toBe(409);
+    expect(bodyOf(r).code).toBe('NOT_EDITABLE');
   });
 });
 

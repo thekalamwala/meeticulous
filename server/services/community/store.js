@@ -26,12 +26,18 @@ const runCount = async (query) => check(await query).count || 0;
 
 const withEq = (query, eqs) => Object.entries(eqs).reduce((q, [k, v]) => q.eq(k, v), query);
 
-// §10.3: links unlock for flagged members, verified hosts, or week-old accounts with >= 3 items.
-function linksAllowed(profile, member) {
+// §10.3: links unlock for flagged members, verified hosts, or week-old accounts with >= 3
+// VISIBLE posts/comments (member.post_count counts every status, so count live rows).
+async function linksAllowed(profile, member) {
   if (member?.links_allowed) return true;
   if (profile?.is_host && profile?.is_verified) return true;
-  const age = Date.now() - new Date(profile?.created_at).getTime();
-  return age >= WEEK_MS && (member?.post_count || 0) + (member?.comment_count || 0) >= 3;
+  if (!profile?.id || !(Date.now() - new Date(profile.created_at).getTime() >= WEEK_MS)) return false;
+  let visible = 0;
+  for (const table of ['community_posts', 'community_comments']) {
+    visible += await runCount(db(table).select('id', { count: 'exact', head: true }).eq('author_id', profile.id).eq('status', 'visible'));
+    if (visible >= 3) return true;
+  }
+  return false;
 }
 
 const getProfile = (id) => run(db('profiles').select(PROFILE_COLS).eq('id', id).maybeSingle());
