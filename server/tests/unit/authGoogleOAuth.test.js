@@ -49,6 +49,7 @@ jest.mock('../../utils/sendEmail', () => jest.fn().mockResolvedValue(true));
 jest.mock('../../utils/notify', () => ({ sendOtpNotification: jest.fn().mockResolvedValue({ emailSent: true }) }));
 jest.mock('../../utils/otpStore', () => ({ set: jest.fn(), verify: jest.fn(), generate: jest.fn(() => '123456') }));
 jest.mock('../../services/notificationEngine', () => ({ send: jest.fn().mockResolvedValue({}) }));
+jest.mock('../../utils/adminAlert', () => ({ adminAlert: jest.fn().mockResolvedValue({ sent: true }) }));
 
 // Supabase mock: a configurable chain + admin.createUser + mintSessionForEmail.
 jest.mock('../../config/supabase', () => {
@@ -97,6 +98,7 @@ jest.mock('../../services/usernameService', () => ({
 }));
 
 const jwt = require('jsonwebtoken');
+const { adminAlert } = require('../../utils/adminAlert');
 const supa = require('../../config/supabase');
 const { googleVendorAuth, googleCallback } = require('../../controllers/authController');
 
@@ -149,6 +151,15 @@ describe('googleCallback — vendor signup (new)', () => {
     expect(target).toContain('refresh_token=sess-rt');
     expect(target).toContain('new=1');
   });
+
+  test('emails the founder a new-host alert', async () => {
+    await googleCallback({ query: { code: 'abc', state: signState({ flow: 'vendor_auth', intent: 'signup' }) } }, res());
+    expect(adminAlert).toHaveBeenCalledTimes(1);
+    const alert = adminAlert.mock.calls[0][0];
+    expect(alert.key).toBe('new_host:p-1');
+    expect(alert.subject).toBe('New host signup: New Vendor');
+    expect(alert.lines).toEqual(expect.arrayContaining(['Email: new@vendor.com', 'Signed up via: Google (new account)']));
+  });
 });
 
 describe('googleCallback — vendor login (existing host)', () => {
@@ -160,6 +171,7 @@ describe('googleCallback — vendor login (existing host)', () => {
     expect(supa.supabaseAdmin.auth.admin.createUser).not.toHaveBeenCalled();
     expect(mockMintSession).toHaveBeenCalledWith('new@vendor.com');
     expect(r.redirect.mock.calls[0][0]).toContain('new=0');
+    expect(adminAlert).not.toHaveBeenCalled(); // returning host: no alert
   });
 });
 
@@ -175,6 +187,7 @@ describe('googleCallback — existing customer upgraded to host', () => {
     expect(supa.supabaseAdmin.auth.admin.createUser).not.toHaveBeenCalled();
     expect(mockMintSession).toHaveBeenCalledWith('new@vendor.com');
     expect(r.redirect.mock.calls[0][0]).toContain('new=upgrade');
+    expect(adminAlert).toHaveBeenCalledWith(expect.objectContaining({ lines: expect.arrayContaining(['Signed up via: existing guest account turned on hosting']) }));
   });
 
   test('superadmin is NOT upgraded (capability preserved)', async () => {
