@@ -11,6 +11,20 @@
 //   New → destination board · Improved → KM stone · Fixed → turn sign · Security → shield.
 export const RELEASES = [
   {
+    version: '1.1.0',
+    date: 'Nov 2, 2026',
+    title: 'A fresh new look',
+    tags: ['Improved', 'New'],
+    points: [
+      'A whole new look — our home, about, careers and pricing pages now wear the new Meeticulous design.',
+      'Pro pricing in US dollars — visiting from outside India? You now see Pro priced in USD.',
+      'Simpler plans — it’s just Starter and Pro now; the old Host+ and Studio names are gone.',
+      'Friendlier emails — booking and account emails now open with an illustrated header.',
+      'New dashboard icons — the host dashboard sidebar has a fresh, easier-to-scan icon set.',
+      'Cleaner sign-in pages — signing in and signing up now match the new design.',
+    ],
+  },
+  {
     version: '1.0.0',
     date: 'Nov 1, 2026',
     title: 'Meeticulous is here',
