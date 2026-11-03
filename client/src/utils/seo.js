@@ -22,6 +22,14 @@ const truncate = (s, n = 160) => {
 
 const robotsFor = (indexable) => (indexable === false ? 'noindex,nofollow' : 'index,follow');
 
+// A public service page is promotable (index + in sitemap) only when the host is
+// verified AND nothing is flagged noindex. Mirrors the sitemap gate in
+// server/services/sitemapService.js, so the robots meta never says "index me" for
+// a page the sitemap deliberately excludes (unverified host).
+// (sameAsFromSocials for provider/entity sameAs is defined further below.)
+const serviceListable = (service = {}, vendor = {}) =>
+  service.is_indexable !== false && vendor.is_verified === true && vendor.is_indexable !== false;
+
 // City for a local-SEO <title>/meta from free-text profiles.location.
 // Takes the first comma-segment, Title-cases it, and drops junk/non-city values
 // so "Nagpur, Maharashtra" -> "Nagpur", "NAGPUR, MH, IN" -> "Nagpur",
@@ -84,8 +92,12 @@ export const resolveServiceSeo = ({ service = {}, vendor = {}, siteUrl = SITE_UR
     // thumbnail -> the static /service-og-default.png floor (Phase 1). See v3.154.
     image: service.og_image || service.seo_image || service.thumbnail_url || serviceDefaultCard(site),
     canonical,
-    indexable: service.is_indexable !== false,
-    robots: robotsFor(service.is_indexable),
+    indexable: serviceListable(service, vendor),
+    // Honest signal: explicit noindex wins (nofollow); otherwise noindex,follow when
+    // the host isn't verified (the sitemap excludes these), so the page never invites
+    // indexing it won't be submitted for; a verified, indexable page indexes.
+    robots: service.is_indexable === false ? 'noindex,nofollow'
+      : serviceListable(service, vendor) ? 'index,follow' : 'noindex,follow',
   };
 };
 
@@ -98,8 +110,14 @@ export const serviceJsonLd = ({ service = {}, vendor = {}, siteUrl = SITE_URL, a
     name: service.title || 'Service',
     description: service.seo_description || service.short_description || service.description || undefined,
     url,
+    ...(service.updated_at ? { dateModified: service.updated_at } : {}),
     provider: vendor.name
-      ? { '@type': 'Person', name: vendor.name, url: vendor.username ? `${site}/${vendor.username}` : undefined }
+      ? {
+          '@type': 'Person',
+          name: vendor.name,
+          url: vendor.username ? `${site}/${vendor.username}` : undefined,
+          ...(sameAsFromSocials(vendor.social_links).length ? { sameAs: sameAsFromSocials(vendor.social_links) } : {}),
+        }
       : undefined,
     // Price-on-request hides the fee, so the numeric price is omitted from the
     // Offer too — the schema must not leak what the page deliberately hides.
@@ -155,8 +173,9 @@ export const resolveProfileSeo = ({ host = {}, services = [], siteUrl = SITE_URL
     // A profile with no bookable service is a thin page (name + empty shell), so
     // keep it out of the index but let crawlers follow its links. Mirrors
     // prerenderController + the sitemap host filter.
-    indexable: host.is_indexable !== false && (services || []).length > 0,
+    indexable: host.is_indexable !== false && host.is_verified === true && (services || []).length > 0,
     robots: host.is_indexable === false ? robotsFor(false)
+      : host.is_verified !== true ? 'noindex,follow'
       : (services || []).length ? robotsFor(true) : 'noindex,follow',
   };
 };

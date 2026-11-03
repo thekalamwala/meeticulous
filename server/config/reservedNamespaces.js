@@ -17,7 +17,7 @@ const ROUTES = [
   'become-a-host', 'login-as-vendor', 'vendor', 'vendor-register', 'auth',
   'backstage', 'super-dashboard', 'admin', 'dashboard', 'user', 'review', 'manage-booking', 'lp', 'for',
   'og', // /og/blog/:slug — render target for the OG card generator
-  'my-bookings', 'profile', 'reviews', 'loyalty', 'settings', 'search', 'wall-of-love', 'moments',
+  'my-bookings', 'profile', 'reviews', 'loyalty', 'settings', 'search', 'wall-of-love', 'submit-review', 'moments',
   'opening', 'inaugurators', // "The Opening" launch event + permanent Inaugurators Wall
 
   'earnings-calculator',

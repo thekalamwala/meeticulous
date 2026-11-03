@@ -341,10 +341,10 @@ const updateService = async (req, res) => {
       updates.slug = await uniqueSlug(base, req.user.id, req.params.id);
     }
 
-    // OG card (v3.154): title/price are the service-card's own fields, so an edit
-    // to either stales it — mark dirty for the next generator sweep. Schema-safe:
-    // updateSafe's legacy fallback drops og_status if the column isn't applied yet.
-    if (req.body.title !== undefined || req.body.price !== undefined) updates.og_status = 'dirty';
+    // No OG-card dirty-marking: the service share card is now a stateless Cloudinary
+    // URL (services/seo/hostOgCard → cloudinaryServiceCard), composited on crawl from
+    // live service fields, so a title/price edit needs no regen. (The old v3.154
+    // og_status state machine + generateServiceOgImages sweep are gone.)
 
     // Free-service sub-cap: only a LIVE service flipping paid→₹0 enters the free
     // set and must fit the cap. Editing an already-free service (or an inactive

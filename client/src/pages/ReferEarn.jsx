@@ -15,18 +15,18 @@ const fmtDate = (iso) =>
 const planLabel = (slug) => displayPlan(slug) || "—";
 
 const COLUMNS = [
-  { key: "date", header: "Date", render: (r) => <span className="text-gray-600">{fmtDate(r.created_at)}</span> },
+  { key: "date", header: "Date", render: (r) => <span className="text-muted">{fmtDate(r.created_at)}</span> },
   {
     key: "plan", header: "Plan",
     render: (r) => (r.referred_plan
-      ? <span className="text-gray-700">{planLabel(r.referred_plan)}<span className="text-gray-400"> · {r.cadence}</span></span>
-      : <span className="text-gray-400">—</span>),
+      ? <span className="text-ink">{planLabel(r.referred_plan)}<span className="text-ink/40"> · {r.cadence}</span></span>
+      : <span className="text-ink/40">—</span>),
   },
   {
     key: "reward", header: "Reward",
     render: (r) => (Number(r.reward_value) > 0
-      ? <span className="font-semibold text-gray-800">{fmtMoney(r.reward_value, { decimals: true })}</span>
-      : <span className="text-gray-400">—</span>),
+      ? <span className="font-semibold text-ink">{fmtMoney(r.reward_value, { decimals: true })}</span>
+      : <span className="text-ink/40">—</span>),
   },
   {
     key: "status", header: "Status",
@@ -116,10 +116,10 @@ const ReferEarn = () => {
       <PageHeader title="Refer & Earn" subtitle="Invite other hosts. Earn cash when they subscribe." />
 
       {/* Referral link */}
-      <div className="mb-6 rounded-xl border border-gray-200 bg-white p-4">
-        <p className="mb-2 text-sm font-semibold text-gray-800">Your referral link</p>
+      <div className="mb-6 rounded-xl border border-maroon/10 bg-white p-4">
+        <p className="mb-2 text-sm font-semibold text-ink">Your referral link</p>
         <div className="flex flex-col gap-2 sm:flex-row">
-          <div className="flex-1 truncate rounded-lg bg-gray-50 px-3 py-2.5 font-mono text-sm text-gray-600">
+          <div className="flex-1 truncate rounded-lg bg-blush/40 px-3 py-2.5 font-mono text-sm text-muted">
             {link || "Set a username to get your link"}
           </div>
           <div className="flex gap-2">
@@ -133,7 +133,7 @@ const ReferEarn = () => {
             </Button>
           </div>
         </div>
-        <p className="mt-3 text-xs text-gray-500">
+        <p className="mt-3 text-xs text-muted">
           Share it with other creators. When someone signs up as a host through your link and pays for a plan,
           you earn a cash reward that lands in your payout balance after a short review window.
         </p>
@@ -146,8 +146,8 @@ const ReferEarn = () => {
         <StatCard label="In review" value={fmtMoney(s.pendingValue, { decimals: true })} icon={Hourglass} tone="warning" />
       </div>
 
-      <p className="mb-6 mt-4 flex items-start gap-2 text-xs text-gray-500">
-        <Banknote className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+      <p className="mb-6 mt-4 flex items-start gap-2 text-xs text-muted">
+        <Banknote className="mt-0.5 h-4 w-4 shrink-0 text-ink/40" />
         <span>
           Rewards are paid in cash to your{" "}
           <Link to="/dashboard/payments/payouts" className="font-semibold text-primary hover:underline">payout balance</Link>{" "}

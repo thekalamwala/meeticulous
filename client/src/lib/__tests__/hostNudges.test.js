@@ -69,3 +69,29 @@ describe('pickNextStep', () => {
     expect(pickNextStep(nudges, { kyc: future, upgrade: future })).toBeNull();
   });
 });
+
+describe('buildNudges — 60-day Pro taste', () => {
+  const endsAt = new Date(Date.now() + 5 * 86400000).toISOString();
+
+  it('shows the countdown in the last 15 days, above the commission pitch', () => {
+    const out = buildNudges({ isFreePlan: true, commissionPaid: 50, taste: { endsAt, daysLeft: 5, endedDaysAgo: null } });
+    expect(out[0].key).toBe('taste');
+    expect(out[0].title).toBe('5 days left of WhatsApp reminders');
+    expect(out[0].to).toContain('src=taste_card');
+    expect(out.map((n) => n.key)).toContain('upgrade');
+  });
+
+  it('stays quiet early in the taste and long after it ended', () => {
+    expect(buildNudges({ isFreePlan: true, taste: { endsAt, daysLeft: 40, endedDaysAgo: null } })).toHaveLength(0);
+    expect(buildNudges({ isFreePlan: true, taste: { endsAt, daysLeft: 0, endedDaysAgo: 45 } })).toHaveLength(0);
+  });
+
+  it('says reminders are off for 30 days after the end', () => {
+    const out = buildNudges({ isFreePlan: true, taste: { endsAt, daysLeft: 0, endedDaysAgo: 3 } });
+    expect(out[0].title).toBe('WhatsApp reminders are off');
+  });
+
+  it('never shows for paid hosts', () => {
+    expect(buildNudges({ isFreePlan: false, taste: { endsAt, daysLeft: 5, endedDaysAgo: null } })).toHaveLength(0);
+  });
+});

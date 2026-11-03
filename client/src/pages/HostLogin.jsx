@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AuthBrandPanel from "../components/auth/AuthBrandPanel";
-import WhatsNewLink from "../components/auth/WhatsNewLink";
+import AuthMobilePattern from "../components/auth/AuthMobilePattern";
 import Seo from "../components/common/Seo";
 import toast from "react-hot-toast";
 
@@ -53,16 +53,16 @@ const MailIcon = () => (
 const SoonBtn = ({ icon, label }) => (
   <button
     type="button" disabled aria-disabled="true" title="Coming soon"
-    className="btn btn--outline mt-3 flex w-full cursor-not-allowed items-center justify-center gap-3 border-black/10 bg-gray-100 py-3 text-sm font-semibold text-gray-400"
+    className="btn btn--outline mt-3 flex w-full cursor-not-allowed items-center justify-center gap-3 border-maroon/10 bg-neutral-50 py-2.5 text-sm font-semibold text-muted"
   >
     {icon}
     {label}
-    <span className="rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-gray-400">Soon</span>
+    <span className="rounded-full bg-maroon/5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted">Soon</span>
   </button>
 );
 
 const Check = () => (
-  <svg viewBox="0 0 24 24" className="mt-0.5 h-3.5 w-3.5 shrink-0 text-c-emerald" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg viewBox="0 0 24 24" className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success-fg" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M20 6 9 17l-5-5" />
   </svg>
 );
@@ -110,30 +110,31 @@ const HostLogin = () => {
   };
 
   return (
-    <div className="grid min-h-[calc(100vh-72px)] w-full lg:grid-cols-[1.05fr_1fr]">
+    <div className="relative grid h-[100dvh] w-full overflow-hidden lg:grid-cols-[1.05fr_1fr]">
       <Seo title="Host login — Meeticulous" robots="noindex,nofollow" />
+      <AuthMobilePattern />
       {/* ── LEFT · colourful brand panel (lg+ only) ──────────────────────────── */}
       <AuthBrandPanel />
 
       {/* ── RIGHT · login card + outside-the-box link ────────────────────────── */}
-      <main className="flex flex-col items-center justify-center px-5 py-10 sm:py-12">
-        <div className="page-card w-full max-w-md p-6 text-center sm:p-8">
-          <Logo className="mx-auto h-14 w-14" />
+      <main className="relative z-10 flex flex-col items-center justify-center overflow-y-auto px-5 py-4">
+        <div className="w-full max-w-md p-6 text-center sm:p-8">
+          <Logo className="mx-auto h-14 w-14 lg:hidden" />
 
         <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-cta">
           Host login
         </p>
-        <h1 className="mt-1.5 font-heading text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+        <h1 className="mt-1.5 font-display text-2xl font-bold tracking-tight text-maroon sm:text-3xl">
           Welcome back
         </h1>
-        <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-gray-500">
+        <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted">
           Log in to your host dashboard — manage bookings, services and payouts.
         </p>
 
         <button
           onClick={handleGoogle}
           disabled={busy}
-          className="btn btn--outline mt-7 flex w-full items-center justify-center gap-3 bg-white py-3 text-sm font-semibold shadow-[0_1px_2px_rgba(16,24,40,0.05)] transition disabled:opacity-50"
+          className="btn mt-7 flex w-full items-center justify-center gap-3 rounded-[16px] bg-ink py-3 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           <GoogleIcon />
           {busy ? "Opening Google…" : "Continue with Google"}
@@ -142,7 +143,7 @@ const HostLogin = () => {
         <SoonBtn icon={<LinkedInIcon />} label="Continue with LinkedIn" />
         <SoonBtn icon={<MailIcon />} label="Continue with email" />
 
-        <ul className="mt-6 space-y-2 text-left text-xs text-gray-500">
+        <ul className="mt-6 space-y-2 text-left text-xs text-muted">
           <li className="flex gap-2">
             <Check />
             <span>No password to remember — your Google account is your login</span>
@@ -153,14 +154,11 @@ const HostLogin = () => {
           </li>
         </ul>
 
-          <p className="mt-8 text-sm text-gray-500">
+          <p className="mt-8 text-sm text-muted">
             New here?{" "}
             <Link to="/become-a-host" className="font-semibold text-primary hover:underline">Sign up as a Host</Link>
           </p>
         </div>
-
-        {/* Outside the card */}
-        <WhatsNewLink className="mt-6" />
       </main>
     </div>
   );

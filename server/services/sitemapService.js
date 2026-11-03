@@ -77,6 +77,10 @@ const JOB_SLUGS = ['digital-marketeer', 'mern-stack-developer', 'sales-associate
 // Drift symptom: a live /moments/:slug missing from sitemap-pages.xml.
 const MOMENT_SLUGS = ['fifa-2026-winners-spain'];
 
+// Release pages (/changelog/:version). KEEP IN SYNC with RELEASES[].version in
+// client/src/data/changelog.js (ESM data file, mirrored here by hand like above).
+const CHANGELOG_VERSIONS = ['1.1.0', '1.0.0'];
+
 // Public, crawlable static routes. Host/service URLs come from the DB below.
 const STATIC_ROUTES = [
   { path: '/',                         changefreq: 'daily',   priority: '1.0' },
@@ -93,6 +97,7 @@ const STATIC_ROUTES = [
   ...JOB_SLUGS.map((s) => ({ path: `/careers/${s}`, changefreq: 'weekly', priority: '0.5' })),
   { path: '/blog',                     changefreq: 'daily',   priority: '0.6' },
   { path: '/changelog',                changefreq: 'weekly',  priority: '0.4' },
+  ...CHANGELOG_VERSIONS.map((v) => ({ path: `/changelog/${v}`, changefreq: 'yearly', priority: '0.3' })),
   { path: '/contact',                  changefreq: 'monthly', priority: '0.4' },
   { path: '/support',                  changefreq: 'monthly', priority: '0.4' },
   { path: '/help',                     changefreq: 'monthly', priority: '0.4' },

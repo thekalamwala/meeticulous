@@ -373,6 +373,8 @@ export const adminUpdateInviteLink = (slug, d)   => API.patch(`/admin/invite-lin
 export const adminGetReviews     = (params)         => API.get('/admin/reviews', { params });
 export const adminModerateReview = (id, data)       => API.patch(`/admin/reviews/${id}`, data);
 export const adminDeleteReview   = (id)             => API.delete(`/admin/reviews/${id}`);
+export const adminGetPlatformReviews     = (params)   => API.get('/admin/platform-reviews', { params });
+export const adminModeratePlatformReview = (id, data) => API.patch(`/admin/platform-reviews/${id}`, data);
 
 // ── Vendor Onboarding (Google-first flow) ─────────────────────
 // Removed in onboarding reshape (server endpoints deleted):
@@ -468,6 +470,10 @@ export const updateReview       = (id, data)  => API.put(`/reviews/booking/${id}
 export const getReceivedReviews = (direction) => API.get('/reviews/received', { params: direction ? { direction } : {} });
 export const getHostReviews     = (username)  => API.get(`/reviews/${username}`);
 export const getBookingReview   = (id)        => API.get(`/reviews/booking/${id}`);
+// Reviews OF Meeticulous (one per signed-in account; public = approved + consented)
+export const getPlatformReviews   = ()     => API.get('/platform-reviews');
+export const getMyPlatformReview  = ()     => API.get('/platform-reviews/me');
+export const saveMyPlatformReview = (data) => API.put('/platform-reviews/me', data);
 
 // ── Vendor feedback ──────────────────────────────────────────
 export const submitFeedback  = (data)   => API.post('/feedback', data);
@@ -598,6 +604,7 @@ export const adminGetRazorpay    = ()     => API.get('/admin/settings/payment/ra
 export const adminUpdateRazorpay = (data) => API.put('/admin/settings/payment/razorpay', data);
 export const adminTestRazorpay   = (data) => API.post('/admin/settings/payment/razorpay/test', data);
 export const getPublicPlans    = ()         => API.get('/plans');
+export const getFoundingSpots  = ()         => API.get('/plans/founding');
 
 // ── Admin: Reserved Slugs ────────────────────────────────────
 export const getReservedSlugs     = ()      => API.get('/admin/reserved-slugs');

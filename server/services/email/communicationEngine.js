@@ -30,6 +30,7 @@ const MARKETING_EVENTS = new Set([
   'PROFILE_COMPLETION_REMINDER',
   'REBOOK_NUDGE_CUSTOMER',
   'UPGRADE_COMMISSION_NUDGE',
+  'PRO_TASTE_STARTED', 'PRO_TASTE_ENDING', 'PRO_TASTE_ENDED', 'FOUNDING_SPOTS_LOW',
   // Newsletter, cross-sell, cart-recovery and onboarding nudges are promotional/
   // bulk — they keep the unsubscribe footer (legal opt-out) and may file under
   // Updates. Everything NOT listed here is transactional → clean footer → Primary.

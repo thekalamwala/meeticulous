@@ -1,5 +1,5 @@
 'use strict';
-// Upgrade nudge: email a free host once their total commission crosses the threshold.
+// Upgrade nudge: email a free host when their 30-day commission reaches Pro's monthly cost.
 
 jest.mock('../../config/supabase', () => ({ supabaseAdmin: { from: jest.fn() } }));
 jest.mock('../../services/notificationEngine', () => ({ send: jest.fn().mockResolvedValue({ ok: true }) }));
@@ -24,7 +24,7 @@ function wire({ plan = 'starter', bookings = [], prior = null } = {}) {
       table === 'email_logs' ? { data: prior, error: null } :
       { data: null, error: null };
     const c = {};
-    c.select = () => c; c.eq = () => c; c.in = () => c; c.limit = () => c;
+    c.select = () => c; c.eq = () => c; c.in = () => c; c.limit = () => c; c.gte = () => c;
     c.maybeSingle = () => Promise.resolve(result);
     c.then = (res, rej) => Promise.resolve(result).then(res, rej);
     return c;

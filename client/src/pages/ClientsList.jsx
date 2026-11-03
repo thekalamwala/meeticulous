@@ -18,24 +18,25 @@ const COLUMNS = [
     header: 'Client',
     render: (c) => (
       <div className="flex items-center gap-2">
-        <p className="font-medium text-gray-800">{c.name || 'Unknown'}</p>
+        <p className="font-medium text-ink">{c.name || 'Unknown'}</p>
         {c.is_recurring && (
           <Badge tone="primary"><Repeat className="h-3 w-3" />Recurring</Badge>
         )}
       </div>
     ),
   },
-  { key: 'phone', header: 'Phone', render: (c) => <span className="text-gray-600">{c.phone || '—'}</span> },
-  { key: 'email', header: 'Email', render: (c) => <span className="block max-w-[180px] truncate text-gray-500">{c.email || '—'}</span> },
-  { key: 'bookings_count', header: 'Bookings', align: 'right', render: (c) => <span className="text-gray-700">{c.bookings_count}</span> },
+  { key: 'phone', header: 'Phone', render: (c) => <span className="text-muted">{c.phone || '—'}</span> },
+  { key: 'email', header: 'Email', render: (c) => <span className="block max-w-[180px] truncate text-muted">{c.email || '—'}</span> },
+  { key: 'bookings_count', header: 'Bookings', align: 'right', render: (c) => <span className="text-ink">{c.bookings_count}</span> },
   { key: 'total_spent', header: 'Total Spent', align: 'right', render: (c) => <span className="font-semibold text-primary">{fmtMoney(c.total_spent)}</span> },
-  { key: 'last_booking_at', header: 'Last Booking', render: (c) => <span className="text-gray-500">{fmtDate(c.last_booking_at)}</span> },
+  { key: 'last_booking_at', header: 'Last Booking', render: (c) => <span className="text-muted">{fmtDate(c.last_booking_at)}</span> },
 ];
 
 const ClientsList = () => {
   const navigate = useNavigate();
   const [clients, setClients] = useState([]);
   const [total, setTotal] = useState(0);
+  const [hidden, setHidden] = useState(0); // clients past the free-plan cap
   const [q, setQ] = useState('');
   const [sort, setSort] = useState('recent');
   const [filter, setFilter] = useState(null);
@@ -51,6 +52,7 @@ const ClientsList = () => {
       const { data } = await crmGetCustomers({ q, sort, filter: filter || undefined });
       setClients(data.clients || []);
       setTotal(data.total || 0);
+      setHidden(data.hidden_count || 0);
       setGated(false);
     } catch (err) {
       if (err.response?.status === 403 && err.response?.data?.upgrade_required) {
@@ -103,9 +105,11 @@ const ClientsList = () => {
       <div>
         <PageHeader title="Customers" subtitle="Your customers" />
         <Card className="border-2 border-dashed border-primary/30 text-center">
-          <div className="mb-3 text-3xl">🗂️</div>
-          <h3 className="mb-1 font-semibold text-gray-900">Unlock Customers</h3>
-          <p className="mb-4 text-sm text-gray-500">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blush text-maroon">
+            <Users className="h-6 w-6" strokeWidth={2} />
+          </div>
+          <h3 className="mb-1 font-display font-bold text-maroon">Unlock Customers</h3>
+          <p className="mb-4 text-sm text-muted">
             See every customer's booking history, total spend, and private notes with {PREMIUM_PLAN.name}.
           </p>
           <Link to="/dashboard/upgrade" className={buttonClasses({ variant: 'primary' })}>
@@ -146,7 +150,7 @@ const ClientsList = () => {
             'inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border px-3 text-sm font-medium transition-colors',
             filter === 'lapsed'
               ? 'border-primary bg-primary/10 text-primary'
-              : 'border-gray-300 text-gray-600 hover:bg-gray-50',
+              : 'border-maroon/20 text-muted hover:bg-blush/40',
           )}
         >
           <UserX className="h-3.5 w-3.5" /> Lapsed
@@ -169,6 +173,18 @@ const ClientsList = () => {
             />
           }
         />
+      )}
+
+      {hidden > 0 && (
+        <Card className="mt-4 flex flex-wrap items-center justify-between gap-3 border-2 border-dashed border-primary/30">
+          <p className="text-sm text-muted">
+            You have <strong className="text-maroon">{total + hidden} customers</strong> — you're seeing your {total} most recent.
+            See every one, with notes and history, on {PREMIUM_PLAN.name}.
+          </p>
+          <Link to="/dashboard/upgrade?src=crm_cap" className={buttonClasses({ variant: 'primary' })}>
+            See all customers
+          </Link>
+        </Card>
       )}
     </div>
   );

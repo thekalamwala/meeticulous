@@ -11,8 +11,9 @@
 
 .fb-input:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 6px rgba(20, 83, 45, 0.08);
+    /* Brand: 3px rose focus ring on every input (was a leftover green ring). */
+    border-color: var(--mt-rose, #E0506F);
+    box-shadow: 0 0 0 3px rgba(224, 80, 111, 0.4);
 }
 
 .fb-input--center {

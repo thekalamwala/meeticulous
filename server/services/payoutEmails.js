@@ -25,7 +25,7 @@ const fmtDate = (ymd) => {
 
 async function hostContact(hostId) {
   if (!hostId) return null;
-  const { data } = await supabaseAdmin.from('profiles').select('name, email').eq('id', hostId).maybeSingle();
+  const { data } = await supabaseAdmin.from('profiles').select('name, email, plan, plan_expires_at').eq('id', hostId).maybeSingle();
   return data && data.email ? data : null;
 }
 
@@ -57,8 +57,14 @@ async function sendPayoutSent(booking, amount) {
   if (!(await claim('bookings', 'id', booking.id, 'payout_email_sent_at'))) return;
   const host = await hostContact(booking.host_id);
   if (!host) return;
+  // Free hosts see what this booking cost them in commission — Pro is 0%.
+  const { isFreeSlug, resolveVendorPlan } = require('./planService');
+  const commission = Number(booking.commission_applied) || 0;
+  const commissionLine = commission > 0 && isFreeSlug(resolveVendorPlan(host))
+    ? `${rupees(commission)} of this booking went to commission. On Pro it's ₹0.`
+    : '';
   await emit('PAYOUT_SENT', host, booking.host_id,
-    { payout_amount: rupees(amount), dashboard_url: `${BASE}/dashboard/payments/payouts` }, booking.id);
+    { payout_amount: rupees(amount), dashboard_url: `${BASE}/dashboard/payments/payouts`, commission_line: commissionLine }, booking.id);
 }
 
 // "One more step to unlock your payouts" — once per stuck-activation episode.

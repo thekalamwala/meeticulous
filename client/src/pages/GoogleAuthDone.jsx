@@ -41,7 +41,12 @@ const GoogleAuthDone = () => {
         );
         // /dashboard is onboarding-guarded — a new or just-upgraded host is
         // auto-routed into the /vendor-register steps by ProtectedRoute.
-        navigate('/dashboard', { replace: true });
+        // A returning host who started from a page that asked for sign-in (e.g.
+        // /submit-review) goes back there. Internal single-slash paths only.
+        let back = null;
+        try { back = sessionStorage.getItem('mt_after_host_login'); sessionStorage.removeItem('mt_after_host_login'); } catch { /* storage blocked */ }
+        const resume = !isNew && !isUpgrade && /^\/(?!\/)/.test(back || '') ? back : null;
+        navigate(resume || '/dashboard', { replace: true });
       })
       .catch(() => {
         // Tokens were valid (account exists) — adopting the session failed, so
@@ -52,11 +57,11 @@ const GoogleAuthDone = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
+    <div className="h-[calc(100dvh-57px)] overflow-hidden flex items-center justify-center bg-cream">
       <Seo title="Signing you in — Meeticulous" robots="noindex,nofollow" />
       <div className="text-center">
         <div className="mb-4 flex justify-center"><PetalSpinner size={48} /></div>
-        <p className="text-sm text-gray-500">Setting up your account…</p>
+        <p className="text-sm text-muted">Setting up your account…</p>
       </div>
     </div>
   );

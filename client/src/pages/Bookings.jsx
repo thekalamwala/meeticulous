@@ -56,16 +56,16 @@ const initialOf = (name) => (name || "G").trim().charAt(0).toUpperCase();
 
 const Row = ({ label, value, mono }) => (
   <div className="flex items-start justify-between gap-4">
-    <span className="flex-shrink-0 text-xs text-gray-500">{label}</span>
-    <span className={cn("text-right text-xs font-medium text-gray-800", mono && "break-all font-mono")}>{value}</span>
+    <span className="flex-shrink-0 text-xs text-muted">{label}</span>
+    <span className={cn("text-right text-xs font-medium text-ink", mono && "break-all font-mono")}>{value}</span>
   </div>
 );
 
 // Icon-led card used to group booking-detail fields into clean sections.
 // On the details modal these sit in a 2-col grid on desktop and stack on mobile.
 const Section = ({ icon: Icon, title, children }) => (
-  <section className="rounded-xl border border-gray-100 bg-gray-50/60 p-4">
-    <h4 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
+  <section className="rounded-xl border border-maroon/5 bg-blush/40 p-4">
+    <h4 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-ink/40">
       <Icon className="h-3.5 w-3.5" strokeWidth={2} />
       {title}
     </h4>
@@ -188,19 +188,19 @@ const RescheduleModal = ({ booking, onClose, onDone }) => {
 
   return (
     <Modal open onClose={onClose} title="Reschedule Booking" size="sm">
-      <p className="mb-4 text-xs text-gray-400">{booking.services?.title} &bull; {booking.guest_name}</p>
+      <p className="mb-4 text-xs text-ink/40">{booking.services?.title} &bull; {booking.guest_name}</p>
 
       {/* Calendar */}
       <div className="mb-3 flex items-center justify-between">
-        <button onClick={() => { if (calMonth === 0) { setCalMonth(11); setCalYear(y => y - 1); } else setCalMonth(m => m - 1); }} aria-label="Previous month" className="grid h-11 w-11 place-items-center rounded-lg hover:bg-gray-100">
+        <button onClick={() => { if (calMonth === 0) { setCalMonth(11); setCalYear(y => y - 1); } else setCalMonth(m => m - 1); }} aria-label="Previous month" className="grid h-11 w-11 place-items-center rounded-lg hover:bg-blush">
           <ChevronLeft className="h-5 w-5" />
         </button>
         <span className="text-sm font-semibold">{MONTHS[calMonth]} {calYear}</span>
-        <button onClick={() => { if (calMonth === 11) { setCalMonth(0); setCalYear(y => y + 1); } else setCalMonth(m => m + 1); }} aria-label="Next month" className="grid h-11 w-11 place-items-center rounded-lg hover:bg-gray-100">
+        <button onClick={() => { if (calMonth === 11) { setCalMonth(0); setCalYear(y => y + 1); } else setCalMonth(m => m + 1); }} aria-label="Next month" className="grid h-11 w-11 place-items-center rounded-lg hover:bg-blush">
           <ChevronRight className="h-5 w-5" />
         </button>
       </div>
-      <div className="mb-1 grid grid-cols-7 text-center text-[11px] font-medium text-gray-400">
+      <div className="mb-1 grid grid-cols-7 text-center text-[11px] font-medium text-ink/40">
         {DS.map((d, i) => <div key={i}>{d}</div>)}
       </div>
       <div className="mb-4 grid grid-cols-7 gap-1 text-center">
@@ -210,7 +210,7 @@ const RescheduleModal = ({ booking, onClose, onDone }) => {
           return (
             <button key={day} disabled={!ok}
               onClick={() => { if (ok) { setSelDate(new Date(calYear, calMonth, day)); setSelTime(""); } }}
-              className={cn("grid aspect-square min-h-11 place-items-center rounded-lg text-sm transition-colors", isSel(day) ? "bg-primary font-semibold text-white" : !ok ? "cursor-default text-gray-300" : "hover:bg-gray-100 active:bg-gray-200")}>
+              className={cn("grid aspect-square min-h-11 place-items-center rounded-lg text-sm transition-colors", isSel(day) ? "bg-primary font-semibold text-white" : !ok ? "cursor-default text-ink/30" : "hover:bg-blush active:bg-blush")}>
               {day}
             </button>
           );
@@ -220,21 +220,21 @@ const RescheduleModal = ({ booking, onClose, onDone }) => {
       {/* Time slots from availability */}
       {selDate && (
         <div className="mb-4">
-          <p className="mb-2 text-xs font-medium text-gray-500">
+          <p className="mb-2 text-xs font-medium text-muted">
             Available times
-            {avail?.timezone ? <span className="ml-1 text-gray-400">({avail.timezone.split("/")[1] || avail.timezone})</span> : ""}
+            {avail?.timezone ? <span className="ml-1 text-ink/40">({avail.timezone.split("/")[1] || avail.timezone})</span> : ""}
           </p>
           {loadingSlots ? (
             <div className="grid grid-cols-2 gap-2">
-              {Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-11 animate-pulse rounded-lg bg-gray-100" />)}
+              {Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-11 animate-pulse rounded-lg bg-blush" />)}
             </div>
           ) : slots.length === 0 ? (
-            <p className="py-2 text-sm text-gray-400">No available slots for this date.</p>
+            <p className="py-2 text-sm text-ink/40">No available slots for this date.</p>
           ) : (
             <div className="grid max-h-64 grid-cols-2 gap-2 overflow-y-auto">
               {slots.map((t) => (
                 <button key={t} onClick={() => setSelTime(t)}
-                  className={cn("min-h-11 rounded-lg border text-sm font-medium transition-colors", selTime === t ? "border-primary bg-primary text-white" : "hover:border-gray-400 active:bg-gray-50")}>
+                  className={cn("min-h-11 rounded-lg border text-sm font-medium transition-colors", selTime === t ? "border-primary bg-primary text-white" : "hover:border-gray-400 active:bg-blush/40")}>
                   {formatSlot(t)}
                 </button>
               ))}
@@ -313,21 +313,21 @@ const DetailsModal = ({ booking, onClose, onAction, review, onReviewDone }) => {
   return (
     <Modal open onClose={onClose} title="Booking Details" size="xl">
       {/* Summary band — service, when, status, copyable id */}
-      <div className="mb-4 flex items-start justify-between gap-3 rounded-xl border border-gray-100 bg-gradient-to-br from-primary/[0.06] to-transparent p-4">
+      <div className="mb-4 flex items-start justify-between gap-3 rounded-2xl border-2 border-maroon/10 bg-blush/50 p-4">
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-gray-900">{booking.services?.title || "Service"}</p>
-          <p className="mt-1 flex flex-wrap items-center gap-x-2 text-xs text-gray-500">
+          <p className="truncate text-sm font-semibold text-ink">{booking.services?.title || "Service"}</p>
+          <p className="mt-1 flex flex-wrap items-center gap-x-2 text-xs text-muted">
             <span>{fmtDate(booking.scheduled_at)}</span>
-            <span className="text-gray-300">&middot;</span>
+            <span className="text-ink/30">&middot;</span>
             <span>{fmtTime(dt)} &ndash; {fmtTime(endDt)}</span>
-            <span className="text-gray-300">&middot;</span>
+            <span className="text-ink/30">&middot;</span>
             <span>{booking.services?.duration || 30} min</span>
           </p>
           <button
             type="button"
             onClick={() => copy(booking.id, "Booking ID")}
             title="Copy booking ID"
-            className="mt-1.5 inline-flex items-center gap-1 font-mono text-[11px] text-gray-400 transition-colors hover:text-primary"
+            className="mt-1.5 inline-flex items-center gap-1 font-mono text-[11px] text-ink/40 transition-colors hover:text-primary"
           >
             #{booking.id.slice(0, 8).toUpperCase()}
             <Copy className="h-3 w-3" />
@@ -361,7 +361,7 @@ const DetailsModal = ({ booking, onClose, onAction, review, onReviewDone }) => {
 
         <Section icon={CreditCard} title="Payment">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500">Status</span>
+            <span className="text-xs text-muted">Status</span>
             <StatusBadge status={booking.payment_status} />
           </div>
           <Row label="Total Amount" value={isFree ? "Free" : `₹${booking.services?.price}`} />
@@ -371,7 +371,7 @@ const DetailsModal = ({ booking, onClose, onAction, review, onReviewDone }) => {
           {booking.razorpay_payment_id && <Row label="Payment Ref" value={booking.razorpay_payment_id} mono />}
           {booking.meeting_link && (
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">Meet Link</span>
+              <span className="text-xs text-muted">Meet Link</span>
               <a href={booking.meeting_link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline">
                 <Link2 className="h-3 w-3" /> Join
               </a>
@@ -382,7 +382,7 @@ const DetailsModal = ({ booking, onClose, onAction, review, onReviewDone }) => {
 
       {/* Reschedule status */}
       {booking.reschedule_status && booking.reschedule_status !== "none" && (
-        <div className={cn("mt-3 rounded-xl px-4 py-3 text-xs font-medium", booking.reschedule_status === "acknowledged" ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-700")}>
+        <div className={cn("mt-3 rounded-xl px-4 py-3 text-xs font-medium", booking.reschedule_status === "acknowledged" ? "bg-c-emerald/10 text-c-emerald" : "bg-marigold-100 text-marigold-800")}>
           {booking.reschedule_status === "awaiting_guest_ack"
             ? "Awaiting guest acknowledgement of reschedule"
             : "Guest acknowledged the new time"}
@@ -391,8 +391,8 @@ const DetailsModal = ({ booking, onClose, onAction, review, onReviewDone }) => {
 
       {/* Actions */}
       {confirming ? (
-        <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4">
-          <p className="mb-3 text-sm font-medium text-red-700">
+        <div className="mt-4 rounded-2xl border-2 border-rose/30 bg-blush p-4">
+          <p className="mb-3 text-sm font-medium text-maroon">
             {confirming === "cancel"
               ? booking.payment_status === "paid"
                 ? "Cancel this paid booking? The guest will be notified. Cancelling does NOT refund automatically — process any refund manually."
@@ -430,19 +430,19 @@ const DetailsModal = ({ booking, onClose, onAction, review, onReviewDone }) => {
 
       {/* Review submitted card — host's existing review of this guest */}
       {booking.status === "completed" && on("review_submission") && booking.guest_id && review && (
-        <div className="mt-3 rounded-xl border bg-green-50/60 border-green-200 px-4 py-3">
+        <div className="mt-3 rounded-2xl border-2 bg-c-emerald/5 border-c-emerald/20 px-4 py-3">
           <div className="flex items-center justify-between">
-            <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-700">
-              <Star size={14} className="fill-green-600 text-green-600" /> Review submitted
+            <span className="inline-flex items-center gap-1.5 text-sm font-medium text-c-emerald">
+              <Star size={14} className="fill-c-emerald text-c-emerald" /> Review submitted
             </span>
             <button onClick={() => setShowReview(true)} className="text-xs font-medium text-[#960D32] hover:underline">
               Edit review
             </button>
           </div>
           <p className="mt-1 text-[#960D32] text-sm tracking-tight">
-            {"★".repeat(review.rating)}<span className="text-gray-300">{"★".repeat(5 - review.rating)}</span>
+            {"★".repeat(review.rating)}<span className="text-ink/30">{"★".repeat(5 - review.rating)}</span>
           </p>
-          {review.comment && <p className="mt-1 text-sm text-gray-600 leading-relaxed">{review.comment}</p>}
+          {review.comment && <p className="mt-1 text-sm text-muted leading-relaxed">{review.comment}</p>}
         </div>
       )}
     </Modal>
@@ -459,24 +459,24 @@ const BookingCard = ({ booking, onOpen }) => {
     <button
       type="button"
       onClick={() => onOpen(booking)}
-      className="flex w-full items-center gap-3 rounded-xl border border-gray-200 bg-white p-3 text-left transition-colors active:bg-gray-50 dash-elev-1"
+      className="flex w-full items-center gap-3 rounded-xl border border-maroon/10 bg-white p-3 text-left transition-colors active:bg-blush/40 dash-elev-1"
     >
       <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary/10 text-base font-bold text-primary">
         {initialOf(booking.guest_name)}
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
-          <p className="truncate text-sm font-semibold text-gray-900">{booking.guest_name || "Guest"}</p>
+          <p className="truncate text-sm font-semibold text-ink">{booking.guest_name || "Guest"}</p>
           <StatusChip status={booking.status} />
         </div>
-        <p className="mt-0.5 truncate text-xs text-gray-500">{booking.services?.title || "Service"}</p>
+        <p className="mt-0.5 truncate text-xs text-muted">{booking.services?.title || "Service"}</p>
         <div className="mt-1.5 flex items-center gap-2 text-xs">
-          <span className="font-medium text-gray-700">{fmtTime(d)}</span>
-          <span className="text-gray-300">&middot;</span>
-          <span className="text-gray-500">{isFree ? "Free" : `₹${booking.services?.price}`}</span>
+          <span className="font-medium text-ink">{fmtTime(d)}</span>
+          <span className="text-ink/30">&middot;</span>
+          <span className="text-muted">{isFree ? "Free" : `₹${booking.services?.price}`}</span>
         </div>
       </div>
-      <Chevron className="h-4 w-4 shrink-0 text-gray-300" />
+      <Chevron className="h-4 w-4 shrink-0 text-ink/30" />
     </button>
   );
 };
@@ -629,9 +629,9 @@ const Bookings = () => {
           groupByDay(paged).map((group) => (
             <section key={group.key}>
               <div className="sticky top-14 z-10 -mx-1 mb-2 bg-canvas/95 px-1 py-1.5 backdrop-blur">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted">
                   {group.label}
-                  <span className="ml-1.5 font-normal text-gray-400">{group.items.length}</span>
+                  <span className="ml-1.5 font-normal text-ink/40">{group.items.length}</span>
                 </p>
               </div>
               <div className="space-y-2.5">
@@ -649,7 +649,7 @@ const Bookings = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
+              <tr className="border-b bg-blush/40 text-xs uppercase tracking-wider text-muted">
                 <th className="px-4 py-3 text-left font-semibold">Booking</th>
                 <th className="px-4 py-3 text-left font-semibold">Customer</th>
                 <th className="hidden px-4 py-3 text-left font-semibold md:table-cell">Phone</th>
@@ -659,31 +659,31 @@ const Bookings = () => {
                 <th className="px-4 py-3 text-center font-semibold">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-maroon/5">
               {paged.length === 0 ? (
-                <tr><td colSpan={7} className="py-12 text-center text-sm text-gray-400">No bookings to show yet.</td></tr>
+                <tr><td colSpan={7} className="py-12 text-center text-sm text-ink/40">No bookings to show yet.</td></tr>
               ) : (
                 paged.map((b) => (
-                  <tr key={b.id} className="transition-colors hover:bg-gray-50">
+                  <tr key={b.id} className="transition-colors hover:bg-blush/40">
                     <td className="px-4 py-3">
-                      <p className="font-mono text-xs text-gray-400">#{b.id.slice(0, 8).toUpperCase()}</p>
-                      <p className="mt-0.5 text-xs text-gray-600">{fmtDate(b.scheduled_at)}</p>
-                      <p className="text-xs text-gray-400">{fmtTime(new Date(b.scheduled_at))}</p>
+                      <p className="font-mono text-xs text-ink/40">#{b.id.slice(0, 8).toUpperCase()}</p>
+                      <p className="mt-0.5 text-xs text-muted">{fmtDate(b.scheduled_at)}</p>
+                      <p className="text-xs text-ink/40">{fmtTime(new Date(b.scheduled_at))}</p>
                     </td>
                     <td className="px-4 py-3">
-                      <p className="font-medium text-gray-800">{b.guest_name || "Guest"}</p>
-                      <p className="max-w-[160px] truncate text-xs text-gray-400">{b.guest_email || "-"}</p>
+                      <p className="font-medium text-ink">{b.guest_name || "Guest"}</p>
+                      <p className="max-w-[160px] truncate text-xs text-ink/40">{b.guest_email || "-"}</p>
                     </td>
-                    <td className="hidden px-4 py-3 text-xs text-gray-500 md:table-cell">{b.guest_phone || "-"}</td>
+                    <td className="hidden px-4 py-3 text-xs text-muted md:table-cell">{b.guest_phone || "-"}</td>
                     <td className="hidden px-4 py-3 sm:table-cell">
-                      <p className="max-w-[140px] truncate text-xs text-gray-700">{b.services?.title || "-"}</p>
-                      <p className="text-xs text-gray-400">{b.services?.price === 0 ? "Free" : `₹${b.services?.price}`}</p>
+                      <p className="max-w-[140px] truncate text-xs text-ink">{b.services?.title || "-"}</p>
+                      <p className="text-xs text-ink/40">{b.services?.price === 0 ? "Free" : `₹${b.services?.price}`}</p>
                     </td>
                     <td className="px-4 py-3"><StatusChip status={b.status} /></td>
                     <td className="hidden px-4 py-3 md:table-cell"><StatusBadge status={b.payment_status} /></td>
                     <td className="px-4 py-3 text-center">
                       <button onClick={() => setSelected(b)} title="View details"
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary">
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-blush hover:text-primary">
                         <Eye className="h-4 w-4" />
                       </button>
                     </td>
@@ -698,7 +698,7 @@ const Bookings = () => {
       {/* Infinite scroll: sentinel grows the window; shared by both views. */}
       {hasMore && <div ref={sentinelRef} aria-hidden="true" className="h-1" />}
       {!hasMore && filtered.length > PAGE_SIZE && (
-        <p className="mt-4 text-center text-xs text-gray-400">Showing all {filtered.length} bookings</p>
+        <p className="mt-4 text-center text-xs text-ink/40">Showing all {filtered.length} bookings</p>
       )}
     </div>
   );

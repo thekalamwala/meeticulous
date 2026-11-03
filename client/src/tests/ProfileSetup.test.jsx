@@ -62,7 +62,8 @@ describe('ProfileSetup — tab navigation', () => {
 
   test('Profile Info tab is active by default', () => {
     renderSetup();
-    expect(screen.getByLabelText(/host name/i)).toBeTruthy();
+    // Name renders as click-to-edit text on the profile card.
+    expect(screen.getByText('Jane Vendor')).toBeTruthy();
   });
 
   test('clicking Social Links tab shows social inputs', async () => {
@@ -92,8 +93,10 @@ describe('ProfileSetup — tab navigation', () => {
 // ── Profile Info tab ──────────────────────────────────────────────────────────
 
 describe('ProfileSetup — Profile Info', () => {
-  test('pre-fills name from user context', () => {
+  test('name is inline-editable and pre-filled', async () => {
     renderSetup();
+    // Click the name to enter edit mode; the input is pre-filled from context.
+    await userEvent.click(screen.getByText('Jane Vendor'));
     expect(screen.getByDisplayValue('Jane Vendor')).toBeTruthy();
   });
 
@@ -104,9 +107,11 @@ describe('ProfileSetup — Profile Info', () => {
     expect(screen.getByText('jane-vendor')).toBeTruthy();
   });
 
-  test('bio field has maxLength 500', () => {
+  test('bio field has maxLength 500', async () => {
     renderSetup();
-    const bio = screen.getByPlaceholderText(/tell people about yourself/i);
+    // Bio is click-to-edit; reveal the textarea, then assert the 500-char cap.
+    await userEvent.click(screen.getByText('Hi there'));
+    const bio = screen.getByDisplayValue('Hi there');
     expect(bio.maxLength).toBe(500);
   });
 });

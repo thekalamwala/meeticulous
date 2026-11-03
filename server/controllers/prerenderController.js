@@ -16,6 +16,7 @@
 const SITE_URL = process.env.PUBLIC_SITE_URL || 'https://meeticulous.com';
 
 const { profileFaqs, serviceFaqs } = require('../services/seo/pageContentModel');
+const { cloudinaryHostCard, cloudinaryServiceCard } = require('../services/seo/hostOgCard');
 
 const trimSlash = (s) => String(s || '').replace(/\/+$/, '');
 const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -42,7 +43,7 @@ const knowsAboutFrom = (host = {}) => [...new Set(
     .filter(Boolean).map(humanizeSlug),
 )];
 
-function buildHtml({ title, description, canonical, ogTitle, ogDescription, image, robots, jsonLd, faqJsonLd, cardImage, bodyHtml }) {
+function buildHtml({ title, description, canonical, ogTitle, ogDescription, image, robots, jsonLd, faqJsonLd, breadcrumbJsonLd, cardImage, bodyHtml }) {
   const site = trimSlash(SITE_URL);
   const img = image || `${site}/og-image.png`;
   const rob = robots || 'index,follow';
@@ -76,6 +77,7 @@ function buildHtml({ title, description, canonical, ogTitle, ogDescription, imag
 <meta name="twitter:image" content="${esc(img)}">
 ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>` : ''}
 ${faqJsonLd ? `<script type="application/ld+json">${JSON.stringify(faqJsonLd)}</script>` : ''}
+${breadcrumbJsonLd ? `<script type="application/ld+json">${JSON.stringify(breadcrumbJsonLd)}</script>` : ''}
 </head>
 <body>
 ${bodyHtml || `<p>Redirecting to <a href="${esc(canonical)}">${esc(title)}</a>...</p>`}
@@ -235,15 +237,22 @@ async function resolveProfileMeta(username) {
   const avatar = upscaleAvatar(host.seo_image || host.profile_image) || undefined;
 
   // og:image is a SHARE CARD, not the avatar. A square Google photo letterboxes
-  // inside a summary_large_image card, so we serve the generated 1200x630 host
-  // card whenever one EXISTS — including a 'dirty' one (a visible field changed
-  // and a regen is queued): a slightly-stale personal card beats dropping to the
-  // generic site card, which is exactly the design's "dirty => serve old image".
-  // Only a host with no card yet ('none') gets the site-wide default.
-  // The avatar still feeds JSON-LD Person.image below, which is correct there.
-  // ponytail: default = the existing site card; swap for a host-flavoured
-  // default 1200x630 when one's designed.
-  const ogCard = host.og_image || `${site}/og-image.png`;
+  // inside a summary_large_image card, so we serve a 1200x630 host card instead.
+  // The card is a Cloudinary URL composited on first crawl from the committed
+  // background + brand marks + this host's photo (services/seo/hostOgCard) — no
+  // pre-generation, no storage, never stale. Order: admin override (og_image) ->
+  // Cloudinary card -> static site default (when CLOUDINARY_CLOUD is unset or the
+  // card can't be built). The avatar still feeds JSON-LD Person.image below.
+  const ogCard = host.og_image
+    || cloudinaryHostCard({
+      name,
+      avatar: host.profile_image,
+      profession: host.profession,
+      city: cityForSeo(host.location),
+      handle: host.username,
+      bio: host.seo_description || host.bio,
+    })
+    || `${site}/og-image.png`;
 
   // sameAs (external identity links) + dateModified are AEO/entity-clarity signals:
   // they tell answer engines who this Person is and how fresh the page is.
@@ -306,7 +315,10 @@ async function resolveProfileMeta(username) {
     cardImage: true, // ogCard is always a known 1200x630 card (generated or site default)
     // No bookable service = thin profile: noindex but keep links followable.
     // Mirrors client resolveProfileSeo + the sitemap host filter.
+    // Honest signal matching the sitemap host filter: unverified hosts are excluded
+    // from the sitemap, so their profile must not say "index me" either.
     robots: host.is_indexable === false ? 'noindex,nofollow'
+      : host.is_verified !== true ? 'noindex,follow'
       : (services || []).length ? 'index,follow' : 'noindex,follow',
     jsonLd,
     // Same templated FAQ the client renders (utils/profileFaqs mirror) — emitted as
@@ -347,9 +359,11 @@ async function resolveServiceMeta(username, serviceSlug) {
     return { status: 404 };
   }
 
+  const { sameAsFrom } = require('../services/seo/pageContentModel');
   const { service, vendor } = outcome.payload;
   const site = trimSlash(SITE_URL);
   const baseTitle = service.title || 'Service';
+  const providerSameAs = sameAsFrom(vendor);
 
   // Compose progressively so the title isn't truncated in results (Google cuts
   // ~60 chars): full → drop " | Meeticulous" → drop " with {host}" → the bare
@@ -385,8 +399,14 @@ async function resolveServiceMeta(username, serviceSlug) {
     name: baseTitle,
     description: service.seo_description || service.short_description || service.description || undefined,
     url: canonical,
+    ...(service.updated_at ? { dateModified: service.updated_at } : {}),
     provider: vendor.name
-      ? { '@type': 'Person', name: vendor.name, url: vendor.username ? `${site}/${vendor.username}` : undefined }
+      ? {
+          '@type': 'Person',
+          name: vendor.name,
+          url: vendor.username ? `${site}/${vendor.username}` : undefined,
+          ...(providerSameAs.length ? { sameAs: providerSameAs } : {}),
+        }
       : undefined,
     // Price-on-request: omit the numeric price so the fee never leaks to crawlers
     // (Offer stays valid via availByRequest). Otherwise expose the real price.
@@ -412,21 +432,49 @@ async function resolveServiceMeta(username, serviceSlug) {
   // 1200x630 assets → flag cardImage so buildHtml emits the og:image size hints. A
   // real seo_image/thumbnail is whatever size the host uploaded, so it stays hint-less.
   const hostImage = service.seo_image || service.thumbnail_url;
+  // Share card: admin override (og_image) -> composited Cloudinary service card
+  // (services/seo/hostOgCard) -> host's own seo_image/thumbnail -> static floor.
+  // The first two are known 1200x630 cards (size hints honest); a host image is
+  // whatever size they uploaded, so it stays hint-less.
+  const svcCard = service.og_image || cloudinaryServiceCard({
+    title: baseTitle,
+    hostName: vendor.name,
+    hostAvatar: vendor.profile_image,
+    price: service.price,
+    priceOnRequest: service.price_on_request,
+    duration: service.duration,
+    mode: service.meeting_mode,
+  });
   const buildHtmlArgs = {
     title,
     description,
     canonical,
     ogTitle: service.og_title || service.seo_title || baseTitle,
     ogDescription: service.og_description || description,
-    // Ordered fallback mirroring client resolveServiceSeo (utils/seo.js): generated
-    // service card -> admin override -> host thumbnail -> static default floor.
-    image: service.og_image || hostImage || `${site}/service-og-default.png`,
-    cardImage: Boolean(service.og_image) || !hostImage,
-    robots: service.is_indexable === false ? 'noindex,nofollow' : 'index,follow',
+    image: svcCard || hostImage || `${site}/service-og-default.png`,
+    cardImage: Boolean(svcCard) || !hostImage,
+    // Honest signal matching the sitemap gate (server/services/sitemapService.js):
+    // explicit noindex wins (nofollow too); otherwise an unverified host's service
+    // is excluded from the sitemap, so the page falls to noindex,follow (links still
+    // followable) until the host is verified; a verified, indexable page indexes.
+    robots: service.is_indexable === false ? 'noindex,nofollow'
+      : (vendor.is_verified === true && vendor.is_indexable !== false) ? 'index,follow'
+      : 'noindex,follow',
     jsonLd,
     // Visible FAQ (host-authored ∪ templated) is now rendered in the body, so emit the
     // matching FAQPage schema — mirrors the host shell and the client ServiceDetail.
     faqJsonLd: faqPageLd(serviceFaqs(service, vendor)),
+    // Breadcrumb (Home > host > service) — the client renders this; the prerendered
+    // bot HTML previously omitted it, so AI/search crawlers never saw the trail.
+    breadcrumbJsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: site },
+        { '@type': 'ListItem', position: 2, name: vendor.name || vendor.username, item: `${site}/${vendor.username}` },
+        { '@type': 'ListItem', position: 3, name: baseTitle, item: canonical },
+      ],
+    },
   };
 
   // payload passed through (additive) for the crawler's content model (see profile).

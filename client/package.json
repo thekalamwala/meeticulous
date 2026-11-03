@@ -16,7 +16,6 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "og:blog": "node scripts/generateBlogOgImages.mjs",
     "og:check": "node scripts/checkOgImages.mjs"
   },
   "dependencies": {

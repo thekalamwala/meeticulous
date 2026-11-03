@@ -1,6 +1,6 @@
 /**
  * ServiceDetail — public service page at /:username/:slug
- * Sections: Hero · Tabs (Overview, Deliverables, Host, FAQ, How it Works, Reviews) · Sticky sidebar
+ * Sections: Hero · scrolling sections (Overview, Deliverables, Host, FAQ, Important Notes, Reviews) · Sticky sidebar
  */
 import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
@@ -261,37 +261,19 @@ const HostTab = ({ vendor, totalServices, totalBookings = 0 }) => {
   );
 };
 
-// ─── How it Works — generic 4-step explainer, derived from service shape ──────
-const HowItWorksTab = ({ duration, online = true }) => {
-  const mins = duration ? `${duration} focused minutes` : 'A focused session';
-  const steps = [
-    { t: 'Book your slot',
-      d: duration ? `Pick a ${duration}-minute time that fits your schedule.` : 'Pick a time that fits your schedule.' },
-    { t: 'Share context',
-      d: 'A quick form so we skip the small talk and dive straight in.' },
-    { t: 'The session',
-      d: online ? `${mins}, 1:1 on Google Meet.` : `${mins}, in person at the host's location.` },
-    { t: 'Follow-up',
-      d: 'A short summary and clear next steps, sent after the session.' },
-  ];
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-7">
-      {steps.map((s, i) => (
-        <div key={i}>
-          <div className="h-0.5 w-full rounded-full mb-3"
-            style={{ background: 'color-mix(in srgb, var(--profile-accent, #960D32) 35%, #e5e7eb)' }}/>
-          <div className="text-lg font-black mb-1.5" style={{ color: 'var(--profile-accent, #960D32)' }}>{i + 1}</div>
-          <h4 className="text-sm font-bold text-gray-900 mb-1">{s.t}</h4>
-          <p className="text-sm text-gray-500 leading-relaxed">{s.d}</p>
-        </div>
-      ))}
-    </div>
-  );
-};
+// ─── Important Notes — host-authored pre-booking notes (blush callout) ─────────
+const ImportantNotes = ({ text }) => (
+  <div className="mt-card mt-card--blush flex gap-3 p-4">
+    <svg className="w-5 h-5 flex-shrink-0 mt-0.5 text-maroon" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"/><path strokeLinecap="round" d="M12 16v-4M12 8.5h.01"/>
+    </svg>
+    <p className="text-sm leading-relaxed whitespace-pre-line text-ink">{text}</p>
+  </div>
+);
 
 // ─── Available Slots preview — real server slots, next 2 open days × 2 each ────
-// Self-contained: fetches only when mounted (i.e. when the Host tab is shown on
-// desktop, or inline on mobile). Scans up to 7 days, stops at 2 with openings.
+// Self-contained: fetches only when mounted (i.e. when the Host section renders).
+// Scans up to 7 days, stops at 2 with openings.
 const AvailableSlotsPreview = ({ hostId, serviceId, onViewAll }) => {
   const [days, setDays] = useState(null); // null = loading · [] = none found
 
@@ -375,6 +357,11 @@ const FAQTab = ({ faqs = [] }) => {
   );
 };
 
+// Maroon review star (brand) — filled or empty. Marigold is reserved for open slots.
+const RevStar = ({ filled }) => (
+  <svg className="w-3.5 h-3.5" style={{ color: filled ? 'var(--mt-maroon, #960D32)' : '#EBDCD9' }} fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+);
+
 const ReviewsTab = ({ reviews = [], avgRating, ratingBreakdown = [] }) => {
   const total = reviews.length;
   const avg = avgRating || 0;
@@ -382,33 +369,33 @@ const ReviewsTab = ({ reviews = [], avgRating, ratingBreakdown = [] }) => {
   const breakdown = ratingBreakdown.length
     ? ratingBreakdown
     : [5, 4, 3, 2, 1].map(star => ({ star, count: 0 }));
-  const accent = 'var(--profile-accent, #960D32)';
+  // % recommend = share of 4- and 5-star ratings
+  const positive = breakdown.filter(b => b.star >= 4).reduce((s, b) => s + (b.count || 0), 0);
+  const recommendPct = total ? Math.round((positive / total) * 100) : 0;
+  // Promote the first review that has a comment into a featured pull-quote.
+  const featured = reviews.find(r => r.comment) || null;
+  const rest = featured ? reviews.filter(r => r !== featured) : reviews;
+  const fmtDate = (d) => new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+
   return (
     <div>
-      {/* Summary — score + per-star bars clubbed into one tinted panel */}
-      <div className="flex flex-col sm:flex-row items-stretch gap-5 rounded-2xl p-5 mb-6"
-        style={{ background: `color-mix(in srgb, ${accent} 7%, white)` }}>
-        {/* Score */}
+      {/* Summary — score + per-star bars on a blush panel */}
+      <div className="flex flex-col sm:flex-row items-stretch gap-5 rounded-2xl p-5 mb-4 bg-blush">
         <div className="flex flex-shrink-0 flex-col items-center justify-center text-center sm:border-r sm:pr-6"
-          style={{ borderColor: `color-mix(in srgb, ${accent} 16%, white)` }}>
-          <div className="text-5xl font-black leading-none text-gray-900">{avg.toFixed(1)}</div>
-          <div className="mt-2 flex gap-0.5">
-            {[1,2,3,4,5].map(s => (
-              <svg key={s} className="w-3.5 h-3.5" style={{ color: s <= Math.round(avg) ? accent : '#e5d9d2' }} fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            ))}
-          </div>
+          style={{ borderColor: 'color-mix(in srgb, var(--mt-maroon, #960D32) 16%, transparent)' }}>
+          <div className="text-5xl font-black leading-none text-maroon">{avg.toFixed(1)}<span className="text-xl font-bold text-gray-400">/5</span></div>
+          <div className="mt-2 flex gap-0.5">{[1,2,3,4,5].map(s => <RevStar key={s} filled={s <= Math.round(avg)} />)}</div>
           <p className="mt-1.5 text-xs text-gray-500">{total} review{total === 1 ? '' : 's'}</p>
         </div>
-        {/* Per-star bars */}
         <div className="flex flex-1 flex-col justify-center gap-1.5">
-          {breakdown.map(({star, count}) => {
+          {breakdown.map(({ star, count }) => {
             const pct = total ? Math.round((count / total) * 100) : 0;
             return (
               <div key={star} className="flex items-center gap-2">
                 <span className="w-3 text-right text-xs font-medium text-gray-500">{star}</span>
-                <svg className="w-3 h-3 flex-shrink-0" style={{ color: accent }} fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                <RevStar filled />
                 <div className="h-2 flex-1 overflow-hidden rounded-full bg-white">
-                  <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: accent }}/>
+                  <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: 'var(--mt-maroon, #960D32)' }}/>
                 </div>
                 <span className="w-9 text-right text-xs text-gray-500">{pct}%</span>
               </div>
@@ -416,47 +403,72 @@ const ReviewsTab = ({ reviews = [], avgRating, ratingBreakdown = [] }) => {
           })}
         </div>
       </div>
-      {/* Testimonials — quote cards under the summary */}
-      {total === 0
-        ? <p className="text-gray-400 text-sm">No reviews yet.</p>
-        : <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {reviews.map(r => (
-              <div key={r.id} className="flex flex-col rounded-2xl border border-gray-100 bg-white p-5">
-                <div className="mb-3 flex gap-0.5">
-                  {[1,2,3,4,5].map(s => (
-                    <svg key={s} className="w-3.5 h-3.5" style={{ color: s <= Math.round(r.rating) ? accent : '#e5e7eb' }} fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                  ))}
-                </div>
-                {r.comment && <p className="flex-1 text-sm leading-relaxed text-gray-700">“{r.comment}”</p>}
-                <div className="mt-4 flex items-center gap-2.5 border-t border-gray-50 pt-3">
-                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold"
-                    style={{ background: `color-mix(in srgb, ${accent} 12%, white)`, color: accent }}>
-                    {r.profiles?.name?.charAt(0) || '?'}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="truncate text-sm font-semibold text-gray-900">{r.profiles?.name || 'Anonymous'}</div>
-                    <div className="text-xs text-gray-400">
-                      {new Date(r.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}
+
+      {total === 0 ? (
+        <p className="text-gray-400 text-sm">No reviews yet.</p>
+      ) : (
+        <>
+          {recommendPct >= 1 && (
+            <div className="inline-flex items-center gap-2 mb-4 rounded-full px-3.5 py-2 text-sm font-semibold"
+              style={{ background: 'var(--green-100, #E3F4EA)', color: 'var(--green-600, #1F7A4D)' }}>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/></svg>
+              {recommendPct}% of guests recommend this session
+            </div>
+          )}
+
+          {featured && (
+            <figure className="relative overflow-hidden rounded-2xl p-6 mb-4 bg-blush">
+              <span aria-hidden className="pointer-events-none absolute -top-2 left-4 font-serif italic text-maroon/20" style={{ fontSize: 110, lineHeight: 1 }}>“</span>
+              <blockquote className="relative font-serif italic text-ink leading-snug mb-4" style={{ fontSize: 'clamp(18px, 4vw, 22px)', maxWidth: '46ch' }}>
+                {featured.comment}
+              </blockquote>
+              <figcaption className="flex items-center flex-wrap gap-x-3 gap-y-2">
+                <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full font-bold text-white" style={{ background: 'var(--mt-maroon, #960D32)' }}>
+                  {featured.profiles?.name?.charAt(0) || '?'}
+                </span>
+                <span>
+                  <span className="block text-sm font-semibold text-gray-900">
+                    {featured.profiles?.name || 'Guest'}
+                    {featured.booking_id && (
+                      <span className="ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold align-middle" style={{ background: 'var(--green-100, #E3F4EA)', color: 'var(--green-600, #1F7A4D)' }}>
+                        <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" strokeWidth={2.6} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        Verified booking
+                      </span>
+                    )}
+                  </span>
+                  <span className="block text-xs text-gray-400">{fmtDate(featured.created_at)}</span>
+                </span>
+                <span className="ml-auto flex gap-0.5">{[1,2,3,4,5].map(s => <RevStar key={s} filled={s <= Math.round(featured.rating)} />)}</span>
+              </figcaption>
+            </figure>
+          )}
+
+          {rest.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {rest.map(r => (
+                <div key={r.id} className="flex flex-col rounded-2xl border border-gray-100 bg-white p-5">
+                  <div className="mb-3 flex gap-0.5">{[1,2,3,4,5].map(s => <RevStar key={s} filled={s <= Math.round(r.rating)} />)}</div>
+                  {r.comment && <p className="flex-1 text-sm leading-relaxed text-gray-700">“{r.comment}”</p>}
+                  <div className="mt-4 flex items-center gap-2.5 border-t border-gray-50 pt-3">
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold bg-blush text-maroon">
+                      {r.profiles?.name?.charAt(0) || '?'}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="truncate text-sm font-semibold text-gray-900">{r.profiles?.name || 'Anonymous'}</div>
+                      <div className="text-xs text-gray-400">{fmtDate(r.created_at)}</div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-      }
+              ))}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };
 
 // ─── Booking Card (sticky sidebar on desktop, block on mobile) ────────────────
-
-// Stable pseudo-random number 2–5 per service (deterministic from ID).
-const socialProofCount = (id) => {
-  let h = 0;
-  const s = String(id || '');
-  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
-  return (Math.abs(h) % 4) + 2;
-};
 
 // Conversion-focused trust signals shown under the CTA.
 const TRUST_SIGNALS = [
@@ -480,7 +492,6 @@ const BookingCard = ({ service, onBookNow, bookingFee = 0, bookingFeeBreakdown =
 
   const { platformFee = 0, tax = 0 } = bookingFeeBreakdown || {};
   const total = service.price + bookingFee;
-  const recentBookers = socialProofCount(service.id);
 
   return (
     <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
@@ -492,8 +503,9 @@ const BookingCard = ({ service, onBookNow, bookingFee = 0, bookingFeeBreakdown =
         style={{
           maxHeight: compact ? 0 : (imgH || 240),
           opacity: compact ? 0 : 1,
+          transform: compact ? 'translateY(-10px) scale(0.97)' : 'none',
           transition: motionOK
-            ? 'max-height 280ms cubic-bezier(0.4,0,0.2,1), opacity 200ms ease'
+            ? 'max-height 460ms cubic-bezier(0.22,1,0.36,1), opacity 300ms ease, transform 460ms cubic-bezier(0.22,1,0.36,1)'
             : 'none',
         }}
       >
@@ -512,9 +524,9 @@ const BookingCard = ({ service, onBookNow, bookingFee = 0, bookingFeeBreakdown =
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-black text-gray-900 leading-none">₹{service.price}</span>
               </div>
-              {bookingFee > 0 && (
+              {platformFee > 0 && (
                 <p className="relative mt-1.5 flex items-center gap-1 text-xs text-gray-500">
-                  <span>+ ₹{bookingFee} platform fee &amp; tax</span>
+                  <span>+ ₹{platformFee} platform fee</span>
                   <button type="button" onClick={() => setFeeTipOpen(o => !o)} aria-label="View fee breakdown"
                     className="text-gray-400 hover:text-gray-600 transition-colors">
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
@@ -575,13 +587,15 @@ const BookingCard = ({ service, onBookNow, bookingFee = 0, bookingFeeBreakdown =
             </li>
           ))}
 
-          {/* Social proof */}
-          <li className="flex items-start gap-2.5 text-xs text-gray-600">
-            <svg className="w-4 h-4 flex-shrink-0 text-orange-500 mt-0.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
-            </svg>
-            <span><strong className="text-gray-800">{recentBookers}</strong> people booked this in last 3 days</span>
-          </li>
+          {/* Social proof — real all-time bookings, not a fabricated count */}
+          {service.total_bookings > 0 && (
+            <li className="flex items-start gap-2.5 text-xs text-gray-600">
+              <svg className="w-4 h-4 flex-shrink-0 text-maroon mt-0.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              <span><strong className="text-gray-800">{service.total_bookings}</strong> {service.total_bookings === 1 ? 'session' : 'sessions'} booked</span>
+            </li>
+          )}
 
           {/* Safety */}
           <li className="flex items-start gap-2.5 text-xs text-gray-600">
@@ -596,120 +610,20 @@ const BookingCard = ({ service, onBookNow, bookingFee = 0, bookingFeeBreakdown =
   );
 };
 
-// ─── Sponsored slot — subtle native ad placeholder under the booking card ──────
-const AdSpaceCard = () => (
-  <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-5 py-6 text-center">
-    <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-400">Sponsored</p>
-    <h3 className="mt-2 text-sm font-bold text-gray-900">Ad space available</h3>
-    <p className="mt-1 text-xs leading-relaxed text-gray-500">Reach buyers actively booking services.</p>
-    <a href="mailto:team@meeticulous.com?subject=Ad%20space%20enquiry"
-      className="mt-3 inline-flex items-center gap-1 text-sm font-semibold no-underline hover:underline"
-      style={{ color: 'var(--profile-accent, #960D32)' }}>
-      Advertise here →
-    </a>
-  </div>
-);
-
-// ─── Sponsored Card — promo upsell styled like a native ad slot ────────────────
-const SponsoredCard = () => (
-  <div className="relative rounded-2xl border border-gray-200 bg-white p-5 text-center">
-    {/* Ad label */}
-    <div className="absolute right-3 top-3 flex items-center gap-1.5 text-[11px] text-gray-400">
-      <span>Ad</span>
-      <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
-    </div>
-
-    {/* Eyebrow stat */}
-    <p className="px-4 pt-1 text-xs leading-relaxed text-gray-500">
-      Verified hosts get up to <strong className="text-gray-700">5x more bookings</strong> on average
-    </p>
-
-    {/* Avatar + Pro badge */}
-    <div className="my-4 flex items-center justify-center gap-3">
-      <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-gray-100 text-gray-300">
-        <svg className="w-9 h-9" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4.42 0-8 2.69-8 6v2h16v-2c0-3.31-3.58-6-8-6z"/></svg>
-      </div>
-      <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-700">
-        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="#E0A431"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
-        Pro
-      </span>
-    </div>
-
-    {/* Headline */}
-    <p className="text-base font-semibold leading-snug text-gray-700">More visibility means more bookings</p>
-
-    {/* Pill CTA */}
-    <Link to="/become-a-host"
-      className="btn cta-ghost mt-4 inline-flex items-center justify-center !rounded-full px-6 py-2.5 text-sm font-semibold no-underline">
-      Try 1 month free
-    </Link>
-  </div>
-);
-
-// ─── Sponsored Card B — second native ad slot ─────────────────────────────────
-const SponsoredCardB = () => (
-  <div className="relative rounded-2xl border border-gray-200 bg-white p-5 text-center">
-    {/* Ad label */}
-    <div className="absolute right-3 top-3 flex items-center gap-1.5 text-[11px] text-gray-400">
-      <span>Ad</span>
-      <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
-    </div>
-
-    {/* Eyebrow */}
-    <p className="px-4 pt-1 text-xs leading-relaxed text-gray-500">
-      List your service free for <strong className="text-gray-700">30 days</strong>. Get started today.
-    </p>
-
-    {/* Avatar + brand mark */}
-    <div className="my-4 flex items-center justify-center gap-4">
-      <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-gray-100 text-gray-300">
-        <svg className="w-9 h-9" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4.42 0-8 2.69-8 6v2h16v-2c0-3.31-3.58-6-8-6z"/></svg>
-      </div>
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl text-base font-black text-white"
-        style={{ background: 'var(--profile-accent, #960D32)' }}>B</div>
-    </div>
-
-    {/* Headline */}
-    <p className="text-base font-semibold leading-snug text-gray-700">Save time and grow your bookings.</p>
-
-    {/* Pill CTA */}
-    <Link to="/become-a-host"
-      className="btn cta-ghost mt-4 inline-flex items-center justify-center !rounded-full px-6 py-2.5 text-sm font-semibold no-underline">
-      Sign Up
-    </Link>
-  </div>
-);
-
-// ─── Display Ad Card — bold full-bleed banner (LinkedIn-style) ─────────────────
-const DisplayAdCard = () => (
-  <Link to="/become-a-host"
-    className="group relative block overflow-hidden rounded-2xl no-underline"
-    style={{ background: '#1463D6' }}>
-    {/* Ad tag */}
-    <span className="absolute right-3 top-2 z-10 text-[11px] font-medium text-white/70">Ad</span>
-
-    <div className="space-y-2.5 p-5">
-      {/* navy bubble */}
-      <div className="inline-block rounded-2xl bg-[#0A2A66] px-4 py-3">
-        <p className="text-2xl font-black leading-[1.05] tracking-tight text-white">Bookings<br/>slipping away?</p>
-      </div>
-      {/* yellow bubble, overlapping */}
-      <div className="-mt-1 rounded-2xl bg-[#FFC400] px-4 py-3.5">
-        <p className="text-2xl font-black leading-[1.05] tracking-tight text-[#0A2A66]">But Meeticulous can run your calendar for you.</p>
-      </div>
-
-      {/* bottom row — pill CTA + wordmark */}
-      <div className="flex items-center justify-between gap-2 pt-2">
-        <span className="inline-flex items-center gap-2 rounded-full bg-[#0A2A66] py-2 pl-4 pr-1.5 text-sm font-bold text-white transition-transform group-">
-          Get started
-          <span className="flex h-7 w-7 items-center justify-center rounded-full" style={{ background: '#FFC400' }}>
-            <svg className="w-4 h-4 text-[#0A2A66]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-          </span>
-        </span>
-        <span className="text-sm font-extrabold leading-tight text-white text-right">Meeticulous<br/>Pro</span>
-      </div>
-    </div>
-  </Link>
+// ─── Hostinger affiliate slot — "your own domain" offer, full Hostinger purple ──
+const HOSTINGER_URL = 'https://www.hostinger.com/in?REFERRALCODE=meeticulous';
+const HostingerCard = () => (
+  <a href={HOSTINGER_URL} target="_blank" rel="noreferrer sponsored"
+    className="relative flex items-center gap-3.5 overflow-hidden rounded-2xl p-4 no-underline"
+    style={{ background: '#673DE6' }}>
+    <span className="absolute right-3 top-2 text-[11px] text-white/70">Ad</span>
+    <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-[14px] bg-white text-[26px] font-black" style={{ color: '#673DE6' }}>H</span>
+    <span className="min-w-0">
+      <span className="block text-[15px] font-black leading-tight text-white">Buy yourname.com for ₹1</span>
+      <span className="mt-0.5 block text-xs text-white/80">Domain + hosting on Hostinger</span>
+      <span className="mt-2 inline-block rounded-full bg-white px-3 py-1 text-xs font-bold" style={{ color: '#673DE6' }}>Claim offer →</span>
+    </span>
+  </a>
 );
 
 // ─── Profile Card (creator summary — sits below the booking card) ─────────────
@@ -794,8 +708,6 @@ const ProfileCard = ({ vendor, rating, reviewCount, bookings }) => {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-const TABS = ['Overview', 'Deliverables', 'Host', 'FAQ', 'How it Works', 'Reviews'];
-
 export default function ServiceDetail() {
   const { profileSlug, serviceSlug } = useParams();
   const navigate  = useNavigate();
@@ -807,9 +719,7 @@ export default function ServiceDetail() {
   const [error, setError]   = useState('');
   // Not-found state gets the stripped minimal footer, header kept.
   useMinimalFooter(!loading && (!!error || !data));
-  const [tab, setTab]       = useState('Overview');
-  const [feeInfoOpen, setFeeInfoOpen] = useState(false); // mobile fee disclaimer
-  const [notesModalOpen, setNotesModalOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('');
 
   // Desktop sidebar polish: collapse the booking-card thumbnail once the reader
   // scrolls past the hero (IntersectionObserver — no scroll handler), and honour
@@ -837,6 +747,17 @@ export default function ServiceDetail() {
     mq.addEventListener?.('change', update);
     return () => mq.removeEventListener?.('change', update);
   }, []);
+
+  // Scrollspy — highlight the section-nav link for whatever section is in view.
+  useEffect(() => {
+    const els = document.querySelectorAll('[data-section]');
+    if (!els.length) return;
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) setActiveSection(e.target.id); });
+    }, { rootMargin: '-72px 0px -62% 0px', threshold: 0 });
+    els.forEach(el => obs.observe(el));
+    return () => obs.disconnect();
+  }, [data, loading]);
 
   useEffect(() => {
     let alive = true;
@@ -936,141 +857,76 @@ export default function ServiceDetail() {
       : []),
   ];
 
+  // Scrolling sections (replaces tabs). Optional sections appear only when they
+  // carry content, so no empty section/nav item is ever shown.
+  const sections = [
+    { id: 'overview', label: 'Overview', heading: `Overview about ${service.title}`,
+      node: <OverviewTab html={service.long_description || service.description} /> },
+    hasDeliverables && { id: 'deliverables', label: 'Deliverables', heading: 'Deliverables',
+      node: <DeliverablesTab included={service.included_items} excluded={service.excluded_items} /> },
+    { id: 'host', label: 'Host', heading: 'Host',
+      node: (
+        <>
+          <HostTab vendor={vendor} totalServices={totalServices} totalBookings={totalBookings} />
+          <AvailableSlotsPreview hostId={vendor?.id} serviceId={service.id} onViewAll={handleBookNow} />
+        </>
+      ) },
+    hasFAQs && { id: 'faq', label: 'FAQ', count: faqs.length, heading: 'FAQ',
+      node: <FAQTab faqs={faqs} /> },
+    service.important_note && { id: 'notes', label: 'Important Notes', heading: 'Important Notes',
+      node: <ImportantNotes text={service.important_note} /> },
+    { id: 'reviews', label: 'Reviews', count: reviews?.length || 0, heading: 'Reviews',
+      node: <ReviewsTab reviews={reviews} avgRating={avgRating} ratingBreakdown={ratingBreakdown} /> },
+  ].filter(Boolean);
+
+  // Smooth-scroll to a section, offsetting the sticky section nav.
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + window.scrollY - 72;
+    window.scrollTo({ top, behavior: motionOK ? 'smooth' : 'auto' });
+    setActiveSection(id);
+  };
+
   return (
     <div className="min-h-screen bg-canvas relative">
       <Seo {...seo} jsonLd={jsonLd} />
-      {/* ── Above-the-fold backdrop — flat dark-grey hero band + calendar-inspired
-           accents. Host theme colour no longer paints the hero; it stays on
-           CTAs/badges/tabs only. White dots read against the dark band. ── */}
+      {/* ── Above-the-fold backdrop — flat brand-maroon field with a tone-on-tone
+           slot pattern (open = marigold, booked = maroon + pink dot) and one ee
+           thread bleeding off the bottom-right. Host theme colour stays off the
+           hero; it paints CTAs/badges only. ── */}
       <div aria-hidden data-bg-band
-        className="pointer-events-none absolute inset-x-0 top-0 h-[34rem] sm:h-[30rem] overflow-hidden z-[1]"
-        style={{ background: '#2a2a2a' }}>
+        className="pointer-events-none absolute inset-x-0 top-0 h-[34rem] sm:h-[30rem] overflow-hidden z-[1] bg-maroon">
 
-        {/* ── Dense dot grid — uniform repeating pattern via SVG <pattern> ── */}
-        <svg className="absolute inset-0 h-full w-full opacity-[0.22] sm:opacity-[0.26]"
-          style={{ color: '#ffffff' }}>
+        {/* ── Slot pattern — right-biased booking-slot pills, faded ── */}
+        <svg className="absolute inset-0 h-full w-full opacity-60" viewBox="0 0 1200 520"
+          preserveAspectRatio="xMaxYMid slice" fill="none">
           <defs>
-            <pattern id="dot-grid" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
-              <circle cx="12" cy="12" r="1.2" fill="currentColor"/>
-            </pattern>
-            <linearGradient id="dot-fade" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="white" stopOpacity="1"/>
-              <stop offset="60%" stopColor="white" stopOpacity="0.6"/>
-              <stop offset="100%" stopColor="white" stopOpacity="0"/>
+            <linearGradient id="slot-fade" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#fff" stopOpacity="1"/>
+              <stop offset="70%" stopColor="#fff" stopOpacity="0.35"/>
+              <stop offset="100%" stopColor="#fff" stopOpacity="0"/>
             </linearGradient>
-            <linearGradient id="dot-fade-lr" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="white" stopOpacity="0"/>
-              <stop offset="30%" stopColor="white" stopOpacity="0.3"/>
-              <stop offset="60%" stopColor="white" stopOpacity="0.8"/>
-              <stop offset="100%" stopColor="white" stopOpacity="1"/>
-            </linearGradient>
-            <mask id="dot-mask">
-              <rect width="100%" height="100%" fill="url(#dot-fade)"/>
-            </mask>
-            <mask id="dot-mask-lr">
-              <rect width="100%" height="100%" fill="url(#dot-fade-lr)"/>
-            </mask>
+            <mask id="slot-mask"><rect width="1200" height="520" fill="url(#slot-fade)"/></mask>
           </defs>
-          <g mask="url(#dot-mask)">
-            <g mask="url(#dot-mask-lr)">
-              <rect width="100%" height="100%" fill="url(#dot-grid)"/>
-            </g>
+          <g mask="url(#slot-mask)">
+            <rect x="760" y="56" width="150" height="46" rx="20" fill="none" stroke="#FF9FB0" strokeWidth="1.5" opacity="0.5"/>
+            <rect x="936" y="56" width="110" height="46" rx="20" fill="none" stroke="#FF9FB0" strokeWidth="1.5" opacity="0.32"/>
+            <rect x="820" y="128" width="130" height="46" rx="20" fill="none" stroke="#F6C35A" strokeWidth="1.5" opacity="0.6"/>
+            <rect x="978" y="128" width="92" height="46" rx="20" fill="#7A0A28"/>
+            <circle cx="998" cy="151" r="4" fill="#FF9FB0"/>
+            <rect x="700" y="200" width="118" height="46" rx="20" fill="none" stroke="#FF9FB0" strokeWidth="1.5" opacity="0.3"/>
+            <rect x="846" y="200" width="150" height="46" rx="20" fill="none" stroke="#FF9FB0" strokeWidth="1.5" opacity="0.42"/>
+            <rect x="1024" y="200" width="88" height="46" rx="20" fill="none" stroke="#F6C35A" strokeWidth="1.5" opacity="0.5"/>
+            <rect x="768" y="272" width="112" height="46" rx="20" fill="none" stroke="#FF9FB0" strokeWidth="1.5" opacity="0.24"/>
+            <rect x="908" y="272" width="146" height="46" rx="20" fill="#7A0A28"/>
+            <circle cx="928" cy="295" r="4" fill="#FF9FB0"/>
           </g>
         </svg>
 
-        {/* ── Calendar date grid — 7-col layout with date numbers, right-biased ── */}
-        <svg className="absolute top-6 right-0 hidden h-[26rem] w-[42rem] opacity-[0.30] sm:block lg:w-[52rem]"
-          viewBox="0 0 700 400" fill="none" style={{ color: '#ffffff' }}>
-          {/* row 1: dates 01-07 */}
-          <text x="240" y="58" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.6">01</text>
-          <text x="310" y="58" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.7">02</text>
-          <text x="380" y="58" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.65">03</text>
-          <text x="450" y="58" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.5">04</text>
-          <text x="520" y="58" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.7">05</text>
-          <text x="590" y="58" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.6">06</text>
-          <text x="660" y="58" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.4">07</text>
-          {/* row 2: dates 08-13 */}
-          <text x="280" y="128" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.55">08</text>
-          <text x="350" y="128" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.7">09</text>
-          <text x="420" y="128" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.6">10</text>
-          <text x="490" y="128" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.75">11</text>
-          <text x="560" y="128" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.8">12</text>
-          <text x="630" y="128" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.65">13</text>
-          {/* row 3: dates 14-20 */}
-          <text x="210" y="198" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.4">14</text>
-          <text x="280" y="198" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.55">15</text>
-          <text x="350" y="198" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.6">16</text>
-          <text x="420" y="198" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.65">17</text>
-          <text x="490" y="198" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.7">18</text>
-          <text x="560" y="198" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.75">19</text>
-          <text x="630" y="198" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.5">20</text>
-          {/* row 4: dates 21-26 */}
-          <text x="240" y="268" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.45">21</text>
-          <text x="310" y="268" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.5">22</text>
-          <text x="380" y="268" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.55">23</text>
-          <text x="450" y="268" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.6">24</text>
-          <text x="520" y="268" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.65">25</text>
-          <text x="590" y="268" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.55">26</text>
-          {/* row 5: dates 28-31 */}
-          <text x="280" y="338" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.35">28</text>
-          <text x="350" y="338" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.4">29</text>
-          <text x="420" y="338" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.45">30</text>
-          <text x="490" y="338" fill="currentColor" fontSize="13" fontFamily="monospace" opacity="0.4">31</text>
-
-          {/* ── Booking connection lines between dates ── */}
-          {/* flow 01→02→03 */}
-          <path d="M256 52 H300" stroke="currentColor" strokeWidth="0.8" opacity="0.45" strokeDasharray="4 3"/>
-          <path d="M326 52 H370" stroke="currentColor" strokeWidth="0.8" opacity="0.4" strokeDasharray="4 3"/>
-          {/* flow 05→12 vertical */}
-          <path d="M530 64 V118" stroke="currentColor" strokeWidth="0.8" opacity="0.5"/>
-          <circle cx="530" cy="64" r="2.5" fill="currentColor" opacity="0.6"/>
-          <circle cx="530" cy="118" r="2.5" fill="currentColor" opacity="0.55"/>
-          {/* flow 09→10→17 L-shape */}
-          <path d="M366 122 H410 V188" stroke="currentColor" strokeWidth="0.8" opacity="0.45"/>
-          <circle cx="366" cy="122" r="2" fill="currentColor" opacity="0.5"/>
-          <circle cx="410" cy="122" r="2" fill="currentColor" opacity="0.35"/>
-          <circle cx="410" cy="188" r="2.5" fill="currentColor" opacity="0.5"/>
-          {/* flow 12→13→20 */}
-          <path d="M576 122 H620 V188" stroke="currentColor" strokeWidth="0.8" opacity="0.5"/>
-          <rect x="618" y="184" width="5" height="5" rx="1" fill="currentColor" opacity="0.6"/>
-          {/* flow 18→25 */}
-          <path d="M500 204 V258" stroke="currentColor" strokeWidth="0.7" opacity="0.4"/>
-          {/* flow 19→26 diagonal-ish connector */}
-          <path d="M576 204 V220 H600 V258" stroke="currentColor" strokeWidth="0.7" opacity="0.35"/>
-          {/* flow 24→31 */}
-          <path d="M460 274 V328" stroke="currentColor" strokeWidth="0.6" opacity="0.3"/>
-
-          {/* ── Calendar cells — small rounded rects around some dates ── */}
-          <rect x="516" y="40" width="30" height="28" rx="4" stroke="currentColor" strokeWidth="0.8" opacity="0.4"/>
-          <rect x="556" y="110" width="30" height="28" rx="4" stroke="currentColor" strokeWidth="0.9" opacity="0.55"/>
-          <rect x="486" y="180" width="30" height="28" rx="4" stroke="currentColor" strokeWidth="0.7" opacity="0.35"/>
-          <rect x="626" y="180" width="30" height="28" rx="4" stroke="currentColor" strokeWidth="0.8" opacity="0.45"/>
-          <rect x="516" y="250" width="30" height="28" rx="4" stroke="currentColor" strokeWidth="0.7" opacity="0.35"/>
-          <rect x="346" y="320" width="30" height="28" rx="4" stroke="currentColor" strokeWidth="0.6" opacity="0.25"/>
-          {/* scattered cells — no dates, ghost cells */}
-          <rect x="170" y="90" width="26" height="22" rx="3" stroke="currentColor" strokeWidth="0.6" opacity="0.2"/>
-          <rect x="200" y="230" width="24" height="20" rx="3" stroke="currentColor" strokeWidth="0.5" opacity="0.15"/>
-          <rect x="660" y="280" width="28" height="24" rx="4" stroke="currentColor" strokeWidth="0.6" opacity="0.2"/>
-
-          {/* ── Intersection nodes — small glowing squares ── */}
-          <rect x="348" y="120" width="4" height="4" rx="1" fill="currentColor" opacity="0.55"/>
-          <rect x="488" y="120" width="5" height="5" rx="1" fill="currentColor" opacity="0.65"/>
-          <rect x="558" y="50" width="4" height="4" rx="1" fill="currentColor" opacity="0.5"/>
-          <rect x="418" y="260" width="4" height="4" rx="1" fill="currentColor" opacity="0.4"/>
-          <rect x="528" y="190" width="5" height="5" rx="1" fill="currentColor" opacity="0.5"/>
-        </svg>
-
-        {/* ── Left side — very faint scattered dots + one ghost cell (kept ~70% cleaner) ── */}
-        <svg className="absolute top-12 left-0 hidden h-48 w-40 opacity-[0.12] sm:block"
-          viewBox="0 0 160 200" fill="none" style={{ color: '#ffffff' }}>
-          <circle cx="30" cy="30" r="1.5" fill="currentColor" opacity="0.4"/>
-          <circle cx="80" cy="50" r="1.2" fill="currentColor" opacity="0.3"/>
-          <circle cx="50" cy="90" r="1" fill="currentColor" opacity="0.2"/>
-          <circle cx="110" cy="70" r="1.3" fill="currentColor" opacity="0.25"/>
-          <circle cx="40" cy="140" r="1" fill="currentColor" opacity="0.15"/>
-          <circle cx="90" cy="120" r="1.2" fill="currentColor" opacity="0.2"/>
-          <rect x="60" y="150" width="22" height="18" rx="3" stroke="currentColor" strokeWidth="0.5" opacity="0.15"/>
-        </svg>
+        {/* ── ee thread — one per layout, bleeding off the bottom-right, behind content ── */}
+        <img src="/brand/ds/02-ee/mt-ee-pink.svg" alt="" aria-hidden
+          className="absolute bottom-0 right-0 w-[320px] max-w-[55%] translate-x-6 translate-y-6 opacity-20"/>
       </div>
 
       {/* ── HERO + Content — single container so sidebar starts under h1 ── */}
@@ -1092,6 +948,13 @@ export default function ServiceDetail() {
           {/* ── LEFT: Hero + tabs ── */}
           <div className="flex-1 min-w-0">
             <section className="relative pb-6">
+
+              {isBestseller && (
+                <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-pink px-3 py-1 text-xs font-bold text-maroon-dark">
+                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                  Bestseller
+                </span>
+              )}
 
               {/* Eyebrow */}
               {eyebrow && (
@@ -1134,81 +997,30 @@ export default function ServiceDetail() {
                     </span>
                   </>
                 )}
-                {service.important_note && (
-                  <>
-                    <span className="text-white/30">|</span>
-                    <button type="button" onClick={() => setNotesModalOpen(true)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-amber-300 bg-amber-50 text-amber-800 text-xs font-semibold hover:bg-amber-100 transition-colors">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                      Important Notes
-                    </button>
-                  </>
-                )}
               </div>
               {/* Sentinel — when this scrolls out of view, sidebar thumbnail collapses */}
               <div ref={heroEndRef} className="h-px" aria-hidden />
             </section>
 
-            {/* Tabs */}
+            {/* Sections — sticky scrollspy nav + stacked panels (replaces tabs) */}
             <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
-              {/* Tab bar — desktop only; mobile stacks every section */}
-              <div className="hidden lg:flex overflow-x-auto border-b border-gray-100 scrollbar-hide">
-                {TABS.map(t => (
-                  <button key={t} onClick={() => setTab(t)}
-                    className={`px-5 py-3.5 text-sm font-medium whitespace-nowrap flex-shrink-0 transition-colors border-b-2 ${tab === t ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>
-                    {t}
-                    {t === 'Reviews' && (reviews?.length || 0) > 0 && (
-                      <span className="ml-1.5 text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">{reviews.length}</span>
-                    )}
-                    {t === 'FAQ' && hasFAQs && (
-                      <span className="ml-1.5 text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">{faqs.length}</span>
-                    )}
-                  </button>
+              <nav className="sticky top-16 z-20 flex gap-1 overflow-x-auto border-b border-gray-100 bg-white px-2 scrollbar-hide" aria-label="Sections">
+                {sections.map(s => (
+                  <a key={s.id} href={`#${s.id}`}
+                    onClick={(e) => { e.preventDefault(); scrollToSection(s.id); }}
+                    className={`whitespace-nowrap flex-shrink-0 border-b-2 px-4 py-3.5 text-sm font-medium transition-colors ${activeSection === s.id ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>
+                    {s.label}
+                    {s.count > 0 && <span className="ml-1.5 rounded-full bg-blush px-1.5 py-0.5 text-xs text-maroon">{s.count}</span>}
+                  </a>
                 ))}
-              </div>
-
-              {/* Tab content — desktop: active tab only */}
-              <div className="hidden lg:block p-6">
-                {tab === 'Overview'     && <OverviewTab html={service.long_description || service.description}/>}
-                {tab === 'Deliverables' && <DeliverablesTab included={service.included_items} excluded={service.excluded_items}/>}
-                {tab === 'Host'         && (
-                  <>
-                    <HostTab vendor={vendor} totalServices={totalServices} totalBookings={totalBookings}/>
-                    <AvailableSlotsPreview hostId={vendor?.id} serviceId={service.id} onViewAll={handleBookNow}/>
-                  </>
-                )}
-                {tab === 'FAQ'          && <FAQTab faqs={faqs}/>}
-                {tab === 'How it Works' && <HowItWorksTab duration={service.duration} online={service.meeting_mode !== 'offline'}/>}
-                {tab === 'Reviews'      && <ReviewsTab reviews={reviews} avgRating={avgRating} ratingBreakdown={ratingBreakdown}/>}
-              </div>
-
-              {/* Mobile: every section stacked, one after another */}
-              <div className="lg:hidden divide-y divide-gray-100">
-                <section className="p-6">
-                  <h2 className="text-base font-bold text-gray-900 mb-4">Overview about {service.title}</h2>
-                  <OverviewTab html={service.long_description || service.description}/>
-                </section>
-                <section className="p-6">
-                  <h2 className="text-base font-bold text-gray-900 mb-4">Deliverables</h2>
-                  <DeliverablesTab included={service.included_items} excluded={service.excluded_items}/>
-                </section>
-                <section className="p-6">
-                  <h2 className="text-base font-bold text-gray-900 mb-4">Host</h2>
-                  <HostTab vendor={vendor} totalServices={totalServices} totalBookings={totalBookings}/>
-                  <AvailableSlotsPreview hostId={vendor?.id} serviceId={service.id} onViewAll={handleBookNow}/>
-                </section>
-                <section className="p-6">
-                  <h2 className="text-base font-bold text-gray-900 mb-4">FAQ</h2>
-                  <FAQTab faqs={faqs}/>
-                </section>
-                <section className="p-6">
-                  <h2 className="text-base font-bold text-gray-900 mb-4">How it Works</h2>
-                  <HowItWorksTab duration={service.duration} online={service.meeting_mode !== 'offline'}/>
-                </section>
-                <section className="p-6">
-                  <h2 className="text-base font-bold text-gray-900 mb-4">Reviews</h2>
-                  <ReviewsTab reviews={reviews} avgRating={avgRating} ratingBreakdown={ratingBreakdown}/>
-                </section>
+              </nav>
+              <div className="divide-y divide-gray-100">
+                {sections.map(s => (
+                  <section key={s.id} id={s.id} data-section className="scroll-mt-28 p-6">
+                    <h2 className="mb-4 text-base font-bold text-gray-900">{s.heading}</h2>
+                    {s.node}
+                  </section>
+                ))}
               </div>
             </div>
           </div>
@@ -1217,34 +1029,12 @@ export default function ServiceDetail() {
           <div className="hidden lg:block lg:w-[320px] flex-shrink-0">
             <div className="sticky top-20 flex flex-col gap-5">
               <BookingCard service={service} onBookNow={handleBookNow} bookingFee={bookingFee} bookingFeeBreakdown={bookingFeeBreakdown} compact={!heroInView} motionOK={motionOK}/>
-              <AdSpaceCard/>
+              <ProfileCard vendor={vendor} rating={rating} reviewCount={reviewCount} bookings={bookings}/>
+              <HostingerCard/>
             </div>
           </div>
         </div>
       </div>
-
-      {/* ── Important Notes modal ── */}
-      {notesModalOpen && service.important_note && (
-        <>
-          <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={() => setNotesModalOpen(false)}/>
-          <div className="fixed z-50 inset-0 flex items-center justify-center p-4 pointer-events-none">
-            <div className="pointer-events-auto bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 relative">
-              <button type="button" onClick={() => setNotesModalOpen(false)}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors"
-                aria-label="Close">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-              </button>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-600">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                </span>
-                <h3 className="text-lg font-bold text-gray-900">Important Notes</h3>
-              </div>
-              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{service.important_note}</p>
-            </div>
-          </div>
-        </>
-      )}
 
       {/* ── Mobile: sticky bottom CTA bar ── */}
       <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 flex items-center gap-3 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
@@ -1258,8 +1048,8 @@ export default function ServiceDetail() {
               <div className="flex items-baseline gap-1.5">
                 <span className="text-xl font-black text-gray-900 leading-none">₹{service.price}</span>
               </div>
-              {bookingFee > 0 && (
-                <p className="text-[11px] text-gray-500 mt-0.5">+ ₹{bookingFee} platform fee &amp; tax</p>
+              {(bookingFeeBreakdown?.platformFee || 0) > 0 && (
+                <p className="text-[11px] text-gray-500 mt-0.5">+ ₹{bookingFeeBreakdown.platformFee} platform fee</p>
               )}
             </>
           )}

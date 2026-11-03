@@ -2,42 +2,59 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
-import { themeFor, AUTHOR_URL, AUTHOR } from '../data/blogPosts';
+import { AUTHOR_URL, AUTHOR } from '../data/blogPosts';
 import { getBlogBySlug } from '../services/api';
 import { isNotFoundError } from '../utils/fetchError';
 import ErrorPage from './ErrorPage';
 import Seo from '../components/common/Seo';
 import { SITE_URL, resolveBlogSeo, articleGraphJsonLd } from '../utils/seo';
-import BlogHeroThumbnail from '../components/blog/BlogHeroThumbnail';
 import RelatedPosts from '../components/blog/RelatedPosts';
 import PetalSpinner from '../components/common/PetalSpinner';
 import { prerendered } from '../services/prerenderData';
 
-// /blog/:slug — immersive post page. A split hero (left = category colour +
-// text, right = image, hidden on mobile) over a dark reading body, finished
-// with a share row and a bottom CTA band in the same category colour.
-// Colour comes from the post category (see CATEGORY_THEME in data/blogPosts.js).
-// Unknown slug → redirect to /blog index.
+// /blog/:slug — immersive post page. A split hero (left = maroon brand field +
+// text, right = image, hidden on mobile) over a light cream reading body,
+// finished with a share row and a maroon bottom CTA band.
+// Loop & Slot brand: cream ground, ink body, maroon headings/accent. The post
+// category is a text label only — it no longer drives colour (BRAND_RULES bans
+// the old per-category blues/greens/yellows). All values map to brand tokens
+// in client/src/styles/brand.css.
 
-const BODY_BG = '#0E0E10';
-const BODY_TX = '#DCDCE1';
-const BODY_DIM = 'rgba(220,220,225,0.55)';
-const HEAD_TX = '#F5F5F7';
+const BODY_BG = '#FBF5F3';  // --mt-cream, page ground
+const BODY_TX = '#2B0A14';  // --mt-ink, body text
+const BODY_DIM = '#6B524F'; // --neutral-600, secondary text
+const HEAD_TX = '#960D32';  // --mt-maroon, headings on cream
+const ACCENT = '#960D32';   // --mt-maroon, links/markers/rules (rose is ≥24px only)
+const RULE = '#EBDCD9';     // --neutral-200, hairline borders
+const SUNK = '#FFE4EA';     // --mt-blush, subtle fills (table head, info/faq cards)
+const ROW = '#F5ECEA';      // --neutral-100, table row divider
 
-// Band (hero / bottom) text colours derived from light/dark theme.
-const bandText = (t) =>
-  t.light
-    ? { title: '#141416', soft: 'rgba(0,0,0,0.66)', faint: 'rgba(0,0,0,0.5)', rule: 'rgba(0,0,0,0.12)' }
-    : { title: '#FFFFFF', soft: 'rgba(255,255,255,0.74)', faint: 'rgba(255,255,255,0.6)', rule: 'rgba(255,255,255,0.18)' };
+// Fixed brand theme for the hero / bottom band — maroon field, white text.
+const THEME = { band: '#960D32', accent: ACCENT, light: false };
 
-// Right-hand hero visual: the post image, or a branded fallback panel.
+// Band (hero / bottom) text colours on the maroon field.
+const bandText = () => ({
+  title: '#FFFFFF',
+  soft: '#FFE4EA',            // --mt-blush
+  faint: 'rgba(255,255,255,0.72)',
+  rule: 'rgba(255,255,255,0.22)',
+});
+
+// Right-hand hero visual: the post image in a rounded slot, inset on the maroon
+// band (Loop & Slot — nothing full-bleed or square-cornered). No image → a blush
+// slot with the camera+calendar illustration, not the old dark fallback panel.
 const HeroVisual = ({ post, t }) => (
-  <div className="relative hidden overflow-hidden lg:block" style={{ backgroundColor: t.band }}>
-    {post.image ? (
-      <img src={post.image} alt={post.title} className="absolute inset-0 h-full w-full object-cover" />
-    ) : (
-      <BlogHeroThumbnail post={post} theme={t} />
-    )}
+  <div className="relative z-10 hidden items-stretch p-6 lg:flex xl:p-8" style={{ backgroundColor: t.band }}>
+    <div className="relative w-full overflow-hidden rounded-3xl" style={{ backgroundColor: post.image ? undefined : SUNK }}>
+      {post.image ? (
+        <img src={post.image} alt={post.title} className="absolute inset-0 h-full w-full object-cover" />
+      ) : (
+        <div className="flex h-full min-h-[18rem] w-full items-center justify-center p-10">
+          <img src="/brand/ds/04-illustrations/mt-illo-availability-light.svg" alt="" aria-hidden="true"
+            className="h-auto w-full max-w-sm" />
+        </div>
+      )}
+    </div>
   </div>
 );
 
@@ -74,13 +91,13 @@ const rich = (text, accent) => {
 // ── Body block renderer ─────────────────────────────────────────────
 const Block = ({ block, accent }) => {
   if (block.h2) {
-    return <h2 className="mt-12 text-xl font-bold tracking-tight sm:text-2xl" style={{ color: HEAD_TX }}>{block.h2}</h2>;
+    return <h2 className="mt-14 font-heading text-2xl font-extrabold tracking-tight sm:text-3xl" style={{ color: HEAD_TX }}>{block.h2}</h2>;
   }
   if (block.ul) {
     return (
-      <ul className="mt-5 space-y-3">
+      <ul className="mt-6 space-y-3.5">
         {block.ul.map((item, i) => (
-          <li key={i} className="flex gap-3 text-[15px] leading-relaxed sm:text-base" style={{ color: BODY_TX }}>
+          <li key={i} className="flex gap-3 text-base leading-[1.75] sm:text-[17px]" style={{ color: BODY_TX }}>
             <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: accent }} />
             <span>{rich(item, accent)}</span>
           </li>
@@ -90,9 +107,9 @@ const Block = ({ block, accent }) => {
   }
   if (block.ol) {
     return (
-      <ol className="mt-5 space-y-3">
+      <ol className="mt-6 space-y-3.5">
         {block.ol.map((item, i) => (
-          <li key={i} className="flex gap-3 text-[15px] leading-relaxed sm:text-base" style={{ color: BODY_TX }}>
+          <li key={i} className="flex gap-3 text-base leading-[1.75] sm:text-[17px]" style={{ color: BODY_TX }}>
             <span className="shrink-0 font-semibold tabular-nums" style={{ color: accent }}>{i + 1}.</span>
             <span>{rich(item, accent)}</span>
           </li>
@@ -102,9 +119,9 @@ const Block = ({ block, accent }) => {
   }
   if (block.steps) {
     return (
-      <ol className="mt-6 space-y-4">
+      <ol className="mt-7 space-y-5">
         {block.steps.map((item, i) => (
-          <li key={i} className="flex gap-4 text-[15px] leading-relaxed sm:text-base" style={{ color: BODY_TX }}>
+          <li key={i} className="flex gap-4 text-base leading-[1.75] sm:text-[17px]" style={{ color: BODY_TX }}>
             <span className="shrink-0 pt-0.5 font-mono text-xs font-bold tabular-nums tracking-wider" style={{ color: accent }}>
               {String(i + 1).padStart(2, '0')}
             </span>
@@ -124,10 +141,10 @@ const Block = ({ block, accent }) => {
   }
   if (block.table) {
     return (
-      <div className="mt-8 overflow-x-auto rounded-xl border" style={{ borderColor: 'rgba(255,255,255,0.10)' }}>
+      <div className="mt-8 overflow-x-auto rounded-xl border" style={{ borderColor: RULE }}>
         <table className="w-full text-sm">
           <thead>
-            <tr style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+            <tr style={{ backgroundColor: SUNK }}>
               {block.table.head.map((h, i) => (
                 <th key={i} className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide" style={{ color: accent }}>
                   {h}
@@ -137,7 +154,7 @@ const Block = ({ block, accent }) => {
           </thead>
           <tbody>
             {block.table.rows.map((row, ri) => (
-              <tr key={ri} style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              <tr key={ri} style={{ borderTop: `1px solid ${ROW}` }}>
                 {row.map((cell, ci) => (
                   <td key={ci} className="px-4 py-3 leading-relaxed" style={{ color: ci === 0 ? HEAD_TX : BODY_TX }}>
                     {cell}
@@ -152,7 +169,7 @@ const Block = ({ block, accent }) => {
   }
   if (block.info) {
     return (
-      <div className="mt-8 rounded-xl border p-4 sm:p-5" style={{ borderColor: 'rgba(255,255,255,0.10)', backgroundColor: 'rgba(255,255,255,0.03)' }}>
+      <div className="mt-8 rounded-xl border p-4 sm:p-5" style={{ borderColor: RULE, backgroundColor: SUNK }}>
         <div className="flex items-center gap-2">
           <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke={accent} strokeWidth="2" aria-hidden="true">
             <circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 7.5h.01" strokeLinecap="round" />
@@ -169,11 +186,11 @@ const Block = ({ block, accent }) => {
   if (block.faq) {
     return (
       <div className="mt-10">
-        <h2 className="text-xl font-bold tracking-tight sm:text-2xl" style={{ color: HEAD_TX }}>
+        <h2 className="font-heading text-2xl font-extrabold tracking-tight sm:text-3xl" style={{ color: HEAD_TX }}>
           {block.faqTitle || 'Common questions'}
         </h2>
         {block.faq.map((item, i) => (
-          <details key={i} className="mt-3 rounded-xl border p-4" style={{ borderColor: 'rgba(255,255,255,0.10)' }}>
+          <details key={i} className="mt-3 rounded-xl border p-4" style={{ borderColor: RULE, backgroundColor: SUNK }}>
             <summary className="cursor-pointer text-[15px] font-semibold" style={{ color: HEAD_TX }}>{item.q}</summary>
             <p className="mt-2 text-sm leading-relaxed" style={{ color: BODY_DIM }}>{rich(item.a, accent)}</p>
           </details>
@@ -181,7 +198,20 @@ const Block = ({ block, accent }) => {
       </div>
     );
   }
-  return <p className="mt-5 text-[15px] leading-relaxed sm:text-base" style={{ color: BODY_TX }}>{rich(block.p, accent)}</p>;
+  // Inline figure: {img:{src,alt,caption}}. Rounded + hairline border (nothing
+  // square), lazy-loaded; optional caption in the dim body colour.
+  if (block.img) {
+    return (
+      <figure className="mt-10">
+        <img src={block.img.src} alt={block.img.alt || ''} loading="lazy"
+          className="w-full rounded-2xl" style={{ border: `1px solid ${RULE}` }} />
+        {block.img.caption && (
+          <figcaption className="mt-3 text-sm italic" style={{ color: BODY_DIM }}>{block.img.caption}</figcaption>
+        )}
+      </figure>
+    );
+  }
+  return <p className="mt-6 text-base leading-[1.75] sm:text-[17px]" style={{ color: BODY_TX }}>{rich(block.p, accent)}</p>;
 };
 
 // Flatten every faq block in a post body into the {q,a} pairs faqJsonLd wants.
@@ -215,14 +245,14 @@ const ShareRow = ({ title }) => {
     <div className="flex items-center gap-3">
       {links.map((l) => (
         <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" aria-label={l.label}
-          className="grid h-9 w-9 place-items-center rounded-full text-white/70 transition-colors hover:text-white"
-          style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
+          className="grid h-9 w-9 place-items-center rounded-full transition-colors hover:opacity-80"
+          style={{ backgroundColor: SUNK, color: ACCENT }}>
           <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true"><path d={l.d} /></svg>
         </a>
       ))}
       <button type="button" onClick={copy} aria-label="Copy link"
-        className="grid h-9 w-9 place-items-center rounded-full text-white/70 transition-colors hover:text-white"
-        style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
+        className="grid h-9 w-9 place-items-center rounded-full transition-colors hover:opacity-80"
+        style={{ backgroundColor: SUNK, color: ACCENT }}>
         <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M13.19 8.69a4.5 4.5 0 0 1 1.24 7.24l-4.5 4.5a4.5 4.5 0 0 1-6.36-6.36l1.76-1.76m13.34-.62 1.76-1.76a4.5 4.5 0 0 0-6.36-6.36l-4.5 4.5a4.5 4.5 0 0 0 1.24 7.24" />
         </svg>
@@ -257,8 +287,7 @@ const SidebarCta = ({ theme }) => {
     }
   };
   return (
-    <div className="sticky top-24 rounded-xl border p-6"
-      style={{ borderColor: 'rgba(255,255,255,0.10)', backgroundColor: 'rgba(255,255,255,0.03)' }}>
+    <div className="sticky top-24 rounded-3xl p-6" style={{ backgroundColor: SUNK }}>
       <h3 className="font-heading text-lg font-bold leading-snug" style={{ color: HEAD_TX }}>
         Get appointments booked &amp; paid — start free today
       </h3>
@@ -266,13 +295,13 @@ const SidebarCta = ({ theme }) => {
         Publish your services, share one link and get paid at 0% commission.
       </p>
       <button type="button" onClick={signup} disabled={loading}
-        className="btn mt-5 flex w-full items-center justify-center rounded-[16px] py-3 text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
-        style={{ backgroundColor: theme.band, color: theme.light ? '#141416' : '#FFFFFF' }}>
+        className="btn mt-5 flex w-full items-center justify-center rounded-full py-3 text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
+        style={{ backgroundColor: theme.band, color: '#FFFFFF' }}>
         {loading ? 'Opening Google…' : 'Create free account'}
       </button>
       <Link to="/contact"
-        className="btn mt-2.5 flex w-full items-center justify-center rounded-[16px] py-3 text-sm font-semibold transition-colors hover:no-underline"
-        style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: HEAD_TX }}>
+        className="btn mt-2.5 flex w-full items-center justify-center rounded-full border-2 py-3 text-sm font-semibold transition-colors hover:no-underline"
+        style={{ borderColor: ACCENT, color: ACCENT }}>
         Book a demo
       </Link>
     </div>
@@ -331,8 +360,8 @@ const BlogPost = () => {
         <div>
           <p className="text-base" style={{ color: BODY_TX }}>This article didn’t load. Please try again.</p>
           <button type="button" onClick={() => window.location.reload()}
-            className="btn mt-5 inline-flex px-5 py-2.5 text-sm font-semibold"
-            style={{ backgroundColor: '#FFFFFF', color: '#141416' }}>
+            className="btn mt-5 inline-flex rounded-full px-5 py-2.5 text-sm font-semibold"
+            style={{ backgroundColor: ACCENT, color: '#FFFFFF' }}>
             Reload
           </button>
           <p className="mt-4 text-sm"><Link to="/blog" style={{ color: BODY_DIM }}>Back to all posts</Link></p>
@@ -348,16 +377,17 @@ const BlogPost = () => {
     );
   }
 
-  const t = themeFor(post.category);
-  const tt = bandText(t);
+  const t = THEME;
+  const tt = bandText();
   const canonical = `${SITE_URL}/blog/${post.slug}`;
   // Share card only. Deliberately NOT `post.image` first: `image` is the on-page
   // hero and setting it suppresses the icon thumbnail, so the two must stay
-  // separate concerns. Falls back to a real hero photo, then the site-wide card.
+  // separate concerns. Blogs supply their own og:image (post.ogImage), then a real
+  // hero photo, then the site-wide card — no auto-generated card.
   const ogImage = post.ogImage || post.image || `${SITE_URL}/og-image.png`;
-  // The generated per-post card and the site-wide card are both 1200x630; only a
-  // raw hero photo (post.image, used when no card exists) has unknown dimensions,
-  // so we emit width/height only for the cards rather than invent them.
+  // post.ogImage and the site-wide card are both 1200x630; only a raw hero photo
+  // (post.image, used when no og card) has unknown dimensions, so we emit
+  // width/height only for the cards rather than invent them.
   const cardDims = post.ogImage || !post.image ? { width: 1200, height: 630 } : {};
   const blogSeo = resolveBlogSeo({ post });
   const faqs = faqsFrom(post.body);
@@ -401,8 +431,11 @@ const BlogPost = () => {
       />
       <article>
       {/* ── Split hero: left colour + text, right image (hidden on mobile) ── */}
-      <header className="grid items-stretch lg:grid-cols-2" style={{ backgroundColor: t.band }}>
-        <div className="app-container py-14 sm:py-20">
+      <header className="relative grid items-stretch overflow-hidden lg:grid-cols-2" style={{ backgroundColor: t.band }}>
+        {/* ee thread — one per layout, bleeding off an edge, behind content (BRAND_RULES). */}
+        <img src="/brand/ds/02-ee/mt-ee-thread-white.svg" alt="" aria-hidden="true"
+          className="blog-hero-thread pointer-events-none absolute bottom-8 -left-12 z-0 w-[40rem] max-w-[80%] opacity-25" />
+        <div className="app-container relative z-10 py-14 sm:py-20">
           <div className="mx-auto max-w-xl lg:mx-0 lg:ml-auto lg:pr-10">
             {/* Visible breadcrumb — same trail as the BreadcrumbList JSON-LD (crumbs). */}
             <nav aria-label="Breadcrumb">
@@ -415,13 +448,17 @@ const BlogPost = () => {
               </ol>
             </nav>
 
-            <p className="mt-8 text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: tt.faint }}>
+            {/* Category pill with the pink live-dot (post is published = live). */}
+            <span className="mt-8 inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em]"
+              style={{ backgroundColor: 'rgba(255,255,255,0.12)', color: '#FFFFFF' }}>
+              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: '#FF9FB0' }} />
               {post.category}
-            </p>
-            <h1 className="mt-3 font-heading text-3xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl" style={{ color: tt.title }}>
+            </span>
+            <h1 className="mt-4 font-heading text-3xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl" style={{ color: tt.title }}>
               {post.title}
             </h1>
-            <p className="mt-5 text-base leading-relaxed sm:text-lg" style={{ color: tt.soft }}>
+            {/* The one serif phrase per layout — Instrument Serif italic, the human half. */}
+            <p className="mt-5 font-serif text-xl italic leading-snug sm:text-[26px]" style={{ color: tt.soft }}>
               {post.excerpt}
             </p>
 
@@ -460,9 +497,9 @@ const BlogPost = () => {
 
             {/* Byline + share */}
             <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t pt-6"
-              style={{ borderColor: 'rgba(255,255,255,0.10)' }}>
+              style={{ borderColor: RULE }}>
               <p className="text-sm" style={{ color: BODY_DIM }}>
-                by <AuthorLink name={post.author} className="font-semibold underline decoration-from-font underline-offset-2 transition-colors hover:text-white" style={{ color: BODY_TX }} />
+                by <AuthorLink name={post.author} className="font-semibold underline decoration-from-font underline-offset-2 transition-opacity hover:opacity-80" style={{ color: ACCENT }} />
               </p>
               <ShareRow title={post.title} />
             </div>
@@ -490,7 +527,7 @@ const BlogPost = () => {
             </p>
             <Link to="/become-a-host"
               className="btn mt-6 inline-flex items-center px-6 py-3 text-sm font-semibold transition-transform hover:no-underline"
-              style={{ backgroundColor: t.light ? '#141416' : '#FFFFFF', color: t.light ? '#FFFFFF' : '#141416' }}>
+              style={{ backgroundColor: '#FF9FB0', color: '#7A0A28' }}>
               Become a host
             </Link>
           </div>

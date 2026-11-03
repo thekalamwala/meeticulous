@@ -122,6 +122,9 @@ const listClients = async (hostId, { q = '', page = 1, pageSize = 50, sort = 're
   // list AND the CSV export (both route through here); getClient is not independently
   // capped, but the hidden clients' ids are never returned here, so a free host has no
   // way to address client N+1 — a monetization gate, not a data-protection boundary.
+  // hidden_count lets the list say "you have 23 — see all on Pro" instead of
+  // silently hiding clients (docs/host-lifecycle-nurture.md stage 11).
+  const hiddenCount = maxClients >= 0 ? Math.max(0, shaped.length - maxClients) : 0;
   if (maxClients >= 0) shaped = shaped.slice(0, maxClients);
 
   // Display sort — LTV re-orders the (capped) set; recency is already applied above.
@@ -129,7 +132,7 @@ const listClients = async (hostId, { q = '', page = 1, pageSize = 50, sort = 're
 
   const total = shaped.length;
   const start = (page - 1) * pageSize;
-  return { clients: shaped.slice(start, start + pageSize), total, page, pageSize };
+  return { clients: shaped.slice(start, start + pageSize), total, page, pageSize, hidden_count: hiddenCount };
 };
 
 // Idempotent: resolve or create the crm_customers row for (host, key). Used before

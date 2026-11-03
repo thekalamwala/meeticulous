@@ -15,7 +15,7 @@ describe('resolveProfileMeta', () => {
   test('returns 200 with title/canonical/robots for a normal host', async () => {
     buildHostProfile.mockResolvedValueOnce({
       payload: {
-        host: { username: 'jane', name: 'Jane', is_indexable: true },
+        host: { username: 'jane', name: 'Jane', is_indexable: true, is_verified: true },
         services: [{ title: 'Intro call', slug: 'intro' }],
       },
     });
@@ -146,7 +146,7 @@ describe('resolveServiceMeta', () => {
     buildPublicServiceByProfileAndSlug.mockResolvedValueOnce({
       payload: {
         service: { title: 'Intro Call', slug: 'intro', is_indexable: true },
-        vendor: { username: 'jane', name: 'Jane' },
+        vendor: { username: 'jane', name: 'Jane', is_verified: true },
         reviews: [],
       },
     });

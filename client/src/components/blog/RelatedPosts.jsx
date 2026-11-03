@@ -3,10 +3,13 @@
 // Static (no fetch) → prerendered into the post HTML → the internal links are
 // crawlable. Card style matches the former "Keep reading" block it replaces.
 import { Link } from 'react-router-dom';
-import { BLOG_POSTS, themeFor } from '../../data/blogPosts';
+import { BLOG_POSTS } from '../../data/blogPosts';
 import { selectRelated } from '../../lib/relatedPosts';
 
-const HEAD_TX = '#F5F5F7';
+// Loop & Slot brand: maroon heads/overlines, ink titles, white cards on cream.
+const HEAD_TX = '#960D32';  // --mt-maroon
+const TITLE_TX = '#2B0A14'; // --mt-ink
+const RULE = '#EBDCD9';     // --neutral-200
 const BY_SLUG = new Map(BLOG_POSTS.map((p) => [p.slug, p]));
 
 export default function RelatedPosts({ slug }) {
@@ -20,19 +23,16 @@ export default function RelatedPosts({ slug }) {
 
   return (
     <div className="mt-14">
-      <h2 className="text-lg font-bold tracking-tight" style={{ color: HEAD_TX }}>Related reading</h2>
+      <h2 className="font-heading text-xl font-extrabold tracking-tight" style={{ color: HEAD_TX }}>Related reading</h2>
       <div className="mt-4 grid gap-4 sm:grid-cols-3">
-        {posts.map((p) => {
-          const pt = themeFor(p.category);
-          return (
-            <Link key={p.slug} to={`/blog/${p.slug}`}
-              className="group rounded-xl border p-4 transition-colors hover:no-underline"
-              style={{ borderColor: 'rgba(255,255,255,0.10)', backgroundColor: 'rgba(255,255,255,0.02)' }}>
-              <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: pt.accent }}>{p.category}</span>
-              <h3 className="mt-1 font-heading text-base font-bold tracking-tight" style={{ color: HEAD_TX }}>{p.title}</h3>
-            </Link>
-          );
-        })}
+        {posts.map((p) => (
+          <Link key={p.slug} to={`/blog/${p.slug}`}
+            className="group rounded-xl border p-4 transition-colors hover:border-maroon hover:no-underline"
+            style={{ borderColor: RULE, backgroundColor: '#FFFFFF' }}>
+            <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: HEAD_TX }}>{p.category}</span>
+            <h3 className="mt-1 font-heading text-base font-bold tracking-tight" style={{ color: TITLE_TX }}>{p.title}</h3>
+          </Link>
+        ))}
       </div>
     </div>
   );

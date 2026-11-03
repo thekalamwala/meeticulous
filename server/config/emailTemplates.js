@@ -530,7 +530,7 @@ const TEMPLATES = [
         step(3, 'Share your link', '{{profile_url}} · WhatsApp, Instagram bio'),
       ) +
       '<!--cta-->' +
-      C.signOff('Tithi', 'Meeticulous team · just reply if you get stuck'),
+      C.signOff('Tithi', 'Meeticulous'),
     cta_label: 'Set up my page', cta_url: '{{dashboard_url}}',
   }; })(),
 
@@ -587,7 +587,8 @@ const TEMPLATES = [
       h('{{payout_amount}} is on its way, {{first_name}}') +
       lead('Nice work. Your earnings from a completed booking have been released and are settling to your bank account now. Depending on your bank it usually lands within 1–2 working days (a little longer over holidays).') +
       C.amountRow(t, 'Paid to you', '{{payout_amount}}') +
-      lead('You can see every payout and its status in your dashboard.'),
+      lead('You can see every payout and its status in your dashboard.') +
+      note('{{commission_line}}'),
     cta_label: 'View payouts', cta_url: '{{dashboard_url}}',
   }; })(),
 
@@ -722,7 +723,34 @@ const TEMPLATES = [
   ].map(([event_key, name, category, subject, preview_text, email_category, email_reason, title, body, cta_label]) => ({
     event_key, name, category, subject, preview_text, email_category, email_reason,
     audience: 'vendor', sender_key: 'tithi',
-    html_content: h(title) + lead(body) + '<!--cta-->' + C.signOff('Tithi', 'Meeticulous team · just reply if you get stuck'),
+    html_content: h(title) + lead(body) + '<!--cta-->' + C.signOff('Tithi', 'Meeticulous'),
+    cta_label, cta_url: '{{link}}',
+  })),
+
+  // ── 60-day Pro taste (sent by services/proTasteNudges.js) ───────────────────────
+  // Free hosts get WhatsApp reminders + reschedule alerts for 60 days from their
+  // first booking. {{link}} is the dashboard / upgrade URL for each stage.
+
+  ...[
+    ['PRO_TASTE_STARTED', 'Pro Taste — Started', 'Upgrade', 'Your first booking is in, {{first_name}} 🎉',
+      'WhatsApp reminders are on for 60 days.', 'Your plan', 'You are receiving this because you are a Meeticulous host on the free plan.',
+      'Your first booking is in, {{first_name}} 🎉',
+      'For the next 60 days your guests get <strong>WhatsApp reminders</strong>, and you both get <strong>reschedule alerts</strong> — that is Pro, on us. After {{taste_ends_on}} they switch to email unless you go Pro.',
+      'See my bookings'],
+    ['PRO_TASTE_ENDING', 'Pro Taste — Ending Soon', 'Upgrade', '{{days_left}} days left of WhatsApp reminders',
+      'They switch to email on {{taste_ends_on}}.', 'Your plan', 'You are receiving this because you are a Meeticulous host on the free plan.',
+      '{{days_left}} days left of WhatsApp reminders',
+      'Since your first booking, Meeticulous has sent WhatsApp reminders for <strong>{{reminded_count}}</strong> of your bookings. On {{taste_ends_on}} they switch to email. Keep them on with Pro — founding price ₹999/yr, locked for life. {{spots_line}}',
+      'Keep WhatsApp reminders'],
+    ['PRO_TASTE_ENDED', 'Pro Taste — Ended', 'Upgrade', 'WhatsApp reminders are now off',
+      'Your guests now get email reminders only.', 'Your plan', 'You are receiving this because you are a Meeticulous host on the free plan.',
+      'WhatsApp reminders are now off',
+      'Your guests now get email reminders only, and reschedule alerts are off for you. Everything else stays the same — your page, bookings and payments keep working. Turn WhatsApp back on any time with Pro.',
+      'Turn WhatsApp back on'],
+  ].map(([event_key, name, category, subject, preview_text, email_category, email_reason, title, body, cta_label]) => ({
+    event_key, name, category, subject, preview_text, email_category, email_reason,
+    audience: 'vendor', sender_key: 'tithi',
+    html_content: h(title) + lead(body) + '<!--cta-->' + C.signOff('Tithi', 'Meeticulous team · just reply with any question'),
     cta_label, cta_url: '{{link}}',
   })),
 
@@ -730,16 +758,29 @@ const TEMPLATES = [
 
   (() => { const t = themeForCategory('Upgrade'); return {
     event_key: 'UPGRADE_COMMISSION_NUDGE', audience: 'all', category: 'Marketing', sender_key: 'news',
-    name: 'Upgrade — Keep Every Rupee', subject: "You've given up {{commission_total}} in commission",
-    preview_text: 'On Pro that number is zero.',
+    name: 'Upgrade — Keep Every Rupee', subject: "You paid {{commission_total}} in commission this month",
+    preview_text: 'Pro costs less than that — and takes 0%.',
     email_category: 'Upgrade',
     email_reason: 'You are receiving this because you are a Meeticulous host on the free plan.',
     html_content:
       C.heroBand(t, { kick: 'Commission given up', big: '{{commission_total}}', sub: "On Pro that's ₹0, {{first_name}}." }) +
-      lead("You've earned well — but the free plan takes <strong>5%</strong> of every booking. You've handed back <strong>{{commission_total}}</strong> across {{bookings_count}} bookings.") +
+      lead("You've earned well — but the free plan takes <strong>5%</strong> of every booking. In the last 30 days you handed back <strong>{{commission_total}}</strong> across {{bookings_count}} bookings. Pro yearly works out to ₹98 a month and takes 0%.") +
       C.compareRow(t, { leftLabel: 'Starter', leftPct: '5%', leftCap: 'per booking', rightLabel: 'Pro', rightPct: '0%', rightCap: 'you keep it all' }) +
       C.stars({ rating: 5, text: 'Hosts who upgraded keep every rupee they earn.' }),
     cta_label: 'Upgrade to 0% commission', cta_url: '{{upgrade_url}}',
+  }; })(),
+
+  (() => { const t = themeForCategory('Upgrade'); return {
+    event_key: 'FOUNDING_SPOTS_LOW', audience: 'vendor', category: 'Marketing', sender_key: 'news',
+    name: 'Upgrade — Founding Spots Low', subject: '{{spots_left}} founding Pro spots left',
+    preview_text: 'Founding price ₹999/yr, locked for life — then Pro is ₹1,499.',
+    email_category: 'Upgrade',
+    email_reason: 'You are receiving this because you are a Meeticulous host on the free plan.',
+    html_content:
+      C.heroBand(t, { kick: 'Founding spots left', big: '{{spots_left}}', sub: 'of 100, {{first_name}}.' }) +
+      lead('The founding Pro price — <strong>₹999/yr, locked for life</strong> — closes after the first 100 hosts. After that, Pro is ₹1,499/yr.') +
+      lead("You've paid <strong>{{commission_total}}</strong> in commission so far. Pro takes 0%, keeps WhatsApp reminders on for every guest, and rebooks your regulars automatically."),
+    cta_label: 'Claim a founding spot', cta_url: '{{upgrade_url}}',
   }; })(),
 
   // ── Newsletter ────────────────────────────────────────────────────────────────

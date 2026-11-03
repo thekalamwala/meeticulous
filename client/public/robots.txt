@@ -23,17 +23,34 @@ Disallow: /*/booking/
 # Social-card render target (/og/blog/:slug) — an art board, not a page.
 Disallow: /og/
 
-# AI crawlers — explicitly welcomed (GEO / AI-search citation).
+# AI crawlers — explicitly welcomed for PUBLIC content (GEO / AI-search citation),
+# but blocked from the same private + funnel surfaces as everyone else. robots.txt
+# groups are NOT additive: a named agent obeys only its own group and ignores the
+# `*` rules above, so the Disallow set must be repeated here or these bots would
+# crawl /admin, /dashboard, /booking/, etc. One stacked group = one shared ruleset.
 User-agent: GPTBot
-Allow: /
-
+User-agent: ChatGPT-User
+User-agent: OAI-SearchBot
 User-agent: ClaudeBot
-Allow: /
-
+User-agent: Claude-Web
 User-agent: PerplexityBot
-Allow: /
-
 User-agent: Google-Extended
 Allow: /
+Disallow: /admin
+Disallow: /super-dashboard
+Disallow: /backstage
+Disallow: /dashboard
+Disallow: /user/
+Disallow: /vendor-register
+Disallow: /vendor/signup
+Disallow: /review/
+Disallow: /auth/
+Disallow: /login
+Disallow: /signup
+Disallow: /login-as-vendor
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /*/booking/
+Disallow: /og/
 
 Sitemap: https://meeticulous.com/sitemap.xml

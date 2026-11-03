@@ -95,19 +95,18 @@ const BecomeAHost    = lazy(() => import('./pages/BecomeAHost'));
 const InviteLanding  = lazy(() => import('./pages/InviteLanding'));
 const HostLogin      = lazy(() => import('./pages/HostLogin'));
 const Changelog      = lazy(() => import('./pages/Changelog'));
+const ChangelogRelease = lazy(() => import('./pages/ChangelogRelease'));
 const Pricing        = lazy(() => import('./pages/Pricing'));
 const AppointmentBookingSoftware = lazy(() => import('./pages/AppointmentBookingSoftware'));
 const Blog           = lazy(() => import('./pages/Blog'));
 const Search         = lazy(() => import('./pages/Search'));
 const WallOfLove     = lazy(() => import('./pages/WallOfLove'));
+const SubmitReview   = lazy(() => import('./pages/SubmitReview'));
 const Opening        = lazy(() => import('./pages/Opening'));
 const Inaugurators   = lazy(() => import('./pages/Inaugurators'));
 const BlogPost       = lazy(() => import('./pages/BlogPost'));
 const Moments        = lazy(() => import('./pages/Moments'));
 const MomentPage     = lazy(() => import('./pages/MomentPage'));
-const OgCard         = lazy(() => import('./pages/OgCard'));
-const HostOgCard     = lazy(() => import('./pages/HostOgCard'));
-const ServiceOgCard  = lazy(() => import('./pages/ServiceOgCard'));
 const GoogleAuthDone = lazy(() => import('./pages/GoogleAuthDone'));
 
 // Vendor Onboarding (Google-first 7-step flow)
@@ -401,6 +400,11 @@ function App() {
     location.pathname.startsWith('/lp') ||
     location.pathname.startsWith('/for/') ||
     location.pathname === '/become-a-host' ||
+    // Auth doors are full-bleed (brand panel + card, no global chrome).
+    location.pathname === '/login' ||
+    location.pathname === '/login-as-vendor' ||
+    location.pathname === '/forgot-password' ||
+    location.pathname === '/reset-password' ||
     location.pathname === '/opening' ||
     location.pathname === '/backstage';
 
@@ -466,21 +470,19 @@ function App() {
           <Route path="/help/docs" element={<HelpDocs />} />
           <Route path="/help/docs/:slug" element={<HelpDoc />} />
           <Route path="/changelog" element={<Changelog />} />
+          <Route path="/changelog/:version" element={<ChangelogRelease />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/appointment-booking-software" element={<AppointmentBookingSoftware />} />
           <Route path="/search" element={<Search />} />
           <Route path="/wall-of-love" element={<WallOfLove />} />
+          {/* Review Meeticulous itself — page handles its own sign-in (host Google / guest OTP). */}
+          <Route path="/submit-review" element={<SubmitReview />} />
           <Route path="/opening" element={<Opening />} />
           <Route path="/inaugurators" element={<Inaugurators />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/moments" element={<Moments />} />
           <Route path="/moments/:slug" element={<MomentPage />} />
-          {/* Render target for the OG card generator, not a page for humans.
-              noindex + absent from the sitemap and prerender lists. */}
-          <Route path="/og/blog/:slug" element={<OgCard />} />
-          <Route path="/og/host/:username" element={<HostOgCard />} />
-          <Route path="/og/service/:username/:slug" element={<ServiceOgCard />} />
           <Route path="/blogs" element={<BlogsRedirect />} />
           <Route path="/blogs/:slug" element={<BlogsRedirect />} />
           <Route path="/about" element={<About />} />

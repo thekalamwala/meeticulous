@@ -263,6 +263,19 @@ a {
   }
 }
 
+/* ee thread draws in once on hero load — fade + slide (not a stroke draw).
+   Resting opacity (.14) is also set as a utility, so reduced motion keeps it. */
+.blog-hero-thread {
+  animation: blog-thread-in 1200ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes blog-thread-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 0.25; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .blog-hero-thread { animation: none; }
+}
+
 button,
 input,
 textarea,

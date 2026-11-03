@@ -7,12 +7,13 @@
  * stories exist (no fabricated videos). Do not hardcode invented testimonials
  * here; edit the data file.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Heart, MessageCircle, Repeat2, ThumbsUp, Share2, Send, Bookmark, Play, ArrowRight,
+  Heart, MessageCircle, Repeat2, ThumbsUp, Share2, Send, Bookmark, Play, ArrowRight, BadgeCheck,
 } from 'lucide-react';
 import Seo from '../components/common/Seo';
+import { getPlatformReviews } from '../services/api';
 import { collectionPageJsonLd, breadcrumbJsonLd, SITE_URL } from '../utils/seo';
 import {
   WALL_TWEETS, WALL_GOOGLE, WALL_LINKEDIN, WALL_INSTAGRAM, WALL_YOUTUBE_PLACEHOLDERS,
@@ -164,6 +165,56 @@ function InstagramCard({ r }) {
   );
 }
 
+// Verified review — submitted by a signed-in account at /submit-review, approved
+// by an admin, and published with the author's consent (v3.185).
+function VerifiedReviewCard({ r }) {
+  const initials = (r.name || '?').split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+  const label = r.reviewer_role === 'host' ? 'Verified host' : 'Verified guest';
+  const when = new Date(r.created_at).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+  return (
+    <article className={`flex min-h-[240px] flex-col p-5 ${CARD}`}>
+      <div className="flex items-center gap-2.5">
+        {r.avatar
+          ? <img src={r.avatar} alt="" className="h-9 w-9 shrink-0 rounded-full object-cover" loading="lazy" />
+          : <Avatar tint="orange">{initials}</Avatar>}
+        <div className="min-w-0 flex-1">
+          <div className="truncate font-heading text-[13px] font-bold text-ink">
+            {r.username ? <Link to={`/${r.username}`} className="hover:underline">{r.name}</Link> : r.name}
+          </div>
+          <div className="truncate text-[11px] text-muted">{r.profession || label}</div>
+        </div>
+      </div>
+      <div className="mt-4 text-sm tracking-wide text-maroon" aria-label={`${r.rating} out of 5`}>
+        {'★'.repeat(r.rating)}<span className="text-ink/20">{'★'.repeat(5 - r.rating)}</span>
+      </div>
+      {r.title && <p className="mt-2 font-heading text-[14px] font-bold text-ink">{r.title}</p>}
+      <p className="mt-2 whitespace-pre-line text-[13px] leading-relaxed text-ink">{r.body}</p>
+      <div className="mt-auto flex items-center gap-1.5 pt-5 text-[11px] text-muted">
+        <BadgeCheck className="h-3.5 w-3.5 text-maroon" />{label} · {when}
+      </div>
+    </article>
+  );
+}
+
+function VerifiedReviews({ data }) {
+  return (
+    <section className="mb-16">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="font-heading text-xl font-bold tracking-tight text-ink sm:text-2xl">Verified reviews</h2>
+          <p className="mt-1 text-[12px] text-muted">
+            {data.average} / 5 from {data.count} signed-in host{data.count !== 1 ? 's' : ''} and guests
+          </p>
+        </div>
+        <Link to="/submit-review" className="mt-btn mt-btn--secondary mt-btn--s hover:no-underline">Leave a review</Link>
+      </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {data.reviews.map((r) => <VerifiedReviewCard key={r.id} r={r} />)}
+      </div>
+    </section>
+  );
+}
+
 function Section({ platform, children }) {
   return (
     <section className="mt-16 first:mt-0">
@@ -197,6 +248,10 @@ const RENDERERS = {
 export default function WallOfLove() {
   const [filter, setFilter] = useState('all');
   const visible = PLATFORMS.filter((p) => filter === 'all' || filter === p.key);
+  const [verified, setVerified] = useState(null);
+  useEffect(() => {
+    getPlatformReviews().then(({ data }) => setVerified(data)).catch(() => { /* wall still renders */ });
+  }, []);
 
   return (
     <div className="min-h-screen bg-canvas px-4 pb-24 pt-12 sm:pt-16">
@@ -253,6 +308,7 @@ export default function WallOfLove() {
 
       {/* Wall */}
       <main className="mx-auto mt-14 max-w-6xl">
+        {filter === 'all' && verified?.count > 0 && <VerifiedReviews data={verified} />}
         {visible.map((p) => (
           <Section key={p.key} platform={p}>{RENDERERS[p.key]()}</Section>
         ))}
@@ -268,6 +324,9 @@ export default function WallOfLove() {
             </Link>
             <Link to="/pricing" className="inline-flex min-h-10 items-center justify-center rounded border-2 border-ink/10 bg-surface px-6 text-xs font-bold text-ink transition hover:border-ink/20">
               Book a Demo
+            </Link>
+            <Link to="/submit-review" className="inline-flex min-h-10 items-center justify-center rounded border-2 border-ink/10 bg-surface px-6 text-xs font-bold text-ink transition hover:border-ink/20">
+              Leave a review
             </Link>
           </div>
         </section>

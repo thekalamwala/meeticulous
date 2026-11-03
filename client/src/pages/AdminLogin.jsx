@@ -22,12 +22,11 @@ const LockIcon = () => (
   </svg>
 );
 
-const OrangeBtn = ({ loading, label, loadingLabel, ...rest }) => (
+const SubmitBtn = ({ loading, label, loadingLabel, ...rest }) => (
   <button
     type="submit"
     disabled={loading}
-    className="btn w-full py-2.5 text-sm font-bold text-white transition-opacity disabled:opacity-50 mt-2"
-    style={{ background: "#960D32" }}
+    className="btn w-full py-2.5 text-sm font-bold text-white bg-maroon transition-opacity disabled:opacity-50 mt-2"
     {...rest}
   >
     {loading ? loadingLabel : label}
@@ -63,7 +62,7 @@ const PasswordStep = ({ onResult }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="admin-identifier" className="block text-xs font-medium text-gray-400 mb-1.5">
+        <label htmlFor="admin-identifier" className="block text-xs font-medium text-neutral-300 mb-1.5">
           Username
         </label>
         <input
@@ -73,13 +72,13 @@ const PasswordStep = ({ onResult }) => {
           autoComplete="username"
           autoFocus
           placeholder="username"
-          className="fb-input bg-gray-800 text-white border-gray-700 placeholder-gray-600"
+          className="fb-input bg-neutral-900 text-white border-neutral-700 placeholder-neutral-500"
           value={form.identifier}
           onChange={(e) => setForm({ ...form, identifier: e.target.value })}
         />
       </div>
       <div>
-        <label htmlFor="admin-password" className="block text-xs font-medium text-gray-400 mb-1.5">
+        <label htmlFor="admin-password" className="block text-xs font-medium text-neutral-300 mb-1.5">
           Password
         </label>
         <input
@@ -87,12 +86,12 @@ const PasswordStep = ({ onResult }) => {
           type="password"
           required
           autoComplete="current-password"
-          className="fb-input bg-gray-800 text-white border-gray-700"
+          className="fb-input bg-neutral-900 text-white border-neutral-700"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
       </div>
-      <OrangeBtn loading={loading} label="Grant Access" loadingLabel="Verifying…" />
+      <SubmitBtn loading={loading} label="Grant access" loadingLabel="Verifying…" />
     </form>
   );
 };
@@ -123,7 +122,7 @@ const CodeStep = ({ pendingToken, onSuccess }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="admin-totp-code" className="block text-xs font-medium text-gray-400 mb-1.5">
+        <label htmlFor="admin-totp-code" className="block text-xs font-medium text-neutral-300 mb-1.5">
           Authenticator code
         </label>
         <input
@@ -134,15 +133,15 @@ const CodeStep = ({ pendingToken, onSuccess }) => {
           autoFocus
           placeholder="123456"
           maxLength={8}
-          className="fb-input bg-gray-800 text-white border-gray-700 placeholder-gray-600 tracking-widest text-center text-lg"
+          className="fb-input bg-neutral-900 text-white border-neutral-700 placeholder-neutral-500 tracking-widest text-center text-lg"
           value={code}
           onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
         />
-        <p className="text-xs text-gray-500 mt-1.5">
+        <p className="text-xs text-neutral-400 mt-1.5">
           Enter the 6-digit code from your authenticator app, or a recovery code.
         </p>
       </div>
-      <OrangeBtn loading={loading} label="Verify" loadingLabel="Verifying…" />
+      <SubmitBtn loading={loading} label="Verify" loadingLabel="Verifying…" />
     </form>
   );
 };
@@ -172,7 +171,7 @@ const EnrollStep = ({ qrDataUrl, secret, pendingToken, onSuccess }) => {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray-300">
+      <p className="text-sm text-neutral-200">
         Scan this QR code in <span className="font-semibold text-white">Google Authenticator</span> or{" "}
         <span className="font-semibold text-white">Authy</span>, then enter the 6-digit code below.
       </p>
@@ -182,22 +181,22 @@ const EnrollStep = ({ qrDataUrl, secret, pendingToken, onSuccess }) => {
         <img
           src={qrDataUrl}
           alt="TOTP QR code — scan with authenticator app"
-          className="rounded-lg border border-gray-700"
+          className="rounded-lg border border-neutral-700"
           style={{ width: 180, height: 180, objectFit: "contain" }}
         />
       </div>
 
       {/* Manual entry secret */}
       {secret && (
-        <div className="bg-gray-800 rounded-lg px-3 py-2">
-          <p className="text-xs text-gray-500 mb-1">Or enter this key manually:</p>
-          <code className="text-xs text-orange-400 break-all select-all">{secret}</code>
+        <div className="bg-neutral-900 rounded-lg px-3 py-2">
+          <p className="text-xs text-neutral-400 mb-1">Or enter this key manually:</p>
+          <code className="text-xs text-rose-400 break-all select-all">{secret}</code>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="admin-enroll-code" className="block text-xs font-medium text-gray-400 mb-1.5">
+          <label htmlFor="admin-enroll-code" className="block text-xs font-medium text-neutral-300 mb-1.5">
             Authenticator code
           </label>
           <input
@@ -208,12 +207,12 @@ const EnrollStep = ({ qrDataUrl, secret, pendingToken, onSuccess }) => {
             autoFocus
             placeholder="123456"
             maxLength={8}
-            className="fb-input bg-gray-800 text-white border-gray-700 placeholder-gray-600 tracking-widest text-center text-lg"
+            className="fb-input bg-neutral-900 text-white border-neutral-700 placeholder-neutral-500 tracking-widest text-center text-lg"
             value={code}
             onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
           />
         </div>
-        <OrangeBtn loading={loading} label="Activate 2FA" loadingLabel="Confirming…" />
+        <SubmitBtn loading={loading} label="Activate 2FA" loadingLabel="Confirming…" />
       </form>
     </div>
   );
@@ -247,36 +246,36 @@ const ChangePasswordStep = ({ changeToken, currentPassword, onDone }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <p className="text-sm text-gray-300">
+      <p className="text-sm text-neutral-200">
         Set a new password to finish securing your account. You'll then log in again and set up two-factor authentication.
       </p>
       <div>
-        <label htmlFor="admin-new-pw" className="block text-xs font-medium text-gray-400 mb-1.5">New password</label>
+        <label htmlFor="admin-new-pw" className="block text-xs font-medium text-neutral-300 mb-1.5">New password</label>
         <input
           id="admin-new-pw"
           type="password"
           required
           autoFocus
           autoComplete="new-password"
-          className="fb-input bg-gray-800 text-white border-gray-700"
+          className="fb-input bg-neutral-900 text-white border-neutral-700"
           value={pw.next}
           onChange={(e) => setPw({ ...pw, next: e.target.value })}
         />
-        <p className="text-xs text-gray-500 mt-1.5">At least 10 characters.</p>
+        <p className="text-xs text-neutral-400 mt-1.5">At least 10 characters.</p>
       </div>
       <div>
-        <label htmlFor="admin-confirm-pw" className="block text-xs font-medium text-gray-400 mb-1.5">Confirm new password</label>
+        <label htmlFor="admin-confirm-pw" className="block text-xs font-medium text-neutral-300 mb-1.5">Confirm new password</label>
         <input
           id="admin-confirm-pw"
           type="password"
           required
           autoComplete="new-password"
-          className="fb-input bg-gray-800 text-white border-gray-700"
+          className="fb-input bg-neutral-900 text-white border-neutral-700"
           value={pw.confirm}
           onChange={(e) => setPw({ ...pw, confirm: e.target.value })}
         />
       </div>
-      <OrangeBtn loading={loading} label="Set password" loadingLabel="Saving…" />
+      <SubmitBtn loading={loading} label="Set password" loadingLabel="Saving…" />
     </form>
   );
 };
@@ -287,13 +286,13 @@ const RecoveryStep = ({ codes, onContinue }) => (
   <div className="space-y-4">
     <div className="text-center">
       <p className="text-sm font-semibold text-white">Two-factor authentication enabled!</p>
-      <p className="text-xs text-gray-400 mt-1">
-        Save these recovery codes somewhere safe — they are shown <span className="text-orange-400 font-semibold">once only</span>.
+      <p className="text-xs text-neutral-300 mt-1">
+        Save these recovery codes somewhere safe — they are shown <span className="text-rose-400 font-semibold">once only</span>.
       </p>
     </div>
-    <div className="bg-gray-800 rounded-lg p-3 space-y-1">
+    <div className="bg-neutral-900 rounded-lg p-3 space-y-1">
       {(codes || []).map((c) => (
-        <code key={c} className="block text-sm text-green-400 font-mono tracking-wider">
+        <code key={c} className="block text-sm text-pink-200 font-mono tracking-wider">
           {c}
         </code>
       ))}
@@ -301,8 +300,7 @@ const RecoveryStep = ({ codes, onContinue }) => (
     <button
       type="button"
       onClick={onContinue}
-      className="btn w-full py-2.5 text-sm font-bold text-white transition-opacity mt-2"
-      style={{ background: "#960D32" }}
+      className="btn w-full py-2.5 text-sm font-bold text-white bg-maroon transition-opacity mt-2"
     >
       Continue
     </button>
@@ -395,23 +393,22 @@ const AdminLogin = () => {
   }[step];
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
+    <div className="h-[100dvh] overflow-hidden bg-ink flex items-center justify-center px-4">
+      <div className="w-full max-w-sm max-h-full overflow-y-auto py-6">
 
         {/* Header */}
         <div className="mb-8 text-center">
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4"
-               style={{ background: "#960D32" }}>
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 bg-maroon">
             <LockIcon />
           </div>
-          <h1 className="text-xl font-bold text-white">Super Admin</h1>
-          <p className="text-sm text-gray-500 mt-1">Meeticulous · Restricted access</p>
+          <h1 className="font-display text-xl font-bold text-white">Super Admin</h1>
+          <p className="text-sm text-neutral-400 mt-1">Meeticulous · Restricted access</p>
           {stepLabel && (
-            <p className="text-xs text-orange-400 font-medium mt-2">{stepLabel}</p>
+            <p className="text-xs text-rose-400 font-medium mt-2">{stepLabel}</p>
           )}
         </div>
 
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+        <div className="bg-neutral-800 border border-neutral-700 rounded-2xl p-6">
           {step === "password" && (
             <PasswordStep onResult={handlePasswordResult} />
           )}
@@ -448,7 +445,7 @@ const AdminLogin = () => {
           )}
         </div>
 
-        <p className="text-center text-xs text-gray-700 mt-6">
+        <p className="text-center text-xs text-neutral-500 mt-6">
           Unauthorised access is prohibited and logged.
         </p>
       </div>
