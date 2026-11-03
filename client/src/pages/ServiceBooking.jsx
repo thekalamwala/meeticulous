@@ -148,7 +148,7 @@ const FinalizingScreen = ({ tc, textOnTheme, isPaid, task, onDone }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(30,30,30,0.06)]">
+    <div className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl p-4 sm:p-6">
       <div className="max-w-md mx-auto text-center py-2">
         <div className="mb-4 flex justify-center"><PetalSpinner size={40} color={tc} /></div>
         <h2 className="text-xl font-bold mb-1">Wrapping things up…</h2>
@@ -923,8 +923,7 @@ const ServiceBooking = () => {
 
   if (loading)
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-6"
-        style={{ background: `radial-gradient(circle at top, ${tc}0f, transparent 22rem), linear-gradient(180deg,#F8FAFC,#F1F5F9)` }}>
+      <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-cream">
         <style>{`@keyframes bkspin{to{transform:rotate(360deg)}}`}</style>
         {/* Petal spinner — 8 rounded squares in one colour, stepped shades,
             rotating as a wheel. Overlap at the centre deepens the shade. */}
@@ -986,12 +985,8 @@ const ServiceBooking = () => {
 
   return (
     <div
-      className="bk-page min-h-screen"
-      style={{
-        background:
-          `radial-gradient(circle at top, ${tc}0f, transparent 22rem), linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%)`,
-        paddingBottom: '48px',
-      }}
+      className="bk-page min-h-screen bg-cream"
+      style={{ paddingBottom: '48px' }}
     >
       <style>{BAS_KEYFRAMES}</style>
       {/* Focus affordance: the global fb-input focus draws a 6px green-grey ring.
@@ -1012,11 +1007,13 @@ const ServiceBooking = () => {
           ⚠️ This creator is pending admin verification. Bookings may be subject to confirmation.
         </div>
       )}
-      <div className="app-container py-4 sm:py-5 flex flex-col lg:flex-row gap-4 lg:items-start">
+      <div className="app-container py-4 sm:py-5 max-w-3xl mx-auto">
 
-        {/* ── LEFT: Permanent Profile Sidebar (content collapsible, column stays put) ── */}
-        <div className="lg:w-[300px] flex-shrink-0">
-          <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-[0_4px_24px_rgba(30,30,30,0.06)] lg:sticky lg:top-24">
+        {/* Profile sidebar is dropped during booking — full-width engine with a
+            compact summary strip below. Kept hidden (not deleted) so the restyle
+            stays a low-risk diff on this critical file; prune in a follow-up. */}
+        <div className="hidden">
+          <div className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl overflow-hidden lg:sticky lg:top-24">
             {/* Header toggle */}
             <button
               onClick={() => setProfileOpen((o) => !o)}
@@ -1128,8 +1125,36 @@ const ServiceBooking = () => {
           </div>
         </div>
 
-        {/* ── RIGHT: Booking Engine ── */}
+        {/* ── Booking Engine (full width) ── */}
         <div className="flex-1 min-w-0 flex flex-col">
+          {/* Summary strip — replaces the side profile: who + what + when + total */}
+          {step !== "confirmed" && (
+            <div className="flex items-center gap-3 bg-white border-2 border-[color:var(--color-line)] rounded-2xl px-4 py-3 mb-4">
+              <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center"
+                style={{ background: `${tc}18`, color: tc }}>
+                {host.profile_image
+                  ? <img src={host.profile_image} alt={host.name} className="w-full h-full object-cover" />
+                  : <span className="font-bold">{host.name?.charAt(0)?.toUpperCase()}</span>}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="font-bold text-sm text-gray-900 truncate">{service.title}</div>
+                <div className="text-xs text-gray-500 truncate">
+                  with {host.name} · {service.duration} min · {service.meeting_mode === "offline" ? "In-person" : "Online"}
+                  {selectedDate && selectedTime && (
+                    <> · <span className="font-semibold" style={{ color: tc }}>
+                      {selectedDate.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" })} · {formatTime(selectedTime)}
+                    </span></>
+                  )}
+                </div>
+              </div>
+              <div className="text-right flex-shrink-0">
+                {!priceOnRequest && <div className="text-[10px] text-gray-400 leading-none mb-0.5">Total</div>}
+                <div className="font-extrabold text-base leading-none" style={{ color: tc }}>
+                  {priceOnRequest ? "On request" : isPaid ? `₹${Math.round((service.price + fees.bookingFee) * 100) / 100}` : "Free"}
+                </div>
+              </div>
+            </div>
+          )}
           {/* Progress bar — only the ACTIVE step expands to a horizontal
               icon + label pill; done steps stay a solid orange icon, upcoming
               steps a grey icon. */}
@@ -1181,7 +1206,7 @@ const ServiceBooking = () => {
 
           {/* Payment verify failed after the instant move — smart by failure type */}
           {!finalizing && payError && (
-            <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(30,30,30,0.06)]">
+            <div className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl p-4 sm:p-6">
               <div className="max-w-md mx-auto text-center">
                 <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
                   style={{ background: payError.type === "server" ? "#FEE2E2" : "#FEF3C7" }}>
@@ -1226,7 +1251,7 @@ const ServiceBooking = () => {
 
           {/* STEP: time */}
           {!finalizing && step === "time" && (
-            <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-[0_4px_24px_rgba(30,30,30,0.06)]">
+            <div className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl p-4 sm:p-5">
               <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 mb-4">
                 <Link
                   to={`/${profileSlug}`}
@@ -1306,9 +1331,9 @@ const ServiceBooking = () => {
                           key={day}
                           onClick={() => selectDate(day)}
                           disabled={!ok}
-                          className={`h-9 rounded text-sm transition-colors ${ok && !sel ? "hover:bg-gray-100 cursor-pointer" : ""} ${!ok ? "text-gray-300 cursor-default" : ""}`}
+                          className={`h-9 rounded-[14px] text-sm transition-colors ${ok && !sel ? "hover:bg-[color:var(--mt-blush,#FFE4EA)] cursor-pointer" : ""} ${!ok ? "text-gray-300 cursor-default" : ""}`}
                           style={sel
-                            ? { background: tc, color: textOnTheme, fontWeight: 700 }
+                            ? { background: "var(--mt-blush, #FFE4EA)", color: tc, fontWeight: 700, boxShadow: "inset 0 0 0 2px var(--mt-rose, #E0506F)" }
                             : td && !sel
                               ? { color: tc, fontWeight: 700, boxShadow: `0 0 0 1.5px ${tc}55` }
                               : {}}
@@ -1377,10 +1402,10 @@ const ServiceBooking = () => {
                                         <button
                                           key={t}
                                           onClick={() => setSelectedTime(t)}
-                                          className="btn btn--outline py-2.5 text-sm transition-all"
+                                          className="py-2.5 text-sm font-semibold rounded-[20px] border-2 transition-all"
                                           style={selectedTime === t
-                                            ? { background: tc, color: textOnTheme, fontWeight: 600 }
-                                            : {}}
+                                            ? { background: "#fff", color: tc, borderColor: "var(--mt-rose, #E0506F)", boxShadow: "0 0 0 2px var(--mt-rose, #E0506F)" }
+                                            : { background: "var(--marigold-100, #FDF0D2)", borderColor: "var(--color-line)", color: "#2B0A14" }}
                                         >
                                           {formatTime(t)}
                                         </button>
@@ -1432,7 +1457,7 @@ const ServiceBooking = () => {
 
           {/* STEP: details */}
           {!finalizing && step === "details" && (
-            <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(30,30,30,0.06)]" style={{ "--tc": tc }}>
+            <div className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl p-4 sm:p-6" style={{ "--tc": tc }}>
               <button
                 onClick={() => setStep("time")}
                 className="text-sm text-gray-500 hover:text-gray-800 flex items-center gap-1 font-medium mb-3"
@@ -1673,7 +1698,7 @@ const ServiceBooking = () => {
 
           {/* STEP: otp */}
           {!finalizing && step === "otp" && (
-            <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(30,30,30,0.06)]">
+            <div className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl p-4 sm:p-6">
               <button
                 onClick={() => setStep("details")}
                 className="text-sm text-gray-400 hover:text-gray-600 flex items-center gap-1 mb-6"
@@ -1746,7 +1771,7 @@ const ServiceBooking = () => {
               ? Number(confirmation.customer_total)
               : Math.round((service.price + _fee + _gst) * 100) / 100;
             return (
-            <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(30,30,30,0.06)]">
+            <div className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl p-4 sm:p-6">
               <div className="max-w-md mx-auto text-center">
               <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
                 style={{ background: `${tc}18` }}>
@@ -1884,7 +1909,7 @@ const ServiceBooking = () => {
             const docIcon = <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6" strokeLinejoin="round"/></svg>;
             const mailIcon = <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6" strokeLinecap="round" strokeLinejoin="round"/></svg>;
             return (
-            <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(30,30,30,0.06)]">
+            <div className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl p-4 sm:p-6">
               <div className="max-w-3xl mx-auto">
                 {/* Top: two columns — success message | booking details. Stacks on mobile. */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 md:items-center">
@@ -1897,12 +1922,12 @@ const ServiceBooking = () => {
                     <p className="text-sm text-gray-500 mb-5 bas-fade">
                       See you {selectedDate?.toLocaleDateString("en-IN", { weekday: "long", month: "long", day: "numeric" })} at {formatTime(selectedTime)} ({tzAbbr})
                     </p>
-                    <div className="flex items-center gap-3 border border-gray-100 rounded-2xl p-3 bg-gray-50/40 text-left">
+                    <div className="flex items-center gap-3 border-2 border-[color:var(--color-line)] rounded-2xl p-3 bg-gray-50/40 text-left">
                       <span style={{ color: tc }}>{mailIcon}</span>
                       <span className="text-xs text-gray-500 leading-snug">Confirmation email sent to<br /><span className="text-gray-700 font-medium break-all">{email}</span></span>
                     </div>
                     {/* How to join / reminders */}
-                    <div className="flex items-start gap-3 border border-gray-100 rounded-2xl p-3 bg-gray-50/40 text-left mt-3">
+                    <div className="flex items-start gap-3 border-2 border-[color:var(--color-line)] rounded-2xl p-3 bg-gray-50/40 text-left mt-3">
                       <span className="mt-0.5" style={{ color: tc }}>
                         {confirmation.meeting_link ? (
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" ry="2" /></svg>
