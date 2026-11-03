@@ -82,7 +82,7 @@ const STEPS = [
 ];
 
 const TOOLS = [
-  { name: 'Google Calendar', icon: 'google-calendar', sub: 'Busy times blocked, bookings added to your calendar' },
+  { name: 'Google Calendar', icon: 'google-calendar', sub: 'Busy times blocked, appointments added to your calendar' },
   { name: 'Google Meet', logo: '/images/logos/google-meet.svg', sub: 'Private video link per consult' },
   { name: 'WhatsApp', logo: '/images/logos/whatsapp.svg', sub: 'Gentle reminders on autopilot' },
   { name: 'Razorpay', logo: razorpayLogo, sub: 'Payments, refunds & GST invoices' },
@@ -91,10 +91,10 @@ const TOOLS = [
 ];
 
 const METRICS = [
-  { v: '24/7', l: 'Bookings, day or night', note: 'Patients book privately, any time — no call to the desk.' },
+  { v: '24/7', l: 'Appointments, day or night', note: 'Patients book privately, any time — no call to the desk.' },
   { v: '0%', l: 'Commission on Pro', note: 'Keep every rupee you earn.' },
   { v: '₹0', l: 'To get started', note: 'Free forever plan — no card, no lock-in.' },
-  { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice for every paid booking.' },
+  { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice for every paid appointment.' },
 ];
 
 const TESTIMONIALS = [
@@ -126,11 +126,11 @@ const TRUST_STRIP = [
 ];
 
 const FAQ = [
-  { q: 'Is Meeticulous suitable for gynecologists and OB-GYN clinics?', a: 'Yes. Whether you are a solo gynaecologist or a women’s-health clinic with a team, Meeticulous manages your services, availability, patient bookings and communication from one place — so your reception runs calmly without constant phone calls. It is a scheduling and payment tool, not a medical-records system.' },
+  { q: 'Is Meeticulous suitable for gynecologists and OB-GYN clinics?', a: 'Yes. Whether you are a solo gynaecologist or a women’s-health clinic with a team, Meeticulous manages your services, availability, patient appointments and communication from one place — so your reception runs calmly without constant phone calls. It is a scheduling and payment tool, not a medical-records system.' },
   { q: 'Can patients book appointments online?', a: 'Yes. A patient opens your booking link, chooses a service such as a consultation or antenatal visit, picks a convenient time and confirms — privately, no calls needed.' },
   { q: 'Is patient information kept private?', a: 'Meeticulous stores appointment and contact details for booking only — it is not a medical-records system. Your production data is hosted in India (Mumbai) and the platform operates under India’s DPDP Act 2023, and you control what a patient provides when booking.' },
   { q: 'Can I offer online consultations?', a: 'Yes. Offer private online consultations with automatic Google Meet links, or mark a service as in-clinic — or both. The patient picks the mode she is comfortable with.' },
-  { q: 'Can I collect the consultation fee online?', a: 'Yes. Collect the fee upfront through Razorpay — UPI, cards or netbanking — before the appointment. A GST invoice is generated automatically for every paid booking.' },
+  { q: 'Can I collect the consultation fee online?', a: 'Yes. Collect the fee upfront through Razorpay — UPI, cards or netbanking — before the appointment. A GST invoice is generated automatically for every paid appointment.' },
   { q: 'Can I manage multiple doctors and services?', a: 'Yes. Create as many services as you need — consultation, antenatal care, fertility, menopause care — each with its own duration, fee and availability, and manage every appointment from one calendar.' },
   { q: 'Do we need any technical setup?', a: 'No. Setup takes minutes and needs no technical skills. You add your services and clinic hours, and your booking page is ready to share — your patients need nothing more than the link.' },
   { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
@@ -696,7 +696,7 @@ export default function Gynecologists() {
           <div className="grid gap-10 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
             <div>
               <div className="font-heading text-lg font-extrabold text-[color:var(--ca-ink)]">Meeticulous</div>
-              <p className="mt-2 max-w-xs text-sm text-slate-500">A calm, private way to run your clinic&apos;s bookings.</p>
+              <p className="mt-2 max-w-xs text-sm text-slate-500">A calm, private way to run your clinic&apos;s appointments.</p>
               <CtaButton to={START} className="mt-5">Create Your Page — Free <ArrowRight size={15} /></CtaButton>
             </div>
             {FOOTER_COLS.map((col) => (

@@ -104,10 +104,10 @@ const TOOLS = [
 
 // Fuchsia impact band — black numerals.
 const METRICS = [
-  { v: '24/7', l: 'Bookings, day or night', note: 'Your booking page never sleeps — clients reserve slots any time.' },
+  { v: '24/7', l: 'Appointments, day or night', note: 'Your booking page never sleeps — clients reserve slots any time.' },
   { v: '100%', l: 'Kept on Pro', note: '0% commission — every rupee you earn stays yours.' },
   { v: '₹0', l: 'To get started', note: 'Free forever plan — no card, no lock-in.' },
-  { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice generated for every paid booking.' },
+  { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice generated for every paid appointment.' },
 ];
 
 // Editorial quote blocks — salon OWNERS/managers about admin relief, never clients about looks.
@@ -133,7 +133,7 @@ const NEW_WAY = [
   { title: 'Advance cuts no-shows', desc: 'A deposit at booking keeps your chairs full.' },
   { title: 'Paid upfront', desc: 'Booking amount taken online, over UPI or card.' },
   { title: 'One neat calendar', desc: 'Every appointment and stylist in a single view.' },
-  { title: 'Conflict-free chairs', desc: 'Availability stays accurate — no double bookings.' },
+  { title: 'Conflict-free chairs', desc: 'Availability stays accurate — no double-booked appointments.' },
 ];
 
 // Trust facts — verifiable only.
@@ -145,13 +145,13 @@ const TRUST_STRIP = [
 ];
 
 const FAQ = [
-  { q: 'Is Meeticulous suitable for salons and beauty studios?', a: 'Yes. Whether you are a solo beautician or a salon with a team of stylists, Meeticulous manages your services, availability, client bookings and communication from one place — so your front desk runs without the constant phone calls.' },
+  { q: 'Is Meeticulous suitable for salons and beauty studios?', a: 'Yes. Whether you are a solo beautician or a salon with a team of stylists, Meeticulous manages your services, availability, client appointments and communication from one place — so your front desk runs without the constant phone calls.' },
   { q: 'Can clients book appointments online?', a: 'Yes. A client opens your booking link, chooses a service such as a haircut, facial or colour, picks a convenient time and confirms — no calls or waiting for the desk to reply.' },
   { q: 'Can I take an advance payment to cut no-shows?', a: 'Yes. Collect a booking amount or the full price upfront through Razorpay — UPI, cards or netbanking — when the client books. Taking an advance is the simplest way to reduce no-shows.' },
   { q: 'Can I share my booking link on Instagram?', a: 'Yes. Your link works anywhere — put it in your Instagram bio, on WhatsApp, on Google or on your storefront. One link handles all your appointment requests.' },
   { q: 'Can I manage multiple stylists and services?', a: 'Yes. Create as many services as you need — hair, skin, nails, makeup, spa — each with its own duration, price and availability, and manage every appointment from one calendar.' },
   { q: 'Do I need any technical knowledge?', a: 'No. Setup takes minutes and needs no technical skills. You add your services and slots, and your booking page is ready to share — your clients need nothing more than the link.' },
-  { q: 'Does every booking get a GST invoice?', a: 'Yes. A GST invoice is generated automatically for every paid booking, and payouts go to your bank once KYC is complete.' },
+  { q: 'Does every appointment get a GST invoice?', a: 'Yes. A GST invoice is generated automatically for every paid appointment, and payouts go to your bank once KYC is complete.' },
   { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
 ];
 
@@ -664,14 +664,14 @@ export default function SalonPage() {
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-grey)' }}>
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <Reveal className="order-2 lg:order-1">
-            <ImgSlot alt="A salon owner reviewing the day's bookings on a tablet" className="aspect-[4/5] w-full shadow-[0_24px_54px_-32px_rgba(17,17,17,0.4)]" />
+            <ImgSlot alt="A salon owner reviewing the day's appointments on a tablet" className="aspect-[4/5] w-full shadow-[0_24px_54px_-32px_rgba(17,17,17,0.4)]" />
           </Reveal>
           <div className="order-1 lg:order-2">
             <Reveal as="h2" delay={0.04} className="font-heading text-3xl font-black leading-tight tracking-tight sm:text-4xl">
               Small salons deserve better tools.
             </Reveal>
             <Reveal as="p" delay={0.08} className="mt-5 text-base leading-relaxed text-neutral-600">
-              Meeticulous was built to make appointment-based businesses easier to run. Instead of a ringing phone, a paper diary and scattered payments, salons can manage their bookings, clients and money from one pretty platform.
+              Meeticulous was built to make appointment-based businesses easier to run. Instead of a ringing phone, a paper diary and scattered payments, salons can manage their appointments, clients and money from one pretty platform.
             </Reveal>
             <Reveal as="p" delay={0.1} className="mt-4 text-[15px] font-medium text-neutral-500">
               Built for Indian professionals. Designed for the way modern salons actually work.

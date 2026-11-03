@@ -101,7 +101,7 @@ const STEPS = [
 
 // Integration logo strip — REAL BAS integrations only.
 const TOOLS = [
-  { name: 'Google Calendar', icon: 'google-calendar', sub: 'Busy times blocked, bookings added to your calendar' },
+  { name: 'Google Calendar', icon: 'google-calendar', sub: 'Busy times blocked, appointments added to your calendar' },
   { name: 'Google Meet', logo: '/images/logos/google-meet.svg', sub: 'Auto-add a video link to every tele-consult' },
   { name: 'WhatsApp Automation', logo: '/images/logos/whatsapp.svg', sub: 'Reminders and updates on autopilot' },
   { name: 'Razorpay', logo: razorpayLogo, sub: 'Secure payments, refunds and GST invoices' },
@@ -111,10 +111,10 @@ const TOOLS = [
 
 // Indigo stat band.
 const METRICS = [
-  { v: '24/7', l: 'Bookings, day or night', note: 'Your booking page never sleeps.' },
+  { v: '24/7', l: 'Appointments, day or night', note: 'Your booking page never sleeps.' },
   { v: '100%', l: 'Kept on Pro', note: '0% commission — every rupee is yours.' },
   { v: '₹0', l: 'To get started', note: 'Free forever plan — no card, no lock-in.' },
-  { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice for every paid booking.' },
+  { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice for every paid appointment.' },
 ];
 
 // Placeholder testimonials — clinic STAFF about ADMIN, never patients about treatment.
@@ -130,7 +130,7 @@ const COMPARE_ROWS = [
   { old: { t: 'No-shows waste clinic hours', d: 'A missed appointment is a slot the surgeon cannot bill.' }, now: { t: 'Automatic reminders', d: 'WhatsApp and email reminders cut no-shows.' } },
   { old: { t: 'Chasing consultation fees', d: 'Payment is collected at the desk, or not at all.' }, now: { t: 'Fees collected upfront', d: 'Consultation fee taken at booking, over UPI or card.' } },
   { old: { t: 'A paper appointment register', d: 'Visits scattered across a book and phone notes.' }, now: { t: 'One clean clinic calendar', d: 'Every appointment and surgeon in a single view.' } },
-  { old: { t: 'Double-booked slots', d: 'Two patients booked into the same slot by hand.' }, now: { t: 'Conflict-free slots', d: 'Availability stays accurate — no double bookings.' } },
+  { old: { t: 'Double-booked slots', d: 'Two patients booked into the same slot by hand.' }, now: { t: 'Conflict-free slots', d: 'Availability stays accurate — no double-booked appointments.' } },
 ];
 
 // Trust facts — verifiable only.
@@ -142,10 +142,10 @@ const TRUST_STRIP = [
 ];
 
 const FAQ = [
-  { q: 'Is Meeticulous suitable for ENT specialists and surgeons?', a: 'Yes. Whether you are a solo ENT specialist or a clinic with a team of surgeons, Meeticulous manages your services, availability, patient bookings and communication from one place — so your reception runs without constant phone calls. It is a scheduling and payment tool, not a medical-records system.' },
+  { q: 'Is Meeticulous suitable for ENT specialists and surgeons?', a: 'Yes. Whether you are a solo ENT specialist or a clinic with a team of surgeons, Meeticulous manages your services, availability, patient appointments and communication from one place — so your reception runs without constant phone calls. It is a scheduling and payment tool, not a medical-records system.' },
   { q: 'Can patients book consultations online?', a: 'Yes. A patient opens your booking link, chooses a service such as an ENT consultation or hearing test, picks a convenient time and confirms — no calls or waiting for the desk to reply.' },
   { q: 'Can I offer online (tele-ENT) consultations?', a: 'Yes. Offer online consults with automatic Google Meet links, or mark a service as in-clinic — or both. The patient picks the mode that suits them.' },
-  { q: 'Can I collect the consultation fee online?', a: 'Yes. Collect the fee upfront through Razorpay — UPI, cards or netbanking — before the appointment. A GST invoice is generated automatically for every paid booking.' },
+  { q: 'Can I collect the consultation fee online?', a: 'Yes. Collect the fee upfront through Razorpay — UPI, cards or netbanking — before the appointment. A GST invoice is generated automatically for every paid appointment.' },
   { q: 'Can I manage multiple surgeons and services?', a: 'Yes. Create as many services as you need — consultation, audiology, sinus care, surgical reviews — each with its own duration, fee and availability, and manage every appointment from one clinic calendar.' },
   { q: 'Is our clinic and patient information kept private?', a: 'Meeticulous stores appointment and contact details for booking only — it is not a medical-records system. Your production data is hosted in India (Mumbai) and the platform operates under India’s DPDP Act 2023.' },
   { q: 'Do we need any technical setup?', a: 'No. Setup takes minutes and needs no technical skills. You add your services and clinic hours, and your booking page is ready to share — your patients need nothing more than the link.' },
@@ -829,7 +829,7 @@ export default function EntSpecialists() {
           <div className="grid gap-10 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
             <div>
               <div className="font-heading text-lg font-extrabold text-[color:var(--ca-ink)]">Meeticulous</div>
-              <p className="mt-2 max-w-xs text-sm text-slate-500">The cleaner way to run your ENT clinic&apos;s bookings.</p>
+              <p className="mt-2 max-w-xs text-sm text-slate-500">The cleaner way to run your ENT clinic&apos;s appointments.</p>
               <CtaButton to={START} className="mt-5">Claim Your Link — Free <ArrowRight size={15} /></CtaButton>
             </div>
             {FOOTER_COLS.map((col) => (
