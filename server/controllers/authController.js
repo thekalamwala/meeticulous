@@ -168,6 +168,7 @@ const serializeProfile = async (profile, session) => {
   social_links:             profile.social_links || {},
   theme_color:              profile.theme_color || null,
   google_calendar_connected:!!profile.google_calendar_connected,
+  calendar_skipped:         !!profile.calendar_skipped,
   is_verified:              !!profile.is_verified,
   whatsapp_verified:        !!profile.whatsapp_verified,
   whatsapp_number:          profile.whatsapp_number || null,

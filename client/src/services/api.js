@@ -387,6 +387,7 @@ export const updateOnboardingStep = (data)             => API.post('/onboarding/
 export const saveOnboardingPersona = (primary_category) => API.post('/onboarding/save-persona', { primary_category });
 export const saveOnboardingDetails = (data)             => API.post('/onboarding/save-details', data);
 export const getOnboardingStatus  = ()                 => API.get('/onboarding/status');
+export const skipCalendar         = ()                 => API.post('/onboarding/skip-calendar');
 export const whatsappSendOtp      = (phone)            => API.post('/whatsapp/send-otp', { phone });
 export const whatsappVerifyOtp    = (phone, otp)       => API.post('/whatsapp/verify-otp', { phone, otp });
 export const activateFreePlan     = ()                 => API.post('/onboarding/activate-free');
