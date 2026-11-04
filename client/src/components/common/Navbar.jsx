@@ -203,6 +203,25 @@ const NavbarLogo = ({ appearance }) => {
   return wordmarkText(true); // fallback: text only, always visible
 };
 
+// ── Community lockup suffix ──────────────────────────────────────────────────
+// On /community routes the logo reads "Meeticulous <word>" as one lockup, so the
+// section needs no separate "Community" nav item. The wordmark stays the official
+// mark; only this suffix word cycles. Held still for reduced-motion.
+const COMMUNITY_WORDS = ['Community', 'Tribe', 'Crew', 'Circle', 'Gang', 'Regulars'];
+const CommunitySuffix = () => {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) return undefined;
+    const t = setInterval(() => setI((n) => (n + 1) % COMMUNITY_WORDS.length), 2200);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <span className="text-[13.2px] font-bold tracking-tight text-primary leading-none" aria-label="Community">
+      <span key={i} className="mt-wordrot inline-block">{COMMUNITY_WORDS[i]}</span>
+    </span>
+  );
+};
+
 // ── Photo avatar (host) — real profile photo with initials fallback ──────────
 // Literal size classes (never interpolated) so Tailwind's JIT emits them.
 const PhotoAvatar = ({ user, className = 'h-11 w-11' }) =>
@@ -547,6 +566,7 @@ export const PublicCenterNav = () => {
   const [activeKey, setActiveKey] = useState(null);
   const timer = useRef(null);
   const location = useLocation();
+  const onCommunity = location.pathname.startsWith('/community');
 
   const openMenu = (k) => { if (timer.current) clearTimeout(timer.current); setActiveKey(k); };
   const closeMenu = (immediate) => {
@@ -584,7 +604,7 @@ export const PublicCenterNav = () => {
         Pricing
       </Link>
 
-      {communityOn && (
+      {communityOn && !onCommunity && (
         <Link to="/community" className="my-2 flex items-center rounded-xl px-3 text-[11.9px] font-medium text-gray-600 lg:px-4 lg:text-[13.2px] transition-colors hover:bg-primary-light/40 hover:text-primary hover:no-underline">
           Community
         </Link>
@@ -599,6 +619,7 @@ const Navbar = () => {
   const { user, logout, mode, setMode } = useAuth();
   const appearance = useAppearance();
   const location = useLocation();
+  const onCommunity = location.pathname.startsWith('/community');
 
   const [menuOpen,    setMenuOpen]    = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -621,7 +642,8 @@ const Navbar = () => {
   // the only navbar surface (hosts navigate via the dashboard; guests only need
   // bookings/reviews). Logged-out users render PublicCenterNav.
   const communityOn  = useCommunityOn();
-  const navItems     = communityOn ? [{ href: '/community', label: 'Community', icon: MessageSquare }] : [];
+  // On community routes the logo lockup carries the name, so drop the separate nav item.
+  const navItems     = communityOn && !onCommunity ? [{ href: '/community', label: 'Community', icon: MessageSquare }] : [];
 
   // Notification feed — role-filtered (host vs guest), loaded on mount and on panel open
   const notifRole = hostingView ? 'host' : 'guest';
@@ -729,6 +751,7 @@ const Navbar = () => {
             aria-label="Meeticulous — home"
           >
             <NavbarLogo appearance={appearance} />
+            {onCommunity && <CommunitySuffix />}
           </Link>
 
           {/* Center nav (desktop only) */}
@@ -1035,7 +1058,7 @@ const Navbar = () => {
                   <Tag size={16} className="flex-shrink-0 text-gray-400" /> Pricing
                 </Link>
 
-                {communityOn && (
+                {communityOn && !onCommunity && (
                   <Link to="/community" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-primary/5 hover:text-primary hover:no-underline">
                     <MessageSquare size={16} className="flex-shrink-0 text-gray-400" /> Community
                   </Link>

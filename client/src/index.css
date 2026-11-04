@@ -291,6 +291,16 @@ a {
   .blog-hero-thread { animation: none; }
 }
 
+/* Navbar community lockup: each new suffix word fades/slides in (re-keyed per word). */
+.mt-wordrot { animation: mt-wordrot-in 0.4s ease both; }
+@keyframes mt-wordrot-in {
+  from { opacity: 0; transform: translateY(0.28em); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mt-wordrot { animation: none; }
+}
+
 button,
 input,
 textarea,
