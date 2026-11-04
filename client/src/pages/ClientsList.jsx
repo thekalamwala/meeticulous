@@ -32,6 +32,14 @@ const COLUMNS = [
   { key: 'last_booking_at', header: 'Last Booking', render: (c) => <span className="text-muted">{fmtDate(c.last_booking_at)}</span> },
 ];
 
+// Blurred teaser shown behind the upgrade overlay when the plan has no CRM.
+const SAMPLE_CUSTOMERS = [
+  { name: 'Aarav Sharma', initials: 'AS', meta: '6 bookings · ₹7,200' },
+  { name: 'Diya Patel', initials: 'DP', meta: '3 bookings · ₹3,600' },
+  { name: 'Kabir Mehta', initials: 'KM', meta: '9 bookings · ₹12,400' },
+  { name: 'Ananya Rao', initials: 'AR', meta: '2 bookings · ₹1,800' },
+];
+
 const ClientsList = () => {
   const navigate = useNavigate();
   const [clients, setClients] = useState([]);
@@ -104,18 +112,35 @@ const ClientsList = () => {
     return (
       <div>
         <PageHeader title="Customers" subtitle="Your customers" />
-        <Card className="border-2 border-dashed border-primary/30 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blush text-maroon">
-            <Users className="h-6 w-6" strokeWidth={2} />
+        <div className="relative overflow-hidden rounded-2xl border border-black/5">
+          {/* Blurred teaser of the customer list */}
+          <ul aria-hidden className="pointer-events-none select-none divide-y divide-black/5 blur-[6px]">
+            {SAMPLE_CUSTOMERS.map((c) => (
+              <li key={c.name} className="flex items-center gap-3 bg-white p-4">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blush font-semibold text-maroon">{c.initials}</span>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-ink">{c.name}</p>
+                  <p className="text-sm text-muted">{c.meta}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+          {/* Upgrade overlay → Razorpay checkout on /dashboard/upgrade */}
+          <div className="absolute inset-0 grid place-items-center bg-white/50 p-4 backdrop-blur-[2px]">
+            <Card className="w-full max-w-sm text-center shadow-xl">
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blush text-maroon">
+                <Users className="h-6 w-6" strokeWidth={2} />
+              </div>
+              <h3 className="mb-1 font-display font-bold text-maroon">Unlock Customers</h3>
+              <p className="mb-4 text-sm text-muted">
+                See every customer's booking history, total spend and private notes — upgrade to {PREMIUM_PLAN.name} to unlock your customer list.
+              </p>
+              <Link to="/dashboard/upgrade" className={buttonClasses({ variant: 'primary' })}>
+                Upgrade to {PREMIUM_PLAN.name}
+              </Link>
+            </Card>
           </div>
-          <h3 className="mb-1 font-display font-bold text-maroon">Unlock Customers</h3>
-          <p className="mb-4 text-sm text-muted">
-            See every customer's booking history, total spend, and private notes with {PREMIUM_PLAN.name}.
-          </p>
-          <Link to="/dashboard/upgrade" className={buttonClasses({ variant: 'primary' })}>
-            Upgrade to {PREMIUM_PLAN.name}
-          </Link>
-        </Card>
+        </div>
       </div>
     );
   }

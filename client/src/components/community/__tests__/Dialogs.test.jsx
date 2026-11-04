@@ -19,15 +19,19 @@ import ReportDialog from '../ReportDialog';
 const wrap = (ui) => render(<MemoryRouter>{ui}</MemoryRouter>);
 
 describe('CommentForm', () => {
-  it('sends parent_id and hands the saved comment to the page', async () => {
+  it('optimistically hands over a temp reply, then reconciles with the saved comment', async () => {
     const saved = { id: 'c2' };
     createComment.mockResolvedValue({ comment: saved });
     const onCreated = vi.fn();
-    wrap(<CommentForm itemId="i1" parent={{ id: 'c1', author: { display_name: 'Meera' } }} onCreated={onCreated} onCancel={vi.fn()} />);
+    const onSettle = vi.fn();
+    wrap(<CommentForm itemId="i1" parent={{ id: 'c1', author: { display_name: 'Meera' } }} onCreated={onCreated} onSettle={onSettle} onCancel={vi.fn()} />);
     await userEvent.type(screen.getByLabelText('Your reply'), 'Thanks!');
     await userEvent.click(screen.getByRole('button', { name: 'Reply' }));
-    await waitFor(() => expect(onCreated).toHaveBeenCalledWith(saved));
+    // optimistic: the temp reply is handed to the page immediately with the typed body
+    expect(onCreated).toHaveBeenCalledWith(expect.objectContaining({ body: 'Thanks!', parent_id: 'c1', pending: true }));
     expect(createComment).toHaveBeenCalledWith('i1', { body: 'Thanks!', parent_id: 'c1' });
+    // then reconciled with the server copy
+    await waitFor(() => expect(onSettle).toHaveBeenCalledWith(expect.any(String), saved));
   });
 });
 

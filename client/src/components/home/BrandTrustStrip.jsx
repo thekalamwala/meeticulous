@@ -45,7 +45,7 @@ const Brand = ({ item }) => (
 export default function BrandTrustStrip() {
   return (
     <section className="border-b border-black/5 py-10 lg:py-12">
-      <p className="mb-6 px-5 text-center text-xs font-medium uppercase tracking-[0.2em] text-neutral-500 sm:px-8">
+      <p className="mb-6 px-5 text-center text-xs font-medium uppercase tracking-[0.2em] text-neutral-600 sm:px-8">
         Used by people who work with
       </p>
 

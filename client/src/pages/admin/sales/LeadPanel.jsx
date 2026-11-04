@@ -801,7 +801,7 @@ function ActionModal({ type, lead, templates = [], onClose, onDone }) {
     const CH = [{ id: 'all', label: 'All' }, { id: 'wa', label: 'WhatsApp' }, { id: 'email', label: 'Email' }];
     return (
       <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
-        <Card className="rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <Card className="rounded-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
           {mView === 'grid' ? (
             <>
               <div className="flex items-center gap-3 px-5 pt-5 pb-3 border-b border-gray-100">
@@ -822,7 +822,7 @@ function ActionModal({ type, lead, templates = [], onClose, onDone }) {
                 </div>
                 <input className="fb-input text-sm flex-1 min-w-[160px]" placeholder="Search templates…" value={q} onChange={(e) => setQ(e.target.value)} />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-5 pb-5 overflow-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-5 pb-5 overflow-auto content-start">
                 {gridTemplates.length === 0 ? (
                   <p className="col-span-full text-[13px] adm-t2 py-6 text-center">No templates{q ? ' match' : ''}. Add them in <a href="/admin/sales/templates" className="text-[#960D32]">Templates</a>.</p>
                 ) : gridTemplates.map((t) => {
@@ -831,15 +831,15 @@ function ActionModal({ type, lead, templates = [], onClose, onDone }) {
                   const nVar = (t.variables || []).length;
                   return (
                     <button key={t.id} type="button" onClick={() => openTpl(t)}
-                      className="text-left rounded-xl border border-gray-200 bg-white p-3 transition hover:shadow-md hover:-translate-y-0.5">
-                      <div className="flex items-center gap-2.5">
-                        <span className={`w-8 h-8 min-h-0 shrink-0 rounded-lg grid place-items-center ${wa ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'}`}><Icon size={16} /></span>
-                        <h3 className="text-[13.5px] font-bold adm-t1 leading-tight">{t.label || t.name}</h3>
+                      className="group flex h-full flex-col text-left rounded-xl border border-gray-200 bg-white p-4 transition hover:border-gray-300 hover:shadow-md">
+                      <div className="flex items-start gap-2.5">
+                        <span className={`w-9 h-9 min-h-0 shrink-0 rounded-lg grid place-items-center ${wa ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'}`}><Icon size={17} /></span>
+                        <h3 className="text-[13.5px] font-bold adm-t1 leading-snug">{t.label || t.name}</h3>
                       </div>
                       <p className="mt-2 text-[11.5px] adm-t3 line-clamp-2">{wa ? (t.body || t.name || '') : (t.subject || t.body || '')}</p>
-                      <div className="mt-2.5 flex items-center gap-2">
+                      <div className="mt-auto flex items-center gap-2 border-t border-gray-100 pt-3">
                         <span className="text-[10px] adm-t3 bg-gray-50 border border-gray-200 rounded px-1.5 py-0.5">{wa ? `${nVar} var${nVar === 1 ? '' : 's'}` : 'Email'}</span>
-                        <span className={`ml-auto inline-flex items-center gap-1 text-white text-[12px] font-bold px-3 py-1.5 rounded-lg ${wa ? 'bg-emerald-600' : 'bg-blue-600'}`}>
+                        <span className={`ml-auto inline-flex items-center gap-1 text-white text-[12px] font-bold px-3 py-1.5 rounded-lg transition group-hover:gap-1.5 ${wa ? 'bg-emerald-600' : 'bg-blue-600'}`}>
                           Send <ArrowRight size={13} strokeWidth={2.5} />
                         </span>
                       </div>

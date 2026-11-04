@@ -70,7 +70,7 @@ export default function CommunitySpace() {
         <header className="mt-card flex-row items-center gap-3 p-5 sm:p-6">
           <span className="mt-avatar rounded-md" aria-hidden="true"><SpaceIcon spaceKey={space.key} /></span>
           <div className="min-w-0 flex-1">
-            <h1 className="font-display text-2xl font-extrabold leading-tight tracking-tight text-maroon">{space.name}</h1>
+            <h1 className="mb-0 font-display text-2xl font-extrabold leading-tight tracking-tight text-maroon">{space.name}</h1>
             <p className="mt-0.5 text-xs leading-snug text-muted">{space.description} {POLICY[space.post_policy]}</p>
           </div>
           {list.items.length > 0 && <div className="hidden sm:block">{startBtn}</div>}

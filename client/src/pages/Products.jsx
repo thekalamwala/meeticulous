@@ -61,6 +61,14 @@ const emptyForm = {
   file_size_bytes: null,
 };
 
+// Blurred teaser shown behind the upgrade overlay for plans without products.
+const SAMPLE_PRODUCTS = [
+  { title: "Brand Guidelines Kit", type: "PDF · 24 pages", price: "₹499" },
+  { title: "Notion Template Pack", type: "Template", price: "₹299" },
+  { title: "Lightroom Presets", type: "Preset Pack", price: "₹799" },
+  { title: "Resume Starter", type: "PDF", price: "₹199" },
+];
+
 const Products = () => {
   const { user } = useAuth();
   const [products, setProducts] = useState([]);
@@ -252,6 +260,57 @@ const Products = () => {
     }
   };
 
+  // Plan-gated: free/limited plans see the page blurred behind an upgrade card.
+  // (Kill-switch OFF is a separate, neutral message — an upgrade can't unlock it.)
+  if (!canCreate) {
+    return (
+      <div className="mx-auto max-w-4xl">
+        <BackButton hasUnsavedChanges={false} />
+        <PageHeader title="Digital Products" subtitle="Sell PDFs, templates, ebooks, and more." />
+        {!digitalProductsOn ? (
+          <Card className="border-2 border-dashed border-primary/30 text-center">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blush text-maroon">
+              <Package className="h-6 w-6" strokeWidth={2} />
+            </div>
+            <h3 className="mb-1 font-semibold text-ink">Digital Products are temporarily unavailable</h3>
+            <p className="text-sm text-muted">This feature is switched off right now. It’ll be back soon — no plan change needed.</p>
+          </Card>
+        ) : (
+          <div className="relative overflow-hidden rounded-2xl border border-black/5">
+            {/* Blurred teaser of what the page offers */}
+            <ul aria-hidden className="pointer-events-none grid select-none gap-4 p-4 blur-[6px] sm:grid-cols-2">
+              {SAMPLE_PRODUCTS.map((s) => (
+                <li key={s.title} className="overflow-hidden rounded-xl border border-black/10 bg-white">
+                  <div className="aspect-[16/9] bg-blush" />
+                  <div className="p-4">
+                    <h3 className="font-semibold text-ink">{s.title}</h3>
+                    <p className="mt-1 text-sm text-muted">{s.type}</p>
+                    <p className="mt-2 font-bold text-maroon">{s.price}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            {/* Upgrade overlay → Razorpay checkout on /dashboard/upgrade */}
+            <div className="absolute inset-0 grid place-items-center bg-white/50 p-4 backdrop-blur-[2px]">
+              <Card className="w-full max-w-sm text-center shadow-xl">
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blush text-maroon">
+                  <Package className="h-6 w-6" strokeWidth={2} />
+                </div>
+                <h3 className="mb-1 font-display font-bold text-maroon">Unlock Digital Products</h3>
+                <p className="mb-4 text-sm text-muted">
+                  Sell PDFs, templates, ebooks and resources right from your profile — unlock it to list and sell your first product.
+                </p>
+                <Link to="/dashboard/upgrade" className={buttonClasses({ variant: "primary" })}>
+                  {upgradePlan ? `Upgrade to ${planLabel(upgradePlan.slug, upgradePlan.name)}` : "Upgrade to unlock"}
+                </Link>
+              </Card>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-4xl">
       <BackButton hasUnsavedChanges={dirty} />
@@ -260,7 +319,7 @@ const Products = () => {
         title="Digital Products"
         subtitle="Sell PDFs, templates, ebooks, and more."
         actions={
-          !showForm && canCreate ? (
+          !showForm ? (
             <Button className="hidden sm:inline-flex" onClick={openCreate}>
               <Plus className="h-4 w-4" />
               Add Product
@@ -268,37 +327,6 @@ const Products = () => {
           ) : null
         }
       />
-
-      {/* Gate — two distinct reasons, two distinct messages:
-          • kill switch OFF → products are globally unavailable; an upgrade can't
-            unlock them, so show a neutral notice with NO upgrade CTA.
-          • plan has no product allowance → show the upgrade CTA, naming the
-            cheapest higher tier (price lives on the Upgrade page, never here). */}
-      {!canCreate && (
-        <Card className="mb-6 border-2 border-dashed border-primary/30 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blush text-maroon">
-            <Package className="h-6 w-6" strokeWidth={2} />
-          </div>
-          {!digitalProductsOn ? (
-            <>
-              <h3 className="mb-1 font-semibold text-ink">Digital Products are temporarily unavailable</h3>
-              <p className="text-sm text-muted">
-                This feature is switched off right now. It’ll be back soon — no plan change needed.
-              </p>
-            </>
-          ) : (
-            <>
-              <h3 className="mb-1 font-semibold text-ink">Unlock Digital Products</h3>
-              <p className="mb-4 text-sm text-muted">
-                Sell PDFs, templates, ebooks, and resources directly from your profile.
-              </p>
-              <Link to="/dashboard/upgrade" className={buttonClasses({ variant: "primary" })}>
-                {upgradePlan ? `Upgrade to ${planLabel(upgradePlan.slug, upgradePlan.name)}` : "Upgrade your plan"}
-              </Link>
-            </>
-          )}
-        </Card>
-      )}
 
       {showForm && (
         <Card as="form" onSubmit={handleSubmit} className="mb-6 space-y-4">

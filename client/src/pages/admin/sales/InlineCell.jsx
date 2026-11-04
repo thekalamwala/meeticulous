@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Badge } from '../../../components/admin/ui';
 import { ALL_STATUSES, STATUS_LABEL, STATUS_TONE } from './salesConstants';
 
@@ -36,15 +37,27 @@ export function InlineText({ value, onSave, placeholder = '—', mono = false })
 // Inline status chip → click opens a compact stage menu.
 export function InlineStatus({ value, onSave }) {
   const [open, setOpen] = useState(false);
+  const btnRef = useRef(null);
+  const [pos, setPos] = useState(null);
+  // The leads table body scrolls (overflow), so an absolutely-positioned menu
+  // gets clipped and "disappears". Portal it to <body> and pin it with fixed
+  // coords taken from the trigger instead.
+  // ponytail: menu stays put if the table is scrolled while open; it closes on
+  // the next click, which is enough for a one-tap stage change.
+  useLayoutEffect(() => {
+    if (!open || !btnRef.current) return;
+    const r = btnRef.current.getBoundingClientRect();
+    setPos({ top: r.bottom + 4, left: r.left });
+  }, [open]);
   return (
     <div className="relative inline-block" onClick={(e) => e.stopPropagation()}>
-      <button type="button" onClick={() => setOpen((o) => !o)} className="rounded hover:opacity-80" title="Change stage">
+      <button ref={btnRef} type="button" onClick={() => setOpen((o) => !o)} className="rounded hover:opacity-80" title="Change stage">
         <Badge tone={STATUS_TONE[value] || 'neutral'}>{STATUS_LABEL[value] || value}</Badge>
       </button>
-      {open && (
+      {open && pos && createPortal(
         <>
-          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 z-20 mt-1 w-40 rounded-lg adm-card shadow-lg py-1">
+          <div className="fixed inset-0 z-[90]" onClick={() => setOpen(false)} />
+          <div className="fixed z-[91] w-44 rounded-lg adm-card shadow-lg py-1" style={{ top: pos.top, left: pos.left }}>
             {ALL_STATUSES.map((s) => (
               <button key={s} type="button"
                 onClick={() => { setOpen(false); if (s !== value) onSave(s); }}
@@ -54,7 +67,8 @@ export function InlineStatus({ value, onSave }) {
               </button>
             ))}
           </div>
-        </>
+        </>,
+        document.body,
       )}
     </div>
   );

@@ -160,12 +160,12 @@ describe('console sidebar — two-level nav', () => {
     expect(screen.getByRole('link', { name: 'Services' })).toHaveAttribute('aria-current', 'page');
   });
 
-  it('plan-locked items render disabled with a locked accessible name', () => {
-    // Starter host: Products is Supreme-only -> shown but locked.
+  it('Customers and Products are reachable for every plan (stale nav lock removed)', () => {
+    // Free host: Products/Customers are no longer nav-locked; the page handles the upsell.
     renderAt('/dashboard/products', { name: 'Host', plan: 'free', role: 'host' });
-    const products = screen.getByLabelText('Products (locked)');
-    expect(products).toHaveAttribute('aria-disabled', 'true');
-    expect(products).toHaveAttribute('tabindex', '-1');
+    const products = screen.getByRole('link', { name: 'Products' });
+    expect(products).not.toHaveAttribute('aria-disabled', 'true');
+    expect(products).toHaveAttribute('href', '/dashboard/products');
   });
 
   it('surfaces a KYC-pending attention badge on Payouts (KYC gates payouts)', () => {

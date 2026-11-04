@@ -2,7 +2,7 @@ const { supabaseAdmin } = require('../config/supabase');
 const { safeError } = require('../utils/httpError');
 const { canCommunityUpload } = require('../middleware/communityGate');
 
-const MAX_SIZE_BYTES = 2 * 1024 * 1024; // 2MB
+const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 const ALLOWED_FOLDERS = ['profiles', 'covers', 'services', 'branding', 'products', 'community'];
 
 // Content-based image detection via magic bytes — the client-supplied mimetype
@@ -88,7 +88,7 @@ const uploadImage = async (req, res) => {
     }
 
     if (size > MAX_SIZE_BYTES) {
-      return res.status(400).json({ message: 'File size must be under 2MB' });
+      return res.status(400).json({ message: 'File size must be under 5MB' });
     }
 
     // Validate by CONTENT, not the (spoofable) client mimetype/extension.
@@ -147,7 +147,7 @@ const uploadProductFile = async (req, res) => {
     }
 
     if (size > MAX_SIZE_BYTES) {
-      return res.status(400).json({ message: 'File size must be under 2MB' });
+      return res.status(400).json({ message: 'File size must be under 5MB' });
     }
 
     const ext = String(originalname || '').toLowerCase().split('.').pop();
