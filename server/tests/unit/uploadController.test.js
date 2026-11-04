@@ -62,12 +62,12 @@ describe('uploadProductFile', () => {
     expect(r.status).toHaveBeenCalledWith(400);
   });
 
-  test('400 when file exceeds 2 MB', async () => {
-    const big = Buffer.concat([PDF_BUF, Buffer.alloc(2 * 1024 * 1024 + 1)]);
+  test('400 when file exceeds 5 MB', async () => {
+    const big = Buffer.concat([PDF_BUF, Buffer.alloc(5 * 1024 * 1024 + 1)]);
     const r = res();
     await uploadProductFile(req({ size: big.length, buffer: big, originalname: 'big.pdf' }), r);
     expect(r.status).toHaveBeenCalledWith(400);
-    expect(r.json.mock.calls[0][0].message).toMatch(/2\s*MB/i);
+    expect(r.json.mock.calls[0][0].message).toMatch(/5\s*MB/i);
   });
 
   test('400 when extension is allowed but magic bytes do not match (spoofed .pdf)', async () => {
