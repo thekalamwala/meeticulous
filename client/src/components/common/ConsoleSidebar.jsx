@@ -56,7 +56,7 @@ export const NAV = [
     id: 'bookings', label: 'Bookings', icon: 'rail-bookings',
     items: [
       { to: '/dashboard/bookings', label: 'Bookings', icon: 'nav-bookings' },
-      { to: '/dashboard/clients', label: 'Customers', icon: 'nav-customers', matchPrefix: '/dashboard/clients', locked: ['professional', 'supreme'] },
+      { to: '/dashboard/clients', label: 'Customers', icon: 'nav-customers', matchPrefix: '/dashboard/clients' },
       { to: '/dashboard/payments/transactions', label: 'Transactions', icon: 'nav-transactions', matchPrefix: '/dashboard/payments/transactions' },
       { to: '/dashboard/availability', label: 'Availability', icon: 'nav-availability' },
     ],
@@ -65,7 +65,7 @@ export const NAV = [
     id: 'catalog', label: 'Catalog', icon: 'rail-catalog',
     items: [
       { to: '/dashboard/services', label: 'Services', icon: 'nav-services', matchPrefix: '/dashboard/service' },
-      { to: '/dashboard/products', label: 'Products', icon: 'nav-products', locked: 'supreme' },
+      { to: '/dashboard/products', label: 'Products', icon: 'nav-products' },
     ],
   },
   {
