@@ -22,9 +22,11 @@ export function useLinkedinEnabled() {
 // Secondary host sign-in/up option beside the Google button. Renders nothing unless
 // the admin flag is explicitly ON — the shared flag map fails OPEN for unknown
 // keys, but this door fails CLOSED (matches the server), so we also require an
-// explicit `true` row.
+// explicit `true` row. `onStart` runs right before the redirect (stash page
+// context the OAuth round-trip must survive, e.g. the hero slug or an invite).
 export default function ContinueWithLinkedIn({
   intent,
+  onStart,
   className = 'btn btn--outline mt-3 flex w-full items-center justify-center gap-3 py-2.5 text-sm font-semibold',
 }) {
   const { startLinkedinHostAuth } = useAuth();
@@ -37,6 +39,7 @@ export default function ContinueWithLinkedIn({
     if (busy) return;
     setBusy(true);
     try {
+      onStart?.();
       await startLinkedinHostAuth(intent);
     } catch {
       toast.error("Couldn't start LinkedIn sign-in. Try again.");

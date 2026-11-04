@@ -40,3 +40,12 @@ test('rejection toasts and re-enables', async () => {
   await waitFor(() => expect(toastError).toHaveBeenCalledWith("Couldn't start LinkedIn sign-in. Try again."));
   expect(screen.getByRole('button')).not.toBeDisabled();
 });
+
+test('onStart runs before the LinkedIn redirect starts', async () => {
+  flagOn = true;
+  const order = [];
+  start.mockImplementation(async () => { order.push('start'); });
+  render(<ContinueWithLinkedIn intent="signup" onStart={() => order.push('onStart')} />);
+  fireEvent.click(screen.getByRole('button'));
+  await waitFor(() => expect(order).toEqual(['onStart', 'start']));
+});

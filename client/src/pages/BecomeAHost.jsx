@@ -41,8 +41,9 @@ const Logo = ({ className = '' }) => (
   />
 );
 
-// /become-a-host — host signup. Google-only: one consent screen grants identity
+// /become-a-host — host signup. Google: one consent screen grants identity
 // + calendar access, the account is created automatically in the callback.
+// LinkedIn (Supabase linkedin_oidc) is offered too while host_linkedin_login is ON.
 const BecomeAHost = () => {
   const { startVendorGoogleAuth, user } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -118,8 +119,8 @@ const BecomeAHost = () => {
             <Link to="/privacy" className="hover:underline">Privacy Policy</Link>.
           </p>
 
-          {/* Secondary providers — shown but inactive ("Soon"). LinkedIn login and
-              email sign-up have no backend yet; enable when those flows land. */}
+          {/* Secondary providers. LinkedIn is live behind host_linkedin_login (inert
+              "Soon" button while OFF); email sign-up has no backend yet ("Soon"). */}
           {linkedinOn ? (
             <ContinueWithLinkedIn intent="signup" />
           ) : (

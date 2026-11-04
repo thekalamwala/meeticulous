@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import Reveal from "./Reveal";
-import ContinueWithLinkedIn from "../ContinueWithLinkedIn";
+import ContinueWithLinkedIn, { useLinkedinEnabled } from "../ContinueWithLinkedIn";
 import { cleanSlug, saveHeroSlug } from "../../utils/heroSlug";
 
 /* Homepage hero — owner reference (2026-11-02): full-screen crimson block, copy
@@ -11,7 +11,8 @@ import { cleanSlug, saveHeroSlug } from "../../utils/heroSlug";
    cursive "ee" and exits right carries that side. Sizing lives in `.home-hero` (index.css)
    so the ribbon, padding and full-screen height stay in one place.
 
-   "Claim my link" stashes the typed slug and starts the existing Google sign-up;
+   "Claim my link" stashes the typed slug and starts the existing Google sign-up
+   (the LinkedIn button, shown only with host_linkedin_login ON, stashes it too);
    onboarding's SlugClaim step pre-fills it and does the real availability check
    (there is no public slug-check endpoint, so the hero doesn't claim to know). */
 
@@ -26,6 +27,7 @@ const EE_PATH =
 const RIBBON = "var(--mt-pink)"; // the pink ee from the app icon
 export default function HomeHero({ onStart, loading }) {
   const [slug, setSlug] = useState("");
+  const linkedinOn = useLinkedinEnabled();
 
   const claim = (e) => {
     e.preventDefault();
@@ -91,11 +93,11 @@ export default function HomeHero({ onStart, loading }) {
                 {!loading && <ArrowRight size={16} />}
               </button>
             </form>
-            <ContinueWithLinkedIn intent="signup" className="btn mt-3 flex w-full max-w-[34rem] items-center justify-center gap-3 rounded-full border border-white/40 bg-transparent py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90" />
+            <ContinueWithLinkedIn intent="signup" onStart={() => saveHeroSlug(slug)} className="btn mt-3 flex w-full max-w-[34rem] items-center justify-center gap-3 rounded-full border border-white/40 bg-transparent py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90" />
             <p className="mt-3 flex max-w-[34rem] items-start gap-2 text-xs leading-relaxed text-white/75">
               <span aria-hidden className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full" style={{ background: RIBBON }} />
               <span>
-                Next, sign in with Google — we&apos;ll check your link is free. By continuing, you agree to our{" "}
+                Next, sign in with Google{linkedinOn ? " or LinkedIn" : ""} — we&apos;ll check your link is free. By continuing, you agree to our{" "}
                 <Link to="/terms" className="text-white/90 underline decoration-white/40 underline-offset-2 hover:text-white">Terms</Link> and{" "}
                 <Link to="/privacy" className="text-white/90 underline decoration-white/40 underline-offset-2 hover:text-white">Privacy Policy</Link>.
               </span>
