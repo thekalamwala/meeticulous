@@ -272,4 +272,4 @@ async function buildFinanceReport({ now = new Date() } = {}) {
   };
 }
 
-module.exports = { buildFinanceReport, aggregateFinance, istWindows, naturalAmount };
+module.exports = { buildFinanceReport, aggregateFinance, istWindows, naturalAmount, fetchAll };
