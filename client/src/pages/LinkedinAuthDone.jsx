@@ -7,7 +7,8 @@ import { linkedinHostAuth } from '../services/api';
 import Seo from '../components/common/Seo';
 import PetalSpinner from '../components/common/PetalSpinner';
 
-// Server code → host-login error. Anything unmapped is a generic auth_failed.
+// Server code → host-login error. Anything unmapped is a generic linkedin_failed
+// (LinkedIn-specific copy — auth_failed reads "Google sign-in failed").
 const ERRORS = { 409: 'email_has_account', 503: 'linkedin_off' };
 
 // /auth/linkedin/done — return page for the host LinkedIn door
@@ -41,9 +42,10 @@ const LinkedinAuthDone = () => {
     (async () => {
       try {
         sb = await getSupabase();
-        if (qs.get('error') || qs.get('error_code') || hash.get('error') || hash.get('error_code')) {
-          throw new Error('oauth_error');
-        }
+        const oauthErrs = [qs.get('error'), qs.get('error_code'), hash.get('error'), hash.get('error_code')];
+        // access_denied = the host backed out on LinkedIn's consent screen.
+        if (oauthErrs.includes('access_denied')) throw Object.assign(new Error('oauth_error'), { reason: 'linkedin_cancelled' });
+        if (oauthErrs.some(Boolean)) throw new Error('oauth_error');
         let refresh = null;
         const code = qs.get('code');
         if (code) {
@@ -87,8 +89,8 @@ const LinkedinAuthDone = () => {
         navigate(resume || '/dashboard', { replace: true });
       } catch (e) {
         const status = e?.response?.status;
-        const reason = ERRORS[status]
-          || (status === 400 && e.response.data?.code === 'email_unverified' ? 'email_unverified' : 'auth_failed');
+        const reason = e?.reason || ERRORS[status]
+          || (status === 400 && e.response.data?.code === 'email_unverified' ? 'email_unverified' : 'linkedin_failed');
         // Never leave an orphan session for a profile-less auth user. scope:local
         // revokes only THIS session — an existing account's other devices stay signed in.
         try { await sb?.auth.signOut({ scope: 'local' }); } catch { /* best-effort */ }

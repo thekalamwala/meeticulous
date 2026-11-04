@@ -23,7 +23,8 @@ vi.mock('../components/common/Seo', () => ({ default: () => null }));
 import HostLogin from '../pages/HostLogin';
 
 const COPY = {
-  calendar_account: 'This Google account is connected as a calendar to an existing host. Sign in with LinkedIn instead.',
+  linkedin_failed: 'LinkedIn sign-in failed. Please try again.',
+  linkedin_cancelled: 'LinkedIn sign-in was cancelled.',
   email_has_account: 'This email already has a host account. Sign in with Google.',
   linkedin_off: "LinkedIn sign-in isn't available right now.",
   email_unverified: 'Verify the email on your LinkedIn account, then try again.',
@@ -34,6 +35,19 @@ beforeEach(() => { vi.clearAllMocks(); flagOn = false; });
 test.each(Object.entries(COPY))('error=%s shows exact copy', (code, msg) => {
   render(<MemoryRouter initialEntries={[`/login-as-vendor?error=${code}`]}><HostLogin /></MemoryRouter>);
   expect(toastError).toHaveBeenCalledWith(msg);
+});
+
+// The Google calendar-account guard is live with the flag off too, so only point
+// at LinkedIn when the LinkedIn button is actually there.
+test('error=calendar_account with flag ON → points to LinkedIn', () => {
+  flagOn = true;
+  render(<MemoryRouter initialEntries={['/login-as-vendor?error=calendar_account']}><HostLogin /></MemoryRouter>);
+  expect(toastError).toHaveBeenCalledWith('This Google account is connected as a calendar to an existing host. Sign in with LinkedIn instead.');
+});
+
+test('error=calendar_account with flag OFF → no LinkedIn mention', () => {
+  render(<MemoryRouter initialEntries={['/login-as-vendor?error=calendar_account']}><HostLogin /></MemoryRouter>);
+  expect(toastError).toHaveBeenCalledWith('This Google account is connected as a calendar to an existing host. Sign in with the account you used to sign up.');
 });
 
 test('"Already a host?" line only with flag on', () => {

@@ -123,10 +123,10 @@ describe('failure → redirect, signOut, no adopt', () => {
     [409, 'email_has_account', 'email_has_account'],
     [503, 'feature_disabled', 'linkedin_off'],
     [400, 'email_unverified', 'email_unverified'],
-    [400, 'no_linkedin_identity', 'auth_failed'],
-    [400, 'no_email', 'auth_failed'],
-    [403, 'superadmin', 'auth_failed'],
-    [404, undefined, 'auth_failed'],
+    [400, 'no_linkedin_identity', 'linkedin_failed'],
+    [400, 'no_email', 'linkedin_failed'],
+    [403, 'superadmin', 'linkedin_failed'],
+    [404, undefined, 'linkedin_failed'],
   ])('API %s %s → error=%s', async (status, code, error) => {
     sessionStorage.setItem('li_host_auth', JSON.stringify({ intent: 'login' }));
     h.linkedinHostAuth.mockRejectedValueOnce(apiError(status, code));
@@ -143,51 +143,63 @@ describe('failure → redirect, signOut, no adopt', () => {
     expect(h.signOut).toHaveBeenCalledWith({ scope: 'local' });
   });
 
-  test('hash path: setSession error → auth_failed, API never called', async () => {
+  test('hash path: setSession error → linkedin_failed, API never called', async () => {
     h.setSession.mockResolvedValueOnce({ data: { session: null }, error: new Error('invalid JWT') });
     renderAt('/auth/linkedin/done#access_token=bad&refresh_token=bad');
-    await expectFailed('auth_failed');
+    await expectFailed('linkedin_failed');
     expect(h.linkedinHostAuth).not.toHaveBeenCalled();
   });
 
-  test('network error → auth_failed', async () => {
+  test('network error → linkedin_failed', async () => {
     h.linkedinHostAuth.mockRejectedValueOnce(new Error('Network Error'));
     renderAt('/auth/linkedin/done?code=abc');
-    await expectFailed('auth_failed');
+    await expectFailed('linkedin_failed');
   });
 
-  test('exchange error → auth_failed, API never called', async () => {
+  test('exchange error → linkedin_failed, API never called', async () => {
     h.exchange.mockResolvedValueOnce({ data: { session: null }, error: new Error('bad code') });
     renderAt('/auth/linkedin/done?code=abc');
-    await expectFailed('auth_failed');
+    await expectFailed('linkedin_failed');
     expect(h.linkedinHostAuth).not.toHaveBeenCalled();
   });
 
-  test('error_code in query → auth_failed', async () => {
-    renderAt('/auth/linkedin/done?error=access_denied&error_code=bad_oauth_state');
-    await expectFailed('auth_failed');
+  test('error=access_denied in query → linkedin_cancelled', async () => {
+    renderAt('/auth/linkedin/done?error=access_denied&error_description=user+cancelled');
+    await expectFailed('linkedin_cancelled');
     expect(h.linkedinHostAuth).not.toHaveBeenCalled();
   });
 
-  test('error_code in hash → auth_failed', async () => {
+  test('error_code=access_denied in hash → linkedin_cancelled', async () => {
+    renderAt('/auth/linkedin/done#error=invalid_request&error_code=access_denied');
+    await expectFailed('linkedin_cancelled');
+    expect(h.linkedinHostAuth).not.toHaveBeenCalled();
+  });
+
+  test('error_code in query → linkedin_failed', async () => {
+    renderAt('/auth/linkedin/done?error=invalid_request&error_code=bad_oauth_state');
+    await expectFailed('linkedin_failed');
+    expect(h.linkedinHostAuth).not.toHaveBeenCalled();
+  });
+
+  test('error_code in hash → linkedin_failed', async () => {
     renderAt('/auth/linkedin/done#error=server_error&error_code=unexpected_failure');
-    await expectFailed('auth_failed');
+    await expectFailed('linkedin_failed');
     expect(h.linkedinHostAuth).not.toHaveBeenCalled();
   });
 
-  test('nothing in the URL → auth_failed', async () => {
+  test('nothing in the URL → linkedin_failed', async () => {
     renderAt('/auth/linkedin/done');
-    await expectFailed('auth_failed');
+    await expectFailed('linkedin_failed');
     expect(h.linkedinHostAuth).not.toHaveBeenCalled();
   });
 
-  test('adoptSession failure → auth_failed + signOut, no half-adopted user', async () => {
+  test('adoptSession failure → linkedin_failed + signOut, no half-adopted user', async () => {
     h.adoptSession.mockImplementationOnce(async ({ token }) => {
       localStorage.setItem('user', JSON.stringify({ token }));
       throw new Error('getMe failed');
     });
     renderAt('/auth/linkedin/done?code=abc');
-    await landedAt('/login-as-vendor?error=auth_failed');
+    await landedAt('/login-as-vendor?error=linkedin_failed');
     expect(h.signOut).toHaveBeenCalled();
     expect(localStorage.getItem('user')).toBeNull();
   });
