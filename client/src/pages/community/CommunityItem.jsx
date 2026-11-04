@@ -114,20 +114,36 @@ export default function CommunityItem() {
     try { return await fn(); } catch (e) { toast.error(errorCopy(e, user)); throw e; }
   };
   const editComment = async (c, body) => {
-    const { comment } = await updateComment(c.id, { body }); // EditBox shows the error / NOT_EDITABLE toast
-    patchComment(c.id, { body: comment.body, edited_at: comment.edited_at });
+    const prev = { body: c.body, edited_at: c.edited_at };
+    patchComment(c.id, { body, edited_at: new Date().toISOString() }); // optimistic
+    try {
+      const { comment } = await updateComment(c.id, { body });
+      patchComment(c.id, { body: comment.body, edited_at: comment.edited_at }); // reconcile
+    } catch (e) {
+      patchComment(c.id, prev); // roll back; EditBox surfaces the error / NOT_EDITABLE toast
+      throw e;
+    }
   };
   const removeComment = async (c) => {
+    const prev = { status: c.status, body: c.body };
+    patchComment(c.id, { status: 'deleted', body: '' }); // optimistic
     try {
       await deleteComment(c.id);
-      patchComment(c.id, { status: 'deleted', body: '' });
-    } catch (e) { toast.error(errorCopy(e, user)); }
+    } catch (e) {
+      patchComment(c.id, prev); // roll back
+      toast.error(errorCopy(e, user));
+    }
   };
   const markAnswer = async (c) => {
+    const prev = item.accepted_comment_id;
+    setS((p) => ({ ...p, item: { ...p.item, accepted_comment_id: c.id } })); // optimistic
     try {
       const d = await acceptAnswer(item.id, c.id);
-      setS((p) => ({ ...p, item: { ...p.item, accepted_comment_id: d.accepted_comment_id } }));
-    } catch (e) { toast.error(errorCopy(e, user)); }
+      setS((p) => ({ ...p, item: { ...p.item, accepted_comment_id: d.accepted_comment_id } })); // reconcile
+    } catch (e) {
+      setS((p) => ({ ...p, item: { ...p.item, accepted_comment_id: prev } })); // roll back
+      toast.error(errorCopy(e, user));
+    }
   };
   const saveItem = async (v) => {
     const d = await updateItem(item.id, v);
