@@ -34,6 +34,18 @@ test('fail-closed: security key unified_login is DISABLED on DB error', async ()
   expect(await featureFlags.isFeatureEnabled('unified_login')).toBe(false);
 });
 
+// Opt-in login door: must stay closed until the row explicitly turns it on.
+test('fail-closed: host_linkedin_login is DISABLED when absent and on DB error', async () => {
+  wire([]);
+  expect(await featureFlags.isFeatureEnabled('host_linkedin_login')).toBe(false);
+  featureFlags.clearCache();
+  wire(null, { message: 'boom' });
+  expect(await featureFlags.isFeatureEnabled('host_linkedin_login')).toBe(false);
+  featureFlags.clearCache();
+  wire([{ key: 'host_linkedin_login', enabled: true }]);
+  expect(await featureFlags.isFeatureEnabled('host_linkedin_login')).toBe(true);
+});
+
 test('security key still honors its explicit stored value when present', async () => {
   wire([{ key: 'unified_login', enabled: true }]);
   expect(await featureFlags.isFeatureEnabled('unified_login')).toBe(true);

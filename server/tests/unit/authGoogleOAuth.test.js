@@ -81,6 +81,15 @@ jest.mock('../../config/supabase', () => {
       if (typeof cols === 'string' && cols.includes('role')) c.__emailLookup = true;
       return c;
     });
+    // google_id lookup (calendar-account check) → returns configurable googleIdOwner.
+    c.eq = jest.fn((col) => {
+      if (col === 'google_id') c.__googleIdLookup = true;
+      return c;
+    });
+    c.maybeSingle = jest.fn(function () {
+      if (c.__googleIdLookup) return Promise.resolve({ data: state.googleIdOwner, error: null });
+      return Promise.resolve({ data: c.__emailLookup ? state.existing : null });
+    });
     return c;
   });
   return {
@@ -128,6 +137,7 @@ beforeEach(() => {
   jest.spyOn(profileSecrets, 'getGoogleTokens').mockResolvedValue({});
   getTokensFromCode.mockResolvedValue({ access_token: 'at', refresh_token: 'rt', scope: FULL_SCOPE });
   supa.__state.existing = null;
+  supa.__state.googleIdOwner = null;
   supa.__state.profile = { id: 'p-1', username: 'new-vendor', name: 'New Vendor', email: 'new@vendor.com', role: 'host' };
   supa.__state.createUserResult = { data: { user: { id: 'p-1', email: 'new@vendor.com' } }, error: null };
   mockGoogleUser = { id: 'g-1', email: 'new@vendor.com', name: 'New Vendor' };
@@ -173,6 +183,24 @@ describe('googleCallback — vendor signup (new)', () => {
     expect(alert.key).toBe('new_host:p-1');
     expect(alert.subject).toBe('New host signup: New Vendor');
     expect(alert.lines).toEqual(expect.arrayContaining(['Email: new@vendor.com', 'Signed up via: Google (new account)']));
+  });
+});
+
+describe('googleCallback — calendar-only Google account', () => {
+  test('new email but google_id attached to another host → calendar_account redirect, nothing created', async () => {
+    supa.__state.googleIdOwner = { id: 'host-9' };
+    const r = res();
+    await googleCallback({ query: { code: 'abc', state: signState({ flow: 'vendor_auth', intent: 'login' }) } }, r);
+    expect(r.redirect.mock.calls[0][0]).toBe('https://app.test/login-as-vendor?error=calendar_account');
+    expect(supa.supabaseAdmin.auth.admin.createUser).not.toHaveBeenCalled();
+    expect(mockMintSession).not.toHaveBeenCalled();
+  });
+
+  test('new email and google_id not attached to anyone → creates the host as today', async () => {
+    const r = res();
+    await googleCallback({ query: { code: 'abc', state: signState({ flow: 'vendor_auth', intent: 'signup' }) } }, r);
+    expect(supa.supabaseAdmin.auth.admin.createUser).toHaveBeenCalled();
+    expect(r.redirect.mock.calls[0][0]).toContain('new=1');
   });
 });
 
@@ -305,6 +333,11 @@ describe('googleCallback — granted calendar scopes', () => {
     expect(u).toContainEqual(expect.objectContaining({ google_calendar_connected: false, calendar_skipped: false }));
     expect(u.some((p) => p.calendar_skipped === true)).toBe(false);
     expect(trackServer).toHaveBeenCalledWith('p-1', 'calendar_scope_denied', { source: 'signup' }, expect.anything());
+    expect(trackServer).toHaveBeenCalledWith('p-1', 'user_registered', { method: 'google', role: 'host' }, expect.anything());
+    expect(require('../../utils/adminAlert').adminAlert).toHaveBeenCalledWith(expect.objectContaining({
+      key: 'new_host:p-1',
+      lines: expect.arrayContaining(['Signed up via: Google (new account)']),
+    }));
     // Denied: no tokens stored, no legacy revoke read, no Google timezone call.
     expect(profileSecrets.setGoogleTokens).not.toHaveBeenCalled();
     expect(profileSecrets.getGoogleTokens).not.toHaveBeenCalled();

@@ -186,9 +186,12 @@ Items previously listed here as pending are now live:
   `email_templates.seed_hash` (nullable). Production boot runs `services/email/templateSync.js`, which
   pushes `config/emailTemplates.js` copy into the DB and KEEPS rows edited in the admin editor
   (row content ≠ its seed_hash). Off switch: `EMAIL_TEMPLATE_SYNC=off`. Manual: `node scripts/seedEmailTemplates.js [--force]`.
+- **v3.188** (`v3.188_host_linkedin_login_flag.sql`) — **PENDING**, apply before/at merge of the LinkedIn
+  host login release: seeds the `host_linkedin_login` flag OFF (`ON CONFLICT DO NOTHING`). The registry
+  entry also carries `enabled: false`, so a boot before the migration still creates it OFF.
 - **v3.189** (`v3.189_maroon_color_defaults.sql`) — applied 2026-11-04 on the Meeticulous DB and verified:
   `profiles.theme_color` + `email_settings.brand_color` defaults `#FE5100` (old orange) → `#960D32`;
-  the 3 profiles + 1 email_settings row still on orange repainted. No migration outstanding.
+  the 3 profiles + 1 email_settings row still on orange repainted.
 
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
@@ -237,7 +240,8 @@ Guests
 - Auto-created if new.
 
 Hosts
-- Host login (`/login-as-vendor`) is Google only. Never show email/password here.
+- Host login (`/login-as-vendor`) is Google OR LinkedIn (LinkedIn via Supabase `linkedin_oidc`, behind the
+  admin flag `host_linkedin_login`, ships OFF). Never show email/password here.
 - Dual login (PR #900): a host MAY also sign into their guest space via WhatsApp
   OTP at `/login` → lands `/user`. It is ONE identity (both doors mint a session
   for the same profile); guest vs host is the `mode` ('traveling'/'hosting'), and

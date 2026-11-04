@@ -75,6 +75,19 @@ test('watermark lookup errors (e.g. column missing) → FAIL OPEN, allows', asyn
   expect(next).toHaveBeenCalled();
 });
 
+// LinkedIn host sign-in (POST /auth/linkedin/host) calls protect BEFORE the
+// profile row exists — a verified JWT with no profile must pass, as req.user.
+test('valid token, no profile row yet → allows with req.user set', async () => {
+  mockMaybeSingle.mockResolvedValue({ data: null, error: null });
+  const next = jest.fn();
+  const r = res();
+  const rq = req();
+  await protect(rq, r, next);
+  expect(next).toHaveBeenCalled();
+  expect(r.status).not.toHaveBeenCalled();
+  expect(rq.user).toEqual({ id: 'u-1', email: 'h@x.com' });
+});
+
 test('a banned user stays blocked across a later gate error (ban-cache, P2-15)', async () => {
   // 1st request: DB reports banned → 403, and the ban is remembered.
   mockMaybeSingle.mockResolvedValueOnce({ data: { sessions_valid_after: null, is_banned: true }, error: null });

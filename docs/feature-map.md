@@ -96,6 +96,7 @@
 - **DB Tables:** `profiles` (extends `auth.users`), `otp_codes`
 - **Session Storage:** `localStorage['user']` = `{ token, refresh_token, id, name, email, role, username, plan, ... }`
 - **Auto-refresh:** 401 interceptor in `api.js` calls `supabase.auth.refreshSession()`
+- **Host LinkedIn login** (flag `host_linkedin_login`, fails closed): `POST /api/auth/linkedin/host` (`linkedinHostAuth`), client `LinkedinAuthDone.jsx` (`/auth/linkedin/done`), `startLinkedinHostAuth` in `AuthContext.jsx`, button `components/ContinueWithLinkedIn.jsx` (HostLogin, BecomeAHost, onboarding/GoogleStart, HomeHero, InviteLanding)
 - **Related:** OTP Verification, Admin Auth
 
 ---

@@ -90,7 +90,7 @@ const AcuityAlternative    = lazy(() => import('./pages/compare/AcuityAlternativ
 const SimplybookAlternative = lazy(() => import('./pages/compare/SimplybookAlternative'));
 const ZohoBookingsAlternative = lazy(() => import('./pages/compare/ZohoBookingsAlternative'));
 
-// Vendor Google auth (Google-only signup/login)
+// Vendor auth: Google signup/login, plus LinkedIn behind the host_linkedin_login flag
 const BecomeAHost    = lazy(() => import('./pages/BecomeAHost'));
 const InviteLanding  = lazy(() => import('./pages/InviteLanding'));
 const HostLogin      = lazy(() => import('./pages/HostLogin'));
@@ -112,6 +112,7 @@ const CommunityGuidelines = lazy(() => import('./pages/community/CommunityGuidel
 const Moments        = lazy(() => import('./pages/Moments'));
 const MomentPage     = lazy(() => import('./pages/MomentPage'));
 const GoogleAuthDone = lazy(() => import('./pages/GoogleAuthDone'));
+const LinkedinAuthDone = lazy(() => import('./pages/LinkedinAuthDone'));
 
 // Vendor Onboarding (Google-first 7-step flow)
 const GoogleStart     = lazy(() => import('./pages/onboarding/GoogleStart'));
@@ -525,11 +526,12 @@ function App() {
           {/* #534: email/password host signup retired — hosts use Google at /become-a-host. */}
           <Route path="/vendor/signup" element={<Navigate to="/become-a-host" replace />} />
 
-          {/* Host signup — Google-only */}
+          {/* Host signup — Google (+ LinkedIn when host_linkedin_login is ON) */}
           <Route path="/become-a-host" element={<BecomeAHost />} />
-          {/* Host login door (Google-only) — also the Google-callback error target. */}
+          {/* Host login door (Google, + LinkedIn when host_linkedin_login is ON) — also the Google/LinkedIn callback error target. */}
           <Route path="/login-as-vendor" element={<HostLogin />} />
           <Route path="/auth/google/done" element={<GoogleAuthDone />} />
+          <Route path="/auth/linkedin/done" element={<LinkedinAuthDone />} />
 
           {/* Vendor Onboarding (Google-first flow):
               claim → category (persona) → preview → live. The plan screen is a

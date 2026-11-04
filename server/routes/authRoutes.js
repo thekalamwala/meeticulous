@@ -17,6 +17,7 @@ const {
   becomeHost,
   cancelHosting,
   verifyLinkedin,
+  linkedinHostAuth,
   forgotPassword,
   resetPassword,
 } = require('../controllers/authController');
@@ -67,5 +68,9 @@ router.post('/cancel-hosting', protect, cancelHosting);
 // (supabase linkIdentity); server confirms it and awards the "LinkedIn Verified"
 // badge. Auth-gated — the identity is read for the calling user only.
 router.post('/linkedin/verify', protect, authLimiter, verifyLinkedin);
+// LinkedIn host sign-in/up: the client holds a Supabase linkedin_oidc session;
+// server confirms the identity and creates / logs in / upgrades the host. Behind
+// the host_linkedin_login kill-switch (ships OFF → 503).
+router.post('/linkedin/host', protect, authLimiter, requireFeature('host_linkedin_login'), linkedinHostAuth);
 
 module.exports = router;
