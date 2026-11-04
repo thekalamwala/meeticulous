@@ -74,12 +74,18 @@ async function activateFromSubscription({ rzpSub, rzpPayment = null }) {
     new Date(Date.now() + (cadence === 'monthly' ? 30 : 365) * 24 * 3600 * 1000).toISOString();
   const nowIso = new Date().toISOString();
 
+  // A gifted host who starts paying is charged now and the gift ends (founder
+  // rule, gifted Pro). Close it BEFORE the never-shrink guard below, which would
+  // otherwise carry a long gift's end date over the paid period.
+  const endedGift = await require('./planGiftService').endOnPaid(vendorId);
+
   // Never shrink access below what's already granted — a switch grants free
   // days up-front (deferred start_at), and the activation webhook must not claw
   // that back when Razorpay reports the first paid cycle's (earlier) end.
   const { data: existing } = await supabaseAdmin
     .from('profiles').select('plan_expires_at').eq('id', vendorId).maybeSingle();
-  if (existing?.plan_expires_at && new Date(existing.plan_expires_at) > new Date(periodEndIso)) {
+  const isGiftEnd = !!endedGift && new Date(endedGift.ends_at).getTime() === new Date(existing?.plan_expires_at).getTime();
+  if (existing?.plan_expires_at && !isGiftEnd && new Date(existing.plan_expires_at) > new Date(periodEndIso)) {
     periodEndIso = existing.plan_expires_at;
   }
 

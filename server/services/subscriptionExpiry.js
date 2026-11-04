@@ -73,8 +73,11 @@ async function processSubscriptionExpiry() {
 
 async function fanOut(rows, now) {
   let sent = 0;
+  // Gifted hosts never paid, so "renew" is wrong for them — planGiftService
+  // sends them the gift's own "ends soon" notice instead.
+  const gifted = await require('./planGiftService').giftedHostIds(rows.map((p) => p.id));
   for (const p of rows) {
-    if (!p.email || isFreeSlug(p.plan)) continue;
+    if (!p.email || isFreeSlug(p.plan) || gifted.has(p.id)) continue;
     const expiry = new Date(p.current_period_end || p.plan_expires_at);
     const daysLeft = Math.ceil((expiry.getTime() - now) / DAY_MS);
     if (!SEND_ON_DAYS.has(daysLeft)) continue;

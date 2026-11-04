@@ -247,6 +247,13 @@ router.patch('/plans/:id/archive',   requireAdmin('plans.manage'), plans.setPlan
 router.patch('/plans/:id/restore',   requireAdmin('plans.manage'), plans.setPlanActive);
 router.post('/plans/:id/clone',      requireAdmin('plans.manage'), plans.clonePlan);
 
+// ── Gifted Pro — super admin only (founder rule, 2026-11-04) ───
+router.get('/gifts',                 requireSuperAdmin, plans.listGifts);
+router.post('/gifts/eligibility',    requireSuperAdmin, plans.giftEligibility);
+router.post('/gifts',                requireSuperAdmin, plans.grantGifts);
+router.post('/gifts/:id/extend',     requireSuperAdmin, plans.extendGift);
+router.post('/gifts/:id/revoke',     requireSuperAdmin, plans.revokeGift);
+
 // ── Categories / professions registry ──────────────────────────
 const categories = require('../controllers/categoryController');
 router.get('/categories',        requireAdmin('settings.manage'), categories.adminList);
