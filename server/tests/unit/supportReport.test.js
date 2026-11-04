@@ -56,7 +56,8 @@ describe('buildSupportReport', () => {
   beforeEach(() => {
     mockFixtures.support_threads = [
       thread('T1', 'resolved', 'host', '2026-11-04T01:00:00Z', '2026-11-04T03:00:00Z', { reason_code: 'pay_refund', rating: 5 }),
-      thread('T2', 'resolved', 'guest', '2026-11-02T10:00:00Z', '2026-11-02T11:00:00Z'),
+      // updated_at bumped by an admin follow-up AFTER resolve → resolution must use the note
+      thread('T2', 'resolved', 'guest', '2026-11-02T10:00:00Z', '2026-11-04T04:00:00Z'),
       thread('T3', 'assigned', 'host', '2026-11-04T02:00:00Z', '2026-11-04T02:20:00Z'),
       thread('T4', 'waiting', 'guest', '2026-09-01T10:00:00Z', '2026-09-01T10:00:00Z'),
       thread('T5', 'bot', 'host', '2026-11-04T01:00:00Z', '2026-11-04T01:00:00Z'),
@@ -69,11 +70,14 @@ describe('buildSupportReport', () => {
       msg('T1', 'user', '2026-11-04T01:30:00Z'),   // customer nudge while waiting: user rows are not fetched
       msg('T1', 'admin', '2026-11-04T02:00:00Z'), msg('T1', 'admin', '2026-11-04T01:40:00Z'),
       msg('T1', 'system', '2026-11-04T01:10:00Z'), // out of order on purpose
+      msg('T1', 'system', '2026-11-04T03:00:00Z'), // "marked resolved" note
       msg('T2', 'system', '2026-11-02T10:00:00Z'), msg('T2', 'admin', '2026-11-02T10:10:00Z'),
+      msg('T2', 'system', '2026-11-02T11:00:00Z'), msg('T2', 'admin', '2026-11-04T04:00:00Z'), // resolved, then a follow-up
       msg('T3', 'bot', '2026-11-04T02:00:00Z'), msg('T3', 'admin', '2026-11-04T02:20:00Z'),
       msg('T4', 'system', '2026-09-01T10:00:00Z'),
       msg('T5', 'bot', '2026-11-04T01:00:00Z'),
       msg('T6', 'admin', '2026-09-01T10:05:00Z'),  // no prior bot/system → from created_at
+      msg('T6', 'system', '2026-09-01T16:00:00Z'), // T7 has no note → falls back to updated_at
     ];
     mockFixtures.bot_escalations = [
       { id: 'E1', status: 'open', reason_code: null, rating: 4, created_at: '2026-11-04T02:00:00Z', ...ePII },

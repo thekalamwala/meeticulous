@@ -116,9 +116,13 @@ function aggregateSupport({ threads, messages, escalations, replies, bookings, w
       const handoff = before.length ? before[before.length - 1].created_at : t.created_at;
       firstResponses.push({ endAt: firstAdmin.created_at, minutes: Math.max(0, at(firstAdmin.created_at) - at(handoff)) / MIN });
     }
-    // resolve() stamps updated_at; nothing writes updated_at on a resolved thread after.
-    if (t.status === 'resolved' && t.updated_at) {
-      resolutions.push({ endAt: t.updated_at, minutes: Math.max(0, at(t.updated_at) - at(t.created_at)) / MIN });
+    // Resolved moment = the "marked resolved" system note (the thread's LAST system
+    // message — nothing posts a system message after resolve). Not updated_at: an
+    // admin reply on a resolved thread bumps it. Fallback updated_at if no note.
+    if (t.status === 'resolved') {
+      const sys = ms.filter((m) => m.sender === 'system');
+      const resolvedAt = sys.length ? sys[sys.length - 1].created_at : t.updated_at;
+      if (resolvedAt) resolutions.push({ endAt: resolvedAt, minutes: Math.max(0, at(resolvedAt) - at(t.created_at)) / MIN });
     }
   }
 
@@ -231,8 +235,8 @@ async function buildSupportReport({ now = new Date() } = {}) {
     definitions: {
       thread_status: 'support_threads.status: bot = Tithi only, never handed off; waiting = handed off, no human yet; assigned = a human is on it; resolved = closed by support',
       by_stage: 'open = waiting, pending = assigned, resolved = resolved, bot_only = bot',
-      first_response: 'support threads: first admin message minus the handoff (latest bot/system message before it, else thread created_at); escalations: first email/WhatsApp reply minus escalation created_at (internal notes excluded). Windowed by the response time; minutes',
-      resolution: 'resolved support threads: resolved time (updated_at, stamped by resolve) minus thread created_at, windowed by resolved time; minutes. Not derivable for bot escalations (no closed timestamp)',
+      first_response: 'support threads: first admin message (incl. the automatic intro posted on "Assign to me", so this is time-to-claim) minus the handoff (latest bot/system message before it, else thread created_at); escalations: first email/WhatsApp reply minus escalation created_at (internal notes excluded; a WhatsApp reply is a logged wa.me hand-off, not a confirmed delivery). Windowed by the response time; minutes',
+      resolution: 'resolved support threads: resolved time (the "marked resolved" system note, else updated_at) minus thread created_at, windowed by resolved time; minutes. Not derivable for bot escalations (no closed timestamp)',
       by_reason_code: 'config/supportReasons.js codes on resolved/closed conversations; (untagged) = resolved/closed without a code; unknown codes count as other',
       csat: 'mean 1-5 rating where given; null when nobody rated',
       bot_escalations: 'open = open + replied (support replied, not closed); resolved = closed',
