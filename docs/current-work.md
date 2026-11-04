@@ -1,9 +1,16 @@
 # Current Work — Meeticulous
 _Last updated: 2026-11-03_
 
+## Host LinkedIn login (Phase 2) — 2026-11-03
+
+> **Status: PR open, flag OFF, migration v3.188 NOT yet applied.** Branch `feat/host-linkedin-login` → `release/2026-11`.
+
+- Host sign-in/up with LinkedIn (Supabase `linkedin_oidc`) behind admin flag `host_linkedin_login` (server fails closed; client button needs an explicit `true`). Buttons on HostLogin (login) and BecomeAHost / onboarding GoogleStart / Home hero / InviteLanding (signup); HostLogin shows "Already a host? Use the same option you signed up with." only while the flag is on.
+- **Founder steps:** (1) apply `v3.188_host_linkedin_login_flag.sql` on the DB before merge; (2) add `/auth/linkedin/done` to the Supabase redirect allowlist (prod + localhost); (3) live-test with a LinkedIn account whose email matches an existing host: must land in the same account; (4) flip `host_linkedin_login` ON.
+
 ## Host calendar guarantee (Phase 1) — 2026-11-03
 
-> **Status: PR on `feat/host-calendar-guarantee` → `release/2026-11`, not merged.** Spec: `docs/superpowers/specs/2026-11-03-host-calendar-and-linkedin-login-design.md`. Plan: `docs/superpowers/plans/2026-11-03-host-calendar-and-linkedin-login.md`. No DB migration.
+> **Status: Merged into release/2026-11 (PR #132).** Spec: `docs/superpowers/specs/2026-11-03-host-calendar-and-linkedin-login-design.md`. Plan: `docs/superpowers/plans/2026-11-03-host-calendar-and-linkedin-login.md`. No DB migration.
 
 - **OAuth callback:** `google_calendar_connected` is set only when calendar scopes are actually granted (`hasCalendarScopes` in `server/config/google.js`). An already-connected host is never disconnected by a later login. Tracks `auth_completed` and `calendar_scope_denied` (source: signup/login/dashboard/onboarding).
 - **Return path + cancel:** `GET /api/auth/google?return=…` only honours allowlisted paths (`/dashboard` or `/vendor-register/<slug>/calendar`). Google Cancel/errors now redirect to `?google=denied|error` there instead of raw JSON or the dashboard.

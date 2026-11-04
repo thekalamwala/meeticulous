@@ -235,7 +235,8 @@ Guests
 - Auto-created if new.
 
 Hosts
-- Host login (`/login-as-vendor`) is Google only. Never show email/password here.
+- Host login (`/login-as-vendor`) is Google OR LinkedIn (LinkedIn via Supabase `linkedin_oidc`, behind the
+  admin flag `host_linkedin_login`, ships OFF). Never show email/password here.
 - Dual login (PR #900): a host MAY also sign into their guest space via WhatsApp
   OTP at `/login` → lands `/user`. It is ONE identity (both doors mint a session
   for the same profile); guest vs host is the `mode` ('traveling'/'hosting'), and
