@@ -105,20 +105,24 @@ describe('share-to-extend', () => {
     await expect(gifts.submitShare('h1', 'https://x.com/a/status/1')).rejects.toMatchObject({ code: 'ALREADY_SHARED' });
   });
 
-  const reviewWorld = (gift) => wire((q) => {
+  // `claimWins` = whether the conditional pending→verdict update finds the row.
+  const reviewWorld = (gift, { claimWins = true, profileUpdate = [{ id: 'h1' }] } = {}) => wire((q) => {
     if (q.table === 'plan_gifts' && q.op === 'select') return { data: gift, error: null };
+    if (q.table === 'plan_gifts' && q.op === 'update' && q.filters['eq:share_status'] === 'pending' && !claimWins) return { data: null, error: null };
     if (q.table === 'plan_gifts' && q.op === 'update') return { data: { ...gift, ...q.payload }, error: null };
     if (q.table === 'profiles' && q.op === 'select') return { data: host({ plan: 'premium', plan_expires_at: gift.ends_at }), error: null };
+    if (q.table === 'profiles' && q.op === 'update') return { data: profileUpdate, error: null };
     return { data: null, error: null };
   });
 
-  test('approve: +1 month first, then marked approved and audit-logged', async () => {
+  test('approve: claims pending→approved first, then +1 month, audit-logged', async () => {
     reviewWorld(activeGift({ share_status: 'pending', share_url: 'https://x.com/a/status/1' }));
     const out = await gifts.reviewShare(req, 'g1', true);
-    const ups = writes('plan_gifts', 'update').map((q) => q.payload);
-    expect(ups[0].extended_months).toBe(1);
-    expect(ups[ups.length - 1].share_status).toBe('approved');
-    expect(out.share_status).toBe('approved');
+    const ups = writes('plan_gifts', 'update');
+    expect(ups[0].payload.share_status).toBe('approved');
+    expect(ups[0].filters['eq:share_status']).toBe('pending');
+    expect(ups[1].payload.extended_months).toBe(1);
+    expect(out.extended_months).toBe(1);
     expect(NotificationEngine.send.mock.calls[0][0].event).toBe('PLAN_GIFT_RECEIVED');
     expect(audit).toHaveBeenCalledWith(req, expect.objectContaining({ action: 'plan.gift.share_approve' }));
   });
@@ -131,6 +135,21 @@ describe('share-to-extend', () => {
 
     reviewWorld(activeGift({ share_status: null }));
     await expect(gifts.reviewShare(req, 'g1', true)).rejects.toMatchObject({ code: 'NOT_PENDING' });
+  });
+
+  test('double approve: the second click loses the claim → no second month', async () => {
+    reviewWorld(activeGift({ share_status: 'pending' }), { claimWins: false });
+    await expect(gifts.reviewShare(req, 'g1', true)).rejects.toMatchObject({ code: 'NOT_PENDING' });
+    expect(writes('plan_gifts', 'update').some((q) => 'extended_months' in q.payload)).toBe(false);
+    expect(NotificationEngine.send).not.toHaveBeenCalled();
+  });
+
+  test('approve but the extend fails → share back to pending', async () => {
+    reviewWorld(activeGift({ share_status: 'pending' }), { profileUpdate: [] });
+    await expect(gifts.reviewShare(req, 'g1', true)).rejects.toMatchObject({ code: 'INELIGIBLE' });
+    const back = writes('plan_gifts', 'update').find((q) => q.payload.share_status === 'pending');
+    expect(back.filters).toMatchObject({ 'eq:id': 'g1', 'eq:share_status': 'approved' });
+    expect(audit).not.toHaveBeenCalled();
   });
 });
 
@@ -166,6 +185,8 @@ describe('redeemForward (pay-it-forward)', () => {
   test.each([
     ['unknown code', { source: null }, 'invalid code'],
     ['used code', { source: { ...SOURCE, forward_redeemed_by: 'someone' } }, 'already used'],
+    ['code from a revoked gift', { source: { ...SOURCE, status: 'revoked' } }, 'gift revoked'],
+    ['churned host (past mandate)', { profile: friend({ subscription_status: 'cancelled', razorpay_subscription_id: 'sub_1' }) }, 'has a past mandate'],
     ['own code', { source: { ...SOURCE, host_id: 'friend' } }, 'own code'],
     ['account older than the link', { profile: friend({ created_at: '2026-10-01T00:00:00Z' }) }, 'not a new host'],
     ['paying host', { profile: friend({ plan: 'premium', subscription_status: 'active', razorpay_subscription_id: 'sub_1' }) }, 'paying customer'],
