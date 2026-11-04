@@ -17,7 +17,7 @@
  *   heroFrom / heroTo — hero gradient stops (dark surface)
  *
  * SEO note: `title`/`description` stay clean + commercial (Google). `ogTitle`/
- * `ogDescription` are intentionally CLICKBAIT (₹10/day hook) — social shares only.
+ * `ogDescription` are intentionally CLICKBAIT (₹4/day hook) — social shares only.
  * `ogImage` is a 1200×630 asset on the company CDN (founder upload; falls back).
  */
 
@@ -51,11 +51,11 @@ export const PROFESSION_LANDING = {
     seo: {
       title: 'Appointment Booking Software for Lawyers | Meeticulous',
       description:
-        'Let clients book paid consultations online. Meeticulous is appointment booking software for lawyers & CAs — fees collected upfront, calendar synced, no-shows gone. From ₹10/day.',
+        'Let clients book paid consultations online. Meeticulous is appointment booking software for lawyers & CAs — fees collected upfront, calendar synced, no-shows gone. From ₹4/day.',
       keywords:
         'appointment booking software for lawyers, legal consultation booking, lawyer scheduling software, CA appointment software, book legal consultation online, advocate booking page India',
       // Clickbait — OG / social share only (NOT the indexed title)
-      ogTitle: 'Your law practice still runs on WhatsApp? Fix it for ₹10/day.',
+      ogTitle: 'Your law practice still runs on WhatsApp? Fix it for ₹4/day.',
       ogDescription:
         "Clients book your consultation, pay the fee upfront, and get reminded — automatically. The booking page every advocate & CA should've had years ago.",
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-lawyers-og-1200x630.jpg',
@@ -97,7 +97,7 @@ export const PROFESSION_LANDING = {
     stats: [
       { icon: Clock3, value: '24/7', label: 'Consultations booked, even mid-hearing' },
       { icon: BadgePercent, value: '0%', label: 'Commission — you keep every fee' },
-      { icon: IndianRupee, value: '~₹10', label: 'A day for the top, unlimited plan' },
+      { icon: IndianRupee, value: '~₹4', label: 'A day for the top, unlimited plan' },
       { icon: CalendarCheck, value: '< 5 min', label: 'To go live with your page' },
     ],
 
@@ -163,7 +163,7 @@ export const PROFESSION_LANDING = {
     // ── Pricing framing ──────────────────────────────────────────────────────
     pricing: {
       hook: 'Less than a cup of chai a day.',
-      line: 'Start free. Go unlimited and 0% commission from about ₹10/day — it pays for itself in a single recovered no-show.',
+      line: 'Start free. Go unlimited and 0% commission from about ₹4/day — it pays for itself in a single recovered no-show.',
     },
 
     // ── FAQ (drives FAQPage schema — AEO/GEO) ────────────────────────────────
@@ -267,11 +267,11 @@ export const PROFESSION_LANDING = {
     seo: {
       title: 'Appointment Booking Software for Doctors & Clinics | Meeticulous',
       description:
-        'Let patients book appointments online. Meeticulous is appointment booking software for doctors & clinics — online scheduling, automatic reminders that cut no-shows, prepaid consultations and GST invoices. From ₹10/day.',
+        'Let patients book appointments online. Meeticulous is appointment booking software for doctors & clinics — online scheduling, automatic reminders that cut no-shows, prepaid consultations and GST invoices. From ₹4/day.',
       keywords:
         'appointment booking software for doctors, clinic appointment software, patient booking system India, doctor scheduling software, online doctor appointment booking, reduce patient no-shows, clinic management booking page',
       // Clickbait — OG / social share only (NOT the indexed title)
-      ogTitle: 'Half your patients no-show? Fix your clinic booking for ₹10/day.',
+      ogTitle: 'Half your patients no-show? Fix your clinic booking for ₹4/day.',
       ogDescription:
         'Patients book their own slot, pay upfront, and get reminded — automatically. The online appointment page every clinic in India should already have.',
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-doctors-og-1200x630.jpg',
@@ -312,7 +312,7 @@ export const PROFESSION_LANDING = {
     stats: [
       { icon: CalendarClock, value: '24/7', label: 'Appointments booked, even after clinic hours' },
       { icon: TrendingDown, value: '1 in 5', label: 'Appointments go no-show industry-wide — reminders win them back' },
-      { icon: IndianRupee, value: '~₹10', label: 'A day for the top, unlimited plan' },
+      { icon: IndianRupee, value: '~₹4', label: 'A day for the top, unlimited plan' },
       { icon: CalendarCheck, value: '< 5 min', label: 'To go live with your clinic page' },
     ],
 
@@ -377,7 +377,7 @@ export const PROFESSION_LANDING = {
     // ── Pricing framing ──────────────────────────────────────────────────────
     pricing: {
       hook: 'Less than a cup of chai a day.',
-      line: 'Start free. Go unlimited and 0% commission from about ₹10/day — one recovered no-show pays for a month.',
+      line: 'Start free. Go unlimited and 0% commission from about ₹4/day — one recovered no-show pays for a month.',
     },
 
     // ── Mid-page CTA banners ─────────────────────────────────────────────────
@@ -480,10 +480,10 @@ export const PROFESSION_LANDING = {
     seo: {
       title: 'Appointment Booking Software for Business Consultants | Meeticulous',
       description:
-        'Let clients book paid strategy sessions online. Meeticulous is appointment booking software for business consultants — fees collected upfront, calendar synced, no-shows gone, GST invoices. From ₹10/day.',
+        'Let clients book paid strategy sessions online. Meeticulous is appointment booking software for business consultants — fees collected upfront, calendar synced, no-shows gone, GST invoices. From ₹4/day.',
       keywords:
         'appointment booking software for consultants, business consultant scheduling, book strategy session online, consulting appointment software, consultant booking page India, discovery call scheduling',
-      ogTitle: 'Still booking discovery calls over email? Fix it for ₹10/day.',
+      ogTitle: 'Still booking discovery calls over email? Fix it for ₹4/day.',
       ogDescription:
         'Clients book your strategy session, pay upfront, and get reminded — automatically. The booking page every independent consultant should already have.',
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-business-consultant-og-1200x630.jpg',
@@ -524,7 +524,7 @@ export const PROFESSION_LANDING = {
     stats: [
       { icon: CalendarClock, value: '24/7', label: 'Sessions booked, even between engagements' },
       { icon: BadgePercent, value: '0%', label: 'Commission — you keep every fee' },
-      { icon: IndianRupee, value: '~₹10', label: 'A day for the top, unlimited plan' },
+      { icon: IndianRupee, value: '~₹4', label: 'A day for the top, unlimited plan' },
       { icon: CalendarCheck, value: '< 5 min', label: 'To go live with your page' },
     ],
 
@@ -589,7 +589,7 @@ export const PROFESSION_LANDING = {
     // ── Pricing framing ──────────────────────────────────────────────────────
     pricing: {
       hook: 'Less than a cup of chai a day.',
-      line: 'Start free. Go unlimited and 0% commission from about ₹10/day — one booked session covers a year.',
+      line: 'Start free. Go unlimited and 0% commission from about ₹4/day — one booked session covers a year.',
     },
 
     // ── Mid-page CTA banners ─────────────────────────────────────────────────
@@ -692,10 +692,10 @@ export const PROFESSION_LANDING = {
     seo: {
       title: 'Appointment Booking Software for Salons & Spas | Meeticulous',
       description:
-        'Let clients book their own appointments online. Meeticulous is appointment booking software for salons & spas — 24/7 booking, deposits collected upfront, automatic reminders that cut no-shows, and GST invoices. From ₹10/day.',
+        'Let clients book their own appointments online. Meeticulous is appointment booking software for salons & spas — 24/7 booking, deposits collected upfront, automatic reminders that cut no-shows, and GST invoices. From ₹4/day.',
       keywords:
         'salon booking software, spa appointment software, salon appointment booking India, online booking for salons, beauty parlour booking system, reduce salon no-shows, salon scheduling app',
-      ogTitle: 'Still taking salon bookings on WhatsApp? Fix it for ₹10/day.',
+      ogTitle: 'Still taking salon bookings on WhatsApp? Fix it for ₹4/day.',
       ogDescription:
         'Clients book their own slot, pay a deposit, and get reminded — automatically. The booking page every salon and spa in India should already have.',
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-salon-og-1200x630.jpg',
@@ -736,7 +736,7 @@ export const PROFESSION_LANDING = {
     stats: [
       { icon: CalendarClock, value: '24/7', label: 'Appointments booked, even after closing' },
       { icon: TrendingDown, value: 'Fewer', label: 'No-shows, thanks to deposits + reminders' },
-      { icon: IndianRupee, value: '~₹10', label: 'A day for the top, unlimited plan' },
+      { icon: IndianRupee, value: '~₹4', label: 'A day for the top, unlimited plan' },
       { icon: CalendarCheck, value: '< 5 min', label: 'To go live with your salon page' },
     ],
 
@@ -801,7 +801,7 @@ export const PROFESSION_LANDING = {
     // ── Pricing framing ──────────────────────────────────────────────────────
     pricing: {
       hook: 'Less than a cup of chai a day.',
-      line: 'Start free. Go unlimited and 0% commission from about ₹10/day — one recovered no-show covers a month.',
+      line: 'Start free. Go unlimited and 0% commission from about ₹4/day — one recovered no-show covers a month.',
     },
 
     // ── Mid-page CTA banners ─────────────────────────────────────────────────
@@ -904,10 +904,10 @@ export const PROFESSION_LANDING = {
     seo: {
       title: 'Appointment Booking Software for Freelancers | Meeticulous',
       description:
-        'Let clients book calls and pay you online. Meeticulous is booking + payment software for freelancers — advances collected upfront, calendar synced, no-shows gone, GST invoices. From ₹10/day.',
+        'Let clients book calls and pay you online. Meeticulous is booking + payment software for freelancers — advances collected upfront, calendar synced, no-shows gone, GST invoices. From ₹4/day.',
       keywords:
         'booking software for freelancers, freelancer scheduling app, collect advance payment freelancer, freelance discovery call booking, freelancer booking page India, get paid upfront freelance',
-      ogTitle: 'Still chasing freelance clients for payment? Fix it for ₹10/day.',
+      ogTitle: 'Still chasing freelance clients for payment? Fix it for ₹4/day.',
       ogDescription:
         'Clients book your call, pay an advance upfront, and get reminded — automatically. The booking + payment link every freelancer in India should already have.',
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-freelancers-og-1200x630.jpg',
@@ -948,7 +948,7 @@ export const PROFESSION_LANDING = {
     stats: [
       { icon: CalendarClock, value: '24/7', label: 'Calls booked, across any client time zone' },
       { icon: BadgePercent, value: '0%', label: 'Commission — you keep every rupee' },
-      { icon: IndianRupee, value: '~₹10', label: 'A day for the top, unlimited plan' },
+      { icon: IndianRupee, value: '~₹4', label: 'A day for the top, unlimited plan' },
       { icon: CalendarCheck, value: '< 5 min', label: 'To go live with your page' },
     ],
 
@@ -1013,7 +1013,7 @@ export const PROFESSION_LANDING = {
     // ── Pricing framing ──────────────────────────────────────────────────────
     pricing: {
       hook: 'Less than a cup of chai a day.',
-      line: 'Start free. Go unlimited and 0% commission from about ₹10/day — one booked call covers a year.',
+      line: 'Start free. Go unlimited and 0% commission from about ₹4/day — one booked call covers a year.',
     },
 
     // ── Mid-page CTA banners ─────────────────────────────────────────────────
@@ -1116,10 +1116,10 @@ export const PROFESSION_LANDING = {
     seo: {
       title: 'Appointment Booking Software for Fitness Trainers | Meeticulous',
       description:
-        'Let clients book sessions and classes online. Meeticulous is booking software for fitness trainers & studios — packages paid upfront, class capacity managed, automatic reminders that cut no-shows, GST invoices. From ₹10/day.',
+        'Let clients book sessions and classes online. Meeticulous is booking software for fitness trainers & studios — packages paid upfront, class capacity managed, automatic reminders that cut no-shows, GST invoices. From ₹4/day.',
       keywords:
         'booking software for fitness trainers, gym class booking software, personal trainer scheduling app, yoga class booking India, fitness studio booking system, reduce no-shows gym, PT session booking',
-      ogTitle: 'Still booking gym clients on WhatsApp? Fix it for ₹10/day.',
+      ogTitle: 'Still booking gym clients on WhatsApp? Fix it for ₹4/day.',
       ogDescription:
         'Clients book their session, pay for the package upfront, and get reminded — automatically. The booking page every trainer and studio in India should already have.',
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-fitness-og-1200x630.jpg',
@@ -1160,7 +1160,7 @@ export const PROFESSION_LANDING = {
     stats: [
       { icon: CalendarClock, value: '24/7', label: 'Sessions & classes booked, any hour' },
       { icon: TrendingDown, value: 'Fewer', label: 'No-shows, thanks to prepaid + reminders' },
-      { icon: IndianRupee, value: '~₹10', label: 'A day for the top, unlimited plan' },
+      { icon: IndianRupee, value: '~₹4', label: 'A day for the top, unlimited plan' },
       { icon: CalendarCheck, value: '< 5 min', label: 'To go live with your page' },
     ],
 
@@ -1225,7 +1225,7 @@ export const PROFESSION_LANDING = {
     // ── Pricing framing ──────────────────────────────────────────────────────
     pricing: {
       hook: 'Less than a cup of chai a day.',
-      line: 'Start free. Go unlimited and 0% commission from about ₹10/day — one recovered no-show covers a month.',
+      line: 'Start free. Go unlimited and 0% commission from about ₹4/day — one recovered no-show covers a month.',
     },
 
     // ── Mid-page CTA banners ─────────────────────────────────────────────────
@@ -1319,10 +1319,10 @@ export const PROFESSION_LANDING = {
     seo: {
       title: 'Appointment Booking Software for Tutors & Educators | Meeticulous',
       description:
-        'Let students and parents book classes online. Meeticulous is booking software for tutors & educators — fees paid upfront, batches scheduled, automatic reminders that cut no-shows, GST invoices. From ₹10/day.',
+        'Let students and parents book classes online. Meeticulous is booking software for tutors & educators — fees paid upfront, batches scheduled, automatic reminders that cut no-shows, GST invoices. From ₹4/day.',
       keywords:
         'booking software for tutors, online class booking, tuition scheduling app, book tutor online India, coaching class booking system, reduce student no-shows, demo class booking',
-      ogTitle: 'Still fixing tuition timings over WhatsApp? Fix it for ₹10/day.',
+      ogTitle: 'Still fixing tuition timings over WhatsApp? Fix it for ₹4/day.',
       ogDescription:
         'Students and parents book a slot, pay upfront, and get reminded — automatically. The booking page every tutor and coaching class in India should already have.',
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-tutors-og-1200x630.jpg',
@@ -1355,7 +1355,7 @@ export const PROFESSION_LANDING = {
     stats: [
       { icon: CalendarClock, value: '24/7', label: 'Classes & demos booked, any hour' },
       { icon: TrendingDown, value: 'Fewer', label: 'No-shows, thanks to prepaid + reminders' },
-      { icon: IndianRupee, value: '~₹10', label: 'A day for the top, unlimited plan' },
+      { icon: IndianRupee, value: '~₹4', label: 'A day for the top, unlimited plan' },
       { icon: CalendarCheck, value: '< 5 min', label: 'To go live with your page' },
     ],
     painPoints: [
@@ -1372,7 +1372,7 @@ export const PROFESSION_LANDING = {
       { icon: ShieldCheck, title: 'Student details stay private', desc: 'Encrypted, access-controlled and never sold. Your student list and history belong to you alone.' },
       { icon: BellRing, title: 'Reminders that cut no-shows', desc: 'Email + WhatsApp reminders send themselves before every class — you never chase a student.' },
     ],
-    pricing: { hook: 'Less than a cup of chai a day.', line: 'Start free. Go unlimited and 0% commission from about ₹10/day — one enrolled student covers a year.' },
+    pricing: { hook: 'Less than a cup of chai a day.', line: 'Start free. Go unlimited and 0% commission from about ₹4/day — one enrolled student covers a year.' },
     midCtas: {
       afterProblems: { text: 'Spend your time teaching, not texting.', ctaText: 'Get My Booking Link' },
       afterHow: { text: 'Your next student is ready to enrol. Make it one click.', ctaText: 'Set Up My Page Free' },
@@ -1409,10 +1409,10 @@ export const PROFESSION_LANDING = {
     seo: {
       title: 'Appointment Booking Software for Photographers | Meeticulous',
       description:
-        'Let clients book shoots and pay online. Meeticulous is booking software for photographers — deposits collected upfront, calendar synced, automatic reminders, GST invoices. From ₹10/day.',
+        'Let clients book shoots and pay online. Meeticulous is booking software for photographers — deposits collected upfront, calendar synced, automatic reminders, GST invoices. From ₹4/day.',
       keywords:
         'booking software for photographers, photography shoot booking, photographer scheduling app, book photoshoot online India, studio booking system, collect shoot deposit, wedding photographer booking',
-      ogTitle: 'Still booking shoots in your Instagram DMs? Fix it for ₹10/day.',
+      ogTitle: 'Still booking shoots in your Instagram DMs? Fix it for ₹4/day.',
       ogDescription:
         'Clients book a shoot slot, pay a deposit upfront, and get reminded — automatically. The booking page every photographer in India should already have.',
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-photographers-og-1200x630.jpg',
@@ -1445,7 +1445,7 @@ export const PROFESSION_LANDING = {
     stats: [
       { icon: CalendarClock, value: '24/7', label: 'Shoots booked, even between sessions' },
       { icon: TrendingDown, value: 'Fewer', label: 'Cancellations, thanks to deposits' },
-      { icon: IndianRupee, value: '~₹10', label: 'A day for the top, unlimited plan' },
+      { icon: IndianRupee, value: '~₹4', label: 'A day for the top, unlimited plan' },
       { icon: CalendarCheck, value: '< 5 min', label: 'To go live with your page' },
     ],
     painPoints: [
@@ -1462,7 +1462,7 @@ export const PROFESSION_LANDING = {
       { icon: ShieldCheck, title: 'Client details stay private', desc: 'Encrypted, access-controlled and never sold. Your client list and shoots belong to you alone.' },
       { icon: BellRing, title: 'Reminders that cut no-shows', desc: 'Email + WhatsApp reminders send themselves before every shoot — you never chase a client.' },
     ],
-    pricing: { hook: 'Less than a cup of chai a day.', line: 'Start free. Go unlimited and 0% commission from about ₹10/day — one secured shoot covers years.' },
+    pricing: { hook: 'Less than a cup of chai a day.', line: 'Start free. Go unlimited and 0% commission from about ₹4/day — one secured shoot covers years.' },
     midCtas: {
       afterProblems: { text: 'Stay behind the lens, not in your DMs.', ctaText: 'Get My Booking Link' },
       afterHow: { text: 'Your next client is ready to book a shoot. Make it one click.', ctaText: 'Set Up My Page Free' },
@@ -1500,10 +1500,10 @@ export const PROFESSION_LANDING = {
     seo: {
       title: 'Appointment Booking Software for Event Organisers | Meeticulous',
       description:
-        'Let clients book consultations and secure dates online. Meeticulous is booking software for event planners & organisers — advances collected upfront, calendar synced, automatic reminders, GST invoices. From ₹10/day.',
+        'Let clients book consultations and secure dates online. Meeticulous is booking software for event planners & organisers — advances collected upfront, calendar synced, automatic reminders, GST invoices. From ₹4/day.',
       keywords:
         'booking software for event planners, event consultation booking, event organiser scheduling, book event planner online India, secure event date deposit, wedding planner booking system',
-      ogTitle: 'Still locking event dates over phone calls? Fix it for ₹10/day.',
+      ogTitle: 'Still locking event dates over phone calls? Fix it for ₹4/day.',
       ogDescription:
         'Clients book a consultation, pay an advance to hold the date, and get reminded — automatically. The booking page every event planner in India should already have.',
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-events-og-1200x630.jpg',
@@ -1536,7 +1536,7 @@ export const PROFESSION_LANDING = {
     stats: [
       { icon: CalendarClock, value: '24/7', label: 'Consultations booked, any hour' },
       { icon: BadgePercent, value: '0%', label: 'Commission — you keep every rupee' },
-      { icon: IndianRupee, value: '~₹10', label: 'A day for the top, unlimited plan' },
+      { icon: IndianRupee, value: '~₹4', label: 'A day for the top, unlimited plan' },
       { icon: CalendarCheck, value: '< 5 min', label: 'To go live with your page' },
     ],
     painPoints: [
@@ -1553,7 +1553,7 @@ export const PROFESSION_LANDING = {
       { icon: ShieldCheck, title: 'Client details stay private', desc: 'Encrypted, access-controlled and never sold. Your client list and events belong to you alone.' },
       { icon: BellRing, title: 'Reminders that cut no-shows', desc: 'Email + WhatsApp reminders send themselves before every meeting — you never chase a client.' },
     ],
-    pricing: { hook: 'Less than a cup of chai a day.', line: 'Start free. Go unlimited and 0% commission from about ₹10/day — one held date covers years.' },
+    pricing: { hook: 'Less than a cup of chai a day.', line: 'Start free. Go unlimited and 0% commission from about ₹4/day — one held date covers years.' },
     midCtas: {
       afterProblems: { text: 'Plan events, not your calendar.', ctaText: 'Get My Booking Link' },
       afterHow: { text: 'Your next client is ready to book a consultation. Make it one click.', ctaText: 'Set Up My Page Free' },
@@ -1591,10 +1591,10 @@ export const PROFESSION_LANDING = {
     seo: {
       title: 'Appointment Booking Software for Agencies & Studios | Meeticulous',
       description:
-        'Let clients book discovery calls with your team online. Meeticulous is booking software for agencies & studios — calls routed, fees collected upfront, calendar synced, GST invoices. From ₹10/day.',
+        'Let clients book discovery calls with your team online. Meeticulous is booking software for agencies & studios — calls routed, fees collected upfront, calendar synced, GST invoices. From ₹4/day.',
       keywords:
         'booking software for agencies, discovery call scheduling, agency client booking, studio booking system India, book agency consultation, team scheduling software, creative studio booking',
-      ogTitle: 'Still scheduling discovery calls over email chains? Fix it for ₹10/day.',
+      ogTitle: 'Still scheduling discovery calls over email chains? Fix it for ₹4/day.',
       ogDescription:
         'Clients book a call with the right person on your team, pay upfront, and get reminded — automatically. The booking page every agency and studio should already have.',
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-agencies-og-1200x630.jpg',
@@ -1627,7 +1627,7 @@ export const PROFESSION_LANDING = {
     stats: [
       { icon: CalendarClock, value: '24/7', label: 'Discovery calls booked, any time zone' },
       { icon: Users, value: 'Whole', label: 'Team on one shared calendar' },
-      { icon: IndianRupee, value: '~₹10', label: 'A day for the top, unlimited plan' },
+      { icon: IndianRupee, value: '~₹4', label: 'A day for the top, unlimited plan' },
       { icon: CalendarCheck, value: '< 5 min', label: 'To go live with your page' },
     ],
     painPoints: [
@@ -1644,7 +1644,7 @@ export const PROFESSION_LANDING = {
       { icon: ShieldCheck, title: 'Client details stay private', desc: 'Encrypted, access-controlled and never sold. Your pipeline and client list belong to you alone.' },
       { icon: BellRing, title: 'Reminders that cut no-shows', desc: 'Email + WhatsApp reminders send themselves before every call — no one on the team chases leads.' },
     ],
-    pricing: { hook: 'Less than a cup of chai a day.', line: 'Start free. Go unlimited and 0% commission from about ₹10/day — one closed lead covers years.' },
+    pricing: { hook: 'Less than a cup of chai a day.', line: 'Start free. Go unlimited and 0% commission from about ₹4/day — one closed lead covers years.' },
     midCtas: {
       afterProblems: { text: 'Let your team pitch, not schedule.', ctaText: 'Get My Booking Link' },
       afterHow: { text: 'Your next lead is ready to book a call. Make it one click.', ctaText: 'Set Up My Page Free' },
@@ -1696,7 +1696,7 @@ PROFESSION_LANDING.therapists = {
       'Booking and payments for therapists and counsellors in India. Clients book private sessions, pay upfront by UPI, and get reminders and a Meet link. Start free.',
     keywords:
       'booking software for therapists India, therapist booking and payments, counsellor appointment booking, psychologist online booking India, therapy session payment UPI, online counselling booking page, reduce therapy no-shows',
-    ogTitle: 'Still booking therapy sessions over WhatsApp? Fix it for ₹10/day.',
+    ogTitle: 'Still booking therapy sessions over WhatsApp? Fix it for ₹4/day.',
     ogDescription:
       'Clients book a private session, pay upfront and get reminded, automatically. The booking page every therapist and counsellor in India should already have.',
   },
@@ -1881,7 +1881,7 @@ PROFESSION_LANDING['yoga-instructors'] = {
       'Yoga class booking for instructors in India. Students book trial and private classes, pay upfront by UPI, and get WhatsApp reminders and Meet links. Start free.',
     keywords:
       'yoga class booking for instructors, yoga class booking India, online yoga class booking, yoga trial class booking, collect yoga fees UPI, yoga teacher scheduling software, private yoga session booking',
-    ogTitle: 'Still collecting yoga fees on WhatsApp? Fix it for ₹10/day.',
+    ogTitle: 'Still collecting yoga fees on WhatsApp? Fix it for ₹4/day.',
     ogDescription:
       'Students book a class, pay upfront by UPI and get reminded, automatically. The booking page every yoga instructor in India should already have.',
   },

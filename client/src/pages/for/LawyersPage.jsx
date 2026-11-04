@@ -58,6 +58,7 @@ import ToolLogo from './toolLogos';
 import razorpayLogo from '../enterprise-v2/assets/logo/razorpay.png';
 import OperatorCredit from '../../components/common/OperatorCredit';
 import PageGuides from '../../components/common/PageGuides';
+import ForFaqIntro from '../../components/common/ForFaqIntro';
 
 const START = '/become-a-host';        // real host signup funnel
 const LOGIN = '/login-as-vendor';   // host login (Google-only door)
@@ -291,10 +292,7 @@ function FaqAccordion() {
     );
   };
   return (
-    <div className="grid items-start gap-3 sm:grid-cols-2 sm:gap-4">
-      <div className="space-y-3">{FAQ.map((f, i) => (i % 2 === 0 ? renderItem(f, i) : null))}</div>
-      <div className="space-y-3">{FAQ.map((f, i) => (i % 2 === 1 ? renderItem(f, i) : null))}</div>
-    </div>
+    <div className="space-y-3">{FAQ.map((f, i) => renderItem(f, i))}</div>
   );
 }
 
@@ -406,7 +404,7 @@ export default function LawyersPage() {
           <div className="text-center lg:text-left">
             <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3.1rem)] font-extrabold leading-[1.06] tracking-[-0.025em] text-[color:var(--ca-ink)]">
               Streamlined appointment booking software for{' '}
-              <span style={{ color: 'var(--ca-primary)' }}>lawyers and law firms</span> managing client consultations.
+              <span style={{ color: 'var(--ca-ink)' }}>lawyers and law firms</span> managing client consultations.
             </Reveal>
             <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-neutral-600 sm:text-lg lg:mx-0">
               Meeticulous is appointment booking software for lawyers — the clients you work with book consultations online with confirmed slots, upfront fees and reminders, so no case starts with phone tag.
@@ -459,7 +457,7 @@ export default function LawyersPage() {
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-2xl text-center">
             <Reveal as="h2" delay={0.04} className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Appointment booking software for lawyers, <span style={{ color: 'var(--ca-primary)' }}>built around how you work.</span>
+              Appointment booking software for lawyers, <span style={{ color: 'var(--ca-ink)' }}>built around how you work.</span>
             </Reveal>
             <Reveal as="p" delay={0.08} className="mt-4 text-base text-neutral-500">
               From consultations to document review and litigation strategy — every appointment type, in one place.
@@ -494,7 +492,7 @@ export default function LawyersPage() {
         <div className="mx-auto max-w-3xl">
           <div className="text-center">
             <Reveal as="h2" delay={0.04} className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              From &ldquo;when are you free?&rdquo; to a <span style={{ color: 'var(--ca-primary)' }}>confirmed consultation.</span>
+              From &ldquo;when are you free?&rdquo; to a <span style={{ color: 'var(--ca-ink)' }}>confirmed consultation.</span>
             </Reveal>
           </div>
 
@@ -530,7 +528,7 @@ export default function LawyersPage() {
         <div className="mx-auto max-w-5xl">
           <div className="mx-auto max-w-2xl text-center">
             <Reveal as="h2" delay={0.04} className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Works with the tools you <span style={{ color: 'var(--ca-primary)' }}>already use.</span>
+              Works with the tools you <span style={{ color: 'var(--ca-ink)' }}>already use.</span>
             </Reveal>
             <Reveal as="p" delay={0.08} className="mt-4 text-base text-neutral-500">
               Connect your calendar, payments and WhatsApp — Meeticulous fits your practice, no rewiring.
@@ -605,7 +603,7 @@ export default function LawyersPage() {
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-2xl text-center">
             <Reveal as="h2" delay={0.04} className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Practices that swapped the <span style={{ color: 'var(--ca-primary)' }}>phone for a link.</span>
+              Practices that swapped the <span style={{ color: 'var(--ca-ink)' }}>phone for a link.</span>
             </Reveal>
             <Reveal as="p" delay={0.08} className="mt-4 text-base text-neutral-500">
               Select an advocate to read how Meeticulous cut their admin. (Illustrative quotes.)
@@ -620,7 +618,7 @@ export default function LawyersPage() {
         <div className="mx-auto max-w-5xl">
           <div className="mx-auto max-w-2xl text-center">
             <Reveal as="h2" delay={0.04} className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              The old way, <span style={{ color: 'var(--ca-primary)' }}>redlined.</span>
+              The old way, <span style={{ color: 'var(--ca-ink)' }}>redlined.</span>
             </Reveal>
             <Reveal as="p" delay={0.08} className="mt-4 text-base text-neutral-500">
               Strike the manual clauses. Keep the clean copy.
@@ -675,7 +673,7 @@ export default function LawyersPage() {
         <div className="mx-auto max-w-5xl">
           <div className="mx-auto max-w-2xl text-center">
             <Reveal as="h2" delay={0.04} className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Start small. <span style={{ color: 'var(--ca-primary)' }}>Grow as your practice does.</span>
+              Start small. <span style={{ color: 'var(--ca-ink)' }}>Grow as your practice does.</span>
             </Reveal>
           </div>
 
@@ -786,7 +784,7 @@ export default function LawyersPage() {
             </Reveal>
             <Reveal delay={0.16} className="mt-8">
               <Link to="/about" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
-                Learn More About Us <ArrowRight size={16} />
+                Know More About Us <ArrowRight size={16} />
               </Link>
             </Reveal>
           </div>
@@ -797,11 +795,14 @@ export default function LawyersPage() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-grey)' }}>
-        <div className="mx-auto max-w-5xl">
-          <Reveal as="h2" className="text-center font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-            Questions? <span style={{ color: 'var(--ca-primary)' }}>We&apos;ve got answers.</span>
-          </Reveal>
-          <div className="mt-12"><FaqAccordion /></div>
+        <div className="mx-auto grid max-w-6xl items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+          <div className="text-center lg:sticky lg:top-28 lg:text-left lg:[&_.text-center]:text-left lg:[&_.mx-auto]:mx-0">
+            <Reveal as="h2" className="text-center font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
+              Questions? <span style={{ color: 'var(--ca-ink)' }}>We&apos;ve got answers.</span>
+            </Reveal>
+            <ForFaqIntro accent="var(--ca-accent, var(--ca-primary))" />
+          </div>
+          <div className="min-w-0"><FaqAccordion /></div>
         </div>
       </section>
 

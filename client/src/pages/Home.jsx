@@ -62,7 +62,7 @@ import HomeHero from "../components/home/HomeHero";
 import ProblemGlyph from "../components/home/ProblemGlyph";
 import { PERSONAS, NEWSLETTER } from "../components/home/images";
 import { TESTIMONIALS } from "../data/testimonials";
-import PricingCards from "../components/pricing/PricingCards";
+import NotebookPricing from "../components/home/NotebookPricing";
 import Seo from "../components/common/Seo";
 import { ogCard } from "../config/ogImages";
 
@@ -491,11 +491,11 @@ const GOOGLE_SCOPES = [
 
 /* ── Trust & security badges ── */
 const TRUST = [
-  { icon: Lock, title: "Secure payments", desc: "Processed by Razorpay, India's trusted gateway.", color: "#960D32" },
-  { icon: ShieldCheck, title: "SSL encrypted", desc: "Every page and payment is encrypted end to end.", color: "#C43A59" },
-  { icon: Eye, title: "Privacy-first", desc: "Your data is yours. Never sold, never shared.", color: "#E0506F" },
-  { icon: FileCheck, title: "You own your data", desc: "Clients, bookings and earnings always belong to you.", color: "#1F7A4D" },
-  { icon: Download, title: "Export anytime", desc: "Download your data whenever you want to.", color: "#7A0A28" },
+  { icon: Lock, title: "Secure payments", desc: "Processed by Razorpay, India's trusted gateway.", tile: "bg-blue-100 text-blue-600" },
+  { icon: ShieldCheck, title: "SSL encrypted", desc: "Every page and payment is encrypted end to end.", tile: "bg-emerald-100 text-emerald-600" },
+  { icon: Eye, title: "Privacy-first", desc: "Your data is yours. Never sold, never shared.", tile: "bg-violet-100 text-violet-600" },
+  { icon: FileCheck, title: "You own your data", desc: "Clients, bookings and earnings always belong to you.", tile: "bg-cyan-100 text-cyan-600" },
+  { icon: Download, title: "Export anytime", desc: "Download your data whenever you want to.", tile: "bg-amber-100 text-amber-500" },
 ];
 
 /* ════════════════════════════════════════════════════════════
@@ -643,7 +643,7 @@ const Home = () => {
   ];
 
   return (
-    <main id="top" className="home-wide overflow-x-clip bg-canvas text-ink">
+    <main id="top" className="home-wide overflow-x-clip bg-white text-ink">
       <Seo
         title="Appointment Booking Software for Creators, Pros & Bros — Meeticulous"
         description="Meeticulous is appointment booking software for creators, consultants, coaches, freelancers and fitness trainers. One link handles scheduling, upfront UPI payments, GST invoices and WhatsApp reminders — clients book and pay themselves. Free to start, built for India."
@@ -905,7 +905,7 @@ const Home = () => {
 
 
       {/* ════════════════ HOW THE CALM WORKS ════════════════ */}
-      <section id="how-it-works" className="scroll-mt-24 bg-blush px-5 py-20 sm:px-8 lg:py-28">
+      <section id="how-it-works" className="scroll-mt-24 px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-7xl">
           <Reveal as="h2" delay={0.05} className="mx-auto max-w-[750px] text-center text-4xl font-extrabold leading-tight text-maroon sm:text-5xl">
             Everything around the appointment, <span className="text-rose">automated.</span>
@@ -1192,9 +1192,10 @@ const Home = () => {
       )}
 
 
-      {/* ════════════ PRICING (shared PricingCards — Starter + Pro) ════════════ */}
+      {/* ════════════ PRICING (home-only notebook cards — Starter + Pro) ════════════
+         /pricing and the other pages keep the shared PricingCards. */}
       <section id="pricing" className="px-5 pb-12 pt-20 sm:px-8 lg:pb-16 lg:pt-28">
-        <div className="home-text-wrap mx-auto max-w-[860px]">
+        <div className="mx-auto max-w-6xl">
           <Reveal as="h2" className="text-center text-4xl font-extrabold leading-tight text-maroon sm:text-5xl">
             Simple pricing. <span className="text-rose">No surprises.</span>
           </Reveal>
@@ -1203,8 +1204,7 @@ const Home = () => {
           </Reveal>
 
           <Reveal delay={0.12} className="mt-8">
-            {/* Starter card in a brand shade (primary-dark) instead of the green */}
-            <PricingCards freeAccent="#7A0A28" startLabel="Get Started - Free" />
+            <NotebookPricing startLabel="Get Started - Free" />
           </Reveal>
 
           <p className="mt-8 text-center">
@@ -1412,7 +1412,7 @@ const Home = () => {
       )}
 
       {/* ════════════════ TRUST & SECURITY ════════════════ */}
-      <section id="trust" className="border-t-2 border-ink px-5 py-20 sm:px-8 lg:py-28">
+      <section id="trust" className="px-5 py-16 sm:px-8 lg:py-12">
         <div className="mx-auto max-w-6xl">
           <Reveal as="h2" delay={0.05} className="mx-auto max-w-[750px] text-center text-4xl font-extrabold leading-tight text-maroon sm:text-5xl">
             Your money and data, <span className="text-rose">handled carefully.</span>
@@ -1421,23 +1421,15 @@ const Home = () => {
             Payments, privacy and your data — the unsexy-but-important stuff, done right.
           </Reveal>
 
-          <div className="mt-14 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-5 [&>*:last-child]:col-span-2 lg:[&>*:last-child]:col-span-1">
+          <div className="mt-8 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-5 [&>*:last-child]:col-span-2 lg:[&>*:last-child]:col-span-1">
             {TRUST.map((t, i) => (
               <Reveal key={t.title} delay={(i % 5) * 0.06}>
-                <div
-                  className="flex h-full flex-col items-center rounded-[24px] bg-white p-6 text-center"
-                >
-                  <span
-                    className="flex h-12 w-12 items-center justify-center rounded-md"
-                    style={{
-                      backgroundColor: `color-mix(in srgb, ${t.color} 14%, white)`,
-                      color: t.color,
-                    }}
-                  >
+                <div className="flex h-full flex-col items-center rounded-[6px] border border-black/5 bg-white px-5 py-6 text-center shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
+                  <span className={`flex h-12 w-12 items-center justify-center rounded-[6px] ${t.tile}`}>
                     <t.icon size={22} />
                   </span>
-                  <h3 className="mt-4 font-heading text-sm font-bold text-ink">{t.title}</h3>
-                  <p className="mt-1.5 text-xs leading-relaxed text-muted">{t.desc}</p>
+                  <h3 className="mt-4 font-heading text-base font-semibold text-ink">{t.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">{t.desc}</p>
                 </div>
               </Reveal>
             ))}
@@ -1445,19 +1437,18 @@ const Home = () => {
 
           {/* How we use Google — plain-language version of the OAuth consent
               screen, for hosts (and Google's verification reviewers). */}
-          <Reveal delay={0.1} className="mt-12">
-            <div id="how-google" className="mx-auto max-w-6xl scroll-mt-24 rounded-[24px] bg-white p-6 sm:p-8 lg:p-10">
+          <Reveal delay={0.1} className="mt-6">
+            <div id="how-google" className="mx-auto max-w-6xl scroll-mt-24 rounded-[6px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-8">
               <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
                 {/* LEFT — icon + headline + intro */}
                 <div className="flex items-start gap-4">
                   <span
-                    className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl sm:flex"
-                    style={{ backgroundColor: "color-mix(in srgb, #ea4335 12%, transparent)", color: "#ea4335" }}
+                    className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-[6px] bg-red-50 text-red-500 sm:flex"
                   >
                     <Calendar size={22} />
                   </span>
                   <div>
-                    <h3 className="font-heading text-lg font-bold text-ink">How Meeticulous uses Google</h3>
+                    <h3 className="font-heading text-xl font-semibold text-ink">How Meeticulous uses Google</h3>
                     <p className="mt-2 text-sm leading-relaxed text-muted">
                       Hosts sign in with Google — no passwords to remember or leak. With your permission,
                       Meeticulous connects to your Google Calendar so your availability and bookings stay
@@ -1470,10 +1461,10 @@ const Home = () => {
                 <ul className="space-y-3">
                   {GOOGLE_SCOPES.map((s) => (
                     <li key={s.scope} className="flex items-start gap-2.5">
-                      <Check size={16} className="mt-0.5 shrink-0 text-primary" />
+                      <Check size={16} className="mt-0.5 shrink-0 text-red-500" />
                       <p className="text-sm leading-relaxed text-muted">
                         <span className="font-semibold text-ink">{s.name}</span>{" "}
-                        <span className="rounded-[16px] bg-black/5 px-1.5 py-0.5 font-mono text-[11px] text-muted">{s.scope}</span>{" "}
+                        <span className="rounded-[4px] border border-black/5 bg-black/[0.03] px-1.5 py-0.5 font-mono text-[11px] text-muted">{s.scope}</span>{" "}
                         — {s.desc}
                       </p>
                     </li>
@@ -1482,7 +1473,7 @@ const Home = () => {
               </div>
 
               {/* BOTTOM — full-width policy / revoke note */}
-              <p className="mt-8 border-t border-black/5 pt-6 text-sm leading-relaxed text-muted">
+              <p className="mt-6 border-t border-black/10 pt-5 text-sm leading-relaxed text-muted">
                 Your Google data is used only to provide these scheduling features — never for advertising,
                 never sold. You can revoke access at any time from your{" "}
                 <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer" className="font-medium text-primary-cta hover:underline">
@@ -1498,7 +1489,7 @@ const Home = () => {
             </div>
           </Reveal>
 
-          <p className="mx-auto mt-10 max-w-[750px] text-center text-sm font-medium text-ink">
+          <p className="mx-auto mt-6 max-w-[750px] text-center text-sm font-medium text-ink">
             Meeticulous does not sell or share your data with third parties. <span className="text-maroon">Ever.</span>
           </p>
         </div>

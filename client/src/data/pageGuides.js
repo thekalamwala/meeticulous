@@ -162,13 +162,11 @@ export const PAGE_GUIDES = {
   ],
   '/for/salon': [
     { slug: 'appointment-reminder-templates', title: 'WhatsApp Reminder Message for Appointment: 36 Templates' },
-    { slug: 'whatsapp-business-away-message', title: 'Away Message for Business: 40 WhatsApp Templates + Setup' },
     { slug: 'cancellation-policy-template', title: 'Cancellation Policy for Appointments: Templates + ₹ Examples' },
     { slug: 'booking-link-instagram-bio', title: 'Booking Link for Instagram Bio: Setup, WhatsApp & UPI' },
   ],
   '/for/spa': [
     { slug: 'appointment-reminder-templates', title: 'WhatsApp Reminder Message for Appointment: 36 Templates' },
-    { slug: 'whatsapp-business-away-message', title: 'Away Message for Business: 40 WhatsApp Templates + Setup' },
     { slug: 'cancellation-policy-template', title: 'Cancellation Policy for Appointments: Templates + ₹ Examples' },
     { slug: 'booking-link-instagram-bio', title: 'Booking Link for Instagram Bio: Setup, WhatsApp & UPI' },
   ],
@@ -216,6 +214,52 @@ export const PAGE_GUIDES = {
     { slug: 'collect-payments-from-clients-india', title: 'How to Collect Payments from Clients Online in India (2026)' },
     { slug: 'advance-payment-for-appointments', title: 'Advance Payment for Appointments: How to Take It in India' },
     { slug: 'payment-reminder-message', title: 'Payment Reminder Message: 20 WhatsApp & Email Templates' },
+  ],
+  // v2 /for template pages (ProfessionLandingV2)
+  '/for/driving-schools': [
+    { slug: 'how-to-reduce-no-shows', title: 'How to Reduce No-Shows: A Playbook for Indian Appointments' },
+    { slug: 'advance-payment-for-appointments', title: 'Advance Payment for Appointments: How to Take It in India' },
+    { slug: 'appointment-reminder-templates', title: 'WhatsApp Reminder Message for Appointment: 36 Templates' },
+  ],
+  '/for/conference-halls': [
+    { slug: 'two-bookings-one-slot', title: 'Two bookings, one slot, fifty people trying' },
+    { slug: 'advance-payment-for-appointments', title: 'Advance Payment for Appointments: How to Take It in India' },
+    { slug: 'cancellation-policy-template', title: 'Cancellation Policy for Appointments: Templates + ₹ Examples' },
+  ],
+  '/for/photo-studios': [
+    { slug: 'booking-link-instagram-bio', title: 'Booking Link for Instagram Bio: Setup, WhatsApp & UPI' },
+    { slug: 'advance-payment-for-appointments', title: 'Advance Payment for Appointments: How to Take It in India' },
+    { slug: 'cancellation-policy-template', title: 'Cancellation Policy for Appointments: Templates + ₹ Examples' },
+  ],
+  '/for/coaches': [
+    { slug: 'how-to-price-coaching-services-india', title: 'How to Price Coaching Services in India (₹ Packages)' },
+    { slug: 'how-to-become-paid-mentor', title: 'How to Become a Paid Mentor (Online, 1:1) in India' },
+    { slug: 'client-intake-form-questions', title: 'Client Intake Form Questions: Templates by Profession' },
+  ],
+  '/for/content-creators': [
+    { slug: 'booking-link-instagram-bio', title: 'Booking Link for Instagram Bio: Setup, WhatsApp & UPI' },
+    { slug: 'how-to-sell-digital-products-online', title: 'How to Sell Digital Products Online: A Complete Guide' },
+    { slug: 'topmate-commission', title: 'Topmate Commission & Fees (2026): What You Keep per ₹1,000' },
+  ],
+  '/for/educators': [
+    { slug: 'how-to-start-online-tuition', title: 'How to Start Online Tuition in India: Batches, Fees & UPI' },
+    { slug: 'tuition-fee-reminder-message', title: 'Tuition Fee Reminder Message: Hindi & English Templates' },
+    { slug: 'appointment-reminder-templates', title: 'WhatsApp Reminder Message for Appointment: 36 Templates' },
+  ],
+  '/for/musicians': [
+    { slug: 'booking-link-instagram-bio', title: 'Booking Link for Instagram Bio: Setup, WhatsApp & UPI' },
+    { slug: 'advance-payment-for-appointments', title: 'Advance Payment for Appointments: How to Take It in India' },
+    { slug: 'tuition-fee-reminder-message', title: 'Tuition Fee Reminder Message: Hindi & English Templates' },
+  ],
+  '/for/language-teachers': [
+    { slug: 'how-to-start-online-tuition', title: 'How to Start Online Tuition in India: Batches, Fees & UPI' },
+    { slug: 'tuition-fee-reminder-message', title: 'Tuition Fee Reminder Message: Hindi & English Templates' },
+    { slug: 'how-to-reduce-no-shows', title: 'How to Reduce No-Shows: A Playbook for Indian Appointments' },
+  ],
+  '/for/coworking-spaces': [
+    { slug: 'two-bookings-one-slot', title: 'Two bookings, one slot, fifty people trying' },
+    { slug: 'advance-payment-for-appointments', title: 'Advance Payment for Appointments: How to Take It in India' },
+    { slug: 'cancellation-policy-template', title: 'Cancellation Policy for Appointments: Templates + ₹ Examples' },
   ],
   '/glossary/buffer-time': [
     { slug: '30-minute-call-setup', title: '30 Minute Call: How to Set One Up and Run It Well' },

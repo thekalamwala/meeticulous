@@ -30,6 +30,7 @@ import useFeeOnly from '../../hooks/useFeeOnly';
 import { getProfessionLanding } from './professionLandingData';
 import ProfessionLandingV2 from './ProfessionLandingV2';
 import { getV2Landing } from './professionLandingV2Data';
+import ForFaqIntro from '../../components/common/ForFaqIntro';
 
 const ROUTE_START = '/become-a-host';
 const YEAR = 2026;
@@ -75,46 +76,46 @@ function ForFooter({ madeFor, label }) {
   );
 }
 
-/* ── Single-open, smoothly-animated FAQ accordion (fixes native <details>) ── */
+/* ── Single-open, smoothly-animated FAQ accordion (fixes native <details>).
+      Two columns on sm+, odd/even split — same layout as the dedicated /for pages. ── */
 function FaqAccordion({ faq }) {
   const [open, setOpen] = useState(null);
-  return (
-    <div className="space-y-3">
-      {faq.map((f, i) => {
-        const isOpen = open === i;
-        return (
-          <div key={f.q} className="overflow-hidden rounded-[16px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'color-mix(in srgb, var(--lp-accent) 40%, transparent)' : 'rgba(0,0,0,0.06)' }}>
-            <button
-              type="button"
-              onClick={() => setOpen(isOpen ? null : i)}
-              aria-expanded={isOpen}
-              className="flex w-full cursor-pointer items-center justify-between gap-4 px-5 py-4 text-left text-base font-semibold text-[color:var(--lp-primary)]"
+  const renderItem = (f, i) => {
+    const isOpen = open === i;
+    return (
+      <div key={f.q} className="overflow-hidden rounded-[16px] border bg-white transition-colors" style={{ borderColor: isOpen ? 'color-mix(in srgb, var(--lp-accent) 40%, transparent)' : 'rgba(0,0,0,0.06)' }}>
+        <button
+          type="button"
+          onClick={() => setOpen(isOpen ? null : i)}
+          aria-expanded={isOpen}
+          className="flex w-full cursor-pointer items-center justify-between gap-4 px-5 py-4 text-left text-base font-semibold text-[color:var(--lp-primary)]"
+        >
+          {f.q}
+          <span
+            className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full transition-transform duration-300"
+            style={{ backgroundColor: 'color-mix(in srgb, var(--lp-accent) 14%, transparent)', color: 'var(--lp-accent-cta)', transform: isOpen ? 'rotate(45deg)' : 'none' }}
+          >
+            <Plus size={15} />
+          </span>
+        </button>
+        <AnimatePresence initial={false}>
+          {isOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              className="overflow-hidden"
             >
-              {f.q}
-              <span
-                className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full transition-transform duration-300"
-                style={{ backgroundColor: 'color-mix(in srgb, var(--lp-accent) 14%, transparent)', color: 'var(--lp-accent-cta)', transform: isOpen ? 'rotate(45deg)' : 'none' }}
-              >
-                <Plus size={15} />
-              </span>
-            </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                  className="overflow-hidden"
-                >
-                  <p className="px-5 pb-4 text-[15px] leading-relaxed text-neutral-500">{f.a}</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        );
-      })}
-    </div>
+              <p className="px-5 pb-4 text-[15px] leading-relaxed text-neutral-500">{f.a}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
+  return (
+    <div className="space-y-3">{faq.map((f, i) => renderItem(f, i))}</div>
   );
 }
 
@@ -608,11 +609,14 @@ function ProfessionLandingV1() {
 
       {/* ════════════════ FAQ ════════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-3xl">
-          <Reveal as="h2" className="text-center text-3xl font-bold leading-tight sm:text-4xl">
-            Questions, answered.
-          </Reveal>
-          <div className="mt-12">
+        <div className="mx-auto grid max-w-6xl items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+          <div className="text-center lg:sticky lg:top-28 lg:text-left lg:[&_.text-center]:text-left lg:[&_.mx-auto]:mx-0">
+            <Reveal as="h2" className="text-center text-3xl font-bold leading-tight sm:text-4xl">
+              Questions, answered.
+            </Reveal>
+            <ForFaqIntro accent="var(--lp-accent-cta)" />
+          </div>
+          <div className="min-w-0">
             <FaqAccordion faq={faq} />
           </div>
         </div>
