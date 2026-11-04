@@ -110,6 +110,14 @@ export default function CommunityItem() {
   }, [pendingScroll]);
 
   const patchComment = (id, patch) => setS((p) => ({ ...p, comments: p.comments.map((c) => (c.id === id ? { ...c, ...patch } : c)) }));
+  // Reconcile an optimistic reply with the server copy, or drop it (and its count) on failure.
+  const settle = (tempId, real) => {
+    if (real) {
+      setS((p) => ({ ...p, comments: p.comments.map((c) => (c.id === tempId ? { ...c, ...real, pending: false } : c)) }));
+    } else {
+      setS((p) => ({ ...p, comments: p.comments.filter((c) => c.id !== tempId), item: { ...p.item, comment_count: Math.max(0, p.item.comment_count - 1) } }));
+    }
+  };
   const guardWrite = async (fn) => {
     try { return await fn(); } catch (e) { toast.error(errorCopy(e, user)); throw e; }
   };
@@ -250,7 +258,7 @@ export default function CommunityItem() {
         <p className="rounded-xl bg-blush p-5 text-sm text-ink sm:p-6">Only hosts can reply in this space.</p>
       )}
       {user && !repliesLocked && (
-        <CommentForm itemId={item.id} parent={parent} focusTick={tick} onCreated={added} onCancel={() => setParent(null)} />
+        <CommentForm itemId={item.id} parent={parent} focusTick={tick} onCreated={added} onSettle={settle} onCancel={() => setParent(null)} />
       )}
 
       {!user && (
