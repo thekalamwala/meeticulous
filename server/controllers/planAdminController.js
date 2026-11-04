@@ -279,7 +279,7 @@ const assignPlan = async (req, res) => {
 // ── Gifted Pro (super admin only — see routes) ───────────────────
 // Complimentary Pro for a fixed tenure. Logic lives in planGiftService; these
 // handlers only validate input and map GiftError codes to HTTP statuses.
-const GIFT_STATUS = { GIFTS_UNAVAILABLE: 503, NOT_FOUND: 404, NOT_ACTIVE: 409, INELIGIBLE: 409 };
+const GIFT_STATUS = { GIFTS_UNAVAILABLE: 503, NOT_FOUND: 404, NOT_ACTIVE: 409, INELIGIBLE: 409, NOT_PENDING: 409, ALREADY_SHARED: 409, BAD_URL: 400 };
 const giftError = (res, err) => (err instanceof planGiftService.GiftError
   ? res.status(GIFT_STATUS[err.code] || 400).json({ message: err.message })
   : safeError(res, err));
@@ -299,7 +299,7 @@ const cleanText = (v, max) => {
 // GET /api/admin/gifts?status=active|ended|revoked|converted|all&page=1
 const listGifts = async (req, res) => {
   try {
-    const status = ['active', 'ended', 'revoked', 'converted', 'all'].includes(req.query.status) ? req.query.status : 'active';
+    const status = ['active', 'ended', 'revoked', 'converted', 'share_pending', 'all'].includes(req.query.status) ? req.query.status : 'active';
     res.json(await planGiftService.listGifts({ status, page: Number(req.query.page) || 1 }));
   } catch (err) {
     giftError(res, err);
@@ -361,6 +361,16 @@ const revokeGift = async (req, res) => {
   }
 };
 
+// POST /api/admin/gifts/:id/share-review  { approve: boolean } — share-to-extend
+const reviewGiftShare = async (req, res) => {
+  try {
+    if (typeof req.body.approve !== 'boolean') return res.status(400).json({ message: 'approve must be true or false' });
+    res.json({ gift: await planGiftService.reviewShare(req, req.params.id, req.body.approve) });
+  } catch (err) {
+    giftError(res, err);
+  }
+};
+
 // ── GET /api/plans (public pricing page) ─────────────────────────
 const publicPlans = async (req, res) => {
   try {
@@ -384,4 +394,4 @@ const foundingSpots = async (req, res) => {
   res.json(status);
 };
 
-module.exports = { listPlans, createPlan, updatePlan, setPlanActive, clonePlan, reorderPlans, assignPlan, listGifts, giftEligibility, grantGifts, extendGift, revokeGift, publicPlans, foundingSpots, RULES };
+module.exports = { listPlans, createPlan, updatePlan, setPlanActive, clonePlan, reorderPlans, assignPlan, listGifts, giftEligibility, grantGifts, extendGift, revokeGift, reviewGiftShare, giftError, publicPlans, foundingSpots, RULES };

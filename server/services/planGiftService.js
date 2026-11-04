@@ -39,7 +39,7 @@ const MANDATE_STATES = new Set(['active', 'authenticated', 'pending', 'halted'])
 // abandoned pending checkout doesn't swallow the "gift expired" notice).
 const CHARGING_STATES = new Set(['active', 'authenticated']);
 
-const PROFILE_COLS = 'id, name, email, role, is_host, plan, plan_expires_at, subscription_status, razorpay_subscription_id';
+const PROFILE_COLS = 'id, name, email, role, is_host, plan, plan_expires_at, subscription_status, razorpay_subscription_id, onboarding_completed, created_at';
 
 class GiftError extends Error {
   constructor(code, message) { super(message); this.code = code; }
@@ -68,6 +68,25 @@ const tenureLabel = (m) =>
 const fmtDate = (iso) => new Date(iso).toLocaleDateString('en-IN', {
   timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric',
 });
+
+// Pay-it-forward link code: 10 chars, no look-alikes (0/O, 1/I/L). ~50 bits.
+const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+const mintForwardCode = () =>
+  Array.from(require('crypto').randomBytes(10), (b) => CODE_ALPHABET[b % CODE_ALPHABET.length]).join('');
+const normalizeCode = (c) => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20);
+
+// Share-to-extend: a public post on one of these networks (https only).
+const SHARE_HOSTS = ['linkedin.com', 'instagram.com', 'x.com', 'twitter.com', 'facebook.com', 'threads.net'];
+function isShareUrl(raw) {
+  try {
+    const u = new URL(String(raw || '').trim());
+    if (u.protocol !== 'https:') return false;
+    const host = u.hostname.toLowerCase();
+    return SHARE_HOSTS.some((h) => host === h || host.endsWith(`.${h}`));
+  } catch (_) {
+    return false;
+  }
+}
 
 const isPaying = (p) => !!p?.razorpay_subscription_id && MANDATE_STATES.has(p.subscription_status);
 
@@ -106,7 +125,13 @@ async function giftForSession(profile) {
   try {
     const g = await getActiveGift(profile.id);
     if (!g || new Date(g.ends_at) <= new Date()) return null;
-    return { ends_at: g.ends_at, months: g.months + (g.extended_months || 0), note: g.note || null };
+    return {
+      ends_at: g.ends_at, months: g.months + (g.extended_months || 0), note: g.note || null,
+      // Share-to-extend: null = not submitted yet; pending / approved / rejected after.
+      share_status: g.share_status || null,
+      // Pay-it-forward: only gifts the team granted carry a code (a forwarded gift doesn't).
+      forward: g.forward_code ? { code: g.forward_code, redeemed: !!g.forward_redeemed_by } : null,
+    };
   } catch (_) {
     return null;
   }
@@ -169,10 +194,10 @@ async function crmEvent(hostId, type, title, meta) {
   }
 }
 
-const receivedNotice = (profile, gift, extended) => notify('PLAN_GIFT_RECEIVED', profile, gift, {
-  emailData: { gift_headline: extended ? "I've extended your gifted Pro" : "I'm gifting you Pro" },
+const receivedNotice = (profile, gift, extended, headline = null) => notify('PLAN_GIFT_RECEIVED', profile, gift, {
+  emailData: { gift_headline: headline || (extended ? "I've extended your gifted Pro" : "I'm gifting you Pro") },
   inApp: {
-    title: extended ? 'Your gifted Pro was extended 🎁' : 'You got Pro, on us 🎁',
+    title: extended ? 'Your gifted Pro was extended' : 'You got Pro, on us',
     body: `Complimentary Pro from the Meeticulous team until ${fmtDate(gift.ends_at)}.`,
     link: '/dashboard/upgrade',
   },
@@ -234,7 +259,7 @@ const uniqueIds = (ids) => [...new Set((ids || []).filter(Boolean).map(String))]
  * Gift Pro to one or many hosts. Never fails the whole batch for one host:
  * returns { granted: [{host_id, gift_id, ends_at}], skipped: [{host_id, reason}] }.
  */
-async function grantGift(req, { hostIds, months, reason, note = null, campaign = null }) {
+async function grantGift(req, { hostIds, months, reason, note = null, campaign = null, forwardedFrom = null, headline = null }) {
   const granted = [], skipped = [];
   for (const hostId of uniqueIds(hostIds)) {
     try {
@@ -247,11 +272,15 @@ async function grantGift(req, { hostIds, months, reason, note = null, campaign =
       const { data: gift, error } = await supabaseAdmin.from('plan_gifts').insert({
         host_id: hostId, months, starts_at: start.toISOString(), ends_at: endsAt,
         reason, note, campaign, granted_by: req?.admin?.id || null,
+        // Pay-it-forward: a team gift carries one link to pass on; a forwarded
+        // gift carries none, so the chain stays one level deep.
+        forward_code: forwardedFrom ? null : mintForwardCode(),
+        forwarded_from: forwardedFrom,
       }).select('*').single();
       if (error) {
         if (isMissingTable(error)) throw new GiftError('GIFTS_UNAVAILABLE', 'Gifts are not set up yet (apply v3.190).');
         // uniq_plan_gifts_active: a concurrent grant got there first.
-        if (/duplicate key|uniq_plan_gifts_active/i.test(error.message)) { skipped.push({ host_id: hostId, reason: 'already gifted (extend instead)' }); continue; }
+        if (/uniq_plan_gifts_active/i.test(error.message)) { skipped.push({ host_id: hostId, reason: 'already gifted (extend instead)' }); continue; }
         throw error;
       }
 
@@ -273,7 +302,7 @@ async function grantGift(req, { hostIds, months, reason, note = null, campaign =
         before: { plan: profile.plan, plan_expires_at: profile.plan_expires_at },
         after: { plan: GIFT_PLAN, plan_expires_at: endsAt, gift_id: gift.id, months, campaign, reason },
       });
-      await receivedNotice(profile, gift, false);
+      await receivedNotice(profile, gift, false, headline);
       await crmEvent(hostId, 'gift_granted', `Gifted Pro — ${tenureLabel(months)}`, { gift_id: gift.id, months, campaign });
       granted.push({ host_id: hostId, gift_id: gift.id, ends_at: endsAt });
     } catch (e) {
@@ -351,13 +380,113 @@ async function listGifts({ status = 'active', page = 1, pageSize = 50 } = {}) {
   let q = supabaseAdmin.from('plan_gifts')
     .select('*, host:profiles!plan_gifts_host_id_fkey(id, name, email, username)', { count: 'exact' })
     .order('created_at', { ascending: false }).range(from, from + pageSize - 1);
-  if (status && status !== 'all') q = q.eq('status', status);
+  // 'share_pending' = the review queue for share-to-extend.
+  if (status === 'share_pending') q = q.eq('status', 'active').eq('share_status', 'pending');
+  else if (status && status !== 'all') q = q.eq('status', status);
   const { data, error, count } = await q;
   if (error) {
     if (isMissingTable(error)) throw new GiftError('GIFTS_UNAVAILABLE', 'Gifts are not set up yet (apply v3.190).');
     throw error;
   }
   return { gifts: data || [], total: count || 0 };
+}
+
+// ── Share-to-extend ────────────────────────────────────────────────────────
+
+/** Host pastes the link to their public post about Meeticulous. Once per gift;
+ *  a super admin checks the post and approves it for +1 month (reviewShare). */
+async function submitShare(hostId, url) {
+  if (!isShareUrl(url)) throw new GiftError('BAD_URL', 'Paste the https link to your public post on LinkedIn, Instagram, X, Facebook or Threads.');
+  const gift = await getActiveGift(hostId);
+  if (!gift) throw new GiftError('NOT_ACTIVE', 'You have no active gifted Pro.');
+  if (gift.share_status) throw new GiftError('ALREADY_SHARED', 'You already sent a post for this gift.');
+  const { data, error } = await supabaseAdmin.from('plan_gifts')
+    .update({ share_url: String(url).trim().slice(0, 500), share_status: 'pending', updated_at: nowIso() })
+    .eq('id', gift.id).eq('status', 'active').is('share_status', null)
+    .select('*').maybeSingle();
+  if (error) throw error;
+  if (!data) throw new GiftError('ALREADY_SHARED', 'You already sent a post for this gift.');
+  require('../utils/adminAlert').adminAlert({
+    key: `gift_share:${gift.id}`,
+    subject: 'Gifted Pro: a share is waiting for review',
+    lines: [`Host ${hostId} posted about Meeticulous.`, `Post: ${data.share_url}`, 'Approve it in Admin → Plans → Gifted Pro to add 1 month.'],
+  }).catch(() => {});
+  return data;
+}
+
+/** Super admin verdict on a pending share. Approve = +1 month (the host gets the
+ *  "I've extended your gifted Pro" email); reject = no extension, no resubmit. */
+async function reviewShare(req, giftId, approve) {
+  const gift = await loadActiveGiftById(giftId);
+  if (gift.share_status !== 'pending') throw new GiftError('NOT_PENDING', 'This gift has no share waiting for review.');
+  if (approve) await extendGift(req, gift.id, 1); // first, so a failed extend never reads as approved
+  const { data, error } = await supabaseAdmin.from('plan_gifts')
+    .update({ share_status: approve ? 'approved' : 'rejected', share_reviewed_at: nowIso(), updated_at: nowIso() })
+    .eq('id', gift.id).eq('share_status', 'pending')
+    .select('*').maybeSingle();
+  if (error) throw error;
+  await audit(req, {
+    action: approve ? 'plan.gift.share_approve' : 'plan.gift.share_reject',
+    resource_type: 'profile', resource_id: gift.host_id,
+    after: { gift_id: gift.id, share_url: gift.share_url },
+  });
+  return data;
+}
+
+// ── Pay-it-forward ─────────────────────────────────────────────────────────
+
+const FORWARD_MONTHS = 1;
+const SYSTEM_REQ = { admin: { id: null, email: 'system:pay-it-forward', role: 'system' } };
+
+/**
+ * A new host who signed up through a gifted host's link gets 1 month of Pro,
+ * once their onboarding is complete. The original super-admin gift is the
+ * approval (founder, 2026-11-04). Returns { redeemed, reason?, keep? } —
+ * keep=true means "try again later" (onboarding not finished yet).
+ */
+async function redeemForward(hostId, rawCode) {
+  const code = normalizeCode(rawCode);
+  if (!code) return { redeemed: false, reason: 'invalid code' };
+  const { data: source, error } = await supabaseAdmin.from('plan_gifts')
+    .select('id, host_id, created_at, forward_redeemed_by').eq('forward_code', code).maybeSingle();
+  if (error) {
+    if (isMissingTable(error)) return { redeemed: false, reason: 'unavailable' };
+    throw error;
+  }
+  if (!source) return { redeemed: false, reason: 'invalid code' };
+  if (source.forward_redeemed_by) return { redeemed: false, reason: 'already used' };
+  if (source.host_id === hostId) return { redeemed: false, reason: 'own code' };
+
+  const profile = await loadProfile(hostId);
+  if (!profile) return { redeemed: false, reason: 'host not found' };
+  if (!profile.onboarding_completed) return { redeemed: false, reason: 'finish onboarding first', keep: true };
+  // New hosts only: the account must postdate the link.
+  if (profile.created_at && new Date(profile.created_at) < new Date(source.created_at)) return { redeemed: false, reason: 'not a new host' };
+  const why = ineligibleReason(profile, await getActiveGift(hostId));
+  if (why) return { redeemed: false, reason: why };
+
+  // Claim the code first (conditional update = one winner under a race).
+  const { data: claimed } = await supabaseAdmin.from('plan_gifts')
+    .update({ forward_redeemed_by: hostId, forward_redeemed_at: nowIso(), updated_at: nowIso() })
+    .eq('id', source.id).is('forward_redeemed_by', null)
+    .select('id').maybeSingle();
+  if (!claimed) return { redeemed: false, reason: 'already used' };
+
+  const giver = await loadProfile(source.host_id);
+  const giverFirst = (giver?.name || '').split(' ')[0] || 'A friend';
+  const out = await grantGift(SYSTEM_REQ, {
+    hostIds: [hostId], months: FORWARD_MONTHS, campaign: 'pay-it-forward',
+    reason: `Pay-it-forward from gift ${source.id}`, forwardedFrom: source.id,
+    headline: `${giverFirst} sent you a month of Pro`,
+  });
+  if (!out.granted.length) {
+    // Grant didn't land: release the code so it isn't burnt.
+    await supabaseAdmin.from('plan_gifts')
+      .update({ forward_redeemed_by: null, forward_redeemed_at: null, updated_at: nowIso() })
+      .eq('id', source.id).eq('forward_redeemed_by', hostId);
+    return { redeemed: false, reason: out.skipped[0]?.reason || 'error' };
+  }
+  return { redeemed: true, ends_at: out.granted[0].ends_at };
 }
 
 // ── Paid activation ────────────────────────────────────────────────────────
@@ -472,5 +601,6 @@ module.exports = {
   addMonths, tenureLabel, ineligibleReason,
   getActiveGift, giftForSession, giftedHostIds,
   checkEligibility, grantGift, extendGift, revokeGift, listGifts,
+  submitShare, reviewShare, isShareUrl, redeemForward, mintForwardCode,
   endOnPaid, processGiftExpiry,
 };

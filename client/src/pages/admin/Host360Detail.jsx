@@ -20,6 +20,7 @@ import { PageHeader, Card, StatCard, Btn, Badge, Table, Skeleton } from '../../c
 import Ic from '../../components/admin/Ic';
 import { sessionCan, IC } from '../../components/admin/adminNav';
 import { normalizePlan, getPlanBorderLabel } from '../../utils/themeUtils';
+import { GiftForm } from '../../components/admin/GiftPro';
 
 const inr = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`;
 const fmtDate = (d) => (d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—');
@@ -652,7 +653,7 @@ const Host360Detail = () => {
 
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [modal, setModal] = useState(null); // 'plan' | 'am' | 'email'
+  const [modal, setModal] = useState(null); // 'plan' | 'am' | 'email' | 'gift'
 
   const loadOverview = useCallback(async () => {
     setLoading(true);
@@ -758,6 +759,10 @@ const Host360Detail = () => {
         {sessionCan(session, 'plans.manage') && (
           <Btn variant="outline" size="sm" icon="tag" onClick={() => setModal('plan')}>Change plan</Btn>
         )}
+        {/* Gifted Pro is super-admin only ('*'); the server enforces it too. */}
+        {sessionCan(session, '*') && (
+          <Btn variant="outline" size="sm" icon="tag" onClick={() => setModal('gift')}>Gift Pro</Btn>
+        )}
         {sessionCan(session, 'users.edit') && (
           <Btn variant="outline" size="sm" icon="userCheck" onClick={() => setModal('am')}>Assign manager</Btn>
         )}
@@ -789,6 +794,12 @@ const Host360Detail = () => {
 
       {modal === 'plan'  && <ChangePlanModal host={host} onClose={() => setModal(null)} onDone={loadOverview} />}
       {modal === 'am'    && <AssignAmModal host={host} onClose={() => setModal(null)} onDone={loadOverview} />}
+      {modal === 'gift'  && (
+        <Modal title={`Gift Pro to ${host.name || 'this host'}`} onClose={() => setModal(null)}>
+          <GiftForm presetHosts={[{ id: host.id, name: host.name, email: host.email }]}
+            onDone={() => { setModal(null); loadOverview(); }} />
+        </Modal>
+      )}
       {modal === 'email' && <SendEmailModal host={host} onClose={() => setModal(null)} />}
     </div>
   );

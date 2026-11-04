@@ -154,6 +154,7 @@ app.use('/api/crm',         require('./routes/crmRoutes'));
 app.use('/api/upload',      require('./routes/uploadRoutes'));
 app.use('/api/vendor',      require('./routes/vendorRoutes'));
 app.use('/api/referrals',   require('./routes/referralRoutes'));
+app.use('/api/gift',        require('./routes/giftRoutes'));
 app.use('/api/invite',      require('./routes/inviteRoutes'));
 app.use('/api/services',    require('./routes/serviceRoutes'));
 app.use('/api/categories',  require('./routes/categoryRoutes'));

@@ -9,7 +9,7 @@ import useLiveNotifications from '../../hooks/useLiveNotifications';
 // /explore route + page stay live. Re-import + render in PublicCenterNav to restore.
 import { isHost, routeRole } from '../../utils/roleRoutes';
 import { getNotifications, markAllNotificationsRead, markNotificationRead, getGuestBookings } from '../../services/api';
-import { getPlanBorderLabel, normalizePlan } from '../../utils/themeUtils';
+import { getPlanBorderLabel, normalizePlan, GIFTED_PRO_LABEL } from '../../utils/themeUtils';
 import {
   Tag,
   CalendarCheck, MessageCircle, Bookmark, BarChart2,
@@ -263,7 +263,7 @@ const MembershipButton = ({ user, onClick }) => (
     className="mt-3 flex items-center justify-center gap-1.5 rounded-lg bg-primary/10 px-3 py-2 text-[12.5px] font-semibold text-primary transition-colors hover:bg-primary/15 hover:no-underline"
   >
     <Sparkles size={14} className="flex-shrink-0" />
-    You are a {getPlanBorderLabel(normalizePlan(user?.plan))} Member
+    You are a {user?.gift ? GIFTED_PRO_LABEL : getPlanBorderLabel(normalizePlan(user?.plan))} Member
   </Link>
 );
 
