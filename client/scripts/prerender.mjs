@@ -61,8 +61,9 @@ const RETRY_TIMEOUT_MS = 60000;
 // failed twice that way: ~300 routes vs a slow free-tier API). Past this budget
 // the pool stops starting new routes and the run ships what it has — routes not
 // reached keep serving the SPA fallback until the next deploy. A partial
-// prerender beats no deploy. Routes are ordered static → blog → host/service, so
-// what gets dropped first is the long tail of host/service pages.
+// prerender beats no deploy. Routes are ordered static (hub-first, see
+// PRERENDER_ROUTES) → blog → host/service, so what gets dropped first is the long
+// tail of host/service pages.
 // ponytail: wall-clock budget, not per-route accounting; ~13 min headroom covers
 // install + vite build + upload. Override with PRERENDER_BUDGET_MS.
 const BUDGET_MS = Number(process.env.PRERENDER_BUDGET_MS) || 30 * 60 * 1000;
@@ -78,60 +79,28 @@ const API_FETCH_TIMEOUT_MS = 15000;
 // error — which WOULD change the baked HTML.
 const BLANK_GIF = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
 
+// ORDER IS PRIORITY. The pool takes routes front to back and the time budget
+// drops the tail, so SEO money pages (hubs, /compare, /for, /features, glossary)
+// come first and low-value pages (help docs, changelog, legal) last. On
+// 2026-11-04 a 1.5-min budget baked the homepage + 30 help docs and left /blog,
+// /services, every /compare, /for and /glossary page as the bare shell.
 const PRERENDER_ROUTES = [
   '/',
   '/pricing',
-  '/enterprise',
-  '/about',
-  '/help',
-  '/help/docs',
-  ...HELP_SLUGS.map((s) => `/help/docs/${s}`),
-  '/contact',
-  '/support',
-  '/blog',
-  '/careers',
-  '/changelog',
-  ...RELEASES.map((r) => `/changelog/${r.version}`),
-  '/privacy',
-  '/terms',
-  '/refund',
-  '/guest-terms',
-  '/host-agreement',
-  '/host-fees',
-  '/earnings-calculator',
-  '/tools',
-  '/templates',
-  '/tools/no-show-cost-calculator',
-  '/tools/gst-calculator',
-  '/glossary',
-  ...GLOSSARY_SLUGS.map((s) => `/glossary/${s}`),
-  '/press',
-  '/stats',
-  '/wall-of-love',
   // SEO discovery hubs — crawlable directories that link every /for/* profession
   // page and /compare/* competitor page (which hide the global nav). Prerender so the
   // internal links land in static HTML for non-JS crawlers.
+  '/services',
+  '/blog',
   '/solutions',
   '/compare',
   '/appointment-booking-software',
-  // Marketing/event pages with bespoke OG cards — prerender so social scrapers
-  // (which don't run JS) get the card + real title, not the default og:image.
-  '/how-it-works',
-  '/become-a-host',
-  '/opening',
-  '/inaugurators',
-  // KEEP IN SYNC with careersContent.js `jobs` slugs (it imports lucide-react,
-  // so this node script can't import it the way it does featureData/helpDocsList).
-  // Without prerender, a job page's raw HTML has no JobPosting JSON-LD at all.
-  '/careers/digital-marketeer',
-  '/careers/mern-stack-developer',
-  '/careers/sales-associate',
-  '/services',
-  '/explore',
-  // Moments archive + each moment. Imported from the static data file (pure ESM,
-  // no lucide) so this list never drifts as moments are added.
-  '/moments',
-  ...MOMENTS.map((m) => `/moments/${m.slug}`),
+  '/compare/calendly-alternative',
+  '/compare/topmate-alternative',
+  '/compare/setmore-alternative',
+  '/compare/acuity-alternative',
+  '/compare/simplybook-alternative',
+  '/compare/zoho-bookings-alternative',
   '/for/astrologers',
   '/for/architects',
   '/for/dentists',
@@ -168,13 +137,50 @@ const PRERENDER_ROUTES = [
   '/for/photographers',
   '/for/events',
   '/for/agencies',
-  '/compare/calendly-alternative',
-  '/compare/topmate-alternative',
-  '/compare/setmore-alternative',
-  '/compare/acuity-alternative',
-  '/compare/simplybook-alternative',
-  '/compare/zoho-bookings-alternative',
   ...FEATURES.map((f) => `/features/${f.slug}`),
+  '/glossary',
+  ...GLOSSARY_SLUGS.map((s) => `/glossary/${s}`),
+  '/about',
+  '/enterprise',
+  // Marketing/event pages with bespoke OG cards — prerender so social scrapers
+  // (which don't run JS) get the card + real title, not the default og:image.
+  '/how-it-works',
+  '/become-a-host',
+  '/host-fees',
+  '/earnings-calculator',
+  '/tools',
+  '/tools/no-show-cost-calculator',
+  '/tools/gst-calculator',
+  '/templates',
+  '/explore',
+  '/opening',
+  '/inaugurators',
+  '/press',
+  '/stats',
+  '/wall-of-love',
+  '/careers',
+  // KEEP IN SYNC with careersContent.js `jobs` slugs (it imports lucide-react,
+  // so this node script can't import it the way it does featureData/helpDocsList).
+  // Without prerender, a job page's raw HTML has no JobPosting JSON-LD at all.
+  '/careers/digital-marketeer',
+  '/careers/mern-stack-developer',
+  '/careers/sales-associate',
+  '/contact',
+  '/support',
+  // Moments archive + each moment. Imported from the static data file (pure ESM,
+  // no lucide) so this list never drifts as moments are added.
+  '/moments',
+  ...MOMENTS.map((m) => `/moments/${m.slug}`),
+  '/help',
+  '/help/docs',
+  ...HELP_SLUGS.map((s) => `/help/docs/${s}`),
+  '/changelog',
+  ...RELEASES.map((r) => `/changelog/${r.version}`),
+  '/privacy',
+  '/terms',
+  '/refund',
+  '/guest-terms',
+  '/host-agreement',
 ];
 
 /**
@@ -407,6 +413,11 @@ async function prerender() {
   console.log(`[prerender] build token: ${PRERENDER_TOKEN
     ? 'configured'
     : 'MISSING — dynamic pages may self-ban; set PRERENDER_BUILD_TOKEN on the build env (must match the API server)'}`);
+  // A PRERENDER_BUDGET_MS override on the build env silently capped every prod
+  // deploy at 1.5 min (32 of 321 routes) for a week — print it up front.
+  console.log(`[prerender] time budget: ${BUDGET_MS / 60000} min (${process.env.PRERENDER_BUDGET_MS
+    ? 'PRERENDER_BUDGET_MS override on the build env'
+    : 'default'}) for ${routes.length} routes`);
 
   // Critical CSS: inline the rules each snapshot's DOM actually uses and load the
   // full stylesheet non-blocking (media="print" → onload swap, <noscript> fallback).
