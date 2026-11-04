@@ -316,5 +316,5 @@ async function handleBookingTransferWebhook(transfer) {
 module.exports = {
   createHeldTransferForBooking, releaseHeldTransfer, reverseHeldTransfer, reverseByPaymentId,
   handleBookingTransferWebhook, finalizeReleasedTransfer, computeHoldUntil, toPaise,
-  handleSettlementWebhook, applyTransferSettlement,
+  handleSettlementWebhook, applyTransferSettlement, isMissingColumn,
 };
