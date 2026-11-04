@@ -53,7 +53,7 @@ const res = () => {
 const HOST = {
   id: 'vendor-uuid', name: 'Jane', email: 'jane@v.com', role: 'host',
   username: 'jane-v', profile_image: '', cover_image: '', bio: 'Hi',
-  social_links: {}, theme_color: '#FE5100', google_calendar_connected: false,
+  social_links: {}, theme_color: '#960D32', google_calendar_connected: false,
   is_verified: true, badges: [], google_access_token: 'secret',
 };
 
@@ -186,8 +186,8 @@ describe('updateProfile', () => {
     });
 
     const r = res();
-    await updateProfile(req({}, { theme_color: '#FE5100' }), r);
-    expect(capturedUpdates?.theme_color).toBe('#FE5100');
+    await updateProfile(req({}, { theme_color: '#960D32' }), r);
+    expect(capturedUpdates?.theme_color).toBe('#960D32');
   });
 });
 

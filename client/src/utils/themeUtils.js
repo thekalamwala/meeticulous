@@ -32,17 +32,17 @@ export const getContrastColor = (hex) => {
 
 // ─── Plan-gated color palettes ───────────────────────────────────────────────
 
-// Starter (free) tier: brand orange only — no choice, keeps free profiles on-brand.
+// Starter (free) tier: brand maroon only — no choice, keeps free profiles on-brand.
 export const FREE_COLORS = [
-  { name: 'Brand Orange', hex: '#960D32' },
+  { name: 'Brand Maroon', hex: '#960D32' },
 ];
 
 // Host+ (creator) tier: 8 curated colours.
 export const CREATOR_COLORS = [
-  { name: 'Brand Orange',  hex: '#960D32' },
-  { name: 'Royal Blue',    hex: '#960D32' },
+  { name: 'Brand Maroon',  hex: '#960D32' },
+  { name: 'Royal Blue',    hex: '#2563EB' },
   { name: 'Indigo',        hex: '#4F46E5' },
-  { name: 'Purple',        hex: '#1DA1F2' },
+  { name: 'Purple',        hex: '#7C3AED' },
   { name: 'Pink',          hex: '#EC4899' },
   { name: 'Crimson',       hex: '#DC2626' },
   { name: 'Emerald',       hex: '#10B981' },
@@ -58,7 +58,7 @@ export const STUDIO_COLORS = [
   { name: 'Coral',        hex: '#FB7185' },
   { name: 'Red',          hex: '#DC2626' },
   { name: 'Orange',       hex: '#F97316' },
-  { name: 'Brand Orange', hex: '#960D32' },
+  { name: 'Brand Maroon', hex: '#960D32' },
   { name: 'Amber',        hex: '#F59E0B' },
   { name: 'Gold',         hex: '#EAB308' },
   { name: 'Yellow',       hex: '#FACC15' },
@@ -71,9 +71,9 @@ export const STUDIO_COLORS = [
   { name: 'Teal',         hex: '#14B8A6' },
   { name: 'Cyan',         hex: '#06B6D4' },
   { name: 'Sky Blue',     hex: '#0EA5E9' },
-  { name: 'Royal Blue',   hex: '#960D32' },
+  { name: 'Royal Blue',   hex: '#2563EB' },
   { name: 'Indigo',       hex: '#4F46E5' },
-  { name: 'Violet',       hex: '#1DA1F2' },
+  { name: 'Violet',       hex: '#7C3AED' },
   { name: 'Purple',       hex: '#9333EA' },
   { name: 'Fuchsia',      hex: '#C026D3' },
   { name: 'Brown',        hex: '#92400E' },
@@ -88,7 +88,7 @@ export const DEFAULT_THEME_COLOR = '#960D32';
 
 /**
  * Returns the color swatches available for the given plan.
- *   Starter        → brand orange only (1)
+ *   Starter        → brand maroon only (1)
  *   Host+          → CREATOR_COLORS (8)
  *   Studio/Supreme → STUDIO_COLORS (full palette) + custom hex input
  */
@@ -105,7 +105,7 @@ export const canUseCustomHex = (plan) => plan === 'professional' || plan === 'su
 export const getPlanBorderColor = (plan) => {
   if (plan === 'supreme')      return '#D4AF37'; // gold (top tier, shares Studio)
   if (plan === 'professional') return '#D4AF37'; // gold
-  if (plan === 'creator')      return '#960D32'; // brand orange
+  if (plan === 'creator')      return '#960D32'; // brand maroon
   return '#6B7280';                               // grey
 };
 

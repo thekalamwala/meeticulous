@@ -435,13 +435,13 @@ const updateProfile = async (req, res) => {
     // "saved but colour never changed" reports).
     if (theme_color !== undefined && theme_color !== null && theme_color !== "") {
       if (!/^#[0-9a-fA-F]{6}$/.test(theme_color)) {
-        return res.status(400).json({ message: "Invalid theme colour — expected a hex value like #FE5100." });
+        return res.status(400).json({ message: "Invalid theme colour — expected a hex value like #960D32." });
       }
-      const FREE_PALETTE = ["#F8F7F2", "#6B7280", "#FE5100"];
+      const FREE_PALETTE = ["#F8F7F2", "#6B7280", "#960D32"];
       // Host+ (creator) — 8 curated colours (keep in sync with
       // client/src/utils/themeUtils.js CREATOR_COLORS).
       const CREATOR_PALETTE = [
-        "#FE5100", "#2563EB", "#4F46E5", "#7C3AED",
+        "#960D32", "#2563EB", "#4F46E5", "#7C3AED",
         "#EC4899", "#DC2626", "#10B981", "#15803D",
       ];
       const { data: planRow } = await supabaseAdmin
