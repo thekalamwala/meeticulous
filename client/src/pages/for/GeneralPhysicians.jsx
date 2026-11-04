@@ -50,6 +50,7 @@ import ToolLogo from './toolLogos';
 import razorpayLogo from '../enterprise-v2/assets/logo/razorpay.png';
 import OperatorCredit from '../../components/common/OperatorCredit';
 import PageGuides from '../../components/common/PageGuides';
+import ForFaqIntro from '../../components/common/ForFaqIntro';
 
 const START = '/become-a-host';      // real host signup funnel
 const LOGIN = '/login-as-vendor'; // host login (Google-only door)
@@ -226,10 +227,7 @@ function FaqAccordion() {
     );
   };
   return (
-    <div className="grid items-start gap-3 sm:grid-cols-2 sm:gap-4">
-      <div className="space-y-3">{FAQ.map((f, i) => (i % 2 === 0 ? renderItem(f, i) : null))}</div>
-      <div className="space-y-3">{FAQ.map((f, i) => (i % 2 === 1 ? renderItem(f, i) : null))}</div>
-    </div>
+    <div className="space-y-3">{FAQ.map((f, i) => renderItem(f, i))}</div>
   );
 }
 
@@ -335,7 +333,7 @@ export default function GeneralPhysicians() {
           <div className="text-center lg:text-left">
             <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.02em] text-[color:var(--ca-ink)]">
               Easy online appointment booking software for{' '}
-              <span style={{ color: 'var(--ca-primary)' }}>doctors</span> who want fewer calls.
+              <span style={{ color: 'var(--ca-ink)' }}>doctors</span> who want fewer calls.
             </Reveal>
             <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
               Meeticulous is appointment booking software for doctors — patients book consultations online, pay upfront, and get reminders, so your clinic runs smoothly and reception answers fewer calls.
@@ -375,7 +373,7 @@ export default function GeneralPhysicians() {
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-2xl text-center">
             <Reveal as="h2" className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Appointment booking software for doctors, <span style={{ color: 'var(--ca-primary)' }}>built around how you work.</span>
+              Appointment booking software for doctors, <span style={{ color: 'var(--ca-ink)' }}>built around how you work.</span>
             </Reveal>
             <Reveal as="p" delay={0.06} className="mt-4 text-base text-slate-500">
               From everyday consults to check-ups, chronic care and tele-medicine — patients book any service in seconds.
@@ -404,7 +402,7 @@ export default function GeneralPhysicians() {
         <div className="mx-auto max-w-3xl">
           <div className="text-center">
             <Reveal as="h2" className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Live in minutes, <span style={{ color: 'var(--ca-primary)' }}>booked in seconds.</span>
+              Live in minutes, <span style={{ color: 'var(--ca-ink)' }}>booked in seconds.</span>
             </Reveal>
             <Reveal as="p" delay={0.06} className="mt-3 text-base text-slate-500">From setup to a confirmed, paid consultation — four simple steps.</Reveal>
           </div>
@@ -430,7 +428,7 @@ export default function GeneralPhysicians() {
         <div className="mx-auto max-w-5xl">
           <div className="mx-auto max-w-2xl text-center">
             <Reveal as="h2" className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Works with the tools your clinic <span style={{ color: 'var(--ca-primary)' }}>already uses.</span>
+              Works with the tools your clinic <span style={{ color: 'var(--ca-ink)' }}>already uses.</span>
             </Reveal>
             <Reveal as="p" delay={0.06} className="mt-3 text-base text-slate-500">
               Calendar, payments and WhatsApp — Meeticulous fits your workflow, no rewiring.
@@ -452,8 +450,8 @@ export default function GeneralPhysicians() {
             ))}
           </div>
           <Reveal delay={0.1} className="mt-10 text-center">
-            <Link to={START} className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
-              See how it fits your clinic <ArrowRight size={16} />
+            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+              Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
         </div>
@@ -464,7 +462,7 @@ export default function GeneralPhysicians() {
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-2xl text-center">
             <Reveal as="h2" className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Less admin at the desk. <span style={{ color: 'var(--ca-primary)' }}>More time for patients.</span>
+              Less admin at the desk. <span style={{ color: 'var(--ca-ink)' }}>More time for patients.</span>
             </Reveal>
           </div>
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -489,7 +487,7 @@ export default function GeneralPhysicians() {
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-2xl text-center">
             <Reveal as="h2" className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Clinics that swapped the <span style={{ color: 'var(--ca-primary)' }}>ringing phone for a link.</span>
+              Clinics that swapped the <span style={{ color: 'var(--ca-ink)' }}>ringing phone for a link.</span>
             </Reveal>
           </div>
           <div className="mt-12 grid gap-5 lg:grid-cols-[1.3fr_1fr]">
@@ -529,7 +527,7 @@ export default function GeneralPhysicians() {
         <div className="mx-auto max-w-4xl">
           <div className="mx-auto max-w-2xl text-center">
             <Reveal as="h2" className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              From busy desk to <span style={{ color: 'var(--ca-primary)' }}>calm clinic.</span>
+              From busy desk to <span style={{ color: 'var(--ca-ink)' }}>calm clinic.</span>
             </Reveal>
           </div>
           <div className="mt-12 overflow-hidden rounded-[16px] border border-black/[0.08] bg-white">
@@ -550,29 +548,12 @@ export default function GeneralPhysicians() {
         </div>
       </section>
 
-      {/* ═══════════════ 9 · TRUST (static badge bar) ═══════════════ */}
-      <section className="px-5 py-14 sm:px-8" aria-label="Security & trust">
-        <div className="mx-auto grid max-w-6xl gap-6 rounded-[18px] border border-black/[0.08] bg-white p-8 sm:grid-cols-2 lg:grid-cols-4 lg:p-10">
-          {TRUST_STRIP.map((s, i) => (
-            <Reveal key={s.value} delay={i * 0.06} className="flex items-start gap-3">
-              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg" style={{ background: 'color-mix(in srgb, var(--ca-primary) 8%, transparent)', color: 'var(--ca-primary)' }}>
-                <s.icon size={19} />
-              </span>
-              <div>
-                <div className="font-heading text-sm font-bold text-[color:var(--ca-ink)]">{s.value}</div>
-                <p className="mt-0.5 text-xs leading-snug text-slate-500">{s.label}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
       {/* ═══════════════ 10 · PRICING (vertical two-card) ═══════════════ */}
       <section id="pricing" className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-5xl">
           <div className="mx-auto max-w-2xl text-center">
             <Reveal as="h2" className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Start free. <span style={{ color: 'var(--ca-primary)' }}>Upgrade as your clinic grows.</span>
+              Start free. <span style={{ color: 'var(--ca-ink)' }}>Upgrade as your clinic grows.</span>
             </Reveal>
           </div>
           <Reveal delay={0.08} className="mt-8 flex items-center justify-center gap-3">
@@ -655,7 +636,7 @@ export default function GeneralPhysicians() {
           </Reveal>
           <div className="order-1 text-center lg:order-2 lg:text-left">
             <Reveal as="h2" delay={0.04} className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Modern clinics deserve <span style={{ color: 'var(--ca-primary)' }}>better tools.</span>
+              Modern clinics deserve <span style={{ color: 'var(--ca-ink)' }}>better tools.</span>
             </Reveal>
             <Reveal as="p" delay={0.08} className="mt-5 text-base leading-relaxed text-slate-600">
               Instead of a ringing phone, a paper register and payments at the desk, clinics manage appointments, patients and money from one platform — built for the way modern Indian practices actually work.
@@ -673,6 +654,11 @@ export default function GeneralPhysicians() {
                 </div>
               ))}
             </Reveal>
+            <Reveal delay={0.16} className="mt-8">
+              <Link to="/about" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+                Know More About Us <ArrowRight size={16} />
+              </Link>
+            </Reveal>
           </div>
         </div>
       </section>
@@ -681,11 +667,14 @@ export default function GeneralPhysicians() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-5xl">
-          <Reveal as="h2" className="text-center font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-            Questions? <span style={{ color: 'var(--ca-primary)' }}>We&apos;ve got answers.</span>
-          </Reveal>
-          <div className="mt-12"><FaqAccordion /></div>
+        <div className="mx-auto grid max-w-6xl items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+          <div className="text-center lg:sticky lg:top-28 lg:text-left lg:[&_.text-center]:text-left lg:[&_.mx-auto]:mx-0">
+            <Reveal as="h2" className="text-center font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
+              Questions? <span style={{ color: 'var(--ca-ink)' }}>We&apos;ve got answers.</span>
+            </Reveal>
+            <ForFaqIntro accent="var(--ca-accent, var(--ca-primary))" />
+          </div>
+          <div className="min-w-0"><FaqAccordion /></div>
         </div>
       </section>
 

@@ -68,9 +68,12 @@ describe('ineligibleReason — never gift a payer', () => {
     expect(r(freeHost({ plan: 'premium', subscription_status: status, razorpay_subscription_id: 'sub_1' }), null)).toBe('paying customer');
     expect(r(freeHost({ plan: 'premium', subscription_status: status, razorpay_subscription_id: 'sub_1' }), activeGift(), { extend: true })).toBe('paying customer');
   });
-  test('cancelled but still in its paid period → blocked', () => {
-    const p = freeHost({ plan: 'premium', subscription_status: 'cancelled', razorpay_subscription_id: 'sub_1', plan_expires_at: new Date(Date.now() + 10 * DAY).toISOString() });
-    expect(r(p, null)).toBe('on a paid or comped plan');
+  test('cancelled mandate (in or past its period) → has a past mandate, matching the grant guard', () => {
+    const inPeriod = freeHost({ plan: 'premium', subscription_status: 'cancelled', razorpay_subscription_id: 'sub_1', plan_expires_at: new Date(Date.now() + 10 * DAY).toISOString() });
+    const churned = freeHost({ plan: 'free', subscription_status: 'cancelled', razorpay_subscription_id: 'sub_1' });
+    expect(r(inPeriod, null)).toBe('has a past mandate');
+    expect(r(churned, null)).toBe('has a past mandate');
+    expect(r(churned, activeGift(), { extend: true })).toBe('has a past mandate');
   });
   test('supreme / legacy paid / manual comp → blocked; expired paid → eligible', () => {
     expect(r(freeHost({ plan: 'supreme' }), null)).toBe('on a paid or comped plan');
@@ -148,11 +151,24 @@ describe('grantGift', () => {
 });
 
 describe('extendGift / revokeGift', () => {
-  const world = (gift, profile) => wire((q) => {
+  const world = (gift, profile, { profileUpdate = [{ id: 'h1' }] } = {}) => wire((q) => {
     if (q.table === 'plan_gifts' && q.op === 'select') return { data: gift, error: null };
     if (q.table === 'plan_gifts' && q.op === 'update') return { data: { ...gift, ...q.payload }, error: null };
     if (q.table === 'profiles' && q.op === 'select') return { data: profile, error: null };
+    if (q.table === 'profiles' && q.op === 'update') return { data: profileUpdate, error: null };
     return { data: null, error: null };
+  });
+
+  test('extend during a checkout that lands mid-write → gift row reverted, no email, INELIGIBLE', async () => {
+    const gift = activeGift({ ends_at: new Date(Date.now() + 5 * DAY).toISOString(), extended_months: 1, ending_notified_days: [7] });
+    world(gift, freeHost({ plan: 'premium', plan_expires_at: gift.ends_at }), { profileUpdate: [] });
+    await expect(gifts.extendGift(req, 'g1', 2)).rejects.toMatchObject({ code: 'INELIGIBLE', message: expect.stringMatching(/checkout in progress/) });
+
+    const [ext, revert] = writes('plan_gifts', 'update');
+    expect(revert.payload).toMatchObject({ ends_at: gift.ends_at, extended_months: 1, ending_notified_days: [7] });
+    expect(revert.filters).toMatchObject({ 'eq:id': 'g1', 'eq:ends_at': ext.payload.ends_at });
+    expect(NotificationEngine.send).not.toHaveBeenCalled();
+    expect(audit).not.toHaveBeenCalled();
   });
 
   test('extend adds months from the current end and re-arms the ending notices', async () => {

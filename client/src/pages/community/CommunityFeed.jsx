@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CircleHelp, Image, MessagesSquare, SquarePen } from 'lucide-react';
 import Seo from '../../components/common/Seo';
 import ErrorPage from '../ErrorPage';
@@ -12,7 +12,6 @@ import { communityBreadcrumbJsonLd, headlineOf } from '../../utils/communitySeo'
 import ItemCard from '../../components/community/ItemCard';
 import { Avatar } from '../../components/community/AuthorChip';
 import useRequireLogin from '../../components/community/useRequireLogin';
-import Composer from '../../components/community/Composer';
 import CommunityLayout, { EmptyState, ListStatus, SITE_DESC, useCursorList } from './CommunityLayout';
 
 const TABS = [
@@ -23,6 +22,7 @@ const TABS = [
 
 export default function CommunityFeed() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const requireLogin = useRequireLogin();
   const [params, setParams] = useSearchParams();
   const tab = params.get('tab') === 'updates' ? 'updates' : 'everyone';
@@ -37,8 +37,9 @@ export default function CommunityFeed() {
     }
   }, [list.status, tab]);
 
-  const [composeKind, setComposeKind] = useState(null);
-  const compose = (kind = 'post') => { if (requireLogin()) setComposeKind(kind); };
+  const compose = (kind = 'post') => {
+    if (requireLogin()) navigate(`/community/new${kind && kind !== 'post' ? `?kind=${kind}` : ''}`);
+  };
 
   if (list.status === 404) return <ErrorPage code={404} />;
 
@@ -109,7 +110,6 @@ export default function CommunityFeed() {
         />
       )}
       <div ref={sentinel} aria-hidden="true" />
-      <Composer open={!!composeKind} defaultKind={composeKind} onClose={() => setComposeKind(null)} />
     </CommunityLayout>
   );
 }

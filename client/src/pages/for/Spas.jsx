@@ -7,7 +7,7 @@
 //
 // DESIGN: a serene SAGE + STONE "quiet luxury" system with lots of breathing room
 // — deliberately distinct from every sibling /for/ page. Mechanics unique here:
-// centered overlapping-ImgSlot hero cluster with outline pills · a spa TREATMENT
+// split hero (copy left, ImgSlot right — aligned with the other /for/ pages) · a spa TREATMENT
 // MENU (leader-dot price-list rows grouped by quiet section labels — not cards,
 // not bento) · a light-weight numeral impact band with hairline separators · four
 // soft numbered steps on a thin connecting line · a logo row in one soft panel ·
@@ -50,6 +50,7 @@ import ToolLogo from './toolLogos';
 import razorpayLogo from '../enterprise-v2/assets/logo/razorpay.png';
 import OperatorCredit from '../../components/common/OperatorCredit';
 import PageGuides from '../../components/common/PageGuides';
+import ForFaqIntro from '../../components/common/ForFaqIntro';
 
 const START = '/become-a-host';      // real host signup funnel
 const LOGIN = '/login-as-vendor'; // host login (Google-only door)
@@ -243,10 +244,7 @@ function FaqAccordion() {
     );
   };
   return (
-    <div className="grid items-start gap-3 sm:grid-cols-2 sm:gap-4">
-      <div className="space-y-3">{FAQ.map((f, i) => (i % 2 === 0 ? renderItem(f, i) : null))}</div>
-      <div className="space-y-3">{FAQ.map((f, i) => (i % 2 === 1 ? renderItem(f, i) : null))}</div>
-    </div>
+    <div className="space-y-3">{FAQ.map((f, i) => renderItem(f, i))}</div>
   );
 }
 
@@ -345,27 +343,28 @@ export default function Spas() {
         </AnimatePresence>
       </header>
 
-      {/* ═══════════════ 2 · HERO (centered composition + overlapping ImgSlot cluster) ═══════════════ */}
-      <section id="top" className="relative overflow-hidden px-5 pb-20 pt-14 text-center sm:px-8 lg:pb-28 lg:pt-20" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 62%)' }}>
+      {/* ═══════════════ 2 · HERO (split: copy left, spa ImgSlot right — matches the other /for/* pages) ═══════════════ */}
+      <section id="top" className="relative overflow-hidden px-5 pb-20 pt-14 text-center sm:px-8 lg:pb-28 lg:pt-20 lg:text-left" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 62%)' }}>
         {/* soft blurred blobs — mix-blend-multiply so they sit INTO the page */}
         <div aria-hidden className="pointer-events-none absolute left-1/2 top-[-6rem] h-[26rem] w-[40rem] -translate-x-1/2 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(63,107,94,0.14), transparent)' }} />
         <div aria-hidden className="pointer-events-none absolute right-[-4rem] top-24 h-72 w-72 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(176,137,104,0.16), transparent)' }} />
 
-        <div className="relative z-10 mx-auto max-w-3xl">
-          <Reveal as="h1" instant className="mx-auto max-w-2xl font-heading text-[clamp(1.5rem,5vw,3.15rem)] font-extrabold leading-[1.06] tracking-[-0.02em] text-[color:var(--ca-ink)]">
+        <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+        <div>
+          <Reveal as="h1" instant className="mx-auto max-w-2xl font-heading lg:mx-0 text-[clamp(1.5rem,5vw,3.15rem)] font-extrabold leading-[1.06] tracking-[-0.02em] text-[color:var(--ca-ink)]">
             Seamless appointment booking software for{' '}
             <span style={{ color: 'var(--ca-primary)' }}>spas and wellness centres.</span>
           </Reveal>
-          <Reveal as="p" instant delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
+          <Reveal as="p" instant delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
             Meeticulous is appointment booking software for spas — guests book massages, facials and treatments, pay an advance, and get gentle reminders, from one serene booking page.
           </Reveal>
-          <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-5">
+          <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-5 lg:justify-start">
             <CtaButton to={START} className="w-full sm:w-auto">Create Your Booking Page <ArrowRight size={16} /></CtaButton>
             <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
               Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
             </Link>
           </Reveal>
-          <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+          <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 lg:justify-start">
             {HERO_TRUST.map((t) => (
               <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
                 <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
@@ -374,10 +373,11 @@ export default function Spas() {
           </Reveal>
         </div>
 
-        {/* centered cluster of overlapping rounded ImgSlots + thin outline pills */}
-        <Reveal instant delay={0.2} className="pointer-events-none absolute bottom-0 right-0 z-0 hidden w-72 opacity-90 lg:block xl:right-8 xl:w-80">
-          <ImgSlot alt="A serene spa treatment room with soft lighting" className="aspect-[3/4] w-full" />
+        {/* right column: the spa treatment-room image (desktop only, like the other /for/* heroes) */}
+        <Reveal instant delay={0.2} className="hidden lg:block">
+          <ImgSlot alt="A serene spa treatment room with soft lighting" className="mx-auto aspect-[4/5] w-full max-w-md" />
         </Reveal>
+        </div>
       </section>
 
       {/* ═══════════════ 3 · SERVICES (spa treatment menu — leader-dot rows) ═══════════════ */}
@@ -663,6 +663,11 @@ export default function Spas() {
                 </div>
               ))}
             </Reveal>
+            <Reveal delay={0.16} className="mt-8">
+              <Link to="/about" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+                Know More About Us <ArrowRight size={16} />
+              </Link>
+            </Reveal>
           </div>
           <Reveal delay={0.06} className="relative order-1 mx-auto w-full max-w-md lg:order-2 lg:mx-0">
             <div aria-hidden className="pointer-events-none absolute -inset-4 rounded-[32px] blur-2xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(176,137,104,0.16), transparent)' }} />
@@ -675,11 +680,14 @@ export default function Spas() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-5xl">
-          <Reveal as="h2" className="text-center font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-            Questions? <span style={{ color: 'var(--ca-primary)' }}>We&apos;ve got answers.</span>
-          </Reveal>
-          <div className="mt-12"><FaqAccordion /></div>
+        <div className="mx-auto grid max-w-6xl items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+          <div className="text-center lg:sticky lg:top-28 lg:text-left lg:[&_.text-center]:text-left lg:[&_.mx-auto]:mx-0">
+            <Reveal as="h2" className="text-center font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
+              Questions? <span style={{ color: 'var(--ca-primary)' }}>We&apos;ve got answers.</span>
+            </Reveal>
+            <ForFaqIntro accent="var(--ca-accent, var(--ca-primary))" />
+          </div>
+          <div className="min-w-0"><FaqAccordion /></div>
         </div>
       </section>
 

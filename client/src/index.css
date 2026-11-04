@@ -101,6 +101,12 @@ h6 {
   line-height: 1.15;
 }
 
+/* /for/* marketing pages (wrapped in .for-page in App.jsx) carry their own
+   palettes: a heading takes the page's text colour unless it sets one itself
+   (text-white on a dark band, an inline accent, …). (0,0,2) — beats the base
+   h1–h6 rules, loses to any text-* utility. */
+html :where(.for-page) :is(h1, h2, h3, h4, h5, h6) { color: inherit; }
+
 /* Card titles and smaller headings (H3) → Poppins, like the body. */
 h3 {
   font-family: var(--font-primary);
@@ -117,8 +123,18 @@ h2.font-heading,
 h1.font-sans,
 h2.font-sans {
   font-family: var(--font-display);
-  /* design-system/BRAND_RULES.md: display + headings are maroon. A text-* utility
-     on the heading (e.g. text-white on a maroon band) still wins. */
+}
+
+/* design-system/BRAND_RULES.md: display + headings are maroon. Same selectors
+   (and specificity) as above, so `h1.font-heading` out-specifies a text-*
+   utility on it — except on /for pages (.for-page), which use their own
+   palettes. The :where() keeps that exclusion at zero specificity. */
+h1:where(:not(.for-page *)),
+h2:where(:not(.for-page *)),
+h1.font-heading:where(:not(.for-page *)),
+h2.font-heading:where(:not(.for-page *)),
+h1.font-sans:where(:not(.for-page *)),
+h2.font-sans:where(:not(.for-page *)) {
   color: var(--mt-maroon);
 }
 
@@ -289,6 +305,16 @@ a {
 }
 @media (prefers-reduced-motion: reduce) {
   .blog-hero-thread { animation: none; }
+}
+
+/* Navbar community lockup: each new suffix word fades/slides in (re-keyed per word). */
+.mt-wordrot { animation: mt-wordrot-in 0.4s ease both; }
+@keyframes mt-wordrot-in {
+  from { opacity: 0; transform: translateY(0.28em); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mt-wordrot { animation: none; }
 }
 
 button,
@@ -521,7 +547,8 @@ button[role='switch'] {
 /* Homepage content width: section containers (max-w-6xl / 7xl) span 80% of the
    window on lg+ instead of the fixed 1152/1280px caps. Narrow text columns
    (max-w-5xl and below) keep their readable widths; phones/tablets keep the
-   normal px-5/sm:px-8 gutters. Scoped to <main class="home-wide"> in Home.jsx. */
+   normal px-5/sm:px-8 gutters. Scoped to <main class="home-wide"> in Home.jsx
+   (also /for/* v2 pages with design.wideLayout). */
 @media (min-width: 1024px) {
   .home-wide .max-w-6xl,
   .home-wide .max-w-7xl {

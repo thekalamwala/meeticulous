@@ -47,6 +47,7 @@ import ToolLogo from './toolLogos';
 import razorpayLogo from '../enterprise-v2/assets/logo/razorpay.png';
 import OperatorCredit from '../../components/common/OperatorCredit';
 import PageGuides from '../../components/common/PageGuides';
+import ForFaqIntro from '../../components/common/ForFaqIntro';
 
 const START = '/become-a-host';
 const LOGIN = '/login-as-vendor';
@@ -210,10 +211,7 @@ function FaqAccordion() {
     );
   };
   return (
-    <div className="grid items-start gap-3 sm:grid-cols-2 sm:gap-4">
-      <div className="space-y-3">{FAQ.map((f, i) => (i % 2 === 0 ? renderItem(f, i) : null))}</div>
-      <div className="space-y-3">{FAQ.map((f, i) => (i % 2 === 1 ? renderItem(f, i) : null))}</div>
-    </div>
+    <div className="space-y-3">{FAQ.map((f, i) => renderItem(f, i))}</div>
   );
 }
 
@@ -322,7 +320,7 @@ export default function Pediatricians() {
           <div className="text-center lg:text-left">
             <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.02em] text-[color:var(--ca-ink)]">
               Easy online appointment booking software for{' '}
-              <span style={{ color: 'var(--ca-primary)' }}>pediatricians and child-care clinics.</span>
+              <span style={{ color: 'var(--ca-ink)' }}>pediatricians and child-care clinics.</span>
             </Reveal>
             <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
               Meeticulous is appointment booking software for pediatricians — parents book consultations and vaccinations, pay upfront, and get gentle reminders, so your waiting room stays calm.
@@ -367,7 +365,7 @@ export default function Pediatricians() {
           <div className="mx-auto max-w-2xl text-center">
             <Reveal as="h2" className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
               Appointment booking software for pediatricians,{' '}
-              <span style={{ color: 'var(--ca-primary)' }}>built around how you work.</span>
+              <span style={{ color: 'var(--ca-ink)' }}>built around how you work.</span>
             </Reveal>
             <Reveal as="p" delay={0.06} className="mt-4 text-base text-slate-500">
               From consultations to vaccinations, well-baby care and sick visits — parents book any service in seconds.
@@ -394,7 +392,7 @@ export default function Pediatricians() {
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-2xl text-center">
             <Reveal as="h2" className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Set up once, <span style={{ color: 'var(--ca-primary)' }}>booked forever.</span>
+              Set up once, <span style={{ color: 'var(--ca-ink)' }}>booked forever.</span>
             </Reveal>
           </div>
           <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -417,14 +415,14 @@ export default function Pediatricians() {
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div className="text-center lg:text-left">
             <Reveal as="h2" className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Works with the tools your clinic <span style={{ color: 'var(--ca-primary)' }}>already uses.</span>
+              Works with the tools your clinic <span style={{ color: 'var(--ca-ink)' }}>already uses.</span>
             </Reveal>
             <Reveal as="p" delay={0.06} className="mt-4 text-base text-slate-500">
               Calendar, payments and WhatsApp — Meeticulous fits your clinic, no rewiring, no new software for parents.
             </Reveal>
             <Reveal delay={0.1} className="mt-6">
-              <Link to={START} className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
-                See how it fits your clinic <ArrowRight size={16} />
+              <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+                Explore All Features <ArrowRight size={16} />
               </Link>
             </Reveal>
           </div>
@@ -462,7 +460,7 @@ export default function Pediatricians() {
         <div className="mx-auto max-w-3xl">
           <div className="text-center">
             <Reveal as="h2" className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Loved by clinics <span style={{ color: 'var(--ca-primary)' }}>and parents alike.</span>
+              Loved by clinics <span style={{ color: 'var(--ca-ink)' }}>and parents alike.</span>
             </Reveal>
           </div>
           <div className="mt-12 flex flex-col gap-6">
@@ -489,7 +487,7 @@ export default function Pediatricians() {
         <div className="mx-auto max-w-5xl">
           <div className="mx-auto max-w-2xl text-center">
             <Reveal as="h2" className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              From a busy front desk to <span style={{ color: 'var(--ca-primary)' }}>a calm one.</span>
+              From a busy front desk to <span style={{ color: 'var(--ca-ink)' }}>a calm one.</span>
             </Reveal>
           </div>
           <div className="mt-12 space-y-6">
@@ -517,25 +515,12 @@ export default function Pediatricians() {
         </div>
       </section>
 
-      {/* ═══════════════ 9 · TRUST (compact row) ═══════════════ */}
-      <section className="px-5 py-12 sm:px-8" aria-label="Security & trust">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-10 gap-y-4">
-          {TRUST_STRIP.map((s) => (
-            <span key={s.value} className="flex items-center gap-2.5">
-              <s.icon size={18} style={{ color: 'var(--ca-primary)' }} />
-              <span className="text-sm font-bold text-[color:var(--ca-ink)]">{s.value}</span>
-              <span className="hidden text-xs text-slate-500 sm:inline">· {s.label}</span>
-            </span>
-          ))}
-        </div>
-      </section>
-
       {/* ═══════════════ 10 · PRICING (ribbon two-card) ═══════════════ */}
       <section id="pricing" className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-5xl">
           <div className="mx-auto max-w-2xl text-center">
             <Reveal as="h2" className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Start free. <span style={{ color: 'var(--ca-primary)' }}>Upgrade as your clinic grows.</span>
+              Start free. <span style={{ color: 'var(--ca-ink)' }}>Upgrade as your clinic grows.</span>
             </Reveal>
           </div>
           <Reveal delay={0.08} className="mt-8 flex items-center justify-center gap-3">
@@ -606,7 +591,7 @@ export default function Pediatricians() {
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-5xl rounded-[28px] px-6 py-12 text-center sm:px-12 sm:py-16" style={{ background: 'var(--ca-cream)' }}>
           <Reveal as="h2" delay={0.04} className="mx-auto max-w-2xl font-heading text-2xl font-extrabold leading-snug tracking-tight sm:text-3xl">
-            Children&apos;s clinics deserve tools as caring as their care. Meeticulous turns a ringing phone and a paper register into <span style={{ color: 'var(--ca-primary)' }}>one friendly booking platform</span> — calm for your desk, easy for parents.
+            Children&apos;s clinics deserve tools as caring as their care. Meeticulous turns a ringing phone and a paper register into <span style={{ color: 'var(--ca-ink)' }}>one friendly booking platform</span> — calm for your desk, easy for parents.
           </Reveal>
           <Reveal delay={0.1} className="mt-8 flex flex-wrap items-center justify-center gap-3">
             {TRUST_STRIP.map((it) => (
@@ -615,6 +600,11 @@ export default function Pediatricians() {
               </span>
             ))}
           </Reveal>
+          <Reveal delay={0.16} className="mt-8">
+            <Link to="/about" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+              Know More About Us <ArrowRight size={16} />
+            </Link>
+          </Reveal>
         </div>
       </section>
 
@@ -622,11 +612,14 @@ export default function Pediatricians() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-grey)' }}>
-        <div className="mx-auto max-w-5xl">
-          <Reveal as="h2" className="text-center font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-            Questions? <span style={{ color: 'var(--ca-primary)' }}>We&apos;ve got answers.</span>
-          </Reveal>
-          <div className="mt-12"><FaqAccordion /></div>
+        <div className="mx-auto grid max-w-6xl items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+          <div className="text-center lg:sticky lg:top-28 lg:text-left lg:[&_.text-center]:text-left lg:[&_.mx-auto]:mx-0">
+            <Reveal as="h2" className="text-center font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
+              Questions? <span style={{ color: 'var(--ca-ink)' }}>We&apos;ve got answers.</span>
+            </Reveal>
+            <ForFaqIntro accent="var(--ca-accent, var(--ca-primary))" />
+          </div>
+          <div className="min-w-0"><FaqAccordion /></div>
         </div>
       </section>
 

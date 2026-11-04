@@ -108,15 +108,15 @@ describe('Composer', () => {
 
   it('hides Host Corner from a guest but shows it to a host', async () => {
     setup({ defaultKind: 'thread' });
-    await screen.findByRole('option', { name: 'Help & Questions' });
-    expect(screen.queryByRole('option', { name: 'Host Corner' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('option', { name: 'Updates' })).not.toBeInTheDocument();
+    await screen.findByRole('button', { name: 'Help & Questions' });
+    expect(screen.queryByRole('button', { name: 'Host Corner' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Updates' })).not.toBeInTheDocument();
   });
 
   it('shows Host Corner to a host', async () => {
     auth.user = { id: 'h1', is_host: true };
     setup({ defaultKind: 'thread' });
-    expect(await screen.findByRole('option', { name: 'Host Corner' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Host Corner' })).toBeInTheDocument();
   });
 
   it('shows the support nudge only for a mention plus a complaint word', async () => {
@@ -142,15 +142,15 @@ describe('Composer', () => {
   it('Updates space and Announcement are for official accounts only, not staff', async () => {
     getMe.mockResolvedValue({ member: { badge: 'staff' } });
     const { unmount } = setup({ defaultKind: 'thread' });
-    await screen.findByRole('option', { name: 'Help & Questions' });
+    await screen.findByRole('button', { name: 'Help & Questions' });
     await waitFor(() => expect(getMe).toHaveBeenCalled());
-    expect(screen.queryByRole('option', { name: 'Updates' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Updates' })).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: /Format:/ }));
     expect(screen.queryByRole('menuitemradio', { name: /Announcement/ })).not.toBeInTheDocument();
     unmount();
     getMe.mockResolvedValue({ member: { badge: 'official' } });
     setup({ defaultKind: 'thread' });
-    expect(await screen.findByRole('option', { name: 'Updates' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Updates' })).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: /Format:/ }));
     expect(screen.getByRole('menuitemradio', { name: /Announcement/ })).toBeInTheDocument();
   });

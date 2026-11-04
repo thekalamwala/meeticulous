@@ -16,6 +16,8 @@
  *   ink / accent / accentInk / accentCta / wash / surfaceDark / canvas — palette
  *   heroVariant — 'split' (copy + product mock) | 'stage' (centered + mock below)
  *   texture     — 'grid' | 'dots' | 'lines' | 'none' (hero background motif)
+ *   wideLayout  — true → sections use the homepage width (home-wide: 80vw on lg+)
+ *   skin        — 'studio' → photoStudioSkin.jsx · 'coworking' → coworkingSkin.jsx · 'conference' → conferenceSkin.jsx · 'driving' → drivingSkin.jsx · 'freelance' → freelanceSkin.jsx · 'language' → languageSkin.jsx · 'educator' → educatorSkin.jsx · 'creator' → creatorSkin.jsx
  */
 
 export const V2_LANDING = {
@@ -24,27 +26,33 @@ export const V2_LANDING = {
     label: 'Driving Schools',
     madeFor: "India's Driving Schools",
 
-    // ── Design — warm amber, line texture, mirror hero ───────────────────────
+    // ── Design — amber + asphalt, road-and-signs skin (drivingSkin.jsx) ───────
     design: {
-      ink: '#2A1A0F',
-      accent: '#D97706',
-      accentInk: '#B45309',
-      accentCta: '#B45309',
-      wash: '#FEF3E2',
-      surfaceDark: '#2B1A08',
-      canvas: '#FFFCF7',
-      heroVariant: 'mirror',
-      texture: 'lines',
+      // Road palette: asphalt for text + dark surfaces, ONE signal yellow for signs,
+      // lines and highlights (fills only), dark amber for accent text, pale yellow
+      // bands. Red/green appear only on the traffic lights. All text pairs ≥ 4.5:1.
+      ink: '#1C1C1A',
+      accent: '#A86F00',
+      accentInk: '#8A5A00',
+      accentCta: '#1C1C1A',
+      wash: '#FFF6D6',
+      surfaceDark: '#1C1C1A',
+      canvas: '#FFFDF6',
+      heroVariant: 'split',
+      texture: 'none',
+      wideLayout: true,
+      skin: 'driving',
+      footerAccent: '#F5B700',
     },
 
     // ── SEO (commercial intent for Google) ───────────────────────────────────
     seo: {
       title: 'Driving School Booking Software in India | Meeticulous',
       description:
-        'Let learners book car and two-wheeler lessons online. Meeticulous is driving school booking software for India — lesson slots paid upfront via UPI, GST invoices, Google Calendar sync and automatic WhatsApp reminders. From ₹10/day.',
+        'Let learners book car and two-wheeler lessons online. Meeticulous is driving school booking software for India — lesson slots paid upfront via UPI, GST invoices, Google Calendar sync and automatic WhatsApp reminders. From ₹4/day.',
       keywords:
         'driving school booking software, driving school management software india, online driving lesson booking, driving school app, book driving lessons online, driving instructor scheduling software, motor training school software',
-      ogTitle: 'Still booking driving lessons over phone calls? Fix it for ₹10/day.',
+      ogTitle: 'Still booking driving lessons over phone calls? Fix it for ₹4/day.',
       ogDescription:
         'Learners pick a lesson slot, pay online, and get reminded — automatically. The booking page every driving school in India should already have.',
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-driving-schools-og-1200x630.jpg',
@@ -52,7 +60,6 @@ export const V2_LANDING = {
 
     // ── Hero ──────────────────────────────────────────────────────────────────
     hero: {
-      eyebrow: 'For Driving Schools & Motor Training Centres',
       headline: 'Driving school booking software',
       headlineAccent: 'that keeps every car on the road.',
       headlineTail: '',
@@ -77,7 +84,7 @@ export const V2_LANDING = {
       { to: 24, suffix: '/7', label: 'Lesson slots bookable, even after the office shuts' },
       { to: 0, suffix: '%', label: 'Commission on Pro — every lesson fee is yours' },
       { to: 5, prefix: '< ', suffix: ' min', label: 'To put your school online' },
-      { to: 10, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
+      { to: 4, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
     ],
 
     // ── Why it works — numbered principles ────────────────────────────────────
@@ -166,7 +173,7 @@ export const V2_LANDING = {
       { q: 'Can I list different lesson types with different prices?', a: 'Yes. Add each lesson — car, two-wheeler, refresher, highway practice — as its own service with its own duration and price. Learners pick the one they want and a free slot.' },
       { q: 'Will it stop learners from skipping a booked lesson?', a: 'No tool can stop every no-show, but paying upfront and getting automatic WhatsApp and email reminders makes a missed lesson far less likely. The fee is already collected, so there is nothing to chase.' },
       { q: 'Do learners need an app or account to book?', a: 'No. Learners open your link, pick a lesson and a slot, and pay. It works straight from your website, Google profile, Instagram or WhatsApp.' },
-      { q: 'How much does it cost?', a: 'You can start free with a small per-booking fee. The top paid plan is about ₹10 a day and removes all commission, so you keep 100% of every lesson fee.' },
+      { q: 'How much does it cost?', a: 'You can start free with a small per-booking fee. The top paid plan is about ₹4 a day and removes all commission, so you keep 100% of every lesson fee.' },
     ],
 
     // ── Final CTA ─────────────────────────────────────────────────────────────
@@ -182,7 +189,7 @@ export const V2_LANDING = {
     label: 'Conference Halls',
     madeFor: "India's Conference Halls & Venues",
 
-    // ── Design — corporate blue, dot texture, stage hero ─────────────────────
+    // ── Design — corporate navy/blue, seating-chart skin (conferenceSkin.jsx) ──
     design: {
       ink: '#121C2E',
       accent: '#2563EB',
@@ -191,18 +198,20 @@ export const V2_LANDING = {
       wash: '#EAF1FE',
       surfaceDark: '#0F1B33',
       canvas: '#FBFCFF',
-      heroVariant: 'stage',
-      texture: 'dots',
+      heroVariant: 'split',
+      texture: 'none',
+      wideLayout: true,
+      skin: 'conference',
     },
 
     // ── SEO (commercial intent for Google) ───────────────────────────────────
     seo: {
       title: 'Conference Hall Booking Software in India | Meeticulous',
       description:
-        'Let organisers check live availability and book your hall online. Meeticulous is conference hall booking software for India — hourly, half-day and full-day slots paid upfront via UPI, GST invoices and Google Calendar sync. From ₹10/day.',
+        'Let organisers check live availability and book your hall online. Meeticulous is conference hall booking software for India — hourly, half-day and full-day slots paid upfront via UPI, GST invoices and Google Calendar sync. From ₹4/day.',
       keywords:
         'conference hall booking software, seminar hall booking system india, venue booking software, meeting hall booking online, banquet hall booking software, boardroom booking system, book a conference hall online',
-      ogTitle: 'Still answering "is the hall free?" all day? Fix it for ₹10/day.',
+      ogTitle: 'Still answering "is the hall free?" all day? Fix it for ₹4/day.',
       ogDescription:
         'Organisers see live availability, book your hall, pay online, and the date locks — automatically. The booking page every conference venue in India should already have.',
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-conference-halls-og-1200x630.jpg',
@@ -210,7 +219,6 @@ export const V2_LANDING = {
 
     // ── Hero ──────────────────────────────────────────────────────────────────
     hero: {
-      eyebrow: 'For Conference Halls, Seminar Rooms & Venues',
       headline: 'Conference hall booking software',
       headlineAccent: 'that turns enquiries into confirmed dates.',
       headlineTail: '',
@@ -235,7 +243,7 @@ export const V2_LANDING = {
       { to: 24, suffix: '/7', label: 'Dates held, even when the sales desk is closed' },
       { to: 0, suffix: '%', label: 'Commission on Pro — every booking is yours' },
       { to: 5, prefix: '< ', suffix: ' min', label: 'To put your venue online' },
-      { to: 10, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
+      { to: 4, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
     ],
 
     // ── Why it works — numbered principles ────────────────────────────────────
@@ -324,7 +332,7 @@ export const V2_LANDING = {
       { q: 'Can I price halls by the hour, half day or full day?', a: 'Yes. Add each hall as a service with the duration and price that suits it — an hourly boardroom, a half-day seminar hall, a full-day conference hall. Organisers book the exact slot and pay upfront.' },
       { q: 'Can I manage several halls on one booking page?', a: 'Yes. Add every hall or room as its own service with its own price. Each one locks separately when booked, and Google Calendar sync keeps your busy times blocked.' },
       { q: 'Do organisers need an app or account to book?', a: 'No. Organisers open your link, pick a hall and a slot, and pay. It works straight from your website, venue listing, Google profile or WhatsApp.' },
-      { q: 'How much does it cost?', a: 'You can start free with a small per-booking fee. The top paid plan is about ₹10 a day and removes all commission, so you keep 100% of every booking.' },
+      { q: 'How much does it cost?', a: 'You can start free with a small per-booking fee. The top paid plan is about ₹4 a day and removes all commission, so you keep 100% of every booking.' },
     ],
 
     // ── Final CTA ─────────────────────────────────────────────────────────────
@@ -340,27 +348,29 @@ export const V2_LANDING = {
     label: 'Photo Studios',
     madeFor: "India's Photo Studios & Photographers",
 
-    // ── Design — creative magenta, dot texture, mirror hero ──────────────────
+    // ── Design — creative magenta, dot texture, split hero ──────────────────
     design: {
-      ink: '#241026',
+      ink: '#111111',
       accent: '#C026D3',
       accentInk: '#9A1FA8',
       accentCta: '#9A1FA8',
       wash: '#FBEAFB',
       surfaceDark: '#1E0B22',
       canvas: '#FFFBFF',
-      heroVariant: 'mirror',
+      heroVariant: 'split',
       texture: 'dots',
+      wideLayout: true,
+      skin: 'studio',
     },
 
     // ── SEO (commercial intent for Google) ───────────────────────────────────
     seo: {
       title: 'Photo Studio Booking Software in India | Meeticulous',
       description:
-        'Let clients book portrait sessions, product shoots and studio hire online. Meeticulous is photo studio booking software for India — slots paid upfront via UPI, GST invoices, Google Calendar sync and automatic WhatsApp reminders. From ₹10/day.',
+        'Let clients book portrait sessions, product shoots and studio hire online. Meeticulous is photo studio booking software for India — slots paid upfront via UPI, GST invoices, Google Calendar sync and automatic WhatsApp reminders. From ₹4/day.',
       keywords:
         'photo studio booking software, photography studio booking system india, studio rental booking, photographer booking app, book a photoshoot online, photo studio scheduling software, studio hire booking',
-      ogTitle: 'Still booking shoots over Instagram DMs? Fix it for ₹10/day.',
+      ogTitle: 'Still booking shoots over Instagram DMs? Fix it for ₹4/day.',
       ogDescription:
         'Clients pick a slot, pay online, and the date locks — automatically. The booking link every photo studio in India should already have in its bio.',
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-photo-studios-og-1200x630.jpg',
@@ -368,7 +378,6 @@ export const V2_LANDING = {
 
     // ── Hero ──────────────────────────────────────────────────────────────────
     hero: {
-      eyebrow: 'For Photo Studios & Photographers',
       headline: 'Photo studio booking software',
       headlineAccent: 'that keeps your calendar shooting.',
       headlineTail: '',
@@ -393,12 +402,11 @@ export const V2_LANDING = {
       { to: 24, suffix: '/7', label: 'Shoots booked, even while you are mid-session' },
       { to: 0, suffix: '%', label: 'Commission on Pro — every booking is yours' },
       { to: 5, prefix: '< ', suffix: ' min', label: 'To put your studio online' },
-      { to: 10, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
+      { to: 4, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
     ],
 
     // ── Why it works — numbered principles ────────────────────────────────────
     why: {
-      eyebrow: 'Why it works',
       title: 'Clients decide on the spot,',
       titleAccent: 'so let them book on the spot.',
       lead: 'Someone loves your portfolio at 11pm and wants a date. Meeticulous turns that moment into a paid booking instead of a DM you answer tomorrow.',
@@ -411,7 +419,6 @@ export const V2_LANDING = {
 
     // ── The booking flow — numbered steps ─────────────────────────────────────
     flow: {
-      eyebrow: 'How it works',
       title: 'A booking in three steps.',
       steps: [
         { title: 'Share your link', desc: 'Put one link in your Instagram bio, website, Google profile and WhatsApp. Clients need no app.' },
@@ -422,7 +429,6 @@ export const V2_LANDING = {
 
     // ── What you get — honest feature grid ────────────────────────────────────
     whatYouGet: {
-      eyebrow: 'What you get',
       title: 'Everything the studio needs.',
       lead: 'One page sells sessions, shoots and studio hire — not just a calendar.',
       items: [
@@ -440,7 +446,6 @@ export const V2_LANDING = {
 
     // ── Before / After — the core pitch, as a comparison ──────────────────────
     beforeAfter: {
-      eyebrow: 'Before / after',
       title: 'From DM chaos to one clean link.',
       lead: 'Same studio, two ways to run it. One of them keeps you shooting.',
       before: [
@@ -459,7 +464,6 @@ export const V2_LANDING = {
 
     // ── Why Meeticulous — numbered conviction ─────────────────────────────────
     whyUs: {
-      eyebrow: 'Why Meeticulous',
       title: 'Built for how Indian studios work.',
       items: [
         { title: '0% commission on Pro', desc: 'Keep every rupee of every shoot. No cut on your revenue.' },
@@ -482,7 +486,7 @@ export const V2_LANDING = {
       { q: 'Can I rent my studio by the hour and sell shoots too?', a: 'Yes. Add studio hire as an hourly service and each shoot type — portraits, products, family sessions — as its own service with its own duration and price. Everything shares one live calendar.' },
       { q: 'Can I take bookings from my Instagram bio?', a: 'Yes. Meeticulous gives you one booking link you can put in your Instagram bio, website, Google profile or WhatsApp. Clients tap it, choose a slot and pay — no app or sign-up call needed.' },
       { q: 'Will it block my calendar when I am already booked?', a: 'Yes. With Google Calendar sync your busy times are blocked automatically and every new booking is added, so a client can never book a slot you are already on.' },
-      { q: 'How much does it cost?', a: 'You can start free with a small per-booking fee. The top paid plan is about ₹10 a day and removes all commission, so you keep 100% of every shoot fee.' },
+      { q: 'How much does it cost?', a: 'You can start free with a small per-booking fee. The top paid plan is about ₹4 a day and removes all commission, so you keep 100% of every shoot fee.' },
     ],
 
     // ── Final CTA ─────────────────────────────────────────────────────────────
@@ -498,7 +502,7 @@ export const V2_LANDING = {
     label: 'Coaches & Mentors',
     madeFor: "India's Coaches & Mentors",
 
-    // ── Design — calm green, grid texture, stage hero ────────────────────────
+    // ── Design — calm green + sunrise, grid texture, coach skin (coachSkin.jsx) ─
     design: {
       ink: '#0F241C',
       accent: '#10B981',
@@ -507,18 +511,20 @@ export const V2_LANDING = {
       wash: '#E7F7F0',
       surfaceDark: '#072019',
       canvas: '#FAFEFC',
-      heroVariant: 'stage',
+      heroVariant: 'split',
       texture: 'grid',
+      wideLayout: true,
+      skin: 'coach',
     },
 
     // ── SEO (commercial intent for Google) ───────────────────────────────────
     seo: {
       title: 'Booking Software for Coaches in India | Meeticulous',
       description:
-        'Let clients book coaching sessions online. Meeticulous is booking software for coaches and mentors in India — session slots paid upfront via UPI, GST invoices, Google Calendar sync and automatic WhatsApp reminders. From ₹10/day.',
+        'Let clients book coaching sessions online. Meeticulous is booking software for coaches and mentors in India — session slots paid upfront via UPI, GST invoices, Google Calendar sync and automatic WhatsApp reminders. From ₹4/day.',
       keywords:
         'booking software for coaches, coaching appointment booking software, coach scheduling software india, online session booking for coaches, mentor booking app, life coach booking system, career coach scheduling tool',
-      ogTitle: 'Still scheduling coaching sessions over WhatsApp? Fix it for ₹10/day.',
+      ogTitle: 'Still scheduling coaching sessions over WhatsApp? Fix it for ₹4/day.',
       ogDescription:
         'Clients pick a time, pay before the session, and get reminded — automatically. The booking page every coach in India should already have.',
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-coaches-og-1200x630.jpg',
@@ -551,7 +557,7 @@ export const V2_LANDING = {
       { to: 24, suffix: '/7', label: 'Sessions booked, even while you are with a client' },
       { to: 0, suffix: '%', label: 'Commission on Pro — every session fee is yours' },
       { to: 5, prefix: '< ', suffix: ' min', label: 'To put your practice online' },
-      { to: 10, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
+      { to: 4, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
     ],
 
     // ── Why it works — numbered principles ────────────────────────────────────
@@ -640,7 +646,7 @@ export const V2_LANDING = {
       { q: 'Can I offer an intro call and longer paid sessions?', a: 'Yes. Add each offering — an intro session, a one-to-one session, a mock interview — as its own service with its own duration and price. Clients pick the one they want and a free time.' },
       { q: 'Can clients book from LinkedIn or Instagram?', a: 'Yes. You get one booking link to put in your LinkedIn profile, Instagram bio, email signature or WhatsApp. Clients tap it, choose a time and pay — no app or sign-up call needed.' },
       { q: 'Will it stop clients from booking over my other commitments?', a: 'Yes. With Google Calendar sync your busy times are blocked automatically and every new booking is added, so clients only see the times you are really free.' },
-      { q: 'How much does it cost?', a: 'You can start free with a small per-booking fee. The top paid plan is about ₹10 a day and removes all commission, so you keep 100% of every session fee.' },
+      { q: 'How much does it cost?', a: 'You can start free with a small per-booking fee. The top paid plan is about ₹4 a day and removes all commission, so you keep 100% of every session fee.' },
     ],
 
     // ── Final CTA ─────────────────────────────────────────────────────────────
@@ -655,35 +661,40 @@ export const V2_LANDING = {
     label: 'Content Creators',
     madeFor: "India's Content Creators",
 
-    // ── Design — creator magenta, lines texture, split hero ──────────────────
+    // ── Design — violet + brand red on deep ink, creator-feed skin (creatorSkin.jsx)
     design: {
-      ink: '#241020',
-      accent: '#DB2777',
-      accentInk: '#BE185D',
-      accentCta: '#BE185D',
-      wash: '#FCE9F1',
-      surfaceDark: '#1F0A17',
-      canvas: '#FFFBFD',
+      // Deep ink for text + dark bands; violet for buttons, accent text and icons;
+      // brand maroon (light surfaces) + a crimson of it (on dark) for red accents; lavender
+      // bands. All text pairs ≥ 4.5:1. Every section uses the full content width.
+      ink: '#17111F',
+      accent: '#7C3AED',
+      accentInk: '#6D28D9',
+      accentCta: '#6D28D9',
+      wash: '#F3EEFF',
+      surfaceDark: '#17111F',
+      canvas: '#FCFBFF',
       heroVariant: 'split',
-      texture: 'lines',
+      texture: 'none',
+      wideLayout: true,
+      skin: 'creator',
+      footerAccent: '#C4B5FD',
     },
 
     // ── SEO (commercial intent for Google) ───────────────────────────────────
     seo: {
       title: 'Booking Software for Content Creators in India | Meeticulous',
       description:
-        'Turn followers into paid calls. Meeticulous is booking software for content creators in India — strategy calls, content audits and mentoring sessions, paid upfront via UPI, with GST invoices, Google Calendar sync and automatic reminders. From ₹10/day.',
+        'Turn followers into paid calls. Meeticulous is booking software for content creators in India — strategy calls, content audits and mentoring sessions, paid upfront via UPI, with GST invoices, Google Calendar sync and automatic reminders. From ₹4/day.',
       keywords:
         'booking software for content creators, paid calls for creators, creator booking page india, monetise instagram followers, 1:1 call booking app, link in bio booking, sell consultation calls online, youtuber appointment booking',
       ogTitle: 'Still negotiating your rate in the DMs? Get paid before the call.',
       ogDescription:
-        'One link in your bio: followers and brands pick a slot, pay upfront and book a call with you. The creator booking page that runs itself, from ₹10/day.',
+        'One link in your bio: followers and brands pick a slot, pay upfront and book a call with you. The creator booking page that runs itself, from ₹4/day.',
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-content-creators-og-1200x630.jpg',
     },
 
     // ── Hero ──────────────────────────────────────────────────────────────────
     hero: {
-      eyebrow: 'For Creators, Coaches & Influencers',
       headline: 'Booking software for content creators',
       headlineAccent: 'that turns DMs into paid calls.',
       headlineTail: '',
@@ -708,7 +719,7 @@ export const V2_LANDING = {
       { to: 24, suffix: '/7', label: 'Paid calls booked while you are editing, travelling or asleep' },
       { to: 0, suffix: '%', label: 'Commission on Pro — every rupee of a call is yours' },
       { to: 5, prefix: '< ', suffix: ' min', label: 'To turn your bio link into a bookable page' },
-      { to: 10, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
+      { to: 4, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
     ],
 
     // ── Why it works — numbered principles ────────────────────────────────────
@@ -797,7 +808,7 @@ export const V2_LANDING = {
       { q: 'Can I charge for 1:1 calls with my followers?', a: 'Yes. Add each call type — a content audit, a strategy session, a paid Q&A — as its own service with its own price and duration. People pay when they book, so you are paid before the call starts.' },
       { q: 'Can brands book a discovery call with me?', a: 'Yes. Add a brand or collaboration call as a service and share the link in your media kit or bio. Sponsors choose a slot from your live availability instead of going back and forth over email.' },
       { q: 'Where do I put my booking link?', a: 'Anywhere you already share links — your Instagram bio, YouTube video descriptions, link-in-bio page, newsletter or WhatsApp. People open the link, pick a slot and pay; there is no app for them to install.' },
-      { q: 'How much does it cost?', a: 'You can start free with a small per-booking fee. The top paid plan is about ₹10 a day, and paid plans take 0% commission, so you keep 100% of every call you sell.' },
+      { q: 'How much does it cost?', a: 'You can start free with a small per-booking fee. The top paid plan is about ₹4 a day, and paid plans take 0% commission, so you keep 100% of every call you sell.' },
     ],
 
     // ── Final CTA ─────────────────────────────────────────────────────────────
@@ -813,35 +824,40 @@ export const V2_LANDING = {
     label: 'Educators',
     madeFor: "India's Tutors & Educators",
 
-    // ── Design — classroom teal-blue, grid texture, mirrored hero ────────────
+    // ── Design — navy ink + red pen + pencil yellow, notebook skin (educatorSkin.jsx)
     design: {
-      ink: '#0E2630',
-      accent: '#0891B2',
-      accentInk: '#0E7490',
-      accentCta: '#0E7490',
-      wash: '#E4F4F8',
-      surfaceDark: '#08202A',
-      canvas: '#FAFEFF',
-      heroVariant: 'mirror',
-      texture: 'grid',
+      // Navy ink for text, dark bands and buttons; ink blue for accent text + icons;
+      // red pen only for margins and marks; pencil yellow only as a highlighter
+      // behind navy text. All text pairs ≥ 4.5:1.
+      ink: '#1B2A4A',
+      accent: '#2F4A8A',
+      accentInk: '#2F4A8A',
+      accentCta: '#1B2A4A',
+      wash: '#EEF2FA',
+      surfaceDark: '#14213D',
+      canvas: '#FFFEF8',
+      heroVariant: 'split',
+      texture: 'none',
+      wideLayout: true,
+      skin: 'educator',
+      footerAccent: '#F2C230',
     },
 
     // ── SEO (commercial intent for Google) ───────────────────────────────────
     seo: {
       title: 'Booking Software for Educators & Tutors in India | Meeticulous',
       description:
-        'Let students and parents book classes online. Meeticulous is booking software for educators in India — trial classes, doubt-clearing sessions and coaching slots, paid upfront via UPI, with GST invoices, Google Calendar sync and automatic reminders. From ₹10/day.',
+        'Let students and parents book classes online. Meeticulous is booking software for educators in India — trial classes, doubt-clearing sessions and coaching slots, paid upfront via UPI, with GST invoices, Google Calendar sync and automatic reminders. From ₹4/day.',
       keywords:
         'booking software for educators, tutor booking software india, class scheduling app, online tutoring booking system, coaching class booking, tuition fee collection online, doubt clearing session booking, tutor appointment app',
       ogTitle: 'Still chasing tuition fees on WhatsApp? Let parents pay before the class.',
       ogDescription:
-        'Parents and students pick a slot, pay online and get reminded — automatically. The class booking page every Indian tutor should already have, from ₹10/day.',
+        'Parents and students pick a slot, pay online and get reminded — automatically. The class booking page every Indian tutor should already have, from ₹4/day.',
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-educators-og-1200x630.jpg',
     },
 
     // ── Hero ──────────────────────────────────────────────────────────────────
     hero: {
-      eyebrow: 'For Tutors, Coaches & Trainers',
       headline: 'Booking software for educators',
       headlineAccent: 'that fills your timetable.',
       headlineTail: '',
@@ -866,7 +882,7 @@ export const V2_LANDING = {
       { to: 24, suffix: '/7', label: 'Class slots booked, even while you are mid-lesson' },
       { to: 0, suffix: '%', label: 'Commission on Pro — every fee is yours' },
       { to: 5, prefix: '< ', suffix: ' min', label: 'To put your classes online' },
-      { to: 10, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
+      { to: 4, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
     ],
 
     // ── Why it works — numbered principles ────────────────────────────────────
@@ -955,7 +971,7 @@ export const V2_LANDING = {
       { q: 'Can parents pay for a class before it starts?', a: 'Yes. The fee is collected when the slot is booked, via UPI, card or netbanking, and a GST invoice is generated automatically. You are paid before the class, not after a reminder.' },
       { q: 'Can I offer a trial class for new students?', a: 'Yes. Add a trial or demo class as its own service with a shorter duration and a lower price. New students book it themselves, with no phone call needed.' },
       { q: 'Does it work for online and in-person classes?', a: 'Yes. Add each class type as a service. You teach it online or in person as you prefer — the booking page handles the slot, the payment and the reminders either way.' },
-      { q: 'How much does it cost?', a: 'You can start free with a small per-booking fee. The top paid plan is about ₹10 a day, and paid plans take 0% commission, so you keep 100% of every class fee.' },
+      { q: 'How much does it cost?', a: 'You can start free with a small per-booking fee. The top paid plan is about ₹4 a day, and paid plans take 0% commission, so you keep 100% of every class fee.' },
     ],
 
     // ── Final CTA ─────────────────────────────────────────────────────────────
@@ -971,7 +987,7 @@ export const V2_LANDING = {
     label: 'Musicians',
     madeFor: "India's Musicians & Music Teachers",
 
-    // ── Design — stage violet, lines texture, stage hero ─────────────────────
+    // ── Design — stage violet, lines texture, music skin (musicSkin.jsx) ─────
     design: {
       ink: '#1C1433',
       accent: '#7C3AED',
@@ -980,18 +996,20 @@ export const V2_LANDING = {
       wash: '#EFE9FC',
       surfaceDark: '#16102A',
       canvas: '#FDFBFF',
-      heroVariant: 'stage',
+      heroVariant: 'split',
       texture: 'lines',
+      wideLayout: true,
+      skin: 'music',
     },
 
     // ── SEO (commercial intent for Google) ───────────────────────────────────
     seo: {
       title: 'Booking Software for Musicians in India | Meeticulous',
       description:
-        'Take music lesson and gig bookings online. Meeticulous is booking software for musicians in India — lessons, studio hours and gig advances paid upfront via UPI, with GST invoices, Google Calendar sync and automatic reminders. From ₹10/day.',
+        'Take music lesson and gig bookings online. Meeticulous is booking software for musicians in India — lessons, studio hours and gig advances paid upfront via UPI, with GST invoices, Google Calendar sync and automatic reminders. From ₹4/day.',
       keywords:
         'booking software for musicians, music lesson booking app india, music teacher scheduling software, gig booking software, band booking page, studio hour booking, guitar class booking, vocal coaching booking',
-      ogTitle: 'Your calendar should keep time. Take lesson and gig bookings for ₹10/day.',
+      ogTitle: 'Your calendar should keep time. Take lesson and gig bookings for ₹4/day.',
       ogDescription:
         'Students and organisers pick a slot, pay upfront and get reminded — automatically. The booking page every Indian musician should already have.',
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-musicians-og-1200x630.jpg',
@@ -1024,7 +1042,7 @@ export const V2_LANDING = {
       { to: 24, suffix: '/7', label: 'Lessons and gigs booked, even mid-soundcheck' },
       { to: 0, suffix: '%', label: 'Commission on Pro — every fee and advance is yours' },
       { to: 5, prefix: '< ', suffix: ' min', label: 'To put your music online' },
-      { to: 10, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
+      { to: 4, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
     ],
 
     // ── Why it works — numbered principles ────────────────────────────────────
@@ -1113,7 +1131,7 @@ export const V2_LANDING = {
       { q: 'Can I take lesson bookings and gig advances on the same page?', a: 'Yes. Add each as its own service — a 45-minute guitar lesson, a vocal coaching hour, a gig booking advance — each with its own price and duration. One link covers all of them.' },
       { q: 'Can I rent out my studio or rehearsal room by the hour?', a: 'Yes. Add studio or jam-room time as an hourly service; people pick the exact slot and pay upfront. The slot locks instantly so it can never be double-booked.' },
       { q: 'Do students need an app to book?', a: 'No. Students and organisers open your link, pick a slot and pay. It works straight from your Instagram bio, website or WhatsApp.' },
-      { q: 'How much does it cost?', a: 'You can start free with a small per-booking fee. The top paid plan is about ₹10 a day, and paid plans take 0% commission, so you keep 100% of every lesson and advance.' },
+      { q: 'How much does it cost?', a: 'You can start free with a small per-booking fee. The top paid plan is about ₹4 a day, and paid plans take 0% commission, so you keep 100% of every lesson and advance.' },
     ],
 
     // ── Final CTA ─────────────────────────────────────────────────────────────
@@ -1129,27 +1147,33 @@ export const V2_LANDING = {
     label: 'Language Teachers',
     madeFor: "India's Language Teachers",
 
-    // ── Design — fresh teal, dots texture, split hero ─────────────────────────
+    // ── Design — passport green + terracotta, phrasebook skin (languageSkin.jsx) ─
     design: {
-      ink: '#0C2622',
-      accent: '#0D9488',
-      accentInk: '#0F766E',
-      accentCta: '#0F766E',
-      wash: '#E3F5F2',
-      surfaceDark: '#07211D',
-      canvas: '#FAFFFE',
+      // Passport green for dark bands + buttons, terracotta for stamps/icons (darker
+      // terracotta for accent text), peach paper bands, gold foil only on the green.
+      // All text pairs ≥ 4.5:1.
+      ink: '#1E2A24',
+      accent: '#B4532A',
+      accentInk: '#963F1B',
+      accentCta: '#1F5136',
+      wash: '#FBEEE4',
+      surfaceDark: '#16352A',
+      canvas: '#FFFBF5',
       heroVariant: 'split',
-      texture: 'dots',
+      texture: 'none',
+      wideLayout: true,
+      skin: 'language',
+      footerAccent: '#F4B184',
     },
 
     // ── SEO (commercial intent for Google) ───────────────────────────────────
     seo: {
       title: 'Booking Software for Language Teachers in India | Meeticulous',
       description:
-        'Let learners book lessons online. Meeticulous is booking software for language teachers in India — trial lessons, 1:1 classes and exam-prep sessions, paid upfront via UPI, with GST invoices, Google Calendar sync and automatic reminders. From ₹10/day.',
+        'Let learners book lessons online. Meeticulous is booking software for language teachers in India — trial lessons, 1:1 classes and exam-prep sessions, paid upfront via UPI, with GST invoices, Google Calendar sync and automatic reminders. From ₹4/day.',
       keywords:
         'booking software for language teachers, language tutor booking app india, online language class scheduling, french tutor booking, spoken english class booking, german tutor scheduling, trial lesson booking, language teacher payment collection',
-      ogTitle: 'Teaching a language, not chasing payments. Fix your lesson bookings for ₹10/day.',
+      ogTitle: 'Teaching a language, not chasing payments. Fix your lesson bookings for ₹4/day.',
       ogDescription:
         'Learners pick a time, pay for the lesson upfront and show up. The booking page every language tutor in India should already have.',
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-language-teachers-og-1200x630.jpg',
@@ -1157,7 +1181,6 @@ export const V2_LANDING = {
 
     // ── Hero ──────────────────────────────────────────────────────────────────
     hero: {
-      eyebrow: 'For Language Tutors & Coaches',
       headline: 'Booking software for language teachers',
       headlineAccent: 'that fills every lesson slot.',
       headlineTail: '',
@@ -1182,7 +1205,7 @@ export const V2_LANDING = {
       { to: 24, suffix: '/7', label: 'Lessons booked, even while you are mid-class' },
       { to: 0, suffix: '%', label: 'Commission on Pro — every lesson fee is yours' },
       { to: 5, prefix: '< ', suffix: ' min', label: 'To put your lessons online' },
-      { to: 10, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
+      { to: 4, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
     ],
 
     // ── Why it works — numbered principles ────────────────────────────────────
@@ -1271,7 +1294,7 @@ export const V2_LANDING = {
       { q: 'Can learners book a trial lesson?', a: 'Yes. Add a trial lesson as its own service with a shorter duration and a lower price. New learners book and pay for it online, with no messaging needed to find a time.' },
       { q: 'Does it work for online lessons?', a: 'Yes. Add each lesson type as a service with its own price and duration. You teach on whichever video app you already use — the booking page handles the slot, the payment and the reminders.' },
       { q: 'Can I teach more than one language from the same page?', a: 'Yes. Add each language or level — French beginner, German A1, spoken English — as a separate service with its own price, all under one link.' },
-      { q: 'How much does it cost?', a: 'You can start free with a small per-booking fee. The top paid plan is about ₹10 a day, and paid plans take 0% commission, so you keep 100% of every lesson fee.' },
+      { q: 'How much does it cost?', a: 'You can start free with a small per-booking fee. The top paid plan is about ₹4 a day, and paid plans take 0% commission, so you keep 100% of every lesson fee.' },
     ],
 
     // ── Final CTA ─────────────────────────────────────────────────────────────
@@ -1286,7 +1309,7 @@ export const V2_LANDING = {
     label: 'Coworking Spaces',
     madeFor: "India's Coworking Spaces",
 
-    // ── Design — professional indigo, grid texture, split hero ───────────────
+    // ── Design — professional indigo, floor-plan skin (coworkingSkin.jsx) ────
     design: {
       ink: '#1E1B3A',
       accent: '#4F46E5',
@@ -1296,17 +1319,19 @@ export const V2_LANDING = {
       surfaceDark: '#17153A',
       canvas: '#FBFBFF',
       heroVariant: 'split',
-      texture: 'grid',
+      texture: 'none',
+      wideLayout: true,
+      skin: 'coworking',
     },
 
     // ── SEO (commercial intent for Google) ───────────────────────────────────
     seo: {
       title: 'Coworking Space Booking Software in India | Meeticulous',
       description:
-        'Let members book desks and meeting rooms online. Meeticulous is coworking space booking software for India — hot-desk and meeting-room booking, paid upfront via UPI, GST invoices, Google Calendar sync and automatic reminders. From ₹10/day.',
+        'Let members book desks and meeting rooms online. Meeticulous is coworking space booking software for India — hot-desk and meeting-room booking, paid upfront via UPI, GST invoices, Google Calendar sync and automatic reminders. From ₹4/day.',
       keywords:
         'coworking space booking software, meeting room booking system india, hot desk booking app, desk booking software, coworking management software, book a coworking space online, conference room scheduling',
-      ogTitle: 'Still booking your coworking space over WhatsApp? Fix it for ₹10/day.',
+      ogTitle: 'Still booking your coworking space over WhatsApp? Fix it for ₹4/day.',
       ogDescription:
         'Members book a desk or meeting room, pay online, and get reminded — automatically. The booking page every coworking space in India should already have.',
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-coworking-spaces-og-1200x630.jpg',
@@ -1314,7 +1339,6 @@ export const V2_LANDING = {
 
     // ── Hero ──────────────────────────────────────────────────────────────────
     hero: {
-      eyebrow: 'For Coworking Spaces & Managed Offices',
       headline: 'Coworking space booking software',
       headlineAccent: 'that fills every desk.',
       headlineTail: '',
@@ -1339,7 +1363,7 @@ export const V2_LANDING = {
       { to: 24, suffix: '/7', label: 'Desks booked, even after the front desk clocks off' },
       { to: 0, suffix: '%', label: 'Commission on Pro — every booking is yours' },
       { to: 5, prefix: '< ', suffix: ' min', label: 'To put your space online' },
-      { to: 10, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
+      { to: 4, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
     ],
 
     // ── Why it works — numbered principles ────────────────────────────────────
@@ -1428,7 +1452,7 @@ export const V2_LANDING = {
       { q: 'Can members book meeting rooms by the hour?', a: 'Yes. Add each meeting room as an hourly service; members pick the exact slot they need and pay for it upfront. The room locks instantly so it can never be double-booked.' },
       { q: 'Can I sell day passes and hot desks without a membership?', a: 'Yes. Offer a day pass or hot-desk service that anyone can book and pay for online — no membership, no sign-up call needed.' },
       { q: 'Do members need an app or account to book?', a: 'No. Members open your link, pick a desk or room, and pay. It works straight from your website, Google profile or WhatsApp.' },
-      { q: 'How much does it cost?', a: 'You can start free with a small per-booking fee. Paid plans begin at roughly ₹10 a day and remove all commission, so you keep 100% of every booking.' },
+      { q: 'How much does it cost?', a: 'You can start free with a small per-booking fee. Paid plans begin at roughly ₹4 a day and remove all commission, so you keep 100% of every booking.' },
     ],
 
     // ── Final CTA ─────────────────────────────────────────────────────────────
@@ -1436,6 +1460,142 @@ export const V2_LANDING = {
       headline: 'Put your space online today.',
       subline: 'Set up your coworking booking page in minutes. Free to start, no card required — cancel anytime, no lock-in.',
       ctaText: 'Set up my space',
+    },
+  },
+  'freelancers': {
+    slug: 'freelancers',
+    label: 'Freelancers',
+    madeFor: "India's Freelancers",
+
+    // ── Design — brand maroon + rose on cream, desktop-workspace skin ─────────
+    // (freelanceSkin.jsx). Same colours as the navbar's Freelancers tile
+    // (tone 'teal' → --mt-rose / --mt-maroon). Moved here from the v1 template
+    // (professionLandingData.js keeps the old entry, but the dispatcher serves
+    // v2 first). Copy, SEO, testimonials and FAQ are carried over from v1.
+    // All text pairs ≥ 4.5:1.
+    design: {
+      ink: '#2B0A14',
+      accent: '#E0506F',
+      accentInk: '#960D32',
+      accentCta: '#960D32',
+      wash: '#FFE4EA',
+      surfaceDark: '#7A0A28',
+      canvas: '#FBF5F3',
+      heroVariant: 'split',
+      texture: 'none',
+      wideLayout: true,
+      skin: 'freelance',
+      footerAccent: '#FF9FB0',
+    },
+
+    // ── SEO (carried over from v1) ───────────────────────────────────────────
+    seo: {
+      title: 'Appointment Booking Software for Freelancers | Meeticulous',
+      description:
+        'Let clients book calls and pay you online. Meeticulous is booking + payment software for freelancers — advances collected upfront, calendar synced, no-shows gone, GST invoices. From ₹4/day.',
+      keywords:
+        'booking software for freelancers, freelancer scheduling app, collect advance payment freelancer, freelance discovery call booking, freelancer booking page India, get paid upfront freelance',
+      ogTitle: 'Still chasing freelance clients for payment? Fix it for ₹4/day.',
+      ogDescription:
+        'Clients book your call, pay an advance upfront, and get reminded — automatically. The booking + payment link every freelancer in India should already have.',
+      ogImage: 'https://company-assets.meeticulous.in/images/seo/for-freelancers-og-1200x630.jpg',
+    },
+
+    // ── Hero ──────────────────────────────────────────────────────────────────
+    hero: {
+      headline: 'Appointment booking software',
+      headlineAccent: 'for freelancers.',
+      headlineTail: '',
+      subline:
+        'You do the work. Meeticulous handles everything around it — clients pick a slot, pay an advance upfront, and get reminded — so your day goes to the craft, not chasing invoices.',
+      ctaText: 'Set up my booking page',
+      microcopy: 'Free to start · No card needed · Live in minutes',
+      audiences: ['Designers', 'Developers', 'Writers', 'Marketers', 'Video editors'],
+      mock: {
+        brand: 'Ananya Rao',
+        tag: 'Freelance UX Designer',
+        services: [
+          { name: 'Intro / Discovery Call', meta: '30 min · Online', price: '₹1,000' },
+          { name: 'Design Consultation', meta: '60 min · Online', price: '₹3,000' },
+        ],
+      },
+    },
+
+    // ── Animated stat counters ────────────────────────────────────────────────
+    stats: [
+      { to: 24, suffix: '/7', label: 'Calls booked, across any client time zone' },
+      { to: 0, suffix: '%', label: 'Commission on Pro — you keep every rupee' },
+      { to: 4, prefix: '~₹', suffix: '/day', label: 'For the top, unlimited plan' },
+      { to: 5, prefix: '< ', suffix: ' min', label: 'To go live with your page' },
+    ],
+
+    // ── The booking flow ──────────────────────────────────────────────────────
+    flow: {
+      title: 'A booking in three steps.',
+      steps: [
+        { title: 'Share your link', desc: 'Put one link on your portfolio, LinkedIn, email signature and Instagram bio. Clients need no app.' },
+        { title: 'They book & pay', desc: 'A client picks a slot in their own time zone and pays an advance or the full fee online.' },
+        { title: 'You do the work', desc: 'It lands on your Google Calendar, reminders go out automatically, and the money is already in.' },
+      ],
+    },
+
+    // ── Services (what you get) ───────────────────────────────────────────────
+    whatYouGet: {
+      title: 'Everything a freelancer needs.',
+      lead: 'One link runs calls, advances and invoices — not just a calendar.',
+      items: [
+        { title: 'Advance payments', desc: 'Collect an advance or the full fee at booking via UPI, card or netbanking.' },
+        { title: 'Time-zone aware slots', desc: 'Clients see your real free slots in their own time zone — no maths, no back-and-forth.' },
+        { title: 'Paid discovery calls', desc: 'A small paid or deposit slot means only serious prospects book your time.' },
+        { title: 'WhatsApp + email reminders', desc: 'Reminders send themselves before every call — you never chase a client.' },
+        { title: 'Google Calendar sync', desc: 'Busy times blocked, bookings added — never double-booked across clients.' },
+        { title: 'GST invoices', desc: 'A proper GST invoice is generated for every payment automatically.' },
+        { title: 'A branded booking page', desc: 'A clean page with Razorpay checkout — the polish that wins better-paying clients.' },
+        { title: 'Client details stay private', desc: 'Encrypted, access-controlled and never sold. Your client list belongs to you alone.' },
+      ],
+      addons: ['Packages & retainers', 'Digital products', 'Client CRM', 'Custom booking rules'],
+    },
+
+    // ── With / without (from the v1 pain points) ──────────────────────────────
+    beforeAfter: {
+      title: 'From chasing invoices to getting paid upfront.',
+      lead: 'Same work, two ways to run it. One of them pays you before the call.',
+      before: [
+        'Chasing clients for advances and unpaid invoices',
+        'Scheduling calls over endless DMs and email threads',
+        'Prospects ghosting your free discovery calls',
+        'Sharing a UPI QR after the call — looks unprofessional',
+      ],
+      after: [
+        'Advance or full fee collected at booking',
+        'One link — clients pick a slot themselves',
+        'Paid slots and reminders, so only serious clients book',
+        'A clean branded page with Razorpay checkout',
+      ],
+    },
+
+    // ── Testimonials (carried over from v1) ───────────────────────────────────
+    testimonials: [
+      { quote: 'Advances at booking ended my cash-flow stress. I start projects already paid instead of chasing invoices for weeks.', name: 'Ananya Rao', role: 'UX Designer' },
+      { quote: 'Overseas clients used to be a scheduling headache. Now they book in their own time zone and pay upfront — zero back-and-forth.', name: 'Karan Mehta', role: 'Freelance Developer' },
+      { quote: 'A clean booking link on my portfolio looks so much more professional than sending a UPI QR after every call.', name: 'Ishita Sen', role: 'Content Writer' },
+    ],
+
+    // ── FAQ (carried over from v1; drives FAQPage schema) ─────────────────────
+    faq: [
+      { q: 'What is the best booking and payment software for freelancers in India?', a: 'Meeticulous is built for Indian freelancers — clients book calls online, pay an advance or full fee upfront via UPI or card, and get automatic reminders. It syncs with your calendar, handles GST invoices and charges 0% commission on paid plans.' },
+      { q: 'Can I collect an advance payment when a client books?', a: 'Yes. Your fee is shown on the booking page and collected at checkout through Razorpay (UPI, cards, netbanking) before the call. You can take an advance or the full amount upfront.' },
+      { q: 'Does it handle clients in other time zones?', a: 'Yes. Your availability is shown in each client’s own time zone, and Google Calendar busy-time blocking keeps your real free slots accurate — so overseas clients book without any back-and-forth.' },
+      { q: 'How does it reduce no-shows on discovery calls?', a: 'Automatic email and WhatsApp reminders go out before every call, and making the slot paid or deposit-based means only serious prospects book your time.' },
+      { q: 'How much does it cost?', a: 'You can start free with a 5% per-booking fee. Paid plans begin at roughly ₹3 a day (billed yearly) and remove all commission, so you keep 100% of every fee.' },
+      { q: 'Is it suitable for designers, developers, writers and consultants?', a: 'Yes. Any freelancer who sells booked time — designers, developers, writers, marketers, video editors and consultants — can use Meeticulous to run bookings and payments from one professional link.' },
+    ],
+
+    // ── Final CTA ─────────────────────────────────────────────────────────────
+    finalCta: {
+      headline: 'Do the work. Skip the admin.',
+      subline: 'Set up your freelance booking page in minutes. Free to start, no card required — cancel anytime, no lock-in.',
+      ctaText: 'Create my booking page',
     },
   },
 };

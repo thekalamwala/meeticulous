@@ -12,7 +12,6 @@ import { communityBreadcrumbJsonLd, discussionForumPostingJsonLd, headlineOf, qa
 import ItemCard from '../../components/community/ItemCard';
 import CommentList from '../../components/community/CommentList';
 import useRequireLogin, { loginHref } from '../../components/community/useRequireLogin';
-import Composer from '../../components/community/Composer';
 import CommentForm from '../../components/community/CommentForm';
 import ReportDialog from '../../components/community/ReportDialog';
 import MoreMenu from '../../components/community/MoreMenu';
@@ -44,7 +43,6 @@ export default function CommunityItem() {
   const requireLogin = useRequireLogin();
   const [s, setS] = useState({ loading: true, status: null });
   const [more, setMore] = useState(false);
-  const [composeKind, setComposeKind] = useState(null);
   const [parent, setParent] = useState(null); // comment being answered (null = the post)
   const [tick, setTick] = useState(0);
   const [editing, setEditing] = useState(false);
@@ -87,7 +85,15 @@ export default function CommunityItem() {
     setParent(c || null);
     setTick((t) => t + 1);
   };
-  const compose = (kind = 'post') => { if (requireLogin()) setComposeKind(kind); };
+  const compose = (kind = 'post') => {
+    if (!requireLogin()) return;
+    const sp = s.item?.space?.key || s.space?.key;
+    const q = new URLSearchParams();
+    if (kind && kind !== 'post') q.set('kind', kind);
+    if (sp) q.set('space', sp);
+    const qs = q.toString();
+    navigate(`/community/new${qs ? `?${qs}` : ''}`);
+  };
   const report = (target) => { if (requireLogin()) setReporting(target); };
 
   // A new reply is appended in place (no refetch) and scrolled to once it has rendered.
@@ -147,7 +153,6 @@ export default function CommunityItem() {
           <p className="text-sm text-muted">It's no longer available. There's plenty more to read in the community.</p>
           <Link to="/community" className="mt-btn no-underline">Back to the community</Link>
         </div>
-        <Composer open={!!composeKind} defaultKind={composeKind} onClose={() => setComposeKind(null)} />
       </CommunityLayout>
     );
   }
@@ -239,7 +244,6 @@ export default function CommunityItem() {
         </div>
       )}
 
-      <Composer open={!!composeKind} defaultKind={composeKind} defaultSpaceKey={item.space?.key} onClose={() => setComposeKind(null)} />
       {reporting && <ReportDialog target={reporting} onClose={() => setReporting(null)} />}
       {confirmDel && (
         <ConfirmDialog title="Delete this post?" text="It will disappear from the community. This can't be undone." onConfirm={removeItem} onClose={() => setConfirmDel(false)} />

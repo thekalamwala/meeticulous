@@ -99,6 +99,11 @@ function ineligibleReason(profile, activeGift, { extend = false } = {}) {
   if (!profile) return 'host not found';
   if (profile.role !== 'host' && !profile.is_host) return 'not a host';
   if (isPaying(profile)) return 'paying customer';
+  // markCancelled keeps razorpay_subscription_id, and every gift profile write
+  // is guarded on it being null — so a churned host can't actually be gifted.
+  // Say so here, so the preview matches the grant. (Founder to decide whether
+  // churned hosts should become giftable; that needs the write guards changed too.)
+  if (profile.razorpay_subscription_id) return 'has a past mandate';
   if (extend) return activeGift ? null : 'no active gift';
   if (activeGift) return 'already gifted (extend instead)';
   if (!planService.isFreeSlug(planService.resolveVendorPlan(profile))) return 'on a paid or comped plan';
@@ -342,9 +347,19 @@ async function extendGift(req, giftId, months) {
   if (error) throw error;
   if (!next) throw new GiftError('NOT_ACTIVE', 'This gift is no longer active.');
 
-  await supabaseAdmin.from('profiles')
+  const { data: updated, error: upErr } = await supabaseAdmin.from('profiles')
     .update({ plan: GIFT_PLAN, plan_expires_at: endsAt, plan_updated_at: ts, updated_at: ts })
-    .eq('id', gift.host_id).is('razorpay_subscription_id', null);
+    .eq('id', gift.host_id).is('razorpay_subscription_id', null)
+    .select('id');
+  if (upErr || !updated || !updated.length) {
+    // A checkout landed between the check and the write: put the gift row back
+    // so no extension (and no "extended" email) exists without the access.
+    await supabaseAdmin.from('plan_gifts')
+      .update({ ends_at: gift.ends_at, extended_months: gift.extended_months || 0, ending_notified_days: gift.ending_notified_days || [], updated_at: nowIso() })
+      .eq('id', gift.id).eq('ends_at', endsAt);
+    if (upErr) throw upErr;
+    throw new GiftError('INELIGIBLE', "Can't extend: checkout in progress.");
+  }
 
   await audit(req, {
     action: 'plan.gift.extend', resource_type: 'profile', resource_id: gift.host_id,
@@ -419,12 +434,26 @@ async function submitShare(hostId, url) {
 async function reviewShare(req, giftId, approve) {
   const gift = await loadActiveGiftById(giftId);
   if (gift.share_status !== 'pending') throw new GiftError('NOT_PENDING', 'This gift has no share waiting for review.');
-  if (approve) await extendGift(req, gift.id, 1); // first, so a failed extend never reads as approved
-  const { data, error } = await supabaseAdmin.from('plan_gifts')
+  // Claim the verdict first (conditional update = one winner), so a double
+  // click / two admins can't both extend.
+  const { data: claimed, error } = await supabaseAdmin.from('plan_gifts')
     .update({ share_status: approve ? 'approved' : 'rejected', share_reviewed_at: nowIso(), updated_at: nowIso() })
     .eq('id', gift.id).eq('share_status', 'pending')
     .select('*').maybeSingle();
   if (error) throw error;
+  if (!claimed) throw new GiftError('NOT_PENDING', 'This gift has no share waiting for review.');
+  let data = claimed;
+  if (approve) {
+    try {
+      data = await extendGift(req, gift.id, 1);
+    } catch (e) {
+      // Extend failed: back to pending so it can be reviewed again.
+      await supabaseAdmin.from('plan_gifts')
+        .update({ share_status: 'pending', share_reviewed_at: null, updated_at: nowIso() })
+        .eq('id', gift.id).eq('share_status', 'approved');
+      throw e;
+    }
+  }
   await audit(req, {
     action: approve ? 'plan.gift.share_approve' : 'plan.gift.share_reject',
     resource_type: 'profile', resource_id: gift.host_id,
@@ -448,12 +477,14 @@ async function redeemForward(hostId, rawCode) {
   const code = normalizeCode(rawCode);
   if (!code) return { redeemed: false, reason: 'invalid code' };
   const { data: source, error } = await supabaseAdmin.from('plan_gifts')
-    .select('id, host_id, created_at, forward_redeemed_by').eq('forward_code', code).maybeSingle();
+    .select('id, host_id, status, created_at, forward_redeemed_by').eq('forward_code', code).maybeSingle();
   if (error) {
     if (isMissingTable(error)) return { redeemed: false, reason: 'unavailable' };
     throw error;
   }
   if (!source) return { redeemed: false, reason: 'invalid code' };
+  // ponytail: only `revoked` is refused; founder to decide on ended/converted codes.
+  if (source.status === 'revoked') return { redeemed: false, reason: 'gift revoked' };
   if (source.forward_redeemed_by) return { redeemed: false, reason: 'already used' };
   if (source.host_id === hostId) return { redeemed: false, reason: 'own code' };
 
