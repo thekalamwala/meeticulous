@@ -1,52 +1,745 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "git": { "deploymentEnabled": false },
+  "git": {
+    "deploymentEnabled": false
+  },
   "redirects": [
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.meeticulous.com" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "www.meeticulous.com"
+        }
+      ],
       "destination": "https://meeticulous.com/:path*",
       "statusCode": 308
     },
-    { "source": "/blogs", "destination": "/blog", "statusCode": 301 },
-    { "source": "/blogs/:slug", "destination": "/blog/:slug", "statusCode": 301 },
-    { "source": "/blog/topmate-alternative", "destination": "/compare/topmate-alternative", "statusCode": 301 },
-    { "source": "/lp/:competitor(calendly|setmore|acuity|simplybook|zoho-bookings)-alternative", "destination": "/compare/:competitor-alternative", "statusCode": 301 },
-    { "source": "/blog/scheduling-terms-glossary", "destination": "/glossary/buffer-time", "statusCode": 301 },
-    { "source": "/for/doctors-india", "destination": "/for/doctors", "statusCode": 301 }
+    {
+      "source": "/blogs",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blogs/:slug",
+      "destination": "/blog/:slug",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/topmate-alternative",
+      "destination": "/compare/topmate-alternative",
+      "statusCode": 301
+    },
+    {
+      "source": "/lp/:competitor(calendly|setmore|acuity|simplybook|zoho-bookings)-alternative",
+      "destination": "/compare/:competitor-alternative",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/scheduling-terms-glossary",
+      "destination": "/glossary/buffer-time",
+      "statusCode": 301
+    },
+    {
+      "source": "/for/doctors-india",
+      "destination": "/for/doctors",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/payment-aggregators-india-consultants",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/how-to-list-property-on-airbnb",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/best-appointment-booking-apps-india",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/calendly-pricing-india",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/calendly-upi-payments",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/online-nutritionist-pcos-tarot-reading-life-coach",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/topmate-commission",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/mbbs-abroad-counselling-developer-mentorship-salesforce-career",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/family-lawyer-architect-financial-advisor-consultation-online",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/marketing-consultant-lead-generation-coworking-hosts",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/best-psychologists-therapists-hyderabad",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/how-to-make-money-from-home-india",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/consultation-fees-india",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/how-to-price-coaching-services-india",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/product-otp-and-verification-badges",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/landing-pages-for-your-profession",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/october-2026-small-fixes",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/personal-trainer-charges-india",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/manage-appointments-on-whatsapp",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/30-minute-call-setup",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/collect-payments-from-clients-india",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/scheduling-poll-group-meeting",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/how-to-reduce-no-shows",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/start-online-consultation-practice-india",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/advance-payment-for-appointments",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/payment-reminder-message",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/how-to-become-freelance-personal-trainer",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/september-2026-product-update",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/payment-reminder-message-hindi",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/appointment-confirmation-message",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/appointment-reminder-templates",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/appointment-cancellation-reschedule-message",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/cancellation-policy-template",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/meeting-invitation-templates",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/whatsapp-business-away-message",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/tuition-fee-reminder-message",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/how-to-find-book-expert-online",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/how-to-start-online-tuition",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/how-to-start-online-yoga-classes",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/client-intake-form-questions",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/databricks-interview-questions",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/please-share-anything-that-will-help-prepare-for-our-meeting",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/booking-link-instagram-bio",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/how-to-acknowledge-interview-email",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/book-button-google-business-profile",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/interview-schedule-template",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/how-to-sell-digital-products-online",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/interview-calling-message",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/how-to-become-paid-mentor",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/how-to-ask-client-for-payment-politely",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/how-to-book-an-appointment-online",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/digital-marketing-for-saas-companies",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/digital-marketing-for-startups",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/email-marketing-for-customer-acquisition",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/performance-marketing-for-ecommerce",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/marketing-for-gaming-industry",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/influencer-marketing-for-product-launch",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/digital-marketing-for-real-estate-companies",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/digital-marketing-for-manufacturers",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/digital-marketing-for-restaurants",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/digital-marketing-for-dentists",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/digital-marketing-for-doctors",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/digital-marketing-for-clinics",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/seo-marketing-for-law-firms",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/marketing-for-banking-services",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/digital-marketing-for-schools",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/digital-marketing-for-architects",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/money-follows-my-brotha",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/digital-marketing-for-travel-and-tourism",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/the-only-thing-that-matters",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/the-booking-link-that-gets-you-paid",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/you-only-pay-when-you-earn",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/content-marketing-for-financial-advisors",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/the-one-email-a-host-should-get",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/kyc-only-after-you-earn",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/the-address-line-nobody-filled",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/marketing-for-recruitment-agencies",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/we-audited-our-own-booking-flow",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/the-vanity-links",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/the-confirmation-that-didnt-confirm",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/content-marketing-for-brand-awareness",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/the-opening-again",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/the-strike-you-could-reset-yourself",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/digital-marketing-for-rural-india",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/bolt-learned-to-say-no",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/meet-bolt-the-support-assistant",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/write-with-bolt-drafts-your-listing",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/security-nobody-claps-for",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/the-arithmetic-of-commission",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/refer-earn-studio-crm-offline-bookings",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/the-ledger-nobody-asked-for",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/what-happens-to-your-aadhaar",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/two-bookings-one-slot",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/how-explore-ranking-works",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/explore-ranking-and-a-more-app-like-app",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/the-day-the-site-went-white",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/gst-invoices-host-verification-mobile",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/where-your-money-sits",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/digital-marketing-strategy-vibe-coders",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/categories-that-make-sense-profile-polish",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/the-first-host-who-paid",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/pricing-page-and-the-rebook-nudge",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/welcome-aastha-nikhare",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/themes-doors-and-a-warmer-booking-flow",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/building-in-public-why-we-blog",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/google-sign-in-service-pages-two-way-reviews",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/zero-commission-bet",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/onboarding-a-host-in-60-seconds",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/homepage-emails-and-downloadable-products",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/payments-and-calendars-on-autopilot",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/permanent-usernames-legal-and-newsletter",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/going-live",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/booking-in-under-a-minute",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/monthly-plans-whatsapp-verification-reminders",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/welcome-mohini-daf",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/phone-login-and-reschedule-bookings",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/notifications-that-actually-arrive",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/what-a-booking-page-needs-in-india",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/advance-payments-without-the-screenshot-dance",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/razorpay-is-the-source-of-truth",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/your-phone-number-is-the-account",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/the-first-booking",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/hello-world",
+      "destination": "/blog",
+      "statusCode": 301
+    }
   ],
   "rewrites": [
-    { "source": "/sitemap.xml", "destination": "https://meeticulous-api.onrender.com/sitemap.xml" },
-    { "source": "/sitemap-:name.xml", "destination": "https://meeticulous-api.onrender.com/sitemap-:name.xml" },
-    { "source": "/((?!assets/).*)", "destination": "/spa-shell.html" }
+    {
+      "source": "/sitemap.xml",
+      "destination": "https://meeticulous-api.onrender.com/sitemap.xml"
+    },
+    {
+      "source": "/sitemap-:name.xml",
+      "destination": "https://meeticulous-api.onrender.com/sitemap-:name.xml"
+    },
+    {
+      "source": "/((?!assets/).*)",
+      "destination": "/spa-shell.html"
+    }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains" },
-        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), browsing-topics=()" },
-        { "key": "Content-Security-Policy-Report-Only", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://*.clarity.ms https://us-assets.i.posthog.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https://*.supabase.co https://api.razorpay.com https://meeticulous-api.onrender.com https://api.meeticulous.com https://*.i.posthog.com https://*.posthog.com https://www.google-analytics.com https://*.google-analytics.com https://*.clarity.ms https://*.facebook.com https://static.cloudflareinsights.com https://cloudflareinsights.com; frame-src https://*.razorpay.com https://www.google.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" }
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=(), browsing-topics=()"
+        },
+        {
+          "key": "Content-Security-Policy-Report-Only",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://*.clarity.ms https://us-assets.i.posthog.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https://*.supabase.co https://api.razorpay.com https://meeticulous-api.onrender.com https://api.meeticulous.com https://*.i.posthog.com https://*.posthog.com https://www.google-analytics.com https://*.google-analytics.com https://*.clarity.ms https://*.facebook.com https://static.cloudflareinsights.com https://cloudflareinsights.com; frame-src https://*.razorpay.com https://www.google.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self'"
+        }
       ]
     },
     {
       "source": "/spa-shell.html",
-      "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }]
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
     },
     {
       "source": "/assets/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     },
     {
       "source": "/fonts/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     },
     {
       "source": "/((?!assets/|fonts/).*\\.(?:png|jpe?g|gif|svg|webp|ico|avif))",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000, stale-while-revalidate=604800" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=2592000, stale-while-revalidate=604800"
+        }
+      ]
     }
   ]
 }
