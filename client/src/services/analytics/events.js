@@ -36,6 +36,7 @@ export const EVENTS = Object.freeze({
   SERVICE_PUBLISHED:  'service_published',    // server-emitted — activation (first live service)
   FIRST_SERVICE_SKIPPED:'first_service_skipped', // host dismissed the /live skip-confirm and finished with 0 services
   PROFILE_LINK_SHARED:'profile_link_shared',  // host copied/shared their profile link (activation funnel)
+  CALENDAR_CONNECTED: 'calendar_connected',  // host connected Google Calendar in onboarding (skips are tracked server-side)
   PLAN_VIEWED:        'plan_viewed',         // pricing/plans seen
   // ── Pro upgrade funnel (props: { trigger, cadence?, founding? }) ──
   //   trigger = where the host came from (?src= on /dashboard/upgrade, e.g. taste_ending)
@@ -66,6 +67,14 @@ export const EVENTS = Object.freeze({
   ENTERPRISE_LEAD_SUBMITTED: 'enterprise_lead_submitted',
   ENTERPRISE_FAQ_OPENED:   'enterprise_faq_opened',
   ENTERPRISE_SCROLL_DEPTH: 'enterprise_scroll_depth',
+
+  // ── Community (/community) — client-only ──
+  COMMUNITY_VIEWED:         'community_viewed',          // feed tab / space / item page loaded ({tab} | {space})
+  COMMUNITY_POST_CREATED:   'community_post_created',
+  COMMUNITY_REPLY_CREATED:  'community_reply_created',
+  COMMUNITY_LIKED:          'community_liked',           // { target_type: 'post' | 'comment' }
+  COMMUNITY_REPORTED:       'community_reported',
+  COMMUNITY_TERMS_ACCEPTED: 'community_terms_accepted',
 
   // ── System / reliability (client-only) ──
   ERROR_PAGE_VIEWED:  'error_page_viewed',   // a branded error/offline page rendered

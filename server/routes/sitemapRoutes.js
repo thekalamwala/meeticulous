@@ -15,5 +15,6 @@ router.get(/^\/sitemap-hosts(?:-(\d+))?\.xml$/, ctrl.sitemapHosts);
 router.get(/^\/sitemap-services(?:-(\d+))?\.xml$/, ctrl.sitemapServices);
 router.get('/sitemap-professions.xml', ctrl.sitemapProfessions);
 router.get('/sitemap-blog.xml', ctrl.sitemapBlog);
+router.get('/sitemap-community.xml', ctrl.sitemapCommunity);
 
 module.exports = router;

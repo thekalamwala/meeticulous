@@ -442,6 +442,7 @@ async function prerender() {
   let failed = 0;
   const errorBaked = []; // routes whose render came back as the branded ErrorPage
   const skipped = []; // routes not started because the time budget ran out
+  const schemaMissing = []; // host profiles that rendered chrome but no ProfilePage JSON-LD
 
   // Build-scoped cache of proxied API GETs. ~300 pages ask for the same plans /
   // categories / stats over and over (~800 fetches a run, the load that used to
@@ -607,6 +608,22 @@ async function prerender() {
         throw e;
       }
 
+      // A host profile that rendered its chrome (.host-profile root) but whose
+      // ProfilePage JSON-LD is absent is a SILENT SEO regression: the page looks
+      // fine to humans, but ships to crawlers with no structured data (the exact
+      // "invisible, went unnoticed for weeks" failure the shell-fallback guard
+      // below was added for). profileJsonLd() always stamps "@type":"ProfilePage",
+      // and HostProfile builds it whenever `host` loaded — so .host-profile present
+      // ⟹ the schema SHOULD be in <head>. Its absence means the Seo/jsonLd wiring
+      // broke. This is NOT the #979 rate-limit empty render: that never renders
+      // .host-profile at all, so it cannot trip here. Checked on the raw page
+      // content (pre-inlineCritical, which only rewrites CSS). Still written — the
+      // page is otherwise fine; the build decides below whether to hard-fail.
+      if (/class="[^"]*\bhost-profile\b/.test(html) && !html.includes('ProfilePage')) {
+        schemaMissing.push(route);
+        console.error(`[prerender] SCHEMA-MISS ${route}: .host-profile rendered but ProfilePage JSON-LD absent`);
+      }
+
       // Write to dist/<route>/index.html (or dist/index.html for /)
       let outPath;
       if (route === '/') {
@@ -710,6 +727,23 @@ async function prerender() {
     console.error(`[prerender] ${errorBaked.length} route(s) rendered as the ErrorPage and were left unbaked (serving live fallback): ${errorBaked.join(', ')}`);
     if (process.env.PRERENDER_FAIL_ON_ERROR_BAKE === '1') {
       console.error('[prerender] FAILED: PRERENDER_FAIL_ON_ERROR_BAKE is set — refusing to ship with error-baked routes.');
+      process.exit(1);
+    }
+  }
+
+  // Host profiles that rendered their chrome but shipped WITHOUT ProfilePage
+  // JSON-LD = a silent structured-data regression. Hard-fail by default: this is
+  // what the user asked the guard to do, and unlike the reverted #979 guard it
+  // CANNOT be tripped by a build-fetch rate-limit (that renders no .host-profile),
+  // so a trip is always a real code regression, not flaky infra. Escape hatch:
+  // PRERENDER_SCHEMA_MISS_WARN_ONLY=1 downgrades to a loud warning if this ever
+  // misfires on an edge case we did not foresee.
+  if (schemaMissing.length > 0) {
+    console.error(`[prerender] ${schemaMissing.length} host profile(s) rendered without ProfilePage JSON-LD: ${schemaMissing.join(', ')}`);
+    if (process.env.PRERENDER_SCHEMA_MISS_WARN_ONLY === '1') {
+      console.error('[prerender] (warn-only) PRERENDER_SCHEMA_MISS_WARN_ONLY is set — shipping anyway.');
+    } else {
+      console.error('[prerender] FAILED: host profiles shipped without structured data — refusing the build. Set PRERENDER_SCHEMA_MISS_WARN_ONLY=1 to override.');
       process.exit(1);
     }
   }

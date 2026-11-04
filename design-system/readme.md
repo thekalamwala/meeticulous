@@ -68,6 +68,7 @@ Naming: `mt-<family>-<variant>-<tone|ground>.svg`
 - **Motion:** calm. Use `--ease-out` with 140–220ms durations for state changes, and fades plus small 4–8px translates. The thread may "draw" in once on hero load (stroke-dashoffset, 1200ms, `--ease-loop`). No bounces, no infinite loops. Respect `prefers-reduced-motion`.
 - **Transparency:** only for the dialog overlay (`--bg-overlay`, ink at 48%).
 - **Status logic:** booked = maroon cell + pink dot · open = marigold · busy = hatched neutral · selected = rose ring.
+- **Community additions (2026-11):** `--text-micro` (11px, small-badge labels only) · `--badge-s` / `--avatar-s` / `--avatar-m` sizes · `.mt-badge--s` (20px) with `--official` (maroon) and `--ai` (ink) tones · `.mt-avatar` (40px, `--s` 32px; `--brand`, `--ink`, `--neutral` tones; initials or a cover `img`) · `.mt-input--textarea` + `.mt-input textarea` · `.mt-menu` / `.mt-menu__item` (floating list, shadow-lg) · `.mt-tab[aria-disabled=true]` (dimmed "soon" tab). Mirrored by hand in `client/src/styles/brand.css`.
 
 ## ICONOGRAPHY
 - **UI icons:** [Lucide](https://lucide.dev), loaded from CDN (`lucide-static@0.460.0`) through the `Icon` component (CSS mask, inherits `currentColor`). Lucide's 2px round stroke at 24px matches the logo icon's stroke-to-body ratio (6u on 76u). *This is a substitution: the kit has no UI icon set.* Sizes 16/20/24/32. Use maroon or ink on light, white on maroon. Never mix with filled sets.
@@ -79,3 +80,4 @@ Naming: `mt-<family>-<variant>-<tone|ground>.svg`
 ## Caveats
 - Fonts are loaded from Google Fonts. If you have licensed or self-hosted files (especially if "grostreque" means a font other than Bricolage Grotesque), add `@font-face` rules in `tokens/fonts.css`.
 - There is no product codebase or screenshots yet, so no UI kits or slide templates are included. Those are the next layer.
+- **Community writing additions (2026-11):** `.mt-card--accepted` (success outline for an accepted answer) · `.mt-dialog--wide` · `.mt-field-foot` + `.mt-counter` (`--over` = past the limit) · `.mt-hint-row` · `.mt-photostrip` / `.mt-thumb` (`--busy` while uploading) / `.mt-thumb-add` · `.mt-toolbar` · `.mt-nudge` (blush notice line) · `.mt-rules` · `.mt-reasons` (radio grid) · `.mt-replybox` · `.mt-more` (anchor for an overflow `.mt-menu`) · `.mt-fab` (mobile "New post", fixed bottom-left so it clears the support-bot launcher at bottom-right). Mirrored by hand in `client/src/styles/brand.css`.

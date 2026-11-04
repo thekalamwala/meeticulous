@@ -73,14 +73,30 @@ function isBot(request) {
   return BOT_UA_RE.test(ua);
 }
 
-async function fetchPrerender(pathname) {
+// Community crawlers: Googlebot/Bing included HERE ONLY (see the /community branch in route()).
+const SEARCH_BOT_RE = /Googlebot|bingbot/i;
+
+// passStatus (community only): hand crawlers the prerender's real 301/404/410 instead of
+// falling through to the 200 SPA shell, and don't follow the 301 (redirect: 'manual') —
+// following it would fetch the public page and serve that as "prerender" HTML. Profiles keep
+// the old behaviour (non-200 -> null -> SPA / username resolver).
+async function fetchPrerender(pathname, { passStatus = false } = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 3000);
   try {
     const res = await fetch(`${API_ORIGIN}/prerender${pathname}`, {
       headers: { accept: 'text/html' },
       signal: controller.signal,
+      ...(passStatus ? { redirect: 'manual' } : {}),
     });
+    if (passStatus && [301, 404, 410].includes(res.status)) {
+      const headers = { 'Cache-Control': res.headers.get('cache-control') || 'public, max-age=60', 'X-Prerender': 'true' };
+      if (res.status === 301) {
+        const location = res.headers.get('location');
+        return location ? new Response(null, { status: 301, headers: { ...headers, Location: location } }) : null;
+      }
+      return new Response(await res.text(), { status: res.status, headers: { ...headers, 'Content-Type': 'text/html; charset=utf-8' } });
+    }
     if (!res.ok) return null;
     const html = await res.text();
     return new Response(html, {
@@ -132,6 +148,20 @@ async function route(request) {
   if (segments.length === 1 && VANITY_SLUGS.has(segments[0].toLowerCase())) {
     url.pathname = `/${VANITY_TARGET}`;
     return Response.redirect(url.toString(), 302);
+  }
+
+  // ── Community: crawlers get server HTML, Googlebot included ──────────────
+  // Unlike profiles, Googlebot/bingbot are routed here too: community posts are created
+  // after deploy, so build-time prerender can't cover them, and the server HTML carries
+  // the same content a person sees (title, body, author, replies) — dynamic rendering,
+  // not cloaking. Runs before the SKIP/bot logic below ('community' is in SKIP).
+  // Prerender failure (timeout/5xx) falls through to the SPA.
+  if (segments[0] === 'community') {
+    const ua = request.headers.get('user-agent') || '';
+    if (BOT_UA_RE.test(ua) || SEARCH_BOT_RE.test(ua)) {
+      const prerenderResponse = await fetchPrerender(url.pathname, { passStatus: true });
+      if (prerenderResponse) return prerenderResponse;
+    }
   }
 
   // ── Bot prerender for dynamic profile/service routes ──────────────────────

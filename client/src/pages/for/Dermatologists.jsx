@@ -95,7 +95,7 @@ const TOOLS = [
 
 // Big-number impact row.
 const METRICS = [
-  { v: '24/7', l: 'Bookings, day or night' },
+  { v: '24/7', l: 'Appointments, day or night' },
   { v: '0%', l: 'Commission on Pro' },
   { v: '₹0', l: 'To get started' },
   { v: 'GST', l: 'Invoices, automatic' },
@@ -128,7 +128,7 @@ const COMPARE = {
       'Automatic WhatsApp reminders cut no-shows',
       'Fees collected upfront over UPI or card',
       'One clean, calendar-synced clinic view',
-      'Conflict-free slots — no double bookings',
+      'Conflict-free slots — no double-booked appointments',
     ],
   },
 };
@@ -142,10 +142,10 @@ const TRUST_STRIP = [
 ];
 
 const FAQ = [
-  { q: 'Is Meeticulous suitable for dermatologists and skin clinics?', a: 'Yes. Whether you are a solo dermatologist or a skin clinic with a team, Meeticulous manages your services, availability, patient bookings and communication from one place — so your front desk runs without constant phone calls. It is a scheduling and payment tool, not a medical-records system.' },
+  { q: 'Is Meeticulous suitable for dermatologists and skin clinics?', a: 'Yes. Whether you are a solo dermatologist or a skin clinic with a team, Meeticulous manages your services, availability, patient appointments and communication from one place — so your front desk runs without constant phone calls. It is a scheduling and payment tool, not a medical-records system.' },
   { q: 'Can patients book consultations online?', a: 'Yes. A patient opens your booking link, chooses a service such as a skin consultation or laser follow-up, picks a convenient time and confirms — no calls or waiting for the desk to reply.' },
   { q: 'Can I offer online (teledermatology) consultations?', a: 'Yes. Offer online consults with automatic Google Meet links, or mark a service as in-clinic — or both. The patient picks the mode that suits them.' },
-  { q: 'Can I collect the consultation fee online?', a: 'Yes. Collect the fee upfront through Razorpay — UPI, cards or netbanking — before the appointment. A GST invoice is generated automatically for every paid booking.' },
+  { q: 'Can I collect the consultation fee online?', a: 'Yes. Collect the fee upfront through Razorpay — UPI, cards or netbanking — before the appointment. A GST invoice is generated automatically for every paid appointment.' },
   { q: 'Can I manage multiple doctors and services?', a: 'Yes. Create as many services as you need — consultation, acne care, laser, cosmetic procedures — each with its own duration, fee and availability, and manage every appointment from one clinic calendar.' },
   { q: 'Is our clinic and patient information kept private?', a: 'Your production data is hosted in India (Mumbai) and the platform operates under India’s DPDP Act 2023. Meeticulous stores appointment and contact details for booking — it is not a medical-records system, and you control what a patient provides when booking.' },
   { q: 'Do we need any technical setup?', a: 'No. Setup takes minutes and needs no technical skills. You add your services and clinic hours, and your booking page is ready to share — your patients need nothing more than the link.' },
@@ -706,7 +706,7 @@ export default function Dermatologists() {
           <div className="grid gap-10 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
             <div>
               <div className="font-heading text-lg font-extrabold text-[color:var(--ca-ink)]">Meeticulous</div>
-              <p className="mt-2 max-w-xs text-sm text-slate-500">The easier way to run your skin clinic&apos;s bookings.</p>
+              <p className="mt-2 max-w-xs text-sm text-slate-500">The easier way to run your skin clinic&apos;s appointments.</p>
               <CtaButton to={START} className="mt-5">Create Your Page — Free <ArrowRight size={15} /></CtaButton>
             </div>
             {FOOTER_COLS.map((col) => (

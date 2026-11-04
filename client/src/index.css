@@ -1,3 +1,14 @@
+/* Cascade layer order, lowest priority first. `tw-preflight` holds Tailwind's
+   preflight (wrapped below — a NON-reserved layer name on purpose: Tailwind
+   intercepts its own `base`/`components`/`utilities` layer names and flattens
+   them to unlayered, which left preflight beating everything). `legacy` holds the
+   component CSS. legacy > tw-preflight means .cta-press / .btn--outline etc. BEAT
+   preflight's `button{background:transparent}` and `*{border:0}` reset — which,
+   unlayered, had rendered CTAs transparent and pills borderless. Everything
+   UNLAYERED (Tailwind components/utilities + the base element rules further down)
+   still wins over both layers, so utilities keep overriding component classes. */
+@layer tw-preflight, legacy;
+
 @import './styles/fonts.css';
 @import './styles/design-tokens.css';
 @import './styles/brand.css';
@@ -13,7 +24,11 @@
 @import './styles/components/badge.css' layer(legacy);
 @import './styles/components/modal.css' layer(legacy);
 
-@tailwind base;
+/* Preflight into the `tw-preflight` layer so component classes (legacy) outrank
+   it. Non-reserved name so Tailwind leaves it as a real native layer. */
+@layer tw-preflight {
+  @tailwind base;
+}
 @tailwind components;
 @tailwind utilities;
 

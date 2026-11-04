@@ -10,4 +10,6 @@
   --slot-size:96px; --slot-gap:10px; --slot-radius:20px;
   /* Control heights */
   --control-s:36px; --control-m:44px; --control-l:52px;
+  /* Small fixed sizes (community, 2026-11) */
+  --badge-s:20px; --avatar-s:32px; --avatar-m:40px;
 }

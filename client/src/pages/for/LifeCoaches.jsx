@@ -72,7 +72,7 @@ const SERVICES = [
   { icon: Target, label: '1:1 Coaching Session', desc: 'One-on-one sessions, booked and paid in advance.' },
   { icon: Sparkles, label: 'Life & Mindset Coaching', desc: 'Clarity, habits and personal growth work.' },
   { icon: Leaf, label: 'Wellness & Wellbeing', desc: 'Stress, balance and lifestyle sessions.' },
-  { icon: Sunrise, label: 'Coaching Packages', desc: 'Multi-session programmes with recurring bookings.' },
+  { icon: Sunrise, label: 'Coaching Packages', desc: 'Programmes with recurring sessions.' },
   { icon: Users, label: 'Group Sessions & Workshops', desc: 'Run a cohort or a group programme.' },
 ];
 
@@ -96,10 +96,10 @@ const TOOLS = [
 
 // Warm big-numeral impact band.
 const METRICS = [
-  { v: '24/7', l: 'Bookings, day or night', note: 'Your booking page never sleeps — clients reserve sessions any time.' },
+  { v: '24/7', l: 'Sessions, day or night', note: 'Your booking page never sleeps — clients reserve sessions any time.' },
   { v: '100%', l: 'Kept on Pro', note: '0% commission — every rupee you earn stays yours.' },
   { v: '₹0', l: 'To get started', note: 'Free forever plan — no card, no lock-in.' },
-  { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice generated for every paid booking.' },
+  { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice generated for every paid session.' },
 ];
 
 // Magazine pull-quotes — labelled placeholders about the SOFTWARE's admin benefit,
@@ -124,7 +124,7 @@ const NEW_WAY = [
   { title: 'Automatic reminders', desc: 'WhatsApp and email reminders cut no-shows.' },
   { title: 'Fees collected upfront', desc: 'Session fee taken at booking, over UPI or card.' },
   { title: 'Every client in one place', desc: 'Sessions, history and notes in a single dashboard.' },
-  { title: 'Conflict-free calendar', desc: 'Availability stays accurate — no double bookings.' },
+  { title: 'Conflict-free calendar', desc: 'Availability stays accurate — no double-booked sessions.' },
 ];
 
 // Trust facts — verifiable only.
@@ -136,12 +136,12 @@ const TRUST_STRIP = [
 ];
 
 const FAQ = [
-  { q: 'Is Meeticulous suitable for life and wellness coaches?', a: 'Yes. Whether you coach one-on-one or run group programmes, Meeticulous manages your sessions, availability, client bookings and communication from one place — so you can focus on coaching, not coordination.' },
+  { q: 'Is Meeticulous suitable for life and wellness coaches?', a: 'Yes. Whether you coach one-on-one or run group programmes, Meeticulous manages your sessions, availability, clients and communication from one place — so you can focus on coaching, not coordination.' },
   { q: 'Can clients book coaching sessions online?', a: 'Yes. A client opens your booking link, chooses a session such as a discovery call or a 1:1, picks a convenient time and confirms — no DMs or waiting for a reply.' },
   { q: 'Can I take a paid discovery call?', a: 'Yes. Create a paid intro or discovery call with its own fee and duration. Clients pay upfront through Razorpay when they book, so you only spend time on committed clients.' },
   { q: 'Can I share my booking link in my Instagram bio?', a: 'Yes. Your link works anywhere — put it in your Instagram or LinkedIn bio, your newsletter or your DMs. One link handles all your booking requests.' },
-  { q: 'Can I collect session fees online?', a: 'Yes. Collect fees upfront through Razorpay — UPI, cards or netbanking — before the session. A GST invoice is generated automatically for every paid booking.' },
-  { q: 'Can I sell coaching packages or run group sessions?', a: 'Yes. Offer multi-session packages, recurring bookings and group sessions or workshops — each with its own duration, fee and availability.' },
+  { q: 'Can I collect session fees online?', a: 'Yes. Collect fees upfront through Razorpay — UPI, cards or netbanking — before the session. A GST invoice is generated automatically for every paid session.' },
+  { q: 'Can I sell coaching packages or run group sessions?', a: 'Yes. Offer multi-session packages, recurring 1:1s and group sessions or workshops — each with its own duration, fee and availability.' },
   { q: 'Can I run online sessions?', a: 'Yes. Offer online sessions with automatic Google Meet or Zoom links, or mark a service as in-person — or both. The client picks the mode that suits them.' },
   { q: 'Is there a free plan?', a: 'Yes. The Starter plan is free forever — an online booking page, unlimited services and bookings, UPI payments, 24-hour reminders and GST invoices — with a small 5% per-booking fee. Pro removes that commission entirely and adds WhatsApp automation and growth tools.' },
 ];
@@ -457,7 +457,7 @@ export default function LifeCoaches() {
               Appointment booking software for life coaches, <span style={{ color: 'var(--ca-primary)' }}>built around how you work.</span>
             </Reveal>
             <Reveal as="p" delay={0.06} className="mt-4 text-base text-neutral-500">
-              From discovery calls to 1:1s, packages and group sessions — manage every booking in one place.
+              From discovery calls to 1:1s, packages and group sessions — manage every session in one place.
             </Reveal>
           </div>
           <div className="mt-12 border-t border-black/10">

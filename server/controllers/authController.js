@@ -6,6 +6,7 @@ const {
   getCalendarTimezone,
   revokeToken,
   oauth2Client,
+  hasCalendarScopes,
 } = require("../config/google");
 const { google } = require("googleapis");
 const jwt = require("jsonwebtoken");
@@ -24,6 +25,13 @@ const { SAFETY_KEYS } = require("../config/featureRegistry");
 // genuine non-UTC Google timezone is still honoured for hosts truly elsewhere.
 const normalizeSeedTimezone = (googleTz) =>
   (!googleTz || /^(Etc\/)?(UTC|GMT)$/i.test(googleTz)) ? "Asia/Kolkata" : googleTz;
+
+// Browser-reported IANA timezone from the sign-in URL: accept only a string of
+// <=64 chars that Intl recognises (query parsing can hand us arrays/objects).
+const validTz = (tz) => {
+  if (typeof tz !== "string" || !tz || tz.length > 64) return null;
+  try { new Intl.DateTimeFormat("en", { timeZone: tz }); return tz; } catch (_) { return null; }
+};
 
 // Invite-link attribution: stamp only in the brand-new-profile branch (caller
 // guarantees profileId was just created). Existing accounts never reach here.
@@ -160,6 +168,7 @@ const serializeProfile = async (profile, session) => {
   social_links:             profile.social_links || {},
   theme_color:              profile.theme_color || null,
   google_calendar_connected:!!profile.google_calendar_connected,
+  calendar_skipped:         !!profile.calendar_skipped,
   is_verified:              !!profile.is_verified,
   whatsapp_verified:        !!profile.whatsapp_verified,
   whatsapp_number:          profile.whatsapp_number || null,
@@ -297,6 +306,27 @@ const ensureGuestProfile = async (email, name = "Guest") => {
 // self-serve) and the Google vendor-auth upgrade path (a customer who signs in
 // via "Become a host" / vendor-login) so both routes flip is_host + seed onboarding
 // identically. Never resets a host who already finished onboarding.
+// Founder heads-up for every new host, so the founder can review who signed up.
+// Two entry points: a brand-new Google host (googleCallback) and an existing
+// guest turning on hosting (enableHostingForProfile). Key is per-profile so
+// distinct signups are never collapsed by the throttle. Fire-and-forget:
+// adminAlert never throws.
+const alertNewHost = (p, via) => {
+  const base = process.env.CLIENT_URL || 'https://meeticulous.com';
+  require('../utils/adminAlert').adminAlert({
+    key: `new_host:${p.id}`,
+    subject: `New host signup: ${p.name || p.username || p.email || p.id}`,
+    lines: [
+      `Name: ${p.name || '—'}`,
+      `Username: ${p.username || '—'}`,
+      `Email: ${p.email || '—'}`,
+      `Phone: ${p.phone || '—'}`,
+      `Signed up via: ${via}`,
+    ],
+    link: `${base}/admin/host360/${p.id}`,
+  });
+};
+
 const enableHostingForProfile = async (profileId) => {
   const { data: profile, error } = await supabaseAdmin
     .from("profiles")
@@ -329,22 +359,8 @@ const enableHostingForProfile = async (profileId) => {
   if (upErr || !updated) throw upErr || new Error("Could not enable hosting");
 
   // New-host alert: fire once, only on the false→true transition (a returning
-  // host re-signing in already has is_host=true, so this stays quiet). Key is
-  // per-profile so distinct signups are never collapsed by the throttle.
-  if (!profile.is_host) {
-    const base = process.env.CLIENT_URL || 'https://meeticulous.com';
-    require('../utils/adminAlert').adminAlert({
-      key: `new_host:${profileId}`,
-      subject: `New host signup: ${updated.name || updated.username || updated.email || profileId}`,
-      lines: [
-        `Name: ${updated.name || '—'}`,
-        `Username: ${updated.username || '—'}`,
-        `Email: ${updated.email || '—'}`,
-        `Phone: ${updated.phone || '—'}`,
-      ],
-      link: `${base}/admin/host360/${profileId}`,
-    });
-  }
+  // host re-signing in already has is_host=true, so this stays quiet).
+  if (!profile.is_host) alertNewHost(updated, 'existing guest account turned on hosting');
   return updated;
 };
 
@@ -420,9 +436,16 @@ const registerVendor = async (req, res) => {
 // calendar from the dashboard/onboarding. Returns the consent URL.
 // State is signed so the callback can verify origin (CSRF) and knows which
 // vendor to attach the tokens to (no more email-collision risk).
+// Where Google may send the host back to after calendar connect. The path comes
+// from the client, so it is an open-redirect vector: exact-match allowlist only
+// (no query, fragment, encoding or traversal can satisfy these anchored regexes).
+const safeReturnPath = (p) =>
+  typeof p === "string" && /^\/(dashboard|vendor-register\/[a-z0-9-]{1,40}\/calendar)$/.test(p) ? p : null;
+
 const googleAuth = (req, res) => {
+  const ret = safeReturnPath(req.query?.return);
   const state = jwt.sign(
-    { flow: "calendar_connect", uid: req.user.id },
+    { flow: "calendar_connect", uid: req.user.id, ...(ret && { ret }) },
     OAUTH_STATE_SECRET,
     { expiresIn: "15m" },
   );
@@ -445,8 +468,10 @@ const googleVendorAuth = (req, res) => {
   // Marketing attribution — carried through the signed OAuth state so the
   // callback can stamp UTM/source on the brand-new host lead (CRM Phase 2b).
   const att = require("../services/crm/attributionInput").cleanAttribution(req.query || {});
+  // Browser timezone: fallback seed when Google Calendar can't supply one.
+  const tz = validTz(req.query.tz);
   const state = jwt.sign(
-    { flow: "vendor_auth", intent, ...(invite ? { invite } : {}), ...(att ? { att } : {}) },
+    { flow: "vendor_auth", intent, ...(invite ? { invite } : {}), ...(att ? { att } : {}), ...(tz ? { tz } : {}) },
     OAUTH_STATE_SECRET,
     { expiresIn: "15m" },
   );
@@ -464,10 +489,12 @@ const googleVendorAuth = (req, res) => {
 // Seed onboarding state for a brand-new Google vendor. Step 1 = Google identity
 // confirmed. The next step (2) is slug claim, handled by the authed claim-slug
 // endpoint. onboarding_slug is pre-seeded with the auto-generated username so
-// the client can resume before they pick a custom slug. calendar_skipped=true
-// because they connected Google OAuth here. Schema-guarded: if the onboarding
+// the client can resume before they pick a custom slug. calendar_skipped mirrors
+// calendarOk: true only when Google actually granted the calendar scopes (the
+// consent screen lets a host untick them); false keeps the calendar step in
+// onboarding so they get asked again. Schema-guarded: if the onboarding
 // columns don't exist (pre-onboarding DB) the vendor lands on dashboard — no crash.
-const markGoogleVendorOnboarding = async (profileId, username) => {
+const markGoogleVendorOnboarding = async (profileId, username, { calendarOk }) => {
   try {
     const { error } = await supabaseAdmin
       .from("profiles")
@@ -475,7 +502,7 @@ const markGoogleVendorOnboarding = async (profileId, username) => {
         onboarding_slug: username,
         onboarding_step_completed: 1, // step 1 = Google identity done; next = claim slug
         onboarding_completed: false,
-        calendar_skipped: true,
+        calendar_skipped: calendarOk,
         updated_at: new Date().toISOString(),
       })
       .eq("id", profileId);
@@ -501,9 +528,60 @@ const exchangeGoogleCode = async (code) => {
   return { tokens, googleUser };
 };
 
+// Timezone: only seed if the vendor has no availability row yet (never
+// overwrite a timezone the vendor chose in the dashboard). Preference: Google
+// Calendar settings → browser tz (seedTz) → platform default; all via
+// normalizeSeedTimezone. Non-fatal: a timezone problem must never block login.
+async function seedAvailabilityTimezone(profileId, getGoogleTz, seedTz) {
+  try {
+    // A failed read must NOT fall through to the upsert: it could overwrite a
+    // timezone the host already chose.
+    const { data: avail, error: availErr } = await supabaseAdmin
+      .from("availability").select("host_id").eq("host_id", profileId).maybeSingle();
+    if (availErr || avail) return;
+    let googleTz = null;
+    try { googleTz = await getGoogleTz(); } catch (e) { console.error("google timezone read (non-fatal):", e.message); }
+    // Google reporting UTC/GMT usually means "never set", not a real zone — it
+    // must not beat the browser timezone.
+    if (/^(utc|gmt|etc\/utc|etc\/gmt)$/i.test(String(googleTz || "").trim())) googleTz = null;
+    await supabaseAdmin.from("availability").upsert(
+      { host_id: profileId, timezone: normalizeSeedTimezone(googleTz || seedTz), updated_at: new Date().toISOString() },
+      { onConflict: "host_id" },
+    );
+  } catch (tzErr) {
+    console.error("timezone seed (non-fatal):", tzErr.message);
+  }
+}
+
 // Persist Google tokens (+ google_id when the column exists) on a profile and
 // best-effort seed the vendor's timezone from their Google Calendar settings.
-const attachGoogleToProfile = async (profileId, tokens, googleUser) => {
+// calendarOk=false (host unticked the calendar boxes): store NO tokens, skip the
+// legacy revoke and timezone call, and record connected=false / skipped=false so
+// onboarding still asks for the calendar. seedTz (browser timezone from the signed
+// state) seeds availability when Google's settings can't (denied / call failed).
+const attachGoogleToProfile = async (profileId, tokens, googleUser, { calendarOk, seedTz, alreadyConnected, identity } = {}) => {
+  if (!calendarOk) {
+    // An already-connected host keeps their stored (still valid) token and flags:
+    // a narrower re-consent must not disconnect them. availabilityService
+    // self-heals if that token later fails. google_id is (re)written only for the
+    // login-identity flow (Flow A, identity=true): on a calendar-connect denial
+    // nothing was attached, so the calendar account's id must not be recorded.
+    const denied = alreadyConnected
+      ? { updated_at: new Date().toISOString() }
+      : { google_calendar_connected: false, calendar_skipped: false, updated_at: new Date().toISOString() };
+    let { error } = await supabaseAdmin
+      .from("profiles")
+      .update(identity ? { ...denied, google_id: googleUser.id || null } : denied)
+      .eq("id", profileId);
+    if (identity && error && /Could not find the|column.*does not exist/i.test(error.message)) {
+      ({ error } = await supabaseAdmin.from("profiles").update(denied).eq("id", profileId));
+    }
+    if (error) throw error;
+    // Connected hosts already have availability; only a not-yet-connected host
+    // gets the browser-timezone seed.
+    if (!alreadyConnected) await seedAvailabilityTimezone(profileId, () => null, seedTz);
+    return;
+  }
   // Tokens are encrypted at rest (AES-256-GCM). Reads decrypt at point of use
   // in availabilityService + bookingController.
   const encAccess = encryptToken(tokens.access_token);
@@ -576,20 +654,8 @@ const attachGoogleToProfile = async (profileId, tokens, googleUser) => {
 
   // Timezone: only seed if the vendor has no availability row yet (never
   // overwrite a timezone the vendor chose in the dashboard).
-  try {
-    const { data: avail } = await supabaseAdmin
-      .from("availability").select("host_id").eq("host_id", profileId).maybeSingle();
-    if (!avail) {
-      const googleTz = await getCalendarTimezone(tokens.access_token, tokens.refresh_token);
-      const tz = normalizeSeedTimezone(googleTz);
-      await supabaseAdmin.from("availability").upsert(
-        { host_id: profileId, timezone: tz, updated_at: new Date().toISOString() },
-        { onConflict: "host_id" },
-      );
-    }
-  } catch (tzErr) {
-    console.error("google timezone seed (non-fatal):", tzErr.message);
-  }
+  await seedAvailabilityTimezone(
+    profileId, () => getCalendarTimezone(tokens.access_token, tokens.refresh_token), seedTz);
 };
 
 // GET /api/auth/google/callback — single callback for BOTH flows, branched on
@@ -613,11 +679,24 @@ const googleCallback = async (req, res) => {
   // a vendor-auth user is NOT logged in, so bouncing them to /dashboard is a
   // dead-end — they must land back on /login-as-vendor.
   let isVendorAuthFlow = false;
+  let statePayload = null; // hoisted: the catch routes calendar_connect errors via its ret
   try {
     const { code, state } = req.query;
+    // Google sends Cancel as ?error=access_denied&state=… with NO code. Send the
+    // host back to where they started instead of raw JSON (state must verify).
+    if (!code && req.query.error && state) {
+      try {
+        const p = jwt.verify(state, OAUTH_STATE_SECRET);
+        if (p.flow === "calendar_connect") {
+          return res.redirect(`${clientUrl}${safeReturnPath(p.ret) || "/dashboard"}?google=denied`);
+        }
+        if (p.flow === "vendor_auth") {
+          return res.redirect(`${clientUrl}/login-as-vendor?error=cancelled`);
+        }
+      } catch (_) { /* bad state: fall through to the generic 400 */ }
+    }
     if (!code) return res.status(400).json({ message: "No code provided" });
 
-    let statePayload = null;
     if (state) {
       try {
         statePayload = jwt.verify(state, OAUTH_STATE_SECRET);
@@ -628,6 +707,9 @@ const googleCallback = async (req, res) => {
     isVendorAuthFlow = statePayload?.flow === "vendor_auth";
 
     const { tokens, googleUser } = await exchangeGoogleCode(code);
+    // Google's consent screen lets the host untick the calendar boxes; only the
+    // scopes actually granted count as "calendar connected".
+    const calendarOk = hasCalendarScopes(tokens);
     const googleEmail = (googleUser.email || "").toLowerCase().trim();
     if (!googleEmail) {
       return res.redirect(`${clientUrl}/login-as-vendor?error=no_email`);
@@ -676,8 +758,9 @@ const googleCallback = async (req, res) => {
 
         // Drop the new Google vendor into onboarding at step 1 (Google identity
         // confirmed). Next step (2) is slug claim via the authed claim-slug
-        // endpoint. calendar_skipped=true because they connected via Google here.
-        await markGoogleVendorOnboarding(profileId, profile.username);
+        // endpoint. calendar_skipped = calendarOk (see markGoogleVendorOnboarding).
+        await markGoogleVendorOnboarding(profileId, profile.username, { calendarOk });
+        alertNewHost(profile, 'Google (new account)');
 
         // Invite-link attribution — new host ONLY, write-once, never a referrals row.
         await maybeStampInvite(profileId, statePayload);
@@ -722,7 +805,8 @@ const googleCallback = async (req, res) => {
       const needsAttach =
         !existing || upgraded || !existing.google_calendar_connected || !!tokens.refresh_token;
       if (needsAttach) {
-        await attachGoogleToProfile(profileId, tokens, googleUser);
+        await attachGoogleToProfile(profileId, tokens, googleUser, { calendarOk, seedTz: validTz(statePayload?.tz), alreadyConnected: !!existing?.google_calendar_connected, identity: true });
+        if (!calendarOk) trackServer(profileId, "calendar_scope_denied", { source: existing ? "login" : "signup" }, { req });
       }
 
       // This host authenticated via Google → has_google_identity is now true.
@@ -746,6 +830,7 @@ const googleCallback = async (req, res) => {
       // hosting · new=0 returning host. The client routes new!=0 through
       // onboarding (ProtectedRoute does the slug-based redirect either way).
       const newFlag = !existing ? "1" : (upgraded ? "upgrade" : "0");
+      trackServer(profileId, "auth_completed", { method: "google", new: newFlag }, { req });
       return res.redirect(
         `${clientUrl}/auth/google/done#access_token=${encodeURIComponent(session.access_token)}` +
         `&refresh_token=${encodeURIComponent(session.refresh_token)}&new=${newFlag}`,
@@ -757,17 +842,27 @@ const googleCallback = async (req, res) => {
     // No state at all = pre-deploy URL or forged request → fall back to the
     // old email match ONLY when a host profile exists for that email.
     let targetId = statePayload?.flow === "calendar_connect" ? statePayload.uid : null;
+    let targetConnected = null;
     if (!targetId) {
       const { data: byEmail } = await supabaseAdmin
-        .from("profiles").select("id, role").eq("email", googleEmail).maybeSingle();
+        .from("profiles").select("id, role, google_calendar_connected").eq("email", googleEmail).maybeSingle();
       if (!byEmail || byEmail.role !== "host") {
         return res.redirect(`${clientUrl}/dashboard?google=error&reason=profile_not_found`);
       }
       targetId = byEmail.id;
+      targetConnected = !!byEmail.google_calendar_connected;
+    }
+    if (targetConnected === null) {
+      const { data: tgt } = await supabaseAdmin
+        .from("profiles").select("id, role, google_calendar_connected").eq("id", targetId).maybeSingle();
+      targetConnected = !!tgt?.google_calendar_connected;
     }
 
-    await attachGoogleToProfile(targetId, tokens, googleUser);
-    res.redirect(`${clientUrl}/dashboard?google=connected`);
+    await attachGoogleToProfile(targetId, tokens, googleUser, { calendarOk, alreadyConnected: targetConnected });
+    // Re-validate: state is signed, but the redirect target is cheap to re-check.
+    const ret = statePayload?.flow === "calendar_connect" ? safeReturnPath(statePayload.ret) : null;
+    if (!calendarOk) trackServer(targetId, "calendar_scope_denied", { source: ret && ret !== "/dashboard" ? "onboarding" : "dashboard" }, { req });
+    res.redirect(`${clientUrl}${ret || "/dashboard"}?google=${calendarOk ? "connected" : "denied"}`);
   } catch (error) {
     console.error("google callback error:", error.message);
     // Vendor-auth failures (e.g. session mint failed) → back to vendor login,
@@ -775,7 +870,10 @@ const googleCallback = async (req, res) => {
     if (isVendorAuthFlow) {
       return res.redirect(`${clientUrl}/login-as-vendor?error=auth_failed`);
     }
-    res.redirect(`${clientUrl}/dashboard?google=error&reason=auth_failed`);
+    // Calendar connect started from onboarding must return there, not skip the
+    // Live screen via /dashboard (ret re-validated through the allowlist).
+    const ret = statePayload?.flow === "calendar_connect" ? safeReturnPath(statePayload.ret) : null;
+    res.redirect(`${clientUrl}${ret || "/dashboard"}?google=error&reason=auth_failed`);
   }
 };
 

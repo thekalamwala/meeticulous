@@ -252,4 +252,37 @@ describe('useOnboardingGuard', () => {
       { timeout: 3000 },
     );
   });
+
+  // R1: both plan paths (activate-free / advance-to-live) save step 6 BEFORE
+  // PlansStep navigates, so /calendar is only legitimately reached at step >= 6.
+  test('calendar screen is ready at stepCompleted 6 (plan saved)', async () => {
+    getOnboardingStatus.mockResolvedValue({ data: { stepCompleted: 6, isComplete: false, slug: 'john' } });
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: { ...window.location, pathname: '/vendor-register/john/calendar' },
+    });
+    const ProbeComponent = () => <div data-testid="probe" data-ready={String(useOnboardingGuard())} />;
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={['/vendor-register/john/calendar']}>
+        <Routes><Route path="/vendor-register/:slug/calendar" element={<ProbeComponent />} /></Routes>
+      </MemoryRouter>
+    );
+    await waitFor(() => expect(getByTestId('probe').getAttribute('data-ready')).toBe('true'));
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  test('calendar screen at stepCompleted 5 (plan not saved) redirects to /plan', async () => {
+    getOnboardingStatus.mockResolvedValue({ data: { stepCompleted: 5, isComplete: false, slug: 'john' } });
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: { ...window.location, pathname: '/vendor-register/john/calendar' },
+    });
+    const ProbeComponent = () => { useOnboardingGuard(); return null; };
+    render(
+      <MemoryRouter initialEntries={['/vendor-register/john/calendar']}>
+        <Routes><Route path="/vendor-register/:slug/calendar" element={<ProbeComponent />} /></Routes>
+      </MemoryRouter>
+    );
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/vendor-register/john/plan', { replace: true }));
+  });
 });

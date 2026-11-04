@@ -15,6 +15,7 @@ const ERROR_COPY = {
   customer_email: "We couldn't sign you in with that Google account. Please try again.",
   create_failed: "We could not create your account. Please try again.",
   auth_failed: "Google sign-in failed. Please try again.",
+  cancelled: "Google sign-in was cancelled.",
   signin_needed: "You're all set! Please sign in to continue.",
   no_email: "Google did not share an email address. Check your account permissions.",
 };
