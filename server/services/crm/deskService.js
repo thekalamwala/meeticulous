@@ -96,10 +96,14 @@ async function replies(limit) {
   return pack(rows, limit, (l) => [replyReason(l)]);
 }
 
+// High-intent queue = intent 'high', unassigned, still in early presale. Shared
+// with the agent sales report so both count the same leads.
+const HIGH_INTENT_STATUSES = ['new', 'contacted', 'replied', 'qualified'];
+
 async function highIntent(limit) {
   const { data } = await supabaseAdmin.from('leads').select('*')
     .eq('intent', 'high').is('owner_admin_id', null)
-    .in('status', ['new', 'contacted', 'replied', 'qualified'])
+    .in('status', HIGH_INTENT_STATUSES)
     .order('score', { ascending: false }).limit(CANDIDATE_CAP);
   return pack(data || [], limit, (l) => [`High intent (score ${l.score ?? 0})`]);
 }
@@ -263,6 +267,6 @@ async function getRelationships(limit = DEFAULT_LIMIT) {
 }
 
 module.exports = {
-  getDesk, getRelationships, rankRecommendations, flattenRec,
+  getDesk, getRelationships, rankRecommendations, flattenRec, HIGH_INTENT_STATUSES,
   isUnansweredReply, activationReason, mergeById, shape, intentRank, replyReason,
 };
