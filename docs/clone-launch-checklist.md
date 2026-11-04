@@ -81,6 +81,7 @@ store in Render env, never commit.
 | `GOOGLE_TOKEN_KEY` | 32-byte key encrypting stored Google refresh tokens |
 | `KYC_ENCRYPTION_KEY` | encrypts host KYC documents at rest |
 | `METRICS_TOKEN`, `INGEST_TOKEN` | protect internal metrics/ingest endpoints |
+| `AGENT_REPORT_TOKEN` | ≥32 chars; read-only `/api/agents/reports/*` for SUTRA agents (`x-agent-token`). Unset = endpoint off (503) |
 | `SUPER_ADMIN_USERNAME`, `SUPER_ADMIN_PASSWORD`, `SUPER_ADMIN_EMAIL`, `SUPER_ADMIN_OTP_EMAIL` | superadmin login (separate door, never phone OTP) |
 
 ### B. Supabase — new project (free tier, or ~$25/mo prod)
