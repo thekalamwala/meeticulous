@@ -11,7 +11,7 @@ import Seo from "../components/common/Seo";
 import ErrorPage from "./ErrorPage";
 import TransientError from "../components/error/TransientError";
 import { isNotFoundError } from "../utils/fetchError";
-import { resolveProfileSeo, profileJsonLd, breadcrumbJsonLd, faqJsonLd, SITE_URL } from "../utils/seo";
+import { resolveProfileSeo, profileGraphJsonLd, SITE_URL } from "../utils/seo";
 import { profileFaqs } from "../utils/profileFaqs";
 import FaqAccordion from "../components/FaqAccordion";
 import { prerendered } from "../services/prerenderData";
@@ -414,15 +414,16 @@ const HostProfile = () => {
 
   // Admin-managed SEO → head tags + ProfilePage JSON-LD (only once host loaded).
   const seo = host ? resolveProfileSeo({ host, services, siteUrl: SEO_SITE }) : null;
+  // Template FAQs are emitted as FAQPage ONLY when the host has host-specific facts
+  // (services or a profession) — otherwise they're generic and thin (guide §5.3).
+  // MIRROR this gate in server prerenderController resolveProfileMeta.
   const faqs = host ? profileFaqs({ host, services }) : [];
-  const jsonLd = host ? [
-    profileJsonLd({ host, siteUrl: SEO_SITE, services, rating: { avg: reviewData.avg, count: reviewData.count } }),
-    breadcrumbJsonLd({ items: [
-      { name: 'Home', path: '/' },
-      { name: host.name || 'Host', path: `/${host.username}` },
-    ], siteUrl: SEO_SITE }),
-    ...(faqs.length ? [faqJsonLd({ faqs })] : []),
-  ] : null;
+  const faqsHostSpecific = host && (services.length > 0 || !!host.profession);
+  const jsonLd = host ? [profileGraphJsonLd({
+    host, siteUrl: SEO_SITE, services, name: seo?.title,
+    rating: { avg: reviewData.avg, count: reviewData.count },
+    faqs: faqsHostSpecific ? faqs : [],
+  })] : null;
 
   if (isVanity) return <Navigate to={`/${VANITY_TARGET}`} replace />;
 

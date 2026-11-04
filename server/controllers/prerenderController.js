@@ -15,7 +15,7 @@
 
 const SITE_URL = process.env.PUBLIC_SITE_URL || 'https://meeticulous.com';
 
-const { profileFaqs, serviceFaqs } = require('../services/seo/pageContentModel');
+const { profileFaqs, serviceFaqs, sameAsFrom } = require('../services/seo/pageContentModel');
 const { cloudinaryHostCard, cloudinaryServiceCard } = require('../services/seo/hostOgCard');
 
 const trimSlash = (s) => String(s || '').replace(/\/+$/, '');
@@ -193,12 +193,143 @@ function cityForSeo(loc) {
   return first.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function faqPageLd(faqs) {
-  const mainEntity = (faqs || []).filter((f) => f && f.q && f.a).map((f) => ({
-    '@type': 'Question', name: String(f.q),
-    acceptedAnswer: { '@type': 'Answer', text: String(f.a) },
+// ── Host entity graph (bot-shell mirror of client/src/utils/seo.js) ───────────
+//
+// buildProfileGraph / buildServiceGraph emit the SAME single @graph the client
+// builders (profileGraphJsonLd / serviceGraphJsonLd) emit for the same input — the
+// host is one `Person` entity (@id `${site}/${username}#person`) linked by @id
+// across the profile and every service. The client/server parity test proves these
+// stay deep-equal. Every node below mirrors its client counterpart VERBATIM; change
+// one, change both. (Product pages are client-only — not in this bot shell.)
+
+const LOGO_URL = (site) => `${site}/web-app-manifest-512x512.png`;
+const websiteNode = (site) => ({
+  '@type': 'WebSite', '@id': `${site}/#website`, url: `${site}/`,
+  name: 'Meeticulous', publisher: { '@id': `${site}/#organization` }, inLanguage: 'en-IN',
+});
+// Mirrors client orgNode (utils/seo.js) + its ORG_LEGAL_NAME / ORG_CONTACT_POINT.
+const orgNode = (site) => ({
+  '@type': 'Organization', '@id': `${site}/#organization`, name: 'Meeticulous',
+  legalName: 'Rajmudra Media LLP', url: `${site}/`,
+  logo: { '@type': 'ImageObject', '@id': `${site}/#logo`, url: LOGO_URL(site), contentUrl: LOGO_URL(site), width: 512, height: 512 },
+  description: 'Online booking and appointment scheduling platform for coaches, consultants, therapists, and small businesses.',
+  contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email: 'team@meeticulous.com', availableLanguage: ['en', 'hi'] },
+});
+const aggregateRatingNode = (avg, count) =>
+  ({ '@type': 'AggregateRating', ratingValue: avg, reviewCount: count, bestRating: 5, worstRating: 1 });
+const abs = (site, p) => (/^https?:/i.test(p) ? p : `${site}${String(p || '').startsWith('/') ? '' : '/'}${p || ''}`);
+const breadcrumbNode = (items, site, id) => ({
+  '@type': 'BreadcrumbList', '@id': id,
+  itemListElement: (items || []).filter((it) => it && it.name && it.path)
+    .map((it, i) => ({ '@type': 'ListItem', position: i + 1, name: it.name, item: abs(site, it.path) })),
+});
+const faqGraphNode = (faqs, id) => ({
+  '@type': 'FAQPage', '@id': id,
+  mainEntity: (faqs || []).filter((f) => f && f.q && f.a)
+    .map((f) => ({ '@type': 'Question', name: String(f.q), acceptedAnswer: { '@type': 'Answer', text: String(f.a) } })),
+});
+
+// host: profiles row; services: public service rows; rating: {avg,count}; faqs: [{q,a}].
+function buildProfileGraph({ host = {}, services = [], rating = null, faqs = [], site, name } = {}) {
+  const url = host.username ? `${site}/${host.username}` : site;
+  const sameAs = sameAsFrom(host);
+  const knowsAbout = knowsAboutFrom(host);
+  const hasOffline = (services || []).some((s) => s && s.meeting_mode === 'offline');
+  const city = hasOffline ? cityForSeo(host.location) : null;
+  const offers = (Array.isArray(services) ? services : []).filter((s) => s && s.title).map((s) => ({
+    '@type': 'Offer',
+    ...(s.price_on_request ? {} : { price: String(s.price ?? 0), priceCurrency: s.currency || 'INR' }),
+    url: s.slug ? `${url}/${s.slug}` : url,
+    itemOffered: { '@id': s.slug ? `${url}/${s.slug}#service` : `${url}#service` },
   }));
-  return mainEntity.length ? { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity } : null;
+  const person = {
+    '@type': 'Person',
+    '@id': `${url}#person`,
+    name: host.name || 'Host',
+    url,
+    jobTitle: host.profession || undefined,
+    description: host.seo_description || host.bio || undefined,
+    image: upscaleAvatar(host.seo_image || host.profile_image) || undefined,
+    ...(sameAs.length ? { sameAs } : {}),
+    ...(host.profession ? {
+      hasOccupation: {
+        '@type': 'Occupation', name: host.profession,
+        ...(host.primary_category ? { occupationalCategory: humanizeSlug(host.primary_category) } : {}),
+      },
+    } : {}),
+    ...(knowsAbout.length ? { knowsAbout } : {}),
+    ...(city ? { workLocation: { '@type': 'Place', address: { '@type': 'PostalAddress', addressLocality: city, addressCountry: 'IN' } } } : {}),
+    ...(offers.length ? { makesOffer: offers } : {}),
+    ...(rating && rating.count > 0 && rating.avg > 0 ? { aggregateRating: aggregateRatingNode(rating.avg, rating.count) } : {}),
+  };
+  const graph = [
+    websiteNode(site),
+    orgNode(site),
+    {
+      '@type': 'ProfilePage', '@id': url, url,
+      ...(name ? { name } : {}),
+      inLanguage: 'en-IN',
+      ...(host.updated_at ? { dateModified: host.updated_at } : {}),
+      isPartOf: { '@id': `${site}/#website` },
+      publisher: { '@id': `${site}/#organization` },
+      mainEntity: { '@id': person['@id'] },
+      breadcrumb: { '@id': `${url}#breadcrumb` },
+    },
+    person,
+    breadcrumbNode([
+      { name: 'Home', path: '/' },
+      { name: host.name || 'Host', path: `/${host.username}` },
+    ], site, `${url}#breadcrumb`),
+  ];
+  if (faqs && faqs.length) graph.push(faqGraphNode(faqs, `${url}#faq`));
+  return { '@context': 'https://schema.org', '@graph': graph };
+}
+
+function buildServiceGraph({ service = {}, vendor = {}, avgRating, reviewCount, faqs = [], site } = {}) {
+  const hostUrl = vendor.username ? `${site}/${vendor.username}` : site;
+  const url = vendor.username && service.slug ? `${site}/${vendor.username}/${service.slug}` : site;
+  const offline = service.meeting_mode === 'offline';
+  const city = offline ? cityForSeo(vendor.location) : null;
+  const duration = Number(service.duration);
+  const serviceNode = {
+    '@type': 'Service',
+    '@id': `${url}#service`,
+    name: service.title || 'Service',
+    url,
+    description: service.seo_description || service.short_description || service.description || undefined,
+    ...(service.category_label ? { serviceType: service.category_label } : {}),
+    ...(vendor.profession ? { category: vendor.profession } : {}),
+    ...(service.seo_image || service.thumbnail_url ? { image: service.seo_image || service.thumbnail_url } : {}),
+    ...(service.updated_at ? { dateModified: service.updated_at } : {}),
+    provider: { '@id': `${hostUrl}#person` },
+    areaServed: city ? { '@type': 'City', name: city } : { '@type': 'Country', name: 'India' },
+    availableChannel: {
+      '@type': 'ServiceChannel',
+      serviceUrl: vendor.username && service.slug ? `${site}/${vendor.username}/booking/${service.slug}` : url,
+      availableLanguage: { '@type': 'Language', name: 'English' },
+    },
+    offers: {
+      '@type': 'Offer',
+      ...(service.price_on_request ? {} : { price: String(service.price ?? 0), priceCurrency: service.currency || 'INR' }),
+      availability: 'https://schema.org/InStock',
+      url,
+      ...(duration > 0 ? { eligibleDuration: { '@type': 'QuantitativeValue', value: duration, unitCode: 'MIN' } } : {}),
+    },
+    ...(reviewCount > 0 && avgRating > 0 ? { aggregateRating: aggregateRatingNode(avgRating, reviewCount) } : {}),
+  };
+  const graph = [
+    websiteNode(site),
+    orgNode(site),
+    serviceNode,
+    { '@type': 'Person', '@id': `${hostUrl}#person`, name: vendor.name || 'Host', url: hostUrl },
+    breadcrumbNode([
+      { name: 'Home', path: '/' },
+      { name: vendor.name || vendor.username, path: `/${vendor.username}` },
+      { name: service.title, path: `/${vendor.username}/${service.slug}` },
+    ], site, `${url}#breadcrumb`),
+  ];
+  if (faqs && faqs.length) graph.push(faqGraphNode(faqs, `${url}#faq`));
+  return { '@context': 'https://schema.org', '@graph': graph };
 }
 
 async function resolveProfileMeta(username) {
@@ -235,18 +366,13 @@ async function resolveProfileMeta(username) {
   const description = host.seo_description
     || truncate(host.bio || `Book sessions with ${name}${city ? ` in ${city}` : ''} on Meeticulous.`);
   const canonical = `${site}/${host.username}`;
-  // Resolved once: the OG tag and the JSON-LD both point at the host's photo,
-  // and upscaling only one of them is how you get a card that works next to
-  // structured data that still says 96px.
-  const avatar = upscaleAvatar(host.seo_image || host.profile_image) || undefined;
-
   // og:image is a SHARE CARD, not the avatar. A square Google photo letterboxes
   // inside a summary_large_image card, so we serve a 1200x630 host card instead.
   // The card is a Cloudinary URL composited on first crawl from the committed
   // background + brand marks + this host's photo (services/seo/hostOgCard) — no
   // pre-generation, no storage, never stale. Order: admin override (og_image) ->
   // Cloudinary card -> static site default (when CLOUDINARY_CLOUD is unset or the
-  // card can't be built). The avatar still feeds JSON-LD Person.image below.
+  // card can't be built). The host's own photo feeds JSON-LD Person.image below.
   const ogCard = host.og_image
     || cloudinaryHostCard({
       name,
@@ -258,51 +384,18 @@ async function resolveProfileMeta(username) {
     })
     || `${site}/og-image.png`;
 
-  // sameAs (external identity links) + dateModified are AEO/entity-clarity signals:
-  // they tell answer engines who this Person is and how fresh the page is.
-  const sameAs = sameAsFrom(host);
-  const knowsAbout = knowsAboutFrom(host);
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'ProfilePage',
-    url: canonical,
-    ...(host.updated_at ? { dateModified: host.updated_at } : {}),
-    // BAS publishes the profile page (accurate — NOT the person's employer, so never
-    // Person.worksFor). Links the page to the Organization entity for the graph.
-    publisher: { '@type': 'Organization', name: 'Meeticulous', url: site },
-    mainEntity: {
-      '@type': 'Person',
-      name,
-      url: canonical,
-      jobTitle: host.profession || undefined,
-      description: host.seo_description || host.bio || undefined,
-      image: avatar,
-      ...(sameAs.length ? { sameAs } : {}),
-      // Structured occupation + topics reinforce jobTitle as a real entity and tell
-      // answer engines what this person is known for (name-query relevance). Mirrors
-      // the client seo.js profileJsonLd — keep both in sync.
-      ...(host.profession ? {
-        hasOccupation: {
-          '@type': 'Occupation',
-          name: host.profession,
-          ...(host.primary_category ? { occupationalCategory: humanizeSlug(host.primary_category) } : {}),
-        },
-      } : {}),
-      ...(knowsAbout.length ? { knowsAbout } : {}),
-      // Only the host's OWN reviews (never a platform default) — a rating here must
-      // be reviews of this person and is shown on the profile. Platform-wide rating
-      // lives on the homepage SoftwareApplication node instead.
-      ...(reviewCount > 0 && avgRating > 0 ? {
-        aggregateRating: { '@type': 'AggregateRating', ratingValue: avgRating, reviewCount },
-      } : {}),
-      ...(Array.isArray(services) && services.length ? {
-        makesOffer: services.filter(s => s && s.title).map(s => ({
-          '@type': 'Offer',
-          itemOffered: { '@type': 'Service', name: s.title, url: s.slug ? `${canonical}/${s.slug}` : undefined },
-        })),
-      } : {}),
-    },
-  };
+  // One @graph (ProfilePage + Person + Breadcrumb + optional FAQPage), @id-linked,
+  // mirroring client profileGraphJsonLd. Person.image is the upscaled host photo
+  // (same seo_image/profile_image source the builder reads).
+  // Only emit the FAQPage when the host has host-specific facts (services or a
+  // profession); generic template FAQs are thin (guide §5.3). MIRRORS the client
+  // HostProfile gate — keep in sync.
+  const faqsHostSpecific = (services || []).length > 0 || !!host.profession;
+  const jsonLd = buildProfileGraph({
+    host, services, site, name: title,
+    rating: { avg: avgRating, count: reviewCount },
+    faqs: faqsHostSpecific ? profileFaqs(host, services) : [],
+  });
 
   const buildHtmlArgs = {
     title,
@@ -324,10 +417,8 @@ async function resolveProfileMeta(username) {
     robots: host.is_indexable === false ? 'noindex,nofollow'
       : host.is_verified !== true ? 'noindex,follow'
       : (services || []).length ? 'index,follow' : 'noindex,follow',
+    // FAQPage + BreadcrumbList are now members of the single jsonLd @graph above.
     jsonLd,
-    // Same templated FAQ the client renders (utils/profileFaqs mirror) — emitted as
-    // a second JSON-LD script so non-JS crawlers + AI answer bots get the FAQPage.
-    faqJsonLd: faqPageLd(profileFaqs(host, services)),
   };
 
   // payload is passed through (additive) so the SEO crawler can build a DB-derived
@@ -363,11 +454,9 @@ async function resolveServiceMeta(username, serviceSlug) {
     return { status: 404 };
   }
 
-  const { sameAsFrom } = require('../services/seo/pageContentModel');
   const { service, vendor } = outcome.payload;
   const site = trimSlash(SITE_URL);
   const baseTitle = service.title || 'Service';
-  const providerSameAs = sameAsFrom(vendor);
 
   // Compose progressively so the title isn't truncated in results (Google cuts
   // ~60 chars): full → drop " | Meeticulous" → drop " with {host}" → the bare
@@ -397,40 +486,13 @@ async function resolveServiceMeta(username, serviceSlug) {
   const avgRating = outcome.payload.avgRating || 0;
   const reviewCount = (outcome.payload.reviews || []).length;
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Service',
-    name: baseTitle,
-    description: service.seo_description || service.short_description || service.description || undefined,
-    url: canonical,
-    ...(service.updated_at ? { dateModified: service.updated_at } : {}),
-    provider: vendor.name
-      ? {
-          '@type': 'Person',
-          name: vendor.name,
-          url: vendor.username ? `${site}/${vendor.username}` : undefined,
-          ...(providerSameAs.length ? { sameAs: providerSameAs } : {}),
-        }
-      : undefined,
-    // Price-on-request: omit the numeric price so the fee never leaks to crawlers
-    // (Offer stays valid via availByRequest). Otherwise expose the real price.
-    offers: service.price_on_request ? {
-      '@type': 'Offer',
-      priceCurrency: service.currency || 'INR',
-      availability: 'https://schema.org/InStock',
-      url: canonical,
-    } : {
-      '@type': 'Offer',
-      price: String(service.price ?? 0),
-      priceCurrency: service.currency || 'INR',
-      availability: 'https://schema.org/InStock',
-      url: canonical,
-    },
-    ...(service.seo_image || service.thumbnail_url ? { image: service.seo_image || service.thumbnail_url } : {}),
-    ...(reviewCount > 0 && avgRating > 0 ? {
-      aggregateRating: { '@type': 'AggregateRating', ratingValue: avgRating, reviewCount },
-    } : {}),
-  };
+  // One @graph (Service + Offer + host Person stub + Breadcrumb + optional FAQPage),
+  // @id-linked, mirroring client serviceGraphJsonLd. The host Person is a stub here;
+  // the full Person lives on the profile page, shared by @id.
+  const jsonLd = buildServiceGraph({
+    service, vendor, site, avgRating, reviewCount,
+    faqs: serviceFaqs(service, vendor),
+  });
 
   // A generated service card (og_image) and the static default floor are both known
   // 1200x630 assets → flag cardImage so buildHtml emits the og:image size hints. A
@@ -464,21 +526,8 @@ async function resolveServiceMeta(username, serviceSlug) {
     robots: service.is_indexable === false ? 'noindex,nofollow'
       : (vendor.is_verified === true && vendor.is_indexable !== false) ? 'index,follow'
       : 'noindex,follow',
+    // FAQPage + BreadcrumbList are now members of the single jsonLd @graph above.
     jsonLd,
-    // Visible FAQ (host-authored ∪ templated) is now rendered in the body, so emit the
-    // matching FAQPage schema — mirrors the host shell and the client ServiceDetail.
-    faqJsonLd: faqPageLd(serviceFaqs(service, vendor)),
-    // Breadcrumb (Home > host > service) — the client renders this; the prerendered
-    // bot HTML previously omitted it, so AI/search crawlers never saw the trail.
-    breadcrumbJsonLd: {
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: site },
-        { '@type': 'ListItem', position: 2, name: vendor.name || vendor.username, item: `${site}/${vendor.username}` },
-        { '@type': 'ListItem', position: 3, name: baseTitle, item: canonical },
-      ],
-    },
   };
 
   // payload passed through (additive) for the crawler's content model (see profile).
@@ -505,4 +554,6 @@ module.exports = {
   renderProfileMeta, renderServiceMeta, resolveProfileMeta, resolveServiceMeta,
   // shared with prerenderCommunity.js
   buildHtml, esc, SITE_URL,
+  // pure graph builders — mirror client seo.js; exercised by the parity test
+  buildProfileGraph, buildServiceGraph,
 };

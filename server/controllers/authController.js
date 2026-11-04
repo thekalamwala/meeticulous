@@ -133,6 +133,10 @@ const serializeProfile = async (profile, session) => {
     const { feeOnlyForHost } = require('../services/paidMode');
     fee_only_mode = await feeOnlyForHost(profile.id);
   } catch (_) { /* fail-safe: default to fee-only */ }
+  // Gifted Pro: { ends_at, months, note } so the dashboard/billing can show the
+  // "Pro (Gifted)" state. plan stays `premium`, so every gate is unchanged.
+  // Fail-safe null; only reads for an un-mandated premium host.
+  const gift = await require('../services/planGiftService').giftForSession(profile);
   return {
   _id:                      profile.id,
   id:                       profile.id,
@@ -157,6 +161,7 @@ const serializeProfile = async (profile, session) => {
   // vendors are 'active' from the v3.8 backfill but carry NO mandate — the UI
   // uses this to avoid showing them a bogus "auto-renew on / cancel" control.
   has_payment_mandate:      !!profile.razorpay_subscription_id,
+  gift,
   username:                 profile.username || null,
   bio:                      profile.bio || '',
   tagline:                  profile.tagline || '',

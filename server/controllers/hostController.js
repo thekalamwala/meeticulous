@@ -435,26 +435,35 @@ const updateProfile = async (req, res) => {
     // "saved but colour never changed" reports).
     if (theme_color !== undefined && theme_color !== null && theme_color !== "") {
       if (!/^#[0-9a-fA-F]{6}$/.test(theme_color)) {
-        return res.status(400).json({ message: "Invalid theme colour — expected a hex value like #FE5100." });
+        return res.status(400).json({ message: "Invalid theme colour — expected a hex value like #960D32." });
       }
-      const FREE_PALETTE = ["#F8F7F2", "#6B7280", "#FE5100"];
+      const FREE_PALETTE = ["#F8F7F2", "#6B7280", "#960D32"];
       // Host+ (creator) — 8 curated colours (keep in sync with
       // client/src/utils/themeUtils.js CREATOR_COLORS).
       const CREATOR_PALETTE = [
-        "#FE5100", "#2563EB", "#4F46E5", "#7C3AED",
+        "#960D32", "#2563EB", "#4F46E5", "#7C3AED",
         "#EC4899", "#DC2626", "#10B981", "#15803D",
+      ];
+      // Pro (premium / premium_founding) — 16 colours (keep in sync with
+      // client/src/utils/themeUtils.js STUDIO_COLORS).
+      const PRO_PALETTE = [
+        "#960D32", "#DC2626", "#F43F5E", "#EC4899", "#F97316", "#F59E0B", "#10B981", "#15803D",
+        "#14B8A6", "#0EA5E9", "#2563EB", "#4F46E5", "#7C3AED", "#C026D3", "#92400E", "#475569",
       ];
       const { data: planRow } = await supabaseAdmin
         .from("profiles").select("plan").eq("id", req.user.id).single();
       const plan = planRow?.plan || "explorer";
       const hex = theme_color.toUpperCase();
-      // Studio (professional) and Supreme get any hex; creator is gated to the
-      // 8-colour palette; everyone else to the free palette.
-      const unlimited = plan === "professional" || plan === "supreme";
+      // Studio (professional) and Supreme get any hex; Pro is gated to the
+      // 16-colour palette, creator to the 8-colour one; everyone else to the
+      // free palette.
+      const unlimited = plan === "professional" || plan === "pro" || plan === "supreme";
+      const isPro = plan === "premium" || plan === "premium_founding";
       const allowed =
         unlimited ||
+        (isPro && PRO_PALETTE.includes(hex)) ||
         (plan === "creator" && CREATOR_PALETTE.includes(hex)) ||
-        (plan !== "creator" && FREE_PALETTE.includes(hex));
+        (!isPro && plan !== "creator" && FREE_PALETTE.includes(hex));
       if (!allowed) {
         return res.status(403).json({ message: "This colour is not available on your plan. Upgrade to unlock more colours." });
       }

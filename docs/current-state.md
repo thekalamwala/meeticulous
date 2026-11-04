@@ -1,7 +1,16 @@
 # Current State — Meeticulous
-_Last updated: 2026-08-29 (host notification system + admin ops badge + AiSensy fix; KYC section 2026-07-16; rest last reviewed 2026-06-13)_
+_Last updated: 2026-11-04 (Nov 2026 section: LinkedIn login, calendar guarantee, community, gifted Pro, JSON-LD graph; host notification system 2026-08-29; KYC section 2026-07-16; rest last reviewed 2026-06-13)_
 
 ## ✅ Working Features
+
+### Nov 2026 additions (detail in `docs/current-work.md`)
+- **Host LinkedIn sign-in** (#135, on `main` via release #136): behind admin flag `host_linkedin_login`, server fails closed.
+- **Calendar guarantee** (#132): `google_calendar_connected` only set when calendar scopes are granted; skippable onboarding step `/vendor-register/:slug/calendar`. Founder still to run `server/scripts/auditCalendarScopes.js`.
+- **Community Phase 1** (#124, shipped; all `community*` flags OFF): `/community` 404s to the public until flags flip.
+- **Email template sync** (#129, v3.187) and **anon lockdown** (#128, v3.186) live.
+- **Gifted Pro** (#137–#140): merged to `release/2026-11`, NOT yet on `main`; v3.190 applied; not browser-verified.
+- **JSON-LD `@id` graph** (#139, `release/2026-11`): one linked graph on host profile/service/product pages; client and prerender builders held in parity by a shared fixture test.
+- **Booking Details inputs** (#133): slim inputs on the guest-details step.
 
 ### Booking Flow
 - Date/time selection with booked-slot exclusion (grace period aware)

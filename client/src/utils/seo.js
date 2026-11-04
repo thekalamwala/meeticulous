@@ -22,6 +22,12 @@ const truncate = (s, n = 160) => {
 
 const robotsFor = (indexable) => (indexable === false ? 'noindex,nofollow' : 'index,follow');
 
+// Google profile photos come back as `=s96-c` (96px). Bump to 512 so the entity
+// image is usable. Only touches Google's `=s<N>-c` suffix; every other URL passes
+// through untouched. MIRRORS upscaleAvatar in server/controllers/prerenderController.js
+// — keep both in sync so Person.image is identical on both paths.
+const upscaleAvatar = (url) => String(url || '').replace(/=s\d+-c$/, '=s512-c');
+
 // A public service page is promotable (index + in sitemap) only when the host is
 // verified AND nothing is flagged noindex. Mirrors the sitemap gate in
 // server/services/sitemapService.js, so the robots meta never says "index me" for
@@ -101,45 +107,9 @@ export const resolveServiceSeo = ({ service = {}, vendor = {}, siteUrl = SITE_UR
   };
 };
 
-export const serviceJsonLd = ({ service = {}, vendor = {}, siteUrl = SITE_URL, avgRating, reviewCount } = {}) => {
-  const site = trimSlash(siteUrl);
-  const url = vendor.username && service.slug ? `${site}/${vendor.username}/${service.slug}` : site;
-  const ld = {
-    '@context': 'https://schema.org',
-    '@type': 'Service',
-    name: service.title || 'Service',
-    description: service.seo_description || service.short_description || service.description || undefined,
-    url,
-    ...(service.updated_at ? { dateModified: service.updated_at } : {}),
-    provider: vendor.name
-      ? {
-          '@type': 'Person',
-          name: vendor.name,
-          url: vendor.username ? `${site}/${vendor.username}` : undefined,
-          ...(sameAsFromSocials(vendor.social_links).length ? { sameAs: sameAsFromSocials(vendor.social_links) } : {}),
-        }
-      : undefined,
-    // Price-on-request hides the fee, so the numeric price is omitted from the
-    // Offer too — the schema must not leak what the page deliberately hides.
-    offers: service.price_on_request ? {
-      '@type': 'Offer',
-      priceCurrency: service.currency || 'INR',
-      availability: 'https://schema.org/InStock',
-      url,
-    } : {
-      '@type': 'Offer',
-      price: String(service.price ?? 0),
-      priceCurrency: service.currency || 'INR',
-      availability: 'https://schema.org/InStock',
-      url,
-    },
-  };
-  if (service.seo_image || service.thumbnail_url) ld.image = service.seo_image || service.thumbnail_url;
-  if (reviewCount > 0 && avgRating > 0) {
-    ld.aggregateRating = { '@type': 'AggregateRating', ratingValue: avgRating, reviewCount };
-  }
-  return ld;
-};
+// serviceJsonLd / profileJsonLd were standalone, unlinked objects. They are now
+// serviceGraphJsonLd / profileGraphJsonLd (single @graph, @id-linked) further below
+// — see docs/seo/profile-schema-guide.md. The server prerender path mirrors them.
 
 // ── Profile (host) ───────────────────────────────────────────────────────────
 
@@ -200,21 +170,74 @@ const knowsAboutFrom = (host = {}) => [...new Set(
     .filter(Boolean).map(humanizeSlug),
 )];
 
-export const profileJsonLd = ({ host = {}, siteUrl = SITE_URL, services = [], rating = null } = {}) => {
-  const site = trimSlash(siteUrl);
+// ── Host entity graph (profiles, services, products) ──────────────────────────
+//
+// One linked @graph per public host page (docs/seo/profile-schema-guide.md). The
+// host is ONE `Person` entity (@id `${site}/${username}#person`) shared by @id
+// across the profile page and every service page, so Google and answer engines
+// treat the host as a single entity instead of a new one per URL. Mirrored
+// VERBATIM in server/controllers/prerenderController.js (buildProfileGraph /
+// buildServiceGraph) — the parity test proves client and server emit the same
+// JSON-LD for the same input. Keep both paths in sync.
+//
+// Honesty rules (unchanged, non-negotiable): no price on price-on-request offers;
+// aggregateRating only behind real, entity-specific reviews; city-only location
+// and only for in-person hosts; never a phone/email/street address here.
+
+const absUrl = (site, p) => (/^https?:/i.test(p) ? p : `${site}${String(p || '').startsWith('/') ? '' : '/'}${p || ''}`);
+
+// WebSite node so `isPartOf`/`publisher` @id refs resolve on a page crawled alone
+// (matches articleGraphJsonLd). Pairs with orgNode (defined below, reused here).
+const websiteNode = (site) => ({
+  '@type': 'WebSite', '@id': `${site}/#website`, url: `${site}/`,
+  name: 'Meeticulous', publisher: { '@id': `${site}/#organization` }, inLanguage: 'en-IN',
+});
+
+// 1–5 rating. bestRating/worstRating make the scale explicit for every engine.
+const aggregateRatingNode = (avg, count) =>
+  ({ '@type': 'AggregateRating', ratingValue: avg, reviewCount: count, bestRating: 5, worstRating: 1 });
+
+const breadcrumbNode = (items, site, id) => ({
+  '@type': 'BreadcrumbList', '@id': id,
+  itemListElement: (items || [])
+    .filter((it) => it && it.name && it.path)
+    .map((it, i) => ({ '@type': 'ListItem', position: i + 1, name: it.name, item: absUrl(site, it.path) })),
+});
+
+const faqGraphNode = (faqs, id) => ({
+  '@type': 'FAQPage', '@id': id,
+  mainEntity: (faqs || [])
+    .filter((f) => f && f.q && f.a)
+    .map((f) => ({ '@type': 'Question', name: String(f.q), acceptedAnswer: { '@type': 'Answer', text: String(f.a) } })),
+});
+
+// Full Person node (the host's identity) — lives on the profile page graph.
+const profilePersonNode = ({ host = {}, services = [], rating = null, site } = {}) => {
   const url = host.username ? `${site}/${host.username}` : site;
   const sameAs = sameAsFromSocials(host.social_links);
   const knowsAbout = knowsAboutFrom(host);
-  const person = {
+  // City (+ IN) only when the host has at least one in-person service — same gate
+  // as the city in the <title>. Online-only host carries no locality.
+  const hasOffline = (services || []).some((s) => s && s.meeting_mode === 'offline');
+  const city = hasOffline ? cityForSeo(host.location) : null;
+  const offers = (Array.isArray(services) ? services : [])
+    .filter((s) => s && s.title)
+    .map((s) => ({
+      '@type': 'Offer',
+      // Omit price AND currency on price-on-request, matching the service Offer.
+      ...(s.price_on_request ? {} : { price: String(s.price ?? 0), priceCurrency: s.currency || 'INR' }),
+      url: s.slug ? `${url}/${s.slug}` : url,
+      itemOffered: { '@id': s.slug ? `${url}/${s.slug}#service` : `${url}#service` },
+    }));
+  return {
     '@type': 'Person',
+    '@id': `${url}#person`,
     name: host.name || 'Host',
     url,
     jobTitle: host.profession || undefined,
     description: host.seo_description || host.bio || undefined,
-    image: host.seo_image || host.profile_image || undefined,
+    image: upscaleAvatar(host.seo_image || host.profile_image) || undefined,
     ...(sameAs.length ? { sameAs } : {}),
-    // Structured occupation + topics reinforce jobTitle as a real entity and tell
-    // answer engines what this person is known for (name-query relevance).
     ...(host.profession ? {
       hasOccupation: {
         '@type': 'Occupation',
@@ -223,30 +246,146 @@ export const profileJsonLd = ({ host = {}, siteUrl = SITE_URL, services = [], ra
       },
     } : {}),
     ...(knowsAbout.length ? { knowsAbout } : {}),
-    // Host's OWN rating only (shown on the profile). Never a platform default —
-    // that would be reviews not about this person. Platform rating lives on the
-    // homepage SoftwareApplication node.
-    ...(rating && rating.count > 0 && rating.avg > 0 ? {
-      aggregateRating: { '@type': 'AggregateRating', ratingValue: rating.avg, reviewCount: rating.count },
-    } : {}),
+    ...(city ? { workLocation: { '@type': 'Place', address: { '@type': 'PostalAddress', addressLocality: city, addressCountry: 'IN' } } } : {}),
+    ...(offers.length ? { makesOffer: offers } : {}),
+    // Host's OWN rating only (never a platform default — those aren't reviews of
+    // this person; the platform rating lives on the homepage node).
+    ...(rating && rating.count > 0 && rating.avg > 0 ? { aggregateRating: aggregateRatingNode(rating.avg, rating.count) } : {}),
   };
-  if (Array.isArray(services) && services.length) {
-    person.makesOffer = services
-      .filter((s) => s && s.title)
-      .map((s) => ({
-        '@type': 'Offer',
-        itemOffered: { '@type': 'Service', name: s.title, url: s.slug ? `${url}/${s.slug}` : undefined },
-      }));
-  }
+};
+
+// Minimal Person stub for a service/product page, so the `provider`/`brand` @id
+// resolves without the full profile page. The full Person lives on the profile.
+const personStubNode = ({ host = {}, site } = {}) => {
+  const url = host.username ? `${site}/${host.username}` : site;
+  return { '@type': 'Person', '@id': `${url}#person`, name: host.name || 'Host', url };
+};
+
+/**
+ * profileGraphJsonLd — the ONE structured-data object a host profile emits.
+ * Graph: WebSite, Organization, ProfilePage, Person (full), BreadcrumbList, and a
+ * FAQPage ONLY when the caller passes host-specific FAQs (see §5.3 of the guide —
+ * generic template FAQs are not emitted). Breadcrumb is Home → Host (no profession
+ * level, per owner decision 2026-11-04).
+ */
+export const profileGraphJsonLd = ({ host = {}, siteUrl = SITE_URL, services = [], rating = null, faqs = [], name } = {}) => {
+  const site = trimSlash(siteUrl);
+  const url = host.username ? `${site}/${host.username}` : site;
+  const person = profilePersonNode({ host, services, rating, site });
+  const graph = [
+    websiteNode(site),
+    orgNode(site),
+    {
+      '@type': 'ProfilePage',
+      '@id': url,
+      url,
+      ...(name ? { name } : {}),
+      inLanguage: 'en-IN',
+      ...(host.updated_at ? { dateModified: host.updated_at } : {}),
+      isPartOf: { '@id': `${site}/#website` },
+      // Meeticulous publishes the page (NOT the host's employer — never Person.worksFor).
+      publisher: { '@id': `${site}/#organization` },
+      mainEntity: { '@id': person['@id'] },
+      breadcrumb: { '@id': `${url}#breadcrumb` },
+    },
+    person,
+    breadcrumbNode([
+      { name: 'Home', path: '/' },
+      { name: host.name || 'Host', path: `/${host.username}` },
+    ], site, `${url}#breadcrumb`),
+  ];
+  if (faqs && faqs.length) graph.push(faqGraphNode(faqs, `${url}#faq`));
+  return { '@context': 'https://schema.org', '@graph': graph };
+};
+
+/**
+ * serviceGraphJsonLd — the ONE structured-data object a service page emits.
+ * Graph: WebSite, Organization, Service (+ Offer), the host Person stub,
+ * BreadcrumbList (Home → Host → Service), and a FAQPage when FAQs are shown.
+ */
+export const serviceGraphJsonLd = ({ service = {}, vendor = {}, siteUrl = SITE_URL, avgRating, reviewCount, faqs = [] } = {}) => {
+  const site = trimSlash(siteUrl);
+  const hostUrl = vendor.username ? `${site}/${vendor.username}` : site;
+  const url = vendor.username && service.slug ? `${site}/${vendor.username}/${service.slug}` : site;
+  const offline = service.meeting_mode === 'offline';
+  const city = offline ? cityForSeo(vendor.location) : null;
+  const duration = Number(service.duration);
+  const serviceNode = {
+    '@type': 'Service',
+    '@id': `${url}#service`,
+    name: service.title || 'Service',
+    url,
+    description: service.seo_description || service.short_description || service.description || undefined,
+    ...(service.category_label ? { serviceType: service.category_label } : {}),
+    ...(vendor.profession ? { category: vendor.profession } : {}),
+    ...(service.seo_image || service.thumbnail_url ? { image: service.seo_image || service.thumbnail_url } : {}),
+    ...(service.updated_at ? { dateModified: service.updated_at } : {}),
+    provider: { '@id': `${hostUrl}#person` },
+    // In-person service with a real city → City; otherwise the service is online
+    // nationwide → Country India. Never guess a city we don't have.
+    areaServed: city ? { '@type': 'City', name: city } : { '@type': 'Country', name: 'India' },
+    availableChannel: {
+      '@type': 'ServiceChannel',
+      serviceUrl: vendor.username && service.slug ? `${site}/${vendor.username}/booking/${service.slug}` : url,
+      availableLanguage: { '@type': 'Language', name: 'English' },
+    },
+    offers: {
+      '@type': 'Offer',
+      // Price-on-request hides the fee → omit the numeric price from the Offer too.
+      ...(service.price_on_request ? {} : { price: String(service.price ?? 0), priceCurrency: service.currency || 'INR' }),
+      availability: 'https://schema.org/InStock',
+      url,
+      ...(duration > 0 ? { eligibleDuration: { '@type': 'QuantitativeValue', value: duration, unitCode: 'MIN' } } : {}),
+    },
+    ...(reviewCount > 0 && avgRating > 0 ? { aggregateRating: aggregateRatingNode(avgRating, reviewCount) } : {}),
+  };
+  const graph = [
+    websiteNode(site),
+    orgNode(site),
+    serviceNode,
+    personStubNode({ host: vendor, site }),
+    breadcrumbNode([
+      { name: 'Home', path: '/' },
+      { name: vendor.name || vendor.username, path: `/${vendor.username}` },
+      { name: service.title, path: `/${vendor.username}/${service.slug}` },
+    ], site, `${url}#breadcrumb`),
+  ];
+  if (faqs && faqs.length) graph.push(faqGraphNode(faqs, `${url}#faq`));
+  return { '@context': 'https://schema.org', '@graph': graph };
+};
+
+/**
+ * productGraphJsonLd — digital product page (`/:username/product/:id`). Graph:
+ * WebSite, Organization, Product (+ Offer), host Person stub as the brand. No
+ * aggregateRating (products have no real reviews). Client-only: product pages are
+ * not in the bot prerender shell. `product` is the public product payload
+ * (profiles{name,username,...} nested); `username` comes from the route.
+ */
+export const productGraphJsonLd = ({ product = {}, username, siteUrl = SITE_URL } = {}) => {
+  const site = trimSlash(siteUrl);
+  const host = product.profiles || {};
+  const user = username || host.username;
+  const hostUrl = user ? `${site}/${user}` : site;
+  const url = user && product.id ? `${site}/${user}/product/${product.id}` : site;
+  const productNode = {
+    '@type': 'Product',
+    '@id': `${url}#product`,
+    name: product.title || 'Digital product',
+    url,
+    description: product.description || undefined,
+    ...(product.thumbnail_url ? { image: product.thumbnail_url } : {}),
+    brand: { '@id': `${hostUrl}#person` },
+    offers: {
+      '@type': 'Offer',
+      price: String(product.price ?? 0),
+      priceCurrency: product.currency || 'INR',
+      availability: 'https://schema.org/InStock',
+      url,
+    },
+  };
   return {
     '@context': 'https://schema.org',
-    '@type': 'ProfilePage',
-    url,
-    ...(host.updated_at ? { dateModified: host.updated_at } : {}),
-    // BAS publishes the profile page (accurate — NOT the person's employer, so never
-    // Person.worksFor). Links the page to the Organization entity for the graph.
-    publisher: { '@type': 'Organization', name: 'Meeticulous', url: site },
-    mainEntity: person,
+    '@graph': [websiteNode(site), orgNode(site), productNode, personStubNode({ host: { ...host, username: user }, site })],
   };
 };
 

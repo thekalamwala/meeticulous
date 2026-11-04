@@ -32,69 +32,60 @@ export const getContrastColor = (hex) => {
 
 // ─── Plan-gated color palettes ───────────────────────────────────────────────
 
-// Starter (free) tier: brand orange only — no choice, keeps free profiles on-brand.
+// Starter (free) tier: brand maroon only — no choice, keeps free profiles on-brand.
 export const FREE_COLORS = [
-  { name: 'Brand Orange', hex: '#960D32' },
+  { name: 'Brand Maroon', hex: '#960D32' },
 ];
 
 // Host+ (creator) tier: 8 curated colours.
 export const CREATOR_COLORS = [
-  { name: 'Brand Orange',  hex: '#960D32' },
-  { name: 'Royal Blue',    hex: '#960D32' },
+  { name: 'Brand Maroon',  hex: '#960D32' },
+  { name: 'Royal Blue',    hex: '#2563EB' },
   { name: 'Indigo',        hex: '#4F46E5' },
-  { name: 'Purple',        hex: '#1DA1F2' },
+  { name: 'Purple',        hex: '#7C3AED' },
   { name: 'Pink',          hex: '#EC4899' },
   { name: 'Crimson',       hex: '#DC2626' },
   { name: 'Emerald',       hex: '#10B981' },
   { name: 'Forest Green',  hex: '#15803D' },
 ];
 
-// Studio (+ Supreme) tier: full hue-ordered palette + custom hex picker.
-// No pure black/white. Approximated from the design swatch sheet — tweak hex freely.
+// Pro (+ legacy Studio / Supreme) tier: 16 hue-ordered colours. Light shades
+// (yellow, lime, pale greys) were dropped — white button text reads poorly on
+// them — along with near-duplicates. No pure black/white. Keep in sync with
+// server/controllers/hostController.js PRO_PALETTE.
 export const STUDIO_COLORS = [
   // warm → green
-  { name: 'Pink',         hex: '#EC4899' },
-  { name: 'Rose',         hex: '#F43F5E' },
-  { name: 'Coral',        hex: '#FB7185' },
+  { name: 'Brand Maroon', hex: '#960D32' },
   { name: 'Red',          hex: '#DC2626' },
+  { name: 'Rose',         hex: '#F43F5E' },
+  { name: 'Pink',         hex: '#EC4899' },
   { name: 'Orange',       hex: '#F97316' },
-  { name: 'Brand Orange', hex: '#960D32' },
   { name: 'Amber',        hex: '#F59E0B' },
-  { name: 'Gold',         hex: '#EAB308' },
-  { name: 'Yellow',       hex: '#FACC15' },
-  { name: 'Lime',         hex: '#84CC16' },
-  { name: 'Light Green',  hex: '#4ADE80' },
-  { name: 'Green',        hex: '#22C55E' },
   { name: 'Emerald',      hex: '#10B981' },
   { name: 'Forest Green', hex: '#15803D' },
   // cool → neutral
   { name: 'Teal',         hex: '#14B8A6' },
-  { name: 'Cyan',         hex: '#06B6D4' },
   { name: 'Sky Blue',     hex: '#0EA5E9' },
-  { name: 'Royal Blue',   hex: '#960D32' },
+  { name: 'Royal Blue',   hex: '#2563EB' },
   { name: 'Indigo',       hex: '#4F46E5' },
-  { name: 'Violet',       hex: '#1DA1F2' },
-  { name: 'Purple',       hex: '#9333EA' },
+  { name: 'Violet',       hex: '#7C3AED' },
   { name: 'Fuchsia',      hex: '#C026D3' },
   { name: 'Brown',        hex: '#92400E' },
-  { name: 'Dark Brown',   hex: '#78350F' },
   { name: 'Slate',        hex: '#475569' },
-  { name: 'Grey',         hex: '#6B7280' },
-  { name: 'Cool Grey',    hex: '#9CA3AF' },
-  { name: 'Taupe',        hex: '#A8A29E' },
 ];
 
 export const DEFAULT_THEME_COLOR = '#960D32';
 
 /**
  * Returns the color swatches available for the given plan.
- *   Starter        → brand orange only (1)
- *   Host+          → CREATOR_COLORS (8)
- *   Studio/Supreme → STUDIO_COLORS (full palette) + custom hex input
+ *   Starter                 → brand maroon only (1)
+ *   Pro (Partner) (creator) → CREATOR_COLORS (8)
+ *   Pro / Studio / Supreme  → STUDIO_COLORS (16); Studio/Supreme also get custom hex
  */
 export const getColorsForPlan = (plan) => {
-  if (plan === 'professional' || plan === 'supreme') return STUDIO_COLORS;
-  if (plan === 'creator') return CREATOR_COLORS;
+  const canon = normalizePlan(plan);
+  if (canon === 'premium' || canon === 'professional' || canon === 'supreme') return STUDIO_COLORS;
+  if (canon === 'creator') return CREATOR_COLORS;
   return FREE_COLORS;
 };
 
@@ -105,7 +96,7 @@ export const canUseCustomHex = (plan) => plan === 'professional' || plan === 'su
 export const getPlanBorderColor = (plan) => {
   if (plan === 'supreme')      return '#D4AF37'; // gold (top tier, shares Studio)
   if (plan === 'professional') return '#D4AF37'; // gold
-  if (plan === 'creator')      return '#960D32'; // brand orange
+  if (plan === 'creator')      return '#960D32'; // brand maroon
   return '#6B7280';                               // grey
 };
 
@@ -148,6 +139,11 @@ export const normalizePlan = (slug) => {
 /** Is this host on the free tier? Use instead of comparing slugs inline — the
  *  canonical free slug has already changed once (starter → free). */
 export const isFreePlan = (slug) => normalizePlan(slug) === 'free';
+
+// Gifted Pro (complimentary, from the team): the slug stays `premium`; the
+// session carries `user.gift`. Dashboard / billing show this label, public
+// surfaces keep plain "Pro".
+export const GIFTED_PRO_LABEL = 'Pro (Gifted)';
 
 export const getPlanBorderLabel = (plan) => {
   const canon = normalizePlan(plan);

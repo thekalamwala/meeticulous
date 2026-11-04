@@ -6,11 +6,12 @@ import { getPublicPlans, createSubscription, syncSubscription, cancelSubscriptio
 import toast from "react-hot-toast";
 import BackButton from "../components/common/BackButton";
 import { PageHeader, Card, Button, buttonClasses, cn, Modal, Sheet, ConfirmSheet, Input, Select, FormField } from "../components/dashboard/ui";
-import { planLabel, normalizePlan } from "../utils/themeUtils";
+import { planLabel, normalizePlan, GIFTED_PRO_LABEL } from "../utils/themeUtils";
 import loadRazorpay from "../utils/loadRazorpay";
 import { INDIAN_STATES } from "../lib/indianStates";
 import { analytics, EVENTS } from "../services/analytics";
 import FoundingNote from "../components/pricing/FoundingNote";
+import GiftedProCard from "../components/dashboard/GiftedProCard";
 
 const GST_RATE = 0.18; // display only — server is authoritative
 const inr = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
@@ -63,6 +64,8 @@ const UpgradePlan = () => {
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [showDetails, setShowDetails] = useState(false); // subscription details drawer
   const [pendingPlan, setPendingPlan] = useState(null); // plan awaiting billing details
+  // Gifted Pro host about to pay: confirm "charge now, gift ends" first (founder rule).
+  const [confirmKeep, setConfirmKeep] = useState(null); // plan
   const [billing, setBilling] = useState({
     name: user?.billing_details?.name || user?.name || "",
     address: user?.billing_details?.address || "",
@@ -74,6 +77,7 @@ const UpgradePlan = () => {
 
   // Alias resolution lives in themeUtils — see the note in Products.jsx.
   const currentPlan = normalizePlan(user?.plan);
+  const gift = user?.gift || null; // complimentary Pro from the team (session payload)
   // Current tier rank, used to tell upgrades from downgrades. Falls back to 0
   // when the current plan isn't in the public list (e.g. an archived/admin tier)
   // — every paid plan then reads as a higher tier, never a bogus "downgrade".
@@ -183,13 +187,16 @@ const UpgradePlan = () => {
         title="Upgrade Your Plan"
         subtitle={
           <>
-            You're on the <span className="font-semibold text-gray-700">{planLabel(currentPlan, currentPlan)}</span> plan
-            {expiry && daysLeft > 0 && ` · renews in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`}
+            You're on the <span className="font-semibold text-gray-700">{gift ? GIFTED_PRO_LABEL : planLabel(currentPlan, currentPlan)}</span> plan
+            {gift && expiry && daysLeft > 0 && ` · free until ${expiry.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}`}
+            {!gift && expiry && daysLeft > 0 && ` · renews in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`}
             {expiry && daysLeft <= 0 && <span className="text-red-500"> · expired</span>}
             {user?.billing_cadence && ` · ${user.billing_cadence}`}
           </>
         }
       />
+
+      <GiftedProCard onKeepPro={() => setConfirmKeep(plans.find((p) => p.slug === recommendedSlug) || null)} />
 
       {/* Manage current subscription */}
       {hasActiveSub && (
@@ -314,14 +321,15 @@ const UpgradePlan = () => {
                   ))}
                 </ul>
 
-                {isCurrentExact ? (
+                {isCurrentExact && !gift ? (
                   <div className="rounded-xl bg-gray-100 py-2.5 text-center text-sm font-medium text-gray-500">Current Plan</div>
                 ) : !paid ? (
                   <div className="rounded-xl border border-gray-200 py-2.5 text-center text-sm text-gray-400">Default plan</div>
                 ) : (
-                  <Button full onClick={() => setPendingPlan(plan)} disabled={paying === plan.slug || !cadenceAvailable}>
+                  <Button full onClick={() => (gift ? setConfirmKeep(plan) : setPendingPlan(plan))} disabled={paying === plan.slug || !cadenceAvailable}>
                     {paying === plan.slug ? "Opening payment…"
                       : !cadenceAvailable ? "Annual billing only"
+                      : gift && isCurrentTier ? "Keep Pro after your gift"
                       : isCurrentTier ? `Switch to ${cadence}`
                       : (plan.sort_order ?? 0) < myOrder ? `Downgrade to ${planLabel(plan.slug, plan.name)}`
                       : `Upgrade to ${planLabel(plan.slug, plan.name)}`}
@@ -479,6 +487,16 @@ const UpgradePlan = () => {
           );
         })()}
       </Sheet>
+
+      <ConfirmSheet
+        open={!!confirmKeep}
+        title="Start paid Pro now?"
+        message={confirmKeep ? `Your gifted Pro ends today and you'll be charged ${inr(Math.round(priceFor(confirmKeep, cadence) * (1 + GST_RATE)))} (${cadence}, incl. GST) now. Pro carries on with no gap.` : ""}
+        confirmLabel="Continue"
+        cancelLabel="Keep my gift for now"
+        onConfirm={() => { const plan = confirmKeep; setConfirmKeep(null); setPendingPlan(plan); }}
+        onClose={() => setConfirmKeep(null)}
+      />
 
       <ConfirmSheet
         open={confirmCancel}

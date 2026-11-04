@@ -62,7 +62,7 @@ const VENDOR_PROFILE = {
   id: 'vendor-uuid', name: 'Jane Vendor', email: 'jane@vendor.com',
   role: 'host', plan: 'explorer', username: 'jane-vendor',
   bio: 'Coach', profession: 'Life Coach', location: 'Mumbai',
-  profile_image: '', cover_image: '', social_links: {}, theme_color: '#FE5100',
+  profile_image: '', cover_image: '', social_links: {}, theme_color: '#960D32',
   google_calendar_connected: false, is_verified: true, badges: [],
 };
 

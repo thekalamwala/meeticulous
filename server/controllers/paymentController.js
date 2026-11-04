@@ -509,6 +509,9 @@ const verifySubscription = async (req, res) => {
 
     if (error) return safeError(res, error);
 
+    // Paying ends any gifted Pro (the paid year above already replaced its expiry).
+    await require("../services/planGiftService").endOnPaid(req.user.id);
+
     await supabaseAdmin.from("plan_purchases").insert({
       vendor_id: req.user.id, plan, amount_paid: await getPlanPricePaise(plan),
       razorpay_order_id, razorpay_payment_id,

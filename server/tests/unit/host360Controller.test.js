@@ -13,6 +13,7 @@ jest.mock('../../config/supabase', () => ({
 }));
 jest.mock('../../utils/httpError', () => ({ safeError: (res, e) => res.status(500).json({ message: e.message }) }));
 jest.mock('../../services/auditService', () => ({ audit: jest.fn() }));
+jest.mock('../../services/planGiftService', () => ({ getActiveGift: jest.fn(() => Promise.resolve(null)) }));
 jest.mock('../../services/settlementService', () => ({
   computeSettlementBalance: jest.fn(() => Promise.resolve({
     lifetimeEarned: 5000, available: 1000, clearing: 500, paidOut: 3500, pendingCompletion: 0,
@@ -493,6 +494,18 @@ test('assignHostPlan rejects a slug that is not its own canonical form', async (
   const res = mockRes();
   await ctrl.assignHostPlan({ params: { id: HOST }, body: { plan_slug: 'host_plus' }, admin }, res);
   expect(res.status).toHaveBeenCalledWith(404);
+});
+
+test('assignHostPlan 409s while the host has an active gifted Pro', async () => {
+  planService.normalizeSlug.mockImplementation((s) => s);
+  planService.getPlan.mockResolvedValue({ slug: 'host_plus', annual_price: 1499 });
+  require('../../services/planGiftService').getActiveGift.mockResolvedValueOnce({ id: 'g1' });
+  setTables({ profiles: { data: hostRow(), error: null } });
+  const res = mockRes();
+  await ctrl.assignHostPlan({ params: { id: HOST }, body: { plan_slug: 'host_plus' }, admin }, res);
+  expect(res.status).toHaveBeenCalledWith(409);
+  expect(chains.profiles.update).not.toHaveBeenCalled();
+  expect(audit).not.toHaveBeenCalled();
 });
 
 test('assignHostPlan sets an expiry for a paid plan and none for a free one', async () => {

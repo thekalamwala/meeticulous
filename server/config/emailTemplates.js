@@ -467,6 +467,58 @@ const TEMPLATES = [
     cta_label: 'Update payment', cta_url: '{{dashboard_url}}',
   }; })(),
 
+  // ── Gifted Pro (v3.190, planGiftService) ─────────────────────────────────────
+  // The gift itself comes from the founder (he gifted it); the lifecycle notices
+  // that follow come from Tithi. Plain sender keys, never crm_* — these are
+  // transactional and must send even while crm_admin_sends is off.
+
+  (() => { const t = themeForCategory('Community Update'); return {
+    event_key: 'PLAN_GIFT_RECEIVED', audience: 'vendor', category: 'Subscription', sender_key: 'shubham',
+    name: 'Gifted Pro Received', subject: '{{gift_headline}} 🎁',
+    preview_text: 'Pro for {{tenure}}, on us. No card needed.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this email because the Meeticulous team gifted your account a complimentary Pro plan.',
+    html_content:
+      h('{{gift_headline}}, {{first_name}}') +
+      lead('You now have <strong>Pro</strong> for <strong>{{tenure}}</strong>, on me. No card, no catch. It runs until <strong>{{end_date}}</strong>.') +
+      lead('{{gift_note}}') +
+      lead('Every Pro feature is switched on: 0% commission on bookings, every reminder flow, the full CRM and unlimited AI help.') +
+      note('When the gift ends you go back to Starter. Your services, bookings and clients stay exactly as they are.') +
+      '<!--cta-->' +
+      C.signOff('Shubham', 'Founder, Meeticulous'),
+    cta_label: 'Open your dashboard', cta_url: '{{dashboard_url}}',
+  }; })(),
+
+  (() => { const t = themeForCategory('Renewal'); return {
+    event_key: 'PLAN_GIFT_ENDING', audience: 'vendor', category: 'Subscription', sender_key: 'tithi',
+    name: 'Gifted Pro Ending', subject: 'Your gifted Pro ends {{ends_in}}',
+    preview_text: 'Go Pro to keep everything you have now.',
+    email_category: 'Renewal',
+    email_reason: 'You are receiving this email because your complimentary Pro plan from Meeticulous ends soon.',
+    html_content:
+      C.heroBand(t, { kick: 'Ends {{ends_in}}', h2: 'Keep Pro going.', sub: 'Your gift ends on {{end_date}}, {{first_name}}.' }) +
+      lead('Your gifted <strong>Pro</strong> ends on <strong>{{end_date}}</strong>. After that you go back to Starter, and the Pro features switch off.') +
+      lead('Go Pro before then and nothing changes for you or your clients.') +
+      '<!--cta-->' +
+      C.signOff('Tithi', 'Meeticulous'),
+    cta_label: 'Keep Pro', cta_url: '{{upgrade_url}}',
+  }; })(),
+
+  (() => { const t = themeForCategory('Renewal'); return {
+    event_key: 'PLAN_GIFT_ENDED', audience: 'vendor', category: 'Subscription', sender_key: 'tithi',
+    name: 'Gifted Pro Expired', subject: 'Your gifted Pro has expired',
+    preview_text: 'Go Pro to keep using the benefits.',
+    email_category: 'Renewal',
+    email_reason: 'You are receiving this email because your complimentary Pro plan from Meeticulous has ended.',
+    html_content:
+      h('Your gifted Pro has expired, {{first_name}}') +
+      lead('To keep using the Pro benefits, go Pro. It takes a minute.') +
+      note("You're on Starter now. Your services, bookings and clients are all still here.") +
+      '<!--cta-->' +
+      C.signOff('Tithi', 'Meeticulous'),
+    cta_label: 'Go Pro', cta_url: '{{upgrade_url}}',
+  }; })(),
+
   (() => { const t = themeForCategory('Payment Receipt'); return {
     event_key: 'REFERRAL_REWARD_RELEASED', sender_key: 'payments', audience: 'vendor', category: 'Payments',
     name: 'Referral Reward Released', subject: 'You earned a referral reward 🎉',
