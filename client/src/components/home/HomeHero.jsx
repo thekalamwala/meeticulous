@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import Reveal from "./Reveal";
-import ContinueWithLinkedIn, { useLinkedinEnabled } from "../ContinueWithLinkedIn";
 import { cleanSlug, saveHeroSlug } from "../../utils/heroSlug";
 
 /* Homepage hero — owner reference (2026-11-02): full-screen crimson block, copy
@@ -11,9 +10,10 @@ import { cleanSlug, saveHeroSlug } from "../../utils/heroSlug";
    cursive "ee" and exits right carries that side. Sizing lives in `.home-hero` (index.css)
    so the ribbon, padding and full-screen height stay in one place.
 
-   "Claim my link" stashes the typed slug and starts the existing Google sign-up
-   (the LinkedIn button, shown only with host_linkedin_login ON, stashes it too);
-   onboarding's SlugClaim step pre-fills it and does the real availability check
+   "Claim my link" stashes the typed slug and sends the visitor to the /become-a-host
+   signup page (which carries the slug through and lets them pick Google / LinkedIn /
+   email), rather than firing the Google OAuth popup straight from the hero.
+   Onboarding's SlugClaim step pre-fills the slug and does the real availability check
    (there is no public slug-check endpoint, so the hero doesn't claim to know). */
 
 // The ee is drawn in a 560×220 box: band centred at y=130 (stroke 34) loops
@@ -25,14 +25,16 @@ const EE_PATH =
   "C50,175 95,195 140,170 C170,150 200,110 225,95 C255,72 265,40 235,35 " +
   "C200,30 172,75 178,120 C185,170 230,195 280,175 C320,160 360,150 400,150 L4000,150";
 const RIBBON = "var(--mt-pink)"; // the pink ee from the app icon
-export default function HomeHero({ onStart, loading }) {
+export default function HomeHero() {
   const [slug, setSlug] = useState("");
-  const linkedinOn = useLinkedinEnabled();
+  const navigate = useNavigate();
 
   const claim = (e) => {
     e.preventDefault();
     saveHeroSlug(slug);
-    onStart();
+    // Send them to the signup page (which pre-fills the slug) instead of
+    // firing the Google OAuth popup directly from the hero.
+    navigate("/become-a-host", { state: { desiredUsername: slug } });
   };
 
   return (
@@ -86,18 +88,16 @@ export default function HomeHero({ onStart, loading }) {
               </label>
               <button
                 type="submit"
-                disabled={loading}
-                className="btn inline-flex flex-shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="btn inline-flex flex-shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
               >
-                {loading ? "Opening Google…" : "Claim my link"}
-                {!loading && <ArrowRight size={16} />}
+                Claim my link
+                <ArrowRight size={16} />
               </button>
             </form>
-            <ContinueWithLinkedIn intent="signup" onStart={() => saveHeroSlug(slug)} className="btn mt-3 flex w-full max-w-[34rem] items-center justify-center gap-3 rounded-full border border-white/40 bg-transparent py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90" />
             <p className="mt-3 flex max-w-[34rem] items-start gap-2 text-xs leading-relaxed text-white/75">
               <span aria-hidden className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full" style={{ background: RIBBON }} />
               <span>
-                Next, sign in with Google{linkedinOn ? " or LinkedIn" : ""} — we&apos;ll check your link is free. By continuing, you agree to our{" "}
+                Next, choose how to sign up — we&apos;ll check your link is free. By continuing, you agree to our{" "}
                 <Link to="/terms" className="text-white/90 underline decoration-white/40 underline-offset-2 hover:text-white">Terms</Link> and{" "}
                 <Link to="/privacy" className="text-white/90 underline decoration-white/40 underline-offset-2 hover:text-white">Privacy Policy</Link>.
               </span>

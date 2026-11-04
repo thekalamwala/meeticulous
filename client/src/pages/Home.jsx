@@ -666,7 +666,7 @@ const Home = () => {
 
       {/* ════════════════ HERO ════════════════ Aastha's HomeHero
          (claim-my-link box + sample booking card) — replaces the DS slot-grid hero. */}
-      <HomeHero onStart={startGoogle} loading={googleLoading} />
+      <HomeHero />
 
       {/* ════════════════ COMPANY TRUST STRIP ════════════════
          Brand marquee right under the hero. Replaces the STATS proof strip
