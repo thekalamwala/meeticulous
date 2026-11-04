@@ -97,6 +97,13 @@ describe('getColorsForPlan', () => {
     expect(colors).toEqual(CREATOR_COLORS);
   });
 
+  test('premium / premium_founding (Pro) → STUDIO_COLORS (16 swatches)', () => {
+    expect(getColorsForPlan('premium')).toHaveLength(16);
+    expect(getColorsForPlan('premium')).toEqual(STUDIO_COLORS);
+    expect(getColorsForPlan('premium_founding')).toEqual(STUDIO_COLORS);
+    expect(canUseCustomHex('premium')).toBe(false);
+  });
+
   test('professional → STUDIO_COLORS (full palette)', () => {
     const colors = getColorsForPlan('professional');
     expect(colors).toEqual(STUDIO_COLORS);

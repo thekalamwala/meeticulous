@@ -49,52 +49,43 @@ export const CREATOR_COLORS = [
   { name: 'Forest Green',  hex: '#15803D' },
 ];
 
-// Studio (+ Supreme) tier: full hue-ordered palette + custom hex picker.
-// No pure black/white. Approximated from the design swatch sheet — tweak hex freely.
+// Pro (+ legacy Studio / Supreme) tier: 16 hue-ordered colours. Light shades
+// (yellow, lime, pale greys) were dropped — white button text reads poorly on
+// them — along with near-duplicates. No pure black/white. Keep in sync with
+// server/controllers/hostController.js PRO_PALETTE.
 export const STUDIO_COLORS = [
   // warm → green
-  { name: 'Pink',         hex: '#EC4899' },
-  { name: 'Rose',         hex: '#F43F5E' },
-  { name: 'Coral',        hex: '#FB7185' },
-  { name: 'Red',          hex: '#DC2626' },
-  { name: 'Orange',       hex: '#F97316' },
   { name: 'Brand Maroon', hex: '#960D32' },
+  { name: 'Red',          hex: '#DC2626' },
+  { name: 'Rose',         hex: '#F43F5E' },
+  { name: 'Pink',         hex: '#EC4899' },
+  { name: 'Orange',       hex: '#F97316' },
   { name: 'Amber',        hex: '#F59E0B' },
-  { name: 'Gold',         hex: '#EAB308' },
-  { name: 'Yellow',       hex: '#FACC15' },
-  { name: 'Lime',         hex: '#84CC16' },
-  { name: 'Light Green',  hex: '#4ADE80' },
-  { name: 'Green',        hex: '#22C55E' },
   { name: 'Emerald',      hex: '#10B981' },
   { name: 'Forest Green', hex: '#15803D' },
   // cool → neutral
   { name: 'Teal',         hex: '#14B8A6' },
-  { name: 'Cyan',         hex: '#06B6D4' },
   { name: 'Sky Blue',     hex: '#0EA5E9' },
   { name: 'Royal Blue',   hex: '#2563EB' },
   { name: 'Indigo',       hex: '#4F46E5' },
   { name: 'Violet',       hex: '#7C3AED' },
-  { name: 'Purple',       hex: '#9333EA' },
   { name: 'Fuchsia',      hex: '#C026D3' },
   { name: 'Brown',        hex: '#92400E' },
-  { name: 'Dark Brown',   hex: '#78350F' },
   { name: 'Slate',        hex: '#475569' },
-  { name: 'Grey',         hex: '#6B7280' },
-  { name: 'Cool Grey',    hex: '#9CA3AF' },
-  { name: 'Taupe',        hex: '#A8A29E' },
 ];
 
 export const DEFAULT_THEME_COLOR = '#960D32';
 
 /**
  * Returns the color swatches available for the given plan.
- *   Starter        → brand maroon only (1)
- *   Host+          → CREATOR_COLORS (8)
- *   Studio/Supreme → STUDIO_COLORS (full palette) + custom hex input
+ *   Starter                 → brand maroon only (1)
+ *   Pro (Partner) (creator) → CREATOR_COLORS (8)
+ *   Pro / Studio / Supreme  → STUDIO_COLORS (16); Studio/Supreme also get custom hex
  */
 export const getColorsForPlan = (plan) => {
-  if (plan === 'professional' || plan === 'supreme') return STUDIO_COLORS;
-  if (plan === 'creator') return CREATOR_COLORS;
+  const canon = normalizePlan(plan);
+  if (canon === 'premium' || canon === 'professional' || canon === 'supreme') return STUDIO_COLORS;
+  if (canon === 'creator') return CREATOR_COLORS;
   return FREE_COLORS;
 };
 

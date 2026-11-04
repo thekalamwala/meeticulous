@@ -189,6 +189,29 @@ describe('updateProfile', () => {
     await updateProfile(req({}, { theme_color: '#960D32' }), r);
     expect(capturedUpdates?.theme_color).toBe('#960D32');
   });
+
+  // Pro gets the 16-colour palette; anything outside it (or on Starter) is a 403.
+  test.each([
+    ['premium',          '#2563EB', true],
+    ['premium_founding', '#2563EB', true],
+    ['premium',          '#FACC15', false],
+    ['free',             '#2563EB', false],
+  ])('plan %s saving %s → allowed=%s', async (plan, hex, allowed) => {
+    let capturedUpdates;
+    supabaseAdmin.from.mockReturnValue({
+      select:  jest.fn().mockReturnThis(),
+      update:  jest.fn().mockImplementation((u) => { capturedUpdates = u; return { eq: jest.fn().mockReturnThis(), select: jest.fn().mockReturnThis(), single: jest.fn().mockResolvedValue({ data: HOST, error: null }) }; }),
+      eq:      jest.fn().mockReturnThis(),
+      neq:     jest.fn().mockReturnThis(),
+      single:  jest.fn().mockResolvedValue({ data: { username: 'jane-v', plan }, error: null }),
+      maybeSingle: jest.fn().mockResolvedValue({ data: null }),
+    });
+
+    const r = res();
+    await updateProfile(req({}, { theme_color: hex }), r);
+    if (allowed) expect(capturedUpdates?.theme_color).toBe(hex);
+    else expect(r.status).toHaveBeenCalledWith(403);
+  });
 });
 
 // ── getServiceBySlug ──────────────────────────────────────────────────────────
