@@ -22,12 +22,21 @@ export const getLuminance = (hex) => {
   }
 };
 
+/** WCAG 2.1 contrast ratio between two hex colours (1–21). */
+export const getContrastRatio = (a, b) => {
+  const [hi, lo] = [getLuminance(a), getLuminance(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+};
+
 /**
- * Returns '#ffffff' or '#111827' based on WCAG contrast against the given background.
+ * Returns '#ffffff' or '#111827' — whichever has the higher WCAG contrast
+ * against the given background. The crossover sits at luminance ≈ 0.20, so the
+ * chosen colour is always ≥ ~4.2:1 (the old fixed 0.35 cut-off gave white text
+ * at ~2.8:1 on mid-tones like Orange #F97316 / Sky Blue #0EA5E9).
  */
 export const getContrastColor = (hex) => {
   if (!hex || !hex.startsWith('#')) return '#ffffff';
-  return getLuminance(hex) > 0.35 ? '#111827' : '#ffffff';
+  return getContrastRatio(hex, '#111827') > getContrastRatio(hex, '#ffffff') ? '#111827' : '#ffffff';
 };
 
 // ─── Plan-gated color palettes ───────────────────────────────────────────────
@@ -89,7 +98,12 @@ export const getColorsForPlan = (plan) => {
   return FREE_COLORS;
 };
 
-export const canUseCustomHex = (plan) => plan === 'professional' || plan === 'supreme';
+// normalizePlan so legacy `pro` (= professional) matches the server, which
+// already lets it save any hex (hostController updateProfile).
+export const canUseCustomHex = (plan) => {
+  const canon = normalizePlan(plan);
+  return canon === 'professional' || canon === 'supreme';
+};
 
 // ─── Profile photo border color by plan ─────────────────────────────────────
 
