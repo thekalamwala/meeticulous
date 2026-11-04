@@ -1,9 +1,24 @@
 # Current Work — Meeticulous
-_Last updated: 2026-11-03_
+_Last updated: 2026-11-04_
+
+## Gifted Pro + JSON-LD graph (release/2026-11 after #136) — 2026-11-04
+
+> **Status: #137–#140 MERGED into `release/2026-11`, not yet on `main`.** Release #136 (`release/2026-11` → `main`, 2026-11-04) shipped everything up to #135 (LinkedIn host login, calendar guarantee, community Phase 1, v3.186/v3.187 work, email template sync).
+
+- **Gifted Pro** (plan `docs/superpowers/plans/2026-11-04-gifted-pro.md`, #137 docs; #138 PR A core; #140 PR B+C screens/growth). Super admin gifts a host complimentary Pro for 1/2/6/12/24/60 months; at the end the host drops to Starter. A gift is plain `premium` with `plan_expires_at` = gift end, so `resolveVendorPlan` ends access on time even if the cron is late.
+  - **Migration `v3.190_plan_gifts.sql`: APPLIED 2026-11-04** on the Meeticulous DB (`plan_gifts` table, RLS on/service-role only, 3 `notification_events`: email + in-app on, WhatsApp off until AiSensy templates are approved). Code is schema-fallback safe (gift routes 503, cron no-op without the table).
+  - Server: `services/planGiftService.js` (eligibility: never a paying host; bulk grant ≤200; extend; revoke; `endOnPaid`; hourly expiry cron with T-7/T-1 notices), `routes/giftRoutes.js`, `GET/POST /api/admin/gifts` (+`/eligibility`, `/:id/extend`, `/:id/revoke`) all `requireSuperAdmin`. Charging a gifted host closes the gift first (`activateFromSubscription`/`verifySubscription`). `assignPlan` and Host 360 *Change plan* return 409 on an active gift. Session payload gains `gift: { ends_at, months, note }`.
+  - Admin UI: Admin → Plans → Gift Pro (bulk, tenure pills, eligibility preview), gifts table (Extend / Revoke / Approve +1 mo), Host 360 "Gift Pro" button.
+  - Host UI: Billing "Pro (Gifted)" card (end date, founder note, share buttons, share-to-extend, pay-it-forward); sidebar chip and profile menu read **Pro (Gifted)**; public surfaces still say Pro. "Keep Pro" confirms an immediate charge.
+  - Growth: `POST /api/gift/share` (once per gift; admin approval = +1 month), pay-it-forward code (`/become-a-host?gift=CODE`, `POST /api/gift/redeem`, one level deep).
+  - Emails (shubham / tithi transactional sender keys, never `crm_*`) auto-insert via templateSync on next prod boot.
+  - **Not browser-verified** (needs a signed-in super admin + gifted host on the live API).
+- **JSON-LD `@id` graph** (#139). Host profile and service pages emit ONE linked `@graph` (WebSite, Organization, ProfilePage/Service/Product, Person, BreadcrumbList, optional FAQPage) instead of unlinked objects, so the host is a single `Person` entity. `client/src/utils/seo.js` (`profileGraphJsonLd` / `serviceGraphJsonLd` / `productGraphJsonLd`) and `server/controllers/prerenderController.js` (`buildProfileGraph` / `buildServiceGraph`) must stay in lockstep: a shared fixture (`seoGraphParity.json`) is asserted in both vitest and jest. Profile FAQPage only with host-specific facts. Product pages are `noindex`, so Product schema won't surface yet. Spec: `docs/seo/profile-schema-guide.md`.
+- **Booking Details inputs** (#133, 2026-11-03): slim 40px/13px inputs via a scoped `.bk-page .fb-input` rule (the `@layer legacy` padding lost to the unlayered global `input{}` rule).
 
 ## Host LinkedIn login (Phase 2) — 2026-11-03
 
-> **Status: PR open, flag OFF, migration v3.188 NOT yet applied.** Branch `feat/host-linkedin-login` → `release/2026-11`.
+> **Status: MERGED (#135), shipped to `main` in release #136 (2026-11-04).** Flag `host_linkedin_login` ships OFF unless flipped; confirm v3.188 is applied and the flag state in admin flags.
 
 - Host sign-in/up with LinkedIn (Supabase `linkedin_oidc`) behind admin flag `host_linkedin_login` (server fails closed; client button needs an explicit `true`). Buttons on HostLogin (login) and BecomeAHost / onboarding GoogleStart / Home hero / InviteLanding (signup); HostLogin shows "Already a host? Use the same option you signed up with." only while the flag is on.
 - **Founder steps:** (1) apply `v3.188_host_linkedin_login_flag.sql` on the DB before merge; (2) add `/auth/linkedin/done` to the Supabase redirect allowlist (prod + localhost); (3) live-test with a LinkedIn account whose email matches an existing host: must land in the same account; (4) flip `host_linkedin_login` ON.
@@ -20,11 +35,11 @@ _Last updated: 2026-11-03_
 - **Dashboard nudge:** `calendar` item in `client/src/lib/hostNudges.js` (priority 75, dismissible). `NextStepCard` action has a busy guard and error toast. `?google=denied` shows a toast.
 - **One-off audit:** `server/scripts/auditCalendarScopes.js`. Dry run lists hosts flagged connected whose stored token lacks calendar scopes (`ok|missing_scopes|token_error|transient_error`). `--apply` flips only `missing_scopes`/`token_error` to disconnected.
 - **Post-merge:** founder runs the audit script dry run, reviews the output, then runs `--apply`. Not run yet.
-- **Next:** Phase 2 LinkedIn host login (`feat/host-linkedin-login`), after this merges.
+- **Next:** Phase 2 LinkedIn host login — merged (#135).
 
 ## Community Phase 1 (`/community`) — 2026-11-03
 
-> **Status: PR open (`feat/community` → `release/2026-11`), not merged. Migration v3.185 APPLIED to the Meeticulous DB. All community flags OFF.**
+> **Status: MERGED (#124), shipped in release #136. Migration v3.185 APPLIED to the Meeticulous DB. All community flags OFF.**
 
 Public, SEO-indexed feed + forum threads (reading is public, interaction needs login). Built via 14-task plan with per-task review + final whole-branch review.
 - **Shipped in Phase 1:** posts + threads (text/question/announcement, up to 4 photos), flat replies with accepted answers, likes, 5 spaces (Host Corner hosts-only posting), reports (3 → auto-hide; dismiss restores), admin moderation (reports/content/members/spaces, bans, badges, early access), reply/mention/removal notifications (in-app + email, honours unsubscribe), prerender + JSON-LD (DiscussionForumPosting / QAPage) + `sitemap-community.xml`, edge routing for crawlers incl. Googlebot on `/community` only.
