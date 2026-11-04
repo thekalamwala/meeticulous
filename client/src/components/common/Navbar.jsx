@@ -216,7 +216,7 @@ const CommunitySuffix = () => {
     return () => clearInterval(t);
   }, []);
   return (
-    <span className="text-[13.2px] font-bold tracking-tight text-primary leading-none" aria-label="Community">
+    <span className="text-[13.2px] font-bold tracking-tight text-primary leading-none -translate-y-px" aria-label="Community">
       <span key={i} className="mt-wordrot inline-block">{COMMUNITY_WORDS[i]}</span>
     </span>
   );
@@ -747,7 +747,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-2.5 shrink-0 pr-4 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded"
+            className="flex items-center gap-2 shrink-0 pr-4 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded"
             aria-label="Meeticulous — home"
           >
             <NavbarLogo appearance={appearance} />
