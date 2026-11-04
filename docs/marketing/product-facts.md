@@ -8,24 +8,15 @@ verified_against: subscription_plans (live DB spquowzrefozmrzoszkf), server/lib/
 # Product facts — the single source of truth
 
 > **DRAFT.** Seeded for the SUTRA agent network. No agent may state a price, feature, limit,
-> policy or timeline that contradicts this file (README §2.1). **The founder must confirm every
-> number below before any customer-facing agent goes live.** DISHA keeps this file true after
-> every release; plan limits always come from `subscription_plans.limits`, never hardcoded.
+> policy or timeline that contradicts this file (README §2.1). Pricing is founder-confirmed
+> (below); the rest still needs a founder pass before customer-facing agents go live. DISHA keeps
+> this file true after every release; plan limits always come from `subscription_plans.limits`.
 
-## ⚠️ Price conflict to resolve first
-On 2026-11-04 the three written sources disagreed with the live database:
-
-| Source | Pro monthly | Pro yearly |
-|---|---|---|
-| **Live DB** (`subscription_plans`, slug `premium`, active) | **₹199** | **₹999** |
-| SUTRA spec v1.0 | ₹235 | ₹1,179 |
-| `docs/help/*` (verified 2026-08-31) | ₹399 | ₹3,599 |
-| Root `CLAUDE.md` | — | ₹999 founding / ₹1,179 regular |
-
-This file uses the **live DB** value because §2.1 makes the database authoritative. If the DB is
-wrong (e.g. the founding ₹999 price was left as the standard `premium` price by mistake), the
-founder fixes the DB and this file together. **Until the founder confirms, agents quote no price
-and link to `/pricing`.**
+## Pro price (confirmed by founder, 2026-11-04)
+- **Final price the guest pays: ₹199/month or ₹999/year.** This is what agents quote. Matches the live DB (`subscription_plans`, slug `premium`).
+- ₹235/month and ₹1,179/year are the same prices **with 18% GST shown on top** (199×1.18, 999×1.18) — a derivation, not a separate price. Don't quote these as "the price".
+- ₹399/₹3,599 (old help docs) and the ₹1,179 "regular" in CLAUDE.md are **discarded** — stale.
+- Those stale figures still live in `docs/help/*` and root `CLAUDE.md`; DISHA/YANTRA fix them in a follow-up.
 
 ## Plans (active, from the live DB)
 
@@ -35,7 +26,7 @@ and link to `/pricing`.**
 - **Limits:** CRM 10 contacts · 2 free (₹0) services · 10 AI generations / 6 months · 3 digital products · 1 reminder flow · 0 follow-up flows · 1 calendar integration. Unlimited paid services, categories, bookings.
 
 ### Pro (slug `premium`)
-- **Price:** ₹199/month or ₹999/year (live DB; **verify** — see conflict above). All prices GST-inclusive.
+- **Price:** ₹199/month or ₹999/year (final price the guest pays). ₹235 / ₹1,179 = the same with 18% GST shown on top.
 - **Commission:** 0%.
 - **Support:** priority.
 - **Limits:** everything unlimited except 2 calendar integrations.
