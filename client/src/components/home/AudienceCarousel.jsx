@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
@@ -93,7 +93,9 @@ export default function AudienceCarousel({ audiences }) {
   const sideH = Math.round(centreH * 0.66);
   const outerH = Math.round(centreH * 0.42);
 
-  useEffect(() => {
+  // Measure before paint: setting the stage height after paint would flash a
+  // collapsed (0-height) stage on first render and shove the page down (CLS).
+  useLayoutEffect(() => {
     const el = stageRef.current;
     if (!el) return;
     const measure = () => setStageW(el.clientWidth);
@@ -102,7 +104,7 @@ export default function AudienceCarousel({ audiences }) {
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const hs = measureRefs.current.map((m) => m?.offsetHeight || 0);
     setContentH(Math.max(0, ...hs));
     setMeasuredW(centreW);
@@ -139,6 +141,7 @@ export default function AudienceCarousel({ audiences }) {
         <p className={`mt-3 text-base leading-relaxed text-ink ${wide ? "" : "mx-auto max-w-sm"}`}>{a.desc}</p>
         <Link
           to={a.learnMore}
+          aria-label={`Learn more about Meeticulous for ${a.title.toLowerCase()}`}
           className="mt-5 inline-block border-b-2 border-primary pb-0.5 text-sm font-semibold text-ink hover:text-primary-cta hover:no-underline"
         >
           Learn more
