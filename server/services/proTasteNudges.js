@@ -49,7 +49,7 @@ function bellFor(stage, { daysLeft, endsOn, spotsLeft }) {
   switch (stage) {
     case 'started': return { title: 'WhatsApp reminders are on for 60 days', body: `Your guests get WhatsApp reminders and you both get reschedule alerts until ${endsOn}. That's Pro, on us.`, link: '/dashboard/bookings' };
     case 'day45':   return { title: `${daysLeft} days of WhatsApp reminders left`, body: `On ${endsOn} reminders switch to email. Pro keeps them on.`, link: upgrade };
-    case 'ending':  return { title: `${daysLeft} days left of WhatsApp reminders`, body: `Keep them with founding Pro — ₹999/yr, locked for life${spotsLeft != null ? ` (${spotsLeft} of 100 spots left)` : ''}.`, link: upgrade };
+    case 'ending':  return { title: `${daysLeft} days left of WhatsApp reminders`, body: `Keep them with founding Pro — ₹1,179/yr incl. GST, locked for life${spotsLeft != null ? ` (${spotsLeft} of 100 spots left)` : ''}.`, link: upgrade };
     case 'ended':   return { title: 'WhatsApp reminders are now off', body: 'Your guests get email reminders only. Turn WhatsApp back on with Pro.', link: upgrade };
     default: return null;
   }

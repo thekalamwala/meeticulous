@@ -87,7 +87,7 @@ const STEPS = [
 
 // Logo grid — REAL BAS integrations only.
 const TOOLS = [
-  { name: 'Google Calendar', icon: 'google-calendar', sub: 'Busy times blocked, bookings added to your calendar' },
+  { name: 'Google Calendar', icon: 'google-calendar', sub: 'Busy times blocked, appointments added to your calendar' },
   { name: 'Google Meet', logo: '/images/logos/google-meet.svg', sub: 'Video link on every tele-consult' },
   { name: 'WhatsApp', logo: '/images/logos/whatsapp.svg', sub: 'Reminders on autopilot' },
   { name: 'Razorpay', logo: razorpayLogo, sub: 'Payments, refunds & GST invoices' },
@@ -97,10 +97,10 @@ const TOOLS = [
 
 // Impact stat cards (middle one dark-highlighted).
 const METRICS = [
-  { v: '24/7', l: 'Bookings, day or night', note: 'Your booking page never sleeps — patients reserve slots any time.' },
+  { v: '24/7', l: 'Appointments, day or night', note: 'Your booking page never sleeps — patients reserve slots any time.' },
   { v: '0%', l: 'Commission on Pro', note: 'Keep every rupee you earn — no cut on your consult fees.' },
   { v: '₹0', l: 'To get started', note: 'Free forever plan — no card, no lock-in.' },
-  { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice generated for every paid booking.' },
+  { v: 'GST', l: 'Invoices, automatic', note: 'A tax invoice generated for every paid appointment.' },
 ];
 
 // Placeholder testimonials — clinic STAFF about admin, never patients about treatment.
@@ -116,7 +116,7 @@ const TRANSFORM = [
   { old: 'No-shows waste clinic hours', now: 'Automatic WhatsApp reminders cut no-shows' },
   { old: 'Chasing consultation fees at the desk', now: 'Fees collected upfront over UPI or card' },
   { old: 'A paper appointment register', now: 'One clean, calendar-synced clinic view' },
-  { old: 'Two patients in one slot', now: 'Conflict-free slots — no double bookings' },
+  { old: 'Two patients in one slot', now: 'Conflict-free slots — no double-booked appointments' },
 ];
 
 // Trust bar — verifiable facts only.
@@ -128,10 +128,10 @@ const TRUST_STRIP = [
 ];
 
 const FAQ = [
-  { q: 'Is Meeticulous suitable for general physicians and clinics?', a: 'Yes. Whether you are a solo GP or a clinic with a team of doctors, Meeticulous manages your services, availability, patient bookings and communication from one place — so your reception runs without constant phone calls. It is a scheduling and payment tool, not a medical-records system.' },
+  { q: 'Is Meeticulous suitable for general physicians and clinics?', a: 'Yes. Whether you are a solo GP or a clinic with a team of doctors, Meeticulous manages your services, availability, patient appointments and communication from one place — so your reception runs without constant phone calls. It is a scheduling and payment tool, not a medical-records system.' },
   { q: 'Can patients book consultations online?', a: 'Yes. A patient opens your booking link, chooses a service such as a general consultation or health check-up, picks a convenient time and confirms — no calls or waiting for the desk to reply.' },
   { q: 'Can I offer online (tele-medicine) consultations?', a: 'Yes. Offer online consults with automatic Google Meet links, or mark a service as in-clinic — or both. The patient picks the mode that suits them.' },
-  { q: 'Can I collect the consultation fee online?', a: 'Yes. Collect the fee upfront through Razorpay — UPI, cards or netbanking — before the appointment. A GST invoice is generated automatically for every paid booking.' },
+  { q: 'Can I collect the consultation fee online?', a: 'Yes. Collect the fee upfront through Razorpay — UPI, cards or netbanking — before the appointment. A GST invoice is generated automatically for every paid appointment.' },
   { q: 'Can I manage multiple doctors and services?', a: 'Yes. Create as many services as you need — consultation, health check-up, chronic care, vaccination — each with its own duration, fee and availability, and manage every appointment from one clinic calendar.' },
   { q: 'Is our clinic and patient information kept private?', a: 'Meeticulous stores appointment and contact details for booking only — it is not a medical-records system. Your production data is hosted in India (Mumbai) and the platform operates under India’s DPDP Act 2023.' },
   { q: 'Do we need any technical setup?', a: 'No. Setup takes minutes and needs no technical skills. You add your services and clinic hours, and your booking page is ready to share — your patients need nothing more than the link.' },
@@ -647,7 +647,7 @@ export default function GeneralPhysicians() {
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-cream)' }}>
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <Reveal className="relative order-2 mx-auto w-full max-w-md lg:order-1 lg:mx-0 lg:max-w-none">
-            <ImgSlot alt="A calm clinic reception managing bookings on Meeticulous" rounded="rounded-[20px]" className="aspect-[5/4] w-full shadow-[0_28px_60px_-30px_rgba(15,30,61,0.4)]" />
+            <ImgSlot alt="A calm clinic reception managing appointments on Meeticulous" rounded="rounded-[20px]" className="aspect-[5/4] w-full shadow-[0_28px_60px_-30px_rgba(15,30,61,0.4)]" />
             <div className="absolute -bottom-5 left-5 z-20 max-w-[16rem] rounded-2xl px-5 py-4 text-white shadow-[0_20px_44px_-20px_rgba(15,30,61,0.8)]" style={{ background: 'var(--ca-ink)' }}>
               <div className="font-heading text-base font-extrabold leading-tight">Built for Indian clinics</div>
               <p className="mt-1.5 text-xs leading-relaxed text-white/70">Your data is hosted in Mumbai, under India&apos;s DPDP Act 2023.</p>

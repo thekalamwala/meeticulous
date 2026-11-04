@@ -15,7 +15,7 @@ vi.mock('../services/api', () => ({
   advanceToLive:       vi.fn().mockResolvedValue({ data: {} }),
   createSubscription:  vi.fn(),
   syncSubscription:    vi.fn(),
-  getMe:               vi.fn().mockResolvedValue({ data: {} }),
+  getMe:               vi.fn().mockResolvedValue({ data: { google_calendar_connected: true } }),
 }));
 vi.mock('../utils/celebration', () => ({ fireCelebration: vi.fn() }));
 vi.mock('../utils/loadRazorpay', () => ({ default: vi.fn().mockResolvedValue(true) }));

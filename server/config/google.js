@@ -200,6 +200,23 @@ const deleteCalendarEvent = async (accessToken, refreshToken, eventId) => {
   return { deleted: true };
 };
 
+// True only when Google actually granted calendar access on this token. A host is
+// "calendar connected" iff the granted scope string holds events + freebusy, or the
+// legacy full `calendar` scope (matched as a whole token, not a prefix).
+// settings.readonly is optional. Missing `scope` means we can't prove a grant → false.
+const hasCalendarScopes = (tokens) => {
+  if (!tokens?.scope) {
+    console.warn('google.hasCalendarScopes: token has no scope; treating as not connected');
+    return false;
+  }
+  const granted = new Set(tokens.scope.split(/\s+/));
+  if (granted.has('https://www.googleapis.com/auth/calendar')) return true;
+  return (
+    granted.has('https://www.googleapis.com/auth/calendar.events') &&
+    granted.has('https://www.googleapis.com/auth/calendar.freebusy')
+  );
+};
+
 module.exports = {
   oauth2Client,
   getAuthUrl,
@@ -210,4 +227,5 @@ module.exports = {
   deleteCalendarEvent,
   getFreeBusy,
   getCalendarTimezone,
+  hasCalendarScopes,
 };

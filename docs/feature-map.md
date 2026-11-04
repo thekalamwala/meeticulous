@@ -96,6 +96,7 @@
 - **DB Tables:** `profiles` (extends `auth.users`), `otp_codes`
 - **Session Storage:** `localStorage['user']` = `{ token, refresh_token, id, name, email, role, username, plan, ... }`
 - **Auto-refresh:** 401 interceptor in `api.js` calls `supabase.auth.refreshSession()`
+- **Host LinkedIn login** (flag `host_linkedin_login`, fails closed): `POST /api/auth/linkedin/host` (`linkedinHostAuth`), client `LinkedinAuthDone.jsx` (`/auth/linkedin/done`), `startLinkedinHostAuth` in `AuthContext.jsx`, button `components/ContinueWithLinkedIn.jsx` (HostLogin, BecomeAHost, onboarding/GoogleStart, HomeHero, InviteLanding)
 - **Related:** OTP Verification, Admin Auth
 
 ---
@@ -163,8 +164,13 @@
 **Purpose:** Auto-create Google Meet events for confirmed online bookings.
 - **Primary:** `config/google.js` → `createCalendarEvent()`
 - **Used in:** `bookingController.createBooking`, `paymentController.verifyPayment`
-- **Profile fields:** `google_calendar_connected`, `google_access_token`, `google_refresh_token`
-- **OAuth route:** `GET /api/auth/google`, `GET /api/auth/google/callback`
+- **Tokens:** live in `profile_private` (since v3.24), not `profiles`. `profiles` keeps `google_calendar_connected`, `calendar_skipped`, `google_id`.
+- **OAuth route:** `GET /api/auth/google?return=…` (return allowlist: `/dashboard`, `/vendor-register/<slug>/calendar`), `GET /api/auth/google/callback`
+- **Scope check:** `hasCalendarScopes` in `config/google.js`. The callback sets `google_calendar_connected` only when calendar scopes are granted; cancel/errors redirect with `?google=denied|error`.
+- **Skip endpoint:** `POST /api/onboarding/skip-calendar` (sets `calendar_skipped`; exposed as `calendarSkipped` in onboarding status and `/auth/me`).
+- **Onboarding step:** `client/src/pages/onboarding/CalendarStep.jsx` at `/vendor-register/:slug/calendar`; gated by `client/src/pages/onboarding/needsCalendar.js`.
+- **Dashboard nudge:** `calendar` item in `client/src/lib/hostNudges.js`, rendered by `NextStepCard`.
+- **Audit script (one-off):** `server/scripts/auditCalendarScopes.js` (dry run by default; `--apply` disconnects hosts with missing scopes or token errors).
 - **Related:** Service Booking, Payments
 
 ---
@@ -221,3 +227,12 @@
 - **DB Tables:** `in_app_notifications` (v3.39; `dedupe_key` v3.131; `resolved_at` v3.132), `notification_events` (`in_app_enabled` v3.130), `notification_logs`, `email_logs`.
 - **Migrations:** `v3.130_notification_in_app_channel`, `v3.131_in_app_notifications_dedupe`, `v3.132_in_app_notifications_resolution` (all applied BOTH DBs 2026-08-29).
 - **Related:** Booking Reminders, Payments, KYC, Subscriptions, Admin Panel
+
+## 20. Community (`/community`) — Phase 1 built 2026-11-03 (v3.185)
+- **Spec / plan:** `docs/superpowers/specs/2026-11-03-community-design.md`, `docs/superpowers/plans/2026-11-03-community-phase-1.md`. Mockups: `docs/design/community-mockups.html`.
+- **Server:** `routes/communityRoutes.js` → `controllers/communityController.js`; admin `controllers/communityAdminController.js` (routes in `adminRoutes.js`, perms `community.view` / `community.moderate`); bots `controllers/prerenderCommunity.js`.
+- **Services:** `services/community/` — `store.js` (all DB access), `adminStore.js`, `text.js` (limits, phone/email/link guard, slugs, mentions), `visibility.js` (the ONE who-can-see rule), `serialize.js` (the ONE author serializer — guests: first name only), `indexable.js`, `cursor.js`, `jsonLd.js`, `notify.js`.
+- **Gate:** `middleware/communityGate.js` — flags `community` / `community_writes` / `community_tithi` / `community_ads` (all OFF + fail-closed); early access via `community_members.early_access` or badge official/staff; terms version `2026-11-v1`; per-account limiters.
+- **Client:** `pages/community/*`, `components/community/*`, `services/communityApi.js`, `utils/communitySeo.js` (JSON-LD, parity-tested against `server/tests/fixtures/community-jsonld.json`); admin `pages/admin/community/*`; edge bot routing for `/community` in `client/middleware.js`.
+- **DB:** 18 `community_*` tables (v3.185). Counters are trigger-owned — never write them from app code.
+- **Launch checklist:** name Grievance Officer (`CommunityGuidelines.jsx` placeholders), daily moderation owner, seed 20–30 posts with early access, re-add the llms.txt community line, then flip `community` + `community_writes`.

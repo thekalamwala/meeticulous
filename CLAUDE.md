@@ -159,10 +159,36 @@ Items previously listed here as pending are now live:
 - **v3.183** (`v3.183_lead_reply_intent.sql`) — applied 2026-11-02 on the Meeticulous DB:
   `leads.last_reply_intent` (AI label on the latest CRM email reply, written by
   `brevoInboundController` via Brevo inbound parsing on `reply.meeticulous.in`).
+- **v3.184** (`v3.184_founding_plan.sql`) — applied 2026-11-03 on the Meeticulous DB after release #116
+  shipped: archived `premium_founding` plan row (copy of Pro at today's price; Pro checkouts land there
+  while founding spots are open), `vendor_metrics.is_founding_member` + automatic "Founding Member" badge,
+  phantom `subscription_plans.features` keys dropped. Email templates reseeded the same day (Pro Taste ×3
+  + FOUNDING_SPOTS_LOW inserted, 22 refreshed to the banner designs; all 54 md5-match `config/emailTemplates.js`).
 - **v3.185** (`v3.185_platform_reviews.sql`) — applied 2026-11-03 on the Meeticulous DB and verified
   (14 cols, RLS on / no policies, checks + 2 indexes): `platform_reviews` = reviews OF Meeticulous from
   `/submit-review` (one per signed-in account). Public only when `status='approved'` AND
-  `consent_public`; approved in Admin → Content → Testimonials (`cms.manage`). No migration outstanding.
+  `consent_public`; approved in Admin → Content → Testimonials (`cms.manage`).
+- **v3.185** (`v3.185_community.sql`, community) — applied 2026-11-03 on the Meeticulous DB (founder-approved):
+  18 `community_*` tables (schema for ALL community phases), counter triggers, 5 seeded spaces,
+  3 `COMMUNITY_*` notification_events. RLS on, no policies. The 3 matching `email_templates` rows were
+  inserted on their own (NOT via `seedEmailTemplates.js`, which overwrites every template). All four
+  `community*` flags ship OFF + fail-closed.
+  **Filename note:** number collides with `v3.185_platform_reviews.sql` — cosmetic only, both applied
+  (Supabase names migrations independently; this one is `v3_185_community`).
+- **v3.186** (`v3.186_lockdown_anon_rpc_and_views.sql`) — applied 2026-11-03 on the Meeticulous DB
+  (founder-approved, verified + advisor clean): revoked anon/authenticated EXECUTE on all 13 `SECURITY
+  DEFINER` functions (service_role only) and made `host_activation` / `host_activation_funnel` /
+  `vendor_metrics` `security_invoker` with no anon/auth access — before this the public anon key could
+  read every host's name/email/phone via `host_activation`. New postgres-owned functions no longer get
+  anon EXECUTE by default: **a function the browser must call needs an explicit GRANT**, and every new
+  view must set `security_invoker = true` (guarded by `tests/unit/lockdownAnonRpcMigration.test.js`).
+- **v3.187** (`v3.187_email_template_seed_hash.sql`) — applied 2026-11-03 on the Meeticulous DB:
+  `email_templates.seed_hash` (nullable). Production boot runs `services/email/templateSync.js`, which
+  pushes `config/emailTemplates.js` copy into the DB and KEEPS rows edited in the admin editor
+  (row content ≠ its seed_hash). Off switch: `EMAIL_TEMPLATE_SYNC=off`. Manual: `node scripts/seedEmailTemplates.js [--force]`.
+- **v3.188** (`v3.188_host_linkedin_login_flag.sql`) — **PENDING**, apply before/at merge of the LinkedIn
+  host login release: seeds the `host_linkedin_login` flag OFF (`ON CONFLICT DO NOTHING`). The registry
+  entry also carries `enabled: false`, so a boot before the migration still creates it OFF.
 
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
@@ -211,7 +237,8 @@ Guests
 - Auto-created if new.
 
 Hosts
-- Host login (`/login-as-vendor`) is Google only. Never show email/password here.
+- Host login (`/login-as-vendor`) is Google OR LinkedIn (LinkedIn via Supabase `linkedin_oidc`, behind the
+  admin flag `host_linkedin_login`, ships OFF). Never show email/password here.
 - Dual login (PR #900): a host MAY also sign into their guest space via WhatsApp
   OTP at `/login` → lands `/user`. It is ONE identity (both doors mint a session
   for the same profile); guest vs host is the `mode` ('traveling'/'hosting'), and

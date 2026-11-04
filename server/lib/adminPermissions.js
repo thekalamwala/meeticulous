@@ -59,6 +59,8 @@ const PERMISSIONS = [
   'support.view', 'support.assign', 'disputes.view', 'disputes.decide',
   'reviews.moderate',
   'feedback.view', 'feedback.manage',
+  // Community moderation (reports, hide/remove, pins, member badges/bans, spaces)
+  'community.view', 'community.moderate',
   // System
   'settings.manage', 'branding.manage', 'flags.manage',
   'integrations.view', 'integrations.manage',
@@ -107,6 +109,7 @@ const ROLES = {
       'badges.manage', 'announcements.manage',
       'support.view', 'support.assign', 'disputes.view', 'disputes.decide',
       'reviews.moderate',
+      'community.view', 'community.moderate',
       'feedback.view', 'feedback.manage',
       'health.view',
       'audit.view',
@@ -128,6 +131,7 @@ const ROLES = {
       'notifications.view',
       'support.view', 'support.assign', 'disputes.view', 'disputes.decide',
       'reviews.moderate',
+      'community.view',
       'feedback.view',
     ],
   },

@@ -29,7 +29,8 @@ API.interceptors.request.use((config) => {
   const isAdminRoute = config.url?.startsWith('/admin') || config.url?.startsWith('/admin-auth');
   const key     = isAdminRoute ? 'bas_admin' : 'user';
   const session = JSON.parse(localStorage.getItem(key) || 'null');
-  if (session?.token) config.headers.Authorization = `Bearer ${session.token}`;
+  // An explicit per-request header wins (e.g. linkedinHostAuth's fresh token).
+  if (session?.token && !config.headers.Authorization) config.headers.Authorization = `Bearer ${session.token}`;
   return config;
 });
 
@@ -122,11 +123,13 @@ export const loginUser        = (data)         => API.post('/auth/login', data);
 export const loginUnified     = (data)         => API.post('/auth/login-unified', data);
 export const getMe            = ()             => API.get('/auth/me');
 export const updateMe         = (data)         => API.put('/auth/me', data);
-export const getGoogleAuthUrl = ()             => API.get('/auth/google');
+export const getGoogleAuthUrl = (returnPath)  => API.get('/auth/google', returnPath ? { params: { return: returnPath } } : undefined);
 // Vendor Google auth (public): one consent screen = identity + calendar scopes.
 // Attribution rides along as query params so a host who arrived from an ad/campaign
 // is stamped with their acquisition source (CRM Phase 2b).
-export const getVendorGoogleUrl = (intent = 'login', invite) => API.get('/auth/google/vendor', { params: { intent, ...(invite ? { invite } : {}), ...(getAttribution() || {}) } });
+// tz = browser timezone, the server's fallback seed when Google Calendar can't supply one.
+const browserTz = () => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || undefined; } catch { return undefined; } };
+export const getVendorGoogleUrl = (intent = 'login', invite) => API.get('/auth/google/vendor', { params: { intent, ...(invite ? { invite } : {}), ...(browserTz() ? { tz: browserTz() } : {}), ...(getAttribution() || {}) } });
 export const sendOtp          = (data)         => API.post('/auth/send-otp', data);
 export const verifyOtp        = (data)         => API.post('/auth/verify-otp', data);
 // Phone-primary user login
@@ -137,6 +140,11 @@ export const setUserPassword  = (data)         => API.post('/auth/set-password',
 export const becomeHost       = ()             => API.post('/auth/become-host');
 export const cancelHosting    = ()             => API.post('/auth/cancel-hosting');
 export const verifyLinkedin   = ()             => API.post('/auth/linkedin/verify');
+// Host LinkedIn door: `token` is the fresh Supabase linkedin_oidc access token,
+// sent explicitly (no localStorage.user exists yet — the request interceptor
+// keeps an explicit header). _retry skips the 401 refresh/logout redirect so
+// LinkedinAuthDone's own error mapping handles a rejected token.
+export const linkedinHostAuth = (body, token)  => API.post('/auth/linkedin/host', body, { headers: { Authorization: `Bearer ${token}` }, _retry: true });
 export const forgotPassword   = (data)         => API.post('/auth/forgot-password', data);
 export const resetPassword    = (data)         => API.post('/auth/reset-password', data);
 
@@ -385,6 +393,7 @@ export const updateOnboardingStep = (data)             => API.post('/onboarding/
 export const saveOnboardingPersona = (primary_category) => API.post('/onboarding/save-persona', { primary_category });
 export const saveOnboardingDetails = (data)             => API.post('/onboarding/save-details', data);
 export const getOnboardingStatus  = ()                 => API.get('/onboarding/status');
+export const skipCalendar         = ()                 => API.post('/onboarding/skip-calendar');
 export const whatsappSendOtp      = (phone)            => API.post('/whatsapp/send-otp', { phone });
 export const whatsappVerifyOtp    = (phone, otp)       => API.post('/whatsapp/verify-otp', { phone, otp });
 export const activateFreePlan     = ()                 => API.post('/onboarding/activate-free');

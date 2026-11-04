@@ -1,11 +1,12 @@
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Navigate, Link } from "react-router-dom";
 import { isVanitySlug, VANITY_TARGET } from "../config/vanityRedirects";
 import { getHostProfile, getHostReviews, getHostProducts, getVendorBadges } from "../services/api";
 import { DEMO_PERSONAS, DEMO_USERNAME, personaView } from "../data/demoPersonas";
 import { analytics, EVENTS } from "../services/analytics";
 import BrandPreloader from "../components/preloader/BrandPreloader";
-import { useMinimalFooter } from "../context/ChromeContext";
+import { useHideChrome } from "../context/ChromeContext";
+import Footer from "../components/common/Footer";
 import Seo from "../components/common/Seo";
 import ErrorPage from "./ErrorPage";
 import TransientError from "../components/error/TransientError";
@@ -19,28 +20,24 @@ import { prerendered } from "../services/prerenderData";
 const SEO_SITE = import.meta.env?.VITE_PUBLIC_SITE_URL || SITE_URL;
 import {
   DEFAULT_THEME_COLOR,
-  getContrastColor,
-  SOCIAL_BRAND_COLORS,
   isValidHex,
   applyProfileTheme,
 } from "../utils/themeUtils";
 
-// ─── Design tokens ────────────────────────────────────────────────────────────
+// ─── Design tokens — Meeticulous "Loop & Slot" (light) ──────────────────────────
+// Repointed from the old monochrome set to brand tokens, so the cards / reviews /
+// FAQ that read `C` are rebranded in one place. The host's chosen colour still
+// themes buttons + CTAs via --profile-accent (tc); these are the neutral chrome.
 const C = {
-  bg:        '#F6F6F6',
+  bg:        '#FBF5F3', // cream
   card:      '#FFFFFF',
-  text:      '#111111',
-  secondary: '#666666',
-  muted:     '#999999',
-  border:    '#E5E5E5',
-  btnBg:     '#222222',
+  text:      '#2B0A14', // ink
+  secondary: '#6B524F',
+  muted:     '#8C716D',
+  border:    '#EBDCD9', // line
+  btnBg:     '#960D32', // maroon
   btnText:   '#FFFFFF',
 };
-
-// Card metrics (Services/Rating/Reviews stats strip + card star rating) are
-// collected and still fetched, but hidden from the landing card. Flip to true
-// to re-enable with no layout changes. See spec 2026-06-14-profile-landing-redesign.
-const SHOW_CARD_METRICS = false;
 
 // Sanitize a vendor-supplied social link before using it as an href.
 // social_links are vendor-controlled and rendered on a public page — a value
@@ -61,7 +58,7 @@ const Stars = ({ avg, count, size = "sm" }) => {
     <div className="flex items-center gap-0.5">
       {[1, 2, 3, 4, 5].map((s) => (
         <svg key={s} className={`${sz} flex-shrink-0`}
-          style={{ color: s <= Math.round(avg) ? '#FBBF24' : '#E5E5E5' }}
+          style={{ color: s <= Math.round(avg) ? '#F6C35A' : C.border }}
           fill="currentColor" viewBox="0 0 20 20">
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
         </svg>
@@ -106,15 +103,16 @@ const SOCIAL_ICONS = {
   </>,
 };
 
+// Social circle, brand-neutral outline on the host-accent tint.
 const SocialIcon = ({ platform, href }) => {
   const icon = SOCIAL_ICONS[platform];
   if (!icon || !href) return null;
   return (
     <a href={href} target="_blank" rel="noreferrer"
-      className="flex items-center justify-center flex-shrink-0 transition-colors hover:bg-gray-50"
-      style={{ width: 28, height: 28, borderRadius: 8, border: `1px solid ${C.border}`, color: C.secondary }}
+      className="flex items-center justify-center flex-shrink-0 transition-colors hover:opacity-80"
+      style={{ width: 34, height: 34, borderRadius: '50%', border: `1px solid ${C.border}`, color: C.secondary, background: C.card }}
       title={platform.charAt(0).toUpperCase() + platform.slice(1)}>
-      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor"
+      <svg className="w-4 h-4" fill="none" stroke="currentColor"
         strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"
         viewBox="0 0 24 24">
         {icon}
@@ -124,9 +122,6 @@ const SocialIcon = ({ platform, href }) => {
 };
 
 // ─── Badge (image award) ──────────────────────────────────────────────────────
-// Renders a real vendor_badges award: { name, image_url, is_bas_team, ... }.
-// No hover tooltip (it got clipped by the card) — click opens a bottom-right
-// info popup via onSelect. Border matches the social icons (light grey C.border).
 const Badge = ({ badge, onSelect }) => {
   const label = badge.label || badge.name || 'Badge';
   return (
@@ -136,7 +131,7 @@ const Badge = ({ badge, onSelect }) => {
       aria-label={label}
       className="flex items-center justify-center cursor-pointer select-none overflow-hidden transition-transform hover:scale-110"
       style={{
-        width: 44, height: 44, borderRadius: 2, background: '#F4F4F4', fontSize: 22,
+        width: 44, height: 44, borderRadius: 12, background: '#F5ECEA', fontSize: 22,
         border: `1px solid ${C.border}`,
       }}>
       {badge.image_url
@@ -158,74 +153,42 @@ const getServiceTag = (service) => {
 const cardPriceLabel = (s) => (s.price_on_request ? 'On request' : s.price === 0 ? 'Free' : `₹${s.price}`);
 
 // ─── Service Card ──────────────────────────────────────────────────────────────
-const ServiceCard = ({ service: s, profileSlug, viewMode }) => {
+const ServiceCard = ({ service: s, profileSlug }) => {
   const _rawDesc  = s.short_description || s.description || '';
-  const desc      = _rawDesc.length > 85 ? `${_rawDesc.slice(0, 84)}…` : _rawDesc;
+  const desc      = _rawDesc.length > 95 ? `${_rawDesc.slice(0, 94)}…` : _rawDesc;
   const detailUrl = s.slug ? `/${profileSlug}/${s.slug}` : null;
   const bookUrl   = s.slug ? `/${profileSlug}/booking/${s.slug}` : null;
   const tag       = getServiceTag(s);
 
-  if (viewMode === 'list') {
-    return (
-      <div className="flex items-end gap-4 bg-white rounded-xl px-5 py-4 transition-shadow hover:shadow-sm"
-        style={{ border: `1px solid ${C.border}` }}>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-baseline gap-2 min-w-0">
-            {detailUrl
-              ? <Link to={detailUrl} className="font-semibold text-base hover:opacity-60 transition-opacity flex-shrink-0" style={{ color: C.text }}>{s.title}</Link>
-              : <span className="font-semibold text-base flex-shrink-0" style={{ color: C.text }}>{s.title}</span>}
-            {desc && <span className="flex-shrink-0 self-stretch w-px" style={{ background: C.border }} />}
-            {desc && <span className="text-sm truncate min-w-0 flex-1" style={{ color: C.secondary }}>{desc}</span>}
-          </div>
-          <div className="grid grid-cols-3 gap-3 mt-2">
-            {[
-              { val: cardPriceLabel(s), lbl: 'Price' },
-              { val: `${s.duration} min`,                      lbl: 'Duration' },
-              { val: s.meeting_mode === 'offline' ? 'In-person' : 'Online', lbl: 'Mode' },
-            ].map(({ val, lbl }) => (
-              <div key={lbl}>
-                <div className="text-sm font-semibold" style={{ color: C.text }}>{val}</div>
-                <div className="text-[11px] mt-0.5" style={{ color: C.muted }}>{lbl}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-        {bookUrl && (
-          <Link to={bookUrl}
-            className="btn flex-shrink-0 text-sm font-semibold flex items-center transition-opacity hover:opacity-80"
-            style={{ background: 'var(--profile-accent, #960D32)', color: 'var(--profile-accent-text, #ffffff)', height: 40, padding: '0 18px' }}>
-            Book Now
-          </Link>
-        )}
-      </div>
-    );
-  }
-
-  // Grid — fixed 250px height
   return (
-    <div className="flex flex-col bg-white rounded-xl transition-shadow hover:shadow-sm"
-      style={{ border: `1px solid ${C.border}`, padding: '18px 18px 16px' }}>
+    <article className="flex flex-col bg-white rounded-2xl transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(43,10,20,0.08)]"
+      style={{ border: `2px solid ${C.border}`, padding: '18px 18px 16px', minHeight: 196 }}>
 
-      {/* Title + tag */}
-      <div className="flex items-start justify-between gap-2 mb-2">
-        {detailUrl
-          ? <Link to={detailUrl} className="font-semibold text-base leading-snug hover:opacity-60 transition-opacity line-clamp-2 flex-1" style={{ color: C.text }}>{s.title}</Link>
-          : <span className="font-semibold text-base leading-snug line-clamp-2 flex-1" style={{ color: C.text }}>{s.title}</span>}
+      {/* Type pill + tag */}
+      <div className="flex items-center justify-between gap-2 mb-2.5">
+        <span className="inline-flex items-center gap-1.5 text-[11.5px] font-semibold px-2.5 py-1 rounded-full"
+          style={{ background: 'var(--profile-accent-light, #FFE4EA)', color: 'var(--profile-accent, #960D32)' }}>
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" />
+          </svg>
+          1:1 Session
+        </span>
         {tag && (
           <span className="flex-shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full"
-            style={{ background: 'var(--profile-accent-light, #FFEDE5)', color: 'var(--profile-accent, #960D32)' }}>
+            style={{ background: '#FDF0D2', color: '#5A3A00' }}>
             {tag}
           </span>
         )}
       </div>
 
-      {/* Description */}
-      <p className="text-sm leading-relaxed line-clamp-2 mb-3" style={{ color: C.secondary }}>
-        {desc || ' '}
-      </p>
+      {detailUrl
+        ? <Link to={detailUrl} className="font-display font-bold text-base leading-snug hover:opacity-60 transition-opacity line-clamp-2" style={{ color: C.text }}>{s.title}</Link>
+        : <span className="font-display font-bold text-base leading-snug line-clamp-2" style={{ color: C.text }}>{s.title}</span>}
 
-      {/* Meta — inline duration + mode (price moves to footer) */}
-      <div className="flex items-center gap-4 text-xs mb-4 mt-1" style={{ color: C.secondary }}>
+      {desc && <p className="text-sm leading-relaxed line-clamp-2 mt-2" style={{ color: C.secondary }}>{desc}</p>}
+
+      {/* Meta — duration + mode */}
+      <div className="flex items-center gap-4 text-xs mt-3" style={{ color: C.secondary }}>
         <span className="flex items-center gap-1.5">
           <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: C.muted }} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="9" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l3 2" />
@@ -234,12 +197,10 @@ const ServiceCard = ({ service: s, profileSlug, viewMode }) => {
         </span>
         <span className="flex items-center gap-1.5">
           {s.meeting_mode === 'offline' ? (
-            // Map pin — in-person
             <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: C.muted }} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
             </svg>
           ) : (
-            // Video camera — online
             <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: C.muted }} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
               <polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
             </svg>
@@ -248,25 +209,22 @@ const ServiceCard = ({ service: s, profileSlug, viewMode }) => {
         </span>
       </div>
 
-      {/* Footer — price promoted, stronger Book */}
+      {/* Footer — price + Book */}
       <div className="flex items-center justify-between mt-auto pt-4" style={{ borderTop: `1px solid ${C.border}` }}>
-        <div className="font-bold text-lg leading-none" style={{ color: C.text }}>{cardPriceLabel(s)}</div>
+        <div className="font-display font-extrabold text-lg leading-none" style={{ color: C.text }}>{cardPriceLabel(s)}</div>
         {bookUrl && (
           <Link to={bookUrl}
-            className="btn text-sm font-semibold flex items-center transition-opacity hover:opacity-80"
-            style={{ background: 'var(--profile-accent, #960D32)', color: 'var(--profile-accent-text, #ffffff)', height: 38, padding: '0 18px' }}>
+            className="text-sm font-semibold flex items-center rounded-full transition-opacity hover:opacity-85"
+            style={{ background: 'var(--profile-accent, #960D32)', color: 'var(--profile-accent-text, #ffffff)', height: 40, padding: '0 18px' }}>
             Book Now
           </Link>
         )}
       </div>
-    </div>
+    </article>
   );
 };
 
 // ─── Digital Product Card ─────────────────────────────────────────────────────
-// Responsive: image-LEFT compact row on mobile (flex-row), image-TOP storefront
-// card on desktop (sm:flex-col). Trust line uses real purchase_count — products
-// have no rating in the DB yet, so no stars here.
 const TYPE_ICONS = { pdf: '📄', template: '🗂️', ebook: '📚', prompt_pack: '✨', resource: '🔗', other: '📦' };
 
 const ProductCard = ({ product: p, profileSlug }) => {
@@ -277,13 +235,12 @@ const ProductCard = ({ product: p, profileSlug }) => {
   const detailUrl = `/${profileSlug}/product/${p.slug || p.id}`;
 
   return (
-    <div className="flex flex-row sm:flex-col bg-white rounded-2xl overflow-hidden transition-shadow hover:shadow-md"
-      style={{ border: `1px solid ${C.border}` }}>
+    <div className="flex flex-row sm:flex-col bg-white rounded-2xl overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(43,10,20,0.08)]"
+      style={{ border: `2px solid ${C.border}` }}>
 
-      {/* Thumbnail — left column on mobile, full-width 16:10 on desktop */}
       <Link to={detailUrl}
         className="relative flex-shrink-0 w-28 self-stretch sm:w-full sm:self-auto aspect-[16/9] overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, var(--profile-accent-light, #FFEDE5), var(--profile-accent, #960D32))' }}>
+        style={{ background: 'linear-gradient(135deg, var(--profile-accent-light, #FFE4EA), var(--profile-accent, #960D32))' }}>
         {p.thumbnail_url
           ? <img src={p.thumbnail_url} alt={p.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
           : <span className="absolute inset-0 flex items-center justify-center text-4xl opacity-50">{TYPE_ICONS[p.type] || '📦'}</span>}
@@ -293,10 +250,9 @@ const ProductCard = ({ product: p, profileSlug }) => {
         </span>
       </Link>
 
-      {/* Body */}
       <div className="flex flex-col gap-1.5 p-4 flex-1 min-w-0">
         <Link to={detailUrl}
-          className="font-semibold leading-snug line-clamp-2 hover:opacity-60 transition-opacity"
+          className="font-display font-bold leading-snug line-clamp-2 hover:opacity-60 transition-opacity"
           style={{ color: C.text, fontSize: 15 }}>
           {p.title}
         </Link>
@@ -305,9 +261,9 @@ const ProductCard = ({ product: p, profileSlug }) => {
           <p className="hidden sm:block text-sm leading-relaxed line-clamp-2" style={{ color: C.secondary }}>{p.description}</p>
         )}
         <div className="flex items-center justify-between mt-auto pt-3" style={{ borderTop: `1px solid ${C.border}` }}>
-          <div className="font-bold leading-none" style={{ color: C.text, fontSize: 17 }}>{isFree ? 'Free' : `₹${p.price}`}</div>
+          <div className="font-display font-extrabold leading-none" style={{ color: C.text, fontSize: 17 }}>{isFree ? 'Free' : `₹${p.price}`}</div>
           <Link to={detailUrl}
-            className="btn text-sm font-semibold flex items-center transition-opacity hover:opacity-80"
+            className="text-sm font-semibold flex items-center rounded-full transition-opacity hover:opacity-85"
             style={{ background: 'var(--profile-accent, #960D32)', color: 'var(--profile-accent-text, #ffffff)', height: 36, padding: '0 16px' }}>
             {isFree ? 'Get Free' : 'Buy Now'}
           </Link>
@@ -328,69 +284,51 @@ function bakedProfile(slug) {
 const HostProfile = () => {
   const { profileSlug } = useParams();
   const navigate = useNavigate();
+  // This page owns a host-branded navbar + its own footer, so drop the global
+  // marketing chrome. useHideChrome flips the flag in a useLayoutEffect (before
+  // paint) and the puppeteer prerender runs it too, so the host navbar is baked
+  // into the crawler HTML — no flash, no CLS, no hydration mismatch.
+  useHideChrome();
   // Vanity easter-egg slugs (/69, /founder, …) redirect to one public profile.
-  // Handled here (not as 19 real routes) so the reservedSegments drift-test stays
-  // untouched. The render-time redirect is below the hooks (rules-of-hooks); the
-  // fetch effect skips these slugs so no 404 lookup fires.
   const isVanity = isVanitySlug(profileSlug);
   const pageRef         = useRef(null);
   // Build-time copy baked into the prerendered HTML → real profile on the first
-  // frame; the fetch effect below refreshes it. Redirect/demo payloads aren't
-  // seeded (they need the effect's navigate / persona handling).
+  // frame; the fetch effect below refreshes it.
   const seed = isVanity ? null : bakedProfile(profileSlug);
   const [host,        setHost]        = useState(seed?.host ?? null);
   const [services,    setServices]    = useState(seed?.services ?? []);
   const [loading,     setLoading]     = useState(!seed);
   const [error,       setError]       = useState('');
-  // Demo persona switch (public /demo account only). Base host+services are kept
-  // so switching is a pure view override — never persisted. See data/demoPersonas.
+  // Demo persona switch (public /demo account only).
   const [isDemo,      setIsDemo]      = useState(false);
   const [personaKey,  setPersonaKey]  = useState(null);
   const demoBase = useRef(null);
-  // Not-found (and other error) state gets the stripped minimal footer, header kept.
-  useMinimalFooter(!!error);
-  const [viewMode,    setViewMode]    = useState('grid');
+  const [filter,      setFilter]      = useState('all'); // all | service | product
   const [reviewData,  setReviewData]  = useState(() => (seed && prerendered(`/reviews/${profileSlug}`)) || { reviews: [], count: 0, avg: 0 });
   const [showReviews, setShowReviews] = useState(false);
   const [products,    setProducts]    = useState(() => (seed && prerendered(`/products/host/${profileSlug}`)) || []);
-  const [badgeList,   setBadgeList]   = useState(() => (seed && prerendered(`/vendors/${profileSlug}/badges`)?.badges) || []); // real awards from vendor_badges
+  const [badgeList,   setBadgeList]   = useState(() => (seed && prerendered(`/vendors/${profileSlug}/badges`)?.badges) || []);
   const [badgeInfo,   setBadgeInfo]   = useState(null); // clicked badge → bottom-right info popup
-  const [cardExpanded, setCardExpanded] = useState(false); // mobile-only collapse
-  const [isMobile, setIsMobile] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 639px)').matches
-  );
-  const [barH,  setBarH]  = useState(0);
-  const [bodyH, setBodyH] = useState(0);
-  const barRef      = useRef(null);
-  const cardBodyRef = useRef(null);
+  const [cardExpanded, setCardExpanded] = useState(false); // "More about" details expander
 
   useEffect(() => {
     if (isVanity) return; // vanity slug → redirected in render; skip the 404 lookup
     let alive = true;
     setError('');
-    // Seeded slug (incl. navigating back to it) → show the baked copy at once.
     const baked = bakedProfile(profileSlug);
     if (baked) { setHost(baked.host); setServices(baked.services); setLoading(false); } else setLoading(true);
     // Only a real 404 means the host is gone → the noindex ErrorPage is correct.
-    // Any OTHER failure (network/timeout, 5xx, or a 429/403 from an edge
-    // rate-limit or IP guard) is transient: retry with a short backoff, then fall
-    // to the non-noindex 'transient' state — a JS-rendering crawler that hit a
-    // transient API failure would otherwise noindex this live, prerendered page
-    // and drop it from search. See BlogPost.jsx / TransientError.
+    // Any OTHER failure (network/timeout, 5xx, 429/403) is transient: retry with
+    // backoff, then fall to the non-noindex 'transient' state so a JS-rendering
+    // crawler that hit a blip doesn't noindex this live, prerendered page.
     const load = async (attempt = 0) => {
       try {
         const { data } = await getHostProfile(profileSlug);
         if (!alive) return;
-        // Old/changed username → server returns the canonical one. The Vercel
-        // edge function already issues a real 301 for crawlers; this self-corrects
-        // the SPA URL for in-app navigations that bypass the edge.
         if (data.redirect && data.username) {
           navigate(`/${data.username}`, { replace: true });
           return;
         }
-        // Demo account: stash the untouched base, then open on the first persona
-        // so /demo reads as a real host immediately (the switch overrides the
-        // header + filters services without a refetch — never persisted).
         if (data.host?.username === DEMO_USERNAME) {
           const base = { host: data.host, services: data.services || [] };
           demoBase.current = base;
@@ -421,22 +359,19 @@ const HostProfile = () => {
     return () => { alive = false; };
   }, [profileSlug, isVanity]);
 
-  // SEO (title/description/robots/canonical/OG/ProfilePage JSON-LD) is rendered
-  // declaratively via <Seo> below from the admin-managed fields.
-
-  // Inject --profile-accent and --profile-accent-text CSS variables so all
-  // themed elements on this page pick up the host's chosen color.
+  // Inject --profile-accent and --profile-accent-text CSS variables so themed
+  // elements pick up the host's chosen colour.
   useEffect(() => {
     if (!host || !pageRef.current) return;
     const color = isValidHex(host.theme_color) ? host.theme_color : DEFAULT_THEME_COLOR;
     applyProfileTheme(pageRef.current, color);
-    // Stash the host's colour so the booking page's loading spinner can paint in
-    // it from the first frame (before its own fetch resolves). See ServiceBooking.
+    // Stash the colour so the booking page's loading spinner can paint in it from
+    // the first frame (before its own fetch resolves). See ServiceBooking.
     try { sessionStorage.setItem(`bas_theme:${profileSlug}`, color); } catch { /* private mode */ }
   }, [host]);
 
-  // Apply a demo persona: override the header fields and show only that persona's
-  // services (tagged by category === key). key=null restores the base account.
+  // Apply a demo persona: override the header fields + show only that persona's
+  // services. key=null restores the base account.
   const applyPersona = (key) => {
     const base = demoBase.current;
     if (!base) return;
@@ -446,34 +381,19 @@ const HostProfile = () => {
     setServices(view.services);
   };
 
-  // Track mobile breakpoint for the collapsible card (curtain only on phones).
+  // Badge info popup auto-dismisses after 5s.
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 639px)');
-    const onMq = () => setIsMobile(mq.matches);
-    mq.addEventListener('change', onMq);
-    return () => mq.removeEventListener('change', onMq);
-  }, []);
+    if (!badgeInfo) return;
+    const t = setTimeout(() => setBadgeInfo(null), 5000);
+    return () => clearTimeout(t);
+  }, [badgeInfo]);
 
-  // Measure collapsed-bar + full-card heights so the max-height curtain is smooth.
-  // useLayoutEffect (not useEffect) so the measured heights are committed BEFORE the
-  // browser paints — otherwise the guessed `maxHeight` fallbacks (200 / 2000) paint
-  // first and then jump to the real value, which registers as layout shift (CLS).
-  useLayoutEffect(() => {
-    if (!host) return;
-    const measure = () => {
-      if (barRef.current)      setBarH(barRef.current.scrollHeight);
-      if (cardBodyRef.current) setBodyH(cardBodyRef.current.scrollHeight);
-    };
-    measure();
-    window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
-  }, [host, products, reviewData]);
-
-  // Derived values are null-safe: the component renders the preloader while
-  // host is still loading, so these run before host exists.
-  const tc          = host && isValidHex(host.theme_color) ? host.theme_color : DEFAULT_THEME_COLOR;
-  const social      = host?.social_links || {};
-  const badges      = badgeList;
+  // Derived values are null-safe: the component renders the preloader while host
+  // is still loading, so these run before host exists.
+  const tc        = host && isValidHex(host.theme_color) ? host.theme_color : DEFAULT_THEME_COLOR;
+  const social    = host?.social_links || {};
+  const badges    = badgeList;
+  const firstName = (host?.name || '').trim().split(/\s+/)[0] || 'the host';
 
   const SOCIAL_ORDER = ['instagram', 'youtube', 'linkedin', 'facebook', 'twitter', 'whatsapp', 'website', 'github', 'email'];
   const socialLinks  = SOCIAL_ORDER
@@ -481,11 +401,16 @@ const HostProfile = () => {
     .map(k => ({ key: k, href: safeUrl(social[k], k === 'email') }))
     .filter(({ href }) => href !== '#');
 
-  const stats = [
-    { val: services.length,                                               lbl: 'Services' },
-    { val: reviewData.avg > 0 ? `${reviewData.avg.toFixed(1)}★` : '—',   lbl: 'Rating'   },
-    { val: reviewData.count > 0 ? reviewData.count : '—',                 lbl: 'Reviews'  },
-  ];
+  const hasProducts = products.length > 0;
+  // Offering types the host actually has drive the icon filters + nav (Memberships
+  // and Updates are omitted until there's a data source — no empty doorway tabs).
+  const showServices = filter === 'all' || filter === 'service';
+  const showProducts = (filter === 'all' || filter === 'product') && hasProducts;
+  // Featured hero only on the "all" view, and only when there's a service to lead
+  // with; the grid then skips that first service so it isn't shown twice.
+  const featured     = filter === 'all' && services.length ? services[0] : null;
+  const gridServices = showServices ? (featured ? services.slice(1) : services) : [];
+  const nothingShown = gridServices.length === 0 && !featured && !showProducts;
 
   // Admin-managed SEO → head tags + ProfilePage JSON-LD (only once host loaded).
   const seo = host ? resolveProfileSeo({ host, services, siteUrl: SEO_SITE }) : null;
@@ -499,23 +424,18 @@ const HostProfile = () => {
     ...(faqs.length ? [faqJsonLd({ faqs })] : []),
   ] : null;
 
-  // All hooks have run — safe to short-circuit the render for a vanity slug.
-  // Badge info popup auto-dismisses after 5s.
-  useEffect(() => {
-    if (!badgeInfo) return;
-    const t = setTimeout(() => setBadgeInfo(null), 5000);
-    return () => clearTimeout(t);
-  }, [badgeInfo]);
-
   if (isVanity) return <Navigate to={`/${VANITY_TARGET}`} replace />;
 
-  // A dead slug otherwise renders thin "Host not found" HTML at 200 — which Google
-  // flags as a "soft 404". ErrorPage carries noindex/nofollow (via ErrorLayout), so
-  // a genuinely gone host (404) drops out of the index cleanly. A transient failure
-  // uses TransientError instead, which emits NO noindex, so a live host page is not
-  // dropped from search over a blip.
+  // A dead slug otherwise renders thin "Host not found" HTML at 200 (a Google "soft
+  // 404"). ErrorPage carries noindex/nofollow, so a gone host drops out cleanly; a
+  // transient failure uses TransientError (no noindex) so a live page isn't dropped.
   if (error === 'notfound') return <ErrorPage code={404} />;
   if (error === 'transient') return <TransientError message="This profile didn’t load. Please try again." />;
+
+  const goOfferings = (f) => {
+    setFilter(f);
+    document.getElementById('offerings')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
     <>
@@ -529,25 +449,61 @@ const HostProfile = () => {
 
       {!host ? (
         // Placeholder, NOT null: these routes are prerendered, so hydration runs
-        // with host===null for one API round-trip. Rendering nothing collapsed the
-        // document and threw the footer to the top and back — CLS 0.93. Holding
-        // full viewport height keeps everything below it still.
+        // with host===null for one API round-trip. Holding viewport height keeps
+        // everything below still (avoids CLS).
         <div className="min-h-screen" style={{ background: C.bg }} />
       ) : (
-    <div ref={pageRef} className="host-profile min-h-screen" style={{ background: C.bg, paddingBottom: 64 }}>
+    <div ref={pageRef} className="host-profile min-h-screen flex flex-col" style={{ background: C.bg }}>
+
+      {/* ── Host-branded navbar — host identity replaces the logo; nav links drive
+          the offering filters; CTA converts visitors into hosts ── */}
+      <nav className="sticky top-0 z-40" style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(10px)', borderBottom: `1px solid ${C.border}` }}>
+        <div className="app-container flex items-center gap-4" style={{ height: 66 }}>
+          <a href="#top" className="flex items-center gap-2.5 min-w-0 flex-shrink-0">
+            <span className="flex-shrink-0 overflow-hidden flex items-center justify-center"
+              style={{ width: 38, height: 38, borderRadius: '50%', background: `${tc}18`, color: tc }}>
+              {host.profile_image
+                ? <img src={host.profile_image} alt={host.name} width={38} height={38} decoding="async" className="w-full h-full object-cover" />
+                : <span className="font-display font-extrabold text-sm">{host.name?.charAt(0)?.toUpperCase()}</span>}
+            </span>
+            <span className="font-display font-bold text-[15px] truncate" style={{ color: C.text }}>{host.name}</span>
+            {host.is_verified && (
+              <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill={tc} aria-label="Verified">
+                <path d="M12 2l2.4 1.8 3-.2 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.2L12 22l-2.4-1.8-3 .2-1-2.8L3 16.3l.7-2.9L3 10.5l2.6-1.5 1-2.8 3 .2z" />
+                <path d="M8.5 12.5l2.5 2.5 4.5-5" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            )}
+          </a>
+
+          <div className="hidden md:flex items-center gap-1 ml-2">
+            <button onClick={() => goOfferings('service')} className="text-sm font-medium px-3 py-2 rounded-full transition-colors hover:bg-[#F5ECEA]" style={{ color: C.secondary }}>Services</button>
+            {hasProducts && (
+              <button onClick={() => goOfferings('product')} className="text-sm font-medium px-3 py-2 rounded-full transition-colors hover:bg-[#F5ECEA]" style={{ color: C.secondary }}>Products</button>
+            )}
+          </div>
+
+          <Link to="/become-a-host"
+            className="ml-auto flex-shrink-0 inline-flex items-center gap-1.5 rounded-full font-semibold text-[13.5px] transition-opacity hover:opacity-90"
+            style={{ height: 42, padding: '0 18px', background: tc, color: '#fff' }}>
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+            <span className="hidden sm:inline">Start Your Page — Free</span>
+            <span className="sm:hidden">Start — Free</span>
+          </Link>
+        </div>
+      </nav>
 
       {host.is_verified === false && (
         <div className="px-4 py-2 text-center text-sm"
-          style={{ background: '#FFFBEB', borderBottom: '1px solid #FDE68A', color: '#92400E' }}>
+          style={{ background: '#FDF0D2', color: '#5A3A00' }}>
           ⚠️ This creator's account is pending admin verification.
         </div>
       )}
 
-      <div className="app-container pt-8">
+      <div id="top" className="app-container pt-6 pb-16 flex-1">
 
         {isDemo && (
-          <div className="mb-5 flex flex-wrap items-center gap-2 rounded-xl border-4 p-2"
-            style={{ background: C.card, borderColor: `${tc}33` }}>
+          <div className="mb-5 flex flex-wrap items-center gap-2 rounded-2xl p-2"
+            style={{ background: C.card, border: `2px solid ${tc}33` }}>
             <span className="px-2 text-xs font-bold uppercase tracking-wide" style={{ color: C.secondary }}>
               Demo · view as
             </span>
@@ -555,7 +511,7 @@ const HostProfile = () => {
               const active = personaKey === p.key;
               return (
                 <button key={p.key || 'base'} onClick={() => applyPersona(p.key)}
-                  className="px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors"
+                  className="px-3 py-1.5 rounded-full text-sm font-semibold transition-colors"
                   style={active
                     ? { background: tc, color: '#fff' }
                     : { background: `${tc}12`, color: C.text }}>
@@ -566,125 +522,39 @@ const HostProfile = () => {
           </div>
         )}
 
-        <div className="flex flex-col lg:flex-row gap-6 items-start">
+        <div className="flex flex-col lg:flex-row gap-7 items-start">
 
-          {/* ── LEFT SIDEBAR — profile card ──────────────────────────────
-              <lg: full-width, centered, capped. lg+: fixed 340 sticky left. */}
-          <div className="w-full max-w-md mx-auto lg:mx-0 lg:max-w-none lg:w-[340px] lg:flex-shrink-0 lg:sticky lg:top-24">
+          {/* ── LEFT — compact identity card (no cover) ──────────────── */}
+          <aside className="w-full max-w-md mx-auto lg:mx-0 lg:max-w-none lg:w-[320px] lg:flex-shrink-0 lg:sticky lg:top-[90px]">
+            <div className="rounded-3xl overflow-hidden" style={{ background: C.card, border: `1px solid ${C.border}`, boxShadow: '0 8px 28px rgba(43,10,20,0.05)' }}>
+              <div className="px-6 pt-6 pb-5 text-center">
 
-            {/* Collapsed bar — mobile only; smooth max-height curtain */}
-            <div className="sm:hidden overflow-hidden transition-[max-height,opacity] duration-300 ease-out"
-              style={{ maxHeight: cardExpanded ? 0 : (barH || 200), opacity: cardExpanded ? 0 : 1 }}>
-              <div ref={barRef}>
-            <button onClick={() => setCardExpanded(true)}
-              className="btn btn--outline w-full flex items-center gap-3 p-3 text-left transition-shadow active:shadow-sm"
-              style={{ background: C.card }}>
-              <div className="flex-shrink-0 overflow-hidden"
-                style={{ width: 48, height: 48, borderRadius: 10, background: C.card }}>
-                {host.profile_image
-                  ? <img src={host.profile_image} alt={host.name} width={48} height={48} decoding="async" className="w-full h-full object-cover" />
-                  : <div className="w-full h-full flex items-center justify-center text-lg font-bold"
-                      style={{ background: `${tc}18`, color: tc }}>
-                      {host.name?.charAt(0)?.toUpperCase()}
-                    </div>}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="font-bold text-sm truncate" style={{ color: C.text }}>{host.name}</div>
-                {(host.profession || host.tagline) && (
-                  <div className="text-xs truncate" style={{ color: C.secondary }}>{host.profession || host.tagline}</div>
-                )}
-              </div>
-              <svg className="w-5 h-5 flex-shrink-0" style={{ color: C.muted }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-              </div>
-            </div>
-
-            {/* Full card — mobile: smooth max-height curtain; sm+: always open */}
-            <div className="overflow-hidden transition-[max-height,opacity] duration-300 ease-out sm:!max-h-none sm:!opacity-100"
-              style={isMobile ? { maxHeight: cardExpanded ? (bodyH || 2000) : 0, opacity: cardExpanded ? 1 : 0 } : undefined}>
-              <div ref={cardBodyRef}>
-            <div className="relative overflow-hidden rounded-2xl"
-              style={{ background: C.card, border: `2px solid ${C.border}` }}>
-
-              {/* Collapse button — mobile only */}
-              <button onClick={() => setCardExpanded(false)} aria-label="Collapse"
-                className="sm:hidden absolute top-3 right-3 z-10 flex items-center justify-center w-8 h-8 rounded-full"
-                style={{ background: 'rgba(255,255,255,0.85)', color: C.text }}>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                </svg>
-              </button>
-
-              {/* Cover — 3:1. NO own border-radius: any radius on the cover
-                  fights the card's rounded-2xl + overflow-hidden clip and leaves
-                  white slivers in the corners. Square corners + parent clip = flush. */}
-              <div className="relative overflow-hidden"
-                style={{
-                  aspectRatio: '3 / 1',
-                  background: host.cover_image ? undefined : `linear-gradient(135deg, ${tc}33, ${tc}88)`,
-                }}>
-                {/* The cover is the LCP element on a profile page: 3:1 and full
-                    width, it is the largest thing above the fold. Without
-                    fetchpriority it queues behind the JS chunks that discovered
-                    it, since it only enters the DOM after the host fetch
-                    resolves. */}
-                {host.cover_image && (
-                  <img src={host.cover_image} alt="" fetchpriority="high" decoding="async"
-                       className="w-full h-full object-cover" />
-                )}
-              </div>
-
-              {/* Profile photo — 100×100 square, overlapping cover */}
-              <div className="flex justify-center" style={{ marginTop: -42, position: 'relative' }}>
-                <div style={{
-                  width: 100, height: 100,
-                  borderRadius: 12,
-                  border: `3px solid ${C.card}`,
-                  overflow: 'hidden',
-                  background: C.card,
-                  flexShrink: 0,
-                }}>
-                  {host.profile_image
-                    ? <img src={host.profile_image} alt={host.name} width={100} height={100} fetchpriority="high" decoding="async" className="w-full h-full object-cover" />
-                    : <div className="w-full h-full flex items-center justify-center text-3xl font-bold"
-                        style={{ background: `${tc}18`, color: tc }}>
-                        {host.name?.charAt(0)?.toUpperCase()}
-                      </div>
-                  }
+                {/* Avatar */}
+                <div className="flex justify-center relative">
+                  <div className="relative overflow-hidden flex items-center justify-center"
+                    style={{ width: 92, height: 92, borderRadius: '50%', background: `${tc}18`, border: `1px solid ${C.border}` }}>
+                    {host.profile_image
+                      ? <img src={host.profile_image} alt={host.name} width={92} height={92} fetchpriority="high" decoding="async" className="w-full h-full object-cover" />
+                      : <span className="font-display font-extrabold text-3xl" style={{ color: tc }}>{host.name?.charAt(0)?.toUpperCase()}</span>}
+                    {host.is_verified && (
+                      <span className="absolute flex items-center justify-center" style={{ bottom: 2, right: 'calc(50% - 46px)', width: 22, height: 22, borderRadius: '50%', background: tc, border: `3px solid ${C.card}` }}>
+                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+                      </span>
+                    )}
+                  </div>
                 </div>
-                {/* Green online dot — disabled
-                {host.google_calendar_connected && (
-                  <span style={{
-                    position: 'absolute', bottom: 4, right: 'calc(50% - 60px)',
-                    width: 14, height: 14, borderRadius: '50%',
-                    background: '#22C55E', border: `2px solid ${C.card}`,
-                  }} />
-                )}
-                */}
-              </div>
 
-              {/* Profile info + all sections */}
-              <div className="px-6 pb-6 pt-4 text-center">
-
-                {/* Name — black (theme colour reserved for the title below) */}
-                <h1 className="text-xl font-bold mt-1" style={{ color: C.text }}>{host.name}</h1>
-
-                {/* Profession — in the host's profile accent colour */}
+                {/* Name + profession */}
+                <h1 className="font-display font-extrabold text-xl mt-3.5" style={{ color: C.text }}>{host.name}</h1>
                 {(host.profession || host.tagline) && (
-                  <p className="text-sm font-medium mt-0.5" style={{ color: tc }}>
-                    {host.profession || host.tagline}
-                  </p>
+                  <p className="font-semibold text-sm mt-1.5" style={{ color: tc }}>{host.profession || host.tagline}</p>
                 )}
 
-                {/* Trust row — real rating + review count (only when reviews exist,
-                    so a brand-new host never shows an empty ★—). Surfaces social
-                    proof near the top; replaces the old hidden stats strip. */}
+                {/* Rating row — real, only when reviews exist */}
                 {reviewData.count > 0 && (
                   <div className="flex items-center justify-center gap-2.5 mt-2.5 text-sm" style={{ color: C.secondary }}>
                     <span className="font-semibold flex items-center gap-1" style={{ color: C.text }}>
-                      <svg className="w-3.5 h-3.5" style={{ color: '#FBBF24' }} fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-3.5 h-3.5" style={{ color: '#F6C35A' }} fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
                       {reviewData.avg.toFixed(1)}
@@ -694,139 +564,140 @@ const HostProfile = () => {
                   </div>
                 )}
 
+                {/* More about — expander for bio / trust / socials / badges / location */}
+                <button onClick={() => setCardExpanded(v => !v)} aria-expanded={cardExpanded} aria-controls="host-more"
+                  className="w-full mt-4 flex items-center justify-center gap-1.5 rounded-full font-semibold text-[13px] transition-colors"
+                  style={{ height: 40, border: `1px solid ${C.border}`, background: C.card, color: C.secondary }}>
+                  {cardExpanded ? 'Show less' : `More about ${firstName}`}
+                  <svg className={`w-3.5 h-3.5 transition-transform ${cardExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></svg>
+                </button>
+              </div>
 
-                {/* Available Now — disabled
-                {host.google_calendar_connected && (
-                  <div className="flex items-center justify-center gap-1.5 mt-1.5">
-                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#16A34A', display: 'inline-block' }} />
-                    <span className="text-xs font-semibold" style={{ color: '#16A34A' }}>Available Now</span>
-                  </div>
-                )}
-                */}
+              <div id="host-more" className="overflow-hidden transition-[max-height] duration-300 ease-out" style={{ maxHeight: cardExpanded ? 680 : 0 }}>
+                <div className="px-6 pb-6 text-center">
+                  {host.bio && <p className="text-sm leading-relaxed" style={{ color: C.secondary }}>{host.bio}</p>}
 
-                {/* Card star rating — hidden by default (collect, don't display) */}
-                {SHOW_CARD_METRICS && reviewData.avg > 0 && (
-                  <div className="flex justify-center mt-2">
-                    <Stars avg={reviewData.avg} count={reviewData.count} />
-                  </div>
-                )}
-
-                {/* Bio — 3 lines max */}
-                {host.bio && (
-                  <p className="text-sm leading-relaxed mt-3 text-center" style={{ color: C.secondary }}>
-                    {host.bio}
-                  </p>
-                )}
-
-                {/* Badges — single row, no text */}
-                {badges.length > 0 && (
-                  <div className="flex flex-wrap justify-center gap-2 mt-5">
-                    {badges.map((b, i) => <Badge key={i} badge={b} onSelect={setBadgeInfo} />)}
-                  </div>
-                )}
-
-                {/* Social links — 36×36 circles with brand colors */}
-                {socialLinks.length > 0 && (
-                  <div className="flex flex-wrap justify-center gap-2 mt-5">
-                    {socialLinks.map(({ key, href }) => (
-                      <SocialIcon key={key} platform={key} href={href} />
-                    ))}
-                  </div>
-                )}
-
-                {/* Stats — hidden by default (collect, don't display) */}
-                {SHOW_CARD_METRICS && (
-                  <div className="grid grid-cols-3 mt-6 pt-5"
-                    style={{ borderTop: `1px solid ${C.border}` }}>
-                    {stats.map(({ val, lbl }, i) => (
-                      <div key={lbl}
-                        className={i > 0 ? 'border-l' : ''}
-                        style={{ borderColor: C.border }}>
-                        <div className="text-lg font-bold" style={{ color: C.text }}>{val}</div>
-                        <div className="text-[11px] mt-0.5" style={{ color: C.muted }}>{lbl}</div>
+                  {/* Trust — real platform guarantees */}
+                  <div className="flex flex-col gap-2.5 mt-4 pt-4 text-left" style={{ borderTop: `1px solid ${C.border}` }}>
+                    {[
+                      { t: 'Secure Razorpay payment', d: 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z M9 12l2 2 4-4' },
+                      { t: 'Instant confirmation',    d: 'M13 2 3 14h7l-1 8 10-12h-7z' },
+                      { t: 'Google Calendar invite',  d: 'M3 4h18v18H3z M16 2v4 M8 2v4 M3 10h18' },
+                    ].map(({ t, d }) => (
+                      <div key={t} className="flex items-center gap-2.5 text-[12.5px]" style={{ color: C.secondary }}>
+                        <svg className="w-4 h-4 flex-shrink-0" style={{ color: '#1F7A4D' }} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d={d} /></svg>
+                        {t}
                       </div>
                     ))}
                   </div>
-                )}
 
-                {/* Location */}
-                {host.location && (
-                  <div className="flex items-center justify-center gap-1 mt-4 text-xs" style={{ color: C.muted }}>
-                    <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    {host.location}
-                  </div>
-                )}
+                  {badges.length > 0 && (
+                    <div className="flex flex-wrap justify-center gap-2 mt-5">
+                      {badges.map((b, i) => <Badge key={i} badge={b} onSelect={setBadgeInfo} />)}
+                    </div>
+                  )}
+
+                  {socialLinks.length > 0 && (
+                    <div className="flex flex-wrap justify-center gap-2 mt-5">
+                      {socialLinks.map(({ key, href }) => (
+                        <SocialIcon key={key} platform={key} href={href} />
+                      ))}
+                    </div>
+                  )}
+
+                  {host.location && (
+                    <div className="flex items-center justify-center gap-1.5 mt-5 text-xs" style={{ color: C.muted }}>
+                      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
+                      </svg>
+                      {host.location}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
+          </aside>
+
+          {/* ── RIGHT — offerings ──────────────────────── */}
+          <section className="w-full lg:flex-1 min-w-0">
+
+            {/* Header + icon filters */}
+            <div id="offerings" className="flex items-start gap-3 flex-wrap mb-5" style={{ scrollMarginTop: 82 }}>
+              <div className="flex-1 min-w-[180px]">
+                <div className="font-serif italic text-base" style={{ color: '#E0506F' }}>Creator's</div>
+                <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight" style={{ color: C.text }}>Offerings</h2>
               </div>
-            </div>
-          </div>
 
-          {/* ── RIGHT — services, reviews, products ──────────────────────── */}
-          <div className="w-full lg:flex-1 min-w-0">
-
-            {/* Header row */}
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-bold" style={{ color: C.text }}>
-                Services
-                {services.length > 0 && (
-                  <span className="ml-2 text-sm font-semibold" style={{ color: C.muted }}>{services.length}</span>
-                )}
-              </h2>
-
-              {/* Grid / List toggle — hidden on mobile (no real value) */}
-              <div className="hidden sm:flex rounded-lg overflow-hidden" style={{ border: `1px solid ${C.border}`, background: C.card }}>
+              {/* Category icon filters (Services always; Products only when present) */}
+              <div className="flex gap-1.5 flex-shrink-0 rounded-full p-1" style={{ background: C.card, border: `1px solid ${C.border}` }} role="tablist">
                 {[
-                  {
-                    mode: 'grid',
-                    icon: <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 16 16">
-                      <path d="M1 2.5A1.5 1.5 0 012.5 1h3A1.5 1.5 0 017 2.5v3A1.5 1.5 0 015.5 7h-3A1.5 1.5 0 011 5.5v-3zm8 0A1.5 1.5 0 0110.5 1h3A1.5 1.5 0 0115 2.5v3A1.5 1.5 0 0113.5 7h-3A1.5 1.5 0 019 5.5v-3zm-8 8A1.5 1.5 0 012.5 9h3A1.5 1.5 0 017 10.5v3A1.5 1.5 0 015.5 15h-3A1.5 1.5 0 011 13.5v-3zm8 0A1.5 1.5 0 0110.5 9h3a1.5 1.5 0 011.5 1.5v3a1.5 1.5 0 01-1.5 1.5h-3A1.5 1.5 0 019 13.5v-3z" />
-                    </svg>,
-                  },
-                  {
-                    mode: 'list',
-                    icon: <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 16 16">
-                      <path fillRule="evenodd" d="M2.5 12a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z" />
-                    </svg>,
-                  },
-                ].map(({ mode, icon }) => (
-                  <button key={mode} onClick={() => setViewMode(mode)}
-                    aria-label={`${mode} view`} title={`${mode} view`}
-                    className="flex items-center justify-center px-3 py-2 transition-colors"
-                    style={viewMode === mode
-                      ? { background: C.text, color: C.btnText }
-                      : { color: C.secondary }}>
-                    {icon}
-                  </button>
-                ))}
+                  { f: 'all',     label: 'All',      count: services.length + products.length,
+                    icon: <><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></> },
+                  { f: 'service', label: 'Services',
+                    icon: <><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></> },
+                  ...(hasProducts ? [{ f: 'product', label: 'Products',
+                    icon: <path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /> }] : []),
+                ].map(({ f, label, icon, count }) => {
+                  const on = filter === f;
+                  return (
+                    <button key={f} onClick={() => setFilter(f)} role="tab" aria-selected={on} title={label} aria-label={label}
+                      className="relative flex items-center justify-center rounded-full transition-colors"
+                      style={{ width: 40, height: 40, background: on ? tc : 'transparent', color: on ? '#fff' : C.secondary }}>
+                      <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">{icon}</svg>
+                      {f === 'all' && count > 0 && (
+                        <span className="absolute -top-0.5 -right-0.5 min-w-[15px] h-[15px] px-1 rounded-full text-[9.5px] font-bold flex items-center justify-center" style={{ background: '#E0506F', color: '#fff' }}>{count}</span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Service cards */}
-            {services.length === 0 ? (
-              <div className="rounded-xl py-16 text-center"
-                style={{ background: C.card, border: `1px solid ${C.border}` }}>
-                <p style={{ color: C.muted }}>No services available yet.</p>
-              </div>
-            ) : (
-              <div className={viewMode === 'grid'
-                ? 'grid grid-cols-1 md:grid-cols-2 gap-6'
-                : 'space-y-3'}>
-                {services.map(s => (
-                  <ServiceCard key={s.id} service={s} profileSlug={profileSlug} viewMode={viewMode} />
+            {/* Featured hero — leads the "all" view with the host's first service */}
+            {featured && (() => {
+              const bookUrl = featured.slug ? `/${profileSlug}/booking/${featured.slug}` : null;
+              const desc = featured.short_description || featured.description || '';
+              return (
+                <div className="relative rounded-3xl overflow-hidden mb-5" style={{ background: C.card, border: `1px solid ${C.border}`, boxShadow: '0 10px 30px rgba(150,13,50,0.07)' }}>
+                  <span className="absolute top-4 left-4 z-10 inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-3 py-1" style={{ background: tc, color: '#fff' }}>
+                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 10-12h-7z" /></svg>Featured
+                  </span>
+                  <div className="flex flex-col sm:flex-row">
+                    <div className="flex items-center justify-center flex-shrink-0 sm:w-48 min-h-[140px]" style={{ background: `linear-gradient(135deg, ${tc}, #E0506F)`, color: '#fff' }}>
+                      <svg className="w-16 h-16 opacity-95" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /><path d="M11 8v3l2 1.5" /></svg>
+                    </div>
+                    <div className="p-6 flex-1 min-w-0">
+                      <h3 className="font-display font-extrabold text-xl leading-tight" style={{ color: C.text }}>{featured.title}</h3>
+                      {desc && <p className="text-sm mt-2 line-clamp-2" style={{ color: C.secondary }}>{desc}</p>}
+                      <div className="flex items-center gap-4 text-xs mt-3" style={{ color: C.secondary }}>
+                        <span>{featured.duration} min</span>
+                        <span>{featured.meeting_mode === 'offline' ? 'In-person' : 'Online'}</span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-4 mt-4">
+                        <div className="font-display font-extrabold text-2xl" style={{ color: C.text }}>{cardPriceLabel(featured)}</div>
+                        {bookUrl && (
+                          <Link to={bookUrl} className="inline-flex items-center rounded-full font-semibold text-sm transition-opacity hover:opacity-90" style={{ height: 46, padding: '0 22px', background: 'var(--profile-accent, #960D32)', color: 'var(--profile-accent-text, #ffffff)' }}>Book Now</Link>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Services grid */}
+            {showServices && gridServices.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {gridServices.map(s => (
+                  <ServiceCard key={s.id} service={s} profileSlug={profileSlug} />
                 ))}
               </div>
             )}
 
-            {/* Digital Products */}
-            {products.length > 0 && (
-              <div className="mt-10">
-                <h2 className="text-lg font-bold mb-4" style={{ color: C.text }}>Digital Products</h2>
+            {/* Products */}
+            {showProducts && (
+              <div className={showServices && gridServices.length ? 'mt-6' : ''}>
+                {filter === 'all' && <h3 className="font-display font-bold text-lg mb-4" style={{ color: C.text }}>Digital Products</h3>}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {products.map(p => (
                     <ProductCard key={p.id} product={p} profileSlug={profileSlug} />
@@ -835,12 +706,20 @@ const HostProfile = () => {
               </div>
             )}
 
+            {/* Empty state */}
+            {nothingShown && (
+              <div className="rounded-2xl py-16 text-center" style={{ background: C.card, border: `1px dashed ${C.border}` }}>
+                <p style={{ color: C.muted }}>
+                  {filter === 'product' ? 'No products yet.' : 'No services available yet.'}
+                </p>
+              </div>
+            )}
+
             {/* Reviews */}
             {reviewData.count > 0 && (
               <div className="mt-10">
-                <button onClick={() => setShowReviews(v => !v)}
-                  className="flex items-center gap-3 mb-4">
-                  <h2 className="text-lg font-bold" style={{ color: C.text }}>Reviews</h2>
+                <button onClick={() => setShowReviews(v => !v)} className="flex items-center gap-3 mb-4">
+                  <h2 className="font-display font-bold text-xl" style={{ color: C.text }}>What people say</h2>
                   <Stars avg={reviewData.avg} count={reviewData.count} size="lg" />
                   <svg className={`w-4 h-4 transition-transform ${showReviews ? 'rotate-180' : ''}`}
                     style={{ color: C.muted }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -848,18 +727,17 @@ const HostProfile = () => {
                   </svg>
                 </button>
                 {showReviews && (
-                  <div className="space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {reviewData.reviews.map(r => (
-                      <div key={r.id} className="rounded-xl p-4"
-                        style={{ background: C.card, border: `1px solid ${C.border}` }}>
+                      <div key={r.id} className="rounded-2xl p-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
                         <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
-                            style={{ background: C.text, color: C.btnText }}>
+                          <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+                            style={{ background: tc, color: '#fff' }}>
                             {r.profiles?.name?.charAt(0) || '?'}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="text-sm font-medium" style={{ color: C.text }}>{r.profiles?.name || 'Anonymous'}</span>
+                              <span className="text-sm font-semibold" style={{ color: C.text }}>{r.profiles?.name || 'Anonymous'}</span>
                               <Stars avg={r.rating} count={0} />
                             </div>
                             {r.comment && <p className="text-sm leading-relaxed" style={{ color: C.secondary }}>{r.comment}</p>}
@@ -875,27 +753,27 @@ const HostProfile = () => {
               </div>
             )}
 
-            {/* FAQ — templated from real profile data (utils/profileFaqs); powers
-                the FAQPage schema + gives answer engines extractable Q&A. */}
+            {/* FAQ — templated from real profile data; powers the FAQPage schema. */}
             {faqs.length > 0 && (
               <div className="mt-10">
-                <h2 className="text-lg font-bold mb-4" style={{ color: C.text }}>Frequently asked questions</h2>
+                <h2 className="font-display font-bold text-xl mb-4" style={{ color: C.text }}>Frequently asked questions</h2>
                 <FaqAccordion faqs={faqs} colors={C} />
               </div>
             )}
-          </div>
+          </section>
         </div>
       </div>
+
+      <Footer />
     </div>
       )}
 
-      {/* Badge info popup — bottom-right, click-triggered, auto-dismiss 5s. Replaces
-          the old hover tooltip that got clipped by the profile card. */}
+      {/* Badge info popup — bottom-right, click-triggered, auto-dismiss 5s. */}
       {badgeInfo && (
         <div className="fixed bottom-4 right-4 z-[60] w-[min(20rem,calc(100vw-2rem))]" role="status" aria-live="polite">
-          <div className="flex items-start gap-3 rounded-xl bg-white p-3 shadow-lg" style={{ border: `1px solid ${C.border}` }}>
+          <div className="flex items-start gap-3 rounded-2xl bg-white p-3 shadow-lg" style={{ border: `1px solid ${C.border}` }}>
             <div className="flex-shrink-0 flex items-center justify-center overflow-hidden"
-              style={{ width: 40, height: 40, borderRadius: 6, background: '#F4F4F4', border: `1px solid ${C.border}` }}>
+              style={{ width: 40, height: 40, borderRadius: 12, background: '#F5ECEA', border: `1px solid ${C.border}` }}>
               {badgeInfo.image_url
                 ? <img src={badgeInfo.image_url} alt="" className="w-full h-full object-contain" />
                 : <span className="font-extrabold" style={{ color: C.text }}>{(badgeInfo.name || 'B').charAt(0).toUpperCase()}</span>}

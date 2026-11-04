@@ -12,12 +12,16 @@ import { getOnboardingStatus } from '../../services/api';
 //   4 = legacy: category-in-flight → preview (roll forward — legacy /about
 //                                     hosts still hit persona, which bumps to 3)
 //   5 = details saved              → plan
+// stepCompleted >= 6 => plan saved (activate-free / advance-to-live both write 6
+// BEFORE the client navigates on), so no redirect applies and /calendar and
+// /live are both reachable. /calendar is a conditional, skippable detour between
+// plan and live (see needsCalendar) with no step of its own: never renumber for it.
 // stepCompleted >= 6 => onboarding complete → dashboard (handled below).
 export const RESUME = { 1: 'claim', 2: 'category', 3: 'preview', 4: 'preview', 5: 'plan' };
 
 // Forward order of onboarding segments. The guard blocks *skipping ahead* but
 // allows revisiting any already-reached step (Back buttons must work).
-const ORDER = ['claim', 'category', 'preview', 'plan'];
+const ORDER = ['claim', 'category', 'preview', 'plan', 'calendar'];
 
 /**
  * Server-truth resume guard for onboarding steps.

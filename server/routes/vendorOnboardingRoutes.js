@@ -10,6 +10,7 @@ const {
   advanceToLive,
   markComplete,
   getOnboardingStatus,
+  skipCalendar,
 } = require('../controllers/vendorOnboardingController');
 const { protect } = require('../middleware/authMiddleware');
 const { slugLimiter } = require('../middleware/security');
@@ -88,6 +89,17 @@ router.get('/status', protect, async (req, res) => {
       return res.status(404).json({ message: 'Onboarding not found' });
     }
     res.json(status);
+  } catch (error) {
+    safeError(res, error);
+  }
+});
+
+// ── Protected: Skip calendar connect ──────────────────────────────────────
+// POST /api/onboarding/skip-calendar
+router.post('/skip-calendar', protect, async (req, res) => {
+  try {
+    await skipCalendar(req.user.id);
+    res.json({ ok: true });
   } catch (error) {
     safeError(res, error);
   }

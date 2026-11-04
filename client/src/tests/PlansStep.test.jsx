@@ -49,6 +49,7 @@ const renderStep = () => render(
     <Routes>
       <Route path="/vendor-register/:slug/plans" element={<PlansStep />} />
       <Route path="/vendor-register/:slug/live" element={<div data-testid="live-page">live</div>} />
+      <Route path="/vendor-register/:slug/calendar" element={<div data-testid="calendar-page">calendar</div>} />
     </Routes>
   </MemoryRouter>
 );
@@ -56,7 +57,7 @@ const renderStep = () => render(
 beforeEach(() => {
   vi.clearAllMocks();
   getPublicPlans.mockResolvedValue({ data: PLANS });
-  getMe.mockResolvedValue({ data: { name: 'Test Host', email: 'host@example.com', plan: 'premium', billing_details: BILL } });
+  getMe.mockResolvedValue({ data: { name: 'Test Host', email: 'host@example.com', plan: 'premium', google_calendar_connected: true, billing_details: BILL } });
   // Use a function (not arrow) so `new window.Razorpay(opts)` works as a constructor.
   window.Razorpay = function () { return { open: vi.fn() }; };
   // Guard checks window.location.pathname for the current segment.
@@ -118,6 +119,15 @@ describe('free plan path', () => {
     await waitFor(() => expect(screen.getByTestId('live-page')).toBeInTheDocument());
   });
 
+  test('goNext goes to /calendar when the host has no working calendar', async () => {
+    getMe.mockResolvedValue({ data: { name: 'Test Host', email: 'host@example.com', plan: 'premium', google_calendar_connected: false, billing_details: BILL } });
+    renderStep();
+    await waitFor(() => screen.getByText('Pro'));
+    fireEvent.click(screen.getByRole('button', { name: /Publish on Starter/ }));
+    await waitFor(() => expect(screen.getByTestId('calendar-page')).toBeInTheDocument());
+    expect(screen.queryByTestId('live-page')).toBeNull();
+  });
+
   test('does NOT call advanceToLive or markOnboardingComplete on free path', async () => {
     renderStep();
     await waitFor(() => screen.getByText('Pro'));
@@ -142,7 +152,7 @@ describe('paid plan success path', () => {
   test('handler calls syncSubscription → getMe → advanceToLive → navigate /live when plan is active', async () => {
     const getCapture = makeRazorpayCapture();
     // Both mount + handler getMe calls return a paid plan
-    getMe.mockResolvedValue({ data: { name: 'Test Host', email: 'host@example.com', plan: 'premium', billing_details: BILL } });
+    getMe.mockResolvedValue({ data: { name: 'Test Host', email: 'host@example.com', plan: 'premium', google_calendar_connected: true, billing_details: BILL } });
 
     renderStep();
     await waitFor(() => screen.getByText('Pro'));
@@ -190,7 +200,7 @@ describe('paid plan success path', () => {
     const getCapture = makeRazorpayCapture();
     // Mount getMe resolves (so the page renders); the post-payment getMe rejects.
     getMe
-      .mockResolvedValueOnce({ data: { name: 'Test Host', email: 'host@example.com', plan: 'premium', billing_details: BILL } })
+      .mockResolvedValueOnce({ data: { name: 'Test Host', email: 'host@example.com', plan: 'premium', google_calendar_connected: true, billing_details: BILL } })
       .mockRejectedValue(new Error('network'));
 
     renderStep();
@@ -223,7 +233,7 @@ describe('paid plan success path', () => {
 
   test('paid handler does NOT call markOnboardingComplete (only navigates to /live via advanceToLive)', async () => {
     const getCapture = makeRazorpayCapture();
-    getMe.mockResolvedValue({ data: { name: 'Test Host', email: 'host@example.com', plan: 'premium', billing_details: BILL } });
+    getMe.mockResolvedValue({ data: { name: 'Test Host', email: 'host@example.com', plan: 'premium', google_calendar_connected: true, billing_details: BILL } });
 
     renderStep();
     await waitFor(() => screen.getByText('Pro'));

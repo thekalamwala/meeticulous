@@ -173,8 +173,8 @@ module.exports = { myAction };
 
 ### New email event
 1. Add template definition to `server/config/emailTemplates.js`
-2. Run `node scripts/seedEmailTemplates.js` to insert it
-3. Register the event key in `notification_events` table (or via admin UI at `/admin/platform/communication`)
+2. Nothing to run: production syncs `emailTemplates.js` into the DB on every deploy (`services/email/templateSync.js`), keeping rows edited in the admin editor. Email-only events go in `EMAIL_ONLY_EVENTS` in the same file. Manual run (another DB, or `--force` over admin edits): `node scripts/seedEmailTemplates.js`
+3. If the event also needs WhatsApp, register it in `notification_events` (or via admin UI at `/admin/platform/communication`)
 4. Call `communicationEngine.send({ event: 'EVENT_KEY', audience, data })` from the controller
 
 ### New badge metric

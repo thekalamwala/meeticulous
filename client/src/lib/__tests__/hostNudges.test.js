@@ -95,3 +95,26 @@ describe('buildNudges — 60-day Pro taste', () => {
     expect(buildNudges({ isFreePlan: false, taste: { endsAt, daysLeft: 5, endedDaysAgo: null } })).toHaveLength(0);
   });
 });
+
+describe('calendar nudge', () => {
+  const cal = (ctx) => buildNudges(ctx).find((x) => x.key === 'calendar');
+
+  it('shows for a host without a connected calendar, with the connect action', () => {
+    const n = cal({ isHost: true, calendarConnected: false });
+    expect(n).toMatchObject({ priority: 75, dismissible: true, cta: 'Connect', action: 'connectCalendar', to: null });
+  });
+
+  it('absent once connected, and for non-hosts', () => {
+    expect(cal({ isHost: true, calendarConnected: true })).toBeUndefined();
+    expect(cal({ isHost: false, calendarConnected: false })).toBeUndefined();
+  });
+
+  it('ranks below upgrade and above share', () => {
+    const keys = buildNudges({
+      isHost: true, calendarConnected: false, isFreePlan: true, commissionPaid: 10,
+      hasUsername: true, servicesCount: 1, bookingsCount: 0,
+    }).map((x) => x.key);
+    expect(keys.indexOf('upgrade')).toBeLessThan(keys.indexOf('calendar'));
+    expect(keys.indexOf('calendar')).toBeLessThan(keys.indexOf('share'));
+  });
+});

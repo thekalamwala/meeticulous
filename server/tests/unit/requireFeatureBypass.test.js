@@ -81,3 +81,12 @@ test('SAFETY_KEYS includes the financial + auth kills', () => {
     expect(SAFETY_KEYS).toContain(k);
   }
 });
+
+// The LinkedIn host door must be absolutely closed when OFF — no Supreme bypass.
+test('flag OFF + Supreme + host_linkedin_login → still 503', async () => {
+  isFeatureEnabled.mockResolvedValue(false);
+  expect(SAFETY_KEYS).toContain('host_linkedin_login');
+  const { res, next } = await run('host_linkedin_login', { user: { id: 'u1' }, vendorPlanData: { bypasses_kill_switches: true } });
+  expect(next).not.toHaveBeenCalled();
+  expect(res.statusCode).toBe(503);
+});
