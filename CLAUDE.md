@@ -162,7 +162,10 @@ Items previously listed here as pending are now live:
 - **v3.185** (`v3.185_platform_reviews.sql`) — applied 2026-11-03 on the Meeticulous DB and verified
   (14 cols, RLS on / no policies, checks + 2 indexes): `platform_reviews` = reviews OF Meeticulous from
   `/submit-review` (one per signed-in account). Public only when `status='approved'` AND
-  `consent_public`; approved in Admin → Content → Testimonials (`cms.manage`). No migration outstanding.
+  `consent_public`; approved in Admin → Content → Testimonials (`cms.manage`).
+- **v3.189** (`v3.189_maroon_color_defaults.sql`) — applied 2026-11-04 on the Meeticulous DB and verified:
+  `profiles.theme_color` + `email_settings.brand_color` defaults `#FE5100` (old orange) → `#960D32`;
+  the 3 profiles + 1 email_settings row still on orange repainted. No migration outstanding.
 
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
