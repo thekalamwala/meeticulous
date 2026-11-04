@@ -12,6 +12,7 @@ const LinkedInIcon = () => (
   </svg>
 );
 
+// useFeature keeps the Supreme/kill-switch semantics; the explicit `=== true` makes this opt-in door fail closed when the flag row is missing.
 export function useLinkedinEnabled() {
   const on = useFeature(KEY);
   const { flags } = useFeatures();

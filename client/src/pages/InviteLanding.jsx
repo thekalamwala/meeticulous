@@ -198,7 +198,7 @@ export default function InviteLanding() {
             </Reveal>
             <Reveal delay={0.16} className="mt-8">
               <GoogleCTA onClick={startGoogle} />
-              <ContinueWithLinkedIn intent="signup" className="mt-3 inline-flex items-center justify-center gap-3 rounded-[6px] border border-black/15 bg-white px-7 py-3.5 text-sm font-semibold text-ink" />
+              <ContinueWithLinkedIn intent="signup" className="mt-3 inline-flex items-center justify-center gap-3 rounded-full border border-black/15 bg-white px-7 py-3.5 text-sm font-semibold text-ink" />
               <p className="mt-3 text-xs text-neutral-500">
                 By continuing you agree to our{' '}
                 <Link to="/terms" className="underline">Terms</Link> and{' '}
