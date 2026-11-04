@@ -423,6 +423,8 @@ const SCHEDULED_JOBS = [
   { name: 'auto-complete', min: AUTO_COMPLETE_INTERVAL_MIN, run: () => autoCompleteBookings() },
   { name: 'otp-cleanup', min: 60, run: () => cleanupOtps() },
   { name: 'subscription-expiry', min: 6 * 60, run: () => require('./services/subscriptionExpiry').processSubscriptionExpiry() },
+  // Gifted Pro: T-7/T-1 "ends soon" + close/downgrade/"expired" (access itself ends via resolveVendorPlan).
+  { name: 'plan-gift-expiry', min: 60, run: () => require('./services/planGiftService').processGiftExpiry() },
   { name: 'guest-host-invite', min: 24 * 60, run: () => require('./services/guestHostInvite').processGuestHostInvites() },
   { name: 'profile-completion', min: 12 * 60, run: () => require('./services/profileCompletion').processProfileCompletion() },
   { name: 'birthday', min: 12 * 60, run: () => require('./services/birthdayGreetings').processBirthdays() },
