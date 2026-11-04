@@ -100,6 +100,10 @@ export const AuthProvider = ({ children }) => {
     try {
       const ref = new URLSearchParams(window.location.search).get('ref');
       if (ref && !localStorage.getItem('bas_ref')) localStorage.setItem('bas_ref', ref.slice(0, 40));
+      // Gifted Pro pay-it-forward link (?gift=CODE): same stash pattern, redeemed by
+      // App.jsx useGiftRedeem once the visitor is a host who finished onboarding.
+      const gift = new URLSearchParams(window.location.search).get('gift');
+      if (gift && !localStorage.getItem('bas_gift')) localStorage.setItem('bas_gift', gift.slice(0, 20));
       // Cold-call tracked link (?i=CX12): log the visit on the lead + keep the code for signup.
       const code = inviteCodeFromUrl(window.location.search);
       if (code) { stashInvite(code); recordInviteVisit(code).catch(() => {}); }

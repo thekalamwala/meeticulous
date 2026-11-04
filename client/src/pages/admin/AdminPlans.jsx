@@ -6,6 +6,13 @@ import {
 } from '../../services/api';
 import { PageHeader, Card, Btn, Badge } from '../../components/admin/ui';
 import { normalizePlan, getPlanBorderLabel } from '../../utils/themeUtils';
+import { sessionCan } from '../../components/admin/adminNav';
+import { GiftForm, GiftsTable } from '../../components/admin/GiftPro';
+
+// Gifted Pro is super-admin only (the server enforces it; this just hides the UI).
+const isSuperAdmin = () => {
+  try { return sessionCan(JSON.parse(localStorage.getItem('bas_admin') || 'null'), '*'); } catch { return false; }
+};
 
 const LIMIT_KEYS = [
   ['services', 'Services'],
@@ -56,6 +63,7 @@ const AdminPlans = () => {
   const [assignResults, setAssignResults] = useState([]);
   const [assignPlanSlug, setAssignPlanSlug] = useState('');
   const [assignReason, setAssignReason] = useState('');
+  const [giftsRefresh, setGiftsRefresh] = useState(0);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -225,6 +233,18 @@ const AdminPlans = () => {
           ))}
         </div>
       </Card>
+
+      {/* Gifted Pro — complimentary Pro for a fixed tenure (super admin only) */}
+      {isSuperAdmin() && (
+        <div className="mt-8 space-y-4">
+          <Card className="max-w-2xl">
+            <h2 className="text-sm font-bold adm-t1 mb-1">Gift Pro</h2>
+            <p className="text-xs adm-t3 mb-3">Complimentary Pro for a set time, from the team. Paying hosts are never gifted. When it ends the host goes back to Starter with everything kept.</p>
+            <GiftForm onDone={() => setGiftsRefresh((n) => n + 1)} />
+          </Card>
+          <GiftsTable refreshKey={giftsRefresh} />
+        </div>
+      )}
 
       {/* Edit / create modal */}
       {editing && (

@@ -518,6 +518,9 @@ export const toggleService      = (id)        => API.put(`/vendor/services/${id}
 
 // ── Refer & Earn (host-refers-host) ───────────────────────────
 export const captureReferral    = (data)      => API.post('/referrals/capture', data); // { ref }
+// Gifted Pro, host side: share-to-extend + pay-it-forward redeem.
+export const submitGiftShare    = (url)       => API.post('/gift/share', { url });
+export const redeemGiftLink     = (code)      => API.post('/gift/redeem', { code });
 export const getMyReferrals      = ()          => API.get('/referrals/mine');
 
 // ── KYC (host identity verification) ──────────────────────────
@@ -607,6 +610,14 @@ export const adminRestorePlan  = (id)       => API.patch(`/admin/plans/${id}/res
 export const adminClonePlan    = (id)       => API.post(`/admin/plans/${id}/clone`);
 export const adminReorderPlans = (order)    => API.patch('/admin/plans/reorder', { order });
 export const adminAssignPlan   = (data)     => API.post('/admin/plans/assign', data);
+
+// ── Admin: Gifted Pro (super admin only) ─────────────────────
+export const adminListGifts       = (params)        => API.get('/admin/gifts', { params }); // { status, page }
+export const adminGiftEligibility = (host_ids)      => API.post('/admin/gifts/eligibility', { host_ids });
+export const adminGrantGifts      = (data)          => API.post('/admin/gifts', data); // { host_ids, months, reason, note?, campaign? }
+export const adminExtendGift      = (id, months)    => API.post(`/admin/gifts/${id}/extend`, { months });
+export const adminRevokeGift      = (id, reason)    => API.post(`/admin/gifts/${id}/revoke`, { reason });
+export const adminReviewGiftShare = (id, approve)   => API.post(`/admin/gifts/${id}/share-review`, { approve });
 
 // ── Admin: payment (Razorpay) settings ────────────────────────
 export const adminGetRazorpay    = ()     => API.get('/admin/settings/payment/razorpay');

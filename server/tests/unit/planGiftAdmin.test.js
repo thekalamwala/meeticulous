@@ -55,6 +55,6 @@ test('extend / revoke validate and map GiftError codes', async () => {
 test('every /gifts route is super-admin only', () => {
   const src = fs.readFileSync(path.join(__dirname, '../../routes/adminRoutes.js'), 'utf8');
   const routes = src.split('\n').filter((l) => /router\.\w+\('\/gifts/.test(l));
-  expect(routes).toHaveLength(5);
+  expect(routes).toHaveLength(6);
   for (const l of routes) expect(l).toMatch(/requireSuperAdmin,/);
 });

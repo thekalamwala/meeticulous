@@ -1,7 +1,7 @@
 import { Suspense, useState, useMemo, useEffect } from 'react';
 import { Routes, Route, useLocation, useParams, Navigate } from 'react-router-dom';
 import ChromeContext from './context/ChromeContext';
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import PageGuides, { GUIDES_IN_PAGE } from './components/common/PageGuides';
@@ -18,7 +18,7 @@ import RouteErrorBoundary from './components/common/RouteErrorBoundary';
 import PetalSpinner from './components/common/PetalSpinner';
 import { useAuth } from './context/AuthContext';
 import { KycProvider } from './context/KycContext';
-import { captureReferral } from './services/api';
+import { captureReferral, redeemGiftLink, getMe } from './services/api';
 import { captureAttribution } from './utils/attribution';
 import lazyWithRetry from './utils/lazyWithRetry';
 
@@ -335,8 +335,31 @@ function useReferralCapture() {
   }, [user?.is_host]);
 }
 
+// Gifted Pro pay-it-forward: a ?gift=CODE link stashed at signup (AuthContext).
+// The server grants only once onboarding is complete and replies keep=true until
+// then, so the code stays stashed and is retried on the next dashboard visit.
+function useGiftRedeem() {
+  const { user, updateUser } = useAuth();
+  useEffect(() => {
+    const code = localStorage.getItem('bas_gift');
+    if (!code || !user?.is_host) return;
+    redeemGiftLink(code)
+      .then(({ data }) => {
+        if (data?.keep) return;
+        localStorage.removeItem('bas_gift');
+        if (data?.redeemed) {
+          toast.success('A fellow creator gifted you a month of Pro.');
+          // Pull the fresh session so the plan + gift show without a reload.
+          getMe().then(({ data: fresh }) => updateUser(fresh)).catch(() => {});
+        }
+      })
+      .catch(() => {});
+  }, [user?.is_host, user?.onboarding_completed]);
+}
+
 function DashboardWrapper({ children }) {
   useReferralCapture();
+  useGiftRedeem();
   return <HostRoute><DashboardLayout>{children}</DashboardLayout></HostRoute>;
 }
 

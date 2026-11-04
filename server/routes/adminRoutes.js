@@ -253,6 +253,7 @@ router.post('/gifts/eligibility',    requireSuperAdmin, plans.giftEligibility);
 router.post('/gifts',                requireSuperAdmin, plans.grantGifts);
 router.post('/gifts/:id/extend',     requireSuperAdmin, plans.extendGift);
 router.post('/gifts/:id/revoke',     requireSuperAdmin, plans.revokeGift);
+router.post('/gifts/:id/share-review', requireSuperAdmin, plans.reviewGiftShare);
 
 // ── Categories / professions registry ──────────────────────────
 const categories = require('../controllers/categoryController');

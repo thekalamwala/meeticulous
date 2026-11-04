@@ -713,6 +713,11 @@ const assignHostPlan = async (req, res) => {
     if (!plan || plan.slug !== planService.normalizeSlug(plan_slug))
       return res.status(404).json({ message: 'Plan not found' });
 
+    // Same guard as planAdminController.assignPlan: a gifted host's plan is owned
+    // by the gift (overwriting it would orphan the gift row).
+    if (await require('../services/planGiftService').getActiveGift(host.id))
+      return res.status(409).json({ message: 'Host has an active gifted Pro — revoke the gift first.' });
+
     const isFree = Number(plan.annual_price) === 0;
     const now = new Date().toISOString();
     const { data, error } = await supabaseAdmin.from('profiles')
