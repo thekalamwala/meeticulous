@@ -2,6 +2,7 @@
 /**
  * agentReportRoutes.js — READ-ONLY reporting for SUTRA agents. Mounted at /api/agents/reports.
  *   GET /finance  — pre-aggregated finance numbers (services/financeReportService.js)
+ *   GET /seo      — Search Console rollups from gsc-sync (services/seoReportService.js)
  *
  * Auth = shared secret in the `x-agent-token` header, constant-time compared to
  * AGENT_REPORT_TOKEN. Fail-CLOSED: unset or shorter than 32 chars → 503, so a
@@ -15,6 +16,7 @@ const { newsletterIpLimiter } = require('../middleware/security');
 const { securityLog } = require('../utils/logger');
 const { safeError } = require('../utils/httpError');
 const { buildFinanceReport } = require('../services/financeReportService');
+const { buildSeoReport } = require('../services/seoReportService');
 
 const MIN_TOKEN_LEN = 32;
 
@@ -37,6 +39,15 @@ router.get('/finance', async (req, res) => {
   try {
     res.set('Cache-Control', 'no-store');
     res.json(await buildFinanceReport());
+  } catch (e) {
+    safeError(res, e);
+  }
+});
+
+router.get('/seo', async (req, res) => {
+  try {
+    res.set('Cache-Control', 'no-store');
+    res.json(await buildSeoReport());
   } catch (e) {
     safeError(res, e);
   }

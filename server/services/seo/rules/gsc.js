@@ -30,4 +30,4 @@ function check(p, ctx) {
   }
   return out;
 }
-module.exports = { check };
+module.exports = { check, isIndexed };
