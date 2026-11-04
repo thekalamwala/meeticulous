@@ -20,7 +20,10 @@ marketing moment, like a surprise "we reset your limits" from a product you use.
 | Who may act | **Super admin only** (`requireSuperAdmin`). No new permission and no perms migration. |
 | Host view | **Distinct "Pro (Gifted)" badge** in the dashboard and billing. The public profile still says "Pro". |
 | Notices | Gift received · ending soon T-7 and T-1 · gift ended. Email + in-app + **WhatsApp**. |
-| Marketing v1 | Bulk/cohort gifting · personal note · convert offer at gift end · shareable "I got Pro" moment · plus 2 share hooks pitched in §8. |
+| Marketing | Bulk/cohort gifting · personal note · convert offer at gift end · shareable "I got Pro" moment · **share-to-extend** · **pay-it-forward** (all six approved, §8). |
+| Revoke | **Tells the host** with the same notice as a natural end: "Your gifted Pro has expired. To keep the benefits, go Pro." |
+| Senders | **Gift email from Shubham** (the founder gifted it). **Every other gift notice from Tithi.** |
+| Pay-it-forward grant | Approved as the one **system** grant path. The original super-admin gift counts as its approval. |
 
 ---
 
@@ -78,6 +81,15 @@ CREATE TABLE IF NOT EXISTS plan_gifts (
   closed_by     uuid,
   close_reason  text,
   ending_notified_days int[] NOT NULL DEFAULT '{}',                       -- {7,1} dedupe for ending-soon
+  -- Share-to-extend (§8.5): one public post per gift, verified by a super admin.
+  share_url     text,
+  share_status  text CHECK (share_status IN ('pending', 'approved', 'rejected')),
+  share_reviewed_at timestamptz,
+  -- Pay-it-forward (§8.6): one forward link per gift; redeemed once.
+  forward_code  text UNIQUE,                                              -- random 10 chars, minted on grant
+  forward_redeemed_by uuid REFERENCES profiles(id) ON DELETE SET NULL,
+  forward_redeemed_at timestamptz,
+  forwarded_from uuid REFERENCES plan_gifts(id) ON DELETE SET NULL,       -- set on the friend's gift row
   created_at    timestamptz NOT NULL DEFAULT now(),
   updated_at    timestamptz NOT NULL DEFAULT now()
 );
@@ -95,6 +107,19 @@ ON CONFLICT (event_key) DO NOTHING;
 (Copy the exact `notification_events` column list from `v3.130_notification_in_app_channel.sql`. Seed
 the 3 `email_templates` rows, audience `vendor`, in the `scripts/seedEmailTemplates.js` shape.
 **Do not run the seed script itself**, because it overwrites every template.)
+
+**Senders**, set by `email_templates.sender_key` and resolved by `senderRegistry.senderFor`:
+
+| Template | `sender_key` | From (live `email_senders`, verified 2026-11-04) |
+|---|---|---|
+| `PLAN_GIFT_RECEIVED` | `shubham` | "Shubham \| Founder, Meeticulous" <shubham@team.meeticulous.com>, Resend, replies → shubham@meeticulous.com |
+| `PLAN_GIFT_ENDING` | `tithi` | "Tithi \| Meeticulous" <tithi@team.meeticulous.com>, Resend |
+| `PLAN_GIFT_ENDED` (also sent on revoke) | `tithi` | same |
+
+⚠ Use the plain `shubham` / `tithi` keys, **never `crm_shubham` / `crm_tithi`**. The `crm_*` rows
+are the cold-outreach senders, only used while `crm_admin_sends` is ON (currently **OFF**), and on the
+`.in` cold root. Gift mail is transactional and must always send. WhatsApp sends as `senderKey: 'tithi'`
+(same as `markHalted`). The in-app notices carry no sender.
 
 **No `profiles` column.** "Is gifted" = an active `plan_gifts` row. `profiles.plan_expires_at = ends_at`
 keeps every existing read path correct with no change.
@@ -138,7 +163,20 @@ extendGift(giftId, months, adminReq)
 
 revokeGift(giftId, closeReason, adminReq)
   status='revoked', closed_*; downgradeIfStillGifted(host)  → host is on Starter now
-  audit('plan.gift.revoke'); no host email by default (silent), in-app optional — see §7
+  audit('plan.gift.revoke'); notify PLAN_GIFT_ENDED (Tithi: "gift has expired, go Pro to keep the benefits")
+  close_reason stays internal and is never shown to the host
+
+submitShare(hostId, url)              // host route, §8.5
+  active gift, share_status null, https URL on linkedin.com / instagram.com / x.com / twitter.com / facebook.com
+  → share_url, share_status='pending'
+reviewShare(giftId, approve, adminReq) // super admin
+  approve → share_status='approved' → extendGift(giftId, 1) ; reject → 'rejected' (host may not resubmit)
+
+redeemForward(code, newHostId)         // §8.6, called on the friend's onboarding completion
+  gift with forward_code=code, forward_redeemed_by IS NULL, giver ≠ friend
+  → eligibility(friend) → grantGift({ hostIds:[friend], months:1, campaign:'pay-it-forward',
+       reason:'pay-it-forward from <giver gift id>', forwarded_from }, system)
+  → forward_redeemed_by/at set (single conditional UPDATE … WHERE forward_redeemed_by IS NULL → race-safe)
 
 endOnPaid(hostId)          // called from BOTH paid-activation paths (§4.3)
   active gift → status='converted', closed_at=now; returns the gift so the caller ignores its ends_at
@@ -164,6 +202,10 @@ the cron is a no-op.
 | POST | `/api/admin/gifts/:id/extend` | `{ months }` |
 | POST | `/api/admin/gifts/:id/revoke` | `{ reason }` |
 | POST | `/api/admin/gifts/eligibility` | `{ host_ids[] }` → dry run for the bulk preview |
+
+| POST | `/api/admin/gifts/:id/share-review` | `{ approve }` |
+
+Host route (host auth): `POST /api/host/gift/share` `{ url }`.
 
 `months` is validated against `TENURES` on the server (never trust the client).
 
@@ -260,12 +302,11 @@ checklist before calling it done.
 Notices (NotificationEngine: email + in-app + WhatsApp; WhatsApp flips on only once the AiSensy
 templates are approved):
 
-| Event | When | Copy angle |
-|---|---|---|
-| `PLAN_GIFT_RECEIVED` | grant / extend | "A gift from the Meeticulous team 🎁": tenure, end date, note, **share card** (§8) |
-| `PLAN_GIFT_ENDING` | T-7, T-1 | "Your gifted Pro ends on X": what you keep vs lose, **Keep Pro** CTA |
-| `PLAN_GIFT_ENDED` | end day | "You're back on Starter. Everything is still here." Keep Pro CTA |
-| revoke | — | **Default silent** (revokes are corrections). Open question: send a soft in-app note? |
+| Event | From | When | Copy angle |
+|---|---|---|---|
+| `PLAN_GIFT_RECEIVED` | **Shubham** | grant / extend | Founder voice: "I'm gifting you Pro 🎁": tenure, end date, personal note, **share card**, share-to-extend + pay-it-forward link (§8) |
+| `PLAN_GIFT_ENDING` | Tithi | T-7, T-1 | "Your gifted Pro ends on X": what you keep vs lose, **Keep Pro** CTA |
+| `PLAN_GIFT_ENDED` | Tithi | end day **and on revoke** | "Your gifted Pro has expired. To keep using the benefits, go Pro." Starter keeps all your data. **Go Pro** CTA |
 
 ---
 
@@ -283,20 +324,23 @@ v1 (founder approved):
    Book me here →"* plus **the host's own booking link** with `utm_source=gift_share`. The host shares
    because it promotes *their* page. Meeticulous gets the brand mention for free.
 
-Pitched (2 more, aimed at people posting on other platforms). **Need the founder's OK before build:**
+Share hooks (approved 2026-11-04, aimed at people posting on other platforms):
 
 5. **Share-to-extend (+1 month):** the gift card says *"Post about it, get another month free."* The
    host posts on LinkedIn / Instagram / X tagging Meeticulous and pastes the post URL into the
-   dashboard. It lands in the admin Gifts tab as "Share pending", and the super admin approves it →
-   `extendGift(+1)`. Once per gift. A human verifies each post, so it can't be gamed. Adds a
-   `share_url` + `share_status` column to `plan_gifts` (same migration, unused until enabled).
-6. **Pay-it-forward gift link:** each gifted host gets **one** link to give a fellow creator 1 month
-   of Pro. The friend signs up through it → on onboarding completion, a system grant (`granted_by=null`,
-   `campaign='pay-it-forward'`) runs through the same eligibility checks. Hosts share it in their own
-   communities (WhatsApp groups, IG stories), so each gift can recruit a new host. ⚠ This is the one
-   **non-super-admin grant path**. It goes against "super admin only" unless the founder treats the
-   link as pre-approved by the original gift. Reuses referral attribution (`referralService`)
-   but gives no cash reward.
+   dashboard (`submitShare`). It lands in the admin Gifts tab as "Share pending", and the super admin
+   opens the post and approves it → `extendGift(+1)`. Once per gift. A human verifies each post, so it
+   can't be gamed. Pay-it-forward gifts qualify too (so the friend posts as well).
+6. **Pay-it-forward gift link:** each gift mints **one** `forward_code`. The host gets
+   `meeticulous.com/for-hosts?gift=CODE` to give a fellow creator 1 month of Pro. The code is stashed at
+   signup the same way referral codes are today (reuse `referralService` attribution, no cash
+   reward). On the friend's **onboarding completion**, `redeemForward` runs a system grant
+   (`granted_by=null`, `campaign='pay-it-forward'`) through the same eligibility checks. Hosts share it
+   in their own communities (WhatsApp groups, IG stories), so each gift can recruit a new host.
+   Guardrails: one redemption per code, new Starter hosts only, can't redeem your own code. The friend's
+   gift mints **no** forward code of its own, so the chain is one level deep and can't spiral
+   (`ponytail:` lift this when the founder wants a viral chain). A dead or used code silently signs the
+   friend up on plain Starter.
 
 ---
 
@@ -309,7 +353,10 @@ Pitched (2 more, aimed at people posting on other platforms). **Need the founder
 | Second gift while one is active | Grant blocked → use **Extend** (adds months to the current `ends_at`). |
 | Gifted host subscribes | Charged now; gift → `converted`; paid period end replaces the gift end (§4.3). |
 | Abandoned checkout while gifted | Gift untouched (no activation). |
-| Revoke | Immediate drop to Starter via the guarded update; audit-logged. |
+| Revoke | Immediate drop to Starter via the guarded update; audit-logged; host gets the Tithi "gift has expired, go Pro" notice. |
+| Share submitted after the gift ended / revoked | 409. Only an active gift can be extended. |
+| Forward code redeemed by an existing paying host | Eligibility blocks it; the code stays unused. |
+| Forward code used after the giver's gift ended | Still valid (the code was earned when it was minted). |
 | `assignPlan` on a gifted host | 409 until the gift is revoked. |
 | Cron down / late | Access still ends on time (`resolveVendorPlan`). Notices catch up on the next tick; T-7/T-1 can be skipped if the cron is down for those days (acceptable). |
 | Gift ends on 31 Jan + 1 month | Clamped to the last day of Feb. |
@@ -336,6 +383,9 @@ Server (`server/tests/unit/planGift*.test.js`):
 - `subscriptionExpiry` skips gifted hosts.
 - `assignPlan` 409 on an active gift.
 - routes reject non-super admins; `months` outside `TENURES` → 400.
+- revoke sends `PLAN_GIFT_ENDED`; received uses template `sender_key='shubham'`, the others `'tithi'` (never `crm_*`).
+- `submitShare`: URL allow-list, once per gift, active gift only; `reviewShare` approve → +1 month.
+- `redeemForward`: single redemption under a race (two concurrent calls → one grant), self-redeem blocked, ineligible friend → no grant + code unused, the friend's gift has no `forward_code`.
 - `resolveVendorPlan` on an expired gift → `free`; CRM `isPaid` false; `countPayingPro` excludes it.
 
 Client:
@@ -352,13 +402,15 @@ Before the PR: `cd server && npm test`, `cd client && npm run build`.
    checkout conversion hooks + `subscriptionExpiry` skip + cron + session `gift` + the 3 events/
    email templates (WhatsApp off) + tests.
 2. **PR B (UI):** admin Gift Pro card + gifts table + billing gifted state + dashboard chip + share card.
-3. **PR C (growth, after founder OK):** share-to-extend, pay-it-forward, WhatsApp templates once
-   AiSensy approves them, a convert discount once subscription coupons exist.
+3. **PR C (growth):** share-to-extend (host share box + admin review queue) and pay-it-forward
+   (signup stash + redeem on onboarding completion). The columns already ship in v3.190 with PR A.
+4. **Later:** WhatsApp templates once AiSensy approves them (submit the 3 templates during PR A), and a
+   convert discount once subscription coupons exist.
 
 Each PR branches from `origin/main` → base `release/YYYY-MM` → stop at the PR.
 
-## 12. Open questions left
+## 12. Open questions
 
-- Revoke: silent (default) or a soft in-app note?
-- Pitches 5 and 6: build? Pay-it-forward conflicts with "super admin only" as written.
-- Should the gift email come from Tithi (`crm_tithi`, lifecycle) or the transactional sender? Default: transactional (NotificationEngine), since it is not gated by `crm_admin_sends`.
+None blocking. Resolved 2026-11-04: revoke tells the host (Tithi, "gift has expired, go Pro"); both
+pitches are approved; the gift email comes from Shubham and every other notice from Tithi
+(transactional keys, not `crm_*`).
