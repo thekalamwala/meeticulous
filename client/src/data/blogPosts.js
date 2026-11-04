@@ -71,6 +71,112 @@ export const themeFor = (category) => CATEGORY_THEME[category] || CATEGORY_THEME
 
 export const BLOG_POSTS = [
 {
+  "slug": "how-to-avoid-double-booking-appointments",
+  "title": "Double Booking: What It Is and How to Prevent It",
+  "date": "Nov 4, 2026",
+  "icons": ["calendar", "shield", "clock"],
+  "author": "Shubham N Datarkar",
+  "readMins": 6,
+  "category": "Guide",
+  "image": null,
+  "excerpt": "Double booking is two appointments in the same time slot. Learn what causes it, when it is deliberate, and five fixes: calendar sync, buffers and slot limits.",
+  "body": [
+    {
+      "p": "Double booking is when two appointments or meetings are scheduled for the same time slot. It usually happens because of manual entry or calendars that do not sync in real time. The fix is a booking system that checks every slot against one live calendar before it confirms, plus buffers between sessions."
+    },
+    {
+      "p": "For a solo professional such as a coach, tutor, therapist or consultant, one double booking costs more than the hour. One client is turned away or kept waiting, and the message you send to apologise is the one they remember. This guide covers what causes it, when it is deliberate, and the fixes that work."
+    },
+    { "h2": "What is double booking?" },
+    {
+      "p": "Double booking means one person, room or resource is committed to two bookings that overlap. Two clients hold the same 4 pm slot, or a client books you while a personal commitment already sits in your calendar. Some clinics do it on purpose, expecting a no-show to free the slot. Most solo professionals never choose it. It just happens."
+    },
+    { "h2": "What causes double booking?" },
+    {
+      "ul": [
+        "**Manual entry.** You say yes on WhatsApp, a client books through your link, and nobody updates the other place.",
+        "**Calendars that do not sync.** Your booking tool does not see the commitments in your personal or work calendar, so it keeps offering a slot that is already taken.",
+        "**Several booking channels.** Instagram DMs, phone calls and a booking page each write to a different list.",
+        "**Two people booking at the same moment.** Without a hard check at the final step, both requests can look free when they arrive.",
+        "**Overruns.** A session that runs 15 minutes long collides with the next one, which feels like a double booking even when the calendar was right."
+      ]
+    },
+    { "h2": "How to prevent double booking: 5 fixes" },
+    {
+      "steps": [
+        "**Use one calendar as the source of truth.** Every booking channel should write to, and read from, the same calendar. Mark busy time as busy on any calendar your scheduling tool checks.",
+        "**Turn on two-way calendar sync.** Real-time two-way sync marks a booked slot unavailable everywhere else, and blocks slots that are busy in your own calendar. Without real-time sync, double booking can still happen ([Acuity Scheduling](https://acuityscheduling.com/learn/avoid-double-booking-appointments)).",
+        "**Add buffer time between sessions.** A short gap absorbs overruns and stops back-to-back bookings. Ten or fifteen minutes is common for one-to-one work.",
+        "**Set booking rules.** Limit how many bookings a slot or a day can take, set a minimum notice period, and open only the windows you want to work ([Cal.com](https://cal.com/blog/double-booking)).",
+        "**Cut no-shows so you are never tempted to overbook.** Reminders and [advance payment](/blog/advance-payment-for-appointments) make a booked slot a real commitment. See [how to reduce no-shows](/blog/how-to-reduce-no-shows) for the full playbook."
+      ]
+    },
+    {
+      "table": {
+        "head": ["Cause", "Best fix"],
+        "rows": [
+          ["Manual entry across WhatsApp, calls and DMs", "One booking link and one calendar"],
+          ["Calendars that do not talk to each other", "Two-way calendar sync"],
+          ["Sessions that overrun", "Buffer time between bookings"],
+          ["Two clients booking at once", "A server-side check at confirmation"],
+          ["Fear of no-shows", "Reminders and advance payment"]
+        ]
+      }
+    },
+    {
+      "p": "Online booking also helps on the no-show side. In one study of a medical practice and a university hospital, the median no-show rate for online bookings in an ophthalmology practice was 1.8%, lower than for offline bookings ([PMC study](https://pmc.ncbi.nlm.nih.gov/articles/PMC12081397/)). Fewer no-shows means less pressure to overbook."
+    },
+    { "h2": "Why a simple calendar check is not enough" },
+    {
+      "p": "A booking page that only checks availability when it shows the slot can still fail. If two people open the same slot and both press confirm, each check passes. The real protection is a second check at the moment of confirmation, on the server, and ideally a database rule that refuses overlapping bookings outright."
+    },
+    {
+      "p": "This is how Meeticulous handles it. Our booking flow validates the slot against your working hours, blocked dates, existing bookings and Google Calendar busy times, and the database itself carries an overlap constraint, which our code comments call \"the only hard double-booking guarantee\", as a final backstop. Hosts can also set buffer minutes between appointments. We wrote up the load-testing story in [two bookings, one slot](/blog/two-bookings-one-slot)."
+    },
+    {
+      "quote": "bookings_no_overlap exclusion constraint (the only hard double-booking guarantee)",
+      "cite": "Comment in the Meeticulous booking controller"
+    },
+    {
+      "info": {
+        "title": "Intentional double booking",
+        "text": "Doctors' offices sometimes overbook on purpose, betting that some patients will not turn up. In one family medicine clinic case study, 32 of 1,074 appointments in the study week were double booked, against an average no-show rate of 23.2% ([PMC case study](https://pmc.ncbi.nlm.nih.gov/articles/PMC10408698/)). If you do this, cap the number of overlaps, tell clients about the possible wait, and track your real no-show rate. For one-to-one coaching, tutoring or therapy, it rarely pays."
+      }
+    },
+    { "h2": "A quick checklist" },
+    {
+      "ul": [
+        "One booking link, shared everywhere clients find you.",
+        "Calendar sync on, with your personal calendar included.",
+        "Buffer time set between sessions.",
+        "A daily or weekly booking cap that fits your energy.",
+        "Reminders on, and a [cancellation or reschedule message](/blog/appointment-cancellation-reschedule-message) ready for the day plans change."
+      ]
+    },
+    { "h2": "Frequently asked questions" },
+    {
+      "faq": [
+        {
+          "q": "What does double booking mean?",
+          "a": "Double booking means two appointments or meetings are scheduled for the same time slot, so one person, room or resource is committed twice. It usually comes from manual entry or calendars that do not sync."
+        },
+        {
+          "q": "How do I stop double booking on my calendar?",
+          "a": "Use one booking link, turn on two-way calendar sync, add buffer time between sessions and set limits on bookings per slot or day. Together these remove the common causes: manual entry, unsynced calendars and overruns."
+        },
+        {
+          "q": "Is double booking ever acceptable?",
+          "a": "Some medical offices double book on purpose to cover expected no-shows. It works only when you track the no-show rate and warn clients about possible waits. For one-to-one services it usually damages trust."
+        },
+        {
+          "q": "Does Google Calendar sync prevent double booking?",
+          "a": "Two-way sync prevents most double booking because the booking tool sees your busy times and removes those slots. A server-side check at confirmation covers the rare case of two people booking at the same moment."
+        }
+      ]
+    }
+  ]
+},
+{
   "slug": "start-private-practice-psychologist-india",
   "title": "How to Start Private Practice as a Psychologist in India",
   "date": "Oct 31, 2026",
