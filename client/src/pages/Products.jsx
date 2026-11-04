@@ -298,7 +298,7 @@ const Products = () => {
                 </div>
                 <h3 className="mb-1 font-display font-bold text-maroon">Unlock Digital Products</h3>
                 <p className="mb-4 text-sm text-muted">
-                  Sell PDFs, templates, ebooks and resources right from your profile — upgrade to {upgradePlan ? planLabel(upgradePlan.slug, upgradePlan.name) : "Pro"} to list your first product.
+                  Sell PDFs, templates, ebooks and resources right from your profile — unlock it to list and sell your first product.
                 </p>
                 <Link to="/dashboard/upgrade" className={buttonClasses({ variant: "primary" })}>
                   {upgradePlan ? `Upgrade to ${planLabel(upgradePlan.slug, upgradePlan.name)}` : "Upgrade to unlock"}
