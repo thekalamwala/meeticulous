@@ -162,6 +162,7 @@ describe('GET /api/agents/reports/finance auth', () => {
   app.use('/api/agents/reports', require('../../routes/agentReportRoutes'));
   const GOOD = 'x'.repeat(40);
   afterEach(() => { delete process.env.AGENT_REPORT_TOKEN; });
+  beforeEach(() => { delete process.env.AGENT_REPORT_TOKEN; });
 
   test('fail-closed: unset or short token → 503', async () => {
     await request(app).get('/api/agents/reports/finance').set('x-agent-token', 'anything').expect(503);
