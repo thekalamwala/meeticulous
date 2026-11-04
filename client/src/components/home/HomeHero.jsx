@@ -72,7 +72,7 @@ export default function HomeHero({ onStart, loading }) {
               className="flex w-full max-w-[34rem] flex-col gap-2 rounded-[16px] bg-white p-1.5 ring-2 ring-white/30 focus-within:ring-[3px] focus-within:ring-pink sm:flex-row sm:items-center"
             >
               <label htmlFor="hero-slug" className="flex min-w-0 flex-1 items-center px-3 py-2 text-sm sm:text-base">
-                <span className="flex-shrink-0 text-neutral-500">meeticulous.com/</span>
+                <span className="flex-shrink-0 text-neutral-600">meeticulous.com/</span>
                 <input
                   id="hero-slug"
                   value={slug}
