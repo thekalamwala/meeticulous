@@ -481,7 +481,6 @@ const TEMPLATES = [
     html_content:
       h('{{gift_headline}}, {{first_name}}') +
       lead('You now have <strong>Pro</strong> for <strong>{{tenure}}</strong>, on me. No card, no catch. It runs until <strong>{{end_date}}</strong>.') +
-      C.infoCard(t, [['Plan', 'Pro (Gifted)'], ['Free for', '{{tenure}}'], ['Ends on', '{{end_date}}']]) +
       lead('{{gift_note}}') +
       lead('Every Pro feature is switched on: 0% commission on bookings, every reminder flow, the full CRM and unlimited AI help.') +
       note('When the gift ends you go back to Starter. Your services, bookings and clients stay exactly as they are.') +
