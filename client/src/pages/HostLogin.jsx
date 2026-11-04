@@ -5,6 +5,7 @@ import AuthBrandPanel from "../components/auth/AuthBrandPanel";
 import AuthMobilePattern from "../components/auth/AuthMobilePattern";
 import Seo from "../components/common/Seo";
 import toast from "react-hot-toast";
+import ContinueWithLinkedIn, { useLinkedinEnabled } from "../components/ContinueWithLinkedIn";
 
 // /login-as-vendor — the host login door. Hosts authenticate with Google only
 // (one consent screen grants identity + calendar). Kept strictly host-focused:
@@ -17,6 +18,10 @@ const ERROR_COPY = {
   auth_failed: "Google sign-in failed. Please try again.",
   cancelled: "Google sign-in was cancelled.",
   signin_needed: "You're all set! Please sign in to continue.",
+  calendar_account: "This Google account is connected as a calendar to an existing host. Sign in with LinkedIn instead.",
+  email_has_account: "This email already has a host account. Sign in with Google.",
+  linkedin_off: "LinkedIn sign-in isn't available right now.",
+  email_unverified: "Verify the email on your LinkedIn account, then try again.",
   no_email: "Google did not share an email address. Check your account permissions.",
 };
 
@@ -73,6 +78,7 @@ const HostLogin = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [busy, setBusy] = useState(false);
+  const linkedinOn = useLinkedinEnabled();
 
   // Dual login. This is the HOST door. If a session already exists:
   //  - already in host space (hosting / superadmin) → nothing to do, go to
@@ -141,7 +147,14 @@ const HostLogin = () => {
           {busy ? "Opening Google…" : "Continue with Google"}
         </button>
 
-        <SoonBtn icon={<LinkedInIcon />} label="Continue with LinkedIn" />
+        {linkedinOn ? (
+          <>
+            <ContinueWithLinkedIn intent="login" />
+            <p className="mt-3 text-xs text-muted">Already a host? Use the same option you signed up with.</p>
+          </>
+        ) : (
+          <SoonBtn icon={<LinkedInIcon />} label="Continue with LinkedIn" />
+        )}
         <SoonBtn icon={<MailIcon />} label="Continue with email" />
 
         <ul className="mt-6 space-y-2 text-left text-xs text-muted">

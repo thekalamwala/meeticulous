@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import Reveal from "./Reveal";
+import ContinueWithLinkedIn from "../ContinueWithLinkedIn";
 import { cleanSlug, saveHeroSlug } from "../../utils/heroSlug";
 
 /* Homepage hero — owner reference (2026-11-02): full-screen crimson block, copy
@@ -90,6 +91,7 @@ export default function HomeHero({ onStart, loading }) {
                 {!loading && <ArrowRight size={16} />}
               </button>
             </form>
+            <ContinueWithLinkedIn intent="signup" className="btn mt-3 flex w-full max-w-[34rem] items-center justify-center gap-3 rounded-full border border-white/40 bg-transparent py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90" />
             <p className="mt-3 flex max-w-[34rem] items-start gap-2 text-xs leading-relaxed text-white/75">
               <span aria-hidden className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full" style={{ background: RIBBON }} />
               <span>
