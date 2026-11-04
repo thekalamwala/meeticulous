@@ -53,6 +53,7 @@ import ToolLogo from './toolLogos';
 import razorpayLogo from '../enterprise-v2/assets/logo/razorpay.png';
 import OperatorCredit from '../../components/common/OperatorCredit';
 import PageGuides from '../../components/common/PageGuides';
+import ForFaqIntro from '../../components/common/ForFaqIntro';
 
 const START = '/become-a-host';      // real host signup funnel
 const LOGIN = '/login-as-vendor'; // host login (Google-only door)
@@ -239,10 +240,7 @@ function FaqAccordion() {
     );
   };
   return (
-    <div className="grid items-start gap-3 sm:grid-cols-2 sm:gap-4">
-      <div className="space-y-3">{FAQ.map((f, i) => (i % 2 === 0 ? renderItem(f, i) : null))}</div>
-      <div className="space-y-3">{FAQ.map((f, i) => (i % 2 === 1 ? renderItem(f, i) : null))}</div>
-    </div>
+    <div className="space-y-3">{FAQ.map((f, i) => renderItem(f, i))}</div>
   );
 }
 
@@ -494,6 +492,11 @@ export default function Physiotherapists() {
               </div>
             </div>
           ))}
+          <Reveal delay={0.1} className="mt-10 text-center">
+            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+              Explore All Features <ArrowRight size={16} />
+            </Link>
+          </Reveal>
         </div>
       </section>
 
@@ -641,22 +644,6 @@ export default function Physiotherapists() {
         </div>
       </section>
 
-      {/* ═══════════════ 9 · TRUST (auto-ticker of verifiable facts) ═══════════════ */}
-      <section className="overflow-hidden py-6" style={{ background: 'var(--ca-ink)' }} aria-label="Security & trust">
-        <div className="flex w-max">
-          <div className="physio-mx flex items-center gap-10 pr-10">
-            {[...TRUST_STRIP, ...TRUST_STRIP, ...TRUST_STRIP].map((s, i) => (
-              <span key={i} className="flex flex-shrink-0 items-center gap-2.5 text-sm text-white/80">
-                <s.icon size={16} style={{ color: 'var(--ca-lime)' }} />
-                <span className="font-bold text-white">{s.value}</span>
-                <span className="text-white/50">— {s.label}</span>
-                <span aria-hidden className="ml-6 h-1 w-1 rounded-full bg-white/25" />
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ═══════════════ 10 · PRICING (horizontal plan bars) ═══════════════ */}
       <section id="pricing" className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-5xl">
@@ -775,6 +762,11 @@ export default function Physiotherapists() {
                 </div>
               ))}
             </Reveal>
+            <Reveal delay={0.16} className="mt-8">
+              <Link to="/about" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+                Know More About Us <ArrowRight size={16} />
+              </Link>
+            </Reveal>
           </div>
         </div>
       </section>
@@ -783,11 +775,14 @@ export default function Physiotherapists() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-5xl">
-          <Reveal as="h2" className="text-center font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-            Questions? <span style={{ color: 'var(--ca-primary)' }}>We&apos;ve got answers.</span>
-          </Reveal>
-          <div className="mt-12"><FaqAccordion /></div>
+        <div className="mx-auto grid max-w-6xl items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+          <div className="text-center lg:sticky lg:top-28 lg:text-left lg:[&_.text-center]:text-left lg:[&_.mx-auto]:mx-0">
+            <Reveal as="h2" className="text-center font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
+              Questions? <span style={{ color: 'var(--ca-primary)' }}>We&apos;ve got answers.</span>
+            </Reveal>
+            <ForFaqIntro accent="var(--ca-accent, var(--ca-primary))" />
+          </div>
+          <div className="min-w-0"><FaqAccordion /></div>
         </div>
       </section>
 

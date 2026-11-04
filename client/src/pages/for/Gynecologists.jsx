@@ -48,6 +48,7 @@ import ToolLogo from './toolLogos';
 import razorpayLogo from '../enterprise-v2/assets/logo/razorpay.png';
 import OperatorCredit from '../../components/common/OperatorCredit';
 import PageGuides from '../../components/common/PageGuides';
+import ForFaqIntro from '../../components/common/ForFaqIntro';
 
 const START = '/become-a-host';
 const LOGIN = '/login-as-vendor';
@@ -222,10 +223,7 @@ function FaqAccordion() {
     );
   };
   return (
-    <div className="grid items-start gap-3 sm:grid-cols-2 sm:gap-4">
-      <div className="space-y-3">{FAQ.map((f, i) => (i % 2 === 0 ? renderItem(f, i) : null))}</div>
-      <div className="space-y-3">{FAQ.map((f, i) => (i % 2 === 1 ? renderItem(f, i) : null))}</div>
-    </div>
+    <div className="space-y-3">{FAQ.map((f, i) => renderItem(f, i))}</div>
   );
 }
 
@@ -447,6 +445,11 @@ export default function Gynecologists() {
               </Reveal>
             ))}
           </div>
+          <Reveal delay={0.1} className="mt-10 text-center">
+            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+              Explore All Features <ArrowRight size={16} />
+            </Link>
+          </Reveal>
         </div>
       </section>
 
@@ -527,19 +530,6 @@ export default function Gynecologists() {
               </ul>
             </Reveal>
           </div>
-        </div>
-      </section>
-
-      {/* ═══════════════ 9 · TRUST (soft pill row) ═══════════════ */}
-      <section className="px-5 pb-8 sm:px-8" aria-label="Security & trust">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-3">
-          {TRUST_STRIP.map((s) => (
-            <span key={s.value} className="inline-flex items-center gap-2 rounded-full border border-black/[0.07] bg-white px-4 py-2 text-sm">
-              <s.icon size={15} style={{ color: 'var(--ca-primary)' }} />
-              <span className="font-bold text-[color:var(--ca-ink)]">{s.value}</span>
-              <span className="hidden text-slate-500 sm:inline">· {s.label}</span>
-            </span>
-          ))}
         </div>
       </section>
 
@@ -645,6 +635,11 @@ export default function Gynecologists() {
                 </div>
               ))}
             </Reveal>
+            <Reveal delay={0.16} className="mt-8">
+              <Link to="/about" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+                Know More About Us <ArrowRight size={16} />
+              </Link>
+            </Reveal>
           </div>
         </div>
       </section>
@@ -653,11 +648,14 @@ export default function Gynecologists() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-cream)' }}>
-        <div className="mx-auto max-w-5xl">
-          <Reveal as="h2" className="text-center font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-            Questions? <span style={{ color: 'var(--ca-primary)' }}>We&apos;ve got answers.</span>
-          </Reveal>
-          <div className="mt-12"><FaqAccordion /></div>
+        <div className="mx-auto grid max-w-6xl items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+          <div className="text-center lg:sticky lg:top-28 lg:text-left lg:[&_.text-center]:text-left lg:[&_.mx-auto]:mx-0">
+            <Reveal as="h2" className="text-center font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
+              Questions? <span style={{ color: 'var(--ca-primary)' }}>We&apos;ve got answers.</span>
+            </Reveal>
+            <ForFaqIntro accent="var(--ca-accent, var(--ca-primary))" />
+          </div>
+          <div className="min-w-0"><FaqAccordion /></div>
         </div>
       </section>
 

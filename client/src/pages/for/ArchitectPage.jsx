@@ -53,6 +53,7 @@ import ToolLogo from './toolLogos';
 import razorpayLogo from '../enterprise-v2/assets/logo/razorpay.png';
 import OperatorCredit from '../../components/common/OperatorCredit';
 import PageGuides from '../../components/common/PageGuides';
+import ForFaqIntro from '../../components/common/ForFaqIntro';
 
 const START = '/become-a-host';
 const LOGIN = '/login-as-vendor';
@@ -305,10 +306,7 @@ function FaqAccordion() {
     );
   };
   return (
-    <div className="grid items-start gap-3 sm:grid-cols-2 sm:gap-4">
-      <div className="space-y-3">{FAQ.map((f, i) => (i % 2 === 0 ? renderItem(f, i) : null))}</div>
-      <div className="space-y-3">{FAQ.map((f, i) => (i % 2 === 1 ? renderItem(f, i) : null))}</div>
-    </div>
+    <div className="space-y-3">{FAQ.map((f, i) => renderItem(f, i))}</div>
   );
 }
 
@@ -849,7 +847,7 @@ export default function ArchitectPage() {
               ))}
             </Reveal>
             <Reveal delay={0.34} className="mt-8">
-              <CtaButton to="/about">Learn more about Meeticulous <ArrowRight size={16} /></CtaButton>
+              <CtaButton to="/about">Know More About Us <ArrowRight size={16} /></CtaButton>
             </Reveal>
           </div>
           <Reveal className="order-2">
@@ -868,13 +866,16 @@ export default function ArchitectPage() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-5xl">
-          <div className="text-center">
-            <Reveal as="h2" delay={0.04} className="mt-3 font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Questions? <span style={{ color: 'var(--ca-primary)' }}>We&apos;ve got answers.</span>
-            </Reveal>
+        <div className="mx-auto grid max-w-6xl items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+          <div className="text-center lg:sticky lg:top-28 lg:text-left lg:[&_.text-center]:text-left lg:[&_.mx-auto]:mx-0">
+            <div className="text-center">
+              <Reveal as="h2" delay={0.04} className="mt-3 font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
+                Questions? <span style={{ color: 'var(--ca-primary)' }}>We&apos;ve got answers.</span>
+              </Reveal>
+            </div>
+            <ForFaqIntro accent="var(--ca-accent, var(--ca-primary))" />
           </div>
-          <div className="mt-12"><FaqAccordion /></div>
+          <div className="min-w-0"><FaqAccordion /></div>
         </div>
       </section>
 

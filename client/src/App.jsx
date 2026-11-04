@@ -1,5 +1,5 @@
 import { Suspense, useState, useMemo, useEffect } from 'react';
-import { Routes, Route, useLocation, useParams, Navigate } from 'react-router-dom';
+import { Routes, Route, useLocation, useParams, Navigate, Outlet } from 'react-router-dom';
 import ChromeContext from './context/ChromeContext';
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/common/Navbar';
@@ -14,6 +14,7 @@ import GuestLayout from './components/common/GuestLayout';
 import AnalyticsBridge from './components/common/AnalyticsBridge';
 import ConsentBanner from './components/common/ConsentBanner';
 import ScrollToTop from './components/common/ScrollToTop';
+import ForHeroFit from './components/common/ForHeroFit';
 import RouteErrorBoundary from './components/common/RouteErrorBoundary';
 import PetalSpinner from './components/common/PetalSpinner';
 import { useAuth } from './context/AuthContext';
@@ -341,6 +342,13 @@ function AdminWrapper({ children }) {
   return <AdminLayout>{children}</AdminLayout>;
 }
 
+// /for/* marketing pages: tags them .for-page so their headings use the page's
+// own palette instead of the global maroon (index.css). display:contents keeps
+// the wrapper out of layout.
+function ForPageScope() {
+  return <div className="for-page" style={{ display: 'contents' }}><Outlet /></div>;
+}
+
 function BookingRedirect() {
   const { profileSlug } = useParams();
   return <Navigate to={`/${profileSlug}`} replace />;
@@ -433,6 +441,7 @@ function App() {
   return (
     <ChromeContext.Provider value={chromeValue}>
       <ScrollToTop />
+      <ForHeroFit />
       <Toaster position="top-right" />
       {/* Boundary wraps the whole chrome, not just <Routes>: a throw in Navbar,
           ConsentBanner or AnalyticsBridge is ABOVE the route content and would
@@ -718,6 +727,8 @@ function App() {
 
           {/* Profession marketing landing pages (/for/:profession) — sell BAS per profession. */}
           {/* Bespoke standalone /for pages must precede the :profession catch-all. */}
+          {/* ForPageScope tags them .for-page so headings keep each page's palette. */}
+          <Route element={<ForPageScope />}>
           <Route path="/for/astrologers" element={<Astrologers />} />
           <Route path="/for/architects" element={<ArchitectPage />} />
           <Route path="/for/dentists" element={<DentistPage />} />
@@ -738,6 +749,7 @@ function App() {
           <Route path="/for/salon" element={<SalonPage />} />
           <Route path="/for/veterinarians" element={<Veterinarians />} />
           <Route path="/for/:profession" element={<ProfessionLanding />} />
+          </Route>
 
           {/* Feature marketing pages (/features/:slug) — use the global Navbar + Footer */}
           {/* Bespoke feature pages precede the /features/:slug template */}

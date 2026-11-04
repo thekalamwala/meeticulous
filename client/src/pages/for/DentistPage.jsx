@@ -57,6 +57,7 @@ import ToolLogo from './toolLogos';
 import razorpayLogo from '../enterprise-v2/assets/logo/razorpay.png';
 import OperatorCredit from '../../components/common/OperatorCredit';
 import PageGuides from '../../components/common/PageGuides';
+import ForFaqIntro from '../../components/common/ForFaqIntro';
 
 const START = '/become-a-host';
 const LOGIN = '/login-as-vendor';
@@ -238,10 +239,7 @@ function FaqAccordion() {
     );
   };
   return (
-    <div className="grid items-start gap-3 sm:grid-cols-2 sm:gap-4">
-      <div className="space-y-3">{FAQ.map((f, i) => (i % 2 === 0 ? renderItem(f, i) : null))}</div>
-      <div className="space-y-3">{FAQ.map((f, i) => (i % 2 === 1 ? renderItem(f, i) : null))}</div>
-    </div>
+    <div className="space-y-3">{FAQ.map((f, i) => renderItem(f, i))}</div>
   );
 }
 
@@ -659,19 +657,6 @@ export default function DentistPage() {
         </div>
       </section>
 
-      {/* ═══════════════ 9 · TRUST (compact icon row) ═══════════════ */}
-      <section className="px-5 py-12 sm:px-8" aria-label="Security & trust">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-10 gap-y-5">
-          {TRUST_STRIP.map((s) => (
-            <span key={s.value} className="flex items-center gap-2.5">
-              <s.icon size={18} style={{ color: 'var(--ca-primary)' }} />
-              <span className="text-sm font-bold text-[color:var(--ca-ink)]">{s.value}</span>
-              <span className="hidden text-xs text-slate-500 sm:inline">· {s.label}</span>
-            </span>
-          ))}
-        </div>
-      </section>
-
       {/* ═══════════════ 10 · PRICING (two clean cards, sky header strip) ═══════════════ */}
       <section id="pricing" className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-4xl">
@@ -788,7 +773,7 @@ export default function DentistPage() {
               ))}
             </Reveal>
             <Reveal delay={0.16} className="mt-8">
-              <Link to="/about" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>Learn More About Us <ArrowRight size={16} /></Link>
+              <Link to="/about" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>Know More About Us <ArrowRight size={16} /></Link>
             </Reveal>
           </div>
         </div>
@@ -798,11 +783,14 @@ export default function DentistPage() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-5xl">
-          <Reveal as="h2" className="text-center font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-            Questions? <span style={{ color: 'var(--ca-primary)' }}>We&apos;ve got answers.</span>
-          </Reveal>
-          <div className="mt-12"><FaqAccordion /></div>
+        <div className="mx-auto grid max-w-6xl items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+          <div className="text-center lg:sticky lg:top-28 lg:text-left lg:[&_.text-center]:text-left lg:[&_.mx-auto]:mx-0">
+            <Reveal as="h2" className="text-center font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
+              Questions? <span style={{ color: 'var(--ca-primary)' }}>We&apos;ve got answers.</span>
+            </Reveal>
+            <ForFaqIntro accent="var(--ca-accent, var(--ca-primary))" />
+          </div>
+          <div className="min-w-0"><FaqAccordion /></div>
         </div>
       </section>
 

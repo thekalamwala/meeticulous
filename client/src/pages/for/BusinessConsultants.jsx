@@ -39,7 +39,7 @@ import {
   BadgePercent, Lock, Zap, Share2,
 } from 'lucide-react';
 import Reveal from '../../components/home/Reveal';
-import { Briefcase as BriefcaseArt, TrendingUp as TrendingUpArt, Handshake as HandshakeArt } from 'lucide-react';
+import { Briefcase as BriefcaseArt } from 'lucide-react';
 import IconArt from '../../components/common/IconArt';
 import Seo from '../../components/common/Seo';
 import useLenis from '../../hooks/useLenis';
@@ -52,6 +52,7 @@ import ToolLogo from './toolLogos';
 import razorpayLogo from '../enterprise-v2/assets/logo/razorpay.png';
 import OperatorCredit from '../../components/common/OperatorCredit';
 import PageGuides from '../../components/common/PageGuides';
+import ForFaqIntro from '../../components/common/ForFaqIntro';
 
 const START = '/become-a-host';      // real host signup funnel
 const LOGIN = '/login-as-vendor'; // host login (Google-only door)
@@ -482,10 +483,7 @@ function FaqAccordion() {
     );
   };
   return (
-    <div className="grid items-start gap-3 sm:grid-cols-2 sm:gap-4">
-      <div className="space-y-3">{FAQ.map((f, i) => (i % 2 === 0 ? renderItem(f, i) : null))}</div>
-      <div className="space-y-3">{FAQ.map((f, i) => (i % 2 === 1 ? renderItem(f, i) : null))}</div>
-    </div>
+    <div className="space-y-3">{FAQ.map((f, i) => renderItem(f, i))}</div>
   );
 }
 
@@ -702,7 +700,7 @@ export default function BusinessConsultants() {
             <IntegrationHub />
           </div>
           <Reveal delay={0.1} className="mt-12 text-center">
-            <Link to={START} className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -750,57 +748,6 @@ export default function BusinessConsultants() {
               </Link>
             </div>
           </Reveal>
-        </div>
-      </section>
-
-      {/* ═══════════════ 9 · WHY Meeticulous (alternating text + visual) ═══════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-6xl space-y-20 lg:space-y-28">
-          {/* row 1 — text left, visual right */}
-          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-            <div className="text-center lg:text-left">
-              <Reveal as="h2" className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-                Look as professional as your advice.
-              </Reveal>
-              <Reveal as="p" delay={0.06} className="mt-5 text-base leading-relaxed text-neutral-600">
-                A clean, branded booking page tells a prospect you run a serious practice. They pick a slot, pay upfront and receive an automatic confirmation — no chasing, no awkward invoicing after the call.
-              </Reveal>
-              <ul className="mx-auto mt-6 flex max-w-sm flex-col gap-3 lg:mx-0">
-                {['Branded page with your services & fees', 'Upfront payment before every session', 'Automatic GST invoices'].map((t) => (
-                  <li key={t} className="flex items-start gap-2.5 text-sm text-neutral-600">
-                    <Check size={16} className="mt-0.5 shrink-0" style={{ color: 'var(--ca-accent)' }} /> <span>{t}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <Reveal delay={0.08} className="relative mx-auto w-full max-w-md">
-              <div aria-hidden className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#1E293B]/10 blur-3xl" />
-              <IconArt icon={TrendingUpArt} className="relative z-10 mx-auto aspect-[4/3] w-full max-w-sm" />
-            </Reveal>
-          </div>
-
-          {/* row 2 — visual left, text right */}
-          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-            <Reveal delay={0.08} className="relative order-2 mx-auto w-full max-w-md lg:order-1">
-              <div aria-hidden className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#B45309]/12 blur-3xl" />
-              <IconArt icon={HandshakeArt} className="relative z-10 mx-auto aspect-[4/3] w-full max-w-sm" />
-            </Reveal>
-            <div className="order-1 text-center lg:order-2 lg:text-left">
-              <Reveal as="h2" className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-                Spend your time on clients, not coordination.
-              </Reveal>
-              <Reveal as="p" delay={0.06} className="mt-5 text-base leading-relaxed text-neutral-600">
-                Reminders go out on their own, your calendar stays conflict-free, and every client&apos;s history sits in one dashboard. The admin that used to eat your mornings simply disappears.
-              </Reveal>
-              <ul className="mx-auto mt-6 flex max-w-sm flex-col gap-3 lg:mx-0">
-                {['Automatic WhatsApp & email reminders', 'Conflict-free, calendar-synced availability', 'Client CRM with notes & history'].map((t) => (
-                  <li key={t} className="flex items-start gap-2.5 text-sm text-neutral-600">
-                    <Check size={16} className="mt-0.5 shrink-0" style={{ color: 'var(--ca-accent)' }} /> <span>{t}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -985,13 +932,16 @@ export default function BusinessConsultants() {
               ))}
             </Reveal>
 
-            <Reveal delay={0.16} className="mt-9">
+            <Reveal delay={0.16} className="mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-4 lg:justify-start">
               <Link
                 to={START}
                 className="inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] transition-opacity hover:opacity-90 hover:no-underline"
                 style={{ background: 'var(--ca-primary)' }}
               >
                 Start Your Practice on Meeticulous <ArrowRight size={16} />
+              </Link>
+              <Link to="/about" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+                Know More About Us <ArrowRight size={16} />
               </Link>
             </Reveal>
           </div>
@@ -1002,11 +952,14 @@ export default function BusinessConsultants() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-5xl">
-          <Reveal as="h2" className="text-center font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-            Questions? <span style={{ color: 'var(--ca-primary)' }}>We&apos;ve got answers.</span>
-          </Reveal>
-          <div className="mt-12"><FaqAccordion /></div>
+        <div className="mx-auto grid max-w-6xl items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+          <div className="text-center lg:sticky lg:top-28 lg:text-left lg:[&_.text-center]:text-left lg:[&_.mx-auto]:mx-0">
+            <Reveal as="h2" className="text-center font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
+              Questions? <span style={{ color: 'var(--ca-primary)' }}>We&apos;ve got answers.</span>
+            </Reveal>
+            <ForFaqIntro accent="var(--ca-accent, var(--ca-primary))" />
+          </div>
+          <div className="min-w-0"><FaqAccordion /></div>
         </div>
       </section>
 
