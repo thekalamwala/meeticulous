@@ -11,7 +11,7 @@ const MAX = 2000; // mirrors LIMITS.COMMENT in server/services/community/text.js
 // Reply box. `parent` = the comment being answered (null = the post itself). `focusTick`
 // bumps each time a Reply button is pressed so the box scrolls into view and takes focus.
 // `onCreated(comment)` receives the saved comment so the page can append it without a refetch.
-export default function CommentForm({ itemId, parent, focusTick = 0, onCreated, onCancel }) {
+export default function CommentForm({ itemId, parent, focusTick = 0, onCreated, onSettle, onCancel }) {
   const { user } = useAuth();
   const [guard, termsDialog] = useTermsGate();
   const [body, setBody] = useState('');
@@ -34,14 +34,37 @@ export default function CommentForm({ itemId, parent, focusTick = 0, onCreated, 
   const submit = async (e) => {
     e.preventDefault();
     if (!ready) return;
-    setBusy(true);
     setErr('');
+    const text = body.trim();
+    // Optimistic: drop the reply in now, reconcile with the server copy, roll back on failure.
+    const tempId = `temp-${Date.now()}`;
+    const temp = {
+      id: tempId,
+      body: text,
+      author: {
+        id: user?.id,
+        display_name: user?.name || 'You',
+        avatar_url: user?.profile_image || null,
+        role: user?.role || 'host',
+        badge: null,
+        profile_url: user?.username ? `/${user.username}` : null,
+      },
+      created_at: new Date().toISOString(),
+      like_count: 0,
+      viewer: { liked: false },
+      parent_id: parent?.id || null,
+      pending: true,
+    };
+    onCreated(temp);
+    setBody('');
+    setBusy(true);
     try {
-      const { comment } = await guard(() => createComment(itemId, { body: body.trim(), ...(parent && { parent_id: parent.id }) }));
+      const { comment } = await guard(() => createComment(itemId, { body: text, ...(parent && { parent_id: parent.id }) }));
       analytics.track(EVENTS.COMMUNITY_REPLY_CREATED, { item: itemId });
-      setBody('');
-      onCreated(comment);
+      onSettle?.(tempId, comment);
     } catch (e2) {
+      onSettle?.(tempId, null);
+      setBody(text); // restore the draft (covers terms-gate cancel too)
       if (!e2?.cancelled) {
         if (errCode(e2) === 'COMMUNITY_BANNED') setBanned(true);
         setErr(errorCopy(e2, user));
