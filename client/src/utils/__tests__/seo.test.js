@@ -1,5 +1,8 @@
 import { describe, test, expect } from 'vitest';
-import { resolveServiceSeo, resolveProfileSeo, resolveBlogSeo, serviceJsonLd, profileJsonLd, articleGraphJsonLd, professionGraphJsonLd, comparisonGraphJsonLd, toolAppJsonLd, definedTermSetJsonLd, glossaryTermJsonLd, cityForSeo } from '../seo';
+import { resolveServiceSeo, resolveProfileSeo, resolveBlogSeo, serviceGraphJsonLd, profileGraphJsonLd, productGraphJsonLd, articleGraphJsonLd, professionGraphJsonLd, comparisonGraphJsonLd, toolAppJsonLd, definedTermSetJsonLd, glossaryTermJsonLd, cityForSeo } from '../seo';
+
+// Pull a graph member by @type (the graph order is an implementation detail).
+const node = (ld, type) => ld['@graph'].find((n) => n['@type'] === type);
 
 const SITE = 'https://meeticulous.com';
 const VENDOR = { name: 'John Doe', username: 'john-doe', profile_image: 'https://img/john.jpg', is_verified: true };
@@ -121,84 +124,125 @@ describe('cityForSeo — normalize free-text location for titles', () => {
   });
 });
 
-describe('serviceJsonLd', () => {
-  test('emits a Service schema with provider + INR offer + canonical url', () => {
-    const ld = serviceJsonLd({
-      service: { title: 'Business Consultation', slug: 'business-consultation', short_description: 'A call.', price: 500 },
+describe('serviceGraphJsonLd', () => {
+  test('one @graph: Service (+ Offer, provider @id, booking channel) linked by @id', () => {
+    const ld = serviceGraphJsonLd({
+      service: { title: 'Business Consultation', slug: 'business-consultation', short_description: 'A call.', price: 500, duration: 30 },
       vendor: VENDOR, siteUrl: SITE,
     });
-    expect(ld['@type']).toBe('Service');
-    expect(ld.name).toBe('Business Consultation');
-    expect(ld.provider).toMatchObject({ '@type': 'Person', name: 'John Doe' });
-    expect(ld.offers).toMatchObject({ '@type': 'Offer', price: '500', priceCurrency: 'INR' });
-    expect(ld.url).toBe('https://meeticulous.com/john-doe/business-consultation');
+    expect(ld['@context']).toBe('https://schema.org');
+    const svc = node(ld, 'Service');
+    expect(svc['@id']).toBe('https://meeticulous.com/john-doe/business-consultation#service');
+    expect(svc.name).toBe('Business Consultation');
+    // provider is an @id ref resolving to the host Person stub in the same graph.
+    expect(svc.provider).toEqual({ '@id': 'https://meeticulous.com/john-doe#person' });
+    expect(node(ld, 'Person')).toEqual({ '@type': 'Person', '@id': 'https://meeticulous.com/john-doe#person', name: 'John Doe', url: 'https://meeticulous.com/john-doe' });
+    expect(svc.offers).toMatchObject({ '@type': 'Offer', price: '500', priceCurrency: 'INR' });
+    expect(svc.offers.eligibleDuration).toEqual({ '@type': 'QuantitativeValue', value: 30, unitCode: 'MIN' });
+    expect(svc.availableChannel.serviceUrl).toBe('https://meeticulous.com/john-doe/booking/business-consultation');
   });
 
-  test('price_on_request omits the numeric price from the Offer (never leak the fee)', () => {
-    const ld = serviceJsonLd({
-      service: { title: 'Tax Filing', slug: 'tax-filing', price: 5000, price_on_request: true },
-      vendor: VENDOR, siteUrl: SITE,
-    });
-    expect(ld.offers.price).toBeUndefined();
-    expect(ld.offers).toMatchObject({ '@type': 'Offer', priceCurrency: 'INR' });
+  test('areaServed: in-person → City, online → Country India', () => {
+    const offline = serviceGraphJsonLd({ service: { title: 'X', slug: 'x', price: 0, meeting_mode: 'offline' }, vendor: { ...VENDOR, location: 'Nagpur, MH' }, siteUrl: SITE });
+    expect(node(offline, 'Service').areaServed).toEqual({ '@type': 'City', name: 'Nagpur' });
+    const online = serviceGraphJsonLd({ service: { title: 'X', slug: 'x', price: 0, meeting_mode: 'online' }, vendor: { ...VENDOR, location: 'Nagpur, MH' }, siteUrl: SITE });
+    expect(node(online, 'Service').areaServed).toEqual({ '@type': 'Country', name: 'India' });
   });
 
-  test('includes aggregateRating only when there are reviews', () => {
-    const withReviews = serviceJsonLd({ service: { title: 'X', slug: 'x', price: 0 }, vendor: VENDOR, siteUrl: SITE, avgRating: 4.5, reviewCount: 12 });
-    expect(withReviews.aggregateRating).toMatchObject({ '@type': 'AggregateRating', ratingValue: 4.5, reviewCount: 12 });
-    const noReviews = serviceJsonLd({ service: { title: 'X', slug: 'x', price: 0 }, vendor: VENDOR, siteUrl: SITE, reviewCount: 0 });
-    expect(noReviews.aggregateRating).toBeUndefined();
+  test('price_on_request omits price + currency from the Offer (never leak the fee)', () => {
+    const ld = serviceGraphJsonLd({ service: { title: 'Tax Filing', slug: 'tax-filing', price: 5000, price_on_request: true }, vendor: VENDOR, siteUrl: SITE });
+    const offers = node(ld, 'Service').offers;
+    expect(offers.price).toBeUndefined();
+    expect(offers.priceCurrency).toBeUndefined();
+    expect(offers).toMatchObject({ '@type': 'Offer', availability: 'https://schema.org/InStock' });
+  });
+
+  test('aggregateRating (with bestRating/worstRating) only when there are reviews', () => {
+    const withReviews = serviceGraphJsonLd({ service: { title: 'X', slug: 'x', price: 0 }, vendor: VENDOR, siteUrl: SITE, avgRating: 4.5, reviewCount: 12 });
+    expect(node(withReviews, 'Service').aggregateRating).toEqual({ '@type': 'AggregateRating', ratingValue: 4.5, reviewCount: 12, bestRating: 5, worstRating: 1 });
+    const noReviews = serviceGraphJsonLd({ service: { title: 'X', slug: 'x', price: 0 }, vendor: VENDOR, siteUrl: SITE, reviewCount: 0 });
+    expect(node(noReviews, 'Service')).not.toHaveProperty('aggregateRating');
+  });
+
+  test('FAQPage member only when the caller passes FAQs', () => {
+    const none = serviceGraphJsonLd({ service: { title: 'X', slug: 'x', price: 0 }, vendor: VENDOR, siteUrl: SITE });
+    expect(node(none, 'FAQPage')).toBeUndefined();
+    const some = serviceGraphJsonLd({ service: { title: 'X', slug: 'x', price: 0 }, vendor: VENDOR, siteUrl: SITE, faqs: [{ q: 'Q?', a: 'A.' }] });
+    expect(node(some, 'FAQPage').mainEntity).toHaveLength(1);
   });
 });
 
-describe('profileJsonLd', () => {
-  test('emits a ProfilePage with a Person main entity', () => {
-    const ld = profileJsonLd({ host: { name: 'John Doe', username: 'john-doe', profession: 'Consultant' }, siteUrl: SITE });
-    expect(ld['@type']).toBe('ProfilePage');
-    expect(ld.mainEntity).toMatchObject({ '@type': 'Person', name: 'John Doe', url: 'https://meeticulous.com/john-doe' });
+describe('profileGraphJsonLd', () => {
+  const run = (host, extra = {}) => profileGraphJsonLd({ host, siteUrl: SITE, ...extra });
+
+  test('one @graph: ProfilePage → Person (@id), WebSite + Organization present', () => {
+    const ld = run({ name: 'John Doe', username: 'john-doe', profession: 'Consultant' });
+    const page = node(ld, 'ProfilePage');
+    expect(page['@id']).toBe('https://meeticulous.com/john-doe');
+    expect(page.mainEntity).toEqual({ '@id': 'https://meeticulous.com/john-doe#person' });
+    expect(page.publisher).toEqual({ '@id': 'https://meeticulous.com/#organization' });
+    expect(node(ld, 'Organization')['@id']).toBe('https://meeticulous.com/#organization');
+    expect(node(ld, 'WebSite')['@id']).toBe('https://meeticulous.com/#website');
+    expect(node(ld, 'Person')).toMatchObject({ '@type': 'Person', '@id': 'https://meeticulous.com/john-doe#person', name: 'John Doe' });
   });
-  test('adds publisher Organization, hasOccupation, and knowsAbout from profession + categories', () => {
-    const ld = profileJsonLd({
-      host: {
-        name: 'John Doe', username: 'john-doe', profession: 'Startup Advisor',
-        primary_category: 'startup-advisor', categories: ['startup-advisor', 'business_consultant'],
-      },
-      siteUrl: SITE,
-    });
-    expect(ld.publisher).toEqual({ '@type': 'Organization', name: 'Meeticulous', url: 'https://meeticulous.com' });
-    expect(ld.mainEntity.hasOccupation).toEqual({
-      '@type': 'Occupation', name: 'Startup Advisor', occupationalCategory: 'Startup Advisor',
-    });
-    // humanized + deduped (primary_category also appears in categories)
-    expect(ld.mainEntity.knowsAbout).toEqual(['Startup Advisor', 'Business Consultant']);
+
+  test('hasOccupation + knowsAbout from profession + categories (humanized, deduped)', () => {
+    const ld = run({ name: 'John Doe', username: 'john-doe', profession: 'Startup Advisor', primary_category: 'startup-advisor', categories: ['startup-advisor', 'business_consultant'] });
+    const person = node(ld, 'Person');
+    expect(person.hasOccupation).toEqual({ '@type': 'Occupation', name: 'Startup Advisor', occupationalCategory: 'Startup Advisor' });
+    expect(person.knowsAbout).toEqual(['Startup Advisor', 'Business Consultant']);
   });
-  test('omits hasOccupation / knowsAbout when profession + categories are absent', () => {
-    const ld = profileJsonLd({ host: { name: 'J', username: 'j' }, siteUrl: SITE });
-    expect(ld.mainEntity).not.toHaveProperty('hasOccupation');
-    expect(ld.mainEntity).not.toHaveProperty('knowsAbout');
-    expect(ld.publisher).toMatchObject({ '@type': 'Organization', name: 'Meeticulous' });
+
+  test('omits hasOccupation / knowsAbout when profession + categories absent', () => {
+    const person = node(run({ name: 'J', username: 'j' }), 'Person');
+    expect(person).not.toHaveProperty('hasOccupation');
+    expect(person).not.toHaveProperty('knowsAbout');
   });
-  test('adds sameAs (http socials only) + dateModified when present', () => {
-    const ld = profileJsonLd({
-      host: {
-        name: 'John Doe', username: 'john-doe', updated_at: '2026-09-01T10:00:00.000Z',
-        social_links: { instagram: 'https://instagram.com/j', website: '', email: 'j@x.com', whatsapp: '9' },
-      },
-      siteUrl: SITE,
-    });
-    expect(ld.mainEntity.sameAs).toEqual(['https://instagram.com/j']);
-    expect(ld.dateModified).toBe('2026-09-01T10:00:00.000Z');
+
+  test('workLocation (city + IN) only when the host has an in-person service', () => {
+    const online = run({ name: 'J', username: 'j', location: 'Nagpur, MH' }, { services: [{ title: 'A', slug: 'a', meeting_mode: 'online' }] });
+    expect(node(online, 'Person')).not.toHaveProperty('workLocation');
+    const offline = run({ name: 'J', username: 'j', location: 'Nagpur, MH' }, { services: [{ title: 'A', slug: 'a', meeting_mode: 'offline' }] });
+    expect(node(offline, 'Person').workLocation).toEqual({ '@type': 'Place', address: { '@type': 'PostalAddress', addressLocality: 'Nagpur', addressCountry: 'IN' } });
   });
-  test('omits sameAs / dateModified when socials blank and no updated_at', () => {
-    const ld = profileJsonLd({ host: { name: 'J', username: 'j', social_links: {} }, siteUrl: SITE });
-    expect(ld.mainEntity).not.toHaveProperty('sameAs');
-    expect(ld).not.toHaveProperty('dateModified');
+
+  test('makesOffer carries price + a service @id ref; omits price on price-on-request', () => {
+    const ld = run({ name: 'J', username: 'j' }, { services: [
+      { title: 'Paid', slug: 'paid', price: 1500 },
+      { title: 'POR', slug: 'por', price_on_request: true },
+    ] });
+    const offers = node(ld, 'Person').makesOffer;
+    expect(offers[0]).toEqual({ '@type': 'Offer', price: '1500', priceCurrency: 'INR', url: 'https://meeticulous.com/j/paid', itemOffered: { '@id': 'https://meeticulous.com/j/paid#service' } });
+    expect(offers[1].price).toBeUndefined();
+    expect(offers[1].itemOffered).toEqual({ '@id': 'https://meeticulous.com/j/por#service' });
   });
-  test('emits aggregateRating from the host own rating, omits it at zero', () => {
-    const withRating = profileJsonLd({ host: { name: 'J', username: 'j' }, siteUrl: SITE, rating: { avg: 4.8, count: 12 } });
-    expect(withRating.mainEntity.aggregateRating).toEqual({ '@type': 'AggregateRating', ratingValue: 4.8, reviewCount: 12 });
-    const noRating = profileJsonLd({ host: { name: 'J', username: 'j' }, siteUrl: SITE, rating: { avg: 0, count: 0 } });
-    expect(noRating.mainEntity).not.toHaveProperty('aggregateRating');
+
+  test('sameAs (http socials only) on Person + dateModified on ProfilePage', () => {
+    const ld = run({ name: 'J', username: 'j', updated_at: '2026-09-01T10:00:00.000Z', social_links: { instagram: 'https://instagram.com/j', website: '', email: 'j@x.com', whatsapp: '9' } });
+    expect(node(ld, 'Person').sameAs).toEqual(['https://instagram.com/j']);
+    expect(node(ld, 'ProfilePage').dateModified).toBe('2026-09-01T10:00:00.000Z');
+  });
+
+  test('aggregateRating with bestRating/worstRating from the host own rating; omits at zero', () => {
+    expect(node(run({ name: 'J', username: 'j' }, { rating: { avg: 4.8, count: 12 } }), 'Person').aggregateRating)
+      .toEqual({ '@type': 'AggregateRating', ratingValue: 4.8, reviewCount: 12, bestRating: 5, worstRating: 1 });
+    expect(node(run({ name: 'J', username: 'j' }, { rating: { avg: 0, count: 0 } }), 'Person')).not.toHaveProperty('aggregateRating');
+  });
+
+  test('FAQPage member only when the caller passes FAQs', () => {
+    expect(node(run({ name: 'J', username: 'j' }), 'FAQPage')).toBeUndefined();
+    expect(node(run({ name: 'J', username: 'j' }, { faqs: [{ q: 'Q?', a: 'A.' }] }), 'FAQPage').mainEntity).toHaveLength(1);
+  });
+});
+
+describe('productGraphJsonLd', () => {
+  test('Product + Offer + brand @id ref; no aggregateRating', () => {
+    const ld = productGraphJsonLd({ username: 'john-doe', siteUrl: SITE, product: { id: 'p1', title: 'Checklist', description: 'A PDF.', price: 299, thumbnail_url: 'https://img/c.webp' } });
+    const prod = node(ld, 'Product');
+    expect(prod['@id']).toBe('https://meeticulous.com/john-doe/product/p1#product');
+    expect(prod.brand).toEqual({ '@id': 'https://meeticulous.com/john-doe#person' });
+    expect(prod.offers).toEqual({ '@type': 'Offer', price: '299', priceCurrency: 'INR', availability: 'https://schema.org/InStock', url: 'https://meeticulous.com/john-doe/product/p1' });
+    expect(prod).not.toHaveProperty('aggregateRating');
   });
 });
 

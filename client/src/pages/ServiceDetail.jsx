@@ -12,7 +12,7 @@ import ErrorPage from './ErrorPage';
 import TransientError from '../components/error/TransientError';
 import { isNotFoundError } from '../utils/fetchError';
 import { useMinimalFooter } from '../context/ChromeContext';
-import { resolveServiceSeo, serviceJsonLd, breadcrumbJsonLd, faqJsonLd, SITE_URL } from '../utils/seo';
+import { resolveServiceSeo, serviceGraphJsonLd, SITE_URL } from '../utils/seo';
 import { serviceFaqs } from '../utils/serviceFaqs';
 import PetalSpinner from '../components/common/PetalSpinner';
 import { prerendered } from '../services/prerenderData';
@@ -850,17 +850,10 @@ export default function ServiceDetail() {
 
   // Admin-managed SEO → head tags + Service JSON-LD (canonical derived from URL).
   const seo = resolveServiceSeo({ service, vendor, siteUrl: SEO_SITE });
-  const jsonLd = [
-    serviceJsonLd({ service, vendor, siteUrl: SEO_SITE, avgRating: rating, reviewCount }),
-    breadcrumbJsonLd({ items: [
-      { name: 'Home', path: '/' },
-      { name: vendor.name || vendor.username, path: `/${vendor.username}` },
-      { name: service.title, path: `/${vendor.username}/${service.slug}` },
-    ], siteUrl: SEO_SITE }),
-    ...(faqs.length
-      ? [faqJsonLd({ faqs: faqs.map(f => ({ q: f.question, a: f.answer })) })]
-      : []),
-  ];
+  const jsonLd = [serviceGraphJsonLd({
+    service, vendor, siteUrl: SEO_SITE, avgRating: rating, reviewCount,
+    faqs: faqs.length ? faqs.map(f => ({ q: f.question, a: f.answer })) : [],
+  })];
 
   // Scrolling sections (replaces tabs). Optional sections appear only when they
   // carry content, so no empty section/nav item is ever shown.

@@ -11,6 +11,10 @@ const {
   resolveProfileMeta, resolveServiceMeta, renderProfileMeta, renderServiceMeta,
 } = require('../../controllers/prerenderController');
 
+// jsonLd is now a single @graph (ProfilePage/Service + Person + Breadcrumb +
+// optional FAQPage), @id-linked — pull a member by @type.
+const gnode = (ld, type) => ld['@graph'].find((n) => n['@type'] === type);
+
 describe('resolveProfileMeta', () => {
   test('returns 200 with title/canonical/robots for a normal host', async () => {
     buildHostProfile.mockResolvedValueOnce({
@@ -54,9 +58,9 @@ describe('resolveProfileMeta', () => {
       },
     });
     const m = await resolveProfileMeta('jane');
-    const person = m.buildHtmlArgs.jsonLd.mainEntity;
+    const person = gnode(m.buildHtmlArgs.jsonLd, 'Person');
     expect(person.sameAs).toEqual(['https://instagram.com/jane', 'https://linkedin.com/in/jane']);
-    expect(m.buildHtmlArgs.jsonLd.dateModified).toBe('2026-09-01T10:00:00.000Z');
+    expect(gnode(m.buildHtmlArgs.jsonLd, 'ProfilePage').dateModified).toBe('2026-09-01T10:00:00.000Z');
   });
 
   test('JSON-LD carries publisher Org, hasOccupation + knowsAbout (mirrors client seo.js)', async () => {
@@ -71,12 +75,15 @@ describe('resolveProfileMeta', () => {
     });
     const m = await resolveProfileMeta('jane');
     const ld = m.buildHtmlArgs.jsonLd;
-    expect(ld.publisher).toEqual({ '@type': 'Organization', name: 'Meeticulous', url: expect.any(String) });
-    expect(ld.mainEntity.hasOccupation).toEqual({
+    const person = gnode(ld, 'Person');
+    // publisher is an @id ref to the Organization node present in the same graph.
+    expect(gnode(ld, 'ProfilePage').publisher).toEqual({ '@id': 'https://meeticulous.com/#organization' });
+    expect(gnode(ld, 'Organization')['@id']).toBe('https://meeticulous.com/#organization');
+    expect(person.hasOccupation).toEqual({
       '@type': 'Occupation', name: 'Startup Advisor', occupationalCategory: 'Startup Advisor',
     });
-    expect(ld.mainEntity.knowsAbout).toEqual(['Startup Advisor', 'Business Consultant']);
-    expect(ld.mainEntity).not.toHaveProperty('worksFor'); // never falsely employed by BAS
+    expect(person.knowsAbout).toEqual(['Startup Advisor', 'Business Consultant']);
+    expect(person).not.toHaveProperty('worksFor'); // never falsely employed by Meeticulous
   });
 
   test('no sameAs / dateModified keys when socials blank and no updated_at', async () => {
@@ -84,8 +91,8 @@ describe('resolveProfileMeta', () => {
       payload: { host: { username: 'jane', name: 'Jane', is_indexable: true, social_links: {} }, services: [] },
     });
     const m = await resolveProfileMeta('jane');
-    expect(m.buildHtmlArgs.jsonLd.mainEntity).not.toHaveProperty('sameAs');
-    expect(m.buildHtmlArgs.jsonLd).not.toHaveProperty('dateModified');
+    expect(gnode(m.buildHtmlArgs.jsonLd, 'Person')).not.toHaveProperty('sameAs');
+    expect(gnode(m.buildHtmlArgs.jsonLd, 'ProfilePage')).not.toHaveProperty('dateModified');
   });
 
   test('emits aggregateRating from the host OWN reviews when present', async () => {
@@ -98,8 +105,8 @@ describe('resolveProfileMeta', () => {
       },
     });
     const m = await resolveProfileMeta('jane');
-    expect(m.buildHtmlArgs.jsonLd.mainEntity.aggregateRating)
-      .toEqual({ '@type': 'AggregateRating', ratingValue: 4.7, reviewCount: 3 });
+    expect(gnode(m.buildHtmlArgs.jsonLd, 'Person').aggregateRating)
+      .toEqual({ '@type': 'AggregateRating', ratingValue: 4.7, reviewCount: 3, bestRating: 5, worstRating: 1 });
   });
 
   test('emits a FAQPage shell node (booking + payment) for non-JS crawlers', async () => {
@@ -110,8 +117,9 @@ describe('resolveProfileMeta', () => {
       },
     });
     const m = await resolveProfileMeta('jane');
-    expect(m.buildHtmlArgs.faqJsonLd['@type']).toBe('FAQPage');
-    const questions = m.buildHtmlArgs.faqJsonLd.mainEntity.map((q) => q.name);
+    const faq = gnode(m.buildHtmlArgs.jsonLd, 'FAQPage');
+    expect(faq['@type']).toBe('FAQPage');
+    const questions = faq.mainEntity.map((q) => q.name);
     expect(questions.some((q) => /how do i book jane/i.test(q))).toBe(true);
     expect(questions.some((q) => /payment secure/i.test(q))).toBe(true);
   });
@@ -121,7 +129,7 @@ describe('resolveProfileMeta', () => {
       payload: { host: { username: 'jane', name: 'Jane', is_indexable: true }, services: [], reviews: [], avgRating: 0 },
     });
     const m = await resolveProfileMeta('jane');
-    expect(m.buildHtmlArgs.jsonLd.mainEntity).not.toHaveProperty('aggregateRating');
+    expect(gnode(m.buildHtmlArgs.jsonLd, 'Person')).not.toHaveProperty('aggregateRating');
   });
 
   test('robots is noindex,follow for a host with no bookable service', async () => {
@@ -205,8 +213,9 @@ describe('resolveServiceMeta', () => {
       },
     });
     const m = await resolveServiceMeta('jane', 'intro');
-    expect(m.buildHtmlArgs.faqJsonLd['@type']).toBe('FAQPage');
-    const qs = m.buildHtmlArgs.faqJsonLd.mainEntity.map((q) => q.name);
+    const faq = gnode(m.buildHtmlArgs.jsonLd, 'FAQPage');
+    expect(faq['@type']).toBe('FAQPage');
+    const qs = faq.mainEntity.map((q) => q.name);
     expect(qs.some((q) => /how do i book intro call/i.test(q))).toBe(true);
     expect(qs.some((q) => /how much does intro call cost/i.test(q))).toBe(true);
     expect(qs.some((q) => /payment secure/i.test(q))).toBe(true);
@@ -223,7 +232,7 @@ describe('resolveServiceMeta', () => {
       },
     });
     const m = await resolveServiceMeta('jane', 'intro');
-    const qs = m.buildHtmlArgs.faqJsonLd.mainEntity.map((q) => q.name);
+    const qs = gnode(m.buildHtmlArgs.jsonLd, 'FAQPage').mainEntity.map((q) => q.name);
     expect(qs).toEqual(['Do you record?']);
   });
 });

@@ -17,7 +17,7 @@ import { INDIAN_STATES } from "../lib/indianStates";
 import { useMinimalFooter } from "../context/ChromeContext";
 import loadRazorpay from "../utils/loadRazorpay";
 import Seo from "../components/common/Seo";
-import { SITE_URL } from "../utils/seo";
+import { SITE_URL, productGraphJsonLd } from "../utils/seo";
 import toast from "react-hot-toast";
 
 const TYPE_ICONS = {
@@ -317,6 +317,7 @@ const ProductPurchase = () => {
         canonical={`${SITE_URL}/${username}/product/${productId}`}
         image={product.cover_image || host?.profile_image || undefined}
         robots="noindex"
+        jsonLd={[productGraphJsonLd({ product, username, siteUrl: SITE_URL })]}
       />
       <div className="app-container py-8 max-w-2xl">
         <Link
