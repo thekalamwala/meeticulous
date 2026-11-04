@@ -31,6 +31,7 @@ Direction: **Loop & Slot**. A rounded calendar slot is the layout module, the ee
 - Slot grid: 96px cells, 10px gap, 20px radius.
 - Borders 2px (3px selected). Shadows only for overlays and hover lift (`--shadow-*`). Cards are flat fills.
 - Use a 2px ink rule between major document sections.
+- A form field is one box: the framed `.mt-input` carries the border/background; its inner `input`/`textarea`/`select` is bare (no border, fill, shadow or radius of its own). Never give a nested control its own chrome — it draws a second grey box inside the field. Guarded in `components.css`.
 
 ## Signature elements
 - **ee thread** (`assets/02-ee/`): ONE per layout, bleeding off an edge, behind content. Never under body text, never rotated, never two at once.

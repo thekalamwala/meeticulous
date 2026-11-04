@@ -59,8 +59,8 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
       </nav>
 
       {/* Columns: rail 240 · main ≤640 · aside 320 (aside only on xl, when given). */}
-      <div className={`mx-auto max-w-7xl gap-6 px-4 lg:grid lg:grid-cols-[15rem_minmax(0,40rem)] lg:justify-center lg:px-5 lg:pt-6 ${
-        aside ? 'xl:grid-cols-[15rem_minmax(0,40rem)_20rem]' : ''}`}>
+      <div className={`mx-auto max-w-7xl gap-6 px-4 lg:grid lg:grid-cols-[15rem_minmax(0,46rem)] lg:justify-center lg:px-5 lg:pt-6 ${
+        aside ? 'xl:grid-cols-[15rem_minmax(0,46rem)_20rem]' : ''}`}>
         <aside aria-label="Community navigation" className="sticky top-24 hidden flex-col gap-5 self-start lg:flex">
           <button type="button" onClick={() => onCompose?.('post')} className="mt-btn mt-btn--block">
             <SquarePen size={20} aria-hidden="true" />New post

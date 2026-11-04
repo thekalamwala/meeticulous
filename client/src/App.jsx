@@ -106,6 +106,7 @@ const Opening        = lazy(() => import('./pages/Opening'));
 const Inaugurators   = lazy(() => import('./pages/Inaugurators'));
 const BlogPost       = lazy(() => import('./pages/BlogPost'));
 const CommunityFeed  = lazy(() => import('./pages/community/CommunityFeed'));
+const NewPost        = lazy(() => import('./pages/community/NewPost'));
 const CommunitySpace = lazy(() => import('./pages/community/CommunitySpace'));
 const CommunityItem  = lazy(() => import('./pages/community/CommunityItem'));
 const CommunityGuidelines = lazy(() => import('./pages/community/CommunityGuidelines'));
@@ -513,6 +514,7 @@ function App() {
           <Route path="/blog/:slug" element={<BlogPost />} />
           {/* Community: the API gate 404s while the flag is off, and the pages render NotFound. */}
           <Route path="/community" element={<CommunityFeed />} />
+          <Route path="/community/new" element={<NewPost />} />
           <Route path="/community/guidelines" element={<CommunityGuidelines />} />
           <Route path="/community/s/:key" element={<CommunitySpace />} />
           <Route path="/community/t/:slug" element={<CommunityItem />} />

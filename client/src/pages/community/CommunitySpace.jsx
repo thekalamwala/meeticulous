@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { MessageSquarePlus } from 'lucide-react';
 import Seo from '../../components/common/Seo';
 import ErrorPage from '../ErrorPage';
@@ -11,7 +11,6 @@ import { SITE_URL, collectionPageJsonLd } from '../../utils/seo';
 import { communityBreadcrumbJsonLd, headlineOf } from '../../utils/communitySeo';
 import ItemCard, { SpaceIcon } from '../../components/community/ItemCard';
 import useRequireLogin from '../../components/community/useRequireLogin';
-import Composer from '../../components/community/Composer';
 import CommunityLayout, { EmptyState, ListStatus, TITLE_SUFFIX, useCursorList } from './CommunityLayout';
 
 const POLICY = {
@@ -23,6 +22,7 @@ const POLICY = {
 export default function CommunitySpace() {
   const { key } = useParams();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const requireLogin = useRequireLogin();
   const list = useCursorList((cursor) => getSpaceThreads({ key, cursor }), key);
   const sentinel = useInfiniteScroll(list.loadMore, { hasMore: list.hasMore, loading: list.loading });
@@ -36,9 +36,8 @@ export default function CommunitySpace() {
     }
   }, [space, key]);
 
-  const [composing, setComposing] = useState(false);
   // Every "start" button here (and the layout's New post) opens a thread in this space.
-  const compose = () => { if (requireLogin()) setComposing(true); };
+  const compose = () => { if (requireLogin()) navigate(`/community/new?kind=thread&space=${encodeURIComponent(key)}`); };
   const canStart = space && (space.post_policy === 'everyone' || (space.post_policy === 'hosts' && (!user || user.is_host)));
 
   // 404 = gate closed or unknown space; a 200 with no space = tables not there yet (soft-fail).
@@ -68,11 +67,11 @@ export default function CommunitySpace() {
       )}
 
       {space && (
-        <header className="mt-card flex-row items-center gap-4 p-5 sm:p-6">
+        <header className="mt-card flex-row items-center gap-3 p-5 sm:p-6">
           <span className="mt-avatar rounded-md" aria-hidden="true"><SpaceIcon spaceKey={space.key} /></span>
           <div className="min-w-0 flex-1">
             <h1 className="font-display text-2xl font-extrabold leading-tight tracking-tight text-maroon">{space.name}</h1>
-            <p className="text-xs text-muted">{space.description} {POLICY[space.post_policy]}</p>
+            <p className="mt-0.5 text-xs leading-snug text-muted">{space.description} {POLICY[space.post_policy]}</p>
           </div>
           {list.items.length > 0 && <div className="hidden sm:block">{startBtn}</div>}
         </header>
@@ -90,7 +89,6 @@ export default function CommunitySpace() {
         />
       )}
       <div ref={sentinel} aria-hidden="true" />
-      <Composer open={composing} defaultKind="thread" defaultSpaceKey={key} onClose={() => setComposing(false)} />
     </CommunityLayout>
   );
 }
