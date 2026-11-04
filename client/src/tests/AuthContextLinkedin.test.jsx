@@ -11,6 +11,7 @@ const h = vi.hoisted(() => {
     calls,
     track: vi.fn(),
     session: { current: null },
+    authListeners: [],
     signOut: vi.fn(async () => { calls.push('signOut'); return { error: null }; }),
     signInWithOAuth: vi.fn(async () => { calls.push('oauth'); return { data: {}, error: null }; }),
   };
@@ -26,7 +27,7 @@ vi.mock('../utils/attribution', () => ({ getAttribution: () => ({ utm_source: 'a
 vi.mock('../services/supabaseClient', () => ({
   getSupabase: () => Promise.resolve({
     auth: {
-      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: vi.fn() } } }),
+      onAuthStateChange: (cb) => { h.authListeners.push(cb); return { data: { subscription: { unsubscribe: vi.fn() } } }; },
       setSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
       getSession: vi.fn(async () => ({ data: { session: h.session.current } })),
       signOut: h.signOut,
@@ -56,6 +57,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   h.calls.length = 0;
   h.session.current = null;
+  h.authListeners.length = 0;
   localStorage.clear();
   sessionStorage.clear();
 });
@@ -93,4 +95,19 @@ test('existing Supabase-only session is logged out before redirecting', async ()
   h.session.current = { access_token: 'sb' };
   await click('login');
   expect(h.calls).toEqual(['signOut', 'oauth']);
+});
+
+// No stored user at boot (the /auth/linkedin/done or /auth/google/done tab): once a
+// session is adopted, Supabase's own token rotations must be mirrored into
+// localStorage.user, or the 401 refresh path later replays a rotated refresh token.
+test('adopted session: TOKEN_REFRESHED is mirrored into localStorage.user', async () => {
+  const { getMe } = await import('../services/api');
+  getMe.mockResolvedValueOnce({ data: { id: 'p1', is_host: true } });
+  let auth;
+  const Grab = () => { auth = useAuth(); return null; };
+  render(<AuthProvider><Grab /></AuthProvider>);
+  await act(async () => { await auth.adoptSession({ token: 'at1', refresh_token: 'rt1' }); });
+  expect(h.authListeners.length).toBeGreaterThan(0);
+  act(() => { h.authListeners.forEach((cb) => cb('TOKEN_REFRESHED', { access_token: 'at2', refresh_token: 'rt2' })); });
+  expect(JSON.parse(localStorage.getItem('user'))).toMatchObject({ id: 'p1', token: 'at2', refresh_token: 'rt2' });
 });
