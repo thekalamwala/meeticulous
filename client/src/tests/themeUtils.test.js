@@ -5,6 +5,7 @@
 import {
   getLuminance,
   getContrastColor,
+  getContrastRatio,
   getColorsForPlan,
   canUseCustomHex,
   getPlanBorderColor,
@@ -79,6 +80,26 @@ describe('getContrastColor', () => {
     expect(getContrastColor(null)).toBe('#ffffff');
     expect(getContrastColor('not-a-hex')).toBe('#ffffff');
   });
+
+  test('mid-tones orange / sky blue → dark text (white was ~2.8:1)', () => {
+    expect(getContrastColor('#F97316')).toBe('#111827');
+    expect(getContrastColor('#0EA5E9')).toBe('#111827');
+  });
+
+  test('every palette swatch gets text at ≥ 3:1 (WCAG AA large)', () => {
+    [...FREE_COLORS, ...CREATOR_COLORS, ...STUDIO_COLORS].forEach(({ name, hex }) => {
+      const ratio = getContrastRatio(hex, getContrastColor(hex));
+      expect(ratio, `${name} ${hex}`).toBeGreaterThanOrEqual(3);
+    });
+  });
+});
+
+describe('getContrastRatio', () => {
+  test('black on white is 21:1, same colour is 1:1', () => {
+    expect(getContrastRatio('#000000', '#ffffff')).toBeCloseTo(21, 1);
+    expect(getContrastRatio('#ffffff', '#000000')).toBeCloseTo(21, 1);
+    expect(getContrastRatio('#960D32', '#960D32')).toBeCloseTo(1, 5);
+  });
 });
 
 // ── getColorsForPlan ──────────────────────────────────────────────────────────
@@ -143,6 +164,15 @@ describe('canUseCustomHex', () => {
 
   test('supreme → true', () => {
     expect(canUseCustomHex('supreme')).toBe(true);
+  });
+
+  test('legacy pro alias (= professional) → true, case-insensitive', () => {
+    expect(canUseCustomHex('pro')).toBe(true);
+    expect(canUseCustomHex('PROFESSIONAL')).toBe(true);
+  });
+
+  test('premium_founding (Pro) → false', () => {
+    expect(canUseCustomHex('premium_founding')).toBe(false);
   });
 
   test('creator → false', () => {
