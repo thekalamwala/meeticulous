@@ -192,6 +192,12 @@ Items previously listed here as pending are now live:
 - **v3.189** (`v3.189_maroon_color_defaults.sql`) — applied 2026-11-04 on the Meeticulous DB and verified:
   `profiles.theme_color` + `email_settings.brand_color` defaults `#FE5100` (old orange) → `#960D32`;
   the 3 profiles + 1 email_settings row still on orange repainted.
+- **v3.190** (`v3.190_plan_gifts.sql`) — applied 2026-11-04 on the Meeticulous DB and verified (24 cols,
+  RLS on / no policies, 7 checks, 3 FKs, partial unique index = one active gift per host):
+  `plan_gifts` = gifted (complimentary) Pro from the super admin (`planGiftService`, PR #138) + 3
+  `notification_events` (`PLAN_GIFT_RECEIVED/ENDING/ENDED`, email + in-app on, WhatsApp OFF until
+  the AiSensy templates are approved). A gift is plain `premium` with `plan_expires_at` = gift end.
+  share_*/forward_* columns are for PR C (share-to-extend, pay-it-forward), unused until then.
 
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.

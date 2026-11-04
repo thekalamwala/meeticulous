@@ -9,7 +9,7 @@ import { useAuth } from '../../context/AuthContext';
 import useIsMobile from '../../hooks/useIsMobile';
 import useLiveNotifications from '../../hooks/useLiveNotifications';
 import { getNotifications, markAllNotificationsRead, markNotificationRead, markLinkShared } from '../../services/api';
-import { normalizePlan } from '../../utils/themeUtils';
+import { normalizePlan, GIFTED_PRO_LABEL } from '../../utils/themeUtils';
 import { cn } from '../dashboard/ui/cn';
 import { PageTransition } from '../dashboard/ui/PageTransition';
 import ConsoleSidebar from './ConsoleSidebar';
@@ -414,7 +414,9 @@ const DashboardLayout = ({ children }) => {
   useBodyScrollLock(navOpen);
 
   const plan = normalizePlan(user?.plan);
-  const planStyle = PLAN_STYLES[plan] || PLAN_STYLES.starter;
+  const planStyle = user?.gift
+    ? { ...PLAN_STYLES.premium, label: GIFTED_PRO_LABEL }
+    : PLAN_STYLES[plan] || PLAN_STYLES.starter;
   const initial = (user?.name || user?.email || 'U').trim().charAt(0).toUpperCase();
 
   return (

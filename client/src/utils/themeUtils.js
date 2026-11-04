@@ -140,6 +140,11 @@ export const normalizePlan = (slug) => {
  *  canonical free slug has already changed once (starter → free). */
 export const isFreePlan = (slug) => normalizePlan(slug) === 'free';
 
+// Gifted Pro (complimentary, from the team): the slug stays `premium`; the
+// session carries `user.gift`. Dashboard / billing show this label, public
+// surfaces keep plain "Pro".
+export const GIFTED_PRO_LABEL = 'Pro (Gifted)';
+
 export const getPlanBorderLabel = (plan) => {
   const canon = normalizePlan(plan);
   if (canon === 'supreme') return 'Supreme';

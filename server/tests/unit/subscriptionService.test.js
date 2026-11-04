@@ -22,12 +22,14 @@ jest.mock('../../services/ledger/journalTemplates', () => ({ subscriptionPayment
 jest.mock('../../services/ledger/postingService', () => ({ postSafe: jest.fn(() => Promise.resolve()) }));
 jest.mock('../../utils/posthog', () => ({ capture: jest.fn(), resolveGuestId: jest.fn() }));
 jest.mock('../../utils/adminAlert', () => ({ adminAlert: jest.fn(() => Promise.resolve({ sent: true })) }));
+jest.mock('../../services/planGiftService', () => ({ endOnPaid: jest.fn(() => Promise.resolve(null)) }));
 
 const { supabaseAdmin } = require('../../config/supabase');
 const { capture: phCapture } = require('../../utils/posthog');
 const { send: notifySend } = require('../../services/notificationEngine');
 const { adminAlert } = require('../../utils/adminAlert');
 const svc = require('../../services/subscriptionService');
+const planGiftService = require('../../services/planGiftService');
 
 const RZP_SUB = {
   id: 'sub_123',
@@ -211,5 +213,34 @@ describe('a failed idempotency read aborts instead of reprocessing', () => {
     wireFailing(null);
     const r = await svc.activateFromSubscription({ rzpSub: RZP_SUB, rzpPayment: { id: 'pay_ok' } });
     expect(r.activated).toBe(true);
+  });
+});
+
+describe('activateFromSubscription — gifted Pro (charge now, gift ends)', () => {
+  const GIFT_END = '2031-11-04T10:00:00.000Z'; // a 5-year gift, far past the paid period
+  const PAID_END = new Date(RZP_SUB.current_end * 1000).toISOString();
+  const withStoredExpiry = (iso) => {
+    const wired = wireSupabase();
+    const base = supabaseAdmin.from.getMockImplementation();
+    supabaseAdmin.from.mockImplementation((table) => {
+      const c = base(table);
+      if (table === 'profiles') c.maybeSingle = jest.fn(() => Promise.resolve({ data: { plan_expires_at: iso }, error: null }));
+      return c;
+    });
+    return wired;
+  };
+
+  test('a converting gift does not carry its end date over the paid period', async () => {
+    const { profileUpdate } = withStoredExpiry(GIFT_END);
+    planGiftService.endOnPaid.mockResolvedValueOnce({ id: 'g1', status: 'converted', ends_at: GIFT_END });
+    await svc.activateFromSubscription({ rzpSub: RZP_SUB, rzpPayment: { id: 'pay_gift_1' } });
+    expect(planGiftService.endOnPaid).toHaveBeenCalledWith('vendor-1');
+    expect(profileUpdate.mock.calls[0][0]).toMatchObject({ plan_expires_at: PAID_END, current_period_end: PAID_END });
+  });
+
+  test('without a gift, a later stored expiry (switch credit) is still never shrunk', async () => {
+    const { profileUpdate } = withStoredExpiry(GIFT_END);
+    await svc.activateFromSubscription({ rzpSub: RZP_SUB, rzpPayment: { id: 'pay_switch_1' } });
+    expect(profileUpdate.mock.calls[0][0]).toMatchObject({ plan_expires_at: GIFT_END });
   });
 });

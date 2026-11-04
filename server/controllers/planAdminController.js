@@ -11,6 +11,7 @@ const { setPublicCache } = require('../utils/httpCache');
 const planService = require('../services/planService');
 const razorpaySubscriptions = require('../services/razorpaySubscriptions');
 const { audit } = require('../services/auditService');
+const planGiftService = require('../services/planGiftService');
 
 const RULES = { min_active_plans: 2, max_active_plans: 3 };
 
@@ -237,6 +238,11 @@ const assignPlan = async (req, res) => {
     if (!plan || plan.slug !== planService.normalizeSlug(plan_slug))
       return res.status(404).json({ message: 'Plan not found' });
 
+    // A gifted host's plan is owned by their gift: overwriting it here would leave
+    // an orphaned "active" gift that later downgrades them or mails "expired".
+    if (await planGiftService.getActiveGift(vendor_id))
+      return res.status(409).json({ message: 'Host has an active gifted Pro — revoke the gift first.' });
+
     // Snapshot the current plan BEFORE the update for the audit before/after.
     const { data: prev } = await supabaseAdmin
       .from('profiles').select('plan').eq('id', vendor_id).maybeSingle();
@@ -270,6 +276,101 @@ const assignPlan = async (req, res) => {
   }
 };
 
+// ── Gifted Pro (super admin only — see routes) ───────────────────
+// Complimentary Pro for a fixed tenure. Logic lives in planGiftService; these
+// handlers only validate input and map GiftError codes to HTTP statuses.
+const GIFT_STATUS = { GIFTS_UNAVAILABLE: 503, NOT_FOUND: 404, NOT_ACTIVE: 409, INELIGIBLE: 409, NOT_PENDING: 409, ALREADY_SHARED: 409, BAD_URL: 400 };
+const giftError = (res, err) => (err instanceof planGiftService.GiftError
+  ? res.status(GIFT_STATUS[err.code] || 400).json({ message: err.message })
+  : safeError(res, err));
+
+const parseMonths = (v) => {
+  const n = Number(v);
+  return planGiftService.TENURES.includes(n) ? n : null;
+};
+
+const parseHostIds = (v) => (Array.isArray(v) ? v.filter((x) => typeof x === 'string' && x.trim()) : []);
+
+const cleanText = (v, max) => {
+  const s = typeof v === 'string' ? v.trim() : '';
+  return s ? s.slice(0, max) : null;
+};
+
+// GET /api/admin/gifts?status=active|ended|revoked|converted|all&page=1
+const listGifts = async (req, res) => {
+  try {
+    const status = ['active', 'ended', 'revoked', 'converted', 'share_pending', 'all'].includes(req.query.status) ? req.query.status : 'active';
+    res.json(await planGiftService.listGifts({ status, page: Number(req.query.page) || 1 }));
+  } catch (err) {
+    giftError(res, err);
+  }
+};
+
+// POST /api/admin/gifts/eligibility  { host_ids[] } — dry run for the bulk preview
+const giftEligibility = async (req, res) => {
+  try {
+    const hostIds = parseHostIds(req.body.host_ids);
+    if (!hostIds.length) return res.status(400).json({ message: 'host_ids is required' });
+    if (hostIds.length > planGiftService.MAX_BATCH) return res.status(400).json({ message: `At most ${planGiftService.MAX_BATCH} hosts per batch` });
+    res.json(await planGiftService.checkEligibility(hostIds));
+  } catch (err) {
+    giftError(res, err);
+  }
+};
+
+// POST /api/admin/gifts  { host_ids[], months, reason, note?, campaign? }
+const grantGifts = async (req, res) => {
+  try {
+    const hostIds = parseHostIds(req.body.host_ids);
+    const months = parseMonths(req.body.months);
+    const reason = cleanText(req.body.reason, 500);
+    if (!hostIds.length) return res.status(400).json({ message: 'host_ids is required' });
+    if (hostIds.length > planGiftService.MAX_BATCH) return res.status(400).json({ message: `At most ${planGiftService.MAX_BATCH} hosts per batch` });
+    if (!months) return res.status(400).json({ message: `months must be one of ${planGiftService.TENURES.join(', ')}` });
+    if (!reason) return res.status(400).json({ message: 'reason is required' });
+    const result = await planGiftService.grantGift(req, {
+      hostIds, months, reason,
+      note: cleanText(req.body.note, 280),
+      campaign: cleanText(req.body.campaign, 60),
+    });
+    res.status(result.granted.length ? 201 : 200).json(result);
+  } catch (err) {
+    giftError(res, err);
+  }
+};
+
+// POST /api/admin/gifts/:id/extend  { months }
+const extendGift = async (req, res) => {
+  try {
+    const months = parseMonths(req.body.months);
+    if (!months) return res.status(400).json({ message: `months must be one of ${planGiftService.TENURES.join(', ')}` });
+    res.json({ gift: await planGiftService.extendGift(req, req.params.id, months) });
+  } catch (err) {
+    giftError(res, err);
+  }
+};
+
+// POST /api/admin/gifts/:id/revoke  { reason }
+const revokeGift = async (req, res) => {
+  try {
+    const reason = cleanText(req.body.reason, 500);
+    if (!reason) return res.status(400).json({ message: 'reason is required' });
+    res.json({ gift: await planGiftService.revokeGift(req, req.params.id, reason) });
+  } catch (err) {
+    giftError(res, err);
+  }
+};
+
+// POST /api/admin/gifts/:id/share-review  { approve: boolean } — share-to-extend
+const reviewGiftShare = async (req, res) => {
+  try {
+    if (typeof req.body.approve !== 'boolean') return res.status(400).json({ message: 'approve must be true or false' });
+    res.json({ gift: await planGiftService.reviewShare(req, req.params.id, req.body.approve) });
+  } catch (err) {
+    giftError(res, err);
+  }
+};
+
 // ── GET /api/plans (public pricing page) ─────────────────────────
 const publicPlans = async (req, res) => {
   try {
@@ -293,4 +394,4 @@ const foundingSpots = async (req, res) => {
   res.json(status);
 };
 
-module.exports = { listPlans, createPlan, updatePlan, setPlanActive, clonePlan, reorderPlans, assignPlan, publicPlans, foundingSpots, RULES };
+module.exports = { listPlans, createPlan, updatePlan, setPlanActive, clonePlan, reorderPlans, assignPlan, listGifts, giftEligibility, grantGifts, extendGift, revokeGift, reviewGiftShare, giftError, publicPlans, foundingSpots, RULES };

@@ -10,7 +10,10 @@ jest.mock('../../services/planService', () => ({
   getPlan: jest.fn(async (slug) => ({ slug, name: slug === 'premium' ? 'Pro' : 'Pro (Partner)' })),
 }));
 
+jest.mock('../../services/planGiftService', () => ({ giftedHostIds: jest.fn(async () => new Set()) }));
+
 const { supabaseAdmin } = require('../../config/supabase');
+const planGiftService = require('../../services/planGiftService');
 const NotificationEngine = require('../../services/notificationEngine');
 const { processSubscriptionExpiry } = require('../../services/subscriptionExpiry');
 
@@ -60,4 +63,13 @@ test('already nudged in the window → skipped', async () => {
   wire({ profiles: [host()], priorLog: { id: 'log1' } });
   const r = await processSubscriptionExpiry();
   expect(r).toEqual({ sent: 0 });
+});
+
+test('gifted host → no "renew" nudge (the gift sends its own ending notice)', async () => {
+  wire({ profiles: [host({ plan: 'premium' })], priorLog: null });
+  planGiftService.giftedHostIds.mockResolvedValueOnce(new Set(['h1']));
+  const r = await processSubscriptionExpiry();
+  expect(r).toEqual({ sent: 0 });
+  expect(planGiftService.giftedHostIds).toHaveBeenCalledWith(['h1']);
+  expect(NotificationEngine.send).not.toHaveBeenCalled();
 });

@@ -10,10 +10,12 @@ jest.mock('../../services/planService', () => ({
   normalizeSlug: jest.fn((s) => s),
   clearCache: jest.fn(),
 }));
+jest.mock('../../services/planGiftService', () => ({ getActiveGift: jest.fn().mockResolvedValue(null) }));
 
 const { supabaseAdmin } = require('../../config/supabase');
 const { audit } = require('../../services/auditService');
 const planService = require('../../services/planService');
+const planGiftService = require('../../services/planGiftService');
 const ctrl = require('../../controllers/planAdminController');
 
 const mockRes = () => { const r = {}; r.status = jest.fn(() => r); r.json = jest.fn(() => r); return r; };
@@ -72,4 +74,14 @@ test('reason is null in the audit when not supplied', async () => {
     expect.anything(),
     expect.objectContaining({ after: expect.objectContaining({ reason: null }) })
   );
+});
+
+test('assignPlan 409s on a host with an active gifted Pro and does not touch the profile', async () => {
+  planService.getPlan.mockResolvedValue({ slug: 'creator', name: 'Creator', annual_price: 999 });
+  planGiftService.getActiveGift.mockResolvedValueOnce({ id: 'g1', status: 'active' });
+  const res = mockRes();
+  await ctrl.assignPlan({ admin, body: { vendor_id: 'h3', plan_slug: 'creator' } }, res);
+  expect(res.status).toHaveBeenCalledWith(409);
+  expect(supabaseAdmin.from).not.toHaveBeenCalled();
+  expect(audit).not.toHaveBeenCalled();
 });
