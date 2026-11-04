@@ -141,7 +141,7 @@ describe('ProfileSetup — Appearance (explorer plan)', () => {
   test('shows single brand swatch for explorer', async () => {
     renderSetup('explorer');
     await userEvent.click(screen.getByRole('tab', { name: /appearance/i }));
-    // FREE_COLORS has 1 swatch (brand orange) — at least one titled swatch renders
+    // FREE_COLORS has 1 swatch (brand maroon) — at least one titled swatch renders
     const swatches = document.querySelectorAll('button[title]');
     expect(swatches.length).toBeGreaterThanOrEqual(1);
   });

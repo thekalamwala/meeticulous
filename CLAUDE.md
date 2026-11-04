@@ -189,6 +189,9 @@ Items previously listed here as pending are now live:
 - **v3.188** (`v3.188_host_linkedin_login_flag.sql`) — **PENDING**, apply before/at merge of the LinkedIn
   host login release: seeds the `host_linkedin_login` flag OFF (`ON CONFLICT DO NOTHING`). The registry
   entry also carries `enabled: false`, so a boot before the migration still creates it OFF.
+- **v3.189** (`v3.189_maroon_color_defaults.sql`) — applied 2026-11-04 on the Meeticulous DB and verified:
+  `profiles.theme_color` + `email_settings.brand_color` defaults `#FE5100` (old orange) → `#960D32`;
+  the 3 profiles + 1 email_settings row still on orange repainted.
 - **v3.190** (`v3.190_plan_gifts.sql`) — applied 2026-11-04 on the Meeticulous DB and verified (24 cols,
   RLS on / no policies, 7 checks, 3 FKs, partial unique index = one active gift per host):
   `plan_gifts` = gifted (complimentary) Pro from the super admin (`planGiftService`, PR #138) + 3
