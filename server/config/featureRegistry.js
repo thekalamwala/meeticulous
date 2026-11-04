@@ -65,8 +65,10 @@ const REGISTRY = [
   { key: 'guest_login',          label: 'Guest Login',          category: 'Auth',     scope: 'customer', description: 'Customer sign-in. Off = customer login blocked.' },
   // Opt-in (ships OFF — seeded disabled in v3.35). Unified identity Phase 3.
   { key: 'unified_login',        label: 'Unified Login',        category: 'Auth',     scope: 'both',     description: 'Sign in by email OR phone to one account (any role). Off = phone login/OTP is guest-only (separate host/guest sign-in).' },
-  // Opt-in (ships OFF — seeded disabled in v3.188). LinkedIn host login (Phase 2).
-  { key: 'host_linkedin_login',  label: 'LinkedIn host login',  category: 'Auth',     scope: 'both',     description: 'Hosts can sign up and log in with LinkedIn on the host door. Off = LinkedIn button hidden and POST /api/auth/linkedin/host returns 503.' },
+  // Opt-in (ships OFF — seeded disabled in v3.188, and `enabled: false` here so the
+  // boot syncRegistry insert can't create it ON if the server deploys before the
+  // migration). LinkedIn host login (Phase 2).
+  { key: 'host_linkedin_login',  label: 'LinkedIn host login',  category: 'Auth',     scope: 'both',     enabled: false, description: 'Hosts can sign up and log in with LinkedIn on the host door. Off = LinkedIn button hidden and POST /api/auth/linkedin/host returns 503.' },
   { key: 'razorpay_payment',     label: 'Razorpay Payment',     category: 'Payments', scope: 'customer', description: 'Paid checkout via Razorpay. Off = paid bookings/purchases blocked.' },
   { key: 'product_purchase',     label: 'Product Purchase',     category: 'Payments', scope: 'customer', description: 'Buy digital products. Off = product checkout blocked.' },
   { key: 'review_submission',    label: 'Review Submission',    category: 'Engagement', scope: 'both', description: 'Guests and hosts review each other after a completed booking. Off = all new reviews blocked (both directions).' },
@@ -115,6 +117,7 @@ const SAFETY_KEYS = [
   'guest_otp',          // auth
   'guest_booking',      // platform-wide booking freeze
   'reschedule_fee',     // money movement
+  'host_linkedin_login', // auth — the LinkedIn host door is closed for everyone when OFF
 ];
 
 module.exports = { REGISTRY, KEYS, SAFETY_KEYS };
