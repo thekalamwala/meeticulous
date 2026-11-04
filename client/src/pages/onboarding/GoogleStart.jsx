@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Check } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Seo from '../../components/common/Seo';
+import ContinueWithLinkedIn from '../../components/ContinueWithLinkedIn';
 import { Wordmark } from './OnboardingStepper';
 
 // Inline Google "G" logo SVG — no external file dependency.
@@ -66,6 +67,7 @@ const GoogleStart = () => {
             <GoogleIcon />
             Continue with Google
           </button>
+          <ContinueWithLinkedIn intent="signup" className="mt-3 inline-flex min-h-[48px] items-center justify-center gap-2.5 rounded-full border border-black/10 bg-white px-7 py-3 text-[15px] font-semibold text-ink transition hover:-translate-y-0.5" />
 
           <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted">
             {TRUST.map((t) => (

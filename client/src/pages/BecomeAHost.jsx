@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import AuthBrandPanel from '../components/auth/AuthBrandPanel';
 import AuthMobilePattern from '../components/auth/AuthMobilePattern';
 import Seo from '../components/common/Seo';
+import ContinueWithLinkedIn, { useLinkedinEnabled } from '../components/ContinueWithLinkedIn';
 import { ogCard } from '../config/ogImages';
 import { SITE_URL } from '../utils/seo';
 
@@ -40,11 +41,13 @@ const Logo = ({ className = '' }) => (
   />
 );
 
-// /become-a-host — host signup. Google-only: one consent screen grants identity
+// /become-a-host — host signup. Google: one consent screen grants identity
 // + calendar access, the account is created automatically in the callback.
+// LinkedIn (Supabase linkedin_oidc) is offered too while host_linkedin_login is ON.
 const BecomeAHost = () => {
   const { startVendorGoogleAuth, user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const linkedinOn = useLinkedinEnabled();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -116,16 +119,20 @@ const BecomeAHost = () => {
             <Link to="/privacy" className="hover:underline">Privacy Policy</Link>.
           </p>
 
-          {/* Secondary providers — shown but inactive ("Soon"). LinkedIn login and
-              email sign-up have no backend yet; enable when those flows land. */}
+          {/* Secondary providers. LinkedIn is live behind host_linkedin_login (inert
+              "Soon" button while OFF); email sign-up has no backend yet ("Soon"). */}
+          {linkedinOn ? (
+            <ContinueWithLinkedIn intent="signup" />
+          ) : (
           <button
-            type="button" disabled aria-disabled="true" title="Coming soon"
-            className="btn btn--outline mt-3 flex w-full cursor-not-allowed items-center justify-center gap-3 border-maroon/10 bg-neutral-50 py-2.5 text-sm font-semibold text-muted"
-          >
-            <LinkedInIcon />
-            Sign up with LinkedIn
-            <span className="rounded-full bg-maroon/5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted">Soon</span>
-          </button>
+              type="button" disabled aria-disabled="true" title="Coming soon"
+              className="btn btn--outline mt-3 flex w-full cursor-not-allowed items-center justify-center gap-3 border-maroon/10 bg-neutral-50 py-2.5 text-sm font-semibold text-muted"
+            >
+              <LinkedInIcon />
+              Sign up with LinkedIn
+              <span className="rounded-full bg-maroon/5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted">Soon</span>
+            </button>
+          )}
           <button
             type="button" disabled aria-disabled="true" title="Coming soon"
             className="btn btn--outline mt-3 flex w-full cursor-not-allowed items-center justify-center gap-3 border-maroon/10 bg-neutral-50 py-2.5 text-sm font-semibold text-muted"

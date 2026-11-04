@@ -20,6 +20,7 @@ import PricingCards from '../components/pricing/PricingCards';
 import HowItWorks from '../components/home/HowItWorks';
 import Reveal from '../components/home/Reveal';
 import Seo from '../components/common/Seo';
+import ContinueWithLinkedIn from '../components/ContinueWithLinkedIn';
 import { ogCard } from '../config/ogImages';
 import { readInvite, stashInvite } from '../utils/inviteStash';
 
@@ -197,6 +198,7 @@ export default function InviteLanding() {
             </Reveal>
             <Reveal delay={0.16} className="mt-8">
               <GoogleCTA onClick={startGoogle} />
+              <ContinueWithLinkedIn intent="signup" onStart={() => stashFirstTouch(slug)} className="mt-3 inline-flex items-center justify-center gap-3 rounded-full border border-black/15 bg-white px-7 py-3.5 text-sm font-semibold text-ink" />
               <p className="mt-3 text-xs text-neutral-500">
                 By continuing you agree to our{' '}
                 <Link to="/terms" className="underline">Terms</Link> and{' '}
@@ -362,6 +364,7 @@ export default function InviteLanding() {
           <div className="mt-8 flex justify-center">
             <GoogleCTA onClick={startGoogle} label="Claim your invite" onDark />
           </div>
+          <ContinueWithLinkedIn intent="signup" onStart={() => stashFirstTouch(slug)} className="mt-3 inline-flex items-center justify-center gap-3 rounded-full border border-white/40 bg-transparent px-7 py-3.5 text-sm font-semibold text-white" />
           <p className="mt-4 text-xs text-white/50">Free to start · no card needed</p>
         </div>
       </section>

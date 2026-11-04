@@ -5,20 +5,33 @@ import AuthBrandPanel from "../components/auth/AuthBrandPanel";
 import AuthMobilePattern from "../components/auth/AuthMobilePattern";
 import Seo from "../components/common/Seo";
 import toast from "react-hot-toast";
+import ContinueWithLinkedIn, { useLinkedinEnabled } from "../components/ContinueWithLinkedIn";
 
-// /login-as-vendor — the host login door. Hosts authenticate with Google only
-// (one consent screen grants identity + calendar). Kept strictly host-focused:
+// /login-as-vendor — the host login door. Hosts authenticate with Google (one
+// consent screen grants identity + calendar), or with LinkedIn when the admin flag
+// host_linkedin_login is ON (else an inert "Soon" button). Kept strictly host-focused:
 // no customer login, no link to the generic guest /login. This page is also the
-// Google-callback error target (GoogleAuthDone redirects here with ?error=…).
+// Google/LinkedIn callback error target (GoogleAuthDone / LinkedinAuthDone redirect
+// here with ?error=…).
 const ERROR_COPY = {
   invalid_state: "That sign-in link expired. Please try again.",
   customer_email: "We couldn't sign you in with that Google account. Please try again.",
   create_failed: "We could not create your account. Please try again.",
   auth_failed: "Google sign-in failed. Please try again.",
   cancelled: "Google sign-in was cancelled.",
+  linkedin_failed: "LinkedIn sign-in failed. Please try again.",
+  linkedin_cancelled: "LinkedIn sign-in was cancelled.",
   signin_needed: "You're all set! Please sign in to continue.",
+  calendar_account: "This Google account is connected as a calendar to an existing host. Sign in with LinkedIn instead.",
+  email_has_account: "This email already has a host account. Sign in with Google.",
+  linkedin_off: "LinkedIn sign-in isn't available right now.",
+  email_unverified: "Verify the email on your LinkedIn account, then try again.",
   no_email: "Google did not share an email address. Check your account permissions.",
 };
+// The Google calendar-account guard (authController Flow A) is live with the
+// LinkedIn flag OFF too — then there is no LinkedIn button to point at.
+const CALENDAR_ACCOUNT_NO_LINKEDIN =
+  "This Google account is connected as a calendar to an existing host. Sign in with the account you used to sign up.";
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -50,7 +63,8 @@ const MailIcon = () => (
   </svg>
 );
 
-// Shown but inactive ("Soon") — LinkedIn login + email login have no backend yet.
+// Shown but inactive ("Soon") — email login has no backend yet; LinkedIn shows
+// this only while host_linkedin_login is OFF.
 const SoonBtn = ({ icon, label }) => (
   <button
     type="button" disabled aria-disabled="true" title="Coming soon"
@@ -73,6 +87,7 @@ const HostLogin = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [busy, setBusy] = useState(false);
+  const linkedinOn = useLinkedinEnabled();
 
   // Dual login. This is the HOST door. If a session already exists:
   //  - already in host space (hosting / superadmin) → nothing to do, go to
@@ -94,7 +109,8 @@ const HostLogin = () => {
   useEffect(() => {
     const err = searchParams.get("error");
     if (!err) return;
-    const msg = ERROR_COPY[err] || "Sign-in failed. Please try again.";
+    const msg = (err === "calendar_account" && !linkedinOn && CALENDAR_ACCOUNT_NO_LINKEDIN)
+      || ERROR_COPY[err] || "Sign-in failed. Please try again.";
     if (err === "signin_needed") toast(msg, { icon: "👋" });
     else toast.error(msg);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -141,7 +157,14 @@ const HostLogin = () => {
           {busy ? "Opening Google…" : "Continue with Google"}
         </button>
 
-        <SoonBtn icon={<LinkedInIcon />} label="Continue with LinkedIn" />
+        {linkedinOn ? (
+          <>
+            <ContinueWithLinkedIn intent="login" />
+            <p className="mt-3 text-xs text-muted">Already a host? Use the same option you signed up with.</p>
+          </>
+        ) : (
+          <SoonBtn icon={<LinkedInIcon />} label="Continue with LinkedIn" />
+        )}
         <SoonBtn icon={<MailIcon />} label="Continue with email" />
 
         <ul className="mt-6 space-y-2 text-left text-xs text-muted">

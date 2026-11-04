@@ -29,7 +29,8 @@ API.interceptors.request.use((config) => {
   const isAdminRoute = config.url?.startsWith('/admin') || config.url?.startsWith('/admin-auth');
   const key     = isAdminRoute ? 'bas_admin' : 'user';
   const session = JSON.parse(localStorage.getItem(key) || 'null');
-  if (session?.token) config.headers.Authorization = `Bearer ${session.token}`;
+  // An explicit per-request header wins (e.g. linkedinHostAuth's fresh token).
+  if (session?.token && !config.headers.Authorization) config.headers.Authorization = `Bearer ${session.token}`;
   return config;
 });
 
@@ -139,6 +140,11 @@ export const setUserPassword  = (data)         => API.post('/auth/set-password',
 export const becomeHost       = ()             => API.post('/auth/become-host');
 export const cancelHosting    = ()             => API.post('/auth/cancel-hosting');
 export const verifyLinkedin   = ()             => API.post('/auth/linkedin/verify');
+// Host LinkedIn door: `token` is the fresh Supabase linkedin_oidc access token,
+// sent explicitly (no localStorage.user exists yet — the request interceptor
+// keeps an explicit header). _retry skips the 401 refresh/logout redirect so
+// LinkedinAuthDone's own error mapping handles a rejected token.
+export const linkedinHostAuth = (body, token)  => API.post('/auth/linkedin/host', body, { headers: { Authorization: `Bearer ${token}` }, _retry: true });
 export const forgotPassword   = (data)         => API.post('/auth/forgot-password', data);
 export const resetPassword    = (data)         => API.post('/auth/reset-password', data);
 
