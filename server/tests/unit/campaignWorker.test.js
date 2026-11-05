@@ -18,16 +18,32 @@ jest.mock('../../config/supabase', () => ({
       // Daily-cap head/count query (email_logs) → return only a count.
       if (q._opts && q._opts.head) return res({ count: state.emailSentToday, error: null });
       if (t === 'email_campaigns') return res({ data: state.campaigns.filter((c) => c.status === 'sending'), error: null });
-      if (t === 'campaign_recipients') return res({ data: state.recipients.filter((r) => r.campaign_id === q._f.campaign_id && r.status === (q._f.status || r.status)), error: null });
+      if (t === 'campaign_recipients') {
+        // staleRead: the worker's list read races another worker's claim (sees every row as queued).
+        const rows = state.staleRead ? state.recipients.map((r) => ({ ...r, status: 'queued' })) : state.recipients;
+        return res({ data: rows.filter((r) => r.campaign_id === q._f.campaign_id && r.status === (q._f.status || r.status)), error: null });
+      }
       if (t === 'contacts') return res({ data: Object.values(state.contacts).filter((c) => c.id === q._f.id), error: null });
       return res({ data: [], error: null });
     };
     q.single = () => { if (t === 'contacts') return Promise.resolve({ data: state.contacts[q._f.id], error: null }); return Promise.resolve({ data: null, error: null }); };
-    q.update = (ch) => ({ eq: (c, v) => {
-      if (t === 'campaign_recipients') { const r = state.recipients.find((x) => x.id === v); if (r) Object.assign(r, ch); }
-      if (t === 'email_campaigns') { const c = state.campaigns.find((x) => x.id === v); if (c) Object.assign(c, ch); }
-      return Promise.resolve({ error: null });
-    } });
+    // Chainable update: .eq() filters, .lt() = the stale-claim sweep (test rows are never
+    // stale), .select().maybeSingle() = the conditional claim (returns the row if won).
+    q.update = (ch) => {
+      const f = {}; let stale = false;
+      const apply = () => {
+        const list = t === 'campaign_recipients' ? state.recipients : t === 'email_campaigns' ? state.campaigns : [];
+        const hits = stale ? [] : list.filter((x) => Object.entries(f).every(([c, v]) => x[c] === v));
+        hits.forEach((x) => Object.assign(x, ch));
+        return hits;
+      };
+      const u = {
+        eq: (c, v) => { f[c] = v; return u; }, lt: () => { stale = true; return u; }, select: () => u,
+        maybeSingle: () => Promise.resolve({ data: apply()[0] || null, error: null }),
+        then: (res) => { apply(); return res({ error: null }); },
+      };
+      return u;
+    };
     return q;
   } },
   supabase: {},
@@ -65,6 +81,15 @@ test('cold budget spent (0 allowance): leaves recipients queued, no send, campai
   expect(state.recipients.every((x) => x.status === 'queued')).toBe(true);
   expect(r.enqueued).toBe(0);
   expect(state.campaigns[0].status).toBe('sending'); // still queued → not marked sent
+});
+
+test('a recipient already claimed by another worker is not sent twice (ASH-35)', async () => {
+  state.recipients[0].status = 'sending'; // another worker claimed r1…
+  state.staleRead = true;                 // …after this worker read it as 'queued'
+  await worker.processDue();
+  state.staleRead = false;
+  expect(mockEnqueued.map((e) => e.to)).toEqual(['b@x']); // only r2; r1's claim was lost
+  expect(state.recipients[0].status).toBe('sending');
 });
 
 test('partial cold allowance enqueues only up to the remainder', async () => {

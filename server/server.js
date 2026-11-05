@@ -282,7 +282,8 @@ const { cleanup: cleanupOtps } = require('./utils/otpStore');
 // Leader-election for the crons below. On one instance every job runs (the lock
 // fails open / always wins); on >1 instance only the lease holder runs each job,
 // so reminders/emails/campaigns aren't double-sent and the reconcilers don't
-// race. Each job leases for 2x its interval so the holder always renews in time.
+// race. Each job leases for 2x its interval so the holder always renews in time
+// (the 4 queue workers used a fixed 2 min against a 5 min interval until ASH-35).
 // See utils/jobLock.js + migrations/v3.25_job_locks.sql.
 const { runLocked } = require('./utils/jobLock');
 
@@ -334,7 +335,7 @@ setInterval(async () => {
     await runLocked('email-queue', async () => {
       const r = await communicationEngine.processQueue();
       if (r.sent || r.failed) console.log(`Email queue: ${r.sent} sent, ${r.retried} retried, ${r.failed} failed`);
-    }, { leaseMs: 2 * 60 * 1000 });
+    }, { leaseMs: EMAIL_QUEUE_INTERVAL_SEC * 2 * 1000 });
   } catch (err) { console.error('Email queue worker error:', err.message); }
 }, EMAIL_QUEUE_INTERVAL_SEC * 1000);
 
@@ -345,7 +346,7 @@ setInterval(async () => {
     await runLocked('campaign-worker', async () => {
       const r = await campaignWorker.processDue();
       if (r.enqueued || r.failed) console.log(`Campaign worker: ${r.enqueued} enqueued, ${r.failed} failed`);
-    }, { leaseMs: 2 * 60 * 1000 });
+    }, { leaseMs: CAMPAIGN_WORKER_INTERVAL_SEC * 2 * 1000 });
   } catch (err) { console.error('Campaign worker error:', err.message); }
 }, CAMPAIGN_WORKER_INTERVAL_SEC * 1000);
 
@@ -371,7 +372,7 @@ setInterval(async () => {
     await runLocked('crm-send-worker', async () => {
       const r = await crmMessageService.processQueue();
       if (r.sent || r.failed) console.log(`CRM send worker: ${r.sent} sent, ${r.failed} failed, ${r.skipped} skipped`);
-    }, { leaseMs: 2 * 60 * 1000 });
+    }, { leaseMs: CRM_SEND_INTERVAL_SEC * 2 * 1000 });
   } catch (err) { console.error('CRM send worker error:', err.message); }
 }, CRM_SEND_INTERVAL_SEC * 1000);
 setInterval(async () => {
@@ -379,7 +380,7 @@ setInterval(async () => {
     await runLocked('crm-sequence-worker', async () => {
       const r = await crmSequenceService.processDue();
       if (r.sent || r.stopped || r.completed) console.log(`CRM sequences: ${r.sent} stepped, ${r.stopped} stopped, ${r.completed} completed`);
-    }, { leaseMs: 2 * 60 * 1000 });
+    }, { leaseMs: CRM_SEQUENCE_INTERVAL_SEC * 2 * 1000 });
   } catch (err) { console.error('CRM sequence worker error:', err.message); }
 }, CRM_SEQUENCE_INTERVAL_SEC * 1000);
 const CRM_FOLLOWUP_INTERVAL_MIN = Number(process.env.CRM_FOLLOWUP_INTERVAL_MIN) || 5;

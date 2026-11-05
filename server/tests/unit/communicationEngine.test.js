@@ -61,14 +61,20 @@ jest.mock('../../config/supabase', () => {
         // Chainable: collect eq/filter predicates, apply to the matching rows on
         // terminal await. Supports the worker's .update().eq().filter() back-fill.
         const preds = [];
+        let stale = false; // .lt('updated_at', …) — the stale-claim sweep; test rows are never stale
         const store = db[table] || db.email_logs;
+        const hits = () => (stale ? [] : store.filter((r) => preds.every(([c, v]) => getPath(r, c) === v)));
         const apply = () => {
-          for (const r of store) if (preds.every(([c, v]) => getPath(r, c) === v)) Object.assign(r, changes);
+          for (const r of hits()) Object.assign(r, changes);
           return { error: null };
         };
         const chain = {
           eq(c, v) { preds.push([c, v]); return chain; },
+          lt() { stale = true; return chain; },
           filter(c, _op, v) { preds.push([c, v]); return chain; },
+          select() { return chain; },
+          // Conditional claim: .update().eq(id).eq(status,'queued').select().maybeSingle()
+          maybeSingle() { const h = hits(); apply(); return Promise.resolve({ data: h[0] ? { id: h[0].id } : null, error: null }); },
           then(resolve) { return resolve(apply()); },
         };
         return chain;

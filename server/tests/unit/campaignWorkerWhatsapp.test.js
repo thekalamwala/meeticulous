@@ -23,11 +23,23 @@ jest.mock('../../config/supabase', () => ({
       if (t === 'campaign_recipients') return res({ data: state.recipients.filter((r) => r.campaign_id === q._f.campaign_id && r.status === (q._f.status || r.status)), error: null });
       return res({ data: [], error: null });
     };
-    q.update = (ch) => ({ eq: (c, v) => {
-      if (t === 'campaign_recipients') { const r = state.recipients.find((x) => x.id === v); if (r) Object.assign(r, ch); }
-      if (t === 'email_campaigns') { const c = state.campaigns.find((x) => x.id === v); if (c) Object.assign(c, ch); }
-      return Promise.resolve({ error: null });
-    } });
+    // Chainable update: .eq() filters, .lt() = the stale-claim sweep (test rows are never
+    // stale), .select().maybeSingle() = the conditional claim (returns the row if won).
+    q.update = (ch) => {
+      const f = {}; let stale = false;
+      const apply = () => {
+        const list = t === 'campaign_recipients' ? state.recipients : t === 'email_campaigns' ? state.campaigns : [];
+        const hits = stale ? [] : list.filter((x) => Object.entries(f).every(([c, v]) => x[c] === v));
+        hits.forEach((x) => Object.assign(x, ch));
+        return hits;
+      };
+      const u = {
+        eq: (c, v) => { f[c] = v; return u; }, lt: () => { stale = true; return u; }, select: () => u,
+        maybeSingle: () => Promise.resolve({ data: apply()[0] || null, error: null }),
+        then: (res) => { apply(); return res({ error: null }); },
+      };
+      return u;
+    };
     return q;
   } },
   supabase: {},
