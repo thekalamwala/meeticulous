@@ -20,13 +20,15 @@ jest.mock('../../config/supabase', () => ({
 }));
 const mockAdminAlert = jest.fn();
 jest.mock('../../utils/adminAlert', () => ({ adminAlert: (...a) => mockAdminAlert(...a) }));
+const mockCapture = jest.fn();
+jest.mock('../../utils/sentry', () => ({ captureException: (...a) => mockCapture(...a) }));
 
 function loadFresh() {
   jest.resetModules();
   return require('../../utils/jobLock');
 }
 
-beforeEach(() => { mockRpc.mockReset(); mockAdminAlert.mockReset(); mockDeletes.length = 0; });
+beforeEach(() => { mockRpc.mockReset(); mockAdminAlert.mockReset(); mockCapture.mockReset(); mockDeletes.length = 0; });
 
 describe('acquire', () => {
   test('passes the job name, a stable holder id, and the lease to the RPC', async () => {
@@ -103,6 +105,14 @@ describe('runLocked', () => {
     mockRpc.mockResolvedValueOnce({ data: true, error: null });
     await expect(runLocked('ledger-reconcile', () => Promise.reject(new Error('boom')), { release: true })).rejects.toThrow('boom');
     expect(mockDeletes).toEqual([{ table: 'job_locks', filters: { name: 'ledger-reconcile', holder: HOLDER } }]);
+  });
+
+  test('a job failure is reported to Sentry with the job name, then rethrown (ASH-35)', async () => {
+    const { runLocked } = loadFresh();
+    mockRpc.mockResolvedValueOnce({ data: true, error: null });
+    const err = new Error('reconcile exploded');
+    await expect(runLocked('payout-reconcile', () => Promise.reject(err))).rejects.toThrow('reconcile exploded');
+    expect(mockCapture).toHaveBeenCalledWith(err, { job: 'payout-reconcile' });
   });
 
   test('default (sticky) mode keeps the lease so one instance stays leader', async () => {

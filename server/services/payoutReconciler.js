@@ -45,6 +45,7 @@ const { createHeldTransferForBooking, finalizeReleasedTransfer, applyTransferSet
 const routeAccountService = require('./routeAccountService');
 const { adminAlert } = require('../utils/adminAlert');
 const { securityLog } = require('../utils/logger');
+const { captureException } = require('../utils/sentry');
 
 const MIN_TRANSFER_RUPEES = 1;                                    // mirrors routeAutoPayoutService
 const MAX_ATTEMPTS = Number(process.env.PAYOUT_RECONCILE_MAX_ATTEMPTS || 5);
@@ -216,6 +217,7 @@ async function reconcile() {
     } catch (e) {
       s.failedAttempt++;
       securityLog('payout_reconcile_create_error', { bookingId: b.id, reason: e.message });
+      captureException(e, { job: 'payout-reconcile', phase: 'create', bookingId: b.id });
     }
   }
 
@@ -283,6 +285,7 @@ async function reconcile() {
         }
       } catch (e) {
         securityLog('payout_reconcile_release_error', { bookingId: b.id, reason: e.message });
+        captureException(e, { job: 'payout-reconcile', phase: 'release', bookingId: b.id });
       }
     }
   }

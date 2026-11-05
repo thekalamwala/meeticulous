@@ -194,11 +194,13 @@ const verify = async (email, otp, expectedType = 'booking') => {
 
 /** Prune expired, unlocked OTPs — called periodically from server.js. */
 const cleanup = async () => {
-  await supabaseAdmin
+  const { error } = await supabaseAdmin
     .from('otp_codes')
     .delete()
     .lt('expires_at', new Date(Date.now()).toISOString())
     .or(`locked_until.is.null,locked_until.lt.${new Date(Date.now()).toISOString()}`);
+  // Throw so the scheduler records outcome=error (it used to report 'ok' regardless).
+  if (error) throw new Error(`otp cleanup failed: ${error.message}`);
 };
 
 module.exports = { set, verify, cleanup, generate, MAX_ATTEMPTS, MAX_SENDS, TTL_MS, LOCKOUT_MS };

@@ -125,6 +125,11 @@ async function runLocked(name, fn, { leaseMs, release: releaseAfter = false } = 
   _inFlight.add(name);
   try {
     return await fn();
+  } catch (err) {
+    // Every cron runs through here, so this is the one place a job failure reaches
+    // Sentry (callers only console.error). No-op without SENTRY_DSN.
+    require('./sentry').captureException(err, { job: name });
+    throw err;
   } finally {
     // Release BEFORE clearing in-flight: otherwise a same-process tick could renew
     // the lease in between and this delete would drop that new run's lease.
