@@ -11,6 +11,7 @@ jest.mock('../../config/supabase', () => ({
     q.select = (_c, opts) => { q._opts = opts; return q; };
     q.eq = (c, v) => { q._f[c] = v; return q; }; q.limit = () => q;
     q.not = () => q; q.gte = () => q;
+    q.in = (c, vs) => { q._in = vs; return q; };
     q.single = () => {
       if (t === 'contacts') return Promise.resolve({ data: state.contacts[q._f.id], error: null });
       if (t === 'whatsapp_templates') return Promise.resolve({ data: state.waTemplates[q._f.id], error: null });
@@ -20,7 +21,7 @@ jest.mock('../../config/supabase', () => ({
     q.then = (res) => {
       if (q._opts && q._opts.head) return res({ count: 0, error: null }); // daily-cap count query
       if (t === 'email_campaigns') return res({ data: state.campaigns.filter((c) => c.status === 'sending'), error: null });
-      if (t === 'campaign_recipients') return res({ data: state.recipients.filter((r) => r.campaign_id === q._f.campaign_id && r.status === (q._f.status || r.status)), error: null });
+      if (t === 'campaign_recipients') return res({ data: state.recipients.filter((r) => r.campaign_id === q._f.campaign_id && (q._in ? q._in.includes(r.status) : r.status === (q._f.status || r.status))), error: null });
       return res({ data: [], error: null });
     };
     // Chainable update: .eq() filters, .lt() = the stale-claim sweep (test rows are never

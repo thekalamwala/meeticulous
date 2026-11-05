@@ -118,6 +118,19 @@ test('live: owed money to an ELIGIBLE host creates the held transfer', async () 
   expect(adminAlert).not.toHaveBeenCalled();
 });
 
+test('live: a transfer being created by another caller gives the attempt back (ASH-35)', async () => {
+  platformConfig.getConfig.mockResolvedValue({ payoutReconcilerMode: 'live' });
+  isPayoutEligible.mockResolvedValue({ eligible: true, reasons: [] });
+  routeAuto.createHeldTransferForBooking.mockResolvedValue({ ok: false, skipped: 'claimed_elsewhere' });
+  const chains = [];
+  supabaseAdmin.from.mockImplementation(() => { const c = makeChain(); chains.push(c); return c; });
+  setReads({ owed: [owedBooking({ transfer_attempts: 2 })] });
+  const r = await reconcile();
+  expect(r.failedAttempt || 0).toBe(0);
+  const patches = chains.filter((c) => c.update.mock.calls.length).map((c) => c.update.mock.calls[0][0]);
+  expect(patches.map((p) => p.transfer_attempts)).toEqual([3, 2]); // bumped, then given back
+});
+
 test('a payout below the ₹1 floor is skipped entirely (no eligibility check, no attempt)', async () => {
   platformConfig.getConfig.mockResolvedValue({ payoutReconcilerMode: 'live' });
   setReads({ owed: [owedBooking({ vendor_amount: 0.5 })] });

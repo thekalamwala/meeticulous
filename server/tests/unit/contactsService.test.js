@@ -12,6 +12,7 @@ const sources = {
   ],
 };
 const upserted = [];
+const mockUpsertCalls = []; // row count per upsert request
 let mockExisting;
 let mockFailTable = null;
 
@@ -27,7 +28,7 @@ jest.mock('../../config/supabase', () => ({
           const all = sources[t] ?? (t === 'contacts' ? mockExisting : []);
           return Promise.resolve({ data: all.slice(from, Math.min(to + 1, from + 1000)), error: null });
         },
-        upsert: (rows) => { upserted.push(...[].concat(rows)); return { select: () => Promise.resolve({ data: [].concat(rows), error: null }) }; },
+        upsert: (rows) => { mockUpsertCalls.push([].concat(rows).length); upserted.push(...[].concat(rows)); return { select: () => Promise.resolve({ data: [].concat(rows), error: null }) }; },
       };
       return q;
     },
@@ -84,6 +85,16 @@ test('preserves opt-outs for contacts past the 1,000-row read cap', async () => 
   expect(g.id).toBe('c-old');              // existing row matched, not a fresh id
   expect(g.email_suppressed).toBe(true);   // opt-out NOT reset
   expect(g.whatsapp_opt_in).toBe(false);
+});
+
+test('large syncs upsert in chunks of 500 (no single giant request)', async () => {
+  mockExisting = Array.from({ length: 1200 }, (_, i) => ({ id: `f${i}`, email: `filler${i}@x.test` }));
+  sources.profiles.push(...mockExisting.map((c) => ({ id: c.id, email: c.email, role: 'guest' })));
+  mockUpsertCalls.length = 0;
+  await contactsService.sync();
+  sources.profiles.length = 2;
+  expect(mockUpsertCalls.every((n) => n <= 500)).toBe(true);
+  expect(mockUpsertCalls.reduce((a, b) => a + b, 0)).toBe(upserted.length);
 });
 
 test('a failed contacts read aborts the sync instead of resetting consent', async () => {

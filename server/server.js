@@ -424,7 +424,9 @@ const { cleanupExpired: cleanupRateLimitHits } = require('./middleware/rateLimit
 
 const SCHEDULED_JOBS = [
   { name: 'auto-complete', min: AUTO_COMPLETE_INTERVAL_MIN, run: () => autoCompleteBookings() },
-  { name: 'otp-cleanup', min: 60, run: () => cleanupOtps() },
+  // retryOnError: idempotent jobs only (re-running repeats no side effect) — a failed
+  // run retries in 15 min instead of a full interval. NEVER on a job that sends.
+  { name: 'otp-cleanup', min: 60, retryOnError: true, run: () => cleanupOtps() },
   { name: 'subscription-expiry', min: 6 * 60, run: () => require('./services/subscriptionExpiry').processSubscriptionExpiry() },
   // Gifted Pro: T-7/T-1 "ends soon" + close/downgrade/"expired" (access itself ends via resolveVendorPlan).
   { name: 'plan-gift-expiry', min: 60, run: () => require('./services/planGiftService').processGiftExpiry() },
@@ -449,15 +451,15 @@ const SCHEDULED_JOBS = [
   // still governs the actual send (quiet-hours, 1/48h, suppression).
   { name: 'crm-second-touch', min: Number(process.env.CRM_SECOND_TOUCH_INTERVAL_MIN) || 30, run: async () => { const r = await require('./services/crm/secondTouchService').run({ dryRun: process.env.CRM_SECOND_TOUCH_DRY_RUN !== 'false' }); if (r.enqueued) console.log(`CRM second-touch: ${r.enqueued} ${r.dryRun ? 'would-send (dryrun)' : 'enqueued'}, ${r.skipped} skipped (scanned ${r.scanned})`); } },
   { name: 'badge-eval', min: parseInt(process.env.BADGE_EVAL_INTERVAL_MIN) || 60, run: async () => { const r = await badgeEngine.evaluate(); if (r.awarded || r.revoked) console.log(`Badge engine: +${r.awarded} awarded, -${r.revoked} revoked`); } },
-  { name: 'ledger-reconcile', min: Number(process.env.LEDGER_RECONCILE_INTERVAL_MIN || 60), run: async () => { const r = await ledgerReconciler.reconcile(); if (r.reposted > 0) console.log(`Ledger reconciler: reposted ${r.reposted} missed entries`); } },
+  { name: 'ledger-reconcile', min: Number(process.env.LEDGER_RECONCILE_INTERVAL_MIN || 60), retryOnError: true, run: async () => { const r = await ledgerReconciler.reconcile(); if (r.reposted > 0) console.log(`Ledger reconciler: reposted ${r.reposted} missed entries`); } },
   { name: 'subscription-reconcile', min: Number(process.env.SUBSCRIPTION_RECONCILE_INTERVAL_MIN || 15), run: async () => { const r = await subscriptionReconciler.reconcile(); if (r.healed > 0) console.log(`Subscription reconciler: activated ${r.healed} pending subscriptions`); if (r.released > 0) console.log(`Subscription reconciler: released ${r.released} orphaned pending mandates`); if (r.recorded > 0) console.log(`Subscription reconciler: booked ${r.recorded} missing subscription charges`); } },
   { name: 'booking-reconcile', min: Number(process.env.BOOKING_RECONCILE_INTERVAL_MIN || 15), run: async () => { const r = await bookingPaymentReconciler.reconcile(); if (r.healed > 0) console.log(`Booking reconciler: confirmed ${r.healed} paid bookings (of ${r.checked} checked)`); } },
   { name: 'confirmation-reconcile', min: Number(process.env.CONFIRMATION_RECONCILE_INTERVAL_MIN || 15), run: async () => { const r = await confirmationReconciler.reconcile(); if (r.healed > 0) console.log(`Confirmation reconciler: re-drove ${r.healed} unconfirmed bookings (of ${r.checked} checked)`); } },
   { name: 'payout-reconcile', min: Number(process.env.PAYOUT_RECONCILE_INTERVAL_MIN || 15), run: async () => { const r = await payoutReconciler.reconcile(); if (r.created || r.finalized) console.log(`Payout reconciler (${r.mode}): created ${r.created || 0}, finalized ${r.finalized || 0}`); } },
   { name: 'payout-holiday-notice', min: 24 * 60, run: async () => { const r = await payoutHolidayNotice.run(); if (r.notified) console.log(`Payout holiday notice: ${r.notified} host(s) for ${r.holiday}`); } },
   { name: 'referral-release', min: 60, run: async () => { const r = await referralService.releaseDue(); if (r.released || r.clawed) console.log(`Referral release: +${r.released} rewarded, ${r.clawed} clawed back`); } },
-  { name: 'rate-limit-cleanup', min: 60, run: async () => { const n = await cleanupRateLimitHits(); if (n > 0) console.log(`Rate-limit store: pruned ${n} expired rows`); } },
-  { name: 'ip-block-prune', min: 60, run: async () => { const n = await ipBlocklist.pruneExpired(); if (n > 0) console.log(`IP blocklist: pruned ${n} expired bans`); } },
+  { name: 'rate-limit-cleanup', min: 60, retryOnError: true, run: async () => { const n = await cleanupRateLimitHits(); if (n > 0) console.log(`Rate-limit store: pruned ${n} expired rows`); } },
+  { name: 'ip-block-prune', min: 60, retryOnError: true, run: async () => { const n = await ipBlocklist.pruneExpired(); if (n > 0) console.log(`IP blocklist: pruned ${n} expired bans`); } },
   { name: 'seo-crawl', min: Number(process.env.SEO_CRAWL_INTERVAL_MIN) || 24 * 60, run: () => require('./services/seo/seoCrawler').run({ trigger: 'nightly' }) },
   // 6 pm IST cold-calling recap to the founder (`when` gates the hour; 20h interval = once a day).
   { name: 'cold-call-recap', min: 20 * 60, when: () => require('./services/crm/coldCallRules').istHour() === 18, run: () => require('./services/crm/coldCallService').dailyRecap() },
@@ -467,7 +469,7 @@ const SCHEDULER_TICK_MIN = Number(process.env.SCHEDULER_TICK_MIN) || 5;
 setInterval(async () => {
   for (const job of SCHEDULED_JOBS) {
     if (job.when && !job.when()) continue;
-    try { await runIfDue(job.name, job.min * 60 * 1000, job.run); }
+    try { await runIfDue(job.name, job.min * 60 * 1000, job.run, { retryOnError: !!job.retryOnError }); }
     catch (err) { console.error(`Scheduled job ${job.name} error:`, err.message); }
   }
 }, SCHEDULER_TICK_MIN * 60 * 1000);

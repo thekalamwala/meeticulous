@@ -29,6 +29,20 @@ async function fetchAll(build) {
   }
 }
 
+// Upsert in chunks: with paged reads the merged set is no longer capped at 1,000,
+// and one giant request risks the PostgREST size limit / statement timeout.
+const UPSERT_CHUNK = 500;
+async function upsertContacts(rows, cols) {
+  const out = [];
+  for (let i = 0; i < rows.length; i += UPSERT_CHUNK) {
+    const { data, error } = await supabaseAdmin.from('contacts')
+      .upsert(rows.slice(i, i + UPSERT_CHUNK), { onConflict: 'email' }).select(cols);
+    if (error) return { error };
+    out.push(...(data || []));
+  }
+  return { data: out };
+}
+
 async function loadExistingByEmail() {
   const data = await fetchAll(() => supabaseAdmin.from('contacts').select('*').order('id'));
   const map = new Map();
@@ -103,7 +117,7 @@ async function sync() {
   }
 
   if (rows.length) {
-    const { error } = await supabaseAdmin.from('contacts').upsert(rows, { onConflict: 'email' }).select();
+    const { error } = await upsertContacts(rows, 'id');
     if (error) return { upserted: 0, error: error.message };
   }
   return { upserted: rows.length };
@@ -169,8 +183,7 @@ async function syncLeads() {
   for (const l of withEmail) { const k = norm(l.email); if (!byEmail.has(k)) byEmail.set(k, l); }
 
   const rows = [...byEmail.values()].map((l) => buildLeadContactRow(l, existing.get(norm(l.email)) || {}, now));
-  const { data: upserted, error } = await supabaseAdmin
-    .from('contacts').upsert(rows, { onConflict: 'email' }).select('id, email');
+  const { data: upserted, error } = await upsertContacts(rows, 'id, email');
   if (error) return { upserted: 0, linked: 0, error: error.message };
 
   // Back-link leads.contact_id for leads that don't have one yet.

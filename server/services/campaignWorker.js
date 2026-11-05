@@ -120,9 +120,10 @@ async function processDue() {
       else      { await mark(rcpt.id, 'failed', r.reason || 'enqueue_failed'); failed++; }
     }
 
-    // Drained? Mark the campaign complete.
+    // Drained? Mark the campaign complete. A recipient still claimed ('sending') by a
+    // live or crashed worker keeps the campaign open until it is sent or swept failed.
     const { data: remaining } = await supabaseAdmin
-      .from('campaign_recipients').select('id').eq('campaign_id', campaign.id).eq('status', 'queued').limit(1);
+      .from('campaign_recipients').select('id').eq('campaign_id', campaign.id).in('status', ['queued', 'sending']).limit(1);
     if (!remaining || remaining.length === 0) {
       await supabaseAdmin.from('email_campaigns').update({ status: 'sent', updated_at: new Date().toISOString() }).eq('id', campaign.id);
     }

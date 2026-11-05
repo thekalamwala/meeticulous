@@ -83,8 +83,11 @@ jest.mock('../../config/supabase', () => {
         // terminal: used for .select() list reads
         if (table === 'email_templates') return resolve({ data: db.email_templates, error: null });
         if (table === 'email_logs') {
-          // queue read: status=queued and next_attempt_at<=now
-          const due = db.email_logs.filter((r) => r.status === 'queued');
+          // queue read: status=queued and next_attempt_at<=now. staleQueueRead models a
+          // read that raced another worker's claim (returns rows as they WERE: queued).
+          const due = db.staleQueueRead
+            ? db.email_logs.map((r) => ({ ...r, status: 'queued' }))
+            : db.email_logs.filter((r) => r.status === 'queued');
           return resolve({ data: due, error: null });
         }
         return resolve({ data: [], error: null });
@@ -104,7 +107,7 @@ jest.mock('../../utils/adminAlert', () => ({ adminAlert: jest.fn() }));
 const engine = require('../../services/email/communicationEngine');
 const { adminAlert } = require('../../utils/adminAlert');
 
-beforeEach(() => { db.email_logs = []; db.email_unsubscribes = []; db.notification_logs = []; mockProviderState = { success: true }; engine.clearCache(); adminAlert.mockClear(); });
+beforeEach(() => { db.email_logs = []; db.email_unsubscribes = []; db.notification_logs = []; db.staleQueueRead = false; mockProviderState = { success: true }; engine.clearCache(); adminAlert.mockClear(); });
 
 describe('communicationEngine.send', () => {
   test('queues a normal email (status queued, not yet sent)', async () => {
@@ -243,6 +246,15 @@ describe('communicationEngine.renderEmail — recipient-driven layout', () => {
 });
 
 describe('communicationEngine.processQueue — retry backoff', () => {
+  test('a row another worker already claimed is not delivered twice (ASH-35)', async () => {
+    await engine.send({ event: 'BOOKING_CONFIRMED_CUSTOMER', to: 'a@x.test', data: { service_name: 'X' }, user: { name: 'A' } });
+    db.email_logs[0].status = 'sending'; // claimed by another worker…
+    db.staleQueueRead = true;            // …after this worker read it as queued
+    const r = await engine.processQueue();
+    expect(r.sent).toBe(0);
+    expect(db.email_logs[0].status).toBe('sending'); // untouched: the other worker owns it
+  });
+
   test('successful send marks the row sent', async () => {
     await engine.send({ event: 'BOOKING_CONFIRMED_CUSTOMER', to: 'a@x.test', data: { service_name: 'X' }, user: { name: 'A' } });
     const r = await engine.processQueue();

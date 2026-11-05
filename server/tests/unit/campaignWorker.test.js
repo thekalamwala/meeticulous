@@ -14,6 +14,7 @@ jest.mock('../../config/supabase', () => ({
     q.select = (_c, opts) => { q._opts = opts; return q; };
     q.eq = (c, v) => { q._f[c] = v; return q; }; q.limit = () => q;
     q.not = () => q; q.gte = () => q;
+    q.in = (c, vs) => { q._in = vs; return q; };
     q.then = (res) => {
       // Daily-cap head/count query (email_logs) → return only a count.
       if (q._opts && q._opts.head) return res({ count: state.emailSentToday, error: null });
@@ -21,7 +22,7 @@ jest.mock('../../config/supabase', () => ({
       if (t === 'campaign_recipients') {
         // staleRead: the worker's list read races another worker's claim (sees every row as queued).
         const rows = state.staleRead ? state.recipients.map((r) => ({ ...r, status: 'queued' })) : state.recipients;
-        return res({ data: rows.filter((r) => r.campaign_id === q._f.campaign_id && r.status === (q._f.status || r.status)), error: null });
+        return res({ data: rows.filter((r) => r.campaign_id === q._f.campaign_id && (q._in ? q._in.includes(r.status) : r.status === (q._f.status || r.status))), error: null });
       }
       if (t === 'contacts') return res({ data: Object.values(state.contacts).filter((c) => c.id === q._f.id), error: null });
       return res({ data: [], error: null });
@@ -90,6 +91,13 @@ test('a recipient already claimed by another worker is not sent twice (ASH-35)',
   state.staleRead = false;
   expect(mockEnqueued.map((e) => e.to)).toEqual(['b@x']); // only r2; r1's claim was lost
   expect(state.recipients[0].status).toBe('sending');
+});
+
+test('a campaign with a recipient still mid-send is NOT marked sent', async () => {
+  state.recipients[0].status = 'sending'; // claimed by another worker, not yet finished
+  await worker.processDue();
+  expect(state.recipients[1].status).toBe('sent');
+  expect(state.campaigns[0].status).toBe('sending');
 });
 
 test('partial cold allowance enqueues only up to the remainder', async () => {
