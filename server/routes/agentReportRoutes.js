@@ -6,6 +6,7 @@
  *   GET /sales    — CRM pipeline/funnel/outreach counts, no PII (services/salesReportService.js)
  *   GET /kyc      — KYC queue/activation funnel/badge/Route counts, no PII (services/kycReportService.js)
  *   GET /support  — support inbox/escalation counts + response times, no PII (services/supportReportService.js)
+ *   GET /engineering — cron/queue/payout/contacts health counts, no PII (services/engineeringReportService.js)
  *
  * Auth = shared secret in the `x-agent-token` header, constant-time compared to
  * AGENT_REPORT_TOKEN. Fail-CLOSED: unset or shorter than 32 chars → 503, so a
@@ -23,6 +24,7 @@ const { buildSeoReport } = require('../services/seoReportService');
 const { buildSalesReport } = require('../services/salesReportService');
 const { buildKycReport } = require('../services/kycReportService');
 const { buildSupportReport } = require('../services/supportReportService');
+const { buildEngineeringReport } = require('../services/engineeringReportService');
 
 const MIN_TOKEN_LEN = 32;
 
@@ -81,6 +83,15 @@ router.get('/support', async (req, res) => {
   try {
     res.set('Cache-Control', 'no-store');
     res.json(await buildSupportReport());
+  } catch (e) {
+    safeError(res, e);
+  }
+});
+
+router.get('/engineering', async (req, res) => {
+  try {
+    res.set('Cache-Control', 'no-store');
+    res.json(await buildEngineeringReport());
   } catch (e) {
     safeError(res, e);
   }
