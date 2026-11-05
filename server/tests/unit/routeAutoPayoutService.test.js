@@ -30,13 +30,15 @@ const svc = require('../../services/routeAutoPayoutService');
 
 let state;
 const wireSupabase = () => {
-  state = { linkedAccountId: 'acc_HOST', bookingRow: null, updateError: null, updates: [] };
+  // claimRows: what the atomic claim UPDATE ... RETURNING id yields ([] = lost the race).
+  state = { linkedAccountId: 'acc_HOST', bookingRow: null, updateError: null, updates: [], claimRows: [{ id: 'bk-1' }] };
   supabaseAdmin.from.mockImplementation((table) => {
     const c = {};
     c.select = jest.fn(() => c);
     c.update = jest.fn((patch) => { state.updates.push(patch); return c; });
     c.eq = jest.fn(() => c);
     c.is = jest.fn(() => c);
+    c.or = jest.fn(() => c);
     c.maybeSingle = jest.fn(() => {
       if (table === 'kyc_submissions') return Promise.resolve({ data: { razorpay_account_id: state.linkedAccountId }, error: null });
       if (table === 'services') return Promise.resolve({ data: { duration: 30 }, error: null });
@@ -44,7 +46,12 @@ const wireSupabase = () => {
       return Promise.resolve({ data: null, error: null });
     });
     // Thenable so `await update().eq()` (patchBooking) resolves to { error }.
-    c.then = (resolve) => resolve({ error: state.updateError });
+    // The claim (first 'creating' update) never fails here; updateError applies to
+    // the bookkeeping patches so "transfer made, save failed" can be simulated.
+    c.then = (resolve) => {
+      const isClaim = state.updates[state.updates.length - 1]?.transfer_status === 'creating';
+      return resolve(isClaim ? { data: state.claimRows, error: null } : { error: state.updateError });
+    };
     return c;
   });
 };
@@ -59,7 +66,10 @@ const booking = (over = {}) => ({
   ...over,
 });
 
-const clientWith = (transfer) => ({ payments: { transfer: jest.fn(() => Promise.resolve({ items: [transfer] })) } });
+const clientWith = (transfer, existing = []) => ({ payments: {
+  transfer: jest.fn(() => Promise.resolve({ items: [transfer] })),
+  fetchTransfer: jest.fn(() => Promise.resolve({ entity: 'collection', items: existing })),
+} });
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -120,11 +130,73 @@ describe('createHeldTransferForBooking happy path', () => {
   });
 
   test('a Razorpay error is swallowed and recorded transfer_status=failed', async () => {
-    const client = { payments: { transfer: jest.fn(() => Promise.reject({ error: { description: 'transfer not allowed' } })) } };
+    const client = { payments: {
+      transfer: jest.fn(() => Promise.reject({ error: { description: 'transfer not allowed' } })),
+      fetchTransfer: jest.fn(() => Promise.resolve({ items: [] })),
+    } };
     razorpayConfig.getClient.mockResolvedValue(client);
     const res = await svc.createHeldTransferForBooking(booking(), { paymentId: 'pay_1', vendorAmount: 9.28 });
     expect(res).toEqual({ ok: false, error: 'transfer not allowed' });
     expect(merged()).toMatchObject({ transfer_status: 'failed', transfer_error: 'transfer not allowed' });
+  });
+});
+
+describe('createHeldTransferForBooking double-transfer guard (ASH-35)', () => {
+  test('claims the booking atomically before calling Razorpay', async () => {
+    const client = clientWith({ id: 'trf_1', status: 'pending' });
+    razorpayConfig.getClient.mockResolvedValue(client);
+    await svc.createHeldTransferForBooking(booking(), { paymentId: 'pay_1', vendorAmount: 9.28 });
+    expect(state.updates[0]).toMatchObject({ transfer_status: 'creating' });
+  });
+
+  test('lost the claim to a concurrent caller → no transfer, status untouched', async () => {
+    state.claimRows = [];
+    const client = clientWith({ id: 'trf_2', status: 'pending' });
+    razorpayConfig.getClient.mockResolvedValue(client);
+    const res = await svc.createHeldTransferForBooking(booking(), { paymentId: 'pay_1', vendorAmount: 9.28 });
+    expect(res).toEqual({ ok: false, skipped: 'claimed_elsewhere' });
+    expect(client.payments.transfer).not.toHaveBeenCalled();
+    expect(state.updates).toHaveLength(1); // only the (lost) claim attempt, no 'failed' write
+  });
+
+  test('a transfer already on the payment for this booking is adopted, not duplicated', async () => {
+    const existing = { id: 'trf_old', status: 'pending', on_hold_until: 2000000000, notes: { booking_id: 'bk-1' } };
+    const client = clientWith({ id: 'trf_new', status: 'pending' }, [existing]);
+    razorpayConfig.getClient.mockResolvedValue(client);
+    const res = await svc.createHeldTransferForBooking(booking(), { paymentId: 'pay_1', vendorAmount: 9.28 });
+    expect(res).toMatchObject({ ok: true, transferId: 'trf_old' });
+    expect(client.payments.transfer).not.toHaveBeenCalled();
+    expect(merged()).toMatchObject({ razorpay_transfer_id: 'trf_old', transfer_status: 'pending' });
+  });
+
+  test('another booking\'s transfer on the same payment is NOT adopted', async () => {
+    const other = { id: 'trf_other', status: 'pending', notes: { booking_id: 'bk-OTHER' } };
+    const client = clientWith({ id: 'trf_new', status: 'pending' }, [other]);
+    razorpayConfig.getClient.mockResolvedValue(client);
+    const res = await svc.createHeldTransferForBooking(booking(), { paymentId: 'pay_1', vendorAmount: 9.28 });
+    expect(res).toMatchObject({ ok: true, transferId: 'trf_new' });
+    expect(client.payments.transfer).toHaveBeenCalledTimes(1);
+  });
+
+  test('transfer created but the save fails → NOT marked failed (no retry as a new transfer)', async () => {
+    state.updateError = { message: 'connection reset' };
+    const client = clientWith({ id: 'trf_1', status: 'pending' });
+    razorpayConfig.getClient.mockResolvedValue(client);
+    const res = await svc.createHeldTransferForBooking(booking(), { paymentId: 'pay_1', vendorAmount: 9.28 });
+    expect(res).toMatchObject({ ok: false, transferId: 'trf_1' });
+    expect(state.updates.some((u) => u.transfer_status === 'failed')).toBe(false);
+  });
+
+  test('cannot check Razorpay for an existing transfer → creates nothing, releases claim as failed', async () => {
+    const client = { payments: {
+      transfer: jest.fn(),
+      fetchTransfer: jest.fn(() => Promise.reject(new Error('rzp down'))),
+    } };
+    razorpayConfig.getClient.mockResolvedValue(client);
+    const res = await svc.createHeldTransferForBooking(booking(), { paymentId: 'pay_1', vendorAmount: 9.28 });
+    expect(res).toEqual({ ok: false, error: 'rzp down' });
+    expect(client.payments.transfer).not.toHaveBeenCalled();
+    expect(merged()).toMatchObject({ transfer_status: 'failed' });
   });
 });
 
