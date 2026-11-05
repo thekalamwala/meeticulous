@@ -23,17 +23,27 @@ const { runLocked } = require('./jobLock');
 
 let _warnedSchema = false;
 
+// A FAILED run does not count as a run: it is retried after this delay (or after
+// its own interval, if shorter) instead of waiting a full interval. ASH-35 S2-5:
+// a daily job that errored used to sit until the next day.
+const RETRY_AFTER_ERROR_MS = 15 * 60 * 1000;
+// The lease is released when a run ends (jobLock.release), so it only needs to
+// outlast one run. Capped so a pod killed mid-run can't block a daily job for 48h.
+const MAX_LEASE_MS = 30 * 60 * 1000;
+
 // Record an attempt's outcome. Best-effort; persistence failure must not break the
 // job. Only ever called from INSIDE runLocked's fn, so it stamps only when THIS
-// instance actually ran (a lease-loser never reaches here).
+// instance actually ran (a lease-loser never reaches here). An error keeps the
+// previous last_run_at (the job is still due); updated_at times the retry.
 async function stampRun(name, outcome, error) {
+  const now = new Date().toISOString();
   try {
     await supabaseAdmin.from('job_runs').upsert({
       name,
-      last_run_at: new Date().toISOString(),
+      ...(outcome === 'ok' ? { last_run_at: now } : {}),
       last_outcome: outcome,
       last_error: error ? String(error).slice(0, 500) : null,
-      updated_at: new Date().toISOString(),
+      updated_at: now,
     }, { onConflict: 'name' });
   } catch (err) {
     if (!_warnedSchema && /Could not find|does not exist|relation .* does not exist/i.test(err.message || '')) {
@@ -56,9 +66,11 @@ async function runIfDue(name, intervalMs, fn, { leaseMs } = {}) {
   let due = true;
   try {
     const { data, error } = await supabaseAdmin
-      .from('job_runs').select('last_run_at').eq('name', name).maybeSingle();
+      .from('job_runs').select('last_run_at, last_outcome, updated_at').eq('name', name).maybeSingle();
     if (error) throw error;
-    if (data && data.last_run_at) {
+    if (data && data.last_outcome === 'error' && data.updated_at) {
+      due = (Date.now() - new Date(data.updated_at).getTime()) >= Math.min(RETRY_AFTER_ERROR_MS, intervalMs);
+    } else if (data && data.last_run_at) {
       due = (Date.now() - new Date(data.last_run_at).getTime()) >= intervalMs;
     }
   } catch (_) {
@@ -79,7 +91,7 @@ async function runIfDue(name, intervalMs, fn, { leaseMs } = {}) {
     } finally {
       await stampRun(name, outcome, errMsg);
     }
-  }, { leaseMs: leaseMs || intervalMs * 2 });
+  }, { leaseMs: leaseMs || Math.min(intervalMs * 2, MAX_LEASE_MS), release: true });
 }
 
-module.exports = { runIfDue, stampRun };
+module.exports = { runIfDue, stampRun, RETRY_AFTER_ERROR_MS, MAX_LEASE_MS };

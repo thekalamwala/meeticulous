@@ -10,8 +10,9 @@
 //
 // runLocked() wraps a job in a short Postgres lease: only the instance that holds
 // a fresh lease for a given job name runs it; the others skip that tick. The
-// holder renews its lease on every tick; if the holder dies, the lease expires
-// and another instance takes over. Backed by the job_locks table +
+// holder renews its lease on every tick (or releases it after the run, for
+// release:true jobs); if the holder dies, the lease expires and another
+// instance takes over. Backed by the job_locks table +
 // try_acquire_job_lock RPC (migrations/v3.25_job_locks.sql).
 //
 // FAIL-OPEN: if the lock cannot be evaluated (migration not yet applied, transient
@@ -78,6 +79,22 @@ async function acquire(name, leaseMs) {
   }
 }
 
+/**
+ * Release our lease on `name` (only if WE still hold it). Best-effort.
+ * Without this a runIfDue lease outlived its run by up to leaseMs (2x the interval):
+ * after a deploy the new pod has a new HOLDER and could not take the old pod's
+ * lease, so a daily job waited up to 48h (ASH-35 S2-5). With release:true a lease
+ * only exists while a run is in flight; a pod killed mid-run still leaves one,
+ * until leaseMs expires (runIfDue caps that at 30 min).
+ * @param {string} name
+ */
+async function release(name) {
+  try {
+    const { supabaseAdmin } = require('../config/supabase');
+    await supabaseAdmin.from('job_locks').delete().eq('name', name).eq('holder', HOLDER);
+  } catch (_) { /* lease simply expires on its own */ }
+}
+
 // In-process re-entrancy guard. The Postgres lease renews for the SAME holder on
 // every tick, so it does NOT stop a slow run of a job from overlapping the next
 // tick of that same job on THIS process (e.g. reminders/email-queue running every
@@ -88,14 +105,20 @@ const _inFlight = new Set();
 /**
  * Run `fn` only if this instance currently holds the lease for `name` AND no
  * previous run of `name` is still executing in this process; otherwise skip this
- * tick. `leaseMs` should comfortably exceed the job's interval (the schedulers in
- * server.js pass 2x the interval) so the holder always renews before expiry.
+ * tick. Two modes:
+ *   • sticky (default) — the holder keeps the lease and renews it every tick, so
+ *     one instance stays leader for a setInterval job. `leaseMs` should comfortably
+ *     exceed the interval (server.js passes 2x).
+ *   • release: true — the lease is dropped when fn settles. Used by runIfDue jobs
+ *     (job_runs decides due-ness, so no leader is needed) and on-demand runs, so a
+ *     new pod after a deploy is not locked out by the old pod's lease. `leaseMs` is
+ *     then only a ceiling on one run's duration.
  * Returns fn()'s result, or undefined when the tick was skipped.
  * @param {string} name
  * @param {() => any} fn
- * @param {{ leaseMs?: number }} [opts]
+ * @param {{ leaseMs?: number, release?: boolean }} [opts]
  */
-async function runLocked(name, fn, { leaseMs } = {}) {
+async function runLocked(name, fn, { leaseMs, release: releaseAfter = false } = {}) {
   if (_inFlight.has(name)) return undefined; // previous tick still running here
   const got = await acquire(name, leaseMs || 60 * 1000);
   if (!got) return undefined;
@@ -103,8 +126,11 @@ async function runLocked(name, fn, { leaseMs } = {}) {
   try {
     return await fn();
   } finally {
+    // Release BEFORE clearing in-flight: otherwise a same-process tick could renew
+    // the lease in between and this delete would drop that new run's lease.
+    if (releaseAfter) await release(name);
     _inFlight.delete(name);
   }
 }
 
-module.exports = { runLocked, acquire, HOLDER };
+module.exports = { runLocked, acquire, release, HOLDER };

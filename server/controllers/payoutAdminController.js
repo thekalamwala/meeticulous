@@ -210,7 +210,7 @@ const listClearing = async (req, res) => {
 // never overlap a cron run (or a second click) and race transfer creation.
 const runReconcile = async (req, res) => {
   try {
-    const summary = await runLocked('payout-reconcile', () => payoutReconciler.reconcile(), { leaseMs: 30 * 60 * 1000 });
+    const summary = await runLocked('payout-reconcile', () => payoutReconciler.reconcile(), { leaseMs: 30 * 60 * 1000, release: true });
     if (summary === undefined) return res.status(409).json({ message: 'The payout reconciler is already running. Try again in a minute.' });
     await audit(req, { action: 'payout.reconcile_run', resource_type: 'payout_reconcile', resource_id: null, after: summary });
     res.json(summary);

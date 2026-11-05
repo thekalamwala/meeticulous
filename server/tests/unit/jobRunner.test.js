@@ -64,6 +64,28 @@ test('a failing job stamps outcome=error and rethrows', async () => {
   await expect(runIfDue('ledger-reconcile', HOUR, fn)).rejects.toThrow('boom');
   expect(mockUpserts[0]).toMatchObject({ name: 'ledger-reconcile', last_outcome: 'error' });
   expect(mockUpserts[0].last_error).toMatch(/boom/);
+  // A failed run does NOT count as a run: last_run_at is left alone (still due).
+  expect(mockUpserts[0]).not.toHaveProperty('last_run_at');
+});
+
+test('after a failed run, a daily job retries in 15 min instead of waiting a day', async () => {
+  const DAY = 24 * HOUR;
+  const fn = jest.fn().mockResolvedValue('ok');
+  // failed 5 min ago → not yet
+  mockScheduleRow = { last_run_at: new Date(Date.now() - 2 * HOUR).toISOString(), last_outcome: 'error', updated_at: new Date(Date.now() - 5 * 60 * 1000).toISOString() };
+  await runIfDue('daily-digest', DAY, fn);
+  expect(fn).not.toHaveBeenCalled();
+  // failed 20 min ago → retried, even though the last success was only 2h ago
+  mockScheduleRow = { ...mockScheduleRow, updated_at: new Date(Date.now() - 20 * 60 * 1000).toISOString() };
+  await runIfDue('daily-digest', DAY, fn);
+  expect(fn).toHaveBeenCalledTimes(1);
+});
+
+test('lease is capped at 30 min so a killed pod cannot block a daily job for 48h', async () => {
+  await runIfDue('daily-digest', 24 * HOUR, jest.fn());
+  expect(mockRunLocked.mock.calls[0][2]).toEqual({ leaseMs: 30 * 60 * 1000, release: true });
+  await runIfDue('payout-reconcile', 5 * 60 * 1000, jest.fn());
+  expect(mockRunLocked.mock.calls[1][2]).toEqual({ leaseMs: 10 * 60 * 1000, release: true }); // 2x interval when shorter
 });
 
 test('when another instance holds the lease (runLocked skips), fn does not run', async () => {
