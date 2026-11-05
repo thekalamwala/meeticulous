@@ -311,15 +311,15 @@ const TEMPLATES = [
 
   (() => { const t = themeForCategory('Account Update'); return {
     event_key: 'KYC_APPROVED', sender_key: 'account', audience: 'vendor', category: 'Profile',
-    name: 'KYC Approved', subject: 'Your KYC is verified — payouts unlocked',
+    name: 'KYC Approved', subject: 'Your KYC is verified',
     preview_text: 'Your identity verification was approved.',
     email_category: 'Account Update',
     email_reason: 'You are receiving this email because your KYC verification status was updated.',
     html_content:
-      C.heroImage('kyc-approved', 'Verified — payouts unlocked') +
+      C.heroImage('kyc-approved', 'Verified') +
       h("You're verified, {{first_name}}!") +
-      lead('Your identity verification was approved. You can now request payouts from your dashboard.') +
-      C.banner(t, { title: 'Verified', sub: 'Payouts are now unlocked' }),
+      lead('Your identity verification was approved. Payouts switch on once your payout account is activated — we will let you know.') +
+      C.banner(t, { title: 'Verified', sub: 'Next: payout account activation' }),
     cta_label: 'Go to payouts', cta_url: '{{dashboard_url}}',
   }; })(),
 

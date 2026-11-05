@@ -42,7 +42,7 @@ function onKycApproved({ userId, email, fullName, reviewNote } = {}) {
       name: fullName,
       emailData: {
         first_name: (fullName || '').split(' ')[0],
-        review_note: reviewNote || 'Please review the requirements and resubmit.',
+        review_note: reviewNote || '',
         support_email: 'team@meeticulous.com',
       },
       emailUser: { name: fullName, email },
@@ -55,7 +55,7 @@ function onKycApproved({ userId, email, fullName, reviewNote } = {}) {
     role: 'host',
     type: 'KYC_APPROVED',
     title: 'KYC approved',
-    body: 'Your identity verification was approved. Payouts are unlocked.',
+    body: 'Your identity verification was approved. Payouts switch on once your payout account is activated — we will let you know.',
     link: '/dashboard/payments/payouts',
   });
 
