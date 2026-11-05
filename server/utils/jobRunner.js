@@ -23,17 +23,29 @@ const { runLocked } = require('./jobLock');
 
 let _warnedSchema = false;
 
+// Jobs opted in with retryOnError: a FAILED run does not count as a run, and is
+// retried after this delay (or its own interval, if shorter) instead of waiting a
+// full interval (ASH-35 S2-5: a daily reconciler that errored sat until the next
+// day). OPT-IN ONLY for idempotent jobs (reconcilers, cleanups): a sender job that
+// throws half-way would otherwise re-send its first half every 15 minutes.
+const RETRY_AFTER_ERROR_MS = 15 * 60 * 1000;
+// The lease is released when a run ends (jobLock.release), so it only needs to
+// outlast one run. Capped so a pod killed mid-run can't block a daily job for 48h.
+const MAX_LEASE_MS = 30 * 60 * 1000;
+
 // Record an attempt's outcome. Best-effort; persistence failure must not break the
 // job. Only ever called from INSIDE runLocked's fn, so it stamps only when THIS
-// instance actually ran (a lease-loser never reaches here).
-async function stampRun(name, outcome, error) {
+// instance actually ran (a lease-loser never reaches here). With retryOnError an
+// error keeps the previous last_run_at (still due); updated_at times the retry.
+async function stampRun(name, outcome, error, { retryOnError = false } = {}) {
+  const now = new Date().toISOString();
   try {
     await supabaseAdmin.from('job_runs').upsert({
       name,
-      last_run_at: new Date().toISOString(),
+      ...(outcome === 'ok' || !retryOnError ? { last_run_at: now } : {}),
       last_outcome: outcome,
       last_error: error ? String(error).slice(0, 500) : null,
-      updated_at: new Date().toISOString(),
+      updated_at: now,
     }, { onConflict: 'name' });
   } catch (err) {
     if (!_warnedSchema && /Could not find|does not exist|relation .* does not exist/i.test(err.message || '')) {
@@ -49,16 +61,18 @@ async function stampRun(name, outcome, error) {
  * @param {string}   name        job name (shared with job_locks + job_runs)
  * @param {number}   intervalMs  minimum spacing between runs
  * @param {()=>any}  fn
- * @param {{ leaseMs?: number }} [opts]
+ * @param {{ leaseMs?: number, retryOnError?: boolean }} [opts]
  * @returns {Promise<any|undefined>} fn's result, or undefined when skipped/not due
  */
-async function runIfDue(name, intervalMs, fn, { leaseMs } = {}) {
+async function runIfDue(name, intervalMs, fn, { leaseMs, retryOnError = false } = {}) {
   let due = true;
   try {
     const { data, error } = await supabaseAdmin
-      .from('job_runs').select('last_run_at').eq('name', name).maybeSingle();
+      .from('job_runs').select('last_run_at, last_outcome, updated_at').eq('name', name).maybeSingle();
     if (error) throw error;
-    if (data && data.last_run_at) {
+    if (retryOnError && data && data.last_outcome === 'error' && data.updated_at) {
+      due = (Date.now() - new Date(data.updated_at).getTime()) >= Math.min(RETRY_AFTER_ERROR_MS, intervalMs);
+    } else if (data && data.last_run_at) {
       due = (Date.now() - new Date(data.last_run_at).getTime()) >= intervalMs;
     }
   } catch (_) {
@@ -77,9 +91,9 @@ async function runIfDue(name, intervalMs, fn, { leaseMs } = {}) {
       errMsg = e && e.message;
       throw e;
     } finally {
-      await stampRun(name, outcome, errMsg);
+      await stampRun(name, outcome, errMsg, { retryOnError });
     }
-  }, { leaseMs: leaseMs || intervalMs * 2 });
+  }, { leaseMs: leaseMs || Math.min(intervalMs * 2, MAX_LEASE_MS), release: true });
 }
 
-module.exports = { runIfDue, stampRun };
+module.exports = { runIfDue, stampRun, RETRY_AFTER_ERROR_MS, MAX_LEASE_MS };

@@ -17,6 +17,7 @@ const { computeAllSettlementBalances } = require('../services/settlementService'
 const platformConfig = require('../services/platformConfig');
 const routeTransferService = require('../services/routeTransferService');
 const payoutReconciler = require('../services/payoutReconciler');
+const { runLocked } = require('../utils/jobLock');
 
 const now = () => new Date().toISOString();
 
@@ -205,9 +206,12 @@ const listClearing = async (req, res) => {
 // platform_settings.payout_reconciler_mode: 'off' no-ops, 'observe' scans + syncs the
 // bank-settlement leg (no money), 'live' also creates/finalizes transfers. Returns the
 // run summary. Gated on payouts.release (it can move money in 'live').
+// Runs under the SAME lease as the 15-min cron ('payout-reconcile'), so a click can
+// never overlap a cron run (or a second click) and race transfer creation.
 const runReconcile = async (req, res) => {
   try {
-    const summary = await payoutReconciler.reconcile();
+    const summary = await runLocked('payout-reconcile', () => payoutReconciler.reconcile(), { leaseMs: 30 * 60 * 1000, release: true });
+    if (summary === undefined) return res.status(409).json({ message: 'The payout reconciler is already running. Try again in a minute.' });
     await audit(req, { action: 'payout.reconcile_run', resource_type: 'payout_reconcile', resource_id: null, after: summary });
     res.json(summary);
   } catch (e) { safeError(res, e); }

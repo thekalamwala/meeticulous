@@ -319,9 +319,20 @@ async function syncNotificationLog(logId, status) {
  * Called on an interval from server.js.
  * @returns {{ processed, sent, failed, retried }}
  */
+// A row is claimed (status 'sending') before delivery so two workers can't both
+// send it. A claim older than this means the worker died mid-send: the row goes
+// back to 'queued' (a possible duplicate beats a lost booking/OTP email).
+const STALE_SENDING_MS = 15 * 60 * 1000;
+
 async function processQueue(limit = 25) {
   const settings = await loadSettings();
   const nowIso = new Date().toISOString();
+
+  try {
+    await supabaseAdmin.from('email_logs')
+      .update({ status: 'queued', updated_at: nowIso })
+      .eq('status', 'sending').lt('updated_at', new Date(Date.now() - STALE_SENDING_MS).toISOString());
+  } catch (_) { /* best-effort sweep; never blocks the queue */ }
 
   let rows = [];
   try {
@@ -335,6 +346,11 @@ async function processQueue(limit = 25) {
 
   let sent = 0, failed = 0, retried = 0;
   for (const row of rows) {
+    // Claim first (queued → sending). Loser (another worker/instance got it) skips.
+    const { data: claimed } = await supabaseAdmin.from('email_logs')
+      .update({ status: 'sending', updated_at: new Date().toISOString() })
+      .eq('id', row.id).eq('status', 'queued').select('id').maybeSingle();
+    if (!claimed) continue;
     const attemptsMade = (row.attempts || 0) + 1;
     // Sender is a property of the template, resolved here at delivery time (the
     // queued row stores rendered html/subject but not the persona). Missing

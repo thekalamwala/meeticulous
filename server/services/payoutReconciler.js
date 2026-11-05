@@ -45,6 +45,7 @@ const { createHeldTransferForBooking, finalizeReleasedTransfer, applyTransferSet
 const routeAccountService = require('./routeAccountService');
 const { adminAlert } = require('../utils/adminAlert');
 const { securityLog } = require('../utils/logger');
+const { captureException } = require('../utils/sentry');
 
 const MIN_TRANSFER_RUPEES = 1;                                    // mirrors routeAutoPayoutService
 const MAX_ATTEMPTS = Number(process.env.PAYOUT_RECONCILE_MAX_ATTEMPTS || 5);
@@ -211,11 +212,19 @@ async function reconcile() {
     try {
       await bumpAttempt(b.id, b.transfer_attempts);
       const r = await createHeldTransferForBooking(b, { paymentId: b.razorpay_payment_id, vendorAmount: amt });
+      if (r.skipped === 'claimed_elsewhere') {
+        // Another caller (capture hook / admin run) is creating this transfer right
+        // now — not a failed attempt. Give the attempt back so a busy booking can't
+        // walk to MAX_ATTEMPTS and email the host a false "payout failed".
+        await supabaseAdmin.from('bookings').update({ transfer_attempts: Number(b.transfer_attempts) || 0 }).eq('id', b.id);
+        continue;
+      }
       if (r.ok && r.transferId) s.created++;
       else s.failedAttempt++;                                // service recorded transfer_status='failed'
     } catch (e) {
       s.failedAttempt++;
       securityLog('payout_reconcile_create_error', { bookingId: b.id, reason: e.message });
+      captureException(e, { job: 'payout-reconcile', phase: 'create', bookingId: b.id });
     }
   }
 
@@ -283,6 +292,7 @@ async function reconcile() {
         }
       } catch (e) {
         securityLog('payout_reconcile_release_error', { bookingId: b.id, reason: e.message });
+        captureException(e, { job: 'payout-reconcile', phase: 'release', bookingId: b.id });
       }
     }
   }
