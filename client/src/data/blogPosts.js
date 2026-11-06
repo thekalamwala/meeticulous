@@ -71,6 +71,73 @@ export const themeFor = (category) => CATEGORY_THEME[category] || CATEGORY_THEME
 
 export const BLOG_POSTS = [
 {
+  "slug": "appointment-cancellation-reschedule-message",
+  "title": "Appointment Cancellation Message: 12 Templates to Copy",
+  "date": "Nov 6, 2026",
+  "icons": ["calendar", "bell", "shield"],
+  "author": "Shubham N Datarkar",
+  "readMins": 7,
+  "category": "Guide",
+  "image": null,
+  "excerpt": "Appointment cancellation message templates for clients and professionals: 12 copy-paste texts for WhatsApp and email, plus rules for rescheduling politely.",
+  "body": [
+    { "p": "A good appointment cancellation message does four things: it says early that the slot is cancelled, names the exact date and time, gives a short honest reason if needed, and offers a new time or a link to pick one. Keep it under five lines and send it on WhatsApp or email the moment you know." },
+    { "p": "Below are 12 copy-paste templates. Six are for professionals who have to cancel or move a client's booking, and six are for the replies you send when a client cancels, reschedules or misses a session. Hinglish versions are included, because many Indian clients reply faster in them." },
+    { "h2": "How to write a cancellation or reschedule message" },
+    { "p": "Guides from scheduling tools agree on the basics: apologise for the inconvenience, state the date and time being cancelled, keep the reason brief, and offer alternatives straight away ([Apptoto](https://www.apptoto.com/best-practices/appointment-reschedule-requests-text-messages)). Two or three specific alternative slots work better than \"let me know what suits you\", because the client only has to say yes." },
+    {
+      "steps": [
+        "**Send it early.** As soon as you know. A cancellation a day ahead can be refilled; one an hour ahead cannot.",
+        "**Name the booking.** Service, day, date and time in IST, so there is no doubt which appointment you mean.",
+        "**Keep the reason to one line.** \"Unwell\" or \"a clash I cannot move\" is enough. Long explanations read as excuses.",
+        "**Offer a next step.** Two slots, or one rebooking link. This is what turns a cancellation into a reschedule.",
+        "**Settle money in the same message.** If the client had paid, say whether it is refunded or carried to the new slot."
+      ]
+    },
+    { "h2": "Templates when you have to cancel or move the booking" },
+    { "quote": "Hi Priya, I am sorry, I have to move your session on Saturday, 15 Nov at 11:00 AM IST because I am unwell. Could we do Monday 17 Nov at 11:00 AM or Tuesday 18 Nov at 5:00 PM? Your payment stays valid for the new slot.", "cite": "1. Professional reschedules, with two options" },
+    { "quote": "Hi Rahul, something urgent has come up and I cannot take your 4:00 PM call today. I am really sorry for the short notice. Pick any free slot here: [booking link]. If you would rather cancel, I will refund the full amount.", "cite": "2. Same-day cancellation by you" },
+    { "quote": "Namaste Mrs. Sharma, Dr. Rao will not be in the clinic on Monday 17 Nov. Your appointment is moved to Tuesday 18 Nov, same time. Reply here if that does not work and we will find another day.", "cite": "3. Clinic moves a day" },
+    { "quote": "Hi Sneha, our stylist is on leave tomorrow, so we need to move your 5:00 PM appointment. Sorry for the trouble. Free slots: [link].", "cite": "4. Salon or studio, staff unavailable" },
+    { "quote": "Hello Mr. Iyer, there is no class on Saturday 22 Nov. The make-up class is on Sunday 23 Nov, 5:00 to 6:00 PM, on the same link.", "cite": "5. Tutor cancels a class" },
+    { "quote": "Hi Arjun, I need to cancel our session tomorrow at 7:00 PM IST. You will get a full refund, or you can rebook here without paying again: [link].", "cite": "6. Coach cancels, full refund or free rebook" },
+    { "h2": "Templates when a client cancels or asks to reschedule" },
+    { "quote": "Hi Priya, thanks for letting me know. Your session on Saturday 15 Nov at 11:00 AM IST is cancelled. Whenever you are ready, you can book again here: [link].", "cite": "7. Confirming a cancellation made in time" },
+    { "quote": "No problem, Rahul. I have moved you to Thursday 20 Nov at 6:00 PM IST. Reply OK to confirm, or pick another slot: [link].", "cite": "8. Confirming a reschedule" },
+    { "quote": "Hi Sneha, I have seen your message. Since this is within 24 hours of the appointment, our policy counts it as a used session. This once, I am happy to move it to next week at no charge. Please pick a slot: [link].", "cite": "9. Late cancellation, with a one-time exception" },
+    { "quote": "Hi Karan, we missed you at 4:00 PM today. These things happen. If you would still like to meet, here is the link to rebook: [link]. As per the booking terms, the fee for a missed session applies.", "cite": "10. After a no-show, firm but kind" },
+    { "quote": "Namaste Sharma ji, aapka kal ka appointment cancel kar diya gaya hai. Naya samay chunne ke liye yeh link use kijiye: [link]. Koi dikkat ho to yahin reply kijiye. Dhanyavaad!", "cite": "11. Hinglish confirmation" },
+    { "quote": "Namaste! Mujhe aapka Shanivar 11 baje ka session aage badhana pada, kshama kijiye. Kya Somvar 11 baje ya Mangalvar 5 baje theek rahega?", "cite": "12. Hinglish reschedule request" },
+    { "h2": "Cancellation message or policy: which comes first?" },
+    { "p": "A message handles one booking. A policy handles all of them. Most private practices use a 24 or 48 hour notice window ([Acuity Scheduling](https://acuityscheduling.com/learn/how-to-create-a-cancellation-policy)). Whatever you choose, show it on the booking page before payment, so the late-cancellation message above is a reminder and not a surprise." },
+    {
+      "table": {
+        "head": ["Situation", "What to send"],
+        "rows": [
+          ["You cancel with a day or more notice", "Template 1 or 3, offer two slots"],
+          ["You cancel the same day", "Template 2 or 6, offer refund or free rebook"],
+          ["Client cancels in time", "Template 7 or 8"],
+          ["Client cancels late", "Template 9, one-time exception if you wish"],
+          ["Client does not turn up", "Template 10"]
+        ]
+      }
+    },
+    { "h2": "How cancellations work on Meeticulous" },
+    { "p": "On Meeticulous, a guest who cancels gets a refund based on how early they cancel: 100% if 24 hours or more before, 50% between 6 and 24 hours, none under 6 hours, and a full refund if the host cancels. The rules are on the [refund page](/refund), and the guest can read them before paying. Your cancellation message then rarely has to argue about money; it only has to be kind and offer a new slot." },
+    { "p": "Fewer last-minute cancellations also start earlier in the flow. A [WhatsApp reminder](/blog/appointment-reminder-templates) gives clients a moment to cancel early, and [advance payment](/blog/advance-payment-for-appointments) makes a booking a real commitment. The full playbook is in [how to reduce no-shows](/blog/how-to-reduce-no-shows), and you can run replies from your phone with [appointments on WhatsApp](/blog/manage-appointments-on-whatsapp)." },
+    { "h2": "Frequently asked questions" },
+    {
+      "faq": [
+        { "q": "How do I write an appointment cancellation message?", "a": "State that the appointment is cancelled, name the service, date and time, give a one-line reason, apologise if you are the one cancelling, and offer a new time or a rebooking link. Keep it under five lines." },
+        { "q": "How do I politely reschedule an appointment?", "a": "Message as early as possible, apologise briefly, and offer two specific new slots. Offering slots means the other person can confirm with one word instead of working out what suits." },
+        { "q": "How much notice should a cancellation policy require?", "a": "Most private practices use 24 or 48 hours. Choose the window that gives you enough time to refill the slot, publish it before payment, and apply it the same way to every client." },
+        { "q": "Should I send a cancellation message on WhatsApp or email?", "a": "Use the channel the client booked on. For anything within 24 hours, WhatsApp is usually read fastest in India, so send there, and use email when you also need a written record of the change." },
+        { "q": "What should I say when a client cancels at the last minute?", "a": "Confirm the cancellation, state the policy in one calm sentence, and offer a rebooking link. If you decide to waive the fee once, say it is a one-time exception so the policy stays intact." }
+      ]
+    }
+  ]
+},
+{
   "slug": "how-to-avoid-double-booking-appointments",
   "title": "Double Booking: What It Is and How to Prevent It",
   "date": "Nov 4, 2026",
