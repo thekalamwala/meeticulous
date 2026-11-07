@@ -179,16 +179,20 @@ function PrimaryCta({ to = START, children }) {
 }
 
 /* Empty image placeholder; the founder supplies the real photo later. */
-function ImgSlot({ alt, slot, className = '' }) {
+function ImgSlot({ alt, slot, src, className = '' }) {
   return (
     <div
-      role="img"
-      aria-label={alt}
+      role={src ? undefined : 'img'}
+      aria-label={src ? undefined : alt}
       data-img-slot={slot}
-      className={`flex items-center justify-center rounded-[16px] border border-black/5 ${className}`}
+      className={`flex items-center justify-center overflow-hidden rounded-[16px] border border-black/5 ${className}`}
       style={{ background: 'repeating-linear-gradient(135deg, rgba(15,118,110,0.04) 0 10px, rgba(15,118,110,0.08) 10px 20px)' }}
     >
-      <ImageIcon size={28} style={{ color: 'rgba(15,118,110,0.35)' }} aria-hidden />
+      {src ? (
+        <img src={src} alt={alt} className="h-full w-full object-cover" loading="lazy" />
+      ) : (
+        <ImageIcon size={28} style={{ color: 'rgba(15,118,110,0.35)' }} aria-hidden />
+      )}
     </div>
   );
 }
@@ -599,6 +603,7 @@ export default function AvailabilityFeature() {
           <Reveal delay={0.08} className="lg:pt-4">
             <ImgSlot
               slot="availability-weekly-schedule"
+              src="/features/availablity.png"
               alt="The Availability screen in the Meeticulous dashboard, with weekly hours, blocked dates and buffer settings"
               className="aspect-[3/4] w-full lg:h-full lg:aspect-auto lg:min-h-[34rem]"
             />
