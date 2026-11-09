@@ -18,6 +18,7 @@ import MoreMenu from '../../components/community/MoreMenu';
 import EditBox from '../../components/community/EditBox';
 import { ConfirmDialog } from '../../components/community/Dialog';
 import { errorCopy } from '../../components/community/communityErrors';
+import useTermsGate from '../../components/community/useTermsGate';
 import CommunityLayout, { ListStatus, TITLE_SUFFIX, flat } from './CommunityLayout';
 
 function SpaceCard({ space, onCompose }) {
@@ -41,6 +42,9 @@ export default function CommunityItem() {
   const loc = useLocation();
   const navigate = useNavigate();
   const requireLogin = useRequireLogin();
+  // Author writes hit requireTerms too: route COMMUNITY_TERMS_REQUIRED (e.g. after a terms
+  // version bump) through the same house-rules dialog instead of a generic toast.
+  const [guard, termsDialog] = useTermsGate();
   const [s, setS] = useState({ loading: true, status: null });
   const [more, setMore] = useState(false);
   const [parent, setParent] = useState(null); // comment being answered (null = the post)
@@ -118,17 +122,15 @@ export default function CommunityItem() {
       setS((p) => ({ ...p, comments: p.comments.filter((c) => c.id !== tempId), item: { ...p.item, comment_count: Math.max(0, p.item.comment_count - 1) } }));
     }
   };
-  const guardWrite = async (fn) => {
-    try { return await fn(); } catch (e) { toast.error(errorCopy(e, user)); throw e; }
-  };
   const editComment = async (c, body) => {
     const prev = { body: c.body, edited_at: c.edited_at };
     patchComment(c.id, { body, edited_at: new Date().toISOString() }); // optimistic
     try {
-      const { comment } = await updateComment(c.id, { body });
+      const { comment } = await guard(() => updateComment(c.id, { body }));
       patchComment(c.id, { body: comment.body, edited_at: comment.edited_at }); // reconcile
     } catch (e) {
       patchComment(c.id, prev); // roll back; EditBox surfaces the error / NOT_EDITABLE toast
+      if (e?.cancelled) return; // user declined the terms dialog; nothing was saved
       throw e;
     }
   };
@@ -136,34 +138,42 @@ export default function CommunityItem() {
     const prev = { status: c.status, body: c.body };
     patchComment(c.id, { status: 'deleted', body: '' }); // optimistic
     try {
-      await deleteComment(c.id);
+      await guard(() => deleteComment(c.id));
     } catch (e) {
       patchComment(c.id, prev); // roll back
-      toast.error(errorCopy(e, user));
+      if (!e?.cancelled) toast.error(errorCopy(e, user));
     }
   };
   const markAnswer = async (c) => {
     const prev = item.accepted_comment_id;
     setS((p) => ({ ...p, item: { ...p.item, accepted_comment_id: c.id } })); // optimistic
     try {
-      const d = await acceptAnswer(item.id, c.id);
+      const d = await guard(() => acceptAnswer(item.id, c.id));
       setS((p) => ({ ...p, item: { ...p.item, accepted_comment_id: d.accepted_comment_id } })); // reconcile
     } catch (e) {
       setS((p) => ({ ...p, item: { ...p.item, accepted_comment_id: prev } })); // roll back
-      toast.error(errorCopy(e, user));
+      if (!e?.cancelled) toast.error(errorCopy(e, user));
     }
   };
   const saveItem = async (v) => {
-    const d = await updateItem(item.id, v);
-    setS((p) => ({ ...p, item: { ...p.item, ...d.item } }));
-    setEditing(false);
+    try {
+      const d = await guard(() => updateItem(item.id, v));
+      setS((p) => ({ ...p, item: { ...p.item, ...d.item } }));
+      setEditing(false);
+    } catch (e) {
+      if (e?.cancelled) { setEditing(false); return; } // declined terms; drop the edit
+      throw e; // EditBox surfaces NOT_EDITABLE / other errors inline
+    }
   };
   const removeItem = async () => {
     try {
-      await guardWrite(() => deleteItem(item.id));
+      await guard(() => deleteItem(item.id));
       toast.success('Deleted');
       navigate('/community', { replace: true });
-    } catch { setConfirmDel(false); }
+    } catch (e) {
+      if (!e?.cancelled) toast.error(errorCopy(e, user));
+      setConfirmDel(false);
+    }
   };
 
   if (s.status === 404) return <ErrorPage code={404} />;
@@ -268,6 +278,7 @@ export default function CommunityItem() {
         </div>
       )}
 
+      {termsDialog}
       {reporting && <ReportDialog target={reporting} onClose={() => setReporting(null)} />}
       {confirmDel && (
         <ConfirmDialog title="Delete this post?" text="It will disappear from the community. This can't be undone." onConfirm={removeItem} onClose={() => setConfirmDel(false)} />

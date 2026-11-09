@@ -23,12 +23,18 @@ export default function CommentList({ comments, acceptedId, viewerId, canAccept,
   const byId = new Map(comments.map((c) => [c.id, c]));
   const accepted = comments.find((c) => c.id === acceptedId && !TOMBSTONE[c.status]);
   const ordered = accepted ? [accepted, ...comments.filter((c) => c !== accepted)] : comments;
+  // A removed/deleted reply is only kept as a tombstone when a visible reply hangs off it,
+  // so the thread still reads. A childless tombstone adds nothing and would make the row
+  // count exceed the visible comment_count in the heading, so drop it.
+  // ponytail: direct visible child only; a tombstone under a tombstone chain is rare enough to keep.
+  const hasVisibleChild = (id) => comments.some((k) => k.parent_id === id && !TOMBSTONE[k.status]);
 
   return (
     <>
     <ol className="flex list-none flex-col gap-4 p-0">
       {ordered.map((c) => {
         if (TOMBSTONE[c.status]) {
+          if (!hasVisibleChild(c.id)) return null; // childless removed reply: drop, no empty row
           return (
             <li key={c.id} id={`c-${c.id}`} className="flex gap-4 rounded-xl bg-neutral-100 p-5 sm:p-6">
               <Avatar author={null} />
