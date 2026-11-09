@@ -217,7 +217,7 @@ describe('Overview — sidebar shell', () => {
 
   it('opens the new-meeting flow from the toolbar', async () => {
     renderShell();
-    fireEvent.click(screen.getByRole('button', { name: /add a new meeting/i }));
+    fireEvent.click(screen.getByRole('button', { name: /add a new booking/i }));
     expect(screen.getByRole('dialog', { name: 'Start a new meeting' })).toBeInTheDocument();
     // Services load async; the modal resolves to its empty/error state.
     await screen.findByText(/no services yet|couldn't load your services/i);
@@ -229,7 +229,7 @@ describe('Overview — sidebar shell', () => {
     expect(screen.queryByRole('searchbox')).toBeNull();
     expect(screen.queryByPlaceholderText('Search anything...')).toBeNull();
     // The remaining actions stay present and functional.
-    expect(screen.getByRole('button', { name: /add a new meeting/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /add a new booking/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Profile completion' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /notifications/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Profile menu' })).toBeInTheDocument();
