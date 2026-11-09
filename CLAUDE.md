@@ -198,6 +198,9 @@ Items previously listed here as pending are now live:
   `notification_events` (`PLAN_GIFT_RECEIVED/ENDING/ENDED`, email + in-app on, WhatsApp OFF until
   the AiSensy templates are approved). A gift is plain `premium` with `plan_expires_at` = gift end.
   share_*/forward_* columns are for PR C (share-to-extend, pay-it-forward), unused until then.
+- **v3.191** (`v3.191_support_sla.sql`) — **PENDING**, apply at merge of the support SLA nudge:
+  `support_threads.sla_waiting_since` (set by a trigger on entering `waiting`) + `sla_alerted_clock` /
+  `sla_alerted_level`. Additive. Until applied the `support-sla-nudge` job fails closed and sends nothing.
 
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.

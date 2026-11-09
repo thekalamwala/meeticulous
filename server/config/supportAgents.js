@@ -51,12 +51,15 @@ function personaFor(email) {
  * Three shapes: a titled persona ("I'm Shubham, Founder & Engineer at Book A
  * Meeticulous."), the generic fallback (no doubled name), and a regular team member.
  */
+const INTRO_TAIL = 'Give me a moment to read your messages and I\'ll help you right away.';
 function introMessage(persona, name) {
   const hi = name ? `Hi ${name}` : 'Hi';
-  const tail = 'Give me a moment to read your messages and I\'ll help you right away.';
-  if (TITLES[persona]) return `${hi} — I'm ${persona}, ${TITLES[persona]}. ${tail}`;
-  if (persona === FALLBACK) return `${hi} — I'm from the Meeticulous support team. ${tail}`;
-  return `${hi} — I'm ${persona} from the Meeticulous support team. ${tail}`;
+  if (TITLES[persona]) return `${hi} — I'm ${persona}, ${TITLES[persona]}. ${INTRO_TAIL}`;
+  if (persona === FALLBACK) return `${hi} — I'm from the Meeticulous support team. ${INTRO_TAIL}`;
+  return `${hi} — I'm ${persona} from the Meeticulous support team. ${INTRO_TAIL}`;
 }
 
-module.exports = { personaFor, introMessage, FALLBACK, TITLES, PERSONAS };
+// The auto-intro is stored as an ordinary 'admin' message, but it is not a reply.
+const isIntroMessage = (body) => String(body || '').endsWith(INTRO_TAIL);
+
+module.exports = { personaFor, introMessage, isIntroMessage, FALLBACK, TITLES, PERSONAS };
