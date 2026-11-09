@@ -504,6 +504,23 @@ function audienceNote(audience) {
   return '';
 }
 
+// Support-thread turns come straight from support_messages, unlike bot_messages which
+// persist() has already redacted, so scrub them before Voyage/Claude see them. Flagged
+// customer turns are dropped outright: only the current question gets the <user_question>
+// delimiter, a replayed turn would sit in the prompt bare. Tithi's own turns are exempt,
+// its "You are a Starter host" would trip the roleplay pattern. Redact before capping so
+// the cut can't split a number past the regexes. A conversation must open with a user
+// turn, and the window or a dropped turn can leave a bot one first.
+const THREAD_TURN_MAX_CHARS = 2000; // /messages accepts 100kb bodies; don't replay 6 of them to the model
+function safeThreadHistory(turns) {
+  const safe = (turns || [])
+    .filter((m) => m.role === 'assistant' || (!isUnsupportedInput(m.content) && !detectInjection(m.content)))
+    .slice(-HISTORY_TURNS)
+    .map((m) => ({ role: m.role, content: redactPii(m.content).slice(0, THREAD_TURN_MAX_CHARS) }));
+  while (safe[0]?.role === 'assistant') safe.shift();
+  return safe;
+}
+
 // Structured (non-streaming) model call — used by askBot / /ask.
 async function callModel(question, chunks, history = [], note = '') {
   const client = anthropicClient.getClient();
@@ -684,8 +701,9 @@ async function tryIntentLayer({ q, conversationId, sessionRef, onDelta }) {
  * Never throws for an expected failure — it escalates so the caller always has a
  * clean reply. Returns { answer, cited_sources, escalate, conversationId, messageId, source }.
  * `source` names the layer that answered: 'smalltalk'|'faq'|'model'|'escalation'.
+ * `history` ([{ role, content }], support threads only) replaces the conversationId lookup.
  */
-async function askBot({ question, conversationId = null, sessionRef = null, ip = null, context = null, audience = null } = {}) {
+async function askBot({ question, conversationId = null, sessionRef = null, ip = null, context = null, audience = null, history: threadHistory = null } = {}) {
   const q = String(question || '').trim();
   const qSafe = q ? redactPii(q) : q; // PII-redacted copy for third parties (Voyage embed, Claude, cache)
 
@@ -763,7 +781,12 @@ async function askBot({ question, conversationId = null, sessionRef = null, ip =
   const intentRes = await tryIntentLayer({ q, conversationId, sessionRef });
   if (intentRes) return intentRes;
 
-  const history = conversationId ? await getRecentMessages(conversationId, HISTORY_TURNS) : [];
+  const history = threadHistory
+    ? safeThreadHistory(threadHistory)
+    : (conversationId ? await getRecentMessages(conversationId, HISTORY_TURNS) : []);
+  // A reply shaped by this customer's earlier messages is as user-specific as `context`,
+  // and `context` can be null on a failed lookup, so this needs its own check.
+  const hasThreadHistory = history.length > 0 && !!threadHistory;
 
   // Embed the query once (Voyage) — reused by the semantic cache AND hybrid retrieval.
   const retrievalQuery = q ? buildRetrievalQuery(qSafe, history) : '';
@@ -773,7 +796,7 @@ async function askBot({ question, conversationId = null, sessionRef = null, ip =
   // Never for sensitive topics — those must escalate, never serve a cached answer.
   // Never when authenticated context is in play — that answer is user-specific and
   // must not be served to (or stored for) anyone else.
-  if (queryEmbedding && !sensitive && !context) {
+  if (queryEmbedding && !sensitive && !context && !hasThreadHistory) {
     const cached = await semanticCacheLookup(queryEmbedding);
     if (cached) {
       const { conversationId: convId, messageId } = await persist({
@@ -832,7 +855,7 @@ async function askBot({ question, conversationId = null, sessionRef = null, ip =
             // Never cache a context- OR audience-influenced answer — a host-flavored reply
             // must not be served to a guest (or vice-versa) via the shared, embedding-only
             // cache. Lookups still run (they only ever return earlier neutral answers).
-            if (!context && !audience) semanticCacheStore(qSafe, queryEmbedding, answer, cited_sources);
+            if (!context && !audience && !hasThreadHistory) semanticCacheStore(qSafe, queryEmbedding, answer, cited_sources);
           }
         }
       } catch (e) {
