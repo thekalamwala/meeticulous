@@ -136,7 +136,7 @@ export default function AppointmentFlow() {
             onMouseLeave={hoverCancel}
             onFocus={() => open(i)}
             onClick={() => open(i)}
-            className={`group relative flex min-w-0 cursor-default flex-col overflow-hidden rounded-[24px] bg-white text-left transition-[flex-grow] duration-[650ms] ease-[cubic-bezier(0.65,0,0.35,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none lg:basis-0 ${
+            className={`group relative flex min-w-0 cursor-default flex-col overflow-hidden rounded-[24px] border-2 border-maroon/10 bg-white text-left transition-[flex-grow] duration-[650ms] ease-[cubic-bezier(0.65,0,0.35,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none lg:basis-0 ${
               on ? "lg:grow-[2.4]" : "lg:grow"
             }`}
           >
