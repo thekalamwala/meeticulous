@@ -95,6 +95,11 @@ test('a missing table reports null instead of failing the report', async () => {
   expect(r.email.queued).toBe(1);
 });
 
+test('a missing job_runs table reports jobs: null, not zero tracked jobs', async () => {
+  mockMissing.add('job_runs');
+  expect((await buildEngineeringReport({ now: NOW })).jobs).toBeNull();
+});
+
 test('NO PII: last_error is never selected and no address appears in the output', async () => {
   const r = await buildEngineeringReport({ now: NOW });
   expect(COLS.job_runs).not.toMatch(/last_error/);

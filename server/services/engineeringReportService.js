@@ -110,7 +110,7 @@ async function buildEngineeringReport({ now = new Date() } = {}) {
       contacts: 'contacts table size + consent counts. Above 1,000 rows the pre-ASH-35 sync reset opt-outs, so watch opted_out/suppressed for unexpected drops',
       null: 'table or column not present on this DB',
     },
-    jobs: aggregateJobs(runs || [], locks, now),
+    jobs: runs === null ? null : aggregateJobs(runs, locks, now),
     email: { queued: emailQueued, sending: emailSending, failed_24h: emailFailed24h, failed_7d: emailFailed7d, sent_24h: emailSent24h },
     crm: { queued: crmQueued, stuck_processing: crmStuck, failed_7d: crmFailed7d },
     campaigns: { sending: campSending, failed_7d: campFailed7d },

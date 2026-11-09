@@ -103,6 +103,18 @@ test('lease is capped at 30 min so a killed pod cannot block a daily job for 48h
   expect(mockRunLocked.mock.calls[1][2]).toEqual({ leaseMs: 10 * 60 * 1000, release: true }); // 2x interval when shorter
 });
 
+test('a run finishing elsewhere between the due-check and the lease is not repeated', async () => {
+  mockScheduleRow = { last_run_at: new Date(Date.now() - 2 * HOUR).toISOString() }; // due at first read
+  mockRunLocked.mockImplementationOnce((_name, leased) => {
+    mockScheduleRow = { last_run_at: new Date().toISOString() }; // other instance just ran it
+    return leased();
+  });
+  const fn = jest.fn();
+  expect(await runIfDue('expiry-emails', HOUR, fn)).toBeUndefined();
+  expect(fn).not.toHaveBeenCalled();
+  expect(mockUpserts).toHaveLength(0);
+});
+
 test('when another instance holds the lease (runLocked skips), fn does not run', async () => {
   mockScheduleRow = null;
   mockRunLocked.mockImplementationOnce(() => undefined); // lease lost → skip

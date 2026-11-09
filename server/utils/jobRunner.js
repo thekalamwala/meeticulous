@@ -55,6 +55,22 @@ async function stampRun(name, outcome, error, { retryOnError = false } = {}) {
   }
 }
 
+// Is the job due per job_runs? Fail-open: unreadable schedule → due.
+async function isDue(name, intervalMs, retryOnError) {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('job_runs').select('last_run_at, last_outcome, updated_at').eq('name', name).maybeSingle();
+    if (error) throw error;
+    if (retryOnError && data && data.last_outcome === 'error' && data.updated_at) {
+      return (Date.now() - new Date(data.updated_at).getTime()) >= Math.min(RETRY_AFTER_ERROR_MS, intervalMs);
+    }
+    if (data && data.last_run_at) return (Date.now() - new Date(data.last_run_at).getTime()) >= intervalMs;
+    return true;
+  } catch (_) {
+    return true;
+  }
+}
+
 /**
  * Run `fn` iff it is DUE per the persisted last_run_at, and this instance wins the
  * lease. Stamps the run (success or failure) so the next due-check is durable.
@@ -65,23 +81,12 @@ async function stampRun(name, outcome, error, { retryOnError = false } = {}) {
  * @returns {Promise<any|undefined>} fn's result, or undefined when skipped/not due
  */
 async function runIfDue(name, intervalMs, fn, { leaseMs, retryOnError = false } = {}) {
-  let due = true;
-  try {
-    const { data, error } = await supabaseAdmin
-      .from('job_runs').select('last_run_at, last_outcome, updated_at').eq('name', name).maybeSingle();
-    if (error) throw error;
-    if (retryOnError && data && data.last_outcome === 'error' && data.updated_at) {
-      due = (Date.now() - new Date(data.updated_at).getTime()) >= Math.min(RETRY_AFTER_ERROR_MS, intervalMs);
-    } else if (data && data.last_run_at) {
-      due = (Date.now() - new Date(data.last_run_at).getTime()) >= intervalMs;
-    }
-  } catch (_) {
-    // Fail-open: can't read schedule → treat as due (better to run than to stall).
-    due = true;
-  }
-  if (!due) return undefined;
+  if (!(await isDue(name, intervalMs, retryOnError))) return undefined;
 
   return runLocked(name, async () => {
+    // Re-check under the lease: the lease is released at the end of a run, so another
+    // instance can read "due", wait out that run, win the lease and repeat the job.
+    if (!(await isDue(name, intervalMs, retryOnError))) return undefined;
     let outcome = 'ok';
     let errMsg = null;
     try {

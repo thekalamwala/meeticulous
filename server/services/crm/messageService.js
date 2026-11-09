@@ -211,8 +211,12 @@ async function markFailed(row, error, { onlyIfStatus } = {}) {
   }
   let q = supabaseAdmin.from('crm_messages').update(patch).eq('id', row.id);
   if (onlyIfStatus) q = q.eq('status', onlyIfStatus);
-  await q;
-  return { ...row, ...patch };
+  const { data: updated } = await q.select('id');
+  if (!onlyIfStatus || updated?.length) return { ...row, ...patch };
+  // Guard matched nothing: the row already moved on, so report what it really is.
+  const { data: current } = await supabaseAdmin.from('crm_messages')
+    .select('status').eq('id', row.id).maybeSingle();
+  return { ...row, status: current?.status || row.status };
 }
 
 // A row left in 'processing' this long means the worker died mid-dispatch. We do

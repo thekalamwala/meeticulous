@@ -71,6 +71,18 @@ describe('processQueue', () => {
     expect(requeue.filters.status).toBe('processing');
   });
 
+  test('a guarded requeue that matched nothing reports the real status, not failed/retried', async () => {
+    email.send.mockResolvedValueOnce({ success: true, providerMessageId: 'p1' });
+    logActivity.mockRejectedValueOnce(new Error('timeline write failed'));
+    const base = mockResolve;
+    mockResolve = (e) => {
+      if (e.table === 'crm_messages' && e.op === 'update' && e.patch.status === 'queued') return { data: [], error: null }; // row is 'sent'
+      if (e.table === 'crm_messages' && e.op === 'select' && e.filters.id) return { data: { status: 'sent' }, error: null };
+      return base(e);
+    };
+    expect(await messageService.processQueue()).toEqual({ sent: 1, failed: 0, skipped: 0 });
+  });
+
   test('rows stuck in processing are failed (not resent) before draining', async () => {
     mockResolve = (e) => (e.table === 'crm_messages' && e.op === 'select' ? { data: [], error: null } : { data: null, error: null });
     await messageService.processQueue();

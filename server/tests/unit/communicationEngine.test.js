@@ -255,6 +255,16 @@ describe('communicationEngine.processQueue — retry backoff', () => {
     expect(db.email_logs[0].status).toBe('sending'); // untouched: the other worker owns it
   });
 
+  test('a throw after the claim counts as a failed attempt, so the row cannot loop forever (ASH-35)', async () => {
+    await engine.send({ event: 'BOOKING_CONFIRMED_CUSTOMER', to: 'a@x.test', data: { service_name: 'X' }, user: { name: 'A' } });
+    const spy = jest.spyOn(require('../../services/email/senderRegistry'), 'senderFor').mockRejectedValueOnce(new Error('registry down'));
+    const r = await engine.processQueue();
+    spy.mockRestore();
+    expect(r.retried).toBe(1);
+    expect(db.email_logs[0]).toMatchObject({ status: 'queued', attempts: 1 });
+    expect(db.email_logs[0].error).toMatch(/delivery_error: registry down/);
+  });
+
   test('successful send marks the row sent', async () => {
     await engine.send({ event: 'BOOKING_CONFIRMED_CUSTOMER', to: 'a@x.test', data: { service_name: 'X' }, user: { name: 'A' } });
     const r = await engine.processQueue();
