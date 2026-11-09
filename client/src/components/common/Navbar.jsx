@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { useFeatures } from '../../context/FeatureContext';
 import useAppearance from '../../hooks/useAppearance';
 import useLiveNotifications from '../../hooks/useLiveNotifications';
 // UseCasesMegaMenu (Explore) intentionally not rendered in the nav for now; the
@@ -18,7 +17,7 @@ import {
   Clock, Wallet, LayoutDashboard, ExternalLink,
   Gift, Star, Info, Cpu, HeartPulse,
   Sparkles, Mail, Award, Layers, Headset,
-  BookOpen, MessageSquare,
+  BookOpen,
   Users, Scale, Scissors, Heart, HelpCircle,
   // "Who it's for" profession-menu icons
   Calculator, Compass, Smile, Sun, Baby, Ear, Eye,
@@ -216,7 +215,7 @@ const CommunitySuffix = () => {
     return () => clearInterval(t);
   }, []);
   return (
-    <span className="text-[13.2px] font-bold tracking-tight text-primary leading-none -translate-y-px" aria-label="Community">
+    <span className="text-[13.2px] font-bold tracking-tight text-primary leading-none translate-y-px" aria-label="Community">
       <span key={i} className="mt-wordrot inline-block">{COMMUNITY_WORDS[i]}</span>
     </span>
   );
@@ -556,17 +555,10 @@ const CompareMega = ({ active }) => {
 // Owns the single "which menu is open" state so switching between triggers is an
 // instant handoff (never two panels at once). One shared close timer bridges the
 // gap from a trigger to its panel; Escape / outside-click / route change close.
-// Community link shows only when the flag is TRULY on. Deliberately not useFeature():
-// that is fail-open (unknown flag = on) and lets Supreme bypass users through, which
-// would expose the link pre-launch.
-const useCommunityOn = () => useFeatures().flags?.community === true;
-
 export const PublicCenterNav = () => {
-  const communityOn = useCommunityOn();
   const [activeKey, setActiveKey] = useState(null);
   const timer = useRef(null);
   const location = useLocation();
-  const onCommunity = location.pathname.startsWith('/community');
 
   const openMenu = (k) => { if (timer.current) clearTimeout(timer.current); setActiveKey(k); };
   const closeMenu = (immediate) => {
@@ -603,12 +595,6 @@ export const PublicCenterNav = () => {
       <Link to="/pricing" className="my-2 flex items-center rounded-xl px-3 text-[11.9px] font-medium text-gray-600 lg:px-4 lg:text-[13.2px] transition-colors hover:bg-primary-light/40 hover:text-primary hover:no-underline">
         Pricing
       </Link>
-
-      {communityOn && !onCommunity && (
-        <Link to="/community" className="my-2 flex items-center rounded-xl px-3 text-[11.9px] font-medium text-gray-600 lg:px-4 lg:text-[13.2px] transition-colors hover:bg-primary-light/40 hover:text-primary hover:no-underline">
-          Community
-        </Link>
-      )}
     </>
   );
 };
@@ -641,9 +627,8 @@ const Navbar = () => {
   // Logged-in users get a deliberately empty center nav — the profile dropdown is
   // the only navbar surface (hosts navigate via the dashboard; guests only need
   // bookings/reviews). Logged-out users render PublicCenterNav.
-  const communityOn  = useCommunityOn();
-  // On community routes the logo lockup carries the name, so drop the separate nav item.
-  const navItems     = communityOn && !onCommunity ? [{ href: '/community', label: 'Community', icon: MessageSquare }] : [];
+  // Logged-in center nav is deliberately empty (profile dropdown is the only surface).
+  const navItems     = [];
 
   // Notification feed — role-filtered (host vs guest), loaded on mount and on panel open
   const notifRole = hostingView ? 'host' : 'guest';
@@ -1057,12 +1042,6 @@ const Navbar = () => {
                 <Link to="/pricing" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-primary/5 hover:text-primary hover:no-underline">
                   <Tag size={16} className="flex-shrink-0 text-gray-400" /> Pricing
                 </Link>
-
-                {communityOn && !onCommunity && (
-                  <Link to="/community" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-primary/5 hover:text-primary hover:no-underline">
-                    <MessageSquare size={16} className="flex-shrink-0 text-gray-400" /> Community
-                  </Link>
-                )}
 
                 {/* Explore hidden from nav (see PublicCenterNav). /explore still live. */}
 
