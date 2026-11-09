@@ -1019,7 +1019,7 @@ const ServiceBooking = () => {
           ⚠️ This creator is pending admin verification. Bookings may be subject to confirmation.
         </div>
       )}
-      <div className="app-container py-4 sm:py-5 max-w-3xl mx-auto">
+      <div className="app-container py-4 sm:py-5 max-w-4xl mx-auto">
 
         {/* Profile sidebar removed during booking — full-width engine with a
             compact summary strip (host · service · when · total) below. */}
@@ -1285,7 +1285,7 @@ const ServiceBooking = () => {
                               <p className="text-xs text-gray-400 mt-1">Try another date — there's bound to be a good one.</p>
                             </div>
                           ) : (
-                            <div className="max-h-[300px] overflow-y-auto pr-1 bas-fade space-y-4">
+                            <div className="max-h-[300px] overflow-y-auto px-1.5 py-1 bas-fade space-y-4">
                               {[
                                 { label: "Morning",   test: (h) => h < 12 },
                                 { label: "Afternoon", test: (h) => h >= 12 && h < 17 },
@@ -1296,14 +1296,14 @@ const ServiceBooking = () => {
                                 return (
                                   <div key={g.label}>
                                     <h4 className="text-[11px] font-bold uppercase tracking-wide text-gray-400 mb-2">{g.label}</h4>
-                                    <div className="grid grid-cols-3 gap-2">
+                                    <div className="grid grid-cols-4 gap-2">
                                       {items.map((t) => (
                                         <button
                                           key={t}
                                           onClick={() => setSelectedTime(t)}
                                           className="py-2.5 text-sm font-semibold rounded-[20px] border-2 transition-all"
                                           style={selectedTime === t
-                                            ? { background: "#fff", color: tc, borderColor: "var(--mt-rose, #E0506F)", boxShadow: "0 0 0 2px var(--mt-rose, #E0506F)" }
+                                            ? { background: "#fff", color: tc, borderColor: tc, boxShadow: `0 0 0 2px ${tc}` }
                                             : { background: "var(--marigold-100, #FDF0D2)", borderColor: "var(--color-line)", color: "#2B0A14" }}
                                         >
                                           {formatTime(t)}

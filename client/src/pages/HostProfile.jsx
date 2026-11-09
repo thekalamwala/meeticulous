@@ -15,6 +15,7 @@ import { resolveProfileSeo, profileGraphJsonLd, SITE_URL } from "../utils/seo";
 import { profileFaqs } from "../utils/profileFaqs";
 import FaqAccordion from "../components/FaqAccordion";
 import { prerendered } from "../services/prerenderData";
+import { BadgeCheck, LayoutGrid, Calendar } from "lucide-react";
 
 // Production base for canonical/OG (Vercel env overrides the apex default).
 const SEO_SITE = import.meta.env?.VITE_PUBLIC_SITE_URL || SITE_URL;
@@ -162,7 +163,7 @@ const ServiceCard = ({ service: s, profileSlug }) => {
 
   return (
     <article className="flex flex-col bg-white rounded-2xl transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(43,10,20,0.08)]"
-      style={{ border: `2px solid ${C.border}`, padding: '18px 18px 16px', minHeight: 196 }}>
+      style={{ border: `2px solid ${C.border}`, padding: '18px 18px 16px' }}>
 
       {/* Type pill + tag */}
       <div className="flex items-center justify-between gap-2 mb-2.5">
@@ -188,7 +189,7 @@ const ServiceCard = ({ service: s, profileSlug }) => {
       {desc && <p className="text-sm leading-relaxed line-clamp-2 mt-2" style={{ color: C.secondary }}>{desc}</p>}
 
       {/* Meta — duration + mode */}
-      <div className="flex items-center gap-4 text-xs mt-3" style={{ color: C.secondary }}>
+      <div className="flex items-center gap-4 text-xs mt-3 mb-4" style={{ color: C.secondary }}>
         <span className="flex items-center gap-1.5">
           <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: C.muted }} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="9" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l3 2" />
@@ -469,24 +470,28 @@ const HostProfile = () => {
             </span>
             <span className="font-display font-bold text-[15px] truncate" style={{ color: C.text }}>{host.name}</span>
             {host.is_verified && (
-              <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill={tc} aria-label="Verified">
-                <path d="M12 2l2.4 1.8 3-.2 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.2L12 22l-2.4-1.8-3 .2-1-2.8L3 16.3l.7-2.9L3 10.5l2.6-1.5 1-2.8 3 .2z" />
-                <path d="M8.5 12.5l2.5 2.5 4.5-5" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <BadgeCheck className="w-4 h-4 flex-shrink-0" strokeWidth={2.2} style={{ color: tc }} aria-label="Verified" />
             )}
           </a>
 
           <div className="hidden md:flex items-center gap-1 ml-2">
-            <button onClick={() => goOfferings('service')} className="text-sm font-medium px-3 py-2 rounded-full transition-colors hover:bg-[#F5ECEA]" style={{ color: C.secondary }}>Services</button>
             {hasProducts && (
               <button onClick={() => goOfferings('product')} className="text-sm font-medium px-3 py-2 rounded-full transition-colors hover:bg-[#F5ECEA]" style={{ color: C.secondary }}>Products</button>
             )}
+            {/* Membership + Feed — placeholders, inactive until those surfaces ship. */}
+            <button type="button" disabled title="Membership — coming soon" aria-label="Membership (coming soon)"
+              className="p-2 rounded-full opacity-40 cursor-not-allowed" style={{ color: C.secondary }}>
+              <LayoutGrid className="w-[18px] h-[18px]" strokeWidth={1.8} />
+            </button>
+            <button type="button" disabled title="Feed — coming soon" aria-label="Feed (coming soon)"
+              className="p-2 rounded-full opacity-40 cursor-not-allowed" style={{ color: C.secondary }}>
+              <Calendar className="w-[18px] h-[18px]" strokeWidth={1.8} />
+            </button>
           </div>
 
           <Link to="/become-a-host"
             className="ml-auto flex-shrink-0 inline-flex items-center gap-1.5 rounded-full font-semibold text-[13.5px] transition-opacity hover:opacity-90"
             style={{ height: 42, padding: '0 18px', background: tc, color: '#fff' }}>
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
             <span className="hidden sm:inline">Start Your Page — Free</span>
             <span className="sm:hidden">Start — Free</span>
           </Link>
