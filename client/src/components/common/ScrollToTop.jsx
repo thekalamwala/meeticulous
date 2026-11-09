@@ -64,7 +64,19 @@ export default function ScrollToTop() {
   }, [key]);
 
   useLayoutEffect(() => {
-    if (hash) return; // let anchor links resolve to their target
+    if (hash) {
+      // Cross-page #hash links: RR v6 won't scroll to the anchor on its own.
+      // Try now (element is in the DOM post-render); rAF retries once in case
+      // the target mounts a frame later (motion/reveal wrappers).
+      const id = decodeURIComponent(hash.slice(1));
+      const toAnchor = () => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView();
+        return !!el;
+      };
+      if (!toAnchor()) requestAnimationFrame(toAnchor);
+      return;
+    }
 
     if (navType === "POP") {
       const y = positions.get(key);
