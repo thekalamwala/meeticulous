@@ -39,11 +39,11 @@ const initialOf = (name) => (name || "G").trim().charAt(0).toUpperCase();
 
 // Soft card tones per status — purple / green / orange / pink variations.
 const CARD_TONE = {
-  confirmed: { card: "border-l-[#9B7CF6] bg-[#F6F3FF]", time: "text-[#7C6BB0]", dot: "bg-[#9B7CF6]" },
-  completed: { card: "border-l-[#10BF83] bg-[#ECFBF4]", time: "text-[#3E8C72]", dot: "bg-[#10BF83]" },
-  pending:   { card: "border-l-[#F59E0B] bg-[#FFF5EA]", time: "text-[#B07A2A]", dot: "bg-[#F59E0B]" },
-  no_show:   { card: "border-l-[#F50069] bg-[#FFF1F7]", time: "text-[#C05B87]", dot: "bg-[#F50069]" },
-  cancelled: { card: "border-l-[#B9B4C7] bg-[#F4F3F7]", time: "text-[#8A849B]", dot: "bg-[#B9B4C7]" },
+  confirmed: { card: "border-l-maroon-500 bg-maroon-100", time: "text-neutral-600", dot: "bg-maroon-500" },
+  completed: { card: "border-l-success-fg bg-success-bg", time: "text-success-fg", dot: "bg-success-fg" },
+  pending:   { card: "border-l-warning-fg bg-warning-bg", time: "text-warning-fg", dot: "bg-warning-fg" },
+  no_show:   { card: "border-l-maroon bg-pink-100", time: "text-maroon-500", dot: "bg-maroon" },
+  cancelled: { card: "border-l-neutral-400 bg-neutral-100", time: "text-neutral-500", dot: "bg-neutral-400" },
 };
 const tone = (status) => CARD_TONE[String(status || "").toLowerCase()] || CARD_TONE.confirmed;
 
@@ -146,9 +146,9 @@ const RescheduleModal = ({ booking, onClose, onDone }) => {
     <Modal open onClose={onClose} title="Reschedule Booking" size="sm">
       <p className="mb-4 text-xs text-ink/40">{booking.services?.title} &bull; {booking.guest_name}</p>
       <div className="mb-3 flex items-center justify-between">
-        <button onClick={() => { if (calMonth === 0) { setCalMonth(11); setCalYear((y) => y - 1); } else setCalMonth((m) => m - 1); }} aria-label="Previous month" className="grid h-11 w-11 place-items-center rounded-lg hover:bg-blush"><ChevronLeft className="h-5 w-5" /></button>
+        <button onClick={() => { if (calMonth === 0) { setCalMonth(11); setCalYear((y) => y - 1); } else setCalMonth((m) => m - 1); }} aria-label="Previous month" className="grid h-11 w-11 place-items-center rounded-full hover:bg-blush"><ChevronLeft className="h-5 w-5" /></button>
         <span className="text-sm font-semibold">{MONTHS[calMonth]} {calYear}</span>
-        <button onClick={() => { if (calMonth === 11) { setCalMonth(0); setCalYear((y) => y + 1); } else setCalMonth((m) => m + 1); }} aria-label="Next month" className="grid h-11 w-11 place-items-center rounded-lg hover:bg-blush"><ChevronRight className="h-5 w-5" /></button>
+        <button onClick={() => { if (calMonth === 11) { setCalMonth(0); setCalYear((y) => y + 1); } else setCalMonth((m) => m + 1); }} aria-label="Next month" className="grid h-11 w-11 place-items-center rounded-full hover:bg-blush"><ChevronRight className="h-5 w-5" /></button>
       </div>
       <div className="mb-1 grid grid-cols-7 text-center text-[11px] font-medium text-ink/40">{DS.map((d, i) => <div key={i}>{d}</div>)}</div>
       <div className="mb-4 grid grid-cols-7 gap-1 text-center">
@@ -173,7 +173,7 @@ const RescheduleModal = ({ booking, onClose, onDone }) => {
           ) : (
             <div className="grid max-h-64 grid-cols-2 gap-2 overflow-y-auto">
               {slots.map((t) => (
-                <button key={t} onClick={() => setSelTime(t)} className={cn("min-h-11 rounded-lg border text-sm font-medium transition-colors", selTime === t ? "border-primary bg-primary text-white" : "hover:border-gray-400 active:bg-blush/40")}>{formatSlot(t)}</button>
+                <button key={t} onClick={() => setSelTime(t)} className={cn("min-h-11 rounded-lg border text-sm font-medium transition-colors", selTime === t ? "border-primary bg-primary text-white" : "hover:border-maroon/40 active:bg-blush/40")}>{formatSlot(t)}</button>
               ))}
             </div>
           )}
@@ -267,7 +267,7 @@ const BookingDetailModal = ({ booking, onClose, onAction, review, onReviewDone }
             {booking.services?.image ? (
               <img src={booking.services.image} alt={booking.services?.title || "Service"} className="h-40 w-full object-cover" />
             ) : (
-              <div className="flex h-40 w-full items-center justify-center bg-gradient-to-br from-[#FFE1F1] via-[#FBD3E6] to-[#EDE3FF]">
+              <div className="flex h-40 w-full items-center justify-center bg-blush">
                 <span className="font-display text-3xl font-extrabold text-maroon/70">{booking.services?.title || "Service"}</span>
               </div>
             )}
@@ -409,9 +409,9 @@ const BookingDetailModal = ({ booking, onClose, onAction, review, onReviewDone }
  * ========================================================================= */
 const SummaryCard = ({ icon: Icon, label, value, to, tone: t }) => {
   const tones = {
-    pink: "bg-[#FFE1F1] text-[#F50069]",
-    orange: "bg-[#FFF0DD] text-[#D97706]",
-    green: "bg-[#E7FAF2] text-[#10BF83]",
+    pink: "bg-blush text-maroon",
+    orange: "bg-warning-bg text-warning-fg",
+    green: "bg-success-bg text-success-fg",
   };
   return (
     <Link to={to} className="flex items-center justify-between rounded-2xl border border-maroon/10 bg-white p-4 shadow-sm transition hover:border-primary/30">
@@ -438,7 +438,7 @@ const BookingCard = ({ booking, onOpen }) => {
       <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white text-[11px] font-bold text-primary shadow-sm">{initialOf(booking.guest_name)}</span>
       <span className="min-w-0 flex-1">
         <span className={cn("block text-[11px] font-semibold leading-tight", t.time)}>{fmtTime(booking.scheduled_at)}</span>
-        <span className="block truncate text-[12px] font-bold leading-tight text-[#17164A]">{booking.services?.title || "Service"}</span>
+        <span className="block truncate text-[12px] font-bold leading-tight text-ink">{booking.services?.title || "Service"}</span>
         <span className="block text-[10px] text-ink/40">{booking.guest_name} · {booking.services?.duration || 30}m</span>
       </span>
     </button>
@@ -556,7 +556,7 @@ const Bookings = () => {
   );
 
   return (
-    <div className="rounded-3xl bg-gradient-to-b from-blush/40 via-transparent to-transparent p-0.5">
+    <div className="rounded-3xl bg-blush/40 p-0.5">
       {header}
 
       {loading ? (
@@ -618,8 +618,8 @@ const Bookings = () => {
               {weekDays.map(({ date, bookings: dayBookings }, i) => {
                 const isToday = sameDay(date, today);
                 return (
-                  <div key={i} className={cn("flex min-h-[320px] flex-col border-r border-[#FFE8F3] last:border-r-0", isToday && "bg-blush/30")}>
-                    <div className={cn("border-b border-[#FFE8F3] px-2 py-2 text-center", isToday && "bg-primary/10")}>
+                  <div key={i} className={cn("flex min-h-[320px] flex-col border-r border-blush last:border-r-0", isToday && "bg-blush/30")}>
+                    <div className={cn("border-b border-blush px-2 py-2 text-center", isToday && "bg-primary/10")}>
                       <p className="text-[11px] font-semibold uppercase text-ink/40">{WEEKDAYS[i]}</p>
                       <p className={cn("font-display text-xl font-extrabold", isToday ? "text-primary" : "text-ink")}>{date.getDate()}</p>
                     </div>
@@ -639,16 +639,16 @@ const Bookings = () => {
 
       {viewMode === "calendar" && calView === "month" && (
         <div className="overflow-hidden rounded-2xl border border-maroon/10 bg-white shadow-sm">
-          <div className="grid grid-cols-7 border-b border-[#FFE8F3] bg-blush/40">
+          <div className="grid grid-cols-7 border-b border-blush bg-blush/40">
             {WEEKDAYS.map((d) => <div key={d} className="py-2 text-center text-[11px] font-bold uppercase text-maroon/60">{d}</div>)}
           </div>
           <div className="grid grid-cols-7">
             {monthCells.map(({ date, inMonth, bookings: dayBookings }, i) => (
-              <div key={i} className={cn("min-h-[92px] border-b border-r border-[#FFE8F3] p-1 last:border-r-0", !inMonth && "bg-blush/20", sameDay(date, today) && "bg-primary/5")}>
+              <div key={i} className={cn("min-h-[92px] border-b border-r border-blush p-1 last:border-r-0", !inMonth && "bg-blush/20", sameDay(date, today) && "bg-primary/5")}>
                 <p className={cn("text-[11px] font-bold", sameDay(date, today) ? "text-primary" : inMonth ? "text-ink/60" : "text-ink/25")}>{date.getDate()}</p>
                 <div className="mt-1 space-y-1">
                   {dayBookings.slice(0, 3).map((b) => (
-                    <button key={b.id} type="button" onClick={() => setSelected(b)} className={cn("block w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-semibold text-[#17164A]", tone(b.status).card)}>
+                    <button key={b.id} type="button" onClick={() => setSelected(b)} className={cn("block w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-semibold text-ink", tone(b.status).card)}>
                       {fmtTime(b.scheduled_at).replace(":00", "")} {b.services?.title}
                     </button>
                   ))}
