@@ -5,6 +5,7 @@ import { sendOtp } from "../services/api";
 import AuthBrandPanel from "../components/auth/AuthBrandPanel";
 import AuthMobilePattern from "../components/auth/AuthMobilePattern";
 import Seo from "../components/common/Seo";
+import OtpSlots from "../components/common/OtpSlots";
 import toast from "react-hot-toast";
 
 // Guest login door. WhatsApp number only — enter the number, get a one-time
@@ -163,12 +164,10 @@ const Login = () => {
               We sent a 6-digit code to <strong>{phone}</strong> on WhatsApp.
             </p>
             <form onSubmit={(e) => { e.preventDefault(); submitOtp(); }} className="space-y-4">
-              <input
-                inputMode="numeric"
-                maxLength={6}
+              <OtpSlots
                 autoFocus
                 placeholder="123456"
-                className="fb-input text-center tracking-[0.5em] text-lg"
+                aria-label="Enter your code"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
               />

@@ -3,6 +3,7 @@ import { Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { whatsappSendOtp, whatsappVerifyOtp } from '../../services/api';
 import CountryCodeSelect, { defaultDialCode } from './CountryCodeSelect';
+import OtpSlots from '../common/OtpSlots';
 
 const RESEND_SECONDS = 30;
 
@@ -135,9 +136,8 @@ const WhatsAppVerify = ({ initialPhone = '', initialCountry, onVerified, onPhone
     <div>
       <p className="text-sm text-gray-500 mb-3">Enter the code sent to <strong>{fullPhone}</strong>.</p>
       <label htmlFor="wa-otp" className="block text-sm font-medium text-gray-700 mb-1.5">Enter OTP</label>
-      <input
-        id="wa-otp" type="text" inputMode="numeric" maxLength={6}
-        className="fb-input fb-input--otp w-full" placeholder="––––––"
+      <OtpSlots
+        id="wa-otp" placeholder="––––––"
         value={otp} disabled={loading}
         onChange={(e) => setOtp(e.target.value.replace(/[^\d]/g, ''))}
       />
