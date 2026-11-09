@@ -179,6 +179,16 @@ test('a HELD booking (pending transfer) reads as in-transit (clearing), NOT avai
   expect(b.clearing).toBe(400);
 });
 
+test('a transfer being CREATED (claim held) is in-transit, NOT manually withdrawable (ASH-35)', async () => {
+  mockData(
+    [{ vendor_amount: 350, settlement_status: 'eligible_for_settlement', completed_at: daysAgo(10), payment_status: 'paid', transfer_status: 'creating' }],
+    []
+  );
+  const b = await computeSettlementBalance('h1', 7, NOW);
+  expect(b.available).toBe(0);
+  expect(b.clearing).toBe(350);
+});
+
 test('a FAILED / REVERSED transfer means the host was not paid — money stays owed', async () => {
   mockData(
     [
