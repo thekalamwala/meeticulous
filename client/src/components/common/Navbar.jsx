@@ -741,7 +741,7 @@ const Navbar = () => {
 
           {/* Center nav (desktop only) */}
           <div className="hidden md:flex items-stretch flex-1 justify-start">
-            {!user ? <PublicCenterNav /> : navItems.map((item) => {
+            {!user && !onCommunity ? <PublicCenterNav /> : navItems.map((item) => {
               const active = isActive(item);
               const Icon   = item.icon;
               return (
@@ -1032,8 +1032,9 @@ const Navbar = () => {
             </div>
 
             {/* Public (mobile): How It Works / Pricing / Explore / More, then the
-                CTA. Industry + info collapsed so the drawer stays short. */}
-            {!user && (
+                CTA. Industry + info collapsed so the drawer stays short.
+                Hidden on /community — that section has no marketing nav. */}
+            {!user && !onCommunity && (
               <div className="px-2 pt-2 space-y-1.5">
                 <Link to="/how-it-works" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-600 hover:bg-primary/5 hover:text-primary hover:no-underline">
                   <Sparkles size={16} className="flex-shrink-0 text-gray-400" /> How It Works
