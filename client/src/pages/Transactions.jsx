@@ -30,7 +30,7 @@ const PAYOUT_STATE = {
   processed: { label: "Paid out", cls: "border-c-emerald/20 bg-c-emerald/10 text-c-emerald" },
   pending:   { label: "In transit", cls: "border-maroon/20 bg-maroon-100 text-maroon-700" },
   reversed:  { label: "Reversed", cls: "border-ink/10 bg-ink/5 text-ink/60" },
-  failed:    { label: "Payout failed", cls: "border-rose/30 bg-rose/10 text-rose-700" },
+  failed:    { label: "Payout failed", cls: "border-error-fg/30 bg-error-bg text-error-fg" },
   owed:      { label: "Payout pending", cls: "border-marigold-300 bg-marigold-100 text-marigold-800" },
 };
 const payoutStateKey = (tx) => {
@@ -166,7 +166,7 @@ const Detail = ({ tx }) => {
                 </div>
               )}
               {tx.transfer_status === "failed" && tx.transfer_error && (
-                <p className="text-[10px] leading-snug text-rose-700">Reason: {tx.transfer_error}</p>
+                <p className="text-[10px] leading-snug text-error-fg">Reason: {tx.transfer_error}</p>
               )}
             </>
           )}
