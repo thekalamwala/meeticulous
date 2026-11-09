@@ -263,6 +263,7 @@ export default function AdminSupportChat() {
   const open = async (id) => {
     setReply({ body: '', busy: false });
     setContext(null);
+    setResolveOpen(false); setReasonCode(''); // a reason belongs to one thread
     try { const { data } = await adminGetSupportThread(id); setSel(data); }
     catch { toast.error('Could not open thread'); return; }
     // Context rail loads independently — the transcript never waits on it.
@@ -328,9 +329,9 @@ export default function AdminSupportChat() {
   const send = (e) => { e?.preventDefault(); postReply(reply.body); };
 
   const doResolve = async () => {
-    if (!sel) return;
+    if (!sel || !reasonCode) return;
     try {
-      await adminResolveSupport(sel.thread.id, reasonCode ? { reason_code: reasonCode } : {});
+      await adminResolveSupport(sel.thread.id, { reason_code: reasonCode });
       toast.success('Marked resolved');
       setSel((s) => (s ? { ...s, thread: { ...s.thread, status: 'resolved' } } : s));
       setResolveOpen(false); setReasonCode('');
@@ -434,14 +435,14 @@ export default function AdminSupportChat() {
                       <span className="text-xs font-medium adm-t2">Why did they need us?</span>
                       <select value={reasonCode} onChange={(e) => setReasonCode(e.target.value)}
                         className="rounded-lg border adm-border px-2 py-1 text-xs">
-                        <option value="">Reason (optional)…</option>
+                        <option value="">Select a reason…</option>
                         {REASON_GROUPS.map((g) => (
                           <optgroup key={g.category} label={g.category}>
                             {g.items.map((r) => <option key={r.code} value={r.code}>{r.label}</option>)}
                           </optgroup>
                         ))}
                       </select>
-                      <button type="button" onClick={doResolve} className="rounded-lg bg-[#960D32] px-2.5 py-1 text-xs font-medium text-white">Resolve ticket</button>
+                      <button type="button" onClick={doResolve} disabled={!reasonCode} className="rounded-lg bg-[#960D32] px-2.5 py-1 text-xs font-medium text-white disabled:opacity-40">Resolve ticket</button>
                       <button type="button" onClick={() => { setResolveOpen(false); setReasonCode(''); }} className="text-xs adm-t3">Cancel</button>
                     </div>
                   )}

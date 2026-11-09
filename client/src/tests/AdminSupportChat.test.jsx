@@ -77,10 +77,27 @@ describe('AdminSupportChat', () => {
     await waitFor(() => expect(adminReplySupport).toHaveBeenCalledWith('t1', { body: expect.stringMatching(/thank you so much/i) }));
   });
 
-  it('marks the thread resolved after picking (or skipping) a reason', async () => {
+  it('requires a reason before the thread can be resolved', async () => {
     await claimThread();
     fireEvent.click(screen.getByRole('button', { name: /^resolve$/i })); // opens the reason picker
-    fireEvent.click(screen.getByRole('button', { name: /resolve ticket/i })); // confirm (reason optional)
-    await waitFor(() => expect(adminResolveSupport).toHaveBeenCalledWith('t1', {}));
+    const confirm = screen.getByRole('button', { name: /resolve ticket/i });
+    expect(confirm).toBeDisabled();
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'host_payout' } });
+    expect(confirm).toBeEnabled();
+    fireEvent.click(confirm);
+    await waitFor(() => expect(adminResolveSupport).toHaveBeenCalledWith('t1', { reason_code: 'host_payout' }));
+  });
+
+  it('does not carry a picked reason over to the next opened thread', async () => {
+    await claimThread();
+    fireEvent.click(screen.getByRole('button', { name: /^resolve$/i }));
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'host_payout' } });
+    fireEvent.click(screen.getByRole('button', { name: /back to queue/i }));
+    await waitFor(() => expect(screen.getByText('Payout is late')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('Payout is late'));
+    await waitFor(() => expect(screen.getByText('My payout is late')).toBeInTheDocument());
+    fireEvent.click(screen.getByRole('button', { name: /assign to me/i }));
+    await waitFor(() => expect(screen.getByLabelText('Reply')).toBeInTheDocument());
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
   });
 });

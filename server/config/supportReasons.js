@@ -36,7 +36,7 @@ const REASONS = [
 ].map(([code, label, category, type]) => ({ code, label, category, type }));
 
 const BY_CODE = Object.fromEntries(REASONS.map((r) => [r.code, r]));
-const isValidReason = (code) => Object.prototype.hasOwnProperty.call(BY_CODE, code);
+const isValidReason = (code) => typeof code === 'string' && Object.prototype.hasOwnProperty.call(BY_CODE, code);
 // Conversations we could have prevented with a better product/UX.
 const isProductCaused = (code) => ['product', 'ux'].includes(BY_CODE[code]?.type);
 
