@@ -14,8 +14,14 @@
 
 const crypto = require('crypto');
 const { supabaseAdmin } = require('../config/supabase');
-const adminAlert = require('../utils/adminAlert');
+const { adminAlert } = require('../utils/adminAlert');
 const supportHours = require('../utils/supportHours');
+
+const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'team@meeticulous.com';
+const adminChatLink = () => `${process.env.CLIENT_URL || 'https://meeticulous.com'}/admin/support/chat`;
+// "Host · +9198…" — who is on the thread, for the team's emails.
+const describeParticipant = (t) =>
+  `${t.participant_type === 'host' ? 'Host' : 'Guest'}${t.guest_phone ? ` · ${t.guest_phone}` : ''}`;
 
 // Human-friendly reference from a uuid, e.g. SUP-8F92AB.
 const refFrom = (id) => `SUP-${String(id).replace(/-/g, '').slice(0, 6).toUpperCase()}`;
@@ -198,32 +204,56 @@ async function setStatus(threadId, status, extra = {}) {
 async function escalate(threadId, aiSummary) {
   const updated = await setStatus(threadId, 'waiting', aiSummary ? { ai_summary: aiSummary } : {});
   const t = updated || (await getThread(threadId));
-  if (t) {
-    const who = t.participant_type === 'host' ? 'Host' : 'Guest';
-    const contact = t.guest_phone ? ` · ${t.guest_phone}` : '';
-    const open = supportHours.isOpen();
-    // Ring ONLY during support hours — no point waking a dashboard nobody's watching
-    // at 3am. Off-hours it's a logged ticket; the email still goes out.
-    if (open) {
-      broadcastTopic('support:admin', 'escalation', {
-        thread_id: t.id, reference: t.reference, participant_type: t.participant_type, summary: aiSummary || null,
-      });
-    }
+  // Ring + email ONLY during support hours — no point alerting a team that's offline
+  // at 3am. Off-hours the thread just stays 'waiting', and sendWaitingDigest emails
+  // it when the next window opens.
+  if (t && supportHours.isOpen()) {
+    broadcastTopic('support:admin', 'escalation', {
+      thread_id: t.id, reference: t.reference, participant_type: t.participant_type, summary: aiSummary || null,
+    });
     // Email: throttled per-thread so re-escalation of the same thread sends once.
     adminAlert({
-      subject: `Support ${open ? 'escalation' : 'ticket (off-hours)'} — ${t.reference}`,
+      to: SUPPORT_EMAIL,
+      subject: `Support escalation — ${t.reference}`,
       key: `support-escalation:${t.id}`,
       lines: [
-        `${who}${contact} needs a human on support chat.`,
+        `${describeParticipant(t)} needs a human on support chat.`,
         aiSummary ? `Details: ${aiSummary}` : 'They asked to talk to a person.',
-        open ? '' : `Raised outside support hours (${supportHours.LABEL}).`,
-      ].filter(Boolean),
-      link: `${process.env.CLIENT_URL || 'https://meeticulous.com'}/admin/support/chat`,
+      ],
+      link: adminChatLink(),
       category: 'Support Alert',
     }).catch(() => {});
   }
   return t;
 }
+
+// The off-hours queue: one email listing every thread still 'waiting'. The scheduler
+// (server.js, 'support-waiting-digest') runs this on the first tick of each window.
+// ponytail: the 'waiting' status IS the queue, so no column or migration. Ceilings: a
+// failed run is only retried by the next window's digest (Friday's waits until Monday),
+// and a thread emailed in hours but still unanswered is listed again next morning. A
+// notified_at column fixes both if either starts to matter.
+async function sendWaitingDigest() {
+  const threads = await listQueue({ filter: 'waiting' });
+  const count = threads.length;
+  if (!count) return { sent: false, count };
+  const plural = count === 1 ? 'thread' : 'threads';
+  const result = await adminAlert({
+    to: SUPPORT_EMAIL,
+    subject: `${count} support ${plural} waiting for a human`,
+    lines: [
+      `${count} support ${plural} waiting as support hours open (${supportHours.LABEL}).`,
+      ...threads.map((t) => {
+        const about = String(t.ai_summary || t.last_message || 'Asked to talk to a person.').replace(/\s+/g, ' ').slice(0, 140);
+        return `${t.reference}: ${describeParticipant(t)} · ${about}`;
+      }),
+    ],
+    link: adminChatLink(),
+    category: 'Support Alert',
+  });
+  return { ...result, count };
+}
+
 const assign   = (threadId, adminId) => setStatus(threadId, 'assigned', { assigned_admin: adminId || null });
 const resolve  = (threadId, rating) => setStatus(threadId, 'resolved', rating ? { rating } : {});
 
@@ -265,5 +295,5 @@ async function listQueue({ filter = 'waiting', adminId } = {}) {
 module.exports = {
   refFrom, broadcast, createThread, getOrCreateOpenThread, getOpenThread, getThread, listThreads, listMessages,
   hasAdminMessage, setAgentName, setReasonCode, setRating,
-  postMessage, setStatus, escalate, assign, resolve, markRead, listQueue,
+  postMessage, setStatus, escalate, sendWaitingDigest, assign, resolve, markRead, listQueue,
 };
