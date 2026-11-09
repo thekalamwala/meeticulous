@@ -1,147 +1,262 @@
 /**
  * tests/Dashboard.test.jsx
- * Covers host dashboard, guest dashboard, profile URL banner,
- * username-missing banner, and Google Calendar prompt.
+ * Covers the reference Overview layout: greeting, summary cards, the exact
+ * 11 dummy bookings, profile-completion panel, week/month calendar controls,
+ * sidebar order and the new-meeting entry point.
  */
-import { render, screen, waitFor, within } from '@testing-library/react';
-import { vi } from 'vitest';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 
 vi.mock('../services/api', () => ({
-  getHostBookings:  vi.fn().mockResolvedValue({ data: [] }),
-  getMyServices:    vi.fn().mockResolvedValue({ data: [] }),
-  getPayoutBalance: vi.fn().mockResolvedValue({ data: {} }),
-  getMyKyc:         vi.fn().mockResolvedValue({ data: { status: 'not_started', pending_earnings: 0, payouts_ready: false } }),
-  getHostNudges:    vi.fn().mockResolvedValue({ data: { snoozed: {} } }),
-  dismissHostNudge: vi.fn().mockResolvedValue({ data: { ok: true } }),
-  markLinkShared:   vi.fn().mockResolvedValue({}),
+  getPayoutBalance: vi.fn(() => Promise.resolve({ data: { available: 0, clearing: 0, pendingCompletion: 0 } })),
+  // Default: the host has NO bookings (empty state). Individual tests override
+  // with real-shaped bookings to exercise the calendar/counts.
+  getHostBookings: vi.fn(() => Promise.resolve({ data: [] })),
+  getMyServices: vi.fn(() => Promise.resolve({ data: [] })),
+  getNotifications: vi.fn(() => Promise.resolve({ data: { notifications: [], unreadCount: 0 } })),
+  getNotificationChannel: vi.fn(() => Promise.resolve({ data: {} })),
+  markAllNotificationsRead: vi.fn(() => Promise.resolve({ data: {} })),
+  markNotificationRead: vi.fn(() => Promise.resolve({ data: {} })),
+  markLinkShared: vi.fn(() => Promise.resolve({})),
+}));
+import * as api from '../services/api';
+
+// Mirror the component's Mon-first week anchor so date assertions aren't tied to
+// a hardcoded calendar — the dashboard shows the *current* week now.
+const startOfWeek = (base) => {
+  const d = new Date(base.getFullYear(), base.getMonth(), base.getDate());
+  const dow = (d.getDay() + 6) % 7;
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate() - dow);
+};
+const MONDAY = startOfWeek(new Date());
+const dayInWeek = (offset, h = 11, m = 0) => {
+  const d = new Date(MONDAY);
+  d.setDate(d.getDate() + offset);
+  d.setHours(h, m, 0, 0);
+  return d.toISOString();
+};
+const fmtDay = (d) => `${d.getDate()} ${d.toLocaleDateString('en-GB', { month: 'short' })}`;
+
+vi.mock('react-hot-toast', () => ({
+  default: Object.assign(() => {}, { success: () => {}, error: () => {} }),
 }));
 
-vi.mock('../services/analytics', () => ({
-  analytics: { track: vi.fn() },
-  EVENTS: { PROFILE_LINK_SHARED: 'profile_link_shared' },
-}));
-
+const { auth } = vi.hoisted(() => ({ auth: { user: null } }));
 vi.mock('../context/AuthContext', () => ({
-  useAuth: vi.fn(),
+  useAuth: () => ({ user: auth.user, logout: vi.fn(), updateUser: vi.fn() }),
 }));
 
-import { useAuth } from '../context/AuthContext';
 import Dashboard from '../pages/Dashboard';
+import OverviewLayout from '../components/common/OverviewLayout';
 
-const renderDashboard = (user) => {
-  useAuth.mockReturnValue({
-    user,
-    connectGoogleCalendar: vi.fn(),
-    updateUser: vi.fn(),
-  });
+const HOST = {
+  id: 'h1', name: 'Mohini Daf', email: 'mohini@example.com', role: 'host',
+  is_host: true, plan: 'premium', username: 'mohini', kyc_status: 'approved',
+  onboarding_completed: true, google_calendar_connected: true,
+};
+
+const renderPage = (user = HOST) => {
+  auth.user = user;
   return render(
     <MemoryRouter initialEntries={['/dashboard']}>
       <Dashboard />
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 };
 
-// ── Vendor (host) dashboard ───────────────────────────────────────────────────
+const renderShell = (user = HOST) => {
+  auth.user = user;
+  return render(
+    <MemoryRouter initialEntries={['/dashboard']}>
+      <OverviewLayout><Dashboard /></OverviewLayout>
+    </MemoryRouter>,
+  );
+};
 
-describe('Dashboard — Vendor (role:host)', () => {
-  const VENDOR = {
-    _id: 'v1', name: 'Jane Vendor', role: 'host', plan: 'explorer',
-    username: 'jane-vendor', google_calendar_connected: false,
-  };
+beforeEach(() => { auth.user = HOST; api.getHostBookings.mockResolvedValue({ data: [] }); });
 
-  test('shows welcome message with first name', async () => {
-    renderDashboard(VENDOR);
-    await waitFor(() => expect(screen.getByText(/welcome back, jane/i)).toBeTruthy());
+describe('Overview — real-data content', () => {
+  it('greets the host and shows the reference subtitle', () => {
+    renderPage();
+    expect(screen.getByRole('heading', { name: /good afternoon, mohini!/i })).toBeInTheDocument();
+    expect(screen.getByText("Here's what's happening with your business today.")).toBeInTheDocument();
   });
 
-  test('shows profile URL pill with correct link', async () => {
-    renderDashboard(VENDOR);
-    await waitFor(() => expect(screen.getByText(/meeticulous\.com\/jane-vendor/i)).toBeTruthy());
+  it('shows the three summary cards; money reads the real payout balance once loaded', async () => {
+    renderPage();
+    expect(screen.getByText('Available to withdraw')).toBeInTheDocument();
+    expect(screen.getByText('Upcoming bookings')).toBeInTheDocument();
+    expect(screen.getByText('Completed bookings')).toBeInTheDocument();
+    // The clearing/pending labels are always present; the amounts fill in once
+    // the balance resolves (available + clearing + pending = three ₹0.00 nodes).
+    expect(screen.getByText('clearing')).toBeInTheDocument();
+    expect(screen.getByText('pending')).toBeInTheDocument();
+    expect((await screen.findAllByText('₹0.00')).length).toBeGreaterThanOrEqual(3);
   });
 
-  test('shows Google Calendar connect prompt when not connected', async () => {
-    renderDashboard(VENDOR);
-    await waitFor(() => expect(screen.getByText(/connect google calendar/i)).toBeTruthy());
+  it('shows an error state (not the empty state) when bookings fail to load', async () => {
+    api.getHostBookings.mockRejectedValueOnce(new Error('network down'));
+    renderPage();
+    expect(await screen.findByText("Couldn't load your bookings")).toBeInTheDocument();
+    // Critically: a failed fetch must NOT masquerade as "no bookings".
+    expect(screen.queryByText('No bookings this week')).toBeNull();
+    // And counts read '—' (unavailable), never a fabricated 0.
+    const upcoming = screen.getByText('Upcoming bookings').closest('div').parentElement;
+    expect(within(upcoming).getByText('—')).toBeInTheDocument();
   });
 
-  test('marks Google Calendar done in the setup checklist when connected', async () => {
-    // Redesign: the prompt is now a setup-checklist item that stays visible but
-    // is struck through / marked complete once connected (no longer hidden).
-    renderDashboard({ ...VENDOR, google_calendar_connected: true });
-    const label = await screen.findByText(/connect google calendar/i);
-    expect(label.className).toMatch(/line-through/);
+  it('shows the unavailable balance as — rather than ₹0.00 when it fails', async () => {
+    api.getPayoutBalance.mockRejectedValueOnce(new Error('network down'));
+    renderPage();
+    expect(await screen.findByText('No bookings this week')).toBeInTheDocument(); // bookings resolved []
+    // Balance never resolved → figures render as '—', not a misleading ₹0.00.
+    const withdraw = screen.getByText('Available to withdraw').closest('div').parentElement;
+    expect(within(withdraw).getAllByText('—').length).toBeGreaterThan(0);
+    expect(within(withdraw).queryByText('₹0.00')).toBeNull();
   });
 
-  test('shows at-a-glance stats (Upcoming, Pending, Completed)', async () => {
-    const { container } = renderDashboard(VENDOR);
-    await waitFor(() => {
-      // Cockpit redesign: vanity tiles (Total Bookings / Total Earnings / Cancelled)
-      // are gone; earnings moved to the money hero. The first .grid is the
-      // at-a-glance strip with the three figures that matter.
-      const statsGrid = container.querySelector('.grid');
-      expect(within(statsGrid).getByText('Upcoming')).toBeTruthy();
-      expect(within(statsGrid).getByText('Pending')).toBeTruthy();
-      expect(within(statsGrid).getByText('Completed')).toBeTruthy();
-    });
+  it('derives upcoming/completed counts from the real bookings', async () => {
+    api.getHostBookings.mockResolvedValueOnce({ data: [
+      { id: 'u1', guest_name: 'A', scheduled_at: dayInWeek(10), status: 'confirmed' }, // future
+      { id: 'u2', guest_name: 'B', scheduled_at: dayInWeek(11), status: 'confirmed' }, // future
+      { id: 'c1', guest_name: 'C', scheduled_at: dayInWeek(-20), status: 'completed' }, // past, completed
+    ] });
+    renderPage();
+    const upcoming = (await screen.findByText('Upcoming bookings')).closest('div').parentElement;
+    await waitFor(() => expect(within(upcoming).getByText('2')).toBeInTheDocument());
+    const completed = screen.getByText('Completed bookings').closest('div').parentElement;
+    expect(within(completed).getByText('1')).toBeInTheDocument();
   });
 
-  test('shows dashboard sections (Upcoming bookings, Recent bookings, Finish setup)', async () => {
-    renderDashboard(VENDOR);
-    await waitFor(() => {
-      expect(screen.getByText('Upcoming bookings')).toBeTruthy();
-      expect(screen.getByText('Recent bookings')).toBeTruthy();
-      expect(screen.getByText('Finish setup')).toBeTruthy();
-    });
+  it('renders the host\'s real bookings on the calendar (no dummy data)', async () => {
+    api.getHostBookings.mockResolvedValueOnce({ data: [
+      { id: 'r1', guest_name: 'Aarav Mehta', scheduled_at: dayInWeek(2, 11, 0), status: 'confirmed', services: { duration: 60 } },
+    ] });
+    renderPage();
+    expect(await screen.findByText('Aarav Mehta')).toBeInTheDocument();
+    expect(screen.getByTitle(/Aarav Mehta · 11:00 am - 12:00 pm/)).toBeInTheDocument();
+    // None of the old fabricated names leak in.
+    expect(screen.queryByText('Kabir Mehta')).toBeNull();
+  });
+
+  it('shows a clean empty state when the host has no bookings', async () => {
+    renderPage(); // default mock: []
+    expect(await screen.findByText('No bookings this week')).toBeInTheDocument();
+    // The calendar chrome is still present (layout preserved).
+    expect(screen.getByRole('heading', { name: 'Calendar' })).toBeInTheDocument();
+  });
+
+  it('labels the current week', () => {
+    renderPage();
+    const sunday = new Date(MONDAY); sunday.setDate(sunday.getDate() + 6);
+    expect(screen.getByText(`${fmtDay(MONDAY)} – ${fmtDay(sunday)} ${sunday.getFullYear()}`)).toBeInTheDocument();
+    ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+      .forEach((day) => expect(screen.getByText(day)).toBeInTheDocument());
+  });
+
+  it('opens the 75% profile completion popover from the toolbar rocket', () => {
+    renderShell();
+    // Popover is closed by default (no layout space taken).
+    expect(screen.queryByText('Complete Your Profile')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Profile completion' }));
+    expect(screen.getByText('75%')).toBeInTheDocument();
+    expect(screen.getByText('Complete Your Profile')).toBeInTheDocument();
+    ['Complete Profile', 'Add Services', 'Set Availability', 'Share Booking Link']
+      .forEach((row) => expect(screen.getByText(row)).toBeInTheDocument());
   });
 });
 
-// ── New vendor — no username yet ──────────────────────────────────────────────
-
-describe('Dashboard — new vendor without username', () => {
-  const NEW_VENDOR = {
-    _id: 'v2', name: 'New Creator', role: 'host', plan: 'explorer',
-    username: null, google_calendar_connected: false,
-  };
-
-  test('shows "Set username" onboarding banner', async () => {
-    renderDashboard(NEW_VENDOR);
-    await waitFor(() => expect(screen.getByText(/set up your public profile/i)).toBeTruthy());
+describe('Overview — sidebar shell', () => {
+  it('keeps the original two-level ConsoleSidebar (rail sections + panel) with Overview active', () => {
+    renderShell();
+    // Rail: the six existing section buttons, in order — NOT the flat pink sidebar.
+    const rail = screen.getByRole('navigation', { name: 'Sections' });
+    const sections = within(rail).getAllByRole('button').map((b) => b.getAttribute('aria-label'));
+    expect(sections).toEqual(['Overview', 'Bookings', 'Catalog', 'Earnings', 'Chat', 'Settings']);
+    // Panel: the active Overview page is current.
+    const panel = screen.getByRole('navigation', { name: /overview pages/i });
+    expect(within(panel).getByRole('link', { name: 'Overview' })).toHaveAttribute('aria-current', 'page');
   });
 
-  test('does NOT show profile URL pill (no username)', async () => {
-    renderDashboard(NEW_VENDOR);
-    await waitFor(() => expect(screen.queryByText(/meeticulous\.com\//i)).toBeNull());
+  it('toggles the profile popover from the rocket and has no Hide button', () => {
+    renderShell();
+    const rocket = screen.getByRole('button', { name: 'Profile completion' });
+    expect(screen.queryByText('Complete Your Profile')).toBeNull(); // closed by default
+    fireEvent.click(rocket);
+    expect(screen.getByText('Complete Your Profile')).toBeInTheDocument();
+    // The Hide button was removed entirely.
+    expect(screen.queryByRole('button', { name: /^Hide$/ })).toBeNull();
+    fireEvent.click(rocket); // tap toggles closed (touch mode in jsdom)
+    expect(screen.queryByText('Complete Your Profile')).toBeNull();
   });
 
-  test('banner links to /dashboard/profile', async () => {
-    renderDashboard(NEW_VENDOR);
-    await waitFor(() => {
-      const link = screen.getByRole('link', { name: /set username/i });
-      expect(link.getAttribute('href')).toContain('/dashboard/profile');
-    });
+  it('switches between week and month views and steps the range', () => {
+    renderPage();
+    const monthLabel = (offset) =>
+      new Date(new Date().getFullYear(), new Date().getMonth() + offset, 1)
+        .toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+    const weekLabel = (weeks) => {
+      const mon = new Date(MONDAY); mon.setDate(mon.getDate() + weeks * 7);
+      const sun = new Date(mon); sun.setDate(sun.getDate() + 6);
+      return `${fmtDay(mon)} – ${fmtDay(sun)} ${sun.getFullYear()}`;
+    };
+
+    fireEvent.click(screen.getByRole('button', { name: 'This Month' }));
+    expect(screen.getByText(monthLabel(0))).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Next month' }));
+    expect(screen.getByText(monthLabel(1))).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'This Week' }));
+    expect(screen.getByText(weekLabel(0))).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Next week' }));
+    expect(screen.getByText(weekLabel(1))).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Previous week' }));
+    expect(screen.getByText(weekLabel(0))).toBeInTheDocument();
+  });
+
+  it('opens the new-meeting flow from the toolbar', async () => {
+    renderShell();
+    fireEvent.click(screen.getByRole('button', { name: /add a new meeting/i }));
+    expect(screen.getByRole('dialog', { name: 'Start a new meeting' })).toBeInTheDocument();
+    // Services load async; the modal resolves to its empty/error state.
+    await screen.findByText(/no services yet|couldn't load your services/i);
+  });
+
+  it('has no search bar, and keeps the right-side toolbar actions', () => {
+    renderShell();
+    // The "Search anything..." bar was removed from the toolbar.
+    expect(screen.queryByRole('searchbox')).toBeNull();
+    expect(screen.queryByPlaceholderText('Search anything...')).toBeNull();
+    // The remaining actions stay present and functional.
+    expect(screen.getByRole('button', { name: /add a new meeting/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Profile completion' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /notifications/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Profile menu' })).toBeInTheDocument();
   });
 });
 
-// ── Guest (user) dashboard ────────────────────────────────────────────────────
-// Guests are now redirected to /user — the Dashboard renders nothing.
-
-describe('Dashboard — User (role:guest)', () => {
-  const GUEST = { _id: 'u1', name: 'Bob Guest', role: 'guest', plan: 'explorer', username: null };
-
-  test('redirects guest: renders no visible content', () => {
-    renderDashboard(GUEST);
-    // <Navigate replace to="/user" /> produces an empty div in MemoryRouter
-    expect(screen.queryByText(/welcome back/i)).toBeNull();
+describe('Overview — access', () => {
+  it('renders nothing for a guest (redirects to /user)', () => {
+    renderPage({ name: 'Bob Guest', role: 'guest', is_host: false });
+    expect(screen.queryByText(/good afternoon/i)).toBeNull();
   });
+});
 
-  test('does NOT show host stat cards', async () => {
-    renderDashboard(GUEST);
-    await waitFor(() => expect(screen.queryByText('Upcoming')).toBeNull());
-  });
-
-  test('does NOT show profile URL banner', async () => {
-    renderDashboard(GUEST);
-    await waitFor(() => expect(screen.queryByText(/meeticulous\.com\//i)).toBeNull());
+describe('Overview — DEV preview mode', () => {
+  it('shows sample bookings + payout WITHOUT calling the API', async () => {
+    vi.stubEnv('VITE_UI_PREVIEW', 'true');
+    api.getHostBookings.mockClear();
+    api.getPayoutBalance.mockClear();
+    try {
+      renderPage();
+      // A preview booking appears on the current-week calendar…
+      expect(await screen.findByText('Ananya Iyer')).toBeInTheDocument();
+      // …and neither data endpoint was hit.
+      expect(api.getHostBookings).not.toHaveBeenCalled();
+      expect(api.getPayoutBalance).not.toHaveBeenCalled();
+    } finally {
+      vi.stubEnv('VITE_UI_PREVIEW', '');
+    }
   });
 });

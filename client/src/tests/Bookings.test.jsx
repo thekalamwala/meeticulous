@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent, within } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, within, cleanup } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 
@@ -8,67 +8,101 @@ vi.mock('../services/api', () => ({
   completeBooking: vi.fn(),
   markNoShow: vi.fn(),
   rescheduleBooking: vi.fn(),
-  getAvailability: vi.fn(),
-  getBookedSlots: vi.fn(),
-  getBookingReview: vi.fn(),
+  getAvailability: vi.fn(() => Promise.resolve({ data: {} })),
+  getBookedSlots: vi.fn(() => Promise.resolve({ data: [] })),
+  getBookingReview: vi.fn(() => Promise.resolve({ data: null })),
 }));
 vi.mock('../hooks/useFeatureFlags', () => ({ default: vi.fn() }));
+vi.mock('../context/AuthContext', () => ({ useAuth: () => ({ user: { username: 'host' } }) }));
 
-import { getHostBookings, getBookingReview } from '../services/api';
+import { getHostBookings } from '../services/api';
 import useFeatureFlags from '../hooks/useFeatureFlags';
 import Bookings from '../pages/Bookings';
 
-const mk = (idPrefix, iso, extra = {}) => ({
-  id: `${idPrefix}-1111-2222-3333-444444444444`,
+// A booking on today (so it lands in the current-week calendar view).
+const startOfWeek = (base) => {
+  const d = new Date(base.getFullYear(), base.getMonth(), base.getDate());
+  const dow = (d.getDay() + 6) % 7;
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate() - dow);
+};
+const todayAt = (h) => { const d = new Date(); d.setHours(h, 0, 0, 0); return d.toISOString(); };
+// A future weekday in the current week (so the booking is "upcoming" + reschedulable).
+const futureThisWeek = () => {
+  const sun = startOfWeek(new Date()); sun.setDate(sun.getDate() + 6); sun.setHours(23, 0, 0, 0);
+  return sun.toISOString();
+};
+
+const booking = {
+  id: 'bk000001-1111-2222-3333-444444444444',
   status: 'confirmed',
   payment_status: 'paid',
-  scheduled_at: iso,
-  created_at: '2024-01-01T00:00:00.000Z',
-  guest_name: `${idPrefix} guest`,
-  guest_email: `${idPrefix}@example.com`,
-  guest_phone: '+910000000000',
-  services: { title: `${idPrefix} svc`, price: 500, duration: 30, meeting_mode: 'online' },
-  ...extra,
-});
-
-// Server returns ascending scheduled_at; the page must present newest first.
-const older = mk('old00000', '2020-01-01T05:00:00.000Z');
-const mid   = mk('mid00000', '2050-06-15T05:00:00.000Z');
-const newer = mk('new00000', '2099-12-31T05:00:00.000Z');
+  scheduled_at: futureThisWeek(),
+  created_at: '2026-11-01T00:00:00.000Z',
+  guest_name: 'Asha Rao',
+  guest_email: 'asha@example.com',
+  guest_phone: '+919999999999',
+  guest_id: 'guest-1',
+  host_id: 'host-1',
+  services: { title: 'Hair Spa', price: 1500, duration: 60 },
+  notes: 'Prefers organic products.',
+};
 
 const renderPage = () => render(<MemoryRouter><Bookings /></MemoryRouter>);
 
+afterEach(() => cleanup());
 beforeEach(() => {
   vi.clearAllMocks();
+  getHostBookings.mockReset(); // drop any resolved value leaked from a prior test
   useFeatureFlags.mockReturnValue({ on: () => true });
-  getBookingReview.mockResolvedValue({ data: null });
 });
 
-test('every tab defaults to newest → oldest order', async () => {
-  // Provided oldest-first (as the API delivers it).
-  getHostBookings.mockResolvedValue({ data: [older, mid, newer] });
+test('shows summary cards with real counts and the booking on the calendar', async () => {
+  getHostBookings.mockResolvedValue({ data: [booking] });
   renderPage();
-
-  await waitFor(() => screen.getByText('#NEW00000'));
-  const ids = screen.getAllByText(/^#(OLD|MID|NEW)00000$/).map((el) => el.textContent);
-  expect(ids).toEqual(['#NEW00000', '#MID00000', '#OLD00000']);
+  await waitFor(() => screen.getByText('Hair Spa'));
+  // Summary labels present; Upcoming reflects the one future booking.
+  expect(screen.getByText('Upcoming')).toBeInTheDocument();
+  expect(screen.getByText('Pending')).toBeInTheDocument();
+  expect(screen.getByText('Completed')).toBeInTheDocument();
 });
 
-test('row opens the redesigned details modal with all grouped sections', async () => {
-  getHostBookings.mockResolvedValue({ data: [newer] });
+test('clicking a booking card opens the redesigned modal with tabs', async () => {
+  getHostBookings.mockResolvedValue({ data: [booking] });
   renderPage();
+  await waitFor(() => screen.getByText('Hair Spa'));
 
-  await waitFor(() => screen.getByText('#NEW00000'));
-  fireEvent.click(screen.getByRole('button', { name: /view details/i }));
-
-  // Scope to the modal — section titles also exist as table column headers.
+  fireEvent.click(screen.getByText('Hair Spa'));
   const dialog = await screen.findByRole('dialog');
   const inModal = within(dialog);
-  // Section titles render as <h4> headings (distinct from row labels like "Service").
-  expect(inModal.getByRole('heading', { name: 'Schedule' })).toBeInTheDocument();
-  expect(inModal.getByRole('heading', { name: 'Customer' })).toBeInTheDocument();
-  expect(inModal.getByRole('heading', { name: 'Service' })).toBeInTheDocument();
-  expect(inModal.getByRole('heading', { name: 'Payment' })).toBeInTheDocument();
-  // A representative data point from a section is preserved.
-  expect(inModal.getByText('new00000 guest')).toBeInTheDocument();
+  // Three tabs from the reference.
+  expect(inModal.getByRole('tab', { name: 'Booking Details' })).toBeInTheDocument();
+  expect(inModal.getByRole('tab', { name: 'Timeline' })).toBeInTheDocument();
+  expect(inModal.getByRole('tab', { name: 'Actions' })).toBeInTheDocument();
+  // Customer + a real field.
+  expect(inModal.getByText('Asha Rao')).toBeInTheDocument();
+  expect(inModal.getByText('Prefers organic products.')).toBeInTheDocument();
+
+  // Switching tabs changes content without closing the modal.
+  fireEvent.click(inModal.getByRole('tab', { name: 'Timeline' }));
+  expect(inModal.getByText('Scheduled')).toBeInTheDocument();
+  expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+  // Actions tab exposes the real, status-gated actions (confirmed + future).
+  fireEvent.click(inModal.getByRole('tab', { name: 'Actions' }));
+  expect(within(screen.getByRole('dialog')).getAllByRole('button', { name: /reschedule/i }).length).toBeGreaterThan(0);
+});
+
+test('shows a clean empty state when there are no bookings', async () => {
+  getHostBookings.mockResolvedValue({ data: [] });
+  renderPage();
+  expect(await screen.findByText('No bookings yet', {}, { timeout: 3000 })).toBeInTheDocument();
+});
+
+test('shows a retryable error state when the API fails', async () => {
+  getHostBookings.mockRejectedValueOnce(new Error('network down'));
+  renderPage();
+  expect(await screen.findByText("Couldn't load your bookings.", {}, { timeout: 3000 })).toBeInTheDocument();
+  getHostBookings.mockResolvedValue({ data: [booking] });
+  fireEvent.click(screen.getByRole('button', { name: /try again|retry/i }));
+  expect(await screen.findByText('Hair Spa', {}, { timeout: 3000 })).toBeInTheDocument();
 });
