@@ -66,23 +66,27 @@ export default function CommentList({ comments, acceptedId, viewerId, canAccept,
               ) : (
                 <p className="text-sm leading-relaxed text-ink"><LinkifiedText text={c.body} /></p>
               )}
-              <div className="-mx-3 -mb-3 flex items-center gap-1">
-                <LikeButton targetType="comment" id={c.id} liked={c.viewer?.liked} count={c.like_count} />
-                <button type="button" onClick={() => onReply?.(c)} className="mt-btn mt-btn--ghost mt-btn--s font-medium text-muted hover:text-maroon">
-                  Reply
-                </button>
-                {canAccept && !isAccepted && (
-                  <button type="button" onClick={() => onAccept?.(c)} className="mt-btn mt-btn--ghost mt-btn--s font-medium text-muted hover:text-maroon">Mark as answer</button>
-                )}
-                <span className="ml-auto">
-                  <MoreMenu
-                    label="More actions for this reply"
-                    items={c.author?.id && c.author.id === viewerId
-                      ? [{ label: 'Edit', onSelect: () => setEditing(c.id) }, { label: 'Delete', onSelect: () => setDeleting(c) }]
-                      : [{ label: 'Report reply', onSelect: () => onReport?.(c) }]}
-                  />
-                </span>
-              </div>
+              {/* A still-saving reply has a temp id the server would 400 on, so hide every
+                  action (like / reply / mark-answer / edit-delete-report) until it settles. */}
+              {!c.pending && (
+                <div className="-mx-3 -mb-3 flex items-center gap-1">
+                  <LikeButton targetType="comment" id={c.id} liked={c.viewer?.liked} count={c.like_count} />
+                  <button type="button" onClick={() => onReply?.(c)} className="mt-btn mt-btn--ghost mt-btn--s font-medium text-muted hover:text-maroon">
+                    Reply
+                  </button>
+                  {canAccept && !isAccepted && (
+                    <button type="button" onClick={() => onAccept?.(c)} className="mt-btn mt-btn--ghost mt-btn--s font-medium text-muted hover:text-maroon">Mark as answer</button>
+                  )}
+                  <span className="ml-auto">
+                    <MoreMenu
+                      label="More actions for this reply"
+                      items={c.author?.id && c.author.id === viewerId
+                        ? [{ label: 'Edit', onSelect: () => setEditing(c.id) }, { label: 'Delete', onSelect: () => setDeleting(c) }]
+                        : [{ label: 'Report reply', onSelect: () => onReport?.(c) }]}
+                    />
+                  </span>
+                </div>
+              )}
             </div>
           </li>
         );
