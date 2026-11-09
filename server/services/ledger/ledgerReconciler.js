@@ -9,6 +9,7 @@
 const { supabaseAdmin } = require('../../config/supabase');
 const { orderPaymentEntry, subscriptionPaymentEntry, productPaymentEntry } = require('./journalTemplates');
 const { postSafe } = require('./postingService');
+const { captureException } = require('../../utils/sentry');
 
 const SCAN_LIMIT = 200;
 
@@ -86,6 +87,7 @@ async function reconcile() {
       if (id) reposted += 1;
     } catch (err) {
       console.error(`Reconciler skipped booking ${b.id}:`, err.message);
+      captureException(err, { job: 'ledger-reconcile', bookingId: b.id });
     }
   }
 
@@ -111,6 +113,7 @@ async function reconcile() {
       if (id) reposted += 1;
     } catch (err) {
       console.error(`Reconciler skipped subscription ${s.id}:`, err.message);
+      captureException(err, { job: 'ledger-reconcile', subscriptionPaymentId: s.id });
     }
   }
 
@@ -145,10 +148,12 @@ async function reconcile() {
         if (id) reposted += 1;
       } catch (err) {
         console.error(`Reconciler skipped product purchase ${p.id}:`, err.message);
+        captureException(err, { job: 'ledger-reconcile', productPurchaseId: p.id });
       }
     }
   } catch (err) {
     console.error('Reconciler product scan skipped:', err.message);
+    captureException(err, { job: 'ledger-reconcile', phase: 'product-scan' });
   }
 
   return { reposted };

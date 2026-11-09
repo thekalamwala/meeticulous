@@ -1,22 +1,26 @@
 // Unit tests for supportChatService — thread/message engine for support chat.
-// supabaseAdmin + the broadcast fetch are mocked; nothing leaves the process.
+// supabaseAdmin + the broadcast fetch + sendEmail are mocked; nothing leaves the process.
+// adminAlert is deliberately REAL: a mock of it once hid a wrong import shape, so
+// escalate() threw in production while these tests passed.
 
 process.env.SUPABASE_URL = 'http://sb.test';
 process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-key';
+process.env.SUPPORT_EMAIL = 'support@example.test';
 
 jest.mock('../../config/supabase', () => ({ supabaseAdmin: { from: jest.fn() } }));
-jest.mock('../../utils/adminAlert', () => jest.fn(() => Promise.resolve({ sent: true })));
+jest.mock('../../utils/sendEmail', () => jest.fn(() => Promise.resolve()));
 jest.mock('../../utils/supportHours', () => ({ isOpen: jest.fn(() => true), LABEL: 'Mon–Fri, 10am–6pm IST' }));
 
 const { supabaseAdmin } = require('../../config/supabase');
-const adminAlert = require('../../utils/adminAlert');
+const sendEmail = require('../../utils/sendEmail');
+const { adminAlert } = require('../../utils/adminAlert');
 const supportHours = require('../../utils/supportHours');
 const chat = require('../../services/supportChatService');
 
 // Chainable builder whose terminals (single/maybeSingle) and await (.then) resolve `result`.
 const makeChain = (result) => {
   const chain = {};
-  for (const m of ['select', 'insert', 'update', 'eq', 'neq', 'order', 'limit']) chain[m] = jest.fn(() => chain);
+  for (const m of ['select', 'insert', 'update', 'eq', 'neq', 'in', 'order', 'limit']) chain[m] = jest.fn(() => chain);
   chain.single = jest.fn(() => Promise.resolve(result));
   chain.maybeSingle = jest.fn(() => Promise.resolve(result));
   chain.then = (resolve) => resolve(result);
@@ -25,6 +29,7 @@ const makeChain = (result) => {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  adminAlert._resetThrottle();
   global.fetch = jest.fn(() => Promise.resolve({ ok: true }));
 });
 
@@ -81,17 +86,54 @@ test('escalate sets status waiting and broadcasts a status event', async () => {
     .find((m) => m.topic === 'support:admin');
   expect(adminMsg.event).toBe('escalation');
   expect(adminMsg.payload.thread_id).toBe('t1');
-  // …and emails the team, throttled per-thread.
-  expect(adminAlert).toHaveBeenCalledWith(expect.objectContaining({ key: 'support-escalation:t1' }));
+  // …and emails the support inbox.
+  expect(sendEmail).toHaveBeenCalledTimes(1);
+  expect(sendEmail.mock.calls[0][0].to).toBe('support@example.test');
 });
 
-test('escalate outside support hours does NOT ring, but still emails', async () => {
+test('re-escalating the same thread emails once (throttled per-thread)', async () => {
+  const row = { data: { id: 't1', status: 'waiting', reference: 'SUP-1' } };
+  supabaseAdmin.from.mockReturnValueOnce(makeChain(row)).mockReturnValueOnce(makeChain(row));
+  await chat.escalate('t1', 'first');
+  await chat.escalate('t1', 'again');
+  expect(sendEmail).toHaveBeenCalledTimes(1);
+});
+
+test('escalate outside support hours neither rings nor emails — it waits for the digest', async () => {
   supportHours.isOpen.mockReturnValueOnce(false);
   supabaseAdmin.from.mockReturnValueOnce(makeChain({ data: { id: 't1', status: 'waiting', reference: 'SUP-1' } }));
-  await chat.escalate('t1', 'after hours');
+  const out = await chat.escalate('t1', 'after hours');
   const rang = global.fetch.mock.calls.some((c) => JSON.parse(c[1].body).messages[0].topic === 'support:admin');
-  expect(rang).toBe(false);            // no admin ring off-hours
-  expect(adminAlert).toHaveBeenCalled(); // email still fires
+  expect(rang).toBe(false);
+  expect(sendEmail).not.toHaveBeenCalled();
+  expect(out.status).toBe('waiting'); // still in the queue the digest reads
+});
+
+test('sendWaitingDigest emails the support inbox one list of waiting threads', async () => {
+  const queue = makeChain({ data: [
+    { id: 't1', reference: 'SUP-AAA111', participant_type: 'host', ai_summary: 'Payout\nmissing' },
+    { id: 't2', reference: 'SUP-BBB222', participant_type: 'guest', guest_phone: '+919800000000', ai_summary: null },
+  ] });
+  supabaseAdmin.from
+    .mockReturnValueOnce(queue)
+    .mockReturnValueOnce(makeChain({ data: [{ thread_id: 't2', body: 'Where is my invoice?' }] }));
+
+  const out = await chat.sendWaitingDigest();
+
+  expect(queue.eq).toHaveBeenCalledWith('status', 'waiting');
+  expect(out).toMatchObject({ sent: true, count: 2 });
+  expect(sendEmail).toHaveBeenCalledTimes(1);
+  const mail = sendEmail.mock.calls[0][0];
+  expect(mail.to).toBe('support@example.test');
+  expect(mail.subject).toContain('2 support threads');
+  expect(mail.text).toContain('SUP-AAA111: Host · Payout missing');
+  expect(mail.text).toContain('SUP-BBB222: Guest · +919800000000 · Where is my invoice?');
+});
+
+test('sendWaitingDigest sends nothing when no thread is waiting', async () => {
+  supabaseAdmin.from.mockReturnValueOnce(makeChain({ data: [] }));
+  expect(await chat.sendWaitingDigest()).toMatchObject({ sent: false, count: 0 });
+  expect(sendEmail).not.toHaveBeenCalled();
 });
 
 test('markRead zeroes the correct counter', async () => {

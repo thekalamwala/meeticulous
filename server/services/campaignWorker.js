@@ -16,7 +16,27 @@ const waTemplates = require('./whatsappTemplateService');
 const NotificationEngine = require('./notificationEngine');
 const sendBudget = require('./email/sendBudget');
 
+// Recipients are claimed (status 'sending') before the send so two workers can't
+// both message one person. A claim older than this = the worker died mid-send; it
+// is marked failed (visible, re-sendable by hand) rather than retried, because the
+// message may already have gone out and a duplicate marketing send is worse.
+const STALE_SENDING_MS = 15 * 60 * 1000;
+
+async function claim(id) {
+  const { data } = await supabaseAdmin.from('campaign_recipients')
+    .update({ status: 'sending', updated_at: new Date().toISOString() })
+    .eq('id', id).eq('status', 'queued').select('id').maybeSingle();
+  return !!data;
+}
+
 async function processDue() {
+  try {
+    const now = new Date().toISOString();
+    await supabaseAdmin.from('campaign_recipients')
+      .update({ status: 'failed', error: 'stuck_sending: worker stopped mid-send; check before re-sending', updated_at: now })
+      .eq('status', 'sending').lt('updated_at', new Date(Date.now() - STALE_SENDING_MS).toISOString());
+  } catch (_) { /* best-effort sweep */ }
+
   const { data: campaigns } = await supabaseAdmin.from('email_campaigns').select('*').eq('status', 'sending');
   let enqueued = 0, failed = 0;
 
@@ -54,6 +74,7 @@ async function processDue() {
         if (!waTpl || !waProvider || !waProvider.is_active || !waProvider.api_key) {
           await mark(rcpt.id, 'failed', 'whatsapp_not_configured'); failed++; continue;
         }
+        if (!(await claim(rcpt.id))) continue; // another worker is sending this one
         const cdata = { first_name: (contact.name || '').split(' ')[0], name: contact.name, ...(contact.attributes || {}) };
         const params = waTemplates.buildParams(waTpl, cdata);
         const r = await aisensy.sendCampaign({
@@ -77,6 +98,7 @@ async function processDue() {
       // Daily Resend budget ran out mid-batch — leave 'queued' (untouched) so a
       // later tick / the next UTC day picks it up, rather than burn it as failed.
       if (emailBudget <= 0) continue;
+      if (!(await claim(rcpt.id))) continue; // another worker is enqueuing this one
       const data = { first_name: (contact.name || '').split(' ')[0], name: contact.name, email: contact.email, ...(contact.attributes || {}) };
       // Custom (composer) campaign carries its own compiled body; template-based
       // campaign carries a template_id. enqueueCampaignEmail accepts either.
@@ -98,9 +120,10 @@ async function processDue() {
       else      { await mark(rcpt.id, 'failed', r.reason || 'enqueue_failed'); failed++; }
     }
 
-    // Drained? Mark the campaign complete.
+    // Drained? Mark the campaign complete. A recipient still claimed ('sending') by a
+    // live or crashed worker keeps the campaign open until it is sent or swept failed.
     const { data: remaining } = await supabaseAdmin
-      .from('campaign_recipients').select('id').eq('campaign_id', campaign.id).eq('status', 'queued').limit(1);
+      .from('campaign_recipients').select('id').eq('campaign_id', campaign.id).in('status', ['queued', 'sending']).limit(1);
     if (!remaining || remaining.length === 0) {
       await supabaseAdmin.from('email_campaigns').update({ status: 'sent', updated_at: new Date().toISOString() }).eq('id', campaign.id);
     }

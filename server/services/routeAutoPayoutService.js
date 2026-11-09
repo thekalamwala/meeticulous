@@ -71,6 +71,47 @@ async function patchBooking(bookingId, patch) {
   }
 }
 
+// ── Double-transfer guard (ASH-35 S2-4) ─────────────────────────────────────
+// Three paths call createHeldTransferForBooking: the fire-and-forget capture hook,
+// the payout reconciler cron and the admin "reconcile" button. An in-memory
+// razorpay_transfer_id check could not stop two of them racing, and a transfer
+// that succeeded but failed to save was retried as a brand-new transfer. So:
+//   1. claimTransfer — one atomic conditional UPDATE: only the caller that flips
+//      transfer_status to 'creating' (on a row with no transfer id) proceeds.
+//   2. findExistingTransfer — before creating, ask Razorpay for transfers already
+//      on this payment tagged with this booking id, and ADOPT one instead of
+//      creating a second (heals a crash between "Razorpay said yes" and our save).
+// A claim left 'creating' by a crashed process goes stale after CLAIM_STALE_MS and
+// can be re-claimed; step 2 makes that re-claim safe. Staleness is judged on
+// transfer_last_attempt_at, which ONLY this claim writes: updated_at moves on any
+// booking edit, so a crashed claim on a busy booking would never go stale.
+const CLAIM_STALE_MS = 10 * 60 * 1000;
+
+async function claimTransfer(bookingId) {
+  const now = new Date().toISOString();
+  const staleIso = new Date(Date.now() - CLAIM_STALE_MS).toISOString();
+  const { data, error } = await supabaseAdmin
+    .from('bookings')
+    .update({ transfer_status: 'creating', transfer_last_attempt_at: now, updated_at: now })
+    .eq('id', bookingId)
+    .is('razorpay_transfer_id', null)
+    .or(`transfer_status.is.null,transfer_status.neq.creating,transfer_last_attempt_at.lt."${staleIso}"`)
+    .select('id');
+  if (error) {
+    // Pre-v3.99/v3.116 DB: no columns to claim on → old behaviour (schema fallback).
+    // The double-transfer guard is OFF in this state, so leave a trace.
+    if (isMissingColumn(error)) { securityLog('route_auto_payout_claim_schema_fallback', { bookingId }); return true; }
+    throw error;
+  }
+  return (data || []).length > 0;
+}
+
+async function findExistingTransfer(razorpay, paymentId, bookingId) {
+  const resp = await razorpay.payments.fetchTransfer(paymentId);
+  return (resp?.items || []).find((t) =>
+    String(t?.notes?.booking_id) === String(bookingId) && !['failed', 'reversed'].includes(t?.status)) || null;
+}
+
 /**
  * Create a held Route transfer for a freshly-captured booking.
  * @param {object} booking  the captured booking row (needs id, host_id, scheduled_at, service_id).
@@ -78,6 +119,8 @@ async function patchBooking(bookingId, patch) {
  * @returns {Promise<{ ok, transferId?, status?, onHoldUntil?, skipped?, error? }>}
  */
 async function createHeldTransferForBooking(booking, { paymentId, vendorAmount } = {}) {
+  let transferId = null; // set once Razorpay has a transfer for this booking
+  let claimed = false;   // only the claim holder may write transfer_status
   try {
     if (!booking?.id) return { ok: false, skipped: 'no_booking' };
     if (booking.razorpay_transfer_id) return { ok: true, transferId: booking.razorpay_transfer_id, skipped: 'already_transferred' };
@@ -94,29 +137,54 @@ async function createHeldTransferForBooking(booking, { paymentId, vendorAmount }
     const account = await getLinkedAccountId(booking.host_id);
     if (!account) return { ok: false, skipped: 'no_linked_account' };
 
-    const onHoldUntil = await computeHoldUntil(booking);
+    // Another caller is creating this transfer right now → stand down.
+    if (!(await claimTransfer(booking.id))) return { ok: false, skipped: 'claimed_elsewhere' };
+    claimed = true;
+
     const razorpay = await razorpayConfig.getClient();
-    const result = await razorpay.payments.transfer(paymentId, {
-      transfers: [{
-        account, amount: toPaise(amount), currency: 'INR',
-        on_hold: true, on_hold_until: onHoldUntil,
-        notes: { booking_id: String(booking.id), host_id: String(booking.host_id) },
-      }],
-    });
-    const t = result?.items?.[0] || result;
-    const transferId = t?.id;
+    let t = await findExistingTransfer(razorpay, paymentId, booking.id);
+    const adopted = Boolean(t);
+    let onHoldUntil;
+    if (adopted) {
+      transferId = t.id; // exists at Razorpay: a failure below must not mark it 'failed'
+      securityLog('route_auto_payout_adopted', { bookingId: booking.id, transferId: t.id });
+      // A webhook for this transfer may have been dropped while no booking held its
+      // id, so the SETTLEMENT journal and host notice may never have run. Adopt as
+      // 'pending' with a hold time: the reconciler then finalizes it once.
+      onHoldUntil = t.on_hold_until || await computeHoldUntil(booking);
+    } else {
+      onHoldUntil = await computeHoldUntil(booking);
+      const result = await razorpay.payments.transfer(paymentId, {
+        transfers: [{
+          account, amount: toPaise(amount), currency: 'INR',
+          on_hold: true, on_hold_until: onHoldUntil,
+          notes: { booking_id: String(booking.id), host_id: String(booking.host_id) },
+        }],
+      });
+      t = result?.items?.[0] || result;
+    }
+    transferId = t?.id || null;
     if (!transferId) throw new Error('Razorpay transfer returned no id');
 
+    // partially_reversed stays as is: finalizing it would settle the full amount.
+    const status = adopted && t.status !== 'partially_reversed' ? 'pending' : (t?.status || 'pending');
     await patchBooking(booking.id, {
       razorpay_transfer_id: transferId,
-      transfer_status: t?.status || 'pending',
+      transfer_status: status,
       transfer_error: null,
-      transfer_hold_until: new Date(onHoldUntil * 1000).toISOString(),
+      transfer_hold_until: onHoldUntil ? new Date(onHoldUntil * 1000).toISOString() : null,
     });
-    return { ok: true, transferId, status: t?.status || 'pending', onHoldUntil };
+    return { ok: true, transferId, status, onHoldUntil };
   } catch (err) {
     const reason = err?.error?.description || err?.message || 'unknown error';
-    securityLog('route_auto_payout_error', { bookingId: booking?.id, reason });
+    securityLog('route_auto_payout_error', { bookingId: booking?.id, transferId, reason });
+    // The transfer EXISTS at Razorpay but we failed to save it: never mark it
+    // 'failed' (that invites a retry). Leave the 'creating' claim; once it goes
+    // stale the next run re-claims and findExistingTransfer adopts this transfer.
+    if (transferId) return { ok: false, transferId, error: reason };
+    // Failed BEFORE claiming: another caller may hold a live claim, so don't
+    // overwrite its status. Only our own claim is released (→ 'failed', retryable).
+    if (!claimed) return { ok: false, error: reason };
     try { await patchBooking(booking.id, { transfer_status: 'failed', transfer_error: reason.slice(0, 500) }); } catch (_) { /* logged */ }
     return { ok: false, error: reason };
   }

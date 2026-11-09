@@ -10,6 +10,15 @@
 // Silence React 18 act() warnings in test output
 global.IS_REACT_ACT_ENVIRONMENT = true;
 
+// DEV-only feature flags (UI preview mode, mock auth) must be OFF by default in
+// tests — client/.env sets them to 'true' for local dev and vitest loads that
+// file. Neutralize them so tests exercise the real (mocked) API path; individual
+// tests opt into preview via localStorage('bas_ui_preview').
+if (typeof vi !== 'undefined' && vi.stubEnv) {
+  vi.stubEnv('VITE_UI_PREVIEW', '');
+  vi.stubEnv('VITE_DEV_MOCK_AUTH', '');
+}
+
 // Stub browser APIs not available in jsdom
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

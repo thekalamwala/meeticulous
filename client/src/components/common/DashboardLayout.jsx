@@ -103,8 +103,16 @@ const SupportButton = () => (
   </Link>
 );
 
-/** Notification bell. Anchored panel on desktop, bottom sheet on mobile. */
-const NotifBell = () => {
+/** Notification bell. Anchored panel on desktop, bottom sheet on mobile.
+ *  The trigger can be re-skinned by callers (the Overview shell uses white/pink)
+ *  without duplicating the panel + live-update logic. */
+export const NotifBell = ({
+  triggerClassName = 'relative grid h-9 w-9 place-items-center rounded-full text-gray-500 transition-colors hover:bg-primary/5 hover:text-primary',
+  badgeClassName = 'absolute right-1 top-1 grid min-h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[9px] font-bold leading-none text-white',
+  iconClassName = 'h-[19px] w-[19px]',
+  // Minimum badge value — the Overview reference always shows a "1" marker.
+  minBadge = 0,
+} = {}) => {
   const [open, setOpen] = useState(false);
   const [notifs, setNotifs] = useState([]);
   const [unread, setUnread] = useState(0);
@@ -143,20 +151,22 @@ const NotifBell = () => {
   }, [isMobile]);
   useBodyScrollLock(open && isMobile);
 
+  const shownUnread = Math.max(unread, minBadge);
+
   return (
     <div ref={ref} className="relative">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="relative grid h-9 w-9 place-items-center rounded-full text-gray-500 transition-colors hover:bg-primary/5 hover:text-primary"
-        aria-label={`Notifications${unread > 0 ? `, ${unread} unread` : ''}`}
+        className={triggerClassName}
+        aria-label={`Notifications${shownUnread > 0 ? `, ${shownUnread} unread` : ''}`}
         aria-expanded={open}
         aria-haspopup="dialog"
       >
-        <Bell className="h-[19px] w-[19px]" strokeWidth={1.7} />
-        {unread > 0 && (
-          <span className="absolute right-1 top-1 grid min-h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[9px] font-bold leading-none text-white">
-            {unread > 9 ? '9+' : unread}
+        <Bell className={iconClassName} strokeWidth={1.7} />
+        {shownUnread > 0 && (
+          <span className={badgeClassName}>
+            {shownUnread > 9 ? '9+' : shownUnread}
           </span>
         )}
       </button>
@@ -224,7 +234,12 @@ const NotifBell = () => {
 };
 
 /** Profile avatar — anchored menu on desktop, bottom sheet on mobile. */
-const ProfileMenu = ({ user, plan, planStyle, initial, logout }) => {
+export const ProfileMenu = ({
+  user, plan, planStyle, initial, logout,
+  triggerClassName = 'flex items-center gap-1.5 rounded-full p-0.5 transition-colors hover:bg-gray-100',
+  avatarClassName = 'bg-primary/10 text-primary',
+  chevronClassName = 'h-4 w-4 text-gray-400',
+}) => {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const ref = useRef(null);
@@ -268,7 +283,7 @@ const ProfileMenu = ({ user, plan, planStyle, initial, logout }) => {
     user?.profile_image ? (
       <img src={user.profile_image} alt={user?.name || 'Profile'} className={cn('shrink-0 rounded-full object-cover', size)} />
     ) : (
-      <div className={cn('grid shrink-0 place-items-center rounded-full bg-primary/10 font-bold text-primary', size)}>
+      <div className={cn('grid shrink-0 place-items-center rounded-full font-bold', avatarClassName, size)}>
         {initial}
       </div>
     );
@@ -278,13 +293,13 @@ const ProfileMenu = ({ user, plan, planStyle, initial, logout }) => {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 rounded-full p-0.5 transition-colors hover:bg-gray-100"
+        className={triggerClassName}
         aria-label="Profile menu"
         aria-expanded={open}
         aria-haspopup="menu"
       >
         <Avatar size="h-9 w-9 text-sm" />
-        <ChevronDown className={cn('h-4 w-4 text-gray-400 transition-transform', open && 'rotate-180')} />
+        <ChevronDown className={cn(chevronClassName, 'transition-transform', open && 'rotate-180')} />
       </button>
 
       <MenuSurface open={open} onClose={close} isMobile={isMobile} title="Account" width="w-72">

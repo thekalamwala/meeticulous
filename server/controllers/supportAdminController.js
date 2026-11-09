@@ -104,13 +104,14 @@ const assign = async (req, res) => {
   } catch (e) { safeError(res, e); }
 };
 
-// POST /api/admin/support/thread/:id/resolve  { reason_code? }
+// POST /api/admin/support/thread/:id/resolve  { reason_code }
 const resolve = async (req, res) => {
   try {
+    const rc = req.body?.reason_code;
+    if (!isValidReason(rc)) return res.status(400).json({ message: 'A valid reason code is required to resolve' });
     const thread = await chat.getThread(req.params.id);
     if (!thread) return res.status(404).json({ message: 'Thread not found' });
-    const rc = req.body?.reason_code;
-    if (rc && isValidReason(rc)) await chat.setReasonCode(thread.id, rc); // best-effort, never blocks resolve
+    await chat.setReasonCode(thread.id, rc); // best-effort, never blocks resolve
     await chat.postMessage({ threadId: thread.id, sender: 'system', body: 'This conversation was marked resolved.' });
     const updated = await chat.resolve(thread.id);
     res.json({ thread: updated });

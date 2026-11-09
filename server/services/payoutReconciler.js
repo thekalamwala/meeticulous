@@ -45,6 +45,7 @@ const { createHeldTransferForBooking, finalizeReleasedTransfer, applyTransferSet
 const routeAccountService = require('./routeAccountService');
 const { adminAlert } = require('../utils/adminAlert');
 const { securityLog } = require('../utils/logger');
+const { captureException } = require('../utils/sentry');
 
 const MIN_TRANSFER_RUPEES = 1;                                    // mirrors routeAutoPayoutService
 const MAX_ATTEMPTS = Number(process.env.PAYOUT_RECONCILE_MAX_ATTEMPTS || 5);
@@ -80,10 +81,12 @@ const isMissingColumn = (err) => {
 
 // Record a transfer attempt (retry cap + backoff). Swallows a missing-column error
 // (v3.116 not applied yet) so the reconciler still works, just without the cap.
+// transfer_last_attempt_at is NOT stamped here: claimTransfer owns it, and a stamp
+// just before the claim would make a crashed 'creating' claim look fresh forever.
 async function bumpAttempt(bookingId, current) {
   const { error } = await supabaseAdmin
     .from('bookings')
-    .update({ transfer_attempts: (Number(current) || 0) + 1, transfer_last_attempt_at: new Date().toISOString() })
+    .update({ transfer_attempts: (Number(current) || 0) + 1 })
     .eq('id', bookingId);
   if (error && !isMissingColumn(error)) throw error;
 }
@@ -211,11 +214,19 @@ async function reconcile() {
     try {
       await bumpAttempt(b.id, b.transfer_attempts);
       const r = await createHeldTransferForBooking(b, { paymentId: b.razorpay_payment_id, vendorAmount: amt });
+      if (r.skipped === 'claimed_elsewhere') {
+        // Another caller (capture hook / admin run) is creating this transfer right
+        // now — not a failed attempt. Give the attempt back so a busy booking can't
+        // walk to MAX_ATTEMPTS and email the host a false "payout failed".
+        await supabaseAdmin.from('bookings').update({ transfer_attempts: Number(b.transfer_attempts) || 0 }).eq('id', b.id);
+        continue;
+      }
       if (r.ok && r.transferId) s.created++;
       else s.failedAttempt++;                                // service recorded transfer_status='failed'
     } catch (e) {
       s.failedAttempt++;
       securityLog('payout_reconcile_create_error', { bookingId: b.id, reason: e.message });
+      captureException(e, { job: 'payout-reconcile', phase: 'create', bookingId: b.id });
     }
   }
 
@@ -283,6 +294,7 @@ async function reconcile() {
         }
       } catch (e) {
         securityLog('payout_reconcile_release_error', { bookingId: b.id, reason: e.message });
+        captureException(e, { job: 'payout-reconcile', phase: 'release', bookingId: b.id });
       }
     }
   }

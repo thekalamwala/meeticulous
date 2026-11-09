@@ -1,7 +1,7 @@
 ---
 status: DRAFT — founder must verify before any agent uses it
 owner: DISHA
-last_verified: 2026-11-04
+last_verified: 2026-11-09
 verified_against: subscription_plans (live DB spquowzrefozmrzoszkf), server/lib/pricingEngine.js
 ---
 
@@ -41,6 +41,11 @@ Inactive/legacy plans in the DB (do not quote): Starter (Legacy), Starter (retir
 
 ## Statutory (from `pricingEngine.js`)
 - GST 18%. TDS Sec 194-O: 1% (5% if no PAN). TCS Sec 52: 1%.
+
+## Recently shipped / not yet live (DISHA, 2026-11-09 — from merged commits, founder to verify)
+- **Live:** image uploads up to 5MB · 16-colour profile palette on Pro · gifted (complimentary) Pro granted by Meeticulous admin.
+- **Built but OFF (do not announce or promise):** LinkedIn host login (`host_linkedin_login`), community (`community*` flags).
+- Gifted Pro is not a purchasable product; never quote it as a plan or price.
 
 ## Founding-100
 First 100 Pro hosts; **spots-left count comes from the live `foundingSpots.js` counter, never hardcoded.** Founding-member badge applies.

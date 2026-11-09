@@ -61,14 +61,20 @@ jest.mock('../../config/supabase', () => {
         // Chainable: collect eq/filter predicates, apply to the matching rows on
         // terminal await. Supports the worker's .update().eq().filter() back-fill.
         const preds = [];
+        let stale = false; // .lt('updated_at', …) — the stale-claim sweep; test rows are never stale
         const store = db[table] || db.email_logs;
+        const hits = () => (stale ? [] : store.filter((r) => preds.every(([c, v]) => getPath(r, c) === v)));
         const apply = () => {
-          for (const r of store) if (preds.every(([c, v]) => getPath(r, c) === v)) Object.assign(r, changes);
+          for (const r of hits()) Object.assign(r, changes);
           return { error: null };
         };
         const chain = {
           eq(c, v) { preds.push([c, v]); return chain; },
+          lt() { stale = true; return chain; },
           filter(c, _op, v) { preds.push([c, v]); return chain; },
+          select() { return chain; },
+          // Conditional claim: .update().eq(id).eq(status,'queued').select().maybeSingle()
+          maybeSingle() { const h = hits(); apply(); return Promise.resolve({ data: h[0] ? { id: h[0].id } : null, error: null }); },
           then(resolve) { return resolve(apply()); },
         };
         return chain;
@@ -77,8 +83,11 @@ jest.mock('../../config/supabase', () => {
         // terminal: used for .select() list reads
         if (table === 'email_templates') return resolve({ data: db.email_templates, error: null });
         if (table === 'email_logs') {
-          // queue read: status=queued and next_attempt_at<=now
-          const due = db.email_logs.filter((r) => r.status === 'queued');
+          // queue read: status=queued and next_attempt_at<=now. staleQueueRead models a
+          // read that raced another worker's claim (returns rows as they WERE: queued).
+          const due = db.staleQueueRead
+            ? db.email_logs.map((r) => ({ ...r, status: 'queued' }))
+            : db.email_logs.filter((r) => r.status === 'queued');
           return resolve({ data: due, error: null });
         }
         return resolve({ data: [], error: null });
@@ -98,7 +107,7 @@ jest.mock('../../utils/adminAlert', () => ({ adminAlert: jest.fn() }));
 const engine = require('../../services/email/communicationEngine');
 const { adminAlert } = require('../../utils/adminAlert');
 
-beforeEach(() => { db.email_logs = []; db.email_unsubscribes = []; db.notification_logs = []; mockProviderState = { success: true }; engine.clearCache(); adminAlert.mockClear(); });
+beforeEach(() => { db.email_logs = []; db.email_unsubscribes = []; db.notification_logs = []; db.staleQueueRead = false; mockProviderState = { success: true }; engine.clearCache(); adminAlert.mockClear(); });
 
 describe('communicationEngine.send', () => {
   test('queues a normal email (status queued, not yet sent)', async () => {
@@ -237,6 +246,25 @@ describe('communicationEngine.renderEmail — recipient-driven layout', () => {
 });
 
 describe('communicationEngine.processQueue — retry backoff', () => {
+  test('a row another worker already claimed is not delivered twice (ASH-35)', async () => {
+    await engine.send({ event: 'BOOKING_CONFIRMED_CUSTOMER', to: 'a@x.test', data: { service_name: 'X' }, user: { name: 'A' } });
+    db.email_logs[0].status = 'sending'; // claimed by another worker…
+    db.staleQueueRead = true;            // …after this worker read it as queued
+    const r = await engine.processQueue();
+    expect(r.sent).toBe(0);
+    expect(db.email_logs[0].status).toBe('sending'); // untouched: the other worker owns it
+  });
+
+  test('a throw after the claim counts as a failed attempt, so the row cannot loop forever (ASH-35)', async () => {
+    await engine.send({ event: 'BOOKING_CONFIRMED_CUSTOMER', to: 'a@x.test', data: { service_name: 'X' }, user: { name: 'A' } });
+    const spy = jest.spyOn(require('../../services/email/senderRegistry'), 'senderFor').mockRejectedValueOnce(new Error('registry down'));
+    const r = await engine.processQueue();
+    spy.mockRestore();
+    expect(r.retried).toBe(1);
+    expect(db.email_logs[0]).toMatchObject({ status: 'queued', attempts: 1 });
+    expect(db.email_logs[0].error).toMatch(/delivery_error: registry down/);
+  });
+
   test('successful send marks the row sent', async () => {
     await engine.send({ event: 'BOOKING_CONFIRMED_CUSTOMER', to: 'a@x.test', data: { service_name: 'X' }, user: { name: 'A' } });
     const r = await engine.processQueue();

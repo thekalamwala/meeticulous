@@ -6,6 +6,7 @@ import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import PageGuides, { GUIDES_IN_PAGE } from './components/common/PageGuides';
 import DashboardLayout from './components/common/DashboardLayout';
+import OverviewLayout from './components/common/OverviewLayout';
 import AdminLayout from './components/common/AdminLayout';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import HostRoute from './components/common/HostRoute';
@@ -362,6 +363,12 @@ function useGiftRedeem() {
 function DashboardWrapper({ children }) {
   useReferralCapture();
   useGiftRedeem();
+  const { pathname } = useLocation();
+  // The Overview page ships the reference chrome (207px single-column sidebar +
+  // toolbar). Every other host page keeps the existing rail/panel DashboardLayout.
+  if (pathname === '/dashboard') {
+    return <HostRoute><OverviewLayout>{children}</OverviewLayout></HostRoute>;
+  }
   return <HostRoute><DashboardLayout>{children}</DashboardLayout></HostRoute>;
 }
 
