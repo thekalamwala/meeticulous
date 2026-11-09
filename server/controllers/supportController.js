@@ -16,13 +16,30 @@ const supportContext = require('../services/supportContextService');
 // down every support suite that requires this controller. The attachment handler
 // is the only place they're needed, so pay that cost only when it actually runs.
 
+// The turns before `messageId`, oldest first, so a follow-up keeps its context. Cut at
+// the message itself (not "the last row"): a customer can double-send while Tithi is
+// still answering. Only customer + Tithi turns: system banners aren't conversation and
+// a teammate's reply must not be replayed to the model as Tithi's own words. Best-effort,
+// like the context lookup — on failure Tithi answers without history.
+// ponytail: listMessages reads the whole thread; threads are short. Add a limit if not.
+async function recentThreadHistory(threadId, messageId) {
+  try {
+    const all = await chat.listMessages(threadId);
+    const cut = all.findIndex((m) => m.id === messageId);
+    return all.slice(0, Math.max(cut, 0))
+      .filter((m) => (m.sender === 'user' || m.sender === 'bot') && m.body)
+      .map((m) => ({ role: m.sender === 'bot' ? 'assistant' : 'user', content: m.body }));
+  } catch (e) {
+    console.error('support history lookup failed', threadId, e.message);
+    return [];
+  }
+}
+
 // Bolt auto-reply. Fired after the user's message is stored, ONLY while the thread
 // is still bot-handled (status 'bot') — once a human takes over ('waiting'/'assigned')
 // Bolt stays silent. Fire-and-forget: the HTTP response already returned, and the
 // bot's answer reaches the client over the thread's realtime broadcast. Never throws.
-// ponytail: answers each message standalone (no thread history passed to askBot);
-// wire conversationId ↔ thread if follow-up context ever matters.
-async function botAutoReply(thread, question) {
+async function botAutoReply(thread, question, messageId) {
   try {
     // Self-service actions run BEFORE the FAQ bot: if the customer (whose identity
     // we know on an authenticated thread) is asking to resend their confirmation /
@@ -57,7 +74,8 @@ async function botAutoReply(thread, question) {
       });
     } catch (e) { console.error('support context lookup failed', thread?.id, e.message); }
 
-    const out = await bot.askBot({ question, sessionRef: thread.reference, context: ctx });
+    const history = await recentThreadHistory(thread.id, messageId);
+    const out = await bot.askBot({ question, sessionRef: thread.reference, context: ctx, history });
     if (!out || !String(out.answer || '').trim()) return;
     await chat.postMessage({ threadId: thread.id, sender: 'bot', senderName: 'Tithi', body: out.answer });
     // Bolt couldn't answer confidently → hand to a human (flips the banner to 'waiting').
@@ -167,7 +185,7 @@ const sendMessage = async (req, res) => {
     res.status(201).json(msg);
     // Async Bolt reply while the thread is still bot-handled — after the response.
     // Skip when the turn is an image with no text (nothing for Bolt to answer).
-    if (thread.status === 'bot' && msg.body) botAutoReply(thread, msg.body);
+    if (thread.status === 'bot' && msg.body) botAutoReply(thread, msg.body, msg.id);
   } catch (e) { safeError(res, e); }
 };
 
