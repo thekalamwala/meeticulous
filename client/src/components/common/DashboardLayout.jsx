@@ -18,13 +18,13 @@ import '../dashboard/ui/tokens.css';
 // Keyed by canonical plan slug (see normalizePlan) — legacy aliases like
 // `explorer`/`free`/`pro` are collapsed before lookup.
 const PLAN_STYLES = {
-  free: { label: 'Starter', bg: 'bg-neutral-100', text: 'text-muted' },
-  premium: { label: 'Pro', bg: 'bg-marigold-100', text: 'text-marigold-600' },
+  free: { label: 'Starter', bg: 'bg-neutral-100', text: 'text-neutral-600' },
+  premium: { label: 'Pro', bg: 'bg-blush', text: 'text-maroon' },
   // Archived rows: hidden from the catalogue, but their existing subscribers
   // still see a badge and carry Pro entitlements at the old price.
-  creator: { label: 'Pro', bg: 'bg-marigold-100', text: 'text-marigold-600' },
-  professional: { label: 'Pro', bg: 'bg-marigold-100', text: 'text-marigold-600' },
-  supreme: { label: 'Supreme', bg: 'bg-maroon-100', text: 'text-maroon' },
+  creator: { label: 'Pro', bg: 'bg-blush', text: 'text-maroon' },
+  professional: { label: 'Pro', bg: 'bg-blush', text: 'text-maroon' },
+  supreme: { label: 'Supreme', bg: 'bg-maroon', text: 'text-white' },
 };
 
 // Humanize a category slug ("career-coaching" -> "Career Coaching"). Falls back
@@ -37,7 +37,7 @@ const humanizeCategory = (raw) => {
 
 // Shared row style for the profile-menu links.
 const MENU_ROW =
-  'flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-ink transition-colors hover:bg-neutral-100';
+  'flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-neutral-700 transition-colors hover:bg-neutral-50';
 
 // Lock body scroll while a mobile sheet / drawer is open (no-op when inactive).
 const useBodyScrollLock = (active) => {
@@ -59,14 +59,14 @@ const MenuSurface = ({ open, onClose, isMobile, title, align = 'right', width = 
       <div className="lg:hidden">
         <div className="fixed inset-0 z-[60] bg-black/40" onClick={onClose} aria-hidden="true" />
         <div
-          className="fixed inset-x-0 bottom-0 z-[60] max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-neutral-200 bg-surface pb-[max(1rem,env(safe-area-inset-bottom))] dash-elev-3"
+          className="fixed inset-x-0 bottom-0 z-[60] max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-neutral-100 bg-white pb-[max(1rem,env(safe-area-inset-bottom))] dash-elev-3"
           role={role}
           aria-label={title}
         >
           <div className="mx-auto mt-2 h-1 w-9 rounded-full bg-neutral-200" aria-hidden="true" />
-          <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-3">
-            <span className="text-base font-semibold text-ink">{title}</span>
-            <button type="button" onClick={onClose} aria-label="Close" className="rounded p-1 text-neutral-400 hover:bg-neutral-100 hover:text-muted">
+          <div className="flex items-center justify-between border-b border-neutral-100 px-5 py-3">
+            <span className="text-base font-semibold text-neutral-900">{title}</span>
+            <button type="button" onClick={onClose} aria-label="Close" className="rounded-full p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600">
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -79,7 +79,7 @@ const MenuSurface = ({ open, onClose, isMobile, title, align = 'right', width = 
   return (
     <div
       className={cn(
-        'absolute top-full z-50 mt-2 overflow-hidden rounded-xl border border-neutral-200 bg-surface shadow-[0_8px_32px_rgba(43,10,20,0.12)]',
+        'absolute top-full z-50 mt-2 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.12)]',
         align === 'right' ? 'right-0' : 'left-0',
         width,
       )}
@@ -97,7 +97,7 @@ const SupportButton = () => (
     to="/help"
     title="Support"
     aria-label="Support"
-    className="grid h-9 w-9 place-items-center rounded-full text-muted transition-colors hover:bg-primary/5 hover:text-primary"
+    className="grid h-9 w-9 place-items-center rounded-full text-neutral-500 transition-colors hover:bg-primary/5 hover:text-primary"
   >
     <LifeBuoy className="h-[19px] w-[19px]" strokeWidth={1.7} />
   </Link>
@@ -107,7 +107,7 @@ const SupportButton = () => (
  *  The trigger can be re-skinned by callers (the Overview shell uses white/pink)
  *  without duplicating the panel + live-update logic. */
 export const NotifBell = ({
-  triggerClassName = 'relative grid h-9 w-9 place-items-center rounded-full text-muted transition-colors hover:bg-primary/5 hover:text-primary',
+  triggerClassName = 'relative grid h-9 w-9 place-items-center rounded-full text-neutral-500 transition-colors hover:bg-primary/5 hover:text-primary',
   badgeClassName = 'absolute right-1 top-1 grid min-h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[9px] font-bold leading-none text-white',
   iconClassName = 'h-[19px] w-[19px]',
   // Minimum badge value — the Overview reference always shows a "1" marker.
@@ -172,8 +172,8 @@ export const NotifBell = ({
       </button>
 
       <MenuSurface open={open} onClose={() => setOpen(false)} isMobile={isMobile} title="Notifications" width="w-80" role="dialog">
-        <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3 md:py-3">
-          {!isMobile && <span className="text-sm font-semibold text-ink">Notifications</span>}
+        <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3 md:py-3">
+          {!isMobile && <span className="text-sm font-semibold text-neutral-900">Notifications</span>}
           <button
             type="button"
             className="ml-auto text-xs font-medium text-primary hover:underline"
@@ -185,7 +185,7 @@ export const NotifBell = ({
         {status === 'loading' && notifs.length === 0 ? (
           <ul className="max-h-80 overflow-y-auto" aria-busy="true">
             {[0, 1, 2].map((i) => (
-              <li key={i} className="flex flex-col gap-2 border-b border-neutral-100 px-4 py-3.5">
+              <li key={i} className="flex flex-col gap-2 border-b border-neutral-50 px-4 py-3.5">
                 <span className="h-3 w-2/5 animate-pulse rounded bg-neutral-100" />
                 <span className="h-2.5 w-3/4 animate-pulse rounded bg-neutral-100" />
               </li>
@@ -217,12 +217,12 @@ export const NotifBell = ({
                     setOpen(false);
                   }}
                   className={cn(
-                    'flex w-full flex-col items-start gap-0.5 border-b border-neutral-100 px-4 py-3 text-left transition-colors hover:bg-neutral-100 hover:no-underline',
+                    'flex w-full flex-col items-start gap-0.5 border-b border-neutral-50 px-4 py-3 text-left transition-colors hover:bg-neutral-50 hover:no-underline',
                     !n.read_at && 'bg-primary/5',
                   )}
                 >
-                  <span className="text-sm font-medium text-ink">{n.title}</span>
-                  {n.body && <span className="text-xs text-muted">{n.body}</span>}
+                  <span className="text-sm font-medium text-neutral-800">{n.title}</span>
+                  {n.body && <span className="text-xs text-neutral-500">{n.body}</span>}
                 </Link>
               </li>
             ))}
@@ -304,11 +304,11 @@ export const ProfileMenu = ({
 
       <MenuSurface open={open} onClose={close} isMobile={isMobile} title="Account" width="w-72">
         {/* Identity: photo + name + @username + plan chip (+ verify pill) */}
-        <div className="flex items-center gap-3 border-b border-neutral-200 px-4 py-4">
+        <div className="flex items-center gap-3 border-b border-neutral-100 px-4 py-4">
           <Avatar size="h-12 w-12 text-base" />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
-              <p className="truncate text-sm font-bold text-ink">{user?.name || 'Host'}</p>
+              <p className="truncate text-sm font-bold text-neutral-900">{user?.name || 'Host'}</p>
               <Link
                 to="/dashboard/kyc"
                 onClick={close}
@@ -317,13 +317,12 @@ export const ProfileMenu = ({
                 className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <BadgeCheck
-                  className="h-4 w-4"
+                  className={cn('h-4 w-4', kycVerified ? 'text-maroon' : 'text-neutral-400')}
                   strokeWidth={2.2}
-                  style={{ color: kycVerified ? '#960D32' : '#B39A96' }}
                 />
               </Link>
             </div>
-            <p className="truncate text-xs text-muted">{user?.username ? `@${user.username}` : category}</p>
+            <p className="truncate text-xs text-neutral-500">{user?.username ? `@${user.username}` : category}</p>
             <div className="mt-1.5">
               <span className={cn('rounded-full px-2 py-0.5 text-[10px] font-semibold', planStyle.bg, planStyle.text)}>
                 {planStyle.label}
@@ -333,7 +332,7 @@ export const ProfileMenu = ({
         </div>
 
         {/* Account */}
-        <div className="border-t border-neutral-200 py-1.5">
+        <div className="border-t border-neutral-100 py-1.5">
           <Link to="/dashboard/profile" onClick={close} className={MENU_ROW}>
             <User className="h-4 w-4 shrink-0" strokeWidth={1.7} />
             <span className="flex-1">Account information</span>
@@ -349,7 +348,7 @@ export const ProfileMenu = ({
         </div>
 
         {/* Your page */}
-        <div className="border-t border-neutral-200 py-1.5">
+        <div className="border-t border-neutral-100 py-1.5">
           {user?.username && (
             <a href={`/${user.username}`} target="_blank" rel="noreferrer" onClick={close} className={MENU_ROW}>
               <ExternalLink className="h-4 w-4 shrink-0" strokeWidth={1.7} />
@@ -367,7 +366,7 @@ export const ProfileMenu = ({
         </div>
 
         {/* Support — Help lives in the topbar; this is the human line. */}
-        <div className="border-t border-neutral-200 py-1.5">
+        <div className="border-t border-neutral-100 py-1.5">
           <a href="/bolt958" target="_blank" rel="noreferrer" onClick={close} className={MENU_ROW}>
             <Headset className="h-4 w-4 shrink-0" strokeWidth={1.7} />
             <span className="flex-1">Account manager</span>
@@ -376,7 +375,7 @@ export const ProfileMenu = ({
         </div>
 
         {/* Logout */}
-        <div className="border-t border-neutral-200 py-1.5">
+        <div className="border-t border-neutral-100 py-1.5">
           <button
             type="button"
             onClick={() => { close(); logout?.(); }}
@@ -393,14 +392,14 @@ export const ProfileMenu = ({
 
 /** Sticky dashboard topbar. Left: mobile nav hamburger. Right: Profile, Notifs, Support. */
 const DashTopbar = ({ user, plan, planStyle, initial, logout, onOpenNav, navTriggerRef }) => (
-  <header className="sticky top-0 z-30 flex min-h-14 shrink-0 items-center border-b border-neutral-200/80 bg-surface/95 px-4 pt-[env(safe-area-inset-top)] backdrop-blur sm:px-6 md:px-8">
+  <header className="sticky top-0 z-30 flex min-h-14 shrink-0 items-center border-b border-neutral-200/80 bg-white/95 px-4 pt-[env(safe-area-inset-top)] backdrop-blur sm:px-6 md:px-8">
     <button
       ref={navTriggerRef}
       type="button"
       onClick={onOpenNav}
       aria-label="Open navigation"
       aria-haspopup="dialog"
-      className="mr-1 grid h-9 w-9 place-items-center rounded-full text-muted transition-colors hover:bg-primary/5 hover:text-primary lg:hidden"
+      className="mr-1 grid h-9 w-9 place-items-center rounded-full text-neutral-500 transition-colors hover:bg-primary/5 hover:text-primary lg:hidden"
     >
       <Menu className="h-[19px] w-[19px]" strokeWidth={1.8} />
     </button>

@@ -39,7 +39,7 @@ export default function CareersHero() {
             See open roles <ArrowRight size={16} aria-hidden="true" />
           </a>
           <Link
-            to="/about"
+            to="/about#team"
             className="border-b-2 border-ink pb-0.5 text-sm font-semibold text-ink hover:border-primary hover:text-primary-cta hover:no-underline"
           >
             Meet the team

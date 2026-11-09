@@ -20,7 +20,7 @@ describe('Careers page', () => {
   it('has the redesign sections: hero CTAs, fact strip, values; no perks or closing CTA', () => {
     renderPage();
     expect(screen.getAllByRole('link', { name: /see open roles/i })[0]).toHaveAttribute('href', '#open-roles');
-    expect(screen.getByRole('link', { name: /meet the team/i })).toHaveAttribute('href', '/about');
+    expect(screen.getByRole('link', { name: /meet the team/i })).toHaveAttribute('href', '/about#team');
     expect(screen.getByRole('region', { name: /working at meeticulous/i })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /why build with us/i })).toBeInTheDocument();
     // The "Work that fits your life" Perks section was removed (owner request).

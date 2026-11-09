@@ -64,24 +64,24 @@ const toCalendarBooking = (b) => {
 
 const STATUS = {
   purple: {
-    card: 'border-l-[#9B7CF6] bg-[#F6F3FF]',
-    time: 'text-[#7C6BB0]',
-    dot: 'bg-[#9B7CF6]',
+    card: 'border-l-maroon-500 bg-maroon-100',
+    time: 'text-neutral-600',
+    dot: 'bg-maroon-500',
   },
   pink: {
-    card: 'border-l-[#F50069] bg-[#FFF1F7]',
-    time: 'text-[#C05B87]',
-    dot: 'bg-[#F50069]',
+    card: 'border-l-maroon bg-pink-100',
+    time: 'text-maroon-500',
+    dot: 'bg-maroon',
   },
   green: {
-    card: 'border-l-[#10BF83] bg-[#ECFBF4]',
-    time: 'text-[#3E8C72]',
-    dot: 'bg-[#10BF83]',
+    card: 'border-l-success-fg bg-success-bg',
+    time: 'text-success-fg',
+    dot: 'bg-success-fg',
   },
   orange: {
-    card: 'border-l-[#F59E0B] bg-[#FFF5EA]',
-    time: 'text-[#B07A2A]',
-    dot: 'bg-[#F59E0B]',
+    card: 'border-l-warning-fg bg-warning-bg',
+    time: 'text-warning-fg',
+    dot: 'bg-warning-fg',
   },
 };
 
@@ -100,15 +100,15 @@ const formatRange = (start, end) => {
 
 const Greeting = ({ firstName }) => (
   <header className="relative mb-5">
-    <span aria-hidden="true" className="absolute -left-2 -top-2 h-2 w-2 rounded-full bg-[#FF9FB0]/70" />
-    <span aria-hidden="true" className="absolute -left-4 top-3 h-1.5 w-[2px] rotate-45 rounded-full bg-[#F50069]/50" />
+    <span aria-hidden="true" className="absolute -left-2 -top-2 h-2 w-2 rounded-full bg-pink/70" />
+    <span aria-hidden="true" className="absolute -left-4 top-3 h-1.5 w-[2px] rotate-45 rounded-full bg-maroon/50" />
     <div className="flex items-center gap-2">
-      <h1 className="mb-0 font-heading text-[26px] font-extrabold leading-tight tracking-tight text-[#F50069] sm:text-[32px] lg:text-[36px]">
+      <h1 className="mb-0 font-heading text-[26px] font-extrabold leading-tight tracking-tight text-maroon sm:text-[32px] lg:text-[36px]">
         Good afternoon, {firstName}!
       </h1>
-      <Sparkles className="hidden h-6 w-6 shrink-0 text-[#FF9FB0] sm:block" strokeWidth={1.8} />
+      <Sparkles className="hidden h-6 w-6 shrink-0 text-pink sm:block" strokeWidth={1.8} />
     </div>
-    <p className="mt-1 text-[15px] font-medium text-[#71639E] sm:text-[16px] lg:text-[18px]">
+    <p className="mt-1 text-[15px] font-medium text-neutral-600 sm:text-[16px] lg:text-[18px]">
       Here's what's happening with your business today.
     </p>
   </header>
@@ -126,7 +126,7 @@ const WithdrawCard = ({ balance, status }) => {
   const money = (v) => (ready ? fmtMoney(v ?? 0, { decimals: true }) : '—');
 
   return (
-    <div className="relative flex h-[122px] flex-col justify-between overflow-hidden rounded-[18px] bg-gradient-to-br from-[#F50069] via-[#D90059] to-[#B3006B] p-4 text-white shadow-[0_16px_34px_-20px_rgba(217,0,89,0.75)]">
+    <div className="relative flex h-[122px] flex-col justify-between overflow-hidden rounded-[18px] bg-maroon p-4 text-white shadow-[0_16px_34px_-20px_rgba(43,10,20,0.75)]">
       <span aria-hidden="true" className="pointer-events-none absolute -right-8 -top-10 h-28 w-28 rounded-full bg-white/10" />
       <div className="flex items-start gap-3">
         <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/20">
@@ -141,7 +141,7 @@ const WithdrawCard = ({ balance, status }) => {
         <button
           type="button"
           onClick={() => navigate('/dashboard/payments/payouts')}
-          className="mt-0.5 inline-flex shrink-0 items-center gap-1 rounded-full bg-white px-3.5 py-1.5 text-[11.5px] font-bold text-[#D90059] shadow-sm transition hover:bg-[#FFF0F8]"
+          className="mt-0.5 inline-flex shrink-0 items-center gap-1 rounded-full bg-white px-3.5 py-1.5 text-[11.5px] font-bold text-maroon-700 shadow-sm transition hover:bg-pink-100"
         >
           Withdraw
           <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.4} />
@@ -161,22 +161,22 @@ const WithdrawCard = ({ balance, status }) => {
 };
 
 const CountCard = ({ title, value, to, tone, Icon, showLink = false }) => (
-  <div className="flex h-[122px] flex-col justify-between rounded-[18px] border border-[#FFD8ED] bg-white p-4 shadow-[0_10px_26px_-22px_rgba(245,0,105,0.45)]">
+  <div className="flex h-[122px] flex-col justify-between rounded-[18px] border border-pink-300 bg-white p-4 shadow-[0_10px_26px_-22px_rgba(43,10,20,0.45)]">
     <div className="flex items-start gap-2.5">
       <span
         className={cn(
           'grid h-9 w-9 shrink-0 place-items-center rounded-full',
-          tone === 'green' ? 'bg-[#E7FAF2] text-[#10BF83]' : 'bg-[#FFE1F1] text-[#F50069]',
+          tone === 'green' ? 'bg-success-bg text-success-fg' : 'bg-blush text-maroon',
         )}
       >
         <Icon className="h-[17px] w-[17px]" strokeWidth={2} />
       </span>
-      <p className="pt-1 text-[12px] font-semibold leading-snug text-[#17164A]">{title}</p>
+      <p className="pt-1 text-[12px] font-semibold leading-snug text-ink">{title}</p>
     </div>
     <div className="flex items-end justify-between gap-2">
-      <p className="font-heading text-[27px] font-extrabold leading-none text-[#17164A]">{value}</p>
+      <p className="font-heading text-[27px] font-extrabold leading-none text-ink">{value}</p>
       {showLink && (
-        <Link to={to} className="mb-0.5 inline-flex items-center gap-0.5 text-[11px] font-semibold text-[#F50069] hover:underline">
+        <Link to={to} className="mb-0.5 inline-flex items-center gap-0.5 text-[11px] font-semibold text-maroon hover:underline">
           View bookings <ArrowRight className="h-3 w-3" strokeWidth={2.4} />
         </Link>
       )}
@@ -201,7 +201,7 @@ const BookingCard = ({ booking, onOpen }) => {
       title={`${booking.name} · ${booking.time}`}
     >
       <span className="min-w-0">
-        <span className="block truncate text-[12px] font-bold leading-tight text-[#17164A]">{booking.name}</span>
+        <span className="block truncate text-[12px] font-bold leading-tight text-ink">{booking.name}</span>
         <span className={cn('mt-0.5 block truncate text-[10px] leading-tight', s.time)}>{booking.time}</span>
       </span>
       <span className={cn('grid h-4 w-4 shrink-0 place-items-center rounded-full text-white', s.dot)}>
@@ -262,18 +262,18 @@ const WeeklyCalendar = ({ bookings = [], status = 'ready', onRetry, onAddBooking
   };
 
   return (
-    <section className="mt-7 flex min-h-[448px] flex-col overflow-hidden rounded-[20px] border border-[#FFD8ED] bg-white shadow-[0_18px_40px_-30px_rgba(245,0,105,0.5)]">
+    <section className="mt-7 flex min-h-[448px] flex-col overflow-hidden rounded-[20px] border border-pink-300 bg-white shadow-[0_18px_40px_-30px_rgba(43,10,20,0.5)]">
       {/* Header */}
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2.5 border-b border-[#FFE1F1] px-4 py-3 sm:px-5">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2.5 border-b border-blush px-4 py-3 sm:px-5">
         <div className="flex items-center gap-2">
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-[#FFE1F1] text-[#F50069]">
+          <span className="grid h-8 w-8 place-items-center rounded-full bg-blush text-maroon">
             <CalendarDays className="h-[15px] w-[15px]" strokeWidth={2} />
           </span>
-          <h2 className="mb-0 font-heading text-[15px] font-bold text-[#17164A]">Calendar</h2>
+          <h2 className="mb-0 font-heading text-[15px] font-bold text-ink">Calendar</h2>
         </div>
 
         <div className="order-3 flex w-full items-center justify-between gap-2 sm:order-none sm:ml-auto sm:w-auto">
-          <div className="flex items-center rounded-full border border-[#FFE1F1] bg-white p-0.5">
+          <div className="flex items-center rounded-full border border-blush bg-white p-0.5">
             {[
               { id: 'week', label: 'This Week' },
               { id: 'month', label: 'This Month' },
@@ -285,7 +285,7 @@ const WeeklyCalendar = ({ bookings = [], status = 'ready', onRetry, onAddBooking
                 aria-pressed={view === t.id}
                 className={cn(
                   'rounded-full px-3 py-1 text-[11px] font-semibold transition',
-                  view === t.id ? 'bg-[#FFE1F1] text-[#F50069]' : 'text-[#71639E] hover:text-[#17164A]',
+                  view === t.id ? 'bg-blush text-maroon' : 'text-neutral-600 hover:text-ink',
                 )}
               >
                 {t.label}
@@ -298,18 +298,18 @@ const WeeklyCalendar = ({ bookings = [], status = 'ready', onRetry, onAddBooking
               type="button"
               onClick={() => step(-1)}
               aria-label={view === 'week' ? 'Previous week' : 'Previous month'}
-              className="grid h-7 w-7 place-items-center rounded-full border border-[#FFE1F1] text-[#71639E] transition hover:bg-[#FFF0F8] hover:text-[#F50069]"
+              className="grid h-7 w-7 place-items-center rounded-full border border-blush text-neutral-600 transition hover:bg-pink-100 hover:text-maroon"
             >
               <ChevronLeft className="h-3.5 w-3.5" strokeWidth={2.2} />
             </button>
-            <span className="min-w-[128px] text-center text-[11.5px] font-semibold text-[#17164A] sm:min-w-[150px]">
+            <span className="min-w-[128px] text-center text-[11.5px] font-semibold text-ink sm:min-w-[150px]">
               {range}
             </span>
             <button
               type="button"
               onClick={() => step(1)}
               aria-label={view === 'week' ? 'Next week' : 'Next month'}
-              className="grid h-7 w-7 place-items-center rounded-full border border-[#FFE1F1] text-[#71639E] transition hover:bg-[#FFF0F8] hover:text-[#F50069]"
+              className="grid h-7 w-7 place-items-center rounded-full border border-blush text-neutral-600 transition hover:bg-pink-100 hover:text-maroon"
             >
               <ChevronRight className="h-3.5 w-3.5" strokeWidth={2.2} />
             </button>
@@ -319,7 +319,7 @@ const WeeklyCalendar = ({ bookings = [], status = 'ready', onRetry, onAddBooking
         <button
           type="button"
           aria-label="Calendar view"
-          className="ml-auto grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#FFE1F1] text-[#71639E] transition hover:bg-[#FFF0F8] hover:text-[#F50069] sm:ml-0"
+          className="ml-auto grid h-8 w-8 shrink-0 place-items-center rounded-full border border-blush text-neutral-600 transition hover:bg-pink-100 hover:text-maroon sm:ml-0"
         >
           <LayoutGrid className="h-[15px] w-[15px]" strokeWidth={1.9} />
         </button>
@@ -329,20 +329,20 @@ const WeeklyCalendar = ({ bookings = [], status = 'ready', onRetry, onAddBooking
       <div className="dash-noscrollbar relative min-h-0 flex-1 overflow-x-auto">
         {status === 'loading' && (
           <div className="pointer-events-none absolute inset-x-0 top-[46%] z-10 flex flex-col items-center px-4 text-center" aria-live="polite">
-            <CalendarDays className="h-6 w-6 animate-pulse text-[#E6A8C8]" strokeWidth={1.7} />
-            <p className="mt-2 text-[13px] font-semibold text-[#71639E]">Loading your bookings…</p>
+            <CalendarDays className="h-6 w-6 animate-pulse text-maroon-300" strokeWidth={1.7} />
+            <p className="mt-2 text-[13px] font-semibold text-neutral-600">Loading your bookings…</p>
           </div>
         )}
         {status === 'error' && (
           <div className="absolute inset-x-0 top-[42%] z-10 flex flex-col items-center px-4 text-center" aria-live="polite">
-            <CalendarDays className="h-6 w-6 text-[#E6A8C8]" strokeWidth={1.7} />
-            <p className="mt-2 text-[13px] font-semibold text-[#17164A]">Couldn't load your bookings</p>
-            <p className="mt-0.5 text-[11.5px] text-[#71639E]">Check your connection and try again.</p>
+            <CalendarDays className="h-6 w-6 text-maroon-300" strokeWidth={1.7} />
+            <p className="mt-2 text-[13px] font-semibold text-ink">Couldn't load your bookings</p>
+            <p className="mt-0.5 text-[11.5px] text-neutral-600">Check your connection and try again.</p>
             {onRetry && (
               <button
                 type="button"
                 onClick={onRetry}
-                className="mt-2.5 inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#F50069] to-[#D90059] px-3.5 py-1.5 text-[11.5px] font-semibold text-white transition hover:brightness-[1.04]"
+                className="mt-2.5 inline-flex items-center gap-1 rounded-full bg-maroon px-3.5 py-1.5 text-[11.5px] font-semibold text-white transition hover:bg-maroon-700"
               >
                 Try again
               </button>
@@ -351,24 +351,24 @@ const WeeklyCalendar = ({ bookings = [], status = 'ready', onRetry, onAddBooking
         )}
         {weekEmpty && (
           <div className="pointer-events-none absolute inset-x-0 top-[46%] z-10 flex flex-col items-center px-4 text-center">
-            <CalendarDays className="h-6 w-6 text-[#E6A8C8]" strokeWidth={1.7} />
-            <p className="mt-2 text-[13px] font-semibold text-[#17164A]">No bookings this week</p>
-            <p className="mt-0.5 text-[11.5px] text-[#71639E]">New bookings will appear here automatically.</p>
+            <CalendarDays className="h-6 w-6 text-maroon-300" strokeWidth={1.7} />
+            <p className="mt-2 text-[13px] font-semibold text-ink">No bookings this week</p>
+            <p className="mt-0.5 text-[11.5px] text-neutral-600">New bookings will appear here automatically.</p>
           </div>
         )}
         {view === 'week' ? (
           <div className="grid h-full min-w-[900px] grid-cols-7 xl:min-w-0">
             {weekDays.map((day) => (
-              <div key={day.name} className="flex min-h-[360px] flex-col border-r border-[#FFE8F3] px-1.5 pb-3 pt-3 last:border-r-0">
+              <div key={day.name} className="flex min-h-[360px] flex-col border-r border-blush px-1.5 pb-3 pt-3 last:border-r-0">
                 <div className="text-center">
-                  <p className="text-[11px] font-medium text-[#8D7FB5]">{day.name}</p>
-                  <p className="mt-0.5 font-heading text-[22px] font-extrabold leading-none text-[#17164A]">
+                  <p className="text-[11px] font-medium text-neutral-500">{day.name}</p>
+                  <p className="mt-0.5 font-heading text-[22px] font-extrabold leading-none text-ink">
                     {day.date.getDate()}
                   </p>
                   <button
                     type="button"
                     onClick={onAddBooking}
-                    className="mt-1.5 inline-flex items-center gap-0.5 text-[10.5px] font-semibold text-[#F50069] transition hover:text-[#D90059]"
+                    className="mt-1.5 inline-flex items-center gap-0.5 text-[10.5px] font-semibold text-maroon transition hover:text-maroon-700"
                   >
                     <Plus className="h-3 w-3" strokeWidth={2.6} /> Add booking
                   </button>
@@ -384,9 +384,9 @@ const WeeklyCalendar = ({ bookings = [], status = 'ready', onRetry, onAddBooking
           </div>
         ) : (
           <div className="min-w-[900px] xl:min-w-0">
-            <div className="grid grid-cols-7 border-b border-[#FFE8F3]">
+            <div className="grid grid-cols-7 border-b border-blush">
               {DAY_NAMES.map((d) => (
-                <div key={d} className="py-1.5 text-center text-[10px] font-semibold text-[#8D7FB5]">{d.slice(0, 3)}</div>
+                <div key={d} className="py-1.5 text-center text-[10px] font-semibold text-neutral-500">{d.slice(0, 3)}</div>
               ))}
             </div>
             <div className="grid grid-cols-7">
@@ -394,11 +394,11 @@ const WeeklyCalendar = ({ bookings = [], status = 'ready', onRetry, onAddBooking
                 <div
                   key={date.toISOString()}
                   className={cn(
-                    'min-h-[58px] border-b border-r border-[#FFE8F3] p-1 last:border-r-0',
-                    !inMonth && 'bg-[#FFF7FB]/60',
+                    'min-h-[58px] border-b border-r border-blush p-1 last:border-r-0',
+                    !inMonth && 'bg-pink-50/60',
                   )}
                 >
-                  <p className={cn('text-[10px] font-semibold', inMonth ? 'text-[#71639E]' : 'text-[#C9BEDF]')}>
+                  <p className={cn('text-[10px] font-semibold', inMonth ? 'text-neutral-600' : 'text-neutral-300')}>
                     {date.getDate()}
                   </p>
                   <div className="mt-0.5 space-y-0.5">
@@ -407,7 +407,7 @@ const WeeklyCalendar = ({ bookings = [], status = 'ready', onRetry, onAddBooking
                         key={b.id}
                         type="button"
                         onClick={onOpenBooking}
-                        className={cn('block w-full truncate rounded px-1 py-0.5 text-left text-[8px] font-semibold text-[#17164A]', (STATUS[b.styleKey] || STATUS.purple).card)}
+                        className={cn('block w-full truncate rounded px-1 py-0.5 text-left text-[8px] font-semibold text-ink', (STATUS[b.styleKey] || STATUS.purple).card)}
                         title={`${b.name} · ${b.time}`}
                       >
                         {b.name.split(' ')[0]}

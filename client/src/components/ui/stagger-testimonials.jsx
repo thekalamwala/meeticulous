@@ -45,7 +45,7 @@ function Avatar({ src, name }) {
   return <img src={src} alt={name} loading="lazy" onError={() => setErr(true)} className={cls} style={style} />;
 }
 
-function TestimonialCard({ position, testimonial, handleMove, cardSize }) {
+function TestimonialCard({ position, testimonial, handleMove, cardSize, centerShift = 0 }) {
   const isCenter = position === 0;
 
   return (
@@ -63,7 +63,7 @@ function TestimonialCard({ position, testimonial, handleMove, cardSize }) {
           "polygon(50px 0%, calc(100% - 50px) 0%, 100% 50px, 100% 100%, calc(100% - 50px) 100%, 50px 100%, 0 100%, 0 0)",
         transform: `
           translate(-50%, -50%)
-          translateX(${(cardSize / 1.5) * position}px)
+          translateX(${(cardSize / 1.5) * (position + centerShift)}px)
           translateY(${isCenter ? -65 : position % 2 ? 15 : -15}px)
           rotate(${isCenter ? 0 : position % 2 ? 2.5 : -2.5}deg)
         `,
@@ -126,7 +126,13 @@ export function StaggerTestimonials({ items, label = "Testimonials" }) {
   }, []);
 
   const n = list.length;
-  const centre = list[n % 2 ? (n - 1) / 2 : n / 2];
+  // Symmetric integer slots around a single centred (raised) card. For an even
+  // count there is no exact middle, so centerShift nudges the whole fan half a
+  // slot to keep it centred in the stage — otherwise the extra card sits on the
+  // left and leaves blank space on the right.
+  const half = Math.floor(n / 2);
+  const centerShift = half - (n - 1) / 2; // 0 for odd n, 0.5 for even n
+  const centre = list[half];
   const arrowBtn =
     "flex h-14 w-14 items-center justify-center border-2 border-[#E5E7EB] bg-white text-2xl text-ink transition-colors " +
     "hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
@@ -145,7 +151,7 @@ export function StaggerTestimonials({ items, label = "Testimonials" }) {
       style={{ height: 600 }}
     >
       {list.map((testimonial, index) => {
-        const position = n % 2 ? index - (n + 1) / 2 : index - n / 2;
+        const position = index - half;
         return (
           <TestimonialCard
             key={testimonial.tempId}
@@ -153,6 +159,7 @@ export function StaggerTestimonials({ items, label = "Testimonials" }) {
             handleMove={handleMove}
             position={position}
             cardSize={cardSize}
+            centerShift={centerShift}
           />
         );
       })}

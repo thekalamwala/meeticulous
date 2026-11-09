@@ -1,13 +1,15 @@
 import { forwardRef } from 'react';
 import { cn } from './cn';
 
+// Loop & Slot buttons: maroon fill, pill radius, warm-neutral never grey, outline/
+// ghost tint pink on hover, 3px rose focus ring (applied in buttonClasses base).
 const VARIANTS = {
-  primary: 'bg-primary text-white hover:bg-primary/90 border border-transparent',
-  secondary: 'bg-white text-gray-800 border border-gray-300 hover:bg-gray-50',
-  outline: 'bg-transparent text-gray-700 border border-gray-300 hover:bg-gray-50',
-  ghost: 'bg-transparent text-gray-600 border border-transparent hover:bg-gray-100',
-  danger: 'bg-red-600 text-white border border-transparent hover:bg-red-700',
-  'danger-outline': 'bg-transparent text-red-600 border border-red-300 hover:bg-red-50',
+  primary: 'bg-maroon text-white hover:bg-maroon-700 border-2 border-transparent',
+  secondary: 'bg-white text-maroon border-2 border-maroon hover:bg-pink-100',
+  outline: 'bg-transparent text-maroon border-2 border-maroon hover:bg-pink-100',
+  ghost: 'bg-transparent text-maroon border-2 border-transparent hover:bg-pink-100',
+  danger: 'bg-error-fg text-white border-2 border-transparent hover:brightness-90',
+  'danger-outline': 'bg-transparent text-error-fg border-2 border-error-fg hover:bg-error-bg',
 };
 
 const SIZES = {
@@ -19,8 +21,9 @@ const SIZES = {
 
 export function buttonClasses({ variant = 'primary', size = 'md', full = false, className = '' } = {}) {
   return cn(
-    'inline-flex items-center justify-center rounded font-semibold whitespace-nowrap transition-colors select-none',
-    'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
+    'inline-flex items-center justify-center rounded-full font-semibold whitespace-nowrap transition select-none',
+    'active:translate-y-px',
+    'focus:outline-none focus-visible:ring-[3px] focus-visible:ring-rose focus-visible:ring-offset-2',
     'disabled:opacity-50 disabled:pointer-events-none',
     VARIANTS[variant] || VARIANTS.primary,
     SIZES[size] || SIZES.md,

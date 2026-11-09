@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { CheckCircle2, Sprout, Rocket, Wallet, BadgePercent } from "lucide-react";
 import {
   FREE_PLAN,
@@ -42,6 +43,7 @@ function Rings() {
 
 function Notebook({ plan, chipIcon: ChipIcon, chip, price, suffix, note, cta, ctaTo, ctaClass }) {
   const PlanIcon = ICONS[plan.icon] ?? Rocket;
+  const reduce = useReducedMotion();
   return (
     <div className="flex flex-col gap-3 lg:flex-row lg:gap-0">
       {/* LEFT page — who it's for + what's included */}
@@ -73,7 +75,20 @@ function Notebook({ plan, chipIcon: ChipIcon, chip, price, suffix, note, cta, ct
           {chip}
         </span>
         <p className="mt-5 flex items-baseline justify-center gap-1.5">
-          <span className="font-sans text-5xl font-extrabold text-ink sm:text-6xl">{price}</span>
+          <span className="relative inline-flex overflow-hidden font-sans text-5xl font-extrabold text-ink sm:text-6xl">
+            <AnimatePresence mode="popLayout" initial={false}>
+              <motion.span
+                key={price}
+                initial={reduce ? false : { y: "0.5em", opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={reduce ? { opacity: 0 } : { y: "-0.5em", opacity: 0 }}
+                transition={reduce ? { duration: 0 } : { duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                className="inline-block"
+              >
+                {price}
+              </motion.span>
+            </AnimatePresence>
+          </span>
           <span className="text-2xl font-extrabold text-neutral-300 sm:text-3xl">{suffix}</span>
         </p>
         <Link
@@ -90,6 +105,8 @@ function Notebook({ plan, chipIcon: ChipIcon, chip, price, suffix, note, cta, ct
 
 export default function NotebookPricing({ startLabel = "Get Started - Free" }) {
   const [yearly, setYearly] = useState(true);
+  const reduce = useReducedMotion();
+  const thumbT = reduce ? { duration: 0 } : { duration: 0.2, ease: [0.22, 1, 0.36, 1] };
   const feeOnly = useFeeOnly();
   const [intl] = useState(() => getPricingRegion() === "INTL");
   const savePct = intl ? PREMIUM_USD_ANNUAL_SAVE_PCT : PREMIUM_ANNUAL_SAVE_PCT;
@@ -107,23 +124,44 @@ export default function NotebookPricing({ startLabel = "Get Started - Free" }) {
 
   return (
     <div>
-      {/* Billing toggle */}
+      {/* Billing toggle — animated sliding pill (the active segment's dark
+          background slides between Monthly/Yearly via a shared layoutId). */}
       <div className="flex justify-center">
         <div className="inline-flex items-center gap-1 rounded-full border border-black/5 bg-white p-1 shadow-sm">
           <button
             type="button"
             onClick={() => setYearly(false)}
-            className={`rounded-full px-5 py-1.5 text-sm font-semibold transition-colors ${!yearly ? "bg-ink text-white" : "text-neutral-500 hover:text-ink"}`}
+            aria-pressed={!yearly}
+            className="relative rounded-full px-5 py-1.5 text-sm font-semibold"
           >
-            Monthly
+            {!yearly && (
+              <motion.span
+                layoutId="billing-thumb"
+                transition={thumbT}
+                className="absolute inset-0 rounded-full bg-ink"
+              />
+            )}
+            <span className={`relative z-10 transition-colors ${!yearly ? "text-white" : "text-neutral-500 hover:text-ink"}`}>
+              Monthly
+            </span>
           </button>
           <button
             type="button"
             onClick={() => setYearly(true)}
-            className={`inline-flex items-center gap-1.5 rounded-full px-5 py-1.5 text-sm font-semibold transition-colors ${yearly ? "bg-ink text-white" : "text-neutral-500 hover:text-ink"}`}
+            aria-pressed={yearly}
+            className="relative inline-flex items-center gap-1.5 rounded-full px-5 py-1.5 text-sm font-semibold"
           >
-            Yearly
-            <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${yearly ? "bg-primary text-white" : "bg-primary/10 text-primary"}`}>
+            {yearly && (
+              <motion.span
+                layoutId="billing-thumb"
+                transition={thumbT}
+                className="absolute inset-0 rounded-full bg-ink"
+              />
+            )}
+            <span className={`relative z-10 transition-colors ${yearly ? "text-white" : "text-neutral-500 hover:text-ink"}`}>
+              Yearly
+            </span>
+            <span className={`relative z-10 rounded-full px-1.5 py-0.5 text-[10px] font-bold transition-colors ${yearly ? "bg-primary text-white" : "bg-primary/10 text-primary"}`}>
               Save {savePct}%
             </span>
           </button>
