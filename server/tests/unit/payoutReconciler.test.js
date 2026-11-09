@@ -129,6 +129,8 @@ test('live: a transfer being created by another caller gives the attempt back (A
   expect(r.failedAttempt || 0).toBe(0);
   const patches = chains.filter((c) => c.update.mock.calls.length).map((c) => c.update.mock.calls[0][0]);
   expect(patches.map((p) => p.transfer_attempts)).toEqual([3, 2]); // bumped, then given back
+  // Only claimTransfer may stamp this: a stamp here keeps a crashed claim fresh forever.
+  expect(patches[0]).not.toHaveProperty('transfer_last_attempt_at');
 });
 
 test('a payout below the ₹1 floor is skipped entirely (no eligibility check, no attempt)', async () => {

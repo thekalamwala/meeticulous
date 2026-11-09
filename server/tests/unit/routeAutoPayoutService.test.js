@@ -169,6 +169,31 @@ describe('createHeldTransferForBooking double-transfer guard (ASH-35)', () => {
     expect(merged()).toMatchObject({ razorpay_transfer_id: 'trf_old', transfer_status: 'pending' });
   });
 
+  test('adopting an already-released transfer stays pending with a hold time, so the reconciler still finalizes it', async () => {
+    const released = { id: 'trf_old', status: 'processed', on_hold_until: null, notes: { booking_id: 'bk-1' } };
+    razorpayConfig.getClient.mockResolvedValue(clientWith({ id: 'trf_new' }, [released]));
+    const res = await svc.createHeldTransferForBooking(booking(), { paymentId: 'pay_1', vendorAmount: 9.28 });
+    expect(res).toMatchObject({ ok: true, transferId: 'trf_old', status: 'pending' });
+    expect(merged()).toMatchObject({ transfer_status: 'pending' });
+    expect(merged().transfer_hold_until).toBeTruthy(); // a null hold is never picked up as matured
+  });
+
+  test('a partially reversed transfer keeps its status when adopted, so it is never finalized in full', async () => {
+    const partial = { id: 'trf_old', status: 'partially_reversed', on_hold_until: 2000000000, notes: { booking_id: 'bk-1' } };
+    razorpayConfig.getClient.mockResolvedValue(clientWith({ id: 'trf_new' }, [partial]));
+    await svc.createHeldTransferForBooking(booking(), { paymentId: 'pay_1', vendorAmount: 9.28 });
+    expect(merged()).toMatchObject({ razorpay_transfer_id: 'trf_old', transfer_status: 'partially_reversed' });
+  });
+
+  test('claim staleness uses transfer_last_attempt_at, which the claim itself stamps', async () => {
+    razorpayConfig.getClient.mockResolvedValue(clientWith({ id: 'trf_1', status: 'pending' }));
+    await svc.createHeldTransferForBooking(booking(), { paymentId: 'pay_1', vendorAmount: 9.28 });
+    expect(state.updates[0].transfer_last_attempt_at).toBeTruthy();
+    const orFilter = supabaseAdmin.from.mock.results.map((r) => r.value.or.mock.calls[0]).find(Boolean)[0];
+    expect(orFilter).toMatch(/transfer_last_attempt_at\.lt\./);
+    expect(orFilter).not.toMatch(/updated_at/);
+  });
+
   test('another booking\'s transfer on the same payment is NOT adopted', async () => {
     const other = { id: 'trf_other', status: 'pending', notes: { booking_id: 'bk-OTHER' } };
     const client = clientWith({ id: 'trf_new', status: 'pending' }, [other]);

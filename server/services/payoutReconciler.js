@@ -81,10 +81,12 @@ const isMissingColumn = (err) => {
 
 // Record a transfer attempt (retry cap + backoff). Swallows a missing-column error
 // (v3.116 not applied yet) so the reconciler still works, just without the cap.
+// transfer_last_attempt_at is NOT stamped here: claimTransfer owns it, and a stamp
+// just before the claim would make a crashed 'creating' claim look fresh forever.
 async function bumpAttempt(bookingId, current) {
   const { error } = await supabaseAdmin
     .from('bookings')
-    .update({ transfer_attempts: (Number(current) || 0) + 1, transfer_last_attempt_at: new Date().toISOString() })
+    .update({ transfer_attempts: (Number(current) || 0) + 1 })
     .eq('id', bookingId);
   if (error && !isMissingColumn(error)) throw error;
 }
