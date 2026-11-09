@@ -37,7 +37,10 @@ export default function HeroV2() {
         style={{ clipPath: "url(#about-hero-panel)" }}
       />
 
-      <div className="relative mx-auto max-w-6xl px-5 pb-12 pt-12 sm:px-8 lg:flex lg:min-h-[calc(100svh-57px)] lg:items-center lg:py-20">
+      {/* lg+: left-anchor the copy to the page gutter (mr-auto) so it hugs the
+          left of the cream panel near the nav logo, instead of drifting right
+          with mx-auto centering as the viewport widens. Mobile stays centered. */}
+      <div className="relative mx-auto max-w-6xl px-5 pb-12 pt-12 sm:px-8 lg:ml-20 lg:mr-auto lg:flex lg:min-h-[calc(100svh-57px)] lg:items-center lg:py-20">
         <div className="lg:max-w-[52%] lg:pr-6">
           <h1 className="font-display font-extrabold leading-[1.08] text-[clamp(2.4rem,5vw,3.75rem)]">
             {hero.title} <span className="text-rose">{hero.titleAccent}</span>
