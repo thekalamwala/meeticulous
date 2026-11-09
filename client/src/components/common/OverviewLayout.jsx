@@ -247,10 +247,10 @@ const OverviewTopbar = ({
         <button
           type="button"
           onClick={onNewMeeting}
-          className="inline-flex h-[42px] shrink-0 items-center gap-2 rounded-full bg-gradient-to-r from-[#F50069] to-[#D90059] px-3.5 text-sm font-semibold text-white shadow-[0_8px_20px_-10px_rgba(245,0,105,0.8)] transition hover:brightness-[1.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F50069]/40 sm:px-5"
+          className="inline-flex h-[42px] shrink-0 items-center gap-2 rounded-full bg-maroon px-3.5 text-sm font-semibold text-white shadow-[0_8px_20px_-10px_rgba(150,13,50,0.5)] transition hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose sm:px-5"
         >
           <CalendarPlus className="h-[17px] w-[17px]" strokeWidth={2} />
-          <span className="hidden whitespace-nowrap sm:inline">Add a New Meeting</span>
+          <span className="hidden whitespace-nowrap sm:inline">Add a New Booking</span>
           <span className="sm:hidden">New</span>
         </button>
 
