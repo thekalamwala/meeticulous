@@ -196,7 +196,9 @@ async function dispatch(row, leadArg, opts = {}) {
   return markFailed(row, result.error || 'send_failed');
 }
 
-async function markFailed(row, error) {
+// onlyIfStatus: apply the patch only while the row is still in that status (so a
+// row that already reached 'sent' is never flipped back to 'queued' and resent).
+async function markFailed(row, error, { onlyIfStatus } = {}) {
   const attempts = (row.attempts || 0) + 1;
   const now = Date.now();
   const patch = { attempts, error, updated_at: new Date().toISOString() };
@@ -207,12 +209,32 @@ async function markFailed(row, error) {
     patch.status = 'queued';
     patch.next_attempt_at = new Date(now + RETRY_BACKOFF_MIN[attempts - 1] * 60 * 1000).toISOString();
   }
-  await supabaseAdmin.from('crm_messages').update(patch).eq('id', row.id);
-  return { ...row, ...patch };
+  let q = supabaseAdmin.from('crm_messages').update(patch).eq('id', row.id);
+  if (onlyIfStatus) q = q.eq('status', onlyIfStatus);
+  const { data: updated } = await q.select('id');
+  if (!onlyIfStatus || updated?.length) return { ...row, ...patch };
+  // Guard matched nothing: the row already moved on, so report what it really is.
+  const { data: current } = await supabaseAdmin.from('crm_messages')
+    .select('status').eq('id', row.id).maybeSingle();
+  return { ...row, status: current?.status || row.status };
+}
+
+// A row left in 'processing' this long means the worker died mid-dispatch. We do
+// NOT requeue it: the send may already have gone out, and a duplicate outbound
+// message is worse than a visible failure an admin can re-queue by hand.
+const STUCK_PROCESSING_MS = 30 * 60 * 1000;
+
+async function failStuckProcessing() {
+  const cutoff = new Date(Date.now() - STUCK_PROCESSING_MS).toISOString();
+  const now = new Date().toISOString();
+  await supabaseAdmin.from('crm_messages')
+    .update({ status: 'failed', failed_at: now, error: 'stuck_processing: worker stopped mid-send; check before re-queueing', updated_at: now })
+    .eq('status', 'processing').lt('updated_at', cutoff);
 }
 
 /** Cron tick: drain due queued rows. Leader-elected by the caller (jobLock). */
 async function processQueue() {
+  await failStuckProcessing().catch((e) => console.error('[crm] stuck-processing sweep failed:', e.message));
   const nowIso = new Date().toISOString();
   const { data: rows, error } = await supabaseAdmin
     .from('crm_messages')
@@ -230,7 +252,17 @@ async function processQueue() {
       .from('crm_messages').update({ status: 'processing', updated_at: nowIso })
       .eq('id', row.id).eq('status', 'queued').select('id').maybeSingle();
     if (!claimed) continue;
-    const out = await dispatch({ ...row, status: 'processing' }, null, { automated: true });
+    let out;
+    try {
+      out = await dispatch({ ...row, status: 'processing' }, null, { automated: true });
+    } catch (e) {
+      // A thrown dispatch used to leave the row 'processing' forever (never sent,
+      // never retried). Route it through the normal retry/backoff path instead —
+      // but only if still 'processing': if the throw came AFTER the row was marked
+      // 'sent' (e.g. logActivity), leave it sent.
+      console.error('[crm] dispatch threw:', e.message);
+      out = await markFailed(row, `dispatch_error: ${String(e.message).slice(0, 300)}`, { onlyIfStatus: 'processing' });
+    }
     if (out.status === 'sent') sent++;
     else if (out.status === 'skipped') skipped++;
     else if (out.status === 'failed') failed++;

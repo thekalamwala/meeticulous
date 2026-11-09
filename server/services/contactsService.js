@@ -14,10 +14,39 @@ const norm = (e) => (e || '').trim().toLowerCase();
 const TYPE_RANK = { vendor: 3, buyer: 2, guest: 1, prospect: 0 };
 const rankType = (a, b) => ((TYPE_RANK[b] || 0) > (TYPE_RANK[a] || 0) ? b : (a || b));
 
+// PostgREST caps an unpaged select at 1,000 rows. An unpaged read here silently
+// dropped every contact past row 1,000, and the sync then re-wrote those rows with
+// default consent (opted in, not suppressed): unsubscribed people came back.
+// So page every read, and THROW on a read error rather than treating it as "no rows".
+const PAGE = 1000;
+async function fetchAll(build) {
+  const rows = [];
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await build().range(from, from + PAGE - 1);
+    if (error) throw error;
+    rows.push(...(data || []));
+    if (!data || data.length < PAGE) return rows;
+  }
+}
+
+// Upsert in chunks: with paged reads the merged set is no longer capped at 1,000,
+// and one giant request risks the PostgREST size limit / statement timeout.
+const UPSERT_CHUNK = 500;
+async function upsertContacts(rows, cols) {
+  const out = [];
+  for (let i = 0; i < rows.length; i += UPSERT_CHUNK) {
+    const { data, error } = await supabaseAdmin.from('contacts')
+      .upsert(rows.slice(i, i + UPSERT_CHUNK), { onConflict: 'email' }).select(cols);
+    if (error) return { error };
+    out.push(...(data || []));
+  }
+  return { data: out };
+}
+
 async function loadExistingByEmail() {
-  const { data } = await supabaseAdmin.from('contacts').select('*');
+  const data = await fetchAll(() => supabaseAdmin.from('contacts').select('*').order('id'));
   const map = new Map();
-  for (const c of data || []) if (c.email) map.set(norm(c.email), c);
+  for (const c of data) if (c.email) map.set(norm(c.email), c);
   return map;
 }
 
@@ -40,10 +69,10 @@ function upsertInto(map, { email, name, phone, type, attrs = {}, userId = null, 
 }
 
 async function sync() {
-  const [{ data: profiles }, { data: bookings }, { data: purchases }] = await Promise.all([
-    supabaseAdmin.from('profiles').select('id, email, name, phone, role, plan'),
-    supabaseAdmin.from('bookings').select('guest_email, guest_name, guest_phone, scheduled_at'),
-    supabaseAdmin.from('product_purchases').select('buyer_email, buyer_name, buyer_phone'),
+  const [profiles, bookings, purchases] = await Promise.all([
+    fetchAll(() => supabaseAdmin.from('profiles').select('id, email, name, phone, role, plan').order('id')),
+    fetchAll(() => supabaseAdmin.from('bookings').select('guest_email, guest_name, guest_phone, scheduled_at').order('id')),
+    fetchAll(() => supabaseAdmin.from('product_purchases').select('buyer_email, buyer_name, buyer_phone').order('id')),
   ]);
 
   const work = new Map();
@@ -88,7 +117,7 @@ async function sync() {
   }
 
   if (rows.length) {
-    const { error } = await supabaseAdmin.from('contacts').upsert(rows, { onConflict: 'email' }).select();
+    const { error } = await upsertContacts(rows, 'id');
     if (error) return { upserted: 0, error: error.message };
   }
   return { upserted: rows.length };
@@ -140,10 +169,10 @@ function buildLeadContactRow(lead, prev = {}, now) {
 }
 
 async function syncLeads() {
-  const { data: leads } = await supabaseAdmin.from('leads')
+  const leads = await fetchAll(() => supabaseAdmin.from('leads')
     .select('id, email, name, phone, status, do_not_contact, contact_id, source, tags, profession, attributes')
-    .not('email', 'is', null);
-  const withEmail = (leads || []).filter((l) => norm(l.email));
+    .not('email', 'is', null).order('id'));
+  const withEmail = leads.filter((l) => norm(l.email));
   if (!withEmail.length) return { upserted: 0, linked: 0 };
 
   const existing = await loadExistingByEmail();
@@ -154,8 +183,7 @@ async function syncLeads() {
   for (const l of withEmail) { const k = norm(l.email); if (!byEmail.has(k)) byEmail.set(k, l); }
 
   const rows = [...byEmail.values()].map((l) => buildLeadContactRow(l, existing.get(norm(l.email)) || {}, now));
-  const { data: upserted, error } = await supabaseAdmin
-    .from('contacts').upsert(rows, { onConflict: 'email' }).select('id, email');
+  const { data: upserted, error } = await upsertContacts(rows, 'id, email');
   if (error) return { upserted: 0, linked: 0, error: error.message };
 
   // Back-link leads.contact_id for leads that don't have one yet.

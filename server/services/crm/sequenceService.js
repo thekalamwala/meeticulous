@@ -17,6 +17,7 @@ const { logActivity } = require('./activity');
 
 const CONVERTED = new Set(['activated', 'paid']);
 const BATCH = 50;
+const ENQUEUE_RETRY_MS = 60 * 60 * 1000; // failed step enqueue → retry the SAME step in 1h
 
 async function steps(sequenceId) {
   const { data } = await supabaseAdmin.from('crm_sequence_steps').select('*')
@@ -119,7 +120,14 @@ async function processDue() {
       });
       sent++;
     } catch (err) {
+      // Do NOT advance past a step that was never queued (it used to be silently
+      // skipped). Keep the step and retry it in an hour; the enqueue is idempotent
+      // per enrollment+step, so a retry can never double-queue.
       console.error('[crm] sequence enqueue failed:', err.message);
+      await supabaseAdmin.from('crm_sequence_enrollments')
+        .update({ next_run_at: new Date(Date.now() + ENQUEUE_RETRY_MS).toISOString(), updated_at: nowIso })
+        .eq('id', en.id);
+      continue;
     }
 
     const following = s.find((st) => st.step_no === next.step_no + 1);

@@ -4,6 +4,30 @@ All significant changes are recorded here by sprint. Most recent first.
 
 ---
 
+## [Release 2026-11, week of 2026-11-02] — 2026-11-09 (DISHA draft, sourced from merged commits)
+
+### Added
+- Gifted (complimentary) Pro — super-admin grant/extend/revoke, expiry cron, gift screens, share-to-extend and pay-it-forward (v3.190 `plan_gifts`). WhatsApp gift notices stay OFF until AiSensy templates are approved.
+- Pro profile palette — 16 theme colours.
+- LinkedIn host login (behind admin flag `host_linkedin_login`, **OFF**) — not available to hosts yet.
+- Community — create-post page, space pills, rotating logo lockup, optimistic reply/edit/delete/accept-answer. All `community*` flags ship OFF.
+- Blurred upgrade overlay on Customers and Products for plans without access.
+- Read-only agent report endpoints (sales, support, KYC, SEO, finance) for the SUTRA network.
+
+### Changed
+- Image upload limit raised 2MB -> 5MB.
+- Host profile default theme colour is maroon (was orange).
+- Homepage + `/for` redesign follow-up; hero "Claim my link" goes to signup.
+- JSON-LD: one `@id`-linked graph for host profile/service/product pages.
+
+### Fixed
+- Customers & Products wrongly locked for Pro (stale plan slugs).
+- Four gifted-Pro money-path gaps from the #140 review.
+- WCAG text contrast on mid-tone theme swatches; custom hex for legacy Pro.
+- 123 removed blog URLs now 301 to `/blog`.
+
+---
+
 ## [Sprint 11] Support Chat — Bolt-to-Human, Admin Inbox & Live Escalation — 2026-08-25
 
 ### Added

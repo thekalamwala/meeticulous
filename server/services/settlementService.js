@@ -45,9 +45,11 @@ async function computeSettlementBalance(hostId, clearingDays, nowMs = Date.now()
     // manual rail — counting it here too would let a host withdraw money they have
     // already been paid (double pay). null / 'failed' / 'reversed' = not paid, so it
     // falls through to the normal maturation buckets and stays owed.
+    // 'creating' = a transfer is being created right now (routeAutoPayoutService claim);
+    // Razorpay may already hold it, so it is in transit, never manually withdrawable.
     const ts = b.transfer_status;
     if (ts === 'processed') { autoPaidOut += amt; continue; }
-    if (ts === 'pending') { autoInTransit += amt; continue; }
+    if (ts === 'pending' || ts === 'creating') { autoInTransit += amt; continue; }
     if (ss === 'eligible_for_settlement') {
       const completedMs = b.completed_at ? new Date(b.completed_at).getTime() : NaN;
       if (Number.isFinite(completedMs) && completedMs <= cutoff) matured += amt;
@@ -152,7 +154,7 @@ async function computeAllSettlementBalances(clearingDays, nowMs = Date.now()) {
     // not withdrawable via the manual rail. null / 'failed' / 'reversed' stay owed.
     const ts = bk.transfer_status;
     if (ts === 'processed') { b.autoPaidOut += amt; continue; }
-    if (ts === 'pending') { b.autoInTransit += amt; continue; }
+    if (ts === 'pending' || ts === 'creating') { b.autoInTransit += amt; continue; }
     if (ss === 'eligible_for_settlement') {
       const completedMs = bk.completed_at ? new Date(bk.completed_at).getTime() : NaN;
       if (Number.isFinite(completedMs) && completedMs <= cutoff) b.matured += amt;

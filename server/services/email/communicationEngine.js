@@ -319,9 +319,20 @@ async function syncNotificationLog(logId, status) {
  * Called on an interval from server.js.
  * @returns {{ processed, sent, failed, retried }}
  */
+// A row is claimed (status 'sending') before delivery so two workers can't both
+// send it. A claim older than this means the worker died mid-send: the row goes
+// back to 'queued' (a possible duplicate beats a lost booking/OTP email).
+const STALE_SENDING_MS = 15 * 60 * 1000;
+
 async function processQueue(limit = 25) {
   const settings = await loadSettings();
   const nowIso = new Date().toISOString();
+
+  try {
+    await supabaseAdmin.from('email_logs')
+      .update({ status: 'queued', updated_at: nowIso })
+      .eq('status', 'sending').lt('updated_at', new Date(Date.now() - STALE_SENDING_MS).toISOString());
+  } catch (_) { /* best-effort sweep; never blocks the queue */ }
 
   let rows = [];
   try {
@@ -335,27 +346,39 @@ async function processQueue(limit = 25) {
 
   let sent = 0, failed = 0, retried = 0;
   for (const row of rows) {
+    // Claim first (queued → sending). Loser (another worker/instance got it) skips.
+    const { data: claimed } = await supabaseAdmin.from('email_logs')
+      .update({ status: 'sending', updated_at: new Date().toISOString() })
+      .eq('id', row.id).eq('status', 'queued').select('id').maybeSingle();
+    if (!claimed) continue;
     const attemptsMade = (row.attempts || 0) + 1;
-    // Sender is a property of the template, resolved here at delivery time (the
-    // queued row stores rendered html/subject but not the persona). Missing
-    // template → null → global fallback.
-    const rowTemplate = await getTemplate(row.event_key, row.audience);
-    let rowSender = await senderRegistry.senderFor(rowTemplate, settings);
-    // Composer campaigns carry no template — their persona lives on the campaign
-    // row (sender_key). Prefer it; otherwise fall back to the 'news' sender, which
-    // is the Brevo-authenticated bulk domain (hello@news.meeticulous.com). Must NOT
-    // fall through to the global verify@notify sender: MARKETING_PROVIDER is Brevo
-    // and Brevo does not authenticate notify.meeticulous.com, so that would bounce.
-    // Schema-safe: byKey returns null pre-migration → keeps the global fallback.
-    if (String(row.event_key || '').startsWith('CAMPAIGN:')) {
-      const campId = row.event_key.slice('CAMPAIGN:'.length);
-      const { data: camp } = await supabaseAdmin.from('email_campaigns').select('sender_key').eq('id', campId).maybeSingle();
-      rowSender = (camp && await senderRegistry.byKey(camp.sender_key)) || (await senderRegistry.byKey('news')) || rowSender;
+    let r;
+    try {
+      // Sender is a property of the template, resolved here at delivery time (the
+      // queued row stores rendered html/subject but not the persona). Missing
+      // template → null → global fallback.
+      const rowTemplate = await getTemplate(row.event_key, row.audience);
+      let rowSender = await senderRegistry.senderFor(rowTemplate, settings);
+      // Composer campaigns carry no template — their persona lives on the campaign
+      // row (sender_key). Prefer it; otherwise fall back to the 'news' sender, which
+      // is the Brevo-authenticated bulk domain (hello@news.meeticulous.com). Must NOT
+      // fall through to the global verify@notify sender: MARKETING_PROVIDER is Brevo
+      // and Brevo does not authenticate notify.meeticulous.com, so that would bounce.
+      // Schema-safe: byKey returns null pre-migration → keeps the global fallback.
+      if (String(row.event_key || '').startsWith('CAMPAIGN:')) {
+        const campId = row.event_key.slice('CAMPAIGN:'.length);
+        const { data: camp } = await supabaseAdmin.from('email_campaigns').select('sender_key').eq('id', campId).maybeSingle();
+        rowSender = (camp && await senderRegistry.byKey(camp.sender_key)) || (await senderRegistry.byKey('news')) || rowSender;
+      }
+      // Bulk campaigns go out on the dedicated marketing SMTP transport (off Resend);
+      // transactional + lifecycle queued rows keep the global provider.
+      const providerName = String(row.event_key || '').startsWith('CAMPAIGN:') ? MARKETING_PROVIDER : null;
+      r = await deliver({ settings, to: row.recipient, subject: row.subject, html: row.html, sender: rowSender, providerName, marketing: isMarketing(row.event_key) });
+    } catch (e) {
+      // A throw here would leave the row 'sending' with attempts unchanged, and the
+      // stale sweep would requeue it forever. Count it as a failed attempt instead.
+      r = { success: false, error: `delivery_error: ${String(e?.message || e).slice(0, 300)}` };
     }
-    // Bulk campaigns go out on the dedicated marketing SMTP transport (off Resend);
-    // transactional + lifecycle queued rows keep the global provider.
-    const providerName = String(row.event_key || '').startsWith('CAMPAIGN:') ? MARKETING_PROVIDER : null;
-    const r = await deliver({ settings, to: row.recipient, subject: row.subject, html: row.html, sender: rowSender, providerName, marketing: isMarketing(row.event_key) });
 
     if (r.success) {
       await supabaseAdmin.from('email_logs').update({

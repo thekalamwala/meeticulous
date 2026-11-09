@@ -69,7 +69,7 @@ async function maybeSendUpgradeNudge({ host, booking }) {
       .select('id')
       .eq('event_key', EVENT)
       .eq('recipient', host.email)
-      .in('status', ['sent', 'queued'])
+      .in('status', ['sent', 'queued', 'sending'])
       .gte('created_at', new Date(Date.now() - REPEAT_DAYS * DAY_MS).toISOString())
       .limit(1)
       .maybeSingle();
