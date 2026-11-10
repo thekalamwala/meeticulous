@@ -121,6 +121,17 @@ const acceptTerms = handle(async (req, res) => {
   if (isBanned(existing)) return fail(res, 403, 'COMMUNITY_BANNED');
   const member = await store.acceptTerms(uid, CURRENT_TERMS_VERSION);
   req.communityMember = member;
+
+  // Fire welcome on the FIRST acceptance only (any later terms-version bump
+  // is an upsert that keeps the row but is not a re-join). isFirstAcceptance
+  // = no prior row existed OR the prior row had no terms_accepted_at.
+  const isFirstAcceptance = !existing || !existing.terms_accepted_at;
+  if (isFirstAcceptance) {
+    const profile = await store.getProfile(uid).catch(() => null);
+    if (profile) require('../services/community/onboardingSequence')
+      .sendWelcome(profile, { isFirstAcceptance: true }).catch(() => null);
+  }
+
   return res.json({ member });
 });
 
