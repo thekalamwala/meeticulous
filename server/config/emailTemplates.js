@@ -357,14 +357,19 @@ const TEMPLATES = [
   (() => { const t = themeForCategory('Achievement Unlocked'); return {
     event_key: 'MILESTONE_FIRST_BOOKING', audience: 'all', category: 'Badge', sender_key: 'shubham',
     name: 'Milestone — First Booking', subject: 'Your first booking on Meeticulous!',
-    preview_text: 'You just landed your first booking.',
+    preview_text: 'A note from Shubham — and the Pro reminders are on us for 60 days.',
     email_category: 'Achievement Unlocked',
     email_reason: 'You are receiving this email because you reached a booking milestone on Meeticulous.',
+    // Consolidated with PRO_TASTE_STARTED: one email on first booking, not two.
+    // PRO_TASTE_STARTED now sends the in-app bell only — the Pro Taste gift is
+    // announced here, in Shubham's voice. ENDING and ENDED keep their own emails.
     html_content:
       C.heroImage('milestone-1', 'First booking') +
-      h('Your first booking, {{first_name}}!') +
-      lead('Congratulations on your first booking. This is the start of something good.'),
-    cta_label: 'View dashboard', cta_url: '{{dashboard_url}}',
+      h('Your first booking is in, {{first_name}}') +
+      lead("This is the start of something. Someone found you on Meeticulous, and they chose you. That matters.") +
+      lead('From today, for the next <strong>60 days</strong>, your guests get WhatsApp reminders and you both get reschedule alerts — that is Pro, on us. After that they switch to email unless you go Pro.') +
+      lead("Nothing to do right now. Go run the booking. Hit reply any time — I read these."),
+    cta_label: 'See my bookings', cta_url: '{{dashboard_url}}',
   }; })(),
 
   (() => { const t = themeForCategory('Achievement Unlocked'); return {
@@ -550,7 +555,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Community Update'); return {
-    event_key: 'ACCOUNT_ANNIVERSARY', audience: 'all', category: 'Celebrations',
+    event_key: 'ACCOUNT_ANNIVERSARY', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
     name: 'Account Anniversary', subject: "It's your Meeticulous anniversary!",
     preview_text: 'Celebrating another year with you.',
     email_category: 'Community Update',
@@ -717,17 +722,18 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Invitation'); return {
-    event_key: 'GUEST_TO_HOST_INVITE', audience: 'all', category: 'Marketing', sender_key: 'news',
+    event_key: 'GUEST_TO_HOST_INVITE', audience: 'all', category: 'Marketing', sender_key: 'shubham',
     name: 'Guest → Host Invite', subject: "You've booked {{completed_count}} times — ever thought about the other side?",
-    preview_text: 'The people you booked earn on Meeticulous. Your account is ready.',
+    preview_text: 'A quick note from Shubham — your account is already set up to host.',
     email_category: 'Invitation',
     email_reason: 'You are receiving this email because you are a Meeticulous guest.',
+    // Founder frame: one voice, one ask, no grids. Shubham is the sender; the body
+    // reads like a short personal note. The CTA is a convenience, not the point.
     html_content:
-      C.heroImage('guest-to-host-invite', 'Your own booking page') +
-      C.heroBand(t, { kick: "You've booked {{completed_count}} times, {{first_name}}", h2: 'Ever thought about the other side?', sub: 'The people you booked earn on Meeticulous. So could you.' }) +
-      lead('You know how smooth booking is from this side. The hosts you paid use the exact same platform to <strong>get paid</strong> — a link they share, bookings that just show up.') +
-      C.benefitGrid([{ icon: 'link.png', label: 'Share your link' }, { icon: 'calendar.png', label: 'Take bookings' }, { icon: 'wallet.png', label: 'Get paid' }]) +
-      lead('Your account is <strong>already set up</strong> to host. No new signup — start free, no card.'),
+      h('{{first_name}}, a quick note from me') +
+      lead("You've booked {{completed_count}} times on Meeticulous. I noticed, and figured I'd write.") +
+      lead('The hosts you paid use the same platform to <strong>get paid</strong> — one link they share, bookings that just show up. Your account is already set up for it. No new signup, no card, nothing to fill in.') +
+      lead("If you've been thinking of the other side, this is your opening. If not, ignore me — hit reply, tell me why. Either way, good to have you here."),
     cta_label: 'Start hosting free', cta_url: '{{become_host_url}}',
   }; })(),
 
