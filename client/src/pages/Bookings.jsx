@@ -18,6 +18,7 @@ import {
   Card, Button, Modal, StatusBadge, SkeletonCard, EmptyState, ErrorState, cn,
 } from "../components/dashboard/ui";
 import { isPreviewEnabled, getPreviewBookings } from "../utils/previewData";
+import { useRegisterRefresh } from "../components/dashboard/ui/refreshContext";
 
 const fmtDate = (iso) =>
   new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
@@ -482,6 +483,7 @@ const Bookings = () => {
     } finally { setLoading(false); }
   }, []);
   useEffect(() => { fetch(); }, [fetch]);
+  useRegisterRefresh(fetch); // pull-to-refresh re-fetches bookings
 
   const counts = useMemo(() => {
     const now = new Date();

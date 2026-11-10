@@ -14,6 +14,8 @@ import { cn } from '../dashboard/ui/cn';
 import { PageTransition } from '../dashboard/ui/PageTransition';
 import ConsoleSidebar from './ConsoleSidebar';
 import MobileTabBar from './MobileTabBar';
+import PullToRefresh from '../dashboard/ui/PullToRefresh';
+import { RefreshProvider } from '../dashboard/ui/refreshContext';
 import '../dashboard/ui/tokens.css';
 
 // Keyed by canonical plan slug (see normalizePlan) — legacy aliases like
@@ -426,12 +428,14 @@ const DashboardLayout = ({ children }) => {
   const initial = (user?.name || user?.email || 'U').trim().charAt(0).toUpperCase();
 
   return (
+    <RefreshProvider>
     <div className="dash flex min-h-screen overflow-x-hidden bg-canvas">
       <ConsoleSidebar open={navOpen} onClose={() => setNavOpen(false)} triggerRef={navTriggerRef} />
 
       {/* Main — offset by the fixed rail (56) + panel (220) = 276px on lg+
-          (the sidebar is out of flow). */}
-      <main ref={mainRef} className="flex min-w-0 flex-1 flex-col overflow-y-auto lg:pl-[276px]">
+          (the sidebar is out of flow). overscroll-contain hands the top overscroll
+          to pull-to-refresh instead of the browser's native gesture. */}
+      <main ref={mainRef} className="flex min-w-0 flex-1 flex-col overflow-y-auto overscroll-y-contain lg:pl-[276px]">
         <DashTopbar
           user={user}
           plan={plan}
@@ -440,17 +444,20 @@ const DashboardLayout = ({ children }) => {
           logout={logout}
         />
         {/* pb clears the fixed mobile tab bar (+ safe area); desktop keeps py-6. */}
-        <div className="px-4 py-6 pb-[calc(68px+env(safe-area-inset-bottom))] sm:px-6 md:px-8 lg:pb-6">
-          <div className="mx-auto w-full max-w-6xl">
-            <PageTransition>{children}</PageTransition>
+        <PullToRefresh scrollerRef={mainRef}>
+          <div className="px-4 py-6 pb-[calc(68px+env(safe-area-inset-bottom))] sm:px-6 md:px-8 lg:pb-6">
+            <div className="mx-auto w-full max-w-6xl">
+              <PageTransition>{children}</PageTransition>
+            </div>
           </div>
-        </div>
+        </PullToRefresh>
       </main>
 
       {/* Native-app bottom tab bar — mobile only (< lg). Its "More" button is the
           mobile nav opener (the topbar hamburger moved here). */}
       <MobileTabBar onOpenMore={() => setNavOpen(true)} moreTriggerRef={navTriggerRef} />
     </div>
+    </RefreshProvider>
   );
 };
 
