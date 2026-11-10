@@ -15,7 +15,10 @@ function serializeAuthor(profile, member) {
     avatar_url: profile.profile_image || null,
     role: host ? 'host' : 'guest',
     badge: member?.badge || null,
-    profile_url: host && profile.username ? `/${profile.username}` : null,
+    // Tithi (Chief of Staff) links to her custom profile page, not /<username>.
+    profile_url: profile.id === (process.env.COMMUNITY_TITHI_USER_ID || null)
+      ? '/agent-tithi'
+      : (host && profile.username ? `/${profile.username}` : null),
   };
 }
 

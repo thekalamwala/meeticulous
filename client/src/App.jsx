@@ -47,6 +47,7 @@ const Home           = lazy(() => import('./pages/Home'));
 // Pre-compaction homepage snapshot — parked at /_attic (hidden, noindex) so the
 // sections cut from the live homepage stay reachable for future reuse.
 const HomeArchive    = lazy(() => import('./pages/HomeArchive'));
+const AgentTithi     = lazy(() => import('./pages/AgentTithi'));
 const Login          = lazy(() => import('./pages/Login'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword  = lazy(() => import('./pages/ResetPassword'));
@@ -817,6 +818,8 @@ function App() {
           <Route path="/get-in-touch" element={<Contact />} />
           <Route path="/enterprise" element={<Enterprise />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
+          {/* Tithi's public profile (Chief of Staff) — linked from her community author chip. */}
+          <Route path="/agent-tithi" element={<AgentTithi />} />
           {/* Full-screen shareable product pitch deck (pages/presentation/). */}
           <Route path="/presentation" element={<Presentation />} />
 
