@@ -247,12 +247,13 @@ const UpgradePlan = () => {
 
       {/* Cadence toggle */}
       <div className="mb-7 flex items-center justify-center gap-2">
-        <div className="inline-flex rounded-full bg-neutral-100 p-1">
+        {/* Same cadence toggle as the public pricing page (PricingCards). */}
+        <div className="inline-flex items-center gap-1 rounded-full border-2 border-neutral-200 bg-white p-1">
           {["monthly", "annual"].map((c) => (
             <button key={c} onClick={() => setCadence(c)}
-              className={cn("rounded-full px-5 py-1.5 text-sm font-semibold transition-colors", cadence === c ? "bg-white text-neutral-900 shadow" : "text-neutral-500")}>
+              className={cn("inline-flex items-center gap-1.5 rounded-full px-5 py-1.5 text-sm font-semibold transition-colors", cadence === c ? "bg-ink text-white" : "text-neutral-500 hover:text-ink")}>
               {c === "monthly" ? "Monthly" : "Annual"}
-              {c === "annual" && <span className="ml-1.5 text-[10px] font-bold text-maroon">save more</span>}
+              {c === "annual" && <span className={cn("rounded-full px-1.5 py-0.5 text-[10px] font-bold", cadence === "annual" ? "bg-primary text-white" : "bg-primary/10 text-primary")}>save more</span>}
             </button>
           ))}
         </div>
@@ -286,17 +287,17 @@ const UpgradePlan = () => {
                   </span>
                 )}
                 <div className="mb-4">
-                  <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">{planLabel(plan.slug, plan.name)}</span>
+                  <span className="rounded-full bg-sand px-2.5 py-1 text-xs font-semibold text-primary">{planLabel(plan.slug, plan.name)}</span>
                   <div className="mt-3">
                     {!paid ? (
-                      <p className="text-3xl font-bold">Free</p>
+                      <p className="font-heading text-4xl font-extrabold text-ink">Free</p>
                     ) : cadenceAvailable ? (
                       <>
                         {/* Lead with the GST-INCLUSIVE amount, matching /pricing.
                             subscription_plans stores the ex-GST base, so showing
                             that as the headline made the dashboard quote a
                             different number than the marketing page. */}
-                        <p className="text-3xl font-bold">
+                        <p className="font-heading text-4xl font-extrabold text-ink">
                           {inr(Math.round(price * (1 + GST_RATE)))}
                           <span className="ml-1 text-sm font-normal text-neutral-400">/ {cadence === "monthly" ? "month" : "year"}</span>
                         </p>
@@ -317,7 +318,7 @@ const UpgradePlan = () => {
 
                 <ul className="mb-6 flex-1 space-y-2">
                   {featureLines(plan).map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-sm text-neutral-600"><Check /> {f}</li>
+                    <li key={f} className="flex items-start gap-2.5 text-sm text-neutral-600"><Check /> {f}</li>
                   ))}
                 </ul>
 
