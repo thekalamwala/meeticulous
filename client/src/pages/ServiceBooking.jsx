@@ -510,11 +510,24 @@ const ServiceBooking = () => {
   // autoModeRef: while true we're still auto-navigating to the first day with
   // open times. Any manual pick (a day or a slot) turns it off for good.
   const autoModeRef = useRef(true);
+  const timesRef = useRef(null);
+  // Desktop splits slots into Morning/Afternoon/Evening; mobile shows them flat.
+  const [isDesktop, setIsDesktop] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const fn = (e) => setIsDesktop(e.matches);
+    mq.addEventListener("change", fn);
+    return () => mq.removeEventListener("change", fn);
+  }, []);
   const selectDate = (day) => {
     if (!isDateSelectable(day)) return;
     autoModeRef.current = false;
     setSelectedDate(new Date(calYear, calMonth, day));
     setSelectedTime("");
+    // Mobile: a real date tap jumps down to the times (auto-pick skips this path).
+    if (!isDesktop) requestAnimationFrame(() => timesRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   };
 
   // Auto-pick the first schedule-selectable day (today onward) once the service
@@ -1174,7 +1187,7 @@ const ServiceBooking = () => {
           {/* STEP: time */}
           {!finalizing && step === "time" && (
             <div className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl p-4 sm:p-5">
-              <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 mb-4">
+              <div className="flex items-center justify-between gap-2 mb-4">
                 <Link
                   to={`/${profileSlug}`}
                   className="text-sm text-gray-400 hover:text-gray-600 flex items-center gap-1 flex-shrink-0"
@@ -1182,11 +1195,12 @@ const ServiceBooking = () => {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
-                  Back to Services
+                  <span className="hidden sm:inline">Back to Services</span>
+                  <span className="sm:hidden">Back</span>
                 </Link>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-lg sm:text-xl font-bold">When works for you?</h2>
-                  <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full flex-shrink-0">
+                <div className="flex items-center gap-2 min-w-0">
+                  <h2 className="text-base sm:text-xl font-bold truncate">When works for you?</h2>
+                  <span className="hidden sm:inline-flex text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full flex-shrink-0">
                     {tzAbbr}
                   </span>
                 </div>
@@ -1267,15 +1281,39 @@ const ServiceBooking = () => {
                   </div>
                 </div>
                 {/* Times */}
-                <div className="flex-1">
+                <div className="flex-1" ref={timesRef}>
                   {selectedDate ? (
                     <>
-                      <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center justify-between gap-2 mb-3">
                         <h3 className="font-semibold">
                           {DAYS_SHORT[selectedDate.getDay()]},{" "}
                           {MONTHS[selectedDate.getMonth()]}{" "}
                           {selectedDate.getDate()}
                         </h3>
+                        {/* Desktop only: icon filters for part of day (count in tooltip). */}
+                        {timeSlots.length > 0 && (
+                          <div className="hidden md:flex items-center gap-1.5">
+                            {slotCats.map((c) => {
+                              const on = activeCat.key === c.key;
+                              const disabled = c.items.length === 0;
+                              return (
+                                <button
+                                  key={c.key}
+                                  type="button"
+                                  disabled={disabled}
+                                  onClick={() => setSlotCategory(c.key)}
+                                  title={`${c.label} · ${c.items.length} ${c.items.length === 1 ? "slot" : "slots"}`}
+                                  className={`h-9 w-9 flex items-center justify-center rounded-full border-2 transition-all ${disabled ? "opacity-40 cursor-default" : "hover:bg-[color:var(--mt-blush,#FFE4EA)] cursor-pointer"}`}
+                                  style={on
+                                    ? { background: "var(--mt-blush, #FFE4EA)", borderColor: tc, color: tc }
+                                    : { background: "#fff", borderColor: "var(--color-line)", color: "#9ca3af" }}
+                                >
+                                  <c.Icon className="w-4 h-4" style={on ? { color: tc } : { color: "#9ca3af" }} />
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
                       {slotsLoading ? (
                         <SlotSkeleton />
@@ -1293,34 +1331,9 @@ const ServiceBooking = () => {
                             </div>
                           ) : (
                             <div className="bas-fade">
-                              {/* Category cards: pick a part of the day, grid filters to it. */}
-                              <div className="grid grid-cols-3 gap-2 mb-3">
-                                {slotCats.map((c) => {
-                                  const on = activeCat.key === c.key;
-                                  const disabled = c.items.length === 0;
-                                  return (
-                                    <button
-                                      key={c.key}
-                                      type="button"
-                                      disabled={disabled}
-                                      onClick={() => setSlotCategory(c.key)}
-                                      className={`flex items-center justify-center gap-2 py-2 px-2 rounded-xl border-2 transition-all ${disabled ? "opacity-40 cursor-default" : "hover:bg-[color:var(--mt-blush,#FFE4EA)] cursor-pointer"}`}
-                                      style={on
-                                        ? { background: "var(--mt-blush, #FFE4EA)", borderColor: tc, color: tc }
-                                        : { background: "#fff", borderColor: "var(--color-line)", color: "#2B0A14" }}
-                                    >
-                                      <c.Icon className="w-4 h-4 shrink-0" style={on ? { color: tc } : { color: "#9ca3af" }} />
-                                      <span className="flex flex-col items-start leading-none">
-                                        <span className="text-[13px] font-bold">{c.label}</span>
-                                        <span className="text-[10px] font-medium text-gray-400 mt-0.5">{c.items.length} {c.items.length === 1 ? "slot" : "slots"}</span>
-                                      </span>
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                              {/* Slots for the active category only. */}
+                              {/* Desktop filters by the active category; mobile shows all slots. */}
                               <div className="max-h-[260px] overflow-y-auto pr-1 grid grid-cols-3 sm:grid-cols-4 gap-1.5">
-                                {activeCat.items.map((t) => {
+                                {(isDesktop ? activeCat.items : timeSlots).map((t) => {
                                   const on = selectedTime === t;
                                   return (
                                     <button
