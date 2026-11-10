@@ -4,6 +4,8 @@ import { LogOut, LifeBuoy, ChevronDown, User } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import GuestSidebar from "./GuestSidebar";
 import GuestTabBar from "./GuestTabBar";
+import PullToRefresh from "../dashboard/ui/PullToRefresh";
+import { RefreshProvider } from "../dashboard/ui/refreshContext";
 
 // Guest-space shell (/user/*). A single-level console for the logged-in
 // customer: a labelled left rail (GuestSidebar) + a lean topbar. Deliberately
@@ -94,7 +96,8 @@ const GuestLayout = () => {
   useEffect(() => { setNavOpen(false); }, [pathname]);
 
   return (
-    <div className="flex min-h-screen overflow-x-hidden" style={{ background: "#F8FAFC" }}>
+    <RefreshProvider>
+    <div className="flex min-h-screen overflow-x-hidden overscroll-y-contain" style={{ background: "#F8FAFC" }}>
       <GuestSidebar open={navOpen} onClose={() => setNavOpen(false)} triggerRef={navTriggerRef} />
 
       {/* Main — offset by the fixed 224px (w-56) rail on lg+. */}
@@ -115,15 +118,18 @@ const GuestLayout = () => {
         </header>
 
         {/* pb clears the fixed mobile tab bar (+ safe area); desktop keeps py-7. */}
-        <div className="app-container max-w-4xl py-7 pb-[calc(68px+env(safe-area-inset-bottom))] flex-1 lg:pb-7">
-          <Outlet />
-        </div>
+        <PullToRefresh>
+          <div className="app-container max-w-4xl py-7 pb-[calc(68px+env(safe-area-inset-bottom))] flex-1 lg:pb-7">
+            <Outlet />
+          </div>
+        </PullToRefresh>
       </main>
 
       {/* Native-app bottom tab bar — mobile only (< lg). Its "More" button is the
           mobile nav opener (the topbar hamburger moved here). */}
       <GuestTabBar onOpenMore={() => setNavOpen(true)} moreTriggerRef={navTriggerRef} />
     </div>
+    </RefreshProvider>
   );
 };
 

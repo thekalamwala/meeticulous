@@ -7,6 +7,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { getPayoutBalance, getHostBookings } from '../services/api';
 import { fmtMoney, cn } from '../components/dashboard/ui';
+import { useRegisterRefresh } from '../components/dashboard/ui/refreshContext';
 import { useOverviewChrome } from '../components/common/overviewChrome';
 import { isPreviewEnabled, getPreviewBookings, getPreviewPayoutBalance } from '../utils/previewData';
 import toast from 'react-hot-toast';
@@ -445,9 +446,16 @@ const Dashboard = () => {
   // show only once a request SUCCEEDS with no rows). Retryable from the UI.
   const loadBookings = useCallback(() => {
     setBookingsStatus('loading');
-    getHostBookings()
+    return getHostBookings()
       .then(({ data }) => { setRawBookings(Array.isArray(data) ? data : []); setBookingsStatus('ready'); })
       .catch(() => { setRawBookings([]); setBookingsStatus('error'); });
+  }, []);
+
+  const loadBalance = useCallback(() => {
+    setBalanceStatus('loading');
+    return getPayoutBalance()
+      .then(({ data }) => { setBalance(data); setBalanceStatus('ready'); })
+      .catch(() => setBalanceStatus('error'));
   }, []);
 
   useEffect(() => {
@@ -461,12 +469,16 @@ const Dashboard = () => {
       setBookingsStatus('ready');
       return;
     }
-    setBalanceStatus('loading');
-    getPayoutBalance()
-      .then(({ data }) => { setBalance(data); setBalanceStatus('ready'); })
-      .catch(() => setBalanceStatus('error'));
+    loadBalance();
     loadBookings();
-  }, [isHost, loadBookings]);
+  }, [isHost, loadBookings, loadBalance]);
+
+  // Pull-to-refresh re-fetches payout balance + bookings together.
+  const refresh = useCallback(() => {
+    if (isPreviewEnabled()) return Promise.resolve();
+    return Promise.all([loadBalance(), loadBookings()]);
+  }, [loadBalance, loadBookings]);
+  useRegisterRefresh(refresh);
 
   // Calendar view-models (cancelled bookings aren't shown on the calendar).
   const calendarBookings = useMemo(

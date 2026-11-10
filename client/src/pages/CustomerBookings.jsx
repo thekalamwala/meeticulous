@@ -7,6 +7,7 @@ import {
 import { getGuestBookings, cancelBooking, getBookingReview, guestCompleteBooking, guestReportProblem } from "../services/api";
 import { downloadReceipt } from "../utils/receipt";
 import { useAuth } from "../context/AuthContext";
+import { useRegisterRefresh } from "../components/dashboard/ui/refreshContext";
 import useFeatureFlags from "../hooks/useFeatureFlags";
 import RescheduleModal from "../components/booking/RescheduleModal";
 import ReviewModal from "../components/booking/ReviewModal";
@@ -144,7 +145,7 @@ const CustomerBookings = () => {
   const [detailsFor, setDetailsFor] = useState(null);
 
   const load = () => {
-    getGuestBookings()
+    return getGuestBookings()
       .then(({ data }) => {
         const list = Array.isArray(data) ? data : [];
         setBookings(list);
@@ -157,6 +158,7 @@ const CustomerBookings = () => {
       .finally(() => setLoading(false));
   };
   useEffect(load, []);
+  useRegisterRefresh(load); // pull-to-refresh re-fetches guest bookings
 
   const handleCancel = async (id) => {
     const b = bookings.find((x) => x.id === id);

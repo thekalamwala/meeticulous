@@ -11,6 +11,8 @@ import ProfileCompletionPanel from '../dashboard/ProfileCompletionPanel';
 import { NotifBell, ProfileMenu } from './DashboardLayout';
 import ConsoleSidebar from './ConsoleSidebar';
 import MobileTabBar from './MobileTabBar';
+import PullToRefresh from '../dashboard/ui/PullToRefresh';
+import { RefreshProvider } from '../dashboard/ui/refreshContext';
 import { OverviewChromeContext } from './overviewChrome';
 
 /* --------------------------------------------------------------------------
@@ -293,10 +295,11 @@ const OverviewLayout = ({ children }) => {
 
   return (
     <OverviewChromeContext.Provider value={{ openNewMeeting }}>
+     <RefreshProvider>
       {/* Page ground is the shared host canvas — same as DashboardLayout — so the
           overview matches every other /dashboard/* page. Do NOT give this a pink
           gradient surface: the host dashboard background must be constant. */}
-      <div className="ov-shell min-h-screen bg-canvas text-[#17164A]">
+      <div className="ov-shell min-h-screen overscroll-y-contain bg-canvas text-[#17164A]">
         {/* Original two-level host sidebar (icon rail + panel), reused verbatim.
             It owns its own desktop-fixed shell AND mobile drawer, driven here by
             navOpen / the toolbar hamburger. */}
@@ -314,7 +317,9 @@ const OverviewLayout = ({ children }) => {
 
           {/* pb clears the fixed mobile tab bar (+ safe area); desktop keeps py-4. */}
           <main className="px-4 py-4 pb-[calc(68px+env(safe-area-inset-bottom))] sm:px-6 lg:pb-4">
-            <PageTransition>{children}</PageTransition>
+            <PullToRefresh>
+              <PageTransition>{children}</PageTransition>
+            </PullToRefresh>
           </main>
         </div>
 
@@ -324,6 +329,7 @@ const OverviewLayout = ({ children }) => {
 
         <NewMeetingModal open={newMeetingOpen} onClose={() => setNewMeetingOpen(false)} user={user} />
       </div>
+     </RefreshProvider>
     </OverviewChromeContext.Provider>
   );
 };
