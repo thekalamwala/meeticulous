@@ -92,15 +92,15 @@ export default function ProfessionServices() {
         canonical={canonical}
         jsonLd={faqLd ? [...jsonLd, faqLd] : jsonLd}
       />
-      <nav className="mb-6 text-sm text-[#64748b]">
+      <nav className="mb-6 text-sm text-neutral-500">
         <Link to="/services" className="hover:underline">Services</Link> / {prof.label}
       </nav>
-      <h1 className="font-heading text-[2.1rem] font-extrabold leading-[1.12] tracking-tight text-[#2B0A14] xl:text-[2.7rem]">
+      <h1 className="font-heading text-[2.1rem] font-extrabold leading-[1.12] tracking-tight text-ink xl:text-[2.7rem]">
         Book {withArticle(prof.label)} online
       </h1>
-      <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-[#475569]">{intro}</p>
+      <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-neutral-700">{intro}</p>
 
-      <h2 className="mt-12 font-heading text-xl font-bold text-[#2B0A14]">
+      <h2 className="mt-12 font-heading text-xl font-bold text-ink">
         {prof.label} services you can book today
       </h2>
       <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -115,14 +115,14 @@ export default function ProfessionServices() {
 
       {faqs.length > 0 && (
         <section className="mt-14 max-w-2xl">
-          <h2 className="font-heading text-xl font-bold text-[#2B0A14]">
+          <h2 className="font-heading text-xl font-bold text-ink">
             {prof.label} bookings — frequently asked questions
           </h2>
           <dl className="mt-6 space-y-6">
             {faqs.map((f) => (
               <div key={f.q}>
-                <dt className="font-semibold text-[#2B0A14]">{f.q}</dt>
-                <dd className="mt-1 text-[15px] leading-relaxed text-[#475569]">{f.a}</dd>
+                <dt className="font-semibold text-ink">{f.q}</dt>
+                <dd className="mt-1 text-[15px] leading-relaxed text-neutral-700">{f.a}</dd>
               </div>
             ))}
           </dl>
@@ -131,7 +131,7 @@ export default function ProfessionServices() {
 
       {hosts.length > 0 && (
         <section className="mt-14">
-          <h2 className="font-heading text-xl font-bold text-[#2B0A14]">
+          <h2 className="font-heading text-xl font-bold text-ink">
             {prof.label}s taking bookings on Meeticulous
           </h2>
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -139,20 +139,20 @@ export default function ProfessionServices() {
               <Link
                 key={h.username}
                 to={`/${h.username}`}
-                className="flex items-center gap-3 rounded-xl border-2 border-[#2B0A14]/10 p-4 transition-colors hover:border-[#2B0A14] hover:no-underline"
+                className="flex items-center gap-3 rounded-xl border-2 border-ink/10 p-4 transition-colors hover:border-ink hover:no-underline"
               >
                 {h.profile_image ? (
                   <img src={h.profile_image} alt={h.name} loading="lazy"
                     className="h-11 w-11 shrink-0 rounded-full object-cover" />
                 ) : (
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#2B0A14]/5 font-bold text-[#2B0A14]">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink/5 font-bold text-ink">
                     {(h.name || '?').charAt(0).toUpperCase()}
                   </span>
                 )}
                 <span className="min-w-0">
-                  <span className="block truncate font-semibold text-[#2B0A14]">{h.name}</span>
+                  <span className="block truncate font-semibold text-ink">{h.name}</span>
                   {h.profession && (
-                    <span className="block truncate text-[13px] text-[#64748b]">{h.profession}</span>
+                    <span className="block truncate text-[13px] text-neutral-500">{h.profession}</span>
                   )}
                 </span>
               </Link>
@@ -161,17 +161,17 @@ export default function ProfessionServices() {
         </section>
       )}
 
-      <section className="mt-14 border-t-2 border-[#2B0A14]/10 pt-8">
-        <h2 className="font-heading text-lg font-bold text-[#2B0A14]">Keep exploring</h2>
+      <section className="mt-14 border-t-2 border-ink/10 pt-8">
+        <h2 className="font-heading text-lg font-bold text-ink">Keep exploring</h2>
         <div className="mt-4 flex flex-wrap gap-3 text-sm">
-          <Link to="/services" className="rounded-full border-2 border-[#2B0A14] px-4 py-1.5 font-semibold hover:bg-[#2B0A14] hover:text-white">
+          <Link to="/services" className="rounded-full border-2 border-ink px-4 py-1.5 font-semibold hover:bg-ink hover:text-white">
             All professions
           </Link>
-          <Link to="/explore" className="rounded-full border-2 border-[#2B0A14] px-4 py-1.5 font-semibold hover:bg-[#2B0A14] hover:text-white">
+          <Link to="/explore" className="rounded-full border-2 border-ink px-4 py-1.5 font-semibold hover:bg-ink hover:text-white">
             Explore all services
           </Link>
           {forLanding && (
-            <Link to={`/for/${forLanding}`} className="rounded-full border-2 border-[#2B0A14] px-4 py-1.5 font-semibold hover:bg-[#2B0A14] hover:text-white">
+            <Link to={`/for/${forLanding}`} className="rounded-full border-2 border-ink px-4 py-1.5 font-semibold hover:bg-ink hover:text-white">
               Why {prof.label.toLowerCase()}s choose Meeticulous
             </Link>
           )}
