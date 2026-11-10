@@ -559,8 +559,37 @@ const me = handleRead(async (req, res) => {
   });
 }, { member: null, terms_version_required: CURRENT_TERMS_VERSION });
 
+// GET /users/:id/activity — one host's community activity (their posts + their
+// comments), newest first, for the public-profile Feed. Gated like every read
+// (communityGate 404s while the flag is off). No cursor paging in v1 — a recent-
+// activity preview. ponytail: add cursors if a profile outgrows one page.
+const authorActivity = handleRead(async (req, res) => {
+  const authorId = String(req.params.id || '');
+  if (!UUID.test(authorId)) return fail(res, 400, 'INVALID_TARGET');
+  const ctx = await ctxFor(req);
+  const [rawPosts, rawComments] = await Promise.all([
+    store.listAuthorPosts({ authorId, cur: null, limit: FEED_FETCH }),
+    store.listAuthorComments({ authorId, cur: null, limit: FEED_FETCH }),
+  ]);
+  const postRows = filterVisible(rawPosts, ctx).slice(0, FEED_LIMIT);
+  const commentRows = filterVisibleComments(rawComments, ctx).slice(0, FEED_LIMIT);
+  const [posts, comments, parents] = await Promise.all([
+    store.hydrateItems(postRows, req.user?.id || null),
+    store.hydrateComments(commentRows, req.user?.id || null),
+    store.postContexts(commentRows.map((r) => r.post_id)),
+  ]);
+  // Attach parent post (slug/url/title) so each comment links to its thread.
+  const withParent = comments.map((cm) => {
+    const p = parents.get(cm.post_id);
+    const gone = !p || ['deleted', 'removed'].includes(p.status);
+    return { ...cm, parent: gone ? null : { slug: p.slug, title: p.title ?? null, url: `/community/${p.kind === 'thread' ? 't' : 'p'}/${p.slug}` } };
+  });
+  setCache(req, res);
+  return res.json({ posts, comments: withParent });
+}, { posts: [], comments: [] });
+
 module.exports = {
-  listSpaces, feed, spaceThreads, itemDetail, itemComments, me,
+  listSpaces, feed, spaceThreads, itemDetail, itemComments, me, authorActivity,
   acceptTerms, createItem, updateItem, deleteItem, createComment, updateComment, deleteComment,
   acceptAnswer, addReaction, removeReaction, createReport,
   createSave, removeSave, createBlock, removeBlock,
