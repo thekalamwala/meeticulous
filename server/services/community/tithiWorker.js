@@ -14,7 +14,9 @@
 const tithi = require('./tithi');
 const store = require('./store');
 const sendEmail = require('../../utils/sendEmail');
+const { isFeatureEnabled } = require('../featureFlags');
 
+const FLAG = 'community_tithi';
 const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'team@meeticulous.com';
 // Auto-post release notes, or draft-and-email for approval first (default: approve-first).
 const AUTOPOST = process.env.COMMUNITY_TITHI_AUTOPOST === 'true';
@@ -99,4 +101,47 @@ async function runReplySweep() {
   return { replied, skipped };
 }
 
-module.exports = { runReleaseNotePoll, runReplySweep, releaseBranch, fetchMergedPrs, _AUTOPOST: AUTOPOST };
+// ── Nightly founder digest ────────────────────────────────────────────────────
+// A reads-only snapshot of the community for the founder, from ONE feed query: new
+// member posts, how many Tithi handled, what's still unanswered, and what Tithi posted.
+// Emailed to the team. Flag-gated so it's silent before launch.
+const DIGEST_SCAN = 60;
+const esc = (s = '') => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+async function runDailyDigest() {
+  if (!(await isFeatureEnabled(FLAG))) return { skipped: 'flag_off' };
+  let rows;
+  try {
+    rows = await store.listFeedRows({ cur: null, limit: DIGEST_SCAN });
+  } catch (e) {
+    if (e.code === 'COMMUNITY_UNAVAILABLE') return { skipped: 'unavailable' };
+    throw e;
+  }
+  const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
+  const tithiId = tithi._tithiUserId();
+  const recent = (rows || []).filter((r) => new Date(r.created_at).getTime() >= dayAgo);
+  const memberPosts = recent.filter((r) => r.author_id !== tithiId);
+  const tithiPosts = recent.filter((r) => r.author_id === tithiId);
+  // comment_count is trigger-kept; 0 = no reply at all (a Tithi reply makes it ≥ 1).
+  const unanswered = memberPosts.filter((r) => (r.comment_count || 0) === 0);
+
+  const metrics = { newPosts: memberPosts.length, tithiPosts: tithiPosts.length, unanswered: unanswered.length };
+  try {
+    const list = unanswered.slice(0, 10)
+      .map((r) => `<li><a href="/community/${r.kind === 'thread' ? 't' : 'p'}/${esc(r.slug)}">${esc(r.title || r.body || '(post)').slice(0, 80)}</a></li>`)
+      .join('') || '<li>Nothing unanswered — nice.</li>';
+    await sendEmail({
+      to: SUPPORT_EMAIL,
+      subject: `[Tithi] Daily community digest — ${metrics.newPosts} new, ${metrics.unanswered} unanswered`,
+      html: `<h2>Community — last 24h</h2>`
+        + `<p>${metrics.newPosts} new member posts · ${metrics.tithiPosts} Tithi posts · ${metrics.unanswered} still unanswered.</p>`
+        + `<h3>Unanswered</h3><ul>${list}</ul>`,
+    });
+  } catch (_) { /* digest email is best-effort */ }
+  return metrics;
+}
+
+module.exports = {
+  runReleaseNotePoll, runReplySweep, runDailyDigest,
+  releaseBranch, fetchMergedPrs, _AUTOPOST: AUTOPOST,
+};

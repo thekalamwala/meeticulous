@@ -491,6 +491,14 @@ setInterval(async () => {
     }, { leaseMs: 6 * 60 * 1000 });
   } catch (err) { console.error('Tithi reply-sweep error:', err.message); }
 }, 3 * 60 * 1000);
+setInterval(async () => {
+  try {
+    await runLocked('tithi-daily-digest', async () => {
+      const r = await tithiWorker.runDailyDigest();
+      if (r.newPosts !== undefined) console.log(`Tithi digest: ${r.newPosts} new, ${r.unanswered} unanswered`);
+    }, { leaseMs: 60 * 60 * 1000 });
+  } catch (err) { console.error('Tithi daily digest error:', err.message); }
+}, 24 * 60 * 60 * 1000);
 
 // ══ F4: LONG-interval crons (≥15 min) driven off a PERSISTED schedule (job_runs),
 // checked on a short SCHEDULER_TICK so pod churn can't starve them. Before this, a

@@ -3,13 +3,16 @@
 jest.mock('../../../services/community/tithi', () => ({
   publishReleaseNote: jest.fn(),
   replyToPost: jest.fn(),
+  _tithiUserId: () => 'tithi-uuid',
 }));
 jest.mock('../../../services/community/store', () => ({ listFeedRows: jest.fn() }));
 jest.mock('../../../utils/sendEmail', () => jest.fn());
+jest.mock('../../../services/featureFlags', () => ({ isFeatureEnabled: jest.fn().mockResolvedValue(true) }));
 
 const tithi = require('../../../services/community/tithi');
 const store = require('../../../services/community/store');
 const sendEmail = require('../../../utils/sendEmail');
+const { isFeatureEnabled } = require('../../../services/featureFlags');
 const worker = require('../../../services/community/tithiWorker');
 
 afterEach(() => { jest.clearAllMocks(); delete global.fetch; delete process.env.COMMUNITY_GH_REPO; delete process.env.COMMUNITY_RELEASE_BRANCH; });
@@ -81,5 +84,27 @@ describe('runReplySweep', () => {
     const err = new Error('missing'); err.code = 'COMMUNITY_UNAVAILABLE';
     store.listFeedRows.mockRejectedValue(err);
     expect(await worker.runReplySweep()).toEqual({ replied: 0, skipped: 0 });
+  });
+});
+
+describe('runDailyDigest', () => {
+  test('flag off -> skipped, no email', async () => {
+    isFeatureEnabled.mockResolvedValueOnce(false);
+    expect(await worker.runDailyDigest()).toEqual({ skipped: 'flag_off' });
+    expect(sendEmail).not.toHaveBeenCalled();
+  });
+
+  test('counts recent member posts, Tithi posts and unanswered, and emails the team', async () => {
+    const now = Date.now();
+    const iso = (ms) => new Date(now - ms).toISOString();
+    store.listFeedRows.mockResolvedValue([
+      { author_id: 'm1', created_at: iso(1000), comment_count: 0, slug: 'a', title: 'A', kind: 'post' },
+      { author_id: 'm2', created_at: iso(2000), comment_count: 3, slug: 'b', title: 'B', kind: 'post' },
+      { author_id: 'tithi-uuid', created_at: iso(3000), comment_count: 0, slug: 'c', title: 'C', kind: 'post' },
+      { author_id: 'm3', created_at: iso(48 * 3600 * 1000), comment_count: 0, slug: 'old', title: 'old', kind: 'post' }, // >24h, excluded
+    ]);
+    const r = await worker.runDailyDigest();
+    expect(r).toEqual({ newPosts: 2, tithiPosts: 1, unanswered: 1 });
+    expect(sendEmail).toHaveBeenCalledTimes(1);
   });
 });
