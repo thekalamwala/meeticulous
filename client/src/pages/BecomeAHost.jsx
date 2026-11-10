@@ -109,7 +109,7 @@ const BecomeAHost = () => {
             disabled={loading}
             className="btn mt-5 flex w-full items-center justify-center gap-3 rounded-[16px] bg-ink py-3 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(16,24,40,0.16)] transition-opacity hover:opacity-90 disabled:opacity-50"
           >
-            <GoogleIcon />
+            {loading ? <Spinner /> : <GoogleIcon />}
             {loading ? 'Opening Google…' : 'Continue with Google'}
           </button>
 
@@ -162,6 +162,14 @@ const BecomeAHost = () => {
     </div>
   );
 };
+
+// Instant click feedback — swaps in for the Google mark while the OAuth URL loads.
+const Spinner = () => (
+  <svg className="h-5 w-5 animate-spin text-white" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+    <path className="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.37 0 0 5.37 0 12h4z" />
+  </svg>
+);
 
 const Check = () => (
   <svg viewBox="0 0 24 24" className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success-fg" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
