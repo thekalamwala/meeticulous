@@ -218,6 +218,55 @@ async function publishReleaseNote({ pr, release, approveFirst = false } = {}) {
   }
 }
 
+// A deploy note's slug: one per ship PR (release/** -> main merge), so a webhook
+// re-delivery of the same merge can't double-post the "we're live" announcement.
+const deploySlug = (pr) => `shipped-pr-${pr && pr.number ? pr.number : 'x'}`;
+
+/**
+ * publishDeploymentNote({ pr, release }) — the "it's live" note posted when the
+ * release train merges into main (prod deploy; Vercel auto-ships from main). This
+ * is the rollup marker, separate from the per-PR release notes: those announce
+ * each change as it lands on the release branch; this says the whole batch is now
+ * live for everyone. Deterministic copy (no model spend per deploy); dedup by slug.
+ *   pr: { number, title, body }   release: 'release/2026-11' | '2026-11'
+ * Returns { skipped: ... } | { posted: true, postId, slug, headline }.
+ */
+async function publishDeploymentNote({ pr, release } = {}) {
+  if (!pr || !pr.number) return { skipped: 'bad_pr' };
+  if (!(await isFeatureEnabled(FLAG))) return { skipped: 'flag_off' };
+  const authorId = tithiUserId();
+  if (!authorId) return { skipped: 'no_identity' };
+
+  const month = releaseLabel(release);
+  const headline = month === 'next' ? 'A fresh batch of updates is live' : `The ${month} updates are live`;
+  const body = month === 'next'
+    ? 'Everything we have been working on just went live. Have a look around — and tell us what you think.'
+    : `Everything from the ${month} release just went live for everyone. Have a look around — and tell us what lands and what doesn't.`;
+
+  try {
+    const slug = deploySlug(pr);
+    if (await store.getPostBySlug(slug)) return { skipped: 'duplicate' };
+    const space = await store.getSpaceByKey(UPDATES_SPACE);
+    if (!space) return { skipped: 'no_space' };
+
+    let post;
+    try {
+      post = await store.insertPost({
+        kind: 'post', format: 'announcement', author_id: authorId,
+        space_id: space.id, title: headline, body, status: 'visible',
+      }, () => slug);
+    } catch (e) {
+      if (e.code === '23505') return { skipped: 'duplicate' };
+      throw e;
+    }
+    try { await store.refreshIndexable(post.id); } catch (_) { /* nice-to-have */ }
+    return { posted: true, postId: post.id, slug, headline };
+  } catch (e) {
+    if (e.code === 'COMMUNITY_UNAVAILABLE') return { skipped: 'unavailable' };
+    throw e;
+  }
+}
+
 // ── Reply (first responder) ───────────────────────────────────────────────────
 // Tithi reads a member's post and replies ONCE, as a top-level comment. The grounded
 // answer, the escalation decision and all the guardrails (KB grounding, sensitive-topic
@@ -304,7 +353,7 @@ async function replyToPost({ post } = {}) {
 module.exports = {
   VOICE, RELEASE_NOTE_RULES,
   classifyPr, kindFromPrefix, writeReleaseNote, fallbackNote,
-  releaseLabel, cleanTitle, prSlug, publishReleaseNote,
+  releaseLabel, cleanTitle, prSlug, publishReleaseNote, publishDeploymentNote,
   replyToPost, escalateToTeam,
   _tithiUserId: tithiUserId,
 };

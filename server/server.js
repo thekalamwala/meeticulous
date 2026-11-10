@@ -69,6 +69,9 @@ app.use('/api/webhooks/resend', express.raw({ type: 'application/json', limit: '
 // Raw body for the Meta Lead Ads webhook — X-Hub-Signature-256 is verified over
 // the exact bytes (see metaLeadgenController). Must precede express.json.
 app.use('/api/webhooks/meta-leadgen', express.raw({ type: 'application/json', limit: '1mb' }));
+// Raw body for the GitHub pull_request webhook — X-Hub-Signature-256 verified over
+// the exact bytes (see githubWebhookController). Must precede express.json.
+app.use('/api/webhooks/github', express.raw({ type: 'application/json', limit: '1mb' }));
 // Brevo inbound replies carry the raw text + HTML of the whole quoted thread,
 // which routinely exceeds the 100kb default below. Secret-gated route.
 app.use('/api/webhooks/brevo/inbound', express.json({ limit: '2mb' }));
