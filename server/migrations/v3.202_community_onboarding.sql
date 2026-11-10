@@ -32,7 +32,11 @@ ON CONFLICT (event_key) DO UPDATE
       in_app_enabled   = EXCLUDED.in_app_enabled,
       is_active        = EXCLUDED.is_active;
 
-INSERT INTO feature_flags (key, enabled, description)
-VALUES ('community_email_onboarding', false,
-        'Community welcome + 4-step onboarding sequence over 14 days (double-gated with per-event is_active/email_enabled). Ships OFF.')
+INSERT INTO feature_flags (key, label, description, category, scope, enabled)
+VALUES ('community_email_onboarding',
+        'Community onboarding emails',
+        'Welcome + 4-step onboarding sequence over 14 days (double-gated with per-event is_active/email_enabled). Ships OFF.',
+        'Community',
+        'both',
+        false)
 ON CONFLICT (key) DO NOTHING;
