@@ -32,7 +32,7 @@ export default function TermsDialog({ onAccepted, onClose }) {
     onAccepted();
   };
   return (
-    <Dialog title={<>Before you post, <span className="font-serif font-normal italic text-rose">a few house rules.</span></>} onClose={onClose}>
+    <Dialog title={<>Before you join in, <span className="font-serif font-normal italic text-rose">a few house rules.</span></>} onClose={onClose}>
       <ul className="mt-rules mt-dialog__body">
         {RULES.map(([Icon, head, rest]) => (
           <li key={head}><Icon size={20} aria-hidden="true" /><span><b>{head}</b> {rest}</span></li>

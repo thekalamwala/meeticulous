@@ -568,6 +568,8 @@ function App() {
           <Route path="/signup" element={<Navigate to="/" replace />} />
           {/* #534: email/password host signup retired — hosts use Google at /become-a-host. */}
           <Route path="/vendor/signup" element={<Navigate to="/become-a-host" replace />} />
+          {/* /register is a host-signup alias → become-a-host. */}
+          <Route path="/register" element={<Navigate to="/become-a-host" replace />} />
 
           {/* Host signup — Google (+ LinkedIn when host_linkedin_login is ON) */}
           <Route path="/become-a-host" element={<BecomeAHost />} />
