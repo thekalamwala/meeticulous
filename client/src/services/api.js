@@ -129,7 +129,9 @@ export const getGoogleAuthUrl = (returnPath)  => API.get('/auth/google', returnP
 // is stamped with their acquisition source (CRM Phase 2b).
 // tz = browser timezone, the server's fallback seed when Google Calendar can't supply one.
 const browserTz = () => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || undefined; } catch { return undefined; } };
-export const getVendorGoogleUrl = (intent = 'login', invite) => API.get('/auth/google/vendor', { params: { intent, ...(invite ? { invite } : {}), ...(browserTz() ? { tz: browserTz() } : {}), ...(getAttribution() || {}) } });
+// timeout: a hung network leaves the signup button stuck on "Opening Google…"
+// forever otherwise — fail after 15s so the UI can toast + re-enable.
+export const getVendorGoogleUrl = (intent = 'login', invite) => API.get('/auth/google/vendor', { timeout: 15000, params: { intent, ...(invite ? { invite } : {}), ...(browserTz() ? { tz: browserTz() } : {}), ...(getAttribution() || {}) } });
 export const sendOtp          = (data)         => API.post('/auth/send-otp', data);
 export const verifyOtp        = (data)         => API.post('/auth/verify-otp', data);
 // Phone-primary user login
