@@ -45,7 +45,7 @@ const featureLines = (plan) => {
 };
 
 const Check = () => (
-  <svg className="h-4 w-4 flex-shrink-0 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <svg className="h-4 w-4 flex-shrink-0 text-maroon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
   </svg>
 );
@@ -187,7 +187,7 @@ const UpgradePlan = () => {
         title="Upgrade Your Plan"
         subtitle={
           <>
-            You're on the <span className="font-semibold text-gray-700">{gift ? GIFTED_PRO_LABEL : planLabel(currentPlan, currentPlan)}</span> plan
+            You're on the <span className="font-semibold text-neutral-700">{gift ? GIFTED_PRO_LABEL : planLabel(currentPlan, currentPlan)}</span> plan
             {gift && expiry && daysLeft > 0 && ` · free until ${expiry.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}`}
             {!gift && expiry && daysLeft > 0 && ` · renews in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`}
             {expiry && daysLeft <= 0 && <span className="text-red-500"> · expired</span>}
@@ -201,11 +201,11 @@ const UpgradePlan = () => {
       {/* Manage current subscription */}
       {hasActiveSub && (
         <Card className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-neutral-600">
             {status === "cancelled" ? (
-              <>Auto-renew is <strong className="text-amber-600">off</strong>. Access ends {expiry ? expiry.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }) : "at period end"}.</>
+              <>Auto-renew is <strong className="text-maroon">off</strong>. Access ends {expiry ? expiry.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }) : "at period end"}.</>
             ) : (
-              <>Auto-renew is <strong className="text-emerald-600">on</strong> ({user?.billing_cadence}). Next charge {expiry ? expiry.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }) : "—"}.</>
+              <>Auto-renew is <strong className="text-maroon">on</strong> ({user?.billing_cadence}). Next charge {expiry ? expiry.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }) : "—"}.</>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -221,12 +221,12 @@ const UpgradePlan = () => {
 
       {/* Free-plan hosts: lay out the whole case to upgrade, right away. */}
       {!loading && !onPaidPlan && (
-        <div className="mb-7 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-5 sm:p-6">
+        <div className="mb-7 rounded-2xl border border-maroon/20 bg-maroon/5 p-5 sm:p-6">
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" strokeWidth={2.25} />
-            <h2 className="text-base font-bold text-gray-900 sm:text-lg">Why hosts upgrade</h2>
+            <h2 className="text-base font-display font-extrabold text-maroon sm:text-lg">Why hosts upgrade</h2>
           </div>
-          <p className="mt-1 text-sm text-gray-600">
+          <p className="mt-1 text-sm text-neutral-600">
             You're on the free plan. Here's what a paid plan unlocks — most hosts earn it back in their first few bookings.
           </p>
           <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -236,8 +236,8 @@ const UpgradePlan = () => {
                   <Icon className="h-5 w-5" strokeWidth={2.25} />
                 </span>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-gray-900">{title}</p>
-                  <p className="mt-0.5 text-xs leading-snug text-gray-500">{body}</p>
+                  <p className="text-sm font-semibold text-neutral-900">{title}</p>
+                  <p className="mt-0.5 text-xs leading-snug text-neutral-500">{body}</p>
                 </div>
               </div>
             ))}
@@ -247,19 +247,20 @@ const UpgradePlan = () => {
 
       {/* Cadence toggle */}
       <div className="mb-7 flex items-center justify-center gap-2">
-        <div className="inline-flex rounded-full bg-gray-100 p-1">
+        {/* Same cadence toggle as the public pricing page (PricingCards). */}
+        <div className="inline-flex items-center gap-1 rounded-full border-2 border-neutral-200 bg-white p-1">
           {["monthly", "annual"].map((c) => (
             <button key={c} onClick={() => setCadence(c)}
-              className={cn("rounded-full px-5 py-1.5 text-sm font-semibold transition-colors", cadence === c ? "bg-white text-gray-900 shadow" : "text-gray-500")}>
+              className={cn("inline-flex items-center gap-1.5 rounded-full px-5 py-1.5 text-sm font-semibold transition-colors", cadence === c ? "bg-ink text-white" : "text-neutral-500 hover:text-ink")}>
               {c === "monthly" ? "Monthly" : "Annual"}
-              {c === "annual" && <span className="ml-1.5 text-[10px] font-bold text-emerald-600">save more</span>}
+              {c === "annual" && <span className={cn("rounded-full px-1.5 py-0.5 text-[10px] font-bold", cadence === "annual" ? "bg-primary text-white" : "bg-primary/10 text-primary")}>save more</span>}
             </button>
           ))}
         </div>
       </div>
 
       {loading ? (
-        <p className="py-10 text-center text-sm text-gray-400">Loading plans…</p>
+        <p className="py-10 text-center text-sm text-neutral-400">Loading plans…</p>
       ) : (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {plans.map((plan) => {
@@ -279,52 +280,52 @@ const UpgradePlan = () => {
               <div key={plan.slug} className={cn("relative flex flex-col rounded-2xl border-2 bg-white p-6 dash-elev-1",
                 isCurrentTier ? "border-primary ring-2 ring-primary/20"
                   : isRecommended ? "border-primary shadow-lg ring-2 ring-primary/30"
-                  : "border-gray-200")}>
+                  : "border-neutral-200")}>
                 {isRecommended && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-3 py-0.5 text-[11px] font-bold text-white shadow">
                     Most Popular
                   </span>
                 )}
                 <div className="mb-4">
-                  <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">{planLabel(plan.slug, plan.name)}</span>
+                  <span className="rounded-full bg-sand px-2.5 py-1 text-xs font-semibold text-primary">{planLabel(plan.slug, plan.name)}</span>
                   <div className="mt-3">
                     {!paid ? (
-                      <p className="text-3xl font-bold">Free</p>
+                      <p className="font-heading text-4xl font-extrabold text-ink">Free</p>
                     ) : cadenceAvailable ? (
                       <>
                         {/* Lead with the GST-INCLUSIVE amount, matching /pricing.
                             subscription_plans stores the ex-GST base, so showing
                             that as the headline made the dashboard quote a
                             different number than the marketing page. */}
-                        <p className="text-3xl font-bold">
+                        <p className="font-heading text-4xl font-extrabold text-ink">
                           {inr(Math.round(price * (1 + GST_RATE)))}
-                          <span className="ml-1 text-sm font-normal text-gray-400">/ {cadence === "monthly" ? "month" : "year"}</span>
+                          <span className="ml-1 text-sm font-normal text-neutral-400">/ {cadence === "monthly" ? "month" : "year"}</span>
                         </p>
-                        <p className="mt-1 text-[11px] text-gray-500">incl. GST · {inr(price)} + 18% GST</p>
+                        <p className="mt-1 text-[11px] text-neutral-500">incl. GST · {inr(price)} + 18% GST</p>
                         {cadence === "annual" && !onPaidPlan && <FoundingNote className="mt-2" />}
                         {user?.plan === "premium_founding" && isCurrentTier && (
                           <p className="mt-2 text-[11px] font-semibold text-maroon">Founding member — your price is locked for life.</p>
                         )}
                         {cadence === "annual" && savings > 0 && (
-                          <p className="mt-0.5 text-[11px] font-semibold text-emerald-600">Save {inr(Math.round(savings * (1 + GST_RATE)))}/yr vs monthly</p>
+                          <p className="mt-0.5 text-[11px] font-semibold text-maroon">Save {inr(Math.round(savings * (1 + GST_RATE)))}/yr vs monthly</p>
                         )}
                       </>
                     ) : (
-                      <p className="py-2 text-sm font-semibold text-gray-400">Annual billing only</p>
+                      <p className="py-2 text-sm font-semibold text-neutral-400">Annual billing only</p>
                     )}
                   </div>
                 </div>
 
                 <ul className="mb-6 flex-1 space-y-2">
                   {featureLines(plan).map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-sm text-gray-600"><Check /> {f}</li>
+                    <li key={f} className="flex items-start gap-2.5 text-sm text-neutral-600"><Check /> {f}</li>
                   ))}
                 </ul>
 
                 {isCurrentExact && !gift ? (
-                  <div className="rounded-xl bg-gray-100 py-2.5 text-center text-sm font-medium text-gray-500">Current Plan</div>
+                  <div className="rounded-xl bg-neutral-100 py-2.5 text-center text-sm font-medium text-neutral-500">Current Plan</div>
                 ) : !paid ? (
-                  <div className="rounded-xl border border-gray-200 py-2.5 text-center text-sm text-gray-400">Default plan</div>
+                  <div className="rounded-xl border border-neutral-200 py-2.5 text-center text-sm text-neutral-400">Default plan</div>
                 ) : (
                   <Button full onClick={() => (gift ? setConfirmKeep(plan) : setPendingPlan(plan))} disabled={paying === plan.slug || !cadenceAvailable}>
                     {paying === plan.slug ? "Opening payment…"
@@ -343,14 +344,14 @@ const UpgradePlan = () => {
 
       {/* Paid hosts: route custom / high-volume needs to Enterprise. */}
       {!loading && onPaidPlan && (
-        <div className="mt-8 flex flex-col items-start justify-between gap-4 rounded-2xl border border-gray-200 bg-gradient-to-br from-gray-50 to-white p-5 sm:flex-row sm:items-center sm:p-6">
+        <div className="mt-8 flex flex-col items-start justify-between gap-4 rounded-2xl border border-neutral-200 bg-neutral-50 p-5 sm:flex-row sm:items-center sm:p-6">
           <div className="flex items-start gap-3">
             <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
               <Building2 className="h-6 w-6" strokeWidth={2} />
             </span>
             <div>
-              <h3 className="text-base font-bold text-gray-900">Need more than your current plan?</h3>
-              <p className="mt-0.5 text-sm text-gray-600">
+              <h3 className="text-base font-display font-extrabold text-maroon">Need more than your current plan?</h3>
+              <p className="mt-0.5 text-sm text-neutral-600">
                 Custom limits, dedicated support, onboarding and SLAs for teams and high-volume hosts — let's build a plan around you.
               </p>
             </div>
@@ -361,7 +362,7 @@ const UpgradePlan = () => {
         </div>
       )}
 
-      <Card className="mt-8 text-center text-sm text-gray-500">
+      <Card className="mt-8 text-center text-sm text-neutral-500">
         Plans auto-renew {cadence}. Cancel anytime — you keep access until the period ends. GST charged on top. · Powered by Razorpay.
       </Card>
 
@@ -386,7 +387,7 @@ const UpgradePlan = () => {
           </>
         }
       >
-        <p className="mb-4 text-sm text-gray-500">Used for your GST invoice. GSTIN and PAN are optional.</p>
+        <p className="mb-4 text-sm text-neutral-500">Used for your GST invoice. GSTIN and PAN are optional.</p>
         <FormField label="Business / legal name" required>
           <Input value={billing.name} onChange={(e) => setBilling((b) => ({ ...b, name: e.target.value }))} />
         </FormField>
@@ -432,42 +433,42 @@ const UpgradePlan = () => {
           const canSwitch = myPlan && priceFor(myPlan, otherCadence) > 0;
           return (
             <div className="px-2 pb-4">
-              <p className="mb-1 text-lg font-semibold text-gray-900">{planLabel(currentPlan, currentPlan)}</p>
+              <p className="mb-1 text-lg font-semibold text-neutral-900">{planLabel(currentPlan, currentPlan)}</p>
 
-              <div className={cn("mb-5 rounded-xl p-4 text-sm", status === "cancelled" ? "bg-amber-50" : "bg-emerald-50")}>
-                <p className="font-semibold text-gray-800">
+              <div className={cn("mb-5 rounded-xl p-4 text-sm", status === "cancelled" ? "bg-blush" : "bg-pink-50")}>
+                <p className="font-semibold text-neutral-800">
                   {status === "cancelled" ? "Auto-renew is off" : "Subscription renews automatically"}
                 </p>
-                <p className="mt-1 text-gray-600">
+                <p className="mt-1 text-neutral-600">
                   {status === "cancelled"
                     ? <>Access ends {expiry ? fmtDay(expiry) : "at period end"}.</>
                     : <>Next charge is {inr(base)} + {inr(tax)} GST {expiry ? `on ${fmtDay(expiry)}` : ""}. Renews {renewCadence === "monthly" ? "monthly" : "for 12 months"}.</>}
                 </p>
               </div>
 
-              <dl className="divide-y divide-gray-100 text-sm">
+              <dl className="divide-y divide-neutral-100 text-sm">
                 <div className="flex items-center justify-between py-3">
-                  <dt className="text-gray-500">Status</dt>
-                  <dd className={cn("font-semibold", daysLeft <= 0 ? "text-red-500" : status === "cancelled" ? "text-amber-600" : "text-emerald-600")}>
+                  <dt className="text-neutral-500">Status</dt>
+                  <dd className={cn("font-semibold", daysLeft <= 0 ? "text-red-500" : status === "cancelled" ? "text-maroon" : "text-maroon")}>
                     {daysLeft <= 0 ? "Expired" : status === "cancelled" ? "Cancelled" : "Active"}
                   </dd>
                 </div>
                 <div className="flex items-center justify-between py-3">
-                  <dt className="text-gray-500">Expiration date</dt>
-                  <dd className="font-medium text-gray-800">{expiry ? fmtDay(expiry) : "—"}</dd>
+                  <dt className="text-neutral-500">Expiration date</dt>
+                  <dd className="font-medium text-neutral-800">{expiry ? fmtDay(expiry) : "—"}</dd>
                 </div>
                 <div className="flex items-center justify-between py-3">
-                  <dt className="text-gray-500">Renewal price</dt>
-                  <dd className="font-medium text-gray-800">{inr(base)}</dd>
+                  <dt className="text-neutral-500">Renewal price</dt>
+                  <dd className="font-medium text-neutral-800">{inr(base)}</dd>
                 </div>
                 <div className="flex items-center justify-between py-3">
-                  <dt className="text-gray-500">Taxes &amp; fees</dt>
-                  <dd className="font-medium text-gray-800">{inr(tax)}</dd>
+                  <dt className="text-neutral-500">Taxes &amp; fees</dt>
+                  <dd className="font-medium text-neutral-800">{inr(tax)}</dd>
                 </div>
                 <div className="flex items-center justify-between gap-3 py-3">
-                  <dt className="text-gray-500">Next billing period</dt>
+                  <dt className="text-neutral-500">Next billing period</dt>
                   <dd className="flex items-center gap-2">
-                    <span className="font-medium text-gray-800">{renewCadence === "monthly" ? "Monthly" : "12 months"}</span>
+                    <span className="font-medium text-neutral-800">{renewCadence === "monthly" ? "Monthly" : "12 months"}</span>
                     {canSwitch && (
                       <Button variant="secondary" size="sm" onClick={() => { setCadence(otherCadence); setShowDetails(false); setPendingPlan(myPlan); }}>
                         Change
@@ -477,7 +478,7 @@ const UpgradePlan = () => {
                 </div>
               </dl>
 
-              <p className="mt-5 text-sm text-gray-500">
+              <p className="mt-5 text-sm text-neutral-500">
                 Need more resources?{" "}
                 <button type="button" className="font-semibold text-primary hover:opacity-80" onClick={() => setShowDetails(false)}>
                   Upgrade to a higher plan.

@@ -74,6 +74,9 @@ const insertMentions = (rows) => (rows.length ? run(db('community_mentions').ins
 
 const getComment = (id) => run(db('community_comments').select('*').eq('id', id).maybeSingle());
 const insertComment = (row) => run(db('community_comments').insert(row).select('*').single());
+// How many comments `authorId` has on a post — Tithi's first-responder dedup (0 = not yet replied).
+const countCommentsByAuthorOnPost = (postId, authorId) => runCount(db('community_comments')
+  .select('id', { count: 'exact', head: true }).eq('post_id', postId).eq('author_id', authorId));
 const updateComment = (id, patch, where = {}) => run(withEq(db('community_comments').update(patch).eq('id', id), where).select('*').maybeSingle());
 
 async function addReaction(userId, targetType, targetId) {
@@ -276,6 +279,6 @@ module.exports = {
   loadAuthors, loadMediaByPost, likedIds, resetReadCaches,
   linksAllowed, getProfile, getMember, acceptTerms, getSpaceByKey, getSpaceById,
   insertPost, getPost, updatePost, insertMedia, listMedia, resolveUsernames, insertMentions,
-  getComment, insertComment, updateComment, addReaction, removeReaction,
+  getComment, insertComment, countCommentsByAuthorOnPost, updateComment, addReaction, removeReaction,
   insertReport, countOpenReports, viewContext, refreshIndexable, run, runCount,
 };

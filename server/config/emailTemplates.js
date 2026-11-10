@@ -174,12 +174,14 @@ const TEMPLATES = [
     preview_text: 'Your booking with {{vendor_name}} was cancelled.',
     email_category: 'Booking Cancelled',
     email_reason: 'You are receiving this email because a booking on your account was cancelled.',
+    // Receipt frame, warm first line (PR-8 empathy reframe). The cancellation
+    // itself is a known loss for the guest — acknowledge it, then show the record.
     html_content:
       h('Your booking was cancelled') +
-      lead('The following booking has been cancelled:') +
+      lead("Sorry you won't be meeting {{vendor_name}} this time. If you paid for this booking, the refund is on its way — most reach you within 5–7 working days.") +
       C.banner(t, { title: '{{service_name}}', sub: '{{booking_date}} at {{booking_time}} · with {{vendor_name}}' }) +
-      note('Questions? Reach us at {{support_email}}.'),
-    cta_label: 'Book again', cta_url: '{{dashboard_url}}',
+      lead("If anything feels off about this, just reply to this email — we'll take a look."),
+    cta_label: 'Find another slot', cta_url: '{{dashboard_url}}',
   }; })(),
 
   (() => { const t = themeForCategory('Booking Cancelled'); return {
@@ -357,14 +359,19 @@ const TEMPLATES = [
   (() => { const t = themeForCategory('Achievement Unlocked'); return {
     event_key: 'MILESTONE_FIRST_BOOKING', audience: 'all', category: 'Badge', sender_key: 'shubham',
     name: 'Milestone — First Booking', subject: 'Your first booking on Meeticulous!',
-    preview_text: 'You just landed your first booking.',
+    preview_text: 'A note from Shubham — and the Pro reminders are on us for 60 days.',
     email_category: 'Achievement Unlocked',
     email_reason: 'You are receiving this email because you reached a booking milestone on Meeticulous.',
+    // Consolidated with PRO_TASTE_STARTED: one email on first booking, not two.
+    // PRO_TASTE_STARTED now sends the in-app bell only — the Pro Taste gift is
+    // announced here, in Shubham's voice. ENDING and ENDED keep their own emails.
     html_content:
       C.heroImage('milestone-1', 'First booking') +
-      h('Your first booking, {{first_name}}!') +
-      lead('Congratulations on your first booking. This is the start of something good.'),
-    cta_label: 'View dashboard', cta_url: '{{dashboard_url}}',
+      h('Your first booking is in, {{first_name}}') +
+      lead("This is the start of something. Someone found you on Meeticulous, and they chose you. That matters.") +
+      lead('From today, for the next <strong>60 days</strong>, your guests get WhatsApp reminders and you both get reschedule alerts — that is Pro, on us. After that they switch to email unless you go Pro.') +
+      lead("Nothing to do right now. Go run the booking. Hit reply any time — I read these."),
+    cta_label: 'See my bookings', cta_url: '{{dashboard_url}}',
   }; })(),
 
   (() => { const t = themeForCategory('Achievement Unlocked'); return {
@@ -550,7 +557,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Community Update'); return {
-    event_key: 'ACCOUNT_ANNIVERSARY', audience: 'all', category: 'Celebrations',
+    event_key: 'ACCOUNT_ANNIVERSARY', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
     name: 'Account Anniversary', subject: "It's your Meeticulous anniversary!",
     preview_text: 'Celebrating another year with you.',
     email_category: 'Community Update',
@@ -677,11 +684,13 @@ const TEMPLATES = [
     preview_text: 'A booking you earned on was refunded, so that payout was reversed.',
     email_category: 'Payment Receipt',
     email_reason: 'You are receiving this email because a booking you earned on was refunded on Meeticulous.',
+    // Receipt frame, warm first line (PR-8 empathy reframe). A reversal reads
+    // as a punishment if we just state it — explain the WHY plainly first.
     html_content:
-      h('A booking was refunded, {{first_name}}') +
-      lead("One of your bookings was cancelled or refunded, so the {{payout_amount}} earning for it has been reversed and won't be paid out. Everything else you've earned is unaffected.") +
+      h('Heads up on a reversal, {{first_name}}') +
+      lead("A booking you earned on was cancelled or refunded, so the {{payout_amount}} for it has been pulled back. Not your mistake — refunds mean the money has to return to the guest, and whatever you were due from it goes with it.") +
       C.amountRow(t, 'Reversed', '{{payout_amount}}') +
-      lead('You can see the details in your transactions.'),
+      lead("Everything else you've earned is unaffected. If this reversal looks wrong to you, reply to this email and we'll check it ourselves."),
     cta_label: 'View transactions', cta_url: '{{dashboard_url}}',
   }; })(),
 
@@ -717,17 +726,18 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Invitation'); return {
-    event_key: 'GUEST_TO_HOST_INVITE', audience: 'all', category: 'Marketing', sender_key: 'news',
+    event_key: 'GUEST_TO_HOST_INVITE', audience: 'all', category: 'Marketing', sender_key: 'shubham',
     name: 'Guest → Host Invite', subject: "You've booked {{completed_count}} times — ever thought about the other side?",
-    preview_text: 'The people you booked earn on Meeticulous. Your account is ready.',
+    preview_text: 'A quick note from Shubham — your account is already set up to host.',
     email_category: 'Invitation',
     email_reason: 'You are receiving this email because you are a Meeticulous guest.',
+    // Founder frame: one voice, one ask, no grids. Shubham is the sender; the body
+    // reads like a short personal note. The CTA is a convenience, not the point.
     html_content:
-      C.heroImage('guest-to-host-invite', 'Your own booking page') +
-      C.heroBand(t, { kick: "You've booked {{completed_count}} times, {{first_name}}", h2: 'Ever thought about the other side?', sub: 'The people you booked earn on Meeticulous. So could you.' }) +
-      lead('You know how smooth booking is from this side. The hosts you paid use the exact same platform to <strong>get paid</strong> — a link they share, bookings that just show up.') +
-      C.benefitGrid([{ icon: 'link.png', label: 'Share your link' }, { icon: 'calendar.png', label: 'Take bookings' }, { icon: 'wallet.png', label: 'Get paid' }]) +
-      lead('Your account is <strong>already set up</strong> to host. No new signup — start free, no card.'),
+      h('{{first_name}}, a quick note from me') +
+      lead("You've booked {{completed_count}} times on Meeticulous. I noticed, and figured I'd write.") +
+      lead('The hosts you paid use the same platform to <strong>get paid</strong> — one link they share, bookings that just show up. Your account is already set up for it. No new signup, no card, nothing to fill in.') +
+      lead("If you've been thinking of the other side, this is your opening. If not, ignore me — hit reply, tell me why. Either way, good to have you here."),
     cta_label: 'Start hosting free', cta_url: '{{become_host_url}}',
   }; })(),
 
@@ -895,6 +905,420 @@ const TEMPLATES = [
       lead('Hi {{first_name}}, a moderator removed your {{target_label}} because it did not follow our community guidelines.') +
       lead('If you think this was a mistake, reply to this email and we will take another look.'),
     cta_label: 'Read the guidelines', cta_url: '{{community_url}}',
+  },
+
+  // ── Humanity track — festival + calendar greetings ────────────────────────────
+  // All Founder frame, Shubham sender. Zero or soft CTA — the greeting IS the
+  // email (see docs/email-playbook.md §Frames · Founder). One line of Hindi is
+  // welcome; no inline translation.
+
+  {
+    event_key: 'GREETING_DIWALI', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Greeting — Diwali', subject: 'Diwali mubarak, {{first_name}}',
+    preview_text: 'A quick note from Shubham, nothing to do.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
+    html_content:
+      C.heroImage('greeting-diwali', 'A lit diya') +
+      h('{{first_name}}, Diwali mubarak') +
+      lead("A short note. Thank you for being on Meeticulous this year.") +
+      lead("The work you do — a session, a class, a conversation — lights something up for the people who find you. Today a lot of us light diyas; whatever you light, light one more.") +
+      lead("Phir milte hain."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'GREETING_HOLI', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Greeting — Holi', subject: 'Happy Holi, {{first_name}}',
+    preview_text: 'From all of us, a happy Holi.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
+    html_content:
+      C.heroImage('greeting-holi', 'Colour-powder loops') +
+      h('Happy Holi, {{first_name}}') +
+      lead("Colour makes everything better for a day. Whatever yours looks like, hope it's a good one.") +
+      lead("Back to bookings tomorrow. Enjoy today."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'GREETING_EID', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Greeting — Eid', subject: 'Eid mubarak, {{first_name}}',
+    preview_text: 'A short greeting from Shubham.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
+    html_content:
+      C.heroImage('greeting-eid', 'Crescent moon and star') +
+      h('Eid mubarak, {{first_name}}') +
+      lead("A quiet note, no CTA. Thanks for being here. Celebrate well, rest well."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'GREETING_CHRISTMAS', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Greeting — Christmas', subject: 'Merry Christmas, {{first_name}}',
+    preview_text: 'A short note before the new year.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
+    html_content:
+      C.heroImage('greeting-christmas', 'A small wreath') +
+      h('Merry Christmas, {{first_name}}') +
+      lead("Hope today is warm, slow and spent with people you want to spend it with.") +
+      lead("We'll be around if you need us. Merry Christmas."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'GREETING_NEWYEAR', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Greeting — New Year', subject: 'A new year, {{first_name}}',
+    preview_text: 'A quick note before you start.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
+    html_content:
+      C.heroImage('greeting-newyear', 'Three rising arcs') +
+      h('Happy new year, {{first_name}}') +
+      lead("Short one. Thanks for sharing a year with Meeticulous. Last year worked because of what you shipped on your page — your sessions, your classes, your consults. Here's to another one like that.") +
+      lead("Aage dekhte hain."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'GREETING_PONGAL_SANKRANTI', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Greeting — Pongal / Sankranti', subject: 'Happy Pongal, {{first_name}}',
+    preview_text: 'Harvest season, new year, same wish from us.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
+    html_content:
+      C.heroImage('greeting-pongal-sankranti', 'Harvest pot and wheat') +
+      h('Happy Pongal, {{first_name}}') +
+      lead("Harvest season looks different everywhere. Pongal, Sankranti, Bihu, Lohri — same beat. Hope yours is full of the people who make it matter."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'GREETING_ONAM', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Greeting — Onam', subject: 'Happy Onam, {{first_name}}',
+    preview_text: 'A short greeting for Thiru Onam.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
+    html_content:
+      C.heroImage('greeting-onam', 'A simplified pookalam') +
+      h('Happy Onam, {{first_name}}') +
+      lead("Hope the sadya is good, the pookalam is better, and the week is spent with people you love."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'GREETING_INDEPENDENCE_DAY', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Greeting — Independence Day', subject: 'On this day, a quick note',
+    preview_text: 'A short note on 15 August.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
+    html_content:
+      C.heroImage('greeting-independence-day', 'Three horizontal slots') +
+      h('{{first_name}}, a short note') +
+      lead("Today we get to do our own work, in our own voice, for people we chose. That's worth saying out loud once a year.") +
+      lead("Thanks for building on Meeticulous. Jai Hind."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'GREETING_REPUBLIC_DAY', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Greeting — Republic Day', subject: 'On this day, a quick note',
+    preview_text: 'A short note on 26 January.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
+    html_content:
+      C.heroImage('greeting-republic-day', 'Three slots on an arc') +
+      h('Republic Day, {{first_name}}') +
+      lead("Rules exist so people can do their own thing without asking. Keep doing yours."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'GREETING_TEACHERS_DAY', audience: 'vendor', category: 'Celebrations', sender_key: 'shubham',
+    name: "Greeting — Teachers' Day", subject: 'Thank you, {{first_name}}',
+    preview_text: "A quick note on Teachers' Day.",
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you teach or coach on Meeticulous. Reply any time.',
+    html_content:
+      C.heroImage('greeting-teachers-day', 'An open book and a halo') +
+      h('Thank you, {{first_name}}') +
+      lead("Today is a thank-you, from this side of the platform to yours. Someone learned something they didn't know yesterday because of a session with you.") +
+      lead("That is the whole product. Guru Dakshina is reading your replies — hit me back with one thing a student recently told you."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'GREETING_MENTAL_HEALTH_DAY', audience: 'vendor', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Greeting — Mental Health Day', subject: 'A note on the work you do',
+    preview_text: 'A quiet note from Shubham.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you do therapy / counselling work on Meeticulous. Reply any time.',
+    html_content:
+      C.heroImage('greeting-mental-health-day', 'A quiet potted plant') +
+      h('{{first_name}}, a note') +
+      lead("World Mental Health Day. I know the work you do is often invisible and almost always underpaid for what it actually does.") +
+      lead("We built the booking side of Meeticulous so the quiet parts — scheduling, reminders, payouts — stop pulling at your attention. If any of it is still in your way, reply and tell me.") +
+      lead("Take care of yourself today, too."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'GREETING_YOGA_DAY', audience: 'vendor', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Greeting — Yoga Day', subject: 'Happy International Yoga Day',
+    preview_text: 'A short note for 21 June.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you teach yoga on Meeticulous. Reply any time.',
+    html_content:
+      C.heroImage('greeting-yoga-day', 'Abstract seated figure') +
+      h('Happy Yoga Day, {{first_name}}') +
+      lead("A short note. Your sessions on Meeticulous have reached people on the other side of the country this year — that is a strange and good thing.") +
+      lead("Enjoy the day. Teach one extra class today if you can."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'GREETING_WOMENS_DAY', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
+    name: "Greeting — Women's Day", subject: 'A note, {{first_name}}',
+    preview_text: 'A short note on 8 March.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
+    html_content:
+      C.heroImage('greeting-womens-day', 'Three overlapping loops') +
+      h('{{first_name}}, a short one') +
+      lead("A lot of what Meeticulous runs on — the services, the voices, the hosts people come back for — is built by women. Today's a good day to say that plainly.") +
+      lead("Thanks for being on this side of the internet."),
+    cta_label: '', cta_url: '',
+  },
+
+  // ── Dormant / win-back track (sent by services/dormancyNudges.js) ──────────
+  // Three stages escalating in voice and tone. All email-only, Founder frame.
+  // 30d = soft nudge (Tithi), 60d = personal (Shubham), 90d = goodbye-or-stay.
+
+  {
+    event_key: 'HOST_DORMANT_30D', audience: 'vendor', category: 'Engagement', sender_key: 'tithi',
+    name: 'Host — 30 days quiet', subject: 'Everything ok, {{first_name}}?',
+    preview_text: "It's been a quiet month on your page.",
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are a Meeticulous host and your page has had no bookings for 30 days.',
+    html_content:
+      h('Everything ok, {{first_name}}?') +
+      lead("It's been a quiet month on your Meeticulous page — no new bookings in the last 30 days.") +
+      lead("Sometimes life gets in the way, sometimes a page needs a refresh. Either way, we'd love to help if there's anything we can do — just reply to this email."),
+    cta_label: 'Open my dashboard', cta_url: '{{dashboard_url}}',
+  },
+
+  {
+    event_key: 'HOST_DORMANT_60D', audience: 'vendor', category: 'Engagement', sender_key: 'shubham',
+    name: 'Host — 60 days quiet', subject: 'A note from Shubham',
+    preview_text: "I noticed your page has been quiet — just checking in.",
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are a Meeticulous host and your page has had no bookings for 60 days.',
+    html_content:
+      h('{{first_name}}, a quick note') +
+      lead("It's been two months since your last booking on Meeticulous, so I figured I'd write.") +
+      lead("I don't know what changed — the work, the audience, the platform. I'd like to. If you have five minutes, hit reply and tell me what's going on. I read every one of these.") +
+      lead("No pitch. Just curious."),
+    cta_label: 'Open my dashboard', cta_url: '{{dashboard_url}}',
+  },
+
+  {
+    event_key: 'HOST_DORMANT_90D', audience: 'vendor', category: 'Engagement', sender_key: 'shubham',
+    name: 'Host — 90 days quiet (final)', subject: 'Last note from me',
+    preview_text: "Your page is still here whenever you are.",
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are a Meeticulous host and your page has had no bookings for 90 days.',
+    html_content:
+      h('Last one, {{first_name}}') +
+      lead("Three months. I'll stop writing after this.") +
+      lead("Your page is still here — same link, same services, same rate. Come back whenever you're ready, or tell me to delete it. No wrong answer.") +
+      lead("Thanks for trying Meeticulous. Reply any time."),
+    cta_label: 'Open my dashboard', cta_url: '{{dashboard_url}}',
+  },
+
+  // ── Onboarding — start KYC (sent by services/activationNudges.js) ─────────────
+  // Fires 2 days after signup if onboarding is still pending. Ladder frame:
+  // 3 crisp steps, one deep link per step, no decorative hero.
+
+  {
+    event_key: 'HOST_START_KYC_NUDGE', audience: 'vendor', category: 'Onboarding', sender_key: 'tithi',
+    name: 'Host — start KYC', subject: 'Finish your Meeticulous setup, {{first_name}}',
+    preview_text: 'Three short steps and your booking page goes live.',
+    email_category: 'Onboarding',
+    email_reason: 'You are receiving this because you signed up as a Meeticulous host and have not completed setup.',
+    html_content:
+      h('Three short steps, {{first_name}}') +
+      lead("Your Meeticulous page is almost ready. Finish these and it goes live.") +
+      steps(
+        step(1, 'Verify KYC', 'Quick ID check so we can send you payouts.'),
+        step(2, 'Add your first service', 'Name it, price it — a line is enough.'),
+        step(3, 'Share your link', 'Send it to one person who already books with you.'),
+      ) +
+      note('Takes under five minutes. Any trouble, just reply to this email.'),
+    cta_label: 'Finish setup', cta_url: '{{link}}',
+  },
+
+  // ── Guest review nudge (sent by services/reviewNudges.js) ─────────────────────
+  // Fires 48h after a completed paid booking with no review row.
+
+  {
+    event_key: 'GUEST_REVIEW_NUDGE', audience: 'all', category: 'Engagement', sender_key: 'tithi',
+    name: 'Guest — review nudge', subject: 'How was your session with {{vendor_name}}?',
+    preview_text: 'A few words go a long way for small creators.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you had a session on Meeticulous and have not left a review yet.',
+    html_content:
+      h('How was it, {{first_name}}?') +
+      lead('You had a session with <strong>{{vendor_name}}</strong> two days ago. If it went well, two lines from you means a lot to a small creator.') +
+      lead('If something was off, reply to this email instead — we read every one and we help sort it out.'),
+    cta_label: 'Leave a review', cta_url: '{{review_url}}',
+  },
+
+  // ── Humanity track — human-moment events (PR-7) ───────────────────────────────
+  // All Shubham, Founder frame. Detail-led openers that prove the email is real.
+
+  {
+    event_key: 'HOST_FIRST_REVIEW', audience: 'vendor', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Host — first review', subject: 'Someone said something nice about you',
+    preview_text: 'Your first review is live, {{first_name}}.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because someone left a review for you on Meeticulous.',
+    html_content:
+      C.heroImage('moment-first-review', 'A quote bubble') +
+      h('{{first_name}}, your first review is in') +
+      lead('{{reviewer_first_name}} just left a review on your page. You can read it on your dashboard.') +
+      lead("First ones mean the most. The stranger just told a future stranger you were worth it."),
+    cta_label: 'Read it', cta_url: '{{dashboard_url}}',
+  },
+
+  {
+    event_key: 'HOST_FIRST_FIVE_STAR', audience: 'vendor', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Host — first 5-star', subject: 'Your first five stars, {{first_name}}',
+    preview_text: 'Your first 5-star review just landed.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you received a 5-star review on Meeticulous.',
+    html_content:
+      C.heroImage('moment-first-five-star', 'Five dots in a row') +
+      h('Five stars, {{first_name}}') +
+      lead("{{reviewer_first_name}} rated your session five stars. That's not a number — that's someone saying they'd send a friend to you.") +
+      lead("Mubarak. Take the win."),
+    cta_label: 'Read the review', cta_url: '{{dashboard_url}}',
+  },
+
+  {
+    event_key: 'HOST_PERFECT_MONTH', audience: 'vendor', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Host — perfect month', subject: 'A perfect month, {{first_name}}',
+    preview_text: '100% show-up in {{month_name}} — that is rare.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because every booking on your page in the last month was completed.',
+    html_content:
+      C.heroImage('moment-perfect-month', 'A calendar page, all filled') +
+      h("A clean month, {{first_name}}") +
+      lead("{{completed_count}} bookings in {{month_name}}. Zero no-shows. Zero cancellations.") +
+      lead("This is harder than it looks. It means your reminders landed, your guests showed up, and whatever your session is — it was worth the trip."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'HOST_BOOKING_STREAK', audience: 'vendor', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Host — 3-week streak', subject: 'Three weeks in a row, {{first_name}}',
+    preview_text: 'At least one booking every week for three weeks.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because your page took bookings three weeks in a row.',
+    html_content:
+      C.heroImage('moment-booking-streak', 'Three beats in a row') +
+      h('Three weeks, {{first_name}}') +
+      lead("At least one booking every week for the last three weeks on your Meeticulous page. That's a rhythm.") +
+      lead("Keep it going. Reply if you want help pushing it to four."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'HOST_FIRST_REPEAT', audience: 'vendor', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Host — first repeat guest', subject: 'They came back, {{first_name}}',
+    preview_text: '{{guest_first_name}} booked you again.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because a past guest booked you again on Meeticulous.',
+    html_content:
+      C.heroImage('moment-first-repeat', 'Two overlapping loops') +
+      h('{{guest_first_name}} came back') +
+      lead("{{guest_first_name}} just booked a second session with you. First repeat is the real signal — whatever you did the first time worked.") +
+      lead("Welcome them back."),
+    cta_label: 'Open the booking', cta_url: '{{dashboard_url}}',
+  },
+
+  {
+    event_key: 'GUEST_EXPLORER_5_HOSTS', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Guest — explorer (5 hosts)', subject: 'Five hosts in, {{first_name}}',
+    preview_text: "You've booked five different hosts on Meeticulous.",
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you have booked five different hosts on Meeticulous.',
+    html_content:
+      C.heroImage('moment-explorer', 'A compass of arcs') +
+      h('Five hosts, {{first_name}}') +
+      lead("You've booked five different hosts on Meeticulous. Most guests don't — most settle into one.") +
+      lead("Thanks for exploring. If any of them is worth a friend knowing about, your words travel further than our ads do."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'GUEST_COMEBACK', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Guest — comeback', subject: 'Good to see you again, {{first_name}}',
+    preview_text: "Welcome back — it's been a while.",
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you returned to Meeticulous after a long break.',
+    html_content:
+      C.heroImage('moment-comeback', 'A soft returning arc') +
+      h('Good to see you, {{first_name}}') +
+      lead("It's been a while since your last booking on Meeticulous — and you just made another one. Noticed, and figured I'd write.") +
+      lead("Nothing to do. Just wanted to say welcome back."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'GUEST_REVIEW_LANDED', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Guest — review landed', subject: 'Your words reached them',
+    preview_text: 'Your review of {{vendor_name}} is live.',
+    email_category: 'Community Update',
+    email_reason: "You are receiving this because your review is now live on the host's page.",
+    html_content:
+      C.heroImage('moment-review-landed', 'A paper-plane shape') +
+      h('{{first_name}}, your words are live') +
+      lead('Your review of <strong>{{vendor_name}}</strong> is now on their page. A future guest will read it and decide to try them.') +
+      lead("That's the whole flywheel. Thank you."),
+    cta_label: "See the host's page", cta_url: '{{host_url}}',
+  },
+
+  // ── Humanity track — empathy events (PR-8) ────────────────────────────────────
+  // Shubham-sender, Founder frame, no CTA. These are notes, not nudges.
+
+  {
+    event_key: 'HOST_LOW_RATINGS_RUN', audience: 'vendor', category: 'Engagement', sender_key: 'shubham',
+    name: 'Host — 3 low ratings', subject: 'Hey {{first_name}}, a private note',
+    preview_text: 'Short, private. Just a check-in.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because of a change in review pattern on your Meeticulous page. This email is private to you.',
+    html_content:
+      h('{{first_name}}, a private note') +
+      lead("Your last three reviews on Meeticulous came in at three stars or below. Could mean nothing. Could mean something to fix.") +
+      lead("Not a nudge, not a performance email. If you want to look at it together — pricing, slot length, scheduling, whatever's in the way — hit reply and I'll set up a short call. On me.") +
+      lead("Everything stays between us."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'ACCOUNT_PAUSED_BY_USER', audience: 'vendor', category: 'Engagement', sender_key: 'shubham',
+    name: 'Host — paused by user', subject: "We'll keep it safe, {{first_name}}",
+    preview_text: 'Your page is paused. Come back anytime.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you paused your hosting page on Meeticulous.',
+    html_content:
+      h("We'll hold your spot, {{first_name}}") +
+      lead("You paused your Meeticulous page. That's fine — things happen.") +
+      lead("Nothing is deleted. Your link, services, reviews, history — all here when you're back. Flip hosting back on from your dashboard whenever that is: tomorrow, next month, next year.") +
+      lead("Take care."),
+    cta_label: '', cta_url: '',
   },
 
 ];

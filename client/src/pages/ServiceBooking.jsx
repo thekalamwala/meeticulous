@@ -110,6 +110,19 @@ const SlotSkeleton = () => (
   </div>
 );
 
+// Time-of-day icons for the Morning/Afternoon/Evening category cards. Inline SVG
+// to match the rest of this file (which doesn't import an icon lib).
+const iconBase = { fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", viewBox: "0 0 24 24" };
+const SunriseIcon = (p) => (
+  <svg {...iconBase} {...p}><path d="M12 2v6m-4 2a4 4 0 0 1 8 0M3 18h18M2 22h20M5.6 10.6 4.2 9.2M18.4 10.6l1.4-1.4" /></svg>
+);
+const SunIcon = (p) => (
+  <svg {...iconBase} {...p}><circle cx="12" cy="12" r="4" /><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+);
+const MoonIcon = (p) => (
+  <svg {...iconBase} {...p}><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" /></svg>
+);
+
 // Labour-illusion: a short "wrapping up" screen between the action (pay / verify)
 // and the confirmed view. Operational transparency — makes the result feel
 // earned and reassures the guest that real work is happening.
@@ -299,7 +312,7 @@ const ServiceBooking = () => {
   const [calYear, setCalYear] = useState(new Date().getFullYear());
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState("");
-  const [timeFormat, setTimeFormat] = useState("12h");
+  const [slotCategory, setSlotCategory] = useState("morning"); // morning | afternoon | evening
   const [bookedSlots, setBookedSlots] = useState([]);
   // Server-computed availability (working hours − bookings − Google busy −
   // blocked dates). null → fall back to the legacy client-side computation.
@@ -497,11 +510,24 @@ const ServiceBooking = () => {
   // autoModeRef: while true we're still auto-navigating to the first day with
   // open times. Any manual pick (a day or a slot) turns it off for good.
   const autoModeRef = useRef(true);
+  const timesRef = useRef(null);
+  // Desktop splits slots into Morning/Afternoon/Evening; mobile shows them flat.
+  const [isDesktop, setIsDesktop] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const fn = (e) => setIsDesktop(e.matches);
+    mq.addEventListener("change", fn);
+    return () => mq.removeEventListener("change", fn);
+  }, []);
   const selectDate = (day) => {
     if (!isDateSelectable(day)) return;
     autoModeRef.current = false;
     setSelectedDate(new Date(calYear, calMonth, day));
     setSelectedTime("");
+    // Mobile: a real date tap jumps down to the times (auto-pick skips this path).
+    if (!isDesktop) requestAnimationFrame(() => timesRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   };
 
   // Auto-pick the first schedule-selectable day (today onward) once the service
@@ -639,7 +665,6 @@ const ServiceBooking = () => {
   };
 
   const formatTime = (t) => {
-    if (timeFormat === "24h") return t;
     const [h, m] = t.split(":").map(Number);
     const ampm = h >= 12 ? "PM" : "AM",
       hr = h % 12 || 12;
@@ -976,6 +1001,17 @@ const ServiceBooking = () => {
   // Server list is authoritative (includes Google busy + blocked dates);
   // local computation is the deploy-skew fallback only.
   const timeSlots = serverSlots ?? getTimeSlots();
+  // Group the day's open times into Morning/Afternoon/Evening + counts, so the
+  // category cards show real availability and can filter the grid.
+  const slotCats = [
+    { key: "morning",   label: "Morning",   Icon: SunriseIcon, test: (h) => h < 12 },
+    { key: "afternoon", label: "Afternoon", Icon: SunIcon,     test: (h) => h >= 12 && h < 17 },
+    { key: "evening",   label: "Evening",   Icon: MoonIcon,    test: (h) => h >= 17 },
+  ].map((c) => ({ ...c, items: timeSlots.filter((t) => c.test(parseInt(t.slice(0, 2), 10))) }));
+  // Honour the pick unless it's empty; then fall back to the first category that has slots.
+  const activeCat = slotCats.find((c) => c.key === slotCategory && c.items.length)
+    || slotCats.find((c) => c.items.length)
+    || slotCats[0];
   const calDays = [];
   for (let i = 0; i < firstDay; i++) calDays.push(null);
   for (let i = 1; i <= daysInMonth; i++) calDays.push(i);
@@ -1019,7 +1055,7 @@ const ServiceBooking = () => {
           ⚠️ This creator is pending admin verification. Bookings may be subject to confirmation.
         </div>
       )}
-      <div className="app-container py-4 sm:py-5 max-w-3xl mx-auto">
+      <div className={`app-container py-4 sm:py-5 mx-auto ${!finalizing && step === "time" ? "max-w-[1200px]" : "max-w-4xl"}`}>
 
         {/* Profile sidebar removed during booking — full-width engine with a
             compact summary strip (host · service · when · total) below. */}
@@ -1151,7 +1187,7 @@ const ServiceBooking = () => {
           {/* STEP: time */}
           {!finalizing && step === "time" && (
             <div className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl p-4 sm:p-5">
-              <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 mb-4">
+              <div className="flex items-center justify-between gap-2 mb-4">
                 <Link
                   to={`/${profileSlug}`}
                   className="text-sm text-gray-400 hover:text-gray-600 flex items-center gap-1 flex-shrink-0"
@@ -1159,11 +1195,12 @@ const ServiceBooking = () => {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
-                  Back to Services
+                  <span className="hidden sm:inline">Back to Services</span>
+                  <span className="sm:hidden">Back</span>
                 </Link>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-lg sm:text-xl font-bold">When works for you?</h2>
-                  <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full flex-shrink-0">
+                <div className="flex items-center gap-2 min-w-0">
+                  <h2 className="text-base sm:text-xl font-bold truncate">When works for you?</h2>
+                  <span className="hidden sm:inline-flex text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full flex-shrink-0">
                     {tzAbbr}
                   </span>
                 </div>
@@ -1244,31 +1281,39 @@ const ServiceBooking = () => {
                   </div>
                 </div>
                 {/* Times */}
-                <div className="flex-1">
+                <div className="flex-1" ref={timesRef}>
                   {selectedDate ? (
                     <>
-                      <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center justify-between gap-2 mb-3">
                         <h3 className="font-semibold">
                           {DAYS_SHORT[selectedDate.getDay()]},{" "}
                           {MONTHS[selectedDate.getMonth()]}{" "}
                           {selectedDate.getDate()}
                         </h3>
-                        <div className="flex border rounded-full overflow-hidden text-xs">
-                          <button
-                            onClick={() => setTimeFormat("12h")}
-                            className="min-h-9 px-3 py-1"
-                            style={timeFormat === "12h" ? { background: tc, color: textOnTheme } : { color: "#6b7280" }}
-                          >
-                            12h
-                          </button>
-                          <button
-                            onClick={() => setTimeFormat("24h")}
-                            className="min-h-9 px-3 py-1"
-                            style={timeFormat === "24h" ? { background: tc, color: textOnTheme } : { color: "#6b7280" }}
-                          >
-                            24h
-                          </button>
-                        </div>
+                        {/* Desktop only: icon filters for part of day (count in tooltip). */}
+                        {timeSlots.length > 0 && (
+                          <div className="hidden md:flex items-center gap-1.5">
+                            {slotCats.map((c) => {
+                              const on = activeCat.key === c.key;
+                              const disabled = c.items.length === 0;
+                              return (
+                                <button
+                                  key={c.key}
+                                  type="button"
+                                  disabled={disabled}
+                                  onClick={() => setSlotCategory(c.key)}
+                                  title={`${c.label} · ${c.items.length} ${c.items.length === 1 ? "slot" : "slots"}`}
+                                  className={`h-9 w-9 flex items-center justify-center rounded-full border-2 transition-all ${disabled ? "opacity-40 cursor-default" : "hover:bg-[color:var(--mt-blush,#FFE4EA)] cursor-pointer"}`}
+                                  style={on
+                                    ? { background: "var(--mt-blush, #FFE4EA)", borderColor: tc, color: tc }
+                                    : { background: "#fff", borderColor: "var(--color-line)", color: "#9ca3af" }}
+                                >
+                                  <c.Icon className="w-4 h-4" style={on ? { color: tc } : { color: "#9ca3af" }} />
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
                       {slotsLoading ? (
                         <SlotSkeleton />
@@ -1285,34 +1330,30 @@ const ServiceBooking = () => {
                               <p className="text-xs text-gray-400 mt-1">Try another date — there's bound to be a good one.</p>
                             </div>
                           ) : (
-                            <div className="max-h-[300px] overflow-y-auto pr-1 bas-fade space-y-4">
-                              {[
-                                { label: "Morning",   test: (h) => h < 12 },
-                                { label: "Afternoon", test: (h) => h >= 12 && h < 17 },
-                                { label: "Evening",   test: (h) => h >= 17 },
-                              ].map((g) => {
-                                const items = timeSlots.filter((t) => g.test(parseInt(t.slice(0, 2), 10)));
-                                if (!items.length) return null;
-                                return (
-                                  <div key={g.label}>
-                                    <h4 className="text-[11px] font-bold uppercase tracking-wide text-gray-400 mb-2">{g.label}</h4>
-                                    <div className="grid grid-cols-3 gap-2">
-                                      {items.map((t) => (
-                                        <button
-                                          key={t}
-                                          onClick={() => setSelectedTime(t)}
-                                          className="py-2.5 text-sm font-semibold rounded-[20px] border-2 transition-all"
-                                          style={selectedTime === t
-                                            ? { background: "#fff", color: tc, borderColor: "var(--mt-rose, #E0506F)", boxShadow: "0 0 0 2px var(--mt-rose, #E0506F)" }
-                                            : { background: "var(--marigold-100, #FDF0D2)", borderColor: "var(--color-line)", color: "#2B0A14" }}
-                                        >
-                                          {formatTime(t)}
-                                        </button>
-                                      ))}
-                                    </div>
-                                  </div>
-                                );
-                              })}
+                            <div className="bas-fade">
+                              {/* Desktop filters by the active category; mobile shows all slots. */}
+                              <div className="max-h-[260px] overflow-y-auto pr-1 grid grid-cols-3 sm:grid-cols-4 gap-1.5">
+                                {(isDesktop ? activeCat.items : timeSlots).map((t) => {
+                                  const on = selectedTime === t;
+                                  return (
+                                    <button
+                                      key={t}
+                                      onClick={() => setSelectedTime(t)}
+                                      className="relative py-2 text-[13px] font-semibold rounded-xl border-2 transition-all"
+                                      style={on
+                                        ? { background: tc, color: textOnTheme, borderColor: tc }
+                                        : { background: "#fff", borderColor: "var(--color-line)", color: "#2B0A14" }}
+                                    >
+                                      {on && (
+                                        <svg className="absolute left-1.5 top-1/2 -translate-y-1/2 w-3 h-3" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                      )}
+                                      {formatTime(t)}
+                                    </button>
+                                  );
+                                })}
+                              </div>
                             </div>
                           )}
                         </>

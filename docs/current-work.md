@@ -1,5 +1,17 @@
 # Current Work — Meeticulous
-_Last updated: 2026-11-04_
+_Last updated: 2026-11-10_
+
+## Tithi in the community (release/2026-11) — 2026-11-10
+
+> **Status: PR open against `release/2026-11`, NOT merged. Entirely inert** — everything is behind the OFF `community_tithi` flag AND needs config (`COMMUNITY_TITHI_USER_ID`, `COMMUNITY_GH_REPO`), so nothing posts until the founder wires it.
+
+Tithi (the existing support bot / "Chief of Staff", never disclosed as AI) extended into `/community`. Reuses the whole existing community module + `botService.askBot` + `escalationService` — no new auth flow, KB or email pipeline.
+- **`server/services/community/tithi.js`** — community voice (her grounded support voice + peer framing + a Trevor-Noah-inspired humour layer; never discloses AI, never fabricates). `publishReleaseNote` posts a human changelog into the `updates` space when a PR lands on the release branch ("coming in the <Month> release"); PR dedup = deterministic `<title>-pr-<n>` slug on the UNIQUE slug index (no new column). `replyToPost` first-responds to member posts via `askBot` (one reply/post), posting the honest holding line + emailing the team on escalation so free-tier members are never left in silence.
+- **`server/services/community/tithiWorker.js`** — poll jobs wired into server boot (`runLocked`): `runReleaseNotePoll` (GitHub REST on the open release branch; auto-post or draft+email per `COMMUNITY_TITHI_AUTOPOST`, default approve-first), `runReplySweep` (3 min), `runDailyDigest` (reads-only founder email).
+- **Identity:** `scripts/seedTithiCommunity.js` (run locally; names her Tithi, seeds a Chief-of-Staff `community_members` row). `notify.js` skips notifying her by `user_id`.
+- **Migration `v3.199_community_member_title.sql` — PENDING** (additive `community_members.title`; title display in the client AuthorChip is a deferred UI follow-up).
+- **Founder steps to go live:** (1) create/choose Tithi's account; (2) `node scripts/seedTithiCommunity.js <id>`; (3) set `COMMUNITY_TITHI_USER_ID`, `COMMUNITY_GH_REPO` (+ optional `COMMUNITY_GH_TOKEN`, `COMMUNITY_TITHI_AVATAR`); (4) apply v3.199; (5) flip `community_tithi` ON; later set `COMMUNITY_TITHI_AUTOPOST=true` once the notes are trusted.
+- Tests: `server/tests/unit/community/tithi*.test.js`, `seedTithi.test.js` (32 cases). Deferred: standalone welcome (placement TBD), `community.meeticulous.com` sender aliases, AuthorChip title display.
 
 ## Gifted Pro + JSON-LD graph (release/2026-11 after #136) — 2026-11-04
 
