@@ -118,7 +118,15 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: client/package-lock.json
-      - run: npm ci
+      # `npm ci`, but self-heal the one recurring Dependabot breakage: when it
+      # regenerates client/package-lock.json it drops the `optional` flag on
+      # esbuild's platform packages, so `npm ci` dies with EBADPLATFORM on e.g.
+      # @esbuild/netbsd-arm64 (2 of 9 Nov CI failures). A real `npm install`
+      # rewrites those flags correctly, so fall back to it, then carry on.
+      # ponytail: fallback is npm install (not reproducible-locked); acceptable
+      # because it only triggers on an already-corrupt lockfile — fix the root
+      # by committing a REAL-install lockfile (see CONTRIBUTING / memory).
+      - run: npm ci || (echo "npm ci failed (likely Dependabot optional-dep drift) — repairing lockfile" && npm install --no-audit --no-fund)
       # The SAME `vitest run` the Vercel deploy gate runs (vercel-build =
       # vitest && build && prerender). Running it here catches a stale/broken
       # client test on the PR, so it can't silently block production deploys.

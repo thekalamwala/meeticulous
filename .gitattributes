@@ -1,3 +1,5 @@
 # Shell scripts must keep LF endings — CRLF breaks the shebang on Linux/macOS
 # (the Render build host) and in Git Bash: "bad interpreter: /usr/bin/env bash^M".
 *.sh text eol=lf
+# Git hooks run via sh — same CRLF hazard, but no .sh extension.
+.githooks/* text eol=lf
