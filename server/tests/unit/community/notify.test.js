@@ -21,7 +21,7 @@ const engine = require('../../../services/notificationEngine');
 const { isFeatureEnabled } = require('../../../services/featureFlags');
 const { isEarlyAccess } = require('../../../middleware/communityGate');
 const HK = () => new Date().toISOString().slice(0, 13).replace(/\D/g, '');
-const { onComment, onMentions, onRemoved } = require('../../../services/community/notify');
+const { onComment, onMentions, onRemoved, onAnswerAccepted } = require('../../../services/community/notify');
 
 const prof = (id, o = {}) => ({ id, is_host: false, is_banned: false, first_name: id.toUpperCase(), name: null, username: id, email: `${id.toLowerCase()}@x.com`, ...o });
 const item = { id: 'P1', slug: 's', kind: 'thread', title: 'Hello world', body: 'b', author_id: 'B' };
@@ -171,5 +171,25 @@ describe('pre-launch (community flag off)', () => {
     setup({ profiles: [prof('A'), prof('B')] });
     await onComment({ item, comment, actorId: 'A' });
     expect(inAppNotify).not.toHaveBeenCalled();
+  });
+});
+
+describe('onAnswerAccepted', () => {
+  const askerItem = { ...item, format: 'question', author_id: 'ASKER' };
+  const answer = { id: 'ANS1', post_id: 'P1', parent_id: null, author_id: 'HELPER', body: 'do it like this' };
+
+  test('notifies the answer author, not the asker', async () => {
+    setup({ profiles: [prof('HELPER'), prof('ASKER')] });
+    await onAnswerAccepted({ item: askerItem, comment: answer, actorId: 'ASKER' });
+    expect(inAppNotify).toHaveBeenCalledTimes(1);
+    expect(inAppNotify.mock.calls[0][0].userId).toBe('HELPER');
+    expect(engine.send).toHaveBeenCalledWith(expect.objectContaining({ event: 'COMMUNITY_ANSWER_ACCEPTED' }));
+  });
+
+  test('silent when the actor is also the comment author (self-accept)', async () => {
+    setup({ profiles: [prof('HELPER')] });
+    await onAnswerAccepted({ item: askerItem, comment: answer, actorId: 'HELPER' });
+    expect(inAppNotify).not.toHaveBeenCalled();
+    expect(engine.send).not.toHaveBeenCalled();
   });
 });

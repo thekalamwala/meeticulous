@@ -65,6 +65,7 @@ const EMAIL_ONLY_EVENTS = [
   ['HOST_DORMANT_90D', 'Host — 90 days quiet (final)'],
   ['HOST_START_KYC_NUDGE', 'Host — start KYC'],
   ['GUEST_REVIEW_NUDGE', 'Guest — review nudge'],
+  ['COMMUNITY_ANSWER_ACCEPTED', 'Community — Answer Accepted'],
   ['GREETING_DIWALI', 'Greeting — Diwali'],
   ['GREETING_HOLI', 'Greeting — Holi'],
   ['GREETING_EID', 'Greeting — Eid'],
