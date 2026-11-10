@@ -7,6 +7,7 @@ jest.mock('../../../services/community/notify', () => ({
   onComment: jest.fn().mockResolvedValue(undefined),
   onMentions: jest.fn().mockResolvedValue(undefined),
   onRemoved: jest.fn().mockResolvedValue(undefined),
+  onAnswerAccepted: jest.fn().mockResolvedValue(undefined),
 }));
 jest.mock('../../../utils/sitemapCache', () => ({ bustSitemapCache: jest.fn() }));
 jest.mock('../../../config/supabase', () => {

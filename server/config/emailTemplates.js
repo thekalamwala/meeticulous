@@ -894,6 +894,21 @@ const TEMPLATES = [
     cta_label: 'See the mention', cta_url: '{{community_url}}',
   }; })(),
 
+  (() => { const t = themeForCategory('Community Update'); return {
+    event_key: 'COMMUNITY_ANSWER_ACCEPTED', audience: 'all', category: 'Community', sender_key: 'tithi',
+    name: 'Community Answer Accepted', subject: 'Your answer was accepted — {{asker_name}}\'s question',
+    preview_text: '{{asker_name}} picked your answer in the Meeticulous community.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this email because the author of a question in the Meeticulous community accepted your answer. To stop these emails, use the unsubscribe link in this email.',
+    html_content:
+      h('{{asker_name}} picked your answer') +
+      lead('Hi {{first_name}}, your answer was accepted on this question:') +
+      C.infoCard(t, [['Question', '{{question_excerpt}}'], ['Your answer', '{{answer_excerpt}}']]) +
+      lead('That is the whole point of this space — a real person got unstuck because you knew the thing. Thank you.') +
+      note('Prefer not to get these emails? <a href="{{website_url}}/unsubscribe?u={{unsubscribe_token}}" style="color:#7D6B70;">Unsubscribe</a>.'),
+    cta_label: 'Open the thread', cta_url: '{{community_url}}',
+  }; })(),
+
   {
     event_key: 'COMMUNITY_CONTENT_REMOVED', audience: 'all', category: 'Community', sender_key: 'tithi',
     name: 'Community Content Removed', subject: 'Your community {{target_label}} was removed',

@@ -150,4 +150,31 @@ async function onRemoved({ targetType, item, comment } = {}) {
   } catch (e) { console.error('[community-notify]', e.message); }
 }
 
-module.exports = { onComment, onMentions, onRemoved };
+// Question author picked this comment as the accepted answer. Notifies the
+// comment's author only. Dedupe is per-comment, so re-accepting the same answer
+// does not re-mail.
+async function onAnswerAccepted({ item, comment, actorId } = {}) {
+  try {
+    if (!item || !comment?.author_id || comment.author_id === actorId) return;
+    const [commenterId] = await launchFilter([comment.author_id]);
+    if (!commenterId) return;
+    const { byId, profiles } = await loadRecipients([commenterId], [actorId]);
+    const r = byId.get(commenterId);
+    if (!r) return;
+    const asker = displayName(profiles.get(actorId));
+    const link = `${itemPath(item)}#c-${comment.id}`;
+    await deliver([{
+      userId: commenterId, profile: r.profile, link,
+      dedupeKey: `community_accepted:${comment.id}`,
+      title: `${asker} picked your answer`, body: snippet(comment.body),
+      emailOk: wantsEmail(r.member),
+      emailData: {
+        asker_name: asker,
+        question_excerpt: snippet(item.title || item.body),
+        answer_excerpt: snippet(comment.body),
+      },
+    }], 'COMMUNITY_ANSWER_ACCEPTED');
+  } catch (e) { console.error('[community-notify]', e.message); }
+}
+
+module.exports = { onComment, onMentions, onRemoved, onAnswerAccepted };
