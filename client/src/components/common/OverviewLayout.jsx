@@ -244,7 +244,9 @@ const OverviewTopbar = ({
           Meeting sits immediately before the rocket; notification + profile
           follow, with a consistent gap. */}
       <div className="ml-auto flex shrink-0 items-center gap-2">
-        <button
+        {/* ponytail: parked — hidden per founder, keep for later reuse. Booking
+            is added from the calendar's per-day "+ Add booking". */}
+        {/* <button
           type="button"
           onClick={onNewMeeting}
           className="inline-flex h-[42px] shrink-0 items-center gap-2 rounded-full bg-maroon px-3.5 text-sm font-semibold text-white shadow-[0_8px_20px_-10px_rgba(150,13,50,0.5)] transition hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose sm:px-5"
@@ -252,9 +254,10 @@ const OverviewTopbar = ({
           <CalendarPlus className="h-[17px] w-[17px]" strokeWidth={2} />
           <span className="hidden whitespace-nowrap sm:inline">Add a New Booking</span>
           <span className="sm:hidden">New</span>
-        </button>
+        </button> */}
 
-        <ProfileCompletionRocket user={user} />
+        {/* ponytail: rocket parked — hidden per founder, panel code kept for later. */}
+        {/* <ProfileCompletionRocket user={user} /> */}
 
         <NotifBell
           triggerClassName="relative grid h-10 w-10 place-items-center rounded-full border border-neutral-200 bg-white text-neutral-500 transition hover:bg-primary/5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
