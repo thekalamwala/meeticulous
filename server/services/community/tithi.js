@@ -25,9 +25,14 @@ const { isFeatureEnabled } = require('../featureFlags');
 const store = require('./store');
 const botService = require('../botService');
 const escalationService = require('../bot/escalationService');
+const notify = require('./notify');
 
 const FLAG = 'community_tithi';
 const UPDATES_SPACE = 'updates';
+// Who Tithi @mentions in-thread when she can't handle an escalation, so a human checks
+// and replies (that's how the team learns there's a problem). A community username,
+// configurable — default the founder until a shared 'team' account exists.
+const escalationHandle = () => (process.env.COMMUNITY_ESCALATION_HANDLE || 'sndatarkar').replace(/^@/, '').trim().toLowerCase() || null;
 
 // Tithi's profiles.id — the author every community post/reply is attributed to. Config,
 // not code: the identity (profile + community_members row, title "Chief of Staff") is
@@ -265,8 +270,13 @@ async function replyToPost({ post } = {}) {
     const audience = author ? (author.is_host ? 'host' : 'guest') : null;
 
     const res = await botService.askBot({ question: post.body, audience });
-    const body = String(res.answer || '').trim();
+    let body = String(res.answer || '').trim();
     if (!body) return { skipped: 'empty' };
+
+    // On escalation, tag a human IN the reply so they're pinged to check + take over.
+    // One reply per post (dedup above) means at most one tag per thread — no extra guard.
+    const handle = res.escalate ? escalationHandle() : null;
+    if (handle) body = `${body}\n\n@${handle} — could you take this one?`;
 
     const comment = await store.insertComment({
       post_id: post.id, author_id: tithi, body, status: 'visible',
@@ -274,8 +284,15 @@ async function replyToPost({ post } = {}) {
 
     if (res.escalate) {
       await escalateToTeam({ post, author, question: post.body, reason: res.escalateReason || 'community' });
+      // In-thread @mention -> notify.onMentions resolves the handle to a profile and sends
+      // the in-app + email ping (fails soft if the username doesn't resolve). actorId=Tithi
+      // so she's excluded as the actor, never self-notified.
+      if (handle) {
+        try { await notify.onMentions({ item: post, comment, usernames: [handle], actorId: tithi }); }
+        catch (_) { /* the team email already went out; the ping is best-effort */ }
+      }
     }
-    return { replied: true, commentId: comment.id, escalated: !!res.escalate };
+    return { replied: true, commentId: comment.id, escalated: !!res.escalate, tagged: !!handle };
   } catch (e) {
     if (e.code === 'COMMUNITY_UNAVAILABLE') return { skipped: 'unavailable' };
     throw e;

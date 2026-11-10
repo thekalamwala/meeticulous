@@ -20,10 +20,12 @@ jest.mock('../../../services/community/store', () => ({
 }));
 jest.mock('../../../services/botService', () => ({ askBot: jest.fn() }));
 jest.mock('../../../services/bot/escalationService', () => ({ recordAndNotify: jest.fn() }));
+jest.mock('../../../services/community/notify', () => ({ onMentions: jest.fn() }));
 
 const { isFeatureEnabled } = require('../../../services/featureFlags');
 const botService = require('../../../services/botService');
 const escalationService = require('../../../services/bot/escalationService');
+const notify = require('../../../services/community/notify');
 const store = require('../../../services/community/store');
 const tithi = require('../../../services/community/tithi');
 
@@ -142,22 +144,26 @@ describe('replyToPost (first responder)', () => {
     expect(store.insertComment).not.toHaveBeenCalled();
   });
 
-  test('grounded answer is posted as a Tithi comment with the author audience', async () => {
+  test('grounded answer is posted as a Tithi comment with the author audience, no tag', async () => {
     const res = await tithi.replyToPost({ post: POST });
-    expect(res).toEqual({ replied: true, commentId: 'comment-1', escalated: false });
+    expect(res).toEqual({ replied: true, commentId: 'comment-1', escalated: false, tagged: false });
     expect(botService.askBot).toHaveBeenCalledWith({ question: POST.body, audience: 'host' });
     expect(store.insertComment).toHaveBeenCalledWith(expect.objectContaining({
       post_id: 'post-1', author_id: 'tithi-uuid', body: 'Payouts clear in 24-48h.', status: 'visible',
     }));
     expect(escalationService.recordAndNotify).not.toHaveBeenCalled();
+    expect(notify.onMentions).not.toHaveBeenCalled();
   });
 
-  test('escalation: posts the holding reply AND emails the team', async () => {
+  test('escalation: holding reply tags a human in-thread AND emails the team', async () => {
     botService.askBot.mockResolvedValue({ answer: "I'm getting a human on this.", escalate: true, escalateReason: 'sensitive' });
     const res = await tithi.replyToPost({ post: POST });
-    expect(res).toEqual({ replied: true, commentId: 'comment-1', escalated: true });
-    expect(store.insertComment).toHaveBeenCalled(); // member never left in silence
+    expect(res).toEqual({ replied: true, commentId: 'comment-1', escalated: true, tagged: true });
+    // the reply body carries the @mention so it's visible in-thread
+    expect(store.insertComment).toHaveBeenCalledWith(expect.objectContaining({ body: expect.stringContaining('@sndatarkar') }));
     expect(escalationService.recordAndNotify).toHaveBeenCalledTimes(1);
+    // and the human is pinged via the community mention path
+    expect(notify.onMentions).toHaveBeenCalledWith(expect.objectContaining({ usernames: ['sndatarkar'], actorId: 'tithi-uuid' }));
   });
 
   test('a removed post is not answered', async () => {
