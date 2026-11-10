@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation } from 'react-router-dom';
-import { Menu, X, CalendarPlus, Rocket, ArrowRight } from 'lucide-react';
+import { X, CalendarPlus, Rocket, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { getMyServices } from '../../services/api';
 import { normalizePlan } from '../../utils/themeUtils';
@@ -10,6 +10,7 @@ import { PageTransition } from '../dashboard/ui/PageTransition';
 import ProfileCompletionPanel from '../dashboard/ProfileCompletionPanel';
 import { NotifBell, ProfileMenu } from './DashboardLayout';
 import ConsoleSidebar from './ConsoleSidebar';
+import MobileTabBar from './MobileTabBar';
 import { OverviewChromeContext } from './overviewChrome';
 
 /* --------------------------------------------------------------------------
@@ -226,20 +227,10 @@ const ProfileCompletionRocket = ({ user }) => {
 };
 
 const OverviewTopbar = ({
-  user, initial, planStyle, logout, onOpenNav, navTriggerRef, onNewMeeting,
+  user, initial, planStyle, logout, onNewMeeting,
 }) => (
     <header className="sticky top-0 z-30 flex min-h-[64px] items-center gap-2.5 border-b border-neutral-200/80 bg-white/95 px-4 py-2 backdrop-blur sm:gap-3 sm:px-6">
-      <button
-        ref={navTriggerRef}
-        type="button"
-        onClick={onOpenNav}
-        aria-label="Open navigation"
-        aria-haspopup="dialog"
-        className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-neutral-500 transition hover:bg-primary/5 hover:text-primary lg:hidden"
-      >
-        <Menu className="h-5 w-5" strokeWidth={1.8} />
-      </button>
-
+      {/* Mobile nav opener moved to the bottom tab bar's "More" button. */}
       {/* Toolbar actions, right-aligned (the search bar was removed). Add a New
           Meeting sits immediately before the rocket; notification + profile
           follow, with a consistent gap. */}
@@ -321,15 +312,18 @@ const OverviewLayout = ({ children }) => {
             initial={initial}
             planStyle={planStyle}
             logout={logout}
-            onOpenNav={() => setNavOpen(true)}
-            navTriggerRef={navTriggerRef}
             onNewMeeting={openNewMeeting}
           />
 
-          <main className="px-4 py-4 sm:px-6">
+          {/* pb clears the fixed mobile tab bar (+ safe area); desktop keeps py-4. */}
+          <main className="px-4 py-4 pb-[calc(68px+env(safe-area-inset-bottom))] sm:px-6 lg:pb-4">
             <PageTransition>{children}</PageTransition>
           </main>
         </div>
+
+        {/* Native-app bottom tab bar — mobile only (< lg). Its "More" button is
+            the mobile nav opener (the topbar hamburger moved here). */}
+        <MobileTabBar onOpenMore={() => setNavOpen(true)} moreTriggerRef={navTriggerRef} />
 
         <NewMeetingModal open={newMeetingOpen} onClose={() => setNewMeetingOpen(false)} user={user} />
       </div>
