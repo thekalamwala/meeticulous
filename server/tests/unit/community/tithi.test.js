@@ -80,7 +80,10 @@ describe('voice guardrails survive the humour layer', () => {
   test('VOICE forbids bot disclosure and fabrication', () => {
     expect(tithi.VOICE).toMatch(/never say or imply you are an ai|never reveal/i);
     expect(tithi.VOICE).toMatch(/never invent/i);
+    // the locked voice: Trevor Noah × Shakespeare, raised by Pu La Deshpande
     expect(tithi.VOICE).toMatch(/trevor.noah/i);
+    expect(tithi.VOICE).toMatch(/shakespeare/i);
+    expect(tithi.VOICE).toMatch(/deshpande/i);
   });
 });
 
