@@ -865,7 +865,7 @@ const TEMPLATES = [
   // ── Community (reply / mention / removal) ────────────────────────────────────
 
   (() => { const t = themeForCategory('Community Update'); return {
-    event_key: 'COMMUNITY_REPLY', audience: 'all', category: 'Community', sender_key: 'tithi',
+    event_key: 'COMMUNITY_REPLY', audience: 'all', category: 'Community', sender_key: 'community',
     name: 'Community Reply', subject: '{{actor_name}} replied to your {{target_label}}',
     preview_text: '{{actor_name}} replied in the Meeticulous community.',
     email_category: 'Community Update',
@@ -881,7 +881,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Community Update'); return {
-    event_key: 'COMMUNITY_MENTION', audience: 'all', category: 'Community', sender_key: 'tithi',
+    event_key: 'COMMUNITY_MENTION', audience: 'all', category: 'Community', sender_key: 'community',
     name: 'Community Mention', subject: '{{actor_name}} mentioned you',
     preview_text: '{{actor_name}} mentioned you in the Meeticulous community.',
     email_category: 'Community Update',
@@ -895,7 +895,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Community Update'); return {
-    event_key: 'COMMUNITY_ANSWER_ACCEPTED', audience: 'all', category: 'Community', sender_key: 'tithi',
+    event_key: 'COMMUNITY_ANSWER_ACCEPTED', audience: 'all', category: 'Community', sender_key: 'community',
     name: 'Community Answer Accepted', subject: 'Your answer was accepted — {{asker_name}}\'s question',
     preview_text: '{{asker_name}} picked your answer in the Meeticulous community.',
     email_category: 'Community Update',
@@ -910,7 +910,7 @@ const TEMPLATES = [
   }; })(),
 
   {
-    event_key: 'COMMUNITY_CONTENT_REMOVED', audience: 'all', category: 'Community', sender_key: 'tithi',
+    event_key: 'COMMUNITY_CONTENT_REMOVED', audience: 'all', category: 'Community', sender_key: 'community',
     name: 'Community Content Removed', subject: 'Your community {{target_label}} was removed',
     preview_text: 'A moderator removed your community {{target_label}}.',
     email_category: 'Community Update',
