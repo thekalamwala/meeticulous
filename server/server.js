@@ -363,6 +363,20 @@ setInterval(async () => {
   } catch (err) { console.error('Activation nudges cron error:', err.message); }
 }, 30 * 60 * 1000);
 
+// Host dormant nudges (30 / 60 / 90 days, once per day). Double-gated:
+// feature flag `dormant_nudges` (default OFF) + per-event is_active/email_enabled
+// (ON from v3.193, so flipping the flag alone turns the track live).
+// Quiet-hours + 60-day dedupe inside.
+const { runDormancyNudges } = require('./services/dormancyNudges');
+setInterval(async () => {
+  try {
+    await runLocked('dormant-nudges', async () => {
+      const r = await runDormancyNudges();
+      if (r.processed) console.log(`Dormant nudges: ${r.processed} processed, ${r.skipped} skipped`);
+    }, { leaseMs: 6 * 60 * 60 * 1000 });
+  } catch (err) { console.error('Dormant nudges cron error:', err.message); }
+}, 24 * 60 * 60 * 1000);
+
 // Guest review nudges (48h after completed paid booking, no review yet).
 // Hourly cron so the 48h cut is tight. Double-gated: feature flag `review_nudges`
 // (default OFF) + per-event is_active/email_enabled (ON in v3.194). Dedupe per

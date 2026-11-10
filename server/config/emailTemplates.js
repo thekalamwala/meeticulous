@@ -357,14 +357,19 @@ const TEMPLATES = [
   (() => { const t = themeForCategory('Achievement Unlocked'); return {
     event_key: 'MILESTONE_FIRST_BOOKING', audience: 'all', category: 'Badge', sender_key: 'shubham',
     name: 'Milestone — First Booking', subject: 'Your first booking on Meeticulous!',
-    preview_text: 'You just landed your first booking.',
+    preview_text: 'A note from Shubham — and the Pro reminders are on us for 60 days.',
     email_category: 'Achievement Unlocked',
     email_reason: 'You are receiving this email because you reached a booking milestone on Meeticulous.',
+    // Consolidated with PRO_TASTE_STARTED: one email on first booking, not two.
+    // PRO_TASTE_STARTED now sends the in-app bell only — the Pro Taste gift is
+    // announced here, in Shubham's voice. ENDING and ENDED keep their own emails.
     html_content:
       C.heroImage('milestone-1', 'First booking') +
-      h('Your first booking, {{first_name}}!') +
-      lead('Congratulations on your first booking. This is the start of something good.'),
-    cta_label: 'View dashboard', cta_url: '{{dashboard_url}}',
+      h('Your first booking is in, {{first_name}}') +
+      lead("This is the start of something. Someone found you on Meeticulous, and they chose you. That matters.") +
+      lead('From today, for the next <strong>60 days</strong>, your guests get WhatsApp reminders and you both get reschedule alerts — that is Pro, on us. After that they switch to email unless you go Pro.') +
+      lead("Nothing to do right now. Go run the booking. Hit reply any time — I read these."),
+    cta_label: 'See my bookings', cta_url: '{{dashboard_url}}',
   }; })(),
 
   (() => { const t = themeForCategory('Achievement Unlocked'); return {
@@ -550,7 +555,7 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Community Update'); return {
-    event_key: 'ACCOUNT_ANNIVERSARY', audience: 'all', category: 'Celebrations',
+    event_key: 'ACCOUNT_ANNIVERSARY', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
     name: 'Account Anniversary', subject: "It's your Meeticulous anniversary!",
     preview_text: 'Celebrating another year with you.',
     email_category: 'Community Update',
@@ -717,17 +722,18 @@ const TEMPLATES = [
   }; })(),
 
   (() => { const t = themeForCategory('Invitation'); return {
-    event_key: 'GUEST_TO_HOST_INVITE', audience: 'all', category: 'Marketing', sender_key: 'news',
+    event_key: 'GUEST_TO_HOST_INVITE', audience: 'all', category: 'Marketing', sender_key: 'shubham',
     name: 'Guest → Host Invite', subject: "You've booked {{completed_count}} times — ever thought about the other side?",
-    preview_text: 'The people you booked earn on Meeticulous. Your account is ready.',
+    preview_text: 'A quick note from Shubham — your account is already set up to host.',
     email_category: 'Invitation',
     email_reason: 'You are receiving this email because you are a Meeticulous guest.',
+    // Founder frame: one voice, one ask, no grids. Shubham is the sender; the body
+    // reads like a short personal note. The CTA is a convenience, not the point.
     html_content:
-      C.heroImage('guest-to-host-invite', 'Your own booking page') +
-      C.heroBand(t, { kick: "You've booked {{completed_count}} times, {{first_name}}", h2: 'Ever thought about the other side?', sub: 'The people you booked earn on Meeticulous. So could you.' }) +
-      lead('You know how smooth booking is from this side. The hosts you paid use the exact same platform to <strong>get paid</strong> — a link they share, bookings that just show up.') +
-      C.benefitGrid([{ icon: 'link.png', label: 'Share your link' }, { icon: 'calendar.png', label: 'Take bookings' }, { icon: 'wallet.png', label: 'Get paid' }]) +
-      lead('Your account is <strong>already set up</strong> to host. No new signup — start free, no card.'),
+      h('{{first_name}}, a quick note from me') +
+      lead("You've booked {{completed_count}} times on Meeticulous. I noticed, and figured I'd write.") +
+      lead('The hosts you paid use the same platform to <strong>get paid</strong> — one link they share, bookings that just show up. Your account is already set up for it. No new signup, no card, nothing to fill in.') +
+      lead("If you've been thinking of the other side, this is your opening. If not, ignore me — hit reply, tell me why. Either way, good to have you here."),
     cta_label: 'Start hosting free', cta_url: '{{become_host_url}}',
   }; })(),
 
@@ -895,6 +901,51 @@ const TEMPLATES = [
       lead('Hi {{first_name}}, a moderator removed your {{target_label}} because it did not follow our community guidelines.') +
       lead('If you think this was a mistake, reply to this email and we will take another look.'),
     cta_label: 'Read the guidelines', cta_url: '{{community_url}}',
+  },
+
+  // ── Dormant / win-back track (sent by services/dormancyNudges.js) ──────────
+  // Three stages escalating in voice and tone. All email-only, Founder frame.
+  // 30d = soft nudge (Tithi), 60d = personal (Shubham), 90d = goodbye-or-stay.
+
+  {
+    event_key: 'HOST_DORMANT_30D', audience: 'vendor', category: 'Engagement', sender_key: 'tithi',
+    name: 'Host — 30 days quiet', subject: 'Everything ok, {{first_name}}?',
+    preview_text: "It's been a quiet month on your page.",
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are a Meeticulous host and your page has had no bookings for 30 days.',
+    html_content:
+      h('Everything ok, {{first_name}}?') +
+      lead("It's been a quiet month on your Meeticulous page — no new bookings in the last 30 days.") +
+      lead("Sometimes life gets in the way, sometimes a page needs a refresh. Either way, we'd love to help if there's anything we can do — just reply to this email."),
+    cta_label: 'Open my dashboard', cta_url: '{{dashboard_url}}',
+  },
+
+  {
+    event_key: 'HOST_DORMANT_60D', audience: 'vendor', category: 'Engagement', sender_key: 'shubham',
+    name: 'Host — 60 days quiet', subject: 'A note from Shubham',
+    preview_text: "I noticed your page has been quiet — just checking in.",
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are a Meeticulous host and your page has had no bookings for 60 days.',
+    html_content:
+      h('{{first_name}}, a quick note') +
+      lead("It's been two months since your last booking on Meeticulous, so I figured I'd write.") +
+      lead("I don't know what changed — the work, the audience, the platform. I'd like to. If you have five minutes, hit reply and tell me what's going on. I read every one of these.") +
+      lead("No pitch. Just curious."),
+    cta_label: 'Open my dashboard', cta_url: '{{dashboard_url}}',
+  },
+
+  {
+    event_key: 'HOST_DORMANT_90D', audience: 'vendor', category: 'Engagement', sender_key: 'shubham',
+    name: 'Host — 90 days quiet (final)', subject: 'Last note from me',
+    preview_text: "Your page is still here whenever you are.",
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are a Meeticulous host and your page has had no bookings for 90 days.',
+    html_content:
+      h('Last one, {{first_name}}') +
+      lead("Three months. I'll stop writing after this.") +
+      lead("Your page is still here — same link, same services, same rate. Come back whenever you're ready, or tell me to delete it. No wrong answer.") +
+      lead("Thanks for trying Meeticulous. Reply any time."),
+    cta_label: 'Open my dashboard', cta_url: '{{dashboard_url}}',
   },
 
   // ── Onboarding — start KYC (sent by services/activationNudges.js) ─────────────
