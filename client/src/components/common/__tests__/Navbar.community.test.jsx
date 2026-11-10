@@ -2,19 +2,18 @@ import { describe, test, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
+// Navbar no longer reads the community flag, but keep the mock so the import graph
+// resolves the same way regardless of provider changes.
 let flags = {};
 vi.mock('../../../context/FeatureContext', () => ({ useFeatures: () => ({ flags }), useFeature: () => true }));
 import { PublicCenterNav } from '../Navbar';
 
-const nav = () => render(<MemoryRouter><PublicCenterNav /></MemoryRouter>);
+const nav = (entries = ['/']) => render(<MemoryRouter initialEntries={entries}><PublicCenterNav /></MemoryRouter>);
 
 describe('Navbar Community link', () => {
-  test('hidden when the community flag is off', () => { flags = { community: false }; nav(); expect(screen.queryByRole('link', { name: 'Community' })).toBeNull(); });
-  test('hidden when the flag is unknown (fail-open must not leak pre-launch)', () => { flags = {}; nav(); expect(screen.queryByRole('link', { name: 'Community' })).toBeNull(); });
-  test('shown when the flag is truly on', () => { flags = { community: true }; nav(); expect(screen.getByRole('link', { name: 'Community' }).getAttribute('href')).toBe('/community'); });
-  test('hidden on community routes (the logo lockup carries the name)', () => {
-    flags = { community: true };
-    render(<MemoryRouter initialEntries={['/community']}><PublicCenterNav /></MemoryRouter>);
-    expect(screen.queryByRole('link', { name: 'Community' })).toBeNull();
-  });
+  // The standalone "Community" nav item was removed; the section is reached elsewhere
+  // and the logo lockup carries the name on /community routes.
+  test('absent when the community flag is off', () => { flags = { community: false }; nav(); expect(screen.queryByRole('link', { name: 'Community' })).toBeNull(); });
+  test('absent when the flag is on (no public nav link anymore)', () => { flags = { community: true }; nav(); expect(screen.queryByRole('link', { name: 'Community' })).toBeNull(); });
+  test('absent on community routes', () => { flags = { community: true }; nav(['/community']); expect(screen.queryByRole('link', { name: 'Community' })).toBeNull(); });
 });
