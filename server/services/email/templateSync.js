@@ -60,6 +60,8 @@ const EMAIL_ONLY_EVENTS = [
   ['BIRTHDAY', 'Birthday'],
   ['ACCOUNT_ANNIVERSARY', 'Account Anniversary'],
   ['NEWSLETTER_WELCOME', 'Newsletter Welcome'],
+  ['HOST_START_KYC_NUDGE', 'Host — start KYC'],
+  ['GUEST_REVIEW_NUDGE', 'Guest — review nudge'],
 ];
 
 // The fields this sync owns. Order is part of the hash — changing it re-hashes

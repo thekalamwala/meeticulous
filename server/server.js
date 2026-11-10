@@ -363,6 +363,20 @@ setInterval(async () => {
   } catch (err) { console.error('Activation nudges cron error:', err.message); }
 }, 30 * 60 * 1000);
 
+// Guest review nudges (48h after completed paid booking, no review yet).
+// Hourly cron so the 48h cut is tight. Double-gated: feature flag `review_nudges`
+// (default OFF) + per-event is_active/email_enabled (ON in v3.194). Dedupe per
+// booking inside, quiet-hours honoured.
+const { runReviewNudges } = require('./services/reviewNudges');
+setInterval(async () => {
+  try {
+    await runLocked('review-nudges', async () => {
+      const r = await runReviewNudges();
+      if (r.processed) console.log(`Review nudges: ${r.processed} processed, ${r.skipped} skipped`);
+    }, { leaseMs: 30 * 60 * 1000 });
+  } catch (err) { console.error('Review nudges cron error:', err.message); }
+}, 60 * 60 * 1000);
+
 // ── Sales CRM fast workers (60s / 5min). Sends gated by crm_admin_sends (default OFF). ──
 const crmMessageService = require('./services/crm/messageService');
 const crmSequenceService = require('./services/crm/sequenceService');
