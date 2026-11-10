@@ -34,11 +34,11 @@ const PAGES = [
   'pages/services/ServicesList.jsx',
   'pages/services/AddService.jsx',
   'pages/services/EditService.jsx',
+  'pages/services/ServiceForm.jsx',
   'pages/services/ProfessionServices.jsx',
   'pages/services/ServicesDirectory.jsx',
-  // TODO: fold in once their own PRs merge — ProfileSetup (#203),
-  // ServiceForm + UpgradePlan (#207). Each ships its own brand guard meanwhile
-  // (ProfileSetup.brand.test.js, dashboardBrand.test.js).
+  'pages/ProfileSetup.jsx',
+  'pages/UpgradePlan.jsx',
 ];
 
 const GRAY = /\b(?:text|bg|border|ring|from|to|via|divide|placeholder|fill|stroke)-gray-\d/g;
