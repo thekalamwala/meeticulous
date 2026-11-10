@@ -363,6 +363,63 @@ setInterval(async () => {
   } catch (err) { console.error('Activation nudges cron error:', err.message); }
 }, 30 * 60 * 1000);
 
+// Host dormant nudges (30 / 60 / 90 days, once per day). Double-gated:
+// feature flag `dormant_nudges` (default OFF) + per-event is_active/email_enabled
+// (ON from v3.193, so flipping the flag alone turns the track live).
+// Quiet-hours + 60-day dedupe inside.
+const { runDormancyNudges } = require('./services/dormancyNudges');
+setInterval(async () => {
+  try {
+    await runLocked('dormant-nudges', async () => {
+      const r = await runDormancyNudges();
+      if (r.processed) console.log(`Dormant nudges: ${r.processed} processed, ${r.skipped} skipped`);
+    }, { leaseMs: 6 * 60 * 60 * 1000 });
+  } catch (err) { console.error('Dormant nudges cron error:', err.message); }
+}, 24 * 60 * 60 * 1000);
+
+// Guest review nudges (48h after completed paid booking, no review yet).
+// Hourly cron so the 48h cut is tight. Double-gated: feature flag `review_nudges`
+// (default OFF) + per-event is_active/email_enabled (ON in v3.194). Dedupe per
+// booking inside, quiet-hours honoured.
+const { runReviewNudges } = require('./services/reviewNudges');
+setInterval(async () => {
+  try {
+    await runLocked('review-nudges', async () => {
+      const r = await runReviewNudges();
+      if (r.processed) console.log(`Review nudges: ${r.processed} processed, ${r.skipped} skipped`);
+    }, { leaseMs: 30 * 60 * 1000 });
+  } catch (err) { console.error('Review nudges cron error:', err.message); }
+}, 60 * 60 * 1000);
+
+// Festival / calendar greetings (Humanity track, PR-6). Once per hour;
+// festivalGreetings dedupes 365d per (event, email) so running every hour
+// just means we catch the 09:00 IST open as soon as quiet hours allow.
+// Double-gated: feature flag `festival_nudges` (default OFF) + per-event
+// is_active/email_enabled (ON in v3.195).
+const { runFestivalGreetings } = require('./services/festivalGreetings');
+setInterval(async () => {
+  try {
+    await runLocked('festival-greetings', async () => {
+      const r = await runFestivalGreetings();
+      if (r.processed) console.log(`Festival greetings: ${r.processed} processed, ${r.skipped} skipped (${r.date})`);
+    }, { leaseMs: 2 * 60 * 60 * 1000 });
+  } catch (err) { console.error('Festival greetings cron error:', err.message); }
+}, 60 * 60 * 1000);
+
+// Human moments (Humanity track, PR-7). Daily scan over reviews + bookings;
+// fires first-review, first-5-star, perfect-month and more. Double-gated:
+// feature flag `human_moments` (default OFF) + per-event is_active/email_enabled
+// (ON in v3.196). Dedupe inside, quiet-hours 09-20 IST.
+const { runHumanMoments } = require('./services/humanMoments');
+setInterval(async () => {
+  try {
+    await runLocked('human-moments', async () => {
+      const r = await runHumanMoments();
+      if (r.processed) console.log(`Human moments: ${r.processed} processed, ${r.skipped} skipped`);
+    }, { leaseMs: 3 * 60 * 60 * 1000 });
+  } catch (err) { console.error('Human moments cron error:', err.message); }
+}, 24 * 60 * 60 * 1000);
+
 // Empathy scans (Humanity track, PR-8). Daily low-ratings-run detection.
 // Double-gated: feature flag `empathy_track` (default OFF) + per-event
 // is_active/email_enabled (ON in v3.197). Private notes, forever dedupe.

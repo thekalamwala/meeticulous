@@ -30,8 +30,12 @@ const DAY_MS = 86400000;
 const BASE = () => process.env.CLIENT_URL || 'https://meeticulous.com';
 
 // [stage, fromDay, toDay (exclusive), event (null = bell only)]
+// 'started' is bell-only: the email went double on first booking with
+// MILESTONE_FIRST_BOOKING (bookingConfirmation.js:172). MILESTONE_FIRST_BOOKING
+// now carries the Pro-Taste gift copy (one email, Shubham voice); the bell
+// still fires here so the dashboard shows the WhatsApp-on toast.
 const STAGES = [
-  ['started', 0, 45, 'PRO_TASTE_STARTED'],
+  ['started', 0, 45, null],
   ['day45', 45, 55, null],
   ['ending', 55, 60, 'PRO_TASTE_ENDING'],
   ['ended', 60, 75, 'PRO_TASTE_ENDED'],
