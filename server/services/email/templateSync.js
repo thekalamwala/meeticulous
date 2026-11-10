@@ -65,6 +65,19 @@ const EMAIL_ONLY_EVENTS = [
   ['HOST_DORMANT_90D', 'Host — 90 days quiet (final)'],
   ['HOST_START_KYC_NUDGE', 'Host — start KYC'],
   ['GUEST_REVIEW_NUDGE', 'Guest — review nudge'],
+  ['GREETING_DIWALI', 'Greeting — Diwali'],
+  ['GREETING_HOLI', 'Greeting — Holi'],
+  ['GREETING_EID', 'Greeting — Eid'],
+  ['GREETING_CHRISTMAS', 'Greeting — Christmas'],
+  ['GREETING_NEWYEAR', 'Greeting — New Year'],
+  ['GREETING_PONGAL_SANKRANTI', 'Greeting — Pongal / Sankranti'],
+  ['GREETING_ONAM', 'Greeting — Onam'],
+  ['GREETING_INDEPENDENCE_DAY', 'Greeting — Independence Day'],
+  ['GREETING_REPUBLIC_DAY', 'Greeting — Republic Day'],
+  ['GREETING_TEACHERS_DAY', "Greeting — Teachers' Day"],
+  ['GREETING_MENTAL_HEALTH_DAY', 'Greeting — Mental Health Day'],
+  ['GREETING_YOGA_DAY', 'Greeting — Yoga Day'],
+  ['GREETING_WOMENS_DAY', "Greeting — Women's Day"],
 ];
 
 // The fields this sync owns. Order is part of the hash — changing it re-hashes

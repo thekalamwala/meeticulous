@@ -391,6 +391,21 @@ setInterval(async () => {
   } catch (err) { console.error('Review nudges cron error:', err.message); }
 }, 60 * 60 * 1000);
 
+// Festival / calendar greetings (Humanity track, PR-6). Once per hour;
+// festivalGreetings dedupes 365d per (event, email) so running every hour
+// just means we catch the 09:00 IST open as soon as quiet hours allow.
+// Double-gated: feature flag `festival_nudges` (default OFF) + per-event
+// is_active/email_enabled (ON in v3.195).
+const { runFestivalGreetings } = require('./services/festivalGreetings');
+setInterval(async () => {
+  try {
+    await runLocked('festival-greetings', async () => {
+      const r = await runFestivalGreetings();
+      if (r.processed) console.log(`Festival greetings: ${r.processed} processed, ${r.skipped} skipped (${r.date})`);
+    }, { leaseMs: 2 * 60 * 60 * 1000 });
+  } catch (err) { console.error('Festival greetings cron error:', err.message); }
+}, 60 * 60 * 1000);
+
 // ── Sales CRM fast workers (60s / 5min). Sends gated by crm_admin_sends (default OFF). ──
 const crmMessageService = require('./services/crm/messageService');
 const crmSequenceService = require('./services/crm/sequenceService');
