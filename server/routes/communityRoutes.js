@@ -37,4 +37,9 @@ router.delete('/reactions', ...write, reactionLimiter, c.removeReaction);
 
 router.post('/reports', ...write, reportLimiter, c.createReport);
 
+router.post('/saves', ...write, reactionLimiter, c.createSave);
+router.delete('/saves', ...write, reactionLimiter, c.removeSave);
+router.post('/blocks', ...write, reactionLimiter, c.createBlock);
+router.delete('/blocks', ...write, reactionLimiter, c.removeBlock);
+
 module.exports = router;

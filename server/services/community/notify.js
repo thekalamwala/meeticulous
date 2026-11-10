@@ -11,6 +11,9 @@ const { isFeatureEnabled } = require('../featureFlags');
 const { isEarlyAccess } = require('../../middleware/communityGate');
 
 const MAX_MENTIONS = 10;
+// Tithi is never notified of activity on her own posts/replies. She is NOT badged 'ai'
+// (never disclosed as a bot), so the badge skip above can't catch her — skip by id.
+const TITHI_ID = () => process.env.COMMUNITY_TITHI_USER_ID || null;
 const BASE = () => process.env.CLIENT_URL || 'https://meeticulous.com';
 const hourKey = () => new Date().toISOString().slice(0, 13).replace(/\D/g, ''); // UTC YYYYMMDDHH
 const snippet = (s, n = 100) => { const t = String(s || '').replace(/\s+/g, ' ').trim(); return t.length > n ? `${t.slice(0, n - 1)}…` : t; };
@@ -36,7 +39,7 @@ async function loadRecipients(ids, extraProfileIds = [], { allowBanned = false }
     const profile = pMap.get(id);
     const member = mMap.get(id) || null;
     const banned = !!member?.banned_until && new Date(member.banned_until).getTime() > Date.now();
-    if (!profile || member?.badge === 'ai' || (!allowBanned && (profile.is_banned || banned))) continue;
+    if (!profile || member?.badge === 'ai' || id === TITHI_ID() || (!allowBanned && (profile.is_banned || banned))) continue;
     byId.set(id, { profile, member });
   }
   return { byId, profiles: pMap };
@@ -147,4 +150,31 @@ async function onRemoved({ targetType, item, comment } = {}) {
   } catch (e) { console.error('[community-notify]', e.message); }
 }
 
-module.exports = { onComment, onMentions, onRemoved };
+// Question author picked this comment as the accepted answer. Notifies the
+// comment's author only. Dedupe is per-comment, so re-accepting the same answer
+// does not re-mail.
+async function onAnswerAccepted({ item, comment, actorId } = {}) {
+  try {
+    if (!item || !comment?.author_id || comment.author_id === actorId) return;
+    const [commenterId] = await launchFilter([comment.author_id]);
+    if (!commenterId) return;
+    const { byId, profiles } = await loadRecipients([commenterId], [actorId]);
+    const r = byId.get(commenterId);
+    if (!r) return;
+    const asker = displayName(profiles.get(actorId));
+    const link = `${itemPath(item)}#c-${comment.id}`;
+    await deliver([{
+      userId: commenterId, profile: r.profile, link,
+      dedupeKey: `community_accepted:${comment.id}`,
+      title: `${asker} picked your answer`, body: snippet(comment.body),
+      emailOk: wantsEmail(r.member),
+      emailData: {
+        asker_name: asker,
+        question_excerpt: snippet(item.title || item.body),
+        answer_excerpt: snippet(comment.body),
+      },
+    }], 'COMMUNITY_ANSWER_ACCEPTED');
+  } catch (e) { console.error('[community-notify]', e.message); }
+}
+
+module.exports = { onComment, onMentions, onRemoved, onAnswerAccepted };

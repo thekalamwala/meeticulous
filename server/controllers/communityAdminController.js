@@ -10,6 +10,7 @@ const { audit } = require('../services/auditService');
 const { serializeAuthor } = require('../services/community/serialize');
 const { encodeCursor, decodeCursor } = require('../services/community/cursor');
 const { bustSitemapCache } = require('../utils/sitemapCache');
+const { adminAlert } = require('../utils/adminAlert');
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const STATUSES = ['visible', 'hidden', 'removed', 'deleted'];
@@ -231,6 +232,28 @@ const patchMember = handle(async (req, res) => {
   }
   store.resetReadCaches(); // banned-author cache
   await audit(req, { action: 'community.member', resource_type: 'community_member', resource_id: userId, before, after });
+
+  // Audit ping: a ban was applied, extended, or lifted. Fires only when
+  // banned_until actually changed value, so unrelated patches (badge / early
+  // access) stay silent.
+  if ('banned_until' in patch && String(before?.banned_until || '') !== String(after?.banned_until || '')) {
+    const becameBan = !!patch.banned_until;
+    adminAlert({
+      subject: becameBan
+        ? `[Audit] Community ban applied — ${userId} until ${patch.banned_until}`
+        : `[Audit] Community ban lifted — ${userId}`,
+      lines: [
+        `Member: ${userId}`,
+        becameBan ? `Until: ${patch.banned_until}` : 'Ban lifted (was ' + before?.banned_until + ')',
+        patch.ban_reason ? `Reason: ${patch.ban_reason}` : (before?.ban_reason ? `Prior reason: ${before.ban_reason}` : ''),
+        `Acting admin: ${req.user?.email || req.user?.id || 'unknown'}`,
+      ].filter(Boolean),
+      key: `community_ban:${userId}:${patch.banned_until || 'lifted'}`,
+      category: 'Community',
+      link: `${process.env.CLIENT_URL || 'https://meeticulous.com'}/admin/community/members/${userId}`,
+    }).catch(() => null);
+  }
+
   res.json({ member: after });
 });
 

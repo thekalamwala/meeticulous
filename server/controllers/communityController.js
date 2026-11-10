@@ -12,6 +12,7 @@ const { encodeCursor, decodeCursor } = require('../services/community/cursor');
 const { setPublicCache } = require('../utils/httpCache');
 const { CURRENT_TERMS_VERSION } = require('../middleware/communityGate');
 const { bustSitemapCache } = require('../utils/sitemapCache');
+const { adminAlert } = require('../utils/adminAlert');
 
 const PHASE1_FORMATS = ['text', 'question', 'announcement'];
 // Spec §6/§13: the `official` space policy and announcements are for badge 'official' only.
@@ -120,6 +121,17 @@ const acceptTerms = handle(async (req, res) => {
   if (isBanned(existing)) return fail(res, 403, 'COMMUNITY_BANNED');
   const member = await store.acceptTerms(uid, CURRENT_TERMS_VERSION);
   req.communityMember = member;
+
+  // Fire welcome on the FIRST acceptance only (any later terms-version bump
+  // is an upsert that keeps the row but is not a re-join). isFirstAcceptance
+  // = no prior row existed OR the prior row had no terms_accepted_at.
+  const isFirstAcceptance = !existing || !existing.terms_accepted_at;
+  if (isFirstAcceptance) {
+    const profile = await store.getProfile(uid).catch(() => null);
+    if (profile) require('../services/community/onboardingSequence')
+      .sendWelcome(profile, { isFirstAcceptance: true }).catch(() => null);
+  }
+
   return res.json({ member });
 });
 
@@ -164,6 +176,29 @@ const createItem = handle(async (req, res) => {
   await recordMentions({ item, comment: null, text: `${draft.title || ''}\n${draft.body}`, actorId: uid });
   item.is_indexable = await safeRefresh(item.id);
   bustSitemapCache();
+
+  // Admin ping: a brand-new account's first post is the spam / sock-puppet canary.
+  // member.post_count is the pre-insert value (counted from community_members),
+  // so 0 here means this is their first. 24h is the "brand new" window.
+  if ((member?.post_count || 0) === 0 && profile?.created_at) {
+    const ageHours = (Date.now() - new Date(profile.created_at).getTime()) / 3600000;
+    if (ageHours < 24) {
+      adminAlert({
+        subject: `[Review] First post from a new member (${ageHours.toFixed(1)}h old)`,
+        lines: [
+          `Member: ${profile.name || profile.username || profile.id}`,
+          `Age: ${ageHours.toFixed(1)}h`,
+          `Space: ${space?.name || '—'}`,
+          `Preview: ${(draft.title || draft.body || '').slice(0, 200)}`,
+          `Links allowed: ${linksAllowed ? 'yes' : 'no'}`,
+        ],
+        key: `community_new_member_first_post:${uid}`,
+        category: 'Community',
+        link: `${process.env.CLIENT_URL || 'https://meeticulous.com'}/community/p/${item.slug}`,
+      }).catch(() => null);
+    }
+  }
+
   return res.status(201).json({ item: serializeItem(item, { author: profile, member, space, media: savedMedia || [] }) });
 });
 
@@ -270,6 +305,8 @@ const acceptAnswer = handle(async (req, res) => {
   if (!c || c.post_id !== item.id || c.status !== 'visible') return fail(res, 400, 'INVALID_COMMENT');
   await store.updatePost(item.id, { accepted_comment_id: c.id });
   await safeRefresh(item.id);
+  // Fire-and-forget: the comment author gets the "your answer was accepted" mail.
+  notify.onAnswerAccepted({ item, comment: c, actorId: req.user.id }).catch(() => null);
   return res.json({ accepted_comment_id: c.id });
 });
 
@@ -297,6 +334,45 @@ const removeReaction = handle(async (req, res) => {
   return res.json({ liked: false });
 });
 
+// POST /saves — idempotent bookmark of a post. { post_id }
+const createSave = handle(async (req, res) => {
+  const uid = req.user.id;
+  const { post_id: id } = req.body || {};
+  if (!UUID.test(String(id))) return fail(res, 400, 'INVALID_TARGET');
+  const post = await store.getPost(id);
+  if (!post || !canView(post, await store.viewContext(uid, post.author_id))) return fail(res, 404, 'NOT_FOUND');
+  const save_count = await store.addSave(uid, id);
+  return res.json({ saved: true, save_count });
+});
+
+// DELETE /saves — 200 whether or not it existed. { post_id }
+const removeSave = handle(async (req, res) => {
+  const { post_id: id } = req.body || {};
+  if (!UUID.test(String(id))) return fail(res, 400, 'INVALID_TARGET');
+  const save_count = await store.removeSave(req.user.id, id);
+  return res.json({ saved: false, save_count });
+});
+
+// POST /blocks — block a member (their content drops out of your feed going forward). { target_id }
+const createBlock = handle(async (req, res) => {
+  const uid = req.user.id;
+  const { target_id: id } = req.body || {};
+  if (!UUID.test(String(id))) return fail(res, 400, 'INVALID_TARGET');
+  if (id === uid) return fail(res, 400, 'CANNOT_BLOCK_SELF');
+  const target = await store.getProfile(id);
+  if (!target) return fail(res, 404, 'NOT_FOUND');
+  await store.addBlock(uid, id);
+  return res.json({ blocked: true });
+});
+
+// DELETE /blocks — unblock. { target_id }
+const removeBlock = handle(async (req, res) => {
+  const { target_id: id } = req.body || {};
+  if (!UUID.test(String(id))) return fail(res, 400, 'INVALID_TARGET');
+  await store.removeBlock(req.user.id, id);
+  return res.json({ blocked: false });
+});
+
 // POST /reports — duplicate = 200 no-op; the 3rd distinct open report hides a visible post/comment.
 const createReport = handle(async (req, res) => {
   const uid = req.user.id;
@@ -312,6 +388,21 @@ const createReport = handle(async (req, res) => {
 
   const created = await store.insertReport({ target_type: type, target_id: id, reporter_id: uid, reason, details: details?.trim() || null });
   if (!created) return res.json({ ok: true });
+
+  // Admin ping: new report lands. Throttle key = (type:id) so a burst on the
+  // same target coalesces into one mail inside the 15m cooldown.
+  adminAlert({
+    subject: `[Flag] ${reason} — community ${type}`,
+    lines: [
+      `Target: ${type} ${id}`,
+      `Reason: ${reason}`,
+      `Reporter: ${uid}`,
+      details ? `Details: ${String(details).slice(0, 200)}` : '',
+    ].filter(Boolean),
+    key: `community_flag:${type}:${id}`,
+    category: 'Community',
+    link: `${process.env.CLIENT_URL || 'https://meeticulous.com'}/admin/community/reports`,
+  }).catch(() => null);
 
   if (type !== 'member' && target.status === 'visible' && (await store.countOpenReports(type, id)) >= AUTO_HIDE_AT) {
     const hide = type === 'post' ? store.updatePost : store.updateComment;
@@ -472,4 +563,5 @@ module.exports = {
   listSpaces, feed, spaceThreads, itemDetail, itemComments, me,
   acceptTerms, createItem, updateItem, deleteItem, createComment, updateComment, deleteComment,
   acceptAnswer, addReaction, removeReaction, createReport,
+  createSave, removeSave, createBlock, removeBlock,
 };

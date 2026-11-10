@@ -20,7 +20,8 @@ vi.mock('../components/auth/AuthBrandPanel', () => ({ default: () => null }));
 vi.mock('../components/auth/AuthMobilePattern', () => ({ default: () => null }));
 vi.mock('../components/common/Seo', () => ({ default: () => null }));
 
-import HostLogin from '../pages/HostLogin';
+// Host + guest share UnifiedLogin; the /login-as-vendor route defaults it to the host door.
+import UnifiedLogin from '../pages/UnifiedLogin';
 
 const COPY = {
   linkedin_failed: 'LinkedIn sign-in failed. Please try again.',
@@ -33,7 +34,7 @@ const COPY = {
 beforeEach(() => { vi.clearAllMocks(); flagOn = false; });
 
 test.each(Object.entries(COPY))('error=%s shows exact copy', (code, msg) => {
-  render(<MemoryRouter initialEntries={[`/login-as-vendor?error=${code}`]}><HostLogin /></MemoryRouter>);
+  render(<MemoryRouter initialEntries={[`/login-as-vendor?error=${code}`]}><UnifiedLogin /></MemoryRouter>);
   expect(toastError).toHaveBeenCalledWith(msg);
 });
 
@@ -41,22 +42,22 @@ test.each(Object.entries(COPY))('error=%s shows exact copy', (code, msg) => {
 // at LinkedIn when the LinkedIn button is actually there.
 test('error=calendar_account with flag ON → points to LinkedIn', () => {
   flagOn = true;
-  render(<MemoryRouter initialEntries={['/login-as-vendor?error=calendar_account']}><HostLogin /></MemoryRouter>);
+  render(<MemoryRouter initialEntries={['/login-as-vendor?error=calendar_account']}><UnifiedLogin /></MemoryRouter>);
   expect(toastError).toHaveBeenCalledWith('This Google account is connected as a calendar to an existing host. Sign in with LinkedIn instead.');
 });
 
 test('error=calendar_account with flag OFF → no LinkedIn mention', () => {
-  render(<MemoryRouter initialEntries={['/login-as-vendor?error=calendar_account']}><HostLogin /></MemoryRouter>);
+  render(<MemoryRouter initialEntries={['/login-as-vendor?error=calendar_account']}><UnifiedLogin /></MemoryRouter>);
   expect(toastError).toHaveBeenCalledWith('This Google account is connected as a calendar to an existing host. Sign in with the account you used to sign up.');
 });
 
 test('"Already a host?" line only with flag on', () => {
-  const { unmount } = render(<MemoryRouter><HostLogin /></MemoryRouter>);
+  const { unmount } = render(<MemoryRouter initialEntries={['/login-as-vendor']}><UnifiedLogin /></MemoryRouter>);
   expect(screen.queryByText(/Already a host\?/)).toBeNull();
   expect(screen.getByRole('button', { name: /continue with linkedin/i })).toBeDisabled(); // inert Soon button
   unmount();
   flagOn = true;
-  render(<MemoryRouter><HostLogin /></MemoryRouter>);
+  render(<MemoryRouter initialEntries={['/login-as-vendor']}><UnifiedLogin /></MemoryRouter>);
   expect(screen.getByText('Already a host? Use the same option you signed up with.')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /continue with linkedin/i })).toBeEnabled();
 });

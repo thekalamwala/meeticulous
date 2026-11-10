@@ -4,6 +4,8 @@ import toast from 'react-hot-toast';
 import { House, Lock, SquarePen } from 'lucide-react';
 import { getSpaces } from '../../services/communityApi';
 import { SpaceIcon } from '../../components/community/ItemCard';
+import FeedSkeleton from '../../components/community/CommunitySkeleton';
+import CommunityAd from '../../components/community/CommunityAd';
 
 export const SITE_DESC = 'Questions, tips and updates from hosts and guests on Meeticulous, the booking platform for independent professionals.';
 export const TITLE_SUFFIX = ' — Meeticulous Community'; // same suffix as server prerenderCommunity.js
@@ -41,6 +43,9 @@ const LOCK_LABEL = { hosts: 'Hosts post here', official: 'Team posts only' };
 // `active` = 'feed' or a space key. `onCompose(kind)` backs the "New post" button.
 export default function CommunityLayout({ active, onCompose, aside, children }) {
   const [spaces, setSpaces] = useState([]);
+  // The right rail always shows: it carries the ad slot (every audience has a deck,
+  // including logged-out guests), plus any page-supplied `aside` above it.
+  const showRail = true;
   useEffect(() => {
     let live = true;
     getSpaces().then((d) => { if (live) setSpaces(d.spaces || []); }).catch(() => {});
@@ -60,7 +65,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
 
       {/* Columns: rail 240 · main ≤640 · aside 320 (aside only on xl, when given). */}
       <div className={`mx-auto max-w-7xl gap-6 px-4 lg:grid lg:grid-cols-[15rem_minmax(0,46rem)] lg:justify-center lg:px-5 lg:pt-6 ${
-        aside ? 'xl:grid-cols-[15rem_minmax(0,46rem)_20rem]' : ''}`}>
+        showRail ? 'xl:grid-cols-[15rem_minmax(0,46rem)_20rem]' : ''}`}>
         <aside aria-label="Community navigation" className="sticky top-24 hidden flex-col gap-5 self-start lg:flex">
           <button type="button" onClick={() => onCompose?.('post')} className="mt-btn mt-btn--block">
             <SquarePen size={20} aria-hidden="true" />New post
@@ -86,7 +91,12 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
 
         <div className="flex min-w-0 flex-col gap-5">{children}</div>
 
-        {aside && <aside aria-label="About" className="sticky top-24 hidden flex-col gap-5 self-start xl:flex">{aside}</aside>}
+        {showRail && (
+          <aside aria-label="About" className="sticky top-24 hidden flex-col gap-5 self-start xl:flex">
+            {aside}
+            <CommunityAd />
+          </aside>
+        )}
       </div>
 
       {/* Mobile "New post": bottom-LEFT, because the support-bot launcher (BotWidget) owns bottom-right. */}
@@ -101,9 +111,9 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
 export function ListStatus({ list }) {
   if (list.loading && !list.items.length) {
     return (
-      <div aria-live="polite" aria-busy="true" className="flex flex-col gap-5">
+      <div aria-live="polite" aria-busy="true">
         <span className="sr-only">Loading</span>
-        {[0, 1].map((i) => <div key={i} className="mt-card h-40 animate-pulse" />)}
+        <FeedSkeleton />
       </div>
     );
   }

@@ -363,6 +363,76 @@ setInterval(async () => {
   } catch (err) { console.error('Activation nudges cron error:', err.message); }
 }, 30 * 60 * 1000);
 
+// Host dormant nudges (30 / 60 / 90 days, once per day). Double-gated:
+// feature flag `dormant_nudges` (default OFF) + per-event is_active/email_enabled
+// (ON from v3.193, so flipping the flag alone turns the track live).
+// Quiet-hours + 60-day dedupe inside.
+const { runDormancyNudges } = require('./services/dormancyNudges');
+setInterval(async () => {
+  try {
+    await runLocked('dormant-nudges', async () => {
+      const r = await runDormancyNudges();
+      if (r.processed) console.log(`Dormant nudges: ${r.processed} processed, ${r.skipped} skipped`);
+    }, { leaseMs: 6 * 60 * 60 * 1000 });
+  } catch (err) { console.error('Dormant nudges cron error:', err.message); }
+}, 24 * 60 * 60 * 1000);
+
+// Guest review nudges (48h after completed paid booking, no review yet).
+// Hourly cron so the 48h cut is tight. Double-gated: feature flag `review_nudges`
+// (default OFF) + per-event is_active/email_enabled (ON in v3.194). Dedupe per
+// booking inside, quiet-hours honoured.
+const { runReviewNudges } = require('./services/reviewNudges');
+setInterval(async () => {
+  try {
+    await runLocked('review-nudges', async () => {
+      const r = await runReviewNudges();
+      if (r.processed) console.log(`Review nudges: ${r.processed} processed, ${r.skipped} skipped`);
+    }, { leaseMs: 30 * 60 * 1000 });
+  } catch (err) { console.error('Review nudges cron error:', err.message); }
+}, 60 * 60 * 1000);
+
+// Festival / calendar greetings (Humanity track, PR-6). Once per hour;
+// festivalGreetings dedupes 365d per (event, email) so running every hour
+// just means we catch the 09:00 IST open as soon as quiet hours allow.
+// Double-gated: feature flag `festival_nudges` (default OFF) + per-event
+// is_active/email_enabled (ON in v3.195).
+const { runFestivalGreetings } = require('./services/festivalGreetings');
+setInterval(async () => {
+  try {
+    await runLocked('festival-greetings', async () => {
+      const r = await runFestivalGreetings();
+      if (r.processed) console.log(`Festival greetings: ${r.processed} processed, ${r.skipped} skipped (${r.date})`);
+    }, { leaseMs: 2 * 60 * 60 * 1000 });
+  } catch (err) { console.error('Festival greetings cron error:', err.message); }
+}, 60 * 60 * 1000);
+
+// Human moments (Humanity track, PR-7). Daily scan over reviews + bookings;
+// fires first-review, first-5-star, perfect-month and more. Double-gated:
+// feature flag `human_moments` (default OFF) + per-event is_active/email_enabled
+// (ON in v3.196). Dedupe inside, quiet-hours 09-20 IST.
+const { runHumanMoments } = require('./services/humanMoments');
+setInterval(async () => {
+  try {
+    await runLocked('human-moments', async () => {
+      const r = await runHumanMoments();
+      if (r.processed) console.log(`Human moments: ${r.processed} processed, ${r.skipped} skipped`);
+    }, { leaseMs: 3 * 60 * 60 * 1000 });
+  } catch (err) { console.error('Human moments cron error:', err.message); }
+}, 24 * 60 * 60 * 1000);
+
+// Empathy scans (Humanity track, PR-8). Daily low-ratings-run detection.
+// Double-gated: feature flag `empathy_track` (default OFF) + per-event
+// is_active/email_enabled (ON in v3.197). Private notes, forever dedupe.
+const { runEmpathyScans } = require('./services/empathyScans');
+setInterval(async () => {
+  try {
+    await runLocked('empathy-scans', async () => {
+      const r = await runEmpathyScans();
+      if (r.processed) console.log(`Empathy scans: ${r.processed} processed, ${r.skipped} skipped`);
+    }, { leaseMs: 3 * 60 * 60 * 1000 });
+  } catch (err) { console.error('Empathy scans cron error:', err.message); }
+}, 24 * 60 * 60 * 1000);
+
 // ── Sales CRM fast workers (60s / 5min). Sends gated by crm_admin_sends (default OFF). ──
 const crmMessageService = require('./services/crm/messageService');
 const crmSequenceService = require('./services/crm/sequenceService');
@@ -399,6 +469,50 @@ setInterval(async () => {
   try { await runLocked('cold-call-reminders', () => require('./services/crm/coldCallService').callbackReminders(), { leaseMs: 10 * 60 * 1000 }); }
   catch (err) { console.error('Cold-call reminder cron error:', err.message); }
 }, 5 * 60 * 1000);
+
+// ── Community: Tithi poll workers. Fully inert until the community_tithi flag is ON
+// AND the identity/repo env is set (COMMUNITY_TITHI_USER_ID, COMMUNITY_GH_REPO) — the
+// flag + config gates live inside tithi.*, so these ticks are safe to run always.
+// Release notes: approve-first (draft+email) until COMMUNITY_TITHI_AUTOPOST=true.
+const tithiWorker = require('./services/community/tithiWorker');
+setInterval(async () => {
+  try {
+    await runLocked('tithi-release-notes', async () => {
+      const r = await tithiWorker.runReleaseNotePoll();
+      if (r.posted || r.drafted) console.log(`Tithi release notes: ${r.posted} posted, ${r.drafted} drafted, ${r.skipped} skipped`);
+    }, { leaseMs: 10 * 60 * 1000 });
+  } catch (err) { console.error('Tithi release-note poll error:', err.message); }
+}, 5 * 60 * 1000);
+setInterval(async () => {
+  try {
+    await runLocked('tithi-reply-sweep', async () => {
+      const r = await tithiWorker.runReplySweep();
+      if (r.replied) console.log(`Tithi reply sweep: ${r.replied} replied, ${r.skipped} skipped`);
+    }, { leaseMs: 6 * 60 * 1000 });
+  } catch (err) { console.error('Tithi reply-sweep error:', err.message); }
+}, 3 * 60 * 1000);
+setInterval(async () => {
+  try {
+    await runLocked('tithi-daily-digest', async () => {
+      const r = await tithiWorker.runDailyDigest();
+      if (r.newPosts !== undefined) console.log(`Tithi digest: ${r.newPosts} new, ${r.unanswered} unanswered`);
+    }, { leaseMs: 60 * 60 * 1000 });
+  } catch (err) { console.error('Tithi daily digest error:', err.message); }
+}, 24 * 60 * 60 * 1000);
+
+// Community: onboarding sequence sweep. Fires day-2/5/9/14 mails per
+// community_members.created_at window. Welcome is fired inline from the
+// controller — this cron handles only the scheduled follow-ups. Gated by
+// community_email_onboarding (OFF) inside the service, so safe to tick always.
+const onboardingSequence = require('./services/community/onboardingSequence');
+setInterval(async () => {
+  try {
+    await runLocked('community-onboarding-sweep', async () => {
+      const r = await onboardingSequence.runSweep();
+      if (r.processed) console.log(`Community onboarding sweep: ${r.processed} sent, ${r.skipped || 0} skipped`);
+    }, { leaseMs: 15 * 60 * 1000 });
+  } catch (err) { console.error('Community onboarding sweep error:', err.message); }
+}, 60 * 60 * 1000);
 
 // ══ F4: LONG-interval crons (≥15 min) driven off a PERSISTED schedule (job_runs),
 // checked on a short SCHEDULER_TICK so pod churn can't starve them. Before this, a
