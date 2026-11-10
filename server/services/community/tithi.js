@@ -139,7 +139,11 @@ async function writeReleaseNote(pr, kind, month) {
     const client = anthropicClient.getClient();
     const resp = await client.messages.create({
       model: anthropicClient.MODELS.listing, // Sonnet — members read this closely
-      max_tokens: 220,
+      // Sonnet-5 is a reasoning model: it spends ~450 "thinking" tokens before any
+      // visible text, so a tight cap (was 220) gets fully consumed by thinking and
+      // returns an empty/truncated note -> silent fallback to the plain deterministic
+      // copy. 1024 leaves room for the thinking budget plus the 2-4 sentence note.
+      max_tokens: 1024,
       system: `${VOICE} ${RELEASE_NOTE_RULES}`,
       messages: [{
         role: 'user',
