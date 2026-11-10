@@ -6,12 +6,23 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
-import Login from '../pages/Login';
+// Guest OTP form now lives in UnifiedLogin; /login defaults it to the guest door.
+import UnifiedLogin from '../pages/UnifiedLogin';
 
 const loginWithOtp = vi.fn();
+const setMode = vi.fn();
 vi.mock('../context/AuthContext', () => ({
-  useAuth: () => ({ loginWithOtp }),
+  useAuth: () => ({ loginWithOtp, setMode, user: null, mode: null, logout: vi.fn(), startVendorGoogleAuth: vi.fn() }),
 }));
+
+// UnifiedLogin's host form imports the LinkedIn flag hook (FeatureContext).
+vi.mock('../context/FeatureContext', () => ({
+  useFeature: () => false,
+  useFeatures: () => ({ flags: {} }),
+}));
+vi.mock('../components/auth/AuthBrandPanel', () => ({ default: () => null }));
+vi.mock('../components/auth/AuthMobilePattern', () => ({ default: () => null }));
+vi.mock('../components/common/Seo', () => ({ default: () => null }));
 
 vi.mock('../services/api', () => ({
   sendOtp: vi.fn(() => Promise.resolve({})),
@@ -28,7 +39,7 @@ vi.mock('react-hot-toast', () => ({
   default: { success: vi.fn(), error: vi.fn() },
 }));
 
-const renderLogin = () => render(<MemoryRouter><Login /></MemoryRouter>);
+const renderLogin = () => render(<MemoryRouter initialEntries={['/login']}><UnifiedLogin /></MemoryRouter>);
 
 // Walk phone step → OTP step, return the OTP input element.
 async function reachOtpStep() {
