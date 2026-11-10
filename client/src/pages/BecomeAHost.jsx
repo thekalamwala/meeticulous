@@ -155,7 +155,7 @@ const BecomeAHost = () => {
 
           <p className="mt-5 text-sm text-muted">
             Already a host?{' '}
-            <Link to="/login-as-vendor" className="font-semibold text-primary hover:underline">Log in</Link>
+            <Link to="/login?as=host" className="font-semibold text-primary hover:underline">Log in</Link>
           </p>
         </div>
       </main>

@@ -71,7 +71,7 @@ import { ogCard } from "../config/ogImages";
 
 /* Real funnel routes — do not point CTAs anywhere else. */
 const ROUTE_START = "/become-a-host";
-const ROUTE_LOGIN = "/login-as-vendor";
+const ROUTE_LOGIN = "/login?as=host";
 
 /* ── Homepage SEO ──────────────────────────────────────────────────────────
    OG/Twitter image + Organization logo must be uploaded to these exact URLs

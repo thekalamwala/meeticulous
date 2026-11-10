@@ -67,7 +67,7 @@ import { ogCard } from "../config/ogImages";
 
 /* Real funnel routes — do not point CTAs anywhere else. */
 const ROUTE_START = "/become-a-host";
-const ROUTE_LOGIN = "/login-as-vendor";
+const ROUTE_LOGIN = "/login?as=host";
 
 /* Directory badges — "Trusted & featured on" strip below the hero. Images are the
    directories' own hosted badges (external). */
