@@ -907,6 +907,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because someone left a review for you on Meeticulous.',
     html_content:
+      C.heroImage('moment-first-review', 'A quote bubble') +
       h('{{first_name}}, your first review is in') +
       lead('{{reviewer_first_name}} just left a review on your page. You can read it on your dashboard.') +
       lead("First ones mean the most. The stranger just told a future stranger you were worth it."),
@@ -920,6 +921,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because you received a 5-star review on Meeticulous.',
     html_content:
+      C.heroImage('moment-first-five-star', 'Five dots in a row') +
       h('Five stars, {{first_name}}') +
       lead("{{reviewer_first_name}} rated your session five stars. That's not a number — that's someone saying they'd send a friend to you.") +
       lead("Mubarak. Take the win."),
@@ -933,6 +935,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because every booking on your page in the last month was completed.',
     html_content:
+      C.heroImage('moment-perfect-month', 'A calendar page, all filled') +
       h("A clean month, {{first_name}}") +
       lead("{{completed_count}} bookings in {{month_name}}. Zero no-shows. Zero cancellations.") +
       lead("This is harder than it looks. It means your reminders landed, your guests showed up, and whatever your session is — it was worth the trip."),
@@ -946,6 +949,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because your page took bookings three weeks in a row.',
     html_content:
+      C.heroImage('moment-booking-streak', 'Three beats in a row') +
       h('Three weeks, {{first_name}}') +
       lead("At least one booking every week for the last three weeks on your Meeticulous page. That's a rhythm.") +
       lead("Keep it going. Reply if you want help pushing it to four."),
@@ -959,6 +963,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because a past guest booked you again on Meeticulous.',
     html_content:
+      C.heroImage('moment-first-repeat', 'Two overlapping loops') +
       h('{{guest_first_name}} came back') +
       lead("{{guest_first_name}} just booked a second session with you. First repeat is the real signal — whatever you did the first time worked.") +
       lead("Welcome them back."),
@@ -972,6 +977,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because you have booked five different hosts on Meeticulous.',
     html_content:
+      C.heroImage('moment-explorer', 'A compass of arcs') +
       h('Five hosts, {{first_name}}') +
       lead("You've booked five different hosts on Meeticulous. Most guests don't — most settle into one.") +
       lead("Thanks for exploring. If any of them is worth a friend knowing about, your words travel further than our ads do."),
@@ -985,6 +991,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because you returned to Meeticulous after a long break.',
     html_content:
+      C.heroImage('moment-comeback', 'A soft returning arc') +
       h('Good to see you, {{first_name}}') +
       lead("It's been a while since your last booking on Meeticulous — and you just made another one. Noticed, and figured I'd write.") +
       lead("Nothing to do. Just wanted to say welcome back."),
@@ -998,6 +1005,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because your review is now live on the host\'s page.',
     html_content:
+      C.heroImage('moment-review-landed', 'A paper-plane shape') +
       h('{{first_name}}, your words are live') +
       lead('Your review of <strong>{{vendor_name}}</strong> is now on their page. A future guest will read it and decide to try them.') +
       lead("That's the whole flywheel. Thank you."),
