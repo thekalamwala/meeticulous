@@ -909,6 +909,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
     html_content:
+      C.heroImage('greeting-diwali', 'A lit diya') +
       h('{{first_name}}, Diwali mubarak') +
       lead("A short note. Thank you for being on Meeticulous this year.") +
       lead("The work you do — a session, a class, a conversation — lights something up for the people who find you. Today a lot of us light diyas; whatever you light, light one more.") +
@@ -923,6 +924,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
     html_content:
+      C.heroImage('greeting-holi', 'Colour-powder loops') +
       h('Happy Holi, {{first_name}}') +
       lead("Colour makes everything better for a day. Whatever yours looks like, hope it's a good one.") +
       lead("Back to bookings tomorrow. Enjoy today."),
@@ -936,6 +938,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
     html_content:
+      C.heroImage('greeting-eid', 'Crescent moon and star') +
       h('Eid mubarak, {{first_name}}') +
       lead("A quiet note, no CTA. Thanks for being here. Celebrate well, rest well."),
     cta_label: '', cta_url: '',
@@ -948,6 +951,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
     html_content:
+      C.heroImage('greeting-christmas', 'A small wreath') +
       h('Merry Christmas, {{first_name}}') +
       lead("Hope today is warm, slow and spent with people you want to spend it with.") +
       lead("We'll be around if you need us. Merry Christmas."),
@@ -961,6 +965,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
     html_content:
+      C.heroImage('greeting-newyear', 'Three rising arcs') +
       h('Happy new year, {{first_name}}') +
       lead("Short one. Thanks for sharing a year with Meeticulous. Last year worked because of what you shipped on your page — your sessions, your classes, your consults. Here's to another one like that.") +
       lead("Aage dekhte hain."),
@@ -974,6 +979,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
     html_content:
+      C.heroImage('greeting-pongal-sankranti', 'Harvest pot and wheat') +
       h('Happy Pongal, {{first_name}}') +
       lead("Harvest season looks different everywhere. Pongal, Sankranti, Bihu, Lohri — same beat. Hope yours is full of the people who make it matter."),
     cta_label: '', cta_url: '',
@@ -986,6 +992,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
     html_content:
+      C.heroImage('greeting-onam', 'A simplified pookalam') +
       h('Happy Onam, {{first_name}}') +
       lead("Hope the sadya is good, the pookalam is better, and the week is spent with people you love."),
     cta_label: '', cta_url: '',
@@ -998,6 +1005,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
     html_content:
+      C.heroImage('greeting-independence-day', 'Three horizontal slots') +
       h('{{first_name}}, a short note') +
       lead("Today we get to do our own work, in our own voice, for people we chose. That's worth saying out loud once a year.") +
       lead("Thanks for building on Meeticulous. Jai Hind."),
@@ -1011,6 +1019,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
     html_content:
+      C.heroImage('greeting-republic-day', 'Three slots on an arc') +
       h('Republic Day, {{first_name}}') +
       lead("Rules exist so people can do their own thing without asking. Keep doing yours."),
     cta_label: '', cta_url: '',
@@ -1023,6 +1032,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because you teach or coach on Meeticulous. Reply any time.',
     html_content:
+      C.heroImage('greeting-teachers-day', 'An open book and a halo') +
       h('Thank you, {{first_name}}') +
       lead("Today is a thank-you, from this side of the platform to yours. Someone learned something they didn't know yesterday because of a session with you.") +
       lead("That is the whole product. Guru Dakshina is reading your replies — hit me back with one thing a student recently told you."),
@@ -1036,6 +1046,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because you do therapy / counselling work on Meeticulous. Reply any time.',
     html_content:
+      C.heroImage('greeting-mental-health-day', 'A quiet potted plant') +
       h('{{first_name}}, a note') +
       lead("World Mental Health Day. I know the work you do is often invisible and almost always underpaid for what it actually does.") +
       lead("We built the booking side of Meeticulous so the quiet parts — scheduling, reminders, payouts — stop pulling at your attention. If any of it is still in your way, reply and tell me.") +
@@ -1050,6 +1061,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because you teach yoga on Meeticulous. Reply any time.',
     html_content:
+      C.heroImage('greeting-yoga-day', 'Abstract seated figure') +
       h('Happy Yoga Day, {{first_name}}') +
       lead("A short note. Your sessions on Meeticulous have reached people on the other side of the country this year — that is a strange and good thing.") +
       lead("Enjoy the day. Teach one extra class today if you can."),
@@ -1063,6 +1075,7 @@ const TEMPLATES = [
     email_category: 'Community Update',
     email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
     html_content:
+      C.heroImage('greeting-womens-day', 'Three overlapping loops') +
       h('{{first_name}}, a short one') +
       lead("A lot of what Meeticulous runs on — the services, the voices, the hosts people come back for — is built by women. Today's a good day to say that plainly.") +
       lead("Thanks for being on this side of the internet."),
