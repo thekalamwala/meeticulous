@@ -1042,7 +1042,7 @@ const ServiceBooking = () => {
           ⚠️ This creator is pending admin verification. Bookings may be subject to confirmation.
         </div>
       )}
-      <div className={`app-container py-4 sm:py-5 mx-auto ${!finalizing && step === "time" ? "max-w-[1200px]" : "max-w-3xl"}`}>
+      <div className={`app-container py-4 sm:py-5 mx-auto ${!finalizing && step === "time" ? "max-w-[1200px]" : "max-w-4xl"}`}>
 
         {/* Profile sidebar removed during booking — full-width engine with a
             compact summary strip (host · service · when · total) below. */}
@@ -1294,7 +1294,7 @@ const ServiceBooking = () => {
                           ) : (
                             <div className="bas-fade">
                               {/* Category cards: pick a part of the day, grid filters to it. */}
-                              <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4">
+                              <div className="grid grid-cols-3 gap-2 mb-3">
                                 {slotCats.map((c) => {
                                   const on = activeCat.key === c.key;
                                   const disabled = c.items.length === 0;
@@ -1304,35 +1304,35 @@ const ServiceBooking = () => {
                                       type="button"
                                       disabled={disabled}
                                       onClick={() => setSlotCategory(c.key)}
-                                      className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-2xl border-2 transition-all text-center ${disabled ? "opacity-40 cursor-default" : "hover:bg-[color:var(--mt-blush,#FFE4EA)] cursor-pointer"}`}
+                                      className={`flex items-center justify-center gap-2 py-2 px-2 rounded-xl border-2 transition-all ${disabled ? "opacity-40 cursor-default" : "hover:bg-[color:var(--mt-blush,#FFE4EA)] cursor-pointer"}`}
                                       style={on
                                         ? { background: "var(--mt-blush, #FFE4EA)", borderColor: tc, color: tc }
                                         : { background: "#fff", borderColor: "var(--color-line)", color: "#2B0A14" }}
                                     >
-                                      <c.Icon className="w-5 h-5" style={on ? { color: tc } : { color: "#9ca3af" }} />
-                                      <span className="text-sm font-bold leading-none">{c.label}</span>
-                                      <span className="text-[11px] font-medium text-gray-400 leading-none">
-                                        {c.items.length} {c.items.length === 1 ? "slot" : "slots"}
+                                      <c.Icon className="w-4 h-4 shrink-0" style={on ? { color: tc } : { color: "#9ca3af" }} />
+                                      <span className="flex flex-col items-start leading-none">
+                                        <span className="text-[13px] font-bold">{c.label}</span>
+                                        <span className="text-[10px] font-medium text-gray-400 mt-0.5">{c.items.length} {c.items.length === 1 ? "slot" : "slots"}</span>
                                       </span>
                                     </button>
                                   );
                                 })}
                               </div>
                               {/* Slots for the active category only. */}
-                              <div className="max-h-[300px] overflow-y-auto pr-1 grid grid-cols-3 gap-2">
+                              <div className="max-h-[260px] overflow-y-auto pr-1 grid grid-cols-3 sm:grid-cols-4 gap-1.5">
                                 {activeCat.items.map((t) => {
                                   const on = selectedTime === t;
                                   return (
                                     <button
                                       key={t}
                                       onClick={() => setSelectedTime(t)}
-                                      className="relative py-2.5 text-sm font-semibold rounded-[20px] border-2 transition-all"
+                                      className="relative py-2 text-[13px] font-semibold rounded-xl border-2 transition-all"
                                       style={on
                                         ? { background: tc, color: textOnTheme, borderColor: tc }
                                         : { background: "#fff", borderColor: "var(--color-line)", color: "#2B0A14" }}
                                     >
                                       {on && (
-                                        <svg className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                                        <svg className="absolute left-1.5 top-1/2 -translate-y-1/2 w-3 h-3" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
                                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                         </svg>
                                       )}
