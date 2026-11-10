@@ -11,6 +11,9 @@ const { isFeatureEnabled } = require('../featureFlags');
 const { isEarlyAccess } = require('../../middleware/communityGate');
 
 const MAX_MENTIONS = 10;
+// Tithi is never notified of activity on her own posts/replies. She is NOT badged 'ai'
+// (never disclosed as a bot), so the badge skip above can't catch her — skip by id.
+const TITHI_ID = () => process.env.COMMUNITY_TITHI_USER_ID || null;
 const BASE = () => process.env.CLIENT_URL || 'https://meeticulous.com';
 const hourKey = () => new Date().toISOString().slice(0, 13).replace(/\D/g, ''); // UTC YYYYMMDDHH
 const snippet = (s, n = 100) => { const t = String(s || '').replace(/\s+/g, ' ').trim(); return t.length > n ? `${t.slice(0, n - 1)}…` : t; };
@@ -36,7 +39,7 @@ async function loadRecipients(ids, extraProfileIds = [], { allowBanned = false }
     const profile = pMap.get(id);
     const member = mMap.get(id) || null;
     const banned = !!member?.banned_until && new Date(member.banned_until).getTime() > Date.now();
-    if (!profile || member?.badge === 'ai' || (!allowBanned && (profile.is_banned || banned))) continue;
+    if (!profile || member?.badge === 'ai' || id === TITHI_ID() || (!allowBanned && (profile.is_banned || banned))) continue;
     byId.set(id, { profile, member });
   }
   return { byId, profiles: pMap };

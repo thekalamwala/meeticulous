@@ -28,6 +28,7 @@ export const RESERVED_FIRST_SEGMENTS = [
   'my-bookings', 'profile', 'reviews', 'loyalty', 'sitemap', 'robots', 'health',
   'search', 'wall-of-love', 'submit-review', 'moments', 'opening', 'inaugurators',
   'community', // /community feed, spaces, threads/posts (pages/community/*); bots get server HTML via middleware.js
+  'agent-tithi', // Tithi's public profile (pages/AgentTithi.jsx) — linked from her community author chip
   'presentation', // full-screen product pitch deck (pages/presentation/)
   'pitch-deck', // retired investor deck — kept reserved so old shared links can't be claimed as a host URL
   '_attic', // hidden pre-compaction homepage snapshot (pages/HomeArchive.jsx) — noindex, unlinked, not in sitemap/prerender

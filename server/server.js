@@ -470,6 +470,36 @@ setInterval(async () => {
   catch (err) { console.error('Cold-call reminder cron error:', err.message); }
 }, 5 * 60 * 1000);
 
+// ── Community: Tithi poll workers. Fully inert until the community_tithi flag is ON
+// AND the identity/repo env is set (COMMUNITY_TITHI_USER_ID, COMMUNITY_GH_REPO) — the
+// flag + config gates live inside tithi.*, so these ticks are safe to run always.
+// Release notes: approve-first (draft+email) until COMMUNITY_TITHI_AUTOPOST=true.
+const tithiWorker = require('./services/community/tithiWorker');
+setInterval(async () => {
+  try {
+    await runLocked('tithi-release-notes', async () => {
+      const r = await tithiWorker.runReleaseNotePoll();
+      if (r.posted || r.drafted) console.log(`Tithi release notes: ${r.posted} posted, ${r.drafted} drafted, ${r.skipped} skipped`);
+    }, { leaseMs: 10 * 60 * 1000 });
+  } catch (err) { console.error('Tithi release-note poll error:', err.message); }
+}, 5 * 60 * 1000);
+setInterval(async () => {
+  try {
+    await runLocked('tithi-reply-sweep', async () => {
+      const r = await tithiWorker.runReplySweep();
+      if (r.replied) console.log(`Tithi reply sweep: ${r.replied} replied, ${r.skipped} skipped`);
+    }, { leaseMs: 6 * 60 * 1000 });
+  } catch (err) { console.error('Tithi reply-sweep error:', err.message); }
+}, 3 * 60 * 1000);
+setInterval(async () => {
+  try {
+    await runLocked('tithi-daily-digest', async () => {
+      const r = await tithiWorker.runDailyDigest();
+      if (r.newPosts !== undefined) console.log(`Tithi digest: ${r.newPosts} new, ${r.unanswered} unanswered`);
+    }, { leaseMs: 60 * 60 * 1000 });
+  } catch (err) { console.error('Tithi daily digest error:', err.message); }
+}, 24 * 60 * 60 * 1000);
+
 // ══ F4: LONG-interval crons (≥15 min) driven off a PERSISTED schedule (job_runs),
 // checked on a short SCHEDULER_TICK so pod churn can't starve them. Before this, a
 // setInterval whose first tick lands after a FULL interval was reset on every Render
