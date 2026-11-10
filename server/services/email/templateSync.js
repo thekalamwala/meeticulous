@@ -86,6 +86,8 @@ const EMAIL_ONLY_EVENTS = [
   ['GUEST_EXPLORER_5_HOSTS', 'Guest — explorer (5 hosts)'],
   ['GUEST_COMEBACK', 'Guest — comeback'],
   ['GUEST_REVIEW_LANDED', 'Guest — review landed'],
+  ['HOST_LOW_RATINGS_RUN', 'Host — 3 low ratings'],
+  ['ACCOUNT_PAUSED_BY_USER', 'Host — paused by user'],
 ];
 
 // The fields this sync owns. Order is part of the hash — changing it re-hashes

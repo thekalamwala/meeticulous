@@ -174,12 +174,14 @@ const TEMPLATES = [
     preview_text: 'Your booking with {{vendor_name}} was cancelled.',
     email_category: 'Booking Cancelled',
     email_reason: 'You are receiving this email because a booking on your account was cancelled.',
+    // Receipt frame, warm first line (PR-8 empathy reframe). The cancellation
+    // itself is a known loss for the guest — acknowledge it, then show the record.
     html_content:
       h('Your booking was cancelled') +
-      lead('The following booking has been cancelled:') +
+      lead("Sorry you won't be meeting {{vendor_name}} this time. If you paid for this booking, the refund is on its way — most reach you within 5–7 working days.") +
       C.banner(t, { title: '{{service_name}}', sub: '{{booking_date}} at {{booking_time}} · with {{vendor_name}}' }) +
-      note('Questions? Reach us at {{support_email}}.'),
-    cta_label: 'Book again', cta_url: '{{dashboard_url}}',
+      lead("If anything feels off about this, just reply to this email — we'll take a look."),
+    cta_label: 'Find another slot', cta_url: '{{dashboard_url}}',
   }; })(),
 
   (() => { const t = themeForCategory('Booking Cancelled'); return {
@@ -682,11 +684,13 @@ const TEMPLATES = [
     preview_text: 'A booking you earned on was refunded, so that payout was reversed.',
     email_category: 'Payment Receipt',
     email_reason: 'You are receiving this email because a booking you earned on was refunded on Meeticulous.',
+    // Receipt frame, warm first line (PR-8 empathy reframe). A reversal reads
+    // as a punishment if we just state it — explain the WHY plainly first.
     html_content:
-      h('A booking was refunded, {{first_name}}') +
-      lead("One of your bookings was cancelled or refunded, so the {{payout_amount}} earning for it has been reversed and won't be paid out. Everything else you've earned is unaffected.") +
+      h('Heads up on a reversal, {{first_name}}') +
+      lead("A booking you earned on was cancelled or refunded, so the {{payout_amount}} for it has been pulled back. Not your mistake — refunds mean the money has to return to the guest, and whatever you were due from it goes with it.") +
       C.amountRow(t, 'Reversed', '{{payout_amount}}') +
-      lead('You can see the details in your transactions.'),
+      lead("Everything else you've earned is unaffected. If this reversal looks wrong to you, reply to this email and we'll check it ourselves."),
     cta_label: 'View transactions', cta_url: '{{dashboard_url}}',
   }; })(),
 
@@ -1284,6 +1288,37 @@ const TEMPLATES = [
       lead('Your review of <strong>{{vendor_name}}</strong> is now on their page. A future guest will read it and decide to try them.') +
       lead("That's the whole flywheel. Thank you."),
     cta_label: "See the host's page", cta_url: '{{host_url}}',
+  },
+
+  // ── Humanity track — empathy events (PR-8) ────────────────────────────────────
+  // Shubham-sender, Founder frame, no CTA. These are notes, not nudges.
+
+  {
+    event_key: 'HOST_LOW_RATINGS_RUN', audience: 'vendor', category: 'Engagement', sender_key: 'shubham',
+    name: 'Host — 3 low ratings', subject: 'Hey {{first_name}}, a private note',
+    preview_text: 'Short, private. Just a check-in.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because of a change in review pattern on your Meeticulous page. This email is private to you.',
+    html_content:
+      h('{{first_name}}, a private note') +
+      lead("Your last three reviews on Meeticulous came in at three stars or below. Could mean nothing. Could mean something to fix.") +
+      lead("Not a nudge, not a performance email. If you want to look at it together — pricing, slot length, scheduling, whatever's in the way — hit reply and I'll set up a short call. On me.") +
+      lead("Everything stays between us."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'ACCOUNT_PAUSED_BY_USER', audience: 'vendor', category: 'Engagement', sender_key: 'shubham',
+    name: 'Host — paused by user', subject: "We'll keep it safe, {{first_name}}",
+    preview_text: 'Your page is paused. Come back anytime.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you paused your hosting page on Meeticulous.',
+    html_content:
+      h("We'll hold your spot, {{first_name}}") +
+      lead("You paused your Meeticulous page. That's fine — things happen.") +
+      lead("Nothing is deleted. Your link, services, reviews, history — all here when you're back. Flip hosting back on from your dashboard whenever that is: tomorrow, next month, next year.") +
+      lead("Take care."),
+    cta_label: '', cta_url: '',
   },
 
 ];

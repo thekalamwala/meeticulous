@@ -420,6 +420,19 @@ setInterval(async () => {
   } catch (err) { console.error('Human moments cron error:', err.message); }
 }, 24 * 60 * 60 * 1000);
 
+// Empathy scans (Humanity track, PR-8). Daily low-ratings-run detection.
+// Double-gated: feature flag `empathy_track` (default OFF) + per-event
+// is_active/email_enabled (ON in v3.197). Private notes, forever dedupe.
+const { runEmpathyScans } = require('./services/empathyScans');
+setInterval(async () => {
+  try {
+    await runLocked('empathy-scans', async () => {
+      const r = await runEmpathyScans();
+      if (r.processed) console.log(`Empathy scans: ${r.processed} processed, ${r.skipped} skipped`);
+    }, { leaseMs: 3 * 60 * 60 * 1000 });
+  } catch (err) { console.error('Empathy scans cron error:', err.message); }
+}, 24 * 60 * 60 * 1000);
+
 // ── Sales CRM fast workers (60s / 5min). Sends gated by crm_admin_sends (default OFF). ──
 const crmMessageService = require('./services/crm/messageService');
 const crmSequenceService = require('./services/crm/sequenceService');
