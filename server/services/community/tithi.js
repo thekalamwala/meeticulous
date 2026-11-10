@@ -23,6 +23,8 @@ const anthropicClient = require('../ai/anthropicClient');
 const botBudget = require('../../lib/botBudget');
 const { isFeatureEnabled } = require('../featureFlags');
 const store = require('./store');
+const botService = require('../botService');
+const escalationService = require('../bot/escalationService');
 
 const FLAG = 'community_tithi';
 const UPDATES_SPACE = 'updates';
@@ -209,9 +211,81 @@ async function publishReleaseNote({ pr, release, approveFirst = false } = {}) {
   }
 }
 
+// ── Reply (first responder) ───────────────────────────────────────────────────
+// Tithi reads a member's post and replies ONCE, as a top-level comment. The grounded
+// answer, the escalation decision and all the guardrails (KB grounding, sensitive-topic
+// routing, abuse/injection, PII redaction, budget cap) are botService.askBot's job — we
+// don't re-implement any of it. When askBot can't confidently answer it returns its honest
+// handoff line AND escalate:true; we post that holding line so the member is never left in
+// silence (free-tier support = Tithi is the only helper until a human arrives), and hand
+// the thread to the team by email. A human replying in the thread is a normal member
+// comment — Tithi has already had her one turn, so she won't talk over them.
+
+// Best-effort team handoff for an unresolved community question. Reuses the existing bot
+// escalation path (bot_escalations row + email to SUPPORT_EMAIL). Never throws.
+async function escalateToTeam({ post, author, question, reason }) {
+  try {
+    await escalationService.recordAndNotify({
+      conversationId: null,
+      question,
+      reason: reason || 'community',
+      pageUrl: post.slug ? `/community/p/${post.slug}` : null,
+      identity: {
+        logged_in: !!post.author_id,
+        user_id: post.author_id || null,
+        is_host: author ? !!author.is_host : null,
+        name: author ? (author.name || author.first_name || null) : null,
+        email: null, // community responses never carry email; support looks the member up
+      },
+    });
+  } catch (_) { /* email/record is best-effort; the holding reply already went out */ }
+}
+
+/**
+ * replyToPost({ post }) — first-responder reply to a member post.
+ *   post: a community_posts row ({ id, author_id, body, slug, status }).
+ * Returns:
+ *   { skipped: 'flag_off' | 'no_identity' | 'self' | 'already_replied' | 'empty' | 'not_visible' | 'unavailable' }
+ *   { replied: true, commentId, escalated }
+ */
+async function replyToPost({ post } = {}) {
+  if (!post || !post.id) return { skipped: 'bad_post' };
+  if (!(await isFeatureEnabled(FLAG))) return { skipped: 'flag_off' };
+  const tithi = tithiUserId();
+  if (!tithi) return { skipped: 'no_identity' };
+  if (post.status && post.status !== 'visible') return { skipped: 'not_visible' };
+  if (post.author_id === tithi) return { skipped: 'self' }; // never reply to herself
+  if (!String(post.body || '').trim()) return { skipped: 'empty' };
+
+  try {
+    // One reply per post (first responder). Dedup before spending a model call.
+    if (await store.countCommentsByAuthorOnPost(post.id, tithi)) return { skipped: 'already_replied' };
+
+    const author = post.author_id ? await store.getProfile(post.author_id) : null;
+    const audience = author ? (author.is_host ? 'host' : 'guest') : null;
+
+    const res = await botService.askBot({ question: post.body, audience });
+    const body = String(res.answer || '').trim();
+    if (!body) return { skipped: 'empty' };
+
+    const comment = await store.insertComment({
+      post_id: post.id, author_id: tithi, body, status: 'visible',
+    });
+
+    if (res.escalate) {
+      await escalateToTeam({ post, author, question: post.body, reason: res.escalateReason || 'community' });
+    }
+    return { replied: true, commentId: comment.id, escalated: !!res.escalate };
+  } catch (e) {
+    if (e.code === 'COMMUNITY_UNAVAILABLE') return { skipped: 'unavailable' };
+    throw e;
+  }
+}
+
 module.exports = {
   VOICE, RELEASE_NOTE_RULES,
   classifyPr, kindFromPrefix, writeReleaseNote, fallbackNote,
   releaseLabel, cleanTitle, prSlug, publishReleaseNote,
+  replyToPost, escalateToTeam,
   _tithiUserId: tithiUserId,
 };

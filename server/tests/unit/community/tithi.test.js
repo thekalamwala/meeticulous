@@ -14,9 +14,16 @@ jest.mock('../../../services/community/store', () => ({
   getSpaceByKey: jest.fn(),
   insertPost: jest.fn(),
   refreshIndexable: jest.fn(),
+  getProfile: jest.fn(),
+  countCommentsByAuthorOnPost: jest.fn(),
+  insertComment: jest.fn(),
 }));
+jest.mock('../../../services/botService', () => ({ askBot: jest.fn() }));
+jest.mock('../../../services/bot/escalationService', () => ({ recordAndNotify: jest.fn() }));
 
 const { isFeatureEnabled } = require('../../../services/featureFlags');
+const botService = require('../../../services/botService');
+const escalationService = require('../../../services/bot/escalationService');
 const store = require('../../../services/community/store');
 const tithi = require('../../../services/community/tithi');
 
@@ -106,6 +113,55 @@ describe('publishReleaseNote gating', () => {
     const err = new Error('relation does not exist'); err.code = 'COMMUNITY_UNAVAILABLE';
     store.getSpaceByKey.mockRejectedValue(err);
     expect(await tithi.publishReleaseNote({ pr: PR, release: '2026-11' })).toEqual({ skipped: 'unavailable' });
+  });
+});
+
+describe('replyToPost (first responder)', () => {
+  const POST = { id: 'post-1', author_id: 'member-1', body: 'how do payouts work?', slug: 'p-slug', status: 'visible' };
+
+  beforeEach(() => {
+    store.countCommentsByAuthorOnPost.mockResolvedValue(0);
+    store.getProfile.mockResolvedValue({ id: 'member-1', is_host: true, name: 'Asha' });
+    store.insertComment.mockResolvedValue({ id: 'comment-1' });
+    botService.askBot.mockResolvedValue({ answer: 'Payouts clear in 24-48h.', escalate: false });
+  });
+
+  test('flag off -> skipped, no model call', async () => {
+    isFeatureEnabled.mockResolvedValue(false);
+    expect(await tithi.replyToPost({ post: POST })).toEqual({ skipped: 'flag_off' });
+    expect(botService.askBot).not.toHaveBeenCalled();
+  });
+
+  test('never replies to herself', async () => {
+    expect(await tithi.replyToPost({ post: { ...POST, author_id: 'tithi-uuid' } })).toEqual({ skipped: 'self' });
+  });
+
+  test('one reply per post (dedup)', async () => {
+    store.countCommentsByAuthorOnPost.mockResolvedValue(1);
+    expect(await tithi.replyToPost({ post: POST })).toEqual({ skipped: 'already_replied' });
+    expect(store.insertComment).not.toHaveBeenCalled();
+  });
+
+  test('grounded answer is posted as a Tithi comment with the author audience', async () => {
+    const res = await tithi.replyToPost({ post: POST });
+    expect(res).toEqual({ replied: true, commentId: 'comment-1', escalated: false });
+    expect(botService.askBot).toHaveBeenCalledWith({ question: POST.body, audience: 'host' });
+    expect(store.insertComment).toHaveBeenCalledWith(expect.objectContaining({
+      post_id: 'post-1', author_id: 'tithi-uuid', body: 'Payouts clear in 24-48h.', status: 'visible',
+    }));
+    expect(escalationService.recordAndNotify).not.toHaveBeenCalled();
+  });
+
+  test('escalation: posts the holding reply AND emails the team', async () => {
+    botService.askBot.mockResolvedValue({ answer: "I'm getting a human on this.", escalate: true, escalateReason: 'sensitive' });
+    const res = await tithi.replyToPost({ post: POST });
+    expect(res).toEqual({ replied: true, commentId: 'comment-1', escalated: true });
+    expect(store.insertComment).toHaveBeenCalled(); // member never left in silence
+    expect(escalationService.recordAndNotify).toHaveBeenCalledTimes(1);
+  });
+
+  test('a removed post is not answered', async () => {
+    expect(await tithi.replyToPost({ post: { ...POST, status: 'removed' } })).toEqual({ skipped: 'not_visible' });
   });
 });
 
