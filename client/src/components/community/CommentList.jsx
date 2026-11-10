@@ -23,12 +23,18 @@ export default function CommentList({ comments, acceptedId, viewerId, canAccept,
   const byId = new Map(comments.map((c) => [c.id, c]));
   const accepted = comments.find((c) => c.id === acceptedId && !TOMBSTONE[c.status]);
   const ordered = accepted ? [accepted, ...comments.filter((c) => c !== accepted)] : comments;
+  // A removed/deleted reply is only kept as a tombstone when a visible reply hangs off it,
+  // so the thread still reads. A childless tombstone adds nothing and would make the row
+  // count exceed the visible comment_count in the heading, so drop it.
+  // ponytail: direct visible child only; a tombstone under a tombstone chain is rare enough to keep.
+  const hasVisibleChild = (id) => comments.some((k) => k.parent_id === id && !TOMBSTONE[k.status]);
 
   return (
     <>
     <ol className="flex list-none flex-col gap-4 p-0">
       {ordered.map((c) => {
         if (TOMBSTONE[c.status]) {
+          if (!hasVisibleChild(c.id)) return null; // childless removed reply: drop, no empty row
           return (
             <li key={c.id} id={`c-${c.id}`} className="flex gap-4 rounded-xl bg-neutral-100 p-5 sm:p-6">
               <Avatar author={null} />
@@ -66,23 +72,27 @@ export default function CommentList({ comments, acceptedId, viewerId, canAccept,
               ) : (
                 <p className="text-sm leading-relaxed text-ink"><LinkifiedText text={c.body} /></p>
               )}
-              <div className="-mx-3 -mb-3 flex items-center gap-1">
-                <LikeButton targetType="comment" id={c.id} liked={c.viewer?.liked} count={c.like_count} />
-                <button type="button" onClick={() => onReply?.(c)} className="mt-btn mt-btn--ghost mt-btn--s font-medium text-muted hover:text-maroon">
-                  Reply
-                </button>
-                {canAccept && !isAccepted && (
-                  <button type="button" onClick={() => onAccept?.(c)} className="mt-btn mt-btn--ghost mt-btn--s font-medium text-muted hover:text-maroon">Mark as answer</button>
-                )}
-                <span className="ml-auto">
-                  <MoreMenu
-                    label="More actions for this reply"
-                    items={c.author?.id && c.author.id === viewerId
-                      ? [{ label: 'Edit', onSelect: () => setEditing(c.id) }, { label: 'Delete', onSelect: () => setDeleting(c) }]
-                      : [{ label: 'Report reply', onSelect: () => onReport?.(c) }]}
-                  />
-                </span>
-              </div>
+              {/* A still-saving reply has a temp id the server would 400 on, so hide every
+                  action (like / reply / mark-answer / edit-delete-report) until it settles. */}
+              {!c.pending && (
+                <div className="-mx-3 -mb-3 flex items-center gap-1">
+                  <LikeButton targetType="comment" id={c.id} liked={c.viewer?.liked} count={c.like_count} />
+                  <button type="button" onClick={() => onReply?.(c)} className="mt-btn mt-btn--ghost mt-btn--s font-medium text-muted hover:text-maroon">
+                    Reply
+                  </button>
+                  {canAccept && !isAccepted && (
+                    <button type="button" onClick={() => onAccept?.(c)} className="mt-btn mt-btn--ghost mt-btn--s font-medium text-muted hover:text-maroon">Mark as answer</button>
+                  )}
+                  <span className="ml-auto">
+                    <MoreMenu
+                      label="More actions for this reply"
+                      items={c.author?.id && c.author.id === viewerId
+                        ? [{ label: 'Edit', onSelect: () => setEditing(c.id) }, { label: 'Delete', onSelect: () => setDeleting(c) }]
+                        : [{ label: 'Report reply', onSelect: () => onReport?.(c) }]}
+                    />
+                  </span>
+                </div>
+              )}
             </div>
           </li>
         );
