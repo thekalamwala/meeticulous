@@ -1,0 +1,56 @@
+#!/bin/sh
+# Pre-push gate — runs the SAME suite CI runs, locally, before anything reaches
+# GitHub. Added after 30 days of "PR run failed: CI" emails: every one was a
+# unit test that broke on push and was caught only after the fact (6 of 9 Nov
+# failures were red client/server tests). This stops a red push at the source.
+#
+# Mirrors .github/workflows/ci.yml exactly:
+#   server/**                         -> cd server && npm run test:unit   (jest)
+#   client/** or docs/help/**         -> cd client && npx vitest run      (vitest)
+# Only the half you touched runs (same paths-filter as CI). Docs-only push runs
+# nothing. Lockfile install is skipped — it assumes your node_modules are current;
+# CI still does the clean `npm ci`.
+#
+# Install (once per clone):  git config core.hooksPath .githooks
+# Skip in an emergency:      git push --no-verify
+set -e
+
+ROOT=$(git rev-parse --show-toplevel)
+cd "$ROOT"
+
+# What is this push adding vs the branch it tracks? Fall back to origin/main, then
+# to HEAD~1, so a detached or first push still diffs something sane.
+BASE=$(git merge-base HEAD '@{upstream}' 2>/dev/null) \
+  || BASE=$(git merge-base HEAD origin/main 2>/dev/null) \
+  || BASE=$(git rev-parse HEAD~1 2>/dev/null) \
+  || BASE=$(git hash-object -t tree /dev/null)
+
+CHANGED=$(git diff --name-only "$BASE" HEAD)
+[ -z "$CHANGED" ] && exit 0
+
+echo "$CHANGED" | grep -qE '^server/'                 && RUN_SERVER=1 || RUN_SERVER=0
+echo "$CHANGED" | grep -qE '^(client/|docs/help/)'    && RUN_CLIENT=1 || RUN_CLIENT=0
+
+if [ "$RUN_SERVER" = 0 ] && [ "$RUN_CLIENT" = 0 ]; then
+  echo "pre-push: no server/ or client/ changes — skipping tests."
+  exit 0
+fi
+
+if [ "$RUN_SERVER" = 1 ]; then
+  echo "pre-push: running SERVER unit tests (jest)…"
+  # Same dummy test env CI sets (ci.yml) so env-reading tests don't crash. Not real.
+  NODE_ENV=test \
+  SUPER_ADMIN_JWT_SECRET=ci-test-secret-not-real \
+  OAUTH_STATE_SECRET=ci-test-secret-not-real \
+  GOOGLE_TOKEN_KEY=ci-test-32-byte-key-000000000000 \
+  CLIENT_URL=http://localhost:5173 \
+  AISENSY_WEBHOOK_SECRET=ci-test-secret-not-real \
+  npm --prefix server run test:unit
+fi
+
+if [ "$RUN_CLIENT" = 1 ]; then
+  echo "pre-push: running CLIENT unit tests (vitest)…"
+  ( cd client && npx vitest run )
+fi
+
+echo "pre-push: all gated tests passed."
