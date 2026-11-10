@@ -34,6 +34,7 @@ If your branch goes stale, rebase before opening the PR: `git fetch && git rebas
 - **One git worktree per session** so 4 people + their agents don't collide. **One writer per set of files** at a time.
 - Claude **stops at the PR**; a human reviews and merges — keeps a person between the code and prod.
 - Before finishing a change: `cd server && npm test` and `cd client && npm run build`. Only flag failures your change actually caused.
+- **Install the pre-push gate (once per clone):** `git config core.hooksPath .githooks` — or run `sh scripts/setup-hooks.sh`. It runs the *exact* CI suite (server jest / client vitest, only the half you touched) locally before every push, so a red test can't reach GitHub. Emergency bypass: `git push --no-verify`.
 
 ## Want hard enforcement later?
 
