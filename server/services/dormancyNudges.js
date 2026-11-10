@@ -98,6 +98,10 @@ async function runDormancyNudges() {
         phone: p.phone || undefined,
         name: firstName,
         audience: 'vendor',
+        // AiSensy template params: see docs/aisensy-template-spec.md.
+        // Dormant 30d/60d: {{1}} = first name, {{2}} = dashboard deep link.
+        // 90d stays email-only (whatsapp_enabled=false on the event row).
+        templateParams: [firstName, dashboardUrl],
         emailData: { first_name: firstName, dashboard_url: dashboardUrl },
         recipientUserId: p.id,
       },
