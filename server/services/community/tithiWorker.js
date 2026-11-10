@@ -68,15 +68,24 @@ async function emailDraft(pr, draft) {
   } catch (_) { /* best-effort */ }
 }
 
+// Publish one merged PR's release note (or draft-and-email in approve-first mode).
+// The single entry point for BOTH the poll and the instant GitHub webhook, so the
+// AUTOPOST gate + draft email behave identically no matter what triggered it.
+async function handleMergedPr(pr, release) {
+  const res = await tithi.publishReleaseNote({ pr, release, approveFirst: !AUTOPOST });
+  if (res.draft) await emailDraft(pr, res);
+  return res;
+}
+
 /** Poll merged release PRs → publish (or draft-and-email) one note each. */
 async function runReleaseNotePoll() {
   const branch = releaseBranch();
   const prs = await fetchMergedPrs(branch);
   let posted = 0; let drafted = 0; let skipped = 0;
   for (const pr of prs) {
-    const res = await tithi.publishReleaseNote({ pr, release: branch, approveFirst: !AUTOPOST });
+    const res = await handleMergedPr(pr, branch);
     if (res.posted) posted += 1;
-    else if (res.draft) { drafted += 1; await emailDraft(pr, res); }
+    else if (res.draft) drafted += 1;
     else skipped += 1;
   }
   return { posted, drafted, skipped, scanned: prs.length };
@@ -142,6 +151,6 @@ async function runDailyDigest() {
 }
 
 module.exports = {
-  runReleaseNotePoll, runReplySweep, runDailyDigest,
+  runReleaseNotePoll, runReplySweep, runDailyDigest, handleMergedPr,
   releaseBranch, fetchMergedPrs, _AUTOPOST: AUTOPOST,
 };
