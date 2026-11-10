@@ -105,20 +105,26 @@ async function scanFirstReviews() {
   const out = [];
   for (const [hostId, first] of byHost) {
     const { data: host } = await supabaseAdmin.from('profiles')
-      .select('id, name, email, is_internal, is_banned').eq('id', hostId).maybeSingle();
+      .select('id, name, email, phone, is_internal, is_banned').eq('id', hostId).maybeSingle();
     if (!host || host.is_internal || host.is_banned || !host.email) continue;
 
     const { data: reviewer } = await supabaseAdmin.from('profiles')
       .select('name').eq('id', first.reviewer_id).maybeSingle();
     const reviewerFirst = firstName(reviewer?.name);
+    const hostFirst = firstName(host.name);
+    const dashUrl = `${BASE()}/dashboard/reviews`;
 
     out.push({
       event: 'HOST_FIRST_REVIEW',
       destination: host.email,
       dedupeDays: 365 * 5,
-      payload: { email: host.email, name: firstName(host.name), audience: 'vendor',
-        emailData: { first_name: firstName(host.name), reviewer_first_name: reviewerFirst,
-          dashboard_url: `${BASE()}/dashboard/reviews` },
+      // AiSensy "First Review - Vendor": {{1}} = host first name,
+      // {{2}} = reviewer first name, {{3}} = dashboard link.
+      payload: { email: host.email, phone: host.phone || undefined,
+        name: hostFirst, audience: 'vendor',
+        templateParams: [hostFirst, reviewerFirst, dashUrl],
+        emailData: { first_name: hostFirst, reviewer_first_name: reviewerFirst,
+          dashboard_url: dashUrl },
         recipientUserId: host.id },
     });
 
@@ -127,9 +133,12 @@ async function scanFirstReviews() {
         event: 'HOST_FIRST_FIVE_STAR',
         destination: host.email,
         dedupeDays: 365 * 5,
-        payload: { email: host.email, name: firstName(host.name), audience: 'vendor',
-          emailData: { first_name: firstName(host.name), reviewer_first_name: reviewerFirst,
-            dashboard_url: `${BASE()}/dashboard/reviews` },
+        // AiSensy "First Five Star - Vendor": same param shape as First Review.
+        payload: { email: host.email, phone: host.phone || undefined,
+          name: hostFirst, audience: 'vendor',
+          templateParams: [hostFirst, reviewerFirst, dashUrl],
+          emailData: { first_name: hostFirst, reviewer_first_name: reviewerFirst,
+            dashboard_url: dashUrl },
           recipientUserId: host.id },
       });
     }
@@ -159,14 +168,19 @@ async function scanPerfectMonth() {
   for (const [hostId, agg] of perHost) {
     if (agg.total < 5 || agg.completed !== agg.total) continue;
     const { data: host } = await supabaseAdmin.from('profiles')
-      .select('id, name, email, is_internal, is_banned').eq('id', hostId).maybeSingle();
+      .select('id, name, email, phone, is_internal, is_banned').eq('id', hostId).maybeSingle();
     if (!host || host.is_internal || host.is_banned || !host.email) continue;
+    const hostFirst = firstName(host.name);
     out.push({
       event: 'HOST_PERFECT_MONTH',
       destination: host.email,
       dedupeDays: 90,
-      payload: { email: host.email, name: firstName(host.name), audience: 'vendor',
-        emailData: { first_name: firstName(host.name), month_name: monthName, completed_count: agg.completed },
+      // AiSensy "Perfect Month - Vendor": {{1}} = host first name,
+      // {{2}} = completed count, {{3}} = month name.
+      payload: { email: host.email, phone: host.phone || undefined,
+        name: hostFirst, audience: 'vendor',
+        templateParams: [hostFirst, String(agg.completed), monthName],
+        emailData: { first_name: hostFirst, month_name: monthName, completed_count: agg.completed },
         recipientUserId: host.id },
     });
   }

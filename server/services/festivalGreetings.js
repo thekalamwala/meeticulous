@@ -69,7 +69,7 @@ async function recipientsFor(filter) {
   // Pre-filter in SQL where we can; final sanity + internal exclusion in code.
   let q = supabaseAdmin
     .from('profiles')
-    .select('id, name, email, profession, is_internal, is_banned')
+    .select('id, name, email, phone, profession, is_internal, is_banned')
     .not('email', 'is', null);
   if (filter.kind === 'profession' && filter.slugs.length) {
     q = q.in('profession', filter.slugs);
@@ -104,8 +104,11 @@ async function runFestivalGreetings({ dateOverride } = {}) {
         event: row.event_key,
         data: {
           email: p.email,
+          phone: p.phone || undefined,
           name: firstName,
           audience: filter.kind === 'profession' ? 'vendor' : 'all',
+          // AiSensy greeting templates all share the same shape: {{1}} = first name.
+          templateParams: [firstName],
           emailData: { first_name: firstName },
           recipientUserId: p.id,
           metadata: { source: 'festivalGreetings', date },

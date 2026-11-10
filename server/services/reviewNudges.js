@@ -84,8 +84,14 @@ async function runReviewNudges() {
       event: 'GUEST_REVIEW_NUDGE',
       data: {
         email: b.guest_email,
+        // bookings has no guest phone column today; WA will no-op on nulls.
+        // When guest phone is wired in (future), the engine picks it up and
+        // Review Request - Guest fires with the same param shape below.
         name: firstName,
         audience: 'all',
+        // AiSensy "Review Request - Guest": {{1}} = guest first name,
+        // {{2}} = host (vendor) name, {{3}} = review deep link.
+        templateParams: [firstName, host.name || 'your host', reviewUrl],
         emailData: {
           first_name: firstName,
           vendor_name: host.name || 'your host',
