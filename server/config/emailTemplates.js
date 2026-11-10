@@ -897,6 +897,113 @@ const TEMPLATES = [
     cta_label: 'Read the guidelines', cta_url: '{{community_url}}',
   },
 
+  // ── Humanity track — human-moment events (PR-7) ───────────────────────────────
+  // All Shubham, Founder frame. Detail-led openers that prove the email is real.
+
+  {
+    event_key: 'HOST_FIRST_REVIEW', audience: 'vendor', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Host — first review', subject: 'Someone said something nice about you',
+    preview_text: 'Your first review is live, {{first_name}}.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because someone left a review for you on Meeticulous.',
+    html_content:
+      h('{{first_name}}, your first review is in') +
+      lead('{{reviewer_first_name}} just left a review on your page. You can read it on your dashboard.') +
+      lead("First ones mean the most. The stranger just told a future stranger you were worth it."),
+    cta_label: 'Read it', cta_url: '{{dashboard_url}}',
+  },
+
+  {
+    event_key: 'HOST_FIRST_FIVE_STAR', audience: 'vendor', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Host — first 5-star', subject: 'Your first five stars, {{first_name}}',
+    preview_text: 'Your first 5-star review just landed.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you received a 5-star review on Meeticulous.',
+    html_content:
+      h('Five stars, {{first_name}}') +
+      lead("{{reviewer_first_name}} rated your session five stars. That's not a number — that's someone saying they'd send a friend to you.") +
+      lead("Mubarak. Take the win."),
+    cta_label: 'Read the review', cta_url: '{{dashboard_url}}',
+  },
+
+  {
+    event_key: 'HOST_PERFECT_MONTH', audience: 'vendor', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Host — perfect month', subject: 'A perfect month, {{first_name}}',
+    preview_text: '100% show-up in {{month_name}} — that is rare.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because every booking on your page in the last month was completed.',
+    html_content:
+      h("A clean month, {{first_name}}") +
+      lead("{{completed_count}} bookings in {{month_name}}. Zero no-shows. Zero cancellations.") +
+      lead("This is harder than it looks. It means your reminders landed, your guests showed up, and whatever your session is — it was worth the trip."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'HOST_BOOKING_STREAK', audience: 'vendor', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Host — 3-week streak', subject: 'Three weeks in a row, {{first_name}}',
+    preview_text: 'At least one booking every week for three weeks.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because your page took bookings three weeks in a row.',
+    html_content:
+      h('Three weeks, {{first_name}}') +
+      lead("At least one booking every week for the last three weeks on your Meeticulous page. That's a rhythm.") +
+      lead("Keep it going. Reply if you want help pushing it to four."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'HOST_FIRST_REPEAT', audience: 'vendor', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Host — first repeat guest', subject: 'They came back, {{first_name}}',
+    preview_text: '{{guest_first_name}} booked you again.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because a past guest booked you again on Meeticulous.',
+    html_content:
+      h('{{guest_first_name}} came back') +
+      lead("{{guest_first_name}} just booked a second session with you. First repeat is the real signal — whatever you did the first time worked.") +
+      lead("Welcome them back."),
+    cta_label: 'Open the booking', cta_url: '{{dashboard_url}}',
+  },
+
+  {
+    event_key: 'GUEST_EXPLORER_5_HOSTS', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Guest — explorer (5 hosts)', subject: 'Five hosts in, {{first_name}}',
+    preview_text: "You've booked five different hosts on Meeticulous.",
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you have booked five different hosts on Meeticulous.',
+    html_content:
+      h('Five hosts, {{first_name}}') +
+      lead("You've booked five different hosts on Meeticulous. Most guests don't — most settle into one.") +
+      lead("Thanks for exploring. If any of them is worth a friend knowing about, your words travel further than our ads do."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'GUEST_COMEBACK', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Guest — comeback', subject: 'Good to see you again, {{first_name}}',
+    preview_text: "Welcome back — it's been a while.",
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you returned to Meeticulous after a long break.',
+    html_content:
+      h('Good to see you, {{first_name}}') +
+      lead("It's been a while since your last booking on Meeticulous — and you just made another one. Noticed, and figured I'd write.") +
+      lead("Nothing to do. Just wanted to say welcome back."),
+    cta_label: '', cta_url: '',
+  },
+
+  {
+    event_key: 'GUEST_REVIEW_LANDED', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
+    name: 'Guest — review landed', subject: 'Your words reached them',
+    preview_text: 'Your review of {{vendor_name}} is live.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because your review is now live on the host\'s page.',
+    html_content:
+      h('{{first_name}}, your words are live') +
+      lead('Your review of <strong>{{vendor_name}}</strong> is now on their page. A future guest will read it and decide to try them.') +
+      lead("That's the whole flywheel. Thank you."),
+    cta_label: "See the host's page", cta_url: '{{host_url}}',
+  },
+
 ];
 
 module.exports = TEMPLATES;

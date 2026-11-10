@@ -363,6 +363,20 @@ setInterval(async () => {
   } catch (err) { console.error('Activation nudges cron error:', err.message); }
 }, 30 * 60 * 1000);
 
+// Human moments (Humanity track, PR-7). Daily scan over reviews + bookings;
+// fires first-review, first-5-star, perfect-month and more. Double-gated:
+// feature flag `human_moments` (default OFF) + per-event is_active/email_enabled
+// (ON in v3.196). Dedupe inside, quiet-hours 09-20 IST.
+const { runHumanMoments } = require('./services/humanMoments');
+setInterval(async () => {
+  try {
+    await runLocked('human-moments', async () => {
+      const r = await runHumanMoments();
+      if (r.processed) console.log(`Human moments: ${r.processed} processed, ${r.skipped} skipped`);
+    }, { leaseMs: 3 * 60 * 60 * 1000 });
+  } catch (err) { console.error('Human moments cron error:', err.message); }
+}, 24 * 60 * 60 * 1000);
+
 // ── Sales CRM fast workers (60s / 5min). Sends gated by crm_admin_sends (default OFF). ──
 const crmMessageService = require('./services/crm/messageService');
 const crmSequenceService = require('./services/crm/sequenceService');

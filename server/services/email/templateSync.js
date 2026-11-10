@@ -60,6 +60,14 @@ const EMAIL_ONLY_EVENTS = [
   ['BIRTHDAY', 'Birthday'],
   ['ACCOUNT_ANNIVERSARY', 'Account Anniversary'],
   ['NEWSLETTER_WELCOME', 'Newsletter Welcome'],
+  ['HOST_FIRST_REVIEW', 'Host — first review'],
+  ['HOST_FIRST_FIVE_STAR', 'Host — first 5-star'],
+  ['HOST_PERFECT_MONTH', 'Host — perfect month'],
+  ['HOST_BOOKING_STREAK', 'Host — 3-week streak'],
+  ['HOST_FIRST_REPEAT', 'Host — first repeat guest'],
+  ['GUEST_EXPLORER_5_HOSTS', 'Guest — explorer (5 hosts)'],
+  ['GUEST_COMEBACK', 'Guest — comeback'],
+  ['GUEST_REVIEW_LANDED', 'Guest — review landed'],
 ];
 
 // The fields this sync owns. Order is part of the hash — changing it re-hashes
