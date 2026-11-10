@@ -37,13 +37,14 @@ const addDays = (date, n) => new Date(date.getFullYear(), date.getMonth(), date.
 const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 const initialOf = (name) => (name || "G").trim().charAt(0).toUpperCase();
 
-// Soft card tones per status — purple / green / orange / pink variations.
+// Status shown by a colored left stripe + dot only — white card, no pastel fill
+// (brand guide: clean cards, maroon accents, no tinted boxes behind data).
 const CARD_TONE = {
-  confirmed: { card: "border-l-maroon-500 bg-maroon-100", time: "text-neutral-600", dot: "bg-maroon-500" },
-  completed: { card: "border-l-success-fg bg-success-bg", time: "text-success-fg", dot: "bg-success-fg" },
-  pending:   { card: "border-l-warning-fg bg-warning-bg", time: "text-warning-fg", dot: "bg-warning-fg" },
-  no_show:   { card: "border-l-maroon bg-pink-100", time: "text-maroon-500", dot: "bg-maroon" },
-  cancelled: { card: "border-l-neutral-400 bg-neutral-100", time: "text-neutral-500", dot: "bg-neutral-400" },
+  confirmed: { card: "bg-white", time: "text-neutral-600", dot: "bg-maroon-500" },
+  completed: { card: "bg-white", time: "text-success-fg", dot: "bg-success-fg" },
+  pending:   { card: "bg-white", time: "text-warning-fg", dot: "bg-warning-fg" },
+  no_show:   { card: "bg-white", time: "text-maroon-500", dot: "bg-maroon" },
+  cancelled: { card: "bg-white", time: "text-neutral-500", dot: "bg-neutral-400" },
 };
 const tone = (status) => CARD_TONE[String(status || "").toLowerCase()] || CARD_TONE.confirmed;
 
@@ -434,7 +435,7 @@ const BookingCard = ({ booking, onOpen }) => {
   const t = tone(booking.status);
   return (
     <button type="button" onClick={() => onOpen(booking)}
-      className={cn("flex w-full items-center gap-2 rounded-xl border-l-[3px] p-2 text-left transition hover:-translate-y-0.5 hover:shadow-[0_6px_14px_-10px_rgba(23,22,74,0.45)]", t.card)}>
+      className={cn("flex w-full items-center gap-2 rounded-xl border border-maroon/10 p-2 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_6px_14px_-10px_rgba(23,22,74,0.45)]", t.card)}>
       <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white text-[11px] font-bold text-primary shadow-sm">{initialOf(booking.guest_name)}</span>
       <span className="min-w-0 flex-1">
         <span className={cn("block text-[11px] font-semibold leading-tight", t.time)}>{fmtTime(booking.scheduled_at)}</span>
@@ -648,7 +649,7 @@ const Bookings = () => {
                 <p className={cn("text-[11px] font-bold", sameDay(date, today) ? "text-primary" : inMonth ? "text-ink/60" : "text-ink/25")}>{date.getDate()}</p>
                 <div className="mt-1 space-y-1">
                   {dayBookings.slice(0, 3).map((b) => (
-                    <button key={b.id} type="button" onClick={() => setSelected(b)} className={cn("block w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-semibold text-ink", tone(b.status).card)}>
+                    <button key={b.id} type="button" onClick={() => setSelected(b)} className={cn("block w-full truncate rounded border border-maroon/10 px-1 py-0.5 text-left text-[10px] font-semibold text-ink", tone(b.status).card)}>
                       {fmtTime(b.scheduled_at).replace(":00", "")} {b.services?.title}
                     </button>
                   ))}
