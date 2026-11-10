@@ -73,7 +73,7 @@ export default function SubmitReview() {
 
   const hostSignIn = () => {
     try { sessionStorage.setItem(RETURN_KEY, "/submit-review"); } catch { /* storage blocked: lands on dashboard */ }
-    navigate("/login-as-vendor");
+    navigate("/login?as=host");
   };
 
   const submit = async (e) => {

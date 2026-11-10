@@ -58,7 +58,7 @@ import ForFaqIntro from '../../components/common/ForFaqIntro';
 const WHATSAPP_LOGO = '/for/astrologers/whatsapp.svg'; // green WhatsApp mark (public asset)
 
 const START = '/become-a-host';      // real host signup funnel
-const LOGIN = '/login-as-vendor'; // host login (Google-only door)
+const LOGIN = '/login?as=host'; // host login (Google-only door)
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
 

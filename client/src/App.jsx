@@ -48,7 +48,7 @@ const Home           = lazy(() => import('./pages/Home'));
 // sections cut from the live homepage stay reachable for future reuse.
 const HomeArchive    = lazy(() => import('./pages/HomeArchive'));
 const AgentTithi     = lazy(() => import('./pages/AgentTithi'));
-const Login          = lazy(() => import('./pages/Login'));
+const UnifiedLogin   = lazy(() => import('./pages/UnifiedLogin'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword  = lazy(() => import('./pages/ResetPassword'));
 const ErrorPage      = lazy(() => import('./pages/ErrorPage'));
@@ -96,7 +96,8 @@ const ZohoBookingsAlternative = lazy(() => import('./pages/compare/ZohoBookingsA
 // Vendor auth: Google signup/login, plus LinkedIn behind the host_linkedin_login flag
 const BecomeAHost    = lazy(() => import('./pages/BecomeAHost'));
 const InviteLanding  = lazy(() => import('./pages/InviteLanding'));
-const HostLogin      = lazy(() => import('./pages/HostLogin'));
+// Host + guest login share one page (UnifiedLogin); /login-as-vendor is kept as an
+// alias so server OAuth callbacks and old links still resolve (never linked publicly).
 const Changelog      = lazy(() => import('./pages/Changelog'));
 const ChangelogRelease = lazy(() => import('./pages/ChangelogRelease'));
 const Pricing        = lazy(() => import('./pages/Pricing'));
@@ -510,7 +511,7 @@ function App() {
             <Route key={c} path={`/lp/${c}-alternative`} element={<Navigate to={`/compare/${c}-alternative`} replace />} />
           ))}
           <Route path="/lp/*" element={<Navigate to="/compare" replace />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<UnifiedLogin />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/invite/:slug" element={<InviteLanding />} />
@@ -571,7 +572,7 @@ function App() {
           {/* Host signup — Google (+ LinkedIn when host_linkedin_login is ON) */}
           <Route path="/become-a-host" element={<BecomeAHost />} />
           {/* Host login door (Google, + LinkedIn when host_linkedin_login is ON) — also the Google/LinkedIn callback error target. */}
-          <Route path="/login-as-vendor" element={<HostLogin />} />
+          <Route path="/login-as-vendor" element={<UnifiedLogin />} />
           <Route path="/auth/google/done" element={<GoogleAuthDone />} />
           <Route path="/auth/linkedin/done" element={<LinkedinAuthDone />} />
 
