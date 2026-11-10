@@ -415,7 +415,7 @@ const Transactions = () => {
   const to = Math.min(page * PAGE_SIZE, total);
 
   return (
-    <div className="rounded-3xl bg-gradient-to-b from-blush/40 via-transparent to-transparent p-1">
+    <div className="rounded-3xl bg-blush/40 p-1">
       {/* ── Page heading ─────────────────────────────────────────────── */}
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
