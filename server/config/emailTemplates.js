@@ -903,6 +903,51 @@ const TEMPLATES = [
     cta_label: 'Read the guidelines', cta_url: '{{community_url}}',
   },
 
+  // ── Dormant / win-back track (sent by services/dormancyNudges.js) ──────────
+  // Three stages escalating in voice and tone. All email-only, Founder frame.
+  // 30d = soft nudge (Tithi), 60d = personal (Shubham), 90d = goodbye-or-stay.
+
+  {
+    event_key: 'HOST_DORMANT_30D', audience: 'vendor', category: 'Engagement', sender_key: 'tithi',
+    name: 'Host — 30 days quiet', subject: 'Everything ok, {{first_name}}?',
+    preview_text: "It's been a quiet month on your page.",
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are a Meeticulous host and your page has had no bookings for 30 days.',
+    html_content:
+      h('Everything ok, {{first_name}}?') +
+      lead("It's been a quiet month on your Meeticulous page — no new bookings in the last 30 days.") +
+      lead("Sometimes life gets in the way, sometimes a page needs a refresh. Either way, we'd love to help if there's anything we can do — just reply to this email."),
+    cta_label: 'Open my dashboard', cta_url: '{{dashboard_url}}',
+  },
+
+  {
+    event_key: 'HOST_DORMANT_60D', audience: 'vendor', category: 'Engagement', sender_key: 'shubham',
+    name: 'Host — 60 days quiet', subject: 'A note from Shubham',
+    preview_text: "I noticed your page has been quiet — just checking in.",
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are a Meeticulous host and your page has had no bookings for 60 days.',
+    html_content:
+      h('{{first_name}}, a quick note') +
+      lead("It's been two months since your last booking on Meeticulous, so I figured I'd write.") +
+      lead("I don't know what changed — the work, the audience, the platform. I'd like to. If you have five minutes, hit reply and tell me what's going on. I read every one of these.") +
+      lead("No pitch. Just curious."),
+    cta_label: 'Open my dashboard', cta_url: '{{dashboard_url}}',
+  },
+
+  {
+    event_key: 'HOST_DORMANT_90D', audience: 'vendor', category: 'Engagement', sender_key: 'shubham',
+    name: 'Host — 90 days quiet (final)', subject: 'Last note from me',
+    preview_text: "Your page is still here whenever you are.",
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you are a Meeticulous host and your page has had no bookings for 90 days.',
+    html_content:
+      h('Last one, {{first_name}}') +
+      lead("Three months. I'll stop writing after this.") +
+      lead("Your page is still here — same link, same services, same rate. Come back whenever you're ready, or tell me to delete it. No wrong answer.") +
+      lead("Thanks for trying Meeticulous. Reply any time."),
+    cta_label: 'Open my dashboard', cta_url: '{{dashboard_url}}',
+  },
+
 ];
 
 module.exports = TEMPLATES;

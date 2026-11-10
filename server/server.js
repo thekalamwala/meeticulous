@@ -363,6 +363,20 @@ setInterval(async () => {
   } catch (err) { console.error('Activation nudges cron error:', err.message); }
 }, 30 * 60 * 1000);
 
+// Host dormant nudges (30 / 60 / 90 days, once per day). Double-gated:
+// feature flag `dormant_nudges` (default OFF) + per-event is_active/email_enabled
+// (ON from v3.193, so flipping the flag alone turns the track live).
+// Quiet-hours + 60-day dedupe inside.
+const { runDormancyNudges } = require('./services/dormancyNudges');
+setInterval(async () => {
+  try {
+    await runLocked('dormant-nudges', async () => {
+      const r = await runDormancyNudges();
+      if (r.processed) console.log(`Dormant nudges: ${r.processed} processed, ${r.skipped} skipped`);
+    }, { leaseMs: 6 * 60 * 60 * 1000 });
+  } catch (err) { console.error('Dormant nudges cron error:', err.message); }
+}, 24 * 60 * 60 * 1000);
+
 // ── Sales CRM fast workers (60s / 5min). Sends gated by crm_admin_sends (default OFF). ──
 const crmMessageService = require('./services/crm/messageService');
 const crmSequenceService = require('./services/crm/sequenceService');
