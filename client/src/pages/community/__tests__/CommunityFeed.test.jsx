@@ -55,7 +55,8 @@ test('renders one ItemCard per feed item and tracks the view once', async () => 
   await waitFor(() => expect(screen.getAllByTestId('item-card')).toHaveLength(2));
   expect(getFeed).toHaveBeenCalledWith({ tab: 'everyone', cursor: null });
   await waitFor(() => expect(analytics.track).toHaveBeenCalledWith('community_viewed', { tab: 'everyone' }));
-  expect(analytics.track).toHaveBeenCalledTimes(1);
+  // the view fires exactly once (the sidebar ad in the layout also tracks, so filter to this event)
+  expect(analytics.track.mock.calls.filter((c) => c[0] === 'community_viewed')).toHaveLength(1);
 });
 
 test('like while logged out goes to login with a return path', async () => {
