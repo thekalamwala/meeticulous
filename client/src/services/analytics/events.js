@@ -75,6 +75,10 @@ export const EVENTS = Object.freeze({
   COMMUNITY_LIKED:          'community_liked',           // { target_type: 'post' | 'comment' }
   COMMUNITY_REPORTED:       'community_reported',
   COMMUNITY_TERMS_ACCEPTED: 'community_terms_accepted',
+  // Sidebar ad slot — props: { ad_code, audience: 'upgrade' | 'advertise' | 'guest' }.
+  // ad_code is the unique per-variant tracking code (e.g. 'upgrade_price').
+  COMMUNITY_AD_IMPRESSION:  'community_ad_impression',   // a variant rendered in the rail
+  COMMUNITY_AD_CLICKED:     'community_ad_clicked',       // its CTA was clicked
 
   // ── System / reliability (client-only) ──
   ERROR_PAGE_VIEWED:  'error_page_viewed',   // a branded error/offline page rendered
