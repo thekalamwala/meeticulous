@@ -3,6 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 import { analytics, EVENTS } from '../../services/analytics';
+import { TESTIMONIALS } from '../../data/testimonials';
+
+// Real, consented host testimonials (single source of truth; see data/testimonials.js —
+// FTC/ASCI: genuine quotes only, no invented numbers). Picked by name so a quote pulled
+// for consent reasons surfaces here instead of silently drifting.
+const testimonial = (name) => TESTIMONIALS.find((t) => t.name === name) || TESTIMONIALS[0];
 
 // Sidebar ad slot. The audience decides the deck: a Pro host is sold reach, a free host
 // is sold Pro, and everyone else (guest / logged-out) is sold "become a host, get paid".
@@ -33,15 +39,15 @@ const AD_CSS = `
 .mtad-x{cursor:pointer;background:none;border:0;color:inherit;font-size:16px;line-height:1;padding:0}
 .mtad-content{display:flex;flex-direction:column;flex:1;min-height:0}
 .mtad-content.center{align-items:center;text-align:center}
-.mtad-ee{flex:1;position:relative;display:flex;align-items:center;justify-content:center;margin:4px -18px;min-height:96px;overflow:hidden}
+.mtad-ee{flex:1;position:relative;display:flex;align-items:center;justify-content:center;margin:4px -18px;min-height:76px;overflow:hidden}
 .mtad-ee svg{height:105px;width:auto;color:#E58BA3;flex:0 0 auto;transform:rotate(-12.5deg) scale(1.06)}
 .mtad-btn{display:block;width:100%;text-align:center;text-transform:capitalize;border:0;border-radius:999px;padding:12px;font-family:Poppins;font-weight:700;font-size:14px;cursor:pointer;background:#960D32;color:#fff;text-decoration:none}
 .mtad-btn--light{display:block;width:100%;text-align:center;text-transform:capitalize;border:0;border-radius:999px;padding:12px;font-family:Poppins;font-weight:700;font-size:14px;cursor:pointer;background:#fff;color:#960D32}
 .mtad-btn--out{display:block;width:100%;text-align:center;text-transform:capitalize;border:1.5px solid #960D32;border-radius:999px;padding:11px;font-family:Poppins;font-weight:600;font-size:14px;cursor:pointer;background:transparent;color:#960D32}
 .mtad-qm{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:46px;line-height:.4;color:#960D32}
-.mtad-quote{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:18px;line-height:1.26;letter-spacing:-.012em;margin:12px 0 0;color:#2A1216}
-.mtad-by{display:flex;align-items:center;gap:10px;margin-top:12px}
-.mtad-by .av{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 30% 25%,#E58BA3,#960D32);flex:0 0 auto;background-size:cover;background-position:center}
+.mtad-quote{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:16.5px;line-height:1.3;letter-spacing:-.01em;margin:10px 0 0;color:#2A1216}
+.mtad-by{display:flex;align-items:center;gap:10px;margin-top:13px}
+.mtad-by .av{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 30% 25%,#E58BA3,#960D32);flex:0 0 auto;background-size:cover;background-position:center}
 .mtad-by b{display:block;font-size:12px;color:#2A1216}.mtad-by span{font-size:10.5px;color:#8A6B72}
 .mtad-chip{display:inline-flex;align-items:center;gap:5px;align-self:flex-start;margin-top:11px;background:#F7E4E9;color:#960D32;font-size:11px;font-weight:700;padding:5px 11px;border-radius:999px}
 .mtad-pill{display:inline-block;font-size:10.5px;font-weight:700;background:#F2A900;color:#2A1216;padding:3px 11px;border-radius:999px;text-transform:uppercase;letter-spacing:.03em}
@@ -71,16 +77,17 @@ const Quote = ({ children }) => (<><div className="mtad-qm" aria-hidden="true">&
 const By = ({ name, role, avatar }) => (
   <div className="mtad-by"><span className="av" style={avatar ? { backgroundImage: `url(${avatar})` } : undefined} /><div><b>{name}</b><span>{role}</span></div></div>
 );
-const Chip = ({ children }) => <span className="mtad-chip">▲ {children}</span>;
-
 // Each variant: { code, maroon?, render({ user, cta }) }. cta(code) does track + action.
 const UPGRADE = [
-  { code: 'upgrade_testimonial', render: ({ cta }) => (
-    <div className="mtad-content">
-      <div><Quote>Since I went Pro I keep every rupee — and Explore sent me 12 new clients last month.</Quote><By name="Priya N." role="Yoga coach · Pune" /><Chip>₹18,000 in fees kept</Chip></div>
-      <Ribbon /><button type="button" className="mtad-btn" onClick={cta}>Go Pro</button>
-    </div>
-  ) },
+  { code: 'upgrade_testimonial', render: ({ cta }) => {
+    const t = testimonial('Arjun Ravikumar'); // 0% commission -> keep-your-money angle for Pro
+    return (
+      <div className="mtad-content">
+        <div><Quote>{t.quote}</Quote><By name={t.name} role={t.role} avatar={t.avatar} /></div>
+        <Ribbon /><button type="button" className="mtad-btn" onClick={cta}>Go Pro</button>
+      </div>
+    );
+  } },
   { code: 'upgrade_price', render: ({ cta }) => (
     <div className="mtad-content center">
       <div><span className="mtad-pill">2 founding spots left</span><h3 className="mtad-bigH">Keep every rupee <span className="q">you earn.</span></h3><p className="mtad-muted">0% platform fee on every booking — forever, on Pro.</p><div className="mtad-price"><span className="old">₹1,499</span><span className="new">₹999</span><span className="per">/mo</span></div></div>
@@ -96,27 +103,26 @@ const UPGRADE = [
 ];
 
 const ADVERTISE = [
+  // Only the capability pitch for now: the paid "feature my page" product doesn't exist yet,
+  // so there is no genuine host testimonial for it — adding a fabricated one would be unlawful.
   { code: 'advertise_capability', maroon: true, render: ({ cta }) => (
     <div className="mtad-content">
       <div><h3 className="mtad-heroH">Get in front of <span className="q">every host &amp; guest.</span></h3><p className="mtad-heroSub">Pin your page to the top of the feed. Pay only for the days you run.</p></div>
       <Ribbon /><button type="button" className="mtad-btn--light" onClick={cta}>Feature my page</button><div className="mtad-adsby">Ads by meeticulous.com</div>
     </div>
   ) },
-  { code: 'advertise_testimonial', render: ({ cta }) => (
-    <div className="mtad-content">
-      <div><Quote>Pinning my page in Wellness doubled my profile views in a week.</Quote><By name="Arjun M." role="Physiotherapist · Mumbai" /><Chip>2× profile views in 7 days</Chip></div>
-      <Ribbon /><button type="button" className="mtad-btn--out" onClick={cta}>Feature my page</button>
-    </div>
-  ) },
 ];
 
 const GUEST = [
-  { code: 'guest_testimonial', render: ({ cta }) => (
-    <div className="mtad-content">
-      <div><Quote>I booked 40 clients my first month on Meeticulous — it replaced my side gig.</Quote><By name="Neha R." role="Makeup artist · Delhi" /><Chip>40 bookings in month one</Chip></div>
-      <Ribbon /><button type="button" className="mtad-btn" onClick={cta}>Start earning</button>
-    </div>
-  ) },
+  { code: 'guest_testimonial', render: ({ cta }) => {
+    const t = testimonial('Sangharata Somkuvar'); // set-up-once, money-comes-in -> become-a-host angle
+    return (
+      <div className="mtad-content">
+        <div><Quote>{t.quote}</Quote><By name={t.name} role={t.role} avatar={t.avatar} /></div>
+        <Ribbon /><button type="button" className="mtad-btn" onClick={cta}>Start earning</button>
+      </div>
+    );
+  } },
   { code: 'guest_value', render: ({ cta }) => (
     <div className="mtad-content center">
       <div><span className="mtad-pill">Free to start</span><h3 className="mtad-bigH">Turn your time <span className="q">into income.</span></h3><p className="mtad-muted">List your services, get discovered, and take bookings &amp; payments in one place.</p></div>
