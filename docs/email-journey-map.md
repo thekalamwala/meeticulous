@@ -234,6 +234,89 @@ Phase-2 governor. **Not part of this map** — lead journey is a separate doc.
 
 ---
 
+## Humanity track
+
+What separates Meeticulous from a SaaS form-filler. These are the mails
+where the trigger isn't a system event — it's "the human remembered." All
+**Shubham sender, Founder frame, often no CTA**. A greeting is the whole
+mail. One-line Hindi (Javed-Akhtar-voice per `shubham-voice` skill) is
+welcome. Governed by the same `touchGovernor` as everything else, so a host
+who fires BIRTHDAY the same week as MILESTONE_10 gets one, not both.
+
+### Festival / calendar (zero today)
+
+Driven by a new `calendar_events` table: `(date, event_key, enabled,
+audience)`. Cron runs daily, enqueues the day's greetings into
+`notification_events`.
+
+| Event | When | Audience | Sender | Notes |
+|---|---|---|---|---|
+| `GREETING_DIWALI` | Diwali (varies) | all | shubham | Keep CTA out. One line, one image. |
+| `GREETING_HOLI` | Holi | all | shubham | — |
+| `GREETING_EID` | Eid-ul-Fitr + Eid-ul-Adha | all | shubham | — |
+| `GREETING_CHRISTMAS` | 25 Dec | all | shubham | — |
+| `GREETING_NEWYEAR` | 1 Jan | all | shubham | Short retrospective allowed ("your year on Meeticulous"). |
+| `GREETING_PONGAL_SANKRANTI` | 14–15 Jan | all | shubham | Regional. |
+| `GREETING_ONAM` | Onam | all | shubham | Regional. |
+| `GREETING_INDEPENDENCE_DAY` | 15 Aug | all | shubham | — |
+| `GREETING_REPUBLIC_DAY` | 26 Jan | all | shubham | — |
+| `GREETING_TEACHERS_DAY` | 5 Sep | vendor (coaches/mentors) | shubham | Segment by profession. |
+| `GREETING_MENTAL_HEALTH_DAY` | 10 Oct | vendor (therapists) | shubham | Segment by profession. |
+| `GREETING_YOGA_DAY` | 21 Jun | vendor (yoga) | shubham | Segment by profession. |
+| `GREETING_WOMENS_DAY` | 8 Mar | all | shubham | — |
+
+Opt-out per track (not just global). A yoga host who hates Yoga Day mail
+should be able to skip just that one.
+
+### Human-moment events (missing)
+
+Triggered off `vendor_metrics` and `bookings`, not a calendar. All Founder
+frame, `shubham` sender, in-app on, email on, WhatsApp off.
+
+| Event | Trigger | Audience |
+|---|---|---|
+| `HOST_FIRST_REVIEW` | First review row ever for this host | vendor |
+| `HOST_FIRST_FIVE_STAR` | First 5★ review | vendor |
+| `HOST_PERFECT_MONTH` | 100% show-up in a calendar month, ≥5 bookings | vendor |
+| `HOST_BOOKING_STREAK` | 3 consecutive weeks with ≥1 booking | vendor |
+| `HOST_FIRST_REPEAT` | Same guest books again | vendor |
+| `HOST_PROFESSION_MILESTONE` | 10 / 50 / 100 of profession-typed service (10th yoga class etc.) | vendor |
+| `GUEST_EXPLORER_5_HOSTS` | Guest has booked 5 distinct hosts | guest |
+| `GUEST_COMEBACK` | Guest returns after 90+ day gap | guest |
+| `GUEST_REVIEW_LANDED` | Guest's review is now live on the host's page | guest |
+
+### Soft / empathy (frame fix for existing + 2 new)
+
+| Event | Status | Fix |
+|---|---|---|
+| `BOOKING_CANCELLED_CUSTOMER` | live, cold receipt | Add empathy opener for refund path. Receipt frame + warm first line. |
+| `EARNING_REVERSED` | live, cold receipt | Same — explain it, don't just report it. Signed from `payments`, body written by Shubham. |
+| `HOST_LOW_RATINGS_RUN` | missing | 3 ratings in a row ≤3★. Private Shubham note, no CTA, offer a call. |
+| `ACCOUNT_PAUSED_BY_USER` | missing | User pauses their own page. "We'll keep it safe, come back anytime." |
+
+### Why this track matters
+
+SaaS brands fear mail with no CTA. That's the differentiator. A greeting IS
+the email. Measure success not by click (there is none) but by **reply rate
+to Shubham** — the number of hosts who email back. That number goes up, the
+brand is working.
+
+### What this needs to ship
+
+1. `calendar_events` table + daily cron (`services/humanity/calendarDrip.js`).
+2. `profession_segment` on templates — Yoga Day mail only reaches yoga hosts.
+3. Per-track opt-out (one preference per humanity event_key).
+4. `shubham-voice` skill used at authoring time for every copy block in this track.
+5. Rate: `touchGovernor` cap stays 1/48h. Greetings can collide with other mail — collisions resolve by priority (festival > milestone > nudge).
+
+### 18 new events, in build order
+
+PR-6 (proposed, after the 5 PRs above): festival track (13 events, calendar-driven, lowest-risk).
+PR-7: human-moment track (9 events, metric-driven).
+PR-8: soft/empathy fixes (2 reframes + 2 new).
+
+---
+
 ## Scorecard
 
 Counts across the host + guest + cross-cutting maps above.
@@ -243,7 +326,8 @@ Counts across the host + guest + cross-cutting maps above.
 | **Live and correct** | 48 | Keep. Audit copy against frames in a later PR. |
 | **Live but disabled** | 4 | Re-enable with correct trigger + copy audit. See below. |
 | **Live but wrong sender/frame** | 3 | Fix sender_key / reframe. |
-| **Missing event** | 6 | Add migration + template + wire into `notify.js`. |
+| **Missing — system events** | 6 | Add migration + template + wire into `notify.js`. |
+| **Missing — humanity track** | 18 | New domain. See Humanity section. Festival (13) + human-moment (9) + soft/empathy (2 reframes + 2 new). |
 
 ### The 4 disabled events (fix order, highest ROI first)
 
@@ -302,3 +386,5 @@ describes what already exists.
 - 2026-11-10 — first pass. Grounded against live DB
   (`spquowzrefozmrzoszkf`). Flagged 4 disabled events, 6 missing events, 3
   wrong-sender events.
+- 2026-11-10 — added Humanity track (18 events across festival, human-moment,
+  soft/empathy). Build order extended to PR-6/7/8.
