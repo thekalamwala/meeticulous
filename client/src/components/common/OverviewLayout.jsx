@@ -202,10 +202,10 @@ const ProfileCompletionRocket = ({ user }) => {
         aria-label="Profile completion"
         aria-expanded={open}
         aria-haspopup="dialog"
-        className="relative grid h-10 w-10 place-items-center rounded-full border border-[#FFD8ED] bg-[#FFE1F1] text-[#F50069] transition hover:brightness-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F50069]/35"
+        className="relative grid h-10 w-10 place-items-center rounded-full border border-neutral-200 bg-primary/10 text-primary transition hover:bg-primary/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
       >
-        <span aria-hidden="true" className="absolute -top-0.5 left-1.5 h-1 w-1 rounded-full bg-[#F50069]" />
-        <span aria-hidden="true" className="absolute -top-1 left-2.5 h-1.5 w-[2px] rotate-45 rounded-full bg-[#FF9FB0]" />
+        <span aria-hidden="true" className="absolute -top-0.5 left-1.5 h-1 w-1 rounded-full bg-primary" />
+        <span aria-hidden="true" className="absolute -top-1 left-2.5 h-1.5 w-[2px] rotate-45 rounded-full bg-rose" />
         <Rocket className="h-[18px] w-[18px]" strokeWidth={1.9} />
       </button>
 
@@ -228,14 +228,14 @@ const ProfileCompletionRocket = ({ user }) => {
 const OverviewTopbar = ({
   user, initial, planStyle, logout, onOpenNav, navTriggerRef, onNewMeeting,
 }) => (
-    <header className="sticky top-0 z-30 flex min-h-[64px] items-center gap-2.5 border-b border-[#FFD8ED] bg-[#FFF7FB]/85 px-4 py-2 backdrop-blur sm:gap-3 sm:px-6">
+    <header className="sticky top-0 z-30 flex min-h-[64px] items-center gap-2.5 border-b border-neutral-200/80 bg-white/95 px-4 py-2 backdrop-blur sm:gap-3 sm:px-6">
       <button
         ref={navTriggerRef}
         type="button"
         onClick={onOpenNav}
         aria-label="Open navigation"
         aria-haspopup="dialog"
-        className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#71639E] transition hover:bg-[#FFE1F1] hover:text-[#F50069] lg:hidden"
+        className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-neutral-500 transition hover:bg-primary/5 hover:text-primary lg:hidden"
       >
         <Menu className="h-5 w-5" strokeWidth={1.8} />
       </button>
@@ -257,8 +257,8 @@ const OverviewTopbar = ({
         <ProfileCompletionRocket user={user} />
 
         <NotifBell
-          triggerClassName="relative grid h-10 w-10 place-items-center rounded-full border border-[#FFD8ED] bg-white text-[#71639E] transition hover:bg-[#FFF0F8] hover:text-[#F50069] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F50069]/30"
-          badgeClassName="absolute right-1 top-1 grid min-h-4 min-w-4 place-items-center rounded-full bg-[#F50069] px-1 text-[9px] font-bold leading-none text-white"
+          triggerClassName="relative grid h-10 w-10 place-items-center rounded-full border border-neutral-200 bg-white text-neutral-500 transition hover:bg-primary/5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+          badgeClassName="absolute right-1 top-1 grid min-h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[9px] font-bold leading-none text-white"
           iconClassName="h-[18px] w-[18px]"
           minBadge={1}
         />
@@ -269,9 +269,9 @@ const OverviewTopbar = ({
           planStyle={planStyle}
           initial={initial}
           logout={logout}
-          triggerClassName="flex items-center gap-1 rounded-full p-0.5 transition hover:bg-[#FFE1F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F50069]/30"
-          avatarClassName="bg-gradient-to-br from-[#F50069] to-[#D90059] text-white"
-          chevronClassName="h-3.5 w-3.5 text-[#71639E]"
+          triggerClassName="flex items-center gap-1 rounded-full p-0.5 transition hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+          avatarClassName="bg-primary text-white"
+          chevronClassName="h-3.5 w-3.5 text-neutral-500"
         />
       </div>
     </header>
@@ -291,8 +291,8 @@ const OverviewLayout = ({ children }) => {
 
   const plan = normalizePlan(user?.plan);
   const planStyle = plan === 'free'
-    ? { label: 'Starter', bg: 'bg-[#FFE1F1]', text: 'text-[#D90059]' }
-    : { label: 'Pro', bg: 'bg-[#FFE1F1]', text: 'text-[#D90059]' };
+    ? { label: 'Starter', bg: 'bg-blush', text: 'text-maroon' }
+    : { label: 'Pro', bg: 'bg-blush', text: 'text-maroon' };
   const initial = (user?.name || user?.email || 'M').trim().charAt(0).toUpperCase();
 
   useEffect(() => { setNavOpen(false); }, [pathname]);
@@ -302,13 +302,10 @@ const OverviewLayout = ({ children }) => {
 
   return (
     <OverviewChromeContext.Provider value={{ openNewMeeting }}>
-      <div
-        className="ov-shell min-h-screen bg-[#FFF0F8] text-[#17164A]"
-        style={{
-          backgroundImage:
-            'radial-gradient(1100px 520px at 78% -8%, rgba(245,0,105,0.10), transparent 62%), radial-gradient(760px 420px at 8% 12%, rgba(255,225,241,0.85), transparent 70%), linear-gradient(180deg, #FFF0F8 0%, #FFF7FB 48%, #FBECF5 100%)',
-        }}
-      >
+      {/* Page ground is the shared host canvas — same as DashboardLayout — so the
+          overview matches every other /dashboard/* page. Do NOT give this a pink
+          gradient surface: the host dashboard background must be constant. */}
+      <div className="ov-shell min-h-screen bg-canvas text-[#17164A]">
         {/* Original two-level host sidebar (icon rail + panel), reused verbatim.
             It owns its own desktop-fixed shell AND mobile drawer, driven here by
             navOpen / the toolbar hamburger. */}
