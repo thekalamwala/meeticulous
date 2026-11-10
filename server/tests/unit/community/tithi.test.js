@@ -160,10 +160,10 @@ describe('replyToPost (first responder)', () => {
     const res = await tithi.replyToPost({ post: POST });
     expect(res).toEqual({ replied: true, commentId: 'comment-1', escalated: true, tagged: true });
     // the reply body carries the @mention so it's visible in-thread
-    expect(store.insertComment).toHaveBeenCalledWith(expect.objectContaining({ body: expect.stringContaining('@sndatarkar') }));
+    expect(store.insertComment).toHaveBeenCalledWith(expect.objectContaining({ body: expect.stringContaining('@team') }));
     expect(escalationService.recordAndNotify).toHaveBeenCalledTimes(1);
     // and the human is pinged via the community mention path
-    expect(notify.onMentions).toHaveBeenCalledWith(expect.objectContaining({ usernames: ['sndatarkar'], actorId: 'tithi-uuid' }));
+    expect(notify.onMentions).toHaveBeenCalledWith(expect.objectContaining({ usernames: ['team'], actorId: 'tithi-uuid' }));
   });
 
   test('a removed post is not answered', async () => {

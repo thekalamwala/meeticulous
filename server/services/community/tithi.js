@@ -31,8 +31,8 @@ const FLAG = 'community_tithi';
 const UPDATES_SPACE = 'updates';
 // Who Tithi @mentions in-thread when she can't handle an escalation, so a human checks
 // and replies (that's how the team learns there's a problem). A community username,
-// configurable — default the founder until a shared 'team' account exists.
-const escalationHandle = () => (process.env.COMMUNITY_ESCALATION_HANDLE || 'sndatarkar').replace(/^@/, '').trim().toLowerCase() || null;
+// configurable — default the shared 'team' account (profiles.username='team', early-access).
+const escalationHandle = () => (process.env.COMMUNITY_ESCALATION_HANDLE || 'team').replace(/^@/, '').trim().toLowerCase() || null;
 
 // Tithi's profiles.id — the author every community post/reply is attributed to. Config,
 // not code: the identity (profile + community_members row, title "Chief of Staff") is
