@@ -922,6 +922,100 @@ const TEMPLATES = [
     cta_label: 'Read the guidelines', cta_url: '{{community_url}}',
   },
 
+  // ── Community onboarding sequence (5-step, 14 days) ────────────────────────────
+  // Placeholder copy — final copy to be edited in the admin editor (templateSync
+  // keeps admin edits per v3.187). All share sender_key 'community' (v3.201).
+
+  (() => { const t = themeForCategory('Community Update'); return {
+    event_key: 'COMMUNITY_WELCOME', audience: 'all', category: 'Community', sender_key: 'community',
+    name: 'Community — Welcome', subject: 'Welcome to the Meeticulous community, {{first_name}}',
+    preview_text: 'A quick tour and three places to start.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this email because you joined the Meeticulous community. To stop these emails, use the unsubscribe link in this email.',
+    html_content:
+      h('Welcome, {{first_name}}') +
+      lead('Glad you are here. The Meeticulous community is five spaces, one feed, and real people. This is a quick tour.') +
+      C.infoCard(t, [
+        ['Ask a question', 'Help & Questions — someone here has probably solved it already.'],
+        ['See host conversations', 'Host Corner — pricing, growth, what is working.'],
+        ['Say hi', 'General — a one-line intro is the lowest-stakes first post.'],
+      ]) +
+      lead('Your first post is the hardest one. After that, this gets easy.') +
+      note('Prefer not to get these emails? <a href="{{website_url}}/unsubscribe?u={{unsubscribe_token}}" style="color:#7D6B70;">Unsubscribe</a>.'),
+    cta_label: 'Open the community', cta_url: '{{community_url}}',
+  }; })(),
+
+  (() => { const t = themeForCategory('Community Update'); return {
+    event_key: 'COMMUNITY_ONBOARD_HOW', audience: 'all', category: 'Community', sender_key: 'community',
+    name: 'Community — How it works', subject: 'How the Meeticulous community works',
+    preview_text: 'Three rhythms people use here.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this email because you joined the Meeticulous community. To stop these emails, use the unsubscribe link in this email.',
+    html_content:
+      h('Three rhythms. Pick one.') +
+      lead('Hi {{first_name}}, this is how the community actually gets used.') +
+      C.infoCard(t, [
+        ['Post', 'Share something you figured out. A paragraph is enough.'],
+        ['Ask', 'Get unstuck. Most questions here get a first reply within a few hours.'],
+        ['Thread', 'Start an ongoing conversation that lives in a space.'],
+      ]) +
+      lead('You do not have to pick one for life. Try whichever fits what you want to say today.') +
+      note('Prefer not to get these emails? <a href="{{website_url}}/unsubscribe?u={{unsubscribe_token}}" style="color:#7D6B70;">Unsubscribe</a>.'),
+    cta_label: 'Browse the spaces', cta_url: '{{community_url}}',
+  }; })(),
+
+  (() => { const t = themeForCategory('Community Update'); return {
+    event_key: 'COMMUNITY_ONBOARD_HOT', audience: 'all', category: 'Community', sender_key: 'community',
+    name: 'Community — Hot this week', subject: 'What is hot in the community this week',
+    preview_text: 'Three threads worth your two minutes.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this email because you joined the Meeticulous community. To stop these emails, use the unsubscribe link in this email.',
+    html_content:
+      h('What caught our eye') +
+      lead('Hi {{first_name}}, three threads pulling real replies this week. No pitch, just the good stuff.') +
+      C.infoCard(t, [
+        ['{{hot1_title}}', 'by {{hot1_author}} · {{hot1_likes}} likes · {{hot1_replies}} replies'],
+        ['{{hot2_title}}', 'by {{hot2_author}} · {{hot2_likes}} likes · {{hot2_replies}} replies'],
+        ['{{hot3_title}}', 'by {{hot3_author}} · {{hot3_likes}} likes · {{hot3_replies}} replies'],
+      ]) +
+      note('Prefer not to get these emails? <a href="{{website_url}}/unsubscribe?u={{unsubscribe_token}}" style="color:#7D6B70;">Unsubscribe</a>.'),
+    cta_label: 'See all this week', cta_url: '{{community_url}}',
+  }; })(),
+
+  (() => { const t = themeForCategory('Community Update'); return {
+    event_key: 'COMMUNITY_ONBOARD_FIRSTPOST', audience: 'all', category: 'Community', sender_key: 'community',
+    name: 'Community — First-post nudge', subject: 'Your first post is the hardest one, {{first_name}}',
+    preview_text: 'Three low-stakes ways to start.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this email because you joined the Meeticulous community and have not posted yet. To stop these emails, use the unsubscribe link in this email.',
+    html_content:
+      h('Your turn') +
+      lead('Hi {{first_name}}, you have been reading for a week. The next good thread is one you start. No judgement, promise.') +
+      C.infoCard(t, [
+        ['Introduce yourself', 'One sentence in General. "Hi, I am X. I run Y sessions." Done.'],
+        ['Ask one thing you Googled', 'If you Googled it, three other people here Googled it too.'],
+        ['Share a small win', '"I tried X this week and Y happened." That is a post.'],
+      ]) +
+      lead('Most first posts get a reply within the hour. That is the whole promise of this place.') +
+      note('Reply to this email if you are stuck on what to write — we will help you draft it.') +
+      note('Prefer not to get these emails? <a href="{{website_url}}/unsubscribe?u={{unsubscribe_token}}" style="color:#7D6B70;">Unsubscribe</a>.'),
+    cta_label: 'Open the community', cta_url: '{{community_url}}',
+  }; })(),
+
+  (() => { return {
+    event_key: 'COMMUNITY_ONBOARD_WINDDOWN', audience: 'all', category: 'Community', sender_key: 'community',
+    name: 'Community — Sequence wind-down', subject: 'One last note, {{first_name}}',
+    preview_text: 'We will stop writing — come back whenever.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this email because you joined the Meeticulous community two weeks ago. This is the last message in the onboarding sequence.',
+    html_content:
+      h('One last note') +
+      lead('Hi {{first_name}}, this is the last onboarding mail from us. You are still a member; we just do not want to keep landing in your inbox if it is not useful.') +
+      lead('You will still hear from us when someone replies to you or mentions you. Nothing else from this sequence.') +
+      note('Rather not get any community emails? <a href="{{website_url}}/unsubscribe?u={{unsubscribe_token}}" style="color:#7D6B70;">Unsubscribe</a>.'),
+    cta_label: 'Open the community', cta_url: '{{community_url}}',
+  }; })(),
+
   // ── Humanity track — festival + calendar greetings ────────────────────────────
   // All Founder frame, Shubham sender. Zero or soft CTA — the greeting IS the
   // email (see docs/email-playbook.md §Frames · Founder). One line of Hindi is
