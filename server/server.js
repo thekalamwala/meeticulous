@@ -500,6 +500,20 @@ setInterval(async () => {
   } catch (err) { console.error('Tithi daily digest error:', err.message); }
 }, 24 * 60 * 60 * 1000);
 
+// Community: onboarding sequence sweep. Fires day-2/5/9/14 mails per
+// community_members.created_at window. Welcome is fired inline from the
+// controller — this cron handles only the scheduled follow-ups. Gated by
+// community_email_onboarding (OFF) inside the service, so safe to tick always.
+const onboardingSequence = require('./services/community/onboardingSequence');
+setInterval(async () => {
+  try {
+    await runLocked('community-onboarding-sweep', async () => {
+      const r = await onboardingSequence.runSweep();
+      if (r.processed) console.log(`Community onboarding sweep: ${r.processed} sent, ${r.skipped || 0} skipped`);
+    }, { leaseMs: 15 * 60 * 1000 });
+  } catch (err) { console.error('Community onboarding sweep error:', err.message); }
+}, 60 * 60 * 1000);
+
 // ══ F4: LONG-interval crons (≥15 min) driven off a PERSISTED schedule (job_runs),
 // checked on a short SCHEDULER_TICK so pod churn can't starve them. Before this, a
 // setInterval whose first tick lands after a FULL interval was reset on every Render
