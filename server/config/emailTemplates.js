@@ -948,6 +948,44 @@ const TEMPLATES = [
     cta_label: 'Open my dashboard', cta_url: '{{dashboard_url}}',
   },
 
+  // ── Onboarding — start KYC (sent by services/activationNudges.js) ─────────────
+  // Fires 2 days after signup if onboarding is still pending. Ladder frame:
+  // 3 crisp steps, one deep link per step, no decorative hero.
+
+  {
+    event_key: 'HOST_START_KYC_NUDGE', audience: 'vendor', category: 'Onboarding', sender_key: 'tithi',
+    name: 'Host — start KYC', subject: 'Finish your Meeticulous setup, {{first_name}}',
+    preview_text: 'Three short steps and your booking page goes live.',
+    email_category: 'Onboarding',
+    email_reason: 'You are receiving this because you signed up as a Meeticulous host and have not completed setup.',
+    html_content:
+      h('Three short steps, {{first_name}}') +
+      lead("Your Meeticulous page is almost ready. Finish these and it goes live.") +
+      steps(
+        step(1, 'Verify KYC', 'Quick ID check so we can send you payouts.'),
+        step(2, 'Add your first service', 'Name it, price it — a line is enough.'),
+        step(3, 'Share your link', 'Send it to one person who already books with you.'),
+      ) +
+      note('Takes under five minutes. Any trouble, just reply to this email.'),
+    cta_label: 'Finish setup', cta_url: '{{link}}',
+  },
+
+  // ── Guest review nudge (sent by services/reviewNudges.js) ─────────────────────
+  // Fires 48h after a completed paid booking with no review row.
+
+  {
+    event_key: 'GUEST_REVIEW_NUDGE', audience: 'all', category: 'Engagement', sender_key: 'tithi',
+    name: 'Guest — review nudge', subject: 'How was your session with {{vendor_name}}?',
+    preview_text: 'A few words go a long way for small creators.',
+    email_category: 'Community Update',
+    email_reason: 'You are receiving this because you had a session on Meeticulous and have not left a review yet.',
+    html_content:
+      h('How was it, {{first_name}}?') +
+      lead('You had a session with <strong>{{vendor_name}}</strong> two days ago. If it went well, two lines from you means a lot to a small creator.') +
+      lead('If something was off, reply to this email instead — we read every one and we help sort it out.'),
+    cta_label: 'Leave a review', cta_url: '{{review_url}}',
+  },
+
 ];
 
 module.exports = TEMPLATES;
