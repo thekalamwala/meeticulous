@@ -59,25 +59,33 @@ async function handleGithubWebhook(req, res) {
     if (evt.action !== 'closed' || !prd || !prd.merged || !prd.number) {
       return res.json({ ok: true, ignored: 'not-merged' });
     }
-    // Only release trains get notes — the poll uses releaseBranch() (release/YYYY-MM).
     const base = prd.base && prd.base.ref;
-    if (!base || !/^release\//.test(base)) {
-      return res.json({ ok: true, ignored: 'not-release-branch' });
+    const head = prd.head && prd.head.ref;
+    // Two shapes get a note:
+    //   PR merged INTO release/**            -> per-feature release note (handleMergedPr)
+    //   release/** merged INTO main (= ship) -> "it's live" deploy note (handleDeployment);
+    //       main is where Vercel auto-deploys, so that merge IS the production deploy.
+    const isFeatureMerge = base && /^release\//.test(base);
+    const isDeploy = base === 'main' && head && /^release\//.test(head);
+    if (!isFeatureMerge && !isDeploy) {
+      return res.json({ ok: true, ignored: 'not-release-merge' });
     }
 
     const pr = { number: prd.number, title: prd.title || '', body: prd.body || '' };
 
     // Ack immediately; the note (LLM classify + write) runs after responding so a
     // slow model call can never trip GitHub's 10s webhook timeout/retry.
-    res.json({ ok: true, received: `pr-${pr.number}` });
+    res.json({ ok: true, received: `pr-${pr.number}`, kind: isDeploy ? 'deploy' : 'release' });
 
     try {
-      const r = await tithiWorker.handleMergedPr(pr, base);
-      if (r.posted) console.log(`Tithi webhook: posted release note for PR #${pr.number} (${r.kind})`);
+      const r = isDeploy
+        ? await tithiWorker.handleDeployment(pr, head)
+        : await tithiWorker.handleMergedPr(pr, base);
+      if (r.posted) console.log(`Tithi webhook: posted ${isDeploy ? 'deploy' : 'release'} note for PR #${pr.number}`);
       else if (r.draft) console.log(`Tithi webhook: drafted + emailed PR #${pr.number} (autopost off)`);
       else console.log(`Tithi webhook: skipped PR #${pr.number} (${r.skipped})`);
     } catch (e) {
-      console.error('[github-webhook] release-note publish failed (non-fatal):', pr.number, e.message);
+      console.error('[github-webhook] note publish failed (non-fatal):', pr.number, e.message);
     }
   } catch (e) { safeError(res, e); }
 }

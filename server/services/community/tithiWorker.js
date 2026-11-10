@@ -77,6 +77,13 @@ async function handleMergedPr(pr, release) {
   return res;
 }
 
+// The release train merged into main (prod deploy). Post the "it's live" rollup note.
+// Always publishes (no approve-first): a deploy already happened, so there's nothing
+// to hold for approval. Idempotent via tithi's ship-PR slug.
+async function handleDeployment(pr, release) {
+  return tithi.publishDeploymentNote({ pr, release });
+}
+
 /** Poll merged release PRs → publish (or draft-and-email) one note each. */
 async function runReleaseNotePoll() {
   const branch = releaseBranch();
@@ -151,6 +158,6 @@ async function runDailyDigest() {
 }
 
 module.exports = {
-  runReleaseNotePoll, runReplySweep, runDailyDigest, handleMergedPr,
+  runReleaseNotePoll, runReplySweep, runDailyDigest, handleMergedPr, handleDeployment,
   releaseBranch, fetchMergedPrs, _AUTOPOST: AUTOPOST,
 };

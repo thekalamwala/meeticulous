@@ -6,7 +6,7 @@
  */
 const crypto = require('crypto');
 
-jest.mock('../../../services/community/tithiWorker', () => ({ handleMergedPr: jest.fn() }));
+jest.mock('../../../services/community/tithiWorker', () => ({ handleMergedPr: jest.fn(), handleDeployment: jest.fn() }));
 const tithiWorker = require('../../../services/community/tithiWorker');
 const { handleGithubWebhook, _internal: { verifySignature } } = require('../../../controllers/githubWebhookController');
 
@@ -30,9 +30,9 @@ const mockRes = () => {
   return res;
 };
 
-const merged = (base = 'release/2026-11') => ({
+const merged = (base = 'release/2026-11', head = 'feat/x') => ({
   action: 'closed',
-  pull_request: { merged: true, number: 42, title: 'feat: thing', body: 'b', base: { ref: base } },
+  pull_request: { merged: true, number: 42, title: 'feat: thing', body: 'b', base: { ref: base }, head: { ref: head } },
 });
 
 beforeEach(() => { process.env.GITHUB_WEBHOOK_SECRET = SECRET; });
@@ -72,20 +72,32 @@ describe('handleGithubWebhook', () => {
     expect(tithiWorker.handleMergedPr).not.toHaveBeenCalled();
   });
 
-  test('ignores merges to non-release branches', async () => {
+  test('ignores a feature merge to main (not a release ship)', async () => {
     const res = mockRes();
-    await handleGithubWebhook(mockReq(merged('main')), res);
-    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ ignored: 'not-release-branch' }));
+    await handleGithubWebhook(mockReq(merged('main', 'feat/x')), res);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ ignored: 'not-release-merge' }));
     expect(tithiWorker.handleMergedPr).not.toHaveBeenCalled();
+    expect(tithiWorker.handleDeployment).not.toHaveBeenCalled();
   });
 
-  test('publishes a merged release PR via handleMergedPr', async () => {
+  test('publishes a per-feature note for a PR merged into release/**', async () => {
     tithiWorker.handleMergedPr.mockResolvedValue({ posted: true, kind: 'feature' });
     const res = mockRes();
-    await handleGithubWebhook(mockReq(merged()), res);
-    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ received: 'pr-42' }));
+    await handleGithubWebhook(mockReq(merged('release/2026-11', 'feat/x')), res);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ received: 'pr-42', kind: 'release' }));
     expect(tithiWorker.handleMergedPr).toHaveBeenCalledWith(
       { number: 42, title: 'feat: thing', body: 'b' }, 'release/2026-11',
     );
+  });
+
+  test('publishes a deploy note when release/** merges into main', async () => {
+    tithiWorker.handleDeployment.mockResolvedValue({ posted: true });
+    const res = mockRes();
+    await handleGithubWebhook(mockReq(merged('main', 'release/2026-11')), res);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ received: 'pr-42', kind: 'deploy' }));
+    expect(tithiWorker.handleDeployment).toHaveBeenCalledWith(
+      { number: 42, title: 'feat: thing', body: 'b' }, 'release/2026-11',
+    );
+    expect(tithiWorker.handleMergedPr).not.toHaveBeenCalled();
   });
 });
