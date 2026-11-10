@@ -1027,8 +1027,8 @@ const TEMPLATES = [
 
   {
     event_key: 'GREETING_TEACHERS_DAY', audience: 'vendor', category: 'Celebrations', sender_key: 'shubham',
-    name: 'Greeting — Teachers'' Day', subject: 'Thank you, {{first_name}}',
-    preview_text: 'A quick note on Teachers'' Day.',
+    name: "Greeting — Teachers' Day", subject: 'Thank you, {{first_name}}',
+    preview_text: "A quick note on Teachers' Day.",
     email_category: 'Community Update',
     email_reason: 'You are receiving this because you teach or coach on Meeticulous. Reply any time.',
     html_content:
@@ -1070,7 +1070,7 @@ const TEMPLATES = [
 
   {
     event_key: 'GREETING_WOMENS_DAY', audience: 'all', category: 'Celebrations', sender_key: 'shubham',
-    name: 'Greeting — Women''s Day', subject: 'A note, {{first_name}}',
+    name: "Greeting — Women's Day", subject: 'A note, {{first_name}}',
     preview_text: 'A short note on 8 March.',
     email_category: 'Community Update',
     email_reason: 'You are receiving this because you are on Meeticulous. Reply any time.',
