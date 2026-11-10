@@ -13,6 +13,7 @@ import { normalizePlan, GIFTED_PRO_LABEL } from '../../utils/themeUtils';
 import { cn } from '../dashboard/ui/cn';
 import { PageTransition } from '../dashboard/ui/PageTransition';
 import ConsoleSidebar from './ConsoleSidebar';
+import MobileTabBar from './MobileTabBar';
 import '../dashboard/ui/tokens.css';
 
 // Keyed by canonical plan slug (see normalizePlan) — legacy aliases like
@@ -449,12 +450,16 @@ const DashboardLayout = ({ children }) => {
           onOpenNav={() => setNavOpen(true)}
           navTriggerRef={navTriggerRef}
         />
-        <div className="px-4 py-6 sm:px-6 md:px-8">
+        {/* pb clears the fixed mobile tab bar (+ safe area); desktop keeps py-6. */}
+        <div className="px-4 py-6 pb-[calc(68px+env(safe-area-inset-bottom))] sm:px-6 md:px-8 lg:pb-6">
           <div className="mx-auto w-full max-w-6xl">
             <PageTransition>{children}</PageTransition>
           </div>
         </div>
       </main>
+
+      {/* Native-app bottom tab bar — mobile only (< lg). */}
+      <MobileTabBar />
     </div>
   );
 };

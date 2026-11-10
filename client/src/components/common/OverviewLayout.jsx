@@ -10,6 +10,7 @@ import { PageTransition } from '../dashboard/ui/PageTransition';
 import ProfileCompletionPanel from '../dashboard/ProfileCompletionPanel';
 import { NotifBell, ProfileMenu } from './DashboardLayout';
 import ConsoleSidebar from './ConsoleSidebar';
+import MobileTabBar from './MobileTabBar';
 import { OverviewChromeContext } from './overviewChrome';
 
 /* --------------------------------------------------------------------------
@@ -323,10 +324,14 @@ const OverviewLayout = ({ children }) => {
             onNewMeeting={openNewMeeting}
           />
 
-          <main className="px-4 py-4 sm:px-6">
+          {/* pb clears the fixed mobile tab bar (+ safe area); desktop keeps py-4. */}
+          <main className="px-4 py-4 pb-[calc(68px+env(safe-area-inset-bottom))] sm:px-6 lg:pb-4">
             <PageTransition>{children}</PageTransition>
           </main>
         </div>
+
+        {/* Native-app bottom tab bar — mobile only (< lg). */}
+        <MobileTabBar />
 
         <NewMeetingModal open={newMeetingOpen} onClose={() => setNewMeetingOpen(false)} user={user} />
       </div>
