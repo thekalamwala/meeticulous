@@ -43,7 +43,7 @@ export default function LikeButton({ targetType, id, liked, count }) {
         aria-label={`${state.liked ? 'Liked' : 'Like'}, ${n} ${n === 1 ? 'like' : 'likes'}`}
         className={`mt-btn mt-btn--ghost mt-btn--s gap-2 font-medium ${state.liked ? 'text-maroon' : 'text-muted hover:text-maroon'}`}
       >
-        <Heart size={16} aria-hidden="true" />
+        <Heart size={16} aria-hidden="true" fill={state.liked ? 'currentColor' : 'none'} />
         {n}
       </button>
       {termsDialog}

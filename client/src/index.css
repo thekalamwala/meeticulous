@@ -352,6 +352,24 @@ textarea {
   min-height: 112px;
 }
 
+/* The framed .mt-input is the ONLY box — its inner control never redraws a native/grey
+   frame. The base `input,textarea,select` rule above is unlayered and app-wide, and bit
+   the booking (#133) and community reply inputs; this reinforcement sits in the same file,
+   AFTER it, so order + specificity both favour it (brand.css also guards this). */
+.mt-input input,
+.mt-input textarea,
+.mt-input select {
+  -webkit-appearance: none;
+  appearance: none;
+  width: auto;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
 input:focus,
 textarea:focus,
 select:focus {

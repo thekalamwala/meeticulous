@@ -26,6 +26,10 @@ export const acceptAnswer = (itemId, commentId) => body(API.post(`/community/ite
 export const like = (targetType, id) => body(API.post('/community/reactions', { target_type: targetType, target_id: id }));
 export const unlike = (targetType, id) => body(API.delete('/community/reactions', { data: { target_type: targetType, target_id: id } }));
 export const report = (payload) => body(API.post('/community/reports', payload));
+export const savePost = (postId) => body(API.post('/community/saves', { post_id: postId }));
+export const unsavePost = (postId) => body(API.delete('/community/saves', { data: { post_id: postId } }));
+export const blockMember = (targetId) => body(API.post('/community/blocks', { target_id: targetId }));
+export const unblockMember = (targetId) => body(API.delete('/community/blocks', { data: { target_id: targetId } }));
 
 // Admin moderation (/admin paths get the admin key from the api.js interceptor).
 export const adminGetReports = ({ status = 'open', limit } = {}) => body(API.get('/admin/community/reports', { params: { status, ...(limit && { limit }) } }));

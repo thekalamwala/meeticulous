@@ -89,6 +89,32 @@ async function addReaction(userId, targetType, targetId) {
 const removeReaction = (userId, targetType, targetId) => run(db('community_reactions').delete()
   .eq('user_id', userId).eq('target_type', targetType).eq('target_id', targetId));
 
+// Save / unsave a post (bookmark). PK (user_id, post_id) makes a double-save idempotent;
+// save_count is DB-trigger owned. Returns the save_count the trigger left on the post.
+async function addSave(userId, postId) {
+  try { await run(db('community_saves').insert({ user_id: userId, post_id: postId })); }
+  catch (e) { if (e.code !== '23505') throw e; } // already saved: idempotent
+  return (await getPost(postId))?.save_count ?? null;
+}
+const removeSave = async (userId, postId) => {
+  await run(db('community_saves').delete().eq('user_id', userId).eq('post_id', postId));
+  return (await getPost(postId))?.save_count ?? null;
+};
+const savedIds = async (userId, postIds) => {
+  if (!userId || !postIds.length) return new Set();
+  const rows = await run(db('community_saves').select('post_id').eq('user_id', userId).in('post_id', postIds));
+  return new Set((rows || []).map((r) => r.post_id));
+};
+
+// Block / unblock a member. PK (blocker_id, blocked_id); self-block and dup are no-ops.
+async function addBlock(blockerId, blockedId) {
+  if (!blockedId || blockerId === blockedId) return false;
+  try { await run(db('community_blocks').insert({ blocker_id: blockerId, blocked_id: blockedId })); return true; }
+  catch (e) { if (e.code === '23505') return true; throw e; }
+}
+const removeBlock = (blockerId, blockedId) => run(db('community_blocks').delete()
+  .eq('blocker_id', blockerId).eq('blocked_id', blockedId));
+
 // true = new report, false = this reporter already reported this target.
 async function insertReport(row) {
   try {
@@ -280,5 +306,6 @@ module.exports = {
   linksAllowed, getProfile, getMember, acceptTerms, getSpaceByKey, getSpaceById,
   insertPost, getPost, updatePost, insertMedia, listMedia, resolveUsernames, insertMentions,
   getComment, insertComment, countCommentsByAuthorOnPost, updateComment, addReaction, removeReaction,
+  addSave, removeSave, savedIds, addBlock, removeBlock,
   insertReport, countOpenReports, viewContext, refreshIndexable, run, runCount,
 };

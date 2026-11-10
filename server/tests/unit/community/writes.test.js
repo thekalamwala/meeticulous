@@ -495,6 +495,47 @@ describe('terms', () => {
   });
 });
 
+describe('saves', () => {
+  test('POST /saves bookmarks a visible post', async () => {
+    const r = res();
+    await ctrl.createSave(req({ post_id: POST_ID }), r);
+    expect(bodyOf(r)).toMatchObject({ saved: true });
+    expect(callsOn('community_saves', 'insert')).toHaveLength(1);
+  });
+  test('rejects a bad target', async () => {
+    const r = res();
+    await ctrl.createSave(req({ post_id: 'nope' }), r);
+    expect(statusOf(r)).toBe(400);
+  });
+  test('DELETE /saves un-bookmarks', async () => {
+    const r = res();
+    await ctrl.removeSave(req({ post_id: POST_ID }), r);
+    expect(bodyOf(r)).toMatchObject({ saved: false });
+    expect(callsOn('community_saves', 'delete')).toHaveLength(1);
+  });
+});
+
+describe('blocks', () => {
+  test('POST /blocks blocks another member', async () => {
+    const r = res();
+    await ctrl.createBlock(req({ target_id: OTHER }), r);
+    expect(bodyOf(r)).toEqual({ blocked: true });
+    expect(callsOn('community_blocks', 'insert')).toHaveLength(1);
+  });
+  test('cannot block yourself', async () => {
+    const r = res();
+    await ctrl.createBlock(req({ target_id: ME }), r);
+    expect(statusOf(r)).toBe(400);
+    expect(bodyOf(r).code).toBe('CANNOT_BLOCK_SELF');
+  });
+  test('DELETE /blocks unblocks', async () => {
+    const r = res();
+    await ctrl.removeBlock(req({ target_id: OTHER }), r);
+    expect(bodyOf(r)).toEqual({ blocked: false });
+    expect(callsOn('community_blocks', 'delete')).toHaveLength(1);
+  });
+});
+
 describe('routes', () => {
   const router = require('../../../routes/communityRoutes');
   const gate = require('../../../middleware/communityGate');
@@ -508,5 +549,10 @@ describe('routes', () => {
   test('POST /terms skips requireTerms', () => {
     expect(chainOf('post', '/terms').slice(0, 3)).toEqual([protect, gate.communityGate, gate.requireWrites]);
     expect(chainOf('post', '/terms')).not.toContain(gate.requireTerms);
+  });
+  test('POST /saves + /blocks are gated writes', () => {
+    for (const p of ['/saves', '/blocks']) {
+      expect(chainOf('post', p).slice(0, 4)).toEqual([protect, gate.communityGate, gate.requireWrites, gate.requireTerms]);
+    }
   });
 });

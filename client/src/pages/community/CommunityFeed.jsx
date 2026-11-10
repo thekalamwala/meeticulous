@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CircleHelp, Image, MessagesSquare, SquarePen } from 'lucide-react';
 import Seo from '../../components/common/Seo';
@@ -12,6 +12,8 @@ import { communityBreadcrumbJsonLd, headlineOf } from '../../utils/communitySeo'
 import ItemCard from '../../components/community/ItemCard';
 import { Avatar } from '../../components/community/AuthorChip';
 import useRequireLogin from '../../components/community/useRequireLogin';
+import useHiddenPosts from '../../components/community/useHiddenPosts';
+import ReportDialog from '../../components/community/ReportDialog';
 import CommunityLayout, { EmptyState, ListStatus, SITE_DESC, useCursorList } from './CommunityLayout';
 
 const TABS = [
@@ -28,6 +30,8 @@ export default function CommunityFeed() {
   const tab = params.get('tab') === 'updates' ? 'updates' : 'everyone';
   const list = useCursorList((cursor) => getFeed({ tab, cursor }), tab);
   const sentinel = useInfiniteScroll(list.loadMore, { hasMore: list.hasMore, loading: list.loading });
+  const { hide, isHidden } = useHiddenPosts();
+  const [reportTarget, setReportTarget] = useState(null);
 
   const tracked = useRef(null);
   useEffect(() => {
@@ -98,7 +102,17 @@ export default function CommunityFeed() {
         </div>
       </div>
 
-      {list.items.map((it) => <ItemCard key={it.id} item={it} />)}
+      {list.items.filter((it) => !isHidden(it.id)).map((it) => (
+        <ItemCard
+          key={it.id}
+          item={it}
+          viewerId={user?.id}
+          canPin={!!user?.is_admin}
+          onHide={hide}
+          onReport={(p) => setReportTarget({ type: 'post', id: p.id })}
+        />
+      ))}
+      {reportTarget && <ReportDialog target={reportTarget} onClose={() => setReportTarget(null)} />}
       <ListStatus list={list} />
       {list.status === 200 && !list.items.length && (
         // The page header already carries this layout's one serif phrase.

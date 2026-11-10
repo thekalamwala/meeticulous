@@ -7,6 +7,7 @@ import { relTime } from '../../utils/relTime';
 import AuthorChip, { Avatar } from './AuthorChip';
 import LikeButton from './LikeButton';
 import LinkifiedText from './LinkifiedText';
+import PostMenu from './PostMenu';
 
 const SPACE_ICONS = { updates: Megaphone, help: CircleHelp, ideas: Lightbulb, 'host-corner': Briefcase, general: MessagesSquare };
 export function SpaceIcon({ spaceKey, size = 20 }) {
@@ -48,7 +49,7 @@ function Photos({ media, author }) {
 
 // One feed/detail card. `detail` = full text, h1 title, Reply action (onReply).
 // `actions` (detail only) = node for the More menu, built by the page that owns edit/delete/report.
-export default function ItemCard({ item, detail = false, onReply, actions }) {
+export default function ItemCard({ item, detail = false, onReply, actions, onHide, onReport, viewerId, canPin = false }) {
   if (TOMBSTONE[item.status]) {
     return (
       <article data-testid="item-card" className="mt-card p-5 sm:p-6">
@@ -60,6 +61,9 @@ export default function ItemCard({ item, detail = false, onReply, actions }) {
   const thread = item.kind === 'thread';
   const pinned = item.is_pinned && !detail;
   const question = item.format === 'question';
+  const isOwn = !!viewerId && item.author?.id === viewerId;
+  // Feed cards carry the "⋯" viewer menu; detail keeps its own author edit/delete actions.
+  const menu = !detail && onReport ? <PostMenu item={item} onHide={onHide} onReport={onReport} isOwn={isOwn} canPin={canPin} /> : null;
   const label = item.title || item.author?.display_name || 'Post';
   const meta = [
     item.format === 'announcement' && 'Announcement',
@@ -74,7 +78,7 @@ export default function ItemCard({ item, detail = false, onReply, actions }) {
   );
 
   return (
-    <article data-testid="item-card" aria-label={pinned ? 'Pinned post' : label} className={`mt-card gap-4 p-5 sm:p-6 ${pinned ? 'mt-card--blush' : ''}`}>
+    <article data-testid="item-card" aria-label={pinned ? 'Pinned post' : label} className={`mt-card gap-5 p-5 sm:p-6 ${pinned ? 'mt-card--blush' : ''}`}>
       {pinned && (
         <div className="flex items-center gap-2 text-xs font-medium text-maroon">
           <Pin size={16} aria-hidden="true" />{item.space ? `Pinned in ${item.space.name}` : 'Pinned'}
@@ -94,6 +98,7 @@ export default function ItemCard({ item, detail = false, onReply, actions }) {
           <div className="flex items-center gap-3">
             <Avatar author={item.author} size="s" />
             <AuthorChip author={item.author} avatar={false} />
+            {menu && <span className="ml-auto">{menu}</span>}
           </div>
         </>
       ) : (
@@ -107,9 +112,10 @@ export default function ItemCard({ item, detail = false, onReply, actions }) {
           {detail && item.title && (
             <h1 className="font-display text-3xl font-extrabold leading-tight tracking-tight text-maroon sm:text-4xl">{item.title}</h1>
           )}
-          <div className="flex items-center gap-3">
+          <div className="flex items-start gap-3">
             <AuthorChip author={item.author} meta={meta} size={pinned ? 's' : 'm'} />
-            {!detail && question && <span className="mt-badge mt-badge--s"><CircleHelp size={16} aria-hidden="true" />Question</span>}
+            {!detail && question && <span className="mt-badge mt-badge--s shrink-0"><CircleHelp size={16} aria-hidden="true" />Question</span>}
+            {menu && <span className="ml-auto">{menu}</span>}
           </div>
           {detail && !item.title && space && <div>{space}</div>}
           <p className={`text-sm leading-relaxed text-ink ${detail ? '' : 'line-clamp-6'}`}>
@@ -122,7 +128,7 @@ export default function ItemCard({ item, detail = false, onReply, actions }) {
         </>
       )}
 
-      <div className="-mx-3 -mb-3 flex flex-wrap items-center gap-1">
+      <div className="flex flex-wrap items-center gap-1 border-t-2 border-ink/5 pt-3">
         <LikeButton targetType="post" id={item.id} liked={item.viewer?.liked} count={item.like_count} />
         {detail ? (
           <button type="button" onClick={() => onReply?.(null)} className="mt-btn mt-btn--ghost mt-btn--s gap-2 font-medium text-muted hover:text-maroon">
