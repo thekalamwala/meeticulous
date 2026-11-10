@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { House, Lock, SquarePen } from 'lucide-react';
 import { getSpaces } from '../../services/communityApi';
 import { SpaceIcon } from '../../components/community/ItemCard';
+import FeedSkeleton from '../../components/community/CommunitySkeleton';
 
 export const SITE_DESC = 'Questions, tips and updates from hosts and guests on Meeticulous, the booking platform for independent professionals.';
 export const TITLE_SUFFIX = ' — Meeticulous Community'; // same suffix as server prerenderCommunity.js
@@ -101,9 +102,9 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
 export function ListStatus({ list }) {
   if (list.loading && !list.items.length) {
     return (
-      <div aria-live="polite" aria-busy="true" className="flex flex-col gap-5">
+      <div aria-live="polite" aria-busy="true">
         <span className="sr-only">Loading</span>
-        {[0, 1].map((i) => <div key={i} className="mt-card h-40 animate-pulse" />)}
+        <FeedSkeleton />
       </div>
     );
   }

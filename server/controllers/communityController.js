@@ -323,6 +323,45 @@ const removeReaction = handle(async (req, res) => {
   return res.json({ liked: false });
 });
 
+// POST /saves — idempotent bookmark of a post. { post_id }
+const createSave = handle(async (req, res) => {
+  const uid = req.user.id;
+  const { post_id: id } = req.body || {};
+  if (!UUID.test(String(id))) return fail(res, 400, 'INVALID_TARGET');
+  const post = await store.getPost(id);
+  if (!post || !canView(post, await store.viewContext(uid, post.author_id))) return fail(res, 404, 'NOT_FOUND');
+  const save_count = await store.addSave(uid, id);
+  return res.json({ saved: true, save_count });
+});
+
+// DELETE /saves — 200 whether or not it existed. { post_id }
+const removeSave = handle(async (req, res) => {
+  const { post_id: id } = req.body || {};
+  if (!UUID.test(String(id))) return fail(res, 400, 'INVALID_TARGET');
+  const save_count = await store.removeSave(req.user.id, id);
+  return res.json({ saved: false, save_count });
+});
+
+// POST /blocks — block a member (their content drops out of your feed going forward). { target_id }
+const createBlock = handle(async (req, res) => {
+  const uid = req.user.id;
+  const { target_id: id } = req.body || {};
+  if (!UUID.test(String(id))) return fail(res, 400, 'INVALID_TARGET');
+  if (id === uid) return fail(res, 400, 'CANNOT_BLOCK_SELF');
+  const target = await store.getProfile(id);
+  if (!target) return fail(res, 404, 'NOT_FOUND');
+  await store.addBlock(uid, id);
+  return res.json({ blocked: true });
+});
+
+// DELETE /blocks — unblock. { target_id }
+const removeBlock = handle(async (req, res) => {
+  const { target_id: id } = req.body || {};
+  if (!UUID.test(String(id))) return fail(res, 400, 'INVALID_TARGET');
+  await store.removeBlock(req.user.id, id);
+  return res.json({ blocked: false });
+});
+
 // POST /reports — duplicate = 200 no-op; the 3rd distinct open report hides a visible post/comment.
 const createReport = handle(async (req, res) => {
   const uid = req.user.id;
@@ -513,4 +552,5 @@ module.exports = {
   listSpaces, feed, spaceThreads, itemDetail, itemComments, me,
   acceptTerms, createItem, updateItem, deleteItem, createComment, updateComment, deleteComment,
   acceptAnswer, addReaction, removeReaction, createReport,
+  createSave, removeSave, createBlock, removeBlock,
 };
