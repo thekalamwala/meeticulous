@@ -408,15 +408,16 @@ const createBooking = async (req, res) => {
     if (!limitCheck.allowed)
       return res.status(403).json({ message: limitCheck.message });
 
-    // v4 — TDS 194-O: a PAID booking withholds income-tax from the host. The rate
-    // is 1% when the host has PAN on file, 5% when they do not (§206AA). Free (₹0)
-    // bookings and "price on request" enquiries withhold nothing (treated as ₹0).
+    // v4 — TDS 194-O: a PAID booking withholds a flat 1% income-tax from the host
+    // (CA-confirmed 2026-11-11: 1% TDS + 1% TCS for all professions; no §206AA 5%
+    // no-PAN rate). Free (₹0) bookings and "price on request" enquiries withhold
+    // nothing (treated as ₹0).
     //
     // `paid_booking_without_pan` (ships OFF): when OFF we keep the legacy behaviour —
     // a paid booking is BLOCKED until the host has PAN on file. When ON, a host with
     // no PAN can still take a paid booking: the money is collected and HELD (payout
-    // already requires approved KYC — see vendorController requestPayout), and TDS is
-    // withheld at the no-PAN 5% rate. `hostHasPan` then drives that rate below.
+    // already requires approved KYC — see vendorController requestPayout). The rate is
+    // 1% either way; `hostHasPan` only gates whether the no-PAN host may book at all.
     let hostHasPan = true;
     if (!service.price_on_request && service.price > 0) {
       const { data: panRow } = await supabaseAdmin
@@ -461,9 +462,10 @@ const createBooking = async (req, res) => {
       // ₹0 service still owes the booking fee under fee-only mode — EXCEPT a
       // price-on-request enquiry, which is a pure no-payment lead (no fee at all).
       chargeFeeOnFree:      feeOnlyMode && !service.price_on_request,
-      // 194-O §206AA: a host with no PAN is withheld at 5% instead of 1%. Omitted
-      // when PAN is present so the engine's 1% default (legacy behaviour) is kept.
-      ...(hostHasPan ? {} : { tdsRate: 0.05 }),
+      // TDS is a flat 1% for every paid booking regardless of PAN (CA-confirmed
+      // 2026-11-11: 1% TDS + 1% TCS for all professions — NOT the §206AA 5% no-PAN
+      // rate). The engine's 1% tdsRate/tcsRate defaults already apply, so no override.
+      // `hostHasPan` now only gates whether a no-PAN host may book at all (above).
     });
     const platformFee  = pricing.platformFee;
     const commission   = pricing.commission;

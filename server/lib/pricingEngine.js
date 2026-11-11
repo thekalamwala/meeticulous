@@ -37,7 +37,7 @@
 const DEFAULTS = Object.freeze({
   platformFee: 10,   // ₹ flat, overridden by platform_settings.platform_fee
   gstRate: 0.18,     // 18% GST — applied to platform fee, commission, and subscriptions
-  tdsRate: 0.01,     // 194-O income-tax TDS on host gross sale; 0.05 when host has no PAN
+  tdsRate: 0.01,     // 194-O income-tax TDS on host gross sale; flat 1% for all (CA 2026-11-11, no §206AA 5%)
   tcsRate: 0.01,     // Sec 52 GST TCS on host gross sale
 });
 
@@ -123,7 +123,7 @@ function calculateCommissionTaxable(commission, opts = {}) {
 // ─── TDS (194-O) — income-tax withheld from the host, remitted to govt ───────
 /**
  * @param {number} servicePrice  host gross sale / base (₹, ≥ 0)
- * @param {object} [opts]        { tdsRate } override (default 1%; 5% if host has no PAN)
+ * @param {object} [opts]        { tdsRate } override (default flat 1% for all; override kept for configurability)
  * @returns {number} TDS amount in ₹ (pass-through; host claims credit)
  */
 function calculateTds(servicePrice, opts = {}) {

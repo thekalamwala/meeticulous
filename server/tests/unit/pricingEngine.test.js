@@ -116,7 +116,7 @@ describe('calculateTds / calculateTcs', () => {
     expect(calculateTds(1000)).toBe(10);
     expect(calculateTcs(1000)).toBe(10);
   });
-  test('no-PAN TDS rate 5% = ₹50', () => {
+  test('TDS rate override (0.05) flows through calculateTds = ₹50', () => {
     expect(calculateTds(1000, { tdsRate: 0.05 })).toBe(50);
   });
   test('₹0 base → ₹0', () => {
@@ -189,14 +189,15 @@ describe('computeBreakdown — marketplace v4 worked examples (₹1000 listing)'
     expect(b.platformRevenue).toBe(10);         // platform fee only
   });
 
-  test('no-PAN host (§206AA) → TDS withheld at 5%, payout ₹869.76', () => {
-    // paid_booking_without_pan ON: a host with no PAN takes a paid booking; TDS is 5%
-    // (50) instead of 1% (10), so the host's provisional payout drops by the extra 40.
-    const b = computeBreakdown({ servicePrice: 1000, commissionPercentage: 5, razorpayFee: PG, tdsRate: 0.05 });
-    expect(b.tds).toBe(50);                      // 5% of 1000
-    expect(b.tcs).toBe(10);                      // unchanged
-    expect(b.customerTotal).toBe(1011.8);        // guest total unchanged — TDS is host-borne
-    expect(b.vendorPayout).toBe(869.76);         // 1000 − 50 − 20.24 − 50 − 10
+  test('no-PAN host (paid_booking_without_pan ON) → flat 1% TDS, payout ₹909.76', () => {
+    // CA-confirmed 2026-11-11: 1% TDS + 1% TCS for ALL professions, PAN or not (no
+    // §206AA 5% no-PAN rate). A no-PAN host taking a paid booking is withheld the same
+    // 1% as anyone else — identical to Scenario B — the money is just held until KYC.
+    const b = computeBreakdown({ servicePrice: 1000, commissionPercentage: 5, razorpayFee: PG });
+    expect(b.tds).toBe(10);                      // 1% of 1000 (flat, not §206AA 5%)
+    expect(b.tcs).toBe(10);                      // 1% of 1000
+    expect(b.customerTotal).toBe(1011.8);        // guest total unchanged — TDS/TCS host-borne
+    expect(b.vendorPayout).toBe(909.76);         // 1000 − 50 − 20.24 − 10 − 10
   });
 
   test('razorpay fee unknown at booking time → payout excludes PG (finalised at capture)', () => {
@@ -240,7 +241,7 @@ describe('computeBreakdown — marketplace v4 worked examples (₹1000 listing)'
     expect(b.vendorPayout).toBe(181.28);         // 200 − 10 − 4.72 − 2 − 2
   });
 
-  test('configurable TDS rate (no-PAN 5%) flows through', () => {
+  test('configurable TDS rate override flows through (engine capability; prod uses flat 1%)', () => {
     const b = computeBreakdown({ servicePrice: 1000, commissionPercentage: 0, razorpayFee: PG, tdsRate: 0.05 });
     expect(b.tds).toBe(50);
     expect(b.vendorPayout).toBe(919.76);         // 1000 − 0 − 20.24 − 50 − 10
