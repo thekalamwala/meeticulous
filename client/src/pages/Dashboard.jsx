@@ -5,10 +5,11 @@ import {
   LayoutGrid, Plus, Sparkles, Wallet,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { getPayoutBalance, getHostBookings, getHostNudges } from '../services/api';
+import { getPayoutBalance, getHostBookings, getHostNudges, getMyKyc, getMyServices } from '../services/api';
 import { fmtMoney, cn } from '../components/dashboard/ui';
 import { isFreePlan } from '../utils/themeUtils';
 import CommissionMeter from '../components/dashboard/CommissionMeter';
+import DashboardKycBanner from '../components/dashboard/DashboardKycBanner';
 import { useRegisterRefresh } from '../components/dashboard/ui/refreshContext';
 import { useOverviewChrome } from '../components/common/overviewChrome';
 import { isPreviewEnabled, getPreviewBookings, getPreviewPayoutBalance } from '../utils/previewData';
@@ -453,6 +454,18 @@ const Dashboard = () => {
     .then(({ data }) => setCommissionPaid(Number(data?.commissionPaid) || 0))
     .catch(() => {}), []);
 
+  // KYC status + whether the host sells a paid service — drives DashboardKycBanner.
+  // Non-blocking: on any error the banner simply stays hidden.
+  const [kyc, setKyc] = useState(null);
+  const [hasPaidService, setHasPaidService] = useState(false);
+  const loadKyc = useCallback(() => Promise.all([getMyKyc(), getMyServices()])
+    .then(([k, s]) => {
+      setKyc(k?.data ?? null);
+      const svcs = Array.isArray(s?.data) ? s.data : [];
+      setHasPaidService(svcs.some((x) => Number(x.price) > 0 && !x.price_on_request));
+    })
+    .catch(() => {}), []);
+
   useEffect(() => {
     if (!isHost) return;
     // DEV-only UI preview: show sample payout + bookings WITHOUT touching the
@@ -467,7 +480,8 @@ const Dashboard = () => {
     loadBalance();
     loadBookings();
     loadNudges();
-  }, [isHost, loadBookings, loadBalance, loadNudges]);
+    loadKyc();
+  }, [isHost, loadBookings, loadBalance, loadNudges, loadKyc]);
 
   // Pull-to-refresh re-fetches payout balance + bookings together.
   const refresh = useCallback(() => {
@@ -525,6 +539,7 @@ const Dashboard = () => {
           so the overview content is a single column — no layout shift. */}
       <Greeting firstName={firstName} />
 
+      <DashboardKycBanner kyc={kyc} hasPaidService={hasPaidService} />
       <CommissionMeter commissionPaid={commissionPaid} isFree={isFreePlan(user?.plan)} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)] 2xl:grid-cols-[540px_minmax(0,1fr)_minmax(0,1fr)]">

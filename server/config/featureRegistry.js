@@ -71,6 +71,9 @@ const REGISTRY = [
   { key: 'host_linkedin_login',  label: 'LinkedIn host login',  category: 'Auth',     scope: 'both',     enabled: false, description: 'Hosts can sign up and log in with LinkedIn on the host door. Off = LinkedIn button hidden and POST /api/auth/linkedin/host returns 503.' },
   { key: 'razorpay_payment',     label: 'Razorpay Payment',     category: 'Payments', scope: 'customer', description: 'Paid checkout via Razorpay. Off = paid bookings/purchases blocked.' },
   { key: 'product_purchase',     label: 'Product Purchase',     category: 'Payments', scope: 'customer', description: 'Buy digital products. Off = product checkout blocked.' },
+  // Opt-in (ships OFF — seeded disabled in v3.204, and enabled:false here so the registry
+  // upsert creates it OFF even before the migration runs).
+  { key: 'coupons',              label: 'Coupons',              category: 'Payments', scope: 'both',     enabled: false, description: 'Host discount codes applied at checkout. Off = codes are rejected and no discount is applied.' },
   { key: 'review_submission',    label: 'Review Submission',    category: 'Engagement', scope: 'both', description: 'Guests and hosts review each other after a completed booking. Off = all new reviews blocked (both directions).' },
   { key: 'customer_bookings',    label: 'Customer Booking History', category: 'Engagement', scope: 'customer', description: 'Guest "my bookings" dashboard. Off = page hidden.' },
 
