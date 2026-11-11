@@ -75,7 +75,7 @@ export default function CommunityFeed() {
         <p className={`text-muted ${v2 ? 'text-xs' : 'text-sm'}`}>Hosts and guests talking about sessions, pricing and the craft.</p>
       </header>
 
-      <div role="tablist" aria-label="Feed" className="mt-tabs flex">
+      <div role="tablist" aria-label="Feed" className={v2 ? 'mt-tabs mt-tabs--underline flex overflow-x-auto' : 'mt-tabs flex'}>
         {TABS.map((t) => (
           <button
             key={t.key}
@@ -85,7 +85,7 @@ export default function CommunityFeed() {
             aria-disabled={t.soon || undefined}
             title={t.soon ? 'Following arrives soon' : undefined}
             onClick={() => { if (!t.soon && t.key !== tab) setParams(t.key === 'everyone' ? {} : { tab: t.key }); }}
-            className="mt-tab flex-1 justify-center px-3 sm:px-6"
+            className={v2 ? 'mt-tab shrink-0' : 'mt-tab flex-1 justify-center px-3 sm:px-6'}
           >
             {t.label}{t.soon && <span className="mt-tab__count">soon</span>}
           </button>
