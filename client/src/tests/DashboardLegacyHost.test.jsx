@@ -15,6 +15,7 @@ const { api } = vi.hoisted(() => ({
     getPayoutBalance: vi.fn(() => Promise.resolve({ data: { available: 0, clearing: 0, pendingCompletion: 0 } })),
     getHostBookings: vi.fn(() => Promise.resolve({ data: [] })),
     getMyServices: vi.fn(() => Promise.resolve({ data: [] })),
+    getHostNudges: vi.fn(() => Promise.resolve({ data: { snoozed: {}, commissionPaid: 0 } })),
     getMyKyc: vi.fn(() => Promise.resolve({ data: { status: 'approved' } })),
   },
 }));
@@ -23,6 +24,7 @@ vi.mock('../services/api', () => ({
   getPayoutBalance: api.getPayoutBalance,
   getHostBookings: api.getHostBookings,
   getMyServices: api.getMyServices,
+  getHostNudges: api.getHostNudges,
   getMyKyc: api.getMyKyc,
 }));
 vi.mock('react-hot-toast', () => ({

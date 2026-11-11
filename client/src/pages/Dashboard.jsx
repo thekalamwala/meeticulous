@@ -5,8 +5,10 @@ import {
   LayoutGrid, Plus, Sparkles, Wallet,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { getPayoutBalance, getHostBookings, getMyKyc, getMyServices } from '../services/api';
+import { getPayoutBalance, getHostBookings, getHostNudges, getMyKyc, getMyServices } from '../services/api';
 import { fmtMoney, cn } from '../components/dashboard/ui';
+import { isFreePlan } from '../utils/themeUtils';
+import CommissionMeter from '../components/dashboard/CommissionMeter';
 import DashboardKycBanner from '../components/dashboard/DashboardKycBanner';
 import { useRegisterRefresh } from '../components/dashboard/ui/refreshContext';
 import { useOverviewChrome } from '../components/common/overviewChrome';
@@ -445,6 +447,13 @@ const Dashboard = () => {
       .catch(() => setBalanceStatus('error'));
   }, []);
 
+  // Commission this free host has paid — drives the free→Pro CommissionMeter.
+  // Non-blocking: on error it stays 0 and the meter simply doesn't show.
+  const [commissionPaid, setCommissionPaid] = useState(0);
+  const loadNudges = useCallback(() => getHostNudges()
+    .then(({ data }) => setCommissionPaid(Number(data?.commissionPaid) || 0))
+    .catch(() => {}), []);
+
   // KYC status + whether the host sells a paid service — drives DashboardKycBanner.
   // Non-blocking: on any error the banner simply stays hidden.
   const [kyc, setKyc] = useState(null);
@@ -470,8 +479,9 @@ const Dashboard = () => {
     }
     loadBalance();
     loadBookings();
+    loadNudges();
     loadKyc();
-  }, [isHost, loadBookings, loadBalance, loadKyc]);
+  }, [isHost, loadBookings, loadBalance, loadNudges, loadKyc]);
 
   // Pull-to-refresh re-fetches payout balance + bookings together.
   const refresh = useCallback(() => {
@@ -530,6 +540,7 @@ const Dashboard = () => {
       <Greeting firstName={firstName} />
 
       <DashboardKycBanner kyc={kyc} hasPaidService={hasPaidService} />
+      <CommissionMeter commissionPaid={commissionPaid} isFree={isFreePlan(user?.plan)} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)] 2xl:grid-cols-[540px_minmax(0,1fr)_minmax(0,1fr)]">
         <WithdrawCard balance={balance} status={balanceStatus} />
