@@ -4,10 +4,10 @@
  */
 const router = require('express').Router();
 const explore = require('../controllers/exploreController');
-const { searchLimiter } = require('../middleware/security');
+const { searchLimiter, clickLimiter } = require('../middleware/security');
 
 router.get('/',            searchLimiter, explore.listServices);
-router.post('/click',      explore.logClick);   // navigator.sendBeacon; global apiLimiter still applies
+router.post('/click',      clickLimiter, explore.logClick);   // sendBeacon; + per-IP clickLimiter (audit F-04)
 router.get('/featured',    explore.getFeatured);
 router.get('/categories',  explore.getCategories);
 router.get('/collections', explore.getCollections);

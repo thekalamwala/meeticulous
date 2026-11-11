@@ -439,6 +439,20 @@ const createBooking = async (req, res) => {
     // with the guest directly; the platform charges nothing at booking time.
     const bookingValue = service.price_on_request ? 0 : service.price; // service amount; add-ons not yet supported
 
+    // Coupon (flag `coupons`, OFF by default). A valid host code reduces the SERVICE
+    // PRICE — the host eats their own promo, and commission / TDS / GST all recompute
+    // on the discounted price below. The booking stores coupon_id + discount_amount as
+    // the redemption record. Invalid/expired codes fail the booking with a 400.
+    let couponId = null;
+    let discountAmount = 0;
+    if (req.body.coupon_code && bookingValue > 0 && (await featureFlags.isFeatureEnabled('coupons'))) {
+      const r = await require('../services/couponService').validate(req.body.coupon_code, { hostId: host_id, servicePrice: bookingValue });
+      if (!r.ok) return res.status(400).json({ message: r.reason });
+      couponId = r.coupon.id;
+      discountAmount = r.discount;
+    }
+    const pricedValue = Math.max(0, bookingValue - discountAmount);
+
     // Commission % is read from the vendor's subscription plan record (DB-driven,
     // admin-editable). Expired paid plans fall back to the free tier.
     const effectivePlanSlug = planService.resolveVendorPlan(host);
@@ -454,7 +468,7 @@ const createBooking = async (req, res) => {
     // Razorpay fee is vendor-borne and only known at capture → finalised in
     // paymentController.verifyPayment. Here razorpayFee = 0 (payout provisional).
     const pricing = computeBreakdown({
-      servicePrice:         bookingValue,
+      servicePrice:         pricedValue,
       commissionPercentage: commissionPct,
       platformFee:          feeSetting,
       gstRate,
@@ -558,6 +572,8 @@ const createBooking = async (req, res) => {
       tcs_amount:            pricing.tcs,                // v3.93: GST Sec 52 collection
       commission_percentage: commissionPct,           // v2.8 snapshot
       vendor_plan_type:      effectivePlanSlug,       // v2.8 snapshot
+      coupon_id:             couponId,                // v3.204 coupon redemption record (null if none)
+      discount_amount:       discountAmount,          // v3.204 ₹ off the service price
       reminder_24h_sent: false,
       reminder_1h_sent: false,
       // Branch on the amount actually payable, not the host price: in fee-only
@@ -604,6 +620,7 @@ const createBooking = async (req, res) => {
         commission_gst: _cg, commission_percentage: _cp, vendor_plan_type: _vp,
         commission_taxable: _ctx, tds_amount: _tds, tcs_amount: _tcs,
         google_event_id: _gei, billing_details: _bd, grace_minutes: _gm,
+        coupon_id: _cid, discount_amount: _da,   // v3.204 — stripped if the migration hasn't run
         ...payloadCore
       } = bookingPayload;
       bookingResult = await supabaseAdmin
@@ -679,6 +696,9 @@ const createBooking = async (req, res) => {
     // manage_token lets an anonymous guest (no session) view/cancel THIS booking
     // via the public /manage-booking/:token page (MF3 #516).
     res.status(201).json({ ...booking, manage_token: manageBookingToken.sign(booking.id) });
+
+    // Coupon: bump the redemption counter (best-effort; booking.coupon_id is the record).
+    if (couponId) require('../services/couponService').redeem(couponId);
 
     // In-app: notify the host of the new booking (fires for both free + paid).
     inAppNotify({
@@ -784,7 +804,11 @@ const getHostBookings = async (req, res) => {
     // 'unpaid' and 'failed' stay hidden. Admin endpoints see everything.
     let result = await supabaseAdmin
       .from("bookings")
-      .select("*, services(*), profiles!bookings_guest_id_fkey(*)")
+      // Audit F-01: explicit guest-profile allowlist (never `(*)`) so the host
+      // can't harvest the guest's private columns (date_of_birth, is_banned,
+      // sessions_valid_after, failed_login_count, google_id, …). phone is kept so
+      // redactBookingContact can reveal/null it per the anti-disintermediation rule.
+      .select("*, services(*), profiles!bookings_guest_id_fkey(id, name, email, profile_image, phone)")
       .eq("host_id", req.user.id)
       .eq("payment_status", "paid")
       .order("scheduled_at", { ascending: true })
@@ -832,7 +856,10 @@ const getGuestBookings = async (req, res) => {
       : null;
     const scoped = (q) => orFilter ? q.or(orFilter) : q.eq("guest_id", req.user.id);
     let result = await scoped(
-      supabaseAdmin.from("bookings").select("*, services(*), profiles!bookings_host_id_fkey(*)"))
+      // Audit F-01: explicit host-profile allowlist (never `(*)`) so a guest can't
+      // harvest the host's private columns. username is needed for the /:username
+      // link; phone is kept for redactBookingContact's offline-reveal rule.
+      supabaseAdmin.from("bookings").select("*, services(*), profiles!bookings_host_id_fkey(id, name, username, email, profile_image, phone)"))
       .order("scheduled_at", { ascending: true })
       .range(from, to);
     // Fallback if schema cache is stale
@@ -2133,11 +2160,32 @@ const expireStalePendingBookings = async () => {
   return { expired };
 };
 
+// POST /api/bookings/coupon/validate { code, service_id } → preview a discount before
+// booking (public; rate-limited to blunt code-guessing). Returns { ok, discount,
+// finalPrice } or { ok:false, reason } — never leaks whether a code exists beyond "invalid".
+const validateCouponPreview = async (req, res) => {
+  try {
+    if (!(await featureFlags.isFeatureEnabled('coupons')))
+      return res.status(404).json({ message: 'Coupons are not enabled.' });
+    const { code, service_id } = req.body || {};
+    const { data: service } = await supabaseAdmin
+      .from('services').select('host_id, price, price_on_request').eq('id', service_id).maybeSingle();
+    if (!service) return res.status(404).json({ message: 'Service not found.' });
+    const servicePrice = service.price_on_request ? 0 : Number(service.price) || 0;
+    const r = await require('../services/couponService').validate(code, { hostId: service.host_id, servicePrice });
+    if (!r.ok) return res.status(200).json({ ok: false, reason: r.reason });
+    return res.status(200).json({ ok: true, discount: r.discount, finalPrice: Math.max(0, servicePrice - r.discount) });
+  } catch (error) {
+    return safeError(res, error);
+  }
+};
+
 module.exports = {
   getServiceById,
   getBookedSlots,
   getAvailableSlots,
   createBooking,
+  validateCouponPreview,
   getHostBookings,
   getGuestBookings,
   cancelBooking,

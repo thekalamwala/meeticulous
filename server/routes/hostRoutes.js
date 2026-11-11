@@ -8,6 +8,7 @@ const {
 const { gone } = require('../middleware/gone');
 const { changeUsername } = require('../controllers/usernameController');
 const { getHostNudges, dismissHostNudge } = require('../controllers/hostNudgeController');
+const { createCoupon, listCoupons, updateCoupon, deleteCoupon } = require('../controllers/couponHostController');
 const { protect, requireHost } = require('../middleware/authMiddleware');
 const { attachPlan, enforceMinPrice } = require('../middleware/planMiddleware');
 const { requireFeature } = require('../middleware/requireFeature');
@@ -30,6 +31,12 @@ router.put('/availability', protect, requireHost, requireFeature('availability_e
 // MUST stay above the public /:username routes or "nudges" reads as a username.
 router.get('/nudges', protect, requireHost, getHostNudges);
 router.post('/nudges/:key/dismiss', protect, requireHost, dismissHostNudge);
+// Host-managed discount codes (v3.204, behind the `coupons` flag). Static paths —
+// MUST stay above the public /:username routes or "coupons" reads as a username.
+router.get('/coupons', protect, requireHost, listCoupons);
+router.post('/coupons', protect, requireHost, createCoupon);
+router.patch('/coupons/:id', protect, requireHost, updateCoupon);
+router.delete('/coupons/:id', protect, requireHost, deleteCoupon);
 router.get('/:username/:slug', getServiceBySlug);
 router.get('/:username', getHostProfile);
 

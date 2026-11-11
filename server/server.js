@@ -290,7 +290,15 @@ const { cleanup: cleanupOtps } = require('./utils/otpStore');
 // See utils/jobLock.js + migrations/v3.25_job_locks.sql.
 const { runLocked } = require('./utils/jobLock');
 
-setInterval(async () => {
+// Cron safety gate. Crons run automatically in production (NODE_ENV=production on
+// Render). Locally they stay OFF unless CRONS_ENABLED=true — so a dev boot against
+// the shared live DB never fires reminders / nudges / reconcilers at real users,
+// nor races the prod instance. Prod behaviour is unchanged.
+const CRONS_ENABLED = isProd || process.env.CRONS_ENABLED === 'true';
+const scheduleCron = (fn, ms) => { if (CRONS_ENABLED) setInterval(fn, ms); };
+if (!CRONS_ENABLED) console.log('Crons disabled (set CRONS_ENABLED=true to run them locally)');
+
+scheduleCron(async () => {
   try { await runLocked('reminders', () => processReminders(), { leaseMs: 10 * 60 * 1000 }); }
   catch (err) { console.error('Reminder cron error:', err.message); }
 }, 5 * 60 * 1000);
@@ -303,20 +311,20 @@ setInterval(async () => {
 // Follow-up nudges (rebook) — fires due scheduled_followups.
 const { processFollowups } = require('./services/followups/followupService');
 const FOLLOWUP_INTERVAL_MIN = Number(process.env.FOLLOWUP_INTERVAL_MIN || 10);
-setInterval(async () => {
+scheduleCron(async () => {
   try { await runLocked('followups', () => processFollowups(), { leaseMs: 10 * 60 * 1000 }); }
   catch (err) { console.error('Follow-up cron error:', err.message); }
 }, FOLLOWUP_INTERVAL_MIN * 60 * 1000);
 
 // Reap stale unpaid 'pending' bookings (security audit H-2).
 const PENDING_REAP_INTERVAL_MIN = Number(process.env.PENDING_REAP_INTERVAL_MIN) || 10;
-setInterval(async () => {
+scheduleCron(async () => {
   try { await runLocked('expire-pending-bookings', () => expireStalePendingBookings(), { leaseMs: PENDING_REAP_INTERVAL_MIN * 2 * 60 * 1000 }); }
   catch (err) { console.error('Pending-hold reaper cron error:', err.message); }
 }, PENDING_REAP_INTERVAL_MIN * 60 * 1000);
 
 // Abandoned-payment recovery: email guests who started a paid booking and didn't finish.
-setInterval(async () => {
+scheduleCron(async () => {
   try {
     const { processAbandonedRecovery } = require('./services/abandonedRecovery');
     await runLocked('abandoned-recovery', () => processAbandonedRecovery(), { leaseMs: 10 * 60 * 1000 });
@@ -333,7 +341,7 @@ const CRM_SEQUENCE_INTERVAL_SEC = Number(process.env.CRM_SEQUENCE_INTERVAL_SEC) 
 
 // Email queue worker.
 const communicationEngine = require('./services/email/communicationEngine');
-setInterval(async () => {
+scheduleCron(async () => {
   try {
     await runLocked('email-queue', async () => {
       const r = await communicationEngine.processQueue();
@@ -344,7 +352,7 @@ setInterval(async () => {
 
 // Campaign worker.
 const campaignWorker = require('./services/campaignWorker');
-setInterval(async () => {
+scheduleCron(async () => {
   try {
     await runLocked('campaign-worker', async () => {
       const r = await campaignWorker.processDue();
@@ -357,7 +365,7 @@ setInterval(async () => {
 // `activation_nudges` (default OFF) + per-event is_active/whatsapp_enabled (OFF,
 // v3.163) — fully inert until the founder launches. Quiet-hours + dedupe inside.
 const { runActivationNudges } = require('./services/activationNudges');
-setInterval(async () => {
+scheduleCron(async () => {
   try {
     await runLocked('activation-nudges', async () => {
       const r = await runActivationNudges();
@@ -371,7 +379,7 @@ setInterval(async () => {
 // (ON from v3.193, so flipping the flag alone turns the track live).
 // Quiet-hours + 60-day dedupe inside.
 const { runDormancyNudges } = require('./services/dormancyNudges');
-setInterval(async () => {
+scheduleCron(async () => {
   try {
     await runLocked('dormant-nudges', async () => {
       const r = await runDormancyNudges();
@@ -385,7 +393,7 @@ setInterval(async () => {
 // (default OFF) + per-event is_active/email_enabled (ON in v3.194). Dedupe per
 // booking inside, quiet-hours honoured.
 const { runReviewNudges } = require('./services/reviewNudges');
-setInterval(async () => {
+scheduleCron(async () => {
   try {
     await runLocked('review-nudges', async () => {
       const r = await runReviewNudges();
@@ -400,7 +408,7 @@ setInterval(async () => {
 // Double-gated: feature flag `festival_nudges` (default OFF) + per-event
 // is_active/email_enabled (ON in v3.195).
 const { runFestivalGreetings } = require('./services/festivalGreetings');
-setInterval(async () => {
+scheduleCron(async () => {
   try {
     await runLocked('festival-greetings', async () => {
       const r = await runFestivalGreetings();
@@ -414,7 +422,7 @@ setInterval(async () => {
 // feature flag `human_moments` (default OFF) + per-event is_active/email_enabled
 // (ON in v3.196). Dedupe inside, quiet-hours 09-20 IST.
 const { runHumanMoments } = require('./services/humanMoments');
-setInterval(async () => {
+scheduleCron(async () => {
   try {
     await runLocked('human-moments', async () => {
       const r = await runHumanMoments();
@@ -427,7 +435,7 @@ setInterval(async () => {
 // Double-gated: feature flag `empathy_track` (default OFF) + per-event
 // is_active/email_enabled (ON in v3.197). Private notes, forever dedupe.
 const { runEmpathyScans } = require('./services/empathyScans');
-setInterval(async () => {
+scheduleCron(async () => {
   try {
     await runLocked('empathy-scans', async () => {
       const r = await runEmpathyScans();
@@ -440,7 +448,7 @@ setInterval(async () => {
 const crmMessageService = require('./services/crm/messageService');
 const crmSequenceService = require('./services/crm/sequenceService');
 const crmFollowUpService = require('./services/crm/followUpService');
-setInterval(async () => {
+scheduleCron(async () => {
   try {
     await runLocked('crm-send-worker', async () => {
       const r = await crmMessageService.processQueue();
@@ -448,7 +456,7 @@ setInterval(async () => {
     }, { leaseMs: CRM_SEND_INTERVAL_SEC * 2 * 1000 });
   } catch (err) { console.error('CRM send worker error:', err.message); }
 }, CRM_SEND_INTERVAL_SEC * 1000);
-setInterval(async () => {
+scheduleCron(async () => {
   try {
     await runLocked('crm-sequence-worker', async () => {
       const r = await crmSequenceService.processDue();
@@ -457,7 +465,7 @@ setInterval(async () => {
   } catch (err) { console.error('CRM sequence worker error:', err.message); }
 }, CRM_SEQUENCE_INTERVAL_SEC * 1000);
 const CRM_FOLLOWUP_INTERVAL_MIN = Number(process.env.CRM_FOLLOWUP_INTERVAL_MIN) || 5;
-setInterval(async () => {
+scheduleCron(async () => {
   try {
     await runLocked('crm-followup-reminder', async () => {
       const r = await crmFollowUpService.processReminders();
@@ -468,7 +476,7 @@ setInterval(async () => {
 
 // Cold calling: WhatsApp the lead ~15 min before a promised callback (no-op until
 // the AiSensy template is approved).
-setInterval(async () => {
+scheduleCron(async () => {
   try { await runLocked('cold-call-reminders', () => require('./services/crm/coldCallService').callbackReminders(), { leaseMs: 10 * 60 * 1000 }); }
   catch (err) { console.error('Cold-call reminder cron error:', err.message); }
 }, 5 * 60 * 1000);
@@ -478,7 +486,7 @@ setInterval(async () => {
 // flag + config gates live inside tithi.*, so these ticks are safe to run always.
 // Release notes: approve-first (draft+email) until COMMUNITY_TITHI_AUTOPOST=true.
 const tithiWorker = require('./services/community/tithiWorker');
-setInterval(async () => {
+scheduleCron(async () => {
   try {
     await runLocked('tithi-release-notes', async () => {
       const r = await tithiWorker.runReleaseNotePoll();
@@ -486,7 +494,7 @@ setInterval(async () => {
     }, { leaseMs: 10 * 60 * 1000 });
   } catch (err) { console.error('Tithi release-note poll error:', err.message); }
 }, 5 * 60 * 1000);
-setInterval(async () => {
+scheduleCron(async () => {
   try {
     await runLocked('tithi-reply-sweep', async () => {
       const r = await tithiWorker.runReplySweep();
@@ -494,7 +502,7 @@ setInterval(async () => {
     }, { leaseMs: 6 * 60 * 1000 });
   } catch (err) { console.error('Tithi reply-sweep error:', err.message); }
 }, 3 * 60 * 1000);
-setInterval(async () => {
+scheduleCron(async () => {
   try {
     await runLocked('tithi-daily-digest', async () => {
       const r = await tithiWorker.runDailyDigest();
@@ -508,7 +516,7 @@ setInterval(async () => {
 // controller — this cron handles only the scheduled follow-ups. Gated by
 // community_email_onboarding (OFF) inside the service, so safe to tick always.
 const onboardingSequence = require('./services/community/onboardingSequence');
-setInterval(async () => {
+scheduleCron(async () => {
   try {
     await runLocked('community-onboarding-sweep', async () => {
       const r = await onboardingSequence.runSweep();
@@ -587,7 +595,7 @@ const SCHEDULED_JOBS = [
   { name: 'gsc-sync', min: Number(process.env.GSC_SYNC_INTERVAL_MIN) || 24 * 60, run: () => require('./services/seo/gscSync').run() },
 ];
 const SCHEDULER_TICK_MIN = Number(process.env.SCHEDULER_TICK_MIN) || 5;
-setInterval(async () => {
+scheduleCron(async () => {
   for (const job of SCHEDULED_JOBS) {
     if (job.when && !job.when()) continue;
     try { await runIfDue(job.name, job.min * 60 * 1000, job.run, { retryOnError: !!job.retryOnError }); }
