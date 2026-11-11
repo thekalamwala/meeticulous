@@ -415,7 +415,7 @@ const Transactions = () => {
   const to = Math.min(page * PAGE_SIZE, total);
 
   return (
-    <div className="rounded-3xl bg-blush/40 p-1">
+    <div>
       {/* ── Page heading ─────────────────────────────────────────────── */}
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
@@ -477,7 +477,7 @@ const Transactions = () => {
         <div className="overflow-x-auto">
           <table className="min-w-[920px] w-full border-collapse">
             <thead>
-              <tr className="border-b border-maroon/10 bg-blush/50">
+              <tr className="border-b border-maroon/10 bg-cream">
                 <TH>Date &amp; Time</TH>
                 <TH>Customer</TH>
                 <TH>Service / Product</TH>

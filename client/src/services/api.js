@@ -153,7 +153,9 @@ export const resetPassword    = (data)         => API.post('/auth/reset-password
 // ── Newsletter (public) — POST /email/subscribe records the address as a
 // campaign contact AND a CRM lead server-side. Callers stay best-effort: on a
 // network failure they still stash the address client-side so it is never lost.
-export const subscribeNewsletter = (email)     => API.post('/email/subscribe', { email, attribution: getAttribution() });
+// `extra` merges into the attribution blob (e.g. { interest: 'membership-early-access' })
+// so the same opt-in doubles as a tagged early-access signup.
+export const subscribeNewsletter = (email, extra) => API.post('/email/subscribe', { email, attribution: { ...(getAttribution() || {}), ...(extra || {}) } });
 
 // ── Contact form (public) ─────────────────────────────────────
 export const sendContactMessage = (data) => API.post('/contact', data);

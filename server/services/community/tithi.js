@@ -139,7 +139,11 @@ async function writeReleaseNote(pr, kind, month) {
     const client = anthropicClient.getClient();
     const resp = await client.messages.create({
       model: anthropicClient.MODELS.listing, // Sonnet — members read this closely
-      max_tokens: 220,
+      // Sonnet-5 is a reasoning model: it spends ~450 "thinking" tokens before any
+      // visible text, so a tight cap (was 220) gets fully consumed by thinking and
+      // returns an empty/truncated note -> silent fallback to the plain deterministic
+      // copy. 1024 leaves room for the thinking budget plus the 2-4 sentence note.
+      max_tokens: 1024,
       system: `${VOICE} ${RELEASE_NOTE_RULES}`,
       messages: [{
         role: 'user',
@@ -212,6 +216,55 @@ async function publishReleaseNote({ pr, release, approveFirst = false } = {}) {
     try { await store.refreshIndexable(post.id); } catch (_) { /* nice-to-have */ }
 
     return { posted: true, postId: post.id, slug, kind, headline };
+  } catch (e) {
+    if (e.code === 'COMMUNITY_UNAVAILABLE') return { skipped: 'unavailable' };
+    throw e;
+  }
+}
+
+// A deploy note's slug: one per ship PR (release/** -> main merge), so a webhook
+// re-delivery of the same merge can't double-post the "we're live" announcement.
+const deploySlug = (pr) => `shipped-pr-${pr && pr.number ? pr.number : 'x'}`;
+
+/**
+ * publishDeploymentNote({ pr, release }) — the "it's live" note posted when the
+ * release train merges into main (prod deploy; Vercel auto-ships from main). This
+ * is the rollup marker, separate from the per-PR release notes: those announce
+ * each change as it lands on the release branch; this says the whole batch is now
+ * live for everyone. Deterministic copy (no model spend per deploy); dedup by slug.
+ *   pr: { number, title, body }   release: 'release/2026-11' | '2026-11'
+ * Returns { skipped: ... } | { posted: true, postId, slug, headline }.
+ */
+async function publishDeploymentNote({ pr, release } = {}) {
+  if (!pr || !pr.number) return { skipped: 'bad_pr' };
+  if (!(await isFeatureEnabled(FLAG))) return { skipped: 'flag_off' };
+  const authorId = tithiUserId();
+  if (!authorId) return { skipped: 'no_identity' };
+
+  const month = releaseLabel(release);
+  const headline = month === 'next' ? 'A fresh batch of updates is live' : `The ${month} updates are live`;
+  const body = month === 'next'
+    ? 'Everything we have been working on just went live. Have a look around — and tell us what you think.'
+    : `Everything from the ${month} release just went live for everyone. Have a look around — and tell us what lands and what doesn't.`;
+
+  try {
+    const slug = deploySlug(pr);
+    if (await store.getPostBySlug(slug)) return { skipped: 'duplicate' };
+    const space = await store.getSpaceByKey(UPDATES_SPACE);
+    if (!space) return { skipped: 'no_space' };
+
+    let post;
+    try {
+      post = await store.insertPost({
+        kind: 'post', format: 'announcement', author_id: authorId,
+        space_id: space.id, title: headline, body, status: 'visible',
+      }, () => slug);
+    } catch (e) {
+      if (e.code === '23505') return { skipped: 'duplicate' };
+      throw e;
+    }
+    try { await store.refreshIndexable(post.id); } catch (_) { /* nice-to-have */ }
+    return { posted: true, postId: post.id, slug, headline };
   } catch (e) {
     if (e.code === 'COMMUNITY_UNAVAILABLE') return { skipped: 'unavailable' };
     throw e;
@@ -304,7 +357,7 @@ async function replyToPost({ post } = {}) {
 module.exports = {
   VOICE, RELEASE_NOTE_RULES,
   classifyPr, kindFromPrefix, writeReleaseNote, fallbackNote,
-  releaseLabel, cleanTitle, prSlug, publishReleaseNote,
+  releaseLabel, cleanTitle, prSlug, publishReleaseNote, publishDeploymentNote,
   replyToPost, escalateToTeam,
   _tithiUserId: tithiUserId,
 };

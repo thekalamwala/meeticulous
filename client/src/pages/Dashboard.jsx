@@ -7,6 +7,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { getPayoutBalance, getHostBookings } from '../services/api';
 import { fmtMoney, cn } from '../components/dashboard/ui';
+import { useRegisterRefresh } from '../components/dashboard/ui/refreshContext';
 import { useOverviewChrome } from '../components/common/overviewChrome';
 import { isPreviewEnabled, getPreviewBookings, getPreviewPayoutBalance } from '../utils/previewData';
 import toast from 'react-hot-toast';
@@ -62,27 +63,13 @@ const toCalendarBooking = (b) => {
   };
 };
 
+// White cards, status shown by the dot only — no pastel fills, no colored
+// left stripe (brand guide: clean cards, no tinted boxes behind data).
 const STATUS = {
-  purple: {
-    card: 'border-l-maroon-500 bg-maroon-100',
-    time: 'text-neutral-600',
-    dot: 'bg-maroon-500',
-  },
-  pink: {
-    card: 'border-l-maroon bg-pink-100',
-    time: 'text-maroon-500',
-    dot: 'bg-maroon',
-  },
-  green: {
-    card: 'border-l-success-fg bg-success-bg',
-    time: 'text-success-fg',
-    dot: 'bg-success-fg',
-  },
-  orange: {
-    card: 'border-l-warning-fg bg-warning-bg',
-    time: 'text-warning-fg',
-    dot: 'bg-warning-fg',
-  },
+  purple: { card: 'bg-white', time: 'text-neutral-600', dot: 'bg-maroon-500' },
+  pink:   { card: 'bg-white', time: 'text-maroon-500',  dot: 'bg-maroon' },
+  green:  { card: 'bg-white', time: 'text-success-fg',  dot: 'bg-success-fg' },
+  orange: { card: 'bg-white', time: 'text-warning-fg',  dot: 'bg-warning-fg' },
 };
 
 const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -195,7 +182,7 @@ const BookingCard = ({ booking, onOpen }) => {
       type="button"
       onClick={onOpen}
       className={cn(
-        'mx-auto flex h-[53px] w-[90%] items-center justify-between gap-1.5 rounded-[10px] border-l-[3px] px-2.5 text-left transition hover:-translate-y-0.5 hover:shadow-[0_6px_14px_-10px_rgba(23,22,74,0.45)]',
+        'mx-auto flex h-[53px] w-[90%] items-center justify-between gap-1.5 rounded-[10px] border border-maroon/10 px-2.5 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_6px_14px_-10px_rgba(23,22,74,0.45)]',
         s.card,
       )}
       title={`${booking.name} · ${booking.time}`}
@@ -445,9 +432,16 @@ const Dashboard = () => {
   // show only once a request SUCCEEDS with no rows). Retryable from the UI.
   const loadBookings = useCallback(() => {
     setBookingsStatus('loading');
-    getHostBookings()
+    return getHostBookings()
       .then(({ data }) => { setRawBookings(Array.isArray(data) ? data : []); setBookingsStatus('ready'); })
       .catch(() => { setRawBookings([]); setBookingsStatus('error'); });
+  }, []);
+
+  const loadBalance = useCallback(() => {
+    setBalanceStatus('loading');
+    return getPayoutBalance()
+      .then(({ data }) => { setBalance(data); setBalanceStatus('ready'); })
+      .catch(() => setBalanceStatus('error'));
   }, []);
 
   useEffect(() => {
@@ -461,12 +455,16 @@ const Dashboard = () => {
       setBookingsStatus('ready');
       return;
     }
-    setBalanceStatus('loading');
-    getPayoutBalance()
-      .then(({ data }) => { setBalance(data); setBalanceStatus('ready'); })
-      .catch(() => setBalanceStatus('error'));
+    loadBalance();
     loadBookings();
-  }, [isHost, loadBookings]);
+  }, [isHost, loadBookings, loadBalance]);
+
+  // Pull-to-refresh re-fetches payout balance + bookings together.
+  const refresh = useCallback(() => {
+    if (isPreviewEnabled()) return Promise.resolve();
+    return Promise.all([loadBalance(), loadBookings()]);
+  }, [loadBalance, loadBookings]);
+  useRegisterRefresh(refresh);
 
   // Calendar view-models (cancelled bookings aren't shown on the calendar).
   const calendarBookings = useMemo(

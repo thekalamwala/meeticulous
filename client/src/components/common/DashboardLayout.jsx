@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  Menu, X, ExternalLink, LogOut, Headset, ChevronDown, Bell, LifeBuoy,
+  X, ExternalLink, LogOut, Headset, ChevronDown, Bell, LifeBuoy,
   User, CreditCard, ShieldCheck, Check, Copy, BadgeCheck,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -13,6 +13,9 @@ import { normalizePlan, GIFTED_PRO_LABEL } from '../../utils/themeUtils';
 import { cn } from '../dashboard/ui/cn';
 import { PageTransition } from '../dashboard/ui/PageTransition';
 import ConsoleSidebar from './ConsoleSidebar';
+import MobileTabBar from './MobileTabBar';
+import PullToRefresh from '../dashboard/ui/PullToRefresh';
+import { RefreshProvider } from '../dashboard/ui/refreshContext';
 import '../dashboard/ui/tokens.css';
 
 // Keyed by canonical plan slug (see normalizePlan) — legacy aliases like
@@ -390,19 +393,10 @@ export const ProfileMenu = ({
   );
 };
 
-/** Sticky dashboard topbar. Left: mobile nav hamburger. Right: Profile, Notifs, Support. */
-const DashTopbar = ({ user, plan, planStyle, initial, logout, onOpenNav, navTriggerRef }) => (
+/** Sticky dashboard topbar. Right: Profile, Notifs, Support. On mobile the nav
+ *  opener moved to the bottom tab bar's "More" button. */
+const DashTopbar = ({ user, plan, planStyle, initial, logout }) => (
   <header className="sticky top-0 z-30 flex min-h-14 shrink-0 items-center border-b border-neutral-200/80 bg-white/95 px-4 pt-[env(safe-area-inset-top)] backdrop-blur sm:px-6 md:px-8">
-    <button
-      ref={navTriggerRef}
-      type="button"
-      onClick={onOpenNav}
-      aria-label="Open navigation"
-      aria-haspopup="dialog"
-      className="mr-1 grid h-9 w-9 place-items-center rounded-full text-neutral-500 transition-colors hover:bg-primary/5 hover:text-primary lg:hidden"
-    >
-      <Menu className="h-[19px] w-[19px]" strokeWidth={1.8} />
-    </button>
     <div className="ml-auto flex items-center gap-1">
       <SupportButton />
       <NotifBell />
@@ -434,28 +428,36 @@ const DashboardLayout = ({ children }) => {
   const initial = (user?.name || user?.email || 'U').trim().charAt(0).toUpperCase();
 
   return (
+    <RefreshProvider>
     <div className="dash flex min-h-screen overflow-x-hidden bg-canvas">
       <ConsoleSidebar open={navOpen} onClose={() => setNavOpen(false)} triggerRef={navTriggerRef} />
 
       {/* Main — offset by the fixed rail (56) + panel (220) = 276px on lg+
-          (the sidebar is out of flow). */}
-      <main ref={mainRef} className="flex min-w-0 flex-1 flex-col overflow-y-auto lg:pl-[276px]">
+          (the sidebar is out of flow). overscroll-contain hands the top overscroll
+          to pull-to-refresh instead of the browser's native gesture. */}
+      <main ref={mainRef} className="flex min-w-0 flex-1 flex-col overflow-y-auto overscroll-y-contain lg:pl-[276px]">
         <DashTopbar
           user={user}
           plan={plan}
           planStyle={planStyle}
           initial={initial}
           logout={logout}
-          onOpenNav={() => setNavOpen(true)}
-          navTriggerRef={navTriggerRef}
         />
-        <div className="px-4 py-6 sm:px-6 md:px-8">
-          <div className="mx-auto w-full max-w-6xl">
-            <PageTransition>{children}</PageTransition>
+        {/* pb clears the fixed mobile tab bar (+ safe area); desktop keeps py-6. */}
+        <PullToRefresh scrollerRef={mainRef}>
+          <div className="px-4 py-6 pb-[calc(68px+env(safe-area-inset-bottom))] sm:px-6 md:px-8 lg:pb-6">
+            <div className="mx-auto w-full max-w-6xl">
+              <PageTransition>{children}</PageTransition>
+            </div>
           </div>
-        </div>
+        </PullToRefresh>
       </main>
+
+      {/* Native-app bottom tab bar — mobile only (< lg). Its "More" button is the
+          mobile nav opener (the topbar hamburger moved here). */}
+      <MobileTabBar onOpenMore={() => setNavOpen(true)} moreTriggerRef={navTriggerRef} />
     </div>
+    </RefreshProvider>
   );
 };
 

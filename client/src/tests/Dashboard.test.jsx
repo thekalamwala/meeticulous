@@ -155,15 +155,11 @@ describe('Overview — real-data content', () => {
       .forEach((day) => expect(screen.getByText(day)).toBeInTheDocument());
   });
 
-  it('opens the 75% profile completion popover from the toolbar rocket', () => {
+  // Profile-completion rocket is parked (hidden in the toolbar, code kept).
+  it('does not render the profile-completion rocket in the toolbar', () => {
     renderShell();
-    // Popover is closed by default (no layout space taken).
+    expect(screen.queryByRole('button', { name: 'Profile completion' })).toBeNull();
     expect(screen.queryByText('Complete Your Profile')).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: 'Profile completion' }));
-    expect(screen.getByText('75%')).toBeInTheDocument();
-    expect(screen.getByText('Complete Your Profile')).toBeInTheDocument();
-    ['Complete Profile', 'Add Services', 'Set Availability', 'Share Booking Link']
-      .forEach((row) => expect(screen.getByText(row)).toBeInTheDocument());
   });
 });
 
@@ -177,18 +173,6 @@ describe('Overview — sidebar shell', () => {
     // Panel: the active Overview page is current.
     const panel = screen.getByRole('navigation', { name: /overview pages/i });
     expect(within(panel).getByRole('link', { name: 'Overview' })).toHaveAttribute('aria-current', 'page');
-  });
-
-  it('toggles the profile popover from the rocket and has no Hide button', () => {
-    renderShell();
-    const rocket = screen.getByRole('button', { name: 'Profile completion' });
-    expect(screen.queryByText('Complete Your Profile')).toBeNull(); // closed by default
-    fireEvent.click(rocket);
-    expect(screen.getByText('Complete Your Profile')).toBeInTheDocument();
-    // The Hide button was removed entirely.
-    expect(screen.queryByRole('button', { name: /^Hide$/ })).toBeNull();
-    fireEvent.click(rocket); // tap toggles closed (touch mode in jsdom)
-    expect(screen.queryByText('Complete Your Profile')).toBeNull();
   });
 
   it('switches between week and month views and steps the range', () => {
@@ -215,22 +199,15 @@ describe('Overview — sidebar shell', () => {
     expect(screen.getByText(weekLabel(0))).toBeInTheDocument();
   });
 
-  it('opens the new-meeting flow from the toolbar', async () => {
-    renderShell();
-    fireEvent.click(screen.getByRole('button', { name: /add a new booking/i }));
-    expect(screen.getByRole('dialog', { name: 'Start a new meeting' })).toBeInTheDocument();
-    // Services load async; the modal resolves to its empty/error state.
-    await screen.findByText(/no services yet|couldn't load your services/i);
-  });
-
-  it('has no search bar, and keeps the right-side toolbar actions', () => {
+  it('has no search bar, no new-booking button or rocket, and keeps the remaining toolbar actions', () => {
     renderShell();
     // The "Search anything..." bar was removed from the toolbar.
     expect(screen.queryByRole('searchbox')).toBeNull();
     expect(screen.queryByPlaceholderText('Search anything...')).toBeNull();
+    // Add-a-new-booking button and the profile-completion rocket are parked (hidden).
+    expect(screen.queryByRole('button', { name: /add a new booking/i })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Profile completion' })).toBeNull();
     // The remaining actions stay present and functional.
-    expect(screen.getByRole('button', { name: /add a new booking/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Profile completion' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /notifications/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Profile menu' })).toBeInTheDocument();
   });
