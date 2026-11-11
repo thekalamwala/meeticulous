@@ -2,9 +2,13 @@
 // tithi.js — release-note publisher. AI is mocked OFF so the deterministic (fallback)
 // path runs: no model stubbing, every assertion stable.
 
+// AI defaults OFF (deterministic fallback path) so the existing suite is untouched; a
+// test opts the model IN by setting mockAiConfigured and the text it should return.
+let mockAiConfigured = false;
+let mockAiResponse = '';
 jest.mock('../../../services/ai/anthropicClient', () => ({
-  isConfigured: () => false,
-  getClient: () => null,
+  isConfigured: () => mockAiConfigured,
+  getClient: () => ({ messages: { create: async () => ({ content: [{ type: 'text', text: mockAiResponse }] }) } }),
   MODELS: { generate: 'haiku', listing: 'sonnet' },
 }));
 jest.mock('../../../lib/botBudget', () => ({ tryConsume: async () => ({ allowed: true }) }));
@@ -38,6 +42,46 @@ beforeEach(() => {
   jest.clearAllMocks();
   process.env.COMMUNITY_TITHI_USER_ID = 'tithi-uuid';
   isFeatureEnabled.mockResolvedValue(true);
+  mockAiConfigured = false;
+  mockAiResponse = '';
+});
+
+describe('[[SKIP]] — model declines a not-live change instead of posting the hedge', () => {
+  test('model returns [[SKIP]] (no brief) -> skipped not_live, nothing written', async () => {
+    mockAiConfigured = true;
+    mockAiResponse = '[[SKIP]]';
+    store.getPostBySlug.mockResolvedValue(null);
+    const res = await tithi.publishReleaseNote({ pr: PR, release: '2026-11' });
+    expect(res).toEqual({ skipped: 'not_live' });
+    expect(store.insertPost).not.toHaveBeenCalled();
+  });
+
+  test('[[SKIP]] never leaks into a published post', async () => {
+    mockAiConfigured = true;
+    mockAiResponse = 'Something shipped\n\n[[SKIP]] actually not sure';
+    store.getPostBySlug.mockResolvedValue(null);
+    const res = await tithi.publishReleaseNote({ pr: PR, release: '2026-11' });
+    expect(res).toEqual({ skipped: 'not_live' });
+    expect(store.insertPost).not.toHaveBeenCalled();
+  });
+
+  test('an explicit author brief overrides [[SKIP]] — their copy is posted', async () => {
+    mockAiConfigured = true;
+    mockAiResponse = '[[SKIP]]';
+    store.getPostBySlug.mockResolvedValue(null);
+    store.getSpaceByKey.mockResolvedValue({ id: 'space-1' });
+    store.insertPost.mockResolvedValue({ id: 'post-1' });
+    const res = await tithi.publishReleaseNote({ pr: PR_B, release: '2026-11' });
+    expect(res.posted).toBe(true);
+    expect(store.insertPost).toHaveBeenCalled();
+  });
+
+  test('writeReleaseNote returns the MODEL_SKIP sentinel for a not-live PR with no brief', async () => {
+    mockAiConfigured = true;
+    mockAiResponse = '[[SKIP]]';
+    const note = await tithi.writeReleaseNote(PR, 'feature', 'November', null);
+    expect(note).toBe(tithi.MODEL_SKIP);
+  });
 });
 
 describe('pure helpers', () => {
