@@ -260,14 +260,24 @@ async function listCommentRows(postId, cur, limit) {
 }
 
 // One profiles + one members query per page. Never selects phone/email.
+// `dualIds` = host authors who have ALSO booked as a guest (bookings.guest_id),
+// so the card can mark them 'host_guest'. One extra `.in()` on the host subset.
 async function loadAuthors(ids) {
   const list = uniq(ids);
-  if (!list.length) return { profiles: new Map(), members: new Map() };
+  if (!list.length) return { profiles: new Map(), members: new Map(), dualIds: new Set() };
   const [p, m] = await Promise.all([
     run(db('profiles').select('id, name, first_name, username, profile_image, is_host, is_banned').in('id', list)),
     run(db('community_members').select('user_id, badge').in('user_id', list)),
   ]);
-  return { profiles: new Map((p || []).map((r) => [r.id, r])), members: new Map((m || []).map((r) => [r.user_id, r])) };
+  const hostIds = (p || []).filter((r) => r.is_host).map((r) => r.id);
+  const dualRows = hostIds.length
+    ? await run(db('bookings').select('guest_id').in('guest_id', hostIds))
+    : [];
+  return {
+    profiles: new Map((p || []).map((r) => [r.id, r])),
+    members: new Map((m || []).map((r) => [r.user_id, r])),
+    dualIds: new Set((dualRows || []).map((r) => r.guest_id)),
+  };
 }
 
 async function loadMediaByPost(postIds) {
@@ -291,8 +301,9 @@ async function likedIds(userId, targetType, ids) {
 // Batch-hydrate rows -> serialized items: one query each for authors, members, media, likes (+ cached spaces).
 async function hydrateItems(rows, viewerId) {
   const ids = rows.map((r) => r.id);
-  const [{ profiles, members }, spaces, media, liked] = await Promise.all([
-    loadAuthors(rows.map((r) => r.author_id)), listSpaces(), loadMediaByPost(ids), likedIds(viewerId, 'post', ids),
+  const [{ profiles, members, dualIds }, spaces, media, liked, saved] = await Promise.all([
+    loadAuthors(rows.map((r) => r.author_id)), listSpaces(), loadMediaByPost(ids),
+    likedIds(viewerId, 'post', ids), savedIds(viewerId, ids),
   ]);
   const spaceById = new Map(spaces.map((s) => [s.id, s]));
   return rows.map((r) => serializeItem(r, {
@@ -300,16 +311,18 @@ async function hydrateItems(rows, viewerId) {
     member: members.get(r.author_id) || null,
     space: spaceById.get(r.space_id) || null,
     media: media.get(r.id) || [],
-    viewer: { liked: liked.has(r.id) },
+    viewer: { liked: liked.has(r.id), saved: saved.has(r.id) },
+    dual: dualIds.has(r.author_id),
   }));
 }
 
 async function hydrateComments(rows, viewerId) {
-  const [{ profiles, members }, liked] = await Promise.all([
+  const [{ profiles, members, dualIds }, liked] = await Promise.all([
     loadAuthors(rows.map((r) => r.author_id)), likedIds(viewerId, 'comment', rows.map((r) => r.id)),
   ]);
   return rows.map((r) => serializeComment(r, {
-    author: profiles.get(r.author_id) || null, member: members.get(r.author_id) || null, viewer: { liked: liked.has(r.id) },
+    author: profiles.get(r.author_id) || null, member: members.get(r.author_id) || null,
+    viewer: { liked: liked.has(r.id) }, dual: dualIds.has(r.author_id),
   }));
 }
 
