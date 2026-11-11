@@ -55,14 +55,30 @@ async function fetchMergedPrs(branch) {
   }
 }
 
-// Email a drafted release note to the team for manual posting (approve-first mode).
-async function emailDraft(pr, draft) {
+// Email the team about a PR Tithi did NOT auto-post. Two shapes:
+//   draft       — approve-first mode: a finished note to review and post manually.
+//   needsReview — announce-worthy PR with no safe copy (no Community brief + model down/
+//                 over budget). We refuse to post a raw dev title, so the team adds a
+//                 `Community:` line to the PR body, or writes the note by hand.
+async function emailDraft(pr, res) {
   try {
+    if (res.needsReview) {
+      await sendEmail({
+        to: SUPPORT_EMAIL,
+        subject: `[Tithi] Needs a community note — PR #${pr.number}`,
+        html: `<p>PR #${pr.number} (${res.kind}) is announce-worthy but Tithi couldn't write a safe note `
+          + '(no <code>Community:</code> line in the PR body, and the model was unavailable or over budget). '
+          + 'It was <b>not posted</b> — nothing raw ships under Tithi\'s name.</p>'
+          + `<p><b>${String(pr.title || '').replace(/[<>&]/g, '')}</b></p>`
+          + '<p style="color:#888">Add a <code>Community:</code> line to the PR body and re-run, or post a note by hand.</p>',
+      });
+      return;
+    }
     await sendEmail({
       to: SUPPORT_EMAIL,
-      subject: `[Tithi] Release-note draft — ${draft.headline}`,
-      html: `<p>Tithi drafted a release note for PR #${pr.number} (${draft.kind}). Review and post if good:</p>`
-        + `<h3>${draft.headline}</h3><p>${String(draft.body).replace(/\n/g, '<br>')}</p>`
+      subject: `[Tithi] Release-note draft — ${res.headline}`,
+      html: `<p>Tithi drafted a release note for PR #${pr.number} (${res.kind}). Review and post if good:</p>`
+        + `<h3>${res.headline}</h3><p>${String(res.body).replace(/\n/g, '<br>')}</p>`
         + '<p style="color:#888">Auto-posting is off (COMMUNITY_TITHI_AUTOPOST). Set it to true once you trust the notes.</p>',
     });
   } catch (_) { /* best-effort */ }
@@ -73,7 +89,7 @@ async function emailDraft(pr, draft) {
 // AUTOPOST gate + draft email behave identically no matter what triggered it.
 async function handleMergedPr(pr, release) {
   const res = await tithi.publishReleaseNote({ pr, release, approveFirst: !AUTOPOST });
-  if (res.draft) await emailDraft(pr, res);
+  if (res.draft || res.needsReview) await emailDraft(pr, res);
   return res;
 }
 
@@ -92,7 +108,7 @@ async function runReleaseNotePoll() {
   for (const pr of prs) {
     const res = await handleMergedPr(pr, branch);
     if (res.posted) posted += 1;
-    else if (res.draft) drafted += 1;
+    else if (res.draft || res.needsReview) drafted += 1;
     else skipped += 1;
   }
   return { posted, drafted, skipped, scanned: prs.length };
