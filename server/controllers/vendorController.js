@@ -76,7 +76,22 @@ const getPayoutBalance = async (req, res) => {
     const hostId = req.user.id;
     const { clearingDays } = await platformConfig.getConfig();
     const balance = await computeSettlementBalance(hostId, clearingDays);
-    res.json(balance);
+
+    // A payout requires approved KYC (requestPayout enforces it). Until then matured
+    // funds are HELD, not withdrawable — surface them as `heldForKyc` with available=0
+    // so the UI never offers a withdraw the API will 403. This matters once a host can
+    // take paid bookings BEFORE KYC (paid_booking_without_pan): the money accrues and
+    // waits for verification instead of looking spendable.
+    const { data: kyc } = await supabaseAdmin
+      .from('kyc_submissions')
+      .select('status')
+      .eq('user_id', hostId)
+      .maybeSingle();
+    const kycApproved = kyc?.status === 'approved';
+    if (!kycApproved && balance.available > 0) {
+      return res.json({ ...balance, available: 0, heldForKyc: balance.available, payoutsBlocked: true });
+    }
+    return res.json({ ...balance, heldForKyc: 0, payoutsBlocked: !kycApproved });
   } catch (error) {
     safeError(res, error);
   }
