@@ -71,6 +71,10 @@ const REGISTRY = [
   { key: 'host_linkedin_login',  label: 'LinkedIn host login',  category: 'Auth',     scope: 'both',     enabled: false, description: 'Hosts can sign up and log in with LinkedIn on the host door. Off = LinkedIn button hidden and POST /api/auth/linkedin/host returns 503.' },
   { key: 'razorpay_payment',     label: 'Razorpay Payment',     category: 'Payments', scope: 'customer', description: 'Paid checkout via Razorpay. Off = paid bookings/purchases blocked.' },
   { key: 'product_purchase',     label: 'Product Purchase',     category: 'Payments', scope: 'customer', description: 'Buy digital products. Off = product checkout blocked.' },
+  // Opt-in (ships OFF — seeded disabled in v3.203, and `enabled: false` here so the
+  // registry upsert creates it OFF even before the migration runs). CA signed off
+  // 2026-11-11 (flat 1% TDS + 1% TCS for all); still OFF pending device/held-balance QA.
+  { key: 'paid_booking_without_pan', label: 'Paid Booking Without PAN', category: 'Payments', scope: 'vendor', enabled: false, description: 'Let a host take a PAID booking before KYC. Off = paid bookings blocked until the host has PAN on file (legacy). On = booking is accepted, money is collected and HELD (payout still needs approved KYC); TDS/TCS withheld at the flat 1% + 1% rate regardless of PAN.' },
   // Opt-in (ships OFF — seeded disabled in v3.204, and enabled:false here so the registry
   // upsert creates it OFF even before the migration runs).
   { key: 'coupons',              label: 'Coupons',              category: 'Payments', scope: 'both',     enabled: false, description: 'Host discount codes applied at checkout. Off = codes are rejected and no discount is applied.' },
