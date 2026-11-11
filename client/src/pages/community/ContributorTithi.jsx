@@ -53,8 +53,8 @@ const DATA = {
     // Team collector — swap to a dedicated VPA if the Circle gets its own.
     vpa: '8637758344@ybl',
     payeeName: 'Meeticulous',
-    note: 'Support the Circle',
-    heading: 'Support the Circle',
+    note: 'Support Tithi',
+    heading: 'Support Tithi',
   },
 };
 
