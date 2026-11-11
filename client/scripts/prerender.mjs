@@ -666,6 +666,27 @@ async function prerender() {
   const POOL = 4;
   const deferred = [];
   const queue = [...routes];
+
+  // ASH-78: the homepage is sitemap priority 1.0 and the #1 page for SEO + AI
+  // crawlers; it must never ship as the bare shell. Bake it FIRST, alone, with the
+  // long retry timeout, BEFORE the 4-wide pool. On Vercel's cold ~4-vCPU builder the
+  // pooled contention timed `/` out → deferred → then budget-dropped → a green build
+  // quietly served the empty shell (no title/h1/Organization JSON-LD). Out of the
+  // pool and before any budget is spent, `/` gets the whole uncontended builder and
+  // the 60s timeout. On a transient first-bake miss it falls through to the deferred
+  // serial retry; a persistent miss is caught by the hard homepage guard below.
+  if (queue[0] === '/') {
+    queue.shift();
+    try {
+      const outPath = await renderOnce('/', RETRY_TIMEOUT_MS);
+      rendered++;
+      console.log(`[prerender] / → ${outPath.replace(DIST, 'dist')} (homepage, baked first)`);
+    } catch (err) {
+      console.warn(`[prerender] defer / (homepage first-bake failed): ${err.message}`);
+      deferred.push('/');
+    }
+  }
+
   await Promise.all(
     Array.from({ length: POOL }, async () => {
       while (queue.length > 0) {
@@ -770,6 +791,25 @@ async function prerender() {
   if (failed > 0) {
     console.error(`[prerender] FAILED: ${failed} of ${routes.length} route(s) did not render — refusing to ship a partially-rendered build.`);
     process.exit(1);
+  }
+
+  // ASH-78: the homepage must ship prerendered, never the bare shell. dist/index.html
+  // starts as the bare vite shell (copied aside to spa-shell.html at boot, line 36) and
+  // is overwritten only by a successful `/` render, which always injects the #__bas_data
+  // marker (see the page.evaluate above). Its absence means `/` ended up the empty shell —
+  // the exact silent regression this task fixes: an invisible #1 page with no title/h1
+  // and no Organization JSON-LD for AI crawlers. Fail loudly instead of deploying it; by
+  // now `/` has had a standalone first bake AND a serial retry, both on an uncontended
+  // builder, so a miss here is a real, reproducible failure (and its error is in the log).
+  // Escape hatch: PRERENDER_ALLOW_HOME_SHELL=1.
+  const homeHtml = existsSync(join(DIST, 'index.html')) ? readFileSync(join(DIST, 'index.html'), 'utf-8') : '';
+  if (!homeHtml.includes('__bas_data')) {
+    console.error('[prerender] HOMEPAGE SHELL: dist/index.html is the bare SPA shell — `/` did not prerender (ASH-78).');
+    if (process.env.PRERENDER_ALLOW_HOME_SHELL === '1') {
+      console.error('[prerender] (override) PRERENDER_ALLOW_HOME_SHELL is set — shipping the shell homepage anyway.');
+    } else {
+      process.exit(1);
+    }
   }
 }
 
