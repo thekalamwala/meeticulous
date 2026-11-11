@@ -6,6 +6,8 @@ import { getSpaces } from '../../services/communityApi';
 import { SpaceIcon } from '../../components/community/ItemCard';
 import FeedSkeleton from '../../components/community/CommunitySkeleton';
 import CommunityAd from '../../components/community/CommunityAd';
+import { useFeature } from '../../context/FeatureContext';
+import '../../styles/community-v2.css';
 
 export const SITE_DESC = 'Questions, tips and updates from hosts and guests on Meeticulous, the booking platform for independent professionals.';
 export const TITLE_SUFFIX = ' — Meeticulous Community'; // same suffix as server prerenderCommunity.js
@@ -42,6 +44,7 @@ const LOCK_LABEL = { hosts: 'Hosts post here', official: 'Team posts only' };
 // Shell: spaces rail (desktop) or chip row (mobile), the main column, optional right rail.
 // `active` = 'feed' or a space key. `onCompose(kind)` backs the "New post" button.
 export default function CommunityLayout({ active, onCompose, aside, children }) {
+  const v2 = useFeature('community_v2');
   const [spaces, setSpaces] = useState([]);
   // The right rail always shows: it carries the ad slot (every audience has a deck,
   // including logged-out guests), plus any page-supplied `aside` above it.
@@ -53,7 +56,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
   }, []);
 
   return (
-    <main className="min-h-screen bg-cream pb-16">
+    <main className={`min-h-screen overflow-x-hidden bg-cream ${v2 ? 'community-v2 pb-24' : 'pb-16'}`}>
       <nav aria-label="Spaces" className="flex gap-3 overflow-x-auto px-5 py-4 lg:hidden">
         <Link to="/community" aria-current={active === 'feed' ? 'page' : undefined} className={`mt-tag shrink-0 no-underline ${active === 'feed' ? 'mt-tag--selected' : ''}`}>All</Link>
         {spaces.map((s) => (
@@ -89,7 +92,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
           </div>
         </aside>
 
-        <div className="flex min-w-0 flex-col gap-5">{children}</div>
+        <div className={`flex min-w-0 flex-col ${v2 ? 'gap-3' : 'gap-5'}`}>{children}</div>
 
         {showRail && (
           <aside aria-label="About" className="sticky top-24 hidden flex-col gap-5 self-start xl:flex">
@@ -99,10 +102,13 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
         )}
       </div>
 
-      {/* Mobile "New post": bottom-LEFT, because the support-bot launcher (BotWidget) owns bottom-right. */}
-      <button type="button" onClick={() => onCompose?.('post')} className="mt-btn mt-fab lg:hidden">
-        <SquarePen size={20} aria-hidden="true" />New post
-      </button>
+      {/* Mobile "New post" FAB: v1 only. v2 drops it (overlapped content); posting
+          lives in the inline composer + the full-screen composer (M4). */}
+      {!v2 && (
+        <button type="button" onClick={() => onCompose?.('post')} className="mt-btn mt-fab lg:hidden">
+          <SquarePen size={20} aria-hidden="true" />New post
+        </button>
+      )}
     </main>
   );
 }

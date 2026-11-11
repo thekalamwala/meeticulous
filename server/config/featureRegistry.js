@@ -98,6 +98,7 @@ const REGISTRY = [
   { key: 'community_writes',     label: 'Community Writes',     category: 'Community', scope: 'both', enabled: false, description: 'Posting, commenting, reacting and reporting. Ships OFF. Off = 503 for everyone except early-access members and staff/official badges.' },
   { key: 'community_tithi',      label: 'Community Tithi',      category: 'Community', scope: 'both', enabled: false, description: 'Tithi bot replies in the community. Ships OFF. Off = no bot replies.' },
   { key: 'community_ads',        label: 'Community Ads',        category: 'Community', scope: 'both', enabled: false, description: 'Sponsored placements in the community. Ships OFF. Off = no ads shown.' },
+  { key: 'community_v2',         label: 'Community v2 (mobile)', category: 'Community', scope: 'both', enabled: false, description: 'Feed-first mobile redesign of the community (new navbar, bottom bar, composer, drawers). Ships OFF. Off = the current community layout is served.' },
 ];
 
 const KEYS = REGISTRY.map((f) => f.key);

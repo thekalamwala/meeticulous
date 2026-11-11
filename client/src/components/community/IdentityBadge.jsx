@@ -56,7 +56,7 @@ export default function IdentityBadge({ author }) {
 
       {open && (
         <span role="dialog" aria-label={`${author.display_name} profile`}
-          className="absolute left-0 top-full z-50 mt-2 w-60 rounded-2xl border border-line bg-white p-4 shadow-[0_12px_32px_rgba(43,10,20,0.14)]">
+          className="absolute left-auto right-0 top-full z-50 mt-2 w-[min(15rem,calc(100vw-2rem))] rounded-2xl border border-line bg-white p-4 shadow-[0_12px_32px_rgba(43,10,20,0.14)] sm:left-0 sm:right-auto">
           <span className="flex items-center gap-3">
             <Avatar author={author} size="m" />
             <span className="min-w-0 flex-1">
