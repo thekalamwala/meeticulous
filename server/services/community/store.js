@@ -48,6 +48,12 @@ const acceptTerms = (userId, version) => run(db('community_members')
   .upsert({ user_id: userId, terms_version: version, terms_accepted_at: new Date().toISOString() }, { onConflict: 'user_id' })
   .select(MEMBER_COLS).single());
 
+// Update a member's notification preferences (email on replies/mentions).
+// Upsert so a reader who never posted can still set it (a member row is created).
+const updateMemberPrefs = (userId, patch) => run(db('community_members')
+  .upsert({ user_id: userId, ...patch }, { onConflict: 'user_id' })
+  .select(MEMBER_COLS).single());
+
 const getSpaceByKey = (key) => run(db('community_spaces').select('*').eq('key', key).eq('is_active', true).maybeSingle());
 const getSpaceById = (id) => run(db('community_spaces').select('*').eq('id', id).maybeSingle());
 
@@ -367,7 +373,7 @@ module.exports = {
   listSpaces, bannedAuthorIds, listFeedRows, listPinned, getPostBySlug, listCommentRows,
   listAuthorPosts, listAuthorComments, postContexts,
   loadAuthors, loadMediaByPost, likedIds, resetReadCaches,
-  linksAllowed, getProfile, getMember, acceptTerms, getSpaceByKey, getSpaceById,
+  linksAllowed, getProfile, getMember, acceptTerms, updateMemberPrefs, getSpaceByKey, getSpaceById,
   insertPost, getPost, updatePost, insertMedia, listMedia, resolveUsernames, insertMentions, searchMentionable,
   getComment, insertComment, countCommentsByAuthorOnPost, updateComment, addReaction, removeReaction,
   addSave, removeSave, savedIds, addBlock, removeBlock,
