@@ -232,6 +232,27 @@ async function listPinned(limit = 5) {
 
 const getPostBySlug = (slug) => run(db('community_posts').select('*').eq('slug', slug).maybeSingle());
 
+// One author's visible posts / comments, newest first (public-profile Feed).
+// Keyset-paged on created_at like the main feed; visibility (author ban) is
+// applied by the caller via filterVisible, so we over-fetch at the controller.
+async function listAuthorPosts({ authorId, cur, limit }) {
+  const q = keyset(db('community_posts').select('*').eq('status', 'visible').eq('author_id', authorId), cur, 'lt');
+  return (await run(q.order('created_at', { ascending: false }).order('id', { ascending: false }).limit(limit))) || [];
+}
+async function listAuthorComments({ authorId, cur, limit }) {
+  const q = keyset(db('community_comments').select('*').eq('status', 'visible').eq('author_id', authorId), cur, 'lt');
+  return (await run(q.order('created_at', { ascending: false }).order('id', { ascending: false }).limit(limit))) || [];
+}
+
+// Minimal parent-post context (slug/kind/title/status) for a set of comment
+// post_ids, so the Feed can link "replied on <title>". Never leaks body.
+async function postContexts(postIds) {
+  const ids = uniq(postIds);
+  if (!ids.length) return new Map();
+  const rows = (await run(db('community_posts').select('id, slug, kind, title, status').in('id', ids))) || [];
+  return new Map(rows.map((r) => [r.id, r]));
+}
+
 // Oldest first; tombstones (deleted/removed) are returned, visibility is applied by the caller.
 async function listCommentRows(postId, cur, limit) {
   const q = keyset(db('community_comments').select('*').eq('post_id', postId), cur, 'gt');
@@ -302,6 +323,7 @@ const listIndexableRows = async () => (await run(db('community_posts')
 module.exports = {
   hydrateItems, hydrateComments, listIndexableRows,
   listSpaces, bannedAuthorIds, listFeedRows, listPinned, getPostBySlug, listCommentRows,
+  listAuthorPosts, listAuthorComments, postContexts,
   loadAuthors, loadMediaByPost, likedIds, resetReadCaches,
   linksAllowed, getProfile, getMember, acceptTerms, getSpaceByKey, getSpaceById,
   insertPost, getPost, updatePost, insertMedia, listMedia, resolveUsernames, insertMentions,

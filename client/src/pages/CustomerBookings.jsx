@@ -157,7 +157,11 @@ const CustomerBookings = () => {
       .catch(() => setBookings([]))
       .finally(() => setLoading(false));
   };
-  useEffect(load, []);
+  // load() returns a promise (for useRegisterRefresh), so it must NOT be passed
+  // straight to useEffect — React would treat the promise as the cleanup fn and
+  // call it on unmount ("destroy is not a function"). Wrap so the effect returns
+  // nothing; load still returns its promise to the refresh registrar below.
+  useEffect(() => { load(); }, []);
   useRegisterRefresh(load); // pull-to-refresh re-fetches guest bookings
 
   const handleCancel = async (id) => {

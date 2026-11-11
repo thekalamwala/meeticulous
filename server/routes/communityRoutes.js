@@ -18,6 +18,7 @@ router.get('/spaces/:key/threads', ...read, c.spaceThreads);
 router.get('/items/:slug', ...read, c.itemDetail);
 router.get('/items/:slug/comments', ...read, c.itemComments);
 router.get('/me', protect, communityGate, c.me);
+router.get('/users/:id/activity', ...read, c.authorActivity);
 
 const write = [protect, communityGate, requireWrites, requireTerms];
 
