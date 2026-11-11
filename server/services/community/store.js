@@ -72,6 +72,35 @@ const resolveUsernames = async (usernames) => (usernames.length
   : []);
 const insertMentions = (rows) => (rows.length ? run(db('community_mentions').insert(rows)) : null);
 
+// Taggable members for the @mention typeahead: hosts + the Meeticulous team
+// (community_members.badge official/staff) + everyone who has joined the
+// community (a community_members row). Empty `q` lists the first few.
+// ponytail: fetch-then-filter in JS; fine at current scale. If the member set
+// grows large, replace with an indexed OR-query / a materialised taggable view.
+const searchMentionable = async (q, { limit = 8 } = {}) => {
+  const term = String(q || '').trim().replace(/[^a-z0-9 ._-]/gi, '').slice(0, 30);
+  const base = db('profiles')
+    .select('id, username, name, first_name, profile_image, is_host')
+    .eq('is_banned', false)
+    .not('username', 'is', null);
+  const [profiles, members] = await Promise.all([
+    run(term ? base.or(`username.ilike.*${term}*,name.ilike.*${term}*`).limit(40) : base.limit(60)),
+    run(db('community_members').select('user_id, badge')),
+  ]);
+  const badgeBy = new Map((members || []).map((m) => [m.user_id, m.badge]));
+  const memberSet = new Set((members || []).map((m) => m.user_id));
+  return (profiles || [])
+    .filter((p) => p.is_host || memberSet.has(p.id))
+    .slice(0, limit)
+    .map((p) => ({
+      id: p.id,
+      username: p.username,
+      name: p.name || p.first_name || p.username,
+      avatar_url: p.profile_image || null,
+      role: badgeBy.get(p.id) ? 'staff' : (p.is_host ? 'host' : 'guest'),
+    }));
+};
+
 const getComment = (id) => run(db('community_comments').select('*').eq('id', id).maybeSingle());
 const insertComment = (row) => run(db('community_comments').insert(row).select('*').single());
 // How many comments `authorId` has on a post — Tithi's first-responder dedup (0 = not yet replied).
@@ -339,7 +368,7 @@ module.exports = {
   listAuthorPosts, listAuthorComments, postContexts,
   loadAuthors, loadMediaByPost, likedIds, resetReadCaches,
   linksAllowed, getProfile, getMember, acceptTerms, getSpaceByKey, getSpaceById,
-  insertPost, getPost, updatePost, insertMedia, listMedia, resolveUsernames, insertMentions,
+  insertPost, getPost, updatePost, insertMedia, listMedia, resolveUsernames, insertMentions, searchMentionable,
   getComment, insertComment, countCommentsByAuthorOnPost, updateComment, addReaction, removeReaction,
   addSave, removeSave, savedIds, addBlock, removeBlock,
   insertReport, countOpenReports, viewContext, refreshIndexable, run, runCount,

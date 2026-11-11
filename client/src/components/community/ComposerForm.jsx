@@ -6,6 +6,8 @@ import useKeyboardInset from './useKeyboardInset';
 import { uploadImage } from '../../services/api';
 import { analytics, EVENTS } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
+import { useFeature } from '../../context/FeatureContext';
+import useMentionSuggest from './useMentionSuggest';
 import useTermsGate from './useTermsGate';
 import { errCode, errorCopy, fmtCount } from './communityErrors';
 import ItemCard, { SpaceIcon } from './ItemCard';
@@ -47,6 +49,7 @@ const measure = (file) => new Promise((resolve) => {
 // `variant`: 'modal' | 'page'. `dirtyRef` (modal): the wrapper reads it to confirm before closing.
 export default function ComposerForm({ variant = 'modal', onClose, onCreated, defaultKind, defaultSpaceKey, dirtyRef }) {
   const { user } = useAuth();
+  const v2 = useFeature('community_v2');
   const navigate = useNavigate();
   const [guard, termsDialog] = useTermsGate();
   const [kind, setKind] = useState(defaultKind === 'thread' ? 'thread' : 'post');
@@ -64,7 +67,13 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
   const [banned, setBanned] = useState(false);
   const [audienceOpen, setAudienceOpen] = useState(false);
   const fileRef = useRef(null);
+  const bodyRef = useRef(null);
   const kbInset = useKeyboardInset();
+  const mention = useMentionSuggest({ value: body, setValue: setBody, inputRef: bodyRef });
+  // v2 gets the @mention typeahead; v1 keeps plain-text input unchanged.
+  const bodyProps = v2
+    ? { ref: bodyRef, onChange: mention.onChange, onKeyDown: mention.onKeyDown, ...mention.aria }
+    : { onChange: (e) => setBody(e.target.value) };
 
   useEffect(() => {
     let live = true;
@@ -197,8 +206,9 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
 
       <div className={`mt-field ${err ? 'mt-field--error' : ''}`}>
         <label className="mt-label" htmlFor="composer-body">{thread ? 'Details' : "What's on your mind?"}</label>
-        <div className="mt-input mt-input--textarea">
-          <textarea id="composer-body" value={body} onChange={(e) => setBody(e.target.value)} aria-describedby={err ? 'composer-err' : undefined} aria-invalid={!!err || undefined} />
+        <div className="mt-input mt-input--textarea relative">
+          <textarea id="composer-body" value={body} aria-describedby={err ? 'composer-err' : undefined} aria-invalid={!!err || undefined} {...bodyProps} />
+          {v2 && mention.list}
         </div>
         <div className="mt-field-foot">
           {err
@@ -292,8 +302,11 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
             <input className="mt-composer-full__title" aria-label="Title" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={LIMITS.TITLE} />
           )}
 
-          {/* eslint-disable-next-line jsx-a11y/no-autofocus -- a composer the user tapped into to write */}
-          <textarea autoFocus aria-label="Share something with the community" placeholder="Share something with the community…" value={body} onChange={(e) => setBody(e.target.value)} className="mt-composer-full__body" />
+          <div className="relative flex min-h-0 flex-1 flex-col">
+            {/* eslint-disable-next-line jsx-a11y/no-autofocus -- a composer the user tapped into to write */}
+            <textarea ref={bodyRef} autoFocus aria-label="Share something with the community" placeholder="Share something with the community…" value={body} onChange={mention.onChange} onKeyDown={mention.onKeyDown} {...mention.aria} className="mt-composer-full__body" />
+            {mention.list}
+          </div>
 
           {err && <p role="alert" className="mt-hint mt-field--error px-4 pb-2">{err}</p>}
 
