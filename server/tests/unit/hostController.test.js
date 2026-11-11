@@ -84,9 +84,10 @@ describe('getHostProfile', () => {
         eq: jest.fn().mockReturnThis(),
         single: jest.fn().mockResolvedValue({ data: { ...HOST }, error: null }),
       })
-      .mockReturnValue({                           // services + availability parallel
+      .mockReturnValue({                           // services + availability + bookings parallel
         select: jest.fn().mockReturnThis(),
         eq:     jest.fn().mockReturnThis(),
+        neq:    jest.fn().mockReturnThis(),
         limit:  jest.fn().mockReturnThis(),
         single: jest.fn().mockResolvedValue({ data: null, error: null }),
       });
@@ -108,6 +109,7 @@ describe('getHostProfile', () => {
       .mockReturnValue({
         select: jest.fn().mockReturnThis(),
         eq:     jest.fn().mockReturnThis(),
+        neq:    jest.fn().mockReturnThis(),
         limit:  jest.fn().mockReturnThis(),
         single: jest.fn().mockResolvedValue({ data: null, error: null }),
       });
