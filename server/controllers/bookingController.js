@@ -775,7 +775,11 @@ const getHostBookings = async (req, res) => {
     // 'unpaid' and 'failed' stay hidden. Admin endpoints see everything.
     let result = await supabaseAdmin
       .from("bookings")
-      .select("*, services(*), profiles!bookings_guest_id_fkey(*)")
+      // Audit F-01: explicit guest-profile allowlist (never `(*)`) so the host
+      // can't harvest the guest's private columns (date_of_birth, is_banned,
+      // sessions_valid_after, failed_login_count, google_id, …). phone is kept so
+      // redactBookingContact can reveal/null it per the anti-disintermediation rule.
+      .select("*, services(*), profiles!bookings_guest_id_fkey(id, name, email, profile_image, phone)")
       .eq("host_id", req.user.id)
       .eq("payment_status", "paid")
       .order("scheduled_at", { ascending: true })
@@ -823,7 +827,10 @@ const getGuestBookings = async (req, res) => {
       : null;
     const scoped = (q) => orFilter ? q.or(orFilter) : q.eq("guest_id", req.user.id);
     let result = await scoped(
-      supabaseAdmin.from("bookings").select("*, services(*), profiles!bookings_host_id_fkey(*)"))
+      // Audit F-01: explicit host-profile allowlist (never `(*)`) so a guest can't
+      // harvest the host's private columns. username is needed for the /:username
+      // link; phone is kept for redactBookingContact's offline-reveal rule.
+      supabaseAdmin.from("bookings").select("*, services(*), profiles!bookings_host_id_fkey(id, name, username, email, profile_image, phone)"))
       .order("scheduled_at", { ascending: true })
       .range(from, to);
     // Fallback if schema cache is stale
