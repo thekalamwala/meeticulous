@@ -33,23 +33,41 @@ async function tasteFor(hostId) {
   }
 }
 
-// GET /api/host/nudges → { snoozed: { <key>: <iso until> }, taste } for still-active snoozes.
+// Total platform commission this host has paid (sum of commission_applied over their
+// PAID bookings). Drives the free→Pro "you've paid ₹X in commission" meter — Pro is
+// 0% commission, so a real, rising number is the upgrade's own argument. Fail-soft → 0.
+async function sumCommissionPaid(hostId) {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('bookings')
+      .select('commission_applied')
+      .eq('host_id', hostId)
+      .eq('payment_status', 'paid');
+    if (error) return 0;
+    return (data || []).reduce((s, b) => s + (Number(b.commission_applied) || 0), 0);
+  } catch (_) {
+    return 0;
+  }
+}
+
+// GET /api/host/nudges → { snoozed: { <key>: <iso until> }, taste, commissionPaid }.
 const getHostNudges = async (req, res) => {
-  const [{ data, error }, taste] = await Promise.all([
+  const [{ data, error }, taste, commissionPaid] = await Promise.all([
     supabaseAdmin
       .from('host_nudges')
       .select('nudge_key, snooze_until')
       .eq('host_id', req.user.id)
       .gt('snooze_until', new Date().toISOString()),
     tasteFor(req.user.id),
+    sumCommissionPaid(req.user.id),
   ]);
   if (error) {
     console.error('getHostNudges:', error.message);
-    return res.json({ snoozed: {}, taste }); // fail soft — showing a nudge beats a broken dashboard
+    return res.json({ snoozed: {}, taste, commissionPaid }); // fail soft — showing a nudge beats a broken dashboard
   }
   const snoozed = {};
   for (const r of data || []) snoozed[r.nudge_key] = r.snooze_until;
-  return res.json({ snoozed, taste });
+  return res.json({ snoozed, taste, commissionPaid });
 };
 
 // POST /api/host/nudges/:key/dismiss → snooze this nudge for its cooldown.

@@ -32,6 +32,14 @@ const MIN_PASSWORD_LEN = 10;        // minimum length for a self-chosen password
 
 const normalize = (s) => (s || '').toLowerCase().trim();
 
+// Timing-equalizer for the unknown/inactive-account path (audit F-15): comparing
+// the given password against a throwaway hash (same cost as real hashes, via the
+// app's own hashPassword) makes a non-existent username take ~the same time as a
+// wrong password for a real one, closing the response-time enumeration oracle.
+// Computed once on first miss, then cached.
+let _dummyHash = null;
+const dummyHash = async () => (_dummyHash ||= await hashPassword('f15-timing-equalizer-not-a-real-password'));
+
 // Look the staff member up by username first, then email — both via parameterized
 // .eq() (never string-interpolated) so the identifier can't inject into the filter.
 const findStaff = async (identifier) => {
@@ -51,6 +59,17 @@ const resolvePermissions = async (roleKey) => {
 // Build the full admin session response object — used by verify2fa and confirm2fa.
 const fullSession = async (staff) => {
   const permissions = await resolvePermissions(staff.role_key);
+  // Stamp the current token_version (audit F-02) so the middleware can revoke this
+  // session once it's bumped (deactivate/demote/reset). Read it if the caller's
+  // staff row didn't carry it; default 0 (pre-migration → middleware fails open).
+  let tv = Number(staff.token_version);
+  if (!Number.isFinite(tv)) {
+    try {
+      const { data } = await supabaseAdmin
+        .from('admin_users').select('token_version').eq('id', staff.id).maybeSingle();
+      tv = Number(data?.token_version) || 0;
+    } catch (_) { tv = 0; }
+  }
   const token = jwtSign({
     type: 'admin',
     sub: staff.id,
@@ -59,6 +78,7 @@ const fullSession = async (staff) => {
     name: staff.name,
     role: staff.role_key,
     permissions,
+    tv,
   });
   return {
     token,
@@ -86,6 +106,9 @@ const adminLogin = async (req, res) => {
 
     // Generic message on lookup failure — never reveal whether the account exists.
     if (!staff || !staff.is_active) {
+      // Equalize response time with the real wrong-password path (audit F-15) so
+      // an attacker can't distinguish a valid username by latency. Result discarded.
+      try { await verifyPassword(password, await dummyHash()); } catch (_) { /* ignore */ }
       // IP-level brute-force tracker (complements the per-account lockout below):
       // catches an attacker spraying many usernames from one IP. Fire-and-forget.
       ipBlocklist.recordAdminLoginFailure(getClientIp(req)).catch(() => {});

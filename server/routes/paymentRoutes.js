@@ -20,7 +20,11 @@ router.post('/webhook', handleWebhook);
 
 // Booking payments — guard the entry point only; never the verify step, so a
 // flag flipped off mid-transaction can't strand an already-captured payment.
-router.post('/create-order', paymentLimiter, requireFeature('razorpay_payment'), createOrder);
+// optionalProtect (audit F-13): attaches req.user when a session is present so
+// createOrder's account-ownership branch works for logged-in / phone-only guests
+// (whose synthetic email won't match booking.guest_email); anonymous callers are
+// unaffected (optionalProtect never rejects).
+router.post('/create-order', paymentLimiter, optionalProtect, requireFeature('razorpay_payment'), createOrder);
 router.post('/verify', paymentLimiter, verifyPayment);
 
 // Plan subscriptions (vendor must be logged in)

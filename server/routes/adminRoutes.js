@@ -48,7 +48,9 @@ router.get('/ops/summary',  requireAdmin('ops.view'), ops.getSummary);
 // Reuses the shared uploadImage handler; admin uploader id comes from req.admin.
 const { uploadImage } = require('../controllers/uploadController');
 const adminUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
-router.post('/upload/image', requireAdmin(), adminUpload.single('image'), uploadImage);
+// Audit F-14: gate on a content permission, not bare any-admin, so a read-only
+// role (e.g. support) can't push assets into the public images bucket.
+router.post('/upload/image', requireAdmin('cms.manage'), adminUpload.single('image'), uploadImage);
 
 // ── Users ──────────────────────────────────────────────────────
 router.get('/users',        requireAdmin('users.view'),   getUsers);
@@ -97,15 +99,22 @@ router.put('/appearance', requireAdmin('settings.manage'), appearance.update);
 
 // ── Payment settings — Razorpay credentials (encrypted at rest) ─
 const paymentSettings = require('../controllers/paymentSettingsAdminController');
-router.get('/settings/payment/razorpay',       requireAdmin('settings.manage'), paymentSettings.getRazorpay);
-router.put('/settings/payment/razorpay',        requireAdmin('settings.manage'), paymentSettings.updateRazorpay);
-router.post('/settings/payment/razorpay/test',  requireAdmin('settings.manage'), paymentSettings.testRazorpay);
+// Audit F-03: gateway credentials are super-admin-only (requireSuperAdmin),
+// structurally — never gated on a grantable permission string. Reading/rotating
+// the Razorpay secret must not ride `settings.manage` (which a future admin_roles
+// edit could grant to a non-super role).
+router.get('/settings/payment/razorpay',       requireSuperAdmin, paymentSettings.getRazorpay);
+router.put('/settings/payment/razorpay',        requireSuperAdmin, paymentSettings.updateRazorpay);
+router.post('/settings/payment/razorpay/test',  requireSuperAdmin, paymentSettings.testRazorpay);
 
 // ── Feature flags ──────────────────────────────────────────────
 const features = require('../controllers/featureFlagController');
-router.get('/features',        requireAdmin('settings.manage'), features.getFlags);
-router.post('/features',       requireAdmin('settings.manage'), features.createFlag);
-router.patch('/features/:key', requireAdmin('settings.manage'), features.toggleFlag);
+// Audit F-03: feature-flag reads/writes are super-admin-only (requireSuperAdmin),
+// structurally. Flags include the CRM master send-switch (crm_admin_sends) and the
+// payments kill-switch, so they must not ride the grantable `settings.manage`.
+router.get('/features',        requireSuperAdmin, features.getFlags);
+router.post('/features',       requireSuperAdmin, features.createFlag);
+router.patch('/features/:key', requireSuperAdmin, features.toggleFlag);
 
 // ── Staff & roles (Super Admin only) ──
 // Enforced structurally with requireSuperAdmin (wildcard) rather than a

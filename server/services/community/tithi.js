@@ -59,8 +59,14 @@ const RELEASE_NOTE_RULES = [
   'Write a short community post announcing a change that shipped, for the people who USE Meeticulous (hosts and guests) — not developers. Lead with what it means for them, not the feature.',
   'Strip the engine room: never mention code, tests, flags, database columns, event keys, file paths, PR or ticket numbers, branches, commits, or "we merged / deployed".',
   'Past tense, warm and specific, grounded only in what actually shipped. Land one dry kicker or warm line if it fits — not three. When the change fixes our own mistake or something we oversold, say so plainly; the honesty is the charm. Mention it is coming in the named release only when that is relevant.',
+  'If the change is NOT yet live for hosts and guests — it is behind a feature flag, shipped turned off ("dark"), only internal groundwork, or just one unfinished part of a larger milestone — then there is nothing to announce yet: reply with EXACTLY [[SKIP]] and nothing else. Never write a post saying a change is not ready, not out yet, still coming, backstage or behind the scenes — that is never a post.',
   'Plain text only — no markdown, no bullets, no emoji. 2 to 4 short sentences. Return the headline on the first line (a specific, natural headline, no "New:/Fixed:" label unless it reads naturally), then a blank line, then the body.',
 ].join(' ');
+
+// The model emits this (and nothing else) when the change isn't live/user-facing yet
+// and there is nothing to announce. writeReleaseNote turns it into a silent skip instead
+// of publishing the model's "this isn't ready" hedge (the live backstage/garbage posts).
+const MODEL_SKIP = '[[SKIP]]';
 
 // ── PR type classification ────────────────────────────────────────────────────
 // Cheapest-first: a conventional-commit prefix answers most PRs with no model call.
@@ -208,6 +214,10 @@ async function writeReleaseNote(pr, kind, month, brief = null) {
     });
     const text = (resp.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('').trim();
     if (!text) return floor;
+    // Model judged the change isn't live/user-facing (flagged-off, dark, groundwork,
+    // partial milestone) -> nothing to announce. Skip rather than publish the hedge.
+    // An explicit author Community brief overrides: they opted in, so use their copy.
+    if (/\[\[\s*SKIP\s*\]\]/i.test(text)) return brief ? floor : MODEL_SKIP;
     const [first, ...rest] = text.split('\n');
     const headline = truncateWords(first.replace(/^#+\s*/, '').replace(/\*\*/g, '').trim(), 60)
       || (floor && floor.headline) || cleanTitle(pr.title).slice(0, 60);
@@ -227,7 +237,7 @@ const prSlug = (pr, kind) => `${slugify(cleanTitle(pr.title) || kind)}-pr-${pr.n
  *   pr: { number, title, body }   release: 'release/2026-11' | '2026-11'
  *   approveFirst: true -> return the draft for the approval queue instead of posting.
  * Returns one of:
- *   { skipped: 'flag_off' | 'no_identity' | 'author_skip' | 'not_announce' | 'unavailable' | 'no_space' | 'duplicate' }
+ *   { skipped: 'flag_off' | 'no_identity' | 'author_skip' | 'not_announce' | 'not_live' | 'unavailable' | 'no_space' | 'duplicate' }
  *   { needsReview: true, kind, pr }   — announce-worthy but no safe copy; worker emails, never posts
  *   { draft: true, kind, headline, body }                       (approveFirst)
  *   { posted: true, postId, slug, kind, headline }              (published)
@@ -245,6 +255,9 @@ async function publishReleaseNote({ pr, release, approveFirst = false } = {}) {
   const month = releaseLabel(release);
   const kind = await classifyPr(pr);
   const note = await writeReleaseNote(pr, kind, month, gate.brief);
+  // Model judged the change isn't live yet (flagged-off / groundwork / partial) — nothing
+  // to announce. Skip silently; do NOT email for review (it isn't review-worthy).
+  if (note === MODEL_SKIP) return { skipped: 'not_live' };
   // No brief + no model = no safe copy. Never post a raw dev title; email for review.
   if (!note) return { needsReview: true, kind, pr: { number: pr.number, title: pr.title } };
   const { headline, body } = note;
@@ -418,7 +431,7 @@ async function replyToPost({ post } = {}) {
 }
 
 module.exports = {
-  VOICE, RELEASE_NOTE_RULES,
+  VOICE, RELEASE_NOTE_RULES, MODEL_SKIP,
   classifyPr, kindFromPrefix, writeReleaseNote, briefNote,
   parseCommunityBlock, announceDecision, truncateWords,
   releaseLabel, cleanTitle, prSlug, publishReleaseNote, publishDeploymentNote,
