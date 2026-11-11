@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Bell, House, LayoutGrid, Lock, Search, SquarePen, UserRound } from 'lucide-react';
 import { getSpaces } from '../../services/communityApi';
+import { getNotifications } from '../../services/api';
 import { SpaceIcon } from '../../components/community/ItemCard';
 import FeedSkeleton from '../../components/community/CommunitySkeleton';
 import CommunityAd from '../../components/community/CommunityAd';
@@ -58,7 +59,22 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
   // Profile drawer (grid tile + Profile tab). The panel + focus-trap land in M3;
   // M2 wires the open state and the aria-expanded semantics on both triggers.
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [unread, setUnread] = useState(0);
   const tag = communityTag();
+
+  // Unread community-alert count for the bottom-bar badge (v2, signed-in).
+  useEffect(() => {
+    if (!v2 || !user) return undefined;
+    let live = true;
+    getNotifications(user.is_host ? 'host' : 'guest')
+      .then((res) => {
+        if (!live) return;
+        const n = (res.data?.notifications || []).filter((x) => typeof x.type === 'string' && x.type.startsWith('COMMUNITY') && !x.read_at);
+        setUnread(n.length);
+      })
+      .catch(() => {});
+    return () => { live = false; };
+  }, [v2, user, active]);
   // The right rail always shows: it carries the ad slot (every audience has a deck,
   // including logged-out guests), plus any page-supplied `aside` above it.
   const showRail = true;
@@ -163,9 +179,18 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
           <button type="button" disabled aria-label="Search (coming soon)" title="Soon" className="flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium text-muted opacity-60">
             <Search size={22} aria-hidden="true" />Search
           </button>
-          <button type="button" disabled aria-label="Alerts (coming soon)" title="Soon" className="flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium text-muted opacity-60">
-            <Bell size={22} aria-hidden="true" />Alerts
-          </button>
+          <Link
+            to="/community/alerts"
+            aria-current={active === 'alerts' ? 'page' : undefined}
+            aria-label={unread ? `Alerts, ${unread} unread` : 'Alerts'}
+            className={`relative flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium no-underline ${active === 'alerts' ? 'text-maroon' : 'text-muted'}`}
+          >
+            <span className="relative">
+              <Bell size={22} aria-hidden="true" />
+              {unread > 0 && <span className="absolute -right-1.5 -top-1 min-w-[16px] rounded-full bg-maroon px-1 text-center text-[10px] font-semibold leading-4 text-white">{unread > 9 ? '9+' : unread}</span>}
+            </span>
+            Alerts
+          </Link>
           <button
             type="button"
             onClick={() => setDrawerOpen((o) => !o)}
