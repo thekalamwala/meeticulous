@@ -55,17 +55,49 @@ async function fetchMergedPrs(branch) {
   }
 }
 
-// Email a drafted release note to the team for manual posting (approve-first mode).
-async function emailDraft(pr, draft) {
+// Email the team about a PR Tithi did NOT auto-post. Two shapes:
+//   draft       — approve-first mode: a finished note to review and post manually.
+//   needsReview — announce-worthy PR with no safe copy (no Community brief + model down/
+//                 over budget). We refuse to post a raw dev title, so the team adds a
+//                 `Community:` line to the PR body, or writes the note by hand.
+async function emailDraft(pr, res) {
   try {
+    if (res.needsReview) {
+      await sendEmail({
+        to: SUPPORT_EMAIL,
+        subject: `[Tithi] Needs a community note — PR #${pr.number}`,
+        html: `<p>PR #${pr.number} (${res.kind}) is announce-worthy but Tithi couldn't write a safe note `
+          + '(no <code>Community:</code> line in the PR body, and the model was unavailable or over budget). '
+          + 'It was <b>not posted</b> — nothing raw ships under Tithi\'s name.</p>'
+          + `<p><b>${String(pr.title || '').replace(/[<>&]/g, '')}</b></p>`
+          + '<p style="color:#888">Add a <code>Community:</code> line to the PR body and re-run, or post a note by hand.</p>',
+      });
+      return;
+    }
     await sendEmail({
       to: SUPPORT_EMAIL,
-      subject: `[Tithi] Release-note draft — ${draft.headline}`,
-      html: `<p>Tithi drafted a release note for PR #${pr.number} (${draft.kind}). Review and post if good:</p>`
-        + `<h3>${draft.headline}</h3><p>${String(draft.body).replace(/\n/g, '<br>')}</p>`
+      subject: `[Tithi] Release-note draft — ${res.headline}`,
+      html: `<p>Tithi drafted a release note for PR #${pr.number} (${res.kind}). Review and post if good:</p>`
+        + `<h3>${res.headline}</h3><p>${String(res.body).replace(/\n/g, '<br>')}</p>`
         + '<p style="color:#888">Auto-posting is off (COMMUNITY_TITHI_AUTOPOST). Set it to true once you trust the notes.</p>',
     });
   } catch (_) { /* best-effort */ }
+}
+
+// Publish one merged PR's release note (or draft-and-email in approve-first mode).
+// The single entry point for BOTH the poll and the instant GitHub webhook, so the
+// AUTOPOST gate + draft email behave identically no matter what triggered it.
+async function handleMergedPr(pr, release) {
+  const res = await tithi.publishReleaseNote({ pr, release, approveFirst: !AUTOPOST });
+  if (res.draft || res.needsReview) await emailDraft(pr, res);
+  return res;
+}
+
+// The release train merged into main (prod deploy). Post the "it's live" rollup note.
+// Always publishes (no approve-first): a deploy already happened, so there's nothing
+// to hold for approval. Idempotent via tithi's ship-PR slug.
+async function handleDeployment(pr, release) {
+  return tithi.publishDeploymentNote({ pr, release });
 }
 
 /** Poll merged release PRs → publish (or draft-and-email) one note each. */
@@ -74,9 +106,9 @@ async function runReleaseNotePoll() {
   const prs = await fetchMergedPrs(branch);
   let posted = 0; let drafted = 0; let skipped = 0;
   for (const pr of prs) {
-    const res = await tithi.publishReleaseNote({ pr, release: branch, approveFirst: !AUTOPOST });
+    const res = await handleMergedPr(pr, branch);
     if (res.posted) posted += 1;
-    else if (res.draft) { drafted += 1; await emailDraft(pr, res); }
+    else if (res.draft || res.needsReview) drafted += 1;
     else skipped += 1;
   }
   return { posted, drafted, skipped, scanned: prs.length };
@@ -142,6 +174,6 @@ async function runDailyDigest() {
 }
 
 module.exports = {
-  runReleaseNotePoll, runReplySweep, runDailyDigest,
+  runReleaseNotePoll, runReplySweep, runDailyDigest, handleMergedPr, handleDeployment,
   releaseBranch, fetchMergedPrs, _AUTOPOST: AUTOPOST,
 };

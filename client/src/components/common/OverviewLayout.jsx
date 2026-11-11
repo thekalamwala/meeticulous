@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation } from 'react-router-dom';
-import { Menu, X, CalendarPlus, Rocket, ArrowRight } from 'lucide-react';
+import { X, CalendarPlus, Rocket, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { getMyServices } from '../../services/api';
 import { normalizePlan } from '../../utils/themeUtils';
@@ -10,6 +10,9 @@ import { PageTransition } from '../dashboard/ui/PageTransition';
 import ProfileCompletionPanel from '../dashboard/ProfileCompletionPanel';
 import { NotifBell, ProfileMenu } from './DashboardLayout';
 import ConsoleSidebar from './ConsoleSidebar';
+import MobileTabBar from './MobileTabBar';
+import PullToRefresh from '../dashboard/ui/PullToRefresh';
+import { RefreshProvider } from '../dashboard/ui/refreshContext';
 import { OverviewChromeContext } from './overviewChrome';
 
 /* --------------------------------------------------------------------------
@@ -226,25 +229,17 @@ const ProfileCompletionRocket = ({ user }) => {
 };
 
 const OverviewTopbar = ({
-  user, initial, planStyle, logout, onOpenNav, navTriggerRef, onNewMeeting,
+  user, initial, planStyle, logout, onNewMeeting,
 }) => (
     <header className="sticky top-0 z-30 flex min-h-[64px] items-center gap-2.5 border-b border-neutral-200/80 bg-white/95 px-4 py-2 backdrop-blur sm:gap-3 sm:px-6">
-      <button
-        ref={navTriggerRef}
-        type="button"
-        onClick={onOpenNav}
-        aria-label="Open navigation"
-        aria-haspopup="dialog"
-        className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-neutral-500 transition hover:bg-primary/5 hover:text-primary lg:hidden"
-      >
-        <Menu className="h-5 w-5" strokeWidth={1.8} />
-      </button>
-
+      {/* Mobile nav opener moved to the bottom tab bar's "More" button. */}
       {/* Toolbar actions, right-aligned (the search bar was removed). Add a New
           Meeting sits immediately before the rocket; notification + profile
           follow, with a consistent gap. */}
       <div className="ml-auto flex shrink-0 items-center gap-2">
-        <button
+        {/* ponytail: parked — hidden per founder, keep for later reuse. Booking
+            is added from the calendar's per-day "+ Add booking". */}
+        {/* <button
           type="button"
           onClick={onNewMeeting}
           className="inline-flex h-[42px] shrink-0 items-center gap-2 rounded-full bg-maroon px-3.5 text-sm font-semibold text-white shadow-[0_8px_20px_-10px_rgba(150,13,50,0.5)] transition hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose sm:px-5"
@@ -252,9 +247,10 @@ const OverviewTopbar = ({
           <CalendarPlus className="h-[17px] w-[17px]" strokeWidth={2} />
           <span className="hidden whitespace-nowrap sm:inline">Add a New Booking</span>
           <span className="sm:hidden">New</span>
-        </button>
+        </button> */}
 
-        <ProfileCompletionRocket user={user} />
+        {/* ponytail: rocket parked — hidden per founder, panel code kept for later. */}
+        {/* <ProfileCompletionRocket user={user} /> */}
 
         <NotifBell
           triggerClassName="relative grid h-10 w-10 place-items-center rounded-full border border-neutral-200 bg-white text-neutral-500 transition hover:bg-primary/5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
@@ -302,10 +298,11 @@ const OverviewLayout = ({ children }) => {
 
   return (
     <OverviewChromeContext.Provider value={{ openNewMeeting }}>
+     <RefreshProvider>
       {/* Page ground is the shared host canvas — same as DashboardLayout — so the
           overview matches every other /dashboard/* page. Do NOT give this a pink
           gradient surface: the host dashboard background must be constant. */}
-      <div className="ov-shell min-h-screen bg-canvas text-[#17164A]">
+      <div className="ov-shell min-h-screen overscroll-y-contain bg-canvas text-[#17164A]">
         {/* Original two-level host sidebar (icon rail + panel), reused verbatim.
             It owns its own desktop-fixed shell AND mobile drawer, driven here by
             navOpen / the toolbar hamburger. */}
@@ -318,18 +315,24 @@ const OverviewLayout = ({ children }) => {
             initial={initial}
             planStyle={planStyle}
             logout={logout}
-            onOpenNav={() => setNavOpen(true)}
-            navTriggerRef={navTriggerRef}
             onNewMeeting={openNewMeeting}
           />
 
-          <main className="px-4 py-4 sm:px-6">
-            <PageTransition>{children}</PageTransition>
+          {/* pb clears the fixed mobile tab bar (+ safe area); desktop keeps py-4. */}
+          <main className="px-4 py-4 pb-[calc(68px+env(safe-area-inset-bottom))] sm:px-6 lg:pb-4">
+            <PullToRefresh>
+              <PageTransition>{children}</PageTransition>
+            </PullToRefresh>
           </main>
         </div>
 
+        {/* Native-app bottom tab bar — mobile only (< lg). Its "More" button is
+            the mobile nav opener (the topbar hamburger moved here). */}
+        <MobileTabBar onOpenMore={() => setNavOpen(true)} moreTriggerRef={navTriggerRef} />
+
         <NewMeetingModal open={newMeetingOpen} onClose={() => setNewMeetingOpen(false)} user={user} />
       </div>
+     </RefreshProvider>
     </OverviewChromeContext.Provider>
   );
 };

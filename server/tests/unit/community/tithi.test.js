@@ -30,6 +30,9 @@ const store = require('../../../services/community/store');
 const tithi = require('../../../services/community/tithi');
 
 const PR = { number: 412, title: 'feat: faster booking confirmations', body: 'Cuts confirm time from 8s to 2s.' };
+// Same PR but the author left a Community brief — the deterministic (AI-off) path then
+// has safe copy to post, so the store-reaching tests below don't trip the needsReview gate.
+const PR_B = { ...PR, body: `${PR.body}\n\nCommunity: Confirmations are near-instant now.` };
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -60,10 +63,38 @@ describe('pure helpers', () => {
     expect(tithi.prSlug(PR, 'feature')).toBe(tithi.prSlug(PR, 'feature'));
   });
 
-  test('fallbackNote leads with the right verb and names the release', () => {
-    const { headline, body } = tithi.fallbackNote(PR, 'feature', 'November');
-    expect(headline).toMatch(/^New:/);
-    expect(body).toMatch(/November release/);
+  test('cleanTitle strips a test(scope) prefix (the #211 leak)', () => {
+    expect(tithi.cleanTitle('test(dashboard): fold revamped pages')).toBe('fold revamped pages');
+  });
+
+  test('truncateWords cuts on a word boundary, never mid-word', () => {
+    const s = 'release notes plus first-responder replies for members';
+    expect(tithi.truncateWords(s, 30)).not.toMatch(/responde$/);
+    expect(s.startsWith(tithi.truncateWords(s, 30))).toBe(true);
+    expect(tithi.truncateWords(s, 30).endsWith(' ')).toBe(false);
+  });
+
+  test('parseCommunityBlock pulls the author brief; empty/absent -> null', () => {
+    expect(tithi.parseCommunityBlock('body\n\nCommunity: Payouts are faster now.')).toBe('Payouts are faster now.');
+    expect(tithi.parseCommunityBlock('no block here')).toBeNull();
+    expect(tithi.parseCommunityBlock('Community:   ')).toBeNull();
+    // last occurrence wins (author may use the word while explaining above)
+    expect(tithi.parseCommunityBlock('Community: draft one\n\nCommunity: final line')).toBe('final line');
+  });
+
+  test('briefNote posts the author copy as-is', () => {
+    const { headline, body } = tithi.briefNote('Confirmations are near-instant now.');
+    expect(body).toBe('Confirmations are near-instant now.');
+    expect(headline).toBe('Confirmations are near-instant now.');
+  });
+
+  test('announceDecision gates by prefix, and a brief always opts in', () => {
+    expect(tithi.announceDecision({ title: 'feat: x', body: '' }).announce).toBe(true);
+    expect(tithi.announceDecision({ title: 'docs: x', body: '' })).toEqual({ announce: false, reason: 'not_announce' });
+    expect(tithi.announceDecision({ title: 'test(ui): x', body: '' })).toEqual({ announce: false, reason: 'not_announce' });
+    expect(tithi.announceDecision({ title: 'random title', body: '' })).toEqual({ announce: false, reason: 'not_announce' });
+    expect(tithi.announceDecision({ title: 'chore: x', body: 'Community: this matters' })).toEqual({ announce: true, brief: 'this matters' });
+    expect(tithi.announceDecision({ title: 'feat: x', body: 'Community: SKIP' })).toEqual({ announce: false, reason: 'author_skip' });
   });
 });
 
@@ -101,12 +132,12 @@ describe('publishReleaseNote gating', () => {
 
   test('already posted (slug exists) -> duplicate, no insert', async () => {
     store.getPostBySlug.mockResolvedValue({ id: 'existing' });
-    expect(await tithi.publishReleaseNote({ pr: PR, release: '2026-11' })).toEqual({ skipped: 'duplicate' });
+    expect(await tithi.publishReleaseNote({ pr: PR_B, release: '2026-11' })).toEqual({ skipped: 'duplicate' });
     expect(store.insertPost).not.toHaveBeenCalled();
   });
 
   test('approveFirst -> draft, never touches the DB', async () => {
-    const res = await tithi.publishReleaseNote({ pr: PR, release: '2026-11', approveFirst: true });
+    const res = await tithi.publishReleaseNote({ pr: PR_B, release: '2026-11', approveFirst: true });
     expect(res.draft).toBe(true);
     expect(res.kind).toBe('feature');
     expect(store.getPostBySlug).not.toHaveBeenCalled();
@@ -117,7 +148,41 @@ describe('publishReleaseNote gating', () => {
     store.getPostBySlug.mockResolvedValue(null);
     const err = new Error('relation does not exist'); err.code = 'COMMUNITY_UNAVAILABLE';
     store.getSpaceByKey.mockRejectedValue(err);
-    expect(await tithi.publishReleaseNote({ pr: PR, release: '2026-11' })).toEqual({ skipped: 'unavailable' });
+    expect(await tithi.publishReleaseNote({ pr: PR_B, release: '2026-11' })).toEqual({ skipped: 'unavailable' });
+  });
+
+  // ── The gate: the whole point of this change ──────────────────────────────
+  test('non-announce prefix with no brief -> skipped, nothing written (the #195/#217 garbage)', async () => {
+    const docsPr = { number: 195, title: 'docs: email journey map', body: 'internal notes' };
+    expect(await tithi.publishReleaseNote({ pr: docsPr, release: '2026-11' })).toEqual({ skipped: 'not_announce' });
+    expect(store.getPostBySlug).not.toHaveBeenCalled();
+    expect(store.insertPost).not.toHaveBeenCalled();
+  });
+
+  test('Community: SKIP -> author_skip, nothing written', async () => {
+    const pr = { number: 1, title: 'feat: thing', body: 'Community: SKIP' };
+    expect(await tithi.publishReleaseNote({ pr, release: '2026-11' })).toEqual({ skipped: 'author_skip' });
+    expect(store.insertPost).not.toHaveBeenCalled();
+  });
+
+  test('announce-worthy but no brief + no model -> needsReview, NEVER a raw-title post', async () => {
+    store.getPostBySlug.mockResolvedValue(null);
+    store.getSpaceByKey.mockResolvedValue({ id: 'updates-space-id' });
+    // PR (feat, no Community line); AI is mocked off -> no safe copy.
+    const res = await tithi.publishReleaseNote({ pr: PR, release: '2026-11' });
+    expect(res).toEqual({ needsReview: true, kind: 'feature', pr: { number: 412, title: PR.title } });
+    expect(store.insertPost).not.toHaveBeenCalled();
+  });
+
+  test('a chore with a Community brief DOES post (author opt-in)', async () => {
+    store.getPostBySlug.mockResolvedValue(null);
+    store.getSpaceByKey.mockResolvedValue({ id: 'updates-space-id', key: 'updates' });
+    store.insertPost.mockResolvedValue({ id: 'chore-post' });
+    const pr = { number: 50, title: 'chore: bump deps', body: 'Community: Everything is a little snappier today.' };
+    const res = await tithi.publishReleaseNote({ pr, release: '2026-11' });
+    expect(res.posted).toBe(true);
+    const [row] = store.insertPost.mock.calls[0];
+    expect(row.body).toBe('Everything is a little snappier today.');
   });
 });
 
@@ -180,7 +245,7 @@ describe('publishReleaseNote happy path', () => {
     store.getSpaceByKey.mockResolvedValue({ id: 'updates-space-id', key: 'updates' });
     store.insertPost.mockResolvedValue({ id: 'new-post-id' });
 
-    const res = await tithi.publishReleaseNote({ pr: PR, release: 'release/2026-11' });
+    const res = await tithi.publishReleaseNote({ pr: PR_B, release: 'release/2026-11' });
 
     expect(res).toMatchObject({ posted: true, postId: 'new-post-id', slug: 'faster-booking-confirmations-pr-412', kind: 'feature' });
     expect(store.getSpaceByKey).toHaveBeenCalledWith('updates');

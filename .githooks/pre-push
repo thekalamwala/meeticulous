@@ -1,15 +1,18 @@
 #!/bin/sh
-# Pre-push gate — runs the SAME suite CI runs, locally, before anything reaches
-# GitHub. Added after 30 days of "PR run failed: CI" emails: every one was a
-# unit test that broke on push and was caught only after the fact (6 of 9 Nov
-# failures were red client/server tests). This stops a red push at the source.
+# Pre-push gate — fast local fail-fast before anything reaches GitHub. Added after
+# 30 days of "PR run failed: CI" emails: every one was a unit test that broke on
+# push and was caught only after the fact (6 of 9 Nov failures were red
+# client/server tests). This stops a red push at the source.
 #
-# Mirrors .github/workflows/ci.yml exactly:
-#   server/**                         -> cd server && npm run test:unit   (jest)
-#   client/** or docs/help/**         -> cd client && npx vitest run      (vitest)
-# Only the half you touched runs (same paths-filter as CI). Docs-only push runs
-# nothing. Lockfile install is skipped — it assumes your node_modules are current;
-# CI still does the clean `npm ci`.
+# Scoped to what you touched (same paths-filter as .github/workflows/ci.yml):
+#   server/**                 -> cd server && npm run test:unit            (jest, full)
+#   client/** or docs/help/** -> cd client && npx vitest related <changed> (vitest)
+# Client runs ONLY the tests whose import graph includes your changed files —
+# seconds, not the full 1200-test suite. The full client+server suite still runs
+# on CI (the authoritative gate before merge→deploy), so nothing is weakened for
+# prod; this just stops local full-suite runs from taking ~10min and flaking on a
+# loaded box. Docs-only push runs nothing. Lockfile install is skipped — it assumes
+# your node_modules are current; CI still does the clean `npm ci`.
 #
 # Install (once per clone):  git config core.hooksPath .githooks
 # Skip in an emergency:      git push --no-verify
@@ -49,8 +52,25 @@ if [ "$RUN_SERVER" = 1 ]; then
 fi
 
 if [ "$RUN_CLIENT" = 1 ]; then
-  echo "pre-push: running CLIENT unit tests (vitest)…"
-  ( cd client && npx vitest run )
+  CLIENT_FILES=$(echo "$CHANGED" | grep -E '^client/' | sed 's#^client/##')
+  # A manifest/config change (deps, vite/vitest/tailwind config) can affect any
+  # test, and `vitest related` treats it as "everything" anyway — so run the full
+  # suite in that case. It's rare; most pushes only touch source.
+  if echo "$CLIENT_FILES" | grep -qE '^(package(-lock)?\.json$|.*\.config\.(js|ts|mjs|cjs)$)'; then
+    echo "pre-push: client manifest/config changed — running full CLIENT suite (vitest)…"
+    ( cd client && npx vitest run )
+  else
+    # Only the tests whose import graph touches your changed source — seconds, not
+    # the full 1200-test suite (that stays on CI, the gate before merge→deploy).
+    # --passWithNoTests: a changed file with no test that imports it isn't a failure.
+    SRC_FILES=$(echo "$CLIENT_FILES" | grep -E '\.(jsx?|tsx?|css)$')
+    if [ -n "$SRC_FILES" ]; then
+      echo "pre-push: running CLIENT tests related to your changes (vitest related)…"
+      ( cd client && npx vitest related --run --passWithNoTests $SRC_FILES )
+    else
+      echo "pre-push: no client source changes — skipping client tests."
+    fi
+  fi
 fi
 
 echo "pre-push: all gated tests passed."

@@ -222,40 +222,84 @@ const DeliverablesTab = ({ included = [], excluded = [] }) => (
   </div>
 );
 
-const HostTab = ({ vendor, totalServices, totalBookings = 0 }) => {
+// Rich host card (service "Host" section). Real signals only — no invented
+// response-rate/structured facts. accent = the host's profile theme colour.
+const HostTab = ({ vendor, totalServices = 0, totalBookings = 0, rating = 0, reviewCount = 0, onBook }) => {
   if (!vendor?.name) return <p className="text-gray-400 text-sm">No host info.</p>;
+  const accent = 'var(--profile-accent, #960D32)';
+  const tint = (pct) => `color-mix(in srgb, ${accent} ${pct}%, white)`;
+  const expertise = [vendor.profession, vendor.tagline]
+    .filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).join(' · ');
+  // Years hosting from the join date, when the vendor payload carries it.
+  const years = vendor.created_at
+    ? Math.max(1, Math.floor((Date.now() - new Date(vendor.created_at).getTime()) / (365.25 * 864e5)))
+    : null;
+  const stats = [
+    rating > 0        && { value: rating.toFixed(1), sub: `(${reviewCount})`, label: reviewCount === 1 ? 'review' : 'reviews', star: true },
+    totalBookings > 0 && { value: totalBookings, label: 'booked' },
+    totalServices > 0 && { value: totalServices, label: totalServices === 1 ? 'service' : 'services' },
+    years            && { value: years, label: years === 1 ? 'yr hosting' : 'yrs hosting' },
+  ].filter(Boolean);
+
   return (
-    <div className="flex flex-col sm:flex-row gap-5 items-start">
-      <div className="flex-shrink-0">
-        {vendor.profile_image
-          ? <img src={vendor.profile_image} alt={vendor.name} className="w-20 h-20 rounded-2xl object-cover border-2 border-white shadow-md"/>
-          : <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl font-bold text-primary">{vendor.name.charAt(0)}</div>}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <h3 className="text-lg font-bold text-gray-900">{vendor.name}</h3>
+    <div className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6">
+      <div className="flex flex-col sm:flex-row gap-5">
+        {/* Avatar + verified seal */}
+        <div className="relative w-20 h-20 flex-shrink-0">
+          {vendor.profile_image
+            ? <img src={vendor.profile_image} alt={vendor.name} className="w-20 h-20 rounded-2xl object-cover"/>
+            : <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-3xl font-bold" style={{ background: tint(12), color: accent }}>{vendor.name.charAt(0).toUpperCase()}</div>}
           {vendor.is_verified && (
-            <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" aria-label="Verified" style={{ transform: 'translate(-2px, 1px)' }}>
-              <path className="fill-primary" d="M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z"/>
-              <path d="M8.5 12.5l2.25 2.25L15.5 10" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <span className="absolute -bottom-1.5 -right-1.5 w-7 h-7 rounded-full flex items-center justify-center border-[3px] border-white" style={{ background: accent }} aria-label="Verified host">
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </span>
           )}
         </div>
-        {(vendor.profession || vendor.tagline) && (
-          <p className="text-sm text-primary font-medium mb-2">{vendor.profession || vendor.tagline}</p>
-        )}
-        {vendor.bio && <p className="text-sm text-gray-600 mb-3 leading-relaxed">{vendor.bio}</p>}
-        <div className="flex flex-wrap gap-4 text-xs text-gray-500 mb-4">
-          <span><strong className="text-gray-800">{totalServices}</strong> services</span>
-          <span><strong className="text-gray-800">{totalBookings}</strong> bookings</span>
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h3 className="font-display text-xl font-extrabold tracking-tight text-gray-900">{vendor.name}</h3>
+            {vendor.is_verified && (
+              <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold" style={{ background: tint(10), color: accent }}>Verified host</span>
+            )}
+          </div>
+          {expertise && <p className="text-sm font-medium mt-0.5" style={{ color: accent }}>{expertise}</p>}
+
+          {/* Signal strip — real data only */}
+          {stats.length > 0 && (
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-3.5">
+              {stats.map((s, i) => (
+                <div key={i} className="flex items-baseline gap-1.5">
+                  {s.star && <svg className="w-4 h-4 self-center text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>}
+                  <span className="text-lg font-bold text-gray-900 leading-none">{s.value}</span>
+                  {s.sub && <span className="text-xs text-gray-400 leading-none">{s.sub}</span>}
+                  <span className="text-xs text-gray-500 leading-none">{s.label}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {vendor.bio && <p className="text-sm text-gray-600 mt-4 leading-relaxed line-clamp-4">{vendor.bio}</p>}
+
+          {/* Actions — existing flows only */}
+          <div className="flex flex-wrap items-center gap-2.5 mt-5">
+            {onBook && (
+              <button type="button" onClick={onBook}
+                className="inline-flex items-center justify-center rounded-full px-5 h-11 text-sm font-semibold text-white transition-opacity hover:opacity-90 outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                style={{ background: accent, '--tw-ring-color': accent }}>
+                Book a slot
+              </button>
+            )}
+            {vendor.username && (
+              <Link to={`/${vendor.username}`}
+                className="inline-flex items-center gap-1.5 rounded-full px-5 h-11 text-sm font-semibold transition-colors hover:bg-gray-50 outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                style={{ color: accent, border: `1.5px solid ${tint(30)}`, '--tw-ring-color': accent }}>
+                Visit profile
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </Link>
+            )}
+          </div>
         </div>
-        {vendor.username && (
-          <Link to={`/${vendor.username}`}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
-            Visit Profile
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-          </Link>
-        )}
       </div>
     </div>
   );
@@ -865,7 +909,7 @@ export default function ServiceDetail() {
     { id: 'host', label: 'Host', heading: 'Host',
       node: (
         <>
-          <HostTab vendor={vendor} totalServices={totalServices} totalBookings={totalBookings} />
+          <HostTab vendor={vendor} totalServices={totalServices} totalBookings={totalBookings} rating={rating} reviewCount={reviewCount} onBook={handleBookNow} />
           <AvailableSlotsPreview hostId={vendor?.id} serviceId={service.id} onViewAll={handleBookNow} />
         </>
       ) },

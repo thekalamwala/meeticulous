@@ -69,7 +69,6 @@ const PREFIX_KIND = [
   [/^(fix|bug|bugfix|hotfix)\b/i, 'fix'],
   [/^(perf|refactor|chore|build|deps|upgrade|ci|revert|style)\b/i, 'upgrade'],
 ];
-const KIND_VERB = { feature: 'New', fix: 'Fixed', upgrade: 'Improved' };
 
 function kindFromPrefix(title) {
   for (const [re, kind] of PREFIX_KIND) if (re.test(String(title || '').trim())) return kind;
@@ -115,47 +114,107 @@ function releaseLabel(release) {
 }
 
 // Strip a conventional-commit prefix + scope from a PR title for human copy.
+// `test` and `docs` are in the list so a gated-in edge case never leaks a raw
+// `test(dashboard):`-style prefix into a post (the live #211 bug).
 const cleanTitle = (title) => String(title || '')
-  .replace(/^(feat|feature|fix|bug|bugfix|hotfix|perf|refactor|chore|build|deps|upgrade|ci|revert|style)(\([^)]*\))?!?:\s*/i, '')
+  .replace(/^(feat|feature|fix|bug|bugfix|hotfix|perf|refactor|chore|build|deps|upgrade|ci|revert|style|test|docs?)(\([^)]*\))?!?:\s*/i, '')
   .trim();
 
-// Deterministic, no model: the fallback note (AI off / over budget / approve-first draft).
-function fallbackNote(pr, kind, month) {
-  const verb = KIND_VERB[kind] || 'Improved';
-  const headline = `${verb}: ${cleanTitle(pr.title) || 'an update'}`.slice(0, 60);
-  const body = month === 'next'
-    ? `${headline}. Coming in the next release.`
-    : `${headline}. Coming in the ${month} release.`;
-  return { headline, body };
+// Truncate on a word boundary, never mid-word (the live "...first-responde" / "brand d"
+// bug was a blind .slice(0, 60)). Trims a trailing separator left by the cut.
+function truncateWords(s, max) {
+  const str = String(s || '').trim();
+  if (str.length <= max) return str;
+  const cut = str.slice(0, max);
+  const sp = cut.lastIndexOf(' ');
+  return (sp > 20 ? cut.slice(0, sp) : cut).replace(/[\s,;:–—-]+$/, '').trim();
 }
 
-// writeReleaseNote(pr, kind, month) -> { headline, body }. Sonnet-written, grounded only
-// in the PR title/body; falls back to the deterministic note on any failure/budget stop.
-async function writeReleaseNote(pr, kind, month) {
-  if (!anthropicClient.isConfigured()) return fallbackNote(pr, kind, month);
+// ── The author's community brief ────────────────────────────────────────────
+// The "good PR body" half: an author drops a `Community:` line (or block) in the PR
+// body describing what changed FOR USERS, in plain words. That line is the ground
+// truth Tithi writes from — far better than guessing from a dev title. Last occurrence
+// wins (the author may use the word while explaining above it); the block runs until a
+// blank line / heading / rule. `Community: SKIP` (or none/no/n/a) = do not post.
+function parseCommunityBlock(body) {
+  const lines = String(body || '').split(/\r?\n/);
+  let start = -1;
+  for (let i = lines.length - 1; i >= 0; i--) {
+    if (/^\s*Community:/i.test(lines[i])) { start = i; break; }
+  }
+  if (start === -1) return null;
+  const out = [lines[start].replace(/^\s*Community:\s*/i, '')];
+  for (let j = start + 1; j < lines.length; j++) {
+    const l = lines[j];
+    if (!l.trim() || /^#{1,6}\s/.test(l) || /^\s*[-*_]{3,}\s*$/.test(l)) break;
+    out.push(l);
+  }
+  return out.join('\n').trim() || null;
+}
+const isSkipBrief = (s) => /^(skip|none|no|n\/a)$/i.test(String(s || '').trim());
+
+// Announce-worthy conventional prefixes; everything else (docs/test/chore/ci/deps/...)
+// is noise and stays silent UNLESS the author wrote an explicit Community brief.
+const ANNOUNCE_PREFIX = /^(feat|feature|fix|bug|bugfix|hotfix|perf|improve|improvement)\b/i;
+
+// announceDecision(pr) -> { announce:true, brief } | { announce:false, reason }
+// The whole gate: an explicit Community brief always wins (author opted in, even for a
+// chore); otherwise only a feat/fix/perf-titled PR announces. This is what stops the
+// live garbage — docs/test/no-prefix PRs no longer force a raw-title fallback post.
+function announceDecision(pr) {
+  const brief = parseCommunityBlock(pr && pr.body);
+  if (brief && isSkipBrief(brief)) return { announce: false, reason: 'author_skip' };
+  if (brief) return { announce: true, brief };
+  if (ANNOUNCE_PREFIX.test(String((pr && pr.title) || '').trim())) return { announce: true, brief: null };
+  return { announce: false, reason: 'not_announce' };
+}
+
+// The safe floor when the model can't run: the author's Community brief IS user-facing
+// copy, so post it as-is (headline = first line, body = the brief). Only reached when a
+// brief exists — with no brief and no model, the caller emails for review instead.
+function briefNote(brief) {
+  const clean = String(brief || '').trim();
+  const headline = truncateWords(clean.split(/\r?\n/)[0], 60) || 'An update';
+  return { headline, body: clean };
+}
+
+// writeReleaseNote(pr, kind, month, brief) -> { headline, body } | null.
+// Sonnet-written, grounded in the author's Community brief when present (else the PR
+// title/body). Returns the brief-floor on any model failure; returns NULL only when
+// there is no brief AND no model — the caller then emails for review instead of posting
+// un-crafted copy under Tithi's name (the live #213/#217 garbage).
+async function writeReleaseNote(pr, kind, month, brief = null) {
+  const floor = brief ? briefNote(brief) : null;
+  if (!anthropicClient.isConfigured()) return floor;
   const budget = await botBudget.tryConsume();
-  if (!budget.allowed) return fallbackNote(pr, kind, month);
+  if (!budget.allowed) return floor;
   try {
     const client = anthropicClient.getClient();
     const resp = await client.messages.create({
       model: anthropicClient.MODELS.listing, // Sonnet — members read this closely
-      max_tokens: 220,
+      // Sonnet-5 reasons ~450 "thinking" tokens before visible text; a tight cap gets
+      // consumed by thinking and returns empty -> floor/needsReview. 1024 leaves room.
+      max_tokens: 1024,
       system: `${VOICE} ${RELEASE_NOTE_RULES}`,
       messages: [{
         role: 'user',
         content: `Change type: ${kind}. Release: the ${month} release.\n`
+          + (brief
+            ? `The author's note to the community (ground the post in THIS, rewritten in your voice — do not contradict it or pad it with facts it doesn't state):\n${brief}\n\n`
+            : '')
           + `PR title: ${pr.title}\n`
           + `PR description:\n${String(pr.body || '(none)').slice(0, 3000)}`,
       }],
     });
     const text = (resp.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('').trim();
-    if (!text) return fallbackNote(pr, kind, month);
+    if (!text) return floor;
     const [first, ...rest] = text.split('\n');
-    const headline = first.replace(/^#+\s*/, '').replace(/\*\*/g, '').trim().slice(0, 60) || fallbackNote(pr, kind, month).headline;
+    const headline = truncateWords(first.replace(/^#+\s*/, '').replace(/\*\*/g, '').trim(), 60)
+      || (floor && floor.headline) || cleanTitle(pr.title).slice(0, 60);
     const body = (rest.join('\n').trim() || text).trim();
     return { headline, body };
   } catch (_) {
-    return fallbackNote(pr, kind, month);
+    return floor;
   }
 }
 
@@ -168,7 +227,8 @@ const prSlug = (pr, kind) => `${slugify(cleanTitle(pr.title) || kind)}-pr-${pr.n
  *   pr: { number, title, body }   release: 'release/2026-11' | '2026-11'
  *   approveFirst: true -> return the draft for the approval queue instead of posting.
  * Returns one of:
- *   { skipped: 'flag_off' | 'no_identity' | 'unavailable' | 'no_space' | 'duplicate' }
+ *   { skipped: 'flag_off' | 'no_identity' | 'author_skip' | 'not_announce' | 'unavailable' | 'no_space' | 'duplicate' }
+ *   { needsReview: true, kind, pr }   — announce-worthy but no safe copy; worker emails, never posts
  *   { draft: true, kind, headline, body }                       (approveFirst)
  *   { posted: true, postId, slug, kind, headline }              (published)
  */
@@ -178,9 +238,16 @@ async function publishReleaseNote({ pr, release, approveFirst = false } = {}) {
   const authorId = tithiUserId();
   if (!authorId) return { skipped: 'no_identity' };
 
+  // Gate: skip docs/test/chore/no-prefix PRs with no Community brief, and `Community: SKIP`.
+  const gate = announceDecision(pr);
+  if (!gate.announce) return { skipped: gate.reason };
+
   const month = releaseLabel(release);
   const kind = await classifyPr(pr);
-  const { headline, body } = await writeReleaseNote(pr, kind, month);
+  const note = await writeReleaseNote(pr, kind, month, gate.brief);
+  // No brief + no model = no safe copy. Never post a raw dev title; email for review.
+  if (!note) return { needsReview: true, kind, pr: { number: pr.number, title: pr.title } };
+  const { headline, body } = note;
 
   if (approveFirst) return { draft: true, kind, headline, body };
 
@@ -212,6 +279,55 @@ async function publishReleaseNote({ pr, release, approveFirst = false } = {}) {
     try { await store.refreshIndexable(post.id); } catch (_) { /* nice-to-have */ }
 
     return { posted: true, postId: post.id, slug, kind, headline };
+  } catch (e) {
+    if (e.code === 'COMMUNITY_UNAVAILABLE') return { skipped: 'unavailable' };
+    throw e;
+  }
+}
+
+// A deploy note's slug: one per ship PR (release/** -> main merge), so a webhook
+// re-delivery of the same merge can't double-post the "we're live" announcement.
+const deploySlug = (pr) => `shipped-pr-${pr && pr.number ? pr.number : 'x'}`;
+
+/**
+ * publishDeploymentNote({ pr, release }) — the "it's live" note posted when the
+ * release train merges into main (prod deploy; Vercel auto-ships from main). This
+ * is the rollup marker, separate from the per-PR release notes: those announce
+ * each change as it lands on the release branch; this says the whole batch is now
+ * live for everyone. Deterministic copy (no model spend per deploy); dedup by slug.
+ *   pr: { number, title, body }   release: 'release/2026-11' | '2026-11'
+ * Returns { skipped: ... } | { posted: true, postId, slug, headline }.
+ */
+async function publishDeploymentNote({ pr, release } = {}) {
+  if (!pr || !pr.number) return { skipped: 'bad_pr' };
+  if (!(await isFeatureEnabled(FLAG))) return { skipped: 'flag_off' };
+  const authorId = tithiUserId();
+  if (!authorId) return { skipped: 'no_identity' };
+
+  const month = releaseLabel(release);
+  const headline = month === 'next' ? 'A fresh batch of updates is live' : `The ${month} updates are live`;
+  const body = month === 'next'
+    ? 'Everything we have been working on just went live. Have a look around — and tell us what you think.'
+    : `Everything from the ${month} release just went live for everyone. Have a look around — and tell us what lands and what doesn't.`;
+
+  try {
+    const slug = deploySlug(pr);
+    if (await store.getPostBySlug(slug)) return { skipped: 'duplicate' };
+    const space = await store.getSpaceByKey(UPDATES_SPACE);
+    if (!space) return { skipped: 'no_space' };
+
+    let post;
+    try {
+      post = await store.insertPost({
+        kind: 'post', format: 'announcement', author_id: authorId,
+        space_id: space.id, title: headline, body, status: 'visible',
+      }, () => slug);
+    } catch (e) {
+      if (e.code === '23505') return { skipped: 'duplicate' };
+      throw e;
+    }
+    try { await store.refreshIndexable(post.id); } catch (_) { /* nice-to-have */ }
+    return { posted: true, postId: post.id, slug, headline };
   } catch (e) {
     if (e.code === 'COMMUNITY_UNAVAILABLE') return { skipped: 'unavailable' };
     throw e;
@@ -303,8 +419,9 @@ async function replyToPost({ post } = {}) {
 
 module.exports = {
   VOICE, RELEASE_NOTE_RULES,
-  classifyPr, kindFromPrefix, writeReleaseNote, fallbackNote,
-  releaseLabel, cleanTitle, prSlug, publishReleaseNote,
+  classifyPr, kindFromPrefix, writeReleaseNote, briefNote,
+  parseCommunityBlock, announceDecision, truncateWords,
+  releaseLabel, cleanTitle, prSlug, publishReleaseNote, publishDeploymentNote,
   replyToPost, escalateToTeam,
   _tithiUserId: tithiUserId,
 };

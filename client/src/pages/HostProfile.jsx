@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Navigate, Link } from "react-router-dom";
 import { isVanitySlug, VANITY_TARGET } from "../config/vanityRedirects";
-import { getHostProfile, getHostReviews, getHostProducts, getVendorBadges } from "../services/api";
+import { getHostProfile, getHostReviews, getHostProducts, getVendorBadges, subscribeNewsletter } from "../services/api";
+import { getAuthorActivity } from "../services/communityApi";
 import { DEMO_PERSONAS, DEMO_USERNAME, personaView } from "../data/demoPersonas";
 import { analytics, EVENTS } from "../services/analytics";
 import BrandPreloader from "../components/preloader/BrandPreloader";
@@ -15,7 +16,7 @@ import { resolveProfileSeo, profileGraphJsonLd, SITE_URL } from "../utils/seo";
 import { profileFaqs } from "../utils/profileFaqs";
 import FaqAccordion from "../components/FaqAccordion";
 import { prerendered } from "../services/prerenderData";
-import { BadgeCheck, LayoutGrid, Calendar } from "lucide-react";
+import { BadgeCheck, LayoutGrid, Package, Crown, Newspaper, Menu, X } from "lucide-react";
 
 // Production base for canonical/OG (Vercel env overrides the apex default).
 const SEO_SITE = import.meta.env?.VITE_PUBLIC_SITE_URL || SITE_URL;
@@ -208,6 +209,14 @@ const ServiceCard = ({ service: s, profileSlug }) => {
           )}
           {s.meeting_mode === 'offline' ? 'In-person' : 'Online'}
         </span>
+        {s.booking_count > 0 && (
+          <span className="flex items-center gap-1.5">
+            <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: C.muted }} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18m-9 5 2 2 4-4" />
+            </svg>
+            {`Booked ${s.booking_count}×`}
+          </span>
+        )}
       </div>
 
       {/* Footer — price + Book */}
@@ -281,6 +290,117 @@ function bakedProfile(slug) {
   return { host: d.host, services: d.services || [] };
 }
 
+// ─── Feed — the host's community activity (posts + replies) ─────────────────────
+// Community reads are gated: a 404 = the `community` flag is off for this viewer,
+// shown as "coming soon". Read-only preview; each item links to its permalink.
+const ProfileFeed = ({ hostId, tc }) => {
+  const [s, setS] = useState({ status: 'loading', posts: [], comments: [] });
+  useEffect(() => {
+    let alive = true;
+    setS((p) => ({ ...p, status: 'loading' }));
+    getAuthorActivity(hostId)
+      .then((d) => alive && setS({ status: 'ready', posts: d.posts || [], comments: d.comments || [] }))
+      .catch((e) => alive && setS({ status: e?.response?.status === 404 ? 'gated' : 'error', posts: [], comments: [] }));
+    return () => { alive = false; };
+  }, [hostId]);
+
+  const Shell = ({ children }) => (
+    <div>
+      <div className="mb-5">
+        <div className="font-serif italic text-base" style={{ color: '#E0506F' }}>Creator's</div>
+        <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight" style={{ color: C.text }}>Feed</h2>
+      </div>
+      {children}
+    </div>
+  );
+  const Empty = ({ title, sub }) => (
+    <div className="rounded-2xl py-16 text-center" style={{ background: C.card, border: `1px dashed ${C.border}` }}>
+      <p className="font-semibold" style={{ color: C.text }}>{title}</p>
+      {sub && <p className="mt-1 text-sm" style={{ color: C.muted }}>{sub}</p>}
+    </div>
+  );
+
+  if (s.status === 'loading') return <Shell><div className="py-16 text-center" style={{ color: C.muted }}>Loading feed…</div></Shell>;
+  if (s.status === 'gated')   return <Shell><Empty title="Feed is coming soon" sub="Posts and replies from this creator will show up here." /></Shell>;
+  if (s.status === 'error')   return <Shell><div className="py-16 text-center" style={{ color: C.muted }}>Couldn't load the feed.</div></Shell>;
+  if (!s.posts.length && !s.comments.length) return <Shell><Empty title="No posts yet" /></Shell>;
+
+  return (
+    <Shell>
+      <div className="space-y-4">
+        {s.posts.map((p) => (
+          <Link key={p.id} to={p.url} className="block rounded-2xl p-5 hover:no-underline" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+            {p.title && <h3 className="font-display font-bold text-lg" style={{ color: C.text }}>{p.title}</h3>}
+            {p.body && <p className="text-sm mt-1.5 line-clamp-3" style={{ color: C.secondary }}>{p.body}</p>}
+            <div className="flex items-center gap-4 text-xs mt-3" style={{ color: C.muted }}>
+              <span>{p.like_count ?? 0} likes</span><span>{p.comment_count ?? 0} replies</span>
+            </div>
+          </Link>
+        ))}
+        {s.comments.map((cm) => (
+          <Link key={cm.id} to={cm.parent?.url || '#'} className="block rounded-2xl p-4 hover:no-underline" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+            <p className="text-xs font-medium mb-1" style={{ color: tc }}>
+              Replied{cm.parent?.title ? ` on “${cm.parent.title}”` : ''}
+            </p>
+            <p className="text-sm line-clamp-2" style={{ color: C.secondary }}>{cm.body}</p>
+          </Link>
+        ))}
+      </div>
+    </Shell>
+  );
+};
+
+// ─── Membership early-access — coming soon + email capture (newsletter opt-in,
+// tagged so sales can see who wants membership). ────────────────────────────────
+const MembershipModal = ({ open, onClose, tc }) => {
+  const [email, setEmail] = useState('');
+  const [state, setState] = useState('idle'); // idle | sending | done | error
+  if (!open) return null;
+  const submit = (e) => {
+    e.preventDefault();
+    if (!EMAIL_RE.test(email.trim())) { setState('error'); return; }
+    setState('sending');
+    subscribeNewsletter(email.trim(), { interest: 'membership-early-access' })
+      .then(() => setState('done'))
+      .catch(() => setState('error'));
+  };
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" style={{ background: 'rgba(43,10,20,0.45)' }}
+      onClick={onClose} role="dialog" aria-modal="true" aria-label="Membership early access">
+      <div className="w-full max-w-md rounded-3xl p-6 sm:p-7" style={{ background: C.card }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Crown className="w-5 h-5" style={{ color: tc }} />
+            <h3 className="font-display font-extrabold text-xl" style={{ color: C.text }}>Membership</h3>
+          </div>
+          <button onClick={onClose} aria-label="Close" className="p-1 rounded-full" style={{ color: C.muted }}><X className="w-5 h-5" /></button>
+        </div>
+        {state === 'done' ? (
+          <p className="mt-4 text-sm" style={{ color: C.secondary }}>You're on the list — we'll email you when membership opens.</p>
+        ) : (
+          <>
+            <p className="mt-2 text-sm" style={{ color: C.secondary }}>
+              Memberships are coming soon. Add your email to get early access.
+            </p>
+            <form onSubmit={submit} className="mt-4 flex flex-col sm:flex-row gap-2">
+              <input type="email" value={email} onChange={(e) => { setEmail(e.target.value); if (state === 'error') setState('idle'); }}
+                placeholder="you@email.com" aria-label="Email" required
+                className="flex-1 rounded-full px-4 py-2.5 text-sm outline-none"
+                style={{ border: `1px solid ${C.border}`, color: C.text }} />
+              <button type="submit" disabled={state === 'sending'}
+                className="rounded-full px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-60"
+                style={{ background: tc, color: '#fff' }}>
+                {state === 'sending' ? 'Adding…' : 'Get early access'}
+              </button>
+            </form>
+            {state === 'error' && <p className="mt-2 text-xs" style={{ color: '#B42318' }}>Enter a valid email and try again.</p>}
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 const HostProfile = () => {
   const { profileSlug } = useParams();
@@ -305,6 +425,8 @@ const HostProfile = () => {
   const [personaKey,  setPersonaKey]  = useState(null);
   const demoBase = useRef(null);
   const [filter,      setFilter]      = useState('all'); // all | service | product
+  const [navOpen,     setNavOpen]     = useState(false); // mobile profile-nav drawer
+  const [memberOpen,  setMemberOpen]  = useState(false); // membership early-access modal
   const [reviewData,  setReviewData]  = useState(() => (seed && prerendered(`/reviews/${profileSlug}`)) || { reviews: [], count: 0, avg: 0 });
   const [showReviews, setShowReviews] = useState(false);
   const [products,    setProducts]    = useState(() => (seed && prerendered(`/products/host/${profileSlug}`)) || []);
@@ -413,6 +535,13 @@ const HostProfile = () => {
   const gridServices = showServices ? (featured ? services.slice(1) : services) : [];
   const nothingShown = gridServices.length === 0 && !featured && !showProducts;
 
+  // Intro / discovery CTA — the host's first FREE active service (price 0, not
+  // on-request) is their low-friction entry offer. No schema: "free" is already a
+  // first-class service state (plan free_services cap). Null when the host has none.
+  const introService = services.find(
+    (s) => s.slug && !s.price_on_request && Number(s.price) === 0,
+  );
+
   // Admin-managed SEO → head tags + ProfilePage JSON-LD (only once host loaded).
   const seo = host ? resolveProfileSeo({ host, services, siteUrl: SEO_SITE }) : null;
   // Template FAQs are emitted as FAQPage ONLY when the host has host-specific facts
@@ -436,8 +565,19 @@ const HostProfile = () => {
 
   const goOfferings = (f) => {
     setFilter(f);
+    setNavOpen(false);
     document.getElementById('offerings')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
+
+  // Profile-nav items. Services/Products drive the in-page offering filter;
+  // Membership/Feed are placeholders until those surfaces ship. Active is derived
+  // from `filter` (never hardcoded), so it stays correct as the visitor switches.
+  const navItems = [
+    { key: 'service',    label: 'Services',   icon: LayoutGrid, active: filter === 'all' || filter === 'service', enabled: true,        onClick: () => goOfferings('service') },
+    { key: 'product',    label: 'Products',   icon: Package,    active: filter === 'product',                      enabled: hasProducts, onClick: () => goOfferings('product') },
+    { key: 'membership', label: 'Membership', icon: Crown,      active: false,                                     enabled: true,        onClick: () => { setNavOpen(false); setMemberOpen(true); } },
+    { key: 'feed',       label: 'Feed',       icon: Newspaper,  active: filter === 'feed',                         enabled: true,        onClick: () => goOfferings('feed') },
+  ];
 
   return (
     <>
@@ -459,9 +599,13 @@ const HostProfile = () => {
 
       {/* ── Host-branded navbar — host identity replaces the logo; nav links drive
           the offering filters; CTA converts visitors into hosts ── */}
-      <nav className="sticky top-0 z-40" style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(10px)', borderBottom: `1px solid ${C.border}` }}>
-        <div className="app-container flex items-center gap-4" style={{ height: 66 }}>
-          <a href="#top" className="flex items-center gap-2.5 min-w-0 flex-shrink-0">
+      <nav className="sticky top-0 z-40" style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(10px)', borderBottom: `1px solid ${C.border}` }}
+        aria-label={`${host.name} profile navigation`}>
+        <div className="app-container relative flex items-center gap-4" style={{ height: 66 }}>
+
+          {/* Left — identity → page top */}
+          <a href="#top" className="flex items-center gap-2.5 min-w-0 flex-shrink-0 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            style={{ '--tw-ring-color': tc }} aria-label={`${host.name} — top of page`}>
             <span className="flex-shrink-0 overflow-hidden flex items-center justify-center"
               style={{ width: 38, height: 38, borderRadius: '50%', background: `${tc}18`, color: tc }}>
               {host.profile_image
@@ -474,27 +618,57 @@ const HostProfile = () => {
             )}
           </a>
 
-          <div className="hidden md:flex items-center gap-1 ml-2">
-            {hasProducts && (
-              <button onClick={() => goOfferings('product')} className="text-sm font-medium px-3 py-2 rounded-full transition-colors hover:bg-[#F5ECEA]" style={{ color: C.secondary }}>Products</button>
-            )}
-            {/* Membership + Feed — placeholders, inactive until those surfaces ship. */}
-            <button type="button" disabled title="Membership — coming soon" aria-label="Membership (coming soon)"
-              className="p-2 rounded-full opacity-40 cursor-not-allowed" style={{ color: C.secondary }}>
-              <LayoutGrid className="w-[18px] h-[18px]" strokeWidth={1.8} />
-            </button>
-            <button type="button" disabled title="Feed — coming soon" aria-label="Feed (coming soon)"
-              className="p-2 rounded-full opacity-40 cursor-not-allowed" style={{ color: C.secondary }}>
-              <Calendar className="w-[18px] h-[18px]" strokeWidth={1.8} />
+          {/* Center — pill nav (desktop ≥ lg; tablet/mobile use the drawer) */}
+          <div className="hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-1 rounded-full p-1"
+            style={{ background: C.card, border: `1px solid ${C.border}` }} role="tablist" aria-label="Sections">
+            {navItems.map(({ key, label, icon: Icon, active, enabled, onClick, soon }) => (
+              <button key={key} type="button" role="tab" aria-selected={active}
+                onClick={enabled ? onClick : undefined} disabled={!enabled}
+                title={soon ? `${label} — coming soon` : label}
+                className="flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-semibold transition-colors outline-none focus-visible:ring-2"
+                style={active
+                  ? { background: `${tc}14`, color: tc, '--tw-ring-color': tc }
+                  : { color: enabled ? C.text : C.muted, opacity: enabled ? 1 : 0.5, cursor: enabled ? 'pointer' : 'not-allowed', '--tw-ring-color': tc }}>
+                <Icon className="w-[18px] h-[18px]" strokeWidth={1.9} />
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Right — CTA + mobile menu toggle */}
+          <div className="ml-auto flex items-center gap-1.5 flex-shrink-0">
+            <Link to="/become-a-host"
+              className="inline-flex items-center gap-1.5 rounded-full font-semibold text-[13.5px] transition-opacity hover:opacity-90"
+              style={{ height: 42, padding: '0 18px', background: tc, color: '#fff' }}>
+              <span className="hidden sm:inline">Start Your Page — Free</span>
+              <span className="sm:hidden">Start — Free</span>
+            </Link>
+            <button type="button" onClick={() => setNavOpen(o => !o)}
+              className="lg:hidden p-2 rounded-full transition-colors" style={{ color: C.text }}
+              aria-label="Menu" aria-expanded={navOpen} aria-controls="profile-mobile-nav">
+              {navOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
 
-          <Link to="/become-a-host"
-            className="ml-auto flex-shrink-0 inline-flex items-center gap-1.5 rounded-full font-semibold text-[13.5px] transition-opacity hover:opacity-90"
-            style={{ height: 42, padding: '0 18px', background: tc, color: '#fff' }}>
-            <span className="hidden sm:inline">Start Your Page — Free</span>
-            <span className="sm:hidden">Start — Free</span>
-          </Link>
+          {/* Mobile / tablet drawer */}
+          {navOpen && (
+            <div id="profile-mobile-nav" className="lg:hidden absolute left-0 right-0 top-full mx-3 mt-1 rounded-2xl overflow-hidden py-1"
+              style={{ background: C.card, border: `1px solid ${C.border}`, boxShadow: '0 12px 32px rgba(43,10,20,0.12)' }}>
+              {navItems.map(({ key, label, icon: Icon, active, enabled, onClick, soon }) => (
+                <button key={key} type="button" disabled={!enabled}
+                  onClick={() => { if (enabled) onClick(); }}
+                  aria-current={active ? 'true' : undefined}
+                  className="flex w-full items-center gap-3 px-4 py-3 text-sm font-semibold text-left transition-colors"
+                  style={active
+                    ? { background: `${tc}10`, color: tc }
+                    : { color: enabled ? C.text : C.muted, opacity: enabled ? 1 : 0.55, cursor: enabled ? 'pointer' : 'not-allowed' }}>
+                  <Icon className="w-[18px] h-[18px]" strokeWidth={1.9} />
+                  {label}
+                  {soon && <span className="ml-auto text-xs font-medium" style={{ color: C.muted }}>Soon</span>}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </nav>
 
@@ -570,6 +744,16 @@ const HostProfile = () => {
                   </div>
                 )}
 
+                {/* Social proof — real completed/confirmed bookings (cancelled excluded) */}
+                {host.booking_count > 0 && (
+                  <div className="flex items-center justify-center gap-1.5 mt-2 text-xs" style={{ color: C.secondary }}>
+                    <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: tc }} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                      <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18m-9 5 2 2 4-4" />
+                    </svg>
+                    <span>Booked <strong style={{ color: C.text }}>{host.booking_count}</strong> time{host.booking_count !== 1 ? 's' : ''}</span>
+                  </div>
+                )}
+
                 {/* More about — expander for bio / trust / socials / badges / location */}
                 <button onClick={() => setCardExpanded(v => !v)} aria-expanded={cardExpanded} aria-controls="host-more"
                   className="w-full mt-4 flex items-center justify-center gap-1.5 rounded-full font-semibold text-[13px] transition-colors"
@@ -627,6 +811,8 @@ const HostProfile = () => {
           {/* ── RIGHT — offerings ──────────────────────── */}
           <section className="w-full lg:flex-1 min-w-0">
 
+            {filter === 'feed' ? <ProfileFeed hostId={host.id} tc={tc} /> : (<>
+
             {/* Header + icon filters */}
             <div id="offerings" className="flex items-start gap-3 flex-wrap mb-5" style={{ scrollMarginTop: 82 }}>
               <div className="flex-1 min-w-[180px]">
@@ -658,6 +844,22 @@ const HostProfile = () => {
                 })}
               </div>
             </div>
+
+            {/* Intro CTA — soft, low-friction entry when the host offers a free service */}
+            {introService && (filter === 'all' || filter === 'service') && (
+              <Link to={`/${profileSlug}/booking/${introService.slug}`} aria-label="Start with a free intro session"
+                className="flex items-center gap-3 rounded-2xl mb-5 px-4 py-3 transition-opacity hover:opacity-90"
+                style={{ background: `${tc}0D`, border: `1px solid ${tc}33` }}>
+                <span className="flex items-center justify-center flex-shrink-0 rounded-full" style={{ width: 36, height: 36, background: tc, color: '#fff' }}>
+                  <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7z" /></svg>
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-display font-bold text-sm leading-tight truncate" style={{ color: C.text }}>New here? Start with a free intro</span>
+                  <span className="block text-xs truncate" style={{ color: C.secondary }}>{introService.title}</span>
+                </span>
+                <span className="flex-shrink-0 text-sm font-semibold rounded-full flex items-center" style={{ height: 36, padding: '0 16px', background: tc, color: '#fff' }}>Book free</span>
+              </Link>
+            )}
 
             {/* Featured hero — leads the "all" view with the host's first service */}
             {featured && (() => {
@@ -720,6 +922,8 @@ const HostProfile = () => {
                 </p>
               </div>
             )}
+
+            </>)}
 
             {/* Reviews */}
             {reviewData.count > 0 && (
@@ -795,6 +999,8 @@ const HostProfile = () => {
           </div>
         </div>
       )}
+
+      <MembershipModal open={memberOpen} onClose={() => setMemberOpen(false)} tc={tc} />
     </>
   );
 };
