@@ -14,6 +14,7 @@ vi.mock('../services/api', () => ({
   // with real-shaped bookings to exercise the calendar/counts.
   getHostBookings: vi.fn(() => Promise.resolve({ data: [] })),
   getMyServices: vi.fn(() => Promise.resolve({ data: [] })),
+  getHostNudges: vi.fn(() => Promise.resolve({ data: { snoozed: {}, commissionPaid: 0 } })),
   getNotifications: vi.fn(() => Promise.resolve({ data: { notifications: [], unreadCount: 0 } })),
   getNotificationChannel: vi.fn(() => Promise.resolve({ data: {} })),
   markAllNotificationsRead: vi.fn(() => Promise.resolve({ data: {} })),
