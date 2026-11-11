@@ -33,3 +33,30 @@ describe('DashboardKycBanner (pre-earnings KYC push)', () => {
     expect(screen.queryByText(prompt)).toBeNull();
   });
 });
+
+describe('DashboardKycBanner (money waiting)', () => {
+  const waiting = /waiting — finish KYC to withdraw/i;
+
+  it('shows "₹X waiting — finish KYC" when earned but not approved/payouts-ready', () => {
+    setup({ kyc: { status: 'not_started', pending_earnings: 2500, payouts_ready: false }, hasPaidService: true });
+    expect(screen.getByText(/₹2,500 waiting — finish KYC to withdraw/i)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Finish KYC/i })).toHaveAttribute('href', '/dashboard/kyc');
+  });
+
+  it('outranks the pre-earnings push (shows money-waiting, not "accept payments")', () => {
+    setup({ kyc: { status: 'not_started', pending_earnings: 500, payouts_ready: false }, hasPaidService: true });
+    expect(screen.getByText(waiting)).toBeInTheDocument();
+    expect(screen.queryByText(prompt)).toBeNull();
+  });
+
+  it('hides once payouts are ready (KYC done)', () => {
+    setup({ kyc: { status: 'approved', pending_earnings: 500, payouts_ready: true }, hasPaidService: true });
+    expect(screen.queryByText(waiting)).toBeNull();
+  });
+
+  it('does not show money-waiting with zero earnings', () => {
+    setup({ kyc: { status: 'not_started', pending_earnings: 0, payouts_ready: false }, hasPaidService: true });
+    expect(screen.queryByText(waiting)).toBeNull();
+    expect(screen.getByText(prompt)).toBeInTheDocument(); // falls through to the pre-earnings push
+  });
+});
