@@ -7,6 +7,8 @@ import { SpaceIcon } from '../../components/community/ItemCard';
 import FeedSkeleton from '../../components/community/CommunitySkeleton';
 import CommunityAd from '../../components/community/CommunityAd';
 import { useFeature } from '../../context/FeatureContext';
+import { useAuth } from '../../context/AuthContext';
+import ProfileDrawer from '../../components/community/ProfileDrawer';
 import '../../styles/community-v2.css';
 
 export const SITE_DESC = 'Questions, tips and updates from hosts and guests on Meeticulous, the booking platform for independent professionals.';
@@ -51,6 +53,7 @@ const communityTag = () => TAGS[new Date().getDay() % TAGS.length];
 // `active` = 'feed' or a space key. `onCompose(kind)` backs the "New post" button.
 export default function CommunityLayout({ active, onCompose, aside, children }) {
   const v2 = useFeature('community_v2');
+  const { user } = useAuth();
   const [spaces, setSpaces] = useState([]);
   // Profile drawer (grid tile + Profile tab). The panel + focus-trap land in M3;
   // M2 wires the open state and the aria-expanded semantics on both triggers.
@@ -174,6 +177,8 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
           </button>
         </nav>
       )}
+
+      {v2 && <ProfileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} user={user} />}
     </main>
   );
 }
