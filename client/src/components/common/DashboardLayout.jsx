@@ -429,7 +429,13 @@ const DashboardLayout = ({ children }) => {
 
   return (
     <RefreshProvider>
-    <div className="dash flex min-h-screen overflow-x-hidden bg-canvas">
+    {/* h-[100dvh] + overflow-hidden (NOT min-h-screen): the shell must be viewport-
+        bounded so the inner <main overflow-y-auto> is the real scroll container. With
+        min-h-screen the shell grew to content height, <main> never scrolled (the window
+        did), so main.scrollTop stayed 0 — and PullToRefresh (scrollerRef={mainRef}) read
+        that as "always at the top" and preventDefault'd every downward touch, killing
+        touch scroll on mobile. dvh tracks the mobile browser chrome. */}
+    <div className="dash flex h-[100dvh] overflow-hidden bg-canvas">
       <ConsoleSidebar open={navOpen} onClose={() => setNavOpen(false)} triggerRef={navTriggerRef} />
 
       {/* Main — offset by the fixed rail (56) + panel (220) = 276px on lg+
