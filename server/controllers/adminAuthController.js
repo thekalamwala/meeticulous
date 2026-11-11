@@ -32,6 +32,14 @@ const MIN_PASSWORD_LEN = 10;        // minimum length for a self-chosen password
 
 const normalize = (s) => (s || '').toLowerCase().trim();
 
+// Timing-equalizer for the unknown/inactive-account path (audit F-15): comparing
+// the given password against a throwaway hash (same cost as real hashes, via the
+// app's own hashPassword) makes a non-existent username take ~the same time as a
+// wrong password for a real one, closing the response-time enumeration oracle.
+// Computed once on first miss, then cached.
+let _dummyHash = null;
+const dummyHash = async () => (_dummyHash ||= await hashPassword('f15-timing-equalizer-not-a-real-password'));
+
 // Look the staff member up by username first, then email — both via parameterized
 // .eq() (never string-interpolated) so the identifier can't inject into the filter.
 const findStaff = async (identifier) => {
@@ -86,6 +94,9 @@ const adminLogin = async (req, res) => {
 
     // Generic message on lookup failure — never reveal whether the account exists.
     if (!staff || !staff.is_active) {
+      // Equalize response time with the real wrong-password path (audit F-15) so
+      // an attacker can't distinguish a valid username by latency. Result discarded.
+      try { await verifyPassword(password, await dummyHash()); } catch (_) { /* ignore */ }
       // IP-level brute-force tracker (complements the per-account lockout below):
       // catches an attacker spraying many usernames from one IP. Fire-and-forget.
       ipBlocklist.recordAdminLoginFailure(getClientIp(req)).catch(() => {});

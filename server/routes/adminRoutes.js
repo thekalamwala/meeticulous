@@ -48,7 +48,9 @@ router.get('/ops/summary',  requireAdmin('ops.view'), ops.getSummary);
 // Reuses the shared uploadImage handler; admin uploader id comes from req.admin.
 const { uploadImage } = require('../controllers/uploadController');
 const adminUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
-router.post('/upload/image', requireAdmin(), adminUpload.single('image'), uploadImage);
+// Audit F-14: gate on a content permission, not bare any-admin, so a read-only
+// role (e.g. support) can't push assets into the public images bucket.
+router.post('/upload/image', requireAdmin('cms.manage'), adminUpload.single('image'), uploadImage);
 
 // ── Users ──────────────────────────────────────────────────────
 router.get('/users',        requireAdmin('users.view'),   getUsers);
