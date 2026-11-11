@@ -215,7 +215,7 @@ const CommunitySuffix = () => {
     return () => clearInterval(t);
   }, []);
   return (
-    <span className="text-[13.2px] font-bold tracking-tight text-primary leading-none translate-y-px" aria-label="Community">
+    <span className="text-[13.2px] font-bold tracking-tight text-primary leading-none translate-y-[2px]" aria-label="Community">
       <span key={i} className="mt-wordrot inline-block">{COMMUNITY_WORDS[i]}</span>
     </span>
   );
