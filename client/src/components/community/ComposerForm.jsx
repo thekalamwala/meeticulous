@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronDown, CircleAlert, CircleHelp, Headset, ImagePlus, Megaphone, Type, X } from 'lucide-react';
+import { ChevronDown, CircleAlert, CircleHelp, Headset, Image, ImagePlus, Megaphone, MessagesSquare, Type, X } from 'lucide-react';
 import { createItem, getMe, getSpaces } from '../../services/communityApi';
+import useKeyboardInset from './useKeyboardInset';
 import { uploadImage } from '../../services/api';
 import { analytics, EVENTS } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
@@ -61,7 +62,9 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
   const [photoErr, setPhotoErr] = useState('');
   const [busy, setBusy] = useState(false);
   const [banned, setBanned] = useState(false);
+  const [audienceOpen, setAudienceOpen] = useState(false);
   const fileRef = useRef(null);
+  const kbInset = useKeyboardInset();
 
   useEffect(() => {
     let live = true;
@@ -256,6 +259,67 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
       </div>
     </form>
   );
+
+  // Full-screen mobile composer (v2): X / audience / Post header, autofocus body,
+  // and a bottom toolbar kept above the keyboard via VisualViewport (kbInset).
+  if (variant === 'fullscreen') {
+    const audienceLabel = effSpace ? (eligible.find((s) => s.key === effSpace)?.name || 'Space') : 'Everyone';
+    return (
+      <>
+        <div className="mt-composer-full" role="dialog" aria-modal="true" aria-label={thread ? 'New thread' : 'New post'}>
+          <header className="mt-composer-full__head">
+            <button type="button" onClick={onClose} aria-label="Close composer" className="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s"><X size={20} aria-hidden="true" /></button>
+            <button type="button" onClick={() => setAudienceOpen((o) => !o)} aria-haspopup="menu" aria-expanded={audienceOpen} className="mt-btn mt-btn--secondary mt-btn--s gap-1">
+              {audienceLabel}<ChevronDown size={16} aria-hidden="true" />
+            </button>
+            <button type="button" onClick={submit} disabled={!ready} className="mt-btn mt-btn--s ml-auto">{thread ? 'Post thread' : 'Post'}</button>
+          </header>
+
+          {audienceOpen && (
+            <div className="mt-composer-full__audience" role="menu" aria-label="Audience">
+              {!thread && (
+                <button type="button" role="menuitemradio" aria-checked={!effSpace} onClick={() => { setSpace(''); setAudienceOpen(false); }} className={`mt-tag ${!effSpace ? 'mt-tag--selected' : ''}`}>Everyone</button>
+              )}
+              {eligible.map((s) => (
+                <button key={s.key} type="button" role="menuitemradio" aria-checked={effSpace === s.key} onClick={() => { setSpace(s.key); setAudienceOpen(false); }} className={`mt-tag ${effSpace === s.key ? 'mt-tag--selected' : ''}`}>
+                  <SpaceIcon spaceKey={s.key} size={16} />{s.name}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {thread && (
+            <input className="mt-composer-full__title" aria-label="Title" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={LIMITS.TITLE} />
+          )}
+
+          {/* eslint-disable-next-line jsx-a11y/no-autofocus -- a composer the user tapped into to write */}
+          <textarea autoFocus aria-label="Share something with the community" placeholder="Share something with the community…" value={body} onChange={(e) => setBody(e.target.value)} className="mt-composer-full__body" />
+
+          {err && <p role="alert" className="mt-hint mt-field--error px-4 pb-2">{err}</p>}
+
+          {photos.length > 0 && (
+            <div className="mt-photostrip px-4 pb-2">
+              {photos.map((p, i) => (
+                <div key={p.id} className={`mt-thumb ${p.busy ? 'mt-thumb--busy' : ''}`}>
+                  {p.preview ? <img src={p.preview} alt={`Photo ${i + 1}`} /> : <ImagePlus size={24} aria-hidden="true" />}
+                  {p.busy && <span className="sr-only" role="status">Uploading photo {i + 1}</span>}
+                  <button type="button" className="mt-btn mt-btn--secondary" aria-label={`Remove photo ${i + 1}`} onClick={() => setPhotos((x) => x.filter((y) => y.id !== p.id))}><X size={16} aria-hidden="true" /></button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-composer-full__toolbar" style={kbInset ? { transform: `translateY(-${kbInset}px)` } : undefined}>
+            <button type="button" onClick={() => fileRef.current?.click()} aria-label="Add photo" className="mt-btn mt-btn--ghost mt-btn--s gap-2"><Image size={20} aria-hidden="true" />Photo</button>
+            <button type="button" aria-pressed={format === 'question'} onClick={() => setFormat((f) => (f === 'question' ? 'text' : 'question'))} className="mt-btn mt-btn--ghost mt-btn--s gap-2"><CircleHelp size={20} aria-hidden="true" />Ask</button>
+            <button type="button" aria-pressed={thread} onClick={() => setKind((k) => (k === 'thread' ? 'post' : 'thread'))} className="mt-btn mt-btn--ghost mt-btn--s gap-2"><MessagesSquare size={20} aria-hidden="true" />Thread</button>
+            <input ref={fileRef} type="file" accept={TYPES.join(',')} multiple hidden onChange={(e) => addFiles(e.target.files)} />
+          </div>
+        </div>
+        {termsDialog}
+      </>
+    );
+  }
 
   if (variant === 'page') {
     return (
