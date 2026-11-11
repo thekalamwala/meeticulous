@@ -51,6 +51,17 @@ const resolvePermissions = async (roleKey) => {
 // Build the full admin session response object — used by verify2fa and confirm2fa.
 const fullSession = async (staff) => {
   const permissions = await resolvePermissions(staff.role_key);
+  // Stamp the current token_version (audit F-02) so the middleware can revoke this
+  // session once it's bumped (deactivate/demote/reset). Read it if the caller's
+  // staff row didn't carry it; default 0 (pre-migration → middleware fails open).
+  let tv = Number(staff.token_version);
+  if (!Number.isFinite(tv)) {
+    try {
+      const { data } = await supabaseAdmin
+        .from('admin_users').select('token_version').eq('id', staff.id).maybeSingle();
+      tv = Number(data?.token_version) || 0;
+    } catch (_) { tv = 0; }
+  }
   const token = jwtSign({
     type: 'admin',
     sub: staff.id,
@@ -59,6 +70,7 @@ const fullSession = async (staff) => {
     name: staff.name,
     role: staff.role_key,
     permissions,
+    tv,
   });
   return {
     token,

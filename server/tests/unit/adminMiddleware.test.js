@@ -49,23 +49,23 @@ describe('requireAdmin', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  test('next() + req.admin populated when permission is granted', () => {
+  test('next() + req.admin populated when permission is granted', async () => {
     const req = reqWith(adminToken(['users.view', 'users.delete'])); const res = mockRes(); const next = jest.fn();
-    requireAdmin('users.delete')(req, res, next);
+    await requireAdmin('users.delete')(req, res, next);
     expect(next).toHaveBeenCalled();
     expect(req.admin).toMatchObject({ id: 'a1', role: 'operations' });
     expect(req.admin.permissions).toContain('users.delete');
   });
 
-  test('wildcard permission satisfies any required permission', () => {
+  test('wildcard permission satisfies any required permission', async () => {
     const res = mockRes(); const next = jest.fn();
-    requireAdmin('users.delete')(reqWith(adminToken(['*'], 'super')), res, next);
+    await requireAdmin('users.delete')(reqWith(adminToken(['*'], 'super')), res, next);
     expect(next).toHaveBeenCalled();
   });
 
-  test('no-arg requireAdmin() just needs a valid admin session', () => {
+  test('no-arg requireAdmin() just needs a valid admin session', async () => {
     const res = mockRes(); const next = jest.fn();
-    requireAdmin()(reqWith(adminToken(['ops.view'])), res, next);
+    await requireAdmin()(reqWith(adminToken(['ops.view'])), res, next);
     expect(next).toHaveBeenCalled();
   });
 });
@@ -78,9 +78,9 @@ describe('requireSuperAdmin', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  test('next() for a super admin (wildcard)', () => {
+  test('next() for a super admin (wildcard)', async () => {
     const res = mockRes(); const next = jest.fn();
-    requireSuperAdmin(reqWith(adminToken(['*'], 'super')), res, next);
+    await requireSuperAdmin(reqWith(adminToken(['*'], 'super')), res, next);
     expect(next).toHaveBeenCalled();
   });
 });
