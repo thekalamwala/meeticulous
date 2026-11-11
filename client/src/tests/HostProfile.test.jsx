@@ -118,7 +118,8 @@ describe('HostProfile — services listing', () => {
     renderProfile();
     await waitFor(() => {
       expect(screen.getByText('Consultation')).toBeTruthy();
-      expect(screen.getByText('Workshop')).toBeTruthy();
+      // Workshop is the free service, so it also appears as the intro-CTA subtitle.
+      expect(screen.getAllByText('Workshop').length).toBeGreaterThan(0);
     });
   });
 
@@ -215,5 +216,51 @@ describe('HostProfile — theme color applied', () => {
     bookBtns.forEach((btn) => {
       expect(btn.style.background).toContain('--profile-accent');
     });
+  });
+});
+
+// ── Social proof (booking counts) ─────────────────────────────────────────────
+
+describe('HostProfile — booking social proof', () => {
+  test('shows host "Booked N times" when host.booking_count > 0', async () => {
+    getHostProfile.mockResolvedValue({ data: { host: { ...HOST, booking_count: 212 }, services: SERVICES, availability: null } });
+    renderProfile();
+    await waitFor(() => expect(screen.getByText('212')).toBeTruthy());
+  });
+
+  test('hides the host count when booking_count is 0 / absent', async () => {
+    getHostProfile.mockResolvedValue({ data: { host: HOST, services: SERVICES, availability: null } });
+    renderProfile();
+    await waitFor(() => screen.getAllByText('Jane Vendor'));
+    expect(screen.queryByText(/booked \d+ time/i)).toBeNull();
+  });
+
+  test('shows per-service "Booked N×" when a service has a count', async () => {
+    // Count on SERVICES[1] — SERVICES[0] leads as the featured hero (no count row there).
+    const services = [SERVICES[0], { ...SERVICES[1], booking_count: 34 }];
+    getHostProfile.mockResolvedValue({ data: { host: HOST, services, availability: null } });
+    renderProfile();
+    await waitFor(() => expect(screen.getByText(/Booked 34×/)).toBeTruthy());
+  });
+});
+
+// ── Free intro CTA ────────────────────────────────────────────────────────────
+
+describe('HostProfile — free intro CTA', () => {
+  test('renders the intro banner linking to the free service', async () => {
+    // SERVICES[1] (Workshop) is price 0 → the intro offer.
+    getHostProfile.mockResolvedValue({ data: { host: HOST, services: SERVICES, availability: null } });
+    renderProfile();
+    await waitFor(() => expect(screen.getByText(/start with a free intro/i)).toBeTruthy());
+    const cta = screen.getByRole('link', { name: /free intro/i });
+    expect(cta.getAttribute('href')).toBe('/jane-vendor/booking/workshop');
+  });
+
+  test('no intro banner when the host has no free service', async () => {
+    const paidOnly = [SERVICES[0], { ...SERVICES[1], price: 300 }];
+    getHostProfile.mockResolvedValue({ data: { host: HOST, services: paidOnly, availability: null } });
+    renderProfile();
+    await waitFor(() => screen.getByText('Workshop'));
+    expect(screen.queryByText(/start with a free intro/i)).toBeNull();
   });
 });

@@ -209,6 +209,14 @@ const ServiceCard = ({ service: s, profileSlug }) => {
           )}
           {s.meeting_mode === 'offline' ? 'In-person' : 'Online'}
         </span>
+        {s.booking_count > 0 && (
+          <span className="flex items-center gap-1.5">
+            <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: C.muted }} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18m-9 5 2 2 4-4" />
+            </svg>
+            {`Booked ${s.booking_count}×`}
+          </span>
+        )}
       </div>
 
       {/* Footer — price + Book */}
@@ -527,6 +535,13 @@ const HostProfile = () => {
   const gridServices = showServices ? (featured ? services.slice(1) : services) : [];
   const nothingShown = gridServices.length === 0 && !featured && !showProducts;
 
+  // Intro / discovery CTA — the host's first FREE active service (price 0, not
+  // on-request) is their low-friction entry offer. No schema: "free" is already a
+  // first-class service state (plan free_services cap). Null when the host has none.
+  const introService = services.find(
+    (s) => s.slug && !s.price_on_request && Number(s.price) === 0,
+  );
+
   // Admin-managed SEO → head tags + ProfilePage JSON-LD (only once host loaded).
   const seo = host ? resolveProfileSeo({ host, services, siteUrl: SEO_SITE }) : null;
   // Template FAQs are emitted as FAQPage ONLY when the host has host-specific facts
@@ -729,6 +744,16 @@ const HostProfile = () => {
                   </div>
                 )}
 
+                {/* Social proof — real completed/confirmed bookings (cancelled excluded) */}
+                {host.booking_count > 0 && (
+                  <div className="flex items-center justify-center gap-1.5 mt-2 text-xs" style={{ color: C.secondary }}>
+                    <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: tc }} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                      <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18m-9 5 2 2 4-4" />
+                    </svg>
+                    <span>Booked <strong style={{ color: C.text }}>{host.booking_count}</strong> time{host.booking_count !== 1 ? 's' : ''}</span>
+                  </div>
+                )}
+
                 {/* More about — expander for bio / trust / socials / badges / location */}
                 <button onClick={() => setCardExpanded(v => !v)} aria-expanded={cardExpanded} aria-controls="host-more"
                   className="w-full mt-4 flex items-center justify-center gap-1.5 rounded-full font-semibold text-[13px] transition-colors"
@@ -819,6 +844,22 @@ const HostProfile = () => {
                 })}
               </div>
             </div>
+
+            {/* Intro CTA — soft, low-friction entry when the host offers a free service */}
+            {introService && (filter === 'all' || filter === 'service') && (
+              <Link to={`/${profileSlug}/booking/${introService.slug}`} aria-label="Start with a free intro session"
+                className="flex items-center gap-3 rounded-2xl mb-5 px-4 py-3 transition-opacity hover:opacity-90"
+                style={{ background: `${tc}0D`, border: `1px solid ${tc}33` }}>
+                <span className="flex items-center justify-center flex-shrink-0 rounded-full" style={{ width: 36, height: 36, background: tc, color: '#fff' }}>
+                  <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7z" /></svg>
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-display font-bold text-sm leading-tight truncate" style={{ color: C.text }}>New here? Start with a free intro</span>
+                  <span className="block text-xs truncate" style={{ color: C.secondary }}>{introService.title}</span>
+                </span>
+                <span className="flex-shrink-0 text-sm font-semibold rounded-full flex items-center" style={{ height: 36, padding: '0 16px', background: tc, color: '#fff' }}>Book free</span>
+              </Link>
+            )}
 
             {/* Featured hero — leads the "all" view with the host's first service */}
             {featured && (() => {
