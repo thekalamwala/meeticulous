@@ -160,3 +160,30 @@
   background: #fff;
 }
 .mt-composer-full__toolbar [aria-pressed="true"] { color: var(--mt-maroon); }
+
+/* ── @mention typeahead (M5) — shared by composer + comment replies ── */
+.mt-mention-list {
+  position: absolute;
+  z-index: 80;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  max-height: 15rem;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid var(--border-1);
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(43, 10, 20, 0.14);
+}
+.mt-mention-opt {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.mt-mention-opt.is-active,
+.mt-mention-opt:hover { background: var(--bg-blush); }

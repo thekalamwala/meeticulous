@@ -588,8 +588,18 @@ const authorActivity = handleRead(async (req, res) => {
   return res.json({ posts, comments: withParent });
 }, { posts: [], comments: [] });
 
+// GET /mention-suggest?q= — taggable members for the composer/comment @mention
+// typeahead (hosts + team + community members). Private, no-store. The list is
+// the only insert path the client offers, so a non-member can't be surfaced.
+const mentionSuggest = handle(async (req, res) => {
+  const q = String(req.query.q || '').slice(0, 40);
+  const members = await store.searchMentionable(q);
+  res.set('Cache-Control', 'private, no-store');
+  return res.json({ members });
+});
+
 module.exports = {
-  listSpaces, feed, spaceThreads, itemDetail, itemComments, me, authorActivity,
+  listSpaces, feed, spaceThreads, itemDetail, itemComments, me, authorActivity, mentionSuggest,
   acceptTerms, createItem, updateItem, deleteItem, createComment, updateComment, deleteComment,
   acceptAnswer, addReaction, removeReaction, createReport,
   createSave, removeSave, createBlock, removeBlock,
