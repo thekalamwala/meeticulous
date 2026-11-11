@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Mail, MapPin, MessageCircle } from 'lucide-react';
 import TipWidget from './TipWidget';
 
-// Hand-built public profile for a community contributor (Tithi, founder, …).
-// Presentational: all copy comes in via `data`. Loop & Slot tokens only.
+// Public profile for a community contributor (Tithi, the founder, …). Presentational:
+// all copy comes in via `data`. Loop & Slot tokens only. Layout: a 65/35 hero —
+// profile panel left, the UPI tip jar right — then tabs + feed below.
 
 const TABS = [
   { key: 'posts', label: 'Posts' },
@@ -10,12 +13,22 @@ const TABS = [
   { key: 'links', label: 'Links' },
 ];
 
+// Scalloped verified seal (same mark as the community IdentityBadge).
+function Seal({ size = 22 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-label="Verified" className="shrink-0">
+      <path fill="#960D32" d="M21 12c0 1.27-.63 2.39-1.59 3.07a3.75 3.75 0 0 1-1.04 3.3 3.75 3.75 0 0 1-3.3 1.04A3.75 3.75 0 0 1 12 21c-1.27 0-2.39-.63-3.07-1.59a3.75 3.75 0 0 1-3.3-1.04 3.75 3.75 0 0 1-1.04-3.3A3.75 3.75 0 0 1 3 12c0-1.27.63-2.39 1.59-3.07a3.75 3.75 0 0 1 1.04-3.3 3.75 3.75 0 0 1 3.3-1.04A3.75 3.75 0 0 1 12 3c1.27 0 2.39.63 3.07 1.59a3.75 3.75 0 0 1 3.3 1.04 3.75 3.75 0 0 1 1.04 3.3A3.75 3.75 0 0 1 21 12z" />
+      <path d="M8.5 12.5l2.25 2.25L15.5 10" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function Avatar({ avatar, name }) {
   if (avatar?.src) {
-    return <img src={avatar.src} alt={name} className="h-24 w-24 rounded-full border-4 border-cream object-cover sm:h-28 sm:w-28" />;
+    return <img src={avatar.src} alt={name} className="h-24 w-24 rounded-[26px] border-[5px] border-white object-cover shadow-sm" />;
   }
   return (
-    <span className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-maroon font-display text-4xl text-cream sm:h-28 sm:w-28">
+    <span className="grid h-24 w-24 shrink-0 place-items-center rounded-[26px] border-[5px] border-white bg-gradient-to-br from-pink via-pink to-rose font-display text-4xl font-extrabold text-[#5c0620] shadow-sm">
       {avatar?.initial || name.charAt(0)}
     </span>
   );
@@ -23,17 +36,12 @@ function Avatar({ avatar, name }) {
 
 function PostCard({ post }) {
   return (
-    <article className="mt-slot gap-3 border-2 border-ink/10 bg-white p-5">
-      {post.banner && (
-        <div className="flex items-center justify-between gap-3 rounded-xl bg-blush px-4 py-2 text-sm text-maroon">
-          <span>🎥 {post.banner}</span>
-        </div>
-      )}
+    <article className="flex flex-col gap-3 rounded-2xl border-2 border-ink/10 bg-white p-5">
       <div className="flex items-start justify-between gap-3">
         <span className="text-xs font-bold uppercase tracking-wide text-maroon">{post.category}</span>
         {post.time && <span className="text-xs text-ink/50">{post.time}</span>}
       </div>
-      <h3 className="font-display text-lg text-ink">{post.title}</h3>
+      <h3 className="font-display text-lg font-extrabold leading-tight text-ink">{post.title}</h3>
       {post.excerpt && <p className="text-sm leading-relaxed text-ink/70">{post.excerpt}</p>}
       {(post.replies != null || post.likes != null) && (
         <div className="flex gap-4 text-sm text-ink/60">
@@ -51,49 +59,98 @@ export default function ContributorProfile({ data }) {
 
   return (
     <main className="min-h-screen bg-cream text-ink">
-      <div className="mx-auto grid max-w-5xl gap-8 px-5 py-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:py-16">
+      <div className="mx-auto max-w-6xl px-5 py-10 lg:py-14">
 
-        {/* LEFT: profile + tabs + feed */}
-        <div className="min-w-0">
-          <section className="rounded-3xl bg-blush p-7 sm:p-9">
-            <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center">
-              <Avatar avatar={data.avatar} name={data.name} />
-              <div className="min-w-0">
-                <h1 className="font-display text-3xl leading-tight text-maroon sm:text-4xl">{data.name}</h1>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                  {data.title && <span className="rounded-full bg-maroon px-3 py-1 text-sm font-medium text-cream">{data.title}</span>}
-                  {data.handle && <span className="rounded-full bg-cream px-3 py-1 text-sm font-medium text-ink">{data.handle}</span>}
-                </div>
-              </div>
+        {/* ---- Hero: 65 / 35 ---- */}
+        <div className="grid gap-6 lg:grid-cols-[65fr_35fr] lg:items-stretch lg:min-h-[78vh]">
+
+          {/* LEFT — profile */}
+          <section className="flex min-w-0 flex-col overflow-hidden rounded-3xl border-2 border-ink/10 bg-white">
+            <div className="relative h-32 bg-gradient-to-br from-blush via-cream to-[#FFF3E3]">
+              <svg viewBox="0 0 600 128" preserveAspectRatio="none" aria-hidden="true" className="absolute inset-0 h-full w-full opacity-50">
+                <path d="M-10 92 C 120 36, 220 36, 340 84 S 520 120, 610 56" fill="none" stroke="#E0506F" strokeWidth="2.5" opacity=".55" />
+                <path d="M-10 72 C 150 120, 300 104, 440 64 S 560 28, 610 86" fill="none" stroke="#FF9FB0" strokeWidth="2" opacity=".45" />
+              </svg>
+              {data.script && (
+                <p className="absolute left-6 top-1/2 -translate-y-1/2 font-serif text-3xl italic leading-none text-maroon sm:text-4xl">
+                  {data.script}
+                </p>
+              )}
+              {data.houseLabel && (
+                <span className="absolute right-4 top-4 inline-flex items-center gap-2 rounded-full border border-ink/10 bg-white/90 px-3 py-1 text-xs font-semibold text-ink">
+                  <span className="h-2 w-2 rounded-full bg-marigold" aria-hidden="true" />{data.houseLabel}
+                </span>
+              )}
             </div>
 
-            {data.script && <p className="mt-6 font-serif text-2xl italic text-rose">{data.script}</p>}
-            {data.bio && <p className="mt-4 max-w-xl text-base leading-relaxed text-ink/80">{data.bio}</p>}
+            <div className="flex flex-1 flex-col gap-4 px-6 pb-6">
+              <div className="-mt-12"><Avatar avatar={data.avatar} name={data.name} /></div>
 
-            {data.stats?.length > 0 && (
-              <dl className="mt-6 flex flex-wrap gap-8">
-                {data.stats.map((s) => (
-                  <div key={s.label}>
-                    <dd className="font-display text-xl text-ink">{s.value}</dd>
-                    <dt className="text-xs uppercase tracking-wide text-ink/50">{s.label}</dt>
-                  </div>
-                ))}
-              </dl>
-            )}
+              <div className="flex flex-col gap-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="font-display text-3xl font-extrabold leading-tight tracking-tight text-maroon">{data.name}</h1>
+                  {data.verified && <Seal />}
+                </div>
+                <div className="flex flex-wrap items-center gap-2 text-sm">
+                  {data.title && <span className="font-medium text-ink"><strong className="font-semibold">{data.title}</strong>{data.org ? ` · ${data.org}` : ''}</span>}
+                </div>
+                <div className="mt-1 flex flex-wrap gap-2">
+                  {data.handle && <span className="rounded-full bg-cream px-3 py-1 text-xs font-medium text-ink">{data.handle}</span>}
+                  {data.location && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-ink/10 bg-white px-3 py-1 text-xs font-medium text-ink">
+                      <MapPin size={13} className="text-ink/50" aria-hidden="true" />{data.location}
+                    </span>
+                  )}
+                </div>
+              </div>
 
-            {data.badges?.length > 0 && (
-              <ul className="mt-6 flex flex-wrap gap-2">
-                {data.badges.map((b) => (
-                  <li key={b.label} className="flex items-center gap-1 rounded-full bg-cream px-3 py-1 text-sm font-semibold text-ink">
-                    <span aria-hidden="true">{b.emoji}</span> {b.label}
-                  </li>
-                ))}
-              </ul>
-            )}
+              {data.bio && <p className="max-w-prose text-sm leading-relaxed text-ink/80">{data.bio}</p>}
+
+              <div className="flex flex-wrap gap-2.5">
+                {data.email && (
+                  <a href={`mailto:${data.email}`} className="mt-btn gap-2 no-underline">
+                    <Mail size={16} aria-hidden="true" />Message
+                  </a>
+                )}
+                <a href="/community" className="mt-btn mt-btn--secondary gap-2 no-underline">
+                  <MessageCircle size={16} aria-hidden="true" />Say hi in the Circle
+                </a>
+              </div>
+
+              {data.badges?.length > 0 && (
+                <ul className="flex flex-wrap gap-2">
+                  {data.badges.map((b) => (
+                    <li key={b.label} className="inline-flex items-center gap-1.5 rounded-full bg-cream px-3 py-1.5 text-sm font-semibold text-ink">
+                      <span aria-hidden="true">{b.emoji}</span>{b.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {data.stats?.length > 0 && (
+                <dl className="mt-auto grid grid-cols-2 gap-2.5 pt-2 sm:grid-cols-3">
+                  {data.stats.map((s) => (
+                    <div key={s.label} className="rounded-[20px] border border-ink/10 bg-cream px-4 py-3">
+                      <dd className="font-display text-xl font-extrabold leading-none text-ink">{s.value}</dd>
+                      <dt className="mt-1 text-[11px] font-semibold uppercase tracking-wide text-ink/50">{s.label}</dt>
+                    </div>
+                  ))}
+                </dl>
+              )}
+            </div>
           </section>
 
-          {/* Tabs */}
-          <div role="tablist" aria-label="Profile sections" className="mt-8 flex gap-1 border-b-2 border-ink/10">
+          {/* RIGHT — UPI tip jar (existing QR system) */}
+          <aside className="min-w-0">
+            <div className="lg:sticky lg:top-24">
+              <TipWidget vpa={data.tip.vpa} payeeName={data.tip.payeeName} note={data.tip.note} heading={data.tip.heading} />
+            </div>
+          </aside>
+        </div>
+
+        {/* ---- Tabs + feed ---- */}
+        <div className="mt-10 max-w-2xl">
+          <div role="tablist" aria-label="Profile sections" className="flex gap-6 border-b-2 border-ink/10">
             {TABS.map((t) => {
               const on = tab === t.key;
               return (
@@ -103,7 +160,7 @@ export default function ContributorProfile({ data }) {
                   type="button"
                   aria-selected={on}
                   onClick={() => setTab(t.key)}
-                  className={`-mb-0.5 border-b-2 px-4 py-3 text-sm font-semibold transition-colors ${
+                  className={`-mb-0.5 border-b-[3px] px-1 py-3 text-sm font-semibold transition-colors ${
                     on ? 'border-maroon text-maroon' : 'border-transparent text-ink/50 hover:text-ink'}`}
                 >
                   {t.label}
@@ -112,24 +169,26 @@ export default function ContributorProfile({ data }) {
             })}
           </div>
 
-          <div role="tabpanel" className="mt-6 flex flex-col gap-4">
+          <div role="tabpanel" className="mt-5 flex flex-col gap-4">
             {tab === 'posts' && (
-              (data.posts?.length
+              data.posts?.length
                 ? data.posts.map((p, i) => <PostCard key={i} post={p} />)
-                : <p className="text-sm text-ink/60">Nothing posted yet.</p>)
+                : <p className="text-sm text-ink/60">Nothing posted yet.</p>
             )}
             {tab === 'about' && (
-              <div className="mt-card gap-3">
+              <div className="flex flex-col gap-3 rounded-2xl border-2 border-ink/10 bg-white p-5">
                 {(data.about || []).map((para, i) => (
                   <p key={i} className="text-sm leading-relaxed text-ink/80">{para}</p>
                 ))}
               </div>
             )}
             {tab === 'links' && (
-              <ul className="mt-card gap-2">
+              <ul className="flex flex-col gap-2 rounded-2xl border-2 border-ink/10 bg-white p-5">
                 {(data.links || []).map((l) => (
                   <li key={l.href}>
-                    <a href={l.href} target="_blank" rel="noopener noreferrer" className="text-maroon underline">{l.label}</a>
+                    {l.href.startsWith('/')
+                      ? <Link to={l.href} className="font-medium text-maroon">{l.label}</Link>
+                      : <a href={l.href} target="_blank" rel="noopener noreferrer" className="font-medium text-maroon underline">{l.label}</a>}
                   </li>
                 ))}
                 {!data.links?.length && <li className="text-sm text-ink/60">No links yet.</li>}
@@ -137,17 +196,6 @@ export default function ContributorProfile({ data }) {
             )}
           </div>
         </div>
-
-        {/* RIGHT: tip jar (stacks under on mobile) */}
-        <aside className="lg:sticky lg:top-24 lg:self-start">
-          <TipWidget
-            vpa={data.tip.vpa}
-            payeeName={data.tip.payeeName}
-            note={data.tip.note}
-            heading={data.tip.heading}
-          />
-        </aside>
-
       </div>
     </main>
   );
