@@ -51,7 +51,7 @@ export default function IdentityBadge({ author }) {
         className="inline-flex items-center gap-0.5 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-maroon/40"
       >
         <Seal color={color} />
-        {isStaff && <img src="/brand/meeticulous-icon.svg" alt="" width="13" height="13" className="h-[13px] w-[13px]" loading="lazy" onError={(e) => e.currentTarget.remove()} />}
+        {isStaff && <img src="/brand/ee-rounded-primary.svg" alt="" width="14" height="14" className="h-[14px] w-[14px] rounded-[3px]" loading="lazy" onError={(e) => e.currentTarget.remove()} />}
       </button>
 
       {open && (
