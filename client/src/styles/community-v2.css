@@ -187,3 +187,7 @@
 }
 .mt-mention-opt.is-active,
 .mt-mention-opt:hover { background: var(--bg-blush); }
+.mt-mention-opt { min-height: 44px; }
+
+/* Accessible tap targets (>=44px) for the full-screen composer toolbar. */
+.mt-composer-full__toolbar .mt-btn { min-height: 44px; }

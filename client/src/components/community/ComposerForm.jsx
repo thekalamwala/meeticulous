@@ -68,7 +68,21 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
   const [audienceOpen, setAudienceOpen] = useState(false);
   const fileRef = useRef(null);
   const bodyRef = useRef(null);
+  const fullRef = useRef(null);
   const kbInset = useKeyboardInset();
+
+  // Esc closes the full-screen composer; Tab stays within it. (Esc inside an open
+  // mention list is swallowed there, so it closes the list first, not the sheet.)
+  const onFullKey = (e) => {
+    if (e.key === 'Escape') { onClose?.(); return; }
+    if (e.key !== 'Tab' || !fullRef.current) return;
+    const f = [...fullRef.current.querySelectorAll('a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled])')];
+    if (!f.length) return;
+    const first = f[0];
+    const last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  };
   const mention = useMentionSuggest({ value: body, setValue: setBody, inputRef: bodyRef });
   // v2 gets the @mention typeahead; v1 keeps plain-text input unchanged.
   const bodyProps = v2
@@ -276,7 +290,7 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
     const audienceLabel = effSpace ? (eligible.find((s) => s.key === effSpace)?.name || 'Space') : 'Everyone';
     return (
       <>
-        <div className="mt-composer-full" role="dialog" aria-modal="true" aria-label={thread ? 'New thread' : 'New post'}>
+        <div ref={fullRef} className="mt-composer-full" role="dialog" aria-modal="true" aria-label={thread ? 'New thread' : 'New post'} onKeyDown={onFullKey}>
           <header className="mt-composer-full__head">
             <button type="button" onClick={onClose} aria-label="Close composer" className="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s"><X size={20} aria-hidden="true" /></button>
             <button type="button" onClick={() => setAudienceOpen((o) => !o)} aria-haspopup="menu" aria-expanded={audienceOpen} className="mt-btn mt-btn--secondary mt-btn--s gap-1">
