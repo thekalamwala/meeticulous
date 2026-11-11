@@ -63,7 +63,11 @@ if [ "$RUN_CLIENT" = 1 ]; then
     # Only the tests whose import graph touches your changed source — seconds, not
     # the full 1200-test suite (that stays on CI, the gate before merge→deploy).
     # --passWithNoTests: a changed file with no test that imports it isn't a failure.
-    SRC_FILES=$(echo "$CLIENT_FILES" | grep -E '\.(jsx?|tsx?|css)$')
+    # `|| true`: grep exits 1 when NO client source file changed (e.g. a push that
+    # only touches client/vercel.json or an asset). Under `set -e` that non-zero from
+    # the command substitution aborted the hook with no output and blocked an
+    # otherwise test-free push. Tolerate the empty match and fall through to skip.
+    SRC_FILES=$(echo "$CLIENT_FILES" | grep -E '\.(jsx?|tsx?|css)$' || true)
     if [ -n "$SRC_FILES" ]; then
       echo "pre-push: running CLIENT tests related to your changes (vitest related)…"
       ( cd client && npx vitest related --run --passWithNoTests $SRC_FILES )
