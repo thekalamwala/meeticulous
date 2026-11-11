@@ -101,6 +101,12 @@ const PRERENDER_ROUTES = [
   '/compare/acuity-alternative',
   '/compare/simplybook-alternative',
   '/compare/zoho-bookings-alternative',
+  // Pure-AEO glossary (index + 30 term pages) — high citability, cheap to bake.
+  // Kept HERE, ahead of the long /for/* + marketing/help/changelog tail, so the
+  // time budget never drops it to the SPA shell (audit 2026-11-11 W2: all 31 URLs
+  // shipped the 5.5 KB shell when glossary sat after the /for list).
+  '/glossary',
+  ...GLOSSARY_SLUGS.map((s) => `/glossary/${s}`),
   '/for/astrologers',
   '/for/architects',
   '/for/dentists',
@@ -138,8 +144,6 @@ const PRERENDER_ROUTES = [
   '/for/events',
   '/for/agencies',
   ...FEATURES.map((f) => `/features/${f.slug}`),
-  '/glossary',
-  ...GLOSSARY_SLUGS.map((s) => `/glossary/${s}`),
   '/about',
   '/enterprise',
   // Marketing/event pages with bespoke OG cards — prerender so social scrapers

@@ -68,7 +68,7 @@ const GLOSSARY_SLUGS = [
   'payout', 'commission', 'platform-fee', 'google-calendar-sync', 'round-robin',
   'intake-form', 'digital-product', 'meeting-link',
   'placeholder-meeting', 'recurring-meeting', 'soft-booking', 'direct-booking', 'preferred-time',
-  'availability-24-7',
+  'availability-24-7', 'time-slot',
 ];
 
 // Open roles (/careers/:jobSlug). KEEP IN SYNC with

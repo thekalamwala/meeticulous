@@ -389,6 +389,19 @@ export const GLOSSARY = [
     example: 'A Bengaluru IT professional books a ₹999 Saturday career-guidance call at 1 am after a late shift, pays by UPI and has the confirmation before the coach wakes up.',
     related: ['booking-page', 'availability', 'advance-payment'],
   },
+  {
+    slug: 'time-slot',
+    term: 'Time slot',
+    short: 'A single bookable block of time on your schedule, like 11:00–11:30.',
+    def: 'A time slot is one bookable block on your calendar — a specific start time and length a client can reserve, such as 11:00–11:30 am. Your booking page builds slots from your working hours and the duration of each service, and shows only the ones you are actually free. A client picks a slot, pays, and that block is held for them alone.',
+    details: [
+      'A time slot is the unit a booking is made of. Set a service to 30 minutes and open 10 am to 1 pm, and the page offers 10:00, 10:30, 11:00 and so on — each a slot a client can take. Once one is booked it disappears for everyone else, so two people cannot land on the same 11 am.',
+      'Slots matter because they turn vague availability into clear choices. "Are you free this week?" becomes a short list of real times the client taps once. The length of a slot also protects your day: a 45-minute consultation with a 15-minute buffer means the next client cannot start until you have had time to write notes and breathe.',
+      'Keep slot lengths honest to how long the work really takes, add a buffer so back-to-back bookings do not run into each other, and connect your calendar so a slot you are personally busy in never shows. On Meeticulous each service carries its own duration and buffer, so the page generates the right slots for you and hides the rest automatically.',
+    ],
+    example: 'A Chennai dietician sets 30-minute slots with a 10-minute buffer from 5 pm to 8 pm; a client opens the page, sees 5:00, 5:40 and 6:20 free, picks 5:40, pays by UPI and the slot is held.',
+    related: ['availability', 'buffer-time', 'double-booking'],
+  },
 ];
 
 export const glossaryBySlug = (slug) => GLOSSARY.find((g) => g.slug === slug) || null;
