@@ -77,7 +77,7 @@ export default function useMentionSuggest({ value, setValue, inputRef }) {
     if (e.key === 'ArrowDown') { e.preventDefault(); setActive((i) => (i + 1) % items.length); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); setActive((i) => (i - 1 + items.length) % items.length); }
     else if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); insert(items[active]); }
-    else if (e.key === 'Escape') { e.preventDefault(); setOpen(false); setQuery(null); }
+    else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); setOpen(false); setQuery(null); }
   };
 
   const aria = {
