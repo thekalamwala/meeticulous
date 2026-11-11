@@ -189,6 +189,16 @@ describe('computeBreakdown — marketplace v4 worked examples (₹1000 listing)'
     expect(b.platformRevenue).toBe(10);         // platform fee only
   });
 
+  test('no-PAN host (§206AA) → TDS withheld at 5%, payout ₹869.76', () => {
+    // paid_booking_without_pan ON: a host with no PAN takes a paid booking; TDS is 5%
+    // (50) instead of 1% (10), so the host's provisional payout drops by the extra 40.
+    const b = computeBreakdown({ servicePrice: 1000, commissionPercentage: 5, razorpayFee: PG, tdsRate: 0.05 });
+    expect(b.tds).toBe(50);                      // 5% of 1000
+    expect(b.tcs).toBe(10);                      // unchanged
+    expect(b.customerTotal).toBe(1011.8);        // guest total unchanged — TDS is host-borne
+    expect(b.vendorPayout).toBe(869.76);         // 1000 − 50 − 20.24 − 50 − 10
+  });
+
   test('razorpay fee unknown at booking time → payout excludes PG (finalised at capture)', () => {
     const b = computeBreakdown({ servicePrice: 1000, commissionPercentage: 5 });
     expect(b.razorpayFee).toBe(0);

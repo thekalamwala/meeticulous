@@ -71,6 +71,10 @@ const REGISTRY = [
   { key: 'host_linkedin_login',  label: 'LinkedIn host login',  category: 'Auth',     scope: 'both',     enabled: false, description: 'Hosts can sign up and log in with LinkedIn on the host door. Off = LinkedIn button hidden and POST /api/auth/linkedin/host returns 503.' },
   { key: 'razorpay_payment',     label: 'Razorpay Payment',     category: 'Payments', scope: 'customer', description: 'Paid checkout via Razorpay. Off = paid bookings/purchases blocked.' },
   { key: 'product_purchase',     label: 'Product Purchase',     category: 'Payments', scope: 'customer', description: 'Buy digital products. Off = product checkout blocked.' },
+  // Opt-in (ships OFF — seeded disabled in v3.203, and `enabled: false` here so the
+  // registry upsert creates it OFF even before the migration runs). PENDING TDS/CA
+  // sign-off before it is flipped on.
+  { key: 'paid_booking_without_pan', label: 'Paid Booking Without PAN', category: 'Payments', scope: 'vendor', enabled: false, description: 'Let a host take a PAID booking before KYC. Off = paid bookings blocked until the host has PAN on file (legacy). On = booking is accepted, money is collected and HELD (payout still needs approved KYC), and TDS is withheld at the no-PAN 5% rate (§206AA) instead of 1%.' },
   { key: 'review_submission',    label: 'Review Submission',    category: 'Engagement', scope: 'both', description: 'Guests and hosts review each other after a completed booking. Off = all new reviews blocked (both directions).' },
   { key: 'customer_bookings',    label: 'Customer Booking History', category: 'Engagement', scope: 'customer', description: 'Guest "my bookings" dashboard. Off = page hidden.' },
 
