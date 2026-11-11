@@ -1,15 +1,21 @@
-import { Link, Navigate, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import Seo from '../../components/common/Seo';
 import { useAuth } from '../../context/AuthContext';
+import { useFeature } from '../../context/FeatureContext';
 import ComposerForm from '../../components/community/ComposerForm';
 import { SITE_URL } from '../../utils/seo';
 import { TITLE_SUFFIX } from './CommunityLayout';
+import '../../styles/community-v2.css';
+
+const isMobile = () => typeof window !== 'undefined' && window.matchMedia?.('(max-width: 1023px)')?.matches;
 
 // Full-page composer (replaces the modal). Two columns: the form + a live preview
 // of the feed card. Compose triggers across the community navigate here.
 export default function NewPost() {
   const { user } = useAuth();
+  const v2 = useFeature('community_v2');
+  const navigate = useNavigate();
   const [params] = useSearchParams();
 
   // Direct hits by signed-out visitors go back to the feed, where compose handles login.
@@ -18,6 +24,17 @@ export default function NewPost() {
   const kind = params.get('kind') === 'thread' ? 'thread' : (params.get('kind') || 'post');
   const spaceKey = params.get('space') || '';
   const heading = kind === 'thread' ? 'New thread' : 'New post';
+
+  // v2 on a phone: the full-screen composer with the keyboard-aware toolbar,
+  // no surrounding page chrome. Desktop + v1 keep the two-column page.
+  if (v2 && isMobile()) {
+    return (
+      <>
+        <Seo title={`${heading}${TITLE_SUFFIX}`} canonical={`${SITE_URL}/community/new`} robots="noindex,follow" />
+        <ComposerForm variant="fullscreen" defaultKind={kind} defaultSpaceKey={spaceKey} onClose={() => navigate('/community')} />
+      </>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-cream pb-16">
