@@ -14,6 +14,8 @@ vi.mock('../services/api', () => ({
   markAllNotificationsRead: vi.fn(() => Promise.resolve({ data: {} })),
   markNotificationRead: vi.fn(() => Promise.resolve({ data: {} })),
   getFeatureFlags: vi.fn(() => Promise.resolve({ data: {} })), // ConsoleSidebar reads flags; coupons off
+  getMyKyc: vi.fn(() => Promise.resolve({ data: null })),       // KycNudgeStrip in DashboardLayout
+  getMyServices: vi.fn(() => Promise.resolve({ data: [] })),
 }));
 
 const mockAuth = { current: {} };
