@@ -25,6 +25,7 @@
 const { supabaseAdmin } = require('../config/supabase');
 const { isFeatureEnabled } = require('./featureFlags');
 const notificationEngine = require('./notificationEngine');
+const { alreadyNotified } = require('../utils/notificationDedupe');
 
 const DEDUPE_DAYS = 60;
 
@@ -44,15 +45,7 @@ function withinQuietHours(now = new Date()) {
 
 async function alreadyNudged(event, email) {
   if (!email) return true; // no address = cannot send = count as already handled
-  const since = new Date(Date.now() - DEDUPE_DAYS * 24 * 3600 * 1000).toISOString();
-  const { data } = await supabaseAdmin
-    .from('notification_logs')
-    .select('id')
-    .eq('event', event)
-    .eq('destination', email)
-    .gte('created_at', since)
-    .limit(1);
-  return !!(data && data.length);
+  return alreadyNotified({ event, destination: email, sinceDays: DEDUPE_DAYS });
 }
 
 function stageFor(inactiveDays) {

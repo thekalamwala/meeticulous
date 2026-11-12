@@ -28,7 +28,10 @@ const { assertNotProd } = require('./lib/guard');
 const grant = require('../utils/bookingGrant');
 const { createBooking } = require('../controllers/bookingController');
 
-const PROD_REF = 'ayjhlwyzszykqtnaktpb';     // Mumbai — NEVER write-burst this
+// NEVER write-burst these: the live Meeticulous DB, and the retired Mumbai prod ref.
+// (Before 2026-11 only the retired ref was listed, so PERF_ALLOW_NONSTAGING=1 would
+// have let this script insert bookings into the live DB.)
+const PROD_REFS = ['spquowzrefozmrzoszkf', 'ayjhlwyzszykqtnaktpb'];
 const STAGING_REF = 'xwvciqkayammbvsidqig';  // Tokyo — the only allowed target
 const TAG_DOMAIN = '@loadtest.meeticulous.local';
 const HOST_USERNAME = 'loadtest-vendor-rules';
@@ -44,8 +47,9 @@ const GRACE_ROUNDS = Number(process.env.GRACE_ROUNDS || 5);
 function assertStaging() {
   assertNotProd('sameSlotBurst');
   const url = process.env.SUPABASE_URL || '';
-  if (url.includes(PROD_REF)) {
-    console.error(`REFUSING: SUPABASE_URL points at PROD (${PROD_REF}). This script writes bookings — staging only.`);
+  const prodRef = PROD_REFS.find((ref) => url.includes(ref));
+  if (prodRef) {
+    console.error(`REFUSING: SUPABASE_URL points at PROD (${prodRef}). This script writes bookings — staging only.`);
     process.exit(2);
   }
   if (!url.includes(STAGING_REF) && process.env.PERF_ALLOW_NONSTAGING !== '1') {

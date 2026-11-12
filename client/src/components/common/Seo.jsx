@@ -90,7 +90,9 @@ export default function Seo({
     if (jsonLd) {
       script = document.createElement('script');
       script.type = 'application/ld+json';
-      script.textContent = JSON.stringify(jsonLd);
+      // Escape '<' so a host-controlled string can never close the tag when the
+      // prerender serialises this DOM to static HTML (JSON parsers read < as '<').
+      script.textContent = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
       document.head.appendChild(script);
     }
 
