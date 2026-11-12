@@ -198,8 +198,8 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
                   <Link to="/privacy" className="text-muted hover:text-maroon">Privacy</Link>
                   <Link to="/community/guidelines" className="text-muted hover:text-maroon">Guidelines</Link>
                 </div>
-                <div className="flex items-center gap-1.5 text-[11px] text-muted">
-                  Powered by <img src="/brand/meeticulous-wordmark.svg" alt="Meeticulous" width="84" height="14" className="relative top-[1.5px] h-[13px] w-auto" />
+                <div className="flex items-center gap-1.5 text-[11px] leading-none text-muted">
+                  Powered by <img src="/brand/meeticulous-wordmark.svg" alt="Meeticulous" width="84" height="14" className="relative top-[0.5px] h-[13px] w-auto" />
                 </div>
               </div>
             )}
