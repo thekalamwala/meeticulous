@@ -20,10 +20,9 @@ export const hero = {
   ctaGhost: "More about us",
   // In-page anchor on the story section right under the hero (ProblemSection).
   ctaGhostHref: "#our-story",
-  // Right-hand hero photo (Unsplash, same ID as the homepage "studio" persona).
-  // Swap for a real Meeticulous photo when one exists.
-  image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1400&h=1100&q=80",
-  imageAlt: "A small team working together around a laptop",
+  // Right-hand hero art: the brand silhouette (local asset, transparent PNG).
+  image: "/home/silhouette.png",
+  imageAlt: "Silhouette of people against a colourful backdrop",
 };
 
 // Illustrative booking card shown beside the hero (a UI sketch, not customer data).
@@ -166,6 +165,7 @@ export const testimonials = {
     { quote: "I send the link, they pick a slot, payment's sorted before the call. No more awkward money talk.", name: "Vishal Chaware", role: "Salesforce Developer", avatar: "/images/testimonials/vishal-chaware.webp" },
     { quote: "Set up my weekend mentoring in one evening and kind of forgot about it. Slots fill, money's already in.", name: "Sangharata Somkuvar", role: "DevOps Engineer", avatar: "/images/testimonials/sangharata-somkuvar.webp" },
     { quote: "My patients forget appointments easily. The reminder texts have honestly been a lifesaver.", name: "Dr. Yukta Bawankar", role: "Physiotherapist", avatar: "/images/testimonials/yukta-bawankar.webp" },
+    { quote: "Stuck the link in my Insta bio. Looks way better than sending a GPay QR after the call.", name: "Happy Singh", role: "Creative Lead", avatar: "/images/testimonials/happy-singh.webp" },
     { quote: "I run mentoring calls on the side — slots fill, payment's sorted, zero admin after work hours.", name: "Tushar Malvi", role: "Management Trainee, ECL", avatar: "/images/testimonials/tushar-malvi.webp" },
   ],
 };
