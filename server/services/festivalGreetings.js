@@ -27,6 +27,7 @@
 const { supabaseAdmin } = require('../config/supabase');
 const { isFeatureEnabled } = require('./featureFlags');
 const notificationEngine = require('./notificationEngine');
+const { alreadyNotified } = require('../utils/notificationDedupe');
 
 const DEDUPE_DAYS = 365;
 
@@ -54,15 +55,7 @@ function parseFilter(audience_filter) {
 
 async function alreadySent(event, email) {
   if (!email) return true;
-  const since = new Date(Date.now() - DEDUPE_DAYS * 24 * 3600 * 1000).toISOString();
-  const { data } = await supabaseAdmin
-    .from('notification_logs')
-    .select('id')
-    .eq('event', event)
-    .eq('destination', email)
-    .gte('created_at', since)
-    .limit(1);
-  return !!(data && data.length);
+  return alreadyNotified({ event, destination: email, sinceDays: DEDUPE_DAYS });
 }
 
 async function recipientsFor(filter) {

@@ -28,6 +28,7 @@
 const { supabaseAdmin } = require('../../config/supabase');
 const { isFeatureEnabled } = require('../featureFlags');
 const notificationEngine = require('../notificationEngine');
+const { alreadyNotified } = require('../../utils/notificationDedupe');
 
 const FLAG = 'community_email_onboarding';
 const HOUR_MS = 3600 * 1000;
@@ -44,14 +45,10 @@ const STEPS = [
 const BASE = () => process.env.CLIENT_URL || 'https://meeticulous.com';
 const firstName = (p) => (p?.is_host ? (p.name || '').trim().split(/\s+/)[0] : p?.first_name?.trim()) || 'there';
 
+// Once per (event, user). notification_logs has no recipient_user_id column, so
+// the send stamps `dedupe_key: <event>:<userId>` into payload and we match on it.
 async function alreadySent(event, userId) {
-  const { data } = await supabaseAdmin
-    .from('notification_logs')
-    .select('id')
-    .eq('event', event)
-    .eq('recipient_user_id', userId)
-    .limit(1);
-  return !!(data && data.length);
+  return alreadyNotified({ event, dedupeKey: `${event}:${userId}` });
 }
 
 function emailDataFor(event, profile) {
@@ -80,6 +77,7 @@ async function sendWelcome(profile, { isFirstAcceptance = true } = {}) {
         audience: profile.is_host ? 'vendor' : 'customer',
         emailData: emailDataFor('COMMUNITY_WELCOME', profile),
         recipientUserId: profile.id,
+        dedupeKey: `COMMUNITY_WELCOME:${profile.id}`,
       },
     });
   } catch (err) { console.error('[onboardingSequence.sendWelcome]', err.message); }
@@ -121,6 +119,7 @@ async function runSweep() {
             audience: profile.is_host ? 'vendor' : 'customer',
             emailData: emailDataFor(step.event, profile),
             recipientUserId: profile.id,
+            dedupeKey: `${step.event}:${profile.id}`,
           },
         });
         processed++;

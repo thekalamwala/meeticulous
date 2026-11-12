@@ -19,6 +19,7 @@
 const { supabaseAdmin } = require('../config/supabase');
 const { isFeatureEnabled } = require('./featureFlags');
 const notificationEngine = require('./notificationEngine');
+const { alreadyNotified } = require('../utils/notificationDedupe');
 
 const WINDOW_MIN_HOURS = 48;
 const WINDOW_MAX_DAYS  = 7;
@@ -29,14 +30,10 @@ function withinQuietHours(now = new Date()) {
   return istHour >= 9 && istHour < 20;
 }
 
+// Once per booking. notification_logs has no booking_id column, so the send
+// stamps `dedupe_key: review:<id>` into payload and we match on that.
 async function alreadyNudged(bookingId) {
-  const { data } = await supabaseAdmin
-    .from('notification_logs')
-    .select('id')
-    .eq('event', 'GUEST_REVIEW_NUDGE')
-    .eq('metadata->>booking_id', bookingId)
-    .limit(1);
-  return !!(data && data.length);
+  return alreadyNotified({ event: 'GUEST_REVIEW_NUDGE', dedupeKey: `review:${bookingId}` });
 }
 
 async function hasReview(bookingId) {
@@ -98,6 +95,7 @@ async function runReviewNudges() {
           review_url: reviewUrl,
         },
         recipientBookingId: b.id,
+        dedupeKey: `review:${b.id}`,
         metadata: { booking_id: b.id },
       },
     });
