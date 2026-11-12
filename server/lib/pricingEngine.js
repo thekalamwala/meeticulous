@@ -41,6 +41,19 @@ const DEFAULTS = Object.freeze({
   tcsRate: 0.01,     // Sec 52 GST TCS on host gross sale
 });
 
+// ─── Withholding rates for the tds_tcs_v2 rule engine (ships behind an OFF flag) ──
+// FY2026-27 statutory defaults, pending CA sign-off (docs/tds-tcs-withholding-design.md).
+// The LIVE values come from platform_settings via platformConfig; these are the engine
+// fallbacks. DEFAULTS.tdsRate/tcsRate (1%+1%) remain the LEGACY path used while the flag
+// is OFF, so turning the flag off restores exactly today's behaviour.
+const WITHHOLDING_DEFAULTS = Object.freeze({
+  tdsRate: 0.001,                 // 194-O, 0.1% (cut from 1% w.e.f. 01-Oct-2024)
+  tdsRateNoPan: 0.05,             // 5% when the host has no PAN/Aadhaar (§206AA)
+  tcsRate: 0.005,                 // Sec 52, 0.5% (cut from 1% w.e.f. 10-Jul-2024, Notif. 15/2024-CT)
+  tdsThresholdIndividual: 500000, // ₹5L/FY TDS exemption for a resident individual/HUF with PAN
+});
+const LEGACY_WITHHOLDING = Object.freeze({ tdsRate: DEFAULTS.tdsRate, tcsRate: DEFAULTS.tcsRate });
+
 const round2 = (n) => Math.round((Number(n) + Number.EPSILON) * 100) / 100;
 
 const assertNonNegative = (value, label) => {
@@ -144,6 +157,39 @@ function calculateTcs(servicePrice, opts = {}) {
   const rate = opts.tcsRate != null ? Number(opts.tcsRate) : DEFAULTS.tcsRate;
   assertNonNegative(rate, 'tcsRate');
   return round2(servicePrice * rate);
+}
+
+// ─── Resolve the TDS + TCS rates for one paid booking (tds_tcs_v2) ───────────
+/**
+ * Pick the TDS and TCS rates to apply, from the host's tax situation.
+ *
+ * FAILS TOWARD DEDUCTING: a resident individual/HUF is TDS-exempt (₹5L threshold)
+ * ONLY when we can PROVE their FY gross is at/below the threshold — i.e. a finite
+ * `fyGrossToDate` is supplied. Unknown gross, or any other entity, deducts at the
+ * standard rate. Under-deduction makes the operator liable; over-deduction only
+ * holds the host's own reclaimable money, so when in doubt we deduct.
+ *
+ * TCS (Sec 52) is flat — no threshold, no entity carve-out.
+ *
+ * @param {object}  ctx
+ * @param {boolean} ctx.enabled          tds_tcs_v2 flag; false → legacy 1% + 1%
+ * @param {string}  [ctx.entityType]     'individual_huf' | 'company_firm_llp'
+ * @param {boolean} [ctx.hasPan]         host PAN on file
+ * @param {number|null} [ctx.fyGrossToDate]  host's gross sales so far this FY (₹), or null/unknown
+ * @param {object}  [ctx.config]         { tdsRate, tdsRateNoPan, tcsRate, tdsThresholdIndividual }
+ * @returns {{ tdsRate:number, tcsRate:number }}
+ */
+function resolveWithholding({ enabled, entityType, hasPan, fyGrossToDate = null, config = {} } = {}) {
+  if (!enabled) return { ...LEGACY_WITHHOLDING };
+  const c = { ...WITHHOLDING_DEFAULTS, ...config };
+  const tcsRate = c.tcsRate;                       // flat for everyone
+  if (!hasPan) return { tdsRate: c.tdsRateNoPan, tcsRate };
+  const exempt =
+    entityType === 'individual_huf' &&
+    typeof fyGrossToDate === 'number' &&
+    Number.isFinite(fyGrossToDate) &&
+    fyGrossToDate <= c.tdsThresholdIndividual;
+  return { tdsRate: exempt ? 0 : c.tdsRate, tcsRate };
 }
 
 // ─── Host payout (commission is GST-inclusive; PG + TDS + TCS host-borne) ────
@@ -268,6 +314,9 @@ function computeSubscriptionBreakdown({ planPrice, gstRate }) {
 
 module.exports = {
   DEFAULTS,
+  WITHHOLDING_DEFAULTS,
+  LEGACY_WITHHOLDING,
+  resolveWithholding,
   calculatePlatformFee,
   calculateGst,
   calculateCommission,
