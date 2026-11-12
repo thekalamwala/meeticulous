@@ -22,6 +22,7 @@ jest.mock('../../services/platformConfig', () => ({
 jest.mock('../../services/notificationEngine', () => ({ send: jest.fn().mockResolvedValue() }));
 jest.mock('../../utils/sendEmail', () => jest.fn().mockResolvedValue());
 jest.mock('../../lib/pricingEngine', () => ({
+  resolveWithholding: () => ({ tdsRate: 0.01, tcsRate: 0.01 }),
   // Input-sensitive so the calendar branch (keyed off customerTotal) is exercised:
   // a genuinely-free booking (price 0, no fee) totals 0; a paid one totals > 0.
   computeBreakdown: ({ servicePrice = 0, chargeFeeOnFree = false }) => {
