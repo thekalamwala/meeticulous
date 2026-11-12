@@ -8,7 +8,7 @@
 //   1 Hero + live demo · 2 Proof strip · 3 Without vs with · 4 How it works ·
 //   5 Capabilities · 6 The difference · 7 Testimonials · 8 FAQ · 9 Final CTA
 //
-// Two-colour scheme: one accent (#EC4899, rgb 236 72 153 — pink) plus a charcoal-ink
+// Two-colour scheme: one accent (#E0506F, rgb 236 72 153 — pink) plus a charcoal-ink
 // contrast, on white + light-grey surfaces. The accent is the ONLY colour, used for
 // bars, chips, links and CTAs; headings are charcoal ink and "no / clash /
 // unavailable" states use a neutral grey, not a second hue. No decorative dots. No Google logo
@@ -58,10 +58,10 @@ const START = '/become-a-host';
 // The accent is the provided pink; everything that used the four Google hues now
 // collapses to it. Genuine "no / clash / unavailable" states use a neutral grey so
 // the yes/no meaning survives without introducing a third colour.
-const ACCENT = '#EC4899';       // rgb(236 72 153) — the single accent (pink)
-const ACCENT_SOFT = '#FCE7F0';  // light accent tint (event chips, positive callouts)
-const NEG = '#9AA0A6';          // neutral grey for no / unavailable / clash
-const NEG_SOFT = '#F1F3F4';     // neutral grey tint
+const ACCENT = '#E0506F';       // rgb(236 72 153) — the single accent (pink)
+const ACCENT_SOFT = '#FFF1F4';  // light accent tint (event chips, positive callouts)
+const NEG = '#6B524F';          // neutral grey for no / unavailable / clash
+const NEG_SOFT = '#F5ECEA';     // neutral grey tint
 // Aliases so the decorative dots/bars/chips resolve to the one accent.
 const BLUE = ACCENT;
 const RED = ACCENT;
@@ -69,9 +69,9 @@ const YELLOW = ACCENT;
 const GREEN = ACCENT;
 // Text-safe tokens (AA on white and on SURFACE).
 const LINK = ACCENT;     // accent for links, the CTA fill and headline highlights
-const INK = '#202124';   // the contrast colour: headings and body text
-const MUTED = '#5F6368'; // secondary text (neutral)
-const SURFACE = '#F8F9FA';
+const INK = '#2B0A14';   // the contrast colour: headings and body text
+const MUTED = '#6B524F'; // secondary text (neutral)
+const SURFACE = '#FBF5F3';
 
 /* ─────────────────────────────  DEMO MODEL  ────────────────────────────── */
 
@@ -305,13 +305,13 @@ function SyncDemo() {
       </div>
 
       <div className="mt-4 flex flex-wrap justify-center gap-2">
-        <button type="button" onClick={() => click('google')} disabled={full('google')} className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white px-3.5 py-2 text-xs font-semibold transition-colors hover:bg-[#F1F3F4] disabled:opacity-40" style={{ color: INK }}>
+        <button type="button" onClick={() => click('google')} disabled={full('google')} className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white px-3.5 py-2 text-xs font-semibold transition-colors hover:bg-[#F5ECEA] disabled:opacity-40" style={{ color: INK }}>
           <Plus size={13} aria-hidden /> Add a meeting in Google
         </button>
-        <button type="button" onClick={() => click('booking')} disabled={full('booking')} className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white px-3.5 py-2 text-xs font-semibold transition-colors hover:bg-[#F1F3F4] disabled:opacity-40" style={{ color: INK }}>
+        <button type="button" onClick={() => click('booking')} disabled={full('booking')} className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white px-3.5 py-2 text-xs font-semibold transition-colors hover:bg-[#F5ECEA] disabled:opacity-40" style={{ color: INK }}>
           <Plus size={13} aria-hidden /> Client books on Meeticulous
         </button>
-        <button type="button" onClick={() => click('reset')} className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold transition-colors hover:bg-[#F1F3F4]" style={{ color: MUTED }}>
+        <button type="button" onClick={() => click('reset')} className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold transition-colors hover:bg-[#F5ECEA]" style={{ color: MUTED }}>
           <RotateCcw size={13} aria-hidden /> Reset
         </button>
       </div>
@@ -372,7 +372,7 @@ function ConnectFlow() {
               onClick={() => setStep(i)}
               className={`flex w-full items-start gap-4 rounded-[6px] border p-5 text-left transition-colors ${step === i ? 'border-black/10 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.05)]' : 'border-transparent hover:bg-white/70'}`}
             >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-heading text-sm font-extrabold text-white" style={{ background: step === i ? LINK : '#9AA0A6' }}>{i + 1}</span>
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-heading text-sm font-extrabold text-white" style={{ background: step === i ? LINK : '#6B524F' }}>{i + 1}</span>
               <span>
                 <span className="block font-heading text-lg font-bold" style={{ color: INK }}>{s.title}</span>
                 <span className="mt-1 block text-[15px] leading-relaxed" style={{ color: MUTED }}>{s.desc}</span>
@@ -510,7 +510,7 @@ export default function GoogleCalendarFeature() {
               <span aria-hidden className="mx-2">/</span>
               <span aria-current="page" style={{ color: INK }}>Google Calendar</span>
             </nav>
-            <Reveal as="h1" instant className="mt-6 font-heading text-[clamp(2.1rem,3.7vw,3.2rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[#202124]">
+            <Reveal as="h1" instant className="mt-6 font-heading text-[clamp(2.1rem,3.7vw,3.2rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-ink">
               Google Calendar sync for <span style={{ color: LINK }}>your booking page.</span>
             </Reveal>
             <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed lg:text-[17px]" style={{ color: MUTED }}>

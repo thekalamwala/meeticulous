@@ -46,10 +46,10 @@ import PageGuides from '../../components/common/PageGuides';
 import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
-const PINK = '#FF4D93';      // decorative accent; text use only on the dark overlay
-const PINK_INK = '#BE185D';  // pink for text / fills on white and light pink (AA)
-const BLUSH = '#FFF4F8';     // very light pink surface
-const PLUM = '#1F0F17';      // dark base under the photo tint and final CTA
+const PINK = '#E0506F';      // decorative accent; text use only on the dark overlay
+const PINK_INK = '#A12A47';  // pink for text / fills on white and light pink (AA)
+const BLUSH = '#FFF7F9';     // very light pink surface
+const PLUM = '#2B0A14';      // dark base under the photo tint and final CTA
 const INK = '#2B0A14';
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
@@ -197,7 +197,7 @@ function Stars({ n, size = 14 }) {
   return (
     <span className="inline-flex gap-0.5" aria-label={`${n} out of 5 stars`}>
       {[1, 2, 3, 4, 5].map((i) => (
-        <Star key={i} size={size} aria-hidden style={i <= n ? { color: PINK, fill: PINK } : { color: '#D4D4D4' }} />
+        <Star key={i} size={size} aria-hidden style={i <= n ? { color: PINK, fill: PINK } : { color: '#D9C4C0' }} />
       ))}
     </span>
   );
@@ -213,7 +213,7 @@ function ReviewDemo() {
 
   return (
     <div className="relative mx-auto w-full max-w-[23rem]">
-      <div className="rounded-[24px] bg-white p-5 text-[#2B0A14] shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)] sm:p-6">
+      <div className="rounded-[24px] bg-white p-5 text-ink shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)] sm:p-6">
         <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">How was your session?</div>
         <div className="mt-3 flex gap-1.5" role="group" aria-label="Pick a rating">
           {[1, 2, 3, 4, 5].map((n) => (
@@ -223,9 +223,9 @@ function ReviewDemo() {
               aria-label={`Rate ${n} star${n > 1 ? 's' : ''}`}
               aria-pressed={n === rating}
               onClick={() => setRating(n)}
-              className="rounded-[16px] p-1.5 transition-colors hover:bg-[#FFF4F8]"
+              className="rounded-[16px] p-1.5 transition-colors hover:bg-[#FFF7F9]"
             >
-              <Star size={26} aria-hidden style={n <= rating ? { color: PINK, fill: PINK } : { color: '#D4D4D4' }} />
+              <Star size={26} aria-hidden style={n <= rating ? { color: PINK, fill: PINK } : { color: '#D9C4C0' }} />
             </button>
           ))}
         </div>
@@ -280,7 +280,7 @@ function VerifyTrack() {
                 className="relative flex h-12 w-12 items-center justify-center rounded-full border transition-colors"
                 style={i <= active
                   ? { background: PINK_INK, borderColor: PINK_INK, color: '#FFFFFF' }
-                  : { background: '#FFFFFF', borderColor: 'rgba(0,0,0,0.1)', color: '#737373' }}
+                  : { background: '#FFFFFF', borderColor: 'rgba(0,0,0,0.1)', color: '#8C716D' }}
               >
                 <v.icon size={19} aria-hidden />
               </span>
@@ -335,7 +335,7 @@ export default function ReviewsFeature() {
   });
 
   return (
-    <main className="overflow-x-clip bg-white text-[#2B0A14]">
+    <main className="overflow-x-clip bg-white text-ink">
       <Seo
         title={seo.title}
         description={seo.description}
@@ -408,7 +408,7 @@ export default function ReviewsFeature() {
       {/* ═══════════════ 3 · WITHOUT vs WITH (DM screenshot vs booked review) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-[#2B0A14] sm:text-5xl">
+          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-ink sm:text-5xl">
             A screenshot of a DM is not <span style={{ color: PINK }}>a review.</span>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed text-neutral-500">
@@ -448,7 +448,7 @@ export default function ReviewsFeature() {
               </div>
               <ul className="mt-6 space-y-3">
                 {WITH.map((t) => (
-                  <li key={t} className="flex items-start gap-2.5 text-[15px] font-medium text-[#2B0A14]">
+                  <li key={t} className="flex items-start gap-2.5 text-[15px] font-medium text-ink">
                     <Check size={16} className="mt-1 shrink-0" style={{ color: PINK_INK }} aria-hidden /><span><span className="sr-only">With Meeticulous: </span>{t}</span>
                   </li>
                 ))}
@@ -462,7 +462,7 @@ export default function ReviewsFeature() {
       {/* ═══════════════ 4 · HOW IT WORKS (photo-topped step cards) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: BLUSH }}>
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-[#2B0A14] sm:text-5xl">
+          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-ink sm:text-5xl">
             From finished session to <span style={{ color: PINK }}>public proof.</span>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed text-neutral-500">
@@ -516,7 +516,7 @@ export default function ReviewsFeature() {
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
           {/* Left intro stays pinned while the list scrolls past it. */}
           <div className="lg:sticky lg:top-24 lg:self-start">
-            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-[#2B0A14] sm:text-5xl">
+            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-ink sm:text-5xl">
               Built so reviews <span style={{ color: PINK }}>can be trusted.</span>
             </Reveal>
             <Reveal as="p" delay={0.05} className="mt-5 max-w-md text-base leading-relaxed text-neutral-500">
@@ -546,7 +546,7 @@ export default function ReviewsFeature() {
       <section id="verified" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:py-28" style={{ background: BLUSH }}>
         <div className="mx-auto max-w-5xl">
           <div className="text-center">
-            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-[#2B0A14] sm:text-5xl">
+            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-ink sm:text-5xl">
               How a review becomes <span style={{ color: PINK }}>verified.</span>
             </Reveal>
             <Reveal as="p" delay={0.05} className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-neutral-500">
@@ -561,7 +561,7 @@ export default function ReviewsFeature() {
       {QUOTES.length > 0 && (
         <section className="px-5 py-20 sm:px-8 lg:py-28">
           <div className="mx-auto max-w-6xl">
-            <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-[#2B0A14] sm:text-5xl">
+            <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-ink sm:text-5xl">
               Hosts who moved their clients <span style={{ color: PINK }}>out of the DMs.</span>
             </Reveal>
             <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed text-neutral-500">
@@ -577,7 +577,7 @@ export default function ReviewsFeature() {
                   style={{ background: i % 3 === 0 ? BLUSH : '#FFFFFF' }}
                 >
                   <span aria-hidden className="block font-heading text-5xl leading-[0.6]" style={{ color: PINK }}>&ldquo;</span>
-                  <blockquote className={`mt-3 leading-relaxed text-[#2B0A14] ${i === 0 ? 'font-heading text-xl font-bold' : 'text-[15px]'}`}>{t.quote}</blockquote>
+                  <blockquote className={`mt-3 leading-relaxed text-ink ${i === 0 ? 'font-heading text-xl font-bold' : 'text-[15px]'}`}>{t.quote}</blockquote>
                   <figcaption className="mt-5 flex items-center gap-3">
                     <img src={t.avatar} alt="" loading="lazy" className="h-10 w-10 rounded-full object-cover" />
                     <div>
@@ -598,7 +598,7 @@ export default function ReviewsFeature() {
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: BLUSH }}>
         <FeatureFaq
           heading={(
-            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-[#2B0A14] sm:text-5xl">
+            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-ink sm:text-5xl">
               Review questions, <span style={{ color: PINK }}>answered.</span>
             </Reveal>
           )}

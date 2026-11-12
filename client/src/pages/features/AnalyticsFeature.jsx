@@ -51,11 +51,11 @@ import PageGuides from '../../components/common/PageGuides';
 import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
-const CHARCOAL = '#0F172A';   // darkest surface
-const SLATE = '#1E293B';      // panels on dark, final CTA
-const AMBER = '#F59E0B';      // accent on dark surfaces only
-const AMBER_INK = '#B45309';  // amber for text on white / slate-50 (AA)
-const ON_DARK = '#F1F5F9';    // headings + body on dark
+const CHARCOAL = '#2B0A14';   // darkest surface
+const SLATE = '#34201F';      // panels on dark, final CTA
+const AMBER = '#F6C35A';      // accent on dark surfaces only
+const AMBER_INK = '#C68A12';  // amber for text on white / slate-50 (AA)
+const ON_DARK = '#FBF5F3';    // headings + body on dark
 const FREE_CRM_CLIENTS = 10;  // limits.crm on the free plan (migration v3.167)
 
 /* ─────────────────────────────  HERO DEMO DATA (sample)  ────────────────────────────── */
@@ -253,7 +253,7 @@ function DashboardDemo() {
       <div className="overflow-hidden rounded-[16px] border border-white/10 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)]" style={{ background: SLATE }}>
         {/* window bar */}
         <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-          <div className="flex items-center gap-2 text-[12px] font-semibold text-[#CBD5E1]">
+          <div className="flex items-center gap-2 text-[12px] font-semibold text-[#D9C4C0]">
             <LayoutDashboard size={14} aria-hidden /> Host dashboard
           </div>
           <span className="rounded-full border px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ borderColor: `${AMBER}66`, color: AMBER }}>
@@ -272,7 +272,7 @@ function DashboardDemo() {
               aria-selected={tab === i}
               aria-controls="ad-panel"
               onClick={() => { setTab(i); setPaused(true); }}
-              className={`flex items-center justify-center gap-1.5 border-b-2 py-2.5 text-xs font-semibold transition-colors ${tab === i ? 'text-[#F1F5F9]' : 'border-transparent text-[#94A3B8] hover:text-[#E2E8F0]'}`}
+              className={`flex items-center justify-center gap-1.5 border-b-2 py-2.5 text-xs font-semibold transition-colors ${tab === i ? 'text-[#FBF5F3]' : 'border-transparent text-[#B39A96] hover:text-[#EBDCD9]'}`}
               style={tab === i ? { borderColor: AMBER } : undefined}
             >
               <d.icon size={13} aria-hidden /> {d.label}
@@ -285,28 +285,28 @@ function DashboardDemo() {
           <div className="grid grid-cols-3 gap-2">
             {t.tiles.map((k) => (
               <div key={k.label} className="rounded-[16px] border border-white/10 px-2.5 py-2.5" style={{ background: CHARCOAL }}>
-                <div className="truncate text-[10px] uppercase tracking-[0.1em] text-[#94A3B8]">{k.label}</div>
-                <div className="mt-1 font-mono text-[15px] font-bold tabular-nums text-[#F1F5F9] sm:text-base">{k.value}</div>
-                <div className="mt-0.5 truncate text-[10px] text-[#94A3B8]">{k.delta}</div>
+                <div className="truncate text-[10px] uppercase tracking-[0.1em] text-[#B39A96]">{k.label}</div>
+                <div className="mt-1 font-mono text-[15px] font-bold tabular-nums text-[#FBF5F3] sm:text-base">{k.value}</div>
+                <div className="mt-0.5 truncate text-[10px] text-[#B39A96]">{k.delta}</div>
               </div>
             ))}
           </div>
 
           {/* chart */}
           <div className="mt-4 rounded-[16px] border border-white/10 p-3.5" style={{ background: CHARCOAL }}>
-            <div className="flex items-center justify-between text-[11px] text-[#94A3B8]">
-              <span className="font-semibold text-[#CBD5E1]">{t.chartTitle}</span>
+            <div className="flex items-center justify-between text-[11px] text-[#B39A96]">
+              <span className="font-semibold text-[#D9C4C0]">{t.chartTitle}</span>
               <span className="font-mono">{horizontal ? 'Top spend' : '6M'}</span>
             </div>
             {horizontal ? (
               <ul className="mt-3 space-y-2">
                 {t.bars.map((b) => (
                   <li key={b.label} className="grid grid-cols-[4.5rem_1fr_4rem] items-center gap-2 text-[11px]">
-                    <span className="truncate text-[#CBD5E1]">{b.label}</span>
+                    <span className="truncate text-[#D9C4C0]">{b.label}</span>
                     <span className="h-2.5 rounded-[2px] bg-white/5">
                       <span className="block h-full rounded-[2px] transition-[width] duration-500 motion-reduce:transition-none" style={{ width: `${(b.value / max) * 100}%`, background: AMBER }} />
                     </span>
-                    <span className="text-right font-mono tabular-nums text-[#E2E8F0]">{b.text}</span>
+                    <span className="text-right font-mono tabular-nums text-[#EBDCD9]">{b.text}</span>
                   </li>
                 ))}
               </ul>
@@ -314,7 +314,7 @@ function DashboardDemo() {
               <div className="mt-3 grid h-36 grid-cols-6 gap-2 border-b border-white/10">
                 {t.bars.map((b, i) => (
                   <div key={b.label} className="flex h-full flex-col justify-end">
-                    <span className="mb-1 text-center font-mono text-[9px] tabular-nums text-[#94A3B8]">{b.text}</span>
+                    <span className="mb-1 text-center font-mono text-[9px] tabular-nums text-[#B39A96]">{b.text}</span>
                     <span
                       className="block rounded-t-[2px] transition-[height] duration-500 motion-reduce:transition-none"
                       style={{ height: `${(b.value / max) * 78}%`, background: i === t.bars.length - 1 ? AMBER : '#475569' }}
@@ -324,14 +324,14 @@ function DashboardDemo() {
               </div>
             )}
             {!horizontal && (
-              <div className="mt-1.5 grid grid-cols-6 gap-2 text-center font-mono text-[10px] text-[#94A3B8]">
+              <div className="mt-1.5 grid grid-cols-6 gap-2 text-center font-mono text-[10px] text-[#B39A96]">
                 {t.bars.map((b) => <span key={b.label}>{b.label}</span>)}
               </div>
             )}
           </div>
         </div>
       </div>
-      <p className="mt-3 text-center text-[11px] text-[#94A3B8]">Illustration of the host dashboard. All figures are sample data.</p>
+      <p className="mt-3 text-center text-[11px] text-[#B39A96]">Illustration of the host dashboard. All figures are sample data.</p>
     </div>
   );
 }
@@ -340,31 +340,31 @@ function DashboardDemo() {
 function SheetMock() {
   return (
     <div className="overflow-hidden rounded-[16px] border border-black/10 bg-white font-mono text-[11px] shadow-[0_8px_30px_rgba(15,23,42,0.05)]">
-      <div className="flex items-center gap-2 border-b border-black/10 bg-[#F8FAFC] px-3 py-2 text-[11px] text-[#64748B]">
+      <div className="flex items-center gap-2 border-b border-black/10 bg-neutral-50 px-3 py-2 text-[11px] text-muted">
         <Table2 size={13} aria-hidden /> bookings_sept_FINAL(2).xlsx
       </div>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[22rem] border-collapse text-left">
           <thead>
-            <tr className="bg-[#F8FAFC] text-[#64748B]">
+            <tr className="bg-neutral-50 text-muted">
               <th className="w-7 border border-black/5 px-1.5 py-1 font-normal" />
               {['A Date', 'B Client', 'C Service', 'D ₹', 'E Paid?'].map((h) => (
                 <th key={h} className="border border-black/5 px-2 py-1 font-normal">{h}</th>
               ))}
             </tr>
           </thead>
-          <tbody className="text-[#334155]">
+          <tbody className="text-[#4D3634]">
             {SHEET_ROWS.map((r, i) => (
               <tr key={r[0]}>
-                <td className="border border-black/5 bg-[#F8FAFC] px-1.5 py-1 text-center text-[#94A3B8]">{i + 2}</td>
+                <td className="border border-black/5 bg-neutral-50 px-1.5 py-1 text-center text-[#B39A96]">{i + 2}</td>
                 {r.map((c, j) => (
                   <td key={j} className={`border border-black/5 px-2 py-1 ${c === '' ? 'bg-[#FEF3C7]/60' : ''} ${j === 3 ? 'text-right tabular-nums' : ''}`}>{c || ' '}</td>
                 ))}
               </tr>
             ))}
             <tr>
-              <td className="border border-black/5 bg-[#F8FAFC] px-1.5 py-1 text-center text-[#94A3B8]">7</td>
-              <td colSpan={3} className="border border-black/5 px-2 py-1 text-right text-[#64748B]">total?</td>
+              <td className="border border-black/5 bg-neutral-50 px-1.5 py-1 text-center text-[#B39A96]">7</td>
+              <td colSpan={3} className="border border-black/5 px-2 py-1 text-right text-muted">total?</td>
               <td className="border border-black/5 px-2 py-1 text-right text-[#B91C1C]">=SUM(D2:D6)</td>
               <td className="border border-black/5 px-2 py-1" />
             </tr>
@@ -379,24 +379,24 @@ function SheetMock() {
 function DashMock() {
   const rows = [['Strategy call', 4, inr(5700)], ['Audit', 1, inr(2380)], ['Follow-up', 1, inr(760)]];
   return (
-    <div className="overflow-hidden rounded-[16px] text-[#F1F5F9] shadow-[0_24px_60px_-28px_rgba(15,23,42,0.5)]" style={{ background: CHARCOAL }}>
-      <div className="flex items-center justify-between border-b border-white/10 px-3 py-2 text-[11px] text-[#94A3B8]">
+    <div className="overflow-hidden rounded-[16px] text-[#FBF5F3] shadow-[0_24px_60px_-28px_rgba(15,23,42,0.5)]" style={{ background: CHARCOAL }}>
+      <div className="flex items-center justify-between border-b border-white/10 px-3 py-2 text-[11px] text-[#B39A96]">
         <span className="flex items-center gap-2"><BarChart3 size={13} aria-hidden /> Earnings · September</span>
         <span className="font-mono text-[10px] uppercase tracking-[0.12em]" style={{ color: AMBER }}>Sample</span>
       </div>
       <div className="grid grid-cols-3 gap-px bg-white/10">
         {[['Net', inr(8840)], ['Gross', inr(9800)], ['Paid', '6']].map(([l, v]) => (
           <div key={l} className="px-3 py-3" style={{ background: CHARCOAL }}>
-            <div className="text-[10px] uppercase tracking-[0.1em] text-[#94A3B8]">{l}</div>
+            <div className="text-[10px] uppercase tracking-[0.1em] text-[#B39A96]">{l}</div>
             <div className="mt-1 font-mono text-base font-bold tabular-nums">{v}</div>
           </div>
         ))}
       </div>
       <div className="border-t border-white/10 px-3 py-2.5">
-        <div className="text-[10px] uppercase tracking-[0.1em] text-[#94A3B8]">Revenue by service</div>
+        <div className="text-[10px] uppercase tracking-[0.1em] text-[#B39A96]">Revenue by service</div>
         {rows.map(([s, n, v]) => (
           <div key={s} className="mt-1.5 flex items-center justify-between font-mono text-[11px]">
-            <span className="text-[#CBD5E1]">{s} <span className="text-[#64748B]">· {n}</span></span>
+            <span className="text-[#D9C4C0]">{s} <span className="text-muted">· {n}</span></span>
             <span className="tabular-nums">{v}</span>
           </div>
         ))}
@@ -418,7 +418,7 @@ function QuestionMap() {
             type="button"
             aria-pressed={active === i}
             onClick={() => setActive(i)}
-            className={`flex items-center justify-between gap-3 rounded-[6px] border px-4 py-3 text-left text-sm font-semibold transition-colors ${active === i ? 'text-[#0F172A]' : 'border-white/10 text-[#CBD5E1] hover:border-white/25 hover:text-[#F1F5F9]'}`}
+            className={`flex items-center justify-between gap-3 rounded-[6px] border px-4 py-3 text-left text-sm font-semibold transition-colors ${active === i ? 'text-ink' : 'border-white/10 text-[#D9C4C0] hover:border-white/25 hover:text-[#FBF5F3]'}`}
             style={active === i ? { background: AMBER, borderColor: AMBER } : undefined}
           >
             <span>{item.q}</span>
@@ -431,7 +431,7 @@ function QuestionMap() {
         <div className="grid gap-px overflow-hidden rounded-[16px] border border-white/10 bg-white/10 sm:grid-cols-2">
           {MAP.map((group) => (
             <div key={group.screen} className="p-4" style={{ background: SLATE }}>
-              <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#94A3B8]">{group.screen}</div>
+              <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#B39A96]">{group.screen}</div>
               <div className="mt-2.5 flex flex-wrap gap-1.5">
                 {group.cells.map((c) => {
                   const on = q.cells.includes(c.id);
@@ -440,7 +440,7 @@ function QuestionMap() {
                       key={c.id}
                       data-metric={c.id}
                       data-active={on ? 'true' : 'false'}
-                      className={`rounded-[5px] border px-2.5 py-1.5 text-xs font-medium transition-colors ${on ? 'text-[#0F172A]' : 'border-white/10 text-[#94A3B8]'}`}
+                      className={`rounded-[5px] border px-2.5 py-1.5 text-xs font-medium transition-colors ${on ? 'text-ink' : 'border-white/10 text-[#B39A96]'}`}
                       style={on ? { background: AMBER, borderColor: AMBER } : undefined}
                     >
                       {c.label}
@@ -453,7 +453,7 @@ function QuestionMap() {
         </div>
         <div aria-live="polite" className="mt-5 rounded-[24px] border border-white/10 p-5" style={{ background: SLATE }}>
           <div className="font-mono text-[11px] uppercase tracking-[0.14em]" style={{ color: AMBER }}>Where: {q.where}</div>
-          <p className="mt-2 text-[15px] leading-relaxed text-[#E2E8F0]">{q.a}</p>
+          <p className="mt-2 text-[15px] leading-relaxed text-[#EBDCD9]">{q.a}</p>
         </div>
       </div>
     </div>
@@ -484,7 +484,7 @@ export default function AnalyticsFeature() {
   });
 
   return (
-    <main className="overflow-x-clip bg-white text-[#0F172A]">
+    <main className="overflow-x-clip bg-white text-ink">
       <Seo
         title={seo.title}
         description={seo.description}
@@ -508,31 +508,31 @@ export default function AnalyticsFeature() {
         />
         <div className="relative mx-auto grid w-full max-w-6xl items-start gap-10 lg:items-center lg:gap-14 lg:grid-cols-[1fr_1fr]">
           <div>
-            <nav aria-label="Breadcrumb" className="text-xs text-[#94A3B8]">
-              <Link to="/" className="text-[#94A3B8] hover:text-[#F1F5F9] hover:no-underline">Home</Link>
+            <nav aria-label="Breadcrumb" className="text-xs text-[#B39A96]">
+              <Link to="/" className="text-[#B39A96] hover:text-[#FBF5F3] hover:no-underline">Home</Link>
               <span aria-hidden className="mx-2">/</span>
               <span>Features</span>
               <span aria-hidden className="mx-2">/</span>
-              <span aria-current="page" className="text-[#E2E8F0]">Analytics</span>
+              <span aria-current="page" className="text-[#EBDCD9]">Analytics</span>
             </nav>
-            <Reveal instant className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/10 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-[#CBD5E1]">
+            <Reveal instant className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/10 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-[#D9C4C0]">
               <span className="h-1.5 w-1.5 rounded-full" style={{ background: AMBER }} aria-hidden /> Booking analytics
             </Reveal>
-            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.1rem,3.7vw,3.2rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[#F1F5F9]">
+            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.1rem,3.7vw,3.2rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[#FBF5F3]">
               Booking analytics, <span style={{ color: AMBER }}>without the spreadsheet.</span>
             </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-[#CBD5E1] lg:text-[17px]">
+            <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-[#D9C4C0] lg:text-[17px]">
               Earnings, paid bookings, revenue by service and your top clients, for freelancers and coaches. Every number comes straight from your bookings.
             </Reveal>
             <Reveal instant delay={0.1} className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
               <PrimaryCta dark>Start free <ArrowRight size={16} /></PrimaryCta>
-              <a href="#questions" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F1F5F9] hover:no-underline hover:opacity-80">
+              <a href="#questions" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#FBF5F3] hover:no-underline hover:opacity-80">
                 See what it answers <ArrowRight size={15} />
               </a>
             </Reveal>
             <Reveal instant delay={0.14} className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
               {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] text-[#94A3B8]">
+                <span key={t} className="flex items-center gap-1.5 text-[13px] text-[#B39A96]">
                   <Check size={14} style={{ color: AMBER }} aria-hidden /> {t}
                 </span>
               ))}
@@ -545,15 +545,15 @@ export default function AnalyticsFeature() {
       </section>
 
       {/* ═══════════════ 2 · PROOF STRIP (KPI-tile facts, no numbers) ═══════════════ */}
-      <section className="border-b border-black/5 bg-[#F8FAFC] px-5 py-10 sm:px-8">
+      <section className="border-b border-black/5 bg-neutral-50 px-5 py-10 sm:px-8">
         <div className="mx-auto grid max-w-6xl gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {PROOF.map((p) => (
             <div key={p.k} className="rounded-[16px] border border-black/5 bg-white px-5 py-4 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#64748B]">{p.k}</span>
+                <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-muted">{p.k}</span>
                 <span className="h-1.5 w-1.5 rounded-full" style={{ background: AMBER_INK }} aria-hidden />
               </div>
-              <div className="mt-2 font-heading text-[15px] font-bold leading-snug text-[#0F172A]">{p.v}</div>
+              <div className="mt-2 font-heading text-[15px] font-bold leading-snug text-ink">{p.v}</div>
             </div>
           ))}
         </div>
@@ -565,13 +565,13 @@ export default function AnalyticsFeature() {
           <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
             Your bookings already know <span style={{ color: AMBER_INK }}>which service pays.</span>
           </Reveal>
-          <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed text-[#64748B]">
+          <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed text-muted">
             Most freelancers keep a sheet, or nothing. Here is the same month of sessions, kept by hand and read off the dashboard.
           </Reveal>
 
           <div className="mt-14 grid gap-6 lg:grid-cols-2">
             <Reveal>
-              <div className="mb-3 flex items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748B]"><X size={14} aria-hidden /> Without</div>
+              <div className="mb-3 flex items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-muted"><X size={14} aria-hidden /> Without</div>
               <SheetMock />
             </Reveal>
             <Reveal delay={0.06}>
@@ -579,13 +579,13 @@ export default function AnalyticsFeature() {
               <DashMock />
             </Reveal>
           </div>
-          <p className="mt-3 text-[11px] text-[#64748B]">Illustration. Figures are sample data.</p>
+          <p className="mt-3 text-[11px] text-muted">Illustration. Figures are sample data.</p>
 
           <div className="mt-10 grid border-t border-black/10 md:grid-cols-2">
             {CONTRAST.map((c) => (
               <div key={c.now} className="grid grid-cols-1 gap-2 border-b border-black/10 py-4 md:grid-cols-2 md:gap-6 md:pr-6">
-                <p className="flex items-start gap-2 text-sm text-[#64748B]"><X size={15} className="mt-0.5 shrink-0" aria-hidden /><span><span className="sr-only">Without: </span>{c.old}</span></p>
-                <p className="flex items-start gap-2 text-sm font-medium text-[#0F172A]"><Check size={15} className="mt-0.5 shrink-0" style={{ color: AMBER_INK }} aria-hidden /><span><span className="sr-only">With Meeticulous: </span>{c.now}</span></p>
+                <p className="flex items-start gap-2 text-sm text-muted"><X size={15} className="mt-0.5 shrink-0" aria-hidden /><span><span className="sr-only">Without: </span>{c.old}</span></p>
+                <p className="flex items-start gap-2 text-sm font-medium text-ink"><Check size={15} className="mt-0.5 shrink-0" style={{ color: AMBER_INK }} aria-hidden /><span><span className="sr-only">With Meeticulous: </span>{c.now}</span></p>
               </div>
             ))}
           </div>
@@ -593,12 +593,12 @@ export default function AnalyticsFeature() {
       </section>
 
       {/* ═══════════════ 4 · HOW IT WORKS (left-to-right data flow) ═══════════════ */}
-      <section className="bg-[#F8FAFC] px-5 py-20 sm:px-8 lg:py-28">
+      <section className="bg-neutral-50 px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
           <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
             One booking in, <span style={{ color: AMBER_INK }}>every number updated.</span>
           </Reveal>
-          <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed text-[#64748B]">
+          <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed text-muted">
             There is no import step. The data travels with the booking, from the slot to the payout.
           </Reveal>
 
@@ -608,18 +608,18 @@ export default function AnalyticsFeature() {
                 <div className="flex-1 rounded-[24px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: AMBER_INK }}>{String(i + 1).padStart(2, '0')} · {s.tag}</span>
-                    <s.icon size={16} className="text-[#64748B]" aria-hidden />
+                    <s.icon size={16} className="text-muted" aria-hidden />
                   </div>
-                  <h3 className="mt-3 font-heading text-lg font-bold text-[#0F172A]">{s.title}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-[#64748B]">{s.desc}</p>
+                  <h3 className="mt-3 font-heading text-lg font-bold text-ink">{s.title}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted">{s.desc}</p>
                   <div className="mt-4 flex flex-wrap gap-1.5">
                     {s.fields.map((f) => (
-                      <span key={f} className="rounded-full border border-black/10 bg-[#F8FAFC] px-2.5 py-0.5 font-mono text-[10px] text-[#334155]">{f}</span>
+                      <span key={f} className="rounded-full border border-black/10 bg-neutral-50 px-2.5 py-0.5 font-mono text-[10px] text-[#4D3634]">{f}</span>
                     ))}
                   </div>
                 </div>
                 {i < FLOW.length - 1 && (
-                  <span aria-hidden className="absolute right-0 top-1/2 hidden h-6 w-6 -translate-y-1/2 items-center justify-center text-[#94A3B8] lg:flex">
+                  <span aria-hidden className="absolute right-0 top-1/2 hidden h-6 w-6 -translate-y-1/2 items-center justify-center text-[#B39A96] lg:flex">
                     <ChevronRight size={18} />
                   </span>
                 )}
@@ -636,7 +636,7 @@ export default function AnalyticsFeature() {
             <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
               The full spec, <span style={{ color: AMBER_INK }}>screen by screen.</span>
             </Reveal>
-            <Reveal as="p" delay={0.05} className="max-w-sm text-sm leading-relaxed text-[#64748B]">
+            <Reveal as="p" delay={0.05} className="max-w-sm text-sm leading-relaxed text-muted">
               Everything below is on every plan. The Customers list shows your {FREE_CRM_CLIENTS} most recent clients on {FREE_PLAN.name}, and all of them on {PREMIUM_PLAN.name}.
             </Reveal>
           </div>
@@ -645,8 +645,8 @@ export default function AnalyticsFeature() {
             {SPECS.map((s) => (
               <div key={s.title} className="bg-white p-5">
                 <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: AMBER_INK }}>{s.area}</div>
-                <h3 className="mt-2 font-heading text-[15px] font-bold text-[#0F172A]">{s.title}</h3>
-                <p className="mt-1 text-[13px] leading-relaxed text-[#64748B]">{s.body}</p>
+                <h3 className="mt-2 font-heading text-[15px] font-bold text-ink">{s.title}</h3>
+                <p className="mt-1 text-[13px] leading-relaxed text-muted">{s.body}</p>
               </div>
             ))}
           </div>
@@ -660,10 +660,10 @@ export default function AnalyticsFeature() {
       {/* ═══════════════ 6 · THE DIFFERENCE (questions it answers) ═══════════════ */}
       <section id="questions" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:py-28" style={{ background: CHARCOAL, color: ON_DARK }}>
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#F1F5F9] sm:text-5xl">
+          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#FBF5F3] sm:text-5xl">
             Ask it a question. <span style={{ color: AMBER }}>See where the answer lives.</span>
           </Reveal>
-          <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed text-[#CBD5E1]">
+          <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed text-[#D9C4C0]">
             These are the questions freelancers and coaches ask about their own business. Pick one and the metric that answers it lights up.
           </Reveal>
           <QuestionMap />
@@ -672,7 +672,7 @@ export default function AnalyticsFeature() {
 
       {/* ═══════════════ 7 · TESTIMONIALS (compact cards) ═══════════════ */}
       {QUOTES.length > 0 && (
-        <section className="bg-[#F8FAFC] px-5 py-20 sm:px-8 lg:py-28">
+        <section className="bg-neutral-50 px-5 py-20 sm:px-8 lg:py-28">
           <div className="mx-auto max-w-6xl">
             <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
               From hosts who stopped <span style={{ color: AMBER_INK }}>chasing the numbers.</span>
@@ -680,12 +680,12 @@ export default function AnalyticsFeature() {
             <div className="mt-12 grid gap-5 sm:gap-6 md:grid-cols-3">
               {QUOTES.map((t, i) => (
                 <Reveal as="figure" key={t.name} delay={i * 0.05} className="flex flex-col justify-between rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
-                  <blockquote className="text-[15px] leading-relaxed text-[#0F172A]">&ldquo;{t.quote}&rdquo;</blockquote>
+                  <blockquote className="text-[15px] leading-relaxed text-ink">&ldquo;{t.quote}&rdquo;</blockquote>
                   <figcaption className="mt-6 flex items-center gap-3 border-t border-black/5 pt-4">
                     <img src={t.avatar} alt="" loading="lazy" className="h-9 w-9 rounded-full object-cover" />
                     <div>
-                      <div className="text-sm font-semibold text-[#0F172A]">{t.name}</div>
-                      <div className="font-mono text-[11px] text-[#64748B]">{t.role}</div>
+                      <div className="text-sm font-semibold text-ink">{t.name}</div>
+                      <div className="font-mono text-[11px] text-muted">{t.role}</div>
                     </div>
                   </figcaption>
                 </Reveal>
@@ -705,21 +705,21 @@ export default function AnalyticsFeature() {
               <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
                 Analytics questions, <span style={{ color: AMBER_INK }}>answered.</span>
               </Reveal>
-              <Reveal as="p" delay={0.05} className="mt-5 text-base text-[#64748B]">
+              <Reveal as="p" delay={0.05} className="mt-5 text-base text-muted">
                 Plan details are on our <Link to="/pricing" className="font-semibold underline underline-offset-4" style={{ color: AMBER_INK }}>pricing page</Link>.
               </Reveal>
             </>
           )}
           items={FAQ}
           listClassName="overflow-hidden rounded-[16px] border border-black/10"
-          itemClassName={(open) => `border-b border-black/10 last:border-b-0 ${open ? 'bg-[#F8FAFC]' : ''}`}
-          summaryClassName={(open) => `grid grid-cols-[3.5rem_1fr_2rem] items-center px-5 py-4 transition-colors sm:grid-cols-[5rem_1fr_2.5rem] ${open ? '' : 'hover:bg-[#F8FAFC]'}`}
-          answerClassName="px-5 pb-5 pl-[3.5rem] text-[15px] leading-relaxed text-[#475569] sm:pl-[5rem]"
+          itemClassName={(open) => `border-b border-black/10 last:border-b-0 ${open ? 'bg-neutral-50' : ''}`}
+          summaryClassName={(open) => `grid grid-cols-[3.5rem_1fr_2rem] items-center px-5 py-4 transition-colors sm:grid-cols-[5rem_1fr_2.5rem] ${open ? '' : 'hover:bg-neutral-50'}`}
+          answerClassName="px-5 pb-5 pl-[3.5rem] text-[15px] leading-relaxed text-muted sm:pl-[5rem]"
           renderSummary={(f, i, open) => (
             <>
               <span className="font-mono text-xs font-semibold tabular-nums" style={{ color: AMBER_INK }}>Q.{String(i + 1).padStart(2, '0')}</span>
-              <span className="font-heading text-[15px] font-bold text-[#0F172A] sm:text-base">{f.q}</span>
-              <span aria-hidden className="justify-self-end font-mono text-lg leading-none text-[#64748B]">{open ? '−' : '+'}</span>
+              <span className="font-heading text-[15px] font-bold text-ink sm:text-base">{f.q}</span>
+              <span aria-hidden className="justify-self-end font-mono text-lg leading-none text-muted">{open ? '−' : '+'}</span>
             </>
           )}
         />
@@ -729,15 +729,15 @@ export default function AnalyticsFeature() {
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: SLATE, color: ON_DARK }}>
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.2fr_0.8fr]">
           <div>
-            <Reveal as="h2" className="font-heading text-[clamp(2.2rem,5vw,3.8rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[#F1F5F9]">
+            <Reveal as="h2" className="font-heading text-[clamp(2.2rem,5vw,3.8rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[#FBF5F3]">
               Stop guessing. <span style={{ color: AMBER }}>Read your numbers.</span>
             </Reveal>
-            <Reveal as="p" delay={0.05} className="mt-6 max-w-xl text-base leading-relaxed text-[#CBD5E1]">
+            <Reveal as="p" delay={0.05} className="mt-6 max-w-xl text-base leading-relaxed text-[#D9C4C0]">
               Set up your booking page free. Your first paid booking starts the chart.
             </Reveal>
             <Reveal delay={0.1} className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
               <PrimaryCta dark>Start free <ArrowRight size={16} /></PrimaryCta>
-              <Link to="/pricing" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F1F5F9] hover:no-underline hover:opacity-80">
+              <Link to="/pricing" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#FBF5F3] hover:no-underline hover:opacity-80">
                 See pricing <ArrowRight size={15} />
               </Link>
             </Reveal>
@@ -746,10 +746,10 @@ export default function AnalyticsFeature() {
             <ImgSlot slot="analytics-host-reviewing" alt="A freelancer reviewing their monthly earnings on a laptop" className="aspect-[4/3] w-full" dark />
           </Reveal>
         </div>
-        <nav aria-label="Related features" className="mx-auto mt-14 flex max-w-6xl flex-wrap gap-x-6 gap-y-2 border-t border-white/10 pt-8 text-sm text-[#94A3B8]">
+        <nav aria-label="Related features" className="mx-auto mt-14 flex max-w-6xl flex-wrap gap-x-6 gap-y-2 border-t border-white/10 pt-8 text-sm text-[#B39A96]">
           <span className="font-mono text-[11px] uppercase tracking-[0.14em]">Works with</span>
           {RELATED.map((r) => (
-            <Link key={r.to} to={r.to} className="text-[#E2E8F0] underline decoration-white/20 underline-offset-4 hover:text-[#F1F5F9] hover:decoration-white">{r.label}</Link>
+            <Link key={r.to} to={r.to} className="text-[#EBDCD9] underline decoration-white/20 underline-offset-4 hover:text-[#FBF5F3] hover:decoration-white">{r.label}</Link>
           ))}
         </nav>
       </section>
