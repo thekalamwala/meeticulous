@@ -40,6 +40,16 @@ const seller = {
   brandSubline: 'by Timewheel Internet (P) Ltd',
   // Hosted on the site (client/public/images/email → meeticulous.com via Vercel).
   logoUrl:   'https://meeticulous.com/images/email/meeticulous-wordmark-full-color.png',
+  // LLPIN — preferred over CIN on the invoice when the entity is an LLP (Rajmudra
+  // Media LLP). Empty until supplied; the invoice then falls back to CIN.
+  llpin:     env.SELLER_LLPIN        || '',
+  // Bank details for the invoice footer. Empty by default → the invoice renders a
+  // muted "to be provided" until the founder supplies them (env-overridable, no
+  // deploy). Part of the same pending Rajmudra-migration block above.
+  bankName:    env.SELLER_BANK_NAME    || '',
+  bankAccount: env.SELLER_BANK_ACCOUNT || '',
+  bankIfsc:    env.SELLER_BANK_IFSC    || '',
+  bankBranch:  env.SELLER_BANK_BRANCH  || '',
 };
 
 // SAC code — CA-confirmed 998314 (IT design & development services). Used for
