@@ -74,7 +74,7 @@ export default function CommunityFeed() {
         <p className={`order-2 text-muted ${v2 ? 'text-xs lg:col-start-1 lg:row-start-2' : 'text-sm'}`}>Hosts and guests talking about sessions, pricing and the craft.</p>
 
         {v2 ? (
-          <div className="relative order-3 mt-2 w-fit justify-self-start lg:order-none lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:mt-0 lg:justify-self-end lg:self-center">
+          <div className="relative hidden lg:block lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:justify-self-end lg:self-center">
             <select
               aria-label="Filter the feed"
               value={tab}

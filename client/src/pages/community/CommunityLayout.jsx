@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Bell, House, LayoutGrid, Lock, Plus, Search, SquarePen, UserRound } from 'lucide-react';
+import { Bell, House, LayoutGrid, ListFilter, Lock, Plus, Search, SquarePen, UserRound } from 'lucide-react';
 import { getSpaces } from '../../services/communityApi';
 import { getNotifications } from '../../services/api';
 import { SpaceIcon } from '../../components/community/ItemCard';
@@ -74,14 +74,18 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [unread, setUnread] = useState(0);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [spacesOpen, setSpacesOpen] = useState(false); // mobile: grid tile → spaces sheet
+  const [filterOpen, setFilterOpen] = useState(false); // mobile: bottom-bar filter sheet
   const searchRef = useRef(null);
+  const [sp] = useSearchParams();
+  const curTab = sp.get('tab') || 'everyone';
   const tag = communityTag();
 
-  // ⌘K / Ctrl-K opens the top-bar search; Esc closes it.
+  // ⌘K / Ctrl-K opens the top-bar search; Esc closes any open overlay.
   useEffect(() => {
     const onKey = (e) => {
       if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); setSearchOpen(true); }
-      else if (e.key === 'Escape') setSearchOpen(false);
+      else if (e.key === 'Escape') { setSearchOpen(false); setSpacesOpen(false); setFilterOpen(false); }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -123,14 +127,32 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
           </Link>
           <button
             type="button"
-            onClick={() => setDrawerOpen((o) => !o)}
-            aria-label="Open profile menu"
-            aria-expanded={drawerOpen}
+            onClick={() => setSpacesOpen(true)}
+            aria-label="Browse spaces"
+            aria-expanded={spacesOpen}
             className="grid h-11 w-11 place-items-center rounded-2xl bg-cream text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40"
           >
             <LayoutGrid size={20} aria-hidden="true" />
           </button>
         </header>
+      )}
+
+      {/* Mobile Spaces sheet — opened by the header grid tile (distinct from the
+          Profile drawer the bottom bar opens). */}
+      {v2 && spacesOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Spaces">
+          <div className="absolute inset-0 bg-ink/30" onClick={() => setSpacesOpen(false)} />
+          <div className="absolute inset-x-0 bottom-0 max-h-[70vh] overflow-y-auto rounded-t-3xl bg-white p-4 shadow-2xl" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
+            <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-line" />
+            <h2 className="px-1 pb-1 font-display text-base font-extrabold text-ink">Spaces</h2>
+            <nav aria-label="Spaces" className="flex flex-col">
+              <Link to="/community" onClick={() => setSpacesOpen(false)} aria-current={active === 'feed' ? 'page' : undefined} className={navCls(active === 'feed')}>All</Link>
+              {spaces.map((s) => (
+                <Link key={s.key} to={`/community/s/${s.key}`} onClick={() => setSpacesOpen(false)} aria-current={active === s.key ? 'page' : undefined} className={navCls(active === s.key)}>{s.title}</Link>
+              ))}
+            </nav>
+          </div>
+        </div>
       )}
 
       {/* v2 desktop top bar: wordmark + search + icon actions (replaces the global
@@ -271,6 +293,9 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
           >
             <House size={22} aria-hidden="true" />Home
           </Link>
+          <button type="button" onClick={() => setFilterOpen(true)} aria-label="Filter the feed" aria-expanded={filterOpen} className={`flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 ${curTab !== 'everyone' ? 'text-maroon' : 'text-muted'}`}>
+            <ListFilter size={22} aria-hidden="true" />Filter
+          </button>
           <button type="button" disabled aria-label="Search (coming soon)" title="Soon" className="flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium text-muted opacity-60">
             <Search size={22} aria-hidden="true" />Search
           </button>
@@ -296,6 +321,23 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
             <UserRound size={22} aria-hidden="true" />Profile
           </button>
         </nav>
+      )}
+
+      {/* Mobile feed-filter sheet — opened by the bottom-bar Filter icon. Options
+          drive the feed via the ?tab= param, so no shared state is needed. */}
+      {v2 && filterOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Filter the feed">
+          <div className="absolute inset-0 bg-ink/30" onClick={() => setFilterOpen(false)} />
+          <div className="absolute inset-x-0 bottom-0 rounded-t-3xl bg-white p-4 shadow-2xl" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
+            <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-line" />
+            <h2 className="px-1 pb-1 font-display text-base font-extrabold text-ink">Show</h2>
+            <nav aria-label="Feed filter" className="flex flex-col">
+              {[{ key: 'everyone', label: 'Everyone', to: '/community' }, { key: 'updates', label: 'Updates', to: '/community?tab=updates' }].map((o) => (
+                <Link key={o.key} to={o.to} onClick={() => setFilterOpen(false)} aria-current={curTab === o.key ? 'page' : undefined} className={navCls(curTab === o.key)}>{o.label}</Link>
+              ))}
+            </nav>
+          </div>
+        </div>
       )}
 
       {v2 && <ProfileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} user={user} />}
