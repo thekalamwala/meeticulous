@@ -74,12 +74,12 @@ export default function CommunityFeed() {
         <p className={`order-2 text-muted ${v2 ? 'text-xs lg:col-start-1 lg:row-start-2' : 'text-sm'}`}>Hosts and guests talking about sessions, pricing and the craft.</p>
 
         {v2 ? (
-          <div className="relative order-3 lg:order-none lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:justify-self-end lg:self-center">
+          <div className="relative order-3 mt-2 w-fit justify-self-start lg:order-none lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:mt-0 lg:justify-self-end lg:self-center">
             <select
               aria-label="Filter the feed"
               value={tab}
               onChange={(e) => setParams(e.target.value === 'everyone' ? {} : { tab: e.target.value })}
-              className="cursor-pointer appearance-none rounded-full border border-line bg-white py-1.5 pl-4 pr-9 text-[13px] font-semibold text-ink shadow-sm transition-colors hover:border-maroon/40 focus:outline-none focus:ring-2 focus:ring-maroon/30"
+              className="w-auto cursor-pointer appearance-none rounded-full border border-line bg-white py-1.5 pl-4 pr-9 text-[13px] font-semibold text-ink shadow-sm transition-colors hover:border-maroon/40 focus:outline-none focus:ring-2 focus:ring-maroon/30"
             >
               {TABS.map((t) => (
                 <option key={t.key} value={t.key} disabled={t.soon}>{t.label}{t.soon ? ' · soon' : ''}</option>
