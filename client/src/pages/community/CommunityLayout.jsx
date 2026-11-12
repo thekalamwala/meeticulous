@@ -197,7 +197,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
                   <Link to="/community/guidelines" className="text-muted hover:text-maroon">Guidelines</Link>
                 </div>
                 <div className="flex items-center gap-1.5 text-[11px] text-muted">
-                  Powered by <span className="font-display text-xs font-extrabold tracking-tight text-ink">Me<span className="text-[#FF6E8A]">e</span>ticulous</span>
+                  Powered by <img src="/brand/meeticulous-wordmark.svg" alt="Meeticulous" width="84" height="14" className="h-[13px] w-auto" />
                 </div>
               </div>
             )}
