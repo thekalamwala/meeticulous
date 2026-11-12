@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { CircleHelp, Image, MessagesSquare, SquarePen } from 'lucide-react';
+import { ChevronDown, CircleHelp, Image, MessagesSquare, SquarePen } from 'lucide-react';
 import Seo from '../../components/common/Seo';
 import ErrorPage from '../ErrorPage';
 import { useInfiniteScroll } from '../../components/dashboard/ui/useInfiniteScroll';
@@ -19,7 +19,6 @@ import CommunityLayout, { EmptyState, ListStatus, SITE_DESC, useCursorList } fro
 
 const TABS = [
   { key: 'everyone', label: 'Everyone' },
-  { key: 'following', label: 'Following', soon: true }, // follows ship in a later phase
   { key: 'updates', label: 'Updates' },
 ];
 
@@ -68,31 +67,47 @@ export default function CommunityFeed() {
 
       {/* v2: a slim one-line greeting, not a full-height hero, so the first post
           sits above the fold on a 390px phone. v1: the original hero. */}
-      <header className={`flex flex-col ${v2 ? 'gap-0.5 py-1' : 'gap-2 py-2'}`}>
-        <h1 className={`font-display font-extrabold leading-tight tracking-tight text-maroon ${v2 ? 'text-xl' : 'text-3xl sm:text-4xl'}`}>
+      <div className={v2 ? 'grid grid-cols-1 gap-x-4 gap-y-0 lg:grid-cols-[1fr_auto] lg:items-start' : 'flex flex-col gap-5 py-1'}>
+        <h1 className={`order-1 font-display font-extrabold leading-tight tracking-tight text-maroon ${v2 ? 'text-xl lg:col-start-1 lg:row-start-1' : 'text-3xl sm:text-4xl'}`}>
           Ask, share, learn. <span className="font-serif font-normal italic text-rose">Find your people.</span>
         </h1>
-        <p className={`text-muted ${v2 ? 'text-xs' : 'text-sm'}`}>Hosts and guests talking about sessions, pricing and the craft.</p>
-      </header>
+        <p className={`order-2 text-muted ${v2 ? 'text-xs lg:col-start-1 lg:row-start-2' : 'text-sm'}`}>Hosts and guests talking about sessions, pricing and the craft.</p>
 
-      <div role="tablist" aria-label="Feed" className={v2 ? 'mt-tabs mt-tabs--underline flex overflow-x-auto' : 'mt-tabs flex'}>
-        {TABS.map((t) => (
-          <button
-            key={t.key}
-            type="button"
-            role="tab"
-            aria-selected={t.key === tab}
-            aria-disabled={t.soon || undefined}
-            title={t.soon ? 'Following arrives soon' : undefined}
-            onClick={() => { if (!t.soon && t.key !== tab) setParams(t.key === 'everyone' ? {} : { tab: t.key }); }}
-            className={v2 ? 'mt-tab shrink-0' : 'mt-tab flex-1 justify-center px-3 sm:px-6'}
-          >
-            {t.label}{t.soon && <span className="mt-tab__count">soon</span>}
-          </button>
-        ))}
+        {v2 ? (
+          <div className="relative hidden lg:block lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:justify-self-end lg:self-center">
+            <select
+              aria-label="Filter the feed"
+              value={tab}
+              onChange={(e) => setParams(e.target.value === 'everyone' ? {} : { tab: e.target.value })}
+              className="w-auto cursor-pointer appearance-none rounded-full border border-line bg-white py-1.5 pl-4 pr-9 text-[13px] font-semibold text-ink shadow-sm transition-colors hover:border-maroon/40 focus:outline-none focus:ring-2 focus:ring-maroon/30"
+            >
+              {TABS.map((t) => (
+                <option key={t.key} value={t.key} disabled={t.soon}>{t.label}{t.soon ? ' · soon' : ''}</option>
+              ))}
+            </select>
+            <ChevronDown size={15} aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted" />
+          </div>
+        ) : (
+          <div role="tablist" aria-label="Feed" className="mt-tabs flex">
+            {TABS.map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                role="tab"
+                aria-selected={t.key === tab}
+                aria-disabled={t.soon || undefined}
+                title={t.soon ? 'Following arrives soon' : undefined}
+                onClick={() => { if (!t.soon && t.key !== tab) setParams(t.key === 'everyone' ? {} : { tab: t.key }); }}
+                className="mt-tab flex-1 justify-center px-3 sm:px-6"
+              >
+                {t.label}{t.soon && <span className="mt-tab__count">soon</span>}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
-      <div className="mt-card gap-4 p-5 sm:p-6">
+      <div className={`${v2 ? 'hidden lg:flex ' : ''}mt-card gap-4 p-5 sm:p-6`}>
         <div className="flex items-center gap-3">
           {user && <Avatar author={{ display_name: user.name || user.first_name, avatar_url: user.profile_image, role: user.is_host ? 'host' : 'guest' }} />}
           <button type="button" onClick={() => compose('post')} className="mt-input min-w-0 flex-1 cursor-text rounded-full text-left text-sm text-muted">

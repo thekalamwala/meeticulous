@@ -34,17 +34,21 @@ export const HELP_DOCS = [
   { slug: 'plans-and-upgrading', category: 'Hosts' },
   { slug: 'why-am-i-not-getting-bookings', category: 'Hosts' },
   { slug: 'your-username-and-booking-link', category: 'Hosts' },
+  { slug: 'custom-domain', category: 'Hosts' },
   { slug: 'branding-and-theme-colours', category: 'Hosts' },
   { slug: 'selling-digital-products', category: 'Hosts' },
   { slug: 'reminders-notifications-and-badges', category: 'Hosts' },
   { slug: 'kyc-and-verification', category: 'Hosts' },
   // General / Trust
   { slug: 'what-is-meeticulous', category: 'General' },
+  { slug: 'feature-overview', category: 'General' },
   { slug: 'pricing-and-commission', category: 'General' },
+  { slug: 'gst-invoices', category: 'General' },
   { slug: 'is-my-payment-and-data-safe', category: 'General' },
   { slug: 'whats-not-supported-yet', category: 'General' },
   { slug: 'troubleshooting-and-errors', category: 'General' },
   { slug: 'contact-support', category: 'General' },
+  { slug: 'deleting-your-account', category: 'General' },
 ];
 
 export const HELP_SLUGS = HELP_DOCS.map((d) => d.slug);

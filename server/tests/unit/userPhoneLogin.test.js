@@ -33,7 +33,7 @@ const { supabaseAdmin, signInWithPassword, mintSessionForEmail } = supa;
 const otpStore  = require('../../utils/otpStore');
 const featureFlags = require('../../services/featureFlags');
 const {
-  loginWithPhone, verifyOtpLogin, setPassword, loginUnified,
+  loginWithPhone, verifyOtpLogin, setPassword, loginUnified, sendOtp,
 } = require('../../controllers/authController');
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -184,6 +184,31 @@ describe('verifyOtpLogin', () => {
     expect(payload.token).toBe('tok');
     expect(payload.role).toBe('guest');
     expect(mintSessionForEmail).toHaveBeenCalledWith(GUEST.email);
+    // C2: a session is minted ONLY from a 'login'-type code — a booking code
+    // (emailed to the booker) must never authenticate.
+    expect(otpStore.verify).toHaveBeenCalledWith(expect.anything(), '123456', 'login');
+  });
+
+  // ── send-otp OTP type (C2 phone-account-takeover guard) ──────────────────────
+  // sendOtp used to email a phone-keyed code to any address in the request AND
+  // store it under the same 'booking' type verifyOtpLogin accepted, so an attacker
+  // could request a code for a victim's number, receive it at their own email, and
+  // log in as the victim. Login codes are now phone-only and 'login'-typed.
+  test('C2: a login send stores a LOGIN-type code', async () => {
+    queueFrom(); // every read null → not a superadmin number
+    const r = res();
+    await sendOtp(req({ phone: '+919876543210', purpose: 'login' }), r);
+    expect(otpStore.set).toHaveBeenCalledWith(expect.anything(), expect.anything(), 'login');
+    // the request email is ignored for a login send — delivery is phone-only
+    const notify = require('../../utils/notify').sendOtpNotification;
+    if (notify.mock.calls.length) expect(notify.mock.calls[0][0].email).toBeUndefined();
+  });
+
+  test('C2: a booking send still stores a BOOKING-type code', async () => {
+    queueFrom();
+    const r = res();
+    await sendOtp(req({ email: 'g@x.com', phone: '+919876543210', name: 'G' }), r);
+    expect(otpStore.set).toHaveBeenCalledWith(expect.anything(), expect.anything(), 'booking');
   });
 
   test('back-fills orphaned anonymous bookings for the verified phone', async () => {

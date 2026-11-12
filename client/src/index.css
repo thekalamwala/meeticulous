@@ -101,11 +101,12 @@ h6 {
   line-height: 1.15;
 }
 
-/* /for/* marketing pages (wrapped in .for-page in App.jsx) carry their own
-   palettes: a heading takes the page's text colour unless it sets one itself
-   (text-white on a dark band, an inline accent, …). (0,0,2) — beats the base
-   h1–h6 rules, loses to any text-* utility. */
-html :where(.for-page) :is(h1, h2, h3, h4, h5, h6) { color: inherit; }
+/* /for/* marketing pages (wrapped in .for-page in App.jsx) and the bespoke
+   dark /features/* pages (.feature-page-dark) carry their own palettes: a
+   heading takes the page's text colour unless it sets one itself (text-white
+   on a dark band, an inline accent, …). (0,0,2) — beats the base h1–h6 rules,
+   loses to any text-* utility. */
+html :where(.for-page, .feature-page-dark) :is(h1, h2, h3, h4, h5, h6) { color: inherit; }
 
 /* Card titles and smaller headings (H3) → Poppins, like the body. */
 h3 {
@@ -127,14 +128,15 @@ h2.font-sans {
 
 /* design-system/BRAND_RULES.md: display + headings are maroon. Same selectors
    (and specificity) as above, so `h1.font-heading` out-specifies a text-*
-   utility on it — except on /for pages (.for-page), which use their own
-   palettes. The :where() keeps that exclusion at zero specificity. */
-h1:where(:not(.for-page *)),
-h2:where(:not(.for-page *)),
-h1.font-heading:where(:not(.for-page *)),
-h2.font-heading:where(:not(.for-page *)),
-h1.font-sans:where(:not(.for-page *)),
-h2.font-sans:where(:not(.for-page *)) {
+   utility on it — except on /for pages (.for-page) and the bespoke dark
+   /features pages (.feature-page-dark), which use their own palettes. The
+   :where() keeps those exclusions at zero specificity. */
+h1:where(:not(.for-page *):not(.feature-page-dark *)),
+h2:where(:not(.for-page *):not(.feature-page-dark *)),
+h1.font-heading:where(:not(.for-page *):not(.feature-page-dark *)),
+h2.font-heading:where(:not(.for-page *):not(.feature-page-dark *)),
+h1.font-sans:where(:not(.for-page *):not(.feature-page-dark *)),
+h2.font-sans:where(:not(.for-page *):not(.feature-page-dark *)) {
   color: var(--mt-maroon);
 }
 
@@ -668,8 +670,29 @@ button[role='switch'] {
 }
 @media (min-width: 1024px) {
   .home-hero { --ee-w: 280px; --ee-r: 6vw; }
-  /* Copy keeps the left column; the right one stays empty (owner call). */
+  /* Copy keeps the left column; the silhouette fills the right one. */
   .home-hero-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); }
+}
+
+/* Silhouette art (client/public/silhouette.png). Desktop only: a small,
+   uncropped image sitting just above the pink "ee" at the hero's bottom-right.
+   Sits behind the copy (z-10) and the ribbon (z-[1]). */
+.home-hero-figure { display: none; }
+@media (min-width: 1024px) {
+  .home-hero-figure {
+    display: block;
+    position: absolute;
+    right: var(--ee-r, 0px);
+    bottom: calc(var(--ee-b, 0px) + var(--ee-w) * 0.55 + 1.25rem);
+    z-index: 0;
+    width: min(50vw, 600px);
+    pointer-events: none;
+  }
+  .home-hero-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
 }
 /* Wide desktop: the loops sit clear of the copy, under the card, so the copy
    only has to clear the straight band (top = 87 units above the loops' foot

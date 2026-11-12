@@ -21,6 +21,23 @@ describe('<Footer>', () => {
     expect(screen.queryByText(/Power up your/i)).toBeNull();
   });
 
+  test('opens on the "Get started for free" strip and a keyword marquee', () => {
+    const { container } = renderFooter();
+    expect(screen.getByRole('link', { name: /Get started for free/i }).getAttribute('href')).toBe('/become-a-host');
+    // Old CTA band copy is gone.
+    expect(screen.queryByText(/Ready to get booked and paid/i)).toBeNull();
+    // Keyword run is rendered twice for the seamless loop; the copy is hidden from AT.
+    expect(container.querySelectorAll('.ft-marquee-track > ul')).toHaveLength(2);
+    expect(container.querySelector('.ft-marquee-track > ul[aria-hidden="true"]')).toBeTruthy();
+    expect(screen.getAllByText('UPI payments')).toHaveLength(2);
+  });
+
+  test('minimal variant has no CTA strip or marquee', () => {
+    const { container } = render(<MemoryRouter><Footer variant="minimal" /></MemoryRouter>);
+    expect(screen.queryByRole('link', { name: /Get started for free/i })).toBeNull();
+    expect(container.querySelector('.ft-marquee')).toBeNull();
+  });
+
   test('links the Solutions + Compare discovery hubs (no per-profession sitemap)', () => {
     const { container } = renderFooter();
     // Discovery lives on dedicated hub pages; the footer links into them in

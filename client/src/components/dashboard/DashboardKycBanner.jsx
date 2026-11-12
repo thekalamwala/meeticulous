@@ -19,8 +19,11 @@ const Banner = ({ tone, Icon, title, body }) => (
   </div>
 );
 
-const AMBER = { box: 'border-amber-200 bg-amber-50', icon: 'text-amber-600', cta: 'bg-amber-600 hover:bg-amber-700', label: 'Verify now' };
-const EMERALD = { box: 'border-emerald-200 bg-emerald-50', icon: 'text-emerald-600', cta: 'bg-emerald-600 hover:bg-emerald-700', label: 'Finish KYC' };
+// Brand tokens (Loop & Slot). WARN = marigold = the design system's warning surface
+// (matches Badge `warning` + the --warning token). CASH = c-emerald (positive/money).
+// CTAs are maroon except the money banner, which keeps the positive emerald.
+const WARN = { box: 'border-marigold-300 bg-marigold-100', icon: 'text-marigold-800', cta: 'bg-maroon hover:bg-maroon-dark', label: 'Verify now' };
+const CASH = { box: 'border-c-emerald/30 bg-c-emerald/10', icon: 'text-c-emerald', cta: 'bg-c-emerald hover:opacity-90', label: 'Finish KYC' };
 
 /**
  * DashboardKycBanner — KYC nudge on the host dashboard home.
@@ -48,7 +51,7 @@ export default function DashboardKycBanner({ kyc, hasPaidService }) {
   if (!approved && !payoutsReady && earned) {
     return (
       <Banner
-        tone={EMERALD}
+        tone={CASH}
         Icon={Wallet}
         title={`You have ${rupees(kyc.pending_earnings)} waiting — finish KYC to withdraw`}
         body="Your earnings are held safely. Complete the one-time verification (PAN + bank) and we'll release them to your account."
@@ -61,7 +64,7 @@ export default function DashboardKycBanner({ kyc, hasPaidService }) {
   if (!hasPaidService) return null;
   return (
     <Banner
-      tone={AMBER}
+      tone={WARN}
       Icon={ShieldCheck}
       title="Complete verification to accept payments"
       body="Your paid services can't be booked until you finish a quick one-time verification (PAN + bank). It takes a couple of minutes and you only do it once."

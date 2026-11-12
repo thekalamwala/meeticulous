@@ -1,0 +1,64 @@
+name: Tax/Legal sign-off gate
+
+# Guardrail #2 (agent-fleet plan). A PR that changes tax / TDS / TCS / GST /
+# commission / payout / invoice logic must carry an explicit human sign-off before
+# it can merge. CI being green does NOT catch a WRONG tax rate — only a human/CA can.
+# Origin: #258 shipped a §206AA 5% no-PAN TDS rate that contradicted the CA's actual
+# rule (flat 1% TDS + 1% TCS for all). This gate forces that authorization to be cited.
+#
+# Pass conditions (either one):
+#   - a "Sign-off: <name/date — what was approved>" line in the PR body, OR
+#   - the `tax-signoff` label on the PR.
+
+on:
+  pull_request:
+    branches: [main, 'release/**']
+    types: [opened, synchronize, reopened, edited, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+jobs:
+  signoff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require sign-off on tax/legal/money changes
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          BODY: ${{ github.event.pull_request.body }}
+          LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: |
+          set -euo pipefail
+          # Files that encode money/legal rules, and patterns that signal a rate/term change.
+          SENSITIVE_FILES='server/lib/pricingEngine\.js|invoice|tax'
+          SENSITIVE_PATTERNS='tdsRate|tcsRate|\bTDS\b|\bTCS\b|206AA|194-O|gstRate|commission_percentage|\bpayout\b'
+
+          changed="$(git diff --name-only "$BASE" "$HEAD" || true)"
+          hit_file="$(printf '%s\n' "$changed" | grep -Ei "$SENSITIVE_FILES" || true)"
+          hit_patch="$(git diff "$BASE" "$HEAD" -- 'server/**' | grep -E '^[+-]' | grep -iE "$SENSITIVE_PATTERNS" | head -20 || true)"
+
+          if [ -z "$hit_file" ] && [ -z "$hit_patch" ]; then
+            echo "No tax/legal/money-sensitive changes detected. OK."
+            exit 0
+          fi
+
+          echo "::group::Tax/legal/money-sensitive changes in this PR"
+          [ -n "$hit_file" ] && { echo "Files:"; printf '%s\n' "$hit_file"; }
+          [ -n "$hit_patch" ] && { echo "Lines:"; printf '%s\n' "$hit_patch"; }
+          echo "::endgroup::"
+
+          if printf '%s' "$LABELS" | grep -q 'tax-signoff'; then
+            echo "'tax-signoff' label present — authorized. OK."
+            exit 0
+          fi
+          if printf '%s' "$BODY" | grep -qiE '^[[:space:]]*Sign-?off:[[:space:]]*\S'; then
+            echo "Sign-off line present in PR body — authorized. OK."
+            exit 0
+          fi
+
+          echo "::error::This PR changes tax/TDS/TCS/GST/commission/payout/invoice logic. Add a 'Sign-off: <name/date — what was approved>' line to the PR body OR the 'tax-signoff' label, citing the human/CA authorization. (See #258: a 5% TDS rate shipped that contradicted the CA's flat 1%+1% rule.)"
+          exit 1

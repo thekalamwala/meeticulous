@@ -21,6 +21,7 @@ vi.mock('../services/api', () => ({
   markAllNotificationsRead: vi.fn(() => Promise.resolve({ data: {} })),
   markNotificationRead: vi.fn(() => Promise.resolve({ data: {} })),
   markLinkShared: vi.fn(() => Promise.resolve({})),
+  getFeatureFlags: vi.fn(() => Promise.resolve({ data: {} })), // ConsoleSidebar reads flags; coupons off
 }));
 import * as api from '../services/api';
 

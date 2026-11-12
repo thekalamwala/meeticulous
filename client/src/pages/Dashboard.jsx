@@ -9,7 +9,7 @@ import { getPayoutBalance, getHostBookings, getHostNudges, getMyKyc, getMyServic
 import { fmtMoney, cn } from '../components/dashboard/ui';
 import { isFreePlan } from '../utils/themeUtils';
 import CommissionMeter from '../components/dashboard/CommissionMeter';
-import DashboardKycBanner from '../components/dashboard/DashboardKycBanner';
+import GoLiveChecklist from '../components/dashboard/GoLiveChecklist';
 import { useRegisterRefresh } from '../components/dashboard/ui/refreshContext';
 import { useOverviewChrome } from '../components/common/overviewChrome';
 import { isPreviewEnabled, getPreviewBookings, getPreviewPayoutBalance } from '../utils/previewData';
@@ -454,7 +454,7 @@ const Dashboard = () => {
     .then(({ data }) => setCommissionPaid(Number(data?.commissionPaid) || 0))
     .catch(() => {}), []);
 
-  // KYC status + whether the host sells a paid service — drives DashboardKycBanner.
+  // KYC status + whether the host sells a paid service — drives GoLiveChecklist.
   // Non-blocking: on any error the banner simply stays hidden.
   const [kyc, setKyc] = useState(null);
   const [hasPaidService, setHasPaidService] = useState(false);
@@ -539,7 +539,9 @@ const Dashboard = () => {
           so the overview content is a single column — no layout shift. */}
       <Greeting firstName={firstName} />
 
-      <DashboardKycBanner kyc={kyc} hasPaidService={hasPaidService} />
+      {/* Activation checklist (home): folds the KYC nudge into the full go-live
+          path. Other pages keep the standalone KycNudgeStrip. Hides when live. */}
+      <GoLiveChecklist kyc={kyc} hasPaidService={hasPaidService} username={user?.username} />
       <CommissionMeter commissionPaid={commissionPaid} isFree={isFreePlan(user?.plan)} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)] 2xl:grid-cols-[540px_minmax(0,1fr)_minmax(0,1fr)]">
