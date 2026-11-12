@@ -1,8 +1,9 @@
 # TDS / TCS Withholding on Host Payouts — Rules & Design
 
-**Status:** CA replied 2026-11-12 (@Aastha) — headline rates CONFIRMED; three corrections
-folded in below; TCS clean sign-off pending the Section 9(5) answer (§8). **No code goes
-live until the CA's final written authorisation is added as the PR sign-off line.**
+**Status:** CA FINAL authorisation received 2026-11-12 (@Aastha) — cleared for go-live (§7).
+§9(5) confirmed not applicable. Key rule folded into code: **TCS is collected only from
+GST-registered hosts** (§8). **Flag stays OFF until the authorisation line (with entity / CA
+name / M. No. filled) is added to the PR to clear the tax-signoff gate.**
 **Date:** 2026-11-12
 **Owner:** Shubham (founder) · drafted with Claude Code
 
@@ -147,40 +148,64 @@ rate going forward only**, and never under-report 16A/GSTR-8 to "fix" it. Any fu
 reconciliation is **transaction-date-wise against each effective date** (TDS 01-Oct-2024,
 TCS 10-Jul-2024), not a blanket percentage.
 
-## 7. CA sign-off status (2026-11-12)
-**Confirmed (set now — "settled" per the CA):** TDS 0.1% / TCS 0.5%; base gross ex-GST with no
-commission/gateway deduction; entity rules per §3; no-PAN 5%; filing cadence (with: March TDS
-due 30 Apr; 26Q due 31 Jul/31 Oct/31 Jan/31 May; 16A quarterly within 15 days of 26Q).
+## 7. CA FINAL authorisation (2026-11-12) — cleared for go-live
 
-**Interim authorisation line the CA gave (TCS still subject to §8):**
-> *Confirmed 12-Nov-2026 for FY 2026-27. TDS 0.1% of gross service value (ex separately-shown
-> GST); 1% up to 30-Sep-2024. Individual/HUF with valid, operative PAN: nil up to ₹5L gross in
-> the FY, 0.1% once ₹5L is crossed (on the full gross); company/firm/LLP: 0.1% from ₹1;
-> no/inoperative PAN: 5%. TCS 0.5% of net value of taxable supplies (ex-GST, net of returns);
-> 1% up to 09-Jul-2024; no threshold, flat for every host, except supplies covered by s.9(5) —
-> to be confirmed. Past bookings: correct rates going forward; deposited excess remains the
-> host's claimable credit — no direct refund/set-off; reconcile date-wise. — [CA name], M.No.[__]*
+> *Confirmed 12-Nov-2026 for FY 2026-27, Meeticulous ([legal entity]). TDS u/s 194-O: 0.1% of
+> gross service value (ex separately-shown GST); individual/HUF host with valid operative PAN —
+> nil up to ₹5L gross in the FY, 0.1% once ₹5L is crossed (on full gross); company/firm/LLP —
+> 0.1% from first rupee; no/inoperative PAN — 5%. Applies to all hosts, registered or not.
+> TCS u/s 52: 0.5% of net value of taxable supplies (ex-GST, net of returns) — **collected only
+> from GST-registered hosts; not collected from unregistered hosts below the ₹20L/₹10L threshold
+> (Notification 65/2017)**. No §9(5) applicability — host services are professional/consultancy,
+> outside the notified categories. Past bookings: none (pre-launch); correct rates set before
+> first payout, nothing to reconcile. TCS registration to be held state-wise where registered
+> hosts are located. — [CA name], M. No. [___]*
 
-The **final clean written authorisation** (the PR sign-off line) comes after §8 is answered.
+This is the fileable sign-off. Two data points remain open but **neither blocks go-live**:
+(a) the precise host-service wording (§8 point 2); (b) the host-by-state map with registration
+flags (§8 point 3). Fill `[legal entity]`, `[CA name]`, `M. No.` to use as the PR sign-off line.
 
-## 8. Open before a clean TCS sign-off — Section 9(5)
-If any host service is a **notified §9(5) category** (passenger transport, hotel/accommodation,
-restaurant, housekeeping such as plumbing/carpentry via a platform), **the operator pays GST
-itself and collects NO TCS** on those supplies — running 0.5% TCS there would be wrong. Hosts
-are professionals/creators taking appointment bookings, which reads as **outside** §9(5)
-(normal 0.5% TCS), but the founder must confirm to the CA: **(a) the precise host-service
-category, (b) whether hosts are GST-registered.** TDS (194-O) is unaffected either way.
+## 8. The rule that mattered most — TCS follows host GST registration
 
-**Compliance (CA flag):** TCS needs a **state-wise GST registration** in every State/UT where
-hosts are located; GSTR-8 is filed per registration. A single-GSTIN setup must be mapped to
-host states before TCS collection — "a common and expensive miss."
+**TCS is collected ONLY from GST-registered hosts.** An unregistered service host below the
+**₹20L (₹10L special-category states)** turnover limit is not required to register (Notif.
+65/2017-CT) and has **no GSTIN** — so there is nothing to report in GSTR-8 and the host cannot
+reclaim it. Deducting TCS from such a host is simply wrongly withheld money. So:
+- **Host with a valid GSTIN** → collect TCS 0.5% on net value; report in GSTR-8 against the GSTIN.
+- **Host unregistered / below threshold** → **no TCS — do not deduct.**
+- When a host later crosses ₹20L and obtains a GSTIN, TCS switches on from that point.
+- **TDS (194-O) is unaffected** — income tax, applies to registered and unregistered hosts alike
+  (individual ≤₹5L still nil). The GSTIN gate must NOT touch the TDS logic.
 
-## 9. Follow-up build (separate PRs, before launch)
-1. **Per-host FY-gross tally** with the §3 **cumulative + catch-up** on crossing ₹5L.
-2. **PAN valid-and-operative** check (not PAN-present); inoperative PAN → 5%.
+**BUILT (this PR):** `resolveWithholding` now gates TCS on `hasGstin` — no GSTIN → TCS 0;
+`bookingController` derives it from `host.billing_details.gstin`. Covered by tests.
+
+**§9(5) — confirmed NOT applicable.** Professional/consultancy sessions are none of the notified
+categories (transport, accommodation, restaurant, housekeeping). Normal TCS regime, subject to
+the registration gate above. *Caveat to watch:* if the catalogue ever adds a notified category
+(short-stay accommodation, restaurant/cloud-kitchen, ride/transport), that slice flips to §9(5)
+(operator pays GST, collects no TCS) — flag to the CA then.
+
+**State-wise TCS registration.** Required only in each State/UT where a **GST-registered** host
+supplies (only those supplies generate TCS); where there is no place of business, the head-office
+address may be declared for that state's TCS registration. Given most hosts are small/unregistered,
+few states will generate an obligation — do **not** blanket-register 30 states (creates nil-return
+filing burden). If there are no registered hosts today, the existing registration is enough to
+start; add state registrations as registered hosts come on board. Needs: host-by-state map with
+registration flags + current GSTIN(s)/states.
+
+## 9. Follow-up build (separate PRs, before volume)
+Done in this PR: config-driven rates, entity/₹5L/no-PAN selection, **TCS GSTIN gate**, OFF flag.
+Still to build:
+1. **Per-host FY-gross tally** with the §3 **cumulative + catch-up** on crossing ₹5L (until then
+   the engine deducts 0.1% whenever FY gross is unknown — safe over-deduction, not exemption).
+2. **PAN valid-and-operative** check (not PAN-present); inoperative PAN → 5%; and **GSTIN format
+   validation** (today the gate is GSTIN-present).
 3. **TCS monthly net-of-returns** base (diverges from the per-booking TDS base on cancellations).
+4. **Capture host GSTIN + entity type at onboarding** so the gate and entity rules have real data.
 
 ---
 
-*The CA's written confirmation is the authority; the final authorisation line goes on the
-implementing PR before anything ships. §8 (9(5)) is the one item that can still move TCS.*
+*The CA's final written confirmation (§7) is the authority and is cleared for go-live; it becomes
+the PR sign-off line once `[legal entity]` / `[CA name]` / `M. No.` are filled. The TCS GSTIN
+gate (§8) is now built; §9 items are refinements for before volume builds.*

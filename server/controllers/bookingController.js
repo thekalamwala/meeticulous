@@ -472,10 +472,14 @@ const createBooking = async (req, res) => {
     // so resolveWithholding fails SAFE — it deducts rather than exempting an individual
     // whose FY gross we can't yet prove is under the threshold (follow-up wires the tally).
     const withholdingEnabled = await featureFlags.isFeatureEnabled('tds_tcs_v2');
+    // TCS is collected only from GST-registered hosts (CA 2026-11-12) — the host's GSTIN
+    // lives in their profile billing_details. No GSTIN → no TCS (handled in resolveWithholding).
+    const hostGstin = host?.billing_details?.gstin || null;
     const { tdsRate: _tdsRate, tcsRate: _tcsRate } = resolveWithholding({
       enabled: withholdingEnabled,
       entityType: host?.host_entity_type,
       hasPan: hostHasPan,
+      hasGstin: !!hostGstin,
       fyGrossToDate: null,
       // cfg already exposes tds_rate / tds_rate_no_pan / tcs_rate / tds_threshold_individual
       // under these exact names; resolveWithholding reads only those four.

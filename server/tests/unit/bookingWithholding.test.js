@@ -79,18 +79,26 @@ test('flag OFF → legacy 1% TDS + 1% TCS snapshotted (₹500 → ₹5 / ₹5)',
   expect(captured.tcs_amount).toBe(5);
 });
 
-test('flag ON, individual + PAN, FY gross unknown → deducts 0.1% TDS / 0.5% TCS (₹0.5 / ₹2.5)', async () => {
+test('flag ON, GST-registered individual + PAN, FY gross unknown → 0.1% TDS / 0.5% TCS (₹0.5 / ₹2.5)', async () => {
   featureFlags.isFeatureEnabled.mockImplementation((k) => Promise.resolve(k !== 'paid_booking_without_pan'));
-  wire({ host: host({ host_entity_type: 'individual_huf' }), panOnFile: true });
+  wire({ host: host({ host_entity_type: 'individual_huf', billing_details: { gstin: '27ABCDE1234F1Z5' } }), panOnFile: true });
   await createBooking(reqFor(), res());
   expect(captured.tds_amount).toBe(0.5);
   expect(captured.tcs_amount).toBe(2.5);
 });
 
-test('flag ON, host has NO PAN (booking allowed) → 5% TDS / 0.5% TCS (₹25 / ₹2.5)', async () => {
+test('flag ON, UNREGISTERED host (no GSTIN) → 0.1% TDS but TCS 0 (₹0.5 / ₹0)', async () => {
+  featureFlags.isFeatureEnabled.mockImplementation((k) => Promise.resolve(k !== 'paid_booking_without_pan'));
+  wire({ host: host({ host_entity_type: 'individual_huf' }), panOnFile: true }); // no billing_details.gstin
+  await createBooking(reqFor(), res());
+  expect(captured.tds_amount).toBe(0.5);
+  expect(captured.tcs_amount).toBe(0);
+});
+
+test('flag ON, host has NO PAN (booking allowed), GST-registered → 5% TDS / 0.5% TCS (₹25 / ₹2.5)', async () => {
   // Every flag ON, including paid_booking_without_pan so the no-PAN booking proceeds.
   featureFlags.isFeatureEnabled.mockResolvedValue(true);
-  wire({ host: host({ host_entity_type: 'individual_huf' }), panOnFile: false });
+  wire({ host: host({ host_entity_type: 'individual_huf', billing_details: { gstin: '27ABCDE1234F1Z5' } }), panOnFile: false });
   await createBooking(reqFor(), res());
   expect(captured.tds_amount).toBe(25);
   expect(captured.tcs_amount).toBe(2.5);

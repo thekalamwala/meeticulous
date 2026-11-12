@@ -169,17 +169,22 @@ function calculateTcs(servicePrice, opts = {}) {
  * standard rate. Under-deduction makes the operator liable; over-deduction only
  * holds the host's own reclaimable money, so when in doubt we deduct.
  *
- * TCS (Sec 52) is flat — no threshold, no entity carve-out.
+ * TCS (Sec 52) has no threshold or entity carve-out, BUT is collected ONLY from a
+ * GST-registered host (one with a GSTIN): an unregistered host below the ₹20L/₹10L
+ * limit (Notif. 65/2017-CT) has no GSTIN to report GSTR-8 against and cannot reclaim
+ * it, so deducting would be wrongly withheld (CA 2026-11-12). No GSTIN → TCS 0. TDS is
+ * unaffected — it applies to registered and unregistered hosts alike.
  *
  * @param {object}  ctx
  * @param {boolean} ctx.enabled          tds_tcs_v2 flag; false → legacy 1% + 1%
  * @param {string}  [ctx.entityType]     'individual_huf' | 'company_firm_llp'
  * @param {boolean} [ctx.hasPan]         host PAN on file
+ * @param {boolean} [ctx.hasGstin]       host GST-registered (GSTIN on file) — gates TCS
  * @param {number|null} [ctx.fyGrossToDate]  host's gross sales so far this FY (₹), or null/unknown
  * @param {object}  [ctx.config]         { tdsRate, tdsRateNoPan, tcsRate, tdsThresholdIndividual }
  * @returns {{ tdsRate:number, tcsRate:number }}
  */
-function resolveWithholding({ enabled, entityType, hasPan, fyGrossToDate = null, config = {} } = {}) {
+function resolveWithholding({ enabled, entityType, hasPan, hasGstin, fyGrossToDate = null, config = {} } = {}) {
   if (!enabled) return { ...LEGACY_WITHHOLDING };
   // Per-field fallback (not a spread): an undefined/missing config member must fall back
   // to the default, never overwrite it with undefined — otherwise a sparse config would
@@ -190,7 +195,8 @@ function resolveWithholding({ enabled, entityType, hasPan, fyGrossToDate = null,
     tcsRate: config.tcsRate ?? WITHHOLDING_DEFAULTS.tcsRate,
     tdsThresholdIndividual: config.tdsThresholdIndividual ?? WITHHOLDING_DEFAULTS.tdsThresholdIndividual,
   };
-  const tcsRate = c.tcsRate;                       // flat for everyone
+  // TCS only from GST-registered hosts; nil for an unregistered below-threshold host.
+  const tcsRate = hasGstin ? c.tcsRate : 0;
   if (!hasPan) return { tdsRate: c.tdsRateNoPan, tcsRate };
   const exempt =
     entityType === 'individual_huf' &&
