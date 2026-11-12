@@ -3,6 +3,8 @@ import { CircleAlert, CornerDownRight } from 'lucide-react';
 import { createComment } from '../../services/communityApi';
 import { analytics, EVENTS } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
+import { useFeature } from '../../context/FeatureContext';
+import useMentionSuggest from './useMentionSuggest';
 import useTermsGate from './useTermsGate';
 import { errCode, errorCopy, fmtCount } from './communityErrors';
 
@@ -13,6 +15,7 @@ const MAX = 2000; // mirrors LIMITS.COMMENT in server/services/community/text.js
 // `onCreated(comment)` receives the saved comment so the page can append it without a refetch.
 export default function CommentForm({ itemId, parent, focusTick = 0, onCreated, onSettle, onCancel }) {
   const { user } = useAuth();
+  const v2 = useFeature('community_v2');
   const [guard, termsDialog] = useTermsGate();
   const [body, setBody] = useState('');
   const [err, setErr] = useState('');
@@ -20,6 +23,10 @@ export default function CommentForm({ itemId, parent, focusTick = 0, onCreated, 
   const [banned, setBanned] = useState(false);
   const box = useRef(null);
   const root = useRef(null);
+  const mention = useMentionSuggest({ value: body, setValue: setBody, inputRef: box });
+  const bodyProps = v2
+    ? { onChange: mention.onChange, onKeyDown: mention.onKeyDown, ...mention.aria }
+    : { onChange: (e) => setBody(e.target.value) };
 
   useEffect(() => {
     if (!focusTick) return;
@@ -84,8 +91,9 @@ export default function CommentForm({ itemId, parent, focusTick = 0, onCreated, 
       )}
       <div className={`mt-field ${err ? 'mt-field--error' : ''}`}>
         <label className="mt-label" htmlFor="reply-body">Your reply</label>
-        <div className="mt-input mt-input--textarea">
-          <textarea ref={box} id="reply-body" value={body} onChange={(e) => setBody(e.target.value)} placeholder="Share what's worked for you" aria-describedby={err ? 'reply-err' : undefined} />
+        <div className="mt-input mt-input--textarea relative">
+          <textarea ref={box} id="reply-body" value={body} placeholder="Share what's worked for you" aria-describedby={err ? 'reply-err' : undefined} {...bodyProps} />
+          {v2 && mention.list}
         </div>
         <div className="mt-field-foot">
           {err

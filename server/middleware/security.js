@@ -196,6 +196,21 @@ const searchLimiter = rateLimit({
   skip: skipWhenOpen,
 });
 
+// Explore click log — public navigator.sendBeacon write into explore_clicks. The
+// global apiLimiter (100/min) is bypassable by IP rotation and still let a single
+// IP push ~144k inserts/day (audit F-04). Cap per IP well above real browsing (a
+// user clicks a handful of cards) so only a scripted flood is throttled.
+const clickLimiter = rateLimit({
+  store: makeRateLimitStore('click'),
+  windowMs: 60 * 1000,
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: ipKeyGenerator,
+  message: { message: 'Too many clicks. Please slow down.' },
+  skip: skipWhenOpen,
+});
+
 // Booking creation — public + fires email/WhatsApp notifications; cap per IP.
 const bookingLimiter = rateLimit({
   store: makeRateLimitStore('booking'),
@@ -500,6 +515,7 @@ module.exports = {
   slugLimiter,
   slotsLimiter,
   searchLimiter,
+  clickLimiter,
   uploadLimiter,
   freeDownloadLimiter,
   freeDownloadIpLimiter,

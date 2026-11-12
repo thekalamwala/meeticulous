@@ -25,4 +25,25 @@ function isOpen(now = new Date()) {
   return OPEN_DAYS.includes(i.getUTCDay()) && i.getUTCHours() >= START_HOUR && i.getUTCHours() < END_HOUR;
 }
 
-module.exports = { isOpen, LABEL };
+const HOUR_MS = 3600000;
+const BUSINESS_DAY_MIN = (END_HOUR - START_HOUR) * 60;
+
+// Minutes of the support window between two instants. Walks one IST day at a time,
+// clipping each open day to START_HOUR..END_HOUR. Public holidays count as open days,
+// same as isOpen.
+function businessMinutesBetween(from, to) {
+  const end = istNow(to).getTime();
+  let t = istNow(from).getTime();
+  let ms = 0;
+  while (t < end) {
+    const d = new Date(t);
+    const dayStart = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+    if (OPEN_DAYS.includes(d.getUTCDay())) {
+      ms += Math.max(0, Math.min(end, dayStart + END_HOUR * HOUR_MS) - Math.max(t, dayStart + START_HOUR * HOUR_MS));
+    }
+    t = dayStart + 24 * HOUR_MS;
+  }
+  return ms / 60000;
+}
+
+module.exports = { isOpen, LABEL, BUSINESS_DAY_MIN, businessMinutesBetween };

@@ -37,6 +37,15 @@ const countActiveSupers = async (excludeId) => {
   return count || 0;
 };
 
+// Invalidate an admin's live sessions (audit F-02) by bumping their token_version
+// via the atomic RPC — any JWT minted before this is rejected by adminMiddleware.
+// Best-effort + schema-safe: a missing column/function (pre-migration) must never
+// fail the staff operation itself.
+const bumpTokenVersion = async (id) => {
+  try { await supabaseAdmin.rpc('increment_admin_token_version', { p_id: id }); }
+  catch (e) { console.error('bumpTokenVersion (non-fatal):', e.message); }
+};
+
 // GET /api/admin/roles
 const listRoles = async (req, res) => {
   try {
@@ -157,6 +166,9 @@ const updateStaff = async (req, res) => {
       .from('admin_users').update(updates).eq('id', req.params.id).select(PUBLIC_COLUMNS).single();
     if (error) return safeError(res, error);
 
+    // A role change (demotion) must invalidate the stale-permission session (F-02).
+    if (updates.role_key && updates.role_key !== before.role_key) await bumpTokenVersion(data.id);
+
     await audit(req, { action: 'staff.update', resource_type: 'admin_user', resource_id: data.id,
       before: { name: before.name, role_key: before.role_key }, after: { name: data.name, role_key: data.role_key } });
     res.json({ staff: data });
@@ -184,6 +196,9 @@ const setStaffActive = async (req, res) => {
       .eq('id', req.params.id).select(PUBLIC_COLUMNS).single();
     if (error) return safeError(res, error);
 
+    // Deactivation must invalidate live sessions immediately (audit F-02).
+    if (!isActive) await bumpTokenVersion(data.id);
+
     await audit(req, { action: isActive ? 'staff.activate' : 'staff.deactivate',
       resource_type: 'admin_user', resource_id: data.id });
     res.json({ staff: data });
@@ -208,6 +223,9 @@ const resetStaffPassword = async (req, res) => {
         updated_at: new Date().toISOString() })
       .eq('id', req.params.id);
     if (error) return safeError(res, error);
+
+    // A password reset must invalidate all existing sessions (audit F-02).
+    await bumpTokenVersion(staff.id);
 
     await audit(req, { action: 'staff.reset_password', resource_type: 'admin_user', resource_id: staff.id });
     res.json({ message: 'Password reset.', temp_password: newPassword });

@@ -16,12 +16,16 @@
 const { supabaseAdmin } = require('../config/supabase');
 const { isFeatureEnabled } = require('./featureFlags');
 const notificationEngine = require('./notificationEngine');
+const { alreadyNotified } = require('../utils/notificationDedupe');
 
 const BASE = 'https://meeticulous.com';
 const DEDUPE_DAYS = 14;
 
 // stage → event + link builder. needsUsername = link points at the host's page.
+// minSignupDays / minSharedDays throttle a stage so we don't ping the instant
+// someone lands there — only after they've genuinely stalled.
 const RULES = [
+  { stage: '1_signed_up',  event: 'HOST_START_KYC_NUDGE',      needsUsername: false, link: () => `${BASE}/dashboard`, minSignupDays: 2, emailOnly: true },
   { stage: '2_onboarded',  event: 'HOST_ADD_SERVICE_NUDGE',    needsUsername: false, link: () => `${BASE}/dashboard` },
   { stage: '3_listed',     event: 'HOST_SHARE_LINK_NUDGE',     needsUsername: true,  link: (u) => `${BASE}/${u}` },
   { stage: '3b_shared',    event: 'HOST_FIRST_BOOKING_NUDGE',  needsUsername: true,  link: (u) => `${BASE}/${u}`, minSharedDays: 7 },
@@ -34,16 +38,8 @@ function withinQuietHours(now = new Date()) {
   return istHour >= 9 && istHour < 20;
 }
 
-async function alreadyNudged(event, phone) {
-  const since = new Date(Date.now() - DEDUPE_DAYS * 24 * 3600 * 1000).toISOString();
-  const { data } = await supabaseAdmin
-    .from('notification_logs')
-    .select('id')
-    .eq('event', event)
-    .eq('destination', phone)
-    .gte('created_at', since)
-    .limit(1);
-  return !!(data && data.length);
+async function alreadyNudged(event, destination) {
+  return alreadyNotified({ event, destination, sinceDays: DEDUPE_DAYS });
 }
 
 async function runActivationNudges() {
@@ -52,21 +48,30 @@ async function runActivationNudges() {
 
   let processed = 0, skipped = 0;
   for (const rule of RULES) {
-    const { data: rows, error } = await supabaseAdmin
+    // Email-only rules (e.g. HOST_START_KYC_NUDGE) tolerate phone=null; everything
+    // else still requires a phone because WhatsApp is the primary channel there.
+    let q = supabaseAdmin
       .from('host_activation')
-      .select('host_id,name,email,phone,first_shared_at,stage')
+      .select('host_id,name,email,phone,first_shared_at,signed_up_at,stage')
       .eq('stage', rule.stage)
-      .eq('is_internal', false)
-      .not('phone', 'is', null);
+      .eq('is_internal', false);
+    if (!rule.emailOnly) q = q.not('phone', 'is', null);
+    const { data: rows, error } = await q;
     if (error || !rows) continue;
 
     for (const h of rows) {
-      if (!h.phone) { skipped++; continue; }
+      if (!rule.emailOnly && !h.phone) { skipped++; continue; }
+      if (rule.emailOnly && !h.email) { skipped++; continue; }
       if (rule.minSharedDays && h.first_shared_at) {
         const ageDays = (Date.now() - new Date(h.first_shared_at).getTime()) / (24 * 3600 * 1000);
         if (ageDays < rule.minSharedDays) { skipped++; continue; }
       }
-      if (await alreadyNudged(rule.event, h.phone)) { skipped++; continue; }
+      if (rule.minSignupDays && h.signed_up_at) {
+        const ageDays = (Date.now() - new Date(h.signed_up_at).getTime()) / (24 * 3600 * 1000);
+        if (ageDays < rule.minSignupDays) { skipped++; continue; }
+      }
+      const dedupeKey = rule.emailOnly ? h.email : h.phone;
+      if (await alreadyNudged(rule.event, dedupeKey)) { skipped++; continue; }
 
       let username = null;
       if (rule.needsUsername) {

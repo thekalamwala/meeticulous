@@ -22,8 +22,8 @@ const { infoCard, FONT } = require('../services/email/emailComponents');
 // and send one email per address.
 const ADMIN_ALERT_EMAIL =
   process.env.ADMIN_ALERT_EMAIL || process.env.SUPER_ADMIN_EMAIL || process.env.SMTP_USER;
-const recipients = () =>
-  String(ADMIN_ALERT_EMAIL || '').split(',').map((s) => s.trim()).filter(Boolean);
+const recipients = (list = ADMIN_ALERT_EMAIL) =>
+  String(list || '').split(',').map((s) => s.trim()).filter(Boolean);
 
 const COOLDOWN_MS = Number(process.env.ADMIN_ALERT_COOLDOWN_MS) || 15 * 60 * 1000;
 const lastSentAt = new Map(); // throttleKey -> epoch ms
@@ -43,10 +43,11 @@ const escapeHtml = (s) =>
  * @param {string}   [opts.link]     Optional review URL rendered as a branded CTA button.
  * @param {string}   [opts.category] Optional email_category for header pill + accent
  *                                   theme (e.g. 'Payment Receipt', 'Security Alert').
+ * @param {string}   [opts.to]       Recipient(s), comma-separated; defaults to ADMIN_ALERT_EMAIL.
  * @returns {Promise<{sent:boolean, reason?:string}>}
  */
-async function adminAlert({ subject, lines = [], key, link, category = '' } = {}) {
-  const to = recipients();
+async function adminAlert({ subject, lines = [], key, link, category = '', to: toList } = {}) {
+  const to = recipients(toList);
   if (!to.length) return { sent: false, reason: 'no_recipient' };
   if (!subject) return { sent: false, reason: 'no_subject' };
 

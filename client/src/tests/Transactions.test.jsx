@@ -2,7 +2,7 @@ import { render, screen, waitFor, fireEvent, within } from '@testing-library/rea
 import { vi } from 'vitest';
 
 // Invoices moved to their own /dashboard/invoices page; this page just lists
-// transactions now.
+// transactions now (redesigned table UI — same getTransactions API).
 vi.mock('../services/api', () => ({
   getTransactions: vi.fn(),
 }));
@@ -32,29 +32,52 @@ const tx = {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  getTransactions.mockResolvedValue({ data: { data: [tx], total: 1, page: 1, limit: 20 } });
+  getTransactions.mockResolvedValue({ data: { data: [tx], total: 1, page: 1, limit: 12 } });
 });
 
-test('date filter sends a dateFrom bound to the API', async () => {
+test('date filter defaults to This Month and clears to all-time', async () => {
   render(<Transactions />);
   await waitFor(() => screen.getAllByText('Asha Rao'));
 
-  // Initial load: no date bound.
-  expect(getTransactions.mock.calls[0][0].dateFrom).toBeUndefined();
+  // Reference default is "This Month" → a dateFrom bound is sent on first load.
+  expect(getTransactions.mock.calls[0][0].dateFrom).toBeTruthy();
 
-  fireEvent.change(screen.getByLabelText('Filter by date'), { target: { value: '7d' } });
+  fireEvent.change(screen.getByLabelText('Filter by date'), { target: { value: '' } });
 
   await waitFor(() => {
     const last = getTransactions.mock.calls.at(-1)[0];
-    expect(last.dateFrom).toBeTruthy();
+    expect(last.dateFrom).toBeUndefined();
   });
+});
+
+test('search filter is forwarded to the API', async () => {
+  render(<Transactions />);
+  await waitFor(() => screen.getAllByText('Asha Rao'));
+  fireEvent.change(screen.getByLabelText('Search transactions'), { target: { value: 'asha' } });
+  await waitFor(() => {
+    expect(getTransactions.mock.calls.at(-1)[0].search).toBe('asha');
+  });
+});
+
+test('renders the real transaction row (no dummy data) with the reference columns', async () => {
+  render(<Transactions />);
+  await waitFor(() => screen.getByText('Asha Rao'));
+  expect(screen.getByText('Strategy call')).toBeInTheDocument();
+  expect(screen.getByText('Razorpay')).toBeInTheDocument();      // real: razorpay_payment_id present
+  // Footer shows the real total (split across spans) — match on textContent.
+  expect(
+    screen.getByText((_, el) => el?.tagName === 'P' && /Showing .* of\s*1\s*transactions/.test(el.textContent)),
+  ).toBeInTheDocument();
+  // Column headers from the reference.
+  ['Date & Time', 'Customer', 'Service / Product', 'Type', 'Amount', 'Payment Method', 'Status', 'Actions']
+    .forEach((h) => expect(screen.getByText(h)).toBeInTheDocument());
 });
 
 test('clicking a row opens the premium detail modal with grouped sections', async () => {
   render(<Transactions />);
-  await waitFor(() => screen.getAllByText('Asha Rao'));
+  await waitFor(() => screen.getByText('Asha Rao'));
 
-  fireEvent.click(screen.getAllByText('Asha Rao')[0]);
+  fireEvent.click(screen.getByText('Asha Rao'));
 
   const dialog = await screen.findByRole('dialog');
   const inModal = within(dialog);
@@ -62,11 +85,40 @@ test('clicking a row opens the premium detail modal with grouped sections', asyn
   expect(inModal.getByRole('heading', { name: 'Booking' })).toBeInTheDocument();
   expect(inModal.getByRole('heading', { name: 'Payment advice' })).toBeInTheDocument();
   expect(inModal.getByRole('heading', { name: 'Gateway reference' })).toBeInTheDocument();
-  // Gateway ids preserved.
   expect(inModal.getByText('order_ABC123')).toBeInTheDocument();
-  // v4 deduction breakdown: commission + gateway + TDS + TCS + net payout.
   expect(inModal.getByText('− Commission')).toBeInTheDocument();
   expect(inModal.getByText('− TDS (194-O, 1%)')).toBeInTheDocument();
   expect(inModal.getByText('− TCS (GST §52, 1%)')).toBeInTheDocument();
   expect(inModal.getByText('Net payout')).toBeInTheDocument();
+});
+
+test('shows a clean empty state when the API returns no transactions', async () => {
+  getTransactions.mockResolvedValueOnce({ data: { data: [], total: 0, page: 1, limit: 12 } });
+  render(<Transactions />);
+  expect(await screen.findByText('No transactions found')).toBeInTheDocument();
+  // No fabricated counts or pagination when empty.
+  expect(screen.queryByText(/Showing/)).toBeNull();
+});
+
+test('shows a retryable error state when the API fails', async () => {
+  getTransactions.mockRejectedValueOnce(new Error('network down'));
+  render(<Transactions />);
+  expect(await screen.findByText("Couldn't load your transactions.")).toBeInTheDocument();
+  // Recover: next call succeeds on retry.
+  getTransactions.mockResolvedValueOnce({ data: { data: [tx], total: 1, page: 1, limit: 12 } });
+  fireEvent.click(screen.getByRole('button', { name: /try again|retry/i }));
+  expect(await screen.findByText('Asha Rao')).toBeInTheDocument();
+});
+
+test('DEV preview mode renders sample transactions WITHOUT calling the API', async () => {
+  vi.stubEnv('VITE_UI_PREVIEW', 'true');
+  try {
+    render(<Transactions />);
+    // A preview customer appears…
+    expect(await screen.findByText('Ananya Iyer')).toBeInTheDocument();
+    // …and the backend was never hit with preview data.
+    expect(getTransactions).not.toHaveBeenCalled();
+  } finally {
+    vi.stubEnv('VITE_UI_PREVIEW', '');
+  }
 });

@@ -60,7 +60,7 @@ import PageGuides from '../../components/common/PageGuides';
 import ForFaqIntro from '../../components/common/ForFaqIntro';
 
 const START = '/become-a-host';
-const LOGIN = '/login-as-vendor';
+const LOGIN = '/login?as=host';
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
 

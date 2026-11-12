@@ -52,7 +52,7 @@ import PageGuides from '../../components/common/PageGuides';
 import ForFaqIntro from '../../components/common/ForFaqIntro';
 
 const START = '/become-a-host';      // real host signup funnel
-const LOGIN = '/login-as-vendor'; // host login (Google-only door)
+const LOGIN = '/login?as=host'; // host login (Google-only door)
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
 

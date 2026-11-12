@@ -276,10 +276,15 @@ const buildHostProfile = async (username) => {
   // Task 10: Show unverified status but don't block -- client shows a banner
   // (flip host.is_verified to true in Admin -> Users to go fully live)
 
-  // Fetch services + availability in parallel
-  const [servicesResult, { data: availability }] = await Promise.all([
+  // Fetch services + availability + booking counts in parallel. Bookings is a lean
+  // service_id-only read used purely for the public "booked N times" social proof;
+  // cancelled rows are excluded to match the slot-availability definition of a
+  // "taken" booking (see bookingController getHostSlots). Wrapped in the cached
+  // profile build, so the count is at-most ~2min stale — fine for social proof.
+  const [servicesResult, { data: availability }, bookingsCountResult] = await Promise.all([
     supabaseAdmin.from("services").select(SERVICE_PUBLIC_COLS).eq("host_id", host.id).eq("is_active", true).limit(100),
     supabaseAdmin.from("availability").select("*").eq("host_id", host.id).single(),
+    supabaseAdmin.from("bookings").select("service_id").eq("host_id", host.id).neq("status", "cancelled"),
   ]);
 
   let { data: services } = servicesResult;
@@ -297,6 +302,19 @@ const buildHostProfile = async (username) => {
       .limit(100);
     services = fallback.data;
   }
+
+  // Social-proof booking counts — per-service + host total. Best-effort: a bookings
+  // read error (e.g. stale schema) leaves counts at 0 and never drops the profile.
+  const countsByService = {};
+  let totalBookings = 0;
+  if (Array.isArray(bookingsCountResult?.data)) {
+    for (const b of bookingsCountResult.data) {
+      totalBookings += 1;
+      if (b.service_id) countsByService[b.service_id] = (countsByService[b.service_id] || 0) + 1;
+    }
+  }
+  host.booking_count = totalBookings;
+  services = (services || []).map((s) => ({ ...s, booking_count: countsByService[s.id] || 0 }));
 
   // Resolve the primary category's human label for display (best-effort).
   if (host?.primary_category) {

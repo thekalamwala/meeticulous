@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronDown, CircleAlert, CircleHelp, Headset, ImagePlus, Megaphone, Type, X } from 'lucide-react';
+import { ChevronDown, CircleAlert, CircleHelp, Headset, Image, ImagePlus, Megaphone, MessagesSquare, Type, X } from 'lucide-react';
 import { createItem, getMe, getSpaces } from '../../services/communityApi';
+import useKeyboardInset from './useKeyboardInset';
 import { uploadImage } from '../../services/api';
 import { analytics, EVENTS } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
+import { useFeature } from '../../context/FeatureContext';
+import useMentionSuggest from './useMentionSuggest';
 import useTermsGate from './useTermsGate';
 import { errCode, errorCopy, fmtCount } from './communityErrors';
 import ItemCard, { SpaceIcon } from './ItemCard';
@@ -46,6 +49,7 @@ const measure = (file) => new Promise((resolve) => {
 // `variant`: 'modal' | 'page'. `dirtyRef` (modal): the wrapper reads it to confirm before closing.
 export default function ComposerForm({ variant = 'modal', onClose, onCreated, defaultKind, defaultSpaceKey, dirtyRef }) {
   const { user } = useAuth();
+  const v2 = useFeature('community_v2');
   const navigate = useNavigate();
   const [guard, termsDialog] = useTermsGate();
   const [kind, setKind] = useState(defaultKind === 'thread' ? 'thread' : 'post');
@@ -61,7 +65,29 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
   const [photoErr, setPhotoErr] = useState('');
   const [busy, setBusy] = useState(false);
   const [banned, setBanned] = useState(false);
+  const [audienceOpen, setAudienceOpen] = useState(false);
   const fileRef = useRef(null);
+  const bodyRef = useRef(null);
+  const fullRef = useRef(null);
+  const kbInset = useKeyboardInset();
+
+  // Esc closes the full-screen composer; Tab stays within it. (Esc inside an open
+  // mention list is swallowed there, so it closes the list first, not the sheet.)
+  const onFullKey = (e) => {
+    if (e.key === 'Escape') { onClose?.(); return; }
+    if (e.key !== 'Tab' || !fullRef.current) return;
+    const f = [...fullRef.current.querySelectorAll('a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled])')];
+    if (!f.length) return;
+    const first = f[0];
+    const last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  };
+  const mention = useMentionSuggest({ value: body, setValue: setBody, inputRef: bodyRef });
+  // v2 gets the @mention typeahead; v1 keeps plain-text input unchanged.
+  const bodyProps = v2
+    ? { ref: bodyRef, onChange: mention.onChange, onKeyDown: mention.onKeyDown, ...mention.aria }
+    : { onChange: (e) => setBody(e.target.value) };
 
   useEffect(() => {
     let live = true;
@@ -194,8 +220,9 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
 
       <div className={`mt-field ${err ? 'mt-field--error' : ''}`}>
         <label className="mt-label" htmlFor="composer-body">{thread ? 'Details' : "What's on your mind?"}</label>
-        <div className="mt-input mt-input--textarea">
-          <textarea id="composer-body" value={body} onChange={(e) => setBody(e.target.value)} aria-describedby={err ? 'composer-err' : undefined} aria-invalid={!!err || undefined} />
+        <div className="mt-input mt-input--textarea relative">
+          <textarea id="composer-body" value={body} aria-describedby={err ? 'composer-err' : undefined} aria-invalid={!!err || undefined} {...bodyProps} />
+          {v2 && mention.list}
         </div>
         <div className="mt-field-foot">
           {err
@@ -256,6 +283,70 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
       </div>
     </form>
   );
+
+  // Full-screen mobile composer (v2): X / audience / Post header, autofocus body,
+  // and a bottom toolbar kept above the keyboard via VisualViewport (kbInset).
+  if (variant === 'fullscreen') {
+    const audienceLabel = effSpace ? (eligible.find((s) => s.key === effSpace)?.name || 'Space') : 'Everyone';
+    return (
+      <>
+        <div ref={fullRef} className="mt-composer-full" role="dialog" aria-modal="true" aria-label={thread ? 'New thread' : 'New post'} onKeyDown={onFullKey}>
+          <header className="mt-composer-full__head">
+            <button type="button" onClick={onClose} aria-label="Close composer" className="mt-btn mt-btn--ghost mt-iconbtn mt-btn--s"><X size={20} aria-hidden="true" /></button>
+            <button type="button" onClick={() => setAudienceOpen((o) => !o)} aria-haspopup="menu" aria-expanded={audienceOpen} className="mt-btn mt-btn--secondary mt-btn--s gap-1">
+              {audienceLabel}<ChevronDown size={16} aria-hidden="true" />
+            </button>
+            <button type="button" onClick={submit} disabled={!ready} className="mt-btn mt-btn--s ml-auto">{thread ? 'Post thread' : 'Post'}</button>
+          </header>
+
+          {audienceOpen && (
+            <div className="mt-composer-full__audience" role="menu" aria-label="Audience">
+              {!thread && (
+                <button type="button" role="menuitemradio" aria-checked={!effSpace} onClick={() => { setSpace(''); setAudienceOpen(false); }} className={`mt-tag ${!effSpace ? 'mt-tag--selected' : ''}`}>Everyone</button>
+              )}
+              {eligible.map((s) => (
+                <button key={s.key} type="button" role="menuitemradio" aria-checked={effSpace === s.key} onClick={() => { setSpace(s.key); setAudienceOpen(false); }} className={`mt-tag ${effSpace === s.key ? 'mt-tag--selected' : ''}`}>
+                  <SpaceIcon spaceKey={s.key} size={16} />{s.name}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {thread && (
+            <input className="mt-composer-full__title" aria-label="Title" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={LIMITS.TITLE} />
+          )}
+
+          <div className="relative flex min-h-0 flex-1 flex-col">
+            {/* eslint-disable-next-line jsx-a11y/no-autofocus -- a composer the user tapped into to write */}
+            <textarea ref={bodyRef} autoFocus aria-label="Share something with the community" placeholder="Share something with the community…" value={body} onChange={mention.onChange} onKeyDown={mention.onKeyDown} {...mention.aria} className="mt-composer-full__body" />
+            {mention.list}
+          </div>
+
+          {err && <p role="alert" className="mt-hint mt-field--error px-4 pb-2">{err}</p>}
+
+          {photos.length > 0 && (
+            <div className="mt-photostrip px-4 pb-2">
+              {photos.map((p, i) => (
+                <div key={p.id} className={`mt-thumb ${p.busy ? 'mt-thumb--busy' : ''}`}>
+                  {p.preview ? <img src={p.preview} alt={`Photo ${i + 1}`} /> : <ImagePlus size={24} aria-hidden="true" />}
+                  {p.busy && <span className="sr-only" role="status">Uploading photo {i + 1}</span>}
+                  <button type="button" className="mt-btn mt-btn--secondary" aria-label={`Remove photo ${i + 1}`} onClick={() => setPhotos((x) => x.filter((y) => y.id !== p.id))}><X size={16} aria-hidden="true" /></button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-composer-full__toolbar" style={kbInset ? { transform: `translateY(-${kbInset}px)` } : undefined}>
+            <button type="button" onClick={() => fileRef.current?.click()} aria-label="Add photo" className="mt-btn mt-btn--ghost mt-btn--s gap-2"><Image size={20} aria-hidden="true" />Photo</button>
+            <button type="button" aria-pressed={format === 'question'} onClick={() => setFormat((f) => (f === 'question' ? 'text' : 'question'))} className="mt-btn mt-btn--ghost mt-btn--s gap-2"><CircleHelp size={20} aria-hidden="true" />Ask</button>
+            <button type="button" aria-pressed={thread} onClick={() => setKind((k) => (k === 'thread' ? 'post' : 'thread'))} className="mt-btn mt-btn--ghost mt-btn--s gap-2"><MessagesSquare size={20} aria-hidden="true" />Thread</button>
+            <input ref={fileRef} type="file" accept={TYPES.join(',')} multiple hidden onChange={(e) => addFiles(e.target.files)} />
+          </div>
+        </div>
+        {termsDialog}
+      </>
+    );
+  }
 
   if (variant === 'page') {
     return (

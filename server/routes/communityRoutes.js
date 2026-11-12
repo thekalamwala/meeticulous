@@ -18,6 +18,10 @@ router.get('/spaces/:key/threads', ...read, c.spaceThreads);
 router.get('/items/:slug', ...read, c.itemDetail);
 router.get('/items/:slug/comments', ...read, c.itemComments);
 router.get('/me', protect, communityGate, c.me);
+router.get('/me/card', protect, communityGate, c.myCard);
+router.get('/mention-suggest', protect, communityGate, requireWrites, c.mentionSuggest);
+router.patch('/prefs', protect, communityGate, requireWrites, c.updatePrefs);
+router.get('/users/:id/activity', ...read, c.authorActivity);
 
 const write = [protect, communityGate, requireWrites, requireTerms];
 
@@ -36,5 +40,10 @@ router.post('/reactions', ...write, reactionLimiter, c.addReaction);
 router.delete('/reactions', ...write, reactionLimiter, c.removeReaction);
 
 router.post('/reports', ...write, reportLimiter, c.createReport);
+
+router.post('/saves', ...write, reactionLimiter, c.createSave);
+router.delete('/saves', ...write, reactionLimiter, c.removeSave);
+router.post('/blocks', ...write, reactionLimiter, c.createBlock);
+router.delete('/blocks', ...write, reactionLimiter, c.removeBlock);
 
 module.exports = router;

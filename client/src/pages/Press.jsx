@@ -11,7 +11,12 @@ import { SITE_URL, organizationJsonLd, breadcrumbJsonLd, ORG_SAME_AS } from "../
 
 const CANONICAL = `${SITE_URL}/press`;
 const PRESS_EMAIL = "team@meeticulous.com";
-const LOGO = "https://company-assets.meeticulous.in/images/brand/logo.png";
+// Official brand assets, self-hosted and served at /brand/ds/ (design-system/assets).
+// The old company-assets.meeticulous.in host is dead.
+const BRAND_ASSETS = [
+  { label: "Icon (SVG)", preview: "/brand/ds/01-logo/icon/mt-icon-color.svg", file: "/brand/ds/01-logo/icon/mt-icon-color.svg" },
+  { label: "Wordmark (PNG)", preview: "/brand/ds/01-logo/wordmark/mt-wordmark-full-color.png", file: "/brand/ds/01-logo/wordmark/mt-wordmark-full-color.png" },
+];
 
 const FACTS = [
   ["Product", "Meeticulous — a booking link that gets India's professionals booked and paid"],
@@ -69,12 +74,14 @@ const Press = () => (
       <section className="mt-10">
         <h2 className="font-heading text-xl font-bold">Brand assets</h2>
         <div className="mt-4 flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-4 rounded-[16px] border border-black/10 bg-white p-5">
-            <img src={LOGO} alt="Meeticulous logo" width={56} height={56} className="h-14 w-14 object-contain" loading="lazy" />
-            <a href={LOGO} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white hover:no-underline">
-              <Download size={15} /> Logo (PNG)
-            </a>
-          </div>
+          {BRAND_ASSETS.map(({ label, preview, file }) => (
+            <div key={label} className="flex items-center gap-4 rounded-[16px] border border-black/10 bg-white p-5">
+              <img src={preview} alt={`Meeticulous ${label}`} height={56} className="h-14 w-auto max-w-[140px] object-contain" loading="lazy" />
+              <a href={file} download target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white hover:no-underline">
+                <Download size={15} /> {label}
+              </a>
+            </div>
+          ))}
         </div>
         <p className="mt-3 text-xs text-neutral-500">
           Please use the name <strong>Meeticulous</strong> and the crimson #960D32 as the accent.

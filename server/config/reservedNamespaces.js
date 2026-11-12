@@ -27,6 +27,7 @@ const ROUTES = [
   'solutions', 'compare', // SEO discovery hubs — client /solutions + /compare routes
   'appointment-booking-software', // SEO landing — client /appointment-booking-software route
   'sitemap', 'robots', 'health', 'manifest', 'favicon', 'get-in-touch',
+  'agent-tithi', // Tithi's public profile — client /agent-tithi route
 ];
 
 // Infrastructure / technical reserved handles.

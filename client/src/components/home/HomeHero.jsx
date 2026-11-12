@@ -59,6 +59,31 @@ export default function HomeHero() {
         <path d={EE_PATH} fill="none" stroke={RIBBON} strokeWidth="34" strokeLinecap="butt" strokeLinejoin="round" />
       </svg>
 
+      {/* Very light rose loop pattern (official DS file), densest at the top-right
+          corner and fading out toward the bottom-middle — tone-on-tone, behind
+          content, masked so it never sits under the left-column copy. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          backgroundImage: "url(/brand/ds/03-patterns/mt-pattern-loop-rose.svg)",
+          backgroundRepeat: "repeat",
+          backgroundSize: "150px",
+          opacity: 0.08,
+          WebkitMaskImage: "radial-gradient(130% 115% at 100% 0%, #000 0%, transparent 58%)",
+          maskImage: "radial-gradient(130% 115% at 100% 0%, #000 0%, transparent 58%)",
+        }}
+      />
+
+      {/* Brand camera+calendar illustration (official DS file, untouched) in the
+          top-right of the hero. */}
+      <img
+        src="/brand/ds/04-illustrations/mt-camcal-white.svg"
+        alt=""
+        aria-hidden
+        className="pointer-events-none absolute right-5 top-20 z-[1] hidden w-24 opacity-90 sm:right-8 sm:top-24 sm:block lg:right-12 lg:top-28 lg:w-32"
+      />
+
       <div className="home-hero-grid relative z-10 mx-auto w-full max-w-6xl">
         <div>
           <Reveal instant as="h1" delay={0.05} className="home-hero-h1 font-display font-extrabold leading-[1.02] tracking-[-0.035em] text-white">
@@ -103,7 +128,7 @@ export default function HomeHero() {
             <p className="mt-3 flex max-w-[34rem] items-start gap-2 text-xs leading-relaxed text-white/75">
               <span aria-hidden className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full" style={{ background: RIBBON }} />
               <span>
-                Next, choose how to sign up — we&apos;ll check your link is free. By continuing, you agree to our{" "}
+                By continuing, you agree to our{" "}
                 <Link to="/terms" className="text-white/90 underline decoration-white/40 underline-offset-2 hover:text-white">Terms</Link> and{" "}
                 <Link to="/privacy" className="text-white/90 underline decoration-white/40 underline-offset-2 hover:text-white">Privacy Policy</Link>.
               </span>

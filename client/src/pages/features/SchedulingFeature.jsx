@@ -8,7 +8,7 @@
 //   1 Hero + live demo · 2 Proof strip · 3 Without vs with · 4 How it works ·
 //   5 Capabilities · 6 The difference · 7 Testimonials · 8 FAQ · 9 Final CTA
 //
-// Design system A "Trust-Blue": white and pale-blue sections, one crisp blue
+// Design system A: white and pale-maroon sections, one crisp maroon
 // accent, a subtle dotted-grid motif, calm fact cards. Mechanics unique to this
 // page: clickable slot picker (hero) · icon fact cards · chat thread vs one link ·
 // horizontal numbered stepper · 3×2 icon grid · interactive slot planner
@@ -47,13 +47,13 @@ import PageGuides from '../../components/common/PageGuides';
 import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
-const BLUE = '#1D4ED8';       // accent for text + fills on white (AA, ~6.7:1)
-const BLUE_DEEP = '#0B2559';  // dark section background
-const BLUE_SKY = '#93C5FD';   // decorative / text on BLUE_DEEP only (AA)
-const PALE = '#F2F6FF';       // tinted section background
-const INK = '#0F172A';
-const HEAD_ACCENT = '#1D4ED8'; // blue (blue-700) — highlighted heading words, half of the black/blue heading
-const DOTS = { backgroundImage: 'radial-gradient(rgba(29,78,216,0.13) 1px, transparent 1px)', backgroundSize: '22px 22px' };
+const BLUE = '#960D32';       // maroon accent for text + fills on white
+const BLUE_DEEP = '#3D0516';  // dark section background
+const BLUE_SKY = '#EB93A6';   // decorative / text on the dark section only
+const PALE = '#FDF2F4';       // tinted section background
+const INK = '#2B0A14';
+const HEAD_ACCENT = '#960D32'; // maroon — highlighted heading words, half of the black/maroon heading
+const DOTS = { backgroundImage: 'radial-gradient(rgba(150,13,50,0.13) 1px, transparent 1px)', backgroundSize: '22px 22px' };
 
 /* ─────────────────────────────  SLOT MATH  ────────────────────────────── */
 
@@ -156,9 +156,9 @@ function ImgSlot({ alt, slot, className = '' }) {
       aria-label={alt}
       data-img-slot={slot}
       className={`flex items-center justify-center rounded-[16px] border border-black/5 ${className}`}
-      style={{ background: 'repeating-linear-gradient(135deg, rgba(29,78,216,0.04) 0 10px, rgba(29,78,216,0.08) 10px 20px)' }}
+      style={{ background: 'repeating-linear-gradient(135deg, rgba(150,13,50,0.04) 0 10px, rgba(150,13,50,0.08) 10px 20px)' }}
     >
-      <ImageIcon size={28} style={{ color: 'rgba(29,78,216,0.3)' }} aria-hidden />
+      <ImageIcon size={28} style={{ color: 'rgba(150,13,50,0.3)' }} aria-hidden />
     </div>
   );
 }
@@ -248,7 +248,7 @@ function SlotPicker() {
                       disabled={!!booked}
                       onClick={() => setPicked({ d: d.d, n: d.n, t })}
                       aria-label={booked ? `${t}, booked` : t}
-                      className={`rounded-[6px] border px-3 py-2.5 text-sm font-semibold transition-colors ${booked ? 'cursor-not-allowed border-transparent bg-slate-50 text-slate-400' : 'border-[#1D4ED8]/30 text-[#1D4ED8] hover:border-[#1D4ED8] hover:bg-[#F2F6FF]'}`}
+                      className={`rounded-[6px] border px-3 py-2.5 text-sm font-semibold transition-colors ${booked ? 'cursor-not-allowed border-transparent bg-slate-50 text-slate-400' : 'border-[#960D32]/30 text-[#960D32] hover:border-[#960D32] hover:bg-[#FDF2F4]'}`}
                     >
                       {booked ? <span className="flex items-center justify-between"><span className="line-through">{t}</span><span className="text-[10px] font-medium uppercase tracking-wider no-underline">Booked</span></span> : t}
                     </button>
@@ -316,7 +316,7 @@ function SlotPlanner() {
               {buf > 0 && s + len < WINDOW.end && (
                 <div
                   className="absolute inset-y-1"
-                  style={{ left: pct(s + len), width: `${(Math.min(buf, WINDOW.end - s - len) / span) * 100}%`, background: 'repeating-linear-gradient(135deg, rgba(29,78,216,0.10) 0 5px, rgba(29,78,216,0.22) 5px 10px)' }}
+                  style={{ left: pct(s + len), width: `${(Math.min(buf, WINDOW.end - s - len) / span) * 100}%`, background: 'repeating-linear-gradient(135deg, rgba(150,13,50,0.10) 0 5px, rgba(150,13,50,0.22) 5px 10px)' }}
                 />
               )}
             </div>
@@ -324,7 +324,7 @@ function SlotPlanner() {
         </div>
         <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-slate-500">
           <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: BLUE }} /> Bookable session</span>
-          {buf > 0 && <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: 'rgba(29,78,216,0.25)' }} /> Buffer</span>}
+          {buf > 0 && <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: 'rgba(150,13,50,0.25)' }} /> Buffer</span>}
         </div>
       </div>
 
@@ -453,7 +453,7 @@ export default function SchedulingFeature() {
               <p className="mt-5 border-t border-black/5 pt-4 text-sm text-slate-500">Five messages in, still nothing on the calendar.</p>
             </Reveal>
 
-            <Reveal delay={0.06} className="flex flex-col rounded-[24px] border border-[#1D4ED8]/20 bg-white p-6 shadow-[0_8px_30px_rgba(29,78,216,0.06)] sm:p-7">
+            <Reveal delay={0.06} className="flex flex-col rounded-[24px] border border-[#960D32]/20 bg-white p-6 shadow-[0_8px_30px_rgba(150,13,50,0.06)] sm:p-7">
               <div className="text-xs font-bold uppercase tracking-[0.16em]" style={{ color: BLUE }}>With Meeticulous: one link</div>
               <div className="mt-5 flex justify-end">
                 <span className="flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-semibold text-white" style={{ background: BLUE }}>
@@ -484,10 +484,10 @@ export default function SchedulingFeature() {
         <div className="mx-auto max-w-6xl">
           <SectionHead center title="Set it up once." accent="Then stop scheduling." lead="Four steps, most of them done the evening you sign up." />
           <ol className="relative mt-16 grid gap-10 lg:grid-cols-4 lg:gap-6">
-            <span aria-hidden className="absolute left-[12.5%] right-[12.5%] top-5 hidden h-px lg:block" style={{ background: 'rgba(29,78,216,0.25)' }} />
+            <span aria-hidden className="absolute left-[12.5%] right-[12.5%] top-5 hidden h-px lg:block" style={{ background: 'rgba(150,13,50,0.25)' }} />
             {STEPS.map((s, i) => (
               <Reveal as="li" key={s.title} delay={i * 0.06} className="relative flex gap-4 lg:flex-col lg:items-center lg:text-center">
-                <span className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border bg-white font-heading text-sm font-extrabold" style={{ borderColor: 'rgba(29,78,216,0.35)', color: BLUE }}>
+                <span className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border bg-white font-heading text-sm font-extrabold" style={{ borderColor: 'rgba(150,13,50,0.35)', color: BLUE }}>
                   {i + 1}
                 </span>
                 <div>
@@ -572,7 +572,7 @@ export default function SchedulingFeature() {
           heading={<SectionHead title="Scheduling questions," accent="answered." />}
           items={FAQ}
           itemClassName="rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]"
-          openItemClassName="border-[#1D4ED8]/25"
+          openItemClassName="border-[#960D32]/25"
           summaryClassName="flex items-start justify-between gap-4 px-5 py-4"
           answerClassName="px-5 pb-5 text-[15px] leading-relaxed text-slate-600"
           renderSummary={(f, i, open) => (

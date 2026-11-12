@@ -13,6 +13,9 @@ vi.mock('../services/api', () => ({
   getNotifications: vi.fn(() => Promise.resolve({ data: { notifications: [], unreadCount: 0 } })),
   markAllNotificationsRead: vi.fn(() => Promise.resolve({ data: {} })),
   markNotificationRead: vi.fn(() => Promise.resolve({ data: {} })),
+  getFeatureFlags: vi.fn(() => Promise.resolve({ data: {} })), // ConsoleSidebar reads flags; coupons off
+  getMyKyc: vi.fn(() => Promise.resolve({ data: null })),       // KycNudgeStrip in DashboardLayout
+  getMyServices: vi.fn(() => Promise.resolve({ data: [] })),
 }));
 
 const mockAuth = { current: {} };
@@ -130,9 +133,10 @@ describe('mobile — popups + nav drawer', () => {
     expect(screen.getByText('Log out')).toBeInTheDocument();
   });
 
-  it('the nav hamburger opens the drawer and Esc closes it', () => {
+  it('the More tab opens the drawer and Esc closes it', () => {
     renderLayout({ name: 'Host', plan: 'creator', role: 'host', username: 'hosty' });
-    fireEvent.click(screen.getByLabelText('Open navigation'));
+    // The mobile nav opener is the bottom tab bar's "More" button.
+    fireEvent.click(screen.getByLabelText('More'));
     const drawer = screen.getByRole('dialog', { name: 'Navigation' });
     expect(drawer).toBeInTheDocument();
     expect(within(drawer).getByLabelText('Close navigation')).toBeInTheDocument();
@@ -148,15 +152,18 @@ describe('console sidebar — two-level nav', () => {
 
   it('marks the active item with aria-current and selects its parent section', () => {
     renderAt('/dashboard/bookings', { name: 'Host', plan: 'creator', role: 'host' });
-    // Bookings is the active section (rail glyph carries aria-current).
-    expect(screen.getByRole('button', { name: 'Bookings' })).toHaveAttribute('aria-current', 'true');
+    // Bookings is the active section (rail glyph carries aria-current). Scope to
+    // the sidebar rail — the mobile tab bar also has a "Bookings" button.
+    const rail = within(screen.getByRole('navigation', { name: 'Sections' }));
+    expect(rail.getByRole('button', { name: 'Bookings' })).toHaveAttribute('aria-current', 'true');
     // Bookings item is the active page.
     expect(screen.getByRole('link', { name: 'Bookings' })).toHaveAttribute('aria-current', 'page');
   });
 
   it('deep pages highlight their parent item (longest-prefix match)', () => {
     renderAt('/dashboard/services/42/edit', { name: 'Host', plan: 'supreme', role: 'host' });
-    expect(screen.getByRole('button', { name: 'Catalog' })).toHaveAttribute('aria-current', 'true');
+    const rail = within(screen.getByRole('navigation', { name: 'Sections' }));
+    expect(rail.getByRole('button', { name: 'Catalog' })).toHaveAttribute('aria-current', 'true');
     expect(screen.getByRole('link', { name: 'Services' })).toHaveAttribute('aria-current', 'page');
   });
 

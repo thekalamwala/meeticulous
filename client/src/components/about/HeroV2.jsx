@@ -14,8 +14,28 @@ import ImgWithSkeleton from "./ImgWithSkeleton";
 export default function HeroV2() {
   return (
     <section className="relative overflow-hidden bg-canvas">
-      <div className="relative mx-auto grid max-w-7xl gap-10 px-5 pb-12 pt-12 sm:px-8 lg:min-h-[calc(100svh-57px)] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center lg:gap-8 lg:py-20">
-        <div className="lg:pr-6">
+      <svg aria-hidden width="0" height="0" className="absolute">
+        <clipPath id="about-hero-panel" clipPathUnits="objectBoundingBox">
+          <path d={PANEL} />
+        </clipPath>
+      </svg>
+
+      {/* Desktop: full-bleed photo behind everything, then the curved cream panel */}
+      <div className="absolute inset-0 hidden lg:block">
+        {/* Focus right of centre — the left part sits under the cream panel */}
+        <ImgWithSkeleton src={hero.image} alt={hero.imageAlt} fallbackLabel="Meeticulous" loading="eager" imgClassName="object-[75%_50%]" />
+      </div>
+      <div
+        aria-hidden
+        className="absolute inset-y-0 left-0 hidden w-[58%] bg-canvas lg:block"
+        style={{ clipPath: "url(#about-hero-panel)" }}
+      />
+
+      {/* lg+: left-anchor the copy to the page gutter (mr-auto) so it hugs the
+          left of the cream panel near the nav logo, instead of drifting right
+          with mx-auto centering as the viewport widens. Mobile stays centered. */}
+      <div className="relative mx-auto max-w-6xl px-5 pb-12 pt-12 sm:px-8 lg:ml-20 lg:mr-auto lg:flex lg:min-h-[calc(100svh-57px)] lg:items-center lg:py-20">
+        <div className="lg:max-w-[52%] lg:pr-6">
           <h1 className="font-display font-extrabold leading-[1.08] text-[clamp(2.4rem,5vw,3.75rem)]">
             {hero.title} <span className="text-rose">{hero.titleAccent}</span>
           </h1>

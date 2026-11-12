@@ -34,4 +34,20 @@ describe('buildTaxInvoiceHTML', () => {
     expect(h).not.toContain('<script>x</script>');
     expect(h).toContain('&lt;script&gt;');
   });
+  test('new design: brand header, product band, embedded signature, config-driven legal entity', () => {
+    const h = buildTaxInvoiceHTML(base);
+    expect(h).toContain('TAX INVOICE');
+    expect(h).toContain('Baloo');                 // display font loaded
+    expect(h).toContain('data:image/png;base64'); // brand marks + signature embedded, not external
+    expect(h).toContain('Authorised Signatory');
+    expect(h).toContain('Supplied by');
+    expect(h).toContain('Billed From');
+    // Legal entity is the one from config/snapshot — NOT a hard-coded brand name.
+    expect(h).toContain('Timewheel Internet Private Limited');
+  });
+  test('bank details render a placeholder until configured', () => {
+    const h = buildTaxInvoiceHTML(base);
+    expect(h).toContain('Bank Details');
+    expect(h).toContain('to be provided');
+  });
 });

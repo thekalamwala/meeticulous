@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  Menu, X, ExternalLink, LogOut, Headset, ChevronDown, Bell, LifeBuoy,
+  X, ExternalLink, LogOut, Headset, ChevronDown, Bell, LifeBuoy,
   User, CreditCard, ShieldCheck, Check, Copy, BadgeCheck,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -13,18 +13,22 @@ import { normalizePlan, GIFTED_PRO_LABEL } from '../../utils/themeUtils';
 import { cn } from '../dashboard/ui/cn';
 import { PageTransition } from '../dashboard/ui/PageTransition';
 import ConsoleSidebar from './ConsoleSidebar';
+import MobileTabBar from './MobileTabBar';
+import KycNudgeStrip from '../dashboard/KycNudgeStrip';
+import PullToRefresh from '../dashboard/ui/PullToRefresh';
+import { RefreshProvider } from '../dashboard/ui/refreshContext';
 import '../dashboard/ui/tokens.css';
 
 // Keyed by canonical plan slug (see normalizePlan) — legacy aliases like
 // `explorer`/`free`/`pro` are collapsed before lookup.
 const PLAN_STYLES = {
-  free: { label: 'Starter', bg: 'bg-gray-100', text: 'text-gray-600' },
-  premium: { label: 'Pro', bg: 'bg-amber-100', text: 'text-amber-700' },
+  free: { label: 'Starter', bg: 'bg-neutral-100', text: 'text-neutral-600' },
+  premium: { label: 'Pro', bg: 'bg-blush', text: 'text-maroon' },
   // Archived rows: hidden from the catalogue, but their existing subscribers
   // still see a badge and carry Pro entitlements at the old price.
-  creator: { label: 'Pro', bg: 'bg-amber-100', text: 'text-amber-700' },
-  professional: { label: 'Pro', bg: 'bg-amber-100', text: 'text-amber-700' },
-  supreme: { label: 'Supreme', bg: 'bg-violet-100', text: 'text-violet-700' },
+  creator: { label: 'Pro', bg: 'bg-blush', text: 'text-maroon' },
+  professional: { label: 'Pro', bg: 'bg-blush', text: 'text-maroon' },
+  supreme: { label: 'Supreme', bg: 'bg-maroon', text: 'text-white' },
 };
 
 // Humanize a category slug ("career-coaching" -> "Career Coaching"). Falls back
@@ -37,7 +41,7 @@ const humanizeCategory = (raw) => {
 
 // Shared row style for the profile-menu links.
 const MENU_ROW =
-  'flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50';
+  'flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-neutral-700 transition-colors hover:bg-neutral-50';
 
 // Lock body scroll while a mobile sheet / drawer is open (no-op when inactive).
 const useBodyScrollLock = (active) => {
@@ -59,14 +63,14 @@ const MenuSurface = ({ open, onClose, isMobile, title, align = 'right', width = 
       <div className="lg:hidden">
         <div className="fixed inset-0 z-[60] bg-black/40" onClick={onClose} aria-hidden="true" />
         <div
-          className="fixed inset-x-0 bottom-0 z-[60] max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-gray-100 bg-white pb-[max(1rem,env(safe-area-inset-bottom))] dash-elev-3"
+          className="fixed inset-x-0 bottom-0 z-[60] max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-neutral-100 bg-white pb-[max(1rem,env(safe-area-inset-bottom))] dash-elev-3"
           role={role}
           aria-label={title}
         >
-          <div className="mx-auto mt-2 h-1 w-9 rounded-full bg-gray-200" aria-hidden="true" />
-          <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3">
-            <span className="text-base font-semibold text-gray-900">{title}</span>
-            <button type="button" onClick={onClose} aria-label="Close" className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
+          <div className="mx-auto mt-2 h-1 w-9 rounded-full bg-neutral-200" aria-hidden="true" />
+          <div className="flex items-center justify-between border-b border-neutral-100 px-5 py-3">
+            <span className="text-base font-semibold text-neutral-900">{title}</span>
+            <button type="button" onClick={onClose} aria-label="Close" className="rounded-full p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600">
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -79,7 +83,7 @@ const MenuSurface = ({ open, onClose, isMobile, title, align = 'right', width = 
   return (
     <div
       className={cn(
-        'absolute top-full z-50 mt-2 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.12)]',
+        'absolute top-full z-50 mt-2 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.12)]',
         align === 'right' ? 'right-0' : 'left-0',
         width,
       )}
@@ -97,14 +101,22 @@ const SupportButton = () => (
     to="/help"
     title="Support"
     aria-label="Support"
-    className="grid h-9 w-9 place-items-center rounded-full text-gray-500 transition-colors hover:bg-primary/5 hover:text-primary"
+    className="grid h-9 w-9 place-items-center rounded-full text-neutral-500 transition-colors hover:bg-primary/5 hover:text-primary"
   >
     <LifeBuoy className="h-[19px] w-[19px]" strokeWidth={1.7} />
   </Link>
 );
 
-/** Notification bell. Anchored panel on desktop, bottom sheet on mobile. */
-const NotifBell = () => {
+/** Notification bell. Anchored panel on desktop, bottom sheet on mobile.
+ *  The trigger can be re-skinned by callers (the Overview shell uses white/pink)
+ *  without duplicating the panel + live-update logic. */
+export const NotifBell = ({
+  triggerClassName = 'relative grid h-9 w-9 place-items-center rounded-full text-neutral-500 transition-colors hover:bg-primary/5 hover:text-primary',
+  badgeClassName = 'absolute right-1 top-1 grid min-h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[9px] font-bold leading-none text-white',
+  iconClassName = 'h-[19px] w-[19px]',
+  // Minimum badge value — the Overview reference always shows a "1" marker.
+  minBadge = 0,
+} = {}) => {
   const [open, setOpen] = useState(false);
   const [notifs, setNotifs] = useState([]);
   const [unread, setUnread] = useState(0);
@@ -143,27 +155,29 @@ const NotifBell = () => {
   }, [isMobile]);
   useBodyScrollLock(open && isMobile);
 
+  const shownUnread = Math.max(unread, minBadge);
+
   return (
     <div ref={ref} className="relative">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="relative grid h-9 w-9 place-items-center rounded-full text-gray-500 transition-colors hover:bg-primary/5 hover:text-primary"
-        aria-label={`Notifications${unread > 0 ? `, ${unread} unread` : ''}`}
+        className={triggerClassName}
+        aria-label={`Notifications${shownUnread > 0 ? `, ${shownUnread} unread` : ''}`}
         aria-expanded={open}
         aria-haspopup="dialog"
       >
-        <Bell className="h-[19px] w-[19px]" strokeWidth={1.7} />
-        {unread > 0 && (
-          <span className="absolute right-1 top-1 grid min-h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[9px] font-bold leading-none text-white">
-            {unread > 9 ? '9+' : unread}
+        <Bell className={iconClassName} strokeWidth={1.7} />
+        {shownUnread > 0 && (
+          <span className={badgeClassName}>
+            {shownUnread > 9 ? '9+' : shownUnread}
           </span>
         )}
       </button>
 
       <MenuSurface open={open} onClose={() => setOpen(false)} isMobile={isMobile} title="Notifications" width="w-80" role="dialog">
-        <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3 md:py-3">
-          {!isMobile && <span className="text-sm font-semibold text-gray-900">Notifications</span>}
+        <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3 md:py-3">
+          {!isMobile && <span className="text-sm font-semibold text-neutral-900">Notifications</span>}
           <button
             type="button"
             className="ml-auto text-xs font-medium text-primary hover:underline"
@@ -175,24 +189,24 @@ const NotifBell = () => {
         {status === 'loading' && notifs.length === 0 ? (
           <ul className="max-h-80 overflow-y-auto" aria-busy="true">
             {[0, 1, 2].map((i) => (
-              <li key={i} className="flex flex-col gap-2 border-b border-gray-50 px-4 py-3.5">
-                <span className="h-3 w-2/5 animate-pulse rounded bg-gray-100" />
-                <span className="h-2.5 w-3/4 animate-pulse rounded bg-gray-100" />
+              <li key={i} className="flex flex-col gap-2 border-b border-neutral-50 px-4 py-3.5">
+                <span className="h-3 w-2/5 animate-pulse rounded bg-neutral-100" />
+                <span className="h-2.5 w-3/4 animate-pulse rounded bg-neutral-100" />
               </li>
             ))}
           </ul>
         ) : status === 'error' && notifs.length === 0 ? (
           <div className="py-10 text-center">
-            <Bell className="mx-auto mb-2 h-7 w-7 text-gray-200" />
-            <p className="text-sm text-gray-400">Couldn't load notifications</p>
+            <Bell className="mx-auto mb-2 h-7 w-7 text-neutral-200" />
+            <p className="text-sm text-neutral-400">Couldn't load notifications</p>
             <button type="button" onClick={load} className="mt-2 text-xs font-medium text-primary hover:underline">
               Try again
             </button>
           </div>
         ) : notifs.length === 0 ? (
           <div className="py-10 text-center">
-            <Bell className="mx-auto mb-2 h-7 w-7 text-gray-200" />
-            <p className="text-sm text-gray-400">No new notifications</p>
+            <Bell className="mx-auto mb-2 h-7 w-7 text-neutral-200" />
+            <p className="text-sm text-neutral-400">No new notifications</p>
           </div>
         ) : (
           <ul className="max-h-80 overflow-y-auto md:max-h-80">
@@ -207,12 +221,12 @@ const NotifBell = () => {
                     setOpen(false);
                   }}
                   className={cn(
-                    'flex w-full flex-col items-start gap-0.5 border-b border-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-50 hover:no-underline',
+                    'flex w-full flex-col items-start gap-0.5 border-b border-neutral-50 px-4 py-3 text-left transition-colors hover:bg-neutral-50 hover:no-underline',
                     !n.read_at && 'bg-primary/5',
                   )}
                 >
-                  <span className="text-sm font-medium text-gray-800">{n.title}</span>
-                  {n.body && <span className="text-xs text-gray-500">{n.body}</span>}
+                  <span className="text-sm font-medium text-neutral-800">{n.title}</span>
+                  {n.body && <span className="text-xs text-neutral-500">{n.body}</span>}
                 </Link>
               </li>
             ))}
@@ -224,7 +238,12 @@ const NotifBell = () => {
 };
 
 /** Profile avatar — anchored menu on desktop, bottom sheet on mobile. */
-const ProfileMenu = ({ user, plan, planStyle, initial, logout }) => {
+export const ProfileMenu = ({
+  user, plan, planStyle, initial, logout,
+  triggerClassName = 'flex items-center gap-1.5 rounded-full p-0.5 transition-colors hover:bg-neutral-100',
+  avatarClassName = 'bg-primary/10 text-primary',
+  chevronClassName = 'h-4 w-4 text-neutral-400',
+}) => {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const ref = useRef(null);
@@ -268,7 +287,7 @@ const ProfileMenu = ({ user, plan, planStyle, initial, logout }) => {
     user?.profile_image ? (
       <img src={user.profile_image} alt={user?.name || 'Profile'} className={cn('shrink-0 rounded-full object-cover', size)} />
     ) : (
-      <div className={cn('grid shrink-0 place-items-center rounded-full bg-primary/10 font-bold text-primary', size)}>
+      <div className={cn('grid shrink-0 place-items-center rounded-full font-bold', avatarClassName, size)}>
         {initial}
       </div>
     );
@@ -278,22 +297,22 @@ const ProfileMenu = ({ user, plan, planStyle, initial, logout }) => {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 rounded-full p-0.5 transition-colors hover:bg-gray-100"
+        className={triggerClassName}
         aria-label="Profile menu"
         aria-expanded={open}
         aria-haspopup="menu"
       >
         <Avatar size="h-9 w-9 text-sm" />
-        <ChevronDown className={cn('h-4 w-4 text-gray-400 transition-transform', open && 'rotate-180')} />
+        <ChevronDown className={cn(chevronClassName, 'transition-transform', open && 'rotate-180')} />
       </button>
 
       <MenuSurface open={open} onClose={close} isMobile={isMobile} title="Account" width="w-72">
         {/* Identity: photo + name + @username + plan chip (+ verify pill) */}
-        <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-4">
+        <div className="flex items-center gap-3 border-b border-neutral-100 px-4 py-4">
           <Avatar size="h-12 w-12 text-base" />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
-              <p className="truncate text-sm font-bold text-gray-900">{user?.name || 'Host'}</p>
+              <p className="truncate text-sm font-bold text-neutral-900">{user?.name || 'Host'}</p>
               <Link
                 to="/dashboard/kyc"
                 onClick={close}
@@ -302,13 +321,12 @@ const ProfileMenu = ({ user, plan, planStyle, initial, logout }) => {
                 className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <BadgeCheck
-                  className="h-4 w-4"
+                  className={cn('h-4 w-4', kycVerified ? 'text-maroon' : 'text-neutral-400')}
                   strokeWidth={2.2}
-                  style={{ color: kycVerified ? '#960D32' : '#9ca3af' }}
                 />
               </Link>
             </div>
-            <p className="truncate text-xs text-gray-500">{user?.username ? `@${user.username}` : category}</p>
+            <p className="truncate text-xs text-neutral-500">{user?.username ? `@${user.username}` : category}</p>
             <div className="mt-1.5">
               <span className={cn('rounded-full px-2 py-0.5 text-[10px] font-semibold', planStyle.bg, planStyle.text)}>
                 {planStyle.label}
@@ -318,7 +336,7 @@ const ProfileMenu = ({ user, plan, planStyle, initial, logout }) => {
         </div>
 
         {/* Account */}
-        <div className="border-t border-gray-100 py-1.5">
+        <div className="border-t border-neutral-100 py-1.5">
           <Link to="/dashboard/profile" onClick={close} className={MENU_ROW}>
             <User className="h-4 w-4 shrink-0" strokeWidth={1.7} />
             <span className="flex-1">Account information</span>
@@ -334,7 +352,7 @@ const ProfileMenu = ({ user, plan, planStyle, initial, logout }) => {
         </div>
 
         {/* Your page */}
-        <div className="border-t border-gray-100 py-1.5">
+        <div className="border-t border-neutral-100 py-1.5">
           {user?.username && (
             <a href={`/${user.username}`} target="_blank" rel="noreferrer" onClick={close} className={MENU_ROW}>
               <ExternalLink className="h-4 w-4 shrink-0" strokeWidth={1.7} />
@@ -344,7 +362,7 @@ const ProfileMenu = ({ user, plan, planStyle, initial, logout }) => {
           {publicUrl && (
             <button type="button" onClick={copyLink} className={MENU_ROW}>
               {copied
-                ? <Check className="h-4 w-4 shrink-0 text-emerald-600" strokeWidth={2.4} />
+                ? <Check className="h-4 w-4 shrink-0 text-success-fg" strokeWidth={2.4} />
                 : <Copy className="h-4 w-4 shrink-0" strokeWidth={1.7} />}
               <span className="flex-1">{copied ? 'Copied' : 'Copy link'}</span>
             </button>
@@ -352,20 +370,20 @@ const ProfileMenu = ({ user, plan, planStyle, initial, logout }) => {
         </div>
 
         {/* Support — Help lives in the topbar; this is the human line. */}
-        <div className="border-t border-gray-100 py-1.5">
+        <div className="border-t border-neutral-100 py-1.5">
           <a href="/bolt958" target="_blank" rel="noreferrer" onClick={close} className={MENU_ROW}>
             <Headset className="h-4 w-4 shrink-0" strokeWidth={1.7} />
             <span className="flex-1">Account manager</span>
-            <ExternalLink className="h-3.5 w-3.5 shrink-0 text-gray-300" strokeWidth={1.8} />
+            <ExternalLink className="h-3.5 w-3.5 shrink-0 text-neutral-300" strokeWidth={1.8} />
           </a>
         </div>
 
         {/* Logout */}
-        <div className="border-t border-gray-100 py-1.5">
+        <div className="border-t border-neutral-100 py-1.5">
           <button
             type="button"
             onClick={() => { close(); logout?.(); }}
-            className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-red-500 transition-colors hover:bg-red-50"
+            className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-error-fg transition-colors hover:bg-error-bg"
           >
             <LogOut className="h-4 w-4 shrink-0" strokeWidth={1.7} />
             <span className="flex-1">Log out</span>
@@ -376,19 +394,10 @@ const ProfileMenu = ({ user, plan, planStyle, initial, logout }) => {
   );
 };
 
-/** Sticky dashboard topbar. Left: mobile nav hamburger. Right: Profile, Notifs, Support. */
-const DashTopbar = ({ user, plan, planStyle, initial, logout, onOpenNav, navTriggerRef }) => (
-  <header className="sticky top-0 z-30 flex min-h-14 shrink-0 items-center border-b border-gray-200/80 bg-white/95 px-4 pt-[env(safe-area-inset-top)] backdrop-blur sm:px-6 md:px-8">
-    <button
-      ref={navTriggerRef}
-      type="button"
-      onClick={onOpenNav}
-      aria-label="Open navigation"
-      aria-haspopup="dialog"
-      className="mr-1 grid h-9 w-9 place-items-center rounded-full text-gray-500 transition-colors hover:bg-primary/5 hover:text-primary lg:hidden"
-    >
-      <Menu className="h-[19px] w-[19px]" strokeWidth={1.8} />
-    </button>
+/** Sticky dashboard topbar. Right: Profile, Notifs, Support. On mobile the nav
+ *  opener moved to the bottom tab bar's "More" button. */
+const DashTopbar = ({ user, plan, planStyle, initial, logout }) => (
+  <header className="sticky top-0 z-30 flex min-h-14 shrink-0 items-center border-b border-neutral-200/80 bg-white/95 px-4 pt-[env(safe-area-inset-top)] backdrop-blur sm:px-6 md:px-8">
     <div className="ml-auto flex items-center gap-1">
       <SupportButton />
       <NotifBell />
@@ -420,28 +429,44 @@ const DashboardLayout = ({ children }) => {
   const initial = (user?.name || user?.email || 'U').trim().charAt(0).toUpperCase();
 
   return (
-    <div className="dash flex min-h-screen overflow-x-hidden bg-canvas">
+    <RefreshProvider>
+    {/* h-[100dvh] + overflow-hidden (NOT min-h-screen): the shell must be viewport-
+        bounded so the inner <main overflow-y-auto> is the real scroll container. With
+        min-h-screen the shell grew to content height, <main> never scrolled (the window
+        did), so main.scrollTop stayed 0 — and PullToRefresh (scrollerRef={mainRef}) read
+        that as "always at the top" and preventDefault'd every downward touch, killing
+        touch scroll on mobile. dvh tracks the mobile browser chrome. */}
+    <div className="dash flex h-[100dvh] overflow-hidden bg-canvas">
       <ConsoleSidebar open={navOpen} onClose={() => setNavOpen(false)} triggerRef={navTriggerRef} />
 
       {/* Main — offset by the fixed rail (56) + panel (220) = 276px on lg+
-          (the sidebar is out of flow). */}
-      <main ref={mainRef} className="flex min-w-0 flex-1 flex-col overflow-y-auto lg:pl-[276px]">
+          (the sidebar is out of flow). overscroll-contain hands the top overscroll
+          to pull-to-refresh instead of the browser's native gesture. */}
+      <main ref={mainRef} className="flex min-w-0 flex-1 flex-col overflow-y-auto overscroll-y-contain lg:pl-[276px]">
         <DashTopbar
           user={user}
           plan={plan}
           planStyle={planStyle}
           initial={initial}
           logout={logout}
-          onOpenNav={() => setNavOpen(true)}
-          navTriggerRef={navTriggerRef}
         />
-        <div className="px-4 py-6 sm:px-6 md:px-8">
-          <div className="mx-auto w-full max-w-6xl">
-            <PageTransition>{children}</PageTransition>
+        {/* pb clears the fixed mobile tab bar (+ safe area); desktop keeps py-6. */}
+        <PullToRefresh scrollerRef={mainRef}>
+          <div className="px-4 py-6 pb-[calc(68px+env(safe-area-inset-bottom))] sm:px-6 md:px-8 lg:pb-6">
+            <div className="mx-auto w-full max-w-6xl">
+              {/* KYC nudge on every host page (home renders its own inline). */}
+              <KycNudgeStrip />
+              <PageTransition>{children}</PageTransition>
+            </div>
           </div>
-        </div>
+        </PullToRefresh>
       </main>
+
+      {/* Native-app bottom tab bar — mobile only (< lg). Its "More" button is the
+          mobile nav opener (the topbar hamburger moved here). */}
+      <MobileTabBar onOpenMore={() => setNavOpen(true)} moreTriggerRef={navTriggerRef} />
     </div>
+    </RefreshProvider>
   );
 };
 

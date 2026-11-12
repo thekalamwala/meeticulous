@@ -49,12 +49,12 @@ import PageGuides from '../../components/common/PageGuides';
 import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
-const CREAM = '#FBF6EE';      // page ground
-const CREAM_DEEP = '#F4EBDD'; // alternate section ground
-const PEACH = '#FCE7DA';      // soft accent surface
+const CREAM = '#FBF5F3';      // page ground
+const CREAM_DEEP = '#F5ECEA'; // alternate section ground
+const PEACH = '#FFE4EA';      // soft accent surface
 const ACCENT = '#2B0A14';     // text + CTA fill (AA on cream and with white text)
-const INK = '#2A211B';        // warm ink
-const MUTED = '#6B5D52';      // body copy on cream (AA)
+const INK = '#34201F';        // warm ink
+const MUTED = '#6B524F';      // body copy on cream (AA)
 const TINTS = ['#FCE3D3', '#F7E6C4', '#F9D9CF', '#EFE4D6']; // avatar backgrounds
 
 // Same cap the server applies on the free plan (planService limits.crm).
@@ -683,7 +683,7 @@ export default function ClientManagementFeature() {
           )}
           items={FAQ}
           listClassName="divide-y divide-black/5 overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]"
-          itemClassName={(open) => (open ? 'bg-[#FFF8F2]' : '')}
+          itemClassName={(open) => (open ? 'bg-neutral-50' : '')}
           summaryClassName="flex items-center justify-between gap-4 px-6 py-5"
           answerClassName="px-6 pb-6 text-[15px] leading-relaxed"
           answerStyle={{ color: MUTED }}

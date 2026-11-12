@@ -17,6 +17,8 @@ vi.mock('../services/api', () => ({
   getAvailableSlots:  vi.fn().mockResolvedValue({ data: { slots: [] } }),
   createPaymentOrder: vi.fn(),
   verifyPayment:      vi.fn(),
+  validateCoupon:     vi.fn(),
+  getFeatureFlags:    vi.fn().mockResolvedValue({ data: {} }), // coupons flag off → no coupon field
 }));
 
 vi.mock('../context/AuthContext', () => ({

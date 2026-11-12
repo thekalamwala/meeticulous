@@ -129,7 +129,9 @@ export const getGoogleAuthUrl = (returnPath)  => API.get('/auth/google', returnP
 // is stamped with their acquisition source (CRM Phase 2b).
 // tz = browser timezone, the server's fallback seed when Google Calendar can't supply one.
 const browserTz = () => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || undefined; } catch { return undefined; } };
-export const getVendorGoogleUrl = (intent = 'login', invite) => API.get('/auth/google/vendor', { params: { intent, ...(invite ? { invite } : {}), ...(browserTz() ? { tz: browserTz() } : {}), ...(getAttribution() || {}) } });
+// timeout: a hung network leaves the signup button stuck on "Opening Google…"
+// forever otherwise — fail after 15s so the UI can toast + re-enable.
+export const getVendorGoogleUrl = (intent = 'login', invite) => API.get('/auth/google/vendor', { timeout: 15000, params: { intent, ...(invite ? { invite } : {}), ...(browserTz() ? { tz: browserTz() } : {}), ...(getAttribution() || {}) } });
 export const sendOtp          = (data)         => API.post('/auth/send-otp', data);
 export const verifyOtp        = (data)         => API.post('/auth/verify-otp', data);
 // Phone-primary user login
@@ -151,7 +153,9 @@ export const resetPassword    = (data)         => API.post('/auth/reset-password
 // ── Newsletter (public) — POST /email/subscribe records the address as a
 // campaign contact AND a CRM lead server-side. Callers stay best-effort: on a
 // network failure they still stash the address client-side so it is never lost.
-export const subscribeNewsletter = (email)     => API.post('/email/subscribe', { email, attribution: getAttribution() });
+// `extra` merges into the attribution blob (e.g. { interest: 'membership-early-access' })
+// so the same opt-in doubles as a tagged early-access signup.
+export const subscribeNewsletter = (email, extra) => API.post('/email/subscribe', { email, attribution: { ...(getAttribution() || {}), ...(extra || {}) } });
 
 // ── Contact form (public) ─────────────────────────────────────
 export const sendContactMessage = (data) => API.post('/contact', data);
@@ -440,6 +444,14 @@ export const deleteService    = (id)             => API.delete(`/host/services/$
 export const setAvailability  = (data)           => API.put('/host/availability', data);
 export const getAvailability  = ()               => API.get('/host/availability');
 export const searchVendors    = (q)              => API.get('/host/search', { params: { q } });
+
+// ── Coupons (v3.204, behind the `coupons` flag) ───────────────
+// Guest: preview a discount before booking. Host: manage own codes.
+export const validateCoupon    = (data)            => API.post('/bookings/coupon/validate', data); // { code, service_id }
+export const getHostCoupons    = ()                => API.get('/host/coupons');
+export const createHostCoupon  = (data)            => API.post('/host/coupons', data);
+export const updateHostCoupon  = (id, data)        => API.patch(`/host/coupons/${id}`, data);
+export const deleteHostCoupon  = (id)              => API.delete(`/host/coupons/${id}`);
 
 // ── Bookings ──────────────────────────────────────────────────
 export const createBooking     = (data)            => API.post('/bookings', data);

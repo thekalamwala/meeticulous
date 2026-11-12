@@ -1,0 +1,80 @@
+#!/bin/sh
+# Pre-push gate — fast local fail-fast before anything reaches GitHub. Added after
+# 30 days of "PR run failed: CI" emails: every one was a unit test that broke on
+# push and was caught only after the fact (6 of 9 Nov failures were red
+# client/server tests). This stops a red push at the source.
+#
+# Scoped to what you touched (same paths-filter as .github/workflows/ci.yml):
+#   server/**                 -> cd server && npm run test:unit            (jest, full)
+#   client/** or docs/help/** -> cd client && npx vitest related <changed> (vitest)
+# Client runs ONLY the tests whose import graph includes your changed files —
+# seconds, not the full 1200-test suite. The full client+server suite still runs
+# on CI (the authoritative gate before merge→deploy), so nothing is weakened for
+# prod; this just stops local full-suite runs from taking ~10min and flaking on a
+# loaded box. Docs-only push runs nothing. Lockfile install is skipped — it assumes
+# your node_modules are current; CI still does the clean `npm ci`.
+#
+# Install (once per clone):  git config core.hooksPath .githooks
+# Skip in an emergency:      git push --no-verify
+set -e
+
+ROOT=$(git rev-parse --show-toplevel)
+cd "$ROOT"
+
+# What is this push adding vs the branch it tracks? Fall back to origin/main, then
+# to HEAD~1, so a detached or first push still diffs something sane.
+BASE=$(git merge-base HEAD '@{upstream}' 2>/dev/null) \
+  || BASE=$(git merge-base HEAD origin/main 2>/dev/null) \
+  || BASE=$(git rev-parse HEAD~1 2>/dev/null) \
+  || BASE=$(git hash-object -t tree /dev/null)
+
+CHANGED=$(git diff --name-only "$BASE" HEAD)
+[ -z "$CHANGED" ] && exit 0
+
+echo "$CHANGED" | grep -qE '^server/'                 && RUN_SERVER=1 || RUN_SERVER=0
+echo "$CHANGED" | grep -qE '^(client/|docs/help/)'    && RUN_CLIENT=1 || RUN_CLIENT=0
+
+if [ "$RUN_SERVER" = 0 ] && [ "$RUN_CLIENT" = 0 ]; then
+  echo "pre-push: no server/ or client/ changes — skipping tests."
+  exit 0
+fi
+
+if [ "$RUN_SERVER" = 1 ]; then
+  echo "pre-push: running SERVER unit tests (jest)…"
+  # Same dummy test env CI sets (ci.yml) so env-reading tests don't crash. Not real.
+  NODE_ENV=test \
+  SUPER_ADMIN_JWT_SECRET=ci-test-secret-not-real \
+  OAUTH_STATE_SECRET=ci-test-secret-not-real \
+  GOOGLE_TOKEN_KEY=ci-test-32-byte-key-000000000000 \
+  CLIENT_URL=http://localhost:5173 \
+  AISENSY_WEBHOOK_SECRET=ci-test-secret-not-real \
+  npm --prefix server run test:unit
+fi
+
+if [ "$RUN_CLIENT" = 1 ]; then
+  CLIENT_FILES=$(echo "$CHANGED" | grep -E '^client/' | sed 's#^client/##')
+  # A manifest/config change (deps, vite/vitest/tailwind config) can affect any
+  # test, and `vitest related` treats it as "everything" anyway — so run the full
+  # suite in that case. It's rare; most pushes only touch source.
+  if echo "$CLIENT_FILES" | grep -qE '^(package(-lock)?\.json$|.*\.config\.(js|ts|mjs|cjs)$)'; then
+    echo "pre-push: client manifest/config changed — running full CLIENT suite (vitest)…"
+    ( cd client && npx vitest run )
+  else
+    # Only the tests whose import graph touches your changed source — seconds, not
+    # the full 1200-test suite (that stays on CI, the gate before merge→deploy).
+    # --passWithNoTests: a changed file with no test that imports it isn't a failure.
+    # `|| true`: grep exits 1 when NO client source file changed (e.g. a push that
+    # only touches client/vercel.json or an asset). Under `set -e` that non-zero from
+    # the command substitution aborted the hook with no output and blocked an
+    # otherwise test-free push. Tolerate the empty match and fall through to skip.
+    SRC_FILES=$(echo "$CLIENT_FILES" | grep -E '\.(jsx?|tsx?|css)$' || true)
+    if [ -n "$SRC_FILES" ]; then
+      echo "pre-push: running CLIENT tests related to your changes (vitest related)…"
+      ( cd client && npx vitest related --run --passWithNoTests $SRC_FILES )
+    else
+      echo "pre-push: no client source changes — skipping client tests."
+    fi
+  fi
+fi
+
+echo "pre-push: all gated tests passed."

@@ -7,6 +7,7 @@ import {
 import { getGuestBookings, cancelBooking, getBookingReview, guestCompleteBooking, guestReportProblem } from "../services/api";
 import { downloadReceipt } from "../utils/receipt";
 import { useAuth } from "../context/AuthContext";
+import { useRegisterRefresh } from "../components/dashboard/ui/refreshContext";
 import useFeatureFlags from "../hooks/useFeatureFlags";
 import RescheduleModal from "../components/booking/RescheduleModal";
 import ReviewModal from "../components/booking/ReviewModal";
@@ -144,7 +145,7 @@ const CustomerBookings = () => {
   const [detailsFor, setDetailsFor] = useState(null);
 
   const load = () => {
-    getGuestBookings()
+    return getGuestBookings()
       .then(({ data }) => {
         const list = Array.isArray(data) ? data : [];
         setBookings(list);
@@ -156,7 +157,12 @@ const CustomerBookings = () => {
       .catch(() => setBookings([]))
       .finally(() => setLoading(false));
   };
-  useEffect(load, []);
+  // load() returns a promise (for useRegisterRefresh), so it must NOT be passed
+  // straight to useEffect — React would treat the promise as the cleanup fn and
+  // call it on unmount ("destroy is not a function"). Wrap so the effect returns
+  // nothing; load still returns its promise to the refresh registrar below.
+  useEffect(() => { load(); }, []);
+  useRegisterRefresh(load); // pull-to-refresh re-fetches guest bookings
 
   const handleCancel = async (id) => {
     const b = bookings.find((x) => x.id === id);

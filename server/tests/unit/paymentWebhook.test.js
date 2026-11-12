@@ -104,10 +104,16 @@ test('an unknown / entity-less event is accepted (200) without side effects', as
   expect(finalizeBookingCapture).not.toHaveBeenCalled();
 });
 
+// The captured branch binds the payment to the booking: its order must be the
+// booking's order AND its amount must equal customer_total (audit C3). bk1 is
+// ₹590 → 59000 paise, order_1.
+const bindOk = { entity: { id: 'pay_1', order_id: 'order_1', amount: 59000, notes: { booking_id: 'bk1' }, fee: 1180, tax: 180 } };
+
 test('payment.captured for a booking finalises capture once and confirms', async () => {
+  mockBookingRow = { razorpay_order_id: 'order_1', customer_total: 590 };
   finalizeBookingCapture.mockResolvedValue({ updated: { id: 'bk1', guest_email: 'g@x.com', customer_total: 590, platform_fee_amount: 0, commission_taxable: 0, services: { title: 'SEO' } } });
   const r = mkRes();
-  await handleWebhook(mkReq({ event: 'payment.captured', payload: { payment: { entity: { id: 'pay_1', notes: { booking_id: 'bk1' }, fee: 1180, tax: 180 } } } }), r);
+  await handleWebhook(mkReq({ event: 'payment.captured', payload: { payment: bindOk } }), r);
   expect(finalizeBookingCapture).toHaveBeenCalledWith(expect.objectContaining({ bookingId: 'bk1', paymentId: 'pay_1' }));
   expect(sendBookingConfirmation).toHaveBeenCalledWith(expect.objectContaining({ bookingId: 'bk1' }));
   expect(trackServer).toHaveBeenCalled();
@@ -115,12 +121,30 @@ test('payment.captured for a booking finalises capture once and confirms', async
 });
 
 test('a DUPLICATE payment.captured (already paid) does not re-confirm or re-track', async () => {
+  mockBookingRow = { razorpay_order_id: 'order_1', customer_total: 590 };
   finalizeBookingCapture.mockResolvedValue({ updated: null }); // idempotent: no row transitioned
   const r = mkRes();
-  await handleWebhook(mkReq({ event: 'payment.captured', payload: { payment: { entity: { id: 'pay_1', notes: { booking_id: 'bk1' }, fee: 1180, tax: 180 } } } }), r);
+  await handleWebhook(mkReq({ event: 'payment.captured', payload: { payment: bindOk } }), r);
   expect(finalizeBookingCapture).toHaveBeenCalledTimes(1);
   expect(sendBookingConfirmation).not.toHaveBeenCalled();
   expect(trackServer).not.toHaveBeenCalled();
+  expect(r.json).toHaveBeenCalledWith({ received: true });
+});
+
+test('C3: a reschedule-fee capture never finalises the original booking', async () => {
+  mockBookingRow = { razorpay_order_id: 'order_1', customer_total: 590 };
+  const r = mkRes();
+  await handleWebhook(mkReq({ event: 'payment.captured', payload: { payment: { entity: { id: 'pay_fee', order_id: 'order_fee', amount: 5000, notes: { booking_id: 'bk1', kind: 'reschedule_fee' } } } } }), r);
+  expect(finalizeBookingCapture).not.toHaveBeenCalled();
+  expect(r.json).toHaveBeenCalledWith({ received: true });
+});
+
+test('C3: a capture whose order/amount do not match the booking is rejected', async () => {
+  mockBookingRow = { razorpay_order_id: 'order_1', customer_total: 590 };
+  const r = mkRes();
+  // right booking id in notes, but a different (cheaper) order — the takeover vector
+  await handleWebhook(mkReq({ event: 'payment.captured', payload: { payment: { entity: { id: 'pay_x', order_id: 'order_OTHER', amount: 5000, notes: { booking_id: 'bk1' } } } } }), r);
+  expect(finalizeBookingCapture).not.toHaveBeenCalled();
   expect(r.json).toHaveBeenCalledWith({ received: true });
 });
 

@@ -71,6 +71,13 @@ const REGISTRY = [
   { key: 'host_linkedin_login',  label: 'LinkedIn host login',  category: 'Auth',     scope: 'both',     enabled: false, description: 'Hosts can sign up and log in with LinkedIn on the host door. Off = LinkedIn button hidden and POST /api/auth/linkedin/host returns 503.' },
   { key: 'razorpay_payment',     label: 'Razorpay Payment',     category: 'Payments', scope: 'customer', description: 'Paid checkout via Razorpay. Off = paid bookings/purchases blocked.' },
   { key: 'product_purchase',     label: 'Product Purchase',     category: 'Payments', scope: 'customer', description: 'Buy digital products. Off = product checkout blocked.' },
+  // Opt-in (ships OFF — seeded disabled in v3.203, and `enabled: false` here so the
+  // registry upsert creates it OFF even before the migration runs). CA signed off
+  // 2026-11-11 (flat 1% TDS + 1% TCS for all); still OFF pending device/held-balance QA.
+  { key: 'paid_booking_without_pan', label: 'Paid Booking Without PAN', category: 'Payments', scope: 'vendor', enabled: false, description: 'Let a host take a PAID booking before KYC. Off = paid bookings blocked until the host has PAN on file (legacy). On = booking is accepted, money is collected and HELD (payout still needs approved KYC); TDS/TCS withheld at the flat 1% + 1% rate regardless of PAN.' },
+  // Opt-in (ships OFF — seeded disabled in v3.204, and enabled:false here so the registry
+  // upsert creates it OFF even before the migration runs).
+  { key: 'coupons',              label: 'Coupons',              category: 'Payments', scope: 'both',     enabled: false, description: 'Host discount codes applied at checkout. Off = codes are rejected and no discount is applied.' },
   { key: 'review_submission',    label: 'Review Submission',    category: 'Engagement', scope: 'both', description: 'Guests and hosts review each other after a completed booking. Off = all new reviews blocked (both directions).' },
   { key: 'customer_bookings',    label: 'Customer Booking History', category: 'Engagement', scope: 'customer', description: 'Guest "my bookings" dashboard. Off = page hidden.' },
 
@@ -98,6 +105,7 @@ const REGISTRY = [
   { key: 'community_writes',     label: 'Community Writes',     category: 'Community', scope: 'both', enabled: false, description: 'Posting, commenting, reacting and reporting. Ships OFF. Off = 503 for everyone except early-access members and staff/official badges.' },
   { key: 'community_tithi',      label: 'Community Tithi',      category: 'Community', scope: 'both', enabled: false, description: 'Tithi bot replies in the community. Ships OFF. Off = no bot replies.' },
   { key: 'community_ads',        label: 'Community Ads',        category: 'Community', scope: 'both', enabled: false, description: 'Sponsored placements in the community. Ships OFF. Off = no ads shown.' },
+  { key: 'community_v2',         label: 'Community v2 (mobile)', category: 'Community', scope: 'both', enabled: false, description: 'Feed-first mobile redesign of the community (new navbar, bottom bar, composer, drawers). Ships OFF. Off = the current community layout is served.' },
 ];
 
 const KEYS = REGISTRY.map((f) => f.key);

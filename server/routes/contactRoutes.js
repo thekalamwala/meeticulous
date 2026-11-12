@@ -5,8 +5,12 @@
 
 const router = require('express').Router();
 const { submitContact } = require('../controllers/contactController');
-const { newsletterIpLimiter } = require('../middleware/security');
+const { newsletterEmailLimiter, newsletterIpLimiter } = require('../middleware/security');
 
-router.post('/', newsletterIpLimiter, submitContact);
+// Stack BOTH limiters (parity with /api/enterprise-lead): the email-keyed cap
+// stops bombing one address; the IP-keyed cap stops rotating the email per
+// request to spam the support inbox from one IP. IP-only (the prior state) left
+// the latter open.
+router.post('/', newsletterEmailLimiter, newsletterIpLimiter, submitContact);
 
 module.exports = router;

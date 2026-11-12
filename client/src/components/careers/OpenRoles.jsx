@@ -7,9 +7,9 @@ import useGsapReveal from '../about/useGsapReveal';
 // Open roles as cards: team chip (tinted per team), title, summary, location +
 // type, pay band, and a "View role" link to /careers/:slug.
 const TEAM_TINT = {
-  Marketing: 'var(--primary, #960D32)',
-  Engineering: 'var(--c-violet)',
-  Sales: 'var(--c-amber)',
+  Marketing: 'var(--mt-maroon)',
+  Engineering: 'var(--mt-rose)',
+  Sales: 'var(--mt-maroon-dark)',
 };
 
 export default function OpenRoles() {
@@ -18,7 +18,7 @@ export default function OpenRoles() {
   const roles = getOpenJobs();
 
   return (
-    <section id="open-roles" ref={root} className="scroll-mt-20 bg-canvas px-5 py-20 sm:px-8 lg:py-28">
+    <section id="open-roles" ref={root} className="scroll-mt-20 bg-[var(--mt-blush)] px-5 py-20 sm:px-8 lg:py-28">
       <div className="mx-auto max-w-6xl">
         <h2 className="js-head text-center font-display text-4xl font-extrabold sm:text-5xl">Open roles</h2>
         <p className="mx-auto mt-4 max-w-2xl text-center text-lg leading-relaxed text-ink/70">
@@ -32,7 +32,7 @@ export default function OpenRoles() {
         ) : (
           <ul className="mt-12 grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {roles.map((j) => {
-              const tint = TEAM_TINT[j.team] || 'var(--c-blue)';
+              const tint = TEAM_TINT[j.team] || 'var(--mt-maroon)';
               return (
                 <li key={j.slug} className="js-item">
                   <Link

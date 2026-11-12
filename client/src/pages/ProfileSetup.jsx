@@ -34,6 +34,27 @@ const COVER_ASPECT = 3; // 3:1 banner
 // Keep only the digits of a phone number (e.g. "+91 98765 43210" → "919876543210").
 const digitsOf = (s) => String(s || '').replace(/[^\d]/g, '');
 
+// ─── Section title — the one hierarchy primitive for this page ────────────────
+// Brand headings are Bricolage-800 maroon (BRAND_RULES §Type). Every settings
+// group leads with one of these + an optional one-line neutral subtitle, so a
+// host can scan the page by its headings instead of a wall of same-size labels.
+const SectionTitle = ({ children, hint }) => (
+  <div className="mb-3">
+    <h2 className="font-display text-lg font-extrabold tracking-tight text-maroon">{children}</h2>
+    {hint && <p className="mt-0.5 text-sm text-neutral-500">{hint}</p>}
+  </div>
+);
+
+// ─── Status chip — brand "live/connected" signal (maroon + pink dot) ──────────
+// Replaces the off-palette green chips. The pink dot is the brand's data-signal
+// for live/booked (BRAND_RULES §Signature elements).
+const LiveChip = ({ children }) => (
+  <span className="inline-flex items-center gap-1.5 rounded-full bg-blush px-2.5 py-0.5 text-[11px] font-semibold text-maroon">
+    <span aria-hidden="true" className="inline-block h-1.5 w-1.5 rounded-full bg-pink" />
+    {children}
+  </span>
+);
+
 // ─── Social platform config ──────────────────────────────────────────────────
 const SOCIAL_PLATFORMS = [
   { key: 'instagram', label: 'Instagram',  placeholder: 'https://instagram.com/yourhandle', type: 'url' },
@@ -65,13 +86,13 @@ const Favicon = ({ domain, name }) => {
   const [err, setErr] = useState(false);
   if (err || !domain) {
     return (
-      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-gray-100 bg-gray-50 text-xs font-bold text-gray-400">
+      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-neutral-200 bg-neutral-50 text-xs font-bold text-neutral-400">
         {name.charAt(0).toUpperCase()}
       </div>
     );
   }
   return (
-    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-100 bg-white">
+    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-neutral-200 bg-white">
       <img
         src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
         alt=""
@@ -120,11 +141,11 @@ const Swatch = ({ color, selected, onClick }) => (
     type="button"
     onClick={() => onClick(color.hex)}
     title={color.name}
-    className="relative h-8 w-8 rounded-lg border-2 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1"
+    className="relative h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 focus:outline-none focus-visible:ring-[3px] focus-visible:ring-rose/40 focus-visible:ring-offset-1"
     style={{
       backgroundColor: color.hex,
-      borderColor: selected ? '#111827' : 'transparent',
-      boxShadow: selected ? '0 0 0 2px #111827' : 'inset 0 0 0 1px rgba(0,0,0,0.1)',
+      borderColor: selected ? '#2B0A14' : 'transparent',
+      boxShadow: selected ? '0 0 0 2px #2B0A14' : 'inset 0 0 0 1px rgba(0,0,0,0.1)',
     }}
   >
     {selected && (
@@ -138,34 +159,36 @@ const Swatch = ({ color, selected, onClick }) => (
 );
 
 // ─── Mini Profile Preview ────────────────────────────────────────────────────
+// Mirrors the host's PUBLIC page, so it legitimately uses the host's own
+// theme_color (that colour is data the host picked, not dashboard chrome).
 const ProfilePreview = ({ form, themeColor }) => {
   const tc = isValidHex(themeColor) ? themeColor : DEFAULT_THEME_COLOR;
   const textOnTheme = getContrastColor(tc);
   const borderColor = getPlanBorderColor('explorer'); // preview always uses explorer
 
   return (
-    <div className="mx-auto w-full max-w-[240px] select-none overflow-hidden rounded-2xl border bg-white text-xs shadow-sm">
-      {/* Cover — 3:1, matches every render site */}
-      <div className="relative aspect-[3/1]" style={{ background: form.cover_image ? undefined : `linear-gradient(135deg, ${tc}33, ${tc}88)` }}>
+    <div className="mx-auto w-full max-w-[240px] select-none overflow-hidden rounded-3xl border-2 border-neutral-200 bg-white text-xs">
+      {/* Cover — 3:1, matches every render site. Flat theme tint (no gradient). */}
+      <div className="relative aspect-[3/1]" style={{ background: form.cover_image ? undefined : `${tc}22` }}>
         {form.cover_image && <img src={form.cover_image} alt="" className="h-full w-full object-cover" />}
       </div>
       {/* Avatar — relative+z-10 so it paints above the positioned cover (else cover overlaps photo) */}
       <div className="relative z-10 -mt-7 flex justify-center">
-        <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl border-2 bg-gray-100" style={{ borderColor }}>
+        <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-2xl border-2 bg-neutral-100" style={{ borderColor }}>
           {form.profile_image
             ? <img src={form.profile_image} alt="" className="h-full w-full object-cover" />
-            : <div className="flex h-full w-full items-center justify-center text-lg font-bold text-gray-400">{form.name?.charAt(0)?.toUpperCase() || '?'}</div>}
+            : <div className="flex h-full w-full items-center justify-center text-lg font-bold text-neutral-400">{form.name?.charAt(0)?.toUpperCase() || '?'}</div>}
         </div>
       </div>
       {/* Info */}
       <div className="px-3 pb-3 pt-1.5 text-center">
-        <p className="truncate font-bold text-gray-900">{form.name || 'Your Name'}</p>
+        <p className="truncate font-bold text-ink">{form.name || 'Your Name'}</p>
         {(form.profession || form.tagline) && (
           <p className="mt-0.5 truncate text-[10px] font-medium" style={{ color: tc }}>{form.profession || form.tagline}</p>
         )}
-        {form.bio && <p className="mt-1 line-clamp-2 text-[10px] leading-relaxed text-gray-400">{form.bio}</p>}
+        {form.bio && <p className="mt-1 line-clamp-2 text-[10px] leading-relaxed text-neutral-400">{form.bio}</p>}
         {/* CTA Preview */}
-        <div className="mt-3 rounded-lg px-3 py-1.5 text-[10px] font-bold" style={{ background: tc, color: textOnTheme }}>Book a Session</div>
+        <div className="mt-3 rounded-full px-3 py-1.5 text-[10px] font-bold" style={{ background: tc, color: textOnTheme }}>Book</div>
       </div>
     </div>
   );
@@ -188,8 +211,8 @@ const InlineField = ({ value, onCommit, placeholder, multiline = false, textClas
     return (
       <button type="button" onClick={() => setEditing(true)}
         className={cn('group flex w-full items-start gap-1.5 text-left', textClass)}>
-        <span className={cn(!value && 'font-normal text-gray-400')}>{value || placeholder}</span>
-        <Pencil className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gray-300 opacity-0 transition group-hover:opacity-100" strokeWidth={2.25} />
+        <span className={cn(!value && 'font-normal text-neutral-400')}>{value || placeholder}</span>
+        <Pencil className="mt-0.5 h-3.5 w-3.5 shrink-0 text-neutral-300 opacity-0 transition group-hover:opacity-100" strokeWidth={2.25} />
       </button>
     );
   }
@@ -201,7 +224,7 @@ const InlineField = ({ value, onCommit, placeholder, multiline = false, textClas
       if (e.key === 'Escape') cancel();
       if (e.key === 'Enter' && !multiline) { e.preventDefault(); commit(); }
     },
-    className: cn('w-full rounded-md border border-primary/40 bg-white px-2 py-1 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/25', inputClass),
+    className: cn('w-full rounded-md border-2 border-maroon/40 bg-white px-2 py-1 text-ink focus:outline-none focus-visible:ring-[3px] focus-visible:ring-rose/40', inputClass),
   };
   return multiline ? <textarea rows={3} {...common} /> : <input type="text" {...common} />;
 };
@@ -213,7 +236,9 @@ const ProfileSetup = () => {
   const navigate = useNavigate();
   const [cropper, setCropper] = useState(null);
   const [dirty, setDirty] = useState(false);
-  const [activeSection, setActiveSection] = useState('info'); // 'info' | 'social' | 'appearance' | 'integrations'
+  // Sections grouped by the host's mental model (see docs/host-dashboard-makeover.md):
+  // profile · categories · social · appearance · booking (policy + privacy) · integrations.
+  const [activeSection, setActiveSection] = useState('info');
 
   const plan = user?.plan || 'explorer';
   const availableColors = getColorsForPlan(plan);
@@ -336,21 +361,23 @@ const ProfileSetup = () => {
     <div className="mx-auto max-w-5xl">
       <AccountModeToggle />
       <PageHeader
-        title="Host Profile"
-        subtitle={<>How guests discover and book you. Plan: <span className="font-semibold text-gray-700">{planLabel(plan, 'Starter')}</span></>}
+        title="Settings"
+        subtitle={<>How guests discover and book you. Plan: <span className="font-semibold text-ink">{planLabel(plan, 'Starter')}</span></>}
       />
 
-      {/* Secondary rail — Plan now lives in the sidebar's Settings section, so it's
-          no longer a tab here. */}
+      {/* Section rail. Booking policy + privacy now live in their own "Booking &
+          privacy" section instead of being buried under Integrations. Plan lives
+          in the sidebar's Settings group, so it is not a tab here. */}
       <Tabs
         className="mb-6"
         value={activeSection}
         onChange={setActiveSection}
         tabs={[
-          { value: 'info', label: 'Profile Info' },
-          { value: 'categories', label: 'Categories' },
-          { value: 'social', label: 'Social Links' },
+          { value: 'info', label: 'Profile' },
+          { value: 'categories', label: 'What you do' },
+          { value: 'social', label: 'Social' },
           { value: 'appearance', label: 'Appearance' },
+          { value: 'booking', label: 'Booking & privacy' },
           { value: 'integrations', label: 'Integrations' },
         ]}
       />
@@ -374,20 +401,24 @@ const ProfileSetup = () => {
                 onClose={() => setCropper(null)} label="Cover Photo" />
             )}
 
+            <SectionTitle hint="This is how guests see you on your booking page. Click any part to edit.">
+              Your public profile
+            </SectionTitle>
+
             {/* ── WYSIWYG profile card — click any piece to edit in place ── */}
             <Card padded={false} className="overflow-hidden">
-              {/* Cover (click to crop). Gated plans fall back to a static banner. */}
-              <FeatureGate flag="cover_photo" fallback={<div className="aspect-[3/1] bg-gradient-to-br from-gray-100 to-gray-50" />}>
+              {/* Cover (click to crop). Gated plans fall back to a flat blush banner. */}
+              <FeatureGate flag="cover_photo" fallback={<div className="aspect-[3/1] bg-blush" />}>
                 <button
                   type="button"
                   onClick={() => setCropper("cover")}
-                  className="group relative block aspect-[3/1] w-full overflow-hidden bg-gray-100"
+                  className="group relative block aspect-[3/1] w-full overflow-hidden bg-blush"
                   title="JPG/PNG/WebP up to 2MB — cropped to a 3:1 banner"
                 >
                   {form.cover_image
                     ? <img src={form.cover_image} alt="" className="h-full w-full object-cover" />
-                    : <span className="flex h-full items-center justify-center text-xs text-gray-400">Add a cover photo</span>}
-                  <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-black/55 px-2.5 py-1 text-[11px] font-medium text-white opacity-0 transition group-hover:opacity-100">
+                    : <span className="flex h-full items-center justify-center text-xs text-neutral-500">Add a cover photo</span>}
+                  <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-ink/60 px-2.5 py-1 text-[11px] font-medium text-white opacity-0 transition group-hover:opacity-100">
                     <Camera className="h-3.5 w-3.5" strokeWidth={2.25} /> {form.cover_image ? "Change" : "Add cover"}
                   </span>
                 </button>
@@ -398,14 +429,14 @@ const ProfileSetup = () => {
                 <button
                   type="button"
                   onClick={() => setCropper("profile")}
-                  className="group relative -mt-10 block h-20 w-20 overflow-hidden rounded-2xl border-4 bg-gray-50 shadow-sm"
+                  className="group relative -mt-10 block h-20 w-20 overflow-hidden rounded-2xl border-[3px] bg-neutral-50"
                   style={{ borderColor: getPlanBorderColor(plan) }}
                   title="Change profile photo — border reflects your plan tier"
                 >
                   {form.profile_image
                     ? <img src={form.profile_image} alt="" className="h-full w-full object-cover" />
-                    : <span className="flex h-full w-full items-center justify-center text-2xl font-bold text-gray-300">{form.name?.charAt(0)?.toUpperCase() || '?'}</span>}
-                  <span className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
+                    : <span className="flex h-full w-full items-center justify-center text-2xl font-bold text-neutral-300">{form.name?.charAt(0)?.toUpperCase() || '?'}</span>}
+                  <span className="absolute inset-0 flex items-center justify-center bg-ink/40 opacity-0 transition group-hover:opacity-100">
                     <Camera className="h-5 w-5 text-white" strokeWidth={2.25} />
                   </span>
                 </button>
@@ -414,31 +445,31 @@ const ProfileSetup = () => {
                 <div className="mt-3">
                   <InlineField value={form.name} onCommit={(v) => commitField('name', v)}
                     placeholder="Your name" label="Host name" maxLength={80}
-                    textClass="text-xl font-bold text-gray-900" inputClass="text-xl font-bold" />
+                    textClass="text-xl font-bold text-ink" inputClass="text-xl font-bold" />
                 </div>
                 {/* Title */}
                 <div className="mt-0.5">
                   <InlineField value={form.profession} onCommit={(v) => commitField('profession', v)}
                     placeholder="Add a title — e.g. Founder & Developer" label="Host title" maxLength={80}
-                    textClass="text-sm font-medium text-primary" inputClass="text-sm font-medium" />
+                    textClass="text-sm font-medium text-maroon" inputClass="text-sm font-medium" />
                 </div>
                 {/* Location */}
                 <div className="mt-1.5 flex items-start gap-1.5">
-                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" strokeWidth={2.25} />
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" strokeWidth={2.25} />
                   <InlineField value={form.location} onCommit={(v) => commitField('location', v)}
                     placeholder="Add your city" label="Location" maxLength={80}
-                    textClass="text-sm text-gray-600" inputClass="text-sm" />
+                    textClass="text-sm text-neutral-600" inputClass="text-sm" />
                 </div>
                 {/* Handle — display only; change it in Details below */}
                 {form.username && (
-                  <p className="mt-1 text-xs text-gray-400">meeticulous.com/{form.username}</p>
+                  <p className="mt-1 text-xs text-neutral-400">meeticulous.com/{form.username}</p>
                 )}
                 {/* Bio */}
-                <div className="mt-3 border-t border-gray-100 pt-3">
+                <div className="mt-3 border-t border-neutral-200 pt-3">
                   <InlineField value={form.bio} onCommit={(v) => commitField('bio', v)} multiline
                     placeholder="Tell people about yourself…" label="Bio" maxLength={500}
-                    textClass="text-sm leading-relaxed text-gray-600 whitespace-pre-wrap" inputClass="text-sm leading-relaxed" />
-                  <p className="mt-1 text-right text-[11px] text-gray-400">{form.bio.length}/500</p>
+                    textClass="text-sm leading-relaxed text-neutral-600 whitespace-pre-wrap" inputClass="text-sm leading-relaxed" />
+                  <p className="mt-1 text-right text-[11px] text-neutral-400">{form.bio.length}/500</p>
                 </div>
               </div>
             </Card>
@@ -460,6 +491,7 @@ const ProfileSetup = () => {
                 >
                   <Input type="url" name="map_link" placeholder="https://maps.app.goo.gl/…" value={form.map_link} onChange={handleChange} />
                 </FormField>
+                <p className="text-[11px] text-neutral-400">Your handle and categories save on their own; everything else saves with the bar below.</p>
               </div>
             </Card>
           </div>
@@ -467,17 +499,24 @@ const ProfileSetup = () => {
 
         {/* ── SECTION: Categories ── */}
         {activeSection === 'categories' && (
-          <CategoriesSection
-            plan={plan}
-            onSaved={(data) => updateUser({ ...user, primary_category: data.primary_category, categories: data.categories })}
-          />
+          <div className="space-y-5">
+            <SectionTitle hint="What you offer — this is how guests find you in Explore and search.">
+              What you do
+            </SectionTitle>
+            <CategoriesSection
+              plan={plan}
+              onSaved={(data) => updateUser({ ...user, primary_category: data.primary_category, categories: data.categories })}
+            />
+          </div>
         )}
 
         {/* ── SECTION: Social Links ── */}
         {activeSection === 'social' && (
-          <FeatureGate flag="social_links" fallback={<p className="text-sm text-gray-400">Social links are currently disabled.</p>}>
-            <div className="space-y-4">
-              <p className="text-sm text-gray-500">Add your social profiles. Only filled links appear on your public page.</p>
+          <div className="space-y-5">
+            <SectionTitle hint="Only filled links appear on your public page.">
+              Social links
+            </SectionTitle>
+            <FeatureGate flag="social_links" fallback={<p className="text-sm text-neutral-400">Social links are currently disabled.</p>}>
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 {SOCIAL_PLATFORMS.map(({ key, label, placeholder, type }) => {
                   // WhatsApp is a public "message me" link — a DIFFERENT thing from the
@@ -493,9 +532,7 @@ const ProfileSetup = () => {
                       {showVerifiedWa && (
                         <div className="mt-1.5">
                           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                            <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-[11px] font-medium text-green-700">
-                              <span aria-hidden="true">✓</span> Verified for booking alerts: +{verifiedDigits}
-                            </span>
+                            <LiveChip>Verified for booking alerts: +{verifiedDigits}</LiveChip>
                             {!form.social_links.whatsapp?.trim() && (
                               <button
                                 type="button"
@@ -503,13 +540,13 @@ const ProfileSetup = () => {
                                   setForm(f => ({ ...f, social_links: { ...f.social_links, whatsapp: `https://wa.me/${verifiedDigits}` } }));
                                   setDirty(true);
                                 }}
-                                className="text-xs font-medium text-primary hover:underline"
+                                className="text-xs font-medium text-maroon hover:underline"
                               >
                                 Use this number as public link
                               </button>
                             )}
                           </div>
-                          <p className="mt-1 text-[11px] leading-snug text-gray-400">
+                          <p className="mt-1 text-[11px] leading-snug text-neutral-400">
                             This is a separate <span className="font-medium">public</span> contact link shown on your page. Your booking-alert number is already saved.
                           </p>
                         </div>
@@ -518,167 +555,113 @@ const ProfileSetup = () => {
                   );
                 })}
               </div>
-            </div>
-          </FeatureGate>
+            </FeatureGate>
+          </div>
         )}
 
         {/* ── SECTION: Appearance & Branding ── */}
         {activeSection === 'appearance' && (
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-            {/* Left: controls */}
-            <div className="space-y-6">
-              {/* Theme Color */}
-              <FeatureGate flag="theme_colors">
-                <div>
-                  <div className="mb-3 flex items-center justify-between">
-                    <div>
-                      <h3 className="text-sm font-semibold text-gray-800">Theme Color</h3>
-                      <p className="mt-0.5 text-xs text-gray-400">Applied to buttons, accents, and CTAs on your profile</p>
-                    </div>
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">{planLabel(plan, 'Starter')}</span>
-                  </div>
-
-                  {/* Swatches */}
-                  <div className="mb-3 flex flex-wrap gap-2">
-                    {availableColors.map(color => (
-                      <Swatch key={color.hex} color={color} selected={form.theme_color === color.hex} onClick={handleColorSelect} />
-                    ))}
-                  </div>
-
-                  {/* Pro custom hex */}
-                  {customHexAllowed ? (
-                    <FeatureGate flag="custom_hex_color">
-                      <div className="mt-2 flex items-center gap-2">
-                        {/* Native colour wheel — click the swatch to pick visually */}
-                        <label
-                          className="relative h-8 w-8 flex-shrink-0 cursor-pointer rounded-lg border"
-                          style={{ background: isValidHex(customHex) ? customHex : '#e5e7eb' }}
-                          title="Pick a colour"
-                        >
-                          <input
-                            type="color"
-                            value={isValidHex(customHex) ? customHex : '#4F46E5'}
-                            onChange={handleCustomHex}
-                            className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                            aria-label="Custom theme colour picker"
-                          />
-                        </label>
-                        <Input type="text" placeholder="#4F46E5" maxLength={7} className="flex-1 font-mono" value={customHex} onChange={handleCustomHex} />
-                        <span className="text-xs text-gray-400">Custom</span>
-                      </div>
-                    </FeatureGate>
-                  ) : (
-                    <p className="mt-1 text-xs text-gray-400">
-                      {plan === 'creator' ? '16 colours available on your plan.' : 'Starter uses the brand colour. Upgrade to Pro for more colours.'}
-                    </p>
-                  )}
-                </div>
-              </FeatureGate>
-
-              {/* Profile Border Info */}
-              <div className="rounded-xl bg-gray-50 p-4">
-                <h3 className="mb-1 text-sm font-semibold text-gray-800">Profile Photo Border</h3>
-                <div className="mt-2 flex items-center gap-3">
-                  <div className="h-10 w-10 flex-shrink-0 rounded-xl border-2 bg-white" style={{ borderColor: getPlanBorderColor(plan) }} />
+          <div className="space-y-5">
+            <SectionTitle hint="Your colours on your public booking page.">
+              Appearance
+            </SectionTitle>
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+              {/* Left: controls */}
+              <div className="space-y-6">
+                {/* Theme Color */}
+                <FeatureGate flag="theme_colors">
                   <div>
-                    <p className="text-xs text-gray-600">
-                      Your border is <span className="font-semibold" style={{ color: getPlanBorderColor(plan) }}>
-                        {plan === 'supreme' || plan === 'professional' ? 'Gold' : plan === 'creator' ? 'Orange' : 'Grey'} ({planLabel(plan, 'Starter')})
-                      </span>
-                    </p>
-                    <p className="mt-0.5 text-[10px] text-gray-400">Border updates automatically with your plan tier</p>
+                    <div className="mb-3 flex items-center justify-between">
+                      <div>
+                        <h3 className="text-sm font-semibold text-ink">Theme colour</h3>
+                        <p className="mt-0.5 text-xs text-neutral-400">Applied to buttons, accents, and CTAs on your profile</p>
+                      </div>
+                      <span className="rounded-full bg-blush px-2 py-0.5 text-[10px] font-medium text-maroon">{planLabel(plan, 'Starter')}</span>
+                    </div>
+
+                    {/* Swatches */}
+                    <div className="mb-3 flex flex-wrap gap-2">
+                      {availableColors.map(color => (
+                        <Swatch key={color.hex} color={color} selected={form.theme_color === color.hex} onClick={handleColorSelect} />
+                      ))}
+                    </div>
+
+                    {/* Pro custom hex */}
+                    {customHexAllowed ? (
+                      <FeatureGate flag="custom_hex_color">
+                        <div className="mt-2 flex items-center gap-2">
+                          {/* Native colour wheel — click the swatch to pick visually */}
+                          <label
+                            className="relative h-8 w-8 flex-shrink-0 cursor-pointer rounded-lg border-2 border-neutral-200"
+                            style={{ background: isValidHex(customHex) ? customHex : '#EBDCD9' }}
+                            title="Pick a colour"
+                          >
+                            <input
+                              type="color"
+                              value={isValidHex(customHex) ? customHex : '#960D32'}
+                              onChange={handleCustomHex}
+                              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                              aria-label="Custom theme colour picker"
+                            />
+                          </label>
+                          <Input type="text" placeholder="#960D32" maxLength={7} className="flex-1 font-mono" value={customHex} onChange={handleCustomHex} />
+                          <span className="text-xs text-neutral-400">Custom</span>
+                        </div>
+                      </FeatureGate>
+                    ) : (
+                      <p className="mt-1 text-xs text-neutral-400">
+                        {plan === 'creator' ? '16 colours available on your plan.' : 'Starter uses the brand colour. Upgrade to Pro for more colours.'}
+                      </p>
+                    )}
+                  </div>
+                </FeatureGate>
+
+                {/* Profile Border Info */}
+                <div className="rounded-2xl bg-cream p-4">
+                  <h3 className="mb-1 text-sm font-semibold text-ink">Profile photo border</h3>
+                  <div className="mt-2 flex items-center gap-3">
+                    <div className="h-10 w-10 flex-shrink-0 rounded-xl border-2 bg-white" style={{ borderColor: getPlanBorderColor(plan) }} />
+                    <div>
+                      <p className="text-xs text-neutral-600">
+                        Your border is <span className="font-semibold" style={{ color: getPlanBorderColor(plan) }}>
+                          {plan === 'supreme' || plan === 'professional' ? 'Gold' : plan === 'creator' ? 'Orange' : 'Grey'} ({planLabel(plan, 'Starter')})
+                        </span>
+                      </p>
+                      <p className="mt-0.5 text-[10px] text-neutral-400">Border updates automatically with your plan tier</p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Upcoming Features */}
-              <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
-                <h3 className="mb-1 text-sm font-semibold text-amber-800">Coming Soon</h3>
-                <ul className="space-y-0.5 text-xs text-amber-700">
-                  <li>• Gradient backgrounds</li>
-                  <li>• Custom font selection</li>
-                  <li>• Theme packs &amp; presets</li>
-                  <li>• Dark mode profile</li>
-                </ul>
+              {/* Right: live preview */}
+              <div>
+                <h3 className="mb-3 text-sm font-semibold text-ink">Live preview</h3>
+                <ProfilePreview form={form} themeColor={tc} />
+                <p className="mt-3 text-center text-xs text-neutral-400">Updates as you type</p>
+
+                {/* Booking CTA preview */}
+                <Card className="mt-5">
+                  <p className="mb-2 text-xs font-medium text-neutral-400">Booking button preview</p>
+                  <button type="button" className="w-full rounded-full py-2.5 text-sm font-bold transition-all" style={{ background: tc, color: getContrastColor(tc) }}>
+                    Book
+                  </button>
+                  <p className="mt-2 text-center text-[10px] text-neutral-400">Text auto-adjusts for readability (WCAG AA)</p>
+                </Card>
               </div>
-            </div>
-
-            {/* Right: live preview */}
-            <div>
-              <h3 className="mb-3 text-sm font-semibold text-gray-800">Live Preview</h3>
-              <ProfilePreview form={form} themeColor={tc} />
-              <p className="mt-3 text-center text-xs text-gray-400">Updates as you type</p>
-
-              {/* Booking CTA preview */}
-              <Card className="mt-5">
-                <p className="mb-2 text-xs font-medium text-gray-400">Booking Button Preview</p>
-                <button type="button" className="w-full rounded py-2.5 text-sm font-bold transition-all" style={{ background: tc, color: getContrastColor(tc) }}>
-                  Book a Session
-                </button>
-                <p className="mt-2 text-center text-[10px] text-gray-400">Text auto-adjusts for readability (WCAG AA)</p>
-              </Card>
             </div>
           </div>
         )}
 
-        {/* ── SECTION: Integrations ── */}
-        {activeSection === 'integrations' && (
+        {/* ── SECTION: Booking & privacy ── (moved out of Integrations) */}
+        {activeSection === 'booking' && (
           <div className="space-y-5">
-            {/* Google Calendar */}
-            <FeatureGate flag="google_calendar">
-              <Card padded={false} className="p-5">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-start gap-3">
-                    {/* Google icon */}
-                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border bg-gray-50">
-                      <svg className="h-5 w-5" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-semibold text-gray-900">Google Calendar</h3>
-                      <p className="mt-0.5 text-xs text-gray-500">Auto-create Google Meet links for every confirmed online booking.</p>
-                      {user?.google_calendar_connected && (
-                        <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-semibold text-green-700">
-                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-green-500" />
-                          Connected
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (user?.google_calendar_connected) {
-                        toast('To disconnect, contact support or revoke access in your Google account settings.', { icon: 'ℹ️' });
-                      } else {
-                        import('../services/api').then(({ getGoogleAuthUrl }) =>
-                          getGoogleAuthUrl().then(({ data }) => { window.location.href = data.url; })
-                        );
-                      }
-                    }}
-                    className={cn(
-                      'flex-shrink-0 whitespace-nowrap rounded border px-4 py-2 text-xs font-semibold transition-colors',
-                      user?.google_calendar_connected ? 'border-gray-300 text-gray-500 hover:bg-gray-50' : 'border-primary/40 text-primary hover:bg-primary/5',
-                    )}
-                  >
-                    {user?.google_calendar_connected ? 'Connected ✓' : 'Connect'}
-                  </button>
-                </div>
-                <div className="mt-3 space-y-1 border-t pt-3 text-xs text-gray-400">
-                  <p>• Works with online services only (not in-person)</p>
-                  <p>• Guests receive the Meet link in their confirmation email</p>
-                  <p>• Bookings appear on your Google Calendar automatically</p>
-                </div>
-              </Card>
-            </FeatureGate>
+            <SectionTitle hint="Your rules for how guests book, reschedule and find you.">
+              Booking & privacy
+            </SectionTitle>
 
             {/* Reschedule fee */}
             <Card padded={false} className="p-5">
-              <h3 className="mb-3 text-sm font-semibold text-gray-900">Booking Policy</h3>
+              <h3 className="mb-3 text-sm font-semibold text-ink">Booking policy</h3>
               <FormField label="Guest reschedule fee" htmlFor="reschedule_fee" hint="The platform keeps this fee. The guest's first reschedule is always free." className="mb-0">
                 <Select
                   id="reschedule_fee"
@@ -696,7 +679,7 @@ const ProfileSetup = () => {
                 professionals bound by advertising/solicitation rules (e.g. ICAI
                 for Chartered Accountants). Defaults to Listed. */}
             <Card padded={false} className="p-5">
-              <h3 className="mb-3 text-sm font-semibold text-gray-900">Discovery &amp; Privacy</h3>
+              <h3 className="mb-3 text-sm font-semibold text-ink">Discovery & privacy</h3>
               <FormField
                 label="Profile visibility"
                 htmlFor="is_indexable"
@@ -713,33 +696,90 @@ const ProfileSetup = () => {
                 </Select>
               </FormField>
             </Card>
+          </div>
+        )}
+
+        {/* ── SECTION: Integrations ── (Google Calendar + catalog only) */}
+        {activeSection === 'integrations' && (
+          <div className="space-y-5">
+            <SectionTitle hint="Connect the tools you already use.">
+              Integrations
+            </SectionTitle>
+            {/* Google Calendar */}
+            <FeatureGate flag="google_calendar">
+              <Card padded={false} className="p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start gap-3">
+                    {/* Google icon */}
+                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-neutral-200 bg-neutral-50">
+                      <svg className="h-5 w-5" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-semibold text-ink">Google Calendar</h3>
+                      <p className="mt-0.5 text-xs text-neutral-500">Auto-create Google Meet links for every confirmed online booking.</p>
+                      {user?.google_calendar_connected && (
+                        <span className="mt-1.5 inline-flex"><LiveChip>Connected</LiveChip></span>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (user?.google_calendar_connected) {
+                        toast('To disconnect, contact support or revoke access in your Google account settings.', { icon: 'ℹ️' });
+                      } else {
+                        import('../services/api').then(({ getGoogleAuthUrl }) =>
+                          getGoogleAuthUrl().then(({ data }) => { window.location.href = data.url; })
+                        );
+                      }
+                    }}
+                    className={cn(
+                      'flex-shrink-0 whitespace-nowrap rounded-full border-2 px-4 py-2 text-xs font-semibold transition-colors',
+                      user?.google_calendar_connected ? 'border-neutral-300 text-neutral-500 hover:bg-neutral-50' : 'border-maroon/40 text-maroon hover:bg-maroon/5',
+                    )}
+                  >
+                    {user?.google_calendar_connected ? 'Connected ✓' : 'Connect'}
+                  </button>
+                </div>
+                <div className="mt-3 space-y-1 border-t border-neutral-200 pt-3 text-xs text-neutral-400">
+                  <p>• Works with online services only (not in-person)</p>
+                  <p>• Guests receive the Meet link in their confirmation email</p>
+                  <p>• Bookings appear on your Google Calendar automatically</p>
+                </div>
+              </Card>
+            </FeatureGate>
 
             {/* More integrations — branded favicon cards, expanded catalog */}
             <div>
               <div className="mb-3 flex items-center justify-between">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">More integrations</p>
-                <span className="text-[11px] text-gray-400">{MORE_INTEGRATIONS.length} more</span>
+                <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400">More integrations</p>
+                <span className="text-[11px] text-neutral-400">{MORE_INTEGRATIONS.length} more</span>
               </div>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {MORE_INTEGRATIONS.map((i) => (
-                  <div key={i.name} className="flex flex-col rounded-xl border border-gray-100 bg-white p-4 transition-shadow hover:shadow-sm">
+                  <div key={i.name} className="flex flex-col rounded-2xl border border-neutral-200 bg-white p-4 transition-shadow hover:shadow-sm">
                     <div className="flex items-start gap-3">
                       <Favicon domain={i.domain} name={i.name} />
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-gray-900">{i.name}</p>
-                        <p className="mt-0.5 text-xs leading-snug text-gray-500">{i.desc}</p>
+                        <p className="truncate text-sm font-semibold text-ink">{i.name}</p>
+                        <p className="mt-0.5 text-xs leading-snug text-neutral-500">{i.desc}</p>
                       </div>
                     </div>
-                    <div className="mt-3 flex items-center border-t border-gray-50 pt-2.5">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-semibold text-gray-500">
-                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-gray-400" />
+                    <div className="mt-3 flex items-center border-t border-neutral-200 pt-2.5">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-semibold text-neutral-500">
+                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-neutral-400" />
                         Coming soon
                       </span>
                     </div>
                   </div>
                 ))}
               </div>
-              <p className="mt-3 text-[11px] text-gray-400">
+              <p className="mt-3 text-[11px] text-neutral-400">
                 More integrations are on the way. Need one sooner? Let us know from the Help page.
               </p>
             </div>
@@ -752,7 +792,7 @@ const ProfileSetup = () => {
           <button
             type="submit"
             disabled={loading}
-            className="rounded px-8 py-2.5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
+            className="rounded-full px-8 py-2.5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
             style={{ background: tc }}
           >
             {loading ? "Saving…" : "Save Profile"}

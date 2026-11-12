@@ -6,6 +6,7 @@ import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import PageGuides, { GUIDES_IN_PAGE } from './components/common/PageGuides';
 import DashboardLayout from './components/common/DashboardLayout';
+import OverviewLayout from './components/common/OverviewLayout';
 import AdminLayout from './components/common/AdminLayout';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import HostRoute from './components/common/HostRoute';
@@ -18,6 +19,13 @@ import ForHeroFit from './components/common/ForHeroFit';
 import RouteErrorBoundary from './components/common/RouteErrorBoundary';
 import PetalSpinner from './components/common/PetalSpinner';
 import { useAuth } from './context/AuthContext';
+import { useFeature } from './context/FeatureContext';
+
+// Community-shell routes that render inside CommunityLayout (which carries its own
+// top bar under community_v2). Profile pages (/community/<slug>, /team) are NOT
+// here — they keep the global navbar.
+const inCommunityShell = (p) => p === '/community' || p === '/community/new' || p === '/community/alerts'
+  || p.startsWith('/community/s/') || p.startsWith('/community/t/') || p.startsWith('/community/p/');
 import { KycProvider } from './context/KycContext';
 import { captureReferral, redeemGiftLink, getMe } from './services/api';
 import { captureAttribution } from './utils/attribution';
@@ -46,7 +54,8 @@ const Home           = lazy(() => import('./pages/Home'));
 // Pre-compaction homepage snapshot — parked at /_attic (hidden, noindex) so the
 // sections cut from the live homepage stay reachable for future reuse.
 const HomeArchive    = lazy(() => import('./pages/HomeArchive'));
-const Login          = lazy(() => import('./pages/Login'));
+const AgentTithi     = lazy(() => import('./pages/AgentTithi'));
+const UnifiedLogin   = lazy(() => import('./pages/UnifiedLogin'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword  = lazy(() => import('./pages/ResetPassword'));
 const ErrorPage      = lazy(() => import('./pages/ErrorPage'));
@@ -94,7 +103,8 @@ const ZohoBookingsAlternative = lazy(() => import('./pages/compare/ZohoBookingsA
 // Vendor auth: Google signup/login, plus LinkedIn behind the host_linkedin_login flag
 const BecomeAHost    = lazy(() => import('./pages/BecomeAHost'));
 const InviteLanding  = lazy(() => import('./pages/InviteLanding'));
-const HostLogin      = lazy(() => import('./pages/HostLogin'));
+// Host + guest login share one page (UnifiedLogin); /login-as-vendor is kept as an
+// alias so server OAuth callbacks and old links still resolve (never linked publicly).
 const Changelog      = lazy(() => import('./pages/Changelog'));
 const ChangelogRelease = lazy(() => import('./pages/ChangelogRelease'));
 const Pricing        = lazy(() => import('./pages/Pricing'));
@@ -107,10 +117,14 @@ const Opening        = lazy(() => import('./pages/Opening'));
 const Inaugurators   = lazy(() => import('./pages/Inaugurators'));
 const BlogPost       = lazy(() => import('./pages/BlogPost'));
 const CommunityFeed  = lazy(() => import('./pages/community/CommunityFeed'));
+const CommunityAlerts = lazy(() => import('./pages/community/CommunityAlerts'));
 const NewPost        = lazy(() => import('./pages/community/NewPost'));
 const CommunitySpace = lazy(() => import('./pages/community/CommunitySpace'));
 const CommunityItem  = lazy(() => import('./pages/community/CommunityItem'));
 const CommunityGuidelines = lazy(() => import('./pages/community/CommunityGuidelines'));
+const ContributorShubham = lazy(() => import('./pages/community/ContributorShubham'));
+const ContributorTithi = lazy(() => import('./pages/community/ContributorTithi'));
+const CommunityTeam   = lazy(() => import('./pages/community/CommunityTeam'));
 const Moments        = lazy(() => import('./pages/Moments'));
 const MomentPage     = lazy(() => import('./pages/MomentPage'));
 const GoogleAuthDone = lazy(() => import('./pages/GoogleAuthDone'));
@@ -134,6 +148,7 @@ const Earnings    = lazy(() => import('./pages/Earnings'));
 const ProfileSetup = lazy(() => import('./pages/ProfileSetup'));
 const Availability = lazy(() => import('./pages/Availability'));
 const Products    = lazy(() => import('./pages/Products'));
+const HostCoupons = lazy(() => import('./pages/HostCoupons'));
 const UpgradePlan = lazy(() => import('./pages/UpgradePlan'));
 const Payouts     = lazy(() => import('./pages/Payouts'));
 const ChatPage    = lazy(() => import('./pages/ChatPage'));
@@ -362,6 +377,12 @@ function useGiftRedeem() {
 function DashboardWrapper({ children }) {
   useReferralCapture();
   useGiftRedeem();
+  const { pathname } = useLocation();
+  // The Overview page ships the reference chrome (207px single-column sidebar +
+  // toolbar). Every other host page keeps the existing rail/panel DashboardLayout.
+  if (pathname === '/dashboard') {
+    return <HostRoute><OverviewLayout>{children}</OverviewLayout></HostRoute>;
+  }
   return <HostRoute><DashboardLayout>{children}</DashboardLayout></HostRoute>;
 }
 
@@ -412,6 +433,8 @@ function HomeGate() {
 function App() {
   const location = useLocation();
   const { user } = useAuth();
+  // community_v2 gives the community shell its own top bar, so drop the global one there.
+  const communityV2 = useFeature('community_v2');
 
   // Snapshot marketing attribution (UTM/referrer/landing) on first arrival, once,
   // before any signup/newsletter/enterprise call reads it (CRM Phase 2b).
@@ -428,6 +451,7 @@ function App() {
 
   const hideNavbar =
     chromeHidden ||
+    (communityV2 && inCommunityShell(location.pathname)) ||
     location.pathname.startsWith('/dashboard') ||
     // Guest console (/user/*) ships its own sidebar shell + topbar (GuestLayout),
     // so the global navbar must not also render — otherwise two headers stack and
@@ -502,7 +526,7 @@ function App() {
             <Route key={c} path={`/lp/${c}-alternative`} element={<Navigate to={`/compare/${c}-alternative`} replace />} />
           ))}
           <Route path="/lp/*" element={<Navigate to="/compare" replace />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<UnifiedLogin />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/invite/:slug" element={<InviteLanding />} />
@@ -523,8 +547,12 @@ function App() {
           <Route path="/blog/:slug" element={<BlogPost />} />
           {/* Community: the API gate 404s while the flag is off, and the pages render NotFound. */}
           <Route path="/community" element={<CommunityFeed />} />
+          <Route path="/community/alerts" element={<CommunityAlerts />} />
           <Route path="/community/new" element={<NewPost />} />
           <Route path="/community/guidelines" element={<CommunityGuidelines />} />
+          <Route path="/community/sndatarkar" element={<ContributorShubham />} />
+          <Route path="/community/tithi" element={<ContributorTithi />} />
+          <Route path="/community/team" element={<CommunityTeam />} />
           <Route path="/community/s/:key" element={<CommunitySpace />} />
           <Route path="/community/t/:slug" element={<CommunityItem />} />
           <Route path="/community/p/:slug" element={<CommunityItem />} />
@@ -559,11 +587,13 @@ function App() {
           <Route path="/signup" element={<Navigate to="/" replace />} />
           {/* #534: email/password host signup retired — hosts use Google at /become-a-host. */}
           <Route path="/vendor/signup" element={<Navigate to="/become-a-host" replace />} />
+          {/* /register is a host-signup alias → become-a-host. */}
+          <Route path="/register" element={<Navigate to="/become-a-host" replace />} />
 
           {/* Host signup — Google (+ LinkedIn when host_linkedin_login is ON) */}
           <Route path="/become-a-host" element={<BecomeAHost />} />
           {/* Host login door (Google, + LinkedIn when host_linkedin_login is ON) — also the Google/LinkedIn callback error target. */}
-          <Route path="/login-as-vendor" element={<HostLogin />} />
+          <Route path="/login-as-vendor" element={<UnifiedLogin />} />
           <Route path="/auth/google/done" element={<GoogleAuthDone />} />
           <Route path="/auth/linkedin/done" element={<LinkedinAuthDone />} />
 
@@ -610,6 +640,7 @@ function App() {
             <Route path="submitted" element={<KycSubmitted />} />
           </Route>
           <Route path="/dashboard/products" element={<DashboardWrapper><Products /></DashboardWrapper>} />
+          <Route path="/dashboard/coupons" element={<DashboardWrapper><HostCoupons /></DashboardWrapper>} />
           <Route path="/dashboard/upgrade" element={<DashboardWrapper><UpgradePlan /></DashboardWrapper>} />
           <Route path="/dashboard/payments/payouts" element={<DashboardWrapper><Payouts /></DashboardWrapper>} />
           <Route path="/dashboard/referrals" element={<DashboardWrapper><ReferEarn /></DashboardWrapper>} />
@@ -810,6 +841,8 @@ function App() {
           <Route path="/get-in-touch" element={<Contact />} />
           <Route path="/enterprise" element={<Enterprise />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
+          {/* Tithi's public profile (Chief of Staff) — linked from her community author chip. */}
+          <Route path="/agent-tithi" element={<AgentTithi />} />
           {/* Full-screen shareable product pitch deck (pages/presentation/). */}
           <Route path="/presentation" element={<Presentation />} />
 

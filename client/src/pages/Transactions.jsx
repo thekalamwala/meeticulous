@@ -1,15 +1,26 @@
-import { useState, useEffect, useCallback } from "react";
-import { Receipt, User, CalendarDays, IndianRupee, CreditCard, Copy } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  Receipt, User, CalendarDays, IndianRupee, CreditCard, Copy,
+  Download, MoreHorizontal, ChevronLeft, ChevronRight, Search,
+} from "lucide-react";
 import { getTransactions } from "../services/api";
 import toast from "react-hot-toast";
 import {
-  PageHeader, DataTable, Modal,
-  SearchInput, Select, EmptyState, ErrorState, SkeletonCard,
-  useInfiniteScroll, fmtMoney, cn,
+  Modal, EmptyState, ErrorState, Skeleton, fmtMoney, cn,
 } from "../components/dashboard/ui";
+import { isPreviewEnabled, getPreviewTransactions, filterPreviewTransactions } from "../utils/previewData";
+
+/* ==========================================================================
+ * Transactions — redesigned content area (the host console shell/ConsoleSidebar
+ * is unchanged; this only redraws the right-hand page). ALL data is real:
+ * getTransactions() returns the host's PAID bookings. No dummy rows; empty,
+ * error and loading states are honest.
+ * ======================================================================== */
 
 const fmtDate = (iso) =>
   new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+const fmtTime = (iso) =>
+  new Date(iso).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", hour12: true });
 
 // PAYOUT status — the truth the host actually cares about: has THEIR money moved?
 // A green "Paid" from the guest's payment_status said nothing about the host being
@@ -19,7 +30,7 @@ const PAYOUT_STATE = {
   processed: { label: "Paid out", cls: "border-c-emerald/20 bg-c-emerald/10 text-c-emerald" },
   pending:   { label: "In transit", cls: "border-maroon/20 bg-maroon-100 text-maroon-700" },
   reversed:  { label: "Reversed", cls: "border-ink/10 bg-ink/5 text-ink/60" },
-  failed:    { label: "Payout failed", cls: "border-rose/30 bg-rose/10 text-rose-700" },
+  failed:    { label: "Payout failed", cls: "border-error-fg/30 bg-error-bg text-error-fg" },
   owed:      { label: "Payout pending", cls: "border-marigold-300 bg-marigold-100 text-marigold-800" },
 };
 const payoutStateKey = (tx) => {
@@ -30,7 +41,15 @@ const payoutStateKey = (tx) => {
 };
 const PayoutChip = ({ tx }) => {
   const key = payoutStateKey(tx);
-  if (!key) return null;
+  // Every row here is a captured payment, so a row with no payout movement still
+  // reads as "Paid" (the real payment_status) rather than a blank cell.
+  if (!key) {
+    return (
+      <span className="inline-flex items-center rounded-full border border-c-emerald/20 bg-c-emerald/10 px-2 py-0.5 text-[11px] font-semibold text-c-emerald">
+        Paid
+      </span>
+    );
+  }
   const s = PAYOUT_STATE[key];
   return (
     <span className={cn("inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold", s.cls)}>
@@ -38,64 +57,23 @@ const PayoutChip = ({ tx }) => {
     </span>
   );
 };
-
-// Day-grouping for the mobile statement feed (Today / Yesterday / date).
-const txDate = (tx) => new Date(tx.scheduled_at || tx.created_at);
-const dayKey = (d) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-const dayLabel = (d) => {
-  const now = new Date();
-  const startOf = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate());
-  const diff = Math.round((startOf(d) - startOf(now)) / 86400000);
-  if (diff === 0) return "Today";
-  if (diff === -1) return "Yesterday";
-  if (diff === 1) return "Tomorrow";
-  return d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", year: d.getFullYear() === now.getFullYear() ? undefined : "numeric" });
-};
-const groupTxByDay = (list) => {
-  const groups = [];
-  const index = {};
-  for (const tx of list) {
-    const key = dayKey(txDate(tx));
-    if (index[key] == null) { index[key] = groups.length; groups.push({ key, label: dayLabel(txDate(tx)), items: [] }); }
-    groups[index[key]].items.push(tx);
-  }
-  return groups;
+const statusLabel = (tx) => {
+  const key = payoutStateKey(tx);
+  return key ? PAYOUT_STATE[key].label : "Paid";
 };
 
-// Money-forward mobile transaction card. Earnings lead; the whole card opens
-// the detail sheet (same onRowClick target as the desktop table).
-const TxCard = ({ tx, onOpen }) => {
-  const isFree = tx.services?.price === 0;
-  return (
-    <button
-      type="button"
-      onClick={() => onOpen(tx)}
-      className="flex w-full items-center gap-3 rounded-xl border border-maroon/10 bg-white p-3 text-left transition-colors active:bg-blush/40 dash-elev-1"
-    >
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-ink">{tx.guest_name || "Guest"}</p>
-        <p className="truncate text-xs text-muted">{tx.services?.title || "—"}</p>
-        <div className="mt-1.5"><PayoutChip tx={tx} /></div>
-      </div>
-      <div className="shrink-0 text-right">
-        <p className="text-base font-bold text-primary">{fmtMoney(tx.vendor_amount, { decimals: true })}</p>
-        <p className="mt-0.5 text-[11px] text-ink/40">{isFree ? "Free" : `of ${fmtMoney(tx.services?.price, { decimals: true })}`}</p>
-      </div>
-    </button>
-  );
+// The only payment gateway on the platform is Razorpay — shown as the method when
+// a gateway payment id exists; never fabricated.
+const paymentMethod = (tx) => (tx.razorpay_payment_id ? "Razorpay" : "—");
+
+const copy = (text, label) => {
+  if (!text) return;
+  navigator.clipboard?.writeText(String(text)).then(() => toast.success(`${label} copied`)).catch(() => {});
 };
 
-// Maps a date-filter preset to an ISO lower bound on the transaction date.
-// Returns undefined for "all time" so the param is omitted entirely.
-const dateFromFor = (preset) => {
-  if (!preset) return undefined;
-  const d = new Date();
-  if (preset === "today") d.setHours(0, 0, 0, 0);
-  else if (preset === "7d") d.setDate(d.getDate() - 7);
-  else if (preset === "30d") d.setDate(d.getDate() - 30);
-  else if (preset === "month") { d.setDate(1); d.setHours(0, 0, 0, 0); }
-  return d.toISOString();
-};
+/* ------------------------------------------------------------------ */
+/* Transaction detail modal (unchanged — real fields)                  */
+/* ------------------------------------------------------------------ */
 
 const Row = ({ label, value, mono }) => (
   <div className="flex items-start justify-between gap-4">
@@ -104,12 +82,6 @@ const Row = ({ label, value, mono }) => (
   </div>
 );
 
-const copy = (text, label) => {
-  if (!text) return;
-  navigator.clipboard?.writeText(String(text)).then(() => toast.success(`${label} copied`)).catch(() => {});
-};
-
-// Copyable mono row for gateway reference ids.
 const RowCopy = ({ label, value }) => (
   <button type="button" onClick={() => copy(value, label)} className="flex w-full items-start justify-between gap-4 text-left">
     <span className="flex-shrink-0 text-xs text-muted">{label}</span>
@@ -119,7 +91,6 @@ const RowCopy = ({ label, value }) => (
   </button>
 );
 
-// Icon-led card grouping the transaction's fields into clean sections.
 const Section = ({ icon: Icon, title, children }) => (
   <section className="rounded-xl border border-maroon/5 bg-blush/40 p-4">
     <h4 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-ink/40">
@@ -131,11 +102,9 @@ const Section = ({ icon: Icon, title, children }) => (
 
 const Detail = ({ tx }) => {
   const isFree = tx.services?.price === 0;
-  // Payment-gateway charge borne by the host = actual Razorpay fee + tax.
   const pg = Math.round(((Number(tx.razorpay_fee_actual) || 0) + (Number(tx.razorpay_tax_actual) || 0)) * 100) / 100;
   return (
     <div>
-      {/* Summary band — emphasized earnings + payment status, copyable id */}
       <div className="mb-4 flex items-start justify-between gap-3 rounded-2xl border-2 border-maroon/10 bg-blush/50 p-4">
         <div className="min-w-0">
           <p className="text-[11px] font-medium uppercase tracking-wider text-ink/40">Your earnings</p>
@@ -156,7 +125,6 @@ const Detail = ({ tx }) => {
         </div>
       </div>
 
-      {/* Two-column section grid; stacks on mobile with equal-height rows. */}
       <div className="grid gap-3 sm:grid-cols-2">
         <Section icon={User} title="Customer">
           <Row label="Name" value={tx.guest_name || "Guest"} />
@@ -176,9 +144,6 @@ const Detail = ({ tx }) => {
             <Row label="Service price" value="Free" />
           ) : (
             <>
-              {/* Marketplace v4: host earns the listed price minus commission, the
-                  payment-gateway charge, and statutory TDS/TCS. Deduction rows show
-                  only when non-zero (paid plans have no commission). */}
               <Row label="Service price" value={fmtMoney(tx.services?.price, { decimals: true })} />
               {Number(tx.commission_applied) > 0 && (
                 <Row label="− Commission" value={fmtMoney(tx.commission_applied, { decimals: true })} />
@@ -201,7 +166,7 @@ const Detail = ({ tx }) => {
                 </div>
               )}
               {tx.transfer_status === "failed" && tx.transfer_error && (
-                <p className="text-[10px] leading-snug text-rose-700">Reason: {tx.transfer_error}</p>
+                <p className="text-[10px] leading-snug text-error-fg">Reason: {tx.transfer_error}</p>
               )}
             </>
           )}
@@ -225,25 +190,139 @@ const Detail = ({ tx }) => {
   );
 };
 
-const PAGE_SIZE = 20;
+/* ------------------------------------------------------------------ */
+/* Filters → API params (only backend-supported controls are wired)    */
+/* ------------------------------------------------------------------ */
 
-const COLUMNS = [
-  {
-    key: "customer",
-    header: "Customer",
-    render: (tx) => (
-      <div>
-        <p className="font-medium text-ink">{tx.guest_name || "Guest"}</p>
-        <p className="max-w-[160px] truncate text-xs text-ink/40">{tx.guest_email || "—"}</p>
-      </div>
-    ),
-  },
-  { key: "service", header: "Service", render: (tx) => <span className="text-muted">{tx.services?.title || "—"}</span> },
-  { key: "date", header: "Date", render: (tx) => <span className="text-muted">{fmtDate(tx.scheduled_at || tx.created_at)}</span> },
-  { key: "total", header: "Total", render: (tx) => <span className="font-semibold text-ink">{tx.services?.price === 0 ? "Free" : fmtMoney(tx.services?.price, { decimals: true })}</span> },
-  { key: "earned", header: "Earned", render: (tx) => <span className="font-semibold text-primary">{fmtMoney(tx.vendor_amount, { decimals: true })}</span> },
-  { key: "status", header: "Payout", render: (tx) => <PayoutChip tx={tx} /> },
-];
+// Maps a date-filter preset to an ISO lower bound (getTransactions `dateFrom`).
+// Returns undefined for "all time" so the param is omitted entirely.
+const dateFromFor = (preset) => {
+  if (!preset) return undefined;
+  const d = new Date();
+  if (preset === "today") d.setHours(0, 0, 0, 0);
+  else if (preset === "7d") d.setDate(d.getDate() - 7);
+  else if (preset === "30d") d.setDate(d.getDate() - 30);
+  else if (preset === "month") { d.setDate(1); d.setHours(0, 0, 0, 0); }
+  return d.toISOString();
+};
+
+// Pink pill select — same options the backend understands, styled to the reference.
+const FilterSelect = ({ value, onChange, children, label }) => (
+  <div className="relative">
+    <select
+      value={value}
+      onChange={onChange}
+      aria-label={label}
+      className="h-10 w-full cursor-pointer appearance-none rounded-full border border-maroon/15 bg-white pl-4 pr-9 text-sm font-medium text-ink shadow-sm outline-none transition focus:border-primary/50 focus:ring-2 focus:ring-primary/15"
+    >
+      {children}
+    </select>
+    <ChevronRight className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 rotate-90 text-primary/70" />
+  </div>
+);
+
+/* ------------------------------------------------------------------ */
+/* Row actions menu                                                    */
+/* ------------------------------------------------------------------ */
+
+const RowActions = ({ tx, onView }) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!open) return undefined;
+    const onDown = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
+  }, [open]);
+
+  const item = "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-medium text-ink transition hover:bg-blush/50";
+  return (
+    <div ref={ref} className="relative flex justify-end" onClick={(e) => e.stopPropagation()}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-label="Transaction actions"
+        aria-expanded={open}
+        className="grid h-8 w-8 place-items-center rounded-full border border-maroon/10 text-ink/50 transition hover:bg-blush/50 hover:text-primary"
+      >
+        <MoreHorizontal className="h-4 w-4" />
+      </button>
+      {open && (
+        <div role="menu" className="absolute right-0 top-full z-20 mt-1 w-44 rounded-xl border border-maroon/10 bg-white p-1 shadow-[0_18px_40px_-20px_rgba(150,13,50,0.45)]">
+          <button type="button" role="menuitem" className={item} onClick={() => { onView(tx); setOpen(false); }}>View details</button>
+          {tx.razorpay_payment_id && (
+            <button type="button" role="menuitem" className={item} onClick={() => { copy(tx.razorpay_payment_id, "Payment ID"); setOpen(false); }}>Copy payment ID</button>
+          )}
+          <button type="button" role="menuitem" className={item} onClick={() => { copy(tx.id, "Transaction ID"); setOpen(false); }}>Copy transaction ID</button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/* Table                                                               */
+/* ------------------------------------------------------------------ */
+
+const TH = ({ children, className }) => (
+  <th scope="col" className={cn("whitespace-nowrap px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-maroon/70", className)}>
+    {children}
+  </th>
+);
+
+const TxRow = ({ tx, onView }) => {
+  const d = tx.scheduled_at || tx.created_at;
+  const isFree = tx.services?.price === 0;
+  return (
+    <tr onClick={() => onView(tx)} className="cursor-pointer border-b border-maroon/5 transition-colors last:border-0 hover:bg-blush/30">
+      <td className="whitespace-nowrap px-4 py-2.5">
+        <p className="text-sm font-medium text-ink">{fmtDate(d)}</p>
+        <p className="text-[11px] text-ink/40">{fmtTime(d)}</p>
+      </td>
+      <td className="px-4 py-2.5">
+        <p className="text-sm font-semibold text-ink">{tx.guest_name || "Guest"}</p>
+        <p className="max-w-[180px] truncate text-[11px] text-ink/40">{tx.guest_email || "—"}</p>
+      </td>
+      <td className="px-4 py-2.5">
+        <span className="text-sm text-ink/70">{tx.services?.title || "—"}</span>
+      </td>
+      <td className="whitespace-nowrap px-4 py-2.5">
+        <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-semibold text-primary">Booking</span>
+      </td>
+      <td className="whitespace-nowrap px-4 py-2.5">
+        <p className="text-sm font-bold text-ink">{isFree ? "Free" : fmtMoney(tx.services?.price, { decimals: true })}</p>
+        {!isFree && <p className="text-[11px] text-primary">nets {fmtMoney(tx.vendor_amount, { decimals: true })}</p>}
+      </td>
+      <td className="whitespace-nowrap px-4 py-2.5">
+        <span className="inline-flex items-center gap-1.5 text-sm text-ink/70">
+          <CreditCard className="h-3.5 w-3.5 text-ink/30" strokeWidth={2} />
+          {paymentMethod(tx)}
+        </span>
+      </td>
+      <td className="whitespace-nowrap px-4 py-2.5"><PayoutChip tx={tx} /></td>
+      <td className="whitespace-nowrap px-4 py-2.5 text-right"><RowActions tx={tx} onView={onView} /></td>
+    </tr>
+  );
+};
+
+const TableSkeleton = () => (
+  <tbody>
+    {Array.from({ length: 8 }).map((_, i) => (
+      <tr key={i} className="border-b border-maroon/5 last:border-0">
+        {Array.from({ length: 8 }).map((__, j) => (
+          <td key={j} className="px-4 py-3"><Skeleton className={cn("h-4", j === 1 ? "w-36" : "w-16")} /></td>
+        ))}
+      </tr>
+    ))}
+  </tbody>
+);
+
+/* ------------------------------------------------------------------ */
+/* Page                                                                */
+/* ------------------------------------------------------------------ */
+
+const PAGE_SIZE = 12;
+const EXPORT_LIMIT = 500;
 
 const Transactions = () => {
   const [data, setData] = useState([]);
@@ -251,120 +330,222 @@ const Transactions = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
-  const [dateRange, setDateRange] = useState("");
+  const [dateRange, setDateRange] = useState("month"); // reference default: This Month
   const [sort, setSort] = useState("desc");
-  const [loading, setLoading] = useState(true);    // first-page / filter-change load
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  // One loader for both the first page (replace) and subsequent pages (append).
-  const load = useCallback(async (pageToLoad, replace) => {
-    replace ? setLoading(true) : setLoadingMore(true);
+  const params = useCallback(
+    (overrides = {}) => ({ page, limit: PAGE_SIZE, search, status, sort, dateFrom: dateFromFor(dateRange), ...overrides }),
+    [page, search, status, sort, dateRange],
+  );
+
+  const load = useCallback(async () => {
+    setLoading(true);
     setError(false);
+    // DEV-only UI preview: render sample transactions WITHOUT touching the API.
+    // Never a fallback on failure — this is an up-front branch gated on the flag.
+    if (isPreviewEnabled()) {
+      const all = filterPreviewTransactions(getPreviewTransactions() || [], { search, status, dateFrom: dateFromFor(dateRange), sort });
+      setTotal(all.length);
+      setData(all.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE));
+      setLoading(false);
+      return;
+    }
     try {
-      const { data: res } = await getTransactions({ page: pageToLoad, limit: PAGE_SIZE, search, status, sort, dateFrom: dateFromFor(dateRange) });
-      const rows = res.data || [];
-      setData((prev) => (replace ? rows : [...prev, ...rows]));
+      const { data: res } = await getTransactions(params());
+      setData(res.data || []);
       setTotal(res.total || 0);
-      setHasMore(pageToLoad * PAGE_SIZE < (res.total || 0));
     } catch {
       setError(true);
-      if (replace) toast.error("Failed to load transactions");
     } finally {
-      replace ? setLoading(false) : setLoadingMore(false);
+      setLoading(false);
     }
-  }, [search, status, sort, dateRange]);
+  }, [params, page, search, status, dateRange, sort]);
 
-  // Reset to page 1 and replace whenever filters change (load identity changes with them).
-  useEffect(() => { setPage(1); load(1, true); }, [load]);
+  useEffect(() => { load(); }, [load]);
 
-  const loadMore = useCallback(() => {
-    setPage((p) => { const next = p + 1; load(next, false); return next; });
-  }, [load]);
+  // Filters reset to page 1 (search is debounce-free; the API call fires on change).
+  const onFilter = (setter) => (v) => { setter(v); setPage(1); };
 
-  const sentinelRef = useInfiniteScroll(loadMore, { hasMore, loading: loading || loadingMore });
+  const exportCsv = async () => {
+    setExporting(true);
+    try {
+      let rows;
+      if (isPreviewEnabled()) {
+        rows = filterPreviewTransactions(getPreviewTransactions() || [], { search, status, dateFrom: dateFromFor(dateRange), sort });
+      } else {
+        const { data: res } = await getTransactions(params({ page: 1, limit: EXPORT_LIMIT }));
+        rows = res.data || [];
+      }
+      if (rows.length === 0) { toast.error("No transactions to export."); return; }
+      const esc = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+      const head = ["Date", "Time", "Customer", "Email", "Service", "Type", "Amount", "Earnings", "Payment Method", "Status"];
+      const lines = rows.map((tx) => {
+        const d = tx.scheduled_at || tx.created_at;
+        return [
+          fmtDate(d), fmtTime(d), tx.guest_name || "Guest", tx.guest_email || "",
+          tx.services?.title || "", "Booking",
+          tx.services?.price ?? "", tx.vendor_amount ?? "",
+          paymentMethod(tx), statusLabel(tx),
+        ].map(esc).join(",");
+      });
+      const csv = [head.map(esc).join(","), ...lines].join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `transactions-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast.success(`Exported ${rows.length} transactions`);
+    } catch {
+      toast.error("Couldn't export transactions.");
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const from = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+  const to = Math.min(page * PAGE_SIZE, total);
 
   return (
     <div>
-      <PageHeader title="Transactions" subtitle={`${total} total transactions`} />
+      {/* ── Page heading ─────────────────────────────────────────────── */}
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary">
+            <Receipt className="h-6 w-6" strokeWidth={2} />
+          </span>
+          <div>
+            <h1 className="font-display text-2xl font-extrabold tracking-tight text-maroon sm:text-[28px]">Transactions</h1>
+            <p className="mt-0.5 text-sm text-muted">Payments, refunds and payout records.</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={exportCsv}
+          disabled={exporting || loading}
+          className="inline-flex h-10 shrink-0 items-center gap-2 self-start rounded-full bg-primary px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90 disabled:opacity-50 sm:self-auto"
+        >
+          <Download className="h-4 w-4" strokeWidth={2} />
+          {exporting ? "Exporting…" : "Export Report"}
+        </button>
+      </div>
 
-      {/* Toolbar — search ~70% + status/date/sort inline on one row;
-          stacks on mobile (search on top, the 3 dropdowns in a row under). */}
-      <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
-        <SearchInput
-          value={search}
-          onChange={(v) => { setSearch(v); setPage(1); }}
-          placeholder="Search name, email…"
-          className="w-full sm:w-[70%]"
-        />
-        <div className="dash-noscrollbar flex gap-2 overflow-x-auto sm:flex-1 sm:overflow-visible">
-          <Select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }} className="min-h-11 min-w-[8.5rem] shrink-0 sm:min-w-0 sm:flex-1" aria-label="Filter by status">
-            <option value="">All statuses</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
-          </Select>
-          <Select value={dateRange} onChange={(e) => { setDateRange(e.target.value); setPage(1); }} className="min-h-11 min-w-[8.5rem] shrink-0 sm:min-w-0 sm:flex-1" aria-label="Filter by date">
-            <option value="">All time</option>
-            <option value="today">Today</option>
-            <option value="7d">Last 7 days</option>
-            <option value="30d">Last 30 days</option>
-            <option value="month">This month</option>
-          </Select>
-          <Select value={sort} onChange={(e) => setSort(e.target.value)} className="min-h-11 min-w-[8.5rem] shrink-0 sm:min-w-0 sm:flex-1" aria-label="Sort order">
-            <option value="desc">Newest first</option>
-            <option value="asc">Oldest first</option>
-          </Select>
+      {/* ── Filter toolbar (only backend-supported controls are wired) ── */}
+      <div className="mb-4 grid grid-cols-1 gap-2.5 rounded-2xl border border-maroon/10 bg-white p-3 shadow-sm sm:grid-cols-2 lg:grid-cols-[repeat(3,minmax(0,1fr))_1.6fr]">
+        <FilterSelect value={dateRange} onChange={(e) => onFilter(setDateRange)(e.target.value)} label="Filter by date">
+          <option value="month">This Month</option>
+          <option value="today">Today</option>
+          <option value="7d">Last 7 days</option>
+          <option value="30d">Last 30 days</option>
+          <option value="">All time</option>
+        </FilterSelect>
+        <FilterSelect value={status} onChange={(e) => onFilter(setStatus)(e.target.value)} label="Filter by status">
+          <option value="">All Status</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </FilterSelect>
+        {/* Sort is real (API `sort`). The reference's "Transaction type" and
+            "Payment method" filters are omitted: the backend has no type or
+            method field to filter on, so faking them would be decorative. */}
+        <FilterSelect value={sort} onChange={(e) => onFilter(setSort)(e.target.value)} label="Sort order">
+          <option value="desc">Newest first</option>
+          <option value="asc">Oldest first</option>
+        </FilterSelect>
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/30" />
+          <input
+            value={search}
+            onChange={(e) => onFilter(setSearch)(e.target.value)}
+            placeholder="Search by customer, service, ref…"
+            aria-label="Search transactions"
+            className="h-10 w-full rounded-full border border-maroon/15 bg-white pl-11 pr-4 text-sm text-ink shadow-sm outline-none transition placeholder:text-ink/35 focus:border-primary/50 focus:ring-2 focus:ring-primary/15"
+          />
         </div>
       </div>
 
-      {/* Mobile: money-forward statement feed, grouped by day */}
-      <div className="space-y-5 md:hidden">
-        {loading ? (
-          <div className="space-y-2.5">{Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}</div>
-        ) : error && data.length === 0 ? (
-          <ErrorState message="Couldn’t load your transactions." onRetry={() => load(1, true)} />
-        ) : data.length === 0 ? (
-          <EmptyState icon={Receipt} title="No transactions found" description="Transactions show up here once guests pay for bookings." />
-        ) : (
-          groupTxByDay(data).map((group) => (
-            <section key={group.key}>
-              <div className="sticky top-14 z-10 -mx-1 mb-2 bg-canvas/95 px-1 py-1.5 backdrop-blur">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted">{group.label}</p>
-              </div>
-              <div className="space-y-2.5">
-                {group.items.map((tx) => <TxCard key={tx.id} tx={tx} onOpen={setSelected} />)}
-              </div>
-            </section>
-          ))
+      {/* ── Table ─────────────────────────────────────────────────────── */}
+      <div className="overflow-hidden rounded-2xl border border-maroon/10 bg-white shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="min-w-[920px] w-full border-collapse">
+            <thead>
+              <tr className="border-b border-maroon/10 bg-cream">
+                <TH>Date &amp; Time</TH>
+                <TH>Customer</TH>
+                <TH>Service / Product</TH>
+                <TH>Type</TH>
+                <TH>Amount</TH>
+                <TH>Payment Method</TH>
+                <TH>Status</TH>
+                <TH className="text-right">Actions</TH>
+              </tr>
+            </thead>
+            {loading ? (
+              <TableSkeleton />
+            ) : data.length > 0 ? (
+              <tbody>
+                {data.map((tx) => <TxRow key={tx.id} tx={tx} onView={setSelected} />)}
+              </tbody>
+            ) : null}
+          </table>
+        </div>
+
+        {/* Empty / error states live inside the table card so the chrome is preserved. */}
+        {!loading && error && (
+          <div className="px-4 py-10">
+            <ErrorState message="Couldn't load your transactions." onRetry={load} />
+          </div>
+        )}
+        {!loading && !error && data.length === 0 && (
+          <div className="px-4 py-12">
+            <EmptyState
+              icon={Receipt}
+              title="No transactions found"
+              description="Transactions show up here once guests pay for bookings."
+            />
+          </div>
         )}
       </div>
 
-      {/* Desktop: table */}
-      <div className="hidden md:block">
-        <DataTable
-          columns={COLUMNS}
-          rows={data}
-          loading={loading}
-          onRowClick={setSelected}
-          empty={<EmptyState icon={Receipt} title="No transactions found" description="Transactions show up here once guests pay for bookings." />}
-        />
-      </div>
-
-      {/* Infinite scroll: IntersectionObserver sentinel + inline load-more skeleton +
-          inline retry on a load-more failure. Replaces numbered pagination. */}
-      {hasMore && <div ref={sentinelRef} aria-hidden="true" className="h-1" />}
-      {loadingMore && <div className="mt-3"><SkeletonCard /></div>}
-      {error && data.length > 0 && (
-        <div className="mt-4 py-2 text-center text-sm text-muted">
-          Couldn’t load more.{" "}
-          <button type="button" onClick={loadMore} className="font-medium text-primary underline">Retry</button>
+      {/* ── Footer: range + numbered pagination (real total) ──────────── */}
+      {!loading && !error && total > 0 && (
+        <div className="mt-4 flex flex-col items-center justify-between gap-3 sm:flex-row">
+          <p className="text-xs text-muted">
+            Showing <span className="font-semibold text-ink">{from}–{to}</span> of{" "}
+            <span className="font-semibold text-ink">{total}</span> transactions
+          </p>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              aria-label="Previous page"
+              className="grid h-9 w-9 place-items-center rounded-full border border-maroon/15 text-ink/60 transition hover:bg-blush/50 hover:text-primary disabled:opacity-40 disabled:hover:bg-transparent"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <span className="px-3 text-sm font-medium text-ink">
+              Page {page} <span className="text-ink/40">of {totalPages}</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
+              aria-label="Next page"
+              className="grid h-9 w-9 place-items-center rounded-full border border-maroon/15 text-ink/60 transition hover:bg-blush/50 hover:text-primary disabled:opacity-40 disabled:hover:bg-transparent"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
         </div>
-      )}
-      {!hasMore && !loading && data.length > 0 && (
-        <p className="mt-4 text-center text-xs text-ink/40">Showing all {total} transactions</p>
       )}
 
       <Modal open={!!selected} onClose={() => setSelected(null)} title="Transaction Details" size="lg">

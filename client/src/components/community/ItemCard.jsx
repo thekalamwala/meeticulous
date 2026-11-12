@@ -5,8 +5,15 @@ import {
 } from 'lucide-react';
 import { relTime } from '../../utils/relTime';
 import AuthorChip, { Avatar } from './AuthorChip';
+import IdentityBadge from './IdentityBadge';
 import LikeButton from './LikeButton';
+import BookmarkButton from './BookmarkButton';
 import LinkifiedText from './LinkifiedText';
+import PostMenu from './PostMenu';
+
+// Feed cards show the first BODY_PREVIEW chars, then a Read more link.
+const BODY_PREVIEW = 256;
+const handleOf = (author) => (author?.profile_url ? `@${author.profile_url.replace(/^\//, '')}` : null);
 
 const SPACE_ICONS = { updates: Megaphone, help: CircleHelp, ideas: Lightbulb, 'host-corner': Briefcase, general: MessagesSquare };
 export function SpaceIcon({ spaceKey, size = 20 }) {
@@ -48,7 +55,7 @@ function Photos({ media, author }) {
 
 // One feed/detail card. `detail` = full text, h1 title, Reply action (onReply).
 // `actions` (detail only) = node for the More menu, built by the page that owns edit/delete/report.
-export default function ItemCard({ item, detail = false, onReply, actions }) {
+export default function ItemCard({ item, detail = false, onReply, actions, onHide, onReport, viewerId, canPin = false }) {
   if (TOMBSTONE[item.status]) {
     return (
       <article data-testid="item-card" className="mt-card p-5 sm:p-6">
@@ -60,12 +67,15 @@ export default function ItemCard({ item, detail = false, onReply, actions }) {
   const thread = item.kind === 'thread';
   const pinned = item.is_pinned && !detail;
   const question = item.format === 'question';
+  const isOwn = !!viewerId && item.author?.id === viewerId;
+  // Feed cards carry the "⋯" viewer menu; detail keeps its own author edit/delete actions.
+  const menu = !detail && onReport ? <PostMenu item={item} onHide={onHide} onReport={onReport} isOwn={isOwn} canPin={canPin} /> : null;
   const label = item.title || item.author?.display_name || 'Post';
-  const meta = [
-    item.format === 'announcement' && 'Announcement',
-    relTime(item.created_at),
-    item.edited_at && 'edited',
-  ].filter(Boolean).join(' · ');
+  // No "Announcement" tag — the role badge + space carry context now.
+  const meta = [relTime(item.created_at), item.edited_at && 'edited'].filter(Boolean).join(' · ');
+  const handle = handleOf(item.author);
+  const long = !detail && typeof item.body === 'string' && item.body.length > BODY_PREVIEW;
+  const bodyText = long ? `${item.body.slice(0, BODY_PREVIEW).trimEnd()}…` : item.body;
 
   const space = item.space && (
     <Link to={`/community/s/${item.space.key}`} className="inline-flex h-6 items-center gap-2 rounded-full bg-neutral-100 px-3 text-xs font-medium text-ink no-underline hover:bg-pink-200 hover:text-maroon">
@@ -74,7 +84,7 @@ export default function ItemCard({ item, detail = false, onReply, actions }) {
   );
 
   return (
-    <article data-testid="item-card" aria-label={pinned ? 'Pinned post' : label} className={`mt-card gap-4 p-5 sm:p-6 ${pinned ? 'mt-card--blush' : ''}`}>
+    <article data-testid="item-card" aria-label={pinned ? 'Pinned post' : label} className={`mt-card gap-5 p-5 sm:p-6 ${pinned ? 'mt-card--blush' : ''}`}>
       {pinned && (
         <div className="flex items-center gap-2 text-xs font-medium text-maroon">
           <Pin size={16} aria-hidden="true" />{item.space ? `Pinned in ${item.space.name}` : 'Pinned'}
@@ -94,6 +104,7 @@ export default function ItemCard({ item, detail = false, onReply, actions }) {
           <div className="flex items-center gap-3">
             <Avatar author={item.author} size="s" />
             <AuthorChip author={item.author} avatar={false} />
+            {menu && <span className="ml-auto">{menu}</span>}
           </div>
         </>
       ) : (
@@ -107,22 +118,42 @@ export default function ItemCard({ item, detail = false, onReply, actions }) {
           {detail && item.title && (
             <h1 className="font-display text-3xl font-extrabold leading-tight tracking-tight text-maroon sm:text-4xl">{item.title}</h1>
           )}
-          <div className="flex items-center gap-3">
-            <AuthorChip author={item.author} meta={meta} size={pinned ? 's' : 'm'} />
-            {!detail && question && <span className="mt-badge mt-badge--s"><CircleHelp size={16} aria-hidden="true" />Question</span>}
-          </div>
+          {detail ? (
+            <div className="flex items-start gap-3">
+              <AuthorChip author={item.author} meta={meta} size={pinned ? 's' : 'm'} />
+              {menu && <span className="ml-auto">{menu}</span>}
+            </div>
+          ) : (
+            <div className="flex items-start gap-3">
+              <Avatar author={item.author} size={pinned ? 's' : 'm'} />
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm leading-snug">
+                  {item.author?.profile_url
+                    ? <Link to={item.author.profile_url} className="font-semibold text-ink no-underline hover:text-maroon hover:underline">{item.author.display_name}</Link>
+                    : <span className="font-semibold text-ink">{item.author?.display_name || 'Member'}</span>}
+                  <IdentityBadge author={item.author} />
+                  {question && <span className="mt-badge mt-badge--s shrink-0"><CircleHelp size={14} aria-hidden="true" />Question</span>}
+                </div>
+                {handle && <div className="text-xs leading-snug text-muted">{handle}</div>}
+              </div>
+              <div className="flex items-center gap-1 shrink-0">
+                <span className="whitespace-nowrap text-xs text-muted">{meta}</span>
+                {menu}
+              </div>
+            </div>
+          )}
           {detail && !item.title && space && <div>{space}</div>}
-          <p className={`text-sm leading-relaxed text-ink ${detail ? '' : 'line-clamp-6'}`}>
-            <LinkifiedText text={item.body} />
+          <p className="text-sm leading-relaxed text-ink">
+            <LinkifiedText text={bodyText} />
           </p>
-          {!detail && item.body.length > 400 && (
+          {long && (
             <Link to={item.url} className="self-start text-sm font-medium text-maroon">Read more</Link>
           )}
           <Photos media={item.media} author={item.author} />
         </>
       )}
 
-      <div className="-mx-3 -mb-3 flex flex-wrap items-center gap-1">
+      <div className="flex flex-wrap items-center gap-1 border-t-2 border-ink/5 pt-3">
         <LikeButton targetType="post" id={item.id} liked={item.viewer?.liked} count={item.like_count} />
         {detail ? (
           <button type="button" onClick={() => onReply?.(null)} className="mt-btn mt-btn--ghost mt-btn--s gap-2 font-medium text-muted hover:text-maroon">
@@ -137,9 +168,11 @@ export default function ItemCard({ item, detail = false, onReply, actions }) {
             <MessageCircle size={16} aria-hidden="true" />{item.comment_count}
           </Link>
         )}
-        <button type="button" onClick={() => share(item)} className="mt-btn mt-btn--ghost mt-btn--s gap-2 font-medium text-muted hover:text-maroon">
-          <Share2 size={16} aria-hidden="true" />Share
+        <button type="button" onClick={() => share(item)} aria-label="Share"
+          className="mt-btn mt-btn--ghost mt-btn--s gap-2 font-medium text-muted hover:text-maroon">
+          <Share2 size={16} aria-hidden="true" />
         </button>
+        {!detail && <BookmarkButton id={item.id} saved={item.viewer?.saved} count={item.save_count} />}
         {detail && actions && <span className="ml-auto">{actions}</span>}
       </div>
     </article>

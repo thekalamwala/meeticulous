@@ -5,6 +5,7 @@ import { Gift, Sparkles, X, Headset, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import useIsMobile from '../../hooks/useIsMobile';
 import useSupportUnread from '../../hooks/useSupportUnread';
+import useFeatureFlags from '../../hooks/useFeatureFlags';
 import { normalizePlan } from '../../utils/themeUtils';
 import { cn } from '../dashboard/ui/cn';
 
@@ -21,11 +22,11 @@ const SB = {
 // Nav glyphs are pre-coloured PNGs (one file per state) exported from
 // design-system/icons/dashboard/*.svg by its export-png.js. A PNG can't recolour,
 // so hover only tints the row background. Recolour = edit the SVG + re-export.
-const ICON_DIR = '/icons/dashboard';
+export const ICON_DIR = '/icons/dashboard';
 
 // Accent per section — all deliberately non-rose so the rose badge never clashes.
 // Must match the active-state colours baked into the PNGs.
-const ACCENT = {
+export const ACCENT = {
   overview: '#4f46e5', // indigo
   bookings: '#059669', // emerald
   catalog:  '#7c3aed', // violet
@@ -66,6 +67,9 @@ export const NAV = [
     items: [
       { to: '/dashboard/services', label: 'Services', icon: 'nav-services', matchPrefix: '/dashboard/service' },
       { to: '/dashboard/products', label: 'Products', icon: 'nav-products' },
+      // Coupons (v3.204) — hidden until the `coupons` flag is on. Reuses the
+      // refer glyph (promo/reward) as no discount icon is exported yet.
+      { to: '/dashboard/coupons', label: 'Coupons', icon: 'nav-refer', visible: (c) => !!c.flags?.coupons },
     ],
   },
   {
@@ -99,7 +103,7 @@ export const NAV = [
 const prefixesOf = (item) =>
   item.matchPrefix ? (Array.isArray(item.matchPrefix) ? item.matchPrefix : [item.matchPrefix]) : [item.to];
 
-const isLocked = (item, plan) => {
+export const isLocked = (item, plan) => {
   if (!item.locked) return false;
   const allowed = Array.isArray(item.locked) ? item.locked : [item.locked];
   return !allowed.includes(plan);
@@ -109,19 +113,19 @@ const isLocked = (item, plan) => {
 // still show (with a lock) — that's the host upsell, not a hide.
 const isVisible = (item, ctx) => (typeof item.visible === 'function' ? item.visible(ctx) : true);
 
-const visibleSections = (ctx) =>
+export const visibleSections = (ctx) =>
   NAV
     .map((s) => ({ ...s, items: s.items.filter((i) => isVisible(i, ctx)) }))
     .filter((s) => s.items.length > 0);
 
 // Where a rail click lands: the section's first page the host can actually open
 // (skip locked items), falling back to the first item.
-const firstItemTo = (section, plan) =>
+export const firstItemTo = (section, plan) =>
   (section.items.find((i) => !isLocked(i, plan)) || section.items[0])?.to;
 
 // Active item by route: exact match for the dashboard root, else longest-prefix
 // so deep pages (e.g. /dashboard/services/42/edit) still light their parent item.
-const resolveActive = (pathname, sections) => {
+export const resolveActive = (pathname, sections) => {
   const flat = sections.flatMap((s) => s.items.map((i) => ({ ...i, sectionId: s.id })));
   const root = flat.find((i) => i.exact);
   if (root && pathname === root.to) return { sectionId: root.sectionId, to: root.to };
@@ -359,7 +363,7 @@ const RailAndPanel = ({ sections, plan, badges, activeSectionId, activeTo, onSel
  *  Runtime attention counts. Wired to the one real host signal today:
  *  a pending/unverified KYC. Add more keys here as queue counts appear.
  * ------------------------------------------------------------------ */
-const computeBadges = (user) => {
+export const computeBadges = (user) => {
   const kyc = (user?.kyc_status || '').toLowerCase();
   const needsVerification = kyc && !['approved', 'verified'].includes(kyc);
   return { verification: needsVerification ? 1 : 0 };
@@ -445,7 +449,8 @@ const ConsoleSidebar = ({ open = false, onClose, triggerRef }) => {
   const drawerRef = useRef(null);
 
   const plan = normalizePlan(user?.plan);
-  const ctx = { user, plan };
+  const { flags } = useFeatureFlags();
+  const ctx = { user, plan, flags };
   const sections = visibleSections(ctx);
   const chatUnread = useSupportUnread();
   const badges = { ...computeBadges(user), chatUnread };

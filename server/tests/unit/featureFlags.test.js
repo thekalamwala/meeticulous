@@ -46,6 +46,18 @@ test('fail-closed: host_linkedin_login is DISABLED when absent and on DB error',
   expect(await featureFlags.isFeatureEnabled('host_linkedin_login')).toBe(true);
 });
 
+// Dormant UI flag: the half-wired v2 redesign must never show by default.
+test('fail-closed: community_v2 is DISABLED when absent and on DB error', async () => {
+  wire([]);
+  expect(await featureFlags.isFeatureEnabled('community_v2')).toBe(false);
+  featureFlags.clearCache();
+  wire(null, { message: 'boom' });
+  expect(await featureFlags.isFeatureEnabled('community_v2')).toBe(false);
+  featureFlags.clearCache();
+  wire([{ key: 'community_v2', enabled: true }]);
+  expect(await featureFlags.isFeatureEnabled('community_v2')).toBe(true);
+});
+
 test('security key still honors its explicit stored value when present', async () => {
   wire([{ key: 'unified_login', enabled: true }]);
   expect(await featureFlags.isFeatureEnabled('unified_login')).toBe(true);

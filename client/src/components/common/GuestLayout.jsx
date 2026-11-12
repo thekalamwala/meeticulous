@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Outlet, useLocation, Link } from "react-router-dom";
-import { Menu, LogOut, LifeBuoy, ChevronDown, User } from "lucide-react";
+import { LogOut, LifeBuoy, ChevronDown, User } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import GuestSidebar from "./GuestSidebar";
+import GuestTabBar from "./GuestTabBar";
+import PullToRefresh from "../dashboard/ui/PullToRefresh";
+import { RefreshProvider } from "../dashboard/ui/refreshContext";
 
 // Guest-space shell (/user/*). A single-level console for the logged-in
 // customer: a labelled left rail (GuestSidebar) + a lean topbar. Deliberately
@@ -93,22 +96,14 @@ const GuestLayout = () => {
   useEffect(() => { setNavOpen(false); }, [pathname]);
 
   return (
-    <div className="flex min-h-screen overflow-x-hidden" style={{ background: "#F8FAFC" }}>
+    <RefreshProvider>
+    <div className="flex min-h-screen overflow-x-hidden overscroll-y-contain" style={{ background: "#F8FAFC" }}>
       <GuestSidebar open={navOpen} onClose={() => setNavOpen(false)} triggerRef={navTriggerRef} />
 
       {/* Main — offset by the fixed 224px (w-56) rail on lg+. */}
       <main className="flex min-w-0 flex-1 flex-col lg:pl-56">
         <header className="sticky top-0 z-30 flex min-h-14 shrink-0 items-center border-b border-gray-200/80 bg-white/95 px-4 pt-[env(safe-area-inset-top)] backdrop-blur sm:px-6">
-          <button
-            ref={navTriggerRef}
-            type="button"
-            onClick={() => setNavOpen(true)}
-            aria-label="Open navigation"
-            aria-haspopup="dialog"
-            className="mr-1 grid h-9 w-9 place-items-center rounded-full text-gray-500 transition-colors hover:bg-primary/5 hover:text-primary lg:hidden"
-          >
-            <Menu className="h-[19px] w-[19px]" strokeWidth={1.8} />
-          </button>
+          {/* Mobile nav opener moved to the bottom tab bar's "More" button. */}
           <div className="ml-auto flex items-center gap-1">
             <Link
               to="/help"
@@ -122,11 +117,19 @@ const GuestLayout = () => {
           </div>
         </header>
 
-        <div className="app-container max-w-4xl py-7 flex-1">
-          <Outlet />
-        </div>
+        {/* pb clears the fixed mobile tab bar (+ safe area); desktop keeps py-7. */}
+        <PullToRefresh>
+          <div className="app-container max-w-4xl py-7 pb-[calc(68px+env(safe-area-inset-bottom))] flex-1 lg:pb-7">
+            <Outlet />
+          </div>
+        </PullToRefresh>
       </main>
+
+      {/* Native-app bottom tab bar — mobile only (< lg). Its "More" button is the
+          mobile nav opener (the topbar hamburger moved here). */}
+      <GuestTabBar onOpenMore={() => setNavOpen(true)} moreTriggerRef={navTriggerRef} />
     </div>
+    </RefreshProvider>
   );
 };
 

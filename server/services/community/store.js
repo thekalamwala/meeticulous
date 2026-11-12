@@ -48,6 +48,12 @@ const acceptTerms = (userId, version) => run(db('community_members')
   .upsert({ user_id: userId, terms_version: version, terms_accepted_at: new Date().toISOString() }, { onConflict: 'user_id' })
   .select(MEMBER_COLS).single());
 
+// Update a member's notification preferences (email on replies/mentions).
+// Upsert so a reader who never posted can still set it (a member row is created).
+const updateMemberPrefs = (userId, patch) => run(db('community_members')
+  .upsert({ user_id: userId, ...patch }, { onConflict: 'user_id' })
+  .select(MEMBER_COLS).single());
+
 const getSpaceByKey = (key) => run(db('community_spaces').select('*').eq('key', key).eq('is_active', true).maybeSingle());
 const getSpaceById = (id) => run(db('community_spaces').select('*').eq('id', id).maybeSingle());
 
@@ -72,8 +78,67 @@ const resolveUsernames = async (usernames) => (usernames.length
   : []);
 const insertMentions = (rows) => (rows.length ? run(db('community_mentions').insert(rows)) : null);
 
+// Host card stats for the community home left rail: lifetime bookings, active
+// services, and the host's own rating (avg of reviews where they're the subject).
+// Core tables (always present) queried directly; each count fails soft to 0/null
+// so a hiccup never breaks the rail.
+const hostCard = async (uid) => {
+  const safe = (p) => Promise.resolve(p).then((r) => r || {}).catch(() => ({}));
+  const [bk, sv, rv] = await Promise.all([
+    safe(db('bookings').select('id', { count: 'exact', head: true }).eq('host_id', uid)),
+    safe(db('services').select('id', { count: 'exact', head: true }).eq('host_id', uid)),
+    safe(db('reviews').select('rating').eq('subject_id', uid)),
+  ]);
+  const ratings = (rv.data || []).map((r) => r.rating).filter((n) => Number.isFinite(n));
+  const reviews = ratings.length;
+  return {
+    bookings: bk.count || 0,
+    services: sv.count || 0,
+    reviews,
+    rating: reviews ? Math.round((ratings.reduce((s, n) => s + n, 0) / reviews) * 10) / 10 : null,
+  };
+};
+
+// Taggable members for the @mention typeahead: hosts + the Meeticulous team
+// (community_members.badge official/staff) + everyone who has joined the
+// community (a community_members row). Empty `q` lists the first few.
+// ponytail: fetch-then-filter in JS; fine at current scale. If the member set
+// grows large, replace with an indexed OR-query / a materialised taggable view.
+const searchMentionable = async (q, { limit = 8 } = {}) => {
+  const term = String(q || '').trim().replace(/[^a-z0-9 ._-]/gi, '').slice(0, 30);
+  const base = db('profiles')
+    .select('id, username, name, first_name, profile_image, is_host')
+    .eq('is_banned', false)
+    .not('username', 'is', null);
+  const [profiles, members] = await Promise.all([
+    run(term ? base.or(`username.ilike.*${term}*,name.ilike.*${term}*`).limit(40) : base.limit(60)),
+    run(db('community_members').select('user_id, badge')),
+  ]);
+  const badgeBy = new Map((members || []).map((m) => [m.user_id, m.badge]));
+  const memberSet = new Set((members || []).map((m) => m.user_id));
+  return (profiles || [])
+    .filter((p) => p.is_host || memberSet.has(p.id))
+    .slice(0, limit)
+    .map((p) => ({
+      id: p.id,
+      username: p.username,
+      name: p.name || p.first_name || p.username,
+      avatar_url: p.profile_image || null,
+      role: badgeBy.get(p.id) ? 'staff' : (p.is_host ? 'host' : 'guest'),
+    }));
+};
+
 const getComment = (id) => run(db('community_comments').select('*').eq('id', id).maybeSingle());
 const insertComment = (row) => run(db('community_comments').insert(row).select('*').single());
+// How many comments `authorId` has on a post — Tithi's first-responder dedup (0 = not yet replied).
+const countCommentsByAuthorOnPost = (postId, authorId) => runCount(db('community_comments')
+  .select('id', { count: 'exact', head: true }).eq('post_id', postId).eq('author_id', authorId));
+// Tithi's comment-thread first-responder: dedup (replies by Tithi under a comment) and
+// human-already-answered (any visible reply under a comment).
+const countRepliesByAuthor = (commentId, authorId) => runCount(db('community_comments')
+  .select('id', { count: 'exact', head: true }).eq('parent_id', commentId).eq('author_id', authorId));
+const countReplies = (commentId) => runCount(db('community_comments')
+  .select('id', { count: 'exact', head: true }).eq('parent_id', commentId).eq('status', 'visible'));
 const updateComment = (id, patch, where = {}) => run(withEq(db('community_comments').update(patch).eq('id', id), where).select('*').maybeSingle());
 
 async function addReaction(userId, targetType, targetId) {
@@ -85,6 +150,32 @@ async function addReaction(userId, targetType, targetId) {
 }
 const removeReaction = (userId, targetType, targetId) => run(db('community_reactions').delete()
   .eq('user_id', userId).eq('target_type', targetType).eq('target_id', targetId));
+
+// Save / unsave a post (bookmark). PK (user_id, post_id) makes a double-save idempotent;
+// save_count is DB-trigger owned. Returns the save_count the trigger left on the post.
+async function addSave(userId, postId) {
+  try { await run(db('community_saves').insert({ user_id: userId, post_id: postId })); }
+  catch (e) { if (e.code !== '23505') throw e; } // already saved: idempotent
+  return (await getPost(postId))?.save_count ?? null;
+}
+const removeSave = async (userId, postId) => {
+  await run(db('community_saves').delete().eq('user_id', userId).eq('post_id', postId));
+  return (await getPost(postId))?.save_count ?? null;
+};
+const savedIds = async (userId, postIds) => {
+  if (!userId || !postIds.length) return new Set();
+  const rows = await run(db('community_saves').select('post_id').eq('user_id', userId).in('post_id', postIds));
+  return new Set((rows || []).map((r) => r.post_id));
+};
+
+// Block / unblock a member. PK (blocker_id, blocked_id); self-block and dup are no-ops.
+async function addBlock(blockerId, blockedId) {
+  if (!blockedId || blockerId === blockedId) return false;
+  try { await run(db('community_blocks').insert({ blocker_id: blockerId, blocked_id: blockedId })); return true; }
+  catch (e) { if (e.code === '23505') return true; throw e; }
+}
+const removeBlock = (blockerId, blockedId) => run(db('community_blocks').delete()
+  .eq('blocker_id', blockerId).eq('blocked_id', blockedId));
 
 // true = new report, false = this reporter already reported this target.
 async function insertReport(row) {
@@ -203,21 +294,63 @@ async function listPinned(limit = 5) {
 
 const getPostBySlug = (slug) => run(db('community_posts').select('*').eq('slug', slug).maybeSingle());
 
+// One author's visible posts / comments, newest first (public-profile Feed).
+// Keyset-paged on created_at like the main feed; visibility (author ban) is
+// applied by the caller via filterVisible, so we over-fetch at the controller.
+async function listAuthorPosts({ authorId, cur, limit }) {
+  const q = keyset(db('community_posts').select('*').eq('status', 'visible').eq('author_id', authorId), cur, 'lt');
+  return (await run(q.order('created_at', { ascending: false }).order('id', { ascending: false }).limit(limit))) || [];
+}
+async function listAuthorComments({ authorId, cur, limit }) {
+  const q = keyset(db('community_comments').select('*').eq('status', 'visible').eq('author_id', authorId), cur, 'lt');
+  return (await run(q.order('created_at', { ascending: false }).order('id', { ascending: false }).limit(limit))) || [];
+}
+
+// Minimal parent-post context (slug/kind/title/status) for a set of comment
+// post_ids, so the Feed can link "replied on <title>". Never leaks body.
+async function postContexts(postIds) {
+  const ids = uniq(postIds);
+  if (!ids.length) return new Map();
+  const rows = (await run(db('community_posts').select('id, slug, kind, title, status').in('id', ids))) || [];
+  return new Map(rows.map((r) => [r.id, r]));
+}
+
 // Oldest first; tombstones (deleted/removed) are returned, visibility is applied by the caller.
 async function listCommentRows(postId, cur, limit) {
   const q = keyset(db('community_comments').select('*').eq('post_id', postId), cur, 'gt');
   return (await run(q.order('created_at', { ascending: true }).order('id', { ascending: true }).limit(limit))) || [];
 }
 
+// Recent top-level comments (parent_id null), newest first — the Phase 2 comment-sweep's
+// candidate questions. We trust the comment's own 'visible' status; parent-post visibility
+// is left to the caller. ponytail: a visible comment under a removed post is rare.
+async function listRecentTopLevelComments({ limit = 20 } = {}) {
+  const rows = await run(db('community_comments')
+    .select('id, post_id, author_id, body, status, parent_id, created_at')
+    .is('parent_id', null).eq('status', 'visible')
+    .order('created_at', { ascending: false }).order('id', { ascending: false }).limit(limit));
+  return rows || [];
+}
+
 // One profiles + one members query per page. Never selects phone/email.
+// `dualIds` = host authors who have ALSO booked as a guest (bookings.guest_id),
+// so the card can mark them 'host_guest'. One extra `.in()` on the host subset.
 async function loadAuthors(ids) {
   const list = uniq(ids);
-  if (!list.length) return { profiles: new Map(), members: new Map() };
+  if (!list.length) return { profiles: new Map(), members: new Map(), dualIds: new Set() };
   const [p, m] = await Promise.all([
     run(db('profiles').select('id, name, first_name, username, profile_image, is_host, is_banned').in('id', list)),
     run(db('community_members').select('user_id, badge').in('user_id', list)),
   ]);
-  return { profiles: new Map((p || []).map((r) => [r.id, r])), members: new Map((m || []).map((r) => [r.user_id, r])) };
+  const hostIds = (p || []).filter((r) => r.is_host).map((r) => r.id);
+  const dualRows = hostIds.length
+    ? await run(db('bookings').select('guest_id').in('guest_id', hostIds))
+    : [];
+  return {
+    profiles: new Map((p || []).map((r) => [r.id, r])),
+    members: new Map((m || []).map((r) => [r.user_id, r])),
+    dualIds: new Set((dualRows || []).map((r) => r.guest_id)),
+  };
 }
 
 async function loadMediaByPost(postIds) {
@@ -241,8 +374,9 @@ async function likedIds(userId, targetType, ids) {
 // Batch-hydrate rows -> serialized items: one query each for authors, members, media, likes (+ cached spaces).
 async function hydrateItems(rows, viewerId) {
   const ids = rows.map((r) => r.id);
-  const [{ profiles, members }, spaces, media, liked] = await Promise.all([
-    loadAuthors(rows.map((r) => r.author_id)), listSpaces(), loadMediaByPost(ids), likedIds(viewerId, 'post', ids),
+  const [{ profiles, members, dualIds }, spaces, media, liked, saved] = await Promise.all([
+    loadAuthors(rows.map((r) => r.author_id)), listSpaces(), loadMediaByPost(ids),
+    likedIds(viewerId, 'post', ids), savedIds(viewerId, ids),
   ]);
   const spaceById = new Map(spaces.map((s) => [s.id, s]));
   return rows.map((r) => serializeItem(r, {
@@ -250,16 +384,18 @@ async function hydrateItems(rows, viewerId) {
     member: members.get(r.author_id) || null,
     space: spaceById.get(r.space_id) || null,
     media: media.get(r.id) || [],
-    viewer: { liked: liked.has(r.id) },
+    viewer: { liked: liked.has(r.id), saved: saved.has(r.id) },
+    dual: dualIds.has(r.author_id),
   }));
 }
 
 async function hydrateComments(rows, viewerId) {
-  const [{ profiles, members }, liked] = await Promise.all([
+  const [{ profiles, members, dualIds }, liked] = await Promise.all([
     loadAuthors(rows.map((r) => r.author_id)), likedIds(viewerId, 'comment', rows.map((r) => r.id)),
   ]);
   return rows.map((r) => serializeComment(r, {
-    author: profiles.get(r.author_id) || null, member: members.get(r.author_id) || null, viewer: { liked: liked.has(r.id) },
+    author: profiles.get(r.author_id) || null, member: members.get(r.author_id) || null,
+    viewer: { liked: liked.has(r.id) }, dual: dualIds.has(r.author_id),
   }));
 }
 
@@ -273,9 +409,12 @@ const listIndexableRows = async () => (await run(db('community_posts')
 module.exports = {
   hydrateItems, hydrateComments, listIndexableRows,
   listSpaces, bannedAuthorIds, listFeedRows, listPinned, getPostBySlug, listCommentRows,
+  listAuthorPosts, listAuthorComments, postContexts,
   loadAuthors, loadMediaByPost, likedIds, resetReadCaches,
-  linksAllowed, getProfile, getMember, acceptTerms, getSpaceByKey, getSpaceById,
-  insertPost, getPost, updatePost, insertMedia, listMedia, resolveUsernames, insertMentions,
-  getComment, insertComment, updateComment, addReaction, removeReaction,
+  linksAllowed, getProfile, getMember, acceptTerms, updateMemberPrefs, getSpaceByKey, getSpaceById,
+  insertPost, getPost, updatePost, insertMedia, listMedia, resolveUsernames, insertMentions, searchMentionable, hostCard,
+  getComment, insertComment, countCommentsByAuthorOnPost, countReplies, countRepliesByAuthor,
+  listRecentTopLevelComments, updateComment, addReaction, removeReaction,
+  addSave, removeSave, savedIds, addBlock, removeBlock,
   insertReport, countOpenReports, viewContext, refreshIndexable, run, runCount,
 };

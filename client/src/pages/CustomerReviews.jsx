@@ -61,7 +61,7 @@ const CustomerReviews = () => {
         {/* Tab bar — only visible for hosts */}
         {canHost && (
           <div className="inline-grid grid-cols-2 gap-1 mb-5 rounded-full border bg-white p-0.5 text-xs font-medium">
-            {[["traveling", "As Traveler"], ["hosting", "As Host"]].map(([k, label]) => (
+            {[["traveling", "As Guest"], ["hosting", "As Host"]].map(([k, label]) => (
               <button key={k} onClick={() => setTab(k)}
                 className={`px-4 py-1.5 rounded-full ${tab === k ? "bg-gray-900 text-white" : "text-gray-500"}`}>
                 {label}

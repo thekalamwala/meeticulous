@@ -17,8 +17,8 @@ export default function EditService() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <div className="text-center py-16 text-gray-400">Loading…</div>;
-  if (error)   return <div className="text-center py-16 text-gray-400">{error}</div>;
+  if (loading) return <div className="text-center py-16 text-neutral-400">Loading…</div>;
+  if (error)   return <div className="text-center py-16 text-neutral-400">{error}</div>;
 
   return <ServiceForm initialData={service} serviceId={id} />;
 }
