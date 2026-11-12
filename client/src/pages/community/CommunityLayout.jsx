@@ -75,6 +75,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
   const [unread, setUnread] = useState(0);
   const [searchOpen, setSearchOpen] = useState(false);
   const [spacesOpen, setSpacesOpen] = useState(false); // mobile: grid tile → spaces sheet
+  const [spaceQuery, setSpaceQuery] = useState(''); // live filter inside the spaces sheet
   const [filterOpen, setFilterOpen] = useState(false); // mobile: bottom-bar filter sheet
   const searchRef = useRef(null);
   const [sp] = useSearchParams();
@@ -127,7 +128,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
           </Link>
           <button
             type="button"
-            onClick={() => setSpacesOpen(true)}
+            onClick={() => { setSpaceQuery(''); setSpacesOpen(true); }}
             aria-label="Browse spaces"
             aria-expanded={spacesOpen}
             className="grid h-11 w-11 place-items-center rounded-2xl bg-cream text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40"
@@ -142,14 +143,23 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
       {v2 && spacesOpen && (
         <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Spaces">
           <div className="absolute inset-0 bg-ink/30" onClick={() => setSpacesOpen(false)} />
-          <div className="absolute inset-x-0 bottom-0 max-h-[70vh] overflow-y-auto rounded-t-3xl bg-white p-4 shadow-2xl" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
+          <div className="absolute inset-x-0 bottom-0 max-h-[78vh] overflow-y-auto rounded-t-3xl bg-white p-4 shadow-2xl" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
             <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-line" />
-            <h2 className="px-1 pb-1 font-display text-base font-extrabold text-ink">Spaces</h2>
+            <label className="mb-3 flex items-center gap-2 rounded-full bg-cream px-4 py-2.5">
+              <Search size={16} className="shrink-0 text-muted" aria-hidden="true" />
+              {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
+              <input autoFocus type="search" value={spaceQuery} onChange={(e) => setSpaceQuery(e.target.value)} aria-label="Search spaces" placeholder="Search spaces…" className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted" />
+            </label>
             <nav aria-label="Spaces" className="flex flex-col">
-              <Link to="/community" onClick={() => setSpacesOpen(false)} aria-current={active === 'feed' ? 'page' : undefined} className={navCls(active === 'feed')}>All</Link>
-              {spaces.map((s) => (
+              {!spaceQuery && (
+                <Link to="/community" onClick={() => setSpacesOpen(false)} aria-current={active === 'feed' ? 'page' : undefined} className={navCls(active === 'feed')}>All</Link>
+              )}
+              {spaces.filter((s) => (s.title || '').toLowerCase().includes(spaceQuery.toLowerCase())).map((s) => (
                 <Link key={s.key} to={`/community/s/${s.key}`} onClick={() => setSpacesOpen(false)} aria-current={active === s.key ? 'page' : undefined} className={navCls(active === s.key)}>{s.title}</Link>
               ))}
+              {spaceQuery && spaces.filter((s) => (s.title || '').toLowerCase().includes(spaceQuery.toLowerCase())).length === 0 && (
+                <p className="px-3 py-6 text-center text-sm text-muted">No spaces match “{spaceQuery}”.</p>
+              )}
             </nav>
           </div>
         </div>
@@ -296,8 +306,8 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
           <button type="button" onClick={() => setFilterOpen(true)} aria-label="Filter the feed" aria-expanded={filterOpen} className={`flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 ${curTab !== 'everyone' ? 'text-maroon' : 'text-muted'}`}>
             <ListFilter size={22} aria-hidden="true" />Filter
           </button>
-          <button type="button" disabled aria-label="Search (coming soon)" title="Soon" className="flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium text-muted opacity-60">
-            <Search size={22} aria-hidden="true" />Search
+          <button type="button" onClick={() => onCompose?.('post')} aria-label="Add a post" className="flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-semibold text-maroon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40">
+            <Plus size={24} aria-hidden="true" />Post
           </button>
           <Link
             to="/community/alerts"

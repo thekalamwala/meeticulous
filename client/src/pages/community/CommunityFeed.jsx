@@ -107,7 +107,7 @@ export default function CommunityFeed() {
         )}
       </div>
 
-      <div className="mt-card gap-4 p-5 sm:p-6">
+      <div className={`${v2 ? 'hidden lg:flex ' : ''}mt-card gap-4 p-5 sm:p-6`}>
         <div className="flex items-center gap-3">
           {user && <Avatar author={{ display_name: user.name || user.first_name, avatar_url: user.profile_image, role: user.is_host ? 'host' : 'guest' }} />}
           <button type="button" onClick={() => compose('post')} className="mt-input min-w-0 flex-1 cursor-text rounded-full text-left text-sm text-muted">
