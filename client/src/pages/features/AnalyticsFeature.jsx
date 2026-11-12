@@ -53,8 +53,8 @@ import FeatureFaq from '../../components/features/FeatureFaq';
 const START = '/become-a-host';
 const CHARCOAL = '#2B0A14';   // darkest surface
 const SLATE = '#34201F';      // panels on dark, final CTA
-const AMBER = '#F6C35A';      // accent on dark surfaces only
-const AMBER_INK = '#C68A12';  // amber for text on white / slate-50 (AA)
+const AMBER = '#F6C35A';      // marigold accent on dark surfaces only
+const AMBER_INK = '#C68A12';  // marigold for text on light (AA)
 const ON_DARK = '#FBF5F3';    // headings + body on dark
 const FREE_CRM_CLIENTS = 10;  // limits.crm on the free plan (migration v3.167)
 

@@ -8,7 +8,7 @@
 //   1 Hero + live demo · 2 Proof strip · 3 Without vs with · 4 How it works ·
 //   5 Capabilities · 6 The difference · 7 Testimonials · 8 FAQ · 9 Final CTA
 //
-// Design system A "Trust-Blue": white and pale-blue sections, one crisp blue
+// Design system A: white and pale-maroon sections, one crisp maroon
 // accent, a subtle dotted-grid motif, calm fact cards. Mechanics unique to this
 // page: clickable slot picker (hero) · icon fact cards · chat thread vs one link ·
 // horizontal numbered stepper · 3×2 icon grid · interactive slot planner
@@ -47,12 +47,12 @@ import PageGuides from '../../components/common/PageGuides';
 import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
-const BLUE = '#960D32';       // accent for text + fills on white (AA, ~6.7:1)
+const BLUE = '#960D32';       // maroon accent for text + fills on white
 const BLUE_DEEP = '#3D0516';  // dark section background
-const BLUE_SKY = '#EB93A6';   // decorative / text on BLUE_DEEP only (AA)
+const BLUE_SKY = '#EB93A6';   // decorative / text on the dark section only
 const PALE = '#FDF2F4';       // tinted section background
 const INK = '#2B0A14';
-const HEAD_ACCENT = '#960D32'; // blue (blue-700) — highlighted heading words, half of the black/blue heading
+const HEAD_ACCENT = '#960D32'; // maroon — highlighted heading words, half of the black/maroon heading
 const DOTS = { backgroundImage: 'radial-gradient(rgba(150,13,50,0.13) 1px, transparent 1px)', backgroundSize: '22px 22px' };
 
 /* ─────────────────────────────  SLOT MATH  ────────────────────────────── */

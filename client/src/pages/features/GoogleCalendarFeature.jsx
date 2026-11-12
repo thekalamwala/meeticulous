@@ -8,7 +8,7 @@
 //   1 Hero + live demo · 2 Proof strip · 3 Without vs with · 4 How it works ·
 //   5 Capabilities · 6 The difference · 7 Testimonials · 8 FAQ · 9 Final CTA
 //
-// Two-colour scheme: one accent (#E0506F, rgb 236 72 153 — pink) plus a charcoal-ink
+// Two-colour scheme: one accent (#E0506F, rose) plus a charcoal-ink
 // contrast, on white + light-grey surfaces. The accent is the ONLY colour, used for
 // bars, chips, links and CTAs; headings are charcoal ink and "no / clash /
 // unavailable" states use a neutral grey, not a second hue. No decorative dots. No Google logo
@@ -58,7 +58,7 @@ const START = '/become-a-host';
 // The accent is the provided pink; everything that used the four Google hues now
 // collapses to it. Genuine "no / clash / unavailable" states use a neutral grey so
 // the yes/no meaning survives without introducing a third colour.
-const ACCENT = '#E0506F';       // rgb(236 72 153) — the single accent (pink)
+const ACCENT = '#E0506F';       // rose — the single accent
 const ACCENT_SOFT = '#FFF1F4';  // light accent tint (event chips, positive callouts)
 const NEG = '#6B524F';          // neutral grey for no / unavailable / clash
 const NEG_SOFT = '#F5ECEA';     // neutral grey tint

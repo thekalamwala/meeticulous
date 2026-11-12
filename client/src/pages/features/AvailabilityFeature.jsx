@@ -41,11 +41,11 @@ import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
 const INK = '#2B0A14';
-const LIME = '#FDF0D2';      // highlighter band, under highlighted words
+const LIME = '#FDF0D2';      // marigold wash — band under highlighted words
 const LIME_DEEP = '#F9D684'; // markers, open cells, the FAQ bar
-const TEAL = '#960D32';      // accent text/icons on white (AA, ~5.5:1)
+const TEAL = '#960D32';      // maroon accent text/icons on white
 const LIME_WASH = '#FBF5F3'; // soft section tint
-const VIOLET = '#960D32';    // navbar Availability violet (violet-600) — highlighted words
+const VIOLET = '#960D32';    // maroon — highlighted words
 
 /* ─────────────────────────────  SLOT MATH  ────────────────────────────── */
 

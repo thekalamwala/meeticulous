@@ -8,11 +8,11 @@
 //   1 Hero + live demo · 2 Proof strip · 3 Without vs with · 4 How it works ·
 //   5 Capabilities · 6 The difference · 7 Testimonials · 8 FAQ · 9 Final CTA
 //
-// Design system F "Dark SaaS": solid deep-indigo feature sections (no gradients),
-// violet accents, glassy translucent panels, two light lilac sections for contrast.
+// Design system F "Dark SaaS": solid maroon-dark feature sections (no gradients),
+// rose accents, glassy translucent panels, two light cream sections for contrast.
 // Mechanics unique to this page: clickable product shelf with checkout and
 // "download ready" states (hero) · glass fact chips · chat-thread vs product-page
-// mock pair · horizontal violet-numbered timeline · glass card grid ·
+// mock pair · horizontal maroon-numbered timeline · glass card grid ·
 // interactive plan slot counter · glass quote cards · dark accordion FAQ.
 //
 // HONESTY: every claim is verified in code (Oct 2026):
@@ -49,10 +49,10 @@ import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
 const NAVY = '#2B0A14';          // page dark base
-const DEEP = '#3D0516';          // deep indigo for the feature sections (solid, no gradient)
-const VIOLET = '#E0506F';        // decorative + accent fills (solid)
-const VIOLET_SOFT = '#FF9FB0';   // accent TEXT on dark (AA on navy/indigo)
-const VIOLET_INK = '#960D32';    // deep violet: accent text on light + CTA/button fill (AA with white)
+const DEEP = '#3D0516';          // maroon-900 dark for the feature sections (solid, no gradient)
+const VIOLET = '#E0506F';        // rose — decorative + accent fills (solid)
+const VIOLET_SOFT = '#FF9FB0';   // soft pink accent text on dark
+const VIOLET_INK = '#960D32';    // maroon: accent text on light + CTA/button fill (AA with white)
 const MIST = '#FBF5F3';          // body text on dark
 const LILAC = '#FBF5F3';         // light section background
 
