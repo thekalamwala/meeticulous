@@ -213,7 +213,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
             <div className="relative ml-auto shrink-0">
               <form role="search" onSubmit={(e) => { e.preventDefault(); const q = searchQuery.trim(); if (q) pushRecent(q); }} className="flex w-44 items-center gap-2 rounded-full bg-cream px-4 py-2 transition-[width] duration-200 ease-out focus-within:w-80 focus-within:ring-2 focus-within:ring-maroon/20">
                 <Search size={16} className="shrink-0 text-muted" aria-hidden="true" />
-                <input ref={searchRef} type="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onFocus={() => setSearchFocused(true)} onBlur={() => setTimeout(() => setSearchFocused(false), 150)} aria-label="Search the community" aria-expanded={searchFocused} placeholder="Search hosts, posts, spaces…" className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted" />
+                <input ref={searchRef} type="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onFocus={() => setSearchFocused(true)} onBlur={() => setTimeout(() => setSearchFocused(false), 150)} aria-label="Search the community" aria-expanded={searchFocused} placeholder="Search hosts, posts, spaces…" className="min-w-0 flex-1 appearance-none border-0 bg-transparent p-0 text-sm text-ink outline-none placeholder:text-muted focus:border-0 focus:outline-none focus:shadow-none focus:ring-0" />
               </form>
               {searchFocused && (
                 <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-80 overflow-hidden rounded-2xl border border-line bg-white py-2 shadow-xl">
