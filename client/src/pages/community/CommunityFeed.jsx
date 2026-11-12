@@ -85,7 +85,7 @@ export default function CommunityFeed() {
             title={t.soon ? 'Following arrives soon' : undefined}
             onClick={() => { if (!t.soon && t.key !== tab) setParams(t.key === 'everyone' ? {} : { tab: t.key }); }}
             className={v2
-              ? `flex-1 rounded-full px-4 py-2 text-center text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 lg:flex-none lg:px-3 lg:py-1 lg:text-[11px] ${
+              ? `flex-1 rounded-full px-4 py-2 text-center text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 lg:flex-none lg:px-2 lg:py-0.5 lg:text-[9px] ${
                 t.key === tab ? 'bg-maroon text-cream' : 'text-muted hover:text-ink'} ${t.soon ? 'opacity-60' : ''}`
               : 'mt-tab flex-1 justify-center px-3 sm:px-6'}
           >
