@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Bell, Calendar, House, LayoutGrid, Lock, MessageSquare, Search, SquarePen, UserRound } from 'lucide-react';
+import { Bell, House, LayoutGrid, Lock, Plus, Search, SquarePen, UserRound } from 'lucide-react';
 import { getSpaces } from '../../services/communityApi';
 import { getNotifications } from '../../services/api';
 import { SpaceIcon } from '../../components/community/ItemCard';
@@ -55,6 +55,14 @@ const communityTag = () => TAGS[new Date().getDay() % TAGS.length];
 const dIcon = (on) => `relative grid h-10 w-10 place-items-center rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 ${
   on ? 'border-transparent bg-maroon text-white' : 'border-line bg-white text-maroon hover:bg-pink-100'}`;
 
+// Desktop top-bar ghost icon button (bell): no border, hover fill.
+const gIcon = (on) => `relative grid h-10 w-10 place-items-center rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 ${
+  on ? 'bg-maroon text-white' : 'text-ink hover:bg-pink-100 hover:text-maroon'}`;
+
+// Desktop top-bar space pill: the community nav as words, active = maroon fill.
+const cSpace = (on) => `shrink-0 rounded-full px-3 py-1.5 text-[13px] font-semibold no-underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 ${
+  on ? 'bg-maroon text-white' : 'text-muted hover:bg-pink-100 hover:text-ink'}`;
+
 // Shell: spaces rail (desktop) or chip row (mobile), the main column, optional right rail.
 // `active` = 'feed' or a space key. `onCompose(kind)` backs the "New post" button.
 export default function CommunityLayout({ active, onCompose, aside, children }) {
@@ -65,7 +73,20 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
   // M2 wires the open state and the aria-expanded semantics on both triggers.
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [unread, setUnread] = useState(0);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchRef = useRef(null);
   const tag = communityTag();
+
+  // ⌘K / Ctrl-K opens the top-bar search; Esc closes it.
+  useEffect(() => {
+    const onKey = (e) => {
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); setSearchOpen(true); }
+      else if (e.key === 'Escape') setSearchOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+  useEffect(() => { if (searchOpen) searchRef.current?.focus(); }, [searchOpen]);
 
   // Unread community-alert count for the bottom-bar badge (v2, signed-in).
   useEffect(() => {
@@ -116,24 +137,45 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
           navbar on the community shell; see inCommunityShell in App.jsx). */}
       {v2 && (
         <header className="sticky top-0 z-40 hidden border-b border-line bg-white/90 backdrop-blur lg:block" style={{ top: 'env(safe-area-inset-top)' }}>
-          <div className="mx-auto flex max-w-7xl items-center gap-4 px-5 py-2.5">
+          <div className="mx-auto flex max-w-7xl items-center gap-3 px-5 py-2">
+            {/* Zone 1 — identity */}
             <Link to="/community" aria-label="Meeticulous Circle" className="flex shrink-0 items-center gap-2 no-underline">
               <img src="/brand/meeticulous-wordmark.svg" alt="Meeticulous" width="110" height="18" className="h-[18px] w-auto" />
-              <span className="rounded-full bg-pink-100 px-2 py-0.5 text-xs font-semibold text-maroon">{tag}</span>
+              <span className="rounded-full bg-blush px-2 py-0.5 text-xs font-semibold text-maroon">{tag}</span>
             </Link>
-            <form role="search" onSubmit={(e) => e.preventDefault()} className="flex max-w-xs flex-1 items-center gap-2 rounded-full bg-cream px-4 py-2 focus-within:ring-1 focus-within:ring-maroon/30">
-              <input type="search" aria-label="Search the community" placeholder="Search hosts, posts, spaces…" className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted" />
-              <Search size={16} className="shrink-0 text-muted" aria-hidden="true" />
-            </form>
-            <div className="ml-auto flex items-center gap-1.5">
-              <Link to="/community" aria-label="Spaces" aria-current={active === 'feed' ? 'page' : undefined} className={dIcon(active === 'feed')}><LayoutGrid size={19} aria-hidden="true" /></Link>
-              <Link to="/dashboard/availability" aria-label="Your calendar" className={dIcon(false)}><Calendar size={19} aria-hidden="true" /></Link>
-              <Link to="/dashboard/chat" aria-label="Messages" className={dIcon(false)}><MessageSquare size={19} aria-hidden="true" /></Link>
-              <Link to="/community/alerts" aria-label={unread ? `Alerts, ${unread} unread` : 'Alerts'} aria-current={active === 'alerts' ? 'page' : undefined} className={dIcon(active === 'alerts')}>
+
+            {/* Zone 2 — community nav: spaces as words */}
+            <nav aria-label="Spaces" className="flex min-w-0 items-center gap-1 overflow-x-auto">
+              <Link to="/community" aria-current={active === 'feed' ? 'page' : undefined} className={cSpace(active === 'feed')}>All</Link>
+              {spaces.map((s) => (
+                <Link key={s.key} to={`/community/s/${s.key}`} aria-current={active === s.key ? 'page' : undefined} className={cSpace(active === s.key)}>{s.title}</Link>
+              ))}
+            </nav>
+
+            {/* Zone 3 — actions */}
+            <div className="ml-auto flex shrink-0 items-center gap-2">
+              {searchOpen ? (
+                <form role="search" onSubmit={(e) => e.preventDefault()} className="flex w-64 items-center gap-2 rounded-full bg-cream px-3.5 py-2">
+                  <Search size={16} className="shrink-0 text-muted" aria-hidden="true" />
+                  <input ref={searchRef} type="search" aria-label="Search the community" placeholder="Search hosts, posts, spaces…" onBlur={() => setSearchOpen(false)} className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted" />
+                </form>
+              ) : (
+                <button type="button" onClick={() => setSearchOpen(true)} aria-label="Search the community" aria-keyshortcuts="Meta+K" className="flex items-center gap-2 rounded-full bg-cream px-3 py-2 text-sm text-muted transition-colors hover:bg-pink-100 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40">
+                  <Search size={16} aria-hidden="true" />
+                  <kbd className="hidden rounded border border-line bg-white px-1.5 text-[11px] font-semibold leading-[18px] xl:inline">⌘K</kbd>
+                </button>
+              )}
+
+              <button type="button" onClick={() => onCompose?.('post')} className="flex items-center gap-1.5 rounded-full bg-maroon px-4 py-2 text-sm font-semibold text-cream shadow-sm transition-colors hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40">
+                <Plus size={16} aria-hidden="true" /> Post
+              </button>
+
+              <Link to="/community/alerts" aria-label={unread ? `Alerts, ${unread} unread` : 'Alerts'} aria-current={active === 'alerts' ? 'page' : undefined} className={gIcon(active === 'alerts')}>
                 <Bell size={19} aria-hidden="true" />
                 {unread > 0 && <span className="absolute -right-1 -top-1 min-w-[17px] rounded-full bg-maroon px-1 text-center text-[10px] font-bold leading-[17px] text-white">{unread > 9 ? '9+' : unread}</span>}
               </Link>
-              <button type="button" onClick={() => setDrawerOpen(true)} aria-label="Open profile menu" aria-expanded={drawerOpen} className="ml-1 grid h-10 w-10 place-items-center rounded-xl font-display text-sm font-extrabold text-[#5c0620] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40" style={{ background: 'radial-gradient(120% 120% at 30% 20%,#FFD7E0,#FF9FB0 60%,#E0506F)' }}>
+
+              <button type="button" onClick={() => setDrawerOpen(true)} aria-label="Open profile menu" aria-expanded={drawerOpen} className="ml-0.5 grid h-10 w-10 place-items-center rounded-xl font-display text-sm font-extrabold text-[#5c0620] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40" style={{ background: 'radial-gradient(120% 120% at 30% 20%,#FFD7E0,#FF9FB0 60%,#E0506F)' }}>
                 {(user?.name || user?.first_name || 'Y').charAt(0).toUpperCase()}
               </button>
             </div>
