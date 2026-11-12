@@ -477,12 +477,9 @@ const createBooking = async (req, res) => {
       entityType: host?.host_entity_type,
       hasPan: hostHasPan,
       fyGrossToDate: null,
-      config: {
-        tdsRate: cfg.tdsRate,
-        tdsRateNoPan: cfg.tdsRateNoPan,
-        tcsRate: cfg.tcsRate,
-        tdsThresholdIndividual: cfg.tdsThresholdIndividual,
-      },
+      // cfg already exposes tds_rate / tds_rate_no_pan / tcs_rate / tds_threshold_individual
+      // under these exact names; resolveWithholding reads only those four.
+      config: cfg,
     });
 
     // Razorpay fee is vendor-borne and only known at capture → finalised in

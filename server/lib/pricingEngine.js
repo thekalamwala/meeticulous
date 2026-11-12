@@ -181,7 +181,15 @@ function calculateTcs(servicePrice, opts = {}) {
  */
 function resolveWithholding({ enabled, entityType, hasPan, fyGrossToDate = null, config = {} } = {}) {
   if (!enabled) return { ...LEGACY_WITHHOLDING };
-  const c = { ...WITHHOLDING_DEFAULTS, ...config };
+  // Per-field fallback (not a spread): an undefined/missing config member must fall back
+  // to the default, never overwrite it with undefined — otherwise a sparse config would
+  // yield an undefined rate that silently reverts the booking to the legacy 1%.
+  const c = {
+    tdsRate: config.tdsRate ?? WITHHOLDING_DEFAULTS.tdsRate,
+    tdsRateNoPan: config.tdsRateNoPan ?? WITHHOLDING_DEFAULTS.tdsRateNoPan,
+    tcsRate: config.tcsRate ?? WITHHOLDING_DEFAULTS.tcsRate,
+    tdsThresholdIndividual: config.tdsThresholdIndividual ?? WITHHOLDING_DEFAULTS.tdsThresholdIndividual,
+  };
   const tcsRate = c.tcsRate;                       // flat for everyone
   if (!hasPan) return { tdsRate: c.tdsRateNoPan, tcsRate };
   const exempt =
