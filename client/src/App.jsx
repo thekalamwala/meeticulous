@@ -141,6 +141,7 @@ const Earnings    = lazy(() => import('./pages/Earnings'));
 const ProfileSetup = lazy(() => import('./pages/ProfileSetup'));
 const Availability = lazy(() => import('./pages/Availability'));
 const Products    = lazy(() => import('./pages/Products'));
+const HostCoupons = lazy(() => import('./pages/HostCoupons'));
 const UpgradePlan = lazy(() => import('./pages/UpgradePlan'));
 const Payouts     = lazy(() => import('./pages/Payouts'));
 const ChatPage    = lazy(() => import('./pages/ChatPage'));
@@ -629,6 +630,7 @@ function App() {
             <Route path="submitted" element={<KycSubmitted />} />
           </Route>
           <Route path="/dashboard/products" element={<DashboardWrapper><Products /></DashboardWrapper>} />
+          <Route path="/dashboard/coupons" element={<DashboardWrapper><HostCoupons /></DashboardWrapper>} />
           <Route path="/dashboard/upgrade" element={<DashboardWrapper><UpgradePlan /></DashboardWrapper>} />
           <Route path="/dashboard/payments/payouts" element={<DashboardWrapper><Payouts /></DashboardWrapper>} />
           <Route path="/dashboard/referrals" element={<DashboardWrapper><ReferEarn /></DashboardWrapper>} />

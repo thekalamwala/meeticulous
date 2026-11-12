@@ -13,6 +13,7 @@ vi.mock('../services/api', () => ({
   getNotifications: vi.fn(() => Promise.resolve({ data: { notifications: [], unreadCount: 0 } })),
   markAllNotificationsRead: vi.fn(() => Promise.resolve({ data: {} })),
   markNotificationRead: vi.fn(() => Promise.resolve({ data: {} })),
+  getFeatureFlags: vi.fn(() => Promise.resolve({ data: {} })), // ConsoleSidebar reads flags; coupons off
 }));
 
 const mockAuth = { current: {} };

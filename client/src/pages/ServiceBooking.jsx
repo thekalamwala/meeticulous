@@ -11,8 +11,10 @@ import {
   verifyPayment,
   getHostReviews,
   invoiceUrl,
+  validateCoupon,
 } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import useFeatureFlags from "../hooks/useFeatureFlags";
 import { analytics, EVENTS, gaClientId } from "../services/analytics";
 import useUtm from "../hooks/useUtm";
 import toast from "react-hot-toast";
@@ -297,6 +299,9 @@ const OtpBoxes = ({ value, onChange, tc }) => {
 const ServiceBooking = () => {
   const { profileSlug, serviceSlug } = useParams();
   const { user } = useAuth();
+  // Raw flag map (fail-closed): don't show promo UI speculatively before flags load.
+  const { flags: featureFlagMap } = useFeatureFlags();
+  const couponsEnabled = featureFlagMap.coupons === true;
 
   const [host, setHost] = useState(null);
   const [service, setService] = useState(null);
@@ -331,6 +336,11 @@ const ServiceBooking = () => {
   // Full E.164-ish number actually sent (India: backend still normalizes to last-10).
   const fullPhone = `${dialCode}${phone.replace(/\D/g, "")}`;
   const [notes, setNotes] = useState("");
+  // Coupon (v3.204, `coupons` flag). appliedCoupon = { code, discount } once validated.
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponMsg, setCouponMsg] = useState("");
+  const [couponBusy, setCouponBusy] = useState(false);
   const [billing, setBilling] = useState({
     name: user?.billing_details?.name || "",
     address: user?.billing_details?.address || "",
@@ -685,6 +695,32 @@ const ServiceBooking = () => {
   // A free booking owes no BAS tax invoice, so no billing is sent.
   const billingDetails = () => (isPaid ? billing : null);
 
+  // Coupon preview (v3.204). Server is authoritative at booking time; this only
+  // shows the guest the discount before they commit. finalPrice = service price − discount.
+  const applyCoupon = async () => {
+    const code = couponCode.trim();
+    if (!code) return;
+    setCouponBusy(true);
+    setCouponMsg("");
+    try {
+      const { data } = await validateCoupon({ code, service_id: service.id });
+      if (data.ok) {
+        setAppliedCoupon({ code, discount: Number(data.discount) || 0 });
+        setCouponMsg("");
+      } else {
+        setAppliedCoupon(null);
+        setCouponMsg(data.reason || "Invalid coupon code.");
+      }
+    } catch (err) {
+      setAppliedCoupon(null);
+      setCouponMsg(err.response?.data?.message || "Could not check that code.");
+    } finally {
+      setCouponBusy(false);
+    }
+  };
+  const clearCoupon = () => { setAppliedCoupon(null); setCouponCode(""); setCouponMsg(""); };
+  const couponDiscount = appliedCoupon?.discount || 0;
+
   // BUG-16 fix: logged-in users skip OTP — book directly with their session
   const bookDirectly = async () => {
     setVerifying(true);
@@ -703,6 +739,7 @@ const ServiceBooking = () => {
         scheduled_at: scheduledAt,
         notes,
         billing_details: billingDetails(),
+        coupon_code: appliedCoupon?.code || undefined,
       });
       setConfirmation(bookingResult);
       // Follow the server's decision: any amount payable (paid service OR the
@@ -775,6 +812,7 @@ const ServiceBooking = () => {
         scheduled_at: scheduledAt,
         notes,
         billing_details: billingDetails(),
+        coupon_code: appliedCoupon?.code || undefined,
         // H-1: short-lived grant proving this contact just passed OTP. The server
         // requires it for anonymous bookings (logged-in users use bookDirectly).
         booking_grant: otpResult.bookingGrant,
@@ -1490,6 +1528,43 @@ const ServiceBooking = () => {
                           </span>
                         </div>
                       )}
+                      {/* Coupon (v3.204) — paid services only, behind the `coupons` flag */}
+                      {isPaid && couponsEnabled && (
+                        <div className="py-2.5 border-t" style={{ borderColor: `${tc}14` }}>
+                          {appliedCoupon ? (
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-sm text-gray-600 flex items-center gap-1.5 min-w-0">
+                                <span className="inline-flex items-center rounded-full bg-green-50 text-green-700 text-xs font-semibold px-2 py-0.5 truncate">
+                                  {appliedCoupon.code}
+                                </span>
+                                <button type="button" onClick={clearCoupon}
+                                  className="text-xs text-gray-400 hover:text-gray-700 underline shrink-0">Remove</button>
+                              </span>
+                              <span className="font-semibold text-sm text-green-700">−₹{Math.round(couponDiscount * 100) / 100}</span>
+                            </div>
+                          ) : (
+                            <div>
+                              <div className="flex items-stretch gap-2">
+                                <input
+                                  value={couponCode}
+                                  onChange={(e) => { setCouponCode(e.target.value); setCouponMsg(""); }}
+                                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyCoupon(); } }}
+                                  placeholder="Coupon code"
+                                  aria-label="Coupon code"
+                                  className="flex-1 min-w-0 rounded-lg border border-[color:var(--color-line)] px-3 py-2 text-sm uppercase tracking-wide placeholder:normal-case placeholder:tracking-normal focus:outline-none focus:ring-2"
+                                  style={{ "--tw-ring-color": `${tc}55` }}
+                                />
+                                <button type="button" onClick={applyCoupon} disabled={couponBusy || !couponCode.trim()}
+                                  className="shrink-0 px-4 rounded-lg text-sm font-semibold border transition-opacity hover:opacity-85 disabled:opacity-40"
+                                  style={{ borderColor: tc, color: tc }}>
+                                  {couponBusy ? "…" : "Apply"}
+                                </button>
+                              </div>
+                              {couponMsg && <div className="text-xs text-red-500 mt-1.5">{couponMsg}</div>}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                     {/* Total band */}
                     <div className="flex items-center justify-between px-4 py-3.5" style={{ background: `${tc}17` }}>
@@ -1498,7 +1573,7 @@ const ServiceBooking = () => {
                         {!priceOnRequest && <div className="text-[11px] text-gray-500">Inclusive of all taxes</div>}
                       </div>
                       <span className="font-bold text-[20px]" style={{ color: tc }}>
-                        {priceOnRequest ? "Price on request" : isPaid ? `₹${Math.round((service.price + fees.bookingFee) * 100) / 100}` : "Free"}
+                        {priceOnRequest ? "Price on request" : isPaid ? `₹${Math.round((service.price - couponDiscount + fees.bookingFee) * 100) / 100}` : "Free"}
                       </span>
                     </div>
                   </div>
