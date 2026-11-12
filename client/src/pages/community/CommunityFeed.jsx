@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { CircleHelp, Image, MessagesSquare, SquarePen } from 'lucide-react';
+import { ChevronDown, CircleHelp, Image, MessagesSquare, SquarePen } from 'lucide-react';
 import Seo from '../../components/common/Seo';
 import ErrorPage from '../ErrorPage';
 import { useInfiniteScroll } from '../../components/dashboard/ui/useInfiniteScroll';
@@ -19,7 +19,6 @@ import CommunityLayout, { EmptyState, ListStatus, SITE_DESC, useCursorList } fro
 
 const TABS = [
   { key: 'everyone', label: 'Everyone' },
-  { key: 'following', label: 'Following', soon: true }, // follows ship in a later phase
   { key: 'updates', label: 'Updates' },
 ];
 
@@ -74,25 +73,38 @@ export default function CommunityFeed() {
         </h1>
         <p className={`order-2 text-muted ${v2 ? 'text-xs lg:col-start-1 lg:row-start-2' : 'text-sm'}`}>Hosts and guests talking about sessions, pricing and the craft.</p>
 
-        <div role="tablist" aria-label="Feed" className={v2 ? 'order-3 flex gap-1 rounded-full border border-line bg-white p-1 shadow-sm lg:order-none lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:w-auto lg:shrink-0 lg:self-center lg:p-0.5' : 'mt-tabs flex'}>
-        {TABS.map((t) => (
-          <button
-            key={t.key}
-            type="button"
-            role="tab"
-            aria-selected={t.key === tab}
-            aria-disabled={t.soon || undefined}
-            title={t.soon ? 'Following arrives soon' : undefined}
-            onClick={() => { if (!t.soon && t.key !== tab) setParams(t.key === 'everyone' ? {} : { tab: t.key }); }}
-            className={v2
-              ? `flex-1 rounded-full px-4 py-2 text-center text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 lg:flex-none lg:px-2 lg:py-0.5 lg:text-[9px] ${
-                t.key === tab ? 'bg-maroon text-cream' : 'text-muted hover:text-ink'} ${t.soon ? 'opacity-60' : ''}`
-              : 'mt-tab flex-1 justify-center px-3 sm:px-6'}
-          >
-            {t.label}{t.soon && <span className="mt-tab__count">soon</span>}
-          </button>
-        ))}
-      </div>
+        {v2 ? (
+          <div className="relative order-3 lg:order-none lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:justify-self-end lg:self-center">
+            <select
+              aria-label="Filter the feed"
+              value={tab}
+              onChange={(e) => setParams(e.target.value === 'everyone' ? {} : { tab: e.target.value })}
+              className="cursor-pointer appearance-none rounded-full border border-line bg-white py-1.5 pl-4 pr-9 text-[13px] font-semibold text-ink shadow-sm transition-colors hover:border-maroon/40 focus:outline-none focus:ring-2 focus:ring-maroon/30"
+            >
+              {TABS.map((t) => (
+                <option key={t.key} value={t.key} disabled={t.soon}>{t.label}{t.soon ? ' · soon' : ''}</option>
+              ))}
+            </select>
+            <ChevronDown size={15} aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted" />
+          </div>
+        ) : (
+          <div role="tablist" aria-label="Feed" className="mt-tabs flex">
+            {TABS.map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                role="tab"
+                aria-selected={t.key === tab}
+                aria-disabled={t.soon || undefined}
+                title={t.soon ? 'Following arrives soon' : undefined}
+                onClick={() => { if (!t.soon && t.key !== tab) setParams(t.key === 'everyone' ? {} : { tab: t.key }); }}
+                className="mt-tab flex-1 justify-center px-3 sm:px-6"
+              >
+                {t.label}{t.soon && <span className="mt-tab__count">soon</span>}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="mt-card gap-4 p-5 sm:p-6">
