@@ -24,4 +24,9 @@ AS $$
   WHERE lower(username) = lower(p_username);
 $$;
 
-REVOKE ALL ON FUNCTION increment_profile_views(text) FROM anon, authenticated;
+-- CREATE FUNCTION grants EXECUTE to PUBLIC by default, so revoking only anon/
+-- authenticated leaves the PUBLIC grant (and the anon abuse vector) in place.
+-- Revoke PUBLIC too and grant the service role explicitly (the server calls this
+-- via supabaseAdmin). Matches the v3.186 "service_role only" lockdown.
+REVOKE ALL ON FUNCTION increment_profile_views(text) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION increment_profile_views(text) TO service_role;
