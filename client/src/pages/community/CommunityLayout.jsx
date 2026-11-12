@@ -145,11 +145,13 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
           <div className="absolute inset-0 bg-ink/30" onClick={() => setSpacesOpen(false)} />
           <div className="absolute inset-x-0 bottom-0 max-h-[78vh] overflow-y-auto rounded-t-3xl bg-white p-4 shadow-2xl" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
             <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-line" />
-            <label className="mb-3 flex items-center gap-2 rounded-full bg-cream px-4 py-2.5">
-              <Search size={16} className="shrink-0 text-muted" aria-hidden="true" />
+            <form role="search" onSubmit={(e) => e.preventDefault()} className="mb-3 flex items-center gap-2">
               {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
-              <input autoFocus type="search" value={spaceQuery} onChange={(e) => setSpaceQuery(e.target.value)} aria-label="Search spaces" placeholder="Search spaces…" className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted" />
-            </label>
+              <input autoFocus type="search" value={spaceQuery} onChange={(e) => setSpaceQuery(e.target.value)} aria-label="Search spaces" placeholder="Search spaces…" className="min-w-0 flex-1 rounded-full border border-line bg-cream px-4 py-2.5 text-sm text-ink outline-none placeholder:text-muted focus:border-maroon/40 focus:ring-2 focus:ring-maroon/20" />
+              <button type="submit" aria-label="Search" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-maroon text-cream transition-colors hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40">
+                <Search size={18} aria-hidden="true" />
+              </button>
+            </form>
             <nav aria-label="Spaces" className="flex flex-col">
               {!spaceQuery && (
                 <Link to="/community" onClick={() => setSpacesOpen(false)} aria-current={active === 'feed' ? 'page' : undefined} className={navCls(active === 'feed')}>All</Link>
