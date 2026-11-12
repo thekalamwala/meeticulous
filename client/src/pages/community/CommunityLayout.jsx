@@ -52,7 +52,7 @@ const TAGS = ['Gang', 'Circle', 'Crew', 'Table', 'Room'];
 const communityTag = () => TAGS[new Date().getDay() % TAGS.length];
 
 // Desktop top-bar icon button: maroon on white, active = maroon fill + white icon.
-const dIcon = (on) => `relative grid h-10 w-10 place-items-center rounded-xl border transition-colors ${
+const dIcon = (on) => `relative grid h-10 w-10 place-items-center rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 ${
   on ? 'border-transparent bg-maroon text-white' : 'border-line bg-white text-maroon hover:bg-pink-100'}`;
 
 // Shell: spaces rail (desktop) or chip row (mobile), the main column, optional right rail.
