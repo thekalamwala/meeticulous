@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Bell, House, LayoutGrid, Lock, Search, SquarePen, UserRound } from 'lucide-react';
+import { Bell, Calendar, House, LayoutGrid, Lock, MessageSquare, Search, SquarePen, UserRound } from 'lucide-react';
 import { getSpaces } from '../../services/communityApi';
 import { getNotifications } from '../../services/api';
 import { SpaceIcon } from '../../components/community/ItemCard';
@@ -49,6 +49,10 @@ const LOCK_LABEL = { hosts: 'Hosts post here', official: 'Team posts only' };
 // ponytail: a fixed rotation, not a naming engine; per-space names can come later.
 const TAGS = ['Gang', 'Circle', 'Crew', 'Table', 'Room'];
 const communityTag = () => TAGS[new Date().getDay() % TAGS.length];
+
+// Desktop top-bar icon button: maroon on white, active = maroon fill + white icon.
+const dIcon = (on) => `relative grid h-10 w-10 place-items-center rounded-xl border transition-colors ${
+  on ? 'border-transparent bg-maroon text-white' : 'border-line bg-white text-maroon hover:bg-pink-100'}`;
 
 // Shell: spaces rail (desktop) or chip row (mobile), the main column, optional right rail.
 // `active` = 'feed' or a space key. `onCompose(kind)` backs the "New post" button.
@@ -107,6 +111,35 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
         </header>
       )}
 
+      {/* v2 desktop top bar: wordmark + search + icon actions (replaces the global
+          navbar on the community shell; see inCommunityShell in App.jsx). */}
+      {v2 && (
+        <header className="sticky top-0 z-40 hidden border-b border-line bg-white/90 backdrop-blur lg:block" style={{ top: 'env(safe-area-inset-top)' }}>
+          <div className="mx-auto flex max-w-7xl items-center gap-4 px-5 py-2.5">
+            <Link to="/community" aria-label="Meeticulous Circle" className="flex shrink-0 items-center gap-2 no-underline">
+              <img src="/brand/meeticulous-wordmark.svg" alt="Meeticulous" width="110" height="18" className="h-[18px] w-auto" />
+              <span className="rounded-full bg-pink-100 px-2 py-0.5 text-xs font-semibold text-maroon">{tag}</span>
+            </Link>
+            <label className="flex max-w-md flex-1 items-center gap-2 rounded-full border border-line bg-cream px-4 py-2">
+              <Search size={16} className="text-muted" aria-hidden="true" />
+              <input type="search" aria-label="Search the community" placeholder="Search hosts, posts, spaces…" className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted" />
+            </label>
+            <div className="ml-auto flex items-center gap-1.5">
+              <Link to="/community" aria-label="Spaces" aria-current={active === 'feed' ? 'page' : undefined} className={dIcon(active === 'feed')}><LayoutGrid size={19} aria-hidden="true" /></Link>
+              <Link to="/dashboard/availability" aria-label="Your calendar" className={dIcon(false)}><Calendar size={19} aria-hidden="true" /></Link>
+              <Link to="/dashboard/chat" aria-label="Messages" className={dIcon(false)}><MessageSquare size={19} aria-hidden="true" /></Link>
+              <Link to="/community/alerts" aria-label={unread ? `Alerts, ${unread} unread` : 'Alerts'} aria-current={active === 'alerts' ? 'page' : undefined} className={dIcon(active === 'alerts')}>
+                <Bell size={19} aria-hidden="true" />
+                {unread > 0 && <span className="absolute -right-1 -top-1 min-w-[17px] rounded-full bg-maroon px-1 text-center text-[10px] font-bold leading-[17px] text-white">{unread > 9 ? '9+' : unread}</span>}
+              </Link>
+              <button type="button" onClick={() => setDrawerOpen(true)} aria-label="Open profile menu" aria-expanded={drawerOpen} className="ml-1 grid h-10 w-10 place-items-center rounded-xl font-display text-sm font-extrabold text-[#5c0620] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40" style={{ background: 'radial-gradient(120% 120% at 30% 20%,#FFD7E0,#FF9FB0 60%,#E0506F)' }}>
+                {(user?.name || user?.first_name || 'Y').charAt(0).toUpperCase()}
+              </button>
+            </div>
+          </div>
+        </header>
+      )}
+
       <nav aria-label="Spaces" className={`gap-3 overflow-x-auto px-5 py-4 lg:hidden ${v2 ? 'hidden' : 'flex'}`}>
         <Link to="/community" aria-current={active === 'feed' ? 'page' : undefined} className={`mt-tag shrink-0 no-underline ${active === 'feed' ? 'mt-tag--selected' : ''}`}>All</Link>
         {spaces.map((s) => (
@@ -119,7 +152,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
       {/* Columns: rail 240 · main ≤640 · aside 320 (aside only on xl, when given). */}
       <div className={`mx-auto max-w-7xl gap-6 px-4 lg:grid lg:grid-cols-[15rem_minmax(0,46rem)] lg:justify-center lg:px-5 lg:pt-6 ${
         showRail ? 'xl:grid-cols-[15rem_minmax(0,46rem)_20rem]' : ''}`}>
-        <aside aria-label="Community navigation" className="sticky top-24 hidden flex-col gap-5 self-start lg:flex">
+        <aside aria-label="Community navigation" className={`sticky hidden flex-col gap-5 self-start lg:flex ${v2 ? 'lg:top-[60px]' : 'top-24'}`}>
           <button type="button" onClick={() => onCompose?.('post')} className="mt-btn mt-btn--block">
             <SquarePen size={20} aria-hidden="true" />New post
           </button>
@@ -145,7 +178,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
         <div className={`flex min-w-0 flex-col ${v2 ? 'gap-3' : 'gap-5'}`}>{children}</div>
 
         {showRail && (
-          <aside aria-label="About" className="sticky top-24 hidden flex-col gap-5 self-start xl:flex">
+          <aside aria-label="About" className={`sticky hidden flex-col gap-5 self-start xl:flex ${v2 ? 'lg:top-[60px]' : 'top-24'}`}>
             {aside}
             <CommunityAd />
           </aside>
