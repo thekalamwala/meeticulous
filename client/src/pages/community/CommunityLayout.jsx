@@ -77,7 +77,6 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
   // M2 wires the open state and the aria-expanded semantics on both triggers.
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [unread, setUnread] = useState(0);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [spacesOpen, setSpacesOpen] = useState(false); // mobile: grid tile → spaces sheet
   const [spaceQuery, setSpaceQuery] = useState(''); // live filter inside the spaces sheet
   const [filterOpen, setFilterOpen] = useState(false); // mobile: bottom-bar filter sheet
@@ -86,16 +85,15 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
   const curTab = sp.get('tab') || 'everyone';
   const tag = communityTag();
 
-  // ⌘K / Ctrl-K opens the top-bar search; Esc closes any open overlay.
+  // ⌘K / Ctrl-K focuses the top-bar search; Esc blurs it and closes any sheet.
   useEffect(() => {
     const onKey = (e) => {
-      if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); setSearchOpen(true); }
-      else if (e.key === 'Escape') { setSearchOpen(false); setSpacesOpen(false); setFilterOpen(false); }
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); searchRef.current?.focus(); }
+      else if (e.key === 'Escape') { searchRef.current?.blur(); setSpacesOpen(false); setFilterOpen(false); }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
-  useEffect(() => { if (searchOpen) searchRef.current?.focus(); }, [searchOpen]);
 
   // Unread community-alert count for the bottom-bar badge (v2, signed-in).
   useEffect(() => {
@@ -190,20 +188,14 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
               ))}
             </nav>
 
-            {/* Zone 3 — actions */}
-            <div className="ml-auto flex shrink-0 items-center gap-2">
-              {searchOpen ? (
-                <form role="search" onSubmit={(e) => e.preventDefault()} className="flex w-64 items-center gap-2 rounded-full bg-cream px-3.5 py-2">
-                  <Search size={16} className="shrink-0 text-muted" aria-hidden="true" />
-                  <input ref={searchRef} type="search" aria-label="Search the community" placeholder="Search hosts, posts, spaces…" onBlur={() => setSearchOpen(false)} className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted" />
-                </form>
-              ) : (
-                <button type="button" onClick={() => setSearchOpen(true)} aria-label="Search the community" aria-keyshortcuts="Meta+K" className="flex items-center gap-2 rounded-full bg-cream px-3 py-2 text-sm text-muted transition-colors hover:bg-pink-100 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40">
-                  <Search size={16} aria-hidden="true" />
-                  <kbd className="hidden rounded border border-line bg-white px-1.5 text-[11px] font-semibold leading-[18px] xl:inline">⌘K</kbd>
-                </button>
-              )}
+            {/* Zone 3 — search (always visible; widens on focus, never wraps the row) */}
+            <form role="search" onSubmit={(e) => e.preventDefault()} className="ml-auto flex w-44 shrink-0 items-center gap-2 rounded-full bg-cream px-4 py-2 transition-[width] duration-200 ease-out focus-within:w-72 focus-within:ring-2 focus-within:ring-maroon/20">
+              <Search size={16} className="shrink-0 text-muted" aria-hidden="true" />
+              <input ref={searchRef} type="search" aria-label="Search the community" placeholder="Search hosts, posts, spaces…" className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted" />
+            </form>
 
+            {/* Actions */}
+            <div className="flex shrink-0 items-center gap-2">
               <button type="button" onClick={() => onCompose?.('post')} className="flex items-center gap-1.5 rounded-full bg-maroon px-4 py-2 text-sm font-semibold text-cream shadow-sm transition-colors hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40">
                 <Plus size={16} aria-hidden="true" /> Post
               </button>
