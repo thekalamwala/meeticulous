@@ -37,13 +37,15 @@ import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
 import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
+import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
 const INK = '#2B0A14';
-const LIME = '#D9F99D';      // highlighter band, always under ink text
+const LIME = '#D9F99D';      // highlighter band, under highlighted words
 const LIME_DEEP = '#BEF264'; // markers, open cells, the FAQ bar
 const TEAL = '#0F766E';      // accent text/icons on white (AA, ~5.5:1)
 const LIME_WASH = '#F7FEE7'; // soft section tint
+const VIOLET = '#7C3AED';    // navbar Availability violet (violet-600) — highlighted words
 
 /* ─────────────────────────────  SLOT MATH  ────────────────────────────── */
 
@@ -159,7 +161,7 @@ function Hl({ children }) {
   return (
     <span
       className="box-decoration-clone rounded-[3px] px-1.5"
-      style={{ background: `linear-gradient(180deg, transparent 14%, ${LIME} 14%, ${LIME} 90%, transparent 90%)` }}
+      style={{ color: VIOLET, background: `linear-gradient(180deg, transparent 14%, ${LIME} 14%, ${LIME} 90%, transparent 90%)` }}
     >
       {children}
     </span>
@@ -170,8 +172,8 @@ function PrimaryCta({ to = START, children }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(26,26,26,0.14)] transition-opacity hover:no-underline hover:opacity-90"
-      style={{ background: INK }}
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white transition-opacity hover:no-underline hover:opacity-90"
+      style={{ background: TEAL }}
     >
       {children}
     </Link>
@@ -179,17 +181,17 @@ function PrimaryCta({ to = START, children }) {
 }
 
 /* Empty image placeholder; the founder supplies the real photo later. */
-function ImgSlot({ alt, slot, src, className = '' }) {
+function ImgSlot({ alt, slot, src, className = '', fit = 'cover', bg = true }) {
   return (
     <div
       role={src ? undefined : 'img'}
       aria-label={src ? undefined : alt}
       data-img-slot={slot}
       className={`flex items-center justify-center overflow-hidden rounded-[16px] border border-black/5 ${className}`}
-      style={{ background: 'repeating-linear-gradient(135deg, rgba(15,118,110,0.04) 0 10px, rgba(15,118,110,0.08) 10px 20px)' }}
+      style={bg ? { background: 'repeating-linear-gradient(135deg, rgba(15,118,110,0.04) 0 10px, rgba(15,118,110,0.08) 10px 20px)' } : undefined}
     >
       {src ? (
-        <img src={src} alt={alt} className="h-full w-full object-cover" loading="lazy" />
+        <img src={src} alt={alt} className={`h-full w-full ${fit === 'contain' ? 'object-contain' : 'object-cover'}`} loading="lazy" />
       ) : (
         <ImageIcon size={28} style={{ color: 'rgba(15,118,110,0.35)' }} aria-hidden />
       )}
@@ -200,7 +202,7 @@ function ImgSlot({ alt, slot, src, className = '' }) {
 function SectionHead({ children, sub, center = false }) {
   return (
     <div className={center ? 'text-center' : ''}>
-      <Reveal as="h2" className={`font-heading text-4xl font-extrabold leading-[1.1] tracking-tight text-[#2B0A14] sm:text-5xl ${center ? 'mx-auto max-w-3xl' : 'max-w-3xl'}`}>
+      <Reveal as="h2" className={`font-heading text-4xl font-extrabold leading-[1.1] tracking-tight text-black sm:text-5xl ${center ? 'mx-auto max-w-3xl' : 'max-w-3xl'}`}>
         {children}
       </Reveal>
       {sub && (
@@ -470,7 +472,7 @@ export default function AvailabilityFeature() {
   });
 
   return (
-    <main className="overflow-x-clip bg-white text-[#2B0A14]">
+    <main className="feature-page-dark overflow-x-clip bg-white text-[#2B0A14]">
       <Seo
         title={seo.title}
         description={seo.description}
@@ -496,7 +498,7 @@ export default function AvailabilityFeature() {
               <span aria-hidden className="mx-2">/</span>
               <span aria-current="page" className="text-[#2B0A14]">Availability</span>
             </nav>
-            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.4rem,4.4vw,3.9rem)] font-extrabold leading-[1.04] tracking-[-0.03em] text-[#2B0A14]">
+            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.4rem,4.4vw,3.9rem)] font-extrabold leading-[1.04] tracking-[-0.03em] text-black">
               Set your availability for online bookings <Hl>once.</Hl>
             </Reveal>
             <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-neutral-600 lg:text-lg">
@@ -606,6 +608,8 @@ export default function AvailabilityFeature() {
               src="/features/availablity.png"
               alt="The Availability screen in the Meeticulous dashboard, with weekly hours, blocked dates and buffer settings"
               className="aspect-[3/4] w-full lg:h-full lg:aspect-auto lg:min-h-[34rem]"
+              fit="contain"
+              bg={false}
             />
           </Reveal>
         </div>
@@ -635,27 +639,28 @@ export default function AvailabilityFeature() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-3xl">
-          <SectionHead center>Availability questions, <Hl>answered.</Hl></SectionHead>
-          <div className="mt-12 space-y-3">
-            {FAQ.map((f, i) => (
-              <details key={f.q} className="group relative overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]" open={i === 0}>
-                <span aria-hidden className="absolute inset-y-0 left-0 hidden w-1.5 group-open:block" style={{ background: LIME_DEEP }} />
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-5 px-6 py-5 [&::-webkit-details-marker]:hidden">
-                  <span className="font-heading text-[17px] font-bold text-[#2B0A14]">{f.q}</span>
-                  <span aria-hidden className="text-xl leading-none text-neutral-400 transition-transform group-open:rotate-45">+</span>
-                </summary>
-                <p className="px-6 pb-6 text-[15px] leading-relaxed text-neutral-600">{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
+        <FeatureFaq
+          heading={<SectionHead>Availability questions, <Hl>answered.</Hl></SectionHead>}
+          items={FAQ}
+          itemClassName="relative overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]"
+          summaryClassName="flex cursor-pointer items-center justify-between gap-5 px-6 py-5"
+          answerClassName="px-6 pb-6 text-[15px] leading-relaxed text-neutral-600"
+          renderExtras={(f, i, open) => open && (
+            <span aria-hidden className="absolute inset-y-0 left-0 w-1.5" style={{ background: LIME_DEEP }} />
+          )}
+          renderSummary={(f, i, open) => (
+            <>
+              <span className="font-heading text-[17px] font-bold text-[#2B0A14]">{f.q}</span>
+              <span aria-hidden className={`text-xl leading-none text-neutral-400 transition-transform ${open ? 'rotate-45' : ''}`}>+</span>
+            </>
+          )}
+        />
       </section>
 
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
       <section className="border-t border-black/5 px-5 py-20 sm:px-8 lg:py-28" style={{ background: LIME_WASH }}>
         <div className="mx-auto max-w-4xl text-center">
-          <Reveal as="h2" className="font-heading text-[clamp(2.3rem,5.4vw,4rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#2B0A14]">
+          <Reveal as="h2" className="font-heading text-[clamp(2.3rem,5.4vw,4rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-black">
             Set your hours once. <Hl>Let the page do the rest.</Hl>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-neutral-600">

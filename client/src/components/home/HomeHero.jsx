@@ -5,10 +5,10 @@ import Reveal from "./Reveal";
 import { cleanSlug, saveHeroSlug } from "../../utils/heroSlug";
 
 /* Homepage hero — owner reference (2026-11-02): full-screen crimson block, copy
-   + "Claim my link" box on the left, the right column left empty (owner call)
-   so the thick pink ribbon that runs in from the left edge, loops into a
-   cursive "ee" and exits right carries that side. Sizing lives in `.home-hero` (index.css)
-   so the ribbon, padding and full-screen height stay in one place.
+   + "Claim my link" box on the left, the silhouette art on the right, and the
+   thick pink ribbon that runs in from the left edge, loops into a cursive "ee"
+   and exits right across both. Sizing lives in `.home-hero` (index.css) so the
+   art, ribbon, padding and full-screen height stay in one place.
 
    "Claim my link" stashes the typed slug and sends the visitor to the /become-a-host
    signup page (which carries the slug through and lets them pick Google / LinkedIn /
@@ -39,11 +39,17 @@ export default function HomeHero() {
 
   return (
     <section className="home-hero relative overflow-hidden bg-primary px-5 pt-14 text-white sm:px-8 sm:pt-20">
+      {/* Silhouette: small desktop-only art just above the pink "ee".
+          Lives behind the copy and the ribbon (see .home-hero-figure). */}
+      <div aria-hidden className="home-hero-figure">
+        <img src="/home/Four Plush Mascots on Pink Platform.png" alt="" decoding="async" />
+      </div>
+
       {/* Ribbon: one pink stroke in from the left edge, through the ee, out right. */}
       <svg
         aria-hidden
         viewBox="0 0 560 220"
-        className="pointer-events-none absolute overflow-visible"
+        className="pointer-events-none absolute z-[1] overflow-visible"
         style={{
           right: "var(--ee-r, 0px)",
           width: "calc(var(--ee-w, 200px) * 1.4)",

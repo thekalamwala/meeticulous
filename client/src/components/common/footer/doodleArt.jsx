@@ -185,21 +185,6 @@ export const Tick = () => (
   </svg>
 );
 
-// Peach-shelled snail — crawls along the baseline
-export const Snail = () => (
-  <svg viewBox="0 0 72 52" aria-hidden="true">
-    <path d="M4 48c0-5 4-7 10-7h36c6 0 10-3 10-9v-6" fill="#FF9FB0" stroke={CHALK} strokeWidth="2.4" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M4 48h54c4 0 6-3 6-7" {...LINE} />
-    <g className="dw-stalks">
-      <path d="M57 27l-3-11M63 28l4-10" {...LINE} strokeWidth="2" />
-      <circle cx="53.5" cy="14.5" r="2.4" fill={INK} stroke={CHALK} strokeWidth="1.4" />
-      <circle cx="67.5" cy="16.5" r="2.4" fill={INK} stroke={CHALK} strokeWidth="1.4" />
-    </g>
-    <circle cx="30" cy="27" r="15" fill="#fed7aa" stroke={CHALK} strokeWidth="2.4" />
-    <path d="M30 27m-7 0a7 7 0 1 0 7-7M30 27a3 3 0 1 1 3 3" {...LINE} strokeWidth="2" />
-  </svg>
-);
-
 /* ── Falling doodles ───────────────────────────────────────── */
 
 const d = (fill, children) => (

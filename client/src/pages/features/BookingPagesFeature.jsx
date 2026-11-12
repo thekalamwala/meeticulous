@@ -38,7 +38,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useReducedMotion } from 'framer-motion';
 import {
-  ArrowRight, Check, X, Link2, ImageIcon, Star, Clock, MapPin, Video,
+  ArrowRight, Check, X, Link2, Star, Clock, MapPin, Video,
   Layers, Package, AtSign, Globe, Mail, MessageCircle, Phone,
 } from 'lucide-react';
 import Reveal from '../../components/home/Reveal';
@@ -48,6 +48,7 @@ import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
 import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
+import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
 const DEMO = '/contact';
@@ -168,30 +169,15 @@ function Sparkle({ className = '', color = ORANGE }) {
 
 /* ─────────────────────────────  PIECES  ────────────────────────────── */
 
-function PrimaryCta({ to = START, children, onDark = false }) {
+function PrimaryCta({ to = START, children }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(194,61,0,0.22)] transition-opacity hover:no-underline hover:opacity-90"
-      style={{ background: onDark ? ORANGE_INK : INK }}
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white transition-opacity hover:no-underline hover:opacity-90"
+      style={{ background: '#C23D00' }}
     >
       {children}
     </Link>
-  );
-}
-
-/* Empty image placeholder; the founder supplies the real photo later. */
-function ImgSlot({ alt, slot, className = '' }) {
-  return (
-    <div
-      role="img"
-      aria-label={alt}
-      data-img-slot={slot}
-      className={`flex items-center justify-center rounded-[16px] border border-black/5 ${className}`}
-      style={{ background: 'repeating-linear-gradient(135deg, rgba(26,26,26,0.035) 0 10px, rgba(26,26,26,0.07) 10px 20px)' }}
-    >
-      <ImageIcon size={28} style={{ color: 'rgba(26,26,26,0.28)' }} aria-hidden />
-    </div>
   );
 }
 
@@ -592,7 +578,13 @@ export default function BookingPagesFeature() {
             ))}
           </div>
           <Reveal className="mt-12">
-            <ImgSlot slot="booking-pages-real-host-page" alt="A real Meeticulous host booking page on a phone, showing photo, bio and services" className="mx-auto aspect-[16/9] w-full max-w-3xl" />
+            <img
+              src="/features/bookable.png"
+              alt="A friendly mascot beside a calendar, a clock and a Booking Confirmed card"
+              loading="lazy"
+              decoding="async"
+              className="mx-auto w-full max-w-3xl rounded-[24px] border border-black/5 shadow-[0_12px_34px_-14px_rgba(26,26,26,0.18)]"
+            />
           </Reveal>
         </div>
       </section>
@@ -648,50 +640,46 @@ export default function BookingPagesFeature() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: PAPER }}>
-        <div className="mx-auto max-w-3xl">
-          <Reveal as="h2" className="text-center font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-            Booking page <span style={{ color: ORANGE_INK }}>questions.</span>
-          </Reveal>
-          <div className="mt-12 space-y-3">
-            {FAQ.map((f, i) => (
-              <details key={f.q} className="group" open={i === 0}>
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-full border border-black/5 bg-white px-6 py-3.5 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors hover:border-black/15 group-open:border-[#960D32]/30 group-open:bg-[#FBE3E8] [&::-webkit-details-marker]:hidden">
-                  <span className="font-heading text-[16px] font-bold">{f.q}</span>
-                  <span aria-hidden className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#2B0A14] text-base leading-none text-white transition-transform group-open:rotate-45">+</span>
-                </summary>
-                <p className="px-6 pb-3 pt-4 text-[15px] leading-relaxed text-neutral-600">{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
+        <FeatureFaq
+          heading={(
+            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
+              Booking page <span style={{ color: ORANGE_INK }}>questions.</span>
+            </Reveal>
+          )}
+          items={FAQ}
+          itemClassName=""
+          summaryClassName={(open) => `flex items-center justify-between gap-4 rounded-full border px-6 py-3.5 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors ${open ? 'border-[#960D32]/30 bg-[#FBE3E8]' : 'border-black/5 bg-white hover:border-black/15'}`}
+          answerClassName="px-6 pb-3 pt-4 text-[15px] leading-relaxed text-neutral-600"
+          renderSummary={(f, i, open) => (
+            <>
+              <span className="font-heading text-[16px] font-bold">{f.q}</span>
+              <span aria-hidden className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#2B0A14] text-base leading-none text-white transition-transform ${open ? 'rotate-45' : ''}`}>+</span>
+            </>
+          )}
+        />
       </section>
 
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
       <section className="relative overflow-hidden px-5 py-20 text-[#FBF4E6] sm:px-8 lg:py-28" style={{ background: INK }}>
         <Sparkle className="absolute left-[8%] top-12 h-7 w-7" />
         <Sparkle className="absolute bottom-16 right-[10%] h-5 w-5" />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="relative mx-auto max-w-6xl text-center">
           <div>
             <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.2rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[#FBF4E6]">
               Claim meeticulous.com/<span className="relative inline-block" style={{ color: ORANGE }}>yourname<Squiggle className="absolute -bottom-2 left-0 h-3 w-full" /></span>
             </Reveal>
-            <Reveal as="p" delay={0.05} className="mt-7 max-w-xl text-base leading-relaxed text-[#FBF4E6]/75">
+            <Reveal as="p" delay={0.05} className="mx-auto mt-7 max-w-xl text-base leading-relaxed text-[#FBF4E6]/75">
               Set up your page free on {FREE_PLAN.name}. Add a service, share the link, and the next person who asks &ldquo;how do I book you?&rdquo; already has the answer.
             </Reveal>
-            <Reveal delay={0.1} className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+            <Reveal delay={0.1} className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
               <PrimaryCta onDark>Claim your free link <ArrowRight size={16} /></PrimaryCta>
               <Link to="/pricing" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#FBF4E6] hover:no-underline hover:opacity-80">
                 See pricing <ArrowRight size={15} />
               </Link>
             </Reveal>
           </div>
-          <Reveal delay={0.08}>
-            <div className="rounded-[16px] border border-white/10 p-2">
-              <ImgSlot slot="booking-pages-creator-sharing" alt="A creator adding their booking link to their Instagram bio on a phone" className="aspect-[4/3] w-full border-white/10" />
-            </div>
-          </Reveal>
         </div>
-        <nav aria-label="Related features" className="relative mx-auto mt-16 flex max-w-6xl flex-wrap items-center gap-2.5 border-t border-white/10 pt-8 text-sm">
+        <nav aria-label="Related features" className="relative mx-auto mt-16 flex max-w-6xl flex-wrap items-center justify-center gap-2.5 border-t border-white/10 pt-8 text-sm">
           <span className="mr-1 text-[#FBF4E6]/55">Works with</span>
           {RELATED.map((r) => (
             <Link key={r.to} to={r.to} className="rounded-full border border-white/15 px-3.5 py-1.5 text-[#FBF4E6]/85 transition-colors hover:border-white/40 hover:text-[#FBF4E6] hover:no-underline">{r.label}</Link>

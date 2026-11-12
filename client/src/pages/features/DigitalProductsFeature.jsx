@@ -8,11 +8,11 @@
 //   1 Hero + live demo · 2 Proof strip · 3 Without vs with · 4 How it works ·
 //   5 Capabilities · 6 The difference · 7 Testimonials · 8 FAQ · 9 Final CTA
 //
-// Design system F "Dark Gradient SaaS": deep navy to purple gradients, violet
-// accents, glassy translucent panels, two light lilac sections for contrast.
+// Design system F "Dark SaaS": solid deep-indigo feature sections (no gradients),
+// violet accents, glassy translucent panels, two light lilac sections for contrast.
 // Mechanics unique to this page: clickable product shelf with checkout and
 // "download ready" states (hero) · glass fact chips · chat-thread vs product-page
-// mock pair · horizontal gradient-numbered timeline · glass card grid ·
+// mock pair · horizontal violet-numbered timeline · glass card grid ·
 // interactive plan slot counter · glass quote cards · dark accordion FAQ.
 //
 // HONESTY: every claim is verified in code (Oct 2026):
@@ -27,7 +27,7 @@
 //   live flags ................. feature_flags digital_products + product_purchase enabled on prod
 // No usage stats, no ratings. Testimonials are the real, consented quotes from data/testimonials.js.
 //
-// IMAGES: empty ImgSlot placeholders (data-img-slot names the photo to supply).
+// IMAGES: /features/digital-products.png in the capabilities section.
 // Global Navbar + Footer come from App.jsx. No hover uplift anywhere.
 
 import { useEffect, useState } from 'react';
@@ -36,7 +36,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
   ArrowRight, Check, X, CheckCircle2, Lock, Download, FileText, LayoutTemplate,
   ListChecks, Mail, ShieldCheck, Smartphone, Infinity as InfinityIcon, Store, Gift,
-  RefreshCw, Plus, Minus, ChevronDown, ImageIcon, QrCode, Link2, Upload, IndianRupee,
+  RefreshCw, Plus, Minus, ChevronDown, QrCode, Link2, Upload, IndianRupee,
 } from 'lucide-react';
 import Reveal from '../../components/home/Reveal';
 import Seo from '../../components/common/Seo';
@@ -45,16 +45,16 @@ import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
 import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
+import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
 const NAVY = '#0B1026';          // page dark base
-const PLUM = '#960D32';          // gradient end
-const VIOLET = '#8B5CF6';        // decorative only (glows, lines, fills)
-const VIOLET_SOFT = '#C4B5FD';   // accent TEXT on dark (AA on navy/plum)
-const VIOLET_INK = '#7A0A28';    // accent text on light + CTA fill (AA with white)
+const DEEP = '#17123F';          // deep indigo for the feature sections (solid, no gradient)
+const VIOLET = '#8B5CF6';        // decorative + accent fills (solid)
+const VIOLET_SOFT = '#C4B5FD';   // accent TEXT on dark (AA on navy/indigo)
+const VIOLET_INK = '#6D28D9';    // deep violet: accent text on light + CTA/button fill (AA with white)
 const MIST = '#EEF0FF';          // body text on dark
 const LILAC = '#F6F5FF';         // light section background
-const GRADIENT = `linear-gradient(140deg, ${NAVY} 0%, #17123F 55%, ${PLUM} 100%)`;
 
 // Mirrors subscription_plans.limits.digital_products for the free plan (v3.165)
 // and FREE_PLAN.features "3 digital products". Change both if the DB changes.
@@ -89,7 +89,7 @@ const STEPS = [
 ];
 
 const CAPS = [
-  { icon: Store, title: 'On the page you already share', body: 'Products sit beside your services on your booking page, and each one gets its own shareable product page.' },
+  { icon: Store, title: 'On the page you already share', body: 'Products sit beside your services on your booking page, and each one gets its own shareable product page.', img: '/features/booking.png' },
   { icon: ShieldCheck, title: 'Files checked on upload', body: 'The extension and the actual file content must match, so a renamed file is rejected before it reaches a buyer.' },
   { icon: Lock, title: 'No public file links', body: 'Uploaded files are never handed out as a permanent URL. Each download opens a link that expires within a minute.' },
   { icon: RefreshCw, title: 'Lost links, restored', body: 'If a buyer misses the 24 hour window, they verify their email with a code and get a fresh link on their own.' },
@@ -126,26 +126,11 @@ function PrimaryCta({ to = START, children }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(109,40,217,0.35)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white transition-opacity hover:no-underline hover:opacity-90"
       style={{ background: VIOLET_INK }}
     >
       {children}
     </Link>
-  );
-}
-
-/* Empty image placeholder; the founder supplies the real photo later. */
-function ImgSlot({ alt, slot, className = '' }) {
-  return (
-    <div
-      role="img"
-      aria-label={alt}
-      data-img-slot={slot}
-      className={`flex items-center justify-center rounded-[16px] border border-white/10 ${className}`}
-      style={{ background: 'repeating-linear-gradient(135deg, rgba(238,240,255,0.04) 0 10px, rgba(238,240,255,0.08) 10px 20px)' }}
-    >
-      <ImageIcon size={28} style={{ color: 'rgba(238,240,255,0.3)' }} aria-hidden />
-    </div>
   );
 }
 
@@ -274,7 +259,7 @@ function PlanCounter() {
         <span
           key={i}
           className={`flex aspect-square items-center justify-center rounded-[5px] ${i < filled ? 'text-white' : 'border border-dashed border-black/20 text-neutral-400'}`}
-          style={i < filled ? { background: `linear-gradient(140deg, ${VIOLET}, ${VIOLET_INK})` } : undefined}
+          style={i < filled ? { background: VIOLET} : undefined}
         >
           {i < filled ? <Check size={14} aria-hidden /> : <Lock size={12} aria-hidden />}
         </span>
@@ -312,14 +297,14 @@ function PlanCounter() {
                 : `All ${n} live. Room for ${FREE_PRODUCT_LIMIT - n} more.`}
           </p>
         </div>
-        <div className="rounded-[24px] p-6 text-[#EEF0FF] shadow-[0_24px_60px_-28px_rgba(46,16,101,0.7)] sm:p-7" style={{ background: GRADIENT }}>
+        <div className="rounded-[24px] p-6 text-[#EEF0FF] shadow-[0_24px_60px_-28px_rgba(46,16,101,0.7)] sm:p-7" style={{ background: DEEP}}>
           <div className="flex items-baseline justify-between gap-3">
             <h3 className="font-heading text-lg font-bold text-[#EEF0FF]">{PREMIUM_PLAN.name}</h3>
             <span className="text-xs text-[#EEF0FF]/60">₹{PREMIUM_PLAN.monthly} / month or ₹{PREMIUM_PLAN.yearly.toLocaleString('en-IN')} / year</span>
           </div>
           <div className="mt-5 grid grid-cols-6 gap-2">
             {Array.from({ length: n }, (_, i) => (
-              <span key={i} className="flex aspect-square items-center justify-center rounded-[16px] text-white" style={{ background: `linear-gradient(140deg, ${VIOLET}, ${VIOLET_INK})` }}>
+              <span key={i} className="flex aspect-square items-center justify-center rounded-[16px] text-white" style={{ background: VIOLET}}>
                 <Check size={14} aria-hidden />
               </span>
             ))}
@@ -340,7 +325,6 @@ function PlanCounter() {
 /* ─────────────────────────────  PAGE  ────────────────────────────── */
 
 export default function DigitalProductsFeature() {
-  const [open, setOpen] = useState(0);
   const canonical = `${SITE_URL}/features/digital-products`;
   const seo = {
     title: 'Sell Digital Products Online in India | Meeticulous',
@@ -362,7 +346,7 @@ export default function DigitalProductsFeature() {
   });
 
   return (
-    <main className="overflow-x-clip bg-[#0B1026] text-[#EEF0FF]">
+    <main className="feature-page-dark overflow-x-clip bg-[#0B1026] text-[#EEF0FF]">
       <Seo
         title={seo.title}
         description={seo.description}
@@ -377,10 +361,10 @@ export default function DigitalProductsFeature() {
         jsonLd={jsonLd}
       />
 
-      {/* ═══════════════ 1 · HERO (gradient + product shelf demo) ═══════════════ */}
-      <section className="relative overflow-hidden px-5 pb-16 pt-8 sm:px-8 lg:pb-24 lg:pt-6 lg:flex lg:min-h-[calc(100svh-57px)] lg:flex-col lg:justify-center" style={{ background: GRADIENT }}>
-        <div aria-hidden className="pointer-events-none absolute -right-40 -top-40 h-[34rem] w-[34rem] rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(139,92,246,0.28), transparent)' }} />
-        <div aria-hidden className="pointer-events-none absolute -bottom-48 -left-32 h-[28rem] w-[28rem] rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(109,40,217,0.22), transparent)' }} />
+      {/* ═══════════════ 1 · HERO (solid deep-indigo + product shelf demo) ═══════════════ */}
+      <section className="relative overflow-hidden px-5 pb-16 pt-8 sm:px-8 lg:pb-24 lg:pt-6 lg:flex lg:min-h-[calc(100svh-57px)] lg:flex-col lg:justify-center" style={{ background: DEEP}}>
+        <div aria-hidden className="pointer-events-none absolute -right-40 -top-40 h-[34rem] w-[34rem] rounded-full blur-3xl" style={{ background: 'rgba(139,92,246,0.16)' }} />
+        <div aria-hidden className="pointer-events-none absolute -bottom-48 -left-32 h-[28rem] w-[28rem] rounded-full blur-3xl" style={{ background: 'rgba(109,40,217,0.14)' }} />
         <div className="relative mx-auto grid w-full max-w-6xl items-start gap-10 lg:items-center lg:gap-14 lg:grid-cols-[1.05fr_0.95fr]">
           <div>
             <nav aria-label="Breadcrumb" className="text-xs text-[#EEF0FF]/55">
@@ -390,7 +374,7 @@ export default function DigitalProductsFeature() {
               <span aria-hidden className="mx-2">/</span>
               <span aria-current="page" className="text-[#EEF0FF]/85">Digital products</span>
             </nav>
-            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.1rem,3.7vw,3.2rem)] font-extrabold leading-[1] tracking-[-0.035em] text-[#EEF0FF]">
+            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.1rem,3.7vw,3.2rem)] font-extrabold leading-[1] tracking-[-0.035em] text-white">
               Sell digital products online, <span style={{ color: VIOLET_SOFT }}>right beside your bookings.</span>
             </Reveal>
             <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-[#EEF0FF]/75 lg:text-[17px]">
@@ -456,7 +440,7 @@ export default function DigitalProductsFeature() {
             <Reveal delay={0.06} className="rounded-[24px] border p-6 shadow-[0_24px_60px_-30px_rgba(109,40,217,0.35)] sm:p-7" style={{ borderColor: `${VIOLET_INK}4d`, background: '#FFFFFF' }}>
               <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: VIOLET_INK }}><Store size={14} aria-hidden /> A product page with checkout</div>
               <div className="mt-5 overflow-hidden rounded-[16px] border border-black/5" aria-hidden>
-                <div className="flex h-20 items-center justify-center" style={{ background: GRADIENT }}><FileText size={26} style={{ color: VIOLET_SOFT }} /></div>
+                <div className="flex h-20 items-center justify-center" style={{ background: DEEP}}><FileText size={26} style={{ color: VIOLET_SOFT }} /></div>
                 <div className="p-4">
                   <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-400">PDF guide</div>
                   <div className="font-heading text-[15px] font-bold">Freelance pricing guide</div>
@@ -476,19 +460,19 @@ export default function DigitalProductsFeature() {
         </div>
       </section>
 
-      {/* ═══════════════ 4 · HOW IT WORKS (horizontal gradient-numbered timeline) ═══════════════ */}
+      {/* ═══════════════ 4 · HOW IT WORKS (horizontal violet-numbered timeline) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: NAVY }}>
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#EEF0FF] sm:text-5xl">
+          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl">
             List it once. <span style={{ color: VIOLET_SOFT }}>Every sale delivers itself.</span>
           </Reveal>
           <ol className="relative mt-16 grid gap-10 md:grid-cols-4 md:gap-6">
-            <span aria-hidden className="absolute left-6 right-6 top-6 hidden h-px md:block" style={{ background: `linear-gradient(90deg, ${VIOLET}, ${VIOLET_INK} 60%, rgba(139,92,246,0.15))` }} />
+            <span aria-hidden className="absolute left-6 right-6 top-6 hidden h-px md:block" style={{ background: 'rgba(139,92,246,0.35)' }} />
             {STEPS.map((s, i) => (
               <Reveal as="li" key={s.title} delay={i * 0.06} className="relative flex gap-5 md:block">
                 <span
                   className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full font-heading text-lg font-extrabold text-white shadow-[0_10px_30px_rgba(139,92,246,0.45)]"
-                  style={{ background: `linear-gradient(140deg, ${VIOLET}, ${VIOLET_INK})` }}
+                  style={{ background: VIOLET}}
                 >
                   {i + 1}
                 </span>
@@ -503,9 +487,9 @@ export default function DigitalProductsFeature() {
       </section>
 
       {/* ═══════════════ 5 · CAPABILITIES (glass card grid) ═══════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: GRADIENT }}>
+      <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: DEEP}}>
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#EEF0FF] sm:text-5xl">
+          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl">
             A small shop, <span style={{ color: VIOLET_SOFT }}>built into your page.</span>
           </Reveal>
           <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-3">
@@ -513,13 +497,28 @@ export default function DigitalProductsFeature() {
               <span className="flex h-10 w-10 items-center justify-center rounded-[16px]" style={{ background: 'rgba(139,92,246,0.18)', color: VIOLET_SOFT }}><Upload size={19} aria-hidden /></span>
               <h3 className="mt-4 font-heading text-xl font-bold text-[#EEF0FF]">Your products, on your booking page</h3>
               <p className="mt-1.5 max-w-lg text-sm leading-relaxed text-[#EEF0FF]/65">Visitors see your services and your products together, with how many people have already bought each one.</p>
-              <ImgSlot slot="digital-products-profile-shelf" alt="A host's Meeticulous booking page showing the Digital Products section beside their services" className="mt-6 aspect-[16/7] w-full" />
+              <img
+                src="/features/digital-products.png"
+                alt="A host's Meeticulous booking page showing the Digital Products section beside their services"
+                loading="lazy"
+                decoding="async"
+                className="mx-auto mt-6 w-full max-w-md"
+              />
             </Reveal>
             {CAPS.map((c, i) => (
               <Reveal key={c.title} delay={(i % 3) * 0.05} className={`rounded-[24px] p-7 ${glass}`}>
                 <span className="flex h-10 w-10 items-center justify-center rounded-[16px]" style={{ background: 'rgba(139,92,246,0.18)', color: VIOLET_SOFT }}><c.icon size={19} aria-hidden /></span>
                 <h3 className="mt-4 font-heading text-lg font-bold text-[#EEF0FF]">{c.title}</h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-[#EEF0FF]/65">{c.body}</p>
+                {c.img && (
+                  <img
+                    src={c.img}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="mx-auto mt-5 w-full max-w-[14rem] rounded-[16px]"
+                  />
+                )}
               </Reveal>
             ))}
           </div>
@@ -543,9 +542,9 @@ export default function DigitalProductsFeature() {
 
       {/* ═══════════════ 7 · TESTIMONIALS (glass quote cards) ═══════════════ */}
       {QUOTES.length > 0 && (
-        <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: GRADIENT }}>
+        <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: DEEP}}>
           <div className="mx-auto max-w-6xl">
-            <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#EEF0FF] sm:text-5xl">
+            <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl">
               From hosts already <span style={{ color: VIOLET_SOFT }}>booked through Meeticulous.</span>
             </Reveal>
             <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-3">
@@ -573,43 +572,31 @@ export default function DigitalProductsFeature() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: NAVY }}>
-        <div className="mx-auto max-w-3xl">
-          <Reveal as="h2" className="text-center font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#EEF0FF] sm:text-5xl">
-            Selling questions, <span style={{ color: VIOLET_SOFT }}>answered.</span>
-          </Reveal>
-          <div className="mt-12 space-y-3">
-            {FAQ.map((f, i) => {
-              const isOpen = open === i;
-              return (
-                <div key={f.q} className={`rounded-[6px] ${glass} ${isOpen ? 'border-[#8B5CF6]/40' : ''}`}>
-                  <h3 className="text-[#EEF0FF]">
-                    <button
-                      type="button"
-                      id={`dp-faq-q${i}`}
-                      aria-expanded={isOpen}
-                      aria-controls={`dp-faq-a${i}`}
-                      onClick={() => setOpen(isOpen ? -1 : i)}
-                      className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left font-heading text-[16px] font-bold text-[#EEF0FF] transition-colors hover:text-white"
-                    >
-                      {f.q}
-                      <ChevronDown size={18} className={`shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} style={{ color: VIOLET_SOFT }} aria-hidden />
-                    </button>
-                  </h3>
-                  <div id={`dp-faq-a${i}`} role="region" aria-labelledby={`dp-faq-q${i}`} hidden={!isOpen}>
-                    <p className="px-5 pb-5 text-[15px] leading-relaxed text-[#EEF0FF]/70">{f.a}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <FeatureFaq
+          heading={(
+            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl">
+              Selling questions, <span style={{ color: VIOLET_SOFT }}>answered.</span>
+            </Reveal>
+          )}
+          items={FAQ}
+          itemClassName={`rounded-[6px] ${glass}`}
+          openItemClassName="border-[#8B5CF6]/40"
+          summaryClassName="flex items-center justify-between gap-4 px-5 py-4 font-heading text-[16px] font-bold text-[#EEF0FF] transition-colors hover:text-white"
+          answerClassName="px-5 pb-5 text-[15px] leading-relaxed text-[#EEF0FF]/70"
+          renderSummary={(f, i, open) => (
+            <>
+              {f.q}
+              <ChevronDown size={18} className={`shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} style={{ color: VIOLET_SOFT }} aria-hidden />
+            </>
+          )}
+        />
       </section>
 
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
-      <section className="relative overflow-hidden px-5 py-20 sm:px-8 lg:py-28" style={{ background: GRADIENT }}>
-        <div aria-hidden className="pointer-events-none absolute left-1/2 top-0 h-[26rem] w-[40rem] -translate-x-1/2 rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(139,92,246,0.25), transparent)' }} />
+      <section className="relative overflow-hidden px-5 py-20 sm:px-8 lg:py-28" style={{ background: DEEP}}>
+        <div aria-hidden className="pointer-events-none absolute left-1/2 top-0 h-[26rem] w-[40rem] -translate-x-1/2 rounded-full blur-3xl" style={{ background: 'rgba(139,92,246,0.14)' }} />
         <div className="relative mx-auto max-w-5xl text-center">
-          <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.2rem)] font-extrabold leading-[1] tracking-[-0.035em] text-[#EEF0FF]">
+          <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.2rem)] font-extrabold leading-[1] tracking-[-0.035em] text-white">
             Turn what you know <span style={{ color: VIOLET_SOFT }}>into a download.</span>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-[#EEF0FF]/70">

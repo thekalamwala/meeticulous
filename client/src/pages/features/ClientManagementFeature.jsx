@@ -27,7 +27,8 @@
 // Tags are NOT claimed (no UI to add them yet). No usage stats, no ratings.
 // Testimonials are the real, consented quotes from data/testimonials.js.
 //
-// IMAGES: empty ImgSlot placeholders (data-img-slot names the photo to supply).
+// IMAGES: /features/client-management.png in the first capability row (the
+// client-profile card); the notes and list rows are still ImgSlot placeholders.
 // Global Navbar + Footer come from App.jsx. No hover uplift anywhere.
 
 import { useEffect, useState } from 'react';
@@ -45,6 +46,7 @@ import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
 import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
+import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
 const CREAM = '#FBF6EE';      // page ground
@@ -127,6 +129,7 @@ const ROWS = [
     body: 'Open a client and see each past and upcoming session, how much they have spent with you, when they last came, and any no-shows. Anyone who books more than once gets a Recurring badge, and their reviews sit right there too.',
     slot: 'client-management-detail',
     alt: 'A client card in the Meeticulous dashboard with booking history, total spent and a Recurring badge',
+    img: '/features/client-management.png',
   },
   {
     icon: NotebookPen,
@@ -134,6 +137,7 @@ const ROWS = [
     body: 'Jot down what matters before the next call: goals, preferences, where you left off. Notes stay in your dashboard and are never shown to your client.',
     slot: 'client-management-notes',
     alt: 'A host typing a private note on a client profile before a session',
+    img: '/features/client-management-notes.png',
   },
   {
     icon: Search,
@@ -141,6 +145,7 @@ const ROWS = [
     body: 'Search by name, phone or email. Sort by most recent or top spend, or filter to lapsed regulars: people with two or more bookings, nothing upcoming, and no visit in 60 days. Download your list as a CSV whenever you like.',
     slot: 'client-management-list',
     alt: 'The client list with search, top-spend sort, the Lapsed filter and the Export CSV button',
+    img: '/features/client-management-list.png',
   },
 ];
 
@@ -170,7 +175,7 @@ function PrimaryCta({ to = START, children }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white shadow-[0_10px_30px_-10px_rgba(194,61,0,0.45)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white transition-opacity hover:no-underline hover:opacity-90"
       style={{ background: ACCENT }}
     >
       {children}
@@ -598,7 +603,17 @@ export default function ClientManagementFeature() {
                   <p className="mt-3 max-w-lg text-base leading-relaxed" style={{ color: MUTED }}>{r.body}</p>
                 </Reveal>
                 <Reveal delay={0.06} className={i % 2 ? 'lg:order-1' : ''}>
-                  <ImgSlot slot={r.slot} alt={r.alt} className="aspect-[4/3] w-full" />
+                  {r.img ? (
+                    <img
+                      src={r.img}
+                      alt={r.alt}
+                      loading="lazy"
+                      decoding="async"
+                      className="aspect-[3/2] w-full rounded-[16px] border border-black/5 object-cover shadow-[0_8px_30px_rgba(26,26,26,0.06)]"
+                    />
+                  ) : (
+                    <ImgSlot slot={r.slot} alt={r.alt} className="aspect-[4/3] w-full" />
+                  )}
                 </Reveal>
               </div>
             ))}
@@ -660,24 +675,27 @@ export default function ClientManagementFeature() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: CREAM_DEEP }}>
-        <div className="mx-auto max-w-3xl">
-          <Reveal as="h2" className={`text-center ${h2}`}>
-            Questions, <span style={{ color: ACCENT }}>gently answered.</span>
-          </Reveal>
-          <div className="mt-12 divide-y divide-black/5 overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-            {FAQ.map((f, i) => (
-              <details key={f.q} className="group open:bg-[#FFF8F2]" open={i === 0}>
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 [&::-webkit-details-marker]:hidden">
-                  <span className="font-heading text-[16px] font-bold" style={{ color: INK }}>{f.q}</span>
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-transform group-open:rotate-180" style={{ background: PEACH, color: ACCENT }}>
-                    <ChevronDown size={15} aria-hidden />
-                  </span>
-                </summary>
-                <p className="px-6 pb-6 text-[15px] leading-relaxed" style={{ color: MUTED }}>{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
+        <FeatureFaq
+          heading={(
+            <Reveal as="h2" className={h2}>
+              Questions, <span style={{ color: ACCENT }}>gently answered.</span>
+            </Reveal>
+          )}
+          items={FAQ}
+          listClassName="divide-y divide-black/5 overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]"
+          itemClassName={(open) => (open ? 'bg-[#FFF8F2]' : '')}
+          summaryClassName="flex items-center justify-between gap-4 px-6 py-5"
+          answerClassName="px-6 pb-6 text-[15px] leading-relaxed"
+          answerStyle={{ color: MUTED }}
+          renderSummary={(f, i, open) => (
+            <>
+              <span className="font-heading text-[16px] font-bold" style={{ color: INK }}>{f.q}</span>
+              <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-transform ${open ? 'rotate-180' : ''}`} style={{ background: PEACH, color: ACCENT }}>
+                <ChevronDown size={15} aria-hidden />
+              </span>
+            </>
+          )}
+        />
       </section>
 
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}

@@ -145,7 +145,11 @@ export function StaggerTestimonials({ items, label = "Testimonials" }) {
       style={{ height: 600 }}
     >
       {list.map((testimonial, index) => {
-        const position = n % 2 ? index - (n + 1) / 2 : index - n / 2;
+        // Odd n → whole-number slots (…-1, 0, 1…), so one card sits exactly at
+        // the centre and the row is symmetric on both sides. Even n can't do
+        // both: it either has no centre card (half steps) or one extra card on
+        // one side — which is the blank gap on the right. Keep the list odd.
+        const position = n % 2 ? index - (n - 1) / 2 : index - n / 2;
         return (
           <TestimonialCard
             key={testimonial.tempId}

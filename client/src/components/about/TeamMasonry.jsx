@@ -143,7 +143,7 @@ export default function TeamMasonry() {
 
   return (
     <section ref={root} className="px-5 py-12 sm:px-8 lg:py-16">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-7xl">
         <h2 className="js-head text-center font-display text-3xl font-bold sm:text-4xl">{team.heading}</h2>
         <p className="mt-4 text-center text-lg leading-relaxed text-ink/70">{team.sub}</p>
 

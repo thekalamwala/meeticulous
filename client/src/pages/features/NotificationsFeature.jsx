@@ -34,14 +34,14 @@
 //   - STOP opt-out: notificationEngine honours contacts.whatsapp_suppressed.
 // No usage stats, no open rates, no no-show percentages.
 //
-// IMAGES: empty ImgSlot placeholders (data-img-slot names the photo to supply).
+// IMAGES: /features/notification.png in the how-it-works section.
 // Global Navbar + Footer come from App.jsx. No hover uplift anywhere.
 
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
-  ArrowRight, Check, X, Lock, ImageIcon, MessageCircle, Mail, BellRing, Bell,
+  ArrowRight, Check, X, Lock, MessageCircle, Mail, BellRing, Bell,
   CalendarCheck, CalendarX2, RefreshCw, Star, Repeat, MapPin, Video, BellOff, CheckCheck,
 } from 'lucide-react';
 import Reveal from '../../components/home/Reveal';
@@ -51,6 +51,7 @@ import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
 import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
+import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
 const INK = '#0F1111';        // dominant near-black
@@ -171,27 +172,11 @@ function PrimaryCta({ to = START, children, onDark = true }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold shadow-[0_8px_30px_rgba(26,26,26,0.12)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-opacity hover:no-underline hover:opacity-90"
       style={onDark ? { background: GREEN, color: INK } : { background: INK, color: PAPER }}
     >
       {children}
     </Link>
-  );
-}
-
-/* Empty image placeholder; the founder supplies the real photo later. */
-function ImgSlot({ alt, slot, className = '', dark = false }) {
-  const ink = dark ? '242,245,243' : '15,17,17';
-  return (
-    <div
-      role="img"
-      aria-label={alt}
-      data-img-slot={slot}
-      className={`flex items-center justify-center rounded-[10px] border ${dark ? 'border-white/10' : 'border-black/5'} ${className}`}
-      style={{ background: `repeating-linear-gradient(135deg, rgba(${ink},0.04) 0 10px, rgba(${ink},0.08) 10px 20px)` }}
-    >
-      <ImageIcon size={28} style={{ color: `rgba(${ink},0.3)` }} aria-hidden />
-    </div>
   );
 }
 
@@ -360,7 +345,7 @@ export default function NotificationsFeature() {
   });
 
   return (
-    <main className="overflow-x-clip bg-[#0F1111] text-[#F2F5F3]">
+    <main className="feature-page-dark overflow-x-clip bg-[#0F1111] text-[#F2F5F3]">
       <Seo
         title={seo.title}
         description={seo.description}
@@ -476,7 +461,7 @@ export default function NotificationsFeature() {
       {/* ═══════════════ 4 · HOW IT WORKS (dark numbered cards) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#F2F5F3] sm:text-5xl">
+          <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#F2F5F3] sm:text-5xl lg:whitespace-nowrap">
             One booking. <span style={{ color: GREEN }}>Every message after it.</span>
           </Reveal>
           <ol className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -490,7 +475,13 @@ export default function NotificationsFeature() {
             ))}
           </ol>
           <Reveal delay={0.1} className="mt-10">
-            <ImgSlot slot="notifications-client-phone" alt="A client reading a Meeticulous appointment reminder on WhatsApp" className="aspect-[21/9] w-full" dark />
+            <img
+              src="/features/notification.png"
+              alt="A client reading a Meeticulous appointment reminder on WhatsApp"
+              loading="lazy"
+              decoding="async"
+              className="mx-auto w-full max-w-3xl"
+            />
           </Reveal>
         </div>
       </section>
@@ -608,23 +599,25 @@ export default function NotificationsFeature() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-3xl">
-          <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#F2F5F3] sm:text-5xl">
-            Reminder questions, <span style={{ color: GREEN }}>answered.</span>
-          </Reveal>
-          <div className="mt-12 grid gap-3">
-            {FAQ.map((f, i) => (
-              <details key={f.q} className="group rounded-[16px] border border-white/10 bg-[#171A1A] open:border-white/20" open={i === 0}>
-                <summary className="flex cursor-pointer list-none items-start gap-4 px-5 py-5 [&::-webkit-details-marker]:hidden">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[16px] font-heading text-[11px] font-extrabold tabular-nums" style={{ background: 'rgba(37,211,102,0.14)', color: GREEN }}>{String(i + 1).padStart(2, '0')}</span>
-                  <span className="flex-1 pt-0.5 font-heading text-[16px] font-bold text-[#F2F5F3]">{f.q}</span>
-                  <span aria-hidden className="pt-0.5 text-xl leading-none text-[#F2F5F3]/50 transition-transform group-open:rotate-45">+</span>
-                </summary>
-                <p className="px-5 pb-6 pl-16 text-[15px] leading-relaxed text-[#F2F5F3]/70">{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
+        <FeatureFaq
+          heading={(
+            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#F2F5F3] sm:text-5xl">
+              Reminder questions, <span style={{ color: GREEN }}>answered.</span>
+            </Reveal>
+          )}
+          items={FAQ}
+          itemClassName="rounded-[16px] border border-white/10 bg-[#171A1A]"
+          openItemClassName="border-white/20"
+          summaryClassName="flex items-start gap-4 px-5 py-5"
+          answerClassName="px-5 pb-6 pl-16 text-[15px] leading-relaxed text-[#F2F5F3]/70"
+          renderSummary={(f, i, open) => (
+            <>
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[16px] font-heading text-[11px] font-extrabold tabular-nums" style={{ background: 'rgba(37,211,102,0.14)', color: GREEN }}>{String(i + 1).padStart(2, '0')}</span>
+              <span className="flex-1 pt-0.5 font-heading text-[16px] font-bold text-[#F2F5F3]">{f.q}</span>
+              <span aria-hidden className={`pt-0.5 text-xl leading-none text-[#F2F5F3]/50 transition-transform ${open ? 'rotate-45' : ''}`}>+</span>
+            </>
+          )}
+        />
       </section>
 
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}

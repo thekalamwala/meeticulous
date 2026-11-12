@@ -8,10 +8,11 @@
 //   1 Hero + live demo · 2 Proof strip · 3 Without vs with · 4 How it works ·
 //   5 Capabilities · 6 The difference · 7 Testimonials · 8 FAQ · 9 Final CTA
 //
-// Design system "Google-white": white + light grey surfaces, charcoal ink, and the
-// four calendar hues used ONLY as dots, bars and event chips (blue #1A73E8 is the
-// one AA-safe text accent). No Google logo or wordmark artwork, no implied
-// endorsement; "Google Calendar" appears in text only. Mechanics unique to this
+// Two-colour scheme: one accent (#EC4899, rgb 236 72 153 — pink) plus a charcoal-ink
+// contrast, on white + light-grey surfaces. The accent is the ONLY colour, used for
+// bars, chips, links and CTAs; headings are charcoal ink and "no / clash /
+// unavailable" states use a neutral grey, not a second hue. No decorative dots. No Google logo
+// or wordmark artwork, no implied endorsement; "Google Calendar" is text only. Mechanics unique to this
 // page: two-calendar sync demo (hero) · four-dot fact strip · double-booking
 // scenario diagram · step-through connect flow with a generic consent mock ·
 // two-column dot list · "what syncs which way" matrix · minimal quote cards ·
@@ -33,14 +34,14 @@
 //   • "2 calendar integrations" (plans.js) is NOT used: limits.calendar_integrations
 //     is not enforced anywhere and no second integration exists yet.
 //
-// IMAGES: empty ImgSlot placeholders (data-img-slot names the photo to supply).
+// IMAGES: /features/google-calendar.png in the capabilities section.
 // Global Navbar + Footer come from App.jsx. No hover uplift anywhere.
 
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
-  ArrowRight, Check, Plus, RotateCcw, Video, ChevronDown, ImageIcon, Lock, Minus,
+  ArrowRight, Check, Plus, RotateCcw, Video, ChevronDown, Lock, Minus,
 } from 'lucide-react';
 import Reveal from '../../components/home/Reveal';
 import Seo from '../../components/common/Seo';
@@ -49,19 +50,27 @@ import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
 import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
+import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
 
-// The four calendar hues: dots, bars and chips only, never body text.
-const BLUE = '#4285F4';
-const RED = '#EA4335';
-const YELLOW = '#FBBC05';
-const GREEN = '#34A853';
-const HUES = [BLUE, RED, YELLOW, GREEN];
+// Two colours only: one accent + a neutral contrast, on white/neutral surfaces.
+// The accent is the provided pink; everything that used the four Google hues now
+// collapses to it. Genuine "no / clash / unavailable" states use a neutral grey so
+// the yes/no meaning survives without introducing a third colour.
+const ACCENT = '#EC4899';       // rgb(236 72 153) — the single accent (pink)
+const ACCENT_SOFT = '#FCE7F0';  // light accent tint (event chips, positive callouts)
+const NEG = '#9AA0A6';          // neutral grey for no / unavailable / clash
+const NEG_SOFT = '#F1F3F4';     // neutral grey tint
+// Aliases so the decorative dots/bars/chips resolve to the one accent.
+const BLUE = ACCENT;
+const RED = ACCENT;
+const YELLOW = ACCENT;
+const GREEN = ACCENT;
 // Text-safe tokens (AA on white and on SURFACE).
-const LINK = '#1A73E8';   // the one accent for text, links and the CTA fill
-const INK = '#202124';
-const MUTED = '#5F6368';
+const LINK = ACCENT;     // accent for links, the CTA fill and headline highlights
+const INK = '#202124';   // the contrast colour: headings and body text
+const MUTED = '#5F6368'; // secondary text (neutral)
 const SURFACE = '#F8F9FA';
 
 /* ─────────────────────────────  DEMO MODEL  ────────────────────────────── */
@@ -186,46 +195,15 @@ function Dot({ color, size = 8, className = '' }) {
   return <span aria-hidden className={`inline-block shrink-0 rounded-full ${className}`} style={{ width: size, height: size, background: color }} />;
 }
 
-function FourDots({ size = 7 }) {
-  return (
-    <span aria-hidden className="inline-flex items-center gap-1">
-      {HUES.map((c) => <Dot key={c} color={c} size={size} />)}
-    </span>
-  );
-}
-
-function Eyebrow({ children }) {
-  return (
-    <div className="flex items-center gap-2.5 text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: MUTED }}>
-      <FourDots /> {children}
-    </div>
-  );
-}
-
 function PrimaryCta({ to = START, children }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(26,115,232,0.22)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white transition-opacity hover:no-underline hover:opacity-90"
       style={{ background: LINK }}
     >
       {children}
     </Link>
-  );
-}
-
-/* Empty image placeholder; the founder supplies the real photo later. */
-function ImgSlot({ alt, slot, className = '' }) {
-  return (
-    <div
-      role="img"
-      aria-label={alt}
-      data-img-slot={slot}
-      className={`flex items-center justify-center rounded-[16px] border border-black/5 ${className}`}
-      style={{ background: 'repeating-linear-gradient(135deg, rgba(32,33,36,0.03) 0 10px, rgba(32,33,36,0.06) 10px 20px)' }}
-    >
-      <ImageIcon size={28} style={{ color: 'rgba(32,33,36,0.3)' }} aria-hidden />
-    </div>
   );
 }
 
@@ -269,8 +247,8 @@ function SyncDemo() {
     <div className="mx-auto w-full max-w-[34rem]">
       <div className="overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_24px_60px_-28px_rgba(32,33,36,0.28)]">
         <div className="grid grid-cols-2 border-b border-black/5 text-[11px] font-bold uppercase tracking-[0.12em]" style={{ color: MUTED }}>
-          <div className="flex items-center gap-2 px-3 py-3 sm:px-4"><Dot color={BLUE} size={7} /> Your Google Calendar</div>
-          <div className="flex items-center gap-2 border-l border-black/5 px-3 py-3 sm:px-4"><Dot color={GREEN} size={7} /> Your Meeticulous page</div>
+          <div className="px-3 py-3 sm:px-4">Your Google Calendar</div>
+          <div className="border-l border-black/5 px-3 py-3 sm:px-4">Your Meeticulous page</div>
         </div>
         <div className="px-3 pt-2 text-[11px] sm:px-4" style={{ color: MUTED }}>Thursday</div>
         <ul className="px-3 pb-3 pt-1 sm:px-4">
@@ -288,9 +266,9 @@ function SyncDemo() {
                         key={`${h}-${ev.title}`}
                         {...pop}
                         className={`flex min-w-0 flex-1 items-center gap-1.5 rounded-[5px] px-2 py-1 ${fresh ? 'ring-1 ring-black/10' : ''}`}
-                        style={{ background: ev.kind === 'booking' ? '#E8F0FE' : '#FEF7E0' }}
+                        style={{ background: ev.kind === 'booking' ? ACCENT_SOFT : NEG_SOFT }}
                       >
-                        <span aria-hidden className="h-full w-[3px] shrink-0 rounded-full" style={{ background: ev.kind === 'booking' ? BLUE : YELLOW }} />
+                        <span aria-hidden className="h-full w-[3px] shrink-0 rounded-full" style={{ background: ev.kind === 'booking' ? ACCENT : NEG }} />
                         <span className="min-w-0">
                           <span className="block truncate text-[11px] font-semibold" style={{ color: INK }}>{ev.title}</span>
                           <span className="flex items-center gap-1 text-[10px]" style={{ color: MUTED }}>
@@ -312,7 +290,7 @@ function SyncDemo() {
                     <span className={`flex w-full items-center justify-between rounded-[5px] px-2 py-1.5 text-[11px] ${fresh ? 'ring-1 ring-black/10' : ''}`} style={{ background: SURFACE, color: MUTED }}>
                       <span className="line-through">{hourLabel(h)}</span>
                       <span className="flex items-center gap-1">
-                        <Dot color={ev.kind === 'booking' ? BLUE : RED} size={6} /> {ev.kind === 'booking' ? 'Booked' : 'Unavailable'}
+                        <Dot color={ev.kind === 'booking' ? ACCENT : NEG} size={6} /> {ev.kind === 'booking' ? 'Booked' : 'Unavailable'}
                       </span>
                     </span>
                   )}
@@ -328,10 +306,10 @@ function SyncDemo() {
 
       <div className="mt-4 flex flex-wrap justify-center gap-2">
         <button type="button" onClick={() => click('google')} disabled={full('google')} className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white px-3.5 py-2 text-xs font-semibold transition-colors hover:bg-[#F1F3F4] disabled:opacity-40" style={{ color: INK }}>
-          <Dot color={YELLOW} size={7} /> <Plus size={13} aria-hidden /> Add a meeting in Google
+          <Plus size={13} aria-hidden /> Add a meeting in Google
         </button>
         <button type="button" onClick={() => click('booking')} disabled={full('booking')} className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white px-3.5 py-2 text-xs font-semibold transition-colors hover:bg-[#F1F3F4] disabled:opacity-40" style={{ color: INK }}>
-          <Dot color={BLUE} size={7} /> <Plus size={13} aria-hidden /> Client books on Meeticulous
+          <Plus size={13} aria-hidden /> Client books on Meeticulous
         </button>
         <button type="button" onClick={() => click('reset')} className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold transition-colors hover:bg-[#F1F3F4]" style={{ color: MUTED }}>
           <RotateCcw size={13} aria-hidden /> Reset
@@ -346,14 +324,14 @@ function SyncDemo() {
 function Scenario({ title, steps, good }) {
   return (
     <div className="rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-7">
-      <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: MUTED }}>
-        <Dot color={good ? GREEN : RED} /> {title}
+      <div className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: MUTED }}>
+        {title}
       </div>
       <ol className="relative mt-6">
         <span aria-hidden className="absolute bottom-6 left-[5px] top-2 w-px bg-black/10" />
         {steps.map((s, i) => (
           <li key={s.lane} className="relative grid grid-cols-[1.5rem_1fr] pb-5">
-            <span aria-hidden className="mt-1.5 h-[11px] w-[11px] rounded-full ring-4 ring-white" style={{ background: i === 0 ? YELLOW : i === 1 ? (good ? GREEN : RED) : BLUE }} />
+            <span aria-hidden className="mt-1.5 h-[11px] w-[11px] rounded-full ring-4 ring-white" style={{ background: i === 1 ? (good ? ACCENT : NEG) : ACCENT }} />
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: MUTED }}>{s.lane}</div>
               <div className="mt-0.5 font-heading text-[15px] font-bold" style={{ color: INK }}>{s.text}</div>
@@ -361,7 +339,7 @@ function Scenario({ title, steps, good }) {
           </li>
         ))}
       </ol>
-      <div className="mt-1 flex items-start gap-2.5 rounded-[16px] px-4 py-3 text-sm leading-relaxed" style={{ background: good ? '#E6F4EA' : '#FCE8E6', color: INK }}>
+      <div className="mt-1 flex items-start gap-2.5 rounded-[16px] px-4 py-3 text-sm leading-relaxed" style={{ background: good ? ACCENT_SOFT : NEG_SOFT, color: INK }}>
         {good ? <Check size={16} className="mt-0.5 shrink-0" aria-hidden /> : <Minus size={16} className="mt-0.5 shrink-0" aria-hidden />}
         <span>
           {good
@@ -412,8 +390,7 @@ function ConnectFlow() {
           <div className="min-h-[19rem] px-5 py-6">
             {step === 0 && (
               <div className="text-center">
-                <FourDots size={9} />
-                <div className="mt-4 font-heading text-xl font-bold" style={{ color: INK }}>Become a host</div>
+                <div className="font-heading text-xl font-bold" style={{ color: INK }}>Become a host</div>
                 <p className="mt-1 text-sm" style={{ color: MUTED }}>One Google sign-in sets up your account and your calendar.</p>
                 <div className="mt-6 rounded-[16px] border border-black/10 py-2.5 text-sm font-semibold" style={{ color: INK }}>Continue with Google</div>
                 <p className="mt-4 text-xs" style={{ color: MUTED }}>Hosts sign in with Google only. No password to remember.</p>
@@ -424,8 +401,7 @@ function ConnectFlow() {
                 <div className="font-heading text-base font-bold" style={{ color: INK }}>Meeticulous wants to</div>
                 <ul className="mt-4 space-y-3.5">
                   {SCOPES_PLAIN.map((s) => (
-                    <li key={s.t} className="flex items-start gap-3">
-                      <Dot color={s.dot} className="mt-1.5" />
+                    <li key={s.t} className="border-l-2 border-black/10 pl-3">
                       <span className="text-sm leading-snug" style={{ color: INK }}>
                         {s.t}
                         <span className="block text-xs" style={{ color: MUTED }}>Used {s.why}</span>
@@ -440,8 +416,8 @@ function ConnectFlow() {
               <div>
                 <div className="flex items-center justify-between">
                   <span className="font-heading text-base font-bold" style={{ color: INK }}>Google Calendar</span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold" style={{ background: '#E6F4EA', color: '#137333' }}>
-                    <Dot color={GREEN} size={6} /> Connected
+                  <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold" style={{ background: ACCENT_SOFT, color: ACCENT }}>
+                    <Dot color={ACCENT} size={6} /> Connected
                   </span>
                 </div>
                 <dl className="mt-5 space-y-3 text-sm">
@@ -471,7 +447,7 @@ function Cell({ c, label }) {
     <div className="flex items-start gap-2.5">
       {c.na
         ? <span aria-hidden className="mt-1.5 inline-block h-[2px] w-2 shrink-0 bg-black/20" />
-        : <Dot color={c.on ? GREEN : RED} className="mt-1.5" />}
+        : <Dot color={c.on ? ACCENT : NEG} className="mt-1.5" />}
       <span className="text-sm leading-relaxed">
         <span className="mb-0.5 block text-[11px] font-semibold uppercase tracking-[0.12em] md:hidden" style={{ color: MUTED }}>{label}</span>
         <span className="font-semibold" style={{ color: INK }}>{c.na ? 'n/a.' : c.on ? 'Yes.' : 'No.'}</span>{' '}
@@ -505,7 +481,7 @@ export default function GoogleCalendarFeature() {
   });
 
   return (
-    <main className="overflow-x-clip bg-white" style={{ color: INK }}>
+    <main className="feature-page-dark overflow-x-clip bg-white" style={{ color: INK }}>
       <Seo
         title={seo.title}
         description={seo.description}
@@ -534,8 +510,7 @@ export default function GoogleCalendarFeature() {
               <span aria-hidden className="mx-2">/</span>
               <span aria-current="page" style={{ color: INK }}>Google Calendar</span>
             </nav>
-            <Reveal instant className="mt-5"><Eyebrow>Google Calendar appointment scheduler &amp; sync</Eyebrow></Reveal>
-            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.1rem,3.7vw,3.2rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[#202124]">
+            <Reveal as="h1" instant className="mt-6 font-heading text-[clamp(2.1rem,3.7vw,3.2rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[#202124]">
               Google Calendar sync for <span style={{ color: LINK }}>your booking page.</span>
             </Reveal>
             <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed lg:text-[17px]" style={{ color: MUTED }}>
@@ -548,10 +523,8 @@ export default function GoogleCalendarFeature() {
               </a>
             </Reveal>
             <Reveal instant delay={0.14} className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
-              {HERO_TRUST.map((t, i) => (
-                <span key={t} className="flex items-center gap-2 text-[13px]" style={{ color: MUTED }}>
-                  <Dot color={HUES[i]} size={7} /> {t}
-                </span>
+              {HERO_TRUST.map((t) => (
+                <span key={t} className="text-[13px]" style={{ color: MUTED }}>{t}</span>
               ))}
             </Reveal>
           </div>
@@ -565,12 +538,9 @@ export default function GoogleCalendarFeature() {
       <section className="border-y border-black/5 px-5 sm:px-8" style={{ background: SURFACE }}>
         <div className="mx-auto grid max-w-6xl sm:grid-cols-2 lg:grid-cols-4">
           {PROOF.map((p) => (
-            <div key={p.k} className="flex items-start gap-3 py-7 sm:px-5">
-              <Dot color={p.dot} size={12} className="mt-1" />
-              <div>
-                <div className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: MUTED }}>{p.k}</div>
-                <div className="mt-1 font-heading text-[15px] font-bold leading-snug">{p.v}</div>
-              </div>
+            <div key={p.k} className="py-7 sm:px-5">
+              <div className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: MUTED }}>{p.k}</div>
+              <div className="mt-1 font-heading text-[15px] font-bold leading-snug">{p.v}</div>
             </div>
           ))}
         </div>
@@ -579,8 +549,7 @@ export default function GoogleCalendarFeature() {
       {/* ═══════════════ 3 · WITHOUT vs WITH (double-booking scenario) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-5xl">
-          <Reveal><Eyebrow>Without vs with</Eyebrow></Reveal>
-          <Reveal as="h2" className="mt-4 max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
+          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
             Two calendars is how you <span style={{ color: LINK }}>get double-booked.</span>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed" style={{ color: MUTED }}>
@@ -596,8 +565,7 @@ export default function GoogleCalendarFeature() {
       {/* ═══════════════ 4 · HOW IT WORKS (connect flow + consent mock) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: SURFACE }}>
         <div className="mx-auto max-w-6xl">
-          <Reveal><Eyebrow>How it works</Eyebrow></Reveal>
-          <Reveal as="h2" className="mt-4 max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
+          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
             Connected the moment <span style={{ color: LINK }}>you sign up.</span>
           </Reveal>
           <ConnectFlow />
@@ -609,19 +577,23 @@ export default function GoogleCalendarFeature() {
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-end">
             <div>
-              <Reveal><Eyebrow>What it does</Eyebrow></Reveal>
-              <Reveal as="h2" className="mt-4 font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
+              <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
                 Your calendar, <span style={{ color: LINK }}>kept honest.</span>
               </Reveal>
             </div>
             <Reveal delay={0.05}>
-              <ImgSlot slot="google-calendar-booking-event" alt="A Meeticulous booking open in Google Calendar, showing the client as a guest and a Google Meet link" className="aspect-[16/9] w-full" />
+              <img
+                src="/features/google-calendar.png"
+                alt="A Meeticulous booking open in Google Calendar, showing the client as a guest and a Google Meet link"
+                loading="lazy"
+                decoding="async"
+                className="w-full"
+              />
             </Reveal>
           </div>
           <ul className="mt-14 grid gap-x-12 md:grid-cols-2">
             {CAPS.map((c, i) => (
-              <Reveal as="li" key={c.title} delay={(i % 2) * 0.04} className="flex items-start gap-4 border-t border-black/5 py-6">
-                <Dot color={HUES[i % 4]} size={10} className="mt-2" />
+              <Reveal as="li" key={c.title} delay={(i % 2) * 0.04} className="border-t border-black/5 py-6">
                 <div>
                   <h3 className="font-heading text-lg font-bold">{c.title}</h3>
                   <p className="mt-1 text-[15px] leading-relaxed" style={{ color: MUTED }}>{c.body}</p>
@@ -635,8 +607,7 @@ export default function GoogleCalendarFeature() {
       {/* ═══════════════ 6 · THE DIFFERENCE (what syncs which way) ═══════════════ */}
       <section id="sync" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:py-28" style={{ background: SURFACE }}>
         <div className="mx-auto max-w-5xl">
-          <Reveal><Eyebrow>The difference</Eyebrow></Reveal>
-          <Reveal as="h2" className="mt-4 max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
+          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
             What syncs <span style={{ color: LINK }}>which way.</span>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed" style={{ color: MUTED }}>
@@ -646,8 +617,8 @@ export default function GoogleCalendarFeature() {
           <Reveal delay={0.08} className="mt-12 overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
             <div className="hidden grid-cols-[0.8fr_1.1fr_1.1fr] gap-8 border-b border-black/5 px-6 py-4 text-[11px] font-bold uppercase tracking-[0.14em] md:grid" style={{ color: MUTED }}>
               <span />
-              <span className="flex items-center gap-2"><Dot color={BLUE} size={7} /> Google Calendar &rarr; Meeticulous</span>
-              <span className="flex items-center gap-2"><Dot color={GREEN} size={7} /> Meeticulous &rarr; Google Calendar</span>
+              <span>Google Calendar &rarr; Meeticulous</span>
+              <span>Meeticulous &rarr; Google Calendar</span>
             </div>
             {MATRIX.map((r) => (
               <div key={r.row} className="grid gap-4 border-b border-black/5 px-6 py-5 last:border-b-0 md:grid-cols-[0.8fr_1.1fr_1.1fr] md:gap-8">
@@ -657,9 +628,8 @@ export default function GoogleCalendarFeature() {
               </div>
             ))}
           </Reveal>
-          <p className="mt-5 flex items-start gap-2 text-sm" style={{ color: MUTED }}>
-            <Dot color={YELLOW} className="mt-1.5" />
-            <span>Events and Meet links are created for online services. In-person bookings stay in your dashboard, and busy time on Google still blocks in-person slots too.</span>
+          <p className="mt-5 text-sm" style={{ color: MUTED }}>
+            Events and Meet links are created for online services. In-person bookings stay in your dashboard, and busy time on Google still blocks in-person slots too.
           </p>
         </div>
       </section>
@@ -668,17 +638,13 @@ export default function GoogleCalendarFeature() {
       {QUOTES.length > 0 && (
         <section className="px-5 py-20 sm:px-8 lg:py-28">
           <div className="mx-auto max-w-6xl">
-            <Reveal><Eyebrow>From hosts</Eyebrow></Reveal>
-            <Reveal as="h2" className="mt-4 max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
+            <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
               Less &ldquo;are you free at 4?&rdquo; <span style={{ color: LINK }}>More booked time.</span>
             </Reveal>
             <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
               {QUOTES.map((t, i) => (
                 <Reveal as="figure" key={t.name} delay={i * 0.05} className="flex flex-col justify-between rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-                  <div>
-                    <Dot color={HUES[i % 4]} size={10} />
-                    <blockquote className="mt-4 text-[15px] leading-relaxed">&ldquo;{t.quote}&rdquo;</blockquote>
-                  </div>
+                  <blockquote className="text-[15px] leading-relaxed">&ldquo;{t.quote}&rdquo;</blockquote>
                   <figcaption className="mt-6 flex items-center gap-3 border-t border-black/5 pt-4">
                     <img src={t.avatar} alt="" loading="lazy" className="h-9 w-9 rounded-full object-cover" />
                     <div>
@@ -697,33 +663,33 @@ export default function GoogleCalendarFeature() {
       <PageGuides />
 
       <section id="faq" className="border-t border-black/5 px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-3xl">
-          <Reveal><Eyebrow>FAQ</Eyebrow></Reveal>
-          <Reveal as="h2" className="mt-4 font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-            Calendar questions, <span style={{ color: LINK }}>answered.</span>
-          </Reveal>
-          <div className="mt-12 space-y-3">
-            {FAQ.map((f, i) => (
-              <details key={f.q} className="group rounded-[16px] border border-black/5 bg-white open:shadow-[0_8px_30px_rgba(26,26,26,0.05)]" open={i === 0}>
-                <summary className="flex cursor-pointer list-none items-center gap-4 px-5 py-4 [&::-webkit-details-marker]:hidden">
-                  <Dot color={HUES[i % 4]} size={9} />
-                  <span className="flex-1 font-heading text-[16px] font-bold">{f.q}</span>
-                  <ChevronDown size={18} aria-hidden className="shrink-0 transition-transform group-open:rotate-180" style={{ color: MUTED }} />
-                </summary>
-                <p className="px-5 pb-5 pl-[3.1rem] text-[15px] leading-relaxed" style={{ color: MUTED }}>{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
+        <FeatureFaq
+          heading={(
+            <>
+              <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
+                Calendar questions, <span style={{ color: LINK }}>answered.</span>
+              </Reveal>
+            </>
+          )}
+          items={FAQ}
+          itemClassName="rounded-[16px] border border-black/5 bg-white"
+          openItemClassName="shadow-[0_8px_30px_rgba(26,26,26,0.05)]"
+          summaryClassName="flex items-center gap-4 px-5 py-4"
+          answerClassName="px-5 pb-5 text-[15px] leading-relaxed"
+          answerStyle={{ color: MUTED }}
+          renderSummary={(f, i, open) => (
+            <>
+              <span className="flex-1 font-heading text-[16px] font-bold">{f.q}</span>
+              <ChevronDown size={18} aria-hidden className={`shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} style={{ color: MUTED }} />
+            </>
+          )}
+        />
       </section>
 
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: SURFACE }}>
         <div className="mx-auto max-w-4xl text-center">
-          <div aria-hidden className="mx-auto flex w-40 overflow-hidden rounded-full">
-            {HUES.map((c) => <span key={c} className="h-1.5 flex-1" style={{ background: c }} />)}
-          </div>
-          <Reveal as="h2" className="mt-10 font-heading text-[clamp(2.3rem,5.5vw,4rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">
+          <Reveal as="h2" className="font-heading text-[clamp(2.3rem,5.5vw,4rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">
             Let your calendar do <span style={{ color: LINK }}>the blocking.</span>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed" style={{ color: MUTED }}>

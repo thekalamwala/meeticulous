@@ -22,7 +22,7 @@ export default function WorkGallery() {
 
   return (
     <section ref={root} className="py-16 lg:py-24">
-      <div className="mx-auto max-w-6xl px-5 sm:px-8">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <h2 className="js-head text-center font-display text-4xl font-extrabold sm:text-5xl">{gallery.heading}</h2>
         <p className="mx-auto mt-5 max-w-2xl text-center text-lg leading-relaxed text-ink/70">{gallery.sub}</p>
       </div>
