@@ -126,6 +126,13 @@ const send = async ({ event, data = {} }) => {
   const results = { event, whatsapp: { attempted: false }, email: { attempted: false }, inApp: { attempted: false } };
   if (!event) return results;
 
+  // Optional per-entity dedupe key: stamped into every logged row's payload so a
+  // nudge can later check `payload->>dedupe_key` (review per booking, onboarding
+  // per step/user) instead of a column notification_logs does not have.
+  const dedupeKey = data.dedupeKey || null;
+  const log = (a) =>
+    logResult(dedupeKey ? { ...a, payload: { ...(a.payload || {}), dedupe_key: dedupeKey } } : a);
+
   let cfg;
   try {
     cfg = await loadConfig();
@@ -164,7 +171,7 @@ const send = async ({ event, data = {} }) => {
     }
     if (suppressed) {
       results.whatsapp = { attempted: true, success: false, suppressed: true };
-      await logResult({
+      await log({
         event, channel: 'whatsapp', destination: data.phone, status: 'suppressed',
         response: {}, error: 'recipient opted out of WhatsApp (STOP)',
         payload: { campaignName: evt.campaign_name },
@@ -180,7 +187,7 @@ const send = async ({ event, data = {} }) => {
       };
       const r = await aisensy.sendCampaign(params);
       results.whatsapp = { attempted: true, ...r };
-      await logResult({
+      await log({
         event, channel: 'whatsapp', destination: data.phone,
         status: r.success ? 'sent' : 'failed',
         response: r.response, error: r.error,
@@ -225,7 +232,7 @@ const send = async ({ event, data = {} }) => {
     });
     results.email = { attempted: true, success: !!r.ok, status: r.status, error: r.error || r.reason };
     // notification_logs keeps the cross-channel summary; email_logs has detail.
-    await logResult({
+    await log({
       event, channel: 'email', destination: data.email,
       status: r.status === 'sent' ? 'sent' : (r.status === 'queued' ? 'pending' : 'failed'),
       error: r.error || r.reason || null,
@@ -246,7 +253,7 @@ const send = async ({ event, data = {} }) => {
       link: data.inApp.link || null, data: data.inApp.data || {},
     });
     results.inApp = { attempted: true, success: true };
-    await logResult({
+    await log({
       event, channel: 'in_app', destination: String(data.recipientUserId),
       status: 'sent', payload: { title: data.inApp.title, link: data.inApp.link || null },
     });

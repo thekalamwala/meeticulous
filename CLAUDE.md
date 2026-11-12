@@ -193,10 +193,13 @@ Items previously listed here as pending are now live:
   pushes `config/emailTemplates.js` copy into the DB and KEEPS rows edited in the admin editor
   (row content ≠ its seed_hash). Off switch: `EMAIL_TEMPLATE_SYNC=off`. Manual: `node scripts/seedEmailTemplates.js [--force]`.
 - **Live state re-verified 2026-11-12 (project audit, read-only) — where an older entry disagrees, this wins.**
-  Flags ON: `crm_admin_sends`, `community`, `community_writes`, `community_tithi`,
-  `community_email_onboarding`, `host_linkedin_login`, and the nudge tracks (`activation_nudges`,
-  `dormant_nudges`, `review_nudges`, `festival_nudges`, `human_moments`, `empathy_track`).
-  Flags OFF: `community_v2`, `community_ads`, `coupons`. Applied: v3.188, v3.199, v3.200, v3.201, v3.205.
+  Flags ON: `crm_admin_sends`, `community`, `community_writes`, `community_tithi`, `host_linkedin_login`.
+  Flags OFF: `community_v2`, `community_ads`, `coupons`, and — **flipped off 2026-11-12** — the seven
+  nudge tracks `activation_nudges`, `dormant_nudges`, `review_nudges`, `festival_nudges`,
+  `human_moments`, `empathy_track`, `community_email_onboarding`. They were ON with a broken
+  dedupe (re-sent every cron tick). The dedupe is **fixed** in this PR (`utils/notificationDedupe.js`,
+  fail-closed); they are safe to re-enable once it ships. Rollback: set those keys back to `true`.
+  Applied: v3.188, v3.199, v3.200, v3.201, v3.205.
   **Not applied:** v3.191, `v3.203_admin_token_version` (admin session revocation is inert until it is),
   `v3.204_coupons`. Open findings from that audit: `docs/audit-2026-11-12.md`.
 - **v3.188** (`v3.188_host_linkedin_login_flag.sql`) — applied (confirmed 2026-11-12). Was listed PENDING: apply before/at merge of the LinkedIn
