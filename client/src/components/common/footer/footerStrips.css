@@ -1,0 +1,20 @@
+/* Footer top strips: the oversized "Get started for free" CTA and the tilted
+   pink keyword marquee under it (Footer.jsx). The track holds two identical
+   copies of the keyword list and slides by -50%, so the loop is seamless. */
+
+.ft-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: ft-marquee 48s linear infinite;
+  will-change: transform;
+}
+.ft-marquee:hover .ft-marquee-track { animation-play-state: paused; }
+
+@keyframes ft-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ft-marquee-track { animation-duration: 160s; }
+}

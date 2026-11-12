@@ -10,8 +10,10 @@ describe('PageGuides', () => {
   it('links the mapped guides for a page, trailing slash tolerated', () => {
     at('/features/payments/');
     const links = screen.getAllByRole('link');
-    expect(links).toHaveLength(PAGE_GUIDES['/features/payments'].length);
-    expect(links[0].getAttribute('href')).toBe(`/blog/${PAGE_GUIDES['/features/payments'][0].slug}`);
+    // Feature pages cap the strip at 3 guides (see PageGuides.jsx).
+    const expected = PAGE_GUIDES['/features/payments'].slice(0, 3);
+    expect(links).toHaveLength(expected.length);
+    expect(links[0].getAttribute('href')).toBe(`/blog/${expected[0].slug}`);
   });
   it('renders nothing on unmapped routes', () => {
     const { container } = at('/pricing');

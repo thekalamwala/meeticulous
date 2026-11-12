@@ -8,7 +8,7 @@
 //   1 Hero + live demo · 2 Proof strip · 3 Without vs with · 4 How it works ·
 //   5 Capabilities · 6 The difference · 7 Testimonials · 8 FAQ · 9 Final CTA
 //
-// Design system A "Trust-Blue": white and pale-blue sections, one crisp blue
+// Design system A: white and pale-maroon sections, one crisp maroon
 // accent, a subtle dotted-grid motif, calm fact cards. Mechanics unique to this
 // page: clickable slot picker (hero) · icon fact cards · chat thread vs one link ·
 // horizontal numbered stepper · 3×2 icon grid · interactive slot planner
@@ -26,7 +26,8 @@
 //   - No group sessions / seat caps exist in code, so none are claimed.
 // No usage stats, no ratings. Testimonials are real, from data/testimonials.js.
 //
-// IMAGES: empty ImgSlot placeholders (data-img-slot names the photo to supply).
+// IMAGES: /features/scheduling.png in the without-vs-with section; the availability
+// settings slot below the stepper is still an empty ImgSlot placeholder.
 // Global Navbar + Footer come from App.jsx. No hover uplift anywhere.
 
 import { useState } from 'react';
@@ -43,14 +44,16 @@ import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
 import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
+import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
-const BLUE = '#960D32';       // accent for text + fills on white (AA, ~6.7:1)
-const BLUE_DEEP = '#0B2559';  // dark section background
-const BLUE_SKY = '#93C5FD';   // decorative / text on BLUE_DEEP only (AA)
-const PALE = '#F2F6FF';       // tinted section background
-const INK = '#0F172A';
-const DOTS = { backgroundImage: 'radial-gradient(rgba(29,78,216,0.13) 1px, transparent 1px)', backgroundSize: '22px 22px' };
+const BLUE = '#960D32';       // maroon accent for text + fills on white
+const BLUE_DEEP = '#3D0516';  // dark section background
+const BLUE_SKY = '#EB93A6';   // decorative / text on the dark section only
+const PALE = '#FDF2F4';       // tinted section background
+const INK = '#2B0A14';
+const HEAD_ACCENT = '#960D32'; // maroon — highlighted heading words, half of the black/maroon heading
+const DOTS = { backgroundImage: 'radial-gradient(rgba(150,13,50,0.13) 1px, transparent 1px)', backgroundSize: '22px 22px' };
 
 /* ─────────────────────────────  SLOT MATH  ────────────────────────────── */
 
@@ -137,7 +140,7 @@ function PrimaryCta({ to = START, children, light = false }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold shadow-[0_8px_30px_rgba(29,78,216,0.18)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-opacity hover:no-underline hover:opacity-90"
       style={light ? { background: '#FFFFFF', color: BLUE_DEEP } : { background: BLUE, color: '#FFFFFF' }}
     >
       {children}
@@ -153,17 +156,17 @@ function ImgSlot({ alt, slot, className = '' }) {
       aria-label={alt}
       data-img-slot={slot}
       className={`flex items-center justify-center rounded-[16px] border border-black/5 ${className}`}
-      style={{ background: 'repeating-linear-gradient(135deg, rgba(29,78,216,0.04) 0 10px, rgba(29,78,216,0.08) 10px 20px)' }}
+      style={{ background: 'repeating-linear-gradient(135deg, rgba(150,13,50,0.04) 0 10px, rgba(150,13,50,0.08) 10px 20px)' }}
     >
-      <ImageIcon size={28} style={{ color: 'rgba(29,78,216,0.3)' }} aria-hidden />
+      <ImageIcon size={28} style={{ color: 'rgba(150,13,50,0.3)' }} aria-hidden />
     </div>
   );
 }
 
 const SectionHead = ({ title, accent, lead, center = false }) => (
   <div className={center ? 'mx-auto max-w-3xl text-center' : 'max-w-3xl'}>
-    <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl">
-      {title} <span style={{ color: BLUE }}>{accent}</span>
+    <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.08] tracking-tight text-black sm:text-5xl">
+      {title} <span style={{ color: HEAD_ACCENT }}>{accent}</span>
     </Reveal>
     {lead && <Reveal as="p" delay={0.05} className="mt-5 text-base leading-relaxed text-slate-600">{lead}</Reveal>}
   </div>
@@ -245,7 +248,7 @@ function SlotPicker() {
                       disabled={!!booked}
                       onClick={() => setPicked({ d: d.d, n: d.n, t })}
                       aria-label={booked ? `${t}, booked` : t}
-                      className={`rounded-[6px] border px-3 py-2.5 text-sm font-semibold transition-colors ${booked ? 'cursor-not-allowed border-transparent bg-slate-50 text-slate-400' : 'border-[#960D32]/30 text-[#960D32] hover:border-[#960D32] hover:bg-[#F2F6FF]'}`}
+                      className={`rounded-[6px] border px-3 py-2.5 text-sm font-semibold transition-colors ${booked ? 'cursor-not-allowed border-transparent bg-slate-50 text-slate-400' : 'border-[#960D32]/30 text-[#960D32] hover:border-[#960D32] hover:bg-[#FDF2F4]'}`}
                     >
                       {booked ? <span className="flex items-center justify-between"><span className="line-through">{t}</span><span className="text-[10px] font-medium uppercase tracking-wider no-underline">Booked</span></span> : t}
                     </button>
@@ -313,7 +316,7 @@ function SlotPlanner() {
               {buf > 0 && s + len < WINDOW.end && (
                 <div
                   className="absolute inset-y-1"
-                  style={{ left: pct(s + len), width: `${(Math.min(buf, WINDOW.end - s - len) / span) * 100}%`, background: 'repeating-linear-gradient(135deg, rgba(29,78,216,0.10) 0 5px, rgba(29,78,216,0.22) 5px 10px)' }}
+                  style={{ left: pct(s + len), width: `${(Math.min(buf, WINDOW.end - s - len) / span) * 100}%`, background: 'repeating-linear-gradient(135deg, rgba(150,13,50,0.10) 0 5px, rgba(150,13,50,0.22) 5px 10px)' }}
                 />
               )}
             </div>
@@ -321,7 +324,7 @@ function SlotPlanner() {
         </div>
         <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-slate-500">
           <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: BLUE }} /> Bookable session</span>
-          {buf > 0 && <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: 'rgba(29,78,216,0.25)' }} /> Buffer</span>}
+          {buf > 0 && <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: 'rgba(150,13,50,0.25)' }} /> Buffer</span>}
         </div>
       </div>
 
@@ -359,10 +362,9 @@ export default function SchedulingFeature() {
       { price: PREMIUM_PLAN.yearly, name: `${PREMIUM_PLAN.name} plan (yearly)` },
     ],
   });
-  const half = Math.ceil(FAQ.length / 2);
 
   return (
-    <main className="overflow-x-clip bg-white" style={{ color: INK }}>
+    <main className="feature-page-dark overflow-x-clip bg-white" style={{ color: INK }}>
       <Seo
         title={seo.title}
         description={seo.description}
@@ -389,8 +391,8 @@ export default function SchedulingFeature() {
               <span aria-hidden className="mx-2">/</span>
               <span aria-current="page" className="text-slate-700">Online scheduling</span>
             </nav>
-            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.3rem,4vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">
-              Free online appointment scheduling, <span style={{ color: BLUE }}>minus the back and forth.</span>
+            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.3rem,4vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-black">
+              Free online appointment scheduling, <span style={{ color: HEAD_ACCENT }}>minus the back and forth.</span>
             </Reveal>
             <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-slate-600 lg:text-[17px]">
               Scheduling software for coaches, consultants and creators in India. Share one link, clients pick a time you are actually free, confirm with a WhatsApp code, and it is booked.
@@ -451,7 +453,7 @@ export default function SchedulingFeature() {
               <p className="mt-5 border-t border-black/5 pt-4 text-sm text-slate-500">Five messages in, still nothing on the calendar.</p>
             </Reveal>
 
-            <Reveal delay={0.06} className="flex flex-col rounded-[24px] border border-[#960D32]/20 bg-white p-6 shadow-[0_8px_30px_rgba(29,78,216,0.06)] sm:p-7">
+            <Reveal delay={0.06} className="flex flex-col rounded-[24px] border border-[#960D32]/20 bg-white p-6 shadow-[0_8px_30px_rgba(150,13,50,0.06)] sm:p-7">
               <div className="text-xs font-bold uppercase tracking-[0.16em]" style={{ color: BLUE }}>With Meeticulous: one link</div>
               <div className="mt-5 flex justify-end">
                 <span className="flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-semibold text-white" style={{ background: BLUE }}>
@@ -465,7 +467,13 @@ export default function SchedulingFeature() {
                   <div className="mt-0.5 text-slate-600">Picked from your live slots. Confirmation on WhatsApp and email.</div>
                 </div>
               </div>
-              <ImgSlot slot="scheduling-booking-page-phone" alt="A Meeticulous booking page open on a phone, showing open time slots" className="mt-5 aspect-[16/9] w-full flex-1" />
+              <img
+                src="/features/scheduling.png"
+                alt="A Meeticulous booking page open on a phone, showing open time slots"
+                loading="lazy"
+                decoding="async"
+                className="mx-auto mt-5 w-full max-w-md"
+              />
             </Reveal>
           </div>
         </div>
@@ -476,10 +484,10 @@ export default function SchedulingFeature() {
         <div className="mx-auto max-w-6xl">
           <SectionHead center title="Set it up once." accent="Then stop scheduling." lead="Four steps, most of them done the evening you sign up." />
           <ol className="relative mt-16 grid gap-10 lg:grid-cols-4 lg:gap-6">
-            <span aria-hidden className="absolute left-[12.5%] right-[12.5%] top-5 hidden h-px lg:block" style={{ background: 'rgba(29,78,216,0.25)' }} />
+            <span aria-hidden className="absolute left-[12.5%] right-[12.5%] top-5 hidden h-px lg:block" style={{ background: 'rgba(150,13,50,0.25)' }} />
             {STEPS.map((s, i) => (
               <Reveal as="li" key={s.title} delay={i * 0.06} className="relative flex gap-4 lg:flex-col lg:items-center lg:text-center">
-                <span className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border bg-white font-heading text-sm font-extrabold" style={{ borderColor: 'rgba(29,78,216,0.35)', color: BLUE }}>
+                <span className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border bg-white font-heading text-sm font-extrabold" style={{ borderColor: 'rgba(150,13,50,0.35)', color: BLUE }}>
                   {i + 1}
                 </span>
                 <div>
@@ -492,7 +500,13 @@ export default function SchedulingFeature() {
             ))}
           </ol>
           <Reveal delay={0.1} className="mt-16">
-            <ImgSlot slot="scheduling-availability-settings" alt="The Meeticulous availability settings with weekly hours, time zone and buffer" className="mx-auto aspect-[21/9] w-full max-w-4xl" />
+            <img
+              src="/features/online%20schedule.png"
+              alt="The Meeticulous availability settings with weekly hours, time zone and buffer"
+              loading="lazy"
+              decoding="async"
+              className="mx-auto w-full max-w-md rounded-[16px]"
+            />
           </Reveal>
         </div>
       </section>
@@ -554,24 +568,20 @@ export default function SchedulingFeature() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-6xl">
-          <SectionHead center title="Scheduling questions," accent="answered." />
-          <div className="mt-14 grid gap-4 md:grid-cols-2 md:gap-6">
-            {[FAQ.slice(0, half), FAQ.slice(half)].map((col, c) => (
-              <div key={c} className="space-y-4">
-                {col.map((f, i) => (
-                  <details key={f.q} className="group rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)] open:border-[#960D32]/25" open={c === 0 && i === 0}>
-                    <summary className="flex cursor-pointer list-none items-start justify-between gap-4 px-5 py-4 [&::-webkit-details-marker]:hidden">
-                      <span className="font-heading text-[16px] font-bold">{f.q}</span>
-                      <span aria-hidden className="text-xl leading-none transition-transform group-open:rotate-45" style={{ color: BLUE }}>+</span>
-                    </summary>
-                    <p className="px-5 pb-5 text-[15px] leading-relaxed text-slate-600">{f.a}</p>
-                  </details>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
+        <FeatureFaq
+          heading={<SectionHead title="Scheduling questions," accent="answered." />}
+          items={FAQ}
+          itemClassName="rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]"
+          openItemClassName="border-[#960D32]/25"
+          summaryClassName="flex items-start justify-between gap-4 px-5 py-4"
+          answerClassName="px-5 pb-5 text-[15px] leading-relaxed text-slate-600"
+          renderSummary={(f, i, open) => (
+            <>
+              <span className="font-heading text-[16px] font-bold">{f.q}</span>
+              <span aria-hidden className={`text-xl leading-none transition-transform ${open ? 'rotate-45' : ''}`} style={{ color: BLUE }}>+</span>
+            </>
+          )}
+        />
       </section>
 
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
