@@ -64,7 +64,7 @@ const dIcon = (on) => `relative grid h-10 w-10 place-items-center rounded-xl bor
   on ? 'border-transparent bg-maroon text-white' : 'border-line bg-white text-maroon hover:bg-pink-100'}`;
 
 // Desktop top-bar ghost icon button (bell): no border, hover fill.
-const gIcon = (on) => `relative grid h-10 w-10 place-items-center rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 ${
+const gIcon = (on) => `relative grid h-9 w-9 place-items-center rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 ${
   on ? 'bg-maroon text-white' : 'text-ink hover:bg-pink-100 hover:text-maroon'}`;
 
 // Desktop top-bar space pill: the community nav as words, active = maroon fill.
@@ -211,9 +211,9 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
                 suggestions panel (Recent + prompts). Panel items use onMouseDown
                 so the choice registers before the input's blur closes it. */}
             <div className="relative ml-auto shrink-0">
-              <form role="search" onSubmit={(e) => { e.preventDefault(); const q = searchQuery.trim(); if (q) pushRecent(q); }} className="flex w-44 items-center gap-2 rounded-full bg-cream px-4 py-2 transition-[width] duration-200 ease-out focus-within:w-80 focus-within:ring-2 focus-within:ring-maroon/20">
-                <Search size={16} className="shrink-0 text-muted" aria-hidden="true" />
-                <input ref={searchRef} type="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onFocus={() => setSearchFocused(true)} onBlur={() => setTimeout(() => setSearchFocused(false), 150)} aria-label="Search the community" aria-expanded={searchFocused} placeholder="Search hosts, posts, spaces…" className="h-7 min-h-0 min-w-0 flex-1 appearance-none border-0 bg-transparent p-0 text-sm leading-7 text-ink outline-none placeholder:text-muted focus:border-0 focus:outline-none focus:shadow-none focus:ring-0" />
+              <form role="search" onSubmit={(e) => { e.preventDefault(); const q = searchQuery.trim(); if (q) pushRecent(q); }} className="flex w-40 items-center gap-2 rounded-full bg-cream px-3.5 py-1.5 transition-[width] duration-200 ease-out focus-within:w-72 focus-within:ring-2 focus-within:ring-maroon/20">
+                <Search size={14} className="shrink-0 text-muted" aria-hidden="true" />
+                <input ref={searchRef} type="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onFocus={() => setSearchFocused(true)} onBlur={() => setTimeout(() => setSearchFocused(false), 150)} aria-label="Search the community" aria-expanded={searchFocused} placeholder="Search hosts, posts, spaces…" className="h-6 min-h-0 min-w-0 flex-1 appearance-none border-0 bg-transparent p-0 text-[13px] leading-6 text-ink outline-none placeholder:text-muted focus:border-0 focus:outline-none focus:shadow-none focus:ring-0" />
               </form>
               {searchFocused && (
                 <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-80 overflow-hidden rounded-2xl border border-line bg-white py-2 shadow-xl">
@@ -243,16 +243,16 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
 
             {/* Actions */}
             <div className="flex shrink-0 items-center gap-2">
-              <button type="button" onClick={() => onCompose?.('post')} className="flex items-center gap-1.5 rounded-full bg-maroon px-4 py-2 text-sm font-semibold text-cream shadow-sm transition-colors hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40">
-                <Plus size={16} aria-hidden="true" /> Post
+              <button type="button" onClick={() => onCompose?.('post')} className="flex items-center gap-1 rounded-full bg-maroon px-3.5 py-1.5 text-[13px] font-semibold text-cream shadow-sm transition-colors hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40">
+                <Plus size={14} aria-hidden="true" /> Post
               </button>
 
               <Link to="/community/alerts" aria-label={unread ? `Alerts, ${unread} unread` : 'Alerts'} aria-current={active === 'alerts' ? 'page' : undefined} className={gIcon(active === 'alerts')}>
-                <Bell size={19} aria-hidden="true" />
+                <Bell size={16} aria-hidden="true" />
                 {unread > 0 && <span className="absolute -right-1 -top-1 min-w-[17px] rounded-full bg-maroon px-1 text-center text-[10px] font-bold leading-[17px] text-white">{unread > 9 ? '9+' : unread}</span>}
               </Link>
 
-              <button type="button" onClick={() => setDrawerOpen(true)} aria-label="Open profile menu" aria-expanded={drawerOpen} className="ml-0.5 grid h-10 w-10 place-items-center rounded-xl font-display text-sm font-extrabold text-[#5c0620] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40" style={{ background: 'radial-gradient(120% 120% at 30% 20%,#FFD7E0,#FF9FB0 60%,#E0506F)' }}>
+              <button type="button" onClick={() => setDrawerOpen(true)} aria-label="Open profile menu" aria-expanded={drawerOpen} className="ml-0.5 grid h-9 w-9 place-items-center rounded-xl font-display text-[13px] font-extrabold text-[#5c0620] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40" style={{ background: 'radial-gradient(120% 120% at 30% 20%,#FFD7E0,#FF9FB0 60%,#E0506F)' }}>
                 {(user?.name || user?.first_name || 'Y').charAt(0).toUpperCase()}
               </button>
             </div>
