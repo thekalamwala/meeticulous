@@ -1,29 +1,65 @@
 'use strict';
 
 /**
- * botTools — Tithi's read-only "status lookup" tools for the AUTHENTICATED support
- * thread. Each wraps the SAME live account context (supportContextService) that
- * contextAnswer already uses, but exposed as model tools so the agent picks the right
- * one from any phrasing and can compose several — the industry-grade tool-calling path,
- * replacing the brittle regex ladder.
+ * botTools — Tithi's account tools for the AUTHENTICATED support thread. Exposed as
+ * model tools so the agent picks the right one from any phrasing and composes several —
+ * the industry-grade tool-calling path, replacing the brittle regex ladder.
  *
- * SAFETY (Slice 1):
- *  - READ-ONLY. Status only, never amounts, never a mutation. (Writes stay in the
- *    regex supportActions path until Slice 2 adds a confirmation gate.)
- *  - OWN-DATA-ONLY. Everything reads from `ctx`, which askBot only ever has on an
- *    authenticated thread (server-resolved from a verified user_id / guest_phone). The
- *    public widget has no ctx, so it never reaches these tools.
- *  - Money disputes are blocked upstream (DISPUTE_RE) before the loop runs, so a tool
- *    can never answer a chargeback/fraud question from state.
+ *   READS  (Slice 1): get_booking_status / get_refund_status / get_listing_status /
+ *                     get_payout_status / get_plan_status. Status only, never amounts.
+ *   WRITES (Slice 2): resend_confirmation / resend_invoice / resend_calendar — the three
+ *                     email-only, idempotent, own-booking actions from supportActions,
+ *                     now behind a CONFIRMATION GATE (confirmed=false previews; the write
+ *                     runs only on confirmed=true, after the user agrees).
+ *
+ * SAFETY:
+ *  - OWN-DATA-ONLY. Reads use `ctx` (server-resolved from a verified thread); writes use
+ *    `identity` ({userId, guestPhone, isHost}) and look the booking up server-side — the
+ *    bot never trusts a client-supplied id.
+ *  - Authenticated thread only: askBot gates the whole loop on `context`, so the public
+ *    widget never reaches any tool. A write with no identity refuses.
+ *  - Money disputes are blocked upstream (DISPUTE_RE) before the loop runs.
+ *  - Writes are email-only + idempotent (resends); no money moves, no booking mutates.
+ *    State-changing actions (reschedule/cancel) come in Slice 3 on this same gate.
  */
 
 const ca = require('./contextAnswer');
+const supportActions = require('../supportActions');
 
 const NONE = 'No matching record found on this account.';
+const NO_IDENTITY = "I can only do that on a signed-in account — if you reached out another way, a teammate can help.";
 
-// name -> { hostOnly, spec (Anthropic tool), run(ctx) -> string|null }.
-// `run` reuses contextAnswer's vetted per-intent helper, so the facts + links match
-// exactly what the regex path would have said.
+const fmtDate = (s) => { try { return new Date(s).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch { return ''; } };
+
+// Human label per write action (used in the preview the model relays).
+const WRITE_LABEL = {
+  resend_confirmation: 'booking confirmation email',
+  resend_invoice: 'GST invoice',
+  resend_calendar: 'calendar invite',
+};
+
+// The confirmation gate. confirmed!==true → a PREVIEW (nothing sent); confirmed===true →
+// run the real supportActions write. Own-booking only (looked up server-side from identity).
+async function runWrite(key, identity, input) {
+  if (!identity || !(identity.userId || identity.guestPhone)) return NO_IDENTITY;
+  if (!input || input.confirmed !== true) {
+    let b = null;
+    try { b = await supportActions.latestBooking(identity); } catch (_) { /* preview is best-effort */ }
+    const label = b ? `${b.service_title || 'your booking'}${b.scheduled_at ? ` on ${fmtDate(b.scheduled_at)}` : ''}` : 'your most recent booking';
+    const to = b && b.guest_email ? ` to ${b.guest_email}` : '';
+    return `[PREVIEW — nothing sent yet] Calling again with confirmed=true will resend the ${WRITE_LABEL[key]} for ${label}${to}. `
+      + 'Tell the user exactly this and ask them to confirm; only call again with confirmed=true after they clearly say yes.';
+  }
+  try {
+    const r = await supportActions.runAction(key, identity);
+    return (r && r.message) || (r && r.ok ? 'Done.' : "I couldn't complete that just now — want me to pull in a teammate?");
+  } catch (_) {
+    return 'I hit a snag doing that — tell the user a teammate will sort it out.';
+  }
+}
+
+// name -> { hostOnly, write, spec, run(ctx) }. Reads reuse contextAnswer's vetted helper;
+// writes route through runWrite (the key equals the supportActions action key).
 const TOOLS = {
   get_booking_status: {
     hostOnly: false,
@@ -38,7 +74,7 @@ const TOOLS = {
     hostOnly: false,
     spec: {
       name: 'get_refund_status',
-      description: "Whether the user has a refund in progress or completed on a recent booking (status only, never an amount). Use for 'where's my refund', 'did my money come back', 'has my cancellation been refunded'. Do NOT use for a dispute (double charge / fraud / unauthorized) — those go to a human.",
+      description: "Whether the user has a refund in progress or completed on a recent booking (status only, never an amount). Use for 'where's my refund', 'did my money come back'. NOT for a dispute (double charge / fraud) — those go to a human.",
       input_schema: { type: 'object', properties: {} },
     },
     run: (ctx) => ca.refundAnswer(ctx),
@@ -47,7 +83,7 @@ const TOOLS = {
     hostOnly: true,
     spec: {
       name: 'get_listing_status',
-      description: "A host's public listing state — why it is or isn't live (plan active, KYC/verification, an active service). Use for 'why isn't my listing live', 'am I showing up', 'is my page published'.",
+      description: "A host's public listing state — why it is or isn't live (plan active, KYC/verification, an active service). Use for 'why isn't my listing live', 'am I showing up'.",
       input_schema: { type: 'object', properties: {} },
     },
     run: (ctx) => ca.listingAnswer(ctx),
@@ -56,7 +92,7 @@ const TOOLS = {
     hostOnly: true,
     spec: {
       name: 'get_payout_status',
-      description: "A host's payout account state — linked, activating, or active (status only). Use for 'when do I get paid', 'where are my earnings', 'is my payout set up'.",
+      description: "A host's payout account state — linked, activating, or active (status only). Use for 'when do I get paid', 'is my payout set up'.",
       input_schema: { type: 'object', properties: {} },
     },
     run: (ctx) => ca.payoutAnswer(ctx),
@@ -65,15 +101,41 @@ const TOOLS = {
     hostOnly: true,
     spec: {
       name: 'get_plan_status',
-      description: "A host's subscription/plan state — which plan, active or expired, renewal. Use for 'what plan am I on', 'has my subscription expired', 'when does my plan renew'.",
+      description: "A host's subscription/plan state — which plan, active or expired, renewal. Use for 'what plan am I on', 'has my subscription expired'.",
       input_schema: { type: 'object', properties: {} },
     },
     run: (ctx) => ca.planAnswer(ctx),
   },
+
+  // ── Writes (confirmation-gated) ──────────────────────────────────────────────
+  resend_confirmation: {
+    hostOnly: false, write: true,
+    spec: {
+      name: 'resend_confirmation',
+      description: "Re-send the booking confirmation email for the user's most recent booking. Call confirmed=false first to preview; confirmed=true only after the user agrees.",
+      input_schema: { type: 'object', properties: { confirmed: { type: 'boolean', description: 'true ONLY after the user has explicitly agreed in their latest message' } }, required: ['confirmed'] },
+    },
+  },
+  resend_invoice: {
+    hostOnly: false, write: true,
+    spec: {
+      name: 'resend_invoice',
+      description: "Email the GST invoice for the user's most recent booking. Call confirmed=false first to preview; confirmed=true only after the user agrees.",
+      input_schema: { type: 'object', properties: { confirmed: { type: 'boolean', description: 'true ONLY after the user has explicitly agreed in their latest message' } }, required: ['confirmed'] },
+    },
+  },
+  resend_calendar: {
+    hostOnly: false, write: true,
+    spec: {
+      name: 'resend_calendar',
+      description: "Email an .ics calendar invite for the user's most recent booking. Call confirmed=false first to preview; confirmed=true only after the user agrees.",
+      input_schema: { type: 'object', properties: { confirmed: { type: 'boolean', description: 'true ONLY after the user has explicitly agreed in their latest message' } }, required: ['confirmed'] },
+    },
+  },
 };
 
-// The tool specs available for this caller — host-only tools are hidden from guests so
-// the model can't look up (or hallucinate) host state for a guest.
+// Tool specs for this caller. Host-only READ tools are hidden from guests; write tools
+// are available to both (they act on the caller's own booking).
 function toolSpecsFor(ctx) {
   const isHost = !!ctx && ctx.kind === 'host';
   return Object.values(TOOLS)
@@ -81,14 +143,18 @@ function toolSpecsFor(ctx) {
     .map((t) => t.spec);
 }
 
-// Execute one tool by name → the string the model sees as the tool_result. Unknown tool,
-// or a host-only tool called for a guest, returns a safe note (never throws, never leaks).
-function runTool(name, ctx) {
+// Execute one tool → the string the model sees as tool_result. Async (writes do I/O).
+// Never throws, never leaks: unknown tool / cross-account / missing identity → safe note.
+async function runTool(name, ctx, identity = null, input = null) {
   const t = TOOLS[name];
   if (!t) return NONE;
   if (t.hostOnly && !(ctx && ctx.kind === 'host')) return NONE;
+  if (t.write) return runWrite(name, identity, input);
   const out = t.run(ctx || {});
   return (out && String(out).trim()) || NONE;
 }
 
-module.exports = { TOOLS, toolSpecsFor, runTool, NONE };
+// Does this tool perform an action? (askBot uses it to require identity + log the write.)
+const isWriteTool = (name) => !!(TOOLS[name] && TOOLS[name].write);
+
+module.exports = { TOOLS, toolSpecsFor, runTool, isWriteTool, NONE, NO_IDENTITY };

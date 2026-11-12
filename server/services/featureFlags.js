@@ -1,5 +1,3 @@
-const { supabaseAdmin } = require('../config/supabase');
-
 const CACHE_TTL_MS = 60 * 1000;
 let _cache = { at: 0, map: null };
 
@@ -8,9 +6,14 @@ async function loadFlags() {
   if (_cache.map && now - _cache.at < CACHE_TTL_MS) return _cache.map;
   const map = {};
   try {
+    // Lazy require: config/supabase throws at load without a service key, so requiring
+    // it here (not at module top) keeps featureFlags import-safe wherever it's pulled in
+    // (mirrors the lazy-supabase pattern in supportController). Any error → empty map →
+    // per-key default (fail-closed for security keys).
+    const { supabaseAdmin } = require('../config/supabase');
     const { data, error } = await supabaseAdmin.from('feature_flags').select('key, enabled');
     if (!error) for (const row of data || []) map[row.key] = !!row.enabled;
-  } catch (_) { /* fail-open below */ }
+  } catch (_) { /* fail-open/closed per key below */ }
   _cache = { at: now, map };
   return map;
 }
