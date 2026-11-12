@@ -1,6 +1,7 @@
 'use strict';
 const { supabaseAdmin } = require('../config/supabase');
 const { buildTaxInvoiceHTML } = require('../services/invoiceHtml');
+const { safeEqual } = require('../utils/safeEqual');
 
 // Public, token-gated: the invoice's unguessable access_token authorises viewing
 // (same model as product download tokens) so the emailed link works without login.
@@ -11,7 +12,9 @@ async function getInvoice(req, res) {
     const { data: inv } = await supabaseAdmin
       .from('invoices').select('*').eq('id', id).maybeSingle();
     if (!inv) return res.status(404).send('Invoice not found');
-    if (!token || token !== inv.access_token) return res.status(403).send('Not authorized');
+    // Constant-time compare (audit F-12) — the access_token is a 122-bit UUID, so
+    // this is belt-and-suspenders, but `!==` is a timing oracle in principle.
+    if (!token || !safeEqual(token, inv.access_token)) return res.status(403).send('Not authorized');
     res.set('Content-Type', 'text/html; charset=utf-8').send(buildTaxInvoiceHTML(inv));
   } catch (e) {
     res.status(500).send('Could not render invoice');

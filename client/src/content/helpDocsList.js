@@ -17,6 +17,7 @@ export const HELP_CATEGORIES = ['Guests', 'Hosts', 'General'];
 export const HELP_DOCS = [
   // Guests
   { slug: 'booking-a-service', category: 'Guests' },
+  { slug: 'online-appointments-and-the-meeting-link', category: 'Guests' },
   { slug: 'signing-in-with-your-phone', category: 'Guests' },
   { slug: 'otp-problems', category: 'Guests' },
   { slug: 'is-my-booking-confirmed', category: 'Guests' },

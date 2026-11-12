@@ -1,11 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { House, Lock, SquarePen } from 'lucide-react';
+import { Bell, House, LayoutGrid, Lock, Search, SquarePen, UserRound } from 'lucide-react';
 import { getSpaces } from '../../services/communityApi';
+import { getNotifications } from '../../services/api';
 import { SpaceIcon } from '../../components/community/ItemCard';
 import FeedSkeleton from '../../components/community/CommunitySkeleton';
 import CommunityAd from '../../components/community/CommunityAd';
+import { useFeature } from '../../context/FeatureContext';
+import { useAuth } from '../../context/AuthContext';
+import ProfileDrawer from '../../components/community/ProfileDrawer';
+import '../../styles/community-v2.css';
 
 export const SITE_DESC = 'Questions, tips and updates from hosts and guests on Meeticulous, the booking platform for independent professionals.';
 export const TITLE_SUFFIX = ' — Meeticulous Community'; // same suffix as server prerenderCommunity.js
@@ -39,10 +44,37 @@ const navCls = (on) => `flex h-10 items-center gap-3 rounded-full px-3 text-sm n
   on ? 'bg-white font-semibold text-maroon' : 'font-medium text-ink hover:bg-pink-100 hover:text-maroon'}`;
 const LOCK_LABEL = { hosts: 'Hosts post here', official: 'Team posts only' };
 
+// Dynamic community wordmark tag — intentionally varies (Gang/Circle/…), never
+// collapsed to one name. Stable within a day so the navbar doesn't flicker.
+// ponytail: a fixed rotation, not a naming engine; per-space names can come later.
+const TAGS = ['Gang', 'Circle', 'Crew', 'Table', 'Room'];
+const communityTag = () => TAGS[new Date().getDay() % TAGS.length];
+
 // Shell: spaces rail (desktop) or chip row (mobile), the main column, optional right rail.
 // `active` = 'feed' or a space key. `onCompose(kind)` backs the "New post" button.
 export default function CommunityLayout({ active, onCompose, aside, children }) {
+  const v2 = useFeature('community_v2');
+  const { user } = useAuth();
   const [spaces, setSpaces] = useState([]);
+  // Profile drawer (grid tile + Profile tab). The panel + focus-trap land in M3;
+  // M2 wires the open state and the aria-expanded semantics on both triggers.
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [unread, setUnread] = useState(0);
+  const tag = communityTag();
+
+  // Unread community-alert count for the bottom-bar badge (v2, signed-in).
+  useEffect(() => {
+    if (!v2 || !user) return undefined;
+    let live = true;
+    getNotifications(user.is_host ? 'host' : 'guest')
+      .then((res) => {
+        if (!live) return;
+        const n = (res.data?.notifications || []).filter((x) => typeof x.type === 'string' && x.type.startsWith('COMMUNITY') && !x.read_at);
+        setUnread(n.length);
+      })
+      .catch(() => {});
+    return () => { live = false; };
+  }, [v2, user, active]);
   // The right rail always shows: it carries the ad slot (every audience has a deck,
   // including logged-out guests), plus any page-supplied `aside` above it.
   const showRail = true;
@@ -53,8 +85,29 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
   }, []);
 
   return (
-    <main className="min-h-screen bg-cream pb-16">
-      <nav aria-label="Spaces" className="flex gap-3 overflow-x-auto px-5 py-4 lg:hidden">
+    <main className={`min-h-screen overflow-x-hidden bg-cream ${v2 ? 'community-v2 pb-24' : 'pb-16'}`}>
+      {v2 && (
+        <header
+          className="sticky top-0 z-40 flex items-center justify-between border-b border-line bg-white px-4 lg:hidden"
+          style={{ paddingTop: 'env(safe-area-inset-top)' }}
+        >
+          <Link to="/community" aria-label="Meeticulous Community" className="flex items-center gap-2 py-3 no-underline">
+            <img src="/brand/meeticulous-wordmark.svg" alt="Meeticulous" width="110" height="18" className="h-[18px] w-auto" />
+            <span className="rounded-full bg-pink-100 px-2 py-0.5 text-xs font-semibold text-maroon">{tag}</span>
+          </Link>
+          <button
+            type="button"
+            onClick={() => setDrawerOpen((o) => !o)}
+            aria-label="Open profile menu"
+            aria-expanded={drawerOpen}
+            className="grid h-11 w-11 place-items-center rounded-2xl bg-cream text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40"
+          >
+            <LayoutGrid size={20} aria-hidden="true" />
+          </button>
+        </header>
+      )}
+
+      <nav aria-label="Spaces" className={`gap-3 overflow-x-auto px-5 py-4 lg:hidden ${v2 ? 'hidden' : 'flex'}`}>
         <Link to="/community" aria-current={active === 'feed' ? 'page' : undefined} className={`mt-tag shrink-0 no-underline ${active === 'feed' ? 'mt-tag--selected' : ''}`}>All</Link>
         {spaces.map((s) => (
           <Link key={s.key} to={`/community/s/${s.key}`} aria-current={active === s.key ? 'page' : undefined} className={`mt-tag shrink-0 no-underline ${active === s.key ? 'mt-tag--selected' : ''}`}>
@@ -89,7 +142,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
           </div>
         </aside>
 
-        <div className="flex min-w-0 flex-col gap-5">{children}</div>
+        <div className={`flex min-w-0 flex-col ${v2 ? 'gap-3' : 'gap-5'}`}>{children}</div>
 
         {showRail && (
           <aside aria-label="About" className="sticky top-24 hidden flex-col gap-5 self-start xl:flex">
@@ -99,10 +152,58 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
         )}
       </div>
 
-      {/* Mobile "New post": bottom-LEFT, because the support-bot launcher (BotWidget) owns bottom-right. */}
-      <button type="button" onClick={() => onCompose?.('post')} className="mt-btn mt-fab lg:hidden">
-        <SquarePen size={20} aria-hidden="true" />New post
-      </button>
+      {/* Mobile "New post" FAB: v1 only. v2 drops it (overlapped content); posting
+          lives in the inline composer + the full-screen composer (M4). */}
+      {!v2 && (
+        <button type="button" onClick={() => onCompose?.('post')} className="mt-btn mt-fab lg:hidden">
+          <SquarePen size={20} aria-hidden="true" />New post
+        </button>
+      )}
+
+      {/* v2 mobile bottom tab bar: Home · Search · Alerts · Profile. Safe-area aware.
+          Alerts wires to the Alerts tab in M6; Search is a placeholder until its
+          page exists. Profile opens the same drawer as the grid tile (panel in M3). */}
+      {v2 && (
+        <nav
+          aria-label="Community"
+          className="fixed inset-x-0 bottom-0 z-40 flex items-stretch justify-around border-t border-line bg-white lg:hidden"
+          style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+        >
+          <Link
+            to="/community"
+            aria-current={active === 'feed' ? 'page' : undefined}
+            className={`flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium no-underline ${active === 'feed' ? 'text-maroon' : 'text-muted'}`}
+          >
+            <House size={22} aria-hidden="true" />Home
+          </Link>
+          <button type="button" disabled aria-label="Search (coming soon)" title="Soon" className="flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium text-muted opacity-60">
+            <Search size={22} aria-hidden="true" />Search
+          </button>
+          <Link
+            to="/community/alerts"
+            aria-current={active === 'alerts' ? 'page' : undefined}
+            aria-label={unread ? `Alerts, ${unread} unread` : 'Alerts'}
+            className={`relative flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium no-underline ${active === 'alerts' ? 'text-maroon' : 'text-muted'}`}
+          >
+            <span className="relative">
+              <Bell size={22} aria-hidden="true" />
+              {unread > 0 && <span className="absolute -right-1.5 -top-1 min-w-[16px] rounded-full bg-maroon px-1 text-center text-[10px] font-semibold leading-4 text-white">{unread > 9 ? '9+' : unread}</span>}
+            </span>
+            Alerts
+          </Link>
+          <button
+            type="button"
+            onClick={() => setDrawerOpen((o) => !o)}
+            aria-label="Open profile menu"
+            aria-expanded={drawerOpen}
+            className="flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40"
+          >
+            <UserRound size={22} aria-hidden="true" />Profile
+          </button>
+        </nav>
+      )}
+
+      {v2 && <ProfileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} user={user} />}
     </main>
   );
 }

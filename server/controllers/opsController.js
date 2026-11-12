@@ -47,9 +47,12 @@ const readiness = async (req, res) => {
 const exposeMetrics = (req, res) => {
   const token = process.env.METRICS_TOKEN;
   if (!token) return res.status(404).json({ message: 'Not found' }); // opt-in only
+  const { safeEqual } = require('../utils/safeEqual');
   const provided =
     (req.headers.authorization || '').replace(/^Bearer\s+/i, '') || req.query.token;
-  if (provided !== token) return res.status(401).json({ message: 'Unauthorized' });
+  // Constant-time compare (audit F-11) — the old `!==` was a timing oracle.
+  // (Query-param token kept so existing monitors don't break; header preferred.)
+  if (!safeEqual(provided, token)) return res.status(401).json({ message: 'Unauthorized' });
 
   res.set('Content-Type', 'text/plain; version=0.0.4');
   return res.status(200).send(metrics.render());

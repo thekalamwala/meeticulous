@@ -7,6 +7,7 @@ import { useInfiniteScroll } from '../../components/dashboard/ui/useInfiniteScro
 import { getFeed } from '../../services/communityApi';
 import { analytics, EVENTS } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
+import { useFeature } from '../../context/FeatureContext';
 import { SITE_URL, collectionPageJsonLd } from '../../utils/seo';
 import { communityBreadcrumbJsonLd, headlineOf } from '../../utils/communitySeo';
 import ItemCard from '../../components/community/ItemCard';
@@ -24,6 +25,7 @@ const TABS = [
 
 export default function CommunityFeed() {
   const { user } = useAuth();
+  const v2 = useFeature('community_v2');
   const navigate = useNavigate();
   const requireLogin = useRequireLogin();
   const [params, setParams] = useSearchParams();
@@ -64,14 +66,16 @@ export default function CommunityFeed() {
         ]}
       />
 
-      <header className="flex flex-col gap-2 py-2">
-        <h1 className="font-display text-3xl font-extrabold leading-tight tracking-tight text-maroon sm:text-4xl">
+      {/* v2: a slim one-line greeting, not a full-height hero, so the first post
+          sits above the fold on a 390px phone. v1: the original hero. */}
+      <header className={`flex flex-col ${v2 ? 'gap-0.5 py-1' : 'gap-2 py-2'}`}>
+        <h1 className={`font-display font-extrabold leading-tight tracking-tight text-maroon ${v2 ? 'text-xl' : 'text-3xl sm:text-4xl'}`}>
           Ask, share, learn. <span className="font-serif font-normal italic text-rose">Find your people.</span>
         </h1>
-        <p className="text-sm text-muted">Hosts and guests talking about sessions, pricing and the craft.</p>
+        <p className={`text-muted ${v2 ? 'text-xs' : 'text-sm'}`}>Hosts and guests talking about sessions, pricing and the craft.</p>
       </header>
 
-      <div role="tablist" aria-label="Feed" className="mt-tabs flex">
+      <div role="tablist" aria-label="Feed" className={v2 ? 'mt-tabs mt-tabs--underline flex overflow-x-auto' : 'mt-tabs flex'}>
         {TABS.map((t) => (
           <button
             key={t.key}
@@ -81,7 +85,7 @@ export default function CommunityFeed() {
             aria-disabled={t.soon || undefined}
             title={t.soon ? 'Following arrives soon' : undefined}
             onClick={() => { if (!t.soon && t.key !== tab) setParams(t.key === 'everyone' ? {} : { tab: t.key }); }}
-            className="mt-tab flex-1 justify-center px-3 sm:px-6"
+            className={v2 ? 'mt-tab shrink-0' : 'mt-tab flex-1 justify-center px-3 sm:px-6'}
           >
             {t.label}{t.soon && <span className="mt-tab__count">soon</span>}
           </button>

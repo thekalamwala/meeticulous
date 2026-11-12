@@ -588,8 +588,29 @@ const authorActivity = handleRead(async (req, res) => {
   return res.json({ posts, comments: withParent });
 }, { posts: [], comments: [] });
 
+// PATCH /prefs — update the member's email notification preference. Mentions and
+// replies share one flag (email_replies) server-side (notify.js wantsEmail), so
+// the client shows one toggle. ponytail: split into email_mentions when the two
+// need independent control (needs a column).
+const updatePrefs = handle(async (req, res) => {
+  const v = req.body?.email_replies;
+  if (typeof v !== 'boolean') return fail(res, 400, 'INVALID_PREF');
+  const m = await store.updateMemberPrefs(req.user.id, { email_replies: v });
+  return res.json({ email_replies: m?.email_replies !== false });
+});
+
+// GET /mention-suggest?q= — taggable members for the composer/comment @mention
+// typeahead (hosts + team + community members). Private, no-store. The list is
+// the only insert path the client offers, so a non-member can't be surfaced.
+const mentionSuggest = handle(async (req, res) => {
+  const q = String(req.query.q || '').slice(0, 40);
+  const members = await store.searchMentionable(q);
+  res.set('Cache-Control', 'private, no-store');
+  return res.json({ members });
+});
+
 module.exports = {
-  listSpaces, feed, spaceThreads, itemDetail, itemComments, me, authorActivity,
+  listSpaces, feed, spaceThreads, itemDetail, itemComments, me, authorActivity, mentionSuggest, updatePrefs,
   acceptTerms, createItem, updateItem, deleteItem, createComment, updateComment, deleteComment,
   acceptAnswer, addReaction, removeReaction, createReport,
   createSave, removeSave, createBlock, removeBlock,

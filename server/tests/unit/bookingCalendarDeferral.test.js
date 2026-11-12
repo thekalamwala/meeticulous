@@ -31,12 +31,18 @@ jest.mock('../../lib/pricingEngine', () => ({
   },
 }));
 
+// featureFlags is real + fail-open (unknown key → enabled), so without a mock the
+// new `paid_booking_without_pan` gate would read ON in tests. Mock it deterministic:
+// every flag ON except our opt-in, which defaults OFF (set per-test below).
+jest.mock('../../services/featureFlags', () => ({ isFeatureEnabled: jest.fn() }));
+
 const mockFrom = jest.fn();
 jest.mock('../../config/supabase', () => ({ supabaseAdmin: { from: (...a) => mockFrom(...a) } }));
 
 const { createCalendarEvent } = require('../../config/google');
 const { createBooking } = require('../../controllers/bookingController');
 const guestGrant = require('../../utils/bookingGrant');
+const featureFlags = require('../../services/featureFlags');
 
 const res = () => { const r = {}; r.status = jest.fn(() => r); r.json = jest.fn(() => r); return r; };
 
@@ -73,7 +79,11 @@ const wireSupabase = ({ service, host, avail, panOnFile = true, insertError = nu
   });
 };
 
-beforeEach(() => jest.clearAllMocks());
+beforeEach(() => {
+  jest.clearAllMocks();
+  // Default: all flags ON except the opt-in paid-without-PAN gate (legacy behaviour).
+  featureFlags.isFeatureEnabled.mockImplementation((k) => Promise.resolve(k !== 'paid_booking_without_pan'));
+});
 
 test('paid online service does NOT create a calendar event at booking time', async () => {
   wireSupabase({
@@ -149,6 +159,20 @@ test('paid booking is rejected 409 when the host has no PAN on file', async () =
   await createBooking(req, r);
   expect(r.status).toHaveBeenCalledWith(409);
   expect(createCalendarEvent).not.toHaveBeenCalled();
+});
+
+test('paid booking is ACCEPTED (201) with no PAN when paid_booking_without_pan is ON', async () => {
+  featureFlags.isFeatureEnabled.mockImplementation(() => Promise.resolve(true)); // flag ON
+  wireSupabase({
+    service: { id: 's1', title: 'SEO', duration: 30, price: 500, meeting_mode: 'online' },
+    host: { id: 'h1', email: 'h@x.com' },
+    avail: { timezone: 'Asia/Kolkata' },
+    panOnFile: false,
+  });
+  const r = res();
+  const req = { user: { id: 'u1' }, body: { service_id: 's1', guest_name: 'G', guest_email: 'g@x.com', scheduled_at: '2099-01-01T05:00:00.000Z' } };
+  await createBooking(req, r);
+  expect(r.status).toHaveBeenCalledWith(201); // no 409 — booking proceeds, payout held by the KYC withdrawal gate
 });
 
 test('free booking is allowed even when the host has no PAN (no TDS on ₹0)', async () => {

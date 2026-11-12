@@ -1,6 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar } from './AuthorChip';
+import MiniProfileSheet from './MiniProfileSheet';
+
+// Touch devices get the mini-profile bottom sheet; pointer devices keep the
+// inline popover. Evaluated once at module load (pointer type is stable enough).
+const isCoarse = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches;
 
 // Role-coloured identity seal next to the author name. Colour encodes role:
 //   guest grey · host rose · host+guest maroon · staff maroon + org mark.
@@ -26,6 +31,7 @@ function Seal({ color, size = 16 }) {
 
 export default function IdentityBadge({ author }) {
   const [open, setOpen] = useState(false);
+  const [sheet, setSheet] = useState(false);
   const ref = useRef(null);
   useEffect(() => {
     if (!open) return undefined;
@@ -45,9 +51,9 @@ export default function IdentityBadge({ author }) {
     <span ref={ref} className="relative inline-flex items-center">
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => (isCoarse ? setSheet(true) : setOpen((o) => !o))}
         aria-label={`${ROLE_LABEL[roleKey]} — view profile`}
-        aria-expanded={open}
+        aria-expanded={isCoarse ? sheet : open}
         className="inline-flex items-center gap-0.5 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-maroon/40"
       >
         <Seal color={color} />
@@ -56,7 +62,7 @@ export default function IdentityBadge({ author }) {
 
       {open && (
         <span role="dialog" aria-label={`${author.display_name} profile`}
-          className="absolute left-0 top-full z-50 mt-2 w-60 rounded-2xl border border-line bg-white p-4 shadow-[0_12px_32px_rgba(43,10,20,0.14)]">
+          className="absolute left-auto right-0 top-full z-50 mt-2 w-[min(15rem,calc(100vw-2rem))] rounded-2xl border border-line bg-white p-4 shadow-[0_12px_32px_rgba(43,10,20,0.14)] sm:left-0 sm:right-auto">
           <span className="flex items-center gap-3">
             <Avatar author={author} size="m" />
             <span className="min-w-0 flex-1">
@@ -74,6 +80,8 @@ export default function IdentityBadge({ author }) {
           )}
         </span>
       )}
+
+      {sheet && <MiniProfileSheet author={author} onClose={() => setSheet(false)} />}
     </span>
   );
 }

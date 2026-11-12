@@ -110,11 +110,14 @@ const Opening        = lazy(() => import('./pages/Opening'));
 const Inaugurators   = lazy(() => import('./pages/Inaugurators'));
 const BlogPost       = lazy(() => import('./pages/BlogPost'));
 const CommunityFeed  = lazy(() => import('./pages/community/CommunityFeed'));
+const CommunityAlerts = lazy(() => import('./pages/community/CommunityAlerts'));
 const NewPost        = lazy(() => import('./pages/community/NewPost'));
 const CommunitySpace = lazy(() => import('./pages/community/CommunitySpace'));
 const CommunityItem  = lazy(() => import('./pages/community/CommunityItem'));
 const CommunityGuidelines = lazy(() => import('./pages/community/CommunityGuidelines'));
 const ContributorShubham = lazy(() => import('./pages/community/ContributorShubham'));
+const ContributorTithi = lazy(() => import('./pages/community/ContributorTithi'));
+const CommunityTeam   = lazy(() => import('./pages/community/CommunityTeam'));
 const Moments        = lazy(() => import('./pages/Moments'));
 const MomentPage     = lazy(() => import('./pages/MomentPage'));
 const GoogleAuthDone = lazy(() => import('./pages/GoogleAuthDone'));
@@ -533,9 +536,12 @@ function App() {
           <Route path="/blog/:slug" element={<BlogPost />} />
           {/* Community: the API gate 404s while the flag is off, and the pages render NotFound. */}
           <Route path="/community" element={<CommunityFeed />} />
+          <Route path="/community/alerts" element={<CommunityAlerts />} />
           <Route path="/community/new" element={<NewPost />} />
           <Route path="/community/guidelines" element={<CommunityGuidelines />} />
           <Route path="/community/sndatarkar" element={<ContributorShubham />} />
+          <Route path="/community/tithi" element={<ContributorTithi />} />
+          <Route path="/community/team" element={<CommunityTeam />} />
           <Route path="/community/s/:key" element={<CommunitySpace />} />
           <Route path="/community/t/:slug" element={<CommunityItem />} />
           <Route path="/community/p/:slug" element={<CommunityItem />} />

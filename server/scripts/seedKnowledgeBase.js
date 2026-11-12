@@ -142,9 +142,15 @@ async function main() {
   if (voyageClient.isConfigured() && rows.length) {
     const texts = rows.map((r) => (r.heading ? `${r.heading}\n` : '') + r.content);
     const vectors = [];
-    for (let i = 0; i < texts.length; i += 100) {
-      const batch = await voyageClient.embed(texts.slice(i, i + 100), 'document');
+    // ponytail: batch + inter-call delay are env-tunable so a free-tier key (3 RPM /
+    // 10K TPM, no card) can seed without a 429 — set VOYAGE_EMBED_BATCH=15
+    // VOYAGE_EMBED_DELAY_MS=21000. Defaults (100 / 0) are the unchanged fast path.
+    const BATCH = Number(process.env.VOYAGE_EMBED_BATCH) || 100;
+    const DELAY = Number(process.env.VOYAGE_EMBED_DELAY_MS) || 0;
+    for (let i = 0; i < texts.length; i += BATCH) {
+      const batch = await voyageClient.embed(texts.slice(i, i + BATCH), 'document');
       vectors.push(...(batch || []));
+      if (DELAY && i + BATCH < texts.length) await new Promise((r) => setTimeout(r, DELAY));
     }
     rows.forEach((r, i) => { if (vectors[i]) r.embedding = vectors[i]; });
     console.log(`Embedded ${vectors.length} chunks (voyage ${voyageClient.MODEL}).`);

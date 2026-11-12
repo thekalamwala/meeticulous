@@ -1,5 +1,8 @@
 import { render } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import LinkifiedText from '../LinkifiedText';
+
+const renderR = (ui) => render(ui, { wrapper: MemoryRouter });
 
 test('links a URL with ugc rel and turns \\n into <br>', () => {
   const { container } = render(<LinkifiedText text={'see https://x.com\nok'} />);
@@ -28,4 +31,26 @@ test('bare domains link only on the server allowlist TLDs; trailing punctuation 
 test('a javascript: scheme is never a link', () => {
   const { container } = render(<LinkifiedText text={'javascript:alert(1)'} />);
   expect(container.querySelector('a')).toBeNull();
+});
+
+test('@mentions link to /<username> and keep the @ in the text', () => {
+  const { container } = renderR(<LinkifiedText text={'thanks @team and @Priya-, see you'} />);
+  const links = [...container.querySelectorAll('a')];
+  expect(links.map((a) => a.getAttribute('href'))).toEqual(['/team', '/priya']);
+  expect(links.map((a) => a.textContent)).toEqual(['@team', '@Priya']);
+  expect(container.textContent).toBe('thanks @team and @Priya-, see you');
+});
+
+test('an email address is not mistaken for a mention', () => {
+  const { container } = renderR(<LinkifiedText text={'mail me at a@b.io please'} />);
+  // @b must NOT become a mention link (preceded by a word char); b.io may still URL-link.
+  expect(container.querySelector('a[href="/b"]')).toBeNull();
+  expect(container.textContent).toBe('mail me at a@b.io please');
+});
+
+test('a mention sits correctly alongside a URL on the same line', () => {
+  const { container } = renderR(<LinkifiedText text={'@team see https://x.com now'} />);
+  const links = [...container.querySelectorAll('a')];
+  expect(links.map((a) => a.getAttribute('href'))).toEqual(['/team', 'https://x.com']);
+  expect(container.textContent).toBe('@team see https://x.com now');
 });

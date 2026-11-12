@@ -13,6 +13,8 @@ export const getSpaceThreads = ({ key, cursor } = {}) => body(API.get(`/communit
 export const getItem = (slug) => body(API.get(`/community/items/${encodeURIComponent(slug)}`));
 export const getComments = ({ slug, cursor } = {}) => body(API.get(`/community/items/${encodeURIComponent(slug)}/comments`, { params: page(cursor) }));
 export const getMe = () => body(API.get('/community/me'));
+export const searchMentions = (q) => body(API.get('/community/mention-suggest', { params: q ? { q } : {} }));
+export const updateCommunityPrefs = (patch) => body(API.patch('/community/prefs', patch));
 // A host's public activity feed → { posts, comments }. 404 = community gate closed.
 export const getAuthorActivity = (userId) => body(API.get(`/community/users/${encodeURIComponent(userId)}/activity`));
 
