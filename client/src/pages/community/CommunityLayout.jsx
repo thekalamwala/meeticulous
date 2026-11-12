@@ -192,7 +192,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
           navbar on the community shell; see inCommunityShell in App.jsx). */}
       {v2 && (
         <header className="sticky top-0 z-40 hidden border-b border-line bg-white/90 backdrop-blur lg:block" style={{ top: 'env(safe-area-inset-top)' }}>
-          <div className="mx-auto flex max-w-7xl items-center gap-3 px-5 py-2">
+          <div className="mx-auto flex max-w-7xl items-center gap-3 px-5 py-1">
             {/* Zone 1 — identity */}
             <Link to="/community" aria-label="Meeticulous Circle" className="flex shrink-0 items-center gap-2 no-underline">
               <img src="/brand/meeticulous-wordmark.svg" alt="Meeticulous" width="110" height="18" className="h-[18px] w-auto" />
