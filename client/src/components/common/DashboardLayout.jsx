@@ -14,6 +14,7 @@ import { cn } from '../dashboard/ui/cn';
 import { PageTransition } from '../dashboard/ui/PageTransition';
 import ConsoleSidebar from './ConsoleSidebar';
 import MobileTabBar from './MobileTabBar';
+import KycNudgeStrip from '../dashboard/KycNudgeStrip';
 import PullToRefresh from '../dashboard/ui/PullToRefresh';
 import { RefreshProvider } from '../dashboard/ui/refreshContext';
 import '../dashboard/ui/tokens.css';
@@ -453,6 +454,8 @@ const DashboardLayout = ({ children }) => {
         <PullToRefresh scrollerRef={mainRef}>
           <div className="px-4 py-6 pb-[calc(68px+env(safe-area-inset-bottom))] sm:px-6 md:px-8 lg:pb-6">
             <div className="mx-auto w-full max-w-6xl">
+              {/* KYC nudge on every host page (home renders its own inline). */}
+              <KycNudgeStrip />
               <PageTransition>{children}</PageTransition>
             </div>
           </div>
