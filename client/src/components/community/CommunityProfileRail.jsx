@@ -25,7 +25,7 @@ function Stat({ v, l }) {
 
 function RailLink({ to, icon: Icon, children }) {
   return (
-    <Link to={to} className="flex h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium text-ink no-underline transition-colors hover:bg-pink-100 hover:text-maroon">
+    <Link to={to} className="flex h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium text-ink no-underline transition-colors hover:bg-pink-100 hover:text-maroon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40">
       <Icon size={18} className="text-muted" aria-hidden="true" />{children}
     </Link>
   );
@@ -94,11 +94,11 @@ export default function CommunityProfileRail({ user }) {
       </nav>
 
       {isHost ? (
-        <Link to={profileHref} className="flex items-center justify-center gap-2 rounded-2xl bg-maroon px-4 py-3 text-sm font-semibold text-cream no-underline transition-colors hover:bg-maroon-dark">
+        <Link to={profileHref} className="flex items-center justify-center gap-2 rounded-2xl bg-maroon px-4 py-3 text-sm font-semibold text-cream no-underline transition-colors hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose">
           <Link2 size={16} aria-hidden="true" />Share your booking link
         </Link>
       ) : (
-        <Link to="/become-a-host" className="flex items-center justify-center rounded-2xl bg-maroon px-4 py-3 text-sm font-semibold text-cream no-underline transition-colors hover:bg-maroon-dark">
+        <Link to="/become-a-host" className="flex items-center justify-center rounded-2xl bg-maroon px-4 py-3 text-sm font-semibold text-cream no-underline transition-colors hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose">
           Set up your booking page
         </Link>
       )}
