@@ -218,6 +218,14 @@ Items previously listed here as pending are now live:
   `support_threads.sla_waiting_since` (set by a trigger on entering `waiting`) + `sla_alerted_clock` /
   `sla_alerted_level`. Additive. Until applied the `support-sla-nudge` job fails closed and sends nothing.
 
+- **v3.206** (`v3.206_lockdown_anon_writes.sql`) — applied 2026-11-12 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`) and verified (0 INSERT/UPDATE/DELETE grants remain for `anon`/`authenticated`).
+  Project-audit C1 fix: REVOKEs write on all public tables from anon/authenticated + sets that as the
+  default privilege for future postgres-owned tables, closing a hole where a signed-in user could write
+  `plan`/`is_verified`/`payment_status`/payouts straight through the publishable key (browser only uses
+  supabase-js for auth+realtime, never PostgREST writes — verified, so no app impact). REVOKE-only, so
+  rollback is a re-GRANT; the permissive write POLICIES are left in place (unreachable with no grant).
+  Companion to v3.205 (profiles column SELECT) + v3.186 (functions + views). Shipped with PR #292.
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
 
