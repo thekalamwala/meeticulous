@@ -26,6 +26,7 @@ vi.mock('../services/api', () => ({
   getMyServices: api.getMyServices,
   getHostNudges: api.getHostNudges,
   getMyKyc: api.getMyKyc,
+  getMyProfileViews: vi.fn(() => Promise.resolve({ data: { views: 0 } })),
 }));
 vi.mock('react-hot-toast', () => ({
   default: Object.assign(() => {}, { success: () => {}, error: () => {} }),
