@@ -451,11 +451,77 @@ async function replyToPost({ post } = {}) {
   }
 }
 
+/**
+ * replyToComment({ comment }) — Phase 2: first-respond to a QUESTION asked as a
+ * top-level comment, so a question buried in a thread also gets Tithi. Mirrors
+ * replyToPost's gate/answer core; the reply NESTS under the question (parent_id).
+ * Returns:
+ *   { skipped: 'bad_comment'|'flag_off'|'no_identity'|'not_visible'|'self'
+ *             |'not_top_level'|'empty'|'already_replied'|'human_answered'|'gate'|'unavailable' }
+ *   { replied: true, commentId, escalated, tagged }
+ */
+async function replyToComment({ comment } = {}) {
+  if (!comment || !comment.id) return { skipped: 'bad_comment' };
+  if (!(await isFeatureEnabled(FLAG))) return { skipped: 'flag_off' };
+  const tithi = tithiUserId();
+  if (!tithi) return { skipped: 'no_identity' };
+  if (comment.status && comment.status !== 'visible') return { skipped: 'not_visible' };
+  if (comment.author_id === tithi) return { skipped: 'self' };   // never answer herself
+  if (comment.parent_id) return { skipped: 'not_top_level' };    // only top-level questions
+  if (!String(comment.body || '').trim()) return { skipped: 'empty' };
+
+  try {
+    // One reply per comment: dedup on Tithi's own nested reply.
+    if (await store.countRepliesByAuthor(comment.id, tithi)) return { skipped: 'already_replied' };
+
+    // Relevance gate (Phase 2 is gate-on only; the sweep never reaches here with it off).
+    let route = 'support';
+    if (process.env.COMMUNITY_REPLY_GATE_ENABLED === 'true') {
+      if (await store.countReplies(comment.id)) return { skipped: 'human_answered' }; // someone already answered
+      const decision = await replyGate.decide({ body: comment.body });
+      if (!decision.act) return { skipped: 'gate', reason: decision.reason };
+      route = decision.route;
+    }
+
+    const author = comment.author_id ? await store.getProfile(comment.author_id) : null;
+    const audience = author ? (author.is_host ? 'host' : 'guest') : null;
+
+    const res = await botService.askBot({ question: comment.body, audience });
+    // Can't ground it → honest community handoff (not the doc-centric support line).
+    let body = res.escalate ? COMMUNITY_HANDOFF : String(res.answer || '').trim();
+    if (!body) return { skipped: 'empty' };
+    if (!res.escalate && route === 'comparison') body = replyGate.appendCta(body, route);
+
+    const handle = res.escalate ? escalationHandle() : null;
+    if (handle) body = `${body}\n\n@${handle} — could you take this one?`;
+
+    // The reply nests UNDER the question comment (parent_id), on the same post.
+    const reply = await store.insertComment({
+      post_id: comment.post_id, parent_id: comment.id, author_id: tithi, body, status: 'visible',
+    });
+
+    if (res.escalate) {
+      await escalateToTeam({
+        post: { author_id: comment.author_id, slug: null },
+        author, question: comment.body, reason: res.escalateReason || 'community',
+      });
+      if (handle) {
+        try { await notify.onMentions({ item: comment, comment: reply, usernames: [handle], actorId: tithi }); }
+        catch (_) { /* team email already went; the ping is best-effort */ }
+      }
+    }
+    return { replied: true, commentId: reply.id, escalated: !!res.escalate, tagged: !!handle };
+  } catch (e) {
+    if (e.code === 'COMMUNITY_UNAVAILABLE') return { skipped: 'unavailable' };
+    throw e;
+  }
+}
+
 module.exports = {
   VOICE, RELEASE_NOTE_RULES, MODEL_SKIP,
   classifyPr, kindFromPrefix, writeReleaseNote, briefNote,
   parseCommunityBlock, announceDecision, truncateWords,
   releaseLabel, cleanTitle, prSlug, publishReleaseNote, publishDeploymentNote,
-  replyToPost, escalateToTeam,
+  replyToPost, replyToComment, escalateToTeam,
   _tithiUserId: tithiUserId,
 };

@@ -138,6 +138,27 @@ async function runReplySweep() {
     if (res.replied) { replied += 1; if (post.author_id) repliedAuthors.add(post.author_id); }
     else skipped += 1;
   }
+
+  // Phase 2 (gate-on only): questions asked as top-level comments, so one buried in a
+  // thread also gets Tithi. Legacy behaviour never answered comments, so this whole
+  // pass stays dark until the gate is enabled. Shares the per-sweep reply budget.
+  if (gateOn) {
+    let comments = [];
+    try {
+      comments = await store.listRecentTopLevelComments({ limit: SWEEP_LIMIT });
+    } catch (e) {
+      if (e.code !== 'COMMUNITY_UNAVAILABLE') throw e;
+    }
+    for (const comment of comments || []) {
+      if (replied >= maxReplies) break;
+      if (new Date(comment.created_at).getTime() < minTs) continue; // too old to first-respond
+      if (comment.author_id && repliedAuthors.has(comment.author_id)) { skipped += 1; continue; }
+      const res = await tithi.replyToComment({ comment });
+      if (res.replied) { replied += 1; if (comment.author_id) repliedAuthors.add(comment.author_id); }
+      else skipped += 1;
+    }
+  }
+
   return { replied, skipped };
 }
 
