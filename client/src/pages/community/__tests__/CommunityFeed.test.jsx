@@ -8,6 +8,7 @@ vi.mock('../../../services/communityApi', () => ({
   getSpaces: vi.fn(),
   like: vi.fn(),
   unlike: vi.fn(),
+  getMyCard: vi.fn().mockResolvedValue({ is_host: false }),
 }));
 vi.mock('../../../services/analytics', () => ({
   analytics: { track: vi.fn() },
