@@ -121,11 +121,9 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
               <img src="/brand/meeticulous-wordmark.svg" alt="Meeticulous" width="110" height="18" className="h-[18px] w-auto" />
               <span className="rounded-full bg-pink-100 px-2 py-0.5 text-xs font-semibold text-maroon">{tag}</span>
             </Link>
-            <form role="search" onSubmit={(e) => e.preventDefault()} className="flex max-w-xs flex-1 items-center gap-2 rounded-full border border-line bg-cream px-4 py-1.5">
+            <form role="search" onSubmit={(e) => e.preventDefault()} className="flex max-w-xs flex-1 items-center gap-2 rounded-full bg-cream px-4 py-2 focus-within:ring-1 focus-within:ring-maroon/30">
               <input type="search" aria-label="Search the community" placeholder="Search hosts, posts, spaces…" className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted" />
-              <button type="submit" aria-label="Search" className="-mr-1 shrink-0 text-muted transition-colors hover:text-maroon focus-visible:outline-none focus-visible:text-maroon">
-                <Search size={16} aria-hidden="true" />
-              </button>
+              <Search size={16} className="shrink-0 text-muted" aria-hidden="true" />
             </form>
             <div className="ml-auto flex items-center gap-1.5">
               <Link to="/community" aria-label="Spaces" aria-current={active === 'feed' ? 'page' : undefined} className={dIcon(active === 'feed')}><LayoutGrid size={19} aria-hidden="true" /></Link>
