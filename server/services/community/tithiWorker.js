@@ -124,12 +124,41 @@ async function runReplySweep() {
     throw e;
   }
   const minTs = Date.now() - SWEEP_MAX_AGE_MS;
+  // Gate on: bound the cost of a tick and don't let one member soak every reply.
+  // Gate off: legacy behaviour — no cap, one pass over the window.
+  const gateOn = process.env.COMMUNITY_REPLY_GATE_ENABLED === 'true';
+  const maxReplies = gateOn ? (Number(process.env.COMMUNITY_REPLY_MAX_PER_SWEEP) || 5) : Infinity;
+  const repliedAuthors = new Set(); // at most one reply per author per sweep (gate on)
   let replied = 0; let skipped = 0;
   for (const post of rows || []) {
+    if (replied >= maxReplies) break;
     if (new Date(post.created_at).getTime() < minTs) continue; // too old to first-respond
+    if (gateOn && post.author_id && repliedAuthors.has(post.author_id)) { skipped += 1; continue; }
     const res = await tithi.replyToPost({ post });
-    if (res.replied) replied += 1; else skipped += 1;
+    if (res.replied) { replied += 1; if (post.author_id) repliedAuthors.add(post.author_id); }
+    else skipped += 1;
   }
+
+  // Phase 2 (gate-on only): questions asked as top-level comments, so one buried in a
+  // thread also gets Tithi. Legacy behaviour never answered comments, so this whole
+  // pass stays dark until the gate is enabled. Shares the per-sweep reply budget.
+  if (gateOn) {
+    let comments = [];
+    try {
+      comments = await store.listRecentTopLevelComments({ limit: SWEEP_LIMIT });
+    } catch (e) {
+      if (e.code !== 'COMMUNITY_UNAVAILABLE') throw e;
+    }
+    for (const comment of comments || []) {
+      if (replied >= maxReplies) break;
+      if (new Date(comment.created_at).getTime() < minTs) continue; // too old to first-respond
+      if (comment.author_id && repliedAuthors.has(comment.author_id)) { skipped += 1; continue; }
+      const res = await tithi.replyToComment({ comment });
+      if (res.replied) { replied += 1; if (comment.author_id) repliedAuthors.add(comment.author_id); }
+      else skipped += 1;
+    }
+  }
+
   return { replied, skipped };
 }
 

@@ -20,9 +20,12 @@ jest.mock('../../../services/community/store', () => ({
   refreshIndexable: jest.fn(),
   getProfile: jest.fn(),
   countCommentsByAuthorOnPost: jest.fn(),
+  countReplies: jest.fn(),
+  countRepliesByAuthor: jest.fn(),
   insertComment: jest.fn(),
 }));
 jest.mock('../../../services/botService', () => ({ askBot: jest.fn() }));
+jest.mock('../../../services/community/replyGate', () => ({ decide: jest.fn(), appendCta: jest.fn((a) => a) }));
 jest.mock('../../../services/bot/escalationService', () => ({ recordAndNotify: jest.fn() }));
 jest.mock('../../../services/community/notify', () => ({ onMentions: jest.fn() }));
 
@@ -32,6 +35,7 @@ const escalationService = require('../../../services/bot/escalationService');
 const notify = require('../../../services/community/notify');
 const store = require('../../../services/community/store');
 const tithi = require('../../../services/community/tithi');
+const replyGate = require('../../../services/community/replyGate');
 
 const PR = { number: 412, title: 'feat: faster booking confirmations', body: 'Cuts confirm time from 8s to 2s.' };
 // Same PR but the author left a Community brief — the deterministic (AI-off) path then
@@ -280,6 +284,115 @@ describe('replyToPost (first responder)', () => {
 
   test('a removed post is not answered', async () => {
     expect(await tithi.replyToPost({ post: { ...POST, status: 'removed' } })).toEqual({ skipped: 'not_visible' });
+  });
+});
+
+describe('replyToPost — relevance gate (COMMUNITY_REPLY_GATE_ENABLED)', () => {
+  const POST = { id: 'p2', author_id: 'member-9', body: 'can you do recurring bookings like Calendly?', slug: 's', status: 'visible', comment_count: 0 };
+
+  beforeEach(() => {
+    process.env.COMMUNITY_REPLY_GATE_ENABLED = 'true';
+    store.countCommentsByAuthorOnPost.mockResolvedValue(0);
+    store.getProfile.mockResolvedValue({ id: 'member-9', is_host: true });
+    store.insertComment.mockResolvedValue({ id: 'c9' });
+    botService.askBot.mockResolvedValue({ answer: 'Not yet — single bookings only for now.', escalate: false });
+    replyGate.appendCta.mockImplementation((a) => a);
+  });
+  afterEach(() => { delete process.env.COMMUNITY_REPLY_GATE_ENABLED; });
+
+  test('gate says skip → stays silent, no model answer, no comment', async () => {
+    replyGate.decide.mockResolvedValue({ act: false, route: 'not_for_us', reason: 'not_a_question' });
+    expect(await tithi.replyToPost({ post: POST })).toEqual({ skipped: 'gate', reason: 'not_a_question' });
+    expect(botService.askBot).not.toHaveBeenCalled();
+    expect(store.insertComment).not.toHaveBeenCalled();
+  });
+
+  test('a member already answered → silent, gate not even consulted', async () => {
+    replyGate.decide.mockResolvedValue({ act: true, route: 'support' });
+    expect(await tithi.replyToPost({ post: { ...POST, comment_count: 1 } })).toEqual({ skipped: 'human_answered' });
+    expect(replyGate.decide).not.toHaveBeenCalled();
+    expect(botService.askBot).not.toHaveBeenCalled();
+  });
+
+  test('comparison intent → grounded answer gets ONE pitch CTA', async () => {
+    replyGate.decide.mockResolvedValue({ act: true, route: 'comparison' });
+    replyGate.appendCta.mockImplementation((a) => `${a}\n\n[See plans & pricing](/pricing)`);
+    const res = await tithi.replyToPost({ post: POST });
+    expect(res.replied).toBe(true);
+    expect(replyGate.appendCta).toHaveBeenCalledWith('Not yet — single bookings only for now.', 'comparison');
+    expect(store.insertComment).toHaveBeenCalledWith(expect.objectContaining({ body: expect.stringContaining('/pricing') }));
+  });
+
+  test("can't ground it → honest community handoff + human tag, escalates", async () => {
+    replyGate.decide.mockResolvedValue({ act: true, route: 'feature' });
+    botService.askBot.mockResolvedValue({ answer: '', escalate: true, escalateReason: 'no_match' });
+    const res = await tithi.replyToPost({ post: POST });
+    expect(res).toEqual({ replied: true, commentId: 'c9', escalated: true, tagged: true });
+    const [row] = store.insertComment.mock.calls[0];
+    expect(row.body).toMatch(/pulling in the team/i);
+    expect(row.body).toContain('@team');
+    expect(escalationService.recordAndNotify).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('replyToComment (Phase 2 — questions in thread comments)', () => {
+  const COMMENT = { id: 'cm1', post_id: 'post-1', parent_id: null, author_id: 'member-2', body: 'how do I enable reminders?', status: 'visible' };
+
+  beforeEach(() => {
+    process.env.COMMUNITY_REPLY_GATE_ENABLED = 'true';
+    store.countRepliesByAuthor.mockResolvedValue(0);
+    store.countReplies.mockResolvedValue(0);
+    store.getProfile.mockResolvedValue({ id: 'member-2', is_host: false });
+    store.insertComment.mockResolvedValue({ id: 'reply-1' });
+    botService.askBot.mockResolvedValue({ answer: 'Reminders are on by default.', escalate: false });
+    replyGate.decide.mockResolvedValue({ act: true, route: 'support' });
+    replyGate.appendCta.mockImplementation((a) => a);
+  });
+  afterEach(() => { delete process.env.COMMUNITY_REPLY_GATE_ENABLED; });
+
+  test('answers a top-level question, nested under it (parent_id)', async () => {
+    const res = await tithi.replyToComment({ comment: COMMENT });
+    expect(res).toEqual({ replied: true, commentId: 'reply-1', escalated: false, tagged: false });
+    expect(botService.askBot).toHaveBeenCalledWith({ question: COMMENT.body, audience: 'guest' });
+    expect(store.insertComment).toHaveBeenCalledWith(expect.objectContaining({
+      post_id: 'post-1', parent_id: 'cm1', author_id: 'tithi-uuid', status: 'visible',
+    }));
+  });
+
+  test('never answers herself', async () => {
+    expect(await tithi.replyToComment({ comment: { ...COMMENT, author_id: 'tithi-uuid' } })).toEqual({ skipped: 'self' });
+  });
+
+  test('skips a nested (non-top-level) comment', async () => {
+    expect(await tithi.replyToComment({ comment: { ...COMMENT, parent_id: 'other' } })).toEqual({ skipped: 'not_top_level' });
+  });
+
+  test('one reply per comment (dedup on Tithi reply)', async () => {
+    store.countRepliesByAuthor.mockResolvedValue(1);
+    expect(await tithi.replyToComment({ comment: COMMENT })).toEqual({ skipped: 'already_replied' });
+    expect(botService.askBot).not.toHaveBeenCalled();
+  });
+
+  test('a member already replied → silent', async () => {
+    store.countReplies.mockResolvedValue(1);
+    expect(await tithi.replyToComment({ comment: COMMENT })).toEqual({ skipped: 'human_answered' });
+    expect(replyGate.decide).not.toHaveBeenCalled();
+  });
+
+  test('gate silences a non-question comment', async () => {
+    replyGate.decide.mockResolvedValue({ act: false, route: 'not_for_us', reason: 'not_a_question' });
+    expect(await tithi.replyToComment({ comment: COMMENT })).toEqual({ skipped: 'gate', reason: 'not_a_question' });
+    expect(store.insertComment).not.toHaveBeenCalled();
+  });
+
+  test("can't ground → honest handoff + human tag, escalates", async () => {
+    botService.askBot.mockResolvedValue({ answer: '', escalate: true, escalateReason: 'no_match' });
+    const res = await tithi.replyToComment({ comment: COMMENT });
+    expect(res).toMatchObject({ replied: true, escalated: true, tagged: true });
+    const [row] = store.insertComment.mock.calls[0];
+    expect(row.body).toMatch(/pulling in the team/i);
+    expect(row.body).toContain('@team');
+    expect(escalationService.recordAndNotify).toHaveBeenCalledTimes(1);
   });
 });
 

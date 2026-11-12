@@ -445,6 +445,14 @@ export const setAvailability  = (data)           => API.put('/host/availability'
 export const getAvailability  = ()               => API.get('/host/availability');
 export const searchVendors    = (q)              => API.get('/host/search', { params: { q } });
 
+// ── Coupons (v3.204, behind the `coupons` flag) ───────────────
+// Guest: preview a discount before booking. Host: manage own codes.
+export const validateCoupon    = (data)            => API.post('/bookings/coupon/validate', data); // { code, service_id }
+export const getHostCoupons    = ()                => API.get('/host/coupons');
+export const createHostCoupon  = (data)            => API.post('/host/coupons', data);
+export const updateHostCoupon  = (id, data)        => API.patch(`/host/coupons/${id}`, data);
+export const deleteHostCoupon  = (id)              => API.delete(`/host/coupons/${id}`);
+
 // ── Bookings ──────────────────────────────────────────────────
 export const createBooking     = (data)            => API.post('/bookings', data);
 export const getHostBookings   = ()                => API.get('/bookings/host');

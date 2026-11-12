@@ -5,6 +5,7 @@ import { Gift, Sparkles, X, Headset, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import useIsMobile from '../../hooks/useIsMobile';
 import useSupportUnread from '../../hooks/useSupportUnread';
+import useFeatureFlags from '../../hooks/useFeatureFlags';
 import { normalizePlan } from '../../utils/themeUtils';
 import { cn } from '../dashboard/ui/cn';
 
@@ -66,6 +67,9 @@ export const NAV = [
     items: [
       { to: '/dashboard/services', label: 'Services', icon: 'nav-services', matchPrefix: '/dashboard/service' },
       { to: '/dashboard/products', label: 'Products', icon: 'nav-products' },
+      // Coupons (v3.204) — hidden until the `coupons` flag is on. Reuses the
+      // refer glyph (promo/reward) as no discount icon is exported yet.
+      { to: '/dashboard/coupons', label: 'Coupons', icon: 'nav-refer', visible: (c) => !!c.flags?.coupons },
     ],
   },
   {
@@ -445,7 +449,8 @@ const ConsoleSidebar = ({ open = false, onClose, triggerRef }) => {
   const drawerRef = useRef(null);
 
   const plan = normalizePlan(user?.plan);
-  const ctx = { user, plan };
+  const { flags } = useFeatureFlags();
+  const ctx = { user, plan, flags };
   const sections = visibleSections(ctx);
   const chatUnread = useSupportUnread();
   const badges = { ...computeBadges(user), chatUnread };

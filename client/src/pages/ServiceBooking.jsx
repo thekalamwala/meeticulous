@@ -11,8 +11,10 @@ import {
   verifyPayment,
   getHostReviews,
   invoiceUrl,
+  validateCoupon,
 } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import useFeatureFlags from "../hooks/useFeatureFlags";
 import { analytics, EVENTS, gaClientId } from "../services/analytics";
 import useUtm from "../hooks/useUtm";
 import toast from "react-hot-toast";
@@ -24,6 +26,7 @@ import {
   applyProfileTheme,
 } from "../utils/themeUtils";
 import { downloadReceipt } from "../utils/receipt";
+import { fireCelebration } from "../utils/celebration";
 import loadRazorpay from "../utils/loadRazorpay";
 import PetalSpinner from "../components/common/PetalSpinner";
 import { INDIAN_STATES } from "../lib/indianStates";
@@ -222,7 +225,7 @@ const FloatingInput = ({ id, label, type = "text", value, onChange, required, au
       placeholder={label}
       value={value}
       onChange={onChange}
-      className="peer fb-input fb-input--sm !rounded-lg !border placeholder-transparent"
+      className="peer fb-input fb-input--sm placeholder-transparent"
     />
     <label
       htmlFor={id}
@@ -297,6 +300,9 @@ const OtpBoxes = ({ value, onChange, tc }) => {
 const ServiceBooking = () => {
   const { profileSlug, serviceSlug } = useParams();
   const { user } = useAuth();
+  // Raw flag map (fail-closed): don't show promo UI speculatively before flags load.
+  const { flags: featureFlagMap } = useFeatureFlags();
+  const couponsEnabled = featureFlagMap.coupons === true;
 
   const [host, setHost] = useState(null);
   const [service, setService] = useState(null);
@@ -331,6 +337,11 @@ const ServiceBooking = () => {
   // Full E.164-ish number actually sent (India: backend still normalizes to last-10).
   const fullPhone = `${dialCode}${phone.replace(/\D/g, "")}`;
   const [notes, setNotes] = useState("");
+  // Coupon (v3.204, `coupons` flag). appliedCoupon = { code, discount } once validated.
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponMsg, setCouponMsg] = useState("");
+  const [couponBusy, setCouponBusy] = useState(false);
   const [billing, setBilling] = useState({
     name: user?.billing_details?.name || "",
     address: user?.billing_details?.address || "",
@@ -382,6 +393,11 @@ const ServiceBooking = () => {
     setStep("confirmed");
     if (finalizeMsg) toast.success(finalizeMsg);
   };
+
+  // Brand confetti once the booking lands (reduced-motion safe inside).
+  useEffect(() => {
+    if (step === "confirmed") fireCelebration();
+  }, [step]);
 
   useEffect(() => {
     const fetchService = async () => {
@@ -685,6 +701,32 @@ const ServiceBooking = () => {
   // A free booking owes no BAS tax invoice, so no billing is sent.
   const billingDetails = () => (isPaid ? billing : null);
 
+  // Coupon preview (v3.204). Server is authoritative at booking time; this only
+  // shows the guest the discount before they commit. finalPrice = service price − discount.
+  const applyCoupon = async () => {
+    const code = couponCode.trim();
+    if (!code) return;
+    setCouponBusy(true);
+    setCouponMsg("");
+    try {
+      const { data } = await validateCoupon({ code, service_id: service.id });
+      if (data.ok) {
+        setAppliedCoupon({ code, discount: Number(data.discount) || 0 });
+        setCouponMsg("");
+      } else {
+        setAppliedCoupon(null);
+        setCouponMsg(data.reason || "Invalid coupon code.");
+      }
+    } catch (err) {
+      setAppliedCoupon(null);
+      setCouponMsg(err.response?.data?.message || "Could not check that code.");
+    } finally {
+      setCouponBusy(false);
+    }
+  };
+  const clearCoupon = () => { setAppliedCoupon(null); setCouponCode(""); setCouponMsg(""); };
+  const couponDiscount = appliedCoupon?.discount || 0;
+
   // BUG-16 fix: logged-in users skip OTP — book directly with their session
   const bookDirectly = async () => {
     setVerifying(true);
@@ -703,6 +745,7 @@ const ServiceBooking = () => {
         scheduled_at: scheduledAt,
         notes,
         billing_details: billingDetails(),
+        coupon_code: appliedCoupon?.code || undefined,
       });
       setConfirmation(bookingResult);
       // Follow the server's decision: any amount payable (paid service OR the
@@ -775,6 +818,7 @@ const ServiceBooking = () => {
         scheduled_at: scheduledAt,
         notes,
         billing_details: billingDetails(),
+        coupon_code: appliedCoupon?.code || undefined,
         // H-1: short-lived grant proving this contact just passed OTP. The server
         // requires it for anonymous bookings (logged-in users use bookDirectly).
         booking_grant: otpResult.bookingGrant,
@@ -1402,7 +1446,7 @@ const ServiceBooking = () => {
                   rises into the top space instead of sitting below a Back row. */}
               <div className="mb-5 flex items-start justify-between gap-4">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold leading-tight">Tell us who's coming</h2>
+                  <h2 className="text-xl sm:text-2xl font-display font-extrabold leading-tight" style={{ color: tc }}>Tell us who's coming</h2>
                   <p className="text-sm text-gray-400 mt-1">We just need a few quick details to confirm your booking.</p>
                 </div>
                 <button
@@ -1490,6 +1534,43 @@ const ServiceBooking = () => {
                           </span>
                         </div>
                       )}
+                      {/* Coupon (v3.204) — paid services only, behind the `coupons` flag */}
+                      {isPaid && couponsEnabled && (
+                        <div className="py-2.5 border-t" style={{ borderColor: `${tc}14` }}>
+                          {appliedCoupon ? (
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-sm text-gray-600 flex items-center gap-1.5 min-w-0">
+                                <span className="inline-flex items-center rounded-full bg-[#E8F5EC] text-[#16834c] text-xs font-semibold px-2 py-0.5 truncate">
+                                  {appliedCoupon.code}
+                                </span>
+                                <button type="button" onClick={clearCoupon}
+                                  className="text-xs text-gray-400 hover:text-gray-700 underline shrink-0">Remove</button>
+                              </span>
+                              <span className="font-semibold text-sm text-[#16834c]">−₹{Math.round(couponDiscount * 100) / 100}</span>
+                            </div>
+                          ) : (
+                            <div>
+                              <div className="flex items-stretch gap-2">
+                                <input
+                                  value={couponCode}
+                                  onChange={(e) => { setCouponCode(e.target.value); setCouponMsg(""); }}
+                                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyCoupon(); } }}
+                                  placeholder="Coupon code"
+                                  aria-label="Coupon code"
+                                  className="flex-1 min-w-0 rounded-md border-2 border-[color:var(--color-line)] px-3 py-2 text-sm uppercase tracking-wide placeholder:normal-case placeholder:tracking-normal focus:outline-none focus:ring-2"
+                                  style={{ "--tw-ring-color": `${tc}55` }}
+                                />
+                                <button type="button" onClick={applyCoupon} disabled={couponBusy || !couponCode.trim()}
+                                  className="shrink-0 px-4 rounded-full text-sm font-semibold border-2 transition-opacity hover:opacity-85 disabled:opacity-40"
+                                  style={{ borderColor: tc, color: tc }}>
+                                  {couponBusy ? "…" : "Apply"}
+                                </button>
+                              </div>
+                              {couponMsg && <div className="text-xs text-red-500 mt-1.5">{couponMsg}</div>}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                     {/* Total band */}
                     <div className="flex items-center justify-between px-4 py-3.5" style={{ background: `${tc}17` }}>
@@ -1498,7 +1579,7 @@ const ServiceBooking = () => {
                         {!priceOnRequest && <div className="text-[11px] text-gray-500">Inclusive of all taxes</div>}
                       </div>
                       <span className="font-bold text-[20px]" style={{ color: tc }}>
-                        {priceOnRequest ? "Price on request" : isPaid ? `₹${Math.round((service.price + fees.bookingFee) * 100) / 100}` : "Free"}
+                        {priceOnRequest ? "Price on request" : isPaid ? `₹${Math.round((service.price - couponDiscount + fees.bookingFee) * 100) / 100}` : "Free"}
                       </span>
                     </div>
                   </div>
@@ -1514,7 +1595,7 @@ const ServiceBooking = () => {
                     <FloatingInput id="bk-email" label="Email Address" type="email" required placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
                     {/* Mobile: floating label + country dial-code select + national number; sent as fullPhone. */}
                     <div className="relative">
-                      <div className="bk-phone-wrap flex items-stretch rounded-lg border border-[color:var(--color-line)] overflow-hidden transition-shadow">
+                      <div className="bk-phone-wrap flex items-stretch rounded-md border-2 border-[color:var(--color-line)] overflow-hidden transition-shadow">
                         <select
                           aria-label="Country code"
                           className="w-[64px] shrink-0 bg-gray-50 text-sm font-medium text-gray-700 border-r pl-2 pr-0.5 outline-none cursor-pointer"
@@ -1542,7 +1623,7 @@ const ServiceBooking = () => {
                       id="bk-state"
                       placeholder="State"
                       autoComplete="off"
-                      className="peer fb-input fb-input--sm !rounded-lg !border placeholder-transparent"
+                      className="peer fb-input fb-input--sm placeholder-transparent"
                       value={billing.state}
                       onFocus={() => setStateOpen(true)}
                       onBlur={() => setTimeout(() => setStateOpen(false), 120)}
@@ -1610,7 +1691,7 @@ const ServiceBooking = () => {
                   </div>
                   <div className="relative">
                     <textarea id="bk-notes" placeholder="Add any notes or requests for this booking."
-                      className="peer fb-input fb-input--sm !rounded-lg !border resize-none !min-h-0 !h-[88px] placeholder-transparent"
+                      className="peer fb-input fb-input--sm resize-none !min-h-0 !h-[88px] placeholder-transparent"
                       value={notes} onChange={(e) => setNotes(e.target.value)} />
                     <label htmlFor="bk-notes" className="pointer-events-none absolute left-2.5 top-0 -translate-y-1/2 bg-white px-1 text-xs font-medium text-gray-500 transition-all
                       peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm peer-placeholder-shown:font-normal peer-placeholder-shown:text-gray-400
@@ -1625,7 +1706,7 @@ const ServiceBooking = () => {
               <button
                 onClick={handleSendOtp}
                 disabled={otpSending || verifying || !firstName || !email || (!user && !isPhoneValid) || (isPaid && !billing.state_code)}
-                className="btn mt-4 w-full py-2.5 font-bold text-sm transition-opacity hover:opacity-85 disabled:!bg-gray-200 disabled:!text-gray-500 disabled:cursor-not-allowed"
+                className="btn rounded-full mt-4 w-full py-2.5 font-bold text-sm transition-opacity hover:opacity-85 disabled:!bg-gray-200 disabled:!text-gray-500 disabled:cursor-not-allowed"
                 style={{ background: tc, color: textOnTheme }}
               >
                 {otpSending || verifying
@@ -1671,7 +1752,7 @@ const ServiceBooking = () => {
                   <path d="M17.5 14.4c-.3-.15-1.7-.84-2-.94s-.46-.15-.65.15-.75.94-.92 1.13-.34.22-.63.07a8.2 8.2 0 0 1-2.4-1.48 9 9 0 0 1-1.67-2.06c-.17-.3 0-.46.13-.6s.3-.35.44-.53a2 2 0 0 0 .3-.5.55.55 0 0 0 0-.52c-.08-.15-.65-1.56-.9-2.14s-.47-.48-.65-.49h-.56a1.06 1.06 0 0 0-.77.36 3.25 3.25 0 0 0-1 2.4 5.66 5.66 0 0 0 1.18 3 12.9 12.9 0 0 0 4.94 4.37c.69.3 1.23.48 1.65.61a4 4 0 0 0 1.82.11 3 3 0 0 0 2-1.39 2.44 2.44 0 0 0 .17-1.39c-.07-.13-.26-.2-.55-.35zM12 2a10 10 0 0 0-8.6 15.06L2 22l5.06-1.33A10 10 0 1 0 12 2z" />
                 </svg>
               </div>
-              <h2 className="text-xl font-bold mb-2">Check WhatsApp</h2>
+              <h2 className="text-xl font-display font-extrabold mb-2" style={{ color: tc }}>Check WhatsApp</h2>
               <p className="text-sm text-gray-500 mb-6">
                 We sent a 6-digit code to <strong>{maskedPhone}</strong> on WhatsApp.
               </p>
@@ -1679,7 +1760,7 @@ const ServiceBooking = () => {
               <button
                 onClick={handleVerifyAndBook}
                 disabled={verifying || otp.length !== 6}
-                className="btn mt-6 w-full py-3 font-bold text-sm transition-opacity hover:opacity-85 disabled:!bg-gray-200 disabled:!text-gray-500 disabled:cursor-not-allowed"
+                className="btn rounded-full mt-6 w-full py-3 font-bold text-sm transition-opacity hover:opacity-85 disabled:!bg-gray-200 disabled:!text-gray-500 disabled:cursor-not-allowed"
                 style={{ background: tc, color: textOnTheme }}
               >
                 {verifying
@@ -1838,119 +1919,133 @@ const ServiceBooking = () => {
               platformFeeGst: confirmation.platform_fee_gst,
               total: confirmation.customer_total,
             };
-            // ponytail: inline SVGs instead of lucide — a missing lucide import breaks the whole /for build (known landmine), not worth a new import for 6 icons
-            const Row = ({ icon, label, children }) => (
-              <div className="flex items-center justify-between gap-3 py-2.5">
-                <span className="flex items-center gap-2.5 text-gray-500 shrink-0">
-                  <span style={{ color: tc }}>{icon}</span>{label}
-                </span>
-                <span className="font-medium text-right text-gray-800">{children}</span>
-              </div>
-            );
+            // ponytail: inline SVGs instead of lucide — a missing lucide import breaks the whole /for build (known landmine), not worth a new import
             const ic = "w-4 h-4";
             const calIcon = <svg className={ic} fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4" strokeLinecap="round"/></svg>;
             const clockIcon = <svg className={ic} fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-            const userIcon = <svg className={ic} fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6" strokeLinecap="round"/></svg>;
-            const pinIcon = <svg className={ic} fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 10-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>;
-            const docIcon = <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6" strokeLinejoin="round"/></svg>;
             const mailIcon = <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+            const modeLabel = confirmation.meeting_link ? "Online meeting" : (isOffline ? "In-person appointment" : "Online meeting");
             return (
-            <div className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl p-4 sm:p-6">
-              <div className="max-w-3xl mx-auto">
-                {/* Top: two columns — success message | booking details. Stacks on mobile. */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 md:items-center">
-                  {/* LEFT: success */}
-                  <div className="text-center">
-                    <div className="w-20 h-20 mx-auto mb-5 rounded-full flex items-center justify-center bas-pop" style={{ background: `${tc}18` }}>
-                      <svg className="w-10 h-10" fill="none" stroke={tc} strokeWidth={3} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                    </div>
-                    <h2 className="text-2xl font-bold mb-2 bas-fade" style={{ color: tc }}>You&rsquo;re all set</h2>
-                    <p className="text-sm text-gray-500 mb-5 bas-fade">
-                      See you {selectedDate?.toLocaleDateString("en-IN", { weekday: "long", month: "long", day: "numeric" })} at {formatTime(selectedTime)} ({tzAbbr})
-                    </p>
-                    <div className="flex items-center gap-3 border-2 border-[color:var(--color-line)] rounded-2xl p-3 bg-gray-50/40 text-left">
-                      <span style={{ color: tc }}>{mailIcon}</span>
-                      <span className="text-xs text-gray-500 leading-snug">Confirmation email sent to<br /><span className="text-gray-700 font-medium break-all">{email}</span></span>
-                    </div>
-                    {/* How to join / reminders */}
-                    <div className="flex items-start gap-3 border-2 border-[color:var(--color-line)] rounded-2xl p-3 bg-gray-50/40 text-left mt-3">
-                      <span className="mt-0.5" style={{ color: tc }}>
-                        {confirmation.meeting_link ? (
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" ry="2" /></svg>
-                        ) : (
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
-                        )}
-                      </span>
-                      <span className="text-xs text-gray-500 leading-snug">
-                        {confirmation.meeting_link ? (
-                          <><span className="text-gray-700 font-medium">How to join:</span> your meeting link is in the confirmation email and calendar invite. </>
-                        ) : (
-                          <><span className="text-gray-700 font-medium">Reminders:</span> </>
-                        )}
-                        We&rsquo;ll remind you 24h and 1h before.
-                      </span>
-                    </div>
+            <div className="overflow-hidden rounded-3xl border border-[color:var(--color-line)] bg-white grid grid-cols-1 md:grid-cols-[0.9fr_1.1fr]">
+
+              {/* LEFT: brand panel — host-themed */}
+              <div className="relative overflow-hidden p-7 sm:p-9 flex flex-col" style={{ background: tc, color: textOnTheme }}>
+                <div className="pointer-events-none absolute rounded-full" style={{ width: 240, height: 240, top: -110, right: -80, background: `color-mix(in srgb, ${textOnTheme} 10%, transparent)` }} />
+                <div className="relative">
+                  <div className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[1.1px] mb-4" style={{ opacity: 0.9 }}>
+                    <span className="inline-block w-2 h-2 rounded-full bas-pop" style={{ background: textOnTheme, boxShadow: `0 0 0 4px color-mix(in srgb, ${textOnTheme} 30%, transparent)` }} />
+                    BOOKING CONFIRMED
                   </div>
-                  {/* RIGHT: booking details */}
-                  <div className="border border-gray-100 rounded-xl px-4 py-1.5 text-sm text-left divide-y divide-gray-100 bg-gray-50/40">
-                    <Row icon={calIcon} label="Service">{service.title}</Row>
-                    <Row icon={calIcon} label="Date">{selectedDate?.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}</Row>
-                    <Row icon={clockIcon} label="Time">{formatTime(selectedTime)} ({tzAbbr})</Row>
-                    <Row icon={userIcon} label="Customer">{`${firstName} ${lastName}`.trim()}</Row>
-                    {confirmation.meeting_link && (
-                      <Row icon={pinIcon} label="Meeting">
-                        <a href={confirmation.meeting_link} target="_blank" rel="noreferrer" className="hover:underline" style={{ color: tc }}>Join Link</a>
-                      </Row>
-                    )}
-                    {isOffline && !confirmation.meeting_link && (
-                      <Row icon={pinIcon} label="Location">
-                        {mapLink ? (
-                          <a href={mapLink} target="_blank" rel="noreferrer" className="hover:underline" style={{ color: tc }}>Get directions</a>
-                        ) : venueText}
-                      </Row>
-                    )}
+                  <h2 className="font-display font-extrabold leading-[1.02] tracking-tight bas-fade" style={{ fontSize: "clamp(38px,5vw,54px)" }}>You&rsquo;re<br />booked.</h2>
+                  <p className="font-serif italic mt-2 text-xl bas-fade" style={{ opacity: 0.92 }}>See you soon{firstName ? `, ${firstName}` : ""}.</p>
+                  <p className="mt-4 text-sm leading-relaxed max-w-xs bas-fade" style={{ opacity: 0.85 }}>
+                    Your time with <strong style={{ opacity: 1 }}>{host.name}</strong> is reserved. Everything&rsquo;s ready — details are on the right.
+                  </p>
+                  {isPaidBooking && (
+                    <div className="mt-5 inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-xs font-semibold" style={{ background: `color-mix(in srgb, ${textOnTheme} 14%, transparent)` }}>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg>
+                      Paid ₹{confirmation.customer_total} · Razorpay
+                    </div>
+                  )}
+                  <div className="mt-3 flex items-center gap-2 text-[11px]" style={{ opacity: 0.72 }}>
+                    <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                    We&rsquo;ll remind you 24h and 1h before.
+                  </div>
+                </div>
+                <div className="relative mt-auto pt-6 flex items-end justify-between gap-3" style={{ borderTop: `1px solid color-mix(in srgb, ${textOnTheme} 20%, transparent)` }}>
+                  <div>
+                    <div className="text-[10px] font-semibold tracking-wide mb-1" style={{ opacity: 0.6 }}>BOOKING REFERENCE</div>
+                    <div className="font-display font-extrabold text-lg">{receiptData.receiptId}</div>
+                  </div>
+                  <button type="button"
+                    onClick={() => { try { navigator.clipboard.writeText(receiptData.receiptId); toast.success("Booking ID copied"); } catch { /* clipboard blocked */ } }}
+                    className="shrink-0 rounded-full px-3.5 py-2 text-xs font-semibold"
+                    style={{ border: `1px solid color-mix(in srgb, ${textOnTheme} 40%, transparent)`, color: textOnTheme }}>
+                    Copy ID
+                  </button>
+                </div>
+              </div>
+
+              {/* RIGHT: appointment details */}
+              <div className="p-6 sm:p-8 flex flex-col min-w-0">
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="font-display font-extrabold text-xl sm:text-2xl tracking-tight" style={{ color: tc }}>Appointment details</h3>
+                  <span className="rounded-full px-3 py-1.5 text-[10px] font-bold tracking-wide" style={{ background: `${tc}14`, color: tc }}>CONFIRMED</span>
+                </div>
+
+                {/* service */}
+                <div className="flex items-center gap-4 pb-5 border-b border-[color:var(--color-line)]">
+                  <div className="w-16 h-16 shrink-0 rounded-2xl grid place-items-center" style={{ background: `${tc}12`, color: tc }}>{calIcon}</div>
+                  <div className="min-w-0">
+                    <div className="font-display font-extrabold text-lg leading-tight text-ink">{service.title}</div>
+                    <div className="text-sm text-muted mt-0.5">with {host.name}</div>
+                    <span className="mt-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold" style={{ background: `${tc}10`, color: tc }}>{modeLabel}</span>
                   </div>
                 </div>
 
-                {/* Row below: actions + footer, full width */}
-                <div className="mt-6 max-w-md mx-auto text-center">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <a href={gUrl} target="_blank" rel="noreferrer"
-                      className="btn btn--outline inline-flex items-center justify-center gap-2 py-2.5 px-3 font-semibold text-sm transition-opacity hover:opacity-85"
-                      style={{ color: tc }}>
-                      {calIcon} Add to Google Calendar
-                    </a>
-                    <a href={icsUrl} download={`${service.title.replace(/\s+/g, "-")}.ics`}
-                      className="btn inline-flex items-center justify-center gap-2 py-2.5 px-3 font-semibold text-sm transition-opacity hover:opacity-85"
-                      style={{ background: tc, color: textOnTheme }}>
-                      {calIcon} Download iCal (.ics)
-                    </a>
+                {/* date + time */}
+                <div className="grid grid-cols-2 gap-4 py-5 border-b border-[color:var(--color-line)]">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-12 h-12 shrink-0 rounded-xl grid place-items-center" style={{ background: `${tc}10`, color: tc }}>{calIcon}</div>
+                    <div className="font-display font-bold text-base leading-tight text-ink">{selectedDate?.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</div>
                   </div>
-                  {/* One download: the GST invoice when we have it, else the receipt. */}
-                  {invoiceRef ? (
-                    <a href={invoiceUrl(invoiceRef.id, invoiceRef.token)} target="_blank" rel="noreferrer"
-                      className="btn btn--outline mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 px-3 font-semibold text-sm transition-opacity hover:opacity-85"
-                      style={{ color: tc }}>
-                      {docIcon} Download invoice
-                    </a>
-                  ) : isPaidBooking && (
-                    <button type="button" onClick={() => downloadReceipt(receiptData)}
-                      className="btn btn--outline mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 px-3 font-semibold text-sm transition-opacity hover:opacity-85"
-                      style={{ color: tc }}>
-                      {docIcon} Download receipt
-                    </button>
-                  )}
-                  <div className="border-t border-gray-100 mt-6 pt-4">
-                    <Link to={`/${profileSlug}`} className="text-sm font-semibold hover:underline" style={{ color: tc }}>
-                      ← Back to {host.name}'s profile
-                    </Link>
-                    {/* Manage link works without a session — the token IS the auth (#516). */}
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-12 h-12 shrink-0 rounded-xl grid place-items-center" style={{ background: `${tc}10`, color: tc }}>{clockIcon}</div>
+                    <div className="font-display font-bold text-base leading-tight text-ink">{formatTime(selectedTime)}<span className="text-muted font-sans font-normal text-xs"> ({tzAbbr})</span></div>
+                  </div>
+                </div>
+
+                {/* secondary */}
+                <div className="flex justify-between gap-3 py-4 border-b border-[color:var(--color-line)]">
+                  <div><div className="text-[10px] font-semibold tracking-wide text-muted mb-1">DURATION</div><div className="text-[13px] font-semibold text-ink">{service.duration} minutes</div></div>
+                  <div><div className="text-[10px] font-semibold tracking-wide text-muted mb-1">TIMEZONE</div><div className="text-[13px] font-semibold text-ink">{tzAbbr}</div></div>
+                  <div><div className="text-[10px] font-semibold tracking-wide text-muted mb-1">BOOKING ID</div><div className="text-[13px] font-semibold text-ink">{receiptData.receiptId}</div></div>
+                </div>
+
+                {/* access panel */}
+                {confirmation.meeting_link ? (
+                  <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl p-4 border border-[color:var(--color-line)]" style={{ background: `${tc}0d` }}>
+                    <div className="min-w-0">
+                      <div className="text-[10px] font-bold tracking-wide text-muted mb-1">YOUR MEETING LINK</div>
+                      <div className="text-[13px] font-semibold text-ink break-all">{confirmation.meeting_link.replace(/^https?:\/\//, "")}</div>
+                    </div>
+                    <a href={confirmation.meeting_link} target="_blank" rel="noreferrer" className="shrink-0 rounded-full px-4 py-2.5 text-xs font-semibold whitespace-nowrap" style={{ background: tc, color: textOnTheme }}>Join meeting ↗</a>
+                  </div>
+                ) : isOffline ? (
+                  <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl p-4 border border-[color:var(--color-line)]" style={{ background: `${tc}0d` }}>
+                    <div className="min-w-0">
+                      <div className="text-[10px] font-bold tracking-wide text-muted mb-1">APPOINTMENT LOCATION</div>
+                      <div className="text-[13px] font-semibold text-ink break-words">{venueText}</div>
+                    </div>
+                    {mapLink && <a href={mapLink} target="_blank" rel="noreferrer" className="shrink-0 rounded-full px-4 py-2.5 text-xs font-semibold whitespace-nowrap" style={{ background: tc, color: textOnTheme }}>Directions ↗</a>}
+                  </div>
+                ) : null}
+
+                {/* email sent */}
+                <div className="mt-4 flex items-center gap-2.5 text-xs text-muted">
+                  <span style={{ color: tc }}>{mailIcon}</span>
+                  <span>Confirmation sent to <span className="text-ink font-medium break-all">{email}</span>.</span>
+                </div>
+
+                {/* primary action */}
+                <a href={gUrl} target="_blank" rel="noreferrer"
+                  className="btn rounded-full mt-5 w-full inline-flex items-center justify-center gap-2 py-3 font-semibold text-sm"
+                  style={{ background: tc, color: textOnTheme }}>
+                  {calIcon} Add to Google Calendar
+                </a>
+
+                {/* footer links */}
+                <div className="mt-5 pt-4 border-t border-[color:var(--color-line)] flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                  <Link to={`/${profileSlug}`} className="text-[13px] font-semibold hover:underline" style={{ color: tc }}>← Back to {host.name}'s profile</Link>
+                  <div className="flex items-center gap-4 text-xs">
+                    <a href={icsUrl} download={`${service.title.replace(/\s+/g, "-")}.ics`} className="font-medium hover:underline" style={{ color: tc }}>Download .ics</a>
+                    {invoiceRef ? (
+                      <a href={invoiceUrl(invoiceRef.id, invoiceRef.token)} target="_blank" rel="noreferrer" className="font-medium hover:underline" style={{ color: tc }}>Invoice</a>
+                    ) : isPaidBooking && (
+                      <button type="button" onClick={() => downloadReceipt(receiptData)} className="font-medium hover:underline" style={{ color: tc }}>Receipt</button>
+                    )}
                     {confirmation?.manage_token && (
-                      <p className="mt-3 text-xs text-gray-400">
-                        <Link to={`/manage-booking/${confirmation.manage_token}`} className="font-medium hover:underline" style={{ color: tc }}>
-                          Manage or cancel this booking
-                        </Link>
-                      </p>
+                      <Link to={`/manage-booking/${confirmation.manage_token}`} className="font-medium hover:underline" style={{ color: tc }}>Manage</Link>
                     )}
                   </div>
                 </div>
