@@ -22,7 +22,9 @@ const abuseGuard = require('./bot/abuseGuard'); // pre-ladder abuse/roast gate (
 const pills = require('./bot/pills'); // context quick-reply pills (flag-gated)
 const { classify: classifyIntent } = require('./bot/intent'); // zero-cost pre-retrieval intent (flag-gated)
 const intentHandlers = require('./bot/intentHandlers'); // deterministic per-topic answers + cards
-const { contextAnswer, contextNote } = require('./bot/contextAnswer'); // data-aware answers (authenticated only)
+const { contextAnswer, contextNote, DISPUTE_RE } = require('./bot/contextAnswer'); // data-aware answers (authenticated only)
+const botTools = require('./bot/botTools'); // read-only account status tools (authenticated tool-loop)
+const { isFeatureEnabled } = require('./featureFlags'); // gates the account tool-loop (bot_tool_loop)
 
 // Pull a generous top-N so the authoritative chunk survives noisier docs; the
 // model still answers only from what's relevant and escalates when none cover it.
@@ -521,6 +523,53 @@ function safeThreadHistory(turns) {
   return safe;
 }
 
+// ── Account tool-loop (authenticated support thread only) ──────────────────────
+// The agentic path: instead of the regex contextAnswer ladder, let the model pick a
+// read-only status tool (botTools) from any phrasing and compose the reply. Bounded to
+// one tool round (2 model calls). Grounded + sanitized like every other answer; returns
+// null on any miss/failure so askBot falls through to the regex contextAnswer + ladder —
+// nothing regresses. Gated by bot_tool_loop (ships OFF) and only ever runs with `context`.
+const TOOL_LOOP_RULES = [
+  "You can look up this signed-in user's OWN account facts with the provided tools — their booking, refund, listing, payout and plan status.",
+  'Call a tool whenever the question is about their account state; never guess an account fact. You may call more than one if they ask more than one thing.',
+  'Use ONLY what the tools and the account context return. If a tool reports no record, say so plainly and offer a human — never invent an amount, date or status.',
+  'Answer in your normal voice, short and clear. For a money dispute, or anything the tools cannot resolve, say you are pulling in a teammate rather than guessing.',
+].join(' ');
+
+async function runToolLoop(question, ctx) {
+  const tools = botTools.toolSpecsFor(ctx);
+  if (!tools.length || !anthropicClient.isConfigured()) return null;
+  const budget = await botBudget.tryConsume();
+  if (!budget.allowed) return null;
+  const client = anthropicClient.getClient();
+  if (!client) return null;
+  const system = `${VOICE} ${TOOL_LOOP_RULES}`;
+  const messages = [{ role: 'user', content: `${contextNote(ctx)}\n\n${question}` }];
+  try {
+    let resp = await client.messages.create({
+      model: anthropicClient.MODELS.generate, max_tokens: 700, system, tools, messages,
+    });
+    const uses = (resp.content || []).filter((b) => b.type === 'tool_use');
+    if (uses.length) {
+      messages.push({ role: 'assistant', content: resp.content });
+      messages.push({
+        role: 'user',
+        content: uses.map((u) => ({ type: 'tool_result', tool_use_id: u.id, content: botTools.runTool(u.name, ctx) })),
+      });
+      resp = await client.messages.create({
+        model: anthropicClient.MODELS.generate, max_tokens: 700, system, tools, messages,
+      });
+    }
+    const text = (resp.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('').trim();
+    if (!text) return null;
+    const clean = sanitizeAnswer(text);
+    return clean.safe ? { answer: clean.text } : null;
+  } catch (e) {
+    console.error('[bot] tool loop failed:', e.message);
+    return null;
+  }
+}
+
 // Structured (non-streaming) model call — used by askBot / /ask.
 async function callModel(question, chunks, history = [], note = '') {
   const client = anthropicClient.getClient();
@@ -751,6 +800,20 @@ async function askBot({ question, conversationId = null, sessionRef = null, ip =
   // by botAutoReply, never by the public widget). Runs before the sensitive gate so
   // "where's my refund / why isn't my listing live" resolve from real state; genuine
   // disputes are excluded inside contextAnswer and still fall through to escalation.
+  // Agentic account tool-loop (flag-gated, authenticated thread only). The model picks a
+  // read-only status tool from any phrasing. Disputes are excluded (they must escalate).
+  // On any miss it returns null and we fall through to the regex contextAnswer + ladder,
+  // so a flag-off boot — or a model that declines — behaves exactly as before.
+  if (context && q && !DISPUTE_RE.test(q) && await isFeatureEnabled('bot_tool_loop')) {
+    const looped = await runToolLoop(q, context);
+    if (looped && looped.answer) {
+      const { conversationId: convId, messageId } = await persist({
+        conversationId, sessionRef, question: q, answer: looped.answer, cited_sources: [], escalate: false, source: 'tool',
+      });
+      return { answer: looped.answer, cited_sources: [], escalate: false, conversationId: convId, messageId, source: 'tool' };
+    }
+  }
+
   if (context && q) {
     const ctxHit = contextAnswer(q, context);
     if (ctxHit) {
@@ -1099,7 +1162,7 @@ async function getRecentMessages(conversationId, limit = 10) {
 }
 
 module.exports = {
-  askBot, askBotStream, recordFeedback, getRecentMessages, matchFaq, logGap,
+  askBot, askBotStream, runToolLoop, recordFeedback, getRecentMessages, matchFaq, logGap,
   HANDOFF, SENSITIVE_RE, MIN_RANK, ESCALATE_TOKEN, buildRetrievalQuery, toModelHistory,
   smalltalkReply, SMALLTALK_REPLIES, mergeChunks, redactPii, pricingReply,
   isUnsupportedInput, UNSUPPORTED_INPUT_MSG, OVER_BUDGET_MSG,

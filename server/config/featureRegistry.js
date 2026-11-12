@@ -69,6 +69,10 @@ const REGISTRY = [
   // boot syncRegistry insert can't create it ON if the server deploys before the
   // migration). LinkedIn host login (Phase 2).
   { key: 'host_linkedin_login',  label: 'LinkedIn host login',  category: 'Auth',     scope: 'both',     enabled: false, description: 'Hosts can sign up and log in with LinkedIn on the host door. Off = LinkedIn button hidden and POST /api/auth/linkedin/host returns 503.' },
+  // Opt-in (ships OFF — seeded disabled in v3.207, and `enabled: false` here so the
+  // registry upsert creates it OFF even before the migration runs). Tithi's agentic
+  // account tool-loop on the authenticated support thread (read-only status lookups).
+  { key: 'bot_tool_loop',        label: 'Bot Account Tool-Loop', category: 'Support',  scope: 'both',     enabled: false, description: "Tithi uses a model tool-loop to answer a signed-in user's own account questions (booking/refund/listing/payout/plan status) from live state, instead of the regex ladder. Off = the existing regex contextAnswer path is used. Read-only." },
   { key: 'razorpay_payment',     label: 'Razorpay Payment',     category: 'Payments', scope: 'customer', description: 'Paid checkout via Razorpay. Off = paid bookings/purchases blocked.' },
   { key: 'product_purchase',     label: 'Product Purchase',     category: 'Payments', scope: 'customer', description: 'Buy digital products. Off = product checkout blocked.' },
   // Opt-in (ships OFF — seeded disabled in v3.203, and `enabled: false` here so the

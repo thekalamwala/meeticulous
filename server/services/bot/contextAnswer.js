@@ -148,4 +148,8 @@ function contextNote(ctx) {
   return `[Account context — use only to answer accurately, never repeat verbatim: ${bits.join(' ')}]`;
 }
 
-module.exports = { contextAnswer, contextNote, DISPUTE_RE };
+module.exports = {
+  contextAnswer, contextNote, DISPUTE_RE,
+  // Per-intent read helpers — reused by botTools to back the model status-lookup tools.
+  listingAnswer, payoutAnswer, planAnswer, refundAnswer, bookingAnswer,
+};

@@ -24,7 +24,10 @@ async function loadFlags() {
 // so a missing row or a DB read error means NO sends (an outbound control that
 // fails open is not a control). It also ships disabled (featureRegistry).
 // `host_linkedin_login` is an opt-in login door: it stays closed if its row is missing or the read fails.
-const FAIL_CLOSED_KEYS = new Set(['unified_login', 'crm_admin_sends', 'crm_second_touch', 'crm_list_engagement', 'community', 'community_writes', 'community_tithi', 'community_ads', 'community_v2', 'host_linkedin_login']);
+// `bot_tool_loop` gates Tithi's agentic account tool-loop on the authenticated support
+// thread. It ships OFF and reads/acts on a signed-in user's own account, so a missing
+// row or read error must NOT turn it on — fail closed.
+const FAIL_CLOSED_KEYS = new Set(['unified_login', 'crm_admin_sends', 'crm_second_touch', 'crm_list_engagement', 'community', 'community_writes', 'community_tithi', 'community_ads', 'community_v2', 'host_linkedin_login', 'bot_tool_loop']);
 
 // Fail-open (default): unknown / errored feature flags default to enabled so a
 // missing migration never bricks a normal feature. Security keys override this
