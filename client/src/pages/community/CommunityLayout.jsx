@@ -121,10 +121,12 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
               <img src="/brand/meeticulous-wordmark.svg" alt="Meeticulous" width="110" height="18" className="h-[18px] w-auto" />
               <span className="rounded-full bg-pink-100 px-2 py-0.5 text-xs font-semibold text-maroon">{tag}</span>
             </Link>
-            <label className="flex max-w-md flex-1 items-center gap-2 rounded-full border border-line bg-cream px-4 py-2">
-              <Search size={16} className="text-muted" aria-hidden="true" />
+            <form role="search" onSubmit={(e) => e.preventDefault()} className="flex max-w-xs flex-1 items-center gap-2 rounded-full border border-line bg-cream px-4 py-1.5">
               <input type="search" aria-label="Search the community" placeholder="Search hosts, posts, spaces…" className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted" />
-            </label>
+              <button type="submit" aria-label="Search" className="-mr-1 shrink-0 text-muted transition-colors hover:text-maroon focus-visible:outline-none focus-visible:text-maroon">
+                <Search size={16} aria-hidden="true" />
+              </button>
+            </form>
             <div className="ml-auto flex items-center gap-1.5">
               <Link to="/community" aria-label="Spaces" aria-current={active === 'feed' ? 'page' : undefined} className={dIcon(active === 'feed')}><LayoutGrid size={19} aria-hidden="true" /></Link>
               <Link to="/dashboard/availability" aria-label="Your calendar" className={dIcon(false)}><Calendar size={19} aria-hidden="true" /></Link>
@@ -197,7 +199,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
                   <Link to="/community/guidelines" className="text-muted hover:text-maroon">Guidelines</Link>
                 </div>
                 <div className="flex items-center gap-1.5 text-[11px] text-muted">
-                  Powered by <img src="/brand/meeticulous-wordmark.svg" alt="Meeticulous" width="84" height="14" className="h-[13px] w-auto" />
+                  Powered by <img src="/brand/meeticulous-wordmark.svg" alt="Meeticulous" width="84" height="14" className="relative top-[1.5px] h-[13px] w-auto" />
                 </div>
               </div>
             )}

@@ -68,6 +68,7 @@ export default function CommunityFeed() {
 
       {/* v2: a slim one-line greeting, not a full-height hero, so the first post
           sits above the fold on a 390px phone. v1: the original hero. */}
+      <div className={v2 ? 'flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between' : 'flex flex-col gap-5'}>
       <header className={`flex flex-col ${v2 ? 'gap-0.5 py-1' : 'gap-2 py-2'}`}>
         <h1 className={`font-display font-extrabold leading-tight tracking-tight text-maroon ${v2 ? 'text-xl' : 'text-3xl sm:text-4xl'}`}>
           Ask, share, learn. <span className="font-serif font-normal italic text-rose">Find your people.</span>
@@ -75,7 +76,7 @@ export default function CommunityFeed() {
         <p className={`text-muted ${v2 ? 'text-xs' : 'text-sm'}`}>Hosts and guests talking about sessions, pricing and the craft.</p>
       </header>
 
-      <div role="tablist" aria-label="Feed" className={v2 ? 'flex gap-1 rounded-full border border-line bg-white p-1 shadow-sm' : 'mt-tabs flex'}>
+      <div role="tablist" aria-label="Feed" className={v2 ? 'flex gap-1 rounded-full border border-line bg-white p-1 shadow-sm lg:w-auto lg:shrink-0' : 'mt-tabs flex'}>
         {TABS.map((t) => (
           <button
             key={t.key}
@@ -86,13 +87,14 @@ export default function CommunityFeed() {
             title={t.soon ? 'Following arrives soon' : undefined}
             onClick={() => { if (!t.soon && t.key !== tab) setParams(t.key === 'everyone' ? {} : { tab: t.key }); }}
             className={v2
-              ? `flex-1 rounded-full py-2 text-center text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 ${
+              ? `flex-1 rounded-full px-4 py-2 text-center text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 lg:flex-none lg:px-3.5 lg:py-1.5 lg:text-xs ${
                 t.key === tab ? 'bg-maroon text-cream' : 'text-muted hover:text-ink'} ${t.soon ? 'opacity-60' : ''}`
               : 'mt-tab flex-1 justify-center px-3 sm:px-6'}
           >
             {t.label}{t.soon && <span className="mt-tab__count">soon</span>}
           </button>
         ))}
+      </div>
       </div>
 
       <div className="mt-card gap-4 p-5 sm:p-6">
