@@ -38,6 +38,19 @@ export default defineConfig(({ command, mode }) => {
     // the client root). Let the dev server read the parent dir; the build bundles
     // them regardless of this.
     fs: { allow: ['..'] },
+    watch: {
+      // Static assets are served straight off disk. On Windows, OneDrive/
+      // antivirus can hold a lock on a file in public/ while the native
+      // fs.watch() enumerates it, which kills the dev server with
+      // "EBUSY: resource busy or locked". Polling stats the files instead of
+      // opening OS watch handles, so a locked file can't crash the server.
+      // (Do NOT add public/ to `ignored`: Vite's public-file registry only
+      // learns about new assets from watcher events, so ignored files 404
+      // until the server restarts.)
+      usePolling: true,
+      interval: 300,
+      ignored: ['**/node_modules/**', '**/dist/**'],
+    },
   },
 
   build: {

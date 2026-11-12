@@ -14,8 +14,11 @@ export const GUIDES_IN_PAGE = /^\/(for|features)\//;
  */
 export default function PageGuides({ pathname }) {
   const location = useLocation();
-  const guides = PAGE_GUIDES[(pathname ?? location.pathname).replace(/\/+$/, "")];
+  const path = (pathname ?? location.pathname).replace(/\/+$/, "");
+  let guides = PAGE_GUIDES[path];
   if (!guides?.length) return null;
+  // Feature pages show at most 3 guides.
+  if (/^\/features\//.test(path)) guides = guides.slice(0, 3);
 
   return (
     <section aria-labelledby="page-guides-title" className="bg-canvas px-5 py-14 sm:px-8">

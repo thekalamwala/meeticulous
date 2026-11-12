@@ -37,11 +37,12 @@ import { getFeature } from './featureData';
 import { TESTIMONIALS } from '../../data/testimonials';
 import { HERO_FACES } from '../../components/home/images';
 import PageGuides from '../../components/common/PageGuides';
+import FeatureFaq from '../../components/features/FeatureFaq';
 import './featurePage.css';
 
 const ROUTE = '/become-a-host';
 // Brand palette cycled for icon chips / borders so a page never reads one-note.
-const PALETTE = ['#960D32', '#FF4D93', '#4AB765', '#FFCC1C', '#269CEF', '#8B5CF6'];
+const PALETTE = ['#960D32', '#E0506F', '#F6C35A', '#FF9FB0', '#EB93A6', '#C43A59'];
 const soft = (hex) => `color-mix(in srgb, ${hex} 14%, white)`;
 
 // Icon-name → component. featureData refers to icons by string.
@@ -77,7 +78,7 @@ function TAvatar({ src, name }) {
 function Cta({ children = 'Get started free', variant = 'primary' }) {
   if (variant === 'primary') {
     return (
-      <Link to={ROUTE} className="btn inline-flex items-center justify-center gap-1.5 px-7 py-3.5 text-white shadow-[var(--shadow-hard-1)] hover:no-underline" style={{ background: 'var(--fp-accent)' }}>
+      <Link to={ROUTE} className="btn inline-flex items-center justify-center gap-1.5 px-7 py-3.5 text-white hover:no-underline" style={{ background: 'var(--fp-accent)' }}>
         {children} <ArrowRight size={16} />
       </Link>
     );
@@ -568,16 +569,21 @@ function Related({ related }) {
 function Faq({ faq }) {
   if (!faq?.length) return null;
   return (
-    <section className="fp-sec fp-faqwrap"><div className="fp-wrap fp-center">
-      <h2 className="fp-title">Questions, answered.</h2>
-      <div className="fp-faq">
-        {faq.map((f, i) => (
-          <details key={f.q} open={i === 0}>
-            <summary>{f.q}<Plus className="pl" size={20} /></summary>
-            <p>{f.a}</p>
-          </details>
-        ))}
-      </div>
+    <section className="fp-sec fp-faqwrap"><div className="fp-wrap">
+      <FeatureFaq
+        heading={<h2 className="fp-title">Questions, answered.</h2>}
+        items={faq}
+        itemClassName="overflow-hidden rounded-[6px] border border-white/10 bg-white/[0.04]"
+        openItemClassName="border-[color:var(--fp-accent)]"
+        summaryClassName="flex items-center justify-between gap-3.5 px-5 py-[18px] text-[15.5px] font-semibold text-white"
+        answerClassName="px-5 pb-[18px] text-sm text-white/60"
+        renderSummary={(f, i, open) => (
+          <>
+            {f.q}
+            <Plus className="flex-none text-[color:var(--fp-accent)]" size={20} style={{ transform: open ? 'rotate(45deg)' : 'none', transition: 'transform .2s' }} />
+          </>
+        )}
+      />
     </div></section>
   );
 }

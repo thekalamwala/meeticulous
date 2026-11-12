@@ -14,9 +14,15 @@ import {
   Mail,
   CalendarCheck,
 } from "lucide-react";
-import { FLOW_ILLUSTRATIONS } from "./illustrations/FlowIllustrations";
-
 const EASE = [0.22, 1, 0.36, 1];
+
+// Mascot art per step (client/public/home/*), shown at the bottom of each card.
+const FLOW_IMAGES = {
+  book: "/home/book.png",
+  pay: "/home/pay.png",
+  confirm: "/home/confirm.png",
+  remind: "/home/reminder.png",
+};
 
 /* "Everything around the appointment" — a horizontal row of four text cards
    (Calendly-style). Hovering (or focusing / tapping) a card widens it to show
@@ -124,7 +130,7 @@ export default function AppointmentFlow() {
     <div className="flex flex-col gap-3 lg:h-[30rem] lg:flex-row lg:gap-4">
       {FLOW_STEPS.map((s, i) => {
         const on = isRow ? i === active : true;
-        const Art = FLOW_ILLUSTRATIONS[s.key];
+        const image = FLOW_IMAGES[s.key];
         return (
           <div
             key={s.key}
@@ -196,15 +202,19 @@ export default function AppointmentFlow() {
               </div>
             </div>
 
-            {/* Line illustration in the blank space below the text (bottom-right).
+            {/* Mascot art in the blank space below the text (bottom-right).
                 In normal flow with mt-auto, so it can never overlap the text.
                 ONE fixed size per breakpoint, open or closed — hovering never
                 resizes it (sized to fit the narrow closed card on the row). */}
-            {Art && (
+            {image && (
               <div className={`relative z-10 mt-auto justify-end px-5 pb-5 ${on ? "flex" : "hidden lg:flex"}`}>
-                <Art
-                  accent={s.tint}
-                  className="h-auto w-40 flex-shrink-0 lg:w-[7.75rem] xl:w-[9.5rem]"
+                <img
+                  src={image}
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
+                  className="h-auto w-40 flex-shrink-0 select-none object-contain lg:w-[7.75rem] xl:w-[9.5rem]"
                 />
               </div>
             )}
