@@ -19,6 +19,13 @@ import ForHeroFit from './components/common/ForHeroFit';
 import RouteErrorBoundary from './components/common/RouteErrorBoundary';
 import PetalSpinner from './components/common/PetalSpinner';
 import { useAuth } from './context/AuthContext';
+import { useFeature } from './context/FeatureContext';
+
+// Community-shell routes that render inside CommunityLayout (which carries its own
+// top bar under community_v2). Profile pages (/community/<slug>, /team) are NOT
+// here — they keep the global navbar.
+const inCommunityShell = (p) => p === '/community' || p === '/community/new' || p === '/community/alerts'
+  || p.startsWith('/community/s/') || p.startsWith('/community/t/') || p.startsWith('/community/p/');
 import { KycProvider } from './context/KycContext';
 import { captureReferral, redeemGiftLink, getMe } from './services/api';
 import { captureAttribution } from './utils/attribution';
@@ -426,6 +433,8 @@ function HomeGate() {
 function App() {
   const location = useLocation();
   const { user } = useAuth();
+  // community_v2 gives the community shell its own top bar, so drop the global one there.
+  const communityV2 = useFeature('community_v2');
 
   // Snapshot marketing attribution (UTM/referrer/landing) on first arrival, once,
   // before any signup/newsletter/enterprise call reads it (CRM Phase 2b).
@@ -442,6 +451,7 @@ function App() {
 
   const hideNavbar =
     chromeHidden ||
+    (communityV2 && inCommunityShell(location.pathname)) ||
     location.pathname.startsWith('/dashboard') ||
     // Guest console (/user/*) ships its own sidebar shell + topbar (GuestLayout),
     // so the global navbar must not also render — otherwise two headers stack and

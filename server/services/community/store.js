@@ -78,6 +78,27 @@ const resolveUsernames = async (usernames) => (usernames.length
   : []);
 const insertMentions = (rows) => (rows.length ? run(db('community_mentions').insert(rows)) : null);
 
+// Host card stats for the community home left rail: lifetime bookings, active
+// services, and the host's own rating (avg of reviews where they're the subject).
+// Core tables (always present) queried directly; each count fails soft to 0/null
+// so a hiccup never breaks the rail.
+const hostCard = async (uid) => {
+  const safe = (p) => Promise.resolve(p).then((r) => r || {}).catch(() => ({}));
+  const [bk, sv, rv] = await Promise.all([
+    safe(db('bookings').select('id', { count: 'exact', head: true }).eq('host_id', uid)),
+    safe(db('services').select('id', { count: 'exact', head: true }).eq('host_id', uid)),
+    safe(db('reviews').select('rating').eq('subject_id', uid)),
+  ]);
+  const ratings = (rv.data || []).map((r) => r.rating).filter((n) => Number.isFinite(n));
+  const reviews = ratings.length;
+  return {
+    bookings: bk.count || 0,
+    services: sv.count || 0,
+    reviews,
+    rating: reviews ? Math.round((ratings.reduce((s, n) => s + n, 0) / reviews) * 10) / 10 : null,
+  };
+};
+
 // Taggable members for the @mention typeahead: hosts + the Meeticulous team
 // (community_members.badge official/staff) + everyone who has joined the
 // community (a community_members row). Empty `q` lists the first few.
@@ -391,7 +412,7 @@ module.exports = {
   listAuthorPosts, listAuthorComments, postContexts,
   loadAuthors, loadMediaByPost, likedIds, resetReadCaches,
   linksAllowed, getProfile, getMember, acceptTerms, updateMemberPrefs, getSpaceByKey, getSpaceById,
-  insertPost, getPost, updatePost, insertMedia, listMedia, resolveUsernames, insertMentions, searchMentionable,
+  insertPost, getPost, updatePost, insertMedia, listMedia, resolveUsernames, insertMentions, searchMentionable, hostCard,
   getComment, insertComment, countCommentsByAuthorOnPost, countReplies, countRepliesByAuthor,
   listRecentTopLevelComments, updateComment, addReaction, removeReaction,
   addSave, removeSave, savedIds, addBlock, removeBlock,

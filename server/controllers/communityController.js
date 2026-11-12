@@ -599,6 +599,23 @@ const updatePrefs = handle(async (req, res) => {
   return res.json({ email_replies: m?.email_replies !== false });
 });
 
+// GET /me/card — the signed-in member's community home card: host stats
+// (bookings · rating · services) for hosts, plus member tenure. Private.
+const myCard = handle(async (req, res) => {
+  const uid = req.user.id;
+  const profile = await store.getProfile(uid);
+  const isHost = !!profile?.is_host;
+  const stats = isHost ? await store.hostCard(uid) : {};
+  res.set('Cache-Control', 'private, max-age=30');
+  return res.json({
+    is_host: isHost,
+    verified: !!profile?.is_verified,
+    username: profile?.username || null,
+    member_since: profile?.created_at ? new Date(profile.created_at).getFullYear() : null,
+    ...stats,
+  });
+});
+
 // GET /mention-suggest?q= — taggable members for the composer/comment @mention
 // typeahead (hosts + team + community members). Private, no-store. The list is
 // the only insert path the client offers, so a non-member can't be surfaced.
@@ -610,7 +627,7 @@ const mentionSuggest = handle(async (req, res) => {
 });
 
 module.exports = {
-  listSpaces, feed, spaceThreads, itemDetail, itemComments, me, authorActivity, mentionSuggest, updatePrefs,
+  listSpaces, feed, spaceThreads, itemDetail, itemComments, me, myCard, authorActivity, mentionSuggest, updatePrefs,
   acceptTerms, createItem, updateItem, deleteItem, createComment, updateComment, deleteComment,
   acceptAnswer, addReaction, removeReaction, createReport,
   createSave, removeSave, createBlock, removeBlock,
