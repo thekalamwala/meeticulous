@@ -43,6 +43,10 @@ export function useCursorList(fetchPage, key) {
 
 const navCls = (on) => `flex h-10 items-center gap-3 rounded-full px-3 text-sm no-underline transition-colors ${
   on ? 'bg-white font-semibold text-maroon' : 'font-medium text-ink hover:bg-pink-100 hover:text-maroon'}`;
+
+// Spaces-sheet chip: wrapping pill, sized to its label (fluid, many per row).
+const chipCls = (on) => `rounded-full border px-3.5 py-2 text-sm font-semibold no-underline transition-colors ${
+  on ? 'border-transparent bg-maroon text-cream' : 'border-line bg-cream text-ink hover:border-maroon/40 hover:text-maroon'}`;
 const LOCK_LABEL = { hosts: 'Hosts post here', official: 'Team posts only' };
 
 // Dynamic community wordmark tag — intentionally varies (Gang/Circle/…), never
@@ -152,12 +156,12 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
                 <Search size={18} aria-hidden="true" />
               </button>
             </form>
-            <nav aria-label="Spaces" className="flex flex-col">
+            <nav aria-label="Spaces" className="flex flex-wrap gap-2">
               {!spaceQuery && (
-                <Link to="/community" onClick={() => setSpacesOpen(false)} aria-current={active === 'feed' ? 'page' : undefined} className={navCls(active === 'feed')}>All</Link>
+                <Link to="/community" onClick={() => setSpacesOpen(false)} aria-current={active === 'feed' ? 'page' : undefined} className={chipCls(active === 'feed')}>All</Link>
               )}
               {spaces.filter((s) => (s.title || '').toLowerCase().includes(spaceQuery.toLowerCase())).map((s) => (
-                <Link key={s.key} to={`/community/s/${s.key}`} onClick={() => setSpacesOpen(false)} aria-current={active === s.key ? 'page' : undefined} className={navCls(active === s.key)}>{s.title}</Link>
+                <Link key={s.key} to={`/community/s/${s.key}`} onClick={() => setSpacesOpen(false)} aria-current={active === s.key ? 'page' : undefined} className={chipCls(active === s.key)}>{s.title}</Link>
               ))}
               {spaceQuery && spaces.filter((s) => (s.title || '').toLowerCase().includes(spaceQuery.toLowerCase())).length === 0 && (
                 <p className="px-3 py-6 text-center text-sm text-muted">No spaces match “{spaceQuery}”.</p>
