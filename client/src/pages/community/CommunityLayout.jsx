@@ -119,7 +119,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
     <main className={`min-h-screen overflow-x-hidden bg-cream ${v2 ? 'community-v2 pb-24' : 'pb-16'}`}>
       {v2 && (
         <header
-          className="sticky top-0 z-40 flex items-center justify-between border-b border-line bg-white px-4 lg:hidden"
+          className="sticky top-0 z-40 flex items-center justify-between border-b border-line bg-white px-4 pb-[2px] lg:hidden"
           style={{ paddingTop: 'env(safe-area-inset-top)' }}
         >
           <Link to="/community" aria-label="Meeticulous Community" className="flex items-center gap-2 py-3 no-underline">
@@ -133,7 +133,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
             aria-expanded={spacesOpen}
             className="grid h-11 w-11 place-items-center rounded-2xl bg-cream text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40"
           >
-            <LayoutGrid size={20} aria-hidden="true" />
+            <LayoutGrid size={18} aria-hidden="true" />
           </button>
         </header>
       )}
@@ -306,9 +306,11 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
           <button type="button" onClick={() => setFilterOpen(true)} aria-label="Filter the feed" aria-expanded={filterOpen} className={`flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 ${curTab !== 'everyone' ? 'text-maroon' : 'text-muted'}`}>
             <ListFilter size={22} aria-hidden="true" />Filter
           </button>
-          <button type="button" onClick={() => onCompose?.('post')} aria-label="Add a post" className="flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-semibold text-maroon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40">
-            <Plus size={24} aria-hidden="true" />Post
-          </button>
+          <div className="flex flex-1 items-center justify-center">
+            <button type="button" onClick={() => onCompose?.('post')} aria-label="Add a post" className="grid h-14 w-14 -translate-y-4 place-items-center rounded-full bg-maroon text-cream shadow-lg shadow-maroon/40 ring-4 ring-white transition-transform hover:bg-maroon-dark active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-maroon">
+              <Plus size={26} strokeWidth={2.6} aria-hidden="true" />
+            </button>
+          </div>
           <Link
             to="/community/alerts"
             aria-current={active === 'alerts' ? 'page' : undefined}
