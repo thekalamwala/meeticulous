@@ -10,6 +10,7 @@ import CommunityAd from '../../components/community/CommunityAd';
 import { useFeature } from '../../context/FeatureContext';
 import { useAuth } from '../../context/AuthContext';
 import ProfileDrawer from '../../components/community/ProfileDrawer';
+import CommunityProfileRail from '../../components/community/CommunityProfileRail';
 import '../../styles/community-v2.css';
 
 export const SITE_DESC = 'Questions, tips and updates from hosts and guests on Meeticulous, the booking platform for independent professionals.';
@@ -153,26 +154,32 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
       <div className={`mx-auto max-w-7xl gap-6 px-4 lg:grid lg:grid-cols-[15rem_minmax(0,46rem)] lg:justify-center lg:px-5 lg:pt-6 ${
         showRail ? 'xl:grid-cols-[15rem_minmax(0,46rem)_20rem]' : ''}`}>
         <aside aria-label="Community navigation" className={`sticky hidden flex-col gap-5 self-start lg:flex ${v2 ? 'lg:top-[60px]' : 'top-24'}`}>
-          <button type="button" onClick={() => onCompose?.('post')} className="mt-btn mt-btn--block">
-            <SquarePen size={20} aria-hidden="true" />New post
-          </button>
-          <nav aria-label="Spaces" className="flex flex-col gap-1">
-            <Link to="/community" aria-current={active === 'feed' ? 'page' : undefined} className={navCls(active === 'feed')}>
-              <House size={20} aria-hidden="true" />Feed
-            </Link>
-            <span className="mt-card__kicker px-3 pb-1 pt-3">Spaces</span>
-            {spaces.map((s) => (
-              <Link key={s.key} to={`/community/s/${s.key}`} aria-current={active === s.key ? 'page' : undefined} className={navCls(active === s.key)}>
-                <SpaceIcon spaceKey={s.key} />
-                <span className="min-w-0 flex-1 truncate">{s.name}</span>
-                {LOCK_LABEL[s.post_policy] && <Lock size={16} role="img" aria-label={LOCK_LABEL[s.post_policy]} className="text-neutral-500" />}
-              </Link>
-            ))}
-          </nav>
-          <div className="flex flex-wrap gap-x-4 gap-y-1 px-3 text-xs">
-            <Link to="/community/guidelines" className="text-muted">Guidelines</Link>
-            <Link to="/help" className="text-muted">Help centre</Link>
-          </div>
+          {v2 ? (
+            <CommunityProfileRail user={user} />
+          ) : (
+            <>
+              <button type="button" onClick={() => onCompose?.('post')} className="mt-btn mt-btn--block">
+                <SquarePen size={20} aria-hidden="true" />New post
+              </button>
+              <nav aria-label="Spaces" className="flex flex-col gap-1">
+                <Link to="/community" aria-current={active === 'feed' ? 'page' : undefined} className={navCls(active === 'feed')}>
+                  <House size={20} aria-hidden="true" />Feed
+                </Link>
+                <span className="mt-card__kicker px-3 pb-1 pt-3">Spaces</span>
+                {spaces.map((s) => (
+                  <Link key={s.key} to={`/community/s/${s.key}`} aria-current={active === s.key ? 'page' : undefined} className={navCls(active === s.key)}>
+                    <SpaceIcon spaceKey={s.key} />
+                    <span className="min-w-0 flex-1 truncate">{s.name}</span>
+                    {LOCK_LABEL[s.post_policy] && <Lock size={16} role="img" aria-label={LOCK_LABEL[s.post_policy]} className="text-neutral-500" />}
+                  </Link>
+                ))}
+              </nav>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 px-3 text-xs">
+                <Link to="/community/guidelines" className="text-muted">Guidelines</Link>
+                <Link to="/help" className="text-muted">Help centre</Link>
+              </div>
+            </>
+          )}
         </aside>
 
         <div className={`flex min-w-0 flex-col ${v2 ? 'gap-3' : 'gap-5'}`}>{children}</div>
