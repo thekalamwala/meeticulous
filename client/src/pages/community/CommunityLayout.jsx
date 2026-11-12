@@ -188,6 +188,19 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
           <aside aria-label="About" className={`sticky hidden flex-col gap-5 self-start xl:flex ${v2 ? 'lg:top-[60px]' : 'top-24'}`}>
             {aside}
             <CommunityAd />
+            {v2 && (
+              <div className="flex flex-col gap-2 px-1">
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+                  <Link to="/about" className="text-muted hover:text-maroon">About</Link>
+                  <Link to="/help" className="text-muted hover:text-maroon">Help</Link>
+                  <Link to="/privacy" className="text-muted hover:text-maroon">Privacy</Link>
+                  <Link to="/community/guidelines" className="text-muted hover:text-maroon">Guidelines</Link>
+                </div>
+                <div className="flex items-center gap-1.5 text-[11px] text-muted">
+                  Powered by <img src="/brand/meeticulous-wordmark.svg" alt="Meeticulous" width="84" height="14" className="h-[13px] w-auto" />
+                </div>
+              </div>
+            )}
           </aside>
         )}
       </div>
