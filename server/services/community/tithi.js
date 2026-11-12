@@ -26,9 +26,15 @@ const store = require('./store');
 const botService = require('../botService');
 const escalationService = require('../bot/escalationService');
 const notify = require('./notify');
+const replyGate = require('./replyGate');
 
 const FLAG = 'community_tithi';
 const UPDATES_SPACE = 'updates';
+// Honest community handoff line (Tithi's voice) for when askBot can't confidently ground
+// the answer — a feature that may not be live yet, a sensitive money/account question, or
+// the model simply being unsure. Replaces the doc-centric support handoff in the community.
+const COMMUNITY_HANDOFF =
+  "Good question — I want to get this exactly right, so I'm pulling in the team to confirm. Hang tight.";
 // Who Tithi @mentions in-thread when she can't handle an escalation, so a human checks
 // and replies (that's how the team learns there's a problem). A community username,
 // configurable — default the shared 'team' account (profiles.username='team', early-access).
@@ -397,12 +403,27 @@ async function replyToPost({ post } = {}) {
     // One reply per post (first responder). Dedup before spending a model call.
     if (await store.countCommentsByAuthorOnPost(post.id, tithi)) return { skipped: 'already_replied' };
 
+    // Relevance gate (COMMUNITY_REPLY_GATE_ENABLED). OFF = legacy behaviour (first-respond
+    // to every eligible post). ON = cheapest-first: stay silent when a human already
+    // answered or the post isn't a question for us, and route the genuine ones.
+    let route = 'support';
+    if (process.env.COMMUNITY_REPLY_GATE_ENABLED === 'true') {
+      // A member already replied → don't talk over them.
+      if ((post.comment_count || 0) >= 1) return { skipped: 'human_answered' };
+      const decision = await replyGate.decide({ body: post.body });
+      if (!decision.act) return { skipped: 'gate', reason: decision.reason };
+      route = decision.route;
+    }
+
     const author = post.author_id ? await store.getProfile(post.author_id) : null;
     const audience = author ? (author.is_host ? 'host' : 'guest') : null;
 
     const res = await botService.askBot({ question: post.body, audience });
-    let body = String(res.answer || '').trim();
+    // Can't ground it → honest community handoff (not the doc-centric support line).
+    let body = res.escalate ? COMMUNITY_HANDOFF : String(res.answer || '').trim();
     if (!body) return { skipped: 'empty' };
+    // Pitch: comparison intent gets ONE internal CTA; the grounded answer is unchanged.
+    if (!res.escalate && route === 'comparison') body = replyGate.appendCta(body, route);
 
     // On escalation, tag a human IN the reply so they're pinged to check + take over.
     // One reply per post (dedup above) means at most one tag per thread — no extra guard.
