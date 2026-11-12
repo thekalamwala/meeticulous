@@ -19,7 +19,7 @@
 // payout held until ~24h after the session). No usage stats, no ratings.
 // Testimonials are the real, consented quotes from data/testimonials.js.
 //
-// IMAGES: empty ImgSlot placeholders (data-img-slot names the photo to supply).
+// IMAGES: /features/payment.png in the "Paid, held, then released" bento cell.
 // Global Navbar + Footer come from App.jsx. No hover uplift anywhere.
 
 import { useEffect, useState } from 'react';
@@ -27,7 +27,7 @@ import { Link } from 'react-router-dom';
 import { useReducedMotion } from 'framer-motion';
 import {
   ArrowRight, Check, X, CheckCircle2, Lock, Receipt, CreditCard, Wallet,
-  IndianRupee, FileText, RotateCcw, Gift, ImageIcon, Clock,
+  IndianRupee, FileText, RotateCcw, Gift, Clock,
 } from 'lucide-react';
 import Reveal from '../../components/home/Reveal';
 import Seo from '../../components/common/Seo';
@@ -36,6 +36,7 @@ import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
 import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
+import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
 const GOLD = '#E9C46A';       // accent on dark forest only (AA on #0E3B2C)
@@ -125,27 +126,11 @@ function PrimaryCta({ to = START, children, dark = false }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold shadow-[0_8px_30px_rgba(26,26,26,0.12)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-opacity hover:no-underline hover:opacity-90"
       style={dark ? { background: GOLD, color: '#12261D' } : { background: '#0E3B2C', color: '#F5EFE3' }}
     >
       {children}
     </Link>
-  );
-}
-
-/* Empty image placeholder; the founder supplies the real photo later. */
-function ImgSlot({ alt, slot, className = '', dark = false }) {
-  const ink = dark ? '245,239,227' : '14,59,44';
-  return (
-    <div
-      role="img"
-      aria-label={alt}
-      data-img-slot={slot}
-      className={`flex items-center justify-center rounded-[16px] border border-black/5 ${className}`}
-      style={{ background: `repeating-linear-gradient(135deg, rgba(${ink},0.04) 0 10px, rgba(${ink},0.08) 10px 20px)` }}
-    >
-      <ImageIcon size={28} style={{ color: `rgba(${ink},0.3)` }} aria-hidden />
-    </div>
   );
 }
 
@@ -342,7 +327,7 @@ export default function PaymentsFeature() {
               <span aria-hidden className="mx-2">/</span>
               <span aria-current="page" className="text-[#F5EFE3]/85">Payments</span>
             </nav>
-            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.1rem,3.7vw,3.2rem)] font-extrabold text-[#F5EFE3] leading-[0.98] tracking-[-0.035em]">
+            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.1rem,3.7vw,3.2rem)] font-extrabold !text-[#F5EFE3] leading-[0.98] tracking-[-0.035em]">
               Get paid before the session, <span style={{ color: GOLD }}>not after.</span>
             </Reveal>
             <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-[#F5EFE3]/75 lg:text-[17px]">
@@ -383,7 +368,7 @@ export default function PaymentsFeature() {
       {/* ═══════════════ 3 · WITHOUT vs WITH (editorial ledger) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-5xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
+          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-[#2B0A14] sm:text-5xl">
             A UPI QR in the chat is not <span className="text-[#1F6B4A]">a payment system.</span>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed text-neutral-500">
@@ -410,7 +395,7 @@ export default function PaymentsFeature() {
       {/* ═══════════════ 4 · HOW IT WORKS (minute-by-minute timeline) ═══════════════ */}
       <section className="bg-[#F5EFE3] px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-5xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
+          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-[#2B0A14] sm:text-5xl">
             What happens the minute <span className="text-[#1F6B4A]">a client pays.</span>
           </Reveal>
           <ol className="mt-14">
@@ -432,7 +417,7 @@ export default function PaymentsFeature() {
       {/* ═══════════════ 5 · CAPABILITIES (bento with one dark cell) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
+          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-[#2B0A14] sm:text-5xl">
             The money admin, <span className="text-[#1F6B4A]">already done.</span>
           </Reveal>
           <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-3">
@@ -442,7 +427,13 @@ export default function PaymentsFeature() {
                 <h3 className="mt-5 font-heading text-2xl font-bold text-[#F5EFE3]">Paid, held, then released</h3>
                 <p className="mt-2 max-w-md text-[15px] leading-relaxed text-[#F5EFE3]/70">The transfer is created the moment your client pays, held until about a day after the session, then released to your bank. Each one shows up in your Payouts dashboard.</p>
               </div>
-              <ImgSlot slot="payouts-dashboard" alt="The Meeticulous payouts dashboard showing held and released payouts" className="mt-7 aspect-[16/9] w-full" dark />
+              <img
+                src="/features/payment.png"
+                alt="The Meeticulous payouts dashboard showing held and released payouts"
+                loading="lazy"
+                decoding="async"
+                className="mx-auto mt-7 w-full max-w-lg"
+              />
             </Reveal>
             {CAPS.map((c, i) => (
               <Reveal key={c.title} delay={(i % 3) * 0.05} className="rounded-[24px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
@@ -459,7 +450,7 @@ export default function PaymentsFeature() {
       <section id="keep" className="scroll-mt-20 bg-[#0E3B2C] px-5 py-20 text-[#F5EFE3] sm:px-8 lg:py-28">
         <div className="mx-auto max-w-4xl">
           <div className="text-center">
-            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#F5EFE3] sm:text-5xl">
+            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-[#F5EFE3] sm:text-5xl">
               See exactly <span style={{ color: GOLD }}>what you keep.</span>
             </Reveal>
             <Reveal as="p" delay={0.05} className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-[#F5EFE3]/70">
@@ -501,34 +492,38 @@ export default function PaymentsFeature() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-          <div className="lg:sticky lg:top-28 lg:self-start">
-            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-              Money questions, <span className="text-[#1F6B4A]">answered.</span>
-            </Reveal>
-            <Reveal as="p" delay={0.05} className="mt-5 text-base text-neutral-500">
-              Every fee is also listed on our <Link to="/host-fees" className="font-semibold text-[#1F6B4A] underline underline-offset-4">host fees page</Link>.
-            </Reveal>
-          </div>
-          <div className="border-t border-black/10">
-            {FAQ.map((f, i) => (
-              <details key={f.q} className="group border-b border-black/10" open={i === 0}>
-                <summary className="flex cursor-pointer list-none items-start gap-5 py-5 [&::-webkit-details-marker]:hidden">
-                  <span className="pt-0.5 font-heading text-sm font-extrabold tabular-nums" style={{ color: GOLD_INK }}>{String(i + 1).padStart(2, '0')}</span>
-                  <span className="flex-1 font-heading text-[17px] font-bold">{f.q}</span>
-                  <span aria-hidden className="pt-0.5 text-xl leading-none text-neutral-400 transition-transform group-open:rotate-45">+</span>
-                </summary>
-                <p className="pb-6 pl-10 pr-6 text-[15px] leading-relaxed text-neutral-600">{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
+        <FeatureFaq
+          containerClassName="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16"
+          headingClassName="lg:sticky lg:top-28 lg:self-start"
+          heading={(
+            <>
+              <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-[#2B0A14] sm:text-5xl">
+                Money questions, <span className="text-[#1F6B4A]">answered.</span>
+              </Reveal>
+              <Reveal as="p" delay={0.05} className="mt-5 text-base text-neutral-500">
+                Every fee is also listed on our <Link to="/host-fees" className="font-semibold text-[#1F6B4A] underline underline-offset-4">host fees page</Link>.
+              </Reveal>
+            </>
+          )}
+          items={FAQ}
+          listClassName="border-t border-black/10"
+          itemClassName="border-b border-black/10"
+          summaryClassName="flex items-start gap-5 py-5"
+          answerClassName="pb-6 pl-10 pr-6 text-[15px] leading-relaxed text-neutral-600"
+          renderSummary={(f, i, open) => (
+            <>
+              <span className="pt-0.5 font-heading text-sm font-extrabold tabular-nums" style={{ color: GOLD_INK }}>{String(i + 1).padStart(2, '0')}</span>
+              <span className="flex-1 font-heading text-[17px] font-bold">{f.q}</span>
+              <span aria-hidden className={`pt-0.5 text-xl leading-none text-neutral-400 transition-transform ${open ? 'rotate-45' : ''}`}>+</span>
+            </>
+          )}
+        />
       </section>
 
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
       <section className="bg-[#0E3B2C] px-5 py-20 text-[#F5EFE3] sm:px-8 lg:py-28">
         <div className="mx-auto max-w-5xl text-center">
-          <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.4rem)] font-extrabold text-[#F5EFE3] leading-[0.98] tracking-[-0.035em]">
+          <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.4rem)] font-extrabold !text-[#F5EFE3] leading-[0.98] tracking-[-0.035em]">
             Stop chasing payments. <span style={{ color: GOLD }}>Get paid first.</span>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-[#F5EFE3]/70">

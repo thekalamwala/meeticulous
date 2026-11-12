@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { ArrowRight, ArrowUp, ChevronDown, CreditCard, Gift, Zap } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ArrowUp, ArrowUpRight, CalendarDays, ChevronDown, Heart, Sparkles, Star } from 'lucide-react';
 import OperatorCredit from './OperatorCredit';
 import DoodleWordmark from './footer/DoodleWordmark';
+import './footer/footerStrips.css';
 
 const EMAIL = 'team@meeticulous.com';
 
@@ -69,6 +70,40 @@ const COLUMNS = [
   },
 ];
 
+// Keywords scrolling in the tilted pink strip under the CTA. Each claim mirrors
+// copy the site already makes (UPI, WhatsApp reminders, "Free Forever" Starter,
+// "live in minutes") — keep them in sync. Separator icons cycle in this order.
+const KEYWORDS = [
+  'Online scheduling',
+  'Booking pages',
+  'UPI payments',
+  'WhatsApp reminders',
+  'Google Calendar sync',
+  'One booking link',
+  'For creators',
+  'For coaches',
+  'For consultants',
+  'Free forever plan',
+  'Live in minutes',
+];
+const KEYWORD_ICONS = [Sparkles, CalendarDays, Heart, Star];
+
+// One copy of the keyword run; the marquee renders it twice (second copy
+// aria-hidden) and slides by -50% for a seamless loop.
+const KeywordRun = ({ hidden = false }) => (
+  <ul aria-hidden={hidden || undefined} className="flex flex-shrink-0 items-center">
+    {KEYWORDS.map((k, i) => {
+      const Icon = KEYWORD_ICONS[i % KEYWORD_ICONS.length];
+      return (
+        <li key={k} className="flex flex-shrink-0 items-center gap-4 pr-4 text-ink sm:gap-5 sm:pr-5">
+          <span className="whitespace-nowrap font-display text-base font-extrabold tracking-tight sm:text-lg lg:text-xl">{k}</span>
+          <Icon size={18} aria-hidden="true" className={Icon === Heart ? 'fill-maroon-dark text-maroon-dark' : ''} strokeWidth={2.2} />
+        </li>
+      );
+    })}
+  </ul>
+);
+
 // Minimal variant (booking + host profile pages): just the legal links.
 const LEGAL = COLUMNS.find((c) => c.title === 'Legal').links;
 
@@ -127,62 +162,47 @@ const Socials = () => (
 export default function Footer({ variant = 'full' }) {
   const year = new Date().getFullYear();
   const minimal = variant === 'minimal';
-  // Homepage CTAs all read "Get Started - Free"; other pages keep the brand copy.
-  const ctaLabel = useLocation().pathname === '/' ? 'Get Started - Free' : 'Get your booking link';
   const [open, setOpen] = useState({}); // mobile accordion state per column
 
   return (
     <footer className="relative overflow-hidden bg-maroon-dark px-5 pb-4 pt-7 text-white sm:px-8 sm:pt-9 lg:pt-10">
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: `url("${GRID_TILE}")`, backgroundSize: '40px 40px', backgroundPosition: 'center top', maskImage: GRID_FADE, WebkitMaskImage: GRID_FADE }} />
 
-      {/* Closing CTA — a full-width band across the top of the footer (bleeds
-          past the footer's side + top padding); its content stays aligned with
-          the max-w-6xl columns below. The last thing people see is the next step.
-          Reassurances reuse claims the site already makes (Starter is "Free
-          Forever · No card, no catch" on the pricing section; "live in minutes"
-          is the site description) — keep them in sync. */}
+      {/* Closing CTA — an oversized maroon strip across the top of the footer
+          (bleeds past the footer's side + top padding), then a tilted pink
+          strip scrolling the product keywords. The whole maroon strip is one
+          link to sign-up; the last thing people see is the next step. */}
       {!minimal && (
-        <div className="relative -mx-5 -mt-7 mb-8 overflow-hidden bg-maroon px-5 py-9 sm:-mx-8 sm:-mt-9 sm:mb-10 sm:px-8 sm:py-11 lg:-mt-10 lg:py-12">
-          <div className="relative mx-auto flex max-w-6xl flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="font-display text-2xl font-extrabold leading-tight text-white sm:text-3xl lg:text-4xl">
-                Ready to get booked and paid?
-              </p>
-              <p className="mt-2 max-w-xl text-sm leading-relaxed text-blush sm:text-base">
-                One link for bookings, UPI payments and reminders. Set it up once and let it run.
-              </p>
-              <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-sm text-white/85">
-                {[
-                  { t: 'Free forever plan', Icon: Gift },
-                  { t: 'No card needed', Icon: CreditCard },
-                  { t: 'Live in minutes', Icon: Zap },
-                ].map(({ t, Icon }) => (
-                  <li key={t} className="inline-flex items-center gap-2">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-white">
-                      <Icon size={14} aria-hidden="true" />
-                    </span>
-                    {t}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex flex-shrink-0 flex-col gap-3 sm:flex-row sm:items-center">
-              <Link
-                to={ROUTE_START}
-                className="group inline-flex items-center justify-center gap-2 rounded-full bg-pink px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-pink-300 hover:no-underline active:translate-y-px"
+        <>
+          <Link
+            to={ROUTE_START}
+            className="group relative z-[1] -mx-5 -mt-7 block bg-maroon px-5 text-cream transition-[filter] duration-300 hover:no-underline hover:brightness-110 sm:-mx-8 sm:-mt-9 sm:px-8 lg:-mt-10"
+          >
+            <span className="mx-auto flex max-w-6xl items-center justify-center gap-4 py-8 sm:gap-6 sm:py-12 lg:gap-10 lg:py-16">
+              <span className="font-display text-[clamp(2.125rem,7.4vw,7.75rem)] font-extrabold leading-[0.95] tracking-[-0.045em]">
+                Get started for free
+              </span>
+              <span
+                aria-hidden="true"
+                className="flex h-[clamp(3rem,7vw,7.25rem)] w-[clamp(3rem,7vw,7.25rem)] flex-shrink-0 items-center justify-center rounded-full border-[3px] border-current transition-transform duration-500 ease-[cubic-bezier(.2,.8,.2,1)] group-hover:rotate-45 lg:border-[6px]"
               >
-                {ctaLabel}
-                <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-0.5" />
-              </Link>
-              <Link
-                to="/pricing"
-                className="inline-flex items-center justify-center rounded-full px-4 py-3 text-sm font-semibold text-white/80 transition-colors hover:text-white hover:no-underline"
-              >
-                See pricing
-              </Link>
+                <ArrowUpRight className="h-1/2 w-1/2" strokeWidth={2.4} />
+              </span>
+            </span>
+          </Link>
+
+          <div className="relative z-[2] -mx-5 mb-8 sm:-mx-8 sm:mb-10">
+            <div
+              className="ft-marquee -mt-3.5 overflow-hidden bg-pink py-3"
+              style={{ width: 'calc(100% + 120px)', marginLeft: -60, transform: 'rotate(-1.5deg)' }}
+            >
+              <div className="ft-marquee-track">
+                <KeywordRun />
+                <KeywordRun hidden />
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
 
       <div className="relative mx-auto max-w-6xl">
@@ -242,21 +262,6 @@ export default function Footer({ variant = 'full' }) {
           </>
         )}
 
-        {/* Bottom row: © left · operator credit · back to top */}
-        <div className="mt-5 flex flex-col gap-1.5 border-t sm:mt-7 sm:gap-2 border-white/10 pt-4 text-xs text-white/55 sm:flex-row sm:items-center sm:justify-between">
-          <span>© {year} Meeticulous. All rights reserved.</span>
-          {/* Company ownership visible site-wide — part of the Google OAuth
-              verification checklist (homepage must identify the operator). */}
-          <OperatorCredit />
-          <button
-            type="button"
-            onClick={scrollTop}
-            className="inline-flex w-fit items-center gap-1.5 text-white/60 transition-colors hover:text-white"
-          >
-            Back to top <ArrowUp size={14} />
-          </button>
-        </div>
-
         {/* Brand signature. Full footer: chalk "Meeticulous" with the doodle crew
             living on the letters (DoodleWordmark). Minimal (booking/profile):
             the quiet faint wordmark, so nothing competes with the booking flow. */}
@@ -272,6 +277,21 @@ export default function Footer({ variant = 'full' }) {
             <DoodleWordmark />
           </div>
         )}
+
+        {/* Bottom row, under the wordmark: © left · operator credit · back to top */}
+        <div className="mt-3 flex flex-col gap-1.5 border-t border-white/10 pt-4 text-xs text-white/55 sm:mt-4 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
+          <span>© {year} Meeticulous. All rights reserved.</span>
+          {/* Company ownership visible site-wide — part of the Google OAuth
+              verification checklist (homepage must identify the operator). */}
+          <OperatorCredit />
+          <button
+            type="button"
+            onClick={scrollTop}
+            className="inline-flex w-fit items-center gap-1.5 text-white/60 transition-colors hover:text-white"
+          >
+            Back to top <ArrowUp size={14} />
+          </button>
+        </div>
       </div>
     </footer>
   );

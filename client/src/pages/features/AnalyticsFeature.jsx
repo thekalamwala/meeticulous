@@ -48,6 +48,7 @@ import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
 import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
+import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
 const CHARCOAL = '#0F172A';   // darkest surface
@@ -207,8 +208,8 @@ function PrimaryCta({ to = START, children, dark = false }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold shadow-[0_8px_30px_rgba(15,23,42,0.18)] transition-opacity hover:no-underline hover:opacity-90"
-      style={dark ? { background: AMBER, color: CHARCOAL } : { background: CHARCOAL, color: '#FFFFFF' }}
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-opacity hover:no-underline hover:opacity-90"
+      style={dark ? { background: AMBER, color: CHARCOAL } : { background: AMBER_INK, color: '#FFFFFF' }}
     >
       {children}
     </Link>
@@ -459,42 +460,6 @@ function QuestionMap() {
   );
 }
 
-/* FAQ: table-like rows, one open at a time. */
-function FaqRows() {
-  const [open, setOpen] = useState(0);
-  return (
-    <div className="mt-12 overflow-hidden rounded-[16px] border border-black/10">
-      <div className="hidden grid-cols-[5rem_1fr_2.5rem] border-b border-black/10 bg-[#F8FAFC] px-5 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#64748B] sm:grid">
-        <span>Ref</span><span>Question</span><span />
-      </div>
-      {FAQ.map((f, i) => {
-        const isOpen = open === i;
-        return (
-          <div key={f.q} className="border-b border-black/10 last:border-b-0">
-            <h3 className="m-0">
-              <button
-                type="button"
-                aria-expanded={isOpen}
-                aria-controls={`af-a-${i}`}
-                id={`af-q-${i}`}
-                onClick={() => setOpen(isOpen ? -1 : i)}
-                className={`grid w-full grid-cols-[3.5rem_1fr_2rem] items-center px-5 py-4 text-left transition-colors sm:grid-cols-[5rem_1fr_2.5rem] ${isOpen ? 'bg-[#F8FAFC]' : 'bg-white hover:bg-[#F8FAFC]'}`}
-              >
-                <span className="font-mono text-xs font-semibold tabular-nums" style={{ color: AMBER_INK }}>Q.{String(i + 1).padStart(2, '0')}</span>
-                <span className="font-heading text-[15px] font-bold text-[#0F172A] sm:text-base">{f.q}</span>
-                <span aria-hidden className="justify-self-end font-mono text-lg leading-none text-[#64748B]">{isOpen ? '−' : '+'}</span>
-              </button>
-            </h3>
-            <div id={`af-a-${i}`} role="region" aria-labelledby={`af-q-${i}`} hidden={!isOpen} className="bg-[#F8FAFC] px-5 pb-5 sm:pl-[6.25rem]">
-              <p className="pl-[3.5rem] text-[15px] leading-relaxed text-[#475569] sm:pl-0">{f.a}</p>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 /* ─────────────────────────────  PAGE  ────────────────────────────── */
 
 export default function AnalyticsFeature() {
@@ -734,15 +699,30 @@ export default function AnalyticsFeature() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-4xl">
-          <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-            Analytics questions, <span style={{ color: AMBER_INK }}>answered.</span>
-          </Reveal>
-          <Reveal as="p" delay={0.05} className="mt-5 text-base text-[#64748B]">
-            Plan details are on our <Link to="/pricing" className="font-semibold underline underline-offset-4" style={{ color: AMBER_INK }}>pricing page</Link>.
-          </Reveal>
-          <FaqRows />
-        </div>
+        <FeatureFaq
+          heading={(
+            <>
+              <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
+                Analytics questions, <span style={{ color: AMBER_INK }}>answered.</span>
+              </Reveal>
+              <Reveal as="p" delay={0.05} className="mt-5 text-base text-[#64748B]">
+                Plan details are on our <Link to="/pricing" className="font-semibold underline underline-offset-4" style={{ color: AMBER_INK }}>pricing page</Link>.
+              </Reveal>
+            </>
+          )}
+          items={FAQ}
+          listClassName="overflow-hidden rounded-[16px] border border-black/10"
+          itemClassName={(open) => `border-b border-black/10 last:border-b-0 ${open ? 'bg-[#F8FAFC]' : ''}`}
+          summaryClassName={(open) => `grid grid-cols-[3.5rem_1fr_2rem] items-center px-5 py-4 transition-colors sm:grid-cols-[5rem_1fr_2.5rem] ${open ? '' : 'hover:bg-[#F8FAFC]'}`}
+          answerClassName="px-5 pb-5 pl-[3.5rem] text-[15px] leading-relaxed text-[#475569] sm:pl-[5rem]"
+          renderSummary={(f, i, open) => (
+            <>
+              <span className="font-mono text-xs font-semibold tabular-nums" style={{ color: AMBER_INK }}>Q.{String(i + 1).padStart(2, '0')}</span>
+              <span className="font-heading text-[15px] font-bold text-[#0F172A] sm:text-base">{f.q}</span>
+              <span aria-hidden className="justify-self-end font-mono text-lg leading-none text-[#64748B]">{open ? '−' : '+'}</span>
+            </>
+          )}
+        />
       </section>
 
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
