@@ -3,9 +3,10 @@
 jest.mock('../../../services/community/tithi', () => ({
   publishReleaseNote: jest.fn(),
   replyToPost: jest.fn(),
+  replyToComment: jest.fn(),
   _tithiUserId: () => 'tithi-uuid',
 }));
-jest.mock('../../../services/community/store', () => ({ listFeedRows: jest.fn() }));
+jest.mock('../../../services/community/store', () => ({ listFeedRows: jest.fn(), listRecentTopLevelComments: jest.fn() }));
 jest.mock('../../../utils/sendEmail', () => jest.fn());
 jest.mock('../../../services/featureFlags', () => ({ isFeatureEnabled: jest.fn().mockResolvedValue(true) }));
 
@@ -15,7 +16,7 @@ const sendEmail = require('../../../utils/sendEmail');
 const { isFeatureEnabled } = require('../../../services/featureFlags');
 const worker = require('../../../services/community/tithiWorker');
 
-afterEach(() => { jest.clearAllMocks(); delete global.fetch; delete process.env.COMMUNITY_GH_REPO; delete process.env.COMMUNITY_RELEASE_BRANCH; });
+afterEach(() => { jest.clearAllMocks(); delete global.fetch; delete process.env.COMMUNITY_GH_REPO; delete process.env.COMMUNITY_RELEASE_BRANCH; delete process.env.COMMUNITY_REPLY_GATE_ENABLED; });
 
 describe('releaseBranch', () => {
   test('env override wins', () => {
@@ -84,6 +85,28 @@ describe('runReplySweep', () => {
     const err = new Error('missing'); err.code = 'COMMUNITY_UNAVAILABLE';
     store.listFeedRows.mockRejectedValue(err);
     expect(await worker.runReplySweep()).toEqual({ replied: 0, skipped: 0 });
+  });
+
+  test('gate on: also sweeps top-level comments, sharing the per-sweep budget', async () => {
+    process.env.COMMUNITY_REPLY_GATE_ENABLED = 'true';
+    const fresh = new Date(Date.now() - 60 * 1000).toISOString();
+    store.listFeedRows.mockResolvedValue([{ id: 'p1', author_id: 'a1', created_at: fresh }]);
+    store.listRecentTopLevelComments.mockResolvedValue([{ id: 'cm1', author_id: 'a2', created_at: fresh }]);
+    tithi.replyToPost.mockResolvedValue({ replied: true });
+    tithi.replyToComment.mockResolvedValue({ replied: true });
+    const r = await worker.runReplySweep();
+    expect(tithi.replyToPost).toHaveBeenCalledTimes(1);
+    expect(tithi.replyToComment).toHaveBeenCalledWith({ comment: expect.objectContaining({ id: 'cm1' }) });
+    expect(r).toEqual({ replied: 2, skipped: 0 });
+  });
+
+  test('gate off: comments are never swept (legacy, posts only)', async () => {
+    store.listFeedRows.mockResolvedValue([{ id: 'p1', author_id: 'a1', created_at: new Date().toISOString() }]);
+    store.listRecentTopLevelComments.mockResolvedValue([{ id: 'cm1', author_id: 'a2', created_at: new Date().toISOString() }]);
+    tithi.replyToPost.mockResolvedValue({ replied: true });
+    await worker.runReplySweep();
+    expect(tithi.replyToComment).not.toHaveBeenCalled();
+    expect(store.listRecentTopLevelComments).not.toHaveBeenCalled();
   });
 });
 

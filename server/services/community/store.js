@@ -112,6 +112,12 @@ const insertComment = (row) => run(db('community_comments').insert(row).select('
 // How many comments `authorId` has on a post — Tithi's first-responder dedup (0 = not yet replied).
 const countCommentsByAuthorOnPost = (postId, authorId) => runCount(db('community_comments')
   .select('id', { count: 'exact', head: true }).eq('post_id', postId).eq('author_id', authorId));
+// Tithi's comment-thread first-responder: dedup (replies by Tithi under a comment) and
+// human-already-answered (any visible reply under a comment).
+const countRepliesByAuthor = (commentId, authorId) => runCount(db('community_comments')
+  .select('id', { count: 'exact', head: true }).eq('parent_id', commentId).eq('author_id', authorId));
+const countReplies = (commentId) => runCount(db('community_comments')
+  .select('id', { count: 'exact', head: true }).eq('parent_id', commentId).eq('status', 'visible'));
 const updateComment = (id, patch, where = {}) => run(withEq(db('community_comments').update(patch).eq('id', id), where).select('*').maybeSingle());
 
 async function addReaction(userId, targetType, targetId) {
@@ -294,6 +300,17 @@ async function listCommentRows(postId, cur, limit) {
   return (await run(q.order('created_at', { ascending: true }).order('id', { ascending: true }).limit(limit))) || [];
 }
 
+// Recent top-level comments (parent_id null), newest first — the Phase 2 comment-sweep's
+// candidate questions. We trust the comment's own 'visible' status; parent-post visibility
+// is left to the caller. ponytail: a visible comment under a removed post is rare.
+async function listRecentTopLevelComments({ limit = 20 } = {}) {
+  const rows = await run(db('community_comments')
+    .select('id, post_id, author_id, body, status, parent_id, created_at')
+    .is('parent_id', null).eq('status', 'visible')
+    .order('created_at', { ascending: false }).order('id', { ascending: false }).limit(limit));
+  return rows || [];
+}
+
 // One profiles + one members query per page. Never selects phone/email.
 // `dualIds` = host authors who have ALSO booked as a guest (bookings.guest_id),
 // so the card can mark them 'host_guest'. One extra `.in()` on the host subset.
@@ -375,7 +392,8 @@ module.exports = {
   loadAuthors, loadMediaByPost, likedIds, resetReadCaches,
   linksAllowed, getProfile, getMember, acceptTerms, updateMemberPrefs, getSpaceByKey, getSpaceById,
   insertPost, getPost, updatePost, insertMedia, listMedia, resolveUsernames, insertMentions, searchMentionable,
-  getComment, insertComment, countCommentsByAuthorOnPost, updateComment, addReaction, removeReaction,
+  getComment, insertComment, countCommentsByAuthorOnPost, countReplies, countRepliesByAuthor,
+  listRecentTopLevelComments, updateComment, addReaction, removeReaction,
   addSave, removeSave, savedIds, addBlock, removeBlock,
   insertReport, countOpenReports, viewContext, refreshIndexable, run, runCount,
 };
