@@ -89,8 +89,8 @@
   transform: translateX(-50%);
   padding: 6px 11px;
   border-radius: 6px;
-  background: #fff;
-  color: #2B0A14;
+  background: var(--mt-surface, #fff);
+  color: var(--mt-ink, #2B0A14);
   font-family: var(--font-primary, "Poppins", sans-serif);
   font-size: 13px;
   font-weight: 600;
@@ -108,7 +108,7 @@
   left: 50%;
   margin-left: -6px;
   border: 6px solid transparent;
-  border-top-color: #fff;
+  border-top-color: var(--mt-surface, #fff);
 }
 /* edge creatures: anchor the bubble inwards so it never clips off-screen */
 .dw-critter--m1 .dw-bubble { left: 0; transform: none; --bx: 0; }
@@ -192,7 +192,7 @@
   30% { opacity: 1; }
   100% { opacity: 0; transform: translate(6px, -12px) scale(1.25); }
 }
-@keyframes dw-glow { 0%, 100% { fill: #FFE4EA; } 50% { fill: #FFFFFF; filter: drop-shadow(0 0 3px #FFE4EA); } }
+@keyframes dw-glow { 0%, 100% { fill: var(--mt-blush, #FFE4EA); } 50% { fill: #FFFFFF; filter: drop-shadow(0 0 3px var(--mt-blush, #FFE4EA)); } }
 @keyframes dw-bubble {
   0% { opacity: 0; transform: translateX(var(--bx, -50%)) translateY(6px) scale(0.85); }
   100% { opacity: 1; transform: translateX(var(--bx, -50%)) translateY(0) scale(1); }
