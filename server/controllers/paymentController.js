@@ -947,8 +947,19 @@ const createProductOrder = async (req, res) => {
     const productFee = calculatePlatformFee(product.price, { platformFee: cfg.platformFee });
     const gstOnFee = calculateGst(productFee, { gstRate: cfg.gstRate });
     const totalPaise = Math.round((product.price + productFee + gstOnFee) * 100);
-    const buyerState = String(req.body.buyer_state || '');
-    const buyerGstin = String(req.body.buyer_gstin || '');
+    // Normalize/validate buyer place-of-supply server-side (mirrors bookings &
+    // subscriptions, which already call normalizeBilling) instead of trusting raw
+    // req.body. Rejects a malformed GSTIN and rewrites state to the canonical
+    // name+code; a valid GSTIN's registration state wins. Does not change the
+    // charged amount (GST-on-fee uses cfg.gstRate) — this is invoice correctness.
+    const billed = stateService.normalizeBilling(
+      { state: req.body.buyer_state, gstin: req.body.buyer_gstin },
+      { requireState: false },
+    );
+    if (!billed.ok) return res.status(400).json({ message: billed.error, field: 'buyer_gstin' });
+    const buyerState = billed.billing?.state || '';
+    const buyerStateCode = billed.billing?.state_code || '';
+    const buyerGstin = billed.billing?.gstin || '';
     const razorpay = await razorpayConfig.getClient();
     const order = await razorpay.orders.create({
       amount: totalPaise, currency: "INR",
@@ -958,7 +969,7 @@ const createProductOrder = async (req, res) => {
         platform_fee: productFee, platform_fee_gst: gstOnFee, gst_rate: cfg.gstRate,
         product_price: product.price,
         buyer_name: buyer_name || '', buyer_email: buyerEmail, buyer_phone: buyer_phone || '',
-        buyer_state: buyerState, buyer_gstin: buyerGstin,
+        buyer_state: buyerState, buyer_state_code: buyerStateCode, buyer_gstin: buyerGstin,
       },
     });
     res.json({ razorpay_order_id: order.id, amount: order.amount, currency: order.currency,
@@ -1118,7 +1129,7 @@ const materializeProductPurchase = async ({ product, notes, orderId, paymentId, 
       const invoiceService = require('../services/invoiceService');
       await invoiceService.generateInvoice({
         sourceType: 'product', sourceId: purchase.id, paymentId,
-        buyer: { name: notes.buyer_name, email: baseRow.buyer_email, gstin: notes.buyer_gstin, state: notes.buyer_state },
+        buyer: { name: notes.buyer_name, email: baseRow.buyer_email, gstin: notes.buyer_gstin, stateName: notes.buyer_state, stateCode: notes.buyer_state_code },
         taxableValue: platformFee, gstAmount: gstOnFee,
       });
     } catch (e) { console.error('product invoice (non-fatal):', e.message); }
