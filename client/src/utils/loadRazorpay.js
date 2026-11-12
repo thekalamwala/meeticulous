@@ -28,7 +28,9 @@ export default function loadRazorpay() {
     s.src = SRC;
     s.async = true;
     s.onload = () => resolve(true);
-    s.onerror = () => { promise = null; resolve(false); };
+    // Remove the failed tag: left in the DOM, the next call would find it above and
+    // wait on load/error events that never fire again (Pay button stuck forever).
+    s.onerror = () => { promise = null; s.remove(); resolve(false); };
     document.body.appendChild(s);
   });
   return promise;
