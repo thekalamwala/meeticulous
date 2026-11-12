@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Bell, House, LayoutGrid, ListFilter, Lock, Plus, Search, SquarePen, UserRound } from 'lucide-react';
+import { Bell, Clock, House, LayoutGrid, ListFilter, Lock, Plus, Search, SquarePen, UserRound } from 'lucide-react';
 import { getSpaces } from '../../services/communityApi';
 import { getNotifications } from '../../services/api';
 import { SpaceIcon } from '../../components/community/ItemCard';
@@ -55,6 +55,10 @@ const LOCK_LABEL = { hosts: 'Hosts post here', official: 'Team posts only' };
 const TAGS = ['Gang', 'Circle', 'Crew', 'Table', 'Room'];
 const communityTag = () => TAGS[new Date().getDay() % TAGS.length];
 
+// Canned prompts shown in the search dropdown until a real search index exists.
+const SEARCH_SUGGESTIONS = ['pricing', 'no-shows', 'getting more bookings', 'payouts', 'reviews'];
+const RECENT_KEY = 'mt_community_recent';
+
 // Desktop top-bar icon button: maroon on white, active = maroon fill + white icon.
 const dIcon = (on) => `relative grid h-10 w-10 place-items-center rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 ${
   on ? 'border-transparent bg-maroon text-white' : 'border-line bg-white text-maroon hover:bg-pink-100'}`;
@@ -80,6 +84,9 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
   const [spacesOpen, setSpacesOpen] = useState(false); // mobile: grid tile → spaces sheet
   const [spaceQuery, setSpaceQuery] = useState(''); // live filter inside the spaces sheet
   const [filterOpen, setFilterOpen] = useState(false); // mobile: bottom-bar filter sheet
+  const [searchFocused, setSearchFocused] = useState(false); // desktop search dropdown
+  const [searchQuery, setSearchQuery] = useState('');
+  const [recent, setRecent] = useState([]);
   const searchRef = useRef(null);
   const [sp] = useSearchParams();
   const curTab = sp.get('tab') || 'everyone';
@@ -94,6 +101,18 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
+
+  // Recent searches live in this browser only (per-viewer convenience).
+  useEffect(() => {
+    try { const r = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); if (Array.isArray(r)) setRecent(r.slice(0, 5)); } catch { /* ignore */ }
+  }, []);
+  const pushRecent = (q) => setRecent((prev) => {
+    const next = [q, ...prev.filter((x) => x !== q)].slice(0, 5);
+    try { localStorage.setItem(RECENT_KEY, JSON.stringify(next)); } catch { /* ignore */ }
+    return next;
+  });
+  const clearRecent = () => { setRecent([]); try { localStorage.removeItem(RECENT_KEY); } catch { /* ignore */ } };
+  const runSuggest = (q) => { setSearchQuery(q); pushRecent(q); searchRef.current?.focus(); };
 
   // Unread community-alert count for the bottom-bar badge (v2, signed-in).
   useEffect(() => {
@@ -188,11 +207,39 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
               ))}
             </nav>
 
-            {/* Zone 3 — search (always visible; widens on focus, never wraps the row) */}
-            <form role="search" onSubmit={(e) => e.preventDefault()} className="ml-auto flex w-44 shrink-0 items-center gap-2 rounded-full bg-cream px-4 py-2 transition-[width] duration-200 ease-out focus-within:w-72 focus-within:ring-2 focus-within:ring-maroon/20">
-              <Search size={16} className="shrink-0 text-muted" aria-hidden="true" />
-              <input ref={searchRef} type="search" aria-label="Search the community" placeholder="Search hosts, posts, spaces…" className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted" />
-            </form>
+            {/* Zone 3 — search: visible bar that widens on focus and drops a
+                suggestions panel (Recent + prompts). Panel items use onMouseDown
+                so the choice registers before the input's blur closes it. */}
+            <div className="relative ml-auto shrink-0">
+              <form role="search" onSubmit={(e) => { e.preventDefault(); const q = searchQuery.trim(); if (q) pushRecent(q); }} className="flex w-44 items-center gap-2 rounded-full bg-cream px-4 py-2 transition-[width] duration-200 ease-out focus-within:w-80 focus-within:ring-2 focus-within:ring-maroon/20">
+                <Search size={16} className="shrink-0 text-muted" aria-hidden="true" />
+                <input ref={searchRef} type="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onFocus={() => setSearchFocused(true)} onBlur={() => setTimeout(() => setSearchFocused(false), 150)} aria-label="Search the community" aria-expanded={searchFocused} placeholder="Search hosts, posts, spaces…" className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted" />
+              </form>
+              {searchFocused && (
+                <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-80 overflow-hidden rounded-2xl border border-line bg-white py-2 shadow-xl">
+                  {recent.length > 0 && (
+                    <>
+                      <div className="flex items-center justify-between px-4 pb-1 pt-1">
+                        <span className="text-[11px] font-bold uppercase tracking-wide text-muted">Recent</span>
+                        <button type="button" onMouseDown={(e) => { e.preventDefault(); clearRecent(); }} className="text-xs font-semibold text-maroon hover:underline">Clear all</button>
+                      </div>
+                      {recent.map((q) => (
+                        <button key={`r-${q}`} type="button" onMouseDown={(e) => { e.preventDefault(); runSuggest(q); }} className="flex w-full items-center gap-3 px-4 py-2 text-left text-sm text-ink hover:bg-pink-100">
+                          <Clock size={16} className="shrink-0 text-muted" aria-hidden="true" /><span className="truncate">{q}</span>
+                        </button>
+                      ))}
+                      <div className="my-1.5 border-t border-line" />
+                    </>
+                  )}
+                  <div className="px-4 pb-1 pt-1 text-[11px] font-bold uppercase tracking-wide text-muted">Try searching for</div>
+                  {SEARCH_SUGGESTIONS.map((q) => (
+                    <button key={`s-${q}`} type="button" onMouseDown={(e) => { e.preventDefault(); runSuggest(q); }} className="flex w-full items-center gap-3 px-4 py-2 text-left text-sm text-ink hover:bg-pink-100">
+                      <Search size={16} className="shrink-0 text-muted" aria-hidden="true" /><span className="truncate">{q}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Actions */}
             <div className="flex shrink-0 items-center gap-2">
