@@ -68,13 +68,13 @@ export default function CommunityFeed() {
 
       {/* v2: a slim one-line greeting, not a full-height hero, so the first post
           sits above the fold on a 390px phone. v1: the original hero. */}
-      <div className={v2 ? 'grid grid-cols-1 gap-x-4 gap-y-1.5 lg:grid-cols-[1fr_auto] lg:items-center' : 'flex flex-col gap-5 py-1'}>
+      <div className={v2 ? 'grid grid-cols-1 gap-x-4 gap-y-0.5 lg:grid-cols-[1fr_auto] lg:items-start' : 'flex flex-col gap-5 py-1'}>
         <h1 className={`order-1 font-display font-extrabold leading-tight tracking-tight text-maroon ${v2 ? 'text-xl lg:col-start-1 lg:row-start-1' : 'text-3xl sm:text-4xl'}`}>
           Ask, share, learn. <span className="font-serif font-normal italic text-rose">Find your people.</span>
         </h1>
         <p className={`order-2 text-muted ${v2 ? 'text-xs lg:col-start-1 lg:row-start-2' : 'text-sm'}`}>Hosts and guests talking about sessions, pricing and the craft.</p>
 
-        <div role="tablist" aria-label="Feed" className={v2 ? 'order-3 flex gap-1 rounded-full border border-line bg-white p-1 shadow-sm lg:order-none lg:col-start-2 lg:row-start-1 lg:w-auto lg:shrink-0 lg:self-center lg:p-0.5' : 'mt-tabs flex'}>
+        <div role="tablist" aria-label="Feed" className={v2 ? 'order-3 flex gap-1 rounded-full border border-line bg-white p-1 shadow-sm lg:order-none lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:w-auto lg:shrink-0 lg:self-center lg:p-0.5' : 'mt-tabs flex'}>
         {TABS.map((t) => (
           <button
             key={t.key}
