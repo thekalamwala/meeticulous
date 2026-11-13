@@ -541,6 +541,10 @@ const TOOL_LOOP_RULES = [
   'Answer in your normal voice, short and clear. For a money dispute, or anything the tools cannot resolve, say you are pulling in a teammate rather than guessing.',
 ].join(' ');
 
+// The exact system prompt the tool-loop runs on — exported so the eval script
+// (scripts/botToolLoopEval.js) grades the model against the SAME prompt production uses.
+const toolLoopSystem = () => `${VOICE} ${TOOL_LOOP_RULES}`;
+
 async function runToolLoop(question, ctx, identity = null, threadHistory = null) {
   const tools = botTools.toolSpecsFor(ctx);
   if (!tools.length || !anthropicClient.isConfigured()) return null;
@@ -548,7 +552,7 @@ async function runToolLoop(question, ctx, identity = null, threadHistory = null)
   if (!budget.allowed) return null;
   const client = anthropicClient.getClient();
   if (!client) return null;
-  const system = `${VOICE} ${TOOL_LOOP_RULES}`;
+  const system = toolLoopSystem();
   // Prior turns let the model tell a confirm ("yes") from a first ask, so a write only
   // runs on the turn AFTER the user agrees. Scrubbed + capped like every other history use.
   const priorTurns = threadHistory ? safeThreadHistory(threadHistory) : [];
@@ -566,6 +570,9 @@ async function runToolLoop(question, ctx, identity = null, threadHistory = null)
       }));
       messages.push({ role: 'assistant', content: resp.content });
       messages.push({ role: 'user', content: results });
+      // Closed-loop audit: which tools the agent used this turn, and whether a write ran.
+      // Pairs with persist()'s source ('tool' / 'tool_action') for the answer itself.
+      console.info('[bot] tool-loop', { tools: uses.map((u) => u.name), didWrite });
       resp = await client.messages.create({
         model: anthropicClient.MODELS.generate, max_tokens: 700, system, tools, messages,
       });
@@ -1172,7 +1179,7 @@ async function getRecentMessages(conversationId, limit = 10) {
 }
 
 module.exports = {
-  askBot, askBotStream, runToolLoop, recordFeedback, getRecentMessages, matchFaq, logGap,
+  askBot, askBotStream, runToolLoop, toolLoopSystem, recordFeedback, getRecentMessages, matchFaq, logGap,
   HANDOFF, SENSITIVE_RE, MIN_RANK, ESCALATE_TOKEN, buildRetrievalQuery, toModelHistory,
   smalltalkReply, SMALLTALK_REPLIES, mergeChunks, redactPii, pricingReply,
   isUnsupportedInput, UNSUPPORTED_INPUT_MSG, OVER_BUDGET_MSG,
