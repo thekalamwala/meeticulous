@@ -10,6 +10,8 @@ const page = (cursor) => (cursor ? { cursor } : {});
 export const getSpaces = () => body(API.get('/community/spaces'));
 export const getFeed = ({ tab = 'everyone', cursor } = {}) => body(API.get('/community/feed', { params: { tab, ...page(cursor) } }));
 export const getSpaceThreads = ({ key, cursor } = {}) => body(API.get(`/community/spaces/${encodeURIComponent(key)}/threads`, { params: page(cursor) }));
+export const getTags = () => body(API.get('/community/tags'));
+export const getTagThreads = ({ tag, cursor } = {}) => body(API.get(`/community/tags/${encodeURIComponent(tag)}/threads`, { params: page(cursor) }));
 export const getItem = (slug) => body(API.get(`/community/items/${encodeURIComponent(slug)}`));
 export const getComments = ({ slug, cursor } = {}) => body(API.get(`/community/items/${encodeURIComponent(slug)}/comments`, { params: page(cursor) }));
 export const getMe = () => body(API.get('/community/me'));
