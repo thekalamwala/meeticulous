@@ -5,7 +5,7 @@ Meeticulous has two plans: **Starter** and **Pro**. See the [pricing](/pricing) 
 ## The plans
 
 - **Starter** — free forever. Unlimited services and bookings, your booking page, online payments, 24-hour booking reminders, and GST invoices. We take a **5% commission** when you actually get paid, and nothing when you don't.
-- **Pro** — **₹399 a month**, or **₹3,599 a year** (under ₹10 a day, and about 25% cheaper than paying monthly). Commission drops to **0%**, and you get the Client CRM, 1-hour reminders and reschedule alerts, follow-up and rebook automation, unlimited digital products, a second calendar integration, unlimited AI service writing, and priority WhatsApp support.
+- **Pro** — **₹235 a month**, or **₹1,179 a year** (under ₹4 a day, and about 58% cheaper than paying monthly). Commission drops to **0%**, and you get the Client CRM, 1-hour reminders and reschedule alerts, follow-up and rebook automation, unlimited digital products, a second calendar integration, unlimited AI service writing, and priority WhatsApp support.
 
 All prices include GST. Exact figures and the full comparison live on the [pricing](/pricing) page.
 
