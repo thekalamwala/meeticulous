@@ -22,7 +22,10 @@ const abuseGuard = require('./bot/abuseGuard'); // pre-ladder abuse/roast gate (
 const pills = require('./bot/pills'); // context quick-reply pills (flag-gated)
 const { classify: classifyIntent } = require('./bot/intent'); // zero-cost pre-retrieval intent (flag-gated)
 const intentHandlers = require('./bot/intentHandlers'); // deterministic per-topic answers + cards
-const { contextAnswer, contextNote } = require('./bot/contextAnswer'); // data-aware answers (authenticated only)
+const { contextAnswer, contextNote, memoryNote, DISPUTE_RE } = require('./bot/contextAnswer'); // data-aware answers (authenticated only)
+const botTools = require('./bot/botTools'); // read-only account status tools (authenticated tool-loop)
+const institutionalMemory = require('./bot/institutionalMemory'); // Slice 6: recall prior community answers
+const { isFeatureEnabled } = require('./featureFlags'); // gates the account tool-loop (bot_tool_loop)
 
 // Pull a generous top-N so the authoritative chunk survives noisier docs; the
 // model still answers only from what's relevant and escalates when none cover it.
@@ -397,7 +400,12 @@ async function retrieve(queryText, queryEmbedding = null) {
     ftsRetrieve(queryText),
     vectorRetrieve(queryEmbedding),
   ]);
-  return mergeChunks(vec, fts);
+  const chunks = mergeChunks(vec, fts);
+  // Institutional memory (Slice 6, flag bot_institutional_memory): append a couple of the
+  // team's prior community answers that match, as extra sources. Flag-off / failure → [],
+  // so retrieval stays docs-only. Appended after the doc hits (docs remain primary).
+  const recalled = await institutionalMemory.recall(queryText);
+  return recalled.length ? [...chunks, ...recalled] : chunks;
 }
 
 // Embed the retrieval query for the vector leg. Best-effort + null when Voyage is
@@ -532,6 +540,76 @@ function safeThreadHistory(turns) {
     .map((m) => ({ role: m.role, content: redactPii(m.content).slice(0, THREAD_TURN_MAX_CHARS) }));
   while (safe[0]?.role === 'assistant') safe.shift();
   return safe;
+}
+
+// ── Account tool-loop (authenticated support thread only) ──────────────────────
+// The agentic path: instead of the regex contextAnswer/supportActions ladders, let the
+// model pick an account tool (botTools) from any phrasing and compose the reply — reads
+// (status lookups) AND writes (the 3 idempotent email resends), the writes behind a
+// confirmation gate. Bounded to one tool round (2 model calls). Grounded + sanitized like
+// every other answer; returns null on any miss/failure so askBot falls through to the
+// regex path — nothing regresses. Gated by bot_tool_loop (ships OFF), only ever runs with
+// `context`; writes additionally require `identity` (own booking, server-side lookup).
+const TOOL_LOOP_RULES = [
+  "You can look up this signed-in user's OWN account facts (booking, refund, listing, payout, plan status) and, for their own most recent booking, resend their booking confirmation, GST invoice or calendar invite, or email them a secure link to cancel it — all with the provided tools.",
+  'Call a tool whenever the question is about their account state or asks you to resend one of those; never guess an account fact. You may call more than one if they ask more than one thing.',
+  'CONFIRM BEFORE ACTING: an action tool (resend_confirmation / resend_invoice / resend_calendar / send_cancel_link) must FIRST be called with confirmed=false — that returns a preview of exactly what will be sent and to where. Relay that to the user and ask them to confirm. Call it again with confirmed=true ONLY after they clearly agree in their latest message. Never set confirmed=true on first mention, and never assume consent.',
+  'CANCELLING: you NEVER cancel a booking or issue a refund yourself. If the user wants to cancel, use send_cancel_link — it emails them a secure one-tap link to cancel on the real page, where the exact refund is shown and applied. Tell them the refund tier the preview gives you; never promise an exact amount.',
+  'RESCHEDULING: you cannot reschedule here. Tell the user to reschedule from their own bookings page (a host from the dashboard Bookings page, a guest from "My bookings"); the first reschedule is free and a later one may carry a small fee. Offer a human if they are stuck. Never move money, charge a fee, or change a booking time yourself.',
+  'Use ONLY what the tools and the account context return. If a tool reports no record, say so plainly and offer a human — never invent an amount, date or status.',
+  'Answer in your normal voice, short and clear. For a money dispute, or anything the tools cannot resolve, say you are pulling in a teammate rather than guessing.',
+].join(' ');
+
+// The exact system prompt the tool-loop runs on — exported so the eval script
+// (scripts/botToolLoopEval.js) grades the model against the SAME prompt production uses.
+const toolLoopSystem = () => `${VOICE} ${TOOL_LOOP_RULES}`;
+
+async function runToolLoop(question, ctx, identity = null, threadHistory = null) {
+  const tools = botTools.toolSpecsFor(ctx);
+  if (!tools.length || !anthropicClient.isConfigured()) return null;
+  const budget = await botBudget.tryConsume();
+  if (!budget.allowed) return null;
+  const client = anthropicClient.getClient();
+  if (!client) return null;
+  const system = toolLoopSystem();
+  // Prior turns let the model tell a confirm ("yes") from a first ask, so a write only
+  // runs on the turn AFTER the user agrees. Scrubbed + capped like every other history use.
+  const priorTurns = threadHistory ? safeThreadHistory(threadHistory) : [];
+  // Per-person memory (Slice 7, flag bot_person_memory) rides in the context line for continuity.
+  let noteLine = contextNote(ctx);
+  if (await isFeatureEnabled('bot_person_memory')) {
+    const mem = memoryNote(ctx);
+    if (mem) noteLine = `${noteLine}\n${mem}`;
+  }
+  const messages = [...toModelHistory(priorTurns), { role: 'user', content: `${noteLine}\n\n${question}` }];
+  try {
+    let resp = await client.messages.create({
+      model: anthropicClient.MODELS.generate, max_tokens: 700, system, tools, messages,
+    });
+    const uses = (resp.content || []).filter((b) => b.type === 'tool_use');
+    let didWrite = false;
+    if (uses.length) {
+      const results = await Promise.all(uses.map(async (u) => {
+        if (botTools.isWriteTool(u.name) && u.input && u.input.confirmed === true) didWrite = true;
+        return { type: 'tool_result', tool_use_id: u.id, content: await botTools.runTool(u.name, ctx, identity, u.input) };
+      }));
+      messages.push({ role: 'assistant', content: resp.content });
+      messages.push({ role: 'user', content: results });
+      // Closed-loop audit: which tools the agent used this turn, and whether a write ran.
+      // Pairs with persist()'s source ('tool' / 'tool_action') for the answer itself.
+      console.info('[bot] tool-loop', { tools: uses.map((u) => u.name), didWrite });
+      resp = await client.messages.create({
+        model: anthropicClient.MODELS.generate, max_tokens: 700, system, tools, messages,
+      });
+    }
+    const text = (resp.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('').trim();
+    if (!text) return null;
+    const clean = sanitizeAnswer(text);
+    return clean.safe ? { answer: clean.text, didWrite } : null;
+  } catch (e) {
+    console.error('[bot] tool loop failed:', e.message);
+    return null;
+  }
 }
 
 // Structured (non-streaming) model call — used by askBot / /ask.
@@ -716,7 +794,7 @@ async function tryIntentLayer({ q, conversationId, sessionRef, onDelta }) {
  * `source` names the layer that answered: 'smalltalk'|'faq'|'model'|'escalation'.
  * `history` ([{ role, content }], support threads only) replaces the conversationId lookup.
  */
-async function askBot({ question, conversationId = null, sessionRef = null, ip = null, context = null, audience = null, channel = null, history: threadHistory = null } = {}) {
+async function askBot({ question, conversationId = null, sessionRef = null, ip = null, context = null, audience = null, identity = null, channel = null, history: threadHistory = null } = {}) {
   const isCommunity = channel === 'community';
   const q = String(question || '').trim();
   const qSafe = q ? redactPii(q) : q; // PII-redacted copy for third parties (Voyage embed, Claude, cache)
@@ -765,6 +843,20 @@ async function askBot({ question, conversationId = null, sessionRef = null, ip =
   // by botAutoReply, never by the public widget). Runs before the sensitive gate so
   // "where's my refund / why isn't my listing live" resolve from real state; genuine
   // disputes are excluded inside contextAnswer and still fall through to escalation.
+  // Agentic account tool-loop (flag-gated, authenticated thread only). The model picks a
+  // read-only status tool from any phrasing. Disputes are excluded (they must escalate).
+  // On any miss it returns null and we fall through to the regex contextAnswer + ladder,
+  // so a flag-off boot — or a model that declines — behaves exactly as before.
+  if (context && q && !DISPUTE_RE.test(q) && await isFeatureEnabled('bot_tool_loop')) {
+    const looped = await runToolLoop(q, context, identity, threadHistory);
+    if (looped && looped.answer) {
+      const { conversationId: convId, messageId } = await persist({
+        conversationId, sessionRef, question: q, answer: looped.answer, cited_sources: [], escalate: false, source: looped.didWrite ? 'tool_action' : 'tool',
+      });
+      return { answer: looped.answer, cited_sources: [], escalate: false, conversationId: convId, messageId, source: looped.didWrite ? 'tool_action' : 'tool' };
+    }
+  }
+
   if (context && q) {
     const ctxHit = contextAnswer(q, context);
     if (ctxHit) {
@@ -851,6 +943,13 @@ async function askBot({ question, conversationId = null, sessionRef = null, ip =
     } else {
       try {
         let modelNote = context ? contextNote(context) : audienceNote(audience);
+        // Per-person memory (Slice 7, flag bot_person_memory): add a compact "what you
+        // already know about this person" line for continuity. Data is already in ctx.
+        if (context && await isFeatureEnabled('bot_person_memory')) {
+          const mem = memoryNote(context);
+          if (mem) modelNote = `${modelNote}\n${mem}`;
+        }
+        // Community channel (Slice/PR #303): prepend the public-post shaping rules.
         if (isCommunity) modelNote = `${COMMUNITY_REPLY_RULES}\n\n${modelNote}`.trim();
         const out = await callModel(qSafe, chunks, history, modelNote);
         if (out && !out.escalate && String(out.answer || '').trim()) {
@@ -1117,7 +1216,7 @@ async function getRecentMessages(conversationId, limit = 10) {
 }
 
 module.exports = {
-  askBot, askBotStream, recordFeedback, getRecentMessages, matchFaq, logGap,
+  askBot, askBotStream, runToolLoop, toolLoopSystem, recordFeedback, getRecentMessages, matchFaq, logGap,
   HANDOFF, SENSITIVE_RE, MIN_RANK, ESCALATE_TOKEN, buildRetrievalQuery, toModelHistory,
   smalltalkReply, SMALLTALK_REPLIES, mergeChunks, redactPii, pricingReply,
   isUnsupportedInput, UNSUPPORTED_INPUT_MSG, OVER_BUDGET_MSG,

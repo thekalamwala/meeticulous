@@ -5,6 +5,8 @@ jest.mock('../../services/botService', () => ({ askBot: jest.fn() }));
 jest.mock('../../services/supportChatService', () => ({ postMessage: jest.fn(), escalate: jest.fn(), listMessages: jest.fn() }));
 jest.mock('../../services/supportContextService', () => ({ getSupportContext: jest.fn() }));
 jest.mock('../../services/supportActions', () => ({ detectAction: jest.fn(() => null), runAction: jest.fn() }));
+// Agentic tool-loop OFF by default here → the legacy regex action path + askBot route run.
+jest.mock('../../services/featureFlags', () => ({ isFeatureEnabled: jest.fn().mockResolvedValue(false) }));
 
 const bot = require('../../services/botService');
 const chat = require('../../services/supportChatService');
@@ -20,7 +22,7 @@ test('resolves the authenticated context and passes it to askBot', async () => {
   bot.askBot.mockResolvedValue({ answer: 'You get paid via Razorpay Route.', escalate: false });
   await botAutoReply(thread, 'how do payouts work?');
   expect(supportContext.getSupportContext).toHaveBeenCalledWith({ userId: 'u1', phone: null, isHost: true });
-  expect(bot.askBot).toHaveBeenCalledWith({ question: 'how do payouts work?', sessionRef: 'SUP-ABC123', context: CTX, history: [] });
+  expect(bot.askBot).toHaveBeenCalledWith({ question: 'how do payouts work?', sessionRef: 'SUP-ABC123', context: CTX, identity: { userId: 'u1', guestPhone: undefined, isHost: true }, history: [] });
   expect(chat.postMessage).toHaveBeenCalledWith({ threadId: 't1', sender: 'bot', senderName: 'Tithi', body: 'You get paid via Razorpay Route.' });
   expect(chat.escalate).not.toHaveBeenCalled();
 });
