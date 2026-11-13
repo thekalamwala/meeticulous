@@ -7,13 +7,14 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Seo from '../components/common/Seo';
 import { MOMENTS, getMoment } from '../data/moments';
 
-// Spain-flag palette for the Diwali celebration.
-const SPAIN_COLORS = ['#C60B1E', '#FFC400', '#AA151B', '#F1BF00', '#FFFFFF'];
+// Indian tricolour palette for the Diwali celebration: saffron, white, green,
+// chakra navy, and a warm diya gold.
+const INDIA_COLORS = ['#FF9933', '#FFFFFF', '#138808', '#1E40FF', '#FFD700'];
 const rand = (a, b) => a + Math.random() * (b - a);
 const pick = (arr) => arr[(Math.random() * arr.length) | 0];
 
 // Diwali-style fireworks overlay. Imperative: ref.burst(clientX, clientY) fires
-// 4-5 rockets that rise and explode into a Spain-coloured shower of lights near
+// 4-5 rockets that rise and explode into a tricolour shower of lights near
 // the given point. Transparent full-screen canvas, additive blend for glow,
 // short line-trails per particle so nothing darkens the page. rAF only runs
 // while particles are alive.
@@ -38,7 +39,7 @@ const DiwaliFireworks = forwardRef(function DiwaliFireworks(_, ref) {
 
   const explode = (x, y) => {
     const n = 90 + ((Math.random() * 70) | 0); // dense, fine burst
-    const base = pick(SPAIN_COLORS);
+    const base = pick(INDIA_COLORS);
     const spread = rand(3.5, 7);
     for (let i = 0; i < n; i++) {
       const ang = rand(0, Math.PI * 2);
@@ -46,37 +47,41 @@ const DiwaliFireworks = forwardRef(function DiwaliFireworks(_, ref) {
       partsRef.current.push({
         x, y, px: x, py: y,
         vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
-        color: Math.random() < 0.7 ? base : pick(SPAIN_COLORS),
+        color: Math.random() < 0.7 ? base : pick(INDIA_COLORS),
         life: 1, decay: rand(0.006, 0.008), size: rand(1, 2), // ~2.5s
         twinkle: Math.random() < 0.5, type: 'spark',
       });
     }
   };
 
-  // Spain-flag burst: particles start at (cx,cy) and slowly ease to a grid that
-  // paints the red-yellow-red flag, then linger before fading. Long life so the
-  // flag holds on screen for everyone to see.
+  // India-flag burst: particles start at (cx,cy) and slowly ease to a grid that
+  // paints the saffron-white-green tricolour with the navy Ashoka Chakra, then
+  // linger before fading. Long life so the flag holds on screen for everyone.
   const explodeFlag = (cx, cy) => {
     const W = 300, H = 200, cols = 36, rows = 24; // ~864 dots, 3:2 flag
     const x0 = cx - W / 2, y0 = cy - H / 2;
     for (let r = 0; r < rows; r++) {
       const frac = (r + 0.5) / rows;               // 0 top .. 1 bottom
-      const red = frac < 0.25 || frac > 0.75;      // Spain: red-yellow-red (1:2:1)
-      const color = red ? '#C60B1E' : '#FFC400';
+      // India: saffron / white / green in equal horizontal thirds.
+      const band = frac < 1 / 3 ? '#FF9933' : frac > 2 / 3 ? '#138808' : '#FFFFFF';
       for (let c = 0; c < cols; c++) {
+        const fx = (c + 0.5) / cols;               // 0 left .. 1 right
+        // Ashoka Chakra: a navy disk at the centre of the white band.
+        const dx = (fx - 0.5) * W, dy = (frac - 0.5) * H;
+        const color = dx * dx + dy * dy < 24 * 24 ? '#1E40FF' : band;
         const ang = rand(0, Math.PI * 2);
         const sp = rand(1, 4); // initial firework spray, then eases to flag
         partsRef.current.push({
           x: cx, y: cy, px: cx, py: cy,
           vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
-          tx: x0 + ((c + 0.5) / cols) * W + rand(-3, 3),
+          tx: x0 + fx * W + rand(-3, 3),
           ty: y0 + frac * H + rand(-3, 3),
           color, life: 1, decay: 0.0033, size: rand(1, 2), // slow dissolve (~5s)
           twinkle: Math.random() < 0.35, type: 'flag',
         });
       }
     }
-    // Heavy upward shower of red/yellow crackers under the flag — gives it weight.
+    // Heavy upward shower of tricolour crackers under the flag — gives it weight.
     const heavy = 120 + ((Math.random() * 60) | 0);
     for (let i = 0; i < heavy; i++) {
       const ang = -Math.PI / 2 + rand(-0.6, 0.6); // upward cone
@@ -84,7 +89,7 @@ const DiwaliFireworks = forwardRef(function DiwaliFireworks(_, ref) {
       partsRef.current.push({
         x: cx + rand(-W / 2, W / 2), y: cy + rand(0, H / 2), px: cx, py: cy,
         vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
-        color: Math.random() < 0.5 ? '#C60B1E' : '#FFC400',
+        color: pick(['#FF9933', '#138808', '#FFD700']),
         life: 1, decay: rand(0.004, 0.006), size: rand(1, 2.4),
         twinkle: Math.random() < 0.3, type: 'spark',
       });
@@ -172,7 +177,7 @@ const DiwaliFireworks = forwardRef(function DiwaliFireworks(_, ref) {
       partsRef.current.push({
         x: startX, y: sy, px: startX, py: sy,
         vx: (tx - startX) / dur, vy: (ty - sy) / dur,
-        targetY: ty, fuse: Math.ceil(dur) + 4, color: pick(SPAIN_COLORS), type: 'rocket',
+        targetY: ty, fuse: Math.ceil(dur) + 4, color: pick(INDIA_COLORS), type: 'rocket',
       });
     }
     // Flag cracker — throttled to once per 5s no matter how many clicks. Bursts
@@ -235,8 +240,8 @@ export default function MomentPage() {
   const prev = MOMENTS[idx + 1]; // older
   const next = MOMENTS[idx - 1]; // newer
 
-  // Diwali celebration easter egg — Spain moment only.
-  const isSpain = moment.slug === 'fifa-2026-winners-spain';
+  // Diwali celebration easter egg — Diwali moment only.
+  const isDiwali = moment.slug === 'diwali-2026';
   const celebrate = (e) => {
     const r = e.currentTarget.getBoundingClientRect();
     fwRef.current?.burst(e.clientX || r.left + r.width / 2, e.clientY || r.top + r.height / 3);
@@ -268,14 +273,14 @@ export default function MomentPage() {
         <ArrowLeft className="h-4 w-4" /> All moments
       </Link>
 
-      {isSpain && <DiwaliFireworks ref={fwRef} />}
+      {isDiwali && <DiwaliFireworks ref={fwRef} />}
 
       <img
         src={moment.image}
         alt={moment.alt}
-        onClick={isSpain ? celebrate : undefined}
-        title={isSpain ? 'Tap for Diwali fireworks 🎆' : undefined}
-        className={`mx-auto mt-10 h-auto w-full max-w-2xl rounded-xl object-contain shadow-sm${isSpain ? ' cursor-pointer' : ''}`}
+        onClick={isDiwali ? celebrate : undefined}
+        title={isDiwali ? 'Tap for Diwali fireworks 🎆' : undefined}
+        className={`mx-auto mt-10 h-auto w-full max-w-2xl rounded-xl object-contain shadow-sm${isDiwali ? ' cursor-pointer' : ''}`}
       />
 
       <p className="mt-10 text-sm font-medium text-primary">{moment.date}</p>
