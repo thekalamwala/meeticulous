@@ -185,6 +185,7 @@ app.use('/api/support',       require('./routes/supportRoutes')); // host/guest 
 app.use('/api/enterprise-lead', require('./routes/enterpriseLeadRoutes')); // public /enterprise page lead form → support email
 app.use('/api/demo-lead', require('./routes/demoLeadRoutes')); // public /become-a-host "Book a Demo" OTP lead form → CRM (source website)
 app.use('/api/ingest', require('./routes/ingestRoutes')); // external lead intake (Meta/Zoho/form) → upsertLead, token-gated
+app.use('/api/sync', require('./routes/revenueSyncRoutes')); // read-only revenue export for Papertrail cashbook, token-gated (x-sync-token)
 app.use('/api/agents/reports', require('./routes/agentReportRoutes')); // READ-ONLY aggregates for SUTRA agents (x-agent-token, fail-closed)
 app.use('/api/events',        require('./routes/eventsRoutes')); // public intent-event sink → lead_events
 app.use('/api/opening',       require('./routes/openingRoutes')); // public "The Opening" launch event (ribbon cut + Inaugurators Wall)
