@@ -3,8 +3,28 @@
  * cancellationPolicy — tier walking + plan/flag resolution (v3.206).
  */
 const {
-  DEFAULT_TIERS, PRO_DEFAULT_TIERS, normalizeTiers, refundPctFor, resolveCancellationPolicy,
+  DEFAULT_TIERS, PRO_DEFAULT_TIERS, FLEXIBLE_TIERS, policyFromPreset,
+  normalizeTiers, refundPctFor, resolveCancellationPolicy,
 } = require('../../lib/cancellationPolicy');
+
+describe('policyFromPreset (P4 — server owns the tiers)', () => {
+  test('standard → null (no override; use the default)', () => {
+    expect(policyFromPreset('standard', { isPro: true })).toBeNull();
+    expect(policyFromPreset('standard', { isPro: false })).toBeNull();
+  });
+  test('pro host can set strict / flexible', () => {
+    expect(policyFromPreset('strict', { isPro: true })).toEqual({ preset: 'strict', tiers: PRO_DEFAULT_TIERS });
+    expect(policyFromPreset('flexible', { isPro: true })).toEqual({ preset: 'flexible', tiers: FLEXIBLE_TIERS });
+  });
+  test('free host cannot set a Pro-only preset → null', () => {
+    expect(policyFromPreset('strict', { isPro: false })).toBeNull();
+    expect(policyFromPreset('flexible', { isPro: false })).toBeNull();
+  });
+  test('unknown preset → null; case-insensitive', () => {
+    expect(policyFromPreset('whatever', { isPro: true })).toBeNull();
+    expect(policyFromPreset('STRICT', { isPro: true })).toEqual({ preset: 'strict', tiers: PRO_DEFAULT_TIERS });
+  });
+});
 
 describe('refundPctFor', () => {
   test('default tiers: 100% ≥24h, 50% ≥6h, 0% under', () => {
