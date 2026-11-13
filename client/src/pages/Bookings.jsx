@@ -19,6 +19,7 @@ import {
 } from "../components/dashboard/ui";
 import { isPreviewEnabled, getPreviewBookings } from "../utils/previewData";
 import { useRegisterRefresh } from "../components/dashboard/ui/refreshContext";
+import { isFreePlan } from "../utils/themeUtils";
 
 const fmtDate = (iso) =>
   new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
@@ -204,6 +205,7 @@ const InfoRow = ({ icon: Icon, label, value }) => (
 
 const BookingDetailModal = ({ booking, onClose, onAction, review, onReviewDone }) => {
   const { on } = useFeatureFlags();
+  const { user } = useAuth();
   const [tab, setTab] = useState("details");
   const [confirming, setConfirming] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -330,6 +332,19 @@ const BookingDetailModal = ({ booking, onClose, onAction, review, onReviewDone }
               </div>
               <InfoRow icon={CreditCard} label="Amount" value={isFree ? "Free" : `₹${booking.services?.price}`} />
               {booking.vendor_amount != null && <InfoRow icon={CreditCard} label="Your earnings" value={`₹${booking.vendor_amount}`} />}
+              {/* Contextual upgrade nudge: a free host just paid 5% on this booking.
+                  Reads the per-booking commission_applied snapshot (v1.7) — no new data. */}
+              {isFreePlan(user?.plan) && Number(booking.commission_applied) > 0 && (
+                <Link
+                  to="/dashboard/upgrade?src=booking_commission"
+                  className="mt-1 flex items-center justify-between gap-3 rounded-xl border border-maroon/20 bg-maroon/5 px-3 py-2.5 transition-colors hover:bg-maroon/10"
+                >
+                  <span className="text-sm text-ink/70">
+                    <span className="font-semibold text-maroon">₹{Math.round(Number(booking.commission_applied))}</span> went to platform (5%). Pro charges 0%.
+                  </span>
+                  <span className="shrink-0 whitespace-nowrap text-xs font-bold text-maroon">Upgrade →</span>
+                </Link>
+              )}
               <div className="flex items-start justify-between gap-3 py-2">
                 <span className="inline-flex items-center gap-2 text-sm text-ink/50"><StickyNote className="h-4 w-4 text-primary/70" strokeWidth={2} />Notes</span>
                 <span className="max-w-[60%] text-right text-sm text-ink">{booking.notes || "—"}</span>

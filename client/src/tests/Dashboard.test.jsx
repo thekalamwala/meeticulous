@@ -16,6 +16,7 @@ vi.mock('../services/api', () => ({
   getMyServices: vi.fn(() => Promise.resolve({ data: [] })),
   getHostNudges: vi.fn(() => Promise.resolve({ data: { snoozed: {}, commissionPaid: 0 } })),
   getMyKyc: vi.fn(() => Promise.resolve({ data: { status: 'approved' } })),
+  getMyProfileViews: vi.fn(() => Promise.resolve({ data: { views: 0 } })),
   getNotifications: vi.fn(() => Promise.resolve({ data: { notifications: [], unreadCount: 0 } })),
   getNotificationChannel: vi.fn(() => Promise.resolve({ data: {} })),
   markAllNotificationsRead: vi.fn(() => Promise.resolve({ data: {} })),
