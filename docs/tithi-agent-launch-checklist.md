@@ -48,6 +48,9 @@ apply them so the admin toggle rows exist.
 
 - `server/migrations/v3.207_bot_tool_loop_flag.sql`
 - `server/migrations/v3.208_tithi_proactive_flag.sql`
+- `server/migrations/v3.209_bot_institutional_memory_flag.sql`
+- `server/migrations/v3.210_bot_person_memory_flag.sql`
+- `server/migrations/v3.211_bot_gap_digest_flag.sql`
 
 Apply on the Meeticulous DB (`spquowzrefozmrzoszkf`).
 
@@ -58,6 +61,12 @@ Apply on the Meeticulous DB (`spquowzrefozmrzoszkf`).
 | `COMMUNITY_REPLY_GATE_ENABLED=true` | Render env (`meeticulous-api`) | the dry-run `server/scripts/tithiReplyDryRun.js` looks right |
 | `bot_tool_loop` | feature_flags (admin) | Step 1 eval passes + a manual spot-check |
 | `tithi_proactive` | feature_flags (admin) | you've decided it won't double up with the email/WhatsApp `activation_nudges` (they cover KYC/service/payout too — keep one channel per blocker, or stagger) |
+| `bot_institutional_memory` | feature_flags (admin) | `bot_tool_loop` is live **and** the community has a few answered questions worth reusing |
+| `bot_person_memory` | feature_flags (admin) | `bot_tool_loop` is live (it only adds continuity to the authenticated support thread) |
+| `bot_gap_digest` | feature_flags (admin) | anytime after ship — it just starts the weekly "what we couldn't answer" email |
+
+The three intelligence flags (6-8) are independent of each other and safe to leave off
+until the core agent is proven; turn them on one at a time.
 
 ## Safety notes / what the agent will NOT do
 
