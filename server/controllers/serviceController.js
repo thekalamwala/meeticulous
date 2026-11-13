@@ -16,6 +16,23 @@ const { summarizePrices, BENCHMARK_MIN_SAMPLE } = require('../lib/priceBenchmark
 // Server-side read-through cache TTL for the assembled public service page.
 const SERVICE_DETAIL_CACHE_MS = Number(process.env.SERVICE_DETAIL_CACHE_MS) || 120_000;
 const { canActivateMore, canAddFreeService } = require('../middleware/planMiddleware');
+const planService = require('../services/planService');
+const { policyFromPreset } = require('../lib/cancellationPolicy');
+
+// P4: is this host on a Pro (non-free) plan? Gates who can set a custom
+// cancellation preset. resolveVendorPlan handles gifted-Pro / expiry.
+const hostIsPro = async (userId) => {
+  const { data: prof } = await supabaseAdmin
+    .from('profiles').select('plan, plan_expires_at, subscription_status, gift').eq('id', userId).maybeSingle();
+  return !planService.isFreeSlug(planService.resolveVendorPlan(prof || {}));
+};
+
+// Map a client-sent cancellation preset to the stored policy (server owns the tiers).
+// Only touches the field when the client actually sent a preset.
+const applyCancellationPreset = async (payload, body, userId) => {
+  if (body.cancellation_preset === undefined) return;
+  payload.cancellation_policy = policyFromPreset(body.cancellation_preset, { isPro: await hostIsPro(userId) });
+};
 const { getPublicAppearanceData } = require('./appearanceController');
 const { capture: phCapture } = require('../utils/posthog');
 
@@ -127,7 +144,7 @@ const V2_SELECT_COLS =
   'id,host_id,title,slug,short_description,long_description,description,' +
   'meeting_mode,type,price,duration,currency,grace_period_minutes,thumbnail_url,' +
   'included_items,excluded_items,faqs,important_note,rating,total_reviews,total_bookings,' +
-  'category,primary_category,is_active,created_at,updated_at';
+  'category,primary_category,is_active,created_at,updated_at,cancellation_policy';
 
 const LEGACY_SELECT_COLS =
   'id,host_id,title,slug,description,type,meeting_mode,price,duration,currency,' +
@@ -247,6 +264,7 @@ const createService = async (req, res) => {
     const slug = await uniqueSlug(baseSlug, req.user.id);
 
     const p = buildPayload(req.body);
+    await applyCancellationPreset(p, req.body, req.user.id); // P4 (server-gated on Pro)
     const venueErr = await offlineNeedsVenue(req.user.id, p.meeting_mode);
     if (venueErr) return res.status(400).json({ message: venueErr, map_link_required: true });
     // Interim fee-only mode (no Razorpay Route yet): hosts cannot list a paid
@@ -321,6 +339,7 @@ const getServiceById = async (req, res) => {
 const updateService = async (req, res) => {
   try {
     const updates = buildPayload(req.body);
+    await applyCancellationPreset(updates, req.body, req.user.id); // P4 (server-gated on Pro)
     const venueErr = await offlineNeedsVenue(req.user.id, updates.meeting_mode);
     if (venueErr) return res.status(400).json({ message: venueErr, map_link_required: true });
     // Interim fee-only mode: no paid listings — force ₹0 on every update

@@ -56,6 +56,7 @@ const REGISTRY = [
   // ── BOOKINGS (shared) ────────────────────────────────────────
   { key: 'reschedule',           label: 'Booking Reschedule',   category: 'Bookings', scope: 'both',     description: 'Allow guests and vendors to reschedule bookings. Off = all reschedule blocked.' },
   { key: 'reschedule_fee',       label: 'Reschedule Fee Charging', category: 'Bookings', scope: 'both',  description: 'Charge the vendor-set reschedule fee from the 2nd reschedule. Off = all reschedules free.' },
+  { key: 'pro_cancellation_policy', label: 'Pro Cancellation Policy', category: 'Bookings', scope: 'both', enabled: false, description: 'Pro hosts get stricter, customizable cancellation refund tiers (keep more on late cancels/no-shows). Off = the standard 24h/6h tiers apply to everyone. Only affects how much of money ALREADY paid is refunded via Razorpay — no card-on-file, no wallet.' },
   { key: 'rebook_nudge',         label: 'Rebook Nudge',         category: 'Bookings', scope: 'both',     description: 'Automated post-session rebook nudge to guests (Studio hosts). Off = no rebook follow-ups fire (pending ones pause).' },
 
   // ── CUSTOMER · Booking ───────────────────────────────────────
@@ -138,6 +139,7 @@ const SAFETY_KEYS = [
   'guest_otp',          // auth
   'guest_booking',      // platform-wide booking freeze
   'reschedule_fee',     // money movement
+  'pro_cancellation_policy', // money movement — changes refund amounts on cancellation
   'host_linkedin_login', // auth — the LinkedIn host door is closed for everyone when OFF
 ];
 
