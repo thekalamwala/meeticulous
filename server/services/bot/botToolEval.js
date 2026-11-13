@@ -17,7 +17,9 @@
 
 const CASES = [
   // ── Reads ──
-  { id: 'booking-read', question: 'is my appointment confirmed?', kind: 'host', expect: { tool: 'get_booking_status' } },
+  // The context line carries booking STATUS (so "is it confirmed?" is answerable without a
+  // tool); it does NOT carry the time, so a time question genuinely needs the tool.
+  { id: 'booking-read', question: 'what time exactly is my next session booked for?', kind: 'host', expect: { tool: 'get_booking_status' } },
   { id: 'refund-read', question: 'did my money come back yet?', kind: 'guest', expect: { tool: 'get_refund_status' } },
   { id: 'payout-host', question: 'when do I actually get paid?', kind: 'host', expect: { tool: 'get_payout_status' } },
   { id: 'plan-host', question: 'what plan am I on right now?', kind: 'host', expect: { tool: 'get_plan_status' } },
