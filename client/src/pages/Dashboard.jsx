@@ -10,6 +10,7 @@ import { fmtMoney, cn } from '../components/dashboard/ui';
 import { isFreePlan } from '../utils/themeUtils';
 import CommissionMeter from '../components/dashboard/CommissionMeter';
 import GoLiveChecklist from '../components/dashboard/GoLiveChecklist';
+import ConversionFunnel from '../components/dashboard/ConversionFunnel';
 import { useRegisterRefresh } from '../components/dashboard/ui/refreshContext';
 import { useOverviewChrome } from '../components/common/overviewChrome';
 import { isPreviewEnabled, getPreviewBookings, getPreviewPayoutBalance } from '../utils/previewData';
@@ -581,6 +582,15 @@ const Dashboard = () => {
           </span>
           <span className="font-display text-lg font-bold text-ink">{profileViews.toLocaleString('en-IN')}</span>
         </Link>
+      )}
+
+      {/* Views→bookings funnel (v3.205 data) — Pro-gated growth analytics. */}
+      {profileViews != null && (
+        <ConversionFunnel
+          views={profileViews}
+          bookings={rawBookings.filter((b) => String(b.status || '').toLowerCase() !== 'cancelled').length}
+          isFree={isFreePlan(user?.plan)}
+        />
       )}
 
       <WeeklyCalendar
