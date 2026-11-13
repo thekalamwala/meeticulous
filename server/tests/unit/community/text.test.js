@@ -93,3 +93,26 @@ describe('makeSlug / mentions / urls', () => {
   });
   test('BLOCKED_LINK_HOSTS', () => expect(t.BLOCKED_LINK_HOSTS).toContain('wa.me'));
 });
+
+describe('toPlainText (community renders raw text)', () => {
+  test('strips the inline marks the bot emits (the live Aastha-reply failure)', () => {
+    const out = t.toPlainText('**Meeticulous** is a `booking` platform.\n\n- One link\n- Pay in one step');
+    expect(out).not.toMatch(/\*|`/);                 // no bold/code markers survive
+    expect(out).toContain('Meeticulous is a booking platform.');
+    expect(out).toContain('• One link');
+    expect(out).toContain('• Pay in one step');
+  });
+  test('internal link -> tappable bare URL; external kept; anchor -> label', () => {
+    expect(t.toPlainText('[See plans](/pricing)')).toBe('See plans: meeticulous.com/pricing');
+    expect(t.toPlainText('[Voyage](https://x.com/a)')).toBe('Voyage: https://x.com/a');
+    expect(t.toPlainText('[top](#top)')).toBe('top');
+  });
+  test('headings, rules and fences gone; content + order preserved', () => {
+    const out = t.toPlainText('## Title\n\n***\n\n```\ncode\n```\n\n> quote');
+    expect(out).not.toMatch(/[#>`]|\*{2}|-{3}/);     // no heading/quote/fence/rule/bold syntax
+    expect(out.replace(/\n+/g, ' ')).toBe('Title code quote');
+  });
+  test('plain text passes through unchanged', () => {
+    expect(t.toPlainText('Not yet — single bookings only for now.')).toBe('Not yet — single bookings only for now.');
+  });
+});

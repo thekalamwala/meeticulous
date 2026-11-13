@@ -20,7 +20,7 @@ If you're wondering how much Meeticulous costs, or what Pro comes to monthly or 
 Here's the shape of it:
 
 - **Starter** costs nothing — it's free forever (a 5% per-booking commission applies).
-- **Pro** is ₹399 a month or ₹3,599 a year, GST included — under ₹10 a day, and about 25% cheaper paid yearly.
+- **Pro** is ₹235 a month or ₹1,179 a year, GST included — under ₹4 a day, and about 58% cheaper paid yearly.
 
 Prices can change and are set by Meeticulous, so check the [pricing](/pricing) page for the up-to-date figure.
 
