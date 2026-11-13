@@ -512,6 +512,19 @@ function audienceNote(audience) {
   return '';
 }
 
+// Per-request shaping for the public member community (channel:'community'), where the
+// reply is a PUBLIC post, not a 1:1 support chat. Prepended to the model note so it rides
+// in the user message like audienceNote — the help widget (no channel) never sees it.
+// Fixes the live failures: a feature question drew a markdown brochure that also volunteered
+// a full "what it can't do" list to every reader, with an un-grounded reminder-timing claim.
+const COMMUNITY_REPLY_RULES =
+  '[This reply is posted PUBLICLY in the member community, read by everyone — not a private support chat. '
+  + 'Plain text only: no markdown, asterisks, backticks, bullet characters, headings or links. '
+  + 'Keep it to 2–4 short sentences — tight and conversational. '
+  + 'Answer ONLY what was asked. Do NOT volunteer limitations, missing features, or a "what it can\'t do yet" list unless the member specifically asked about that. '
+  + 'When you mention what a plan includes or a plan limit, name the plan (Starter or Pro). '
+  + 'Never state a specific number, time or limit that is not in the Sources.]';
+
 // Support-thread turns come straight from support_messages, unlike bot_messages which
 // persist() has already redacted, so scrub them before Voyage/Claude see them. Flagged
 // customer turns are dropped outright: only the current question gets the <user_question>
@@ -781,7 +794,8 @@ async function tryIntentLayer({ q, conversationId, sessionRef, onDelta }) {
  * `source` names the layer that answered: 'smalltalk'|'faq'|'model'|'escalation'.
  * `history` ([{ role, content }], support threads only) replaces the conversationId lookup.
  */
-async function askBot({ question, conversationId = null, sessionRef = null, ip = null, context = null, audience = null, identity = null, history: threadHistory = null } = {}) {
+async function askBot({ question, conversationId = null, sessionRef = null, ip = null, context = null, audience = null, identity = null, channel = null, history: threadHistory = null } = {}) {
+  const isCommunity = channel === 'community';
   const q = String(question || '').trim();
   const qSafe = q ? redactPii(q) : q; // PII-redacted copy for third parties (Voyage embed, Claude, cache)
 
@@ -888,7 +902,9 @@ async function askBot({ question, conversationId = null, sessionRef = null, ip =
   // Never for sensitive topics — those must escalate, never serve a cached answer.
   // Never when authenticated context is in play — that answer is user-specific and
   // must not be served to (or stored for) anyone else.
-  if (queryEmbedding && !sensitive && !context && !hasThreadHistory) {
+  // Community answers are channel-shaped (plain, short, no volunteered limitations), so
+  // they must not be served from — or stored into — the shared widget cache.
+  if (queryEmbedding && !sensitive && !context && !hasThreadHistory && !isCommunity) {
     const cached = await semanticCacheLookup(queryEmbedding);
     if (cached) {
       const { conversationId: convId, messageId } = await persist({
@@ -933,6 +949,8 @@ async function askBot({ question, conversationId = null, sessionRef = null, ip =
           const mem = memoryNote(context);
           if (mem) modelNote = `${modelNote}\n${mem}`;
         }
+        // Community channel (Slice/PR #303): prepend the public-post shaping rules.
+        if (isCommunity) modelNote = `${COMMUNITY_REPLY_RULES}\n\n${modelNote}`.trim();
         const out = await callModel(qSafe, chunks, history, modelNote);
         if (out && !out.escalate && String(out.answer || '').trim()) {
           escalate = false;
@@ -954,7 +972,7 @@ async function askBot({ question, conversationId = null, sessionRef = null, ip =
             // Never cache a context- OR audience-influenced answer — a host-flavored reply
             // must not be served to a guest (or vice-versa) via the shared, embedding-only
             // cache. Lookups still run (they only ever return earlier neutral answers).
-            if (!context && !audience && !hasThreadHistory) semanticCacheStore(qSafe, queryEmbedding, answer, cited_sources);
+            if (!context && !audience && !hasThreadHistory && !isCommunity) semanticCacheStore(qSafe, queryEmbedding, answer, cited_sources);
           }
         }
       } catch (e) {
