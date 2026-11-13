@@ -2,14 +2,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight, CalendarDays, Check, CheckCircle2, ChevronLeft, ChevronRight,
-  LayoutGrid, Plus, Sparkles, Wallet,
+  Eye, LayoutGrid, Plus, Sparkles, Wallet,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { getPayoutBalance, getHostBookings, getHostNudges, getMyKyc, getMyServices } from '../services/api';
+import { getPayoutBalance, getHostBookings, getHostNudges, getMyKyc, getMyServices, getMyProfileViews } from '../services/api';
 import { fmtMoney, cn } from '../components/dashboard/ui';
 import { isFreePlan } from '../utils/themeUtils';
 import CommissionMeter from '../components/dashboard/CommissionMeter';
 import GoLiveChecklist from '../components/dashboard/GoLiveChecklist';
+import ConversionFunnel from '../components/dashboard/ConversionFunnel';
 import { useRegisterRefresh } from '../components/dashboard/ui/refreshContext';
 import { useOverviewChrome } from '../components/common/overviewChrome';
 import { isPreviewEnabled, getPreviewBookings, getPreviewPayoutBalance } from '../utils/previewData';
@@ -466,6 +467,12 @@ const Dashboard = () => {
     })
     .catch(() => {}), []);
 
+  // Public-profile view count (v3.205) — a free→Pro growth hook. Null until loaded; 0 is valid.
+  const [profileViews, setProfileViews] = useState(null);
+  const loadViews = useCallback(() => getMyProfileViews()
+    .then((r) => setProfileViews(Number(r?.data?.views) || 0))
+    .catch(() => {}), []);
+
   useEffect(() => {
     if (!isHost) return;
     // DEV-only UI preview: show sample payout + bookings WITHOUT touching the
@@ -481,7 +488,8 @@ const Dashboard = () => {
     loadBookings();
     loadNudges();
     loadKyc();
-  }, [isHost, loadBookings, loadBalance, loadNudges, loadKyc]);
+    loadViews();
+  }, [isHost, loadBookings, loadBalance, loadNudges, loadKyc, loadViews]);
 
   // Pull-to-refresh re-fetches payout balance + bookings together.
   const refresh = useCallback(() => {
@@ -562,6 +570,28 @@ const Dashboard = () => {
           Icon={CheckCircle2}
         />
       </div>
+
+      {/* Profile views (v3.205) — a quiet growth signal; links to the public page. */}
+      {profileViews != null && (
+        <Link
+          to={user?.username ? `/${user.username}` : '/dashboard/profile'}
+          className="flex items-center justify-between gap-3 rounded-2xl border border-maroon/10 bg-white px-4 py-3 transition-colors hover:border-maroon/25"
+        >
+          <span className="flex items-center gap-2 text-sm text-ink/60">
+            <Eye className="h-4 w-4 text-maroon/70" strokeWidth={2} /> Profile views
+          </span>
+          <span className="font-display text-lg font-bold text-ink">{profileViews.toLocaleString('en-IN')}</span>
+        </Link>
+      )}
+
+      {/* Views→bookings funnel (v3.205 data) — Pro-gated growth analytics. */}
+      {profileViews != null && (
+        <ConversionFunnel
+          views={profileViews}
+          bookings={rawBookings.filter((b) => String(b.status || '').toLowerCase() !== 'cancelled').length}
+          isFree={isFreePlan(user?.plan)}
+        />
+      )}
 
       <WeeklyCalendar
         bookings={calendarBookings}

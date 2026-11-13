@@ -7,7 +7,9 @@
 //   slug     — URL segment (/moments/:slug). Unique, URL-safe [a-z0-9-].
 //   title    — headline.
 //   date     — display string; also sort order (keep array newest-first).
-//   image    — art URL. Convention: CDN .../images/moments/${slug}.png
+//   image    — art URL. Self-hosted art lives in client/public/images/moments
+//              and is referenced as /images/moments/${slug}.{gif,png}. Remote
+//              art may use the assets CDN instead.
 //   alt      — image alt text.
 //   excerpt  — 1-2 line summary (index card + meta description, keep < 160 chars).
 //   body     — array of blocks:
@@ -22,26 +24,24 @@
 // beginning; the lesson is the destination. Celebrate effort more than victory.
 // See docs/moments-authoring.md before writing a new one.
 
-const CDN = 'https://company-assets.meeticulous.in/images/moments';
-
 export const MOMENTS = [
   {
-    slug: 'fifa-2026-winners-spain',
-    title: 'Spain — Champions of the World',
-    date: 'July 19, 2026',
-    image: `${CDN}/fifa-2026-winners-spain.png`,
-    alt: 'Illustration celebrating Spain winning the FIFA World Cup 2026',
-    excerpt: 'Spain win the 2026 World Cup, 1–0 after extra time. A final decided not by chaos, but by control.',
+    slug: 'diwali-2026',
+    title: 'Diwali — The Festival of Lights',
+    date: 'November 8, 2026',
+    image: '/images/moments/diwali-2026.gif',
+    alt: 'Illustration celebrating Diwali 2026 — a night sky lit by fireworks over lamp-lit homes',
+    excerpt: 'On the darkest night of the year, millions light a single lamp. Diwali 2026 — light over darkness, one patient flame at a time.',
     body: [
-      { p: 'On a July night at New York–New Jersey Stadium, Spain became champions of the world. They beat the defending champions, Argentina, 1–0 after extra time — Ferran Torres finishing the deadlock in the 106th minute for the country’s second world title.' },
-      { p: 'It was not a night of chaos. Spain kept the ball, kept the shape, and kept coming: chance after chance, save after save from Emiliano Martínez, until the pressure finally found a way through. Argentina, holders of the crown, did not manage a shot in normal time.' },
+      { p: 'On the new-moon night of November 8, 2026 — the darkest night of the lunar month — millions of homes did the same small thing at the same hour: they lit a lamp. One clay diya on a windowsill, then another beside it, then a row along the wall, until streets, balconies and whole cities glowed against the dark. Diwali had come again.' },
+      { p: 'Diwali is not one story but many — Rama’s return to Ayodhya, Lakshmi walking into lit homes, the triumph of light over darkness and knowledge over ignorance. Across faiths and regions the details differ, but the gesture is the same everywhere: when the night is longest, you do not wait for the dark to pass. You make light.' },
       { h2: 'What this took' },
-      { p: 'A final like this is won long before the whistle. It is won in the midfield — in the unglamorous discipline of holding the ball for one more pass, closing one more gap, staying patient while the score stays level and the world grows loud. Spain did not out-run this game. They out-organised it.' },
-      { p: 'That kind of control is not a gift. It is thousands of ordinary training days, repeated with purpose, until composure under pressure stops being a decision and becomes a habit.' },
+      { p: 'The festival looks effortless — fireworks, sweets, lamps — but the night rests on weeks of quiet work. Homes are cleaned corner to corner. Debts are settled and accounts closed before the new year. Rangoli is drawn grain by grain at dawn. The celebration everyone sees is the last small part of a long, unglamorous preparation nobody photographs.' },
+      { p: 'And a single diya is itself a lesson in patience: oil, a cotton wick, a steady hand, shelter from the wind. Light does not arrive all at once. It is tended.' },
       { h2: 'What we can carry from it' },
-      { p: 'Most great results look, from the outside, like a single decisive moment — one goal, in the 106th minute. But the moment was only the visible ending. The real work was every quiet day that made the team calm enough to still be playing their game when it mattered most.' },
-      { p: 'And we should hold a little space for Argentina, too. To reach a World Cup final is itself the sum of years most people never see. Some nights the discipline is the other team’s. The effort is no less real.' },
-      { quote: 'Great moments are rarely created in a single day.' },
+      { p: 'One lamp does little against a whole night. But no one lights just one. Each flame borrows from the one beside it, and a street no single lamp could brighten becomes luminous because everyone lit their own. The point was never the brightness of any one light. It was that we all chose to light something.' },
+      { p: 'That is the quiet instruction of Diwali — not to wait for better conditions, not to out-shout the darkness, but to tend your own small flame faithfully, and trust it to join the others.' },
+      { quote: 'A thousand lamps begin with one that refused to stay dark.' },
     ],
     credits: 'Art by the Meeticulous team.',
     cta: { label: 'Explore hosts', href: '/explore' },

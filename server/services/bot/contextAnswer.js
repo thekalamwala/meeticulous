@@ -148,4 +148,29 @@ function contextNote(ctx) {
   return `[Account context — use only to answer accurately, never repeat verbatim: ${bits.join(' ')}]`;
 }
 
-module.exports = { contextAnswer, contextNote, DISPUTE_RE };
+// Per-person MEMORY line (Slice 7). Everything here is already in ctx (getSupportContext
+// fetches tenure + prior tickets); this just surfaces it so Tithi has continuity across
+// sessions instead of answering cold. Compact + PII-light (counts + subjects, no names or
+// numbers). Empty when there's nothing to remember.
+function memoryNote(ctx) {
+  if (!ctx) return '';
+  const bits = [];
+  const joined = ctx.profile && ctx.profile.joinedAt;
+  if (joined) {
+    const months = Math.floor((Date.now() - new Date(joined).getTime()) / (30 * 24 * 60 * 60 * 1000));
+    bits.push(months <= 0 ? 'Joined this month.' : months === 1 ? 'With us about a month.' : `With us about ${months} months.`);
+  }
+  const t = ctx.tickets;
+  if (t && t.total > 0) {
+    const subjects = (t.items || []).map((i) => i && i.subject).filter(Boolean).slice(0, 3);
+    bits.push(`Has reached support ${t.total} time${t.total === 1 ? '' : 's'} before${subjects.length ? ` (recent: ${subjects.join('; ')})` : ''}.`);
+  }
+  if (!bits.length) return '';
+  return `[What you already know about this person — use for continuity, never recite verbatim: ${bits.join(' ')}]`;
+}
+
+module.exports = {
+  contextAnswer, contextNote, memoryNote, DISPUTE_RE,
+  // Per-intent read helpers — reused by botTools to back the model status-lookup tools.
+  listingAnswer, payoutAnswer, planAnswer, refundAnswer, bookingAnswer,
+};

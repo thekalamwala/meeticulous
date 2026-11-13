@@ -15,6 +15,8 @@ const read = [optionalProtect, communityGate];
 router.get('/spaces', ...read, c.listSpaces);
 router.get('/feed', ...read, c.feed);
 router.get('/spaces/:key/threads', ...read, c.spaceThreads);
+router.get('/tags', ...read, c.tags);
+router.get('/tags/:tag/threads', ...read, c.tagThreads);
 router.get('/items/:slug', ...read, c.itemDetail);
 router.get('/items/:slug/comments', ...read, c.itemComments);
 router.get('/me', protect, communityGate, c.me);

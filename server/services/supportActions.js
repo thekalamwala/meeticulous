@@ -16,6 +16,8 @@ const { supabaseAdmin } = require('../config/supabase');
 const sendEmail = require('../utils/sendEmail');
 const { buildIcs } = require('../utils/icsInvite');
 const { sendBookingConfirmation } = require('./bookingConfirmation');
+const manageBookingToken = require('../utils/manageBookingToken');
+const { refundTierPct } = require('./refundService'); // ≥24h→1, ≥6h→0.5, else 0 (/refund §1)
 
 const ACTIONS = [
   ['resend_confirmation', /\b(resend|re-?send|send again|didn.?t (get|receive)|missing).*(confirm|booking (details|email))|confirmation.*(resend|again|didn.?t)/i],
@@ -49,7 +51,55 @@ async function latestBooking({ userId, guestPhone, isHost }) {
   return b;
 }
 
+// The refund the guest would get if they cancel NOW, as plain words (never an exact
+// amount — the manage page shows that). Tiered on the service price per /refund §1.
+function refundTierText(scheduledAt) {
+  if (!scheduledAt) return 'a refund per our cancellation policy';
+  const hrs = (new Date(scheduledAt).getTime() - Date.now()) / 3600000;
+  const pct = refundTierPct(hrs);
+  return pct === 1 ? 'a full refund of the service price'
+    : pct === 0.5 ? 'a 50% refund of the service price'
+      : 'no refund (it’s under 6 hours to the session)';
+}
+
+// Safe-split cancel: the data for the SECURE self-service cancel link, no side effect.
+// The bot never cancels or refunds — it hands the user this link, and they cancel on the
+// real page (which shows + performs the exact refund). Own booking only, server-resolved.
+async function cancelLinkInfo(identity) {
+  if (!identity || !(identity.userId || identity.guestPhone)) return { ok: false, message: "I can only do that on a signed-in account." };
+  const b = await latestBooking(identity);
+  if (!b) return { ok: false, message: "I don't see a booking on your account to cancel." };
+  if (b.status === 'cancelled' || b.status === 'completed' || b.status === 'no_show') {
+    return { ok: false, message: `Your most recent booking (${b.service_title}) is already ${b.status}, so there's nothing to cancel there.` };
+  }
+  const when = fmtDate(b.scheduled_at);
+  const base = (process.env.CLIENT_URL || 'https://meeticulous.com').replace(/\/$/, '');
+  return {
+    ok: true,
+    booking: b,
+    label: `${b.service_title}${when ? ` on ${when}` : ''}`,
+    email: b.guest_email || null,
+    tierText: refundTierText(b.scheduled_at),
+    link: `${base}/manage-booking/${manageBookingToken.sign(b.id)}`,
+  };
+}
+
 async function runAction(action, identity) {
+  if (action === 'send_cancel_link') {
+    const info = await cancelLinkInfo(identity);
+    if (!info.ok) return { ok: false, message: info.message };
+    if (!info.email) return { ok: false, message: `I found ${info.label}, but there's no email on it to send the secure link to. Want me to bring in a teammate?` };
+    await sendEmail({
+      to: info.email,
+      subject: `Manage your booking — ${info.booking.service_title}`,
+      html: `<p>Hi ${info.booking.guest_name || 'there'},</p>
+             <p>Here's your secure link to manage <b>${info.label}</b> — you can cancel in one tap, and you'll see the exact refund before you confirm:</p>
+             <p><a href="${info.link}" style="color:#960D32;font-weight:600">Manage / cancel your booking →</a></p>
+             <p style="color:#888;font-size:12px">Cancelling now would get you ${info.tierText}. Meeticulous</p>`,
+    });
+    return { ok: true, message: `Done — I've emailed your secure cancel link to ${info.email}. Open it to cancel in one tap; you'll see the exact refund first (cancelling now would get you ${info.tierText}).` };
+  }
+
   const b = await latestBooking(identity);
   if (!b) return { ok: false, message: "I couldn't find a booking on your account to work with. If you booked with a different number or email, let me know and I'll pull in a teammate." };
 
@@ -98,4 +148,4 @@ async function runAction(action, identity) {
   return { ok: false, message: null };
 }
 
-module.exports = { detectAction, runAction, latestBooking };
+module.exports = { detectAction, runAction, latestBooking, cancelLinkInfo, refundTierText };
