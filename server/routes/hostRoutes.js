@@ -4,6 +4,7 @@ const {
   getHostProfile, updateProfile, getMyCategories, updateCategories,
   updateService, deleteService,
   getMyServices, setAvailability, getServiceBySlug, searchVendors, getAvailability,
+  recordProfileView, getMyProfileViews,
 } = require('../controllers/hostController');
 const { gone } = require('../middleware/gone');
 const { changeUsername } = require('../controllers/usernameController');
@@ -37,6 +38,10 @@ router.get('/coupons', protect, requireHost, listCoupons);
 router.post('/coupons', protect, requireHost, createCoupon);
 router.patch('/coupons/:id', protect, requireHost, updateCoupon);
 router.delete('/coupons/:id', protect, requireHost, deleteCoupon);
+// Profile view counter (v3.205). Static read MUST stay above /:username; the public
+// beacon is a POST so it never collides with the GET /:username profile route.
+router.get('/profile-views', protect, requireHost, getMyProfileViews);
+router.post('/:username/view', recordProfileView);
 router.get('/:username/:slug', getServiceBySlug);
 router.get('/:username', getHostProfile);
 

@@ -1005,8 +1005,32 @@ const searchVendors = async (req, res) => {
   }
 };
 
+// POST /api/host/:username/view — public beacon from the public profile page.
+// Increments the host's view counter (v3.205). Best-effort: never blocks or errors
+// the viewer, and no-ops if the migration hasn't run.
+const recordProfileView = async (req, res) => {
+  try {
+    const username = String(req.params.username || '').trim();
+    if (username) await supabaseAdmin.rpc('increment_profile_views', { p_username: username });
+  } catch (_) { /* best-effort vanity counter — never surface an error */ }
+  return res.json({ ok: true });
+};
+
+// GET /api/host/profile-views — the signed-in host's own view count (v3.205).
+const getMyProfileViews = async (req, res) => {
+  try {
+    const { data } = await supabaseAdmin
+      .from('profiles').select('profile_views').eq('id', req.user.id).maybeSingle();
+    return res.json({ views: Number(data?.profile_views) || 0 });
+  } catch (_) {
+    return res.json({ views: 0 }); // schema-fallback: column may not exist yet
+  }
+};
+
 module.exports = {
   getHostProfile,
+  recordProfileView,
+  getMyProfileViews,
   updateProfile,
   getMyCategories,
   updateCategories,
