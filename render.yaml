@@ -91,6 +91,11 @@ services:
         sync: false
       - key: BREVO_FROM
         sync: false
+      # Shared secret Papertrail sends in x-sync-token to pull the daily revenue
+      # export (GET /api/sync/revenue). Unset = endpoint disabled (503). Set the
+      # same value here and in Papertrail's MEETICULOUS_SYNC_TOKEN.
+      - key: SYNC_REVENUE_TOKEN
+        sync: false
 
   # ───────────────────────────────────────────────────────────────────────
   # STAGING backend — the online "testing URL" that sits between your laptop
