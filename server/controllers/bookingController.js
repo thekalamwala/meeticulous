@@ -9,7 +9,7 @@ const { checkBookingReceiveLimit } = require("../middleware/planMiddleware");
 const { parseListRange } = require("../utils/pagination");
 const { runExclusive } = require("../utils/keyedMutex");
 const crypto = require("crypto");
-const { computeBreakdown } = require("../lib/pricingEngine");
+const { computeBreakdown, resolveWithholding } = require("../lib/pricingEngine");
 const { resolveCancellationPolicy } = require("../lib/cancellationPolicy");
 const planService = require("../services/planService");
 const proTaste = require("../services/proTaste");
@@ -476,8 +476,29 @@ const createBooking = async (req, res) => {
     // Platform fee + GST rate are admin-editable settings. In fee-only mode every
     // booking still carries the platform fee even at ₹0 price — but a paid-enabled
     // host (pilot) is in normal paid mode, so the fee follows the real price.
-    const { platformFee: feeSetting, gstRate } = await platformConfig.getConfig();
+    const cfg = await platformConfig.getConfig();
+    const { platformFee: feeSetting, gstRate } = cfg;
     const feeOnlyMode = await require('../services/paidMode').feeOnlyForHost(host_id);
+
+    // Withholding rates (tds_tcs_v2, ships OFF → legacy flat 1% + 1%). When ON, the
+    // rate follows the host's tax situation (PAN present, entity type, ₹5L threshold)
+    // using CA-confirmed rates from platform_settings. fyGrossToDate is null for now,
+    // so resolveWithholding fails SAFE — it deducts rather than exempting an individual
+    // whose FY gross we can't yet prove is under the threshold (follow-up wires the tally).
+    const withholdingEnabled = await featureFlags.isFeatureEnabled('tds_tcs_v2');
+    // TCS is collected only from GST-registered hosts (CA 2026-11-12) — the host's GSTIN
+    // lives in their profile billing_details. No GSTIN → no TCS (handled in resolveWithholding).
+    const hostGstin = host?.billing_details?.gstin || null;
+    const { tdsRate: _tdsRate, tcsRate: _tcsRate } = resolveWithholding({
+      enabled: withholdingEnabled,
+      entityType: host?.host_entity_type,
+      hasPan: hostHasPan,
+      hasGstin: !!hostGstin,
+      fyGrossToDate: null,
+      // cfg already exposes tds_rate / tds_rate_no_pan / tcs_rate / tds_threshold_individual
+      // under these exact names; resolveWithholding reads only those four.
+      config: cfg,
+    });
 
     // Razorpay fee is vendor-borne and only known at capture → finalised in
     // paymentController.verifyPayment. Here razorpayFee = 0 (payout provisional).
@@ -490,10 +511,10 @@ const createBooking = async (req, res) => {
       // ₹0 service still owes the booking fee under fee-only mode — EXCEPT a
       // price-on-request enquiry, which is a pure no-payment lead (no fee at all).
       chargeFeeOnFree:      feeOnlyMode && !service.price_on_request,
-      // TDS is a flat 1% for every paid booking regardless of PAN (CA-confirmed
-      // 2026-11-11: 1% TDS + 1% TCS for all professions — NOT the §206AA 5% no-PAN
-      // rate). The engine's 1% tdsRate/tcsRate defaults already apply, so no override.
-      // `hostHasPan` now only gates whether a no-PAN host may book at all (above).
+      // TDS/TCS rates resolved above. While tds_tcs_v2 is OFF these are the legacy
+      // flat 1% + 1% (unchanged behaviour); when ON they follow PAN / entity / ₹5L.
+      tdsRate:              _tdsRate,
+      tcsRate:              _tcsRate,
     });
     const platformFee  = pricing.platformFee;
     const commission   = pricing.commission;
