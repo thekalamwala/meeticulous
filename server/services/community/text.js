@@ -85,6 +85,38 @@ function validateComment(body, { linksAllowed = false } = {}) {
   return { ok: true, body: b };
 }
 
+// Markdown -> plain text for the community feed, which renders raw text (no markdown).
+// askBot answers (model + pricing/faq layers) carry **bold**, `code`, [label](/link),
+// bullets and the occasional rule — all of which show as literal `**`/`---`/backticks
+// in a post. This is a focused converter, not a full parser: it unwraps the inline
+// marks Tithi actually emits and turns internal links into tappable bare URLs
+// (meeticulous.com is auto-linked + always-allowed). ponytail: covers the real cases;
+// extend if a new mark shows up in the wild.
+function toPlainText(md) {
+  let s = String(md ?? '').replace(/\r\n/g, '\n');
+  // Links/images: [label](url) -> "label: url". Internal (/pricing) -> absolute so it
+  // is a real tappable link; external http(s) kept; anchors/mailto -> label only.
+  s = s.replace(/!?\[([^\]]*)\]\(([^)]+)\)/g, (_m, label, url) => {
+    const u = String(url).trim();
+    const text = String(label).trim();
+    if (/^\/[a-z0-9]/i.test(u)) return text ? `${text}: meeticulous.com${u}` : `meeticulous.com${u}`;
+    if (/^https?:\/\//i.test(u)) return text ? `${text}: ${u}` : u;
+    return text; // #anchor, mailto:, etc. — no usable plain link
+  });
+  s = s.replace(/^```.*$/gm, '');              // code-fence lines
+  s = s.replace(/^\s*[-*_]{3,}\s*$/gm, '');    // horizontal rules ---, ***, ___
+  s = s.replace(/^#{1,6}\s+/gm, '');           // ATX headings
+  s = s.replace(/^\s*>\s?/gm, '');             // blockquote markers
+  s = s.replace(/^\s*[-*+]\s+/gm, '• ');       // bullet markers -> •
+  s = s.replace(/\*\*([^*]+)\*\*/g, '$1');     // **bold**
+  s = s.replace(/__([^_]+)__/g, '$1');         // __bold__
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1$2'); // *italic* (not the ** already gone)
+  s = s.replace(/(^|[^_\w])_([^_\n]+)_(?!\w)/g, '$1$2'); // _italic_
+  s = s.replace(/`([^`]+)`/g, '$1');           // `inline code`
+  s = s.replace(/\n{3,}/g, '\n\n');            // collapse blank runs
+  return s.trim();
+}
+
 function makeSlug(source) {
   const words = String(source ?? '')
     .normalize('NFKD').replace(/[\u0300-\u036f]/g, '') // fold accents to ASCII
@@ -110,4 +142,4 @@ function extractMentions(text) {
   return [...out];
 }
 
-module.exports = { validateDraft, validateComment, checkSafety, makeSlug, extractMentions, extractUrls, BLOCKED_LINK_HOSTS, LIMITS };
+module.exports = { validateDraft, validateComment, checkSafety, makeSlug, extractMentions, extractUrls, toPlainText, BLOCKED_LINK_HOSTS, LIMITS };

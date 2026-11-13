@@ -25,7 +25,7 @@ import { useFeature } from './context/FeatureContext';
 // top bar under community_v2). Profile pages (/community/<slug>, /team) are NOT
 // here — they keep the global navbar.
 const inCommunityShell = (p) => p === '/community' || p === '/community/new' || p === '/community/alerts'
-  || p.startsWith('/community/s/') || p.startsWith('/community/t/') || p.startsWith('/community/p/');
+  || p.startsWith('/community/s/') || p.startsWith('/community/tag/') || p.startsWith('/community/t/') || p.startsWith('/community/p/');
 import { KycProvider } from './context/KycContext';
 import { captureReferral, redeemGiftLink, getMe } from './services/api';
 import { captureAttribution } from './utils/attribution';
@@ -120,6 +120,7 @@ const CommunityFeed  = lazy(() => import('./pages/community/CommunityFeed'));
 const CommunityAlerts = lazy(() => import('./pages/community/CommunityAlerts'));
 const NewPost        = lazy(() => import('./pages/community/NewPost'));
 const CommunitySpace = lazy(() => import('./pages/community/CommunitySpace'));
+const CommunityTag   = lazy(() => import('./pages/community/CommunityTag'));
 const CommunityItem  = lazy(() => import('./pages/community/CommunityItem'));
 const CommunityGuidelines = lazy(() => import('./pages/community/CommunityGuidelines'));
 const ContributorShubham = lazy(() => import('./pages/community/ContributorShubham'));
@@ -554,6 +555,7 @@ function App() {
           <Route path="/community/tithi" element={<ContributorTithi />} />
           <Route path="/community/team" element={<CommunityTeam />} />
           <Route path="/community/s/:key" element={<CommunitySpace />} />
+          <Route path="/community/tag/:tag" element={<CommunityTag />} />
           <Route path="/community/t/:slug" element={<CommunityItem />} />
           <Route path="/community/p/:slug" element={<CommunityItem />} />
           <Route path="/moments" element={<Moments />} />
