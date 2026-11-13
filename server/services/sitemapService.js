@@ -213,14 +213,16 @@ const communityEntries = (rows, siteUrl) => {
   return [
     { loc: `${site}/community`, changefreq: 'daily', priority: '0.6' },
     { loc: `${site}/community/guidelines`, changefreq: 'monthly', priority: '0.3' },
-    ...list.map((r) => (r.key
-      ? { loc: `${site}/community/s/${r.key}`, changefreq: 'daily', priority: '0.5' }
-      : r.slug && {
+    ...list.map((r) => {
+      if (r.key) return { loc: `${site}/community/s/${r.key}`, changefreq: 'daily', priority: '0.5' };
+      if (r.tag) return { loc: `${site}/community/tag/${r.tag}`, changefreq: 'weekly', priority: '0.4' };
+      return r.slug && {
         loc: `${site}/community/${r.kind === 'thread' ? 't' : 'p'}/${r.slug}`,
         lastmod: toLastmod(r.last_activity_at),
         changefreq: 'weekly',
         priority: '0.5',
-      })).filter(Boolean),
+      };
+    }).filter(Boolean),
   ];
 };
 
@@ -331,11 +333,14 @@ const fetchBlogs = async () => {
 const fetchCommunity = async () => {
   if (!(await isFeatureEnabled('community').catch(() => false))) return [];
   try {
-    const [spaces, items, banned] = await Promise.all([
+    const [spaces, items, banned, tags] = await Promise.all([
       communityStore.listSpaces(), communityStore.listIndexableRows(), communityStore.bannedAuthorIds(),
+      communityStore.listTags().catch(() => []),
     ]);
     return [
       ...spaces.map((s) => ({ key: s.key })),
+      // Topic hubs: only tags with enough content to be worth a page (avoid thin hubs).
+      ...tags.filter((t) => (t.use_count || 0) >= 3).map((t) => ({ tag: t.tag })),
       ...items.filter((i) => !(i.author_id && banned.has(i.author_id))),
     ];
   } catch (e) {

@@ -6,6 +6,7 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 vi.mock('../../../services/communityApi', () => ({
   getFeed: vi.fn(),
   getSpaces: vi.fn(),
+  getTags: vi.fn(() => Promise.resolve({ tags: [] })),
   like: vi.fn(),
   unlike: vi.fn(),
   getMyCard: vi.fn().mockResolvedValue({ is_host: false }),
