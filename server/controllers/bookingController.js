@@ -10,6 +10,7 @@ const { parseListRange } = require("../utils/pagination");
 const { runExclusive } = require("../utils/keyedMutex");
 const crypto = require("crypto");
 const { computeBreakdown } = require("../lib/pricingEngine");
+const { resolveCancellationPolicy } = require("../lib/cancellationPolicy");
 const planService = require("../services/planService");
 const proTaste = require("../services/proTaste");
 const { redactBookingContact } = require("../lib/contactVisibility");
@@ -459,6 +460,19 @@ const createBooking = async (req, res) => {
     const planRecord        = await planService.getPlan(effectivePlanSlug);
     const commissionPct     = Number(planRecord.commission_percentage) || 0;
 
+    // v3.206: snapshot the cancellation policy agreed at booking time (default tiers
+    // while `pro_cancellation_policy` is OFF). Refunds read this snapshot, never the
+    // live service/plan, so a host editing their policy later can't change these terms.
+    const cancelFlagOn = await featureFlags.isFeatureEnabled('pro_cancellation_policy');
+    const cancellationSnapshot = resolveCancellationPolicy({
+      service,
+      // isPro only matters when the flag is on; the typeof guard keeps partial
+      // planService mocks in booking tests from throwing on the (then-unused) call.
+      isPro: cancelFlagOn && typeof planService.isFreeSlug === 'function'
+        && !planService.isFreeSlug(effectivePlanSlug),
+      flagOn: cancelFlagOn,
+    });
+
     // Platform fee + GST rate are admin-editable settings. In fee-only mode every
     // booking still carries the platform fee even at ₹0 price — but a paid-enabled
     // host (pilot) is in normal paid mode, so the fee follows the real price.
@@ -574,6 +588,7 @@ const createBooking = async (req, res) => {
       vendor_plan_type:      effectivePlanSlug,       // v2.8 snapshot
       coupon_id:             couponId,                // v3.204 coupon redemption record (null if none)
       discount_amount:       discountAmount,          // v3.204 ₹ off the service price
+      cancellation_policy:   cancellationSnapshot,    // v3.206 refund-tier snapshot (fairness anchor)
       reminder_24h_sent: false,
       reminder_1h_sent: false,
       // Branch on the amount actually payable, not the host price: in fee-only
@@ -621,6 +636,7 @@ const createBooking = async (req, res) => {
         commission_taxable: _ctx, tds_amount: _tds, tcs_amount: _tcs,
         google_event_id: _gei, billing_details: _bd, grace_minutes: _gm,
         coupon_id: _cid, discount_amount: _da,   // v3.204 — stripped if the migration hasn't run
+        cancellation_policy: _canp,              // v3.206 — stripped if the migration hasn't run
         ...payloadCore
       } = bookingPayload;
       bookingResult = await supabaseAdmin
