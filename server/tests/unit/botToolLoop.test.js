@@ -18,6 +18,7 @@ jest.mock('../../services/supportActions', () => ({
   latestBooking: jest.fn(),
   runAction: jest.fn(),
   detectAction: jest.fn(),
+  cancelLinkInfo: jest.fn(),
 }));
 
 const client = require('../../services/ai/anthropicClient');
@@ -45,19 +46,20 @@ beforeEach(() => {
   botBudget.tryConsume.mockResolvedValue({ allowed: true, reason: null });
   supportActions.latestBooking.mockReset().mockResolvedValue({ service_title: 'Yoga', scheduled_at: '2026-11-20T09:30:00Z', guest_email: 'g@x.com' });
   supportActions.runAction.mockReset().mockResolvedValue({ ok: true, message: 'Sent — your invoice is on its way to g@x.com.' });
+  supportActions.cancelLinkInfo.mockReset().mockResolvedValue({ ok: true, label: 'Yoga on 20 Nov', email: 'g@x.com', tierText: 'a 50% refund of the service price' });
 });
 
 describe('botTools — specs are scoped to the caller', () => {
-  test('host sees the 5 read tools + 3 write tools', () => {
+  test('host sees the 5 read tools + 4 write tools', () => {
     const names = bt.toolSpecsFor(hostCtx).map((t) => t.name).sort();
     expect(names).toEqual([
       'get_booking_status', 'get_listing_status', 'get_payout_status', 'get_plan_status', 'get_refund_status',
-      'resend_calendar', 'resend_confirmation', 'resend_invoice',
+      'resend_calendar', 'resend_confirmation', 'resend_invoice', 'send_cancel_link',
     ].sort());
   });
   test('guest sees only non-host reads + the writes (writes act on own booking)', () => {
     const names = bt.toolSpecsFor(guestCtx).map((t) => t.name).sort();
-    expect(names).toEqual(['get_booking_status', 'get_refund_status', 'resend_calendar', 'resend_confirmation', 'resend_invoice'].sort());
+    expect(names).toEqual(['get_booking_status', 'get_refund_status', 'resend_calendar', 'resend_confirmation', 'resend_invoice', 'send_cancel_link'].sort());
   });
   test('no ctx never exposes a host-only read tool', () => {
     expect(bt.toolSpecsFor(null).map((t) => t.name)).not.toContain('get_payout_status');
@@ -101,6 +103,31 @@ describe('botTools — write executor is gated', () => {
   });
   test('missing input is treated as not-confirmed (preview, no send)', async () => {
     await bt.runTool('resend_calendar', hostCtx, identity, null);
+    expect(supportActions.runAction).not.toHaveBeenCalled();
+  });
+});
+
+describe('botTools — send_cancel_link (safe split: bot never cancels/refunds)', () => {
+  test('preview discloses the refund tier and sends nothing', async () => {
+    const out = await bt.runTool('send_cancel_link', hostCtx, identity, { confirmed: false });
+    expect(out).toMatch(/50% refund/);
+    expect(out).toMatch(/does NOT cancel/i);
+    expect(supportActions.runAction).not.toHaveBeenCalled();
+    expect(supportActions.cancelLinkInfo).toHaveBeenCalled();
+  });
+  test('preview surfaces a not-cancellable reason', async () => {
+    supportActions.cancelLinkInfo.mockResolvedValueOnce({ ok: false, message: 'That booking is already completed.' });
+    expect(await bt.runTool('send_cancel_link', hostCtx, identity, { confirmed: false })).toBe('That booking is already completed.');
+    expect(supportActions.runAction).not.toHaveBeenCalled();
+  });
+  test('confirmed=true emails the secure link (no cancel performed by the bot)', async () => {
+    supportActions.runAction.mockResolvedValueOnce({ ok: true, message: "Done — I've emailed your secure cancel link to g@x.com." });
+    const out = await bt.runTool('send_cancel_link', hostCtx, identity, { confirmed: true });
+    expect(supportActions.runAction).toHaveBeenCalledWith('send_cancel_link', identity);
+    expect(out).toMatch(/secure cancel link/);
+  });
+  test('no identity refuses', async () => {
+    expect(await bt.runTool('send_cancel_link', hostCtx, null, { confirmed: true })).toBe(bt.NO_IDENTITY);
     expect(supportActions.runAction).not.toHaveBeenCalled();
   });
 });

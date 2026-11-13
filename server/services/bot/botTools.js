@@ -36,6 +36,7 @@ const WRITE_LABEL = {
   resend_confirmation: 'booking confirmation email',
   resend_invoice: 'GST invoice',
   resend_calendar: 'calendar invite',
+  send_cancel_link: 'secure link to cancel your booking',
 };
 
 // The confirmation gate. confirmed!==true → a PREVIEW (nothing sent); confirmed===true →
@@ -43,6 +44,17 @@ const WRITE_LABEL = {
 async function runWrite(key, identity, input) {
   if (!identity || !(identity.userId || identity.guestPhone)) return NO_IDENTITY;
   if (!input || input.confirmed !== true) {
+    // Cancel link carries a refund-tier disclosure in its preview (safe-split: the bot
+    // sends the link, the user cancels on the page — the bot never cancels or refunds).
+    if (key === 'send_cancel_link') {
+      let info = null;
+      try { info = await supportActions.cancelLinkInfo(identity); } catch (_) { /* best-effort */ }
+      if (info && info.ok) {
+        return `[PREVIEW — nothing sent yet] Calling again with confirmed=true will EMAIL the secure link to cancel ${info.label}${info.email ? ` to ${info.email}` : ''} — it does NOT cancel anything; the user cancels on that page. `
+          + `Tell the user that cancelling now would get them ${info.tierText}, and ask them to confirm; only call again with confirmed=true after they clearly say yes.`;
+      }
+      if (info && !info.ok) return info.message;
+    }
     let b = null;
     try { b = await supportActions.latestBooking(identity); } catch (_) { /* preview is best-effort */ }
     const label = b ? `${b.service_title || 'your booking'}${b.scheduled_at ? ` on ${fmtDate(b.scheduled_at)}` : ''}` : 'your most recent booking';
@@ -129,6 +141,14 @@ const TOOLS = {
     spec: {
       name: 'resend_calendar',
       description: "Email an .ics calendar invite for the user's most recent booking. Call confirmed=false first to preview; confirmed=true only after the user agrees.",
+      input_schema: { type: 'object', properties: { confirmed: { type: 'boolean', description: 'true ONLY after the user has explicitly agreed in their latest message' } }, required: ['confirmed'] },
+    },
+  },
+  send_cancel_link: {
+    hostOnly: false, write: true,
+    spec: {
+      name: 'send_cancel_link',
+      description: "Email the user a SECURE one-tap link to cancel their most recent booking THEMSELVES — you do NOT cancel or refund anything; they do it on the page, which shows the exact refund. Use when the user wants to cancel a booking. Call confirmed=false first to preview the refund tier; confirmed=true only after they agree.",
       input_schema: { type: 'object', properties: { confirmed: { type: 'boolean', description: 'true ONLY after the user has explicitly agreed in their latest message' } }, required: ['confirmed'] },
     },
   },
