@@ -54,11 +54,12 @@ import PageGuides from '../../components/common/PageGuides';
 import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
-const INK = '#2B0A14';        // dominant near-black
-const INK_2 = '#34201F';      // raised cards on dark
-const PAPER = '#FBF5F3';      // light text on dark + light section bg
-const GREEN = '#25D366';      // decorative / text on dark only (AA on INK)
-const GREEN_INK = '#1F7A4D';  // green for text on light (AA on white + PAPER)
+const INK = '#241B33';        // Gajju deep purple-tinted dark — dominant background
+const INK_2 = '#2F2442';      // raised cards on dark
+const PAPER = '#F6E3C6';      // Gajju cream — light text on dark + light section bg
+const PURPLE = '#8E5BC7';     // Gajju primary purple — solid fills (buttons, selected) + accent on light
+const GREEN = '#B794DB';      // light purple — accent text / icons on the dark sections
+const GREEN_INK = '#8E5BC7';  // Gajju purple — accent text on the light sections
 const CHAT_BG = '#0B141A';    // phone mock: chat wallpaper
 const CHAT_BUBBLE = '#1F2C33'; // phone mock: header + bubbles
 const CHAT_TEXT = '#E9EDEF';  // phone mock: text
@@ -159,13 +160,6 @@ const FAQ = [
   { q: 'Can a client stop the WhatsApp messages?', a: 'Yes. Replying STOP turns off WhatsApp messages for that number. One-time booking codes still arrive so they can keep booking.' },
 ];
 
-const RELATED = [
-  { to: '/features/online-scheduling', label: 'Online scheduling' },
-  { to: '/features/google-calendar', label: 'Google Calendar' },
-  { to: '/features/client-management', label: 'Client management' },
-  { to: '/features/reviews', label: 'Reviews' },
-];
-
 /* ─────────────────────────────  PIECES  ────────────────────────────── */
 
 function PrimaryCta({ to = START, children, onDark = true }) {
@@ -173,7 +167,7 @@ function PrimaryCta({ to = START, children, onDark = true }) {
     <Link
       to={to}
       className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-opacity hover:no-underline hover:opacity-90"
-      style={onDark ? { background: GREEN, color: INK } : { background: INK, color: PAPER }}
+      style={onDark ? { background: PURPLE, color: '#FFFFFF' } : { background: INK, color: PAPER }}
     >
       {children}
     </Link>
@@ -182,7 +176,7 @@ function PrimaryCta({ to = START, children, onDark = true }) {
 
 function ProTag({ className = '' }) {
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full border border-white/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#FBF5F3]/70 ${className}`}>
+    <span className={`inline-flex items-center gap-1 rounded-full border border-white/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#F6E3C6]/70 ${className}`}>
       <Lock size={9} aria-hidden /> {PREMIUM_PLAN.name}
     </span>
   );
@@ -209,7 +203,7 @@ function ReminderPhone() {
     <div className="mx-auto w-full max-w-[30rem]">
       <div className="overflow-hidden rounded-[16px] border border-white/10 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.7)]" style={{ background: CHAT_BG }}>
         <div className="flex items-center gap-3 px-4 py-3" style={{ background: CHAT_BUBBLE }}>
-          <span className="flex h-8 w-8 items-center justify-center rounded-full font-heading text-xs font-extrabold" style={{ background: GREEN, color: INK }}>BS</span>
+          <span className="flex h-8 w-8 items-center justify-center rounded-full font-heading text-xs font-extrabold" style={{ background: PURPLE, color: '#FFFFFF' }}>BS</span>
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold text-[#E9EDEF]">Meeticulous</div>
             <div className="text-[11px] text-[#E9EDEF]/55">Business account</div>
@@ -236,19 +230,19 @@ function ReminderPhone() {
             type="button"
             aria-pressed={step === i}
             onClick={() => { setStep(i); setPaused(true); }}
-            className={`flex flex-col items-start gap-1 rounded-[6px] border px-3 py-2 text-left text-xs font-semibold transition-colors ${step === i ? 'border-transparent' : 'border-white/10 text-[#FBF5F3]/70 hover:border-white/25 hover:text-[#FBF5F3]'}`}
-            style={step === i ? { background: GREEN, color: INK } : undefined}
+            className={`flex flex-col items-start gap-1 rounded-[6px] border px-3 py-2 text-left text-xs font-semibold transition-colors ${step === i ? 'border-transparent' : 'border-white/10 text-[#F6E3C6]/70 hover:border-white/25 hover:text-[#F6E3C6]'}`}
+            style={step === i ? { background: PURPLE, color: '#FFFFFF' } : undefined}
           >
             {m.marker}
             {m.active && (
-              <span className={`text-[10px] font-bold uppercase tracking-[0.06em] ${step === i ? 'text-[#2B0A14]/70' : 'text-[#FBF5F3]/50'}`}>
+              <span className={`text-[10px] font-bold uppercase tracking-[0.06em] ${step === i ? 'text-white/70' : 'text-[#F6E3C6]/50'}`}>
                 {PREMIUM_PLAN.name} only
               </span>
             )}
           </button>
         ))}
       </div>
-      <p className="mt-3 text-center text-[11px] text-[#FBF5F3]/45">Illustration of the messages a client receives. Real wording may differ.</p>
+      <p className="mt-3 text-center text-[11px] text-[#F6E3C6]/45">Illustration of the messages a client receives. Real wording may differ.</p>
     </div>
   );
 }
@@ -257,12 +251,12 @@ function Cell({ v }) {
   if (v === 'note') {
     return (
       <span className="flex items-start gap-1.5">
-        <Check size={16} className="mt-0.5 shrink-0 text-[#1F7A4D]" aria-hidden />
+        <Check size={16} className="mt-0.5 shrink-0 text-[#8E5BC7]" aria-hidden />
         <span className="text-[12px] leading-snug text-neutral-500">{FREE_PLAN.name}: first 2 months, then email</span>
       </span>
     );
   }
-  return <Check size={17} className="text-[#1F7A4D]" aria-label="Yes" />;
+  return <Check size={17} className="text-[#8E5BC7]" aria-label="Yes" />;
 }
 
 /* The difference — flip the plan, watch which messages fire. */
@@ -278,8 +272,8 @@ function PlanToggle() {
             type="button"
             aria-pressed={plan === p.k}
             onClick={() => setPlan(p.k)}
-            className={`flex-1 rounded-[5px] px-4 py-2.5 text-sm font-semibold transition-colors ${plan === p.k ? '' : 'text-[#FBF5F3]/65 hover:text-[#FBF5F3]'}`}
-            style={plan === p.k ? { background: GREEN, color: INK } : undefined}
+            className={`flex-1 rounded-[5px] px-4 py-2.5 text-sm font-semibold transition-colors ${plan === p.k ? '' : 'text-[#F6E3C6]/65 hover:text-[#F6E3C6]'}`}
+            style={plan === p.k ? { background: PURPLE, color: '#FFFFFF' } : undefined}
           >
             {p.name}
           </button>
@@ -295,15 +289,15 @@ function PlanToggle() {
               key={f.k}
               data-testid={`flow-${f.k}`}
               data-on={on ? 'true' : 'false'}
-              className={`grid grid-cols-[2.5rem_1fr_auto] items-center gap-4 rounded-[6px] border px-4 py-4 transition-colors sm:px-5 ${on ? 'border-white/15 bg-[#34201F]' : 'border-white/5 bg-transparent'}`}
+              className={`grid grid-cols-[2.5rem_1fr_auto] items-center gap-4 rounded-[6px] border px-4 py-4 transition-colors sm:px-5 ${on ? 'border-white/15 bg-[#2F2442]' : 'border-white/5 bg-transparent'}`}
             >
-              <span className="font-heading text-sm font-extrabold tabular-nums" style={{ color: on ? GREEN : 'rgba(242,245,243,0.25)' }}>{String(i + 1).padStart(2, '0')}</span>
+              <span className="font-heading text-sm font-extrabold tabular-nums" style={{ color: on ? GREEN : 'rgba(246,227,198,0.3)' }}>{String(i + 1).padStart(2, '0')}</span>
               <div className="min-w-0">
-                <div className={`font-heading text-[15px] font-bold ${on ? 'text-[#FBF5F3]' : 'text-[#FBF5F3]/35'}`}>{f.label}</div>
-                <div className={`mt-0.5 text-xs ${on ? 'text-[#FBF5F3]/60' : 'text-[#FBF5F3]/30'}`}>{f.when}{note ? `. ${note}` : ''}</div>
+                <div className={`font-heading text-[15px] font-bold ${on ? 'text-[#F6E3C6]' : 'text-[#F6E3C6]/35'}`}>{f.label}</div>
+                <div className={`mt-0.5 text-xs ${on ? 'text-[#F6E3C6]/60' : 'text-[#F6E3C6]/30'}`}>{f.when}{note ? `. ${note}` : ''}</div>
               </div>
               {on ? (
-                <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold" style={{ background: 'rgba(37,211,102,0.14)', color: GREEN }}>
+                <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold" style={{ background: 'rgba(142,91,199,0.14)', color: GREEN }}>
                   <Check size={12} aria-hidden /> Fires
                 </span>
               ) : (
@@ -313,7 +307,7 @@ function PlanToggle() {
           );
         })}
       </ol>
-      <p className="mx-auto mt-8 max-w-2xl text-center text-sm leading-relaxed text-[#FBF5F3]/65">
+      <p className="mx-auto mt-8 max-w-2xl text-center text-sm leading-relaxed text-[#F6E3C6]/65">
         {PREMIUM_PLAN.name} is ₹{PREMIUM_PLAN.monthly} a month or ₹{PREMIUM_PLAN.yearly.toLocaleString('en-IN')} a year, GST included, with 0% commission on your bookings.
         {' '}<Link to="/pricing" className="font-semibold underline decoration-white/30 underline-offset-4 hover:decoration-white" style={{ color: GREEN }}>Compare plans</Link>
       </p>
@@ -345,7 +339,7 @@ export default function NotificationsFeature() {
   });
 
   return (
-    <main className="feature-page-dark overflow-x-clip bg-[#2B0A14] text-[#FBF5F3]">
+    <main className="feature-page-dark overflow-x-clip bg-[#241B33] text-[#F6E3C6]">
       <Seo
         title={seo.title}
         description={seo.description}
@@ -362,31 +356,31 @@ export default function NotificationsFeature() {
 
       {/* ═══════════════ 1 · HERO (bold display + phone chat demo) ═══════════════ */}
       <section className="relative overflow-hidden px-5 pb-20 pt-8 sm:px-8 lg:pb-28 lg:pt-6 lg:flex lg:min-h-[calc(100svh-57px)] lg:flex-col lg:justify-center">
-        <div aria-hidden className="pointer-events-none absolute -left-40 top-10 h-[28rem] w-[28rem] rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(37,211,102,0.12), transparent)' }} />
+        <div aria-hidden className="pointer-events-none absolute -left-40 top-10 h-[28rem] w-[28rem] rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(142,91,199,0.12), transparent)' }} />
         <div className="relative mx-auto grid w-full max-w-6xl items-start gap-10 lg:items-center lg:gap-14 lg:grid-cols-[1fr_1fr]">
           <div>
-            <nav aria-label="Breadcrumb" className="text-xs text-[#FBF5F3]/55">
-              <Link to="/" className="text-[#FBF5F3]/55 hover:text-[#FBF5F3] hover:no-underline">Home</Link>
+            <nav aria-label="Breadcrumb" className="text-xs text-[#F6E3C6]/55">
+              <Link to="/" className="text-[#F6E3C6]/55 hover:text-[#F6E3C6] hover:no-underline">Home</Link>
               <span aria-hidden className="mx-2">/</span>
               <span>Features</span>
               <span aria-hidden className="mx-2">/</span>
-              <span aria-current="page" className="text-[#FBF5F3]/85">Notifications</span>
+              <span aria-current="page" className="text-[#F6E3C6]/85">Notifications</span>
             </nav>
-            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.1rem,3.7vw,3.2rem)] font-extrabold uppercase leading-[0.95] tracking-[-0.03em] text-[#FBF5F3]">
+            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.1rem,3.7vw,3.2rem)] font-extrabold uppercase leading-[0.95] tracking-[-0.03em] text-[#F6E3C6]">
               The appointment reminder system that <span style={{ color: GREEN }}>texts clients for you.</span>
             </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-[#FBF5F3]/75 lg:text-[17px]">
+            <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-[#F6E3C6]/75 lg:text-[17px]">
               Automated WhatsApp and email reminders for coaches, therapists, tutors and consultants in India. Every booking is confirmed, reminded and followed up without you typing a word.
             </Reveal>
             <Reveal instant delay={0.1} className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
               <PrimaryCta>Start free <ArrowRight size={16} /></PrimaryCta>
-              <a href="#plans" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#FBF5F3] hover:no-underline hover:opacity-80">
+              <a href="#plans" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F6E3C6] hover:no-underline hover:opacity-80">
                 See what fires on each plan <ArrowRight size={15} />
               </a>
             </Reveal>
             <Reveal instant delay={0.14} className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
               {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] text-[#FBF5F3]/65">
+                <span key={t} className="flex items-center gap-1.5 text-[13px] text-[#F6E3C6]/65">
                   <Check size={14} style={{ color: GREEN }} aria-hidden /> {t}
                 </span>
               ))}
@@ -402,11 +396,11 @@ export default function NotificationsFeature() {
       <section className="px-5 pb-20 sm:px-8 lg:pb-28">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {PROOF.map((p, i) => (
-            <Reveal key={p.n} delay={i * 0.05} className="flex min-h-[11rem] flex-col justify-between sm:aspect-square rounded-[24px] border border-white/10 bg-[#34201F] p-4 sm:p-6">
+            <Reveal key={p.n} delay={i * 0.05} className="flex min-h-[11rem] flex-col justify-between sm:aspect-square rounded-[24px] border border-white/10 bg-[#2F2442] p-4 sm:p-6">
               <span className="font-heading text-4xl font-extrabold tabular-nums sm:text-6xl" style={{ color: GREEN }}>{p.n}</span>
               <div>
-                <div className="font-heading text-lg font-extrabold leading-tight text-[#FBF5F3] sm:text-2xl">{p.big}</div>
-                <p className="mt-1.5 text-xs leading-snug text-[#FBF5F3]/60 sm:text-sm">{p.small}</p>
+                <div className="font-heading text-lg font-extrabold leading-tight text-[#F6E3C6] sm:text-2xl">{p.big}</div>
+                <p className="mt-1.5 text-xs leading-snug text-[#F6E3C6]/60 sm:text-sm">{p.small}</p>
               </div>
             </Reveal>
           ))}
@@ -414,9 +408,9 @@ export default function NotificationsFeature() {
       </section>
 
       {/* ═══════════════ 3 · WITHOUT vs WITH (light: hand-typed bubbles vs automated log) ═══════════════ */}
-      <section className="bg-[#FBF5F3] px-5 py-20 text-[#2B0A14] sm:px-8 lg:py-28">
+      <section className="bg-[#F6E3C6] px-5 py-20 text-[#241B33] sm:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#2B0A14] sm:text-5xl">
+          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#241B33] sm:text-5xl">
             Stop texting every client <span style={{ color: GREEN_INK }}>by hand.</span>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed text-neutral-600">
@@ -438,19 +432,19 @@ export default function NotificationsFeature() {
               </p>
             </Reveal>
 
-            <Reveal delay={0.06} className="rounded-[24px] bg-[#2B0A14] p-6 text-[#FBF5F3] sm:p-8">
+            <Reveal delay={0.06} className="rounded-[24px] bg-[#241B33] p-6 text-[#F6E3C6] sm:p-8">
               <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: GREEN }}>
                 <Check size={14} aria-hidden /> Meeticulous, automatically
               </div>
               <ul className="mt-6 space-y-3">
                 {AUTOMATED.map((a) => (
                   <li key={a.t} className="flex items-center gap-3.5 rounded-[16px] border border-white/10 px-4 py-3.5">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[16px]" style={{ background: 'rgba(37,211,102,0.14)', color: GREEN }}><a.icon size={17} aria-hidden /></span>
-                    <span className="text-sm font-medium text-[#FBF5F3]">{a.t}</span>
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[16px]" style={{ background: 'rgba(142,91,199,0.14)', color: GREEN }}><a.icon size={17} aria-hidden /></span>
+                    <span className="text-sm font-medium text-[#F6E3C6]">{a.t}</span>
                   </li>
                 ))}
               </ul>
-              <p className="mt-6 border-t border-white/10 pt-5 text-sm leading-relaxed text-[#FBF5F3]/65">
+              <p className="mt-6 border-t border-white/10 pt-5 text-sm leading-relaxed text-[#F6E3C6]/65">
                 You set up your booking page once. Every message after that sends itself.
               </p>
             </Reveal>
@@ -461,16 +455,16 @@ export default function NotificationsFeature() {
       {/* ═══════════════ 4 · HOW IT WORKS (dark numbered cards) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#FBF5F3] sm:text-5xl lg:whitespace-nowrap">
+          <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#F6E3C6] sm:text-5xl lg:whitespace-nowrap">
             One booking. <span style={{ color: GREEN }}>Every message after it.</span>
           </Reveal>
           <ol className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((s, i) => (
-              <Reveal as="li" key={s.title} delay={i * 0.05} className="flex flex-col rounded-[24px] border border-white/10 bg-[#34201F] p-6 sm:p-7">
-                <span className="font-heading text-6xl font-extrabold leading-none tabular-nums text-[#FBF5F3]/10">{String(i + 1).padStart(2, '0')}</span>
+              <Reveal as="li" key={s.title} delay={i * 0.05} className="flex flex-col rounded-[24px] border border-white/10 bg-[#2F2442] p-6 sm:p-7">
+                <span className="font-heading text-6xl font-extrabold leading-none tabular-nums text-[#F6E3C6]/10">{String(i + 1).padStart(2, '0')}</span>
                 <span className="mt-5 h-1 w-10 rounded-full" style={{ background: GREEN }} aria-hidden />
-                <h3 className="mt-5 font-heading text-xl font-bold text-[#FBF5F3]">{s.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-[#FBF5F3]/65">{s.desc}</p>
+                <h3 className="mt-5 font-heading text-xl font-bold text-[#F6E3C6]">{s.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-[#F6E3C6]/65">{s.desc}</p>
               </Reveal>
             ))}
           </ol>
@@ -487,9 +481,9 @@ export default function NotificationsFeature() {
       </section>
 
       {/* ═══════════════ 5 · CAPABILITIES (light: channel × event matrix) ═══════════════ */}
-      <section className="bg-[#FBF5F3] px-5 py-20 text-[#2B0A14] sm:px-8 lg:py-28">
+      <section className="bg-[#F6E3C6] px-5 py-20 text-[#241B33] sm:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#2B0A14] sm:text-5xl">
+          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#241B33] sm:text-5xl">
             Every event, <span style={{ color: GREEN_INK }}>every channel.</span>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed text-neutral-600">
@@ -513,7 +507,7 @@ export default function NotificationsFeature() {
                   <tr key={r.event} className="border-b border-black/5 last:border-b-0">
                     <th scope="row" className="px-5 py-4 font-heading font-bold">
                       <span className="flex items-center gap-3">
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[16px] bg-[#2B0A14] text-[#25D366]"><r.icon size={15} aria-hidden /></span>
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[16px] bg-[#241B33] text-[#B794DB]"><r.icon size={15} aria-hidden /></span>
                         {r.event}
                       </span>
                     </th>
@@ -521,7 +515,7 @@ export default function NotificationsFeature() {
                     <td className="px-4 py-4"><Cell v={r.email} /></td>
                     <td className="px-4 py-4 text-neutral-600">{r.who}</td>
                     <td className="px-5 py-4">
-                      <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-bold ${r.plan === BOTH ? 'bg-[#1F7A4D]/10 text-[#1F7A4D]' : 'bg-[#2B0A14] text-[#FBF5F3]'}`}>{r.plan}</span>
+                      <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-bold ${r.plan === BOTH ? 'bg-[#8E5BC7]/10 text-[#8E5BC7]' : 'bg-[#241B33] text-[#F6E3C6]'}`}>{r.plan}</span>
                     </td>
                   </tr>
                 ))}
@@ -535,8 +529,8 @@ export default function NotificationsFeature() {
           <div className="mt-12 grid gap-5 sm:gap-6 md:grid-cols-3">
             {EXTRAS.map((c, i) => (
               <Reveal key={c.title} delay={i * 0.05} className="rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-                <span className="flex h-10 w-10 items-center justify-center rounded-[16px] bg-[#2B0A14] text-[#25D366]"><c.icon size={18} aria-hidden /></span>
-                <h3 className="mt-4 font-heading text-lg font-bold text-[#2B0A14]">{c.title}</h3>
+                <span className="flex h-10 w-10 items-center justify-center rounded-[16px] bg-[#241B33] text-[#B794DB]"><c.icon size={18} aria-hidden /></span>
+                <h3 className="mt-4 font-heading text-lg font-bold text-[#241B33]">{c.title}</h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-neutral-600">{c.body}</p>
               </Reveal>
             ))}
@@ -548,10 +542,10 @@ export default function NotificationsFeature() {
       <section id="plans" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-3xl">
           <div className="text-center">
-            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#FBF5F3] sm:text-5xl">
+            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#F6E3C6] sm:text-5xl">
               Flip the plan. <span style={{ color: GREEN }}>See what fires.</span>
             </Reveal>
-            <Reveal as="p" delay={0.05} className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-[#FBF5F3]/70">
+            <Reveal as="p" delay={0.05} className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-[#F6E3C6]/70">
               {FREE_PLAN.name} covers the essentials for free. {PREMIUM_PLAN.name} adds the last-call reminder, reschedule alerts and rebook nudges.
             </Reveal>
           </div>
@@ -561,17 +555,17 @@ export default function NotificationsFeature() {
 
       {/* ═══════════════ 7 · TESTIMONIALS (one big quote + two side quotes) ═══════════════ */}
       {QUOTES.length > 0 && (
-        <section className="border-t border-white/10 bg-[#34201F] px-5 py-20 sm:px-8 lg:py-28">
+        <section className="border-t border-white/10 bg-[#2F2442] px-5 py-20 sm:px-8 lg:py-28">
           <div className="mx-auto max-w-6xl">
             <Reveal as="figure" className="max-w-4xl">
-              <blockquote className="font-heading text-[clamp(1.9rem,4.4vw,3.4rem)] font-extrabold leading-[1.1] tracking-tight text-[#FBF5F3]">
+              <blockquote className="font-heading text-[clamp(1.9rem,4.4vw,3.4rem)] font-extrabold leading-[1.1] tracking-tight text-[#F6E3C6]">
                 <span style={{ color: GREEN }}>&ldquo;</span>{QUOTES[0].quote}<span style={{ color: GREEN }}>&rdquo;</span>
               </blockquote>
               <figcaption className="mt-8 flex items-center gap-4">
                 <img src={QUOTES[0].avatar} alt="" loading="lazy" className="h-12 w-12 rounded-full object-cover" />
                 <div>
-                  <div className="font-semibold text-[#FBF5F3]">{QUOTES[0].name}</div>
-                  <div className="text-sm text-[#FBF5F3]/55">{QUOTES[0].role}</div>
+                  <div className="font-semibold text-[#F6E3C6]">{QUOTES[0].name}</div>
+                  <div className="text-sm text-[#F6E3C6]/55">{QUOTES[0].role}</div>
                 </div>
               </figcaption>
             </Reveal>
@@ -579,12 +573,12 @@ export default function NotificationsFeature() {
               <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-2">
                 {QUOTES.slice(1).map((t, i) => (
                   <Reveal as="figure" key={t.name} delay={i * 0.05} className="rounded-[24px] border border-white/10 p-6 sm:p-7">
-                    <blockquote className="text-[15px] leading-relaxed text-[#FBF5F3]/85">&ldquo;{t.quote}&rdquo;</blockquote>
+                    <blockquote className="text-[15px] leading-relaxed text-[#F6E3C6]/85">&ldquo;{t.quote}&rdquo;</blockquote>
                     <figcaption className="mt-5 flex items-center gap-3">
                       <img src={t.avatar} alt="" loading="lazy" className="h-9 w-9 rounded-full object-cover" />
                       <div className="text-sm">
-                        <div className="font-semibold text-[#FBF5F3]">{t.name}</div>
-                        <div className="text-[#FBF5F3]/55">{t.role}</div>
+                        <div className="font-semibold text-[#F6E3C6]">{t.name}</div>
+                        <div className="text-[#F6E3C6]/55">{t.role}</div>
                       </div>
                     </figcaption>
                   </Reveal>
@@ -601,20 +595,20 @@ export default function NotificationsFeature() {
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
         <FeatureFaq
           heading={(
-            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#FBF5F3] sm:text-5xl">
+            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#F6E3C6] sm:text-5xl">
               Reminder questions, <span style={{ color: GREEN }}>answered.</span>
             </Reveal>
           )}
           items={FAQ}
-          itemClassName="rounded-[16px] border border-white/10 bg-[#34201F]"
+          itemClassName="rounded-[16px] border border-white/10 bg-[#2F2442]"
           openItemClassName="border-white/20"
           summaryClassName="flex items-start gap-4 px-5 py-5"
-          answerClassName="px-5 pb-6 pl-16 text-[15px] leading-relaxed text-[#FBF5F3]/70"
+          answerClassName="px-5 pb-6 pl-16 text-[15px] leading-relaxed text-[#F6E3C6]/70"
           renderSummary={(f, i, open) => (
             <>
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[16px] font-heading text-[11px] font-extrabold tabular-nums" style={{ background: 'rgba(37,211,102,0.14)', color: GREEN }}>{String(i + 1).padStart(2, '0')}</span>
-              <span className="flex-1 pt-0.5 font-heading text-[16px] font-bold text-[#FBF5F3]">{f.q}</span>
-              <span aria-hidden className={`pt-0.5 text-xl leading-none text-[#FBF5F3]/50 transition-transform ${open ? 'rotate-45' : ''}`}>+</span>
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[16px] font-heading text-[11px] font-extrabold tabular-nums" style={{ background: 'rgba(142,91,199,0.14)', color: GREEN }}>{String(i + 1).padStart(2, '0')}</span>
+              <span className="flex-1 pt-0.5 font-heading text-[16px] font-bold text-[#F6E3C6]">{f.q}</span>
+              <span aria-hidden className={`pt-0.5 text-xl leading-none text-[#F6E3C6]/50 transition-transform ${open ? 'rotate-45' : ''}`}>+</span>
             </>
           )}
         />
@@ -623,24 +617,12 @@ export default function NotificationsFeature() {
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
       <section className="border-t border-white/10 px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-5xl text-center">
-          <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.4rem)] font-extrabold uppercase leading-[0.95] tracking-[-0.03em] text-[#FBF5F3]">
+          <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.4rem)] font-extrabold uppercase leading-[0.95] tracking-[-0.03em] text-[#F6E3C6]">
             Let the reminders <span style={{ color: GREEN }}>chase them.</span>
           </Reveal>
-          <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-[#FBF5F3]/70">
+          <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-[#F6E3C6]/70">
             Set up your booking page free. Confirmations and reminders start with your first booking.
           </Reveal>
-          <Reveal delay={0.1} className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
-            <PrimaryCta>Start free <ArrowRight size={16} /></PrimaryCta>
-            <Link to="/pricing" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#FBF5F3] hover:no-underline hover:opacity-80">
-              See pricing <ArrowRight size={15} />
-            </Link>
-          </Reveal>
-          <nav aria-label="Related features" className="mt-14 flex flex-wrap justify-center gap-x-6 gap-y-2 border-t border-white/10 pt-8 text-sm text-[#FBF5F3]/55">
-            <span className="flex items-center gap-1.5"><BellRing size={14} aria-hidden /> Works with</span>
-            {RELATED.map((r) => (
-              <Link key={r.to} to={r.to} className="text-[#FBF5F3]/80 underline decoration-white/20 underline-offset-4 hover:text-[#FBF5F3] hover:decoration-white">{r.label}</Link>
-            ))}
-          </nav>
         </div>
       </section>
     </main>

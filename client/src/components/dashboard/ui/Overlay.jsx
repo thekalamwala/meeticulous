@@ -28,14 +28,20 @@ function useEscape(open, onClose) {
 
 const MODAL_SIZES = { sm: 'max-w-sm', md: 'max-w-lg', lg: 'max-w-2xl', xl: 'max-w-4xl' };
 
-export function Modal({ open, onClose, title, children, footer, size = 'md', className = '' }) {
+// Right-side drawer widths (used when `drawer` is set).
+const DRAWER_SIZES = { sm: 'sm:max-w-sm', md: 'sm:max-w-md', lg: 'sm:max-w-lg', xl: 'sm:max-w-xl' };
+
+export function Modal({ open, onClose, title, children, footer, size = 'md', className = '', drawer = false }) {
   useLockBody(open);
   useEscape(open, onClose);
   return createPortal(
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[100] flex items-end justify-center p-0 sm:items-center sm:p-4"
+          className={cn(
+            'fixed inset-0 z-[100] flex',
+            drawer ? 'justify-end' : 'items-end justify-center p-0 sm:items-center sm:p-4',
+          )}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -44,16 +50,22 @@ export function Modal({ open, onClose, title, children, footer, size = 'md', cla
           <motion.div
             role="dialog"
             aria-modal="true"
-            initial={{ y: 24, opacity: 0, scale: 0.98 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 24, opacity: 0, scale: 0.98 }}
+            initial={drawer ? { x: '100%' } : { y: 24, opacity: 0, scale: 0.98 }}
+            animate={drawer ? { x: 0 } : { y: 0, opacity: 1, scale: 1 }}
+            exit={drawer ? { x: '100%' } : { y: 24, opacity: 0, scale: 0.98 }}
             transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-            className={cn('relative w-full rounded-t-xl bg-white dash-elev-3 sm:rounded-xl', MODAL_SIZES[size], className)}
+            className={cn(
+              'relative bg-white dash-elev-3',
+              drawer
+                ? cn('flex h-full w-full flex-col rounded-l-2xl', DRAWER_SIZES[size] || DRAWER_SIZES.lg)
+                : cn('w-full rounded-t-xl sm:rounded-xl', MODAL_SIZES[size]),
+              className,
+            )}
           >
-            {/* Mobile grabber — signals a draggable native sheet. */}
-            <div className="mx-auto mt-2.5 h-1 w-10 rounded-full bg-gray-300 sm:hidden" aria-hidden="true" />
+            {/* Mobile grabber — signals a draggable native sheet (centered modal only). */}
+            {!drawer && <div className="mx-auto mt-2.5 h-1 w-10 rounded-full bg-gray-300 sm:hidden" aria-hidden="true" />}
             {(title || onClose) && (
-              <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+              <div className="flex shrink-0 items-center justify-between border-b border-gray-100 px-5 py-4">
                 <h3 className="text-base font-semibold text-gray-900">{title}</h3>
                 {onClose && (
                   <button
@@ -67,8 +79,8 @@ export function Modal({ open, onClose, title, children, footer, size = 'md', cla
                 )}
               </div>
             )}
-            <div className="max-h-[70vh] overflow-y-auto px-5 py-4">{children}</div>
-            {footer && <div className="flex justify-end gap-2 border-t border-gray-100 px-5 py-3">{footer}</div>}
+            <div className={cn('overflow-y-auto px-5 py-4', drawer ? 'flex-1' : 'max-h-[70vh]')}>{children}</div>
+            {footer && <div className="flex shrink-0 justify-end gap-2 border-t border-gray-100 px-5 py-3">{footer}</div>}
           </motion.div>
         </motion.div>
       )}
