@@ -73,6 +73,9 @@ const REGISTRY = [
   // registry upsert creates it OFF even before the migration runs). Tithi's agentic
   // account tool-loop on the authenticated support thread (read-only status lookups).
   { key: 'bot_tool_loop',        label: 'Bot Account Tool-Loop', category: 'Support',  scope: 'both',     enabled: false, description: "Tithi uses a model tool-loop to answer a signed-in user's own account questions (booking/refund/listing/payout/plan status) from live state, instead of the regex ladder. Off = the existing regex contextAnswer path is used. Read-only." },
+  // Opt-in (ships OFF — seeded disabled in v3.208, enabled:false here so the registry
+  // upsert creates it OFF before the migration). Tithi's proactive in-app nudges.
+  { key: 'tithi_proactive',      label: 'Tithi Proactive Nudges', category: 'Support', scope: 'vendor',  enabled: false, description: "Tithi proactively drops IN-APP nudges in a host's notification bell when a blocker is resolvable (verification stuck, no live service, earnings waiting, plan expiring). Off = no proactive nudges fire. In-app only, deduped per host per blocker." },
   { key: 'razorpay_payment',     label: 'Razorpay Payment',     category: 'Payments', scope: 'customer', description: 'Paid checkout via Razorpay. Off = paid bookings/purchases blocked.' },
   { key: 'product_purchase',     label: 'Product Purchase',     category: 'Payments', scope: 'customer', description: 'Buy digital products. Off = product checkout blocked.' },
   // Opt-in (ships OFF — seeded disabled in v3.203, and `enabled: false` here so the

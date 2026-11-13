@@ -388,6 +388,21 @@ scheduleCron(async () => {
   } catch (err) { console.error('Dormant nudges cron error:', err.message); }
 }, 24 * 60 * 60 * 1000);
 
+// Tithi proactive IN-APP nudges (Slice 5) — a host's notification bell gets a Tithi-voiced
+// nudge for a resolvable blocker (verification stuck, no live service, earnings waiting,
+// plan expiring). Flag `tithi_proactive` (default OFF) gates the whole job; in-app only,
+// per-host-per-blocker dedupe, quiet-hours 09–20 IST inside. Complements (does not replace)
+// the email/WhatsApp activation nudges above.
+const { runProactiveNudges } = require('./services/bot/tithiProactive');
+scheduleCron(async () => {
+  try {
+    await runLocked('tithi-proactive', async () => {
+      const r = await runProactiveNudges();
+      if (r.nudged) console.log(`Tithi proactive nudges: ${r.nudged} nudged`);
+    }, { leaseMs: 6 * 60 * 60 * 1000 });
+  } catch (err) { console.error('Tithi proactive cron error:', err.message); }
+}, 6 * 60 * 60 * 1000);
+
 // Guest review nudges (48h after completed paid booking, no review yet).
 // Hourly cron so the 48h cut is tight. Double-gated: feature flag `review_nudges`
 // (default OFF) + per-event is_active/email_enabled (ON in v3.194). Dedupe per
