@@ -403,6 +403,19 @@ scheduleCron(async () => {
   } catch (err) { console.error('Tithi proactive cron error:', err.message); }
 }, 6 * 60 * 60 * 1000);
 
+// Tithi gap digest (Slice 8) — weekly: cluster the week's unanswered questions into themes,
+// draft a help-doc stub for the top one, email the team. Flag `bot_gap_digest` (default OFF)
+// gates it. Closes the learning loop: the KB's gaps become the KB's next entries.
+const { runGapDigest } = require('./services/bot/gapDigest');
+scheduleCron(async () => {
+  try {
+    await runLocked('tithi-gap-digest', async () => {
+      const r = await runGapDigest();
+      if (r.themes) console.log(`Tithi gap digest: ${r.themes} themes from ${r.gaps} misses`);
+    }, { leaseMs: 60 * 60 * 1000 });
+  } catch (err) { console.error('Tithi gap digest cron error:', err.message); }
+}, 7 * 24 * 60 * 60 * 1000);
+
 // Guest review nudges (48h after completed paid booking, no review yet).
 // Hourly cron so the 48h cut is tight. Double-gated: feature flag `review_nudges`
 // (default OFF) + per-event is_active/email_enabled (ON in v3.194). Dedupe per

@@ -76,6 +76,12 @@ const REGISTRY = [
   // Opt-in (ships OFF — seeded disabled in v3.208, enabled:false here so the registry
   // upsert creates it OFF before the migration). Tithi's proactive in-app nudges.
   { key: 'tithi_proactive',      label: 'Tithi Proactive Nudges', category: 'Support', scope: 'vendor',  enabled: false, description: "Tithi proactively drops IN-APP nudges in a host's notification bell when a blocker is resolvable (verification stuck, no live service, earnings waiting, plan expiring). Off = no proactive nudges fire. In-app only, deduped per host per blocker." },
+  // Opt-in (ships OFF — seeded disabled in v3.209, enabled:false here). Institutional memory.
+  { key: 'bot_institutional_memory', label: 'Bot Institutional Memory', category: 'Support', scope: 'both', enabled: false, description: "At retrieval time Tithi also recalls the team's prior ANSWERED community questions that match, and feeds the best answer in as an extra source, so she reuses real past answers instead of only the help docs. Off = docs-only retrieval. Read-only." },
+  // Opt-in (ships OFF — seeded disabled in v3.210, enabled:false here). Per-person memory.
+  { key: 'bot_person_memory',    label: 'Bot Per-Person Memory', category: 'Support', scope: 'both', enabled: false, description: "On an authenticated support thread, Tithi gets a compact 'what you already know about this person' line (tenure + prior support topics, already in context) for continuity across sessions. Off = each thread is answered cold. Read-only." },
+  // Opt-in (ships OFF — seeded disabled in v3.211, enabled:false here). Weekly learning loop.
+  { key: 'bot_gap_digest',       label: 'Bot Gap Digest', category: 'Support', scope: 'both', enabled: false, description: "Weekly: cluster the week's unanswered support questions (knowledge_gaps) into themes, draft a help-doc stub for the top one, and email the team — so the KB's gaps become its next entries. Off = no digest. Email only." },
   { key: 'razorpay_payment',     label: 'Razorpay Payment',     category: 'Payments', scope: 'customer', description: 'Paid checkout via Razorpay. Off = paid bookings/purchases blocked.' },
   { key: 'product_purchase',     label: 'Product Purchase',     category: 'Payments', scope: 'customer', description: 'Buy digital products. Off = product checkout blocked.' },
   // Opt-in (ships OFF — seeded disabled in v3.203, and `enabled: false` here so the

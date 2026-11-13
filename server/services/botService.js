@@ -22,8 +22,9 @@ const abuseGuard = require('./bot/abuseGuard'); // pre-ladder abuse/roast gate (
 const pills = require('./bot/pills'); // context quick-reply pills (flag-gated)
 const { classify: classifyIntent } = require('./bot/intent'); // zero-cost pre-retrieval intent (flag-gated)
 const intentHandlers = require('./bot/intentHandlers'); // deterministic per-topic answers + cards
-const { contextAnswer, contextNote, DISPUTE_RE } = require('./bot/contextAnswer'); // data-aware answers (authenticated only)
+const { contextAnswer, contextNote, memoryNote, DISPUTE_RE } = require('./bot/contextAnswer'); // data-aware answers (authenticated only)
 const botTools = require('./bot/botTools'); // read-only account status tools (authenticated tool-loop)
+const institutionalMemory = require('./bot/institutionalMemory'); // Slice 6: recall prior community answers
 const { isFeatureEnabled } = require('./featureFlags'); // gates the account tool-loop (bot_tool_loop)
 
 // Pull a generous top-N so the authoritative chunk survives noisier docs; the
@@ -399,7 +400,12 @@ async function retrieve(queryText, queryEmbedding = null) {
     ftsRetrieve(queryText),
     vectorRetrieve(queryEmbedding),
   ]);
-  return mergeChunks(vec, fts);
+  const chunks = mergeChunks(vec, fts);
+  // Institutional memory (Slice 6, flag bot_institutional_memory): append a couple of the
+  // team's prior community answers that match, as extra sources. Flag-off / failure → [],
+  // so retrieval stays docs-only. Appended after the doc hits (docs remain primary).
+  const recalled = await institutionalMemory.recall(queryText);
+  return recalled.length ? [...chunks, ...recalled] : chunks;
 }
 
 // Embed the retrieval query for the vector leg. Best-effort + null when Voyage is
@@ -556,7 +562,13 @@ async function runToolLoop(question, ctx, identity = null, threadHistory = null)
   // Prior turns let the model tell a confirm ("yes") from a first ask, so a write only
   // runs on the turn AFTER the user agrees. Scrubbed + capped like every other history use.
   const priorTurns = threadHistory ? safeThreadHistory(threadHistory) : [];
-  const messages = [...toModelHistory(priorTurns), { role: 'user', content: `${contextNote(ctx)}\n\n${question}` }];
+  // Per-person memory (Slice 7, flag bot_person_memory) rides in the context line for continuity.
+  let noteLine = contextNote(ctx);
+  if (await isFeatureEnabled('bot_person_memory')) {
+    const mem = memoryNote(ctx);
+    if (mem) noteLine = `${noteLine}\n${mem}`;
+  }
+  const messages = [...toModelHistory(priorTurns), { role: 'user', content: `${noteLine}\n\n${question}` }];
   try {
     let resp = await client.messages.create({
       model: anthropicClient.MODELS.generate, max_tokens: 700, system, tools, messages,
@@ -914,7 +926,14 @@ async function askBot({ question, conversationId = null, sessionRef = null, ip =
       cited_sources = [];
     } else {
       try {
-        const out = await callModel(qSafe, chunks, history, context ? contextNote(context) : audienceNote(audience));
+        let modelNote = context ? contextNote(context) : audienceNote(audience);
+        // Per-person memory (Slice 7, flag bot_person_memory): add a compact "what you
+        // already know about this person" line for continuity. Data is already in ctx.
+        if (context && await isFeatureEnabled('bot_person_memory')) {
+          const mem = memoryNote(context);
+          if (mem) modelNote = `${modelNote}\n${mem}`;
+        }
+        const out = await callModel(qSafe, chunks, history, modelNote);
         if (out && !out.escalate && String(out.answer || '').trim()) {
           escalate = false;
           source = 'model';
