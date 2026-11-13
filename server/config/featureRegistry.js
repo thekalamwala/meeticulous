@@ -89,6 +89,9 @@ const REGISTRY = [
   // registry upsert creates it OFF even before the migration runs). CA signed off
   // 2026-11-11 (flat 1% TDS + 1% TCS for all); still OFF pending device/held-balance QA.
   { key: 'paid_booking_without_pan', label: 'Paid Booking Without PAN', category: 'Payments', scope: 'vendor', enabled: false, description: 'Let a host take a PAID booking before KYC. Off = paid bookings blocked until the host has PAN on file (legacy). On = booking is accepted, money is collected and HELD (payout still needs approved KYC); TDS/TCS withheld at the flat 1% + 1% rate regardless of PAN.' },
+  // Opt-in MONEY flag (ships OFF — seeded disabled in v3.206, enabled:false here so the
+  // fail-open registry creates it OFF even before the migration runs). Flip ON only after CA sign-off.
+  { key: 'tds_tcs_v2', label: 'TDS/TCS v2 Withholding', category: 'Payments', scope: 'vendor', enabled: false, description: 'Config-driven TDS (194-O) + TCS (Sec 52) withholding with PAN / entity / Rs5L-threshold rules. Off = legacy flat 1% TDS + 1% TCS. On = rates from platform_settings (default 0.1% TDS / 0.5% TCS), 5% no-PAN, Rs5L individual exemption.' },
   // Opt-in (ships OFF — seeded disabled in v3.204, and enabled:false here so the registry
   // upsert creates it OFF even before the migration runs).
   { key: 'coupons',              label: 'Coupons',              category: 'Payments', scope: 'both',     enabled: false, description: 'Host discount codes applied at checkout. Off = codes are rejected and no discount is applied.' },
