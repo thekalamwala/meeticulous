@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight, CalendarDays, Check, CheckCircle2, ChevronLeft, ChevronRight,
-  Eye, LayoutGrid, Plus, Sparkles, Wallet,
+  Eye, LayoutGrid, Sparkles, Wallet, XCircle, Info,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getPayoutBalance, getHostBookings, getHostNudges, getMyKyc, getMyServices, getMyProfileViews } from '../services/api';
@@ -12,7 +12,6 @@ import CommissionMeter from '../components/dashboard/CommissionMeter';
 import GoLiveChecklist from '../components/dashboard/GoLiveChecklist';
 import ConversionFunnel from '../components/dashboard/ConversionFunnel';
 import { useRegisterRefresh } from '../components/dashboard/ui/refreshContext';
-import { useOverviewChrome } from '../components/common/overviewChrome';
 import { isPreviewEnabled, getPreviewBookings, getPreviewPayoutBalance } from '../utils/previewData';
 import toast from 'react-hot-toast';
 
@@ -90,7 +89,7 @@ const formatRange = (start, end) => {
 /* ------------------------------------------------------------------ */
 
 const Greeting = ({ firstName }) => (
-  <header className="relative mb-5">
+  <header className="relative min-w-0">
     <span aria-hidden="true" className="absolute -left-2 -top-2 h-2 w-2 rounded-full bg-pink/70" />
     <span aria-hidden="true" className="absolute -left-4 top-3 h-1.5 w-[2px] rotate-45 rounded-full bg-maroon/50" />
     <div className="flex items-center gap-2">
@@ -109,7 +108,9 @@ const Greeting = ({ firstName }) => (
 /* Stat cards                                                          */
 /* ------------------------------------------------------------------ */
 
-const WithdrawCard = ({ balance, status }) => {
+const CARD = 'relative flex h-full min-h-[172px] flex-col overflow-hidden rounded-3xl border border-maroon/10 bg-white p-5 shadow-[0_10px_26px_-22px_rgba(43,10,20,0.45)]';
+
+const BalanceCard = ({ balance, status }) => {
   const navigate = useNavigate();
   const ready = status === 'ready';
   // Only show a real figure once the balance has actually loaded. While loading
@@ -117,63 +118,67 @@ const WithdrawCard = ({ balance, status }) => {
   const money = (v) => (ready ? fmtMoney(v ?? 0, { decimals: true }) : '—');
 
   return (
-    <div className="relative flex h-[122px] flex-col justify-between overflow-hidden rounded-[18px] bg-maroon p-4 text-white shadow-[0_16px_34px_-20px_rgba(43,10,20,0.75)]">
-      <span aria-hidden="true" className="pointer-events-none absolute -right-8 -top-10 h-28 w-28 rounded-full bg-white/10" />
-      <div className="flex items-start gap-3">
-        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/20">
-          <Wallet className="h-5 w-5" strokeWidth={2} />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="text-[12px] font-semibold text-white/85">Available to withdraw</p>
-          <p className="mt-0.5 font-heading text-[30px] font-extrabold leading-none tracking-tight">
-            {money(balance?.available)}
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => navigate('/dashboard/payments/payouts')}
-          className="mt-0.5 inline-flex shrink-0 items-center gap-1 rounded-full bg-white px-3.5 py-1.5 text-[11.5px] font-bold text-maroon-700 shadow-sm transition hover:bg-pink-100"
-        >
-          Withdraw
-          <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.4} />
-        </button>
-      </div>
-      {/* Clearing / pending — kept on one readable line under the balance.
-          Mapped from the real getPayoutBalance() fields (clearing, pendingCompletion). */}
-      <p className="flex flex-wrap items-baseline gap-x-1.5 pl-[56px] text-[13px] font-medium leading-tight text-white/90">
-        <span className="font-bold text-white">{money(balance?.clearing)}</span>
-        <span className="text-white/80">clearing</span>
-        <span aria-hidden="true" className="px-0.5 text-white/55">·</span>
-        <span className="font-bold text-white">{money(balance?.pendingCompletion)}</span>
-        <span className="text-white/80">pending</span>
+    <div className={CARD}>
+      <p className="text-[11px] font-bold uppercase tracking-wide text-ink/40">Available balance</p>
+      <p className="mt-2 font-heading text-[34px] font-extrabold leading-none tracking-tight text-ink">
+        {money(balance?.available)}
       </p>
+      <p className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] font-medium text-ink/70">
+        <span className="flex items-center gap-1.5">
+          <span aria-hidden="true" className="h-2 w-2 rounded-full bg-rose" />
+          {money(balance?.clearing)} clearing
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span aria-hidden="true" className="h-2 w-2 rounded-full bg-ink/25" />
+          {money(balance?.pendingCompletion)} pending
+        </span>
+      </p>
+      <button
+        type="button"
+        onClick={() => navigate('/dashboard/payments/payouts')}
+        className="mt-auto inline-flex w-fit items-center gap-1.5 rounded-full bg-maroon px-4 py-2.5 text-[13px] font-bold text-white shadow-sm transition hover:bg-maroon-dark"
+      >
+        Withdraw funds
+        <ArrowRight className="h-4 w-4" strokeWidth={2.4} />
+      </button>
     </div>
   );
 };
 
-const CountCard = ({ title, value, to, tone, Icon, showLink = false }) => (
-  <div className="flex h-[122px] flex-col justify-between rounded-[18px] border border-pink-300 bg-white p-4 shadow-[0_10px_26px_-22px_rgba(43,10,20,0.45)]">
-    <div className="flex items-start gap-2.5">
-      <span
-        className={cn(
-          'grid h-9 w-9 shrink-0 place-items-center rounded-full',
-          tone === 'green' ? 'bg-success-bg text-success-fg' : 'bg-blush text-maroon',
+// tone → chip colours. 'pink' (default), 'green' (completed), 'rose' (cancelled).
+const TONES = {
+  pink: { chip: 'bg-blush text-maroon' },
+  green: { chip: 'bg-success-bg text-success-fg' },
+  rose: { chip: 'bg-rose/20 text-rose-600' },
+};
+
+const CountCard = ({ title, value, to, tone = 'pink', Icon, subtitle, showLink = false }) => {
+  const t = TONES[tone] || TONES.pink;
+  return (
+    <div className={CARD}>
+      <span className={cn('ml-auto w-fit rounded-full px-2.5 py-0.5 text-[10px] font-bold', t.chip)}>{title}</span>
+      <div className="mt-4 flex items-center gap-3">
+        <span className={cn('grid h-11 w-11 shrink-0 place-items-center rounded-2xl', t.chip)}>
+          <Icon className="h-[19px] w-[19px]" strokeWidth={2} />
+        </span>
+        <span aria-hidden="true" className="h-9 w-px bg-maroon/10" />
+        <span className="font-heading text-[34px] font-extrabold leading-none text-ink">{value}</span>
+      </div>
+      <div className="mt-auto flex items-center gap-1.5 border-t border-maroon/10 pt-3 text-[12px] font-medium text-ink/55">
+        {showLink ? (
+          <Link to={to} className="inline-flex items-center gap-1 font-semibold text-maroon hover:underline">
+            View bookings <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.4} />
+          </Link>
+        ) : (
+          <>
+            <Info className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+            {subtitle}
+          </>
         )}
-      >
-        <Icon className="h-[17px] w-[17px]" strokeWidth={2} />
-      </span>
-      <p className="pt-1 text-[12px] font-semibold leading-snug text-ink">{title}</p>
+      </div>
     </div>
-    <div className="flex items-end justify-between gap-2">
-      <p className="font-heading text-[27px] font-extrabold leading-none text-ink">{value}</p>
-      {showLink && (
-        <Link to={to} className="mb-0.5 inline-flex items-center gap-0.5 text-[11px] font-semibold text-maroon hover:underline">
-          View bookings <ArrowRight className="h-3 w-3" strokeWidth={2.4} />
-        </Link>
-      )}
-    </div>
-  </div>
-);
+  );
+};
 
 /* ------------------------------------------------------------------ */
 /* Booking card                                                        */
@@ -206,7 +211,7 @@ const BookingCard = ({ booking, onOpen }) => {
 /* Calendar                                                            */
 /* ------------------------------------------------------------------ */
 
-const WeeklyCalendar = ({ bookings = [], status = 'ready', onRetry, onAddBooking, onOpenBooking }) => {
+const WeeklyCalendar = ({ bookings = [], status = 'ready', onRetry, onOpenBooking }) => {
   const [view, setView] = useState('week');
   const [weekOffset, setWeekOffset] = useState(0);
   const [monthOffset, setMonthOffset] = useState(0);
@@ -356,13 +361,6 @@ const WeeklyCalendar = ({ bookings = [], status = 'ready', onRetry, onAddBooking
                   <p className="mt-0.5 font-heading text-[22px] font-extrabold leading-none text-ink">
                     {day.date.getDate()}
                   </p>
-                  <button
-                    type="button"
-                    onClick={onAddBooking}
-                    className="mt-1.5 inline-flex items-center gap-0.5 text-[10.5px] font-semibold text-maroon transition hover:text-maroon-700"
-                  >
-                    <Plus className="h-3 w-3" strokeWidth={2.6} /> Add booking
-                  </button>
                 </div>
 
                 <div className="mt-3 space-y-2.5">
@@ -424,7 +422,6 @@ const Dashboard = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const isHost = user?.is_host === true || user?.role === 'host';
-  const { openNewMeeting } = useOverviewChrome();
 
   const [balance, setBalance] = useState(null);
   const [balanceStatus, setBalanceStatus] = useState('loading'); // 'loading' | 'ready' | 'error'
@@ -506,13 +503,14 @@ const Dashboard = () => {
 
   // Counts from real data: upcoming = not-cancelled & still in the future;
   // completed = status 'completed'.
-  const { upcomingCount, completedCount } = useMemo(() => {
+  const { upcomingCount, completedCount, cancelledCount } = useMemo(() => {
     const now = Date.now();
     return {
       upcomingCount: rawBookings.filter(
         (b) => String(b.status || '').toLowerCase() !== 'cancelled' && +new Date(b.scheduled_at) > now,
       ).length,
       completedCount: rawBookings.filter((b) => String(b.status || '').toLowerCase() === 'completed').length,
+      cancelledCount: rawBookings.filter((b) => String(b.status || '').toLowerCase() === 'cancelled').length,
     };
   }, [rawBookings]);
 
@@ -545,29 +543,42 @@ const Dashboard = () => {
     <div>
       {/* Profile completion now lives in a toolbar hover popover (OverviewLayout),
           so the overview content is a single column — no layout shift. */}
-      <Greeting firstName={firstName} />
+      {/* Greeting + activation checklist share one row: the checklist is a compact
+          "Setup 1/3" pill on the right that opens the full go-live dropdown.
+          It folds in the KYC nudge; other pages keep the standalone KycNudgeStrip. */}
+      <div className="mb-5 flex items-start justify-between gap-4">
+        <Greeting firstName={firstName} />
+        <GoLiveChecklist kyc={kyc} hasPaidService={hasPaidService} username={user?.username} />
+      </div>
 
-      {/* Activation checklist (home): folds the KYC nudge into the full go-live
-          path. Other pages keep the standalone KycNudgeStrip. Hides when live. */}
-      <GoLiveChecklist kyc={kyc} hasPaidService={hasPaidService} username={user?.username} />
       <CommissionMeter commissionPaid={commissionPaid} isFree={isFreePlan(user?.plan)} />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)] 2xl:grid-cols-[540px_minmax(0,1fr)_minmax(0,1fr)]">
-        <WithdrawCard balance={balance} status={balanceStatus} />
+      {/* Withdraw = 40%, the three booking counts = 20% each. Stacks 1-col on
+          phones, 2-col on small screens, 4-across (2fr_1fr_1fr_1fr) from lg up. */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr]">
+        <BalanceCard balance={balance} status={balanceStatus} />
         <CountCard
           title="Upcoming bookings"
           value={countValue(upcomingCount)}
           to="/dashboard/bookings"
           tone="pink"
           Icon={CalendarDays}
-          showLink
+          subtitle="No upcoming events"
+          showLink={upcomingCount > 0}
         />
         <CountCard
           title="Completed bookings"
           value={countValue(completedCount)}
-          to="/dashboard/bookings"
           tone="green"
           Icon={CheckCircle2}
+          subtitle="Finished sessions"
+        />
+        <CountCard
+          title="Cancelled bookings"
+          value={countValue(cancelledCount)}
+          tone="rose"
+          Icon={XCircle}
+          subtitle="Called off by either side"
         />
       </div>
 
@@ -597,7 +608,6 @@ const Dashboard = () => {
         bookings={calendarBookings}
         status={bookingsStatus}
         onRetry={loadBookings}
-        onAddBooking={openNewMeeting}
         onOpenBooking={() => navigate('/dashboard/bookings')}
       />
     </div>
