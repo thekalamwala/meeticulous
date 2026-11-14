@@ -126,11 +126,11 @@ const BalanceCard = ({ balance, status }) => {
       <p className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] font-medium text-ink/70">
         <span className="flex items-center gap-1.5">
           <span aria-hidden="true" className="h-2 w-2 rounded-full bg-rose" />
-          {money(balance?.clearing)} clearing
+          {money(balance?.clearing)} <span>clearing</span>
         </span>
         <span className="flex items-center gap-1.5">
           <span aria-hidden="true" className="h-2 w-2 rounded-full bg-ink/25" />
-          {money(balance?.pendingCompletion)} pending
+          {money(balance?.pendingCompletion)} <span>pending</span>
         </span>
       </p>
       <button
