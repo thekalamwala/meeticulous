@@ -4,6 +4,26 @@ All significant changes are recorded here by sprint. Most recent first.
 
 ---
 
+## [Release 2026-11, week of 2026-11-09] — 2026-11-14 (DISHA draft, sourced from merged commits)
+
+### Added
+- Cancellation policy disclosed at checkout — guests see the refund tiers before paying; standard 24h/6h tiers apply to everyone (P2 live).
+- Free→Pro conversion nudges — commission-paid meter on the dashboard, plan comparison, per-booking commission nudge, profile-view counts.
+- Read-only revenue export endpoint for Papertrail (`sd/revenue-sync-export`).
+- Tithi (support/community bot) — public profile page `/agent-tithi`, community first-responder + in-thread answers, release-note publisher, nightly founder digest, proactive in-app nudges, safe-split cancel/reschedule routing. All community + Tithi behaviour stays flag-gated.
+- Guest review nudge + host KYC-start nudge emails (PR-4); KYC nudge now shows on every host dashboard page.
+- TDS/TCS: config-driven withholding engine behind the `tds_tcs_v2` flag (0.1%/0.5%, PAN + GSTIN-aware), with TCS gated on host GST registration. **Flag OFF** — legacy flat 1% + 1% still live.
+
+### Changed
+- TDS simplified to a flat 1% for everyone on the live path — the old §206AA 5% no-PAN rate was dropped (CA sign-off 2026-11-11).
+- Feature pages refreshed — colours, images and CTAs.
+- The Spain FIFA seasonal moment became the Diwali 2026 moment.
+
+### Flags (all OFF — built, not announced)
+- `pro_cancellation_policy` (Pro per-service refund presets) · `tds_tcs_v2` · `host_linkedin_login` · `community*`.
+
+---
+
 ## [Release 2026-11, week of 2026-11-02] — 2026-11-09 (DISHA draft, sourced from merged commits)
 
 ### Added
