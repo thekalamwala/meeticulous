@@ -65,6 +65,11 @@ CREATE OR REPLACE FUNCTION increment_course_purchase_count(row_id UUID)
 RETURNS void LANGUAGE sql AS $$
   UPDATE courses SET purchase_count = purchase_count + 1 WHERE id = row_id;
 $$;
+-- v3.186 lockdown posture: a new function gets PUBLIC EXECUTE by default, so the
+-- anon/publishable key could call this to inflate purchase_count. Revoke that and
+-- grant only service_role (the API calls it via supabaseAdmin).
+REVOKE ALL ON FUNCTION increment_course_purchase_count(uuid) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION increment_course_purchase_count(uuid) TO service_role;
 
 -- RLS on, no policies → service_role only (all reads/writes go through the API).
 ALTER TABLE courses          ENABLE ROW LEVEL SECURITY;
