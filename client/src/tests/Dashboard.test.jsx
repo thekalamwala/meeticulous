@@ -87,11 +87,12 @@ describe('Overview — real-data content', () => {
     expect(screen.getByText("Here's what's happening with your business today.")).toBeInTheDocument();
   });
 
-  it('shows the three summary cards; money reads the real payout balance once loaded', async () => {
+  it('shows the four summary cards; money reads the real payout balance once loaded', async () => {
     renderPage();
-    expect(screen.getByText('Available to withdraw')).toBeInTheDocument();
+    expect(screen.getByText('Available balance')).toBeInTheDocument();
     expect(screen.getByText('Upcoming bookings')).toBeInTheDocument();
     expect(screen.getByText('Completed bookings')).toBeInTheDocument();
+    expect(screen.getByText('Cancelled bookings')).toBeInTheDocument();
     // The clearing/pending labels are always present; the amounts fill in once
     // the balance resolves (available + clearing + pending = three ₹0.00 nodes).
     expect(screen.getByText('clearing')).toBeInTheDocument();
@@ -106,7 +107,7 @@ describe('Overview — real-data content', () => {
     // Critically: a failed fetch must NOT masquerade as "no bookings".
     expect(screen.queryByText('No bookings this week')).toBeNull();
     // And counts read '—' (unavailable), never a fabricated 0.
-    const upcoming = screen.getByText('Upcoming bookings').closest('div').parentElement;
+    const upcoming = screen.getByText('Upcoming bookings').closest('div');
     expect(within(upcoming).getByText('—')).toBeInTheDocument();
   });
 
@@ -115,7 +116,7 @@ describe('Overview — real-data content', () => {
     renderPage();
     expect(await screen.findByText('No bookings this week')).toBeInTheDocument(); // bookings resolved []
     // Balance never resolved → figures render as '—', not a misleading ₹0.00.
-    const withdraw = screen.getByText('Available to withdraw').closest('div').parentElement;
+    const withdraw = screen.getByText('Available balance').closest('div');
     expect(within(withdraw).getAllByText('—').length).toBeGreaterThan(0);
     expect(within(withdraw).queryByText('₹0.00')).toBeNull();
   });
@@ -127,9 +128,9 @@ describe('Overview — real-data content', () => {
       { id: 'c1', guest_name: 'C', scheduled_at: dayInWeek(-20), status: 'completed' }, // past, completed
     ] });
     renderPage();
-    const upcoming = (await screen.findByText('Upcoming bookings')).closest('div').parentElement;
+    const upcoming = (await screen.findByText('Upcoming bookings')).closest('div');
     await waitFor(() => expect(within(upcoming).getByText('2')).toBeInTheDocument());
-    const completed = screen.getByText('Completed bookings').closest('div').parentElement;
+    const completed = screen.getByText('Completed bookings').closest('div');
     expect(within(completed).getByText('1')).toBeInTheDocument();
   });
 
