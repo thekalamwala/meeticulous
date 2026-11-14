@@ -848,8 +848,10 @@ const HostProfile = () => {
               </div>
             </div>
 
-            {/* Intro CTA — soft, low-friction entry when the host offers a free service */}
-            {introService && (filter === 'all' || filter === 'service') && (
+            {/* Intro CTA — soft, low-friction entry when the host offers a free service.
+                Hidden when that free service is already the featured hero below, so the
+                same offer isn't shown twice (the hero is the richer presentation). */}
+            {introService && introService.id !== featured?.id && (filter === 'all' || filter === 'service') && (
               <Link to={`/${profileSlug}/booking/${introService.slug}`} aria-label="Start with a free intro session"
                 className="flex items-center gap-3 rounded-2xl mb-5 px-4 py-3 transition-opacity hover:opacity-90"
                 style={{ background: `${tc}0D`, border: `1px solid ${tc}33` }}>
@@ -898,7 +900,7 @@ const HostProfile = () => {
 
             {/* Services grid */}
             {showServices && gridServices.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                 {gridServices.map(s => (
                   <ServiceCard key={s.id} service={s} profileSlug={profileSlug} />
                 ))}
