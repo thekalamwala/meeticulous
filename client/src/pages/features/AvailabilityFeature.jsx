@@ -29,7 +29,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Check, X, ImageIcon, CalendarDays } from 'lucide-react';
+import { ArrowRight, Check, X, ImageIcon } from 'lucide-react';
 import Reveal from '../../components/home/Reveal';
 import Seo from '../../components/common/Seo';
 import { ogCard } from '../../config/ogImages';
@@ -40,12 +40,12 @@ import PageGuides from '../../components/common/PageGuides';
 import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
-const INK = '#2B0A14';
-const LIME = '#FDF0D2';      // marigold wash — band under highlighted words
-const LIME_DEEP = '#F9D684'; // markers, open cells, the FAQ bar
-const TEAL = '#960D32';      // maroon accent text/icons on white
-const LIME_WASH = '#FBF5F3'; // soft section tint
-const VIOLET = '#960D32';    // maroon — highlighted words
+const INK = '#201E1D';       // Tukku ink
+const LIME = '#F6E3C6';      // Tukku cream — band under highlighted words (blue-on-cream mascot pairing)
+const LIME_DEEP = '#85B7EB'; // soft Tukku blue — markers, open cells, the FAQ bar
+const TEAL = '#2F7DD1';      // Tukku blue — accent text/icons on white
+const LIME_WASH = '#FAF4E9'; // soft cream section tint
+const VIOLET = '#2F7DD1';    // Tukku blue — highlighted words
 
 /* ─────────────────────────────  SLOT MATH  ────────────────────────────── */
 
@@ -147,22 +147,12 @@ const FAQ = [
   { q: 'Can I set different hours for each service?', a: 'Not today. Your hours, blocked dates and buffer are set once for your account and apply to every service you offer.' },
 ];
 
-const RELATED = [
-  { to: '/features/online-scheduling', label: 'Online scheduling' },
-  { to: '/features/google-calendar', label: 'Google Calendar sync' },
-  { to: '/features/booking-pages', label: 'Booking pages' },
-  { to: '/features/notifications', label: 'Reminders' },
-];
-
 /* ─────────────────────────────  PIECES  ────────────────────────────── */
 
-/* The highlighter: a lime band behind ink text. */
+/* The highlighter: blue accent text, no background band. */
 function Hl({ children }) {
   return (
-    <span
-      className="box-decoration-clone rounded-[3px] px-1.5"
-      style={{ color: VIOLET, background: `linear-gradient(180deg, transparent 14%, ${LIME} 14%, ${LIME} 90%, transparent 90%)` }}
-    >
+    <span style={{ color: VIOLET }}>
       {children}
     </span>
   );
@@ -181,19 +171,19 @@ function PrimaryCta({ to = START, children }) {
 }
 
 /* Empty image placeholder; the founder supplies the real photo later. */
-function ImgSlot({ alt, slot, src, className = '', fit = 'cover', bg = true }) {
+function ImgSlot({ alt, slot, src, className = '', fit = 'cover', bg = true, bordered = true }) {
   return (
     <div
       role={src ? undefined : 'img'}
       aria-label={src ? undefined : alt}
       data-img-slot={slot}
-      className={`flex items-center justify-center overflow-hidden rounded-[16px] border border-black/5 ${className}`}
-      style={bg ? { background: 'repeating-linear-gradient(135deg, rgba(15,118,110,0.04) 0 10px, rgba(15,118,110,0.08) 10px 20px)' } : undefined}
+      className={`flex items-center justify-center overflow-hidden rounded-[16px] ${bordered ? 'border border-black/5' : ''} ${className}`}
+      style={bg ? { background: 'repeating-linear-gradient(135deg, rgba(47,125,209,0.05) 0 10px, rgba(47,125,209,0.09) 10px 20px)' } : undefined}
     >
       {src ? (
         <img src={src} alt={alt} className={`h-full w-full ${fit === 'contain' ? 'object-contain' : 'object-cover'}`} loading="lazy" />
       ) : (
-        <ImageIcon size={28} style={{ color: 'rgba(15,118,110,0.35)' }} aria-hidden />
+        <ImageIcon size={28} style={{ color: 'rgba(47,125,209,0.35)' }} aria-hidden />
       )}
     </div>
   );
@@ -224,7 +214,7 @@ function HoursGrid() {
 
   return (
     <div className="mx-auto w-full max-w-[30rem]">
-      <div className="rounded-[24px] border border-black/5 bg-white p-4 shadow-[0_30px_70px_-30px_rgba(15,118,110,0.35)] sm:p-6">
+      <div className="rounded-[24px] border border-black/5 bg-white p-4 shadow-[0_30px_70px_-30px_rgba(47,125,209,0.32)] sm:p-6">
         <div className="flex items-center justify-between">
           <div className="font-heading text-sm font-bold text-ink">Your week</div>
           <div className="text-[11px] text-neutral-500">Tap a block or a day</div>
@@ -289,7 +279,7 @@ function WeekPanel({ variant }) {
             {messy && MESSY.filter((m) => m.d === d).map((m) => (
               <span
                 key={`${m.top}-${m.label}`}
-                className={`absolute rounded-[4px] border px-1 py-0.5 text-[9px] font-semibold leading-tight sm:text-[10px] ${m.clash ? 'border-[#2B0A14]/30 bg-white text-ink' : 'border-dashed border-neutral-400 bg-neutral-200/80 text-neutral-600'}`}
+                className={`absolute rounded-[4px] border px-1 py-0.5 text-[9px] font-semibold leading-tight sm:text-[10px] ${m.clash ? 'border-[#201E1D]/30 bg-white text-ink' : 'border-dashed border-neutral-400 bg-neutral-200/80 text-neutral-600'}`}
                 style={{ top: `${m.top}%`, height: `${m.h}%`, left: `${m.x}%`, width: '78%' }}
               >
                 {m.label}
@@ -298,7 +288,7 @@ function WeekPanel({ variant }) {
             {!messy && (CLEAN[d] ? CLEAN[d].map((c) => (
               <span
                 key={c.top}
-                className="absolute inset-x-1 rounded-full px-1 py-0.5 text-[9px] font-semibold leading-tight sm:text-[10px]"
+                className="absolute inset-x-1 flex items-center justify-center rounded-full px-1 text-center text-[9px] font-semibold leading-tight sm:text-[10px]"
                 style={{ top: `${c.top}%`, height: `${c.h}%`, ...(c.kind === 'booked' ? { background: TEAL, color: '#fff' } : { background: LIME, color: INK }) }}
               >
                 {c.kind === 'booked' ? 'Booked' : 'Open'}
@@ -351,7 +341,7 @@ function BufferControl() {
       </div>
 
       <div className="mt-9">
-        <div className="relative h-14 overflow-hidden rounded-[16px] border border-black/5" style={{ background: 'repeating-linear-gradient(135deg, rgba(15,118,110,0.05) 0 6px, rgba(15,118,110,0.1) 6px 12px)' }} aria-hidden>
+        <div className="relative h-14 overflow-hidden rounded-[16px] border border-black/5" style={{ background: 'repeating-linear-gradient(135deg, rgba(47,125,209,0.05) 0 6px, rgba(47,125,209,0.1) 6px 12px)' }} aria-hidden>
           {starts.map((s) => (
             <span key={s} className="absolute inset-y-1.5 rounded-[16px]" style={{ left: pct(s), width: `calc(${pct(duration)} - 2px)`, background: LIME_DEEP }} />
           ))}
@@ -498,10 +488,10 @@ export default function AvailabilityFeature() {
               <span aria-hidden className="mx-2">/</span>
               <span aria-current="page" className="text-ink">Availability</span>
             </nav>
-            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.4rem,4.4vw,3.9rem)] font-extrabold leading-[1.04] tracking-[-0.03em] text-black">
-              Set your availability for online bookings <Hl>once.</Hl>
+            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.2rem,4vw,3.2rem)] font-extrabold leading-[1.06] tracking-[-0.03em] text-black">
+              Set your availability<br />for online bookings <Hl>once.</Hl>
             </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-neutral-600 lg:text-lg">
+            <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-neutral-600 text-pretty">
               Your weekly hours, breaks, days off and a buffer between sessions, set one time. Your booking page only offers the hours you are actually free, every week, without you touching it.
             </Reveal>
             <Reveal instant delay={0.1} className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
@@ -594,7 +584,7 @@ export default function AvailabilityFeature() {
             <ul className="mt-10 grid gap-x-8 gap-y-4 sm:grid-cols-2">
               {CAPS.map((c, i) => (
                 <Reveal as="li" key={c} delay={(i % 4) * 0.04} className="flex items-start gap-3 border-b border-black/5 pb-4 text-[15px] leading-relaxed text-ink">
-                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: 'rgba(15,118,110,0.1)' }}>
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: 'rgba(47,125,209,0.12)' }}>
                     <Check size={13} strokeWidth={3} style={{ color: TEAL }} aria-hidden />
                   </span>
                   {c}
@@ -610,6 +600,7 @@ export default function AvailabilityFeature() {
               className="aspect-[3/4] w-full lg:h-full lg:aspect-auto lg:min-h-[34rem]"
               fit="contain"
               bg={false}
+              bordered={false}
             />
           </Reveal>
         </div>
@@ -666,18 +657,6 @@ export default function AvailabilityFeature() {
           <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-neutral-600">
             Availability is included on the free {FREE_PLAN.name} plan. Make your booking page, set your week, share the link.
           </Reveal>
-          <Reveal delay={0.1} className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
-            <PrimaryCta>Start free <ArrowRight size={16} /></PrimaryCta>
-            <Link to="/pricing" className="inline-flex items-center gap-1.5 text-sm font-semibold hover:no-underline hover:opacity-80" style={{ color: TEAL }}>
-              See pricing <ArrowRight size={15} />
-            </Link>
-          </Reveal>
-          <nav aria-label="Related features" className="mt-14 flex flex-wrap justify-center gap-x-6 gap-y-2 border-t border-black/10 pt-8 text-sm text-neutral-500">
-            <span className="flex items-center gap-1.5"><CalendarDays size={14} aria-hidden /> Works with</span>
-            {RELATED.map((r) => (
-              <Link key={r.to} to={r.to} className="font-medium underline decoration-black/20 underline-offset-4 hover:decoration-black/60" style={{ color: TEAL }}>{r.label}</Link>
-            ))}
-          </nav>
         </div>
       </section>
     </main>
