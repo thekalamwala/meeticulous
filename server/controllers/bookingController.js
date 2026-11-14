@@ -11,6 +11,7 @@ const { runExclusive } = require("../utils/keyedMutex");
 const crypto = require("crypto");
 const { computeBreakdown, resolveWithholding } = require("../lib/pricingEngine");
 const { resolveCancellationPolicy } = require("../lib/cancellationPolicy");
+const { tzLabel, calendarUrl } = require("../utils/bookingEmailExtras");
 const planService = require("../services/planService");
 const proTaste = require("../services/proTaste");
 const { redactBookingContact } = require("../lib/contactVisibility");
@@ -124,10 +125,11 @@ const splitWhen = (scheduledAt, tz = "Asia/Kolkata") => {
   };
 };
 // Placeholder map shared by customer + vendor booking emails.
-const bookingEmailData = ({ serviceTitle, hostName, hostPhone, guestName, scheduledAt, tz, bookingId, online, actionLink, mapLink, hostLocation }) => {
+const bookingEmailData = ({ serviceTitle, hostName, hostPhone, guestName, scheduledAt, tz, bookingId, online, actionLink, mapLink, hostLocation, durationMin }) => {
   const dashboard = `${process.env.CLIENT_URL || "https://meeticulous.com"}/dashboard`;
   // Online → Meet link (or dashboard). Offline → the host's map link (or dashboard).
   const link = online ? (actionLink || dashboard) : (mapLink || dashboard);
+  const where = online ? "Online" : (hostLocation || (mapLink ? "In person" : ""));
   return {
     service_name: serviceTitle || "Service",
     vendor_name: hostName || "Host",
@@ -139,7 +141,11 @@ const bookingEmailData = ({ serviceTitle, hostName, hostPhone, guestName, schedu
     // neutral "In person" when only a map link is set). Empty when the caller
     // passes no venue info at all — preserves the lifecycle emails (cancel /
     // complete / reschedule) that don't carry mode/venue. Map link is the CTA below.
-    location: online ? "Online" : (hostLocation || (mapLink ? "In person" : "")),
+    location: where,
+    // Timezone label beside the time + add-to-calendar deep link (redesigned
+    // confirmation email). Threaded here so both free + paid paths carry them.
+    booking_tz: tzLabel(scheduledAt, tz),
+    calendar_url: calendarUrl({ title: `${serviceTitle || "Service"} with ${hostName || "Host"}`, start: scheduledAt, durationMin, details: "Booked via Meeticulous", location: where || "Online" }),
     // CTA: online → Join meeting when a Meet link exists; offline → Get directions
     // when the host set a map link. Falls back to a plain "View booking" otherwise.
     action_link: link,
@@ -769,6 +775,7 @@ const createBooking = async (req, res) => {
           guestName: guest_name, scheduledAt: scheduled_at, tz: hostTimezone,
           bookingId: booking.id, online: !!meetingLink,
           mapLink: host.map_link, hostLocation: host.location,
+          durationMin: service.duration,
         });
         await NotificationEngine.send({
           event: "BOOKING_CONFIRMED_CUSTOMER",

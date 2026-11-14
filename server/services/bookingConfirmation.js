@@ -28,6 +28,7 @@ const profileSecrets = require('../utils/profileSecrets');
 const manageBookingToken = require('../utils/manageBookingToken');
 const { hostOf } = require('../utils/hostOf');
 const { inAppNotify } = require('../utils/inAppNotify');
+const { tzLabel, calendarUrl } = require('../utils/bookingEmailExtras');
 
 /**
  * @param {object} a
@@ -100,6 +101,9 @@ async function sendBookingConfirmation({ bookingId, invoiceRef = null }) {
   // 2) BOOKING_CONFIRMED to guest + host (email + WhatsApp).
   const d = new Date(booking.scheduled_at);
   const when = d.toLocaleString('en-IN', { timeZone: tz });
+  const where = isOnline
+    ? (meetingLink ? 'Online (link in your dashboard)' : 'Online')
+    : (host.location || 'In person');
   const emailData = {
     service_name: svc.title || 'Service',
     vendor_name: host.name || 'Host',
@@ -109,9 +113,11 @@ async function sendBookingConfirmation({ bookingId, invoiceRef = null }) {
     // Short human reference shown above the email title ("Booking #1A2B3C4D").
     booking_ref: String(booking.id || '').slice(0, 8).toUpperCase(),
     manage_url: `${process.env.CLIENT_URL || 'https://meeticulous.com'}/manage-booking/${manageBookingToken.sign(booking.id)}`,
-    location: isOnline
-      ? (meetingLink ? 'Online (link in your dashboard)' : 'Online')
-      : (host.location || 'In person'),
+    location: where,
+    // Timezone label beside the time + add-to-calendar deep link (redesigned
+    // confirmation email). Mirrors the free path in bookingController.
+    booking_tz: tzLabel(booking.scheduled_at, tz),
+    calendar_url: calendarUrl({ title: `${svc.title || 'Service'} with ${host.name || 'Host'}`, start: booking.scheduled_at, durationMin: svc.duration, details: 'Booked via Meeticulous', location: where }),
     ...(!isOnline && host.map_link
       ? { action_link: host.map_link, action_label: 'Get directions' }
       : {}),

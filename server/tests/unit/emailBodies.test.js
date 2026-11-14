@@ -27,6 +27,7 @@ const data = {
   action_label: 'Join meeting', action_link: 'https://meeticulous.com/x',
   manage_url: 'https://meeticulous.com/manage-booking/tok',
   booking_ref: '1A2B3C4D',
+  booking_tz: 'IST', calendar_url: 'https://calendar.google.com/calendar/render?action=TEMPLATE',
 };
 
 // Mirror of communicationEngine.renderEmail (kept DB-free for unit testing).
@@ -63,6 +64,9 @@ describe('email bodies — full render', () => {
     expect(html).toContain('meeticulous-icon-color-512.png');          // mark in the card header
     expect(html).toContain('Career Direction Consultation');
     expect(html).toContain('Mon, 16 Feb 2026');
+    expect(html).toContain('10:15 AM IST');                            // time carries the timezone
+    expect(html).toContain('calendar.google.com/calendar/render');    // add-to-calendar link
+    expect(html).toMatch(/full refund/i);                             // cancellation policy line
     expect(html.match(/Booking Confirmed/g)).toHaveLength(1);          // header pill only
   });
 
