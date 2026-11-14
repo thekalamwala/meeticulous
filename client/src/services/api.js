@@ -878,8 +878,16 @@ export const adminCreateAllowlistIp = (data)  => API.post('/admin/security/allow
 export const adminDeleteAllowlistIp = (ip)    => API.delete(`/admin/security/allowlist/${encodeURIComponent(ip)}`);
 
 // Absolute URL to a GST tax invoice (token-gated public view; opens print dialog).
-export const invoiceUrl = (id, token) =>
-  `${API.defaults.baseURL.replace(/\/$/, '')}/invoices/${id}?token=${encodeURIComponent(token)}`;
+// Must stay ABSOLUTE even when the API base is a same-origin relative path
+// (VITE_API_URL=/api, the Vercel edge-cache cutover): a relative base would make
+// this link break anywhere it leaves the page (copied, emailed, new tab). If the
+// base is already absolute (http…), use it as-is; if relative, prefix the origin.
+export const invoiceUrl = (id, token) => {
+  const base = (API.defaults.baseURL || '').replace(/\/$/, '');
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const abs = /^https?:\/\//.test(base) ? base : `${origin}${base}`;
+  return `${abs}/invoices/${id}?token=${encodeURIComponent(token)}`;
+};
 
 // The logged-in user's own GST invoices (subscriptions + bookings billed to them).
 export const getMyInvoices = () => API.get('/invoices/mine');
