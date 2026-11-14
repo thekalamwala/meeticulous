@@ -19,7 +19,7 @@
 // payout held until ~24h after the session). No usage stats, no ratings.
 // Testimonials are the real, consented quotes from data/testimonials.js.
 //
-// IMAGES: empty ImgSlot placeholders (data-img-slot names the photo to supply).
+// IMAGES: /features/payment.png in the "Paid, held, then released" bento cell.
 // Global Navbar + Footer come from App.jsx. No hover uplift anywhere.
 
 import { useEffect, useState } from 'react';
@@ -27,7 +27,7 @@ import { Link } from 'react-router-dom';
 import { useReducedMotion } from 'framer-motion';
 import {
   ArrowRight, Check, X, CheckCircle2, Lock, Receipt, CreditCard, Wallet,
-  IndianRupee, FileText, RotateCcw, Gift, ImageIcon, Clock,
+  FileText, RotateCcw, Gift, Clock,
 } from 'lucide-react';
 import Reveal from '../../components/home/Reveal';
 import Seo from '../../components/common/Seo';
@@ -36,10 +36,11 @@ import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
 import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
+import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
-const GOLD = '#E9C46A';       // accent on dark forest only (AA on #0E3B2C)
-const GOLD_INK = '#7A5C0E';   // gold for text on light paper (AA on #F5EFE3)
+const GOLD = '#E8772E';       // Duggu orange — accent on dark brown only
+const GOLD_INK = '#CC6220';   // dark orange for text on light cream
 
 /* ─────────────────────────────  MONEY MATH  ────────────────────────────── */
 
@@ -112,40 +113,17 @@ const FAQ = [
   { q: 'Do I need a PAN?', a: 'Yes. A valid PAN is needed before you can accept paid bookings, because TDS and TCS are deposited against it.' },
 ];
 
-const RELATED = [
-  { to: '/features/online-scheduling', label: 'Online scheduling' },
-  { to: '/features/booking-pages', label: 'Booking pages' },
-  { to: '/features/notifications', label: 'Reminders' },
-  { to: '/features/analytics', label: 'Analytics' },
-];
-
 /* ─────────────────────────────  PIECES  ────────────────────────────── */
 
 function PrimaryCta({ to = START, children, dark = false }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold shadow-[0_8px_30px_rgba(26,26,26,0.12)] transition-opacity hover:no-underline hover:opacity-90"
-      style={dark ? { background: GOLD, color: '#12261D' } : { background: '#0E3B2C', color: '#F5EFE3' }}
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-opacity hover:no-underline hover:opacity-90"
+      style={dark ? { background: GOLD, color: '#201E1D' } : { background: '#3A1E10', color: '#FBF3E8' }}
     >
       {children}
     </Link>
-  );
-}
-
-/* Empty image placeholder; the founder supplies the real photo later. */
-function ImgSlot({ alt, slot, className = '', dark = false }) {
-  const ink = dark ? '245,239,227' : '14,59,44';
-  return (
-    <div
-      role="img"
-      aria-label={alt}
-      data-img-slot={slot}
-      className={`flex items-center justify-center rounded-[16px] border border-black/5 ${className}`}
-      style={{ background: `repeating-linear-gradient(135deg, rgba(${ink},0.04) 0 10px, rgba(${ink},0.08) 10px 20px)` }}
-    >
-      <ImageIcon size={28} style={{ color: `rgba(${ink},0.3)` }} aria-hidden />
-    </div>
   );
 }
 
@@ -170,13 +148,13 @@ function CheckoutDemo() {
 
   return (
     <div className="relative mx-auto w-full max-w-[22rem]">
-      <div className="overflow-hidden rounded-[16px] bg-[#FFFDF8] text-[#12261D] shadow-[0_40px_80px_-30px_rgba(0,0,0,0.55)]">
+      <div className="overflow-hidden rounded-[16px] bg-[#FFFCF4] text-[#201E1D] shadow-[0_40px_80px_-30px_rgba(0,0,0,0.55)]">
         <div className="flex items-center justify-between border-b border-black/5 px-5 py-3.5">
           <div>
             <div className="text-[11px] uppercase tracking-[0.14em] text-neutral-500">Discovery call · 30 min</div>
             <div className="font-heading text-sm font-bold">with Priya Nair · Thu, 4:30 PM</div>
           </div>
-          <Lock size={15} className="text-[#1F6B4A]" aria-hidden />
+          <Lock size={15} className="text-[#CC6220]" aria-hidden />
         </div>
 
         <div className="grid px-5 py-5" aria-live="polite">
@@ -188,21 +166,21 @@ function CheckoutDemo() {
                 </dl>
                 <div className="mt-4 grid grid-cols-4 gap-1.5 text-center text-[11px] font-semibold">
                   {['UPI', 'Card', 'Netbank', 'Wallet'].map((m, i) => (
-                    <span key={m} className={`rounded-[5px] border px-1 py-1.5 ${i === 0 ? 'border-[#1F6B4A] bg-[#1F6B4A]/10 text-[#1F6B4A]' : 'border-black/10 text-neutral-500'}`}>{m}</span>
+                    <span key={m} className={`rounded-[5px] border px-1 py-1.5 ${i === 0 ? 'border-[#CC6220] bg-[#CC6220]/10 text-[#CC6220]' : 'border-black/10 text-neutral-500'}`}>{m}</span>
                   ))}
                 </div>
-                <div className="mt-4 rounded-[16px] bg-[#0E3B2C] py-2.5 text-center text-sm font-semibold text-[#F5EFE3]">Pay {inr(DEMO.guestPays)}</div>
+                <div className="mt-4 rounded-[16px] bg-[#3A1E10] py-2.5 text-center text-sm font-semibold text-[#FBF3E8]">Pay {inr(DEMO.guestPays)}</div>
             </div>
             <div className={`${panel(1)} flex flex-col items-center justify-center text-center`} aria-hidden={step !== 1}>
-                <CheckCircle2 size={44} className="text-[#1F6B4A]" aria-hidden />
+                <CheckCircle2 size={44} className="text-[#CC6220]" aria-hidden />
                 <div className="mt-3 font-heading text-lg font-extrabold">Payment successful</div>
                 <div className="mt-1 text-sm text-neutral-500">{inr(DEMO.guestPays)} via UPI</div>
-                <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#1F6B4A]/10 px-3 py-1.5 text-xs font-semibold text-[#1F6B4A]">
+                <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#CC6220]/10 px-3 py-1.5 text-xs font-semibold text-[#CC6220]">
                   <Lock size={12} aria-hidden /> Slot locked · Thu 4:30 PM
                 </div>
             </div>
             <div className={panel(2)} aria-hidden={step !== 2}>
-                <div className="flex items-center gap-2 font-heading text-sm font-bold"><Receipt size={16} className="text-[#1F6B4A]" aria-hidden /> Tax invoice</div>
+                <div className="flex items-center gap-2 font-heading text-sm font-bold"><Receipt size={16} className="text-[#CC6220]" aria-hidden /> Tax invoice</div>
                 <div className="mt-3 space-y-2 rounded-[16px] border border-dashed border-black/15 p-3.5 text-[13px]">
                   <div className="flex justify-between"><span className="text-neutral-500">Billed to</span><span>Priya Nair</span></div>
                   <div className="flex justify-between"><span className="text-neutral-500">Discovery call</span><span className="tabular-nums">{inr(1500)}</span></div>
@@ -222,14 +200,14 @@ function CheckoutDemo() {
             type="button"
             aria-pressed={step === i}
             onClick={() => { setStep(i); setPaused(true); }}
-            className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${step === i ? 'border-transparent text-[#12261D]' : 'border-white/20 text-[#F5EFE3]/70 hover:text-[#F5EFE3]'}`}
+            className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${step === i ? 'border-transparent text-[#201E1D]' : 'border-white/20 text-[#FBF3E8]/70 hover:text-[#FBF3E8]'}`}
             style={step === i ? { background: GOLD } : undefined}
           >
             {i + 1}. {label}
           </button>
         ))}
       </div>
-      <p className="mt-3 text-center text-[11px] text-[#F5EFE3]/60">Illustration of the client checkout</p>
+      <p className="mt-3 text-center text-[11px] text-[#FBF3E8]/60">Illustration of the client checkout</p>
     </div>
   );
 }
@@ -244,9 +222,9 @@ function KeepCalculator() {
   return (
     <div className="mt-12">
       <div className="mx-auto max-w-xl">
-        <label htmlFor="pf-price" className="flex items-baseline justify-between text-sm text-[#F5EFE3]/70">
+        <label htmlFor="pf-price" className="flex items-baseline justify-between text-sm text-[#FBF3E8]/70">
           <span>Your price for one session</span>
-          <span className="font-heading text-3xl font-extrabold tabular-nums text-[#F5EFE3]">{inr(price, 0)}</span>
+          <span className="font-heading text-3xl font-extrabold tabular-nums text-[#FBF3E8]">{inr(price, 0)}</span>
         </label>
         <input
           id="pf-price"
@@ -259,17 +237,17 @@ function KeepCalculator() {
           className="mt-4 w-full"
           style={{ accentColor: GOLD }}
         />
-        <div className="mt-1 flex justify-between text-[11px] text-[#F5EFE3]/40"><span>₹100</span><span>₹20,000</span></div>
+        <div className="mt-1 flex justify-between text-[11px] text-[#FBF3E8]/40"><span>₹100</span><span>₹20,000</span></div>
       </div>
 
       <div className="mt-10 grid gap-5 md:grid-cols-2">
         {plans.map((p, i) => (
-          <div key={p.name} className={`rounded-[10px] p-6 sm:p-7 ${i === 1 ? 'bg-[#F5EFE3] text-[#12261D]' : 'border border-white/10 text-[#F5EFE3]'}`}>
+          <div key={p.name} className={`rounded-[10px] p-6 sm:p-7 ${i === 1 ? 'bg-[#FBF3E8] text-[#201E1D]' : 'border border-white/10 text-[#FBF3E8]'}`}>
             <div className="flex items-baseline justify-between gap-3">
-              <h3 className={`font-heading text-lg font-bold ${i === 1 ? 'text-[#12261D]' : 'text-[#F5EFE3]'}`}>{p.name}</h3>
-              <span className={`text-xs ${i === 1 ? 'text-neutral-500' : 'text-[#F5EFE3]/50'}`}>{p.note}</span>
+              <h3 className={`font-heading text-lg font-bold ${i === 1 ? 'text-[#201E1D]' : 'text-[#FBF3E8]'}`}>{p.name}</h3>
+              <span className={`text-xs ${i === 1 ? 'text-neutral-500' : 'text-[#FBF3E8]/50'}`}>{p.note}</span>
             </div>
-            <dl className={`mt-5 space-y-2 text-sm ${i === 1 ? 'text-neutral-600' : 'text-[#F5EFE3]/65'}`}>
+            <dl className={`mt-5 space-y-2 text-sm ${i === 1 ? 'text-neutral-600' : 'text-[#FBF3E8]/65'}`}>
               <div className="flex justify-between"><dt>Your client pays</dt><dd className="tabular-nums">{inr(p.b.guestPays)}</dd></div>
               <div className="flex justify-between"><dt>Commission ({i === 1 ? '0%' : '5%'})</dt><dd className="tabular-nums">− {inr(p.b.commission)}</dd></div>
               <div className="flex justify-between"><dt>Gateway (~{GATEWAY_PCT}%)</dt><dd className="tabular-nums">− {inr(p.b.gateway)}</dd></div>
@@ -277,13 +255,13 @@ function KeepCalculator() {
             </dl>
             <div className={`mt-5 flex items-baseline justify-between border-t pt-4 ${i === 1 ? 'border-black/10' : 'border-white/10'}`}>
               <span className="text-sm font-semibold">You keep</span>
-              <span className="font-heading text-3xl font-extrabold tabular-nums" style={i === 1 ? { color: '#1F6B4A' } : { color: GOLD }}>{inr(p.b.keep)}</span>
+              <span className="font-heading text-3xl font-extrabold tabular-nums" style={i === 1 ? { color: '#CC6220' } : { color: GOLD }}>{inr(p.b.keep)}</span>
             </div>
           </div>
         ))}
       </div>
 
-      <p className="mx-auto mt-8 max-w-2xl text-center text-sm leading-relaxed text-[#F5EFE3]/70">
+      <p className="mx-auto mt-8 max-w-2xl text-center text-sm leading-relaxed text-[#FBF3E8]/70">
         Your client pays the same on both plans. Earning more than about ₹4,700 a month? {PREMIUM_PLAN.name} yearly costs less than the 5% it saves you.
         {' '}<Link to="/host-fees" className="font-semibold underline decoration-white/30 underline-offset-4 hover:decoration-white" style={{ color: GOLD }}>Full fee breakdown</Link>
       </p>
@@ -315,7 +293,7 @@ export default function PaymentsFeature() {
   });
 
   return (
-    <main className="overflow-x-clip bg-white text-[#12261D]">
+    <main className="overflow-x-clip bg-white text-[#201E1D]">
       <Seo
         title={seo.title}
         description={seo.description}
@@ -323,7 +301,7 @@ export default function PaymentsFeature() {
         robots="index, follow, max-image-preview:large, max-snippet:-1"
         siteName="Meeticulous"
         locale="en_IN"
-        themeColor="#0E3B2C"
+        themeColor="#3A1E10"
         ogTitle="Get paid before the session, not after."
         ogDescription={seo.description}
         image={ogCard('features-payments')}
@@ -331,32 +309,32 @@ export default function PaymentsFeature() {
       />
 
       {/* ═══════════════ 1 · HERO (editorial display + checkout demo) ═══════════════ */}
-      <section className="relative overflow-hidden bg-[#0E3B2C] px-5 pb-20 pt-8 text-[#F5EFE3] sm:px-8 lg:pb-28 lg:pt-6 lg:flex lg:min-h-[calc(100svh-57px)] lg:flex-col lg:justify-center">
-        <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-[30rem] w-[30rem] rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(233,196,106,0.16), transparent)' }} />
+      <section className="relative overflow-hidden bg-[#3A1E10] px-5 pb-20 pt-8 text-[#FBF3E8] sm:px-8 lg:pb-28 lg:pt-6 lg:flex lg:min-h-[calc(100svh-57px)] lg:flex-col lg:justify-center">
+        <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-[30rem] w-[30rem] rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(232,119,46,0.16), transparent)' }} />
         <div className="relative mx-auto grid w-full max-w-6xl items-start gap-10 lg:items-center lg:gap-14 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
-            <nav aria-label="Breadcrumb" className="text-xs text-[#F5EFE3]/55">
-              <Link to="/" className="text-[#F5EFE3]/55 hover:text-[#F5EFE3] hover:no-underline">Home</Link>
+            <nav aria-label="Breadcrumb" className="text-xs text-[#FBF3E8]/55">
+              <Link to="/" className="text-[#FBF3E8]/55 hover:text-[#FBF3E8] hover:no-underline">Home</Link>
               <span aria-hidden className="mx-2">/</span>
               <span>Features</span>
               <span aria-hidden className="mx-2">/</span>
-              <span aria-current="page" className="text-[#F5EFE3]/85">Payments</span>
+              <span aria-current="page" className="text-[#FBF3E8]/85">Payments</span>
             </nav>
-            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.1rem,3.7vw,3.2rem)] font-extrabold text-[#F5EFE3] leading-[0.98] tracking-[-0.035em]">
+            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.1rem,3.7vw,3.2rem)] font-extrabold !text-[#FBF3E8] leading-[0.98] tracking-[-0.035em]">
               Get paid before the session, <span style={{ color: GOLD }}>not after.</span>
             </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-[#F5EFE3]/75 lg:text-[17px]">
+            <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-[#FBF3E8]/75 lg:text-[17px]">
               Online payments for freelancers, coaches and consultants in India. Clients pay by UPI, card or netbanking when they book, every booking gets a GST invoice, and your payout lands in your bank.
             </Reveal>
             <Reveal instant delay={0.1} className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
               <PrimaryCta dark>Start free <ArrowRight size={16} /></PrimaryCta>
-              <a href="#keep" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F5EFE3] hover:no-underline hover:opacity-80">
+              <a href="#keep" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#FBF3E8] hover:no-underline hover:opacity-80">
                 See what you keep <ArrowRight size={15} />
               </a>
             </Reveal>
             <Reveal instant delay={0.14} className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
               {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] text-[#F5EFE3]/65">
+                <span key={t} className="flex items-center gap-1.5 text-[13px] text-[#FBF3E8]/65">
                   <Check size={14} style={{ color: GOLD }} aria-hidden /> {t}
                 </span>
               ))}
@@ -369,10 +347,10 @@ export default function PaymentsFeature() {
       </section>
 
       {/* ═══════════════ 2 · PROOF STRIP (ruled facts, no invented numbers) ═══════════════ */}
-      <section className="border-b border-black/5 bg-[#F5EFE3] px-5 sm:px-8">
+      <section className="border-b border-black/5 bg-[#FBF3E8] px-5 sm:px-8">
         <div className="mx-auto grid max-w-6xl gap-px bg-black/10 sm:grid-cols-2 lg:grid-cols-4">
           {PROOF.map((p) => (
-            <div key={p.k} className="bg-[#F5EFE3] py-7 sm:px-6">
+            <div key={p.k} className="bg-[#FBF3E8] py-7 sm:px-6">
               <div className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: GOLD_INK }}>{p.k}</div>
               <div className="mt-2 font-heading text-[15px] font-bold leading-snug">{p.v}</div>
             </div>
@@ -383,24 +361,24 @@ export default function PaymentsFeature() {
       {/* ═══════════════ 3 · WITHOUT vs WITH (editorial ledger) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-5xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-            A UPI QR in the chat is not <span className="text-[#1F6B4A]">a payment system.</span>
+          <Reveal as="h2" className="font-heading text-[clamp(0.8rem,3vw,2.35rem)] font-extrabold leading-[1.05] tracking-tight !text-ink whitespace-nowrap">
+            A UPI QR in the chat is not <span className="text-[#CC6220]">a payment system.</span>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed text-neutral-500">
             Sending your GPay number after the call works until someone forgets, or doesn&rsquo;t show up. Here is the same booking, both ways.
           </Reveal>
 
           <div className="mt-14">
-            <div className="hidden grid-cols-[1fr_1.2fr_1.2fr] gap-8 border-b-2 border-[#12261D] pb-3 text-[11px] font-bold uppercase tracking-[0.18em] md:grid">
+            <div className="hidden grid-cols-[1fr_1.2fr_1.2fr] gap-8 border-b-2 border-[#201E1D] pb-3 text-[11px] font-bold uppercase tracking-[0.18em] md:grid">
               <span />
               <span className="text-neutral-500">UPI QR + DMs</span>
-              <span className="text-[#1F6B4A]">Meeticulous</span>
+              <span className="text-[#CC6220]">Meeticulous</span>
             </div>
             {LEDGER.map((r, i) => (
               <Reveal key={r.row} delay={i * 0.04} className="grid gap-2 border-b border-black/10 py-6 md:grid-cols-[1fr_1.2fr_1.2fr] md:gap-8">
                 <h3 className="font-heading text-lg font-bold">{r.row}</h3>
                 <p className="flex items-start gap-2 text-[15px] text-neutral-500"><X size={16} className="mt-0.5 shrink-0" aria-hidden /><span><span className="sr-only">Without: </span>{r.old}</span></p>
-                <p className="flex items-start gap-2 text-[15px] font-medium text-[#12261D]"><Check size={16} className="mt-0.5 shrink-0 text-[#1F6B4A]" aria-hidden /><span><span className="sr-only">With Meeticulous: </span>{r.now}</span></p>
+                <p className="flex items-start gap-2 text-[15px] font-medium text-[#201E1D]"><Check size={16} className="mt-0.5 shrink-0 text-[#CC6220]" aria-hidden /><span><span className="sr-only">With Meeticulous: </span>{r.now}</span></p>
               </Reveal>
             ))}
           </div>
@@ -408,10 +386,10 @@ export default function PaymentsFeature() {
       </section>
 
       {/* ═══════════════ 4 · HOW IT WORKS (minute-by-minute timeline) ═══════════════ */}
-      <section className="bg-[#F5EFE3] px-5 py-20 sm:px-8 lg:py-28">
+      <section className="bg-[#FBF3E8] px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-5xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-            What happens the minute <span className="text-[#1F6B4A]">a client pays.</span>
+          <Reveal as="h2" className="font-heading text-[clamp(0.8rem,3vw,2.35rem)] font-extrabold leading-[1.05] tracking-tight !text-ink whitespace-nowrap">
+            What happens the minute <span className="text-[#CC6220]">a client pays.</span>
           </Reveal>
           <ol className="mt-14">
             {TIMELINE.map((s, i) => (
@@ -432,23 +410,33 @@ export default function PaymentsFeature() {
       {/* ═══════════════ 5 · CAPABILITIES (bento with one dark cell) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-            The money admin, <span className="text-[#1F6B4A]">already done.</span>
+          <Reveal as="h2" className="font-heading text-[clamp(0.8rem,3vw,2.35rem)] font-extrabold leading-[1.05] tracking-tight !text-ink whitespace-nowrap">
+            The money admin, <span className="text-[#CC6220]">already done.</span>
           </Reveal>
           <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-3">
-            <Reveal className="flex flex-col justify-between rounded-[24px] bg-[#0E3B2C] p-7 text-[#F5EFE3] md:col-span-2 md:row-span-2">
+            <Reveal className="flex flex-col justify-between rounded-[24px] bg-[#3A1E10] p-7 text-[#FBF3E8] md:col-span-2 md:row-span-2">
               <div>
-                <span className="flex h-11 w-11 items-center justify-center rounded-[16px]" style={{ background: 'rgba(233,196,106,0.15)', color: GOLD }}><Wallet size={21} aria-hidden /></span>
-                <h3 className="mt-5 font-heading text-2xl font-bold text-[#F5EFE3]">Paid, held, then released</h3>
-                <p className="mt-2 max-w-md text-[15px] leading-relaxed text-[#F5EFE3]/70">The transfer is created the moment your client pays, held until about a day after the session, then released to your bank. Each one shows up in your Payouts dashboard.</p>
+                <div className="flex items-center gap-3.5">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[16px]" style={{ background: 'rgba(232,119,46,0.15)', color: GOLD }}><Wallet size={21} aria-hidden /></span>
+                  <h3 className="mb-0 font-heading text-2xl font-bold text-[#FBF3E8]">Paid, held, then released</h3>
+                </div>
+                <p className="mt-2 max-w-md text-[15px] leading-relaxed text-[#FBF3E8]/70">The transfer is created the moment your client pays, held until about a day after the session, then released to your bank. Each one shows up in your Payouts dashboard.</p>
               </div>
-              <ImgSlot slot="payouts-dashboard" alt="The Meeticulous payouts dashboard showing held and released payouts" className="mt-7 aspect-[16/9] w-full" dark />
+              <img
+                src="/features/payment.png"
+                alt="The Meeticulous payouts dashboard showing held and released payouts"
+                loading="lazy"
+                decoding="async"
+                className="mx-auto mt-7 w-full max-w-lg"
+              />
             </Reveal>
             {CAPS.map((c, i) => (
               <Reveal key={c.title} delay={(i % 3) * 0.05} className="rounded-[24px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-                <span className="flex h-10 w-10 items-center justify-center rounded-[16px] bg-[#1F6B4A]/10 text-[#1F6B4A]"><c.icon size={19} aria-hidden /></span>
-                <h3 className="mt-4 font-heading text-lg font-bold">{c.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-neutral-500">{c.body}</p>
+                <div className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[16px] bg-[#CC6220]/10 text-[#CC6220]"><c.icon size={19} aria-hidden /></span>
+                  <h3 className="mb-0 font-heading text-base font-bold leading-snug">{c.title}</h3>
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-neutral-500">{c.body}</p>
               </Reveal>
             ))}
           </div>
@@ -456,13 +444,13 @@ export default function PaymentsFeature() {
       </section>
 
       {/* ═══════════════ 6 · THE DIFFERENCE (what-you-keep calculator) ═══════════════ */}
-      <section id="keep" className="scroll-mt-20 bg-[#0E3B2C] px-5 py-20 text-[#F5EFE3] sm:px-8 lg:py-28">
+      <section id="keep" className="scroll-mt-20 bg-[#3A1E10] px-5 py-20 text-[#FBF3E8] sm:px-8 lg:py-28">
         <div className="mx-auto max-w-4xl">
           <div className="text-center">
-            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#F5EFE3] sm:text-5xl">
+            <Reveal as="h2" className="font-heading text-[clamp(0.9rem,4vw,3rem)] font-extrabold leading-[1.05] tracking-tight !text-[#FBF3E8] whitespace-nowrap">
               See exactly <span style={{ color: GOLD }}>what you keep.</span>
             </Reveal>
-            <Reveal as="p" delay={0.05} className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-[#F5EFE3]/70">
+            <Reveal as="p" delay={0.05} className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-[#FBF3E8]/70">
               No hidden cuts. Move the slider and every deduction shows up, on both plans.
             </Reveal>
           </div>
@@ -472,7 +460,7 @@ export default function PaymentsFeature() {
 
       {/* ═══════════════ 7 · TESTIMONIALS (featured pull-quote + ruled list) ═══════════════ */}
       {QUOTES.length > 0 && (
-        <section className="bg-[#F5EFE3] px-5 py-20 sm:px-8 lg:py-28">
+        <section className="bg-[#FBF3E8] px-5 py-20 sm:px-8 lg:py-28">
           <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-[1.3fr_1fr] lg:gap-20">
             <Reveal as="figure">
               <span aria-hidden className="block font-heading text-[96px] leading-[0.6]" style={{ color: GOLD_INK }}>&ldquo;</span>
@@ -488,7 +476,7 @@ export default function PaymentsFeature() {
             <div className="lg:pt-6">
               {QUOTES.slice(1).map((t, i) => (
                 <Reveal as="figure" key={t.name} delay={i * 0.05} className="border-t border-black/10 py-6 first:border-t-0 first:pt-0">
-                  <blockquote className="text-[15px] leading-relaxed text-[#12261D]">&ldquo;{t.quote}&rdquo;</blockquote>
+                  <blockquote className="text-[15px] leading-relaxed text-[#201E1D]">&ldquo;{t.quote}&rdquo;</blockquote>
                   <figcaption className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-neutral-500">{t.name} · <span className="font-medium normal-case tracking-normal">{t.role}</span></figcaption>
                 </Reveal>
               ))}
@@ -501,51 +489,46 @@ export default function PaymentsFeature() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-          <div className="lg:sticky lg:top-28 lg:self-start">
-            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-              Money questions, <span className="text-[#1F6B4A]">answered.</span>
-            </Reveal>
-            <Reveal as="p" delay={0.05} className="mt-5 text-base text-neutral-500">
-              Every fee is also listed on our <Link to="/host-fees" className="font-semibold text-[#1F6B4A] underline underline-offset-4">host fees page</Link>.
-            </Reveal>
-          </div>
-          <div className="border-t border-black/10">
-            {FAQ.map((f, i) => (
-              <details key={f.q} className="group border-b border-black/10" open={i === 0}>
-                <summary className="flex cursor-pointer list-none items-start gap-5 py-5 [&::-webkit-details-marker]:hidden">
-                  <span className="pt-0.5 font-heading text-sm font-extrabold tabular-nums" style={{ color: GOLD_INK }}>{String(i + 1).padStart(2, '0')}</span>
-                  <span className="flex-1 font-heading text-[17px] font-bold">{f.q}</span>
-                  <span aria-hidden className="pt-0.5 text-xl leading-none text-neutral-400 transition-transform group-open:rotate-45">+</span>
-                </summary>
-                <p className="pb-6 pl-10 pr-6 text-[15px] leading-relaxed text-neutral-600">{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
+        <FeatureFaq
+          containerClassName="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16"
+          headingClassName="lg:sticky lg:top-28 lg:self-start"
+          heading={(
+            <>
+              <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-ink sm:text-5xl">
+                Money questions, <span className="text-[#CC6220]">answered.</span>
+              </Reveal>
+              <Reveal as="p" delay={0.05} className="mt-5 text-base text-neutral-500">
+                Every fee is also listed on our <Link to="/host-fees" className="font-semibold text-[#CC6220] underline underline-offset-4">host fees page</Link>.
+              </Reveal>
+            </>
+          )}
+          items={FAQ}
+          listClassName="border-t border-black/10"
+          itemClassName="border-b border-black/10"
+          summaryClassName="flex items-start gap-5 py-5"
+          answerClassName="pb-6 pl-10 pr-6 text-[15px] leading-relaxed text-neutral-600"
+          renderSummary={(f, i, open) => (
+            <>
+              <span className="pt-0.5 font-heading text-sm font-extrabold tabular-nums" style={{ color: GOLD_INK }}>{String(i + 1).padStart(2, '0')}</span>
+              <span className="flex-1 font-heading text-[17px] font-bold">{f.q}</span>
+              <span aria-hidden className={`pt-0.5 text-xl leading-none text-neutral-400 transition-transform ${open ? 'rotate-45' : ''}`}>+</span>
+            </>
+          )}
+        />
       </section>
 
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
-      <section className="bg-[#0E3B2C] px-5 py-20 text-[#F5EFE3] sm:px-8 lg:py-28">
+      <section className="bg-[#3A1E10] px-5 py-20 text-[#FBF3E8] sm:px-8 lg:py-28">
         <div className="mx-auto max-w-5xl text-center">
-          <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.4rem)] font-extrabold text-[#F5EFE3] leading-[0.98] tracking-[-0.035em]">
+          <Reveal as="h2" className="font-heading text-[clamp(1rem,5vw,2.9rem)] font-extrabold !text-[#FBF3E8] leading-[1.02] tracking-[-0.035em] whitespace-nowrap">
             Stop chasing payments. <span style={{ color: GOLD }}>Get paid first.</span>
           </Reveal>
-          <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-[#F5EFE3]/70">
+          <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-[#FBF3E8]/70">
             Set up your booking page free. Your first client pays before they show up.
           </Reveal>
-          <Reveal delay={0.1} className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
+          <Reveal delay={0.1} className="mt-9 flex justify-center">
             <PrimaryCta dark>Start free <ArrowRight size={16} /></PrimaryCta>
-            <Link to="/pricing" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F5EFE3] hover:no-underline hover:opacity-80">
-              See pricing <ArrowRight size={15} />
-            </Link>
           </Reveal>
-          <nav aria-label="Related features" className="mt-14 flex flex-wrap justify-center gap-x-6 gap-y-2 border-t border-white/10 pt-8 text-sm text-[#F5EFE3]/55">
-            <span className="flex items-center gap-1.5"><IndianRupee size={14} aria-hidden /> Works with</span>
-            {RELATED.map((r) => (
-              <Link key={r.to} to={r.to} className="text-[#F5EFE3]/80 underline decoration-white/20 underline-offset-4 hover:text-[#F5EFE3] hover:decoration-white">{r.label}</Link>
-            ))}
-          </nav>
         </div>
       </section>
     </main>

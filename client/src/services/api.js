@@ -2,8 +2,25 @@ import axios from 'axios';
 import { getAttribution } from '../utils/attribution';
 import { batchedImport } from '../utils/batchImport';
 
+// Resolve the API base. VITE_API_URL stays ABSOLUTE (…onrender.com/api) so the
+// build-time prerender script and its request-interceptor proxy keep working. But
+// in a real production browser we prefer same-origin `/api`, which Vercel rewrites
+// to the origin AND edge-caches (client/vercel.json x-vercel-enable-rewrite-caching)
+// — so a traffic spike of public reads is served from the edge, not the one Render
+// instance. Skipped on localhost: dev and the prerender static server (localhost:4173)
+// must use the absolute base (the prerender proxies those calls through Node).
+function resolveApiBase() {
+  const configured = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  if (typeof window !== 'undefined' && import.meta.env.PROD) {
+    const h = window.location.hostname;
+    const isLocal = h === 'localhost' || h === '127.0.0.1' || h === '::1' || h === '[::1]';
+    if (!isLocal) return '/api';
+  }
+  return configured;
+}
+
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: resolveApiBase(),
   timeout: 30000, // give up on a stalled request instead of hanging forever
 });
 
@@ -444,6 +461,9 @@ export const deleteService    = (id)             => API.delete(`/host/services/$
 export const setAvailability  = (data)           => API.put('/host/availability', data);
 export const getAvailability  = ()               => API.get('/host/availability');
 export const searchVendors    = (q)              => API.get('/host/search', { params: { q } });
+// Profile views (v3.205): public beacon on profile load + the host's own count.
+export const recordProfileView = (username)      => API.post(`/host/${encodeURIComponent(username)}/view`).catch(() => {});
+export const getMyProfileViews = ()              => API.get('/host/profile-views');
 
 // ── Coupons (v3.204, behind the `coupons` flag) ───────────────
 // Guest: preview a discount before booking. Host: manage own codes.
@@ -452,6 +472,13 @@ export const getHostCoupons    = ()                => API.get('/host/coupons');
 export const createHostCoupon  = (data)            => API.post('/host/coupons', data);
 export const updateHostCoupon  = (id, data)        => API.patch(`/host/coupons/${id}`, data);
 export const deleteHostCoupon  = (id)              => API.delete(`/host/coupons/${id}`);
+
+// ── Testimonials (v3.212, host-authored proof wall) ───────────
+export const getMyTestimonials   = ()               => API.get('/host/testimonials');
+export const createTestimonial   = (data)           => API.post('/host/testimonials', data);
+export const updateTestimonial   = (id, data)       => API.put(`/host/testimonials/${id}`, data);
+export const deleteTestimonial   = (id)             => API.delete(`/host/testimonials/${id}`);
+export const getHostTestimonials = (username)       => API.get(`/host/${username}/testimonials`); // public proof wall
 
 // ── Bookings ──────────────────────────────────────────────────
 export const createBooking     = (data)            => API.post('/bookings', data);
@@ -519,6 +546,9 @@ export const uploadProductFile = (file) => {
 // ── Vendor dashboard ──────────────────────────────────────────
 // Activation funnel: stamp the host's first link-share (fire-and-forget, never blocks UX).
 export const markLinkShared     = ()          => API.post('/vendor/share-signal').catch(() => {});
+// The host's assigned account manager, or null. Soft-fails to null so the UI can
+// fall back to the generic support link without surfacing an error.
+export const getMyAccountManager = ()          => API.get('/vendor/account-manager').then((r) => r.data).catch(() => ({ account_manager: null }));
 // Dashboard "Next step" nudge — server-tracked dismissal (cross-device).
 export const getHostNudges      = ()           => API.get('/host/nudges');
 export const dismissHostNudge   = (key)        => API.post(`/host/nudges/${key}/dismiss`);
@@ -564,6 +594,17 @@ export const downloadProduct     = (token)    => API.get(`/products/download/${t
 export const freeDownloadProduct = (data)     => API.post('/products/free-download', data);
 // Re-issue a lapsed download link (OTP-gated server-side).
 export const resendProductLink   = (data)     => API.post('/products/resend-link', data);
+
+// ── Video Courses ─────────────────────────────────────────────
+export const createCourse        = (data)     => API.post('/courses', data);
+export const getMyCourses        = ()         => API.get('/courses/mine/all');
+export const updateCourse        = (id, data) => API.put(`/courses/${id}`, data);
+export const deleteCourse        = (id)       => API.delete(`/courses/${id}`);
+export const getCoursePublic     = (username, slug) => API.get(`/courses/p/${encodeURIComponent(username)}/${encodeURIComponent(slug)}`);
+export const getCourseContent    = (id)       => API.get(`/courses/${id}/content`);
+export const getPurchasedCourses = ()         => API.get('/courses/purchased');
+export const createCourseOrder   = (data)     => API.post('/courses/create-order', data);
+export const verifyCoursePayment = (data)     => API.post('/courses/verify', data);
 
 // ── Admin ─────────────────────────────────────────────────────
 export const adminGetStats       = ()          => API.get('/admin/stats');

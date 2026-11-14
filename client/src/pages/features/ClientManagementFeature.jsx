@@ -8,8 +8,8 @@
 //   1 Hero + live demo · 2 Proof strip · 3 Without vs with · 4 How it works ·
 //   5 Capabilities · 6 The difference · 7 Testimonials · 8 FAQ · 9 Final CTA
 //
-// Design system B "Calm cream": soft cream grounds, warm orange accent (#2B0A14
-// for text and CTA fills, peach tints for surfaces), pill chips, an avatar-count
+// Design system B "Calm cream": soft cream grounds, Gajju purple accent (#8E5BC7
+// for highlights and CTA fills, light-purple tints for surfaces), pill chips, an avatar-count
 // pill motif. Gentle and human, not dashboardy. Mechanics unique to this page:
 // clickable client list + client card (hero) · avatar-stack pill with fact chips ·
 // scattered-sources pile vs one client profile · three soft "builds itself" cards ·
@@ -27,7 +27,8 @@
 // Tags are NOT claimed (no UI to add them yet). No usage stats, no ratings.
 // Testimonials are the real, consented quotes from data/testimonials.js.
 //
-// IMAGES: empty ImgSlot placeholders (data-img-slot names the photo to supply).
+// IMAGES: /features/client-management.png in the first capability row (the
+// client-profile card); the notes and list rows are still ImgSlot placeholders.
 // Global Navbar + Footer come from App.jsx. No hover uplift anywhere.
 
 import { useEffect, useState } from 'react';
@@ -45,15 +46,16 @@ import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
 import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
+import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
-const CREAM = '#FBF6EE';      // page ground
-const CREAM_DEEP = '#F4EBDD'; // alternate section ground
-const PEACH = '#FCE7DA';      // soft accent surface
-const ACCENT = '#2B0A14';     // text + CTA fill (AA on cream and with white text)
-const INK = '#2A211B';        // warm ink
-const MUTED = '#6B5D52';      // body copy on cream (AA)
-const TINTS = ['#FCE3D3', '#F7E6C4', '#F9D9CF', '#EFE4D6']; // avatar backgrounds
+const CREAM = '#FAF4E9';      // page ground (Gajju cream)
+const CREAM_DEEP = '#F2EBDE'; // alternate section ground (deeper cream)
+const PEACH = '#F1ECF9';      // soft accent surface (light purple)
+const ACCENT = '#8E5BC7';     // Gajju purple — highlights + CTA fill (with white text)
+const INK = '#201E1D';        // ink
+const MUTED = '#605B68';      // body copy on cream (AA)
+const TINTS = ['#EDE7F7', '#F6E7D2', '#F3DCEA', '#E7E1F4']; // avatar backgrounds (Gajju pastels)
 
 // Same cap the server applies on the free plan (planService limits.crm).
 export const FREE_CRM_CLIENTS = 10;
@@ -127,6 +129,7 @@ const ROWS = [
     body: 'Open a client and see each past and upcoming session, how much they have spent with you, when they last came, and any no-shows. Anyone who books more than once gets a Recurring badge, and their reviews sit right there too.',
     slot: 'client-management-detail',
     alt: 'A client card in the Meeticulous dashboard with booking history, total spent and a Recurring badge',
+    img: '/features/client-management.png',
   },
   {
     icon: NotebookPen,
@@ -134,6 +137,7 @@ const ROWS = [
     body: 'Jot down what matters before the next call: goals, preferences, where you left off. Notes stay in your dashboard and are never shown to your client.',
     slot: 'client-management-notes',
     alt: 'A host typing a private note on a client profile before a session',
+    img: '/features/client-management-notes.png',
   },
   {
     icon: Search,
@@ -141,6 +145,7 @@ const ROWS = [
     body: 'Search by name, phone or email. Sort by most recent or top spend, or filter to lapsed regulars: people with two or more bookings, nothing upcoming, and no visit in 60 days. Download your list as a CSV whenever you like.',
     slot: 'client-management-list',
     alt: 'The client list with search, top-spend sort, the Lapsed filter and the Export CSV button',
+    img: '/features/client-management-list.png',
   },
 ];
 
@@ -157,20 +162,13 @@ const FAQ = [
   { q: 'Do abandoned checkouts show up as clients?', a: 'No. Someone who started a booking but never paid is not added. Only confirmed bookings count.' },
 ];
 
-const RELATED = [
-  { to: '/features/online-scheduling', label: 'Online scheduling' },
-  { to: '/features/notifications', label: 'Reminders' },
-  { to: '/features/reviews', label: 'Reviews' },
-  { to: '/features/analytics', label: 'Analytics' },
-];
-
 /* ─────────────────────────────  PIECES  ────────────────────────────── */
 
 function PrimaryCta({ to = START, children }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white shadow-[0_10px_30px_-10px_rgba(194,61,0,0.45)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white transition-opacity hover:no-underline hover:opacity-90"
       style={{ background: ACCENT }}
     >
       {children}
@@ -209,10 +207,10 @@ function ImgSlot({ alt, slot, className = '' }) {
       role="img"
       aria-label={alt}
       data-img-slot={slot}
-      className={`flex items-center justify-center rounded-[16px] border border-black/5 ${className}`}
-      style={{ background: 'repeating-linear-gradient(135deg, rgba(194,61,0,0.04) 0 10px, rgba(194,61,0,0.08) 10px 20px)' }}
+      className={`flex items-center justify-center rounded-[16px] ${className}`}
+      style={{ background: 'repeating-linear-gradient(135deg, rgba(142,91,199,0.04) 0 10px, rgba(142,91,199,0.08) 10px 20px)' }}
     >
-      <ImageIcon size={28} style={{ color: 'rgba(194,61,0,0.35)' }} aria-hidden />
+      <ImageIcon size={28} style={{ color: 'rgba(142,91,199,0.35)' }} aria-hidden />
     </div>
   );
 }
@@ -237,7 +235,7 @@ function ClientCardDemo() {
 
   return (
     <div className="mx-auto w-full max-w-[34rem]">
-      <div className="overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_30px_70px_-35px_rgba(122,60,20,0.35)]">
+      <div className="overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_30px_70px_-35px_rgba(117,71,173,0.35)]">
         <div className="flex items-center justify-between border-b border-black/5 px-5 py-3.5">
           <span className="font-heading text-sm font-bold" style={{ color: INK }}>Clients</span>
           <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold" style={{ background: PEACH, color: ACCENT }}>
@@ -313,7 +311,7 @@ function ClientCardDemo() {
                   onFocus={() => setPaused(true)}
                   onChange={(e) => { const v = e.target.value; setNotes((n) => n.map((x, i) => (i === active ? v : x))); }}
                   className="mt-1.5 w-full resize-none rounded-[16px] border border-black/10 bg-white px-3 py-2 text-[13px] focus:outline-none focus:ring-2"
-                  style={{ color: INK, '--tw-ring-color': 'rgba(194,61,0,0.3)' }}
+                  style={{ color: INK, '--tw-ring-color': 'rgba(142,91,199,0.3)' }}
                 />
               </motion.div>
             </AnimatePresence>
@@ -391,8 +389,8 @@ function PlanLens() {
             {rows.map(([k, a, b]) => (
               <tr key={k}>
                 <th scope="row" className="px-4 py-3.5 font-medium sm:px-5" style={{ color: INK }}>{k}</th>
-                <td className="px-3 py-3.5 transition-colors" style={{ color: free ? INK : MUTED, background: free ? 'rgba(252,231,218,0.45)' : undefined }}>{a}</td>
-                <td className="px-3 py-3.5 transition-colors sm:pr-5" style={{ color: free ? MUTED : INK, background: free ? undefined : 'rgba(252,231,218,0.45)' }}>{b}</td>
+                <td className="px-3 py-3.5 transition-colors" style={{ color: free ? INK : MUTED, background: free ? 'rgba(246,227,198,0.45)' : undefined }}>{a}</td>
+                <td className="px-3 py-3.5 transition-colors sm:pr-5" style={{ color: free ? MUTED : INK, background: free ? undefined : 'rgba(246,227,198,0.45)' }}>{b}</td>
               </tr>
             ))}
           </tbody>
@@ -445,7 +443,7 @@ export default function ClientManagementFeature() {
 
       {/* ═══════════════ 1 · HERO (client list + client card demo) ═══════════════ */}
       <section className="relative overflow-hidden px-5 pb-20 pt-8 sm:px-8 lg:pb-28 lg:pt-6 lg:flex lg:min-h-[calc(100svh-57px)] lg:flex-col lg:justify-center">
-        <div aria-hidden className="pointer-events-none absolute -left-40 top-10 h-[28rem] w-[28rem] rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(252,231,218,0.9), transparent)' }} />
+        <div aria-hidden className="pointer-events-none absolute -left-40 top-10 h-[28rem] w-[28rem] rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(246,227,198,0.9), transparent)' }} />
         <div className="relative mx-auto grid w-full max-w-6xl items-start gap-10 lg:items-center lg:gap-14 lg:grid-cols-[0.95fr_1.05fr]">
           <div>
             <nav aria-label="Breadcrumb" className="text-xs" style={{ color: MUTED }}>
@@ -502,7 +500,7 @@ export default function ClientManagementFeature() {
       {/* ═══════════════ 3 · WITHOUT vs WITH (scattered sources vs one profile) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className={`max-w-3xl ${h2}`}>
+          <Reveal as="h2" style={{ color: INK }} className="font-heading text-[clamp(0.75rem,3vw,2.3rem)] font-extrabold leading-[1.08] tracking-tight whitespace-nowrap">
             Your clients are in five apps. <span style={{ color: ACCENT }}>They should be in one.</span>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed" style={{ color: MUTED }}>
@@ -561,7 +559,7 @@ export default function ClientManagementFeature() {
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: CREAM_DEEP }}>
         <div className="mx-auto max-w-6xl">
           <div className="text-center">
-            <Reveal as="h2" className={h2}>
+            <Reveal as="h2" style={{ color: INK }} className={h2}>
               The list <span style={{ color: ACCENT }}>builds itself.</span>
             </Reveal>
             <Reveal as="p" delay={0.05} className="mx-auto mt-5 max-w-xl text-base leading-relaxed" style={{ color: MUTED }}>
@@ -586,19 +584,31 @@ export default function ClientManagementFeature() {
       {/* ═══════════════ 5 · CAPABILITIES (alternating text and image rows) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className={`max-w-3xl ${h2}`}>
+          <Reveal as="h2" style={{ color: INK }} className="font-heading text-[clamp(0.75rem,3vw,2.3rem)] font-extrabold leading-[1.08] tracking-tight whitespace-nowrap">
             Know who you are talking to <span style={{ color: ACCENT }}>before you say hello.</span>
           </Reveal>
           <div className="mt-16 space-y-20 lg:space-y-24">
             {ROWS.map((r, i) => (
               <div key={r.title} className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
                 <Reveal className={i % 2 ? 'lg:order-2' : ''}>
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full" style={{ background: PEACH, color: ACCENT }}><r.icon size={20} aria-hidden /></span>
-                  <h3 className="mt-5 font-heading text-2xl font-bold sm:text-3xl" style={{ color: INK }}>{r.title}</h3>
-                  <p className="mt-3 max-w-lg text-base leading-relaxed" style={{ color: MUTED }}>{r.body}</p>
+                  <div className="flex items-center gap-4">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full" style={{ background: PEACH, color: ACCENT }}><r.icon size={20} aria-hidden /></span>
+                    <h3 className="mb-0 font-heading text-2xl font-bold sm:text-3xl" style={{ color: INK }}>{r.title}</h3>
+                  </div>
+                  <p className="mt-4 max-w-lg text-base leading-relaxed" style={{ color: MUTED }}>{r.body}</p>
                 </Reveal>
                 <Reveal delay={0.06} className={i % 2 ? 'lg:order-1' : ''}>
-                  <ImgSlot slot={r.slot} alt={r.alt} className="aspect-[4/3] w-full" />
+                  {r.img ? (
+                    <img
+                      src={r.img}
+                      alt={r.alt}
+                      loading="lazy"
+                      decoding="async"
+                      className="aspect-[3/2] w-full rounded-[16px] object-cover"
+                    />
+                  ) : (
+                    <ImgSlot slot={r.slot} alt={r.alt} className="aspect-[4/3] w-full" />
+                  )}
                 </Reveal>
               </div>
             ))}
@@ -619,7 +629,7 @@ export default function ClientManagementFeature() {
       {/* ═══════════════ 6 · THE DIFFERENCE (plan toggle over an avatar grid) ═══════════════ */}
       <section id="plans" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:py-28" style={{ background: CREAM_DEEP }}>
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className={`max-w-3xl ${h2}`}>
+          <Reveal as="h2" style={{ color: INK }} className="font-heading text-[clamp(0.75rem,3vw,2.3rem)] font-extrabold leading-[1.08] tracking-tight whitespace-nowrap">
             Free to start. <span style={{ color: ACCENT }}>Everyone, when you grow.</span>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed" style={{ color: MUTED }}>
@@ -637,7 +647,7 @@ export default function ClientManagementFeature() {
       {QUOTES.length > 0 && (
         <section className="px-5 py-20 sm:px-8 lg:py-28">
           <div className="mx-auto max-w-6xl">
-            <Reveal as="h2" className={`mx-auto max-w-3xl text-center ${h2}`}>
+            <Reveal as="h2" style={{ color: INK }} className={`mx-auto max-w-3xl text-center ${h2}`}>
               Less admin, <span style={{ color: ACCENT }}>more people.</span>
             </Reveal>
             <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-3">
@@ -660,29 +670,32 @@ export default function ClientManagementFeature() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: CREAM_DEEP }}>
-        <div className="mx-auto max-w-3xl">
-          <Reveal as="h2" className={`text-center ${h2}`}>
-            Questions, <span style={{ color: ACCENT }}>gently answered.</span>
-          </Reveal>
-          <div className="mt-12 divide-y divide-black/5 overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-            {FAQ.map((f, i) => (
-              <details key={f.q} className="group open:bg-[#FFF8F2]" open={i === 0}>
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 [&::-webkit-details-marker]:hidden">
-                  <span className="font-heading text-[16px] font-bold" style={{ color: INK }}>{f.q}</span>
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-transform group-open:rotate-180" style={{ background: PEACH, color: ACCENT }}>
-                    <ChevronDown size={15} aria-hidden />
-                  </span>
-                </summary>
-                <p className="px-6 pb-6 text-[15px] leading-relaxed" style={{ color: MUTED }}>{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
+        <FeatureFaq
+          heading={(
+            <Reveal as="h2" style={{ color: INK }} className={h2}>
+              Questions, <span style={{ color: ACCENT }}>gently answered.</span>
+            </Reveal>
+          )}
+          items={FAQ}
+          listClassName="divide-y divide-black/5 overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]"
+          itemClassName={(open) => (open ? 'bg-neutral-50' : '')}
+          summaryClassName="flex items-center justify-between gap-4 px-6 py-5"
+          answerClassName="px-6 pb-6 text-[15px] leading-relaxed"
+          answerStyle={{ color: MUTED }}
+          renderSummary={(f, i, open) => (
+            <>
+              <span className="font-heading text-[16px] font-bold" style={{ color: INK }}>{f.q}</span>
+              <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-transform ${open ? 'rotate-180' : ''}`} style={{ background: PEACH, color: ACCENT }}>
+                <ChevronDown size={15} aria-hidden />
+              </span>
+            </>
+          )}
+        />
       </section>
 
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-4xl rounded-[16px] px-6 py-14 text-center sm:px-12" style={{ background: PEACH }}>
+      <section className="px-5 py-20 text-center sm:px-8 lg:py-28" style={{ background: PEACH }}>
+        <div className="mx-auto max-w-4xl">
           <Reveal className="flex justify-center">
             <AvatarStackPill names={SAMPLE_CLIENTS.map((c) => c.name)} label="Your next client, already remembered" />
           </Reveal>
@@ -692,19 +705,9 @@ export default function ClientManagementFeature() {
           <Reveal as="p" delay={0.08} className="mx-auto mt-5 max-w-xl text-base leading-relaxed" style={{ color: MUTED }}>
             Set up your booking page free. Your client list starts with your first booking.
           </Reveal>
-          <Reveal delay={0.1} className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
+          <Reveal delay={0.1} className="mt-9 flex justify-center">
             <PrimaryCta>Start free <ArrowRight size={16} /></PrimaryCta>
-            <Link to="/pricing" className="inline-flex items-center gap-1.5 text-sm font-semibold hover:no-underline hover:opacity-80" style={{ color: ACCENT }}>
-              See pricing <ArrowRight size={15} />
-            </Link>
           </Reveal>
-          <nav aria-label="Related features" className="mt-12 flex flex-wrap justify-center gap-2 border-t border-black/5 pt-8">
-            {RELATED.map((r) => (
-              <Link key={r.to} to={r.to} className="rounded-full border border-black/5 bg-white px-3.5 py-1.5 text-[13px] font-semibold transition-colors hover:no-underline hover:border-[#2B0A14]/40" style={{ color: INK }}>
-                {r.label}
-              </Link>
-            ))}
-          </nav>
         </div>
       </section>
     </main>

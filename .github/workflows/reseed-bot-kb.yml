@@ -26,6 +26,11 @@ on:
       - "server/scripts/data/botFaqs.json"
   workflow_dispatch:
 
+# Default is read-only; the failure alert opens/updates an ops-alert issue.
+permissions:
+  contents: read
+  issues: write
+
 concurrency:
   group: reseed-bot-kb
   cancel-in-progress: false
@@ -42,6 +47,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # ASH-89/#7: fail fast BEFORE touching prod if a prod secret is missing OR is
+      # the wrong role (anon/publishable pasted into the service_role slot — the exact
+      # bug that silently broke this reseed). Decodes the JWT `role` claim.
+      - name: Secret guard (presence + service_role)
+        run: |
+          bash scripts/check-prod-secrets.sh
+          [ -z "$VOYAGE_API_KEY" ] && echo "::warning::VOYAGE_API_KEY not set — kb_chunks will be FTS-only (no embeddings)." || true
+        env:
+          PROD_SUPABASE_URL: ${{ secrets.PROD_SUPABASE_URL }}
+          PROD_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.PROD_SUPABASE_SERVICE_ROLE_KEY }}
+          VOYAGE_API_KEY: ${{ secrets.VOYAGE_API_KEY }}
+
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
@@ -49,19 +66,6 @@ jobs:
           cache-dependency-path: server/package-lock.json
 
       - run: npm ci
-
-      - name: Guard — prod Supabase secrets must be set
-        run: |
-          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
-            echo "::error::PROD_SUPABASE_URL / PROD_SUPABASE_SERVICE_ROLE_KEY not set — cannot reseed."
-            exit 1
-          fi
-          [ -z "$VOYAGE_API_KEY" ] && echo "::warning::VOYAGE_API_KEY not set — kb_chunks will be FTS-only (no embeddings)."
-          echo "ok"
-        env:
-          SUPABASE_URL: ${{ secrets.PROD_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.PROD_SUPABASE_SERVICE_ROLE_KEY }}
-          VOYAGE_API_KEY: ${{ secrets.VOYAGE_API_KEY }}
 
       - name: Reseed kb_chunks + bot_faqs
         run: |
@@ -81,3 +85,32 @@ jobs:
           # to manage for no benefit. Deliberately NOT fixed in config/supabase.js:
           # on the live server a missing anon key SHOULD fail loudly.
           SUPABASE_ANON_KEY: unused-by-seed-scripts
+
+      # ASH-89/#7 Part 3: a failed prod-writing run must be LOUD, not a red run nobody
+      # sees. Reuses GitHub (the existing channel) with the default token — no new
+      # secret: opens one deduped `ops-alert` issue (reused while open) that pings
+      # watchers. Upgrade to a WhatsApp/Brevo push later by adding that key as a secret.
+      - name: Alert ops on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = 'ops-alert: Reseed Tithi KB failed';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = [
+              `**Reseed Tithi KB** failed on \`${context.ref}\` — the bot KB (kb_chunks + bot_faqs) may be stale.`,
+              '',
+              `Run: ${runUrl}`,
+              '',
+              'Most likely a missing/wrong-role prod secret (the guard step prints which) — fix it in Settings → Secrets and re-run. This issue auto-dedupes while open.',
+            ].join('\n');
+            const { owner, repo } = context.repo;
+            const existing = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: 'open', labels: 'ops-alert', per_page: 100,
+            });
+            const hit = existing.find(i => i.title === title);
+            if (hit) {
+              await github.rest.issues.createComment({ owner, repo, issue_number: hit.number, body });
+            } else {
+              await github.rest.issues.create({ owner, repo, title, body, labels: ['ops-alert'] });
+            }

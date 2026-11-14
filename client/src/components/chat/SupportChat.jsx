@@ -182,6 +182,8 @@ export default function SupportChat() {
 
   // Realtime: subscribe to this thread's broadcast channel. Anon client is fine —
   // broadcast needs no RLS, and the channel name is the unguessable thread uuid.
+  // Broadcast delivery is best-effort, so a visible-tab poll backs it up: without
+  // it a dropped ping leaves a reply sitting in the DB, unseen until a refresh.
   useEffect(() => {
     if (!thread?.id) return undefined;
     let cancelled = false;
@@ -201,8 +203,20 @@ export default function SupportChat() {
         .subscribe();
       chanRef.current = chan;
     })();
+
+    // Poll fallback — reconcile against server history while the tab is visible.
+    // `append` dedupes by id, so re-seeing known messages is a no-op; only genuinely
+    // missed replies get added.
+    const poll = setInterval(() => {
+      if (document.visibilityState !== 'visible') return;
+      getSupportMessages(thread.id)
+        .then(({ data }) => { (data.messages || []).forEach(append); })
+        .catch(() => {});
+    }, 20000);
+
     return () => {
       cancelled = true;
+      clearInterval(poll);
       if (chanRef.current) getSupabase().then((sb) => sb.removeChannel(chanRef.current)).catch(() => {});
     };
   }, [thread?.id, append]);

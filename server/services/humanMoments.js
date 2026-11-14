@@ -29,6 +29,7 @@
 const { supabaseAdmin } = require('../config/supabase');
 const { isFeatureEnabled } = require('./featureFlags');
 const notificationEngine = require('./notificationEngine');
+const { alreadyNotified } = require('../utils/notificationDedupe');
 
 const DAY_MS = 86400000;
 const BASE = () => process.env.CLIENT_URL || 'https://meeticulous.com';
@@ -42,15 +43,7 @@ const firstName = (full) => (full || '').trim().split(/\s+/)[0] || 'there';
 
 async function alreadySent(event, destination, days) {
   if (!destination) return true;
-  const since = new Date(Date.now() - days * DAY_MS).toISOString();
-  const { data } = await supabaseAdmin
-    .from('notification_logs')
-    .select('id')
-    .eq('event', event)
-    .eq('destination', destination)
-    .gte('created_at', since)
-    .limit(1);
-  return !!(data && data.length);
+  return alreadyNotified({ event, destination, sinceDays: days });
 }
 
 // ── Pure helpers (unit-tested) ──────────────────────────────────────────────

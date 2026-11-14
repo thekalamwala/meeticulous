@@ -991,6 +991,14 @@ const sendOtp = async (req, res) => {
   try {
     const { email, name, phone, purpose } = req.body;
     const normalizedPhone = normalizePhone(phone);
+    // Login mints a full session (verifyOtpLogin) and is a phone/WhatsApp flow:
+    // key the code on the phone, deliver it ONLY to the phone, and store it under
+    // a 'login' type that verifyOtpLogin checks. Emailing a phone-keyed login code
+    // to a request-supplied address let an attacker request a code for a victim's
+    // number and receive it in their own inbox — full account takeover.
+    const isLogin = purpose === 'login';
+    if (isLogin && !normalizedPhone)
+      return res.status(400).json({ message: "A valid mobile number is required" });
     if (!email && !normalizedPhone)
       return res.status(400).json({ message: "A valid mobile number or email is required" });
 
@@ -1011,15 +1019,18 @@ const sendOtp = async (req, res) => {
 
     const identifier = otpIdentifier({ email, phone });
     const otp = otpStore.generate();
-    // Securely stored: bcrypt hash, 3 attempts, 3 sends/hour, 15-min lockout
-    const stored = await otpStore.set(identifier, otp);
+    // Securely stored: bcrypt hash, 3 attempts, 3 sends/hour, 15-min lockout.
+    // Namespaced by type so a booking code can never be replayed as a login code.
+    const stored = await otpStore.set(identifier, otp, isLogin ? 'login' : 'booking');
     if (stored && stored.ok === false) return res.status(429).json({ message: stored.reason });
 
     // Ensure a guest profile exists BEFORE responding so verifyOtp can link the
     // booking. Best-effort and resilient (handles orphaned auth users); a failure
     // here must never block OTP delivery.
     try {
-      if (email) await ensureGuestProfile(email, name);
+      // Booking links a guest profile by email; a login never emails, so skip it
+      // and never materialise an account from a login request's email.
+      if (email && !isLogin) await ensureGuestProfile(email, name);
     } catch (profileErr) {
       console.error("send-otp: ensureGuestProfile error (non-fatal):", profileErr.message);
     }
@@ -1031,7 +1042,7 @@ const sendOtp = async (req, res) => {
 
     // Email rendered from the BOOKING_OTP DB template by the Communication Engine.
     runInBackground("send-otp:notify", () =>
-      sendOtpNotification({ email, phone, name, otp }));
+      sendOtpNotification({ email: isLogin ? undefined : email, phone, name, otp }));
   } catch (error) {
     console.error("send-otp error:", error);
     safeError(res, error);
@@ -1252,7 +1263,9 @@ const verifyOtpLogin = async (req, res) => {
     if (!normalized || !otp)
       return res.status(400).json({ message: "Mobile number and OTP are required" });
 
-    const result = await otpStore.verify(normalized, otp);
+    // Verify a 'login'-type code only — a booking code (emailed to the booker)
+    // must never authenticate a session (phone-account takeover guard).
+    const result = await otpStore.verify(normalized, otp, 'login');
     if (!result.valid)
       return res.status(400).json({ message: result.reason });
 

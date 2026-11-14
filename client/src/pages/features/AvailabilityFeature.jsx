@@ -29,7 +29,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Check, X, ImageIcon, CalendarDays } from 'lucide-react';
+import { ArrowRight, Check, X, ImageIcon } from 'lucide-react';
 import Reveal from '../../components/home/Reveal';
 import Seo from '../../components/common/Seo';
 import { ogCard } from '../../config/ogImages';
@@ -37,13 +37,15 @@ import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
 import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
+import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
-const INK = '#2B0A14';
-const LIME = '#D9F99D';      // highlighter band, always under ink text
-const LIME_DEEP = '#BEF264'; // markers, open cells, the FAQ bar
-const TEAL = '#0F766E';      // accent text/icons on white (AA, ~5.5:1)
-const LIME_WASH = '#F7FEE7'; // soft section tint
+const INK = '#201E1D';       // Tukku ink
+const LIME = '#F6E3C6';      // Tukku cream — band under highlighted words (blue-on-cream mascot pairing)
+const LIME_DEEP = '#85B7EB'; // soft Tukku blue — markers, open cells, the FAQ bar
+const TEAL = '#2F7DD1';      // Tukku blue — accent text/icons on white
+const LIME_WASH = '#FAF4E9'; // soft cream section tint
+const VIOLET = '#2F7DD1';    // Tukku blue — highlighted words
 
 /* ─────────────────────────────  SLOT MATH  ────────────────────────────── */
 
@@ -145,22 +147,12 @@ const FAQ = [
   { q: 'Can I set different hours for each service?', a: 'Not today. Your hours, blocked dates and buffer are set once for your account and apply to every service you offer.' },
 ];
 
-const RELATED = [
-  { to: '/features/online-scheduling', label: 'Online scheduling' },
-  { to: '/features/google-calendar', label: 'Google Calendar sync' },
-  { to: '/features/booking-pages', label: 'Booking pages' },
-  { to: '/features/notifications', label: 'Reminders' },
-];
-
 /* ─────────────────────────────  PIECES  ────────────────────────────── */
 
-/* The highlighter: a lime band behind ink text. */
+/* The highlighter: blue accent text, no background band. */
 function Hl({ children }) {
   return (
-    <span
-      className="box-decoration-clone rounded-[3px] px-1.5"
-      style={{ background: `linear-gradient(180deg, transparent 14%, ${LIME} 14%, ${LIME} 90%, transparent 90%)` }}
-    >
+    <span style={{ color: VIOLET }}>
       {children}
     </span>
   );
@@ -170,8 +162,8 @@ function PrimaryCta({ to = START, children }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(26,26,26,0.14)] transition-opacity hover:no-underline hover:opacity-90"
-      style={{ background: INK }}
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white transition-opacity hover:no-underline hover:opacity-90"
+      style={{ background: TEAL }}
     >
       {children}
     </Link>
@@ -179,16 +171,20 @@ function PrimaryCta({ to = START, children }) {
 }
 
 /* Empty image placeholder; the founder supplies the real photo later. */
-function ImgSlot({ alt, slot, className = '' }) {
+function ImgSlot({ alt, slot, src, className = '', fit = 'cover', bg = true, bordered = true }) {
   return (
     <div
-      role="img"
-      aria-label={alt}
+      role={src ? undefined : 'img'}
+      aria-label={src ? undefined : alt}
       data-img-slot={slot}
-      className={`flex items-center justify-center rounded-[16px] border border-black/5 ${className}`}
-      style={{ background: 'repeating-linear-gradient(135deg, rgba(15,118,110,0.04) 0 10px, rgba(15,118,110,0.08) 10px 20px)' }}
+      className={`flex items-center justify-center overflow-hidden rounded-[16px] ${bordered ? 'border border-black/5' : ''} ${className}`}
+      style={bg ? { background: 'repeating-linear-gradient(135deg, rgba(47,125,209,0.05) 0 10px, rgba(47,125,209,0.09) 10px 20px)' } : undefined}
     >
-      <ImageIcon size={28} style={{ color: 'rgba(15,118,110,0.35)' }} aria-hidden />
+      {src ? (
+        <img src={src} alt={alt} className={`h-full w-full ${fit === 'contain' ? 'object-contain' : 'object-cover'}`} loading="lazy" />
+      ) : (
+        <ImageIcon size={28} style={{ color: 'rgba(47,125,209,0.35)' }} aria-hidden />
+      )}
     </div>
   );
 }
@@ -196,7 +192,7 @@ function ImgSlot({ alt, slot, className = '' }) {
 function SectionHead({ children, sub, center = false }) {
   return (
     <div className={center ? 'text-center' : ''}>
-      <Reveal as="h2" className={`font-heading text-4xl font-extrabold leading-[1.1] tracking-tight text-[#2B0A14] sm:text-5xl ${center ? 'mx-auto max-w-3xl' : 'max-w-3xl'}`}>
+      <Reveal as="h2" className={`font-heading text-4xl font-extrabold leading-[1.1] tracking-tight text-black sm:text-5xl ${center ? 'mx-auto max-w-3xl' : 'max-w-3xl'}`}>
         {children}
       </Reveal>
       {sub && (
@@ -218,9 +214,9 @@ function HoursGrid() {
 
   return (
     <div className="mx-auto w-full max-w-[30rem]">
-      <div className="rounded-[24px] border border-black/5 bg-white p-4 shadow-[0_30px_70px_-30px_rgba(15,118,110,0.35)] sm:p-6">
+      <div className="rounded-[24px] border border-black/5 bg-white p-4 shadow-[0_30px_70px_-30px_rgba(47,125,209,0.32)] sm:p-6">
         <div className="flex items-center justify-between">
-          <div className="font-heading text-sm font-bold text-[#2B0A14]">Your week</div>
+          <div className="font-heading text-sm font-bold text-ink">Your week</div>
           <div className="text-[11px] text-neutral-500">Tap a block or a day</div>
         </div>
 
@@ -232,7 +228,7 @@ function HoursGrid() {
               type="button"
               onClick={() => toggleDay(d)}
               aria-label={`${grid[d].some(Boolean) ? 'Close' : 'Open'} all of ${full}`}
-              className="rounded-[16px] py-1 text-center text-[11px] font-bold text-[#2B0A14] transition-colors hover:bg-black/5"
+              className="rounded-[16px] py-1 text-center text-[11px] font-bold text-ink transition-colors hover:bg-black/5"
             >
               {short}
             </button>
@@ -249,7 +245,7 @@ function HoursGrid() {
                     aria-pressed={open}
                     aria-label={`${full} ${label}`}
                     onClick={() => toggleCell(d, b)}
-                    className={`h-10 rounded-[5px] border text-[10px] font-semibold transition-colors sm:h-11 ${open ? 'border-transparent text-[#2B0A14]' : 'border-black/5 bg-neutral-50 text-neutral-500 hover:bg-neutral-100'}`}
+                    className={`h-10 rounded-[5px] border text-[10px] font-semibold transition-colors sm:h-11 ${open ? 'border-transparent text-ink' : 'border-black/5 bg-neutral-50 text-neutral-500 hover:bg-neutral-100'}`}
                     style={open ? { background: LIME_DEEP } : undefined}
                   >
                     {open ? 'Open' : 'Off'}
@@ -260,7 +256,7 @@ function HoursGrid() {
           ))}
         </div>
 
-        <p className="mt-5 rounded-[16px] px-4 py-3 text-sm text-[#2B0A14]" style={{ background: LIME_WASH }} aria-live="polite">
+        <p className="mt-5 rounded-[16px] px-4 py-3 text-sm text-ink" style={{ background: LIME_WASH }} aria-live="polite">
           Clients can book{' '}
           <span data-testid="week-slots" className="font-heading text-lg font-extrabold tabular-nums" style={{ color: TEAL }}>{total}</span>{' '}
           one-hour slots this week.
@@ -283,7 +279,7 @@ function WeekPanel({ variant }) {
             {messy && MESSY.filter((m) => m.d === d).map((m) => (
               <span
                 key={`${m.top}-${m.label}`}
-                className={`absolute rounded-[4px] border px-1 py-0.5 text-[9px] font-semibold leading-tight sm:text-[10px] ${m.clash ? 'border-[#2B0A14]/30 bg-white text-[#2B0A14]' : 'border-dashed border-neutral-400 bg-neutral-200/80 text-neutral-600'}`}
+                className={`absolute rounded-[4px] border px-1 py-0.5 text-[9px] font-semibold leading-tight sm:text-[10px] ${m.clash ? 'border-[#201E1D]/30 bg-white text-ink' : 'border-dashed border-neutral-400 bg-neutral-200/80 text-neutral-600'}`}
                 style={{ top: `${m.top}%`, height: `${m.h}%`, left: `${m.x}%`, width: '78%' }}
               >
                 {m.label}
@@ -292,7 +288,7 @@ function WeekPanel({ variant }) {
             {!messy && (CLEAN[d] ? CLEAN[d].map((c) => (
               <span
                 key={c.top}
-                className="absolute inset-x-1 rounded-full px-1 py-0.5 text-[9px] font-semibold leading-tight sm:text-[10px]"
+                className="absolute inset-x-1 flex items-center justify-center rounded-full px-1 text-center text-[9px] font-semibold leading-tight sm:text-[10px]"
                 style={{ top: `${c.top}%`, height: `${c.h}%`, ...(c.kind === 'booked' ? { background: TEAL, color: '#fff' } : { background: LIME, color: INK }) }}
               >
                 {c.kind === 'booked' ? 'Booked' : 'Open'}
@@ -319,7 +315,7 @@ function Choice({ label, options, value, onChange, fmt }) {
             role="radio"
             aria-checked={value === o}
             onClick={() => onChange(o)}
-            className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${value === o ? 'border-transparent text-[#2B0A14]' : 'border-black/10 text-neutral-600 hover:border-black/25'}`}
+            className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${value === o ? 'border-transparent text-ink' : 'border-black/10 text-neutral-600 hover:border-black/25'}`}
             style={value === o ? { background: LIME_DEEP } : undefined}
           >
             {fmt(o)}
@@ -345,7 +341,7 @@ function BufferControl() {
       </div>
 
       <div className="mt-9">
-        <div className="relative h-14 overflow-hidden rounded-[16px] border border-black/5" style={{ background: 'repeating-linear-gradient(135deg, rgba(15,118,110,0.05) 0 6px, rgba(15,118,110,0.1) 6px 12px)' }} aria-hidden>
+        <div className="relative h-14 overflow-hidden rounded-[16px] border border-black/5" style={{ background: 'repeating-linear-gradient(135deg, rgba(47,125,209,0.05) 0 6px, rgba(47,125,209,0.1) 6px 12px)' }} aria-hidden>
           {starts.map((s) => (
             <span key={s} className="absolute inset-y-1.5 rounded-[16px]" style={{ left: pct(s), width: `calc(${pct(duration)} - 2px)`, background: LIME_DEEP }} />
           ))}
@@ -355,7 +351,7 @@ function BufferControl() {
         </div>
       </div>
 
-      <p className="mt-7 text-center text-lg text-[#2B0A14]" aria-live="polite">
+      <p className="mt-7 text-center text-lg text-ink" aria-live="polite">
         <span data-testid="day-slots" className="font-heading text-4xl font-extrabold tabular-nums" style={{ color: TEAL }}>{starts.length}</span>{' '}
         sessions fit between 9 AM and 5 PM{buffer ? `, each followed by ${buffer} free minutes.` : ', back to back.'}
       </p>
@@ -367,11 +363,11 @@ function BufferControl() {
 function QuoteCard({ t, hidden = false }) {
   return (
     <figure aria-hidden={hidden || undefined} className="flex w-[85%] shrink-0 flex-col justify-between rounded-[24px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:w-[22rem]">
-      <blockquote className="text-[16px] leading-relaxed text-[#2B0A14]">&ldquo;{t.quote}&rdquo;</blockquote>
+      <blockquote className="text-[16px] leading-relaxed text-ink">&ldquo;{t.quote}&rdquo;</blockquote>
       <figcaption className="mt-6 flex items-center gap-3">
         <img src={t.avatar} alt="" loading="lazy" className="h-11 w-11 rounded-full object-cover" />
         <div>
-          <div className="text-sm font-semibold text-[#2B0A14]">{t.name}</div>
+          <div className="text-sm font-semibold text-ink">{t.name}</div>
           <div className="text-xs text-neutral-500">{t.role}</div>
         </div>
       </figcaption>
@@ -466,7 +462,7 @@ export default function AvailabilityFeature() {
   });
 
   return (
-    <main className="overflow-x-clip bg-white text-[#2B0A14]">
+    <main className="feature-page-dark overflow-x-clip bg-white text-ink">
       <Seo
         title={seo.title}
         description={seo.description}
@@ -486,16 +482,16 @@ export default function AvailabilityFeature() {
         <div className="mx-auto grid w-full max-w-6xl items-start gap-10 lg:items-center lg:gap-14 lg:grid-cols-[1fr_1fr]">
           <div>
             <nav aria-label="Breadcrumb" className="text-xs text-neutral-500">
-              <Link to="/" className="text-neutral-500 hover:text-[#2B0A14] hover:no-underline">Home</Link>
+              <Link to="/" className="text-neutral-500 hover:text-ink hover:no-underline">Home</Link>
               <span aria-hidden className="mx-2">/</span>
               <span>Features</span>
               <span aria-hidden className="mx-2">/</span>
-              <span aria-current="page" className="text-[#2B0A14]">Availability</span>
+              <span aria-current="page" className="text-ink">Availability</span>
             </nav>
-            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.4rem,4.4vw,3.9rem)] font-extrabold leading-[1.04] tracking-[-0.03em] text-[#2B0A14]">
-              Set your availability for online bookings <Hl>once.</Hl>
+            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.2rem,4vw,3.2rem)] font-extrabold leading-[1.06] tracking-[-0.03em] text-black">
+              Set your availability<br />for online bookings <Hl>once.</Hl>
             </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-neutral-600 lg:text-lg">
+            <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-neutral-600 text-pretty">
               Your weekly hours, breaks, days off and a buffer between sessions, set one time. Your booking page only offers the hours you are actually free, every week, without you touching it.
             </Reveal>
             <Reveal instant delay={0.1} className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
@@ -520,7 +516,7 @@ export default function AvailabilityFeature() {
 
       {/* ═══════════════ 2 · PROOF (one sentence, facts highlighted) ═══════════════ */}
       <section className="border-y border-black/5 px-5 py-14 sm:px-8 lg:py-16" style={{ background: LIME_WASH }}>
-        <Reveal as="p" className="mx-auto max-w-4xl text-center font-heading text-xl font-bold leading-[1.7] text-[#2B0A14] sm:text-2xl sm:leading-[1.7]">
+        <Reveal as="p" className="mx-auto max-w-4xl text-center font-heading text-xl font-bold leading-[1.7] text-ink sm:text-2xl sm:leading-[1.7]">
           Hours that <Hl>repeat every week</Hl>, <Hl>more than one window a day</Hl>, <Hl>blocked dates</Hl> for leave, a <Hl>buffer up to an hour</Hl> after each session, and <Hl>Google Calendar busy time</Hl> kept off your page.
         </Reveal>
       </section>
@@ -545,11 +541,11 @@ export default function AvailabilityFeature() {
               </ul>
             </Reveal>
             <Reveal delay={0.06} className="rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] sm:p-8">
-              <h3 className="font-heading text-lg font-bold text-[#2B0A14]">Hours on <Hl>Meeticulous</Hl></h3>
+              <h3 className="font-heading text-lg font-bold text-ink">Hours on <Hl>Meeticulous</Hl></h3>
               <div className="mt-5"><WeekPanel variant="clean" /></div>
               <ul className="mt-6 space-y-2.5">
                 {WITH.map((t) => (
-                  <li key={t} className="flex items-start gap-2 text-[15px] font-medium text-[#2B0A14]">
+                  <li key={t} className="flex items-start gap-2 text-[15px] font-medium text-ink">
                     <Check size={16} className="mt-0.5 shrink-0" style={{ color: TEAL }} aria-hidden /><span><span className="sr-only">With Meeticulous: </span>{t}</span>
                   </li>
                 ))}
@@ -567,11 +563,11 @@ export default function AvailabilityFeature() {
             {STEPS.map((s, i) => (
               <Reveal as="li" key={s.title} delay={i * 0.05} className="relative grid grid-cols-[3rem_1fr] gap-5 pb-10 last:pb-0">
                 {i < STEPS.length - 1 && <span aria-hidden className="absolute bottom-0 left-6 top-12 w-px bg-black/10" />}
-                <span className="flex h-12 w-12 items-center justify-center rounded-full font-heading text-lg font-extrabold text-[#2B0A14]" style={{ background: LIME_DEEP }}>
+                <span className="flex h-12 w-12 items-center justify-center rounded-full font-heading text-lg font-extrabold text-ink" style={{ background: LIME_DEEP }}>
                   {i + 1}
                 </span>
                 <div className="pt-2">
-                  <h3 className="font-heading text-xl font-bold text-[#2B0A14]">{s.title}</h3>
+                  <h3 className="font-heading text-xl font-bold text-ink">{s.title}</h3>
                   <p className="mt-2 text-[15px] leading-relaxed text-neutral-600">{s.desc}</p>
                 </div>
               </Reveal>
@@ -587,8 +583,8 @@ export default function AvailabilityFeature() {
             <SectionHead>Everything your hours <Hl>need to know.</Hl></SectionHead>
             <ul className="mt-10 grid gap-x-8 gap-y-4 sm:grid-cols-2">
               {CAPS.map((c, i) => (
-                <Reveal as="li" key={c} delay={(i % 4) * 0.04} className="flex items-start gap-3 border-b border-black/5 pb-4 text-[15px] leading-relaxed text-[#2B0A14]">
-                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: 'rgba(15,118,110,0.1)' }}>
+                <Reveal as="li" key={c} delay={(i % 4) * 0.04} className="flex items-start gap-3 border-b border-black/5 pb-4 text-[15px] leading-relaxed text-ink">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: 'rgba(47,125,209,0.12)' }}>
                     <Check size={13} strokeWidth={3} style={{ color: TEAL }} aria-hidden />
                   </span>
                   {c}
@@ -599,8 +595,12 @@ export default function AvailabilityFeature() {
           <Reveal delay={0.08} className="lg:pt-4">
             <ImgSlot
               slot="availability-weekly-schedule"
+              src="/features/availablity.png"
               alt="The Availability screen in the Meeticulous dashboard, with weekly hours, blocked dates and buffer settings"
               className="aspect-[3/4] w-full lg:h-full lg:aspect-auto lg:min-h-[34rem]"
+              fit="contain"
+              bg={false}
+              bordered={false}
             />
           </Reveal>
         </div>
@@ -630,44 +630,33 @@ export default function AvailabilityFeature() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-3xl">
-          <SectionHead center>Availability questions, <Hl>answered.</Hl></SectionHead>
-          <div className="mt-12 space-y-3">
-            {FAQ.map((f, i) => (
-              <details key={f.q} className="group relative overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]" open={i === 0}>
-                <span aria-hidden className="absolute inset-y-0 left-0 hidden w-1.5 group-open:block" style={{ background: LIME_DEEP }} />
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-5 px-6 py-5 [&::-webkit-details-marker]:hidden">
-                  <span className="font-heading text-[17px] font-bold text-[#2B0A14]">{f.q}</span>
-                  <span aria-hidden className="text-xl leading-none text-neutral-400 transition-transform group-open:rotate-45">+</span>
-                </summary>
-                <p className="px-6 pb-6 text-[15px] leading-relaxed text-neutral-600">{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
+        <FeatureFaq
+          heading={<SectionHead>Availability questions, <Hl>answered.</Hl></SectionHead>}
+          items={FAQ}
+          itemClassName="relative overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]"
+          summaryClassName="flex cursor-pointer items-center justify-between gap-5 px-6 py-5"
+          answerClassName="px-6 pb-6 text-[15px] leading-relaxed text-neutral-600"
+          renderExtras={(f, i, open) => open && (
+            <span aria-hidden className="absolute inset-y-0 left-0 w-1.5" style={{ background: LIME_DEEP }} />
+          )}
+          renderSummary={(f, i, open) => (
+            <>
+              <span className="font-heading text-[17px] font-bold text-ink">{f.q}</span>
+              <span aria-hidden className={`text-xl leading-none text-neutral-400 transition-transform ${open ? 'rotate-45' : ''}`}>+</span>
+            </>
+          )}
+        />
       </section>
 
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
       <section className="border-t border-black/5 px-5 py-20 sm:px-8 lg:py-28" style={{ background: LIME_WASH }}>
         <div className="mx-auto max-w-4xl text-center">
-          <Reveal as="h2" className="font-heading text-[clamp(2.3rem,5.4vw,4rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#2B0A14]">
+          <Reveal as="h2" className="font-heading text-[clamp(2.3rem,5.4vw,4rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-black">
             Set your hours once. <Hl>Let the page do the rest.</Hl>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-neutral-600">
             Availability is included on the free {FREE_PLAN.name} plan. Make your booking page, set your week, share the link.
           </Reveal>
-          <Reveal delay={0.1} className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
-            <PrimaryCta>Start free <ArrowRight size={16} /></PrimaryCta>
-            <Link to="/pricing" className="inline-flex items-center gap-1.5 text-sm font-semibold hover:no-underline hover:opacity-80" style={{ color: TEAL }}>
-              See pricing <ArrowRight size={15} />
-            </Link>
-          </Reveal>
-          <nav aria-label="Related features" className="mt-14 flex flex-wrap justify-center gap-x-6 gap-y-2 border-t border-black/10 pt-8 text-sm text-neutral-500">
-            <span className="flex items-center gap-1.5"><CalendarDays size={14} aria-hidden /> Works with</span>
-            {RELATED.map((r) => (
-              <Link key={r.to} to={r.to} className="font-medium underline decoration-black/20 underline-offset-4 hover:decoration-black/60" style={{ color: TEAL }}>{r.label}</Link>
-            ))}
-          </nav>
         </div>
       </section>
     </main>

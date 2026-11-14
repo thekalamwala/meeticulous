@@ -21,8 +21,13 @@ describe('Availability feature page', () => {
     renderPage();
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
     expect(screen.getAllByRole('link', { name: /start free/i })[0].getAttribute('href')).toBe('/become-a-host');
-    expect(screen.getByRole('link', { name: /see pricing/i }).getAttribute('href')).toBe('/pricing');
     expect(screen.getByRole('link', { name: /try the buffer maths/i }).getAttribute('href')).toBe('#buffer');
+  });
+
+  it('renders the availability feature image from the supplied source', () => {
+    renderPage();
+    const image = screen.getByRole('img', { name: /Availability screen/i });
+    expect(image.getAttribute('src')).toBe('/features/availablity.png');
   });
 
   it('updates the weekly slot count when a block is toggled', () => {

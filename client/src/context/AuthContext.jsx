@@ -119,7 +119,14 @@ export const AuthProvider = ({ children }) => {
     if (parsed?.token) {
       getMe()
         .then(({ data: fresh }) => {
-          const merged = { ...parsed, ...fresh };
+          // Merge onto the LATEST stored value, not the boot snapshot `parsed`:
+          // the 401 interceptor / Supabase setSession may have rotated the tokens
+          // while /auth/me was in flight, and /auth/me returns no tokens — merging
+          // onto `parsed` would write the stale access+refresh token back and force
+          // a logout on the next call.
+          let current = parsed;
+          try { current = JSON.parse(localStorage.getItem('user')) || parsed; } catch { /* keep parsed */ }
+          const merged = { ...current, ...fresh };
           localStorage.setItem('user', JSON.stringify(merged));
           setUser(merged);
         })
@@ -314,7 +321,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateUser = (updatedData) => {
-    const newUser = { ...user, ...updatedData };
+    // Build on the LATEST stored value, not this render's `user` closure — a
+    // long-lived async caller (Razorpay handler, gift redeem) holds an old copy,
+    // and a token refresh landing in between would otherwise be clobbered back to
+    // stale tokens, logging the user out right after a successful action.
+    let current = user;
+    try { current = JSON.parse(localStorage.getItem('user')) || user; } catch { /* keep closure */ }
+    const newUser = { ...current, ...updatedData };
     localStorage.setItem('user', JSON.stringify(newUser));
     setUser(newUser);
   };

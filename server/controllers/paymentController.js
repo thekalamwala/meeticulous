@@ -519,10 +519,14 @@ const verifySubscription = async (req, res) => {
     });
 
     // ── v2.8: subscription payment record + SUBSCRIPTION_PAYMENT ledger entry ──
+    // `breakdown` is read below (trackServer, receipt email, founder alert) after
+    // this block closes, so it must be declared in the outer scope — a `const`
+    // inside the try threw a ReferenceError right after the plan was activated.
+    let breakdown;
     try {
       const planRecord2 = await planService.getPlan(plan);
       const { gstRate } = await platformConfig.getConfig();
-      const breakdown = computeSubscriptionBreakdown({ planPrice: Number(planRecord2?.annual_price) || 0, gstRate });
+      breakdown = computeSubscriptionBreakdown({ planPrice: Number(planRecord2?.annual_price) || 0, gstRate });
 
       // Actual gateway fee+tax — PLATFORM-borne for subscriptions (PRD §5.3)
       let subFeeTotal = 0, subTax = 0;
@@ -827,9 +831,13 @@ const createVendorSubscription = async (req, res) => {
     });
 
     if (isSwitch) {
-      // Grant the new tier + free days immediately (vendor already paid for the
-      // old period) but keep status 'pending' until the mandate is authorized.
-      const grantedEnd = new Date(nowMs + ((switchInfo?.creditDays || 0) + cadencePeriodDays(cadence)) * 86400000).toISOString();
+      // Grant ONLY the proration credit from the old (already-paid) plan up front,
+      // status 'pending'. The new PAID period is granted by the charge webhook
+      // (activateFromSubscription sets plan_expires_at = the cycle end and never
+      // shrinks this credit). Granting the full period here let an abandoned
+      // checkout keep the tier for a whole period unpaid, because releaseOrphan
+      // deliberately retains plan_expires_at.
+      const grantedEnd = new Date(nowMs + (switchInfo?.creditDays || 0) * 86400000).toISOString();
       const { error: upErr } = await supabaseAdmin.from("profiles").update({
         plan: planRecord.slug, billing_cadence: cadence, subscription_status: "pending",
         razorpay_subscription_id: subscription.id, current_period_end: grantedEnd, plan_expires_at: grantedEnd,
@@ -1176,11 +1184,19 @@ const verifyProductPayment = async (req, res) => {
       product_id,
       product_price: orderNotes.product_price != null ? orderNotes.product_price : product.price,
       platform_fee: orderNotes.platform_fee != null ? orderNotes.platform_fee : calculatePlatformFee(product.price),
+      // createProductOrder charges price + fee + GST-on-fee; the GST was missing
+      // here, so verify always 400'd when the fee's GST was > 0 (default ₹10 fee →
+      // +₹1.80). Legacy/in-flight orders without it default to 0 and still match.
+      platform_fee_gst: orderNotes.platform_fee_gst != null ? Number(orderNotes.platform_fee_gst) : 0,
+      gst_rate: orderNotes.gst_rate != null ? Number(orderNotes.gst_rate) : undefined,
       buyer_name: orderNotes.buyer_name || req.body.buyer_name || '',
       buyer_email: String(orderNotes.buyer_email || req.body.buyer_email || '').toLowerCase().trim(),
       buyer_phone: orderNotes.buyer_phone || req.body.buyer_phone || '',
+      buyer_state: orderNotes.buyer_state || '',
+      buyer_state_code: orderNotes.buyer_state_code || '',
+      buyer_gstin: orderNotes.buyer_gstin || '',
     };
-    const expectedPaise = Math.round((Number(notes.product_price) + Number(notes.platform_fee)) * 100);
+    const expectedPaise = Math.round((Number(notes.product_price) + Number(notes.platform_fee) + Number(notes.platform_fee_gst || 0)) * 100);
     if (String(orderNotes.product_id) !== String(product_id) || Number(rzpOrder?.amount) !== expectedPaise) {
       securityLog('PRODUCT_PAYMENT_MISMATCH', { product_id, order_id: razorpay_order_id, ip: req.ip });
       return res.status(400).json({ message: "Payment does not match this product." });
@@ -1491,7 +1507,30 @@ const handleWebhook = async (req, res) => {
   try {
     if (event.event === 'payment.captured') {
       const notes = payment.notes || {};
-      if (notes.booking_id) {
+      // A reschedule-fee payment ALSO carries booking_id (notes.kind='reschedule_fee');
+      // it must NEVER finalise the original booking. The payment.failed branch already
+      // guards on kind — the captured branch did not, so a small reschedule-fee capture
+      // flipped an unpaid booking to paid. Bail on any kinded payment here.
+      if (notes.kind) {
+        securityLog('WEBHOOK_CAPTURED_SKIPPED_KIND', { kind: notes.kind, booking_id: notes.booking_id || null, payment_id: payment.id });
+      } else if (notes.booking_id) {
+        // Bind the payment to the booking before finalising. The signature proves
+        // the order/payment pair is genuine, not WHAT it paid for; require the
+        // payment's order to be THIS booking's order AND the amount to equal the
+        // booking's customer_total (what verifyPayment already asserts), so a
+        // cheaper genuine payment carrying another booking's id can't flip it paid.
+        const { data: bkBind } = await supabaseAdmin.from('bookings')
+          .select('razorpay_order_id, customer_total')
+          .eq('id', notes.booking_id).maybeSingle();
+        const expectedPaise = bkBind ? Math.round((Number(bkBind.customer_total) || 0) * 100) : null;
+        if (!bkBind || bkBind.razorpay_order_id !== payment.order_id || Number(payment.amount) !== expectedPaise) {
+          securityLog('WEBHOOK_BOOKING_BINDING_MISMATCH', {
+            booking_id: notes.booking_id, payment_id: payment.id,
+            payment_order: payment.order_id, stored_order: bkBind?.razorpay_order_id || null,
+            payment_amount: payment.amount, expected_amount: expectedPaise,
+          });
+          return res.json({ received: true });
+        }
         // Single source of truth (security audit H-3): flip unpaid→paid/confirmed
         // AND finalise the vendor payout (subtracting the gateway fee) AND post the
         // ORDER_PAYMENT ledger entry. Previously the webhook only flipped the status
@@ -1529,6 +1568,18 @@ const handleWebhook = async (req, res) => {
             email: paid.guest_email,
             eventId: payment.id,              // same id browser pixel used → de-dupe
           });
+        }
+      } else if (notes.kind === 'course' && notes.course_id) {
+        // Course-purchase safety net: verify-course may have died after capture.
+        // Idempotent on razorpay_order_id — a no-op if verify already issued it.
+        const { data: course } = await supabaseAdmin
+          .from("courses").select("id, host_id, title").eq("id", notes.course_id).single();
+        if (course) {
+          const { materializeCoursePurchase } = require("./courseController");
+          const issued = await materializeCoursePurchase({
+            course, notes, orderId: payment.order_id, paymentId: payment.id,
+          });
+          if (!issued.reused) auditLog('WEBHOOK_COURSE_PAID', null, { course_id: notes.course_id, payment_id: payment.id });
         }
       } else if (notes.product_id) {
         // Product-purchase safety net: verify-product may have died after Razorpay

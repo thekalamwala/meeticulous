@@ -6,6 +6,7 @@ import { getSupabase } from '../services/supabaseClient';
 import { linkedinHostAuth } from '../services/api';
 import Seo from '../components/common/Seo';
 import PetalSpinner from '../components/common/PetalSpinner';
+import { isInternalPath } from '../utils/safePath';
 
 // Server code → host-login error. Anything unmapped is a generic linkedin_failed
 // (LinkedIn-specific copy — auth_failed reads "Google sign-in failed").
@@ -85,7 +86,7 @@ const LinkedinAuthDone = () => {
         // back to the page that asked for sign-in. Internal single-slash paths only.
         let back = null;
         try { back = sessionStorage.getItem('mt_after_host_login'); sessionStorage.removeItem('mt_after_host_login'); } catch { /* storage blocked */ }
-        const resume = !isNew && !isUpgrade && /^\/(?!\/)/.test(back || '') ? back : null;
+        const resume = !isNew && !isUpgrade && isInternalPath(back) ? back : null;
         navigate(resume || '/dashboard', { replace: true });
       } catch (e) {
         const status = e?.response?.status;

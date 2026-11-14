@@ -8,6 +8,7 @@ import Seo from "../components/common/Seo";
 import OtpSlots from "../components/common/OtpSlots";
 import toast from "react-hot-toast";
 import ContinueWithLinkedIn, { useLinkedinEnabled } from "../components/ContinueWithLinkedIn";
+import { isInternalPath } from "../utils/safePath";
 
 // One login door for both sides of the single identity. A toggle picks the form:
 //  - "I'm booking" → guest WhatsApp OTP (the number IS the identity; accounts are
@@ -106,7 +107,7 @@ const UnifiedLogin = () => {
 
   // Honour ?redirect= only for internal single-slash paths (avoid open-redirects).
   const rawRedirect = searchParams.get("redirect") || "";
-  const redirectTo = /^\/(?!\/)/.test(rawRedirect) ? rawRedirect : "/user";
+  const redirectTo = isInternalPath(rawRedirect) ? rawRedirect : "/user";
 
   const [busy, setBusy] = useState(false);
   // Guest OTP state

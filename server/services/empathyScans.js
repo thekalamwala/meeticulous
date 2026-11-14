@@ -28,6 +28,7 @@
 const { supabaseAdmin } = require('../config/supabase');
 const { isFeatureEnabled } = require('./featureFlags');
 const notificationEngine = require('./notificationEngine');
+const { alreadyNotified } = require('../utils/notificationDedupe');
 
 const DEDUPE_DAYS = 365 * 5; // effectively forever
 const LOW_STAR = 3;
@@ -41,15 +42,7 @@ const firstName = (full) => (full || '').trim().split(/\s+/)[0] || 'there';
 
 async function alreadySent(event, email) {
   if (!email) return true;
-  const since = new Date(Date.now() - DEDUPE_DAYS * 86400000).toISOString();
-  const { data } = await supabaseAdmin
-    .from('notification_logs')
-    .select('id')
-    .eq('event', event)
-    .eq('destination', email)
-    .gte('created_at', since)
-    .limit(1);
-  return !!(data && data.length);
+  return alreadyNotified({ event, destination: email, sinceDays: DEDUPE_DAYS });
 }
 
 /** Pure: given a host's reviews sorted newest-first, decide if the last 3 are all low. */

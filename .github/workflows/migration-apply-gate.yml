@@ -1,0 +1,52 @@
+name: Migration apply gate
+
+# Guardrail #3 (agent-fleet plan). Migrations in server/migrations/*.sql are applied
+# to the prod DB BY HAND (not on deploy), so a migration can ship in code while its
+# table is missing in prod. Origin: v3.204_coupons shipped with release #278 but the
+# `coupons` table was never applied to prod. This gate blocks the release→main ship
+# until every new migration is confirmed applied.
+#
+# Pass conditions (either one):
+#   - the ship adds no new migration files, OR
+#   - the `migrations-applied` label on the PR (apply them to prod first, then label).
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+jobs:
+  migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require migrations-applied confirmation
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: |
+          set -euo pipefail
+          new_migs="$(git diff --name-only --diff-filter=A "$BASE" "$HEAD" -- 'server/migrations/*.sql' || true)"
+
+          if [ -z "$new_migs" ]; then
+            echo "No new migrations in this ship. OK."
+            exit 0
+          fi
+
+          echo "::group::New migrations in this release ship"
+          printf '%s\n' "$new_migs"
+          echo "::endgroup::"
+
+          if printf '%s' "$LABELS" | grep -q 'migrations-applied'; then
+            echo "'migrations-applied' label present — confirmed applied to prod. OK."
+            exit 0
+          fi
+
+          echo "::error::This release adds migrations that MUST be applied to the prod DB before merge (migrations here are applied by hand, not on deploy). Apply the files above to prod, then add the 'migrations-applied' label. (See v3.204_coupons: shipped in code, table was missing on prod.)"
+          exit 1

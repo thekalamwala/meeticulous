@@ -13,6 +13,12 @@
 > CI runs server + client unit tests on every PR. Merging `main` ships prod: the client via the
 > `deploy-vercel.yml` Action (a remote build that re-runs tests → build → prerender), the server via Render.
 
+## Audits & large-scale maintenance
+Whenever asked for a comprehensive project audit, full-codebase review, major cleanup or any
+similar large-scale maintenance task: **read and follow [`PROJECT_AUDIT_GUIDE.md`](PROJECT_AUDIT_GUIDE.md)
+before starting.** It holds the methodology, checklists, safe-fix vs needs-approval rules,
+verification requirements and the report format — do not improvise a new process.
+
 ## Quick Start (every session)
 Read these 4 files before touching any code:
 1. `docs/ai-context.md` — project snapshot + active rules
@@ -53,7 +59,7 @@ appointment-booking/
     config/        # supabase.js, google.js, migrations, schema
     lib/           # pricingEngine.js
     utils/         # otpStore.js, sendEmail.js, notify.js
-    migrations/    # v1.1 → v1.7 SQL files
+    migrations/    # v1.1 → v3.205 SQL files (applied by hand)
   docs/            # This documentation
 ```
 
@@ -132,7 +138,7 @@ Items previously listed here as pending are now live:
     RLS unchanged (service-role only). Code is schema-fallback safe (`guestRelationshipEngine`
     skips the health write, `deskService` guest query fails soft) so it was safe before apply.
   - **`crm_admin_sends` — the CRM master send switch.** On the current Meeticulous DB
-    (`spquowzrefozmrzoszkf`) it is **OFF** (`enabled=false`, verified 2026-11-01; no CRM email has
+    (`spquowzrefozmrzoszkf`) it is **ON** (`enabled=true`, re-verified 2026-11-12; on 2026-11-01 it was OFF and no CRM email had
     been sent from this DB). The history below is from the old Mumbai/Tokyo DBs: it was enabled on
     prod Mumbai since 2026-08-27 (~100+ real messages) and staging Tokyo since 2026-09-02.
     When it is ON: Phase 2 is therefore NOT advisory-only on
@@ -186,7 +192,17 @@ Items previously listed here as pending are now live:
   `email_templates.seed_hash` (nullable). Production boot runs `services/email/templateSync.js`, which
   pushes `config/emailTemplates.js` copy into the DB and KEEPS rows edited in the admin editor
   (row content ≠ its seed_hash). Off switch: `EMAIL_TEMPLATE_SYNC=off`. Manual: `node scripts/seedEmailTemplates.js [--force]`.
-- **v3.188** (`v3.188_host_linkedin_login_flag.sql`) — **PENDING**, apply before/at merge of the LinkedIn
+- **Live state re-verified 2026-11-12 (project audit, read-only) — where an older entry disagrees, this wins.**
+  Flags ON: `crm_admin_sends`, `community`, `community_writes`, `community_tithi`, `host_linkedin_login`.
+  Flags OFF: `community_v2`, `community_ads`, `coupons`, and — **flipped off 2026-11-12** — the seven
+  nudge tracks `activation_nudges`, `dormant_nudges`, `review_nudges`, `festival_nudges`,
+  `human_moments`, `empathy_track`, `community_email_onboarding`. They were ON with a broken
+  dedupe (re-sent every cron tick). The dedupe is **fixed** in this PR (`utils/notificationDedupe.js`,
+  fail-closed); they are safe to re-enable once it ships. Rollback: set those keys back to `true`.
+  Applied: v3.188, v3.199, v3.200, v3.201, v3.205.
+  **Not applied:** v3.191, `v3.203_admin_token_version` (admin session revocation is inert until it is),
+  `v3.204_coupons`. Open findings from that audit: `docs/audit-2026-11-12.md`.
+- **v3.188** (`v3.188_host_linkedin_login_flag.sql`) — applied (confirmed 2026-11-12). Was listed PENDING: apply before/at merge of the LinkedIn
   host login release: seeds the `host_linkedin_login` flag OFF (`ON CONFLICT DO NOTHING`). The registry
   entry also carries `enabled: false`, so a boot before the migration still creates it OFF.
 - **v3.189** (`v3.189_maroon_color_defaults.sql`) — applied 2026-11-04 on the Meeticulous DB and verified:
@@ -202,6 +218,14 @@ Items previously listed here as pending are now live:
   `support_threads.sla_waiting_since` (set by a trigger on entering `waiting`) + `sla_alerted_clock` /
   `sla_alerted_level`. Additive. Until applied the `support-sla-nudge` job fails closed and sends nothing.
 
+- **v3.206** (`v3.206_lockdown_anon_writes.sql`) — applied 2026-11-12 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`) and verified (0 INSERT/UPDATE/DELETE grants remain for `anon`/`authenticated`).
+  Project-audit C1 fix: REVOKEs write on all public tables from anon/authenticated + sets that as the
+  default privilege for future postgres-owned tables, closing a hole where a signed-in user could write
+  `plan`/`is_verified`/`payment_status`/payouts straight through the publishable key (browser only uses
+  supabase-js for auth+realtime, never PostgREST writes — verified, so no app impact). REVOKE-only, so
+  rollback is a re-GRANT; the permissive write POLICIES are left in place (unreachable with no grant).
+  Companion to v3.205 (profiles column SELECT) + v3.186 (functions + views). Shipped with PR #292.
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
 
@@ -219,6 +243,7 @@ code-side schema fallback (SELECT/INSERT destructure) until it is confirmed appl
 | `docs/current-work.md` | Recent changes + next tasks |
 | `docs/common-workflows.md` | How to implement recurring tasks |
 | `docs/critical-files.md` | High-risk files + consequences |
+| `PROJECT_AUDIT_GUIDE.md` | How to run a full audit / major cleanup (mandatory for those tasks) |
 
 
 # Before Writing Any Code
@@ -267,8 +292,9 @@ Payments
 
 Plans
 Starter
-Host+
-Studio
+Pro
+(the two active rows in `subscription_plans`, verified 2026-11-12; Host+/Studio and
+explorer/creator/professional in older docs are retired names)
 
 Limits always come from: subscription_plans.limits
 
@@ -302,7 +328,7 @@ All UI, pages, emails and graphics MUST follow the Meeticulous design system in 
 Authentication
 server/routes/authRoutes.js
 server/controllers/authController.js
-client/context/AuthContext.jsx
+client/src/context/AuthContext.jsx
 
 Bookings
 server/controllers/bookingController.js
@@ -312,7 +338,7 @@ Payments
 server/controllers/paymentController.js
 
 Hosts
-client/pages/dashboard/*
+client/src/pages/Dashboard.jsx (host pages sit flat in client/src/pages/)
 server/controllers/vendorController.js
 
 Pricing
