@@ -153,6 +153,7 @@ app.use('/api/reviews',     require('./routes/reviewRoutes'));
 app.use('/api/platform-reviews', require('./routes/platformReviewRoutes'));
 app.use('/api/feedback',    require('./routes/feedbackRoutes'));
 app.use('/api/products',    require('./routes/productRoutes'));
+app.use('/api/courses',     require('./routes/courseRoutes'));
 app.use('/api/crm',         require('./routes/crmRoutes'));
 app.use('/api/upload',      require('./routes/uploadRoutes'));
 app.use('/api/vendor',      require('./routes/vendorRoutes'));

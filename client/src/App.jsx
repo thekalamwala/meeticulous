@@ -149,6 +149,9 @@ const Earnings    = lazy(() => import('./pages/Earnings'));
 const ProfileSetup = lazy(() => import('./pages/ProfileSetup'));
 const Availability = lazy(() => import('./pages/Availability'));
 const Products    = lazy(() => import('./pages/Products'));
+const Courses     = lazy(() => import('./pages/Courses'));
+const MyCourses   = lazy(() => import('./pages/MyCourses'));
+const CoursePage  = lazy(() => import('./pages/CoursePage'));
 const HostCoupons = lazy(() => import('./pages/HostCoupons'));
 const UpgradePlan = lazy(() => import('./pages/UpgradePlan'));
 const Payouts     = lazy(() => import('./pages/Payouts'));
@@ -642,6 +645,7 @@ function App() {
             <Route path="submitted" element={<KycSubmitted />} />
           </Route>
           <Route path="/dashboard/products" element={<DashboardWrapper><Products /></DashboardWrapper>} />
+          <Route path="/dashboard/courses" element={<DashboardWrapper><Courses /></DashboardWrapper>} />
           <Route path="/dashboard/coupons" element={<DashboardWrapper><HostCoupons /></DashboardWrapper>} />
           <Route path="/dashboard/upgrade" element={<DashboardWrapper><UpgradePlan /></DashboardWrapper>} />
           <Route path="/dashboard/payments/payouts" element={<DashboardWrapper><Payouts /></DashboardWrapper>} />
@@ -883,6 +887,7 @@ function App() {
           {/* Public host/service pages — specific before dynamic */}
           <Route path="/:profileSlug/badges" element={<BadgeShowcase />} />
           <Route path="/:profileSlug/product/:productId" element={<ProductPurchase />} />
+          <Route path="/:username/course/:slug" element={<CoursePage />} />
           <Route path="/:profileSlug/booking" element={<BookingRedirect />} />
           <Route path="/:profileSlug/booking/:serviceSlug" element={<ServiceBooking />} />
           <Route path="/:profileSlug/:serviceSlug" element={<ServiceDetail />} />
@@ -894,6 +899,7 @@ function App() {
           <Route element={<GuestRoute><GuestLayout /></GuestRoute>}>
             <Route path="/user" element={<GuestOverview />} />
             <Route path="/user/my-bookings" element={<CustomerBookings />} />
+            <Route path="/user/courses" element={<MyCourses />} />
             <Route path="/user/invoices" element={<GuestInvoices />} />
             <Route path="/user/profile" element={<CustomerProfile />} />
             <Route path="/user/reviews" element={<CustomerReviews />} />
