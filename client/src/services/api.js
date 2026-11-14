@@ -592,6 +592,17 @@ export const freeDownloadProduct = (data)     => API.post('/products/free-downlo
 // Re-issue a lapsed download link (OTP-gated server-side).
 export const resendProductLink   = (data)     => API.post('/products/resend-link', data);
 
+// ── Video Courses ─────────────────────────────────────────────
+export const createCourse        = (data)     => API.post('/courses', data);
+export const getMyCourses        = ()         => API.get('/courses/mine/all');
+export const updateCourse        = (id, data) => API.put(`/courses/${id}`, data);
+export const deleteCourse        = (id)       => API.delete(`/courses/${id}`);
+export const getCoursePublic     = (username, slug) => API.get(`/courses/p/${encodeURIComponent(username)}/${encodeURIComponent(slug)}`);
+export const getCourseContent    = (id)       => API.get(`/courses/${id}/content`);
+export const getPurchasedCourses = ()         => API.get('/courses/purchased');
+export const createCourseOrder   = (data)     => API.post('/courses/create-order', data);
+export const verifyCoursePayment = (data)     => API.post('/courses/verify', data);
+
 // ── Admin ─────────────────────────────────────────────────────
 export const adminGetStats       = ()          => API.get('/admin/stats');
 export const adminGetInsights    = ()          => API.get('/admin/insights/kpis');
