@@ -329,7 +329,7 @@ const CustomerBookings = () => {
           <div className="bg-white border rounded-2xl p-10 text-center">
             <p className="text-gray-500 mb-1">No bookings yet</p>
             <p className="text-sm text-gray-400 mb-4">When you book a session it'll show up here.</p>
-            <Link to="/" className="inline-block text-sm font-medium text-[#960D32] hover:underline">Find a creator to book →</Link>
+            <Link to="/explore" className="inline-block text-sm font-medium text-[#960D32] hover:underline">Find a creator to book →</Link>
           </div>
         ) : filtered.length === 0 ? (
           <div className="bg-white border rounded-2xl p-10 text-center text-gray-400 text-sm">
@@ -342,7 +342,7 @@ const CustomerBookings = () => {
         )}
 
         <div className="text-center mt-6">
-          <Link to="/" className="text-sm text-[#960D32] hover:underline">Browse creators →</Link>
+          <Link to="/explore" className="text-sm text-[#960D32] hover:underline">Browse creators →</Link>
         </div>
 
       {/* Details drawer/modal */}
