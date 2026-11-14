@@ -16,6 +16,7 @@ export const POST_TAGS = {
   'payment-reminder-message': ['get-paid', 'client-messages'],
   'payment-reminder-message-hindi': ['get-paid', 'client-messages'],
   'tuition-fee-reminder-message': ['get-paid', 'client-messages', 'teaching'],
+  'thank-you-message-after-appointment': ['client-messages', 'no-shows'],
   'appointment-confirmation-message': ['client-messages'],
   'appointment-cancellation-reschedule-message': ['client-messages', 'no-shows'],
   'whatsapp-business-away-message': ['client-messages'],

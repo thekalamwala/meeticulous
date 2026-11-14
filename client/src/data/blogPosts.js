@@ -71,6 +71,75 @@ export const themeFor = (category) => CATEGORY_THEME[category] || CATEGORY_THEME
 
 export const BLOG_POSTS = [
 {
+  "slug": "thank-you-message-after-appointment",
+  "title": "Thank You Message After Appointment: 12 Templates",
+  "date": "Nov 14, 2026",
+  "icons": ["bell", "star", "calendar"],
+  "author": "Shubham N Datarkar",
+  "readMins": 7,
+  "category": "Guide",
+  "image": null,
+  "excerpt": "Thank you message after appointment: 12 copy-paste templates for WhatsApp and email, plus when to ask for a review or a rebooking, with Hinglish versions.",
+  "body": [
+    { "p": "A good thank you message after an appointment does three things: it thanks the client by name within a few hours of the session, points to one real detail from the meeting so it does not read as a template, and offers one clear next step, a review link or a time to book again. Keep it to three or four lines and send it on WhatsApp or email." },
+    { "p": "Below are 12 copy-paste templates, grouped as a simple sequence: a thank you straight after the session, a feedback or review request a few days later, and a gentle rebooking nudge. English and Hinglish versions are included, because many Indian clients reply faster in Hinglish." },
+    { "h2": "How to write a thank you message after an appointment" },
+    { "p": "The advice across scheduling guides is consistent: send it soon, keep it short, and personalise it with at least one real detail so it does not read like a mass text ([FluentBooking](https://fluentbooking.com/articles/how-to-write-a-thank-you-email-after-meeting/)). A line that names what you discussed, \"the diet plan we talked about\", does more than any amount of warm wording ([Jobber](https://www.getjobber.com/academy/thank-you-notes-for-customer-appreciation/))." },
+    {
+      "steps": [
+        "**Send it the same day.** While the session is fresh. A thank you two days late reads as an afterthought.",
+        "**Use their name and one detail.** Name the service and one thing from the session, so the client knows it was written for them.",
+        "**Keep it to three or four lines.** A thank you is not a newsletter: one warm line, one useful line, one next step.",
+        "**Give one next step, not three.** A review link, or a booking link, or an aftercare note. Asking for all three at once gets none of them.",
+        "**Match the channel to the booking.** Reply where they booked. In India, WhatsApp is usually read fastest, so send there for anything that needs a quick reply."
+      ]
+    },
+    { "h2": "Thank you message templates to send after the session" },
+    { "quote": "Hi Priya, thank you for coming in today. It was good to work through your tax filing questions. If anything else comes up before next month, just message me here.", "cite": "1. Consultant, after a session" },
+    { "quote": "Hi Rahul, thanks for a great training session today. Keep up the stretches we covered and drink enough water. See you Thursday!", "cite": "2. Trainer or coach" },
+    { "quote": "Namaste Mrs. Sharma, thank you for visiting the clinic today. We hope you felt well cared for. If you have any questions about the prescription, reply here any time.", "cite": "3. Clinic or practitioner" },
+    { "quote": "Hi Sneha, thank you for choosing us for your appointment today. We loved having you. Your next slot is open whenever you are ready: [booking link].", "cite": "4. Salon or studio, with a soft rebook" },
+    { "quote": "Hi Arjun, thank you for the call today. As promised, here is the summary and the plan we agreed. Message me if anything is unclear.", "cite": "5. After a consultation with a deliverable" },
+    { "h2": "When to ask for a review or feedback" },
+    { "p": "A thank you and a review request are not the same message. Send the thank you the same day, then ask for a review a little later, when the client has had time to feel the result. For reviews, one to four hours after the appointment works for quick services, and a day or two for anything a client needs to think about. Ask once, and if there is no reply, send a single reminder after five to seven days, never a third ([Apptoto](https://www.apptoto.com/best-practices/sms-review-requests))." },
+    { "quote": "Hi Priya, I hope the session was useful. If you have a minute, a short review really helps others find me: [review link]. No pressure either way, and thank you again.", "cite": "6. Review request, low pressure" },
+    { "quote": "Hi Rahul, just checking the plan is working for you. Reply with a 1 to 5 and one line on what could be better, it genuinely helps me improve.", "cite": "7. Feedback request" },
+    { "h2": "Rebooking messages that do not feel pushy" },
+    { "p": "Rebooking is where a one-time client becomes a regular, but timing matters. Guides suggest waiting at least 24 hours after the appointment before nudging a rebook, and keeping any follow-up sequence to three to five messages spread over 30 to 90 days, not a message a week ([SchedulingKit](https://schedulingkit.com/hub/business-growth/how-to-automate-review-requests-after-appointments)). The softest version just hands over the link: when you are ready, here is where to book." },
+    { "quote": "Hi Sneha, it is about time for your next appointment. Whenever it suits you, pick a slot here: [booking link]. Looking forward to seeing you again.", "cite": "8. Gentle rebook nudge" },
+    { "quote": "Hi Arjun, it has been a month since our last session. If you would like to pick up where we left off, here is my calendar: [booking link].", "cite": "9. Re-engagement after a gap" },
+    { "h2": "Hinglish versions" },
+    { "quote": "Namaste Priya ji, aaj aane ke liye dhanyavaad. Aapke saath baat karke accha laga. Aage koi sawaal ho to yahin message kijiye.", "cite": "10. Thank you, Hinglish" },
+    { "quote": "Hi Rahul, session achha raha, thank you! Agar aapko theek lage to ek chhota review bahut help karega: [review link]. Bilkul koi pressure nahi.", "cite": "11. Review request, Hinglish" },
+    { "quote": "Namaste Sharma ji, agli appointment ka time ho gaya hai. Jab suvidha ho, yahan slot chun lijiye: [booking link]. Milte hain!", "cite": "12. Rebook, Hinglish" },
+    {
+      "table": {
+        "head": ["When", "What to send"],
+        "rows": [
+          ["Right after the session", "Thank-you, templates 1 to 5, same day"],
+          ["1 to 4 hours later (quick services)", "Review request, template 6"],
+          ["2 to 3 days later", "Feedback request, template 7"],
+          ["24 hours on, or a month later", "Rebooking nudge, template 8 or 9"],
+          ["Client who cancelled or no-showed", "No review request; a warm rebook link only"]
+        ]
+      }
+    },
+    { "h2": "How this works on Meeticulous" },
+    { "p": "On Meeticulous, the routine messages are already handled for you. When a guest books, they get an automatic [confirmation](/blog/appointment-confirmation-message), and [reminders](/blog/appointment-reminder-templates) go out before the session, so you are not typing those by hand. The thank you, review and rebooking notes above are the human touch you add on top, and your booking link makes the next step one tap." },
+    { "p": "Two things make the review and rebook easier. Guests can leave a [two-way review](/blog/google-sign-in-service-pages-two-way-reviews) after a booking, so a review link points somewhere that builds your profile. And because a thank-you with a booking link is really a retention tool, it pairs well with the rest of the [no-show and rebooking playbook](/blog/how-to-reduce-no-shows) and with [running appointments on WhatsApp](/blog/manage-appointments-on-whatsapp)." },
+    { "h2": "Frequently asked questions" },
+    {
+      "faq": [
+        { "q": "What should I say in a thank you message after an appointment?", "a": "Thank the client by name, mention one real detail from the session so it does not read like a template, and add one clear next step such as a review link or a time to book again. Keep it to three or four lines and send it the same day." },
+        { "q": "When should I send a thank you message after an appointment?", "a": "Send the thank you the same day, ideally within a few hours while the session is fresh. If you also want a review, ask for that a little later: one to four hours after for quick services, or a day or two for anything the client needs to reflect on." },
+        { "q": "Should I send a thank you message on WhatsApp or email?", "a": "Use the channel the client booked on. In India, WhatsApp is usually read fastest, so it suits a short thank you or a rebooking nudge. Email is better when you are also attaching a summary, a plan or an invoice." },
+        { "q": "How do I ask for a review without being pushy?", "a": "Ask once, keep it short, and make it easy to skip. Send a single review link, say a review helps others find you, and add that there is no pressure. If there is no reply, send one reminder after five to seven days and then stop." },
+        { "q": "How soon can I ask a client to rebook?", "a": "Wait at least 24 hours after the appointment before nudging a rebook, so it does not feel transactional. The softest version simply shares your booking link for whenever they are ready, rather than pushing a specific date." }
+      ]
+    }
+  ]
+},
+{
   "slug": "appointment-cancellation-reschedule-message",
   "title": "Appointment Cancellation Message: 12 Templates to Copy",
   "date": "Nov 6, 2026",
