@@ -24,7 +24,14 @@ const NotificationBell = () => {
     } catch { setState('error'); }
   };
 
-  useEffect(() => { load(); }, []);
+  // Load on mount, then poll while the tab is visible so the "needs attention"
+  // bell actually refreshes (it has no realtime channel of its own).
+  useEffect(() => {
+    load();
+    const tick = () => { if (document.visibilityState === 'visible') load(); };
+    const poll = setInterval(tick, 60000);
+    return () => clearInterval(poll);
+  }, []);
   useEffect(() => {
     const h = e => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
     document.addEventListener('mousedown', h);
