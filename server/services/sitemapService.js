@@ -160,6 +160,18 @@ const STATIC_ROUTES = [
   { path: '/for/photographers',        changefreq: 'monthly', priority: '0.8' },
   { path: '/for/events',               changefreq: 'monthly', priority: '0.8' },
   { path: '/for/agencies',             changefreq: 'monthly', priority: '0.8' },
+  // 9 more live, prerendered /for pages (bespoke skins in client/src/pages/for/*Skin.jsx)
+  // added after the first sitemap backfill — same drift, still undeclared. Keep this list
+  // mirrored to the /for block in client/scripts/prerender.mjs.
+  { path: '/for/coworking-spaces',     changefreq: 'monthly', priority: '0.8' },
+  { path: '/for/driving-schools',      changefreq: 'monthly', priority: '0.8' },
+  { path: '/for/conference-halls',     changefreq: 'monthly', priority: '0.8' },
+  { path: '/for/photo-studios',        changefreq: 'monthly', priority: '0.8' },
+  { path: '/for/coaches',              changefreq: 'monthly', priority: '0.8' },
+  { path: '/for/content-creators',     changefreq: 'monthly', priority: '0.8' },
+  { path: '/for/educators',            changefreq: 'monthly', priority: '0.8' },
+  { path: '/for/musicians',            changefreq: 'monthly', priority: '0.8' },
+  { path: '/for/language-teachers',    changefreq: 'monthly', priority: '0.8' },
 ];
 
 const staticEntries = (siteUrl) =>
