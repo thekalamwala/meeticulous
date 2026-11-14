@@ -238,7 +238,6 @@ const BookingDetailModal = ({ booking, onClose, onAction, review, onReviewDone }
   const TABS = [
     { id: "details", label: "Booking Details" },
     { id: "timeline", label: "Timeline" },
-    { id: "actions", label: "Actions" },
   ];
 
   const actionButtons = (
@@ -262,23 +261,20 @@ const BookingDetailModal = ({ booking, onClose, onAction, review, onReviewDone }
   );
 
   return (
-    <Modal open onClose={onClose} title="Booking Details" size="xl">
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)]">
+    <Modal open onClose={onClose} title="Booking Details" size="xl" drawer>
+      <div className="grid gap-4">
         {/* ── Left: service + schedule + customer ─────────────────────── */}
         <div className="flex flex-col">
-          {/* Service image (real only if present) or a branded placeholder */}
-          <div className="relative mb-3 overflow-hidden rounded-2xl">
-            {booking.services?.image ? (
-              <img src={booking.services.image} alt={booking.services?.title || "Service"} className="h-40 w-full object-cover" />
-            ) : (
-              <div className="flex h-40 w-full items-center justify-center bg-blush">
-                <span className="font-display text-3xl font-extrabold text-maroon/70">{booking.services?.title || "Service"}</span>
-              </div>
+          {/* Compact header: status only — the service name lives in the Details tab's Service row */}
+          <div className="flex items-center gap-3">
+            {booking.services?.image && (
+              <img src={booking.services.image} alt={booking.services?.title || "Service"} className="h-11 w-11 shrink-0 rounded-xl object-cover" />
             )}
-            <span className="absolute left-3 top-3"><StatusChip status={booking.status} /></span>
+            <StatusChip status={booking.status} />
           </div>
-          <h3 className="font-display text-xl font-extrabold text-maroon">{booking.services?.title || "Service"}</h3>
-          {booking.services?.description && <p className="mt-1 text-sm text-muted">{booking.services.description}</p>}
+          {booking.services?.description && booking.services.description !== booking.services?.title && (
+            <p className="mt-1 line-clamp-2 text-sm text-muted">{booking.services.description}</p>
+          )}
 
           <div className="mt-3 space-y-2 border-t border-maroon/10 pt-3">
             <div className="flex items-start gap-2 text-sm">
@@ -371,52 +367,44 @@ const BookingDetailModal = ({ booking, onClose, onAction, review, onReviewDone }
             </ol>
           )}
 
-          {tab === "actions" && (
-            confirming ? (
-              <div className="rounded-2xl border-2 border-rose/30 bg-blush p-4">
-                <p className="mb-3 text-sm font-medium text-maroon">
-                  {confirming === "cancel"
-                    ? booking.payment_status === "paid"
-                      ? "Cancel this paid booking? The guest will be notified. Cancelling does NOT refund automatically — process any refund manually."
-                      : "Cancel this booking? The guest will be notified."
-                    : confirming === "no_show" ? "Mark this booking as a no-show?" : "Mark as completed?"}
-                </p>
-                <div className="flex flex-col-reverse gap-2 sm:flex-row">
-                  <Button size="lg" variant="outline" full onClick={() => setConfirming(null)}>Back</Button>
-                  <Button size="lg" full variant={confirming === "cancel" ? "danger" : "primary"} onClick={() => doAction(confirming)} disabled={busy}>
-                    {busy ? "..." : confirming === "cancel" ? "Yes, cancel" : confirming === "no_show" ? "Yes, no-show" : "Yes, complete"}
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {actionButtons}
-                {terminal && booking.status !== "completed" && <p className="text-sm text-ink/40">No actions available for a {booking.status} booking.</p>}
-                {booking.status === "completed" && on("review_submission") && booking.guest_id && review && (
-                  <div className="rounded-2xl border-2 border-c-emerald/20 bg-c-emerald/5 px-4 py-3">
-                    <div className="flex items-center justify-between">
-                      <span className="inline-flex items-center gap-1.5 text-sm font-medium text-c-emerald"><Star size={14} className="fill-c-emerald text-c-emerald" /> Review submitted</span>
-                      <button onClick={() => setShowReview(true)} className="text-xs font-medium text-maroon hover:underline">Edit review</button>
-                    </div>
-                    <p className="mt-1 text-sm tracking-tight text-maroon">{"★".repeat(review.rating)}<span className="text-ink/30">{"★".repeat(5 - review.rating)}</span></p>
-                    {review.comment && <p className="mt-1 text-sm leading-relaxed text-muted">{review.comment}</p>}
-                  </div>
-                )}
-              </div>
-            )
-          )}
         </div>
       </div>
 
-      {/* Persistent bottom action bar (the reference's Reschedule / Cancel). */}
-      {!confirming && !terminal && (
-        <div className="mt-5 flex flex-wrap justify-end gap-2 border-t border-maroon/10 pt-4">
-          {booking.status === "confirmed" && future && (
-            <Button size="lg" variant="outline" className="text-primary" onClick={() => setShowReschedule(true)}>Reschedule</Button>
-          )}
-          <Button size="lg" variant="danger-outline" onClick={() => { setTab("actions"); setConfirming("cancel"); }}>Cancel Booking</Button>
-        </div>
-      )}
+      {/* Bottom action bar — all booking actions + their confirmation (was the Actions tab). */}
+      <div className="mt-5 border-t border-maroon/10 pt-4">
+        {confirming ? (
+          <div className="rounded-2xl border-2 border-rose/30 bg-blush p-4">
+            <p className="mb-3 text-sm font-medium text-maroon">
+              {confirming === "cancel"
+                ? booking.payment_status === "paid"
+                  ? "Cancel this paid booking? The guest will be notified. Cancelling does NOT refund automatically — process any refund manually."
+                  : "Cancel this booking? The guest will be notified."
+                : confirming === "no_show" ? "Mark this booking as a no-show?" : "Mark as completed?"}
+            </p>
+            <div className="flex flex-col-reverse gap-2 sm:flex-row">
+              <Button size="lg" variant="outline" full onClick={() => setConfirming(null)}>Back</Button>
+              <Button size="lg" full variant={confirming === "cancel" ? "danger" : "primary"} onClick={() => doAction(confirming)} disabled={busy}>
+                {busy ? "..." : confirming === "cancel" ? "Yes, cancel" : confirming === "no_show" ? "Yes, no-show" : "Yes, complete"}
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-wrap justify-end gap-2">
+            {actionButtons}
+            {terminal && booking.status !== "completed" && <p className="w-full text-right text-sm text-ink/40">No actions available for a {booking.status} booking.</p>}
+            {booking.status === "completed" && on("review_submission") && booking.guest_id && review && (
+              <div className="w-full rounded-2xl border-2 border-c-emerald/20 bg-c-emerald/5 px-4 py-3">
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 text-sm font-medium text-c-emerald"><Star size={14} className="fill-c-emerald text-c-emerald" /> Review submitted</span>
+                  <button onClick={() => setShowReview(true)} className="text-xs font-medium text-maroon hover:underline">Edit review</button>
+                </div>
+                <p className="mt-1 text-sm tracking-tight text-maroon">{"★".repeat(review.rating)}<span className="text-ink/30">{"★".repeat(5 - review.rating)}</span></p>
+                {review.comment && <p className="mt-1 text-sm leading-relaxed text-muted">{review.comment}</p>}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </Modal>
   );
 };
@@ -549,32 +537,24 @@ const Bookings = () => {
     ? `${MONTHS[anchor.getMonth()]} ${anchor.getFullYear()}`
     : `${MONTHS[weekStart.getMonth()]} ${weekStart.getFullYear()}`;
 
+  // Heading + summary cards on one row
   const header = (
-    <>
-      {/* Heading */}
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary"><CalendarDays className="h-6 w-6" strokeWidth={2} /></span>
-          <div>
-            <h1 className="font-display text-2xl font-extrabold tracking-tight text-maroon sm:text-[28px]">Bookings</h1>
-            <p className="mt-0.5 text-sm text-muted">Manage your upcoming and completed appointments.</p>
-          </div>
-        </div>
-        <button type="button" onClick={newBooking} className="inline-flex h-10 shrink-0 items-center gap-2 self-start rounded-full bg-primary px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90 sm:self-auto">
-          <Plus className="h-4 w-4" strokeWidth={2.4} /> New Booking
-        </button>
+    <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex shrink-0 items-center gap-3">
+        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary"><CalendarDays className="h-6 w-6" strokeWidth={2} /></span>
+        <h1 className="font-display text-2xl font-extrabold leading-none tracking-tight text-maroon sm:text-[28px]">Bookings</h1>
       </div>
       {/* Summary cards */}
-      <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:max-w-3xl lg:flex-1">
         <SummaryCard icon={CalendarClock} label="Upcoming" value={counts.upcoming} to="/dashboard/bookings" tone="pink" />
         <SummaryCard icon={Clock} label="Pending" value={counts.pending} to="/dashboard/bookings" tone="orange" />
         <SummaryCard icon={CalendarCheck2} label="Completed" value={counts.completed} to="/dashboard/bookings" tone="green" />
       </div>
-    </>
+    </div>
   );
 
   return (
-    <div className="rounded-3xl bg-blush/40 p-0.5">
+    <div>
       {header}
 
       {loading ? (
@@ -617,7 +597,7 @@ const Bookings = () => {
             </div>
             <button type="button" onClick={() => setAnchor(new Date())} className="rounded-full border border-maroon/15 px-3 py-1.5 text-[13px] font-semibold text-ink/70 transition hover:bg-blush/50 hover:text-primary">Today</button>
             <div className="ml-auto flex items-center rounded-full border border-maroon/10 bg-blush/40 p-0.5">
-              {["week", "month", "agenda"].map((v) => (
+              {["week", "month"].map((v) => (
                 <button key={v} type="button" onClick={() => setCalView(v)} aria-pressed={calView === v}
                   className={cn("rounded-full px-3 py-1.5 text-[13px] font-semibold capitalize transition", calView === v ? "bg-white text-primary shadow-sm" : "text-ink/50 hover:text-ink")}>
                   {v}
@@ -643,9 +623,6 @@ const Bookings = () => {
                     </div>
                     <div className="flex-1 space-y-1.5 p-1.5">
                       {dayBookings.map((b) => <BookingCard key={b.id} booking={b} onOpen={setSelected} />)}
-                      <button type="button" onClick={newBooking} className="flex w-full items-center justify-center gap-1 rounded-lg border border-dashed border-maroon/15 py-1.5 text-[11px] font-semibold text-ink/40 transition hover:border-primary/40 hover:text-primary">
-                        <Plus className="h-3 w-3" /> Add Booking
-                      </button>
                     </div>
                   </div>
                 );
