@@ -455,7 +455,9 @@ const updateProfile = async (req, res) => {
       if (!/^#[0-9a-fA-F]{6}$/.test(theme_color)) {
         return res.status(400).json({ message: "Invalid theme colour — expected a hex value like #960D32." });
       }
-      const FREE_PALETTE = ["#F8F7F2", "#6B7280", "#960D32"];
+      // Keep in sync with client/src/utils/themeUtils.js FREE_COLORS (the two
+      // brand colours shown to free hosts). The off-white/grey are legacy-safe.
+      const FREE_PALETTE = ["#F8F7F2", "#6B7280", "#960D32", "#E0506F"];
       // Host+ (creator) — 8 curated colours (keep in sync with
       // client/src/utils/themeUtils.js CREATOR_COLORS).
       const CREATOR_PALETTE = [

@@ -39,11 +39,19 @@ export const getContrastColor = (hex) => {
   return getContrastRatio(hex, '#111827') > getContrastRatio(hex, '#ffffff') ? '#111827' : '#ffffff';
 };
 
+// Default cover banner (branded Meeticulous wordmark on maroon). Centered
+// wordmark with wide margins, so object-cover/center keeps it visible at any
+// aspect. Served from client/public/brand/.
+export const DEFAULT_COVER_IMAGE = '/brand/default-cover.webp';
+
 // ─── Plan-gated color palettes ───────────────────────────────────────────────
 
-// Starter (free) tier: brand maroon only — no choice, keeps free profiles on-brand.
+// Starter (free) tier: the two brand colours — maroon + rose. Keeps free
+// profiles on-brand while giving a real choice. Keep in sync with the server's
+// FREE_PALETTE in hostController.js.
 export const FREE_COLORS = [
   { name: 'Brand Maroon', hex: '#960D32' },
+  { name: 'Brand Rose',   hex: '#E0506F' },
 ];
 
 // Host+ (creator) tier: 8 curated colours.

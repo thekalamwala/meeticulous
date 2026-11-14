@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   X, ExternalLink, LogOut, Headset, ChevronDown, Bell, LifeBuoy,
   User, CreditCard, ShieldCheck, Check, Copy, BadgeCheck,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { isHost } from '../../utils/roleRoutes';
 import useIsMobile from '../../hooks/useIsMobile';
 import useLiveNotifications from '../../hooks/useLiveNotifications';
 import { getNotifications, markAllNotificationsRead, markNotificationRead, markLinkShared } from '../../services/api';
@@ -251,6 +252,17 @@ export const ProfileMenu = ({
   const category = humanizeCategory(user?.category || user?.primary_category);
   const close = () => setOpen(false);
 
+  // Dual-capability mode switch (unified identity) — only for an account that
+  // owns both spaces. Switching navigates into that space and closes the menu.
+  const { mode, setMode } = useAuth();
+  const navigate = useNavigate();
+  const switchMode = (next) => {
+    close();
+    if (next === mode) return;
+    setMode(next);
+    navigate(next === 'hosting' ? '/dashboard' : '/user');
+  };
+
   // Verification tick by the name: orange (brand) when verified, grey otherwise.
   const kyc = (user?.kyc_status || '').toLowerCase();
   const kycVerified = ['approved', 'verified'].includes(kyc);
@@ -327,13 +339,32 @@ export const ProfileMenu = ({
               </Link>
             </div>
             <p className="truncate text-xs text-neutral-500">{user?.username ? `@${user.username}` : category}</p>
-            <div className="mt-1.5">
-              <span className={cn('rounded-full px-2 py-0.5 text-[10px] font-semibold', planStyle.bg, planStyle.text)}>
-                {planStyle.label}
-              </span>
-            </div>
           </div>
         </div>
+
+        {/* Mode switch — Hosting / Guesting (dual-capability accounts only) */}
+        {isHost(user) && (
+          <div className="border-t border-neutral-100 px-4 py-3">
+            <div className="flex gap-1 rounded-full bg-neutral-100 p-0.5">
+              <button
+                type="button"
+                onClick={() => switchMode('hosting')}
+                className={cn('flex-1 rounded-full px-3 py-1.5 text-xs font-semibold transition',
+                  mode === 'hosting' ? 'bg-maroon text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-800')}
+              >
+                Hosting
+              </button>
+              <button
+                type="button"
+                onClick={() => switchMode('traveling')}
+                className={cn('flex-1 rounded-full px-3 py-1.5 text-xs font-semibold transition',
+                  mode === 'traveling' ? 'bg-maroon text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-800')}
+              >
+                Guesting
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Account */}
         <div className="border-t border-neutral-100 py-1.5">

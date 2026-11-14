@@ -48,12 +48,13 @@ const openProfile = () => fireEvent.click(screen.getByLabelText('Profile menu'))
 describe('dashboard topbar profile menu', () => {
   beforeEach(() => { mockAuth.current = {}; });
 
-  it('shows name + category + plan badge on open and never the email', () => {
+  it('shows name + category on open and never the email', () => {
     renderLayout({ name: 'Shubham Datarkar', email: 'sndatarkar@gmail.com', plan: 'supreme', category: 'career-coaching', is_host: true, role: 'host' });
     openProfile();
     expect(screen.getByText('Shubham Datarkar')).toBeInTheDocument();
     expect(screen.getByText('Career Coaching')).toBeInTheDocument();   // humanized category
-    expect(screen.getAllByText(/Supreme/).length).toBeGreaterThan(0);
+    // Plan badge removed from the menu identity block.
+    expect(screen.queryByText(/Supreme/)).toBeNull();
     expect(screen.queryByText('sndatarkar@gmail.com')).toBeNull();      // email never shown
   });
 
@@ -72,8 +73,6 @@ describe('dashboard topbar profile menu', () => {
     renderLayout({ name: 'Host', plan: 'creator', role: 'host', username: 'hosty' });
     openProfile();
     const menu = within(screen.getByRole('menu', { name: 'Account' }));
-    // Plan chip in the header carries the humanized plan label (creator -> Pro).
-    expect(menu.getByText('Pro')).toBeInTheDocument();
     ['Account information', 'Plan & billing', 'Verification', 'View public profile', 'Copy link', 'Account manager', 'Log out']
       .forEach((label) => expect(menu.getByText(label)).toBeInTheDocument());
     // The old nav shortcuts no longer live in the menu — they're in the sidebar.
