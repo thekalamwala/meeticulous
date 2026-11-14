@@ -69,6 +69,8 @@ export const NAV = [
       { to: '/dashboard/products', label: 'Products', icon: 'nav-products' },
       // Video courses (v3.214) — hidden until the `course_purchase` flag is on.
       { to: '/dashboard/courses', label: 'Courses', icon: 'nav-products', visible: (c) => !!c.flags?.course_purchase },
+      // Reuse nav-profile glyph — no testimonial icon is exported yet (closest fit).
+      { to: '/dashboard/testimonials', label: 'Testimonials', icon: 'nav-profile' },
       // Coupons (v3.204) — hidden until the `coupons` flag is on. Reuses the
       // refer glyph (promo/reward) as no discount icon is exported yet.
       { to: '/dashboard/coupons', label: 'Coupons', icon: 'nav-refer', visible: (c) => !!c.flags?.coupons },

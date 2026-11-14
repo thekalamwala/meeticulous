@@ -2,8 +2,25 @@ import axios from 'axios';
 import { getAttribution } from '../utils/attribution';
 import { batchedImport } from '../utils/batchImport';
 
+// Resolve the API base. VITE_API_URL stays ABSOLUTE (…onrender.com/api) so the
+// build-time prerender script and its request-interceptor proxy keep working. But
+// in a real production browser we prefer same-origin `/api`, which Vercel rewrites
+// to the origin AND edge-caches (client/vercel.json x-vercel-enable-rewrite-caching)
+// — so a traffic spike of public reads is served from the edge, not the one Render
+// instance. Skipped on localhost: dev and the prerender static server (localhost:4173)
+// must use the absolute base (the prerender proxies those calls through Node).
+function resolveApiBase() {
+  const configured = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  if (typeof window !== 'undefined' && import.meta.env.PROD) {
+    const h = window.location.hostname;
+    const isLocal = h === 'localhost' || h === '127.0.0.1' || h === '::1' || h === '[::1]';
+    if (!isLocal) return '/api';
+  }
+  return configured;
+}
+
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: resolveApiBase(),
   timeout: 30000, // give up on a stalled request instead of hanging forever
 });
 
@@ -455,6 +472,13 @@ export const getHostCoupons    = ()                => API.get('/host/coupons');
 export const createHostCoupon  = (data)            => API.post('/host/coupons', data);
 export const updateHostCoupon  = (id, data)        => API.patch(`/host/coupons/${id}`, data);
 export const deleteHostCoupon  = (id)              => API.delete(`/host/coupons/${id}`);
+
+// ── Testimonials (v3.212, host-authored proof wall) ───────────
+export const getMyTestimonials   = ()               => API.get('/host/testimonials');
+export const createTestimonial   = (data)           => API.post('/host/testimonials', data);
+export const updateTestimonial   = (id, data)       => API.put(`/host/testimonials/${id}`, data);
+export const deleteTestimonial   = (id)             => API.delete(`/host/testimonials/${id}`);
+export const getHostTestimonials = (username)       => API.get(`/host/${username}/testimonials`); // public proof wall
 
 // ── Bookings ──────────────────────────────────────────────────
 export const createBooking     = (data)            => API.post('/bookings', data);
