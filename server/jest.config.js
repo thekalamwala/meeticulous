@@ -21,4 +21,11 @@ module.exports = {
   testTimeout: 15000,
   clearMocks: true,
   restoreMocks: true,
+  // A worker that lingers past Jest's shutdown grace makes Jest force-exit with
+  // code 1 even when every suite passed — seen only on Render's slower build box:
+  // the deploy build (`NODE_ENV=test npm run test:unit`) fails right after printing
+  // "412 passed", while the same commit exits 0 locally and in GitHub CI. forceExit
+  // exits on the run's result code (0 on pass) the moment tests finish; it never
+  // masks a real failure (a failing suite still exits non-zero).
+  forceExit: true,
 };

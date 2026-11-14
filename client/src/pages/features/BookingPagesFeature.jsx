@@ -52,12 +52,15 @@ import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
 const DEMO = '/contact';
-const CREAM = '#FBF5F3';      // page paper
-const PAPER = '#FFFFFF';      // lighter alternate sections
-const INK = '#2B0A14';
-const ORANGE = '#960D32';     // decorative only (doodles, dots, fills behind dark text)
-const ORANGE_INK = '#2B0A14'; // orange for text + white-on-orange CTAs (AA on cream)
-const PEACH = '#FBE3E8';      // primary-light tint
+const CREAM = '#F5F9FE';      // cool light paper — page background
+const PAPER = '#FFFFFF';      // white alternate sections
+const INK = '#201E1D';        // Tukku ink — text + dark fills
+const ORANGE = '#2F7DD1';     // Tukku primary blue — doodles, dots, borders, fills
+const ORANGE_INK = '#2F7DD1'; // Tukku primary blue — solid fills, accent text, links, icons
+const HEAD_ACCENT = '#E9578A'; // Tukku pink — highlighted heading words only
+const BLUE_DEEP = '#15396B';  // deep blue — final CTA background
+const PEACH = '#EAF3FC';      // soft pale-blue tint — accent sections, chips
+const TCREAM = '#F6E3C6';     // Tukku cream — warm accent (sticky-note alt)
 
 /* ─────────────────────────────  LINK SLUG  ────────────────────────────── */
 
@@ -133,19 +136,12 @@ const FAQ = [
   { q: 'Can I put the link in my Instagram bio?', a: 'Yes, that is what it is built for. One link carries your bio, socials, services and booking.' },
 ];
 
-const RELATED = [
-  { to: '/features/online-scheduling', label: 'Online scheduling' },
-  { to: '/features/payments', label: 'Payments' },
-  { to: '/features/reviews', label: 'Reviews' },
-  { to: '/features/digital-products', label: 'Digital products' },
-];
-
 /* ─────────────────────────────  DOODLES  ────────────────────────────── */
 
-function Squiggle({ className = '' }) {
+function Squiggle({ className = '', color = ORANGE }) {
   return (
     <svg aria-hidden viewBox="0 0 200 14" preserveAspectRatio="none" className={className}>
-      <path d="M3 9 C 20 2, 34 13, 52 7 S 86 2, 103 8 S 136 13, 153 6 S 186 3, 197 8" fill="none" stroke={ORANGE} strokeWidth="3.5" strokeLinecap="round" />
+      <path d="M3 9 C 20 2, 34 13, 52 7 S 86 2, 103 8 S 136 13, 153 6 S 186 3, 197 8" fill="none" stroke={color} strokeWidth="3.5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -169,12 +165,12 @@ function Sparkle({ className = '', color = ORANGE }) {
 
 /* ─────────────────────────────  PIECES  ────────────────────────────── */
 
-function PrimaryCta({ to = START, children }) {
+function PrimaryCta({ to = START, children, onDark = false }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white transition-opacity hover:no-underline hover:opacity-90"
-      style={{ background: '#960D32' }}
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-opacity hover:no-underline hover:opacity-90"
+      style={onDark ? { background: '#FFFFFF', color: BLUE_DEEP } : { background: ORANGE, color: '#FFFFFF' }}
     >
       {children}
     </Link>
@@ -415,7 +411,7 @@ export default function BookingPagesFeature() {
   });
 
   return (
-    <main className="overflow-x-clip text-ink" style={{ background: CREAM }}>
+    <main className="feature-page-dark overflow-x-clip text-ink" style={{ background: CREAM, color: INK }}>
       <Seo
         title={seo.title}
         description={seo.description}
@@ -441,16 +437,11 @@ export default function BookingPagesFeature() {
               <span aria-hidden className="mx-2">/</span>
               <span aria-current="page" className="text-ink">Booking pages</span>
             </nav>
-            <Reveal instant className="mt-5">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-black/5 bg-white px-3.5 py-1.5 text-xs font-semibold text-neutral-700 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-                <Sparkle className="h-3 w-3" /> For freelancers, coaches and creators
-              </span>
-            </Reveal>
-            <Reveal as="h1" instant delay={0.03} className="mt-4 font-heading text-[clamp(2.5rem,4.8vw,4.1rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-ink">
+            <Reveal as="h1" instant delay={0.03} className="mt-5 font-heading text-[clamp(2.5rem,4.8vw,4.1rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">
               A free booking page that{' '}
-              <span className="relative inline-block whitespace-nowrap" style={{ color: ORANGE_INK }}>
+              <span className="relative inline-block whitespace-nowrap" style={{ color: HEAD_ACCENT }}>
                 feels like you.
-                <Squiggle className="absolute -bottom-2 left-0 h-3 w-full" />
+                <Squiggle className="absolute -bottom-2 left-0 h-3 w-full" color={HEAD_ACCENT} />
               </span>
             </Reveal>
             <Reveal as="p" instant delay={0.06} className="mt-4 max-w-xl text-base leading-relaxed text-neutral-600 lg:text-lg">
@@ -486,8 +477,8 @@ export default function BookingPagesFeature() {
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-5xl">
           <div className="text-center">
-            <Reveal as="h2" className="mx-auto max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-              A list of links is not <span style={{ color: ORANGE_INK }}>a way to book you.</span>
+            <Reveal as="h2" className="mx-auto font-heading text-[clamp(1.7rem,3vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight lg:whitespace-nowrap">
+              A list of links is not <span style={{ color: HEAD_ACCENT }}>a way to book you.</span>
             </Reveal>
             <Reveal as="p" delay={0.05} className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-neutral-600">
               A link-in-bio page sends people somewhere else to ask. A booking page lets them see the price, pick a time and pay in one go.
@@ -529,7 +520,7 @@ export default function BookingPagesFeature() {
       <section id="how" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:py-28" style={{ background: PAPER }}>
         <div className="mx-auto max-w-4xl">
           <Reveal as="h2" className="text-center font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-            From sign-up to <span style={{ color: ORANGE_INK }}>first booking.</span>
+            From sign-up to <span style={{ color: HEAD_ACCENT }}>first booking.</span>
           </Reveal>
           <ol className="mt-16">
             {STEPS.map((s, i) => {
@@ -560,8 +551,8 @@ export default function BookingPagesFeature() {
       {/* ═══════════════ 5 · CAPABILITIES (static, slightly rotated sticker cards) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-            Small things that make <span style={{ color: ORANGE_INK }}>a page bookable.</span>
+          <Reveal as="h2" className="font-heading text-[clamp(1.7rem,3vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight lg:whitespace-nowrap">
+            Small things that make <span style={{ color: HEAD_ACCENT }}>a page bookable.</span>
           </Reveal>
           <div className="mt-14 grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {STICKERS.map((c, i) => (
@@ -570,9 +561,11 @@ export default function BookingPagesFeature() {
                   className="h-full rounded-[24px] border border-black/5 bg-white p-7 shadow-[0_12px_34px_-14px_rgba(26,26,26,0.18)]"
                   style={{ transform: `rotate(${c.tilt}deg)` }}
                 >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full" style={{ background: PEACH, color: ORANGE_INK }}><c.icon size={18} aria-hidden /></span>
-                  <h3 className="mt-4 font-heading text-lg font-bold">{c.title}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-neutral-600">{c.body}</p>
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full" style={{ background: PEACH, color: ORANGE_INK }}><c.icon size={18} aria-hidden /></span>
+                    <h3 className="font-heading text-lg font-bold leading-tight">{c.title}</h3>
+                  </div>
+                  <p className="mt-3 text-sm leading-relaxed text-neutral-600">{c.body}</p>
                 </div>
               </Reveal>
             ))}
@@ -583,7 +576,7 @@ export default function BookingPagesFeature() {
               alt="A friendly mascot beside a calendar, a clock and a Booking Confirmed card"
               loading="lazy"
               decoding="async"
-              className="mx-auto w-full max-w-3xl rounded-[24px] border border-black/5 shadow-[0_12px_34px_-14px_rgba(26,26,26,0.18)]"
+              className="mx-auto w-full max-w-3xl rounded-[24px]"
             />
           </Reveal>
         </div>
@@ -595,7 +588,7 @@ export default function BookingPagesFeature() {
           <div className="relative text-center">
             <Sparkle className="absolute -top-6 left-[12%] hidden h-6 w-6 sm:block" color={ORANGE_INK} />
             <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-              One link. <span style={{ color: ORANGE_INK }}>Everywhere you already are.</span>
+              One link. <span style={{ color: HEAD_ACCENT }}>Everywhere you already are.</span>
             </Reveal>
             <Reveal as="p" delay={0.05} className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-neutral-700">
               The same short link goes in your bio, your replies, your signature and your card, and it always opens the page where people book.
@@ -610,14 +603,14 @@ export default function BookingPagesFeature() {
         <section className="px-5 py-20 sm:px-8 lg:py-28">
           <div className="mx-auto max-w-6xl">
             <Reveal as="h2" className="text-center font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-              Hosts on <span style={{ color: ORANGE_INK }}>their link.</span>
+              Hosts on <span style={{ color: HEAD_ACCENT }}>their link.</span>
             </Reveal>
             <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
               {QUOTES.map((t, i) => (
                 <Reveal as="figure" key={t.name} delay={i * 0.05}>
                   <div
                     className="relative flex h-full flex-col rounded-[24px] p-6 pt-8 shadow-[0_14px_30px_-16px_rgba(26,26,26,0.25)]"
-                    style={{ background: i % 2 ? '#F7EAD3' : PEACH, transform: `rotate(${i % 2 ? 1.4 : -1.4}deg)` }}
+                    style={{ background: i % 2 ? TCREAM : PEACH, transform: `rotate(${i % 2 ? 1.4 : -1.4}deg)` }}
                   >
                     <span aria-hidden className="absolute -top-2.5 left-1/2 h-5 w-16 -translate-x-1/2 rotate-[-3deg] rounded-[2px] bg-white/70 shadow-[0_2px_6px_rgba(26,26,26,0.08)]" />
                     <blockquote className="flex-1 text-[15px] leading-relaxed text-ink">&ldquo;{t.quote}&rdquo;</blockquote>
@@ -643,12 +636,12 @@ export default function BookingPagesFeature() {
         <FeatureFaq
           heading={(
             <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-              Booking page <span style={{ color: ORANGE_INK }}>questions.</span>
+              Booking page <span style={{ color: HEAD_ACCENT }}>questions.</span>
             </Reveal>
           )}
           items={FAQ}
           itemClassName=""
-          summaryClassName={(open) => `flex items-center justify-between gap-4 rounded-full border px-6 py-3.5 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors ${open ? 'border-[#960D32]/30 bg-[#FBE3E8]' : 'border-black/5 bg-white hover:border-black/15'}`}
+          summaryClassName={(open) => `flex items-center justify-between gap-4 rounded-full border px-6 py-3.5 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors ${open ? 'border-[#2F7DD1]/30 bg-[#EAF3FC]' : 'border-black/5 bg-white hover:border-black/15'}`}
           answerClassName="px-6 pb-3 pt-4 text-[15px] leading-relaxed text-neutral-600"
           renderSummary={(f, i, open) => (
             <>
@@ -660,31 +653,19 @@ export default function BookingPagesFeature() {
       </section>
 
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
-      <section className="relative overflow-hidden px-5 py-20 text-[#FBF5F3] sm:px-8 lg:py-28" style={{ background: INK }}>
+      <section className="relative overflow-hidden px-5 py-20 text-[#F6E3C6] sm:px-8 lg:py-28" style={{ background: BLUE_DEEP }}>
         <Sparkle className="absolute left-[8%] top-12 h-7 w-7" />
         <Sparkle className="absolute bottom-16 right-[10%] h-5 w-5" />
         <div className="relative mx-auto max-w-6xl text-center">
           <div>
-            <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.2rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[#FBF5F3]">
-              Claim meeticulous.com/<span className="relative inline-block" style={{ color: ORANGE }}>yourname<Squiggle className="absolute -bottom-2 left-0 h-3 w-full" /></span>
+            <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.2rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[#F6E3C6]">
+              Claim meeticulous.com/<span className="relative inline-block" style={{ color: '#F5A3C0' }}>yourname<Squiggle className="absolute -bottom-2 left-0 h-3 w-full" color="#F5A3C0" /></span>
             </Reveal>
-            <Reveal as="p" delay={0.05} className="mx-auto mt-7 max-w-xl text-base leading-relaxed text-[#FBF5F3]/75">
+            <Reveal as="p" delay={0.05} className="mx-auto mt-7 max-w-xl text-base leading-relaxed text-[#F6E3C6]/75">
               Set up your page free on {FREE_PLAN.name}. Add a service, share the link, and the next person who asks &ldquo;how do I book you?&rdquo; already has the answer.
-            </Reveal>
-            <Reveal delay={0.1} className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
-              <PrimaryCta onDark>Claim your free link <ArrowRight size={16} /></PrimaryCta>
-              <Link to="/pricing" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#FBF5F3] hover:no-underline hover:opacity-80">
-                See pricing <ArrowRight size={15} />
-              </Link>
             </Reveal>
           </div>
         </div>
-        <nav aria-label="Related features" className="relative mx-auto mt-16 flex max-w-6xl flex-wrap items-center justify-center gap-2.5 border-t border-white/10 pt-8 text-sm">
-          <span className="mr-1 text-[#FBF5F3]/55">Works with</span>
-          {RELATED.map((r) => (
-            <Link key={r.to} to={r.to} className="rounded-full border border-white/15 px-3.5 py-1.5 text-[#FBF5F3]/85 transition-colors hover:border-white/40 hover:text-[#FBF5F3] hover:no-underline">{r.label}</Link>
-          ))}
-        </nav>
       </section>
     </main>
   );
