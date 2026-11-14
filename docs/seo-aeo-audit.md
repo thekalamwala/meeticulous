@@ -1,5 +1,40 @@
 # Meeticulous — Technical SEO + AEO Audit
 
+> ## Weekly re-audit — 2026-11-14 (VANI, ASH-114)
+>
+> _Delta pass over the 2026-10-04 baseline below. Egress still blocked (curl not on the tool
+> allowlist); live claims tagged **[VERIFY LIVE]**. Supabase MCP not available this run — platform-scale
+> DB figures NOT re-pulled (use baseline numbers with caution; the host-supply / review-count checks
+> that need the DB are flagged below as NEEDS DB)._
+>
+> **Baseline P0/P1 — status re-verified against CURRENT code (repo was brand-scrubbed, so trust code not the old report):**
+> - **0-A logo 404** → ✅ fixed. `seo.js:466,542` point at `web-app-manifest-512x512.png` (exists, real 512px).
+> - **0-C homepage `reviewCount:176` vs real reviews** → ✅ fixed. `Home.jsx:105` removed `aggregateRating` entirely with a comment explaining why. No fabricated count remains.
+> - **3-B Organization legalName/contactPoint** → ✅ shipped. `seo.js:436` `ORG_LEGAL_NAME='Rajmudra Media LLP'`, `contactPoint` set. Postal address deliberately kept OUT of the Org node (owner call 2026-10-31, `seo.js:433-435`) — only `/contact` map uses it. Not a finding.
+> - **P1 content gaps** → ✅ mostly shipped: `/tools/no-show-cost-calculator`, `/tools/gst-calculator`, `/glossary` + 30 term pages, `/press`, `/stats` all exist (`App.jsx:580-585`), prerendered AND sitemapped (`prerender.mjs:104-163`, `sitemapService.js:116-121`). Big progress since Oct.
+> - **0-D/2-A `/lp/*` pages emit no schema** → N/A now: `/lp/*Alternative` routes were migrated to `/compare/*-alternative` (6 pages, prerender↔sitemap in sync). Re-verify these emit FAQ/SoftwareApplication JSON-LD → **NEW task ASH-114-b**.
+>
+> **NEW finding this week — the classic drift bug re-emerged:**
+> - **W-1 (P0, FIXED THIS PR) · 9 live, prerendered `/for` pages missing from the sitemap.**
+>   `prerender.mjs` bakes 36 `/for` pages (incl. bespoke skins: coworking-spaces, driving-schools,
+>   conference-halls, photo-studios, content-creators, language-teachers; + coaches/educators/musicians),
+>   but `sitemapService.js` STATIC_ROUTES declared only 27. The 9 extra were crawlable only via internal
+>   links, not declared. **Evidence:** `prerender.mjs:110-145` vs `sitemapService.js:136-162`; routes resolve
+>   via the `/for/:profession` catch-all (`App.jsx:823`) with real skin content. **Fix:** added the 9 to
+>   STATIC_ROUTES (this branch) + a comment to keep the two lists mirrored. Impact M, Effort S.
+> - **W-2 (NEEDS DB) · host-supply vs `/for` targeting** — baseline finding 1-A unresolved and not re-checkable
+>   without Supabase MCP. Several `/for` verticals (healthcare/salon) may still render near-empty host lists
+>   (doorway risk). Re-run the §2 supply query next time MCP is available.
+>
+> **Still-open from baseline (carried):** 0-E BreadcrumbList in bot-prerender shells (P2); 1-A supply realignment
+> (P1, needs DB); 3-A more linkable tools — partially addressed (2 calculators shipped), consider QR generator / templates;
+> 3-D off-site profile claims (no code, founder action); 4-B data-PR thresholds (hold until volume).
+>
+> **[VERIFY LIVE] for the founder:** confirm the 9 newly-sitemapped `/for` pages return 200 with `X-Prerender`;
+> run Lighthouse + pull GSC coverage (which `/for`/`/services` are "Crawled – not indexed"). See §7.
+
+---
+
 _Audited: 2026-10-04 · Auditor: automated senior technical-SEO/AEO pass over the codebase + prod config · Branch: `claude/seo-aeo-audit-9a2qny`_
 
 ---
