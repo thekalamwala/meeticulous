@@ -20,10 +20,8 @@ const PAID = new Set(['premium', 'professional', 'supreme']);
 const isProPlan = (plan) => PAID.has(String(plan || '').toLowerCase());
 const firstName = (name) => String(name || '').trim().split(/\s+/)[0] || 'there';
 
-const DISMISS_KEY = 'mt_community_ad_dismissed'; // per-tab: hide for this session only
-const dismissedThisSession = () => {
-  try { return sessionStorage.getItem(DISMISS_KEY) === '1'; } catch { return false; }
-};
+// The sidebar ad is permanent — no dismiss control. (It used to carry a per-tab
+// hide, but the single ⋯ glyph read as a menu and hid the whole ad on one click.)
 
 // Scoped styles (mtad- prefix, self-contained hex) so the card matches the approved design
 // exactly without depending on Tailwind/brand.css class names. Injected once by the component.
@@ -144,7 +142,6 @@ const pick = (deck) => deck[Math.floor(Math.random() * deck.length)];
 export default function CommunityAd() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [dismissed, setDismissed] = useState(dismissedThisSession);
 
   // Pro host -> sell reach; free host -> sell Pro; everyone else (guest / logged-out) -> sell hosting.
   const audience = !user?.is_host ? 'guest' : (isProPlan(user?.plan) ? 'advertise' : 'upgrade');
@@ -157,11 +154,9 @@ export default function CommunityAd() {
     return () => clearInterval(t);
   }, [audience]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const show = !dismissed; // every audience has a deck now (incl. logged-out guests)
-
   useEffect(() => {
-    if (show) analytics.track(EVENTS.COMMUNITY_AD_IMPRESSION, { ad_code: variant.code, audience });
-  }, [show, variant.code, audience]);
+    analytics.track(EVENTS.COMMUNITY_AD_IMPRESSION, { ad_code: variant.code, audience });
+  }, [variant.code, audience]);
 
   const cta = useMemo(() => () => {
     analytics.track(EVENTS.COMMUNITY_AD_CLICKED, { ad_code: variant.code, audience });
@@ -171,12 +166,6 @@ export default function CommunityAd() {
     else toast.success("Thanks — we'll reach out about featuring your page.");
   }, [variant.code, audience, navigate]);
 
-  const onDismiss = () => {
-    try { sessionStorage.setItem(DISMISS_KEY, '1'); } catch { /* ignore */ }
-    setDismissed(true);
-  };
-
-  if (!show) return null;
   return (
     <>
       <style>{AD_CSS}</style>
@@ -184,7 +173,6 @@ export default function CommunityAd() {
         <div className="mtad-strip" aria-hidden="true" />
         <div className="mtad-flag">
           <span className="l"><i aria-hidden="true" />{FLAG[audience]}</span>
-          <button type="button" className="mtad-x" aria-label="Hide this" onClick={onDismiss}>⋯</button>
         </div>
         {variant.render({ user, cta })}
       </div>

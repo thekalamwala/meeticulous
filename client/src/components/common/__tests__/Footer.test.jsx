@@ -75,15 +75,13 @@ describe('<Footer>', () => {
 
   test('social links are safe external links with aria-labels', () => {
     renderFooter();
-    ['WhatsApp'].forEach((name) => {
+    // All active brand socials render as safe external links (placeholder handle
+    // until the real URLs land — see Footer SOCIALS).
+    ['WhatsApp', 'Instagram', 'X', 'LinkedIn', 'Facebook'].forEach((name) => {
       const link = screen.getByLabelText(name);
       expect(link.tagName).toBe('A');
       expect(link.getAttribute('target')).toBe('_blank');
       expect(link.getAttribute('rel')).toContain('noopener');
-    });
-    // Held until the accounts exist.
-    ['Instagram', 'X', 'LinkedIn', 'Facebook'].forEach((name) => {
-      expect(screen.queryByLabelText(name)).toBeNull();
     });
   });
 

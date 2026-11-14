@@ -45,3 +45,10 @@ test('shows the empty state when there are no clients', async () => {
   renderList();
   await waitFor(() => expect(screen.getByText('No customers yet')).toBeInTheDocument());
 });
+
+test('a gated (no-CRM) plan sees an attributed ProTeaser upgrade CTA', async () => {
+  crmGetCustomers.mockRejectedValueOnce({ response: { status: 403, data: { upgrade_required: true } } });
+  renderList();
+  const cta = await screen.findByRole('link', { name: /Upgrade to Pro/i });
+  expect(cta).toHaveAttribute('href', '/dashboard/upgrade?src=crm');
+});
