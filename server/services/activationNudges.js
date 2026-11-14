@@ -16,6 +16,7 @@
 const { supabaseAdmin } = require('../config/supabase');
 const { isFeatureEnabled } = require('./featureFlags');
 const notificationEngine = require('./notificationEngine');
+const { alreadyNotified } = require('../utils/notificationDedupe');
 
 const BASE = 'https://meeticulous.com';
 const DEDUPE_DAYS = 14;
@@ -38,15 +39,7 @@ function withinQuietHours(now = new Date()) {
 }
 
 async function alreadyNudged(event, destination) {
-  const since = new Date(Date.now() - DEDUPE_DAYS * 24 * 3600 * 1000).toISOString();
-  const { data } = await supabaseAdmin
-    .from('notification_logs')
-    .select('id')
-    .eq('event', event)
-    .eq('destination', destination)
-    .gte('created_at', since)
-    .limit(1);
-  return !!(data && data.length);
+  return alreadyNotified({ event, destination, sinceDays: DEDUPE_DAYS });
 }
 
 async function runActivationNudges() {

@@ -38,7 +38,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useReducedMotion } from 'framer-motion';
 import {
-  ArrowRight, Check, X, Link2, ImageIcon, Star, Clock, MapPin, Video,
+  ArrowRight, Check, X, Link2, Star, Clock, MapPin, Video,
   Layers, Package, AtSign, Globe, Mail, MessageCircle, Phone,
 } from 'lucide-react';
 import Reveal from '../../components/home/Reveal';
@@ -48,15 +48,19 @@ import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
 import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
+import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
 const DEMO = '/contact';
-const CREAM = '#FBF4E6';      // page paper
-const PAPER = '#FFFCF5';      // lighter alternate sections
-const INK = '#2B0A14';
-const ORANGE = '#960D32';     // decorative only (doodles, dots, fills behind dark text)
-const ORANGE_INK = '#2B0A14'; // orange for text + white-on-orange CTAs (AA on cream)
-const PEACH = '#FBE3E8';      // primary-light tint
+const CREAM = '#F5F9FE';      // cool light paper — page background
+const PAPER = '#FFFFFF';      // white alternate sections
+const INK = '#201E1D';        // Tukku ink — text + dark fills
+const ORANGE = '#2F7DD1';     // Tukku primary blue — doodles, dots, borders, fills
+const ORANGE_INK = '#2F7DD1'; // Tukku primary blue — solid fills, accent text, links, icons
+const HEAD_ACCENT = '#E9578A'; // Tukku pink — highlighted heading words only
+const BLUE_DEEP = '#15396B';  // deep blue — final CTA background
+const PEACH = '#EAF3FC';      // soft pale-blue tint — accent sections, chips
+const TCREAM = '#F6E3C6';     // Tukku cream — warm accent (sticky-note alt)
 
 /* ─────────────────────────────  LINK SLUG  ────────────────────────────── */
 
@@ -132,19 +136,12 @@ const FAQ = [
   { q: 'Can I put the link in my Instagram bio?', a: 'Yes, that is what it is built for. One link carries your bio, socials, services and booking.' },
 ];
 
-const RELATED = [
-  { to: '/features/online-scheduling', label: 'Online scheduling' },
-  { to: '/features/payments', label: 'Payments' },
-  { to: '/features/reviews', label: 'Reviews' },
-  { to: '/features/digital-products', label: 'Digital products' },
-];
-
 /* ─────────────────────────────  DOODLES  ────────────────────────────── */
 
-function Squiggle({ className = '' }) {
+function Squiggle({ className = '', color = ORANGE }) {
   return (
     <svg aria-hidden viewBox="0 0 200 14" preserveAspectRatio="none" className={className}>
-      <path d="M3 9 C 20 2, 34 13, 52 7 S 86 2, 103 8 S 136 13, 153 6 S 186 3, 197 8" fill="none" stroke={ORANGE} strokeWidth="3.5" strokeLinecap="round" />
+      <path d="M3 9 C 20 2, 34 13, 52 7 S 86 2, 103 8 S 136 13, 153 6 S 186 3, 197 8" fill="none" stroke={color} strokeWidth="3.5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -172,26 +169,11 @@ function PrimaryCta({ to = START, children, onDark = false }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(194,61,0,0.22)] transition-opacity hover:no-underline hover:opacity-90"
-      style={{ background: onDark ? ORANGE_INK : INK }}
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-opacity hover:no-underline hover:opacity-90"
+      style={onDark ? { background: '#FFFFFF', color: BLUE_DEEP } : { background: ORANGE, color: '#FFFFFF' }}
     >
       {children}
     </Link>
-  );
-}
-
-/* Empty image placeholder; the founder supplies the real photo later. */
-function ImgSlot({ alt, slot, className = '' }) {
-  return (
-    <div
-      role="img"
-      aria-label={alt}
-      data-img-slot={slot}
-      className={`flex items-center justify-center rounded-[16px] border border-black/5 ${className}`}
-      style={{ background: 'repeating-linear-gradient(135deg, rgba(26,26,26,0.035) 0 10px, rgba(26,26,26,0.07) 10px 20px)' }}
-    >
-      <ImageIcon size={28} style={{ color: 'rgba(26,26,26,0.28)' }} aria-hidden />
-    </div>
   );
 }
 
@@ -228,7 +210,7 @@ function BookingPageDemo() {
             <div className="flex items-center gap-3">
               <div aria-hidden className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full font-heading text-base font-extrabold text-white" style={{ background: ORANGE_INK }}>PN</div>
               <div className="min-w-0">
-                <div className="font-heading text-base font-extrabold text-[#2B0A14]">Priya Nair</div>
+                <div className="font-heading text-base font-extrabold text-ink">Priya Nair</div>
                 <div className="text-xs font-semibold" style={{ color: ORANGE_INK }}>Brand designer · Pune</div>
               </div>
             </div>
@@ -252,12 +234,12 @@ function BookingPageDemo() {
                     className="flex w-full items-center justify-between px-3 py-2.5 text-left"
                   >
                     <span>
-                      <span className="block font-heading text-[13px] font-bold text-[#2B0A14]">{svc.title}</span>
+                      <span className="block font-heading text-[13px] font-bold text-ink">{svc.title}</span>
                       <span className="mt-0.5 flex items-center gap-1 text-[11px] text-neutral-500">
                         <Clock size={10} aria-hidden /> {svc.mins} min · {svc.mode}
                       </span>
                     </span>
-                    <span className="font-heading text-[13px] font-extrabold tabular-nums text-[#2B0A14]">{svc.price}</span>
+                    <span className="font-heading text-[13px] font-extrabold tabular-nums text-ink">{svc.price}</span>
                   </button>
                   {on && (
                     <div className="px-3 pb-3" aria-live="polite">
@@ -331,7 +313,7 @@ function LinkEverywhere() {
       label: 'Instagram bio',
       body: (
         <div className="text-[13px] leading-snug text-neutral-700">
-          <div className="font-heading font-bold text-[#2B0A14]">{name.trim() || 'Your name'}</div>
+          <div className="font-heading font-bold text-ink">{name.trim() || 'Your name'}</div>
           Brand designer · Pune
           <div className="mt-1 font-semibold" style={{ color: ORANGE_INK }}>{link}</div>
         </div>
@@ -341,7 +323,7 @@ function LinkEverywhere() {
       label: 'WhatsApp reply',
       icon: MessageCircle,
       body: (
-        <div className="ml-auto max-w-[15rem] rounded-[16px] bg-[#F1F5F9] px-3 py-2 text-[13px] leading-snug text-neutral-800">
+        <div className="ml-auto max-w-[15rem] rounded-[16px] bg-neutral-100 px-3 py-2 text-[13px] leading-snug text-neutral-800">
           Hi! You can see my services and pick a time here: <span className="font-semibold underline" style={{ color: ORANGE_INK }}>{link}</span>
         </div>
       ),
@@ -351,7 +333,7 @@ function LinkEverywhere() {
       icon: Mail,
       body: (
         <div className="border-l-2 pl-3 text-[13px] leading-snug text-neutral-700" style={{ borderColor: ORANGE }}>
-          <div className="font-semibold text-[#2B0A14]">{name.trim() || 'Your name'}</div>
+          <div className="font-semibold text-ink">{name.trim() || 'Your name'}</div>
           Book a session: <span className="font-semibold" style={{ color: ORANGE_INK }}>{link}</span>
         </div>
       ),
@@ -371,7 +353,7 @@ function LinkEverywhere() {
   return (
     <div className="mt-12">
       <div className="mx-auto max-w-xl">
-        <label htmlFor="bp-name" className="block text-sm font-semibold text-[#2B0A14]">Type your name</label>
+        <label htmlFor="bp-name" className="block text-sm font-semibold text-ink">Type your name</label>
         <div className="mt-2 flex items-center gap-2 rounded-full border border-black/10 bg-white px-5 py-3 shadow-[0_8px_30px_rgba(26,26,26,0.05)]">
           <input
             id="bp-name"
@@ -380,7 +362,7 @@ function LinkEverywhere() {
             maxLength={60}
             autoComplete="off"
             onChange={(e) => setName(e.target.value)}
-            className="w-full bg-transparent text-base text-[#2B0A14] outline-none placeholder:text-neutral-400"
+            className="w-full bg-transparent text-base text-ink outline-none placeholder:text-neutral-400"
             placeholder="Your name or studio"
           />
         </div>
@@ -429,7 +411,7 @@ export default function BookingPagesFeature() {
   });
 
   return (
-    <main className="overflow-x-clip text-[#2B0A14]" style={{ background: CREAM }}>
+    <main className="feature-page-dark overflow-x-clip text-ink" style={{ background: CREAM, color: INK }}>
       <Seo
         title={seo.title}
         description={seo.description}
@@ -449,22 +431,17 @@ export default function BookingPagesFeature() {
         <div className="mx-auto grid w-full max-w-6xl items-start gap-10 lg:items-center lg:gap-14 lg:grid-cols-[1fr_1fr]">
           <div>
             <nav aria-label="Breadcrumb" className="text-xs text-neutral-500">
-              <Link to="/" className="text-neutral-500 hover:text-[#2B0A14] hover:no-underline">Home</Link>
+              <Link to="/" className="text-neutral-500 hover:text-ink hover:no-underline">Home</Link>
               <span aria-hidden className="mx-2">/</span>
               <span>Features</span>
               <span aria-hidden className="mx-2">/</span>
-              <span aria-current="page" className="text-[#2B0A14]">Booking pages</span>
+              <span aria-current="page" className="text-ink">Booking pages</span>
             </nav>
-            <Reveal instant className="mt-5">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-black/5 bg-white px-3.5 py-1.5 text-xs font-semibold text-neutral-700 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-                <Sparkle className="h-3 w-3" /> For freelancers, coaches and creators
-              </span>
-            </Reveal>
-            <Reveal as="h1" instant delay={0.03} className="mt-4 font-heading text-[clamp(2.5rem,4.8vw,4.1rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[#2B0A14]">
+            <Reveal as="h1" instant delay={0.03} className="mt-5 font-heading text-[clamp(2.5rem,4.8vw,4.1rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">
               A free booking page that{' '}
-              <span className="relative inline-block whitespace-nowrap" style={{ color: ORANGE_INK }}>
+              <span className="relative inline-block whitespace-nowrap" style={{ color: HEAD_ACCENT }}>
                 feels like you.
-                <Squiggle className="absolute -bottom-2 left-0 h-3 w-full" />
+                <Squiggle className="absolute -bottom-2 left-0 h-3 w-full" color={HEAD_ACCENT} />
               </span>
             </Reveal>
             <Reveal as="p" instant delay={0.06} className="mt-4 max-w-xl text-base leading-relaxed text-neutral-600 lg:text-lg">
@@ -500,8 +477,8 @@ export default function BookingPagesFeature() {
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-5xl">
           <div className="text-center">
-            <Reveal as="h2" className="mx-auto max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-              A list of links is not <span style={{ color: ORANGE_INK }}>a way to book you.</span>
+            <Reveal as="h2" className="mx-auto font-heading text-[clamp(1.7rem,3vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight lg:whitespace-nowrap">
+              A list of links is not <span style={{ color: HEAD_ACCENT }}>a way to book you.</span>
             </Reveal>
             <Reveal as="p" delay={0.05} className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-neutral-600">
               A link-in-bio page sends people somewhere else to ask. A booking page lets them see the price, pick a time and pay in one go.
@@ -529,7 +506,7 @@ export default function BookingPagesFeature() {
               <BookingMiniMock />
               <ul className="mx-auto mt-7 max-w-sm space-y-2.5">
                 {WITH.map((t) => (
-                  <li key={t} className="flex items-start gap-2.5 text-[15px] font-medium text-[#2B0A14]">
+                  <li key={t} className="flex items-start gap-2.5 text-[15px] font-medium text-ink">
                     <Check size={16} className="mt-1 shrink-0" style={{ color: ORANGE_INK }} aria-hidden /><span><span className="sr-only">With Meeticulous: </span>{t}</span>
                   </li>
                 ))}
@@ -543,7 +520,7 @@ export default function BookingPagesFeature() {
       <section id="how" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:py-28" style={{ background: PAPER }}>
         <div className="mx-auto max-w-4xl">
           <Reveal as="h2" className="text-center font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-            From sign-up to <span style={{ color: ORANGE_INK }}>first booking.</span>
+            From sign-up to <span style={{ color: HEAD_ACCENT }}>first booking.</span>
           </Reveal>
           <ol className="mt-16">
             {STEPS.map((s, i) => {
@@ -552,7 +529,7 @@ export default function BookingPagesFeature() {
                 <Reveal as="li" key={s.title} delay={i * 0.04} className="relative">
                   <div className={`flex ${right ? 'md:justify-end' : 'md:justify-start'}`}>
                     <div className="flex w-full items-start gap-5 rounded-[24px] border border-black/5 bg-white p-6 shadow-[0_8px_30px_rgba(26,26,26,0.04)] md:w-[62%]">
-                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-heading text-lg font-extrabold text-[#2B0A14]" style={{ background: PEACH }}>{i + 1}</span>
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-heading text-lg font-extrabold text-ink" style={{ background: PEACH }}>{i + 1}</span>
                       <div>
                         <h3 className="font-heading text-xl font-bold">{s.title}</h3>
                         <p className="mt-1.5 text-[15px] leading-relaxed text-neutral-600">{s.desc}</p>
@@ -574,8 +551,8 @@ export default function BookingPagesFeature() {
       {/* ═══════════════ 5 · CAPABILITIES (static, slightly rotated sticker cards) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-            Small things that make <span style={{ color: ORANGE_INK }}>a page bookable.</span>
+          <Reveal as="h2" className="font-heading text-[clamp(1.7rem,3vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight lg:whitespace-nowrap">
+            Small things that make <span style={{ color: HEAD_ACCENT }}>a page bookable.</span>
           </Reveal>
           <div className="mt-14 grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {STICKERS.map((c, i) => (
@@ -584,15 +561,23 @@ export default function BookingPagesFeature() {
                   className="h-full rounded-[24px] border border-black/5 bg-white p-7 shadow-[0_12px_34px_-14px_rgba(26,26,26,0.18)]"
                   style={{ transform: `rotate(${c.tilt}deg)` }}
                 >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full" style={{ background: PEACH, color: ORANGE_INK }}><c.icon size={18} aria-hidden /></span>
-                  <h3 className="mt-4 font-heading text-lg font-bold">{c.title}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-neutral-600">{c.body}</p>
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full" style={{ background: PEACH, color: ORANGE_INK }}><c.icon size={18} aria-hidden /></span>
+                    <h3 className="font-heading text-lg font-bold leading-tight">{c.title}</h3>
+                  </div>
+                  <p className="mt-3 text-sm leading-relaxed text-neutral-600">{c.body}</p>
                 </div>
               </Reveal>
             ))}
           </div>
           <Reveal className="mt-12">
-            <ImgSlot slot="booking-pages-real-host-page" alt="A real Meeticulous host booking page on a phone, showing photo, bio and services" className="mx-auto aspect-[16/9] w-full max-w-3xl" />
+            <img
+              src="/features/bookable.png"
+              alt="A friendly mascot beside a calendar, a clock and a Booking Confirmed card"
+              loading="lazy"
+              decoding="async"
+              className="mx-auto w-full max-w-3xl rounded-[24px]"
+            />
           </Reveal>
         </div>
       </section>
@@ -603,7 +588,7 @@ export default function BookingPagesFeature() {
           <div className="relative text-center">
             <Sparkle className="absolute -top-6 left-[12%] hidden h-6 w-6 sm:block" color={ORANGE_INK} />
             <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-              One link. <span style={{ color: ORANGE_INK }}>Everywhere you already are.</span>
+              One link. <span style={{ color: HEAD_ACCENT }}>Everywhere you already are.</span>
             </Reveal>
             <Reveal as="p" delay={0.05} className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-neutral-700">
               The same short link goes in your bio, your replies, your signature and your card, and it always opens the page where people book.
@@ -618,17 +603,17 @@ export default function BookingPagesFeature() {
         <section className="px-5 py-20 sm:px-8 lg:py-28">
           <div className="mx-auto max-w-6xl">
             <Reveal as="h2" className="text-center font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-              Hosts on <span style={{ color: ORANGE_INK }}>their link.</span>
+              Hosts on <span style={{ color: HEAD_ACCENT }}>their link.</span>
             </Reveal>
             <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
               {QUOTES.map((t, i) => (
                 <Reveal as="figure" key={t.name} delay={i * 0.05}>
                   <div
                     className="relative flex h-full flex-col rounded-[24px] p-6 pt-8 shadow-[0_14px_30px_-16px_rgba(26,26,26,0.25)]"
-                    style={{ background: i % 2 ? '#F7EAD3' : PEACH, transform: `rotate(${i % 2 ? 1.4 : -1.4}deg)` }}
+                    style={{ background: i % 2 ? TCREAM : PEACH, transform: `rotate(${i % 2 ? 1.4 : -1.4}deg)` }}
                   >
                     <span aria-hidden className="absolute -top-2.5 left-1/2 h-5 w-16 -translate-x-1/2 rotate-[-3deg] rounded-[2px] bg-white/70 shadow-[0_2px_6px_rgba(26,26,26,0.08)]" />
-                    <blockquote className="flex-1 text-[15px] leading-relaxed text-[#2B0A14]">&ldquo;{t.quote}&rdquo;</blockquote>
+                    <blockquote className="flex-1 text-[15px] leading-relaxed text-ink">&ldquo;{t.quote}&rdquo;</blockquote>
                     <figcaption className="mt-5 flex items-center gap-3">
                       <img src={t.avatar} alt="" loading="lazy" className="h-10 w-10 rounded-full object-cover" />
                       <div>
@@ -648,55 +633,39 @@ export default function BookingPagesFeature() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: PAPER }}>
-        <div className="mx-auto max-w-3xl">
-          <Reveal as="h2" className="text-center font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-            Booking page <span style={{ color: ORANGE_INK }}>questions.</span>
-          </Reveal>
-          <div className="mt-12 space-y-3">
-            {FAQ.map((f, i) => (
-              <details key={f.q} className="group" open={i === 0}>
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-full border border-black/5 bg-white px-6 py-3.5 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors hover:border-black/15 group-open:border-[#960D32]/30 group-open:bg-[#FBE3E8] [&::-webkit-details-marker]:hidden">
-                  <span className="font-heading text-[16px] font-bold">{f.q}</span>
-                  <span aria-hidden className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#2B0A14] text-base leading-none text-white transition-transform group-open:rotate-45">+</span>
-                </summary>
-                <p className="px-6 pb-3 pt-4 text-[15px] leading-relaxed text-neutral-600">{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
+        <FeatureFaq
+          heading={(
+            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
+              Booking page <span style={{ color: HEAD_ACCENT }}>questions.</span>
+            </Reveal>
+          )}
+          items={FAQ}
+          itemClassName=""
+          summaryClassName={(open) => `flex items-center justify-between gap-4 rounded-full border px-6 py-3.5 shadow-[0_8px_30px_rgba(26,26,26,0.04)] transition-colors ${open ? 'border-[#2F7DD1]/30 bg-[#EAF3FC]' : 'border-black/5 bg-white hover:border-black/15'}`}
+          answerClassName="px-6 pb-3 pt-4 text-[15px] leading-relaxed text-neutral-600"
+          renderSummary={(f, i, open) => (
+            <>
+              <span className="font-heading text-[16px] font-bold">{f.q}</span>
+              <span aria-hidden className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink text-base leading-none text-white transition-transform ${open ? 'rotate-45' : ''}`}>+</span>
+            </>
+          )}
+        />
       </section>
 
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
-      <section className="relative overflow-hidden px-5 py-20 text-[#FBF4E6] sm:px-8 lg:py-28" style={{ background: INK }}>
+      <section className="relative overflow-hidden px-5 py-20 text-[#F6E3C6] sm:px-8 lg:py-28" style={{ background: BLUE_DEEP }}>
         <Sparkle className="absolute left-[8%] top-12 h-7 w-7" />
         <Sparkle className="absolute bottom-16 right-[10%] h-5 w-5" />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="relative mx-auto max-w-6xl text-center">
           <div>
-            <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.2rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[#FBF4E6]">
-              Claim meeticulous.com/<span className="relative inline-block" style={{ color: ORANGE }}>yourname<Squiggle className="absolute -bottom-2 left-0 h-3 w-full" /></span>
+            <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.2rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[#F6E3C6]">
+              Claim meeticulous.com/<span className="relative inline-block" style={{ color: '#F5A3C0' }}>yourname<Squiggle className="absolute -bottom-2 left-0 h-3 w-full" color="#F5A3C0" /></span>
             </Reveal>
-            <Reveal as="p" delay={0.05} className="mt-7 max-w-xl text-base leading-relaxed text-[#FBF4E6]/75">
+            <Reveal as="p" delay={0.05} className="mx-auto mt-7 max-w-xl text-base leading-relaxed text-[#F6E3C6]/75">
               Set up your page free on {FREE_PLAN.name}. Add a service, share the link, and the next person who asks &ldquo;how do I book you?&rdquo; already has the answer.
             </Reveal>
-            <Reveal delay={0.1} className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-              <PrimaryCta onDark>Claim your free link <ArrowRight size={16} /></PrimaryCta>
-              <Link to="/pricing" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#FBF4E6] hover:no-underline hover:opacity-80">
-                See pricing <ArrowRight size={15} />
-              </Link>
-            </Reveal>
           </div>
-          <Reveal delay={0.08}>
-            <div className="rounded-[16px] border border-white/10 p-2">
-              <ImgSlot slot="booking-pages-creator-sharing" alt="A creator adding their booking link to their Instagram bio on a phone" className="aspect-[4/3] w-full border-white/10" />
-            </div>
-          </Reveal>
         </div>
-        <nav aria-label="Related features" className="relative mx-auto mt-16 flex max-w-6xl flex-wrap items-center gap-2.5 border-t border-white/10 pt-8 text-sm">
-          <span className="mr-1 text-[#FBF4E6]/55">Works with</span>
-          {RELATED.map((r) => (
-            <Link key={r.to} to={r.to} className="rounded-full border border-white/15 px-3.5 py-1.5 text-[#FBF4E6]/85 transition-colors hover:border-white/40 hover:text-[#FBF4E6] hover:no-underline">{r.label}</Link>
-          ))}
-        </nav>
       </section>
     </main>
   );

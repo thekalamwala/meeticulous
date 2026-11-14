@@ -26,20 +26,32 @@ import { getPricingRegion } from "../../lib/pricingRegion";
 const ROUTE_START = "/become-a-host"; // must match Home.jsx
 const ICONS = { Sprout, Rocket };
 
-// Spiral binding between the two pages (lg+). Each ring is a loop with a
-// punched hole on either page.
+// Spiral binding between the two pages (lg+). A soft vertical spine runs down
+// the centre gap; each ring is a capsule threaded over the spine, its two ends
+// resting on the white pages with a punched hole on either side.
 function Rings() {
   return (
-    <div aria-hidden className="relative z-10 hidden w-10 flex-shrink-0 flex-col justify-evenly py-8 lg:flex">
-      {[0, 1, 2, 3, 4].map((i) => (
-        <span key={i} className="relative flex h-5 w-[72px] -translate-x-4 items-center justify-between rounded-full border-[3px] border-pink-200 bg-maroon-400/40 px-1 shadow-[0_3px_8px_rgba(61,5,22,0.35)]">
-          <span className="h-2.5 w-2.5 rounded-full bg-maroon-900/40" />
-          <span className="h-2.5 w-2.5 rounded-full bg-maroon-900/40" />
-        </span>
-      ))}
+    <div aria-hidden className="relative z-10 hidden w-10 flex-shrink-0 self-stretch lg:block">
+      {/* spine the rings are bound to */}
+      <div className="absolute inset-y-7 left-1/2 w-3.5 -translate-x-1/2 rounded-full bg-pink-200/80 shadow-[inset_0_0_0_1px_rgba(214,90,121,0.35)]" />
+      {/* rings */}
+      <div className="absolute inset-0 flex flex-col items-center justify-evenly py-10">
+        {[0, 1, 2, 3, 4].map((i) => (
+          <span
+            key={i}
+            className="flex h-6 w-[72px] items-center justify-between rounded-full border-[3px] border-pink-300 bg-pink-100 shadow-[0_3px_7px_-1px_rgba(61,5,22,0.28)]"
+          >
+            <span className="-ml-2 h-4 w-4 rounded-full bg-maroon-300 ring-[3px] ring-white" />
+            <span className="-mr-2 h-4 w-4 rounded-full bg-maroon-300 ring-[3px] ring-white" />
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
+
+const PAGE = "rounded-3xl bg-white shadow-[0_24px_60px_-28px_rgba(61,5,22,0.45)]";
+const CHIP = "inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-ink";
 
 function Notebook({ plan, chipIcon: ChipIcon, chip, price, suffix, note, cta, ctaTo, ctaClass }) {
   const PlanIcon = ICONS[plan.icon] ?? Rocket;
@@ -47,19 +59,21 @@ function Notebook({ plan, chipIcon: ChipIcon, chip, price, suffix, note, cta, ct
   return (
     <div className="flex flex-col gap-3 lg:flex-row lg:gap-0">
       {/* LEFT page — who it's for + what's included */}
-      <div className="rounded-[10px] bg-white p-6 shadow-[0_24px_60px_-28px_rgba(61,5,22,0.45)] sm:p-8 lg:flex-[1.45]">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-50 px-3 py-1 text-xs font-medium text-ink">
+      <div className={`${PAGE} p-7 sm:p-10 lg:flex-[1.45]`}>
+        <span className={CHIP}>
           <PlanIcon size={14} className="text-maroon" />
           {plan.name} · {plan.persona.title}
         </span>
-        <h3 className="mt-4 font-sans text-3xl font-extrabold leading-tight text-ink sm:text-4xl">{plan.tagline}</h3>
-        <p className="mt-3 max-w-[520px] text-sm leading-relaxed text-muted">{plan.persona.blurb}</p>
+        <h3 className="mt-4 max-w-[440px] font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-ink sm:text-5xl">
+          {plan.tagline}
+        </h3>
+        <p className="mt-4 max-w-[520px] text-sm leading-relaxed text-muted">{plan.persona.blurb}</p>
 
-        <p className="mt-6 text-lg font-bold text-ink">{plan.intro ?? "What's included"}</p>
-        <ul className="mt-3 grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
+        <p className="mt-7 font-display text-2xl font-extrabold tracking-tight text-ink">{plan.intro ?? "What's included"}</p>
+        <ul className="mt-4 grid gap-x-10 gap-y-3 sm:grid-cols-2">
           {plan.features.map((f) => (
-            <li key={f} className="flex items-start gap-2.5 text-sm text-neutral-700">
-              <CheckCircle2 size={18} className="mt-px flex-shrink-0 fill-c-emerald text-white" />
+            <li key={f} className="flex items-start gap-3 text-[15px] text-neutral-700">
+              <CheckCircle2 size={20} className="mt-px flex-shrink-0 fill-c-emerald text-white" />
               <span>{f}</span>
             </li>
           ))}
@@ -69,8 +83,8 @@ function Notebook({ plan, chipIcon: ChipIcon, chip, price, suffix, note, cta, ct
       <Rings />
 
       {/* RIGHT page — price + CTA */}
-      <div className="flex flex-col items-center justify-center rounded-[10px] bg-white p-6 text-center shadow-[0_24px_60px_-28px_rgba(61,5,22,0.45)] sm:p-8 lg:flex-1">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-50 px-3 py-1 text-xs font-medium text-ink">
+      <div className={`${PAGE} flex flex-col items-center justify-center p-7 text-center sm:p-10 lg:flex-1`}>
+        <span className={CHIP}>
           <ChipIcon size={14} className="text-c-emerald" />
           {chip}
         </span>
@@ -97,7 +111,7 @@ function Notebook({ plan, chipIcon: ChipIcon, chip, price, suffix, note, cta, ct
         >
           {cta} →
         </Link>
-        <p className="mt-5 max-w-[280px] text-xs leading-relaxed text-muted">{note}</p>
+        <p className="mt-5 max-w-[280px] text-xs leading-relaxed text-ink/70">{note}</p>
       </div>
     </div>
   );
@@ -169,7 +183,7 @@ export default function NotebookPricing({ startLabel = "Get Started - Free" }) {
       </div>
 
       {/* Crimson field the notebooks sit on */}
-      <div className="mt-8 space-y-8 rounded-[10px] bg-maroon px-4 py-8 sm:px-8 sm:py-10 lg:space-y-10 lg:px-12 lg:py-12">
+      <div className="mt-8 space-y-8 rounded-3xl bg-maroon px-4 py-8 sm:px-8 sm:py-10 lg:space-y-10 lg:px-10 lg:py-10">
         {!feeOnly && (
           <Notebook
             plan={FREE_PLAN}

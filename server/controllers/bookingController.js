@@ -8,8 +8,11 @@ const NotificationEngine = require("../services/notificationEngine");
 const { checkBookingReceiveLimit } = require("../middleware/planMiddleware");
 const { parseListRange } = require("../utils/pagination");
 const { runExclusive } = require("../utils/keyedMutex");
+const { checkBookingCaps } = require("../lib/bookingCaps");
 const crypto = require("crypto");
-const { computeBreakdown } = require("../lib/pricingEngine");
+const { computeBreakdown, resolveWithholding } = require("../lib/pricingEngine");
+const { resolveCancellationPolicy } = require("../lib/cancellationPolicy");
+const { tzLabel, calendarUrl } = require("../utils/bookingEmailExtras");
 const planService = require("../services/planService");
 const proTaste = require("../services/proTaste");
 const { redactBookingContact } = require("../lib/contactVisibility");
@@ -123,10 +126,11 @@ const splitWhen = (scheduledAt, tz = "Asia/Kolkata") => {
   };
 };
 // Placeholder map shared by customer + vendor booking emails.
-const bookingEmailData = ({ serviceTitle, hostName, hostPhone, guestName, scheduledAt, tz, bookingId, online, actionLink, mapLink, hostLocation }) => {
+const bookingEmailData = ({ serviceTitle, hostName, hostPhone, guestName, scheduledAt, tz, bookingId, online, actionLink, mapLink, hostLocation, durationMin }) => {
   const dashboard = `${process.env.CLIENT_URL || "https://meeticulous.com"}/dashboard`;
   // Online → Meet link (or dashboard). Offline → the host's map link (or dashboard).
   const link = online ? (actionLink || dashboard) : (mapLink || dashboard);
+  const where = online ? "Online" : (hostLocation || (mapLink ? "In person" : ""));
   return {
     service_name: serviceTitle || "Service",
     vendor_name: hostName || "Host",
@@ -138,7 +142,11 @@ const bookingEmailData = ({ serviceTitle, hostName, hostPhone, guestName, schedu
     // neutral "In person" when only a map link is set). Empty when the caller
     // passes no venue info at all — preserves the lifecycle emails (cancel /
     // complete / reschedule) that don't carry mode/venue. Map link is the CTA below.
-    location: online ? "Online" : (hostLocation || (mapLink ? "In person" : "")),
+    location: where,
+    // Timezone label beside the time + add-to-calendar deep link (redesigned
+    // confirmation email). Threaded here so both free + paid paths carry them.
+    booking_tz: tzLabel(scheduledAt, tz),
+    calendar_url: calendarUrl({ title: `${serviceTitle || "Service"} with ${hostName || "Host"}`, start: scheduledAt, durationMin, details: "Booked via Meeticulous", location: where || "Online" }),
     // CTA: online → Join meeting when a Meet link exists; offline → Get directions
     // when the host set a map link. Falls back to a plain "View booking" otherwise.
     action_link: link,
@@ -151,6 +159,13 @@ const bookingEmailData = ({ serviceTitle, hostName, hostPhone, guestName, schedu
     manage_url: bookingId
       ? `${process.env.CLIENT_URL || "https://meeticulous.com"}/manage-booking/${manageBookingToken.sign(bookingId)}`
       : dashboard,
+    // No invoice on this path: free/₹0 bookings have no GST invoice, and the
+    // lifecycle emails (cancel/complete/reschedule) carry none either. The paid
+    // path (services/bookingConfirmation.js) builds the real {{invoice_block}}.
+    // Passing '' (not absent) stops the customer template's raw-HTML invoice token
+    // from rendering a dead link AND from firing the admin "unresolved placeholder:
+    // invoice_url" alert on every free booking.
+    invoice_block: "",
     ...splitWhen(scheduledAt, tz),
   };
 };
@@ -408,6 +423,17 @@ const createBooking = async (req, res) => {
     if (!limitCheck.allowed)
       return res.status(403).json({ message: limitCheck.message });
 
+    // Host-configurable caps (Pro, v3.213). Early fast-fail — before pricing /
+    // calendar — so a capped booking leaves no orphan Google event. The
+    // authoritative, race-safe recheck runs under the per-host lock below.
+    const capCheck = await checkBookingCaps({
+      supabaseAdmin, hostId: host_id, hostProfile: host, avail,
+      scheduledAt: scheduled_at, guestId: resolvedGuestId,
+      guestEmail: guest_email, guestPhone: guest_phone,
+    });
+    if (!capCheck.allowed)
+      return res.status(409).json({ message: capCheck.message });
+
     // v4 — TDS 194-O: a PAID booking withholds a flat 1% income-tax from the host
     // (CA-confirmed 2026-11-11: 1% TDS + 1% TCS for all professions; no §206AA 5%
     // no-PAN rate). Free (₹0) bookings and "price on request" enquiries withhold
@@ -459,11 +485,45 @@ const createBooking = async (req, res) => {
     const planRecord        = await planService.getPlan(effectivePlanSlug);
     const commissionPct     = Number(planRecord.commission_percentage) || 0;
 
+    // v3.206: snapshot the cancellation policy agreed at booking time (default tiers
+    // while `pro_cancellation_policy` is OFF). Refunds read this snapshot, never the
+    // live service/plan, so a host editing their policy later can't change these terms.
+    const cancelFlagOn = await featureFlags.isFeatureEnabled('pro_cancellation_policy');
+    const cancellationSnapshot = resolveCancellationPolicy({
+      service,
+      // isPro only matters when the flag is on; the typeof guard keeps partial
+      // planService mocks in booking tests from throwing on the (then-unused) call.
+      isPro: cancelFlagOn && typeof planService.isFreeSlug === 'function'
+        && !planService.isFreeSlug(effectivePlanSlug),
+      flagOn: cancelFlagOn,
+    });
+
     // Platform fee + GST rate are admin-editable settings. In fee-only mode every
     // booking still carries the platform fee even at ₹0 price — but a paid-enabled
     // host (pilot) is in normal paid mode, so the fee follows the real price.
-    const { platformFee: feeSetting, gstRate } = await platformConfig.getConfig();
+    const cfg = await platformConfig.getConfig();
+    const { platformFee: feeSetting, gstRate } = cfg;
     const feeOnlyMode = await require('../services/paidMode').feeOnlyForHost(host_id);
+
+    // Withholding rates (tds_tcs_v2, ships OFF → legacy flat 1% + 1%). When ON, the
+    // rate follows the host's tax situation (PAN present, entity type, ₹5L threshold)
+    // using CA-confirmed rates from platform_settings. fyGrossToDate is null for now,
+    // so resolveWithholding fails SAFE — it deducts rather than exempting an individual
+    // whose FY gross we can't yet prove is under the threshold (follow-up wires the tally).
+    const withholdingEnabled = await featureFlags.isFeatureEnabled('tds_tcs_v2');
+    // TCS is collected only from GST-registered hosts (CA 2026-11-12) — the host's GSTIN
+    // lives in their profile billing_details. No GSTIN → no TCS (handled in resolveWithholding).
+    const hostGstin = host?.billing_details?.gstin || null;
+    const { tdsRate: _tdsRate, tcsRate: _tcsRate } = resolveWithholding({
+      enabled: withholdingEnabled,
+      entityType: host?.host_entity_type,
+      hasPan: hostHasPan,
+      hasGstin: !!hostGstin,
+      fyGrossToDate: null,
+      // cfg already exposes tds_rate / tds_rate_no_pan / tcs_rate / tds_threshold_individual
+      // under these exact names; resolveWithholding reads only those four.
+      config: cfg,
+    });
 
     // Razorpay fee is vendor-borne and only known at capture → finalised in
     // paymentController.verifyPayment. Here razorpayFee = 0 (payout provisional).
@@ -476,10 +536,10 @@ const createBooking = async (req, res) => {
       // ₹0 service still owes the booking fee under fee-only mode — EXCEPT a
       // price-on-request enquiry, which is a pure no-payment lead (no fee at all).
       chargeFeeOnFree:      feeOnlyMode && !service.price_on_request,
-      // TDS is a flat 1% for every paid booking regardless of PAN (CA-confirmed
-      // 2026-11-11: 1% TDS + 1% TCS for all professions — NOT the §206AA 5% no-PAN
-      // rate). The engine's 1% tdsRate/tcsRate defaults already apply, so no override.
-      // `hostHasPan` now only gates whether a no-PAN host may book at all (above).
+      // TDS/TCS rates resolved above. While tds_tcs_v2 is OFF these are the legacy
+      // flat 1% + 1% (unchanged behaviour); when ON they follow PAN / entity / ₹5L.
+      tdsRate:              _tdsRate,
+      tcsRate:              _tcsRate,
     });
     const platformFee  = pricing.platformFee;
     const commission   = pricing.commission;
@@ -574,6 +634,7 @@ const createBooking = async (req, res) => {
       vendor_plan_type:      effectivePlanSlug,       // v2.8 snapshot
       coupon_id:             couponId,                // v3.204 coupon redemption record (null if none)
       discount_amount:       discountAmount,          // v3.204 ₹ off the service price
+      cancellation_policy:   cancellationSnapshot,    // v3.206 refund-tier snapshot (fairness anchor)
       reminder_24h_sent: false,
       reminder_1h_sent: false,
       // Branch on the amount actually payable, not the host price: in fee-only
@@ -590,6 +651,14 @@ const createBooking = async (req, res) => {
     const guarded = await runExclusive(`booking-quota:${host_id}`, async () => {
       const recheck = await checkBookingReceiveLimit(host_id);
       if (!recheck.allowed) return { limited: recheck.message };
+      // Race-safe cap recheck: the day/week counts now include any queued peer's
+      // pending row, so two concurrent bookings can't both slip past a cap.
+      const capRecheck = await checkBookingCaps({
+        supabaseAdmin, hostId: host_id, hostProfile: host,
+        planSlug: effectivePlanSlug, avail, scheduledAt: scheduled_at,
+        guestId: resolvedGuestId, guestEmail: guest_email, guestPhone: guest_phone,
+      });
+      if (!capRecheck.allowed) return { capped: capRecheck.message };
       return {
         result: await supabaseAdmin
           .from("bookings")
@@ -600,6 +669,8 @@ const createBooking = async (req, res) => {
     });
     if (guarded.limited)
       return res.status(403).json({ message: guarded.limited });
+    if (guarded.capped)
+      return res.status(409).json({ message: guarded.capped });
     let bookingResult = guarded.result;
 
     // Fallback: retry without commission_applied if v1.7 migration hasn't run yet
@@ -621,6 +692,7 @@ const createBooking = async (req, res) => {
         commission_taxable: _ctx, tds_amount: _tds, tcs_amount: _tcs,
         google_event_id: _gei, billing_details: _bd, grace_minutes: _gm,
         coupon_id: _cid, discount_amount: _da,   // v3.204 — stripped if the migration hasn't run
+        cancellation_policy: _canp,              // v3.206 — stripped if the migration hasn't run
         ...payloadCore
       } = bookingPayload;
       bookingResult = await supabaseAdmin
@@ -732,6 +804,7 @@ const createBooking = async (req, res) => {
           guestName: guest_name, scheduledAt: scheduled_at, tz: hostTimezone,
           bookingId: booking.id, online: !!meetingLink,
           mapLink: host.map_link, hostLocation: host.location,
+          durationMin: service.duration,
         });
         await NotificationEngine.send({
           event: "BOOKING_CONFIRMED_CUSTOMER",

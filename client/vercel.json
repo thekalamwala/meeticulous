@@ -671,6 +671,10 @@
       "destination": "https://meeticulous-api.onrender.com/sitemap-:name.xml"
     },
     {
+      "source": "/api/:path*",
+      "destination": "https://meeticulous-api.onrender.com/api/:path*"
+    },
+    {
       "source": "/((?!assets/).*)",
       "destination": "/spa-shell.html"
     }
@@ -711,6 +715,15 @@
         {
           "key": "X-Robots-Tag",
           "value": "noindex"
+        }
+      ]
+    },
+    {
+      "source": "/api/:path*",
+      "headers": [
+        {
+          "key": "x-vercel-enable-rewrite-caching",
+          "value": "1"
         }
       ]
     },

@@ -36,7 +36,7 @@ export default function FaqAccordion() {
     <section ref={root} className="bg-canvas px-5 py-12 text-ink sm:px-8 lg:py-16">
       {/* lg+: two columns — heading + sub on the left (sticky while you scroll
           the answers), the Q&A list on the right. Stacked on smaller screens. */}
-      <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
+      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
         <div className="lg:sticky lg:top-24 lg:self-start">
           <h2 className="js-head font-display text-3xl font-bold text-maroon sm:text-4xl">{faq.heading}</h2>
           <p className="mt-4 text-lg leading-relaxed text-ink/70">{faq.sub}</p>

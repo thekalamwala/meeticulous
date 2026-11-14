@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import Seo from '../components/common/Seo';
 import PetalSpinner from '../components/common/PetalSpinner';
+import { isInternalPath } from '../utils/safePath';
 
 // /auth/google/done — landing page for the vendor Google OAuth callback.
 // Session tokens arrive in the URL FRAGMENT (never sent to any server/logs):
@@ -45,7 +46,7 @@ const GoogleAuthDone = () => {
         // /submit-review) goes back there. Internal single-slash paths only.
         let back = null;
         try { back = sessionStorage.getItem('mt_after_host_login'); sessionStorage.removeItem('mt_after_host_login'); } catch { /* storage blocked */ }
-        const resume = !isNew && !isUpgrade && /^\/(?!\/)/.test(back || '') ? back : null;
+        const resume = !isNew && !isUpgrade && isInternalPath(back) ? back : null;
         navigate(resume || '/dashboard', { replace: true });
       })
       .catch(() => {

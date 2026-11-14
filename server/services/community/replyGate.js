@@ -83,15 +83,23 @@ async function decide({ body } = {}) {
   return { act: true, route: cls.route, reason: cls.route };
 }
 
-// ── Pitch: append ONE CTA, comparison intent only. The grounded answer is never changed —
-// the CTA is additive and internal-only (sanitizeAnswer strips external links upstream).
-// No double-link if the answer already points pitch-ward.
-const PRICING_CTA = '[See plans & pricing](/pricing)';
+// ── Pitch: append ONE plain-text CTA so a product answer never dead-ends. Community
+// renders raw text, so these are bare meeticulous.com URLs (auto-linked + always-allowed),
+// NOT markdown links. The grounded answer is unchanged — the CTA is additive. Routes:
+//   comparison — "can you do X like <tool>" → point at plans/pricing to close the eval.
+//   feature    — "does X exist" → point at the product so the answer has a next step.
+//   support / not_for_us — no CTA (a how-to or troubleshooting reply shouldn't be a pitch).
+// No double-link if the answer already points at meeticulous.com.
+const CTA = {
+  comparison: 'See how the plans stack up: meeticulous.com/pricing',
+  feature: 'Have a look at everything you can do: meeticulous.com',
+};
 function appendCta(answer, route) {
   const base = String(answer || '').trim();
-  if (route !== 'comparison' || !base) return base;
-  if (/\]\(\/pricing|\]\(\/login-as-vendor/.test(base)) return base;
-  return `${base}\n\n${PRICING_CTA}`;
+  const cta = CTA[route];
+  if (!cta || !base) return base;
+  if (/meeticulous\.com/i.test(base)) return base; // answer already links out
+  return `${base}\n\n${cta}`;
 }
 
 module.exports = { looksLikeQuestion, classify, decide, appendCta };

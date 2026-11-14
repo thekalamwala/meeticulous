@@ -25,7 +25,8 @@
 // Testimonials are the real, consented quotes from data/testimonials.js; they
 // are hosts on Meeticulous in general, and the section says so.
 //
-// IMAGES: empty ImgSlot placeholders (data-img-slot names the photo to supply).
+// IMAGES: real art in the how-it-works step cards (client/public/features/);
+// the hero background still uses an ImgSlot placeholder.
 // Global Navbar + Footer come from App.jsx. No hover uplift anywhere.
 
 import { useState } from 'react';
@@ -42,13 +43,14 @@ import { SITE_URL, professionGraphJsonLd } from '../../utils/seo';
 import { FREE_PLAN, PREMIUM_PLAN } from '../../data/plans';
 import { TESTIMONIALS as ALL_TESTIMONIALS } from '../../data/testimonials';
 import PageGuides from '../../components/common/PageGuides';
+import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
-const PINK = '#FF4D93';      // decorative accent; text use only on the dark overlay
-const PINK_INK = '#BE185D';  // pink for text / fills on white and light pink (AA)
-const BLUSH = '#FFF4F8';     // very light pink surface
-const PLUM = '#1F0F17';      // dark base under the photo tint and final CTA
-const INK = '#2B0A14';
+const PINK = '#E8772E';      // Duggu orange — accent; highlights, stars, checks, glow
+const PINK_INK = '#CC6220';  // dark orange for text / fills on white and light cream (AA)
+const BLUSH = '#FBF4EA';     // very light cream surface
+const PLUM = '#3A1E10';      // dark brown base under the photo tint and final CTA
+const INK = '#201E1D';
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
 
@@ -87,14 +89,14 @@ const STEPS = [
   {
     title: 'Run the session',
     desc: 'Your guest books through your page and the session happens. Mark it complete in your dashboard, or it completes on its own shortly after the end time.',
-    slot: 'reviews-step-session',
-    alt: 'A coach and a client in a one-to-one session',
+    img: '/features/blue_review_character.png',
+    alt: 'Illustration of a coach and a client in a one-to-one session',
   },
   {
     title: 'Your guest gets the ask',
     desc: 'The moment it completes, we email them a link to review that exact booking, and it appears in their Meeticulous notifications. They sign in with their phone number and tap a rating.',
-    slot: 'reviews-step-phone',
-    alt: 'A client tapping a star rating on their phone',
+    img: '/features/green_review_character.png',
+    alt: 'Illustration of a client tapping a star rating on their phone',
   },
   {
     title: 'It shows on your page',
@@ -154,20 +156,13 @@ const FAQ = [
   { q: 'Is it on the free plan?', a: `Yes. Guest reviews are included on ${FREE_PLAN.name} and on ${PREMIUM_PLAN.name}.` },
 ];
 
-const RELATED = [
-  { to: '/features/notifications', label: 'Reminders' },
-  { to: '/features/booking-pages', label: 'Booking pages' },
-  { to: '/features/client-management', label: 'Client management' },
-  { to: '/features/online-scheduling', label: 'Online scheduling' },
-];
-
 /* ─────────────────────────────  PIECES  ────────────────────────────── */
 
 function PrimaryCta({ to = START, children, onDark = false }) {
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold shadow-[0_8px_30px_rgba(26,26,26,0.12)] transition-opacity hover:no-underline hover:opacity-90"
+      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-opacity hover:no-underline hover:opacity-90"
       style={onDark ? { background: '#FFFFFF', color: PINK_INK } : { background: PINK_INK, color: '#FFFFFF' }}
     >
       {children}
@@ -195,7 +190,7 @@ function Stars({ n, size = 14 }) {
   return (
     <span className="inline-flex gap-0.5" aria-label={`${n} out of 5 stars`}>
       {[1, 2, 3, 4, 5].map((i) => (
-        <Star key={i} size={size} aria-hidden style={i <= n ? { color: PINK, fill: PINK } : { color: '#D4D4D4' }} />
+        <Star key={i} size={size} aria-hidden style={i <= n ? { color: PINK, fill: PINK } : { color: '#D8CDBE' }} />
       ))}
     </span>
   );
@@ -211,7 +206,7 @@ function ReviewDemo() {
 
   return (
     <div className="relative mx-auto w-full max-w-[23rem]">
-      <div className="rounded-[24px] bg-white p-5 text-[#2B0A14] shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)] sm:p-6">
+      <div className="rounded-[24px] bg-white p-5 text-ink shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)] sm:p-6">
         <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">How was your session?</div>
         <div className="mt-3 flex gap-1.5" role="group" aria-label="Pick a rating">
           {[1, 2, 3, 4, 5].map((n) => (
@@ -221,9 +216,9 @@ function ReviewDemo() {
               aria-label={`Rate ${n} star${n > 1 ? 's' : ''}`}
               aria-pressed={n === rating}
               onClick={() => setRating(n)}
-              className="rounded-[16px] p-1.5 transition-colors hover:bg-[#FFF4F8]"
+              className="rounded-[16px] p-1.5 transition-colors hover:bg-[#FBF4EA]"
             >
-              <Star size={26} aria-hidden style={n <= rating ? { color: PINK, fill: PINK } : { color: '#D4D4D4' }} />
+              <Star size={26} aria-hidden style={n <= rating ? { color: PINK, fill: PINK } : { color: '#D8CDBE' }} />
             </button>
           ))}
         </div>
@@ -278,7 +273,7 @@ function VerifyTrack() {
                 className="relative flex h-12 w-12 items-center justify-center rounded-full border transition-colors"
                 style={i <= active
                   ? { background: PINK_INK, borderColor: PINK_INK, color: '#FFFFFF' }
-                  : { background: '#FFFFFF', borderColor: 'rgba(0,0,0,0.1)', color: '#737373' }}
+                  : { background: '#FFFFFF', borderColor: 'rgba(0,0,0,0.1)', color: '#7D746B' }}
               >
                 <v.icon size={19} aria-hidden />
               </span>
@@ -333,7 +328,7 @@ export default function ReviewsFeature() {
   });
 
   return (
-    <main className="overflow-x-clip bg-white text-[#2B0A14]">
+    <main className="overflow-x-clip bg-white text-ink">
       <Seo
         title={seo.title}
         description={seo.description}
@@ -351,8 +346,8 @@ export default function ReviewsFeature() {
       {/* ═══════════════ 1 + 2 · HERO + PROOF ROW, on one full-bleed photo ═══════════════ */}
       <div className="relative overflow-hidden text-white" style={{ background: PLUM }}>
         <ImgSlot slot="reviews-hero" alt="A smiling client leaving a review on their phone after a session" className="absolute inset-0" dark />
-        <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(31,15,23,0.80) 0%, rgba(31,15,23,0.72) 45%, rgba(31,15,23,0.92) 100%)' }} />
-        <div aria-hidden className="pointer-events-none absolute -left-40 top-10 h-[34rem] w-[34rem] rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(255,77,147,0.28), transparent)' }} />
+        <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(42,22,12,0.80) 0%, rgba(42,22,12,0.72) 45%, rgba(42,22,12,0.92) 100%)' }} />
+        <div aria-hidden className="pointer-events-none absolute -left-40 top-10 h-[34rem] w-[34rem] rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(232,119,46,0.28), transparent)' }} />
 
         <section className="relative px-5 pb-16 pt-8 sm:px-8 lg:pb-20 lg:pt-6 lg:flex lg:min-h-[calc(100svh-57px)] lg:flex-col lg:justify-center">
           <div className="mx-auto grid w-full max-w-6xl items-start gap-10 lg:items-center lg:gap-14 lg:grid-cols-[1.1fr_0.9fr]">
@@ -364,7 +359,7 @@ export default function ReviewsFeature() {
                 <span aria-hidden className="mx-2">/</span>
                 <span aria-current="page" className="text-white/85">Reviews</span>
               </nav>
-              <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.1rem,3.7vw,3.2rem)] font-extrabold leading-[1.0] tracking-[-0.03em] text-white">
+              <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.1rem,3.7vw,3.2rem)] font-extrabold leading-[1.0] tracking-[-0.03em] !text-white">
                 Reviews from clients who <span style={{ color: PINK }}>actually booked you.</span>
               </Reveal>
               <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-white/80 lg:text-[17px]">
@@ -394,7 +389,7 @@ export default function ReviewsFeature() {
         <section aria-label="Review facts" className="relative px-5 pb-14 sm:px-8 lg:pb-16">
           <dl className="mx-auto grid max-w-6xl gap-px overflow-hidden rounded-[16px] border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
             {PROOF.map((p) => (
-              <div key={p.k} className="px-6 py-6 backdrop-blur-sm" style={{ background: 'rgba(31,15,23,0.55)' }}>
+              <div key={p.k} className="px-6 py-6 backdrop-blur-sm" style={{ background: 'rgba(42,22,12,0.55)' }}>
                 <dt className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: PINK }}>{p.k}</dt>
                 <dd className="mt-2 font-heading text-[15px] font-bold leading-snug text-white">{p.v}</dd>
               </div>
@@ -406,8 +401,8 @@ export default function ReviewsFeature() {
       {/* ═══════════════ 3 · WITHOUT vs WITH (DM screenshot vs booked review) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-            A screenshot of a DM is not <span style={{ color: PINK_INK }}>a review.</span>
+          <Reveal as="h2" className="font-heading text-[clamp(0.75rem,3vw,2.35rem)] font-extrabold leading-[1.05] tracking-tight !text-ink whitespace-nowrap">
+            A screenshot of a DM is not <span style={{ color: PINK }}>a review.</span>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed text-neutral-500">
             Kind words in your WhatsApp are lovely. To a stranger looking at your page, they are just a picture. Here is the same happy client, both ways.
@@ -446,7 +441,7 @@ export default function ReviewsFeature() {
               </div>
               <ul className="mt-6 space-y-3">
                 {WITH.map((t) => (
-                  <li key={t} className="flex items-start gap-2.5 text-[15px] font-medium text-[#2B0A14]">
+                  <li key={t} className="flex items-start gap-2.5 text-[15px] font-medium text-ink">
                     <Check size={16} className="mt-1 shrink-0" style={{ color: PINK_INK }} aria-hidden /><span><span className="sr-only">With Meeticulous: </span>{t}</span>
                   </li>
                 ))}
@@ -460,8 +455,8 @@ export default function ReviewsFeature() {
       {/* ═══════════════ 4 · HOW IT WORKS (photo-topped step cards) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: BLUSH }}>
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-            From finished session to <span style={{ color: PINK_INK }}>public proof.</span>
+          <Reveal as="h2" className="font-heading text-[clamp(0.75rem,3vw,2.35rem)] font-extrabold leading-[1.05] tracking-tight !text-ink whitespace-nowrap">
+            From finished session to <span style={{ color: PINK }}>public proof.</span>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed text-neutral-500">
             Three steps, and you only do the first one.
@@ -469,8 +464,15 @@ export default function ReviewsFeature() {
           <ol className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-3">
             {STEPS.map((s, i) => (
               <Reveal as="li" key={s.title} delay={i * 0.06} className="flex flex-col overflow-hidden rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-                {s.slot ? (
-                  <ImgSlot slot={s.slot} alt={s.alt} className="aspect-[4/3] w-full border-b border-black/5" />
+                {s.img ? (
+                  <img
+                    src={s.img}
+                    alt={s.alt}
+                    loading="lazy"
+                    decoding="async"
+                    className="aspect-[4/3] w-full border-b border-black/5 object-contain"
+                    style={{ background: BLUSH }}
+                  />
                 ) : (
                   <div className="flex aspect-[4/3] w-full items-center justify-center border-b border-black/5 p-6" style={{ background: `linear-gradient(160deg, ${BLUSH}, #FFFFFF)` }} aria-hidden>
                     <div className="w-full max-w-[15rem] rounded-[16px] border border-black/5 bg-white p-3.5 shadow-[0_8px_30px_rgba(26,26,26,0.06)]">
@@ -480,7 +482,7 @@ export default function ReviewsFeature() {
                       </div>
                       {[5, 4].map((n, j) => (
                         <div key={n} className="mt-2.5 flex items-start gap-2 border-t border-black/5 pt-2.5">
-                          <span className="h-6 w-6 shrink-0 rounded-full" style={{ background: j ? '#FBCFE8' : PINK_INK }} />
+                          <span className="h-6 w-6 shrink-0 rounded-full" style={{ background: j ? '#F6D9C0' : PINK_INK }} />
                           <div className="flex-1">
                             <Stars n={n} size={10} />
                             <div className="mt-1 h-1.5 w-full rounded-full bg-neutral-200" />
@@ -507,8 +509,8 @@ export default function ReviewsFeature() {
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
           {/* Left intro stays pinned while the list scrolls past it. */}
           <div className="lg:sticky lg:top-24 lg:self-start">
-            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-              Built so reviews <span style={{ color: PINK_INK }}>can be trusted.</span>
+            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-ink sm:text-5xl">
+              Built so reviews <span style={{ color: PINK }}>can be trusted.</span>
             </Reveal>
             <Reveal as="p" delay={0.05} className="mt-5 max-w-md text-base leading-relaxed text-neutral-500">
               A review only means something if the person reading it believes it. Every rule below is there for that reader.
@@ -537,8 +539,8 @@ export default function ReviewsFeature() {
       <section id="verified" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:py-28" style={{ background: BLUSH }}>
         <div className="mx-auto max-w-5xl">
           <div className="text-center">
-            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-              How a review becomes <span style={{ color: PINK_INK }}>verified.</span>
+            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-ink sm:text-5xl">
+              How a review becomes <span style={{ color: PINK }}>verified.</span>
             </Reveal>
             <Reveal as="p" delay={0.05} className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-neutral-500">
               Four checkpoints sit between a booking and a review on your page. Tap each one to see what it checks, and what it keeps out.
@@ -552,8 +554,8 @@ export default function ReviewsFeature() {
       {QUOTES.length > 0 && (
         <section className="px-5 py-20 sm:px-8 lg:py-28">
           <div className="mx-auto max-w-6xl">
-            <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-              Hosts who moved their clients <span style={{ color: PINK_INK }}>out of the DMs.</span>
+            <Reveal as="h2" className="font-heading text-[clamp(0.75rem,3vw,2.35rem)] font-extrabold leading-[1.05] tracking-tight !text-ink whitespace-nowrap">
+              Hosts who moved their clients <span style={{ color: PINK }}>out of the DMs.</span>
             </Reveal>
             <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed text-neutral-500">
               Real hosts on Meeticulous, talking about running their bookings here.
@@ -568,7 +570,7 @@ export default function ReviewsFeature() {
                   style={{ background: i % 3 === 0 ? BLUSH : '#FFFFFF' }}
                 >
                   <span aria-hidden className="block font-heading text-5xl leading-[0.6]" style={{ color: PINK }}>&ldquo;</span>
-                  <blockquote className={`mt-3 leading-relaxed text-[#2B0A14] ${i === 0 ? 'font-heading text-xl font-bold' : 'text-[15px]'}`}>{t.quote}</blockquote>
+                  <blockquote className="mt-3 text-[15px] leading-relaxed text-ink">{t.quote}</blockquote>
                   <figcaption className="mt-5 flex items-center gap-3">
                     <img src={t.avatar} alt="" loading="lazy" className="h-10 w-10 rounded-full object-cover" />
                     <div>
@@ -587,46 +589,38 @@ export default function ReviewsFeature() {
       <PageGuides />
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: BLUSH }}>
-        <div className="mx-auto max-w-3xl">
-          <Reveal as="h2" className="text-center font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
-            Review questions, <span style={{ color: PINK_INK }}>answered.</span>
-          </Reveal>
-          <div className="mt-12 space-y-3">
-            {FAQ.map((f, i) => (
-              <details key={f.q} className="group rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]" open={i === 0}>
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 sm:px-6 [&::-webkit-details-marker]:hidden">
-                  <span className="font-heading text-[16px] font-bold">{f.q}</span>
-                  <ChevronDown size={18} aria-hidden className="shrink-0 text-neutral-400 transition-transform group-open:rotate-180" />
-                </summary>
-                <p className="px-5 pb-5 text-[15px] leading-relaxed text-neutral-600 sm:px-6">{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
+        <FeatureFaq
+          heading={(
+            <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight !text-ink sm:text-5xl">
+              Review questions, <span style={{ color: PINK }}>answered.</span>
+            </Reveal>
+          )}
+          items={FAQ}
+          itemClassName="rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]"
+          summaryClassName="flex items-center justify-between gap-4 px-5 py-4 sm:px-6"
+          answerClassName="px-5 pb-5 text-[15px] leading-relaxed text-neutral-600 sm:px-6"
+          renderSummary={(f, i, open) => (
+            <>
+              <span className="font-heading text-[16px] font-bold">{f.q}</span>
+              <ChevronDown size={18} aria-hidden className={`shrink-0 text-neutral-400 transition-transform ${open ? 'rotate-180' : ''}`} />
+            </>
+          )}
+        />
       </section>
 
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
       <section className="relative overflow-hidden px-5 py-20 text-white sm:px-8 lg:py-28" style={{ background: PLUM }}>
-        <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-[30rem] w-[30rem] rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(255,77,147,0.22), transparent)' }} />
+        <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-[30rem] w-[30rem] rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(232,119,46,0.22), transparent)' }} />
         <div className="relative mx-auto max-w-5xl text-center">
-          <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.2rem)] font-extrabold leading-[1.0] tracking-[-0.03em] text-white">
+          <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.2rem)] font-extrabold leading-[1.0] tracking-[-0.03em] !text-white">
             Let your last client <span style={{ color: PINK }}>introduce your next one.</span>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/75">
             Set up your booking page free. Every completed session asks for a review on its own.
           </Reveal>
-          <Reveal delay={0.1} className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
+          <Reveal delay={0.1} className="mt-9 flex justify-center">
             <PrimaryCta onDark>Start free <ArrowRight size={16} /></PrimaryCta>
-            <Link to="/pricing" className="inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:no-underline hover:opacity-80">
-              See pricing <ArrowRight size={15} />
-            </Link>
           </Reveal>
-          <nav aria-label="Related features" className="mt-14 flex flex-wrap justify-center gap-x-6 gap-y-2 border-t border-white/10 pt-8 text-sm text-white/60">
-            <span className="flex items-center gap-1.5"><Star size={14} aria-hidden /> Works with</span>
-            {RELATED.map((r) => (
-              <Link key={r.to} to={r.to} className="text-white/85 underline decoration-white/25 underline-offset-4 hover:text-white hover:decoration-white">{r.label}</Link>
-            ))}
-          </nav>
         </div>
       </section>
     </main>

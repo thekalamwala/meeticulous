@@ -20,7 +20,7 @@ export function ProblemSection() {
     <section ref={root} id="our-story" className="mt-6 scroll-mt-16 overflow-hidden px-5 py-20 sm:px-8 lg:mt-16 lg:flex lg:min-h-[calc(100svh-57px)] lg:items-center lg:py-4">
       {/* Split (lg+): heading + intro on the left, the before/after cards on the
           right (owner request — keep this split, not a centred stack). */}
-      <div className="mx-auto grid w-full max-w-6xl items-center gap-14 lg:grid-cols-[2fr_3fr] lg:gap-12">
+      <div className="mx-auto grid w-full max-w-7xl items-center gap-14 lg:grid-cols-[2fr_3fr] lg:gap-12">
         <div>
           <h2 className="js-head font-display text-4xl font-extrabold sm:text-5xl">{problem.heading}</h2>
           <p className="mt-5 text-lg leading-relaxed text-ink/70">{problem.intro}</p>
@@ -34,8 +34,8 @@ export function ProblemSection() {
 export function MissionBand() {
   return (
     <section className="bg-ink px-5 py-20 text-white sm:px-8 lg:py-24">
-      <div className="mx-auto max-w-4xl text-center">
-        <p className="font-heading text-3xl font-bold leading-snug text-white sm:text-4xl">{mission.statement}</p>
+      <div className="mx-auto max-w-7xl">
+        <p className="mx-auto max-w-4xl text-center font-heading text-3xl font-bold leading-snug text-white sm:text-4xl">{mission.statement}</p>
       </div>
     </section>
   );
@@ -61,7 +61,7 @@ export function DifferenceSection() {
   useGsapReveal(root);
   return (
     <section ref={root} className="bg-canvas px-5 py-20 sm:px-8 lg:py-28">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-7xl">
         {/* Header: full width, centred, with a quiet text link underneath */}
         <div className="flex flex-col items-center gap-6 text-center">
           <div className="w-full">

@@ -31,6 +31,10 @@ const ref     = (t) => `<p style="margin:0 0 4px;font-size:12px;letter-spacing:.
 // Numbered setup step (host welcome checklist).
 const step    = (n, title, sub) => `<tr><td style="width:34px;vertical-align:top;padding:10px 0;"><div style="width:26px;height:26px;line-height:26px;border-radius:999px;background:#FBE3E8;color:#960D32;font-weight:700;font-size:13px;text-align:center;font-family:'Poppins','Plus Jakarta Sans',Arial,sans-serif;">${n}</div></td><td style="padding:10px 0;border-bottom:1px solid #F1DCE1;font-family:'Poppins','Plus Jakarta Sans',Arial,sans-serif;"><div style="font-size:14px;font-weight:600;color:#2B1218;">${title}</div><div style="font-size:13px;color:#7D6B70;">${sub}</div></td></tr>`;
 const steps   = (...rows) => `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 4px;">${rows.join('')}</table>`;
+// Outlined pill link — a secondary action (e.g. add-to-calendar) that sits below
+// the one maroon CTA the layout owns. ponytail: inline, both booking-confirmed
+// bodies use it; promote to emailComponents if a third caller appears.
+const pillLink = (url, label) => `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:14px 0 4px;"><tr><td style="border:1px solid #F1DCE1;border-radius:999px;background:#FBF4F5;"><a href="${url}" style="display:inline-block;padding:10px 18px;font-size:14px;font-weight:600;color:#960D32;text-decoration:none;font-family:'Poppins','Plus Jakarta Sans',Arial,sans-serif;">${label}</a></td></tr></table>`;
 
 const TEMPLATES = [
 
@@ -117,9 +121,17 @@ const TEMPLATES = [
     email_reason: 'You are receiving this email because you made a booking on Meeticulous.',
     html_content:
       ref('Booking #{{booking_ref}}') + h("You're all set, {{first_name}}") +
-      lead('{{vendor_name}} is expecting you. Everything you need is below.') +
-      C.bookingCard({ title: '{{service_name}}', sub: 'with {{vendor_name}}', rows: [['Date', '{{booking_date}}'], ['Time', '{{booking_time}}'], ['Where', '{{location}}']] }) +
-      note('Your GST tax invoice is ready — <a href="{{invoice_url}}" style="color:#960D32;font-weight:600;text-decoration:none">view or download the PDF</a>. It is also under My Bookings in your dashboard.'),
+      lead('{{vendor_name}} is expecting you for {{service_name}}. Add it to your calendar so the time doesn\'t slip, and please join a couple of minutes early.') +
+      C.bookingCard({ title: '{{service_name}}', sub: 'with {{vendor_name}}', rows: [['Date', '{{booking_date}}'], ['Time', '{{booking_time}} {{booking_tz}}'], ['Where', '{{location}}']] }) +
+      // Secondary action; add-to-calendar deep link threaded by both send sites.
+      pillLink('{{calendar_url}}', 'Add to Google Calendar') +
+      note('<strong>Plans change?</strong> Reschedule or cancel from the button below. Cancel at least 24 hours ahead for a full refund; within 24 hours a partial refund applies, and within 6 hours the slot is non-refundable.') +
+      // Invoice line is caller-built (raw-HTML {{invoice_block}} token): the full
+      // "GST tax invoice is ready — <a>…</a>" <p> for a paid booking, '' for a
+      // free one. A free booking has no invoice, so the old hard-coded line left a
+      // dead link AND fired an admin "unresolved placeholder: invoice_url" alert on
+      // every free booking. Paid path builds the <p>; free path passes ''.
+      '{{invoice_block}}',
     // CTA → the public manage/cancel page (works without a login, unlike the
     // dashboard) so anonymous OTP guests can self-serve (#516).
     cta_label: 'View or manage booking', cta_url: '{{manage_url}}',
@@ -133,8 +145,9 @@ const TEMPLATES = [
     email_reason: 'You are receiving this email because you received a new booking on Meeticulous.',
     html_content:
       h('A new client booked you') +
-      lead("You've received a new booking. Please review your schedule.") +
-      C.bookingCard({ title: '{{service_name}}', sub: 'with {{user_name}}', rows: [['Date', '{{booking_date}}'], ['Time', '{{booking_time}}'], ['Where', '{{location}}']] }),
+      lead("You've received a new booking. Add it to your calendar and review your schedule below.") +
+      C.bookingCard({ title: '{{service_name}}', sub: 'with {{user_name}}', rows: [['Date', '{{booking_date}}'], ['Time', '{{booking_time}} {{booking_tz}}'], ['Where', '{{location}}']] }) +
+      pillLink('{{calendar_url}}', 'Add to Google Calendar'),
     cta_label: 'Open dashboard', cta_url: '{{dashboard_url}}',
   }; })(),
 

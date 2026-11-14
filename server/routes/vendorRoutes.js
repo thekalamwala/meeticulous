@@ -9,6 +9,7 @@ const {
   toggleService,
   getMyWithholding,
   markLinkShared,
+  getMyAccountManager,
 } = require('../controllers/vendorController');
 
 // All vendor routes require auth
@@ -30,5 +31,8 @@ router.put('/services/:id/toggle', requireHost, toggleService);
 
 // Activation funnel: stamp first time the host shares their public link
 router.post('/share-signal', requireHost, markLinkShared);
+
+// The host's assigned account manager (admin-assigned via Host 360)
+router.get('/account-manager', requireHost, getMyAccountManager);
 
 module.exports = router;

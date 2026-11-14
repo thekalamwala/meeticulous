@@ -8,9 +8,12 @@ A small, trusted team shipping fast with Claude Code. Keep it simple — **`main
    `git fetch origin && git switch -c <type>/<slug> origin/main`
    Types: `feat/`, `fix/`, `chore/`, `docs/`. One task per branch; keep it short-lived (merge within a day or two).
 2. **Commit** in [Conventional Commits](https://www.conventionalcommits.org) style — `feat(booking): …`, `fix(auth): …`.
-3. **Open a PR into `main`** — `gh pr create`. CI runs automatically (server + client unit tests).
-4. **One teammate reviews**, then **squash-merge**. Delete the branch after.
-5. **Merging `main` ships to production** (see Deploy). Whoever merges watches the deploy and smoke-tests prod.
+3. **Open a PR into the open release train**, not `main` — find it with `git branch -r | grep release/`,
+   then `gh pr create --base release/YYYY-MM`. CI runs automatically (server + client unit tests).
+   Only a hotfix the founder asks for targets `main` directly.
+4. **One teammate reviews**, then **squash-merge** into the release train. Delete the branch after.
+5. **The release train ships to `main` in one merge** (`/ship-release`), and **merging `main` ships to
+   production** (see Deploy). Whoever merges watches the deploy and smoke-tests prod.
 
 If your branch goes stale, rebase before opening the PR: `git fetch && git rebase origin/main`. Resolve conflicts on your branch, never on `main`.
 

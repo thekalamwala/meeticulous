@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Navigate, Link } from "react-router-dom";
 import { isVanitySlug, VANITY_TARGET } from "../config/vanityRedirects";
-import { getHostProfile, getHostReviews, getHostProducts, getVendorBadges, subscribeNewsletter } from "../services/api";
+import { getHostProfile, getHostReviews, getHostProducts, getHostTestimonials, getVendorBadges, subscribeNewsletter, recordProfileView } from "../services/api";
 import { getAuthorActivity } from "../services/communityApi";
 import { DEMO_PERSONAS, DEMO_USERNAME, personaView } from "../data/demoPersonas";
 import { analytics, EVENTS } from "../services/analytics";
@@ -430,6 +430,7 @@ const HostProfile = () => {
   const [reviewData,  setReviewData]  = useState(() => (seed && prerendered(`/reviews/${profileSlug}`)) || { reviews: [], count: 0, avg: 0 });
   const [showReviews, setShowReviews] = useState(false);
   const [products,    setProducts]    = useState(() => (seed && prerendered(`/products/host/${profileSlug}`)) || []);
+  const [testimonials, setTestimonials] = useState(() => (seed && prerendered(`/host/${profileSlug}/testimonials`)) || []);
   const [badgeList,   setBadgeList]   = useState(() => (seed && prerendered(`/vendors/${profileSlug}/badges`)?.badges) || []);
   const [badgeInfo,   setBadgeInfo]   = useState(null); // clicked badge → bottom-right info popup
   const [cardExpanded, setCardExpanded] = useState(false); // "More about" details expander
@@ -466,8 +467,10 @@ const HostProfile = () => {
           setServices(data.services || []);
         }
         analytics.track(EVENTS.PROFILE_VIEWED, { host_id: data.host?.id, slug: profileSlug });
+        recordProfileView(profileSlug); // v3.205 server-side view counter (fire-and-forget)
         getHostReviews(profileSlug).then(r => setReviewData(r.data)).catch(() => {});
         getHostProducts(profileSlug).then(r => setProducts(r.data || [])).catch(() => {});
+        getHostTestimonials(profileSlug).then(r => setTestimonials(r.data || [])).catch(() => {});
         getVendorBadges(profileSlug).then(r => setBadgeList(r.data?.badges || [])).catch(() => {});
         setLoading(false);
       } catch (err) {
@@ -960,6 +963,42 @@ const HostProfile = () => {
                     ))}
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Testimonials — HOST-PROVIDED quotes (a proof wall). Deliberately
+                distinct from the verified "What people say" reviews above, and
+                NOT counted in the star rating / aggregateRating. */}
+            {testimonials.length > 0 && (
+              <div className="mt-10 rounded-2xl p-5 sm:p-6" style={{ background: tc + '0D', border: `1px solid ${C.border}` }}>
+                <div className="flex items-center gap-2 mb-1">
+                  <h2 className="font-display font-bold text-xl" style={{ color: C.text }}>Testimonials</h2>
+                  <span className="text-[11px] font-semibold uppercase tracking-wide rounded-full px-2 py-0.5"
+                    style={{ background: tc + '1A', color: tc }}>Host-provided</span>
+                </div>
+                <p className="text-xs mb-4" style={{ color: C.muted }}>Praise shared directly by {host?.name || 'the host'}.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {testimonials.map(t => (
+                    <blockquote key={t.id} className="rounded-2xl p-4" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+                      <svg className="w-6 h-6 mb-2 opacity-40" fill="currentColor" viewBox="0 0 24 24" style={{ color: tc }}>
+                        <path d="M7.17 6A5.17 5.17 0 002 11.17V18h6.83v-6.83H5.5A1.67 1.67 0 017.17 9.5V6zm9 0A5.17 5.17 0 0011 11.17V18h6.83v-6.83H14.5A1.67 1.67 0 0116.17 9.5V6z" />
+                      </svg>
+                      <p className="text-sm leading-relaxed" style={{ color: C.secondary }}>{t.quote}</p>
+                      <footer className="flex items-center gap-3 mt-3">
+                        {t.author_image_url ? (
+                          <img src={t.author_image_url} alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                            style={{ background: tc, color: '#fff' }}>{t.author_name?.charAt(0) || '?'}</div>
+                        )}
+                        <div className="min-w-0">
+                          <div className="text-sm font-semibold truncate" style={{ color: C.text }}>{t.author_name}</div>
+                          {t.author_role && <div className="text-xs truncate" style={{ color: C.muted }}>{t.author_role}</div>}
+                        </div>
+                      </footer>
+                    </blockquote>
+                  ))}
+                </div>
               </div>
             )}
 

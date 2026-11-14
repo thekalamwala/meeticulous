@@ -829,8 +829,8 @@ const getMyServices = async (req, res) => {
 // PUT /api/host/availability
 const setAvailability = async (req, res) => {
   try {
-    const { weekly_schedule, blocked_dates, timezone, buffer_minutes } =
-      req.body;
+    const { weekly_schedule, blocked_dates, timezone, buffer_minutes,
+      cap_per_day, cap_per_week, cap_per_guest } = req.body;
 
     // P1-10: reject malformed/contradictory schedules before they silently
     // produce an empty calendar (host appears open, guests see no slots).
@@ -841,22 +841,46 @@ const setAvailability = async (req, res) => {
     if (buffer_minutes != null && (!Number.isFinite(Number(buffer_minutes)) || Number(buffer_minutes) < 0 || Number(buffer_minutes) > 480))
       return res.status(400).json({ message: 'buffer_minutes must be between 0 and 480.' });
 
+    // Booking caps (v3.213): each is a positive integer or null (no cap). Blank/0
+    // → null. Capped at 999 so a fat-finger can't lock the calendar silently.
+    const parseCap = (v) => {
+      if (v == null || v === '') return null;
+      const n = Number(v);
+      return Number.isInteger(n) && n >= 1 ? Math.min(n, 999) : NaN;
+    };
+    const caps = { cap_per_day: parseCap(cap_per_day), cap_per_week: parseCap(cap_per_week), cap_per_guest: parseCap(cap_per_guest) };
+    if (Object.values(caps).some(Number.isNaN))
+      return res.status(400).json({ message: 'Booking caps must be whole numbers of 1 or more.' });
+
+    // Caps are a Pro feature — a free host's values are not stored (enforcement is
+    // Pro-gated too, so this just keeps the row clean). The server is the gate; the
+    // client lock is only UX.
+    const { data: planRow } = await supabaseAdmin
+      .from('profiles').select('plan, plan_expires_at').eq('id', req.user.id).maybeSingle();
+    if (planService.isFreeSlug(planService.resolveVendorPlan(planRow))) {
+      caps.cap_per_day = null; caps.cap_per_week = null; caps.cap_per_guest = null;
+    }
+
     // Upsert -- insert if not exists, update if exists
-    const { data, error } = await supabaseAdmin
+    const basePayload = {
+      host_id: req.user.id,
+      weekly_schedule,
+      blocked_dates,
+      timezone,
+      buffer_minutes: buffer_minutes ?? 0, // Task 13
+      updated_at: new Date().toISOString(),
+    };
+    const doUpsert = (payload) => supabaseAdmin
       .from("availability")
-      .upsert(
-        {
-          host_id: req.user.id,
-          weekly_schedule,
-          blocked_dates,
-          timezone,
-          buffer_minutes: buffer_minutes ?? 0, // Task 13
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "host_id" },
-      )
+      .upsert(payload, { onConflict: "host_id" })
       .select()
       .single();
+
+    let { data, error } = await doUpsert({ ...basePayload, ...caps }); // v3.213 caps
+    // Schema fallback: retry without cap columns if v3.213 hasn't been applied yet.
+    if (error && /Could not find the|column.*does not exist/i.test(error.message || "")) {
+      ({ data, error } = await doUpsert(basePayload));
+    }
 
     if (error) return safeError(res, error);
     res.json(data);
@@ -1005,8 +1029,32 @@ const searchVendors = async (req, res) => {
   }
 };
 
+// POST /api/host/:username/view — public beacon from the public profile page.
+// Increments the host's view counter (v3.205). Best-effort: never blocks or errors
+// the viewer, and no-ops if the migration hasn't run.
+const recordProfileView = async (req, res) => {
+  try {
+    const username = String(req.params.username || '').trim();
+    if (username) await supabaseAdmin.rpc('increment_profile_views', { p_username: username });
+  } catch (_) { /* best-effort vanity counter — never surface an error */ }
+  return res.json({ ok: true });
+};
+
+// GET /api/host/profile-views — the signed-in host's own view count (v3.205).
+const getMyProfileViews = async (req, res) => {
+  try {
+    const { data } = await supabaseAdmin
+      .from('profiles').select('profile_views').eq('id', req.user.id).maybeSingle();
+    return res.json({ views: Number(data?.profile_views) || 0 });
+  } catch (_) {
+    return res.json({ views: 0 }); // schema-fallback: column may not exist yet
+  }
+};
+
 module.exports = {
   getHostProfile,
+  recordProfileView,
+  getMyProfileViews,
   updateProfile,
   getMyCategories,
   updateCategories,
