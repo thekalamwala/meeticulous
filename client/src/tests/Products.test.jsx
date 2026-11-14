@@ -183,6 +183,12 @@ describe('Products — plan-tier upgrade gate', () => {
     expect(cta.textContent.trim()).toBe('Upgrade to Pro');
     expect(cta.textContent).not.toMatch(/₹|\/mo|\/month|999/);
   });
+
+  test('the upgrade gate CTA is attributed with src=products', async () => {
+    renderWithPlan('explorer', PLANS_FREE_BLOCKED);
+    const cta = await screen.findByRole('link', { name: /upgrade to pro/i });
+    expect(cta).toHaveAttribute('href', '/dashboard/upgrade?src=products');
+  });
 });
 
 // ── Admin kill-switch gate (digital_products feature OFF) ─────────────────────
