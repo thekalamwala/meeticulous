@@ -81,14 +81,24 @@ describe('decide (Tier 0 → Tier 1)', () => {
   });
 });
 
-describe('appendCta (pitch — comparison only)', () => {
-  test('comparison gets one pricing CTA', () => {
-    expect(gate.appendCta('We do that too.', 'comparison')).toBe('We do that too.\n\n[See plans & pricing](/pricing)');
+describe('appendCta (plain-text pitch — comparison + feature)', () => {
+  test('comparison gets one plain pricing CTA (no markdown)', () => {
+    const out = gate.appendCta('We do that too.', 'comparison');
+    expect(out).toBe('We do that too.\n\nSee how the plans stack up: meeticulous.com/pricing');
+    expect(out).not.toMatch(/[[\]()*`]/); // no markdown link/emphasis syntax
+  });
+  test('feature answers get a product CTA (no more dead-ends)', () => {
+    expect(gate.appendCta('Yes, GST invoices are built in.', 'feature'))
+      .toBe('Yes, GST invoices are built in.\n\nHave a look at everything you can do: meeticulous.com');
   });
   test('support answers are untouched', () => {
     expect(gate.appendCta('Here is how.', 'support')).toBe('Here is how.');
   });
-  test('no double-link when the answer already points to pricing', () => {
-    expect(gate.appendCta('Yep — [see pricing](/pricing).', 'comparison')).toBe('Yep — [see pricing](/pricing).');
+  test('not_for_us gets no CTA', () => {
+    expect(gate.appendCta('Nice work!', 'not_for_us')).toBe('Nice work!');
+  });
+  test('no double-link when the answer already points at meeticulous.com', () => {
+    const base = 'Yep — see meeticulous.com/pricing.';
+    expect(gate.appendCta(base, 'comparison')).toBe(base);
   });
 });

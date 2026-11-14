@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Navigate, Link } from "react-router-dom";
 import { isVanitySlug, VANITY_TARGET } from "../config/vanityRedirects";
-import { getHostProfile, getHostReviews, getHostProducts, getVendorBadges, subscribeNewsletter } from "../services/api";
+import { getHostProfile, getHostReviews, getHostProducts, getVendorBadges, subscribeNewsletter, recordProfileView } from "../services/api";
 import { getAuthorActivity } from "../services/communityApi";
 import { DEMO_PERSONAS, DEMO_USERNAME, personaView } from "../data/demoPersonas";
 import { analytics, EVENTS } from "../services/analytics";
@@ -466,6 +466,7 @@ const HostProfile = () => {
           setServices(data.services || []);
         }
         analytics.track(EVENTS.PROFILE_VIEWED, { host_id: data.host?.id, slug: profileSlug });
+        recordProfileView(profileSlug); // v3.205 server-side view counter (fire-and-forget)
         getHostReviews(profileSlug).then(r => setReviewData(r.data)).catch(() => {});
         getHostProducts(profileSlug).then(r => setProducts(r.data || [])).catch(() => {});
         getVendorBadges(profileSlug).then(r => setBadgeList(r.data?.badges || [])).catch(() => {});

@@ -185,6 +185,7 @@ app.use('/api/support',       require('./routes/supportRoutes')); // host/guest 
 app.use('/api/enterprise-lead', require('./routes/enterpriseLeadRoutes')); // public /enterprise page lead form → support email
 app.use('/api/demo-lead', require('./routes/demoLeadRoutes')); // public /become-a-host "Book a Demo" OTP lead form → CRM (source website)
 app.use('/api/ingest', require('./routes/ingestRoutes')); // external lead intake (Meta/Zoho/form) → upsertLead, token-gated
+app.use('/api/sync', require('./routes/revenueSyncRoutes')); // read-only revenue export for Papertrail cashbook, token-gated (x-sync-token)
 app.use('/api/agents/reports', require('./routes/agentReportRoutes')); // READ-ONLY aggregates for SUTRA agents (x-agent-token, fail-closed)
 app.use('/api/events',        require('./routes/eventsRoutes')); // public intent-event sink → lead_events
 app.use('/api/opening',       require('./routes/openingRoutes')); // public "The Opening" launch event (ribbon cut + Inaugurators Wall)
@@ -387,6 +388,34 @@ scheduleCron(async () => {
     }, { leaseMs: 6 * 60 * 60 * 1000 });
   } catch (err) { console.error('Dormant nudges cron error:', err.message); }
 }, 24 * 60 * 60 * 1000);
+
+// Tithi proactive IN-APP nudges (Slice 5) — a host's notification bell gets a Tithi-voiced
+// nudge for a resolvable blocker (verification stuck, no live service, earnings waiting,
+// plan expiring). Flag `tithi_proactive` (default OFF) gates the whole job; in-app only,
+// per-host-per-blocker dedupe, quiet-hours 09–20 IST inside. Complements (does not replace)
+// the email/WhatsApp activation nudges above.
+const { runProactiveNudges } = require('./services/bot/tithiProactive');
+scheduleCron(async () => {
+  try {
+    await runLocked('tithi-proactive', async () => {
+      const r = await runProactiveNudges();
+      if (r.nudged) console.log(`Tithi proactive nudges: ${r.nudged} nudged`);
+    }, { leaseMs: 6 * 60 * 60 * 1000 });
+  } catch (err) { console.error('Tithi proactive cron error:', err.message); }
+}, 6 * 60 * 60 * 1000);
+
+// Tithi gap digest (Slice 8) — weekly: cluster the week's unanswered questions into themes,
+// draft a help-doc stub for the top one, email the team. Flag `bot_gap_digest` (default OFF)
+// gates it. Closes the learning loop: the KB's gaps become the KB's next entries.
+const { runGapDigest } = require('./services/bot/gapDigest');
+scheduleCron(async () => {
+  try {
+    await runLocked('tithi-gap-digest', async () => {
+      const r = await runGapDigest();
+      if (r.themes) console.log(`Tithi gap digest: ${r.themes} themes from ${r.gaps} misses`);
+    }, { leaseMs: 60 * 60 * 1000 });
+  } catch (err) { console.error('Tithi gap digest cron error:', err.message); }
+}, 7 * 24 * 60 * 60 * 1000);
 
 // Guest review nudges (48h after completed paid booking, no review yet).
 // Hourly cron so the 48h cut is tight. Double-gated: feature flag `review_nudges`
