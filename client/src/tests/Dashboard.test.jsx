@@ -168,15 +168,17 @@ describe('Overview — real-data content', () => {
 });
 
 describe('Overview — sidebar shell', () => {
-  it('keeps the original two-level ConsoleSidebar (rail sections + panel) with Overview active', () => {
-    renderShell();
-    // Rail: the six existing section buttons, in order — NOT the flat pink sidebar.
-    const rail = screen.getByRole('navigation', { name: 'Sections' });
-    const sections = within(rail).getAllByRole('button').map((b) => b.getAttribute('aria-label'));
-    expect(sections).toEqual(['Overview', 'Bookings', 'Catalog', 'Earnings', 'Chat', 'Settings']);
-    // Panel: the active Overview page is current.
-    const panel = screen.getByRole('navigation', { name: /overview pages/i });
-    expect(within(panel).getByRole('link', { name: 'Overview' })).toHaveAttribute('aria-current', 'page');
+  it('shows the single-column push/pop sidebar with the regrouped sections', () => {
+    renderShell(); // at /dashboard → Home is active; the root section list shows
+    const nav = screen.getByRole('navigation', { name: 'Sections' });
+    // Home is a single-page section (a link straight to /dashboard); the rest push.
+    expect(within(nav).getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/dashboard');
+    const sections = within(nav)
+      .getAllByRole('button')
+      .map((b) => b.getAttribute('aria-label'))
+      .filter(Boolean);
+    // Messages is flag-gated (hidden here); the visible push sections, in order.
+    expect(sections).toEqual(['Bookings', 'Catalog', 'Money', 'Settings']);
   });
 
   it('switches between week and month views and steps the range', () => {

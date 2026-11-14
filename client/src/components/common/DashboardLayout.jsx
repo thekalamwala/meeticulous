@@ -398,6 +398,10 @@ export const ProfileMenu = ({
  *  opener moved to the bottom tab bar's "More" button. */
 const DashTopbar = ({ user, plan, planStyle, initial, logout }) => (
   <header className="sticky top-0 z-30 flex min-h-14 shrink-0 items-center border-b border-neutral-200/80 bg-white/95 px-4 pt-[env(safe-area-inset-top)] backdrop-blur sm:px-6 md:px-8">
+    {/* Mobile-only brand logo → Home (desktop shows it in the sidebar top bar). */}
+    <Link to="/dashboard" title="Meeticulous — Home" aria-label="Meeticulous — Home" className="lg:hidden">
+      <img src="/brand/meeticulous-icon.svg" alt="Meeticulous" className="h-8 w-8 object-contain" />
+    </Link>
     <div className="ml-auto flex items-center gap-1">
       <SupportButton />
       <NotifBell />
@@ -439,10 +443,10 @@ const DashboardLayout = ({ children }) => {
     <div className="dash flex h-[100dvh] overflow-hidden bg-canvas">
       <ConsoleSidebar open={navOpen} onClose={() => setNavOpen(false)} triggerRef={navTriggerRef} />
 
-      {/* Main — offset by the fixed rail (56) + panel (220) = 276px on lg+
-          (the sidebar is out of flow). overscroll-contain hands the top overscroll
+      {/* Main — offset by the fixed single-column sidebar (272px) on lg+ (the
+          sidebar is out of flow). overscroll-contain hands the top overscroll
           to pull-to-refresh instead of the browser's native gesture. */}
-      <main ref={mainRef} className="flex min-w-0 flex-1 flex-col overflow-y-auto overscroll-y-contain lg:pl-[276px]">
+      <main ref={mainRef} className="flex min-w-0 flex-1 flex-col overflow-y-auto overscroll-y-contain lg:pl-[272px]">
         <DashTopbar
           user={user}
           plan={plan}

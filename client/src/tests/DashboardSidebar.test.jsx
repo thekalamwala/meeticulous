@@ -147,38 +147,47 @@ describe('mobile — popups + nav drawer', () => {
   });
 });
 
-describe('console sidebar — two-level nav', () => {
+describe('console sidebar — single-column push/pop nav', () => {
   beforeEach(() => { mockAuth.current = {}; });
 
-  it('marks the active item with aria-current and selects its parent section', () => {
+  it('deep-links open the active section panel with its page current', () => {
     renderAt('/dashboard/bookings', { name: 'Host', plan: 'creator', role: 'host' });
-    // Bookings is the active section (rail glyph carries aria-current). Scope to
-    // the sidebar rail — the mobile tab bar also has a "Bookings" button.
-    const rail = within(screen.getByRole('navigation', { name: 'Sections' }));
-    expect(rail.getByRole('button', { name: 'Bookings' })).toHaveAttribute('aria-current', 'true');
-    // Bookings item is the active page.
-    expect(screen.getByRole('link', { name: 'Bookings' })).toHaveAttribute('aria-current', 'page');
+    // The Bookings section is pushed open (panel labelled "<section> pages"),
+    // with a Back affordance and the active page current.
+    const panel = within(screen.getByRole('navigation', { name: 'Bookings pages' }));
+    expect(panel.getByRole('button', { name: 'Back' })).toBeInTheDocument();
+    expect(panel.getByRole('link', { name: 'Bookings' })).toHaveAttribute('aria-current', 'page');
   });
 
   it('deep pages highlight their parent item (longest-prefix match)', () => {
     renderAt('/dashboard/services/42/edit', { name: 'Host', plan: 'supreme', role: 'host' });
-    const rail = within(screen.getByRole('navigation', { name: 'Sections' }));
-    expect(rail.getByRole('button', { name: 'Catalog' })).toHaveAttribute('aria-current', 'true');
-    expect(screen.getByRole('link', { name: 'Services' })).toHaveAttribute('aria-current', 'page');
+    const panel = within(screen.getByRole('navigation', { name: 'Catalog pages' }));
+    expect(panel.getByRole('link', { name: 'Services' })).toHaveAttribute('aria-current', 'page');
   });
 
   it('Customers and Products are reachable for every plan (stale nav lock removed)', () => {
-    // Free host: Products/Customers are no longer nav-locked; the page handles the upsell.
     renderAt('/dashboard/products', { name: 'Host', plan: 'free', role: 'host' });
     const products = screen.getByRole('link', { name: 'Products' });
     expect(products).not.toHaveAttribute('aria-disabled', 'true');
     expect(products).toHaveAttribute('href', '/dashboard/products');
   });
 
+  it('moves Transactions into the Money section', () => {
+    renderAt('/dashboard/payments/transactions', { name: 'Host', plan: 'creator', role: 'host' });
+    const panel = within(screen.getByRole('navigation', { name: 'Money pages' }));
+    expect(panel.getByRole('link', { name: 'Transactions' })).toHaveAttribute('aria-current', 'page');
+  });
+
   it('surfaces a KYC-pending attention badge on Payouts (KYC gates payouts)', () => {
     renderAt('/dashboard/payments/payouts', { name: 'Host', plan: 'creator', role: 'host', kyc_status: 'pending' });
     // Payouts item's SR name carries the count + noun.
     expect(screen.getByLabelText('Payouts, 1 verify to get paid')).toBeInTheDocument();
+  });
+
+  it('shows the loud KYC banner atop Settings while unverified', () => {
+    renderAt('/dashboard/kyc', { name: 'Host', plan: 'creator', role: 'host', kyc_status: 'pending' });
+    // KYC pending → a maroon "Verify to get paid" banner leads the Settings panel.
+    expect(screen.getByRole('link', { name: 'Verify to get paid' })).toHaveAttribute('href', '/dashboard/kyc');
   });
 });
 
