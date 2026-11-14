@@ -67,6 +67,8 @@ export const NAV = [
     items: [
       { to: '/dashboard/services', label: 'Services', icon: 'nav-services', matchPrefix: '/dashboard/service' },
       { to: '/dashboard/products', label: 'Products', icon: 'nav-products' },
+      // Reuse nav-profile glyph — no testimonial icon is exported yet (closest fit).
+      { to: '/dashboard/testimonials', label: 'Testimonials', icon: 'nav-profile' },
       // Coupons (v3.204) — hidden until the `coupons` flag is on. Reuses the
       // refer glyph (promo/reward) as no discount icon is exported yet.
       { to: '/dashboard/coupons', label: 'Coupons', icon: 'nav-refer', visible: (c) => !!c.flags?.coupons },
