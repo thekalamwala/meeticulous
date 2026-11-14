@@ -546,6 +546,9 @@ export const uploadProductFile = (file) => {
 // ── Vendor dashboard ──────────────────────────────────────────
 // Activation funnel: stamp the host's first link-share (fire-and-forget, never blocks UX).
 export const markLinkShared     = ()          => API.post('/vendor/share-signal').catch(() => {});
+// The host's assigned account manager, or null. Soft-fails to null so the UI can
+// fall back to the generic support link without surfacing an error.
+export const getMyAccountManager = ()          => API.get('/vendor/account-manager').then((r) => r.data).catch(() => ({ account_manager: null }));
 // Dashboard "Next step" nudge — server-tracked dismissal (cross-device).
 export const getHostNudges      = ()           => API.get('/host/nudges');
 export const dismissHostNudge   = (key)        => API.post(`/host/nudges/${key}/dismiss`);
