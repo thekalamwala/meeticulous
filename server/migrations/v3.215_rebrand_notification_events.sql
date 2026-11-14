@@ -15,7 +15,9 @@
 -- carry it. This does a blanket, idempotent replace so any such row is covered.
 --
 -- Idempotent and additive (UPDATEs only). Safe to run more than once.
--- Run on the live DB (spquowzrefozmrzoszkf). NOT YET APPLIED — see CLAUDE.md.
+-- Run on the live DB (spquowzrefozmrzoszkf). APPLIED 2026-11-14 (prod data was
+-- already clean — 0 stale rows). The original referenced a non-existent
+-- bot_faqs.question column; bot_faqs's text columns are `answer` and `pattern`.
 
 UPDATE notification_events
    SET email_subject = replace(replace(email_subject, 'Book A Sloth', 'Meeticulous'), 'BookASloth', 'Meeticulous'),
@@ -30,6 +32,7 @@ UPDATE bot_faqs
    SET answer = replace(answer, 'Book A Sloth', 'Meeticulous')
  WHERE answer ILIKE '%book a sloth%';
 
+-- bot_faqs has no `question` column; the FAQ match text lives in `pattern`.
 UPDATE bot_faqs
-   SET question = replace(question, 'Book A Sloth', 'Meeticulous')
- WHERE question ILIKE '%book a sloth%';
+   SET pattern = replace(pattern, 'Book A Sloth', 'Meeticulous')
+ WHERE pattern ILIKE '%book a sloth%';
