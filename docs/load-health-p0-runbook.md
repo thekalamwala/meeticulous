@@ -97,3 +97,41 @@ Render Free spins down on idle → 30s+ cold start for the first launch visitor.
 - Supabase paid compute when DB-read load climbs.
 
 Buy these against the **real** infra number from the staging test, not a guess.
+
+---
+
+## UPDATE 2026-11-14 — P0-B is Vercel edge-cache, NOT Cloudflare
+
+**Cloudflare is dead-ended here:** `meeticulous.com` is registered/locked on Vercel,
+so its nameservers can't point to Cloudflare without a multi-day domain-registration
+transfer. Not worth it pre-launch. Vercel caches external rewrites natively, so we get
+the same edge offload on the stack we already run — no DNS move, no email-record risk.
+
+### Phase 1 — SHIPPED on PR #324 (inert, safe)
+`client/vercel.json` now has a `/api/:path*` rewrite to the Render origin plus the
+`x-vercel-enable-rewrite-caching: 1` header (external rewrites are not cached by default
+for projects made before 2026-04-06). The origin already sends `s-maxage` on public GETs
+and `no-store`/`private` on auth/bookings/payments, so Vercel caches ONLY the safe reads.
+Inert until Phase 2 — the app still calls the Render origin directly.
+
+### Phase 2 — the cutover (VERIFIED on a preview 2026-11-14, NOT yet flipped)
+Makes the app USE the cached edge. Two steps, each independently confirmable on prod:
+
+1. **Merge PR #324** → Phase-1 rewrite + the `invoiceUrl` fix go live, still inert.
+   Confirm on prod: `curl -sI https://meeticulous.com/api/blogs` twice → 2nd = `x-vercel-cache: HIT`.
+2. **Flip Production `VITE_API_URL`** (Vercel project `appointment-hive-web-app`, env id
+   `4fpeNWmgIMr0hxyI`) from `https://meeticulous-api.onrender.com/api` → `/api`, then redeploy.
+   Now browsers call same-origin `meeticulous.com/api/*` through the cached edge.
+
+**Rollback:** set `VITE_API_URL` back to the onrender value + redeploy (build-time, ~few min).
+
+**What was verified on preview `…git-perf-load-health-p0…vercel.app`:**
+- `/api/blogs`, `/api/host/:u` → MISS→HIT, origin offloaded, real JSON (not spa-shell).
+- `/api/auth/me` → 401, never cached. `POST /api/bookings` → Render 400, uncached, no data created.
+- Bot SSE `/api/bot/ask/stream` → streams incrementally through the proxy (TTFB 0.67s ≪ total 1.66s), uncached.
+- `invoiceUrl` hardened (`api.js`) to stay absolute when the base is relative — no broken invoice links.
+- No service worker to intercept `/api`.
+
+**Caveat:** Phase 2 routes 100% of API traffic (incl. writes) through Vercel — an extra hop +
+Vercel bandwidth on every call, and Vercel becomes an API dependency (already true for the whole
+site, so no new single point of failure). Worth it for the edge offload; flip deliberately.
