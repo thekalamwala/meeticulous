@@ -11,6 +11,7 @@ vi.mock('../services/api', () => ({
   getAvailability: vi.fn(() => Promise.resolve({ data: {} })),
   getBookedSlots: vi.fn(() => Promise.resolve({ data: [] })),
   getBookingReview: vi.fn(() => Promise.resolve({ data: null })),
+  getHostNudges: vi.fn(() => Promise.resolve({ data: { taste: null } })), // taste card: hidden
 }));
 vi.mock('../hooks/useFeatureFlags', () => ({ default: vi.fn() }));
 vi.mock('../context/AuthContext', () => ({ useAuth: () => ({ user: { username: 'host' } }) }));
