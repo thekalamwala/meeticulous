@@ -159,6 +159,13 @@ const bookingEmailData = ({ serviceTitle, hostName, hostPhone, guestName, schedu
     manage_url: bookingId
       ? `${process.env.CLIENT_URL || "https://meeticulous.com"}/manage-booking/${manageBookingToken.sign(bookingId)}`
       : dashboard,
+    // No invoice on this path: free/₹0 bookings have no GST invoice, and the
+    // lifecycle emails (cancel/complete/reschedule) carry none either. The paid
+    // path (services/bookingConfirmation.js) builds the real {{invoice_block}}.
+    // Passing '' (not absent) stops the customer template's raw-HTML invoice token
+    // from rendering a dead link AND from firing the admin "unresolved placeholder:
+    // invoice_url" alert on every free booking.
+    invoice_block: "",
     ...splitWhen(scheduledAt, tz),
   };
 };

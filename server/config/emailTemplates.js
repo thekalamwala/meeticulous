@@ -126,7 +126,12 @@ const TEMPLATES = [
       // Secondary action; add-to-calendar deep link threaded by both send sites.
       pillLink('{{calendar_url}}', 'Add to Google Calendar') +
       note('<strong>Plans change?</strong> Reschedule or cancel from the button below. Cancel at least 24 hours ahead for a full refund; within 24 hours a partial refund applies, and within 6 hours the slot is non-refundable.') +
-      note('Your GST tax invoice is ready — <a href="{{invoice_url}}" style="color:#960D32;font-weight:600;text-decoration:none">view or download the PDF</a>. It is also under My Bookings in your dashboard.'),
+      // Invoice line is caller-built (raw-HTML {{invoice_block}} token): the full
+      // "GST tax invoice is ready — <a>…</a>" <p> for a paid booking, '' for a
+      // free one. A free booking has no invoice, so the old hard-coded line left a
+      // dead link AND fired an admin "unresolved placeholder: invoice_url" alert on
+      // every free booking. Paid path builds the <p>; free path passes ''.
+      '{{invoice_block}}',
     // CTA → the public manage/cancel page (works without a login, unlike the
     // dashboard) so anonymous OTP guests can self-serve (#516).
     cta_label: 'View or manage booking', cta_url: '{{manage_url}}',
