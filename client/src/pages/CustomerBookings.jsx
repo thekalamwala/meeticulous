@@ -189,6 +189,14 @@ const CustomerBookings = () => {
   // host's payout instantly. Shown for a paid, confirmed booking whose slot has passed.
   const [confirming, setConfirming] = useState(null);
   const canConfirm = (b) => b.status === "confirmed" && b.payment_status === "paid" && new Date(b.scheduled_at) < now;
+  // A booking can auto-complete on a timer even if nobody joined. Give the guest a
+  // recourse window after completion to flag that it didn't happen — same endpoint
+  // as "Report a problem" (holds/reverses payout + opens an admin dispute).
+  const REPORT_WINDOW_DAYS = 14;
+  const canReportCompleted = (b) =>
+    b.status === "completed" &&
+    b.payment_status === "paid" &&
+    new Date(b.scheduled_at) >= new Date(now - REPORT_WINDOW_DAYS * 86400000);
   const handleConfirmComplete = async (id) => {
     setConfirming(id);
     try {
@@ -279,6 +287,12 @@ const CustomerBookings = () => {
                 {confirming === b.id ? "Confirming…" : "Confirm completed"}
               </button>
             </div>
+          )}
+          {canReportCompleted(b) && (
+            <button onClick={() => handleReportProblem(b.id)} disabled={confirming === b.id}
+              className="ml-auto text-sm font-medium text-gray-500 hover:text-rose-600 disabled:opacity-60 px-2.5 py-1.5 rounded-lg hover:bg-rose-50">
+              Didn't happen? Report
+            </button>
           )}
         </div>
       </div>
