@@ -42,10 +42,11 @@ describe('HostCover', () => {
     expect(container.querySelector('img')).toBeTruthy();
   });
 
-  it('renders a gradient div (no img) when src is empty', () => {
+  it('renders the branded default cover img when src is empty', () => {
     const { container } = render(<HostCover src="" themeColor="#2E1065" />);
-    expect(container.querySelector('img')).toBeNull();
-    expect(container.firstChild.style.background).toContain('linear-gradient');
+    const img = container.querySelector('img');
+    expect(img).toBeTruthy();
+    expect(img.getAttribute('src')).toContain('default-cover');
   });
 
   it('sets fetchpriority high only when eager', () => {
