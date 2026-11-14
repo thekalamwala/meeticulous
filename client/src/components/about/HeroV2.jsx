@@ -14,22 +14,11 @@ import ImgWithSkeleton from "./ImgWithSkeleton";
 export default function HeroV2() {
   return (
     <section className="relative overflow-hidden bg-canvas">
-      <svg aria-hidden width="0" height="0" className="absolute">
-        <clipPath id="about-hero-panel" clipPathUnits="objectBoundingBox">
-          <path d={PANEL} />
-        </clipPath>
-      </svg>
-
-      {/* Desktop: full-bleed photo behind everything, then the curved cream panel */}
+      {/* Desktop: full-bleed photo behind everything */}
       <div className="absolute inset-0 hidden lg:block">
-        {/* Focus right of centre — the left part sits under the cream panel */}
+        {/* Focus right of centre — copy sits over the left part */}
         <ImgWithSkeleton src={hero.image} alt={hero.imageAlt} fallbackLabel="Meeticulous" loading="eager" imgClassName="object-[75%_50%]" />
       </div>
-      <div
-        aria-hidden
-        className="absolute inset-y-0 left-0 hidden w-[58%] bg-canvas lg:block"
-        style={{ clipPath: "url(#about-hero-panel)" }}
-      />
 
       {/* lg+: left-anchor the copy to the page gutter (mr-auto) so it hugs the
           left of the cream panel near the nav logo, instead of drifting right
