@@ -50,9 +50,14 @@ function buildGlobals(settings = {}, user = {}) {
  * @param {Function|null} escapeFn  Optional fn applied to each substituted value
  *   (e.g. htmlEscape for HTML bodies). Pass null/undefined for plain-text fields
  *   such as email subjects where literal characters must not be entity-encoded.
+ * @param {Set<string>|null} rawKeys  Allow-list of token keys whose value is
+ *   inserted WITHOUT escapeFn (pre-trusted HTML built in our own code, e.g. the
+ *   {{invoice_block}} line). ponytail: raw insertion is safe only because every
+ *   rawKey value is assembled server-side from our data — never pass user input
+ *   through one. If that ever changes, escape the untrusted parts at the source.
  * @returns {{ text, missing }} text with substitutions; missing = unresolved keys
  */
-function resolveString(input, context = {}, escapeFn = null) {
+function resolveString(input, context = {}, escapeFn = null, rawKeys = null) {
   const missing = [];
   if (input == null) return { text: '', missing };
   const text = String(input).replace(PLACEHOLDER_RE, (_m, key) => {
@@ -61,7 +66,7 @@ function resolveString(input, context = {}, escapeFn = null) {
     if (context[k] != null && context[k] !== '') val = String(context[k]);
     else if (k in context) val = String(context[k] ?? '');
     else { missing.push(k); val = ''; }
-    return escapeFn ? escapeFn(val) : val;
+    return (escapeFn && !(rawKeys && rawKeys.has(k))) ? escapeFn(val) : val;
   });
   return { text, missing };
 }
@@ -73,12 +78,13 @@ function resolveString(input, context = {}, escapeFn = null) {
  * @param {object} globals   global placeholders (from buildGlobals)
  * @returns {{ subject, html, ctaUrl, ctaLabel, missing }}
  */
-function resolveTemplate(template, data = {}, globals = {}) {
+function resolveTemplate(template, data = {}, globals = {}, rawKeys = null) {
   const context = { ...globals, ...data };
   // Subject is a plain-text mail header — do NOT html-escape (would show &amp; literally).
   const subject = resolveString(template.subject, context);
   // html_content, cta_url and cta_label are injected into HTML — escape substituted values.
-  const html = resolveString(template.html_content, context, htmlEscape);
+  // Only html_content honours rawKeys (pre-trusted HTML blocks); subject/cta never do.
+  const html = resolveString(template.html_content, context, htmlEscape, rawKeys);
   const ctaUrl = resolveString(template.cta_url, context, htmlEscape);
   const ctaLabel = resolveString(template.cta_label, context, htmlEscape);
   const missing = [...new Set([...subject.missing, ...html.missing, ...ctaUrl.missing, ...ctaLabel.missing])];

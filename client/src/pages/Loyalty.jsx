@@ -8,11 +8,12 @@ import { Gift, Lock, Ticket, Percent, Trophy, Sparkles } from "lucide-react";
 // state. Wire real spend + rewards data when the backend lands (see gap list).
 
 // Spend thresholds (₹) → tier. Placeholder values; admin-tunable later.
+// `how` = plain-language "how you reach this tier" (spend-only model).
 const TIERS = [
-  { name: "Bronze",   spend: 0,     perks: "Welcome offers",            color: "#CD7F32" },
-  { name: "Silver",   spend: 5000,  perks: "5% back as credits",        color: "#9CA3AF" },
-  { name: "Gold",     spend: 15000, perks: "10% back + priority slots",  color: "#F5B301" },
-  { name: "Platinum", spend: 40000, perks: "Exclusive drops + concierge",color: "#6B7280" },
+  { name: "Bronze",   spend: 0,     perks: "Welcome offers",             how: "Everyone starts here",        color: "#CD7F32" },
+  { name: "Silver",   spend: 5000,  perks: "5% back as credits",         how: "Spend ₹5,000 in total",       color: "#9CA3AF" },
+  { name: "Gold",     spend: 15000, perks: "10% back + priority slots",   how: "Spend ₹15,000 in total",      color: "#F5B301" },
+  { name: "Platinum", spend: 40000, perks: "Exclusive drops + concierge", how: "Spend ₹40,000 in total",      color: "#6B7280" },
 ];
 
 const LockedCard = ({ icon: Icon, title, desc }) => (
@@ -46,10 +47,14 @@ const Loyalty = () => {
 
         {/* Tier progress */}
         <div className="bg-white border rounded-2xl p-5 sm:p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-1.5">
             <h2 className="font-semibold text-gray-900">Your tier</h2>
             <span className="text-xs text-gray-400">Total spent: ₹{spent.toLocaleString("en-IN")}</span>
           </div>
+          <p className="text-xs text-gray-500 mb-4 leading-snug">
+            Tiers are based only on your lifetime spend on Meeticulous — every booking counts.
+            You climb automatically as you cross each amount; there's nothing to claim or apply for.
+          </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {TIERS.map((t) => {
               const unlocked = spent >= t.spend;
@@ -62,6 +67,7 @@ const Loyalty = () => {
                   </span>
                   <p className="text-sm font-semibold text-gray-800">{t.name}</p>
                   <p className="text-[11px] text-gray-400 mt-0.5">₹{t.spend.toLocaleString("en-IN")}+</p>
+                  <p className="text-[11px] font-medium text-gray-600 mt-1 leading-snug">{t.how}</p>
                   <p className="text-[11px] text-gray-500 mt-1 leading-snug">{t.perks}</p>
                 </div>
               );

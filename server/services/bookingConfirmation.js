@@ -28,6 +28,18 @@ const profileSecrets = require('../utils/profileSecrets');
 const manageBookingToken = require('../utils/manageBookingToken');
 const { hostOf } = require('../utils/hostOf');
 const { inAppNotify } = require('../utils/inAppNotify');
+const { htmlEscape } = require('./email/placeholderResolver');
+
+// Pre-built "GST tax invoice is ready" line for the customer confirmation's
+// raw-HTML {{invoice_block}} token. Only the paid path has an invoice, so only it
+// builds this; the free path (bookingController) passes ''. Markup mirrors the
+// emailTemplates note() helper + crimson anchor so the line reads identically to
+// the rest of the body. ponytail: url is ours (env + signed invoiceRef token),
+// escaped here anyway as defense-in-depth before raw insertion.
+const invoiceLine = (url) =>
+  `<p style="margin:16px 0 0;font-size:13px;color:#7D6B70;font-family:'Poppins','Plus Jakarta Sans',Arial,sans-serif;">` +
+  `Your GST tax invoice is ready — <a href="${htmlEscape(url)}" style="color:#960D32;font-weight:600;text-decoration:none">view or download the PDF</a>. ` +
+  `It is also under My Bookings in your dashboard.</p>`;
 const { tzLabel, calendarUrl } = require('../utils/bookingEmailExtras');
 
 /**
@@ -126,9 +138,12 @@ async function sendBookingConfirmation({ bookingId, invoiceRef = null }) {
     booking_day: d.toLocaleDateString('en-IN', { timeZone: tz, day: '2-digit' }),
     booking_month: d.toLocaleDateString('en-IN', { timeZone: tz, month: 'short' }).toUpperCase(),
     booking_year: d.toLocaleDateString('en-IN', { timeZone: tz, year: 'numeric' }),
-    invoice_url: (invoiceRef && process.env.API_URL)
+    // Paid booking → always show the invoice line: a real invoice PDF link when we
+    // have an invoiceRef, else the My Bookings fallback (reconciler path). The free
+    // path sends invoice_block:'' so a no-invoice booking shows no invoice line.
+    invoice_block: invoiceLine((invoiceRef && process.env.API_URL)
       ? `${process.env.API_URL.replace(/\/$/, '')}/api/invoices/${invoiceRef.id}?token=${encodeURIComponent(invoiceRef.token)}`
-      : `${process.env.CLIENT_URL || 'https://meeticulous.com'}/user/my-bookings`,
+      : `${process.env.CLIENT_URL || 'https://meeticulous.com'}/user/my-bookings`),
   };
   // AiSensy "Booking Confirmed" templates take exactly 4 body variables (no link):
   //   Customer: {{1}} guest, {{2}} service, {{3}} host, {{4}} date/time
