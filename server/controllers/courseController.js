@@ -1,4 +1,4 @@
-// Video Courses — Pro-gated billable product line (v3.207).
+// Video Courses — Pro-gated billable product line (v3.214).
 // A course = title/description/price + ordered video lessons, bought once, then
 // watchable in-app by the buyer. Mirrors the digital-products Razorpay one-time
 // order+verify rail; access is an in-app grant (course_purchases row), not an
@@ -13,7 +13,7 @@ const { verifySignature } = require('../utils/razorpaySignature');
 const { calculatePlatformFee, calculateGst, round2 } = require('../lib/pricingEngine');
 const { auditLog, securityLog } = require('../utils/logger');
 
-// ponytail: schema-fallback — if the v3.207 tables aren't applied yet, Supabase
+// ponytail: schema-fallback — if the v3.214 tables aren't applied yet, Supabase
 // returns a "relation does not exist" error. Treat that as "no courses" for
 // reads and a soft 503 for writes, so a missing migration never 500s.
 const MISSING_TABLE_RE = /relation .* does not exist|Could not find the table|schema cache/i;

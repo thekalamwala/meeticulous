@@ -1,4 +1,4 @@
--- v3.207 Video Courses — a Pro-gated billable product line.
+-- v3.214 Video Courses — a Pro-gated billable product line.
 -- A course is a structured, buy-once product: title/description/price + ordered
 -- video lessons, watchable in-app by the buyer. Mirrors the digital-products
 -- purchase rail (Razorpay one-time order + verify), but access is an in-app grant
