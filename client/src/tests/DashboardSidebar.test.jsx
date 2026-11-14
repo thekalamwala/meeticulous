@@ -16,6 +16,8 @@ vi.mock('../services/api', () => ({
   getFeatureFlags: vi.fn(() => Promise.resolve({ data: {} })), // ConsoleSidebar reads flags; coupons off
   getMyKyc: vi.fn(() => Promise.resolve({ data: null })),       // KycNudgeStrip in DashboardLayout
   getMyServices: vi.fn(() => Promise.resolve({ data: [] })),
+  markLinkShared: vi.fn(() => Promise.resolve({})),             // copyLink activation signal
+  getMyAccountManager: vi.fn(() => Promise.resolve({ account_manager: null })), // profile menu
 }));
 
 const mockAuth = { current: {} };

@@ -14,11 +14,10 @@ import ImgWithSkeleton from "./ImgWithSkeleton";
 export default function HeroV2() {
   return (
     <section className="relative overflow-hidden bg-canvas">
-      {/* Desktop: full-bleed photo behind everything */}
-      <div className="absolute inset-0 hidden lg:block">
-        {/* Focus right of centre — copy sits over the left part */}
-        <ImgWithSkeleton src={hero.image} alt={hero.imageAlt} fallbackLabel="Meeticulous" loading="eager" imgClassName="object-[75%_50%]" />
-      </div>
+      {/* No full-bleed background photo: the dark heading was rendered over a busy
+          colour photo (same asset shown contained on the right), so the copy was
+          near-invisible. The art now sits only on the right, contained, over the
+          cream page background — matching the layout note above. */}
 
       {/* lg+: left-anchor the copy to the page gutter (mr-auto) so it hugs the
           left of the cream panel near the nav logo, instead of drifting right

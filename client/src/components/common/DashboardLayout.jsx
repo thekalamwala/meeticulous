@@ -8,7 +8,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import useIsMobile from '../../hooks/useIsMobile';
 import useLiveNotifications from '../../hooks/useLiveNotifications';
-import { getNotifications, markAllNotificationsRead, markNotificationRead, markLinkShared } from '../../services/api';
+import { getNotifications, markAllNotificationsRead, markNotificationRead, markLinkShared, getMyAccountManager } from '../../services/api';
 import { normalizePlan, GIFTED_PRO_LABEL } from '../../utils/themeUtils';
 import { cn } from '../dashboard/ui/cn';
 import { PageTransition } from '../dashboard/ui/PageTransition';
@@ -246,10 +246,20 @@ export const ProfileMenu = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [acctMgr, setAcctMgr] = useState(null); // assigned account manager, or null
   const ref = useRef(null);
   const isMobile = useIsMobile();
   const category = humanizeCategory(user?.category || user?.primary_category);
   const close = () => setOpen(false);
+
+  // Fetch the assigned account manager the first time the menu opens (lazy — avoids
+  // a call on every page load). Soft-fails to null → falls back to generic support.
+  const mgrFetched = useRef(false);
+  useEffect(() => {
+    if (!open || mgrFetched.current) return;
+    mgrFetched.current = true;
+    getMyAccountManager().then((d) => setAcctMgr(d?.account_manager || null));
+  }, [open]);
 
   // Verification tick by the name: orange (brand) when verified, grey otherwise.
   const kyc = (user?.kyc_status || '').toLowerCase();
@@ -369,13 +379,31 @@ export const ProfileMenu = ({
           )}
         </div>
 
-        {/* Support — Help lives in the topbar; this is the human line. */}
+        {/* Support — Help lives in the topbar; this is the human line.
+            Show the assigned account manager's contact when one exists; otherwise
+            fall back to the generic support line. */}
         <div className="border-t border-neutral-100 py-1.5">
-          <a href="/bolt958" target="_blank" rel="noreferrer" onClick={close} className={MENU_ROW}>
-            <Headset className="h-4 w-4 shrink-0" strokeWidth={1.7} />
-            <span className="flex-1">Account manager</span>
-            <ExternalLink className="h-3.5 w-3.5 shrink-0 text-neutral-300" strokeWidth={1.8} />
-          </a>
+          {acctMgr ? (
+            <a
+              href={acctMgr.email ? `mailto:${acctMgr.email}` : (acctMgr.phone ? `tel:${acctMgr.phone}` : '/bolt958')}
+              target={acctMgr.email || acctMgr.phone ? undefined : '_blank'}
+              rel="noreferrer"
+              onClick={close}
+              className={MENU_ROW}
+            >
+              <Headset className="h-4 w-4 shrink-0" strokeWidth={1.7} />
+              <span className="flex-1 min-w-0">
+                <span className="block truncate">{acctMgr.name}</span>
+                <span className="block truncate text-xs text-neutral-400">Your account manager</span>
+              </span>
+            </a>
+          ) : (
+            <a href="/bolt958" target="_blank" rel="noreferrer" onClick={close} className={MENU_ROW}>
+              <Headset className="h-4 w-4 shrink-0" strokeWidth={1.7} />
+              <span className="flex-1">Account manager</span>
+              <ExternalLink className="h-3.5 w-3.5 shrink-0 text-neutral-300" strokeWidth={1.8} />
+            </a>
+          )}
         </div>
 
         {/* Logout */}
