@@ -254,6 +254,44 @@ const markLinkShared = async (req, res) => {
   }
 };
 
+// GET /api/vendor/account-manager — the host's assigned account manager, if any.
+// Admins assign one via Host 360 (profiles.account_manager_id); this surfaces that
+// contact to the host. Returns { account_manager: null } when unassigned, inactive,
+// or if the Host-360 schema isn't present yet (schema-fallback per migration policy).
+const getMyAccountManager = async (req, res) => {
+  try {
+    const { data: profile, error: pErr } = await supabaseAdmin
+      .from('profiles')
+      .select('account_manager_id')
+      .eq('id', req.user.id)
+      .maybeSingle();
+    if (pErr) {
+      if (/account_manager_id.*does not exist/i.test(pErr.message || '')) {
+        return res.json({ account_manager: null });
+      }
+      return safeError(res, pErr);
+    }
+    if (!profile?.account_manager_id) return res.json({ account_manager: null });
+
+    const { data: am, error: aErr } = await supabaseAdmin
+      .from('account_managers')
+      .select('name, email, phone, is_active')
+      .eq('id', profile.account_manager_id)
+      .maybeSingle();
+    if (aErr) {
+      if (/relation .*account_managers.* does not exist/i.test(aErr.message || '')) {
+        return res.json({ account_manager: null });
+      }
+      return safeError(res, aErr);
+    }
+    if (!am || am.is_active === false) return res.json({ account_manager: null });
+
+    res.json({ account_manager: { name: am.name, email: am.email || null, phone: am.phone || null } });
+  } catch (error) {
+    safeError(res, error);
+  }
+};
+
 module.exports = {
   getTransactions,
   getPayoutBalance,
@@ -262,4 +300,5 @@ module.exports = {
   toggleService,
   getMyWithholding,
   markLinkShared,
+  getMyAccountManager,
 };
