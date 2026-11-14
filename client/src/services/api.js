@@ -549,6 +549,8 @@ export const markLinkShared     = ()          => API.post('/vendor/share-signal'
 // Dashboard "Next step" nudge — server-tracked dismissal (cross-device).
 export const getHostNudges      = ()           => API.get('/host/nudges');
 export const dismissHostNudge   = (key)        => API.post(`/host/nudges/${key}/dismiss`);
+// One-click "notify me" interest in an unlaunched feature (courses/coupons/membership).
+export const notifyFeatureInterest = (feature) => API.post('/host/feature-interest', { feature });
 export const getTransactions    = (params)    => API.get('/vendor/transactions', { params });
 export const getPayoutBalance   = ()          => API.get('/vendor/payout/balance');
 export const getPayoutRequests  = ()          => API.get('/vendor/payout/requests');
