@@ -8,6 +8,7 @@ const NotificationEngine = require("../services/notificationEngine");
 const { checkBookingReceiveLimit } = require("../middleware/planMiddleware");
 const { parseListRange } = require("../utils/pagination");
 const { runExclusive } = require("../utils/keyedMutex");
+const { checkBookingCaps } = require("../lib/bookingCaps");
 const crypto = require("crypto");
 const { computeBreakdown, resolveWithholding } = require("../lib/pricingEngine");
 const { resolveCancellationPolicy } = require("../lib/cancellationPolicy");
@@ -409,6 +410,17 @@ const createBooking = async (req, res) => {
     if (!limitCheck.allowed)
       return res.status(403).json({ message: limitCheck.message });
 
+    // Host-configurable caps (Pro, v3.207). Early fast-fail — before pricing /
+    // calendar — so a capped booking leaves no orphan Google event. The
+    // authoritative, race-safe recheck runs under the per-host lock below.
+    const capCheck = await checkBookingCaps({
+      supabaseAdmin, hostId: host_id, hostProfile: host, avail,
+      scheduledAt: scheduled_at, guestId: resolvedGuestId,
+      guestEmail: guest_email, guestPhone: guest_phone,
+    });
+    if (!capCheck.allowed)
+      return res.status(409).json({ message: capCheck.message });
+
     // v4 — TDS 194-O: a PAID booking withholds a flat 1% income-tax from the host
     // (CA-confirmed 2026-11-11: 1% TDS + 1% TCS for all professions; no §206AA 5%
     // no-PAN rate). Free (₹0) bookings and "price on request" enquiries withhold
@@ -626,6 +638,14 @@ const createBooking = async (req, res) => {
     const guarded = await runExclusive(`booking-quota:${host_id}`, async () => {
       const recheck = await checkBookingReceiveLimit(host_id);
       if (!recheck.allowed) return { limited: recheck.message };
+      // Race-safe cap recheck: the day/week counts now include any queued peer's
+      // pending row, so two concurrent bookings can't both slip past a cap.
+      const capRecheck = await checkBookingCaps({
+        supabaseAdmin, hostId: host_id, hostProfile: host,
+        planSlug: effectivePlanSlug, avail, scheduledAt: scheduled_at,
+        guestId: resolvedGuestId, guestEmail: guest_email, guestPhone: guest_phone,
+      });
+      if (!capRecheck.allowed) return { capped: capRecheck.message };
       return {
         result: await supabaseAdmin
           .from("bookings")
@@ -636,6 +656,8 @@ const createBooking = async (req, res) => {
     });
     if (guarded.limited)
       return res.status(403).json({ message: guarded.limited });
+    if (guarded.capped)
+      return res.status(409).json({ message: guarded.capped });
     let bookingResult = guarded.result;
 
     // Fallback: retry without commission_applied if v1.7 migration hasn't run yet
