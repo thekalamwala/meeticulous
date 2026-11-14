@@ -9,8 +9,11 @@ const FEATURES = new Set(['courses', 'coupons', 'membership']);
 // The table may not be applied yet (migration is held for a founder-run DB change),
 // so a "missing relation" error is treated as a successful no-op — the button must
 // never 500 pre-migration. Matches the project's schema-fallback convention.
+// Narrow to a MISSING TABLE only — Postgres "relation ... does not exist" and
+// PostgREST "could not find the table ... in the schema cache". A genuine error
+// (a column drift, an FK/constraint violation) must NOT match, so it still 500s.
 const isMissingTable = (msg) =>
-  /relation .* does not exist|could not find the table|schema cache|does not exist/i.test(msg || '');
+  /relation ".*" does not exist|could not find the table/i.test(msg || '');
 
 // POST /api/host/feature-interest { feature } → record one-click interest.
 async function recordFeatureInterest(req, res) {

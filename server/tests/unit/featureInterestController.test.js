@@ -50,6 +50,13 @@ describe('recordFeatureInterest', () => {
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ ok: true }));
   });
 
+  it('does NOT swallow a genuine error (column drift) as success', async () => {
+    upsert.mockResolvedValueOnce({ error: { message: 'column "feature" does not exist' } });
+    const res = mockRes();
+    await recordFeatureInterest({ user: { id: 'h1' }, body: { feature: 'courses' } }, res);
+    expect(res.status).toHaveBeenCalledWith(500);
+  });
+
   it('exposes the three gated features', () => {
     expect([...FEATURES].sort()).toEqual(['coupons', 'courses', 'membership']);
   });
