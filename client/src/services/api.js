@@ -456,6 +456,13 @@ export const createHostCoupon  = (data)            => API.post('/host/coupons', 
 export const updateHostCoupon  = (id, data)        => API.patch(`/host/coupons/${id}`, data);
 export const deleteHostCoupon  = (id)              => API.delete(`/host/coupons/${id}`);
 
+// ── Testimonials (v3.212, host-authored proof wall) ───────────
+export const getMyTestimonials   = ()               => API.get('/host/testimonials');
+export const createTestimonial   = (data)           => API.post('/host/testimonials', data);
+export const updateTestimonial   = (id, data)       => API.put(`/host/testimonials/${id}`, data);
+export const deleteTestimonial   = (id)             => API.delete(`/host/testimonials/${id}`);
+export const getHostTestimonials = (username)       => API.get(`/host/${username}/testimonials`); // public proof wall
+
 // ── Bookings ──────────────────────────────────────────────────
 export const createBooking     = (data)            => API.post('/bookings', data);
 export const getHostBookings   = ()                => API.get('/bookings/host');

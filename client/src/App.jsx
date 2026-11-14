@@ -150,6 +150,7 @@ const ProfileSetup = lazy(() => import('./pages/ProfileSetup'));
 const Availability = lazy(() => import('./pages/Availability'));
 const Products    = lazy(() => import('./pages/Products'));
 const HostCoupons = lazy(() => import('./pages/HostCoupons'));
+const Testimonials = lazy(() => import('./pages/Testimonials'));
 const UpgradePlan = lazy(() => import('./pages/UpgradePlan'));
 const Payouts     = lazy(() => import('./pages/Payouts'));
 const ChatPage    = lazy(() => import('./pages/ChatPage'));
@@ -643,6 +644,7 @@ function App() {
           </Route>
           <Route path="/dashboard/products" element={<DashboardWrapper><Products /></DashboardWrapper>} />
           <Route path="/dashboard/coupons" element={<DashboardWrapper><HostCoupons /></DashboardWrapper>} />
+          <Route path="/dashboard/testimonials" element={<DashboardWrapper><Testimonials /></DashboardWrapper>} />
           <Route path="/dashboard/upgrade" element={<DashboardWrapper><UpgradePlan /></DashboardWrapper>} />
           <Route path="/dashboard/payments/payouts" element={<DashboardWrapper><Payouts /></DashboardWrapper>} />
           <Route path="/dashboard/referrals" element={<DashboardWrapper><ReferEarn /></DashboardWrapper>} />
