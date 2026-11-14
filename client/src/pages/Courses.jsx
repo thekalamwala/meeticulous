@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import { useFeature } from "../context/FeatureContext";
 import BackButton from "../components/common/BackButton";
 import ThumbnailCropper from "../components/common/ThumbnailCropper";
+import ComingSoonTeaser from "../components/dashboard/ComingSoonTeaser";
 import { Link } from "react-router-dom";
 import { Plus, Video, Trash2, GripVertical } from "lucide-react";
 import toast from "react-hot-toast";
@@ -141,13 +142,11 @@ const Courses = () => {
         <BackButton hasUnsavedChanges={false} />
         <PageHeader title="Video Courses" subtitle="Sell structured video courses — buy once, watch anytime." />
         {!coursesOn ? (
-          <Card className="border-2 border-dashed border-primary/30 text-center">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blush text-maroon">
-              <Video className="h-6 w-6" strokeWidth={2} />
-            </div>
-            <h3 className="mb-1 font-semibold text-ink">Video Courses are temporarily unavailable</h3>
-            <p className="text-sm text-muted">This feature is switched off right now. It’ll be back soon.</p>
-          </Card>
+          <ComingSoonTeaser
+            feature="courses"
+            title="Sell video courses"
+            blurb="Package your expertise into a structured video course and sell it from your profile — buy once, watch anytime. Coming to Pro."
+          />
         ) : (
           <div className="relative overflow-hidden rounded-2xl border border-black/5">
             <ul aria-hidden className="pointer-events-none grid select-none gap-4 p-4 blur-[6px] sm:grid-cols-2">

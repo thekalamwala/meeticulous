@@ -9,6 +9,7 @@ const {
 const { gone } = require('../middleware/gone');
 const { changeUsername } = require('../controllers/usernameController');
 const { getHostNudges, dismissHostNudge } = require('../controllers/hostNudgeController');
+const { recordFeatureInterest } = require('../controllers/featureInterestController');
 const { createCoupon, listCoupons, updateCoupon, deleteCoupon } = require('../controllers/couponHostController');
 const {
   listMyTestimonials, createTestimonial, updateTestimonial, deleteTestimonial, getPublicTestimonials,
@@ -35,6 +36,8 @@ router.put('/availability', protect, requireHost, requireFeature('availability_e
 // MUST stay above the public /:username routes or "nudges" reads as a username.
 router.get('/nudges', protect, requireHost, getHostNudges);
 router.post('/nudges/:key/dismiss', protect, requireHost, dismissHostNudge);
+// One-click "notify me" interest in an unlaunched feature (schema-fallback safe).
+router.post('/feature-interest', protect, requireHost, recordFeatureInterest);
 // Host-managed discount codes (v3.204, behind the `coupons` flag). Static paths —
 // MUST stay above the public /:username routes or "coupons" reads as a username.
 router.get('/coupons', protect, requireHost, listCoupons);

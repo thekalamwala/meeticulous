@@ -8,6 +8,7 @@ import {
   PageHeader, Card, Button, FormField, Input, Select,
   Badge, EmptyState, ErrorState, ConfirmSheet, cn,
 } from "../components/dashboard/ui";
+import ComingSoonTeaser from "../components/dashboard/ComingSoonTeaser";
 
 const emptyForm = {
   code: "", discount_type: "percent", discount_value: "",
@@ -100,12 +101,12 @@ export default function HostCoupons() {
 
   if (loadError === "disabled") {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-6">
+      <div className="mx-auto max-w-2xl px-4 py-6">
         <PageHeader title="Coupons" subtitle="Discount codes for your services." />
-        <EmptyState
-          icon={Ticket}
-          title="Coupons aren't available yet"
-          description="This feature is being rolled out. Check back soon."
+        <ComingSoonTeaser
+          feature="coupons"
+          title="Discount codes"
+          blurb="Create coupon codes guests apply at checkout — run launches, win-backs and seasonal offers. Coming to Pro."
         />
       </div>
     );
