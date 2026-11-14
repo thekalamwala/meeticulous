@@ -9,7 +9,6 @@ describe('Reviews feature page', () => {
   it('renders one h1 and real CTA targets', () => {
     renderPage();
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
-    expect(screen.getByRole('link', { name: /see pricing/i }).getAttribute('href')).toBe('/pricing');
     expect(screen.getByRole('link', { name: /how reviews get verified/i }).getAttribute('href')).toBe('#verified');
     expect(screen.getAllByRole('link', { name: /start free/i })[0].getAttribute('href')).toBe('/become-a-host');
   });

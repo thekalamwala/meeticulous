@@ -41,7 +41,7 @@ export const FLOW_STEPS = [
       { icon: CalendarX2, text: "Busy times from Google Calendar hidden", color: "var(--c-violet)" },
       { icon: Clock, text: "Client picks Tuesday at 11:00 AM", color: "var(--c-blue)" },
     ],
-    tint: "var(--c-pink)",
+    tint: "#3B82F6", // blue
   },
   {
     key: "pay",
@@ -53,7 +53,7 @@ export const FLOW_STEPS = [
       { icon: Wallet, text: "Client pays upfront", color: "var(--c-emerald)" },
       { icon: Receipt, text: "GST invoice generated automatically", color: "var(--c-amber)" },
     ],
-    tint: "var(--c-emerald)",
+    tint: "#F97316", // orange
   },
   {
     key: "confirm",
@@ -65,7 +65,7 @@ export const FLOW_STEPS = [
       { icon: Video, text: "Added to Google Calendar with a Meet link", color: "var(--c-blue)" },
       { icon: Settings2, text: "Client gets a link to manage the booking", color: "var(--c-violet)" },
     ],
-    tint: "var(--c-blue)",
+    tint: "#8B5CF6", // purple
   },
   {
     key: "remind",
@@ -77,7 +77,7 @@ export const FLOW_STEPS = [
       { icon: Mail, text: "Email reminder with session details", color: "var(--c-amber)" },
       { icon: CalendarCheck, text: "Session starts. Nothing to chase.", color: "var(--c-pink)" },
     ],
-    tint: "var(--c-amber)",
+    tint: "#22C55E", // green
   },
 ];
 
@@ -145,6 +145,7 @@ export default function AppointmentFlow() {
             className={`group relative flex min-w-0 cursor-default flex-col overflow-hidden rounded-[24px] border-2 border-maroon/10 bg-white text-left transition-[flex-grow] duration-[650ms] ease-[cubic-bezier(0.65,0,0.35,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none lg:basis-0 ${
               on ? "lg:grow-[2.4]" : "lg:grow"
             }`}
+            style={{ boxShadow: on ? "none" : `0 22px 45px -24px ${s.tint}80` }}
           >
             <div className="relative z-10 p-6 sm:p-7">
               <h3
@@ -219,11 +220,12 @@ export default function AppointmentFlow() {
               </div>
             )}
 
-            {/* Soft colour glow at the bottom — decorative, brighter on the open card */}
+            {/* Coloured shadow gradient at the bottom — blue / orange / purple /
+                green per card, brighter on the open card. */}
             <span
               aria-hidden
-              className={`pointer-events-none absolute -bottom-24 left-1/2 hidden h-64 w-64 -translate-x-1/2 rounded-full blur-2xl transition-opacity duration-[650ms] lg:block ${on ? "opacity-90" : "opacity-50"}`}
-              style={{ background: `radial-gradient(circle, color-mix(in srgb, ${s.tint} 30%, white), transparent 70%)` }}
+              className={`pointer-events-none absolute -bottom-24 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full blur-2xl transition-opacity duration-[650ms] ${on ? "opacity-100" : "opacity-60"}`}
+              style={{ background: `radial-gradient(circle, color-mix(in srgb, ${s.tint} 55%, white), transparent 70%)` }}
             />
 
             {/* Auto-advance progress */}

@@ -74,10 +74,9 @@ test('clicking a booking card opens the redesigned modal with tabs', async () =>
   fireEvent.click(screen.getByText('Hair Spa'));
   const dialog = await screen.findByRole('dialog');
   const inModal = within(dialog);
-  // Three tabs from the reference.
+  // Two tabs; booking actions moved to a persistent bottom action bar (was the Actions tab).
   expect(inModal.getByRole('tab', { name: 'Booking Details' })).toBeInTheDocument();
   expect(inModal.getByRole('tab', { name: 'Timeline' })).toBeInTheDocument();
-  expect(inModal.getByRole('tab', { name: 'Actions' })).toBeInTheDocument();
   // Customer + a real field.
   expect(inModal.getByText('Asha Rao')).toBeInTheDocument();
   expect(inModal.getByText('Prefers organic products.')).toBeInTheDocument();
@@ -87,9 +86,8 @@ test('clicking a booking card opens the redesigned modal with tabs', async () =>
   expect(inModal.getByText('Scheduled')).toBeInTheDocument();
   expect(screen.getByRole('dialog')).toBeInTheDocument();
 
-  // Actions tab exposes the real, status-gated actions (confirmed + future).
-  fireEvent.click(inModal.getByRole('tab', { name: 'Actions' }));
-  expect(within(screen.getByRole('dialog')).getAllByRole('button', { name: /reschedule/i }).length).toBeGreaterThan(0);
+  // The bottom action bar exposes the real, status-gated actions (confirmed + future).
+  expect(inModal.getAllByRole('button', { name: /reschedule/i }).length).toBeGreaterThan(0);
 });
 
 test('shows a clean empty state when there are no bookings', async () => {
