@@ -13,6 +13,21 @@ import PetalSpinner from "../components/common/PetalSpinner";
 
 const MAX_SIZE_BYTES = 2 * 1024 * 1024;
 
+// Defined at module scope on purpose: a component declared inside CustomerProfile
+// gets a new function identity every render, so React unmounts+remounts its
+// subtree each keystroke — the input loses focus and the value/placeholder reset.
+const Field = ({ icon: Icon, label, children, hint }) => (
+  <div>
+    <label className="flex items-center gap-1.5 text-xs font-medium text-gray-500 mb-1.5">
+      <Icon size={13} /> {label} {hint && <span className="text-gray-300">· {hint}</span>}
+    </label>
+    {children}
+  </div>
+);
+
+const inputCls =
+  "w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 bg-white focus:border-[#960D32] focus:ring-1 focus:ring-[#960D32] outline-none disabled:bg-gray-50 disabled:text-gray-400";
+
 const CustomerProfile = () => {
   const { user, updateUser } = useAuth();
   const fileRef = useRef(null);
@@ -77,18 +92,6 @@ const CustomerProfile = () => {
       setSaving(false);
     }
   };
-
-  const Field = ({ icon: Icon, label, children, hint }) => (
-    <div>
-      <label className="flex items-center gap-1.5 text-xs font-medium text-gray-500 mb-1.5">
-        <Icon size={13} /> {label} {hint && <span className="text-gray-300">· {hint}</span>}
-      </label>
-      {children}
-    </div>
-  );
-
-  const inputCls =
-    "w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 bg-white focus:border-[#960D32] focus:ring-1 focus:ring-[#960D32] outline-none disabled:bg-gray-50 disabled:text-gray-400";
 
   return (
     <>

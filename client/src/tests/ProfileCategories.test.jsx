@@ -1,5 +1,9 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
+
+// CategoriesSection renders an <Upgrade> Link, so it needs a router context.
+const renderIn = (ui) => render(<MemoryRouter>{ui}</MemoryRouter>);
 
 vi.mock('../services/api', () => ({
   getCategories: vi.fn(),
@@ -23,16 +27,16 @@ beforeEach(() => {
 });
 
 test('free plan is locked with a contact-admin note', async () => {
-  render(<CategoriesSection plan="starter" onSaved={() => {}} />);
+  renderIn(<CategoriesSection plan="starter" onSaved={() => {}} />);
   expect(await screen.findByText(/Life Coach/)).toBeTruthy();
-  expect(screen.getByText(/contact admin/i)).toBeTruthy();
-  expect(screen.queryByRole('button', { name: /save categories/i })).toBeNull();
+  expect(screen.getByRole('link', { name: /upgrade/i })).toBeTruthy();
+  expect(screen.queryByRole('button', { name: /save categor/i })).toBeNull();
 });
 
 test('professional plan can save up to 3 categories', async () => {
-  render(<CategoriesSection plan="professional" onSaved={() => {}} />);
+  renderIn(<CategoriesSection plan="professional" onSaved={() => {}} />);
   fireEvent.click(await screen.findByText('Business Coach')); // add a 2nd
-  fireEvent.click(screen.getByRole('button', { name: /save categories/i }));
+  fireEvent.click(screen.getByRole('button', { name: /save categor/i }));
   await waitFor(() => expect(hostUpdateCategories).toHaveBeenCalled());
   const payload = hostUpdateCategories.mock.calls[0][0];
   expect(payload.primary_category).toBe('life-coach');

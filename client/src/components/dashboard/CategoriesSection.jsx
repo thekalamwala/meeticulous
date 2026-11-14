@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Check, Lock } from 'lucide-react';
 import { getCategories, hostGetCategories, hostUpdateCategories } from '../../services/api';
@@ -67,23 +68,29 @@ const CategoriesSection = ({ plan, onSaved }) => {
     }
   };
 
-  if (loading) return <div className="py-10 text-center text-gray-400"><PetalSpinner size={36} /></div>;
+  if (loading) return <div className="py-6 text-center"><PetalSpinner size={32} /></div>;
 
   return (
-    <div className="space-y-5">
-      <div>
-        <p className="text-sm font-medium mb-1">Your Primary Category</p>
-        <p className="text-base font-semibold text-primary">{primary ? labelOf(primary) : 'Not set'}</p>
+    <div className="space-y-3">
+      {/* Current primary — a clean brand row */}
+      <div className="flex items-center justify-between gap-3 rounded-xl border-2 border-maroon/10 bg-cream px-4 py-3">
+        <p className="min-w-0 truncate text-sm font-semibold text-ink">
+          {primary ? labelOf(primary) : <span className="font-normal text-neutral-400">Not set yet</span>}
+        </p>
+        {rules.locked && (
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-neutral-200 bg-white px-2.5 py-1 text-[11px] font-medium text-neutral-500">
+            <Lock className="h-3 w-3" strokeWidth={2.25} /> Fixed on your plan
+          </span>
+        )}
       </div>
 
       {rules.locked ? (
-        <div className="flex items-start gap-2 rounded border border-gray-200 bg-gray-50 p-3 text-sm text-gray-600">
-          <Lock className="w-4 h-4 mt-0.5 shrink-0" />
-          <span>Your plan keeps your category fixed. Upgrade, or <strong>contact admin</strong> to change it.</span>
-        </div>
+        <p className="text-xs text-neutral-500">
+          Set by your plan. <Link to="/dashboard/upgrade?src=category" className="font-semibold text-maroon underline">Upgrade</Link> to change it.
+        </p>
       ) : (
         <>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-neutral-500">
             {rules.max === 1
               ? 'Tap a category to change your primary.'
               : `Choose up to ${rules.max}. Tap "Make primary" to set the main one.`}
@@ -91,7 +98,7 @@ const CategoriesSection = ({ plan, onSaved }) => {
           <div className="space-y-4">
             {groups.map((g) => (
               <div key={g.group}>
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">{g.group}</p>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-400">{g.group}</p>
                 <div className="grid grid-cols-2 gap-2">
                   {g.items.map((c) => {
                     const on = selected.includes(c.slug);
@@ -99,18 +106,18 @@ const CategoriesSection = ({ plan, onSaved }) => {
                     return (
                       <div
                         key={c.slug}
-                        className={`flex items-center justify-between gap-1 p-2.5 rounded border-2 text-sm ${
-                          on ? 'border-primary bg-primary-light' : 'border-gray-200'
+                        className={`flex items-center justify-between gap-1 rounded-lg border-2 p-2.5 text-sm transition ${
+                          on ? 'border-maroon bg-blush text-maroon' : 'border-neutral-200 hover:border-maroon/30'
                         }`}
                       >
-                        <button onClick={() => toggle(c.slug)} className="flex items-center gap-1.5 text-left flex-1 min-w-0">
-                          {on && <Check className="w-3.5 h-3.5 shrink-0 text-primary" strokeWidth={3} />}
+                        <button type="button" onClick={() => toggle(c.slug)} className="flex min-w-0 flex-1 items-center gap-1.5 text-left">
+                          {on && <Check className="h-3.5 w-3.5 shrink-0" strokeWidth={3} />}
                           <span className="truncate">{c.label}</span>
                         </button>
                         {rules.max > 1 && on && !isPrimary && (
-                          <button onClick={() => makePrimary(c.slug)} className="text-[10px] text-primary underline shrink-0">Make primary</button>
+                          <button type="button" onClick={() => makePrimary(c.slug)} className="shrink-0 text-[10px] font-medium text-maroon underline">Make primary</button>
                         )}
-                        {isPrimary && <span className="text-[10px] text-primary font-semibold shrink-0">Primary</span>}
+                        {isPrimary && <span className="shrink-0 rounded-full bg-maroon px-1.5 py-0.5 text-[10px] font-semibold text-white">Primary</span>}
                       </div>
                     );
                   })}
@@ -119,11 +126,12 @@ const CategoriesSection = ({ plan, onSaved }) => {
             ))}
           </div>
           <button
+            type="button"
             onClick={save}
             disabled={saving || !primary}
-            className="btn bg-primary text-white px-5 py-2 text-sm font-medium hover:bg-primary-dark disabled:opacity-50"
+            className="rounded-full bg-maroon px-5 py-2 text-sm font-semibold text-white transition hover:bg-maroon-dark disabled:opacity-50"
           >
-            {saving ? 'Saving…' : 'Save categories'}
+            {saving ? 'Saving…' : 'Save category'}
           </button>
         </>
       )}

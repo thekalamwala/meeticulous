@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   getHostBookings, cancelBooking, completeBooking, markNoShow,
-  rescheduleBooking, getAvailability, getBookedSlots, getBookingReview,
+  rescheduleBooking, getAvailability, getBookedSlots, getBookingReview, getHostNudges,
 } from "../services/api";
 import toast from "react-hot-toast";
 import {
@@ -11,6 +11,7 @@ import {
   User, Briefcase, CreditCard, FileText, StickyNote, MapPin, ArrowRight, CalendarX2,
 } from "lucide-react";
 import ReviewModal from "../components/booking/ReviewModal";
+import TasteCountdown from "../components/dashboard/TasteCountdown";
 import useFeatureFlags from "../hooks/useFeatureFlags";
 import StatusChip from "../components/common/StatusChip";
 import { useAuth } from "../context/AuthContext";
@@ -464,6 +465,14 @@ const Bookings = () => {
   const [viewMode, setViewMode] = useState("calendar"); // 'calendar' | 'list'
   const [calView, setCalView] = useState("week");        // 'week' | 'month' | 'agenda'
   const [anchor, setAnchor] = useState(() => new Date());
+  // WhatsApp taste window (free→Pro expiry nudge). Server returns null for paid
+  // hosts / hosts with no booking yet; non-blocking so a blip never blanks the page.
+  const [taste, setTaste] = useState(null);
+  useEffect(() => {
+    getHostNudges()
+      .then(({ data }) => setTaste(data?.taste || null))
+      .catch(() => {});
+  }, []);
 
   const fetch = useCallback(async () => {
     setLoading(true);
@@ -556,6 +565,8 @@ const Bookings = () => {
   return (
     <div>
       {header}
+
+      <TasteCountdown taste={taste} />
 
       {loading ? (
         <div className="rounded-2xl border border-maroon/10 bg-white p-4 shadow-sm">

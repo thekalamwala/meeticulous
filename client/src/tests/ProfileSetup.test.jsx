@@ -13,6 +13,13 @@ vi.mock('../services/api', () => ({
   getGoogleAuthUrl: vi.fn(),
   uploadImage: vi.fn(),
   getAppearance: vi.fn(() => Promise.resolve({ data: { backgrounds: [] } })),
+  // Category section now lives on the Profile tab and loads on mount.
+  getCategories: vi.fn(() => Promise.resolve({ data: [] })),
+  hostGetCategories: vi.fn(() => Promise.resolve({ data: { primary_category: null, categories: [] } })),
+  hostUpdateCategories: vi.fn(),
+  // Inline username editor.
+  changeUsername: vi.fn(),
+  checkUsername: vi.fn(() => Promise.resolve({ data: { available: true } })),
 }));
 
 vi.mock('../context/AuthContext', () => ({
@@ -51,14 +58,15 @@ const renderSetup = (plan = 'explorer') => {
 // ── Tab navigation ────────────────────────────────────────────────────────────
 
 describe('ProfileSetup — tab navigation', () => {
-  test('renders six sections', () => {
+  test('renders five sections', () => {
     renderSetup();
+    // "What you do" is no longer a tab — categories moved into the Profile tab.
     expect(screen.getByRole('tab', { name: /^profile$/i })).toBeTruthy();
-    expect(screen.getByRole('tab', { name: /what you do/i })).toBeTruthy();
     expect(screen.getByRole('tab', { name: /^social$/i })).toBeTruthy();
     expect(screen.getByRole('tab', { name: /appearance/i })).toBeTruthy();
     expect(screen.getByRole('tab', { name: /booking & privacy/i })).toBeTruthy();
     expect(screen.getByRole('tab', { name: /integrations/i })).toBeTruthy();
+    expect(screen.queryByRole('tab', { name: /what you do/i })).toBeNull();
   });
 
   test('Profile Info tab is active by default', () => {
@@ -70,9 +78,10 @@ describe('ProfileSetup — tab navigation', () => {
   test('clicking Social Links tab shows social inputs', async () => {
     renderSetup();
     await userEvent.click(screen.getByRole('tab', { name: /^social$/i }));
+    // Free platforms have editable inputs; YouTube/WhatsApp are Pro-locked here.
     expect(screen.getByLabelText(/instagram/i)).toBeTruthy();
-    expect(screen.getByLabelText(/youtube/i)).toBeTruthy();
-    expect(screen.getByLabelText(/whatsapp/i)).toBeTruthy();
+    expect(screen.getByLabelText(/facebook/i)).toBeTruthy();
+    expect(screen.getByLabelText(/linkedin/i)).toBeTruthy();
   });
 
   test('clicking Appearance tab shows theme color section', async () => {
@@ -132,7 +141,8 @@ describe('ProfileSetup — Social Links', () => {
   test('pre-fills existing social links from user context', async () => {
     renderSetup();
     await userEvent.click(screen.getByRole('tab', { name: /^social$/i }));
-    expect(screen.getByDisplayValue('https://instagram.com/jane')).toBeTruthy();
+    // Inputs now show just the handle; the full URL is rebuilt from the prefix.
+    expect(screen.getByDisplayValue('jane')).toBeTruthy();
   });
 });
 
@@ -147,18 +157,18 @@ describe('ProfileSetup — Appearance (explorer plan)', () => {
     expect(swatches.length).toBeGreaterThanOrEqual(1);
   });
 
-  test('shows upgrade hint for explorer', async () => {
+  test('shows upgrade CTA for explorer', async () => {
     renderSetup('explorer');
     await userEvent.click(screen.getByRole('tab', { name: /appearance/i }));
-    expect(screen.getByText(/upgrade to pro for more colours/i)).toBeTruthy();
+    expect(screen.getByRole('link', { name: /upgrade for more colours/i })).toBeTruthy();
   });
 
-  test('shows "Book" CTA preview button', async () => {
+  test('shows a "Book" CTA in the live preview', async () => {
     renderSetup('explorer');
     await userEvent.click(screen.getByRole('tab', { name: /appearance/i }));
-    // The mini profile preview card shows "Book" as a div; the dedicated
-    // booking-button preview is the actual <button>. Target the button.
-    expect(screen.getByRole('button', { name: /^book$/i })).toBeTruthy();
+    // The mini profile preview shows a "Book" CTA (the separate button-preview
+    // card was removed to de-clutter).
+    expect(screen.getAllByText(/^book$/i).length).toBeGreaterThan(0);
   });
 });
 

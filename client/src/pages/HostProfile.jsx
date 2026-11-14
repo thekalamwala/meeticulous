@@ -8,6 +8,7 @@ import { analytics, EVENTS } from "../services/analytics";
 import BrandPreloader from "../components/preloader/BrandPreloader";
 import { useHideChrome } from "../context/ChromeContext";
 import Footer from "../components/common/Footer";
+import { HostCover } from "../components/common/HostAvatar";
 import Seo from "../components/common/Seo";
 import ErrorPage from "./ErrorPage";
 import TransientError from "../components/error/TransientError";
@@ -707,15 +708,17 @@ const HostProfile = () => {
 
         <div className="flex flex-col lg:flex-row gap-7 items-start">
 
-          {/* ── LEFT — compact identity card (no cover) ──────────────── */}
+          {/* ── LEFT — identity card with cover banner ──────────────── */}
           <aside className="w-full max-w-md mx-auto lg:mx-0 lg:max-w-none lg:w-[320px] lg:flex-shrink-0 lg:sticky lg:top-[90px]">
             <div className="rounded-3xl overflow-hidden" style={{ background: C.card, border: `1px solid ${C.border}`, boxShadow: '0 8px 28px rgba(43,10,20,0.05)' }}>
-              <div className="px-6 pt-6 pb-5 text-center">
+              {/* Cover — host's, or the branded default. Avatar overlaps below. */}
+              <HostCover src={host.cover_image} themeColor={tc} eager className="w-full" />
+              <div className="px-6 pb-5 text-center">
 
-                {/* Avatar */}
-                <div className="flex justify-center relative">
+                {/* Avatar — overlaps the cover */}
+                <div className="flex justify-center relative -mt-12">
                   <div className="relative overflow-hidden flex items-center justify-center"
-                    style={{ width: 92, height: 92, borderRadius: '50%', background: `${tc}18`, border: `1px solid ${C.border}` }}>
+                    style={{ width: 92, height: 92, borderRadius: '50%', background: `${tc}18`, border: `3px solid ${C.card}`, boxShadow: '0 2px 8px rgba(43,10,20,0.12)' }}>
                     {host.profile_image
                       ? <img src={host.profile_image} alt={host.name} width={92} height={92} fetchpriority="high" decoding="async" className="w-full h-full object-cover" />
                       : <span className="font-display font-extrabold text-3xl" style={{ color: tc }}>{host.name?.charAt(0)?.toUpperCase()}</span>}

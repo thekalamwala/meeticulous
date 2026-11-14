@@ -13,11 +13,11 @@ import { useAuth } from "../context/AuthContext";
 import { useFeature } from "../context/FeatureContext";
 import BackButton from "../components/common/BackButton";
 import ThumbnailCropper from "../components/common/ThumbnailCropper";
-import { Link } from "react-router-dom";
+import ProTeaser from "../components/dashboard/ProTeaser";
 import { Plus, Package } from "lucide-react";
 import toast from "react-hot-toast";
 import {
-  PageHeader, Card, Button, buttonClasses, FormField, Input, Select, Textarea,
+  PageHeader, Card, Button, FormField, Input, Select, Textarea,
   Badge, StatusBadge, EmptyState, ErrorState, ConfirmSheet, Fab, cn,
 } from "../components/dashboard/ui";
 
@@ -276,9 +276,14 @@ const Products = () => {
             <p className="text-sm text-muted">This feature is switched off right now. It’ll be back soon — no plan change needed.</p>
           </Card>
         ) : (
-          <div className="relative overflow-hidden rounded-2xl border border-black/5">
-            {/* Blurred teaser of what the page offers */}
-            <ul aria-hidden className="pointer-events-none grid select-none gap-4 p-4 blur-[6px] sm:grid-cols-2">
+          // Shared ProTeaser: blurred sample grid + attributed upgrade CTA.
+          <ProTeaser
+            title="Unlock Digital Products"
+            sub="Sell PDFs, templates, ebooks and resources right from your profile — unlock it to list and sell your first product."
+            ctaLabel={upgradePlan ? `Upgrade to ${planLabel(upgradePlan.slug, upgradePlan.name)}` : "Upgrade to unlock"}
+            src="products"
+          >
+            <ul className="grid gap-4 p-4 sm:grid-cols-2">
               {SAMPLE_PRODUCTS.map((s) => (
                 <li key={s.title} className="overflow-hidden rounded-xl border border-black/10 bg-white">
                   <div className="aspect-[16/9] bg-blush" />
@@ -290,22 +295,7 @@ const Products = () => {
                 </li>
               ))}
             </ul>
-            {/* Upgrade overlay → Razorpay checkout on /dashboard/upgrade */}
-            <div className="absolute inset-0 grid place-items-center bg-white/50 p-4 backdrop-blur-[2px]">
-              <Card className="w-full max-w-sm text-center shadow-xl">
-                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blush text-maroon">
-                  <Package className="h-6 w-6" strokeWidth={2} />
-                </div>
-                <h3 className="mb-1 font-display font-bold text-maroon">Unlock Digital Products</h3>
-                <p className="mb-4 text-sm text-muted">
-                  Sell PDFs, templates, ebooks and resources right from your profile — unlock it to list and sell your first product.
-                </p>
-                <Link to="/dashboard/upgrade" className={buttonClasses({ variant: "primary" })}>
-                  {upgradePlan ? `Upgrade to ${planLabel(upgradePlan.slug, upgradePlan.name)}` : "Upgrade to unlock"}
-                </Link>
-              </Card>
-            </div>
-          </div>
+          </ProTeaser>
         )}
       </div>
     );

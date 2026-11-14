@@ -109,3 +109,6 @@ client/scripts/.host-og-preview/
 # Vercel CLI local link state (project/org ids) — created by `vercel link`
 .vercel/
 cold-email-preview.html
+
+# local-only backups (never commit)
+*.local.bak
