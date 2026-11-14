@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
-import { Plus, Trash2, MoreHorizontal, Globe, Clock, Settings } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Plus, Trash2, MoreHorizontal, Globe, Clock, Settings, Lock } from "lucide-react";
 import {
   setAvailability as saveAvailability,
   getAvailability,
 } from "../services/api";
 import BackButton from "../components/common/BackButton";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
+import { isFreePlan } from "../utils/themeUtils";
 import {
   PageHeader, Card, Button, FormField, Select, Input, StickyActionBar,
   ContextMenu, cn,
@@ -40,8 +43,13 @@ const Availability = () => {
   const [bufferMinutes, setBufferMinutes] = useState(0);
   const [blockedDates, setBlockedDates] = useState([]); // "YYYY-MM-DD" strings
   const [newBlockedDate, setNewBlockedDate] = useState("");
+  // Booking caps (Pro). "" = no cap; stored as null on save.
+  const [caps, setCaps] = useState({ cap_per_day: "", cap_per_week: "", cap_per_guest: "" });
   const [loading, setLoading] = useState(false);
   const [dirty, setDirty] = useState(false);
+
+  const { user } = useAuth() || {};
+  const isFree = isFreePlan(user?.plan);
 
   const fetchAvailability = async () => {
     try {
@@ -51,6 +59,11 @@ const Availability = () => {
         setTimezone(data.timezone || "Asia/Kolkata");
         setBufferMinutes(data.buffer_minutes || 0);
         setBlockedDates(Array.isArray(data.blocked_dates) ? data.blocked_dates : []);
+        setCaps({
+          cap_per_day: data.cap_per_day ?? "",
+          cap_per_week: data.cap_per_week ?? "",
+          cap_per_guest: data.cap_per_guest ?? "",
+        });
       }
     } catch { /* no record yet — start with defaults */ }
   };
@@ -124,6 +137,10 @@ const Availability = () => {
         timezone,
         buffer_minutes: bufferMinutes,
         blocked_dates: blockedDates,
+        // "" → null (no cap). Server re-gates to Pro and ignores a free host's values.
+        cap_per_day: caps.cap_per_day === "" ? null : Number(caps.cap_per_day),
+        cap_per_week: caps.cap_per_week === "" ? null : Number(caps.cap_per_week),
+        cap_per_guest: caps.cap_per_guest === "" ? null : Number(caps.cap_per_guest),
       });
       toast.success("Availability saved!");
       setDirty(false);
@@ -320,6 +337,46 @@ const Availability = () => {
           </FormField>
         </div>
         <p className="mt-2 text-xs text-ink/40">A buffer is the gap between the end of one booking and the start of the next.</p>
+      </Card>
+
+      {/* Booking caps — Pro power-host control */}
+      <Card className="mb-5">
+        <div className="mb-1 flex items-center gap-2">
+          <h2 className="text-base font-semibold text-ink">Booking caps</h2>
+          <span className="rounded-full bg-marigold-100 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-marigold-800">Pro</span>
+          {isFree && <Lock className="h-3.5 w-3.5 text-ink/40" strokeWidth={2.2} />}
+        </div>
+        <p className="mb-4 text-xs text-ink/40">
+          Protect your calendar. Leave a field blank for no limit — a booking that would exceed a cap is turned away.
+        </p>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {[
+            { key: "cap_per_day", label: "Max bookings per day" },
+            { key: "cap_per_week", label: "Max bookings per week" },
+            { key: "cap_per_guest", label: "Max bookings per guest" },
+          ].map(({ key, label }) => (
+            <FormField key={key} label={label} htmlFor={`av-${key}`} className="mb-0">
+              <Input
+                id={`av-${key}`}
+                type="number"
+                min={1}
+                max={999}
+                step={1}
+                inputMode="numeric"
+                placeholder="No limit"
+                disabled={isFree}
+                value={caps[key]}
+                onChange={(e) => { setCaps((c) => ({ ...c, [key]: e.target.value })); setDirty(true); }}
+              />
+            </FormField>
+          ))}
+        </div>
+        {isFree && (
+          <p className="mt-3 text-xs text-ink/55">
+            Booking caps are a Pro feature.{" "}
+            <Link to="/dashboard/upgrade?src=booking_caps" className="font-semibold text-maroon underline">Upgrade to Pro</Link>
+          </p>
+        )}
       </Card>
 
       <StickyActionBar>
