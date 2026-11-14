@@ -444,6 +444,9 @@ export const deleteService    = (id)             => API.delete(`/host/services/$
 export const setAvailability  = (data)           => API.put('/host/availability', data);
 export const getAvailability  = ()               => API.get('/host/availability');
 export const searchVendors    = (q)              => API.get('/host/search', { params: { q } });
+// Profile views (v3.205): public beacon on profile load + the host's own count.
+export const recordProfileView = (username)      => API.post(`/host/${encodeURIComponent(username)}/view`).catch(() => {});
+export const getMyProfileViews = ()              => API.get('/host/profile-views');
 
 // ── Coupons (v3.204, behind the `coupons` flag) ───────────────
 // Guest: preview a discount before booking. Host: manage own codes.

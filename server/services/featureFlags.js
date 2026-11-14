@@ -1,5 +1,3 @@
-const { supabaseAdmin } = require('../config/supabase');
-
 const CACHE_TTL_MS = 60 * 1000;
 let _cache = { at: 0, map: null };
 
@@ -8,9 +6,14 @@ async function loadFlags() {
   if (_cache.map && now - _cache.at < CACHE_TTL_MS) return _cache.map;
   const map = {};
   try {
+    // Lazy require: config/supabase throws at load without a service key, so requiring
+    // it here (not at module top) keeps featureFlags import-safe wherever it's pulled in
+    // (mirrors the lazy-supabase pattern in supportController). Any error → empty map →
+    // per-key default (fail-closed for security keys).
+    const { supabaseAdmin } = require('../config/supabase');
     const { data, error } = await supabaseAdmin.from('feature_flags').select('key, enabled');
     if (!error) for (const row of data || []) map[row.key] = !!row.enabled;
-  } catch (_) { /* fail-open below */ }
+  } catch (_) { /* fail-open/closed per key below */ }
   _cache = { at: now, map };
   return map;
 }
@@ -24,7 +27,10 @@ async function loadFlags() {
 // so a missing row or a DB read error means NO sends (an outbound control that
 // fails open is not a control). It also ships disabled (featureRegistry).
 // `host_linkedin_login` is an opt-in login door: it stays closed if its row is missing or the read fails.
-const FAIL_CLOSED_KEYS = new Set(['unified_login', 'crm_admin_sends', 'crm_second_touch', 'crm_list_engagement', 'community', 'community_writes', 'community_tithi', 'community_ads', 'community_v2', 'host_linkedin_login']);
+// `bot_tool_loop` gates Tithi's agentic account tool-loop on the authenticated support
+// thread. It ships OFF and reads/acts on a signed-in user's own account, so a missing
+// row or read error must NOT turn it on — fail closed.
+const FAIL_CLOSED_KEYS = new Set(['unified_login', 'crm_admin_sends', 'crm_second_touch', 'crm_list_engagement', 'community', 'community_writes', 'community_tithi', 'community_ads', 'community_v2', 'host_linkedin_login', 'bot_tool_loop', 'tithi_proactive', 'bot_institutional_memory', 'bot_person_memory', 'bot_gap_digest']);
 
 // Fail-open (default): unknown / errored feature flags default to enabled so a
 // missing migration never bricks a normal feature. Security keys override this

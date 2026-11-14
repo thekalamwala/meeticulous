@@ -29,6 +29,7 @@ import { downloadReceipt } from "../utils/receipt";
 import { fireCelebration } from "../utils/celebration";
 import loadRazorpay from "../utils/loadRazorpay";
 import PetalSpinner from "../components/common/PetalSpinner";
+import CancellationPolicyNote from "../components/booking/CancellationPolicyNote";
 import { INDIAN_STATES } from "../lib/indianStates";
 
 const MONTHS = [
@@ -1583,6 +1584,10 @@ const ServiceBooking = () => {
                       </span>
                     </div>
                   </div>
+                  {/* Disclose the cancellation/refund policy BEFORE payment (paid only;
+                      free bookings cancel any time). Uses the service's resolved tiers
+                      when present (P3+), else the standard policy. */}
+                  {isPaid && <CancellationPolicyNote tiers={service.cancellation_policy?.tiers} className="mt-3" />}
                 </div>
 
                 {/* RIGHT: Customer Information — floating-label fields */}

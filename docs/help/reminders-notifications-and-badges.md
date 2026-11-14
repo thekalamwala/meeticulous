@@ -20,8 +20,7 @@ Beyond email and WhatsApp, Meeticulous shows notifications in-app on a **bell ic
 
 Automated reminders go out before a session to cut down no-shows. **How many reminder points you get depends on your plan:**
 
-- The free tier doesn't include automated reminders.
-- Starter includes a 24-hour reminder before the session.
+- Starter (the free plan) includes a 24-hour reminder before the session.
 - Pro adds a 1-hour reminder and reschedule alerts.
 
 See the [pricing](/pricing) page for exactly what each plan includes.
