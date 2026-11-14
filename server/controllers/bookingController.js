@@ -410,7 +410,7 @@ const createBooking = async (req, res) => {
     if (!limitCheck.allowed)
       return res.status(403).json({ message: limitCheck.message });
 
-    // Host-configurable caps (Pro, v3.207). Early fast-fail — before pricing /
+    // Host-configurable caps (Pro, v3.213). Early fast-fail — before pricing /
     // calendar — so a capped booking leaves no orphan Google event. The
     // authoritative, race-safe recheck runs under the per-host lock below.
     const capCheck = await checkBookingCaps({

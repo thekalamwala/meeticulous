@@ -1,5 +1,7 @@
 -- ============================================================
--- v3.207 — Host-configurable booking caps (Pro power-host control)
+-- v3.213 — Host-configurable booking caps (Pro power-host control)
+-- (renumbered from v3.207 to avoid collision with v3.207_bot_tool_loop_flag.sql;
+--  already applied live on 2026-11-14 under the name `v3_207_booking_caps`.)
 -- ------------------------------------------------------------
 -- A host can cap how many bookings they take per day / per week, and how many
 -- a single guest can ever make with them. A booking that would exceed a set cap

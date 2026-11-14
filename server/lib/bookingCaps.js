@@ -1,4 +1,4 @@
-// Host-configurable booking caps (Pro power-host control). See migration v3.207.
+// Host-configurable booking caps (Pro power-host control). See migration v3.213.
 //
 // A host sets any of cap_per_day / cap_per_week / cap_per_guest on their
 // `availability` row. A new booking is blocked if it would push the host over a

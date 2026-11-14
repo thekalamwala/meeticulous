@@ -841,7 +841,7 @@ const setAvailability = async (req, res) => {
     if (buffer_minutes != null && (!Number.isFinite(Number(buffer_minutes)) || Number(buffer_minutes) < 0 || Number(buffer_minutes) > 480))
       return res.status(400).json({ message: 'buffer_minutes must be between 0 and 480.' });
 
-    // Booking caps (v3.207): each is a positive integer or null (no cap). Blank/0
+    // Booking caps (v3.213): each is a positive integer or null (no cap). Blank/0
     // → null. Capped at 999 so a fat-finger can't lock the calendar silently.
     const parseCap = (v) => {
       if (v == null || v === '') return null;
@@ -876,8 +876,8 @@ const setAvailability = async (req, res) => {
       .select()
       .single();
 
-    let { data, error } = await doUpsert({ ...basePayload, ...caps }); // v3.207 caps
-    // Schema fallback: retry without cap columns if v3.207 hasn't been applied yet.
+    let { data, error } = await doUpsert({ ...basePayload, ...caps }); // v3.213 caps
+    // Schema fallback: retry without cap columns if v3.213 hasn't been applied yet.
     if (error && /Could not find the|column.*does not exist/i.test(error.message || "")) {
       ({ data, error } = await doUpsert(basePayload));
     }
