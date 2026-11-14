@@ -100,13 +100,15 @@ export const beliefs = {
   ],
 };
 
-// Order is intentional: Shubham · Shivani · Pranav · Tushar · Aastha.
-// Shivani, Pranav and Tushar carry a neutral "Team Member" title until their
-// real roles are confirmed — update position/role/bio when they are.
-// Photos: the old company-assets.meeticulous.in host does not resolve, so every
-// member renders the initials fallback until real photos are re-hosted — set
-// `photo` per member when they are. Socials resolve to Meeticulous's own pages
-// for now (TeamSocials fills the default per type) until individual links exist.
+// Order is intentional: Shubham · Shivani · Pranav · Tushar · Durga · Aastha · Mohini.
+// Several members carry a neutral title/bio until their real roles are confirmed —
+// update position/role/bio when they are.
+// Photos: every member renders the initials fallback until a real photo is set —
+// drop files in client/public/about/ and set `photo: '/about/<file>'` per member.
+// (Not auto-sourced from the web: a wrong face on a named real person is a real
+// error, so these need founder-supplied photos or confirmed URLs.)
+// Socials resolve to Meeticulous's own pages for now (TeamSocials fills the default
+// per type) until individual links exist.
 export const team = {
   heading: "The people behind Meeticulous.",
   sub: "A small team, building in India. Tap a photo to meet the person behind it.",
@@ -144,12 +146,28 @@ export const team = {
       socials: [{ type: "linkedin" }, { type: "meeticulous" }],
     },
     {
+      name: "Durga Laxne",
+      position: "Team Member",
+      role: "Team",
+      photo: null,
+      bio: "Durga is part of the small team building Meeticulous in India, helping creators and professionals get booked, paid and reminded without the admin.",
+      socials: [{ type: "linkedin" }, { type: "meeticulous" }],
+    },
+    {
       name: "Aastha Nikhare",
       position: "Product Designer",
       role: "Product",
       photo: null,
       bio: "Aastha obsesses over each tap so you never think twice, removing friction for a living and shaping a product that feels calm, quick and humane in use.",
       socials: [{ type: "linkedin" }, { type: "x" }, { type: "meeticulous" }],
+    },
+    {
+      name: "Mohini Daf",
+      position: "Team Member",
+      role: "Team",
+      photo: null,
+      bio: "Mohini is part of the small team building Meeticulous in India, working to make every booking feel simple for hosts and the people who book them.",
+      socials: [{ type: "linkedin" }, { type: "meeticulous" }],
     },
   ],
 };
