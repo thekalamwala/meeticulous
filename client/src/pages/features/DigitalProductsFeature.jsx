@@ -48,13 +48,14 @@ import PageGuides from '../../components/common/PageGuides';
 import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
-const NAVY = '#2B0A14';          // page dark base
-const DEEP = '#3D0516';          // maroon-900 dark for the feature sections (solid, no gradient)
-const VIOLET = '#E0506F';        // rose — decorative + accent fills (solid)
-const VIOLET_SOFT = '#FF9FB0';   // soft pink accent text on dark
-const VIOLET_INK = '#960D32';    // maroon: accent text on light + CTA/button fill (AA with white)
-const MIST = '#FBF5F3';          // body text on dark
-const LILAC = '#FBF5F3';         // light section background
+const NAVY = '#122A4D';          // Tukku deep navy — page dark base
+const DEEP = '#15396B';          // Tukku deep blue for the feature sections (solid, no gradient)
+const VIOLET = '#2F7DD1';        // Tukku primary blue — decorative + accent fills (solid)
+const VIOLET_SOFT = '#F5A3C0';   // soft light-pink accent text on dark
+const VIOLET_INK = '#2F7DD1';    // Tukku blue: CTA/button fill (AA with white)
+const HEAD_ACCENT = '#E9578A';   // Tukku pink — heading accents on the light sections
+const MIST = '#F6E3C6';          // cream body text on dark
+const LILAC = '#F6E3C6';         // cream light section background
 
 // Mirrors subscription_plans.limits.digital_products for the free plan (v3.165)
 // and FREE_PLAN.features "3 digital products". Change both if the DB changes.
@@ -113,13 +114,6 @@ const FAQ = [
   { q: 'Can a buyer get a refund?', a: 'Digital products are not refundable once a download link has been issued, as set out in our refund policy.' },
 ];
 
-const RELATED = [
-  { to: '/features/booking-pages', label: 'Booking pages' },
-  { to: '/features/payments', label: 'Payments' },
-  { to: '/features/online-scheduling', label: 'Online scheduling' },
-  { to: '/features/client-management', label: 'Client management' },
-];
-
 /* ─────────────────────────────  PIECES  ────────────────────────────── */
 
 function PrimaryCta({ to = START, children }) {
@@ -168,10 +162,10 @@ function ShelfDemo() {
 
   return (
     <div className="relative mx-auto w-full max-w-[26rem]">
-      <div className={`overflow-hidden rounded-[16px] ${glass} shadow-[0_40px_90px_-30px_rgba(61,5,22,0.9)]`}>
+      <div className={`overflow-hidden rounded-[16px] ${glass} shadow-[0_40px_90px_-30px_rgba(13,35,70,0.9)]`}>
         <div className="flex items-center justify-between border-b border-white/10 px-5 py-3.5">
-          <div className="font-heading text-sm font-bold text-[#FBF5F3]">Digital products</div>
-          <span className="text-[11px] text-[#FBF5F3]/55">meeticulous.com/you</span>
+          <div className="font-heading text-sm font-bold text-[#F6E3C6]">Digital products</div>
+          <span className="text-[11px] text-[#F6E3C6]/55">meeticulous.com/you</span>
         </div>
 
         <div className="grid grid-cols-3 gap-2.5 p-4" role="group" aria-label="Sample products">
@@ -183,13 +177,13 @@ function ShelfDemo() {
                 type="button"
                 aria-pressed={on}
                 onClick={() => go({ k: i, stage: 'checkout' })}
-                className={`flex flex-col items-start rounded-[6px] border p-2.5 text-left transition-colors ${on ? 'border-[#E0506F] bg-[#E0506F]/15' : 'border-white/10 bg-white/[0.03] hover:border-white/25'}`}
+                className={`flex flex-col items-start rounded-[6px] border p-2.5 text-left transition-colors ${on ? 'border-[#2F7DD1] bg-[#2F7DD1]/15' : 'border-white/10 bg-white/[0.03] hover:border-white/25'}`}
               >
-                <span className="flex h-8 w-8 items-center justify-center rounded-[16px]" style={{ background: 'rgba(139,92,246,0.18)', color: VIOLET_SOFT }}>
+                <span className="flex h-8 w-8 items-center justify-center rounded-[16px]" style={{ background: 'rgba(47,125,209,0.18)', color: VIOLET_SOFT }}>
                   <item.icon size={16} aria-hidden />
                 </span>
-                <span className="mt-2 text-[10px] uppercase tracking-[0.12em] text-[#FBF5F3]/50">{item.kind}</span>
-                <span className="mt-0.5 line-clamp-2 text-[12px] font-semibold leading-snug text-[#FBF5F3]">{item.title}</span>
+                <span className="mt-2 text-[10px] uppercase tracking-[0.12em] text-[#F6E3C6]/50">{item.kind}</span>
+                <span className="mt-0.5 line-clamp-2 text-[12px] font-semibold leading-snug text-[#F6E3C6]">{item.title}</span>
                 <span className="mt-1.5 font-heading text-[13px] font-bold" style={{ color: VIOLET_SOFT }}>{item.price ? `₹${item.price}` : 'Free'}</span>
               </button>
             );
@@ -201,19 +195,19 @@ function ShelfDemo() {
             {demo.stage === 'shelf' && (
               <motion.div key="shelf" {...slide} className="flex h-[12.5rem] flex-col items-center justify-center text-center">
                 <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5"><Download size={18} style={{ color: VIOLET_SOFT }} aria-hidden /></span>
-                <p className="mt-3 text-sm text-[#FBF5F3]/70">Pick a product to see the buyer&rsquo;s checkout.</p>
+                <p className="mt-3 text-sm text-[#F6E3C6]/70">Pick a product to see the buyer&rsquo;s checkout.</p>
               </motion.div>
             )}
             {demo.stage === 'checkout' && (
               <motion.div key={`checkout-${demo.k}`} {...slide}>
-                <div className="font-heading text-[15px] font-bold text-[#FBF5F3]">{p.title}</div>
-                <div className="text-xs text-[#FBF5F3]/50">{p.meta}</div>
-                <dl className="mt-4 space-y-2 text-sm text-[#FBF5F3]/70">
+                <div className="font-heading text-[15px] font-bold text-[#F6E3C6]">{p.title}</div>
+                <div className="text-xs text-[#F6E3C6]/50">{p.meta}</div>
+                <dl className="mt-4 space-y-2 text-sm text-[#F6E3C6]/70">
                   <div className="flex justify-between"><dt>Price</dt><dd className="tabular-nums">{free ? 'Free' : inr(p.price)}</dd></div>
                   {!free && <div className="flex justify-between"><dt>Booking fee + GST</dt><dd className="tabular-nums">{inr(FEE + FEE_GST)}</dd></div>}
-                  <div className="flex justify-between border-t border-white/10 pt-2 font-heading font-bold text-[#FBF5F3]"><dt>Total</dt><dd className="tabular-nums">{inr(buyerTotal(p.price))}</dd></div>
+                  <div className="flex justify-between border-t border-white/10 pt-2 font-heading font-bold text-[#F6E3C6]"><dt>Total</dt><dd className="tabular-nums">{inr(buyerTotal(p.price))}</dd></div>
                 </dl>
-                <div className="mt-3 flex items-center gap-1.5 text-[11px] text-[#FBF5F3]/55">
+                <div className="mt-3 flex items-center gap-1.5 text-[11px] text-[#F6E3C6]/55">
                   <Smartphone size={12} aria-hidden /> Verified with a WhatsApp code{free ? '' : ' · UPI, card or wallet'}
                 </div>
                 <button
@@ -229,12 +223,12 @@ function ShelfDemo() {
             {demo.stage === 'done' && (
               <motion.div key={`done-${demo.k}`} {...slide} className="flex flex-col items-center pt-1 text-center">
                 <CheckCircle2 size={40} style={{ color: VIOLET_SOFT }} aria-hidden />
-                <div className="mt-2.5 font-heading text-lg font-extrabold text-[#FBF5F3]">{free ? 'Done.' : 'Purchased.'} Your download is ready.</div>
-                <div className="mt-1 text-xs text-[#FBF5F3]/55">{p.title}</div>
-                <span className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-[#FBF5F3]">
+                <div className="mt-2.5 font-heading text-lg font-extrabold text-[#F6E3C6]">{free ? 'Done.' : 'Purchased.'} Your download is ready.</div>
+                <div className="mt-1 text-xs text-[#F6E3C6]/55">{p.title}</div>
+                <span className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-[#F6E3C6]">
                   <Download size={15} aria-hidden /> Download
                 </span>
-                <div className="mt-3 text-[11px] text-[#FBF5F3]/50">Link valid 24 hours · up to 3 downloads · a copy sent to email</div>
+                <div className="mt-3 text-[11px] text-[#F6E3C6]/50">Link valid 24 hours · up to 3 downloads · a copy sent to email</div>
                 <button type="button" onClick={() => go({ k: demo.k, stage: 'shelf' })} className="mt-3 text-[11px] font-semibold underline underline-offset-4 transition-opacity hover:opacity-80" style={{ color: VIOLET_SOFT }}>
                   Back to the shelf
                 </button>
@@ -243,7 +237,7 @@ function ShelfDemo() {
           </AnimatePresence>
         </div>
       </div>
-      <p className="mt-3 text-center text-[11px] text-[#FBF5F3]/45">Illustration of a buyer&rsquo;s purchase, sample products</p>
+      <p className="mt-3 text-center text-[11px] text-[#F6E3C6]/45">Illustration of a buyer&rsquo;s purchase, sample products</p>
     </div>
   );
 }
@@ -297,10 +291,10 @@ function PlanCounter() {
                 : `All ${n} live. Room for ${FREE_PRODUCT_LIMIT - n} more.`}
           </p>
         </div>
-        <div className="rounded-[24px] p-6 text-[#FBF5F3] shadow-[0_24px_60px_-28px_rgba(61,5,22,0.7)] sm:p-7" style={{ background: DEEP}}>
+        <div className="rounded-[24px] p-6 text-[#F6E3C6] shadow-[0_24px_60px_-28px_rgba(13,35,70,0.7)] sm:p-7" style={{ background: DEEP}}>
           <div className="flex items-baseline justify-between gap-3">
-            <h3 className="font-heading text-lg font-bold text-[#FBF5F3]">{PREMIUM_PLAN.name}</h3>
-            <span className="text-xs text-[#FBF5F3]/60">₹{PREMIUM_PLAN.monthly} / month or ₹{PREMIUM_PLAN.yearly.toLocaleString('en-IN')} / year</span>
+            <h3 className="font-heading text-lg font-bold text-[#F6E3C6]">{PREMIUM_PLAN.name}</h3>
+            <span className="text-xs text-[#F6E3C6]/60">₹{PREMIUM_PLAN.monthly} / month or ₹{PREMIUM_PLAN.yearly.toLocaleString('en-IN')} / year</span>
           </div>
           <div className="mt-5 grid grid-cols-6 gap-2">
             {Array.from({ length: n }, (_, i) => (
@@ -309,7 +303,7 @@ function PlanCounter() {
               </span>
             ))}
           </div>
-          <p className="mt-5 flex items-center gap-2 text-sm leading-relaxed text-[#FBF5F3]/75">
+          <p className="mt-5 flex items-center gap-2 text-sm leading-relaxed text-[#F6E3C6]/75">
             <InfinityIcon size={16} style={{ color: VIOLET_SOFT }} aria-hidden /> All {n} live. No product cap.
           </p>
         </div>
@@ -346,7 +340,7 @@ export default function DigitalProductsFeature() {
   });
 
   return (
-    <main className="feature-page-dark overflow-x-clip bg-ink text-[#FBF5F3]">
+    <main className="feature-page-dark overflow-x-clip bg-[#122A4D] text-[#F6E3C6]">
       <Seo
         title={seo.title}
         description={seo.description}
@@ -363,32 +357,32 @@ export default function DigitalProductsFeature() {
 
       {/* ═══════════════ 1 · HERO (solid deep-indigo + product shelf demo) ═══════════════ */}
       <section className="relative overflow-hidden px-5 pb-16 pt-8 sm:px-8 lg:pb-24 lg:pt-6 lg:flex lg:min-h-[calc(100svh-57px)] lg:flex-col lg:justify-center" style={{ background: DEEP}}>
-        <div aria-hidden className="pointer-events-none absolute -right-40 -top-40 h-[34rem] w-[34rem] rounded-full blur-3xl" style={{ background: 'rgba(139,92,246,0.16)' }} />
-        <div aria-hidden className="pointer-events-none absolute -bottom-48 -left-32 h-[28rem] w-[28rem] rounded-full blur-3xl" style={{ background: 'rgba(109,40,217,0.14)' }} />
+        <div aria-hidden className="pointer-events-none absolute -right-40 -top-40 h-[34rem] w-[34rem] rounded-full blur-3xl" style={{ background: 'rgba(47,125,209,0.16)' }} />
+        <div aria-hidden className="pointer-events-none absolute -bottom-48 -left-32 h-[28rem] w-[28rem] rounded-full blur-3xl" style={{ background: 'rgba(30,86,145,0.14)' }} />
         <div className="relative mx-auto grid w-full max-w-6xl items-start gap-10 lg:items-center lg:gap-14 lg:grid-cols-[1.05fr_0.95fr]">
           <div>
-            <nav aria-label="Breadcrumb" className="text-xs text-[#FBF5F3]/55">
-              <Link to="/" className="text-[#FBF5F3]/55 hover:text-[#FBF5F3] hover:no-underline">Home</Link>
+            <nav aria-label="Breadcrumb" className="text-xs text-[#F6E3C6]/55">
+              <Link to="/" className="text-[#F6E3C6]/55 hover:text-[#F6E3C6] hover:no-underline">Home</Link>
               <span aria-hidden className="mx-2">/</span>
               <span>Features</span>
               <span aria-hidden className="mx-2">/</span>
-              <span aria-current="page" className="text-[#FBF5F3]/85">Digital products</span>
+              <span aria-current="page" className="text-[#F6E3C6]/85">Digital products</span>
             </nav>
             <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.1rem,3.7vw,3.2rem)] font-extrabold leading-[1] tracking-[-0.035em] text-white">
               Sell digital products online, <span style={{ color: VIOLET_SOFT }}>right beside your bookings.</span>
             </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-[#FBF5F3]/75 lg:text-[17px]">
+            <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-[#F6E3C6]/75 lg:text-[17px]">
               Sell PDF guides, templates and checklists from the page clients already book you on. Buyers pay by UPI or card and get a secure download link.
             </Reveal>
             <Reveal instant delay={0.1} className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
               <PrimaryCta>Start free <ArrowRight size={16} /></PrimaryCta>
-              <a href="#plans" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#FBF5F3] hover:no-underline hover:opacity-80">
+              <a href="#plans" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F6E3C6] hover:no-underline hover:opacity-80">
                 See product limits by plan <ArrowRight size={15} />
               </a>
             </Reveal>
             <Reveal instant delay={0.14} className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
               {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] text-[#FBF5F3]/65">
+                <span key={t} className="flex items-center gap-1.5 text-[13px] text-[#F6E3C6]/65">
                   <Check size={14} style={{ color: VIOLET_SOFT }} aria-hidden /> {t}
                 </span>
               ))}
@@ -404,7 +398,7 @@ export default function DigitalProductsFeature() {
       <section className="border-y border-white/10 px-5 py-8 sm:px-8" style={{ background: NAVY }}>
         <ul className="mx-auto flex max-w-6xl flex-wrap justify-center gap-2.5">
           {CHIPS.map((c) => (
-            <li key={c.label} className={`flex items-center gap-2 rounded-full px-4 py-2 text-[13px] font-medium text-[#FBF5F3]/85 ${glass}`}>
+            <li key={c.label} className={`flex items-center gap-2 rounded-full px-4 py-2 text-[13px] font-medium text-[#F6E3C6]/85 ${glass}`}>
               <c.icon size={14} style={{ color: VIOLET_SOFT }} aria-hidden /> {c.label}
             </li>
           ))}
@@ -414,8 +408,8 @@ export default function DigitalProductsFeature() {
       {/* ═══════════════ 3 · WITHOUT vs WITH (chat thread vs product page) ═══════════════ */}
       <section className="px-5 py-20 text-ink sm:px-8 lg:py-28" style={{ background: LILAC }}>
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-ink sm:text-5xl">
-            A Drive link and a UPI QR <span style={{ color: VIOLET_INK }}>is not a shop.</span>
+          <Reveal as="h2" className="font-heading text-[clamp(1.7rem,3vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight text-ink lg:whitespace-nowrap">
+            A Drive link and a UPI QR <span style={{ color: HEAD_ACCENT }}>is not a shop.</span>
           </Reveal>
           <Reveal as="p" delay={0.05} className="mt-5 max-w-2xl text-base leading-relaxed text-neutral-600">
             Selling a guide over DMs works until you are checking screenshots at midnight. Here is the same sale, both ways.
@@ -437,7 +431,7 @@ export default function DigitalProductsFeature() {
               </ul>
             </Reveal>
 
-            <Reveal delay={0.06} className="rounded-[24px] border p-6 shadow-[0_24px_60px_-30px_rgba(109,40,217,0.35)] sm:p-7" style={{ borderColor: `${VIOLET_INK}4d`, background: '#FFFFFF' }}>
+            <Reveal delay={0.06} className="rounded-[24px] border p-6 shadow-[0_24px_60px_-30px_rgba(30,86,145,0.35)] sm:p-7" style={{ borderColor: `${VIOLET_INK}4d`, background: '#FFFFFF' }}>
               <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: VIOLET_INK }}><Store size={14} aria-hidden /> A product page with checkout</div>
               <div className="mt-5 overflow-hidden rounded-[16px] border border-black/5" aria-hidden>
                 <div className="flex h-20 items-center justify-center" style={{ background: DEEP}}><FileText size={26} style={{ color: VIOLET_SOFT }} /></div>
@@ -463,22 +457,22 @@ export default function DigitalProductsFeature() {
       {/* ═══════════════ 4 · HOW IT WORKS (horizontal violet-numbered timeline) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: NAVY }}>
         <div className="mx-auto max-w-6xl">
-          <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl">
+          <Reveal as="h2" className="font-heading text-[clamp(1.7rem,3vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight text-white lg:whitespace-nowrap">
             List it once. <span style={{ color: VIOLET_SOFT }}>Every sale delivers itself.</span>
           </Reveal>
           <ol className="relative mt-16 grid gap-10 md:grid-cols-4 md:gap-6">
-            <span aria-hidden className="absolute left-6 right-6 top-6 hidden h-px md:block" style={{ background: 'rgba(139,92,246,0.35)' }} />
+            <span aria-hidden className="absolute left-6 right-6 top-6 hidden h-px md:block" style={{ background: 'rgba(47,125,209,0.35)' }} />
             {STEPS.map((s, i) => (
               <Reveal as="li" key={s.title} delay={i * 0.06} className="relative flex gap-5 md:block">
                 <span
-                  className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full font-heading text-lg font-extrabold text-white shadow-[0_10px_30px_rgba(139,92,246,0.45)]"
+                  className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full font-heading text-lg font-extrabold text-white shadow-[0_10px_30px_rgba(47,125,209,0.45)]"
                   style={{ background: VIOLET}}
                 >
                   {i + 1}
                 </span>
                 <div className="md:mt-6">
-                  <h3 className="font-heading text-lg font-bold text-[#FBF5F3]">{s.title}</h3>
-                  <p className="mt-2 text-[14px] leading-relaxed text-[#FBF5F3]/65">{s.desc}</p>
+                  <h3 className="font-heading text-lg font-bold text-[#F6E3C6]">{s.title}</h3>
+                  <p className="mt-2 text-[14px] leading-relaxed text-[#F6E3C6]/65">{s.desc}</p>
                 </div>
               </Reveal>
             ))}
@@ -494,9 +488,13 @@ export default function DigitalProductsFeature() {
           </Reveal>
           <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-3">
             <Reveal className={`rounded-[24px] p-7 md:col-span-2 ${glass}`}>
-              <span className="flex h-10 w-10 items-center justify-center rounded-[16px]" style={{ background: 'rgba(139,92,246,0.18)', color: VIOLET_SOFT }}><Upload size={19} aria-hidden /></span>
-              <h3 className="mt-4 font-heading text-xl font-bold text-[#FBF5F3]">Your products, on your booking page</h3>
-              <p className="mt-1.5 max-w-lg text-sm leading-relaxed text-[#FBF5F3]/65">Visitors see your services and your products together, with how many people have already bought each one.</p>
+              <div className="flex items-start gap-3.5">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[16px]" style={{ background: 'rgba(47,125,209,0.18)', color: VIOLET_SOFT }}><Upload size={19} aria-hidden /></span>
+                <div>
+                  <h3 className="font-heading text-xl font-bold leading-tight text-[#F6E3C6]">Your products, on your booking page</h3>
+                  <p className="mt-2 max-w-lg text-sm leading-relaxed text-[#F6E3C6]/65">Visitors see your services and your products together, with how many people have already bought each one.</p>
+                </div>
+              </div>
               <img
                 src="/features/digital-products.png"
                 alt="A host's Meeticulous booking page showing the Digital Products section beside their services"
@@ -507,9 +505,13 @@ export default function DigitalProductsFeature() {
             </Reveal>
             {CAPS.map((c, i) => (
               <Reveal key={c.title} delay={(i % 3) * 0.05} className={`rounded-[24px] p-7 ${glass}`}>
-                <span className="flex h-10 w-10 items-center justify-center rounded-[16px]" style={{ background: 'rgba(139,92,246,0.18)', color: VIOLET_SOFT }}><c.icon size={19} aria-hidden /></span>
-                <h3 className="mt-4 font-heading text-lg font-bold text-[#FBF5F3]">{c.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-[#FBF5F3]/65">{c.body}</p>
+                <div className="flex items-start gap-3.5">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[16px]" style={{ background: 'rgba(47,125,209,0.18)', color: VIOLET_SOFT }}><c.icon size={19} aria-hidden /></span>
+                  <div>
+                    <h3 className="font-heading text-lg font-bold leading-tight text-[#F6E3C6]">{c.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-[#F6E3C6]/65">{c.body}</p>
+                  </div>
+                </div>
                 {c.img && (
                   <img
                     src={c.img}
@@ -530,7 +532,7 @@ export default function DigitalProductsFeature() {
         <div className="mx-auto max-w-4xl">
           <div className="text-center">
             <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-ink sm:text-5xl">
-              Start with {FREE_PRODUCT_LIMIT}. <span style={{ color: VIOLET_INK }}>Grow to unlimited.</span>
+              Start with {FREE_PRODUCT_LIMIT}. <span style={{ color: HEAD_ACCENT }}>Grow to unlimited.</span>
             </Reveal>
             <Reveal as="p" delay={0.05} className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-neutral-600">
               Choose how many products you want on sale and see what each plan keeps live.
@@ -544,21 +546,21 @@ export default function DigitalProductsFeature() {
       {QUOTES.length > 0 && (
         <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: DEEP}}>
           <div className="mx-auto max-w-6xl">
-            <Reveal as="h2" className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl">
+            <Reveal as="h2" className="font-heading text-[clamp(1.7rem,3vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight text-white lg:whitespace-nowrap">
               From hosts already <span style={{ color: VIOLET_SOFT }}>booked through Meeticulous.</span>
             </Reveal>
             <div className="mt-14 grid gap-5 sm:gap-6 md:grid-cols-3">
               {QUOTES.map((t, i) => (
                 <Reveal as="figure" key={t.name} delay={i * 0.06} className={`flex flex-col justify-between rounded-[24px] p-7 ${glass}`}>
-                  <blockquote className="text-[15px] leading-relaxed text-[#FBF5F3]/85">
+                  <blockquote className="text-[15px] leading-relaxed text-[#F6E3C6]/85">
                     <span aria-hidden className="mb-3 block font-heading text-4xl leading-none" style={{ color: VIOLET_SOFT }}>&ldquo;</span>
                     {t.quote}
                   </blockquote>
                   <figcaption className="mt-7 flex items-center gap-3 border-t border-white/10 pt-5">
                     <img src={t.avatar} alt="" loading="lazy" className="h-10 w-10 rounded-full object-cover" />
                     <div>
-                      <div className="text-sm font-semibold text-[#FBF5F3]">{t.name}</div>
-                      <div className="text-xs text-[#FBF5F3]/55">{t.role}</div>
+                      <div className="text-sm font-semibold text-[#F6E3C6]">{t.name}</div>
+                      <div className="text-xs text-[#F6E3C6]/55">{t.role}</div>
                     </div>
                   </figcaption>
                 </Reveal>
@@ -580,9 +582,9 @@ export default function DigitalProductsFeature() {
           )}
           items={FAQ}
           itemClassName={`rounded-[6px] ${glass}`}
-          openItemClassName="border-[#E0506F]/40"
-          summaryClassName="flex items-center justify-between gap-4 px-5 py-4 font-heading text-[16px] font-bold text-[#FBF5F3] transition-colors hover:text-white"
-          answerClassName="px-5 pb-5 text-[15px] leading-relaxed text-[#FBF5F3]/70"
+          openItemClassName="border-[#2F7DD1]/40"
+          summaryClassName="flex items-center justify-between gap-4 px-5 py-4 font-heading text-[16px] font-bold text-[#F6E3C6] transition-colors hover:text-white"
+          answerClassName="px-5 pb-5 text-[15px] leading-relaxed text-[#F6E3C6]/70"
           renderSummary={(f, i, open) => (
             <>
               {f.q}
@@ -594,29 +596,14 @@ export default function DigitalProductsFeature() {
 
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
       <section className="relative overflow-hidden px-5 py-20 sm:px-8 lg:py-28" style={{ background: DEEP}}>
-        <div aria-hidden className="pointer-events-none absolute left-1/2 top-0 h-[26rem] w-[40rem] -translate-x-1/2 rounded-full blur-3xl" style={{ background: 'rgba(139,92,246,0.14)' }} />
+        <div aria-hidden className="pointer-events-none absolute left-1/2 top-0 h-[26rem] w-[40rem] -translate-x-1/2 rounded-full blur-3xl" style={{ background: 'rgba(47,125,209,0.14)' }} />
         <div className="relative mx-auto max-w-5xl text-center">
           <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.2rem)] font-extrabold leading-[1] tracking-[-0.035em] text-white">
             Turn what you know <span style={{ color: VIOLET_SOFT }}>into a download.</span>
           </Reveal>
-          <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-[#FBF5F3]/70">
+          <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-[#F6E3C6]/70">
             Set up your booking page free, then add your first product from your dashboard.
           </Reveal>
-          <Reveal delay={0.1} className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
-            <PrimaryCta>Start free <ArrowRight size={16} /></PrimaryCta>
-            <Link to="/pricing" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#FBF5F3] hover:no-underline hover:opacity-80">
-              See pricing <ArrowRight size={15} />
-            </Link>
-            <Link to="/contact" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#FBF5F3]/80 hover:no-underline hover:opacity-80">
-              See a live host page <ArrowRight size={15} />
-            </Link>
-          </Reveal>
-          <nav aria-label="Related features" className="mt-14 flex flex-wrap justify-center gap-x-6 gap-y-2 border-t border-white/10 pt-8 text-sm text-[#FBF5F3]/55">
-            <span className="flex items-center gap-1.5"><Download size={14} aria-hidden /> Works with</span>
-            {RELATED.map((r) => (
-              <Link key={r.to} to={r.to} className="text-[#FBF5F3]/80 underline decoration-white/20 underline-offset-4 hover:text-[#FBF5F3] hover:decoration-white">{r.label}</Link>
-            ))}
-          </nav>
         </div>
       </section>
     </main>

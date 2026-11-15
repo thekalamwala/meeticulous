@@ -104,7 +104,7 @@ const GuestOverview = () => {
       {/* Quick counts */}
       <div className="mt-4 grid grid-cols-2 gap-3">
         <StatTile icon={CalendarDays} label="Upcoming" value={loading ? "—" : upcoming.length} to="/user/my-bookings" />
-        <StatTile icon={Star} label="Completed" value={loading ? "—" : completedCount} to="/user/reviews" />
+        <StatTile icon={Star} label="Completed" value={loading ? "—" : completedCount} to="/user/my-bookings" />
       </div>
 
       {/* Shortcuts */}

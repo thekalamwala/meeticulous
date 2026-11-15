@@ -64,9 +64,9 @@ test('a Pro host gets an advertise variant; clicking tracks it and captures inte
   expect(toast.success).toHaveBeenCalled();
 });
 
-test('dismissing hides the ad for the session', async () => {
+test('the ad is permanent — no dismiss/hide control', () => {
   user = { id: 'h1', is_host: true, plan: 'free', name: 'Shubham' };
   const { container } = render_();
-  await userEvent.click(screen.getByRole('button', { name: 'Hide this' }));
-  expect(container.firstChild).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Hide this' })).toBeNull();
+  expect(container.firstChild).not.toBeNull();
 });

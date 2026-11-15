@@ -52,7 +52,7 @@ beforeEach(() => {
 test('legacy host reaches the overview and sees the reference summary', async () => {
   renderDash();
   expect(await screen.findByRole('heading', { name: /good afternoon, asha!/i })).toBeInTheDocument();
-  expect(screen.getByText('Available to withdraw')).toBeInTheDocument();
+  expect(screen.getByText('Available balance')).toBeInTheDocument();
   expect(screen.getByText('Upcoming bookings')).toBeInTheDocument();
   expect(api.getPayoutBalance).toHaveBeenCalled();
 });

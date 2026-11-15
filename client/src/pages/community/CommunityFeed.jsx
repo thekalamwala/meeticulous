@@ -4,7 +4,8 @@ import { ChevronDown, CircleHelp, Image, MessagesSquare, SquarePen } from 'lucid
 import Seo from '../../components/common/Seo';
 import ErrorPage from '../ErrorPage';
 import { useInfiniteScroll } from '../../components/dashboard/ui/useInfiniteScroll';
-import { getFeed, getTags } from '../../services/communityApi';
+import { getFeed } from '../../services/communityApi';
+import CommunityTopics from '../../components/community/CommunityTopics';
 import { analytics, EVENTS } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
 import { useFeature } from '../../context/FeatureContext';
@@ -21,28 +22,6 @@ const TABS = [
   { key: 'everyone', label: 'Everyone' },
   { key: 'updates', label: 'Updates' },
 ];
-
-// Crawlable internal links from the hub to every topic page (SEO/AEO) + a quick
-// way for people to jump into a topic. Soft-fails to nothing if tags aren't there.
-function TopicsRow() {
-  const [tags, setTags] = useState([]);
-  useEffect(() => { getTags().then((r) => setTags(r.tags || [])).catch(() => {}); }, []);
-  if (!tags.length) return null;
-  return (
-    <nav aria-label="Topics" className="mt-card flex flex-wrap items-center gap-2 p-4 sm:p-5">
-      <span className="w-full font-display text-xs font-bold uppercase tracking-wide text-muted">Browse by topic</span>
-      {tags.map((t) => (
-        <Link
-          key={t.tag}
-          to={`/community/tag/${t.tag}`}
-          className="rounded-full border border-line px-3 py-1.5 text-[13px] font-medium text-ink transition-colors hover:border-maroon/40 hover:text-maroon"
-        >
-          {t.name} <span className="text-muted">{t.count}</span>
-        </Link>
-      ))}
-    </nav>
-  );
-}
 
 export default function CommunityFeed() {
   const { user } = useAuth();
@@ -129,7 +108,9 @@ export default function CommunityFeed() {
         )}
       </div>
 
-      <TopicsRow />
+      {/* Compact topic pills. On xl the rail shows them under the ad (see
+          CommunityLayout); here they cover narrower screens that have no rail. */}
+      <CommunityTopics className="xl:hidden" />
 
       <div className={`${v2 ? 'hidden lg:flex ' : ''}mt-card gap-4 p-5 sm:p-6`}>
         <div className="flex items-center gap-3">

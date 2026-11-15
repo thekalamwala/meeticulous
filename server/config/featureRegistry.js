@@ -85,6 +85,9 @@ const REGISTRY = [
   { key: 'bot_gap_digest',       label: 'Bot Gap Digest', category: 'Support', scope: 'both', enabled: false, description: "Weekly: cluster the week's unanswered support questions (knowledge_gaps) into themes, draft a help-doc stub for the top one, and email the team — so the KB's gaps become its next entries. Off = no digest. Email only." },
   { key: 'razorpay_payment',     label: 'Razorpay Payment',     category: 'Payments', scope: 'customer', description: 'Paid checkout via Razorpay. Off = paid bookings/purchases blocked.' },
   { key: 'product_purchase',     label: 'Product Purchase',     category: 'Payments', scope: 'customer', description: 'Buy digital products. Off = product checkout blocked.' },
+  // Opt-in (ships OFF — enabled:false here so the fail-open registry creates it OFF
+  // even before the migration runs). Gates the video-courses checkout.
+  { key: 'course_purchase',      label: 'Course Purchase',      category: 'Payments', scope: 'customer', enabled: false, description: 'Buy video courses. Off = course checkout blocked.' },
   // Opt-in (ships OFF — seeded disabled in v3.203, and `enabled: false` here so the
   // registry upsert creates it OFF even before the migration runs). CA signed off
   // 2026-11-11 (flat 1% TDS + 1% TCS for all); still OFF pending device/held-balance QA.
@@ -137,6 +140,7 @@ const KEYS = REGISTRY.map((f) => f.key);
 const SAFETY_KEYS = [
   'razorpay_payment',   // money movement
   'product_purchase',   // money movement
+  'course_purchase',    // money movement
   'guest_login',        // auth
   'guest_signup',       // auth
   'guest_otp',          // auth

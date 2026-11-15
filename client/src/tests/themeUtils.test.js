@@ -105,9 +105,9 @@ describe('getContrastRatio', () => {
 // ── getColorsForPlan ──────────────────────────────────────────────────────────
 
 describe('getColorsForPlan', () => {
-  test('explorer → FREE_COLORS (brand colour only)', () => {
+  test('explorer → FREE_COLORS (the two brand colours)', () => {
     const colors = getColorsForPlan('explorer');
-    expect(colors).toHaveLength(1);
+    expect(colors).toHaveLength(2);
     expect(colors).toEqual(FREE_COLORS);
     expect(colors[0].hex).toBe(DEFAULT_THEME_COLOR);
   });

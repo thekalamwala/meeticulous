@@ -97,7 +97,7 @@ const GuestLayout = () => {
 
   return (
     <RefreshProvider>
-    <div className="flex min-h-screen overflow-x-hidden overscroll-y-contain" style={{ background: "#F8FAFC" }}>
+    <div className="flex min-h-screen overflow-x-clip" style={{ background: "#F8FAFC" }}>
       <GuestSidebar open={navOpen} onClose={() => setNavOpen(false)} triggerRef={navTriggerRef} />
 
       {/* Main — offset by the fixed 224px (w-56) rail on lg+. */}

@@ -14,6 +14,13 @@
 
 const { supabaseAdmin } = require('../../config/supabase');
 const { buildGlobals, resolveTemplate, resolveString } = require('./placeholderResolver');
+
+// Tokens whose value is pre-trusted HTML built in our own code (never user input)
+// and so is inserted into html_content WITHOUT html-escaping. Keep this list tiny.
+//   invoice_block — the "GST tax invoice is ready — <a>…</a>" line; the caller
+//   supplies the full <p> only for bookings that actually have an invoice, and ''
+//   for free bookings (so the line vanishes instead of leaving a dead link).
+const RAW_HTML_KEYS = new Set(['invoice_block']);
 const { renderLayout } = require('./emailLayout');
 const { getProvider, MARKETING_PROVIDER } = require('./providers');
 const { makeToken } = require('./unsubscribeToken');
@@ -121,7 +128,7 @@ async function getTemplate(event, audience = 'all') {
  */
 function renderEmail(template, { data = {}, user = {}, settings, audience = 'all', marketing } = {}) {
   const globals = buildGlobals(settings, user);
-  const r = resolveTemplate(template, data, globals);
+  const r = resolveTemplate(template, data, globals, RAW_HTML_KEYS);
   // Resolve the preheader too — otherwise raw {{tokens}} leak into the inbox preview.
   const previewText = resolveString(data.preview_text || template.preview_text || '', { ...globals, ...data }).text;
   const html = renderLayout({

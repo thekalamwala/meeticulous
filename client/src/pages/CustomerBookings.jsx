@@ -189,6 +189,14 @@ const CustomerBookings = () => {
   // host's payout instantly. Shown for a paid, confirmed booking whose slot has passed.
   const [confirming, setConfirming] = useState(null);
   const canConfirm = (b) => b.status === "confirmed" && b.payment_status === "paid" && new Date(b.scheduled_at) < now;
+  // A booking can auto-complete on a timer even if nobody joined. Give the guest a
+  // recourse window after completion to flag that it didn't happen — same endpoint
+  // as "Report a problem" (holds/reverses payout + opens an admin dispute).
+  const REPORT_WINDOW_DAYS = 14;
+  const canReportCompleted = (b) =>
+    b.status === "completed" &&
+    b.payment_status === "paid" &&
+    new Date(b.scheduled_at) >= new Date(now - REPORT_WINDOW_DAYS * 86400000);
   const handleConfirmComplete = async (id) => {
     setConfirming(id);
     try {
@@ -280,6 +288,12 @@ const CustomerBookings = () => {
               </button>
             </div>
           )}
+          {canReportCompleted(b) && (
+            <button onClick={() => handleReportProblem(b.id)} disabled={confirming === b.id}
+              className="ml-auto text-sm font-medium text-gray-500 hover:text-rose-600 disabled:opacity-60 px-2.5 py-1.5 rounded-lg hover:bg-rose-50">
+              Didn't happen? Report
+            </button>
+          )}
         </div>
       </div>
     );
@@ -329,7 +343,7 @@ const CustomerBookings = () => {
           <div className="bg-white border rounded-2xl p-10 text-center">
             <p className="text-gray-500 mb-1">No bookings yet</p>
             <p className="text-sm text-gray-400 mb-4">When you book a session it'll show up here.</p>
-            <Link to="/" className="inline-block text-sm font-medium text-[#960D32] hover:underline">Find a creator to book →</Link>
+            <Link to="/explore" className="inline-block text-sm font-medium text-[#960D32] hover:underline">Find a creator to book →</Link>
           </div>
         ) : filtered.length === 0 ? (
           <div className="bg-white border rounded-2xl p-10 text-center text-gray-400 text-sm">
@@ -342,7 +356,7 @@ const CustomerBookings = () => {
         )}
 
         <div className="text-center mt-6">
-          <Link to="/" className="text-sm text-[#960D32] hover:underline">Browse creators →</Link>
+          <Link to="/explore" className="text-sm text-[#960D32] hover:underline">Browse creators →</Link>
         </div>
 
       {/* Details drawer/modal */}

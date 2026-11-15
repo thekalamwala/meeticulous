@@ -7,6 +7,7 @@ import { getNotifications } from '../../services/api';
 import { SpaceIcon } from '../../components/community/ItemCard';
 import FeedSkeleton from '../../components/community/CommunitySkeleton';
 import CommunityAd from '../../components/community/CommunityAd';
+import CommunityTopics from '../../components/community/CommunityTopics';
 import { useFeature } from '../../context/FeatureContext';
 import { useAuth } from '../../context/AuthContext';
 import ProfileDrawer from '../../components/community/ProfileDrawer';
@@ -307,6 +308,8 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
           <aside aria-label="About" className={`sticky hidden flex-col gap-5 self-start xl:flex ${v2 ? 'lg:top-[60px]' : 'top-24'}`}>
             {aside}
             <CommunityAd />
+            {/* Small-pill topic browser, under the ad (reporter request) */}
+            <CommunityTopics rail />
             {v2 && (
               <div className="flex flex-col gap-2 px-1">
                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">

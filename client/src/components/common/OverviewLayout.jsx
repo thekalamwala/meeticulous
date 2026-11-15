@@ -308,8 +308,8 @@ const OverviewLayout = ({ children }) => {
             navOpen / the toolbar hamburger. */}
         <ConsoleSidebar open={navOpen} onClose={() => setNavOpen(false)} triggerRef={navTriggerRef} />
 
-        {/* Main column — offset by the fixed rail (56) + panel (220) = 276px. */}
-        <div className="lg:pl-[276px]">
+        {/* Main column — offset by the fixed single-column sidebar (272px). */}
+        <div className="lg:pl-[272px]">
           <OverviewTopbar
             user={user}
             initial={initial}
