@@ -83,3 +83,39 @@ describe('XSS / html-escape security', () => {
     expect(out.html).toContain('A &amp; B');
   });
 });
+
+describe('rawKeys — pre-trusted HTML blocks (e.g. {{invoice_block}})', () => {
+  const RAW = new Set(['invoice_block']);
+  const tpl = { subject: 's', html_content: '<p>{{user_name}}</p>{{invoice_block}}', cta_url: '' };
+
+  test('a rawKey value is inserted into html WITHOUT escaping', () => {
+    const block = '<p>Your GST tax invoice is ready — <a href="https://x.test/i?token=a&amp;b">PDF</a>.</p>';
+    const out = resolveTemplate(tpl, { user_name: 'Asha', invoice_block: block }, {}, RAW);
+    expect(out.html).toContain('<a href="https://x.test/i?token=a&amp;b">PDF</a>'); // anchor survives
+    expect(out.html).not.toContain('&lt;a href'); // not entity-escaped
+  });
+
+  test('non-rawKey values are STILL escaped even when rawKeys is passed (XSS guard holds)', () => {
+    const out = resolveTemplate(tpl, { user_name: '<img src=x onerror=alert(1)>', invoice_block: '' }, {}, RAW);
+    expect(out.html).toContain('&lt;img');
+    expect(out.html).not.toContain('<img src=x');
+  });
+
+  test("an empty rawKey value renders nothing and is NOT reported missing (free booking → no invoice line, no alert)", () => {
+    const out = resolveTemplate(tpl, { user_name: 'Asha', invoice_block: '' }, {}, RAW);
+    expect(out.html).toBe('<p>Asha</p>');
+    expect(out.missing).not.toContain('invoice_block');
+    expect(out.missing).toHaveLength(0);
+  });
+
+  test('rawKeys does not leak into the subject (subject never honours rawKeys)', () => {
+    const out = resolveTemplate(
+      { subject: '{{invoice_block}}', html_content: '', cta_url: '' },
+      { invoice_block: '<b>x</b>' }, {}, RAW
+    );
+    // subject resolver is called without rawKeys AND without escapeFn, so the value
+    // passes through literally — the guarantee is only that html-specific raw
+    // handling never reaches the subject path.
+    expect(out.subject).toBe('<b>x</b>');
+  });
+});

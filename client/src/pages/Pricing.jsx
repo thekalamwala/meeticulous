@@ -26,7 +26,7 @@ import {
   PREMIUM_PLAN_USD,
   PREMIUM_USD_ANNUAL_SAVE_PCT,
 } from "../data/plans";
-import PricingCards from "../components/pricing/PricingCards";
+import BlogSeoPricing from "../components/home/BlogSeoPricing";
 import useFeeOnly from "../hooks/useFeeOnly";
 import { getPricingRegion } from "../lib/pricingRegion";
 
@@ -146,7 +146,7 @@ export default function Pricing() {
 
         {/* Plan cards — framed on a soft panel so they lift off the hero band */}
         <div className="mx-auto mt-12 max-w-[1050px]">
-          <PricingCards />
+          <BlogSeoPricing />
           <p className="mt-6 text-center text-xs text-neutral-400">
             {intl
               ? `Prices in USD · Yearly saves ${PREMIUM_USD_ANNUAL_SAVE_PCT}% · Cancel anytime`

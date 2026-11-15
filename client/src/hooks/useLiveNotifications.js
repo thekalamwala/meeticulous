@@ -20,22 +20,32 @@ export default function useLiveNotifications(userId, onPing) {
     (async () => {
       let topic;
       try { ({ data: { topic } = {} } = await getNotificationChannel()); }
-      catch { return; } // no channel → fall back to poll-on-open + focus
+      catch { return; } // no channel → the poll + focus fallbacks below still cover it
       if (cancelled || !topic) return;
       const sb = await getSupabase();
       if (cancelled) return;
       chan = sb
         .channel(topic)
         .on('broadcast', { event: 'notification' }, () => { onPing(); })
+        // Broadcast delivery is best-effort (anon channel join can silently fail if
+        // Realtime authz is on). The interval below is the reliability floor so a
+        // dropped ping never leaves the bell stale until the next manual refresh.
         .subscribe();
     })();
 
-    // Also refetch on window focus — cheap catch-up for anything missed while hidden.
+    // Poll fallback: refetch on an interval while the tab is visible. Cheap, and it
+    // is what makes new notifications actually appear without a broadcast ping.
+    const POLL_MS = 45000;
+    const tick = () => { if (document.visibilityState === 'visible') onPing(); };
+    const poll = setInterval(tick, POLL_MS);
+
+    // Also refetch on window focus — instant catch-up for anything missed while hidden.
     const onFocus = () => onPing();
     window.addEventListener('focus', onFocus);
 
     return () => {
       cancelled = true;
+      clearInterval(poll);
       window.removeEventListener('focus', onFocus);
       if (chan) getSupabase().then((sb) => sb.removeChannel(chan)).catch(() => {});
     };

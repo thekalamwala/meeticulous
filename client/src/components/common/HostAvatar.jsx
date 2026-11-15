@@ -12,7 +12,7 @@
  * no third party.
  */
 import { useState } from 'react';
-import { DEFAULT_THEME_COLOR, isValidHex } from '../../utils/themeUtils';
+import { DEFAULT_THEME_COLOR, isValidHex, DEFAULT_COVER_IMAGE } from '../../utils/themeUtils';
 
 const SHAPE_RADIUS = {
   circle: '9999px',
@@ -90,13 +90,19 @@ export function HostAvatar({
 export function HostCover({
   src, themeColor, aspect = '3 / 1', eager = false, className = '', style = {}, alt = '',
 }) {
-  const tc = safeTheme(themeColor);
   if (!src) {
+    // Branded default cover — centered wordmark, object-cover/center keeps it
+    // visible at any width/aspect.
     return (
-      <div
-        className={className}
-        style={{ aspectRatio: aspect, background: `linear-gradient(135deg, ${tc}33, ${tc}88)`, ...style }}
+      <img
+        src={DEFAULT_COVER_IMAGE}
+        alt=""
         aria-hidden="true"
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager ? 'high' : undefined}
+        decoding="async"
+        className={`h-full w-full object-cover object-center ${className}`}
+        style={{ aspectRatio: aspect, ...style }}
       />
     );
   }

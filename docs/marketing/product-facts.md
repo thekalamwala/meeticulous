@@ -1,7 +1,7 @@
 ---
 status: DRAFT — founder must verify before any agent uses it
 owner: DISHA
-last_verified: 2026-11-09
+last_verified: 2026-11-14
 verified_against: subscription_plans (live DB spquowzrefozmrzoszkf), server/lib/pricingEngine.js
 ---
 
@@ -39,12 +39,13 @@ Inactive/legacy plans in the DB (do not quote): Starter (Legacy), Starter (retir
 - Host earnings are computed from the service price the host sets, not the guest total.
 - Minimum paid service price: **₹100**.
 
-## Statutory (from `pricingEngine.js`)
-- GST 18%. TDS Sec 194-O: 1% (5% if no PAN). TCS Sec 52: 1%.
+## Statutory (from `pricingEngine.js`, live `DEFAULTS` path)
+- GST 18%. TDS Sec 194-O: **flat 1% for all** (the old "5% if no PAN / §206AA" rate was dropped 2026-11-11). TCS Sec 52: 1%.
+- A config-driven withholding engine (`tds_tcs_v2`: 0.1% TDS / 0.5% TCS, PAN + GSTIN-aware, individual threshold) is **built but behind an OFF flag** — do NOT quote its rates. While the flag is OFF every paid booking uses the legacy flat 1% + 1%.
 
-## Recently shipped / not yet live (DISHA, 2026-11-09 — from merged commits, founder to verify)
-- **Live:** image uploads up to 5MB · 16-colour profile palette on Pro · gifted (complimentary) Pro granted by Meeticulous admin.
-- **Built but OFF (do not announce or promise):** LinkedIn host login (`host_linkedin_login`), community (`community*` flags).
+## Recently shipped / not yet live (DISHA, 2026-11-14 — from merged commits, founder to verify)
+- **Live:** image uploads up to 5MB · 16-colour profile palette on Pro · gifted (complimentary) Pro granted by Meeticulous admin · cancellation policy disclosed at checkout (standard 24h/6h tiers for everyone) · free→Pro conversion nudges (commission-paid meter, plan comparison, profile views) · feature-page visual refresh · Diwali 2026 moment.
+- **Built but OFF (do not announce or promise):** LinkedIn host login (`host_linkedin_login`) · community (`community*` flags) · Pro per-service cancellation-policy presets (`pro_cancellation_policy` — while OFF, the standard 24h/6h refund tiers apply to all) · config-driven TDS/TCS engine (`tds_tcs_v2`).
 - Gifted Pro is not a purchasable product; never quote it as a plan or price.
 
 ## Founding-100

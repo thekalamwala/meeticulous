@@ -8,6 +8,19 @@
 
 ---
 
+## In Progress — this release (DISHA weekly status, 2026-11-14)
+
+- **Pro cancellation policy** 🔄 — P1 plumbing + P2 checkout disclosure merged; refund tiers snapshot at booking. Flag `pro_cancellation_policy` **OFF** (standard 24h/6h tiers apply to all). Next: P3 turn-on for Pro, per-service presets (P4 done).
+- **TDS/TCS v2 withholding** 🔄 — config-driven engine (PAN + GSTIN-aware, individual threshold) merged behind `tds_tcs_v2` **OFF**; live path stays flat 1% + 1%. Next: founder/CA go-live.
+- **Tithi (support + community bot)** 🔄 — first-responder, in-thread answers, release-note publisher, nightly digest, proactive nudges all merged; community + Tithi behaviour flag-gated. Next: eval → flag flips per launch checklist.
+- **Free→Pro conversion nudges** ✅ live — commission-paid meter, plan comparison, profile-view counts shipped.
+- **LinkedIn host login** 🔄 — code live, flag `host_linkedin_login` **OFF**. Next: founder go-live.
+- **Community** 🔄 — pages + Tithi integration shipped, all `community*` flags **OFF**.
+
+> Flags OFF = built, not customer-facing. DISHA does not announce or promise these until a flag is ON.
+
+---
+
 ## Core Platform (Done)
 
 ### Booking Engine ✅

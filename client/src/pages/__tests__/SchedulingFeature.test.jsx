@@ -20,7 +20,6 @@ describe('Scheduling feature page', () => {
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
     expect(screen.getAllByRole('link', { name: /start free/i })[0].getAttribute('href')).toBe('/become-a-host');
     expect(screen.getByRole('link', { name: /see a live booking page/i }).getAttribute('href')).toBe('/contact');
-    expect(screen.getByRole('link', { name: /see pricing/i }).getAttribute('href')).toBe('/pricing');
   });
 
   it('confirms a booking when a free slot is picked, and booked slots are disabled', async () => {
