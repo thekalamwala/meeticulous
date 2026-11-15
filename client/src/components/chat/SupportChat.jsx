@@ -206,13 +206,15 @@ export default function SupportChat() {
 
     // Poll fallback — reconcile against server history while the tab is visible.
     // `append` dedupes by id, so re-seeing known messages is a no-op; only genuinely
-    // missed replies get added.
+    // missed replies get added. Kept very short (1.5s) so a bot/human reply feels
+    // near-instant even when the realtime broadcast never arrives (the common case:
+    // anon channel join fails silently), instead of only on refresh.
     const poll = setInterval(() => {
       if (document.visibilityState !== 'visible') return;
       getSupportMessages(thread.id)
         .then(({ data }) => { (data.messages || []).forEach(append); })
         .catch(() => {});
-    }, 20000);
+    }, 1500);
 
     return () => {
       cancelled = true;
