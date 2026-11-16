@@ -451,10 +451,13 @@ allowed to pass, and the result is reported. A move still inside its window show
 as *still measuring* rather than claiming a verdict, and a losing move is shown
 losing — a page that reports only its wins is marketing, not measurement.
 
-Delivery: in-app on Insights, and weekly by email through the **existing**
-`weeklyHostRecap` service (`SCHEDULED_JOBS` → `weekly-recap`) — a new section in a
-mail that already ships, not a new mail. An LLM may rephrase a rule's output; it may
-never invent a number, and the numbers are computed before any text is generated.
+Delivery: in-app on Insights, **and weekly by email** (§17.3, decided) through
+the **existing** `weeklyHostRecap` service (`SCHEDULED_JOBS` → `weekly-recap`) —
+a new section in a mail that already ships, not a new mail. `worthSending()` is
+re-pointed rather than removed: a host with no bookings and nothing upcoming
+qualifies only if there is at least one insight for them, so a host with nothing
+to say to still hears nothing. An LLM may rephrase a rule's output; it may never
+invent a number, and the numbers are computed before any text is generated.
 
 v1 rules (each one a metric already in §9): commission above Pro price · at-risk
 guests with LTV · a funnel step below cohort median · a demand window with no
@@ -759,7 +762,7 @@ Each phase is independently shippable and independently useful.
 | **3. Money (free) + Overview (gated)** | Money page live off `bookings`, **ungated** per §6.4; Overview with commission leak (free) + forecast/win-back/goal strip (Pro) | 2 (not for Money — it needs no events) | Net revenue ties to a hand-reconciled payout for a real host; a free host's API response provably contains none of the six gated figures; `limits.insights` read from `subscription_plans`, nothing hardcoded |
 | **4. Audience & Conversion** | Traffic, funnel (4 stages — no slot step, §11.3), services, devices; async attribution resolver; repoint the Dashboard view tile at the rollup (§9.2) | 3 + **≥14 days of events counted from the prod deploy**, since the bus is prod-host-gated | Funnel denominators match the dictionary; `unknown` attribution bucket visible, never dropped; one profile-view number across both surfaces |
 | **5. Demand & Customers** | Utilisation, heatmap, lead time, LTV, cohorts, retention | 3 | Utilisation never >100%; one guest never double-counted across identity fallbacks |
-| **6. Benchmarks + Insights section** | `benchmark_daily`, `cohort_key` normaliser, k≥5 suppression, 7 v1 rules · **Insights as its own section (§17.7)**: `insight_moves` persisted with `status` and a nullable `outcome`, This week / History / What worked (+ weekly-recap section **only if §17.3 says so**) | 3–5 | No host's row ever leaves the server (test); a rule with empty evidence renders nothing (test); an unmatched profession is excluded, not pooled; **a move inside its window reports "still measuring", never a verdict, and a losing outcome renders as a loss** |
+| **6. Benchmarks + Insights section** | `benchmark_daily`, `cohort_key` normaliser, k≥5 suppression, 7 v1 rules · **Insights as its own section (§17.7)**: `insight_moves` persisted with `status` and a nullable `outcome`, This week / History / What worked · **the weekly email (§17.3): an insight block in `weeklyHostRecap`, `worthSending()` re-pointed, then `WEEKLY_RECAP_ENABLED=true` on Render at this deploy** | 3–5 | No host's row ever leaves the server (test); a rule with empty evidence renders nothing (test); an unmatched profession is excluded, not pooled; **a move inside its window reports "still measuring", never a verdict, and a losing outcome renders as a loss**; **a host with no bookings AND no insights still receives no email** (the `worthSending` test asserts it) |
 | **7. Forecast + anomaly** | Projections, demand prediction, anomaly detection | ≥90 days of history | Every estimate visibly labelled with its basis; no estimate rendered without one |
 | **8. Community section** | Activity, Mentions, Answer, Spaces (§17.8). Reads `community_posts` / `community_comments` / `community_members`; no writes — posting stays at `/community`. **Answer** needs one new query: posts in `help`/`host-corner` with `accepted_comment_id IS NULL`, ordered by age | the `community` flag being on | Mentions resolves only via `mentions_host_id`, never a name match; a space the host may not post in offers no composer; every row deep-links to the real thread rather than rendering it here |
 | **9. Hardening** | Partitioning if triggered, retention job, perf budget, export limits, privacy copy | all | p95 <800 ms on every endpoint at 10× current data; retention job proven to delete |
@@ -877,7 +880,33 @@ primitives into production. **(a) is cheaper if Host Lab is the agreed direction
 (b) is the only option if it isn't.** This decides the PR base, Phase 1's shape and
 which nav Phase 3 ships into.
 
-### 17.3 The weekly email
+### 17.3 The weekly email — **DECIDED 2026-11-16: switch it on, with phase 6**
+
+Insights go out weekly by email. Two code changes and one env flip, and the
+order between them matters:
+
+1. **The insight section is added to `weeklyHostRecap`** — a new block in a mail
+   that already ships, not a new mail.
+2. **`worthSending()` is relaxed** so a host with no bookings and nothing
+   upcoming still qualifies *when there is at least one insight for them*. Today
+   it is `bookings > 0 || upcoming > 0`, and the mail carries exactly three
+   numbers: bookings, earnings, upcoming.
+3. **`WEEKLY_RECAP_ENABLED=true`** on Render, at that deploy.
+
+**Why the flip rides phase 6 rather than happening now.** Until the insight
+engine exists, the mail contains no insights — flipping the env today sends the
+*existing* booking recap, which is a different decision about a different mail.
+And relaxing `worthSending` before the engine lands is strictly worse: it would
+email a host with no bookings, nothing upcoming **and** nothing to recommend —
+three zeros and a greeting. That is precisely the nag its author guarded
+against, and the comment on the line says so: *"never nag a dead host"*. The
+guard is not removed, it is re-pointed: silence still beats a ₹0 email, but a
+real recommendation is no longer silence.
+
+Acceptance for the email leg sits in phase 6: a host with no bookings and no
+insights still receives nothing.
+
+Original question, for the record:
 
 §10 planned to deliver insights through `weeklyHostRecap`. It is **off in production**
 (`WEEKLY_RECAP_ENABLED !== 'true'` → `{skipped:'disabled'}`) and `worthSending()`
