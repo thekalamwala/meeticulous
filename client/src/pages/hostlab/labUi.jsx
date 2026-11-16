@@ -15,9 +15,112 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Search, TrendingDown, TrendingUp, X } from 'lucide-react';
 import { cn } from '../../components/dashboard/ui';
 import { pageMeta } from './nav';
+
+/* ── Drawer ───────────────────────────────────────────────────────────────
+ * Two bugs in the kit's Modal, both only visible once you close one.
+ *
+ * 1. It slides in and then vanishes. AnimatePresence can only play an exit
+ *    while its child is still mounted, and the callers returned null the
+ *    moment the selection cleared — so the component was gone before the
+ *    animation could start. `open` is a prop here, and the caller keeps the
+ *    last item on screen while it leaves (see useLast).
+ *
+ * 2. The list jumped. Locking the body with `overflow: hidden` drops the
+ *    scroll position and removes the scrollbar, so the page reflows and the
+ *    row you clicked is no longer under your cursor. This pins the body at a
+ *    negative offset instead and keeps the scrollbar gutter, so nothing moves
+ *    horizontally or vertically — and restores the exact position on close.
+ * ---------------------------------------------------------------------- */
+
+/** Holds the last non-null value, so content does not blank out mid-exit. */
+export const useLast = (value) => {
+  const ref = useRef(value);
+  if (value != null) ref.current = value;
+  return value ?? ref.current;
+};
+
+export const Drawer = ({ open, onClose, title, subtitle, children, width = 'sm:w-[480px]' }) => {
+  useEffect(() => {
+    if (!open) return undefined;
+    const y = window.scrollY;
+    const { body } = document;
+    const prev = { position: body.style.position, top: body.style.top, width: body.style.width, overflowY: body.style.overflowY };
+    body.style.position = 'fixed';
+    body.style.top = `-${y}px`;
+    body.style.width = '100%';
+    body.style.overflowY = 'scroll'; // keep the gutter so nothing shifts sideways
+    return () => {
+      Object.assign(body.style, prev);
+      window.scrollTo(0, y);
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
+
+  // Both children are motion components with keys, and neither is wrapped in a
+  // plain element. AnimatePresence only tracks its DIRECT children: with a
+  // <div> in between, the panel mounted at `initial` and stayed there — it
+  // never animated in, and there was nothing for the exit to play on. So each
+  // positions itself rather than sharing a flex wrapper.
+  return createPortal(
+    <AnimatePresence>
+      {open && (
+        <>
+          <motion.div
+            key="drawer-backdrop"
+            className="fixed inset-0 z-[100] bg-ink/35"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            onClick={onClose}
+            aria-hidden="true"
+          />
+          <motion.aside
+            key="drawer-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-label={title}
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            // Tween, not spring. A spring asymptotes, so AnimatePresence never
+            // sees the exit finish and leaves the node mounted off-screen.
+            // Bounded easing also matches the brand's 140–220ms, no-bounce rule.
+            transition={{ duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
+            className={cn('fixed inset-y-0 right-0 z-[101] flex w-full flex-col border-l-2 border-neutral-200 bg-white dash-elev-3', width)}
+          >
+            <header className="flex shrink-0 items-start gap-2 border-b-2 border-neutral-200 px-3 py-2.5">
+              <div className="min-w-0 flex-1">
+                <h2 className="mb-0 truncate font-display text-[13.5px] font-bold tracking-[-0.02em] text-ink">{title}</h2>
+                {subtitle && <p className="mt-0.5 truncate text-[11px] font-medium text-ink/50">{subtitle}</p>}
+              </div>
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close"
+                className="grid h-7 w-7 shrink-0 place-items-center rounded-xs text-ink/45 transition hover:bg-blush hover:text-maroon"
+              >
+                <X className="h-4 w-4" strokeWidth={2.4} />
+              </button>
+            </header>
+            <div className="min-h-0 flex-1 overflow-y-auto p-3">{children}</div>
+          </motion.aside>
+        </>
+      )}
+    </AnimatePresence>,
+    document.body,
+  );
+};
 
 /* ── useSubPage ───────────────────────────────────────────────────────────
  * A destination's sub-pages are real routes (/host-lab/money/payouts), not a

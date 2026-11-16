@@ -10,14 +10,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   ArrowDownUp, CalendarDays, CalendarX2, Check, Clock, Copy, Download, LayoutList,
-  List, MessageSquare, Plus, RotateCcw, Trash2, UserX, Video, X,
+  CalendarRange, List, MessageSquare, Plus, RotateCcw, Trash2, UserX, Video, X,
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Button, Modal, cn } from '../../../components/dashboard/ui';
 import {
   Avatar, LabInput as Input, LabSelect as Select,
-  Panel, StatusPill, fmtDayFull, fmtTime, inr, relDay,
+  Drawer, Panel, StatusPill, fmtDayFull, fmtTime, inr, relDay, useLast, useSubPage,
 } from '../labUi';
 import { CheckBox, Filter, FilterBar, ViewSwitch } from '../filters';
 import mock from '../mockData';
@@ -70,7 +70,7 @@ const inRange = (iso, range) => {
 };
 
 /* ── Detail drawer — the list stays behind it, so you keep your place ──── */
-const BookingDrawer = ({ booking, onClose, onAction }) => {
+const BookingDrawer = ({ open, booking, onClose, onAction }) => {
   const [confirming, setConfirming] = useState(null);
   const [note, setNote] = useState('');
   useEffect(() => { setConfirming(null); setNote(booking?.host_note || ''); }, [booking]);
@@ -96,7 +96,12 @@ const BookingDrawer = ({ booking, onClose, onAction }) => {
   };
 
   return (
-    <Modal open drawer size="lg" onClose={onClose} title={`${booking.guest_name} · ${booking.ref}`}>
+    <Drawer
+      open={open}
+      onClose={onClose}
+      title={booking.guest_name}
+      subtitle={`${booking.ref} · ${booking.services.title}`}
+    >
       <div className="flex flex-col gap-2.5">
         <div className="flex flex-wrap items-center gap-1.5">
           <StatusPill status={booking.status} />
@@ -188,7 +193,7 @@ const BookingDrawer = ({ booking, onClose, onAction }) => {
           </div>
         )}
       </div>
-    </Modal>
+    </Drawer>
   );
 };
 
@@ -261,8 +266,9 @@ const AddBooking = ({ open, onClose }) => {
 /* ── Page ──────────────────────────────────────────────────────────────── */
 const Bookings = () => {
   const [params, setParams] = useSearchParams();
-  const [mode, setMode] = useState('list');
-  const [calView, setCalView] = useState('week');
+  // Which view is open is a URL, not component state: a week you are looking
+  // at is a thing you can send someone.
+  const mode = useSubPage('bookings').slug;
   const [anchor, setAnchor] = useState(() => new Date());
   const [q, setQ] = useState('');
   const [statuses, setStatuses] = useState([]);
@@ -378,6 +384,8 @@ const Bookings = () => {
   }, [filtered]);
 
   const openBooking = rows.find((b) => b.id === openId) || null;
+  // Holds the booking on screen while the drawer animates out.
+  const drawerBooking = useLast(openBooking);
   const allPicked = filtered.length > 0 && picked.length === filtered.length;
 
   return (
@@ -420,11 +428,11 @@ const Bookings = () => {
             />
             <ViewSwitch
               value={mode}
-              onChange={setMode}
               options={[
-                { value: 'list', label: 'List', icon: List },
-                { value: 'calendar', label: 'Calendar', icon: CalendarDays },
-                { value: 'agenda', label: 'Agenda', icon: LayoutList },
+                { value: 'list', label: 'List', icon: List, to: '/host-lab/bookings/list' },
+                { value: 'week', label: 'Week', icon: CalendarDays, to: '/host-lab/bookings/week' },
+                { value: 'month', label: 'Month', icon: CalendarRange, to: '/host-lab/bookings/month' },
+                { value: 'agenda', label: 'Agenda', icon: LayoutList, to: '/host-lab/bookings/agenda' },
               ]}
             />
           </>
@@ -609,36 +617,23 @@ const Bookings = () => {
       )}
 
       {/* ── CALENDAR ── */}
-      {mode === 'calendar' && (
+      {(mode === 'week' || mode === 'month') && (
         <Panel
           flush
-          title={calView === 'month'
+          title={mode === 'month'
             ? anchor.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })
             : `${weekDays[0].date.getDate()} – ${weekDays[6].date.getDate()} ${weekDays[6].date.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}`}
           action={(
             <div className="flex items-center gap-1.5">
-              <div className="flex items-center rounded-full border-2 border-neutral-200 bg-cream p-0.5">
-                {['week', 'month'].map((v) => (
-                  <button
-                    key={v}
-                    type="button"
-                    onClick={() => setCalView(v)}
-                    aria-pressed={calView === v}
-                    className={cn('rounded-full px-2.5 py-1 text-[10.5px] font-bold capitalize transition', calView === v ? 'bg-maroon text-white' : 'text-ink/45')}
-                  >
-                    {v}
-                  </button>
-                ))}
-              </div>
               <Button size="sm" variant="ghost" onClick={() => setAnchor(new Date())}>Today</Button>
               <div className="flex gap-1">
-                <button type="button" aria-label="Previous" onClick={() => setAnchor((a) => (calView === 'month' ? new Date(a.getFullYear(), a.getMonth() - 1, 1) : addDays(a, -7)))} className="grid h-6 w-6 place-items-center rounded-full border-2 border-neutral-200 text-ink/55 hover:border-maroon/40">‹</button>
-                <button type="button" aria-label="Next" onClick={() => setAnchor((a) => (calView === 'month' ? new Date(a.getFullYear(), a.getMonth() + 1, 1) : addDays(a, 7)))} className="grid h-6 w-6 place-items-center rounded-full border-2 border-neutral-200 text-ink/55 hover:border-maroon/40">›</button>
+                <button type="button" aria-label="Previous" onClick={() => setAnchor((a) => (mode === 'month' ? new Date(a.getFullYear(), a.getMonth() - 1, 1) : addDays(a, -7)))} className="grid h-6 w-6 place-items-center rounded-full border-2 border-neutral-200 text-ink/55 hover:border-maroon/40">‹</button>
+                <button type="button" aria-label="Next" onClick={() => setAnchor((a) => (mode === 'month' ? new Date(a.getFullYear(), a.getMonth() + 1, 1) : addDays(a, 7)))} className="grid h-6 w-6 place-items-center rounded-full border-2 border-neutral-200 text-ink/55 hover:border-maroon/40">›</button>
               </div>
             </div>
           )}
         >
-          {calView === 'week' ? (
+          {mode === 'week' ? (
             <div className="overflow-x-auto">
               <div className="grid min-w-[840px] grid-cols-7">
                 {weekDays.map(({ date, items }, i) => {
@@ -743,7 +738,12 @@ const Bookings = () => {
         </div>
       )}
 
-      <BookingDrawer booking={openBooking} onClose={() => { setOpenId(null); setParams({}, { replace: true }); }} onAction={act} />
+      <BookingDrawer
+        open={!!openBooking}
+        booking={drawerBooking}
+        onClose={() => { setOpenId(null); setParams({}, { replace: true }); }}
+        onAction={act}
+      />
       <AddBooking open={adding} onClose={() => { setAdding(false); setParams({}, { replace: true }); }} />
     </div>
   );

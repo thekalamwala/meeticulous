@@ -16,6 +16,7 @@
 // filters": present, not in the way.
 // ─────────────────────────────────────────────────────────────────────────────
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Check, ChevronDown, Search, SlidersHorizontal, X } from 'lucide-react';
 import { cn } from '../../components/dashboard/ui';
 
@@ -226,22 +227,27 @@ export const CheckBox = ({ checked, onChange, label, className = '' }) => (
   </label>
 );
 
-/** Segmented view switcher — list / calendar / agenda, and the like. */
+/** Segmented view switcher. An option with `to` navigates, because a view of
+ *  a list is a place you can link someone to — the switch is the control, the
+ *  URL is the truth. Without `to` it falls back to local state. */
 export const ViewSwitch = ({ value, onChange, options }) => (
   <div className="flex shrink-0 items-center rounded-sm border-2 border-neutral-200 bg-cream p-0.5">
-    {options.map((o) => (
-      <button
-        key={o.value}
-        type="button"
-        onClick={() => onChange(o.value)}
-        aria-pressed={value === o.value}
-        aria-label={o.label}
-        title={o.label}
-        className={cn('grid h-6 w-7 place-items-center rounded-xs transition', value === o.value ? 'bg-maroon text-white' : 'text-ink/45 hover:text-ink')}
-      >
-        <o.icon className="h-3.5 w-3.5" strokeWidth={2.4} />
-      </button>
-    ))}
+    {options.map((o) => {
+      const on = value === o.value;
+      const cls = cn(
+        'grid h-6 w-7 place-items-center rounded-xs transition',
+        on ? 'bg-maroon text-white' : 'text-ink/45 hover:text-ink',
+      );
+      return o.to ? (
+        <Link key={o.value} to={o.to} aria-current={on ? 'page' : undefined} aria-label={o.label} title={o.label} className={cls}>
+          <o.icon className="h-3.5 w-3.5" strokeWidth={2.4} />
+        </Link>
+      ) : (
+        <button key={o.value} type="button" onClick={() => onChange(o.value)} aria-pressed={on} aria-label={o.label} title={o.label} className={cls}>
+          <o.icon className="h-3.5 w-3.5" strokeWidth={2.4} />
+        </button>
+      );
+    })}
   </div>
 );
 
