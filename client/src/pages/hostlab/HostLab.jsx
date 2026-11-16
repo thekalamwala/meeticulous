@@ -64,7 +64,7 @@ const NavRow = ({ item, activeTab, expanded, onToggle, onNavigate }) => {
           onClick={onNavigate}
           className={({ isActive }) =>
             cn(
-              'flex h-7 items-center gap-2 rounded-md px-2 text-[12px] font-semibold transition',
+              'flex h-7 items-center gap-2 rounded-sm px-2 text-[12px] font-semibold transition',
               ring,
               tabs && 'pr-7',
               isActive ? 'bg-maroon text-white' : 'text-ink/60 hover:bg-blush hover:text-ink',
@@ -85,7 +85,7 @@ const NavRow = ({ item, activeTab, expanded, onToggle, onNavigate }) => {
             onClick={() => onToggle(item.to)}
             aria-expanded={expanded}
             aria-label={`${expanded ? 'Collapse' : 'Expand'} ${item.label}`}
-            className={cn('absolute right-1 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded text-ink/40 transition hover:text-ink', ring)}
+            className={cn('absolute right-1 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-xs text-ink/40 transition hover:text-ink', ring)}
           >
             <ChevronRight className={cn('h-3.5 w-3.5 transition-transform', expanded && 'rotate-90')} strokeWidth={2.6} />
           </button>
@@ -100,7 +100,7 @@ const NavRow = ({ item, activeTab, expanded, onToggle, onNavigate }) => {
                 to={`${href(item.to)}?tab=${t.value}`}
                 onClick={onNavigate}
                 className={cn(
-                  'flex h-6 items-center rounded-md px-2 text-[11.5px] transition',
+                  'flex h-6 items-center rounded-xs px-2 text-[11.5px] transition',
                   ring,
                   activeTab === t.value ? 'bg-blush font-semibold text-maroon' : 'font-medium text-ink/50 hover:bg-cream hover:text-ink',
                 )}
@@ -153,7 +153,7 @@ const SidebarBody = ({ onNavigate }) => {
           target="_blank"
           rel="noreferrer"
           onClick={(e) => { e.preventDefault(); onNavigate?.(); }}
-          className={cn('flex items-center gap-1.5 rounded-lg border-2 border-maroon-100 bg-maroon-50 p-2 transition hover:border-maroon/40', ring)}
+          className={cn('flex items-center gap-1.5 rounded-sm border-2 border-maroon-100 bg-maroon-50 p-2 transition hover:border-maroon/40', ring)}
         >
           <span className="grid h-6 w-6 shrink-0 place-items-center rounded bg-white text-maroon">
             <ExternalLink className="h-3.5 w-3.5" strokeWidth={2.4} />
@@ -180,7 +180,7 @@ const Popover = ({ open, onClose, label, width, children }) => {
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={onClose} aria-hidden="true" />
-      <div role="dialog" aria-label={label} className={cn('absolute right-0 top-full z-50 mt-1.5 overflow-hidden rounded-lg border-2 border-neutral-200 bg-white dash-elev-3', width)}>
+      <div role="dialog" aria-label={label} className={cn('absolute right-0 top-full z-50 mt-1.5 overflow-hidden rounded-md border-2 border-neutral-200 bg-white dash-elev-3', width)}>
         {children}
       </div>
     </>
@@ -203,7 +203,7 @@ const ProfileMenu = ({ onGo, onClose }) => {
   // Hover is an inset rounded slot, never an edge-to-edge band: the menu reads
   // as a stack of objects rather than a ruled list.
   const row = cn(
-    'group mx-1.5 flex w-[calc(100%-12px)] items-center gap-2 rounded-md px-2 py-[7px]',
+    'group mx-1.5 flex w-[calc(100%-12px)] items-center gap-2 rounded-sm px-2 py-[7px]',
     'text-left text-[11.5px] font-medium text-ink/70 transition hover:bg-blush hover:text-ink',
     ring,
   );
@@ -236,7 +236,7 @@ const ProfileMenu = ({ onGo, onClose }) => {
       {/* Which space you are in */}
       <div className="border-t-2 border-neutral-200 py-1.5">
         {confirmSwitch ? (
-          <div className="mx-1.5 rounded-md bg-cream p-2.5">
+          <div className="mx-1.5 rounded-sm bg-cream p-2.5">
             <p className="text-[10.5px] font-medium leading-snug text-ink/70">
               One identity, two doors. Switching signs you out of hosting on this device.
             </p>
@@ -272,7 +272,7 @@ const ProfileMenu = ({ onGo, onClose }) => {
         <button
           type="button"
           onClick={() => onGo('grow?tab=page')}
-          className={cn('block w-full rounded-md border-2 p-2 text-left transition', ring,
+          className={cn('block w-full rounded-sm border-2 p-2 text-left transition', ring,
             setupLeft ? 'border-marigold-300 bg-marigold-100 hover:border-marigold' : 'border-success-fg/25 bg-success-bg')}
         >
           <span className="flex items-center gap-1.5">

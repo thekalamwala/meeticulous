@@ -254,21 +254,21 @@ const Transactions = () => {
             <thead>
               <tr className="border-b-2 border-neutral-200 bg-cream text-[10px] uppercase tracking-wide text-ink/45">
                 {['Date', 'Ref', 'Client', 'Service', 'Status', 'Gross', 'Fee', 'Net'].map((h) => (
-                  <th key={h} scope="col" className={cn('px-2.5 py-1.5 font-bold', ['Gross', 'Fee', 'Net'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
+                  <th key={h} scope="col" className={cn('px-3 py-2 font-bold', ['Gross', 'Fee', 'Net'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y-2 divide-neutral-200">
               {rows.map((b) => (
                 <tr key={b.id} className="transition-colors hover:bg-cream">
-                  <td className="px-2.5 py-1.5 font-medium text-ink/70">{fmtDayFull(b.scheduled_at)}</td>
-                  <td className="px-2.5 py-1.5 font-mono text-[10.5px] text-ink/55">{b.ref}</td>
-                  <td className="px-2.5 py-1.5 font-bold text-ink">{b.guest_name}</td>
-                  <td className="px-2.5 py-1.5 max-w-[160px] truncate font-medium text-ink/70">{b.services.title}</td>
-                  <td className="px-2.5 py-1.5"><StatusPill status={b.payment_status} /></td>
-                  <td className="px-2.5 py-1.5 text-right font-bold tabular-nums text-ink">{inr(b.amount)}</td>
-                  <td className="px-2.5 py-1.5 text-right tabular-nums text-ink/55">{b.platform_fee ? `−${inr(b.platform_fee)}` : '—'}</td>
-                  <td className="px-2.5 py-1.5 text-right font-bold tabular-nums text-maroon">{inr(b.amount - b.platform_fee)}</td>
+                  <td className="px-3 py-2 font-medium text-ink/70">{fmtDayFull(b.scheduled_at)}</td>
+                  <td className="px-3 py-2 font-mono text-[10.5px] text-ink/55">{b.ref}</td>
+                  <td className="px-3 py-2 font-bold text-ink">{b.guest_name}</td>
+                  <td className="px-3 py-2 max-w-[160px] truncate font-medium text-ink/70">{b.services.title}</td>
+                  <td className="px-3 py-2"><StatusPill status={b.payment_status} /></td>
+                  <td className="px-3 py-2 text-right font-bold tabular-nums text-ink">{inr(b.amount)}</td>
+                  <td className="px-3 py-2 text-right tabular-nums text-ink/55">{b.platform_fee ? `−${inr(b.platform_fee)}` : '—'}</td>
+                  <td className="px-3 py-2 text-right font-bold tabular-nums text-maroon">{inr(b.amount - b.platform_fee)}</td>
                 </tr>
               ))}
             </tbody>

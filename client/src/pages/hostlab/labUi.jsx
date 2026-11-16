@@ -89,7 +89,7 @@ export const Tile = ({ label, value, delta, deltaLabel, hint, onClick, accent = 
       type={onClick ? 'button' : undefined}
       onClick={onClick}
       className={cn(
-        'flex min-w-0 flex-col rounded-lg border-2 p-2 text-left transition',
+        'flex min-w-0 flex-col rounded-md border-2 p-2.5 text-left transition',
         accent ? 'border-maroon bg-maroon text-white' : 'border-neutral-200 bg-white',
         onClick && 'hover:border-maroon/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose',
       )}
@@ -467,9 +467,9 @@ export const StatusPill = ({ status, children }) => {
 
 /* ── SectionCard — the one card shape the lab uses ─────────────────────── */
 export const Panel = ({ title, subtitle, action, children, className = '', flush = false }) => (
-  <section className={cn('overflow-hidden rounded-xl border-2 border-neutral-200 bg-white', className)}>
+  <section className={cn('overflow-hidden rounded-lg border-2 border-neutral-200 bg-white', className)}>
     {(title || action) && (
-      <header className="flex flex-wrap items-center justify-between gap-1.5 border-b-2 border-neutral-200 px-2.5 py-1.5">
+      <header className="flex flex-wrap items-center justify-between gap-1.5 border-b-2 border-neutral-200 px-3 py-2">
         <div className="min-w-0">
           {title && <h2 className="mb-0 font-display text-[12.5px] font-bold tracking-[-0.02em] text-ink">{title}</h2>}
           {subtitle && <p className="mt-0.5 text-[10.5px] font-medium text-ink/50">{subtitle}</p>}
@@ -477,9 +477,28 @@ export const Panel = ({ title, subtitle, action, children, className = '', flush
         {action}
       </header>
     )}
-    <div className={flush ? '' : 'p-2.5'}>{children}</div>
+    <div className={flush ? '' : 'p-3'}>{children}</div>
   </section>
 );
+
+/* ── RADIUS AT CONSOLE DENSITY ────────────────────────────────────────────
+ * The brand radius scale (inputs 16 · slots 20 · cards 24 · dialogs 32) was
+ * drawn for booking-page furniture, where the smallest thing it names is tall.
+ * Carried onto a 24px list row, a 16px corner is two thirds of the height and
+ * the row reads as a capsule — which is exactly how this prototype went wrong
+ * after two density passes scaled padding and heights but left radii alone.
+ *
+ * Rule: a radius is about a third of the element's height, capped by the brand
+ * scale. Nothing is square-cornered; nothing below 40px tall is a pill either.
+ *
+ *   24px sub-row ......... rounded-xs  (6px)
+ *   28–32px row / input .. rounded-sm  (10px)
+ *   tiles, popovers ...... rounded-md  (16px)
+ *   panels, cards ........ rounded-lg  (20px)
+ *   dialogs .............. rounded-3xl (32px)
+ *   chips, badges, buttons pill — the brand mandates these, and they are
+ *                          short-and-wide, so a pill reads as intended.
+ * ---------------------------------------------------------------------- */
 
 /* ── Fields ───────────────────────────────────────────────────────────────
  * The kit's Form.jsx still ships pre-rebrand styling: `rounded` (10px) where
@@ -490,7 +509,7 @@ export const Panel = ({ title, subtitle, action, children, className = '', flush
  * prototype, the lab uses these, and the fix is filed as a P0 in the report.
  * ---------------------------------------------------------------------- */
 export const FIELD =
-  'block rounded-md border-2 border-neutral-200 bg-white px-2.5 text-[12px] font-medium text-ink ' +
+  'block rounded-sm border-2 border-neutral-200 bg-white px-2.5 text-[12px] font-medium text-ink ' +
   'outline-none transition placeholder:text-ink/35 focus:border-maroon/50 ' +
   'focus-visible:ring-[3px] focus-visible:ring-rose disabled:bg-neutral-50 disabled:text-ink/40';
 

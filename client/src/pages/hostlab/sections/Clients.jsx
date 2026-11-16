@@ -309,21 +309,21 @@ const Clients = () => {
               <table className="w-full text-[11.5px]">
                 <thead>
                   <tr className="border-b-2 border-neutral-200 bg-cream text-[10px] uppercase tracking-wide text-ink/45">
-                    <th scope="col" className="w-8 px-2.5 py-1.5">
+                    <th scope="col" className="w-8 px-3 py-2">
                       <input type="checkbox" checked={allPicked} onChange={() => setPicked(allPicked ? [] : rows.map((c) => c.id))} aria-label="Select all shown" className="h-4 w-4 accent-[#960D32]" />
                     </th>
                     {['Client', 'Contact', 'Bookings', 'Lifetime value', 'Last seen', ''].map((h, i) => (
-                      <th key={h || i} scope="col" className={cn('px-2.5 py-1.5 font-bold', ['Bookings', 'Lifetime value'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
+                      <th key={h || i} scope="col" className={cn('px-3 py-2 font-bold', ['Bookings', 'Lifetime value'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y-2 divide-neutral-200">
                   {rows.map((c) => (
                     <tr key={c.id} onClick={() => setOpenId(c.id)} className={cn('cursor-pointer transition-colors hover:bg-cream', picked.includes(c.id) && 'bg-blush/60')}>
-                      <td className="px-2.5 py-1.5" onClick={(e) => e.stopPropagation()}>
+                      <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
                         <input type="checkbox" checked={picked.includes(c.id)} onChange={() => setPicked((p) => (p.includes(c.id) ? p.filter((x) => x !== c.id) : [...p, c.id]))} aria-label={`Select ${c.name}`} className="h-4 w-4 accent-[#960D32]" />
                       </td>
-                      <td className="px-2.5 py-1.5">
+                      <td className="px-3 py-2">
                         <div className="flex items-center gap-1.5">
                           <Avatar name={c.name} size="h-6 w-6 text-[9.5px]" />
                           <span className="min-w-0">
@@ -336,17 +336,17 @@ const Clients = () => {
                           </span>
                         </div>
                       </td>
-                      <td className="px-2.5 py-1.5">
+                      <td className="px-3 py-2">
                         <p className="max-w-[170px] truncate font-medium text-ink/70">{c.email}</p>
                         <p className="text-[10.5px] text-ink/45">{c.phone}</p>
                       </td>
-                      <td className="px-2.5 py-1.5 text-right font-bold tabular-nums text-ink">{c.bookings_count}</td>
-                      <td className="px-2.5 py-1.5 text-right font-bold tabular-nums text-maroon">{inr(c.total_spent)}</td>
-                      <td className="px-2.5 py-1.5">
+                      <td className="px-3 py-2 text-right font-bold tabular-nums text-ink">{c.bookings_count}</td>
+                      <td className="px-3 py-2 text-right font-bold tabular-nums text-maroon">{inr(c.total_spent)}</td>
+                      <td className="px-3 py-2">
                         <p className="font-medium text-ink/70">{daysSince(c.last_booking_at)}d ago</p>
                         <p className="text-[10.5px] text-ink/45">{fmtDayFull(c.last_booking_at)}</p>
                       </td>
-                      <td className="px-2.5 py-1.5 text-right" onClick={(e) => e.stopPropagation()}>
+                      <td className="px-3 py-2 text-right" onClick={(e) => e.stopPropagation()}>
                         <button
                           type="button"
                           onClick={() => toast.success(`WhatsApp drafted for ${c.name}`)}

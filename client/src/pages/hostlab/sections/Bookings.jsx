@@ -520,7 +520,7 @@ const Bookings = () => {
                 <table className="w-full text-[11.5px]">
                   <thead>
                     <tr className="border-b-2 border-neutral-200 bg-cream text-[10px] uppercase tracking-wide text-ink/45">
-                      <th scope="col" className="w-8 px-2.5 py-1.5">
+                      <th scope="col" className="w-8 px-3 py-2">
                         <input
                           type="checkbox"
                           checked={allPicked}
@@ -530,7 +530,7 @@ const Bookings = () => {
                         />
                       </th>
                       {['When', 'Client', 'Service', 'Status', 'Payment', 'Value'].map((h) => (
-                        <th key={h} scope="col" className={cn('px-2.5 py-1.5 font-bold', h === 'Value' ? 'text-right' : 'text-left')}>{h}</th>
+                        <th key={h} scope="col" className={cn('px-3 py-2 font-bold', h === 'Value' ? 'text-right' : 'text-left')}>{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -541,7 +541,7 @@ const Bookings = () => {
                         onClick={() => setOpenId(b.id)}
                         className={cn('cursor-pointer transition-colors hover:bg-cream', picked.includes(b.id) && 'bg-blush/60')}
                       >
-                        <td className="px-2.5 py-1.5" onClick={(e) => e.stopPropagation()}>
+                        <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
                           <input
                             type="checkbox"
                             checked={picked.includes(b.id)}
@@ -550,11 +550,11 @@ const Bookings = () => {
                             className="h-4 w-4 accent-[#960D32]"
                           />
                         </td>
-                        <td className="px-2.5 py-1.5">
+                        <td className="px-3 py-2">
                           <p className="font-bold text-ink">{fmtDayFull(b.scheduled_at)}</p>
                           <p className="text-[10.5px] font-medium text-ink/45">{fmtTime(b.scheduled_at)} · {relDay(b.scheduled_at)}</p>
                         </td>
-                        <td className="px-2.5 py-1.5">
+                        <td className="px-3 py-2">
                           <div className="flex items-center gap-1.5">
                             <Avatar name={b.guest_name} size="h-6 w-6 text-[9.5px]" />
                             <span className="min-w-0">
@@ -563,13 +563,13 @@ const Bookings = () => {
                             </span>
                           </div>
                         </td>
-                        <td className="px-2.5 py-1.5">
+                        <td className="px-3 py-2">
                           <p className="max-w-[170px] truncate font-medium text-ink/75">{b.services.title}</p>
                           <p className="text-[10.5px] text-ink/45">{b.services.duration} min</p>
                         </td>
-                        <td className="px-2.5 py-1.5"><StatusPill status={b.status} /></td>
-                        <td className="px-2.5 py-1.5"><StatusPill status={b.payment_status} /></td>
-                        <td className="px-2.5 py-1.5 text-right font-bold tabular-nums text-ink">{b.amount ? inr(b.amount) : '—'}</td>
+                        <td className="px-3 py-2"><StatusPill status={b.status} /></td>
+                        <td className="px-3 py-2"><StatusPill status={b.payment_status} /></td>
+                        <td className="px-3 py-2 text-right font-bold tabular-nums text-ink">{b.amount ? inr(b.amount) : '—'}</td>
                       </tr>
                     ))}
                   </tbody>
