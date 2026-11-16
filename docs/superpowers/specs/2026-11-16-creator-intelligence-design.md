@@ -8,6 +8,14 @@
 Covers brief deliverables 4–10 and 12–14. Deliverable 11 (clickable prototype) is
 built after this document is approved.
 
+**Revision 2 (same day):** a builder review ran this document against the codebase.
+Its findings are folded in; the calls I made are marked in §17, and the three
+decisions that are genuinely the founder's are listed there. The biggest change: the
+Supabase org is on the **free tier** (500 MB, 65 MB used), which rewrote retention,
+the event row, the rate-limit mount and the upgrade trigger — and `PLAN_MATRIX`
+already promises free hosts their earnings and commission tracker, which moved the
+gate off Money entirely.
+
 ---
 
 ## 1. Intent & why
@@ -75,6 +83,13 @@ Failure states even if it technically works:
 - **`profile_views` is a counter with no timestamp.** The 72 existing views cannot
   become a time series. Day one of the event store is day one of all trend data, and
   the UI must say so rather than draw a line from nothing.
+- **Supabase is on the FREE tier — a 500 MB hard cap, 65 MB used today (49 MB of
+  public tables), on the same database that serves booking writes.** Measured
+  2026-11-16 (org `ruoczznftdubvktmdoug`, `plan: free`). This is the tightest
+  constraint in the design and it rewrites retention, the event row and the upgrade
+  trigger. At ~500 bytes per event row all-in (row + three indexes), 435 MB of
+  headroom is ~870k events *absolute*; the analytics budget is **200 MB ≈ 400k raw
+  events**. Filling this database is a payments outage, not an analytics outage.
 - **Infra:** Render free (no Shell, no one-off jobs), Supabase Postgres, Vercel client.
   Crons are the `SCHEDULED_JOBS` array in `server/server.js` driven by `runIfDue`
   (`utils/jobRunner`, persisted in `job_runs`, leader-elected). A new job is one line there.
@@ -123,11 +138,20 @@ Full comparison in the research doc §3.2. Summary of why **first-party on Postg
   free tier carries no SLA for a feature a host paid ₹1,179 for.
 - **Reversible.** A frozen event schema is precisely what you replay into ClickHouse later.
 
-**Written upgrade trigger** (so this is a measurement, not a vibe): move the store
-off Postgres when any of these holds for two consecutive months — raw events
->20M rows/month · p95 on a rollup-backed endpoint >800ms · rollup job >10 min ·
-analytics I/O measurably degrading booking writes. First response is partitioning
-and coarser rollups, not a new database.
+**Written upgrade trigger** (so this is a measurement, not a vibe). The free-tier
+cap makes this a **size** trigger, not a row-count one — "20M rows/month" would have
+been a fantasy on 500 MB:
+
+| Signal | Threshold | First response |
+|---|---|---|
+| `pg_total_relation_size('analytics_events')` | >150 MB sustained | Shorten raw retention (30d → 14d); prune runs hourly |
+| Total `pg_database_size` | >350 MB (70% of cap) | **Ingest stops accepting** (see the size guard, §11.5) and the founder is alerted |
+| p95 on a rollup-backed endpoint | >800 ms | Coarser rollups, then narrower ranges |
+| Rollup job duration | >10 min | Batch by host, then incremental-only |
+| Analytics I/O degrading booking writes | any measurable effect | Ingest off by flag, immediately |
+
+Only once Supabase is on a paid tier (8 GB) does the question "ClickHouse or not"
+become real. Until then the ceiling is the plan, not the engine.
 
 ### 6.3 Where non-page metrics live
 
@@ -142,15 +166,42 @@ target is a settings form):
 
 ### 6.4 Gating
 
-Server-side, always: every Intelligence endpoint resolves the plan via
-`planService.isFreeSlug` and **a free host's response never contains the real
-numbers** — it returns the headline figure the teaser is allowed to show plus
-`locked: true`. The client renders the existing blur-overlay pattern from
-`ConversionFunnel.jsx` and links to `/dashboard/upgrade?src=intel-<page>`.
+**`PLAN_MATRIX` already promises free hosts "Earnings & transaction history ✓" and
+"Commission tracker — see what you've paid ✓"** (`client/src/data/plans.js:169-170`),
+and `/dashboard/earnings` is ungated today. So Money **cannot** be Pro-gated: that
+would paywall data the host already has for free one click away, break a published
+promise, and trip the parent design's "real gates only" constraint. It would also be
+a weak gate — the conversion value of fencing off something reachable elsewhere is
+near zero.
 
-Which headline a free host *does* see (honest, and the strongest hook we have):
-**commission already paid** and **what Pro would have kept** — both computable from
-`bookings.commission_applied`, both already surfaced by `CommissionMeter`.
+The gate therefore lands on the **intelligence**, not the ledger:
+
+| Free | Pro |
+|---|---|
+| Money page in full (gross, net, fees, refunds, payouts, transactions, CSV) — a better rendering of what they already get | Revenue **forecast** |
+| Commission paid + "Pro would have kept ₹X" (the hook, already honest and already shipped in `CommissionMeter`) | **Win-back list** |
+| Headline counts: profile views, paid bookings | **Peer benchmarks** |
+| | **Audience & Conversion** page (sources, funnel, devices) |
+| | **Retention cohorts, LTV, segments** |
+| | **Weekly 3 moves** |
+
+None of those six is promised to free hosts anywhere, so gating them breaks no
+promise — and they are the things no competitor has, which makes this the sharper
+magnet as well as the honest one.
+
+**Mechanism:** a new `limits.insights` key on `subscription_plans` (CLAUDE.md:
+limits always come from `subscription_plans.limits`, never hardcoded), read through
+`planService.getLimit` — **not** a bare `isFreeSlug` check. A free host's response
+never contains the gated numbers; it carries the teaser headline plus `locked: true`.
+
+**Teaser component:** `ProTeaser.jsx`, which is documented as the *canonical
+replacement* for the hand-rolled blur in `ConversionFunnel`/`ClientsList`/`Products`
+and carries `?src` on every CTA. Links go to `/dashboard/upgrade?src=intel-<page>`.
+
+> **Pre-existing honesty bug, flagged not fixed here:** `ConversionFunnel.jsx:29`
+> renders *fabricated* numbers to free hosts behind the blur (`{views: 248,
+> bookings: 37, rate: 15}`). That contradicts the parent design's honesty rule.
+> Out of scope for this PR; raised separately.
 
 ### 6.5 Geography: deliberately deferred
 
@@ -303,7 +354,7 @@ The contract. A formula change is a versioned, announced change. Freshness class
 
 | Metric | Formula | Required events | Edge cases |
 |---|---|---|---|
-| **Profile views** | `count(host_profile_viewed)` | `host_profile_viewed` | Excludes the host's own sessions. **Not** the legacy `profiles.profile_views` counter, which keeps running independently for back-compat |
+| **Profile views** | `count(host_profile_viewed)` | `host_profile_viewed` | Excludes the host's own sessions. **Two counts must not coexist on two host surfaces** — that is the §4 anti-goal in miniature. The v3.205 `profiles.profile_views` counter (rendered today on `/dashboard` and feeding `ConversionFunnel`) stays as the server-side write path, but in Phase 4 the Dashboard tile and funnel are **repointed at this rollup** so there is one number. Until then the Intelligence tile is labelled "tracked views (from <date>)" and the Dashboard tile keeps its lifetime label |
 | **Unique visitors** | `count(distinct visitor_id)` over the range | any event | **Not additive across days.** Recomputed from raw for the selected range; a sum of daily uniques is wrong and the dictionary says so |
 | **Returning visitor** | visitor with ≥1 event in an earlier period | any | 400-day identifier lifetime; a cleared browser is a new visitor — a known, stated floor |
 | **Service view rate** | `service_viewed uniques ÷ profile_viewed uniques` | both | Direct-to-service arrivals have no profile view → counted in the service leg only, denominator noted |
@@ -345,7 +396,7 @@ The contract. A formula change is a versioned, announced change. Freshness class
 
 | Metric | Formula | Edge cases |
 |---|---|---|
-| **Cohort** | hosts sharing `profession` (fallback `primary_category`) with ≥1 paid booking in 90 days | — |
+| **Cohort** | hosts sharing a normalised `cohort_key`, with ≥1 paid booking in 90 days | **`profiles.profession` is free text** (`TEXT DEFAULT ''`, no CHECK), so raw values fragment — "Yoga teacher" vs "yoga instructor" would be two cohorts and k≥5 would stay unreachable even at 10× supply, killing the feature silently. So the job normalises: lowercase + trim → match against the existing profession-slug taxonomy in `client/src/config/professionIcons.js` (mirrored server-side as the single source) → unmatched falls back to `primary_category` → still unmatched is **excluded from benchmarks entirely** rather than pooled into a meaningless "other" cohort |
 | **Price percentile** | host median service price vs cohort distribution | **k-anonymity: suppressed below 5 hosts.** At 8 profiles today, every cohort is suppressed — the UI must ship a real "not enough hosts yet" state, not a placeholder |
 | **Conversion percentile** | host view→book vs cohort | same |
 | **What leaves the server** | aggregates only — medians, percentiles, counts | Never another host's row, name, price or identifier. Matches the v3.186 anon-read lockdown posture |
@@ -400,15 +451,31 @@ hold authoritatively. They are derived, not tracked.
 
 | Event | Why it can't be derived |
 |---|---|
-| `profile_link_clicked` | Outbound clicks on a host's social/website/CTA links leave no server trace. Props: `link_type` (instagram/linkedin/youtube/website/whatsapp/cta), `host_id` |
-| `service_shared` | Share intent has no row anywhere. Props: `service_id`, `channel` |
+| `profile_link_clicked` | Outbound clicks on a host's social/website/CTA links leave no server trace. Carries `link_type` (instagram/linkedin/youtube/website/whatsapp/cta) |
+| `service_shared` | Share intent has no row anywhere. Carries `channel` |
+
+**`booking_slot_picked` is declared in `events.js` and fired from nowhere** (verified:
+the only match in `client/src` is the declaration itself). So the "slot selected"
+stage would be permanently zero, and a zero stage breaks the frozen
+each-step-over-the-previous-step denominator for every stage after it. **The stage is
+dropped from the v1 funnel**: profile view → service view → booking started →
+checkout started → paid. Wiring a call site in `ServiceBooking.jsx` is an
+instrumentation change to the guest booking flow and does not belong in an analytics
+PR; if it is wired later the stage can be added back, since the rollup is recomputed
+from raw.
 
 ### 11.4 Event envelope
 
 Every event carries: `event`, `host_id`, `visitor_id`, `session_id`, `service_id?`,
 `occurred_at` (client clock, UTC), `source`, `medium`, `campaign`, `referrer_host`
-(host only, never the full URL — paths carry PII), `device_type`, `path`, `props`,
+(host only, never the full URL — paths carry PII), `device_type`, `route`,
 `ingest_id` (UUID v4, per event, for dedupe).
+
+**There is no `props jsonb` column.** On a 500 MB shared cap a free-form blob is the
+fastest way to turn an analytics feature into a payments outage; the two new events'
+only payloads (`link_type`, `channel`) go in narrow `varchar(32)` columns instead.
+`route` is the matched **route pattern** (`/:username/:serviceSlug`), capped at 64
+chars — not the full path, which is both larger and a PII risk.
 
 - **`visitor_id`:** random UUID in `localStorage`, 400-day lifetime, first-party,
   per-origin. Not derived from IP, email, phone or any user attribute. Not shared
@@ -433,7 +500,29 @@ Every event carries: `event`, `host_id`, `visitor_id`, `session_id`, `service_id
   `occurred_at` more than 48 h from server time → clamped and flagged, because client
   clocks lie.
 - **Dedupe:** unique index on `ingest_id`, `INSERT … ON CONFLICT DO NOTHING`.
-- **Rate limit:** existing `rateLimitStore` middleware, per IP and per `visitor_id`.
+- **Rate limit — its own bucket, mounted BEFORE `apiLimiter`.** The global
+  `app.use('/api', apiLimiter)` is 100 req/min **per IP**, DB-backed. Guests behind
+  carrier NAT share one bucket (the `adminLimiter` comment in `security.js` records
+  this exact failure mode forcing a redesign), beacons flush every 5 s, and each
+  limiter hit writes a `rate_limit_hits` row — i.e. the naive mount would both 429
+  guests mid-booking and double the write load on the very table we're trying not to
+  grow. So: `collect` mounts ahead of the global limiter with an **in-memory**
+  per-`visitor_id` cap, writes no `rate_limit_hits` rows, and **over the cap it
+  returns 202 and drops** rather than 429. Analytics never shows a guest an error.
+- **Size guard (the free-tier safety property).** Before each insert batch the
+  ingest checks a cached table-size reading (refreshed by the rollup job): over the
+  configured byte budget it returns 202 and drops, and the founder is alerted once.
+  Analytics degrades; bookings never do. There is also a kill flag —
+  `feature_flags.analytics_ingest` — that stops ingest within the 60 s flag cache.
+- **Environment isolation.** `analyticsEnabled()` restricts the whole bus to
+  `meeticulous.com`/`www.meeticulous.com` for a documented reason (localhost and
+  Vercel previews once polluted the single prod PostHog project). The `firstParty`
+  adapter **inherits that gate**, and the server independently drops any event whose
+  `Origin` is not the prod host. So dev and preview traffic can never appear in a
+  real host's paid dashboard, and no `env` column is needed. The cost is that the
+  ingest path is exercised off-prod only against a local server + local Postgres
+  with `VITE_ANALYTICS_DEBUG=true` (§15), and that Phase 4's "≥14 days of events"
+  clock starts at the prod deploy, not at merge. Both are stated in the roadmap.
 - **The IP is used to rate-limit and then discarded.** It is never stored. (§6.5 is
   the cost of that choice and it's the right trade.)
 - **Server-side money events keep going through `trackServer`** and additionally
@@ -473,11 +562,13 @@ GET /host/intelligence/* ──► rollups (traffic/funnel) + bookings LIVE (mon
   profiles`, `visitor_id text not null`, `session_id text`, `event text not null`,
   `service_id uuid`, `occurred_at timestamptz not null`, `received_at timestamptz
   default now()`, `source text`, `medium text`, `campaign text`, `referrer_host
-  text`, `device_type text`, `path text`, `props jsonb`, `ingest_id text`.
+  varchar(253)`, `device_type varchar(16)`, `route varchar(64)`, `link_type
+  varchar(32)`, `channel varchar(32)`, `ingest_id text`. **No `props jsonb`** (§11.4).
   Indexes: `unique (ingest_id)`, `(host_id, occurred_at desc)`,
-  `(host_id, event, occurred_at desc)`. RLS on, no policies (service-role only), per
-  the v3.186/v3.206 lockdown posture.
-  *Not partitioned.* Partitioning is the first response to the §6.2 trigger, not day-one work.
+  `(host_id, event, occurred_at desc)` — three, not more; each costs ~50 bytes/row
+  against a 500 MB cap. RLS on, no policies (service-role only), per the
+  v3.186/v3.206 lockdown posture.
+  *Not partitioned* — on a 500 MB cap, pruning is what matters, not partitioning.
 - **`analytics_daily`** — `(host_id, day)` pk + funnel counters: `profile_views`,
   `unique_visitors`, `new_visitors`, `service_views`, `booking_starts`,
   `slot_picks`, `checkout_starts`, `link_clicks`. The per-host per-day funnel.
@@ -487,8 +578,18 @@ GET /host/intelligence/* ──► rollups (traffic/funnel) + bookings LIVE (mon
   instead of six near-identical ones.
 - **`booking_attribution`** — `booking_id uuid pk references bookings`, `visitor_id`,
   `first_source/medium/campaign`, `last_source/medium/campaign`, `first_seen_at`,
-  `resolved_at`. Written at payment confirmation by matching `visitor_id`. A separate
-  table precisely because `bookings.source` already means something else.
+  `resolved_at`, `confidence varchar(8)`. A separate table precisely because
+  `bookings.source` already means something else (`'platform'` vs manual CRM entry).
+  **Resolved asynchronously by the rollup job, not on the money path.** The server
+  never receives a `visitor_id` today — the only precedent is the optional
+  `req.body.ga_client_id` read in three places in `paymentController.js`, and
+  changing a payment payload for an analytics feature is the wrong trade and would
+  break the "zero call-site changes" property. Instead the job matches a paid booking
+  to the nearest preceding `checkout_started` / `booking_started` event for the same
+  `host_id` + `service_id` inside a 2-hour window: exactly one candidate →
+  `confidence='high'`; several → `'low'`; none → **no row**, and the booking shows in
+  the `unknown` attribution bucket. Looser than a payload hand-off, honest about it,
+  and it touches nothing that takes money.
 - **`benchmark_daily`** — `(cohort_key, day)` pk, `host_count`, `median_price`,
   `median_conversion`, `median_aov`, `median_no_show`. Written only when
   `host_count >= 5`. No host identifiers, ever.
@@ -521,11 +622,24 @@ query lacks it.
 - **`intel-rollup`** — one entry in `SCHEDULED_JOBS`, `min: 60`,
   `retryOnError: true` (idempotent: it recomputes whole days by upsert).
   Recomputes today + yesterday every run; older days only on backfill.
-- **`intel-benchmarks`** — `min: 24*60`, writes `benchmark_daily` for cohorts ≥5.
-- **Cache:** per-host, per-range, 5-minute TTL in the existing in-process cache. The
-  heavy pages are rollup-backed already; this is for repeat loads, not a crutch.
-- **Retention:** raw events 400 days, then deleted; rollups kept indefinitely (they
-  are small and they are the history). Stated in the privacy copy.
+- **`intel-benchmarks`** — `min: 24*60`, writes `benchmark_daily` for cohorts ≥5,
+  after normalising each host's `profession` to a `cohort_key` (§9.5).
+- **`intel-prune`** — **Phase 2, not Phase 8.** Deletes raw events older than the
+  retention window and refreshes the cached table-size reading the ingest size guard
+  reads. On the free tier this job is a safety device, not housekeeping.
+- **Cache:** none. There is **no in-process cache in this codebase** — `httpCache.js`
+  only sets `Cache-Control` and is documented for public, anonymous payloads, which a
+  per-host paid dashboard is not. The pages are rollup-backed, so they are already
+  one indexed read; if a real p95 problem shows up, that is when a cache gets
+  designed, with a measurement behind it.
+- **Retention: raw events 30 days** (not 400 — see §5; 400 days of raw events does
+  not fit in a 500 MB cap shared with the booking tables). **Rollups are the
+  history** and are kept indefinitely: `analytics_daily` is one row per host per day
+  and `analytics_daily_dim` a handful more, so a year of 500 hosts is single-digit MB.
+  Raw events exist only to be rolled up and to allow a 30-day recompute. Stated in
+  the privacy copy, which is a genuine privacy *improvement* over a 400-day window.
+  Longer raw retention is available for the price of a Supabase paid tier, and that
+  is a founder decision (§17), not a code change.
 - **Schema fallback:** every read destructures defensively and degrades to "no data
   yet" if a table or column is missing, matching the `inAppNotify`/`escalationService`
   pattern — so code is safe to deploy before the migration is applied anywhere.
@@ -537,6 +651,15 @@ query lacks it.
 Loop & Slot throughout: tokens only, `rounded-full` buttons/tags, `rounded-xl`/`2xl`
 cards, `rounded-3xl` dialogs, Bricolage display / Poppins sans / one Instrument Serif
 line per page. Reference feel: Linear's density, Stripe's honesty about fees.
+
+**There is no charting library in `client/package.json`** — no recharts, chart.js,
+d3, visx or victory, and that is a deliberate bundle decision this design does not
+reopen. Every chart is hand-rolled SVG. The precedent is `chartGeometry.js` +
+`EarningsTrendChart.jsx`, and the primitives (`Tile`, `Sparkline`, `RankedBars`,
+`Funnel`, `BarChart`) exist in `client/src/pages/hostlab/labUi.jsx` — **which lives
+only on the unmerged `feat/host-lab-prototype` branch** (§17.2). New shapes needed
+beyond those: line chart, horizontal waterfall, heatmap, cohort table. Four SVG
+components, no dependency added.
 
 Chart types, one purpose each (brief rule 14):
 
@@ -578,11 +701,11 @@ Each phase is independently shippable and independently useful.
 | Phase | Scope | Depends on | Acceptance |
 |---|---|---|---|
 | **1. Prototype** | Clickable 4-page prototype in `/host-lab`, realistic fictional data, working nav/range/compare/tabs/filters/drill-downs | this doc approved | Every page, tab, filter and locked state navigable; founder sign-off before any production code |
-| **2. Foundation** | `v3.207` migration · `firstParty` adapter · collect endpoint · `intel-rollup` job · 2 new events | 1 | Events land; dedupe proven by replay; rollups match a hand-written SQL count; zero change to existing adapters (test asserts it) |
-| **3. Money + Overview (Pro-gated)** | Money page live off `bookings`; Overview with commission leak, forecast, win-back, goal strip | 2 (not for money — Money needs no events) | Net revenue ties to a hand-reconciled payout for a real host; free host's API response provably contains no real numbers |
-| **4. Audience & Conversion** | Traffic, funnel, services, devices | 3 + ≥14 days of events | Funnel denominators match the dictionary; `unknown` attribution row visible, never dropped |
+| **2. Foundation** | `v3.207` migration · `firstParty` adapter · collect endpoint · `intel-rollup` **and `intel-prune`** jobs · size guard + `analytics_ingest` kill flag · 2 new events · **local Postgres for tests** (§15) | 1 | Events land; dedupe proven by replay **against a real Postgres, not a mock**; rollups match a hand-written SQL count; prune deletes; size guard trips at a lowered test budget; zero change to existing adapters (test asserts it) |
+| **3. Money (free) + Overview (gated)** | Money page live off `bookings`, **ungated** per §6.4; Overview with commission leak (free) + forecast/win-back/goal strip (Pro) | 2 (not for Money — it needs no events) | Net revenue ties to a hand-reconciled payout for a real host; a free host's API response provably contains none of the six gated figures; `limits.insights` read from `subscription_plans`, nothing hardcoded |
+| **4. Audience & Conversion** | Traffic, funnel (4 stages — no slot step, §11.3), services, devices; async attribution resolver; repoint the Dashboard view tile at the rollup (§9.2) | 3 + **≥14 days of events counted from the prod deploy**, since the bus is prod-host-gated | Funnel denominators match the dictionary; `unknown` attribution bucket visible, never dropped; one profile-view number across both surfaces |
 | **5. Demand & Customers** | Utilisation, heatmap, lead time, LTV, cohorts, retention | 3 | Utilisation never >100%; one guest never double-counted across identity fallbacks |
-| **6. Benchmarks + insight engine** | `benchmark_daily`, k≥5 suppression, 7 v1 rules, weekly-recap section | 3–5 | No host's row ever leaves the server (test); a rule with empty evidence renders nothing (test) |
+| **6. Benchmarks + insight engine** | `benchmark_daily`, `cohort_key` normaliser, k≥5 suppression, 7 v1 rules, in-app Overview delivery (+ weekly-recap section **only if §17.3 says so**) | 3–5 | No host's row ever leaves the server (test); a rule with empty evidence renders nothing (test); an unmatched profession is excluded, not pooled |
 | **7. Forecast + anomaly** | Projections, demand prediction, anomaly detection | ≥90 days of history | Every estimate visibly labelled with its basis; no estimate rendered without one |
 | **8. Hardening** | Partitioning if triggered, retention job, perf budget, export limits, privacy copy | all | p95 <800 ms on every endpoint at 10× current data; retention job proven to delete |
 
@@ -607,6 +730,19 @@ ship dark until supply clears k=5.
 
 ## 15. Testing
 
+- **A real Postgres is a Phase 2 prerequisite.** Server tests mock Supabase wholesale
+  (`jest.mock('../../config/supabase', …makeSbMock())`), there is no local database in
+  the repo, the only reachable DB is **production**, and there is a standing rule
+  against running a local server against it (local boot fires customer-facing crons —
+  `no-local-server-against-live-db`). A mock cannot prove a unique index, an
+  `ON CONFLICT DO NOTHING`, an upsert or a prune. So Phase 2 adds a throwaway
+  `docker compose` Postgres used by the ingest/rollup/prune tests only — not a dev
+  stack, not wired to the app, no Supabase branch (the org is on the free tier).
+  Without it, the ingest path ships unexercised, which for a write path on a 500 MB
+  shared database is not acceptable.
+- **Migration ownership:** `v3.207` is applied by the founder, by hand, on merge, per
+  the project's migration workflow. The schema fallback (§12.4) means code is safe to
+  deploy before it lands.
 - **Unit:** every dictionary formula gets a test with a fixture covering its stated
   edge case (null `customer_total`, 0 bookings, >100% utilisation, duplicate guest
   identity, cohort <5, non-additive uniques).
@@ -621,6 +757,63 @@ ship dark until supply clears k=5.
 
 ## 16. Left to the builder
 
-Tile copy and microcopy · exact skeleton shapes · CSV column order · cache keys ·
+Tile copy and microcopy · exact skeleton shapes · CSV column order ·
 heatmap colour steps within the token set · rollup batch size · whether Transactions
 paginates or infinite-scrolls. None of these change what gets built.
+
+---
+
+## 17. Open decisions — founder only
+
+A builder review ran against this document and the codebase. Seven of its findings
+are settled above as engineering calls (slot-stage drop, async attribution, no
+`props` column, 30-day retention + prune + size guard, own rate-limit bucket, prod-gate
+inheritance, `cohort_key` normaliser, one profile-view number, no cache, docker
+Postgres for tests). Three need the founder, and one is a notice.
+
+### 17.1 Money's gate — the published promise
+
+`PLAN_MATRIX` tells the world free hosts get "Earnings & transaction history ✓" and
+"Commission tracker ✓", and `/dashboard/earnings` is ungated today. §6.4 therefore
+keeps **Money free** and gates only the six things promised to nobody (forecast,
+win-back, benchmarks, Audience & Conversion, cohorts/LTV, weekly moves).
+**Needed:** agreement, plus a `limits.insights` key added to the `subscription_plans`
+rows — a live-DB plan-row edit, which is founder territory. The alternative (gate
+Money too) means changing a published promise and is not recommended.
+
+### 17.2 Does Intelligence live inside Host Lab?
+
+Every primitive §13 builds on (`labUi.jsx`, `useUrlTab`, `nav.js`, `pageMap.js`,
+`sections/`) exists **only on `feat/host-lab-prototype`** — unmerged, two commits
+ahead of `origin/main`, and being actively committed to by another session.
+Either: (a) Intelligence is Host Lab's fifth section, so this work depends on that
+branch merging and the prototype is built on top of it; or (b) Intelligence is four
+standalone pages on the current live dashboard, which means duplicating those
+primitives into production. **(a) is cheaper if Host Lab is the agreed direction;
+(b) is the only option if it isn't.** This decides the PR base, Phase 1's shape and
+which nav Phase 3 ships into.
+
+### 17.3 The weekly email
+
+§10 planned to deliver insights through `weeklyHostRecap`. It is **off in production**
+(`WEEKLY_RECAP_ENABLED !== 'true'` → `{skipped:'disabled'}`) and `worthSending()`
+deliberately skips any host with no bookings and nothing upcoming — "silence beats a
+₹0 email" — which is precisely the dormant free host the win-back and commission
+rules target. So either flip the env var **and** change `worthSending()` (a behaviour
+change to a live retention mail), or keep insights in-app only for now.
+**Recommended:** in-app only in Phase 6; revisit the mail once there are hosts to
+mail. Phase 6 is scoped that way above.
+
+### 17.4 Notice — a pre-existing honesty bug
+
+`ConversionFunnel.jsx:29` shows free hosts **fabricated** numbers behind the blur
+(248 views / 37 bookings / 15%). That contradicts the honesty rule in the parent
+free→Pro design. `ProTeaser.jsx` already exists as its documented canonical
+replacement. Intelligence uses `ProTeaser`; fixing `ConversionFunnel` is a separate,
+small PR and is **not** in this scope.
+
+### 17.5 Optional — Supabase tier
+
+Everything above fits the free tier (500 MB) with 30-day raw retention. A paid tier
+(8 GB) would buy longer raw history and remove the size guard as a live concern. Not
+required for any phase; purely a cost call, and the design works either way.
