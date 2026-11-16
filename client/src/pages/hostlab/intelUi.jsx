@@ -1,67 +1,84 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Intelligence — the chart shapes labUi doesn't have yet.
+// Intelligence — the chart kit.
 //
-// Lives in its own module, not inside labUi.jsx, for two reasons: labUi is being
-// edited concurrently on the Host Lab branch, and these four shapes are only
-// needed by the Intelligence section. If Intelligence ships, they move into
-// labUi; until then this file keeps the diff additive.
+// Shape of the thing: Google Analytics' card grid. One card, one question, one
+// chart, almost no prose. A number carries its own meaning; a paragraph under a
+// chart means the chart failed.
 //
-// There is NO charting library in client/package.json and this design doesn't add
-// one (see the design doc §13) — every shape here is hand-rolled SVG or CSS grid.
+// Own module rather than labUi.jsx because labUi is edited concurrently on the
+// Host Lab branch. There is NO charting library in client/package.json and this
+// does not add one — every shape is hand-rolled SVG.
 //
-// One measure, one shape, each with a stated purpose:
-//   LineChart   — a trend over time (revenue, bookings, views)
-//   Waterfall   — gross → deductions → net. The only honest shape for subtraction
-//   Heatmap     — demand across weekday × hour, the only readable 2-D form
-//   CohortTable — retention, where the counts matter more than a curve would
-// Plus the furniture every page needs: Locked, RangeControls, AsOf, InsightCard,
-// SortableTable, Delta.
+// PALETTE — computed, not chosen. Run through the dataviz validator against the
+// cream surface; all six checks pass (worst adjacent CVD ΔE 21.8 deutan):
+//   series  #960D32  --mt-maroon       the one data colour. Single series = this.
+//   open    #C68A12  marigold-600      ONLY where it means open/unbooked capacity,
+//                                      which is what the brand reserves marigold for.
+//   alt     #A12A47  rose-700          third slot, used once (lead time vs median).
+// Marigold-500 (#F6C35A) FAILS the lightness band and contrast on cream — the
+// 600 step is the one that passes, so that is the step used.
+//
+// Sequential (heatmap, cohort) is one hue light→dark from the maroon ramp.
+// There is no dual-axis chart anywhere in here, by rule: two measures of
+// different scale become two charts, never two y-scales.
 // ─────────────────────────────────────────────────────────────────────────────
 import { useMemo, useState } from 'react';
 import { ArrowDown, ArrowRight, ArrowUp, Info, Lock, TrendingDown, TrendingUp } from 'lucide-react';
 import { cn } from '../../components/dashboard/ui';
-import { inr, pct } from './labUi';
+import { inr } from './labUi';
 
-// Mirrors labUi's Sparkline, which hard-codes the same value: an SVG `stroke`
-// cannot take a Tailwind class, so the maroon token is inlined here once and
-// every alpha below is derived from it rather than invented.
-const MAROON = '#960D32';
-const alpha = (a) => `rgba(150, 13, 50, ${a})`;
+export const C = {
+  series: '#960D32',
+  open: '#C68A12',
+  alt: '#A12A47',
+  grid: 'rgba(43, 10, 20, 0.09)',
+  surface: '#FFFFFF',
+};
+const seriesAt = (a) => `rgba(150, 13, 50, ${a})`;
 
-/** A rate, with a decimal where one matters. labUi's pct() rounds to whole
- *  numbers, which is right for "71% drop" and wrong for conversion: 4.3% and
- *  3.6% both render as "4%", and those two are a business apart. */
+/** A rate, with a decimal where one matters: 4.3% and 3.6% must not both
+ *  render as "4%". Whole numbers above 10%, where the decimal is noise. */
 export const rate = (n) => {
   const v = (Number(n) || 0) * 100;
   return `${v > 0 && v < 10 ? v.toFixed(1) : Math.round(v)}%`;
 };
 
-/* ── Delta — one period against another, never a bare number ───────────── */
-export const Delta = ({ value, label = 'vs last period', inverse = false }) => {
-  if (value == null) return <span className="text-[10.5px] font-medium text-ink/40">no prior period</span>;
-  const good = inverse ? value <= 0 : value >= 0;
-  const Icon = value >= 0 ? TrendingUp : TrendingDown;
+const num = (n) => Number(n || 0).toLocaleString('en-IN');
+
+/* ── Scorecard — the GA4 top row. Number, change, shape. No sentence. ───── */
+export const Scorecard = ({ label, value, delta, spark, onClick, info, inverse = false }) => {
+  const Tag = onClick ? 'button' : 'div';
+  const good = delta == null ? null : inverse ? delta <= 0 : delta >= 0;
+  const Icon = delta >= 0 ? TrendingUp : TrendingDown;
   return (
-    <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold">
-      <span className={cn('inline-flex items-center gap-0.5', good ? 'text-success-fg' : 'text-error-fg')}>
-        <Icon className="h-3 w-3" strokeWidth={2.6} />
-        {value >= 0 ? '+' : ''}{value}%
+    <Tag
+      type={onClick ? 'button' : undefined}
+      onClick={onClick}
+      className={cn(
+        'flex min-w-0 flex-col gap-2 rounded-xl border-2 border-neutral-200 bg-white p-3 text-left transition',
+        onClick && 'hover:border-maroon/40 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose',
+      )}
+    >
+      <span className="flex items-center gap-1 text-[11px] font-semibold text-ink/50">
+        <span className="truncate">{label}</span>
+        {info && <Explain>{info}</Explain>}
       </span>
-      <span className="font-medium text-ink/45">{label}</span>
-    </span>
+      <span className="font-display text-[26px] font-extrabold leading-none tracking-[-0.04em] text-ink">{value}</span>
+      <div className="flex items-end justify-between gap-2">
+        {/* undefined = this measure has no period comparison (a stock figure like
+            pending payout); null = comparable, but no prior period exists yet. */}
+        {delta === undefined ? <span /> : delta === null ? <span className="text-[11px] font-medium text-ink/35">no prior period</span> : (
+          <span className={cn('inline-flex items-center gap-0.5 text-[11.5px] font-bold', good ? 'text-success-fg' : 'text-error-fg')}>
+            <Icon className="h-3.5 w-3.5" strokeWidth={2.6} />{delta >= 0 ? '+' : ''}{delta}%
+          </span>
+        )}
+        {spark}
+      </div>
+    </Tag>
   );
 };
 
-/* ── AsOf — freshness, printed. Beacons' silent 30-minute staleness is the
- *   reason this is not optional furniture. ──────────────────────────────── */
-export const AsOf = ({ at, freshness = 'live' }) => (
-  <span className="inline-flex items-center gap-1.5 text-[10.5px] font-medium text-ink/45">
-    <span className={cn('h-1.5 w-1.5 rounded-full', freshness === 'live' ? 'bg-success-fg' : 'bg-marigold')} />
-    {freshness === 'live' ? 'Live' : 'Updated hourly'} · as of {at}
-  </span>
-);
-
-/* ── Tooltip trigger — carries the metric definition from the dictionary ── */
+/* ── Tooltip trigger — where a definition lives instead of in a paragraph ── */
 export const Explain = ({ children }) => (
   <span className="group relative inline-flex">
     <Info className="h-3 w-3 cursor-help text-ink/30" strokeWidth={2.4} tabIndex={0} aria-label="What this means" />
@@ -71,185 +88,161 @@ export const Explain = ({ children }) => (
   </span>
 );
 
-/* ── Locked — the Pro gate. Mirrors ProTeaser.jsx: the real shape behind
- *   glass, aria-hidden, with an attributed CTA. The headline number shown is
- *   REAL (commission paid) — never a fabricated sample. ─────────────────── */
-export const Locked = ({ headline, sub, src, children, onUpgrade }) => (
-  <div className="relative overflow-hidden rounded-xl">
-    <div className="pointer-events-none select-none blur-[5px] saturate-[0.6]" aria-hidden="true">{children}</div>
-    <div className="absolute inset-0 grid place-items-center bg-cream/70 p-4 backdrop-blur-[2px]">
-      <div className="max-w-[22rem] text-center">
-        <span className="mx-auto mb-2 grid h-9 w-9 place-items-center rounded-full bg-maroon text-white">
-          <Lock className="h-[17px] w-[17px]" strokeWidth={2.4} />
-        </span>
-        <p className="font-display text-[17px] font-extrabold leading-tight tracking-[-0.03em] text-ink">{headline}</p>
-        {sub && <p className="mt-1 text-[12px] font-medium leading-snug text-ink/55">{sub}</p>}
-        <button
-          type="button"
-          onClick={() => onUpgrade?.(src)}
-          className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-maroon px-4 py-2 text-[12.5px] font-bold text-white transition hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
-        >
-          Unlock with Pro <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
-        </button>
-        <p className="mt-1.5 text-[10.5px] font-medium text-ink/40">₹1,179/year · and commission drops to 0%</p>
-      </div>
-    </div>
-  </div>
+/* ── Card — the grid unit. Title, optional link, chart. ────────────────── */
+export const Card = ({ title, info, action, children, className = '' }) => (
+  <section className={cn('flex flex-col rounded-xl border-2 border-neutral-200 bg-white p-3', className)}>
+    <header className="mb-2.5 flex items-center justify-between gap-2">
+      <h3 className="flex items-center gap-1.5 truncate text-[12.5px] font-bold text-ink">
+        {title}
+        {info && <Explain>{info}</Explain>}
+      </h3>
+      {action}
+    </header>
+    <div className="min-w-0 flex-1">{children}</div>
+  </section>
 );
 
-/* ── RangeControls — date range + comparison, the furniture on every page ─ */
-export const RANGES = [
-  { value: '7d', label: 'Last 7 days' },
-  { value: '30d', label: 'Last 30 days' },
-  { value: '90d', label: 'Last 90 days' },
-  { value: 'mtd', label: 'Month to date' },
-  { value: 'ytd', label: 'Year to date' },
-  { value: 'next7', label: 'Next 7 days' },
-];
-
-export const RangeControls = ({ range, onRange, compare, onCompare }) => (
-  <div className="flex flex-wrap items-center gap-1.5">
-    <div className="flex overflow-hidden rounded-full border-2 border-neutral-200 bg-white">
-      {RANGES.map((r) => (
-        <button
-          key={r.value}
-          type="button"
-          onClick={() => onRange(r.value)}
-          aria-pressed={range === r.value}
-          className={cn(
-            'px-2.5 py-1.5 text-[11px] font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose',
-            range === r.value ? 'bg-maroon text-white' : 'text-ink/55 hover:bg-blush',
-          )}
-        >
-          {r.value === 'next7' ? 'Next 7d' : r.label.replace('Last ', '').replace('Month to date', 'MTD').replace('Year to date', 'YTD')}
-        </button>
-      ))}
-    </div>
-    <button
-      type="button"
-      onClick={() => onCompare(!compare)}
-      aria-pressed={compare}
-      className={cn(
-        'inline-flex items-center gap-1.5 rounded-full border-2 px-2.5 py-1.5 text-[11px] font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose',
-        compare ? 'border-maroon bg-maroon/5 text-maroon' : 'border-neutral-200 bg-white text-ink/55 hover:border-maroon/40',
-      )}
-    >
-      Compare to previous
-    </button>
-  </div>
+export const CardLink = ({ children, onClick }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className="inline-flex shrink-0 items-center gap-0.5 rounded-full text-[11px] font-bold text-maroon transition hover:gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
+  >
+    {children} <ArrowRight className="h-3 w-3" strokeWidth={2.8} />
+  </button>
 );
 
-/* ── LineChart — a trend. Hover any point for its exact value. ──────────── */
-export const LineChart = ({
-  series, labelKey = 'label', height = 170,
-  format = (v) => inr(v, { compact: true }),
-}) => {
+/* ── AreaChart — one measure over time. Crosshair + tooltip by default. ──
+ *   One series only. Two measures of different scale get two of these, side
+ *   by side, never two y-axes on one plot. ─────────────────────────────── */
+export const AreaChart = ({ data, format = (v) => inr(v, { compact: true }), height = 128, color = C.series, id = 'a' }) => {
   const [hover, setHover] = useState(null);
-  const W = 560;
-  const H = height;
-  const pad = { l: 4, r: 4, t: 10, b: 18 };
-  const keys = series.map((s) => s.key);
-  const rows = series[0]?.data || [];
-  const max = Math.max(...series.flatMap((s) => s.data.map((d) => d.value)), 1);
+  const W = 520;
+  const PAD_B = 16;
+  const max = Math.max(...data.map((d) => d.value), 1);
+  const x = (i) => (i / Math.max(data.length - 1, 1)) * W;
+  const y = (v) => 6 + (1 - v / max) * (height - PAD_B - 6);
 
-  const x = (i) => pad.l + (i / Math.max(rows.length - 1, 1)) * (W - pad.l - pad.r);
-  const y = (v) => pad.t + (1 - v / max) * (H - pad.t - pad.b);
+  if (!data.length) return <p className="py-6 text-center text-[12px] font-medium text-ink/40">Nothing in this range.</p>;
 
-  if (!rows.length) return <p className="py-8 text-center text-[12px] font-medium text-ink/45">No data in this range yet.</p>;
+  const line = data.map((d, i) => `${x(i)},${y(d.value)}`).join(' ');
+  const area = `${line} ${W},${height - PAD_B} 0,${height - PAD_B}`;
+  const peak = data.reduce((a, b, i) => (b.value > data[a].value ? i : a), 0);
+  const shown = hover ?? peak;
 
   return (
     <div className="relative">
-      <div className="flex gap-2.5">
-        <div className="flex shrink-0 flex-col justify-between py-0.5 text-right text-[9.5px] font-semibold tabular-nums text-ink/35" style={{ height: H - pad.b }}>
-          <span>{format(max)}</span><span>{format(max / 2)}</span><span>{format(0)}</span>
-        </div>
-        <div className="relative min-w-0 flex-1">
-          <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: H }} role="img" aria-label="Trend over the selected range">
-            {[0, 0.5, 1].map((t) => (
-              <line key={t} x1={pad.l} x2={W - pad.r} y1={y(max * t)} y2={y(max * t)} stroke="currentColor" className="text-neutral-200" strokeWidth="1" />
-            ))}
-            {series.map((s, si) => (
-              <polyline
-                key={s.key}
-                points={s.data.map((d, i) => `${x(i)},${y(d.value)}`).join(' ')}
-                fill="none"
-                stroke={si === 0 ? MAROON : alpha(0.3)}
-                strokeWidth={si === 0 ? 2.25 : 2}
-                strokeDasharray={s.dashed ? '4 3' : undefined}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            ))}
-            {hover != null && <line x1={x(hover)} x2={x(hover)} y1={pad.t} y2={H - pad.b} stroke={alpha(0.25)} strokeWidth="1" />}
-            {series.map((s, si) => hover != null && (
-              <circle key={s.key} cx={x(hover)} cy={y(s.data[hover].value)} r="3.25" fill={si === 0 ? MAROON : alpha(0.45)} stroke="#fff" strokeWidth="1.5" />
-            ))}
-            {rows.map((d, i) => (
-              <rect
-                key={d[labelKey]}
-                x={x(i) - (W / rows.length) / 2} y={0} width={W / rows.length} height={H}
-                fill="transparent"
-                onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)}
-                onFocus={() => setHover(i)} onBlur={() => setHover(null)}
-                tabIndex={0}
-                role="button"
-                aria-label={`${d[labelKey]}: ${series.map((s) => `${s.key} ${format(s.data[i].value)}`).join(', ')}`}
-                className="cursor-crosshair focus:outline-none"
-              />
-            ))}
-          </svg>
-          <div className="flex justify-between pt-0.5 text-[9.5px] font-semibold text-ink/35">
-            <span>{rows[0]?.[labelKey]}</span>
-            <span>{rows[rows.length - 1]?.[labelKey]}</span>
-          </div>
-          {hover != null && (
-            <div className="pointer-events-none absolute -top-1 left-1/2 w-max -translate-x-1/2 rounded-lg bg-ink px-2.5 py-1.5 text-[11px] font-semibold text-white">
-              <span className="text-white/60">{rows[hover][labelKey]} · </span>
-              {series.map((s) => (
-                <span key={s.key} className="ml-1.5">{s.key} <span className="tabular-nums">{format(s.data[hover].value)}</span></span>
-              ))}
-            </div>
-          )}
-        </div>
+      <svg viewBox={`0 0 ${W} ${height}`} className="w-full" style={{ height }} role="img" aria-label={`${format(max)} peak over ${data.length} points`}>
+        <defs>
+          <linearGradient id={`fill-${id}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity="0.16" />
+            <stop offset="100%" stopColor={color} stopOpacity="0.02" />
+          </linearGradient>
+        </defs>
+        {[0, 0.5, 1].map((t) => (
+          <line key={t} x1="0" x2={W} y1={y(max * t)} y2={y(max * t)} stroke={C.grid} strokeWidth="1" />
+        ))}
+        <polygon points={area} fill={`url(#fill-${id})`} />
+        <polyline points={line} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <line x1={x(shown)} x2={x(shown)} y1="0" y2={height - PAD_B} stroke={color} strokeWidth="1" strokeOpacity="0.35" />
+        <circle cx={x(shown)} cy={y(data[shown].value)} r="4" fill={color} stroke={C.surface} strokeWidth="2" />
+        {data.map((d, i) => (
+          <rect
+            key={d.label} x={x(i) - W / data.length / 2} y="0" width={W / data.length} height={height}
+            fill="transparent" tabIndex={0} role="button" aria-label={`${d.label}: ${format(d.value)}`}
+            onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)}
+            onFocus={() => setHover(i)} onBlur={() => setHover(null)}
+            className="cursor-crosshair focus:outline-none"
+          />
+        ))}
+      </svg>
+      <div className="flex items-center justify-between text-[10px] font-semibold text-ink/35">
+        <span>{data[0].label}</span>
+        <span className="rounded-full bg-cream px-2 py-0.5 text-[10.5px] font-bold text-ink/70">
+          {data[shown].label} · {format(data[shown].value)}
+        </span>
+        <span>{data[data.length - 1].label}</span>
       </div>
-      {keys.length > 1 && (
-        <ul className="mt-2 flex flex-wrap gap-3 pl-10 text-[10.5px] font-semibold text-ink/55">
-          {series.map((s, si) => (
-            <li key={s.key} className="inline-flex items-center gap-1.5">
-              <span className="h-0.5 w-4 rounded-full" style={{ background: si === 0 ? MAROON : alpha(0.3) }} />
-              {s.key}
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   );
 };
 
-/* ── Waterfall — gross → every deduction → net. Stripe's "net volume"
- *   honesty, as a shape. A pie could not show subtraction. ──────────────── */
+/* ── Bars — one measure across named rows, bar beside the label. ────────── */
+export const Bars = ({ rows, valueKey = 'value', labelKey = 'label', format = num, color = C.series, note }) => {
+  const max = Math.max(...rows.map((r) => r[valueKey]), 1);
+  return (
+    <ul className="flex flex-col gap-2">
+      {rows.map((r) => (
+        <li key={r[labelKey]} className="group">
+          <div className="mb-1 flex items-baseline justify-between gap-2">
+            <span className="truncate text-[11.5px] font-semibold text-ink/75">{r[labelKey]}</span>
+            <span className="shrink-0 text-[11.5px] font-bold tabular-nums text-ink">
+              {format(r[valueKey])}
+              {note && <span className="ml-1.5 font-medium text-ink/40">{note(r)}</span>}
+            </span>
+          </div>
+          <div className="h-2 w-full rounded-full bg-neutral-100">
+            <div className="h-full rounded-full transition-all" style={{ width: `${(r[valueKey] / max) * 100}%`, background: color }} />
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+/* ── SegmentedBar — part-to-whole at a glance. The one place a legend plus
+ *   in-bar labels is correct (dataviz: tall segmented bar). ───────────── */
+export const SegmentedBar = ({ segments, format = inr }) => {
+  const total = segments.reduce((s, x) => s + x.value, 0) || 1;
+  const shade = (i) => seriesAt(0.95 - (i / Math.max(segments.length - 1, 1)) * 0.65);
+  return (
+    <div>
+      <div className="flex h-7 w-full gap-[2px] overflow-hidden rounded-full">
+        {segments.map((s, i) => (
+          <div
+            key={s.label}
+            title={`${s.label}: ${format(s.value)} (${rate(s.value / total)})`}
+            className="h-full first:rounded-l-full last:rounded-r-full"
+            style={{ width: `${(s.value / total) * 100}%`, background: shade(i) }}
+          />
+        ))}
+      </div>
+      <ul className="mt-2.5 flex flex-col gap-1">
+        {segments.map((s, i) => (
+          <li key={s.label} className="flex items-baseline gap-2 text-[11.5px]">
+            <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: shade(i) }} />
+            <span className="truncate font-semibold text-ink/70">{s.label}</span>
+            <span className="ml-auto shrink-0 font-bold tabular-nums text-ink">{format(s.value)}</span>
+            <span className="w-9 shrink-0 text-right font-medium tabular-nums text-ink/40">{rate(s.value / total)}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+/* ── Waterfall — gross → deductions → net. The honest shape for subtraction. */
 export const Waterfall = ({ rows }) => {
   const gross = rows[0]?.value || 1;
   return (
     <ul className="flex flex-col gap-1.5">
       {rows.map((r) => {
         const isTotal = r.kind === 'total';
-        const w = Math.max((Math.abs(r.value) / gross) * 100, 1.5);
         return (
-          <li key={r.label} className={cn(isTotal && 'mt-1 border-t-2 border-neutral-200 pt-2.5')}>
-            <div className="mb-1 flex items-baseline justify-between gap-2.5">
-              <span className={cn('truncate text-[12px]', isTotal ? 'font-bold text-ink' : 'font-semibold text-ink/75')}>
-                {r.kind === 'deduction' && <ArrowDown className="mr-1 inline h-3 w-3 text-error-fg" strokeWidth={2.6} />}
-                {r.label}
-              </span>
-              <span className={cn('shrink-0 tabular-nums', isTotal ? 'text-[14px] font-extrabold text-ink' : 'text-[11.5px] font-bold text-ink/80')}>
+          <li key={r.label} className={cn(isTotal && 'mt-1 border-t-2 border-neutral-200 pt-2')}>
+            <div className="mb-1 flex items-baseline justify-between gap-2">
+              <span className={cn('truncate text-[11.5px]', isTotal ? 'font-bold text-ink' : 'font-semibold text-ink/70')}>{r.label}</span>
+              <span className={cn('shrink-0 tabular-nums', isTotal ? 'text-[14px] font-extrabold text-ink' : 'text-[11.5px] font-bold text-ink/75')}>
                 {r.kind === 'deduction' ? '−' : ''}{inr(Math.abs(r.value))}
               </span>
             </div>
-            <div className="h-2.5 w-full overflow-hidden rounded-full bg-neutral-100">
+            <div className="h-2 w-full rounded-full bg-neutral-100">
               <div
-                className={cn('h-full rounded-full', isTotal ? 'bg-maroon' : r.kind === 'deduction' ? 'bg-rose' : 'bg-maroon/55')}
-                style={{ width: `${w}%` }}
+                className="h-full rounded-full"
+                style={{
+                  width: `${Math.max((Math.abs(r.value) / gross) * 100, 1)}%`,
+                  background: isTotal ? C.series : r.kind === 'deduction' ? seriesAt(0.3) : seriesAt(0.6),
+                }}
               />
             </div>
           </li>
@@ -259,34 +252,58 @@ export const Waterfall = ({ rows }) => {
   );
 };
 
-/* ── Heatmap — weekday × hour demand. Scrolls on a phone, day labels stick ─ */
+/* ── Funnel — ordered stages, each step against the one above it. ───────── */
+export const Funnel = ({ stages }) => {
+  const top = stages[0]?.value || 1;
+  return (
+    <ol className="flex flex-col gap-1.5">
+      {stages.map((s, i) => {
+        const drop = i === 0 ? null : 1 - s.value / stages[i - 1].value;
+        const worst = i > 0 && drop === Math.max(...stages.slice(1).map((st, j) => 1 - st.value / stages[j].value));
+        return (
+          <li key={s.label}>
+            <div className="mb-1 flex items-baseline justify-between gap-2">
+              <span className="truncate text-[11.5px] font-semibold text-ink/75">{s.label}</span>
+              <span className="shrink-0 text-[11.5px] font-bold tabular-nums text-ink">{num(s.value)}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-5 flex-1 rounded-lg bg-neutral-100">
+                <div className="h-full rounded-lg" style={{ width: `${Math.max((s.value / top) * 100, 2)}%`, background: seriesAt(0.95 - i * 0.14) }} />
+              </div>
+              <span className={cn('w-16 shrink-0 text-right text-[10.5px] font-bold tabular-nums', worst ? 'text-error-fg' : 'text-ink/35')}>
+                {drop == null ? `${rate(1)}` : `−${rate(drop)}`}
+              </span>
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+  );
+};
+
+/* ── Heatmap — weekday × hour. Sequential, one hue light→dark. ──────────── */
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 export const Heatmap = ({ grid, hours, onPick }) => {
   const max = Math.max(...grid.flat(), 1);
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[520px] border-separate border-spacing-[2px]">
-        <caption className="sr-only">Bookings by weekday and hour, all times IST</caption>
+      <table className="w-full min-w-[460px] border-separate border-spacing-[2px]">
+        <caption className="sr-only">Bookings by weekday and hour, IST</caption>
         <thead>
-          <tr>
-            <th scope="col" className="w-9" />
-            {hours.map((h) => (
-              <th key={h} scope="col" className="pb-0.5 text-[9.5px] font-bold text-ink/35">{h}</th>
-            ))}
-          </tr>
+          <tr><th className="w-8" />{hours.map((h) => <th key={h} scope="col" className="pb-0.5 text-[9px] font-bold text-ink/35">{h}</th>)}</tr>
         </thead>
         <tbody>
           {grid.map((row, di) => (
             <tr key={DAYS[di]}>
-              <th scope="row" className="sticky left-0 bg-white pr-1 text-right text-[10px] font-bold text-ink/45">{DAYS[di]}</th>
+              <th scope="row" className="pr-1 text-right text-[9.5px] font-bold text-ink/40">{DAYS[di]}</th>
               {row.map((v, hi) => (
                 <td key={hours[hi]}>
                   <button
                     type="button"
                     onClick={() => onPick?.(DAYS[di], hours[hi], v)}
                     title={`${DAYS[di]} ${hours[hi]} · ${v} booking${v === 1 ? '' : 's'}`}
-                    className="grid aspect-square w-full place-items-center rounded-md text-[9.5px] font-bold transition hover:ring-2 hover:ring-maroon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
-                    style={{ background: v ? alpha(0.12 + (v / max) * 0.78) : 'rgb(245 245 245)', color: v / max > 0.55 ? '#fff' : 'rgba(26,26,26,0.5)' }}
+                    className="grid aspect-square w-full place-items-center rounded-md text-[9px] font-bold transition hover:ring-2 hover:ring-maroon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
+                    style={{ background: v ? seriesAt(0.1 + (v / max) * 0.8) : '#F5F5F5', color: v / max > 0.55 ? '#fff' : 'rgba(43,10,20,0.45)' }}
                   >
                     <span className="sr-only">{DAYS[di]} {hours[hi]}: </span>{v || ''}
                   </button>
@@ -296,43 +313,38 @@ export const Heatmap = ({ grid, hours, onPick }) => {
           ))}
         </tbody>
       </table>
-      <p className="mt-2 text-[10.5px] font-medium text-ink/45">All times IST. Darker means more bookings taken in that slot.</p>
     </div>
   );
 };
 
-/* ── CohortTable — retention. A table, because the counts matter. ───────── */
+/* ── CohortTable — retention. Sequential shading, counts kept visible. ──── */
 export const CohortTable = ({ cohorts, months }) => (
   <div className="overflow-x-auto">
-    <table className="w-full min-w-[460px] text-[11.5px]">
+    <table className="w-full min-w-[420px] text-[11px]">
       <caption className="sr-only">Repeat booking rate by first-booking month</caption>
       <thead>
         <tr className="text-left">
-          <th scope="col" className="pb-1.5 pr-2 font-bold text-ink/45">First booked</th>
-          <th scope="col" className="pb-1.5 pr-2 text-right font-bold text-ink/45">Guests</th>
-          {months.map((m) => (
-            <th key={m} scope="col" className="pb-1.5 text-center font-bold text-ink/45">{m}</th>
-          ))}
+          <th scope="col" className="pb-1 pr-2 font-bold text-ink/40">Cohort</th>
+          <th scope="col" className="pb-1 pr-2 text-right font-bold text-ink/40">n</th>
+          {months.map((m) => <th key={m} scope="col" className="pb-1 text-center font-bold text-ink/40">{m}</th>)}
         </tr>
       </thead>
       <tbody>
         {cohorts.map((c) => (
           <tr key={c.month}>
-            <th scope="row" className="py-0.5 pr-2 text-left font-semibold text-ink/80">{c.month}</th>
-            <td className="py-0.5 pr-2 text-right font-bold tabular-nums text-ink">{c.size}</td>
+            <th scope="row" className="py-0.5 pr-2 text-left font-semibold text-ink/75">{c.month}</th>
+            <td className="py-0.5 pr-2 text-right font-bold tabular-nums text-ink/60">{c.size}</td>
             {months.map((m, i) => {
               const v = c.values[i];
               return (
                 <td key={m} className="py-0.5">
-                  {v == null ? (
-                    <span className="grid h-7 place-items-center text-ink/20">·</span>
-                  ) : (
+                  {v == null ? <span className="grid h-6 place-items-center text-ink/15">·</span> : (
                     <span
-                      className="grid h-7 place-items-center rounded-md font-bold tabular-nums"
-                      style={{ background: alpha(0.08 + v * 0.72), color: v > 0.55 ? '#fff' : 'rgba(26,26,26,0.72)' }}
+                      className="grid h-6 place-items-center rounded font-bold tabular-nums"
+                      style={{ background: seriesAt(0.08 + v * 0.75), color: v > 0.5 ? '#fff' : 'rgba(43,10,20,0.7)' }}
                       title={`${Math.round(v * 100)}% of the ${c.month} cohort booked again`}
                     >
-                      {pct(v)}
+                      {Math.round(v * 100)}
                     </span>
                   )}
                 </td>
@@ -345,98 +357,38 @@ export const CohortTable = ({ cohorts, months }) => (
   </div>
 );
 
-/* ── InsightCard — a recommendation with its evidence. Six fields, and it
- *   renders nothing without evidence (design doc §10). ──────────────────── */
-export const InsightCard = ({ insight, onAct }) => {
-  const [open, setOpen] = useState(false);
-  if (!insight.evidence?.length) return null;
-  return (
-    <li className="rounded-xl border-2 border-neutral-200 bg-white p-3">
-      <div className="flex items-start gap-2.5">
-        <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-marigold/25 text-[13px]">{insight.icon}</span>
-        <div className="min-w-0 flex-1">
-          <p className="font-display text-[14px] font-extrabold leading-snug tracking-[-0.02em] text-ink">{insight.what}</p>
-          <p className="mt-0.5 text-[12px] font-medium leading-snug text-ink/60">{insight.why}</p>
-
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            aria-expanded={open}
-            className="mt-1.5 text-[11px] font-bold text-maroon underline decoration-maroon/30 underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
-          >
-            {open ? 'Hide the numbers' : 'Show the numbers'}
-          </button>
-
-          {open && (
-            <div className="mt-2 rounded-lg bg-cream p-2.5">
-              <ul className="flex flex-col gap-1">
-                {insight.evidence.map((e) => (
-                  <li key={e.label} className="flex items-baseline justify-between gap-2 text-[11.5px]">
-                    <span className="font-medium text-ink/60">{e.label}</span>
-                    <span className="shrink-0 font-bold tabular-nums text-ink">{e.value}</span>
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-2 border-t border-maroon/10 pt-1.5 text-[11px] font-medium text-ink/55">
-                <span className="font-bold text-ink/70">If it works: </span>{insight.impact}
-                {insight.estimate && <span className="ml-1 rounded-full bg-marigold/30 px-1.5 py-px text-[9.5px] font-bold uppercase tracking-wide text-ink/70">estimate</span>}
-              </p>
-              <p className="mt-1 text-[11px] font-medium text-ink/55">
-                <span className="font-bold text-ink/70">Measure it: </span>{insight.measure}
-              </p>
-            </div>
-          )}
-        </div>
-        <button
-          type="button"
-          onClick={() => onAct?.(insight)}
-          className="shrink-0 rounded-full bg-maroon px-3 py-1.5 text-[11.5px] font-bold text-white transition hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
-        >
-          {insight.action}
-        </button>
-      </div>
-    </li>
-  );
-};
-
-/* ── SortableTable — the Gumroad referrer table, generalised. Every column
- *   sorts; the sorted one says so. ─────────────────────────────────────── */
-export const SortableTable = ({ columns, rows, initialSort, rowKey = 'label', footer }) => {
+/* ── DataTable — a dimension table with the bar inside the cell. ────────── */
+export const DataTable = ({ columns, rows, initialSort, rowKey = 'label', barKey }) => {
   const [sort, setSort] = useState({ key: initialSort || columns[1]?.key, dir: 'desc' });
+  const max = barKey ? Math.max(...rows.map((r) => r[barKey]), 1) : 0;
   const sorted = useMemo(() => {
-    const col = columns.find((c) => c.key === sort.key);
-    const vals = [...rows];
-    vals.sort((a, b) => {
+    const out = [...rows];
+    out.sort((a, b) => {
       const av = a[sort.key]; const bv = b[sort.key];
       const cmp = typeof av === 'string' ? av.localeCompare(bv) : (av ?? -Infinity) - (bv ?? -Infinity);
       return sort.dir === 'asc' ? cmp : -cmp;
     });
-    return col ? vals : rows;
-  }, [rows, sort, columns]);
-
-  const toggle = (key) => setSort((s) => ({ key, dir: s.key === key && s.dir === 'desc' ? 'asc' : 'desc' }));
+    return out;
+  }, [rows, sort]);
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[520px] text-[12px]">
+      <table className="w-full min-w-[420px] text-[11.5px]">
         <thead>
-          <tr className="border-b-2 border-neutral-200">
+          <tr className="border-b border-neutral-200">
             {columns.map((c) => (
               <th
-                key={c.key}
-                scope="col"
+                key={c.key} scope="col"
                 aria-sort={sort.key === c.key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
-                className={cn('pb-1.5 font-bold text-ink/45', c.align === 'right' ? 'text-right' : 'text-left')}
+                className={cn('pb-1.5 font-bold text-ink/40', c.align === 'right' ? 'text-right' : 'text-left')}
               >
                 <button
                   type="button"
-                  onClick={() => toggle(c.key)}
-                  className={cn('inline-flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose', sort.key === c.key && 'text-maroon')}
+                  onClick={() => setSort((s) => ({ key: c.key, dir: s.key === c.key && s.dir === 'desc' ? 'asc' : 'desc' }))}
+                  className={cn('inline-flex items-center gap-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose', sort.key === c.key && 'text-maroon')}
                 >
                   {c.label}
-                  {sort.key === c.key && (sort.dir === 'asc'
-                    ? <ArrowUp className="h-3 w-3" strokeWidth={2.8} />
-                    : <ArrowDown className="h-3 w-3" strokeWidth={2.8} />)}
+                  {sort.key === c.key && (sort.dir === 'asc' ? <ArrowUp className="h-2.5 w-2.5" strokeWidth={3} /> : <ArrowDown className="h-2.5 w-2.5" strokeWidth={3} />)}
                 </button>
               </th>
             ))}
@@ -445,25 +397,124 @@ export const SortableTable = ({ columns, rows, initialSort, rowKey = 'label', fo
         <tbody>
           {sorted.map((r) => (
             <tr key={r[rowKey]} className="border-b border-neutral-100 last:border-0">
-              {columns.map((c) => (
-                <td key={c.key} className={cn('py-1.5', c.align === 'right' ? 'text-right tabular-nums' : 'text-left', c.strong ? 'font-bold text-ink' : 'font-medium text-ink/70')}>
-                  {c.render ? c.render(r) : r[c.key]}
+              {columns.map((c, ci) => (
+                <td key={c.key} className={cn('py-1.5', c.align === 'right' ? 'text-right tabular-nums' : 'text-left', c.strong ? 'font-bold text-ink' : 'font-medium text-ink/65')}>
+                  {ci === 0 && barKey ? (
+                    <span className="block">
+                      <span className="block truncate">{c.render ? c.render(r) : r[c.key]}</span>
+                      <span className="mt-1 block h-1 rounded-full" style={{ width: `${(r[barKey] / max) * 100}%`, background: seriesAt(0.55), minWidth: 2 }} />
+                    </span>
+                  ) : (c.render ? c.render(r) : r[c.key])}
                 </td>
               ))}
             </tr>
           ))}
         </tbody>
-        {footer && <tfoot>{footer}</tfoot>}
       </table>
     </div>
   );
 };
 
+/* ── Locked — the Pro gate. Real headline number, never a fabricated one. ─ */
+export const Locked = ({ headline, src, children, onUpgrade, compact = false }) => (
+  <div className="relative overflow-hidden rounded-xl">
+    <div className={cn('pointer-events-none select-none blur-[5px] saturate-[0.5]', compact && 'max-h-44')} aria-hidden="true">{children}</div>
+    <div className="absolute inset-0 grid place-items-center bg-cream/75 p-3">
+      <div className="text-center">
+        <span className="mx-auto mb-1.5 grid h-8 w-8 place-items-center rounded-full bg-maroon text-white">
+          <Lock className="h-4 w-4" strokeWidth={2.4} />
+        </span>
+        <p className="mx-auto max-w-[17rem] font-display text-[14px] font-extrabold leading-tight tracking-[-0.025em] text-ink">{headline}</p>
+        <button
+          type="button"
+          onClick={() => onUpgrade?.(src)}
+          className="mt-2 inline-flex items-center gap-1 rounded-full bg-maroon px-3.5 py-1.5 text-[12px] font-bold text-white transition hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
+        >
+          Unlock with Pro <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+/* ── RangeControls — one row above the cards, GA4-style. ────────────────── */
+export const RANGES = [
+  { value: '7d', label: '7d' }, { value: '30d', label: '30d' }, { value: '90d', label: '90d' },
+  { value: 'mtd', label: 'MTD' }, { value: 'ytd', label: 'YTD' }, { value: 'next7', label: 'Next 7d' },
+];
+
+export const RangeControls = ({ range, onRange, compare, onCompare, asOf, freshness }) => (
+  <div className="flex flex-wrap items-center gap-1.5">
+    <div className="flex overflow-hidden rounded-full border-2 border-neutral-200 bg-white">
+      {RANGES.map((r) => (
+        <button
+          key={r.value} type="button" onClick={() => onRange(r.value)} aria-pressed={range === r.value}
+          className={cn(
+            'px-2.5 py-1 text-[11px] font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose',
+            range === r.value ? 'bg-maroon text-white' : 'text-ink/50 hover:bg-blush',
+          )}
+        >{r.label}</button>
+      ))}
+    </div>
+    <button
+      type="button" onClick={() => onCompare(!compare)} aria-pressed={compare}
+      className={cn(
+        'rounded-full border-2 px-2.5 py-1 text-[11px] font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose',
+        compare ? 'border-maroon bg-maroon/5 text-maroon' : 'border-neutral-200 bg-white text-ink/50 hover:border-maroon/40',
+      )}
+    >Compare</button>
+    <span className="ml-auto inline-flex items-center gap-1.5 text-[10.5px] font-medium text-ink/40">
+      <span className={cn('h-1.5 w-1.5 rounded-full', freshness === 'live' ? 'bg-success-fg' : 'bg-marigold-600')} />
+      {asOf}
+      <Explain>
+        Money is read from your bookings and payouts, so it matches what you were paid. Visitor numbers come from our own
+        tracking and update hourly.
+      </Explain>
+    </span>
+  </div>
+);
+
+/* ── Insight — a recommendation. Number first, evidence on demand. ─────── */
+export const Insight = ({ insight, onAct }) => {
+  const [open, setOpen] = useState(false);
+  if (!insight.evidence?.length) return null;
+  return (
+    <li className="rounded-xl border-2 border-neutral-200 bg-white p-2.5">
+      <div className="flex items-center gap-2.5">
+        <span className="font-display text-[17px] font-extrabold leading-none tracking-[-0.03em] text-maroon">{insight.headline}</span>
+        <span className="min-w-0 flex-1 truncate text-[12px] font-semibold text-ink/70">{insight.what}</span>
+        <button
+          type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open}
+          className="shrink-0 rounded-full px-1.5 text-[11px] font-bold text-ink/40 hover:text-maroon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
+        >Why</button>
+        <button
+          type="button" onClick={() => onAct?.(insight)}
+          className="shrink-0 rounded-full bg-maroon px-3 py-1.5 text-[11.5px] font-bold text-white transition hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
+        >{insight.action}</button>
+      </div>
+      {open && (
+        <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 rounded-lg bg-cream p-2.5 sm:grid-cols-4">
+          {insight.evidence.map((e) => (
+            <div key={e.label}>
+              <dt className="truncate text-[10px] font-semibold text-ink/45">{e.label}</dt>
+              <dd className="font-display text-[13px] font-extrabold tracking-[-0.02em] text-ink">{e.value}</dd>
+            </div>
+          ))}
+          <div className="col-span-2 border-t border-maroon/10 pt-1.5 text-[11px] font-medium text-ink/55 sm:col-span-4">
+            {insight.impact}
+            {insight.estimate && <span className="ml-1 rounded-full bg-marigold-100 px-1.5 py-px text-[9px] font-bold uppercase tracking-wide text-marigold-800">estimate</span>}
+            <span className="ml-2 text-ink/40">Measured by: {insight.measure}</span>
+          </div>
+        </dl>
+      )}
+    </li>
+  );
+};
+
 /* ── Empty — specific, never generic. ──────────────────────────────────── */
-export const Empty = ({ title, body, action }) => (
-  <div className="grid place-items-center rounded-xl border-2 border-dashed border-neutral-200 bg-white px-4 py-8 text-center">
-    <p className="font-display text-[15px] font-extrabold tracking-[-0.02em] text-ink">{title}</p>
-    <p className="mt-1 max-w-sm text-[12px] font-medium leading-snug text-ink/55">{body}</p>
-    {action}
+export const Empty = ({ title, body }) => (
+  <div className="grid place-items-center rounded-xl border-2 border-dashed border-neutral-200 bg-white px-4 py-7 text-center">
+    <p className="font-display text-[14px] font-extrabold tracking-[-0.02em] text-ink">{title}</p>
+    <p className="mt-1 max-w-xs text-[11.5px] font-medium leading-snug text-ink/50">{body}</p>
   </div>
 );

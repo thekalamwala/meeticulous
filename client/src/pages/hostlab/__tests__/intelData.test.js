@@ -32,6 +32,11 @@ describe('intelData fixtures', () => {
     expect(sum).toBe(intel.money.gross);
   });
 
+  it('the composition segments sum to gross', () => {
+    const sum = intel.money.composition.reduce((s, r) => s + r.value, 0);
+    expect(sum).toBe(intel.money.gross);
+  });
+
   it('the funnel only ever narrows, and ends at the real paid count', () => {
     const values = intel.audience.funnel.map((s) => s.value);
     values.forEach((v, i) => { if (i) expect(v).toBeLessThanOrEqual(values[i - 1]); });

@@ -81,6 +81,12 @@ export const money = {
 
   concentration: { topThreeShare: 0.37, note: 'Your top 3 guests are 37% of revenue' },
 
+  // Part-to-whole: where the gross actually comes from.
+  composition: [
+    { label: 'Sessions', value: 99_000 },
+    { label: 'Digital products', value: 34_291 },
+  ],
+
   forecast: {
     confirmedUpcoming: 46_800,
     projected: 148_000,
@@ -293,8 +299,8 @@ export const goal = {
 export const insights = [
   {
     id: 'winback',
-    icon: '💰',
-    what: '4 guests worth ₹25,200 haven\'t booked in 60+ days',
+    headline: '₹25,200',
+    what: 'sitting with 4 guests who haven\'t booked in 60+ days',
     why: 'Returning guests are 41% of your paid bookings — well above the ₹1,010 cohort median earner.',
     evidence: [
       { label: 'Guests inactive 60+ days', value: '4' },
@@ -309,8 +315,8 @@ export const insights = [
   },
   {
     id: 'thursday',
-    icon: '📅',
-    what: 'Thursday 6–8pm is your second-best window and you publish no hours in it',
+    headline: 'Thu 6–8pm',
+    what: 'your second-best window, and you publish no hours in it',
     why: 'Friday 6–8pm fills at 92%. Thursday evening demand is nearly identical, and you are closed.',
     evidence: [
       { label: 'Friday 6–8pm fill rate', value: '92%' },
@@ -325,7 +331,7 @@ export const insights = [
   },
   {
     id: 'deepdive',
-    icon: '🔍',
+    headline: '4.6%',
     what: 'Nutrition deep-dive gets the most views and converts the worst',
     why: '388 views, 4.6% conversion — Follow-up consult converts at 11.3% from half the traffic.',
     evidence: [
