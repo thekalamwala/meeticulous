@@ -16,7 +16,7 @@ import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Button, Modal, cn } from '../../../components/dashboard/ui';
 import { Avatar, LabTextarea, Panel, StatusPill, fmtDayFull, inr, relDay } from '../labUi';
-import { Filter, FilterBar } from '../filters';
+import { CheckBox, Filter, FilterBar } from '../filters';
 import mock from '../mockData';
 
 const SEGMENTS = [
@@ -293,7 +293,7 @@ const Clients = () => {
                 <thead>
                   <tr className="border-b-2 border-neutral-200 bg-cream text-[10px] uppercase tracking-wide text-ink/45">
                     <th scope="col" className="w-8 px-3 py-2">
-                      <input type="checkbox" checked={allPicked} onChange={() => setPicked(allPicked ? [] : rows.map((c) => c.id))} aria-label="Select all shown" className="h-4 w-4 accent-[#960D32]" />
+                      <CheckBox checked={allPicked} onChange={() => setPicked(allPicked ? [] : rows.map((c) => c.id))} label="Select all shown" />
                     </th>
                     {['Client', 'Contact', 'Bookings', 'Lifetime value', 'Last seen', ''].map((h, i) => (
                       <th key={h || i} scope="col" className={cn('px-3 py-2 font-bold', ['Bookings', 'Lifetime value'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
@@ -304,7 +304,7 @@ const Clients = () => {
                   {rows.map((c) => (
                     <tr key={c.id} onClick={() => setOpenId(c.id)} className={cn('cursor-pointer transition-colors hover:bg-cream', picked.includes(c.id) && 'bg-blush/60')}>
                       <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
-                        <input type="checkbox" checked={picked.includes(c.id)} onChange={() => setPicked((p) => (p.includes(c.id) ? p.filter((x) => x !== c.id) : [...p, c.id]))} aria-label={`Select ${c.name}`} className="h-4 w-4 accent-[#960D32]" />
+                        <CheckBox checked={picked.includes(c.id)} onChange={() => setPicked((p) => (p.includes(c.id) ? p.filter((x) => x !== c.id) : [...p, c.id]))} label={`Select ${c.name}`} />
                       </td>
                       <td className="px-3 py-2">
                         <div className="flex items-center gap-1.5">

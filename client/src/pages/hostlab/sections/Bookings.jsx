@@ -19,7 +19,7 @@ import {
   Avatar, LabInput as Input, LabSelect as Select,
   Panel, StatusPill, fmtDayFull, fmtTime, inr, relDay,
 } from '../labUi';
-import { Filter, FilterBar, ViewSwitch } from '../filters';
+import { CheckBox, Filter, FilterBar, ViewSwitch } from '../filters';
 import mock from '../mockData';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -522,12 +522,10 @@ const Bookings = () => {
                   <thead>
                     <tr className="border-b-2 border-neutral-200 bg-cream text-[10px] uppercase tracking-wide text-ink/45">
                       <th scope="col" className="w-8 px-3 py-2">
-                        <input
-                          type="checkbox"
+                        <CheckBox
                           checked={allPicked}
                           onChange={() => setPicked(allPicked ? [] : filtered.map((b) => b.id))}
-                          aria-label="Select all shown"
-                          className="h-4 w-4 accent-[#960D32]"
+                          label="Select all shown"
                         />
                       </th>
                       {['When', 'Client', 'Service', 'Status', 'Payment', 'Value'].map((h) => (
@@ -543,12 +541,10 @@ const Bookings = () => {
                         className={cn('cursor-pointer transition-colors hover:bg-cream', picked.includes(b.id) && 'bg-blush/60')}
                       >
                         <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
-                          <input
-                            type="checkbox"
+                          <CheckBox
                             checked={picked.includes(b.id)}
                             onChange={() => setPicked((p) => (p.includes(b.id) ? p.filter((x) => x !== b.id) : [...p, b.id]))}
-                            aria-label={`Select ${b.guest_name}`}
-                            className="h-4 w-4 accent-[#960D32]"
+                            label={`Select ${b.guest_name}`}
                           />
                         </td>
                         <td className="px-3 py-2">

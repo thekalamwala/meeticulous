@@ -22,7 +22,7 @@ import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react
 import { Navigate, NavLink, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Bell, CheckCircle2 as CircleCheck, ChevronRight, CreditCard, ExternalLink, HelpCircle,
-  LogOut, Menu, MessageSquare, Plus, Repeat, Search, ShieldCheck, X,
+  LogOut, Menu, MessageSquare, Repeat, Search, ShieldCheck, X,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { cn } from '../../components/dashboard/ui';
@@ -354,14 +354,12 @@ const Topbar = ({ onOpenNav, onOpenSearch, onGo }) => {
         <kbd className="ml-auto hidden shrink-0 rounded border border-neutral-200 px-1 text-[9.5px] font-bold sm:block">/</kbd>
       </button>
 
+      {/* No global "Add booking" here: every page already carries its own
+          primary action in its header (Add booking, New service, Add client),
+          where it belongs to what you are looking at. A second copy in the
+          chrome was the same button twice on the one page that needs it, and
+          an out-of-context one on the seven that don't. */}
       <div className="ml-auto flex shrink-0 items-center gap-1">
-        <button
-          type="button"
-          onClick={() => onGo('bookings?new=1')}
-          className={cn('hidden h-7 items-center gap-1 rounded-full bg-maroon px-2.5 text-[11.5px] font-bold text-white transition hover:bg-maroon-dark sm:inline-flex', ring)}
-        >
-          <Plus className="h-3.5 w-3.5" strokeWidth={2.8} /> Add booking
-        </button>
         <button type="button" onClick={() => onGo('settings?tab=help')} aria-label="Help and support" className={iconBtn}>
           <HelpCircle className="h-4 w-4" strokeWidth={2.2} />
         </button>

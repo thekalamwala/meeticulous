@@ -196,6 +196,36 @@ export const FilterBar = ({ search, children, more, onClearAll, activeCount = 0,
   );
 };
 
+/* ── CheckBox ─────────────────────────────────────────────────────────────
+ * A native checkbox with `accent-color` paints a solid 16px block in the
+ * accent — against a light table row that reads as a black box, and it is the
+ * heaviest thing on screen in a view where selection is incidental. This is
+ * the same 14px box the filter panels use: a 2px outline at rest, filled only
+ * once it is on. The real <input> stays, moved off-screen, so the label, the
+ * keyboard and screen readers behave exactly as before.
+ * ---------------------------------------------------------------------- */
+export const CheckBox = ({ checked, onChange, label, className = '' }) => (
+  <label className={cn('relative inline-flex cursor-pointer items-center', className)}>
+    <input
+      type="checkbox"
+      checked={checked}
+      onChange={onChange}
+      aria-label={label}
+      className="peer absolute h-0 w-0 opacity-0"
+    />
+    <span
+      aria-hidden="true"
+      className={cn(
+        'grid h-3.5 w-3.5 place-items-center rounded-xs border-2 transition',
+        'peer-focus-visible:ring-2 peer-focus-visible:ring-rose peer-focus-visible:ring-offset-1',
+        checked ? 'border-maroon bg-maroon text-white' : 'border-neutral-300 bg-white hover:border-maroon/50',
+      )}
+    >
+      {checked && <Check className="h-2.5 w-2.5" strokeWidth={4} />}
+    </span>
+  </label>
+);
+
 /** Segmented view switcher — list / calendar / agenda, and the like. */
 export const ViewSwitch = ({ value, onChange, options }) => (
   <div className="flex shrink-0 items-center rounded-sm border-2 border-neutral-200 bg-cream p-0.5">
