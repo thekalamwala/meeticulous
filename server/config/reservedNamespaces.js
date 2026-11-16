@@ -16,6 +16,7 @@ const ROUTES = [
   'guest-terms', 'host-agreement', 'host-fees', // legal document set
   'become-a-host', 'login-as-vendor', 'vendor', 'vendor-register', 'auth',
   'backstage', 'super-dashboard', 'admin', 'dashboard', 'user', 'review', 'manage-booking', 'lp', 'for',
+  'host-lab', // /host-lab/* — host dashboard redesign prototype (client pages/hostlab/*)
   'og', // /og/blog/:slug — render target for the OG card generator
   'my-bookings', 'profile', 'reviews', 'loyalty', 'settings', 'search', 'wall-of-love', 'submit-review', 'moments',
   'opening', 'inaugurators', // "The Opening" launch event + permanent Inaugurators Wall

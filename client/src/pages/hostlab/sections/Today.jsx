@@ -226,7 +226,9 @@ const Today = ({ go }) => {
           onClick={() => go('money')}
         />
         <Tile label="Upcoming bookings" value={upcoming} hint="Next 30 days" onClick={() => go('bookings')} />
-        <Tile label="Page views" value={mock.funnel.views.toLocaleString('en-IN')} delta={viewsDelta} deltaLabel="vs last 30 days" onClick={() => go('grow')} />
+        {/* Traffic lives in Intelligence now, not Grow — Grow › Insights was removed
+            because it duplicated Intelligence › Audience. */}
+        <Tile label="Page views" value={mock.funnel.views.toLocaleString('en-IN')} delta={viewsDelta} deltaLabel="vs last 30 days" onClick={() => go('intelligence/audience')} />
       </div>
 
       <ActionQueue go={go} />
@@ -235,7 +237,7 @@ const Today = ({ go }) => {
         <DayTimeline go={go} />
 
         <div className="flex flex-col gap-3">
-          <Panel title="Where bookings came from" subtitle="Last 30 days" action={<Button size="sm" variant="ghost" onClick={() => go('grow')}>Details <ArrowRight className="h-3.5 w-3.5" /></Button>}>
+          <Panel title="Where bookings came from" subtitle="Last 30 days" action={<Button size="sm" variant="ghost" onClick={() => go('intelligence/audience')}>Details <ArrowRight className="h-3.5 w-3.5" /></Button>}>
             <ul className="flex flex-col gap-1.5">
               {mock.trafficSources.slice(0, 4).map((s) => {
                 const max = mock.trafficSources[0].views;
