@@ -116,9 +116,10 @@ const SidebarBody = ({ onNavigate }) => {
   const [params] = useSearchParams();
   const section = pathname.replace(/^\/host-lab\/?/, '').split('/')[0];
   const tabParam = params.get('tab');
-  // The active section opens itself; the rest stay where the host left them.
-  const [open, setOpen] = useState(() => (section ? { [section]: true } : {}));
-  useEffect(() => { if (section) setOpen((o) => ({ ...o, [section]: true })); }, [section]);
+  // Accordion: one section open at a time, so the rail never grows past a
+  // screenful. Opening one closes the last; the active section opens itself.
+  const [open, setOpen] = useState(() => section || null);
+  useEffect(() => { if (section) setOpen(section); }, [section]);
 
   return (
     <>
@@ -132,8 +133,8 @@ const SidebarBody = ({ onNavigate }) => {
                   key={item.label}
                   item={item}
                   activeTab={section === item.to ? tabParam || TABS[item.tabs]?.[0]?.value : null}
-                  expanded={!!open[item.to]}
-                  onToggle={(to) => setOpen((o) => ({ ...o, [to]: !o[to] }))}
+                  expanded={open === item.to}
+                  onToggle={(to) => setOpen((o) => (o === to ? null : to))}
                   onNavigate={onNavigate}
                 />
               ))}
