@@ -50,7 +50,11 @@ export const SUBPAGES = {
   ],
   grow: [
     { slug: 'page', label: 'Booking page', blurb: 'The one link worth sharing, and how to make it work harder.' },
-    { slug: 'insights', label: 'Insights', blurb: 'Why bookings are or are not happening.' },
+    // "Insights" used to sit here. It was page views, a drop-off funnel, traffic
+    // sources and three written observations — every one of which Intelligence
+    // now answers, with real charts and a Pro gate. Two surfaces answering
+    // "why are bookings happening or not" is the duplication the IA decision
+    // existed to prevent, so this one goes and Intelligence keeps it.
     { slug: 'proof', label: 'Social proof', blurb: 'Reviews guests left you, and the quotes you added.' },
     { slug: 'refer', label: 'Refer & earn', blurb: 'Invite a host; you both get paid when they go live.' },
   ],
