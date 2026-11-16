@@ -11,7 +11,7 @@
 // and children indented under a hairline like URBN's Advertisements and Deals.
 // ─────────────────────────────────────────────────────────────────────────────
 import {
-  CalendarDays, CalendarRange, CreditCard, Home, Package, Settings, TrendingUp, Users,
+  CalendarDays, CalendarRange, CreditCard, Home, LineChart, Package, Settings, TrendingUp, Users,
 } from 'lucide-react';
 
 export const BASE = '/host-lab';
@@ -36,6 +36,16 @@ export const TABS = {
     { value: 'payouts', label: 'Payouts' },
     { value: 'transactions', label: 'Transactions' },
     { value: 'invoices', label: 'Invoices' },
+  ],
+  // Creator Intelligence. Four pages, each answering one question — see
+  // docs/superpowers/specs/2026-11-16-creator-intelligence-design.md §8.
+  // "Revenue" (analysis) is deliberately NOT "Earnings" (the ledger, under Money):
+  // one reads the numbers, the other lists the transactions behind them.
+  intelligence: [
+    { value: 'overview', label: 'Overview' },
+    { value: 'revenue', label: 'Revenue' },
+    { value: 'audience', label: 'Audience' },
+    { value: 'demand', label: 'Demand' },
   ],
   grow: [
     { value: 'page', label: 'Booking page' },
@@ -67,6 +77,7 @@ export const NAV = [
     items: [
       { to: 'catalog', label: 'Catalog', icon: Package, tabs: 'catalog' },
       { to: 'schedule', label: 'Schedule', icon: CalendarRange, tabs: 'schedule' },
+      { to: 'intelligence', label: 'Intelligence', icon: LineChart, tabs: 'intelligence' },
       { to: 'money', label: 'Money', icon: CreditCard, tabs: 'money' },
       { to: 'grow', label: 'Grow', icon: TrendingUp, tabs: 'grow', badge: 2 },
     ],

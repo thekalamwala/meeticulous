@@ -771,7 +771,7 @@ are settled above as engineering calls (slot-stage drop, async attribution, no
 inheritance, `cohort_key` normaliser, one profile-view number, no cache, docker
 Postgres for tests). Three need the founder, and one is a notice.
 
-### 17.1 Money's gate — the published promise
+### 17.1 Money's gate — the published promise · **DECIDED 2026-11-16: gate the insights, Money stays free**
 
 `PLAN_MATRIX` tells the world free hosts get "Earnings & transaction history ✓" and
 "Commission tracker ✓", and `/dashboard/earnings` is ungated today. §6.4 therefore

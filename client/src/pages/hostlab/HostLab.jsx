@@ -31,6 +31,7 @@ const Bookings = lazy(() => import('./sections/Bookings'));
 const Clients = lazy(() => import('./sections/Clients'));
 const Catalog = lazy(() => import('./sections/Catalog'));
 const Schedule = lazy(() => import('./sections/Schedule'));
+const Intelligence = lazy(() => import('./sections/Intelligence'));
 const Money = lazy(() => import('./sections/Money'));
 const Grow = lazy(() => import('./sections/Grow'));
 const SettingsSection = lazy(() => import('./sections/SettingsSection'));
@@ -380,6 +381,7 @@ const HostLab = () => {
               <Route path="clients" element={<Clients go={go} />} />
               <Route path="catalog" element={<Catalog go={go} />} />
               <Route path="schedule" element={<Schedule go={go} />} />
+              <Route path="intelligence" element={<Intelligence go={go} />} />
               <Route path="money" element={<Money go={go} />} />
               <Route path="grow" element={<Grow go={go} />} />
               <Route path="settings" element={<SettingsSection go={go} />} />
