@@ -219,15 +219,18 @@ with its dependency named. The brief's B3 is the one section this design openly 
 ## 7. Sitemap
 
 ```
-/dashboard/intelligence                     Intelligence › Overview
-  ?range=30d&compare=prev                   (range + comparison are URL state everywhere)
-/dashboard/intelligence/money               Intelligence › Money
-/dashboard/intelligence/audience            Intelligence › Audience & Conversion
-/dashboard/intelligence/demand              Intelligence › Demand & Customers
+/dashboard/intelligence                     → redirects to its first page
+/dashboard/intelligence/overview            Intelligence › Overview
+/dashboard/intelligence/revenue             Intelligence › Revenue
+/dashboard/intelligence/audience            Intelligence › Audience
+/dashboard/intelligence/demand              Intelligence › Demand
+  ?range=30d&compare=prev                   (range + comparison are URL state on every page)
 ```
 
-Four routes. Tabs within a page are URL state (`?tab=`) via the existing
-`useUrlTab` helper, not new routes. Deep links out to `/dashboard/earnings`,
+Four pages, four URLs, declared once in `SUBPAGES.intelligence` and read by the
+rail, the router and each page's heading (§17.2). **Nothing inside a page is a
+tab** — each is one scrollable report with grouped sections. Deep links out to
+`/dashboard/earnings`,
 `/dashboard/clients`, `/dashboard/services`, `/dashboard/availability`,
 `/dashboard/testimonials` — those pages are unchanged.
 
@@ -809,9 +812,35 @@ win-back, benchmarks, Audience & Conversion, cohorts/LTV, weekly moves).
 rows — a live-DB plan-row edit, which is founder territory. The alternative (gate
 Money too) means changing a published promise and is not recommended.
 
-### 17.2 Does Intelligence live inside Host Lab?
+### 17.2 Does Intelligence live inside Host Lab? · **DECIDED 2026-11-16: yes, fifth section**
 
-Every primitive §13 builds on (`labUi.jsx`, `useUrlTab`, `nav.js`, `pageMap.js`,
+Intelligence is Host Lab's fifth Business section. Consequences, all now live in
+the code:
+
+- **This work depends on #360.** It cannot ship before Host Lab does, and its
+  PR is stacked on that branch.
+- **It follows Host Lab's conventions, not its own.** Host Lab replaced tabs with
+  real sub-pages — *if it has a URL in the rail it is a page; if it is a subset of
+  one list it is a filter; nothing is a tab*. Intelligence was built on the older
+  tab model and is rebuilt on theirs: `SUBPAGES.intelligence` declares the four
+  pages once, and the rail, the router and each page heading read that one
+  declaration. The sitemap in §7 is unchanged — the four pages were always the
+  four pages; only the mechanism changed.
+- **The three tab strips inside the pages are gone too.** Revenue's four,
+  Audience's four and Demand's three are now grouped sections on one scrollable
+  report each. That is what the rule requires, and it is also closer to GA4,
+  where a report is a long page rather than a tabbed one.
+- **`intelUi.jsx` is temporary.** Its chart kit lives apart from `labUi.jsx` only
+  because the two branches were being written at once. Once Host Lab merges, it
+  folds into `labUi` so the console has one kit.
+- **Open collision:** Grow › Insights ("Why bookings are or are not happening")
+  now overlaps Intelligence › Audience almost exactly. Both should not ship. That
+  is a Host Lab page and the call belongs with whoever owns that section.
+
+Original question, for the record:
+
+*(Answered above. Kept because the reasoning still explains the dependency.)*
+Every primitive §13 builds on (`labUi.jsx`, `useSubPage`, `nav.js`, `pageMap.js`,
 `sections/`) exists **only on `feat/host-lab-prototype`** — unmerged, two commits
 ahead of `origin/main`, and being actively committed to by another session.
 Either: (a) Intelligence is Host Lab's fifth section, so this work depends on that
