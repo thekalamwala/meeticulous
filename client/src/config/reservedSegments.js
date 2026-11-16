@@ -23,6 +23,7 @@ export const RESERVED_FIRST_SEGMENTS = [
   'appointment-booking-software', // SEO landing (pages/AppointmentBookingSoftware.jsx)
   'become-a-host', 'login-as-vendor', 'vendor', 'vendor-register', 'auth',
   'backstage', 'super-dashboard', 'admin', 'dashboard', 'user', 'review', 'manage-booking', 'lp', 'for', 'invite',
+  'host-lab', // /host-lab/* — the host dashboard redesign prototype (pages/hostlab/*)
   // /og/blog/:slug — render target for the OG card generator (see pages/OgCard.jsx).
   'og',
   'my-bookings', 'profile', 'reviews', 'loyalty', 'sitemap', 'robots', 'health',
