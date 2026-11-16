@@ -15,7 +15,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
-import { Check, ChevronDown, Search, TrendingDown, TrendingUp, X } from 'lucide-react';
+import { Search, TrendingDown, TrendingUp, X } from 'lucide-react';
 import { cn } from '../../components/dashboard/ui';
 import { TABS } from './nav';
 
@@ -122,82 +122,9 @@ export const Tile = ({ label, value, delta, deltaLabel, hint, onClick, accent = 
   );
 };
 
-/* ── Chips — a filter row that shows, and clears, what is applied ──────── */
-export const Chip = ({ active, children, onClick, count }) => (
-  <button
-    type="button"
-    onClick={onClick}
-    aria-pressed={active}
-    className={cn(
-      'inline-flex shrink-0 items-center gap-1.5 rounded-full border-2 px-2.5 py-1.5 text-[11px] font-semibold transition focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose',
-      active ? 'border-maroon bg-maroon text-white' : 'border-neutral-200 bg-white text-ink/65 hover:border-maroon/40 hover:text-ink',
-    )}
-  >
-    {children}
-    {count != null && (
-      <span className={cn('rounded-full px-1.5 text-[10px] font-bold', active ? 'bg-white/20 text-white' : 'bg-neutral-100 text-ink/55')}>{count}</span>
-    )}
-  </button>
-);
-
-export const AppliedChip = ({ children, onClear }) => (
-  <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-blush px-2.5 py-1 text-[10.5px] font-semibold text-maroon">
-    {children}
-    <button type="button" onClick={onClear} aria-label={`Clear ${children}`} className="rounded-full p-0.5 hover:bg-maroon/15">
-      <X className="h-3 w-3" strokeWidth={3} />
-    </button>
-  </span>
-);
-
-/* ── Dropdown — a real menu, closes on click-outside and Escape ────────── */
-export const Dropdown = ({ label, value, options, onChange, align = 'left', width = 'w-48' }) => {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-  useEffect(() => {
-    if (!open) return undefined;
-    const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
-    const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
-    document.addEventListener('mousedown', onDoc);
-    document.addEventListener('keydown', onKey);
-    return () => { document.removeEventListener('mousedown', onDoc); document.removeEventListener('keydown', onKey); };
-  }, [open]);
-  const current = options.find((o) => o.value === value);
-  return (
-    <div ref={ref} className="relative shrink-0">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        aria-haspopup="menu"
-        className="inline-flex items-center gap-1.5 rounded-full border-2 border-neutral-200 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-ink/70 transition hover:border-maroon/40 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
-      >
-        {label && <span className="text-ink/45">{label}</span>}
-        {current?.label || 'Any'}
-        <ChevronDown className="h-3.5 w-3.5" strokeWidth={2.4} />
-      </button>
-      {open && (
-        <div
-          role="menu"
-          className={cn('absolute z-50 mt-1.5 overflow-hidden rounded-lg border-2 border-neutral-200 bg-white py-1 dash-elev-3', width, align === 'right' ? 'right-0' : 'left-0')}
-        >
-          {options.map((o) => (
-            <button
-              key={o.value}
-              type="button"
-              role="menuitemradio"
-              aria-checked={o.value === value}
-              onClick={() => { onChange(o.value); setOpen(false); }}
-              className="flex w-full items-center justify-between gap-1.5 px-2.5 py-1.5 text-left text-[11.5px] font-medium text-ink/75 transition hover:bg-blush"
-            >
-              {o.label}
-              {o.value === value && <Check className="h-3.5 w-3.5 text-maroon" strokeWidth={3} />}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
+/* Chip, AppliedChip and Dropdown lived here. They were the four-row filter
+ * bar; filters.jsx replaced all three with one row. Removed rather than kept
+ * around, so nothing drifts back to the old pattern. */
 
 /* ── Toggle ────────────────────────────────────────────────────────────── */
 export const Toggle = ({ checked, onChange, label, disabled }) => (

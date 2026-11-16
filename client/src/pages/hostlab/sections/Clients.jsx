@@ -9,16 +9,14 @@
 // clients cannot do by eye.
 import { useMemo, useState } from 'react';
 import {
-  AlertTriangle, Download, MessageSquare, Phone, Plus, Repeat, Search,
+  AlertTriangle, ArrowDownUp, Download, MessageSquare, Phone, Plus, Repeat,
   StickyNote, Trash2, TrendingUp, Users, Mail, Crown,
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Button, Modal, cn } from '../../../components/dashboard/ui';
-import {
-  AppliedChip, Avatar, Chip, Dropdown, LabTextarea, Panel, StatusPill,
-  fmtDayFull, inr, relDay,
-} from '../labUi';
+import { Avatar, LabTextarea, Panel, StatusPill, fmtDayFull, inr, relDay } from '../labUi';
+import { Filter, FilterBar } from '../filters';
 import mock from '../mockData';
 
 const SEGMENTS = [
@@ -182,10 +180,6 @@ const Clients = () => {
   const open = mock.clients.find((c) => c.id === openId) || null;
   const allPicked = rows.length > 0 && picked.length === rows.length;
 
-  const applied = [
-    segment !== 'all' && { label: SEGMENTS.find((s) => s.value === segment).label, clear: () => setSegment('all') },
-    q.trim() && { label: `“${q.trim()}”`, clear: () => setQ('') },
-  ].filter(Boolean);
 
   return (
     <div className="flex flex-col gap-2.5">
@@ -234,48 +228,37 @@ const Clients = () => {
         </Panel>
       )}
 
-      {/* Toolbar */}
-      <div className="flex flex-col gap-1.5 rounded-xl border-2 border-neutral-200 bg-white p-2">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <div className="relative min-w-[180px] flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/35" strokeWidth={2.2} />
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Name, email or phone"
-              aria-label="Search clients"
-              className="w-full rounded-full border-2 border-neutral-200 bg-white py-1.5 pl-9 pr-3 text-[11.5px] font-medium text-ink outline-none transition placeholder:text-ink/35 focus:border-maroon/40 focus-visible:ring-[3px] focus-visible:ring-rose"
-            />
-          </div>
-          <Dropdown
+      <FilterBar
+        search={{ value: q, onChange: setQ, placeholder: 'Name, email or phone' }}
+        activeCount={(segment !== 'all' ? 1 : 0) + (q.trim() ? 1 : 0)}
+        onClearAll={() => { setSegment('all'); setQ(''); }}
+        trailing={(
+          <Filter
             label="Sort"
+            icon={ArrowDownUp}
             value={sort}
-            onChange={setSort}
+            empty="value_desc"
             align="right"
-            width="w-52"
+            width="w-56"
+            onChange={setSort}
             options={[
               { value: 'value_desc', label: 'Highest lifetime value' },
               { value: 'bookings_desc', label: 'Most bookings' },
               { value: 'recent', label: 'Booked most recently' },
               { value: 'stale', label: 'Longest since booking' },
-              { value: 'name_asc', label: 'Name A–Z' },
+              { value: 'name_asc', label: 'Name A-Z' },
             ]}
           />
-        </div>
-        <div className="dash-noscrollbar flex gap-1.5 overflow-x-auto">
-          {SEGMENTS.map((s) => (
-            <Chip key={s.value} active={segment === s.value} count={counts[s.value]} onClick={() => setSegment(s.value)}>
-              {s.label}
-            </Chip>
-          ))}
-        </div>
-        {applied.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1.5 border-t-2 border-neutral-200 pt-2.5">
-            <span className="text-[10px] font-bold uppercase tracking-wide text-ink/40">Filtered by</span>
-            {applied.map((f) => <AppliedChip key={f.label} onClear={f.clear}>{f.label}</AppliedChip>)}
-          </div>
         )}
-      </div>
+      >
+        <Filter
+          label="Segment"
+          value={segment}
+          width="w-52"
+          onChange={setSegment}
+          options={SEGMENTS.map((x) => ({ ...x, count: counts[x.value] }))}
+        />
+      </FilterBar>
 
       {picked.length > 0 && (
         <div className="sticky top-16 z-20 flex flex-wrap items-center gap-1.5 rounded-xl border-2 border-maroon bg-maroon px-2.5 py-1.5 text-white">

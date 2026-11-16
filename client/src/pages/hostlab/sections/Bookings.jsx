@@ -10,15 +10,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   ArrowDownUp, CalendarDays, CalendarX2, Check, Clock, Copy, Download, LayoutList,
-  List, MessageSquare, Plus, RotateCcw, Search, Trash2, UserX, Video, X,
+  List, MessageSquare, Plus, RotateCcw, Trash2, UserX, Video, X,
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Button, Modal, cn } from '../../../components/dashboard/ui';
 import {
-  AppliedChip, Avatar, Chip, Dropdown, LabInput as Input, LabSelect as Select,
+  Avatar, LabInput as Input, LabSelect as Select,
   Panel, StatusPill, fmtDayFull, fmtTime, inr, relDay,
 } from '../labUi';
+import { Filter, FilterBar, ViewSwitch } from '../filters';
 import mock from '../mockData';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -308,24 +309,22 @@ const Bookings = () => {
     return [...out].sort(by[sort]);
   }, [rows, q, statuses, payment, service, range, sort]);
 
-  const activeFilters = [
-    ...statuses.map((s) => ({ label: STATUSES.find((x) => x.value === s).label, clear: () => setStatuses((v) => v.filter((x) => x !== s)) })),
-    payment !== 'all' && { label: payment === 'paid' ? 'Paid' : 'Unpaid', clear: () => setPayment('all') },
-    service !== 'all' && { label: mock.services.find((s) => s.id === service).title, clear: () => setService('all') },
-    range !== 'all' && { label: RANGES.find((r) => r.value === range).label, clear: () => setRange('all') },
-    q.trim() && { label: `“${q.trim()}”`, clear: () => setQ('') },
-  ].filter(Boolean);
+  // How many things are narrowing the list — drives the one "Clear all".
+  const activeCount =
+    (statuses.length ? 1 : 0) + (payment !== 'all' ? 1 : 0) + (service !== 'all' ? 1 : 0)
+    + (range !== 'all' ? 1 : 0) + (q.trim() ? 1 : 0) + (savedView ? 1 : 0);
 
   const clearAll = () => { setStatuses([]); setPayment('all'); setService('all'); setRange('all'); setQ(''); setSavedView(null); };
 
-  const applyView = (v) => {
-    if (savedView === v.id) { clearAll(); return; }
+  const applyView = (id) => {
+    if (!id || savedView === id) { clearAll(); return; }
+    const v = VIEWS.find((x) => x.id === id);
     setStatuses(v.filters.statuses);
     setPayment(v.filters.payment);
     setRange(v.filters.range);
     setService('all');
     setQ('');
-    setSavedView(v.id);
+    setSavedView(id);
   };
 
   const act = (booking, action) => {
@@ -401,86 +400,88 @@ const Bookings = () => {
         </div>
       </header>
 
-      {/* Saved views */}
-      <div className="dash-noscrollbar flex gap-1.5 overflow-x-auto pb-0.5">
-        {VIEWS.map((v) => (
-          <Chip
-            key={v.id}
-            active={savedView === v.id}
-            onClick={() => applyView(v)}
-            count={v.id === 'needs' ? counts.pending : v.id === 'unpaid' ? counts.unpaid : v.id === 'noshow' ? counts.no_show : undefined}
-          >
-            {v.label}
-          </Chip>
-        ))}
-      </div>
-
-      {/* Toolbar */}
-      <div className="flex flex-col gap-1.5 rounded-xl border-2 border-neutral-200 bg-white p-2">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <div className="relative min-w-[180px] flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/35" strokeWidth={2.2} />
-            <input
-              value={q}
-              onChange={(e) => { setQ(e.target.value); setSavedView(null); }}
-              placeholder="Name, email, service or MT-ref"
-              aria-label="Search bookings"
-              className="w-full rounded-full border-2 border-neutral-200 bg-white py-1.5 pl-9 pr-3 text-[11.5px] font-medium text-ink outline-none transition placeholder:text-ink/35 focus:border-maroon/40 focus-visible:ring-[3px] focus-visible:ring-rose"
+      {/* One row. The value of an applied filter lives in its own button, so
+          there is no chip row underneath repeating it back. */}
+      <FilterBar
+        search={{ value: q, onChange: (v) => { setQ(v); setSavedView(null); }, placeholder: 'Name, email, service or MT-ref' }}
+        activeCount={activeCount}
+        onClearAll={clearAll}
+        trailing={(
+          <>
+            <Filter
+              label="Sort"
+              icon={ArrowDownUp}
+              value={sort}
+              empty="date_desc"
+              align="right"
+              width="w-44"
+              onChange={setSort}
+              options={[
+                { value: 'date_desc', label: 'Newest first' },
+                { value: 'date_asc', label: 'Oldest first' },
+                { value: 'amount_desc', label: 'Highest value' },
+                { value: 'name_asc', label: 'Client A-Z' },
+              ]}
             />
-          </div>
-          <Dropdown label="Payment" value={payment} onChange={(v) => { setPayment(v); setSavedView(null); }} options={[{ value: 'all', label: 'Any' }, { value: 'paid', label: 'Paid' }, { value: 'unpaid', label: 'Unpaid' }, { value: 'refunded', label: 'Refunded' }]} width="w-40" />
-          <Dropdown label="Service" value={service} onChange={(v) => { setService(v); setSavedView(null); }} options={[{ value: 'all', label: 'All services' }, ...mock.services.map((s) => ({ value: s.id, label: s.title }))]} width="w-56" />
-          <Dropdown label="When" value={range} onChange={(v) => { setRange(v); setSavedView(null); }} options={RANGES} width="w-44" />
-          <Dropdown
-            label={<ArrowDownUp className="h-3.5 w-3.5" />}
-            value={sort}
-            onChange={setSort}
-            align="right"
-            width="w-48"
-            options={[
-              { value: 'date_desc', label: 'Newest first' },
-              { value: 'date_asc', label: 'Oldest first' },
-              { value: 'amount_desc', label: 'Highest value' },
-              { value: 'name_asc', label: 'Client A–Z' },
-            ]}
-          />
-          <div className="ml-auto flex shrink-0 items-center rounded-full border-2 border-neutral-200 bg-cream p-0.5">
-            {[['list', List], ['calendar', CalendarDays], ['agenda', LayoutList]].map(([m, Icon]) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => setMode(m)}
-                aria-pressed={mode === m}
-                aria-label={`${m} view`}
-                className={cn('grid h-6 w-7 place-items-center rounded-full transition', mode === m ? 'bg-maroon text-white' : 'text-ink/45 hover:text-ink')}
-              >
-                <Icon className="h-[15px] w-[15px]" strokeWidth={2.2} />
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="dash-noscrollbar flex gap-1.5 overflow-x-auto">
-          {STATUSES.map((s) => (
-            <Chip
-              key={s.value}
-              active={statuses.includes(s.value)}
-              count={counts[s.value]}
-              onClick={() => { setSavedView(null); setStatuses((v) => (v.includes(s.value) ? v.filter((x) => x !== s.value) : [...v, s.value])); }}
-            >
-              {s.label}
-            </Chip>
-          ))}
-        </div>
-
-        {activeFilters.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1.5 border-t-2 border-neutral-200 pt-2.5">
-            <span className="text-[10px] font-bold uppercase tracking-wide text-ink/40">Filtered by</span>
-            {activeFilters.map((f) => <AppliedChip key={f.label} onClear={f.clear}>{f.label}</AppliedChip>)}
-            <button type="button" onClick={clearAll} className="ml-1 text-[10.5px] font-bold text-maroon underline">Clear all</button>
-          </div>
+            <ViewSwitch
+              value={mode}
+              onChange={setMode}
+              options={[
+                { value: 'list', label: 'List', icon: List },
+                { value: 'calendar', label: 'Calendar', icon: CalendarDays },
+                { value: 'agenda', label: 'Agenda', icon: LayoutList },
+              ]}
+            />
+          </>
         )}
-      </div>
+      >
+        <Filter
+          label="View"
+          value={savedView}
+          empty={null}
+          width="w-52"
+          onChange={(v) => applyView(v)}
+          options={VIEWS.map((v) => ({
+            value: v.id,
+            label: v.label,
+            count: v.id === 'needs' ? counts.pending : v.id === 'unpaid' ? counts.unpaid : v.id === 'noshow' ? counts.no_show : undefined,
+          }))}
+        />
+        <Filter
+          label="Status"
+          multi
+          value={statuses}
+          width="w-56"
+          onChange={(v) => { setStatuses(v); setSavedView(null); }}
+          options={STATUSES.map((x) => ({ ...x, count: counts[x.value] }))}
+        />
+        <Filter
+          label="Payment"
+          value={payment}
+          width="w-40"
+          onChange={(v) => { setPayment(v); setSavedView(null); }}
+          options={[
+            { value: 'all', label: 'Any' },
+            { value: 'paid', label: 'Paid' },
+            { value: 'unpaid', label: 'Unpaid', count: counts.unpaid },
+            { value: 'refunded', label: 'Refunded' },
+          ]}
+        />
+        <Filter
+          label="Service"
+          value={service}
+          width="w-56"
+          onChange={(v) => { setService(v); setSavedView(null); }}
+          options={[{ value: 'all', label: 'All services' }, ...mock.services.map((x) => ({ value: x.id, label: x.title }))]}
+        />
+        <Filter
+          label="When"
+          value={range}
+          width="w-44"
+          onChange={(v) => { setRange(v); setSavedView(null); }}
+          options={RANGES}
+        />
+      </FilterBar>
 
       {/* Bulk bar */}
       {picked.length > 0 && (

@@ -10,14 +10,15 @@
 import { useMemo, useState } from 'react';
 import {
   AlertTriangle, ArrowDownToLine, Banknote, Building2, Clock, Download,
-  FileText, Info, Receipt, Search, ShieldCheck, TrendingUp,
+  FileText, Info, Receipt, ShieldCheck, TrendingUp,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button, Modal, Tabs, cn } from '../../../components/dashboard/ui';
 import {
-  BarChart, Chip, Dropdown, Panel, RankedBars, StatusPill, Tile,
+  BarChart, Panel, RankedBars, StatusPill, Tile,
   fmtDayFull, inr, relDay, useUrlTab,
 } from '../labUi';
+import { Filter, FilterBar } from '../filters';
 import mock from '../mockData';
 
 const PERIODS = [
@@ -56,14 +57,15 @@ const Earnings = () => {
 
   return (
     <div className="flex flex-col gap-2.5">
-      <div className="flex flex-wrap items-center gap-1.5">
-        {PERIODS.map((p) => (
-          <Chip key={p.value} active={period === p.value} onClick={() => setPeriod(p.value)}>{p.label}</Chip>
-        ))}
-        <Button size="sm" variant="outline" className="ml-auto" onClick={() => toast.success('Earnings report exported to CSV')}>
-          <Download className="h-4 w-4" strokeWidth={2.4} /> Export
-        </Button>
-      </div>
+      <FilterBar
+        trailing={(
+          <Button size="sm" variant="outline" onClick={() => toast.success('Earnings report exported to CSV')}>
+            <Download className="h-3.5 w-3.5" strokeWidth={2.4} /> Export
+          </Button>
+        )}
+      >
+        <Filter label="Period" value={period} empty="all" width="w-44" onChange={setPeriod} options={PERIODS} />
+      </FilterBar>
 
       <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         <Tile label="Earned" value={inr(total, { compact: true })} delta={delta} deltaLabel="this month vs last" />
@@ -225,28 +227,29 @@ const Transactions = () => {
         <Tile label="Net to you" value={inr(gross - fees, { compact: true })} />
       </div>
 
-      <div className="flex flex-wrap items-center gap-1.5 rounded-xl border-2 border-neutral-200 bg-white p-2">
-        <div className="relative min-w-[180px] flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/35" strokeWidth={2.2} />
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Client, service or MT-ref"
-            aria-label="Search transactions"
-            className="w-full rounded-full border-2 border-neutral-200 bg-white py-1.5 pl-9 pr-3 text-[11.5px] font-medium text-ink outline-none transition placeholder:text-ink/35 focus:border-maroon/40 focus-visible:ring-[3px] focus-visible:ring-rose"
-          />
-        </div>
-        <Dropdown
+      <FilterBar
+        search={{ value: q, onChange: setQ, placeholder: 'Client, service or MT-ref' }}
+        activeCount={(status !== 'all' ? 1 : 0) + (q.trim() ? 1 : 0)}
+        onClearAll={() => { setStatus('all'); setQ(''); }}
+        trailing={(
+          <Button size="sm" variant="outline" onClick={() => toast.success(`${rows.length} transactions exported`)}>
+            <Download className="h-3.5 w-3.5" strokeWidth={2.4} /> Export
+          </Button>
+        )}
+      >
+        <Filter
           label="Status"
           value={status}
-          onChange={setStatus}
-          options={[{ value: 'all', label: 'Any' }, { value: 'paid', label: 'Paid' }, { value: 'unpaid', label: 'Unpaid' }, { value: 'refunded', label: 'Refunded' }]}
           width="w-40"
+          onChange={setStatus}
+          options={[
+            { value: 'all', label: 'Any' },
+            { value: 'paid', label: 'Paid' },
+            { value: 'unpaid', label: 'Unpaid' },
+            { value: 'refunded', label: 'Refunded' },
+          ]}
         />
-        <Button size="sm" variant="outline" onClick={() => toast.success(`${rows.length} transactions exported`)}>
-          <Download className="h-4 w-4" strokeWidth={2.4} /> Export
-        </Button>
-      </div>
+      </FilterBar>
 
       <Panel flush>
         <div className="hidden overflow-x-auto md:block">
