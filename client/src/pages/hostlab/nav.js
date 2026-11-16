@@ -15,7 +15,8 @@
 // and children indented under a hairline like URBN's Advertisements and Deals.
 // ─────────────────────────────────────────────────────────────────────────────
 import {
-  CalendarDays, CalendarRange, CreditCard, Home, LineChart, Package, Settings, TrendingUp, Users,
+  CalendarDays, CalendarRange, CreditCard, Home, LineChart, MessagesSquare, Package,
+  Settings, TrendingUp, Users,
 } from 'lucide-react';
 
 export const BASE = '/host-lab';
@@ -47,6 +48,15 @@ export const SUBPAGES = {
     { slug: 'payouts', label: 'Payouts', blurb: 'Where your money is, and when it lands.' },
     { slug: 'transactions', label: 'Transactions', blurb: 'Every payment, fee and refund.' },
     { slug: 'invoices', label: 'Invoices', blurb: 'GST invoices, issued and received.' },
+  ],
+  // Community. The console's view of /community — the part that is about this
+  // host. Reading and posting stay in the community itself; a second feed here
+  // would be the Grow › Insights mistake again.
+  community: [
+    { slug: 'activity', label: 'Activity', blurb: 'What you have posted, and what it earned you.' },
+    { slug: 'mentions', label: 'Mentions', blurb: 'Posts that name you, while the thread is still live.' },
+    { slug: 'answer', label: 'Answer', blurb: 'Open questions you could answer. The cheapest visibility there is.' },
+    { slug: 'spaces', label: 'Spaces', blurb: 'The five rooms, and which ones you may post in.' },
   ],
   grow: [
     { slug: 'page', label: 'Booking page', blurb: 'The one link worth sharing, and how to make it work harder.' },
@@ -85,6 +95,9 @@ export const NAV = [
       { to: 'intelligence', label: 'Intelligence', icon: LineChart, pages: 'intelligence' },
       { to: 'money', label: 'Money', icon: CreditCard, pages: 'money' },
       { to: 'grow', label: 'Grow', icon: TrendingUp, pages: 'grow', badge: 2 },
+      // Badge = unread mentions. A guest naming you by name is the highest-intent
+      // moment in the community, so it earns a count in the rail.
+      { to: 'community', label: 'Community', icon: MessagesSquare, pages: 'community', badge: 1 },
     ],
   },
   {

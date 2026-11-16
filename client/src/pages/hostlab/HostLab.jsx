@@ -36,6 +36,7 @@ const Clients = lazy(() => import('./sections/Clients'));
 const Catalog = lazy(() => import('./sections/Catalog'));
 const CatalogEditor = lazy(() => import('./sections/CatalogEditor'));
 const Schedule = lazy(() => import('./sections/Schedule'));
+const Community = lazy(() => import('./sections/Community'));
 const Intelligence = lazy(() => import('./sections/Intelligence'));
 const Money = lazy(() => import('./sections/Money'));
 const Grow = lazy(() => import('./sections/Grow'));
@@ -516,7 +517,7 @@ const HostLab = () => {
               <Route path="catalog/:id" element={<CatalogEditor />} />
               {/* Sub-pages are real routes. A bare destination redirects to
                   its first page, so the rail row always lands somewhere. */}
-              {[['schedule', Schedule], ['intelligence', Intelligence], ['money', Money], ['grow', Grow], ['settings', SettingsSection]].map(([key, El]) => (
+              {[['schedule', Schedule], ['intelligence', Intelligence], ['money', Money], ['grow', Grow], ['community', Community], ['settings', SettingsSection]].map(([key, El]) => (
                 <Route key={key} path={key}>
                   <Route index element={<Navigate to={SUBPAGES[key][0].slug} replace />} />
                   <Route path=":page" element={<El go={go} />} />

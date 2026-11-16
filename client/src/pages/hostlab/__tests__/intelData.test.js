@@ -6,6 +6,7 @@
 // fixtures. So the fixture's arithmetic is asserted rather than trusted.
 import { describe, expect, it } from 'vitest';
 import intel from '../intelData';
+import community from '../communityData';
 
 describe('intelData fixtures', () => {
   it('gross is service revenue plus product revenue', () => {
@@ -80,6 +81,17 @@ describe('intelData fixtures', () => {
     expect(intel.benchmark.suppressed).toBe(false);
     expect(intel.benchmarkSuppressed.hostCount).toBeLessThan(5);
     expect(intel.benchmarkSuppressed.suppressed).toBe(true);
+  });
+
+  it('accepted answers never exceed replies written', () => {
+    // The Activity page draws this as a share of a bar; above 1 it overflows.
+    expect(community.me.acceptedAnswers).toBeLessThanOrEqual(community.me.commentCount);
+  });
+
+  it('the five spaces match the ones seeded in the database', () => {
+    expect(community.spaces.map((s) => s.key)).toEqual(['updates', 'help', 'ideas', 'host-corner', 'general']);
+    // post_policy drives who may post; an unknown value would render as "Everyone".
+    community.spaces.forEach((s) => expect(['official', 'hosts', 'everyone']).toContain(s.policy));
   });
 
   it('every insight carries its evidence, impact and measure', () => {
