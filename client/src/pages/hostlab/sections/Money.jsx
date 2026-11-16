@@ -28,24 +28,52 @@ const PERIODS = [
   { value: 'all', label: 'All time' },
 ];
 
-const monthsFor = (period) => {
+// A window, and the equivalent window before it, so every figure on this page
+// can answer "up or down" rather than just "how much". Where there is not
+// enough history to compare like with like (year to date, all time) it falls
+// back to the latest month against the one before, and says so.
+const MONTHS = { '30d': 1, '90d': 3, ytd: 11 };
+
+const windowFor = (period) => {
   const all = mock.revenueByMonth;
-  if (period === '30d') return all.slice(-2);
-  if (period === '90d') return all.slice(-3);
-  if (period === 'ytd') return all.slice(-11);
-  return all;
+  const n = MONTHS[period];
+  // Enough history for a like-for-like window: compare it with the one before.
+  if (n && all.length >= n * 2) {
+    const cur = all.slice(-n);
+    return {
+      cur,
+      cmpCur: cur,
+      cmpPrev: all.slice(-n * 2, -n),
+      label: `vs previous ${period === '30d' ? '30 days' : '90 days'}`,
+    };
+  }
+  // Not enough (year to date, all time): the window has no predecessor, so the
+  // comparison is the latest month against the one before — and says so. The
+  // tile still SHOWS the whole window; only the delta is month-on-month.
+  const cur = n ? all.slice(-n) : all;
+  const [a, b] = [all.at(-2), all.at(-1)];
+  return { cur, cmpCur: [b], cmpPrev: [a], label: `${b.month} vs ${a.month}` };
 };
+
+const sum = (rows, key) => rows.reduce((n, r) => n + r[key], 0);
+const growth = (now, before) => (before ? Math.round(((now - before) / before) * 100) : null);
 
 /* ── Earnings ──────────────────────────────────────────────────────────── */
 const Earnings = () => {
   const [period, setPeriod] = useState('all');
-  const months = monthsFor(period);
-  const total = months.reduce((n, m) => n + m.revenue, 0);
-  const count = months.reduce((n, m) => n + m.bookings, 0);
+  const { cur, cmpCur, cmpPrev, label } = windowFor(period);
+
+  const total = sum(cur, 'revenue');
+  const count = sum(cur, 'bookings');
   const avg = count ? Math.round(total / count) : 0;
+
+  // Deltas come from the comparison pair, which is not always the window.
+  const avgOf = (rows) => (sum(rows, 'bookings') ? Math.round(sum(rows, 'revenue') / sum(rows, 'bookings')) : 0);
+  const dTotal = growth(sum(cmpCur, 'revenue'), sum(cmpPrev, 'revenue'));
+  const dCount = growth(sum(cmpCur, 'bookings'), sum(cmpPrev, 'bookings'));
+  const dAvg = growth(avgOf(cmpCur), avgOf(cmpPrev));
+
   const thisM = mock.revenueByMonth.at(-1);
-  const lastM = mock.revenueByMonth.at(-2);
-  const delta = Math.round(((thisM.revenue - lastM.revenue) / lastM.revenue) * 100);
 
   const byService = useMemo(
     () => [...mock.services, ...mock.products, ...mock.courses]
@@ -68,9 +96,9 @@ const Earnings = () => {
       </FilterBar>
 
       <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
-        <Tile label="Earned" value={inr(total, { compact: true })} delta={delta} deltaLabel="this month vs last" />
-        <Tile label="Bookings paid" value={count} />
-        <Tile label="Average booking" value={inr(avg)} />
+        <Tile label="Earned" value={inr(total, { compact: true })} delta={dTotal} deltaLabel={label} />
+        <Tile label="Bookings paid" value={count} delta={dCount} deltaLabel={label} />
+        <Tile label="Average booking" value={inr(avg)} delta={dAvg} deltaLabel={label} />
         <Tile label="Platform fees paid" value={inr(0)} hint="Pro plan · 0% commission" />
       </div>
 

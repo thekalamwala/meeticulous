@@ -507,7 +507,10 @@ const HostLab = () => {
           <Suspense fallback={<div className="py-20 text-center text-[11.5px] font-semibold text-ink/40">Loading…</div>}>
             <Routes>
               <Route index element={<Today go={go} />} />
-              <Route path="bookings" element={<Bookings go={go} />} />
+              <Route path="bookings">
+                <Route index element={<Navigate to="list" replace />} />
+                <Route path=":page" element={<Bookings go={go} />} />
+              </Route>
               <Route path="clients" element={<Clients go={go} />} />
               <Route path="catalog" element={<Catalog go={go} />} />
               {/* The editor is a page, not a modal: creating a thing you sell

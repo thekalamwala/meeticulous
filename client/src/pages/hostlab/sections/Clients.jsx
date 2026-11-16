@@ -14,8 +14,8 @@ import {
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Button, Modal, cn } from '../../../components/dashboard/ui';
-import { Avatar, LabTextarea, Panel, StatusPill, fmtDayFull, inr, relDay } from '../labUi';
+import { Button, cn } from '../../../components/dashboard/ui';
+import { Avatar, Drawer, LabTextarea, Panel, StatusPill, fmtDayFull, inr, relDay, useLast } from '../labUi';
 import { CheckBox, Filter, FilterBar } from '../filters';
 import mock from '../mockData';
 
@@ -32,7 +32,7 @@ const SEG_LABEL = { new: 'New', repeat: 'Repeat', vip: 'Top spender', lapsing: '
 
 const daysSince = (iso) => Math.round((Date.now() - new Date(iso).getTime()) / 86_400_000);
 
-const ClientDrawer = ({ client, onClose }) => {
+const ClientDrawer = ({ open, client, onClose }) => {
   const [notes, setNotes] = useState(client?.notes || []);
   const [draft, setDraft] = useState('');
   if (!client) return null;
@@ -43,7 +43,12 @@ const ClientDrawer = ({ client, onClose }) => {
   const avg = client.bookings_count ? Math.round(client.total_spent / client.bookings_count) : 0;
 
   return (
-    <Modal open drawer size="lg" onClose={onClose} title={client.name}>
+    <Drawer
+      open={open}
+      onClose={onClose}
+      title={client.name}
+      subtitle={`${client.bookings_count} bookings · ${inr(client.total_spent)} lifetime`}
+    >
       <div className="flex flex-col gap-2.5">
         <div className="flex items-center gap-2">
           <Avatar name={client.name} size="h-12 w-12 text-[13px]" />
@@ -137,7 +142,7 @@ const ClientDrawer = ({ client, onClose }) => {
           </ul>
         </section>
       </div>
-    </Modal>
+    </Drawer>
   );
 };
 
@@ -180,6 +185,8 @@ const Clients = () => {
   const lapsing = mock.clients.filter((c) => c.segment === 'lapsing');
   const lapsingValue = lapsing.reduce((n, c) => n + c.total_spent, 0);
   const open = mock.clients.find((c) => c.id === openId) || null;
+  // Holds the client on screen while the drawer animates out.
+  const drawerClient = useLast(open);
   const allPicked = rows.length > 0 && picked.length === rows.length;
 
 
@@ -425,7 +432,11 @@ const Clients = () => {
         On a Starter plan this page is a blurred teaser with an upgrade overlay, exactly as it is today — the gate is preserved, only the contents behind it change.
       </p>
 
-      <ClientDrawer client={open} onClose={() => { setOpenId(null); setParams({}, { replace: true }); }} />
+      <ClientDrawer
+        open={!!open}
+        client={drawerClient}
+        onClose={() => { setOpenId(null); setParams({}, { replace: true }); }}
+      />
     </div>
   );
 };

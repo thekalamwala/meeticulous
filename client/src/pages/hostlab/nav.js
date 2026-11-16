@@ -27,6 +27,12 @@ export const BASE = '/host-lab';
  *  Catalog is deliberately absent — it is one list with a Type filter, not a
  *  set of pages. Bookings and Clients are single pages. */
 export const SUBPAGES = {
+  bookings: [
+    { slug: 'list', label: 'List', blurb: 'Every booking, filterable and sortable.' },
+    { slug: 'week', label: 'Week', blurb: 'The week ahead, day by day.' },
+    { slug: 'month', label: 'Month', blurb: 'The shape of the month at a glance.' },
+    { slug: 'agenda', label: 'Agenda', blurb: 'Grouped by day, in order.' },
+  ],
   schedule: [
     { slug: 'hours', label: 'Hours', blurb: 'The week a guest can book against.' },
     { slug: 'rules', label: 'Rules', blurb: 'Notice, gaps and limits on every slot you offer.' },
@@ -60,7 +66,7 @@ export const NAV = [
     label: 'Main',
     items: [
       { to: '', label: 'Today', icon: Home, end: true },
-      { to: 'bookings', label: 'Bookings', icon: CalendarDays, badge: 2 },
+      { to: 'bookings', label: 'Bookings', icon: CalendarDays, pages: 'bookings', badge: 2 },
       { to: 'clients', label: 'Clients', icon: Users },
     ],
   },
