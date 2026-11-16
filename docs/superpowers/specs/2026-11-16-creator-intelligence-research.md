@@ -28,14 +28,18 @@ Before any research matters, this is the real starting line.
 | Admin analytics | `insightsAdminController.js` — deliberately **Postgres-first**; its own header states traffic/source and visitor funnel "live in PostHog/GA4 and are reached via launchpad links (a server-side PostHog query API is deferred)". | `server/controllers/insightsAdminController.js` |
 | Overlapping in-flight work | `docs/future/pro-insights-suite.md` (13 Pro-gated insight features, spec'd 2026-11-16) · `/host-lab` prototype, uncommitted, 4.6k lines, 8 sections incl. Money/Clients/Grow · `2026-11-14-free-to-pro-conversion-design.md` (approved, D1–D3 locked) | — |
 
-**Live data volume (queried `spquowzrefozmrzoszkf`, 2026-11-16):**
-8 profiles · 11 services · **5 bookings total, 4 paid**, first one 2026-11-12 ·
-72 lifetime profile views across all hosts (max 29 on one) · 0 reviews ·
-2,219 CRM contacts (leads, not customers) · 2 Pro plans.
+**A note on row counts.** The host, service and booking rows in
+`spquowzrefozmrzoszkf` today are **seeded test data, not the business** (founder,
+2026-11-16). They are not a planning input, and nothing in this document or the
+design is sized from them. Where scale matters — the architecture choice in §3.3
+— the reasoning runs off a *projection* of hosts and events per host, and off the
+written upgrade trigger that governs the decision by measurement rather than by
+assumption. Treat any row count below as illustrative of shape, never of volume.
 
-That number is the most important input in this document and it changes the
-answer to section 7. There is no analytics data-volume problem to solve. There is
-a *product* problem: what makes a host hand over ₹1,179.
+What *is* a real measurement, and does bind the design: the Supabase org is on
+the **free tier, a 500 MB hard cap**, on the same database that serves booking
+writes. That is a plan fact, not a data fact, and it holds whatever the volume
+turns out to be.
 
 **Two consequences, stated plainly:**
 
@@ -240,7 +244,7 @@ Charts are table stakes; these three are the product.
 | **Matomo** | GPLv3 `[1P; one source says AGPL — conflict]` | MySQL | Full web analytics | **No.** Copyleft + heatmaps/A-B/replay are paid plugins even self-hosted `[3P]` |
 | **Apache Superset** | Apache 2.0 | any SQL | Internal BI console | Internal only. Brief rule 8 forbids an embedded dashboard as the product |
 | **Metabase** | **AGPLv3** `[1P]` | any SQL | Internal BI, embedding | Internal only, and AGPL makes embedding a legal question. Cal.com itself uses Metabase for *internal* self-service analytics `[3P case study]` — the same split we should adopt |
-| **ClickHouse** | Apache 2.0 `[1P/3P consistent]` | — | Columnar OLAP at any scale | Right answer eventually. Wrong answer at 5 bookings. Needs an ops owner we don't have |
+| **ClickHouse** | Apache 2.0 `[1P/3P consistent]` | — | Columnar OLAP at any scale | Right answer eventually, at the volume the §3.3 trigger names. Premature before it, and it needs an ops owner we don't have on Render free |
 | **Apache Druid** | Apache 2.0 `[3P: DB-Engines]` | — | Real-time OLAP | No. Strictly heavier than ClickHouse for us |
 | **OpenTelemetry** | Apache 2.0 | — | Traces/metrics for *infrastructure* | Out of scope. Product analytics is not telemetry |
 
@@ -311,10 +315,11 @@ existing destinations. That is the whole data-layer change.
 
 Reasons, in order:
 
-1. **Volume.** 5 bookings, 72 lifetime profile views. At a generous 500 hosts ×
-   2,000 events/month, that is 1M rows/month — about 12M rows/year, which Postgres
-   serves from an index with monthly rollups. ClickHouse earns its keep two orders
-   of magnitude later.
+1. **Volume, projected — not read off today's rows.** At 500 hosts × 2,000
+   events/month that is 1M rows/month, about 12M rows/year, which Postgres serves
+   from an index with daily rollups. At 5,000 hosts it is 120M rows/year, which is
+   where the written trigger below fires and the store moves on evidence rather
+   than on a guess.
 2. **Licensing.** Nothing copyleft touches our source tree.
 3. **Ops.** Render free tier, no Shell, no on-call. A second datastore is the
    fastest way to make this feature unreliable, and an unreliable paid feature is
@@ -342,9 +347,11 @@ before the design doc:
    computable from Postgres **today**. Sections B (audience), C (profile), D
    (conversion funnel) and I (marketing) need the ingest pipeline first. The brief
    puts the unavailable ones first.
-2. **A 12-section sidebar is the wrong IA for a host with 5 bookings.** Kajabi's
-   40 reports serve course businesses with staff. Cal.com and Calendly ship
-   *one* Insights page each. The IA question — one Intelligence tree vs
+2. **A 12-section sidebar is the wrong IA for a solo host at any scale.** Kajabi's
+   40 reports serve course businesses with staff and an analyst. Cal.com and
+   Calendly — both far larger than us, both serving the same solo-professional
+   job — ship *one* Insights surface each. The argument is about who the reader
+   is, not about how many rows we hold. The IA question — one Intelligence tree vs
    distributing metrics into the existing `/host-lab` sections (Money, Clients,
    Grow, Schedule) — is the next decision and it is the founder's, not mine.
 3. **`pro-insights-suite.md` is not a competing spec, it is this spec's best half.**
@@ -362,8 +369,10 @@ before the design doc:
 2. **Free-host experience:** `pro-insights-suite.md` says blurred with the real
    headline teased, matching `ConversionFunnel.jsx`. Confirmed as the pattern for
    every Intelligence surface?
-3. **Peer benchmarks:** these need cross-host aggregation with k-anonymity. At
-   8 profiles no cohort clears a minimum of 5. Ship the surface with an honest
+3. **Peer benchmarks:** these need cross-host aggregation with k-anonymity, so a
+   cohort below five hosts is suppressed as a privacy rule — which means the
+   suppressed state is reachable in production whenever a profession is thin, not
+   only early on. Ship the surface with an honest
    "not enough hosts yet" state, or hold the feature until supply exists?
 
 ---

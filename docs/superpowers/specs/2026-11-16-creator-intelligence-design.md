@@ -66,7 +66,7 @@ Failure states even if it technically works:
   `bookings`, never from tracking events. If our "revenue" disagrees with their bank,
   the whole product is dead.
 - **A chart with no data behind it.** Shipping ten pages of empty states to a host
-  with 5 bookings is worse than shipping four pages that are full.
+  who has just started is worse than shipping four pages that are full.
 - **Vanity.** "Who viewed you" with no action attached. The retired
   `pro-insights-suite.md` already called this out and it stands.
 - **Teasing a gate the server doesn't enforce** (honesty rule, `data/plans.js`).
@@ -77,10 +77,13 @@ Failure states even if it technically works:
 
 ## 5. Constraints
 
-- **Data (measured 2026-11-16, `spquowzrefozmrzoszkf`):** 8 profiles · 11 services ·
-  5 bookings (4 paid, first 2026-11-12) · 72 lifetime profile views · 0 reviews ·
-  2 Pro plans. Everything here must look right at n=0, n=5 and n=5,000.
-- **`profile_views` is a counter with no timestamp.** The 72 existing views cannot
+- **Row counts in the database today are seeded test data, not the business**
+  (founder, 2026-11-16) and are **not a planning input**. Nothing here is sized
+  from them. What the design owes instead is range: every page, metric and empty
+  state must be right at n=0, at n=50 and at n=5,000, because none of those is
+  ruled out. Where volume genuinely decides something — the store — §6.2 runs off
+  a projection plus a written trigger that re-decides it by measurement.
+- **`profile_views` is a counter with no timestamp.** Whatever it has counted cannot
   become a time series. Day one of the event store is day one of all trend data, and
   the UI must say so rather than draw a line from nothing.
 - **Supabase is on the FREE tier — a 500 MB hard cap, 65 MB used today (49 MB of
@@ -108,7 +111,7 @@ Failure states even if it technically works:
 
 - **A — Own sidebar tree, the brief's A–L.** One upgrade destination, gates wholesale.
   Rejected: 10+ pages duplicating Money/Clients/Grow, which already own revenue,
-  customers and reputation; ten empty states for a host with 5 bookings. Cal.com and
+  customers and reputation; ten thin pages for one solo reader. Cal.com and
   Calendly each ship *one* insights surface; Kajabi's 40 reports serve course
   companies with staff.
 - **B — Distributed, no front door.** Smallest build, each number beside its action.
@@ -155,7 +158,8 @@ become real. Until then the ceiling is the plan, not the engine.
 
 ### 6.3 Where non-page metrics live
 
-Reputation and Goals do **not** get pages (0 reviews exist; a goals page with one
+Reputation and Goals do **not** get pages (reputation is a handful of metrics that
+belong beside the testimonials that produce them; a goals page with one
 target is a settings form):
 
 - **Reputation** → rating trend + per-service rating render on **Grow › Social
@@ -397,7 +401,7 @@ The contract. A formula change is a versioned, announced change. Freshness class
 | Metric | Formula | Edge cases |
 |---|---|---|
 | **Cohort** | hosts sharing a normalised `cohort_key`, with ≥1 paid booking in 90 days | **`profiles.profession` is free text** (`TEXT DEFAULT ''`, no CHECK), so raw values fragment — "Yoga teacher" vs "yoga instructor" would be two cohorts and k≥5 would stay unreachable even at 10× supply, killing the feature silently. So the job normalises: lowercase + trim → match against the existing profession-slug taxonomy in `client/src/config/professionIcons.js` (mirrored server-side as the single source) → unmatched falls back to `primary_category` → still unmatched is **excluded from benchmarks entirely** rather than pooled into a meaningless "other" cohort |
-| **Price percentile** | host median service price vs cohort distribution | **k-anonymity: suppressed below 5 hosts.** At 8 profiles today, every cohort is suppressed — the UI must ship a real "not enough hosts yet" state, not a placeholder |
+| **Price percentile** | host median service price vs cohort distribution | **k-anonymity: suppressed below 5 hosts.** This is a privacy rule, not a launch condition — a thin profession stays suppressed at any platform size, so the suppressed state is a permanent production path and needs a real "not enough hosts yet" UI, not a placeholder |
 | **Conversion percentile** | host view→book vs cohort | same |
 | **What leaves the server** | aggregates only — medians, percentiles, counts | Never another host's row, name, price or identifier. Matches the v3.186 anon-read lockdown posture |
 
@@ -715,11 +719,14 @@ ship dark until supply clears k=5.
 
 **Risks:**
 
-- **Not enough hosts.** 8 profiles. Benchmarks are suppressed and win-back lists are
-  thin until supply arrives. Mitigation: Money + commission leak carry Phase 3 alone;
-  both work at n=1.
-- **No trend history on day one.** The 72 existing profile views are unrecoverable.
-  Mitigation: say so in the UI; don't draw a line from nothing.
+- **A thin cohort suppresses benchmarks.** Any profession with fewer than five
+  active hosts stays suppressed, permanently and by design. Mitigation: Money +
+  commission leak carry Phase 3 without benchmarks at all; both work for a single
+  host with a single booking.
+- **No trend history on day one.** `profile_views` is a counter with no timestamp,
+  so whatever it has accumulated cannot become a time series — trend data starts
+  the day the event store ships, for every host. Mitigation: say so in the UI and
+  stamp the start date; never draw a line from nothing.
 - **Attribution gaps.** Blocked scripts and cleared storage mean some paid bookings
   have no source. Mitigation: an explicit `unknown` row, and money reporting that
   never depends on attribution.
