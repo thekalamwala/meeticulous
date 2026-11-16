@@ -34,6 +34,7 @@ const Today = lazy(() => import('./sections/Today'));
 const Bookings = lazy(() => import('./sections/Bookings'));
 const Clients = lazy(() => import('./sections/Clients'));
 const Catalog = lazy(() => import('./sections/Catalog'));
+const CatalogEditor = lazy(() => import('./sections/CatalogEditor'));
 const Schedule = lazy(() => import('./sections/Schedule'));
 const Money = lazy(() => import('./sections/Money'));
 const Grow = lazy(() => import('./sections/Grow'));
@@ -459,7 +460,7 @@ const HostLab = () => {
       subtitle: `${c.bookings_count} bookings · ${c.phone}`, to: `clients?client=${c.id}`,
     })),
     ...mock.services.map((s) => ({
-      id: `s-${s.id}`, group: 'Service', title: s.title, subtitle: `${s.duration} min`, to: `catalog?service=${s.id}`,
+      id: `s-${s.id}`, group: 'Service', title: s.title, subtitle: `${s.duration} min`, to: `catalog/${s.id}`,
     })),
     ...FLAT.flatMap((n) => [
       { id: `n-${n.to || 'today'}`, group: 'Go to', title: n.label, to: n.to },
@@ -511,6 +512,9 @@ const HostLab = () => {
               <Route path="bookings" element={<Bookings go={go} />} />
               <Route path="clients" element={<Clients go={go} />} />
               <Route path="catalog" element={<Catalog go={go} />} />
+              {/* The editor is a page, not a modal: creating a thing you sell
+                  is real work and deserves a URL you can come back to. */}
+              <Route path="catalog/:id" element={<CatalogEditor />} />
               <Route path="schedule" element={<Schedule go={go} />} />
               <Route path="money" element={<Money go={go} />} />
               <Route path="grow" element={<Grow go={go} />} />

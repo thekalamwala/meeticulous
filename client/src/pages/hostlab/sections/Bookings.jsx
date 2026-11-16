@@ -390,14 +390,9 @@ const Bookings = () => {
             {counts.pending > 0 && <span className="text-warning-fg"> · {counts.pending} waiting on you</span>}
           </p>
         </div>
-        <div className="flex items-center gap-1.5">
-          <Button variant="outline" size="sm" onClick={() => { toast.success(`${filtered.length} rows exported to CSV`); }}>
-            <Download className="h-4 w-4" strokeWidth={2.4} /> Export
-          </Button>
-          <Button size="sm" onClick={() => setAdding(true)}>
-            <Plus className="h-4 w-4" strokeWidth={2.6} /> Add booking
-          </Button>
-        </div>
+        <Button size="sm" onClick={() => setAdding(true)}>
+          <Plus className="h-4 w-4" strokeWidth={2.6} /> Add booking
+        </Button>
       </header>
 
       {/* One row. The value of an applied filter lives in its own button, so
@@ -505,7 +500,19 @@ const Bookings = () => {
 
       {/* ── LIST ── */}
       {mode === 'list' && (
-        <Panel flush>
+        <Panel
+          flush
+          title={`${filtered.length} of ${rows.length} bookings`}
+          action={(
+            <button
+              type="button"
+              onClick={() => toast.success(`${filtered.length} rows exported to CSV`)}
+              className="inline-flex h-7 items-center gap-1 rounded-sm border-2 border-neutral-200 px-2 text-[11px] font-bold text-ink/65 transition hover:border-maroon/40 hover:text-maroon"
+            >
+              <Download className="h-3 w-3" strokeWidth={2.6} /> Export
+            </button>
+          )}
+        >
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center gap-1.5 px-2.5 py-14 text-center">
               <CalendarX2 className="h-6 w-6 text-maroon/30" strokeWidth={1.8} />

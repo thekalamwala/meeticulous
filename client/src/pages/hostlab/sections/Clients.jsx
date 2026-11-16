@@ -9,7 +9,7 @@
 // clients cannot do by eye.
 import { useMemo, useState } from 'react';
 import {
-  AlertTriangle, ArrowDownUp, Download, MessageSquare, Phone, Plus, Repeat,
+  AlertTriangle, ArrowDownUp, ChevronDown, Download, MessageSquare, Phone, Repeat, UserMinus,
   StickyNote, Trash2, TrendingUp, Users, Mail, Crown,
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
@@ -148,6 +148,7 @@ const Clients = () => {
   const [sort, setSort] = useState('value_desc');
   const [picked, setPicked] = useState([]);
   const [openId, setOpenId] = useState(params.get('client'));
+  const [winbackOpen, setWinbackOpen] = useState(false);
 
   const counts = useMemo(() => ({
     new: mock.clients.filter((c) => c.segment === 'new').length,
@@ -177,55 +178,91 @@ const Clients = () => {
   const total = mock.clients.reduce((n, c) => n + c.total_spent, 0);
   const repeatRate = mock.clients.filter((c) => c.bookings_count > 1).length / mock.clients.length;
   const lapsing = mock.clients.filter((c) => c.segment === 'lapsing');
+  const lapsingValue = lapsing.reduce((n, c) => n + c.total_spent, 0);
   const open = mock.clients.find((c) => c.id === openId) || null;
   const allPicked = rows.length > 0 && picked.length === rows.length;
 
 
   return (
     <div className="flex flex-col gap-2.5">
-      <header className="flex flex-wrap items-end justify-between gap-2">
+      <header>
         <div>
           <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Clients</h1>
           <p className="mt-0.5 text-[12px] font-medium text-ink/55">
             {mock.clients.length} people · {inr(total)} lifetime · {Math.round(repeatRate * 100)}% come back
           </p>
         </div>
-        <div className="flex gap-1.5">
-          <Button size="sm" variant="outline" onClick={() => toast.success(`${rows.length} clients exported to CSV`)}>
-            <Download className="h-4 w-4" strokeWidth={2.4} /> Export
-          </Button>
-          <Button size="sm" onClick={() => toast.success('Opens the add-client form')}>
-            <Plus className="h-4 w-4" strokeWidth={2.6} /> Add client
-          </Button>
-        </div>
       </header>
 
-      {/* Win-back: the list a host cannot build by eye */}
+      {/* Win-back. A banner, not a panel: the page is a list of clients, and
+          this is one line of news above it until the host asks for it. Closed
+          it states the fact and what it is worth; open it is the list to act
+          on. The one thing a host cannot spot by eye, costing one line. */}
       {lapsing.length > 0 && (
-        <Panel
-          title="Win these back"
-          subtitle={`${lapsing.length} regulars have not booked in 30+ days`}
-          action={<Button size="sm" onClick={() => toast.success(`WhatsApp drafted for ${lapsing.length} clients`)}>Message all {lapsing.length}</Button>}
-          flush
-        >
-          <ul className="divide-y-2 divide-neutral-200">
-            {lapsing.map((c) => (
-              <li key={c.id} className="flex items-center gap-2 px-2.5 py-1.5">
-                <Avatar name={c.name} size="h-7 w-7 text-[10px]" />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[11.5px] font-bold text-ink">{c.name}</span>
-                  <span className="block text-[10.5px] font-medium text-ink/50">
-                    Last came {daysSince(c.last_booking_at)} days ago · {inr(c.total_spent)} lifetime
-                  </span>
-                </span>
-                <Button size="sm" variant="outline" onClick={() => toast.success(`WhatsApp drafted for ${c.name}`)}>
-                  <MessageSquare className="h-4 w-4" strokeWidth={2.4} /> Nudge
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => setOpenId(c.id)}>Open</Button>
-              </li>
-            ))}
-          </ul>
-        </Panel>
+        <section className="overflow-hidden rounded-lg border-2 border-marigold-300 bg-marigold-100">
+          <button
+            type="button"
+            onClick={() => setWinbackOpen((v) => !v)}
+            aria-expanded={winbackOpen}
+            className="flex w-full items-center gap-2 px-3 py-2 text-left transition hover:bg-marigold-100/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
+          >
+            <UserMinus className="h-3.5 w-3.5 shrink-0 text-marigold-800" strokeWidth={2.6} />
+            <span className="min-w-0 flex-1 truncate text-[11.5px] font-semibold text-marigold-800">
+              <b className="font-bold">{lapsing.length} regulars</b> have not booked in 30+ days
+              <span className="font-medium opacity-70"> · {inr(lapsingValue)} of lifetime value</span>
+            </span>
+            <span className="shrink-0 text-[11px] font-bold text-marigold-800">{winbackOpen ? 'Hide' : 'Review'}</span>
+            <ChevronDown className={cn('h-3.5 w-3.5 shrink-0 text-marigold-800 transition-transform', winbackOpen && 'rotate-180')} strokeWidth={2.6} />
+          </button>
+
+          {winbackOpen && (
+            <div className="border-t-2 border-marigold-300 bg-white">
+              <ul className="divide-y-2 divide-neutral-200">
+                {lapsing.map((c) => (
+                  <li key={c.id} className="flex items-center gap-2 px-3 py-1.5">
+                    <Avatar name={c.name} size="h-7 w-7 text-[10px]" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[11.5px] font-bold text-ink">{c.name}</span>
+                      <span className="block text-[10.5px] font-medium text-ink/50">
+                        {daysSince(c.last_booking_at)} days ago · {inr(c.total_spent)} lifetime
+                      </span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => toast.success(`WhatsApp drafted for ${c.name}`)}
+                      className="inline-flex h-7 shrink-0 items-center gap-1 rounded-sm border-2 border-maroon px-2 text-[11px] font-bold text-maroon transition hover:bg-pink-100"
+                    >
+                      <MessageSquare className="h-3 w-3" strokeWidth={2.6} /> Nudge
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOpenId(c.id)}
+                      className="shrink-0 px-1.5 text-[11px] font-bold text-ink/50 transition hover:text-maroon"
+                    >
+                      Open
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <div className="flex items-center gap-2 border-t-2 border-neutral-200 px-3 py-1.5">
+                <button
+                  type="button"
+                  onClick={() => toast.success(`WhatsApp drafted for ${lapsing.length} clients`)}
+                  className="inline-flex h-7 items-center gap-1 rounded-sm bg-maroon px-2.5 text-[11px] font-bold text-white transition hover:bg-maroon-dark"
+                >
+                  <MessageSquare className="h-3 w-3" strokeWidth={2.6} /> Message all {lapsing.length}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setSegment('lapsing'); setWinbackOpen(false); }}
+                  className="text-[11px] font-bold text-maroon underline decoration-maroon/30 underline-offset-2"
+                >
+                  Show only these in the list
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
       )}
 
       <FilterBar
@@ -279,7 +316,19 @@ const Clients = () => {
         </div>
       )}
 
-      <Panel flush>
+      <Panel
+        flush
+        title={`${rows.length} ${rows.length === 1 ? 'client' : 'clients'}`}
+        action={(
+          <button
+            type="button"
+            onClick={() => toast.success(`${rows.length} clients exported to CSV`)}
+            className="inline-flex h-7 items-center gap-1 rounded-sm border-2 border-neutral-200 px-2 text-[11px] font-bold text-ink/65 transition hover:border-maroon/40 hover:text-maroon"
+          >
+            <Download className="h-3 w-3" strokeWidth={2.6} /> Export
+          </button>
+        )}
+      >
         {rows.length === 0 ? (
           <div className="flex flex-col items-center gap-1.5 px-2.5 py-14 text-center">
             <Users className="h-6 w-6 text-maroon/30" strokeWidth={1.8} />

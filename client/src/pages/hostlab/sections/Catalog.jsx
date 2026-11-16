@@ -1,375 +1,239 @@
-// Catalog — everything a host sells, in one place.
+// Catalog — one list of everything a host sells.
 //
-// Today these are four separate rail items (Services, Products, Courses,
-// Memberships) plus Coupons, each a page of its own. They are the same job:
-// "what am I selling, for how much, and is it working?" So they become tabs of
-// one destination, and every row carries its own 30-day performance — the number
-// that tells a host which service to push and which to retire. Nothing is lost:
-// each tab is the live page, and the service editor keeps every field.
+// It was five tabs: Services, Products, Courses, Memberships, Offers. But a
+// tab set whose only job is to show a subset of one list is a filter wearing a
+// costume — and we already have a filter bar. So: one list, a Type filter, and
+// the same row shape for every kind, each carrying its own 30-day performance.
+//
+// Rows open a full page, never a modal. See CatalogEditor.
+//
+// (Money and Settings keep their tabs on purpose: those are different views of
+// one subject, not one list filtered.)
 import { useMemo, useState } from 'react';
-import {
-  BarChart3, BookOpen, Copy, Eye, EyeOff, FileDown, Package, Pencil, Plus,
-  Sparkles, Ticket, Trash2, Clock, Users, IndianRupee, Share2,
-} from 'lucide-react';
-import { useSearchParams } from 'react-router-dom';
+import { Copy, Eye, EyeOff, Package, Pencil, Plus, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Button, Modal, Tabs, cn } from '../../../components/dashboard/ui';
-import { Field, LabInput, LabSelect, LabTextarea, Panel, StatusPill, Toggle, fmtDayFull, inr, pct, useUrlTab } from '../labUi';
-import mock from '../mockData';
+import { Panel, StatusPill, inr, pct } from '../labUi';
+import { Filter, FilterBar } from '../filters';
+import { CATALOG_TYPES, TYPE_LIST } from '../catalogTypes';
+import { allItems, couponState, summarise } from '../catalogData';
 
-/* ── Service editor — the live ServiceForm's fields, reorganised ───────── */
-const ServiceEditor = ({ service, onClose }) => {
-  const [form, setForm] = useState(
-    service || { title: '', duration: 30, price: '', description: '', kind: 'session', active: true, price_on_request: false },
-  );
-  const [step, setStep] = useState('basics');
-  const valid = form.title.trim().length > 2 && form.duration > 0;
+const SORTS = [
+  { value: 'revenue', label: 'Earning most' },
+  { value: 'sold', label: 'Sold most' },
+  { value: 'name', label: 'Name A-Z' },
+  { value: 'type', label: 'Grouped by type' },
+];
 
-  const STEPS = [
-    { value: 'basics', label: 'The basics' },
-    { value: 'price', label: 'Price' },
-    { value: 'page', label: 'Booking page' },
-  ];
-
+/* ── New-item menu: pick what you are making, then get a page ──────────── */
+const NewMenu = ({ onPick }) => {
+  const [open, setOpen] = useState(false);
   return (
-    <Modal
-      open
-      onClose={onClose}
-      size="lg"
-      title={service ? `Edit ${service.title}` : 'New service'}
-      footer={(
+    <div className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="inline-flex h-8 items-center gap-1 rounded-full bg-maroon px-3 text-[11.5px] font-bold text-white transition hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
+      >
+        <Plus className="h-3.5 w-3.5" strokeWidth={2.8} /> New
+      </button>
+      {open && (
         <>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button disabled={!valid} onClick={() => { toast.success(service ? `${form.title} saved` : `${form.title} created`); onClose(); }}>
-            {service ? 'Save changes' : 'Create service'}
-          </Button>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} aria-hidden="true" />
+          <div role="menu" className="absolute right-0 z-50 mt-1 w-64 overflow-hidden rounded-sm border-2 border-neutral-200 bg-white py-1 dash-elev-3">
+            {TYPE_LIST.map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                role="menuitem"
+                onClick={() => { setOpen(false); onPick(t.key); }}
+                className="flex w-full items-start gap-2 px-2.5 py-1.5 text-left transition hover:bg-blush"
+              >
+                <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-xs bg-neutral-100 text-ink/55">
+                  <t.icon className="h-3 w-3" strokeWidth={2.4} />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[11.5px] font-bold text-ink">{t.label}</span>
+                  <span className="block text-[10.5px] font-medium leading-snug text-ink/50">{t.blurb}</span>
+                </span>
+              </button>
+            ))}
+          </div>
         </>
       )}
-    >
-      <div className="flex flex-col gap-2.5">
-        <Tabs tabs={STEPS} value={step} onChange={setStep} />
-
-        {step === 'basics' && (
-          <div className="flex flex-col gap-2">
-            <Field label="What is it called?" hint="Guests see this on your booking page.">
-              <LabInput value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="Nutrition deep-dive" />
-            </Field>
-            <div className="grid gap-2 sm:grid-cols-2">
-              <Field label="How long?">
-                <LabSelect value={form.duration} onChange={(e) => setForm((f) => ({ ...f, duration: +e.target.value }))}>
-                  {[15, 20, 30, 45, 60, 75, 90, 120].map((n) => <option key={n} value={n}>{n} minutes</option>)}
-                </LabSelect>
-              </Field>
-              <Field label="Kind">
-                <LabSelect value={form.kind} onChange={(e) => setForm((f) => ({ ...f, kind: e.target.value }))}>
-                  <option value="session">One-to-one session</option>
-                  <option value="group">Group session</option>
-                  <option value="package">Package of sessions</option>
-                </LabSelect>
-              </Field>
-            </div>
-            <Field label="Describe it" hint="Two or three sentences. What the guest walks away with.">
-              <LabTextarea rows={4} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
-            </Field>
-            <button
-              type="button"
-              onClick={() => { setForm((f) => ({ ...f, description: 'A full look at your diet history and recent bloodwork, then a four-week plan you can actually cook. You leave with a grocery list and a follow-up date.' })); toast.success('Draft written — edit it to sound like you'); }}
-              className="inline-flex w-fit items-center gap-1.5 rounded-full border-2 border-maroon px-2.5 py-1.5 text-[11px] font-bold text-maroon transition hover:bg-pink-100"
-            >
-              <Sparkles className="h-4 w-4" strokeWidth={2.4} /> Write a first draft for me
-            </button>
-          </div>
-        )}
-
-        {step === 'price' && (
-          <div className="flex flex-col gap-2">
-            <Field label="Price" hint="Inclusive of GST. Your 5% platform fee comes out of this.">
-              <LabInput
-                type="number"
-                min={0}
-                value={form.price}
-                onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
-                placeholder="2400"
-                disabled={form.price_on_request}
-              />
-            </Field>
-            <label className="flex items-center gap-1.5">
-              <Toggle checked={form.price_on_request} onChange={(v) => setForm((f) => ({ ...f, price_on_request: v }))} label="Price on request" />
-              <span className="text-[11.5px] font-semibold text-ink/75">Price on request instead</span>
-            </label>
-            {form.price > 0 && (
-              <div className="rounded-xl border-2 border-neutral-200 bg-cream p-2.5">
-                <p className="text-[10px] font-bold uppercase tracking-wide text-ink/45">On each booking</p>
-                <ul className="mt-2 flex flex-col gap-1.5 text-[11.5px]">
-                  <li className="flex justify-between"><span className="font-medium text-ink/65">Guest pays</span><span className="font-bold tabular-nums text-ink">{inr(form.price)}</span></li>
-                  <li className="flex justify-between"><span className="font-medium text-ink/65">Platform fee (5%, Starter)</span><span className="font-bold tabular-nums text-ink/60">−{inr(Math.round(form.price * 0.05))}</span></li>
-                  <li className="flex justify-between border-t-2 border-neutral-200 pt-1.5"><span className="font-bold text-ink">You keep</span><span className="font-bold tabular-nums text-maroon">{inr(form.price - Math.round(form.price * 0.05))}</span></li>
-                  <li className="flex justify-between"><span className="font-medium text-success-fg">On Pro (0% fee)</span><span className="font-bold tabular-nums text-success-fg">{inr(form.price)}</span></li>
-                </ul>
-              </div>
-            )}
-            <div className="flex items-start gap-1.5 rounded-xl border-2 border-maroon-100 bg-maroon-50 p-2">
-              <BarChart3 className="mt-0.5 h-4 w-4 shrink-0 text-maroon" strokeWidth={2.2} />
-              <p className="text-[11px] font-medium text-ink/70">
-                Nutritionists in Pune charge <strong className="text-maroon">₹1,800–₹3,200</strong> for a 60-minute consult. You are
-                {form.price ? (form.price > 3200 ? ' above' : form.price < 1800 ? ' below' : ' inside') : ' not yet in'} that band.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {step === 'page' && (
-          <div className="flex flex-col gap-2">
-            <label className="flex items-center gap-1.5">
-              <Toggle checked={form.active} onChange={(v) => setForm((f) => ({ ...f, active: v }))} label="Live on booking page" />
-              <span className="text-[11.5px] font-semibold text-ink/75">Live on your booking page</span>
-            </label>
-            <Field label="Link" hint="Share this to send someone straight to this one service.">
-              <div className="flex gap-1.5">
-                <LabInput readOnly value={`meeticulous.com/${mock.host.username}/${(form.title || 'new-service').toLowerCase().replace(/\s+/g, '-')}`} />
-                <Button variant="outline" onClick={() => toast.success('Link copied')}><Copy className="h-4 w-4" strokeWidth={2.4} /></Button>
-              </div>
-            </Field>
-            <div className="rounded-xl border-2 border-neutral-200 p-2.5">
-              <p className="mb-2 text-[10px] font-bold uppercase tracking-wide text-ink/45">How it will look</p>
-              <div className="rounded-lg border-2 border-neutral-200 bg-white p-2">
-                <p className="font-display text-[12.5px] font-bold text-ink">{form.title || 'Your service name'}</p>
-                <p className="mt-0.5 text-[11px] font-medium text-ink/55">{form.duration} min · {form.price_on_request ? 'Price on request' : form.price ? inr(form.price) : 'Free'}</p>
-                <p className="mt-1.5 text-[11px] text-ink/70">{form.description || 'Your description shows here.'}</p>
-                <span className="mt-2.5 inline-flex rounded-full bg-maroon px-2.5 py-1.5 text-[10.5px] font-bold text-white">Book</span>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </Modal>
+    </div>
   );
-};
-
-/* ── Services ──────────────────────────────────────────────────────────── */
-const Services = ({ openId, onOpen }) => {
-  const [items, setItems] = useState(mock.services);
-  const [editing, setEditing] = useState(null);
-  const [creating, setCreating] = useState(false);
-
-  const openService = items.find((s) => s.id === openId);
-  const revenue = items.reduce((n, s) => n + s.revenue_30d, 0);
-
-  return (
-    <>
-      <Panel
-        title="Services"
-        subtitle={`${items.filter((s) => s.active).length} live · ${inr(revenue)} in the last 30 days`}
-        action={<Button size="sm" onClick={() => setCreating(true)}><Plus className="h-4 w-4" strokeWidth={2.6} /> New service</Button>}
-        flush
-      >
-        <ul className="divide-y-2 divide-neutral-200">
-          {items.map((s) => (
-            <li key={s.id} className="flex flex-col gap-2 px-2.5 py-2 sm:flex-row sm:items-center">
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <p className="text-[12px] font-bold text-ink">{s.title}</p>
-                  <StatusPill status={s.active ? 'active' : 'inactive'} />
-                </div>
-                <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] font-medium text-ink/55">
-                  <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" strokeWidth={2.2} />{s.duration} min</span>
-                  <span className="inline-flex items-center gap-1"><IndianRupee className="h-3.5 w-3.5" strokeWidth={2.2} />{s.price_on_request ? 'On request' : s.price ? inr(s.price) : 'Free'}</span>
-                </p>
-              </div>
-
-              {/* Per-row performance: the live page shows none of this. */}
-              <div className="flex shrink-0 gap-2.5 sm:gap-5">
-                {[
-                  ['Booked', s.bookings_30d],
-                  ['Revenue', inr(s.revenue_30d, { compact: true })],
-                  ['View → book', s.conversion ? pct(s.conversion) : '—'],
-                ].map(([k, v]) => (
-                  <div key={k}>
-                    <p className="text-[9.5px] font-bold uppercase tracking-wide text-ink/40">{k}</p>
-                    <p className="font-display text-[12.5px] font-extrabold tabular-nums text-ink">{v}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex shrink-0 gap-1">
-                <button type="button" onClick={() => setEditing(s)} aria-label={`Edit ${s.title}`} className="grid h-7 w-7 place-items-center rounded-full text-ink/45 transition hover:bg-blush hover:text-maroon">
-                  <Pencil className="h-4 w-4" strokeWidth={2.2} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setItems((v) => v.map((x) => (x.id === s.id ? { ...x, active: !x.active } : x))); toast.success(`${s.title} ${s.active ? 'hidden' : 'live'}`); }}
-                  aria-label={`${s.active ? 'Hide' : 'Show'} ${s.title}`}
-                  className="grid h-7 w-7 place-items-center rounded-full text-ink/45 transition hover:bg-blush hover:text-maroon"
-                >
-                  {s.active ? <EyeOff className="h-4 w-4" strokeWidth={2.2} /> : <Eye className="h-4 w-4" strokeWidth={2.2} />}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setItems((v) => [...v, { ...s, id: `${s.id}-copy`, title: `${s.title} (copy)`, active: false, bookings_30d: 0, revenue_30d: 0 }]); toast.success(`${s.title} duplicated`); }}
-                  aria-label={`Duplicate ${s.title}`}
-                  className="grid h-7 w-7 place-items-center rounded-full text-ink/45 transition hover:bg-blush hover:text-maroon"
-                >
-                  <Copy className="h-4 w-4" strokeWidth={2.2} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setItems((v) => v.filter((x) => x.id !== s.id)); toast.success(`${s.title} deleted`); }}
-                  aria-label={`Delete ${s.title}`}
-                  className="grid h-7 w-7 place-items-center rounded-full text-ink/35 transition hover:bg-error-bg hover:text-error-fg"
-                >
-                  <Trash2 className="h-4 w-4" strokeWidth={2.2} />
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </Panel>
-
-      {(editing || openService) && <ServiceEditor service={editing || openService} onClose={() => { setEditing(null); onOpen(null); }} />}
-      {creating && <ServiceEditor onClose={() => setCreating(false)} />}
-    </>
-  );
-};
-
-/* ── Products / Courses / Memberships / Offers ─────────────────────────── */
-const SimpleList = ({ title, subtitle, cta, rows, columns, icon: Icon, emptyLine }) => (
-  <Panel
-    title={title}
-    subtitle={subtitle}
-    action={<Button size="sm" onClick={() => toast.success(`Opens the ${cta.toLowerCase()} form`)}><Plus className="h-4 w-4" strokeWidth={2.6} /> {cta}</Button>}
-    flush
-  >
-    {rows.length === 0 ? (
-      <div className="flex flex-col items-center gap-1.5 px-2.5 py-12 text-center">
-        <Icon className="h-6 w-6 text-maroon/30" strokeWidth={1.8} />
-        <p className="text-[12px] font-bold text-ink">Nothing here yet</p>
-        <p className="max-w-sm text-[11px] font-medium text-ink/55">{emptyLine}</p>
-        <Button size="sm" className="mt-1" onClick={() => toast.success(`Opens the ${cta.toLowerCase()} form`)}>{cta}</Button>
-      </div>
-    ) : (
-      <ul className="divide-y-2 divide-neutral-200">
-        {rows.map((r) => (
-          <li key={r.id} className="flex flex-col gap-1.5 px-2.5 py-2 sm:flex-row sm:items-center">
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-1.5">
-                <p className="text-[12px] font-bold text-ink">{r.title || r.code}</p>
-                {r.state && <StatusPill status={r.state} />}
-              </div>
-              {r.meta && <p className="mt-0.5 text-[11px] font-medium text-ink/55">{r.meta}</p>}
-            </div>
-            <div className="flex shrink-0 gap-2.5 sm:gap-5">
-              {columns.map(([k, get]) => (
-                <div key={k}>
-                  <p className="text-[9.5px] font-bold uppercase tracking-wide text-ink/40">{k}</p>
-                  <p className="font-display text-[12.5px] font-extrabold tabular-nums text-ink">{get(r)}</p>
-                </div>
-              ))}
-            </div>
-            <div className="flex shrink-0 gap-1">
-              <button type="button" onClick={() => toast.success(`Editing ${r.title || r.code}`)} aria-label={`Edit ${r.title || r.code}`} className="grid h-7 w-7 place-items-center rounded-full text-ink/45 transition hover:bg-blush hover:text-maroon">
-                <Pencil className="h-4 w-4" strokeWidth={2.2} />
-              </button>
-              <button type="button" onClick={() => toast.success('Link copied')} aria-label={`Share ${r.title || r.code}`} className="grid h-7 w-7 place-items-center rounded-full text-ink/45 transition hover:bg-blush hover:text-maroon">
-                <Share2 className="h-4 w-4" strokeWidth={2.2} />
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
-    )}
-  </Panel>
-);
-
-const couponState = (c) => {
-  if (!c.active) return 'inactive';
-  if (c.expires_at && new Date(c.expires_at) < new Date()) return 'expired';
-  if (c.max_redemptions != null && c.times_redeemed >= c.max_redemptions) return 'used_up';
-  return 'active';
 };
 
 /* ── Page ──────────────────────────────────────────────────────────────── */
 const Catalog = () => {
-  const [params] = useSearchParams();
-  const [tab, setTab, TAB_DEFS] = useUrlTab('catalog');
-  const [serviceId, setServiceId] = useState(params.get('service'));
+  const navigate = useNavigate();
+  const [items, setItems] = useState(() => allItems());
+  const [q, setQ] = useState('');
+  const [kind, setKind] = useState('all');
+  const [state, setState] = useState('all');
+  const [sort, setSort] = useState('revenue');
 
-  // The rail declares the tab set; the page adds how many are in each.
-  const COUNTS = { services: mock.services.length, products: mock.products.length, courses: mock.courses.length, memberships: 0, offers: mock.offers.length };
-  const TABS = useMemo(() => TAB_DEFS.map((t) => ({ ...t, count: COUNTS[t.value] })), [TAB_DEFS]); // eslint-disable-line react-hooks/exhaustive-deps
+  const open = (id) => navigate(`/host-lab/catalog/${id}`);
+  const create = (typeKey) => navigate(`/host-lab/catalog/new?type=${typeKey}`);
 
-  const totalEarned = mock.services.reduce((n, s) => n + s.revenue_30d, 0)
-    + mock.products.reduce((n, p) => n + p.revenue_30d, 0)
-    + mock.courses.reduce((n, c) => n + c.revenue_30d, 0);
+  const counts = useMemo(() => {
+    const c = {};
+    TYPE_LIST.forEach((t) => { c[t.key] = items.filter((i) => i.kind === t.key).length; });
+    return c;
+  }, [items]);
+
+  const rows = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    const out = items.filter((i) => {
+      if (kind !== 'all' && i.kind !== kind) return false;
+      if (state === 'live' && !i.active) return false;
+      if (state === 'hidden' && i.active) return false;
+      if (needle && !`${i.title} ${i.description || ''}`.toLowerCase().includes(needle)) return false;
+      return true;
+    });
+    const by = {
+      revenue: (a, b) => b.revenue_30d - a.revenue_30d,
+      sold: (a, b) => b.sold_30d - a.sold_30d,
+      name: (a, b) => String(a.title).localeCompare(String(b.title)),
+      type: (a, b) => a.kind.localeCompare(b.kind) || String(a.title).localeCompare(String(b.title)),
+    };
+    return [...out].sort(by[sort]);
+  }, [items, q, kind, state, sort]);
+
+  const earned = items.reduce((n, i) => n + i.revenue_30d, 0);
+  const activeCount = (kind !== 'all' ? 1 : 0) + (state !== 'all' ? 1 : 0) + (q.trim() ? 1 : 0);
+
+  const toggleLive = (item) => {
+    setItems((v) => v.map((x) => (x.id === item.id ? { ...x, active: !x.active } : x)));
+    toast.success(`${item.title} ${item.active ? 'hidden' : 'live'}`);
+  };
 
   return (
-    <div className="flex flex-col gap-2.5">
-      <header>
-        <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Catalog</h1>
-        <p className="mt-0.5 text-[12px] font-medium text-ink/55">
-          Everything you sell · {inr(totalEarned)} earned in the last 30 days
-        </p>
+    <div className="flex flex-col gap-3">
+      <header className="flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Catalog</h1>
+          <p className="mt-0.5 text-[12px] font-medium text-ink/55">
+            {items.length} things you sell · {inr(earned)} earned in the last 30 days
+          </p>
+        </div>
+        <NewMenu onPick={create} />
       </header>
 
-      <Tabs tabs={TABS} value={tab} onChange={(v) => { setTab(v); setServiceId(null); }} />
-
-      {tab === 'services' && <Services openId={serviceId} onOpen={setServiceId} />}
-
-      {tab === 'products' && (
-        <SimpleList
-          title="Digital products"
-          subtitle={`${mock.products.length} on sale · ${inr(mock.products.reduce((n, p) => n + p.revenue_30d, 0))} in 30 days`}
-          cta="New product"
-          icon={FileDown}
-          emptyLine="A PDF, a template, a recording. It sells while you sleep and needs no slot on your calendar."
-          rows={mock.products.map((p) => ({ ...p, state: p.active ? 'active' : 'inactive', meta: `${p.price ? inr(p.price) : 'Free'} · instant download` }))}
-          columns={[['Sold', (r) => r.sales_30d], ['Revenue', (r) => inr(r.revenue_30d, { compact: true })]]}
+      <FilterBar
+        search={{ value: q, onChange: setQ, placeholder: 'Search what you sell' }}
+        activeCount={activeCount}
+        onClearAll={() => { setKind('all'); setState('all'); setQ(''); }}
+        trailing={(
+          <Filter label="Sort" value={sort} empty="revenue" align="right" width="w-48" onChange={setSort} options={SORTS} />
+        )}
+      >
+        <Filter
+          label="Type"
+          value={kind}
+          width="w-52"
+          onChange={setKind}
+          options={[{ value: 'all', label: 'Everything' }, ...TYPE_LIST.map((t) => ({ value: t.key, label: t.plural, count: counts[t.key] }))]}
         />
-      )}
-
-      {tab === 'courses' && (
-        <SimpleList
-          title="Courses"
-          subtitle={`${mock.courses.length} published`}
-          cta="New course"
-          icon={BookOpen}
-          emptyLine="Teach once, sell many times. Lessons, drip release and a student list."
-          rows={mock.courses.map((c) => ({ ...c, state: c.active ? 'active' : 'inactive', meta: `${inr(c.price)} · ${c.lessons} lessons` }))}
-          columns={[['Enrolled', (r) => r.enrolled], ['Revenue', (r) => inr(r.revenue_30d, { compact: true })]]}
+        <Filter
+          label="Shown"
+          value={state}
+          width="w-40"
+          onChange={setState}
+          options={[
+            { value: 'all', label: 'Live and hidden' },
+            { value: 'live', label: 'Live only' },
+            { value: 'hidden', label: 'Hidden only' },
+          ]}
         />
-      )}
+      </FilterBar>
 
-      {tab === 'memberships' && (
-        <SimpleList
-          title="Memberships"
-          subtitle="Recurring access, charged monthly"
-          cta="New membership"
-          icon={Users}
-          emptyLine="A monthly fee for ongoing access — the steadiest revenue a host can build. Set a price, pick what members get."
-          rows={[]}
-          columns={[]}
-        />
-      )}
+      <Panel flush title={`${rows.length} ${rows.length === 1 ? 'item' : 'items'}`}>
+        {rows.length === 0 ? (
+          <div className="flex flex-col items-center gap-1.5 px-3 py-10 text-center">
+            <Package className="h-6 w-6 text-maroon/30" strokeWidth={1.8} />
+            <p className="text-[12.5px] font-bold text-ink">
+              {items.length === 0 ? 'Nothing in your catalog yet' : 'Nothing matches'}
+            </p>
+            <p className="max-w-sm text-[11.5px] font-medium text-ink/55">
+              {items.length === 0
+                ? 'A service puts time on your calendar. A product sells while you sleep. Start with either.'
+                : 'Loosen a filter, or clear them all.'}
+            </p>
+          </div>
+        ) : (
+          <ul className="divide-y-2 divide-neutral-200">
+            {rows.map((item) => {
+              const type = CATALOG_TYPES[item.kind];
+              const live = item.kind === 'coupon' ? couponState(item) : item.active ? 'active' : 'inactive';
+              return (
+                <li key={item.id}>
+                  <div className="flex items-center gap-2 px-3 py-2 transition hover:bg-cream">
+                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-xs bg-neutral-100 text-ink/55" title={type.label}>
+                      <type.icon className="h-3.5 w-3.5" strokeWidth={2.4} />
+                    </span>
 
-      {tab === 'offers' && (
-        <>
-          <SimpleList
-            title="Coupon codes"
-            subtitle={`${mock.offers.filter((o) => couponState(o) === 'active').length} active`}
-            cta="New code"
-            icon={Ticket}
-            emptyLine="A code for a launch, a festival or a returning client."
-            rows={mock.offers.map((o) => ({
-              ...o,
-              state: couponState(o),
-              meta: `${o.discount_type === 'percent' ? `${o.discount_value}% off` : `${inr(o.discount_value)} off`}${o.expires_at ? ` · expires ${fmtDayFull(o.expires_at)}` : ' · no expiry'}`,
-            }))}
-            columns={[['Used', (r) => `${r.times_redeemed}${r.max_redemptions ? `/${r.max_redemptions}` : ''}`]]}
-          />
-          <p className="flex items-start gap-1.5 rounded-xl border-2 border-marigold-300 bg-marigold-100 px-2.5 py-1.5 text-[11px] font-medium text-marigold-800">
-            <Package className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2.2} />
-            Coupons sit behind the <code className="rounded bg-white/70 px-1 font-mono text-[10.5px]">coupons</code> flag, which is off in production today. The tab is shown here because the feature exists and is finished — the flag is the only thing between it and hosts.
-          </p>
-        </>
+                    <button type="button" onClick={() => open(item.id)} className="min-w-0 flex-1 text-left">
+                      <span className="flex flex-wrap items-center gap-1.5">
+                        <span className="truncate text-[12.5px] font-bold text-ink">{item.title}</span>
+                        <StatusPill status={live} />
+                      </span>
+                      <span className="block truncate text-[11px] font-medium text-ink/50">{summarise(item)}</span>
+                    </button>
+
+                    {/* Per-row performance: the old tabs showed none of this */}
+                    <div className="hidden shrink-0 gap-4 sm:flex">
+                      {[
+                        ['Sold', item.sold_30d],
+                        ['Revenue', inr(item.revenue_30d, { compact: true })],
+                        ['View → buy', item.conversion ? pct(item.conversion) : '—'],
+                      ].map(([k, v]) => (
+                        <div key={k} className="w-[62px] text-right">
+                          <p className="text-[9.5px] font-bold uppercase tracking-wide text-ink/40">{k}</p>
+                          <p className="font-display text-[12.5px] font-extrabold tabular-nums text-ink">{v}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex shrink-0 gap-0.5">
+                      <button type="button" onClick={() => open(item.id)} aria-label={`Edit ${item.title}`} className="grid h-7 w-7 place-items-center rounded-xs text-ink/45 transition hover:bg-blush hover:text-maroon">
+                        <Pencil className="h-3.5 w-3.5" strokeWidth={2.2} />
+                      </button>
+                      <button type="button" onClick={() => toggleLive(item)} aria-label={`${item.active ? 'Hide' : 'Show'} ${item.title}`} className="grid h-7 w-7 place-items-center rounded-xs text-ink/45 transition hover:bg-blush hover:text-maroon">
+                        {item.active ? <EyeOff className="h-3.5 w-3.5" strokeWidth={2.2} /> : <Eye className="h-3.5 w-3.5" strokeWidth={2.2} />}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setItems((v) => [...v, { ...item, id: `${item.id}-copy`, title: `${item.title} (copy)`, active: false, sold_30d: 0, revenue_30d: 0 }]); toast.success(`${item.title} duplicated`); }}
+                        aria-label={`Duplicate ${item.title}`}
+                        className="grid h-7 w-7 place-items-center rounded-xs text-ink/45 transition hover:bg-blush hover:text-maroon"
+                      >
+                        <Copy className="h-3.5 w-3.5" strokeWidth={2.2} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setItems((v) => v.filter((x) => x.id !== item.id)); toast.success(`${item.title} deleted`); }}
+                        aria-label={`Delete ${item.title}`}
+                        className="grid h-7 w-7 place-items-center rounded-xs text-ink/35 transition hover:bg-error-bg hover:text-error-fg"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" strokeWidth={2.2} />
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </Panel>
+
+      {counts.membership === 0 && (
+        <p className="rounded-lg border-2 border-neutral-200 bg-white px-3 py-2 text-[11.5px] font-medium text-ink/60">
+          You have no memberships yet. A monthly fee for ongoing access is the steadiest revenue a host can build —
+          it is in the <b className="font-bold text-ink">New</b> menu above.
+        </p>
       )}
     </div>
   );

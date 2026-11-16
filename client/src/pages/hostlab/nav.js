@@ -16,15 +16,11 @@ import {
 
 export const BASE = '/host-lab';
 
-/** Tab sets, shared between the rail and the page that owns them. */
+/** Tab sets, shared between the rail and the page that owns them.
+ *  Catalog is deliberately absent: it is one list with a Type filter, not a
+ *  set of views, so it has no sub-pages. Money and Settings genuinely are
+ *  different views of one subject, so they keep theirs. */
 export const TABS = {
-  catalog: [
-    { value: 'services', label: 'Services' },
-    { value: 'products', label: 'Products' },
-    { value: 'courses', label: 'Courses' },
-    { value: 'memberships', label: 'Memberships' },
-    { value: 'offers', label: 'Offers' },
-  ],
   schedule: [
     { value: 'hours', label: 'Hours' },
     { value: 'rules', label: 'Rules' },
@@ -65,7 +61,7 @@ export const NAV = [
   {
     label: 'Business',
     items: [
-      { to: 'catalog', label: 'Catalog', icon: Package, tabs: 'catalog' },
+      { to: 'catalog', label: 'Catalog', icon: Package },
       { to: 'schedule', label: 'Schedule', icon: CalendarRange, tabs: 'schedule' },
       { to: 'money', label: 'Money', icon: CreditCard, tabs: 'money' },
       { to: 'grow', label: 'Grow', icon: TrendingUp, tabs: 'grow', badge: 2 },
