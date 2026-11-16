@@ -13,6 +13,10 @@
 // `control` maps to an input in CatalogEditor; `group` decides which section of
 // the page the field lands in. No type declares layout, so every item in the
 // catalog is created and edited through the same page.
+//
+// `notice` is the honest escape hatch: a type whose backend does not exist yet
+// still gets its real page, and says plainly what will not work. Better than a
+// stub, which teaches nothing, and better than silence, which lies.
 // ─────────────────────────────────────────────────────────────────────────────
 import { BookOpen, CalendarClock, FileDown, Ticket, Users } from 'lucide-react';
 
@@ -104,6 +108,10 @@ export const CATALOG_TYPES = {
     icon: Users,
     blurb: 'A monthly fee for ongoing access — the steadiest revenue a host can build.',
     nameField: 'title',
+    // Recurring billing does not exist in the product yet, so a membership can
+    // be written and priced but cannot charge anyone. Say so on the page rather
+    // than letting a host find out after they publish one.
+    notice: 'Recurring billing is not live yet, so a membership cannot charge anyone until it ships. Write it now and it is ready the day it does.',
     fields: [
       { key: 'title', label: 'What is it called?', control: 'text', group: 'basics', placeholder: 'Inner circle', required: true },
       DESCRIPTION,

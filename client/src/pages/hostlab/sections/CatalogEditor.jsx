@@ -11,7 +11,7 @@
 // page. Nothing here knows what a service is.
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Copy, Sparkles, Trash2, Upload } from 'lucide-react';
+import { ArrowLeft, Copy, Info, Sparkles, Trash2, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button, cn } from '../../../components/dashboard/ui';
 import { Field, LabInput, LabSelect, LabTextarea, Panel, Toggle, inr } from '../labUi';
@@ -156,6 +156,13 @@ const CatalogEditor = () => {
           <p className="mt-0.5 text-[12px] font-medium text-ink/55">{type.blurb}</p>
         </div>
       </header>
+
+      {type.notice && (
+        <p className="flex items-start gap-2 rounded-lg border-2 border-marigold-300 bg-marigold-100 px-3 py-2 text-[11.5px] font-medium text-marigold-800">
+          <Info className="mt-px h-3.5 w-3.5 shrink-0" strokeWidth={2.6} />
+          {type.notice}
+        </p>
+      )}
 
       <div className="grid gap-3 lg:grid-cols-[1.6fr_1fr]">
         {/* The form — one page, every field, one submit */}
