@@ -68,7 +68,7 @@ export const relDay = (iso) => {
 
 /* ── LabBanner — says plainly that nothing here is real ────────────────── */
 export const LabBanner = () => (
-  <div className="flex items-center gap-2 overflow-hidden border-b-2 border-marigold-300 bg-marigold-100 px-3 py-1 text-[10.5px] font-semibold text-marigold-800">
+  <div className="flex items-center gap-1.5 overflow-hidden border-b-2 border-marigold-300 bg-marigold-100 px-2.5 py-1 text-[10.5px] font-semibold text-marigold-800">
     <span className="shrink-0 rounded-full bg-marigold px-1.5 py-px text-[9px] font-bold uppercase tracking-wide text-ink">Prototype</span>
     <span className="truncate">Redesign proposal for the host dashboard. Sample data only — nothing here reads or writes your real account.</span>
   </div>
@@ -89,22 +89,22 @@ export const Tile = ({ label, value, delta, deltaLabel, hint, onClick, accent = 
       type={onClick ? 'button' : undefined}
       onClick={onClick}
       className={cn(
-        'flex min-w-0 flex-col rounded-lg border-2 p-2.5 text-left transition',
+        'flex min-w-0 flex-col rounded-lg border-2 p-2 text-left transition',
         accent ? 'border-maroon bg-maroon text-white' : 'border-neutral-200 bg-white',
         onClick && 'hover:border-maroon/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose',
       )}
     >
-      <div className="flex items-start justify-between gap-2">
+      <div className="flex items-start justify-between gap-1.5">
         <span className={cn('truncate text-[10px] font-bold uppercase tracking-[0.07em]', accent ? 'text-white/70' : 'text-ink/45')}>{label}</span>
         {spark && <span className="mt-px shrink-0 opacity-90">{spark}</span>}
       </div>
 
-      <span className={cn('mt-1 font-display text-[19px] font-extrabold leading-none tracking-[-0.035em]', accent ? 'text-white' : 'text-ink')}>
+      <span className={cn('mt-1 font-display text-[17px] font-extrabold leading-none tracking-[-0.035em]', accent ? 'text-white' : 'text-ink')}>
         {value}
       </span>
 
       {footer && (
-        <div className={cn('mt-2 flex items-center gap-2 border-t pt-1.5 text-[10.5px] font-semibold', accent ? 'border-white/20' : 'border-neutral-200')}>
+        <div className={cn('mt-2 flex items-center gap-1.5 border-t pt-1.5 text-[10.5px] font-semibold', accent ? 'border-white/20' : 'border-neutral-200')}>
           {delta != null && (
             <span className={cn('inline-flex shrink-0 items-center gap-0.5', accent ? 'text-white/85' : up ? 'text-success-fg' : 'text-error-fg')}>
               {up ? <TrendingUp className="h-3 w-3" strokeWidth={2.6} /> : <TrendingDown className="h-3 w-3" strokeWidth={2.6} />}
@@ -129,7 +129,7 @@ export const Chip = ({ active, children, onClick, count }) => (
     onClick={onClick}
     aria-pressed={active}
     className={cn(
-      'inline-flex shrink-0 items-center gap-1.5 rounded-full border-2 px-2.5 py-1.5 text-[11.5px] font-semibold transition focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose',
+      'inline-flex shrink-0 items-center gap-1.5 rounded-full border-2 px-2.5 py-1.5 text-[11px] font-semibold transition focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose',
       active ? 'border-maroon bg-maroon text-white' : 'border-neutral-200 bg-white text-ink/65 hover:border-maroon/40 hover:text-ink',
     )}
   >
@@ -141,7 +141,7 @@ export const Chip = ({ active, children, onClick, count }) => (
 );
 
 export const AppliedChip = ({ children, onClear }) => (
-  <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-blush px-2.5 py-1 text-[11px] font-semibold text-maroon">
+  <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-blush px-2.5 py-1 text-[10.5px] font-semibold text-maroon">
     {children}
     <button type="button" onClick={onClear} aria-label={`Clear ${children}`} className="rounded-full p-0.5 hover:bg-maroon/15">
       <X className="h-3 w-3" strokeWidth={3} />
@@ -169,7 +169,7 @@ export const Dropdown = ({ label, value, options, onChange, align = 'left', widt
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="inline-flex items-center gap-1.5 rounded-full border-2 border-neutral-200 bg-white px-2.5 py-1.5 text-[11.5px] font-semibold text-ink/70 transition hover:border-maroon/40 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
+        className="inline-flex items-center gap-1.5 rounded-full border-2 border-neutral-200 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-ink/70 transition hover:border-maroon/40 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
       >
         {label && <span className="text-ink/45">{label}</span>}
         {current?.label || 'Any'}
@@ -187,7 +187,7 @@ export const Dropdown = ({ label, value, options, onChange, align = 'left', widt
               role="menuitemradio"
               aria-checked={o.value === value}
               onClick={() => { onChange(o.value); setOpen(false); }}
-              className="flex w-full items-center justify-between gap-2 px-2.5 py-2 text-left text-[12px] font-medium text-ink/75 transition hover:bg-blush"
+              className="flex w-full items-center justify-between gap-1.5 px-2.5 py-1.5 text-left text-[11.5px] font-medium text-ink/75 transition hover:bg-blush"
             >
               {o.label}
               {o.value === value && <Check className="h-3.5 w-3.5 text-maroon" strokeWidth={3} />}
@@ -232,7 +232,7 @@ export const BarChart = ({ data, valueKey = 'revenue', labelKey = 'month', forma
 
   return (
     <div className="relative">
-      <div className="flex gap-2.5">
+      <div className="flex gap-2">
         {/* y axis */}
         <div className="flex shrink-0 flex-col justify-between py-0.5 text-right text-[9.5px] font-semibold tabular-nums text-ink/35" style={{ height }}>
           {ticks.map((t) => <span key={t}>{format(t)}</span>)}
@@ -278,7 +278,7 @@ export const BarChart = ({ data, valueKey = 'revenue', labelKey = 'month', forma
           </div>
           {hover != null && (
             <div
-              className="pointer-events-none absolute -top-1 z-10 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-lg bg-ink px-2.5 py-1.5 text-[11px] font-semibold text-white"
+              className="pointer-events-none absolute -top-1 z-10 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-lg bg-ink px-2.5 py-1.5 text-[10.5px] font-semibold text-white"
               style={{ left: `${((hover + 0.5) / data.length) * 100}%` }}
             >
               {data[hover][labelKey]} · {format(data[hover][valueKey])}
@@ -315,12 +315,12 @@ export const Sparkline = ({ values, width = 62, height = 20 }) => {
 export const RankedBars = ({ rows, valueKey = 'views', labelKey = 'label', format = (v) => v.toLocaleString('en-IN'), secondary }) => {
   const max = Math.max(...rows.map((r) => r[valueKey]), 1);
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="flex flex-col gap-1.5">
       {rows.map((r) => (
         <li key={r[labelKey]}>
-          <div className="mb-1 flex items-baseline justify-between gap-2.5">
-            <span className="truncate text-[12px] font-semibold text-ink/80">{r[labelKey]}</span>
-            <span className="shrink-0 text-[11.5px] font-bold tabular-nums text-ink">
+          <div className="mb-1 flex items-baseline justify-between gap-2">
+            <span className="truncate text-[11.5px] font-semibold text-ink/80">{r[labelKey]}</span>
+            <span className="shrink-0 text-[11px] font-bold tabular-nums text-ink">
               {format(r[valueKey])}
               {secondary && <span className="ml-1.5 font-medium text-ink/45">{secondary(r)}</span>}
             </span>
@@ -338,17 +338,17 @@ export const RankedBars = ({ rows, valueKey = 'views', labelKey = 'label', forma
 export const Funnel = ({ stages }) => {
   const top = stages[0]?.value || 1;
   return (
-    <ol className="flex flex-col gap-2.5">
+    <ol className="flex flex-col gap-2">
       {stages.map((s, i) => {
         const prev = i === 0 ? null : stages[i - 1].value;
         const drop = prev ? 1 - s.value / prev : null;
         return (
           <li key={s.label}>
-            <div className="mb-1 flex items-baseline justify-between gap-2.5">
-              <span className="text-[12px] font-semibold text-ink/80">{s.label}</span>
-              <span className="text-[12px] font-bold tabular-nums text-ink">
+            <div className="mb-1 flex items-baseline justify-between gap-2">
+              <span className="text-[11.5px] font-semibold text-ink/80">{s.label}</span>
+              <span className="text-[11.5px] font-bold tabular-nums text-ink">
                 {s.value.toLocaleString('en-IN')}
-                <span className="ml-1.5 text-[11px] font-semibold text-ink/40">{pct(s.value / top)} of views</span>
+                <span className="ml-1.5 text-[10.5px] font-semibold text-ink/40">{pct(s.value / top)} of views</span>
               </span>
             </div>
             <div className="h-6 w-full overflow-hidden rounded-lg bg-neutral-100">
@@ -358,7 +358,7 @@ export const Funnel = ({ stages }) => {
               />
             </div>
             {drop != null && (
-              <p className="mt-1 text-[11px] font-medium text-ink/45">
+              <p className="mt-1 text-[10.5px] font-medium text-ink/45">
                 {pct(drop)} drop from {stages[i - 1].label.toLowerCase()}
               </p>
             )}
@@ -397,23 +397,23 @@ export const CommandPalette = ({ open, onClose, items, onPick }) => {
 
   if (!open) return null;
   return createPortal(
-    <div className="fixed inset-0 z-[110] flex items-start justify-center px-3 pt-[12vh]">
+    <div className="fixed inset-0 z-[110] flex items-start justify-center px-2.5 pt-[12vh]">
       <div className="absolute inset-0 bg-ink/40" onClick={onClose} aria-hidden="true" />
       <div role="dialog" aria-modal="true" aria-label="Search" className="relative w-full max-w-lg overflow-hidden rounded-3xl border-2 border-neutral-200 bg-white dash-elev-3">
-        <div className="flex items-center gap-2 border-b-2 border-neutral-200 px-3 py-2">
+        <div className="flex items-center gap-1.5 border-b-2 border-neutral-200 px-2.5 py-1.5">
           <Search className="h-4 w-4 shrink-0 text-ink/40" strokeWidth={2.4} />
           <input
             ref={inputRef}
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search bookings, clients, services…"
-            className="w-full bg-transparent text-[12.5px] font-medium text-ink outline-none placeholder:text-ink/35"
+            className="w-full bg-transparent text-[12px] font-medium text-ink outline-none placeholder:text-ink/35"
           />
           <kbd className="shrink-0 rounded border border-neutral-200 px-1.5 py-0.5 text-[9.5px] font-bold text-ink/40">esc</kbd>
         </div>
         <ul className="max-h-[52vh] overflow-y-auto py-1">
           {results.length === 0 ? (
-            <li className="px-3 py-8 text-center text-[12px] font-medium text-ink/45">Nothing matches “{q}”.</li>
+            <li className="px-2.5 py-8 text-center text-[11.5px] font-medium text-ink/45">Nothing matches “{q}”.</li>
           ) : (
             results.map((it, i) => (
               <li key={it.id}>
@@ -421,14 +421,14 @@ export const CommandPalette = ({ open, onClose, items, onPick }) => {
                   type="button"
                   onMouseEnter={() => setSel(i)}
                   onClick={() => { onPick(it); onClose(); }}
-                  className={cn('flex w-full items-center gap-2.5 px-3 py-2 text-left transition', i === sel ? 'bg-blush' : 'hover:bg-cream')}
+                  className={cn('flex w-full items-center gap-2 px-2.5 py-1.5 text-left transition', i === sel ? 'bg-blush' : 'hover:bg-cream')}
                 >
                   <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-neutral-100 text-[10px] font-bold text-maroon">
                     {it.group.slice(0, 2).toUpperCase()}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[12.5px] font-semibold text-ink">{it.title}</span>
-                    {it.subtitle && <span className="block truncate text-[11px] text-ink/50">{it.subtitle}</span>}
+                    <span className="block truncate text-[12px] font-semibold text-ink">{it.title}</span>
+                    {it.subtitle && <span className="block truncate text-[10.5px] text-ink/50">{it.subtitle}</span>}
                   </span>
                   <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-ink/35">{it.group}</span>
                 </button>
@@ -469,15 +469,15 @@ export const StatusPill = ({ status, children }) => {
 export const Panel = ({ title, subtitle, action, children, className = '', flush = false }) => (
   <section className={cn('overflow-hidden rounded-xl border-2 border-neutral-200 bg-white', className)}>
     {(title || action) && (
-      <header className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-neutral-200 px-3 py-2">
+      <header className="flex flex-wrap items-center justify-between gap-1.5 border-b-2 border-neutral-200 px-2.5 py-1.5">
         <div className="min-w-0">
-          {title && <h2 className="mb-0 font-display text-[13.5px] font-bold tracking-[-0.02em] text-ink">{title}</h2>}
-          {subtitle && <p className="mt-0.5 text-[11px] font-medium text-ink/50">{subtitle}</p>}
+          {title && <h2 className="mb-0 font-display text-[12.5px] font-bold tracking-[-0.02em] text-ink">{title}</h2>}
+          {subtitle && <p className="mt-0.5 text-[10.5px] font-medium text-ink/50">{subtitle}</p>}
         </div>
         {action}
       </header>
     )}
-    <div className={flush ? '' : 'p-3'}>{children}</div>
+    <div className={flush ? '' : 'p-2.5'}>{children}</div>
   </section>
 );
 
@@ -490,7 +490,7 @@ export const Panel = ({ title, subtitle, action, children, className = '', flush
  * prototype, the lab uses these, and the fix is filed as a P0 in the report.
  * ---------------------------------------------------------------------- */
 export const FIELD =
-  'block rounded-md border-2 border-neutral-200 bg-white px-2.5 text-[12.5px] font-medium text-ink ' +
+  'block rounded-md border-2 border-neutral-200 bg-white px-2.5 text-[12px] font-medium text-ink ' +
   'outline-none transition placeholder:text-ink/35 focus:border-maroon/50 ' +
   'focus-visible:ring-[3px] focus-visible:ring-rose disabled:bg-neutral-50 disabled:text-ink/40';
 
@@ -516,19 +516,19 @@ export const LabSelect = ({ className = '', children, ...props }) => (
 );
 
 export const LabTextarea = ({ className = '', rows = 3, ...props }) => (
-  <textarea rows={rows} className={cn(FIELD, unless(className, 'w', 'w-full'), 'py-2', className)} {...props} />
+  <textarea rows={rows} className={cn(FIELD, unless(className, 'w', 'w-full'), 'py-1.5', className)} {...props} />
 );
 
 export const Field = ({ label, hint, htmlFor, children, className = '' }) => (
   <label htmlFor={htmlFor} className={cn('block', className)}>
     <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-wide text-ink/45">{label}</span>
     {children}
-    {hint && <span className="mt-1 block text-[11px] font-medium text-ink/45">{hint}</span>}
+    {hint && <span className="mt-1 block text-[10.5px] font-medium text-ink/45">{hint}</span>}
   </label>
 );
 
 /* ── Avatar ────────────────────────────────────────────────────────────── */
-export const Avatar = ({ name, size = 'h-8 w-8 text-[11px]' }) => (
+export const Avatar = ({ name, size = 'h-8 w-8 text-[10.5px]' }) => (
   <span className={cn('grid shrink-0 place-items-center rounded-full bg-blush font-bold text-maroon', size)}>
     {(name || 'G').trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase()}
   </span>

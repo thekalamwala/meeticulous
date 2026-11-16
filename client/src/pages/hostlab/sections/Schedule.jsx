@@ -87,21 +87,21 @@ const Hours = ({ schedule, setSchedule, dirty }) => {
           const slots = schedule[key];
           const open = slots.length > 0;
           return (
-            <li key={key} className="px-3 py-2">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <div className="flex w-[150px] shrink-0 items-center gap-2">
+            <li key={key} className="px-2.5 py-1.5">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex w-[150px] shrink-0 items-center gap-1.5">
                   <Toggle checked={open} onChange={() => toggleDay(key)} label={`${label} open for bookings`} />
-                  <span className={cn('text-[12.5px] font-bold', open ? 'text-ink' : 'text-ink/35')}>{label}</span>
+                  <span className={cn('text-[12px] font-bold', open ? 'text-ink' : 'text-ink/35')}>{label}</span>
                 </div>
 
                 {!open ? (
-                  <span className="text-[11.5px] font-semibold text-ink/35">Closed</span>
+                  <span className="text-[11px] font-semibold text-ink/35">Closed</span>
                 ) : (
-                  <div className="flex min-w-0 flex-1 flex-col gap-2">
+                  <div className="flex min-w-0 flex-1 flex-col gap-1.5">
                     {slots.map((sl, i) => {
                       const bad = minutesOf(sl.end) <= minutesOf(sl.start);
                       return (
-                        <div key={i} className="flex flex-wrap items-center gap-2">
+                        <div key={i} className="flex flex-wrap items-center gap-1.5">
                           <LabSelect
                             value={sl.start}
                             onChange={(e) => setSlot(key, i, 'start', e.target.value)}
@@ -110,7 +110,7 @@ const Hours = ({ schedule, setSchedule, dirty }) => {
                           >
                             {TIMES.map((t) => <option key={t.v} value={t.v}>{t.label}</option>)}
                           </LabSelect>
-                          <span className="text-[11px] font-bold text-ink/35">to</span>
+                          <span className="text-[10.5px] font-bold text-ink/35">to</span>
                           <LabSelect
                             value={sl.end}
                             onChange={(e) => setSlot(key, i, 'end', e.target.value)}
@@ -119,7 +119,7 @@ const Hours = ({ schedule, setSchedule, dirty }) => {
                           >
                             {TIMES.map((t) => <option key={t.v} value={t.v}>{t.label}</option>)}
                           </LabSelect>
-                          {bad && <span className="text-[11px] font-bold text-error-fg">End must be after start</span>}
+                          {bad && <span className="text-[10.5px] font-bold text-error-fg">End must be after start</span>}
                           <button
                             type="button"
                             onClick={() => removeSlot(key, i)}
@@ -159,13 +159,13 @@ const Hours = ({ schedule, setSchedule, dirty }) => {
 
               {copyFrom === key && (
                 <div className="mt-2.5 flex flex-wrap items-center gap-1.5 rounded-lg bg-blush p-2">
-                  <span className="text-[11px] font-bold text-maroon">Copy {label} to</span>
+                  <span className="text-[10.5px] font-bold text-maroon">Copy {label} to</span>
                   {DAYS.filter(([k]) => k !== key).map(([k, l]) => (
                     <button
                       key={k}
                       type="button"
                       onClick={() => copyTo(key, [k])}
-                      className="rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-maroon transition hover:bg-maroon hover:text-white"
+                      className="rounded-full bg-white px-2.5 py-1 text-[10.5px] font-bold text-maroon transition hover:bg-maroon hover:text-white"
                     >
                       {l.slice(0, 3)}
                     </button>
@@ -173,7 +173,7 @@ const Hours = ({ schedule, setSchedule, dirty }) => {
                   <button
                     type="button"
                     onClick={() => copyTo(key, DAYS.filter(([k]) => k !== key).map(([k]) => k))}
-                    className="rounded-full bg-maroon px-2.5 py-1 text-[11px] font-bold text-white"
+                    className="rounded-full bg-maroon px-2.5 py-1 text-[10.5px] font-bold text-white"
                   >
                     All days
                   </button>
@@ -184,8 +184,8 @@ const Hours = ({ schedule, setSchedule, dirty }) => {
         })}
       </ul>
       {dirty && (
-        <div className="flex items-center gap-2.5 border-t-2 border-neutral-200 bg-marigold-100 px-3 py-2">
-          <span className="text-[11.5px] font-bold text-marigold-800">Unsaved changes</span>
+        <div className="flex items-center gap-2 border-t-2 border-neutral-200 bg-marigold-100 px-2.5 py-1.5">
+          <span className="text-[11px] font-bold text-marigold-800">Unsaved changes</span>
           <Button size="sm" className="ml-auto" onClick={() => toast.success('Hours saved')}>Save hours</Button>
         </div>
       )}
@@ -195,9 +195,9 @@ const Hours = ({ schedule, setSchedule, dirty }) => {
 
 /* ── Rules ─────────────────────────────────────────────────────────────── */
 const Rules = ({ rules, setRules }) => (
-  <div className="grid gap-3 lg:grid-cols-2">
+  <div className="grid gap-2.5 lg:grid-cols-2">
     <Panel title="Booking rules" subtitle="The guard rails on every slot you offer">
-      <div className="grid gap-2.5 sm:grid-cols-2">
+      <div className="grid gap-2 sm:grid-cols-2">
         <Field label="Time zone" hint="Guests always see their own local time.">
           <LabSelect value={rules.timezone} onChange={(e) => setRules((r) => ({ ...r, timezone: e.target.value }))}>
             {['Asia/Kolkata', 'Asia/Dubai', 'Europe/London', 'America/New_York', 'Asia/Singapore'].map((t) => <option key={t}>{t}</option>)}
@@ -226,7 +226,7 @@ const Rules = ({ rules, setRules }) => (
       subtitle="Protect your calendar from a good week"
       action={<span className="rounded-full bg-marigold px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wide text-ink">Pro</span>}
     >
-      <div className="grid gap-2.5 sm:grid-cols-3">
+      <div className="grid gap-2 sm:grid-cols-3">
         {[
           ['per_day', 'Per day'],
           ['per_week', 'Per week'],
@@ -244,7 +244,7 @@ const Rules = ({ rules, setRules }) => (
           </Field>
         ))}
       </div>
-      <p className="mt-2.5 text-[11px] font-medium text-ink/50">
+      <p className="mt-2.5 text-[10.5px] font-medium text-ink/50">
         A booking that would break a limit is simply not offered — the guest never sees a slot they cannot have.
       </p>
     </Panel>
@@ -277,8 +277,8 @@ const Dates = ({ overrides, setOverrides, blocked, setBlocked }) => {
       flush
     >
       {adding && (
-        <div className="border-b-2 border-neutral-200 bg-cream p-3">
-          <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="border-b-2 border-neutral-200 bg-cream p-2.5">
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             <Field label="Date">
               <LabInput type="date" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
             </Field>
@@ -306,30 +306,30 @@ const Dates = ({ overrides, setOverrides, blocked, setBlocked }) => {
               <LabInput value={form.label} onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))} placeholder="Clinic visit, travelling, public holiday…" />
             </Field>
           </div>
-          <div className="mt-2.5 flex gap-2">
+          <div className="mt-2.5 flex gap-1.5">
             <Button size="sm" onClick={add} disabled={!form.date}>Add date</Button>
             <Button size="sm" variant="outline" onClick={() => setAdding(false)}>Cancel</Button>
-            {!form.date && <span className="self-center text-[11px] font-semibold text-warning-fg">Pick a date first.</span>}
+            {!form.date && <span className="self-center text-[10.5px] font-semibold text-warning-fg">Pick a date first.</span>}
           </div>
         </div>
       )}
 
       {overrides.length === 0 && blocked.length === 0 ? (
-        <div className="flex flex-col items-center gap-2 px-3 py-10 text-center">
+        <div className="flex flex-col items-center gap-1.5 px-2.5 py-10 text-center">
           <Calendar className="h-6 w-6 text-maroon/30" strokeWidth={1.8} />
-          <p className="text-[12.5px] font-bold text-ink">No one-offs set</p>
-          <p className="max-w-sm text-[11.5px] font-medium text-ink/55">Add a date when you are away, or when you work different hours than usual.</p>
+          <p className="text-[12px] font-bold text-ink">No one-offs set</p>
+          <p className="max-w-sm text-[11px] font-medium text-ink/55">Add a date when you are away, or when you work different hours than usual.</p>
         </div>
       ) : (
         <ul className="divide-y-2 divide-neutral-200">
           {overrides.map((o) => (
-            <li key={o.date} className="flex items-center gap-2.5 px-3 py-2">
+            <li key={o.date} className="flex items-center gap-2 px-2.5 py-1.5">
               <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-marigold-100 text-marigold-800">
                 <Clock className="h-4 w-4" strokeWidth={2.4} />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-[12.5px] font-bold text-ink">{fmtDayFull(o.date)}</span>
-                <span className="block text-[11.5px] font-medium text-ink/55">
+                <span className="block text-[12px] font-bold text-ink">{fmtDayFull(o.date)}</span>
+                <span className="block text-[11px] font-medium text-ink/55">
                   {o.slots.map((s) => `${pretty(s.start)} – ${pretty(s.end)}`).join(', ')} · {o.label}
                 </span>
               </span>
@@ -344,13 +344,13 @@ const Dates = ({ overrides, setOverrides, blocked, setBlocked }) => {
             </li>
           ))}
           {blocked.map((d) => (
-            <li key={d} className="flex items-center gap-2.5 px-3 py-2">
+            <li key={d} className="flex items-center gap-2 px-2.5 py-1.5">
               <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-neutral-100 text-ink/50">
                 <CalendarX2 className="h-4 w-4" strokeWidth={2.4} />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-[12.5px] font-bold text-ink">{fmtDayFull(d)}</span>
-                <span className="block text-[11.5px] font-medium text-ink/55">Not available at all</span>
+                <span className="block text-[12px] font-bold text-ink">{fmtDayFull(d)}</span>
+                <span className="block text-[11px] font-medium text-ink/55">Not available at all</span>
               </span>
               <button
                 type="button"
@@ -375,18 +375,18 @@ const Calendars = () => {
     <Panel title="Connected calendars" subtitle="Busy time elsewhere should close the slot here" flush>
       <ul className="divide-y-2 divide-neutral-200">
         {cals.map((c) => (
-          <li key={c.id} className="flex flex-wrap items-center gap-2.5 px-3 py-2.5">
+          <li key={c.id} className="flex flex-wrap items-center gap-2 px-2.5 py-2">
             <span className={cn('grid h-8 w-8 shrink-0 place-items-center rounded-lg', c.status === 'connected' ? 'bg-success-bg text-success-fg' : 'bg-neutral-100 text-ink/45')}>
               {c.status === 'connected' ? <CheckCircle2 className="h-4 w-4" strokeWidth={2.4} /> : <Link2 className="h-4 w-4" strokeWidth={2.4} />}
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-[12.5px] font-bold text-ink">{c.name}</span>
-              <span className="block text-[11.5px] font-medium text-ink/55">
+              <span className="block text-[12px] font-bold text-ink">{c.name}</span>
+              <span className="block text-[11px] font-medium text-ink/55">
                 {c.status === 'connected' ? `${c.account} · two-way, busy time blocks your slots` : 'Not connected'}
               </span>
             </span>
             {c.status === 'connected' ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <Toggle checked onChange={() => toast.success('Two-way sync is required while connected')} label="Two-way sync" />
                 <Button size="sm" variant="outline" onClick={() => { setCals((v) => v.map((x) => (x.id === c.id ? { ...x, status: 'available', account: null } : x))); toast.success(`${c.name} disconnected`); }}>
                   Disconnect
@@ -400,9 +400,9 @@ const Calendars = () => {
           </li>
         ))}
       </ul>
-      <div className="flex items-start gap-2 border-t-2 border-neutral-200 bg-cream p-3">
+      <div className="flex items-start gap-1.5 border-t-2 border-neutral-200 bg-cream p-2.5">
         <Lock className="mt-0.5 h-4 w-4 shrink-0 text-ink/40" strokeWidth={2.2} />
-        <p className="text-[11.5px] font-medium text-ink/60">
+        <p className="text-[11px] font-medium text-ink/60">
           Meeticulous reads only the busy/free times on a connected calendar. It never reads event titles, guests or notes.
         </p>
       </div>
@@ -453,11 +453,11 @@ const Preview = ({ schedule, rules }) => {
       action={<Button size="sm" variant="ghost" onClick={() => toast.success('Opens your public booking page in a new tab')}><Eye className="h-4 w-4" strokeWidth={2.4} /> Open live page</Button>}
     >
       {grouped.length === 0 ? (
-        <p className="py-6 text-center text-[12px] font-semibold text-ink/45">
+        <p className="py-6 text-center text-[11.5px] font-semibold text-ink/45">
           No slots are bookable in the next 10 days. Open some hours, or loosen the notice rule.
         </p>
       ) : (
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col gap-2">
           {grouped.map(([day, items]) => (
             <div key={day}>
               <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-ink/45">
@@ -465,14 +465,14 @@ const Preview = ({ schedule, rules }) => {
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {items.map((s) => (
-                  <span key={s.key} className="rounded-lg border-2 border-marigold-300 bg-marigold-100 px-2.5 py-1 text-[11px] font-bold text-marigold-800">
+                  <span key={s.key} className="rounded-lg border-2 border-marigold-300 bg-marigold-100 px-2.5 py-1 text-[10.5px] font-bold text-marigold-800">
                     {s.at.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true }).replace(' ', '')}
                   </span>
                 ))}
               </div>
             </div>
           ))}
-          <p className="flex items-center gap-1.5 text-[11px] font-medium text-ink/45">
+          <p className="flex items-center gap-1.5 text-[10.5px] font-medium text-ink/45">
             <Globe className="h-3.5 w-3.5" strokeWidth={2.2} /> Shown in {rules.timezone}. Guests see their own zone.
           </p>
         </div>
@@ -498,16 +498,16 @@ const Schedule = () => {
   const setSchedule = (fn) => { setScheduleRaw(fn); setDirty(true); };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2.5">
       <header>
-        <h1 className="mb-0 font-display text-[19px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[21px]">Schedule</h1>
-        <p className="mt-0.5 text-[12.5px] font-medium text-ink/55">When guests can book you, and the rules around it.</p>
+        <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Schedule</h1>
+        <p className="mt-0.5 text-[12px] font-medium text-ink/55">When guests can book you, and the rules around it.</p>
       </header>
 
       <Tabs tabs={TABS} value={tab} onChange={setTab} />
 
-      <div className="grid gap-3 lg:grid-cols-[1.5fr_1fr]">
-        <div className="flex min-w-0 flex-col gap-3">
+      <div className="grid gap-2.5 lg:grid-cols-[1.5fr_1fr]">
+        <div className="flex min-w-0 flex-col gap-2.5">
           {tab === 'hours' && <Hours schedule={schedule} setSchedule={setSchedule} dirty={dirty} />}
           {tab === 'rules' && <Rules rules={rules} setRules={setRules} />}
           {tab === 'dates' && <Dates overrides={overrides} setOverrides={setOverrides} blocked={blocked} setBlocked={setBlocked} />}

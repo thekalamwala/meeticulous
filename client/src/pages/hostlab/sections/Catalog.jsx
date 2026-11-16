@@ -46,15 +46,15 @@ const ServiceEditor = ({ service, onClose }) => {
         </>
       )}
     >
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2.5">
         <Tabs tabs={STEPS} value={step} onChange={setStep} />
 
         {step === 'basics' && (
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-2">
             <Field label="What is it called?" hint="Guests see this on your booking page.">
               <LabInput value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="Nutrition deep-dive" />
             </Field>
-            <div className="grid gap-2.5 sm:grid-cols-2">
+            <div className="grid gap-2 sm:grid-cols-2">
               <Field label="How long?">
                 <LabSelect value={form.duration} onChange={(e) => setForm((f) => ({ ...f, duration: +e.target.value }))}>
                   {[15, 20, 30, 45, 60, 75, 90, 120].map((n) => <option key={n} value={n}>{n} minutes</option>)}
@@ -74,7 +74,7 @@ const ServiceEditor = ({ service, onClose }) => {
             <button
               type="button"
               onClick={() => { setForm((f) => ({ ...f, description: 'A full look at your diet history and recent bloodwork, then a four-week plan you can actually cook. You leave with a grocery list and a follow-up date.' })); toast.success('Draft written — edit it to sound like you'); }}
-              className="inline-flex w-fit items-center gap-1.5 rounded-full border-2 border-maroon px-2.5 py-1.5 text-[11.5px] font-bold text-maroon transition hover:bg-pink-100"
+              className="inline-flex w-fit items-center gap-1.5 rounded-full border-2 border-maroon px-2.5 py-1.5 text-[11px] font-bold text-maroon transition hover:bg-pink-100"
             >
               <Sparkles className="h-4 w-4" strokeWidth={2.4} /> Write a first draft for me
             </button>
@@ -82,7 +82,7 @@ const ServiceEditor = ({ service, onClose }) => {
         )}
 
         {step === 'price' && (
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-2">
             <Field label="Price" hint="Inclusive of GST. Your 5% platform fee comes out of this.">
               <LabInput
                 type="number"
@@ -93,14 +93,14 @@ const ServiceEditor = ({ service, onClose }) => {
                 disabled={form.price_on_request}
               />
             </Field>
-            <label className="flex items-center gap-2">
+            <label className="flex items-center gap-1.5">
               <Toggle checked={form.price_on_request} onChange={(v) => setForm((f) => ({ ...f, price_on_request: v }))} label="Price on request" />
-              <span className="text-[12px] font-semibold text-ink/75">Price on request instead</span>
+              <span className="text-[11.5px] font-semibold text-ink/75">Price on request instead</span>
             </label>
             {form.price > 0 && (
-              <div className="rounded-xl border-2 border-neutral-200 bg-cream p-3">
+              <div className="rounded-xl border-2 border-neutral-200 bg-cream p-2.5">
                 <p className="text-[10px] font-bold uppercase tracking-wide text-ink/45">On each booking</p>
-                <ul className="mt-2 flex flex-col gap-1.5 text-[12px]">
+                <ul className="mt-2 flex flex-col gap-1.5 text-[11.5px]">
                   <li className="flex justify-between"><span className="font-medium text-ink/65">Guest pays</span><span className="font-bold tabular-nums text-ink">{inr(form.price)}</span></li>
                   <li className="flex justify-between"><span className="font-medium text-ink/65">Platform fee (5%, Starter)</span><span className="font-bold tabular-nums text-ink/60">−{inr(Math.round(form.price * 0.05))}</span></li>
                   <li className="flex justify-between border-t-2 border-neutral-200 pt-1.5"><span className="font-bold text-ink">You keep</span><span className="font-bold tabular-nums text-maroon">{inr(form.price - Math.round(form.price * 0.05))}</span></li>
@@ -108,9 +108,9 @@ const ServiceEditor = ({ service, onClose }) => {
                 </ul>
               </div>
             )}
-            <div className="flex items-start gap-2 rounded-xl border-2 border-maroon-100 bg-maroon-50 p-2.5">
+            <div className="flex items-start gap-1.5 rounded-xl border-2 border-maroon-100 bg-maroon-50 p-2">
               <BarChart3 className="mt-0.5 h-4 w-4 shrink-0 text-maroon" strokeWidth={2.2} />
-              <p className="text-[11.5px] font-medium text-ink/70">
+              <p className="text-[11px] font-medium text-ink/70">
                 Nutritionists in Pune charge <strong className="text-maroon">₹1,800–₹3,200</strong> for a 60-minute consult. You are
                 {form.price ? (form.price > 3200 ? ' above' : form.price < 1800 ? ' below' : ' inside') : ' not yet in'} that band.
               </p>
@@ -119,24 +119,24 @@ const ServiceEditor = ({ service, onClose }) => {
         )}
 
         {step === 'page' && (
-          <div className="flex flex-col gap-2.5">
-            <label className="flex items-center gap-2">
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center gap-1.5">
               <Toggle checked={form.active} onChange={(v) => setForm((f) => ({ ...f, active: v }))} label="Live on booking page" />
-              <span className="text-[12px] font-semibold text-ink/75">Live on your booking page</span>
+              <span className="text-[11.5px] font-semibold text-ink/75">Live on your booking page</span>
             </label>
             <Field label="Link" hint="Share this to send someone straight to this one service.">
-              <div className="flex gap-2">
+              <div className="flex gap-1.5">
                 <LabInput readOnly value={`meeticulous.com/${mock.host.username}/${(form.title || 'new-service').toLowerCase().replace(/\s+/g, '-')}`} />
                 <Button variant="outline" onClick={() => toast.success('Link copied')}><Copy className="h-4 w-4" strokeWidth={2.4} /></Button>
               </div>
             </Field>
-            <div className="rounded-xl border-2 border-neutral-200 p-3">
+            <div className="rounded-xl border-2 border-neutral-200 p-2.5">
               <p className="mb-2 text-[10px] font-bold uppercase tracking-wide text-ink/45">How it will look</p>
-              <div className="rounded-lg border-2 border-neutral-200 bg-white p-2.5">
-                <p className="font-display text-[13.5px] font-bold text-ink">{form.title || 'Your service name'}</p>
-                <p className="mt-0.5 text-[11.5px] font-medium text-ink/55">{form.duration} min · {form.price_on_request ? 'Price on request' : form.price ? inr(form.price) : 'Free'}</p>
-                <p className="mt-1.5 text-[11.5px] text-ink/70">{form.description || 'Your description shows here.'}</p>
-                <span className="mt-2.5 inline-flex rounded-full bg-maroon px-2.5 py-1.5 text-[11px] font-bold text-white">Book</span>
+              <div className="rounded-lg border-2 border-neutral-200 bg-white p-2">
+                <p className="font-display text-[12.5px] font-bold text-ink">{form.title || 'Your service name'}</p>
+                <p className="mt-0.5 text-[11px] font-medium text-ink/55">{form.duration} min · {form.price_on_request ? 'Price on request' : form.price ? inr(form.price) : 'Free'}</p>
+                <p className="mt-1.5 text-[11px] text-ink/70">{form.description || 'Your description shows here.'}</p>
+                <span className="mt-2.5 inline-flex rounded-full bg-maroon px-2.5 py-1.5 text-[10.5px] font-bold text-white">Book</span>
               </div>
             </div>
           </div>
@@ -165,20 +165,20 @@ const Services = ({ openId, onOpen }) => {
       >
         <ul className="divide-y-2 divide-neutral-200">
           {items.map((s) => (
-            <li key={s.id} className="flex flex-col gap-2.5 px-3 py-2.5 sm:flex-row sm:items-center">
+            <li key={s.id} className="flex flex-col gap-2 px-2.5 py-2 sm:flex-row sm:items-center">
               <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-[12.5px] font-bold text-ink">{s.title}</p>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <p className="text-[12px] font-bold text-ink">{s.title}</p>
                   <StatusPill status={s.active ? 'active' : 'inactive'} />
                 </div>
-                <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11.5px] font-medium text-ink/55">
+                <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] font-medium text-ink/55">
                   <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" strokeWidth={2.2} />{s.duration} min</span>
                   <span className="inline-flex items-center gap-1"><IndianRupee className="h-3.5 w-3.5" strokeWidth={2.2} />{s.price_on_request ? 'On request' : s.price ? inr(s.price) : 'Free'}</span>
                 </p>
               </div>
 
               {/* Per-row performance: the live page shows none of this. */}
-              <div className="flex shrink-0 gap-3 sm:gap-5">
+              <div className="flex shrink-0 gap-2.5 sm:gap-5">
                 {[
                   ['Booked', s.bookings_30d],
                   ['Revenue', inr(s.revenue_30d, { compact: true })],
@@ -186,7 +186,7 @@ const Services = ({ openId, onOpen }) => {
                 ].map(([k, v]) => (
                   <div key={k}>
                     <p className="text-[9.5px] font-bold uppercase tracking-wide text-ink/40">{k}</p>
-                    <p className="font-display text-[13.5px] font-extrabold tabular-nums text-ink">{v}</p>
+                    <p className="font-display text-[12.5px] font-extrabold tabular-nums text-ink">{v}</p>
                   </div>
                 ))}
               </div>
@@ -240,28 +240,28 @@ const SimpleList = ({ title, subtitle, cta, rows, columns, icon: Icon, emptyLine
     flush
   >
     {rows.length === 0 ? (
-      <div className="flex flex-col items-center gap-2 px-3 py-12 text-center">
+      <div className="flex flex-col items-center gap-1.5 px-2.5 py-12 text-center">
         <Icon className="h-6 w-6 text-maroon/30" strokeWidth={1.8} />
-        <p className="text-[12.5px] font-bold text-ink">Nothing here yet</p>
-        <p className="max-w-sm text-[11.5px] font-medium text-ink/55">{emptyLine}</p>
+        <p className="text-[12px] font-bold text-ink">Nothing here yet</p>
+        <p className="max-w-sm text-[11px] font-medium text-ink/55">{emptyLine}</p>
         <Button size="sm" className="mt-1" onClick={() => toast.success(`Opens the ${cta.toLowerCase()} form`)}>{cta}</Button>
       </div>
     ) : (
       <ul className="divide-y-2 divide-neutral-200">
         {rows.map((r) => (
-          <li key={r.id} className="flex flex-col gap-2 px-3 py-2.5 sm:flex-row sm:items-center">
+          <li key={r.id} className="flex flex-col gap-1.5 px-2.5 py-2 sm:flex-row sm:items-center">
             <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <p className="text-[12.5px] font-bold text-ink">{r.title || r.code}</p>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <p className="text-[12px] font-bold text-ink">{r.title || r.code}</p>
                 {r.state && <StatusPill status={r.state} />}
               </div>
-              {r.meta && <p className="mt-0.5 text-[11.5px] font-medium text-ink/55">{r.meta}</p>}
+              {r.meta && <p className="mt-0.5 text-[11px] font-medium text-ink/55">{r.meta}</p>}
             </div>
-            <div className="flex shrink-0 gap-3 sm:gap-5">
+            <div className="flex shrink-0 gap-2.5 sm:gap-5">
               {columns.map(([k, get]) => (
                 <div key={k}>
                   <p className="text-[9.5px] font-bold uppercase tracking-wide text-ink/40">{k}</p>
-                  <p className="font-display text-[13.5px] font-extrabold tabular-nums text-ink">{get(r)}</p>
+                  <p className="font-display text-[12.5px] font-extrabold tabular-nums text-ink">{get(r)}</p>
                 </div>
               ))}
             </div>
@@ -302,10 +302,10 @@ const Catalog = () => {
     + mock.courses.reduce((n, c) => n + c.revenue_30d, 0);
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2.5">
       <header>
-        <h1 className="mb-0 font-display text-[19px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[21px]">Catalog</h1>
-        <p className="mt-0.5 text-[12.5px] font-medium text-ink/55">
+        <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Catalog</h1>
+        <p className="mt-0.5 text-[12px] font-medium text-ink/55">
           Everything you sell · {inr(totalEarned)} earned in the last 30 days
         </p>
       </header>
@@ -365,9 +365,9 @@ const Catalog = () => {
             }))}
             columns={[['Used', (r) => `${r.times_redeemed}${r.max_redemptions ? `/${r.max_redemptions}` : ''}`]]}
           />
-          <p className="flex items-start gap-2 rounded-xl border-2 border-marigold-300 bg-marigold-100 px-3 py-2 text-[11.5px] font-medium text-marigold-800">
+          <p className="flex items-start gap-1.5 rounded-xl border-2 border-marigold-300 bg-marigold-100 px-2.5 py-1.5 text-[11px] font-medium text-marigold-800">
             <Package className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2.2} />
-            Coupons sit behind the <code className="rounded bg-white/70 px-1 font-mono text-[11px]">coupons</code> flag, which is off in production today. The tab is shown here because the feature exists and is finished — the flag is the only thing between it and hosts.
+            Coupons sit behind the <code className="rounded bg-white/70 px-1 font-mono text-[10.5px]">coupons</code> flag, which is off in production today. The tab is shown here because the feature exists and is finished — the flag is the only thing between it and hosts.
           </p>
         </>
       )}
