@@ -10,15 +10,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   ArrowDownUp, CalendarDays, CalendarX2, Check, Clock, Copy, Download, LayoutList,
-  List, MessageSquare, Plus, RotateCcw, Search, Trash2, UserX, Video, X,
+  List, MessageSquare, Plus, RotateCcw, Trash2, UserX, Video, X,
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Button, Modal, cn } from '../../../components/dashboard/ui';
 import {
-  AppliedChip, Avatar, Chip, Dropdown, LabInput as Input, LabSelect as Select,
+  Avatar, LabInput as Input, LabSelect as Select,
   Panel, StatusPill, fmtDayFull, fmtTime, inr, relDay,
 } from '../labUi';
+import { CheckBox, Filter, FilterBar, ViewSwitch } from '../filters';
 import mock from '../mockData';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -96,22 +97,22 @@ const BookingDrawer = ({ booking, onClose, onAction }) => {
 
   return (
     <Modal open drawer size="lg" onClose={onClose} title={`${booking.guest_name} · ${booking.ref}`}>
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-col gap-2.5">
+        <div className="flex flex-wrap items-center gap-1.5">
           <StatusPill status={booking.status} />
           <StatusPill status={booking.payment_status} />
           <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-bold text-ink/55">from {booking.source}</span>
         </div>
 
-        <div className="rounded-xl border-2 border-neutral-200 p-3">
-          <p className="font-display text-[14px] font-bold text-ink">{booking.services.title}</p>
-          <p className="mt-0.5 text-[12px] font-semibold text-maroon">
+        <div className="rounded-xl border-2 border-neutral-200 p-2.5">
+          <p className="font-display text-[13px] font-bold text-ink">{booking.services.title}</p>
+          <p className="mt-0.5 text-[11.5px] font-semibold text-maroon">
             {fmtDayFull(booking.scheduled_at)} · {fmtTime(booking.scheduled_at)} · {booking.services.duration} min
           </p>
-          <p className="mt-0.5 text-[11px] font-medium text-ink/50">{relDay(booking.scheduled_at)} · {booking.location}</p>
+          <p className="mt-0.5 text-[10.5px] font-medium text-ink/50">{relDay(booking.scheduled_at)} · {booking.location}</p>
         </div>
 
-        <dl className="grid grid-cols-2 gap-2.5 text-[12px]">
+        <dl className="grid grid-cols-2 gap-2 text-[11.5px]">
           {[
             ['Amount', booking.amount ? inr(booking.amount) : 'Free'],
             ['Platform fee', booking.platform_fee ? inr(booking.platform_fee) : '—'],
@@ -128,9 +129,9 @@ const BookingDrawer = ({ booking, onClose, onAction }) => {
         </dl>
 
         {booking.guest_note && (
-          <div className="rounded-lg bg-blush p-2.5">
+          <div className="rounded-lg bg-blush p-2">
             <p className="text-[10px] font-bold uppercase tracking-wide text-maroon/70">What they wrote when booking</p>
-            <p className="mt-1 text-[12px] font-medium text-ink/80">{booking.guest_note}</p>
+            <p className="mt-1 text-[11.5px] font-medium text-ink/80">{booking.guest_note}</p>
           </div>
         )}
 
@@ -154,7 +155,7 @@ const BookingDrawer = ({ booking, onClose, onAction }) => {
           </Button>
         </div>
 
-        <div className="flex flex-wrap gap-2 border-t-2 border-neutral-200 pt-3">
+        <div className="flex flex-wrap gap-1.5 border-t-2 border-neutral-200 pt-2.5">
           <Button size="sm" variant="outline"><Video className="h-4 w-4" strokeWidth={2.4} /> Join call</Button>
           <Button size="sm" variant="outline"><MessageSquare className="h-4 w-4" strokeWidth={2.4} /> WhatsApp</Button>
           <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard?.writeText(booking.ref); toast.success(`${booking.ref} copied`); }}>
@@ -163,9 +164,9 @@ const BookingDrawer = ({ booking, onClose, onAction }) => {
         </div>
 
         {confirming ? (
-          <div className="rounded-xl border-2 border-maroon bg-maroon-50 p-3">
-            <p className="text-[12px] font-semibold text-ink/80">{CONFIRM_COPY[confirming]}</p>
-            <div className="mt-2.5 flex gap-2">
+          <div className="rounded-xl border-2 border-maroon bg-maroon-50 p-2.5">
+            <p className="text-[11.5px] font-semibold text-ink/80">{CONFIRM_COPY[confirming]}</p>
+            <div className="mt-2.5 flex gap-1.5">
               <Button size="sm" variant="outline" onClick={() => setConfirming(null)}>Back</Button>
               <Button
                 size="sm"
@@ -177,13 +178,13 @@ const BookingDrawer = ({ booking, onClose, onAction }) => {
             </div>
           </div>
         ) : (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {ACTIONS.map((a) => (
               <Button key={a.key} size="sm" variant={a.variant} onClick={() => setConfirming(a.key)}>
                 <a.icon className="h-4 w-4" strokeWidth={2.4} /> {a.label}
               </Button>
             ))}
-            {terminal && <p className="text-[11.5px] font-medium text-ink/45">No actions left on a {booking.status.replace('_', '-')} booking.</p>}
+            {terminal && <p className="text-[11px] font-medium text-ink/45">No actions left on a {booking.status.replace('_', '-')} booking.</p>}
           </div>
         )}
       </div>
@@ -213,8 +214,8 @@ const AddBooking = ({ open, onClose }) => {
         </>
       )}
     >
-      <div className="flex flex-col gap-2.5">
-        <p className="text-[11.5px] font-medium text-ink/55">
+      <div className="flex flex-col gap-2">
+        <p className="text-[11px] font-medium text-ink/55">
           For the client who called instead of booking online. It lands on your calendar and blocks the slot like any other.
         </p>
         <label className="block">
@@ -233,7 +234,7 @@ const AddBooking = ({ open, onClose }) => {
             ))}
           </Select>
         </label>
-        <div className="grid grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-2 gap-2">
           <label className="block">
             <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-wide text-ink/40">Date</span>
             <Input type="date" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
@@ -251,7 +252,7 @@ const AddBooking = ({ open, onClose }) => {
             <option value="free">No charge</option>
           </Select>
         </label>
-        {!valid && <p className="text-[11px] font-semibold text-warning-fg">A name and a date are needed.</p>}
+        {!valid && <p className="text-[10.5px] font-semibold text-warning-fg">A name and a date are needed.</p>}
       </div>
     </Modal>
   );
@@ -308,24 +309,22 @@ const Bookings = () => {
     return [...out].sort(by[sort]);
   }, [rows, q, statuses, payment, service, range, sort]);
 
-  const activeFilters = [
-    ...statuses.map((s) => ({ label: STATUSES.find((x) => x.value === s).label, clear: () => setStatuses((v) => v.filter((x) => x !== s)) })),
-    payment !== 'all' && { label: payment === 'paid' ? 'Paid' : 'Unpaid', clear: () => setPayment('all') },
-    service !== 'all' && { label: mock.services.find((s) => s.id === service).title, clear: () => setService('all') },
-    range !== 'all' && { label: RANGES.find((r) => r.value === range).label, clear: () => setRange('all') },
-    q.trim() && { label: `“${q.trim()}”`, clear: () => setQ('') },
-  ].filter(Boolean);
+  // How many things are narrowing the list — drives the one "Clear all".
+  const activeCount =
+    (statuses.length ? 1 : 0) + (payment !== 'all' ? 1 : 0) + (service !== 'all' ? 1 : 0)
+    + (range !== 'all' ? 1 : 0) + (q.trim() ? 1 : 0) + (savedView ? 1 : 0);
 
   const clearAll = () => { setStatuses([]); setPayment('all'); setService('all'); setRange('all'); setQ(''); setSavedView(null); };
 
-  const applyView = (v) => {
-    if (savedView === v.id) { clearAll(); return; }
+  const applyView = (id) => {
+    if (!id || savedView === id) { clearAll(); return; }
+    const v = VIEWS.find((x) => x.id === id);
     setStatuses(v.filters.statuses);
     setPayment(v.filters.payment);
     setRange(v.filters.range);
     setService('all');
     setQ('');
-    setSavedView(v.id);
+    setSavedView(id);
   };
 
   const act = (booking, action) => {
@@ -382,118 +381,115 @@ const Bookings = () => {
   const allPicked = filtered.length > 0 && picked.length === filtered.length;
 
   return (
-    <div className="flex flex-col gap-3">
-      <header className="flex flex-wrap items-end justify-between gap-2.5">
+    <div className="flex flex-col gap-2.5">
+      <header className="flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h1 className="mb-0 font-display text-[19px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[21px]">Bookings</h1>
-          <p className="mt-0.5 text-[12.5px] font-medium text-ink/55">
+          <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Bookings</h1>
+          <p className="mt-0.5 text-[12px] font-medium text-ink/55">
             {filtered.length} of {rows.length} shown
             {counts.pending > 0 && <span className="text-warning-fg"> · {counts.pending} waiting on you</span>}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => { toast.success(`${filtered.length} rows exported to CSV`); }}>
-            <Download className="h-4 w-4" strokeWidth={2.4} /> Export
-          </Button>
-          <Button size="sm" onClick={() => setAdding(true)}>
-            <Plus className="h-4 w-4" strokeWidth={2.6} /> Add booking
-          </Button>
-        </div>
+        <Button size="sm" onClick={() => setAdding(true)}>
+          <Plus className="h-4 w-4" strokeWidth={2.6} /> Add booking
+        </Button>
       </header>
 
-      {/* Saved views */}
-      <div className="dash-noscrollbar flex gap-2 overflow-x-auto pb-0.5">
-        {VIEWS.map((v) => (
-          <Chip
-            key={v.id}
-            active={savedView === v.id}
-            onClick={() => applyView(v)}
-            count={v.id === 'needs' ? counts.pending : v.id === 'unpaid' ? counts.unpaid : v.id === 'noshow' ? counts.no_show : undefined}
-          >
-            {v.label}
-          </Chip>
-        ))}
-      </div>
-
-      {/* Toolbar */}
-      <div className="flex flex-col gap-2 rounded-xl border-2 border-neutral-200 bg-white p-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="relative min-w-[180px] flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/35" strokeWidth={2.2} />
-            <input
-              value={q}
-              onChange={(e) => { setQ(e.target.value); setSavedView(null); }}
-              placeholder="Name, email, service or MT-ref"
-              aria-label="Search bookings"
-              className="w-full rounded-full border-2 border-neutral-200 bg-white py-1.5 pl-9 pr-3 text-[12px] font-medium text-ink outline-none transition placeholder:text-ink/35 focus:border-maroon/40 focus-visible:ring-[3px] focus-visible:ring-rose"
+      {/* One row. The value of an applied filter lives in its own button, so
+          there is no chip row underneath repeating it back. */}
+      <FilterBar
+        search={{ value: q, onChange: (v) => { setQ(v); setSavedView(null); }, placeholder: 'Name, email, service or MT-ref' }}
+        activeCount={activeCount}
+        onClearAll={clearAll}
+        trailing={(
+          <>
+            <Filter
+              label="Sort"
+              icon={ArrowDownUp}
+              value={sort}
+              empty="date_desc"
+              align="right"
+              width="w-44"
+              onChange={setSort}
+              options={[
+                { value: 'date_desc', label: 'Newest first' },
+                { value: 'date_asc', label: 'Oldest first' },
+                { value: 'amount_desc', label: 'Highest value' },
+                { value: 'name_asc', label: 'Client A-Z' },
+              ]}
             />
-          </div>
-          <Dropdown label="Payment" value={payment} onChange={(v) => { setPayment(v); setSavedView(null); }} options={[{ value: 'all', label: 'Any' }, { value: 'paid', label: 'Paid' }, { value: 'unpaid', label: 'Unpaid' }, { value: 'refunded', label: 'Refunded' }]} width="w-40" />
-          <Dropdown label="Service" value={service} onChange={(v) => { setService(v); setSavedView(null); }} options={[{ value: 'all', label: 'All services' }, ...mock.services.map((s) => ({ value: s.id, label: s.title }))]} width="w-56" />
-          <Dropdown label="When" value={range} onChange={(v) => { setRange(v); setSavedView(null); }} options={RANGES} width="w-44" />
-          <Dropdown
-            label={<ArrowDownUp className="h-3.5 w-3.5" />}
-            value={sort}
-            onChange={setSort}
-            align="right"
-            width="w-48"
-            options={[
-              { value: 'date_desc', label: 'Newest first' },
-              { value: 'date_asc', label: 'Oldest first' },
-              { value: 'amount_desc', label: 'Highest value' },
-              { value: 'name_asc', label: 'Client A–Z' },
-            ]}
-          />
-          <div className="ml-auto flex shrink-0 items-center rounded-full border-2 border-neutral-200 bg-cream p-0.5">
-            {[['list', List], ['calendar', CalendarDays], ['agenda', LayoutList]].map(([m, Icon]) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => setMode(m)}
-                aria-pressed={mode === m}
-                aria-label={`${m} view`}
-                className={cn('grid h-6 w-7 place-items-center rounded-full transition', mode === m ? 'bg-maroon text-white' : 'text-ink/45 hover:text-ink')}
-              >
-                <Icon className="h-[15px] w-[15px]" strokeWidth={2.2} />
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="dash-noscrollbar flex gap-2 overflow-x-auto">
-          {STATUSES.map((s) => (
-            <Chip
-              key={s.value}
-              active={statuses.includes(s.value)}
-              count={counts[s.value]}
-              onClick={() => { setSavedView(null); setStatuses((v) => (v.includes(s.value) ? v.filter((x) => x !== s.value) : [...v, s.value])); }}
-            >
-              {s.label}
-            </Chip>
-          ))}
-        </div>
-
-        {activeFilters.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1.5 border-t-2 border-neutral-200 pt-2.5">
-            <span className="text-[10px] font-bold uppercase tracking-wide text-ink/40">Filtered by</span>
-            {activeFilters.map((f) => <AppliedChip key={f.label} onClear={f.clear}>{f.label}</AppliedChip>)}
-            <button type="button" onClick={clearAll} className="ml-1 text-[11px] font-bold text-maroon underline">Clear all</button>
-          </div>
+            <ViewSwitch
+              value={mode}
+              onChange={setMode}
+              options={[
+                { value: 'list', label: 'List', icon: List },
+                { value: 'calendar', label: 'Calendar', icon: CalendarDays },
+                { value: 'agenda', label: 'Agenda', icon: LayoutList },
+              ]}
+            />
+          </>
         )}
-      </div>
+      >
+        <Filter
+          label="View"
+          value={savedView}
+          empty={null}
+          width="w-52"
+          onChange={(v) => applyView(v)}
+          options={VIEWS.map((v) => ({
+            value: v.id,
+            label: v.label,
+            count: v.id === 'needs' ? counts.pending : v.id === 'unpaid' ? counts.unpaid : v.id === 'noshow' ? counts.no_show : undefined,
+          }))}
+        />
+        <Filter
+          label="Status"
+          multi
+          value={statuses}
+          width="w-56"
+          onChange={(v) => { setStatuses(v); setSavedView(null); }}
+          options={STATUSES.map((x) => ({ ...x, count: counts[x.value] }))}
+        />
+        <Filter
+          label="Payment"
+          value={payment}
+          width="w-40"
+          onChange={(v) => { setPayment(v); setSavedView(null); }}
+          options={[
+            { value: 'all', label: 'Any' },
+            { value: 'paid', label: 'Paid' },
+            { value: 'unpaid', label: 'Unpaid', count: counts.unpaid },
+            { value: 'refunded', label: 'Refunded' },
+          ]}
+        />
+        <Filter
+          label="Service"
+          value={service}
+          width="w-56"
+          onChange={(v) => { setService(v); setSavedView(null); }}
+          options={[{ value: 'all', label: 'All services' }, ...mock.services.map((x) => ({ value: x.id, label: x.title }))]}
+        />
+        <Filter
+          label="When"
+          value={range}
+          width="w-44"
+          onChange={(v) => { setRange(v); setSavedView(null); }}
+          options={RANGES}
+        />
+      </FilterBar>
 
       {/* Bulk bar */}
       {picked.length > 0 && (
-        <div className="sticky top-16 z-20 flex flex-wrap items-center gap-2 rounded-xl border-2 border-maroon bg-maroon px-2.5 py-2 text-white">
-          <span className="text-[12px] font-bold">{picked.length} selected</span>
-          <button type="button" onClick={() => setPicked([])} className="text-[11px] font-semibold text-white/70 underline">Clear</button>
+        <div className="sticky top-16 z-20 flex flex-wrap items-center gap-1.5 rounded-xl border-2 border-maroon bg-maroon px-2.5 py-1.5 text-white">
+          <span className="text-[11.5px] font-bold">{picked.length} selected</span>
+          <button type="button" onClick={() => setPicked([])} className="text-[10.5px] font-semibold text-white/70 underline">Clear</button>
           <div className="ml-auto flex flex-wrap gap-1.5">
             {[['confirm', 'Confirm'], ['complete', 'Mark done'], ['remind', 'Send reminder'], ['export', 'Export'], ['cancel', 'Cancel']].map(([k, label]) => (
               <button
                 key={k}
                 type="button"
                 onClick={() => bulk(k)}
-                className={cn('rounded-full px-2.5 py-1.5 text-[11px] font-bold transition', k === 'cancel' ? 'bg-white/15 text-white hover:bg-white/25' : 'bg-white text-maroon hover:bg-pink-100')}
+                className={cn('rounded-full px-2.5 py-1.5 text-[10.5px] font-bold transition', k === 'cancel' ? 'bg-white/15 text-white hover:bg-white/25' : 'bg-white text-maroon hover:bg-pink-100')}
               >
                 {label}
               </button>
@@ -504,12 +500,24 @@ const Bookings = () => {
 
       {/* ── LIST ── */}
       {mode === 'list' && (
-        <Panel flush>
+        <Panel
+          flush
+          title={`${filtered.length} of ${rows.length} bookings`}
+          action={(
+            <button
+              type="button"
+              onClick={() => toast.success(`${filtered.length} rows exported to CSV`)}
+              className="inline-flex h-7 items-center gap-1 rounded-sm border-2 border-neutral-200 px-2 text-[11px] font-bold text-ink/65 transition hover:border-maroon/40 hover:text-maroon"
+            >
+              <Download className="h-3 w-3" strokeWidth={2.6} /> Export
+            </button>
+          )}
+        >
           {filtered.length === 0 ? (
-            <div className="flex flex-col items-center gap-2 px-3 py-14 text-center">
+            <div className="flex flex-col items-center gap-1.5 px-2.5 py-14 text-center">
               <CalendarX2 className="h-6 w-6 text-maroon/30" strokeWidth={1.8} />
-              <p className="text-[12.5px] font-bold text-ink">{rows.length === 0 ? 'No bookings yet' : 'Nothing matches those filters'}</p>
-              <p className="max-w-sm text-[11.5px] font-medium text-ink/55">
+              <p className="text-[12px] font-bold text-ink">{rows.length === 0 ? 'No bookings yet' : 'Nothing matches those filters'}</p>
+              <p className="max-w-sm text-[11px] font-medium text-ink/55">
                 {rows.length === 0 ? 'They appear here the moment someone books you.' : 'Loosen a filter, or clear them all.'}
               </p>
               {activeFilters.length > 0 && <Button size="sm" variant="outline" className="mt-1" onClick={clearAll}>Clear filters</Button>}
@@ -517,20 +525,18 @@ const Bookings = () => {
           ) : (
             <>
               <div className="hidden overflow-x-auto md:block">
-                <table className="w-full text-[12px]">
+                <table className="w-full text-[11.5px]">
                   <thead>
                     <tr className="border-b-2 border-neutral-200 bg-cream text-[10px] uppercase tracking-wide text-ink/45">
-                      <th scope="col" className="w-8 px-2.5 py-2">
-                        <input
-                          type="checkbox"
+                      <th scope="col" className="w-8 px-3 py-2">
+                        <CheckBox
                           checked={allPicked}
                           onChange={() => setPicked(allPicked ? [] : filtered.map((b) => b.id))}
-                          aria-label="Select all shown"
-                          className="h-4 w-4 accent-[#960D32]"
+                          label="Select all shown"
                         />
                       </th>
                       {['When', 'Client', 'Service', 'Status', 'Payment', 'Value'].map((h) => (
-                        <th key={h} scope="col" className={cn('px-2.5 py-2 font-bold', h === 'Value' ? 'text-right' : 'text-left')}>{h}</th>
+                        <th key={h} scope="col" className={cn('px-3 py-2 font-bold', h === 'Value' ? 'text-right' : 'text-left')}>{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -541,35 +547,33 @@ const Bookings = () => {
                         onClick={() => setOpenId(b.id)}
                         className={cn('cursor-pointer transition-colors hover:bg-cream', picked.includes(b.id) && 'bg-blush/60')}
                       >
-                        <td className="px-2.5 py-2" onClick={(e) => e.stopPropagation()}>
-                          <input
-                            type="checkbox"
+                        <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
+                          <CheckBox
                             checked={picked.includes(b.id)}
                             onChange={() => setPicked((p) => (p.includes(b.id) ? p.filter((x) => x !== b.id) : [...p, b.id]))}
-                            aria-label={`Select ${b.guest_name}`}
-                            className="h-4 w-4 accent-[#960D32]"
+                            label={`Select ${b.guest_name}`}
                           />
                         </td>
-                        <td className="px-2.5 py-2">
+                        <td className="px-3 py-2">
                           <p className="font-bold text-ink">{fmtDayFull(b.scheduled_at)}</p>
-                          <p className="text-[11px] font-medium text-ink/45">{fmtTime(b.scheduled_at)} · {relDay(b.scheduled_at)}</p>
+                          <p className="text-[10.5px] font-medium text-ink/45">{fmtTime(b.scheduled_at)} · {relDay(b.scheduled_at)}</p>
                         </td>
-                        <td className="px-2.5 py-2">
-                          <div className="flex items-center gap-2">
+                        <td className="px-3 py-2">
+                          <div className="flex items-center gap-1.5">
                             <Avatar name={b.guest_name} size="h-6 w-6 text-[9.5px]" />
                             <span className="min-w-0">
                               <span className="block truncate font-semibold text-ink">{b.guest_name}</span>
-                              <span className="block max-w-[150px] truncate text-[11px] text-ink/45">{b.guest_email}</span>
+                              <span className="block max-w-[150px] truncate text-[10.5px] text-ink/45">{b.guest_email}</span>
                             </span>
                           </div>
                         </td>
-                        <td className="px-2.5 py-2">
+                        <td className="px-3 py-2">
                           <p className="max-w-[170px] truncate font-medium text-ink/75">{b.services.title}</p>
-                          <p className="text-[11px] text-ink/45">{b.services.duration} min</p>
+                          <p className="text-[10.5px] text-ink/45">{b.services.duration} min</p>
                         </td>
-                        <td className="px-2.5 py-2"><StatusPill status={b.status} /></td>
-                        <td className="px-2.5 py-2"><StatusPill status={b.payment_status} /></td>
-                        <td className="px-2.5 py-2 text-right font-bold tabular-nums text-ink">{b.amount ? inr(b.amount) : '—'}</td>
+                        <td className="px-3 py-2"><StatusPill status={b.status} /></td>
+                        <td className="px-3 py-2"><StatusPill status={b.payment_status} /></td>
+                        <td className="px-3 py-2 text-right font-bold tabular-nums text-ink">{b.amount ? inr(b.amount) : '—'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -580,20 +584,20 @@ const Bookings = () => {
               <ul className="divide-y-2 divide-neutral-200 md:hidden">
                 {filtered.map((b) => (
                   <li key={b.id}>
-                    <button type="button" onClick={() => setOpenId(b.id)} className="flex w-full items-center gap-2.5 px-3 py-2 text-left">
+                    <button type="button" onClick={() => setOpenId(b.id)} className="flex w-full items-center gap-2 px-2.5 py-1.5 text-left">
                       <Avatar name={b.guest_name} size="h-8 w-8 text-[10px]" />
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-[12.5px] font-bold text-ink">{b.guest_name}</span>
-                        <span className="block truncate text-[11px] font-medium text-ink/55">{b.services.title}</span>
+                        <span className="block truncate text-[12px] font-bold text-ink">{b.guest_name}</span>
+                        <span className="block truncate text-[10.5px] font-medium text-ink/55">{b.services.title}</span>
                         <span className="mt-1 flex flex-wrap items-center gap-1.5">
                           <StatusPill status={b.status} />
                           {b.amount > 0 && <StatusPill status={b.payment_status} />}
                         </span>
                       </span>
                       <span className="shrink-0 text-right">
-                        <span className="block text-[11px] font-bold text-maroon">{fmtTime(b.scheduled_at)}</span>
+                        <span className="block text-[10.5px] font-bold text-maroon">{fmtTime(b.scheduled_at)}</span>
                         <span className="block text-[10px] font-medium text-ink/45">{fmtDayFull(b.scheduled_at)}</span>
-                        {b.amount > 0 && <span className="mt-0.5 block text-[11px] font-bold text-ink">{inr(b.amount)}</span>}
+                        {b.amount > 0 && <span className="mt-0.5 block text-[10.5px] font-bold text-ink">{inr(b.amount)}</span>}
                       </span>
                     </button>
                   </li>
@@ -612,7 +616,7 @@ const Bookings = () => {
             ? anchor.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })
             : `${weekDays[0].date.getDate()} – ${weekDays[6].date.getDate()} ${weekDays[6].date.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}`}
           action={(
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <div className="flex items-center rounded-full border-2 border-neutral-200 bg-cream p-0.5">
                 {['week', 'month'].map((v) => (
                   <button
@@ -620,7 +624,7 @@ const Bookings = () => {
                     type="button"
                     onClick={() => setCalView(v)}
                     aria-pressed={calView === v}
-                    className={cn('rounded-full px-2.5 py-1 text-[11px] font-bold capitalize transition', calView === v ? 'bg-maroon text-white' : 'text-ink/45')}
+                    className={cn('rounded-full px-2.5 py-1 text-[10.5px] font-bold capitalize transition', calView === v ? 'bg-maroon text-white' : 'text-ink/45')}
                   >
                     {v}
                   </button>
@@ -641,10 +645,10 @@ const Bookings = () => {
                   const today = sameDay(date, new Date());
                   const open = mock.availability.weekly_schedule[date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()]?.length > 0;
                   return (
-                    <div key={i} className={cn('flex min-h-[244px] flex-col border-r-2 border-neutral-200 last:border-r-0', today && 'bg-blush/40')}>
-                      <div className="border-b-2 border-neutral-200 px-2 py-2 text-center">
+                    <div key={i} className={cn('flex min-h-[212px] flex-col border-r-2 border-neutral-200 last:border-r-0', today && 'bg-blush/40')}>
+                      <div className="border-b-2 border-neutral-200 px-2 py-1.5 text-center">
                         <p className="text-[10px] font-bold uppercase tracking-wide text-ink/40">{DAYS[i]}</p>
-                        <p className={cn('font-display text-[16px] font-extrabold leading-none', today ? 'text-maroon' : 'text-ink')}>{date.getDate()}</p>
+                        <p className={cn('font-display text-[14px] font-extrabold leading-none', today ? 'text-maroon' : 'text-ink')}>{date.getDate()}</p>
                         {!open && <p className="mt-0.5 text-[9px] font-bold uppercase text-ink/30">Closed</p>}
                       </div>
                       <div className="flex flex-1 flex-col gap-1.5 p-1.5">
@@ -659,12 +663,12 @@ const Bookings = () => {
                               <span className={cn('h-1.5 w-1.5 shrink-0 rounded-full', b.status === 'pending' ? 'bg-warning-fg' : b.status === 'no_show' ? 'bg-error-fg' : b.status === 'completed' ? 'bg-success-fg' : 'bg-pink')} />
                               <span className="text-[10px] font-bold text-maroon">{fmtTime(b.scheduled_at)}</span>
                             </span>
-                            <span className="mt-0.5 block truncate text-[11px] font-bold text-ink">{b.guest_name}</span>
+                            <span className="mt-0.5 block truncate text-[10.5px] font-bold text-ink">{b.guest_name}</span>
                             <span className="block truncate text-[9.5px] font-medium text-ink/50">{b.services.title}</span>
                           </button>
                         ))}
                         {items.length === 0 && open && (
-                          <span className="mt-2 block rounded-lg border-2 border-dashed border-marigold-300 bg-marigold-100/50 py-2 text-center text-[9.5px] font-bold text-marigold-800">
+                          <span className="mt-2 block rounded-lg border-2 border-dashed border-marigold-300 bg-marigold-100/50 py-1.5 text-center text-[9.5px] font-bold text-marigold-800">
                             Open
                           </span>
                         )}
@@ -677,11 +681,11 @@ const Bookings = () => {
           ) : (
             <div>
               <div className="grid grid-cols-7 border-b-2 border-neutral-200 bg-cream">
-                {DAYS.map((d) => <span key={d} className="py-2 text-center text-[10px] font-bold uppercase tracking-wide text-ink/45">{d}</span>)}
+                {DAYS.map((d) => <span key={d} className="py-1.5 text-center text-[10px] font-bold uppercase tracking-wide text-ink/45">{d}</span>)}
               </div>
               <div className="grid grid-cols-7">
                 {monthCells.map(({ date, inMonth, items }, i) => (
-                  <div key={i} className={cn('min-h-[72px] border-b-2 border-r-2 border-neutral-200 p-1', !inMonth && 'bg-cream/70', sameDay(date, new Date()) && 'bg-blush/40')}>
+                  <div key={i} className={cn('min-h-[64px] border-b-2 border-r-2 border-neutral-200 p-1', !inMonth && 'bg-cream/70', sameDay(date, new Date()) && 'bg-blush/40')}>
                     <p className={cn('px-0.5 text-[10px] font-bold', sameDay(date, new Date()) ? 'text-maroon' : inMonth ? 'text-ink/60' : 'text-ink/25')}>{date.getDate()}</p>
                     <div className="mt-0.5 space-y-0.5">
                       {items.slice(0, 2).map((b) => (
@@ -709,12 +713,12 @@ const Bookings = () => {
 
       {/* ── AGENDA ── */}
       {mode === 'agenda' && (
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col gap-2">
           {agenda.length === 0 ? (
-            <Panel><p className="py-8 text-center text-[12px] font-semibold text-ink/45">Nothing matches those filters.</p></Panel>
+            <Panel><p className="py-8 text-center text-[11.5px] font-semibold text-ink/45">Nothing matches those filters.</p></Panel>
           ) : agenda.map((g) => (
             <Panel key={g.k} flush>
-              <p className="flex items-center gap-2 border-b-2 border-neutral-200 bg-cream px-3 py-2 text-[11px] font-bold uppercase tracking-wide text-maroon/75">
+              <p className="flex items-center gap-1.5 border-b-2 border-neutral-200 bg-cream px-2.5 py-1.5 text-[10.5px] font-bold uppercase tracking-wide text-maroon/75">
                 <Clock className="h-3.5 w-3.5" strokeWidth={2.4} />
                 {fmtDayFull(g.date.toISOString())} · {relDay(g.date.toISOString())}
                 <span className="ml-auto font-bold normal-case text-ink/45">{g.items.length} booked</span>
@@ -722,12 +726,12 @@ const Bookings = () => {
               <ul className="divide-y-2 divide-neutral-200">
                 {g.items.map((b) => (
                   <li key={b.id}>
-                    <button type="button" onClick={() => setOpenId(b.id)} className="flex w-full items-center gap-2.5 px-3 py-2 text-left transition hover:bg-cream">
-                      <span className="w-[52px] shrink-0 text-[11.5px] font-bold tabular-nums text-maroon">{fmtTime(b.scheduled_at)}</span>
+                    <button type="button" onClick={() => setOpenId(b.id)} className="flex w-full items-center gap-2 px-2.5 py-1.5 text-left transition hover:bg-cream">
+                      <span className="w-[52px] shrink-0 text-[11px] font-bold tabular-nums text-maroon">{fmtTime(b.scheduled_at)}</span>
                       <Avatar name={b.guest_name} size="h-7 w-7 text-[10px]" />
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-[12px] font-bold text-ink">{b.guest_name}</span>
-                        <span className="block truncate text-[11px] font-medium text-ink/50">{b.services.title} · {b.services.duration} min</span>
+                        <span className="block truncate text-[11.5px] font-bold text-ink">{b.guest_name}</span>
+                        <span className="block truncate text-[10.5px] font-medium text-ink/50">{b.services.title} · {b.services.duration} min</span>
                       </span>
                       <StatusPill status={b.status} />
                     </button>

@@ -27,6 +27,7 @@ export const host = {
   kyc_status: 'approved',
   city: 'Pune',
   timezone: 'Asia/Kolkata',
+  email: 'ananya.rao@gmail.com',
   avatar_initials: 'AR',
   member_since: '2026-03-14',
 };
@@ -251,6 +252,18 @@ export const testimonials = [
   { id: 't2', quote: 'She fixed in six weeks what three years of guessing could not.', author_name: 'Nikhil J.', author_role: 'Marathoner' },
 ];
 
+// The go-live checklist. Shared: the profile menu shows the counter, Grow ›
+// Booking page shows the list. One source, so the two cannot disagree.
+export const setupChecklist = [
+  { label: 'Photo and bio', done: true, to: 'settings?tab=account' },
+  { label: 'At least one paid service', done: true, to: 'catalog?tab=services' },
+  { label: 'Hours set for 5+ days a week', done: true, to: 'schedule?tab=hours' },
+  { label: 'Verified for payouts', done: true, to: 'settings?tab=verification' },
+  { label: 'Three or more reviews shown', done: true, to: 'grow?tab=proof' },
+  { label: 'A short intro video', done: false, to: 'settings?tab=account' },
+  { label: 'Link in your Instagram bio', done: false, to: 'grow?tab=page' },
+];
+
 export const referrals = {
   link: 'meeticulous.com/invite/ananyarao',
   invited: 7,
@@ -281,5 +294,5 @@ export const activity = [
 export default {
   host, services, products, courses, offers, clients, bookings, availability,
   payouts, invoices, revenueByMonth, funnel, trafficSources, reviews,
-  testimonials, referrals, actionQueue, activity,
+  testimonials, referrals, actionQueue, activity, setupChecklist,
 };

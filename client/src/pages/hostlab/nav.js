@@ -1,10 +1,14 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Host Lab — the nav tree.
 //
-// Three groups, eight destinations, and sub-pages that are the SAME tabs each
-// section renders. A section's tab set is declared once, here, and read by both
-// the rail (as collapsible children) and the page (as its tab bar), so the two
-// can never disagree.
+// Three groups, eight destinations, and sub-pages that are REAL PAGES: each has
+// its own path, its own heading, and renders only itself. They were tabs for a
+// while, which was a mistake — the rail already lists them and gives each a
+// URL, so a tab strip inside the page was a second navigation for the same
+// thing, in a second style, that could disagree with the first.
+//
+// The rule the whole console follows now: if it has a URL in the rail, it is a
+// page. If it is a subset of one list, it is a filter. Nothing is a tab.
 //
 // Shape follows the references: group labels like GROWZA's Main / Accounts /
 // Support, a chevron on any row with children like Cal.com's Apps and Insights,
@@ -16,50 +20,47 @@ import {
 
 export const BASE = '/host-lab';
 
-/** Tab sets, shared between the rail and the page that owns them. */
-export const TABS = {
-  catalog: [
-    { value: 'services', label: 'Services' },
-    { value: 'products', label: 'Products' },
-    { value: 'courses', label: 'Courses' },
-    { value: 'memberships', label: 'Memberships' },
-    { value: 'offers', label: 'Offers' },
-  ],
+/** Sub-pages, keyed by their parent destination. Declared once: the rail reads
+ *  this to list them, the router reads it to route them, and each page reads
+ *  its own entry for its heading. They cannot drift apart.
+ *
+ *  Catalog is deliberately absent — it is one list with a Type filter, not a
+ *  set of pages. Bookings and Clients are single pages. */
+export const SUBPAGES = {
   schedule: [
-    { value: 'hours', label: 'Hours' },
-    { value: 'rules', label: 'Rules' },
-    { value: 'dates', label: 'Specific dates' },
-    { value: 'calendars', label: 'Calendars' },
+    { slug: 'hours', label: 'Hours', blurb: 'The week a guest can book against.' },
+    { slug: 'rules', label: 'Rules', blurb: 'Notice, gaps and limits on every slot you offer.' },
+    { slug: 'dates', label: 'Specific dates', blurb: 'One-offs that override the weekly pattern.' },
+    { slug: 'calendars', label: 'Calendars', blurb: 'Busy time elsewhere should close the slot here.' },
+  ],
+  // Creator Intelligence. Four pages, one question each — see
+  // docs/superpowers/specs/2026-11-16-creator-intelligence-design.md §8.
+  // "Revenue" here is the analysis; Money › Earnings is the ledger behind it.
+  intelligence: [
+    { slug: 'overview', label: 'Overview', blurb: 'What your business did, and what to do next.' },
+    { slug: 'revenue', label: 'Revenue', blurb: 'Every rupee in, every deduction, and what is coming.' },
+    { slug: 'audience', label: 'Audience', blurb: 'Who arrives, and where they fall out.' },
+    { slug: 'demand', label: 'Demand', blurb: 'When you are wanted, and who keeps coming back.' },
   ],
   money: [
-    { value: 'earnings', label: 'Earnings' },
-    { value: 'payouts', label: 'Payouts' },
-    { value: 'transactions', label: 'Transactions' },
-    { value: 'invoices', label: 'Invoices' },
-  ],
-  // Creator Intelligence. Four pages, each answering one question — see
-  // docs/superpowers/specs/2026-11-16-creator-intelligence-design.md §8.
-  // "Revenue" (analysis) is deliberately NOT "Earnings" (the ledger, under Money):
-  // one reads the numbers, the other lists the transactions behind them.
-  intelligence: [
-    { value: 'overview', label: 'Overview' },
-    { value: 'revenue', label: 'Revenue' },
-    { value: 'audience', label: 'Audience' },
-    { value: 'demand', label: 'Demand' },
+    { slug: 'earnings', label: 'Earnings', blurb: 'What you have made, and what is making it.' },
+    { slug: 'payouts', label: 'Payouts', blurb: 'Where your money is, and when it lands.' },
+    { slug: 'transactions', label: 'Transactions', blurb: 'Every payment, fee and refund.' },
+    { slug: 'invoices', label: 'Invoices', blurb: 'GST invoices, issued and received.' },
   ],
   grow: [
-    { value: 'page', label: 'Booking page' },
-    { value: 'insights', label: 'Insights' },
-    { value: 'proof', label: 'Social proof' },
-    { value: 'refer', label: 'Refer & earn' },
+    { slug: 'page', label: 'Booking page', blurb: 'The one link worth sharing, and how to make it work harder.' },
+    { slug: 'insights', label: 'Insights', blurb: 'Why bookings are or are not happening.' },
+    { slug: 'proof', label: 'Social proof', blurb: 'Reviews guests left you, and the quotes you added.' },
+    { slug: 'refer', label: 'Refer & earn', blurb: 'Invite a host; you both get paid when they go live.' },
   ],
   settings: [
-    { value: 'account', label: 'Account' },
-    { value: 'plan', label: 'Plan & billing' },
-    { value: 'verification', label: 'Verification' },
-    { value: 'notifications', label: 'Notifications' },
-    { value: 'help', label: 'Help' },
-    { value: 'moved', label: 'Where things moved' },
+    { slug: 'account', label: 'Account', blurb: 'You, your link, and how you sign in.' },
+    { slug: 'plan', label: 'Plan & billing', blurb: 'What you are on, and what it is worth.' },
+    { slug: 'verification', label: 'Verification', blurb: 'Required before any money can reach your bank.' },
+    { slug: 'notifications', label: 'Notifications', blurb: 'What reaches you, and where.' },
+    { slug: 'help', label: 'Help', blurb: 'Talk to us, or find the answer yourself.' },
+    { slug: 'moved', label: 'Where things moved', blurb: 'Every page of the old dashboard, and where it lands.' },
   ],
 };
 
@@ -75,16 +76,16 @@ export const NAV = [
   {
     label: 'Business',
     items: [
-      { to: 'catalog', label: 'Catalog', icon: Package, tabs: 'catalog' },
-      { to: 'schedule', label: 'Schedule', icon: CalendarRange, tabs: 'schedule' },
-      { to: 'intelligence', label: 'Intelligence', icon: LineChart, tabs: 'intelligence' },
-      { to: 'money', label: 'Money', icon: CreditCard, tabs: 'money' },
-      { to: 'grow', label: 'Grow', icon: TrendingUp, tabs: 'grow', badge: 2 },
+      { to: 'catalog', label: 'Catalog', icon: Package },
+      { to: 'schedule', label: 'Schedule', icon: CalendarRange, pages: 'schedule' },
+      { to: 'intelligence', label: 'Intelligence', icon: LineChart, pages: 'intelligence' },
+      { to: 'money', label: 'Money', icon: CreditCard, pages: 'money' },
+      { to: 'grow', label: 'Grow', icon: TrendingUp, pages: 'grow', badge: 2 },
     ],
   },
   {
     label: 'Account',
-    items: [{ to: 'settings', label: 'Settings', icon: Settings, tabs: 'settings' }],
+    items: [{ to: 'settings', label: 'Settings', icon: Settings, pages: 'settings' }],
   },
 ];
 
@@ -95,5 +96,12 @@ export const FLAT = NAV.flatMap((g) => g.items);
 export const TAB_BAR = ['', 'bookings', 'clients', 'money', 'grow'];
 
 export const href = (to) => (to ? `${BASE}/${to}` : BASE);
+
+/** Where a destination lands when you click it in the rail: its first page. */
+export const landingFor = (item) => (item.pages ? `${item.to}/${SUBPAGES[item.pages][0].slug}` : item.to);
+
+/** One sub-page's entry, for its own heading. */
+export const pageMeta = (parent, slug) =>
+  SUBPAGES[parent]?.find((p) => p.slug === slug) || SUBPAGES[parent]?.[0];
 
 export default NAV;
