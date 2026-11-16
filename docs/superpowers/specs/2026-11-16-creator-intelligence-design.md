@@ -754,14 +754,15 @@ Each phase is independently shippable and independently useful.
 
 | Phase | Scope | Depends on | Acceptance |
 |---|---|---|---|
-| **1. Prototype** | Clickable 4-page prototype in `/host-lab`, realistic fictional data, working nav/range/compare/tabs/filters/drill-downs | this doc approved | Every page, tab, filter and locked state navigable; founder sign-off before any production code |
+| **1. Prototype** ✅ | Clickable prototype in `/host-lab`: Intelligence (4 pages), Insights (3), Community (4), realistic fictional data, working nav/range/compare/filters/drill-downs | this doc approved | Every page, filter and locked state navigable; founder sign-off before any production code |
 | **2. Foundation** | `v3.207` migration · `firstParty` adapter · collect endpoint · `intel-rollup`, `intel-prune` **and `intel-archive`** jobs · size guard + `analytics_ingest` kill flag · 2 new events · **local Postgres for tests** (§15) | 1 | Events land; dedupe proven by replay **against a real Postgres, not a mock**; rollups match a hand-written SQL count; **a pruned day is readable back from Storage and replays to the same rollup totals**; size guard trips at a lowered test budget; zero change to existing adapters (test asserts it) |
 | **3. Money (free) + Overview (gated)** | Money page live off `bookings`, **ungated** per §6.4; Overview with commission leak (free) + forecast/win-back/goal strip (Pro) | 2 (not for Money — it needs no events) | Net revenue ties to a hand-reconciled payout for a real host; a free host's API response provably contains none of the six gated figures; `limits.insights` read from `subscription_plans`, nothing hardcoded |
 | **4. Audience & Conversion** | Traffic, funnel (4 stages — no slot step, §11.3), services, devices; async attribution resolver; repoint the Dashboard view tile at the rollup (§9.2) | 3 + **≥14 days of events counted from the prod deploy**, since the bus is prod-host-gated | Funnel denominators match the dictionary; `unknown` attribution bucket visible, never dropped; one profile-view number across both surfaces |
 | **5. Demand & Customers** | Utilisation, heatmap, lead time, LTV, cohorts, retention | 3 | Utilisation never >100%; one guest never double-counted across identity fallbacks |
-| **6. Benchmarks + insight engine** | `benchmark_daily`, `cohort_key` normaliser, k≥5 suppression, 7 v1 rules, in-app Overview delivery (+ weekly-recap section **only if §17.3 says so**) | 3–5 | No host's row ever leaves the server (test); a rule with empty evidence renders nothing (test); an unmatched profession is excluded, not pooled |
+| **6. Benchmarks + Insights section** | `benchmark_daily`, `cohort_key` normaliser, k≥5 suppression, 7 v1 rules · **Insights as its own section (§17.7)**: `insight_moves` persisted with `status` and a nullable `outcome`, This week / History / What worked (+ weekly-recap section **only if §17.3 says so**) | 3–5 | No host's row ever leaves the server (test); a rule with empty evidence renders nothing (test); an unmatched profession is excluded, not pooled; **a move inside its window reports "still measuring", never a verdict, and a losing outcome renders as a loss** |
 | **7. Forecast + anomaly** | Projections, demand prediction, anomaly detection | ≥90 days of history | Every estimate visibly labelled with its basis; no estimate rendered without one |
-| **8. Hardening** | Partitioning if triggered, retention job, perf budget, export limits, privacy copy | all | p95 <800 ms on every endpoint at 10× current data; retention job proven to delete |
+| **8. Community section** | Activity, Mentions, Answer, Spaces (§17.8). Reads `community_posts` / `community_comments` / `community_members`; no writes — posting stays at `/community`. **Answer** needs one new query: posts in `help`/`host-corner` with `accepted_comment_id IS NULL`, ordered by age | the `community` flag being on | Mentions resolves only via `mentions_host_id`, never a name match; a space the host may not post in offers no composer; every row deep-links to the real thread rather than rendering it here |
+| **9. Hardening** | Partitioning if triggered, retention job, perf budget, export limits, privacy copy | all | p95 <800 ms on every endpoint at 10× current data; retention job proven to delete |
 
 **Ship independently:** Money (Phase 3) needs no event store at all and is the single
 most valuable page — a host can reconcile their earnings on day one. Benchmarks can
@@ -922,7 +923,7 @@ Consequences: Overview keeps a one-line pointer and renders no moves itself;
 where `outcome: null` means the window has not closed); and §10's sixth field
 finally has somewhere to land. The whole section is Pro, as one of the six.
 
-### 17.8 Community — **ADDED 2026-11-16**
+### 17.8 Community — **ADDED 2026-11-16** · Answer page **approved**
 
 Community gains a rail section of four pages (Activity · Mentions · Answer ·
 Spaces). It is **not** a second feed — reading and posting stay at `/community`,
@@ -934,3 +935,10 @@ and every row opens it there. Grounded in real columns: `community_spaces`
 Mentions carries the rail badge: a guest naming a host in public, with a
 completed booking behind it, is the highest-intent moment in the community, and
 nothing tells the host it happened today.
+
+**Answer is approved** (2026-11-16) and is the one page here that does not exist
+in any form yet — the questions, spaces and accepted answers are real, the page
+is new. It needs exactly one new query: posts in `help` / `host-corner` with
+`accepted_comment_id IS NULL`, ordered by how long they have waited. The
+prototype keeps its honest notice until that query ships, because approval means
+*build it*, not *it already works*.
