@@ -66,12 +66,18 @@ export const Drawer = ({ open, onClose, title, subtitle, children, width = 'sm:w
     return () => document.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
+  // Both children are motion components with keys, and neither is wrapped in a
+  // plain element. AnimatePresence only tracks its DIRECT children: with a
+  // <div> in between, the panel mounted at `initial` and stayed there — it
+  // never animated in, and there was nothing for the exit to play on. So each
+  // positions itself rather than sharing a flex wrapper.
   return createPortal(
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-[100] flex justify-end">
+        <>
           <motion.div
-            className="absolute inset-0 bg-ink/35"
+            key="drawer-backdrop"
+            className="fixed inset-0 z-[100] bg-ink/35"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -80,6 +86,7 @@ export const Drawer = ({ open, onClose, title, subtitle, children, width = 'sm:w
             aria-hidden="true"
           />
           <motion.aside
+            key="drawer-panel"
             role="dialog"
             aria-modal="true"
             aria-label={title}
@@ -87,11 +94,10 @@ export const Drawer = ({ open, onClose, title, subtitle, children, width = 'sm:w
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             // Tween, not spring. A spring asymptotes, so AnimatePresence never
-            // sees the exit finish and leaves the node mounted off-screen —
-            // which is exactly what happened here. Bounded easing also matches
-            // the brand's 140–220ms, no-bounce rule.
+            // sees the exit finish and leaves the node mounted off-screen.
+            // Bounded easing also matches the brand's 140–220ms, no-bounce rule.
             transition={{ duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
-            className={cn('relative flex h-full w-full flex-col border-l-2 border-neutral-200 bg-white dash-elev-3', width)}
+            className={cn('fixed inset-y-0 right-0 z-[101] flex w-full flex-col border-l-2 border-neutral-200 bg-white dash-elev-3', width)}
           >
             <header className="flex shrink-0 items-start gap-2 border-b-2 border-neutral-200 px-3 py-2.5">
               <div className="min-w-0 flex-1">
@@ -109,7 +115,7 @@ export const Drawer = ({ open, onClose, title, subtitle, children, width = 'sm:w
             </header>
             <div className="min-h-0 flex-1 overflow-y-auto p-3">{children}</div>
           </motion.aside>
-        </div>
+        </>
       )}
     </AnimatePresence>,
     document.body,
