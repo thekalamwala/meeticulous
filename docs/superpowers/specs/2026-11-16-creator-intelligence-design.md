@@ -591,9 +591,19 @@ GET /host/intelligence/* ──► rollups (traffic/funnel) + bookings LIVE (mon
   break the "zero call-site changes" property. Instead the job matches a paid booking
   to the nearest preceding `checkout_started` / `booking_started` event for the same
   `host_id` + `service_id` inside a 2-hour window: exactly one candidate →
-  `confidence='high'`; several → `'low'`; none → **no row**, and the booking shows in
-  the `unknown` attribution bucket. Looser than a payload hand-off, honest about it,
-  and it touches nothing that takes money.
+  `confidence='high'`; several → **no row**, because a guess recorded as a fact is
+  worse than an honest gap; none → no row either. Both land in the `unknown`
+  attribution bucket, which is always shown rather than spread across the known
+  sources.
+
+  **Known limitation, and it worsens with growth.** Two guests booking the same
+  service in the same two-hour window are indistinguishable to this resolver, so
+  the share of `unknown` rises with volume rather than falling. The stronger design
+  is a short-lived signed attribution token minted when the booking flow starts and
+  echoed back at payment confirmation — exact, and immune to the collision. It is
+  deliberately **not** in v1 because it changes a payment payload for an analytics
+  feature. Revisit when `unknown` exceeds ~15% of paid bookings in a month; that
+  threshold is the trigger, and it is measurable from day one.
 - **`benchmark_daily`** — `(cohort_key, day)` pk, `host_count`, `median_price`,
   `median_conversion`, `median_aov`, `median_no_show`. Written only when
   `host_count >= 5`. No host identifiers, ever.
@@ -628,9 +638,20 @@ query lacks it.
   Recomputes today + yesterday every run; older days only on backfill.
 - **`intel-benchmarks`** — `min: 24*60`, writes `benchmark_daily` for cohorts ≥5,
   after normalising each host's `profession` to a `cohort_key` (§9.5).
-- **`intel-prune`** — **Phase 2, not Phase 8.** Deletes raw events older than the
-  retention window and refreshes the cached table-size reading the ingest size guard
-  reads. On the free tier this job is a safety device, not housekeeping.
+- **`intel-prune`** — **Phase 2, not Phase 8.** Archives, then deletes raw events
+  older than the retention window, and refreshes the cached table-size reading the
+  ingest size guard reads. On the free tier this job is a safety device, not
+  housekeeping.
+- **`intel-archive` — the recompute escape hatch, and it must ship with the prune.**
+  A 30-day raw window means a metric definition can only ever be recomputed over
+  the last 30 days: change a funnel denominator in month four and the earlier
+  history cannot be rebuilt, because the rows are gone. **This cannot be fixed
+  retroactively** — an archive added in month four does not bring months one to
+  three back. So before `intel-prune` deletes a day, that day is written out as
+  gzipped JSONL to Supabase Storage (a private bucket, one object per host-month).
+  Storage is billed separately from the 500 MB database cap, and a month of raw
+  events compresses to single-digit MB. Nothing reads it in normal operation; it
+  exists so a definition change in month four can be replayed over month one.
 - **Cache:** none. There is **no in-process cache in this codebase** — `httpCache.js`
   only sets `Cache-Control` and is documented for public, anonymous payloads, which a
   per-host paid dashboard is not. The pages are rollup-backed, so they are already
@@ -705,7 +726,7 @@ Each phase is independently shippable and independently useful.
 | Phase | Scope | Depends on | Acceptance |
 |---|---|---|---|
 | **1. Prototype** | Clickable 4-page prototype in `/host-lab`, realistic fictional data, working nav/range/compare/tabs/filters/drill-downs | this doc approved | Every page, tab, filter and locked state navigable; founder sign-off before any production code |
-| **2. Foundation** | `v3.207` migration · `firstParty` adapter · collect endpoint · `intel-rollup` **and `intel-prune`** jobs · size guard + `analytics_ingest` kill flag · 2 new events · **local Postgres for tests** (§15) | 1 | Events land; dedupe proven by replay **against a real Postgres, not a mock**; rollups match a hand-written SQL count; prune deletes; size guard trips at a lowered test budget; zero change to existing adapters (test asserts it) |
+| **2. Foundation** | `v3.207` migration · `firstParty` adapter · collect endpoint · `intel-rollup`, `intel-prune` **and `intel-archive`** jobs · size guard + `analytics_ingest` kill flag · 2 new events · **local Postgres for tests** (§15) | 1 | Events land; dedupe proven by replay **against a real Postgres, not a mock**; rollups match a hand-written SQL count; **a pruned day is readable back from Storage and replays to the same rollup totals**; size guard trips at a lowered test budget; zero change to existing adapters (test asserts it) |
 | **3. Money (free) + Overview (gated)** | Money page live off `bookings`, **ungated** per §6.4; Overview with commission leak (free) + forecast/win-back/goal strip (Pro) | 2 (not for Money — it needs no events) | Net revenue ties to a hand-reconciled payout for a real host; a free host's API response provably contains none of the six gated figures; `limits.insights` read from `subscription_plans`, nothing hardcoded |
 | **4. Audience & Conversion** | Traffic, funnel (4 stages — no slot step, §11.3), services, devices; async attribution resolver; repoint the Dashboard view tile at the rollup (§9.2) | 3 + **≥14 days of events counted from the prod deploy**, since the bus is prod-host-gated | Funnel denominators match the dictionary; `unknown` attribution bucket visible, never dropped; one profile-view number across both surfaces |
 | **5. Demand & Customers** | Utilisation, heatmap, lead time, LTV, cohorts, retention | 3 | Utilisation never >100%; one guest never double-counted across identity fallbacks |
@@ -824,3 +845,12 @@ small PR and is **not** in this scope.
 Everything above fits the free tier (500 MB) with 30-day raw retention. A paid tier
 (8 GB) would buy longer raw history and remove the size guard as a live concern. Not
 required for any phase; purely a cost call, and the design works either way.
+
+### 17.6 Sizing — **DECIDED 2026-11-16: keep the trigger**
+
+No fixed host-count target. The store is sized by the §6.2 trigger table and
+re-decided on measurement, not on a capacity forecast. Two consequences the
+builder should hold onto: the rollup grain stays daily (coarsening is a response
+to the trigger, not a starting position), and `intel-archive` is non-optional,
+because an un-forecast growth curve is exactly the case where a definition has to
+be recomputed over history that no longer exists in the database.
