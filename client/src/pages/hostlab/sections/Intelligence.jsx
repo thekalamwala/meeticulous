@@ -36,7 +36,7 @@ import { Button, cn } from '../../../components/dashboard/ui';
 import { Sparkline, SubPageHeader, inr, useSubPage } from '../labUi';
 import {
   AreaChart, Bars, C, Card, CardLink, CohortTable, DataTable, Empty, Explain,
-  Funnel, Heatmap, Insight, Locked, RangeControls, Scorecard, SegmentedBar,
+  Funnel, Heatmap, Locked, RangeControls, Scorecard, SegmentedBar,
   Waterfall, rate,
 } from '../intelUi';
 import intel from '../intelData';
@@ -176,17 +176,21 @@ const Overview = ({ isFree, go }) => {
           info="Paid bookings divided by profile views in the range." />
       </div>
 
-      <Card title="This week's 3 moves" action={<Explain>Each one is generated from a metric on these pages. With no evidence behind it, nothing is shown.</Explain>}>
-        {isFree ? (
-          <Locked headline="Three moves worth about ₹14,400 this month" src="intel-moves" onUpgrade={() => soon('Opens /dashboard/upgrade?src=intel-moves')} compact>
-            <ul className="flex flex-col gap-2">{intel.insights.map((i) => <Insight key={i.id} insight={i} />)}</ul>
-          </Locked>
-        ) : (
-          <ul className="flex flex-col gap-2">
-            {intel.insights.map((i) => <Insight key={i.id} insight={i} onAct={(x) => soon(`${x.action} — wired in phase 3`)} />)}
-          </ul>
-        )}
-      </Card>
+      {/* A pointer, not a copy. The moves live in Insights; rendering them here
+          too would be the Grow › Insights duplication all over again. */}
+      <button
+        type="button"
+        onClick={() => (isFree ? soon('Opens /dashboard/upgrade?src=intel-moves') : go?.('insights/week'))}
+        className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border-2 border-maroon/25 bg-blush px-3 py-2.5 text-left transition hover:border-maroon/50 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
+      >
+        <span className="font-display text-[17px] font-extrabold leading-none tracking-[-0.035em] text-maroon">
+          {intel.insights.length} moves
+        </span>
+        <span className="min-w-0 flex-1 truncate text-[12.5px] font-semibold text-ink/70">
+          waiting for you this week, worth about {inr(14_400)}
+        </span>
+        <span className="shrink-0 text-[11.5px] font-bold text-maroon">{isFree ? 'Unlock with Pro' : 'Open Insights'} →</span>
+      </button>
 
       {/* Two measures, two scales → two cards. Never one plot with two y-axes. */}
       <div className={GRID}>

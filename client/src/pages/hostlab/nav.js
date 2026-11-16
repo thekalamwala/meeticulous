@@ -15,8 +15,8 @@
 // and children indented under a hairline like URBN's Advertisements and Deals.
 // ─────────────────────────────────────────────────────────────────────────────
 import {
-  CalendarDays, CalendarRange, CreditCard, Home, LineChart, MessagesSquare, Package,
-  Settings, TrendingUp, Users,
+  CalendarDays, CalendarRange, CreditCard, Home, Lightbulb, LineChart, MessagesSquare,
+  Package, Settings, TrendingUp, Users,
 } from 'lucide-react';
 
 export const BASE = '/host-lab';
@@ -48,6 +48,14 @@ export const SUBPAGES = {
     { slug: 'payouts', label: 'Payouts', blurb: 'Where your money is, and when it lands.' },
     { slug: 'transactions', label: 'Transactions', blurb: 'Every payment, fee and refund.' },
     { slug: 'invoices', label: 'Invoices', blurb: 'GST invoices, issued and received.' },
+  ],
+  // Insights — the moves, and whether they worked. Its own destination rather
+  // than a card on Intelligence › Overview: a recommendation you scroll past is
+  // not a recommendation. "What worked" is what makes the advice honest.
+  insights: [
+    { slug: 'week', label: 'This week', blurb: 'The moves on the table now, each with its evidence.' },
+    { slug: 'history', label: 'History', blurb: 'Every move already surfaced, and what you did with it.' },
+    { slug: 'worked', label: 'What worked', blurb: 'The measured result of the ones you acted on.' },
   ],
   // Community. The console's view of /community — the part that is about this
   // host. Reading and posting stay in the community itself; a second feed here
@@ -93,6 +101,7 @@ export const NAV = [
       { to: 'catalog', label: 'Catalog', icon: Package },
       { to: 'schedule', label: 'Schedule', icon: CalendarRange, pages: 'schedule' },
       { to: 'intelligence', label: 'Intelligence', icon: LineChart, pages: 'intelligence' },
+      { to: 'insights', label: 'Insights', icon: Lightbulb, pages: 'insights', badge: 3 },
       { to: 'money', label: 'Money', icon: CreditCard, pages: 'money' },
       { to: 'grow', label: 'Grow', icon: TrendingUp, pages: 'grow', badge: 2 },
       // Badge = unread mentions. A guest naming you by name is the highest-intent

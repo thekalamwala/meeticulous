@@ -347,7 +347,49 @@ export const insights = [
   },
 ];
 
+/* ── Every move already surfaced, and what became of it ────────────────────
+ * The design promised each recommendation would say how to measure success.
+ * That promise is empty unless the measurement comes back, so a move is kept
+ * after its week: `status` is what the host did, `outcome` is what happened in
+ * the window the move itself named. A move with no outcome yet says so rather
+ * than claiming one. ----------------------------------------------------- */
+export const insightHistory = [
+  {
+    id: 'h-winback-oct', headline: '₹18,400', what: 'win back 6 quiet guests', surfaced: '20 Oct',
+    status: 'acted', window: '30 days',
+    outcome: { verdict: 'worked', measure: 'Rebookings from that list', expected: '~3', actual: '4', value: 11_400 },
+  },
+  {
+    id: 'h-sat-morning', headline: 'Sat 10am', what: 'open Saturday mornings', surfaced: '13 Oct',
+    status: 'acted', window: '30 days',
+    outcome: { verdict: 'worked', measure: 'Bookings in the new window', expected: '~4', actual: '7', value: 8_750 },
+  },
+  {
+    id: 'h-discovery-price', headline: '₹0', what: 'charge for the discovery call', surfaced: '6 Oct',
+    status: 'acted', window: '30 days',
+    outcome: { verdict: 'backfired', measure: 'Discovery call bookings', expected: 'no change', actual: '−38%', value: -4_200 },
+  },
+  {
+    id: 'h-ig-bio', headline: '3×', what: 'put the booking link in your Instagram bio', surfaced: '29 Sep',
+    status: 'acted', window: '30 days',
+    outcome: { verdict: 'worked', measure: 'Visitors from Instagram', expected: '+30%', actual: '+112%', value: 21_600 },
+  },
+  {
+    id: 'h-deepdive-page', headline: '4.6%', what: 'rewrite the deep-dive page', surfaced: '10 Nov',
+    status: 'acted', window: '30 days',
+    outcome: null, // still inside its window — no verdict yet, and we say so
+  },
+  {
+    id: 'h-testimonials', headline: '2', what: 'ask two guests for a testimonial', surfaced: '3 Nov',
+    status: 'dismissed', window: '30 days', outcome: null,
+  },
+  {
+    id: 'h-reminder-two', headline: '11%', what: 'send a second reminder the night before', surfaced: '27 Oct',
+    status: 'expired', window: '30 days', outcome: null,
+  },
+];
+
 export default {
   money, leak, audience, demand, customers, benchmark, benchmarkSuppressed,
-  reputation, goal, insights,
+  reputation, goal, insights, insightHistory,
 };

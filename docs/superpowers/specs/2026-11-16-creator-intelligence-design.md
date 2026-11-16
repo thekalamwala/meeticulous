@@ -225,7 +225,18 @@ with its dependency named. The brief's B3 is the one section this design openly 
 /dashboard/intelligence/audience            Intelligence › Audience
 /dashboard/intelligence/demand              Intelligence › Demand
   ?range=30d&compare=prev                   (range + comparison are URL state on every page)
+
+/dashboard/insights                         → redirects to its first page
+/dashboard/insights/week                    Insights › This week
+/dashboard/insights/history                 Insights › History
+/dashboard/insights/worked                  Insights › What worked
 ```
+
+**Insights is its own section, beside Intelligence, not a card inside it**
+(§17.7). Intelligence answers *what happened*; Insights says *what to do* and
+then *whether it worked*. Overview carries a one-line pointer to it and renders
+none of the moves itself — a copy there would be the duplication that removing
+Grow › Insights was meant to end.
 
 Four pages, four URLs, declared once in `SUBPAGES.intelligence` and read by the
 rail, the router and each page's heading (§17.2). **Nothing inside a page is a
@@ -425,7 +436,22 @@ mechanism that stops generic advice:
 | Likely impact | "At your repeat rate, ~1 rebooking ≈ ₹4,700" — labelled estimate |
 | Measure it | "Rebookings from this list in 30 days" |
 
-Delivery: in-app on Overview, and weekly by email through the **existing**
+**Insights is a section of three pages (§17.7), not a card.** The third page is
+the one that makes the other two honest:
+
+| Page | What it holds |
+|---|---|
+| **This week** | The moves on the table now, evidence visible rather than behind a toggle — this is where the host decides, so the case gets made |
+| **History** | Every move already surfaced, with what the host did: acted on, dismissed, or expired. Nothing is deleted when it stops being current |
+| **What worked** | The measured outcome of the ones acted on, against the measure the move itself named, **including the ones that backfired** |
+
+The sixth mandatory field ("how do I measure success?") was until now a promise
+with no mechanism. A move is therefore kept past its week, the window it named is
+allowed to pass, and the result is reported. A move still inside its window shows
+as *still measuring* rather than claiming a verdict, and a losing move is shown
+losing — a page that reports only its wins is marketing, not measurement.
+
+Delivery: in-app on Insights, and weekly by email through the **existing**
 `weeklyHostRecap` service (`SCHEDULED_JOBS` → `weekly-recap`) — a new section in a
 mail that already ships, not a new mail. An LLM may rephrase a rule's output; it may
 never invent a number, and the numbers are computed before any text is generated.
@@ -883,3 +909,28 @@ builder should hold onto: the rollup grain stays daily (coarsening is a response
 to the trigger, not a starting position), and `intel-archive` is non-optional,
 because an un-forecast growth curve is exactly the case where a definition has to
 be recomputed over history that no longer exists in the database.
+
+### 17.7 Insights — **DECIDED 2026-11-16: its own rail section**
+
+Insights leaves Intelligence › Overview and becomes a destination of its own,
+with three pages (This week · History · What worked). A recommendation the host
+scrolls past is not a recommendation, and the brief's "L. AI Growth
+Intelligence" always was a section rather than a card.
+
+Consequences: Overview keeps a one-line pointer and renders no moves itself;
+`insightHistory` joins the data model (a move's `status` and its `outcome`,
+where `outcome: null` means the window has not closed); and §10's sixth field
+finally has somewhere to land. The whole section is Pro, as one of the six.
+
+### 17.8 Community — **ADDED 2026-11-16**
+
+Community gains a rail section of four pages (Activity · Mentions · Answer ·
+Spaces). It is **not** a second feed — reading and posting stay at `/community`,
+and every row opens it there. Grounded in real columns: `community_spaces`
+(the five seeded rooms and their `post_policy`), `community_posts`
+(`mentions_host_id`, `accepted_comment_id`, `verified_booking`) and
+`community_members` (`post_count`, `comment_count`, `follower_count`).
+
+Mentions carries the rail badge: a guest naming a host in public, with a
+completed booking behind it, is the highest-intent moment in the community, and
+nothing tells the host it happened today.
