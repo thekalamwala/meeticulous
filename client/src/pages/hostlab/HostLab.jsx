@@ -8,18 +8,22 @@
 //
 // IA change being proposed, in one line: the live console has 6 sections behind
 // a push/pop rail, so every page costs two clicks and you cannot see the whole
-// product at once. Here the rail is FLAT — 8 destinations, always visible — and
-// depth moves into tabs inside each destination. Every live page is preserved;
-// see `pageMap.js` for where each one lands (it is the preservation checklist).
+// product at once. Here the rail is FLAT and grouped — Main / Business /
+// Account — and a section with sub-pages expands IN PLACE under a chevron
+// rather than replacing the list. Every live page is preserved; see
+// `pageMap.js`, which is the preservation checklist and renders in the app at
+// Settings › Where things moved.
+//
+// Density is console scale, not marketing scale: 32px nav rows, a 48px topbar,
+// 12.5px row text and 9.5px uppercase labels. The scale lives here and in
+// labUi.jsx; nothing sets a one-off size.
 // ─────────────────────────────────────────────────────────────────────────────
 import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react';
-import { Navigate, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import {
-  Bell, CalendarDays, CreditCard, Home, Menu, Package, Search, Settings,
-  TrendingUp, Users, X, Plus, ExternalLink, HelpCircle,
-} from 'lucide-react';
+import { Navigate, NavLink, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { Bell, ChevronRight, ExternalLink, HelpCircle, Menu, Plus, Search, X } from 'lucide-react';
 import { cn } from '../../components/dashboard/ui';
 import { Avatar, CommandPalette, LabBanner, fmtTime, relDay } from './labUi';
+import { FLAT, NAV, TAB_BAR, TABS, href } from './nav';
 import mock from './mockData';
 
 const Today = lazy(() => import('./sections/Today'));
@@ -31,107 +35,136 @@ const Money = lazy(() => import('./sections/Money'));
 const Grow = lazy(() => import('./sections/Grow'));
 const SettingsSection = lazy(() => import('./sections/SettingsSection'));
 
-/* ── Nav: flat, 8 destinations, each with its own tab set ──────────────── */
-export const NAV = [
-  { to: '', label: 'Today', icon: Home, end: true },
-  { to: 'bookings', label: 'Bookings', icon: CalendarDays, badge: 2 },
-  { to: 'clients', label: 'Clients', icon: Users },
-  { to: 'catalog', label: 'Catalog', icon: Package },
-  { to: 'schedule', label: 'Schedule', icon: CalendarDays },
-  { to: 'money', label: 'Money', icon: CreditCard },
-  { to: 'grow', label: 'Grow', icon: TrendingUp, badge: 2 },
-  { to: 'settings', label: 'Settings', icon: Settings },
-];
+const RAIL = 216;
+const ring = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose';
 
-// Phone tab bar: the five a host touches daily. The rest live behind "More".
-const TAB_BAR = ['', 'bookings', 'clients', 'money', 'grow'];
+/* ── Nav rows ──────────────────────────────────────────────────────────── */
 
-const BASE = '/host-lab';
-const href = (to) => (to ? `${BASE}/${to}` : BASE);
-
-/* ── Sidebar ───────────────────────────────────────────────────────────── */
-const NavRow = ({ item, onNavigate, compact = false }) => (
-  <NavLink
-    to={href(item.to)}
-    end={item.end}
-    onClick={onNavigate}
-    className={({ isActive }) =>
-      cn(
-        'group flex items-center gap-3 rounded-md px-2.5 py-2 text-[13.5px] font-semibold transition focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose',
-        isActive ? 'bg-maroon text-white' : 'text-ink/60 hover:bg-blush hover:text-ink',
-        compact && 'py-1.5',
-      )
-    }
-  >
-    {({ isActive }) => (
-      <>
-        <span className={cn('grid h-[26px] w-[26px] shrink-0 place-items-center rounded-lg transition', isActive ? 'bg-white/20' : 'bg-neutral-100 group-hover:bg-white')}>
-          <item.icon className="h-[15px] w-[15px]" strokeWidth={2.2} />
-        </span>
-        <span className="flex-1 truncate">{item.label}</span>
-        {item.badge > 0 && (
-          <span className={cn('grid min-h-[18px] min-w-[18px] place-items-center rounded-full px-1.5 text-[10px] font-bold', isActive ? 'bg-white text-maroon' : 'bg-rose text-white')}>
-            {item.badge}
-          </span>
-        )}
-      </>
-    )}
-  </NavLink>
+const Badge = ({ n, on }) => (
+  <span className={cn('ml-auto grid min-h-[16px] min-w-[16px] place-items-center rounded-full px-1 text-[9.5px] font-bold leading-none', on ? 'bg-white text-maroon' : 'bg-rose text-white')}>
+    {n}
+  </span>
 );
 
-const SidebarBody = ({ onNavigate }) => (
-  <>
-    <nav aria-label="Dashboard sections" className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-2.5 py-3 dash-noscrollbar">
-      {NAV.map((item) => <NavRow key={item.label} item={item} onNavigate={onNavigate} />)}
-    </nav>
-    <div className="shrink-0 border-t-2 border-neutral-200 p-2.5">
-      <a
-        href={`/${mock.host.username}`}
-        target="_blank"
-        rel="noreferrer"
-        onClick={(e) => { e.preventDefault(); onNavigate?.(); }}
-        className="flex items-center gap-2.5 rounded-xl border-2 border-maroon-100 bg-maroon-50 p-3 transition hover:border-maroon/40 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
-      >
-        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white text-maroon">
-          <ExternalLink className="h-4 w-4" strokeWidth={2.2} />
-        </span>
-        <span className="min-w-0">
-          <span className="block truncate font-display text-[12.5px] font-bold text-maroon">Your booking page</span>
-          <span className="block truncate text-[11px] font-medium text-ink/55">meeticulous.com/{mock.host.username}</span>
-        </span>
-      </a>
-    </div>
-  </>
-);
-
-/* ── Topbar ────────────────────────────────────────────────────────────── */
-const NotifPanel = ({ open, onClose }) => {
-  useEffect(() => {
-    if (!open) return undefined;
-    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [open, onClose]);
-  if (!open) return null;
+/** One destination. A row with sub-pages carries a chevron that expands it in
+ *  place — the row itself still navigates, so the chevron is never the only
+ *  way in. */
+const NavRow = ({ item, activeTab, expanded, onToggle, onNavigate }) => {
+  const tabs = item.tabs ? TABS[item.tabs] : null;
   return (
-    <>
-      <div className="fixed inset-0 z-40" onClick={onClose} aria-hidden="true" />
-      <div role="dialog" aria-label="Notifications" className="absolute right-0 top-full z-50 mt-2 w-[300px] overflow-hidden rounded-xl border-2 border-neutral-200 bg-white dash-elev-3">
-        <p className="border-b-2 border-neutral-200 px-3.5 py-2.5 font-display text-[13px] font-bold text-ink">Recent activity</p>
-        <ul className="max-h-[320px] divide-y divide-neutral-200/70 overflow-y-auto">
-          {mock.activity.map((a) => (
-            <li key={a.id} className="px-3.5 py-2.5">
-              <p className="text-[12.5px] font-medium leading-snug text-ink/80">{a.text}</p>
-              <p className="mt-0.5 text-[11px] font-semibold text-ink/40">{relDay(a.at)} · {fmtTime(a.at)}</p>
+    <li>
+      <div className="relative">
+        <NavLink
+          to={href(item.to)}
+          end={item.end}
+          onClick={onNavigate}
+          className={({ isActive }) =>
+            cn(
+              'flex h-8 items-center gap-2.5 rounded-md px-2 text-[12.5px] font-semibold transition',
+              ring,
+              tabs && 'pr-7',
+              isActive ? 'bg-maroon text-white' : 'text-ink/60 hover:bg-blush hover:text-ink',
+            )
+          }
+        >
+          {({ isActive }) => (
+            <>
+              <item.icon className="h-[15px] w-[15px] shrink-0" strokeWidth={2.2} />
+              <span className="flex-1 truncate">{item.label}</span>
+              {item.badge > 0 && <Badge n={item.badge} on={isActive} />}
+            </>
+          )}
+        </NavLink>
+        {tabs && (
+          <button
+            type="button"
+            onClick={() => onToggle(item.to)}
+            aria-expanded={expanded}
+            aria-label={`${expanded ? 'Collapse' : 'Expand'} ${item.label}`}
+            className={cn('absolute right-1 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded text-ink/40 transition hover:text-ink', ring)}
+          >
+            <ChevronRight className={cn('h-3.5 w-3.5 transition-transform', expanded && 'rotate-90')} strokeWidth={2.6} />
+          </button>
+        )}
+      </div>
+
+      {tabs && expanded && (
+        <ul className="ml-[15px] mt-0.5 flex flex-col gap-px border-l-2 border-neutral-200 pl-2.5">
+          {tabs.map((t) => (
+            <li key={t.value}>
+              <NavLink
+                to={`${href(item.to)}?tab=${t.value}`}
+                onClick={onNavigate}
+                className={cn(
+                  'flex h-7 items-center rounded-md px-2 text-[12px] transition',
+                  ring,
+                  activeTab === t.value ? 'bg-blush font-semibold text-maroon' : 'font-medium text-ink/50 hover:bg-cream hover:text-ink',
+                )}
+              >
+                <span className="truncate">{t.label}</span>
+              </NavLink>
             </li>
           ))}
         </ul>
+      )}
+    </li>
+  );
+};
+
+const SidebarBody = ({ onNavigate }) => {
+  const { pathname } = useLocation();
+  const [params] = useSearchParams();
+  const section = pathname.replace(/^\/host-lab\/?/, '').split('/')[0];
+  const tabParam = params.get('tab');
+  // The active section opens itself; the rest stay where the host left them.
+  const [open, setOpen] = useState(() => (section ? { [section]: true } : {}));
+  useEffect(() => { if (section) setOpen((o) => ({ ...o, [section]: true })); }, [section]);
+
+  return (
+    <>
+      <nav aria-label="Dashboard sections" className="dash-noscrollbar flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-2 py-2.5">
+        {NAV.map((group) => (
+          <div key={group.label}>
+            <p className="px-2 pb-1 text-[9.5px] font-bold uppercase tracking-[0.1em] text-ink/35">{group.label}</p>
+            <ul className="flex flex-col gap-px">
+              {group.items.map((item) => (
+                <NavRow
+                  key={item.label}
+                  item={item}
+                  activeTab={section === item.to ? tabParam || TABS[item.tabs]?.[0]?.value : null}
+                  expanded={!!open[item.to]}
+                  onToggle={(to) => setOpen((o) => ({ ...o, [to]: !o[to] }))}
+                  onNavigate={onNavigate}
+                />
+              ))}
+            </ul>
+          </div>
+        ))}
+      </nav>
+
+      <div className="shrink-0 border-t-2 border-neutral-200 p-2">
+        <a
+          href={`/${mock.host.username}`}
+          target="_blank"
+          rel="noreferrer"
+          onClick={(e) => { e.preventDefault(); onNavigate?.(); }}
+          className={cn('flex items-center gap-2 rounded-lg border-2 border-maroon-100 bg-maroon-50 p-2 transition hover:border-maroon/40', ring)}
+        >
+          <span className="grid h-6 w-6 shrink-0 place-items-center rounded bg-white text-maroon">
+            <ExternalLink className="h-3.5 w-3.5" strokeWidth={2.4} />
+          </span>
+          <span className="min-w-0">
+            <span className="block truncate text-[11.5px] font-bold text-maroon">Your booking page</span>
+            <span className="block truncate text-[10px] font-medium text-ink/50">meeticulous.com/{mock.host.username}</span>
+          </span>
+        </a>
       </div>
     </>
   );
 };
 
-const AccountMenu = ({ open, onClose, onGo }) => {
+/* ── Topbar ────────────────────────────────────────────────────────────── */
+const Popover = ({ open, onClose, label, width, children }) => {
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
@@ -139,34 +172,11 @@ const AccountMenu = ({ open, onClose, onGo }) => {
     return () => document.removeEventListener('keydown', onKey);
   }, [open, onClose]);
   if (!open) return null;
-  const rows = [
-    ['Account & booking page', 'settings'],
-    ['Plan & billing', 'settings?tab=plan'],
-    ['Verification', 'settings?tab=verification'],
-    ['Where things moved', 'settings?tab=moved'],
-  ];
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={onClose} aria-hidden="true" />
-      <div role="menu" className="absolute right-0 top-full z-50 mt-2 w-60 overflow-hidden rounded-xl border-2 border-neutral-200 bg-white py-1 dash-elev-3">
-        <div className="flex items-center gap-2.5 border-b-2 border-neutral-200 px-3.5 py-3">
-          <Avatar name={mock.host.name} />
-          <span className="min-w-0">
-            <span className="block truncate text-[13px] font-bold text-ink">{mock.host.name}</span>
-            <span className="block truncate text-[11.5px] font-medium text-ink/50">Pro · {mock.host.profession}</span>
-          </span>
-        </div>
-        {rows.map(([label, to]) => (
-          <button
-            key={label}
-            type="button"
-            role="menuitem"
-            onClick={() => { onGo(to); onClose(); }}
-            className="block w-full px-3.5 py-2 text-left text-[13px] font-medium text-ink/75 transition hover:bg-blush"
-          >
-            {label}
-          </button>
-        ))}
+      <div role="dialog" aria-label={label} className={cn('absolute right-0 top-full z-50 mt-1.5 overflow-hidden rounded-lg border-2 border-neutral-200 bg-white dash-elev-3', width)}>
+        {children}
       </div>
     </>
   );
@@ -175,65 +185,77 @@ const AccountMenu = ({ open, onClose, onGo }) => {
 const Topbar = ({ onOpenNav, onOpenSearch, onGo }) => {
   const [notif, setNotif] = useState(false);
   const [acct, setAcct] = useState(false);
+  const iconBtn = cn('grid h-8 w-8 place-items-center rounded-full text-ink/55 transition hover:bg-blush', ring);
+
   return (
-    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b-2 border-neutral-200 bg-cream/95 px-3 backdrop-blur sm:px-5">
-      <button
-        type="button"
-        onClick={onOpenNav}
-        aria-label="Open navigation"
-        className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-ink/60 transition hover:bg-blush lg:hidden"
-      >
-        <Menu className="h-5 w-5" strokeWidth={2.2} />
+    <header className="sticky top-0 z-30 flex h-12 shrink-0 items-center gap-1.5 border-b-2 border-neutral-200 bg-cream/95 px-2.5 backdrop-blur sm:px-4">
+      <button type="button" onClick={onOpenNav} aria-label="Open navigation" className={cn(iconBtn, 'lg:hidden')}>
+        <Menu className="h-[18px] w-[18px]" strokeWidth={2.2} />
       </button>
 
       <button
         type="button"
         onClick={onOpenSearch}
-        className="flex min-w-0 flex-1 items-center gap-2 rounded-full border-2 border-neutral-200 bg-white px-3 py-1.5 text-left text-[13px] font-medium text-ink/40 transition hover:border-maroon/30 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose sm:max-w-sm"
+        className={cn('flex h-8 min-w-0 flex-1 items-center gap-2 rounded-full border-2 border-neutral-200 bg-white px-2.5 text-left text-[12px] font-medium text-ink/40 transition hover:border-maroon/30 sm:max-w-xs', ring)}
       >
-        <Search className="h-4 w-4 shrink-0" strokeWidth={2.2} />
-        <span className="truncate">Search bookings, clients, services…</span>
-        <kbd className="ml-auto hidden shrink-0 rounded border border-neutral-200 px-1.5 py-0.5 text-[10px] font-bold sm:block">/</kbd>
+        <Search className="h-3.5 w-3.5 shrink-0" strokeWidth={2.2} />
+        <span className="truncate">Search bookings, clients…</span>
+        <kbd className="ml-auto hidden shrink-0 rounded border border-neutral-200 px-1 text-[9.5px] font-bold sm:block">/</kbd>
       </button>
 
       <div className="ml-auto flex shrink-0 items-center gap-1">
         <button
           type="button"
           onClick={() => onGo('bookings?new=1')}
-          className="hidden items-center gap-1.5 rounded-full bg-maroon px-3.5 py-2 text-[12.5px] font-bold text-white transition hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose sm:inline-flex"
+          className={cn('hidden h-8 items-center gap-1.5 rounded-full bg-maroon px-3 text-[12px] font-bold text-white transition hover:bg-maroon-dark sm:inline-flex', ring)}
         >
-          <Plus className="h-4 w-4" strokeWidth={2.6} /> Add booking
+          <Plus className="h-3.5 w-3.5" strokeWidth={2.8} /> Add booking
         </button>
-        <button
-          type="button"
-          onClick={() => onGo('settings?tab=help')}
-          aria-label="Help and support"
-          className="grid h-9 w-9 place-items-center rounded-full text-ink/55 transition hover:bg-blush"
-        >
-          <HelpCircle className="h-[18px] w-[18px]" strokeWidth={2.2} />
+        <button type="button" onClick={() => onGo('settings?tab=help')} aria-label="Help and support" className={iconBtn}>
+          <HelpCircle className="h-4 w-4" strokeWidth={2.2} />
         </button>
+
         <div className="relative">
-          <button
-            type="button"
-            onClick={() => { setNotif((v) => !v); setAcct(false); }}
-            aria-label="Notifications, 3 recent"
-            className="relative grid h-9 w-9 place-items-center rounded-full text-ink/55 transition hover:bg-blush"
-          >
-            <Bell className="h-[18px] w-[18px]" strokeWidth={2.2} />
-            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-rose" />
+          <button type="button" onClick={() => { setNotif((v) => !v); setAcct(false); }} aria-label="Notifications, 3 recent" className={cn(iconBtn, 'relative')}>
+            <Bell className="h-4 w-4" strokeWidth={2.2} />
+            <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-rose" />
           </button>
-          <NotifPanel open={notif} onClose={() => setNotif(false)} />
+          <Popover open={notif} onClose={() => setNotif(false)} label="Notifications" width="w-[268px]">
+            <p className="border-b-2 border-neutral-200 px-3 py-2 font-display text-[12px] font-bold text-ink">Recent activity</p>
+            <ul className="max-h-[280px] divide-y divide-neutral-200/70 overflow-y-auto">
+              {mock.activity.map((a) => (
+                <li key={a.id} className="px-3 py-2">
+                  <p className="text-[11.5px] font-medium leading-snug text-ink/80">{a.text}</p>
+                  <p className="mt-0.5 text-[10px] font-semibold text-ink/40">{relDay(a.at)} · {fmtTime(a.at)}</p>
+                </li>
+              ))}
+            </ul>
+          </Popover>
         </div>
+
         <div className="relative">
-          <button
-            type="button"
-            onClick={() => { setAcct((v) => !v); setNotif(false); }}
-            aria-label="Account menu"
-            className="rounded-full transition hover:opacity-85 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
-          >
-            <Avatar name={mock.host.name} />
+          <button type="button" onClick={() => { setAcct((v) => !v); setNotif(false); }} aria-label="Account menu" className={cn('rounded-full transition hover:opacity-85', ring)}>
+            <Avatar name={mock.host.name} size="h-7 w-7 text-[10px]" />
           </button>
-          <AccountMenu open={acct} onClose={() => setAcct(false)} onGo={onGo} />
+          <Popover open={acct} onClose={() => setAcct(false)} label="Account" width="w-52">
+            <div className="flex items-center gap-2 border-b-2 border-neutral-200 px-3 py-2.5">
+              <Avatar name={mock.host.name} size="h-7 w-7 text-[10px]" />
+              <span className="min-w-0">
+                <span className="block truncate text-[12px] font-bold text-ink">{mock.host.name}</span>
+                <span className="block truncate text-[10.5px] font-medium text-ink/50">Pro · {mock.host.profession}</span>
+              </span>
+            </div>
+            {TABS.settings.slice(0, 4).map((t) => (
+              <button
+                key={t.value}
+                type="button"
+                onClick={() => { onGo(`settings?tab=${t.value}`); setAcct(false); }}
+                className="block w-full px-3 py-1.5 text-left text-[12px] font-medium text-ink/75 transition hover:bg-blush"
+              >
+                {t.label}
+              </button>
+            ))}
+          </Popover>
         </div>
       </div>
     </header>
@@ -242,31 +264,26 @@ const Topbar = ({ onOpenNav, onOpenSearch, onGo }) => {
 
 /* ── Phone tab bar ─────────────────────────────────────────────────────── */
 const TabBar = ({ onMore }) => (
-  <nav
-    aria-label="Sections"
-    className="fixed inset-x-0 bottom-0 z-30 flex border-t-2 border-neutral-200 bg-cream/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
-  >
+  <nav aria-label="Sections" className="fixed inset-x-0 bottom-0 z-30 flex border-t-2 border-neutral-200 bg-cream/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
     {TAB_BAR.map((to) => {
-      const item = NAV.find((n) => n.to === to);
+      const item = FLAT.find((n) => n.to === to);
       return (
         <NavLink
           key={item.label}
           to={href(item.to)}
           end={item.end}
-          className={({ isActive }) =>
-            cn('flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] font-bold transition', isActive ? 'text-maroon' : 'text-ink/45')
-          }
+          className={({ isActive }) => cn('flex flex-1 flex-col items-center gap-0.5 py-1.5 text-[9.5px] font-bold transition', isActive ? 'text-maroon' : 'text-ink/45')}
         >
           <span className="relative">
-            <item.icon className="h-[19px] w-[19px]" strokeWidth={2.2} />
+            <item.icon className="h-[17px] w-[17px]" strokeWidth={2.2} />
             {item.badge > 0 && <span className="absolute -right-1 -top-0.5 h-1.5 w-1.5 rounded-full bg-rose" />}
           </span>
           {item.label}
         </NavLink>
       );
     })}
-    <button type="button" onClick={onMore} className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] font-bold text-ink/45">
-      <Menu className="h-[19px] w-[19px]" strokeWidth={2.2} />
+    <button type="button" onClick={onMore} className="flex flex-1 flex-col items-center gap-0.5 py-1.5 text-[9.5px] font-bold text-ink/45">
+      <Menu className="h-[17px] w-[17px]" strokeWidth={2.2} />
       More
     </button>
   </nav>
@@ -281,7 +298,6 @@ const HostLab = () => {
 
   const go = useCallback((to) => navigate(href(to)), [navigate]);
 
-  // Collapse the drawer on every navigation, and scroll the new page to the top.
   useEffect(() => { setNavOpen(false); window.scrollTo({ top: 0 }); }, [pathname]);
 
   // "/" focuses search the way Linear and GitHub do; ⌘K / Ctrl-K too.
@@ -298,7 +314,8 @@ const HostLab = () => {
     return () => document.removeEventListener('keydown', onKey);
   }, []);
 
-  // One index over everything searchable. Real build: one /host/search endpoint.
+  // One index over everything searchable, sub-pages included. Real build: one
+  // /host/search endpoint behind the same shape.
   const searchItems = useMemo(() => [
     ...mock.bookings.map((b) => ({
       id: `b-${b.id}`, group: 'Booking', title: `${b.guest_name} · ${b.services.title}`,
@@ -311,7 +328,12 @@ const HostLab = () => {
     ...mock.services.map((s) => ({
       id: `s-${s.id}`, group: 'Service', title: s.title, subtitle: `${s.duration} min`, to: `catalog?service=${s.id}`,
     })),
-    ...NAV.map((n) => ({ id: `n-${n.to || 'today'}`, group: 'Go to', title: n.label, to: n.to })),
+    ...FLAT.flatMap((n) => [
+      { id: `n-${n.to || 'today'}`, group: 'Go to', title: n.label, to: n.to },
+      ...(n.tabs ? TABS[n.tabs].map((t) => ({
+        id: `n-${n.to}-${t.value}`, group: 'Go to', title: `${n.label} · ${t.label}`, to: `${n.to}?tab=${t.value}`,
+      })) : []),
+    ]),
   ], []);
 
   return (
@@ -320,12 +342,12 @@ const HostLab = () => {
 
       {/* Desktop rail */}
       <aside
-        className="fixed bottom-0 left-0 top-0 z-40 hidden w-[248px] flex-col border-r-2 border-neutral-200 bg-cream lg:flex"
-        style={{ top: 37 }}
+        className="fixed bottom-0 left-0 z-40 hidden flex-col border-r-2 border-neutral-200 bg-cream lg:flex"
+        style={{ width: RAIL, top: 33 }}
       >
-        <div className="flex h-14 shrink-0 items-center gap-2.5 border-b-2 border-neutral-200 px-4">
-          <img src="/brand/meeticulous-icon.svg" alt="" aria-hidden="true" className="h-8 w-8 object-contain" />
-          <span className="font-display text-[15px] font-bold tracking-[-0.02em] text-ink">Meeticulous</span>
+        <div className="flex h-12 shrink-0 items-center gap-2 border-b-2 border-neutral-200 px-3">
+          <img src="/brand/meeticulous-icon.svg" alt="" aria-hidden="true" className="h-6 w-6 object-contain" />
+          <span className="font-display text-[13.5px] font-bold tracking-[-0.02em] text-ink">Meeticulous</span>
         </div>
         <SidebarBody />
       </aside>
@@ -334,12 +356,12 @@ const HostLab = () => {
       {navOpen && (
         <div className="lg:hidden">
           <div className="fixed inset-0 z-[60] bg-ink/40" onClick={() => setNavOpen(false)} aria-hidden="true" />
-          <div role="dialog" aria-modal="true" aria-label="Navigation" className="fixed inset-y-0 left-0 z-[60] flex w-[276px] max-w-[85vw] flex-col bg-cream">
-            <div className="flex h-14 shrink-0 items-center gap-2.5 border-b-2 border-neutral-200 px-4">
-              <img src="/brand/meeticulous-icon.svg" alt="" aria-hidden="true" className="h-8 w-8 object-contain" />
-              <span className="flex-1 font-display text-[15px] font-bold text-ink">Meeticulous</span>
-              <button type="button" onClick={() => setNavOpen(false)} aria-label="Close navigation" className="grid h-9 w-9 place-items-center rounded-full text-ink/50 hover:bg-blush">
-                <X className="h-5 w-5" />
+          <div role="dialog" aria-modal="true" aria-label="Navigation" className="fixed inset-y-0 left-0 z-[60] flex w-[248px] max-w-[84vw] flex-col bg-cream">
+            <div className="flex h-12 shrink-0 items-center gap-2 border-b-2 border-neutral-200 px-3">
+              <img src="/brand/meeticulous-icon.svg" alt="" aria-hidden="true" className="h-6 w-6 object-contain" />
+              <span className="flex-1 font-display text-[13.5px] font-bold text-ink">Meeticulous</span>
+              <button type="button" onClick={() => setNavOpen(false)} aria-label="Close navigation" className="grid h-8 w-8 place-items-center rounded-full text-ink/50 hover:bg-blush">
+                <X className="h-4 w-4" />
               </button>
             </div>
             <SidebarBody onNavigate={() => setNavOpen(false)} />
@@ -347,10 +369,10 @@ const HostLab = () => {
         </div>
       )}
 
-      <div className="lg:pl-[248px]">
+      <div className="lg:pl-[216px]">
         <Topbar onOpenNav={() => setNavOpen(true)} onOpenSearch={() => setSearchOpen(true)} onGo={go} />
-        <main className="mx-auto w-full max-w-[1180px] px-3 pb-24 pt-5 sm:px-5 lg:pb-10">
-          <Suspense fallback={<div className="py-24 text-center text-[13px] font-semibold text-ink/40">Loading…</div>}>
+        <main className="mx-auto w-full max-w-[1120px] px-2.5 pb-20 pt-4 sm:px-4 lg:pb-8">
+          <Suspense fallback={<div className="py-20 text-center text-[12px] font-semibold text-ink/40">Loading…</div>}>
             <Routes>
               <Route index element={<Today go={go} />} />
               <Route path="bookings" element={<Bookings go={go} />} />
@@ -360,7 +382,7 @@ const HostLab = () => {
               <Route path="money" element={<Money go={go} />} />
               <Route path="grow" element={<Grow go={go} />} />
               <Route path="settings" element={<SettingsSection go={go} />} />
-              <Route path="*" element={<Navigate to={BASE} replace />} />
+              <Route path="*" element={<Navigate to="/host-lab" replace />} />
             </Routes>
           </Suspense>
         </main>
