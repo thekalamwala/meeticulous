@@ -16,8 +16,8 @@ import {
   Plus, Trash2, Clock, Eye,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Button, Tabs, cn } from '../../../components/dashboard/ui';
-import { Field, LabInput, LabSelect, Panel, Toggle, fmtDayFull, useUrlTab } from '../labUi';
+import { Button, cn } from '../../../components/dashboard/ui';
+import { Field, LabInput, LabSelect, Panel, SubPageHeader, Toggle, fmtDayFull, useSubPage } from '../labUi';
 import mock from '../mockData';
 
 const DAYS = [
@@ -483,7 +483,7 @@ const Preview = ({ schedule, rules }) => {
 
 /* ── Page ──────────────────────────────────────────────────────────────── */
 const Schedule = () => {
-  const [tab, setTab, TABS] = useUrlTab('schedule');
+  const page = useSubPage('schedule');
   const [schedule, setScheduleRaw] = useState(mock.availability.weekly_schedule);
   const [rules, setRules] = useState({
     timezone: mock.availability.timezone,
@@ -499,19 +499,14 @@ const Schedule = () => {
 
   return (
     <div className="flex flex-col gap-2.5">
-      <header>
-        <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Schedule</h1>
-        <p className="mt-0.5 text-[12px] font-medium text-ink/55">When guests can book you, and the rules around it.</p>
-      </header>
-
-      <Tabs tabs={TABS} value={tab} onChange={setTab} />
+      <SubPageHeader page={page} />
 
       <div className="grid gap-2.5 lg:grid-cols-[1.5fr_1fr]">
         <div className="flex min-w-0 flex-col gap-2.5">
-          {tab === 'hours' && <Hours schedule={schedule} setSchedule={setSchedule} dirty={dirty} />}
-          {tab === 'rules' && <Rules rules={rules} setRules={setRules} />}
-          {tab === 'dates' && <Dates overrides={overrides} setOverrides={setOverrides} blocked={blocked} setBlocked={setBlocked} />}
-          {tab === 'calendars' && <Calendars />}
+          {page.slug === 'hours' && <Hours schedule={schedule} setSchedule={setSchedule} dirty={dirty} />}
+          {page.slug === 'rules' && <Rules rules={rules} setRules={setRules} />}
+          {page.slug === 'dates' && <Dates overrides={overrides} setOverrides={setOverrides} blocked={blocked} setBlocked={setBlocked} />}
+          {page.slug === 'calendars' && <Calendars />}
         </div>
         <div className="min-w-0">
           <Preview schedule={schedule} rules={rules} />

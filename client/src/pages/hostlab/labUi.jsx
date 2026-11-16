@@ -14,31 +14,35 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useSearchParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Search, TrendingDown, TrendingUp, X } from 'lucide-react';
 import { cn } from '../../components/dashboard/ui';
-import { TABS } from './nav';
+import { pageMeta } from './nav';
 
-/* ── useUrlTab ────────────────────────────────────────────────────────────
- * A section's tab lives in the URL, not in component state, so the rail's
- * expanded sub-pages, the page's own tab bar, the command palette and a pasted
- * link all address the same thing. The tab set is declared once in nav.js; an
- * unknown or missing ?tab= falls back to the first.
+/* ── useSubPage ───────────────────────────────────────────────────────────
+ * A destination's sub-pages are real routes (/host-lab/money/payouts), not a
+ * ?tab= on one page. This reads which one is open from the path and hands back
+ * its entry from nav.js, so the heading, the rail and the router all read the
+ * same declaration. An unknown slug falls back to the first.
  * ---------------------------------------------------------------------- */
-export const useUrlTab = (key) => {
-  const [params, setParams] = useSearchParams();
-  const tabs = TABS[key];
-  const raw = params.get('tab');
-  const tab = tabs.some((t) => t.value === raw) ? raw : tabs[0].value;
-  const setTab = (value) => {
-    const next = new URLSearchParams(params);
-    next.set('tab', value);
-    setParams(next, { replace: true });
-  };
-  return [tab, setTab, tabs];
+export const useSubPage = (parent) => {
+  const { page } = useParams();
+  return pageMeta(parent, page);
 };
 
-/* ── money ─────────────────────────────────────────────────────────────── */
+/* ── SubPageHeader — every sub-page gets a real heading of its own ─────── */
+export const SubPageHeader = ({ page, action, children }) => (
+  <header className="flex flex-wrap items-end justify-between gap-2">
+    <div className="min-w-0">
+      <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">
+        {page.label}
+      </h1>
+      <p className="mt-0.5 text-[12px] font-medium text-ink/55">{children || page.blurb}</p>
+    </div>
+    {action}
+  </header>
+);
+
 export const inr = (n, opts = {}) => {
   const v = Number(n) || 0;
   if (opts.compact && Math.abs(v) >= 1000) {

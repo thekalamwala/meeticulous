@@ -15,8 +15,8 @@ import {
   Phone, Route, ShieldCheck, Smartphone, User,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Button, Tabs, cn } from '../../../components/dashboard/ui';
-import { Avatar, Field, LabInput, LabSelect, LabTextarea, Panel, StatusPill, Toggle, inr, useUrlTab } from '../labUi';
+import { Button, cn } from '../../../components/dashboard/ui';
+import { Avatar, Field, LabInput, LabSelect, LabTextarea, Panel, StatusPill, SubPageHeader, Toggle, inr, useSubPage } from '../labUi';
 import { LIVE_PAGE_MAP } from '../pageMap';
 import mock from '../mockData';
 
@@ -313,25 +313,25 @@ const Moved = () => (
 
 /* ── Page ──────────────────────────────────────────────────────────────── */
 const SettingsSection = () => {
-  const [tab, setTab, TABS] = useUrlTab('settings');
+  const page = useSubPage('settings');
 
   return (
     <div className="flex flex-col gap-2.5">
-      <header>
-        <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Settings</h1>
-        <p className="mt-0.5 text-[12px] font-medium text-ink/55">
-          {mock.host.name} · Pro · host since {new Date(mock.host.member_since).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}
-        </p>
-      </header>
+      <SubPageHeader
+        page={page}
+        action={(
+          <span className="text-[11px] font-medium text-ink/45">
+            {mock.host.name} · Pro · host since {new Date(mock.host.member_since).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}
+          </span>
+        )}
+      />
 
-      <Tabs tabs={TABS} value={tab} onChange={setTab} />
-
-      {tab === 'account' && <Account />}
-      {tab === 'plan' && <Plan />}
-      {tab === 'verification' && <Verification />}
-      {tab === 'notifications' && <Notifications />}
-      {tab === 'help' && <Help />}
-      {tab === 'moved' && <Moved />}
+      {page.slug === 'account' && <Account />}
+      {page.slug === 'plan' && <Plan />}
+      {page.slug === 'verification' && <Verification />}
+      {page.slug === 'notifications' && <Notifications />}
+      {page.slug === 'help' && <Help />}
+      {page.slug === 'moved' && <Moved />}
     </div>
   );
 };

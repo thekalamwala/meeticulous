@@ -13,10 +13,10 @@ import {
   FileText, Info, Receipt, ShieldCheck, TrendingUp,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Button, Modal, Tabs, cn } from '../../../components/dashboard/ui';
+import { Button, Modal, cn } from '../../../components/dashboard/ui';
 import {
   BarChart, Panel, RankedBars, StatusPill, Tile,
-  fmtDayFull, inr, relDay, useUrlTab,
+  SubPageHeader, fmtDayFull, inr, relDay, useSubPage,
 } from '../labUi';
 import { Filter, FilterBar } from '../filters';
 import mock from '../mockData';
@@ -349,28 +349,23 @@ const Invoices = () => (
 
 /* ── Page ──────────────────────────────────────────────────────────────── */
 const Money = () => {
-  const [tab, setTab, TABS] = useUrlTab('money');
+  const page = useSubPage('money');
 
   return (
     <div className="flex flex-col gap-2.5">
-      <header className="flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Money</h1>
-          <p className="mt-0.5 text-[12px] font-medium text-ink/55">
-            {inr(mock.payouts.available)} ready · {inr(mock.payouts.clearing + mock.payouts.pending_completion)} on the way
-          </p>
-        </div>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-success-bg px-2.5 py-1.5 text-[10.5px] font-bold text-success-fg">
-          <Clock className="h-3.5 w-3.5" strokeWidth={2.4} /> Next payout {relDay(mock.payouts.next_payout_on).toLowerCase()}
-        </span>
-      </header>
+      <SubPageHeader
+        page={page}
+        action={(
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-success-bg px-2.5 py-1.5 text-[10.5px] font-bold text-success-fg">
+            <Clock className="h-3.5 w-3.5" strokeWidth={2.4} /> {inr(mock.payouts.available)} ready · next payout {relDay(mock.payouts.next_payout_on).toLowerCase()}
+          </span>
+        )}
+      />
 
-      <Tabs tabs={TABS} value={tab} onChange={setTab} />
-
-      {tab === 'earnings' && <Earnings />}
-      {tab === 'payouts' && <Payouts />}
-      {tab === 'transactions' && <Transactions />}
-      {tab === 'invoices' && <Invoices />}
+      {page.slug === 'earnings' && <Earnings />}
+      {page.slug === 'payouts' && <Payouts />}
+      {page.slug === 'transactions' && <Transactions />}
+      {page.slug === 'invoices' && <Invoices />}
     </div>
   );
 };

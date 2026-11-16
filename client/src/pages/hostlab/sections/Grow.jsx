@@ -14,10 +14,10 @@ import {
   Quote, Share2, Star, Trash2, TrendingUp, Users,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Button, Modal, Tabs, cn } from '../../../components/dashboard/ui';
+import { Button, Modal, cn } from '../../../components/dashboard/ui';
 import {
   Avatar, Field, Funnel, LabInput, LabTextarea, Panel, RankedBars, Tile,
-  inr, pct, relDay, useUrlTab,
+  SubPageHeader, inr, pct, relDay, useSubPage,
 } from '../labUi';
 import mock from '../mockData';
 
@@ -297,32 +297,24 @@ const Refer = () => {
 
 /* ── Page ──────────────────────────────────────────────────────────────── */
 const Grow = () => {
-  const [tab, setTab, TAB_DEFS] = useUrlTab('grow');
-  // The rail declares the tab set; the page only decorates it with a count.
-  const unreplied = mock.reviews.filter((r) => !r.replied).length;
-  const TABS = TAB_DEFS.map((t) => (t.value === 'proof' && unreplied ? { ...t, count: unreplied } : t));
+  const page = useSubPage('grow');
 
   return (
     <div className="flex flex-col gap-2.5">
-      <header className="flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Grow</h1>
-          <p className="mt-0.5 text-[12px] font-medium text-ink/55">
-            {mock.funnel.views.toLocaleString('en-IN')} people saw your page in the last 30 days.
-            {' '}{pct(mock.funnel.completed / mock.funnel.views)} booked.
-          </p>
-        </div>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-blush px-2.5 py-1.5 text-[10.5px] font-bold text-maroon">
-          <Star className="h-3.5 w-3.5" strokeWidth={2.4} /> {(mock.reviews.reduce((n, x) => n + x.rating, 0) / mock.reviews.length).toFixed(1)} average
-        </span>
-      </header>
+      <SubPageHeader
+        page={page}
+        action={(
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-blush px-2.5 py-1.5 text-[10.5px] font-bold text-maroon">
+            <Star className="h-3.5 w-3.5" strokeWidth={2.4} /> {(mock.reviews.reduce((n, x) => n + x.rating, 0) / mock.reviews.length).toFixed(1)} average ·
+            {' '}{mock.funnel.views.toLocaleString('en-IN')} views · {pct(mock.funnel.completed / mock.funnel.views)} booked
+          </span>
+        )}
+      />
 
-      <Tabs tabs={TABS} value={tab} onChange={setTab} />
-
-      {tab === 'page' && <BookingPage />}
-      {tab === 'insights' && <Insights />}
-      {tab === 'proof' && <SocialProof />}
-      {tab === 'refer' && <Refer />}
+      {page.slug === 'page' && <BookingPage />}
+      {page.slug === 'insights' && <Insights />}
+      {page.slug === 'proof' && <SocialProof />}
+      {page.slug === 'refer' && <Refer />}
     </div>
   );
 };

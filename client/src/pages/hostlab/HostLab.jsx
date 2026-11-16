@@ -19,7 +19,7 @@
 // labUi.jsx; nothing sets a one-off size.
 // ─────────────────────────────────────────────────────────────────────────────
 import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react';
-import { Navigate, NavLink, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { Navigate, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import {
   Bell, CheckCircle2 as CircleCheck, ChevronRight, CreditCard, ExternalLink, HelpCircle,
   LogOut, Menu, MessageSquare, Repeat, Search, ShieldCheck, X,
@@ -27,7 +27,7 @@ import {
 import toast from 'react-hot-toast';
 import { cn } from '../../components/dashboard/ui';
 import { Avatar, CommandPalette, LabBanner, fmtTime, relDay } from './labUi';
-import { FLAT, NAV, TAB_BAR, TABS, href } from './nav';
+import { FLAT, NAV, SUBPAGES, TAB_BAR, href, landingFor } from './nav';
 import mock from './mockData';
 
 const Today = lazy(() => import('./sections/Today'));
@@ -54,20 +54,20 @@ const Badge = ({ n, on }) => (
 /** One destination. A row with sub-pages carries a chevron that expands it in
  *  place — the row itself still navigates, so the chevron is never the only
  *  way in. */
-const NavRow = ({ item, activeTab, expanded, onToggle, onNavigate }) => {
-  const tabs = item.tabs ? TABS[item.tabs] : null;
+const NavRow = ({ item, activePage, expanded, onToggle, onNavigate }) => {
+  const pages = item.pages ? SUBPAGES[item.pages] : null;
   return (
     <li>
       <div className="relative">
         <NavLink
-          to={href(item.to)}
+          to={href(landingFor(item))}
           end={item.end}
           onClick={onNavigate}
           className={({ isActive }) =>
             cn(
               'flex h-7 items-center gap-2 rounded-sm px-2 text-[12px] font-semibold transition',
               ring,
-              tabs && 'pr-7',
+              pages && 'pr-7',
               isActive ? 'bg-maroon text-white' : 'text-ink/60 hover:bg-blush hover:text-ink',
             )
           }
@@ -80,7 +80,7 @@ const NavRow = ({ item, activeTab, expanded, onToggle, onNavigate }) => {
             </>
           )}
         </NavLink>
-        {tabs && (
+        {pages && (
           <button
             type="button"
             onClick={() => onToggle(item.to)}
@@ -93,20 +93,20 @@ const NavRow = ({ item, activeTab, expanded, onToggle, onNavigate }) => {
         )}
       </div>
 
-      {tabs && expanded && (
+      {pages && expanded && (
         <ul className="ml-[15px] mt-0.5 flex flex-col gap-px border-l-2 border-neutral-200 pl-2.5">
-          {tabs.map((t) => (
-            <li key={t.value}>
+          {pages.map((pg) => (
+            <li key={pg.slug}>
               <NavLink
-                to={`${href(item.to)}?tab=${t.value}`}
+                to={href(`${item.to}/${pg.slug}`)}
                 onClick={onNavigate}
                 className={cn(
                   'flex h-6 items-center rounded-xs px-2 text-[11.5px] transition',
                   ring,
-                  activeTab === t.value ? 'bg-blush font-semibold text-maroon' : 'font-medium text-ink/50 hover:bg-cream hover:text-ink',
+                  activePage === pg.slug ? 'bg-blush font-semibold text-maroon' : 'font-medium text-ink/50 hover:bg-cream hover:text-ink',
                 )}
               >
-                <span className="truncate">{t.label}</span>
+                <span className="truncate">{pg.label}</span>
               </NavLink>
             </li>
           ))}
@@ -118,9 +118,7 @@ const NavRow = ({ item, activeTab, expanded, onToggle, onNavigate }) => {
 
 const SidebarBody = ({ onNavigate }) => {
   const { pathname } = useLocation();
-  const [params] = useSearchParams();
-  const section = pathname.replace(/^\/host-lab\/?/, '').split('/')[0];
-  const tabParam = params.get('tab');
+  const [section, sub] = pathname.replace(/^\/host-lab\/?/, '').split('/');
   // Accordion: one section open at a time, so the rail never grows past a
   // screenful. Opening one closes the last; the active section opens itself.
   const [open, setOpen] = useState(() => section || null);
@@ -137,7 +135,7 @@ const SidebarBody = ({ onNavigate }) => {
                 <NavRow
                   key={item.label}
                   item={item}
-                  activeTab={section === item.to ? tabParam || TABS[item.tabs]?.[0]?.value : null}
+                  activePage={section === item.to ? sub || SUBPAGES[item.pages]?.[0]?.slug : null}
                   expanded={open === item.to}
                   onToggle={(to) => setOpen((o) => (o === to ? null : to))}
                   onNavigate={onNavigate}
@@ -361,7 +359,7 @@ const Topbar = ({ onOpenNav, onOpenSearch, onGo }) => {
           chrome was the same button twice on the one page that needs it, and
           an out-of-context one on the seven that don't. */}
       <div className="ml-auto flex shrink-0 items-center gap-1">
-        <button type="button" onClick={() => onGo('settings?tab=help')} aria-label="Help and support" className={iconBtn}>
+        <button type="button" onClick={() => onGo('settings/help')} aria-label="Help and support" className={iconBtn}>
           <HelpCircle className="h-4 w-4" strokeWidth={2.2} />
         </button>
 
@@ -404,7 +402,7 @@ const TabBar = ({ onMore }) => (
       return (
         <NavLink
           key={item.label}
-          to={href(item.to)}
+          to={href(landingFor(item))}
           end={item.end}
           className={({ isActive }) => cn('flex flex-1 flex-col items-center gap-0.5 py-1.5 text-[9.5px] font-bold transition', isActive ? 'text-maroon' : 'text-ink/45')}
         >
@@ -463,9 +461,9 @@ const HostLab = () => {
       id: `s-${s.id}`, group: 'Service', title: s.title, subtitle: `${s.duration} min`, to: `catalog/${s.id}`,
     })),
     ...FLAT.flatMap((n) => [
-      { id: `n-${n.to || 'today'}`, group: 'Go to', title: n.label, to: n.to },
-      ...(n.tabs ? TABS[n.tabs].map((t) => ({
-        id: `n-${n.to}-${t.value}`, group: 'Go to', title: `${n.label} · ${t.label}`, to: `${n.to}?tab=${t.value}`,
+      { id: `n-${n.to || 'today'}`, group: 'Go to', title: n.label, to: landingFor(n) },
+      ...(n.pages ? SUBPAGES[n.pages].map((pg) => ({
+        id: `n-${n.to}-${pg.slug}`, group: 'Go to', title: `${n.label} · ${pg.label}`, subtitle: pg.blurb, to: `${n.to}/${pg.slug}`,
       })) : []),
     ]),
   ], []);
@@ -515,10 +513,14 @@ const HostLab = () => {
               {/* The editor is a page, not a modal: creating a thing you sell
                   is real work and deserves a URL you can come back to. */}
               <Route path="catalog/:id" element={<CatalogEditor />} />
-              <Route path="schedule" element={<Schedule go={go} />} />
-              <Route path="money" element={<Money go={go} />} />
-              <Route path="grow" element={<Grow go={go} />} />
-              <Route path="settings" element={<SettingsSection go={go} />} />
+              {/* Sub-pages are real routes. A bare destination redirects to
+                  its first page, so the rail row always lands somewhere. */}
+              {[['schedule', Schedule], ['money', Money], ['grow', Grow], ['settings', SettingsSection]].map(([key, El]) => (
+                <Route key={key} path={key}>
+                  <Route index element={<Navigate to={SUBPAGES[key][0].slug} replace />} />
+                  <Route path=":page" element={<El go={go} />} />
+                </Route>
+              ))}
               <Route path="*" element={<Navigate to="/host-lab" replace />} />
             </Routes>
           </Suspense>
