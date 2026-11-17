@@ -7,12 +7,29 @@
 //
 // Rows open a full page, never a modal. See CatalogEditor.
 //
+// Two things the first pass got wrong, both the same mistake — saying one thing
+// many times:
+//   · Sold / Revenue / View→buy were labelled on every row. Three labels × 12
+//     rows is 36 repetitions of what a table says once, in its header. It is a
+//     table now.
+//   · The status pill read "Active" on nine rows of twelve. Live is the
+//     ordinary state of a thing you sell, so it needs no badge; the pill is
+//     kept for Hidden, Expired and Scheduled, which are the exceptions.
+//
+// Row actions are one, not four. Edit, duplicate and delete all exist inside
+// the editor, which is one click away and actually shows you what you are
+// about to duplicate or destroy — a delete button on a dense row, with no
+// confirm and nothing on screen but a title, is a trap. What stays on the row
+// is the show/hide toggle, because that is the one you do while scanning the
+// list rather than while looking at the item.
+//
 // (Money and Settings keep their tabs on purpose: those are different views of
 // one subject, not one list filtered.)
 import { useMemo, useState } from 'react';
-import { Copy, Eye, EyeOff, Package, Pencil, Plus, Trash2 } from 'lucide-react';
+import { Eye, EyeOff, Package, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { cn } from '../../../components/dashboard/ui';
 import { Panel, StatusPill, inr, pct } from '../labUi';
 import { Filter, FilterBar } from '../filters';
 import { CATALOG_TYPES, TYPE_LIST } from '../catalogTypes';
@@ -25,7 +42,9 @@ const SORTS = [
   { value: 'type', label: 'Grouped by type' },
 ];
 
-/* ── New-item menu: pick what you are making, then get a page ──────────── */
+/* ── New-item menu: pick what you are making, then get a page ──────────────
+   Catalog keeps its create button where Bookings lost one: a host fills this
+   list themselves, while bookings arrive from guests. */
 const NewMenu = ({ onPick }) => {
   const [open, setOpen] = useState(false);
   return (
@@ -110,8 +129,32 @@ const Catalog = () => {
     toast.success(`${item.title} ${item.active ? 'hidden' : 'live'}`);
   };
 
+  // Live is the ordinary state, so only the exceptions wear a pill.
+  const stateOf = (item) => (item.kind === 'coupon' ? couponState(item) : item.active ? 'active' : 'inactive');
+
+  const TypeIcon = ({ item, size = 'h-7 w-7', glyph = 'h-3.5 w-3.5' }) => {
+    const type = CATALOG_TYPES[item.kind];
+    return (
+      <span className={cn('grid shrink-0 place-items-center rounded-xs bg-neutral-100 text-ink/55', size)} title={type.label}>
+        <type.icon className={glyph} strokeWidth={2.4} />
+      </span>
+    );
+  };
+
+  const LiveToggle = ({ item, className = '' }) => (
+    <button
+      type="button"
+      onClick={() => toggleLive(item)}
+      aria-label={`${item.active ? 'Hide' : 'Show'} ${item.title}`}
+      title={item.active ? 'Hide from your page' : 'Show on your page'}
+      className={cn('grid h-7 w-7 place-items-center rounded-xs text-ink/45 transition hover:bg-blush hover:text-maroon', className)}
+    >
+      {item.active ? <EyeOff className="h-3.5 w-3.5" strokeWidth={2.2} /> : <Eye className="h-3.5 w-3.5" strokeWidth={2.2} />}
+    </button>
+  );
+
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2.5">
       <header className="flex flex-wrap items-end justify-between gap-2">
         <div>
           <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Catalog</h1>
@@ -164,77 +207,82 @@ const Catalog = () => {
             </p>
           </div>
         ) : (
-          <ul className="divide-y-2 divide-neutral-200">
-            {rows.map((item) => {
-              const type = CATALOG_TYPES[item.kind];
-              const live = item.kind === 'coupon' ? couponState(item) : item.active ? 'active' : 'inactive';
-              return (
-                <li key={item.id}>
-                  <div className="flex items-center gap-2 px-3 py-2 transition hover:bg-cream">
-                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-xs bg-neutral-100 text-ink/55" title={type.label}>
-                      <type.icon className="h-3.5 w-3.5" strokeWidth={2.4} />
-                    </span>
+          <>
+            {/* Desktop: a table, so the three measures are named once. The page
+                header already says the window is 30 days. */}
+            <div className="hidden overflow-x-auto md:block">
+              <table className="w-full text-[11.5px]">
+                <thead>
+                  <tr className="border-b-2 border-neutral-200 bg-cream text-[10px] uppercase tracking-wide text-ink/45">
+                    <th scope="col" className="px-3 py-2 text-left font-bold">Item</th>
+                    <th scope="col" className="w-20 px-3 py-2 text-right font-bold">Sold</th>
+                    <th scope="col" className="w-28 px-3 py-2 text-right font-bold">Revenue</th>
+                    <th scope="col" className="w-28 px-3 py-2 text-right font-bold">View → buy</th>
+                    <th scope="col" className="w-12 px-3 py-2" />
+                  </tr>
+                </thead>
+                <tbody className="divide-y-2 divide-neutral-200">
+                  {rows.map((item) => {
+                    const live = stateOf(item);
+                    return (
+                      <tr
+                        key={item.id}
+                        onClick={() => open(item.id)}
+                        className="cursor-pointer transition-colors hover:bg-cream"
+                      >
+                        <td className="px-3 py-2">
+                          <div className="flex items-center gap-2">
+                            <TypeIcon item={item} />
+                            <span className="min-w-0">
+                              <span className="flex items-center gap-1.5">
+                                <span className="truncate text-[12px] font-bold text-ink">{item.title}</span>
+                                {live !== 'active' && <StatusPill status={live} />}
+                              </span>
+                              <span className="block truncate text-[10.5px] font-medium text-ink/50">{summarise(item)}</span>
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-3 py-2 text-right font-bold tabular-nums text-ink">{item.sold_30d}</td>
+                        <td className="px-3 py-2 text-right font-bold tabular-nums text-maroon">{inr(item.revenue_30d, { compact: true })}</td>
+                        <td className="px-3 py-2 text-right font-medium tabular-nums text-ink/70">{item.conversion ? pct(item.conversion) : '—'}</td>
+                        <td className="px-3 py-2 text-right" onClick={(e) => e.stopPropagation()}>
+                          <LiveToggle item={item} className="ml-auto" />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
 
-                    <button type="button" onClick={() => open(item.id)} className="min-w-0 flex-1 text-left">
-                      <span className="flex flex-wrap items-center gap-1.5">
-                        <span className="truncate text-[12.5px] font-bold text-ink">{item.title}</span>
-                        <StatusPill status={live} />
+            {/* Mobile: revenue is the one number worth carrying across. */}
+            <ul className="divide-y-2 divide-neutral-200 md:hidden">
+              {rows.map((item) => {
+                const live = stateOf(item);
+                return (
+                  <li key={item.id} className="flex items-center gap-2 px-2.5 py-1.5">
+                    <button type="button" onClick={() => open(item.id)} className="flex min-w-0 flex-1 items-center gap-2 text-left">
+                      <TypeIcon item={item} size="h-8 w-8" glyph="h-4 w-4" />
+                      <span className="min-w-0 flex-1">
+                        <span className="flex items-center gap-1.5">
+                          <span className="truncate text-[12px] font-bold text-ink">{item.title}</span>
+                          {live !== 'active' && <StatusPill status={live} />}
+                        </span>
+                        <span className="block truncate text-[10.5px] font-medium text-ink/50">{summarise(item)}</span>
                       </span>
-                      <span className="block truncate text-[11px] font-medium text-ink/50">{summarise(item)}</span>
+                      <span className="shrink-0 text-right">
+                        <span className="block text-[11.5px] font-bold text-maroon">{inr(item.revenue_30d, { compact: true })}</span>
+                        <span className="block text-[10px] font-medium text-ink/40">{item.sold_30d} sold</span>
+                      </span>
                     </button>
-
-                    {/* Per-row performance: the old tabs showed none of this */}
-                    <div className="hidden shrink-0 gap-4 sm:flex">
-                      {[
-                        ['Sold', item.sold_30d],
-                        ['Revenue', inr(item.revenue_30d, { compact: true })],
-                        ['View → buy', item.conversion ? pct(item.conversion) : '—'],
-                      ].map(([k, v]) => (
-                        <div key={k} className="w-[62px] text-right">
-                          <p className="text-[9.5px] font-bold uppercase tracking-wide text-ink/40">{k}</p>
-                          <p className="font-display text-[12.5px] font-extrabold tabular-nums text-ink">{v}</p>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="flex shrink-0 gap-0.5">
-                      <button type="button" onClick={() => open(item.id)} aria-label={`Edit ${item.title}`} className="grid h-7 w-7 place-items-center rounded-xs text-ink/45 transition hover:bg-blush hover:text-maroon">
-                        <Pencil className="h-3.5 w-3.5" strokeWidth={2.2} />
-                      </button>
-                      <button type="button" onClick={() => toggleLive(item)} aria-label={`${item.active ? 'Hide' : 'Show'} ${item.title}`} className="grid h-7 w-7 place-items-center rounded-xs text-ink/45 transition hover:bg-blush hover:text-maroon">
-                        {item.active ? <EyeOff className="h-3.5 w-3.5" strokeWidth={2.2} /> : <Eye className="h-3.5 w-3.5" strokeWidth={2.2} />}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => { setItems((v) => [...v, { ...item, id: `${item.id}-copy`, title: `${item.title} (copy)`, active: false, sold_30d: 0, revenue_30d: 0 }]); toast.success(`${item.title} duplicated`); }}
-                        aria-label={`Duplicate ${item.title}`}
-                        className="grid h-7 w-7 place-items-center rounded-xs text-ink/45 transition hover:bg-blush hover:text-maroon"
-                      >
-                        <Copy className="h-3.5 w-3.5" strokeWidth={2.2} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => { setItems((v) => v.filter((x) => x.id !== item.id)); toast.success(`${item.title} deleted`); }}
-                        aria-label={`Delete ${item.title}`}
-                        className="grid h-7 w-7 place-items-center rounded-xs text-ink/35 transition hover:bg-error-bg hover:text-error-fg"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" strokeWidth={2.2} />
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+                    <LiveToggle item={item} />
+                  </li>
+                );
+              })}
+            </ul>
+          </>
         )}
       </Panel>
-
-      {counts.membership === 0 && (
-        <p className="rounded-lg border-2 border-neutral-200 bg-white px-3 py-2 text-[11.5px] font-medium text-ink/60">
-          You have no memberships yet. A monthly fee for ongoing access is the steadiest revenue a host can build —
-          it is in the <b className="font-bold text-ink">New</b> menu above.
-        </p>
-      )}
     </div>
   );
 };
