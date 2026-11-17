@@ -218,16 +218,26 @@ Items previously listed here as pending are now live:
   `email_templates.seed_hash` (nullable). Production boot runs `services/email/templateSync.js`, which
   pushes `config/emailTemplates.js` copy into the DB and KEEPS rows edited in the admin editor
   (row content ≠ its seed_hash). Off switch: `EMAIL_TEMPLATE_SYNC=off`. Manual: `node scripts/seedEmailTemplates.js [--force]`.
-- **Live state re-verified 2026-11-12 (project audit, read-only) — where an older entry disagrees, this wins.**
-  Flags ON: `crm_admin_sends`, `community`, `community_writes`, `community_tithi`, `host_linkedin_login`.
-  Flags OFF: `community_v2`, `community_ads`, `coupons`, and — **flipped off 2026-11-12** — the seven
-  nudge tracks `activation_nudges`, `dormant_nudges`, `review_nudges`, `festival_nudges`,
-  `human_moments`, `empathy_track`, `community_email_onboarding`. They were ON with a broken
-  dedupe (re-sent every cron tick). The dedupe is **fixed** in this PR (`utils/notificationDedupe.js`,
-  fail-closed); they are safe to re-enable once it ships. Rollback: set those keys back to `true`.
-  Applied: v3.188, v3.199, v3.200, v3.201, v3.205.
-  **Not applied:** v3.191, `v3.203_admin_token_version` (admin session revocation is inert until it is),
-  `v3.204_coupons`. Open findings from that audit: `docs/audit-2026-11-12.md`.
+- **Live state re-verified 2026-11-17 (read-only query against the live DB) — where an older entry
+  disagrees, this wins.**
+  **Everything is now ON.** The seven nudge tracks — `activation_nudges`, `dormant_nudges`,
+  `review_nudges`, `festival_nudges`, `human_moments`, `empathy_track`,
+  `community_email_onboarding` — were switched back on after `utils/notificationDedupe.js` shipped
+  and was wired into the nudge services themselves (activationNudges, dormancyNudges, empathyScans,
+  festivalGreetings, community/onboardingSequence), which was the condition for re-enabling them.
+  **These send real email and WhatsApp.** Rollback: set the keys back to `false`.
+  `community_v2`, `community_ads` and `coupons` are ON too. Founder decision: test in prod.
+  `tds_tcs_v2` is ON (2026-11-17) — see its own entry below; with it OFF the legacy flat 1% + 1%
+  ignored `hasGstin` and would have taken GST TCS from hosts with no GSTIN to credit it to.
+  Applied: v3.188, v3.199, v3.200, v3.201, v3.205, **v3.204_coupons (2026-11-17)**.
+  **Not applied:** v3.191, `v3.203_admin_token_version` (admin session revocation is inert until it is).
+  Open findings from the 2026-11-12 audit: `docs/audit-2026-11-12.md`.
+- **Open security gap found 2026-11-17 (not fixed):** 149 public tables still grant `TRUNCATE` to
+  `anon` and `authenticated`. v3.206 revoked INSERT/UPDATE/DELETE but not TRUNCATE, and RLS does not
+  cover TRUNCATE. Not currently reachable — PostgREST exposes no TRUNCATE verb, so the publishable
+  key has no route to it — but it is the same posture v3.206 set out to close and wants a follow-up
+  migration. The second half of this finding — `increment_coupon_redemption` (v3.204) being
+  SECURITY DEFINER with no `SET search_path` — is **FIXED** by v3.221 below.
 - **v3.188** (`v3.188_host_linkedin_login_flag.sql`) — applied (confirmed 2026-11-12). Was listed PENDING: apply before/at merge of the LinkedIn
   host login release: seeds the `host_linkedin_login` flag OFF (`ON CONFLICT DO NOTHING`). The registry
   entry also carries `enabled: false`, so a boot before the migration still creates it OFF.
@@ -252,6 +262,29 @@ Items previously listed here as pending are now live:
   supabase-js for auth+realtime, never PostgREST writes — verified, so no app impact). REVOKE-only, so
   rollback is a re-GRANT; the permissive write POLICIES are left in place (unreachable with no grant).
   Companion to v3.205 (profiles column SELECT) + v3.186 (functions + views). Shipped with PR #292.
+- **v3.221** (`v3.221_coupon_fn_search_path.sql`) — applied 2026-11-17 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`) and verified: `increment_coupon_redemption` now pins
+  `search_path = public, pg_temp`. Closes the open finding above. It was the ONLY one of 15
+  `SECURITY DEFINER` functions in `public` with a mutable path (measured, not assumed). Such a
+  function runs as its OWNER, so whatever the CALLER's search_path resolves `coupons` to is what
+  runs with owner rights. **pg_temp is NAMED** because Postgres searches the temp schema FIRST
+  whenever pg_temp is absent from the path — so the bare `= public` form used by v3.205 and v3.25
+  still permits a temp-table shadow (residual; those two are applied and left alone). Barely
+  exploitable today: EXECUTE is postgres + service_role only, and service_role can already write
+  `coupons` directly. It matters the day someone grants EXECUTE to `authenticated`, which CAN
+  create temp tables. ALTER-only, so body and ACL untouched — grants verified unchanged after.
+  Rollback: `ALTER FUNCTION public.increment_coupon_redemption(uuid) RESET search_path;`. Guarded:
+  `tests/unit/lockdownAnonRpcMigration.test.js` now fails ANY `SECURITY DEFINER` definition in a
+  migration from v3.186 on that does not pin search_path. Shipped with PR #375.
+- **v3.222** (`v3.222_course_fn_search_path.sql`) — applied 2026-11-17 on the Meeticulous DB and
+  verified (`search_path=public, pg_temp`; still SECURITY INVOKER; `courses` untouched; every
+  function we own now pins its path, 0 remaining).
+  Pins `increment_course_purchase_count`, the last entry in the Supabase
+  `function_search_path_mutable` lint. NOT v3.221's risk class: this one is SECURITY INVOKER, runs
+  with the caller's own rights, no privilege escalation — it is fixed so the lint reads zero and the
+  next finding in it is a real one. Of 338 unpinned functions in `public`, 337 are extension-owned
+  (btree_gist, pg_trgm and vector are all installed in public — a separate, lower advisor warning);
+  exactly one was ours.
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
 

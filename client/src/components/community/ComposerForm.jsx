@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ChevronDown, CircleAlert, CircleHelp, Headset, Image, ImagePlus, Megaphone, MessagesSquare, Type, X } from 'lucide-react';
 import { createItem, getMe, getSpaces } from '../../services/communityApi';
 import useKeyboardInset from './useKeyboardInset';
-import { uploadImage } from '../../services/api';
+import { uploadImage, getMyMembership } from '../../services/api';
 import { analytics, EVENTS } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
 import { useFeature } from '../../context/FeatureContext';
@@ -66,6 +66,12 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
   const [busy, setBusy] = useState(false);
   const [banned, setBanned] = useState(false);
   const [audienceOpen, setAudienceOpen] = useState(false);
+  // Membership audience gate (M3). Only hosts with a live program can gate a post.
+  const membershipsOn = useFeature('community_memberships');
+  const [program, setProgram] = useState(null);
+  const [audience, setAudience] = useState('public');       // 'public' | 'free_subscribers' | 'tier'
+  const [audienceTierId, setAudienceTierId] = useState(''); // when audience === 'tier'
+  const [teaserLine, setTeaserLine] = useState('');
   const fileRef = useRef(null);
   const bodyRef = useRef(null);
   const fullRef = useRef(null);
@@ -137,6 +143,26 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
     if (fileRef.current) fileRef.current.value = '';
   };
 
+  // Load the composing host's own program (for the audience selector).
+  useEffect(() => {
+    if (!membershipsOn || !user?.is_host) return;
+    let live = true;
+    const p = getMyMembership?.();            // undefined when api is mocked out (tests)
+    if (p?.then) p.then(({ data }) => { if (live) setProgram(data?.program || null); }).catch(() => {});
+    return () => { live = false; };
+  }, [membershipsOn, user?.is_host]);
+
+  const liveTiers = (program?.tiers || []).filter((t) => t.status === 'live');
+  const hasLiveFree = liveTiers.some((t) => t.type === 'free');
+  // A host can gate once their program is live. 'Free subscribers' only offered when a
+  // live free tier exists (otherwise nobody could be a free subscriber).
+  const canGate = membershipsOn && program?.status === 'live' && (liveTiers.length > 0 || hasLiveFree);
+  const pickAudience = (val) => {
+    if (val === 'public') { setAudience('public'); setAudienceTierId(''); }
+    else if (val === 'free_subscribers') { setAudience('free_subscribers'); setAudienceTierId(''); }
+    else { setAudience('tier'); setAudienceTierId(val); } // val = tier id
+  };
+
   const submit = async (e) => {
     e.preventDefault();
     if (!ready) return;
@@ -146,6 +172,9 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
       kind, format, body: body.trim(),
       ...(thread && { title: title.trim() }),
       ...(effSpace && { space_key: effSpace }),
+      ...(canGate && audience !== 'public' && { audience }),
+      ...(canGate && audience === 'tier' && audienceTierId && { audience_tier_id: audienceTierId }),
+      ...(canGate && audience !== 'public' && teaserLine.trim() && { teaser_line: teaserLine.trim() }),
       media: photos.map(({ url, width, height }) => ({ url, width, height })),
     };
     try {
@@ -206,6 +235,29 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
         </div>
         {thread && <span className="mt-hint">Required for threads.</span>}
       </div>
+
+      {canGate && (
+        <div className="mt-field">
+          <label className="mt-label" htmlFor="composer-audience">Who can see this?</label>
+          <select id="composer-audience" className="mt-input"
+            value={audience === 'tier' ? audienceTierId : audience}
+            onChange={(e) => pickAudience(e.target.value)}>
+            <option value="public">Everyone</option>
+            {hasLiveFree && <option value="free_subscribers">Free subscribers</option>}
+            {liveTiers.filter((t) => t.type === 'paid').map((t) => (
+              <option key={t.id} value={t.id}>{t.name} members (₹{t.price_inr}/mo)</option>
+            ))}
+          </select>
+          {audience !== 'public' && (
+            <>
+              <input className="mt-input mt-2" maxLength={200} value={teaserLine}
+                onChange={(e) => setTeaserLine(e.target.value)}
+                placeholder="Teaser line shown to non-members (optional)" />
+              <span className="mt-hint">Locked for everyone below this tier — they see a teaser + a join prompt.</span>
+            </>
+          )}
+        </div>
+      )}
 
       {thread && (
         <div className="mt-field">

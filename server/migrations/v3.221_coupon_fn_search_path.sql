@@ -1,0 +1,38 @@
+-- ============================================================
+-- v3.221 — increment_coupon_redemption: pin search_path
+-- (project audit 2026-11-12 follow-up; companion to v3.186 / v3.206)
+-- ------------------------------------------------------------
+-- v3.204 created this function SECURITY DEFINER and remembered the v3.186
+-- lesson (explicit REVOKE, service_role only) but did not pin search_path. A
+-- SECURITY DEFINER function runs as its owner (postgres), so whatever the
+-- CALLER's search_path resolves `coupons` to is what runs with owner rights.
+--
+-- WHY pg_temp IS LISTED, where v3.205 and v3.25 write only `= public`:
+-- Postgres searches the session's temporary schema FIRST — ahead of even
+-- pg_catalog — whenever pg_temp is not named in the path explicitly. So
+-- `search_path = public` alone still lets a caller who can CREATE TEMP TABLE
+-- coupons shadow the real table. Naming pg_temp puts it last, where it cannot.
+--
+-- HOW EXPLOITABLE IS THIS TODAY: barely. EXECUTE is held only by postgres and
+-- service_role, and anything holding service_role can already write `coupons`
+-- directly. This matters the day someone grants EXECUTE to `authenticated`,
+-- which can create temp tables — that grant would otherwise silently turn a
+-- counter into an arbitrary owner-rights UPDATE. Pin it now, while it is free.
+--
+-- ALTER, not CREATE OR REPLACE, so the body and the ACL are not touched.
+-- APPLY TO the Meeticulous DB (spquowzrefozmrzoszkf). Idempotent.
+-- ============================================================
+
+ALTER FUNCTION public.increment_coupon_redemption(uuid) SET search_path = public, pg_temp;
+
+-- Verification (expects exactly one row, config = {"search_path=public, pg_temp"}):
+--   select proname, proconfig from pg_proc p
+--     join pg_namespace n on n.oid = p.pronamespace
+--    where n.nspname = 'public' and p.proname = 'increment_coupon_redemption';
+--
+-- Invariant this restores (0 rows = every SECURITY DEFINER function is pinned):
+--   select proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+--    where n.nspname = 'public' and p.prosecdef
+--      and (p.proconfig is null
+--           or not exists (select 1 from unnest(p.proconfig) c
+--                           where c like 'search\_path=%'));
