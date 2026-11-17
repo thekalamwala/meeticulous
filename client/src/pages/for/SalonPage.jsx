@@ -374,7 +374,7 @@ export default function SalonPage() {
                   Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </Reveal>
-              <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+              <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
                 {HERO_TRUST.map((t) => (
                   <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-neutral-500">
                     <Check size={14} style={{ color: 'var(--ca-accent)' }} /> {t}
@@ -384,15 +384,6 @@ export default function SalonPage() {
             </div>
           </div>
 
-          {/* MOBILE — the scene below the text (hidden on desktop) */}
-          <div className="relative z-0 h-[300px] w-full overflow-hidden lg:hidden">
-            <img
-              src="/images/hero/salon-hero-wide.webp"
-              alt=""
-              aria-hidden="true"
-              className="h-full w-full object-cover object-right"
-            />
-          </div>
         </div>
       </section>
 
@@ -472,7 +463,7 @@ export default function SalonPage() {
             ))}
           </div>
           <Reveal delay={0.1} className="mt-12">
-            <Link to="/pricing" className="group inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-accent)' }}>
+            <Link to="/become-a-host" className="group inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-accent)' }}>
               Explore All Features <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
             </Link>
           </Reveal>
@@ -664,7 +655,7 @@ export default function SalonPage() {
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-grey)' }}>
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <Reveal className="order-2 lg:order-1">
-            <ImgSlot alt="A salon owner reviewing the day's appointments on a tablet" className="aspect-[4/5] w-full shadow-[0_24px_54px_-32px_rgba(17,17,17,0.4)]" />
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
           <div className="order-1 lg:order-2">
             <Reveal as="h2" delay={0.04} className="font-heading text-3xl font-black leading-tight tracking-tight sm:text-4xl">
@@ -714,14 +705,12 @@ export default function SalonPage() {
       {/* ═══════════════ 12 · FINAL CTA (black + fuchsia mix-blend-screen glow) ═══════════════ */}
       <section className="relative overflow-hidden px-5 py-24 text-center sm:px-8" style={{ background: 'var(--ca-primary)' }}>
         <div aria-hidden className="pointer-events-none absolute -top-24 left-1/2 h-72 w-[44rem] max-w-[92vw] -translate-x-1/2 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(214,0,154,0.55), transparent)' }} />
-        <div className="relative mx-auto max-w-2xl">
-          <Reveal className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: 'rgba(214,0,154,0.2)' }}>
-            <Sparkles size={26} style={{ color: 'var(--ca-accent)' }} />
-          </Reveal>
-          <Reveal as="h2" delay={0.06} className="mt-6 font-heading text-3xl font-black leading-tight tracking-tight text-white sm:text-5xl">
+        <div className="relative mx-auto w-full lg:w-[70%]">
+
+          <Reveal as="h2" delay={0.06} className="font-heading text-3xl font-black leading-tight tracking-tight text-white sm:text-5xl">
             Spend less time on the phone. <span style={{ color: 'var(--ca-accent)' }}>Spend more time on your clients.</span>
           </Reveal>
-          <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base text-white/70">
+          <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base text-white/70">
             Set up your salon booking page today and give your clients a beautiful way to book with you.
           </Reveal>
           <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

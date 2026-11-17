@@ -425,7 +425,7 @@ export default function LifeCoaches() {
                 See How It Works <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </a>
             </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+            <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
               {HERO_TRUST.map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-neutral-500">
                   <Check size={14} style={{ color: 'var(--ca-accent)' }} /> {t}
@@ -435,16 +435,6 @@ export default function LifeCoaches() {
           </div>
         </div>
 
-        {/* MOBILE — the scene stacked below the text (hidden on desktop); cropped to frame
-            the coach, mascot and client. */}
-        <img
-          src="/images/hero/life-coach-hero-wide.webp"
-          alt=""
-          aria-hidden="true"
-          width={1670}
-          height={941}
-          className="relative z-0 block h-[17rem] w-full object-cover object-[62%_center] sm:h-[22rem] lg:hidden"
-        />
       </section>
 
       {/* ═══════════════ 3 · SERVICES (editorial numbered offering rows) ═══════════════ */}
@@ -515,7 +505,7 @@ export default function LifeCoaches() {
             ))}
           </Reveal>
           <Reveal delay={0.1} className="mt-10 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -713,15 +703,18 @@ export default function LifeCoaches() {
       </section>
 
       {/* ═══════════════ 10 · ABOUT (drop-cap editorial statement + ruled trust rows) ═══════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-cream)' }}>
-        <div className="mx-auto max-w-4xl">
-          <Reveal as="p" delay={0.04} className="font-heading text-[clamp(1.35rem,2.6vw,1.9rem)] font-semibold leading-[1.42] tracking-[-0.01em] text-[color:var(--ca-ink)] first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-heading first-letter:text-[4.5rem] first-letter:font-black first-letter:leading-[0.68] first-letter:text-[#C2410C]">
+      <section className="px-5 py-20 sm:px-8 lg:py-10" style={{ background: 'var(--ca-cream)' }}>
+        <div className="mx-auto grid max-w-6xl items-center gap-8 lg:grid-cols-2">
+          <Reveal><img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" /></Reveal>
+
+        <div className="mx-auto max-w-none">
+          <Reveal as="p" delay={0.04} className="font-heading text-[clamp(1.35rem,2.6vw,1.9rem)] font-semibold leading-[1.42] tracking-[-0.01em] text-[color:var(--ca-ink)] first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-heading first-letter:text-[4.5rem] first-letter:font-black first-letter:leading-[0.68] first-letter:text-[#C2410C] lg:text-xl lg:first-letter:text-5xl">
             Meeticulous was built to make appointment-based practices easier to run. Instead of stitching together calendars, DMs, notebooks and payment tools, coaches manage every client session from one calm platform — built for Indian professionals, and designed for the way modern practices actually work.
           </Reveal>
-          <Reveal delay={0.1} className="mt-12 border-t border-black/10">
+          <Reveal delay={0.1} className="mt-12 border-t lg:mt-6 border-black/10">
             {TRUST_STRIP.map((it) => (
-              <div key={it.value} className="flex items-center gap-4 border-b border-black/10 py-5">
-                <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl" style={{ background: 'color-mix(in srgb, var(--ca-primary) 8%, transparent)', color: 'var(--ca-primary)' }}>
+              <div key={it.value} className="flex items-center gap-4 border-b border-black/10 py-5 lg:py-2.5">
+                <span className="flex h-11 w-11 flex-shrink-0 lg:h-8 lg:w-8 items-center justify-center rounded-xl" style={{ background: 'color-mix(in srgb, var(--ca-primary) 8%, transparent)', color: 'var(--ca-primary)' }}>
                   <it.icon size={20} />
                 </span>
                 <div className="flex flex-1 flex-col sm:flex-row sm:items-baseline sm:gap-3">
@@ -731,11 +724,13 @@ export default function LifeCoaches() {
               </div>
             ))}
           </Reveal>
-          <Reveal delay={0.16} className="mt-8">
+          <Reveal delay={0.16} className="mt-8 lg:mt-5">
             <Link to="/about" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Know More About Us <ArrowRight size={16} />
             </Link>
           </Reveal>
+        </div>
+
         </div>
       </section>
 
@@ -755,17 +750,17 @@ export default function LifeCoaches() {
       </section>
 
       {/* ═══════════════ 12 · FINAL CTA (forest green + terracotta mix-blend glow) ═══════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-24">
-        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[28px] px-6 py-16 text-center sm:px-12 sm:py-20" style={{ background: 'linear-gradient(150deg, #0F4D28 0%, var(--ca-primary) 100%)' }}>
+      <section>
+        <div className="relative mx-auto w-full overflow-hidden px-6 py-16 text-center sm:px-12 sm:py-20" style={{ background: 'linear-gradient(150deg, #0F4D28 0%, var(--ca-primary) 100%)' }}>
           <div aria-hidden className="pointer-events-none absolute -top-20 left-1/2 h-72 w-[44rem] -translate-x-1/2 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(194,65,12,0.55), transparent)' }} />
-          <div className="relative mx-auto max-w-2xl">
+          <div className="relative mx-auto w-full lg:w-[70%]">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: 'rgba(194,65,12,0.22)' }}>
               <Sunrise size={26} style={{ color: GLOW }} />
             </div>
-            <Reveal as="h2" className="mt-6 font-heading text-[clamp(1.9rem,4.5vw,2.7rem)] font-extrabold leading-[1.08] tracking-tight text-white">
+            <Reveal as="h2" className="font-heading text-[clamp(1.9rem,4.5vw,2.7rem)] font-extrabold leading-[1.08] tracking-tight text-white">
               Spend less time scheduling. <span style={{ color: GLOW }}>Spend more time coaching.</span>
             </Reveal>
-            <Reveal as="p" delay={0.06} className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/75">
+            <Reveal as="p" delay={0.06} className="mx-auto mt-4 text-base leading-relaxed text-white/75">
               Set up your booking page today and give your clients a calmer way to work with you.
             </Reveal>
             <Reveal delay={0.1} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

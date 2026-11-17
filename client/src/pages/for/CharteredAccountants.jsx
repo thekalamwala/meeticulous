@@ -69,7 +69,6 @@ const NAV = [
   { label: 'FAQ', href: '#faq' },
 ];
 
-const HERO_TRUST = ['No credit card required', 'Setup in minutes', 'Built for Indian businesses'];
 
 // SERVICES — rendered as a two-page ledger of account entries (not cards).
 const LEDGER = [
@@ -431,25 +430,16 @@ export default function CharteredAccountants() {
                 Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
-              {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
-                  <Check size={14} style={{ color: 'var(--ca-accent)' }} /> {t}
+            <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+              {['No credit card required', 'Setup in minutes', 'Built for Indian businesses'].map((text) => (
+                <span key={text} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
+                  <Check size={14} style={{ color: 'var(--ca-accent)' }} aria-hidden /> {text}
                 </span>
               ))}
             </Reveal>
           </div>
         </div>
 
-        {/* MOBILE — the scene stacked below the text (hidden on desktop). */}
-        <img
-          src="/images/hero/ca-hero.webp"
-          alt=""
-          aria-hidden="true"
-          width={1522}
-          height={1033}
-          className="relative z-0 block w-full lg:hidden"
-        />
       </section>
 
       {/* ═══════════════ 3 · SERVICES (ledger line-items) ═══════════════ */}
@@ -521,19 +511,21 @@ export default function CharteredAccountants() {
             {TOOLS.map((t, i) => (
               <Reveal key={t.name} delay={(i % 3) * 0.05}>
                 <div className="flex h-full flex-col rounded-[14px] border border-black/[0.08] bg-white p-5 transition-all hover:border-[color:var(--ca-primary)]/30 hover:shadow-[0_14px_34px_-24px_rgba(16,26,41,0.45)]">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-[16px] bg-[color:var(--ca-grey)]">
+                  <div className="flex items-center gap-3">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[16px] bg-[color:var(--ca-grey)]">
                     {t.logo
                       ? <img src={t.logo} alt={`${t.name} logo`} loading="lazy" className="h-6 w-6 object-contain" />
                       : <ToolLogo name={t.icon} size={24} className="h-6 w-6" />}
                   </span>
-                  <h3 className="mt-3.5 font-heading text-[15px] font-bold text-[color:var(--ca-ink)]">{t.name}</h3>
-                  <p className="mt-1 text-[13px] leading-relaxed text-slate-500">{t.sub}</p>
+                  <h3 className="font-heading text-[15px] font-bold leading-tight text-[color:var(--ca-ink)]" style={{ margin: 0 }}>{t.name}</h3>
+                  </div>
+                  <p className="mt-3 text-[13px] leading-relaxed text-slate-500">{t.sub}</p>
                 </div>
               </Reveal>
             ))}
           </div>
           <Reveal delay={0.1} className="mt-12 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -754,15 +746,17 @@ export default function CharteredAccountants() {
 
       {/* ═══════════════ 10 · ABOUT (split — real image + trust facts) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-cream)' }}>
-        <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          {/* LEFT — framed icon art */}
-          <Reveal className="relative order-2 mx-auto w-full max-w-sm lg:order-1 lg:mx-0">
-            <div aria-hidden className="pointer-events-none absolute -left-5 -top-5 h-28 w-28 rounded-[16px]" style={{ background: 'color-mix(in srgb, var(--ca-accent) 16%, transparent)' }} />
-            <div className="relative rounded-[20px] border border-black/[0.08] bg-white p-5 shadow-[0_30px_70px_-42px_rgba(16,26,41,0.55)]">
-              <div aria-hidden="true" className="mx-auto grid aspect-square w-full max-w-[18rem] place-items-center">
-                <ART_ICON className="h-20 w-20" style={{ color: 'var(--ca-primary)' }} strokeWidth={1.25} />
-              </div>
-            </div>
+        <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.15fr_1fr] lg:gap-12">
+          {/* LEFT — supplied mascot illustration */}
+          <Reveal className="relative order-2 mx-auto w-full lg:order-1 lg:mx-0">
+            <img
+              src="/images/ca-about.png"
+              alt="Meeticulous mascots with a laptop, booking calendar and checklist"
+              loading="lazy"
+              width={588}
+              height={425}
+              className="h-auto w-full rounded-[20px] lg:-translate-x-12"
+            />
           </Reveal>
 
           {/* RIGHT — statement + trust facts */}
@@ -811,18 +805,15 @@ export default function CharteredAccountants() {
       </section>
 
       {/* ═══════════════ 12 · FINAL CTA (navy + gold mix-blend glow) ═══════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-24">
-        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[24px] px-8 py-16 text-center sm:px-12 lg:py-20" style={{ background: 'linear-gradient(150deg, var(--ca-ink) 0%, var(--ca-primary) 100%)' }}>
+      <section>
+        <div className="relative w-full overflow-hidden px-8 py-16 text-center sm:px-12 lg:py-20" style={{ background: 'linear-gradient(150deg, var(--ca-ink) 0%, var(--ca-primary) 100%)' }}>
           <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-72 w-72 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(161,98,7,0.7), transparent)' }} />
           <div aria-hidden className="pointer-events-none absolute -bottom-20 -left-10 h-72 w-72 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(161,98,7,0.4), transparent)' }} />
-          <div className="relative mx-auto max-w-2xl">
-            <Reveal className="mx-auto flex h-14 w-14 items-center justify-center rounded-[14px]" style={{ background: 'color-mix(in srgb, var(--ca-accent) 30%, transparent)' }}>
-              <Zap size={26} style={{ color: '#FBBF24' }} />
-            </Reveal>
-            <Reveal as="h2" delay={0.06} className="mt-6 font-heading text-[clamp(1.8rem,4.5vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight text-white">
+          <div className="relative mx-auto w-full lg:w-[70%]">
+            <Reveal as="h2" delay={0.06} className="font-heading text-[clamp(1.8rem,4.5vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight text-white">
               Spend less time managing appointments. Spend more time growing your practice.
             </Reveal>
-            <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/75">
+            <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base leading-relaxed text-white/75">
               Set up your booking page today and give your clients a simpler way to meet with you.
             </Reveal>
             <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

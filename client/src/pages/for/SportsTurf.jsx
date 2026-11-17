@@ -478,7 +478,7 @@ export default function SportsTurf() {
                   Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </Reveal>
-              <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+              <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
                 {HERO_TRUST.map((t) => (
                   <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-white/60">
                     <Check size={14} className="text-[#A3E635]" /> {t}
@@ -488,10 +488,6 @@ export default function SportsTurf() {
             </div>
           </div>
 
-          {/* MOBILE — the scene below the text (hidden on desktop) */}
-          <div className="relative z-0 w-full overflow-hidden lg:hidden">
-            <img src="/images/hero/sports-hero-wide.jpg" alt="" aria-hidden="true" className="h-[280px] w-full object-cover object-right" />
-          </div>
         </div>
 
         {/* Four benefits — scoreboard-style tiles, below the hero */}
@@ -562,7 +558,7 @@ export default function SportsTurf() {
           </div>
           <div className="mt-12"><IntegrationHub /></div>
           <Reveal delay={0.1} className="mt-14 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -815,9 +811,8 @@ export default function SportsTurf() {
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-cream)' }}>
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* LEFT — icon art */}
-          <Reveal className="relative order-2 mx-auto w-full max-w-md lg:order-1 lg:mx-0">
-            <div aria-hidden className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#15803D]/15 blur-3xl" />
-            <IconArt icon={TrophyArt} className="relative z-10 mx-auto aspect-square w-full max-w-[22rem]" />
+          <Reveal className="relative order-2 mx-auto w-full max-w-xl lg:order-1 lg:mx-0">
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
 
           {/* RIGHT — text */}
@@ -871,14 +866,12 @@ export default function SportsTurf() {
       {/* ═══════════════ 13 · FINAL CTA (floodlit) ═══════════════ */}
       <section className="relative overflow-hidden px-5 py-24 text-center sm:px-8" style={{ background: 'radial-gradient(120% 120% at 50% 0%, #123A24 0%, #0B0F12 60%)' }}>
         <div aria-hidden className="pointer-events-none absolute -top-16 left-1/2 h-56 w-[42rem] -translate-x-1/2 rounded-full" style={{ background: 'radial-gradient(closest-side, rgba(163,230,53,0.18), transparent)' }} />
-        <div className="relative mx-auto max-w-2xl">
-          <Reveal className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: 'rgba(163,230,53,0.16)' }}>
-            <Zap size={26} style={{ color: '#A3E635' }} />
-          </Reveal>
-          <Reveal as="h2" delay={0.06} className="mt-6 font-heading text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">
+        <div className="relative mx-auto w-full lg:w-[70%]">
+
+          <Reveal as="h2" delay={0.06} className="font-heading text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">
             Spend less time on the phone. <span style={{ color: '#A3E635' }}>Spend more time filling your ground.</span>
           </Reveal>
-          <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base text-white/60">
+          <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base text-white/60">
             Set up your booking page today and give players a simpler way to reserve a slot.
           </Reveal>
           <Reveal delay={0.14} className="mt-8">

@@ -381,7 +381,7 @@ export default function Nutritionists() {
                 Book A Demo <ArrowRight size={15} />
               </Link>
             </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+            <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
               {HERO_TRUST.map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
                   <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
@@ -391,16 +391,6 @@ export default function Nutritionists() {
           </div>
         </div>
 
-        {/* MOBILE — the scene stacked below the text (hidden on desktop); cropped to frame
-            the nutritionist, mascot and client. */}
-        <img
-          src="/images/hero/nutritionist-hero-wide.webp"
-          alt=""
-          aria-hidden="true"
-          width={1670}
-          height={941}
-          className="relative z-0 block h-[17rem] w-full object-cover object-[62%_center] sm:h-[22rem] lg:hidden"
-        />
       </section>
 
       {/* ═══════════════ 3 · SERVICES (editorial ruled cards) ═══════════════ */}
@@ -505,7 +495,7 @@ export default function Nutritionists() {
             </div>
           </Reveal>
           <Reveal delay={0.1} className="mt-10 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -705,11 +695,9 @@ export default function Nutritionists() {
       {/* ═══════════════ 10 · ABOUT (statement + 2x2 trust grid + ImgSlot cluster) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-cream)' }}>
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          {/* ImgSlot cluster */}
-          <Reveal className="order-2 grid grid-cols-2 gap-4 lg:order-1">
-            <ImgSlot alt="A nutritionist reviewing a client's diet plan" className="col-span-2 aspect-[16/10] shadow-[0_24px_50px_-28px_rgba(20,38,26,0.4)]" />
-            <ImgSlot alt="Fresh, colourful whole foods on a plate" className="aspect-square shadow-[0_18px_40px_-24px_rgba(20,38,26,0.4)]" />
-            <ImgSlot alt="A calm nutrition consultation in progress" className="aspect-square shadow-[0_18px_40px_-24px_rgba(20,38,26,0.4)]" />
+          {/* About illustration */}
+          <Reveal className="order-2 w-full lg:order-1">
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
 
           <div className="order-1 text-center lg:order-2 lg:text-left">
@@ -753,17 +741,17 @@ export default function Nutritionists() {
       </section>
 
       {/* ═══════════════ 12 · FINAL CTA (green + citrus glow + dot texture) ═══════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-24">
-        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[24px] px-8 py-16 text-center sm:px-12" style={{ background: 'linear-gradient(150deg, #0F4F27 0%, #15803D 100%)' }}>
+      <section>
+        <div className="relative mx-auto w-full overflow-hidden px-8 py-16 text-center sm:px-12" style={{ background: 'linear-gradient(150deg, #0F4F27 0%, #15803D 100%)' }}>
           {/* subtle dot texture */}
           <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.10) 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
           {/* citrus glow (mix-blend-screen) */}
           <div aria-hidden className="pointer-events-none absolute -right-16 -top-20 h-72 w-72 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(202,138,4,0.6), transparent)' }} />
-          <div className="relative mx-auto max-w-2xl">
+          <div className="relative mx-auto w-full lg:w-[70%]">
             <Reveal as="h2" className="font-heading text-[clamp(1.8rem,4.5vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight text-white">
               Spend less time scheduling. Spend more time with clients.
             </Reveal>
-            <Reveal as="p" delay={0.06} className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/80">
+            <Reveal as="p" delay={0.06} className="mx-auto mt-4 text-base leading-relaxed text-white/80">
               Set up your booking page today — free forever, ready to share in minutes.
             </Reveal>
             <Reveal delay={0.1} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

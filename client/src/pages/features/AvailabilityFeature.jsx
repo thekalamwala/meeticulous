@@ -73,7 +73,6 @@ export const countWeekSlots = (grid) => grid.flat().filter(Boolean).length * SLO
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
 
-const HERO_TRUST = [`Included on ${FREE_PLAN.name}, ₹0`, 'Repeats every week', 'Respects your Google Calendar'];
 
 const WITHOUT = [
   'Typing "I am free Tuesday after 3" into every chat',
@@ -500,13 +499,6 @@ export default function AvailabilityFeature() {
                 Try the buffer maths <ArrowRight size={15} />
               </a>
             </Reveal>
-            <Reveal instant delay={0.14} className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
-              {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] text-neutral-600">
-                  <Check size={14} style={{ color: TEAL }} aria-hidden /> {t}
-                </span>
-              ))}
-            </Reveal>
           </div>
           <Reveal instant delay={0.12}>
             <HoursGrid />
@@ -648,17 +640,6 @@ export default function AvailabilityFeature() {
         />
       </section>
 
-      {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
-      <section className="border-t border-black/5 px-5 py-20 sm:px-8 lg:py-28" style={{ background: LIME_WASH }}>
-        <div className="mx-auto max-w-4xl text-center">
-          <Reveal as="h2" className="font-heading text-[clamp(2.3rem,5.4vw,4rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-black">
-            Set your hours once. <Hl>Let the page do the rest.</Hl>
-          </Reveal>
-          <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-neutral-600">
-            Availability is included on the free {FREE_PLAN.name} plan. Make your booking page, set your week, share the link.
-          </Reveal>
-        </div>
-      </section>
     </main>
   );
 }

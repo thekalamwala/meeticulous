@@ -369,7 +369,7 @@ export default function Spas() {
                 Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 lg:justify-start">
+            <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-6 gap-y-2 lg:justify-start">
               {HERO_TRUST.map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
                   <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
@@ -379,16 +379,6 @@ export default function Spas() {
           </div>
         </div>
 
-        {/* MOBILE — the scene stacked below the text (hidden on desktop); cropped to frame
-            the therapist, mascot and guest. */}
-        <img
-          src="/images/hero/spa-hero-wide.webp"
-          alt=""
-          aria-hidden="true"
-          width={1671}
-          height={941}
-          className="relative z-0 block h-[17rem] w-full object-cover object-[64%_center] sm:h-[22rem] lg:hidden"
-        />
       </section>
 
       {/* ═══════════════ 3 · SERVICES (spa treatment menu — leader-dot rows) ═══════════════ */}
@@ -484,7 +474,7 @@ export default function Spas() {
             </div>
           </Reveal>
           <Reveal delay={0.1} className="mt-8 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -680,9 +670,8 @@ export default function Spas() {
               </Link>
             </Reveal>
           </div>
-          <Reveal delay={0.06} className="relative order-1 mx-auto w-full max-w-md lg:order-2 lg:mx-0">
-            <div aria-hidden className="pointer-events-none absolute -inset-4 rounded-[32px] blur-2xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(176,137,104,0.16), transparent)' }} />
-            <ImgSlot alt="A therapist preparing a serene spa treatment room" className="relative aspect-[4/5] w-full shadow-[0_28px_60px_-34px_rgba(36,50,46,0.5)]" />
+          <Reveal delay={0.06} className="relative order-1 mx-auto w-full max-w-xl lg:order-2 lg:mx-0">
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
         </div>
       </section>
@@ -703,18 +692,16 @@ export default function Spas() {
       </section>
 
       {/* ═══════════════ 12 · FINAL CTA (sage + stone mix-blend glow) ═══════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-24">
-        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[28px] px-8 py-16 text-center sm:px-12 lg:py-20" style={{ background: 'linear-gradient(150deg, #2E5247 0%, #3F6B5E 100%)' }}>
+      <section>
+        <div className="relative mx-auto w-full overflow-hidden px-8 py-16 text-center sm:px-12 lg:py-20" style={{ background: 'linear-gradient(150deg, #2E5247 0%, #3F6B5E 100%)' }}>
           <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-72 w-72 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(176,137,104,0.55), transparent)' }} />
           <div aria-hidden className="pointer-events-none absolute -bottom-24 left-1/3 h-64 w-64 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(176,137,104,0.3), transparent)' }} />
-          <div className="relative mx-auto max-w-2xl">
-            <Reveal className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: 'rgba(176,137,104,0.2)' }}>
-              <Flower2 size={26} style={{ color: '#E7D3BE' }} />
-            </Reveal>
-            <Reveal as="h2" delay={0.06} className="mt-6 font-heading text-[clamp(1.8rem,4.5vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight text-white">
+          <div className="relative mx-auto w-full lg:w-[70%]">
+
+            <Reveal as="h2" delay={0.06} className="font-heading text-[clamp(1.8rem,4.5vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight text-white">
               Spend less time on the phone. Spend more time creating calm.
             </Reveal>
-            <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/75">
+            <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base leading-relaxed text-white/75">
               Set up your spa&apos;s booking page today — free forever, ready to share in minutes.
             </Reveal>
             <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

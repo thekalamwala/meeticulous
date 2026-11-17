@@ -381,7 +381,7 @@ export default function Ophthalmologists() {
                 Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+            <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
               {HERO_TRUST.map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
                   <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
@@ -391,17 +391,6 @@ export default function Ophthalmologists() {
           </div>
         </div>
 
-        {/* MOBILE — the scene stacked below the text (hidden on desktop).
-            The one wide image is reused: object-cover with a right-of-centre focal
-            point crops off the empty white left half and frames the doctor + mascot. */}
-        <img
-          src="/images/hero/ophthalmologist-hero-wide.webp"
-          alt=""
-          aria-hidden="true"
-          width={1920}
-          height={819}
-          className="relative z-0 block h-[17rem] w-full object-cover object-[68%_center] sm:h-[22rem] lg:hidden"
-        />
       </section>
 
       {/* ═══════════════ 3 · SERVICES (focus grid, amber corner tick) ═══════════════ */}
@@ -490,7 +479,7 @@ export default function Ophthalmologists() {
             </div>
           </Reveal>
           <Reveal delay={0.1} className="mt-8 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -715,9 +704,8 @@ export default function Ophthalmologists() {
               </Link>
             </Reveal>
           </div>
-          <Reveal delay={0.06} className="relative order-2 mx-auto w-full max-w-md lg:mx-0">
-            <div aria-hidden className="pointer-events-none absolute -left-6 -top-6 h-40 w-40 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(245,158,11,0.25), transparent)' }} />
-            <ImgSlot alt="A calm eye-clinic reception managed from one booking dashboard" className="relative aspect-[4/5] shadow-[0_28px_60px_-30px_rgba(11,30,42,0.4)]" />
+          <Reveal delay={0.06} className="relative order-2 mx-auto w-full max-w-xl lg:mx-0">
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
         </div>
       </section>
@@ -738,19 +726,19 @@ export default function Ophthalmologists() {
       </section>
 
       {/* ═══════════════ 12 · FINAL CTA (deep-blue + amber focus-ring glow) ═══════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-24">
-        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[24px] px-8 py-16 text-center sm:px-12 lg:py-20" style={{ background: 'linear-gradient(150deg, #062B44 0%, #0C4A6E 100%)' }}>
+      <section>
+        <div className="relative mx-auto w-full overflow-hidden px-8 py-16 text-center sm:px-12 lg:py-20" style={{ background: 'linear-gradient(150deg, #062B44 0%, #0C4A6E 100%)' }}>
           {/* amber concentric focus-ring glow, blended into the panel */}
           <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 h-[26rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 mix-blend-screen">
             <span className="absolute inset-0 rounded-full border" style={{ borderColor: 'rgba(245,158,11,0.28)' }} />
             <span className="absolute inset-[14%] rounded-full border" style={{ borderColor: 'rgba(245,158,11,0.22)' }} />
             <span className="absolute inset-[30%] rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(245,158,11,0.4), transparent)' }} />
           </div>
-          <div className="relative mx-auto max-w-2xl">
+          <div className="relative mx-auto w-full lg:w-[70%]">
             <Reveal as="h2" className="font-heading text-[clamp(1.8rem,4.5vw,2.6rem)] font-extrabold leading-[1.1] tracking-tight text-white">
               Give patients a clearer way to book your eye clinic.
             </Reveal>
-            <Reveal as="p" delay={0.06} className="mx-auto mt-4 max-w-md text-base leading-relaxed text-white/75">
+            <Reveal as="p" delay={0.06} className="mx-auto mt-4 text-base leading-relaxed text-white/75">
               Set up your clinic&apos;s booking page today — free forever, ready to share in minutes.
             </Reveal>
             <Reveal delay={0.1} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

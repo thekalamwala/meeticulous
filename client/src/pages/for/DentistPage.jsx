@@ -422,7 +422,7 @@ export default function DentistPage() {
                   Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </Reveal>
-              <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+              <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
                 {HERO_TRUST.map((t) => (
                   <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
                     <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
@@ -432,15 +432,6 @@ export default function DentistPage() {
             </div>
           </div>
 
-          {/* MOBILE — the scene below the text (hidden on desktop) */}
-          <div className="relative z-0 h-[300px] w-full overflow-hidden lg:hidden">
-            <img
-              src="/images/hero/dentist-hero-wide.webp"
-              alt=""
-              aria-hidden="true"
-              className="h-full w-full object-cover object-right"
-            />
-          </div>
         </div>
       </section>
 
@@ -567,7 +558,7 @@ export default function DentistPage() {
             </ul>
           </Reveal>
           <Reveal delay={0.1} className="mt-10 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>Explore All Features <ArrowRight size={16} /></Link>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>Explore All Features <ArrowRight size={16} /></Link>
           </Reveal>
         </div>
       </section>
@@ -748,27 +739,16 @@ export default function DentistPage() {
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* icon-art gallery: one main tile + a two-up thumbnail rail */}
           <Reveal className="relative order-2 lg:order-1">
-            <div aria-hidden className="pointer-events-none absolute -left-8 -top-8 h-56 w-56 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(20,184,166,0.2), transparent)' }} />
-            <div className="relative overflow-hidden rounded-[22px] border border-black/[0.06] bg-white shadow-[0_28px_60px_-36px_rgba(12,34,49,0.4)]">
-              <IconArt icon={CalendarArt} label="Meeticulous booking dashboard for a dental practice" rounded="rounded-none" className="aspect-[4/3] w-full border-0 shadow-none" />
-            </div>
-            <div className="relative mt-4 grid grid-cols-2 gap-4">
-              <div className="overflow-hidden rounded-[16px] border border-black/[0.06] bg-white shadow-[0_18px_40px_-30px_rgba(12,34,49,0.4)]">
-                <IconArt icon={SmileArt} rounded="rounded-none" className="aspect-[4/3] h-full w-full border-0 shadow-none" iconClassName="h-10 w-10" />
-              </div>
-              <div className="overflow-hidden rounded-[16px] border border-black/[0.06] bg-white shadow-[0_18px_40px_-30px_rgba(12,34,49,0.4)]">
-                <IconArt icon={BellArt} rounded="rounded-none" className="aspect-[4/3] h-full w-full border-0 shadow-none" iconClassName="h-10 w-10" />
-              </div>
-            </div>
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
           <div className="order-1 text-center lg:order-2 lg:text-left">
             <Reveal as="h2" delay={0.05} className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">Small practices deserve better tools.</Reveal>
             <Reveal as="p" delay={0.08} className="mt-5 text-base leading-relaxed text-slate-600">
               Meeticulous was built to make appointment-based practices easier to run. Instead of stitching together calendars, WhatsApp messages, a paper register and payment tools, your clinic manages patient appointments from one calm platform — a scheduling and payment tool, not a dental-records system.
             </Reveal>
-            <Reveal delay={0.12} className="mt-7 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+            <Reveal delay={0.12} className="mt-7 flex flex-wrap items-center justify-center gap-3 lg:flex-nowrap lg:justify-start">
               {TRUST_STRIP.map((it) => (
-                <span key={it.value} className="inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-white px-4 py-2 text-sm font-semibold text-[color:var(--ca-ink)]">
+                <span key={it.value} className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-black/[0.08] bg-white px-4 py-2 text-sm font-semibold text-[color:var(--ca-ink)] lg:gap-1.5 lg:px-2 lg:text-xs">
                   <it.icon size={15} style={{ color: 'var(--ca-primary)' }} /> {it.value}
                 </span>
               ))}
@@ -796,32 +776,27 @@ export default function DentistPage() {
       </section>
 
       {/* ═══════════════ 13 · FINAL CTA (sky + mint mix-blend glow) ═══════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-24">
-        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[28px] px-6 py-16 text-center sm:px-12 sm:py-20" style={{ background: 'linear-gradient(150deg, var(--ca-primary) 0%, var(--ca-ink) 100%)' }}>
-          <div aria-hidden className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(20,184,166,0.55), transparent)' }} />
-          <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-16 h-72 w-72 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(56,189,248,0.4), transparent)' }} />
-          <div className="relative mx-auto max-w-2xl">
-            <Reveal className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background: 'rgba(255,255,255,0.16)' }}><Zap size={26} className="text-white" /></Reveal>
-            <Reveal as="h2" delay={0.06} className="mt-6 font-heading text-[clamp(1.8rem,4.5vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight text-white">
+      <section className="relative w-full overflow-hidden px-5 py-16 text-center sm:px-8 lg:py-20" style={{ background: 'linear-gradient(150deg, var(--ca-primary) 0%, var(--ca-ink) 100%)' }}>
+        <div className="relative mx-auto w-full lg:w-[70%]">
+          <Reveal as="h2" delay={0.06} className="font-heading text-[clamp(1.8rem,4.5vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight text-white">
               Spend less time on the phone. Spend more time with patients.
             </Reveal>
-            <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/75">
+          <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base leading-relaxed text-white/75">
               Set up your clinic&apos;s booking page today — free forever, ready to share in minutes.
             </Reveal>
-            <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-              <Link to={START} className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline sm:w-auto" style={{ color: 'var(--ca-primary)' }}>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <Link to={START} className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline sm:w-auto" style={{ color: 'var(--ca-primary)' }}>
                 Set Up My Clinic Page <ArrowRight size={16} />
               </Link>
-              <Link to="/contact" className="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline sm:w-auto">
+            <Link to="/contact" className="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline sm:w-auto">
                 Book A Demo
               </Link>
-            </Reveal>
-            <Reveal delay={0.18} className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+          </div>
+          <Reveal delay={0.18} className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
               {['No credit card', 'Free forever', '0% on Pro'].map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-white/70"><Check size={14} style={{ color: 'color-mix(in srgb, var(--ca-accent) 55%, white)' }} /> {t}</span>
               ))}
             </Reveal>
-          </div>
         </div>
       </section>
 

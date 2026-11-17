@@ -177,7 +177,7 @@ export default function Footer({ variant = 'full' }) {
         <>
           <Link
             to={ROUTE_START}
-            className="group relative z-[1] -mx-5 -mt-7 block bg-maroon px-5 text-cream transition-[filter] duration-300 hover:no-underline hover:brightness-110 sm:-mx-8 sm:-mt-9 sm:px-8 lg:-mt-10"
+            className="group relative z-[1] -mx-5 -mt-7 block bg-maroon px-5 text-cream hover:text-cream hover:no-underline sm:-mx-8 sm:-mt-9 sm:px-8 lg:-mt-10"
           >
             <span className="mx-auto flex max-w-6xl items-center justify-center gap-4 py-8 sm:gap-6 sm:py-12 lg:gap-10 lg:py-16">
               <span className="font-display text-[clamp(2.125rem,7.4vw,7.75rem)] font-extrabold leading-[0.95] tracking-[-0.045em]">
@@ -185,7 +185,7 @@ export default function Footer({ variant = 'full' }) {
               </span>
               <span
                 aria-hidden="true"
-                className="flex h-[clamp(3rem,7vw,7.25rem)] w-[clamp(3rem,7vw,7.25rem)] flex-shrink-0 items-center justify-center rounded-full border-[3px] border-current transition-transform duration-500 ease-[cubic-bezier(.2,.8,.2,1)] group-hover:rotate-45 lg:border-[6px]"
+                className="flex h-[clamp(3rem,7vw,7.25rem)] w-[clamp(3rem,7vw,7.25rem)] flex-shrink-0 items-center justify-center rounded-full border-[3px] border-current transition-[transform,background-color,color,border-color] duration-500 ease-[cubic-bezier(.2,.8,.2,1)] group-hover:rotate-45 group-hover:border-white group-hover:bg-white group-hover:text-maroon lg:border-[6px]"
               >
                 <ArrowUpRight className="h-1/2 w-1/2" strokeWidth={2.4} />
               </span>

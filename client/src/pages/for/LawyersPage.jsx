@@ -422,7 +422,7 @@ export default function LawyersPage() {
                   Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </Reveal>
-              <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+              <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
                 {HERO_TRUST.map((t) => (
                   <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-neutral-500">
                     <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
@@ -432,15 +432,6 @@ export default function LawyersPage() {
             </div>
           </div>
 
-          {/* MOBILE — the scene below the text (hidden on desktop) */}
-          <div className="relative z-0 h-[300px] w-full overflow-hidden lg:hidden">
-            <img
-              src="/images/hero/lawyer-hero-wide.webp"
-              alt=""
-              aria-hidden="true"
-              className="h-full w-full object-cover object-right"
-            />
-          </div>
         </div>
       </section>
 
@@ -551,7 +542,7 @@ export default function LawyersPage() {
           </Reveal>
 
           <Reveal delay={0.1} className="mt-10 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -750,13 +741,8 @@ export default function LawyersPage() {
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* LEFT — framed icon art */}
-          <Reveal className="relative order-2 mx-auto w-full max-w-sm lg:order-1 lg:mx-0">
-            <div aria-hidden className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(127,29,29,0.14), transparent)' }} />
-            <div className="relative rounded-[18px] border-2 p-2 shadow-[0_24px_50px_-32px_rgba(31,19,21,0.5)]" style={{ borderColor: 'var(--ca-primary)', background: '#fff' }}>
-              <div className="overflow-hidden rounded-[16px] border" style={{ borderColor: 'rgba(194,137,26,0.5)', background: 'var(--ca-cream)' }}>
-                <div aria-hidden="true" className="mx-auto grid aspect-square w-full max-w-[20rem] place-items-center p-5"><ART_ICON className="h-20 w-20" style={{ color: 'var(--ca-primary)' }} strokeWidth={1.25} /></div>
-              </div>
-            </div>
+          <Reveal className="relative order-2 mx-auto w-full max-w-xl lg:order-1 lg:mx-0">
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
 
           {/* RIGHT — statement + trust facts */}
@@ -767,9 +753,9 @@ export default function LawyersPage() {
             <Reveal as="p" delay={0.08} className="mt-5 text-base leading-relaxed text-neutral-600">
               Meeticulous was built to make appointment-based practices easier to run. Instead of stitching together calendars, WhatsApp messages, paper diaries and payment tools, professionals manage their client consultations from one calm platform — built for the way Indian practices actually work.
             </Reveal>
-            <Reveal delay={0.12} className="mt-7 flex flex-wrap justify-center gap-2.5 lg:justify-start">
+            <Reveal delay={0.12} className="mt-7 flex flex-wrap justify-center gap-2.5 lg:flex-nowrap lg:justify-start">
               {TRUST_STRIP.map((it) => (
-                <span key={it.value} className="inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-white px-4 py-2 text-sm font-semibold text-[color:var(--ca-ink)]" title={it.label}>
+                <span key={it.value} className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-black/[0.08] bg-white px-4 py-2 text-sm font-semibold text-[color:var(--ca-ink)] lg:gap-1.5 lg:px-2 lg:text-xs" title={it.label}>
                   <it.icon size={15} style={{ color: 'var(--ca-primary)' }} /> {it.value}
                 </span>
               ))}
@@ -801,14 +787,14 @@ export default function LawyersPage() {
       {/* ═══════════════ 12 · FINAL CTA (burgundy + gold mix-blend glow) ═══════════════ */}
       <section className="relative overflow-hidden px-5 py-24 text-center sm:px-8" style={{ background: 'radial-gradient(120% 120% at 50% 0%, #9B2A2A 0%, #7F1D1D 45%, #5F1414 100%)' }}>
         <div aria-hidden className="pointer-events-none absolute -top-16 left-1/2 h-64 w-[44rem] -translate-x-1/2 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(194,137,26,0.5), transparent)' }} />
-        <div className="relative mx-auto max-w-2xl">
+        <div className="relative mx-auto w-full lg:w-[70%]">
           <Reveal className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: 'rgba(194,137,26,0.18)' }}>
             <Gavel size={26} style={{ color: 'var(--ca-accent)' }} />
           </Reveal>
-          <Reveal as="h2" delay={0.06} className="mt-6 font-heading text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">
+          <Reveal as="h2" delay={0.06} className="font-heading text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">
             Spend less time scheduling. <span style={{ color: 'var(--ca-accent)' }}>Spend more time on your matters.</span>
           </Reveal>
-          <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base text-white/70">
+          <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base text-white/70">
             Set up your booking page today and give your clients a simpler way to meet with you.
           </Reveal>
           <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

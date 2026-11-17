@@ -373,16 +373,14 @@ function ProfessionLandingV1() {
                     {hero.ctaText}
                     <ArrowRight size={16} />
                   </Link>
-                  <span className="flex items-center gap-1.5 text-xs text-neutral-500">
+                  <span className="hidden lg:flex items-center gap-1.5 text-xs text-neutral-500">
                     <Check size={13} style={{ color: 'var(--lp-accent-cta)' }} />
                     {hero.microcopy}
                   </span>
                 </Reveal>
               </div>
             </div>
-            <div className="relative z-0 h-[300px] w-full overflow-hidden lg:hidden">
-              <img src={hero.image} alt="" aria-hidden="true" className="h-full w-full object-cover object-right" />
-            </div>
+
           </div>
         </section>
       ) : (
@@ -414,7 +412,7 @@ function ProfessionLandingV1() {
                 {hero.ctaText}
                 <ArrowRight size={16} />
               </Link>
-              <span className="flex items-center gap-1.5 text-xs text-white/50">
+              <span className="hidden lg:flex items-center gap-1.5 text-xs text-white/50">
                 <Check size={13} style={{ color: 'var(--lp-accent)' }} />
                 {hero.microcopy}
               </span>
@@ -672,19 +670,17 @@ function ProfessionLandingV1() {
         className="px-5 py-24 text-center text-white sm:px-8"
         style={{ background: 'linear-gradient(160deg, var(--lp-hero-from), var(--lp-hero-to))' }}
       >
-        <div className="mx-auto max-w-2xl">
-          <Reveal className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: 'color-mix(in srgb, var(--lp-accent) 20%, transparent)' }}>
-            <finalCta.icon size={26} style={{ color: 'var(--lp-accent)' }} />
-          </Reveal>
+        <div className="mx-auto w-full lg:w-[70%]">
+
           {finalCta.urgency && (
             <Reveal as="p" delay={0.04} className="mt-6 text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: 'var(--lp-accent)' }}>
               {finalCta.urgency}
             </Reveal>
           )}
-          <Reveal as="h2" delay={0.08} className="mt-3 text-3xl font-bold leading-tight text-white sm:text-4xl">
+          <Reveal as="h2" delay={0.08} className="text-3xl font-bold leading-tight text-white sm:text-4xl">
             {finalCta.headline}
           </Reveal>
-          <Reveal as="p" delay={0.12} className="mx-auto mt-4 max-w-lg text-base text-white/70">
+          <Reveal as="p" delay={0.12} className="mx-auto mt-4 text-base text-white/70">
             {finalCta.subline}
           </Reveal>
           <Reveal delay={0.18} className="mt-8">

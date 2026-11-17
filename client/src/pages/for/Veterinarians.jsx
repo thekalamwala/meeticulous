@@ -405,7 +405,7 @@ export default function Veterinarians() {
                 Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+            <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
               {HERO_TRUST.map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
                   <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
@@ -415,16 +415,6 @@ export default function Veterinarians() {
           </div>
         </div>
 
-        {/* MOBILE — the scene stacked below the text (hidden on desktop); cropped to frame
-            the vet, mascot and dog. */}
-        <img
-          src="/images/hero/vet-hero-wide.webp"
-          alt=""
-          aria-hidden="true"
-          width={1670}
-          height={941}
-          className="relative z-0 block h-[17rem] w-full object-cover object-[62%_center] sm:h-[22rem] lg:hidden"
-        />
       </section>
 
       {/* ═══════════════ 3 · SERVICES (white cards · filled-teal icon · coral tag) ═══════════════ */}
@@ -522,7 +512,7 @@ export default function Veterinarians() {
             Google Calendar busy-time blocking, auto Google Meet links, WhatsApp reminders, and Razorpay payments with automatic GST invoices.
           </Reveal>
           <Reveal delay={0.12} className="mt-8 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -754,11 +744,7 @@ export default function Veterinarians() {
             </Reveal>
           </div>
           <Reveal className="order-1 lg:order-2">
-            <ImgSlot
-              alt="A friendly veterinarian welcoming a pet and its owner to the clinic"
-              rounded="rounded-[28px]"
-              className="aspect-[5/4] w-full shadow-[0_28px_64px_-32px_rgba(28,43,41,0.4)]"
-            />
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
         </div>
       </section>
@@ -782,14 +768,12 @@ export default function Veterinarians() {
       <section className="relative overflow-hidden px-5 py-24 text-center sm:px-8" style={{ background: 'linear-gradient(150deg, #0E5B54 0%, #157F76 55%, #0E5B54 100%)' }}>
         <div aria-hidden className="pointer-events-none absolute -top-16 left-1/2 h-64 w-[42rem] -translate-x-1/2 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(249,115,22,0.45), transparent)' }} />
         <PawField color="#ffffff" />
-        <div className="relative mx-auto max-w-2xl">
-          <Reveal className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: 'rgba(255,255,255,0.14)' }}>
-            <PawPrint size={26} style={{ color: '#FDBA74' }} />
-          </Reveal>
-          <Reveal as="h2" delay={0.06} className="mt-6 font-heading text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">
+        <div className="relative mx-auto w-full lg:w-[70%]">
+
+          <Reveal as="h2" delay={0.06} className="font-heading text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">
             Spend less time on the phone. <span style={{ color: '#FDBA74' }}>Spend more time with pets.</span>
           </Reveal>
-          <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base text-white/80">
+          <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base text-white/80">
             Set up your clinic booking page today and give pet parents a friendly way to book with you.
           </Reveal>
           <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

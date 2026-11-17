@@ -652,21 +652,6 @@ export default function BookingPagesFeature() {
         />
       </section>
 
-      {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
-      <section className="relative overflow-hidden px-5 py-20 text-[#F6E3C6] sm:px-8 lg:py-28" style={{ background: BLUE_DEEP }}>
-        <Sparkle className="absolute left-[8%] top-12 h-7 w-7" />
-        <Sparkle className="absolute bottom-16 right-[10%] h-5 w-5" />
-        <div className="relative mx-auto max-w-6xl text-center">
-          <div>
-            <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.2rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[#F6E3C6]">
-              Claim meeticulous.com/<span className="relative inline-block" style={{ color: '#F5A3C0' }}>yourname<Squiggle className="absolute -bottom-2 left-0 h-3 w-full" color="#F5A3C0" /></span>
-            </Reveal>
-            <Reveal as="p" delay={0.05} className="mx-auto mt-7 max-w-xl text-base leading-relaxed text-[#F6E3C6]/75">
-              Set up your page free on {FREE_PLAN.name}. Add a service, share the link, and the next person who asks &ldquo;how do I book you?&rdquo; already has the answer.
-            </Reveal>
-          </div>
-        </div>
-      </section>
     </main>
   );
 }

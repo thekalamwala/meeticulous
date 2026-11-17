@@ -639,7 +639,7 @@ export default function BusinessConsultants() {
                   Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </Reveal>
-              <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+              <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
                 {HERO_TRUST.map((t) => (
                   <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-neutral-500">
                     <Check size={14} style={{ color: 'var(--ca-accent)' }} /> {t}
@@ -649,15 +649,6 @@ export default function BusinessConsultants() {
             </div>
           </div>
 
-          {/* MOBILE — the scene below the text (hidden on desktop) */}
-          <div className="relative z-0 h-[300px] w-full overflow-hidden lg:hidden">
-            <img
-              src="/images/hero/consultant-hero-wide.webp"
-              alt=""
-              aria-hidden="true"
-              className="h-full w-full object-cover object-right"
-            />
-          </div>
         </div>
 
         {/* Four benefits — compact strip, below the hero */}
@@ -729,7 +720,7 @@ export default function BusinessConsultants() {
             <IntegrationHub />
           </div>
           <Reveal delay={0.1} className="mt-12 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -922,15 +913,8 @@ export default function BusinessConsultants() {
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-cream)' }}>
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* LEFT — framed image + overlapping dark card */}
-          <Reveal delay={0.05} className="relative order-2 mx-auto w-full max-w-md lg:order-1 lg:mx-0 lg:max-w-none">
-            <div aria-hidden className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#1E293B]/10 blur-3xl" />
-            <div className="relative overflow-hidden rounded-[22px] bg-white shadow-[0_28px_60px_-30px_rgba(15,23,42,0.4)]">
-              <IconArt icon={BriefcaseArt} label="Meeticulous — one calm platform for consultants" rounded="rounded-none" className="aspect-[4/3] w-full border-0 shadow-none" />
-            </div>
-            <div className="absolute bottom-5 left-5 z-20 max-w-[17rem] rounded-2xl px-5 py-4 text-white shadow-[0_20px_44px_-20px_rgba(15,23,42,0.8)]" style={{ background: 'var(--ca-ink)' }}>
-              <div className="font-heading text-lg font-extrabold leading-tight">One calm platform for your whole practice</div>
-              <p className="mt-1.5 text-xs leading-relaxed text-white/70">Calendars, payments, WhatsApp and GST invoices — in one place.</p>
-            </div>
+          <Reveal delay={0.05} className="relative order-2 mx-auto w-full max-w-xl lg:order-1 lg:mx-0 lg:max-w-none">
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
 
           {/* RIGHT — heading + copy + trust grid + CTA */}
@@ -993,23 +977,19 @@ export default function BusinessConsultants() {
       </section>
 
       {/* ═══════════════ 16 · FINAL CTA (dark business) ═══════════════ */}
-      <section className="relative overflow-hidden px-5 py-24 text-center sm:px-8" style={{ background: 'radial-gradient(120% 120% at 50% 0%, #334155 0%, #0F172A 60%)' }}>
-        <div aria-hidden className="pointer-events-none absolute -top-16 left-1/2 h-56 w-[42rem] -translate-x-1/2 rounded-full" style={{ background: 'radial-gradient(closest-side, rgba(245,158,11,0.16), transparent)' }} />
-        <div className="relative mx-auto max-w-2xl">
-          <Reveal className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: 'rgba(245,158,11,0.16)' }}>
-            <Zap size={26} style={{ color: AMBER }} />
-          </Reveal>
-          <Reveal as="h2" delay={0.06} className="mt-6 font-heading text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">
+      <section className="relative w-full overflow-hidden px-5 py-16 text-center sm:px-8 lg:py-20" style={{ background: 'radial-gradient(120% 120% at 50% 0%, #334155 0%, #0F172A 60%)' }}>
+        <div className="relative mx-auto w-full lg:w-[70%]">
+          <Reveal as="h2" delay={0.06} className="font-heading text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">
             Spend less time scheduling. <span style={{ color: AMBER }}>Spend more time advising.</span>
           </Reveal>
-          <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base text-white/60">
+          <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base text-white/60">
             Set up your booking page today and give your clients a simpler way to work with you.
           </Reveal>
-          <Reveal delay={0.14} className="mt-8">
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
             <Link to={START} className="inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 text-sm font-semibold shadow-[0_10px_30px_-8px_rgba(245,158,11,0.6)] transition-opacity hover:opacity-90 hover:no-underline" style={{ background: AMBER, color: 'var(--ca-ink)' }}>
               Start for Free <ArrowRight size={16} />
             </Link>
-          </Reveal>
+          </div>
           <Reveal as="p" delay={0.18} className="mt-4 text-xs text-white/60">No credit card required</Reveal>
         </div>
       </section>

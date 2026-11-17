@@ -343,7 +343,7 @@ export default function Pediatricians() {
                   Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </Reveal>
-              <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+              <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
                 {HERO_TRUST.map((t) => (
                   <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
                     <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
@@ -353,15 +353,6 @@ export default function Pediatricians() {
             </div>
           </div>
 
-          {/* MOBILE — the scene below the text (hidden on desktop) */}
-          <div className="relative z-0 h-[300px] w-full overflow-hidden lg:hidden">
-            <img
-              src="/images/hero/pediatrician-hero-wide.webp"
-              alt=""
-              aria-hidden="true"
-              className="h-full w-full object-cover object-right"
-            />
-          </div>
         </div>
       </section>
 
@@ -427,7 +418,7 @@ export default function Pediatricians() {
               Calendar, payments and WhatsApp — Meeticulous fits your clinic, no rewiring, no new software for parents.
             </Reveal>
             <Reveal delay={0.1} className="mt-6">
-              <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+              <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
                 Explore All Features <ArrowRight size={16} />
               </Link>
             </Reveal>
@@ -595,7 +586,10 @@ export default function Pediatricians() {
 
       {/* ═══════════════ 11 · ABOUT (tinted banner) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-5xl rounded-[28px] px-6 py-12 text-center sm:px-12 sm:py-16" style={{ background: 'var(--ca-cream)' }}>
+        <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2">
+          <Reveal><img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" /></Reveal>
+
+        <div className="mx-auto max-w-none rounded-[28px] px-6 py-12 text-center sm:px-12 sm:py-16" style={{ background: 'var(--ca-cream)' }}>
           <Reveal as="h2" delay={0.04} className="mx-auto max-w-2xl font-heading text-2xl font-extrabold leading-snug tracking-tight sm:text-3xl">
             Children&apos;s clinics deserve tools as caring as their care. Meeticulous turns a ringing phone and a paper register into <span style={{ color: 'var(--ca-ink)' }}>one friendly booking platform</span> — calm for your desk, easy for parents.
           </Reveal>
@@ -611,6 +605,8 @@ export default function Pediatricians() {
               Know More About Us <ArrowRight size={16} />
             </Link>
           </Reveal>
+        </div>
+
         </div>
       </section>
 
@@ -635,11 +631,11 @@ export default function Pediatricians() {
         <div aria-hidden className="pointer-events-none absolute right-[16%] top-20 h-2.5 w-2.5 rounded-full bg-white/50" />
         <div aria-hidden className="pointer-events-none absolute bottom-16 left-[22%] h-2 w-2 rounded-full bg-white/40" />
         <div aria-hidden className="pointer-events-none absolute bottom-24 right-[12%] h-3 w-3 rounded-full" style={{ background: 'var(--ca-amber)' }} />
-        <div className="relative mx-auto max-w-2xl">
+        <div className="relative mx-auto w-full lg:w-[70%]">
           <Reveal as="h2" delay={0.06} className="font-heading text-[clamp(1.9rem,5vw,2.75rem)] font-extrabold leading-[1.08] tracking-tight text-white">
             Give parents an easier way<br className="hidden sm:block" /> <span style={{ color: 'var(--ca-amber)' }}>to book your clinic.</span>
           </Reveal>
-          <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/75">
+          <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base leading-relaxed text-white/75">
             Set up your clinic&apos;s booking page today — free forever, and ready to share in minutes.
           </Reveal>
           <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

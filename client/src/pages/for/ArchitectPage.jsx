@@ -457,7 +457,7 @@ export default function ArchitectPage() {
                   Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </Reveal>
-              <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+              <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
                 {HERO_TRUST.map((t) => (
                   <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
                     <Check size={14} style={{ color: 'var(--ca-accent)' }} /> {t}
@@ -467,15 +467,6 @@ export default function ArchitectPage() {
             </div>
           </div>
 
-          {/* MOBILE — the scene below the text (hidden on desktop) */}
-          <div className="relative z-0 h-[300px] w-full overflow-hidden lg:hidden">
-            <img
-              src="/images/hero/architect-hero-wide.webp"
-              alt=""
-              aria-hidden="true"
-              className="h-full w-full object-cover object-right"
-            />
-          </div>
         </div>
 
         {/* benefit strip */}
@@ -855,9 +846,9 @@ export default function ArchitectPage() {
               ))}
             </div>
             {/* trust facts */}
-            <Reveal delay={0.28} className="mt-8 flex flex-wrap justify-center gap-2.5 lg:justify-start">
+            <Reveal delay={0.28} className="mt-8 flex flex-wrap justify-center gap-2.5 lg:flex-nowrap lg:justify-start">
               {TRUST_STRIP.map((it) => (
-                <span key={it.value} className="inline-flex items-center gap-2 border bg-white px-3.5 py-2 text-sm font-semibold text-[color:var(--ca-ink)]" style={{ borderColor: 'rgba(26,34,48,0.12)' }}>
+                <span key={it.value} className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap border bg-white px-3.5 py-2 text-sm font-semibold text-[color:var(--ca-ink)] lg:gap-1.5 lg:px-2 lg:text-xs" style={{ borderColor: 'rgba(26,34,48,0.12)' }}>
                   <it.icon size={15} style={{ color: 'var(--ca-accent)' }} /> {it.value}
                 </span>
               ))}
@@ -867,13 +858,7 @@ export default function ArchitectPage() {
             </Reveal>
           </div>
           <Reveal className="order-2">
-            <Framed
-              icon={BuildingArt}
-              alt="Meeticulous, a calm booking platform for architecture and interior-design studios in India"
-              label="Fig. 02 · One Calm Diary"
-              className="mx-auto max-w-md"
-              imgClassName="aspect-square"
-            />
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
         </div>
       </section>
@@ -896,22 +881,19 @@ export default function ArchitectPage() {
       </section>
 
       {/* ═══════════════ 12 · FINAL CTA (graphite + bronze mix-blend glow) ═══════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-24">
-        <div className="mx-auto max-w-6xl overflow-hidden" style={{ background: 'var(--ca-ink)' }}>
-          <div className="relative grid items-center gap-10 px-8 py-14 sm:px-12 lg:grid-cols-[1.1fr_0.9fr]">
+      <section>
+        <div className="w-full overflow-hidden" style={{ background: 'var(--ca-ink)' }}>
+          <div className="relative px-8 py-16 sm:px-12 lg:py-20">
             <div aria-hidden className="pointer-events-none absolute -left-16 -top-16 h-72 w-72 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(180,83,9,0.55), transparent)' }} />
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-40 [mask-image:radial-gradient(circle_at_20%_20%,black,transparent_60%)]" style={gridBg} />
-            <div className="relative text-center lg:text-left">
-              <Reveal className="mx-auto flex h-14 w-14 items-center justify-center rounded-[16px] lg:mx-0" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                <Zap size={26} style={{ color: 'var(--ca-accent)' }} />
-              </Reveal>
-              <Reveal as="h2" delay={0.06} className="mt-6 font-heading text-[clamp(1.8rem,4.5vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight text-white">
+            <div className="relative mx-auto w-full text-center lg:w-[70%]">
+              <Reveal as="h2" delay={0.06} className="font-heading text-[clamp(1.8rem,4.5vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight text-white">
                 Spend less time arranging meetings. Spend more time designing.
               </Reveal>
-              <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/70 lg:mx-0">
+              <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base leading-relaxed text-white/70">
                 Set up your studio&apos;s booking page today — free forever, ready to share in minutes.
               </Reveal>
-              <Reveal delay={0.14} className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4 lg:justify-start">
+              <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
                 <Link to={START} className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold text-[color:var(--ca-ink)] transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline">
                   Launch My Studio Page — Free <ArrowRight size={16} />
                 </Link>
@@ -919,15 +901,12 @@ export default function ArchitectPage() {
                   Book A Demo
                 </Link>
               </Reveal>
-              <Reveal delay={0.18} className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 lg:justify-start">
+              <Reveal delay={0.18} className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2">
                 {['No credit card', 'Free forever', '0% on Pro'].map((t) => (
                   <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-white/70"><Check size={14} style={{ color: 'var(--ca-accent)' }} /> {t}</span>
                 ))}
               </Reveal>
             </div>
-            <Reveal delay={0.1} className="relative hidden lg:block">
-              <IconArt icon={PencilRulerArt} label="An architect choosing Meeticulous to schedule studio consultations" className="mx-auto aspect-square w-full max-w-sm" iconClassName="h-24 w-24" />
-            </Reveal>
           </div>
         </div>
       </section>

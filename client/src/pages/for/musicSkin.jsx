@@ -424,13 +424,13 @@ export default function MusicSections({ data, wrap, Counter, icons, routeStart }
       <V2Pricing routeStart={routeStart} Decor={NoteDecor} cardClass={CARD} lift={false} />
 
       {/* ════════ ABOUT ════════ */}
-      <V2About wrap={wrap} label={data.label} background="var(--v2-wash)" Decor={NoteDecor} cardClass={CARD} />
+      <V2About wrap={wrap} label={data.label} background="var(--v2-wash)" Decor={NoteDecor} cardClass={CARD} cardsOnLeft />
 
       {/* Guides sit directly above the FAQ, as on the bespoke /for pages. */}
       <PageGuides />
 
       {/* ════════ FAQ — a tracklist ════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-28">
+      <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto grid max-w-6xl items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
           <div className="text-center lg:sticky lg:top-28 lg:text-left lg:[&_.text-center]:text-left lg:[&_.mx-auto]:mx-0">
             <SectionHead title="Frequently asked questions." center />
@@ -441,8 +441,8 @@ export default function MusicSections({ data, wrap, Counter, icons, routeStart }
       </section>
 
       {/* ════════ FINAL CTA — a stage under a spotlight ════════ */}
-      <section className="px-5 pb-24 pt-4 sm:px-8">
-        <div className="relative mx-auto max-w-5xl overflow-hidden rounded-[32px] px-6 pb-20 pt-20 text-center sm:px-10" style={{ background: 'var(--v2-dark)' }}>
+      <section>
+        <div className="relative mx-auto w-full overflow-hidden px-6 pb-20 pt-20 text-center sm:px-10" style={{ background: 'var(--v2-dark)' }}>
           {/* side lights + the main spot */}
           <span aria-hidden="true" className="pointer-events-none absolute -left-10 top-0 h-full w-1/2" style={{ background: `linear-gradient(200deg, ${SPOT}33, transparent 60%)`, clipPath: 'polygon(0 0, 18% 0, 100% 100%, 40% 100%)' }} />
           <span aria-hidden="true" className="pointer-events-none absolute -right-10 top-0 h-full w-1/2" style={{ background: `linear-gradient(160deg, ${SPOT}33, transparent 60%)`, clipPath: 'polygon(82% 0, 100% 0, 60% 100%, 0 100%)' }} />
@@ -455,9 +455,9 @@ export default function MusicSections({ data, wrap, Counter, icons, routeStart }
             <span key={n.l} aria-hidden="true" className="mt-rise pointer-events-none absolute bottom-6 font-heading text-[28px] font-extrabold" style={{ left: n.l, color: n.c === '♫' || n.c === '♬' ? SPOT : LILAC, animationDelay: `${n.d}s` }}>{n.c}</span>
           ))}
           <div className="relative">
-            <EqBars color={SPOT} bars={5} className="h-6" />
-            <h2 className="mx-auto mt-5 max-w-3xl font-heading text-[clamp(1.9rem,3.8vw,2.8rem)] font-extrabold leading-tight tracking-[-0.02em] text-white">{finalCta.headline}</h2>
-            <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-white/75">{finalCta.subline}</p>
+
+            <h2 className="mx-auto font-heading text-[clamp(1.9rem,3.8vw,2.8rem)] font-extrabold leading-tight tracking-[-0.02em] text-white w-full lg:w-[70%]">{finalCta.headline}</h2>
+            <p className="mx-auto mt-4 text-[15px] leading-relaxed text-white/75 w-full lg:w-[70%]">{finalCta.subline}</p>
             <Link to={routeStart} className={`mt-9 inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold hover:no-underline ${FOCUS}`} style={{ background: LILAC, color: 'var(--v2-dark)' }}>
               {finalCta.ctaText} <ArrowRight size={16} />
             </Link>

@@ -66,7 +66,6 @@ const inr = (n, dp = 2) => `₹${n.toLocaleString('en-IN', { minimumFractionDigi
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
 
-const HERO_TRUST = ['Free plan, no card needed', 'Razorpay-secured checkout', 'Built for India'];
 
 const PROOF = [
   { k: 'Checkout', v: 'UPI, cards, netbanking, wallets' },
@@ -332,13 +331,6 @@ export default function PaymentsFeature() {
                 See what you keep <ArrowRight size={15} />
               </a>
             </Reveal>
-            <Reveal instant delay={0.14} className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
-              {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] text-[#FBF3E8]/65">
-                  <Check size={14} style={{ color: GOLD }} aria-hidden /> {t}
-                </span>
-              ))}
-            </Reveal>
           </div>
           <Reveal instant delay={0.12}>
             <CheckoutDemo />
@@ -517,20 +509,6 @@ export default function PaymentsFeature() {
         />
       </section>
 
-      {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
-      <section className="bg-[#3A1E10] px-5 py-20 text-[#FBF3E8] sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-5xl text-center">
-          <Reveal as="h2" className="font-heading text-[clamp(1rem,5vw,2.9rem)] font-extrabold !text-[#FBF3E8] leading-[1.02] tracking-[-0.035em] whitespace-nowrap">
-            Stop chasing payments. <span style={{ color: GOLD }}>Get paid first.</span>
-          </Reveal>
-          <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-[#FBF3E8]/70">
-            Set up your booking page free. Your first client pays before they show up.
-          </Reveal>
-          <Reveal delay={0.1} className="mt-9 flex justify-center">
-            <PrimaryCta dark>Start free <ArrowRight size={16} /></PrimaryCta>
-          </Reveal>
-        </div>
-      </section>
     </main>
   );
 }

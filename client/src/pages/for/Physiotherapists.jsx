@@ -382,7 +382,7 @@ export default function Physiotherapists() {
                 Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+            <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
               {HERO_TRUST.map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-neutral-500">
                   <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
@@ -392,17 +392,6 @@ export default function Physiotherapists() {
           </div>
         </div>
 
-        {/* MOBILE — the scene stacked below the text (hidden on desktop).
-            The one wide image is reused: object-cover with a right-of-centre focal
-            point crops off the empty white left half and frames the therapist + mascot. */}
-        <img
-          src="/images/hero/physiotherapist-hero-wide.webp"
-          alt=""
-          aria-hidden="true"
-          width={1672}
-          height={941}
-          className="relative z-0 block h-[17rem] w-full object-cover object-[72%_center] sm:h-[22rem] lg:hidden"
-        />
       </section>
 
       {/* ═══════════════ 3 · TREATMENTS (numbered index rows) ═══════════════ */}
@@ -500,7 +489,7 @@ export default function Physiotherapists() {
             </div>
           ))}
           <Reveal delay={0.1} className="mt-10 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -738,15 +727,8 @@ export default function Physiotherapists() {
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-grey)' }}>
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* arched image cluster (empty placeholders) + years badge */}
-          <Reveal className="relative order-2 mx-auto w-full max-w-md lg:order-1 lg:mx-0 lg:max-w-none">
-            <div className="grid grid-cols-2 gap-4">
-              <ImgSlot alt="A physiotherapist assessing a patient's mobility" rounded="rounded-t-[999px] rounded-b-[20px]" className="aspect-[3/4]" />
-              <ImgSlot alt="A patient completing a guided rehab exercise" rounded="rounded-b-[999px] rounded-t-[20px]" className="mt-8 aspect-[3/4]" />
-            </div>
-            <div className="absolute left-1/2 top-1/2 z-10 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border-4 border-white text-white shadow-xl" style={{ background: 'var(--ca-primary)' }}>
-              <span className="font-heading text-2xl font-extrabold leading-none">0%</span>
-              <span className="mt-0.5 text-[9px] font-semibold uppercase tracking-wide text-white/80">commission</span>
-            </div>
+          <Reveal className="relative order-2 mx-auto w-full max-w-xl lg:order-1 lg:mx-0 lg:max-w-none">
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
 
           <div className="order-1 text-center lg:order-2 lg:text-left">
@@ -800,11 +782,11 @@ export default function Physiotherapists() {
         <div aria-hidden className="pointer-events-none absolute -top-24 left-1/2 h-80 w-[42rem] -translate-x-1/2 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(190,242,100,0.5), transparent)' }} />
         <div aria-hidden className="pointer-events-none absolute -bottom-32 -right-16 h-72 w-72 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(45,212,191,0.5), transparent)' }} />
 
-        <div className="relative mx-auto max-w-2xl">
+        <div className="relative mx-auto w-full lg:w-[70%]">
           <Reveal as="h2" delay={0.06} className="font-heading text-[clamp(1.9rem,5vw,2.75rem)] font-extrabold leading-[1.08] tracking-tight text-white">
             Spend less time scheduling.<br className="hidden sm:block" /> <span style={{ color: 'var(--ca-lime)' }}>Spend more time on recovery.</span>
           </Reveal>
-          <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/70">
+          <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base leading-relaxed text-white/70">
             Set up your centre&apos;s booking page today — free forever, and ready to share in minutes.
           </Reveal>
           <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

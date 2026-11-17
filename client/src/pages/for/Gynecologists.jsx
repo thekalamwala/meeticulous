@@ -353,7 +353,7 @@ export default function Gynecologists() {
                   Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </Reveal>
-              <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+              <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
                 {HERO_TRUST.map((t) => (
                   <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-600">
                     <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
@@ -363,9 +363,7 @@ export default function Gynecologists() {
             </div>
           </div>
           {/* Mobile — image strip below the copy */}
-          <div className="relative z-0 h-[300px] w-full overflow-hidden lg:hidden">
-            <img src="/images/hero/gynaec-hero-wide.webp" alt="" aria-hidden="true" className="h-full w-full object-cover object-[72%_bottom]" />
-          </div>
+
         </div>
       </section>
 
@@ -449,7 +447,7 @@ export default function Gynecologists() {
             ))}
           </div>
           <Reveal delay={0.1} className="mt-10 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -614,9 +612,8 @@ export default function Gynecologists() {
       {/* ═══════════════ 11 · ABOUT (promise editorial + blob image) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <Reveal className="relative order-2 mx-auto w-full max-w-sm lg:order-1 lg:mx-0 lg:max-w-none">
-            <div aria-hidden className="pointer-events-none absolute -left-10 -top-8 h-56 w-56 rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(4,120,87,0.12), transparent)' }} />
-            <ImgSlot alt="A calm women's-health clinic reception" rounded="rounded-[58%_42%_47%_53%/42%_53%_47%_58%]" className="relative aspect-square w-full shadow-[0_28px_60px_-30px_rgba(20,52,42,0.4)]" />
+          <Reveal className="relative order-2 mx-auto w-full max-w-xl lg:order-1 lg:mx-0 lg:max-w-none">
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
           <div className="order-1 text-center lg:order-2 lg:text-left">
             <Reveal as="h2" delay={0.04} className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
@@ -666,11 +663,11 @@ export default function Gynecologists() {
       <section className="relative overflow-hidden px-5 py-24 text-center sm:px-8" style={{ background: 'linear-gradient(160deg, #06231C 0%, #047857 100%)' }}>
         <div aria-hidden className="pointer-events-none absolute -top-24 left-1/2 h-80 w-[42rem] -translate-x-1/2 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(190,24,93,0.4), transparent)' }} />
         <div aria-hidden className="pointer-events-none absolute -bottom-28 -right-16 h-72 w-72 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(110,231,183,0.4), transparent)' }} />
-        <div className="relative mx-auto max-w-2xl">
+        <div className="relative mx-auto w-full lg:w-[70%]">
           <Reveal as="h2" delay={0.06} className="font-heading text-[clamp(1.9rem,5vw,2.75rem)] font-extrabold leading-[1.08] tracking-tight text-white">
             Give patients a calmer,<br className="hidden sm:block" /> <span style={{ color: '#6EE7B7' }}>more private way to book.</span>
           </Reveal>
-          <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/75">
+          <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base leading-relaxed text-white/75">
             Set up your clinic&apos;s booking page today — free forever, and ready to share in minutes.
           </Reveal>
           <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import useLenis from '../../hooks/useLenis';
 import Seo from '../../components/common/Seo';
-import OperatorCredit from '../../components/common/OperatorCredit';
+import ForPageFooter from './ForPageFooter';
 import PageGuides from '../../components/common/PageGuides';
 import { SITE_URL } from '../../utils/seo';
 import { FREE_PLAN, PAID_PLANS } from '../../data/plans';
@@ -44,7 +44,6 @@ import { V2Integrations, V2Pricing, V2About } from './v2Sections';
 import ForFaqIntro from '../../components/common/ForFaqIntro';
 
 const ROUTE_START = '/become-a-host';
-const YEAR = 2026;
 
 const GET_ICONS = [Wallet, CalendarClock, DoorOpen, BellRing, CalendarCheck, FileCheck, StarIcon, Compass];
 
@@ -174,7 +173,7 @@ function HeroCopy({ hero, centered = false, lift = true }) {
         <Link to={ROUTE_START} className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-white shadow-lg hover:no-underline sm:w-auto ${lift ? 'transition-transform hover:-translate-y-0.5' : ''}`} style={{ background: 'var(--v2-accent-cta)' }}>
           {hero.ctaText} <ArrowRight size={16} />
         </Link>
-        <span className="flex items-center gap-1.5 text-xs text-black/60"><Check size={13} style={{ color: 'var(--v2-accent)' }} />{hero.microcopy}</span>
+        <span className="hidden lg:flex items-center gap-1.5 text-xs text-black/60"><Check size={13} style={{ color: 'var(--v2-accent)' }} />{hero.microcopy}</span>
       </Reveal>
       {hero.audiences && (
         <Reveal delay={0.24} className={`mt-8 flex flex-wrap gap-2 ${centered ? 'justify-center' : 'justify-center lg:justify-start'}`}>
@@ -312,9 +311,7 @@ export default function ProfessionLandingV2() {
             <div className="relative z-10 flex items-center px-5 sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
               <div className="w-full py-14 sm:py-16 lg:max-w-[42rem] lg:py-0"><HeroCopy hero={hero} lift={false} /></div>
             </div>
-            <div className="relative z-0 h-[300px] w-full overflow-hidden lg:hidden">
-              <img src={hero.image} alt="" aria-hidden="true" className="h-full w-full object-cover object-right" />
-            </div>
+
           </div>
         </section>
       ) : (
@@ -348,15 +345,7 @@ export default function ProfessionLandingV2() {
             )}
           </div>
         )}
-        {/* MOBILE — the scene stacked below the text when a photo hero is set. */}
-        {hero.sideImage && (
-          <img
-            src={hero.sideImage}
-            alt=""
-            aria-hidden="true"
-            className="relative z-0 -mx-5 block h-[280px] w-[calc(100%_+_2.5rem)] object-cover object-right sm:-mx-8 sm:w-[calc(100%_+_4rem)] lg:hidden"
-          />
-        )}
+
       </section>
       )}
 
@@ -511,10 +500,10 @@ export default function ProfessionLandingV2() {
           </section>
 
           {/* ════════ FINAL CTA ════════ */}
-          <section className="px-5 pb-24 pt-4 sm:px-8">
-            <div className="mx-auto max-w-5xl overflow-hidden rounded-[20px] px-6 py-16 text-center shadow-[0_30px_70px_-30px_rgba(23,21,58,0.5)] sm:px-10" style={{ background: 'linear-gradient(135deg, var(--v2-accent), var(--v2-accent-ink))' }}>
-              <h2 className="font-heading text-[clamp(1.8rem,3.6vw,2.6rem)] font-extrabold text-white">{finalCta.headline}</h2>
-              <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-white/85">{finalCta.subline}</p>
+          <section>
+            <div className="mx-auto w-full overflow-hidden px-6 py-16 text-center shadow-[0_30px_70px_-30px_rgba(23,21,58,0.5)] sm:px-10" style={{ background: 'linear-gradient(135deg, var(--v2-accent), var(--v2-accent-ink))' }}>
+              <h2 className="font-heading text-[clamp(1.8rem,3.6vw,2.6rem)] font-extrabold text-white mx-auto w-full lg:w-[70%]">{finalCta.headline}</h2>
+              <p className="mx-auto mt-4 text-[15px] leading-relaxed text-white/85 w-full lg:w-[70%]">{finalCta.subline}</p>
               <Link to={ROUTE_START} className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-semibold transition-transform hover:-translate-y-0.5 hover:no-underline" style={{ color: 'var(--v2-accent-ink)' }}>
                 {finalCta.ctaText} <ArrowRight size={16} />
               </Link>
@@ -524,14 +513,7 @@ export default function ProfessionLandingV2() {
       )}
 
       {/* ── Footer ── */}
-      <footer className="px-5 py-12 text-center sm:px-8" style={{ background: 'var(--v2-dark)' }}>
-        <div className="mx-auto max-w-3xl">
-          <div className="font-heading text-lg font-bold text-white">Meeticulous</div>
-          <p className="mt-2 text-sm text-white/55">© {YEAR} All rights reserved.</p>
-          <p className="mt-4 text-sm font-semibold" style={{ color: 'var(--v2-footer-accent, var(--v2-accent))' }}><OperatorCredit /></p>
-          <p className="mt-4 text-xs uppercase tracking-[0.18em] text-white/55">Made for {madeFor || `India's ${label}`}</p>
-        </div>
-      </footer>
+      <ForPageFooter madeFor={madeFor || `India's ${label}`} label={label} />
     </main>
   );
 }

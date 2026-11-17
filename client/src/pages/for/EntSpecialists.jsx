@@ -529,7 +529,7 @@ export default function EntSpecialists() {
                   See How It Works <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
                 </a>
               </Reveal>
-              <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+              <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
                 {HERO_TRUST.map((t) => (
                   <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
                     <Check size={14} style={{ color: 'var(--ca-accent)' }} /> {t}
@@ -539,15 +539,6 @@ export default function EntSpecialists() {
             </div>
           </div>
 
-          {/* MOBILE — the scene below the text (hidden on desktop) */}
-          <div className="relative z-0 h-[300px] w-full overflow-hidden lg:hidden">
-            <img
-              src="/images/hero/ent-hero-wide.webp"
-              alt=""
-              aria-hidden="true"
-              className="h-full w-full object-cover object-right"
-            />
-          </div>
         </div>
       </section>
 
@@ -598,7 +589,7 @@ export default function EntSpecialists() {
             </div>
           </Reveal>
           <Reveal delay={0.1} className="mt-8 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -785,10 +776,8 @@ export default function EntSpecialists() {
               </Link>
             </Reveal>
           </div>
-          <Reveal delay={0.1} className="relative mx-auto w-full max-w-md">
-            <div aria-hidden className="pointer-events-none absolute -left-8 -top-8 h-40 w-40 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(8,145,178,0.2), transparent)' }} />
-            <ImgSlot alt="A calm, organised ENT clinic front desk" className="relative z-10 aspect-[5/4] w-full shadow-[0_24px_50px_-30px_rgba(30,27,58,0.45)]" />
-            <ImgSlot alt="An ENT specialist consulting a patient" className="relative z-20 -mt-10 ml-auto aspect-square w-2/3 ring-4 ring-white shadow-[0_22px_44px_-26px_rgba(30,27,58,0.5)]" />
+          <Reveal delay={0.1} className="relative mx-auto w-full max-w-xl">
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
         </div>
       </section>
@@ -809,32 +798,27 @@ export default function EntSpecialists() {
       </section>
 
       {/* ═══════════════ 12 · FINAL CTA (indigo + cyan glow + grid lines) ═══════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-24">
-        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[24px] px-6 py-16 text-center sm:px-12 sm:py-20" style={{ background: 'linear-gradient(150deg, #312E81 0%, #4338CA 100%)' }}>
-          <div aria-hidden className="pointer-events-none absolute -top-16 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(8,145,178,0.6), transparent)' }} />
-          <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)', backgroundSize: '44px 44px', maskImage: 'radial-gradient(circle at 50% 40%, #000, transparent 75%)', WebkitMaskImage: 'radial-gradient(circle at 50% 40%, #000, transparent 75%)' }} />
-          <div className="relative mx-auto max-w-2xl">
-            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-[14px]" style={{ background: 'rgba(255,255,255,0.12)' }}><Zap size={26} className="text-white" /></span>
-            <Reveal as="h2" delay={0.04} className="mt-6 font-heading text-[clamp(1.8rem,4.5vw,2.6rem)] font-extrabold leading-[1.1] tracking-tight text-white">
+      <section className="relative w-full overflow-hidden px-5 py-16 text-center sm:px-8 lg:py-20" style={{ background: 'linear-gradient(150deg, #312E81 0%, #4338CA 100%)' }}>
+        <div className="relative mx-auto w-full lg:w-[70%]">
+          <Reveal as="h2" delay={0.04} className="font-heading text-[clamp(1.8rem,4.5vw,2.6rem)] font-extrabold leading-[1.1] tracking-tight text-white">
               Spend less time scheduling. Spend more time with patients.
             </Reveal>
-            <Reveal as="p" delay={0.08} className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/75">
+          <Reveal as="p" delay={0.08} className="mx-auto mt-4 text-base leading-relaxed text-white/75">
               Set up your clinic&apos;s booking page today — free forever, ready to share in minutes.
             </Reveal>
-            <Reveal delay={0.12} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-              <Link to={START} className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <Link to={START} className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
                 Launch My Page — Free <ArrowRight size={16} />
               </Link>
-              <Link to="/contact" className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline">
+            <Link to="/contact" className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline">
                 Book A Demo
               </Link>
-            </Reveal>
-            <Reveal delay={0.16} className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2">
+          </div>
+          <Reveal delay={0.16} className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2">
               {['No credit card', 'Free forever', '0% on Pro'].map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-white/70"><Check size={14} style={{ color: '#67E8F9' }} /> {t}</span>
               ))}
             </Reveal>
-          </div>
         </div>
       </section>
 

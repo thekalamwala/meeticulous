@@ -352,7 +352,7 @@ export default function GeneralPhysicians() {
                 Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+            <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
               {HERO_TRUST.map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
                   <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
@@ -362,17 +362,6 @@ export default function GeneralPhysicians() {
           </div>
         </div>
 
-        {/* MOBILE — the scene stacked below the text (hidden on desktop).
-            The one wide image is reused: object-cover with a right-of-centre focal
-            point crops off the empty white left half and frames the doctor + mascot. */}
-        <img
-          src="/images/hero/doctor-hero-wide.webp"
-          alt=""
-          aria-hidden="true"
-          width={1920}
-          height={819}
-          className="relative z-0 block h-[17rem] w-full object-cover object-[68%_center] sm:h-[22rem] lg:hidden"
-        />
       </section>
 
       {/* ═══════════════ 3 · SERVICES (left-stripe cards) ═══════════════ */}
@@ -457,7 +446,7 @@ export default function GeneralPhysicians() {
             ))}
           </div>
           <Reveal delay={0.1} className="mt-10 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -634,12 +623,8 @@ export default function GeneralPhysicians() {
       {/* ═══════════════ 11 · ABOUT (image + overlapping card) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-cream)' }}>
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <Reveal className="relative order-2 mx-auto w-full max-w-md lg:order-1 lg:mx-0 lg:max-w-none">
-            <ImgSlot alt="A calm clinic reception managing appointments on Meeticulous" rounded="rounded-[20px]" className="aspect-[5/4] w-full shadow-[0_28px_60px_-30px_rgba(15,30,61,0.4)]" />
-            <div className="absolute -bottom-5 left-5 z-20 max-w-[16rem] rounded-2xl px-5 py-4 text-white shadow-[0_20px_44px_-20px_rgba(15,30,61,0.8)]" style={{ background: 'var(--ca-ink)' }}>
-              <div className="font-heading text-base font-extrabold leading-tight">Built for Indian clinics</div>
-              <p className="mt-1.5 text-xs leading-relaxed text-white/70">Your data is hosted in Mumbai, under India&apos;s DPDP Act 2023.</p>
-            </div>
+          <Reveal className="relative order-2 mx-auto w-full max-w-xl lg:order-1 lg:mx-0 lg:max-w-none">
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
           <div className="order-1 text-center lg:order-2 lg:text-left">
             <Reveal as="h2" delay={0.04} className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
@@ -688,11 +673,11 @@ export default function GeneralPhysicians() {
       {/* ═══════════════ 13 · FINAL CTA (clean blue band, dotted motif) ═══════════════ */}
       <section className="relative overflow-hidden px-5 py-24 text-center sm:px-8" style={{ background: 'linear-gradient(160deg, #0F1E3D 0%, #1D4ED8 100%)' }}>
         <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.14]" style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.9) 1px, transparent 1px)', backgroundSize: '24px 24px', maskImage: 'radial-gradient(120% 80% at 50% 50%, #000 30%, transparent 75%)', WebkitMaskImage: 'radial-gradient(120% 80% at 50% 50%, #000 30%, transparent 75%)' }} />
-        <div className="relative mx-auto max-w-2xl">
+        <div className="relative mx-auto w-full lg:w-[70%]">
           <Reveal as="h2" delay={0.06} className="font-heading text-[clamp(1.9rem,5vw,2.75rem)] font-extrabold leading-[1.08] tracking-tight text-white">
             Give patients an easier way<br className="hidden sm:block" /> <span style={{ color: '#93C5FD' }}>to book your clinic.</span>
           </Reveal>
-          <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/70">
+          <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base leading-relaxed text-white/70">
             Set up your clinic&apos;s booking page today — free forever, and ready to share in minutes.
           </Reveal>
           <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
