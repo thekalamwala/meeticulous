@@ -208,9 +208,11 @@ const Payouts = () => {
         </ul>
       </Panel>
 
-      {/* A drawer, like every other side surface here. The lab dropped the kit
-          Modal; this was the last one left. Withdrawing is irreversible, so it
-          still asks — it just asks from the side, with the arithmetic in view. */}
+      {/* A drawer, like every other side surface here. Withdrawing is
+          irreversible, so it still asks — it just asks from the side, with the
+          arithmetic in view. (This comment first claimed to be converting the
+          lab's last kit Modal. It was not: Grow's testimonial editor and
+          Bookings' add form were still modals, and were converted after.) */}
       <Drawer
         open={withdrawing}
         onClose={() => setWithdrawing(false)}

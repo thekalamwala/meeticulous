@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Button, Modal, cn } from '../../../components/dashboard/ui';
+import { Button, cn } from '../../../components/dashboard/ui';
 import {
   Avatar, LabInput as Input, LabSelect as Select,
   Drawer, Panel, StatusPill, fmtDayFull, fmtTime, inr, relDay, useLast, useSubPage,
@@ -202,26 +202,16 @@ const AddBooking = ({ open, onClose }) => {
   const [form, setForm] = useState({ name: '', phone: '', service: mock.services[1].id, date: '', time: '10:00', collect: 'link' });
   const valid = form.name.trim() && form.date;
   return (
-    <Modal
+    <Drawer
       open={open}
       onClose={onClose}
       title="Add a booking yourself"
-      size="md"
-      footer={(
-        <>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button
-            disabled={!valid}
-            onClick={() => { toast.success(`Booking created for ${form.name}`); onClose(); }}
-          >
-            Create booking
-          </Button>
-        </>
-      )}
+      subtitle="For the client who called instead of booking online"
+      width="sm:w-[420px]"
     >
       <div className="flex flex-col gap-2">
         <p className="text-[11px] font-medium text-ink/55">
-          For the client who called instead of booking online. It lands on your calendar and blocks the slot like any other.
+          It lands on your calendar and blocks the slot like any other.
         </p>
         <label className="block">
           <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-wide text-ink/40">Client name</span>
@@ -258,8 +248,14 @@ const AddBooking = ({ open, onClose }) => {
           </Select>
         </label>
         {!valid && <p className="text-[10.5px] font-semibold text-warning-fg">A name and a date are needed.</p>}
+        <div className="mt-1 flex gap-1.5">
+          <Button size="sm" disabled={!valid} onClick={() => { toast.success(`Booking created for ${form.name}`); onClose(); }}>
+            Create booking
+          </Button>
+          <Button size="sm" variant="outline" onClick={onClose}>Cancel</Button>
+        </div>
       </div>
-    </Modal>
+    </Drawer>
   );
 };
 

@@ -14,9 +14,9 @@ import {
   Quote, Share2, Star, Trash2, TrendingUp, Users,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Button, Modal, cn } from '../../../components/dashboard/ui';
+import { Button, cn } from '../../../components/dashboard/ui';
 import {
-  Avatar, Field, Funnel, LabInput, LabTextarea, Panel, RankedBars, Tile,
+  Avatar, Drawer, Field, Funnel, LabInput, LabTextarea, Panel, RankedBars, Tile,
   SubPageHeader, inr, pct, relDay, useSubPage,
 } from '../labUi';
 import mock from '../mockData';
@@ -29,7 +29,7 @@ const BookingPage = () => {
 
   return (
     <div className="flex flex-col gap-2.5">
-      <Panel title="Your link" subtitle="The one thing worth sharing">
+      <Panel title="Your link">
         <div className="flex flex-wrap items-center gap-1.5">
           <LabInput readOnly value={url} className="min-w-[220px] flex-1 font-mono text-[11.5px]" aria-label="Your booking page link" />
           <Button onClick={() => { navigator.clipboard?.writeText(`https://${url}`); toast.success('Link copied'); }}>
@@ -214,27 +214,14 @@ const SocialProof = () => {
         </ul>
       </Panel>
 
-      <Modal
+      {/* A drawer, not a modal. Three fields do not want a route of their own
+          the way a catalog item does, but they do want the lab's one side
+          surface rather than the kit dialog everything else here dropped. */}
+      <Drawer
         open={!!editing}
         onClose={() => setEditing(null)}
         title={editing === 'new' ? 'Add a testimonial' : 'Edit testimonial'}
-        size="md"
-        footer={(
-          <>
-            <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
-            <Button
-              disabled={!form.quote.trim() || !form.author_name.trim()}
-              onClick={() => {
-                if (editing === 'new') setItems((v) => [...v, { ...form, id: `t${Date.now()}` }]);
-                else setItems((v) => v.map((x) => (x.id === editing ? { ...form } : x)));
-                setEditing(null);
-                toast.success('Testimonial saved');
-              }}
-            >
-              Save
-            </Button>
-          </>
-        )}
+        width="sm:w-[420px]"
       >
         <div className="flex flex-col gap-2">
           <Field label="What they said">
@@ -249,8 +236,23 @@ const SocialProof = () => {
             </Field>
           </div>
           <p className="text-[10.5px] font-medium text-ink/50">Starter plans show three quotes. Pro shows all of them.</p>
+          <div className="mt-1 flex gap-1.5">
+            <Button
+              size="sm"
+              disabled={!form.quote.trim() || !form.author_name.trim()}
+              onClick={() => {
+                if (editing === 'new') setItems((v) => [...v, { ...form, id: `t${Date.now()}` }]);
+                else setItems((v) => v.map((x) => (x.id === editing ? { ...form } : x)));
+                setEditing(null);
+                toast.success('Testimonial saved');
+              }}
+            >
+              Save
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
+          </div>
         </div>
-      </Modal>
+      </Drawer>
     </div>
   );
 };
@@ -267,7 +269,7 @@ const Refer = () => {
         <Tile label="Pending" value={inr(r.pending)} hint="Paid once they take a booking" />
       </div>
 
-      <Panel title="Your invite link" subtitle="You both get paid when someone you invite goes live">
+      <Panel title="Your invite link">
         <div className="flex flex-wrap items-center gap-1.5">
           <LabInput readOnly value={r.link} className="min-w-[220px] flex-1 font-mono text-[11.5px]" aria-label="Your invite link" />
           <Button onClick={() => { navigator.clipboard?.writeText(`https://${r.link}`); toast.success('Invite link copied'); }}>
