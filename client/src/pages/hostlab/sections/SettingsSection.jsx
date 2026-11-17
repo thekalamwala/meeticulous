@@ -6,9 +6,13 @@
 // also gets a permanent button in the topbar, because a host looking for help
 // should not have to guess which section it lives under.
 //
-// "Where things moved" is a real tab, not a footnote: it is the preservation
+// "Where things moved" is a real page, not a footnote: it is the preservation
 // checklist, rendered from the same table the shell routes from, so it cannot
 // drift from the code.
+//
+// Verification, Notifications and Where things moved each hold a single panel,
+// so that panel is unnamed — its title and subtitle were word-for-word the
+// page's own heading and blurb, 30px apart.
 import { useState } from 'react';
 import {
   ArrowRight, Bell, CheckCircle2, CreditCard, HelpCircle, Mail, MessageSquare,
@@ -98,17 +102,19 @@ const Account = () => {
 
 /* ── Plan ──────────────────────────────────────────────────────────────── */
 const Plan = () => {
-  const thisM = mock.revenueByMonth.at(-1);
+  // A year against a year. Comparing one month's commission with Pro's annual
+  // price made Pro look twelve times more expensive than it is.
+  const wouldOwe = Math.round(mock.YEAR_REVENUE * 0.05);
   return (
     <div className="flex flex-col gap-2.5">
-      <Panel title="Your plan">
+      <Panel title="Your plan" subtitle="Last 12 months">
         <div className="flex flex-wrap items-center gap-2 rounded-xl border-2 border-maroon bg-maroon-50 p-2.5">
           <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-maroon text-white">
             <CreditCard className="h-5 w-5" strokeWidth={2.2} />
           </span>
           <div className="min-w-0 flex-1">
             <p className="font-display text-[13px] font-bold text-maroon">Pro</p>
-            <p className="text-[11px] font-medium text-ink/60">₹999 a month · 0% commission · renews 12 Dec</p>
+            <p className="text-[11px] font-medium text-ink/60">{inr(mock.PRO_YEARLY)} a year · 0% commission · renews 12 Dec</p>
           </div>
           <div className="flex gap-1.5">
             <Button size="sm" variant="outline" onClick={() => toast.success('Opens the plan comparison')}>Compare plans</Button>
@@ -117,9 +123,9 @@ const Plan = () => {
         </div>
         <ul className="mt-2.5 flex flex-col gap-1.5 text-[11.5px]">
           {[
-            ['Commission avoided this month', inr(Math.round(thisM.revenue * 0.05))],
-            ['What Pro cost you', inr(999)],
-            ['Net benefit', inr(Math.round(thisM.revenue * 0.05) - 999)],
+            ['Commission you would have paid on Starter (5%)', inr(wouldOwe)],
+            ['What Pro costs a year', inr(mock.PRO_YEARLY)],
+            ['You are ahead by', inr(wouldOwe - mock.PRO_YEARLY)],
           ].map(([k, v], i) => (
             <li key={k} className={cn('flex items-baseline justify-between gap-2', i === 2 && 'border-t-2 border-neutral-200 pt-2')}>
               <span className={cn(i === 2 ? 'font-bold text-ink' : 'font-medium text-ink/65')}>{k}</span>
@@ -151,7 +157,7 @@ const Plan = () => {
 
 /* ── Verification ──────────────────────────────────────────────────────── */
 const Verification = () => (
-  <Panel title="Verification" subtitle="Required before any money can reach your bank">
+  <Panel>
     <div className="flex flex-wrap items-center gap-2 rounded-xl border-2 border-success-fg/30 bg-success-bg p-2.5">
       <ShieldCheck className="h-6 w-6 shrink-0 text-success-fg" strokeWidth={2.2} />
       <div className="min-w-0 flex-1">
@@ -190,7 +196,7 @@ const Notifications = () => {
     ['A payout is sent', 'payout'],
   ];
   return (
-    <Panel title="Notifications" subtitle="What reaches you, and where" flush>
+    <Panel flush>
       <div className="hidden grid-cols-[1fr_repeat(3,72px)] items-center gap-1.5 border-b-2 border-neutral-200 bg-cream px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-ink/45 sm:grid">
         <span>Event</span>
         <span className="text-center">Email</span>
@@ -289,11 +295,7 @@ const Help = () => {
 
 /* ── Where things moved ────────────────────────────────────────────────── */
 const Moved = () => (
-  <Panel
-    title="Where everything moved"
-    subtitle={`All ${LIVE_PAGE_MAP.length} pages of today's dashboard, and where this redesign puts them. Nothing was dropped.`}
-    flush
-  >
+  <Panel flush>
     <ul className="divide-y-2 divide-neutral-200">
       {LIVE_PAGE_MAP.map(([from, to]) => (
         <li key={from} className="flex flex-col gap-1 px-2.5 py-1.5 sm:flex-row sm:items-center sm:gap-3">
@@ -324,7 +326,11 @@ const SettingsSection = () => {
             {mock.host.name} · Pro · host since {new Date(mock.host.member_since).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}
           </span>
         )}
-      />
+      >
+        {page.slug === 'moved'
+          ? `All ${LIVE_PAGE_MAP.length} pages of today's dashboard, and where this redesign puts them. Nothing was dropped.`
+          : undefined}
+      </SubPageHeader>
 
       {page.slug === 'account' && <Account />}
       {page.slug === 'plan' && <Plan />}
