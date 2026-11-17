@@ -250,7 +250,9 @@ Items previously listed here as pending are now live:
   Rollback: `ALTER FUNCTION public.increment_coupon_redemption(uuid) RESET search_path;`. Guarded:
   `tests/unit/lockdownAnonRpcMigration.test.js` now fails ANY `SECURITY DEFINER` definition in a
   migration from v3.186 on that does not pin search_path. Shipped with PR #375.
-- **v3.222** (`v3.222_course_fn_search_path.sql`) — **PENDING**, founder approval not yet given.
+- **v3.222** (`v3.222_course_fn_search_path.sql`) — applied 2026-11-17 on the Meeticulous DB and
+  verified (`search_path=public, pg_temp`; still SECURITY INVOKER; `courses` untouched; every
+  function we own now pins its path, 0 remaining).
   Pins `increment_course_purchase_count`, the last entry in the Supabase
   `function_search_path_mutable` lint. NOT v3.221's risk class: this one is SECURITY INVOKER, runs
   with the caller's own rights, no privilege escalation — it is fixed so the lint reads zero and the
