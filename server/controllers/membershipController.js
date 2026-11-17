@@ -5,6 +5,9 @@
 const { supabaseAdmin } = require('../config/supabase');
 const { safeError } = require('../utils/httpError');
 const store = require('../services/community/store');
+const razorpayConfig = require('../services/razorpayConfig');
+const { fetchSubscription } = require('../services/razorpaySubscriptions');
+const billing = require('../services/membershipBillingService');
 
 const MAX_TIERS = 3;
 
@@ -246,7 +249,75 @@ const joinFree = async (req, res) => {
   } catch (error) { safeError(res, error); }
 };
 
+// Load a joinable paid tier for the caller, or answer + return null.
+const loadJoinablePaidTier = async (req, res, tierId) => {
+  if (!tierId) { res.status(400).json({ message: 'tier_id is required' }); return null; }
+  const { data: tier, error } = await supabaseAdmin
+    .from('community_membership_tiers')
+    .select('id, name, type, status, price_inr, razorpay_plan_id_monthly, program:community_membership_programs!inner(host_id, status)')
+    .eq('id', tierId).maybeSingle();
+  if (error) {
+    if (isMissingTable(error)) res.status(503).json({ message: 'Memberships are not available yet.' });
+    else safeError(res, error);
+    return null;
+  }
+  if (!tier || tier.type !== 'paid' || tier.status !== 'live' || tier.program?.status !== 'live') {
+    res.status(400).json({ message: 'This tier is not open to join.' }); return null;
+  }
+  if (tier.program.host_id === req.user.id) { res.status(400).json({ message: 'You cannot join your own membership.' }); return null; }
+  return tier;
+};
+
+// ── POST /api/memberships/subscribe ───────────────────────────
+// Start a paid membership: mint/verify the tier's Razorpay plan + a subscription.
+// The webhook (notes.kind === 'membership') grants entitlement on charge.
+const createPaidSubscription = async (req, res) => {
+  try {
+    const tier = await loadJoinablePaidTier(req, res, req.body?.tier_id);
+    if (!tier) return;
+    const hostId = tier.program.host_id;
+
+    const { data: current } = await supabaseAdmin
+      .from('community_membership_subscriptions').select('id')
+      .eq('member_id', req.user.id).eq('host_id', hostId).in('status', ['active', 'past_due']).maybeSingle();
+    if (current) return res.status(409).json({ message: 'You already have a membership with this host.' });
+
+    const sub = await billing.startPaidSubscription({ tier, memberId: req.user.id, hostId });
+    res.status(201).json({ subscription_id: sub.id, key: await razorpayConfig.getKeyId() });
+  } catch (error) { safeError(res, error); }
+};
+
+// ── POST /api/memberships/subscription/sync ───────────────────
+// On-return fallback when the webhook lags: fetch the subscription and activate if live.
+const syncPaidSubscription = async (req, res) => {
+  try {
+    const { subscription_id: subId } = req.body || {};
+    if (!subId) return res.status(400).json({ message: 'subscription_id is required' });
+    const rzpSub = await fetchSubscription(subId);
+    if (rzpSub?.notes?.member_id !== req.user.id) return res.status(403).json({ message: 'Not your subscription.' });
+    if (['active', 'authenticated', 'charged'].includes(rzpSub.status)) {
+      await billing.activateFromSubscription({ rzpSub });
+    }
+    const { data: sub } = await supabaseAdmin
+      .from('community_membership_subscriptions').select('tier_id, status')
+      .eq('razorpay_subscription_id', subId).maybeSingle();
+    res.json({ membership: sub || null });
+  } catch (error) { safeError(res, error); }
+};
+
+// ── POST /api/memberships/cancel ──────────────────────────────
+// Cancel at cycle end (access continues until period end). { host_id }.
+const cancelSubscription = async (req, res) => {
+  try {
+    const hostId = req.body?.host_id;
+    if (!hostId) return res.status(400).json({ message: 'host_id is required' });
+    const r = await billing.cancelForMember({ memberId: req.user.id, hostId });
+    if (!r.canceled) return res.status(404).json({ message: 'No active membership to cancel.' });
+    res.json({ ok: true });
+  } catch (error) { safeError(res, error); }
+};
+
 module.exports = {
   getMyMembership, upsertProgram, addTier, updateTier, deleteTier, setPublished,
-  getPublicSpace, joinFree,
+  getPublicSpace, joinFree, createPaidSubscription, syncPaidSubscription, cancelSubscription,
 };

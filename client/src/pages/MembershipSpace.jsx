@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { getMembershipSpace, joinMembership } from "../services/api";
+import { getMembershipSpace, joinMembership, createMembershipSubscription, syncMembershipSubscription } from "../services/api";
+import loadRazorpay from "../utils/loadRazorpay";
 import { useAuth } from "../context/AuthContext";
 import ItemCard from "../components/community/ItemCard";
 import { Check, Lock, ArrowLeft } from "lucide-react";
@@ -36,12 +37,31 @@ export default function MembershipSpace() {
 
   const join = async (tier) => {
     if (!user) { navigate(`/login?next=/${username}/membership`); return; }
-    if (tier.type !== "free") { toast("Paid memberships are coming soon."); return; } // M6: Razorpay checkout
     setJoining(tier.id);
     try {
-      await joinMembership(tier.id);
-      toast.success(`You're in — ${tier.name}`);
-      await load(); // unlocks posts in place
+      if (tier.type === "free") {
+        await joinMembership(tier.id);
+        toast.success(`You're in — ${tier.name}`);
+        await load(); // unlocks posts in place
+        return;
+      }
+      // Paid: Razorpay recurring checkout. Webhook grants entitlement; sync is the on-return fallback.
+      const loaded = await loadRazorpay();
+      if (!loaded) { toast.error("Payment gateway failed to load"); return; }
+      const { data } = await createMembershipSubscription(tier.id);
+      new window.Razorpay({
+        key: data.key,
+        subscription_id: data.subscription_id,
+        name: "Meeticulous",
+        description: `${program.name} — ${tier.name} (auto-renews)`,
+        handler: async () => {
+          try { await syncMembershipSubscription(data.subscription_id); } catch { /* webhook will catch up */ }
+          toast.success(`Membership active — ${tier.name}`);
+          await load();
+        },
+        prefill: { name: user?.name, email: user?.email },
+        theme: { color: "#960D32" },
+      }).open();
     } catch (e) {
       toast.error(e?.response?.data?.message || "Could not join");
     } finally { setJoining(null); }

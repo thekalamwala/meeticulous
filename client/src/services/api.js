@@ -617,6 +617,9 @@ export const updateMembershipTier = (id, d)  => API.put(`/memberships/tiers/${id
 export const deleteMembershipTier = (id)     => API.delete(`/memberships/tiers/${id}`);
 export const getMembershipSpace = (username)  => API.get(`/memberships/space/${encodeURIComponent(username)}`);
 export const joinMembership     = (tierId)    => API.post('/memberships/join', { tier_id: tierId });
+export const createMembershipSubscription = (tierId) => API.post('/memberships/subscribe', { tier_id: tierId });
+export const syncMembershipSubscription   = (subId) => API.post('/memberships/subscription/sync', { subscription_id: subId });
+export const cancelMembership   = (hostId)    => API.post('/memberships/cancel', { host_id: hostId });
 
 // ── Admin ─────────────────────────────────────────────────────
 export const adminGetStats       = ()          => API.get('/admin/stats');

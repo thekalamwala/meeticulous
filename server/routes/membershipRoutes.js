@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
   getMyMembership, upsertProgram, addTier, updateTier, deleteTier, setPublished,
-  getPublicSpace, joinFree,
+  getPublicSpace, joinFree, createPaidSubscription, syncPaidSubscription, cancelSubscription,
 } = require('../controllers/membershipController');
 const { protect, optionalProtect, requireHost } = require('../middleware/authMiddleware');
 const { requireFeature } = require('../middleware/requireFeature');
@@ -12,8 +12,13 @@ const { requireFeature } = require('../middleware/requireFeature');
 // Public membership space — anyone; viewer rank (optionalProtect) unlocks teasers in place.
 router.get('/space/:username', optionalProtect, requireFeature('community_memberships'), getPublicSpace);
 
-// Free-tier join — any signed-in member (not the host). Paid joins are M6 (Razorpay).
+// Free-tier join — any signed-in member (not the host).
 router.post('/join', protect, requireFeature('community_memberships'), joinFree);
+
+// Paid membership (Razorpay). Subscribe is money movement -> extra SAFETY gate.
+router.post('/subscribe', protect, requireFeature('community_memberships'), requireFeature('membership_purchase'), createPaidSubscription);
+router.post('/subscription/sync', protect, requireFeature('community_memberships'), syncPaidSubscription);
+router.post('/cancel', protect, requireFeature('community_memberships'), cancelSubscription);
 
 // Host-only management.
 // No Pro gate yet — whether membership creation is a paid-plan feature is an open
