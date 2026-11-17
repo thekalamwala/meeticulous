@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import {
-  Briefcase, CircleCheck, CircleHelp, Lightbulb, Megaphone, MessageCircle, MessagesSquare, Pin, Share2,
+  Briefcase, CircleCheck, CircleHelp, Lightbulb, Lock, Megaphone, MessageCircle, MessagesSquare, Pin, Share2,
 } from 'lucide-react';
 import { relTime } from '../../utils/relTime';
 import AuthorChip, { Avatar } from './AuthorChip';
@@ -60,6 +60,39 @@ export default function ItemCard({ item, detail = false, onReply, actions, onHid
     return (
       <article data-testid="item-card" className="mt-card p-5 sm:p-6">
         <p className="text-sm font-medium text-muted">{TOMBSTONE[item.status]}</p>
+      </article>
+    );
+  }
+
+  // Locked membership teaser (M4): body/media/comments are server-withheld; show the
+  // author, title, teaser line, lock chip and a Join CTA. The CTA opens the host profile
+  // (membership space lands in M5).
+  if (item.locked) {
+    const chip = item.lock?.audience === 'free_subscribers' ? 'Free subscribers'
+      : (item.lock?.tier_name ? `${item.lock.tier_name} members` : 'Members only');
+    const cta = item.lock?.audience === 'free_subscribers' ? 'Subscribe free to read'
+      : (item.lock?.tier_name ? `Join ${item.lock.tier_name} to unlock` : 'Join to unlock');
+    // Open the host's membership space (profile_url is "/<username>").
+    const joinTo = item.author?.profile_url ? `${item.author.profile_url}/membership` : '#';
+    return (
+      <article data-testid="item-card" aria-label="Members-only post" className="mt-card gap-4 p-5 sm:p-6">
+        <div className="flex items-start gap-3">
+          <Avatar author={item.author} size="m" />
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-x-1.5 text-sm leading-snug">
+              <span className="font-semibold text-ink">{item.author?.display_name || 'Member'}</span>
+              <IdentityBadge author={item.author} />
+            </div>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-blush px-2.5 py-0.5 text-xs font-medium text-maroon">
+              <Lock size={13} aria-hidden="true" />{chip}
+            </span>
+          </div>
+        </div>
+        {item.title && <h3 className="font-display text-lg font-extrabold leading-tight text-maroon">{item.title}</h3>}
+        {item.teaser && <p className="text-sm leading-relaxed text-muted">{item.teaser}…</p>}
+        <Link to={joinTo} className="mt-btn mt-btn--primary mt-btn--s self-start gap-2 no-underline">
+          <Lock size={15} aria-hidden="true" />{cta}
+        </Link>
       </article>
     );
   }

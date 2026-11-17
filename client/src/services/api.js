@@ -608,6 +608,21 @@ export const getPurchasedCourses = ()         => API.get('/courses/purchased');
 export const createCourseOrder   = (data)     => API.post('/courses/create-order', data);
 export const verifyCoursePayment = (data)     => API.post('/courses/verify', data);
 
+// ── Memberships (host-side program + tiers) ───────────────────
+export const getMyMembership    = ()         => API.get('/memberships/mine');
+export const saveMembership     = (data)     => API.post('/memberships', data);
+export const publishMembership  = (live)     => API.post('/memberships/publish', { live });
+export const addMembershipTier  = (data)     => API.post('/memberships/tiers', data);
+export const updateMembershipTier = (id, d)  => API.put(`/memberships/tiers/${id}`, d);
+export const deleteMembershipTier = (id)     => API.delete(`/memberships/tiers/${id}`);
+export const getMembershipSpace = (username)  => API.get(`/memberships/space/${encodeURIComponent(username)}`);
+export const joinMembership     = (tierId)    => API.post('/memberships/join', { tier_id: tierId });
+export const createMembershipSubscription = (tierId) => API.post('/memberships/subscribe', { tier_id: tierId });
+export const syncMembershipSubscription   = (subId) => API.post('/memberships/subscription/sync', { subscription_id: subId });
+export const cancelMembership   = (hostId)    => API.post('/memberships/cancel', { host_id: hostId });
+export const getHostMembers     = ()          => API.get('/memberships/members');
+export const getMySubscriptions = ()          => API.get('/memberships/my-subscriptions');
+
 // ── Admin ─────────────────────────────────────────────────────
 export const adminGetStats       = ()          => API.get('/admin/stats');
 export const adminGetInsights    = ()          => API.get('/admin/insights/kpis');

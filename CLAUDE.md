@@ -218,16 +218,26 @@ Items previously listed here as pending are now live:
   `email_templates.seed_hash` (nullable). Production boot runs `services/email/templateSync.js`, which
   pushes `config/emailTemplates.js` copy into the DB and KEEPS rows edited in the admin editor
   (row content ≠ its seed_hash). Off switch: `EMAIL_TEMPLATE_SYNC=off`. Manual: `node scripts/seedEmailTemplates.js [--force]`.
-- **Live state re-verified 2026-11-12 (project audit, read-only) — where an older entry disagrees, this wins.**
-  Flags ON: `crm_admin_sends`, `community`, `community_writes`, `community_tithi`, `host_linkedin_login`.
-  Flags OFF: `community_v2`, `community_ads`, `coupons`, and — **flipped off 2026-11-12** — the seven
-  nudge tracks `activation_nudges`, `dormant_nudges`, `review_nudges`, `festival_nudges`,
-  `human_moments`, `empathy_track`, `community_email_onboarding`. They were ON with a broken
-  dedupe (re-sent every cron tick). The dedupe is **fixed** in this PR (`utils/notificationDedupe.js`,
-  fail-closed); they are safe to re-enable once it ships. Rollback: set those keys back to `true`.
-  Applied: v3.188, v3.199, v3.200, v3.201, v3.205.
-  **Not applied:** v3.191, `v3.203_admin_token_version` (admin session revocation is inert until it is),
-  `v3.204_coupons`. Open findings from that audit: `docs/audit-2026-11-12.md`.
+- **Live state re-verified 2026-11-17 (read-only query against the live DB) — where an older entry
+  disagrees, this wins.**
+  **Everything is now ON.** The seven nudge tracks — `activation_nudges`, `dormant_nudges`,
+  `review_nudges`, `festival_nudges`, `human_moments`, `empathy_track`,
+  `community_email_onboarding` — were switched back on after `utils/notificationDedupe.js` shipped
+  and was wired into the nudge services themselves (activationNudges, dormancyNudges, empathyScans,
+  festivalGreetings, community/onboardingSequence), which was the condition for re-enabling them.
+  **These send real email and WhatsApp.** Rollback: set the keys back to `false`.
+  `community_v2`, `community_ads` and `coupons` are ON too. Founder decision: test in prod.
+  `tds_tcs_v2` is ON (2026-11-17) — see its own entry below; with it OFF the legacy flat 1% + 1%
+  ignored `hasGstin` and would have taken GST TCS from hosts with no GSTIN to credit it to.
+  Applied: v3.188, v3.199, v3.200, v3.201, v3.205, **v3.204_coupons (2026-11-17)**.
+  **Not applied:** v3.191, `v3.203_admin_token_version` (admin session revocation is inert until it is).
+  Open findings from the 2026-11-12 audit: `docs/audit-2026-11-12.md`.
+- **Open security gap found 2026-11-17 (not fixed):** 149 public tables still grant `TRUNCATE` to
+  `anon` and `authenticated`. v3.206 revoked INSERT/UPDATE/DELETE but not TRUNCATE, and RLS does not
+  cover TRUNCATE. Not currently reachable — PostgREST exposes no TRUNCATE verb, so the publishable
+  key has no route to it — but it is the same posture v3.206 set out to close and wants a follow-up
+  migration. Also: `increment_coupon_redemption` (v3.204) is SECURITY DEFINER with no
+  `SET search_path`, unlike the v3.186/v3.218 pattern.
 - **v3.188** (`v3.188_host_linkedin_login_flag.sql`) — applied (confirmed 2026-11-12). Was listed PENDING: apply before/at merge of the LinkedIn
   host login release: seeds the `host_linkedin_login` flag OFF (`ON CONFLICT DO NOTHING`). The registry
   entry also carries `enabled: false`, so a boot before the migration still creates it OFF.

@@ -52,7 +52,6 @@ jest.mock('../../services/routeAutoPayoutService', () => ({
   handleSettlementWebhook: jest.fn().mockResolvedValue({ handled: true }),
   reverseByPaymentId: jest.fn().mockResolvedValue({ ok: true }),
 }));
-jest.mock('../../services/routeTransferService', () => ({ handleTransferWebhook: jest.fn().mockResolvedValue({ handled: true }) }));
 jest.mock('../../services/disputeService', () => ({ recordDispute: jest.fn().mockResolvedValue() }));
 jest.mock('../../utils/adminAlert', () => ({ adminAlert: jest.fn() }));
 jest.mock('../../utils/trackServer', () => ({ trackServer: jest.fn() }));
