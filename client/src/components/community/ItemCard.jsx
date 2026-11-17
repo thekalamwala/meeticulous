@@ -72,7 +72,8 @@ export default function ItemCard({ item, detail = false, onReply, actions, onHid
       : (item.lock?.tier_name ? `${item.lock.tier_name} members` : 'Members only');
     const cta = item.lock?.audience === 'free_subscribers' ? 'Subscribe free to read'
       : (item.lock?.tier_name ? `Join ${item.lock.tier_name} to unlock` : 'Join to unlock');
-    const joinTo = item.author?.profile_url || '#';
+    // Open the host's membership space (profile_url is "/<username>").
+    const joinTo = item.author?.profile_url ? `${item.author.profile_url}/membership` : '#';
     return (
       <article data-testid="item-card" aria-label="Members-only post" className="mt-card gap-4 p-5 sm:p-6">
         <div className="flex items-start gap-3">

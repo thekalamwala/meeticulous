@@ -151,6 +151,7 @@ const Availability = lazy(() => import('./pages/Availability'));
 const Products    = lazy(() => import('./pages/Products'));
 const Courses     = lazy(() => import('./pages/Courses'));
 const Memberships = lazy(() => import('./pages/Memberships'));
+const MembershipSpace = lazy(() => import('./pages/MembershipSpace'));
 const MyCourses   = lazy(() => import('./pages/MyCourses'));
 const CoursePage  = lazy(() => import('./pages/CoursePage'));
 const HostCoupons = lazy(() => import('./pages/HostCoupons'));
@@ -894,6 +895,7 @@ function App() {
           <Route path="/:profileSlug/badges" element={<BadgeShowcase />} />
           <Route path="/:profileSlug/product/:productId" element={<ProductPurchase />} />
           <Route path="/:username/course/:slug" element={<CoursePage />} />
+          <Route path="/:username/membership" element={<MembershipSpace />} />
           <Route path="/:profileSlug/booking" element={<BookingRedirect />} />
           <Route path="/:profileSlug/booking/:serviceSlug" element={<ServiceBooking />} />
           <Route path="/:profileSlug/:serviceSlug" element={<ServiceDetail />} />

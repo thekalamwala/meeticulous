@@ -4,8 +4,14 @@
 // file is pure CRUD + the publish guard. Paid joins (Razorpay) are M6.
 const { supabaseAdmin } = require('../config/supabase');
 const { safeError } = require('../utils/httpError');
+const store = require('../services/community/store');
 
 const MAX_TIERS = 3;
+
+const publicTier = (t) => ({
+  id: t.id, name: t.name, type: t.type, price_inr: t.price_inr,
+  billing_period: t.billing_period, perks: Array.isArray(t.perks) ? t.perks : [],
+});
 
 // ponytail: schema-fallback — if v3.218 isn't applied yet, Supabase returns a
 // "relation does not exist" error. Reads degrade to "no program", writes soft-503,
@@ -159,4 +165,88 @@ const setPublished = async (req, res) => {
   } catch (error) { safeError(res, error); }
 };
 
-module.exports = { getMyMembership, upsertProgram, addTier, updateTier, deleteTier, setPublished };
+// ── GET /api/memberships/space/:username ──────────────────────
+// Public membership space: live program + live tiers + recent posts as (gated) teasers.
+// 404 when the host has no live program. optionalProtect -> viewer rank unlocks in place.
+const getPublicSpace = async (req, res) => {
+  try {
+    const username = String(req.params.username || '').toLowerCase().trim();
+    if (!username) return res.status(404).json({ message: 'Not found' });
+    const { data: host } = await supabaseAdmin
+      .from('profiles').select('id, username, name, profile_image').eq('username', username).maybeSingle();
+    if (!host) return res.status(404).json({ message: 'Not found' });
+
+    const { data: program, error } = await supabaseAdmin
+      .from('community_membership_programs')
+      .select('*, tiers:community_membership_tiers(*)')
+      .eq('host_id', host.id).eq('status', 'live').maybeSingle();
+    if (error) {
+      if (isMissingTable(error)) return res.status(404).json({ message: 'Not found' });
+      return safeError(res, error);
+    }
+    if (!program) return res.status(404).json({ message: 'Not found' });
+
+    const tiers = (program.tiers || [])
+      .filter((t) => t.status === 'live').sort((a, b) => (a.position || 0) - (b.position || 0)).map(publicTier);
+
+    // Recent posts as teasers (hydrateItems gates per viewer). Soft-fail if community isn't live.
+    let posts = [];
+    try {
+      const rows = await store.listAuthorPosts({ authorId: host.id, limit: 10 });
+      posts = await store.hydrateItems(rows, req.user?.id || null);
+    } catch (_) { posts = []; }
+
+    // Viewer's current membership for this host (drives "you're a member" state).
+    let viewerMembership = null;
+    if (req.user?.id) {
+      const { data: sub } = await supabaseAdmin
+        .from('community_membership_subscriptions')
+        .select('tier_id, status')
+        .eq('member_id', req.user.id).eq('host_id', host.id).in('status', ['active', 'past_due']).maybeSingle();
+      viewerMembership = sub || null;
+    }
+
+    res.json({
+      host: { username: host.username, name: host.name, avatar_url: host.profile_image || null },
+      program: { name: program.name, blurb: program.blurb, cover_url: program.cover_url },
+      tiers, posts, viewer_membership: viewerMembership,
+    });
+  } catch (error) { safeError(res, error); }
+};
+
+// ── POST /api/memberships/join ────────────────────────────────
+// Free-tier join: instant, no payment. Paid joins go through Razorpay (M6).
+const joinFree = async (req, res) => {
+  try {
+    const { tier_id: tierId } = req.body || {};
+    if (!tierId) return res.status(400).json({ message: 'tier_id is required' });
+    const { data: tier, error } = await supabaseAdmin
+      .from('community_membership_tiers')
+      .select('id, type, status, program:community_membership_programs!inner(host_id, status)')
+      .eq('id', tierId).maybeSingle();
+    if (error) {
+      if (isMissingTable(error)) return res.status(503).json({ message: 'Memberships are not available yet.' });
+      return safeError(res, error);
+    }
+    if (!tier || tier.type !== 'free' || tier.status !== 'live' || tier.program?.status !== 'live') {
+      return res.status(400).json({ message: 'This tier is not open to join.' });
+    }
+    const hostId = tier.program.host_id;
+    if (hostId === req.user.id) return res.status(400).json({ message: 'You cannot join your own membership.' });
+
+    const { data: sub, error: insErr } = await supabaseAdmin
+      .from('community_membership_subscriptions')
+      .insert({ member_id: req.user.id, host_id: hostId, tier_id: tier.id, status: 'active' })
+      .select().single();
+    if (insErr) {
+      if (isUniqueViolation(insErr)) return res.status(409).json({ message: 'You are already a member.' });
+      return safeError(res, insErr);
+    }
+    res.status(201).json({ subscription: sub });
+  } catch (error) { safeError(res, error); }
+};
+
+module.exports = {
+  getMyMembership, upsertProgram, addTier, updateTier, deleteTier, setPublished,
+  getPublicSpace, joinFree,
+};
