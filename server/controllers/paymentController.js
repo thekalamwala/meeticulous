@@ -22,7 +22,6 @@ const profileSecrets = require("../utils/profileSecrets");
 const { verifySignature } = require("../utils/razorpaySignature");
 const { finalizeBookingCapture, recordBookingRefund } = require("../services/bookingCapture");
 const { sendBookingConfirmation } = require("../services/bookingConfirmation");
-const routeTransferService = require("../services/routeTransferService");
 const routeAutoPayoutService = require("../services/routeAutoPayoutService");
 const { capture: phCapture, resolveGuestId } = require("../utils/posthog");
 const { trackServer } = require("../utils/trackServer");
@@ -1366,11 +1365,15 @@ const handleWebhook = async (req, res) => {
     const transfer = event.payload?.transfer?.entity;
     try {
       if (transfer) {
-        // A transfer id belongs to EITHER a booking held transfer (Phase 2 auto-
-        // payout) or a payout_request (Phase 1 manual release). Try the booking
-        // handler first; fall back to the payout-request handler.
-        let r = await routeAutoPayoutService.handleBookingTransferWebhook(transfer);
-        if (!r.handled) r = await routeTransferService.handleTransferWebhook(transfer);
+        // ONE rail, so one handler. Every transfer we create is a per-booking
+        // held transfer; the balance-transfer path that used to need a second
+        // handler is gone. An id we do not recognise is now worth saying so
+        // about rather than passing to a lookup that can only miss — it would
+        // mean a transfer exists at Razorpay that this system did not create.
+        const r = await routeAutoPayoutService.handleBookingTransferWebhook(transfer);
+        if (!r.handled) {
+          securityLog('route_transfer_unrecognised', { transferId: transfer.id, status: transfer.status, event: event.event });
+        }
         auditLog('WEBHOOK_ROUTE_TRANSFER', null, { transfer_id: transfer.id, event: event.event, status: transfer.status, handled: r.handled, reason: r.reason });
       }
     } catch (err) {
