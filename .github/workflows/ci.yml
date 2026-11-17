@@ -153,6 +153,14 @@ jobs:
           GOOGLE_TOKEN_KEY: ci-test-32-byte-key-000000000000
           CLIENT_URL: http://localhost:5173
           AISENSY_WEBHOOK_SECRET: ci-test-secret-not-real
+          # config/supabase.js is required transitively by intelRollup and
+          # fails fast if these are unset. The suite never makes a Supabase
+          # network call (it talks to the pg service above) — createClient is
+          # lazy — so a shaped-but-fake key and URL satisfy the guard without
+          # granting anything. sb_secret_ prefix passes the new-secret check.
+          SUPABASE_URL: https://ci-test.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: sb_secret_ci-test-not-real
+          SUPABASE_ANON_KEY: sb_publishable_ci-test-not-real
 
   client:
     name: Client (unit tests)
