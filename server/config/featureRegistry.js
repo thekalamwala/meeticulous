@@ -135,6 +135,12 @@ const REGISTRY = [
   // ON is what starts the event clock, and Phase 4 of Creator Intelligence needs
   // 14 days on that clock, so the flip is the date to note, not the merge.
   { key: 'analytics_ingest',     label: 'Analytics Ingest',     category: 'Analytics', scope: 'both', enabled: false, description: 'First-party event collection at POST /api/analytics/collect. Off = the endpoint still answers 202 and drops, so no guest ever sees an error. Kill this if analytics writes threaten the shared database cap.' },
+
+  // ── CONSOLE ──────────────────────────────────────────────────
+  // Nav grouping only: the SAME routes, regrouped per the host-dashboard
+  // redesign. No URL changes, so every bookmark and emailed link keeps working
+  // with it on or off, and flipping it back is a full revert.
+  { key: 'console_v2',           label: 'Console v2 (rail grouping)', category: 'Operations', scope: 'vendor', enabled: false, description: 'Regrouped host dashboard rail: Clients and Schedule get their own sections, Grow collects testimonials + referrals. Ships OFF. Off = the current grouping is served. Routes are identical either way.' },
 ];
 
 const KEYS = REGISTRY.map((f) => f.key);
