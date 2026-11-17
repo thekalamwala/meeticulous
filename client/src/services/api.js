@@ -620,6 +620,8 @@ export const joinMembership     = (tierId)    => API.post('/memberships/join', {
 export const createMembershipSubscription = (tierId) => API.post('/memberships/subscribe', { tier_id: tierId });
 export const syncMembershipSubscription   = (subId) => API.post('/memberships/subscription/sync', { subscription_id: subId });
 export const cancelMembership   = (hostId)    => API.post('/memberships/cancel', { host_id: hostId });
+export const getHostMembers     = ()          => API.get('/memberships/members');
+export const getMySubscriptions = ()          => API.get('/memberships/my-subscriptions');
 
 // ── Admin ─────────────────────────────────────────────────────
 export const adminGetStats       = ()          => API.get('/admin/stats');

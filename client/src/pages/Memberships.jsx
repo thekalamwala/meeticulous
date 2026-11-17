@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import {
   getMyMembership, saveMembership, publishMembership,
-  addMembershipTier, updateMembershipTier, deleteMembershipTier,
+  addMembershipTier, updateMembershipTier, deleteMembershipTier, getHostMembers,
 } from "../services/api";
 import { useFeature } from "../context/FeatureContext";
 import BackButton from "../components/common/BackButton";
@@ -28,13 +28,17 @@ export default function Memberships() {
   const [showTier, setShowTier] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [members, setMembers] = useState(null);
 
   const fetchProgram = async () => {
     setLoadError(false);
     try {
       const { data } = await getMyMembership();
       setProgram(data.program || null);
-      if (data.program) setForm({ name: data.program.name, blurb: data.program.blurb || "", cover_url: data.program.cover_url || "" });
+      if (data.program) {
+        setForm({ name: data.program.name, blurb: data.program.blurb || "", cover_url: data.program.cover_url || "" });
+        getHostMembers().then(({ data: m }) => setMembers(m)).catch(() => {});
+      }
     } catch { setLoadError(true); }
   };
   useEffect(() => { if (on) fetchProgram(); }, [on]);
@@ -164,6 +168,33 @@ export default function Memberships() {
               </div>
             </div>
           ))}
+        </Card>
+      )}
+
+      {program && members && (
+        <Card className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="font-display text-lg">Members</h3>
+            <div className="text-right text-sm">
+              <div className="font-semibold text-maroon">{members.member_count || 0} active</div>
+              {members.mrr > 0 && <div className="text-ink/60">₹{members.mrr}/mo</div>}
+            </div>
+          </div>
+          {(!members.members || members.members.length === 0) ? (
+            <p className="text-sm text-ink/60">No members yet.</p>
+          ) : (
+            <ul className="divide-y divide-ink/5">
+              {members.members.map((m) => (
+                <li key={m.id} className="flex items-center justify-between py-2">
+                  <span className="text-sm">{m.member.name}</span>
+                  <span className="flex items-center gap-2">
+                    {m.tier && <Badge>{m.tier.name}</Badge>}
+                    <StatusBadge status={m.status} />
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </Card>
       )}
 

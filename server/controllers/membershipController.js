@@ -8,6 +8,7 @@ const store = require('../services/community/store');
 const razorpayConfig = require('../services/razorpayConfig');
 const { fetchSubscription } = require('../services/razorpaySubscriptions');
 const billing = require('../services/membershipBillingService');
+const membershipNotify = require('../services/community/membershipNotify');
 
 const MAX_TIERS = 3;
 
@@ -225,7 +226,7 @@ const joinFree = async (req, res) => {
     if (!tierId) return res.status(400).json({ message: 'tier_id is required' });
     const { data: tier, error } = await supabaseAdmin
       .from('community_membership_tiers')
-      .select('id, type, status, program:community_membership_programs!inner(host_id, status)')
+      .select('id, name, type, status, program:community_membership_programs!inner(host_id, status)')
       .eq('id', tierId).maybeSingle();
     if (error) {
       if (isMissingTable(error)) return res.status(503).json({ message: 'Memberships are not available yet.' });
@@ -245,6 +246,7 @@ const joinFree = async (req, res) => {
       if (isUniqueViolation(insErr)) return res.status(409).json({ message: 'You are already a member.' });
       return safeError(res, insErr);
     }
+    membershipNotify.newMember({ hostId, tierName: tier.name });
     res.status(201).json({ subscription: sub });
   } catch (error) { safeError(res, error); }
 };
@@ -317,7 +319,71 @@ const cancelSubscription = async (req, res) => {
   } catch (error) { safeError(res, error); }
 };
 
+// Batch-load minimal public profile fields for a set of ids (never leak email/phone).
+const loadProfiles = async (ids) => {
+  const uniq = [...new Set(ids.filter(Boolean))];
+  if (!uniq.length) return {};
+  const { data } = await supabaseAdmin
+    .from('profiles').select('id, name, first_name, username, profile_image').in('id', uniq);
+  return Object.fromEntries((data || []).map((p) => [p.id, p]));
+};
+
+// ── GET /api/memberships/members ──────────────────────────────
+// Host dashboard: subscribers + MRR snapshot + status/tier counts.
+const getHostMembers = async (req, res) => {
+  try {
+    const programId = await callerProgramId(req.user.id);
+    if (!programId) return res.json({ members: [], mrr: 0, counts: {} });
+    const { data: subs, error } = await supabaseAdmin
+      .from('community_membership_subscriptions')
+      .select('id, member_id, status, current_period_end, started_at, tier:community_membership_tiers(name, type, price_inr)')
+      .eq('host_id', req.user.id).order('started_at', { ascending: false });
+    if (error) {
+      if (isMissingTable(error)) return res.json({ members: [], mrr: 0, counts: {} });
+      return safeError(res, error);
+    }
+    const profiles = await loadProfiles((subs || []).map((s) => s.member_id));
+    const current = (subs || []).filter((s) => ['active', 'past_due'].includes(s.status));
+    const mrr = current.reduce((sum, s) => sum + (s.tier?.type === 'paid' ? (s.tier.price_inr || 0) : 0), 0);
+    const counts = (subs || []).reduce((acc, s) => { acc[s.status] = (acc[s.status] || 0) + 1; return acc; }, {});
+    const members = (subs || []).map((s) => ({
+      id: s.id, status: s.status, current_period_end: s.current_period_end, started_at: s.started_at,
+      tier: s.tier ? { name: s.tier.name, type: s.tier.type, price_inr: s.tier.price_inr } : null,
+      member: (() => { const p = profiles[s.member_id]; return p ? { name: p.first_name || p.name || 'Member', avatar_url: p.profile_image || null } : { name: 'Member', avatar_url: null }; })(),
+    }));
+    res.json({ members, mrr, counts, member_count: current.length });
+  } catch (error) { safeError(res, error); }
+};
+
+// ── GET /api/memberships/my-subscriptions ─────────────────────
+// Member surface: my memberships across hosts (tier, renewal, status) + cancel target.
+const getMySubscriptions = async (req, res) => {
+  try {
+    const { data: subs, error } = await supabaseAdmin
+      .from('community_membership_subscriptions')
+      .select('id, host_id, status, current_period_end, started_at, razorpay_subscription_id, tier:community_membership_tiers(name, type, price_inr)')
+      .eq('member_id', req.user.id).order('started_at', { ascending: false });
+    if (error) {
+      if (isMissingTable(error)) return res.json({ subscriptions: [] });
+      return safeError(res, error);
+    }
+    const profiles = await loadProfiles((subs || []).map((s) => s.host_id));
+    const subscriptions = (subs || []).map((s) => {
+      const h = profiles[s.host_id];
+      return {
+        id: s.id, host_id: s.host_id, status: s.status,
+        current_period_end: s.current_period_end, started_at: s.started_at,
+        paid: !!s.razorpay_subscription_id,
+        host: h ? { name: h.name || h.username || 'Host', username: h.username, avatar_url: h.profile_image || null } : null,
+        tier: s.tier ? { name: s.tier.name, type: s.tier.type, price_inr: s.tier.price_inr } : null,
+      };
+    });
+    res.json({ subscriptions });
+  } catch (error) { safeError(res, error); }
+};
+
 module.exports = {
   getMyMembership, upsertProgram, addTier, updateTier, deleteTier, setPublished,
   getPublicSpace, joinFree, createPaidSubscription, syncPaidSubscription, cancelSubscription,
+  getHostMembers, getMySubscriptions,
 };

@@ -11,6 +11,7 @@
 const { supabaseAdmin } = require('../config/supabase');
 const razorpayConfig = require('./razorpayConfig');
 const { planStillExists, createSubscription, cancelSubscription } = require('./razorpaySubscriptions');
+const membershipNotify = require('./community/membershipNotify');
 
 const unixToIso = (s) => (s ? new Date(s * 1000).toISOString() : null);
 
@@ -64,6 +65,7 @@ async function activateFromSubscription({ rzpSub }) {
       .update({ status: 'active', tier_id: notes.tier_id, current_period_end: periodEnd, updated_at: nowIso })
       .eq('id', existing.id);
     if (error) throw error;
+    membershipNotify.renewed({ memberId: notes.member_id }); // existing row re-charged = renewal
   } else {
     const { error } = await supabaseAdmin.from('community_membership_subscriptions').insert({
       member_id: notes.member_id, host_id: notes.host_id, tier_id: notes.tier_id,
@@ -79,6 +81,7 @@ async function activateFromSubscription({ rzpSub }) {
         if (upErr) throw upErr;
       } else throw error;
     }
+    membershipNotify.newMember({ hostId: notes.host_id }); // first paid activation = new member
   }
   return { activated: true };
 }
@@ -89,6 +92,7 @@ async function markHalted(rzpSub) {
   await supabaseAdmin.from('community_membership_subscriptions')
     .update({ status: 'past_due', updated_at: new Date().toISOString() })
     .eq('razorpay_subscription_id', rzpSub.id);
+  membershipNotify.paymentFailed({ memberId: rzpSub?.notes?.member_id });
 }
 
 // subscription.cancelled (fires at cycle end for an at-cycle-end cancel) → expire access.

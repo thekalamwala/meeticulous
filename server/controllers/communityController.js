@@ -14,6 +14,7 @@ const { CURRENT_TERMS_VERSION } = require('../middleware/communityGate');
 const { bustSitemapCache } = require('../utils/sitemapCache');
 const { adminAlert } = require('../utils/adminAlert');
 const { isFeatureEnabled } = require('../services/featureFlags');
+const membershipNotify = require('../services/community/membershipNotify');
 
 const PHASE1_FORMATS = ['text', 'question', 'announcement'];
 // Spec §6/§13: the `official` space policy and announcements are for badge 'official' only.
@@ -194,6 +195,9 @@ const createItem = handle(async (req, res) => {
   await recordMentions({ item, comment: null, text: `${draft.title || ''}\n${draft.body}`, actorId: uid });
   item.is_indexable = await safeRefresh(item.id);
   bustSitemapCache();
+
+  // New members-only post → notify entitled members (batched, fire-and-forget).
+  if (audience !== 'public') membershipNotify.newPost(item);
 
   // Admin ping: a brand-new account's first post is the spam / sock-puppet canary.
   // member.post_count is the pre-insert value (counted from community_members),

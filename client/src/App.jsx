@@ -152,6 +152,7 @@ const Products    = lazy(() => import('./pages/Products'));
 const Courses     = lazy(() => import('./pages/Courses'));
 const Memberships = lazy(() => import('./pages/Memberships'));
 const MembershipSpace = lazy(() => import('./pages/MembershipSpace'));
+const MyMemberships = lazy(() => import('./pages/MyMemberships'));
 const MyCourses   = lazy(() => import('./pages/MyCourses'));
 const CoursePage  = lazy(() => import('./pages/CoursePage'));
 const HostCoupons = lazy(() => import('./pages/HostCoupons'));
@@ -908,6 +909,7 @@ function App() {
             <Route path="/user" element={<GuestOverview />} />
             <Route path="/user/my-bookings" element={<CustomerBookings />} />
             <Route path="/user/courses" element={<MyCourses />} />
+            <Route path="/user/memberships" element={<MyMemberships />} />
             <Route path="/user/invoices" element={<GuestInvoices />} />
             <Route path="/user/profile" element={<CustomerProfile />} />
             <Route path="/user/reviews" element={<CustomerReviews />} />
