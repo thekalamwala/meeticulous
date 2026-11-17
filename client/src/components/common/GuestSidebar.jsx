@@ -12,16 +12,19 @@ import useSupportUnread from '../../hooks/useSupportUnread';
 // Layout: a fixed left column on lg+, a slide-in drawer on mobile (opened by the
 // topbar hamburger). Adding a page = one entry in NAV.
 
+// Path suffixes off the console base. The real console is based at /user; the
+// restyle prototype reuses this exact rail at /preview/guest by passing `base`.
 const NAV = [
-  { to: '/user', label: 'Home', icon: Home, end: true },
-  { to: '/user/my-bookings', label: 'Bookings', icon: CalendarDays },
-  { to: '/user/courses', label: 'My Courses', icon: Video },
-  { to: '/user/invoices', label: 'Invoices', icon: FileText },
-  { to: '/user/reviews', label: 'Reviews', icon: Star },
-  { to: '/user/loyalty', label: 'Rewards', icon: Gift },
-  { to: '/user/chat', label: 'Chat', icon: MessageCircle, badge: 'chat' },
-  { to: '/user/profile', label: 'Profile', icon: User },
+  { path: '', label: 'Home', icon: Home, end: true },
+  { path: 'my-bookings', label: 'Bookings', icon: CalendarDays },
+  { path: 'courses', label: 'My Courses', icon: Video },
+  { path: 'invoices', label: 'Invoices', icon: FileText },
+  { path: 'reviews', label: 'Reviews', icon: Star },
+  { path: 'loyalty', label: 'Rewards', icon: Gift },
+  { path: 'chat', label: 'Chat', icon: MessageCircle, badge: 'chat' },
+  { path: 'profile', label: 'Profile', icon: User },
 ];
+const hrefFor = (base, path) => (path ? `${base}/${path}` : base);
 
 // STYLING (explore/console-restyle): Loop & Slot rail — solid maroon active row
 // (like the Host Lab rail), blush hover, rose unread badge.
@@ -33,10 +36,10 @@ const rowClass = ({ isActive }) =>
   }`;
 
 // Shared nav list — rendered in both the desktop column and the mobile drawer.
-const NavList = ({ chatUnread, onNavigate }) => (
+const NavList = ({ chatUnread, onNavigate, base }) => (
   <nav className="flex flex-col gap-1" aria-label="Your account">
-    {NAV.map(({ to, label, icon: Icon, end, badge }) => (
-      <NavLink key={to} to={to} end={end} onClick={onNavigate} className={rowClass}>
+    {NAV.map(({ path, label, icon: Icon, end, badge }) => (
+      <NavLink key={path} to={hrefFor(base, path)} end={end} onClick={onNavigate} className={rowClass}>
         {({ isActive }) => (
           <>
             <Icon size={17} strokeWidth={2} className="shrink-0" />
@@ -53,7 +56,7 @@ const NavList = ({ chatUnread, onNavigate }) => (
   </nav>
 );
 
-const GuestSidebar = ({ open, onClose, triggerRef }) => {
+const GuestSidebar = ({ open, onClose, triggerRef, base = '/user' }) => {
   const chatUnread = useSupportUnread();
   const drawerRef = useRef(null);
 
@@ -78,7 +81,7 @@ const GuestSidebar = ({ open, onClose, triggerRef }) => {
           <span className="font-display text-[18px] font-extrabold tracking-[-0.03em] text-maroon">Meeticulous</span>
         </div>
         <div className="flex-1 overflow-y-auto px-3 py-2">
-          <NavList chatUnread={chatUnread} />
+          <NavList chatUnread={chatUnread} base={base} />
         </div>
       </aside>
 
@@ -110,7 +113,7 @@ const GuestSidebar = ({ open, onClose, triggerRef }) => {
               </button>
             </div>
             <div className="flex-1 overflow-y-auto px-3 py-2">
-              <NavList chatUnread={chatUnread} onNavigate={onClose} />
+              <NavList chatUnread={chatUnread} onNavigate={onClose} base={base} />
             </div>
           </aside>
         </div>

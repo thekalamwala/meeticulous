@@ -593,7 +593,7 @@ function App() {
           <Route path="/glossary/:slug" element={<GlossaryTerm />} />
           <Route path="/press" element={<Press />} />
           <Route path="/stats" element={<Stats />} />
-          <Route path="/preview/guest" element={<GuestConsolePreview />} />
+          <Route path="/preview/guest/*" element={<GuestConsolePreview />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
           {/* Customers never register — accounts are created automatically
               during booking (phone OTP). Old signup URL redirects home. */}
