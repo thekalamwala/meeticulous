@@ -106,22 +106,27 @@ const AccountMenu = () => {
             {user?.email && <p className="relative mt-0.5 truncate text-[10.5px] font-medium text-maroon/60">{user.email}</p>}
           </div>
 
-          {/* Mode switch — hosts who are visiting their guest space can hop back.
-              Loop & Slot segmented pill; "Guesting" is active here. */}
+          {/* Mode switch — the SAME segmented pill the host DashboardLayout
+              shows: isHost-gated, mode-driven active half, setMode + navigate.
+              Kept visually identical to /dashboard so the two consoles agree. */}
           {dual && (
-            <div className="border-t-2 border-neutral-200 p-2">
+            <div className="border-t-2 border-neutral-200 px-3 py-2.5">
               <div className="flex gap-1 rounded-full bg-neutral-100 p-0.5">
                 <button
                   type="button"
                   onClick={() => switchMode("hosting")}
-                  className={`flex-1 rounded-full px-3 py-1.5 text-[11.5px] font-bold transition ${ring} text-ink/55 hover:text-ink`}
+                  className={`flex-1 rounded-full px-3 py-1.5 text-xs font-semibold transition ${ring} ${
+                    (mode || "traveling") === "hosting" ? "bg-maroon text-white shadow-sm" : "text-neutral-500 hover:text-neutral-800"
+                  }`}
                 >
                   Hosting
                 </button>
                 <button
                   type="button"
                   onClick={() => switchMode("traveling")}
-                  className={`flex-1 rounded-full px-3 py-1.5 text-[11.5px] font-bold transition ${ring} bg-maroon text-white`}
+                  className={`flex-1 rounded-full px-3 py-1.5 text-xs font-semibold transition ${ring} ${
+                    (mode || "traveling") === "traveling" ? "bg-maroon text-white shadow-sm" : "text-neutral-500 hover:text-neutral-800"
+                  }`}
                 >
                   Guesting
                 </button>

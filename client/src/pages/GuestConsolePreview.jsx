@@ -61,10 +61,10 @@ const PreviewAccountMenu = () => {
             <p className="relative mt-2 truncate font-display text-[13px] font-bold leading-tight tracking-[-0.02em]">{SAMPLE.name}</p>
             <p className="relative mt-0.5 truncate text-[10.5px] font-medium text-maroon/60">{SAMPLE.email}</p>
           </div>
-          <div className="border-t-2 border-neutral-200 p-2">
+          <div className="border-t-2 border-neutral-200 px-3 py-2.5">
             <div className="flex gap-1 rounded-full bg-neutral-100 p-0.5">
-              <button type="button" className={`flex-1 rounded-full px-3 py-1.5 text-[11.5px] font-bold transition ${ring} text-ink/55 hover:text-ink`}>Hosting</button>
-              <button type="button" className={`flex-1 rounded-full px-3 py-1.5 text-[11.5px] font-bold transition ${ring} bg-maroon text-white`}>Guesting</button>
+              <button type="button" className={`flex-1 rounded-full px-3 py-1.5 text-xs font-semibold transition ${ring} text-neutral-500 hover:text-neutral-800`}>Hosting</button>
+              <button type="button" className={`flex-1 rounded-full px-3 py-1.5 text-xs font-semibold transition ${ring} bg-maroon text-white shadow-sm`}>Guesting</button>
             </div>
           </div>
           <div className="border-t-2 border-neutral-200 py-1.5">
