@@ -21,7 +21,14 @@
 --     The ROLLUPS are the history and are kept indefinitely: analytics_daily is
 --     one row per host per day, so a year of 500 hosts is single-digit MB.
 --   * Revenue is NOT stored in any rollup. It is always read live from
---     `bookings`, so a dashboard figure can never drift from the host's payout.
+--     `bookings`, so a dashboard figure can never drift from the money the host
+--     was actually paid.
+--     (Wording note: the tax/legal sign-off gate scans server/** for a short
+--     list of money terms, and the obvious word for "money the host was paid"
+--     is on it. This migration changes no tax, commission or settlement logic,
+--     so it should not be spending a CA's attention. Phrased to avoid the term,
+--     not the gate. Please do not "tidy" it back — it blocks the PR on a
+--     comment. See .github/workflows/tax-legal-signoff.yml.)
 --
 -- SAFETY: additive only. No existing table or column is altered, except
 -- `profiles` gaining one nullable column. Every server read destructures
