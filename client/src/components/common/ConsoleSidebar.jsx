@@ -157,12 +157,12 @@ export const NAV_V2 = [
     visible: (c) => !!c.flags?.guest_messaging,
   },
   {
+    // Six rail entries become one list. The four type pages keep their routes
+    // and their editors — the catalog links to them — they simply stop each
+    // needing a line in the rail to be findable.
     id: 'catalog', label: 'Catalog', icon: 'rail-catalog',
     items: [
-      { to: '/dashboard/services', label: 'Services', icon: 'nav-services', matchPrefix: '/dashboard/service' },
-      { to: '/dashboard/products', label: 'Products', icon: 'nav-products' },
-      { to: '/dashboard/courses', label: 'Courses', icon: 'nav-products', visible: (c) => !!c.flags?.course_purchase },
-      { to: '/dashboard/coupons', label: 'Coupons', icon: 'nav-refer', visible: (c) => !!c.flags?.coupons },
+      { to: '/dashboard/catalog', label: 'Catalog', icon: 'nav-services', matchPrefix: ['/dashboard/catalog', '/dashboard/service', '/dashboard/products', '/dashboard/courses', '/dashboard/coupons'] },
     ],
   },
   {
