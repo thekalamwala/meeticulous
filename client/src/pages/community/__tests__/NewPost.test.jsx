@@ -7,7 +7,7 @@ vi.mock('../../../services/communityApi', () => ({
   getMe: vi.fn().mockResolvedValue({ member: null }),
   createItem: vi.fn(), acceptTerms: vi.fn(),
 }));
-vi.mock('../../../services/api', () => ({ uploadImage: vi.fn() }));
+vi.mock('../../../services/api', () => ({ uploadImage: vi.fn(), getMyMembership: vi.fn().mockResolvedValue({ data: { program: null } }) }));
 vi.mock('../../../services/analytics', () => ({ analytics: { track: vi.fn() }, EVENTS: {} }));
 const auth = { user: { id: 'u1', is_host: false, name: 'Pat' } };
 vi.mock('../../../context/AuthContext', () => ({ useAuth: () => auth }));

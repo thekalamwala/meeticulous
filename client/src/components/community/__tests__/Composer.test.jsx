@@ -6,7 +6,7 @@ import { MemoryRouter } from 'react-router-dom';
 vi.mock('../../../services/communityApi', () => ({
   createItem: vi.fn(), acceptTerms: vi.fn(), getSpaces: vi.fn(), getMe: vi.fn(),
 }));
-vi.mock('../../../services/api', () => ({ uploadImage: vi.fn() }));
+vi.mock('../../../services/api', () => ({ uploadImage: vi.fn(), getMyMembership: vi.fn().mockResolvedValue({ data: { program: null } }) }));
 vi.mock('../../../services/analytics', () => ({
   analytics: { track: vi.fn() },
   EVENTS: { COMMUNITY_POST_CREATED: 'community_post_created', COMMUNITY_TERMS_ACCEPTED: 'community_terms_accepted' },

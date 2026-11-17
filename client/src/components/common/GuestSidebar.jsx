@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, CalendarDays, FileText, Star, Gift, MessageCircle, User, Video, X } from 'lucide-react';
+import { Home, CalendarDays, FileText, Star, Gift, MessageCircle, User, Video, Crown, X } from 'lucide-react';
 import useSupportUnread from '../../hooks/useSupportUnread';
 
 // Guest console — a single-level nav rail for the logged-in customer space
@@ -18,6 +18,7 @@ const NAV = [
   { path: '', label: 'Home', icon: Home, end: true },
   { path: 'my-bookings', label: 'Bookings', icon: CalendarDays },
   { path: 'courses', label: 'My Courses', icon: Video },
+  { path: 'memberships', label: 'Memberships', icon: Crown },
   { path: 'invoices', label: 'Invoices', icon: FileText },
   { path: 'reviews', label: 'Reviews', icon: Star },
   { path: 'loyalty', label: 'Rewards', icon: Gift },
