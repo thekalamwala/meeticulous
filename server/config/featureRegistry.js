@@ -129,6 +129,13 @@ const REGISTRY = [
   { key: 'community_memberships', label: 'Community Memberships', category: 'Community', scope: 'both', enabled: false, description: 'Paid/free membership tiers on host profiles + gated community posts. Ships OFF. Off = 503 on host membership management and no Join/teaser surfaces. Paid joins are additionally gated by membership_purchase (M6).' },
   { key: 'membership_purchase',  label: 'Membership Purchase',   category: 'Community', scope: 'both', enabled: false, description: 'Paid membership checkout (Razorpay recurring). SAFETY kill-switch. Ships OFF. Off = paid subscribe is blocked; free join and reads are unaffected.' },
 
+  // ── ANALYTICS ────────────────────────────────────────────────
+  // Ships OFF, and stays off until v3.217 is applied — with the flag on and the
+  // tables absent every beacon would take the insert path and fail. Flipping it
+  // ON is what starts the event clock, and Phase 4 of Creator Intelligence needs
+  // 14 days on that clock, so the flip is the date to note, not the merge.
+  { key: 'analytics_ingest',     label: 'Analytics Ingest',     category: 'Analytics', scope: 'both', enabled: false, description: 'First-party event collection at POST /api/analytics/collect. Off = the endpoint still answers 202 and drops, so no guest ever sees an error. Kill this if analytics writes threaten the shared database cap.' },
+
   // ── CONSOLE ──────────────────────────────────────────────────
   // Nav grouping only: the SAME routes, regrouped per the host-dashboard
   // redesign. No URL changes, so every bookmark and emailed link keeps working
@@ -157,6 +164,11 @@ const SAFETY_KEYS = [
   'reschedule_fee',     // money movement
   'pro_cancellation_policy', // money movement — changes refund amounts on cancellation
   'host_linkedin_login', // auth — the LinkedIn host door is closed for everyone when OFF
+  // Database protection, which is why it is here and not merely a commercial gate:
+  // analytics shares a 500 MB cap with the booking tables, so "stop ingesting" has
+  // to mean everyone, including plans that bypass kill switches. Analytics
+  // degrades; bookings never do.
+  'analytics_ingest',
 ];
 
 module.exports = { REGISTRY, KEYS, SAFETY_KEYS };
