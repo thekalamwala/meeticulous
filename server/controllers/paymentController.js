@@ -1317,15 +1317,18 @@ const handleWebhook = async (req, res) => {
     const rzpSub = event.payload?.subscription?.entity;
     const rzpPayment = event.payload?.payment?.entity || null;
     try {
+      // Membership subscriptions ride the same Razorpay rail; fork by notes.kind.
+      const svc = rzpSub?.notes?.kind === 'membership'
+        ? require('../services/membershipBillingService') : subscriptionService;
       if (rzpSub) {
         if (event.event === 'subscription.charged' || event.event === 'subscription.activated') {
-          await subscriptionService.activateFromSubscription({ rzpSub, rzpPayment });
+          await svc.activateFromSubscription({ rzpSub, rzpPayment });
           auditLog('WEBHOOK_SUBSCRIPTION_ACTIVE', null, { subscription_id: rzpSub.id, event: event.event });
         } else if (event.event === 'subscription.halted') {
-          await subscriptionService.markHalted(rzpSub);
+          await svc.markHalted(rzpSub);
           securityLog('WEBHOOK_SUBSCRIPTION_HALTED', { subscription_id: rzpSub.id });
         } else if (event.event === 'subscription.cancelled') {
-          await subscriptionService.markCancelled(rzpSub);
+          await svc.markCancelled(rzpSub);
           auditLog('WEBHOOK_SUBSCRIPTION_CANCELLED', null, { subscription_id: rzpSub.id });
           // Churn: subscription cancelled at Razorpay. Key on vendor_id carried in
           // the subscription notes (set at creation). PostHog-only.
