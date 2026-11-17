@@ -154,6 +154,7 @@ app.use('/api/platform-reviews', require('./routes/platformReviewRoutes'));
 app.use('/api/feedback',    require('./routes/feedbackRoutes'));
 app.use('/api/products',    require('./routes/productRoutes'));
 app.use('/api/courses',     require('./routes/courseRoutes'));
+app.use('/api/memberships', require('./routes/membershipRoutes'));
 app.use('/api/crm',         require('./routes/crmRoutes'));
 app.use('/api/upload',      require('./routes/uploadRoutes'));
 app.use('/api/vendor',      require('./routes/vendorRoutes'));

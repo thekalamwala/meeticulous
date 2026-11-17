@@ -69,6 +69,8 @@ export const NAV = [
       { to: '/dashboard/products', label: 'Products', icon: 'nav-products' },
       // Reuse nav-products glyph — no course icon exported (closest fit).
       { to: '/dashboard/courses', label: 'Courses', icon: 'nav-products', visible: (c) => !!c.flags?.course_purchase },
+      // Reuse nav-plan glyph — no membership icon exported.
+      { to: '/dashboard/memberships', label: 'Memberships', icon: 'nav-plan', visible: (c) => !!c.flags?.community_memberships },
       // Reuse nav-profile glyph — no testimonial icon exported.
       { to: '/dashboard/testimonials', label: 'Testimonials', icon: 'nav-profile' },
       // Reuse nav-refer glyph (promo/reward) — no discount icon exported.

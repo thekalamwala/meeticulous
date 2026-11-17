@@ -579,7 +579,7 @@ const HostProfile = () => {
   const navItems = [
     { key: 'service',    label: 'Services',   icon: LayoutGrid, active: filter === 'all' || filter === 'service', enabled: true,        onClick: () => goOfferings('service') },
     { key: 'product',    label: 'Products',   icon: Package,    active: filter === 'product',                      enabled: hasProducts, onClick: () => goOfferings('product') },
-    { key: 'membership', label: 'Membership', icon: Crown,      active: false,                                     enabled: true,        onClick: () => { setNavOpen(false); setMemberOpen(true); } },
+    { key: 'membership', label: 'Membership', icon: Crown,      active: false,                                     enabled: true,        onClick: () => { setNavOpen(false); navigate(`/${profileSlug}/membership`); } },
     { key: 'feed',       label: 'Feed',       icon: Newspaper,  active: filter === 'feed',                         enabled: true,        onClick: () => goOfferings('feed') },
   ];
 
