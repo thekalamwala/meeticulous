@@ -43,22 +43,17 @@ export const useLast = (value) => {
   return value ?? ref.current;
 };
 
+// No scroll lock, deliberately. Two attempts at one both broke the page:
+// `overflow: hidden` on the body drops the scroll position and removes the
+// scrollbar, so the list jumps sideways and loses your place; pinning the body
+// with `position: fixed` and a negative top takes it out of flow, its height
+// collapses, and the list behind the drawer disappears entirely.
+//
+// A side panel does not need the page frozen. Touch nothing, and the list stays
+// exactly where it was — which was the point of locking it in the first place.
+// The background stays scrollable behind the drawer, which is what Linear's
+// side peek does too.
 export const Drawer = ({ open, onClose, title, subtitle, children, width = 'sm:w-[480px]' }) => {
-  useEffect(() => {
-    if (!open) return undefined;
-    const y = window.scrollY;
-    const { body } = document;
-    const prev = { position: body.style.position, top: body.style.top, width: body.style.width, overflowY: body.style.overflowY };
-    body.style.position = 'fixed';
-    body.style.top = `-${y}px`;
-    body.style.width = '100%';
-    body.style.overflowY = 'scroll'; // keep the gutter so nothing shifts sideways
-    return () => {
-      Object.assign(body.style, prev);
-      window.scrollTo(0, y);
-    };
-  }, [open]);
-
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };

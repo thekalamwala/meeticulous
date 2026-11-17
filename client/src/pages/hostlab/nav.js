@@ -31,7 +31,9 @@ export const SUBPAGES = {
     { slug: 'list', label: 'List', blurb: 'Every booking, filterable and sortable.' },
     { slug: 'week', label: 'Week', blurb: 'The week ahead, day by day.' },
     { slug: 'month', label: 'Month', blurb: 'The shape of the month at a glance.' },
-    { slug: 'agenda', label: 'Agenda', blurb: 'Grouped by day, in order.' },
+    // No Agenda: a grouped-by-day list sat between List and Week without
+    // being better than either. An unknown slug falls back to the first page,
+    // so an old /bookings/agenda link still lands on List.
   ],
   schedule: [
     { slug: 'hours', label: 'Hours', blurb: 'The week a guest can book against.' },

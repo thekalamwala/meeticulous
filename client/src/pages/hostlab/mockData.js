@@ -255,13 +255,13 @@ export const testimonials = [
 // The go-live checklist. Shared: the profile menu shows the counter, Grow ›
 // Booking page shows the list. One source, so the two cannot disagree.
 export const setupChecklist = [
-  { label: 'Photo and bio', done: true, to: 'settings?tab=account' },
-  { label: 'At least one paid service', done: true, to: 'catalog?tab=services' },
-  { label: 'Hours set for 5+ days a week', done: true, to: 'schedule?tab=hours' },
-  { label: 'Verified for payouts', done: true, to: 'settings?tab=verification' },
-  { label: 'Three or more reviews shown', done: true, to: 'grow?tab=proof' },
-  { label: 'A short intro video', done: false, to: 'settings?tab=account' },
-  { label: 'Link in your Instagram bio', done: false, to: 'grow?tab=page' },
+  { label: 'Photo and bio', done: true, to: 'settings/account' },
+  { label: 'At least one paid service', done: true, to: 'catalog' },
+  { label: 'Hours set for 5+ days a week', done: true, to: 'schedule/hours' },
+  { label: 'Verified for payouts', done: true, to: 'settings/verification' },
+  { label: 'Three or more reviews shown', done: true, to: 'grow/proof' },
+  { label: 'A short intro video', done: false, to: 'settings/account' },
+  { label: 'Link in your Instagram bio', done: false, to: 'grow/page' },
 ];
 
 export const referrals = {

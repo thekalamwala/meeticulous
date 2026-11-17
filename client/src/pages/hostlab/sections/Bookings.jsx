@@ -3,13 +3,13 @@
 // What the live page is missing and this adds: text search, status / payment /
 // service / date-range filters, saved views, column sort, multi-select with bulk
 // actions, a detail DRAWER instead of a modal (so the list stays in view), an
-// agenda view that is reachable (the live page has agenda code with no button to
-// it), a visible "Add booking" entry, and per-status counts on the filter chips.
+// a visible "Add booking" entry, and per-status counts inside the filters.
+// Three views, each its own route: List, Week, Month.
 // Every live action is preserved: confirm, complete, no-show, reschedule, cancel,
 // review, notes.
 import { useEffect, useMemo, useState } from 'react';
 import {
-  ArrowDownUp, CalendarDays, CalendarX2, Check, Clock, Copy, Download, LayoutList,
+  ArrowDownUp, CalendarDays, CalendarX2, Check, Copy, Download,
   CalendarRange, List, MessageSquare, Plus, RotateCcw, Trash2, UserX, Video, X,
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
@@ -293,6 +293,7 @@ const Bookings = () => {
     const c = {};
     STATUSES.forEach((s) => { c[s.value] = rows.filter((b) => b.status === s.value).length; });
     c.unpaid = rows.filter((b) => b.payment_status === 'unpaid' && b.amount > 0).length;
+    c.upcoming = rows.filter((b) => b.status !== 'cancelled' && new Date(b.scheduled_at) > new Date()).length;
     return c;
   }, [rows]);
 
@@ -372,17 +373,6 @@ const Bookings = () => {
     });
   }, [anchor, filtered]);
 
-  const agenda = useMemo(() => {
-    const groups = [];
-    const seen = {};
-    [...filtered].sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at)).forEach((b) => {
-      const k = new Date(b.scheduled_at).toDateString();
-      if (seen[k] == null) { seen[k] = groups.length; groups.push({ k, date: new Date(b.scheduled_at), items: [] }); }
-      groups[seen[k]].items.push(b);
-    });
-    return groups;
-  }, [filtered]);
-
   const openBooking = rows.find((b) => b.id === openId) || null;
   // Holds the booking on screen while the drawer animates out.
   const drawerBooking = useLast(openBooking);
@@ -393,8 +383,10 @@ const Bookings = () => {
       <header className="flex flex-wrap items-end justify-between gap-2">
         <div>
           <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Bookings</h1>
+          {/* The live count belongs on the table it counts — repeating it
+              here just gave two numbers that could disagree mid-filter. */}
           <p className="mt-0.5 text-[12px] font-medium text-ink/55">
-            {filtered.length} of {rows.length} shown
+            {counts.upcoming} upcoming · {inr(rows.filter((b) => b.payment_status === 'paid').reduce((n, b) => n + b.amount, 0), { compact: true })} collected
             {counts.pending > 0 && <span className="text-warning-fg"> · {counts.pending} waiting on you</span>}
           </p>
         </div>
@@ -432,7 +424,6 @@ const Bookings = () => {
                 { value: 'list', label: 'List', icon: List, to: '/host-lab/bookings/list' },
                 { value: 'week', label: 'Week', icon: CalendarDays, to: '/host-lab/bookings/week' },
                 { value: 'month', label: 'Month', icon: CalendarRange, to: '/host-lab/bookings/month' },
-                { value: 'agenda', label: 'Agenda', icon: LayoutList, to: '/host-lab/bookings/agenda' },
               ]}
             />
           </>
@@ -704,38 +695,6 @@ const Bookings = () => {
             </div>
           )}
         </Panel>
-      )}
-
-      {/* ── AGENDA ── */}
-      {mode === 'agenda' && (
-        <div className="flex flex-col gap-2">
-          {agenda.length === 0 ? (
-            <Panel><p className="py-8 text-center text-[11.5px] font-semibold text-ink/45">Nothing matches those filters.</p></Panel>
-          ) : agenda.map((g) => (
-            <Panel key={g.k} flush>
-              <p className="flex items-center gap-1.5 border-b-2 border-neutral-200 bg-cream px-2.5 py-1.5 text-[10.5px] font-bold uppercase tracking-wide text-maroon/75">
-                <Clock className="h-3.5 w-3.5" strokeWidth={2.4} />
-                {fmtDayFull(g.date.toISOString())} · {relDay(g.date.toISOString())}
-                <span className="ml-auto font-bold normal-case text-ink/45">{g.items.length} booked</span>
-              </p>
-              <ul className="divide-y-2 divide-neutral-200">
-                {g.items.map((b) => (
-                  <li key={b.id}>
-                    <button type="button" onClick={() => setOpenId(b.id)} className="flex w-full items-center gap-2 px-2.5 py-1.5 text-left transition hover:bg-cream">
-                      <span className="w-[52px] shrink-0 text-[11px] font-bold tabular-nums text-maroon">{fmtTime(b.scheduled_at)}</span>
-                      <Avatar name={b.guest_name} size="h-7 w-7 text-[10px]" />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-[11.5px] font-bold text-ink">{b.guest_name}</span>
-                        <span className="block truncate text-[10.5px] font-medium text-ink/50">{b.services.title} · {b.services.duration} min</span>
-                      </span>
-                      <StatusPill status={b.status} />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </Panel>
-          ))}
-        </div>
       )}
 
       <BookingDrawer

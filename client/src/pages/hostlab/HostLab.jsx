@@ -19,10 +19,10 @@
 // labUi.jsx; nothing sets a one-off size.
 // ─────────────────────────────────────────────────────────────────────────────
 import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react';
-import { Navigate, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import {
   Bell, CheckCircle2 as CircleCheck, ChevronRight, CreditCard, ExternalLink, HelpCircle,
-  LogOut, Menu, MessageSquare, Repeat, Search, ShieldCheck, X,
+  LogOut, Menu, MessageSquare, PanelLeft, Repeat, Search, ShieldCheck, Sparkles, X,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { cn } from '../../components/dashboard/ui';
@@ -40,7 +40,22 @@ const Money = lazy(() => import('./sections/Money'));
 const Grow = lazy(() => import('./sections/Grow'));
 const SettingsSection = lazy(() => import('./sections/SettingsSection'));
 
-const RAIL = 200;
+const RAIL = 200;      // expanded
+const RAIL_MIN = 56;   // icon only
+const RAIL_KEY = 'hostlab:rail';
+
+/** Collapse state, remembered per viewer. Storage can throw in a private
+ *  window or be cleared, so it is never trusted and never required. */
+const useRailState = () => {
+  const [collapsed, setCollapsed] = useState(() => {
+    try { return localStorage.getItem(RAIL_KEY) === '1'; } catch { return false; }
+  });
+  const toggle = () => setCollapsed((v) => {
+    try { localStorage.setItem(RAIL_KEY, v ? '0' : '1'); } catch { /* not worth caring about */ }
+    return !v;
+  });
+  return [collapsed, toggle];
+};
 const ring = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose';
 
 /* ── Nav rows ──────────────────────────────────────────────────────────── */
@@ -54,8 +69,55 @@ const Badge = ({ n, on }) => (
 /** One destination. A row with sub-pages carries a chevron that expands it in
  *  place — the row itself still navigates, so the chevron is never the only
  *  way in. */
-const NavRow = ({ item, activePage, expanded, onToggle, onNavigate }) => {
+const NavRow = ({ item, activePage, expanded, onToggle, onNavigate, collapsed }) => {
   const pages = item.pages ? SUBPAGES[item.pages] : null;
+
+  // Collapsed: the icon is the whole row, and the label — plus any sub-pages —
+  // arrive in a flyout on hover. Without this the sub-pages would simply be
+  // unreachable while the rail is narrow, which is how most collapsed rails
+  // quietly lose half the product.
+  if (collapsed) {
+    return (
+      <li className="group/row relative">
+        <NavLink
+          to={href(landingFor(item))}
+          end={item.end}
+          onClick={onNavigate}
+          title={item.label}
+          className={({ isActive }) =>
+            cn('relative mx-auto grid h-8 w-8 place-items-center rounded-sm transition', ring,
+              isActive ? 'bg-maroon text-white' : 'text-ink/55 hover:bg-blush hover:text-ink')
+          }
+        >
+          <item.icon className="h-[15px] w-[15px]" strokeWidth={2.2} />
+          {item.badge > 0 && <span className="absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full bg-rose" />}
+        </NavLink>
+
+        <div className="pointer-events-none absolute left-full top-0 z-50 hidden pl-1.5 group-hover/row:block group-focus-within/row:block">
+          <div className="pointer-events-auto min-w-[150px] overflow-hidden rounded-sm border-2 border-neutral-200 bg-white py-1 dash-elev-3">
+            <p className="px-2.5 py-1 text-[11.5px] font-bold text-ink">{item.label}</p>
+            {pages && (
+              <ul className="border-t-2 border-neutral-200 pt-1">
+                {pages.map((pg) => (
+                  <li key={pg.slug}>
+                    <NavLink
+                      to={href(`${item.to}/${pg.slug}`)}
+                      onClick={onNavigate}
+                      className={cn('block px-2.5 py-1 text-[11.5px] transition', ring,
+                        activePage === pg.slug ? 'bg-blush font-semibold text-maroon' : 'font-medium text-ink/55 hover:bg-cream hover:text-ink')}
+                    >
+                      {pg.label}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      </li>
+    );
+  }
+
   return (
     <li>
       <div className="relative">
@@ -116,7 +178,7 @@ const NavRow = ({ item, activePage, expanded, onToggle, onNavigate }) => {
   );
 };
 
-const SidebarBody = ({ onNavigate }) => {
+const SidebarBody = ({ onNavigate, collapsed = false }) => {
   const { pathname } = useLocation();
   const [section, sub] = pathname.replace(/^\/host-lab\/?/, '').split('/');
   // Accordion: one section open at a time, so the rail never grows past a
@@ -127,14 +189,19 @@ const SidebarBody = ({ onNavigate }) => {
   return (
     <>
       <nav aria-label="Dashboard sections" className="dash-noscrollbar flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto px-2 py-2">
-        {NAV.map((group) => (
+        {NAV.map((group, i) => (
           <div key={group.label}>
-            <p className="px-2 pb-1 text-[9.5px] font-bold uppercase tracking-[0.1em] text-ink/35">{group.label}</p>
+            {/* Collapsed, a group label would not fit — a hairline carries the
+                same grouping without the words. */}
+            {collapsed
+              ? i > 0 && <div className="mx-auto mb-1.5 h-px w-6 bg-neutral-200" />
+              : <p className="px-2 pb-1 text-[9.5px] font-bold uppercase tracking-[0.1em] text-ink/35">{group.label}</p>}
             <ul className="flex flex-col gap-px">
               {group.items.map((item) => (
                 <NavRow
                   key={item.label}
                   item={item}
+                  collapsed={collapsed}
                   activePage={section === item.to ? sub || SUBPAGES[item.pages]?.[0]?.slug : null}
                   expanded={open === item.to}
                   onToggle={(to) => setOpen((o) => (o === to ? null : to))}
@@ -146,22 +213,36 @@ const SidebarBody = ({ onNavigate }) => {
         ))}
       </nav>
 
-      <div className="shrink-0 border-t-2 border-neutral-200 p-2">
-        <a
-          href={`/${mock.host.username}`}
-          target="_blank"
-          rel="noreferrer"
-          onClick={(e) => { e.preventDefault(); onNavigate?.(); }}
-          className={cn('flex items-center gap-1.5 rounded-sm border-2 border-maroon-100 bg-maroon-50 p-2 transition hover:border-maroon/40', ring)}
-        >
-          <span className="grid h-6 w-6 shrink-0 place-items-center rounded bg-white text-maroon">
-            <ExternalLink className="h-3.5 w-3.5" strokeWidth={2.4} />
-          </span>
-          <span className="min-w-0">
-            <span className="block truncate text-[11px] font-bold text-maroon">Your booking page</span>
-            <span className="block truncate text-[10px] font-medium text-ink/50">meeticulous.com/{mock.host.username}</span>
-          </span>
-        </a>
+      {/* Footer. Quiet by design: the rail's job is to get you somewhere, and
+          the last thing in it should not shout. A changelog link earns its
+          place because a host noticing the product moves is cheap trust. */}
+      <div className="shrink-0 border-t-2 border-neutral-200 px-2 py-1.5">
+        {collapsed ? (
+          <a
+            href="/changelog"
+            target="_blank"
+            rel="noreferrer"
+            onClick={(e) => { e.preventDefault(); onNavigate?.(); }}
+            title="View changelog"
+            className={cn('mx-auto grid h-7 w-7 place-items-center rounded-sm text-ink/35 transition hover:bg-blush hover:text-maroon', ring)}
+          >
+            <Sparkles className="h-3.5 w-3.5" strokeWidth={2.2} />
+          </a>
+        ) : (
+          <>
+            <a
+              href="/changelog"
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => { e.preventDefault(); onNavigate?.(); }}
+              className={cn('flex items-center gap-1.5 rounded-xs px-1.5 py-1 text-[11px] font-semibold text-ink/50 transition hover:bg-blush hover:text-maroon', ring)}
+            >
+              <Sparkles className="h-3 w-3 shrink-0" strokeWidth={2.4} />
+              View changelog
+            </a>
+            <p className="px-1.5 pt-0.5 text-[9.5px] font-medium text-ink/30">© 2026 Meeticulous</p>
+          </>
+        )}
       </div>
     </>
   );
@@ -208,10 +289,10 @@ const ProfileMenu = ({ onGo, onClose }) => {
   );
 
   const LINKS = [
-    { label: 'Profile verification', to: 'settings?tab=verification', icon: ShieldCheck, note: <StatusDot ok>Verified</StatusDot> },
-    { label: 'Plan & billing', to: 'settings?tab=plan', icon: CreditCard, note: <span className="text-[9.5px] font-bold uppercase tracking-wide text-maroon">Pro</span> },
-    { label: 'Support', to: 'settings?tab=help', icon: MessageSquare },
-    { label: 'Help centre', to: 'settings?tab=help', icon: HelpCircle, external: true },
+    { label: 'Profile verification', to: 'settings/verification', icon: ShieldCheck, note: <StatusDot ok>Verified</StatusDot> },
+    { label: 'Plan & billing', to: 'settings/plan', icon: CreditCard, note: <span className="text-[9.5px] font-bold uppercase tracking-wide text-maroon">Pro</span> },
+    { label: 'Support', to: 'settings/help', icon: MessageSquare },
+    { label: 'Help centre', to: 'settings/help', icon: HelpCircle, external: true },
   ];
 
   return (
@@ -234,6 +315,13 @@ const ProfileMenu = ({ onGo, onClose }) => {
 
       {/* Which space you are in */}
       <div className="border-t-2 border-neutral-200 py-1.5">
+        {/* State first, action second: the line tells you where you are, the
+            row below it is the way out. Reading them the other way round meant
+            the control arrived before the fact it depends on. */}
+        <p className="px-3 pb-1 pt-0.5 text-[10px] font-medium text-ink/40">
+          Viewing as: <span className="font-bold text-ink/70">Host</span>
+        </p>
+
         {confirmSwitch ? (
           <div className="mx-1.5 rounded-sm bg-cream p-2.5">
             <p className="text-[10.5px] font-medium leading-snug text-ink/70">
@@ -257,40 +345,24 @@ const ProfileMenu = ({ onGo, onClose }) => {
             <span className="grid h-6 w-6 shrink-0 place-items-center rounded bg-neutral-100 text-ink/55 transition group-hover:bg-white group-hover:text-maroon">
               <Repeat className="h-3.5 w-3.5" strokeWidth={2.4} />
             </span>
-            <span className="flex-1">
-              <span className="block leading-tight">Switch to guesting</span>
-              <span className="block text-[9.5px] font-medium leading-tight text-ink/40">Viewing as host</span>
-            </span>
+            <span className="flex-1">Switch to Guest</span>
             <ChevronRight className="h-3.5 w-3.5 shrink-0 text-ink/25" strokeWidth={2.6} />
           </button>
         )}
       </div>
 
-      {/* Setup — a slot, not a row with a rule under it. */}
-      <div className="border-t-2 border-neutral-200 p-1.5">
-        <button
-          type="button"
-          onClick={() => onGo('grow?tab=page')}
-          className={cn('block w-full rounded-sm border-2 p-2 text-left transition', ring,
-            setupLeft ? 'border-marigold-300 bg-marigold-100 hover:border-marigold' : 'border-success-fg/25 bg-success-bg')}
-        >
-          <span className="flex items-center gap-1.5">
-            <CircleCheck className={cn('h-3.5 w-3.5 shrink-0', setupLeft ? 'text-marigold-800' : 'text-success-fg')} strokeWidth={2.6} />
-            <span className={cn('text-[11.5px] font-bold', setupLeft ? 'text-marigold-800' : 'text-success-fg')}>Setup checklist</span>
-            <span className={cn('ml-auto font-display text-[12px] font-extrabold tabular-nums', setupLeft ? 'text-marigold-800' : 'text-success-fg')}>
-              {done}<span className="opacity-50">/{total}</span>
-            </span>
+      {/* Setup — the same row shape as everything below it. The card, the
+          seven segment bars and the "2 left · next:" line all said what the
+          counter already says. */}
+      <div className="border-t-2 border-neutral-200 py-1.5">
+        <button type="button" onClick={() => onGo('grow/page')} className={row}>
+          <span className="grid h-6 w-6 shrink-0 place-items-center rounded bg-neutral-100 text-ink/50 transition group-hover:bg-white group-hover:text-maroon">
+            <CircleCheck className="h-3.5 w-3.5" strokeWidth={2.2} />
           </span>
-          <span className="mt-1.5 flex gap-[3px]" aria-hidden="true">
-            {mock.setupChecklist.map((c, i) => (
-              <span key={c.label} className={cn('h-1.5 flex-1 rounded-full', c.done ? 'bg-maroon' : i === done ? 'bg-maroon/25' : 'bg-maroon/10')} />
-            ))}
+          <span className="flex-1 truncate">Setup checklist</span>
+          <span className={cn('shrink-0 text-[10px] font-bold tabular-nums', setupLeft ? 'text-marigold-800' : 'text-success-fg')}>
+            {done}/{total}
           </span>
-          {setupLeft > 0 && (
-            <span className="mt-1.5 block text-[9.5px] font-semibold text-marigold-800/75">
-              {setupLeft} left · next: {mock.setupChecklist.find((c) => !c.done).label.toLowerCase()}
-            </span>
-          )}
         </button>
       </div>
 
@@ -424,6 +496,7 @@ const TabBar = ({ onMore }) => (
 /* ── Page ──────────────────────────────────────────────────────────────── */
 const HostLab = () => {
   const [navOpen, setNavOpen] = useState(false);
+  const [railCollapsed, toggleRail] = useRailState();
   const [searchOpen, setSearchOpen] = useState(false);
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -474,14 +547,36 @@ const HostLab = () => {
 
       {/* Desktop rail */}
       <aside
-        className="fixed bottom-0 left-0 z-40 hidden flex-col border-r-2 border-neutral-200 bg-cream lg:flex"
-        style={{ width: RAIL, top: 33 }}
+        className="group/rail fixed bottom-0 left-0 z-40 hidden flex-col border-r-2 border-neutral-200 bg-cream transition-[width] duration-200 lg:flex"
+        style={{ width: railCollapsed ? RAIL_MIN : RAIL, top: 33 }}
       >
-        <div className="flex h-11 shrink-0 items-center gap-1.5 border-b-2 border-neutral-200 px-2.5">
-          <img src="/brand/meeticulous-icon.svg" alt="" aria-hidden="true" className="h-6 w-6 object-contain" />
-          <span className="font-display text-[12.5px] font-bold tracking-[-0.02em] text-ink">Meeticulous</span>
+        <div className={cn('flex h-11 shrink-0 items-center border-b-2 border-neutral-200', railCollapsed ? 'justify-center px-0' : 'gap-1.5 px-2.5')}>
+          <Link to="/host-lab" aria-label="Meeticulous — Today" className={cn('grid shrink-0 place-items-center rounded-xs', ring)}>
+            <img src="/brand/meeticulous-icon.svg" alt="" aria-hidden="true" className="h-6 w-6 object-contain" />
+          </Link>
+          {!railCollapsed && (
+            <span className="flex-1 truncate font-display text-[12.5px] font-bold tracking-[-0.02em] text-ink">Meeticulous</span>
+          )}
+          {/* The toggle only appears on hover when expanded, so the resting
+              rail is brand and nav and nothing else. Collapsed it is always
+              visible, because there is no other way back. */}
+          <button
+            type="button"
+            onClick={toggleRail}
+            aria-label={railCollapsed ? 'Expand navigation' : 'Collapse navigation'}
+            title={railCollapsed ? 'Expand' : 'Collapse'}
+            className={cn(
+              'grid h-6 w-6 shrink-0 place-items-center rounded-xs text-ink/35 transition hover:bg-blush hover:text-maroon',
+              ring,
+              railCollapsed
+                ? 'absolute -right-3 top-3 border-2 border-neutral-200 bg-cream'
+                : 'opacity-0 group-hover/rail:opacity-100 focus-visible:opacity-100',
+            )}
+          >
+            <PanelLeft className="h-3.5 w-3.5" strokeWidth={2.2} />
+          </button>
         </div>
-        <SidebarBody />
+        <SidebarBody collapsed={railCollapsed} />
       </aside>
 
       {/* Mobile drawer */}
@@ -501,7 +596,9 @@ const HostLab = () => {
         </div>
       )}
 
-      <div className="lg:pl-[200px]">
+      {/* Two static classes, not an arbitrary custom property: Tailwind only
+          emits what it can see as a literal string in the source. */}
+      <div className={cn('transition-[padding] duration-200', railCollapsed ? 'lg:pl-[56px]' : 'lg:pl-[200px]')}>
         <Topbar onOpenNav={() => setNavOpen(true)} onOpenSearch={() => setSearchOpen(true)} onGo={go} />
         <main className="mx-auto w-full max-w-[1180px] px-2.5 pb-20 pt-3.5 sm:px-4 lg:pb-7">
           <Suspense fallback={<div className="py-20 text-center text-[11.5px] font-semibold text-ink/40">Loading…</div>}>
