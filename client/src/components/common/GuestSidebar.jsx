@@ -12,43 +12,52 @@ import useSupportUnread from '../../hooks/useSupportUnread';
 // Layout: a fixed left column on lg+, a slide-in drawer on mobile (opened by the
 // topbar hamburger). Adding a page = one entry in NAV.
 
+// Path suffixes off the console base. The real console is based at /user; the
+// restyle prototype reuses this exact rail at /preview/guest by passing `base`.
 const NAV = [
-  { to: '/user', label: 'Home', icon: Home, end: true },
-  { to: '/user/my-bookings', label: 'Bookings', icon: CalendarDays },
-  { to: '/user/courses', label: 'My Courses', icon: Video },
-  { to: '/user/memberships', label: 'Memberships', icon: Crown },
-  { to: '/user/invoices', label: 'Invoices', icon: FileText },
-  { to: '/user/reviews', label: 'Reviews', icon: Star },
-  { to: '/user/loyalty', label: 'Rewards', icon: Gift },
-  { to: '/user/chat', label: 'Chat', icon: MessageCircle, badge: 'chat' },
-  { to: '/user/profile', label: 'Profile', icon: User },
+  { path: '', label: 'Home', icon: Home, end: true },
+  { path: 'my-bookings', label: 'Bookings', icon: CalendarDays },
+  { path: 'courses', label: 'My Courses', icon: Video },
+  { path: 'memberships', label: 'Memberships', icon: Crown },
+  { path: 'invoices', label: 'Invoices', icon: FileText },
+  { path: 'reviews', label: 'Reviews', icon: Star },
+  { path: 'loyalty', label: 'Rewards', icon: Gift },
+  { path: 'chat', label: 'Chat', icon: MessageCircle, badge: 'chat' },
+  { path: 'profile', label: 'Profile', icon: User },
 ];
+const hrefFor = (base, path) => (path ? `${base}/${path}` : base);
 
+// STYLING (explore/console-restyle): Loop & Slot rail — solid maroon active row
+// (like the Host Lab rail), blush hover, rose unread badge.
 const rowClass = ({ isActive }) =>
-  `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+  `flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose ${
     isActive
-      ? 'bg-primary/10 text-primary'
-      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+      ? 'bg-maroon text-white'
+      : 'text-ink/60 hover:bg-blush hover:text-ink'
   }`;
 
 // Shared nav list — rendered in both the desktop column and the mobile drawer.
-const NavList = ({ chatUnread, onNavigate }) => (
+const NavList = ({ chatUnread, onNavigate, base }) => (
   <nav className="flex flex-col gap-1" aria-label="Your account">
-    {NAV.map(({ to, label, icon: Icon, end, badge }) => (
-      <NavLink key={to} to={to} end={end} onClick={onNavigate} className={rowClass}>
-        <Icon size={18} strokeWidth={1.8} className="shrink-0" />
-        <span className="flex-1">{label}</span>
-        {badge === 'chat' && chatUnread > 0 && (
-          <span className="grid min-w-[18px] place-items-center rounded-full bg-primary px-1 text-[10px] font-bold leading-[18px] text-white">
-            {chatUnread > 9 ? '9+' : chatUnread}
-          </span>
+    {NAV.map(({ path, label, icon: Icon, end, badge }) => (
+      <NavLink key={path} to={hrefFor(base, path)} end={end} onClick={onNavigate} className={rowClass}>
+        {({ isActive }) => (
+          <>
+            <Icon size={17} strokeWidth={2} className="shrink-0" />
+            <span className="flex-1">{label}</span>
+            {badge === 'chat' && chatUnread > 0 && (
+              <span className={`grid min-w-[18px] place-items-center rounded-full px-1 text-[10px] font-bold leading-[18px] ${isActive ? 'bg-white text-maroon' : 'bg-rose text-white'}`}>
+                {chatUnread > 9 ? '9+' : chatUnread}
+              </span>
+            )}
+          </>
         )}
       </NavLink>
     ))}
   </nav>
 );
 
-const GuestSidebar = ({ open, onClose, triggerRef }) => {
+const GuestSidebar = ({ open, onClose, triggerRef, base = '/user' }) => {
   const chatUnread = useSupportUnread();
   const drawerRef = useRef(null);
 
@@ -68,14 +77,12 @@ const GuestSidebar = ({ open, onClose, triggerRef }) => {
   return (
     <>
       {/* Desktop: fixed left column (out of flow — main offsets by its width). */}
-      <aside className="fixed inset-y-0 left-0 z-20 hidden w-56 flex-col border-r border-gray-200 bg-white lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-20 hidden w-56 flex-col border-r-2 border-neutral-200 bg-cream lg:flex">
         <div className="flex h-14 items-center px-5">
-          <span className="text-lg font-bold text-gray-900">
-            Mee<span className="text-primary">ticulous</span>
-          </span>
+          <span className="font-display text-[18px] font-extrabold tracking-[-0.03em] text-maroon">Meeticulous</span>
         </div>
         <div className="flex-1 overflow-y-auto px-3 py-2">
-          <NavList chatUnread={chatUnread} />
+          <NavList chatUnread={chatUnread} base={base} />
         </div>
       </aside>
 
@@ -93,23 +100,21 @@ const GuestSidebar = ({ open, onClose, triggerRef }) => {
             role="dialog"
             aria-modal="true"
             aria-label="Navigation"
-            className="fixed inset-y-0 left-0 z-50 flex w-64 max-w-[80%] flex-col bg-white shadow-xl focus:outline-none"
+            className="fixed inset-y-0 left-0 z-50 flex w-64 max-w-[80%] flex-col bg-cream shadow-xl focus:outline-none"
           >
             <div className="flex h-14 items-center justify-between px-5">
-              <span className="text-lg font-bold text-gray-900">
-                Mee<span className="text-primary">ticulous</span>
-              </span>
+              <span className="font-display text-[18px] font-extrabold tracking-[-0.03em] text-maroon">Meeticulous</span>
               <button
                 type="button"
                 onClick={onClose}
                 aria-label="Close navigation"
-                className="grid h-9 w-9 place-items-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                className="grid h-9 w-9 place-items-center rounded-full text-ink/50 hover:bg-blush hover:text-maroon"
               >
                 <X size={18} />
               </button>
             </div>
             <div className="flex-1 overflow-y-auto px-3 py-2">
-              <NavList chatUnread={chatUnread} onNavigate={onClose} />
+              <NavList chatUnread={chatUnread} onNavigate={onClose} base={base} />
             </div>
           </aside>
         </div>
