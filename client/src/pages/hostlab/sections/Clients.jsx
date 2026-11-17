@@ -1,16 +1,17 @@
 // Clients — the host's own book of business.
 //
 // The live page is a Pro-gated table with search + CSV export, and a separate
-// detail route. Kept: everything, including the Pro gate (shown as a state here,
-// not removed). Added: segments that are computed not typed (new / repeat / VIP /
+// detail route. Kept: everything, the Pro gate included — on Starter this whole
+// table is a blurred teaser behind an upgrade overlay and that does not change;
+// the prototype simply renders the unlocked state. Added: segments that are computed not typed (new / repeat / VIP /
 // lapsing / no-show risk), lifetime value and average per booking, a detail
 // DRAWER with the full booking history and private notes in one place, bulk
 // WhatsApp + export, and a "win them back" list — the one thing a host with 60
 // clients cannot do by eye.
 import { useMemo, useState } from 'react';
 import {
-  AlertTriangle, ArrowDownUp, ChevronDown, Download, MessageSquare, Phone, Repeat, UserMinus,
-  StickyNote, Trash2, TrendingUp, Users, Mail, Crown,
+  AlertTriangle, ArrowDownUp, ChevronDown, Download, MessageSquare, Phone, UserMinus,
+  StickyNote, Trash2, Users, Mail, Crown,
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -80,7 +81,7 @@ const ClientDrawer = ({ open, client, onClose }) => {
         <div className="flex flex-wrap gap-1.5">
           <Button size="sm"><MessageSquare className="h-4 w-4" strokeWidth={2.4} /> WhatsApp</Button>
           <Button size="sm" variant="outline"><Phone className="h-4 w-4" strokeWidth={2.4} /> {client.phone}</Button>
-          <Button size="sm" variant="outline"><Mail className="h-4 w-4" strokeWidth={2.4} /> Email</Button>
+          <Button size="sm" variant="outline"><Mail className="h-4 w-4" strokeWidth={2.4} /> {client.email}</Button>
           <Button size="sm" variant="ghost" onClick={() => toast.success(`Booking link sent to ${client.name}`)}>Send booking link</Button>
         </div>
 
@@ -184,6 +185,9 @@ const Clients = () => {
   const repeatRate = mock.clients.filter((c) => c.bookings_count > 1).length / mock.clients.length;
   const lapsing = mock.clients.filter((c) => c.segment === 'lapsing');
   const lapsingValue = lapsing.reduce((n, c) => n + c.total_spent, 0);
+  // Opening writes the id to the URL so ?client= is a link a host can send
+  // themselves, not state that only ever gets cleared on close.
+  const openClient = (id) => { setOpenId(id); setParams({ client: id }, { replace: true }); };
   const open = mock.clients.find((c) => c.id === openId) || null;
   // Holds the client on screen while the drawer animates out.
   const drawerClient = useLast(open);
@@ -243,7 +247,7 @@ const Clients = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setOpenId(c.id)}
+                      onClick={() => openClient(c.id)}
                       className="shrink-0 px-1.5 text-[11px] font-bold text-ink/50 transition hover:text-maroon"
                     >
                       Open
@@ -351,14 +355,14 @@ const Clients = () => {
                     <th scope="col" className="w-8 px-3 py-2">
                       <CheckBox checked={allPicked} onChange={() => setPicked(allPicked ? [] : rows.map((c) => c.id))} label="Select all shown" />
                     </th>
-                    {['Client', 'Contact', 'Bookings', 'Lifetime value', 'Last seen', ''].map((h, i) => (
+                    {['Client', 'Phone', 'Bookings', 'Lifetime value', 'Last seen', ''].map((h, i) => (
                       <th key={h || i} scope="col" className={cn('px-3 py-2 font-bold', ['Bookings', 'Lifetime value'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y-2 divide-neutral-200">
                   {rows.map((c) => (
-                    <tr key={c.id} onClick={() => setOpenId(c.id)} className={cn('cursor-pointer transition-colors hover:bg-cream', picked.includes(c.id) && 'bg-blush/60')}>
+                    <tr key={c.id} onClick={() => openClient(c.id)} className={cn('cursor-pointer transition-colors hover:bg-cream', picked.includes(c.id) && 'bg-blush/60')}>
                       <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
                         <CheckBox checked={picked.includes(c.id)} onChange={() => setPicked((p) => (p.includes(c.id) ? p.filter((x) => x !== c.id) : [...p, c.id]))} label={`Select ${c.name}`} />
                       </td>
@@ -368,22 +372,27 @@ const Clients = () => {
                           <span className="min-w-0">
                             <span className="flex items-center gap-1.5">
                               <span className="truncate font-bold text-ink">{c.name}</span>
+                              {/* Crown only. 80% of this book comes back, so a
+                                  repeat badge sat on 13 of 15 rows and meant
+                                  nothing. The header states the rate once; the
+                                  rows are left to flag the exceptions. */}
                               {c.segment === 'vip' && <Crown className="h-3.5 w-3.5 shrink-0 text-marigold-600" strokeWidth={2.4} />}
-                              {c.is_recurring && <Repeat className="h-3.5 w-3.5 shrink-0 text-maroon/50" strokeWidth={2.4} />}
                             </span>
                             {c.no_shows > 0 && <span className="block text-[10.5px] font-bold text-error-fg">{c.no_shows} no-show{c.no_shows > 1 ? 's' : ''}</span>}
                           </span>
                         </div>
                       </td>
+                      {/* Phone, not email: phone is identity in this product
+                          (guests sign in with it, WhatsApp is the channel) and
+                          one line keeps the row one line. Email is in the
+                          drawer, and search still matches both. */}
                       <td className="px-3 py-2">
-                        <p className="max-w-[170px] truncate font-medium text-ink/70">{c.email}</p>
-                        <p className="text-[10.5px] text-ink/45">{c.phone}</p>
+                        <p className="font-medium tabular-nums text-ink/70">{c.phone}</p>
                       </td>
                       <td className="px-3 py-2 text-right font-bold tabular-nums text-ink">{c.bookings_count}</td>
                       <td className="px-3 py-2 text-right font-bold tabular-nums text-maroon">{inr(c.total_spent)}</td>
-                      <td className="px-3 py-2">
+                      <td className="px-3 py-2" title={fmtDayFull(c.last_booking_at)}>
                         <p className="font-medium text-ink/70">{daysSince(c.last_booking_at)}d ago</p>
-                        <p className="text-[10.5px] text-ink/45">{fmtDayFull(c.last_booking_at)}</p>
                       </td>
                       <td className="px-3 py-2 text-right" onClick={(e) => e.stopPropagation()}>
                         <button
@@ -404,7 +413,7 @@ const Clients = () => {
             <ul className="divide-y-2 divide-neutral-200 md:hidden">
               {rows.map((c) => (
                 <li key={c.id}>
-                  <button type="button" onClick={() => setOpenId(c.id)} className="flex w-full items-center gap-2 px-2.5 py-1.5 text-left">
+                  <button type="button" onClick={() => openClient(c.id)} className="flex w-full items-center gap-2 px-2.5 py-1.5 text-left">
                     <Avatar name={c.name} size="h-8 w-8 text-[10.5px]" />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-[12px] font-bold text-ink">{c.name}</span>
@@ -426,11 +435,6 @@ const Clients = () => {
           </>
         )}
       </Panel>
-
-      <p className="flex items-start gap-1.5 rounded-xl border-2 border-maroon-100 bg-maroon-50 px-2.5 py-1.5 text-[11px] font-medium text-ink/65">
-        <TrendingUp className="mt-0.5 h-4 w-4 shrink-0 text-maroon" strokeWidth={2.2} />
-        On a Starter plan this page is a blurred teaser with an upgrade overlay, exactly as it is today — the gate is preserved, only the contents behind it change.
-      </p>
 
       <ClientDrawer
         open={!!open}
