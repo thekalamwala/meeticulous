@@ -63,20 +63,31 @@ async function computeHostWeek(hostId) {
   const nowIso = new Date(now).toISOString();
   const in7 = new Date(now + WEEK_MS).toISOString();
 
-  const { data: recent } = await supabaseAdmin
+  // `bookings` has no `amount` column — selecting it made PostgREST reject the
+  // whole query, which returned null rows, summarized to zero, and skipped every
+  // host through worthSending(). The job then finished "ok" having sent nothing,
+  // to anyone, for as long as it has been enabled. summarize() keeps its
+  // `?? amount` fallback: that is defensive on the row shape and costs nothing.
+  const { data: recent, error: recentErr } = await supabaseAdmin
     .from('bookings')
-    .select('vendor_amount, amount')
+    .select('vendor_amount')
     .eq('host_id', hostId)
     .eq('payment_status', 'paid')
     .gte('created_at', since);
 
-  const { count: upcoming } = await supabaseAdmin
+  const { count: upcoming, error: upcomingErr } = await supabaseAdmin
     .from('bookings')
     .select('id', { count: 'exact', head: true })
     .eq('host_id', hostId)
     .eq('payment_status', 'paid')
     .gte('scheduled_at', nowIso)
     .lte('scheduled_at', in7);
+
+  // Never swallow these again. A failed query here is indistinguishable from a
+  // quiet week — both produce zeros — so without this line the recap can fail
+  // completely and still report success.
+  const failed = recentErr || upcomingErr;
+  if (failed) console.error('weekly recap: bookings query failed for host', hostId, '—', failed.message);
 
   return summarize(recent || [], upcoming || 0);
 }
