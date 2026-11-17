@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { Outlet, useLocation, Link } from "react-router-dom";
+import { Outlet, useLocation, Link, useNavigate } from "react-router-dom";
 import {
   LogOut, LifeBuoy, ChevronDown, User, CalendarDays, Gift, HelpCircle, ExternalLink,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { isHost } from "../../utils/roleRoutes";
 import GuestSidebar from "./GuestSidebar";
 import GuestTabBar from "./GuestTabBar";
 import PullToRefresh from "../dashboard/ui/PullToRefresh";
@@ -25,10 +26,22 @@ const ring = "focus-visible:outline-none focus-visible:ring-[3px] focus-visible:
 // no setup checklist and no second door, so those rows are dropped; the
 // identity head, the inset blush-hover rows and the error-bg sign-out stay.
 const AccountMenu = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, mode, setMode } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const name = user?.name || "You";
+
+  // Dual-capability accounts (a host who is also in their guest space) can hop
+  // doors. Same mechanism the host DashboardLayout uses: set the mode, go to the
+  // other console. Pure guests are not hosts, so they never see this.
+  const dual = isHost(user);
+  const switchMode = (next) => {
+    setOpen(false);
+    if (next === (mode || "traveling")) return;
+    setMode?.(next);
+    navigate(next === "hosting" ? "/dashboard" : "/user");
+  };
   const initials = name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "U";
 
   useEffect(() => {
@@ -92,6 +105,29 @@ const AccountMenu = () => {
             <p className="relative mt-2 truncate font-display text-[13px] font-bold leading-tight tracking-[-0.02em]">{name}</p>
             {user?.email && <p className="relative mt-0.5 truncate text-[10.5px] font-medium text-maroon/60">{user.email}</p>}
           </div>
+
+          {/* Mode switch — hosts who are visiting their guest space can hop back.
+              Loop & Slot segmented pill; "Guesting" is active here. */}
+          {dual && (
+            <div className="border-t-2 border-neutral-200 p-2">
+              <div className="flex gap-1 rounded-full bg-neutral-100 p-0.5">
+                <button
+                  type="button"
+                  onClick={() => switchMode("hosting")}
+                  className={`flex-1 rounded-full px-3 py-1.5 text-[11.5px] font-bold transition ${ring} text-ink/55 hover:text-ink`}
+                >
+                  Hosting
+                </button>
+                <button
+                  type="button"
+                  onClick={() => switchMode("traveling")}
+                  className={`flex-1 rounded-full px-3 py-1.5 text-[11.5px] font-bold transition ${ring} bg-maroon text-white`}
+                >
+                  Guesting
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="border-t-2 border-neutral-200 py-1.5">
             {LINKS.map((l) => (
