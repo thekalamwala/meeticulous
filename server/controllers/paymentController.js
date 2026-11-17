@@ -1569,6 +1569,18 @@ const handleWebhook = async (req, res) => {
             eventId: payment.id,              // same id browser pixel used → de-dupe
           });
         }
+      } else if (notes.kind === 'course' && notes.course_id) {
+        // Course-purchase safety net: verify-course may have died after capture.
+        // Idempotent on razorpay_order_id — a no-op if verify already issued it.
+        const { data: course } = await supabaseAdmin
+          .from("courses").select("id, host_id, title").eq("id", notes.course_id).single();
+        if (course) {
+          const { materializeCoursePurchase } = require("./courseController");
+          const issued = await materializeCoursePurchase({
+            course, notes, orderId: payment.order_id, paymentId: payment.id,
+          });
+          if (!issued.reused) auditLog('WEBHOOK_COURSE_PAID', null, { course_id: notes.course_id, payment_id: payment.id });
+        }
       } else if (notes.product_id) {
         // Product-purchase safety net: verify-product may have died after Razorpay
         // captured (DB blip, client closed the tab). The order notes carry the

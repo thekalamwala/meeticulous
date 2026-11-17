@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ChevronDown, CircleHelp, Image, MessagesSquare, SquarePen } from 'lucide-react';
 import Seo from '../../components/common/Seo';
 import ErrorPage from '../ErrorPage';
 import { useInfiniteScroll } from '../../components/dashboard/ui/useInfiniteScroll';
 import { getFeed } from '../../services/communityApi';
+import CommunityTopics from '../../components/community/CommunityTopics';
 import { analytics, EVENTS } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
 import { useFeature } from '../../context/FeatureContext';
@@ -106,6 +107,10 @@ export default function CommunityFeed() {
           </div>
         )}
       </div>
+
+      {/* Compact topic pills. On xl the rail shows them under the ad (see
+          CommunityLayout); here they cover narrower screens that have no rail. */}
+      <CommunityTopics className="xl:hidden" />
 
       <div className={`${v2 ? 'hidden lg:flex ' : ''}mt-card gap-4 p-5 sm:p-6`}>
         <div className="flex items-center gap-3">

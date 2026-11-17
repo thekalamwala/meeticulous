@@ -504,6 +504,31 @@ const spaceThreads = handleRead(async (req, res) => {
   return res.json({ space: spaceView(space), items, next_cursor: next });
 }, { space: null, items: [], next_cursor: null });
 
+// Humanize a tag slug for display: "getting-bookings" -> "Getting bookings".
+const humanizeTag = (t) => String(t || '').replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
+const tagView = ({ tag, use_count: useCount }) => ({ tag, name: humanizeTag(tag), count: useCount || 0 });
+
+// GET /community/tags — topic tags that carry content, for the "Browse by topic" list.
+const tags = handleRead(async (req, res) => {
+  const all = await store.listTags();
+  setCache(req, res);
+  return res.json({ tags: all.filter((t) => (t.use_count || 0) > 0).map(tagView) });
+}, { tags: [] });
+
+// GET /community/tags/:tag/threads — a topic hub: visible threads carrying one tag.
+const tagThreads = handleRead(async (req, res) => {
+  const tag = String(req.params.tag || '').toLowerCase();
+  const found = (await store.listTags()).find((t) => t.tag === tag);
+  if (!found) return fail(res, 404, 'NOT_FOUND');
+  const c = readCursor(req, res);
+  if (!c) return null;
+  const raw = await store.listTagRows({ cur: c.cur, limit: FEED_FETCH, tag, sortCol: 'last_activity_at' });
+  const { rows, next } = pageOf(raw, await ctxFor(req), { sortCol: 'last_activity_at' });
+  const items = await store.hydrateItems(rows, req.user?.id || null);
+  setCache(req, res);
+  return res.json({ tag: tagView(found), items, next_cursor: next });
+}, { tag: null, items: [], next_cursor: null });
+
 // Oldest-first comment page. Tombstones stay (filterVisibleComments), so no over-fetch needed.
 async function commentPage(req, postId, cur) {
   const raw = await store.listCommentRows(postId, cur, COMMENT_LIMIT + 1);
@@ -627,7 +652,7 @@ const mentionSuggest = handle(async (req, res) => {
 });
 
 module.exports = {
-  listSpaces, feed, spaceThreads, itemDetail, itemComments, me, myCard, authorActivity, mentionSuggest, updatePrefs,
+  listSpaces, feed, spaceThreads, tags, tagThreads, itemDetail, itemComments, me, myCard, authorActivity, mentionSuggest, updatePrefs,
   acceptTerms, createItem, updateItem, deleteItem, createComment, updateComment, deleteComment,
   acceptAnswer, addReaction, removeReaction, createReport,
   createSave, removeSave, createBlock, removeBlock,

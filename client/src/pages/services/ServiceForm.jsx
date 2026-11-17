@@ -14,6 +14,7 @@ import { PageHeader, Card, Button, Input, Select, Textarea, cn } from '../../com
 import { BOLT_ENABLED } from '../../config/aiListing';
 import { useAuth } from '../../context/AuthContext';
 import { normalizePlan } from '../../utils/themeUtils';
+import CancellationPolicyField from '../../components/services/CancellationPolicyField';
 import { fieldError } from '../../utils/apiError';
 
 // ₹ floor for paid services on the self-serve plans; Supreme is exempt, ₹0 free is
@@ -101,6 +102,7 @@ const empty = () => ({
   duration: 30,
   custom_duration: '',
   grace_period: 0,
+  cancellation_preset: 'standard',
   thumbnail_url: '',
   long_description: '',
   included_items: [],
@@ -350,6 +352,7 @@ export default function ServiceForm({ initialData, serviceId }) {
         duration:          DURATIONS.find(d => d.value === initialData.duration) ? initialData.duration : 0,
         custom_duration:   DURATIONS.find(d => d.value === initialData.duration) ? '' : String(initialData.duration || ''),
         grace_period:      initialData.grace_period_minutes ?? initialData.grace_period ?? 0,
+        cancellation_preset: initialData.cancellation_policy?.preset || 'standard',
         thumbnail_url:     initialData.thumbnail_url || '',
         long_description:  initialData.long_description || '',
         included_items:    Array.isArray(initialData.included_items) ? initialData.included_items : [],
@@ -468,6 +471,7 @@ export default function ServiceForm({ initialData, serviceId }) {
         duration:          effectiveDuration,
         grace_period:      form.grace_period,
         grace_period_minutes: form.grace_period,
+        cancellation_preset: form.cancellation_preset,
         thumbnail_url:     form.thumbnail_url,
         long_description:  form.long_description,
         included_items:    form.included_items,
@@ -685,6 +689,15 @@ export default function ServiceForm({ initialData, serviceId }) {
                 </Select>
               </div>
             </FeatureGate>
+
+            {/* Cancellation policy (P4) — paid services only; free bookings cancel any time. */}
+            {!feeOnly && (form.price_on_request || (parseFloat(form.price) || 0) > 0) && (
+              <CancellationPolicyField
+                value={form.cancellation_preset}
+                onChange={(v) => set('cancellation_preset', v)}
+                isFree={normalizePlan(user?.plan) === 'free'}
+              />
+            )}
 
             {/* Thumbnail */}
             <FeatureGate flag="service_thumbnail">

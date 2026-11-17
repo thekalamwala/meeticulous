@@ -27,6 +27,7 @@ const botService = require('../botService');
 const escalationService = require('../bot/escalationService');
 const notify = require('./notify');
 const replyGate = require('./replyGate');
+const text = require('./text');
 
 const FLAG = 'community_tithi';
 const UPDATES_SPACE = 'updates';
@@ -418,12 +419,16 @@ async function replyToPost({ post } = {}) {
     const author = post.author_id ? await store.getProfile(post.author_id) : null;
     const audience = author ? (author.is_host ? 'host' : 'guest') : null;
 
-    const res = await botService.askBot({ question: post.body, audience });
+    const res = await botService.askBot({ question: post.body, audience, channel: 'community' });
     // Can't ground it → honest community handoff (not the doc-centric support line).
     let body = res.escalate ? COMMUNITY_HANDOFF : String(res.answer || '').trim();
     if (!body) return { skipped: 'empty' };
-    // Pitch: comparison intent gets ONE internal CTA; the grounded answer is unchanged.
-    if (!res.escalate && route === 'comparison') body = replyGate.appendCta(body, route);
+    if (!res.escalate) {
+      // Community renders raw text — strip any markdown the bot layers emit, then add ONE
+      // route-aware plain-text CTA (comparison/feature) so a product answer has a next step.
+      body = text.toPlainText(body);
+      body = replyGate.appendCta(body, route);
+    }
 
     // On escalation, tag a human IN the reply so they're pinged to check + take over.
     // One reply per post (dedup above) means at most one tag per thread — no extra guard.
@@ -486,11 +491,14 @@ async function replyToComment({ comment } = {}) {
     const author = comment.author_id ? await store.getProfile(comment.author_id) : null;
     const audience = author ? (author.is_host ? 'host' : 'guest') : null;
 
-    const res = await botService.askBot({ question: comment.body, audience });
+    const res = await botService.askBot({ question: comment.body, audience, channel: 'community' });
     // Can't ground it → honest community handoff (not the doc-centric support line).
     let body = res.escalate ? COMMUNITY_HANDOFF : String(res.answer || '').trim();
     if (!body) return { skipped: 'empty' };
-    if (!res.escalate && route === 'comparison') body = replyGate.appendCta(body, route);
+    if (!res.escalate) {
+      body = text.toPlainText(body);
+      body = replyGate.appendCta(body, route);
+    }
 
     const handle = res.escalate ? escalationHandle() : null;
     if (handle) body = `${body}\n\n@${handle} — could you take this one?`;

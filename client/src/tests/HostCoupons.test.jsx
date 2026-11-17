@@ -27,10 +27,11 @@ const renderPage = () => render(<MemoryRouter><HostCoupons /></MemoryRouter>);
 beforeEach(() => vi.clearAllMocks());
 
 describe('HostCoupons', () => {
-  it('shows the disabled state when the coupons flag is off (404)', async () => {
+  it('shows the Coming-to-Pro teaser when the coupons flag is off (404)', async () => {
     api.getHostCoupons.mockRejectedValueOnce({ response: { status: 404 } });
     renderPage();
-    expect(await screen.findByText(/aren't available yet/i)).toBeInTheDocument();
+    expect(await screen.findByText('Discount codes')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /notify me/i })).toBeInTheDocument();
   });
 
   it('shows the empty state and opens the create form', async () => {

@@ -36,6 +36,28 @@ Key facts:
 - [Topmate commission and fees explained](https://meeticulous.com/blog/topmate-commission)
 - [Best appointment booking apps in India](https://meeticulous.com/blog/best-appointment-booking-apps-india)
 
+## Community
+
+Real questions from Indian hosts and guests, answered by hosts and the Meeticulous team — pricing, payments, GST, no-shows, getting bookings, and running a service business. Threads carry accepted answers (Q&A / FAQ structured data).
+
+- [Community home](https://meeticulous.com/community): Ask, share and learn with other hosts and guests.
+- [Help & Questions](https://meeticulous.com/community/s/help): How-to questions from hosts and guests, with accepted answers.
+- [Host Corner](https://meeticulous.com/community/s/host-corner): Business questions from hosts — pricing, growth and operations.
+- [Community guidelines](https://meeticulous.com/community/guidelines): How the community works.
+
+Popular answered questions:
+
+- [How much is the Pro plan and can I pay yearly?](https://meeticulous.com/community/t/how-much-is-the-pro-plan-and-can-0utr9d)
+- [Do I need a GST number to use Meeticulous?](https://meeticulous.com/community/t/do-i-need-a-gst-number-to-use-g2eodf)
+- [How do I change the bank account my payouts go to?](https://meeticulous.com/community/t/how-do-i-change-the-bank-account-my-9heuav)
+- [My Razorpay KYC got rejected — can I still take bookings?](https://meeticulous.com/community/t/my-razorpay-kyc-got-rejected-can-i-still-wm6pkx)
+- [Does it sync with my Google Calendar both ways?](https://meeticulous.com/community/t/does-it-sync-with-my-google-calendar-both-vdvwrd)
+- [Can I collect fees before a class to stop last-minute cancellations?](https://meeticulous.com/community/t/can-i-collect-fees-before-a-spoken-english-69339q)
+- [I use Topmate / Calendly now — is it worth switching?](https://meeticulous.com/community/t/i-use-topmate-calendly-now-is-it-worth-gkn5wx)
+- [How do I turn Instagram DMs into actual bookings?](https://meeticulous.com/community/t/how-do-i-turn-instagram-dms-into-actual-ygaojd)
+- [How do I get my first reviews and testimonials?](https://meeticulous.com/community/t/how-do-i-get-my-first-reviews-and-1vifo4)
+- [Can a tutor run recurring online lessons with calendar sync?](https://meeticulous.com/community/t/can-a-french-or-german-tutor-run-recurring-l9mjf2)
+
 ## Features
 
 - [Online scheduling](https://meeticulous.com/features/online-scheduling)

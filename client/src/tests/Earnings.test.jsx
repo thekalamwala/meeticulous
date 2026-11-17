@@ -1,7 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 
-vi.mock("../services/api", () => ({ getHostBookings: vi.fn() }));
+vi.mock("../services/api", () => ({
+  getHostBookings: vi.fn(),
+  getHostNudges: vi.fn(() => Promise.resolve({ data: {} })), // meter: no commission → hidden
+}));
 import { getHostBookings } from "../services/api";
 import Earnings from "../pages/Earnings";
 

@@ -20,8 +20,19 @@
 
 const { supabaseAdmin } = require('../config/supabase');
 const { securityLog } = require('../utils/logger');
+const { WITHHOLDING_DEFAULTS } = require('../lib/pricingEngine');
 
-const DEFAULTS = { platformFee: 10, gstRate: 0.18, clearingDays: 7, feeOnlyMode: true, payoutReconcilerMode: 'observe', routeAutopilot: false };
+const DEFAULTS = {
+  platformFee: 10, gstRate: 0.18, clearingDays: 7, feeOnlyMode: true,
+  payoutReconcilerMode: 'observe', routeAutopilot: false,
+  // Withholding rates for the tds_tcs_v2 engine — only applied when that flag is ON
+  // (resolveWithholding returns the legacy 1%+1% while it's OFF). Seeded in v3.206;
+  // these mirror pricingEngine.WITHHOLDING_DEFAULTS so there's a single source of truth.
+  tdsRate: WITHHOLDING_DEFAULTS.tdsRate,
+  tdsRateNoPan: WITHHOLDING_DEFAULTS.tdsRateNoPan,
+  tcsRate: WITHHOLDING_DEFAULTS.tcsRate,
+  tdsThresholdIndividual: WITHHOLDING_DEFAULTS.tdsThresholdIndividual,
+};
 
 // Reconciler mode tri-state (see payoutReconciler.js). Unwraps JSON-stringified
 // values like toBool/toNumber; anything not a known mode resolves to the fallback.
@@ -96,11 +107,15 @@ const getConfig = async () => {
   let feeOnlyMode = DEFAULTS.feeOnlyMode;
   let payoutReconcilerMode = DEFAULTS.payoutReconcilerMode;
   let routeAutopilot = DEFAULTS.routeAutopilot;
+  let tdsRate = DEFAULTS.tdsRate;
+  let tdsRateNoPan = DEFAULTS.tdsRateNoPan;
+  let tcsRate = DEFAULTS.tcsRate;
+  let tdsThresholdIndividual = DEFAULTS.tdsThresholdIndividual;
   try {
     const { data, error } = await supabaseAdmin
       .from('platform_settings')
       .select('key, value')
-      .in('key', ['platform_fee', 'platform_fee_gst_rate', 'settlement_clearing_days', 'fee_only_mode', 'payout_reconciler_mode', 'route_autopilot']);
+      .in('key', ['platform_fee', 'platform_fee_gst_rate', 'settlement_clearing_days', 'fee_only_mode', 'payout_reconciler_mode', 'route_autopilot', 'tds_rate', 'tds_rate_no_pan', 'tcs_rate', 'tds_threshold_individual']);
     // supabase-js RETURNS errors, it does not throw. Destructuring only `data`
     // meant a failed read looked identical to an empty table: the loop below ran
     // zero times, every setting silently reverted to DEFAULTS, and the catch
@@ -114,6 +129,10 @@ const getConfig = async () => {
       if (row.key === 'fee_only_mode') feeOnlyMode = toBool(row.value, DEFAULTS.feeOnlyMode);
       if (row.key === 'payout_reconciler_mode') payoutReconcilerMode = toMode(row.value, DEFAULTS.payoutReconcilerMode);
       if (row.key === 'route_autopilot') routeAutopilot = toBool(row.value, DEFAULTS.routeAutopilot);
+      if (row.key === 'tds_rate') tdsRate = toNumber(row.value, DEFAULTS.tdsRate);
+      if (row.key === 'tds_rate_no_pan') tdsRateNoPan = toNumber(row.value, DEFAULTS.tdsRateNoPan);
+      if (row.key === 'tcs_rate') tcsRate = toNumber(row.value, DEFAULTS.tcsRate);
+      if (row.key === 'tds_threshold_individual') tdsThresholdIndividual = toNumber(row.value, DEFAULTS.tdsThresholdIndividual);
     }
   } catch (err) {
     // Serve the LAST GOOD config rather than reverting to DEFAULTS. A blip must
@@ -138,8 +157,13 @@ const getConfig = async () => {
   if (gstRate < 0 || gstRate > 1) gstRate = DEFAULTS.gstRate;
   if (!Number.isFinite(clearingDays) || clearingDays < 0) clearingDays = DEFAULTS.clearingDays;
   clearingDays = Math.floor(clearingDays);
+  // Withholding rates must be a sane fraction; a corrupt row must never over/under-deduct tax.
+  if (!(tdsRate >= 0 && tdsRate <= 1)) tdsRate = DEFAULTS.tdsRate;
+  if (!(tdsRateNoPan >= 0 && tdsRateNoPan <= 1)) tdsRateNoPan = DEFAULTS.tdsRateNoPan;
+  if (!(tcsRate >= 0 && tcsRate <= 1)) tcsRate = DEFAULTS.tcsRate;
+  if (!(tdsThresholdIndividual >= 0)) tdsThresholdIndividual = DEFAULTS.tdsThresholdIndividual;
 
-  _cache = { at: now, value: { platformFee, gstRate, clearingDays, feeOnlyMode, payoutReconcilerMode, routeAutopilot } };
+  _cache = { at: now, value: { platformFee, gstRate, clearingDays, feeOnlyMode, payoutReconcilerMode, routeAutopilot, tdsRate, tdsRateNoPan, tcsRate, tdsThresholdIndividual } };
   _lastGood = _cache.value;
   return _cache.value;
 };

@@ -10,6 +10,7 @@ const chat = require('../services/supportChatService');
 const bot = require('../services/botService');
 const supportActions = require('../services/supportActions');
 const supportContext = require('../services/supportContextService');
+const { isFeatureEnabled } = require('../services/featureFlags');
 // NOTE: config/supabase + uploadController are required LAZILY inside
 // uploadAttachment (below), not at module top. config/supabase throws on load
 // when SUPABASE_SERVICE_ROLE_KEY is absent (the unit-test env), which would take
@@ -41,24 +42,28 @@ async function recentThreadHistory(threadId, messageId) {
 // bot's answer reaches the client over the thread's realtime broadcast. Never throws.
 async function botAutoReply(thread, question, messageId) {
   try {
-    // Self-service actions run BEFORE the FAQ bot: if the customer (whose identity
-    // we know on an authenticated thread) is asking to resend their confirmation /
-    // invoice / calendar invite, DO it rather than answer with words.
-    const action = supportActions.detectAction(question);
-    if (action && (thread.user_id || thread.guest_phone)) {
-      let msg;
-      try {
-        const r = await supportActions.runAction(action, {
-          userId: thread.user_id, guestPhone: thread.guest_phone, isHost: thread.participant_type === 'host',
-        });
-        msg = r.message;
-      } catch (e) {
-        console.error('support action failed', action, thread?.id, e.message);
-        msg = "I hit a snag doing that just now. Tap 'Talk to a human' and a teammate will sort it out.";
-      }
-      if (msg) {
-        await chat.postMessage({ threadId: thread.id, sender: 'bot', senderName: 'Tithi', body: msg });
-        return; // handled — skip the FAQ bot
+    const identity = { userId: thread.user_id, guestPhone: thread.guest_phone, isHost: thread.participant_type === 'host' };
+
+    // Self-service actions. When the agentic tool-loop (bot_tool_loop) is ON, askBot owns
+    // actions behind a confirmation gate, so this legacy INSTANT regex path is skipped —
+    // otherwise it would fire a resend before the bot ever got to ask "want me to?".
+    // OFF = legacy behaviour: detect the resend intent by regex and DO it immediately.
+    const toolLoopOn = await isFeatureEnabled('bot_tool_loop');
+    if (!toolLoopOn) {
+      const action = supportActions.detectAction(question);
+      if (action && (thread.user_id || thread.guest_phone)) {
+        let msg;
+        try {
+          const r = await supportActions.runAction(action, identity);
+          msg = r.message;
+        } catch (e) {
+          console.error('support action failed', action, thread?.id, e.message);
+          msg = "I hit a snag doing that just now. Tap 'Talk to a human' and a teammate will sort it out.";
+        }
+        if (msg) {
+          await chat.postMessage({ threadId: thread.id, sender: 'bot', senderName: 'Tithi', body: msg });
+          return; // handled — skip the FAQ bot
+        }
       }
     }
 
@@ -75,7 +80,7 @@ async function botAutoReply(thread, question, messageId) {
     } catch (e) { console.error('support context lookup failed', thread?.id, e.message); }
 
     const history = await recentThreadHistory(thread.id, messageId);
-    const out = await bot.askBot({ question, sessionRef: thread.reference, context: ctx, history });
+    const out = await bot.askBot({ question, sessionRef: thread.reference, context: ctx, identity, history });
     if (!out || !String(out.answer || '').trim()) return;
     await chat.postMessage({ threadId: thread.id, sender: 'bot', senderName: 'Tithi', body: out.answer });
     // Bolt couldn't answer confidently → hand to a human (flips the banner to 'waiting').

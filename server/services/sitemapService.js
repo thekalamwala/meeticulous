@@ -160,6 +160,18 @@ const STATIC_ROUTES = [
   { path: '/for/photographers',        changefreq: 'monthly', priority: '0.8' },
   { path: '/for/events',               changefreq: 'monthly', priority: '0.8' },
   { path: '/for/agencies',             changefreq: 'monthly', priority: '0.8' },
+  // 9 more live, prerendered /for pages (bespoke skins in client/src/pages/for/*Skin.jsx)
+  // added after the first sitemap backfill — same drift, still undeclared. Keep this list
+  // mirrored to the /for block in client/scripts/prerender.mjs.
+  { path: '/for/coworking-spaces',     changefreq: 'monthly', priority: '0.8' },
+  { path: '/for/driving-schools',      changefreq: 'monthly', priority: '0.8' },
+  { path: '/for/conference-halls',     changefreq: 'monthly', priority: '0.8' },
+  { path: '/for/photo-studios',        changefreq: 'monthly', priority: '0.8' },
+  { path: '/for/coaches',              changefreq: 'monthly', priority: '0.8' },
+  { path: '/for/content-creators',     changefreq: 'monthly', priority: '0.8' },
+  { path: '/for/educators',            changefreq: 'monthly', priority: '0.8' },
+  { path: '/for/musicians',            changefreq: 'monthly', priority: '0.8' },
+  { path: '/for/language-teachers',    changefreq: 'monthly', priority: '0.8' },
 ];
 
 const staticEntries = (siteUrl) =>
@@ -213,14 +225,16 @@ const communityEntries = (rows, siteUrl) => {
   return [
     { loc: `${site}/community`, changefreq: 'daily', priority: '0.6' },
     { loc: `${site}/community/guidelines`, changefreq: 'monthly', priority: '0.3' },
-    ...list.map((r) => (r.key
-      ? { loc: `${site}/community/s/${r.key}`, changefreq: 'daily', priority: '0.5' }
-      : r.slug && {
+    ...list.map((r) => {
+      if (r.key) return { loc: `${site}/community/s/${r.key}`, changefreq: 'daily', priority: '0.5' };
+      if (r.tag) return { loc: `${site}/community/tag/${r.tag}`, changefreq: 'weekly', priority: '0.4' };
+      return r.slug && {
         loc: `${site}/community/${r.kind === 'thread' ? 't' : 'p'}/${r.slug}`,
         lastmod: toLastmod(r.last_activity_at),
         changefreq: 'weekly',
         priority: '0.5',
-      })).filter(Boolean),
+      };
+    }).filter(Boolean),
   ];
 };
 
@@ -331,11 +345,14 @@ const fetchBlogs = async () => {
 const fetchCommunity = async () => {
   if (!(await isFeatureEnabled('community').catch(() => false))) return [];
   try {
-    const [spaces, items, banned] = await Promise.all([
+    const [spaces, items, banned, tags] = await Promise.all([
       communityStore.listSpaces(), communityStore.listIndexableRows(), communityStore.bannedAuthorIds(),
+      communityStore.listTags().catch(() => []),
     ]);
     return [
       ...spaces.map((s) => ({ key: s.key })),
+      // Topic hubs: only tags with enough content to be worth a page (avoid thin hubs).
+      ...tags.filter((t) => (t.use_count || 0) >= 3).map((t) => ({ tag: t.tag })),
       ...items.filter((i) => !(i.author_id && banned.has(i.author_id))),
     ];
   } catch (e) {

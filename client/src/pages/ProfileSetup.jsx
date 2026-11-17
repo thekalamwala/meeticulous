@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Pencil, MapPin, Camera } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { Pencil, MapPin, Camera, Check, Lock } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { updateProfile } from "../services/api";
 import ImageCropper from "../components/common/ImageCropper";
 import FeatureGate from "../components/common/FeatureGate";
 import UsernameField from "../components/dashboard/UsernameField";
 import CategoriesSection from "../components/dashboard/CategoriesSection";
-import AccountModeToggle from "../components/common/AccountModeToggle";
 import toast from "react-hot-toast";
 import { fieldError } from "../utils/apiError";
 import {
@@ -20,6 +19,8 @@ import {
   FREE_COLORS,
   CREATOR_COLORS,
   planLabel,
+  isFreePlan,
+  DEFAULT_COVER_IMAGE,
 } from "../utils/themeUtils";
 import {
   PageHeader, Card, Button, FormField, Input, Select, StickyActionBar, Tabs, cn,
@@ -56,17 +57,44 @@ const LiveChip = ({ children }) => (
 );
 
 // ─── Social platform config ──────────────────────────────────────────────────
+// Each platform takes just the handle; we prefill the rest. `prefix` is the grey
+// label shown before the input, `base` is the full URL we store (public pages
+// render the stored value as an href). `plain` platforms take a full value
+// (website URL / email). `pro` platforms are gated to paid plans.
 const SOCIAL_PLATFORMS = [
-  { key: 'instagram', label: 'Instagram',  placeholder: 'https://instagram.com/yourhandle', type: 'url' },
-  { key: 'youtube',   label: 'YouTube',    placeholder: 'https://youtube.com/@yourchannel', type: 'url' },
-  { key: 'linkedin',  label: 'LinkedIn',   placeholder: 'https://linkedin.com/in/you',      type: 'url' },
-  { key: 'facebook',  label: 'Facebook',   placeholder: 'https://facebook.com/yourpage',    type: 'url' },
-  { key: 'twitter',   label: 'X (Twitter)',placeholder: 'https://x.com/yourhandle',         type: 'url' },
-  { key: 'whatsapp',  label: 'WhatsApp',   placeholder: 'https://wa.me/919876543210',       type: 'url' },
-  { key: 'website',   label: 'Website',    placeholder: 'https://yourwebsite.com',           type: 'url' },
-  { key: 'github',    label: 'GitHub',     placeholder: 'https://github.com/you',            type: 'url' },
-  { key: 'email',     label: 'Public Email',placeholder: 'hello@you.com',                   type: 'email' },
+  { key: 'instagram', label: 'Instagram',    prefix: 'instagram.com/',    base: 'https://instagram.com/',    ph: 'yourhandle' },
+  { key: 'facebook',  label: 'Facebook',     prefix: 'facebook.com/',     base: 'https://facebook.com/',     ph: 'yourpage' },
+  { key: 'linkedin',  label: 'LinkedIn',     prefix: 'linkedin.com/in/',  base: 'https://linkedin.com/in/',  ph: 'you' },
+  { key: 'email',     label: 'Public Email', type: 'email', plain: true,  ph: 'hello@you.com' },
+  // Pro-only platforms
+  { key: 'youtube',   label: 'YouTube',      prefix: 'youtube.com/@',     base: 'https://youtube.com/@',     ph: 'yourchannel', pro: true },
+  { key: 'twitter',   label: 'X (Twitter)',  prefix: 'x.com/',            base: 'https://x.com/',            ph: 'yourhandle', pro: true },
+  { key: 'whatsapp',  label: 'WhatsApp',     prefix: 'wa.me/',            base: 'https://wa.me/',            ph: '919876543210', pro: true },
+  { key: 'github',    label: 'GitHub',       prefix: 'github.com/',       base: 'https://github.com/',       ph: 'you', pro: true },
+  { key: 'website',   label: 'Website',      type: 'url',   plain: true,  ph: 'https://yourwebsite.com', pro: true },
+  { key: 'tiktok',    label: 'TikTok',       prefix: 'tiktok.com/@',      base: 'https://tiktok.com/@',      ph: 'yourhandle', pro: true },
+  { key: 'threads',   label: 'Threads',      prefix: 'threads.net/@',     base: 'https://threads.net/@',     ph: 'yourhandle', pro: true },
+  { key: 'pinterest', label: 'Pinterest',    prefix: 'pinterest.com/',    base: 'https://pinterest.com/',    ph: 'yourhandle', pro: true },
+  { key: 'telegram',  label: 'Telegram',     prefix: 't.me/',             base: 'https://t.me/',             ph: 'yourhandle', pro: true },
+  { key: 'snapchat',  label: 'Snapchat',     prefix: 'snapchat.com/add/', base: 'https://snapchat.com/add/', ph: 'yourhandle', pro: true },
+  { key: 'dribbble',  label: 'Dribbble',     prefix: 'dribbble.com/',     base: 'https://dribbble.com/',     ph: 'yourhandle', pro: true },
 ];
+
+// Stored value (full URL) → the handle shown in the input.
+const handleFromUrl = (p, url = '') => {
+  if (p.plain || !p.base || !url) return url || '';
+  const noScheme = url.replace(/^https?:\/\/(www\.)?/i, '');
+  const baseNoScheme = p.base.replace(/^https?:\/\/(www\.)?/i, '');
+  return noScheme.toLowerCase().startsWith(baseNoScheme.toLowerCase())
+    ? noScheme.slice(baseNoScheme.length)
+    : url; // legacy value that doesn't match the base — show it raw
+};
+// Typed handle → the full URL we store (empty stays empty).
+const urlFromHandle = (p, handle = '') => {
+  const h = handle.trim().replace(/^@+/, '').replace(/^\/+/, '');
+  if (!h) return '';
+  return (p.plain || !p.base) ? h : p.base + h;
+};
 
 // ─── Integrations catalog ─────────────────────────────────────────────────────
 // Google Calendar is wired (its own card above). These are the rest of the
@@ -169,8 +197,8 @@ const ProfilePreview = ({ form, themeColor }) => {
   return (
     <div className="mx-auto w-full max-w-[240px] select-none overflow-hidden rounded-3xl border-2 border-neutral-200 bg-white text-xs">
       {/* Cover — 3:1, matches every render site. Flat theme tint (no gradient). */}
-      <div className="relative aspect-[3/1]" style={{ background: form.cover_image ? undefined : `${tc}22` }}>
-        {form.cover_image && <img src={form.cover_image} alt="" className="h-full w-full object-cover" />}
+      <div className="relative aspect-[3/1]">
+        <img src={form.cover_image || DEFAULT_COVER_IMAGE} alt="" className="h-full w-full object-cover object-center" />
       </div>
       {/* Avatar — relative+z-10 so it paints above the positioned cover (else cover overlaps photo) */}
       <div className="relative z-10 -mt-7 flex justify-center">
@@ -199,7 +227,7 @@ const ProfilePreview = ({ form, themeColor }) => {
 // input/textarea that commits on Enter/blur and cancels on Esc. Edits write to the
 // page form state — the sticky Save bar persists everything, so there is no
 // per-field API call. ponytail: reuses the page's existing save instead of adding one.
-const InlineField = ({ value, onCommit, placeholder, multiline = false, textClass = '', inputClass = '', maxLength, label }) => {
+const InlineField = ({ value, onCommit, placeholder, multiline = false, inline = false, textClass = '', inputClass = '', maxLength, label }) => {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value || '');
   useEffect(() => { setDraft(value || ''); }, [value]);
@@ -210,9 +238,9 @@ const InlineField = ({ value, onCommit, placeholder, multiline = false, textClas
   if (!editing) {
     return (
       <button type="button" onClick={() => setEditing(true)}
-        className={cn('group flex w-full items-start gap-1.5 text-left', textClass)}>
-        <span className={cn(!value && 'font-normal text-neutral-400')}>{value || placeholder}</span>
-        <Pencil className="mt-0.5 h-3.5 w-3.5 shrink-0 text-neutral-300 opacity-0 transition group-hover:opacity-100" strokeWidth={2.25} />
+        className={cn('group gap-1 text-left', inline ? 'inline-flex max-w-full items-center' : 'flex w-full items-start gap-1.5', textClass)}>
+        <span className={cn('truncate', !value && 'font-normal text-neutral-400')}>{value || placeholder}</span>
+        <Pencil className={cn('h-3.5 w-3.5 shrink-0 text-neutral-300 opacity-0 transition group-hover:opacity-100', !inline && 'mt-0.5')} strokeWidth={2.25} />
       </button>
     );
   }
@@ -224,9 +252,17 @@ const InlineField = ({ value, onCommit, placeholder, multiline = false, textClas
       if (e.key === 'Escape') cancel();
       if (e.key === 'Enter' && !multiline) { e.preventDefault(); commit(); }
     },
-    className: cn('w-full rounded-md border-2 border-maroon/40 bg-white px-2 py-1 text-ink focus:outline-none focus-visible:ring-[3px] focus-visible:ring-rose/40', inputClass),
+    className: cn('rounded-md border-2 border-maroon/40 bg-white px-2 py-1 text-ink focus:outline-none focus-visible:ring-[3px] focus-visible:ring-rose/40', inline ? 'w-auto min-w-[9rem] max-w-full' : 'w-full', inputClass),
   };
-  return multiline ? <textarea rows={3} {...common} /> : <input type="text" {...common} />;
+  if (multiline) {
+    return (
+      <div>
+        <textarea rows={3} {...common} />
+        {maxLength ? <p className="mt-1 text-right text-[11px] text-neutral-400">{draft.length}/{maxLength}</p> : null}
+      </div>
+    );
+  }
+  return <input type="text" {...common} />;
 };
 
 // ─── Main Component ───────────────────────────────────────────────────────────
@@ -243,6 +279,9 @@ const ProfileSetup = () => {
   const plan = user?.plan || 'explorer';
   const availableColors = getColorsForPlan(plan);
   const customHexAllowed = canUseCustomHex(plan);
+  const isPro = !isFreePlan(plan); // Pro-gated social platforms
+  // Extra colours a free host can't pick yet — shown locked under an Upgrade overlay.
+  const lockedColors = CREATOR_COLORS.filter(c => !availableColors.some(a => a.hex === c.hex));
 
   const [form, setForm] = useState({
     name: "",
@@ -305,8 +344,9 @@ const ProfileSetup = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setDirty(true);
   };
-  const handleSocialChange = (e) => {
-    setForm({ ...form, social_links: { ...form.social_links, [e.target.name]: e.target.value } });
+  // Social: user types a handle, we store the full prefilled URL.
+  const setSocialHandle = (p, raw) => {
+    setForm((f) => ({ ...f, social_links: { ...f.social_links, [p.key]: urlFromHandle(p, raw) } }));
     setDirty(true);
   };
   const handleColorSelect = (hex) => {
@@ -359,7 +399,6 @@ const ProfileSetup = () => {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <AccountModeToggle />
       <PageHeader
         title="Settings"
         subtitle={<>How guests discover and book you. Plan: <span className="font-semibold text-ink">{planLabel(plan, 'Starter')}</span></>}
@@ -374,7 +413,6 @@ const ProfileSetup = () => {
         onChange={setActiveSection}
         tabs={[
           { value: 'info', label: 'Profile' },
-          { value: 'categories', label: 'What you do' },
           { value: 'social', label: 'Social' },
           { value: 'appearance', label: 'Appearance' },
           { value: 'booking', label: 'Booking & privacy' },
@@ -412,12 +450,14 @@ const ProfileSetup = () => {
                 <button
                   type="button"
                   onClick={() => setCropper("cover")}
-                  className="group relative block aspect-[3/1] w-full overflow-hidden bg-blush"
+                  className="group relative block aspect-[3/1] w-full overflow-hidden rounded-t-2xl rounded-b-none bg-blush"
                   title="JPG/PNG/WebP up to 2MB — cropped to a 3:1 banner"
                 >
-                  {form.cover_image
-                    ? <img src={form.cover_image} alt="" className="h-full w-full object-cover" />
-                    : <span className="flex h-full items-center justify-center text-xs text-neutral-500">Add a cover photo</span>}
+                  <img
+                    src={form.cover_image || DEFAULT_COVER_IMAGE}
+                    alt=""
+                    className="h-full w-full object-cover object-center"
+                  />
                   <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-ink/60 px-2.5 py-1 text-[11px] font-medium text-white opacity-0 transition group-hover:opacity-100">
                     <Camera className="h-3.5 w-3.5" strokeWidth={2.25} /> {form.cover_image ? "Change" : "Add cover"}
                   </span>
@@ -425,11 +465,13 @@ const ProfileSetup = () => {
               </FeatureGate>
 
               <div className="px-5 pb-5">
+                {/* Avatar + name share a row, sitting under the cover. */}
+                <div className="flex items-end gap-4">
                 {/* Avatar (click to crop) — border colour reflects the plan tier. */}
                 <button
                   type="button"
                   onClick={() => setCropper("profile")}
-                  className="group relative -mt-10 block h-20 w-20 overflow-hidden rounded-2xl border-[3px] bg-neutral-50"
+                  className="group relative -mt-6 block h-24 w-24 overflow-hidden rounded-2xl border-[3px] bg-neutral-50 shadow-sm"
                   style={{ borderColor: getPlanBorderColor(plan) }}
                   title="Change profile photo — border reflects your plan tier"
                 >
@@ -441,72 +483,75 @@ const ProfileSetup = () => {
                   </span>
                 </button>
 
-                {/* Name */}
-                <div className="mt-3">
-                  <InlineField value={form.name} onCommit={(v) => commitField('name', v)}
+                {/* Name + KYC verified tick — sit next to the avatar, under the cover */}
+                <div className="flex min-w-0 flex-1 items-center gap-2 pb-1">
+                  <InlineField inline value={form.name} onCommit={(v) => commitField('name', v)}
                     placeholder="Your name" label="Host name" maxLength={80}
                     textClass="text-xl font-bold text-ink" inputClass="text-xl font-bold" />
+                  {user?.kyc_status === 'approved' ? (
+                    <span title="Identity verified" aria-label="Identity verified"
+                      className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-maroon text-white">
+                      <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                    </span>
+                  ) : (
+                    <button type="button" onClick={() => navigate('/dashboard/kyc')}
+                      title="Verify your identity (KYC)" aria-label="Verify your identity"
+                      className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-neutral-200 text-neutral-500 transition hover:bg-neutral-300">
+                      <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                    </button>
+                  )}
                 </div>
-                {/* Title */}
-                <div className="mt-0.5">
-                  <InlineField value={form.profession} onCommit={(v) => commitField('profession', v)}
-                    placeholder="Add a title — e.g. Founder & Developer" label="Host title" maxLength={80}
-                    textClass="text-sm font-medium text-maroon" inputClass="text-sm font-medium" />
-                </div>
-                {/* Location */}
-                <div className="mt-1.5 flex items-start gap-1.5">
-                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" strokeWidth={2.25} />
-                  <InlineField value={form.location} onCommit={(v) => commitField('location', v)}
+              </div>
+
+              {/* Meta — title · location · handle, all on one line */}
+              <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+                <InlineField inline value={form.profession} onCommit={(v) => commitField('profession', v)}
+                  placeholder="Add a title" label="Host title" maxLength={80}
+                  textClass="font-medium text-maroon" inputClass="text-sm font-medium" />
+                <span aria-hidden="true" className="text-neutral-300">·</span>
+                <span className="inline-flex max-w-full items-center gap-1 text-neutral-600">
+                  <MapPin className="h-3.5 w-3.5 shrink-0 text-neutral-400" strokeWidth={2.25} />
+                  <InlineField inline value={form.location} onCommit={(v) => commitField('location', v)}
                     placeholder="Add your city" label="Location" maxLength={80}
-                    textClass="text-sm text-neutral-600" inputClass="text-sm" />
-                </div>
-                {/* Handle — display only; change it in Details below */}
-                {form.username && (
-                  <p className="mt-1 text-xs text-neutral-400">meeticulous.com/{form.username}</p>
-                )}
-                {/* Bio */}
-                <div className="mt-3 border-t border-neutral-200 pt-3">
+                    textClass="text-neutral-600" inputClass="text-sm" />
+                </span>
+                <span aria-hidden="true" className="text-neutral-300">·</span>
+                <UsernameField user={user} variant="inline"
+                  onChanged={(u) => updateUser({ ...user, username: u })} />
+              </div>
+
+              {/* Bio */}
+              <div className="mt-3 border-t border-neutral-200 pt-3">
                   <InlineField value={form.bio} onCommit={(v) => commitField('bio', v)} multiline
                     placeholder="Tell people about yourself…" label="Bio" maxLength={500}
                     textClass="text-sm leading-relaxed text-neutral-600 whitespace-pre-wrap" inputClass="text-sm leading-relaxed" />
-                  <p className="mt-1 text-right text-[11px] text-neutral-400">{form.bio.length}/500</p>
                 </div>
               </div>
             </Card>
 
-            {/* ── Details — the handle plus private / config fields not shown on the card ── */}
+            {/* ── Details — category plus private / config fields not shown on the card ── */}
             <Card>
               <div className="space-y-4">
-                <UsernameField user={user} onChanged={(u) => updateUser({ ...user, username: u })} />
-                <FormField label="Tagline" className="mb-0">
-                  <Input type="text" name="tagline" placeholder="Short one-liner about you" value={form.tagline} onChange={handleChange} maxLength={100} />
+                <FormField label="Category" className="mb-0">
+                  <CategoriesSection
+                    plan={plan}
+                    onSaved={(data) => updateUser({ ...user, primary_category: data.primary_category, categories: data.categories })}
+                  />
                 </FormField>
-                <FormField label="Date of birth" hint="Private — only used to send you a birthday wish. Never shown on your public profile." className="mb-0">
-                  <Input type="date" name="date_of_birth" value={form.date_of_birth || ''} max={new Date().toISOString().slice(0, 10)} onChange={handleChange} />
-                </FormField>
-                <FormField
-                  label="Google Maps link"
-                  hint="Shown to guests who book an in-person (offline) service — in their confirmation, reminder, and calendar. Leave blank if all your services are online."
-                  className="mb-0"
-                >
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField label="Search keywords" hint="Helps guests find you in search." className="mb-0">
+                    <Input type="text" name="tagline" placeholder="e.g. prenatal yoga, Hindi" value={form.tagline} onChange={handleChange} maxLength={100} />
+                  </FormField>
+                  <FormField label="Date of birth" hint="For birthday wishes. Never public." className="mb-0">
+                    <Input type="date" name="date_of_birth" value={form.date_of_birth || ''} max={new Date().toISOString().slice(0, 10)} onChange={handleChange} />
+                  </FormField>
+                </div>
+                <FormField label="Google Maps link" hint="Shown to guests booking an in-person service." className="mb-0">
                   <Input type="url" name="map_link" placeholder="https://maps.app.goo.gl/…" value={form.map_link} onChange={handleChange} />
                 </FormField>
                 <p className="text-[11px] text-neutral-400">Your handle and categories save on their own; everything else saves with the bar below.</p>
               </div>
             </Card>
-          </div>
-        )}
-
-        {/* ── SECTION: Categories ── */}
-        {activeSection === 'categories' && (
-          <div className="space-y-5">
-            <SectionTitle hint="What you offer — this is how guests find you in Explore and search.">
-              What you do
-            </SectionTitle>
-            <CategoriesSection
-              plan={plan}
-              onSaved={(data) => updateUser({ ...user, primary_category: data.primary_category, categories: data.categories })}
-            />
           </div>
         )}
 
@@ -518,17 +563,40 @@ const ProfileSetup = () => {
             </SectionTitle>
             <FeatureGate flag="social_links" fallback={<p className="text-sm text-neutral-400">Social links are currently disabled.</p>}>
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                {SOCIAL_PLATFORMS.map(({ key, label, placeholder, type }) => {
+                {SOCIAL_PLATFORMS.map((p) => {
+                  // Pro-gated platform on a free plan — show a locked, upgrade row.
+                  if (p.pro && !isPro) {
+                    return (
+                      <div key={p.key} className="flex items-center justify-between gap-2 rounded-md border-2 border-dashed border-neutral-200 bg-neutral-50/60 px-3 py-2.5">
+                        <span className="inline-flex items-center gap-1.5 text-sm text-neutral-400">
+                          <Lock className="h-3.5 w-3.5" strokeWidth={2.25} /> {p.label}
+                        </span>
+                        <Link to="/dashboard/upgrade?src=social" className="shrink-0 text-xs font-semibold text-maroon underline">Upgrade</Link>
+                      </div>
+                    );
+                  }
                   // WhatsApp is a public "message me" link — a DIFFERENT thing from the
                   // number verified during onboarding for booking alerts. When that number
                   // is already verified, explain the split and offer a one-tap fill so the
                   // host isn't asked to re-type it. We never auto-publish it silently.
                   const showVerifiedWa =
-                    key === 'whatsapp' && user?.whatsapp_verified && user?.whatsapp_number;
+                    p.key === 'whatsapp' && user?.whatsapp_verified && user?.whatsapp_number;
                   const verifiedDigits = showVerifiedWa ? digitsOf(user.whatsapp_number) : '';
                   return (
-                    <FormField key={key} label={label} htmlFor={`sl-${key}`} className="mb-0">
-                      <Input id={`sl-${key}`} type={type} name={key} placeholder={placeholder} value={form.social_links[key] || ''} onChange={handleSocialChange} />
+                    <FormField key={p.key} label={p.label} htmlFor={`sl-${p.key}`} className="mb-0">
+                      {p.plain ? (
+                        <Input id={`sl-${p.key}`} type={p.type} placeholder={p.ph}
+                          value={form.social_links[p.key] || ''}
+                          onChange={(e) => setSocialHandle(p, e.target.value)} />
+                      ) : (
+                        <div className="flex items-center overflow-hidden rounded-md border-2 border-neutral-200 bg-white focus-within:border-maroon/40">
+                          <span className="shrink-0 pl-2.5 text-sm text-neutral-400">{p.prefix}</span>
+                          <input id={`sl-${p.key}`} type="text" placeholder={p.ph}
+                            value={handleFromUrl(p, form.social_links[p.key])}
+                            onChange={(e) => setSocialHandle(p, e.target.value)}
+                            className="min-w-0 flex-1 appearance-none rounded-none border-0 bg-transparent px-1 py-2 pr-2.5 text-sm text-ink shadow-none focus:border-0 focus:outline-none focus:ring-0" />
+                        </div>
+                      )}
                       {showVerifiedWa && (
                         <div className="mt-1.5">
                           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -565,34 +633,49 @@ const ProfileSetup = () => {
             <SectionTitle hint="Your colours on your public booking page.">
               Appearance
             </SectionTitle>
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-              {/* Left: controls */}
-              <div className="space-y-6">
-                {/* Theme Color */}
-                <FeatureGate flag="theme_colors">
-                  <div>
-                    <div className="mb-3 flex items-center justify-between">
-                      <div>
-                        <h3 className="text-sm font-semibold text-ink">Theme colour</h3>
-                        <p className="mt-0.5 text-xs text-neutral-400">Applied to buttons, accents, and CTAs on your profile</p>
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
+              {/* Controls — one card, so related choices share a region (proximity). */}
+              <FeatureGate flag="theme_colors">
+                <Card>
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-sm font-semibold text-ink">Theme colour</h3>
+                      <p className="mt-0.5 text-xs text-neutral-400">Used for buttons, accents and CTAs on your page.</p>
+                    </div>
+                    <span className="shrink-0 rounded-full bg-blush px-2.5 py-0.5 text-[10px] font-medium text-maroon">{planLabel(plan, 'Starter')}</span>
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap items-center gap-2.5">
+                    {availableColors.map(color => (
+                      <Swatch key={color.hex} color={color} selected={form.theme_color === color.hex} onClick={handleColorSelect} />
+                    ))}
+                    {/* Locked Pro colours, inline to the right of the brand swatches. */}
+                    {!customHexAllowed && plan !== 'creator' && lockedColors.length > 0 && (
+                      <div className="relative ml-1">
+                        <div className="pointer-events-none flex select-none gap-2.5 opacity-50 blur-[1.5px]" aria-hidden="true">
+                          {lockedColors.slice(0, 6).map(color => (
+                            <Swatch key={color.hex} color={color} selected={false} onClick={() => {}} />
+                          ))}
+                        </div>
+                        <div className="absolute inset-0 grid place-items-center">
+                          <Link
+                            to="/dashboard/upgrade?src=theme"
+                            className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-maroon px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-maroon-dark"
+                          >
+                            <Lock className="h-3.5 w-3.5" strokeWidth={2.25} /> Upgrade for more colours
+                          </Link>
+                        </div>
                       </div>
-                      <span className="rounded-full bg-blush px-2 py-0.5 text-[10px] font-medium text-maroon">{planLabel(plan, 'Starter')}</span>
-                    </div>
+                    )}
+                  </div>
 
-                    {/* Swatches */}
-                    <div className="mb-3 flex flex-wrap gap-2">
-                      {availableColors.map(color => (
-                        <Swatch key={color.hex} color={color} selected={form.theme_color === color.hex} onClick={handleColorSelect} />
-                      ))}
-                    </div>
-
-                    {/* Pro custom hex */}
-                    {customHexAllowed ? (
-                      <FeatureGate flag="custom_hex_color">
-                        <div className="mt-2 flex items-center gap-2">
-                          {/* Native colour wheel — click the swatch to pick visually */}
+                  {customHexAllowed ? (
+                    <FeatureGate flag="custom_hex_color">
+                      <div className="mt-4 border-t border-neutral-100 pt-4">
+                        <label className="mb-2 block text-xs font-medium text-neutral-500">Custom colour</label>
+                        <div className="flex items-center gap-2">
                           <label
-                            className="relative h-8 w-8 flex-shrink-0 cursor-pointer rounded-lg border-2 border-neutral-200"
+                            className="relative h-10 w-10 shrink-0 cursor-pointer rounded-lg border-2 border-neutral-200"
                             style={{ background: isValidHex(customHex) ? customHex : '#EBDCD9' }}
                             title="Pick a colour"
                           >
@@ -605,48 +688,19 @@ const ProfileSetup = () => {
                             />
                           </label>
                           <Input type="text" placeholder="#960D32" maxLength={7} className="flex-1 font-mono" value={customHex} onChange={handleCustomHex} />
-                          <span className="text-xs text-neutral-400">Custom</span>
                         </div>
-                      </FeatureGate>
-                    ) : (
-                      <p className="mt-1 text-xs text-neutral-400">
-                        {plan === 'creator' ? '16 colours available on your plan.' : 'Starter uses the brand colour. Upgrade to Pro for more colours.'}
-                      </p>
-                    )}
-                  </div>
-                </FeatureGate>
-
-                {/* Profile Border Info */}
-                <div className="rounded-2xl bg-cream p-4">
-                  <h3 className="mb-1 text-sm font-semibold text-ink">Profile photo border</h3>
-                  <div className="mt-2 flex items-center gap-3">
-                    <div className="h-10 w-10 flex-shrink-0 rounded-xl border-2 bg-white" style={{ borderColor: getPlanBorderColor(plan) }} />
-                    <div>
-                      <p className="text-xs text-neutral-600">
-                        Your border is <span className="font-semibold" style={{ color: getPlanBorderColor(plan) }}>
-                          {plan === 'supreme' || plan === 'professional' ? 'Gold' : plan === 'creator' ? 'Orange' : 'Grey'} ({planLabel(plan, 'Starter')})
-                        </span>
-                      </p>
-                      <p className="mt-0.5 text-[10px] text-neutral-400">Border updates automatically with your plan tier</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right: live preview */}
-              <div>
-                <h3 className="mb-3 text-sm font-semibold text-ink">Live preview</h3>
-                <ProfilePreview form={form} themeColor={tc} />
-                <p className="mt-3 text-center text-xs text-neutral-400">Updates as you type</p>
-
-                {/* Booking CTA preview */}
-                <Card className="mt-5">
-                  <p className="mb-2 text-xs font-medium text-neutral-400">Booking button preview</p>
-                  <button type="button" className="w-full rounded-full py-2.5 text-sm font-bold transition-all" style={{ background: tc, color: getContrastColor(tc) }}>
-                    Book
-                  </button>
-                  <p className="mt-2 text-center text-[10px] text-neutral-400">Text auto-adjusts for readability (WCAG AA)</p>
+                      </div>
+                    </FeatureGate>
+                  ) : plan === 'creator' ? (
+                    <p className="mt-3 text-xs text-neutral-400">16 colours available on your plan.</p>
+                  ) : null}
                 </Card>
+              </FeatureGate>
+
+              {/* Live preview — sticky, so it stays in view while you pick (feedback). */}
+              <div className="lg:sticky lg:top-4">
+                <ProfilePreview form={form} themeColor={tc} />
+                <p className="mt-3 text-center text-xs text-neutral-400">Live preview · updates as you type</p>
               </div>
             </div>
           </div>

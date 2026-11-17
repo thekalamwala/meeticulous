@@ -12,6 +12,7 @@ vi.mock('../services/api', () => ({
   getHostReviews: vi.fn().mockResolvedValue({ data: { reviews: [], count: 0, avg: 0 } }),
   getHostProducts: vi.fn().mockResolvedValue({ data: [] }),
   getVendorBadges: vi.fn().mockResolvedValue({ data: { badges: [] } }),
+  recordProfileView: vi.fn(),
 }));
 
 import { getHostProfile } from '../services/api';

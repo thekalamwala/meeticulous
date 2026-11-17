@@ -66,6 +66,19 @@ test('grounded answer cites its source and does not escalate', async () => {
   }));
 });
 
+test('channel:community shapes the model prompt (public, plain, no volunteered limits)', async () => {
+  sb.__rpc.mockResolvedValue({ data: [chunk()], error: null });
+  client.__create.mockResolvedValueOnce(answerReply({ answer: 'Yes, it syncs.', escalate: false, source_numbers: [1] }));
+
+  await askBot({ question: 'what is meeticulous?', audience: 'host', channel: 'community' });
+
+  const call = client.__create.mock.calls[0][0];
+  const userContent = call.messages[call.messages.length - 1].content;
+  expect(userContent).toMatch(/posted PUBLICLY in the member community/i);
+  expect(userContent).toMatch(/Do NOT volunteer limitations/i);
+  expect(userContent).toMatch(/Plain text only/i);
+});
+
 test('no retrieved chunks escalates without calling the model', async () => {
   sb.__rpc.mockResolvedValue({ data: [], error: null });
   const out = await askBot({ question: 'What is the airspeed of an unladen swallow?' });

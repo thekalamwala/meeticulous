@@ -1,0 +1,84 @@
+name: CI event-drop recovery (detect + alert)
+
+# ASH-88 (agent guardrail #6). GitHub occasionally drops a `pull_request` event,
+# leaving an open PR stuck at "no checks reported". The required-checks ruleset
+# already makes that BLOCK the merge (it can no longer merge silently), so the
+# remaining problem is only the manual close/reopen someone does to re-fire CI.
+#
+# This is the detect-and-ALERT variant: it finds a PR with zero checks + zero
+# statuses past a grace window (the dropped-event signature) and labels + comments
+# so it is loud within 15m instead of whenever a human notices. It deliberately
+# does NOT auto close/reopen: that needs a non-default token (GITHUB_TOKEN is
+# suppressed from triggering further workflow runs), i.e. a standing bot PAT. To
+# upgrade to auto-recovery later, provision a fine-grained `CI_REFIRE_TOKEN`
+# (pull-requests: write, contents: read) and replace the "alert" step with a
+# close+reopen using that token — see ASH-88 for the ready-made version.
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'   # dropped events are rare; 15m is plenty
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pull-requests: write   # label + comment only
+
+concurrency:
+  group: ci-event-drop-recovery
+  cancel-in-progress: false
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const GRACE_MIN = 10;   // let genuinely-queued checks appear first
+            const LABEL = 'ci-stuck';
+            const { owner, repo } = context.repo;
+            const now = Date.now();
+
+            const prs = await github.paginate(github.rest.pulls.list,
+              { owner, repo, state: 'open', per_page: 100 });
+
+            for (const pr of prs) {
+              if (pr.draft) continue;
+              const sha = pr.head.sha;
+              const hasLabel = (pr.labels || []).some(l => l.name === LABEL);
+
+              // Any check runs or statuses on the head SHA?
+              const runs = await github.rest.checks.listForRef({ owner, repo, ref: sha });
+              const status = await github.rest.repos.getCombinedStatusForRef({ owner, repo, ref: sha });
+              const hasSignal = runs.data.total_count > 0 || status.data.total_count > 0;
+
+              if (hasSignal) {
+                // Checks showed up — clear a stale alert so the label self-heals.
+                if (hasLabel) {
+                  await github.rest.issues.removeLabel({ owner, repo, issue_number: pr.number, name: LABEL })
+                    .catch(() => {});
+                }
+                continue;
+              }
+
+              // Zero signal. Respect the grace window on the head commit.
+              const commit = await github.rest.repos.getCommit({ owner, repo, ref: sha });
+              const committedAt = new Date(commit.data.commit.committer.date).getTime();
+              if (now - committedAt < GRACE_MIN * 60000) continue;
+
+              // Already flagged — stay quiet (one alert per stuck state).
+              if (hasLabel) continue;
+
+              core.warning(`PR #${pr.number}: zero checks/statuses on ${sha.slice(0,7)} after ${GRACE_MIN}m — likely a dropped pull_request event.`);
+              await github.rest.issues.addLabels({ owner, repo, issue_number: pr.number, labels: [LABEL] });
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: pr.number,
+                body: [
+                  '⚠️ **CI event-drop suspected** — no check runs and no statuses on `' + sha.slice(0,7) + '` after ' + GRACE_MIN + ' minutes.',
+                  '',
+                  'GitHub likely dropped the `pull_request` event. The required-checks ruleset will keep this PR **unmergeable** until checks report, so nothing can merge unverified.',
+                  '',
+                  '**To re-fire CI:** close and immediately reopen this PR (that raises a fresh `pull_request` event). This label clears automatically once checks appear.',
+                ].join('\n'),
+              });
+            }

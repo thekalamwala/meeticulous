@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { TrendingUp } from "lucide-react";
-import { getHostBookings } from "../services/api";
+import { getHostBookings, getHostNudges } from "../services/api";
+import { useAuth } from "../context/AuthContext";
+import { isFreePlan } from "../utils/themeUtils";
 import EarningsTrendChart from "../components/EarningsTrendChart";
+import CommissionMeter from "../components/dashboard/CommissionMeter";
 import {
   PageHeader, Section, Card, EmptyState, ErrorState, SegmentedControl, SkeletonCard, fmtMoney,
 } from "../components/dashboard/ui";
@@ -23,10 +26,19 @@ const periodStart = (p) => {
 };
 
 const Earnings = () => {
+  const { user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(false);
   const [period, setPeriod] = useState("all");
+  // Commission paid — drives the free→Pro CommissionMeter. Non-blocking: on error
+  // it stays 0 and the meter simply doesn't show (same pattern as the dashboard home).
+  const [commissionPaid, setCommissionPaid] = useState(0);
+  useEffect(() => {
+    getHostNudges()
+      .then(({ data }) => setCommissionPaid(Number(data?.commissionPaid) || 0))
+      .catch(() => {});
+  }, []);
 
   const load = async () => {
     setErr(false);
@@ -81,6 +93,9 @@ const Earnings = () => {
   return (
     <div>
       <PageHeader title="Earnings" subtitle="Track your revenue and per-service performance." />
+
+      {/* The commission a free host has paid is sharpest right here, on the money page. */}
+      <CommissionMeter commissionPaid={commissionPaid} isFree={isFreePlan(user?.plan)} src="earnings" />
 
       {/* Period scope — filters both the trend chart and the per-service breakdown */}
       <SegmentedControl

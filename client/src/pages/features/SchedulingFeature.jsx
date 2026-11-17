@@ -47,13 +47,14 @@ import PageGuides from '../../components/common/PageGuides';
 import FeatureFaq from '../../components/features/FeatureFaq';
 
 const START = '/become-a-host';
-const BLUE = '#960D32';       // maroon accent for text + fills on white
-const BLUE_DEEP = '#3D0516';  // dark section background
-const BLUE_SKY = '#EB93A6';   // decorative / text on the dark section only
-const PALE = '#FDF2F4';       // tinted section background
-const INK = '#2B0A14';
-const HEAD_ACCENT = '#960D32'; // maroon — highlighted heading words, half of the black/maroon heading
-const DOTS = { backgroundImage: 'radial-gradient(rgba(150,13,50,0.13) 1px, transparent 1px)', backgroundSize: '22px 22px' };
+const BLUE = '#7DBA3C';       // Mintu primary green — text + fills on white
+const BLUE_DEEP = '#2E5518';  // deep green — dark section background
+const BLUE_SKY = '#AEDC7E';   // light green — decorative / text on the dark section only
+const PALE = '#EFF6E3';       // soft pale-green (tint of the primary) — tinted section background
+const CREAM = '#F6E3C6';      // Mintu cream — warm accent on "confirmed" moments only
+const INK = '#201E1D';        // Mintu ink
+const HEAD_ACCENT = '#5E9A2A'; // Mintu dark green — highlighted heading words, half of the black/green heading
+const DOTS = { backgroundImage: 'radial-gradient(rgba(125,186,60,0.14) 1px, transparent 1px)', backgroundSize: '22px 22px' };
 
 /* ─────────────────────────────  SLOT MATH  ────────────────────────────── */
 
@@ -127,13 +128,6 @@ const FAQ = [
   { q: 'Do clients get reminders?', a: `Yes. On ${FREE_PLAN.name}, clients get a reminder 24 hours before. ${PREMIUM_PLAN.name} adds 1-hour reminders and reschedule alerts.` },
 ];
 
-const RELATED = [
-  { to: '/features/booking-pages', label: 'Booking pages' },
-  { to: '/features/availability', label: 'Availability' },
-  { to: '/features/google-calendar', label: 'Google Calendar' },
-  { to: '/features/payments', label: 'Payments' },
-];
-
 /* ─────────────────────────────  PIECES  ────────────────────────────── */
 
 function PrimaryCta({ to = START, children, light = false }) {
@@ -141,7 +135,7 @@ function PrimaryCta({ to = START, children, light = false }) {
     <Link
       to={to}
       className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-opacity hover:no-underline hover:opacity-90"
-      style={light ? { background: '#FFFFFF', color: BLUE_DEEP } : { background: BLUE, color: '#FFFFFF' }}
+      style={light ? { background: '#FFFFFF', color: BLUE_DEEP } : { background: BLUE, color: INK }}
     >
       {children}
     </Link>
@@ -156,19 +150,19 @@ function ImgSlot({ alt, slot, className = '' }) {
       aria-label={alt}
       data-img-slot={slot}
       className={`flex items-center justify-center rounded-[16px] border border-black/5 ${className}`}
-      style={{ background: 'repeating-linear-gradient(135deg, rgba(150,13,50,0.04) 0 10px, rgba(150,13,50,0.08) 10px 20px)' }}
+      style={{ background: 'repeating-linear-gradient(135deg, rgba(125,186,60,0.05) 0 10px, rgba(125,186,60,0.10) 10px 20px)' }}
     >
-      <ImageIcon size={28} style={{ color: 'rgba(150,13,50,0.3)' }} aria-hidden />
+      <ImageIcon size={28} style={{ color: 'rgba(125,186,60,0.35)' }} aria-hidden />
     </div>
   );
 }
 
-const SectionHead = ({ title, accent, lead, center = false }) => (
-  <div className={center ? 'mx-auto max-w-3xl text-center' : 'max-w-3xl'}>
-    <Reveal as="h2" className="font-heading text-4xl font-extrabold leading-[1.08] tracking-tight text-black sm:text-5xl">
+const SectionHead = ({ title, accent, lead, center = false, nowrap = true }) => (
+  <div className={center ? 'text-center' : ''}>
+    <Reveal as="h2" className={`font-heading text-[clamp(1.75rem,3.2vw,2.6rem)] font-extrabold leading-[1.12] tracking-tight text-black ${nowrap ? 'lg:whitespace-nowrap' : ''}`}>
       {title} <span style={{ color: HEAD_ACCENT }}>{accent}</span>
     </Reveal>
-    {lead && <Reveal as="p" delay={0.05} className="mt-5 text-base leading-relaxed text-slate-600">{lead}</Reveal>}
+    {lead && <Reveal as="p" delay={0.05} className={`mt-5 max-w-3xl text-base leading-relaxed text-slate-600 ${center ? 'mx-auto' : ''}`}>{lead}</Reveal>}
   </div>
 );
 
@@ -199,16 +193,16 @@ function SlotPicker() {
             <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Discovery call · 30 min</div>
             <div className="font-heading text-sm font-bold" style={{ color: INK }}>with Priya Nair</div>
           </div>
-          <span className="rounded-full px-2.5 py-1 text-[11px] font-semibold" style={{ background: PALE, color: BLUE }}>IST</span>
+          <span className="rounded-full px-2.5 py-1 text-[11px] font-semibold" style={{ background: CREAM, color: INK }}>IST</span>
         </div>
 
         <div className="min-h-[17rem] px-5 py-5" aria-live="polite">
           <AnimatePresence mode="wait" initial={false}>
             {picked ? (
               <motion.div key="done" {...fade} className="flex flex-col items-center pt-2 text-center">
-                <CheckCircle2 size={44} style={{ color: BLUE }} aria-hidden />
+                <CheckCircle2 size={44} style={{ color: HEAD_ACCENT }} aria-hidden />
                 <div className="mt-3 font-heading text-lg font-extrabold" style={{ color: INK }}>Booking confirmed</div>
-                <dl className="mt-4 w-full space-y-2 rounded-[24px] p-4 text-left text-sm" style={{ background: PALE }}>
+                <dl className="mt-4 w-full space-y-2 rounded-[24px] p-4 text-left text-sm" style={{ background: CREAM }}>
                   <div className="flex justify-between gap-3"><dt className="text-slate-500">Service</dt><dd className="font-semibold">Discovery call, 30 min</dd></div>
                   <div className="flex justify-between gap-3"><dt className="text-slate-500">Date</dt><dd className="font-semibold">{FULL_DAY[picked.d]}, {picked.n} Oct</dd></div>
                   <div className="flex justify-between gap-3"><dt className="text-slate-500">Time</dt><dd className="font-semibold">{picked.t} (IST)</dd></div>
@@ -218,7 +212,7 @@ function SlotPicker() {
                   type="button"
                   onClick={() => setPicked(null)}
                   className="mt-4 text-xs font-semibold underline underline-offset-4 transition-opacity hover:opacity-80"
-                  style={{ color: BLUE }}
+                  style={{ color: HEAD_ACCENT }}
                 >
                   Pick another time
                 </button>
@@ -233,7 +227,7 @@ function SlotPicker() {
                       aria-pressed={day === i}
                       onClick={() => setDay(i)}
                       className="rounded-[16px] border py-2 text-center transition-colors"
-                      style={day === i ? { background: BLUE, borderColor: BLUE, color: '#FFFFFF' } : { borderColor: 'rgba(15,23,42,0.08)', color: INK }}
+                      style={day === i ? { background: BLUE, borderColor: BLUE, color: INK } : { borderColor: 'rgba(15,23,42,0.08)', color: INK }}
                     >
                       <span className="block text-[10px] font-semibold uppercase tracking-wider opacity-80">{x.d}</span>
                       <span className="block font-heading text-base font-bold">{x.n}</span>
@@ -248,7 +242,7 @@ function SlotPicker() {
                       disabled={!!booked}
                       onClick={() => setPicked({ d: d.d, n: d.n, t })}
                       aria-label={booked ? `${t}, booked` : t}
-                      className={`rounded-[6px] border px-3 py-2.5 text-sm font-semibold transition-colors ${booked ? 'cursor-not-allowed border-transparent bg-slate-50 text-slate-400' : 'border-[#960D32]/30 text-[#960D32] hover:border-[#960D32] hover:bg-[#FDF2F4]'}`}
+                      className={`rounded-[6px] border px-3 py-2.5 text-sm font-semibold transition-colors ${booked ? 'cursor-not-allowed border-transparent bg-slate-50 text-slate-400' : 'border-[#7DBA3C]/40 text-[#5E9A2A] hover:border-[#7DBA3C] hover:bg-[#EFF6E3]'}`}
                     >
                       {booked ? <span className="flex items-center justify-between"><span className="line-through">{t}</span><span className="text-[10px] font-medium uppercase tracking-wider no-underline">Booked</span></span> : t}
                     </button>
@@ -276,7 +270,7 @@ function Chips({ label, values, value, onPick, fmt }) {
             aria-pressed={value === v}
             onClick={() => onPick(v)}
             className="rounded-full border px-3.5 py-1.5 text-sm font-semibold transition-colors"
-            style={value === v ? { background: BLUE, borderColor: BLUE, color: '#FFFFFF' } : { background: '#FFFFFF', borderColor: 'rgba(15,23,42,0.1)', color: INK }}
+            style={value === v ? { background: BLUE, borderColor: BLUE, color: INK } : { background: '#FFFFFF', borderColor: 'rgba(15,23,42,0.1)', color: INK }}
           >
             {fmt(v)}
           </button>
@@ -316,7 +310,7 @@ function SlotPlanner() {
               {buf > 0 && s + len < WINDOW.end && (
                 <div
                   className="absolute inset-y-1"
-                  style={{ left: pct(s + len), width: `${(Math.min(buf, WINDOW.end - s - len) / span) * 100}%`, background: 'repeating-linear-gradient(135deg, rgba(150,13,50,0.10) 0 5px, rgba(150,13,50,0.22) 5px 10px)' }}
+                  style={{ left: pct(s + len), width: `${(Math.min(buf, WINDOW.end - s - len) / span) * 100}%`, background: 'repeating-linear-gradient(135deg, rgba(125,186,60,0.12) 0 5px, rgba(125,186,60,0.26) 5px 10px)' }}
                 />
               )}
             </div>
@@ -324,13 +318,13 @@ function SlotPlanner() {
         </div>
         <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-slate-500">
           <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: BLUE }} /> Bookable session</span>
-          {buf > 0 && <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: 'rgba(150,13,50,0.25)' }} /> Buffer</span>}
+          {buf > 0 && <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: 'rgba(125,186,60,0.3)' }} /> Buffer</span>}
         </div>
       </div>
 
       <ul className="mt-8 flex flex-wrap gap-2" aria-label="Times your clients would see">
         {starts.map((s) => (
-          <li key={s} className="rounded-full border border-[#1D4ED8]/30 px-3 py-1.5 text-sm font-semibold tabular-nums" style={{ color: BLUE }}>{fmtMin(s)}</li>
+          <li key={s} className="rounded-full border border-[#7DBA3C]/40 px-3 py-1.5 text-sm font-semibold tabular-nums" style={{ color: HEAD_ACCENT }}>{fmtMin(s)}</li>
         ))}
       </ul>
       <p className="mt-6 text-sm leading-relaxed text-slate-600">
@@ -391,22 +385,22 @@ export default function SchedulingFeature() {
               <span aria-hidden className="mx-2">/</span>
               <span aria-current="page" className="text-slate-700">Online scheduling</span>
             </nav>
-            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2.3rem,4vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-black">
-              Free online appointment scheduling, <span style={{ color: HEAD_ACCENT }}>minus the back and forth.</span>
+            <Reveal as="h1" instant className="mt-4 font-heading text-[clamp(2rem,3.3vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-black">
+              Free online appointment <br className="hidden sm:block" />scheduling, <span style={{ color: HEAD_ACCENT }}>minus the <br className="hidden sm:block" />back and forth.</span>
             </Reveal>
             <Reveal as="p" instant delay={0.05} className="mt-4 max-w-xl text-base leading-relaxed text-slate-600 lg:text-[17px]">
               Scheduling software for coaches, consultants and creators in India. Share one link, clients pick a time you are actually free, confirm with a WhatsApp code, and it is booked.
             </Reveal>
             <Reveal instant delay={0.1} className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
               <PrimaryCta>Start free <ArrowRight size={16} /></PrimaryCta>
-              <Link to="/contact" className="inline-flex items-center gap-1.5 text-sm font-semibold hover:no-underline hover:opacity-80" style={{ color: BLUE }}>
+              <Link to="/contact" className="inline-flex items-center gap-1.5 text-sm font-semibold hover:no-underline hover:opacity-80" style={{ color: HEAD_ACCENT }}>
                 See a live booking page <ArrowRight size={15} />
               </Link>
             </Reveal>
             <Reveal instant delay={0.14} className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
               {HERO_TRUST.map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] text-slate-600">
-                  <Check size={14} style={{ color: BLUE }} aria-hidden /> {t}
+                  <Check size={14} style={{ color: HEAD_ACCENT }} aria-hidden /> {t}
                 </span>
               ))}
             </Reveal>
@@ -422,9 +416,9 @@ export default function SchedulingFeature() {
         <div className="mx-auto grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {PROOF.map((p, i) => (
             <Reveal key={p.k} delay={i * 0.04} className="flex gap-4 rounded-[24px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[16px]" style={{ background: PALE, color: BLUE }}><p.icon size={19} aria-hidden /></span>
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[16px]" style={{ background: PALE, color: HEAD_ACCENT }}><p.icon size={19} aria-hidden /></span>
               <div>
-                <div className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: BLUE }}>{p.k}</div>
+                <div className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: HEAD_ACCENT }}>{p.k}</div>
                 <div className="mt-1 text-sm leading-snug text-slate-700">{p.v}</div>
               </div>
             </Reveal>
@@ -453,15 +447,15 @@ export default function SchedulingFeature() {
               <p className="mt-5 border-t border-black/5 pt-4 text-sm text-slate-500">Five messages in, still nothing on the calendar.</p>
             </Reveal>
 
-            <Reveal delay={0.06} className="flex flex-col rounded-[24px] border border-[#960D32]/20 bg-white p-6 shadow-[0_8px_30px_rgba(150,13,50,0.06)] sm:p-7">
-              <div className="text-xs font-bold uppercase tracking-[0.16em]" style={{ color: BLUE }}>With Meeticulous: one link</div>
+            <Reveal delay={0.06} className="flex flex-col rounded-[24px] border border-[#7DBA3C]/30 bg-white p-6 shadow-[0_8px_30px_rgba(125,186,60,0.08)] sm:p-7">
+              <div className="text-xs font-bold uppercase tracking-[0.16em]" style={{ color: HEAD_ACCENT }}>With Meeticulous: one link</div>
               <div className="mt-5 flex justify-end">
-                <span className="flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-semibold text-white" style={{ background: BLUE }}>
+                <span className="flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-semibold text-[#201E1D]" style={{ background: BLUE }}>
                   <Link2 size={15} aria-hidden /> meeticulous.com/priya
                 </span>
               </div>
-              <div className="mt-4 flex items-start gap-3 rounded-[24px] p-4" style={{ background: PALE }}>
-                <CheckCircle2 size={20} className="mt-0.5 shrink-0" style={{ color: BLUE }} aria-hidden />
+              <div className="mt-4 flex items-start gap-3 rounded-[24px] p-4" style={{ background: CREAM }}>
+                <CheckCircle2 size={20} className="mt-0.5 shrink-0" style={{ color: HEAD_ACCENT }} aria-hidden />
                 <div className="text-sm">
                   <div className="font-heading font-bold">Booked: Thursday, 4:30 PM (IST)</div>
                   <div className="mt-0.5 text-slate-600">Picked from your live slots. Confirmation on WhatsApp and email.</div>
@@ -484,15 +478,15 @@ export default function SchedulingFeature() {
         <div className="mx-auto max-w-6xl">
           <SectionHead center title="Set it up once." accent="Then stop scheduling." lead="Four steps, most of them done the evening you sign up." />
           <ol className="relative mt-16 grid gap-10 lg:grid-cols-4 lg:gap-6">
-            <span aria-hidden className="absolute left-[12.5%] right-[12.5%] top-5 hidden h-px lg:block" style={{ background: 'rgba(150,13,50,0.25)' }} />
+            <span aria-hidden className="absolute left-[12.5%] right-[12.5%] top-5 hidden h-px lg:block" style={{ background: 'rgba(125,186,60,0.3)' }} />
             {STEPS.map((s, i) => (
               <Reveal as="li" key={s.title} delay={i * 0.06} className="relative flex gap-4 lg:flex-col lg:items-center lg:text-center">
-                <span className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border bg-white font-heading text-sm font-extrabold" style={{ borderColor: 'rgba(150,13,50,0.35)', color: BLUE }}>
+                <span className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border bg-white font-heading text-sm font-extrabold" style={{ borderColor: 'rgba(125,186,60,0.45)', color: HEAD_ACCENT }}>
                   {i + 1}
                 </span>
                 <div>
                   <h3 className="flex items-center gap-2 font-heading text-lg font-bold lg:mt-4 lg:justify-center">
-                    <s.icon size={17} style={{ color: BLUE }} aria-hidden /> {s.title}
+                    <s.icon size={17} style={{ color: HEAD_ACCENT }} aria-hidden /> {s.title}
                   </h3>
                   <p className="mt-2 text-[15px] leading-relaxed text-slate-600">{s.desc}</p>
                 </div>
@@ -519,9 +513,11 @@ export default function SchedulingFeature() {
           <div className="mt-14 grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {CAPS.map((c, i) => (
               <Reveal key={c.title} delay={(i % 3) * 0.05} className="rounded-[24px] border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(26,26,26,0.04)]">
-                <span className="flex h-11 w-11 items-center justify-center rounded-[16px] text-white" style={{ background: BLUE }}><c.icon size={20} aria-hidden /></span>
-                <h3 className="mt-5 font-heading text-lg font-bold">{c.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">{c.body}</p>
+                <div className="flex items-center gap-3.5">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[16px] text-[#201E1D]" style={{ background: BLUE }}><c.icon size={20} aria-hidden /></span>
+                  <h3 className="font-heading text-lg font-bold leading-tight">{c.title}</h3>
+                </div>
+                <p className="mt-4 text-sm leading-relaxed text-slate-600">{c.body}</p>
               </Reveal>
             ))}
           </div>
@@ -569,16 +565,16 @@ export default function SchedulingFeature() {
 
       <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
         <FeatureFaq
-          heading={<SectionHead title="Scheduling questions," accent="answered." />}
+          heading={<SectionHead title="Scheduling questions," accent="answered." nowrap={false} />}
           items={FAQ}
           itemClassName="rounded-[16px] border border-black/5 bg-white shadow-[0_8px_30px_rgba(26,26,26,0.04)]"
-          openItemClassName="border-[#960D32]/25"
+          openItemClassName="border-[#7DBA3C]/35"
           summaryClassName="flex items-start justify-between gap-4 px-5 py-4"
           answerClassName="px-5 pb-5 text-[15px] leading-relaxed text-slate-600"
           renderSummary={(f, i, open) => (
             <>
               <span className="font-heading text-[16px] font-bold">{f.q}</span>
-              <span aria-hidden className={`text-xl leading-none transition-transform ${open ? 'rotate-45' : ''}`} style={{ color: BLUE }}>+</span>
+              <span aria-hidden className={`text-xl leading-none transition-transform ${open ? 'rotate-45' : ''}`} style={{ color: HEAD_ACCENT }}>+</span>
             </>
           )}
         />
@@ -586,7 +582,7 @@ export default function SchedulingFeature() {
 
       {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
       <section className="relative overflow-hidden px-5 py-20 text-white sm:px-8 lg:py-28" style={{ background: BLUE_DEEP }}>
-        <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: 'radial-gradient(rgba(147,197,253,0.14) 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
+        <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: 'radial-gradient(rgba(174,220,126,0.16) 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
         <div className="relative mx-auto max-w-4xl text-center">
           <Reveal as="h2" className="font-heading text-[clamp(2.2rem,5.4vw,3.8rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-white">
             One link. <span style={{ color: BLUE_SKY }}>Zero back and forth.</span>
@@ -594,18 +590,6 @@ export default function SchedulingFeature() {
           <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/75">
             Set your hours tonight on the free {FREE_PLAN.name} plan. Tomorrow, clients book themselves.
           </Reveal>
-          <Reveal delay={0.1} className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
-            <PrimaryCta light>Start free <ArrowRight size={16} /></PrimaryCta>
-            <Link to="/pricing" className="inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:no-underline hover:opacity-80">
-              See pricing <ArrowRight size={15} />
-            </Link>
-          </Reveal>
-          <nav aria-label="Related features" className="mt-14 flex flex-wrap justify-center gap-x-6 gap-y-2 border-t border-white/10 pt-8 text-sm text-white/60">
-            <span className="flex items-center gap-1.5"><CalendarDays size={14} aria-hidden /> Works with</span>
-            {RELATED.map((r) => (
-              <Link key={r.to} to={r.to} className="text-white/85 underline decoration-white/25 underline-offset-4 hover:text-white hover:decoration-white">{r.label}</Link>
-            ))}
-          </nav>
         </div>
       </section>
     </main>

@@ -406,8 +406,25 @@ const listIndexableRows = async () => (await run(db('community_posts')
   .select('kind, slug, author_id, last_activity_at').eq('status', 'visible').eq('is_indexable', true)
   .order('last_activity_at', { ascending: false }))) || [];
 
+// Topic tags with their use_count, most-used first. Soft-fails to [] if the
+// hashtag tables aren't present yet (community gate off / pre-migration).
+const listTags = async () => (await run(db('community_hashtags')
+  .select('tag, use_count').order('use_count', { ascending: false }))) || [];
+
+// Visible threads carrying a tag, newest-activity first. Keyset-paged like the
+// space feed. Two-step (links -> posts) to keep the query in the codebase's
+// explicit style; each tag holds a small set, so .in() stays cheap.
+async function listTagRows({ cur, limit, tag, sortCol = 'last_activity_at' }) {
+  const links = (await run(db('community_post_hashtags').select('post_id').eq('tag', tag))) || [];
+  const ids = links.map((r) => r.post_id);
+  if (!ids.length) return [];
+  let q = db('community_posts').select('*').eq('status', 'visible').eq('kind', 'thread').in('id', ids);
+  q = keyset(q, cur, 'lt', sortCol);
+  return (await run(q.order(sortCol, { ascending: false }).order('id', { ascending: false }).limit(limit))) || [];
+}
+
 module.exports = {
-  hydrateItems, hydrateComments, listIndexableRows,
+  hydrateItems, hydrateComments, listIndexableRows, listTags, listTagRows,
   listSpaces, bannedAuthorIds, listFeedRows, listPinned, getPostBySlug, listCommentRows,
   listAuthorPosts, listAuthorComments, postContexts,
   loadAuthors, loadMediaByPost, likedIds, resetReadCaches,

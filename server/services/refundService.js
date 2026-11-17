@@ -28,6 +28,7 @@
 const { supabaseAdmin } = require('../config/supabase');
 const razorpayConfig = require('./razorpayConfig');
 const { recordBookingRefund } = require('./bookingCapture');
+const { refundPctFor } = require('../lib/cancellationPolicy');
 
 const round2 = (n) => Math.round((Number(n) + Number.EPSILON) * 100) / 100;
 
@@ -60,11 +61,18 @@ const isMissingColumn = (err) => {
  */
 async function issueBookingRefund({ bookingId, mode = 'tiered', reason, actorEmail } = {}) {
   try {
-    const { data: bk } = await supabaseAdmin
+    // cancellation_policy is the v3.206 snapshot (tiers agreed at booking time).
+    // Schema-safe: retry without it if the migration hasn't run (→ default tiers).
+    const BASE_COLS = 'id, payment_status, transfer_status, razorpay_payment_id, customer_total, scheduled_at, services(price)';
+    let { data: bk, error: selErr } = await supabaseAdmin
       .from('bookings')
-      .select('id, payment_status, transfer_status, razorpay_payment_id, customer_total, scheduled_at, services(price)')
+      .select(`${BASE_COLS}, cancellation_policy`)
       .eq('id', bookingId)
       .maybeSingle();
+    if (selErr && isMissingColumn(selErr)) {
+      ({ data: bk } = await supabaseAdmin
+        .from('bookings').select(BASE_COLS).eq('id', bookingId).maybeSingle());
+    }
     if (!bk) return { ok: false, reason: 'booking_not_found' };
     if (bk.payment_status !== 'paid') return { ok: false, reason: 'not_paid' };
     if (!bk.razorpay_payment_id) return { ok: false, reason: 'no_payment' };
@@ -79,7 +87,9 @@ async function issueBookingRefund({ bookingId, mode = 'tiered', reason, actorEma
       amount = round2(customerTotal);
     } else {
       const hoursToStart = bk.scheduled_at ? (new Date(bk.scheduled_at).getTime() - Date.now()) / 3600000 : -1;
-      amount = round2(servicePrice * refundTierPct(hoursToStart));
+      // Use the booking's snapshot tiers (v3.206); refundPctFor falls back to the
+      // default 24h/6h tiers for pre-snapshot bookings or when the column is absent.
+      amount = round2(servicePrice * refundPctFor(hoursToStart, bk.cancellation_policy?.tiers));
     }
     if (!(amount > 0)) return { ok: false, reason: 'not_eligible' };
 

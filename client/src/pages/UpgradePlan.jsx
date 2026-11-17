@@ -12,6 +12,7 @@ import { INDIAN_STATES } from "../lib/indianStates";
 import { analytics, EVENTS } from "../services/analytics";
 import FoundingNote from "../components/pricing/FoundingNote";
 import GiftedProCard from "../components/dashboard/GiftedProCard";
+import PlanComparison from "../components/pricing/PlanComparison";
 
 const GST_RATE = 0.18; // display only — server is authoritative
 const inr = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
@@ -339,6 +340,13 @@ const UpgradePlan = () => {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Full Free vs Pro comparison — free hosts only (paid hosts already have Pro). */}
+      {!loading && !onPaidPlan && (
+        <div className="mt-10 rounded-2xl border border-maroon/15 bg-white p-4 sm:p-6">
+          <PlanComparison />
         </div>
       )}
 

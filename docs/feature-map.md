@@ -1,3 +1,88 @@
+<!-- ============================================================= -->
+<!-- CODE INDEX (ASH-91 guardrail #9, Part 2 / ASH-92).            -->
+<!-- Reviews and new-context reads START HERE instead of reading   -->
+<!-- the tree top-to-bottom. One section per subsystem: what it    -->
+<!-- does, entry files, key functions, invariants, DB tables/flags.-->
+<!-- Refresh the touched section as part of any PR that changes a  -->
+<!-- subsystem's SHAPE (new route, new table, changed invariant) — -->
+<!-- a one-paragraph diff, not a rewrite. The feature→file map      -->
+<!-- (sections 1–20) stays below as the detailed reference.         -->
+<!-- ============================================================= -->
+
+# Code Index
+
+> How to use: to review a diff, read (a) the diff, (b) the files it touches, (c) the direct
+> callers/callees of changed functions (grep, don't bulk-read), and (d) the matching section
+> here. Pull in a whole extra file only when the diff's correctness depends on it, and say which
+> and why in the PR body. If a section is stale or missing the area you touch, fix that section
+> in the same PR instead of re-reading everything.
+
+### Auth
+- **Entry:** `server/controllers/authController.js`, `server/utils/otpStore.js`, `server/middleware/authMiddleware.js`; client `client/src/context/AuthContext.jsx`, `pages/UnifiedLogin.jsx`, `GoogleAuthDone.jsx`, `LinkedinAuthDone.jsx`.
+- **Key fns:** `sendOtp`, `verifyOtp` (booking), `verifyOtpLogin` (session), `loginWithPhone`, `loginUnified`, `linkedinHostAuth`; `otpStore.set(id, otp, type)` / `otpStore.verify(id, otp, expectedType)`.
+- **Invariants:**
+  - OTP is **namespaced by type**. Login codes are `'login'`-typed, phone-keyed, delivered **to the phone only** (never emailed); `verifyOtpLogin` verifies `'login'` only. A booking code (`'booking'`, emailed to the booker) must **never** authenticate a session (phone-account-takeover guard, audit C2).
+  - Host login (`/login-as-vendor`) is Google **or** LinkedIn (`linkedin_oidc`, behind flag `host_linkedin_login`, ships OFF) — never email/password.
+  - Guest identity = phone (WhatsApp OTP). One identity across guest+host doors; `mode` = `'traveling'`/`'hosting'`. Superadmin is never reachable by phone OTP.
+  - A phone on `PUT /api/auth/me` with no OTP proof is still an **open hole** (audit H1) — do not rely on `guest_phone` for identity.
+- **Tables/flags:** `profiles`, `otp_codes`; flag `host_linkedin_login`.
+
+### Payments (Razorpay + Route payouts)
+- **Entry:** `server/controllers/paymentController.js`, `server/lib/pricingEngine.js`, `server/lib/subscriptionPricing.js`, `server/services/bookingCapture.js`, `server/services/routeTransferService.js`, `server/services/settlementService.js`; client `ServiceBooking.jsx` (handlePayment), `UpgradePlan.jsx`, `ProductPurchase.jsx`.
+- **Key fns:** `createOrder`/`verifyPayment` (booking), `createProductOrder`/`verifyProductPayment`, `createVendorSubscription`/`verifySubscription`, `handleWebhook` (`payment.captured`/`failed`/`refund.processed`), `finalizeBookingCapture`, `computeBooking*` in `pricingEngine.js`.
+- **Invariants:**
+  - **Razorpay is the source of truth; verify signatures server-side; never trust client pricing** — always snapshot.
+  - Webhook `payment.captured` **binds** before finalising: payment's `order_id` must equal the booking's `razorpay_order_id` **and** `amount` must equal `customer_total` (paise); **bail on any kinded payment** (`notes.kind`, e.g. `reschedule_fee`) so a fee capture can't flip the booking paid (audit C3).
+  - Pricing is caller-injected — **nothing about plans or rates is hardcoded** in `pricingEngine.js`. `commission% = plan row`; `commissionGst` is **extracted** (`commission − commission/(1+gstRate)`), not added. **TDS (194-O) + TCS (Sec 52) are flat 1% each on the base price**, govt's money, behind flag `tds_tcs_v2`. `payout = price − commission − razorpayFee − tds − tcs`.
+  - A paid booking/product is **not our sale** — we invoice only our fee + commission.
+- **Tables/flags:** `bookings`, `product_purchases`, `plan_purchases`, `payout_requests`, ledger tables; flag `tds_tcs_v2`, `reschedule_fee`.
+
+### Bookings
+- **Entry:** `server/controllers/bookingController.js`, `server/services/availabilityService.js`, `server/services/bookingConfirmation.js`; client `ServiceBooking.jsx`, dashboard `Bookings.jsx`.
+- **Key fns:** `createBooking`, `rescheduleBooking`/`confirmReschedule`, `cancelBooking`, `autoCompleteBookings`, `expireStalePendingBookings`, `processReminders`.
+- **Invariants:**
+  - Always **snapshot pricing** at creation. Double-booking guarded by availability + buffer.
+  - Status writes should be **conditional** (`.eq('status', ...)`) so a cancel mid-batch isn't overwritten to `completed` (audit M5). Reschedule must check the old `scheduled_at` (audit H7, still open).
+- **Tables/flags:** `bookings` (`payment_status`, `status`, `reminder_24h_sent`, `reminder_1h_sent`, `reschedule_status`, `coupon_id`), `availability`, `services`.
+
+### Subscriptions / Plans
+- **Entry:** `server/controllers/paymentController.js` (`createVendorSubscription`/`verifySubscription`), `server/services/planService.js`, `server/services/subscriptionReconciler.js`, `server/middleware/planMiddleware.js`; client `UpgradePlan.jsx`.
+- **Key fns:** `attachPlan` (sets `req.vendorPlan`), `checkServiceLimit`, `activateFromSubscription` (charge webhook), `releaseOrphan`.
+- **Invariants:**
+  - **Limits always come from `subscription_plans.limits`** — never hardcode (`planMiddleware.js` reads `planData.limits?.services`).
+  - Plans = **Starter** (free) / **Pro** (paid); `subscription_plans.name` is UNIQUE. (`premium_founding` is an archived copy of Pro for founding checkouts.)
+  - On a plan **switch**, grant **only the proration credit** up front (status `pending`); the paid period is granted by the charge webhook (`activateFromSubscription`), which never shrinks the credit — don't grant a full period before payment (audit C4).
+- **Tables/flags:** `subscription_plans`, `profiles` (`plan`, `plan_expires_at`, `subscription_status`, `current_period_end`), `plan_gifts`.
+
+### Reminders & scheduled jobs
+- **Entry:** `server/server.js` (cron wiring), `server/controllers/bookingController.js` (`processReminders`), `server/services/*Nudges.js`, `server/services/campaignWorker.js`, `server/services/**/*Reconciler.js`, `server/utils/notificationDedupe.js`.
+- **Key fns:** `scheduleCron(fn, ms)` (guarded by `CRONS_ENABLED`), `runLocked('reminders', …)`, `processDue` (campaigns), `alreadyNotified(...)`.
+- **Invariants:**
+  - Dedupe is **fail-closed**: `alreadyNotified` queries real columns (`event_key`, `destination`, `payload->>dedupe_key`) and treats a query error as "already sent" — a broken check must never cause a re-send storm (audit C5). The 7 nudge flags were flipped **OFF** on prod; re-enable only with the dedupe fix live.
+  - Long-interval (24h) jobs still on raw `setInterval` never fire on a host that restarts daily (audit M13) — fix only after C5.
+- **Tables/flags:** `notification_logs`, `in_app_notifications`; the nudge feature flags (activation/dormancy/festival/human/empathy/review/community-onboard).
+
+### Calendar
+- **Entry:** `server/config/google.js` (`createCalendarEvent`, `hasCalendarScopes`), used in `bookingController.createBooking` + `paymentController.verifyPayment`; client `pages/onboarding/CalendarStep.jsx`.
+- **Invariants:** OAuth tokens live in **`profile_private`** (since v3.24), not `profiles`; `profiles` keeps `google_calendar_connected`/`calendar_skipped`/`google_id`. `google_calendar_connected` is set only when calendar scopes are granted.
+- **Tables/flags:** `profile_private`, `profiles`.
+
+### Admin
+- **Entry:** `server/controllers/adminController.js`, `adminAuthController.js`, `server/middleware/adminMiddleware.js`, `server/lib/adminPermissions.js`; client `pages/admin/*` (login `/backstage`).
+- **Invariants:**
+  - Admin auth is a **separate door + separate JWT** from host/guest auth — never phone OTP. Permissions are embedded in the admin JWT **at sign-in**, so a permission grant (migration) takes effect on the admin's **next login**, not immediately.
+  - Roles: `super` (wildcard), `operations`, `support` — permissions in `lib/adminPermissions.js` are the source of truth; migrations must match it.
+- **Tables/flags:** `admin_users`, permission columns; `operations`/`support`/`super` roles.
+
+### Middleware & security (DB access boundary)
+- **Entry:** `server/middleware/` (`authMiddleware`, `adminMiddleware`, `planMiddleware`, `security`, `validate`, `ipGuard`, `requireFeature`, `communityGate`, `rateLimitStore`); `server/lib/clientIp.js`.
+- **Invariants:**
+  - **Every product write goes through the Express API with the service_role key** — the browser uses supabase-js for **auth + realtime only**, never a PostgREST table write. `anon`/`authenticated` have **no INSERT/UPDATE/DELETE grant** on public tables (v3.206) and only column-scoped SELECT on `profiles` (v3.205). A new view must set `security_invoker = true`; a function the browser calls needs an explicit GRANT (v3.186). Guarded by `tests/unit/lockdownAnon*Migration.test.js`.
+  - `security.js` regex → 24h IP ban is **over-broad** and cross-site triggerable (audit M9) — treat as a known hazard.
+- **Tables/flags:** all public tables (grants); `feature_flags` (60s cache, **fail-open** on read error — audit M12).
+
+---
+
 # Feature Map — Meeticulous
 
 ## 1. Public Host Profile

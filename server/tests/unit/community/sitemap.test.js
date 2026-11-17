@@ -44,6 +44,7 @@ function setup({ flag = true, missing = false } = {}) {
     error: null,
   }));
   db.on('community_spaces', () => (err ? { data: null, error: err } : { data: [{ id: 's1', key: 'help', is_active: true }], error: null }));
+  db.on('community_hashtags', () => (err ? { data: null, error: err } : { data: [{ tag: 'pricing', use_count: 5 }, { tag: 'rare', use_count: 1 }], error: null }));
   db.on('community_members', () => ({ data: [{ user_id: BAD }], error: null }));
   db.on('profiles', () => ({ data: [], error: null }));
 }
@@ -54,10 +55,12 @@ describe('communityEntries', () => {
       { kind: 'thread', slug: 'pricing-ab12', last_activity_at: '2026-11-02T09:30:00.000Z' },
       { kind: 'post', slug: 'hello-cd34', last_activity_at: '2026-11-01T09:30:00.000Z' },
       { key: 'help' },
+      { tag: 'pricing' },
     ], SITE);
     expect(locs.map((e) => e.loc)).toEqual([
       `${SITE}/community`, `${SITE}/community/guidelines`,
       `${SITE}/community/t/pricing-ab12`, `${SITE}/community/p/hello-cd34`, `${SITE}/community/s/help`,
+      `${SITE}/community/tag/pricing`,
     ]);
     expect(locs[2].lastmod).toBe('2026-11-02');
     expect(locs[3].lastmod).toBe('2026-11-01');
@@ -70,10 +73,11 @@ describe('communityEntries', () => {
 });
 
 describe('fetchCommunity', () => {
-  test('indexable items minus banned authors, plus active spaces', async () => {
+  test('indexable items minus banned authors, plus active spaces and tags (>=3 uses)', async () => {
     setup();
     const rows = await fetchCommunity();
-    expect(rows.map((r) => r.slug || r.key)).toEqual(['help', 'pricing-ab12', 'loved-ef56']);
+    // spaces, then tags with enough content (rare's use_count=1 is dropped), then items minus banned.
+    expect(rows.map((r) => r.slug || r.key || r.tag)).toEqual(['help', 'pricing', 'pricing-ab12', 'loved-ef56']);
   });
 
   test('flag off -> empty, and the community table is never read', async () => {

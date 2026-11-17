@@ -3,11 +3,14 @@
 jest.mock('../../config/supabase', () => ({ supabaseAdmin: { from: jest.fn() } }));
 jest.mock('../../services/bookingConfirmation', () => ({ sendBookingConfirmation: jest.fn(() => Promise.resolve()) }));
 jest.mock('../../utils/sendEmail', () => jest.fn(() => Promise.resolve()));
+jest.mock('../../utils/manageBookingToken', () => ({ sign: () => 'TOK123', verify: jest.fn() }));
 
 const { supabaseAdmin } = require('../../config/supabase');
 const { sendBookingConfirmation } = require('../../services/bookingConfirmation');
 const sendEmail = require('../../utils/sendEmail');
-const { detectAction, runAction } = require('../../services/supportActions');
+const { detectAction, runAction, cancelLinkInfo } = require('../../services/supportActions');
+
+const hoursFromNow = (h) => new Date(Date.now() + h * 3600000).toISOString();
 
 // per-table result queue → chainable builder
 function qb(result) {
@@ -76,6 +79,55 @@ describe('runAction', () => {
   it('invoice not generated → ok:false, no email', async () => {
     wire({ bookings: [booking], services: [svc], invoices: [{ data: null }] });
     const r = await runAction('resend_invoice', GUEST);
+    expect(r.ok).toBe(false);
+    expect(sendEmail).not.toHaveBeenCalled();
+  });
+});
+
+describe('cancelLinkInfo (safe-split cancel data — no side effect)', () => {
+  const svc = { data: { title: 'Yoga' } };
+  const bk = (over) => ({ data: [{ id: 'bk1', service_id: 's1', scheduled_at: hoursFromNow(48), status: 'confirmed', guest_email: 'g@x.com', host_id: 'h1', ...over }] });
+
+  it('≥24h away → full-refund tier + a manage-booking link, nothing sent', async () => {
+    wire({ bookings: [bk()], services: [svc] });
+    const info = await cancelLinkInfo(GUEST);
+    expect(info.ok).toBe(true);
+    expect(info.tierText).toMatch(/full refund/);
+    expect(info.link).toContain('/manage-booking/TOK123');
+    expect(sendEmail).not.toHaveBeenCalled();
+  });
+  it('under 6h away → no-refund tier', async () => {
+    wire({ bookings: [bk({ scheduled_at: hoursFromNow(3) })], services: [svc] });
+    expect((await cancelLinkInfo(GUEST)).tierText).toMatch(/no refund/);
+  });
+  it('an already-completed booking is not cancellable', async () => {
+    wire({ bookings: [bk({ status: 'completed' })], services: [svc] });
+    expect((await cancelLinkInfo(GUEST)).ok).toBe(false);
+  });
+  it('no booking → not ok', async () => {
+    wire({ bookings: [{ data: null }] });
+    expect((await cancelLinkInfo(GUEST)).ok).toBe(false);
+  });
+  it('no identity → not ok', async () => {
+    expect((await cancelLinkInfo({})).ok).toBe(false);
+  });
+});
+
+describe("runAction('send_cancel_link') — emails the secure link, cancels nothing", () => {
+  const svc = { data: { title: 'Yoga' } };
+  it('emails the link to the booking owner and discloses the tier', async () => {
+    wire({ bookings: [{ data: [{ id: 'bk1', service_id: 's1', scheduled_at: hoursFromNow(48), status: 'confirmed', guest_email: 'g@x.com', host_id: 'h1' }] }], services: [svc] });
+    const r = await runAction('send_cancel_link', GUEST);
+    expect(r.ok).toBe(true);
+    expect(sendEmail).toHaveBeenCalledTimes(1);
+    const mail = sendEmail.mock.calls[0][0];
+    expect(mail.to).toBe('g@x.com');
+    expect(mail.html).toContain('/manage-booking/TOK123');
+    expect(r.message).toMatch(/full refund/);
+  });
+  it('no email on the booking → nothing sent', async () => {
+    wire({ bookings: [{ data: [{ id: 'bk1', service_id: 's1', scheduled_at: hoursFromNow(48), status: 'confirmed', guest_email: null, host_id: 'h1' }] }], services: [svc] });
+    const r = await runAction('send_cancel_link', GUEST);
     expect(r.ok).toBe(false);
     expect(sendEmail).not.toHaveBeenCalled();
   });

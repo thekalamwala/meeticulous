@@ -263,7 +263,7 @@ describe('replyToPost (first responder)', () => {
   test('grounded answer is posted as a Tithi comment with the author audience, no tag', async () => {
     const res = await tithi.replyToPost({ post: POST });
     expect(res).toEqual({ replied: true, commentId: 'comment-1', escalated: false, tagged: false });
-    expect(botService.askBot).toHaveBeenCalledWith({ question: POST.body, audience: 'host' });
+    expect(botService.askBot).toHaveBeenCalledWith({ question: POST.body, audience: 'host', channel: 'community' });
     expect(store.insertComment).toHaveBeenCalledWith(expect.objectContaining({
       post_id: 'post-1', author_id: 'tithi-uuid', body: 'Payouts clear in 24-48h.', status: 'visible',
     }));
@@ -353,7 +353,7 @@ describe('replyToComment (Phase 2 — questions in thread comments)', () => {
   test('answers a top-level question, nested under it (parent_id)', async () => {
     const res = await tithi.replyToComment({ comment: COMMENT });
     expect(res).toEqual({ replied: true, commentId: 'reply-1', escalated: false, tagged: false });
-    expect(botService.askBot).toHaveBeenCalledWith({ question: COMMENT.body, audience: 'guest' });
+    expect(botService.askBot).toHaveBeenCalledWith({ question: COMMENT.body, audience: 'guest', channel: 'community' });
     expect(store.insertComment).toHaveBeenCalledWith(expect.objectContaining({
       post_id: 'post-1', parent_id: 'cm1', author_id: 'tithi-uuid', status: 'visible',
     }));

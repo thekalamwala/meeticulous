@@ -62,7 +62,7 @@ import HomeHero from "../components/home/HomeHero";
 import ProblemGlyph from "../components/home/ProblemGlyph";
 import { PERSONAS, NEWSLETTER } from "../components/home/images";
 import { TESTIMONIALS } from "../data/testimonials";
-import NotebookPricing from "../components/home/NotebookPricing";
+import BlogSeoPricing from "../components/home/BlogSeoPricing";
 import Seo from "../components/common/Seo";
 import { ogCard } from "../config/ogImages";
 
@@ -1204,7 +1204,7 @@ const Home = () => {
           </Reveal>
 
           <Reveal delay={0.12} className="mt-8">
-            <NotebookPricing startLabel="Get Started - Free" />
+            <BlogSeoPricing startLabel="Get Started - Free" />
           </Reveal>
 
           <p className="mt-8 text-center">
