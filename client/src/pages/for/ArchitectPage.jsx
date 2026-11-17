@@ -29,7 +29,7 @@
 // accordion/toggle, AA-contrast palette, visible focus, NO hover uplift, Reveal
 // guards its own motion.
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -317,6 +317,22 @@ export default function ArchitectPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [yearly, setYearly] = useState(true);
 
+  // Keep the hero exactly as tall as the viewport below the sticky nav, so it
+  // always fills the fold with no white gap — measured live instead of a magic
+  // pixel value (the nav's height shifts a little across fonts/zoom/OS).
+  const mainRef = useRef(null);
+  const headerRef = useRef(null);
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el || !mainRef.current) return undefined;
+    const sync = () => mainRef.current?.style.setProperty('--for-nav-h', `${el.offsetHeight}px`);
+    sync();
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(sync) : null;
+    ro?.observe(el);
+    window.addEventListener('resize', sync);
+    return () => { ro?.disconnect(); window.removeEventListener('resize', sync); };
+  }, []);
+
   const canonical = `${SITE_URL}/for/architects`;
   const seo = {
     title: 'Appointment Booking Software for Architects & Interior Designers | Meeticulous',
@@ -358,7 +374,7 @@ export default function ArchitectPage() {
   };
 
   return (
-    <main className="overflow-x-clip bg-white text-[color:var(--ca-ink)]" style={styleVars}>
+    <main ref={mainRef} className="overflow-x-clip bg-white text-[color:var(--ca-ink)]" style={styleVars}>
       <Seo
         title={seo.title}
         description={seo.description}
@@ -374,7 +390,7 @@ export default function ArchitectPage() {
       />
 
       {/* ═══════════════ 1 · NAV (shared shell) ═══════════════ */}
-      <header className="sticky top-0 z-50 border-b border-black/5 bg-white/85 backdrop-blur-md">
+      <header ref={headerRef} className="sticky top-0 z-50 border-b border-black/5 bg-white/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3.5 sm:px-8">
           <Link to="/" className="flex items-center gap-2 hover:no-underline" aria-label="Meeticulous — home">
             <img src="/favicon.svg" alt="" className="h-7 w-7 rounded-md" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
@@ -411,59 +427,50 @@ export default function ArchitectPage() {
       </header>
 
       {/* ═══════════════ 2 · HERO (blueprint-grid + framed drawing) ═══════════════ */}
-      <section id="top" className="relative overflow-hidden px-5 pb-16 pt-10 sm:px-8 lg:pb-24 lg:pt-16" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 100%)' }}>
-        {/* drafting grid + graphite blob (mix-blend-multiply) */}
-        <div aria-hidden className="pointer-events-none absolute inset-0">
-          <div className="absolute inset-x-0 top-0 h-[560px] opacity-70 [mask-image:linear-gradient(to_bottom,black,transparent)]" style={gridBg} />
-          <div className="absolute -left-24 -top-20 h-80 w-80 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(51,65,85,0.18), transparent)' }} />
-        </div>
+      <section id="top" className="relative overflow-hidden bg-white">
+        {/* HERO BAND — full-width wide scene as the background; the photo's white
+            left half holds the text, and the band fills the fold. */}
+        <div className="relative lg:flex lg:flex-col lg:min-h-[calc(100svh_-_var(--for-nav-h,69px))]">
+          {/* DESKTOP — background photo (kept sharp) */}
+          <img
+            src="/images/hero/architect-hero-wide.webp"
+            alt="An architect and interior designer meeting a client over floor plans, a model house and material swatches."
+            width={1842}
+            height={854}
+            className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-cover object-center lg:block"
+          />
 
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="text-center lg:text-left">
-            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3.05rem)] font-extrabold leading-[1.06] tracking-[-0.02em] text-[color:var(--ca-ink)]">
-              Flexible appointment booking software for{' '}
-              <span style={{ color: 'var(--ca-primary)' }}>architects and interior designers</span> managing client meetings.
-            </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
-              Meeticulous is appointment booking software for architects and interior designers — clients book consultations, site visits and reviews online, pay your fee upfront, and get automatic reminders.
-            </Reveal>
-            <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
-              <CtaButton to={START} className="w-full sm:w-auto">Create a Free Account <ArrowRight size={16} /></CtaButton>
-              <Link to={DEMO} className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-accent)] hover:no-underline">
-                Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
-              {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
-                  <Check size={14} style={{ color: 'var(--ca-accent)' }} /> {t}
-                </span>
-              ))}
-            </Reveal>
+          {/* TEXT — aligned to the page content edge, over the white area; the hero
+              fills the viewport height on desktop. */}
+          <div className="relative z-10 flex items-center px-5 sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
+            <div className="w-full py-14 text-center sm:py-16 lg:max-w-[38rem] lg:py-0 lg:text-left">
+              <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,3.6vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.02em] text-[color:var(--ca-ink)]">
+                Flexible appointment booking software for{' '}
+                <span style={{ color: 'var(--ca-primary)' }}>architects and interior designers</span> managing client meetings.
+              </Reveal>
+              <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
+                Meeticulous is appointment booking software for architects and interior designers — clients book consultations, site visits and reviews online, pay your fee upfront, and get automatic reminders.
+              </Reveal>
+              <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
+                <CtaButton to={START} className="w-full sm:w-auto">Create a Free Account <ArrowRight size={16} /></CtaButton>
+                <Link to={DEMO} className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-accent)] hover:no-underline">
+                  Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </Reveal>
+              <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+                {HERO_TRUST.map((t) => (
+                  <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
+                    <Check size={14} style={{ color: 'var(--ca-accent)' }} /> {t}
+                  </span>
+                ))}
+              </Reveal>
+            </div>
           </div>
 
-          {/* RIGHT — icon art framed like a drawing sheet + floating card */}
-          <Reveal instant delay={0.1} className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
-            <Framed
-              icon={PencilRulerArt}
-              alt="Meeticulous booking software shown on screen for an architecture and interior-design studio"
-              label="Fig. 01 · Studio Booking"
-              priority
-              className="shadow-[0_28px_60px_-30px_rgba(26,34,48,0.5)]"
-              imgClassName="aspect-square"
-            />
-            <div className="absolute -bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-3 border bg-white px-4 py-3 shadow-[0_18px_40px_-18px_rgba(26,34,48,0.55)]" style={{ borderColor: 'rgba(26,34,48,0.12)' }}>
-              <span className="flex h-9 w-9 items-center justify-center rounded-[16px] text-white" style={{ background: 'var(--ca-primary)' }}><CalendarCheck size={17} /></span>
-              <div>
-                <div className="text-[11px] text-slate-500">Consultation booked</div>
-                <div className="text-sm font-bold text-[color:var(--ca-ink)]">Site visit · Fri 4:30</div>
-              </div>
-            </div>
-          </Reveal>
         </div>
 
         {/* benefit strip */}
-        <div className="relative mx-auto mt-16 grid max-w-7xl gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+        <div className="relative mx-auto grid max-w-7xl gap-3 px-5 pb-16 pt-12 sm:grid-cols-2 sm:gap-4 sm:px-8 lg:grid-cols-4 lg:pb-24 lg:pt-16">
           {BENEFITS.map((b, i) => (
             <Reveal key={b.title} delay={(i % 4) * 0.06}>
               <div className="flex h-full flex-col bg-white p-4 transition-colors hover:border-[color:var(--ca-accent)]" style={{ border: '1px solid rgba(26,34,48,0.1)' }}>
@@ -839,9 +846,9 @@ export default function ArchitectPage() {
               ))}
             </div>
             {/* trust facts */}
-            <Reveal delay={0.28} className="mt-8 flex flex-wrap justify-center gap-2.5 lg:justify-start">
+            <Reveal delay={0.28} className="mt-8 flex flex-wrap justify-center gap-2.5 lg:flex-nowrap lg:justify-start">
               {TRUST_STRIP.map((it) => (
-                <span key={it.value} className="inline-flex items-center gap-2 border bg-white px-3.5 py-2 text-sm font-semibold text-[color:var(--ca-ink)]" style={{ borderColor: 'rgba(26,34,48,0.12)' }}>
+                <span key={it.value} className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap border bg-white px-3.5 py-2 text-sm font-semibold text-[color:var(--ca-ink)] lg:gap-1.5 lg:px-2 lg:text-xs" style={{ borderColor: 'rgba(26,34,48,0.12)' }}>
                   <it.icon size={15} style={{ color: 'var(--ca-accent)' }} /> {it.value}
                 </span>
               ))}
@@ -851,13 +858,7 @@ export default function ArchitectPage() {
             </Reveal>
           </div>
           <Reveal className="order-2">
-            <Framed
-              icon={BuildingArt}
-              alt="Meeticulous, a calm booking platform for architecture and interior-design studios in India"
-              label="Fig. 02 · One Calm Diary"
-              className="mx-auto max-w-md"
-              imgClassName="aspect-square"
-            />
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
         </div>
       </section>
@@ -880,22 +881,19 @@ export default function ArchitectPage() {
       </section>
 
       {/* ═══════════════ 12 · FINAL CTA (graphite + bronze mix-blend glow) ═══════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-24">
-        <div className="mx-auto max-w-6xl overflow-hidden" style={{ background: 'var(--ca-ink)' }}>
-          <div className="relative grid items-center gap-10 px-8 py-14 sm:px-12 lg:grid-cols-[1.1fr_0.9fr]">
+      <section>
+        <div className="w-full overflow-hidden" style={{ background: 'var(--ca-ink)' }}>
+          <div className="relative px-8 py-16 sm:px-12 lg:py-20">
             <div aria-hidden className="pointer-events-none absolute -left-16 -top-16 h-72 w-72 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(180,83,9,0.55), transparent)' }} />
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-40 [mask-image:radial-gradient(circle_at_20%_20%,black,transparent_60%)]" style={gridBg} />
-            <div className="relative text-center lg:text-left">
-              <Reveal className="mx-auto flex h-14 w-14 items-center justify-center rounded-[16px] lg:mx-0" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                <Zap size={26} style={{ color: 'var(--ca-accent)' }} />
-              </Reveal>
-              <Reveal as="h2" delay={0.06} className="mt-6 font-heading text-[clamp(1.8rem,4.5vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight text-white">
+            <div className="relative mx-auto w-full text-center lg:w-[70%]">
+              <Reveal as="h2" delay={0.06} className="font-heading text-[clamp(1.8rem,4.5vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight text-white">
                 Spend less time arranging meetings. Spend more time designing.
               </Reveal>
-              <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/70 lg:mx-0">
+              <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base leading-relaxed text-white/70">
                 Set up your studio&apos;s booking page today — free forever, ready to share in minutes.
               </Reveal>
-              <Reveal delay={0.14} className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4 lg:justify-start">
+              <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
                 <Link to={START} className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold text-[color:var(--ca-ink)] transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline">
                   Launch My Studio Page — Free <ArrowRight size={16} />
                 </Link>
@@ -903,15 +901,12 @@ export default function ArchitectPage() {
                   Book A Demo
                 </Link>
               </Reveal>
-              <Reveal delay={0.18} className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 lg:justify-start">
+              <Reveal delay={0.18} className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2">
                 {['No credit card', 'Free forever', '0% on Pro'].map((t) => (
                   <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-white/70"><Check size={14} style={{ color: 'var(--ca-accent)' }} /> {t}</span>
                 ))}
               </Reveal>
             </div>
-            <Reveal delay={0.1} className="relative hidden lg:block">
-              <IconArt icon={PencilRulerArt} label="An architect choosing Meeticulous to schedule studio consultations" className="mx-auto aspect-square w-full max-w-sm" iconClassName="h-24 w-24" />
-            </Reveal>
           </div>
         </div>
       </section>

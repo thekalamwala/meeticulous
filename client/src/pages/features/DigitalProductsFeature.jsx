@@ -71,7 +71,6 @@ const inr = (n) => `₹${n.toLocaleString('en-IN', { minimumFractionDigits: 2, m
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
 
-const HERO_TRUST = ['Free plan, no card needed', `${FREE_PRODUCT_LIMIT} products on ${FREE_PLAN.name}`, 'Built for India'];
 
 const CHIPS = [
   { icon: FileText, label: '12 file formats, up to 2 MB' },
@@ -380,13 +379,6 @@ export default function DigitalProductsFeature() {
                 See product limits by plan <ArrowRight size={15} />
               </a>
             </Reveal>
-            <Reveal instant delay={0.14} className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
-              {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] text-[#F6E3C6]/65">
-                  <Check size={14} style={{ color: VIOLET_SOFT }} aria-hidden /> {t}
-                </span>
-              ))}
-            </Reveal>
           </div>
           <Reveal instant delay={0.12}>
             <ShelfDemo />
@@ -594,18 +586,6 @@ export default function DigitalProductsFeature() {
         />
       </section>
 
-      {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
-      <section className="relative overflow-hidden px-5 py-20 sm:px-8 lg:py-28" style={{ background: DEEP}}>
-        <div aria-hidden className="pointer-events-none absolute left-1/2 top-0 h-[26rem] w-[40rem] -translate-x-1/2 rounded-full blur-3xl" style={{ background: 'rgba(47,125,209,0.14)' }} />
-        <div className="relative mx-auto max-w-5xl text-center">
-          <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.2rem)] font-extrabold leading-[1] tracking-[-0.035em] text-white">
-            Turn what you know <span style={{ color: VIOLET_SOFT }}>into a download.</span>
-          </Reveal>
-          <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-[#F6E3C6]/70">
-            Set up your booking page free, then add your first product from your dashboard.
-          </Reveal>
-        </div>
-      </section>
     </main>
   );
 }

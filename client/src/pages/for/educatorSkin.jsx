@@ -310,13 +310,13 @@ export default function EducatorSections({ data, wrap, Counter, icons, routeStar
       <V2Pricing routeStart={routeStart} Decor={MarginDecor} cardClass={CARD} lift={false} />
 
       {/* ════════ ABOUT ════════ */}
-      <V2About wrap={wrap} label={data.label} background="var(--v2-wash)" Decor={MarginDecor} cardClass={CARD} />
+      <V2About wrap={wrap} label={data.label} background="var(--v2-wash)" compact />
 
       {/* Guides sit directly above the FAQ, as on the bespoke /for pages. */}
       <PageGuides />
 
       {/* ════════ FAQ — an exam paper ════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-28">
+      <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto grid max-w-6xl items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
           <div className="text-center lg:sticky lg:top-28 lg:text-left lg:[&_.text-center]:text-left lg:[&_.mx-auto]:mx-0">
             <SectionHead title="Frequently asked questions." center />
@@ -327,16 +327,12 @@ export default function EducatorSections({ data, wrap, Counter, icons, routeStar
       </section>
 
       {/* ════════ FINAL CTA — an exercise-book cover ════════ */}
-      <section className="px-5 pb-24 pt-4 sm:px-8">
-        <div className={`relative mx-auto ${wrap} overflow-hidden rounded-[32px] px-6 py-14 sm:px-10`} style={{ background: 'var(--v2-dark)' }}>
-          <span aria-hidden="true" className="absolute inset-y-0 left-0 w-6 sm:w-8" style={{ background: RED }} />
-          <div className="mx-auto max-w-2xl rounded-[20px] bg-white px-6 py-10 text-center sm:px-10">
-            <div className="mx-auto flex max-w-xs items-end gap-2 border-b-2 pb-1 text-left text-[13px] font-semibold text-black/60" style={{ borderColor: BORDER }}>
-              Name: <span className="font-heading text-[15px] font-bold" style={{ color: 'var(--v2-accent-ink)' }}>Your class</span>
-            </div>
-            <h2 className="mx-auto mt-7 max-w-xl font-heading text-[clamp(1.8rem,3.6vw,2.6rem)] font-extrabold leading-tight tracking-[-0.02em]" style={{ color: 'var(--v2-ink)' }}>{finalCta.headline}</h2>
-            <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-black/65">{finalCta.subline}</p>
-            <Link to={routeStart} className={`mt-8 inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold text-white hover:no-underline ${FOCUS}`} style={{ background: 'var(--v2-accent-cta)' }}>
+      <section className="relative w-full overflow-hidden px-5 py-16 text-center sm:px-8 lg:py-20" style={{ background: 'var(--v2-dark)' }}>
+        <div className="relative mx-auto w-full lg:w-[70%]">
+          <h2 className="mx-auto font-heading text-[clamp(1.8rem,3.6vw,2.6rem)] font-extrabold leading-tight tracking-[-0.02em]" style={{ color: '#ffffff' }}>{finalCta.headline}</h2>
+          <p className="mx-auto mt-4 text-[15px] leading-relaxed text-white/70">{finalCta.subline}</p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <Link to={routeStart} className={`inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold text-white hover:no-underline ${FOCUS}`} style={{ background: 'var(--v2-accent-cta)' }}>
               {finalCta.ctaText} <ArrowRight size={16} />
             </Link>
           </div>
