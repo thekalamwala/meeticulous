@@ -13,6 +13,8 @@ const { setPublicCache } = require('../utils/httpCache');
 const { CURRENT_TERMS_VERSION } = require('../middleware/communityGate');
 const { bustSitemapCache } = require('../utils/sitemapCache');
 const { adminAlert } = require('../utils/adminAlert');
+const { isFeatureEnabled } = require('../services/featureFlags');
+const membershipNotify = require('../services/community/membershipNotify');
 
 const PHASE1_FORMATS = ['text', 'question', 'announcement'];
 // Spec §6/§13: the `official` space policy and announcements are for badge 'official' only.
@@ -161,8 +163,25 @@ const createItem = handle(async (req, res) => {
     if (!mayPost(space, profile, member)) return fail(res, 403, 'SPACE_NOT_ALLOWED');
   }
 
+  // Membership audience gate (M3). Honored only while community_memberships is on;
+  // otherwise every post is public. 'tier' must name one of the author's OWN live tiers.
+  let audience = 'public', audienceTierId = null, teaserLine = null;
+  if (await isFeatureEnabled('community_memberships')) {
+    const reqAud = String((req.body && req.body.audience) || 'public');
+    if (!['public', 'free_subscribers', 'tier'].includes(reqAud)) return fail(res, 400, 'INVALID_AUDIENCE', 'Invalid audience');
+    if (reqAud === 'tier') {
+      const tier = await store.getOwnedLiveTier(uid, req.body.audience_tier_id);
+      if (!tier) return fail(res, 400, 'TIER_NOT_ALLOWED', 'Pick one of your own published tiers');
+      audience = 'tier'; audienceTierId = tier.id;
+    } else {
+      audience = reqAud;
+    }
+    if (audience !== 'public' && req.body.teaser_line) teaserLine = String(req.body.teaser_line).slice(0, 200);
+  }
+
   const item = await store.insertPost(
-    { kind, format, author_id: uid, space_id: space?.id || null, title: draft.title, body: draft.body },
+    { kind, format, author_id: uid, space_id: space?.id || null, title: draft.title, body: draft.body,
+      audience, audience_tier_id: audienceTierId, teaser_line: teaserLine },
     () => makeSlug(draft.title || draft.body),
   );
   let savedMedia;
@@ -176,6 +195,9 @@ const createItem = handle(async (req, res) => {
   await recordMentions({ item, comment: null, text: `${draft.title || ''}\n${draft.body}`, actorId: uid });
   item.is_indexable = await safeRefresh(item.id);
   bustSitemapCache();
+
+  // New members-only post → notify entitled members (batched, fire-and-forget).
+  if (audience !== 'public') membershipNotify.newPost(item);
 
   // Admin ping: a brand-new account's first post is the spam / sock-puppet canary.
   // member.post_count is the pre-insert value (counted from community_members),
@@ -553,11 +575,15 @@ async function loadReadable(req, res) {
 const itemDetail = handleRead(async (req, res) => {
   const row = await loadReadable(req, res);
   if (!row) return null;
-  const [[item], { comments, next }, spaces] = await Promise.all([
+  const [[item], page, spaces] = await Promise.all([
     store.hydrateItems([row], req.user?.id || null), commentPage(req, row.id, null), store.listSpaces(),
   ]);
   const space = spaces.find((s) => s.id === row.space_id);
-  setCache(req, res);
+  // Locked post: withhold the comment thread too (brief §4 — comments are gated content).
+  const comments = item.locked ? [] : page.comments;
+  const next = item.locked ? null : page.next;
+  // Gated posts are per-viewer: never public-cache them.
+  if ((row.audience || 'public') === 'public') setCache(req, res);
   return res.json({ item, space: space ? spaceView(space) : null, comments, next_comment_cursor: next });
 });
 
@@ -566,8 +592,13 @@ const itemComments = handleRead(async (req, res) => {
   if (!c) return null;
   const row = await loadReadable(req, res);
   if (!row) return null;
+  // A below-tier viewer gets no comments on a gated post.
+  if ((row.audience || 'public') !== 'public') {
+    const [item] = await store.hydrateItems([row], req.user?.id || null);
+    if (item.locked) return res.json({ comments: [], next_cursor: null });
+  }
   const { comments, next } = await commentPage(req, row.id, c.cur);
-  setCache(req, res);
+  if ((row.audience || 'public') === 'public') setCache(req, res);
   return res.json({ comments, next_cursor: next });
 });
 
