@@ -150,6 +150,7 @@ const ProfileSetup = lazy(() => import('./pages/ProfileSetup'));
 const Availability = lazy(() => import('./pages/Availability'));
 const Products    = lazy(() => import('./pages/Products'));
 const Courses     = lazy(() => import('./pages/Courses'));
+const Memberships = lazy(() => import('./pages/Memberships'));
 const MyCourses   = lazy(() => import('./pages/MyCourses'));
 const CoursePage  = lazy(() => import('./pages/CoursePage'));
 const HostCoupons = lazy(() => import('./pages/HostCoupons'));
@@ -648,6 +649,7 @@ function App() {
           </Route>
           <Route path="/dashboard/products" element={<DashboardWrapper><Products /></DashboardWrapper>} />
           <Route path="/dashboard/courses" element={<DashboardWrapper><Courses /></DashboardWrapper>} />
+          <Route path="/dashboard/memberships" element={<DashboardWrapper><Memberships /></DashboardWrapper>} />
           <Route path="/dashboard/coupons" element={<DashboardWrapper><HostCoupons /></DashboardWrapper>} />
           <Route path="/dashboard/membership" element={<DashboardWrapper><Membership /></DashboardWrapper>} />
           <Route path="/dashboard/testimonials" element={<DashboardWrapper><Testimonials /></DashboardWrapper>} />

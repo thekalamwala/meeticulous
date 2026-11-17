@@ -608,6 +608,14 @@ export const getPurchasedCourses = ()         => API.get('/courses/purchased');
 export const createCourseOrder   = (data)     => API.post('/courses/create-order', data);
 export const verifyCoursePayment = (data)     => API.post('/courses/verify', data);
 
+// ── Memberships (host-side program + tiers) ───────────────────
+export const getMyMembership    = ()         => API.get('/memberships/mine');
+export const saveMembership     = (data)     => API.post('/memberships', data);
+export const publishMembership  = (live)     => API.post('/memberships/publish', { live });
+export const addMembershipTier  = (data)     => API.post('/memberships/tiers', data);
+export const updateMembershipTier = (id, d)  => API.put(`/memberships/tiers/${id}`, d);
+export const deleteMembershipTier = (id)     => API.delete(`/memberships/tiers/${id}`);
+
 // ── Admin ─────────────────────────────────────────────────────
 export const adminGetStats       = ()          => API.get('/admin/stats');
 export const adminGetInsights    = ()          => API.get('/admin/insights/kpis');

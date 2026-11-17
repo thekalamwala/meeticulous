@@ -57,6 +57,19 @@ const updateMemberPrefs = (userId, patch) => run(db('community_members')
 const getSpaceByKey = (key) => run(db('community_spaces').select('*').eq('key', key).eq('is_active', true).maybeSingle());
 const getSpaceById = (id) => run(db('community_spaces').select('*').eq('id', id).maybeSingle());
 
+// Validate a membership tier belongs to `hostId` AND is live — the only tiers a host
+// may gate a post to. Returns the tier row or null (incl. when v3.218 isn't applied).
+async function getOwnedLiveTier(hostId, tierId) {
+  if (!tierId) return null;
+  try {
+    const t = await run(db('community_membership_tiers')
+      .select('id, status, type, price_inr, program:community_membership_programs!inner(host_id)')
+      .eq('id', tierId).maybeSingle());
+    if (!t || t.program?.host_id !== hostId || t.status !== 'live') return null;
+    return t;
+  } catch (e) { if (e.code === 'COMMUNITY_UNAVAILABLE') return null; throw e; }
+}
+
 async function insertPost(row, makeSlug) {
   for (let attempt = 0; ; attempt += 1) {
     try {
@@ -428,7 +441,7 @@ module.exports = {
   listSpaces, bannedAuthorIds, listFeedRows, listPinned, getPostBySlug, listCommentRows,
   listAuthorPosts, listAuthorComments, postContexts,
   loadAuthors, loadMediaByPost, likedIds, resetReadCaches,
-  linksAllowed, getProfile, getMember, acceptTerms, updateMemberPrefs, getSpaceByKey, getSpaceById,
+  linksAllowed, getProfile, getMember, acceptTerms, updateMemberPrefs, getSpaceByKey, getSpaceById, getOwnedLiveTier,
   insertPost, getPost, updatePost, insertMedia, listMedia, resolveUsernames, insertMentions, searchMentionable, hostCard,
   getComment, insertComment, countCommentsByAuthorOnPost, countReplies, countRepliesByAuthor,
   listRecentTopLevelComments, updateComment, addReaction, removeReaction,

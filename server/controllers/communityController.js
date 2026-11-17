@@ -13,6 +13,7 @@ const { setPublicCache } = require('../utils/httpCache');
 const { CURRENT_TERMS_VERSION } = require('../middleware/communityGate');
 const { bustSitemapCache } = require('../utils/sitemapCache');
 const { adminAlert } = require('../utils/adminAlert');
+const { isFeatureEnabled } = require('../services/featureFlags');
 
 const PHASE1_FORMATS = ['text', 'question', 'announcement'];
 // Spec §6/§13: the `official` space policy and announcements are for badge 'official' only.
@@ -161,8 +162,25 @@ const createItem = handle(async (req, res) => {
     if (!mayPost(space, profile, member)) return fail(res, 403, 'SPACE_NOT_ALLOWED');
   }
 
+  // Membership audience gate (M3). Honored only while community_memberships is on;
+  // otherwise every post is public. 'tier' must name one of the author's OWN live tiers.
+  let audience = 'public', audienceTierId = null, teaserLine = null;
+  if (await isFeatureEnabled('community_memberships')) {
+    const reqAud = String((req.body && req.body.audience) || 'public');
+    if (!['public', 'free_subscribers', 'tier'].includes(reqAud)) return fail(res, 400, 'INVALID_AUDIENCE', 'Invalid audience');
+    if (reqAud === 'tier') {
+      const tier = await store.getOwnedLiveTier(uid, req.body.audience_tier_id);
+      if (!tier) return fail(res, 400, 'TIER_NOT_ALLOWED', 'Pick one of your own published tiers');
+      audience = 'tier'; audienceTierId = tier.id;
+    } else {
+      audience = reqAud;
+    }
+    if (audience !== 'public' && req.body.teaser_line) teaserLine = String(req.body.teaser_line).slice(0, 200);
+  }
+
   const item = await store.insertPost(
-    { kind, format, author_id: uid, space_id: space?.id || null, title: draft.title, body: draft.body },
+    { kind, format, author_id: uid, space_id: space?.id || null, title: draft.title, body: draft.body,
+      audience, audience_tier_id: audienceTierId, teaser_line: teaserLine },
     () => makeSlug(draft.title || draft.body),
   );
   let savedMedia;
