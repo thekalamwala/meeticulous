@@ -17,13 +17,11 @@ const TIERS = [
 ];
 
 const LockedCard = ({ icon: Icon, title, desc }) => (
-  <div className="relative bg-white border rounded-2xl p-5 overflow-hidden">
-    <div className="absolute top-3 right-3 text-gray-300"><Lock size={15} /></div>
-    <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gray-100 text-gray-400 mb-3">
-      <Icon size={20} />
-    </span>
-    <p className="font-semibold text-gray-800">{title}</p>
-    <p className="text-sm text-gray-500 mt-1">{desc}</p>
+  <div className="relative overflow-hidden rounded-xl border-2 border-neutral-200 bg-white p-4">
+    <span className="absolute right-3 top-3 grid h-5 w-5 place-items-center rounded-full bg-neutral-100 text-ink/35"><Lock className="h-3 w-3" strokeWidth={2.4} /></span>
+    <Icon className="h-6 w-6 text-maroon" strokeWidth={1.9} />
+    <p className="mt-2 font-display text-[13.5px] font-extrabold tracking-[-0.02em] text-ink">{title}</p>
+    <p className="mt-0.5 text-[11.5px] font-medium leading-snug text-ink/50">{desc}</p>
   </div>
 );
 
@@ -34,41 +32,40 @@ const Loyalty = () => {
   return (
     <>
       {/* Header / coming soon banner */}
-        <div className="rounded-2xl p-6 sm:p-8 mb-6 text-white relative overflow-hidden"
-          style={{ background: "linear-gradient(135deg,#960D32,#960D32)" }}>
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide opacity-90">
-            <Sparkles size={14} /> Coming soon
+        <div className="mb-5 flex items-center gap-3 rounded-2xl bg-maroon p-5 text-white">
+          <Sparkles className="h-6 w-6 shrink-0" strokeWidth={2} />
+          <div>
+            <p className="text-[10.5px] font-bold uppercase tracking-[0.08em] text-white/60">Coming soon</p>
+            <h1 className="font-display text-[18px] font-extrabold tracking-[-0.03em]">Loyalty program</h1>
+            <p className="max-w-md text-[12px] font-medium text-white/75">
+              Spend on Meeticulous, climb tiers, and unlock rewards automatically. The more you book, the more you get back.
+            </p>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold mt-2">Loyalty Program</h1>
-          <p className="text-sm opacity-90 mt-1 max-w-md">
-            Spend on Meeticulous, climb tiers, and unlock rewards automatically. The more you book, the more you get back.
-          </p>
         </div>
 
         {/* Tier progress */}
-        <div className="bg-white border rounded-2xl p-5 sm:p-6 mb-6">
-          <div className="flex items-center justify-between mb-1.5">
-            <h2 className="font-semibold text-gray-900">Your tier</h2>
-            <span className="text-xs text-gray-400">Total spent: ₹{spent.toLocaleString("en-IN")}</span>
+        <div className="mb-5 rounded-xl border-2 border-neutral-200 bg-white p-4">
+          <div className="flex items-baseline justify-between">
+            <h2 className="font-display text-[15px] font-extrabold tracking-[-0.02em] text-ink">Your tier</h2>
+            <span className="text-[12px] font-semibold text-ink/55">Total spent: <span className="font-bold text-ink">₹{spent.toLocaleString("en-IN")}</span></span>
           </div>
-          <p className="text-xs text-gray-500 mb-4 leading-snug">
+          <p className="mt-1 text-[11.5px] font-medium leading-snug text-ink/50">
             Tiers are based only on your lifetime spend on Meeticulous — every booking counts.
             You climb automatically as you cross each amount; there's nothing to claim or apply for.
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
             {TIERS.map((t) => {
               const unlocked = spent >= t.spend;
               return (
                 <div key={t.name}
-                  className={`rounded-xl border p-3 text-center ${unlocked ? "border-[#960D32]/40 bg-[#960D32]/5" : "bg-gray-50"}`}>
-                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-full mb-2"
-                    style={{ background: `${t.color}22`, color: t.color }}>
-                    {unlocked ? <Trophy size={17} /> : <Lock size={15} />}
-                  </span>
-                  <p className="text-sm font-semibold text-gray-800">{t.name}</p>
-                  <p className="text-[11px] text-gray-400 mt-0.5">₹{t.spend.toLocaleString("en-IN")}+</p>
-                  <p className="text-[11px] font-medium text-gray-600 mt-1 leading-snug">{t.how}</p>
-                  <p className="text-[11px] text-gray-500 mt-1 leading-snug">{t.perks}</p>
+                  className={`rounded-xl border-2 p-2.5 ${unlocked ? "border-maroon/25 bg-blush" : "border-neutral-200 bg-white"}`}>
+                  <div className="flex items-center gap-1.5">
+                    {unlocked ? <Trophy className="h-3.5 w-3.5 text-maroon" strokeWidth={2.2} /> : <Lock className="h-3.5 w-3.5 text-ink/30" strokeWidth={2.2} />}
+                    <p className="font-display text-[12.5px] font-extrabold tracking-[-0.02em] text-ink">{t.name}</p>
+                  </div>
+                  <p className="mt-1 text-[11px] font-bold text-maroon">₹{t.spend.toLocaleString("en-IN")}+</p>
+                  <p className="mt-0.5 text-[10.5px] font-medium leading-snug text-ink/55">{t.how}</p>
+                  <p className="mt-0.5 text-[10.5px] font-medium leading-snug text-ink/50">{t.perks}</p>
                 </div>
               );
             })}
@@ -76,18 +73,18 @@ const Loyalty = () => {
         </div>
 
         {/* Rewards grid */}
-        <h2 className="font-semibold text-gray-900 mb-3">Rewards</h2>
-        <div className="grid sm:grid-cols-3 gap-4 mb-8">
+        <h2 className="mb-2 text-[11px] font-bold uppercase tracking-[0.07em] text-ink/40">Rewards</h2>
+        <div className="mb-6 grid gap-2.5 sm:grid-cols-3">
           <LockedCard icon={Gift}    title="Rewards"   desc="Credits and gifts that unlock as you spend." />
           <LockedCard icon={Ticket}  title="Scratch cards" desc="Win surprise rewards after eligible bookings." />
           <LockedCard icon={Percent} title="Promo codes" desc="Exclusive codes from our affiliate partners." />
         </div>
 
-        <div className="bg-white border rounded-2xl p-6 text-center">
-          <p className="text-sm text-gray-500">
+        <div className="rounded-xl border-2 border-neutral-200 bg-white p-5 text-center">
+          <p className="text-[12px] font-medium leading-snug text-ink/55">
             We're putting the finishing touches on rewards. Keep booking — your spend will count toward your tier the day it goes live.
           </p>
-          <Link to="/explore" className="inline-block text-sm font-medium text-[#960D32] hover:underline mt-3">Explore creators →</Link>
+          <Link to="/explore" className="mt-3 inline-block text-[12.5px] font-bold text-maroon hover:underline">Explore creators →</Link>
         </div>
     </>
   );

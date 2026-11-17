@@ -69,6 +69,8 @@ export const NAV = [
       { to: '/dashboard/products', label: 'Products', icon: 'nav-products' },
       // Reuse nav-products glyph — no course icon exported (closest fit).
       { to: '/dashboard/courses', label: 'Courses', icon: 'nav-products', visible: (c) => !!c.flags?.course_purchase },
+      // Reuse nav-plan glyph — no membership icon exported.
+      { to: '/dashboard/memberships', label: 'Memberships', icon: 'nav-plan', visible: (c) => !!c.flags?.community_memberships },
       // Reuse nav-profile glyph — no testimonial icon exported.
       { to: '/dashboard/testimonials', label: 'Testimonials', icon: 'nav-profile' },
       // Reuse nav-refer glyph (promo/reward) — no discount icon exported.
@@ -157,12 +159,19 @@ export const NAV_V2 = [
     visible: (c) => !!c.flags?.guest_messaging,
   },
   {
-    // Six rail entries become one list. The four type pages keep their routes
-    // and their editors — the catalog links to them — they simply stop each
-    // needing a line in the rail to be findable.
+    // Five rail entries become one list, plus Memberships. The four type pages
+    // keep their routes and their editors — the catalog links to them — they
+    // simply stop each needing a line in the rail to be findable. Memberships
+    // is not one of the four, so it keeps its own line; see below.
     id: 'catalog', label: 'Catalog', icon: 'rail-catalog',
     items: [
       { to: '/dashboard/catalog', label: 'Catalog', icon: 'nav-services', matchPrefix: ['/dashboard/catalog', '/dashboard/service', '/dashboard/products', '/dashboard/courses', '/dashboard/coupons'] },
+      // Memberships stays its OWN entry. It arrived on the base branch after this
+      // one was cut, and the catalog cannot absorb it: catalogModel fetches
+      // services, products, courses and coupons, so a membership program would
+      // not appear in the list that replaced its rail line. Collapsing it would
+      // leave /dashboard/memberships reachable only by typing the URL.
+      { to: '/dashboard/memberships', label: 'Memberships', icon: 'nav-plan', visible: (c) => !!c.flags?.community_memberships },
     ],
   },
   {

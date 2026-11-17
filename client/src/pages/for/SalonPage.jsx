@@ -345,52 +345,45 @@ export default function SalonPage() {
       </header>
 
       {/* ═══════════════ 2 · HERO (fashion-magazine headline + rotated collage) ═══════════════ */}
-      <section id="top" className="relative overflow-hidden px-5 pb-16 pt-10 sm:px-8 lg:pb-24 lg:pt-16" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 100%)' }}>
-        <div aria-hidden className="pointer-events-none absolute -left-24 -top-24 h-80 w-80 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(214,0,154,0.22), transparent)' }} />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
-          {/* LEFT — oversized display headline */}
-          <div className="text-center lg:text-left">
-            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,4rem)] font-black leading-[1.02] tracking-[-0.03em] text-[color:var(--ca-ink)]">
-              Smart appointment booking software for{' '}
-              <span style={{ color: 'var(--ca-accent)' }}>salons and beauticians</span> managing busy schedules.
-            </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mx-auto mt-6 max-w-md text-base leading-relaxed text-neutral-600 sm:text-lg lg:mx-0">
-              Meeticulous is appointment booking software for salons — clients book haircuts, facials and bridal appointments, pay an advance, and get reminders, so your chairs stay booked and no-shows drop.
-            </Reveal>
-            <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
-              <CtaButton to={START} className="w-full sm:w-auto">Create Your Booking Page <ArrowRight size={16} /></CtaButton>
-              <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-accent)] hover:no-underline">
-                Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
-              {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-neutral-500">
-                  <Check size={14} style={{ color: 'var(--ca-accent)' }} /> {t}
-                </span>
-              ))}
-            </Reveal>
+      <section id="top" className="relative overflow-hidden bg-white lg:flex lg:flex-col lg:min-h-[calc(100svh_-_69px)]">
+        {/* HERO BAND — full-width wide scene as the background; the photo's white
+            left half holds the text, and the hero fills the fold. */}
+        <div className="relative lg:flex lg:flex-1 lg:flex-col">
+          {/* DESKTOP — background photo (kept sharp) */}
+          <img
+            src="/images/hero/salon-hero-wide.webp"
+            alt="A beautician applying makeup to a smiling client at a salon vanity with brushes and products."
+            width={1844}
+            height={853}
+            className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-cover object-center lg:block"
+          />
+
+          {/* TEXT — aligned to the page content edge, over the white area */}
+          <div className="relative z-10 flex items-center px-5 sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
+            <div className="w-full py-14 text-center sm:py-16 lg:max-w-[38rem] lg:py-0 lg:text-left">
+              <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,3.6vw,2.5rem)] font-black leading-[1.1] tracking-[-0.03em] text-[color:var(--ca-ink)]">
+                Smart appointment booking software for{' '}
+                <span style={{ color: 'var(--ca-accent)' }}>salons and beauticians</span> managing busy schedules.
+              </Reveal>
+              <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-neutral-600 sm:text-lg lg:mx-0">
+                Meeticulous is appointment booking software for salons — clients book haircuts, facials and bridal appointments, pay an advance, and get reminders, so your chairs stay booked and no-shows drop.
+              </Reveal>
+              <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
+                <CtaButton to={START} className="w-full sm:w-auto">Create Your Booking Page <ArrowRight size={16} /></CtaButton>
+                <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-accent)] hover:no-underline">
+                  Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </Reveal>
+              <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+                {HERO_TRUST.map((t) => (
+                  <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-neutral-500">
+                    <Check size={14} style={{ color: 'var(--ca-accent)' }} /> {t}
+                  </span>
+                ))}
+              </Reveal>
+            </div>
           </div>
 
-          {/* RIGHT — rotated overlapping collage + fuchsia frame + floating card */}
-          <Reveal instant delay={0.1} className="relative mx-auto w-full max-w-sm lg:mx-0 lg:max-w-md">
-            <div className="relative aspect-[5/6] w-full">
-              <div aria-hidden className="absolute inset-x-8 inset-y-10 rotate-[7deg] rounded-[16px] border-2" style={{ borderColor: 'var(--ca-accent)' }} />
-              <ImgSlot alt="A stylist finishing a client's blow-dry at the salon chair" className="absolute inset-0 h-full w-full" />
-              <div className="absolute -bottom-3 left-[6%] z-20 flex items-center gap-3 rounded-xl bg-white px-4 py-3 shadow-[0_18px_40px_-18px_rgba(17,17,17,0.5)]">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg text-white" style={{ background: 'var(--ca-accent)' }}><Star size={17} /></span>
-                <div><div className="text-[11px] text-neutral-500">This week</div><div className="text-sm font-bold text-[color:var(--ca-ink)]">Fully booked</div></div>
-              </div>
-              <div className="absolute -top-4 -left-4 z-20 flex items-center gap-3 rounded-xl bg-white px-4 py-3 shadow-[0_18px_40px_-18px_rgba(17,17,17,0.5)]">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg text-white" style={{ background: 'var(--ca-accent)' }}><CalendarCheck size={17} /></span>
-                <div><div className="text-[11px] text-neutral-500">New booking</div><div className="text-sm font-bold text-[color:var(--ca-ink)]">Haircut · 2:00 PM</div></div>
-              </div>
-              <div className="absolute -top-4 -right-4 z-20 flex items-center gap-3 rounded-xl bg-white px-4 py-3 shadow-[0_18px_40px_-18px_rgba(17,17,17,0.5)]">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg text-white" style={{ background: 'var(--ca-accent)' }}><BellRing size={17} /></span>
-                <div><div className="text-[11px] text-neutral-500">Reminder sent</div><div className="text-sm font-bold text-[color:var(--ca-ink)]">1h before</div></div>
-              </div>
-            </div>
-          </Reveal>
         </div>
       </section>
 
@@ -470,7 +463,7 @@ export default function SalonPage() {
             ))}
           </div>
           <Reveal delay={0.1} className="mt-12">
-            <Link to="/pricing" className="group inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-accent)' }}>
+            <Link to="/become-a-host" className="group inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-accent)' }}>
               Explore All Features <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
             </Link>
           </Reveal>
@@ -662,7 +655,7 @@ export default function SalonPage() {
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-grey)' }}>
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <Reveal className="order-2 lg:order-1">
-            <ImgSlot alt="A salon owner reviewing the day's appointments on a tablet" className="aspect-[4/5] w-full shadow-[0_24px_54px_-32px_rgba(17,17,17,0.4)]" />
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
           <div className="order-1 lg:order-2">
             <Reveal as="h2" delay={0.04} className="font-heading text-3xl font-black leading-tight tracking-tight sm:text-4xl">
@@ -712,14 +705,12 @@ export default function SalonPage() {
       {/* ═══════════════ 12 · FINAL CTA (black + fuchsia mix-blend-screen glow) ═══════════════ */}
       <section className="relative overflow-hidden px-5 py-24 text-center sm:px-8" style={{ background: 'var(--ca-primary)' }}>
         <div aria-hidden className="pointer-events-none absolute -top-24 left-1/2 h-72 w-[44rem] max-w-[92vw] -translate-x-1/2 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(214,0,154,0.55), transparent)' }} />
-        <div className="relative mx-auto max-w-2xl">
-          <Reveal className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: 'rgba(214,0,154,0.2)' }}>
-            <Sparkles size={26} style={{ color: 'var(--ca-accent)' }} />
-          </Reveal>
-          <Reveal as="h2" delay={0.06} className="mt-6 font-heading text-3xl font-black leading-tight tracking-tight text-white sm:text-5xl">
+        <div className="relative mx-auto w-full lg:w-[70%]">
+
+          <Reveal as="h2" delay={0.06} className="font-heading text-3xl font-black leading-tight tracking-tight text-white sm:text-5xl">
             Spend less time on the phone. <span style={{ color: 'var(--ca-accent)' }}>Spend more time on your clients.</span>
           </Reveal>
-          <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base text-white/70">
+          <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base text-white/70">
             Set up your salon booking page today and give your clients a beautiful way to book with you.
           </Reveal>
           <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

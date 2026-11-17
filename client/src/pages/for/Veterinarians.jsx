@@ -379,21 +379,24 @@ export default function Veterinarians() {
         </AnimatePresence>
       </header>
 
-      {/* ═══════════════ 2 · HERO (paw-dot rounded composition + confirmed card) ═══════════════ */}
-      <section id="top" className="relative overflow-hidden px-5 pb-20 pt-10 sm:px-8 lg:pb-28 lg:pt-16" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 100%)' }}>
-        {/* warm coral blob — sits INTO the cream via multiply */}
-        <div aria-hidden className="pointer-events-none absolute -right-16 -top-20 h-80 w-80 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(249,115,22,0.20), transparent)' }} />
-        <div aria-hidden className="pointer-events-none absolute -left-24 top-1/3 h-72 w-72 rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(21,127,118,0.12), transparent)' }} />
-        {/* signature paw-dot motif */}
-        <PawField color="var(--ca-primary)" />
-
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="text-center lg:text-left">
-            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.02em] text-[color:var(--ca-ink)]">
+      {/* ═══════════════ 2 · HERO (framed wide scene + text over white left half) ═══════════════ */}
+      <section id="top" className="relative overflow-hidden lg:flex lg:flex-col lg:min-h-[calc(100svh_-_69px)]" style={{ background: 'linear-gradient(135deg, #FFF7ED 0%, #FFFAF4 45%, #FFFFFF 72%)' }}>
+        {/* DESKTOP — wide scene as the hero background; the photo's white left half holds the text. */}
+        <img
+          src="/images/hero/vet-hero-wide.webp"
+          alt="A veterinarian listening to a happy golden retriever with a stethoscope at a pet clinic."
+          width={1670}
+          height={941}
+          className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-cover object-[50%_88%] lg:block"
+        />
+        {/* TEXT — left-aligned, over the white area on desktop. */}
+        <div className="relative z-10 flex items-center px-5 sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
+          <div className="w-full py-14 text-center sm:py-16 lg:max-w-[34rem] lg:py-0 lg:text-left">
+            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,3.4vw,2.6rem)] font-extrabold leading-[1.08] tracking-[-0.02em] text-[color:var(--ca-ink)]">
               Easy appointment booking software for{' '}
               <span style={{ color: 'var(--ca-primary)' }}>veterinarians</span> managing pet-care appointments.
             </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
+            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
               Meeticulous is appointment booking software for veterinarians — pet parents book consultations and vaccinations in a minute, pay upfront, and get reminders, for a calmer clinic and waiting room.
             </Reveal>
             <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
@@ -402,7 +405,7 @@ export default function Veterinarians() {
                 Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+            <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
               {HERO_TRUST.map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
                   <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
@@ -410,27 +413,8 @@ export default function Veterinarians() {
               ))}
             </Reveal>
           </div>
-
-          {/* RIGHT — single strongly-rounded image + floating confirmed card + coral reminder chip */}
-          <Reveal instant delay={0.1} className="relative mx-auto w-full max-w-sm lg:mx-0 lg:max-w-none">
-            <ImgSlot
-              alt="A veterinarian with a happy dog at a modern pet clinic"
-              rounded="rounded-[32px]"
-              className="aspect-[4/5] shadow-[0_30px_70px_-30px_rgba(28,43,41,0.45)]"
-            />
-            <div className="absolute -bottom-5 -left-4 z-20 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_16px_36px_-18px_rgba(28,43,41,0.5)] sm:-left-6">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl text-white" style={{ background: 'var(--ca-primary)' }}><CalendarCheck size={18} /></span>
-              <div>
-                <div className="text-[11px] font-medium text-slate-500">Pet appointment confirmed</div>
-                <div className="text-sm font-bold text-[color:var(--ca-ink)]">Bruno · Vaccination · 11:00 AM</div>
-              </div>
-            </div>
-            <div className="absolute -right-3 top-8 z-20 flex items-center gap-2 rounded-full bg-white px-3 py-2 shadow-[0_12px_28px_-16px_rgba(28,43,41,0.5)]">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full text-white" style={{ background: 'var(--ca-accent)' }}><BellRing size={13} /></span>
-              <span className="text-[12px] font-semibold text-[color:var(--ca-ink)]">Reminder sent</span>
-            </div>
-          </Reveal>
         </div>
+
       </section>
 
       {/* ═══════════════ 3 · SERVICES (white cards · filled-teal icon · coral tag) ═══════════════ */}
@@ -528,7 +512,7 @@ export default function Veterinarians() {
             Google Calendar busy-time blocking, auto Google Meet links, WhatsApp reminders, and Razorpay payments with automatic GST invoices.
           </Reveal>
           <Reveal delay={0.12} className="mt-8 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -760,11 +744,7 @@ export default function Veterinarians() {
             </Reveal>
           </div>
           <Reveal className="order-1 lg:order-2">
-            <ImgSlot
-              alt="A friendly veterinarian welcoming a pet and its owner to the clinic"
-              rounded="rounded-[28px]"
-              className="aspect-[5/4] w-full shadow-[0_28px_64px_-32px_rgba(28,43,41,0.4)]"
-            />
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
         </div>
       </section>
@@ -788,14 +768,12 @@ export default function Veterinarians() {
       <section className="relative overflow-hidden px-5 py-24 text-center sm:px-8" style={{ background: 'linear-gradient(150deg, #0E5B54 0%, #157F76 55%, #0E5B54 100%)' }}>
         <div aria-hidden className="pointer-events-none absolute -top-16 left-1/2 h-64 w-[42rem] -translate-x-1/2 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(249,115,22,0.45), transparent)' }} />
         <PawField color="#ffffff" />
-        <div className="relative mx-auto max-w-2xl">
-          <Reveal className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: 'rgba(255,255,255,0.14)' }}>
-            <PawPrint size={26} style={{ color: '#FDBA74' }} />
-          </Reveal>
-          <Reveal as="h2" delay={0.06} className="mt-6 font-heading text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">
+        <div className="relative mx-auto w-full lg:w-[70%]">
+
+          <Reveal as="h2" delay={0.06} className="font-heading text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">
             Spend less time on the phone. <span style={{ color: '#FDBA74' }}>Spend more time with pets.</span>
           </Reveal>
-          <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base text-white/80">
+          <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base text-white/80">
             Set up your clinic booking page today and give pet parents a friendly way to book with you.
           </Reveal>
           <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

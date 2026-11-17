@@ -320,13 +320,13 @@ export default function DrivingSections({ data, wrap, Counter, icons, routeStart
       <V2Pricing routeStart={routeStart} Decor={LPlateDecor} cardClass={CARD} lift={false} />
 
       {/* ════════ ABOUT ════════ */}
-      <V2About wrap={wrap} label={data.label} background="var(--v2-wash)" Decor={LPlateDecor} cardClass={CARD} />
+      <V2About wrap={wrap} label={data.label} background="var(--v2-wash)" Decor={LPlateDecor} cardClass={CARD} cardsOnLeft />
 
       {/* Guides sit directly above the FAQ, as on the bespoke /for pages. */}
       <PageGuides />
 
       {/* ════════ FAQ — two lanes ════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-28">
+      <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto grid max-w-6xl items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
           <div className="text-center lg:sticky lg:top-28 lg:text-left lg:[&_.text-center]:text-left lg:[&_.mx-auto]:mx-0">
             <SectionHead title="Frequently asked questions." center />
@@ -337,23 +337,15 @@ export default function DrivingSections({ data, wrap, Counter, icons, routeStart
       </section>
 
       {/* ════════ FINAL CTA — a green light at the end of the road ════════ */}
-      <section className="px-5 pb-24 pt-4 sm:px-8">
-        <div className={`relative mx-auto ${wrap} overflow-hidden rounded-[32px]`} style={{ background: ASPHALT }}>
-          <div className="relative flex flex-col items-center gap-10 px-6 pb-16 pt-16 text-center sm:px-10 lg:flex-row lg:text-left">
-            <div className="flex-1">
-              <h2 className="font-heading text-[clamp(1.9rem,3.8vw,2.8rem)] font-extrabold leading-tight tracking-[-0.02em] text-white">{finalCta.headline}</h2>
-              <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-white/65 lg:max-w-2xl">{finalCta.subline}</p>
-              <Link to={routeStart} className={`mt-9 inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold hover:no-underline ${FOCUS}`} style={{ background: LINE, color: ASPHALT }}>
+      <section className="relative w-full overflow-hidden px-5 py-16 text-center sm:px-8 lg:py-20" style={{ background: ASPHALT }}>
+        <div className="relative mx-auto w-full lg:w-[70%]">
+          <h2 className="font-heading text-[clamp(1.9rem,3.8vw,2.8rem)] font-extrabold leading-tight tracking-[-0.02em] text-white">{finalCta.headline}</h2>
+          <p className="mt-4 text-[15px] leading-relaxed text-white/65">{finalCta.subline}</p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <Link to={routeStart} className={`inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold hover:no-underline ${FOCUS}`} style={{ background: LINE, color: ASPHALT }}>
                 {finalCta.ctaText} <ArrowRight size={16} />
               </Link>
-            </div>
-            <span aria-hidden="true" className="hidden flex-col items-center gap-2.5 rounded-[28px] border-2 border-white/10 px-4 py-5 lg:flex" style={{ background: ASPHALT_DEEP }}>
-              <span className="h-10 w-10 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }} />
-              <span className="h-10 w-10 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }} />
-              <span className="h-10 w-10 rounded-full" style={{ background: '#22C55E', boxShadow: '0 0 0 6px rgba(34,197,94,0.18)' }} />
-            </span>
           </div>
-          <div className="px-6 pb-8"><Road height="h-10" /></div>
         </div>
       </section>
     </>

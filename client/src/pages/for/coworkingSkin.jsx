@@ -337,13 +337,13 @@ export default function CoworkingSections({ data, wrap, Counter, icons, routeSta
       <V2Pricing routeStart={routeStart} Decor={DoorDecor} cardClass={PLAN_CARD} lift={false} />
 
       {/* ════════ ABOUT ════════ */}
-      <V2About wrap={wrap} label={data.label} background="var(--v2-wash)" Decor={DoorDecor} cardClass={PLAN_CARD} />
+      <V2About wrap={wrap} label={data.label} background="var(--v2-wash)" Decor={DoorDecor} cardClass={PLAN_CARD} cardsOnLeft />
 
       {/* Guides sit directly above the FAQ, as on the bespoke /for pages. */}
       <PageGuides />
 
       {/* ════════ FAQ — two-column directory ════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-28">
+      <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto grid max-w-6xl items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
           <div className="text-center lg:sticky lg:top-28 lg:text-left lg:[&_.text-center]:text-left lg:[&_.mx-auto]:mx-0">
             <SectionHead title="Frequently asked questions." center />
@@ -354,15 +354,15 @@ export default function CoworkingSections({ data, wrap, Counter, icons, routeSta
       </section>
 
       {/* ════════ FINAL CTA — the front door ════════ */}
-      <section className="px-5 pb-24 pt-4 sm:px-8">
-        <div className={`relative mx-auto ${wrap} overflow-hidden rounded-[32px] px-6 py-20 text-center sm:px-10`} style={{ background: 'var(--v2-dark)' }}>
-          <DoorSwing size={220} tone="rgba(165,180,252,0.35)" className="absolute -bottom-6 -right-4 hidden sm:block" />
-          <DoorSwing size={140} tone="rgba(165,180,252,0.2)" className="absolute -left-6 -top-4 hidden rotate-180 sm:block" />
-          <h2 className="relative mx-auto max-w-3xl font-heading text-[clamp(1.9rem,3.8vw,2.8rem)] font-extrabold leading-tight tracking-[-0.02em] text-white">{finalCta.headline}</h2>
-          <p className="relative mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-white/65">{finalCta.subline}</p>
-          <Link to={routeStart} className={`relative mt-9 inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold hover:no-underline ${FOCUS}`} style={{ background: '#fff', color: 'var(--v2-accent-ink)' }}>
+      <section className="relative w-full overflow-hidden px-5 py-16 text-center sm:px-8 lg:py-20" style={{ background: 'var(--v2-dark)' }}>
+        <div className="relative mx-auto w-full lg:w-[70%]">
+          <h2 className="relative mx-auto font-heading text-[clamp(1.9rem,3.8vw,2.8rem)] font-extrabold leading-tight tracking-[-0.02em] text-white">{finalCta.headline}</h2>
+          <p className="relative mx-auto mt-4 text-[15px] leading-relaxed text-white/65">{finalCta.subline}</p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <Link to={routeStart} className={`relative mt-9 inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold hover:no-underline ${FOCUS}`} style={{ background: '#fff', color: 'var(--v2-accent-ink)' }}>
             {finalCta.ctaText} <ArrowRight size={16} />
           </Link>
+          </div>
         </div>
       </section>
     </>

@@ -48,3 +48,50 @@ describe('views created from v3.186 on', () => {
     for (const v of views) expect(v).toMatch(/security_invoker\s*=\s*(true|on)/i);
   });
 });
+
+/**
+ * A SECURITY DEFINER function runs as its OWNER, so whatever the CALLER's
+ * search_path resolves an unqualified table name to is what runs with owner
+ * rights. v3.204 shipped increment_coupon_redemption with the revoke but
+ * without the pin - the same class of miss v3.186 exists to stop, one layer
+ * down - and v3.221 fixed it. This is the guard, so the next one is caught
+ * here rather than by a security advisor months later.
+ */
+describe('SECURITY DEFINER functions from v3.186 on pin search_path', () => {
+  const later = fs.readdirSync(DIR).filter((f) => f.endsWith('.sql') && atLeast(versionOf(f), [3, 186]));
+
+  // Header = CREATE FUNCTION up to the body delimiter, with -- comments stripped
+  // so words in a comment above a function cannot satisfy or trip the check.
+  const headers = (body) =>
+    (body.match(/CREATE\s+(?:OR\s+REPLACE\s+)?FUNCTION[\s\S]*?\bAS\s+\$/gi) || [])
+      .map((h) => h.replace(/--[^\r\n]*/g, ''));
+
+  test.each(later)('%s', (f) => {
+    for (const h of headers(fs.readFileSync(path.join(DIR, f), 'utf8'))) {
+      if (/SECURITY\s+DEFINER/i.test(h)) expect(h).toMatch(/SET\s+search_path\s*=/i);
+    }
+  });
+
+  test('the matcher sees a definition it should reject', () => {
+    // Without this, a regex that silently matched nothing would make the suite
+    // above pass for every migration forever.
+    const bad = 'create or replace function f(x uuid)\n returns void language sql security definer as $$ select 1; $$;';
+    expect(headers(bad)).toHaveLength(1);
+    expect(headers(bad)[0]).not.toMatch(/SET\s+search_path\s*=/i);
+
+    const good = 'create function g() returns void language sql security definer set search_path = public, pg_temp as $$ select 1; $$;';
+    expect(headers(good)[0]).toMatch(/SET\s+search_path\s*=/i);
+  });
+
+  test('a definition whose only search_path is in a comment does not count', () => {
+    const sneaky = '-- set search_path = public\ncreate function h() returns void language sql security definer as $$ select 1; $$;';
+    expect(headers(sneaky)[0]).not.toMatch(/SET\s+search_path\s*=/i);
+  });
+
+  test('v3.221 pins the function v3.204 left open', () => {
+    const fix = fs.readFileSync(path.join(DIR, 'v3.221_coupon_fn_search_path.sql'), 'utf8');
+    // pg_temp named explicitly: when it is absent from the path Postgres searches
+    // the temp schema FIRST, so "= public" alone still allows a temp-table shadow.
+    expect(fix).toMatch(/ALTER FUNCTION public\.increment_coupon_redemption\(uuid\)\s+SET search_path = public, pg_temp;/);
+  });
+});

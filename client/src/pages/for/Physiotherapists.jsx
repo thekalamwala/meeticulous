@@ -355,16 +355,25 @@ export default function Physiotherapists() {
         </AnimatePresence>
       </header>
 
-      {/* ═══════════════ 2 · HERO (highlight-marker + arched image, mix-blend blob) ═══════════════ */}
-      <section className="relative overflow-hidden px-5 pb-16 pt-10 sm:px-8 lg:pb-24 lg:pt-16" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 100%)' }}>
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="text-center lg:text-left">
-            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.02em] text-[color:var(--ca-ink)]">
+      {/* ═══════════════ 2 · HERO (framed wide scene + text over white left half) ═══════════════ */}
+      <section id="top" className="relative overflow-hidden lg:flex lg:flex-col lg:min-h-[calc(100svh_-_69px)]" style={{ background: 'linear-gradient(135deg, #ECFCCB 0%, #F7FEE7 45%, #FFFFFF 100%)' }}>
+        {/* DESKTOP — wide scene as the hero background; the photo's white left half holds the text. */}
+        <img
+          src="/images/hero/physiotherapist-hero-wide.webp"
+          alt="A physiotherapist guiding a patient through a shoulder-mobility exercise in a rehab clinic."
+          width={1672}
+          height={941}
+          className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-cover object-[50%_85%] lg:block"
+        />
+        {/* TEXT — left-aligned, over the white area on desktop (image kept sharp). */}
+        <div className="relative z-10 flex items-center px-5 sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
+          <div className="w-full py-14 text-center sm:py-16 lg:max-w-[38rem] lg:py-0 lg:text-left">
+            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,3.6vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.02em] text-[color:var(--ca-ink)]">
               Flexible appointment booking software for{' '}
               <span style={{ color: 'var(--ca-primary)' }}>physiotherapists</span>{' '}
               managing recurring sessions.
             </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-neutral-600 sm:text-lg lg:mx-0">
+            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-neutral-600 sm:text-lg lg:mx-0">
               Meeticulous is appointment booking software for physiotherapists — patients book and rebook recurring sessions, pay upfront, and get reminders, so no one drops off mid-recovery.
             </Reveal>
             <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
@@ -373,7 +382,7 @@ export default function Physiotherapists() {
                 Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+            <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
               {HERO_TRUST.map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-neutral-500">
                   <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
@@ -381,21 +390,8 @@ export default function Physiotherapists() {
               ))}
             </Reveal>
           </div>
-
-          {/* RIGHT — arched empty image + floating session chip; lime blob uses mix-blend */}
-          <Reveal instant delay={0.1} className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
-            <div aria-hidden className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full mix-blend-multiply blur-2xl" style={{ background: 'var(--ca-lime)' }} />
-            <ImgSlot alt="A physiotherapist guiding a patient through a rehab exercise" rounded="rounded-t-[999px] rounded-b-[28px]" className="relative z-10 aspect-[4/5] w-full" />
-            <div className="absolute -left-3 top-10 z-20 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_16px_36px_-18px_rgba(15,23,42,0.5)]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl text-white" style={{ background: 'var(--ca-primary)' }}><CalendarCheck size={17} /></span>
-              <div><div className="text-[11px] text-neutral-500">New session</div><div className="text-sm font-bold text-[color:var(--ca-ink)]">Rehab · 5:00 PM</div></div>
-            </div>
-            <div className="absolute -right-2 bottom-10 z-20 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_16px_36px_-18px_rgba(15,23,42,0.5)]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ background: 'var(--ca-lime)', color: 'var(--ca-ink)' }}><Wallet size={17} /></span>
-              <div><div className="text-[11px] text-neutral-500">Fee received</div><div className="text-sm font-bold text-[color:var(--ca-ink)]">₹800</div></div>
-            </div>
-          </Reveal>
         </div>
+
       </section>
 
       {/* ═══════════════ 3 · TREATMENTS (numbered index rows) ═══════════════ */}
@@ -493,7 +489,7 @@ export default function Physiotherapists() {
             </div>
           ))}
           <Reveal delay={0.1} className="mt-10 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -731,15 +727,8 @@ export default function Physiotherapists() {
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-grey)' }}>
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* arched image cluster (empty placeholders) + years badge */}
-          <Reveal className="relative order-2 mx-auto w-full max-w-md lg:order-1 lg:mx-0 lg:max-w-none">
-            <div className="grid grid-cols-2 gap-4">
-              <ImgSlot alt="A physiotherapist assessing a patient's mobility" rounded="rounded-t-[999px] rounded-b-[20px]" className="aspect-[3/4]" />
-              <ImgSlot alt="A patient completing a guided rehab exercise" rounded="rounded-b-[999px] rounded-t-[20px]" className="mt-8 aspect-[3/4]" />
-            </div>
-            <div className="absolute left-1/2 top-1/2 z-10 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border-4 border-white text-white shadow-xl" style={{ background: 'var(--ca-primary)' }}>
-              <span className="font-heading text-2xl font-extrabold leading-none">0%</span>
-              <span className="mt-0.5 text-[9px] font-semibold uppercase tracking-wide text-white/80">commission</span>
-            </div>
+          <Reveal className="relative order-2 mx-auto w-full max-w-xl lg:order-1 lg:mx-0 lg:max-w-none">
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
 
           <div className="order-1 text-center lg:order-2 lg:text-left">
@@ -793,11 +782,11 @@ export default function Physiotherapists() {
         <div aria-hidden className="pointer-events-none absolute -top-24 left-1/2 h-80 w-[42rem] -translate-x-1/2 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(190,242,100,0.5), transparent)' }} />
         <div aria-hidden className="pointer-events-none absolute -bottom-32 -right-16 h-72 w-72 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(45,212,191,0.5), transparent)' }} />
 
-        <div className="relative mx-auto max-w-2xl">
+        <div className="relative mx-auto w-full lg:w-[70%]">
           <Reveal as="h2" delay={0.06} className="font-heading text-[clamp(1.9rem,5vw,2.75rem)] font-extrabold leading-[1.08] tracking-tight text-white">
             Spend less time scheduling.<br className="hidden sm:block" /> <span style={{ color: 'var(--ca-lime)' }}>Spend more time on recovery.</span>
           </Reveal>
-          <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/70">
+          <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base leading-relaxed text-white/70">
             Set up your centre&apos;s booking page today — free forever, and ready to share in minutes.
           </Reveal>
           <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

@@ -97,12 +97,6 @@ export function addToDay(events, kind) {
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
 
-const HERO_TRUST = [
-  `Included on ${FREE_PLAN.name}, the free plan`,
-  'We read busy times, not event details',
-  'No Gmail or Drive access',
-];
-
 const PROOF = [
   { dot: BLUE, k: 'Reads', v: 'Busy times from your primary Google Calendar' },
   { dot: RED, k: 'Re-checks', v: 'Your calendar live, at the moment someone books' },
@@ -523,11 +517,6 @@ export default function GoogleCalendarFeature() {
                 What syncs which way <ArrowRight size={15} />
               </a>
             </Reveal>
-            <Reveal instant delay={0.14} className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
-              {HERO_TRUST.map((t) => (
-                <span key={t} className="text-[13px]" style={{ color: MUTED }}>{t}</span>
-              ))}
-            </Reveal>
           </div>
           <Reveal instant delay={0.12}>
             <SyncDemo />
@@ -693,35 +682,6 @@ export default function GoogleCalendarFeature() {
         />
       </section>
 
-      {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: SURFACE }}>
-        <div className="mx-auto max-w-4xl text-center">
-          <Reveal as="h2" className="font-heading text-[clamp(2.3rem,5.5vw,4rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">
-            Let your calendar do <span style={{ color: LINK }}>the blocking.</span>
-          </Reveal>
-          <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed" style={{ color: MUTED }}>
-            Sign up with Google, and your booking page starts respecting your calendar from the first booking. Free on {FREE_PLAN.name}.
-          </Reveal>
-          <Reveal delay={0.1} className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
-            <PrimaryCta>Connect your calendar free <ArrowRight size={16} /></PrimaryCta>
-            <Link to="/contact" className="inline-flex items-center gap-1.5 text-sm font-semibold hover:no-underline hover:opacity-80" style={{ color: LINK }}>
-              See a live booking page <ArrowRight size={15} />
-            </Link>
-            <Link to="/pricing" className="inline-flex items-center gap-1.5 text-sm font-semibold hover:no-underline hover:opacity-80" style={{ color: INK }}>
-              See pricing <ArrowRight size={15} />
-            </Link>
-          </Reveal>
-          <nav aria-label="Related features" className="mt-14 flex flex-wrap justify-center gap-x-6 gap-y-2 border-t border-black/5 pt-8 text-sm" style={{ color: MUTED }}>
-            <span>Works with</span>
-            {RELATED.map((r) => (
-              <Link key={r.to} to={r.to} className="underline decoration-black/20 underline-offset-4 hover:decoration-black/60" style={{ color: LINK }}>{r.label}</Link>
-            ))}
-          </nav>
-          <p className="mx-auto mt-8 max-w-xl text-[11px] leading-relaxed" style={{ color: MUTED }}>
-            Google Calendar and Google Meet are trademarks of Google LLC. Meeticulous is not affiliated with or endorsed by Google.
-          </p>
-        </div>
-      </section>
     </main>
   );
 }

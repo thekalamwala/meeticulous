@@ -399,19 +399,24 @@ export default function LifeCoaches() {
         </AnimatePresence>
       </header>
 
-      {/* ═══════════════ 2 · HERO (editorial display + tall image + upward arc) ═══════════════ */}
-      <section id="top" className="relative overflow-hidden px-5 pb-20 pt-12 sm:px-8 lg:pb-28 lg:pt-16" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 100%)' }}>
-        {/* required decorative blob — mix-blend-multiply so it sits into the warm paper */}
-        <div aria-hidden className="pointer-events-none absolute -right-24 top-6 h-[26rem] w-[26rem] rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(194,65,12,0.16), transparent)' }} />
-        <div aria-hidden className="pointer-events-none absolute -left-20 bottom-0 h-72 w-72 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(22,101,52,0.10), transparent)' }} />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
-          {/* LEFT — editorial copy */}
-          <div className="text-center lg:text-left">
-            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[color:var(--ca-ink)]">
+      {/* ═══════════════ 2 · HERO (framed wide scene + text over white left half) ═══════════════ */}
+      <section id="top" className="relative overflow-hidden lg:flex lg:flex-col lg:min-h-[calc(100svh_-_69px)]" style={{ background: 'linear-gradient(135deg, #FAF6F0 0%, #FBF8F3 45%, #FFFFFF 72%)' }}>
+        {/* DESKTOP — wide scene as the hero background; the photo's white left half holds the text. */}
+        <img
+          src="/images/hero/life-coach-hero-wide.webp"
+          alt="A life coach in an upbeat one-to-one session with a client across a desk."
+          width={1670}
+          height={941}
+          className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-cover object-[50%_85%] lg:block"
+        />
+        {/* TEXT — left-aligned, over the white area on desktop. */}
+        <div className="relative z-10 flex items-center px-5 sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
+          <div className="w-full py-14 text-center sm:py-16 lg:max-w-[36rem] lg:py-0 lg:text-left">
+            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,3.6vw,2.7rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-[color:var(--ca-ink)]">
               Flexible appointment booking software for{' '}
               <span style={{ color: 'var(--ca-primary)' }}>life coaches</span> managing one-to-one sessions.
             </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-neutral-600 sm:text-lg lg:mx-0">
+            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-neutral-600 sm:text-lg lg:mx-0">
               Meeticulous is appointment booking software for life coaches — stop losing clients in your DMs; they book sessions, pay upfront, and get reminded, so you coach instead of coordinating.
             </Reveal>
             <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
@@ -420,7 +425,7 @@ export default function LifeCoaches() {
                 See How It Works <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </a>
             </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+            <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
               {HERO_TRUST.map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-neutral-500">
                   <Check size={14} style={{ color: 'var(--ca-accent)' }} /> {t}
@@ -428,23 +433,8 @@ export default function LifeCoaches() {
               ))}
             </Reveal>
           </div>
-
-          {/* RIGHT — single tall image + upward-arc motif + floating "Session booked" card */}
-          <Reveal instant delay={0.12} className="relative mx-auto w-full max-w-sm lg:mx-0 lg:max-w-md">
-            <svg aria-hidden viewBox="0 0 160 112" fill="none" className="pointer-events-none absolute -right-8 -top-9 h-24 w-36 sm:h-28 sm:w-40">
-              <path d="M8 104 C 44 44, 104 14, 152 8" stroke="var(--ca-accent)" strokeWidth="2.5" strokeLinecap="round" />
-              <circle cx="152" cy="8" r="4.5" fill="var(--ca-accent)" />
-            </svg>
-            <ImgSlot alt="A life coach in a calm one-on-one session with a client" rounded="rounded-[28px]" className="aspect-[4/5] w-full shadow-[0_30px_60px_-30px_rgba(28,43,34,0.45)]" />
-            <div className="absolute top-[16%] -left-6 z-20 flex items-center gap-3 rounded-2xl border border-black/5 bg-white px-4 py-3 shadow-[0_18px_40px_-18px_rgba(28,43,34,0.5)]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg text-white" style={{ background: 'var(--ca-primary)' }}><CalendarCheck size={17} /></span>
-              <div>
-                <div className="text-[11px] text-neutral-500">Session booked</div>
-                <div className="text-sm font-bold text-[color:var(--ca-ink)]">1:1 Session · 5:00 PM</div>
-              </div>
-            </div>
-          </Reveal>
         </div>
+
       </section>
 
       {/* ═══════════════ 3 · SERVICES (editorial numbered offering rows) ═══════════════ */}
@@ -515,7 +505,7 @@ export default function LifeCoaches() {
             ))}
           </Reveal>
           <Reveal delay={0.1} className="mt-10 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -713,15 +703,18 @@ export default function LifeCoaches() {
       </section>
 
       {/* ═══════════════ 10 · ABOUT (drop-cap editorial statement + ruled trust rows) ═══════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-cream)' }}>
-        <div className="mx-auto max-w-4xl">
-          <Reveal as="p" delay={0.04} className="font-heading text-[clamp(1.35rem,2.6vw,1.9rem)] font-semibold leading-[1.42] tracking-[-0.01em] text-[color:var(--ca-ink)] first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-heading first-letter:text-[4.5rem] first-letter:font-black first-letter:leading-[0.68] first-letter:text-[#C2410C]">
+      <section className="px-5 py-20 sm:px-8 lg:py-10" style={{ background: 'var(--ca-cream)' }}>
+        <div className="mx-auto grid max-w-6xl items-center gap-8 lg:grid-cols-2">
+          <Reveal><img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" /></Reveal>
+
+        <div className="mx-auto max-w-none">
+          <Reveal as="p" delay={0.04} className="font-heading text-[clamp(1.35rem,2.6vw,1.9rem)] font-semibold leading-[1.42] tracking-[-0.01em] text-[color:var(--ca-ink)] first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-heading first-letter:text-[4.5rem] first-letter:font-black first-letter:leading-[0.68] first-letter:text-[#C2410C] lg:text-xl lg:first-letter:text-5xl">
             Meeticulous was built to make appointment-based practices easier to run. Instead of stitching together calendars, DMs, notebooks and payment tools, coaches manage every client session from one calm platform — built for Indian professionals, and designed for the way modern practices actually work.
           </Reveal>
-          <Reveal delay={0.1} className="mt-12 border-t border-black/10">
+          <Reveal delay={0.1} className="mt-12 border-t lg:mt-6 border-black/10">
             {TRUST_STRIP.map((it) => (
-              <div key={it.value} className="flex items-center gap-4 border-b border-black/10 py-5">
-                <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl" style={{ background: 'color-mix(in srgb, var(--ca-primary) 8%, transparent)', color: 'var(--ca-primary)' }}>
+              <div key={it.value} className="flex items-center gap-4 border-b border-black/10 py-5 lg:py-2.5">
+                <span className="flex h-11 w-11 flex-shrink-0 lg:h-8 lg:w-8 items-center justify-center rounded-xl" style={{ background: 'color-mix(in srgb, var(--ca-primary) 8%, transparent)', color: 'var(--ca-primary)' }}>
                   <it.icon size={20} />
                 </span>
                 <div className="flex flex-1 flex-col sm:flex-row sm:items-baseline sm:gap-3">
@@ -731,11 +724,13 @@ export default function LifeCoaches() {
               </div>
             ))}
           </Reveal>
-          <Reveal delay={0.16} className="mt-8">
+          <Reveal delay={0.16} className="mt-8 lg:mt-5">
             <Link to="/about" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Know More About Us <ArrowRight size={16} />
             </Link>
           </Reveal>
+        </div>
+
         </div>
       </section>
 
@@ -755,17 +750,17 @@ export default function LifeCoaches() {
       </section>
 
       {/* ═══════════════ 12 · FINAL CTA (forest green + terracotta mix-blend glow) ═══════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-24">
-        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[28px] px-6 py-16 text-center sm:px-12 sm:py-20" style={{ background: 'linear-gradient(150deg, #0F4D28 0%, var(--ca-primary) 100%)' }}>
+      <section>
+        <div className="relative mx-auto w-full overflow-hidden px-6 py-16 text-center sm:px-12 sm:py-20" style={{ background: 'linear-gradient(150deg, #0F4D28 0%, var(--ca-primary) 100%)' }}>
           <div aria-hidden className="pointer-events-none absolute -top-20 left-1/2 h-72 w-[44rem] -translate-x-1/2 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(194,65,12,0.55), transparent)' }} />
-          <div className="relative mx-auto max-w-2xl">
+          <div className="relative mx-auto w-full lg:w-[70%]">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: 'rgba(194,65,12,0.22)' }}>
               <Sunrise size={26} style={{ color: GLOW }} />
             </div>
-            <Reveal as="h2" className="mt-6 font-heading text-[clamp(1.9rem,4.5vw,2.7rem)] font-extrabold leading-[1.08] tracking-tight text-white">
+            <Reveal as="h2" className="font-heading text-[clamp(1.9rem,4.5vw,2.7rem)] font-extrabold leading-[1.08] tracking-tight text-white">
               Spend less time scheduling. <span style={{ color: GLOW }}>Spend more time coaching.</span>
             </Reveal>
-            <Reveal as="p" delay={0.06} className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/75">
+            <Reveal as="p" delay={0.06} className="mx-auto mt-4 text-base leading-relaxed text-white/75">
               Set up your booking page today and give your clients a calmer way to work with you.
             </Reveal>
             <Reveal delay={0.1} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

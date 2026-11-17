@@ -1418,6 +1418,8 @@ export const PROFESSION_LANDING = {
       ogImage: 'https://company-assets.meeticulous.in/images/seo/for-photographers-og-1200x630.jpg',
     },
     hero: {
+      image: '/images/hero/photographer-hero-wide.webp',
+      imageAlt: 'A photographer showing a client the shot on the camera at a studio desk with a lens, laptop and lighting.',
       eyebrow: 'For Photographers, Studios & Videographers',
       headline: 'Appointment booking software',
       headlineAccent: 'for photographers',
