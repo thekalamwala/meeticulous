@@ -126,6 +126,8 @@ const REGISTRY = [
   { key: 'community_tithi',      label: 'Community Tithi',      category: 'Community', scope: 'both', enabled: false, description: 'Tithi bot replies in the community. Ships OFF. Off = no bot replies.' },
   { key: 'community_ads',        label: 'Community Ads',        category: 'Community', scope: 'both', enabled: false, description: 'Sponsored placements in the community. Ships OFF. Off = no ads shown.' },
   { key: 'community_v2',         label: 'Community v2 (mobile)', category: 'Community', scope: 'both', enabled: false, description: 'Feed-first mobile redesign of the community (new navbar, bottom bar, composer, drawers). Ships OFF. Off = the current community layout is served.' },
+  { key: 'community_memberships', label: 'Community Memberships', category: 'Community', scope: 'both', enabled: false, description: 'Paid/free membership tiers on host profiles + gated community posts. Ships OFF. Off = 503 on host membership management and no Join/teaser surfaces. Paid joins are additionally gated by membership_purchase (M6).' },
+  { key: 'membership_purchase',  label: 'Membership Purchase',   category: 'Community', scope: 'both', enabled: false, description: 'Paid membership checkout (Razorpay recurring). SAFETY kill-switch. Ships OFF. Off = paid subscribe is blocked; free join and reads are unaffected.' },
 
   // ── ANALYTICS ────────────────────────────────────────────────
   // Ships OFF, and stays off until v3.217 is applied — with the flag on and the
@@ -133,6 +135,12 @@ const REGISTRY = [
   // ON is what starts the event clock, and Phase 4 of Creator Intelligence needs
   // 14 days on that clock, so the flip is the date to note, not the merge.
   { key: 'analytics_ingest',     label: 'Analytics Ingest',     category: 'Analytics', scope: 'both', enabled: false, description: 'First-party event collection at POST /api/analytics/collect. Off = the endpoint still answers 202 and drops, so no guest ever sees an error. Kill this if analytics writes threaten the shared database cap.' },
+
+  // ── CONSOLE ──────────────────────────────────────────────────
+  // Nav grouping only: the SAME routes, regrouped per the host-dashboard
+  // redesign. No URL changes, so every bookmark and emailed link keeps working
+  // with it on or off, and flipping it back is a full revert.
+  { key: 'console_v2',           label: 'Console v2 (rail grouping)', category: 'Operations', scope: 'vendor', enabled: false, description: 'Regrouped host dashboard rail: Clients and Schedule get their own sections, Grow collects testimonials + referrals. Ships OFF. Off = the current grouping is served. Routes are identical either way.' },
 ];
 
 const KEYS = REGISTRY.map((f) => f.key);
@@ -148,6 +156,7 @@ const SAFETY_KEYS = [
   'razorpay_payment',   // money movement
   'product_purchase',   // money movement
   'course_purchase',    // money movement
+  'membership_purchase', // money movement — paid membership checkout
   'guest_login',        // auth
   'guest_signup',       // auth
   'guest_otp',          // auth

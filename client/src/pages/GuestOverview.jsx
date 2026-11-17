@@ -7,6 +7,11 @@ import { useAuth } from "../context/AuthContext";
 // /user — the guest console landing. A calm at-a-glance home: the next upcoming
 // booking, two quick counts, and shortcuts into the rest of the space. Pulls the
 // same guest bookings list the Bookings page uses (no new endpoint).
+//
+// STYLING EXPLORATION (explore/console-restyle): the look is carried over from
+// the Host Lab redesign — Loop & Slot tokens (maroon/cream/blush, 2px rounded
+// borders, Bricolage display numbers, one Instrument Serif phrase), a scorecard
+// row and a card grid. Data and routes are unchanged; this is a restyle only.
 
 const fmtWhen = (iso) => {
   if (!iso) return "";
@@ -23,17 +28,19 @@ const isUpcoming = (b) => {
 };
 const isCompleted = (b) => ["completed", "complete"].includes((b.status || "").toLowerCase());
 
+// Scorecard — the Host Lab stat pattern: a big Bricolage number over a quiet
+// label, in a 2px rounded card that lifts to maroon on hover.
 const StatTile = ({ icon: Icon, label, value, to }) => (
   <Link
     to={to}
-    className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white p-4 transition-colors hover:border-primary/40"
+    className="flex items-center gap-3 rounded-xl border-2 border-neutral-200 bg-white p-3.5 transition hover:border-maroon/40 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
   >
-    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-      <Icon size={20} strokeWidth={1.8} />
+    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-blush text-maroon">
+      <Icon size={19} strokeWidth={2} />
     </span>
     <div className="min-w-0">
-      <p className="text-2xl font-bold leading-none text-gray-900">{value}</p>
-      <p className="mt-1 text-xs text-gray-500">{label}</p>
+      <p className="font-display text-[26px] font-extrabold leading-none tracking-[-0.04em] text-ink">{value}</p>
+      <p className="mt-1 text-[11px] font-semibold text-ink/50">{label}</p>
     </div>
   </Link>
 );
@@ -41,11 +48,11 @@ const StatTile = ({ icon: Icon, label, value, to }) => (
 const QuickLink = ({ icon: Icon, label, to }) => (
   <Link
     to={to}
-    className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:border-primary/40 hover:text-gray-900"
+    className="flex items-center gap-3 rounded-full border-2 border-neutral-200 bg-white px-4 py-2.5 text-[13px] font-semibold text-ink/70 transition hover:border-maroon/40 hover:text-ink focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
   >
-    <Icon size={18} strokeWidth={1.8} className="shrink-0 text-primary" />
+    <Icon size={17} strokeWidth={2} className="shrink-0 text-maroon" />
     <span className="flex-1">{label}</span>
-    <ArrowRight size={16} className="text-gray-300" />
+    <ArrowRight size={15} className="text-ink/25" strokeWidth={2.4} />
   </Link>
 );
 
@@ -67,49 +74,51 @@ const GuestOverview = () => {
   const completedCount = bookings.filter(isCompleted).length;
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-        Hi {firstName} 👋
-      </h1>
-      <p className="mt-1 text-sm text-gray-500">Here's what's happening with your bookings.</p>
-
-      {/* Next booking */}
-      <div className="mt-6">
-        {loading ? (
-          <div className="h-28 animate-pulse rounded-2xl border border-gray-200 bg-white" />
-        ) : next ? (
-          <Link
-            to="/user/my-bookings"
-            className="block rounded-2xl border border-gray-200 bg-white p-5 transition-colors hover:border-primary/40"
-          >
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-primary">
-              <Clock size={14} /> Next booking
-            </div>
-            <p className="mt-2 text-lg font-semibold text-gray-900">
-              {next.services?.title || "Your session"}
-            </p>
-            <p className="mt-0.5 text-sm text-gray-500">
-              {next.profiles?.name ? `with ${next.profiles.name} · ` : ""}{fmtWhen(next.scheduled_at)}
-            </p>
-          </Link>
-        ) : (
-          <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-6 text-center">
-            <CalendarDays className="mx-auto mb-2 h-7 w-7 text-gray-300" />
-            <p className="text-sm font-medium text-gray-700">No upcoming bookings</p>
-            <p className="mt-1 text-xs text-gray-500">When you book a session, it'll show up here.</p>
-          </div>
-        )}
+    <div className="flex flex-col gap-5">
+      <div>
+        <h1 className="font-display text-[26px] font-extrabold leading-none tracking-[-0.04em] text-maroon">
+          Hi {firstName}
+        </h1>
+        <p className="mt-1.5 text-[13px] font-medium text-ink/55">
+          Here&apos;s <span className="font-serif text-[1.08em] italic text-ink/70">what&apos;s happening</span> with your bookings.
+        </p>
       </div>
 
-      {/* Quick counts */}
-      <div className="mt-4 grid grid-cols-2 gap-3">
+      {/* Next booking — the hero. Maroon ground, pink dot = booked (brand rule). */}
+      {loading ? (
+        <div className="h-28 animate-pulse rounded-2xl border-2 border-neutral-200 bg-white" />
+      ) : next ? (
+        <Link
+          to="/user/my-bookings"
+          className="block rounded-2xl bg-maroon p-5 text-white transition hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
+        >
+          <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.07em] text-white/70">
+            <span className="h-2 w-2 rounded-full bg-pink" aria-hidden="true" /> Next booking
+          </div>
+          <p className="mt-2 font-display text-[19px] font-extrabold leading-tight tracking-[-0.03em]">
+            {next.services?.title || "Your session"}
+          </p>
+          <p className="mt-1 text-[13px] font-medium text-white/75">
+            {next.profiles?.name ? `with ${next.profiles.name} · ` : ""}{fmtWhen(next.scheduled_at)}
+          </p>
+        </Link>
+      ) : (
+        <div className="rounded-2xl border-2 border-dashed border-neutral-200 bg-white p-7 text-center">
+          <CalendarDays className="mx-auto mb-2 h-7 w-7 text-ink/25" strokeWidth={1.8} />
+          <p className="font-display text-[15px] font-extrabold tracking-[-0.02em] text-ink">No upcoming bookings</p>
+          <p className="mt-1 text-[12px] font-medium text-ink/50">When you book a session, it&apos;ll show up here.</p>
+        </div>
+      )}
+
+      {/* Quick counts — the scorecard row. */}
+      <div className="grid grid-cols-2 gap-2.5">
         <StatTile icon={CalendarDays} label="Upcoming" value={loading ? "—" : upcoming.length} to="/user/my-bookings" />
         <StatTile icon={Star} label="Completed" value={loading ? "—" : completedCount} to="/user/my-bookings" />
       </div>
 
-      {/* Shortcuts */}
-      <div className="mt-6">
-        <p className="mb-2 text-sm font-semibold text-gray-900">Quick links</p>
+      {/* Shortcuts — pill links, the Host Lab rail style laid flat. */}
+      <div>
+        <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.07em] text-ink/40">Quick links</p>
         <div className="grid gap-2 sm:grid-cols-2">
           <QuickLink icon={CalendarDays} label="My bookings" to="/user/my-bookings" />
           <QuickLink icon={MessageCircle} label="Chat with support" to="/user/chat" />

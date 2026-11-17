@@ -393,53 +393,45 @@ export default function DentistPage() {
       </header>
 
       {/* ═══════════════ 2 · HERO (clean split + confirmation card + reminder chip) ═══════════════ */}
-      <section id="top" className="relative overflow-hidden px-5 pb-16 pt-10 sm:px-8 lg:pb-24 lg:pt-16" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 100%)' }}>
-        {/* sky blob — sits INTO the page via mix-blend-multiply */}
-        <div aria-hidden className="pointer-events-none absolute -right-24 -top-20 h-[26rem] w-[26rem] rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(3,105,161,0.18), transparent)' }} />
-        <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(20,184,166,0.14), transparent)' }} />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="text-center lg:text-left">
-            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.02em] text-[color:var(--ca-ink)]">
-              Simple appointment booking software for{' '}
-              <span style={{ color: 'var(--ca-primary)' }}>dentists</span> who want fewer calls and fuller chairs.
-            </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
-              Meeticulous is appointment booking software for dentists — patients book and reschedule online, pay upfront, and get WhatsApp reminders, so your front desk stays off the phone and your chairs stay full.
-            </Reveal>
-            <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
-              <CtaButton to={START} className="w-full sm:w-auto">Create Your Booking Page <ArrowRight size={16} /></CtaButton>
-              <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
-                Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
-              {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
-                  <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
-                </span>
-              ))}
-            </Reveal>
+      <section id="top" className="relative overflow-hidden bg-white lg:flex lg:flex-col lg:min-h-[calc(100svh_-_69px)]">
+        {/* HERO BAND — full-width scene as the background; the photo's white left
+            half holds the text, and the band fills the fold. */}
+        <div className="relative lg:flex lg:flex-1 lg:flex-col">
+          {/* DESKTOP — background photo (kept sharp) */}
+          <img
+            src="/images/hero/dentist-hero-wide.webp"
+            alt="A smiling dentist in a clinic beside a dental chair and tooth models."
+            width={1672}
+            height={941}
+            className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-cover object-bottom lg:block"
+          />
+
+          {/* TEXT — aligned to the page content edge, over the white area */}
+          <div className="relative z-10 flex items-center px-5 sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
+            <div className="w-full py-14 text-center sm:py-16 lg:max-w-[38rem] lg:py-0 lg:text-left">
+              <Reveal as="h1" instant className="font-heading text-[clamp(1.75rem,4.2vw,3rem)] font-extrabold leading-[1.08] tracking-[-0.02em] text-[color:var(--ca-ink)]">
+                Simple appointment booking software for{' '}
+                <span style={{ color: 'var(--ca-primary)' }}>dentists</span> who want fewer calls and fuller chairs.
+              </Reveal>
+              <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
+                Meeticulous is appointment booking software for dentists — patients book and reschedule online, pay upfront, and get WhatsApp reminders, so your front desk stays off the phone and your chairs stay full.
+              </Reveal>
+              <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
+                <CtaButton to={START} className="w-full sm:w-auto">Create Your Booking Page <ArrowRight size={16} /></CtaButton>
+                <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
+                  Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </Reveal>
+              <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+                {HERO_TRUST.map((t) => (
+                  <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
+                    <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
+                  </span>
+                ))}
+              </Reveal>
+            </div>
           </div>
 
-          {/* RIGHT — icon art + floating confirmation card + mint reminder chip */}
-          <Reveal instant delay={0.1} className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
-            <div className="relative overflow-hidden rounded-[24px] border border-black/[0.06] bg-white shadow-[0_30px_60px_-32px_rgba(12,34,49,0.45)]">
-              <IconArt icon={SmileArt} label="Meeticulous appointment booking for a dental clinic" rounded="rounded-none" className="aspect-[1100/852] w-full border-0 shadow-none" iconClassName="h-24 w-24" />
-            </div>
-            {/* floating "Appointment confirmed" card */}
-            <div className="absolute -bottom-5 left-4 z-20 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_16px_36px_-18px_rgba(12,34,49,0.5)] ring-1 ring-black/5 sm:left-6">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg text-white" style={{ background: 'var(--ca-primary)' }}><CalendarCheck size={17} /></span>
-              <div>
-                <div className="flex items-center gap-1.5 text-[11px] font-bold" style={{ color: 'color-mix(in srgb, var(--ca-accent) 72%, var(--ca-ink))' }}><Check size={11} strokeWidth={3} /> Appointment confirmed</div>
-                <div className="text-sm font-bold text-[color:var(--ca-ink)]">Dental check-up · 10:30 AM</div>
-              </div>
-            </div>
-            {/* mint "reminder sent" chip */}
-            <div className="absolute -top-3 right-3 z-20 hidden items-center gap-2 rounded-full px-3.5 py-2 shadow-[0_12px_30px_-14px_rgba(20,184,166,0.6)] ring-1 ring-black/5 sm:flex" style={{ background: 'color-mix(in srgb, var(--ca-accent) 12%, white)' }}>
-              <span className="flex h-6 w-6 items-center justify-center rounded-full text-white" style={{ background: 'var(--ca-accent)' }}><MessageCircle size={13} /></span>
-              <span className="text-[12px] font-bold text-[color:var(--ca-ink)]">WhatsApp reminder sent</span>
-            </div>
-          </Reveal>
         </div>
       </section>
 
@@ -566,7 +558,7 @@ export default function DentistPage() {
             </ul>
           </Reveal>
           <Reveal delay={0.1} className="mt-10 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>Explore All Features <ArrowRight size={16} /></Link>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>Explore All Features <ArrowRight size={16} /></Link>
           </Reveal>
         </div>
       </section>
@@ -747,27 +739,16 @@ export default function DentistPage() {
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* icon-art gallery: one main tile + a two-up thumbnail rail */}
           <Reveal className="relative order-2 lg:order-1">
-            <div aria-hidden className="pointer-events-none absolute -left-8 -top-8 h-56 w-56 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(20,184,166,0.2), transparent)' }} />
-            <div className="relative overflow-hidden rounded-[22px] border border-black/[0.06] bg-white shadow-[0_28px_60px_-36px_rgba(12,34,49,0.4)]">
-              <IconArt icon={CalendarArt} label="Meeticulous booking dashboard for a dental practice" rounded="rounded-none" className="aspect-[4/3] w-full border-0 shadow-none" />
-            </div>
-            <div className="relative mt-4 grid grid-cols-2 gap-4">
-              <div className="overflow-hidden rounded-[16px] border border-black/[0.06] bg-white shadow-[0_18px_40px_-30px_rgba(12,34,49,0.4)]">
-                <IconArt icon={SmileArt} rounded="rounded-none" className="aspect-[4/3] h-full w-full border-0 shadow-none" iconClassName="h-10 w-10" />
-              </div>
-              <div className="overflow-hidden rounded-[16px] border border-black/[0.06] bg-white shadow-[0_18px_40px_-30px_rgba(12,34,49,0.4)]">
-                <IconArt icon={BellArt} rounded="rounded-none" className="aspect-[4/3] h-full w-full border-0 shadow-none" iconClassName="h-10 w-10" />
-              </div>
-            </div>
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
           <div className="order-1 text-center lg:order-2 lg:text-left">
             <Reveal as="h2" delay={0.05} className="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">Small practices deserve better tools.</Reveal>
             <Reveal as="p" delay={0.08} className="mt-5 text-base leading-relaxed text-slate-600">
               Meeticulous was built to make appointment-based practices easier to run. Instead of stitching together calendars, WhatsApp messages, a paper register and payment tools, your clinic manages patient appointments from one calm platform — a scheduling and payment tool, not a dental-records system.
             </Reveal>
-            <Reveal delay={0.12} className="mt-7 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+            <Reveal delay={0.12} className="mt-7 flex flex-wrap items-center justify-center gap-3 lg:flex-nowrap lg:justify-start">
               {TRUST_STRIP.map((it) => (
-                <span key={it.value} className="inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-white px-4 py-2 text-sm font-semibold text-[color:var(--ca-ink)]">
+                <span key={it.value} className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-black/[0.08] bg-white px-4 py-2 text-sm font-semibold text-[color:var(--ca-ink)] lg:gap-1.5 lg:px-2 lg:text-xs">
                   <it.icon size={15} style={{ color: 'var(--ca-primary)' }} /> {it.value}
                 </span>
               ))}
@@ -795,32 +776,27 @@ export default function DentistPage() {
       </section>
 
       {/* ═══════════════ 13 · FINAL CTA (sky + mint mix-blend glow) ═══════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-24">
-        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[28px] px-6 py-16 text-center sm:px-12 sm:py-20" style={{ background: 'linear-gradient(150deg, var(--ca-primary) 0%, var(--ca-ink) 100%)' }}>
-          <div aria-hidden className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(20,184,166,0.55), transparent)' }} />
-          <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-16 h-72 w-72 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(56,189,248,0.4), transparent)' }} />
-          <div className="relative mx-auto max-w-2xl">
-            <Reveal className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background: 'rgba(255,255,255,0.16)' }}><Zap size={26} className="text-white" /></Reveal>
-            <Reveal as="h2" delay={0.06} className="mt-6 font-heading text-[clamp(1.8rem,4.5vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight text-white">
+      <section className="relative w-full overflow-hidden px-5 py-16 text-center sm:px-8 lg:py-20" style={{ background: 'linear-gradient(150deg, var(--ca-primary) 0%, var(--ca-ink) 100%)' }}>
+        <div className="relative mx-auto w-full lg:w-[70%]">
+          <Reveal as="h2" delay={0.06} className="font-heading text-[clamp(1.8rem,4.5vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight text-white">
               Spend less time on the phone. Spend more time with patients.
             </Reveal>
-            <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/75">
+          <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base leading-relaxed text-white/75">
               Set up your clinic&apos;s booking page today — free forever, ready to share in minutes.
             </Reveal>
-            <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-              <Link to={START} className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline sm:w-auto" style={{ color: 'var(--ca-primary)' }}>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <Link to={START} className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold transition-shadow hover:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.5)] hover:no-underline sm:w-auto" style={{ color: 'var(--ca-primary)' }}>
                 Set Up My Clinic Page <ArrowRight size={16} />
               </Link>
-              <Link to="/contact" className="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline sm:w-auto">
+            <Link to="/contact" className="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-white/30 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:no-underline sm:w-auto">
                 Book A Demo
               </Link>
-            </Reveal>
-            <Reveal delay={0.18} className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+          </div>
+          <Reveal delay={0.18} className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
               {['No credit card', 'Free forever', '0% on Pro'].map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-white/70"><Check size={14} style={{ color: 'color-mix(in srgb, var(--ca-accent) 55%, white)' }} /> {t}</span>
               ))}
             </Reveal>
-          </div>
         </div>
       </section>
 

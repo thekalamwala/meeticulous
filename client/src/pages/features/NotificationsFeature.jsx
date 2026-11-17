@@ -67,7 +67,6 @@ const CHAT_TICK = '#53BDEB';  // phone mock: read ticks
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
 
-const HERO_TRUST = ['Free plan, no card needed', 'WhatsApp and email', 'Built for India'];
 
 // Hero demo: time markers → the message that fires at that moment.
 const MOMENTS = [
@@ -378,13 +377,6 @@ export default function NotificationsFeature() {
                 See what fires on each plan <ArrowRight size={15} />
               </a>
             </Reveal>
-            <Reveal instant delay={0.14} className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
-              {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] text-[#F6E3C6]/65">
-                  <Check size={14} style={{ color: GREEN }} aria-hidden /> {t}
-                </span>
-              ))}
-            </Reveal>
           </div>
           <Reveal instant delay={0.12}>
             <ReminderPhone />
@@ -614,17 +606,6 @@ export default function NotificationsFeature() {
         />
       </section>
 
-      {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
-      <section className="border-t border-white/10 px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-5xl text-center">
-          <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.4rem)] font-extrabold uppercase leading-[0.95] tracking-[-0.03em] text-[#F6E3C6]">
-            Let the reminders <span style={{ color: GREEN }}>chase them.</span>
-          </Reveal>
-          <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-[#F6E3C6]/70">
-            Set up your booking page free. Confirmations and reminders start with your first booking.
-          </Reveal>
-        </div>
-      </section>
     </main>
   );
 }
