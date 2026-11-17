@@ -2,7 +2,33 @@
 
 ## Task Workflow (default for every task)
 1. **Ask first.** Before starting any task, ask at least one clarifying question. Never dive in cold.
-2. **Fresh branch from main.** `git fetch origin && git switch -c <type>/<slug> origin/main`. Never work directly on `main` or reuse an old branch unless told to.
+2. **Fresh WORKTREE from main — never `git switch` in the shared checkout.**
+   ```bash
+   git fetch origin && git worktree add ../mt-wt-<slug> -b <type>/<slug> origin/main
+   ```
+   Then work in `../mt-wt-<slug>`. Never work directly on `main` or reuse an old branch unless told to.
+
+   **Why a worktree and not a branch switch.** Several Claude sessions share this
+   one clone at the same time. `git switch`, `git checkout` and `git reset --hard`
+   act on the whole working directory, so a session that switches branches destroys
+   every other session's uncommitted work — silently, and with no warning to either
+   side. This has bitten before; on 2026-11-17 a switch wiped 593 lines of another
+   session's in-progress work mid-build. A worktree gives each session its own
+   directory against the same repo, so nobody can be yanked out from under.
+   `git worktree list` shows who is where.
+
+   Three habits that go with it:
+   - **Commit as soon as something passes.** Uncommitted work is the only kind that
+     can be lost this way.
+   - **`git stash -u` before any switch** you still decide to make. The `-u` matters:
+     without it untracked files are not saved, and new files are most of a new
+     feature. That flag is the only reason the 593 lines above came back.
+   - **Never `git reset --hard` in a tree you did not dirty yourself.**
+
+   A worktree needs `node_modules` before it can run anything — junction it from the
+   main clone rather than reinstalling (`New-Item -ItemType Junction -Path
+   <wt>/server/node_modules -Target <main>/server/node_modules`, same for `client/`),
+   and copy `client/.env` across.
 3. **Work → commit → PR.** Do the change, commit, `gh pr create` (any type: feat/fix/docs/chore).
    **PR base = the open release train**, not `main`: check `git branch -r | grep release/` and use
    `--base release/YYYY-MM` (CI runs on `release/**`). The train ships to `main` in one merge
