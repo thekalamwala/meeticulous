@@ -45,6 +45,11 @@ function serializeItem(row, { author = null, member = null, space = null, viewer
     is_pinned: row.is_pinned,
     status: row.status,
     is_indexable: row.is_indexable,
+    // Membership gate (M3). audience surfaces so the composer can round-trip it and the
+    // feed layer (M4) can lock below-tier viewers. teaser_line is the host's locked-out line.
+    audience: row.audience || 'public',
+    audience_tier_id: row.audience_tier_id ?? null,
+    teaser_line: row.teaser_line ?? null,
     accepted_comment_id: row.accepted_comment_id ?? null,
     media: [...media].sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
       .map((m) => ({ url: m.url, width: m.width ?? null, height: m.height ?? null, alt: m.alt ?? null })),
