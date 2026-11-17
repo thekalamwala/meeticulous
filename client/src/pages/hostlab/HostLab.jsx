@@ -542,7 +542,26 @@ const HostLab = () => {
   ], []);
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="hostlab min-h-screen bg-cream">
+      {/* index.css carries unlayered element rules — `button { min-height: 40px }`
+          and `input { min-height: 44px }` — that beat any `h-*` class, because a
+          min-height always wins over a smaller height. Every compact control in
+          this prototype was therefore rendering 40px no matter what it asked
+          for, which is why table rows would not go below ~58px however much the
+          content was tightened.
+
+          Lifted here only, scoped to .hostlab, so production is untouched. Safe
+          because nothing in the lab relies on the floor: the shared kit Button
+          sets its own height (sm 32 / md 40 / lg 44) and the lab's own controls
+          are h-7 (28px) or h-6 (24px) — at or above the 24px WCAG 2.2 AA target
+          minimum. Keep it that way: no control here goes under 24px.
+
+          The same bite on inputs is already documented in index.css for
+          .mt-input; this is the dense-table version of it. */}
+      <style>{`
+        .hostlab button { min-height: 0; }
+        .hostlab input, .hostlab select { min-height: 0; }
+      `}</style>
       <LabBanner />
 
       {/* Desktop rail */}
