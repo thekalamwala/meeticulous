@@ -211,10 +211,10 @@ const ProfileMenu = ({ onGo, onClose }) => {
   );
 
   const LINKS = [
-    { label: 'Profile verification', to: 'settings?tab=verification', icon: ShieldCheck, note: <StatusDot ok>Verified</StatusDot> },
-    { label: 'Plan & billing', to: 'settings?tab=plan', icon: CreditCard, note: <span className="text-[9.5px] font-bold uppercase tracking-wide text-maroon">Pro</span> },
-    { label: 'Support', to: 'settings?tab=help', icon: MessageSquare },
-    { label: 'Help centre', to: 'settings?tab=help', icon: HelpCircle, external: true },
+    { label: 'Profile verification', to: 'settings/verification', icon: ShieldCheck, note: <StatusDot ok>Verified</StatusDot> },
+    { label: 'Plan & billing', to: 'settings/plan', icon: CreditCard, note: <span className="text-[9.5px] font-bold uppercase tracking-wide text-maroon">Pro</span> },
+    { label: 'Support', to: 'settings/help', icon: MessageSquare },
+    { label: 'Help centre', to: 'settings/help', icon: HelpCircle, external: true },
   ];
 
   return (
@@ -273,7 +273,7 @@ const ProfileMenu = ({ onGo, onClose }) => {
       <div className="border-t-2 border-neutral-200 p-1.5">
         <button
           type="button"
-          onClick={() => onGo('grow?tab=page')}
+          onClick={() => onGo('grow/page')}
           className={cn('block w-full rounded-sm border-2 p-2 text-left transition', ring,
             setupLeft ? 'border-marigold-300 bg-marigold-100 hover:border-marigold' : 'border-success-fg/25 bg-success-bg')}
         >
