@@ -597,6 +597,13 @@ const SCHEDULED_JOBS = [
   // retryOnError: idempotent jobs only (re-running repeats no side effect) — a failed
   // run retries in 15 min instead of a full interval. NEVER on a job that sends.
   { name: 'otp-cleanup', min: 60, retryOnError: true, run: () => cleanupOtps() },
+  // Creator Intelligence. Both are idempotent, hence retryOnError: the rollup
+  // recomputes whole days by upsert, and the prune archives before it deletes
+  // and declines to delete if that archive failed.
+  { name: 'intel-rollup', min: 60, retryOnError: true, run: () => require('./services/intelRollup').runIntelRollup() },
+  // A safety device on a 500 MB tier shared with the booking tables, not
+  // housekeeping: it is what stops analytics growing until a booking write fails.
+  { name: 'intel-prune', min: 24 * 60, retryOnError: true, run: () => require('./services/intelPrune').runIntelPrune() },
   { name: 'subscription-expiry', min: 6 * 60, run: () => require('./services/subscriptionExpiry').processSubscriptionExpiry() },
   // Gifted Pro: T-7/T-1 "ends soon" + close/downgrade/"expired" (access itself ends via resolveVendorPlan).
   { name: 'plan-gift-expiry', min: 60, run: () => require('./services/planGiftService').processGiftExpiry() },
