@@ -556,11 +556,20 @@ const HostLab = () => {
           are h-7 (28px) or h-6 (24px) — at or above the 24px WCAG 2.2 AA target
           minimum. Keep it that way: no control here goes under 24px.
 
+          The vertical padding has to go with it. index.css also sets
+          `input, select { padding: 0.78rem 0.95rem }`, which the 44px floor
+          used to hide: with the floor gone, 25px of padding in a 32px select
+          pushes the chosen option clean out of the box and `overflow: clip`
+          eats it. Tailwind's `px-*` only writes left and right, so the element
+          rule kept winning on top and bottom. A single-line control centres its
+          own text, so zero is right; textarea is deliberately left alone,
+          because its 112px floor is doing real work.
+
           The same bite on inputs is already documented in index.css for
           .mt-input; this is the dense-table version of it. */}
       <style>{`
         .hostlab button { min-height: 0; }
-        .hostlab input, .hostlab select { min-height: 0; }
+        .hostlab input, .hostlab select { min-height: 0; padding-top: 0; padding-bottom: 0; }
       `}</style>
       <LabBanner />
 
