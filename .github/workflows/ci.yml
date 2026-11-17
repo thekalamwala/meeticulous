@@ -103,6 +103,65 @@ jobs:
           CLIENT_URL: http://localhost:5173
           AISENSY_WEBHOOK_SECRET: ci-test-secret-not-real
 
+  # The ONE integration suite that can run in CI. Every other tests/integration
+  # file hits live Supabase/SMTP and needs real credentials, which is why the
+  # server job above runs test:unit only. This one talks to an ephemeral
+  # Postgres in a service container, holds no secret, and touches nothing real.
+  #
+  # It earns its place because mocks cannot prove the three things Creator
+  # Intelligence is charged for: that the schema accepts the row, that the
+  # unique index actually dedupes a replayed beacon, and that our counts agree
+  # with what SQL counts. The suite skips itself when DATABASE_URL_TEST is
+  # unset, so local runs and the pre-push hook are unaffected.
+  intel-store:
+    name: Server (analytics store, real Postgres)
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.server != 'false' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: mttest
+        ports:
+          - 5432:5432
+        # Without this the job races the container and fails on connect.
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - name: Analytics store against Postgres
+        run: npx jest tests/integration/intelStore --runInBand
+        env:
+          NODE_ENV: test
+          DATABASE_URL_TEST: postgres://postgres:test@localhost:5432/mttest
+          SUPER_ADMIN_JWT_SECRET: ci-test-secret-not-real
+          OAUTH_STATE_SECRET: ci-test-secret-not-real
+          GOOGLE_TOKEN_KEY: ci-test-32-byte-key-000000000000
+          CLIENT_URL: http://localhost:5173
+          AISENSY_WEBHOOK_SECRET: ci-test-secret-not-real
+          # config/supabase.js is required transitively by intelRollup and
+          # fails fast if these are unset. The suite never makes a Supabase
+          # network call (it talks to the pg service above) — createClient is
+          # lazy — so a shaped-but-fake key and URL satisfy the guard without
+          # granting anything. sb_secret_ prefix passes the new-secret check.
+          SUPABASE_URL: https://ci-test.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: sb_secret_ci-test-not-real
+          SUPABASE_ANON_KEY: sb_publishable_ci-test-not-real
+
   client:
     name: Client (unit tests)
     needs: changes
