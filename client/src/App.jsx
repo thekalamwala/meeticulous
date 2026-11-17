@@ -142,6 +142,10 @@ const LiveStep        = lazy(() => import('./pages/onboarding/LiveStep'));
 // Admin login
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 
+// Host Lab — the host-dashboard redesign prototype. Sample data only, no auth,
+// no API, not linked from any nav. Lazy, so it costs nothing until visited.
+const HostLab = lazy(() => import('./pages/hostlab/HostLab'));
+
 // Vendor dashboard
 const Dashboard   = lazy(() => import('./pages/Dashboard'));
 const Bookings    = lazy(() => import('./pages/Bookings'));
@@ -150,6 +154,9 @@ const ProfileSetup = lazy(() => import('./pages/ProfileSetup'));
 const Availability = lazy(() => import('./pages/Availability'));
 const Products    = lazy(() => import('./pages/Products'));
 const Courses     = lazy(() => import('./pages/Courses'));
+const Memberships = lazy(() => import('./pages/Memberships'));
+const MembershipSpace = lazy(() => import('./pages/MembershipSpace'));
+const MyMemberships = lazy(() => import('./pages/MyMemberships'));
 const MyCourses   = lazy(() => import('./pages/MyCourses'));
 const CoursePage  = lazy(() => import('./pages/CoursePage'));
 const HostCoupons = lazy(() => import('./pages/HostCoupons'));
@@ -459,6 +466,8 @@ function App() {
     chromeHidden ||
     (communityV2 && inCommunityShell(location.pathname)) ||
     location.pathname.startsWith('/dashboard') ||
+    // Host Lab prototype ships its own rail + topbar, same as the real console.
+    location.pathname.startsWith('/host-lab') ||
     // Guest console (/user/*) ships its own sidebar shell + topbar (GuestLayout),
     // so the global navbar must not also render — otherwise two headers stack and
     // the guest sees two identity blocks (account name vs booking name).
@@ -496,6 +505,7 @@ function App() {
     location.pathname.startsWith('/admin') ||
     location.pathname.startsWith('/super-dashboard') ||
     location.pathname.startsWith('/vendor-register') ||
+    location.pathname.startsWith('/host-lab') ||
     location.pathname === '/backstage';
 
   return (
@@ -648,6 +658,7 @@ function App() {
           </Route>
           <Route path="/dashboard/products" element={<DashboardWrapper><Products /></DashboardWrapper>} />
           <Route path="/dashboard/courses" element={<DashboardWrapper><Courses /></DashboardWrapper>} />
+          <Route path="/dashboard/memberships" element={<DashboardWrapper><Memberships /></DashboardWrapper>} />
           <Route path="/dashboard/coupons" element={<DashboardWrapper><HostCoupons /></DashboardWrapper>} />
           <Route path="/dashboard/membership" element={<DashboardWrapper><Membership /></DashboardWrapper>} />
           <Route path="/dashboard/testimonials" element={<DashboardWrapper><Testimonials /></DashboardWrapper>} />
@@ -658,6 +669,12 @@ function App() {
           <Route path="/dashboard/invoices" element={<DashboardWrapper><Invoices /></DashboardWrapper>} />
           <Route path="/dashboard/feedback" element={<DashboardWrapper><Feedback /></DashboardWrapper>} />
           <Route path="/dashboard/chat" element={<DashboardWrapper><ChatPage /></DashboardWrapper>} />
+
+          {/* Host Lab — redesign prototype of the host dashboard. Its own shell,
+              its own sample data, zero API calls. Deliberately NOT wrapped in
+              DashboardWrapper/HostRoute: it is a design artefact, not a host
+              surface, so it needs no session and touches no real account. */}
+          <Route path="/host-lab/*" element={<HostLab />} />
 
           {/* Super Dashboard (main admin entry) */}
           <Route path="/super-dashboard" element={<AdminWrapper><SuperDashboard /></AdminWrapper>} />
@@ -892,6 +909,7 @@ function App() {
           <Route path="/:profileSlug/badges" element={<BadgeShowcase />} />
           <Route path="/:profileSlug/product/:productId" element={<ProductPurchase />} />
           <Route path="/:username/course/:slug" element={<CoursePage />} />
+          <Route path="/:username/membership" element={<MembershipSpace />} />
           <Route path="/:profileSlug/booking" element={<BookingRedirect />} />
           <Route path="/:profileSlug/booking/:serviceSlug" element={<ServiceBooking />} />
           <Route path="/:profileSlug/:serviceSlug" element={<ServiceDetail />} />
@@ -904,6 +922,7 @@ function App() {
             <Route path="/user" element={<GuestOverview />} />
             <Route path="/user/my-bookings" element={<CustomerBookings />} />
             <Route path="/user/courses" element={<MyCourses />} />
+            <Route path="/user/memberships" element={<MyMemberships />} />
             <Route path="/user/invoices" element={<GuestInvoices />} />
             <Route path="/user/profile" element={<CustomerProfile />} />
             <Route path="/user/reviews" element={<CustomerReviews />} />
