@@ -7,6 +7,7 @@ const { supabaseAdmin } = require('../../config/supabase');
 const { computeIndexable } = require('./indexable');
 const { bustSitemapCache } = require('../../utils/sitemapCache');
 const { serializeItem, serializeComment } = require('./serialize');
+const { tierRank, requiredRank, postToTeaser } = require('./entitlement');
 
 const MISSING = /relation .* does not exist|Could not find the table/i;
 const PROFILE_COLS = 'id, is_host, is_verified, created_at, username, name, first_name, profile_image, is_banned';
@@ -392,7 +393,7 @@ async function hydrateItems(rows, viewerId) {
     likedIds(viewerId, 'post', ids), savedIds(viewerId, ids),
   ]);
   const spaceById = new Map(spaces.map((s) => [s.id, s]));
-  return rows.map((r) => serializeItem(r, {
+  const items = rows.map((r) => serializeItem(r, {
     author: profiles.get(r.author_id) || null,
     member: members.get(r.author_id) || null,
     space: spaceById.get(r.space_id) || null,
@@ -400,6 +401,48 @@ async function hydrateItems(rows, viewerId) {
     viewer: { liked: liked.has(r.id), saved: saved.has(r.id) },
     dual: dualIds.has(r.author_id),
   }));
+  return gateItems(items, viewerId);
+}
+
+// Membership gate (M4): turn every post the viewer isn't entitled to into a locked
+// teaser BEFORE it leaves the server. Runs on any hydrated list (feed/space/detail).
+// Fail CLOSED — on any error, gated posts are withheld, never leaked (brief §4/§10).
+async function gateItems(items, viewerId) {
+  const gated = items.filter((it) => it.audience && it.audience !== 'public');
+  if (!gated.length) return items;
+  try {
+    const tierIds = [...new Set(gated.map((it) => it.audience_tier_id).filter(Boolean))];
+    const hostIds = [...new Set(gated.map((it) => it.author?.id).filter(Boolean))];
+    const tierRows = tierIds.length
+      ? (await run(db('community_membership_tiers').select('id, name, type, price_inr').in('id', tierIds))) || []
+      : [];
+    const tierById = Object.fromEntries(tierRows.map((t) => [t.id, t]));
+
+    const rankByHost = {};
+    if (viewerId && hostIds.length) {
+      const subs = (await run(db('community_membership_subscriptions')
+        .select('host_id, tier:community_membership_tiers(type, price_inr)')
+        .eq('member_id', viewerId).in('host_id', hostIds).in('status', ['active', 'past_due']))) || [];
+      for (const s of subs) {
+        const r = tierRank(s.tier);
+        if (r > (rankByHost[s.host_id] || 0)) rankByHost[s.host_id] = r;
+      }
+    }
+
+    return items.map((it) => {
+      if (!it.audience || it.audience === 'public') return it;
+      if (viewerId && it.author?.id === viewerId) return it; // the author always sees their own
+      const req = requiredRank({ audience: it.audience, audience_tier_id: it.audience_tier_id }, tierById);
+      if ((rankByHost[it.author?.id] || 0) >= req) return it;
+      return postToTeaser(it, { requiredTier: tierById[it.audience_tier_id] || null, teaserLine: it.teaser_line });
+    });
+  } catch (e) {
+    // Fail closed: if we can't prove entitlement, teaser every gated post.
+    return items.map((it) =>
+      (it.audience && it.audience !== 'public' && !(viewerId && it.author?.id === viewerId))
+        ? postToTeaser(it, { teaserLine: it.teaser_line })
+        : it);
+  }
 }
 
 async function hydrateComments(rows, viewerId) {
@@ -437,7 +480,7 @@ async function listTagRows({ cur, limit, tag, sortCol = 'last_activity_at' }) {
 }
 
 module.exports = {
-  hydrateItems, hydrateComments, listIndexableRows, listTags, listTagRows,
+  hydrateItems, hydrateComments, gateItems, listIndexableRows, listTags, listTagRows,
   listSpaces, bannedAuthorIds, listFeedRows, listPinned, getPostBySlug, listCommentRows,
   listAuthorPosts, listAuthorComments, postContexts,
   loadAuthors, loadMediaByPost, likedIds, resetReadCaches,

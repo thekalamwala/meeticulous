@@ -571,11 +571,15 @@ async function loadReadable(req, res) {
 const itemDetail = handleRead(async (req, res) => {
   const row = await loadReadable(req, res);
   if (!row) return null;
-  const [[item], { comments, next }, spaces] = await Promise.all([
+  const [[item], page, spaces] = await Promise.all([
     store.hydrateItems([row], req.user?.id || null), commentPage(req, row.id, null), store.listSpaces(),
   ]);
   const space = spaces.find((s) => s.id === row.space_id);
-  setCache(req, res);
+  // Locked post: withhold the comment thread too (brief §4 — comments are gated content).
+  const comments = item.locked ? [] : page.comments;
+  const next = item.locked ? null : page.next;
+  // Gated posts are per-viewer: never public-cache them.
+  if ((row.audience || 'public') === 'public') setCache(req, res);
   return res.json({ item, space: space ? spaceView(space) : null, comments, next_comment_cursor: next });
 });
 
@@ -584,8 +588,13 @@ const itemComments = handleRead(async (req, res) => {
   if (!c) return null;
   const row = await loadReadable(req, res);
   if (!row) return null;
+  // A below-tier viewer gets no comments on a gated post.
+  if ((row.audience || 'public') !== 'public') {
+    const [item] = await store.hydrateItems([row], req.user?.id || null);
+    if (item.locked) return res.json({ comments: [], next_cursor: null });
+  }
   const { comments, next } = await commentPage(req, row.id, c.cur);
-  setCache(req, res);
+  if ((row.audience || 'public') === 'public') setCache(req, res);
   return res.json({ comments, next_cursor: next });
 });
 
