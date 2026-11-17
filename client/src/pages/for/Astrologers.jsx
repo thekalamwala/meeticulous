@@ -481,58 +481,58 @@ export default function Astrologers() {
       </header>
 
       {/* ═══════════════ 2 · HERO (celestial circular image + constellation) ═══════════════ */}
-      <section id="top" className="relative overflow-hidden px-5 pb-16 pt-10 sm:px-8 lg:pb-24 lg:pt-16" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 100%)' }}>
-        {/* violet blob — mix-blend-multiply so it sits INTO the light hero */}
-        <div aria-hidden className="pointer-events-none absolute -left-24 -top-24 h-96 w-96 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(76,29,149,0.20), transparent)' }} />
-        <Constellation aria-hidden className="absolute right-6 top-10 hidden w-52 opacity-70 lg:block" />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="text-center lg:text-left">
-            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.02em] text-[color:var(--ca-ink)]">
-              Seamless appointment booking software for{' '}
-              <span style={{ color: 'var(--ca-primary)' }}>astrologers</span> managing one-to-one consultations.
-            </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
-              Meeticulous is appointment booking software for astrologers — seekers book and pay for readings online, while WhatsApp reminders and one calm dashboard handle the rest.
-            </Reveal>
-            <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
-              <CtaButton to={START} className="w-full sm:w-auto">Create Your Free Page <ArrowRight size={16} /></CtaButton>
-              <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
-                Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
-              {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
-                  <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
-                </span>
-              ))}
-            </Reveal>
+      <section id="top" className="relative overflow-hidden bg-white">
+        {/* HERO BAND — full-width wide scene as the background; the photo's white
+            left half holds the text, and the band fills the fold. */}
+        <div className="relative lg:flex lg:flex-col lg:min-h-[calc(100svh_-_69px)]">
+          {/* DESKTOP — background photo (kept sharp) */}
+          <img
+            src="/images/hero/astro-hero-wide.webp"
+            alt="An astrologer at a desk with a laptop, a zodiac wheel and Vedic astrology books, counting a consultation fee."
+            width={1842}
+            height={854}
+            className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-contain object-right lg:block"
+          />
+
+          {/* TEXT — aligned to the page content edge, over the white area */}
+          <div className="relative z-10 flex items-center px-5 sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
+            <div className="w-full py-14 text-center sm:py-16 lg:max-w-[38rem] lg:py-0 lg:text-left">
+              <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,3.6vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.02em] text-[color:var(--ca-ink)]">
+                Seamless appointment booking software for{' '}
+                <span style={{ color: 'var(--ca-primary)' }}>astrologers</span> managing one-to-one consultations.
+              </Reveal>
+              <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
+                Meeticulous is appointment booking software for astrologers — seekers book and pay for readings online, while WhatsApp reminders and one calm dashboard handle the rest.
+              </Reveal>
+              <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
+                <CtaButton to={START} className="w-full sm:w-auto">Create Your Free Page <ArrowRight size={16} /></CtaButton>
+                <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
+                  Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </Reveal>
+              <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+                {HERO_TRUST.map((t) => (
+                  <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
+                    <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
+                  </span>
+                ))}
+              </Reveal>
+            </div>
           </div>
 
-          {/* RIGHT — hero image in a circular "celestial" frame with a thin gold ring */}
-          <Reveal instant delay={0.1} className="relative mx-auto w-full max-w-[380px] sm:max-w-[440px] lg:mx-0">
-            <div className="relative aspect-square">
-              <div aria-hidden className="pointer-events-none absolute -inset-3 rounded-full" style={{ background: 'linear-gradient(135deg, var(--ca-accent), rgba(234,179,8,0.15))' }} />
-              <div className="relative h-full w-full rounded-full border-[6px] border-white shadow-[0_30px_70px_-30px_rgba(76,29,149,0.55)]">
-                <div className="h-full w-full overflow-hidden rounded-full" style={{ background: 'radial-gradient(120% 100% at 70% 0%, #2c2166 0%, var(--ca-deep) 70%)' }}>
-                  <div role="img" aria-label="Meeticulous booking for an astrology practice" className="grid h-full w-full place-items-center"><Moon className="h-1/3 w-1/3 text-white/90" strokeWidth={1} aria-hidden="true" /></div>
-                </div>
-              </div>
-              {/* floating chips */}
-              <div className="absolute -left-3 top-6 z-20 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_18px_40px_-20px_rgba(76,29,149,0.5)] sm:-left-8">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg text-white" style={{ background: 'var(--ca-primary)' }}><CalendarCheck size={17} /></span>
-                <div><div className="text-[11px] text-slate-500">Reading booked</div><div className="text-sm font-bold text-[color:var(--ca-ink)]">Kundli Reading · 5:30 PM</div></div>
-              </div>
-              <div className="absolute -right-2 bottom-8 z-20 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_18px_40px_-20px_rgba(76,29,149,0.5)] sm:-right-6">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: 'color-mix(in srgb, var(--ca-accent) 22%, white)', color: '#92610a' }}><Wallet size={17} /></span>
-                <div><div className="text-[11px] text-slate-500">Fee received</div><div className="text-sm font-bold text-[color:var(--ca-ink)]">₹1,499 · paid</div></div>
-              </div>
-            </div>
-          </Reveal>
+          {/* MOBILE — the scene below the text (hidden on desktop) */}
+          <div className="relative z-0 h-[300px] w-full overflow-hidden lg:hidden">
+            <img
+              src="/images/hero/astro-hero-wide.webp"
+              alt=""
+              aria-hidden="true"
+              className="h-full w-full object-cover object-right"
+            />
+          </div>
         </div>
 
         {/* benefit strip */}
-        <div className="relative mx-auto mt-16 grid max-w-6xl gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+        <div className="relative mx-auto grid max-w-6xl gap-3 px-5 pb-16 pt-12 sm:grid-cols-2 sm:gap-4 sm:px-8 lg:grid-cols-4 lg:pb-24 lg:pt-16">
           {BENEFITS.map((b, i) => (
             <Reveal key={b.title} delay={(i % 4) * 0.06}>
               <div className="flex h-full flex-col rounded-[14px] border border-black/[0.07] bg-white p-4 transition-colors hover:border-[color:var(--ca-primary)]/30">

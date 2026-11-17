@@ -250,7 +250,7 @@ export default function Pediatricians() {
 
   // Friendly blue + warm amber. Legacy --ca-* names kept.
   const styleVars = {
-    '--ca-primary': '#960D32', // blue-600 — text/links/fills, AA on white (~5.2:1)
+    '--ca-primary': '#2563EB', // blue-600 — text/links/fills, AA on white (~5.2:1)
     '--ca-accent': '#B45309',  // amber-700 — accent text, AA on white
     '--ca-amber': '#F59E0B',   // bright amber — decorative fills only
     '--ca-ink': '#172554',     // blue-950 navy text
@@ -270,7 +270,7 @@ export default function Pediatricians() {
         robots="index, follow, max-image-preview:large, max-snippet:-1"
         siteName="Meeticulous"
         locale="en_IN"
-        themeColor="#960D32"
+        themeColor="#2563EB"
         ogTitle={seo.ogTitle}
         ogDescription={seo.ogDescription}
         jsonLd={jsonLd}
@@ -314,48 +314,54 @@ export default function Pediatricians() {
       </header>
 
       {/* ═══════════════ 2 · HERO (image + scattered sticker chips) ═══════════════ */}
-      <section className="relative overflow-hidden px-5 pb-8 pt-6 sm:px-8 lg:pb-10 lg:pt-10" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 100%)' }}>
-        <div aria-hidden className="pointer-events-none absolute left-1/2 top-24 h-2 w-2 rounded-full bg-[color:var(--ca-primary)]/40" />
-        <div className="relative mx-auto grid max-w-7xl items-center lg:items-start gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="text-center lg:text-left">
-            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.02em] text-[color:var(--ca-ink)]">
-              Easy online appointment booking software for{' '}
-              <span style={{ color: 'var(--ca-ink)' }}>pediatricians and child-care clinics.</span>
-            </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
-              Meeticulous is appointment booking software for pediatricians — parents book consultations and vaccinations, pay upfront, and get gentle reminders, so your waiting room stays calm.
-            </Reveal>
-            <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
-              <CtaButton to={START} className="w-full sm:w-auto">Set Up My Clinic Page <ArrowRight size={16} /></CtaButton>
-              <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
-                Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
-              {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
-                  <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
-                </span>
-              ))}
-            </Reveal>
+      <section id="top" className="relative overflow-hidden bg-white lg:flex lg:flex-col lg:min-h-[calc(100svh_-_69px)]">
+        {/* HERO BAND — full-width scene as the background; the photo's white left
+            half holds the text, and the band fills the fold. */}
+        <div className="relative lg:flex lg:flex-1 lg:flex-col">
+          {/* DESKTOP — background photo, anchored to the bottom so the scene isn't cropped */}
+          <img
+            src="/images/hero/pediatrician-hero-wide.webp"
+            alt="A paediatrician high-fiving a happy child beside a parent, with a friendly mascot on the clinic desk."
+            width={2000}
+            height={923}
+            className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-cover object-bottom lg:block"
+          />
+
+          {/* TEXT — aligned to the page content edge, over the white area */}
+          <div className="relative z-10 flex items-center px-5 sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
+            <div className="w-full py-14 text-center sm:py-16 lg:max-w-[38rem] lg:py-0 lg:text-left">
+              <Reveal as="h1" instant className="font-heading text-[clamp(1.75rem,4.2vw,3rem)] font-extrabold leading-[1.08] tracking-[-0.02em] text-[color:var(--ca-ink)]">
+                Easy online appointment booking software for{' '}
+                <span style={{ color: 'var(--ca-primary)' }}>pediatricians and child-care clinics.</span>
+              </Reveal>
+              <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
+                Meeticulous is appointment booking software for pediatricians — parents book consultations and vaccinations, pay upfront, and get gentle reminders, so your waiting room stays calm.
+              </Reveal>
+              <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
+                <CtaButton to={START} className="w-full sm:w-auto">Set Up My Clinic Page <ArrowRight size={16} /></CtaButton>
+                <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
+                  Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </Reveal>
+              <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+                {HERO_TRUST.map((t) => (
+                  <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
+                    <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
+                  </span>
+                ))}
+              </Reveal>
+            </div>
           </div>
 
-          {/* RIGHT — image + scattered sticker chips */}
-          <Reveal instant delay={0.1} className="relative mx-auto w-full max-w-md">
-            <ImgSlot alt="A paediatrician with a happy child and parent" rounded="rounded-[32px]" className="aspect-[4/5] w-full shadow-[0_28px_60px_-30px_rgba(23,37,84,0.4)]" />
-            <div className="absolute -left-4 top-[160px] z-20 flex items-center gap-2.5 rounded-2xl bg-white px-4 py-2.5 shadow-[0_16px_36px_-18px_rgba(23,37,84,0.5)]">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full text-white" style={{ background: 'var(--ca-primary)' }}><Syringe size={15} /></span>
-              <div className="text-[12px] font-bold text-[color:var(--ca-ink)]">Vaccine reminder sent</div>
-            </div>
-            <div className="absolute -right-[42px] top-[calc(50%-190px)] z-20 flex items-center gap-2.5 rounded-2xl bg-white px-4 py-2.5 shadow-[0_16px_36px_-18px_rgba(23,37,84,0.5)]">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full" style={{ background: 'color-mix(in srgb, var(--ca-amber) 22%, transparent)', color: 'var(--ca-accent)' }}><Smile size={15} /></span>
-              <div className="text-[12px] font-bold text-[color:var(--ca-ink)]">Booked in 1 min</div>
-            </div>
-            <div className="absolute bottom-[88px] left-[calc(50%-250px)] z-20 flex -translate-x-1/2 items-center gap-2.5 rounded-2xl bg-white px-4 py-2.5 shadow-[0_16px_36px_-18px_rgba(23,37,84,0.5)]">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full text-white" style={{ background: 'var(--ca-primary)' }}><Wallet size={15} /></span>
-              <div className="text-[12px] font-bold text-[color:var(--ca-ink)]">Fee paid ₹500</div>
-            </div>
-          </Reveal>
+          {/* MOBILE — the scene below the text (hidden on desktop) */}
+          <div className="relative z-0 h-[300px] w-full overflow-hidden lg:hidden">
+            <img
+              src="/images/hero/pediatrician-hero-wide.webp"
+              alt=""
+              aria-hidden="true"
+              className="h-full w-full object-cover object-right"
+            />
+          </div>
         </div>
       </section>
 
@@ -624,7 +630,7 @@ export default function Pediatricians() {
       </section>
 
       {/* ═══════════════ 13 · FINAL CTA (blue band, confetti dots) ═══════════════ */}
-      <section className="relative overflow-hidden px-5 py-24 text-center sm:px-8" style={{ background: 'linear-gradient(160deg, #172554 0%, #960D32 100%)' }}>
+      <section className="relative overflow-hidden px-5 py-24 text-center sm:px-8" style={{ background: 'linear-gradient(160deg, #172554 0%, #2563EB 100%)' }}>
         <div aria-hidden className="pointer-events-none absolute left-[12%] top-10 h-3 w-3 rounded-full" style={{ background: 'var(--ca-amber)' }} />
         <div aria-hidden className="pointer-events-none absolute right-[16%] top-20 h-2.5 w-2.5 rounded-full bg-white/50" />
         <div aria-hidden className="pointer-events-none absolute bottom-16 left-[22%] h-2 w-2 rounded-full bg-white/40" />

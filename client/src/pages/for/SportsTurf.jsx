@@ -441,55 +441,61 @@ export default function SportsTurf() {
       </header>
 
       {/* ═══════════════ 2 · HERO (floodlit night) ═══════════════ */}
-      <section className="relative overflow-hidden px-5 pb-14 pt-8 text-white sm:px-8 sm:pb-20 sm:pt-12 lg:pb-28 lg:pt-16" style={{ background: 'radial-gradient(120% 90% at 50% -10%, #123A24 0%, #0B0F12 58%)' }}>
-        {/* floodlight glow */}
-        <div aria-hidden className="pointer-events-none absolute -top-24 left-1/2 h-72 w-[46rem] -translate-x-1/2 rounded-full" style={{ background: 'radial-gradient(closest-side, rgba(163,230,53,0.20), transparent)' }} />
-        {/* pitch yard-lines */}
-        <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: 'repeating-linear-gradient(90deg, rgba(255,255,255,0.035) 0 1px, transparent 1px 72px)', maskImage: 'linear-gradient(180deg, #000, transparent 82%)', WebkitMaskImage: 'linear-gradient(180deg, #000, transparent 82%)' }} />
+      <section id="top" className="relative overflow-hidden text-white" style={{ background: '#000' }}>
+        {/* HERO BAND — fills the fold; the sports scene fades in from the right over the black. */}
+        <div className="relative lg:flex lg:flex-col lg:min-h-[calc(100svh_-_69px)]">
+          {/* floodlight glow */}
+          <div aria-hidden className="pointer-events-none absolute -top-28 left-[58%] z-0 h-80 w-[56rem] -translate-x-1/2 rounded-full" style={{ background: 'radial-gradient(closest-side, rgba(163,230,53,0.28), transparent)' }} />
+          {/* DESKTOP — sports scene on the right, masked so it dissolves into the black on its left */}
+          <img
+            src="/images/hero/sports-hero-wide.jpg"
+            alt="Three young people booking a sports-turf slot on a laptop, with a basketball and water bottle."
+            width={1600}
+            height={900}
+            className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden h-full w-[68%] object-cover object-right lg:block"
+            style={{ WebkitMaskImage: 'linear-gradient(to right, transparent 0%, #000 44%)', maskImage: 'linear-gradient(to right, transparent 0%, #000 44%)' }}
+          />
 
-        <div className="relative mx-auto grid max-w-7xl items-center gap-10 sm:gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
-          {/* LEFT */}
-          <div className="text-center lg:text-left">
-            <Reveal as="h1" instant className="text-[clamp(1.5rem,5vw,2.7rem)] font-semibold leading-[1.1] tracking-[-0.03em] text-white sm:text-[2.7rem] sm:leading-[1.1] lg:text-[3rem]">
-              Instant online booking software for{' '}
-              <span style={{ color: '#A3E635' }}>sports turfs and arenas</span> with open slots.
-            </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-white/70 sm:mt-7 sm:text-lg lg:mx-0">
-              Meeticulous is booking software for sports turfs and arenas — players see open slots, book and pay online for box cricket, football turf and courts, with reminders and GST invoices.
-            </Reveal>
-            <Reveal instant delay={0.1} className="mt-6 flex flex-col items-center gap-3 sm:mt-9 sm:flex-row sm:gap-5 lg:justify-start">
-              <Link
-                to={START}
-                className="btn flex w-full items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-white shadow-[0_10px_30px_-8px_rgba(22,163,74,0.7)] transition-opacity hover:opacity-90 hover:no-underline sm:w-auto"
-                style={{ background: 'var(--ca-primary)' }}
-              >
-                Create a Free Account <ArrowRight size={16} />
-              </Link>
-              <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-white transition-colors hover:text-[#A3E635] hover:no-underline">
-                Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </Reveal>
-            <Reveal instant delay={0.14} className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 sm:mt-9 lg:justify-start">
-              {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-white/60">
-                  <Check size={14} className="text-[#A3E635]" /> {t}
-                </span>
-              ))}
-            </Reveal>
+          {/* TEXT — left, over the black */}
+          <div className="relative z-10 flex items-center px-5 sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
+            <div className="w-full py-14 text-center sm:py-16 lg:max-w-[38rem] lg:py-0 lg:text-left">
+              <Reveal as="h1" instant className="text-[clamp(1.5rem,3.6vw,2.5rem)] font-semibold leading-[1.1] tracking-[-0.03em] text-white">
+                Instant online booking software for{' '}
+                <span style={{ color: '#A3E635' }}>sports turfs and arenas</span> with open slots.
+              </Reveal>
+              <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg lg:mx-0">
+                Meeticulous is booking software for sports turfs and arenas — players see open slots, book and pay online for box cricket, football turf and courts, with reminders and GST invoices.
+              </Reveal>
+              <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-5 lg:justify-start">
+                <Link
+                  to={START}
+                  className="btn flex w-full items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-white shadow-[0_10px_30px_-8px_rgba(22,163,74,0.7)] transition-opacity hover:opacity-90 hover:no-underline sm:w-auto"
+                  style={{ background: 'var(--ca-primary)' }}
+                >
+                  Create a Free Account <ArrowRight size={16} />
+                </Link>
+                <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-white transition-colors hover:text-[#A3E635] hover:no-underline">
+                  Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </Reveal>
+              <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+                {HERO_TRUST.map((t) => (
+                  <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-white/60">
+                    <Check size={14} className="text-[#A3E635]" /> {t}
+                  </span>
+                ))}
+              </Reveal>
+            </div>
           </div>
 
-          {/* RIGHT — icon art + floating glass cards */}
-          <Reveal instant delay={0.1} className="relative hidden lg:block">
-            <div aria-hidden className="absolute left-1/2 top-1/2 h-[27rem] w-[27rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-[rgba(22,163,74,0.35)] to-[rgba(163,230,53,0.22)] blur-2xl" />
-            <IconArt icon={TrophyArt} label="Meeticulous — slot booking for turf and sports arenas" className="relative z-10 mx-auto aspect-square w-full max-w-[27rem]" iconClassName="h-24 w-24" />
-            <GlassCard icon={CalendarCheck} label="New booking" value="7–8 PM · Booked" float="brand-float" className="top-6 -left-4" />
-            <GlassCard icon={Wallet} label="Payment received" value="₹1,200" accent float="brand-float--mid" className="top-1/2 -right-6" />
-            <GlassCard icon={BellRing} label="WhatsApp reminder" value="Sent · 1h before" float="brand-float--slow" className="bottom-10 left-2" />
-          </Reveal>
+          {/* MOBILE — the scene below the text (hidden on desktop) */}
+          <div className="relative z-0 w-full overflow-hidden lg:hidden">
+            <img src="/images/hero/sports-hero-wide.jpg" alt="" aria-hidden="true" className="h-[280px] w-full object-cover object-right" />
+          </div>
         </div>
 
-        {/* Four benefits — scoreboard-style tiles, part of the hero */}
-        <div className="relative mx-auto mt-12 grid max-w-7xl gap-3 sm:mt-16 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4">
+        {/* Four benefits — scoreboard-style tiles, below the hero */}
+        <div className="relative mx-auto grid max-w-7xl gap-3 px-5 pb-14 pt-10 sm:grid-cols-2 sm:gap-4 sm:px-8 lg:grid-cols-4 lg:pb-16">
           {BENEFITS.map((b, i) => (
             <Reveal key={b.title} delay={(i % 4) * 0.06}>
               <div className="group flex h-full flex-col rounded-[24px] border border-white/10 bg-white/[0.06] p-4 backdrop-blur-sm transition-colors hover:border-[#A3E635]/40">

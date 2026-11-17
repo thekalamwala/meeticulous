@@ -405,19 +405,24 @@ export default function CharteredAccountants() {
       </header>
 
       {/* ═══════════════ 2 · HERO (framed image + navy mix-blend blob + floating stat cards) ═══════════════ */}
-      <section id="top" className="relative overflow-hidden px-5 pb-16 pt-10 sm:px-8 lg:pb-24 lg:pt-16" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 100%)' }}>
-        {/* navy blurred blob, blended INTO the surface */}
-        <div aria-hidden className="pointer-events-none absolute -left-24 -top-20 h-96 w-96 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(30,58,95,0.22), transparent)' }} />
-        {/* faint ruled-ledger lines */}
-        <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(16,26,41,0.035) 1px, transparent 1px)', backgroundSize: '100% 34px', maskImage: 'linear-gradient(180deg, transparent, #000 40%, transparent)', WebkitMaskImage: 'linear-gradient(180deg, transparent, #000 40%, transparent)' }} />
-
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="text-center lg:text-left">
-            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.02em] text-[color:var(--ca-ink)]">
+      <section id="top" className="relative overflow-hidden lg:flex lg:flex-col lg:min-h-[calc(100svh_-_69px)]" style={{ background: 'linear-gradient(135deg, #E2E8F0 0%, #F1F5F9 45%, #FFFFFF 100%)' }}>
+        {/* DESKTOP — wide scene as the hero background; the photo's white left half
+            holds the text. The square crop below is used when the layout stacks. */}
+        <img
+          src="/images/hero/ca-hero-wide.webp"
+          alt="A chartered accountant meeting a client across a desk, discussing a tax and advisory consultation on a laptop."
+          width={1844}
+          height={853}
+          className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-cover object-center lg:block"
+        />
+        {/* TEXT — left-aligned, over the white area on desktop (image kept sharp). */}
+        <div className="relative z-10 flex items-center px-5 sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
+          <div className="w-full py-14 text-center sm:py-16 lg:max-w-[38rem] lg:py-0 lg:text-left">
+            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,3.6vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.02em] text-[color:var(--ca-ink)]">
               Professional appointment booking software for{' '}
               <span style={{ color: 'var(--ca-primary)' }}>Chartered Accountants</span> running modern practices.
             </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
+            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
               Meeticulous is appointment booking software for chartered accountants — clients book tax, GST and advisory consultations, pay upfront, and get reminded, so your practice runs without the back-and-forth.
             </Reveal>
             <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
@@ -434,27 +439,17 @@ export default function CharteredAccountants() {
               ))}
             </Reveal>
           </div>
-
-          {/* RIGHT — icon art, framed like a ledger card + floating stat cards */}
-          <Reveal instant delay={0.1} className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
-            <div aria-hidden className="pointer-events-none absolute -bottom-6 -right-6 h-32 w-32 rounded-[16px]" style={{ background: 'color-mix(in srgb, var(--ca-accent) 16%, transparent)' }} />
-            <div className="relative rounded-[20px] border border-black/[0.08] bg-white p-4 shadow-[0_34px_80px_-40px_rgba(16,26,41,0.6)]">
-              <div className="mb-3 flex items-center justify-between border-b border-dashed border-black/10 pb-3">
-                <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-400">Booking ledger</span>
-                <span className="flex items-center gap-1.5 text-[11px] font-bold" style={{ color: 'var(--ca-accent)' }}>
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--ca-accent)' }} /> Live
-                </span>
-              </div>
-              <div className="relative flex items-center justify-center overflow-hidden rounded-[14px] py-4" style={{ background: 'radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--ca-primary) 8%, transparent), transparent 70%)' }}>
-                <div role="img" aria-label="Meeticulous — appointment booking for chartered accountants" className="mx-auto grid aspect-square w-full max-w-[20rem] place-items-center">
-                  <ART_ICON className="h-24 w-24" style={{ color: 'var(--ca-primary)' }} strokeWidth={1.25} aria-hidden="true" />
-                </div>
-              </div>
-            </div>
-            <StatCard icon={Receipt} label="GST filed" value="Invoice sent" className="-left-3 top-8 hidden sm:flex" />
-            <StatCard icon={IndianRupee} label="Fees collected" value="₹2,500 · UPI" className="-right-3 bottom-10 hidden sm:flex" />
-          </Reveal>
         </div>
+
+        {/* MOBILE — the scene stacked below the text (hidden on desktop). */}
+        <img
+          src="/images/hero/ca-hero.webp"
+          alt=""
+          aria-hidden="true"
+          width={1522}
+          height={1033}
+          className="relative z-0 block w-full lg:hidden"
+        />
       </section>
 
       {/* ═══════════════ 3 · SERVICES (ledger line-items) ═══════════════ */}

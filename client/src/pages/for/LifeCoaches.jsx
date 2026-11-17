@@ -399,19 +399,24 @@ export default function LifeCoaches() {
         </AnimatePresence>
       </header>
 
-      {/* ═══════════════ 2 · HERO (editorial display + tall image + upward arc) ═══════════════ */}
-      <section id="top" className="relative overflow-hidden px-5 pb-20 pt-12 sm:px-8 lg:pb-28 lg:pt-16" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 100%)' }}>
-        {/* required decorative blob — mix-blend-multiply so it sits into the warm paper */}
-        <div aria-hidden className="pointer-events-none absolute -right-24 top-6 h-[26rem] w-[26rem] rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(194,65,12,0.16), transparent)' }} />
-        <div aria-hidden className="pointer-events-none absolute -left-20 bottom-0 h-72 w-72 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(22,101,52,0.10), transparent)' }} />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
-          {/* LEFT — editorial copy */}
-          <div className="text-center lg:text-left">
-            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-[color:var(--ca-ink)]">
+      {/* ═══════════════ 2 · HERO (framed wide scene + text over white left half) ═══════════════ */}
+      <section id="top" className="relative overflow-hidden lg:flex lg:flex-col lg:min-h-[calc(100svh_-_69px)]" style={{ background: 'linear-gradient(135deg, #FAF6F0 0%, #FBF8F3 45%, #FFFFFF 72%)' }}>
+        {/* DESKTOP — wide scene as the hero background; the photo's white left half holds the text. */}
+        <img
+          src="/images/hero/life-coach-hero-wide.webp"
+          alt="A life coach in an upbeat one-to-one session with a client across a desk."
+          width={1670}
+          height={941}
+          className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-cover object-[50%_85%] lg:block"
+        />
+        {/* TEXT — left-aligned, over the white area on desktop. */}
+        <div className="relative z-10 flex items-center px-5 sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
+          <div className="w-full py-14 text-center sm:py-16 lg:max-w-[36rem] lg:py-0 lg:text-left">
+            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,3.6vw,2.7rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-[color:var(--ca-ink)]">
               Flexible appointment booking software for{' '}
               <span style={{ color: 'var(--ca-primary)' }}>life coaches</span> managing one-to-one sessions.
             </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-neutral-600 sm:text-lg lg:mx-0">
+            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-neutral-600 sm:text-lg lg:mx-0">
               Meeticulous is appointment booking software for life coaches — stop losing clients in your DMs; they book sessions, pay upfront, and get reminded, so you coach instead of coordinating.
             </Reveal>
             <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
@@ -428,23 +433,18 @@ export default function LifeCoaches() {
               ))}
             </Reveal>
           </div>
-
-          {/* RIGHT — single tall image + upward-arc motif + floating "Session booked" card */}
-          <Reveal instant delay={0.12} className="relative mx-auto w-full max-w-sm lg:mx-0 lg:max-w-md">
-            <svg aria-hidden viewBox="0 0 160 112" fill="none" className="pointer-events-none absolute -right-8 -top-9 h-24 w-36 sm:h-28 sm:w-40">
-              <path d="M8 104 C 44 44, 104 14, 152 8" stroke="var(--ca-accent)" strokeWidth="2.5" strokeLinecap="round" />
-              <circle cx="152" cy="8" r="4.5" fill="var(--ca-accent)" />
-            </svg>
-            <ImgSlot alt="A life coach in a calm one-on-one session with a client" rounded="rounded-[28px]" className="aspect-[4/5] w-full shadow-[0_30px_60px_-30px_rgba(28,43,34,0.45)]" />
-            <div className="absolute top-[16%] -left-6 z-20 flex items-center gap-3 rounded-2xl border border-black/5 bg-white px-4 py-3 shadow-[0_18px_40px_-18px_rgba(28,43,34,0.5)]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg text-white" style={{ background: 'var(--ca-primary)' }}><CalendarCheck size={17} /></span>
-              <div>
-                <div className="text-[11px] text-neutral-500">Session booked</div>
-                <div className="text-sm font-bold text-[color:var(--ca-ink)]">1:1 Session · 5:00 PM</div>
-              </div>
-            </div>
-          </Reveal>
         </div>
+
+        {/* MOBILE — the scene stacked below the text (hidden on desktop); cropped to frame
+            the coach, mascot and client. */}
+        <img
+          src="/images/hero/life-coach-hero-wide.webp"
+          alt=""
+          aria-hidden="true"
+          width={1670}
+          height={941}
+          className="relative z-0 block h-[17rem] w-full object-cover object-[62%_center] sm:h-[22rem] lg:hidden"
+        />
       </section>
 
       {/* ═══════════════ 3 · SERVICES (editorial numbered offering rows) ═══════════════ */}

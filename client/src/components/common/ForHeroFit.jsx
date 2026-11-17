@@ -43,6 +43,11 @@ function fit(block) {
   block.style.zoom = "";
   section.style.paddingTop = "";
   if (window.innerWidth < LG) return;
+  // Full-bleed heroes that already fill the fold themselves (min-h: 100svh - nav,
+  // background image via object-fit) opt out: zooming or padding them only fights
+  // their own layout and leaves a white strip at the top. The older hand-built
+  // heroes (no 100svh fill) still get fitted below.
+  if (`${block.className} ${section.className}`.includes("100svh")) return;
   // Bottom of the hero block at scroll 0. getBoundingClientRect already reports
   // the zoomed box, so it can be re-read after each change.
   const overflow = () => {

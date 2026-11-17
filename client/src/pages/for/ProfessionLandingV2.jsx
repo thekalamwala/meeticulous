@@ -300,8 +300,35 @@ export default function ProfessionLandingV2() {
       </header>
 
       {/* ════════ HERO (light, textured; layout per design.heroVariant) ════════ */}
-      <section className="relative px-5 sm:px-8" style={{ backgroundColor: 'var(--v2-canvas)', backgroundImage: texture, backgroundSize: textureSize }}>
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-full" style={{ background: 'linear-gradient(180deg, transparent, var(--v2-canvas) 92%)' }} />
+      {hero.image ? (
+        /* Photo-led variant: full-width scene, text over the white area, fills the fold. */
+        <section id="top" className="relative overflow-hidden bg-white lg:flex lg:flex-col lg:min-h-[calc(100svh_-_69px)]">
+          <div className="relative lg:flex lg:flex-1 lg:flex-col">
+            <img
+              src={hero.image}
+              alt={hero.imageAlt}
+              className={`pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-cover ${hero.imagePosition || 'object-bottom'} lg:block`}
+            />
+            <div className="relative z-10 flex items-center px-5 sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
+              <div className="w-full py-14 sm:py-16 lg:max-w-[42rem] lg:py-0"><HeroCopy hero={hero} lift={false} /></div>
+            </div>
+            <div className="relative z-0 h-[300px] w-full overflow-hidden lg:hidden">
+              <img src={hero.image} alt="" aria-hidden="true" className="h-full w-full object-cover object-right" />
+            </div>
+          </div>
+        </section>
+      ) : (
+      <section className="relative overflow-hidden px-5 sm:px-8" style={hero.sideImage ? { backgroundColor: '#ffffff' } : { backgroundColor: 'var(--v2-canvas)', backgroundImage: texture, backgroundSize: textureSize }}>
+        {hero.sideImage ? (
+          /* Full-bleed photo covering the whole hero; text sits over the white left half. */
+          <img
+            src={hero.sideImage}
+            alt={hero.imageAlt}
+            className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-cover object-right-bottom lg:block"
+          />
+        ) : (
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-full" style={{ background: 'linear-gradient(180deg, transparent, var(--v2-canvas) 92%)' }} />
+        )}
         {heroVariant === 'stage' ? (
           <div className="relative mx-auto max-w-4xl py-16 sm:py-20">
             <HeroCopy hero={hero} centered lift={!skinned} />
@@ -310,14 +337,28 @@ export default function ProfessionLandingV2() {
         ) : (
           <div
             ref={heroGridRef}
-            className={`relative mx-auto grid ${wrap} items-center gap-12 py-16 sm:py-20 ${heroCols}`}
+            className={`relative z-10 mx-auto grid ${wrap} items-center gap-12 py-16 sm:py-20 ${hero.sideImage ? 'lg:py-32' : ''} ${heroCols}`}
             style={design.wideLayout && heroZoom < 1 ? { maxWidth: `calc(80vw / ${heroZoom})` } : undefined}
           >
             <div className={heroVariant === 'mirror' ? 'lg:order-2' : ''}><HeroCopy hero={hero} lift={!skinned} /></div>
-            <Reveal delay={0.1} className={`hidden lg:block ${heroVariant === 'mirror' ? 'lg:order-1' : ''}`}><HeroMock mock={hero.mock} /></Reveal>
+            {hero.sideImage ? (
+              <div aria-hidden className="hidden lg:block" />
+            ) : (
+              <Reveal delay={0.1} className={`hidden lg:block ${heroVariant === 'mirror' ? 'lg:order-1' : ''}`}><HeroMock mock={hero.mock} /></Reveal>
+            )}
           </div>
         )}
+        {/* MOBILE — the scene stacked below the text when a photo hero is set. */}
+        {hero.sideImage && (
+          <img
+            src={hero.sideImage}
+            alt=""
+            aria-hidden="true"
+            className="relative z-0 -mx-5 block h-[280px] w-[calc(100%_+_2.5rem)] object-cover object-right sm:-mx-8 sm:w-[calc(100%_+_4rem)] lg:hidden"
+          />
+        )}
       </section>
+      )}
 
       {/* Body sections: a page skin (design.skin) or the shared template. */}
       {Skin ? (

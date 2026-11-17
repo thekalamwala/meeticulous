@@ -500,45 +500,54 @@ export default function EntSpecialists() {
       </header>
 
       {/* ═══════════════ 2 · HERO (audiogram instrument-panel motif) ═══════════════ */}
-      <section id="top" className="relative overflow-hidden px-5 pb-16 pt-10 sm:px-8 lg:pb-28 lg:pt-16" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 100%)' }}>
-        <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(67,56,202,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(67,56,202,0.045) 1px, transparent 1px)', backgroundSize: '44px 44px', maskImage: 'linear-gradient(180deg, #000, transparent 72%)', WebkitMaskImage: 'linear-gradient(180deg, #000, transparent 72%)' }} />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
-          {/* LEFT — copy */}
-          <div className="text-center lg:text-left">
-            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.06] tracking-[-0.02em] text-[color:var(--ca-ink)]">
-              Reliable appointment booking software for{' '}
-              <span style={{ color: 'var(--ca-primary)' }}>ENT specialists</span> managing busy clinics.
-            </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
-              Meeticulous is appointment booking software for ENT specialists — patients book consultations and hearing tests, pay upfront, and get reminded, so reception stops drowning in calls.
-            </Reveal>
-            <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
-              <CtaButton to={START} className="w-full sm:w-auto">Create Your Booking Page <ArrowRight size={16} /></CtaButton>
-              <a href="#how" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
-                See How It Works <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
-              </a>
-            </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
-              {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
-                  <Check size={14} style={{ color: 'var(--ca-accent)' }} /> {t}
-                </span>
-              ))}
-            </Reveal>
+      <section id="top" className="relative overflow-hidden bg-white lg:flex lg:flex-col lg:min-h-[calc(100svh_-_69px)]">
+        {/* HERO BAND — full-width scene as the background; the photo's white left
+            half holds the text, and the band fills the fold. */}
+        <div className="relative lg:flex lg:flex-1 lg:flex-col">
+          {/* DESKTOP — background photo (kept sharp, wide crop keeps the full scene) */}
+          <img
+            src="/images/hero/ent-hero-wide.webp"
+            alt="An ENT specialist examining a child's ear in a clinic, with an ENT scan on a monitor."
+            width={2000}
+            height={923}
+            className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-cover object-center lg:block"
+          />
+
+          {/* TEXT — aligned to the page content edge, over the white area */}
+          <div className="relative z-10 flex items-center px-5 sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
+            <div className="w-full py-14 text-center sm:py-16 lg:max-w-[38rem] lg:py-0 lg:text-left">
+              <Reveal as="h1" instant className="font-heading text-[clamp(1.75rem,4.2vw,3rem)] font-extrabold leading-[1.08] tracking-[-0.02em] text-[color:var(--ca-ink)]">
+                Reliable appointment booking software for{' '}
+                <span style={{ color: 'var(--ca-primary)' }}>ENT specialists</span> managing busy clinics.
+              </Reveal>
+              <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
+                Meeticulous is appointment booking software for ENT specialists — patients book consultations and hearing tests, pay upfront, and get reminded, so reception stops drowning in calls.
+              </Reveal>
+              <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
+                <CtaButton to={START} className="w-full sm:w-auto">Create Your Booking Page <ArrowRight size={16} /></CtaButton>
+                <a href="#how" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
+                  See How It Works <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+                </a>
+              </Reveal>
+              <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+                {HERO_TRUST.map((t) => (
+                  <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
+                    <Check size={14} style={{ color: 'var(--ca-accent)' }} /> {t}
+                  </span>
+                ))}
+              </Reveal>
+            </div>
           </div>
 
-          {/* RIGHT — audiogram instrument panel behind an ImgSlot + floating chip */}
-          <Reveal instant delay={0.1} className="relative mx-auto mt-6 mb-10 w-full max-w-md lg:mx-0 lg:my-0 lg:max-w-none">
-            <div aria-hidden className="pointer-events-none absolute -right-10 -top-10 h-72 w-72 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(67,56,202,0.22), transparent)' }} />
-            <ImgSlot alt="An ENT specialist reviewing a patient's hearing results" className="aspect-[4/5] w-full" />
-            <div className="absolute top-[58%] -left-4 z-20 flex items-center gap-2.5 rounded-[16px] border border-black/[0.06] bg-white px-3.5 py-2.5 shadow-[0_16px_36px_-18px_rgba(30,27,58,0.5)]">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg text-white" style={{ background: 'var(--ca-primary)' }}><CalendarCheck size={16} /></span>
-              <div>
-                <div className="text-[10px] text-slate-500">Appointment confirmed</div>
-                <div className="text-[13px] font-bold text-[color:var(--ca-ink)]">ENT consult · 4:30 PM</div>
-              </div>
-            </div>
-          </Reveal>
+          {/* MOBILE — the scene below the text (hidden on desktop) */}
+          <div className="relative z-0 h-[300px] w-full overflow-hidden lg:hidden">
+            <img
+              src="/images/hero/ent-hero-wide.webp"
+              alt=""
+              aria-hidden="true"
+              className="h-full w-full object-cover object-right"
+            />
+          </div>
         </div>
       </section>
 

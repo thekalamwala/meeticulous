@@ -324,45 +324,48 @@ export default function Gynecologists() {
         </AnimatePresence>
       </header>
 
-      {/* ═══════════════ 2 · HERO (organic-blob image + soft rose glow) ═══════════════ */}
-      <section className="relative overflow-hidden px-5 pb-16 pt-10 sm:px-8 lg:pb-24 lg:pt-16" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 100%)' }}>
-        <div aria-hidden className="pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(190,24,93,0.10), transparent)' }} />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="text-center lg:text-left">
-            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.02em] text-[color:var(--ca-ink)]">
-              Private online appointment booking software for{' '}
-              <span style={{ color: 'var(--ca-primary)' }}>gynecologists</span> and women's health clinics.
-            </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
-              Meeticulous is appointment booking software for gynecologists — patients book consultations and antenatal visits privately, pay upfront, and get gentle reminders, with discretion built in.
-            </Reveal>
-            <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
-              <CtaButton to={START} className="w-full sm:w-auto">Set Up My Clinic Page <ArrowRight size={16} /></CtaButton>
-              <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
-                Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
-              {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
-                  <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
-                </span>
-              ))}
-            </Reveal>
+      {/* ═══════════════ 2 · HERO (photo-led — mirrors ProfessionLandingV2) ═══════════════ */}
+      {/* Desktop: the full clinic scene bleeds behind the whole hero (no wash over it);
+          the copy sits in the image's own white left area, left-aligned in a page gutter,
+          and the section fills one fold. Mobile: copy in a white block, then an image
+          strip below — the same split the language-teachers V2 hero uses. */}
+      <section id="top" className="relative overflow-hidden bg-white lg:flex lg:flex-col lg:min-h-[calc(100svh-72px)]">
+        <div className="relative lg:flex lg:flex-1 lg:flex-col">
+          {/* Desktop full-bleed scene — anchored bottom so the scene reads; left stays white */}
+          <img
+            src="/images/hero/gynaec-hero-wide.webp"
+            alt="A gynaecologist talking with a patient in a calm, private clinic"
+            fetchpriority="high"
+            className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-cover object-[72%_bottom] lg:block"
+          />
+          <div className="relative z-10 flex items-center px-5 sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw-80rem)/2))] lg:pr-8">
+            <div className="w-full py-14 text-center sm:py-16 lg:max-w-[40rem] lg:py-0 lg:text-left">
+              <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,3.6vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.02em] text-[color:var(--ca-ink)]">
+                Private online appointment booking software for{' '}
+                <span style={{ color: 'var(--ca-primary)' }}>gynecologists</span> and women's health clinics.
+              </Reveal>
+              <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-slate-700 sm:text-lg lg:mx-0">
+                Meeticulous is appointment booking software for gynecologists — patients book consultations and antenatal visits privately, pay upfront, and get gentle reminders, with discretion built in.
+              </Reveal>
+              <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
+                <CtaButton to={START} className="w-full sm:w-auto">Set Up My Clinic Page <ArrowRight size={16} /></CtaButton>
+                <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
+                  Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </Reveal>
+              <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+                {HERO_TRUST.map((t) => (
+                  <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-600">
+                    <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
+                  </span>
+                ))}
+              </Reveal>
+            </div>
           </div>
-
-          {/* RIGHT — organic blob-masked image + floating gentle card */}
-          <Reveal instant delay={0.1} className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
-            <ImgSlot alt="A gynaecologist welcoming a patient in a calm clinic" rounded="rounded-[42%_58%_58%_42%/48%_42%_58%_52%]" className="aspect-square w-full shadow-[0_28px_60px_-30px_rgba(20,52,42,0.4)]" />
-            <div className="absolute -bottom-3 left-4 z-20 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_16px_36px_-18px_rgba(20,52,42,0.5)]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full text-white" style={{ background: 'var(--ca-primary)' }}><CalendarCheck size={17} /></span>
-              <div><div className="text-[11px] text-slate-500">Booked privately</div><div className="text-sm font-bold text-[color:var(--ca-ink)]">Consult · 10:30 AM</div></div>
-            </div>
-            <div className="absolute right-2 top-6 z-20 flex items-center gap-2.5 rounded-2xl bg-white px-4 py-2.5 shadow-[0_16px_36px_-18px_rgba(20,52,42,0.5)]">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full" style={{ background: 'color-mix(in srgb, var(--ca-accent) 12%, transparent)', color: 'var(--ca-accent)' }}><ShieldCheck size={16} /></span>
-              <div className="text-[12px] font-bold text-[color:var(--ca-ink)]">Private &amp; secure</div>
-            </div>
-          </Reveal>
+          {/* Mobile — image strip below the copy */}
+          <div className="relative z-0 h-[300px] w-full overflow-hidden lg:hidden">
+            <img src="/images/hero/gynaec-hero-wide.webp" alt="" aria-hidden="true" className="h-full w-full object-cover object-[72%_bottom]" />
+          </div>
         </div>
       </section>
 

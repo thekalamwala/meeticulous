@@ -384,48 +384,54 @@ export default function Dermatologists() {
       </header>
 
       {/* ═══════════════ 2 · HERO (2-tile image collage + rose glow) ═══════════════ */}
-      <section className="relative overflow-hidden px-5 pb-16 pt-10 sm:px-8 lg:pb-24 lg:pt-16" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 100%)' }}>
-        <div aria-hidden className="pointer-events-none absolute -right-20 -top-16 h-80 w-80 rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(219,39,119,0.14), transparent)' }} />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="text-center lg:text-left">
-            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.02em] text-[color:var(--ca-ink)]">
-              Modern appointment booking software for{' '}
-              <span style={{ color: 'var(--ca-primary)' }}>dermatologists</span> managing busy skin clinics.
-            </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
-              Meeticulous is appointment booking software for dermatologists — patients book skin consultations and laser follow-ups, pay upfront, and get reminded, so your clinic fills without the call log.
-            </Reveal>
-            <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
-              <CtaButton to={START} className="w-full sm:w-auto">Set Up My Clinic Page <ArrowRight size={16} /></CtaButton>
-              <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
-                Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
-              {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
-                  <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
-                </span>
-              ))}
-            </Reveal>
+      <section id="top" className="relative overflow-hidden bg-white lg:flex lg:flex-col lg:min-h-[calc(100svh_-_69px)]">
+        {/* HERO BAND — full-width scene as the background; the photo's white left
+            half holds the text, and the band fills the fold. */}
+        <div className="relative lg:flex lg:flex-1 lg:flex-col">
+          {/* DESKTOP — background photo (kept sharp) */}
+          <img
+            src="/images/hero/dermat-hero-wide.webp"
+            alt="A dermatologist examining a patient's skin at a clinic, with a skin-analysis screen and products on a shelf."
+            width={1672}
+            height={941}
+            className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-cover object-bottom lg:block"
+          />
+
+          {/* TEXT — aligned to the page content edge, over the white area */}
+          <div className="relative z-10 flex items-center px-5 sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
+            <div className="w-full py-14 text-center sm:py-16 lg:max-w-[38rem] lg:py-0 lg:text-left">
+              <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,3.6vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.02em] text-[color:var(--ca-ink)]">
+                Modern appointment booking software for{' '}
+                <span style={{ color: 'var(--ca-primary)' }}>dermatologists</span> managing busy skin clinics.
+              </Reveal>
+              <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
+                Meeticulous is appointment booking software for dermatologists — patients book skin consultations and laser follow-ups, pay upfront, and get reminded, so your clinic fills without the call log.
+              </Reveal>
+              <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
+                <CtaButton to={START} className="w-full sm:w-auto">Set Up My Clinic Page <ArrowRight size={16} /></CtaButton>
+                <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
+                  Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </Reveal>
+              <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+                {HERO_TRUST.map((t) => (
+                  <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
+                    <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
+                  </span>
+                ))}
+              </Reveal>
+            </div>
           </div>
 
-          {/* RIGHT — 2-tile stacked image collage + floating chip */}
-          <Reveal instant delay={0.1} className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
-            <ImgSlot alt="A dermatologist examining a patient's skin" className="aspect-[4/5] w-full" />
-            <div className="absolute bottom-8 left-0 z-50 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_16px_36px_-18px_rgba(18,35,43,0.5)]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg text-white" style={{ background: 'var(--ca-primary)' }}><CalendarCheck size={17} /></span>
-              <div><div className="text-[11px] text-slate-500">Booked &amp; paid</div><div className="text-sm font-bold text-[color:var(--ca-ink)]">Skin consult · 4:00 PM</div></div>
-            </div>
-            <div className="absolute top-12 left-6 z-50 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_16px_36px_-18px_rgba(18,35,43,0.5)]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg text-white" style={{ background: 'var(--ca-primary)' }}><BellRing size={17} /></span>
-              <div><div className="text-[11px] text-slate-500">Reminder sent</div><div className="text-sm font-bold text-[color:var(--ca-ink)]">1h before</div></div>
-            </div>
-            <div className="absolute top-12 right-6 z-50 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_16px_36px_-18px_rgba(18,35,43,0.5)]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg text-white" style={{ background: 'var(--ca-primary)' }}><Video size={17} /></span>
-              <div><div className="text-[11px] text-slate-500">Teledermatology</div><div className="text-sm font-bold text-[color:var(--ca-ink)]">Online consult</div></div>
-            </div>
-          </Reveal>
+          {/* MOBILE — the scene below the text (hidden on desktop) */}
+          <div className="relative z-0 h-[300px] w-full overflow-hidden lg:hidden">
+            <img
+              src="/images/hero/dermat-hero-wide.webp"
+              alt=""
+              aria-hidden="true"
+              className="h-full w-full object-cover object-right"
+            />
+          </div>
         </div>
       </section>
 

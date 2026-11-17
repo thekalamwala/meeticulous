@@ -355,16 +355,25 @@ export default function Physiotherapists() {
         </AnimatePresence>
       </header>
 
-      {/* ═══════════════ 2 · HERO (highlight-marker + arched image, mix-blend blob) ═══════════════ */}
-      <section className="relative overflow-hidden px-5 pb-16 pt-10 sm:px-8 lg:pb-24 lg:pt-16" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 100%)' }}>
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="text-center lg:text-left">
-            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.02em] text-[color:var(--ca-ink)]">
+      {/* ═══════════════ 2 · HERO (framed wide scene + text over white left half) ═══════════════ */}
+      <section id="top" className="relative overflow-hidden lg:flex lg:flex-col lg:min-h-[calc(100svh_-_69px)]" style={{ background: 'linear-gradient(135deg, #ECFCCB 0%, #F7FEE7 45%, #FFFFFF 100%)' }}>
+        {/* DESKTOP — wide scene as the hero background; the photo's white left half holds the text. */}
+        <img
+          src="/images/hero/physiotherapist-hero-wide.webp"
+          alt="A physiotherapist guiding a patient through a shoulder-mobility exercise in a rehab clinic."
+          width={1672}
+          height={941}
+          className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-cover object-[50%_85%] lg:block"
+        />
+        {/* TEXT — left-aligned, over the white area on desktop (image kept sharp). */}
+        <div className="relative z-10 flex items-center px-5 sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
+          <div className="w-full py-14 text-center sm:py-16 lg:max-w-[38rem] lg:py-0 lg:text-left">
+            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,3.6vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.02em] text-[color:var(--ca-ink)]">
               Flexible appointment booking software for{' '}
               <span style={{ color: 'var(--ca-primary)' }}>physiotherapists</span>{' '}
               managing recurring sessions.
             </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-neutral-600 sm:text-lg lg:mx-0">
+            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-neutral-600 sm:text-lg lg:mx-0">
               Meeticulous is appointment booking software for physiotherapists — patients book and rebook recurring sessions, pay upfront, and get reminders, so no one drops off mid-recovery.
             </Reveal>
             <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
@@ -381,21 +390,19 @@ export default function Physiotherapists() {
               ))}
             </Reveal>
           </div>
-
-          {/* RIGHT — arched empty image + floating session chip; lime blob uses mix-blend */}
-          <Reveal instant delay={0.1} className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
-            <div aria-hidden className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full mix-blend-multiply blur-2xl" style={{ background: 'var(--ca-lime)' }} />
-            <ImgSlot alt="A physiotherapist guiding a patient through a rehab exercise" rounded="rounded-t-[999px] rounded-b-[28px]" className="relative z-10 aspect-[4/5] w-full" />
-            <div className="absolute -left-3 top-10 z-20 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_16px_36px_-18px_rgba(15,23,42,0.5)]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl text-white" style={{ background: 'var(--ca-primary)' }}><CalendarCheck size={17} /></span>
-              <div><div className="text-[11px] text-neutral-500">New session</div><div className="text-sm font-bold text-[color:var(--ca-ink)]">Rehab · 5:00 PM</div></div>
-            </div>
-            <div className="absolute -right-2 bottom-10 z-20 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_16px_36px_-18px_rgba(15,23,42,0.5)]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ background: 'var(--ca-lime)', color: 'var(--ca-ink)' }}><Wallet size={17} /></span>
-              <div><div className="text-[11px] text-neutral-500">Fee received</div><div className="text-sm font-bold text-[color:var(--ca-ink)]">₹800</div></div>
-            </div>
-          </Reveal>
         </div>
+
+        {/* MOBILE — the scene stacked below the text (hidden on desktop).
+            The one wide image is reused: object-cover with a right-of-centre focal
+            point crops off the empty white left half and frames the therapist + mascot. */}
+        <img
+          src="/images/hero/physiotherapist-hero-wide.webp"
+          alt=""
+          aria-hidden="true"
+          width={1672}
+          height={941}
+          className="relative z-0 block h-[17rem] w-full object-cover object-[72%_center] sm:h-[22rem] lg:hidden"
+        />
       </section>
 
       {/* ═══════════════ 3 · TREATMENTS (numbered index rows) ═══════════════ */}

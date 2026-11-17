@@ -354,16 +354,25 @@ export default function Nutritionists() {
         </AnimatePresence>
       </header>
 
-      {/* ═══════════════ 2 · HERO (balanced-plate composition) ═══════════════ */}
-      <section id="top" className="relative overflow-hidden px-5 pb-16 pt-10 sm:px-8 lg:pb-24 lg:pt-16" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 100%)' }}>
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-          {/* LEFT — copy */}
-          <div className="text-center lg:text-left">
-            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.02em] text-[color:var(--ca-ink)]">
+      {/* ═══════════════ 2 · HERO (full scene, no crop on desktop, fits the fold) ═══════════════ */}
+      <section id="top" className="relative overflow-hidden lg:h-[calc(100svh_-_69px)]" style={{ background: 'linear-gradient(135deg, #F0FDF4 0%, #F7FEF9 45%, #FFFFFF 72%)' }}>
+        {/* DESKTOP — the whole wide scene, pinned right and object-contain so it is NEVER
+            cropped and always fits inside the fold; the photo's white left half holds the text. */}
+        <img
+          src="/images/hero/nutritionist-hero-wide.webp"
+          alt="A nutritionist showing a client a printed meal plan across a desk with fresh fruit and a laptop."
+          width={1670}
+          height={941}
+          className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-contain object-right lg:block"
+        />
+        {/* TEXT — left-aligned, over the white area on desktop. */}
+        <div className="relative z-10 flex items-center px-5 sm:px-8 lg:h-full lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
+          <div className="w-full py-14 text-center sm:py-16 lg:max-w-[34rem] lg:py-0 lg:text-left">
+            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.02em] text-[color:var(--ca-ink)]">
               Convenient appointment booking software for{' '}
               <span style={{ color: 'var(--ca-primary)' }}>nutritionists</span> managing client consultations.
             </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
+            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
               Meeticulous is appointment booking software for nutritionists — clients book diet consultations, pay upfront, and get reminded, so you keep plans on track without chasing anyone.
             </Reveal>
             <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
@@ -380,41 +389,18 @@ export default function Nutritionists() {
               ))}
             </Reveal>
           </div>
-
-          {/* RIGHT — conic-gradient balanced plate + floating booked card */}
-          <Reveal instant delay={0.1} className="relative mx-auto w-full max-w-[24rem] lg:mx-0 lg:max-w-none">
-            {/* blurred green blob behind (mix-blend-multiply) */}
-            <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 h-[26rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(21,128,61,0.22), transparent)' }} />
-            <div className="relative mx-auto aspect-square w-full max-w-[22rem]">
-              {/* plate rim */}
-              <div className="relative flex h-full w-full items-center justify-center rounded-full bg-white p-4 shadow-[0_30px_60px_-30px_rgba(20,38,26,0.45)]">
-                {/* conic-gradient pie */}
-                <div className="relative h-full w-full rounded-full" style={{ background: plateGradient }}>
-                  {/* plate centre */}
-                  <div className="absolute left-1/2 top-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-white text-center shadow-[0_10px_24px_-12px_rgba(20,38,26,0.5)]">
-                    <Leaf size={22} style={{ color: 'var(--ca-primary)' }} />
-                    <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">Balanced</span>
-                  </div>
-                  {/* wedge labels */}
-                  {PLATE_LABELS.map((w) => (
-                    <span key={w.label} className={`absolute ${w.pos} flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-bold text-[color:var(--ca-ink)] shadow-sm backdrop-blur-sm`}>
-                      <span aria-hidden className="h-2 w-2 rounded-full" style={{ background: w.dot }} />
-                      {w.label}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              {/* floating "consultation booked" card */}
-              <div className="absolute -bottom-4 -left-2 z-20 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_16px_36px_-18px_rgba(20,38,26,0.5)] sm:-left-5">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg text-white" style={{ background: 'var(--ca-primary)' }}><Check size={17} /></span>
-                <div>
-                  <div className="text-[11px] text-slate-500">Consultation booked</div>
-                  <div className="text-sm font-bold text-[color:var(--ca-ink)]">Diet consult · 5:00 PM</div>
-                </div>
-              </div>
-            </div>
-          </Reveal>
         </div>
+
+        {/* MOBILE — the scene stacked below the text (hidden on desktop); cropped to frame
+            the nutritionist, mascot and client. */}
+        <img
+          src="/images/hero/nutritionist-hero-wide.webp"
+          alt=""
+          aria-hidden="true"
+          width={1670}
+          height={941}
+          className="relative z-0 block h-[17rem] w-full object-cover object-[62%_center] sm:h-[22rem] lg:hidden"
+        />
       </section>
 
       {/* ═══════════════ 3 · SERVICES (editorial ruled cards) ═══════════════ */}

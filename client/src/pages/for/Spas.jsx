@@ -343,41 +343,52 @@ export default function Spas() {
         </AnimatePresence>
       </header>
 
-      {/* ═══════════════ 2 · HERO (split: copy left, spa ImgSlot right — matches the other /for/* pages) ═══════════════ */}
-      <section id="top" className="relative overflow-hidden px-5 pb-20 pt-14 text-center sm:px-8 lg:pb-28 lg:pt-20 lg:text-left" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 62%)' }}>
-        {/* soft blurred blobs — mix-blend-multiply so they sit INTO the page */}
-        <div aria-hidden className="pointer-events-none absolute left-1/2 top-[-6rem] h-[26rem] w-[40rem] -translate-x-1/2 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(63,107,94,0.14), transparent)' }} />
-        <div aria-hidden className="pointer-events-none absolute right-[-4rem] top-24 h-72 w-72 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(176,137,104,0.16), transparent)' }} />
-
-        <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-        <div>
-          <Reveal as="h1" instant className="mx-auto max-w-2xl font-heading lg:mx-0 text-[clamp(1.5rem,5vw,3.15rem)] font-extrabold leading-[1.06] tracking-[-0.02em] text-[color:var(--ca-ink)]">
-            Seamless appointment booking software for{' '}
-            <span style={{ color: 'var(--ca-primary)' }}>spas and wellness centres.</span>
-          </Reveal>
-          <Reveal as="p" instant delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
-            Meeticulous is appointment booking software for spas — guests book massages, facials and treatments, pay an advance, and get gentle reminders, from one serene booking page.
-          </Reveal>
-          <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-5 lg:justify-start">
-            <CtaButton to={START} className="w-full sm:w-auto">Create Your Booking Page <ArrowRight size={16} /></CtaButton>
-            <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
-              Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
-            </Link>
-          </Reveal>
-          <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 lg:justify-start">
-            {HERO_TRUST.map((t) => (
-              <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
-                <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
-              </span>
-            ))}
-          </Reveal>
+      {/* ═══════════════ 2 · HERO (framed wide scene + text over white left half) ═══════════════ */}
+      <section id="top" className="relative overflow-hidden lg:flex lg:flex-col lg:min-h-[calc(100svh_-_69px)]" style={{ background: 'linear-gradient(135deg, #F1F5F2 0%, #F7FAF8 45%, #FFFFFF 72%)' }}>
+        {/* DESKTOP — wide scene as the hero background; the photo's white left half holds the text. */}
+        <img
+          src="/images/hero/spa-hero-wide.webp"
+          alt="A spa therapist giving a relaxed guest a facial treatment in a serene wellness room."
+          width={1671}
+          height={941}
+          className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-cover object-center lg:block"
+        />
+        {/* TEXT — left-aligned, over the white area on desktop. */}
+        <div className="relative z-10 flex items-center px-5 text-center sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8 lg:text-left">
+          <div className="w-full py-14 sm:py-16 lg:max-w-[36rem] lg:py-0">
+            <Reveal as="h1" instant className="mx-auto max-w-2xl font-heading lg:mx-0 text-[clamp(1.5rem,3.4vw,2.6rem)] font-extrabold leading-[1.08] tracking-[-0.02em] text-[color:var(--ca-ink)]">
+              Seamless appointment booking software for{' '}
+              <span style={{ color: 'var(--ca-primary)' }}>spas and wellness centres.</span>
+            </Reveal>
+            <Reveal as="p" instant delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
+              Meeticulous is appointment booking software for spas — guests book massages, facials and treatments, pay an advance, and get gentle reminders, from one serene booking page.
+            </Reveal>
+            <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-5 lg:justify-start">
+              <CtaButton to={START} className="w-full sm:w-auto">Create Your Booking Page <ArrowRight size={16} /></CtaButton>
+              <Link to="/contact" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
+                Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </Reveal>
+            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 lg:justify-start">
+              {HERO_TRUST.map((t) => (
+                <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
+                  <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
+                </span>
+              ))}
+            </Reveal>
+          </div>
         </div>
 
-        {/* right column: the spa treatment-room image (desktop only, like the other /for/* heroes) */}
-        <Reveal instant delay={0.2} className="hidden lg:block">
-          <ImgSlot alt="A serene spa treatment room with soft lighting" className="mx-auto aspect-[4/5] w-full max-w-md" />
-        </Reveal>
-        </div>
+        {/* MOBILE — the scene stacked below the text (hidden on desktop); cropped to frame
+            the therapist, mascot and guest. */}
+        <img
+          src="/images/hero/spa-hero-wide.webp"
+          alt=""
+          aria-hidden="true"
+          width={1671}
+          height={941}
+          className="relative z-0 block h-[17rem] w-full object-cover object-[64%_center] sm:h-[22rem] lg:hidden"
+        />
       </section>
 
       {/* ═══════════════ 3 · SERVICES (spa treatment menu — leader-dot rows) ═══════════════ */}

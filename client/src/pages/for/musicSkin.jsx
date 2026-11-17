@@ -208,7 +208,7 @@ export default function MusicSections({ data, wrap, Counter, icons, routeStart }
       <style>{EQ_CSS}</style>
 
       {/* ════════ SERVICES — a mixing desk (opens with a scrolling marquee ribbon) ════════ */}
-      <section className="overflow-hidden pb-20 pt-6 lg:pb-28">
+      <section className="-mt-6 overflow-hidden pb-20 pt-6 lg:pb-28">
         <div aria-hidden="true" className="-mx-4 -rotate-[1.5deg] py-3" style={{ background: 'var(--v2-accent-cta)' }}>
           <div className="mt-marquee flex w-max">
             {[0, 1].map((dup) => (
