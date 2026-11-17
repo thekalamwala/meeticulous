@@ -215,7 +215,7 @@ const Today = ({ go }) => {
           label="Ready to withdraw"
           value={inr(mock.payouts.available)}
           hint={`${inr(mock.payouts.clearing)} still clearing`}
-          onClick={() => go('money?tab=payouts')}
+          onClick={() => go('money/payouts')}
         />
         <Tile
           label="This month"
@@ -285,7 +285,7 @@ const Today = ({ go }) => {
               ))}
             </ul>
             <div className="border-t-2 border-neutral-200 p-2">
-              <Button size="sm" full onClick={() => go('money?tab=payouts')}>Withdraw {inr(mock.payouts.available)}</Button>
+              <Button size="sm" full onClick={() => go('money/payouts')}>Withdraw {inr(mock.payouts.available)}</Button>
               <p className="mt-2 text-center text-[10px] font-medium text-ink/45">Next automatic payout {relDay(mock.payouts.next_payout_on).toLowerCase()}</p>
             </div>
           </Panel>
