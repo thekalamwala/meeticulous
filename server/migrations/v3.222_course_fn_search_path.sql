@@ -1,0 +1,32 @@
+-- ============================================================
+-- v3.222 — increment_course_purchase_count: pin search_path
+-- (found by the Supabase security advisor right after v3.221 was applied)
+-- ------------------------------------------------------------
+-- NOT the same risk as v3.221, and worth being precise about: this function is
+-- SECURITY INVOKER, so it runs with the CALLER's own rights. Shadowing
+-- `courses` buys an attacker nothing they could not already do as themselves —
+-- there is no privilege escalation here.
+--
+-- It is fixed because it was the last entry in the advisor's
+-- `function_search_path_mutable` lint, and a lint that always has one finding
+-- in it is a lint nobody reads. With this applied the check is at zero, so the
+-- next finding is a real one.
+--
+-- SCOPE, measured on the live DB: 338 functions in public have no search_path,
+-- but 337 of those are extension-owned — btree_gist, pg_trgm and vector are
+-- all installed in public, which is its own (separate, lower) advisor warning.
+-- Exactly ONE was ours. This is it.
+--
+-- APPLY TO the Meeticulous DB (spquowzrefozmrzoszkf). Idempotent.
+-- Rollback: ALTER FUNCTION public.increment_course_purchase_count(uuid) RESET search_path;
+-- ============================================================
+
+ALTER FUNCTION public.increment_course_purchase_count(uuid) SET search_path = public, pg_temp;
+
+-- Invariant after this migration (0 rows): every function in public that we own
+-- pins its search_path.
+--   select p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+--    where n.nspname = 'public'
+--      and not exists (select 1 from pg_depend d where d.objid = p.oid and d.deptype = 'e')
+--      and (p.proconfig is null
+--           or not exists (select 1 from unnest(p.proconfig) c where c like 'search\_path=%'));
