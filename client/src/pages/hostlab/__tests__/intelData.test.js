@@ -94,6 +94,45 @@ describe('intelData fixtures', () => {
     community.spaces.forEach((s) => expect(['official', 'hosts', 'everyone']).toContain(s.policy));
   });
 
+  // insightHistory drives "What worked" — the page that makes the advice
+  // honest. These went in late, after a peer session pointed out that I keep
+  // building the right check and then running it against a narrower surface
+  // than the data occupies. This was the surface I had missed.
+  it('a verdict agrees with the sign of its value', () => {
+    // "Worked" beside a negative number, or "Backfired" beside a positive one,
+    // would be worse than showing nothing.
+    intel.insightHistory.filter((r) => r.outcome).forEach((r) => {
+      if (r.outcome.verdict === 'worked') expect(r.outcome.value).toBeGreaterThan(0);
+      if (r.outcome.verdict === 'backfired') expect(r.outcome.value).toBeLessThan(0);
+    });
+  });
+
+  it('only a move that was acted on can have an outcome', () => {
+    // Dismissed and expired moves were never tried, so there is nothing to
+    // measure; claiming a result for one would be an invented number.
+    intel.insightHistory.forEach((r) => {
+      if (r.outcome) expect(r.status).toBe('acted');
+    });
+  });
+
+  it('what worked reports at least one loss', () => {
+    // Not an arbitrary rule: a fixture where everything succeeded would let the
+    // page render as marketing and never exercise the losing branch.
+    const settled = intel.insightHistory.filter((r) => r.outcome);
+    expect(settled.length).toBeGreaterThan(0);
+    expect(settled.some((r) => r.outcome.verdict === 'backfired')).toBe(true);
+  });
+
+  it('the goal strip cannot overflow its bar', () => {
+    expect(intel.goal.progress).toBeLessThanOrEqual(1);
+    expect(intel.goal.remaining).toBe(Math.max(0, intel.goal.target - intel.goal.achieved));
+  });
+
+  it('the rating distribution sums to the review count', () => {
+    const sum = intel.reputation.distribution.reduce((s, r) => s + r.value, 0);
+    expect(sum).toBe(intel.reputation.reviews);
+  });
+
   it('every insight carries its evidence, impact and measure', () => {
     expect(intel.insights.length).toBeGreaterThan(0);
     intel.insights.forEach((i) => {

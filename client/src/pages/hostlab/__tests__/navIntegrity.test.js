@@ -84,9 +84,15 @@ describe('Host Lab nav integrity', () => {
   });
 
   it('no link points at a deleted page', () => {
-    // Grow › Insights was removed; Intelligence owns measurement. A link to it
-    // would dead-end, and the rebuilt Today.jsx on the Host Lab branch still
-    // carries two of them — this is what catches them at merge.
+    // Grow › Insights was removed here; Intelligence owns measurement.
+    //
+    // EXPECT THIS TO FAIL WHEN THE HOST LAB BRANCH MERGES, and read it
+    // correctly when it does. grow/insights resolves on that branch and must —
+    // the page still exists there, because the deletion lands on this branch,
+    // not theirs. Their rebuilt Today.jsx carries two links to it. So the
+    // failure means "the repoint is now due", not "their branch is broken".
+    // The fix is to point both at intelligence/audience, as agreed between the
+    // two sessions. Do not fix it by deleting this test.
     const dead = TARGETS.filter((t) => t.target.startsWith('grow/insights'));
     expect(dead.map((d) => `${d.file}: ${d.target}`)).toEqual([]);
   });
