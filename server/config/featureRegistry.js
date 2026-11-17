@@ -126,6 +126,12 @@ const REGISTRY = [
   { key: 'community_tithi',      label: 'Community Tithi',      category: 'Community', scope: 'both', enabled: false, description: 'Tithi bot replies in the community. Ships OFF. Off = no bot replies.' },
   { key: 'community_ads',        label: 'Community Ads',        category: 'Community', scope: 'both', enabled: false, description: 'Sponsored placements in the community. Ships OFF. Off = no ads shown.' },
   { key: 'community_v2',         label: 'Community v2 (mobile)', category: 'Community', scope: 'both', enabled: false, description: 'Feed-first mobile redesign of the community (new navbar, bottom bar, composer, drawers). Ships OFF. Off = the current community layout is served.' },
+
+  // ── CONSOLE ──────────────────────────────────────────────────
+  // Nav grouping only: the SAME routes, regrouped per the host-dashboard
+  // redesign. No URL changes, so every bookmark and emailed link keeps working
+  // with it on or off, and flipping it back is a full revert.
+  { key: 'console_v2',           label: 'Console v2 (rail grouping)', category: 'Operations', scope: 'vendor', enabled: false, description: 'Regrouped host dashboard rail: Clients and Schedule get their own sections, Grow collects testimonials + referrals. Ships OFF. Off = the current grouping is served. Routes are identical either way.' },
 ];
 
 const KEYS = REGISTRY.map((f) => f.key);
