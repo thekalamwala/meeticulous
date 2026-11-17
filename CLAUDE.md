@@ -2,7 +2,33 @@
 
 ## Task Workflow (default for every task)
 1. **Ask first.** Before starting any task, ask at least one clarifying question. Never dive in cold.
-2. **Fresh branch from main.** `git fetch origin && git switch -c <type>/<slug> origin/main`. Never work directly on `main` or reuse an old branch unless told to.
+2. **Fresh WORKTREE from main — never `git switch` in the shared checkout.**
+   ```bash
+   git fetch origin && git worktree add ../mt-wt-<slug> -b <type>/<slug> origin/main
+   ```
+   Then work in `../mt-wt-<slug>`. Never work directly on `main` or reuse an old branch unless told to.
+
+   **Why a worktree and not a branch switch.** Several Claude sessions share this
+   one clone at the same time. `git switch`, `git checkout` and `git reset --hard`
+   act on the whole working directory, so a session that switches branches destroys
+   every other session's uncommitted work — silently, and with no warning to either
+   side. This has bitten before; on 2026-11-17 a switch wiped 593 lines of another
+   session's in-progress work mid-build. A worktree gives each session its own
+   directory against the same repo, so nobody can be yanked out from under.
+   `git worktree list` shows who is where.
+
+   Three habits that go with it:
+   - **Commit as soon as something passes.** Uncommitted work is the only kind that
+     can be lost this way.
+   - **`git stash -u` before any switch** you still decide to make. The `-u` matters:
+     without it untracked files are not saved, and new files are most of a new
+     feature. That flag is the only reason the 593 lines above came back.
+   - **Never `git reset --hard` in a tree you did not dirty yourself.**
+
+   A worktree needs `node_modules` before it can run anything — junction it from the
+   main clone rather than reinstalling (`New-Item -ItemType Junction -Path
+   <wt>/server/node_modules -Target <main>/server/node_modules`, same for `client/`),
+   and copy `client/.env` across.
 3. **Work → commit → PR.** Do the change, commit, `gh pr create` (any type: feat/fix/docs/chore).
    **PR base = the open release train**, not `main`: check `git branch -r | grep release/` and use
    `--base release/YYYY-MM` (CI runs on `release/**`). The train ships to `main` in one merge
@@ -210,8 +236,8 @@ Items previously listed here as pending are now live:
   `anon` and `authenticated`. v3.206 revoked INSERT/UPDATE/DELETE but not TRUNCATE, and RLS does not
   cover TRUNCATE. Not currently reachable — PostgREST exposes no TRUNCATE verb, so the publishable
   key has no route to it — but it is the same posture v3.206 set out to close and wants a follow-up
-  migration. Also: `increment_coupon_redemption` (v3.204) is SECURITY DEFINER with no
-  `SET search_path`, unlike the v3.186/v3.218 pattern.
+  migration. The second half of this finding — `increment_coupon_redemption` (v3.204) being
+  SECURITY DEFINER with no `SET search_path` — is **FIXED** by v3.221 below.
 - **v3.188** (`v3.188_host_linkedin_login_flag.sql`) — applied (confirmed 2026-11-12). Was listed PENDING: apply before/at merge of the LinkedIn
   host login release: seeds the `host_linkedin_login` flag OFF (`ON CONFLICT DO NOTHING`). The registry
   entry also carries `enabled: false`, so a boot before the migration still creates it OFF.
@@ -236,6 +262,29 @@ Items previously listed here as pending are now live:
   supabase-js for auth+realtime, never PostgREST writes — verified, so no app impact). REVOKE-only, so
   rollback is a re-GRANT; the permissive write POLICIES are left in place (unreachable with no grant).
   Companion to v3.205 (profiles column SELECT) + v3.186 (functions + views). Shipped with PR #292.
+- **v3.221** (`v3.221_coupon_fn_search_path.sql`) — applied 2026-11-17 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`) and verified: `increment_coupon_redemption` now pins
+  `search_path = public, pg_temp`. Closes the open finding above. It was the ONLY one of 15
+  `SECURITY DEFINER` functions in `public` with a mutable path (measured, not assumed). Such a
+  function runs as its OWNER, so whatever the CALLER's search_path resolves `coupons` to is what
+  runs with owner rights. **pg_temp is NAMED** because Postgres searches the temp schema FIRST
+  whenever pg_temp is absent from the path — so the bare `= public` form used by v3.205 and v3.25
+  still permits a temp-table shadow (residual; those two are applied and left alone). Barely
+  exploitable today: EXECUTE is postgres + service_role only, and service_role can already write
+  `coupons` directly. It matters the day someone grants EXECUTE to `authenticated`, which CAN
+  create temp tables. ALTER-only, so body and ACL untouched — grants verified unchanged after.
+  Rollback: `ALTER FUNCTION public.increment_coupon_redemption(uuid) RESET search_path;`. Guarded:
+  `tests/unit/lockdownAnonRpcMigration.test.js` now fails ANY `SECURITY DEFINER` definition in a
+  migration from v3.186 on that does not pin search_path. Shipped with PR #375.
+- **v3.222** (`v3.222_course_fn_search_path.sql`) — applied 2026-11-17 on the Meeticulous DB and
+  verified (`search_path=public, pg_temp`; still SECURITY INVOKER; `courses` untouched; every
+  function we own now pins its path, 0 remaining).
+  Pins `increment_course_purchase_count`, the last entry in the Supabase
+  `function_search_path_mutable` lint. NOT v3.221's risk class: this one is SECURITY INVOKER, runs
+  with the caller's own rights, no privilege escalation — it is fixed so the lint reads zero and the
+  next finding in it is a real one. Of 338 unpinned functions in `public`, 337 are extension-owned
+  (btree_gist, pg_trgm and vector are all installed in public — a separate, lower advisor warning);
+  exactly one was ours.
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
 
