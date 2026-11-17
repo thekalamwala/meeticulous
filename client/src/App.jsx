@@ -186,6 +186,7 @@ const KycAddress   = lazy(() => import('./pages/kyc/KycAddress'));
 const KycSubmitted = lazy(() => import('./pages/kyc/KycSubmitted'));
 
 // Service Module v2
+const CatalogList     = lazy(() => import('./pages/catalog/CatalogList'));
 const ServicesList = lazy(() => import('./pages/services/ServicesList'));
 const AddService   = lazy(() => import('./pages/services/AddService'));
 const EditService  = lazy(() => import('./pages/services/EditService'));
@@ -645,6 +646,10 @@ function App() {
           <Route path="/dashboard/clients" element={<DashboardWrapper><ClientsList /></DashboardWrapper>} />
           <Route path="/dashboard/clients/:id" element={<DashboardWrapper><ClientDetail /></DashboardWrapper>} />
           <Route path="/dashboard/earnings" element={<DashboardWrapper><Earnings /></DashboardWrapper>} />
+          {/* One list of everything sellable. Additive: Services, Products,
+              Courses and Coupons keep their own routes and pages. The
+              console_v2 rail points here instead of at the four. */}
+          <Route path="/dashboard/catalog" element={<DashboardWrapper><CatalogList /></DashboardWrapper>} />
           <Route path="/dashboard/services" element={<DashboardWrapper><ServicesList /></DashboardWrapper>} />
           <Route path="/dashboard/service/add-new" element={<DashboardWrapper><AddService /></DashboardWrapper>} />
           <Route path="/dashboard/service/edit/:id" element={<DashboardWrapper><EditService /></DashboardWrapper>} />

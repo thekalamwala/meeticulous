@@ -159,13 +159,19 @@ export const NAV_V2 = [
     visible: (c) => !!c.flags?.guest_messaging,
   },
   {
+    // Five rail entries become one list, plus Memberships. The four type pages
+    // keep their routes and their editors — the catalog links to them — they
+    // simply stop each needing a line in the rail to be findable. Memberships
+    // is not one of the four, so it keeps its own line; see below.
     id: 'catalog', label: 'Catalog', icon: 'rail-catalog',
     items: [
-      { to: '/dashboard/services', label: 'Services', icon: 'nav-services', matchPrefix: '/dashboard/service' },
-      { to: '/dashboard/products', label: 'Products', icon: 'nav-products' },
-      { to: '/dashboard/courses', label: 'Courses', icon: 'nav-products', visible: (c) => !!c.flags?.course_purchase },
+      { to: '/dashboard/catalog', label: 'Catalog', icon: 'nav-services', matchPrefix: ['/dashboard/catalog', '/dashboard/service', '/dashboard/products', '/dashboard/courses', '/dashboard/coupons'] },
+      // Memberships stays its OWN entry. It arrived on the base branch after this
+      // one was cut, and the catalog cannot absorb it: catalogModel fetches
+      // services, products, courses and coupons, so a membership program would
+      // not appear in the list that replaced its rail line. Collapsing it would
+      // leave /dashboard/memberships reachable only by typing the URL.
       { to: '/dashboard/memberships', label: 'Memberships', icon: 'nav-plan', visible: (c) => !!c.flags?.community_memberships },
-      { to: '/dashboard/coupons', label: 'Coupons', icon: 'nav-refer', visible: (c) => !!c.flags?.coupons },
     ],
   },
   {

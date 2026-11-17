@@ -6,28 +6,52 @@
  * route 404s, the page just cannot be reached from the rail — the quietest
  * kind of regression there is. This test makes that a red CI run instead.
  *
- * It also pins the property that makes the flag safe to flip either way:
- * v2 changes grouping, never routes.
+ * It also pins the property that makes the flag safe to flip either way: every
+ * page stays reachable under both rails. v2 adds exactly one surface of its own
+ * — the catalog list — and that exception is allowlisted below so a second one
+ * cannot slip in unnoticed.
  */
 import { describe, it, expect } from 'vitest';
 import { NAV, NAV_V2, navFor, visibleSections, resolveActive, firstItemTo } from '../components/common/ConsoleSidebar';
+import { HOME_OF } from '../pages/catalog/catalogModel';
 
 const routesOf = (nav) => nav.flatMap((s) => s.items.map((i) => i.to));
 const ALL_FLAGS = { flags: { guest_messaging: true, course_purchase: true, coupons: true, community_memberships: true } };
 
-describe('the two rails serve the same routes', () => {
-  it('loses no page from NAV when v2 is on', () => {
-    const missing = routesOf(NAV).filter((to) => !routesOf(NAV_V2).includes(to));
-    // If this fails you added a page to NAV and not to NAV_V2. Add it there —
-    // do not delete this test.
-    expect(missing).toEqual([]);
+// Step 2 changed this contract, and the test caught it rather than the change
+// slipping through: the v2 rail no longer lists the four catalog types, because
+// /dashboard/catalog lists them instead. So "present in the rail" is too strong
+// a requirement now. "Reachable" is the property that actually matters, and it
+// is the one asserted below.
+//
+// Anything the catalog page links to counts as reachable. Everything else must
+// still be a rail entry.
+const CATALOG_COVERS = Object.values(HOME_OF);
+const V2_OWN_ROUTES = ['/dashboard/catalog'];
+
+describe('nothing becomes unreachable under v2', () => {
+  it('keeps every NAV page either in the rail or linked from the catalog', () => {
+    const v2 = routesOf(NAV_V2);
+    const stranded = routesOf(NAV).filter((to) => !v2.includes(to) && !CATALOG_COVERS.includes(to));
+    // If this fails you added a page to NAV and not to NAV_V2, and the catalog
+    // does not link it either — so it is reachable only by typing the URL.
+    // Add it to NAV_V2. Do not delete this test.
+    expect(stranded).toEqual([]);
   });
 
-  it('invents no route that NAV does not already have', () => {
-    // v2 is a regrouping, not a new surface. A route here that NAV lacks means
-    // a page was added without a route, or this list drifted into fiction.
-    const invented = routesOf(NAV_V2).filter((to) => !routesOf(NAV).includes(to));
+  it('adds exactly one surface of its own, and names it', () => {
+    // v2 is a regrouping. The catalog list is the single deliberate exception,
+    // allowlisted above so a second one cannot appear unnoticed.
+    const invented = routesOf(NAV_V2).filter((to) => !routesOf(NAV).includes(to) && !V2_OWN_ROUTES.includes(to));
     expect(invented).toEqual([]);
+  });
+
+  it('still reaches all four catalog types from the catalog page', () => {
+    // The flip side of collapsing the rail: if these links broke, four pages
+    // would have no way in at all.
+    expect(CATALOG_COVERS).toEqual(expect.arrayContaining([
+      '/dashboard/services', '/dashboard/products', '/dashboard/courses', '/dashboard/coupons',
+    ]));
   });
 
   it('lists every route exactly once, so no page has two homes', () => {
