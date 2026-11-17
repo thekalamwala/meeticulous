@@ -75,8 +75,6 @@ const Earnings = () => {
   const dCount = growth(sum(cmpCur, 'bookings'), sum(cmpPrev, 'bookings'));
   const dAvg = growth(avgOf(cmpCur), avgOf(cmpPrev));
 
-  const thisM = mock.revenueByMonth.at(-1);
-
   const byService = useMemo(
     () => [...mock.services, ...mock.products, ...mock.courses]
       .filter((s) => s.revenue_30d > 0)
@@ -118,12 +116,15 @@ const Earnings = () => {
         <Panel title="What earns the most" subtitle="Last 30 days">
           <RankedBars rows={byService} valueKey="revenue" format={(v) => inr(v, { compact: true })} />
         </Panel>
-        <Panel title="How your plan pays off" subtitle="Pro, ₹999 a month">
+        {/* A year against a year. This compared ONE month's commission with
+            Pro's annual price, which made Pro look twelve times dearer than it
+            is. ₹999 is the yearly ex-GST price; the monthly one is ₹199. */}
+        <Panel title="How your plan pays off" subtitle="Last 12 months">
           <ul className="flex flex-col gap-1.5 text-[11.5px]">
             {[
-              ['Commission you would owe on Starter (5%)', inr(Math.round(thisM.revenue * 0.05))],
-              ['What Pro costs you', inr(999)],
-              ['Pro is cheaper by', inr(Math.round(thisM.revenue * 0.05) - 999)],
+              ['Commission you would owe on Starter (5%)', inr(Math.round(mock.YEAR_REVENUE * 0.05))],
+              ['What Pro costs a year', inr(mock.PRO_YEARLY)],
+              ['Pro is cheaper by', inr(Math.round(mock.YEAR_REVENUE * 0.05) - mock.PRO_YEARLY)],
             ].map(([k, v], i) => (
               <li key={k} className={cn('flex items-baseline justify-between gap-2', i === 2 && 'border-t-2 border-neutral-200 pt-2.5')}>
                 <span className={cn('font-medium', i === 2 ? 'font-bold text-ink' : 'text-ink/65')}>{k}</span>

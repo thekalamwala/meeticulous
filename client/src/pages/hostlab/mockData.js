@@ -231,6 +231,12 @@ export const revenueByMonth = [
   { month: 'Oct', revenue: 68_400, bookings: 40 },
   { month: 'Nov', revenue: 84_950, bookings: 48 },
 ];
+// Pro is ₹999 a YEAR ex-GST (₹1,179 incl), or ₹199 a month (₹235 incl) — see
+// client/src/pages/Pricing.jsx, which is the authority. The prototype called it
+// "₹999 a month" in two places and then compared ONE month's commission against
+// it, overstating Pro's cost by twelve. Starter is free and takes 5%.
+export const PRO_YEARLY = 999;
+export const YEAR_REVENUE = revenueByMonth.reduce((n, m) => n + m.revenue, 0);
 
 export const funnel = {
   views: 1_842,
@@ -303,5 +309,5 @@ export default {
   host, services, products, courses, offers, clients, bookings, availability,
   payouts, invoices, revenueByMonth, funnel, trafficSources, reviews,
   testimonials, referrals, actionQueue, activity, setupChecklist,
-  COMMISSION_RATE,
+  COMMISSION_RATE, PRO_YEARLY, YEAR_REVENUE,
 };
