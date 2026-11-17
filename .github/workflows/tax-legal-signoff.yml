@@ -37,9 +37,23 @@ jobs:
           SENSITIVE_FILES='server/lib/pricingEngine\.js|invoice|tax'
           SENSITIVE_PATTERNS='tdsRate|tcsRate|\bTDS\b|\bTCS\b|206AA|194-O|gstRate|commission_percentage|\bpayout\b'
 
-          changed="$(git diff --name-only "$BASE" "$HEAD" || true)"
+          # THREE dots, not two. "git diff A B" compares the two tips, so once the
+          # release train moves ahead of where a branch was cut, every commit on the
+          # train but not on the branch shows up here as a DELETION - and the greps
+          # below then match tax words inside other people's merged work. That is a
+          # gate firing on PRs that touch nothing of the sort, which is how a gate
+          # stops being read.
+          #
+          # "A...B" diffs from the MERGE BASE, which is what the PR actually proposes
+          # and what GitHub's own Files-changed tab shows. fetch-depth: 0 above is
+          # what makes the merge base available here.
+          #
+          # Measured on PR #373 (a one-file docs change) while the train was 7 commits
+          # ahead of main: two-dot saw 36 files and failed the gate; three-dot sees 1
+          # file and 0 pattern matches.
+          changed="$(git diff --name-only "$BASE"..."$HEAD" || true)"
           hit_file="$(printf '%s\n' "$changed" | grep -Ei "$SENSITIVE_FILES" || true)"
-          hit_patch="$(git diff "$BASE" "$HEAD" -- 'server/**' | grep -E '^[+-]' | grep -iE "$SENSITIVE_PATTERNS" | head -20 || true)"
+          hit_patch="$(git diff "$BASE"..."$HEAD" -- 'server/**' | grep -E '^[+-]' | grep -iE "$SENSITIVE_PATTERNS" | head -20 || true)"
 
           if [ -z "$hit_file" ] && [ -z "$hit_patch" ]; then
             echo "No tax/legal/money-sensitive changes detected. OK."
