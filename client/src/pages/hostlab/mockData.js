@@ -137,6 +137,10 @@ const BK = [
   [-30, 15, 0, 5, 1, 'completed', 'paid'],
 ];
 
+// Pro is ₹999 a year at 0% commission; Starter is 5%. One constant, so the
+// two cannot drift apart again.
+export const COMMISSION_RATE = host.plan === 'premium' ? 0 : 0.05;
+
 export const bookings = BK.map(([d, h, m, ci, si, status, payment], i) => {
   const client = clients[ci];
   const service = services[si];
@@ -153,7 +157,11 @@ export const bookings = BK.map(([d, h, m, ci, si, status, payment], i) => {
     client_id: client.id,
     services: { id: service.id, title: service.title, duration: service.duration, price: service.price },
     amount: payment === 'refunded' ? 0 : service.price,
-    platform_fee: service.price ? Math.round(service.price * 0.05) : 0,
+    // Starter pays 5%, Pro pays nothing — so the fee has to read the plan.
+    // A flat 5% here made Ananya, who is on Pro, pay ₹3.3k of commission on
+    // Transactions while Earnings told her she had paid ₹0. One host, two
+    // pages, two answers.
+    platform_fee: COMMISSION_RATE && service.price ? Math.round(service.price * COMMISSION_RATE) : 0,
     location: 'Google Meet',
     source: i % 5 === 0 ? 'Instagram bio' : i % 3 === 0 ? 'Direct link' : i % 7 === 0 ? 'Explore' : 'WhatsApp',
     guest_note:
@@ -295,4 +303,5 @@ export default {
   host, services, products, courses, offers, clients, bookings, availability,
   payouts, invoices, revenueByMonth, funnel, trafficSources, reviews,
   testimonials, referrals, actionQueue, activity, setupChecklist,
+  COMMISSION_RATE,
 };
