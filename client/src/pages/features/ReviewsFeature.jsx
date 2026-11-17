@@ -25,8 +25,7 @@
 // Testimonials are the real, consented quotes from data/testimonials.js; they
 // are hosts on Meeticulous in general, and the section says so.
 //
-// IMAGES: real art in the how-it-works step cards (client/public/features/);
-// the hero background still uses an ImgSlot placeholder.
+// IMAGES: real art in the how-it-works step cards (client/public/features/).
 // Global Navbar + Footer come from App.jsx. No hover uplift anywhere.
 
 import { useState } from 'react';
@@ -34,7 +33,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
   ArrowRight, Check, X, Star, ShieldCheck, BadgeCheck, MailCheck, PencilLine,
-  Users, Bell, EyeOff, Heart, ChevronDown, ImageIcon, CalendarCheck,
+  Users, Bell, EyeOff, Heart, ChevronDown, CalendarCheck,
 } from 'lucide-react';
 import Reveal from '../../components/home/Reveal';
 import Seo from '../../components/common/Seo';
@@ -54,7 +53,6 @@ const INK = '#201E1D';
 
 /* ─────────────────────────────  CONTENT  ────────────────────────────── */
 
-const HERO_TRUST = ['Free plan, no card needed', 'No public review form to spam', 'Built for India'];
 
 const PROOF = [
   { k: 'Who can review', v: 'Only the guest who booked the session' },
@@ -167,22 +165,6 @@ function PrimaryCta({ to = START, children, onDark = false }) {
     >
       {children}
     </Link>
-  );
-}
-
-/* Empty image placeholder; the founder supplies the real photo later. */
-function ImgSlot({ alt, slot, className = '', dark = false }) {
-  const ink = dark ? '255,255,255' : '190,24,93';
-  return (
-    <div
-      role="img"
-      aria-label={alt}
-      data-img-slot={slot}
-      className={`flex items-center justify-center ${className}`}
-      style={{ background: `repeating-linear-gradient(135deg, rgba(${ink},0.04) 0 10px, rgba(${ink},0.08) 10px 20px)` }}
-    >
-      <ImageIcon size={28} style={{ color: `rgba(${ink},0.3)` }} aria-hidden />
-    </div>
   );
 }
 
@@ -343,9 +325,8 @@ export default function ReviewsFeature() {
         jsonLd={jsonLd}
       />
 
-      {/* ═══════════════ 1 + 2 · HERO + PROOF ROW, on one full-bleed photo ═══════════════ */}
+      {/* ═══════════════ 1 + 2 · HERO + PROOF ROW ═══════════════ */}
       <div className="relative overflow-hidden text-white" style={{ background: PLUM }}>
-        <ImgSlot slot="reviews-hero" alt="A smiling client leaving a review on their phone after a session" className="absolute inset-0" dark />
         <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(42,22,12,0.80) 0%, rgba(42,22,12,0.72) 45%, rgba(42,22,12,0.92) 100%)' }} />
         <div aria-hidden className="pointer-events-none absolute -left-40 top-10 h-[34rem] w-[34rem] rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(232,119,46,0.28), transparent)' }} />
 
@@ -370,13 +351,6 @@ export default function ReviewsFeature() {
                 <a href="#verified" className="inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:no-underline hover:opacity-80">
                   How reviews get verified <ArrowRight size={15} />
                 </a>
-              </Reveal>
-              <Reveal instant delay={0.14} className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
-                {HERO_TRUST.map((t) => (
-                  <span key={t} className="flex items-center gap-1.5 text-[13px] text-white/70">
-                    <Check size={14} style={{ color: PINK }} aria-hidden /> {t}
-                  </span>
-                ))}
               </Reveal>
             </div>
             <Reveal instant delay={0.12}>
@@ -608,21 +582,6 @@ export default function ReviewsFeature() {
         />
       </section>
 
-      {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
-      <section className="relative overflow-hidden px-5 py-20 text-white sm:px-8 lg:py-28" style={{ background: PLUM }}>
-        <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-[30rem] w-[30rem] rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(232,119,46,0.22), transparent)' }} />
-        <div className="relative mx-auto max-w-5xl text-center">
-          <Reveal as="h2" className="font-heading text-[clamp(2.4rem,6vw,4.2rem)] font-extrabold leading-[1.0] tracking-[-0.03em] !text-white">
-            Let your last client <span style={{ color: PINK }}>introduce your next one.</span>
-          </Reveal>
-          <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/75">
-            Set up your booking page free. Every completed session asks for a review on its own.
-          </Reveal>
-          <Reveal delay={0.1} className="mt-9 flex justify-center">
-            <PrimaryCta onDark>Start free <ArrowRight size={16} /></PrimaryCta>
-          </Reveal>
-        </div>
-      </section>
     </main>
   );
 }

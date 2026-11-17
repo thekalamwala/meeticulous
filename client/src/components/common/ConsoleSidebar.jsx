@@ -69,6 +69,8 @@ export const NAV = [
       { to: '/dashboard/products', label: 'Products', icon: 'nav-products' },
       // Reuse nav-products glyph — no course icon exported (closest fit).
       { to: '/dashboard/courses', label: 'Courses', icon: 'nav-products', visible: (c) => !!c.flags?.course_purchase },
+      // Reuse nav-plan glyph — no membership icon exported.
+      { to: '/dashboard/memberships', label: 'Memberships', icon: 'nav-plan', visible: (c) => !!c.flags?.community_memberships },
       // Reuse nav-profile glyph — no testimonial icon exported.
       { to: '/dashboard/testimonials', label: 'Testimonials', icon: 'nav-profile' },
       // Reuse nav-refer glyph (promo/reward) — no discount icon exported.
@@ -101,6 +103,110 @@ export const NAV = [
   },
 ];
 
+/* ------------------------------------------------------------------ *
+ *  NAV_V2 — the regrouped rail, behind the `console_v2` flag.
+ *
+ *  SAME ROUTES, DIFFERENT GROUPING. Not one URL changes: every `to` below
+ *  already exists in NAV above, so a bookmark, a link in an email and every
+ *  deep route keep working whichever nav is served. This step moves labels in
+ *  a sidebar and nothing else — which is why it can ship behind a flag and be
+ *  reverted by flipping it back.
+ *
+ *  What moves, and why (from the host-dashboard redesign, PR #360):
+ *    · Customers      → its own section. It is a book of business, not a view
+ *                       of bookings, and it is where win-back lives.
+ *    · Availability   → its own "Schedule" section, for the same reason: the
+ *                       rules that decide when a guest can book are a subject,
+ *                       not a sub-page of the bookings list.
+ *    · Testimonials   → Grow. It is social proof, not something you sell.
+ *    · Refer & Earn   → Grow, out of Settings. It is a growth tool that was
+ *                       filed under account admin.
+ *  Money is untouched: it already matches the redesign exactly.
+ *
+ *  Catalog still lists its types separately here. Collapsing them into one
+ *  filterable list is the next step and needs a real page, not a config edit.
+ *
+ *  KEEPING THE TWO IN STEP: navParity.test.jsx asserts every route in NAV
+ *  appears somewhere in NAV_V2. Add a page to NAV and forget this list, and
+ *  that test fails rather than the page silently vanishing for anyone on v2.
+ * ------------------------------------------------------------------ */
+export const NAV_V2 = [
+  {
+    id: 'home', label: 'Today', icon: 'rail-overview',
+    items: [
+      { to: '/dashboard', label: 'Today', icon: 'nav-overview', exact: true },
+    ],
+  },
+  {
+    id: 'bookings', label: 'Bookings', icon: 'rail-bookings',
+    items: [
+      { to: '/dashboard/bookings', label: 'Bookings', icon: 'nav-bookings' },
+    ],
+  },
+  {
+    id: 'clients', label: 'Clients', icon: 'nav-customers',
+    items: [
+      { to: '/dashboard/clients', label: 'Clients', icon: 'nav-customers', matchPrefix: '/dashboard/clients' },
+    ],
+  },
+  {
+    // Reserved slot, unchanged from NAV: hidden until the `guest_messaging`
+    // flag and its route land.
+    id: 'messages', label: 'Messages', icon: 'rail-chat',
+    items: [
+      { to: '/dashboard/messages', label: 'Guest chats', icon: 'nav-chat', badgeKey: 'guestUnread', badgeNoun: 'new message' },
+    ],
+    visible: (c) => !!c.flags?.guest_messaging,
+  },
+  {
+    // Five rail entries become one list, plus Memberships. The four type pages
+    // keep their routes and their editors — the catalog links to them — they
+    // simply stop each needing a line in the rail to be findable. Memberships
+    // is not one of the four, so it keeps its own line; see below.
+    id: 'catalog', label: 'Catalog', icon: 'rail-catalog',
+    items: [
+      { to: '/dashboard/catalog', label: 'Catalog', icon: 'nav-services', matchPrefix: ['/dashboard/catalog', '/dashboard/service', '/dashboard/products', '/dashboard/courses', '/dashboard/coupons'] },
+      // Memberships stays its OWN entry. It arrived on the base branch after this
+      // one was cut, and the catalog cannot absorb it: catalogModel fetches
+      // services, products, courses and coupons, so a membership program would
+      // not appear in the list that replaced its rail line. Collapsing it would
+      // leave /dashboard/memberships reachable only by typing the URL.
+      { to: '/dashboard/memberships', label: 'Memberships', icon: 'nav-plan', visible: (c) => !!c.flags?.community_memberships },
+    ],
+  },
+  {
+    id: 'schedule', label: 'Schedule', icon: 'nav-availability',
+    items: [
+      { to: '/dashboard/availability', label: 'Availability', icon: 'nav-availability' },
+    ],
+  },
+  {
+    id: 'money', label: 'Money', icon: 'rail-earnings',
+    items: [
+      { to: '/dashboard/earnings', label: 'Earnings', icon: 'nav-earnings' },
+      { to: '/dashboard/payments/payouts', label: 'Payouts', icon: 'nav-payouts', matchPrefix: '/dashboard/payments/payouts', badgeKey: 'verification', badgeNoun: 'verify to get paid' },
+      { to: '/dashboard/payments/transactions', label: 'Transactions', icon: 'nav-transactions', matchPrefix: '/dashboard/payments/transactions' },
+      { to: '/dashboard/invoices', label: 'Invoices', icon: 'nav-invoices', matchPrefix: '/dashboard/invoices' },
+    ],
+  },
+  {
+    id: 'grow', label: 'Grow', icon: 'nav-refer',
+    items: [
+      { to: '/dashboard/testimonials', label: 'Social proof', icon: 'nav-profile' },
+      { to: '/dashboard/referrals', label: 'Refer & earn', icon: 'nav-refer' },
+    ],
+  },
+  {
+    id: 'settings', label: 'Settings', icon: 'rail-settings',
+    items: [
+      { to: '/dashboard/profile', label: 'Account', icon: 'nav-profile', matchPrefix: '/dashboard/profile' },
+      { to: '/dashboard/upgrade', label: 'Plan & billing', icon: 'nav-plan' },
+      { to: '/dashboard/kyc', label: 'Verification', icon: 'nav-payouts', matchPrefix: '/dashboard/kyc', badgeKey: 'verification', badgeNoun: 'pending' },
+      { to: '/dashboard/chat', label: 'Help & support', icon: 'nav-chat', matchPrefix: '/dashboard/chat', badgeKey: 'chatUnread', badgeNoun: 'new reply' },
+    ],
+  },
+];
+
 const ROSE = '#E0506F';
 
 /* ------------------------------------------------------------------ *
@@ -117,8 +223,14 @@ export const isLocked = (item, plan) => {
 
 const isVisible = (item, ctx) => (typeof item.visible === 'function' ? item.visible(ctx) : true);
 
+// The ONE place the two navs are chosen between. Both the sidebar and the
+// mobile tab bar call this, so they cannot disagree about which rail is live —
+// which is the same reason the tab bar already shares resolveActive and
+// computeBadges.
+export const navFor = (ctx) => (ctx?.flags?.console_v2 ? NAV_V2 : NAV);
+
 export const visibleSections = (ctx) =>
-  NAV
+  navFor(ctx)
     .map((s) => ({ ...s, items: s.items.filter((i) => isVisible(i, ctx)) }))
     .filter((s) => s.items.length > 0 && isVisible(s, ctx));
 

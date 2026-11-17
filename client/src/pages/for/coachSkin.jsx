@@ -391,13 +391,13 @@ export default function CoachSections({ data, wrap, Counter, icons, routeStart }
       <V2Pricing routeStart={routeStart} Decor={FlagDecor} cardClass={CARD} lift={false} />
 
       {/* ════════ ABOUT ════════ */}
-      <V2About wrap={wrap} label={data.label} background="var(--v2-wash)" Decor={FlagDecor} cardClass={CARD} />
+      <V2About wrap={wrap} label={data.label} background="var(--v2-wash)" compact />
 
       {/* Guides sit directly above the FAQ, as on the bespoke /for pages. */}
       <PageGuides />
 
       {/* ════════ FAQ — worksheet prompts ════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-28">
+      <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto grid max-w-6xl items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
           <div className="text-center lg:sticky lg:top-28 lg:text-left lg:[&_.text-center]:text-left lg:[&_.mx-auto]:mx-0">
             <SectionHead title="Frequently asked questions." center />
@@ -408,23 +408,15 @@ export default function CoachSections({ data, wrap, Counter, icons, routeStart }
       </section>
 
       {/* ════════ FINAL CTA — the summit at sunrise ════════ */}
-      <section className="px-5 pb-24 pt-4 sm:px-8">
-        <div className="relative mx-auto max-w-5xl overflow-hidden rounded-[32px] px-6 pt-16 text-center sm:px-10" style={{ background: `linear-gradient(180deg, #FFF4E8 0%, #FFE2C4 45%, ${SUN} 100%)` }}>
-          <div className="relative z-10">
-            <h2 className="mx-auto max-w-3xl font-heading text-[clamp(1.9rem,3.8vw,2.8rem)] font-extrabold leading-tight tracking-[-0.02em]" style={{ color: 'var(--v2-ink)' }}>{finalCta.headline}</h2>
-            <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-black/70">{finalCta.subline}</p>
-            <Link to={routeStart} className={`mt-8 inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold text-white hover:no-underline ${FOCUS}`} style={{ background: 'var(--v2-accent-cta)' }}>
+      <section className="relative w-full overflow-hidden px-5 py-16 text-center sm:px-8 lg:py-20" style={{ background: `linear-gradient(180deg, #FFF4E8 0%, #FFE2C4 45%, ${SUN} 100%)` }}>
+        <div className="relative mx-auto w-full lg:w-[70%]">
+          <h2 className="mx-auto font-heading text-[clamp(1.9rem,3.8vw,2.8rem)] font-extrabold leading-tight tracking-[-0.02em]" style={{ color: 'var(--v2-ink)' }}>{finalCta.headline}</h2>
+          <p className="mx-auto mt-4 text-[15px] leading-relaxed text-black/70">{finalCta.subline}</p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <Link to={routeStart} className={`inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold text-white hover:no-underline ${FOCUS}`} style={{ background: 'var(--v2-accent-cta)' }}>
               {finalCta.ctaText} <ArrowRight size={16} />
             </Link>
           </div>
-          {/* sun, ridges and the planted flag */}
-          <svg aria-hidden="true" viewBox="0 0 1000 220" preserveAspectRatio="none" className="relative mt-6 block h-[160px] w-[calc(100%+3rem)] -translate-x-6 sm:h-[200px] sm:w-[calc(100%+5rem)] sm:-translate-x-10">
-            <circle cx="470" cy="115" r="70" fill="#FFF7ED" opacity="0.85" />
-            <path d="M0 220 L0 150 L140 90 L260 150 L380 85 L470 125 L650 75 L760 150 L860 105 L1000 165 L1000 220 Z" fill="var(--v2-accent)" opacity="0.55" />
-            <path d="M0 220 L0 185 L180 135 L330 190 L560 62 L760 185 L900 150 L1000 175 L1000 220 Z" fill="var(--v2-dark)" />
-            <path d="M560 62 L560 8" stroke="var(--v2-dark)" strokeWidth="4" strokeLinecap="round" />
-            <path d="M562 10 L604 22 L562 36 Z" fill={MARKER} />
-          </svg>
         </div>
       </section>
     </>

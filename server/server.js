@@ -132,6 +132,20 @@ app.use(permissionsPolicy);
 app.use(hppMiddleware);
 app.use(sanitizeBody);
 app.use(blockSuspiciousRequests);
+
+// Analytics beacons mount HERE, ahead of speedLimiter and the global apiLimiter,
+// and therefore ahead of maintenanceMiddleware too. Three reasons, all the same
+// reason: a telemetry call must never cost a guest a booking.
+//   * apiLimiter is 100 req/min PER IP and DB-backed. Guests behind carrier NAT
+//     share a bucket, beacons flush every 5 s, and every hit writes a
+//     rate_limit_hits row — so the obvious mount would 429 guests mid-booking
+//     AND grow the table analytics is trying not to grow. The per-visitor cap
+//     inside analyticsIngest is in memory and drops instead of refusing.
+//   * speedLimiter would delay a beacon on the booking page.
+//   * In maintenance mode a beacon should be dropped, not answered 503.
+// It still sits behind helmet, hpp, sanitizeBody and blockSuspiciousRequests.
+app.use('/api/analytics', require('./routes/analyticsRoutes'));
+
 app.use(speedLimiter);
 app.use('/api', apiLimiter);
 
@@ -154,6 +168,7 @@ app.use('/api/platform-reviews', require('./routes/platformReviewRoutes'));
 app.use('/api/feedback',    require('./routes/feedbackRoutes'));
 app.use('/api/products',    require('./routes/productRoutes'));
 app.use('/api/courses',     require('./routes/courseRoutes'));
+app.use('/api/memberships', require('./routes/membershipRoutes'));
 app.use('/api/crm',         require('./routes/crmRoutes'));
 app.use('/api/upload',      require('./routes/uploadRoutes'));
 app.use('/api/vendor',      require('./routes/vendorRoutes'));

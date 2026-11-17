@@ -49,7 +49,6 @@ import FeatureFaq from '../../components/features/FeatureFaq';
 const START = '/become-a-host';
 const BLUE = '#7DBA3C';       // Mintu primary green — text + fills on white
 const BLUE_DEEP = '#2E5518';  // deep green — dark section background
-const BLUE_SKY = '#AEDC7E';   // light green — decorative / text on the dark section only
 const PALE = '#EFF6E3';       // soft pale-green (tint of the primary) — tinted section background
 const CREAM = '#F6E3C6';      // Mintu cream — warm accent on "confirmed" moments only
 const INK = '#201E1D';        // Mintu ink
@@ -580,18 +579,6 @@ export default function SchedulingFeature() {
         />
       </section>
 
-      {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
-      <section className="relative overflow-hidden px-5 py-20 text-white sm:px-8 lg:py-28" style={{ background: BLUE_DEEP }}>
-        <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: 'radial-gradient(rgba(174,220,126,0.16) 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
-        <div className="relative mx-auto max-w-4xl text-center">
-          <Reveal as="h2" className="font-heading text-[clamp(2.2rem,5.4vw,3.8rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-white">
-            One link. <span style={{ color: BLUE_SKY }}>Zero back and forth.</span>
-          </Reveal>
-          <Reveal as="p" delay={0.05} className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/75">
-            Set your hours tonight on the free {FREE_PLAN.name} plan. Tomorrow, clients book themselves.
-          </Reveal>
-        </div>
-      </section>
     </main>
   );
 }
