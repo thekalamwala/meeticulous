@@ -29,7 +29,20 @@ const DAY = 24 * 60 * 60 * 1000;
  * precisely what Pro would have kept for them.
  */
 function commissionLeak(bookings = [], { proYearly = 999, now = Date.now() } = {}) {
-  const paid = bookings.filter(isPaid);
+  // TRAILING 12 MONTHS, not financial-year-to-date. CA ruling 2026-11-17 (Q2):
+  // FY-to-date resets on 1 April, so on 2 April a host who paid ₹40,000 in
+  // commission last year is shown ₹0 and told Pro has not paid for itself —
+  // at exactly the season when renewals are decided. A rolling year keeps the
+  // argument honest across the boundary.
+  //
+  // The FY figure still exists, on the tax panel, where a period that
+  // reconciles to a statutory record is what matters. Two questions, two
+  // windows; conflating them is what made this wrong.
+  const since = now - 365 * DAY;
+  const paid = bookings.filter(isPaid).filter((b) => {
+    const at = Date.parse(b.paid_at || b.created_at);
+    return Number.isFinite(at) && at >= since;
+  });
   const commission = round2(paid.reduce((s, b) => s + n(b.commission_applied) + n(b.commission_gst), 0));
 
   // Run-rate over the window the data actually spans, not a flat 12× of one
@@ -49,6 +62,7 @@ function commissionLeak(bookings = [], { proYearly = 999, now = Date.now() } = {
     // is noise wearing a decimal point, and this block is an argument for
     // spending money — it cannot be the one that overstates.
     projectedYear,
+    window: 'trailing_12_months',
     basis: projectedYear == null
       ? 'Not enough history yet to project a year.'
       : `Projected from ${Math.round(spanDays)} days of bookings.`,

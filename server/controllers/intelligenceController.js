@@ -99,6 +99,10 @@ const getMoney = async (req, res) => {
       byMonth: money.byMonth(rows),
       concentration: money.concentration(rows),
       upcoming: money.upcoming(rows),
+      // FY-scoped and measured-only, per the CA ruling: an all-time withholding
+      // total reconciles to no statutory record, and a derived one is a guess
+      // about money the government is holding.
+      withholding: money.withholding(rows),
     });
   } catch (error) {
     return safeError(res, error);

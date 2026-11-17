@@ -290,6 +290,27 @@ Payments
 - Razorpay is source of truth.
 - Verify signatures server-side.
 
+Withholding (TDS / TCS) — when CA sign-off is required
+  Ruled by the founder-CA on 2026-11-17 (PR #371). Cite this when the
+  tax-legal-signoff gate fires, instead of re-litigating it.
+
+  Sign-off IS required where a change determines a withheld amount OR ITS
+  ATTRIBUTION: rate, threshold, section, PAN/GSTIN condition, no-PAN floor,
+  state split, the period attributed to, refund/cancellation reversal, a write
+  to a withholding column, or statutory return/certificate content.
+
+  Sign-off is NOT required to aggregate or present already-persisted
+  withholding. That needs presentation review, not tax sign-off.
+
+  Two standing rules that came out of the same ruling:
+  - Withholding aggregates are FY-SCOPED (1 Apr–31 Mar IST, via
+    services/gst/gstPeriod.js). An all-time total reconciles to no statutory
+    record.
+  - Rates are asserted in ONE file, tests/unit/pricingEngineWithholding.test.js.
+    Every other fixture touching withholding uses deliberately non-statutory
+    amounts, so a changed rate can never be "corrected" into a fixture and
+    mistaken for validation.
+
 Plans
 Starter
 Pro

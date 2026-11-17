@@ -24,6 +24,9 @@
  *   vendor_amount       THE AUTHORITATIVE NET. Not recomputed here — see below.
  */
 
+const { currentFyStart, fyRange, fyLabel } = require('../gst/gstPeriod');
+const { withholdingDisclosure } = require('./disclosures');
+
 const n = (v) => {
   const x = Number(v);
   return Number.isFinite(x) ? x : 0;
@@ -69,7 +72,7 @@ function summarise(bookings = []) {
   const paid = bookings.filter(isPaid);
 
   let gross = 0, platformFee = 0, platformFeeGst = 0, commission = 0, commissionGst = 0;
-  let razorpay = 0, tds = 0, tcs = 0, refunded = 0, net = 0, derivedCount = 0;
+  let razorpay = 0, tds = 0, tcs = 0, refunded = 0, net = 0, derivedCount = 0, derivedValue = 0;
 
   for (const b of paid) {
     gross += n(b.customer_total);
@@ -83,7 +86,10 @@ function summarise(bookings = []) {
     refunded += n(b.refunded_amount);
     const r = netOf(b);
     net += r.net;
-    if (r.derived) derivedCount += 1;
+    // Count AND value, per the CA ruling (Q5): "3 bookings estimated" tells a
+    // host nothing about whether their total can be trusted. ₹340 of ₹400,000
+    // and ₹340 of ₹600 are different situations.
+    if (r.derived) { derivedCount += 1; derivedValue += r.net; }
   }
 
   const count = paid.length;
@@ -104,9 +110,13 @@ function summarise(bookings = []) {
     // against. Net AOV is a different question and gets its own key.
     aov: count ? round2(gross / count) : 0,
     netAov: count ? round2((net - refunded) / count) : 0,
-    // Honesty marker: how many rows had no vendor_amount snapshot and had to be
-    // derived. A non-zero value here is why a figure might not tie exactly.
+    // Honesty markers: how many rows had no vendor_amount snapshot and had to
+    // be derived, and what they are worth. A non-zero value here is why a
+    // figure might not tie exactly, and the share is what decides whether that
+    // matters enough to lead with.
     derivedRows: derivedCount,
+    derivedValue: round2(derivedValue),
+    derivedLeads: count > 0 && derivedCount / count > 0.05,
   };
 }
 
@@ -200,3 +210,67 @@ function upcoming(bookings = []) {
 module.exports = {
   isPaid, netOf, summarise, settlement, byService, byMonth, concentration, upcoming,
 };
+
+/* ── Withholding, FY-scoped and measured-only ────────────────────────────────
+ * CA ruling 2026-11-17, Gate A + Q5.
+ *
+ * TWO RULES, both of which change the number:
+ *
+ * 1. FY-SCOPED. An all-time withholding total reconciles to no statutory
+ *    record. TDS and TCS are deposited, returned and credited per financial
+ *    year, so a figure spanning several of them cannot be checked against
+ *    anything a host or their accountant holds. The FY runs 1 April to 31
+ *    March, IST, and gstPeriod.js already owns that arithmetic.
+ *
+ * 2. MEASURED ONLY. Rows without a vendor_amount snapshot have their net
+ *    DERIVED, and a derived withholding figure is a guess about money the
+ *    government is holding. Those rows are excluded from the totals and
+ *    reported separately as unknown, rather than being folded in and making
+ *    the total look authoritative. An aggregate that silently mixes measured
+ *    and inferred withholding is the one a host would take to their filing.
+ */
+function withholding(bookings = [], { fy = null, now = Date.now() } = {}) {
+  const fyStart = fy || currentFyStart(now);
+  const { fromIso, toIso } = (() => {
+    const r = fyRange(fyStart);
+    // gstPeriod returns its own key names across versions; normalise here so a
+    // rename there cannot silently widen this window to all time.
+    const from = r.fromIso || r.startIso || r.from || r.start;
+    const to = r.toIso || r.endIso || r.to || r.end;
+    if (!from || !to) throw new Error('fyRange did not return a usable range');
+    return { fromIso: from, toIso: to };
+  })();
+
+  const inFy = bookings.filter(isPaid).filter((b) => {
+    const at = b.paid_at || b.created_at;
+    return at && String(at) >= String(fromIso) && String(at) <= String(toIso);
+  });
+
+  // The snapshot is what was actually withheld. No snapshot, no claim.
+  const measured = inFy.filter((b) => b.vendor_amount != null);
+  const derived = inFy.length - measured.length;
+
+  const tds = round2(measured.reduce((s2, b) => s2 + n(b.tds_amount), 0));
+  const tcs = round2(measured.reduce((s2, b) => s2 + n(b.tcs_amount), 0));
+  // What the excluded rows are worth at face value. Reported so a host can see
+  // the size of what is NOT in the total, without it being added to it.
+  const unknownGross = round2(
+    inFy.filter((b) => b.vendor_amount == null).reduce((s2, b) => s2 + n(b.customer_total), 0),
+  );
+
+  return {
+    fy: fyStart,
+    fyLabel: `${fyLabel(fyStart)} to date`,
+    bookingsMeasured: measured.length,
+    // Stated as unknown rather than folded in, per the ruling.
+    bookingsUnknown: derived,
+    unknownGross,
+    unknownLeads: inFy.length > 0 && derived / inFy.length > 0.05,
+    tds,
+    tcs,
+    total: round2(tds + tcs),
+    disclosure: withholdingDisclosure({ periodLabel: `${fyLabel(fyStart)} to date` }),
+  };
+}
+
+module.exports.withholding = withholding;

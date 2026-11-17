@@ -15,17 +15,24 @@ const money = require('../../services/intel/money');
 //   − commission GST    9.00   (18% of 50)
 //   − razorpay fee     20.24
 //   − razorpay tax      3.64
-//   − TDS (1%)         10.00
-//   − TCS (1%)         10.00
+//   − TDS                7.00   ← deliberately NOT a statutory rate
+//   − TCS               13.00   ← see note below
 //   ─────────────────────────
 //   net               897.12
+//
+// CA ruling 2026-11-17 (Q4): the withholding values here are ₹7 and ₹13, which
+// correspond to no rate in force. This fixture tests ARITHMETIC — that the
+// deductions sum and subtract correctly — and never a rate. Statutory numbers
+// here would invite a later reader to "correct" them against a changed rate and
+// believe they had validated something. Rate assertions live in
+// pricingEngineWithholding.test.js, which is the only place they belong.
 const PAID = {
   id: 'b1', payment_status: 'paid', status: 'completed',
   created_at: '2026-10-05T10:00:00Z', paid_at: '2026-10-05T10:02:00Z',
   customer_total: 1000, platform_fee_amount: 0, platform_fee_gst: 0,
   commission_applied: 50, commission_gst: 9,
   razorpay_fee_actual: 20.24, razorpay_tax_actual: 3.64,
-  tds_amount: 10, tcs_amount: 10, refunded_amount: 0,
+  tds_amount: 7, tcs_amount: 13, refunded_amount: 0,
   vendor_amount: 897.12, settlement_status: 'settled', settled_at: '2026-10-07T00:00:00Z',
   client_id: 'g1', guest_name: 'Meera', services: { title: 'Consult' },
 };
@@ -54,7 +61,7 @@ describe('summarise', () => {
     const s = money.summarise([PAID]);
     expect(s).toMatchObject({
       bookings: 1, gross: 1000, commission: 50, commissionGst: 9,
-      razorpayFee: 23.88, tds: 10, tcs: 10, net: 897.12, aov: 1000,
+      razorpayFee: 23.88, tds: 7, tcs: 13, net: 897.12, aov: 1000,
     });
   });
 
