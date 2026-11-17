@@ -25,8 +25,12 @@ import ga4 from './adapters/ga4';
 import pixel from './adapters/pixel';
 import clarity from './adapters/clarity';
 import gtm from './adapters/gtm';
+// First-party, same-origin, and therefore the only adapter an ad-blocker cannot
+// quietly delete. It is last in the list for no reason beyond reading order:
+// each adapter is independent and a throw in one cannot reach another.
+import firstParty from './adapters/firstParty';
 
-const ADAPTERS = [posthog, ga4, pixel, clarity, gtm];
+const ADAPTERS = [posthog, ga4, pixel, clarity, gtm, firstParty];
 
 // Only the real production site may send analytics. Vite's import.meta.env.PROD is
 // ALSO true on Vercel preview builds, so it can't tell preview from prod — gate on

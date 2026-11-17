@@ -24,6 +24,7 @@ export const RESERVED_FIRST_SEGMENTS = [
   'become-a-host', 'login-as-vendor', 'vendor', 'vendor-register', 'auth',
   'backstage', 'super-dashboard', 'admin', 'dashboard', 'user', 'review', 'manage-booking', 'lp', 'for', 'invite',
   'host-lab', // host-dashboard redesign prototype (pages/hostlab/) — sample data only, but it owns a top-level route
+  'preview', // guest-console restyle prototype (/preview/guest) — reuses the guest rail with a base prop
   // /og/blog/:slug — render target for the OG card generator (see pages/OgCard.jsx).
   'og',
   'my-bookings', 'profile', 'reviews', 'loyalty', 'sitemap', 'robots', 'health',
