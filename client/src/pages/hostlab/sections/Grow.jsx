@@ -1,22 +1,27 @@
 // Grow — the destination that does not exist today.
 //
-// Right now a host's growth tools are scattered: profile views sit on the
-// Overview, the conversion funnel sits under them, testimonials are a Catalog
+// Right now a host's growth tools are scattered: testimonials are a Catalog
 // sibling, Refer & Earn is buried in Settings, and reviews received have no page
 // at all. Pulled together they answer one question a booking tool must answer:
-// "why am I not getting more bookings, and what do I do about it?"
+// "how do I get more people to the page, and more proof on it?"
 //
-// Everything live is preserved — profile views, the Pro-gated funnel,
-// testimonials CRUD, the referral link and its rewards.
+// Everything live is preserved — testimonials CRUD, the referral link and its
+// rewards, and the booking page itself.
+//
+// The measurement half of growth is NOT here. Profile views and the Pro-gated
+// funnel moved to Intelligence (nav.js SUBPAGES.intelligence), which answers
+// "why are bookings happening or not" with real charts and a server-enforced
+// gate. This page used to carry a thinner copy of the same thing; two surfaces
+// answering one question is what the IA decision existed to prevent.
 import { useState } from 'react';
 import {
   CheckCircle2, Copy, Eye, Gift, Link2, MessageSquare, Pencil, Plus, QrCode,
-  Quote, Share2, Star, Trash2, TrendingUp, Users,
+  Quote, Share2, Star, Trash2, Users,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button, cn } from '../../../components/dashboard/ui';
 import {
-  Avatar, Drawer, Field, Funnel, LabInput, LabTextarea, Panel, RankedBars, Tile,
+  Avatar, Drawer, Field, LabInput, LabTextarea, Panel, Tile,
   SubPageHeader, inr, pct, relDay, useSubPage,
 } from '../labUi';
 import mock from '../mockData';
@@ -65,72 +70,6 @@ const BookingPage = () => {
           ))}
         </ul>
       </Panel>
-    </div>
-  );
-};
-
-/* ── Insights ──────────────────────────────────────────────────────────── */
-const Insights = () => {
-  const f = mock.funnel;
-  const viewsDelta = Math.round(((f.views - f.views_prev) / f.views_prev) * 100);
-  const bookDelta = Math.round(((f.completed - f.completed_prev) / f.completed_prev) * 100);
-
-  return (
-    <div className="flex flex-col gap-2.5">
-      <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
-        <Tile label="Page views" value={f.views.toLocaleString('en-IN')} delta={viewsDelta} />
-        <Tile label="Bookings" value={f.completed} delta={bookDelta} />
-        <Tile label="View → booking" value={pct(f.completed / f.views)} hint="A healthy booking page sits at 8–12%" />
-        <Tile label="Paid of booked" value={pct(f.paid / f.completed)} hint={`${f.completed - f.paid} did not complete payment`} />
-      </div>
-
-      <div className="grid gap-2.5 lg:grid-cols-2">
-        <Panel title="Where people drop off" subtitle="Last 30 days">
-          <Funnel
-            stages={[
-              { label: 'Saw your page', value: f.views },
-              { label: 'Opened a service', value: f.started },
-              { label: 'Finished booking', value: f.completed },
-              { label: 'Paid', value: f.paid },
-            ]}
-          />
-          <p className="mt-2.5 rounded-lg bg-blush p-2 text-[11px] font-medium text-ink/70">
-            The biggest loss is page → service. Of {f.views.toLocaleString('en-IN')} people who saw your page,
-            {' '}{(f.views - f.started).toLocaleString('en-IN')} never opened a service. Usually that means the page
-            is not saying fast enough what you do.
-          </p>
-        </Panel>
-
-        <div className="flex flex-col gap-2.5">
-          <Panel title="Where they came from" subtitle="Views, and how many turned into bookings">
-            <RankedBars
-              rows={mock.trafficSources}
-              valueKey="views"
-              secondary={(r) => `· ${r.bookings} booked (${pct(r.bookings / r.views)})`}
-            />
-          </Panel>
-          <Panel title="Worth knowing">
-            <ul className="flex flex-col gap-1.5 text-[11.5px] font-medium text-ink/70">
-              {[
-                'WhatsApp shares convert best — 13% of those views book. Instagram brings more people but books fewer.',
-                'Friday 4pm is your most-requested slot and you are closed. Opening it is the cheapest booking you will ever get.',
-                'Your free Discovery call converts 41% of viewers. Two of every five who take it buy a paid service after.',
-              ].map((t) => (
-                <li key={t} className="flex items-start gap-1.5">
-                  <TrendingUp className="mt-0.5 h-4 w-4 shrink-0 text-maroon" strokeWidth={2.2} />
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </Panel>
-        </div>
-      </div>
-
-      <p className="rounded-xl border-2 border-marigold-300 bg-marigold-100 px-2.5 py-1.5 text-[11px] font-medium text-marigold-800">
-        Honest note: of everything on this tab, only <strong>page views</strong> and the view → booking funnel exist in
-        production today (v3.205). Traffic sources, per-source conversion and the written observations need event
-        tracking on the public booking page — see the roadmap, P1.
-      </p>
     </div>
   );
 };
@@ -314,7 +253,6 @@ const Grow = () => {
       />
 
       {page.slug === 'page' && <BookingPage />}
-      {page.slug === 'insights' && <Insights />}
       {page.slug === 'proof' && <SocialProof />}
       {page.slug === 'refer' && <Refer />}
     </div>

@@ -249,12 +249,15 @@ const Today = ({ go }) => {
           onClick={() => go('money/earnings')}
         />
         <Tile label="Upcoming" value={upcoming} hint="Next 30 days" onClick={() => go('bookings/list')} />
+        {/* Traffic lives in Intelligence now. Grow › Insights was removed on the
+            Creator Intelligence branch because it duplicated Intelligence ›
+            Audience, so both of Today's links to it point there instead. */}
         <Tile
           label="Page views"
           value={mock.funnel.views.toLocaleString('en-IN')}
           delta={viewsDelta}
           deltaLabel="vs last 30 days"
-          onClick={() => go('grow/insights')}
+          onClick={() => go('intelligence/audience')}
         />
       </div>
 
@@ -268,7 +271,7 @@ const Today = ({ go }) => {
             title="Where bookings came from"
             subtitle="Last 30 days"
             action={(
-              <Button size="sm" variant="ghost" onClick={() => go('grow/insights')}>
+              <Button size="sm" variant="ghost" onClick={() => go('intelligence/audience')}>
                 Details <ArrowRight className="h-3 w-3" strokeWidth={2.6} />
               </Button>
             )}

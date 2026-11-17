@@ -5,6 +5,11 @@
 // a feature cannot quietly vanish from the redesign without vanishing from here.
 export const LIVE_PAGE_MAP = [
   ['/dashboard', 'Today'],
+  // The analytics half of the live Overview — the v3.205 profile-views tile and
+  // the Pro-gated ConversionFunnel — lands in Intelligence, not on Today. Listed
+  // separately because this table is the preservation checklist: without a row,
+  // a live feature could vanish into a redesign unnoticed.
+  ['/dashboard (profile views + conversion funnel)', 'Intelligence › Overview'],
   ['/dashboard/bookings', 'Bookings'],
   ['/dashboard/availability', 'Schedule › Hours'],
   ['/dashboard/clients', 'Clients'],

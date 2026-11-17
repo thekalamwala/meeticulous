@@ -15,7 +15,8 @@
 // and children indented under a hairline like URBN's Advertisements and Deals.
 // ─────────────────────────────────────────────────────────────────────────────
 import {
-  CalendarDays, CalendarRange, CreditCard, Home, Package, Settings, TrendingUp, Users,
+  CalendarDays, CalendarRange, CreditCard, Home, Lightbulb, LineChart, MessagesSquare,
+  Package, Settings, TrendingUp, Users,
 } from 'lucide-react';
 
 export const BASE = '/host-lab';
@@ -41,15 +42,45 @@ export const SUBPAGES = {
     { slug: 'dates', label: 'Specific dates', blurb: 'One-offs that override the weekly pattern.' },
     { slug: 'calendars', label: 'Calendars', blurb: 'Busy time elsewhere should close the slot here.' },
   ],
+  // Creator Intelligence. Four pages, one question each — see
+  // docs/superpowers/specs/2026-11-16-creator-intelligence-design.md §8.
+  // "Revenue" here is the analysis; Money › Earnings is the ledger behind it.
+  intelligence: [
+    { slug: 'overview', label: 'Overview', blurb: 'What your business did, and what to do next.' },
+    { slug: 'revenue', label: 'Revenue', blurb: 'Every rupee in, every deduction, and what is coming.' },
+    { slug: 'audience', label: 'Audience', blurb: 'Who arrives, and where they fall out.' },
+    { slug: 'demand', label: 'Demand', blurb: 'When you are wanted, and who keeps coming back.' },
+  ],
   money: [
     { slug: 'earnings', label: 'Earnings', blurb: 'What you have made, and what is making it.' },
     { slug: 'payouts', label: 'Payouts', blurb: 'Where your money is, and when it lands.' },
     { slug: 'transactions', label: 'Transactions', blurb: 'Every payment, fee and refund.' },
     { slug: 'invoices', label: 'Invoices', blurb: 'GST invoices, issued and received.' },
   ],
+  // Insights — the moves, and whether they worked. Its own destination rather
+  // than a card on Intelligence › Overview: a recommendation you scroll past is
+  // not a recommendation. "What worked" is what makes the advice honest.
+  insights: [
+    { slug: 'week', label: 'This week', blurb: 'The moves on the table now, each with its evidence.' },
+    { slug: 'history', label: 'History', blurb: 'Every move already surfaced, and what you did with it.' },
+    { slug: 'worked', label: 'What worked', blurb: 'The measured result of the ones you acted on.' },
+  ],
+  // Community. The console's view of /community — the part that is about this
+  // host. Reading and posting stay in the community itself; a second feed here
+  // would be the Grow › Insights mistake again.
+  community: [
+    { slug: 'activity', label: 'Activity', blurb: 'What you have posted, and what it earned you.' },
+    { slug: 'mentions', label: 'Mentions', blurb: 'Posts that name you, while the thread is still live.' },
+    { slug: 'answer', label: 'Answer', blurb: 'Open questions you could answer. The cheapest visibility there is.' },
+    { slug: 'spaces', label: 'Spaces', blurb: 'The five rooms, and which ones you may post in.' },
+  ],
   grow: [
     { slug: 'page', label: 'Booking page', blurb: 'The one link worth sharing, and how to make it work harder.' },
-    { slug: 'insights', label: 'Insights', blurb: 'Why bookings are or are not happening.' },
+    // "Insights" used to sit here. It was page views, a drop-off funnel, traffic
+    // sources and three written observations — every one of which Intelligence
+    // now answers, with real charts and a Pro gate. Two surfaces answering
+    // "why are bookings happening or not" is the duplication the IA decision
+    // existed to prevent, so this one goes and Intelligence keeps it.
     { slug: 'proof', label: 'Social proof', blurb: 'Reviews guests left you, and the quotes you added.' },
     { slug: 'refer', label: 'Refer & earn', blurb: 'Invite a host; you both get paid when they go live.' },
   ],
@@ -77,8 +108,13 @@ export const NAV = [
     items: [
       { to: 'catalog', label: 'Catalog', icon: Package },
       { to: 'schedule', label: 'Schedule', icon: CalendarRange, pages: 'schedule' },
+      { to: 'intelligence', label: 'Intelligence', icon: LineChart, pages: 'intelligence' },
+      { to: 'insights', label: 'Insights', icon: Lightbulb, pages: 'insights', badge: 3 },
       { to: 'money', label: 'Money', icon: CreditCard, pages: 'money' },
       { to: 'grow', label: 'Grow', icon: TrendingUp, pages: 'grow', badge: 2 },
+      // Badge = unread mentions. A guest naming you by name is the highest-intent
+      // moment in the community, so it earns a count in the rail.
+      { to: 'community', label: 'Community', icon: MessagesSquare, pages: 'community', badge: 1 },
     ],
   },
   {
