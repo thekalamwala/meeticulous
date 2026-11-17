@@ -62,26 +62,11 @@ const Hours = ({ schedule, setSchedule, dirty }) => {
     toast.success(`${from[0].toUpperCase() + from.slice(1)}'s hours copied to ${targets.length} days`);
   };
 
-  const totalHours = useMemo(
-    () => Object.values(schedule).flat().reduce((n, sl) => n + (minutesOf(sl.end) - minutesOf(sl.start)), 0) / 60,
-    [schedule],
-  );
-
+  // Untitled on purpose. The page heading above says "Hours" and carries the
+  // week's total; a panel title here would be the same thing a third time,
+  // inside 40px. The button and the stat moved up to that heading.
   return (
-    <Panel
-      title="Weekly hours"
-      subtitle={`${totalHours.toFixed(1)} bookable hours a week · ${mock.availability.timezone}`}
-      action={(
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => copyTo('monday', ['tuesday', 'wednesday', 'thursday', 'friday'])}
-        >
-          <Copy className="h-4 w-4" strokeWidth={2.4} /> Same every weekday
-        </Button>
-      )}
-      flush
-    >
+    <Panel flush>
       <ul className="divide-y-2 divide-neutral-200">
         {DAYS.map(([key, label]) => {
           const slots = schedule[key];
@@ -196,7 +181,9 @@ const Hours = ({ schedule, setSchedule, dirty }) => {
 /* ── Rules ─────────────────────────────────────────────────────────────── */
 const Rules = ({ rules, setRules }) => (
   <div className="grid gap-2.5 lg:grid-cols-2">
-    <Panel title="Booking rules" subtitle="The guard rails on every slot you offer">
+    {/* Two panels here, so the titles earn their place: they tell the two
+        groups apart. The subtitle did not — it was the page blurb again. */}
+    <Panel title="Booking rules">
       <div className="grid gap-2 sm:grid-cols-2">
         <Field label="Time zone" hint="Guests always see their own local time.">
           <LabSelect value={rules.timezone} onChange={(e) => setRules((r) => ({ ...r, timezone: e.target.value }))}>
@@ -252,8 +239,7 @@ const Rules = ({ rules, setRules }) => (
 );
 
 /* ── Dates ─────────────────────────────────────────────────────────────── */
-const Dates = ({ overrides, setOverrides, blocked, setBlocked }) => {
-  const [adding, setAdding] = useState(false);
+const Dates = ({ overrides, setOverrides, blocked, setBlocked, adding, setAdding }) => {
   const [form, setForm] = useState({ date: '', kind: 'hours', start: '10:00', end: '14:00', label: '' });
 
   const add = () => {
@@ -270,12 +256,7 @@ const Dates = ({ overrides, setOverrides, blocked, setBlocked }) => {
   };
 
   return (
-    <Panel
-      title="Specific dates"
-      subtitle="One-offs that override the weekly pattern"
-      action={<Button size="sm" onClick={() => setAdding((v) => !v)}><CalendarPlus className="h-4 w-4" strokeWidth={2.4} /> Add a date</Button>}
-      flush
-    >
+    <Panel flush>
       {adding && (
         <div className="border-b-2 border-neutral-200 bg-cream p-2.5">
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
@@ -372,7 +353,7 @@ const Dates = ({ overrides, setOverrides, blocked, setBlocked }) => {
 const Calendars = () => {
   const [cals, setCals] = useState(mock.availability.calendars);
   return (
-    <Panel title="Connected calendars" subtitle="Busy time elsewhere should close the slot here" flush>
+    <Panel flush>
       <ul className="divide-y-2 divide-neutral-200">
         {cals.map((c) => (
           <li key={c.id} className="flex flex-wrap items-center gap-2 px-2.5 py-2">
@@ -495,17 +476,55 @@ const Schedule = () => {
   const [overrides, setOverrides] = useState(mock.availability.date_overrides);
   const [blocked, setBlocked] = useState(mock.availability.blocked_dates);
   const [dirty, setDirty] = useState(false);
+  const [addingDate, setAddingDate] = useState(false);
   const setSchedule = (fn) => { setScheduleRaw(fn); setDirty(true); };
+
+  const totalHours = useMemo(
+    () => Object.values(schedule).flat().reduce((n, sl) => n + (minutesOf(sl.end) - minutesOf(sl.start)), 0) / 60,
+    [schedule],
+  );
+
+  // Each sub-page is a page, so it gets one heading and that heading carries
+  // the page's action. Panels underneath are unnamed where there is only one
+  // of them — "Specific dates" over a panel called "Specific dates" was the
+  // same sentence twice, 30px apart.
+  const sameEveryWeekday = () => {
+    setSchedule((s) => {
+      const next = { ...s };
+      ['tuesday', 'wednesday', 'thursday', 'friday'].forEach((d) => {
+        next[d] = s.monday.map((sl) => ({ ...sl }));
+      });
+      return next;
+    });
+    toast.success("Monday's hours copied to the rest of the week");
+  };
+
+  const headerAction = {
+    hours: (
+      <Button size="sm" variant="outline" onClick={sameEveryWeekday}>
+        <Copy className="h-4 w-4" strokeWidth={2.4} /> Same every weekday
+      </Button>
+    ),
+    dates: (
+      <Button size="sm" onClick={() => setAddingDate((v) => !v)}>
+        <CalendarPlus className="h-4 w-4" strokeWidth={2.4} /> Add a date
+      </Button>
+    ),
+  }[page.slug];
 
   return (
     <div className="flex flex-col gap-2.5">
-      <SubPageHeader page={page} />
+      <SubPageHeader page={page} action={headerAction}>
+        {page.slug === 'hours'
+          ? `${totalHours.toFixed(1)} bookable hours a week · ${mock.availability.timezone}`
+          : undefined}
+      </SubPageHeader>
 
       <div className="grid gap-2.5 lg:grid-cols-[1.5fr_1fr]">
         <div className="flex min-w-0 flex-col gap-2.5">
           {page.slug === 'hours' && <Hours schedule={schedule} setSchedule={setSchedule} dirty={dirty} />}
           {page.slug === 'rules' && <Rules rules={rules} setRules={setRules} />}
-          {page.slug === 'dates' && <Dates overrides={overrides} setOverrides={setOverrides} blocked={blocked} setBlocked={setBlocked} />}
+          {page.slug === 'dates' && <Dates overrides={overrides} setOverrides={setOverrides} blocked={blocked} setBlocked={setBlocked} adding={addingDate} setAdding={setAddingDate} />}
           {page.slug === 'calendars' && <Calendars />}
         </div>
         <div className="min-w-0">
