@@ -1,5 +1,7 @@
-// Money — earnings, payouts, transactions and invoices as four tabs of one
-// destination instead of four rail items.
+// Money — earnings, payouts, transactions and invoices, each its own page
+// under one rail item. They were four separate rail entries; they are four
+// routes now, because they are four views of one subject rather than one list
+// filtered four ways.
 //
 // Kept: the period selector, the trend chart, the automatic Razorpay-Route
 // settlement states, the host-as-buyer invoice list, the free-plan commission
@@ -13,9 +15,9 @@ import {
   FileText, Info, Receipt, ShieldCheck, TrendingUp,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Button, Modal, cn } from '../../../components/dashboard/ui';
+import { Button, cn } from '../../../components/dashboard/ui';
 import {
-  BarChart, Panel, RankedBars, StatusPill, Tile,
+  BarChart, Drawer, Panel, RankedBars, StatusPill, Tile,
   SubPageHeader, fmtDayFull, inr, relDay, useSubPage,
 } from '../labUi';
 import { Filter, FilterBar } from '../filters';
@@ -99,7 +101,13 @@ const Earnings = () => {
         <Tile label="Earned" value={inr(total, { compact: true })} delta={dTotal} deltaLabel={label} />
         <Tile label="Bookings paid" value={count} delta={dCount} deltaLabel={label} />
         <Tile label="Average booking" value={inr(avg)} delta={dAvg} deltaLabel={label} />
-        <Tile label="Platform fees paid" value={inr(0)} hint="Pro plan · 0% commission" />
+        {/* Summed, not asserted. This tile was a hardcoded ₹0 beside a
+            Transactions page that added up ₹3.3k of fees on the same bookings. */}
+        <Tile
+          label="Platform fees paid"
+          value={inr(mock.bookings.reduce((n, b) => n + b.platform_fee, 0), { compact: true })}
+          hint={mock.COMMISSION_RATE ? `Starter plan · ${mock.COMMISSION_RATE * 100}% commission` : 'Pro plan · 0% commission'}
+        />
       </div>
 
       <Panel title="Revenue by month" subtitle="Every paid booking, product and course">
@@ -142,13 +150,19 @@ const Payouts = () => {
     <div className="flex flex-col gap-2.5">
       <div className="grid gap-2 lg:grid-cols-[1.2fr_1fr_1fr]">
         <Tile accent label="Ready to withdraw" value={inr(available)} hint={`Lands in ${bank.label} in about 2 working days`}>
-          <Button
-            size="sm"
-            className="mt-2.5 w-fit bg-white text-maroon hover:bg-pink-100"
+          {/* Not the kit Button. Overriding its colours from the outside is
+              how this one broke: `cn` is a plain joiner, so `bg-white` beat
+              `bg-maroon` while `text-white` beat `text-maroon`, and the page's
+              primary action rendered as white text on a white pill — invisible,
+              on the button that moves money. A tile with its own background
+              styles its own button. */}
+          <button
+            type="button"
             onClick={() => setWithdrawing(true)}
+            className="mt-2.5 inline-flex h-8 w-fit items-center gap-1.5 rounded-full bg-white px-3 text-[11.5px] font-bold text-maroon transition hover:bg-pink-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
           >
             <ArrowDownToLine className="h-4 w-4" strokeWidth={2.4} /> Withdraw now
-          </Button>
+          </button>
         </Tile>
         <Tile label="Clearing" value={inr(clearing)} hint="Razorpay holds new money briefly before release" />
         <Tile label="Held until the session happens" value={inr(held)} hint="Released when you mark the booking done" />
@@ -194,19 +208,15 @@ const Payouts = () => {
         </ul>
       </Panel>
 
-      <Modal
+      {/* A drawer, like every other side surface here. The lab dropped the kit
+          Modal; this was the last one left. Withdrawing is irreversible, so it
+          still asks — it just asks from the side, with the arithmetic in view. */}
+      <Drawer
         open={withdrawing}
         onClose={() => setWithdrawing(false)}
         title="Withdraw your balance"
-        size="sm"
-        footer={(
-          <>
-            <Button variant="outline" onClick={() => setWithdrawing(false)}>Cancel</Button>
-            <Button onClick={() => { toast.success(`${inr(available)} on its way to ${mock.payouts.bank.label}`); setWithdrawing(false); }}>
-              Withdraw {inr(available)}
-            </Button>
-          </>
-        )}
+        subtitle={`${inr(available)} to ${bank.label}`}
+        width="sm:w-[380px]"
       >
         <ul className="flex flex-col gap-1.5 text-[11.5px]">
           {[
@@ -225,7 +235,16 @@ const Payouts = () => {
           <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2.2} />
           {inr(clearing)} is still clearing and {inr(held)} is held until those sessions happen. Both arrive on later payouts automatically.
         </p>
-      </Modal>
+        <div className="mt-3 flex gap-1.5">
+          <Button
+            size="sm"
+            onClick={() => { toast.success(`${inr(available)} on its way to ${bank.label}`); setWithdrawing(false); }}
+          >
+            Withdraw {inr(available)}
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => setWithdrawing(false)}>Cancel</Button>
+        </div>
+      </Drawer>
     </div>
   );
 };
@@ -244,15 +263,42 @@ const Transactions = () => {
       .sort((a, b) => new Date(b.scheduled_at) - new Date(a.scheduled_at));
   }, [q, status]);
 
-  const gross = rows.reduce((n, b) => n + b.amount, 0);
-  const fees = rows.reduce((n, b) => n + b.platform_fee, 0);
+  // Only paid rows count. Summing every row put unpaid bookings into "Net to
+  // you", which is money that has not arrived — the one number on this page a
+  // host would act on. What is outstanding is said separately, as what it is.
+  const settled = rows.filter((b) => b.payment_status === 'paid');
+  const gross = settled.reduce((n, b) => n + b.amount, 0);
+  const fees = settled.reduce((n, b) => n + b.platform_fee, 0);
+  const owed = rows.filter((b) => b.payment_status === 'unpaid');
+  const outstanding = owed.reduce((n, b) => n + b.amount, 0);
+  // On Pro there is no commission, so Fee is empty on every row and Net is
+  // Gross again. Two columns of nothing. A Starter host gets both back.
+  const charged = mock.COMMISSION_RATE > 0;
 
   return (
     <div className="flex flex-col gap-2.5">
       <div className="grid grid-cols-3 gap-2">
-        <Tile label="Gross" value={inr(gross, { compact: true })} />
-        <Tile label="Platform fees" value={inr(fees, { compact: true })} />
-        <Tile label="Net to you" value={inr(gross - fees, { compact: true })} />
+        <Tile label="Gross collected" value={inr(gross, { compact: true })} hint={`${settled.length} paid`} />
+        <Tile
+          label="Platform fees"
+          value={inr(fees, { compact: true })}
+          hint={mock.COMMISSION_RATE ? `${mock.COMMISSION_RATE * 100}% of each sale` : 'Pro pays no commission'}
+        />
+        {charged ? (
+          <Tile
+            label="Net to you"
+            value={inr(gross - fees, { compact: true })}
+            hint={owed.length ? `${inr(outstanding, { compact: true })} still unpaid, not counted` : 'Everything shown is settled'}
+          />
+        ) : (
+          /* With no commission, "net" would just be "gross" a second time.
+             What is still owed is the fact worth the space. */
+          <Tile
+            label="Awaiting payment"
+            value={inr(outstanding, { compact: true })}
+            hint={owed.length ? `${owed.length} booking${owed.length > 1 ? 's' : ''} unpaid` : 'Nothing outstanding'}
+          />
+        )}
       </div>
 
       <FilterBar
@@ -284,7 +330,7 @@ const Transactions = () => {
           <table className="w-full text-[11.5px]">
             <thead>
               <tr className="border-b-2 border-neutral-200 bg-cream text-[10px] uppercase tracking-wide text-ink/45">
-                {['Date', 'Ref', 'Client', 'Service', 'Status', 'Gross', 'Fee', 'Net'].map((h) => (
+                {['Date', 'Ref', 'Client', 'Service', 'Status', 'Gross', ...(charged ? ['Fee', 'Net'] : [])].map((h) => (
                   <th key={h} scope="col" className={cn('px-3 py-2 font-bold', ['Gross', 'Fee', 'Net'].includes(h) ? 'text-right' : 'text-left')}>{h}</th>
                 ))}
               </tr>
@@ -296,10 +342,24 @@ const Transactions = () => {
                   <td className="px-3 py-2 font-mono text-[10.5px] text-ink/55">{b.ref}</td>
                   <td className="px-3 py-2 font-bold text-ink">{b.guest_name}</td>
                   <td className="px-3 py-2 max-w-[160px] truncate font-medium text-ink/70">{b.services.title}</td>
-                  <td className="px-3 py-2"><StatusPill status={b.payment_status} /></td>
+                  {/* Paid is the ordinary outcome, so it wears no pill — with one
+                      on every row the two that matter stopped standing out. And
+                      an unpaid row has no net yet: printing one in confident
+                      maroon read as money received. */}
+                  <td className="px-3 py-2">
+                    {b.payment_status === 'paid'
+                      ? <span className="text-[10.5px] font-medium text-ink/40">Paid</span>
+                      : <StatusPill status={b.payment_status} />}
+                  </td>
                   <td className="px-3 py-2 text-right font-bold tabular-nums text-ink">{inr(b.amount)}</td>
-                  <td className="px-3 py-2 text-right tabular-nums text-ink/55">{b.platform_fee ? `−${inr(b.platform_fee)}` : '—'}</td>
-                  <td className="px-3 py-2 text-right font-bold tabular-nums text-maroon">{inr(b.amount - b.platform_fee)}</td>
+                  {charged && (
+                    <>
+                      <td className="px-3 py-2 text-right tabular-nums text-ink/55">{b.platform_fee ? `−${inr(b.platform_fee)}` : '—'}</td>
+                      <td className="px-3 py-2 text-right font-bold tabular-nums text-maroon">
+                        {b.payment_status === 'paid' ? inr(b.amount - b.platform_fee) : <span className="font-medium text-ink/30">—</span>}
+                      </td>
+                    </>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -315,7 +375,9 @@ const Transactions = () => {
               </span>
               <span className="shrink-0 text-right">
                 <span className="block text-[11.5px] font-bold text-ink">{inr(b.amount)}</span>
-                <span className="block text-[10px] font-medium text-ink/45">net {inr(b.amount - b.platform_fee)}</span>
+                <span className="block text-[10px] font-medium text-ink/45">
+                  {b.payment_status !== 'paid' ? 'not paid yet' : charged ? `net ${inr(b.amount - b.platform_fee)}` : 'paid'}
+                </span>
               </span>
             </li>
           ))}
@@ -325,7 +387,7 @@ const Transactions = () => {
 
       <p className="flex items-start gap-1.5 rounded-xl border-2 border-neutral-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-ink/60">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning-fg" strokeWidth={2.2} />
-        Refunds are not automatic. Cancelling a paid booking tells the guest but does not return the money — you issue a refund from the row here. That is true today and the prototype keeps it, loudly.
+        Refunds are not automatic. Cancelling a paid booking tells the guest but does not return the money — you issue the refund from the row here.
       </p>
     </div>
   );
@@ -362,16 +424,12 @@ const Invoices = () => (
       </ul>
     </Panel>
 
-    <Panel title="Invoices you issued" subtitle="GST invoices your guests received for their bookings">
-      <div className="flex flex-col items-center gap-1.5 py-8 text-center">
-        <Receipt className="h-6 w-6 text-maroon/30" strokeWidth={1.8} />
-        <p className="text-[12px] font-bold text-ink">Not built yet</p>
-        <p className="max-w-md text-[11px] font-medium text-ink/55">
-          Today a host can see the invoices they received but not the ones their guests got. Hosts who file GST ask for this list every quarter. It is a P1 in the roadmap, not a prototype trick.
-        </p>
-        <Button size="sm" variant="outline" className="mt-1" onClick={() => toast.success('Noted — you want this')}>Tell us you need it</Button>
-      </div>
-    </Panel>
+    {/* The gap is real and worth recording, but it was an empty panel with a
+        button that did nothing. One line states it. */}
+    <p className="flex items-start gap-1.5 rounded-lg border-2 border-neutral-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-ink/60">
+      <Receipt className="mt-0.5 h-4 w-4 shrink-0 text-ink/35" strokeWidth={2.2} />
+      The invoices your guests received are not listed anywhere yet. Hosts who file GST ask for them every quarter — P1 in the roadmap.
+    </p>
   </div>
 );
 
