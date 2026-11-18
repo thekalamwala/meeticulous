@@ -6,7 +6,9 @@ import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import PageGuides, { GUIDES_IN_PAGE } from './components/common/PageGuides';
 import DashboardLayout from './components/common/DashboardLayout';
+import DashboardLayoutV2 from './components/common/DashboardLayoutV2';
 import OverviewLayout from './components/common/OverviewLayout';
+import useFeatureFlags from './hooks/useFeatureFlags';
 import AdminLayout from './components/common/AdminLayout';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import HostRoute from './components/common/HostRoute';
@@ -395,6 +397,14 @@ function DashboardWrapper({ children }) {
   useReferralCapture();
   useGiftRedeem();
   const { pathname } = useLocation();
+  const { flags } = useFeatureFlags();
+  // dashboard_v2 (ships OFF): the Host Lab shell adopted as the real layout. One
+  // flat/compact rail for EVERY host page, Overview included — so it bypasses
+  // OverviewLayout too. Fails closed: an unknown/undefined flag is falsy, so the
+  // current chrome is served until the flag is explicitly flipped on.
+  if (flags.dashboard_v2) {
+    return <HostRoute><DashboardLayoutV2>{children}</DashboardLayoutV2></HostRoute>;
+  }
   // The Overview page ships the reference chrome (207px single-column sidebar +
   // toolbar). Every other host page keeps the existing rail/panel DashboardLayout.
   if (pathname === '/dashboard') {

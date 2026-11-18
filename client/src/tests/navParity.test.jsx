@@ -14,6 +14,7 @@
 import { describe, it, expect } from 'vitest';
 import { NAV, NAV_V2, navFor, visibleSections, resolveActive, firstItemTo } from '../components/common/ConsoleSidebar';
 import { HOME_OF } from '../pages/catalog/catalogModel';
+import { GROUPS } from '../components/common/dashboardV2Groups';
 
 const routesOf = (nav) => nav.flatMap((s) => s.items.map((i) => i.to));
 const ALL_FLAGS = { flags: { guest_messaging: true, course_purchase: true, coupons: true, community_memberships: true } };
@@ -57,6 +58,28 @@ describe('nothing becomes unreachable under v2', () => {
   it('lists every route exactly once, so no page has two homes', () => {
     const seen = routesOf(NAV_V2);
     expect(seen).toHaveLength(new Set(seen).size);
+  });
+});
+
+describe('the dashboard_v2 shell reaches every section', () => {
+  // The v2 shell (DashboardLayoutV2) renders NAV_V2's sections bucketed into
+  // GROUPS. A section id present in NAV_V2 but absent from every bucket would be
+  // invisible on the new rail — the same quiet regression navParity guards for
+  // the rail itself, one level up. With every flag on, ALL sections are visible.
+  const ctx = { flags: { console_v2: true, guest_messaging: true, course_purchase: true, coupons: true, community_memberships: true } };
+  const bucketed = new Set(GROUPS.flatMap((g) => g.ids));
+
+  it('buckets every visible v2 section into a group', () => {
+    const stranded = visibleSections(ctx).map((s) => s.id).filter((id) => !bucketed.has(id));
+    // If this fails you added a NAV_V2 section and did not place it in a GROUPS
+    // bucket in dashboardV2Groups.js, so it cannot be reached from the v2 rail.
+    expect(stranded).toEqual([]);
+  });
+
+  it('buckets no id that is not a real section', () => {
+    const real = new Set(NAV_V2.map((s) => s.id));
+    const ghosts = [...bucketed].filter((id) => !real.has(id));
+    expect(ghosts).toEqual([]);
   });
 });
 
