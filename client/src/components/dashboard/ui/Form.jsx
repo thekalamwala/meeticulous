@@ -2,9 +2,9 @@ import { forwardRef } from 'react';
 import { cn } from './cn';
 
 const fieldBase =
-  'block w-full rounded border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 shadow-sm transition-colors ' +
+  'block w-full rounded border border-neutral-300 bg-white text-sm text-neutral-900 placeholder:text-neutral-400 shadow-sm transition-colors ' +
   'focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 ' +
-  'disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500';
+  'disabled:cursor-not-allowed disabled:bg-neutral-50 disabled:text-neutral-500';
 
 export const Input = forwardRef(function Input({ className = '', invalid = false, ...props }, ref) {
   return (
@@ -56,7 +56,7 @@ export const Select = forwardRef(function Select({ className = '', invalid = fal
 
 export function Label({ htmlFor, required, children, className = '' }) {
   return (
-    <label htmlFor={htmlFor} className={cn('mb-1.5 block text-sm font-medium text-gray-700', className)}>
+    <label htmlFor={htmlFor} className={cn('mb-1.5 block text-sm font-medium text-neutral-700', className)}>
       {children}
       {required && <span className="ml-0.5 text-red-500">*</span>}
     </label>
@@ -75,7 +75,7 @@ export function FormField({ label, htmlFor, required, hint, error, children, cla
       {error ? (
         <p className="mt-1 text-xs text-red-600">{error}</p>
       ) : hint ? (
-        <p className="mt-1 text-xs text-gray-500">{hint}</p>
+        <p className="mt-1 text-xs text-neutral-500">{hint}</p>
       ) : null}
     </div>
   );

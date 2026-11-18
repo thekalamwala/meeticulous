@@ -39,9 +39,9 @@ export function InfiniteFeed({
       {hasMore && <div ref={sentinelRef} aria-hidden="true" className="h-1" />}
       {loading && items.length > 0 && <SkeletonCard />}
       {error && items.length > 0 && (
-        <div className="py-4 text-center text-sm text-gray-500">
+        <div className="py-4 text-center text-sm text-neutral-500">
           Couldn’t load more.{' '}
-          <button type="button" onClick={onRetry} className="font-medium text-gray-900 underline">
+          <button type="button" onClick={onRetry} className="font-medium text-neutral-900 underline">
             Retry
           </button>
         </div>

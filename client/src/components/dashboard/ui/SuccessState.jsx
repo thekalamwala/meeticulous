@@ -23,8 +23,8 @@ export function SuccessState({ title = 'Done', message, action, className = '' }
           />
         </svg>
       </motion.div>
-      <h3 className="text-base font-semibold text-gray-900">{title}</h3>
-      {message && <p className="mt-1 max-w-sm text-sm text-gray-500">{message}</p>}
+      <h3 className="text-base font-semibold text-neutral-900">{title}</h3>
+      {message && <p className="mt-1 max-w-sm text-sm text-neutral-500">{message}</p>}
       {action && <div className="mt-5">{action}</div>}
     </div>
   );
