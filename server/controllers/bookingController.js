@@ -434,16 +434,31 @@ const createBooking = async (req, res) => {
     if (!capCheck.allowed)
       return res.status(409).json({ message: capCheck.message });
 
-    // v4 — TDS 194-O: a PAID booking withholds a flat 1% income-tax from the host
-    // (CA-confirmed 2026-11-11: 1% TDS + 1% TCS for all professions; no §206AA 5%
-    // no-PAN rate). Free (₹0) bookings and "price on request" enquiries withhold
-    // nothing (treated as ₹0).
+    // Withholding on a PAID booking. The RATES ARE NOT IN THIS FILE — they come from
+    // resolveWithholding() in lib/pricingEngine.js, fed by platform_settings, and the
+    // call a few lines below is the only place they are decided. Free (₹0) bookings and
+    // "price on request" enquiries withhold nothing (treated as ₹0).
     //
-    // `paid_booking_without_pan` (ships OFF): when OFF we keep the legacy behaviour —
-    // a paid booking is BLOCKED until the host has PAN on file. When ON, a host with
-    // no PAN can still take a paid booking: the money is collected and HELD (payout
-    // already requires approved KYC — see vendorController requestPayout). The rate is
-    // 1% either way; `hostHasPan` only gates whether the no-PAN host may book at all.
+    // Since `tds_tcs_v2` was switched ON (2026-11-17) the statutory rates apply:
+    // income-tax at 0.1% where the host has PAN on file and 5% where they do not
+    // (s.393(1) Table Sl. 8(v), IT Act 2025 — the provision formerly numbered 194-O),
+    // and GST TCS at 0.5% ONLY from a host holding a GSTIN. The earlier note here,
+    // "CA-confirmed 2026-11-11: flat 1% + 1% for all professions, no 5% no-PAN rate",
+    // described the LEGACY path and is superseded — that path now runs only if the
+    // flag is turned back off.
+    //
+    // `paid_booking_without_pan` (ships OFF): OFF means a paid booking is BLOCKED
+    // until the host has PAN on file. ON lets a host with no PAN take one — money is
+    // collected and HELD (payout already needs approved KYC; see vendorController
+    // requestPayout).
+    //
+    // READ THIS BEFORE TURNING THAT FLAG ON. It is no longer only an access gate.
+    // Under the statutory rates a host with no PAN is withheld at FIFTY TIMES the
+    // with-PAN rate, and they can only get it back by filing a return. As of
+    // 2026-11-18 `kyc_submissions` holds no PAN for any host, so flipping it today
+    // would apply the no-PAN rate to the platform's first real revenue. Collect PAN
+    // at KYC first. `hostHasPan` below decides both whether the booking is allowed
+    // and, through resolveWithholding, which rate is used.
     let hostHasPan = true;
     if (!service.price_on_request && service.price > 0) {
       const { data: panRow } = await supabaseAdmin
