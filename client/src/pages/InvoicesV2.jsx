@@ -42,7 +42,6 @@ export default function InvoicesV2() {
 
   const header = (
     <>
-      <SubNav items={MONEY_NAV} />
       <PageHeading title="Invoices" sub="GST invoices for services you booked and your plan renewals." />
     </>
   );

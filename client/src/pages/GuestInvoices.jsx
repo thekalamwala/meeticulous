@@ -40,7 +40,7 @@ const GuestInvoices = () => {
         {loading ? (
           <div className="flex flex-col gap-2.5">
             {[0, 1, 2].map((i) => (
-              <div key={i} className="h-[66px] animate-pulse rounded-xl border-2 border-neutral-200 bg-white" />
+              <div key={i} className="h-[66px] animate-pulse rounded-[8px] border-2 border-neutral-200 bg-white" />
             ))}
           </div>
         ) : invoices.length === 0 ? (
@@ -54,7 +54,7 @@ const GuestInvoices = () => {
             {invoices.map((inv) => (
               <li
                 key={inv.id}
-                className="flex items-center gap-3 rounded-xl border-2 border-neutral-200 bg-white p-4"
+                className="flex items-center gap-3 rounded-[8px] border-2 border-neutral-200 bg-white p-4"
               >
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-blush text-maroon">
                   <FileText className="h-[18px] w-[18px]" strokeWidth={2} />

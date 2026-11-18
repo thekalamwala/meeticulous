@@ -553,6 +553,23 @@ async function prerender() {
         // prerendered pages never POST. ponytail: on any proxy error, fall back to
         // the browser's own (blocked) request — no worse than before this fix.
         if (API_BASE && url.startsWith(API_BASE) && req.method() === 'GET') {
+          // available-slots is the single slowest build fetch: a cold FreeBusy +
+          // Supabase path that took up to ~53s on Vercel's builder and deferred
+          // ~30 host/service routes into the serial-retry pass (2026-11-18 log).
+          // It is already LIVE_ONLY (never baked into #__bas_data), the booking
+          // widget re-fetches it live on hydration, and every consumer treats an
+          // empty list as "no slots" (Array.isArray(data?.slots) ? … : []), so
+          // serve an empty list INSTANTLY instead of paying that wait at build
+          // time. Does not touch the page's SEO HTML (meta/title/JSON-LD).
+          // ponytail: stub ONLY available-slots — other /bookings/* GETs (e.g.
+          // /bookings/service/:id) feed real page content and must still proxy.
+          if (url.slice(API_BASE.length).startsWith('/bookings/available-slots')) {
+            return req.respond({
+              status: 200,
+              headers: { 'content-type': 'application/json', 'access-control-allow-origin': '*' },
+              body: '{"slots":[]}',
+            });
+          }
           try {
             const r = await fetchApi(url);
             const path = url.slice(API_BASE.length);

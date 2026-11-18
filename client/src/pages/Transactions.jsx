@@ -435,7 +435,6 @@ const Transactions = ({ embedded = false } = {}) => {
       {/* ── Page heading ─────────────────────────────────────────────── */}
       {embedded ? (
         <div className="mb-4 flex flex-col gap-2.5">
-          <SubNav items={MONEY_NAV} />
           <PageHeading title="Transactions" sub="Payments, refunds and payout records." action={exportBtn} />
         </div>
       ) : (

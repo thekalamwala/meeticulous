@@ -240,7 +240,7 @@ const CustomerBookings = () => {
     const host = hostOf(b);
     const svc = b.services || {};
     return (
-      <div className="rounded-xl border-2 border-neutral-200 bg-white p-4">
+      <div className="rounded-[8px] border-2 border-neutral-200 bg-white p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <p className="truncate font-display text-[15px] font-extrabold tracking-[-0.02em] text-ink">{svc.title || "Service"}</p>
@@ -315,7 +315,7 @@ const CustomerBookings = () => {
               <ChevronDown size={15} className={`text-ink/35 transition-transform ${filterOpen ? "rotate-180" : ""}`} strokeWidth={2.2} />
             </button>
             {filterOpen && (
-              <div className="absolute right-0 top-full z-20 mt-1.5 w-44 overflow-hidden rounded-xl border-2 border-neutral-200 bg-white py-1 dash-elev-3">
+              <div className="absolute right-0 top-full z-20 mt-1.5 w-44 overflow-hidden rounded-[8px] border-2 border-neutral-200 bg-white py-1 dash-elev-3">
                 {FILTERS.map((f) => (
                   <button key={f.key} onClick={() => { setFilter(f.key); setFilterOpen(false); }}
                     className={`flex w-full items-center px-4 py-2 text-[12.5px] font-semibold transition hover:bg-blush ${filter === f.key ? "text-maroon" : "text-ink/65"}`}>

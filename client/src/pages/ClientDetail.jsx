@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { crmGetCustomer, crmGetNotes, crmAddNote, crmDeleteNote, svcGetAll } from '../services/api';
 import {
   PageHeader, Card, Badge, StatusBadge, Button, Textarea, buttonClasses,
-  EmptyState, ErrorState, SkeletonText, SkeletonCard, fmtMoney,
+  EmptyState, ErrorState, Skeleton, SkeletonText, SkeletonCard, fmtMoney,
 } from '../components/dashboard/ui';
 
 const fmtDate = (iso) =>
@@ -163,13 +163,38 @@ const ClientDetail = () => {
   useEffect(() => { load(); }, [load]);
 
   if (loading) {
+    // Mirror the real layout (profile card → booking history → notes) so the
+    // page doesn't visibly reflow when data lands.
     return (
       <div>
-        <PageHeader title="Client" />
-        <div className="space-y-3">
-          <SkeletonCard />
-          <SkeletonCard />
-        </div>
+        <Skeleton className="mb-4 h-4 w-36" />
+        <Card className="mb-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0 space-y-2.5">
+              <Skeleton className="h-6 w-48" />
+              <Skeleton className="h-4 w-64" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-7 w-24 sm:ml-auto" />
+              <Skeleton className="h-3 w-28 sm:ml-auto" />
+            </div>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-3 border-t border-maroon/5 pt-4 sm:grid-cols-3">
+            <Skeleton className="h-9" />
+            <Skeleton className="h-9" />
+            <Skeleton className="h-9" />
+          </div>
+        </Card>
+        <Card className="mb-5 space-y-3">
+          <Skeleton className="h-5 w-40" />
+          <Skeleton className="h-11" />
+          <Skeleton className="h-11" />
+          <Skeleton className="h-11" />
+        </Card>
+        <Card className="space-y-3">
+          <Skeleton className="h-5 w-24" />
+          <Skeleton className="h-16" />
+        </Card>
       </div>
     );
   }
