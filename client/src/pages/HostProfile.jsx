@@ -17,7 +17,7 @@ import { resolveProfileSeo, profileGraphJsonLd, SITE_URL } from "../utils/seo";
 import { profileFaqs } from "../utils/profileFaqs";
 import FaqAccordion from "../components/FaqAccordion";
 import { prerendered } from "../services/prerenderData";
-import { BadgeCheck, LayoutGrid, Package, Crown, Newspaper, Menu, X } from "lucide-react";
+import { BadgeCheck, LayoutGrid, Package, Crown, Newspaper, PlayCircle, MessageCircle, Menu, X } from "lucide-react";
 
 // Production base for canonical/OG (Vercel env overrides the apex default).
 const SEO_SITE = import.meta.env?.VITE_PUBLIC_SITE_URL || SITE_URL;
@@ -402,6 +402,48 @@ const MembershipModal = ({ open, onClose, tc }) => {
   );
 };
 
+// Empty state for an offering section the host hasn't filled (or that has no public
+// listing yet, like courses). Shows a message + a request form: a visitor leaves an
+// email and the host is told there's demand (recorded via the newsletter/interest rail).
+const OfferingEmpty = ({ type, hostName, profileSlug, tc, C }) => {
+  const NOUN = { service: 'sessions', product: 'products', course: 'courses' };
+  const noun = NOUN[type] || 'offerings';
+  const [email, setEmail] = useState('');
+  const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const send = async (e) => {
+    e.preventDefault();
+    const v = email.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) return;
+    setBusy(true);
+    try { await subscribeNewsletter(v, { interest: `request-${type}`, host: profileSlug }); }
+    catch { /* soft — still thank them */ }
+    finally { setBusy(false); setSent(true); }
+  };
+  return (
+    <div className="rounded-2xl py-12 px-5 text-center" style={{ background: C.card, border: `1px dashed ${C.border}` }}>
+      <span className="mx-auto flex items-center justify-center rounded-full" style={{ width: 48, height: 48, background: `${tc}12`, color: tc }}>
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
+      </span>
+      <p className="font-display font-bold text-base mt-3" style={{ color: C.text }}>No {noun} here yet</p>
+      {sent ? (
+        <p className="text-sm mt-1.5" style={{ color: C.secondary }}>Request noted — {hostName} will hear there's demand.</p>
+      ) : (
+        <>
+          <p className="text-sm mt-1.5 mx-auto" style={{ color: C.muted, maxWidth: 360 }}>Want {hostName} to offer {noun}? Leave your email and we'll pass the request along.</p>
+          <form onSubmit={send} className="flex flex-col sm:flex-row gap-2 mx-auto mt-4" style={{ maxWidth: 420 }}>
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com"
+              aria-label="Your email" className="flex-1 rounded-full text-sm outline-none"
+              style={{ height: 42, padding: '0 16px', border: `1px solid ${C.border}`, background: C.bg, color: C.text }} />
+            <button type="submit" disabled={busy} className="rounded-full font-semibold text-sm hover:opacity-90"
+              style={{ height: 42, padding: '0 20px', background: tc, color: '#fff' }}>{busy ? 'Sending…' : 'Send request'}</button>
+          </form>
+        </>
+      )}
+    </div>
+  );
+};
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 const HostProfile = () => {
   const { profileSlug } = useParams();
@@ -573,15 +615,19 @@ const HostProfile = () => {
     document.getElementById('offerings')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  // Profile-nav items. Services/Products drive the in-page offering filter;
-  // Membership/Feed are placeholders until those surfaces ship. Active is derived
-  // from `filter` (never hardcoded), so it stays correct as the visitor switches.
-  const navItems = [
-    { key: 'service',    label: 'Services',   icon: LayoutGrid, active: filter === 'all' || filter === 'service', enabled: true,        onClick: () => goOfferings('service') },
-    { key: 'product',    label: 'Products',   icon: Package,    active: filter === 'product',                      enabled: hasProducts, onClick: () => goOfferings('product') },
-    { key: 'membership', label: 'Membership', icon: Crown,      active: false,                                     enabled: true,        onClick: () => { setNavOpen(false); navigate(`/${profileSlug}/membership`); } },
-    { key: 'feed',       label: 'Feed',       icon: Newspaper,  active: filter === 'feed',                         enabled: true,        onClick: () => goOfferings('feed') },
-  ];
+  // Profile sections. Each drives the in-page offering filter, except Membership
+  // which navigates to the membership space. `show` hides a section the host does
+  // not have, so a host with only services shows just Services + Community. Active
+  // is derived from `filter` (never hardcoded). `icon` is used only by the mobile
+  // bottom tab-bar; the desktop rail is text-only. Courses has no profile listing
+  // surface yet (only per-course pages), so it stays hidden until one ships.
+  const SECTIONS = [
+    { key: 'service',    label: 'Services',    icon: LayoutGrid,   show: true,        active: filter === 'all' || filter === 'service', onClick: () => goOfferings('service') },
+    { key: 'product',    label: 'Products',    icon: Package,      show: true,        active: filter === 'product',                      onClick: () => goOfferings('product') },
+    { key: 'course',     label: 'Courses',     icon: PlayCircle,   show: true,        active: filter === 'course',                       onClick: () => goOfferings('course') },
+    { key: 'membership', label: 'Memberships', icon: Crown,        show: true,        active: false,                                     onClick: () => { setNavOpen(false); navigate(`/${profileSlug}/membership`); } },
+    { key: 'feed',       label: 'Community',   icon: MessageCircle, show: true,        active: filter === 'feed',                         onClick: () => goOfferings('feed') },
+  ].filter((s) => s.show);
 
   return (
     <>
@@ -601,12 +647,11 @@ const HostProfile = () => {
       ) : (
     <div ref={pageRef} className="host-profile min-h-screen flex flex-col" style={{ background: C.bg }}>
 
-      {/* ── Host-branded navbar — host identity replaces the logo; nav links drive
-          the offering filters; CTA converts visitors into hosts ── */}
-      <nav className="sticky top-0 z-40" style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(10px)', borderBottom: `1px solid ${C.border}` }}
+      {/* ══ Desktop navbar (lg+): identity left · divider rail centred · CTA right.
+          Text-only rail, no icons, no filled active pill — matches the /for chrome. ══ */}
+      <nav className="hidden lg:block sticky top-0 z-40" style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(10px)', borderBottom: `1px solid ${C.border}` }}
         aria-label={`${host.name} profile navigation`}>
         <div className="app-container relative flex items-center gap-4" style={{ height: 66 }}>
-
           {/* Left — identity → page top */}
           <a href="#top" className="flex items-center gap-2.5 min-w-0 flex-shrink-0 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
             style={{ '--tw-ring-color': tc }} aria-label={`${host.name} — top of page`}>
@@ -622,59 +667,133 @@ const HostProfile = () => {
             )}
           </a>
 
-          {/* Center — pill nav (desktop ≥ lg; tablet/mobile use the drawer) */}
-          <div className="hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-1 rounded-full p-1"
-            style={{ background: C.card, border: `1px solid ${C.border}` }} role="tablist" aria-label="Sections">
-            {navItems.map(({ key, label, icon: Icon, active, enabled, onClick, soon }) => (
-              <button key={key} type="button" role="tab" aria-selected={active}
-                onClick={enabled ? onClick : undefined} disabled={!enabled}
-                title={soon ? `${label} — coming soon` : label}
-                className="flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-semibold transition-colors outline-none focus-visible:ring-2"
-                style={active
-                  ? { background: `${tc}14`, color: tc, '--tw-ring-color': tc }
-                  : { color: enabled ? C.text : C.muted, opacity: enabled ? 1 : 0.5, cursor: enabled ? 'pointer' : 'not-allowed', '--tw-ring-color': tc }}>
-                <Icon className="w-[18px] h-[18px]" strokeWidth={1.9} />
-                {label}
-              </button>
-            ))}
-          </div>
-
-          {/* Right — CTA + mobile menu toggle */}
-          <div className="ml-auto flex items-center gap-1.5 flex-shrink-0">
-            <Link to="/become-a-host"
-              className="inline-flex items-center gap-1.5 rounded-full font-semibold text-[13.5px] transition-opacity hover:opacity-90"
-              style={{ height: 42, padding: '0 18px', background: tc, color: '#fff' }}>
-              <span className="hidden sm:inline">Start Your Page — Free</span>
-              <span className="sm:hidden">Start — Free</span>
-            </Link>
-            <button type="button" onClick={() => setNavOpen(o => !o)}
-              className="lg:hidden p-2 rounded-full transition-colors" style={{ color: C.text }}
-              aria-label="Menu" aria-expanded={navOpen} aria-controls="profile-mobile-nav">
-              {navOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
-
-          {/* Mobile / tablet drawer */}
-          {navOpen && (
-            <div id="profile-mobile-nav" className="lg:hidden absolute left-0 right-0 top-full mx-3 mt-1 rounded-2xl overflow-hidden py-1"
-              style={{ background: C.card, border: `1px solid ${C.border}`, boxShadow: '0 12px 32px rgba(43,10,20,0.12)' }}>
-              {navItems.map(({ key, label, icon: Icon, active, enabled, onClick, soon }) => (
-                <button key={key} type="button" disabled={!enabled}
-                  onClick={() => { if (enabled) onClick(); }}
-                  aria-current={active ? 'true' : undefined}
-                  className="flex w-full items-center gap-3 px-4 py-3 text-sm font-semibold text-left transition-colors"
-                  style={active
-                    ? { background: `${tc}10`, color: tc }
-                    : { color: enabled ? C.text : C.muted, opacity: enabled ? 1 : 0.55, cursor: enabled ? 'pointer' : 'not-allowed' }}>
-                  <Icon className="w-[18px] h-[18px]" strokeWidth={1.9} />
-                  {label}
-                  {soon && <span className="ml-auto text-xs font-medium" style={{ color: C.muted }}>Soon</span>}
+          {/* Center — divider rail (text only; active = accent, neighbouring dividers fade) */}
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center rounded-full"
+            style={{ background: C.card, border: `1px solid ${C.border}`, padding: 3 }} role="tablist" aria-label="Sections">
+            {SECTIONS.map((s, i) => {
+              const prevActive = i > 0 && SECTIONS[i - 1].active;
+              return (
+                <button key={s.key} type="button" role="tab" aria-selected={s.active} onClick={s.onClick}
+                  className="relative text-sm transition-colors outline-none focus-visible:ring-2 rounded-full"
+                  style={{ color: s.active ? tc : C.muted, fontWeight: s.active ? 600 : 500, padding: '7px 15px', '--tw-ring-color': tc }}>
+                  {i > 0 && (
+                    <span aria-hidden="true" className="absolute left-0" style={{ top: '22%', bottom: '22%', width: 1,
+                      background: (s.active || prevActive) ? 'transparent' : C.border }} />
+                  )}
+                  {s.label}
                 </button>
-              ))}
-            </div>
-          )}
+              );
+            })}
+          </div>
+
+          {/* Right — CTA */}
+          <Link to="/become-a-host"
+            className="ml-auto flex-shrink-0 inline-flex items-center gap-1.5 rounded-full font-semibold text-[13.5px] transition-opacity hover:opacity-90"
+            style={{ height: 42, padding: '0 18px', background: tc, color: '#fff' }}>
+            Start Your Page — Free
+          </Link>
         </div>
       </nav>
+
+      {/* ══ Mobile header (below lg): host photo + name left (opens the profile
+          drawer) · ee mark right (home). Sections live in the bottom tab-bar. ══ */}
+      <header className="lg:hidden sticky top-0 z-40 flex items-center justify-between gap-3"
+        style={{ height: 56, padding: '0 16px', background: 'rgba(255,255,255,0.90)', backdropFilter: 'blur(8px)', borderBottom: `1px solid ${C.border}` }}>
+        <button type="button" onClick={() => setNavOpen(true)} aria-label={`${host.name} — profile`} aria-expanded={navOpen} aria-controls="profile-drawer"
+          className="flex items-center gap-2 min-w-0 rounded-full outline-none focus-visible:ring-2" style={{ '--tw-ring-color': tc }}>
+          <span className="relative flex-shrink-0 overflow-hidden flex items-center justify-center" style={{ width: 34, height: 34, borderRadius: '50%', background: `${tc}18`, color: tc }}>
+            {host.profile_image
+              ? <img src={host.profile_image} alt={host.name} width={34} height={34} decoding="async" className="w-full h-full object-cover" />
+              : <span className="font-display font-extrabold text-sm">{host.name?.charAt(0)?.toUpperCase()}</span>}
+          </span>
+          <span className="font-display font-bold text-[15px] truncate" style={{ color: C.text }}>{host.name}</span>
+          {host.is_verified && <BadgeCheck className="w-4 h-4 flex-shrink-0" strokeWidth={2.2} style={{ color: tc }} aria-label="Verified" />}
+        </button>
+        <Link to="/" className="flex-shrink-0 hover:no-underline" aria-label="Meeticulous — home">
+          <img src="/favicon.svg" alt="Meeticulous" width={30} height={30} className="rounded-lg" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+        </Link>
+      </header>
+
+      {/* ══ Mobile bottom tab-bar (below lg): section icons ══ */}
+      <nav className="lg:hidden fixed left-0 right-0 bottom-0 z-40 flex items-stretch justify-around"
+        style={{ background: 'rgba(255,255,255,0.94)', backdropFilter: 'blur(10px)', borderTop: `1px solid ${C.border}`, paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+        aria-label="Sections">
+        {SECTIONS.map((s) => {
+          const Icon = s.icon;
+          return (
+            <button key={s.key} type="button" onClick={s.onClick} aria-current={s.active ? 'true' : undefined}
+              className="flex-1 flex flex-col items-center justify-center gap-0.5 outline-none"
+              style={{ height: 60, color: s.active ? tc : C.muted, fontSize: 10, fontWeight: s.active ? 600 : 500 }}>
+              <Icon className="w-[22px] h-[22px]" strokeWidth={s.active ? 2.3 : 1.9} />
+              {s.label}
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* ══ Mobile profile drawer — opened by the avatar ══ */}
+      {navOpen && (
+        <div className="lg:hidden fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label={`${host.name} profile`} id="profile-drawer">
+          <div className="absolute inset-0" style={{ background: 'rgba(43,10,20,0.40)' }} onClick={() => setNavOpen(false)} />
+          <div className="absolute left-0 right-0 bottom-0 rounded-t-3xl flex flex-col"
+            style={{ background: C.card, maxHeight: '90%', overflow: 'auto', paddingBottom: 'calc(28px + env(safe-area-inset-bottom, 0px))', boxShadow: '0 -14px 40px rgba(43,10,20,0.18)' }}>
+            {/* Grip handle on the sheet — always visible, not over the cover */}
+            <div className="flex justify-center flex-shrink-0" style={{ paddingTop: 8, paddingBottom: 6 }}>
+              <span aria-hidden="true" style={{ width: 40, height: 4, borderRadius: 4, background: C.border }} />
+            </div>
+            {/* Cover — a fixed band (host's cover photo, or a branded accent tint) */}
+            <div className="relative flex-shrink-0" style={{ height: 120, background: host.cover_image ? `center/cover no-repeat url("${host.cover_image}")` : `linear-gradient(120deg, ${tc}, ${tc}B3)` }}>
+              <div aria-hidden="true" className="absolute inset-x-0 top-0" style={{ height: 52, background: 'linear-gradient(rgba(0,0,0,0.28), rgba(0,0,0,0))' }} />
+              <button type="button" onClick={() => setNavOpen(false)} aria-label="Close"
+                className="absolute flex items-center justify-center rounded-full"
+                style={{ top: 12, right: 14, width: 32, height: 32, background: 'rgba(255,255,255,0.95)', color: '#2B0A14', boxShadow: '0 2px 8px rgba(0,0,0,0.20)' }}>
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex flex-col items-center text-center px-5" style={{ marginTop: -44 }}>
+              <span className="flex items-center justify-center overflow-hidden flex-shrink-0" style={{ position: 'relative', zIndex: 2, width: 88, height: 88, borderRadius: '50%', background: `${tc}18`, color: tc, border: `4px solid ${C.card}`, boxShadow: '0 4px 12px rgba(43,10,20,0.15)' }}>
+                {host.profile_image
+                  ? <img src={host.profile_image} alt={host.name} width={88} height={88} className="w-full h-full object-cover" />
+                  : <span className="font-display font-extrabold" style={{ fontSize: 34 }}>{host.name?.charAt(0)?.toUpperCase()}</span>}
+              </span>
+            <span className="font-display font-extrabold text-xl flex items-center gap-1.5" style={{ color: C.text, marginTop: 12 }}>
+              {host.name}
+              {host.is_verified && <BadgeCheck className="w-[18px] h-[18px]" strokeWidth={2.2} style={{ color: tc }} aria-label="Verified" />}
+            </span>
+            {(host.profession || host.tagline) && (
+              <p className="text-sm font-medium" style={{ color: tc, marginTop: 4, maxWidth: '34ch' }}>{host.profession || host.tagline}</p>
+            )}
+            {host.bio && (
+              <p className="text-sm w-full text-left" style={{ color: C.muted, marginTop: 12, lineHeight: 1.55 }}>{host.bio}</p>
+            )}
+
+            {badges.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-2" style={{ marginTop: 14 }}>
+                {badges.map((b, i) => <Badge key={i} badge={b} onSelect={setBadgeInfo} />)}
+              </div>
+            )}
+
+            <div className="flex w-full justify-center gap-8" style={{ marginTop: 16, paddingTop: 16, borderTop: `1px solid ${C.border}` }}>
+              <div className="flex flex-col"><b className="font-display font-extrabold text-lg" style={{ color: C.text }}>{services.length}</b><span className="text-xs" style={{ color: C.muted }}>Services</span></div>
+              <div className="flex flex-col"><b className="font-display font-extrabold text-lg" style={{ color: C.text }}>{host.booking_count || 0}</b><span className="text-xs" style={{ color: C.muted }}>Bookings</span></div>
+              <div className="flex flex-col"><b className="font-display font-extrabold text-lg" style={{ color: C.text }}>{reviewData?.avg > 0 ? Number(reviewData.avg).toFixed(1) : '—'}</b><span className="text-xs" style={{ color: C.muted }}>Ratings</span></div>
+            </div>
+
+            {socialLinks.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-2" style={{ marginTop: 14 }}>
+                {socialLinks.map(({ key, href }) => <SocialIcon key={key} platform={key} href={href} />)}
+              </div>
+            )}
+
+            <button type="button" onClick={() => { setNavOpen(false); goOfferings('service'); }}
+              className="w-full flex items-center justify-center rounded-full font-semibold text-sm hover:opacity-90"
+              style={{ height: 46, background: tc, color: '#fff', marginTop: 18 }}>
+              Book a session
+            </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {host.is_verified === false && (
         <div className="px-4 py-2 text-center text-sm"
@@ -683,7 +802,7 @@ const HostProfile = () => {
         </div>
       )}
 
-      <div id="top" className="app-container pt-6 pb-16 flex-1">
+      <div id="top" className="app-container pt-6 pb-24 lg:pb-16 flex-1">
 
         {isDemo && (
           <div className="mb-5 flex flex-wrap items-center gap-2 rounded-2xl p-2"
@@ -708,17 +827,18 @@ const HostProfile = () => {
 
         <div className="flex flex-col lg:flex-row gap-7 items-start">
 
-          {/* ── LEFT — identity card with cover banner ──────────────── */}
-          <aside className="w-full max-w-md mx-auto lg:mx-0 lg:max-w-none lg:w-[320px] lg:flex-shrink-0 lg:sticky lg:top-[90px]">
+          {/* ── LEFT — identity card with cover banner (desktop only; on mobile the
+                profile lives in the corner-avatar drawer) ──────────────── */}
+          <aside className="hidden lg:block w-full max-w-md mx-auto lg:mx-0 lg:max-w-none lg:w-[320px] lg:flex-shrink-0 lg:sticky lg:top-[90px]">
             <div className="rounded-3xl overflow-hidden" style={{ background: C.card, border: `1px solid ${C.border}`, boxShadow: '0 8px 28px rgba(43,10,20,0.05)' }}>
-              {/* Cover — host's, or the branded default. Avatar overlaps below. */}
+              {/* Cover — host's, or the branded default. Avatar overlaps in front. */}
               <HostCover src={host.cover_image} themeColor={tc} eager className="w-full" />
-              <div className="px-6 pb-5 text-center">
+              <div className="px-6 pb-6 text-center">
 
-                {/* Avatar — overlaps the cover */}
-                <div className="flex justify-center relative -mt-12">
+                {/* Avatar — overlaps the cover, in front */}
+                <div className="flex justify-center relative -mt-12" style={{ zIndex: 2 }}>
                   <div className="relative overflow-hidden flex items-center justify-center"
-                    style={{ width: 92, height: 92, borderRadius: '50%', background: `${tc}18`, border: `3px solid ${C.card}`, boxShadow: '0 2px 8px rgba(43,10,20,0.12)' }}>
+                    style={{ width: 92, height: 92, borderRadius: '50%', background: `${tc}18`, border: `4px solid ${C.card}`, boxShadow: '0 4px 12px rgba(43,10,20,0.14)' }}>
                     {host.profile_image
                       ? <img src={host.profile_image} alt={host.name} width={92} height={92} fetchpriority="high" decoding="async" className="w-full h-full object-cover" />
                       : <span className="font-display font-extrabold text-3xl" style={{ color: tc }}>{host.name?.charAt(0)?.toUpperCase()}</span>}
@@ -736,80 +856,73 @@ const HostProfile = () => {
                   <p className="font-semibold text-sm mt-1.5" style={{ color: tc }}>{host.profession || host.tagline}</p>
                 )}
 
-                {/* Rating row — real, only when reviews exist */}
-                {reviewData.count > 0 && (
-                  <div className="flex items-center justify-center gap-2.5 mt-2.5 text-sm" style={{ color: C.secondary }}>
-                    <span className="font-semibold flex items-center gap-1" style={{ color: C.text }}>
-                      <svg className="w-3.5 h-3.5" style={{ color: '#F6C35A' }} fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                      {reviewData.avg.toFixed(1)}
+                {/* Location — sits right under the name/profession */}
+                {host.location && (
+                  <p className="inline-flex items-center justify-center gap-1.5 text-sm mt-2" style={{ color: C.secondary }}>
+                    <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                    {host.location}
+                  </p>
+                )}
+
+                {/* Stats — Services · Bookings · Ratings */}
+                <div className="flex justify-center gap-7 mt-4 pt-4" style={{ borderTop: `1px solid ${C.border}` }}>
+                  <div className="flex flex-col"><b className="font-display font-extrabold text-lg" style={{ color: C.text }}>{services.length}</b><span className="text-xs" style={{ color: C.muted }}>Services</span></div>
+                  <div className="flex flex-col"><b className="font-display font-extrabold text-lg" style={{ color: C.text }}>{host.booking_count || 0}</b><span className="text-xs" style={{ color: C.muted }}>Bookings</span></div>
+                  <div className="flex flex-col"><b className="font-display font-extrabold text-lg" style={{ color: C.text }}>{reviewData.avg > 0 ? reviewData.avg.toFixed(1) : '—'}</b><span className="text-xs" style={{ color: C.muted }}>Ratings</span></div>
+                </div>
+
+                {/* Meta — member since · location · price-from */}
+                <div className="flex flex-col items-center gap-1.5 mt-4 text-xs" style={{ color: C.muted }}>
+                  {host.created_at && !Number.isNaN(new Date(host.created_at).getTime()) && (
+                    <span className="inline-flex items-center gap-1.5">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
+                      Hosting since {new Date(host.created_at).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
                     </span>
-                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: C.muted, display: 'inline-block' }} />
-                    <span>{reviewData.count} review{reviewData.count !== 1 ? 's' : ''}</span>
-                  </div>
-                )}
-
-                {/* Social proof — real completed/confirmed bookings (cancelled excluded) */}
-                {host.booking_count > 0 && (
-                  <div className="flex items-center justify-center gap-1.5 mt-2 text-xs" style={{ color: C.secondary }}>
-                    <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: tc }} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                      <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18m-9 5 2 2 4-4" />
-                    </svg>
-                    <span>Booked <strong style={{ color: C.text }}>{host.booking_count}</strong> time{host.booking_count !== 1 ? 's' : ''}</span>
-                  </div>
-                )}
-
-                {/* More about — expander for bio / trust / socials / badges / location */}
-                <button onClick={() => setCardExpanded(v => !v)} aria-expanded={cardExpanded} aria-controls="host-more"
-                  className="w-full mt-4 flex items-center justify-center gap-1.5 rounded-full font-semibold text-[13px] transition-colors"
-                  style={{ height: 40, border: `1px solid ${C.border}`, background: C.card, color: C.secondary }}>
-                  {cardExpanded ? 'Show less' : `More about ${firstName}`}
-                  <svg className={`w-3.5 h-3.5 transition-transform ${cardExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></svg>
-                </button>
-              </div>
-
-              <div id="host-more" className="overflow-hidden transition-[max-height] duration-300 ease-out" style={{ maxHeight: cardExpanded ? 680 : 0 }}>
-                <div className="px-6 pb-6 text-center">
-                  {host.bio && <p className="text-sm leading-relaxed" style={{ color: C.secondary }}>{host.bio}</p>}
-
-                  {/* Trust — real platform guarantees */}
-                  <div className="flex flex-col gap-2.5 mt-4 pt-4 text-left" style={{ borderTop: `1px solid ${C.border}` }}>
-                    {[
-                      { t: 'Secure Razorpay payment', d: 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z M9 12l2 2 4-4' },
-                      { t: 'Instant confirmation',    d: 'M13 2 3 14h7l-1 8 10-12h-7z' },
-                      { t: 'Google Calendar invite',  d: 'M3 4h18v18H3z M16 2v4 M8 2v4 M3 10h18' },
-                    ].map(({ t, d }) => (
-                      <div key={t} className="flex items-center gap-2.5 text-[12.5px]" style={{ color: C.secondary }}>
-                        <svg className="w-4 h-4 flex-shrink-0" style={{ color: '#1F7A4D' }} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d={d} /></svg>
-                        {t}
-                      </div>
-                    ))}
-                  </div>
-
-                  {badges.length > 0 && (
-                    <div className="flex flex-wrap justify-center gap-2 mt-5">
-                      {badges.map((b, i) => <Badge key={i} badge={b} onSelect={setBadgeInfo} />)}
-                    </div>
                   )}
+                  {(() => {
+                    const paid = services.filter((s) => !s.price_on_request && Number(s.price) > 0).map((s) => Number(s.price));
+                    return paid.length > 0 ? <span className="font-medium" style={{ color: C.secondary }}>Sessions from ₹{Math.min(...paid)}</span> : null;
+                  })()}
+                </div>
 
-                  {socialLinks.length > 0 && (
-                    <div className="flex flex-wrap justify-center gap-2 mt-5">
-                      {socialLinks.map(({ key, href }) => (
-                        <SocialIcon key={key} platform={key} href={href} />
+                {/* Bio */}
+                {host.bio && (
+                  <p className="text-sm leading-relaxed text-left mt-4 pt-4" style={{ color: C.secondary, borderTop: `1px solid ${C.border}` }}>{host.bio}</p>
+                )}
+
+                {/* Featured review — the most recent, as social proof */}
+                {reviewData.reviews?.length > 0 && (
+                  <figure className="text-left mt-4 pt-4" style={{ borderTop: `1px solid ${C.border}` }}>
+                    <div className="flex items-center gap-1" aria-label={`${reviewData.avg.toFixed(1)} out of 5`}>
+                      {[0, 1, 2, 3, 4].map((i) => (
+                        <svg key={i} className="w-3.5 h-3.5" style={{ color: i < Math.round(reviewData.avg) ? '#F6C35A' : C.border }} fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                       ))}
                     </div>
-                  )}
+                    <blockquote className="text-sm mt-2 line-clamp-4" style={{ color: C.secondary }}>“{reviewData.reviews[0].comment || reviewData.reviews[0].review || reviewData.reviews[0].text}”</blockquote>
+                    <figcaption className="text-xs mt-1.5" style={{ color: C.muted }}>— {reviewData.reviews[0].guest_name || reviewData.reviews[0].name || 'Verified guest'}</figcaption>
+                  </figure>
+                )}
 
-                  {host.location && (
-                    <div className="flex items-center justify-center gap-1.5 mt-5 text-xs" style={{ color: C.muted }}>
-                      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
-                      </svg>
-                      {host.location}
-                    </div>
-                  )}
-                </div>
+                {badges.length > 0 && (
+                  <div className="flex flex-wrap justify-center gap-2 mt-4">
+                    {badges.map((b, i) => <Badge key={i} badge={b} onSelect={setBadgeInfo} />)}
+                  </div>
+                )}
+
+                {socialLinks.length > 0 && (
+                  <div className="flex flex-wrap justify-center gap-2 mt-4">
+                    {socialLinks.map(({ key, href }) => <SocialIcon key={key} platform={key} href={href} />)}
+                  </div>
+                )}
+
+                {/* Share */}
+                <button type="button"
+                  onClick={() => { const url = window.location.href; if (navigator.share) navigator.share({ title: `${host.name} · Meeticulous`, url }).catch(() => {}); else navigator.clipboard?.writeText(url).catch(() => {}); }}
+                  className="w-full mt-5 flex items-center justify-center gap-2 rounded-full font-semibold text-[13px] transition-colors hover:opacity-90"
+                  style={{ height: 42, border: `1px solid ${C.border}`, background: C.card, color: C.text }}>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="m8.6 13.5 6.8 4M15.4 6.5 8.6 10.5" /></svg>
+                  Share profile
+                </button>
               </div>
             </div>
           </aside>
@@ -822,33 +935,14 @@ const HostProfile = () => {
             {/* Header + icon filters */}
             <div id="offerings" className="flex items-start gap-3 flex-wrap mb-5" style={{ scrollMarginTop: 82 }}>
               <div className="flex-1 min-w-[180px]">
-                <div className="font-serif italic text-base" style={{ color: '#E0506F' }}>Creator's</div>
-                <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight" style={{ color: C.text }}>Offerings</h2>
+                <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight flex items-baseline gap-2 flex-wrap" style={{ color: C.text }}>
+                  <span className="font-serif italic font-normal text-base sm:text-lg" style={{ color: '#E0506F' }}>{host.name}'s</span>
+                  Offerings
+                </h2>
               </div>
 
-              {/* Category icon filters (Services always; Products only when present) */}
-              <div className="flex gap-1.5 flex-shrink-0 rounded-full p-1" style={{ background: C.card, border: `1px solid ${C.border}` }} role="tablist">
-                {[
-                  { f: 'all',     label: 'All',      count: services.length + products.length,
-                    icon: <><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></> },
-                  { f: 'service', label: 'Services',
-                    icon: <><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></> },
-                  ...(hasProducts ? [{ f: 'product', label: 'Products',
-                    icon: <path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /> }] : []),
-                ].map(({ f, label, icon, count }) => {
-                  const on = filter === f;
-                  return (
-                    <button key={f} onClick={() => setFilter(f)} role="tab" aria-selected={on} title={label} aria-label={label}
-                      className="relative flex items-center justify-center rounded-full transition-colors"
-                      style={{ width: 40, height: 40, background: on ? tc : 'transparent', color: on ? '#fff' : C.secondary }}>
-                      <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">{icon}</svg>
-                      {f === 'all' && count > 0 && (
-                        <span className="absolute -top-0.5 -right-0.5 min-w-[15px] h-[15px] px-1 rounded-full text-[9.5px] font-bold flex items-center justify-center" style={{ background: '#E0506F', color: '#fff' }}>{count}</span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+              {/* Category filters removed — the profile nav (rail on desktop, bottom
+                  tab-bar on mobile) drives the section filter now. */}
             </div>
 
             {/* Intro CTA — soft, low-friction entry when the host offers a free service */}
@@ -920,13 +1014,11 @@ const HostProfile = () => {
               </div>
             )}
 
-            {/* Empty state */}
+            {/* Empty state — message + request form (services/products/courses) */}
             {nothingShown && (
-              <div className="rounded-2xl py-16 text-center" style={{ background: C.card, border: `1px dashed ${C.border}` }}>
-                <p style={{ color: C.muted }}>
-                  {filter === 'product' ? 'No products yet.' : 'No services available yet.'}
-                </p>
-              </div>
+              <OfferingEmpty
+                type={filter === 'product' ? 'product' : filter === 'course' ? 'course' : 'service'}
+                hostName={host.name} profileSlug={profileSlug} tc={tc} C={C} />
             )}
 
             </>)}
