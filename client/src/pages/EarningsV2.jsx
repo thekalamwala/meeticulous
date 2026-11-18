@@ -44,7 +44,6 @@ const EarningsV2 = () => {
 
   const header = (
     <>
-      <SubNav items={MONEY_NAV} />
       <PageHeading title="Earnings" sub="What you've made, and which services earn it." />
     </>
   );

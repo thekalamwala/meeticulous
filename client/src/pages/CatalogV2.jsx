@@ -4,19 +4,67 @@
 // the flag-ON path (App picks it in CatalogRoute).
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Package } from 'lucide-react';
-import { svcGetAll, getMyProducts, getMyCourses, getHostCoupons } from '../services/api';
+import { Plus, Package, CalendarClock, FileDown, BookOpen, Users, TicketPercent } from 'lucide-react';
+import { svcGetAll, getMyProducts, getMyCourses, getHostCoupons, getMyMembership } from '../services/api';
 import useFeatureFlags from '../hooks/useFeatureFlags';
 import { Button, SearchInput, SegmentedControl, ErrorState, Skeleton } from '../components/dashboard/ui';
 import { PageHeading, Panel, StatusPill, cn } from '../components/dashboard/ui/v2';
 import {
-  mergeCatalog, selectItems, countsByKind, editHref, TYPE_LABEL, TYPE_PLURAL, TYPES,
+  mergeCatalog, selectItems, countsByKind, editHref, TYPE_LABEL, TYPE_PLURAL, TYPE_BLURB, TYPES, ADD_ROUTE,
 } from './catalog/catalogModel';
+
+// Icon per type for the New picker (matches the Host Lab descriptors).
+const TYPE_ICON = { service: CalendarClock, product: FileDown, course: BookOpen, membership: Users, coupon: TicketPercent };
+// Order the picker shows, Memberships before Offers (as the prototype does).
+const NEW_ORDER = ['service', 'product', 'course', 'membership', 'coupon'];
+
+/* The "New" picker: pick what you are making, land on that type's create page.
+   An anchored panel with an icon + name + one line each, like Host Lab. */
+const NewMenu = ({ enabled, onPick }) => {
+  const [open, setOpen] = useState(false);
+  const types = NEW_ORDER.filter((t) => enabled[t]);
+  return (
+    <div className="relative">
+      <Button size="sm" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-haspopup="menu">
+        <Plus className="h-4 w-4" /> New
+      </Button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} aria-hidden="true" />
+          <div role="menu" className="absolute right-0 z-50 mt-1 w-64 overflow-hidden rounded-[8px] border-2 border-neutral-200 bg-white py-1 shadow-lg">
+            {types.map((t) => {
+              const Icon = TYPE_ICON[t] || Plus;
+              return (
+                <button key={t} type="button" role="menuitem"
+                  onClick={() => { setOpen(false); onPick(t); }}
+                  className="flex w-full items-start gap-2 px-2.5 py-1.5 text-left transition hover:bg-blush">
+                  <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-xs bg-neutral-100 text-ink/55">
+                    <Icon className="h-3 w-3" strokeWidth={2.4} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[11.5px] font-bold text-ink">{TYPE_LABEL[t]}</span>
+                    <span className="block text-[10.5px] font-medium leading-snug text-ink/50">{TYPE_BLURB[t]}</span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 
 const money = (n) => (n === 0 ? 'Free' : `₹${Number(n).toLocaleString('en-IN')}`);
 const load = async (kind, fn) => {
   try { const { data } = await fn(); return { kind, rows: Array.isArray(data) ? data : [] }; }
   catch { return { kind, rows: [], error: true }; }
+};
+// Membership returns one program ({ program: { tiers } }), not an array — flatten
+// its tiers into rows so each tier is a sellable item in the list.
+const loadMemberships = async () => {
+  try { const { data } = await getMyMembership(); return { kind: 'membership', rows: data?.program?.tiers || [] }; }
+  catch { return { kind: 'membership', rows: [], error: true }; }
 };
 
 const CatalogV2 = () => {
@@ -29,7 +77,8 @@ const CatalogV2 = () => {
 
   const courseOn = !!flags?.course_purchase;
   const couponOn = !!flags?.coupons;
-  const enabled = useMemo(() => ({ service: true, product: true, course: courseOn, coupon: couponOn }), [courseOn, couponOn]);
+  const membershipOn = !!flags?.community_memberships;
+  const enabled = useMemo(() => ({ service: true, product: true, course: courseOn, coupon: couponOn, membership: membershipOn }), [courseOn, couponOn, membershipOn]);
 
   const fetchAll = useCallback(async () => {
     setSources(null);
@@ -38,6 +87,7 @@ const CatalogV2 = () => {
       enabled.product && load('product', getMyProducts),
       enabled.course && load('course', getMyCourses),
       enabled.coupon && load('coupon', getHostCoupons),
+      enabled.membership && loadMemberships(),
     ].filter(Boolean);
     setSources(await Promise.all(jobs));
   }, [enabled]);
@@ -54,7 +104,7 @@ const CatalogV2 = () => {
 
   const header = (
     <PageHeading title="Catalog" sub={sources === null ? 'Loading…' : `${items.length} ${items.length === 1 ? 'thing' : 'things'} you sell`}
-      action={<Button size="sm" onClick={() => navigate('/dashboard/service/add-new')}><Plus className="h-4 w-4" /> New service</Button>} />
+      action={<NewMenu enabled={enabled} onPick={(t) => navigate(ADD_ROUTE[t])} />} />
   );
 
   if (sources === null) {

@@ -67,7 +67,7 @@ const PageHead = ({ title, sub, right }) => (
 );
 
 const Card = ({ className = "", children }) => (
-  <div className={`rounded-xl border-2 border-neutral-200 bg-white p-4 ${className}`}>{children}</div>
+  <div className={`rounded-[8px] border-2 border-neutral-200 bg-white p-4 ${className}`}>{children}</div>
 );
 
 const STATUS = {
@@ -114,7 +114,7 @@ const Overview = () => (
     </div>
     <div className="grid grid-cols-2 gap-2.5">
       {[[CalendarDays, "Upcoming", 3], [Star, "Completed", 11]].map(([Ic, l, v]) => (
-        <div key={l} className="flex items-center gap-3 rounded-xl border-2 border-neutral-200 bg-white p-3.5">
+        <div key={l} className="flex items-center gap-3 rounded-[8px] border-2 border-neutral-200 bg-white p-3.5">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-blush text-maroon"><Ic size={19} strokeWidth={2} /></span>
           <div><p className="font-display text-[26px] font-extrabold leading-none tracking-[-0.04em] text-ink">{v}</p><p className="mt-1 text-[11px] font-semibold text-ink/50">{l}</p></div>
         </div>
@@ -292,7 +292,7 @@ const Courses = () => (
     ) : (
       <div className="grid gap-3 sm:grid-cols-2">
         {COURSES.map((c) => (
-          <div key={c.title} className="overflow-hidden rounded-xl border-2 border-neutral-200 bg-white">
+          <div key={c.title} className="overflow-hidden rounded-[8px] border-2 border-neutral-200 bg-white">
             <div className="grid aspect-video place-items-center bg-blush"><Video className="h-8 w-8 text-maroon/40" strokeWidth={1.6} /></div>
             <div className="p-3">
               <p className="font-display text-[14px] font-extrabold tracking-[-0.02em] text-ink">{c.title}</p>
@@ -370,7 +370,7 @@ const AccountMenu = () => {
         <ChevronDown className={`h-4 w-4 text-ink/35 transition-transform ${open ? "rotate-180" : ""}`} strokeWidth={2.2} />
       </button>
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-60 overflow-hidden rounded-2xl border-2 border-neutral-200 bg-white text-ink dash-elev-3" role="menu">
+        <div className="absolute right-0 top-full z-50 mt-2 w-60 overflow-hidden rounded-[8px] border-2 border-neutral-200 bg-white text-ink dash-elev-3" role="menu">
           <div className="relative overflow-hidden bg-blush px-3 pb-3 pt-3.5 text-center">
             <span className="absolute -left-6 -top-8 h-20 w-20 rounded-full border-[3px] border-maroon/10" />
             <span className="absolute -right-7 top-6 h-16 w-16 rounded-full border-[3px] border-maroon/10" />

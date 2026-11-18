@@ -41,6 +41,16 @@ export const TYPE_PLURAL = {
   membership: 'Memberships',
 };
 
+// One line on what each type is, for the "New" picker. Lifted from the Host Lab
+// descriptors so the live menu reads the same as the prototype the founder saw.
+export const TYPE_BLURB = {
+  service: 'Time on your calendar. A guest picks a slot and pays for it.',
+  product: 'A file a guest downloads. It sells while you sleep and takes no slot.',
+  course: 'Lessons a guest works through. Teach once, sell many times.',
+  membership: 'A monthly fee for ongoing access — the steadiest revenue a host can build.',
+  coupon: 'A code that takes money off. For a launch, a festival, or a returning client.',
+};
+
 // Where a row goes when clicked. Only services have a per-item editor route;
 // the rest edit inline on their own page, so a row lands there instead.
 // Stated rather than hidden: this is the seam a later step closes by unifying

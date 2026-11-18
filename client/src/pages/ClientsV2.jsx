@@ -464,7 +464,7 @@ const ClientsV2 = () => {
       {error && clients.length === 0 ? (
         <ErrorState message="Couldn't load your clients." onRetry={load} />
       ) : loading ? (
-        <div className="overflow-hidden rounded-xl border-2 border-neutral-200 bg-white">
+        <div className="overflow-hidden rounded-[8px] border-2 border-neutral-200 bg-white">
           {[0, 1, 2, 3, 4].map((i) => (
             <div key={i} className="flex items-center gap-2.5 border-b-2 border-neutral-100 px-3 py-2.5 last:border-b-0">
               <Skeleton className="h-6 w-6 rounded-full" /><Skeleton className="h-3.5 w-40" /><Skeleton className="ml-auto h-3.5 w-16" />
@@ -477,7 +477,7 @@ const ClientsV2 = () => {
       ) : (
         <>
           {/* Desktop table */}
-          <div className="hidden overflow-hidden rounded-xl border-2 border-neutral-200 bg-white md:block">
+          <div className="hidden overflow-hidden rounded-[8px] border-2 border-neutral-200 bg-white md:block">
             <table className="w-full text-[11.5px]">
               <thead>
                 <tr className="border-b-2 border-neutral-200 bg-cream text-[10px] uppercase tracking-wide text-ink/45">
@@ -519,7 +519,7 @@ const ClientsV2 = () => {
           </div>
 
           {/* Mobile list */}
-          <ul className="divide-y-2 divide-neutral-200 overflow-hidden rounded-xl border-2 border-neutral-200 bg-white md:hidden">
+          <ul className="divide-y-2 divide-neutral-200 overflow-hidden rounded-[8px] border-2 border-neutral-200 bg-white md:hidden">
             {rows.map((c) => (
               <li key={c.customer_key}>
                 <button type="button" onClick={() => openClient(c)} className="flex w-full items-center gap-2 px-2.5 py-2 text-left">

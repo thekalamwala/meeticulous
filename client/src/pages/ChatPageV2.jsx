@@ -7,7 +7,6 @@ import { SETTINGS_NAV } from './dashboardNav';
 
 const ChatPageV2 = () => (
   <div className="flex flex-col gap-2.5">
-    <SubNav items={SETTINGS_NAV} />
     <PageHeading title="Help" sub="Chat with the Meeticulous team." />
     <SupportChat />
   </div>
