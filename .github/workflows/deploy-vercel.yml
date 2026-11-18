@@ -79,5 +79,14 @@ jobs:
       # VITE_* vars baked in — a total white screen. Remote builds run inside
       # Vercel's infra where ALL project env vars (sensitive included) exist,
       # and run `vercel-build`, so the tests + prerender gate apply here too.
-      - name: Deploy (remote build)
-        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
+      #
+      # --no-wait: queue the deploy and return immediately instead of blocking
+      # the runner for the whole ~11-32 min REMOTE build. The GitHub runner was
+      # idling (and billing Actions minutes) the entire build before this —
+      # ~30 wasted GH-minutes per client deploy. The build still runs on Vercel;
+      # its pass/fail shows on the Vercel dashboard, and smoke.yml (triggered by
+      # deployment_status) only fires on a SUCCESSFUL deploy, so a failed remote
+      # build never false-passes a canary. Trade-off: this job goes green even
+      # if the remote build later fails — watch Vercel, not just Actions.
+      - name: Deploy (remote build, fire-and-forget)
+        run: vercel deploy --prod --no-wait --token=${{ secrets.VERCEL_TOKEN }}
