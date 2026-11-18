@@ -178,6 +178,9 @@ const Feedback     = lazy(() => import('./pages/Feedback'));
 // Studio Client CRM ("Host 360") — Studio+ only, gated server-side.
 const ClientsList  = lazy(() => import('./pages/ClientsList'));
 const ClientsV2    = lazy(() => import('./pages/ClientsV2'));
+const TodayV2      = lazy(() => import('./pages/TodayV2'));
+const BookingsV2   = lazy(() => import('./pages/BookingsV2'));
+const CatalogV2    = lazy(() => import('./pages/CatalogV2'));
 const ClientDetail = lazy(() => import('./pages/ClientDetail'));
 
 // KYC (host identity verification)
@@ -399,6 +402,20 @@ function useGiftRedeem() {
 function ClientsListRoute() {
   const { flags } = useFeatureFlags();
   return flags.dashboard_v2 ? <ClientsV2 /> : <ClientsList />;
+}
+
+// dashboard_v2: the graduated Today page replaces the Overview on the flag path.
+function DashboardHomeRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <TodayV2 /> : <Dashboard />;
+}
+function BookingsRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <BookingsV2 /> : <Bookings />;
+}
+function CatalogRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <CatalogV2 /> : <CatalogList />;
 }
 
 function DashboardWrapper({ children }) {
@@ -659,15 +676,15 @@ function App() {
           <Route path="/backstage" element={<AdminLogin />} />
 
           {/* Vendor dashboard */}
-          <Route path="/dashboard" element={<DashboardWrapper><Dashboard /></DashboardWrapper>} />
-          <Route path="/dashboard/bookings" element={<DashboardWrapper><Bookings /></DashboardWrapper>} />
+          <Route path="/dashboard" element={<DashboardWrapper><DashboardHomeRoute /></DashboardWrapper>} />
+          <Route path="/dashboard/bookings" element={<DashboardWrapper><BookingsRoute /></DashboardWrapper>} />
           <Route path="/dashboard/clients" element={<DashboardWrapper><ClientsListRoute /></DashboardWrapper>} />
           <Route path="/dashboard/clients/:id" element={<DashboardWrapper><ClientDetail /></DashboardWrapper>} />
           <Route path="/dashboard/earnings" element={<DashboardWrapper><Earnings /></DashboardWrapper>} />
           {/* One list of everything sellable. Additive: Services, Products,
               Courses and Coupons keep their own routes and pages. The
               console_v2 rail points here instead of at the four. */}
-          <Route path="/dashboard/catalog" element={<DashboardWrapper><CatalogList /></DashboardWrapper>} />
+          <Route path="/dashboard/catalog" element={<DashboardWrapper><CatalogRoute /></DashboardWrapper>} />
           <Route path="/dashboard/services" element={<DashboardWrapper><ServicesList /></DashboardWrapper>} />
           <Route path="/dashboard/service/add-new" element={<DashboardWrapper><AddService /></DashboardWrapper>} />
           <Route path="/dashboard/service/edit/:id" element={<DashboardWrapper><EditService /></DashboardWrapper>} />
