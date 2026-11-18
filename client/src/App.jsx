@@ -177,6 +177,7 @@ const Feedback     = lazy(() => import('./pages/Feedback'));
 
 // Studio Client CRM ("Host 360") — Studio+ only, gated server-side.
 const ClientsList  = lazy(() => import('./pages/ClientsList'));
+const ClientsV2    = lazy(() => import('./pages/ClientsV2'));
 const ClientDetail = lazy(() => import('./pages/ClientDetail'));
 
 // KYC (host identity verification)
@@ -391,6 +392,13 @@ function useGiftRedeem() {
       })
       .catch(() => {});
   }, [user?.is_host, user?.onboarding_completed]);
+}
+
+// dashboard_v2 (ships OFF): graduated Clients page (lab design on real CRM data).
+// Fails closed — undefined flag serves the existing ClientsList.
+function ClientsListRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <ClientsV2 /> : <ClientsList />;
 }
 
 function DashboardWrapper({ children }) {
@@ -653,7 +661,7 @@ function App() {
           {/* Vendor dashboard */}
           <Route path="/dashboard" element={<DashboardWrapper><Dashboard /></DashboardWrapper>} />
           <Route path="/dashboard/bookings" element={<DashboardWrapper><Bookings /></DashboardWrapper>} />
-          <Route path="/dashboard/clients" element={<DashboardWrapper><ClientsList /></DashboardWrapper>} />
+          <Route path="/dashboard/clients" element={<DashboardWrapper><ClientsListRoute /></DashboardWrapper>} />
           <Route path="/dashboard/clients/:id" element={<DashboardWrapper><ClientDetail /></DashboardWrapper>} />
           <Route path="/dashboard/earnings" element={<DashboardWrapper><Earnings /></DashboardWrapper>} />
           {/* One list of everything sellable. Additive: Services, Products,
