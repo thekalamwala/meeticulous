@@ -57,7 +57,7 @@ export default function CommentList({ comments, acceptedId, viewerId, canAccept,
   const accepted = acceptedId ? comments.find((c) => c.id === acceptedId && !TOMBSTONE[c.status]) : null;
 
   const actionsRow = (c) => (!c.pending && (
-    <div className="-mx-3 -mb-3 flex items-center gap-1">
+    <div className="mt-comment__actions">
       <LikeButton targetType="comment" id={c.id} liked={c.viewer?.liked} count={c.like_count} />
       <button type="button" onClick={() => onReply?.(c)} className="mt-btn mt-btn--ghost mt-btn--s font-medium text-muted hover:text-maroon">
         Reply
@@ -85,22 +85,24 @@ export default function CommentList({ comments, acceptedId, viewerId, canAccept,
     const isAccepted = c === accepted;
 
     const node = TOMBSTONE[c.status] ? (
-      <li key={c.id} id={`c-${c.id}`} className="flex gap-4 rounded-xl bg-neutral-100 p-5 sm:p-6">
-        <Avatar author={null} />
+      <li key={c.id} id={`c-${c.id}`} className="mt-comment mt-comment--gone">
+        <Avatar author={null} size={depth ? 's' : 'm'} />
         <div className="flex flex-col gap-1">
-          <span className="text-sm font-medium text-muted">{TOMBSTONE[c.status]}</span>
-          <span className="text-xs text-muted">{GONE_NOTE[c.status]} · {relTime(c.created_at)}</span>
+          <span className="mt-post__name text-muted">{TOMBSTONE[c.status]}</span>
+          <span className="mt-post__meta">{GONE_NOTE[c.status]} · {relTime(c.created_at)}</span>
         </div>
       </li>
     ) : (
-      <li key={c.id} id={`c-${c.id}`} className={`flex gap-4 rounded-xl bg-white p-5 sm:p-6 ${isAccepted ? 'mt-card--accepted' : ''}`}>
-        <Avatar author={c.author} />
-        <div className="flex min-w-0 flex-1 flex-col gap-3">
+      <li key={c.id} id={`c-${c.id}`} className={`mt-comment ${isAccepted ? 'mt-comment--accepted' : ''}`}>
+        {/* Nested replies take the small avatar: the step down reads as depth without
+            spending another 8px of indent on a phone. */}
+        <Avatar author={c.author} size={depth ? 's' : 'm'} />
+        <div className="mt-comment__main">
           {/* Breadcrumb only when the reply was flattened (indent no longer shows its parent)
               and the parent is a real, visible comment. Nested replies skip it — the indent is the cue. */}
           {flattened && parent && !TOMBSTONE[parent.status] && (
-            <span className="inline-flex items-center gap-2 text-xs text-muted">
-              <CornerDownRight size={16} aria-hidden="true" />
+            <span className="mt-post__meta inline-flex items-center gap-2">
+              <CornerDownRight size={14} aria-hidden="true" />
               Replying to <a href={`#c-${parent.id}`} className="font-medium text-maroon no-underline">{parent.author?.display_name}</a>
             </span>
           )}
@@ -113,7 +115,7 @@ export default function CommentList({ comments, acceptedId, viewerId, canAccept,
           {editing === c.id ? (
             <EditBox initial={{ body: c.body }} max={2000} onCancel={() => setEditing(null)} onSave={async (v) => { await onEdit(c, v.body); setEditing(null); }} />
           ) : (
-            <p className="text-sm leading-relaxed text-ink"><LinkifiedText text={c.body} /></p>
+            <p className="mt-post__body"><LinkifiedText text={c.body} /></p>
           )}
           {/* A still-saving reply has a temp id the server would 400 on, so hide every action. */}
           {actionsRow(c)}
@@ -127,8 +129,10 @@ export default function CommentList({ comments, acceptedId, viewerId, canAccept,
     const childFlattened = flattened || depth + 1 > MAX_DEPTH;
     return (
       <li key={`${c.id}-g`} className="list-none">
-        <ol className="flex list-none flex-col gap-4 p-0">{node}</ol>
-        <ol className={`flex list-none flex-col gap-4 p-0 ${childFlattened ? 'mt-4' : 'mt-4 border-l-2 border-blush pl-3 sm:pl-6'}`}>
+        <ol className="list-none p-0">{node}</ol>
+        {/* Indent alone carries lineage — the old 2px blush rail plus card padding cost
+            ~40px per level, which a 375px screen cannot spare three times over. */}
+        <ol className={childFlattened ? 'list-none p-0' : 'mt-comment-kids'}>
           {children.map((k) => renderNode(k, depth + 1, childFlattened))}
         </ol>
       </li>
@@ -149,7 +153,7 @@ export default function CommentList({ comments, acceptedId, viewerId, canAccept,
 
   return (
     <>
-      <ol className="flex list-none flex-col gap-4 p-0">
+      <ol className="list-none p-0">
         {visibleRoots.map(renderRoot)}
       </ol>
       {deleting && (

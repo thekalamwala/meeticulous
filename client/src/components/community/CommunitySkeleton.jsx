@@ -8,7 +8,7 @@ function Bar({ w = 'w-full', h = 'h-3' }) {
 
 export function CardSkeleton() {
   return (
-    <div className="mt-card gap-5 p-5 sm:p-6" aria-hidden="true">
+    <div className="mt-card mt-card--feed" aria-hidden="true">
       <div className="flex items-center gap-3">
         <div className="h-10 w-10 shrink-0 rounded-full bg-neutral-100" />
         <div className="flex flex-1 flex-col gap-2">
