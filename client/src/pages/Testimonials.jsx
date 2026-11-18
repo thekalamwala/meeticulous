@@ -105,7 +105,6 @@ export default function Testimonials({ embedded = false } = {}) {
     <div className={embedded ? 'flex flex-col gap-2.5' : 'mx-auto max-w-3xl px-4 py-6'}>
       {embedded ? (
         <>
-          <SubNav items={GROW_NAV} />
           <PageHeadingV2
             title="Social proof"
             sub="Import praise you already have — WhatsApp, DMs, emails — and show it as a proof wall on your public page."

@@ -188,7 +188,6 @@ const UpgradePlan = ({ embedded = false } = {}) => {
       {!embedded && <BackButton />}
       {embedded && (
         <div className="mb-4 flex flex-col gap-2.5">
-          <SubNav items={SETTINGS_NAV} />
         </div>
       )}
       <PageHeader

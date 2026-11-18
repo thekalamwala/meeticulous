@@ -197,7 +197,7 @@ const ProfilePreview = ({ form, themeColor }) => {
   const borderColor = getPlanBorderColor('explorer'); // preview always uses explorer
 
   return (
-    <div className="mx-auto w-full max-w-[240px] select-none overflow-hidden rounded-3xl border-2 border-neutral-200 bg-white text-xs">
+    <div className="mx-auto w-full max-w-[240px] select-none overflow-hidden rounded-[8px] border-2 border-neutral-200 bg-white text-xs">
       {/* Cover — 3:1, matches every render site. Flat theme tint (no gradient). */}
       <div className="relative aspect-[3/1]">
         <img src={form.cover_image || DEFAULT_COVER_IMAGE} alt="" className="h-full w-full object-cover object-center" />
@@ -403,7 +403,6 @@ const ProfileSetup = ({ embedded = false } = {}) => {
     <div className={embedded ? '' : 'mx-auto max-w-5xl'}>
       {embedded ? (
         <div className="mb-4 flex flex-col gap-2.5">
-          <SubNav items={SETTINGS_NAV} />
           <PageHeadingV2
             title="Account"
             sub={<>How guests discover and book you. Plan: <span className="font-semibold text-ink">{planLabel(plan, 'Starter')}</span></>}
