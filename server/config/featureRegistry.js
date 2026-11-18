@@ -141,6 +141,12 @@ const REGISTRY = [
   // redesign. No URL changes, so every bookmark and emailed link keeps working
   // with it on or off, and flipping it back is a full revert.
   { key: 'console_v2',           label: 'Console v2 (rail grouping)', category: 'Operations', scope: 'vendor', enabled: false, description: 'Regrouped host dashboard rail: Clients and Schedule get their own sections, Grow collects testimonials + referrals. Ships OFF. Off = the current grouping is served. Routes are identical either way.' },
+  // Opt-in (ships OFF — seeded disabled in v3.223, and `enabled: false` here so the
+  // registry upsert creates it OFF even before the migration runs). The Host Lab
+  // shell adopted as the real dashboard LAYOUT (flat/compact/chevron rail), driven
+  // by the same NAV_V2 routes. Off = the current ConsoleSidebar/Overview chrome is
+  // served; routes are identical either way, so flipping it back is a full revert.
+  { key: 'dashboard_v2',         label: 'Dashboard v2 (shell)', category: 'Operations', scope: 'vendor', enabled: false, description: 'Host Lab redesign adopted as the host dashboard shell: one flat, collapsible, chevron-expand rail for every host page (Overview included). Ships OFF. Off = the current rail/panel layout is served. Same routes either way.' },
 ];
 
 const KEYS = REGISTRY.map((f) => f.key);
