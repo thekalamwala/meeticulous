@@ -181,6 +181,16 @@ export const NAV_V2 = [
     ],
   },
   {
+    // dashboard_sections_v2 (ships OFF): graduated Host Lab Intelligence onto real
+    // bookings. Hidden entirely until the flag is on; its routes redirect home off-flag.
+    id: 'intelligence', label: 'Intelligence', icon: 'nav-earnings',
+    items: [
+      { to: '/dashboard/intelligence/overview', label: 'Overview', icon: 'nav-overview', matchPrefix: '/dashboard/intelligence/overview' },
+      { to: '/dashboard/intelligence/revenue', label: 'Revenue', icon: 'nav-earnings', matchPrefix: '/dashboard/intelligence/revenue' },
+    ],
+    visible: (c) => !!c.flags?.dashboard_sections_v2,
+  },
+  {
     id: 'money', label: 'Money', icon: 'rail-earnings',
     items: [
       { to: '/dashboard/earnings', label: 'Earnings', icon: 'nav-earnings' },
@@ -195,6 +205,18 @@ export const NAV_V2 = [
       { to: '/dashboard/testimonials', label: 'Social proof', icon: 'nav-profile' },
       { to: '/dashboard/referrals', label: 'Refer & earn', icon: 'nav-refer' },
     ],
+  },
+  {
+    // dashboard_sections_v2 (ships OFF): the console's view of /community — this
+    // host's own activity, open questions to answer, and the spaces. Hidden until
+    // the flag is on; routes redirect home off-flag.
+    id: 'community', label: 'Community', icon: 'nav-chat',
+    items: [
+      { to: '/dashboard/community/activity', label: 'Activity', icon: 'nav-chat', matchPrefix: '/dashboard/community/activity' },
+      { to: '/dashboard/community/answer', label: 'Answer', icon: 'nav-chat', matchPrefix: '/dashboard/community/answer' },
+      { to: '/dashboard/community/spaces', label: 'Spaces', icon: 'nav-chat', matchPrefix: '/dashboard/community/spaces' },
+    ],
+    visible: (c) => !!c.flags?.dashboard_sections_v2,
   },
   {
     id: 'settings', label: 'Settings', icon: 'rail-settings',

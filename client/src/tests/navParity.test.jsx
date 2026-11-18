@@ -28,7 +28,14 @@ const ALL_FLAGS = { flags: { guest_messaging: true, course_purchase: true, coupo
 // Anything the catalog page links to counts as reachable. Everything else must
 // still be a rail entry.
 const CATALOG_COVERS = Object.values(HOME_OF);
-const V2_OWN_ROUTES = ['/dashboard/catalog'];
+// v2's own surfaces that have no NAV equivalent: the collapsed catalog list, and
+// the dashboard_sections_v2 Intelligence + Community consoles (graduated from the
+// Host Lab prototype; gated by their own OFF flag, so hidden unless it is on).
+const V2_OWN_ROUTES = [
+  '/dashboard/catalog',
+  '/dashboard/intelligence/overview', '/dashboard/intelligence/revenue',
+  '/dashboard/community/activity', '/dashboard/community/answer', '/dashboard/community/spaces',
+];
 
 describe('nothing becomes unreachable under v2', () => {
   it('keeps every NAV page either in the rail or linked from the catalog', () => {
@@ -139,5 +146,14 @@ describe('the helpers still work against v2', () => {
   it('keeps Messages hidden until its flag is on', () => {
     const withoutMessages = visibleSections({ flags: { console_v2: true } });
     expect(withoutMessages.some((s) => s.id === 'messages')).toBe(false);
+  });
+
+  it('hides Intelligence + Community until dashboard_sections_v2 is on, then shows them', () => {
+    const off = visibleSections({ flags: { console_v2: true } }).map((s) => s.id);
+    expect(off).not.toContain('intelligence');
+    expect(off).not.toContain('community');
+    const on = visibleSections({ flags: { console_v2: true, dashboard_sections_v2: true } }).map((s) => s.id);
+    expect(on).toContain('intelligence');
+    expect(on).toContain('community');
   });
 });

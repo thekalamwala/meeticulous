@@ -186,6 +186,12 @@ const PayoutsV2      = lazy(() => import('./pages/PayoutsV2'));
 const TransactionsV2 = lazy(() => import('./pages/TransactionsV2'));
 const InvoicesV2     = lazy(() => import('./pages/InvoicesV2'));
 const AvailabilityV2 = lazy(() => import('./pages/AvailabilityV2'));
+// dashboard_sections_v2 (ships OFF): graduated Intelligence + Community consoles.
+const IntelOverview    = lazy(() => import('./pages/intelligence/IntelOverview'));
+const IntelRevenue     = lazy(() => import('./pages/intelligence/IntelRevenue'));
+const CommunityActivity = lazy(() => import('./pages/community/CommunityActivity'));
+const CommunityAnswer   = lazy(() => import('./pages/community/CommunityAnswer'));
+const CommunitySpaces   = lazy(() => import('./pages/community/CommunitySpaces'));
 const TestimonialsV2 = lazy(() => import('./pages/TestimonialsV2'));
 const ReferEarnV2    = lazy(() => import('./pages/ReferEarnV2'));
 const ProfileSetupV2 = lazy(() => import('./pages/ProfileSetupV2'));
@@ -450,6 +456,13 @@ function InvoicesRoute() {
 function AvailabilityRoute() {
   const { flags } = useFeatureFlags();
   return flags.dashboard_v2 ? <AvailabilityV2 /> : <Availability />;
+}
+// dashboard_sections_v2 (ships OFF): gates the graduated Intelligence + Community
+// consoles. Fails closed — undefined/false flag redirects to the dashboard home,
+// so the routes exist but lead nowhere until the founder flips it on after QA.
+function SectionsRoute({ children }) {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_sections_v2 ? children : <Navigate to="/dashboard" replace />;
 }
 function TestimonialsRoute() {
   const { flags } = useFeatureFlags();
@@ -750,6 +763,13 @@ function App() {
           <Route path="/dashboard/service/edit/:id" element={<DashboardWrapper><EditService /></DashboardWrapper>} />
           <Route path="/dashboard/service/view/:id" element={<DashboardWrapper><EditService /></DashboardWrapper>} />
           <Route path="/dashboard/availability" element={<DashboardWrapper><AvailabilityRoute /></DashboardWrapper>} />
+          {/* dashboard_sections_v2 (ships OFF): Intelligence + Community consoles.
+              SectionsRoute redirects to /dashboard until the flag is flipped on. */}
+          <Route path="/dashboard/intelligence/overview" element={<DashboardWrapper><SectionsRoute><IntelOverview /></SectionsRoute></DashboardWrapper>} />
+          <Route path="/dashboard/intelligence/revenue" element={<DashboardWrapper><SectionsRoute><IntelRevenue /></SectionsRoute></DashboardWrapper>} />
+          <Route path="/dashboard/community/activity" element={<DashboardWrapper><SectionsRoute><CommunityActivity /></SectionsRoute></DashboardWrapper>} />
+          <Route path="/dashboard/community/answer" element={<DashboardWrapper><SectionsRoute><CommunityAnswer /></SectionsRoute></DashboardWrapper>} />
+          <Route path="/dashboard/community/spaces" element={<DashboardWrapper><SectionsRoute><CommunitySpaces /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/profile" element={<DashboardWrapper><ProfileRoute /></DashboardWrapper>} />
           <Route path="/dashboard/kyc" element={<DashboardWrapper><KycRoute /></DashboardWrapper>} />
           {/* KycProvider sits OUTSIDE DashboardWrapper on purpose: DashboardLayout

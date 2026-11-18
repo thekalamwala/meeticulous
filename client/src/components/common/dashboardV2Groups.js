@@ -4,7 +4,7 @@
 // Standalone (no React/CSS imports) so that test stays cheap.
 export const GROUPS = [
   { label: 'Main', ids: ['home', 'bookings', 'clients', 'messages'] },
-  { label: 'Business', ids: ['catalog', 'schedule', 'money', 'grow'] },
+  { label: 'Business', ids: ['catalog', 'schedule', 'intelligence', 'money', 'grow', 'community'] },
   { label: 'Account', ids: ['settings'] },
 ];
 
