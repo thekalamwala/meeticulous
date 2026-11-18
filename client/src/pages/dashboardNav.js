@@ -19,10 +19,13 @@ export const GROW_NAV = [
 export const INTELLIGENCE_NAV = [
   { to: '/dashboard/intelligence/overview', label: 'Overview', end: true },
   { to: '/dashboard/intelligence/revenue', label: 'Revenue' },
+  { to: '/dashboard/intelligence/audience', label: 'Audience' },
+  { to: '/dashboard/intelligence/demand', label: 'Demand' },
 ];
 
 export const COMMUNITY_NAV = [
   { to: '/dashboard/community/activity', label: 'Activity', end: true },
+  { to: '/dashboard/community/mentions', label: 'Mentions' },
   { to: '/dashboard/community/answer', label: 'Answer' },
   { to: '/dashboard/community/spaces', label: 'Spaces' },
 ];

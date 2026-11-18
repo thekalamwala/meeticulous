@@ -187,6 +187,8 @@ export const NAV_V2 = [
     items: [
       { to: '/dashboard/intelligence/overview', label: 'Overview', icon: 'nav-overview', matchPrefix: '/dashboard/intelligence/overview' },
       { to: '/dashboard/intelligence/revenue', label: 'Revenue', icon: 'nav-earnings', matchPrefix: '/dashboard/intelligence/revenue' },
+      { to: '/dashboard/intelligence/audience', label: 'Audience', icon: 'nav-customers', matchPrefix: '/dashboard/intelligence/audience' },
+      { to: '/dashboard/intelligence/demand', label: 'Demand', icon: 'nav-bookings', matchPrefix: '/dashboard/intelligence/demand' },
     ],
     visible: (c) => !!c.flags?.dashboard_sections_v2,
   },
@@ -213,6 +215,7 @@ export const NAV_V2 = [
     id: 'community', label: 'Community', icon: 'nav-chat',
     items: [
       { to: '/dashboard/community/activity', label: 'Activity', icon: 'nav-chat', matchPrefix: '/dashboard/community/activity' },
+      { to: '/dashboard/community/mentions', label: 'Mentions', icon: 'nav-chat', matchPrefix: '/dashboard/community/mentions' },
       { to: '/dashboard/community/answer', label: 'Answer', icon: 'nav-chat', matchPrefix: '/dashboard/community/answer' },
       { to: '/dashboard/community/spaces', label: 'Spaces', icon: 'nav-chat', matchPrefix: '/dashboard/community/spaces' },
     ],

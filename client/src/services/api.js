@@ -470,6 +470,8 @@ export const getMyProfileViews = ()              => API.get('/host/profile-views
 // the headline tiles + commission leak; forecast/win-back/benchmarks/cohorts
 // are REMOVED from the payload, not hidden). Money (Revenue) is ungated.
 export const getIntelligenceOverview = (params) => API.get('/host/intelligence/overview', { params });
+export const getIntelligenceAudience = (params) => API.get('/host/intelligence/audience', { params });
+export const getIntelligenceDemand   = (params) => API.get('/host/intelligence/demand', { params });
 export const getIntelligenceMoney    = (params) => API.get('/host/intelligence/money', { params });
 
 // ── Coupons (v3.204, behind the `coupons` flag) ───────────────

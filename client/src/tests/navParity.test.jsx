@@ -34,7 +34,9 @@ const CATALOG_COVERS = Object.values(HOME_OF);
 const V2_OWN_ROUTES = [
   '/dashboard/catalog',
   '/dashboard/intelligence/overview', '/dashboard/intelligence/revenue',
-  '/dashboard/community/activity', '/dashboard/community/answer', '/dashboard/community/spaces',
+  '/dashboard/intelligence/audience', '/dashboard/intelligence/demand',
+  '/dashboard/community/activity', '/dashboard/community/mentions',
+  '/dashboard/community/answer', '/dashboard/community/spaces',
 ];
 
 describe('nothing becomes unreachable under v2', () => {

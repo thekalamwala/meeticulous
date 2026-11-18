@@ -189,7 +189,10 @@ const AvailabilityV2 = lazy(() => import('./pages/AvailabilityV2'));
 // dashboard_sections_v2 (ships OFF): graduated Intelligence + Community consoles.
 const IntelOverview    = lazy(() => import('./pages/intelligence/IntelOverview'));
 const IntelRevenue     = lazy(() => import('./pages/intelligence/IntelRevenue'));
+const IntelAudience    = lazy(() => import('./pages/intelligence/IntelAudience'));
+const IntelDemand      = lazy(() => import('./pages/intelligence/IntelDemand'));
 const CommunityActivity = lazy(() => import('./pages/community/CommunityActivity'));
+const CommunityMentions = lazy(() => import('./pages/community/CommunityMentions'));
 const CommunityAnswer   = lazy(() => import('./pages/community/CommunityAnswer'));
 const CommunitySpaces   = lazy(() => import('./pages/community/CommunitySpaces'));
 const TestimonialsV2 = lazy(() => import('./pages/TestimonialsV2'));
@@ -767,7 +770,10 @@ function App() {
               SectionsRoute redirects to /dashboard until the flag is flipped on. */}
           <Route path="/dashboard/intelligence/overview" element={<DashboardWrapper><SectionsRoute><IntelOverview /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/intelligence/revenue" element={<DashboardWrapper><SectionsRoute><IntelRevenue /></SectionsRoute></DashboardWrapper>} />
+          <Route path="/dashboard/intelligence/audience" element={<DashboardWrapper><SectionsRoute><IntelAudience /></SectionsRoute></DashboardWrapper>} />
+          <Route path="/dashboard/intelligence/demand" element={<DashboardWrapper><SectionsRoute><IntelDemand /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/community/activity" element={<DashboardWrapper><SectionsRoute><CommunityActivity /></SectionsRoute></DashboardWrapper>} />
+          <Route path="/dashboard/community/mentions" element={<DashboardWrapper><SectionsRoute><CommunityMentions /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/community/answer" element={<DashboardWrapper><SectionsRoute><CommunityAnswer /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/community/spaces" element={<DashboardWrapper><SectionsRoute><CommunitySpaces /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/profile" element={<DashboardWrapper><ProfileRoute /></DashboardWrapper>} />
