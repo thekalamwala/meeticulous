@@ -172,10 +172,10 @@ describe('HostProfile — services listing', () => {
     expect(imgs.length).toBe(0);
   });
 
-  test('shows "No services available yet" when services array is empty', async () => {
+  test('shows an empty state + request form when services array is empty', async () => {
     getHostProfile.mockResolvedValueOnce({ data: { host: HOST, services: [], availability: null } });
     renderProfile();
-    await waitFor(() => expect(screen.getByText(/no services available yet/i)).toBeTruthy());
+    await waitFor(() => expect(screen.getByText(/no sessions here yet/i)).toBeTruthy());
   });
 });
 
