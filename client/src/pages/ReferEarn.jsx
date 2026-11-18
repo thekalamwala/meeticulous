@@ -71,7 +71,6 @@ const ReferEarn = ({ embedded = false } = {}) => {
 
   const head = embedded ? (
     <>
-      <SubNav items={GROW_NAV} />
       <PageHeadingV2 title="Refer & earn" sub="Invite other hosts. Earn cash when they subscribe." action={<GrowShareButton />} />
     </>
   ) : (

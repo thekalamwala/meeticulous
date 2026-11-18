@@ -23,7 +23,6 @@ export default function KycHome({ embedded = false } = {}) {
 
   const head = embedded ? (
     <div className="mb-4 flex flex-col gap-2.5">
-      <SubNav items={SETTINGS_NAV} />
       <PageHeadingV2 title="Verification" sub="Verify your identity to receive payouts." />
     </div>
   ) : (

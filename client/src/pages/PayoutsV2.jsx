@@ -53,7 +53,6 @@ const PayoutsV2 = () => {
   const kycApproved = kycStatus === 'approved';
   const header = (
     <>
-      <SubNav items={MONEY_NAV} />
       <PageHeading title="Payouts" sub="Your share of each paid booking, settled to your bank automatically." />
     </>
   );

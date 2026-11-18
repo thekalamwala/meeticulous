@@ -105,7 +105,9 @@ export const Drawer = ({ open, onClose, title, subtitle, children, width = 'sm:w
 
 /* ── Panel — the one card shape. ───────────────────────────────────────── */
 export const Panel = ({ title, subtitle, action, children, className = '', flush = false }) => (
-  <section className={cn('overflow-hidden rounded-lg border-2 border-neutral-200 bg-white', className)}>
+  // Outer table/list container capped at 8px — the big Loop & Slot radius read
+  // as off on these full-width data panels (founder call, 2026-11-18).
+  <section className={cn('overflow-hidden rounded-[8px] border-2 border-neutral-200 bg-white', className)}>
     {(title || action) && (
       <header className="flex flex-wrap items-center justify-between gap-1.5 border-b-2 border-neutral-200 px-3 py-2">
         <div className="min-w-0">
