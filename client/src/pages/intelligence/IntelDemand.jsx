@@ -24,7 +24,6 @@ const IntelDemand = () => {
 
   const header = (
     <>
-      <SubNav items={INTELLIGENCE_NAV} />
       <PageHeading title="Demand" sub="When you are wanted, and who keeps coming back." />
     </>
   );

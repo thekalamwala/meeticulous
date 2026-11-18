@@ -23,7 +23,6 @@ const IntelRevenue = () => {
 
   const header = (
     <>
-      <SubNav items={INTELLIGENCE_NAV} />
       <PageHeading title="Revenue" sub="From what guests paid to what reaches you, line by line." />
     </>
   );

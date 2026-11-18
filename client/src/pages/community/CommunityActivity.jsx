@@ -35,7 +35,6 @@ const CommunityActivity = () => {
 
   const header = (
     <>
-      <SubNav items={COMMUNITY_NAV} />
       <PageHeading title="Activity" sub="What you've posted and said in the community." />
     </>
   );

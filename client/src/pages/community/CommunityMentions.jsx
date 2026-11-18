@@ -39,7 +39,6 @@ const CommunityMentions = () => {
 
   const header = (
     <>
-      <SubNav items={COMMUNITY_NAV} />
       <PageHeading title="Mentions" sub="Posts that name you — jump in while the thread is live." />
     </>
   );
