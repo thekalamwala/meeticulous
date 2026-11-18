@@ -21,6 +21,7 @@ import { HELP_SLUGS } from '../src/content/helpDocsList.js';
 import { MOMENTS } from '../src/data/moments.js';
 import { RELEASES } from '../src/data/changelog.js';
 import { GLOSSARY_SLUGS } from '../src/data/glossaryData.js';
+import { capHostService } from './lib/capHostService.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST = join(__dirname, '..', 'dist');
@@ -297,10 +298,21 @@ async function hostServiceRoutes() {
       .map((u) => new URL(u).pathname)
       .filter((p) => /\/sitemap-(hosts|services|professions)/.test(p));
 
-    const routes = [];
+    // Split professions (always kept) from host/service (capped) as we read the
+    // sub-sitemaps, so capHostService can protect the 45-min build cap without
+    // ever dropping a profession SEO page.
+    const professionPaths = [];
+    const hostServicePaths = [];
     for (const sub of subPaths) {
       const res = await fetchWithRetry(`${origin}${sub}`);
-      for (const u of locs(await res.text())) routes.push(new URL(u).pathname);
+      const paths = locs(await res.text()).map((u) => new URL(u).pathname);
+      if (/\/sitemap-professions/.test(sub)) professionPaths.push(...paths);
+      else hostServicePaths.push(...paths);
+    }
+    const CAP = Number(process.env.PRERENDER_HOST_CAP) || 1500;
+    const { routes, dropped } = capHostService(professionPaths, hostServicePaths, CAP);
+    if (dropped > 0) {
+      console.warn(`[prerender] host/service routes capped: ${dropped} past PRERENDER_HOST_CAP=${CAP} left to the SPA fallback (${professionPaths.length} profession routes always kept)`);
     }
     console.log(`[prerender] ${routes.length} host/service routes from ${subPaths.length} sub-sitemap(s)`);
     return routes;
@@ -665,9 +677,16 @@ async function prerender() {
   // from being cold), and an immediate retry just re-enters the same jam — which
   // is exactly how a run of adjacent /lp/ routes failed a deploy. Defer the
   // stragglers to the serial pass below instead.
-  // ponytail: fixed pool of 4, sized for the ~4-vCPU Vercel builder — lower it
+  // ponytail: default pool of 4, sized for the ~4-vCPU Vercel builder — lower it
   // first if prerender starts OOMing there, raise it if the builder grows.
-  const POOL = 4;
+  //
+  // Env-tunable (PRERENDER_POOL) so build throughput can be raised WITHOUT a code
+  // deploy: most of a route's wall clock is `networkidle0` I/O wait, so going
+  // 6-8 wide can cut the build ~30-40%. Kept at 4 by default because higher
+  // concurrency CAN saturate the builder's vCPUs and re-trigger the timeout jam
+  // the comment above describes — so raise it via env, watch one deploy, and dial
+  // back instantly if stragglers spike. Clamped to [1, 16].
+  const POOL = Math.min(16, Math.max(1, Number(process.env.PRERENDER_POOL) || 4));
   const deferred = [];
   const queue = [...routes];
 
