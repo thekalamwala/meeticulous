@@ -90,10 +90,14 @@ const REGISTRY = [
   { key: 'course_purchase',      label: 'Course Purchase',      category: 'Payments', scope: 'customer', enabled: false, description: 'Buy video courses. Off = course checkout blocked.' },
   // Opt-in (ships OFF — seeded disabled in v3.203, and `enabled: false` here so the
   // registry upsert creates it OFF even before the migration runs). CA signed off
-  // 2026-11-11 (flat 1% TDS + 1% TCS for all); still OFF pending device/held-balance QA.
-  { key: 'paid_booking_without_pan', label: 'Paid Booking Without PAN', category: 'Payments', scope: 'vendor', enabled: false, description: 'Let a host take a PAID booking before KYC. Off = paid bookings blocked until the host has PAN on file (legacy). On = booking is accepted, money is collected and HELD (payout still needs approved KYC); TDS/TCS withheld at the flat 1% + 1% rate regardless of PAN.' },
+  // 2026-11-11 for the LEGACY flat 1%+1% path, which tds_tcs_v2 replaced on 2026-11-17.
+  // Turned ON 2026-11-18 for founder testing. It is NOT only an access gate: with v2 on
+  // and no PAN on file the no-PAN rate applies, so collect PAN before relying on it.
+  { key: 'paid_booking_without_pan', label: 'Paid Booking Without PAN', category: 'Payments', scope: 'vendor', enabled: false, description: 'Let a host take a PAID booking before KYC. Off = paid bookings blocked until the host has PAN on file (legacy). On = booking is accepted, money is collected and HELD (payout still needs approved KYC); WITHHOLDING IS NOT THE SAME EITHER WAY: with TDS/TCS v2 on, a host with NO PAN on file is withheld at the no-PAN rate (5%) rather than 0.1%, recoverable by the host only by filing a return. Check PAN is on file before turning this on.' },
   // Opt-in MONEY flag (ships OFF — seeded disabled in v3.206, enabled:false here so the
-  // fail-open registry creates it OFF even before the migration runs). Flip ON only after CA sign-off.
+  // fail-open registry creates it OFF even before the migration runs). LIVE since 2026-11-17
+  // (founder/CA decision): statutory rates replaced the legacy flat 1%+1%. enabled:false
+  // below only governs a FIRST insert, so it does not turn the live flag back off.
   { key: 'tds_tcs_v2', label: 'TDS/TCS v2 Withholding', category: 'Payments', scope: 'vendor', enabled: false, description: 'Config-driven TDS (194-O) + TCS (Sec 52) withholding with PAN / entity / Rs5L-threshold rules. Off = legacy flat 1% TDS + 1% TCS. On = rates from platform_settings (default 0.1% TDS / 0.5% TCS), 5% no-PAN, Rs5L individual exemption.' },
   // Opt-in (ships OFF — seeded disabled in v3.204, and enabled:false here so the registry
   // upsert creates it OFF even before the migration runs).
@@ -141,6 +145,12 @@ const REGISTRY = [
   // redesign. No URL changes, so every bookmark and emailed link keeps working
   // with it on or off, and flipping it back is a full revert.
   { key: 'console_v2',           label: 'Console v2 (rail grouping)', category: 'Operations', scope: 'vendor', enabled: false, description: 'Regrouped host dashboard rail: Clients and Schedule get their own sections, Grow collects testimonials + referrals. Ships OFF. Off = the current grouping is served. Routes are identical either way.' },
+  // Opt-in (ships OFF — seeded disabled in v3.223, and `enabled: false` here so the
+  // registry upsert creates it OFF even before the migration runs). The Host Lab
+  // shell adopted as the real dashboard LAYOUT (flat/compact/chevron rail), driven
+  // by the same NAV_V2 routes. Off = the current ConsoleSidebar/Overview chrome is
+  // served; routes are identical either way, so flipping it back is a full revert.
+  { key: 'dashboard_v2',         label: 'Dashboard v2 (shell)', category: 'Operations', scope: 'vendor', enabled: false, description: 'Host Lab redesign adopted as the host dashboard shell: one flat, collapsible, chevron-expand rail for every host page (Overview included). Ships OFF. Off = the current rail/panel layout is served. Same routes either way.' },
 ];
 
 const KEYS = REGISTRY.map((f) => f.key);

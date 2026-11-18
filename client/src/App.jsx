@@ -6,7 +6,9 @@ import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import PageGuides, { GUIDES_IN_PAGE } from './components/common/PageGuides';
 import DashboardLayout from './components/common/DashboardLayout';
+import DashboardLayoutV2 from './components/common/DashboardLayoutV2';
 import OverviewLayout from './components/common/OverviewLayout';
+import useFeatureFlags from './hooks/useFeatureFlags';
 import AdminLayout from './components/common/AdminLayout';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import HostRoute from './components/common/HostRoute';
@@ -175,6 +177,7 @@ const Feedback     = lazy(() => import('./pages/Feedback'));
 
 // Studio Client CRM ("Host 360") — Studio+ only, gated server-side.
 const ClientsList  = lazy(() => import('./pages/ClientsList'));
+const ClientsV2    = lazy(() => import('./pages/ClientsV2'));
 const ClientDetail = lazy(() => import('./pages/ClientDetail'));
 
 // KYC (host identity verification)
@@ -391,10 +394,25 @@ function useGiftRedeem() {
   }, [user?.is_host, user?.onboarding_completed]);
 }
 
+// dashboard_v2 (ships OFF): graduated Clients page (lab design on real CRM data).
+// Fails closed — undefined flag serves the existing ClientsList.
+function ClientsListRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <ClientsV2 /> : <ClientsList />;
+}
+
 function DashboardWrapper({ children }) {
   useReferralCapture();
   useGiftRedeem();
   const { pathname } = useLocation();
+  const { flags } = useFeatureFlags();
+  // dashboard_v2 (ships OFF): the Host Lab shell adopted as the real layout. One
+  // flat/compact rail for EVERY host page, Overview included — so it bypasses
+  // OverviewLayout too. Fails closed: an unknown/undefined flag is falsy, so the
+  // current chrome is served until the flag is explicitly flipped on.
+  if (flags.dashboard_v2) {
+    return <HostRoute><DashboardLayoutV2>{children}</DashboardLayoutV2></HostRoute>;
+  }
   // The Overview page ships the reference chrome (207px single-column sidebar +
   // toolbar). Every other host page keeps the existing rail/panel DashboardLayout.
   if (pathname === '/dashboard') {
@@ -643,7 +661,7 @@ function App() {
           {/* Vendor dashboard */}
           <Route path="/dashboard" element={<DashboardWrapper><Dashboard /></DashboardWrapper>} />
           <Route path="/dashboard/bookings" element={<DashboardWrapper><Bookings /></DashboardWrapper>} />
-          <Route path="/dashboard/clients" element={<DashboardWrapper><ClientsList /></DashboardWrapper>} />
+          <Route path="/dashboard/clients" element={<DashboardWrapper><ClientsListRoute /></DashboardWrapper>} />
           <Route path="/dashboard/clients/:id" element={<DashboardWrapper><ClientDetail /></DashboardWrapper>} />
           <Route path="/dashboard/earnings" element={<DashboardWrapper><Earnings /></DashboardWrapper>} />
           {/* One list of everything sellable. Additive: Services, Products,
