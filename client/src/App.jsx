@@ -180,6 +180,7 @@ const ClientsList  = lazy(() => import('./pages/ClientsList'));
 const ClientsV2    = lazy(() => import('./pages/ClientsV2'));
 const TodayV2      = lazy(() => import('./pages/TodayV2'));
 const BookingsV2   = lazy(() => import('./pages/BookingsV2'));
+const CatalogV2    = lazy(() => import('./pages/CatalogV2'));
 const ClientDetail = lazy(() => import('./pages/ClientDetail'));
 
 // KYC (host identity verification)
@@ -411,6 +412,10 @@ function DashboardHomeRoute() {
 function BookingsRoute() {
   const { flags } = useFeatureFlags();
   return flags.dashboard_v2 ? <BookingsV2 /> : <Bookings />;
+}
+function CatalogRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <CatalogV2 /> : <CatalogList />;
 }
 
 function DashboardWrapper({ children }) {
@@ -679,7 +684,7 @@ function App() {
           {/* One list of everything sellable. Additive: Services, Products,
               Courses and Coupons keep their own routes and pages. The
               console_v2 rail points here instead of at the four. */}
-          <Route path="/dashboard/catalog" element={<DashboardWrapper><CatalogList /></DashboardWrapper>} />
+          <Route path="/dashboard/catalog" element={<DashboardWrapper><CatalogRoute /></DashboardWrapper>} />
           <Route path="/dashboard/services" element={<DashboardWrapper><ServicesList /></DashboardWrapper>} />
           <Route path="/dashboard/service/add-new" element={<DashboardWrapper><AddService /></DashboardWrapper>} />
           <Route path="/dashboard/service/edit/:id" element={<DashboardWrapper><EditService /></DashboardWrapper>} />
