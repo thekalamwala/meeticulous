@@ -285,6 +285,20 @@ Items previously listed here as pending are now live:
   next finding in it is a real one. Of 338 unpinned functions in `public`, 337 are extension-owned
   (btree_gist, pg_trgm and vector are all installed in public — a separate, lower advisor warning);
   exactly one was ours.
+- **v3.217** (`v3.217_creator_intelligence.sql`) — applied 2026-11-18 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`) and verified: the 5 Creator Intelligence tables (`analytics_events`,
+  `analytics_daily`, `analytics_daily_dim`, `booking_attribution`, `benchmark_daily`), the
+  `profiles.intel_revenue_target` column, RLS ON all 5 (no policies, service_role only — v3.186/v3.206
+  posture), and anon/authenticated REVOKED. Additive; code is schema-fallback safe (intel-rollup /
+  intel-prune wrap each day in try/catch and no-op on a missing table), so it was safe to ship on
+  release/2026-11 before apply. Intel stays dark until `analytics_ingest` is flipped ON (ships OFF:
+  the collect endpoint returns 202 and drops). Shipped with PRs #366 (foundation) / #367 / #371.
+- **v3.218** (`v3.218_analytics_size_fn.sql`) — applied 2026-11-18 on the Meeticulous DB and verified
+  (fn executes, returned 40960 bytes): `analytics_events_size_bytes()` (SECURITY DEFINER, pins
+  `search_path = public, pg_catalog`, EXECUTE granted to service_role ONLY). Feeds the ingest size
+  guard, sampled by intel-rollup/intel-prune, never called on the ingest path. **Filename note:**
+  number collides with `v3.218_community_membership.sql` (membership) — cosmetic only, both applied,
+  Supabase names migrations independently. Shipped with PR #371.
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
 
