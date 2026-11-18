@@ -644,6 +644,12 @@ const authorActivity = handleRead(async (req, res) => {
   return res.json({ posts, comments: withParent });
 }, { posts: [], comments: [] });
 
+// GET /mentions — posts/comments that @mention the signed-in member, newest first. Private.
+const listMentions = handle(async (req, res) => {
+  const items = (await store.listMentions(req.user.id, 30)).filter((m) => m.post);
+  return res.json({ items });
+});
+
 // PATCH /prefs — update the member's email notification preference. Mentions and
 // replies share one flag (email_replies) server-side (notify.js wantsEmail), so
 // the client shows one toggle. ponytail: split into email_mentions when the two
@@ -683,7 +689,7 @@ const mentionSuggest = handle(async (req, res) => {
 });
 
 module.exports = {
-  listSpaces, feed, spaceThreads, tags, tagThreads, itemDetail, itemComments, me, myCard, authorActivity, mentionSuggest, updatePrefs,
+  listSpaces, feed, spaceThreads, tags, tagThreads, itemDetail, itemComments, me, myCard, authorActivity, listMentions, mentionSuggest, updatePrefs,
   acceptTerms, createItem, updateItem, deleteItem, createComment, updateComment, deleteComment,
   acceptAnswer, addReaction, removeReaction, createReport,
   createSave, removeSave, createBlock, removeBlock,
