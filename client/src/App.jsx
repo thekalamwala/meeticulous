@@ -181,6 +181,17 @@ const ClientsV2    = lazy(() => import('./pages/ClientsV2'));
 const TodayV2      = lazy(() => import('./pages/TodayV2'));
 const BookingsV2   = lazy(() => import('./pages/BookingsV2'));
 const CatalogV2    = lazy(() => import('./pages/CatalogV2'));
+const EarningsV2     = lazy(() => import('./pages/EarningsV2'));
+const PayoutsV2      = lazy(() => import('./pages/PayoutsV2'));
+const TransactionsV2 = lazy(() => import('./pages/TransactionsV2'));
+const InvoicesV2     = lazy(() => import('./pages/InvoicesV2'));
+const AvailabilityV2 = lazy(() => import('./pages/AvailabilityV2'));
+const TestimonialsV2 = lazy(() => import('./pages/TestimonialsV2'));
+const ReferEarnV2    = lazy(() => import('./pages/ReferEarnV2'));
+const ProfileSetupV2 = lazy(() => import('./pages/ProfileSetupV2'));
+const UpgradePlanV2  = lazy(() => import('./pages/UpgradePlanV2'));
+const KycHomeV2      = lazy(() => import('./pages/kyc/KycHomeV2'));
+const ChatPageV2     = lazy(() => import('./pages/ChatPageV2'));
 const ClientDetail = lazy(() => import('./pages/ClientDetail'));
 
 // KYC (host identity verification)
@@ -416,6 +427,55 @@ function BookingsRoute() {
 function CatalogRoute() {
   const { flags } = useFeatureFlags();
   return flags.dashboard_v2 ? <CatalogV2 /> : <CatalogList />;
+}
+// dashboard_v2: the Money hub — four real routes graduated in place, each with the
+// shared Money SubNav. Fails closed to the existing page.
+function EarningsRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <EarningsV2 /> : <Earnings />;
+}
+function PayoutsRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <PayoutsV2 /> : <Payouts />;
+}
+function TransactionsRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <TransactionsV2 /> : <Transactions />;
+}
+function InvoicesRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <InvoicesV2 /> : <Invoices />;
+}
+// dashboard_v2: Schedule (availability editor) + Grow (social proof, refer & earn).
+function AvailabilityRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <AvailabilityV2 /> : <Availability />;
+}
+function TestimonialsRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <TestimonialsV2 /> : <Testimonials />;
+}
+function ReferralsRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <ReferEarnV2 /> : <ReferEarn />;
+}
+// dashboard_v2: Settings hub — Account / Plan / Verification / Help, each a real
+// route with the shared Settings SubNav. Fails closed to the existing page.
+function ProfileRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <ProfileSetupV2 /> : <ProfileSetup />;
+}
+function UpgradeRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <UpgradePlanV2 /> : <UpgradePlan />;
+}
+function KycRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <KycHomeV2 /> : <KycHome />;
+}
+function ChatRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <ChatPageV2 /> : <ChatPage />;
 }
 
 function DashboardWrapper({ children }) {
@@ -680,7 +740,7 @@ function App() {
           <Route path="/dashboard/bookings" element={<DashboardWrapper><BookingsRoute /></DashboardWrapper>} />
           <Route path="/dashboard/clients" element={<DashboardWrapper><ClientsListRoute /></DashboardWrapper>} />
           <Route path="/dashboard/clients/:id" element={<DashboardWrapper><ClientDetail /></DashboardWrapper>} />
-          <Route path="/dashboard/earnings" element={<DashboardWrapper><Earnings /></DashboardWrapper>} />
+          <Route path="/dashboard/earnings" element={<DashboardWrapper><EarningsRoute /></DashboardWrapper>} />
           {/* One list of everything sellable. Additive: Services, Products,
               Courses and Coupons keep their own routes and pages. The
               console_v2 rail points here instead of at the four. */}
@@ -689,9 +749,9 @@ function App() {
           <Route path="/dashboard/service/add-new" element={<DashboardWrapper><AddService /></DashboardWrapper>} />
           <Route path="/dashboard/service/edit/:id" element={<DashboardWrapper><EditService /></DashboardWrapper>} />
           <Route path="/dashboard/service/view/:id" element={<DashboardWrapper><EditService /></DashboardWrapper>} />
-          <Route path="/dashboard/availability" element={<DashboardWrapper><Availability /></DashboardWrapper>} />
-          <Route path="/dashboard/profile" element={<DashboardWrapper><ProfileSetup /></DashboardWrapper>} />
-          <Route path="/dashboard/kyc" element={<DashboardWrapper><KycHome /></DashboardWrapper>} />
+          <Route path="/dashboard/availability" element={<DashboardWrapper><AvailabilityRoute /></DashboardWrapper>} />
+          <Route path="/dashboard/profile" element={<DashboardWrapper><ProfileRoute /></DashboardWrapper>} />
+          <Route path="/dashboard/kyc" element={<DashboardWrapper><KycRoute /></DashboardWrapper>} />
           {/* KycProvider sits OUTSIDE DashboardWrapper on purpose: DashboardLayout
               renders pages inside PageTransition (keyed on pathname), so a provider
               below it would remount — and lose every field — on each step. */}
@@ -707,14 +767,14 @@ function App() {
           <Route path="/dashboard/memberships" element={<DashboardWrapper><Memberships /></DashboardWrapper>} />
           <Route path="/dashboard/coupons" element={<DashboardWrapper><HostCoupons /></DashboardWrapper>} />
           <Route path="/dashboard/membership" element={<DashboardWrapper><Membership /></DashboardWrapper>} />
-          <Route path="/dashboard/testimonials" element={<DashboardWrapper><Testimonials /></DashboardWrapper>} />
-          <Route path="/dashboard/upgrade" element={<DashboardWrapper><UpgradePlan /></DashboardWrapper>} />
-          <Route path="/dashboard/payments/payouts" element={<DashboardWrapper><Payouts /></DashboardWrapper>} />
-          <Route path="/dashboard/referrals" element={<DashboardWrapper><ReferEarn /></DashboardWrapper>} />
-          <Route path="/dashboard/payments/transactions" element={<DashboardWrapper><Transactions /></DashboardWrapper>} />
-          <Route path="/dashboard/invoices" element={<DashboardWrapper><Invoices /></DashboardWrapper>} />
+          <Route path="/dashboard/testimonials" element={<DashboardWrapper><TestimonialsRoute /></DashboardWrapper>} />
+          <Route path="/dashboard/upgrade" element={<DashboardWrapper><UpgradeRoute /></DashboardWrapper>} />
+          <Route path="/dashboard/payments/payouts" element={<DashboardWrapper><PayoutsRoute /></DashboardWrapper>} />
+          <Route path="/dashboard/referrals" element={<DashboardWrapper><ReferralsRoute /></DashboardWrapper>} />
+          <Route path="/dashboard/payments/transactions" element={<DashboardWrapper><TransactionsRoute /></DashboardWrapper>} />
+          <Route path="/dashboard/invoices" element={<DashboardWrapper><InvoicesRoute /></DashboardWrapper>} />
           <Route path="/dashboard/feedback" element={<DashboardWrapper><Feedback /></DashboardWrapper>} />
-          <Route path="/dashboard/chat" element={<DashboardWrapper><ChatPage /></DashboardWrapper>} />
+          <Route path="/dashboard/chat" element={<DashboardWrapper><ChatRoute /></DashboardWrapper>} />
 
           {/* Host Lab — redesign prototype of the host dashboard. Its own shell,
               its own sample data, zero API calls. Deliberately NOT wrapped in
