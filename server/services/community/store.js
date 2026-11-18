@@ -92,6 +92,32 @@ const resolveUsernames = async (usernames) => (usernames.length
   : []);
 const insertMentions = (rows) => (rows.length ? run(db('community_mentions').insert(rows)) : null);
 
+// Mentions of one member, newest first, with the source post (and comment author) resolved.
+async function listMentions(userId, limit = 30) {
+  const rows = (await run(db('community_mentions').select('id, post_id, comment_id, created_at')
+    .eq('mentioned_user_id', userId).order('created_at', { ascending: false }).limit(limit))) || [];
+  const cids = uniq(rows.map((r) => r.comment_id));
+  const comments = cids.length
+    ? (await run(db('community_comments').select('id, post_id, author_id').in('id', cids))) || [] : [];
+  const cmap = new Map(comments.map((c) => [c.id, c]));
+  const postIds = uniq(rows.map((r) => r.post_id || cmap.get(r.comment_id)?.post_id));
+  const posts = postIds.length
+    ? (await run(db('community_posts').select('id, slug, kind, title, status, author_id').in('id', postIds))) || [] : [];
+  const pmap = new Map(posts.map((p) => [p.id, p]));
+  const { profiles } = await loadAuthors([...posts.map((p) => p.author_id), ...comments.map((c) => c.author_id)]);
+  return rows.map((r) => {
+    const c = r.comment_id ? cmap.get(r.comment_id) : null;
+    const p = pmap.get(r.post_id || c?.post_id);
+    const a = profiles.get(c ? c.author_id : p?.author_id);
+    return {
+      id: r.id, created_at: r.created_at, source: c ? 'comment' : 'post',
+      post: !p || ['deleted', 'removed'].includes(p.status) ? null
+        : { id: p.id, slug: p.slug, title: p.title ?? null, url: `/community/${p.kind === 'thread' ? 't' : 'p'}/${p.slug}` },
+      author: a ? { id: a.id, display_name: a.first_name || a.name || a.username || 'Member', username: a.username } : null,
+    };
+  });
+}
+
 // Host card stats for the community home left rail: lifetime bookings, active
 // services, and the host's own rating (avg of reviews where they're the subject).
 // Core tables (always present) queried directly; each count fails soft to 0/null
@@ -485,7 +511,7 @@ module.exports = {
   listAuthorPosts, listAuthorComments, postContexts,
   loadAuthors, loadMediaByPost, likedIds, resetReadCaches,
   linksAllowed, getProfile, getMember, acceptTerms, updateMemberPrefs, getSpaceByKey, getSpaceById, getOwnedLiveTier,
-  insertPost, getPost, updatePost, insertMedia, listMedia, resolveUsernames, insertMentions, searchMentionable, hostCard,
+  insertPost, getPost, updatePost, insertMedia, listMedia, resolveUsernames, insertMentions, listMentions, searchMentionable, hostCard,
   getComment, insertComment, countCommentsByAuthorOnPost, countReplies, countRepliesByAuthor,
   listRecentTopLevelComments, updateComment, addReaction, removeReaction,
   addSave, removeSave, savedIds, addBlock, removeBlock,

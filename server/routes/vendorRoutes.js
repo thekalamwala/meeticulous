@@ -19,9 +19,11 @@ router.use(protect);
 // day they ship rather than waiting on the event store. Money is ungated by
 // design (see services/intel/gate.js); Overview gates six blocks on the
 // subscription_plans limits.insights key.
-const { getMoney, getOverview } = require('../controllers/intelligenceController');
+const { getMoney, getOverview, getAudience, getDemand } = require('../controllers/intelligenceController');
 router.get('/intelligence/money', getMoney);
 router.get('/intelligence/overview', getOverview);
+router.get('/intelligence/audience', getAudience);
+router.get('/intelligence/demand', getDemand);
 
 // Transactions
 router.get('/transactions', getTransactions);

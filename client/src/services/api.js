@@ -465,6 +465,15 @@ export const searchVendors    = (q)              => API.get('/host/search', { pa
 export const recordProfileView = (username)      => API.post(`/host/${encodeURIComponent(username)}/view`).catch(() => {});
 export const getMyProfileViews = ()              => API.get('/host/profile-views');
 
+// ── Creator Intelligence (behind `dashboard_sections_v2`) ─────
+// Both read live bookings server-side. Overview is plan-gated (free hosts get
+// the headline tiles + commission leak; forecast/win-back/benchmarks/cohorts
+// are REMOVED from the payload, not hidden). Money (Revenue) is ungated.
+export const getIntelligenceOverview = (params) => API.get('/host/intelligence/overview', { params });
+export const getIntelligenceAudience = (params) => API.get('/host/intelligence/audience', { params });
+export const getIntelligenceDemand   = (params) => API.get('/host/intelligence/demand', { params });
+export const getIntelligenceMoney    = (params) => API.get('/host/intelligence/money', { params });
+
 // ── Coupons (v3.204, behind the `coupons` flag) ───────────────
 // Guest: preview a discount before booking. Host: manage own codes.
 export const validateCoupon    = (data)            => API.post('/bookings/coupon/validate', data); // { code, service_id }

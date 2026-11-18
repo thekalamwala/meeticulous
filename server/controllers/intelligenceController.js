@@ -21,7 +21,9 @@ const { supabaseAdmin } = require('../config/supabase');
 const { resolveVendorPlan } = require('../services/planService');
 const money = require('../services/intel/money');
 const { buildOverview } = require('../services/intel/overview');
-const { applyGate } = require('../services/intel/gate');
+const { applyGate, hasInsights } = require('../services/intel/gate');
+const { buildAudience } = require('../services/intel/audience');
+const { buildDemand } = require('../services/intel/demand');
 const { safeError } = require('../utils/httpError');
 
 // The snapshot columns the Revenue page reconciles from. Listed explicitly
@@ -129,4 +131,19 @@ const getOverview = async (req, res) => {
   }
 };
 
-module.exports = { getMoney, getOverview, hostBookings, planOf, BOOKING_COLUMNS };
+// Pro-gated deep analytics: locked hosts get the envelope and nothing else.
+const gatedBlock = (build) => async (req, res) => {
+  try {
+    const hostId = req.user.id;
+    const rows = await hostBookings(hostId);
+    const plan = await planOf(hostId);
+    if (!(await hasInsights(plan))) return res.json({ ...envelope(req.query.range), locked: true });
+    return res.json({ ...envelope(req.query.range), locked: false, ...build(rows) });
+  } catch (error) {
+    return safeError(res, error);
+  }
+};
+const getAudience = gatedBlock(buildAudience);
+const getDemand = gatedBlock(buildDemand);
+
+module.exports = { getMoney, getOverview, getAudience, getDemand, hostBookings, planOf, BOOKING_COLUMNS };
