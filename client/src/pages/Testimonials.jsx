@@ -11,13 +11,16 @@ import {
   PageHeader, Card, Button, FormField, Input, Textarea,
   EmptyState, ErrorState, ConfirmSheet, buttonClasses,
 } from "../components/dashboard/ui";
+import { PageHeading as PageHeadingV2, SubNav } from "../components/dashboard/ui/v2";
+import { GROW_NAV } from "./dashboardNav";
+import GrowShareButton from "../components/dashboard/GrowShareButton";
 
 // Keep in sync with testimonialController.FREE_CAP (server is the source of truth;
 // this is only for the UI gate — the 409 on create is the real enforcement).
 const FREE_CAP = 3;
 const emptyForm = { quote: "", author_name: "", author_role: "", author_image_url: "" };
 
-export default function Testimonials() {
+export default function Testimonials({ embedded = false } = {}) {
   const { user } = useAuth();
   const isFree = isFreePlan(user?.plan);
 
@@ -94,19 +97,28 @@ export default function Testimonials() {
     }
   };
 
+  const addBtn = !showForm && items?.length > 0 && !atCap ? (
+    <Button variant="primary" onClick={openNew}><Plus className="h-4 w-4" /> Add testimonial</Button>
+  ) : null;
+
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6">
-      <PageHeader
-        title="Testimonials"
-        subtitle="Import praise you already have — WhatsApp messages, DMs, emails — and show it as a proof wall on your public profile. (These are host-provided and never affect your verified review rating.)"
-        actions={
-          !showForm && items?.length > 0 && !atCap ? (
-            <Button variant="primary" onClick={openNew}>
-              <Plus className="h-4 w-4" /> Add testimonial
-            </Button>
-          ) : null
-        }
-      />
+    <div className={embedded ? 'flex flex-col gap-2.5' : 'mx-auto max-w-3xl px-4 py-6'}>
+      {embedded ? (
+        <>
+          <SubNav items={GROW_NAV} />
+          <PageHeadingV2
+            title="Social proof"
+            sub="Import praise you already have — WhatsApp, DMs, emails — and show it as a proof wall on your public page."
+            action={<div className="flex items-center gap-2"><GrowShareButton />{addBtn}</div>}
+          />
+        </>
+      ) : (
+        <PageHeader
+          title="Testimonials"
+          subtitle="Import praise you already have — WhatsApp messages, DMs, emails — and show it as a proof wall on your public profile. (These are host-provided and never affect your verified review rating.)"
+          actions={addBtn}
+        />
+      )}
 
       {loadError === "error" && <ErrorState message="Couldn't load your testimonials." onRetry={load} />}
 
