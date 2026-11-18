@@ -162,7 +162,11 @@ export const Tile = ({ label, value, delta, deltaLabel, hint, onClick, accent = 
         <span className={cn('truncate text-[10px] font-bold uppercase tracking-[0.07em]', accent ? 'text-white/70' : 'text-ink/45')}>{label}</span>
         {spark && <span className="mt-px shrink-0 opacity-90">{spark}</span>}
       </div>
-      <span className={cn('mt-1 font-display text-[17px] font-extrabold leading-none tracking-[-0.035em]', accent ? 'text-white' : 'text-ink')}>{value}</span>
+      {/* tabular-nums: a tile's value is a figure — money, a count, a percentage —
+          and tiles sit in a row, so proportional digits make neighbouring values
+          jitter against each other and shift width as they refresh. Harmless on
+          the few tiles whose value is a word: it only affects digits. */}
+      <span className={cn('mt-1 font-display text-[17px] font-extrabold leading-none tracking-[-0.035em] tabular-nums', accent ? 'text-white' : 'text-ink')}>{value}</span>
       {footer && (
         <div className={cn('mt-2 flex items-center gap-1.5 border-t pt-1.5 text-[10.5px] font-semibold', accent ? 'border-white/20' : 'border-neutral-200')}>
           {delta != null && (
