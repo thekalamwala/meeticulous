@@ -174,7 +174,7 @@ export default function Testimonials({ embedded = false } = {}) {
       )}
 
       {items === null ? (
-        <div className="py-10 text-center text-sm text-gray-400">Loading…</div>
+        <div className="py-10 text-center text-sm text-neutral-400">Loading…</div>
       ) : items.length === 0 && !showForm && loadError !== "error" ? (
         <EmptyState
           icon={Quote}
@@ -188,7 +188,7 @@ export default function Testimonials({ embedded = false } = {}) {
             <Card key={t.id} padded={false} className="flex items-start gap-3 p-3.5">
               <div className="min-w-0 flex-1">
                 <p className="text-sm leading-relaxed text-ink">“{t.quote}”</p>
-                <div className="mt-1.5 text-xs text-gray-500">
+                <div className="mt-1.5 text-xs text-neutral-500">
                   <span className="font-semibold text-ink/80">{t.author_name}</span>
                   {t.author_role && ` · ${t.author_role}`}
                 </div>
