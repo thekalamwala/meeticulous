@@ -24,16 +24,17 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import {
-  svcGetAll, getMyProducts, getMyCourses, getHostCoupons,
+  svcGetAll, getMyProducts, getMyCourses, getHostCoupons, getMyMembership,
 } from '../../services/api';
 import useFeatureFlags from '../../hooks/useFeatureFlags';
 import {
   PageHeader, Card, Button, SearchInput, SegmentedControl,
   StatusBadge, SkeletonCard, ErrorState, cn,
 } from '../../components/dashboard/ui';
+import { ContextMenu } from '../../components/dashboard/ui/ContextMenu';
 import {
   mergeCatalog, selectItems, countsByKind, editHref,
-  TYPE_LABEL, TYPE_PLURAL, TYPES,
+  TYPE_LABEL, TYPE_PLURAL, TYPES, ADD_ROUTE,
 } from './catalogModel';
 
 const money = (n) => (n === 0 ? 'Free' : `₹${Number(n).toLocaleString('en-IN')}`);
@@ -47,6 +48,18 @@ const load = async (kind, fn) => {
     // Swallowed on purpose: the merge reports it, and one dead endpoint is a
     // partial result, not a page error.
     return { kind, rows: [], error: true };
+  }
+};
+
+// Membership is the odd source out: getMyMembership returns ONE program object
+// ({ program: { tiers: [...] } } or { program: null }), not an array. Flatten
+// its tiers into rows so the shared list treats each tier as a sellable item.
+const loadMemberships = async () => {
+  try {
+    const { data } = await getMyMembership();
+    return { kind: 'membership', rows: data?.program?.tiers || [] };
+  } catch {
+    return { kind: 'membership', rows: [], error: true };
   }
 };
 
@@ -69,12 +82,14 @@ const CatalogList = () => {
   // but a component should not be one refactor away from a fetch loop.
   const courseOn = !!flags?.course_purchase;
   const couponOn = !!flags?.coupons;
+  const membershipOn = !!flags?.community_memberships;
   const enabled = useMemo(() => ({
     service: true,
     product: true,
     course: courseOn,
     coupon: couponOn,
-  }), [courseOn, couponOn]);
+    membership: membershipOn,
+  }), [courseOn, couponOn, membershipOn]);
 
   const fetchAll = useCallback(async () => {
     setSources(null);
@@ -83,6 +98,7 @@ const CatalogList = () => {
       enabled.product && load('product', getMyProducts),
       enabled.course && load('course', getMyCourses),
       enabled.coupon && load('coupon', getHostCoupons),
+      enabled.membership && loadMemberships(),
     ].filter(Boolean);
     setSources(await Promise.all(jobs));
   }, [enabled]);
@@ -101,6 +117,14 @@ const CatalogList = () => {
       value: t, label: TYPE_PLURAL[t], count: counts[t] || 0,
     })),
   ];
+
+  // One "Add" that offers every type the host can sell, not just services.
+  // Each lands on that type's own create/management page (ADD_ROUTE).
+  const addItems = TYPES.filter((t) => enabled[t]).map((t) => ({
+    label: `New ${TYPE_LABEL[t].toLowerCase()}`,
+    icon: Plus,
+    onSelect: () => navigate(ADD_ROUTE[t]),
+  }));
 
   if (sources === null) {
     return (
@@ -128,9 +152,16 @@ const CatalogList = () => {
         title="Catalog"
         subtitle={`${items.length} ${items.length === 1 ? 'thing' : 'things'} you sell`}
         actions={(
-          <Button onClick={() => navigate('/dashboard/service/add-new')}>
-            <Plus className="w-4 h-4" /> New service
-          </Button>
+          <ContextMenu
+            openOnClick
+            title="Add to your catalog"
+            items={addItems}
+            trigger={(
+              <Button>
+                <Plus className="w-4 h-4" /> Add
+              </Button>
+            )}
+          />
         )}
       />
 
