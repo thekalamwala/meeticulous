@@ -12,8 +12,11 @@ on:
   workflow_dispatch:
   pull_request:
     branches: [main]
-  schedule:
-    - cron: '0 2 * * *'   # nightly 02:00 UTC
+  # Nightly cron removed 2026-11-18 to save GitHub Actions minutes: the load
+  # test runs on every PR to main and on demand (workflow_dispatch), which
+  # already gates every change. A scheduled 02:00 UTC run against an unchanged
+  # main added no signal and burned minutes daily. Re-add a `schedule:` block
+  # if a standing baseline-drift watch is ever wanted.
 
 jobs:
   smoke:
