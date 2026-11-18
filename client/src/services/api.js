@@ -469,10 +469,10 @@ export const getMyProfileViews = ()              => API.get('/host/profile-views
 // Both read live bookings server-side. Overview is plan-gated (free hosts get
 // the headline tiles + commission leak; forecast/win-back/benchmarks/cohorts
 // are REMOVED from the payload, not hidden). Money (Revenue) is ungated.
-export const getIntelligenceOverview = (params) => API.get('/host/intelligence/overview', { params });
-export const getIntelligenceAudience = (params) => API.get('/host/intelligence/audience', { params });
-export const getIntelligenceDemand   = (params) => API.get('/host/intelligence/demand', { params });
-export const getIntelligenceMoney    = (params) => API.get('/host/intelligence/money', { params });
+export const getIntelligenceOverview = (params) => API.get('/vendor/intelligence/overview', { params });
+export const getIntelligenceAudience = (params) => API.get('/vendor/intelligence/audience', { params });
+export const getIntelligenceDemand   = (params) => API.get('/vendor/intelligence/demand', { params });
+export const getIntelligenceMoney    = (params) => API.get('/vendor/intelligence/money', { params });
 
 // ── Coupons (v3.204, behind the `coupons` flag) ───────────────
 // Guest: preview a discount before booking. Host: manage own codes.
