@@ -18,15 +18,15 @@ const MAX_SIZE_BYTES = 2 * 1024 * 1024;
 // subtree each keystroke — the input loses focus and the value/placeholder reset.
 const Field = ({ icon: Icon, label, children, hint }) => (
   <div>
-    <label className="flex items-center gap-1.5 text-xs font-medium text-gray-500 mb-1.5">
-      <Icon size={13} /> {label} {hint && <span className="text-gray-300">· {hint}</span>}
+    <label className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.06em] text-ink/40">
+      <Icon size={13} strokeWidth={2.2} /> {label} {hint && <span className="font-medium normal-case tracking-normal text-ink/30">· {hint}</span>}
     </label>
     {children}
   </div>
 );
 
 const inputCls =
-  "w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 bg-white focus:border-[#960D32] focus:ring-1 focus:ring-[#960D32] outline-none disabled:bg-gray-50 disabled:text-gray-400";
+  "w-full rounded-xl border-2 border-neutral-200 bg-white px-3.5 py-2.5 text-[13px] font-semibold text-ink outline-none transition focus:border-maroon/40 focus:ring-[3px] focus:ring-rose disabled:bg-neutral-50 disabled:text-ink/45";
 
 const CustomerProfile = () => {
   const { user, updateUser } = useAuth();
@@ -96,48 +96,48 @@ const CustomerProfile = () => {
   return (
     <>
       <AccountModeToggle />
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-5 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">My Profile</h1>
-            <p className="text-sm text-gray-500 mt-0.5">Manage your personal details.</p>
+            <h1 className="font-display text-[24px] font-extrabold leading-none tracking-[-0.04em] text-maroon">My profile</h1>
+            <p className="mt-1.5 text-[13px] font-medium text-ink/55">Manage your personal details.</p>
           </div>
           {!editing && !loading && (
             <button onClick={() => setEditing(true)}
-              className="text-sm font-medium text-[#960D32] hover:underline whitespace-nowrap">Edit</button>
+              className="whitespace-nowrap rounded-full border-2 border-neutral-200 px-3.5 py-1.5 text-[12px] font-bold text-ink/65 transition hover:border-maroon/40 hover:text-maroon focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">Edit</button>
           )}
         </div>
 
         {loading ? (
-          <div className="text-center py-16">
+          <div className="py-16 text-center">
             <PetalSpinner size={40} />
           </div>
         ) : (
-          <div className="bg-white border rounded-2xl p-5 sm:p-6 space-y-5">
+          <div className="flex flex-col gap-5 rounded-2xl border-2 border-neutral-200 bg-white p-5">
             {/* Avatar */}
             <div className="flex items-center gap-4">
               <div className="relative">
                 {form.profile_image ? (
-                  <img src={form.profile_image} alt="" className="w-20 h-20 rounded-full object-cover" />
+                  <img src={form.profile_image} alt="" className="h-16 w-16 rounded-full object-cover" />
                 ) : (
-                  <span className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#960D32] text-white text-2xl font-bold select-none">
+                  <span className="grid h-16 w-16 select-none place-items-center rounded-full bg-maroon font-display text-[20px] font-extrabold text-white">
                     {form.name ? form.name[0].toUpperCase() : "U"}
                   </span>
                 )}
                 {editing && (
                   <button onClick={() => fileRef.current?.click()} disabled={uploading}
-                    className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-white border shadow flex items-center justify-center text-gray-600 hover:text-[#960D32]">
-                    {uploading ? <Loader2 size={15} className="animate-spin" /> : <Camera size={15} />}
+                    className="absolute -bottom-1 -right-1 grid h-8 w-8 place-items-center rounded-full border-2 border-neutral-200 bg-white text-ink/55 shadow-sm transition hover:text-maroon">
+                    {uploading ? <Loader2 size={15} className="animate-spin" /> : <Camera size={15} strokeWidth={2} />}
                   </button>
                 )}
                 <input ref={fileRef} type="file" accept="image/*" hidden onChange={onPick} />
               </div>
               <div className="min-w-0">
-                <p className="font-semibold text-gray-900 truncate">{form.name || "Your name"}</p>
-                <p className="text-sm text-gray-400 truncate">{form.email}</p>
+                <p className="truncate font-display text-[16px] font-extrabold tracking-[-0.02em] text-ink">{form.name || "Your name"}</p>
+                <p className="truncate text-[12px] font-medium text-ink/50">{form.email}</p>
               </div>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-4 pt-1">
+            <div className="grid gap-4 pt-1 sm:grid-cols-2">
               <Field icon={User} label="Full name">
                 <input className={inputCls} disabled={!editing} value={form.name}
                   onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Your name" />
@@ -157,20 +157,20 @@ const CustomerProfile = () => {
             </div>
 
             {editing && (
-              <div className="flex items-center gap-3 pt-2 border-t">
+              <div className="flex items-center gap-3 border-t-2 border-neutral-200 pt-3">
                 <button onClick={onSave} disabled={saving}
-                  className="btn inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#960D32] hover:bg-[#2B0A14] disabled:opacity-60">
+                  className="inline-flex items-center gap-2 rounded-full bg-maroon px-5 py-2.5 text-[13px] font-bold text-white transition hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose disabled:opacity-60">
                   {saving && <Loader2 size={15} className="animate-spin" />} Save changes
                 </button>
                 <button onClick={() => setEditing(false)} disabled={saving}
-                  className="text-sm text-gray-500 hover:text-gray-700">Cancel</button>
+                  className="text-[13px] font-semibold text-ink/55 transition hover:text-ink">Cancel</button>
               </div>
             )}
           </div>
         )}
 
-        <p className="flex items-center gap-1.5 text-xs text-gray-400 mt-4">
-          <Lock size={12} /> Your details are private and never shown to hosts beyond your bookings.
+        <p className="mt-4 flex items-center gap-2 rounded-xl bg-cream p-3 text-[11.5px] font-medium text-ink/55">
+          <Lock size={14} className="shrink-0 text-maroon" strokeWidth={2} /> Your details are private and never shown to hosts beyond your bookings.
         </p>
     </>
   );

@@ -15,7 +15,7 @@ const { payoutEntry } = require('../services/ledger/journalTemplates');
 const { inAppNotify } = require('../utils/inAppNotify');
 const { computeAllSettlementBalances } = require('../services/settlementService');
 const platformConfig = require('../services/platformConfig');
-const routeTransferService = require('../services/routeTransferService');
+const payoutRail = require('../services/payoutRail');
 const payoutReconciler = require('../services/payoutReconciler');
 const { runLocked } = require('../utils/jobLock');
 
@@ -115,10 +115,22 @@ const markPayoutPaid = async (req, res) => {
 };
 
 // POST /admin/payouts/:id/pay-route
-// Phase 1: release an approved payout via a Razorpay Route transfer-from-balance
-// to the host's linked account (replaces the manual markPayoutPaid reference).
-// The ledger entry + approved→paid flip happen when the transfer is 'processed'
-// (synchronously here, or via the transfer.* webhook). Dormant behind fee_only_mode.
+// Releases an approved payout by driving THE payout rail — the same per-booking
+// Route transfers the automatic release uses — not by creating a transfer from
+// the platform balance.
+//
+// This used to call transfers.create({ account, amount }), a standalone transfer
+// unlinked to any payment. Two mechanisms moving money to one host is a
+// double-pay hazard, and settlementService already carried a guard against it:
+// it excludes bookings on the auto rail from the withdrawable balance because
+// counting both "would let a host withdraw money they have already been paid".
+// With one mechanism that hazard does not exist to be guarded against.
+//
+// A payment-linked transfer is also the better record: it keeps an unbroken
+// chain from the guest’s payment to the host’s account, which is what any
+// reconciliation or withholding report has to be built on.
+//
+// Still an admin lever, still segregated by duty, still dormant in fee-only mode.
 const releasePayoutViaRoute = async (req, res) => {
   try {
     const p = await fetchPayout(req.params.id);
@@ -135,15 +147,25 @@ const releasePayoutViaRoute = async (req, res) => {
       return res.status(409).json({ message: 'Route payouts are not enabled yet (fee-only mode). Use manual release.' });
     }
 
-    const result = await routeTransferService.releasePayout(p, { actorId: req.admin.id });
+    const result = await payoutRail.releaseViaRail(p, { actorId: req.admin.id });
     if (!result.ok) {
-      return res.status(422).json({ message: `Route transfer failed: ${result.error || result.skipped}` });
+      // No payable booking is the common non-error case: the automatic release
+      // has usually already paid them. Say which it is rather than reporting a
+      // transfer failure that did not happen.
+      const why = result.results?.length
+        ? result.results.filter((r) => !r.ok).map((r) => r.reason).join('; ')
+        : 'no payable bookings — the automatic release may already have paid them';
+      return res.status(422).json({ message: `Payout rail released nothing: ${why}` });
     }
 
     const updated = await fetchPayout(p.id);
     await audit(req, {
       action: 'payout.pay_route', resource_type: 'payout_request', resource_id: p.id,
-      before: { status: p.status }, after: { status: updated?.status, transfer_id: result.transferId },
+      before: { status: p.status },
+      // The rail pays per booking, so there is no single transfer id to record.
+      // What matters for an audit is how much moved, over how many bookings, and
+      // what was left owed.
+      after: { status: updated?.status, paid: result.paid, bookings: result.bookings, shortfall: result.shortfall },
     });
     inAppNotify({
       userId: p.host_id, role: 'host', type: 'PAYOUT_UPDATE',

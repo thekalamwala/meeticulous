@@ -315,13 +315,13 @@ export default function CreatorSections({ data, wrap, Counter, icons, routeStart
       <V2Pricing routeStart={routeStart} Decor={LiveDecor} cardClass={CARD} lift={false} wrap={wrap} />
 
       {/* ════════ ABOUT ════════ */}
-      <V2About wrap={wrap} label={data.label} background="var(--v2-wash)" Decor={LiveDecor} cardClass={CARD} />
+      <V2About wrap={wrap} label={data.label} background="var(--v2-wash)" compact />
 
       {/* Guides sit directly above the FAQ, as on the bespoke /for pages. */}
       <PageGuides />
 
       {/* ════════ FAQ — minimal list (full width) ════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-28">
+      <section id="faq" className="px-5 py-20 sm:px-8 lg:py-28">
         <div className={`mx-auto grid ${wrap} items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16`}>
           <div className="text-center lg:sticky lg:top-28 lg:text-left lg:[&_.text-center]:text-left lg:[&_.mx-auto]:mx-0">
             <SectionHead title="Frequently asked questions." center />
@@ -332,13 +332,15 @@ export default function CreatorSections({ data, wrap, Counter, icons, routeStart
       </section>
 
       {/* ════════ FINAL CTA — dark panel, one button ════════ */}
-      <section className="px-5 pb-24 pt-4 sm:px-8">
-        <div className={`relative mx-auto ${wrap} overflow-hidden rounded-[32px] px-6 py-16 text-center sm:px-10`} style={{ background: 'var(--v2-dark)' }}>
-          <h2 className="mx-auto max-w-3xl font-heading text-[clamp(1.9rem,3.8vw,2.8rem)] font-extrabold leading-tight tracking-[-0.02em] text-white">{finalCta.headline}</h2>
-          <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-white/70">{finalCta.subline}</p>
-          <Link to={routeStart} className={`mt-9 inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold hover:no-underline ${FOCUS}`} style={{ background: RED_BRIGHT, color: '#fff' }}>
+      <section className="relative w-full overflow-hidden px-5 py-16 text-center sm:px-8 lg:py-20" style={{ background: 'var(--v2-dark)' }}>
+        <div className="relative mx-auto w-full lg:w-[70%]">
+          <h2 className="mx-auto font-heading text-[clamp(1.9rem,3.8vw,2.8rem)] font-extrabold leading-tight tracking-[-0.02em] text-white">{finalCta.headline}</h2>
+          <p className="mx-auto mt-4 text-[15px] leading-relaxed text-white/70">{finalCta.subline}</p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <Link to={routeStart} className={`inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold hover:no-underline ${FOCUS}`} style={{ background: RED_BRIGHT, color: '#fff' }}>
             {finalCta.ctaText} <ArrowRight size={16} />
           </Link>
+          </div>
         </div>
       </section>
     </>

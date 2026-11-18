@@ -60,6 +60,9 @@ export const V2_LANDING = {
 
     // ── Hero ──────────────────────────────────────────────────────────────────
     hero: {
+      image: '/images/hero/driving-hero-wide.jpg',
+      imageAlt: 'A driving instructor guiding a learner at the wheel of an L-plate car, with a friendly mascot on the dashboard.',
+      imagePosition: 'object-right-bottom',
       headline: 'Driving school booking software',
       headlineAccent: 'that keeps every car on the road.',
       headlineTail: '',
@@ -219,6 +222,8 @@ export const V2_LANDING = {
 
     // ── Hero ──────────────────────────────────────────────────────────────────
     hero: {
+      image: '/images/hero/conference-hero-wide.jpg',
+      imageAlt: 'A presenter leading a meeting with two colleagues at a table in a bright office, with friendly mascots on a shelf.',
       headline: 'Conference hall booking software',
       headlineAccent: 'that turns enquiries into confirmed dates.',
       headlineTail: '',
@@ -378,6 +383,8 @@ export const V2_LANDING = {
 
     // ── Hero ──────────────────────────────────────────────────────────────────
     hero: {
+      image: '/images/hero/photostudio-hero-wide.webp',
+      imageAlt: 'A photographer showing a client the shot on the camera at a studio desk with a lens, laptop, lighting and a friendly mascot.',
       headline: 'Photo studio booking software',
       headlineAccent: 'that keeps your calendar shooting.',
       headlineTail: '',
@@ -540,6 +547,9 @@ export const V2_LANDING = {
         'One link for every session. Clients pick a time that works, pay online, and the slot lands on your calendar — so you spend your energy coaching, not scheduling and chasing fees.',
       ctaText: 'Fill my calendar',
       microcopy: 'Free to start · No card needed · Live in minutes',
+      image: '/images/hero/coach-hero-wide.webp',
+      imageAlt: 'A coach reviewing goals with a client on a tablet, with a trophy and progress charts behind them.',
+      imagePosition: 'object-[50%_85%]',
       audiences: ['Career coaches', 'Life coaches', 'Business mentors', 'Wellness coaches', 'Interview prep'],
       mock: {
         brand: 'Riya Menon Coaching',
@@ -702,6 +712,9 @@ export const V2_LANDING = {
         'Stop haggling over rates in your inbox. One link lets followers, brands and fellow creators pick a slot, pay upfront and book — strategy calls, content audits, paid Q&As and mentoring, all on autopilot.',
       ctaText: 'Set up my page',
       microcopy: 'Free to start · No card needed · Live in minutes',
+      image: '/images/hero/creator-hero-wide.webp',
+      imageAlt: 'Two content creators filming a video at a desk with a camera on a tripod, laptop and ring light.',
+      imagePosition: 'object-bottom',
       audiences: ['YouTubers', 'Instagram creators', 'Podcasters', 'Newsletter writers', 'Creator coaches'],
       mock: {
         brand: 'Riya Sethi Studio',
@@ -865,7 +878,10 @@ export const V2_LANDING = {
         'Parents and students pick a class slot, pay the fee upfront and get reminded automatically — so your evenings go to teaching, not to chasing fees and confirming timings.',
       ctaText: 'Fill my timetable',
       microcopy: 'Free to start · No card needed · Live in minutes',
-      audiences: ['School tutors', 'Test-prep coaches', 'Skill trainers', 'Workshop hosts', 'Doubt sessions'],
+      image: '/images/hero/educator-hero-wide.webp',
+      imageAlt: 'An educator teaching a student on a laptop at a desk with books, a globe and stationery.',
+      imagePosition: 'object-bottom',
+      audiences: ['School tutors', 'Test-prep coaches', 'Skill trainers', 'Workshop hosts'],
       mock: {
         brand: 'Iyer Maths Classes',
         tag: 'Class 9–12 · Bengaluru · online + home',
@@ -1025,6 +1041,8 @@ export const V2_LANDING = {
         'Lessons, rehearsals, studio hours and gig enquiries, all on one link. Students and organisers pick a slot, pay upfront, and you get back to the music instead of the back-and-forth.',
       ctaText: 'Get booked',
       microcopy: 'Free to start · No card needed · Live in minutes',
+      sideImage: '/images/hero/music-hero.webp',
+      imageAlt: 'Two musicians — one playing acoustic guitar, one singing into a mic — recording at a desk with a laptop.',
       audiences: ['Music teachers', 'Vocal coaches', 'Session players', 'Wedding bands', 'Producers'],
       mock: {
         brand: 'Karan Mehta Music',
@@ -1181,6 +1199,8 @@ export const V2_LANDING = {
 
     // ── Hero ──────────────────────────────────────────────────────────────────
     hero: {
+      image: '/images/hero/language-hero-wide.webp',
+      imageAlt: 'A language teacher holding a "Hello" flashcard for students in an English class, with a friendly mascot and grammar books.',
       headline: 'Booking software for language teachers',
       headlineAccent: 'that fills every lesson slot.',
       headlineTail: '',
@@ -1346,6 +1366,9 @@ export const V2_LANDING = {
         'One link takes every booking. Members pick a hot desk, cabin or meeting room, pay online, and the slot locks instantly — so your front desk stops juggling calls and your space stops sitting empty.',
       ctaText: 'Set up my space',
       microcopy: 'Free to start · No card needed · Live in minutes',
+      image: '/images/hero/coworking-hero-wide.webp',
+      imageAlt: 'Two colleagues chatting over a laptop at a desk in a bright coworking space.',
+      imagePosition: 'object-bottom',
       audiences: ['Hot desks', 'Private cabins', 'Meeting rooms', 'Event space', 'Day passes'],
       mock: {
         brand: 'Eureka Coworking',
@@ -1510,6 +1533,9 @@ export const V2_LANDING = {
         'You do the work. Meeticulous handles everything around it — clients pick a slot, pay an advance upfront, and get reminded — so your day goes to the craft, not chasing invoices.',
       ctaText: 'Set up my booking page',
       microcopy: 'Free to start · No card needed · Live in minutes',
+      image: '/images/hero/freelancer-hero-wide.webp',
+      imageAlt: 'A freelancer working on a laptop at a tidy desk with a coffee mug, plant and notebook.',
+      imagePosition: 'object-bottom',
       audiences: ['Designers', 'Developers', 'Writers', 'Marketers', 'Video editors'],
       mock: {
         brand: 'Ananya Rao',

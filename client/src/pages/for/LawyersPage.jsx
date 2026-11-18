@@ -393,62 +393,45 @@ export default function LawyersPage() {
       </header>
 
       {/* ═══════════════ 2 · HERO (framed editorial portrait) ═══════════════ */}
-      <section className="relative overflow-hidden px-5 pb-16 pt-10 sm:px-8 lg:pb-24 lg:pt-16" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 100%)' }}>
-        {/* burgundy blob — sits INTO the warm paper via multiply */}
-        <div aria-hidden className="pointer-events-none absolute -right-24 -top-20 h-96 w-96 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(127,29,29,0.16), transparent)' }} />
-        {/* faint editorial column rules */}
-        <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: 'repeating-linear-gradient(90deg, rgba(31,19,21,0.03) 0 1px, transparent 1px 104px)', maskImage: 'linear-gradient(180deg, #000, transparent 78%)', WebkitMaskImage: 'linear-gradient(180deg, #000, transparent 78%)' }} />
+      <section className="relative flex flex-col overflow-hidden bg-white lg:min-h-[calc(100svh_-_69px)]">
+        {/* HERO BAND — full-width wide scene as the background; the photo's white
+            left half holds the text, and the hero fills the fold. */}
+        <div className="relative lg:flex lg:flex-1 lg:flex-col">
+          {/* DESKTOP — background photo (kept sharp) */}
+          <img
+            src="/images/hero/lawyer-hero-wide.webp"
+            alt="A lawyer and a colleague reviewing a case on a laptop at a desk with law books, scales of justice and a gavel."
+            width={2000}
+            height={923}
+            className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-cover object-center lg:block"
+          />
 
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-          {/* LEFT — the editorial statement */}
-          <div className="text-center lg:text-left">
-            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3.1rem)] font-extrabold leading-[1.06] tracking-[-0.025em] text-[color:var(--ca-ink)]">
-              Streamlined appointment booking software for{' '}
-              <span style={{ color: 'var(--ca-ink)' }}>lawyers and law firms</span> managing client consultations.
-            </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-neutral-600 sm:text-lg lg:mx-0">
-              Meeticulous is appointment booking software for lawyers — the clients you work with book consultations online with confirmed slots, upfront fees and reminders, so no case starts with phone tag.
-            </Reveal>
-            <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
-              <CtaButton to={START} className="w-full sm:w-auto">Create Your Booking Page <ArrowRight size={16} /></CtaButton>
-              <Link to={DEMO} className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
-                Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
-              {HERO_TRUST.map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-neutral-500">
-                  <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
-                </span>
-              ))}
-            </Reveal>
+          {/* TEXT — aligned to the page content edge, over the white area */}
+          <div className="relative z-10 flex items-center px-5 sm:px-8 lg:flex-1 lg:py-16 lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
+            <div className="w-full py-14 text-center sm:py-16 lg:max-w-[38rem] lg:py-0 lg:text-left">
+              <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,3.6vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.025em] text-[color:var(--ca-ink)]">
+                Streamlined appointment booking software for{' '}
+                <span style={{ color: 'var(--ca-primary)' }}>lawyers and law firms</span> managing client consultations.
+              </Reveal>
+              <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-neutral-600 sm:text-lg lg:mx-0">
+                Meeticulous is appointment booking software for lawyers — the clients you work with book consultations online with confirmed slots, upfront fees and reminders, so no case starts with phone tag.
+              </Reveal>
+              <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
+                <CtaButton to={START} className="w-full sm:w-auto">Create Your Booking Page <ArrowRight size={16} /></CtaButton>
+                <Link to={DEMO} className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--ca-ink)] transition-colors hover:text-[color:var(--ca-primary)] hover:no-underline">
+                  Book A Demo <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </Reveal>
+              <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+                {HERO_TRUST.map((t) => (
+                  <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-neutral-500">
+                    <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
+                  </span>
+                ))}
+              </Reveal>
+            </div>
           </div>
 
-          {/* RIGHT — framed portrait (burgundy frame + gold inner rule) + floating card */}
-          <Reveal instant delay={0.1} className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
-            <div aria-hidden className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(194,137,26,0.22), transparent)' }} />
-            <div className="relative rounded-[20px] border-[3px] p-2.5 shadow-[0_30px_60px_-34px_rgba(31,19,21,0.55)]" style={{ borderColor: 'var(--ca-primary)', background: '#fff' }}>
-              <div className="relative overflow-hidden rounded-[13px] border" style={{ borderColor: 'rgba(194,137,26,0.5)', background: 'var(--ca-cream)' }}>
-                <div role="img" aria-label="Meeticulous — appointment booking for advocates and law firms" className="mx-auto grid aspect-square w-full max-w-[24rem] place-items-center p-6"><ART_ICON className="h-24 w-24" style={{ color: 'var(--ca-primary)' }} strokeWidth={1.25} aria-hidden="true" /></div>
-              </div>
-            </div>
-            {/* floating "Consultation booked" card */}
-            <div className="absolute -bottom-5 left-2 z-20 flex items-center gap-3 rounded-2xl border border-black/[0.05] bg-white px-4 py-3 shadow-[0_18px_38px_-18px_rgba(31,19,21,0.5)] sm:left-4">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl text-white" style={{ background: 'var(--ca-primary)' }}><CalendarCheck size={18} /></span>
-              <div>
-                <div className="text-[11px] font-medium text-neutral-500">Consultation booked</div>
-                <div className="text-sm font-bold text-[color:var(--ca-ink)]">Property matter · 4:30 PM</div>
-              </div>
-            </div>
-            {/* floating fee chip */}
-            <div className="absolute -right-2 top-6 z-20 flex items-center gap-2.5 rounded-2xl border border-black/[0.05] bg-white px-3.5 py-2.5 shadow-[0_16px_34px_-18px_rgba(31,19,21,0.45)]">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: 'color-mix(in srgb, var(--ca-accent) 18%, transparent)', color: 'var(--ca-accent)' }}><Wallet size={16} /></span>
-              <div>
-                <div className="text-[10px] font-medium text-neutral-500">Fee received</div>
-                <div className="text-[13px] font-bold text-[color:var(--ca-ink)]">₹3,000</div>
-              </div>
-            </div>
-          </Reveal>
         </div>
       </section>
 
@@ -559,7 +542,7 @@ export default function LawyersPage() {
           </Reveal>
 
           <Reveal delay={0.1} className="mt-10 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -758,13 +741,8 @@ export default function LawyersPage() {
       <section className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* LEFT — framed icon art */}
-          <Reveal className="relative order-2 mx-auto w-full max-w-sm lg:order-1 lg:mx-0">
-            <div aria-hidden className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(127,29,29,0.14), transparent)' }} />
-            <div className="relative rounded-[18px] border-2 p-2 shadow-[0_24px_50px_-32px_rgba(31,19,21,0.5)]" style={{ borderColor: 'var(--ca-primary)', background: '#fff' }}>
-              <div className="overflow-hidden rounded-[16px] border" style={{ borderColor: 'rgba(194,137,26,0.5)', background: 'var(--ca-cream)' }}>
-                <div aria-hidden="true" className="mx-auto grid aspect-square w-full max-w-[20rem] place-items-center p-5"><ART_ICON className="h-20 w-20" style={{ color: 'var(--ca-primary)' }} strokeWidth={1.25} /></div>
-              </div>
-            </div>
+          <Reveal className="relative order-2 mx-auto w-full max-w-xl lg:order-1 lg:mx-0">
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
 
           {/* RIGHT — statement + trust facts */}
@@ -775,9 +753,9 @@ export default function LawyersPage() {
             <Reveal as="p" delay={0.08} className="mt-5 text-base leading-relaxed text-neutral-600">
               Meeticulous was built to make appointment-based practices easier to run. Instead of stitching together calendars, WhatsApp messages, paper diaries and payment tools, professionals manage their client consultations from one calm platform — built for the way Indian practices actually work.
             </Reveal>
-            <Reveal delay={0.12} className="mt-7 flex flex-wrap justify-center gap-2.5 lg:justify-start">
+            <Reveal delay={0.12} className="mt-7 flex flex-wrap justify-center gap-2.5 lg:flex-nowrap lg:justify-start">
               {TRUST_STRIP.map((it) => (
-                <span key={it.value} className="inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-white px-4 py-2 text-sm font-semibold text-[color:var(--ca-ink)]" title={it.label}>
+                <span key={it.value} className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-black/[0.08] bg-white px-4 py-2 text-sm font-semibold text-[color:var(--ca-ink)] lg:gap-1.5 lg:px-2 lg:text-xs" title={it.label}>
                   <it.icon size={15} style={{ color: 'var(--ca-primary)' }} /> {it.value}
                 </span>
               ))}
@@ -809,14 +787,14 @@ export default function LawyersPage() {
       {/* ═══════════════ 12 · FINAL CTA (burgundy + gold mix-blend glow) ═══════════════ */}
       <section className="relative overflow-hidden px-5 py-24 text-center sm:px-8" style={{ background: 'radial-gradient(120% 120% at 50% 0%, #9B2A2A 0%, #7F1D1D 45%, #5F1414 100%)' }}>
         <div aria-hidden className="pointer-events-none absolute -top-16 left-1/2 h-64 w-[44rem] -translate-x-1/2 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(194,137,26,0.5), transparent)' }} />
-        <div className="relative mx-auto max-w-2xl">
+        <div className="relative mx-auto w-full lg:w-[70%]">
           <Reveal className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: 'rgba(194,137,26,0.18)' }}>
             <Gavel size={26} style={{ color: 'var(--ca-accent)' }} />
           </Reveal>
-          <Reveal as="h2" delay={0.06} className="mt-6 font-heading text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">
+          <Reveal as="h2" delay={0.06} className="font-heading text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">
             Spend less time scheduling. <span style={{ color: 'var(--ca-accent)' }}>Spend more time on your matters.</span>
           </Reveal>
-          <Reveal as="p" delay={0.1} className="mx-auto mt-4 max-w-lg text-base text-white/70">
+          <Reveal as="p" delay={0.1} className="mx-auto mt-4 text-base text-white/70">
             Set up your booking page today and give your clients a simpler way to meet with you.
           </Reveal>
           <Reveal delay={0.14} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

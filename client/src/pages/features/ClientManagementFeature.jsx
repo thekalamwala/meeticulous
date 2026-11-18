@@ -462,19 +462,19 @@ export default function ClientManagementFeature() {
             <Reveal as="p" instant delay={0.06} className="mt-4 max-w-xl text-base leading-relaxed lg:text-[17px]" style={{ color: MUTED }}>
               Everyone who books you is saved automatically, with every session, what they have spent and your private notes. No CRM to maintain.
             </Reveal>
-            <Reveal as="ul" instant delay={0.08} className="mt-4 grid max-w-xl gap-x-6 gap-y-1.5 sm:grid-cols-2">
+            <Reveal instant delay={0.1} className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+              <PrimaryCta>Start free <ArrowRight size={16} /></PrimaryCta>
+              <a href="#plans" className="inline-flex items-center gap-1.5 text-sm font-semibold hover:no-underline hover:opacity-80" style={{ color: ACCENT }}>
+                What is free, what is not <ArrowRight size={15} />
+              </a>
+            </Reveal>
+            <Reveal as="ul" aria-hidden="true" instant delay={0.08} className="invisible mt-4 grid max-w-xl gap-x-6 gap-y-1.5 sm:grid-cols-2">
               {FACTS.map((f) => (
                 <li key={f} className="flex items-center gap-2 text-[14.5px] font-medium" style={{ color: INK }}>
                   <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: PEACH }}><Check size={12} style={{ color: ACCENT }} aria-hidden /></span>
                   {f}
                 </li>
               ))}
-            </Reveal>
-            <Reveal instant delay={0.1} className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-              <PrimaryCta>Start free <ArrowRight size={16} /></PrimaryCta>
-              <a href="#plans" className="inline-flex items-center gap-1.5 text-sm font-semibold hover:no-underline hover:opacity-80" style={{ color: ACCENT }}>
-                What is free, what is not <ArrowRight size={15} />
-              </a>
             </Reveal>
           </div>
           <Reveal instant delay={0.12}>
@@ -693,23 +693,6 @@ export default function ClientManagementFeature() {
         />
       </section>
 
-      {/* ═══════════════ 9 · FINAL CTA ═══════════════ */}
-      <section className="px-5 py-20 text-center sm:px-8 lg:py-28" style={{ background: PEACH }}>
-        <div className="mx-auto max-w-4xl">
-          <Reveal className="flex justify-center">
-            <AvatarStackPill names={SAMPLE_CLIENTS.map((c) => c.name)} label="Your next client, already remembered" />
-          </Reveal>
-          <Reveal as="h2" delay={0.04} className="mt-7 font-heading text-[clamp(2.2rem,5vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.03em]" style={{ color: INK }}>
-            Remember every client. <span style={{ color: ACCENT }}>Type nothing.</span>
-          </Reveal>
-          <Reveal as="p" delay={0.08} className="mx-auto mt-5 max-w-xl text-base leading-relaxed" style={{ color: MUTED }}>
-            Set up your booking page free. Your client list starts with your first booking.
-          </Reveal>
-          <Reveal delay={0.1} className="mt-9 flex justify-center">
-            <PrimaryCta>Start free <ArrowRight size={16} /></PrimaryCta>
-          </Reveal>
-        </div>
-      </section>
     </main>
   );
 }

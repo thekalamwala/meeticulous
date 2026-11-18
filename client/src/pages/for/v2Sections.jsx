@@ -68,7 +68,7 @@ export function V2Integrations({ wrap, Decor = null, cardClass = 'rounded-[24px]
           ))}
         </div>
         <Reveal delay={0.1} className="mt-10 text-center">
-          <Link to="/pricing" className="inline-flex items-center gap-2 rounded-full text-sm font-semibold hover:no-underline focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose" style={{ color: 'var(--v2-accent-ink)' }}>
+          <Link to="/become-a-host" className="inline-flex items-center gap-2 rounded-full text-sm font-semibold hover:no-underline focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose" style={{ color: 'var(--v2-accent-ink)' }}>
             Explore all features <ArrowRight size={16} />
           </Link>
         </Reveal>
@@ -162,26 +162,9 @@ export function V2Pricing({ routeStart, Decor = null, cardClass = 'rounded-[24px
   );
 }
 
-export function V2About({ wrap, label, background = 'var(--v2-wash)', Decor = null, cardClass = 'rounded-[24px] border border-black/[0.08]' }) {
-  return (
-    <section id="about" className="px-5 py-20 sm:px-8 lg:py-24" style={{ background }}>
-      <div className={`mx-auto grid ${wrap} items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16`}>
-        <div className="text-center lg:text-left">
-          <Reveal as="h2" className="font-heading text-[clamp(1.7rem,3.3vw,2.4rem)] font-extrabold leading-tight tracking-[-0.02em]">
-            Small businesses deserve <span style={{ color: 'var(--v2-heading-accent)' }}>better tools.</span>
-          </Reveal>
-          <Reveal as="p" delay={0.06} className="mt-5 text-[15.5px] leading-relaxed text-black/60">
-            Meeticulous was built to make appointment-based businesses easier to run. Instead of stitching together
-            calendars, WhatsApp messages, spreadsheets and payment apps, {label.toLowerCase()} run bookings, payments
-            and reminders from one clean platform.
-          </Reveal>
-          <Reveal delay={0.1} className="mt-8">
-            <Link to="/about" className="inline-flex items-center gap-2 rounded-full text-sm font-semibold hover:no-underline focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose" style={{ color: 'var(--v2-accent-ink)' }}>
-              Know more about us <ArrowRight size={16} />
-            </Link>
-          </Reveal>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2">
+export function V2About({ wrap, label, background = 'var(--v2-wash)', Decor = null, cardClass = 'rounded-[24px] border border-black/[0.08]', compact = false, cardsOnLeft = false }) {
+  const trustCards = (
+          <div className="grid gap-3 sm:grid-cols-2">
           {TRUST.map((it, i) => (
             <Reveal key={it.value} delay={i * 0.05}>
               <div className={`group relative flex h-full items-start gap-3 bg-white p-5 ${cardClass}`}>
@@ -196,6 +179,70 @@ export function V2About({ wrap, label, background = 'var(--v2-wash)', Decor = nu
               </div>
             </Reveal>
           ))}
+          </div>
+  );
+  if (compact) {
+    return (
+      <section id="about" className="px-5 py-16 sm:px-8 lg:py-12" style={{ background }}>
+        <div className={`mx-auto grid ${wrap} items-center gap-8 lg:grid-cols-2 lg:gap-12`}>
+          <Reveal>
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
+          </Reveal>
+          <div className="text-left">
+            <Reveal as="h2" className="font-heading text-2xl font-extrabold leading-tight tracking-[-0.02em] sm:text-3xl">
+              Small businesses deserve <span style={{ color: 'var(--v2-heading-accent)' }}>better tools.</span>
+            </Reveal>
+            <Reveal as="p" delay={0.06} className="mt-5 text-[15.5px] leading-relaxed text-black/60">
+              Meeticulous was built to make appointment-based businesses easier to run. Instead of stitching together calendars, WhatsApp messages, spreadsheets and payment apps, {label.toLowerCase()} run bookings, payments and reminders from one clean platform.
+            </Reveal>
+            <Reveal delay={0.1} className="mt-6 flex flex-wrap items-center gap-2 lg:flex-nowrap">
+              {TRUST.map((it) => (
+                <span key={it.value} title={it.label} className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-black/[0.08] bg-white px-2 py-2 text-xs font-semibold">
+                  <it.icon size={15} style={{ color: 'var(--v2-accent-ink)' }} aria-hidden /> {it.value}
+                </span>
+              ))}
+            </Reveal>
+            <Reveal delay={0.14} className="mt-6">
+              <Link to="/about" className="inline-flex items-center gap-2 rounded-full text-sm font-semibold hover:no-underline focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose" style={{ color: 'var(--v2-accent-ink)' }}>
+                Know more about us <ArrowRight size={16} />
+              </Link>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+    );
+  }
+  return (
+    <section id="about" className="px-5 py-20 sm:px-8 lg:py-24" style={{ background }}>
+      <div className={`mx-auto grid ${wrap} items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16`}>
+        <div className="text-center lg:text-left">
+          <Reveal as="h2" className="font-heading text-[clamp(1.7rem,3.3vw,2.4rem)] font-extrabold leading-tight tracking-[-0.02em]">
+            Small businesses deserve <span style={{ color: 'var(--v2-heading-accent)' }}>better tools.</span>
+          </Reveal>
+          <Reveal as="p" delay={0.06} className="mt-5 text-[15.5px] leading-relaxed text-black/60">
+            Meeticulous was built to make appointment-based businesses easier to run. Instead of stitching together
+            calendars, WhatsApp messages, spreadsheets and payment apps, {label.toLowerCase()} run bookings, payments
+            and reminders from one clean platform.
+          </Reveal>
+          {cardsOnLeft && <div className="mt-6 text-left">{trustCards}</div>}
+          <Reveal delay={0.1} className="mt-8">
+            <Link to="/about" className="inline-flex items-center gap-2 rounded-full text-sm font-semibold hover:no-underline focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose" style={{ color: 'var(--v2-accent-ink)' }}>
+              Know more about us <ArrowRight size={16} />
+            </Link>
+          </Reveal>
+        </div>
+        <div className="space-y-8">
+          <Reveal>
+            <img
+              src="/images/ca-about.png"
+              alt="Meeticulous mascots with a laptop, booking calendar and checklist"
+              loading="lazy"
+              width={588}
+              height={425}
+              className="mx-auto h-auto w-full max-w-xl object-contain"
+            />
+          </Reveal>
+          {!cardsOnLeft && trustCards}
         </div>
       </div>
     </section>

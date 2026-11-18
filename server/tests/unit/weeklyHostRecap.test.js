@@ -31,6 +31,58 @@ describe('worthSending — never nag a dead host', () => {
   });
 });
 
+describe('computeHostWeek — a failed query must not look like a quiet week', () => {
+  // The recap sent nothing to anyone for as long as it was enabled, and
+  // reported ok the whole time: it selected a `bookings.amount` column that
+  // does not exist, PostgREST rejected the query, the error was destructured
+  // away, and null rows summarized to zero — which worthSending() reads as
+  // "nothing happened this week". Zero-from-failure and zero-from-quiet are
+  // indistinguishable downstream, so the only defence is refusing to be silent.
+  const { supabaseAdmin } = require('../../config/supabase');
+  const { computeHostWeek } = require('../../services/weeklyHostRecap');
+
+  /** Minimal thenable query builder: every method chains, awaiting yields `result`. */
+  const chain = (result) => {
+    const o = {};
+    ['select', 'eq', 'gte', 'lte'].forEach((m) => { o[m] = jest.fn(() => o); });
+    o.then = (resolve) => resolve(result);
+    return o;
+  };
+
+  afterEach(() => jest.restoreAllMocks());
+
+  test('logs when the bookings query fails instead of returning a silent zero', async () => {
+    const err = jest.spyOn(console, 'error').mockImplementation(() => {});
+    supabaseAdmin.from
+      .mockReturnValueOnce(chain({ data: null, error: { message: 'column bookings.amount does not exist' } }))
+      .mockReturnValueOnce(chain({ count: 0, error: null }));
+
+    const s = await computeHostWeek('host-1');
+
+    expect(s).toEqual({ bookings: 0, earnings: 0, upcoming: 0 });
+    expect(err).toHaveBeenCalled();
+    expect(err.mock.calls[0].join(' ')).toMatch(/bookings query failed/);
+  });
+
+  test('stays quiet when the query simply returns nothing', async () => {
+    const err = jest.spyOn(console, 'error').mockImplementation(() => {});
+    supabaseAdmin.from
+      .mockReturnValueOnce(chain({ data: [], error: null }))
+      .mockReturnValueOnce(chain({ count: 0, error: null }));
+
+    expect(await computeHostWeek('host-1')).toEqual({ bookings: 0, earnings: 0, upcoming: 0 });
+    expect(err).not.toHaveBeenCalled();
+  });
+
+  test('does not ask for a column the bookings table does not have', () => {
+    // Drift guard. A unit test cannot see the real schema, so it pins the one
+    // fact that broke: `amount` is not selectable on bookings.
+    const src = require('fs').readFileSync(require.resolve('../../services/weeklyHostRecap'), 'utf8');
+    const selects = [...src.matchAll(/\.select\('([^']+)'/g)].map((m) => m[1]);
+    expect(selects.some((s) => /\bamount\b/.test(s))).toBe(false);
+  });
+});
+
 describe('sendWeeklyRecaps gate', () => {
   const OLD = process.env.WEEKLY_RECAP_ENABLED;
   afterEach(() => { process.env.WEEKLY_RECAP_ENABLED = OLD; });

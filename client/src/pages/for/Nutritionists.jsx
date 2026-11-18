@@ -354,16 +354,25 @@ export default function Nutritionists() {
         </AnimatePresence>
       </header>
 
-      {/* ═══════════════ 2 · HERO (balanced-plate composition) ═══════════════ */}
-      <section id="top" className="relative overflow-hidden px-5 pb-16 pt-10 sm:px-8 lg:pb-24 lg:pt-16" style={{ background: 'linear-gradient(180deg, var(--ca-cream) 0%, #ffffff 100%)' }}>
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-          {/* LEFT — copy */}
-          <div className="text-center lg:text-left">
-            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,5vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.02em] text-[color:var(--ca-ink)]">
+      {/* ═══════════════ 2 · HERO (full scene, no crop on desktop, fits the fold) ═══════════════ */}
+      <section id="top" className="relative overflow-hidden lg:h-[calc(100svh_-_69px)]" style={{ background: 'linear-gradient(135deg, #F0FDF4 0%, #F7FEF9 45%, #FFFFFF 72%)' }}>
+        {/* DESKTOP — the whole wide scene, pinned right and object-contain so it is NEVER
+            cropped and always fits inside the fold; the photo's white left half holds the text. */}
+        <img
+          src="/images/hero/nutritionist-hero-wide.webp"
+          alt="A nutritionist showing a client a printed meal plan across a desk with fresh fruit and a laptop."
+          width={1670}
+          height={941}
+          className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-contain object-right lg:block"
+        />
+        {/* TEXT — left-aligned, over the white area on desktop. */}
+        <div className="relative z-10 flex items-center px-5 sm:px-8 lg:h-full lg:pl-[max(2rem,calc((100vw_-_80rem)/2))] lg:pr-8">
+          <div className="w-full py-14 text-center sm:py-16 lg:max-w-[34rem] lg:py-0 lg:text-left">
+            <Reveal as="h1" instant className="font-heading text-[clamp(1.5rem,3.4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.02em] text-[color:var(--ca-ink)]">
               Convenient appointment booking software for{' '}
               <span style={{ color: 'var(--ca-primary)' }}>nutritionists</span> managing client consultations.
             </Reveal>
-            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-md text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
+            <Reveal as="p" instant delay={0.05} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg lg:mx-0">
               Meeticulous is appointment booking software for nutritionists — clients book diet consultations, pay upfront, and get reminded, so you keep plans on track without chasing anyone.
             </Reveal>
             <Reveal instant delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
@@ -372,7 +381,7 @@ export default function Nutritionists() {
                 Book A Demo <ArrowRight size={15} />
               </Link>
             </Reveal>
-            <Reveal instant delay={0.14} className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
+            <Reveal instant delay={0.14} className="mt-8 hidden lg:flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:justify-start">
               {HERO_TRUST.map((t) => (
                 <span key={t} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-500">
                   <Check size={14} style={{ color: 'var(--ca-primary)' }} /> {t}
@@ -380,41 +389,8 @@ export default function Nutritionists() {
               ))}
             </Reveal>
           </div>
-
-          {/* RIGHT — conic-gradient balanced plate + floating booked card */}
-          <Reveal instant delay={0.1} className="relative mx-auto w-full max-w-[24rem] lg:mx-0 lg:max-w-none">
-            {/* blurred green blob behind (mix-blend-multiply) */}
-            <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 h-[26rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl mix-blend-multiply" style={{ background: 'radial-gradient(closest-side, rgba(21,128,61,0.22), transparent)' }} />
-            <div className="relative mx-auto aspect-square w-full max-w-[22rem]">
-              {/* plate rim */}
-              <div className="relative flex h-full w-full items-center justify-center rounded-full bg-white p-4 shadow-[0_30px_60px_-30px_rgba(20,38,26,0.45)]">
-                {/* conic-gradient pie */}
-                <div className="relative h-full w-full rounded-full" style={{ background: plateGradient }}>
-                  {/* plate centre */}
-                  <div className="absolute left-1/2 top-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-white text-center shadow-[0_10px_24px_-12px_rgba(20,38,26,0.5)]">
-                    <Leaf size={22} style={{ color: 'var(--ca-primary)' }} />
-                    <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">Balanced</span>
-                  </div>
-                  {/* wedge labels */}
-                  {PLATE_LABELS.map((w) => (
-                    <span key={w.label} className={`absolute ${w.pos} flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-bold text-[color:var(--ca-ink)] shadow-sm backdrop-blur-sm`}>
-                      <span aria-hidden className="h-2 w-2 rounded-full" style={{ background: w.dot }} />
-                      {w.label}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              {/* floating "consultation booked" card */}
-              <div className="absolute -bottom-4 -left-2 z-20 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_16px_36px_-18px_rgba(20,38,26,0.5)] sm:-left-5">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg text-white" style={{ background: 'var(--ca-primary)' }}><Check size={17} /></span>
-                <div>
-                  <div className="text-[11px] text-slate-500">Consultation booked</div>
-                  <div className="text-sm font-bold text-[color:var(--ca-ink)]">Diet consult · 5:00 PM</div>
-                </div>
-              </div>
-            </div>
-          </Reveal>
         </div>
+
       </section>
 
       {/* ═══════════════ 3 · SERVICES (editorial ruled cards) ═══════════════ */}
@@ -519,7 +495,7 @@ export default function Nutritionists() {
             </div>
           </Reveal>
           <Reveal delay={0.1} className="mt-10 text-center">
-            <Link to="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
+            <Link to="/become-a-host" className="inline-flex items-center gap-2 text-sm font-semibold hover:no-underline" style={{ color: 'var(--ca-primary)' }}>
               Explore All Features <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -719,11 +695,9 @@ export default function Nutritionists() {
       {/* ═══════════════ 10 · ABOUT (statement + 2x2 trust grid + ImgSlot cluster) ═══════════════ */}
       <section className="px-5 py-20 sm:px-8 lg:py-28" style={{ background: 'var(--ca-cream)' }}>
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          {/* ImgSlot cluster */}
-          <Reveal className="order-2 grid grid-cols-2 gap-4 lg:order-1">
-            <ImgSlot alt="A nutritionist reviewing a client's diet plan" className="col-span-2 aspect-[16/10] shadow-[0_24px_50px_-28px_rgba(20,38,26,0.4)]" />
-            <ImgSlot alt="Fresh, colourful whole foods on a plate" className="aspect-square shadow-[0_18px_40px_-24px_rgba(20,38,26,0.4)]" />
-            <ImgSlot alt="A calm nutrition consultation in progress" className="aspect-square shadow-[0_18px_40px_-24px_rgba(20,38,26,0.4)]" />
+          {/* About illustration */}
+          <Reveal className="order-2 w-full lg:order-1">
+            <img src="/images/ca-about.png" alt="Meeticulous mascots with a laptop, booking calendar and checklist" loading="lazy" width={588} height={425} className="mx-auto h-auto w-full max-w-xl object-contain" />
           </Reveal>
 
           <div className="order-1 text-center lg:order-2 lg:text-left">
@@ -767,17 +741,17 @@ export default function Nutritionists() {
       </section>
 
       {/* ═══════════════ 12 · FINAL CTA (green + citrus glow + dot texture) ═══════════════ */}
-      <section className="px-5 py-20 sm:px-8 lg:py-24">
-        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[24px] px-8 py-16 text-center sm:px-12" style={{ background: 'linear-gradient(150deg, #0F4F27 0%, #15803D 100%)' }}>
+      <section>
+        <div className="relative mx-auto w-full overflow-hidden px-8 py-16 text-center sm:px-12" style={{ background: 'linear-gradient(150deg, #0F4F27 0%, #15803D 100%)' }}>
           {/* subtle dot texture */}
           <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.10) 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
           {/* citrus glow (mix-blend-screen) */}
           <div aria-hidden className="pointer-events-none absolute -right-16 -top-20 h-72 w-72 rounded-full blur-3xl mix-blend-screen" style={{ background: 'radial-gradient(closest-side, rgba(202,138,4,0.6), transparent)' }} />
-          <div className="relative mx-auto max-w-2xl">
+          <div className="relative mx-auto w-full lg:w-[70%]">
             <Reveal as="h2" className="font-heading text-[clamp(1.8rem,4.5vw,2.5rem)] font-extrabold leading-[1.1] tracking-tight text-white">
               Spend less time scheduling. Spend more time with clients.
             </Reveal>
-            <Reveal as="p" delay={0.06} className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/80">
+            <Reveal as="p" delay={0.06} className="mx-auto mt-4 text-base leading-relaxed text-white/80">
               Set up your booking page today — free forever, ready to share in minutes.
             </Reveal>
             <Reveal delay={0.1} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

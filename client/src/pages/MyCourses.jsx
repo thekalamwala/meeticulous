@@ -41,8 +41,8 @@ const MyCourses = () => {
                   <div className="grid aspect-video place-items-center bg-blush text-maroon"><Video className="h-8 w-8" /></div>
                 )}
                 <div className="p-4">
-                  <h3 className="truncate font-medium text-ink">{c.title}</h3>
-                  <p className="mt-0.5 text-sm text-ink/40">by {c.profiles?.name}</p>
+                  <h3 className="truncate font-display text-[15px] font-extrabold tracking-[-0.02em] text-ink">{c.title}</h3>
+                  <p className="mt-0.5 text-[12px] font-medium text-ink/45">by {c.profiles?.name}</p>
                 </div>
               </Link>
             </Card>

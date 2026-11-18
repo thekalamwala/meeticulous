@@ -36,8 +36,13 @@ alter table bookings add column if not exists discount_amount numeric not null d
 
 -- Atomic redemption counter (avoids a read-modify-write race on the limit check).
 -- SECURITY DEFINER + explicit revoke per the v3.186 anon/RPC lockdown — service_role only.
+-- search_path pinned (added after this migration had already been applied; v3.221 carries
+-- the same fix as an ALTER for the DB where it had). pg_temp is named so it sorts LAST:
+-- Postgres searches the temp schema first whenever pg_temp is absent from the path, which
+-- would let a caller shadow `coupons` with a temp table and run it with owner rights.
 create or replace function increment_coupon_redemption(c_id uuid)
-  returns void language sql security definer as $$
+  returns void language sql security definer
+  set search_path = public, pg_temp as $$
   update coupons set times_redeemed = times_redeemed + 1, updated_at = now() where id = c_id;
 $$;
 revoke all on function increment_coupon_redemption(uuid) from public, anon, authenticated;
