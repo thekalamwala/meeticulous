@@ -274,7 +274,12 @@ const DashboardLayoutV2 = ({ children }) => {
   const plan = normalizePlan(user?.plan);
   const initial = (user?.name || user?.email || 'U').trim().charAt(0).toUpperCase();
   const { flags } = useFeatureFlags();
-  const sections = visibleSections({ user, plan, flags });
+  // The v2 shell IS the redesigned grouping, so the rail always uses NAV_V2
+  // regardless of the separate console_v2 flag (navFor keys off console_v2).
+  // Forcing it here keeps Clients/Schedule/Grow — which only exist as their own
+  // sections in NAV_V2 — on the rail even when console_v2 is off. navParity's
+  // GROUPS-coverage test pins that every NAV_V2 section has a bucket.
+  const sections = visibleSections({ user, plan, flags: { ...flags, console_v2: true } });
   const chatUnread = useSupportUnread();
   const badges = { ...computeBadges(user), chatUnread };
   const activeTo = resolveActive(pathname, sections).to;
