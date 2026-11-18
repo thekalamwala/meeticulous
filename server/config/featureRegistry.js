@@ -151,6 +151,11 @@ const REGISTRY = [
   // by the same NAV_V2 routes. Off = the current ConsoleSidebar/Overview chrome is
   // served; routes are identical either way, so flipping it back is a full revert.
   { key: 'dashboard_v2',         label: 'Dashboard v2 (shell)', category: 'Operations', scope: 'vendor', enabled: false, description: 'Host Lab redesign adopted as the host dashboard shell: one flat, collapsible, chevron-expand rail for every host page (Overview included). Ships OFF. Off = the current rail/panel layout is served. Same routes either way.' },
+  // Opt-in (ships OFF — seeded disabled in v3.224, and `enabled: false` here so the
+  // registry upsert creates it OFF even before the migration runs). Graduates the
+  // Host Lab Intelligence + Community console sections onto real data. Off = the
+  // sections are hidden from the rail and their routes redirect to /dashboard.
+  { key: 'dashboard_sections_v2', label: 'Dashboard sections v2 (Intelligence + Community)', category: 'Operations', scope: 'vendor', enabled: false, description: 'Graduates the Host Lab Intelligence and Community console sections onto REAL data: Intelligence > Overview + Revenue (live bookings), Community > Activity + Spaces + Answer (community API). Ships OFF. Off = the sections are hidden from the rail and their routes redirect to the dashboard home.' },
 ];
 
 const KEYS = REGISTRY.map((f) => f.key);
