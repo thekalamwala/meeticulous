@@ -38,7 +38,6 @@ const IntelOverview = () => {
 
   const header = (
     <>
-      <SubNav items={INTELLIGENCE_NAV} />
       <PageHeading title="Intelligence" sub="What your commission is costing you, and where to act next." />
     </>
   );
