@@ -179,6 +179,7 @@ const Feedback     = lazy(() => import('./pages/Feedback'));
 const ClientsList  = lazy(() => import('./pages/ClientsList'));
 const ClientsV2    = lazy(() => import('./pages/ClientsV2'));
 const TodayV2      = lazy(() => import('./pages/TodayV2'));
+const BookingsV2   = lazy(() => import('./pages/BookingsV2'));
 const ClientDetail = lazy(() => import('./pages/ClientDetail'));
 
 // KYC (host identity verification)
@@ -406,6 +407,10 @@ function ClientsListRoute() {
 function DashboardHomeRoute() {
   const { flags } = useFeatureFlags();
   return flags.dashboard_v2 ? <TodayV2 /> : <Dashboard />;
+}
+function BookingsRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <BookingsV2 /> : <Bookings />;
 }
 
 function DashboardWrapper({ children }) {
@@ -667,7 +672,7 @@ function App() {
 
           {/* Vendor dashboard */}
           <Route path="/dashboard" element={<DashboardWrapper><DashboardHomeRoute /></DashboardWrapper>} />
-          <Route path="/dashboard/bookings" element={<DashboardWrapper><Bookings /></DashboardWrapper>} />
+          <Route path="/dashboard/bookings" element={<DashboardWrapper><BookingsRoute /></DashboardWrapper>} />
           <Route path="/dashboard/clients" element={<DashboardWrapper><ClientsListRoute /></DashboardWrapper>} />
           <Route path="/dashboard/clients/:id" element={<DashboardWrapper><ClientDetail /></DashboardWrapper>} />
           <Route path="/dashboard/earnings" element={<DashboardWrapper><Earnings /></DashboardWrapper>} />
