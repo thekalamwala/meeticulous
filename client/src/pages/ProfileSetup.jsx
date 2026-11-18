@@ -25,6 +25,8 @@ import {
 import {
   PageHeader, Card, Button, FormField, Input, Select, StickyActionBar, Tabs, cn,
 } from "../components/dashboard/ui";
+import { PageHeading as PageHeadingV2, SubNav } from "../components/dashboard/ui/v2";
+import { SETTINGS_NAV } from "./dashboardNav";
 
 
 // Canonical cover-photo aspect ratio. Cropped to this on upload and rendered at
@@ -267,7 +269,7 @@ const InlineField = ({ value, onCommit, placeholder, multiline = false, inline =
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-const ProfileSetup = () => {
+const ProfileSetup = ({ embedded = false } = {}) => {
   const { user, updateUser } = useAuth();
   const navigate = useNavigate();
   const [cropper, setCropper] = useState(null);
@@ -398,11 +400,21 @@ const ProfileSetup = () => {
   }, [dirty]);
 
   return (
-    <div className="mx-auto max-w-5xl">
-      <PageHeader
-        title="Settings"
-        subtitle={<>How guests discover and book you. Plan: <span className="font-semibold text-ink">{planLabel(plan, 'Starter')}</span></>}
-      />
+    <div className={embedded ? '' : 'mx-auto max-w-5xl'}>
+      {embedded ? (
+        <div className="mb-4 flex flex-col gap-2.5">
+          <SubNav items={SETTINGS_NAV} />
+          <PageHeadingV2
+            title="Account"
+            sub={<>How guests discover and book you. Plan: <span className="font-semibold text-ink">{planLabel(plan, 'Starter')}</span></>}
+          />
+        </div>
+      ) : (
+        <PageHeader
+          title="Settings"
+          subtitle={<>How guests discover and book you. Plan: <span className="font-semibold text-ink">{planLabel(plan, 'Starter')}</span></>}
+        />
+      )}
 
       {/* Section rail. Booking policy + privacy now live in their own "Booking &
           privacy" section instead of being buried under Integrations. Plan lives

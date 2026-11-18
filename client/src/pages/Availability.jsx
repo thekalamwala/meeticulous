@@ -13,6 +13,7 @@ import {
   PageHeader, Card, Button, FormField, Select, Input, StickyActionBar,
   ContextMenu, cn,
 } from "../components/dashboard/ui";
+import { PageHeading as PageHeadingV2 } from "../components/dashboard/ui/v2";
 
 const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 const DEFAULT_SCHEDULE = DAYS.reduce((acc, day) => { acc[day] = []; return acc; }, {});
@@ -37,7 +38,9 @@ const TimeSelect = ({ value, onChange }) => {
   );
 };
 
-const Availability = () => {
+// `embedded` (dashboard_v2): swap the standalone PageHeader for the v2 PageHeading.
+// The slot editor below is untouched — only the header changes.
+const Availability = ({ embedded = false } = {}) => {
   const [schedule, setSchedule] = useState(DEFAULT_SCHEDULE);
   const [timezone, setTimezone] = useState("Asia/Kolkata");
   const [bufferMinutes, setBufferMinutes] = useState(0);
@@ -164,7 +167,11 @@ const Availability = () => {
   return (
     <form onSubmit={handleSubmit} className="mx-auto max-w-4xl">
       <BackButton hasUnsavedChanges={dirty} />
-      <PageHeader title="Set Your Availability" subtitle="Define when guests can book time with you." />
+      {embedded ? (
+        <div className="mb-4"><PageHeadingV2 title="Availability" sub="Define when guests can book time with you." /></div>
+      ) : (
+        <PageHeader title="Set Your Availability" subtitle="Define when guests can book time with you." />
+      )}
 
       {/* Weekly schedule */}
       <Card className="mb-5">
