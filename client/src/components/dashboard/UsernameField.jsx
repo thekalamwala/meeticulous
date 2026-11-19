@@ -125,13 +125,13 @@ export default function UsernameField({ user, onChanged, variant = "default" }) 
 
       {!editing ? (
         <div className="flex items-center gap-2">
-          <div className="flex min-w-0 flex-1 items-center overflow-hidden rounded-lg border bg-gray-50">
-            <span className="shrink-0 px-3 py-2 text-sm text-gray-400 border-r">meeticulous.com/</span>
+          <div className="flex min-w-0 flex-1 items-center overflow-hidden rounded-lg border bg-neutral-50">
+            <span className="shrink-0 px-3 py-2 text-sm text-neutral-400 border-r">meeticulous.com/</span>
             <span className="truncate px-3 py-2 text-sm">{current || "—"}</span>
           </div>
           {verified ? (
             <button type="button" onClick={() => { setValue(current); setEditing(true); }}
-              className="shrink-0 rounded-lg border px-3 py-2 text-sm font-medium hover:bg-gray-50">
+              className="shrink-0 rounded-lg border px-3 py-2 text-sm font-medium hover:bg-neutral-50">
               Change
             </button>
           ) : null}
@@ -139,7 +139,7 @@ export default function UsernameField({ user, onChanged, variant = "default" }) 
       ) : (
         <div>
           <div className="flex min-w-0 flex-col overflow-hidden rounded-lg border focus-within:ring-2 focus-within:ring-primary sm:flex-row">
-            <span className="shrink-0 bg-gray-50 px-3 py-2 text-sm text-gray-400 border-b sm:border-b-0 sm:border-r">meeticulous.com/</span>
+            <span className="shrink-0 bg-neutral-50 px-3 py-2 text-sm text-neutral-400 border-b sm:border-b-0 sm:border-r">meeticulous.com/</span>
             <input type="text" autoFocus value={value} onChange={onType}
               className="flex-1 px-3 py-2 text-sm focus:outline-none"
               placeholder="your-new-handle" />
@@ -166,12 +166,12 @@ export default function UsernameField({ user, onChanged, variant = "default" }) 
       )}
 
       {!verified ? (
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-neutral-500">
           Verify your WhatsApp number to claim a custom username. Changeable twice a
           year, with at least 6 months between changes. Old links keep working.
         </p>
       ) : (
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-neutral-500">
           Permanent handle — at most twice a year, 6 months apart. Old links redirect here.
         </p>
       )}
