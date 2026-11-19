@@ -12,7 +12,7 @@ export function SegmentedControl({ options = [], value, onChange, className = ''
     <div
       role="tablist"
       className={cn(
-        'dash-noscrollbar flex gap-1 overflow-x-auto rounded-xl border border-gray-200 bg-gray-100/70 p-1',
+        'dash-noscrollbar flex gap-1 overflow-x-auto rounded-xl border border-neutral-200 bg-neutral-100/70 p-1',
         className,
       )}
     >
@@ -28,8 +28,8 @@ export function SegmentedControl({ options = [], value, onChange, className = ''
             className={cn(
               'flex min-h-11 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-sm font-medium transition-colors',
               active
-                ? 'bg-white text-gray-900 shadow-sm dash-elev-1'
-                : 'text-gray-500 hover:text-gray-800 active:bg-white/50',
+                ? 'bg-white text-neutral-900 shadow-sm dash-elev-1'
+                : 'text-neutral-500 hover:text-neutral-800 active:bg-white/50',
             )}
           >
             {opt.label}
@@ -37,7 +37,7 @@ export function SegmentedControl({ options = [], value, onChange, className = ''
               <span
                 className={cn(
                   'rounded-full px-1.5 py-0.5 text-[11px] font-semibold leading-none',
-                  active ? 'bg-primary/10 text-primary' : 'bg-gray-200 text-gray-500',
+                  active ? 'bg-primary/10 text-primary' : 'bg-neutral-200 text-neutral-500',
                 )}
               >
                 {opt.count}

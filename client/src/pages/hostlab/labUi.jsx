@@ -128,14 +128,29 @@ export const useSubPage = (parent) => {
   return pageMeta(parent, page);
 };
 
-/* ── SubPageHeader — every sub-page gets a real heading of its own ─────── */
-export const SubPageHeader = ({ page, action, children }) => (
+/* ── SubPageHeader — every page gets a real heading of its own ──────────
+ *
+ * Two ways in, because two kinds of page exist:
+ *   <SubPageHeader page={page} />        a sub-page, titled from its nav.js entry
+ *   <SubPageHeader title="Today">…</…>   a destination with no sub-pages of its
+ *                                        own (Today, Catalog, Clients), or one
+ *                                        titled from its data (the editor)
+ *
+ * `page` wins when both are given. The subtitle is `children` if present, else
+ * the nav blurb — so a page whose subtitle is computed live (today's date, a
+ * row count, a sum) passes it as children and still gets the shared heading.
+ *
+ * This is deliberately NOT a tab strip. nav.js states the console's rule: if it
+ * has a URL in the rail it is a page, if it is a subset of one list it is a
+ * filter, nothing is a tab. This renders the heading only.
+ * ---------------------------------------------------------------------- */
+export const SubPageHeader = ({ page, title, action, children }) => (
   <header className="flex flex-wrap items-end justify-between gap-2">
     <div className="min-w-0">
       <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">
-        {page.label}
+        {page ? page.label : title}
       </h1>
-      <p className="mt-0.5 text-[12px] font-medium text-ink/55">{children || page.blurb}</p>
+      <p className="mt-0.5 text-[12px] font-medium text-ink/55">{children || page?.blurb}</p>
     </div>
     {action}
   </header>

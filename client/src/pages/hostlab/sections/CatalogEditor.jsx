@@ -14,7 +14,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Copy, Info, Sparkles, Trash2, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button, cn } from '../../../components/dashboard/ui';
-import { Field, LabInput, LabSelect, LabTextarea, Panel, Toggle, inr } from '../labUi';
+import { Field, LabInput, LabSelect, LabTextarea, Panel, SubPageHeader, Toggle, inr } from '../labUi';
 import { CATALOG_TYPES, blankItem, groupsFor } from '../catalogTypes';
 import { allItems } from '../catalogData';
 import mock from '../mockData';
@@ -137,8 +137,10 @@ const CatalogEditor = () => {
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Header */}
-      <header className="flex flex-wrap items-center gap-2">
+      {/* Header. The breadcrumb and type pill sit in their own row above the
+          heading rather than inside it: SubPageHeader renders a <header>, and
+          a <header> cannot nest inside another one. */}
+      <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
           onClick={back}
@@ -150,12 +152,11 @@ const CatalogEditor = () => {
           <type.icon className="h-3 w-3" strokeWidth={2.6} /> {type.label}
         </span>
         <div className="w-full">
-          <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">
-            {isNew ? `New ${type.label.toLowerCase()}` : name || `Untitled ${type.label.toLowerCase()}`}
-          </h1>
-          <p className="mt-0.5 text-[12px] font-medium text-ink/55">{type.blurb}</p>
+          <SubPageHeader title={isNew ? `New ${type.label.toLowerCase()}` : name || `Untitled ${type.label.toLowerCase()}`}>
+            {type.blurb}
+          </SubPageHeader>
         </div>
-      </header>
+      </div>
 
       {type.notice && (
         <p className="flex items-start gap-2 rounded-lg border-2 border-marigold-300 bg-marigold-100 px-3 py-2 text-[11.5px] font-medium text-marigold-800">

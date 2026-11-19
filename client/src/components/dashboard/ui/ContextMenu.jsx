@@ -23,8 +23,8 @@ export function ContextMenu({ items = [], trigger, title, openOnClick = false })
               type="button"
               onClick={() => { setOpen(false); it.onSelect?.(); }}
               className={cn(
-                'flex items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-gray-50',
-                it.danger ? 'text-red-600' : 'text-gray-800',
+                'flex items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-neutral-50',
+                it.danger ? 'text-red-600' : 'text-neutral-800',
               )}
             >
               {it.icon && <it.icon className="h-5 w-5" />}
