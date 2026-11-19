@@ -244,9 +244,27 @@ export default function CommunityItem() {
         <ItemCard item={item} detail onReply={reply} actions={itemMenu} />
       )}
 
-      <h2 className="mt-2 font-display text-xl font-extrabold tracking-tight text-maroon">
+      {/* The composer sits directly under the post, where someone who has just finished
+          reading already is. Replying to a specific comment reuses this one box — focusTick
+          scrolls it back into view with the "Replying to" chip. */}
+      {user && repliesLocked && (
+        <p className="mt-nudge">Only hosts can reply in this space.</p>
+      )}
+      {user && !repliesLocked && (
+        <CommentForm itemId={item.id} parent={parent} focusTick={tick} onCreated={added} onSettle={settle} onCancel={() => setParent(null)} />
+      )}
+
+      {!user && (
+        <div className="flex flex-col items-start gap-4 rounded-xl bg-blush p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <p className="text-sm text-ink">Join the conversation. It takes a minute.</p>
+          <Link to={loginHref(loc)} className="mt-btn no-underline"><LogIn size={20} aria-hidden="true" />Log in to reply</Link>
+        </div>
+      )}
+
+      <h2 className="mt-post__title mt-2">
         {item.comment_count} {item.comment_count === 1 ? 'reply' : 'replies'}
       </h2>
+      {!s.comments.length && <p className="mt-post__meta py-4 text-center">No replies yet.</p>}
       <CommentList
         comments={s.comments}
         acceptedId={item.accepted_comment_id}
@@ -262,20 +280,6 @@ export default function CommunityItem() {
         <button type="button" onClick={loadMore} disabled={more} className="mt-btn mt-btn--secondary mt-btn--s self-center">
           {more ? 'Loading…' : 'Show more replies'}
         </button>
-      )}
-
-      {user && repliesLocked && (
-        <p className="rounded-xl bg-blush p-5 text-sm text-ink sm:p-6">Only hosts can reply in this space.</p>
-      )}
-      {user && !repliesLocked && (
-        <CommentForm itemId={item.id} parent={parent} focusTick={tick} onCreated={added} onSettle={settle} onCancel={() => setParent(null)} />
-      )}
-
-      {!user && (
-        <div className="flex flex-col items-start gap-4 rounded-xl bg-blush p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-          <p className="text-sm text-ink">Join the conversation. It takes a minute.</p>
-          <Link to={loginHref(loc)} className="mt-btn no-underline"><LogIn size={20} aria-hidden="true" />Log in to reply</Link>
-        </div>
       )}
 
       {termsDialog}

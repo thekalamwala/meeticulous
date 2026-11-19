@@ -46,7 +46,7 @@ export default function MiniProfileSheet({ author, onClose }) {
         <div className="mt-sheet__body">
           <Avatar author={author} />
           <div className="mt-sheet__name">{author?.display_name || 'Member'}</div>
-          <div className="text-xs text-muted">{ROLE_LABEL[roleKey]}{isStaff ? ' · Meeticulous' : ''}</div>
+          <div className="mt-post__meta">{ROLE_LABEL[roleKey]}{isStaff ? ' · Meeticulous' : ''}</div>
           {author?.profile_url
             ? <Link to={author.profile_url} onClick={onClose} className="mt-btn mt-btn--block">Visit profile</Link>
             : <button type="button" onClick={onClose} className="mt-btn mt-btn--secondary mt-btn--block">Close</button>}

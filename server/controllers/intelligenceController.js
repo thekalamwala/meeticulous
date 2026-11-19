@@ -36,7 +36,11 @@ const BOOKING_COLUMNS = [
   'razorpay_fee_actual', 'razorpay_tax_actual',
   'tds_amount', 'tcs_amount', 'refunded_amount', 'vendor_amount',
   'settlement_status', 'settled_at',
-  'client_id', 'guest_name', 'guest_email', 'guest_phone',
+  // bookings has no `client_id` column (selecting it 500s PostgREST). The stable
+  // client identifier is `guest_id` (profiles.id for account guests, null for
+  // walk-ins) — alias it to client_id so the builders' `r.client_id || phone ||
+  // email` fallback groups account guests by profile and everyone else by key.
+  'client_id:guest_id', 'guest_name', 'guest_email', 'guest_phone',
   'services(title)',
 ].join(', ');
 

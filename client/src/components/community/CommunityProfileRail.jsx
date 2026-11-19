@@ -18,7 +18,7 @@ function Stat({ v, l }) {
   return (
     <div className="min-w-0 flex-1">
       <dd className="font-display text-base font-extrabold leading-none text-ink tabular-nums">{v}</dd>
-      <dt className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-muted">{l}</dt>
+      <dt className="mt-1 mt-overline text-muted">{l}</dt>
     </div>
   );
 }
@@ -61,7 +61,7 @@ export default function CommunityProfileRail({ user }) {
           <div className="mt-2 flex items-center gap-1.5 font-display text-base font-extrabold leading-tight text-ink">
             {name}{card?.verified && <Seal />}
           </div>
-          <div className="text-xs text-muted">{isHost ? 'Host' : 'Member'}{card?.member_since ? ` · since ${card.member_since}` : ''}</div>
+          <div className="mt-post__meta">{isHost ? 'Host' : 'Member'}{card?.member_since ? ` · since ${card.member_since}` : ''}</div>
 
           {isHost ? (
             <dl className="mt-3 flex w-full border-t border-line pt-3 text-center">
@@ -70,7 +70,7 @@ export default function CommunityProfileRail({ user }) {
               <Stat v={card ? card.services : '—'} l="Services" />
             </dl>
           ) : (
-            <p className="mt-3 w-full border-t border-line pt-3 text-xs text-muted">Welcome to the Circle — introduce yourself and find your people.</p>
+            <p className="mt-3 w-full border-t border-line pt-3 mt-post__meta">Welcome to the Circle — introduce yourself and find your people.</p>
           )}
         </div>
       </div>
