@@ -154,15 +154,15 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
           </Link>
           <button
             type="button"
-            onClick={() => { setSpaceQuery(''); setSpacesOpen(true); }}
-            aria-label="Browse spaces"
-            aria-expanded={spacesOpen}
-            className="grid h-11 w-11 place-items-center rounded-2xl text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40"
+            onClick={() => setFilterOpen(true)}
+            aria-label="Filter the feed"
+            aria-expanded={filterOpen}
+            className={`grid h-11 w-11 place-items-center rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 ${curTab !== 'everyone' ? 'text-maroon' : 'text-ink'}`}
           >
             {/* The tap target stays 44px; only the painted tile is 36px, so the fill has
                 room to breathe inside the bar instead of meeting its top and bottom edges. */}
             <span className="grid h-9 w-9 place-items-center rounded-xl bg-cream">
-              <LayoutGrid size={18} aria-hidden="true" />
+              <ListFilter size={18} aria-hidden="true" />
             </span>
           </button>
         </header>
@@ -370,8 +370,11 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
           >
             <House size={22} aria-hidden="true" />Home
           </Link>
-          <button type="button" onClick={() => setFilterOpen(true)} aria-label="Filter the feed" aria-expanded={filterOpen} className={`flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 ${curTab !== 'everyone' ? 'text-maroon' : 'text-muted'}`}>
-            <ListFilter size={22} aria-hidden="true" />Filter
+          {/* Spaces sits in the bar and Filter in the header, swapped from the other way
+              round: spaces is the one people reach for while reading, so it belongs under
+              the thumb, and filtering the feed is a per-page setting that lives with it. */}
+          <button type="button" onClick={() => { setSpaceQuery(''); setSpacesOpen(true); }} aria-label="Browse spaces" aria-expanded={spacesOpen} className={`flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 ${active !== 'feed' && active !== 'alerts' ? 'text-maroon' : 'text-muted'}`}>
+            <LayoutGrid size={22} aria-hidden="true" />Spaces
           </button>
           <div className="flex flex-1 items-center justify-center">
             <button type="button" onClick={() => onCompose?.('post')} aria-label="Add a post" className="grid h-14 w-14 -translate-y-4 place-items-center rounded-full bg-maroon text-cream shadow-lg shadow-maroon/40 ring-4 ring-white transition-transform hover:bg-maroon-dark active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-maroon">
