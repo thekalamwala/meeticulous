@@ -628,6 +628,9 @@ export const getMembershipSpace = (username)  => API.get(`/memberships/space/${e
 export const joinMembership     = (tierId)    => API.post('/memberships/join', { tier_id: tierId });
 export const createMembershipSubscription = (tierId) => API.post('/memberships/subscribe', { tier_id: tierId });
 export const syncMembershipSubscription   = (subId) => API.post('/memberships/subscription/sync', { subscription_id: subId });
+// Tier upgrade: /subscribe answers { upgrade: true, ... } when the member already
+// holds a cheaper paid tier; this confirms the prorated payment and moves them.
+export const verifyMembershipUpgrade = (p)    => API.post('/memberships/upgrade/verify', p);
 export const cancelMembership   = (hostId)    => API.post('/memberships/cancel', { host_id: hostId });
 export const getHostMembers     = ()          => API.get('/memberships/members');
 export const getMySubscriptions = ()          => API.get('/memberships/my-subscriptions');

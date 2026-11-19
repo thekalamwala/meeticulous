@@ -86,6 +86,78 @@ async function activateFromSubscription({ rzpSub }) {
   return { activated: true };
 }
 
+// ── Tier upgrade (immediate, prorated) ────────────────────────
+// A member on a paid tier moving to a dearer one pays the difference for the days
+// they have left today, and the new recurring subscription starts when the old
+// period would have ended — so no day is billed twice.
+
+/** One-time order for the prorated difference. notes carry everything verify needs. */
+async function createUpgradeOrder({ tier, current, memberId, hostId, quote }) {
+  const razorpay = await razorpayConfig.getClient();
+  return razorpay.orders.create({
+    amount: Math.round(quote.dueNowInr * 100),
+    currency: 'INR',
+    receipt: `mup_${String(tier.id).slice(0, 20)}`,
+    notes: {
+      kind: 'membership_upgrade',
+      member_id: memberId, host_id: hostId,
+      tier_id: tier.id, from_tier_id: current.tier_id,
+      due_now_inr: quote.dueNowInr, credit_inr: quote.creditInr,
+    },
+  });
+}
+
+/**
+ * Move the member onto the dearer tier once the difference is paid.
+ *
+ * Order of operations is deliberate, because the member's money has already moved
+ * by the time this runs:
+ *   1. mint the new subscription, deferred to the old period end (nothing charged now),
+ *   2. flip the membership row — this is the entitlement they just paid for,
+ *   3. cancel the old subscription.
+ * A failure at 1 or 2 leaves them on the old tier with the old subscription intact:
+ * recoverable, and they are not short of access. A failure at 3 is the one that could
+ * double-bill, so it is logged loudly rather than swallowed.
+ */
+async function applyUpgrade({ notes, current, tier }) {
+  const planId = await ensureTierPlan(tier);
+  const periodEndMs = current.current_period_end ? new Date(current.current_period_end).getTime() : 0;
+  // Razorpay rejects a start_at that is not comfortably in the future; if the paid
+  // period has already run out there is nothing left to defer past, so bill from now.
+  const startAt = Number.isFinite(periodEndMs) && periodEndMs > Date.now() + 5 * 60 * 1000
+    ? Math.floor(periodEndMs / 1000)
+    : undefined;
+
+  const newSub = await createSubscription({
+    planId, cadence: 'monthly', startAt,
+    notes: { kind: 'membership', tier_id: tier.id, host_id: notes.host_id, member_id: notes.member_id },
+  });
+
+  const { error } = await supabaseAdmin.from('community_membership_subscriptions')
+    .update({
+      tier_id: tier.id, status: 'active', razorpay_subscription_id: newSub.id,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', current.id);
+  if (error) throw error;
+
+  if (current.razorpay_subscription_id) {
+    try {
+      await cancelSubscription(current.razorpay_subscription_id, false); // immediate
+    } catch (e) {
+      // They are on the new tier and have been charged for it. An old mandate left
+      // alive bills again next cycle, so this needs a human, not a silent retry.
+      console.error(
+        `MEMBERSHIP_UPGRADE_OLD_SUB_NOT_CANCELLED sub=${current.razorpay_subscription_id} `
+        + `member=${notes.member_id} host=${notes.host_id}: ${e?.error?.description || e?.message}`,
+      );
+    }
+  }
+
+  membershipNotify.newMember({ hostId: notes.host_id, tierName: tier.name });
+  return { upgraded: true, subscription_id: newSub.id };
+}
+
 // subscription.halted → grace (past_due still counts as entitled in the gate).
 // A reconciler downgrades past_due -> expired after the grace window (follow-up).
 async function markHalted(rzpSub) {
@@ -120,4 +192,5 @@ async function cancelForMember({ memberId, hostId }) {
 
 module.exports = {
   ensureTierPlan, startPaidSubscription, activateFromSubscription, markHalted, markCancelled, cancelForMember,
+  createUpgradeOrder, applyUpgrade,
 };
