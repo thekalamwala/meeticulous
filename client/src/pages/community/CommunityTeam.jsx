@@ -19,11 +19,11 @@ export default function CommunityTeam() {
     <main className="min-h-screen bg-cream text-ink">
       <div className="mx-auto max-w-5xl px-5 py-12 lg:py-16">
         <header className="flex flex-col gap-3">
-          <p className="text-xs font-bold uppercase tracking-[0.08em] text-ink/50">Meeticulous Circle</p>
+          <p className="mt-overline text-faint">Meeticulous Circle</p>
           <h1 className="font-display text-4xl font-extrabold leading-tight tracking-tight text-maroon sm:text-5xl">
             Meet the team <span className="font-serif font-normal italic text-rose">here for you.</span>
           </h1>
-          <p className="max-w-xl text-base leading-relaxed text-ink/70">
+          <p className="max-w-xl text-base leading-relaxed text-muted">
             The people who keep the Circle warm. Say hi any time — we read everything.
           </p>
         </header>
@@ -44,7 +44,7 @@ export default function CommunityTeam() {
                   <div className="text-sm font-medium text-maroon">{m.title}</div>
                 </div>
               </div>
-              <p className="text-sm leading-relaxed text-ink/70">{m.blurb}</p>
+              <p className="text-sm leading-relaxed text-muted">{m.blurb}</p>
               <span className="mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-maroon">
                 View profile <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
               </span>

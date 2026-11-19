@@ -4,12 +4,12 @@ import { cn } from './cn';
 export function SearchInput({ value, onChange, placeholder = 'Search…', className = '' }) {
   return (
     <div className={cn('relative', className)}>
-      <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+      <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
       <input
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
         placeholder={placeholder}
-        className="h-10 w-full rounded border border-gray-300 bg-white pl-9 pr-3 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+        className="h-10 w-full rounded border border-neutral-300 bg-white pl-9 pr-3 text-sm text-neutral-900 placeholder:text-neutral-400 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
       />
     </div>
   );

@@ -8,6 +8,7 @@ import { SpaceIcon } from '../../components/community/ItemCard';
 import FeedSkeleton from '../../components/community/CommunitySkeleton';
 import CommunityAd from '../../components/community/CommunityAd';
 import CommunityTopics from '../../components/community/CommunityTopics';
+import useSheet from '../../components/community/useSheet';
 import { useFeature } from '../../context/FeatureContext';
 import { useAuth } from '../../context/AuthContext';
 import ProfileDrawer from '../../components/community/ProfileDrawer';
@@ -85,6 +86,9 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
   const [spacesOpen, setSpacesOpen] = useState(false); // mobile: grid tile → spaces sheet
   const [spaceQuery, setSpaceQuery] = useState(''); // live filter inside the spaces sheet
   const [filterOpen, setFilterOpen] = useState(false); // mobile: bottom-bar filter sheet
+  // Both sheets stay mounted while they slide out; see useSheet.
+  const spacesSheet = useSheet(spacesOpen);
+  const filterSheet = useSheet(filterOpen);
   const [searchFocused, setSearchFocused] = useState(false); // desktop search dropdown
   const [searchQuery, setSearchQuery] = useState('');
   const [recent, setRecent] = useState([]);
@@ -141,7 +145,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
     <main className={`min-h-screen overflow-x-hidden bg-cream ${v2 ? 'community-v2 pb-24' : 'pb-16'}`}>
       {v2 && (
         <header
-          className="sticky top-0 z-40 flex items-center justify-between border-b border-line bg-white px-4 pb-[2px] lg:hidden"
+          className="sticky top-0 z-40 flex items-center justify-between border-b border-line bg-white px-4 py-1.5 lg:hidden"
           style={{ paddingTop: 'env(safe-area-inset-top)' }}
         >
           <Link to="/community" aria-label="Meeticulous Community" className="flex items-center gap-2 py-3 no-underline">
@@ -150,23 +154,27 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
           </Link>
           <button
             type="button"
-            onClick={() => { setSpaceQuery(''); setSpacesOpen(true); }}
-            aria-label="Browse spaces"
-            aria-expanded={spacesOpen}
-            className="grid h-11 w-11 place-items-center rounded-2xl bg-cream text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40"
+            onClick={() => setFilterOpen(true)}
+            aria-label="Filter the feed"
+            aria-expanded={filterOpen}
+            className={`grid h-11 w-11 place-items-center rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 ${curTab !== 'everyone' ? 'text-maroon' : 'text-ink'}`}
           >
-            <LayoutGrid size={18} aria-hidden="true" />
+            {/* The tap target stays 44px; only the painted tile is 36px, so the fill has
+                room to breathe inside the bar instead of meeting its top and bottom edges. */}
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-cream">
+              <ListFilter size={18} aria-hidden="true" />
+            </span>
           </button>
         </header>
       )}
 
       {/* Mobile Spaces sheet — opened by the header grid tile (distinct from the
           Profile drawer the bottom bar opens). */}
-      {v2 && spacesOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Spaces">
-          <div className="absolute inset-0 bg-ink/30" onClick={() => setSpacesOpen(false)} />
-          <div className="absolute inset-x-0 bottom-0 max-h-[78vh] overflow-y-auto rounded-t-3xl bg-white p-4 shadow-2xl" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
-            <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-line" />
+      {v2 && spacesSheet.mounted && (
+        <div className="mt-bsheet lg:hidden" data-phase={spacesSheet.phase} role="dialog" aria-modal="true" aria-label="Spaces">
+          <div className="mt-bsheet__scrim" onClick={() => setSpacesOpen(false)} />
+          <div className="mt-bsheet__panel">
+            <div className="mt-bsheet__grip" />
             <form role="search" onSubmit={(e) => e.preventDefault()} className="mb-3 flex items-center gap-2">
               {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
               <input autoFocus type="search" value={spaceQuery} onChange={(e) => setSpaceQuery(e.target.value)} aria-label="Search spaces" placeholder="Search spaces…" className="min-w-0 flex-1 rounded-full border border-line bg-cream px-4 py-2.5 text-sm text-ink outline-none placeholder:text-muted focus:border-maroon/40 focus:ring-2 focus:ring-maroon/20" />
@@ -174,17 +182,28 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
                 <Search size={18} aria-hidden="true" />
               </button>
             </form>
+            <span className="mt-overline mb-2 block text-muted">Spaces</span>
             <nav aria-label="Spaces" className="flex flex-wrap gap-2">
               {!spaceQuery && (
                 <Link to="/community" onClick={() => setSpacesOpen(false)} aria-current={active === 'feed' ? 'page' : undefined} className={chipCls(active === 'feed')}>All</Link>
               )}
-              {spaces.filter((s) => (s.title || '').toLowerCase().includes(spaceQuery.toLowerCase())).map((s) => (
-                <Link key={s.key} to={`/community/s/${s.key}`} onClick={() => setSpacesOpen(false)} aria-current={active === s.key ? 'page' : undefined} className={chipCls(active === s.key)}>{s.title}</Link>
+              {spaces.filter((s) => (s.name || '').toLowerCase().includes(spaceQuery.toLowerCase())).map((s) => (
+                <Link key={s.key} to={`/community/s/${s.key}`} onClick={() => setSpacesOpen(false)} aria-current={active === s.key ? 'page' : undefined} className={chipCls(active === s.key)}>{s.name}</Link>
               ))}
-              {spaceQuery && spaces.filter((s) => (s.title || '').toLowerCase().includes(spaceQuery.toLowerCase())).length === 0 && (
+              {spaceQuery && spaces.filter((s) => (s.name || '').toLowerCase().includes(spaceQuery.toLowerCase())).length === 0 && (
                 <p className="px-3 py-6 text-center text-sm text-muted">No spaces match “{spaceQuery}”.</p>
               )}
             </nav>
+
+            {/* Topics sit here with the spaces rather than above the feed: both answer
+                "where do I go next?", so they belong behind the same tap instead of
+                costing every reader a band of chrome before the first post. */}
+            {!spaceQuery && (
+              <>
+                <span className="mt-overline mb-2 mt-5 block text-muted">Browse by topic</span>
+                <CommunityTopics bare onNavigate={() => setSpacesOpen(false)} />
+              </>
+            )}
           </div>
         </div>
       )}
@@ -204,7 +223,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
             <nav aria-label="Spaces" className="flex min-w-0 items-center gap-1 overflow-x-auto">
               <Link to="/community" aria-current={active === 'feed' ? 'page' : undefined} className={cSpace(active === 'feed')}>All</Link>
               {spaces.map((s) => (
-                <Link key={s.key} to={`/community/s/${s.key}`} aria-current={active === s.key ? 'page' : undefined} className={cSpace(active === s.key)}>{s.title}</Link>
+                <Link key={s.key} to={`/community/s/${s.key}`} aria-current={active === s.key ? 'page' : undefined} className={cSpace(active === s.key)}>{s.name}</Link>
               ))}
             </nav>
 
@@ -221,7 +240,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
                   {recent.length > 0 && (
                     <>
                       <div className="flex items-center justify-between px-4 pb-1 pt-1">
-                        <span className="text-[11px] font-bold uppercase tracking-wide text-muted">Recent</span>
+                        <span className="mt-overline text-muted">Recent</span>
                         <button type="button" onMouseDown={(e) => { e.preventDefault(); clearRecent(); }} className="text-xs font-semibold text-maroon hover:underline">Clear all</button>
                       </div>
                       {recent.map((q) => (
@@ -232,7 +251,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
                       <div className="my-1.5 border-t border-line" />
                     </>
                   )}
-                  <div className="px-4 pb-1 pt-1 text-[11px] font-bold uppercase tracking-wide text-muted">Try searching for</div>
+                  <div className="px-4 pb-1 pt-1 mt-overline text-muted">Try searching for</div>
                   {SEARCH_SUGGESTIONS.map((q) => (
                     <button key={`s-${q}`} type="button" onMouseDown={(e) => { e.preventDefault(); runSuggest(q); }} className="flex w-full items-center gap-3 px-4 py-2 text-left text-sm text-ink hover:bg-pink-100">
                       <Search size={16} className="shrink-0 text-muted" aria-hidden="true" /><span className="truncate">{q}</span>
@@ -318,7 +337,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
                   <Link to="/privacy" className="text-muted hover:text-maroon">Privacy</Link>
                   <Link to="/community/guidelines" className="text-muted hover:text-maroon">Guidelines</Link>
                 </div>
-                <div className="flex items-center gap-1.5 text-[11px] leading-none text-muted">
+                <div className="flex items-center gap-1.5 mt-post__meta leading-none">
                   Powered by <img src="/brand/meeticulous-wordmark.svg" alt="Meeticulous" width="84" height="14" className="relative top-[0.5px] h-[13px] w-auto" />
                 </div>
               </div>
@@ -351,8 +370,11 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
           >
             <House size={22} aria-hidden="true" />Home
           </Link>
-          <button type="button" onClick={() => setFilterOpen(true)} aria-label="Filter the feed" aria-expanded={filterOpen} className={`flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 ${curTab !== 'everyone' ? 'text-maroon' : 'text-muted'}`}>
-            <ListFilter size={22} aria-hidden="true" />Filter
+          {/* Spaces sits in the bar and Filter in the header, swapped from the other way
+              round: spaces is the one people reach for while reading, so it belongs under
+              the thumb, and filtering the feed is a per-page setting that lives with it. */}
+          <button type="button" onClick={() => { setSpaceQuery(''); setSpacesOpen(true); }} aria-label="Browse spaces" aria-expanded={spacesOpen} className={`flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40 ${active !== 'feed' && active !== 'alerts' ? 'text-maroon' : 'text-muted'}`}>
+            <LayoutGrid size={22} aria-hidden="true" />Spaces
           </button>
           <div className="flex flex-1 items-center justify-center">
             <button type="button" onClick={() => onCompose?.('post')} aria-label="Add a post" className="grid h-14 w-14 -translate-y-4 place-items-center rounded-full bg-maroon text-cream shadow-lg shadow-maroon/40 ring-4 ring-white transition-transform hover:bg-maroon-dark active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-maroon">
@@ -385,11 +407,11 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
 
       {/* Mobile feed-filter sheet — opened by the bottom-bar Filter icon. Options
           drive the feed via the ?tab= param, so no shared state is needed. */}
-      {v2 && filterOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Filter the feed">
-          <div className="absolute inset-0 bg-ink/30" onClick={() => setFilterOpen(false)} />
-          <div className="absolute inset-x-0 bottom-0 rounded-t-3xl bg-white p-4 shadow-2xl" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
-            <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-line" />
+      {v2 && filterSheet.mounted && (
+        <div className="mt-bsheet lg:hidden" data-phase={filterSheet.phase} role="dialog" aria-modal="true" aria-label="Filter the feed">
+          <div className="mt-bsheet__scrim" onClick={() => setFilterOpen(false)} />
+          <div className="mt-bsheet__panel">
+            <div className="mt-bsheet__grip" />
             <h2 className="px-1 pb-1 font-display text-base font-extrabold text-ink">Show</h2>
             <nav aria-label="Feed filter" className="flex flex-col">
               {[{ key: 'everyone', label: 'Everyone', to: '/community' }, { key: 'updates', label: 'Updates', to: '/community?tab=updates' }].map((o) => (

@@ -15,8 +15,8 @@ const snippet = (s, n = 140) => { const t = String(s || '').replace(/\s+/g, ' ')
 const Row = ({ to, title, body, meta }) => (
   <Link to={to} className="block border-b border-neutral-200 px-3 py-2.5 last:border-b-0 hover:bg-blush/50">
     {title && <p className="mb-0 text-[12.5px] font-bold text-ink">{title}</p>}
-    {body && <p className="mb-0 mt-0.5 text-[11.5px] font-medium text-ink/65">{snippet(body)}</p>}
-    <p className="mb-0 mt-1 text-[10.5px] font-medium text-ink/50">{meta}</p>
+    {body && <p className="mb-0 mt-0.5 mt-post__meta">{snippet(body)}</p>}
+    <p className="mb-0 mt-1 mt-post__meta">{meta}</p>
   </Link>
 );
 
@@ -72,7 +72,7 @@ const CommunityActivity = () => {
       <Panel title="Your posts" subtitle="Newest first" flush>
         <div className="overflow-hidden rounded-[8px]">
           {posts.length === 0
-            ? <p className="mb-0 px-3 py-6 text-center text-[11.5px] font-medium text-ink/55">No posts yet.</p>
+            ? <p className="mb-0 px-3 py-6 text-center mt-post__meta">No posts yet.</p>
             : posts.map((p) => (
               <Row key={p.id} to={p.url} title={p.title} body={p.body}
                 meta={`${relDay(p.created_at)}${p.space ? ` · ${p.space.name}` : ''} · ${p.like_count || 0} likes · ${p.comment_count || 0} replies`} />
@@ -83,7 +83,7 @@ const CommunityActivity = () => {
       <Panel title="Your comments" subtitle="Newest first" flush>
         <div className="overflow-hidden rounded-[8px]">
           {comments.length === 0
-            ? <p className="mb-0 px-3 py-6 text-center text-[11.5px] font-medium text-ink/55">No comments yet.</p>
+            ? <p className="mb-0 px-3 py-6 text-center mt-post__meta">No comments yet.</p>
             : comments.map((c) => (
               <Row key={c.id} to={c.parent?.url || '/community'} title={c.parent?.title ? `On: ${c.parent.title}` : null} body={c.body}
                 meta={`${relDay(c.created_at)} · ${c.like_count || 0} likes`} />

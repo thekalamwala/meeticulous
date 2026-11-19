@@ -77,8 +77,8 @@ const CommunityAnswer = () => {
                 <Avatar name={q.author?.display_name} />
                 <div className="min-w-0 flex-1">
                   <p className="mb-0 text-[12.5px] font-bold text-ink">{q.title || snippet(q.body, 80)}</p>
-                  {q.title && q.body && <p className="mb-0 mt-0.5 text-[11.5px] font-medium text-ink/65">{snippet(q.body)}</p>}
-                  <p className="mb-0 mt-1 text-[10.5px] font-medium text-ink/50">
+                  {q.title && q.body && <p className="mb-0 mt-0.5 mt-post__meta">{snippet(q.body)}</p>}
+                  <p className="mb-0 mt-1 mt-post__meta">
                     {q.author?.display_name} · {relDay(q.created_at)}{q.space ? ` · ${q.space.name}` : ''} · {q.comment_count || 0} {q.comment_count === 1 ? 'reply' : 'replies'}
                   </p>
                 </div>
@@ -88,7 +88,7 @@ const CommunityAnswer = () => {
         )}
         {(cursor || moreErr) && (
           <div className="flex items-center justify-center gap-2 border-t border-neutral-200 p-2.5">
-            {moreErr && <span className="text-[11px] font-medium text-ink/55">Couldn't load more.</span>}
+            {moreErr && <span className="mt-post__meta">Couldn't load more.</span>}
             <button type="button" onClick={loadMore} disabled={more} className="mt-btn">{more ? 'Loading…' : 'Load older posts'}</button>
           </div>
         )}

@@ -30,7 +30,7 @@ import { Eye, EyeOff, Package, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { cn } from '../../../components/dashboard/ui';
-import { Panel, StatusPill, inr, pct } from '../labUi';
+import { Panel, StatusPill, SubPageHeader, inr, pct } from '../labUi';
 import { Filter, FilterBar } from '../filters';
 import { CATALOG_TYPES, TYPE_LIST } from '../catalogTypes';
 import { allItems, couponState, summarise } from '../catalogData';
@@ -155,15 +155,9 @@ const Catalog = () => {
 
   return (
     <div className="flex flex-col gap-2.5">
-      <header className="flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Catalog</h1>
-          <p className="mt-0.5 text-[12px] font-medium text-ink/55">
-            {items.length} things you sell · {inr(earned)} earned in the last 30 days
-          </p>
-        </div>
-        <NewMenu onPick={create} />
-      </header>
+      <SubPageHeader title="Catalog" action={<NewMenu onPick={create} />}>
+        {items.length} things you sell · {inr(earned)} earned in the last 30 days
+      </SubPageHeader>
 
       <FilterBar
         search={{ value: q, onChange: setQ, placeholder: 'Search what you sell' }}

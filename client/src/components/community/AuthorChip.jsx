@@ -39,22 +39,27 @@ export function AuthorBadge({ author }) {
   return r ? <span className={`mt-badge mt-badge--s ${r.cls}`}>{r.label}</span> : null;
 }
 
-// Name + handle + badge on one wrapping line. `meta` renders underneath (time, format...).
-export default function AuthorChip({ author, meta, size = 'm', avatar = true }) {
+// The one identity row: avatar · name · seal · handle · time, on a single line that
+// truncates instead of wrapping. Every surface (feed card, detail, thread, reply) uses
+// THIS — when each one built its own header, the same author rendered on one, two or
+// three lines depending on width, which is what made the spacing look arbitrary.
+//
+// `badge` is the caller's <IdentityBadge/> node rather than an import, so this file and
+// IdentityBadge (which needs Avatar from here) don't form an import cycle. The seal
+// already encodes the role by colour, so the text role pill stays out of this row.
+export default function AuthorChip({ author, meta, size = 'm', avatar = true, badge = null }) {
   const name = author?.display_name || 'Deleted account';
   const handle = author?.profile_url ? `@${author.profile_url.replace(/^\//, '')}` : null;
   return (
     <div className="flex min-w-0 flex-1 items-center gap-3">
       {avatar && <Avatar author={author} size={size} />}
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm leading-snug">
-          {author?.profile_url
-            ? <Link to={author.profile_url} className="font-semibold text-ink no-underline hover:text-maroon hover:underline">{name}</Link>
-            : <span className="font-semibold text-ink">{name}</span>}
-          {handle && <span className="text-muted">{handle}</span>}
-          <AuthorBadge author={author} />
-        </div>
-        {meta && <div className="text-xs leading-snug text-muted">{meta}</div>}
+      <div className="mt-identity">
+        {author?.profile_url
+          ? <Link to={author.profile_url} className="mt-identity__name">{name}</Link>
+          : <span className="mt-identity__name">{name}</span>}
+        {badge && <span className="mt-identity__seal">{badge}</span>}
+        {handle && <span className="mt-identity__handle">{handle}</span>}
+        {meta && <span className="mt-identity__time">{meta}</span>}
       </div>
     </div>
   );

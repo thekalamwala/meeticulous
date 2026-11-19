@@ -16,7 +16,7 @@ import {
 import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Button, cn } from '../../../components/dashboard/ui';
-import { Avatar, Drawer, LabTextarea, Panel, StatusPill, fmtDayFull, inr, relDay, useLast } from '../labUi';
+import { Avatar, Drawer, LabTextarea, Panel, StatusPill, SubPageHeader, fmtDayFull, inr, relDay, useLast } from '../labUi';
 import { CheckBox, Filter, FilterBar } from '../filters';
 import mock from '../mockData';
 
@@ -196,14 +196,9 @@ const Clients = () => {
 
   return (
     <div className="flex flex-col gap-2.5">
-      <header>
-        <div>
-          <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Clients</h1>
-          <p className="mt-0.5 text-[12px] font-medium text-ink/55">
-            {mock.clients.length} people · {inr(total)} lifetime · {Math.round(repeatRate * 100)}% come back
-          </p>
-        </div>
-      </header>
+      <SubPageHeader title="Clients">
+        {mock.clients.length} people · {inr(total)} lifetime · {Math.round(repeatRate * 100)}% come back
+      </SubPageHeader>
 
       {/* Win-back. A banner, not a panel: the page is a list of clients, and
           this is one line of news above it until the host asks for it. Closed
