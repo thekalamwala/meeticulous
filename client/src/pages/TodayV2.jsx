@@ -18,7 +18,7 @@ import { useAuth } from '../context/AuthContext';
 import { getPayoutBalance, getHostBookings, getMyProfileViews, getMyKyc } from '../services/api';
 import { Button, EmptyState, ErrorState, Skeleton } from '../components/dashboard/ui';
 import {
-  Avatar, Drawer, Panel, Sparkline, StatusPill, Tile, RankedBars,
+  Avatar, Drawer, PageHeading, Panel, Sparkline, StatusPill, Tile, RankedBars,
   cn, inr, fmtTime, relDay, useLast,
 } from '../components/dashboard/ui/v2';
 
@@ -124,7 +124,7 @@ const TodayV2 = () => {
   if (status === 'error') {
     return (
       <div className="flex flex-col gap-2.5">
-        <h1 className="font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Today</h1>
+        <PageHeading title="Today" />
         <ErrorState message="Couldn't load your dashboard." onRetry={load} />
       </div>
     );
@@ -132,14 +132,16 @@ const TodayV2 = () => {
 
   return (
     <div className="flex flex-col gap-2.5">
-      <header>
-        <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Today</h1>
-        <p className="mt-0.5 text-[12px] font-medium text-ink/55">
-          {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
-          {user?.city ? ` · ${user.city}` : ''}
-          {queue.length > 0 && <span className="text-warning-fg"> · {queue.length} waiting on you</span>}
-        </p>
-      </header>
+      <PageHeading
+        title="Today"
+        sub={(
+          <>
+            {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+            {user?.city ? ` · ${user.city}` : ''}
+            {queue.length > 0 && <span className="text-warning-fg"> · {queue.length} waiting on you</span>}
+          </>
+        )}
+      />
 
       {status === 'loading' ? (
         <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
