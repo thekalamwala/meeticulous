@@ -71,7 +71,7 @@ export default function CommunitySpace() {
           <span className="mt-avatar rounded-md" aria-hidden="true"><SpaceIcon spaceKey={space.key} /></span>
           <div className="min-w-0 flex-1">
             <h1 className="mb-0 font-display text-2xl font-extrabold leading-tight tracking-tight text-maroon">{space.name}</h1>
-            <p className="mt-0.5 text-xs leading-snug text-muted">{space.description} {POLICY[space.post_policy]}</p>
+            <p className="mt-0.5 mt-post__meta">{space.description} {POLICY[space.post_policy]}</p>
           </div>
           {list.items.length > 0 && <div className="hidden sm:block">{startBtn}</div>}
         </header>

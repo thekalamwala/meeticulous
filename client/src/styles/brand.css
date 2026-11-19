@@ -415,3 +415,38 @@ a.mt-post__chip:hover{border-color:var(--border-brand);color:var(--fg-brand)}
 .mt-composer-inline__tools .mt-counter{margin-left:auto}
 .mt-field--error .mt-composer-inline__box{border-color:var(--danger)}
 .mt-comment--accepted{padding:var(--space-5);border:var(--stroke-ui-strong) solid var(--success);border-radius:18px}
+/* The one overline. BRAND_RULES allows ALL CAPS here and nowhere else. */
+.mt-overline{font-size:var(--text-overline);font-weight:var(--weight-bold);letter-spacing:var(--ls-overline);text-transform:uppercase}
+
+/* The identity row: avatar, name, seal, handle and time are ONE family on ONE line.
+   Before this they were four independent chips in a wrapping flex, so the same header
+   rendered on one, two or three lines depending on the width and the name's length.
+   The name and handle share the slack and truncate; the seal and time never shrink;
+   below 480px the handle drops out rather than pushing the time onto its own line. */
+.mt-identity{display:flex;align-items:center;gap:var(--space-3);min-width:0;flex-wrap:nowrap}
+.mt-identity__name{flex:0 1 auto;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:15px;font-weight:var(--weight-semibold);line-height:1.35;color:var(--fg-1);text-decoration:none}
+a.mt-identity__name:hover{color:var(--fg-brand);text-decoration:underline}
+.mt-identity__seal{display:inline-flex;align-items:center;flex-shrink:0}
+.mt-identity__handle{flex:0 1 auto;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:var(--text-caption);font-weight:var(--weight-medium);line-height:1.35;color:var(--fg-2)}
+.mt-identity__time{flex-shrink:0;white-space:nowrap;font-size:var(--text-caption);font-weight:var(--weight-medium);line-height:1.35;color:var(--fg-2)}
+.mt-identity__time::before{content:"·";margin-right:var(--space-3);color:var(--fg-3)}
+@media (max-width:480px){.mt-identity__handle{display:none}}
+
+/* Topic pills: solid, fluid, multicoloured. Every tone is an existing kit token — the
+   brand ramps plus the feedback ramps (green/blue/marigold) the kit already carries — so
+   this adds variety without inventing a palette. Each topic keeps the same tone wherever
+   it appears (the caller hashes the tag). Every pairing clears 4.5:1 for its label.
+   Red is left out: a topic that reads as an error state is a bug, not a colour.
+   NOTE: tone 5 is marigold, which BRAND_RULES otherwise reserves for open time slots.
+   That exception is deliberate and founder-approved for topics only — see readme. */
+.mt-topic{display:inline-flex;align-items:center;gap:var(--space-2);height:28px;padding:0 var(--space-4);border-radius:var(--radius-pill);font-size:var(--text-caption);font-weight:var(--weight-semibold);line-height:1;white-space:nowrap;text-decoration:none;border:0;transition:filter var(--dur-fast) var(--ease-out)}
+.mt-topic:hover{filter:brightness(.94)}
+.mt-topic__n{font-weight:var(--weight-medium);opacity:.72;font-variant-numeric:tabular-nums}
+.mt-topic--1{background:var(--maroon-600);color:var(--mt-cream)}
+.mt-topic--2{background:var(--maroon-800);color:var(--mt-cream)}
+.mt-topic--3{background:var(--rose-500);color:var(--mt-ink)}
+.mt-topic--4{background:var(--pink-400);color:var(--mt-ink)}
+.mt-topic--5{background:var(--marigold-400);color:var(--marigold-800)}
+.mt-topic--6{background:var(--green-600);color:var(--mt-white)}
+.mt-topic--7{background:var(--blue-600);color:var(--mt-white)}
+.mt-topic--8{background:var(--neutral-700);color:var(--mt-cream)}

@@ -5,7 +5,6 @@ import Seo from '../../components/common/Seo';
 import ErrorPage from '../ErrorPage';
 import { useInfiniteScroll } from '../../components/dashboard/ui/useInfiniteScroll';
 import { getFeed } from '../../services/communityApi';
-import CommunityTopics from '../../components/community/CommunityTopics';
 import { analytics, EVENTS } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
 import { useFeature } from '../../context/FeatureContext';
@@ -108,9 +107,9 @@ export default function CommunityFeed() {
         )}
       </div>
 
-      {/* Compact topic pills. On xl the rail shows them under the ad (see
-          CommunityLayout); here they cover narrower screens that have no rail. */}
-      <CommunityTopics className="xl:hidden" />
+      {/* Topics used to sit here, costing every reader a band of chrome before the first
+          post. Narrow screens now reach them in the spaces sheet (bottom bar → Spaces),
+          next to the spaces they belong with; xl still shows them in the rail. */}
 
       {/* Desktop post box. Takes the feed card's density so it sits flush with the posts
           below it instead of in a roomier card of its own. */}

@@ -174,17 +174,28 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
                 <Search size={18} aria-hidden="true" />
               </button>
             </form>
+            <span className="mt-overline mb-2 block text-muted">Spaces</span>
             <nav aria-label="Spaces" className="flex flex-wrap gap-2">
               {!spaceQuery && (
                 <Link to="/community" onClick={() => setSpacesOpen(false)} aria-current={active === 'feed' ? 'page' : undefined} className={chipCls(active === 'feed')}>All</Link>
               )}
-              {spaces.filter((s) => (s.title || '').toLowerCase().includes(spaceQuery.toLowerCase())).map((s) => (
-                <Link key={s.key} to={`/community/s/${s.key}`} onClick={() => setSpacesOpen(false)} aria-current={active === s.key ? 'page' : undefined} className={chipCls(active === s.key)}>{s.title}</Link>
+              {spaces.filter((s) => (s.name || '').toLowerCase().includes(spaceQuery.toLowerCase())).map((s) => (
+                <Link key={s.key} to={`/community/s/${s.key}`} onClick={() => setSpacesOpen(false)} aria-current={active === s.key ? 'page' : undefined} className={chipCls(active === s.key)}>{s.name}</Link>
               ))}
-              {spaceQuery && spaces.filter((s) => (s.title || '').toLowerCase().includes(spaceQuery.toLowerCase())).length === 0 && (
+              {spaceQuery && spaces.filter((s) => (s.name || '').toLowerCase().includes(spaceQuery.toLowerCase())).length === 0 && (
                 <p className="px-3 py-6 text-center text-sm text-muted">No spaces match “{spaceQuery}”.</p>
               )}
             </nav>
+
+            {/* Topics sit here with the spaces rather than above the feed: both answer
+                "where do I go next?", so they belong behind the same tap instead of
+                costing every reader a band of chrome before the first post. */}
+            {!spaceQuery && (
+              <>
+                <span className="mt-overline mb-2 mt-5 block text-muted">Browse by topic</span>
+                <CommunityTopics bare onNavigate={() => setSpacesOpen(false)} />
+              </>
+            )}
           </div>
         </div>
       )}
@@ -204,7 +215,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
             <nav aria-label="Spaces" className="flex min-w-0 items-center gap-1 overflow-x-auto">
               <Link to="/community" aria-current={active === 'feed' ? 'page' : undefined} className={cSpace(active === 'feed')}>All</Link>
               {spaces.map((s) => (
-                <Link key={s.key} to={`/community/s/${s.key}`} aria-current={active === s.key ? 'page' : undefined} className={cSpace(active === s.key)}>{s.title}</Link>
+                <Link key={s.key} to={`/community/s/${s.key}`} aria-current={active === s.key ? 'page' : undefined} className={cSpace(active === s.key)}>{s.name}</Link>
               ))}
             </nav>
 
@@ -221,7 +232,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
                   {recent.length > 0 && (
                     <>
                       <div className="flex items-center justify-between px-4 pb-1 pt-1">
-                        <span className="text-[11px] font-bold uppercase tracking-wide text-muted">Recent</span>
+                        <span className="mt-overline text-muted">Recent</span>
                         <button type="button" onMouseDown={(e) => { e.preventDefault(); clearRecent(); }} className="text-xs font-semibold text-maroon hover:underline">Clear all</button>
                       </div>
                       {recent.map((q) => (
@@ -232,7 +243,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
                       <div className="my-1.5 border-t border-line" />
                     </>
                   )}
-                  <div className="px-4 pb-1 pt-1 text-[11px] font-bold uppercase tracking-wide text-muted">Try searching for</div>
+                  <div className="px-4 pb-1 pt-1 mt-overline text-muted">Try searching for</div>
                   {SEARCH_SUGGESTIONS.map((q) => (
                     <button key={`s-${q}`} type="button" onMouseDown={(e) => { e.preventDefault(); runSuggest(q); }} className="flex w-full items-center gap-3 px-4 py-2 text-left text-sm text-ink hover:bg-pink-100">
                       <Search size={16} className="shrink-0 text-muted" aria-hidden="true" /><span className="truncate">{q}</span>
@@ -318,7 +329,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
                   <Link to="/privacy" className="text-muted hover:text-maroon">Privacy</Link>
                   <Link to="/community/guidelines" className="text-muted hover:text-maroon">Guidelines</Link>
                 </div>
-                <div className="flex items-center gap-1.5 text-[11px] leading-none text-muted">
+                <div className="flex items-center gap-1.5 mt-post__meta leading-none">
                   Powered by <img src="/brand/meeticulous-wordmark.svg" alt="Meeticulous" width="84" height="14" className="relative top-[0.5px] h-[13px] w-auto" />
                 </div>
               </div>

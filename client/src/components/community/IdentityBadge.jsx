@@ -69,7 +69,7 @@ export default function IdentityBadge({ author }) {
               <span className="flex items-center gap-1 text-sm font-semibold text-ink">
                 {author.display_name}<Seal color={color} size={14} />
               </span>
-              <span className="block text-xs text-muted">{ROLE_LABEL[roleKey]}{isStaff ? ' · Meeticulous' : ''}</span>
+              <span className="block mt-post__meta">{ROLE_LABEL[roleKey]}{isStaff ? ' · Meeticulous' : ''}</span>
             </span>
           </span>
           {author.profile_url && (

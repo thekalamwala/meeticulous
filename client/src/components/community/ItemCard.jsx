@@ -4,7 +4,7 @@ import {
   Briefcase, CircleCheck, CircleHelp, Lightbulb, Lock, Megaphone, MessageCircle, MessagesSquare, Pin, Share2,
 } from 'lucide-react';
 import { relTime } from '../../utils/relTime';
-import AuthorChip, { Avatar } from './AuthorChip';
+import AuthorChip from './AuthorChip';
 import IdentityBadge from './IdentityBadge';
 import LikeButton from './LikeButton';
 import BookmarkButton from './BookmarkButton';
@@ -14,7 +14,6 @@ import PostMenu from './PostMenu';
 // Feed cards show the first BODY_PREVIEW chars, then an inline "see more" link. Inline so
 // the truncation costs no extra row — a link on its own line is a whole band of dead height.
 const BODY_PREVIEW = 256;
-const handleOf = (author) => (author?.profile_url ? `@${author.profile_url.replace(/^\//, '')}` : null);
 
 const SPACE_ICONS = { updates: Megaphone, help: CircleHelp, ideas: Lightbulb, 'host-corner': Briefcase, general: MessagesSquare };
 export function SpaceIcon({ spaceKey, size = 20 }) {
@@ -84,18 +83,10 @@ export default function ItemCard({ item, detail = false, onReply, actions, onHid
     const joinTo = item.author?.profile_url ? `${item.author.profile_url}/membership` : '#';
     return (
       <article data-testid="item-card" aria-label="Members-only post" className="mt-card mt-card--feed">
-        <div className="flex items-start gap-3">
-          <Avatar author={item.author} />
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-              <span className="mt-post__name">{item.author?.display_name || 'Member'}</span>
-              <IdentityBadge author={item.author} />
-            </div>
-            <span className="mt-post__chip mt-1">
-              <Lock size={13} aria-hidden="true" />{chip}
-            </span>
-          </div>
-        </div>
+        <AuthorChip author={item.author} badge={<IdentityBadge author={item.author} />} />
+        <span className="mt-post__chip self-start">
+          <Lock size={13} aria-hidden="true" />{chip}
+        </span>
         {item.title && <h3 className="mt-post__title">{item.title}</h3>}
         {item.teaser && <p className="mt-post__body text-muted">{item.teaser}…</p>}
         <Link to={joinTo} className="mt-btn mt-btn--primary mt-btn--s self-start gap-2 no-underline">
@@ -114,7 +105,6 @@ export default function ItemCard({ item, detail = false, onReply, actions, onHid
   const label = item.title || item.author?.display_name || 'Post';
   // No "Announcement" tag — the role badge + space carry context now.
   const meta = [relTime(item.created_at), item.edited_at && 'edited'].filter(Boolean).join(' · ');
-  const handle = handleOf(item.author);
   const long = !detail && typeof item.body === 'string' && item.body.length > BODY_PREVIEW;
   const bodyText = long ? `${item.body.slice(0, BODY_PREVIEW).trimEnd()}…` : item.body;
 
@@ -141,9 +131,8 @@ export default function ItemCard({ item, detail = false, onReply, actions, onHid
           <Link to={item.url} className="mt-post__title">{item.title}</Link>
           <p className="mt-post__body line-clamp-3 text-muted">{item.body}</p>
           <div className="flex items-center gap-3">
-            <Avatar author={item.author} size="s" />
-            <AuthorChip author={item.author} avatar={false} />
-            {menu && <span className="ml-auto">{menu}</span>}
+            <AuthorChip author={item.author} size="s" badge={<IdentityBadge author={item.author} />} />
+            {menu && <span className="shrink-0">{menu}</span>}
           </div>
         </>
       ) : (
@@ -157,31 +146,20 @@ export default function ItemCard({ item, detail = false, onReply, actions, onHid
           {detail && item.title && (
             <h1 className="font-display text-3xl font-extrabold leading-tight tracking-tight text-maroon sm:text-4xl">{item.title}</h1>
           )}
-          {detail ? (
-            <div className="flex items-start gap-3">
-              <AuthorChip author={item.author} meta={meta} />
-              {menu && <span className="ml-auto">{menu}</span>}
-            </div>
-          ) : (
-            // Name, badge and time share one line; the "⋯" is anchored to the card edge
-            // instead of being crammed in beside the timestamp.
-            <div className="flex items-start gap-3">
-              <Avatar author={item.author} />
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                  {item.author?.profile_url
-                    ? <Link to={item.author.profile_url} className="mt-post__name">{item.author.display_name}</Link>
-                    : <span className="mt-post__name">{item.author?.display_name || 'Member'}</span>}
-                  <IdentityBadge author={item.author} />
-                  <span className="mt-post__meta">{meta}</span>
-                  {question && <span className="mt-badge mt-badge--s shrink-0"><CircleHelp size={14} aria-hidden="true" />Question</span>}
-                </div>
-                {handle && <div className="mt-post__meta">{handle}</div>}
-              </div>
-              {menu}
+          {/* One identity row for both views. The "⋯" is anchored to the card edge and
+              never competes with the name for space. */}
+          <div className="flex items-center gap-3">
+            <AuthorChip author={item.author} meta={meta} badge={<IdentityBadge author={item.author} />} />
+            {menu && <span className="shrink-0">{menu}</span>}
+          </div>
+          {/* Chips sit on their own row: inside the identity line they were what pushed
+              the time, and then the handle, onto lines of their own. */}
+          {((!detail && question) || (detail && !item.title && space)) && (
+            <div className="flex flex-wrap items-center gap-2">
+              {!detail && question && <span className="mt-badge mt-badge--s"><CircleHelp size={14} aria-hidden="true" />Question</span>}
+              {detail && !item.title && space}
             </div>
           )}
-          {detail && !item.title && space && <div>{space}</div>}
           <p className="mt-post__body">
             <LinkifiedText text={bodyText} />
             {long && <> <Link to={item.url} className="mt-post__more">see more</Link></>}

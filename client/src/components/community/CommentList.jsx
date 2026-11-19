@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { CircleCheck, CornerDownRight } from 'lucide-react';
 import { relTime } from '../../utils/relTime';
 import AuthorChip, { Avatar } from './AuthorChip';
+import IdentityBadge from './IdentityBadge';
 import LikeButton from './LikeButton';
 import LinkifiedText from './LinkifiedText';
 import { TOMBSTONE } from './ItemCard';
@@ -106,12 +107,15 @@ export default function CommentList({ comments, acceptedId, viewerId, canAccept,
               Replying to <a href={`#c-${parent.id}`} className="font-medium text-maroon no-underline">{parent.author?.display_name}</a>
             </span>
           )}
-          <div className="flex flex-wrap items-center gap-3">
-            <AuthorChip author={c.author} avatar={false} meta={`${relTime(c.created_at)}${c.edited_at ? ' · edited' : ''}`} />
-            {isAccepted && (
-              <span className="mt-badge mt-badge--s mt-badge--success"><CircleCheck size={16} aria-hidden="true" />Accepted answer</span>
-            )}
-          </div>
+          <AuthorChip
+            author={c.author}
+            avatar={false}
+            meta={`${relTime(c.created_at)}${c.edited_at ? ' · edited' : ''}`}
+            badge={<IdentityBadge author={c.author} />}
+          />
+          {isAccepted && (
+            <span className="mt-badge mt-badge--s mt-badge--success self-start"><CircleCheck size={16} aria-hidden="true" />Accepted answer</span>
+          )}
           {editing === c.id ? (
             <EditBox initial={{ body: c.body }} max={2000} onCancel={() => setEditing(null)} onSave={async (v) => { await onEdit(c, v.body); setEditing(null); }} />
           ) : (
