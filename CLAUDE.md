@@ -285,6 +285,22 @@ Items previously listed here as pending are now live:
   next finding in it is a real one. Of 338 unpinned functions in `public`, 337 are extension-owned
   (btree_gist, pg_trgm and vector are all installed in public — a separate, lower advisor warning);
   exactly one was ours.
+- **v3.225** (`v3.225_membership_charges.sql`) — applied 2026-11-19 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`) and verified: 37 columns, 7 indexes, RLS ON with no policies, 0
+  anon/authenticated INSERT/UPDATE/DELETE grants (v3.206 default privileges held), 0 rows.
+  `membership_charges` = one row per successful membership charge. Until it existed, a charge
+  left NO trace: the webhook moved `current_period_end` forward and dropped the payment entity,
+  so membership revenue was invisible to `routeAutoPayoutService` (needs a payment id),
+  `settlementService` (sums `bookings.vendor_amount`), `withholdingReportService` and
+  `gstExportService` — all of which read rows. The payout gap was a RECORD gap.
+  Money snapshot comes from `lib/pricingEngine` (same engine as bookings), so commission and
+  TDS/TCS match for the same host. No platform fee on top — the tier price is what Razorpay
+  bills — so `platform_fee_amount` is 0 and `customer_total` is the amount charged. Unique
+  indexes on `razorpay_payment_id` / `razorpay_order_id` are the idempotency guard: a duplicate
+  row would later become a duplicate payout. Additive; `services/membershipCharges.js` keeps a
+  schema fallback and swallows write failures, so bookkeeping can never cost a member the
+  access they paid for. **This records money; it does not move any** — the Route rail,
+  settlement/statutory reads and refund reversal are the next slices (PR #405).
 - **v3.217** (`v3.217_creator_intelligence.sql`) — applied 2026-11-18 on the Meeticulous DB
   (`spquowzrefozmrzoszkf`) and verified: the 5 Creator Intelligence tables (`analytics_events`,
   `analytics_daily`, `analytics_daily_dim`, `booking_attribution`, `benchmark_daily`), the
