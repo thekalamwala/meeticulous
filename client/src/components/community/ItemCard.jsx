@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom';
-import toast from 'react-hot-toast';
 import {
-  Briefcase, CircleCheck, CircleHelp, Lightbulb, Lock, Megaphone, MessageCircle, MessagesSquare, Pin, Share2,
+  Briefcase, CircleCheck, CircleHelp, Lightbulb, Lock, Megaphone, MessagesSquare, Pin,
 } from 'lucide-react';
 import { relTime } from '../../utils/relTime';
 import AuthorChip from './AuthorChip';
 import IdentityBadge from './IdentityBadge';
 import LikeButton from './LikeButton';
 import BookmarkButton from './BookmarkButton';
+import ShareButton from './ShareButton';
+import CommentCount from './CommentCount';
 import LinkifiedText from './LinkifiedText';
 import PostMenu from './PostMenu';
 
@@ -22,17 +23,6 @@ export function SpaceIcon({ spaceKey, size = 20 }) {
 }
 
 export const TOMBSTONE = { deleted: '[deleted]', removed: '[removed]' };
-
-async function share(item) {
-  const url = `${window.location.origin}${item.url}`;
-  try {
-    if (navigator.share) await navigator.share({ url, title: item.title || 'Meeticulous Community' });
-    else {
-      await navigator.clipboard.writeText(url);
-      toast.success('Link copied');
-    }
-  } catch { /* share sheet dismissed */ }
-}
 
 function Photos({ media, author }) {
   if (!media?.length) return null;
@@ -172,24 +162,16 @@ export default function ItemCard({ item, detail = false, onReply, actions, onHid
         <Cell><LikeButton targetType="post" id={item.id} liked={item.viewer?.liked} count={item.like_count} /></Cell>
         <Cell>
           {detail ? (
-            <button type="button" onClick={() => onReply?.(null)} className="mt-btn mt-btn--ghost mt-btn--s">
-              <MessageCircle size={16} aria-hidden="true" />Reply
-            </button>
+            <CommentCount count="Reply" label="Reply to this post" onClick={() => onReply?.(null)} />
           ) : (
-            <Link
+            <CommentCount
               to={item.url}
-              aria-label={`${item.comment_count} ${item.comment_count === 1 ? 'reply' : 'replies'}, open ${thread ? 'thread' : 'post'}`}
-              className="mt-btn mt-btn--ghost mt-btn--s no-underline"
-            >
-              <MessageCircle size={16} aria-hidden="true" />{item.comment_count}
-            </Link>
+              count={item.comment_count}
+              label={`${item.comment_count} ${item.comment_count === 1 ? 'reply' : 'replies'}, open ${thread ? 'thread' : 'post'}`}
+            />
           )}
         </Cell>
-        <Cell>
-          <button type="button" onClick={() => share(item)} className="mt-btn mt-btn--ghost mt-btn--s">
-            <Share2 size={16} aria-hidden="true" />Share
-          </button>
-        </Cell>
+        <Cell><ShareButton item={item} /></Cell>
         {!detail && <Cell><BookmarkButton id={item.id} saved={item.viewer?.saved} count={item.save_count} /></Cell>}
         {detail && actions && <span className="ml-auto pl-3">{actions}</span>}
       </div>

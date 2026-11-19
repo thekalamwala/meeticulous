@@ -180,3 +180,28 @@
 
 /* Accessible tap targets (>=44px) for the full-screen composer toolbar. */
 .mt-composer-full__toolbar .mt-btn { min-height: 44px; }
+
+/* ── Bottom sheets (spaces, feed filter) ──
+   Both used to mount and unmount outright, so they appeared and vanished with no
+   motion at all. useSheet holds the node for the close, and these two phases give the
+   drawer its slide: the backdrop fades, the panel travels. Entry is a shade slower than
+   exit — a drawer should arrive calmly and get out of the way briskly. */
+.mt-bsheet{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end}
+.mt-bsheet__scrim{position:absolute;inset:0;background:rgba(43,10,20,.3);opacity:0;transition:opacity .26s var(--ease-out)}
+.mt-bsheet__panel{
+  position:relative;width:100%;max-height:78vh;overflow-y:auto;
+  background:#fff;border-radius:28px 28px 0 0;
+  padding:1rem;padding-bottom:max(1rem,env(safe-area-inset-bottom));
+  box-shadow:0 -12px 40px rgba(43,10,20,.18);
+  transform:translateY(100%);transition:transform .26s cubic-bezier(.22,1,.36,1);
+}
+.mt-bsheet[data-phase="open"] .mt-bsheet__scrim{opacity:1}
+.mt-bsheet[data-phase="open"] .mt-bsheet__panel{transform:translateY(0)}
+.mt-bsheet[data-phase="closing"] .mt-bsheet__scrim{opacity:0;transition-duration:.2s}
+.mt-bsheet[data-phase="closing"] .mt-bsheet__panel{transform:translateY(100%);transition-duration:.2s}
+.mt-bsheet__grip{width:40px;height:4px;margin:0 auto .75rem;border-radius:999px;background:var(--border-1)}
+
+@media (prefers-reduced-motion:reduce){
+  .mt-bsheet__scrim,.mt-bsheet__panel{transition:none}
+  .mt-bsheet__panel{transform:none}
+}

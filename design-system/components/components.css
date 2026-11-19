@@ -276,3 +276,62 @@ a.mt-identity__name:hover{color:var(--fg-brand);text-decoration:underline}
 .mt-topic--6{background:var(--green-600);color:var(--mt-white)}
 .mt-topic--7{background:var(--blue-600);color:var(--mt-white)}
 .mt-topic--8{background:var(--neutral-700);color:var(--mt-cream)}
+
+/* ── Reaction effects ───────────────────────────────────────────────────────────
+   Feedback for like / save / share / comment. The host button owns `.mt-fx` and the
+   rings are empty spans it renders; `data-fx` names the effect and `data-play` is a
+   counter the host bumps on every press, which restarts the animation even when the
+   same effect fires twice in a row. Nothing here waits on a network call: the press
+   plays, the request settles later.
+   Ported from the motion studies onto brand tokens — the studies' own reds and golds
+   are not ours, and rose/pink/marigold already read as "something good happened". */
+.mt-fx{position:relative;overflow:visible}
+.mt-fx>svg,.mt-fx>span.mt-fx__glyph{position:relative;z-index:2}
+.mt-fx__ring,.mt-fx__spark{position:absolute;top:50%;left:50%;border-radius:var(--radius-round);transform:translate(-50%,-50%) scale(0);opacity:0;pointer-events:none;z-index:0}
+.mt-fx__ring{width:34px;height:34px;border:2px solid var(--mt-rose)}
+.mt-fx__ring--2{width:24px;height:24px;border-color:var(--mt-pink)}
+.mt-fx__ring--3{width:44px;height:44px;border-color:var(--mt-marigold)}
+.mt-fx__spark{width:5px;height:5px;background:var(--mt-pink)}
+
+@keyframes mtRingOut{0%{transform:translate(-50%,-50%) scale(.2);opacity:.9}100%{transform:translate(-50%,-50%) scale(2.1);opacity:0}}
+@keyframes mtRingSoft{0%{transform:translate(-50%,-50%) scale(.3);opacity:.7}100%{transform:translate(-50%,-50%) scale(1.5);opacity:0}}
+@keyframes mtBloom{0%{transform:translate(-50%,-50%) scale(.2);opacity:.55;background:var(--mt-blush)}100%{transform:translate(-50%,-50%) scale(2.4);opacity:0;background:transparent}}
+@keyframes mtGlyphPop{0%{transform:scale(1)}30%{transform:scale(.82)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+@keyframes mtSparkOut{0%{transform:translate(-50%,-50%) translate(0,0) scale(0);opacity:1}70%{opacity:1}100%{transform:translate(-50%,-50%) translate(var(--dx),var(--dy)) scale(1);opacity:0}}
+@keyframes mtOrbit{0%{transform:translate(-50%,-50%) rotate(0) translateX(0) scale(0);opacity:0}25%{opacity:1;transform:translate(-50%,-50%) rotate(90deg) translateX(16px) scale(1)}100%{transform:translate(-50%,-50%) rotate(420deg) translateX(20px) scale(0);opacity:0}}
+@keyframes mtRibbon{0%{transform:translate(-50%,-50%) scaleY(0);opacity:0}40%{opacity:1}100%{transform:translate(-50%,-50%) scaleY(1.6);opacity:0}}
+@keyframes mtSend{0%{transform:translate(-50%,-50%) scale(.2);opacity:.8}100%{transform:translate(-50%,-50%) scale(2.3);opacity:0}}
+@keyframes mtSendGlyph{0%{transform:translate(0,0)}35%{transform:translate(3px,-3px)}100%{transform:translate(0,0)}}
+@keyframes mtJello{0%,100%{transform:scale(1,1)}30%{transform:scale(1.18,.82)}45%{transform:scale(.86,1.14)}62%{transform:scale(1.08,.94)}78%{transform:scale(.97,1.03)}}
+
+/* The glyph reacts on every effect; the rings differ per effect. */
+.mt-fx[data-play]:not([data-play="0"])>svg,
+.mt-fx[data-play]:not([data-play="0"])>span.mt-fx__glyph{animation:mtGlyphPop .34s var(--ease-out)}
+
+/* like — five combos, picked at random per press */
+.mt-fx[data-fx="twin"][data-play]:not([data-play="0"]) .mt-fx__ring{animation:mtRingOut .62s var(--ease-out)}
+.mt-fx[data-fx="twin"][data-play]:not([data-play="0"]) .mt-fx__ring--2{animation:mtRingSoft .46s var(--ease-out) .06s}
+.mt-fx[data-fx="triple"][data-play]:not([data-play="0"]) .mt-fx__ring{animation:mtRingOut .66s var(--ease-out)}
+.mt-fx[data-fx="triple"][data-play]:not([data-play="0"]) .mt-fx__ring--2{animation:mtRingOut .66s var(--ease-out) .08s}
+.mt-fx[data-fx="triple"][data-play]:not([data-play="0"]) .mt-fx__ring--3{animation:mtRingOut .66s var(--ease-out) .16s}
+.mt-fx[data-fx="bloom"][data-play]:not([data-play="0"]) .mt-fx__ring{animation:mtBloom .7s var(--ease-out)}
+.mt-fx[data-fx="wave"][data-play]:not([data-play="0"]) .mt-fx__ring{animation:mtRingSoft .5s var(--ease-out)}
+.mt-fx[data-fx="wave"][data-play]:not([data-play="0"]) .mt-fx__ring--2{animation:mtRingSoft .5s var(--ease-out) .12s}
+.mt-fx[data-fx="wave"][data-play]:not([data-play="0"]) .mt-fx__ring--3{animation:mtRingSoft .5s var(--ease-out) .24s}
+.mt-fx[data-fx="orbit"][data-play]:not([data-play="0"]) .mt-fx__spark{animation:mtOrbit .72s var(--ease-out)}
+.mt-fx[data-fx="orbit"][data-play]:not([data-play="0"]) .mt-fx__ring{animation:mtRingSoft .5s var(--ease-out)}
+.mt-fx[data-fx="twin"][data-play]:not([data-play="0"]) .mt-fx__spark,
+.mt-fx[data-fx="triple"][data-play]:not([data-play="0"]) .mt-fx__spark,
+.mt-fx[data-fx="bloom"][data-play]:not([data-play="0"]) .mt-fx__spark{animation:mtSparkOut .6s var(--ease-out)}
+
+/* save — ribbon unfurl · share — ripple send · comment — jello */
+.mt-fx[data-fx="ribbon"] .mt-fx__ring{width:14px;height:22px;border-radius:3px;border:0;background:var(--mt-marigold);transform-origin:top center}
+.mt-fx[data-fx="ribbon"][data-play]:not([data-play="0"]) .mt-fx__ring{animation:mtRibbon .6s var(--ease-out)}
+.mt-fx[data-fx="send"][data-play]:not([data-play="0"]) .mt-fx__ring{animation:mtSend .6s var(--ease-out)}
+.mt-fx[data-fx="send"][data-play]:not([data-play="0"]) .mt-fx__ring--2{animation:mtSend .6s var(--ease-out) .1s}
+.mt-fx[data-fx="send"][data-play]:not([data-play="0"])>svg{animation:mtSendGlyph .4s var(--ease-out)}
+.mt-fx[data-fx="jello"][data-play]:not([data-play="0"])>svg{animation:mtJello .5s var(--ease-out)}
+
+@media (prefers-reduced-motion:reduce){
+  .mt-fx *,.mt-fx>svg{animation:none!important}
+}

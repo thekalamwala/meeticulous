@@ -8,6 +8,7 @@ import { SpaceIcon } from '../../components/community/ItemCard';
 import FeedSkeleton from '../../components/community/CommunitySkeleton';
 import CommunityAd from '../../components/community/CommunityAd';
 import CommunityTopics from '../../components/community/CommunityTopics';
+import useSheet from '../../components/community/useSheet';
 import { useFeature } from '../../context/FeatureContext';
 import { useAuth } from '../../context/AuthContext';
 import ProfileDrawer from '../../components/community/ProfileDrawer';
@@ -85,6 +86,9 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
   const [spacesOpen, setSpacesOpen] = useState(false); // mobile: grid tile → spaces sheet
   const [spaceQuery, setSpaceQuery] = useState(''); // live filter inside the spaces sheet
   const [filterOpen, setFilterOpen] = useState(false); // mobile: bottom-bar filter sheet
+  // Both sheets stay mounted while they slide out; see useSheet.
+  const spacesSheet = useSheet(spacesOpen);
+  const filterSheet = useSheet(filterOpen);
   const [searchFocused, setSearchFocused] = useState(false); // desktop search dropdown
   const [searchQuery, setSearchQuery] = useState('');
   const [recent, setRecent] = useState([]);
@@ -141,7 +145,7 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
     <main className={`min-h-screen overflow-x-hidden bg-cream ${v2 ? 'community-v2 pb-24' : 'pb-16'}`}>
       {v2 && (
         <header
-          className="sticky top-0 z-40 flex items-center justify-between border-b border-line bg-white px-4 pb-[2px] lg:hidden"
+          className="sticky top-0 z-40 flex items-center justify-between border-b border-line bg-white px-4 py-1.5 lg:hidden"
           style={{ paddingTop: 'env(safe-area-inset-top)' }}
         >
           <Link to="/community" aria-label="Meeticulous Community" className="flex items-center gap-2 py-3 no-underline">
@@ -153,20 +157,24 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
             onClick={() => { setSpaceQuery(''); setSpacesOpen(true); }}
             aria-label="Browse spaces"
             aria-expanded={spacesOpen}
-            className="grid h-11 w-11 place-items-center rounded-2xl bg-cream text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40"
+            className="grid h-11 w-11 place-items-center rounded-2xl text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/40"
           >
-            <LayoutGrid size={18} aria-hidden="true" />
+            {/* The tap target stays 44px; only the painted tile is 36px, so the fill has
+                room to breathe inside the bar instead of meeting its top and bottom edges. */}
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-cream">
+              <LayoutGrid size={18} aria-hidden="true" />
+            </span>
           </button>
         </header>
       )}
 
       {/* Mobile Spaces sheet — opened by the header grid tile (distinct from the
           Profile drawer the bottom bar opens). */}
-      {v2 && spacesOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Spaces">
-          <div className="absolute inset-0 bg-ink/30" onClick={() => setSpacesOpen(false)} />
-          <div className="absolute inset-x-0 bottom-0 max-h-[78vh] overflow-y-auto rounded-t-3xl bg-white p-4 shadow-2xl" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
-            <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-line" />
+      {v2 && spacesSheet.mounted && (
+        <div className="mt-bsheet lg:hidden" data-phase={spacesSheet.phase} role="dialog" aria-modal="true" aria-label="Spaces">
+          <div className="mt-bsheet__scrim" onClick={() => setSpacesOpen(false)} />
+          <div className="mt-bsheet__panel">
+            <div className="mt-bsheet__grip" />
             <form role="search" onSubmit={(e) => e.preventDefault()} className="mb-3 flex items-center gap-2">
               {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
               <input autoFocus type="search" value={spaceQuery} onChange={(e) => setSpaceQuery(e.target.value)} aria-label="Search spaces" placeholder="Search spaces…" className="min-w-0 flex-1 rounded-full border border-line bg-cream px-4 py-2.5 text-sm text-ink outline-none placeholder:text-muted focus:border-maroon/40 focus:ring-2 focus:ring-maroon/20" />
@@ -396,11 +404,11 @@ export default function CommunityLayout({ active, onCompose, aside, children }) 
 
       {/* Mobile feed-filter sheet — opened by the bottom-bar Filter icon. Options
           drive the feed via the ?tab= param, so no shared state is needed. */}
-      {v2 && filterOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Filter the feed">
-          <div className="absolute inset-0 bg-ink/30" onClick={() => setFilterOpen(false)} />
-          <div className="absolute inset-x-0 bottom-0 rounded-t-3xl bg-white p-4 shadow-2xl" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
-            <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-line" />
+      {v2 && filterSheet.mounted && (
+        <div className="mt-bsheet lg:hidden" data-phase={filterSheet.phase} role="dialog" aria-modal="true" aria-label="Filter the feed">
+          <div className="mt-bsheet__scrim" onClick={() => setFilterOpen(false)} />
+          <div className="mt-bsheet__panel">
+            <div className="mt-bsheet__grip" />
             <h2 className="px-1 pb-1 font-display text-base font-extrabold text-ink">Show</h2>
             <nav aria-label="Feed filter" className="flex flex-col">
               {[{ key: 'everyone', label: 'Everyone', to: '/community' }, { key: 'updates', label: 'Updates', to: '/community?tab=updates' }].map((o) => (
