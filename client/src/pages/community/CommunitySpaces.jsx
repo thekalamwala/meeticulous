@@ -25,7 +25,6 @@ const CommunitySpaces = () => {
 
   const header = (
     <>
-      <SubNav items={COMMUNITY_NAV} />
       <PageHeading title="Spaces" sub="The community's rooms, and where you can post." />
     </>
   );

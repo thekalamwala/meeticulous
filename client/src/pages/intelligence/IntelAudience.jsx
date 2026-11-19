@@ -25,7 +25,6 @@ const IntelAudience = () => {
 
   const header = (
     <>
-      <SubNav items={INTELLIGENCE_NAV} />
       <PageHeading title="Audience" sub="Who arrives, and who comes back." />
     </>
   );

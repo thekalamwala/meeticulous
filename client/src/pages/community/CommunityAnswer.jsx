@@ -46,7 +46,6 @@ const CommunityAnswer = () => {
 
   const header = (
     <>
-      <SubNav items={COMMUNITY_NAV} />
       <PageHeading title="Answer" sub="Open questions in the community — a helpful reply builds your name." />
     </>
   );
