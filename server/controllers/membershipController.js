@@ -381,7 +381,10 @@ const verifyUpgrade = async (req, res) => {
       .eq('id', notes.tier_id).maybeSingle();
     if (!tier || tier.type !== 'paid') return res.status(400).json({ message: 'Tier is no longer available.' });
 
-    const result = await billing.applyUpgrade({ notes, current, tier });
+    const result = await billing.applyUpgrade({
+      notes, current, tier,
+      orderId: razorpay_order_id, paymentId: razorpay_payment_id,
+    });
     auditLog('MEMBERSHIP_UPGRADED', req.user.id, {
       host_id: notes.host_id, from_tier_id: notes.from_tier_id, to_tier_id: tier.id,
       paid_inr: Number(notes.due_now_inr) || 0, credit_inr: Number(notes.credit_inr) || 0,
