@@ -12,6 +12,7 @@ const { supabaseAdmin } = require('../config/supabase');
 const razorpayConfig = require('./razorpayConfig');
 const { planStillExists, createSubscription, cancelSubscription } = require('./razorpaySubscriptions');
 const membershipNotify = require('./community/membershipNotify');
+const membershipCharges = require('./membershipCharges');
 
 const unixToIso = (s) => (s ? new Date(s * 1000).toISOString() : null);
 
@@ -46,7 +47,7 @@ async function startPaidSubscription({ tier, memberId, hostId }) {
 
 // Webhook: subscription.charged / .activated → grant/extend membership. Idempotent on
 // razorpay_subscription_id. notes (signature-verified) carry member/host/tier.
-async function activateFromSubscription({ rzpSub }) {
+async function activateFromSubscription({ rzpSub, rzpPayment = null }) {
   const notes = rzpSub?.notes || {};
   if (notes.kind !== 'membership' || !notes.member_id || !notes.host_id || !notes.tier_id) {
     return { activated: false, reason: 'missing membership notes' };
@@ -59,6 +60,12 @@ async function activateFromSubscription({ rzpSub }) {
     .from('community_membership_subscriptions').select('id')
     .eq('razorpay_subscription_id', rzpSub.id).maybeSingle();
   if (selErr) throw selErr; // let Razorpay retry rather than half-process
+
+  // Record the money BEFORE the entitlement write, while we still hold the payment
+  // entity. It is idempotent on the payment id and never throws, so it cannot cost
+  // the member the access they paid for — but a charge recorded with no entitlement
+  // is recoverable, where entitlement with no record is money we cannot pay out.
+  await membershipCharges.recordSubscriptionCharge({ rzpSub, rzpPayment, subscriptionRow: existing });
 
   if (existing) {
     const { error } = await supabaseAdmin.from('community_membership_subscriptions')
@@ -119,7 +126,13 @@ async function createUpgradeOrder({ tier, current, memberId, hostId, quote }) {
  * recoverable, and they are not short of access. A failure at 3 is the one that could
  * double-bill, so it is logged loudly rather than swallowed.
  */
-async function applyUpgrade({ notes, current, tier }) {
+async function applyUpgrade({ notes, current, tier, orderId = null, paymentId = null }) {
+  // The prorated difference is membership revenue like any other charge, and it is
+  // the host's money too. Recorded first, for the same reason a recurring charge is.
+  await membershipCharges.recordUpgradeCharge({
+    notes, orderId, paymentId, amountInr: Number(notes.due_now_inr) || 0, subscriptionRow: current,
+  });
+
   const planId = await ensureTierPlan(tier);
   const periodEndMs = current.current_period_end ? new Date(current.current_period_end).getTime() : 0;
   // Razorpay rejects a start_at that is not comfortably in the future; if the paid
