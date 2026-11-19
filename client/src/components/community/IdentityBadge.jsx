@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar } from './AuthorChip';
 import MiniProfileSheet from './MiniProfileSheet';
@@ -32,7 +32,22 @@ function Seal({ color, size = 16 }) {
 export default function IdentityBadge({ author }) {
   const [open, setOpen] = useState(false);
   const [sheet, setSheet] = useState(false);
+  const [shift, setShift] = useState(0);
   const ref = useRef(null);
+  const pop = useRef(null);
+
+  // Anchoring the card to the seal is not enough: a seal near either edge of the screen
+  // opens a 15rem card straight off it, which is what cropped the one on a short name in
+  // a reply. Measure once it is up and nudge it back inside, 8px clear of both edges.
+  useLayoutEffect(() => {
+    if (!open || !pop.current) { setShift(0); return; }
+    const M = 8;
+    const r = pop.current.getBoundingClientRect();
+    const over = r.right > window.innerWidth - M ? window.innerWidth - M - r.right : 0;
+    const under = r.left + over < M ? M - (r.left + over) : 0;
+    setShift(over + under);
+  }, [open]);
+
   useEffect(() => {
     if (!open) return undefined;
     const onDown = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
@@ -61,8 +76,9 @@ export default function IdentityBadge({ author }) {
       </button>
 
       {open && (
-        <span role="dialog" aria-label={`${author.display_name} profile`}
-          className="absolute left-auto right-0 top-full z-50 mt-2 w-[min(15rem,calc(100vw-2rem))] rounded-2xl border border-line bg-white p-4 shadow-[0_12px_32px_rgba(43,10,20,0.14)] sm:left-0 sm:right-auto">
+        <span ref={pop} role="dialog" aria-label={`${author.display_name} profile`}
+          style={shift ? { transform: `translateX(${shift}px)` } : undefined}
+          className="absolute left-0 top-full z-50 mt-2 w-[min(15rem,calc(100vw-2rem))] rounded-2xl border border-line bg-white p-4 shadow-[0_12px_32px_rgba(43,10,20,0.14)]">
           <span className="flex items-center gap-3">
             <Avatar author={author} size="m" />
             <span className="min-w-0 flex-1">
