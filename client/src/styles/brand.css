@@ -384,7 +384,6 @@ a.mt-post__chip:hover{border-color:var(--border-brand);color:var(--fg-brand)}
 /* The action row is the card's structural beat: equal cells, hairline above and below,
    every cell icon + label + count so the row reads as data rather than decoration. */
 .mt-actionrow{display:flex;align-items:center;padding:var(--space-1) 0;border-top:var(--stroke-hairline) solid var(--border-1);border-bottom:var(--stroke-hairline) solid var(--border-1)}
-.mt-actionrow--open{border-bottom:0}
 .mt-actionrow__cell{display:flex;flex:1 1 0;min-width:0}
 /* .mt-btn paints itself from the --_fg custom property, so a plain `color` here loses
    to the variant that set it. Set the variable the button already reads. */
@@ -414,6 +413,5 @@ a.mt-post__chip:hover{border-color:var(--border-brand);color:var(--fg-brand)}
 .mt-composer-inline textarea::placeholder{color:var(--fg-3)}
 .mt-composer-inline__tools{display:flex;align-items:center;gap:var(--space-3);padding:0 var(--space-4) var(--space-3)}
 .mt-composer-inline__tools .mt-counter{margin-left:auto}
-.mt-composer-inline__foot{padding:0 var(--space-4) var(--space-3)}
 .mt-field--error .mt-composer-inline__box{border-color:var(--danger)}
 .mt-comment--accepted{padding:var(--space-5);border:var(--stroke-ui-strong) solid var(--success);border-radius:18px}

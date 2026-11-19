@@ -1,6 +1,7 @@
 // Loading skeletons shaped like the real community card (avatar + header + body lines +
-// action row with the 2px rule), so the loading state mirrors the design instead of a
-// blank block. Decorative — aria-hidden; the caller owns the aria-busy/live region.
+// the equal-cell action row between its hairlines), so the loading state mirrors the
+// design instead of a blank block and nothing shifts when the real card replaces it.
+// Decorative — aria-hidden; the caller owns the aria-busy/live region.
 
 function Bar({ w = 'w-full', h = 'h-3' }) {
   return <div className={`${h} ${w} rounded-full bg-neutral-100`} />;
@@ -22,10 +23,10 @@ export function CardSkeleton() {
         <Bar w="w-11/12" />
         <Bar w="w-2/3" />
       </div>
-      <div className="flex gap-6 border-t-2 border-ink/5 pt-3">
-        <Bar w="w-12" />
-        <Bar w="w-12" />
-        <Bar w="w-14" />
+      <div className="mt-actionrow">
+        {['w-10', 'w-10', 'w-14', 'w-10'].map((w, i) => (
+          <span key={w + i} className="mt-actionrow__cell justify-center py-2"><Bar w={w} /></span>
+        ))}
       </div>
     </div>
   );
