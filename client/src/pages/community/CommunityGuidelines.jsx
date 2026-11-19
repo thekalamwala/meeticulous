@@ -58,7 +58,7 @@ export default function CommunityGuidelines() {
       <div className="mx-auto max-w-2xl px-5 py-10 text-ink leading-relaxed">
         <Link to="/community" className="text-sm text-maroon">&larr; Back to the Community</Link>
         <h1 className="font-display text-3xl sm:text-4xl text-maroon mt-3">Community Guidelines</h1>
-        <p className="text-sm text-ink/70 mt-1">Terms version {TERMS_VERSION}</p>
+        <p className="text-sm text-muted mt-1">Terms version {TERMS_VERSION}</p>
 
         <h2 className={H2}>What this is</h2>
         <p>The Community is a friendly place for hosts and guests on Meeticulous to ask questions, swap tips and hear product updates. It is public, so anyone can read what you post. Please share it the way you would at a good meetup.</p>

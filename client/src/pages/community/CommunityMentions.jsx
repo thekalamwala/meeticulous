@@ -71,8 +71,8 @@ const CommunityMentions = () => {
                 <Avatar name={name} />
                 <div className="min-w-0">
                   {text && <p className="mb-0 truncate text-[12.5px] font-bold text-ink">{text}</p>}
-                  {m.post?.title && m.snippet && <p className="mb-0 mt-0.5 line-clamp-2 text-[11.5px] font-medium text-ink/65">{m.snippet}</p>}
-                  <p className="mb-0 mt-1 text-[10.5px] font-medium text-ink/50">{name} · {relDay(m.created_at)}</p>
+                  {m.post?.title && m.snippet && <p className="mb-0 mt-0.5 line-clamp-2 mt-post__meta">{m.snippet}</p>}
+                  <p className="mb-0 mt-1 mt-post__meta">{name} · {relDay(m.created_at)}</p>
                 </div>
               </Link>
             );
@@ -81,7 +81,7 @@ const CommunityMentions = () => {
       </Panel>
       {cursor && (
         <div className="flex flex-col items-center gap-1.5">
-          {moreErr && <p className="mb-0 text-[11px] font-medium text-ink/55">Couldn't load more.</p>}
+          {moreErr && <p className="mb-0 mt-post__meta">Couldn't load more.</p>}
           <button type="button" onClick={loadMore} disabled={more} className="mt-btn">
             {more ? 'Loading…' : 'Load older'}
           </button>

@@ -15,7 +15,7 @@ export function StickyActionBar({ children, className = '' }) {
   return (
     <div
       className={cn(
-        'sticky z-30 -mx-4 mt-6 border-t border-gray-200 bg-white/95 px-4 py-3 backdrop-blur',
+        'sticky z-30 -mx-4 mt-6 border-t border-neutral-200 bg-white/95 px-4 py-3 backdrop-blur',
         'bottom-[calc(4rem+env(safe-area-inset-bottom))] sm:-mx-6 sm:px-6 md:-mx-8 md:bottom-0 md:px-8',
         'shadow-[0_-8px_24px_-16px_rgba(15,23,42,0.25)]',
         className,

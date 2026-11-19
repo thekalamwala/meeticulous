@@ -26,7 +26,8 @@ export default {
         blush: "#FFE4EA",
         cream: "#FBF5F3",
         marigold: { DEFAULT: "#F6C35A", 100: "#FDF0D2", 300: "#F9D684", 600: "#C68A12", 800: "#5A3A00" },
-        muted: "#6B524F", // --neutral-600
+        muted: "#6B524F", // --neutral-600 (--fg-2)
+        faint: "#8C716D", // --neutral-500 (--fg-3) — the lighter meta step
         ink: "#2B0A14", // --mt-ink
         sand: "#FFE4EA", // --mt-blush
         canvas: "#FBF5F3", // --mt-cream (page ground)

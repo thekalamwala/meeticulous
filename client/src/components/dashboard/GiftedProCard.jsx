@@ -28,12 +28,12 @@ const ShareLinks = ({ text, url }) => {
     <div className="flex flex-wrap gap-2">
       {links.map(([name, href]) => (
         <a key={name} href={href} target="_blank" rel="noreferrer"
-          className="rounded-full border border-gray-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-gray-700 hover:border-primary hover:text-primary hover:no-underline focus:outline-none focus-visible:shadow-[var(--focus-ring)]">
+          className="rounded-full border border-neutral-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-neutral-700 hover:border-primary hover:text-primary hover:no-underline focus:outline-none focus-visible:shadow-[var(--focus-ring)]">
           {name}
         </a>
       ))}
       <button type="button" onClick={() => copy(url, "Link")}
-        className="inline-flex items-center gap-1 rounded-full border border-gray-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-gray-700 hover:border-primary hover:text-primary focus:outline-none focus-visible:shadow-[var(--focus-ring)]">
+        className="inline-flex items-center gap-1 rounded-full border border-neutral-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-neutral-700 hover:border-primary hover:text-primary focus:outline-none focus-visible:shadow-[var(--focus-ring)]">
         <Copy className="h-3.5 w-3.5" /> Copy link
       </button>
     </div>
@@ -82,31 +82,31 @@ export default function GiftedProCard({ onKeepPro }) {
           </span>
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-primary">{GIFTED_PRO_LABEL}</p>
-            <h2 className="text-base font-bold text-gray-900 sm:text-lg">Complimentary Pro from the Meeticulous team</h2>
-            <p className="mt-0.5 text-sm text-gray-600">
+            <h2 className="text-base font-bold text-neutral-900 sm:text-lg">Complimentary Pro from the Meeticulous team</h2>
+            <p className="mt-0.5 text-sm text-neutral-600">
               Every Pro feature is on until <strong>{fmtDay(gift.ends_at)}</strong>
               {" "}· {daysLeft} day{daysLeft === 1 ? "" : "s"} left
             </p>
-            {gift.note && <p className="mt-2 font-serif text-base italic text-gray-700">“{gift.note}”</p>}
+            {gift.note && <p className="mt-2 font-serif text-base italic text-neutral-700">“{gift.note}”</p>}
           </div>
         </div>
         <Button onClick={onKeepPro}>Keep Pro after your gift</Button>
       </div>
 
       <div className="rounded-2xl bg-blush/60 p-4">
-        <p className="text-sm font-semibold text-gray-900">Tell people you got Pro</p>
-        <p className="mb-3 mt-0.5 text-xs text-gray-600">Share your booking page. New clients find you, and you show off the upgrade.</p>
+        <p className="text-sm font-semibold text-neutral-900">Tell people you got Pro</p>
+        <p className="mb-3 mt-0.5 text-xs text-neutral-600">Share your booking page. New clients find you, and you show off the upgrade.</p>
         <ShareLinks text="Meeticulous just gifted me Pro. Book a session with me here:" url={bookingUrl} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border border-gray-200 p-4">
-          <p className="flex items-center gap-1.5 text-sm font-semibold text-gray-900"><Send className="h-4 w-4 text-primary" /> Post about it, get another month free</p>
+        <div className="rounded-2xl border border-neutral-200 p-4">
+          <p className="flex items-center gap-1.5 text-sm font-semibold text-neutral-900"><Send className="h-4 w-4 text-primary" /> Post about it, get another month free</p>
           {gift.share_status ? (
-            <p className={cn("mt-2 text-xs", gift.share_status === "rejected" ? "text-gray-500" : "text-maroon")}>{SHARE_COPY[gift.share_status]}</p>
+            <p className={cn("mt-2 text-xs", gift.share_status === "rejected" ? "text-neutral-500" : "text-maroon")}>{SHARE_COPY[gift.share_status]}</p>
           ) : (
             <form onSubmit={sendShare} className="mt-2 space-y-2">
-              <p className="text-xs text-gray-600">Post on LinkedIn, Instagram, X, Facebook or Threads and tag Meeticulous. Paste the link to your public post here. Once per gift.</p>
+              <p className="text-xs text-neutral-600">Post on LinkedIn, Instagram, X, Facebook or Threads and tag Meeticulous. Paste the link to your public post here. Once per gift.</p>
               <div className="flex gap-2">
                 <Input value={postUrl} onChange={(e) => setPostUrl(e.target.value)} placeholder="https://www.linkedin.com/posts/…" aria-label="Link to your post" />
                 <Button type="submit" variant="secondary" disabled={sending || !postUrl.trim()}>{sending ? "Sending…" : "Send"}</Button>
@@ -116,13 +116,13 @@ export default function GiftedProCard({ onKeepPro }) {
         </div>
 
         {forwardUrl && (
-          <div className="rounded-2xl border border-gray-200 p-4">
-            <p className="flex items-center gap-1.5 text-sm font-semibold text-gray-900"><Link2 className="h-4 w-4 text-primary" /> Pay it forward</p>
+          <div className="rounded-2xl border border-neutral-200 p-4">
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-neutral-900"><Link2 className="h-4 w-4 text-primary" /> Pay it forward</p>
             {gift.forward.redeemed ? (
               <p className="mt-2 text-xs text-maroon">A fellow creator joined with your link and got a month of Pro. Nice one!</p>
             ) : (
               <>
-                <p className="mb-3 mt-2 text-xs text-gray-600">Give one fellow creator a month of Pro. They get it when they sign up as a new host with this link.</p>
+                <p className="mb-3 mt-2 text-xs text-neutral-600">Give one fellow creator a month of Pro. They get it when they sign up as a new host with this link.</p>
                 <ShareLinks text="I'm gifting you a month of Meeticulous Pro — sign up with my link:" url={forwardUrl} />
               </>
             )}

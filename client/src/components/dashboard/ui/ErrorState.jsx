@@ -10,13 +10,13 @@ export function ErrorState({ icon: Icon, title = 'Something went wrong', message
           <Icon className="h-6 w-6" />
         </div>
       )}
-      <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
-      {message && <p className="mt-1 max-w-sm text-sm text-gray-500">{message}</p>}
+      <h3 className="text-sm font-semibold text-neutral-900">{title}</h3>
+      {message && <p className="mt-1 max-w-sm text-sm text-neutral-500">{message}</p>}
       {onRetry && (
         <button
           type="button"
           onClick={onRetry}
-          className="mt-4 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+          className="mt-4 rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-neutral-800"
         >
           Try again
         </button>

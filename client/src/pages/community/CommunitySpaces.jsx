@@ -45,7 +45,7 @@ const CommunitySpaces = () => {
               className="flex items-start justify-between gap-3 border-b border-neutral-200 px-3 py-2.5 last:border-b-0 hover:bg-blush/50">
               <div className="min-w-0">
                 <p className="mb-0 text-[12.5px] font-bold text-ink">{s.name}</p>
-                {s.description && <p className="mb-0 mt-0.5 text-[11.5px] font-medium text-ink/65">{s.description}</p>}
+                {s.description && <p className="mb-0 mt-0.5 mt-post__meta">{s.description}</p>}
               </div>
               <StatusPill status={canPost(s) ? 'confirmed' : 'pending'}>{canPost(s) ? 'You can post' : 'Team only'}</StatusPill>
             </Link>

@@ -12,12 +12,18 @@ Direction: **Loop & Slot**. A rounded calendar slot is the layout module, the ee
 | `--mt-blush` | #FFE4EA | Light brand ground |
 | `--mt-cream` | #FBF5F3 | Page background |
 | `--mt-ink` | #2B0A14 | Body text |
-| `--mt-marigold` | #F6C35A | **Open time slots only**, never decoration |
+| `--mt-marigold` | #F6C35A | **Open time slots**, and one community topic tone (see below). Never decoration |
 
 - At most two grounds per page section: cream + maroon, or cream + blush.
 - Body text is ink or maroon. Rose is never used for body text.
 - No gradients, glassmorphism, blur, 3D blobs, neon or purple/blue.
 - Proportion: cream 45 · maroon 20 · blush 15 · ink 10 · pink 5 · rose 3 · marigold 2.
+- **Community topic pills are the one multicoloured surface** (`.mt-topic--1..8`): a topic
+  hashes its name to a fixed tone so the same topic is always the same colour. The tones are
+  existing tokens only — maroon-600, maroon-800, rose-500, pink-400, marigold-400, green-600,
+  blue-600, neutral-700 — never a new hex. This is the only place marigold appears away from an
+  open slot, and the only place green/blue appear outside a feedback state. Red is excluded so a
+  topic never reads as an error. Everywhere else the two-grounds rule above still holds.
 
 ## Type
 - Display/headings: **Bricolage Grotesque 800**, tracking −3% to −4.5%, maroon.
