@@ -38,21 +38,21 @@ export default function Pagination({ page, totalPages, hrefFor }) {
         aria-disabled={page === 1}
         onClick={(e) => (page === 1 ? e.preventDefault() : toTop())}
         className={`${arrowBase} ${page === 1
-          ? 'pointer-events-none text-gray-300'
-          : 'text-gray-600 hover:bg-black/[0.04] hover:text-ink'}`}
+          ? 'pointer-events-none text-neutral-300'
+          : 'text-neutral-600 hover:bg-black/[0.04] hover:text-ink'}`}
       >
         <ChevronLeft size={18} />
       </Link>
 
       {/* M-eeeeeeeeee-t. Ten e's: real pages link, the rest are dead word. */}
       <span className={`${wordBase} select-none flex items-baseline`}>
-        <span className="text-gray-300" aria-hidden="true">M</span>
+        <span className="text-neutral-300" aria-hidden="true">M</span>
         {slots.map((p) => {
           const real = p <= totalPages;
           const active = p === page;
           // Past the real page count: decorative dim 'e', not a link.
           if (!real) {
-            return <span key={p} className="text-gray-200" aria-hidden="true">e</span>;
+            return <span key={p} className="text-neutral-200" aria-hidden="true">e</span>;
           }
           return (
             <Link
@@ -64,13 +64,13 @@ export default function Pagination({ page, totalPages, hrefFor }) {
               style={active ? { color: colorFor(p) } : undefined}
               className={`transition-colors duration-150 ${active
                 ? ''
-                : 'text-gray-300 hover:text-gray-500'}`}
+                : 'text-neutral-300 hover:text-neutral-500'}`}
             >
               e
             </Link>
           );
         })}
-        <span className="text-gray-300" aria-hidden="true">t</span>
+        <span className="text-neutral-300" aria-hidden="true">t</span>
       </span>
 
       <Link
@@ -80,8 +80,8 @@ export default function Pagination({ page, totalPages, hrefFor }) {
         aria-disabled={page === totalPages}
         onClick={(e) => (page === totalPages ? e.preventDefault() : toTop())}
         className={`${arrowBase} ${page === totalPages
-          ? 'pointer-events-none text-gray-300'
-          : 'text-gray-600 hover:bg-black/[0.04] hover:text-ink'}`}
+          ? 'pointer-events-none text-neutral-300'
+          : 'text-neutral-600 hover:bg-black/[0.04] hover:text-ink'}`}
       >
         <ChevronRight size={18} />
       </Link>
