@@ -17,7 +17,7 @@ import toast from 'react-hot-toast';
 import { Button, cn } from '../../../components/dashboard/ui';
 import {
   Avatar, LabInput as Input, LabSelect as Select,
-  Drawer, Panel, StatusPill, fmtDayFull, fmtTime, inr, relDay, useLast, useSubPage,
+  Drawer, Panel, StatusPill, SubPageHeader, fmtDayFull, fmtTime, inr, relDay, useLast, useSubPage,
 } from '../labUi';
 import { CheckBox, Filter, FilterBar, ViewSwitch } from '../filters';
 import mock from '../mockData';
@@ -376,20 +376,19 @@ const Bookings = () => {
 
   return (
     <div className="flex flex-col gap-2.5">
-      <header className="flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Bookings</h1>
-          {/* The live count belongs on the table it counts — repeating it
-              here just gave two numbers that could disagree mid-filter. */}
-          <p className="mt-0.5 text-[12px] font-medium text-ink/55">
-            {counts.upcoming} upcoming · {inr(rows.filter((b) => b.payment_status === 'paid').reduce((n, b) => n + b.amount, 0), { compact: true })} collected
-            {counts.pending > 0 && <span className="text-warning-fg"> · {counts.pending} waiting on you</span>}
-          </p>
-        </div>
-        <Button size="sm" onClick={() => setAdding(true)}>
-          <Plus className="h-4 w-4" strokeWidth={2.6} /> Add booking
-        </Button>
-      </header>
+      {/* The live count belongs on the table it counts — repeating it here
+          just gave two numbers that could disagree mid-filter. */}
+      <SubPageHeader
+        title="Bookings"
+        action={(
+          <Button size="sm" onClick={() => setAdding(true)}>
+            <Plus className="h-4 w-4" strokeWidth={2.6} /> Add booking
+          </Button>
+        )}
+      >
+        {counts.upcoming} upcoming · {inr(rows.filter((b) => b.payment_status === 'paid').reduce((n, b) => n + b.amount, 0), { compact: true })} collected
+        {counts.pending > 0 && <span className="text-warning-fg"> · {counts.pending} waiting on you</span>}
+      </SubPageHeader>
 
       {/* One row. The value of an applied filter lives in its own button, so
           there is no chip row underneath repeating it back. */}

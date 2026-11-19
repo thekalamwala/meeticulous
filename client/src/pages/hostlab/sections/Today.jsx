@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { Button, cn } from '../../../components/dashboard/ui';
 import {
-  Avatar, Drawer, Panel, Sparkline, StatusPill, Tile,
+  Avatar, Drawer, Panel, Sparkline, StatusPill, SubPageHeader, Tile,
   fmtTime, inr, relDay, useLast,
 } from '../labUi';
 import mock from '../mockData';
@@ -224,13 +224,10 @@ const Today = ({ go }) => {
 
   return (
     <div className="flex flex-col gap-2.5">
-      <header>
-        <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Today</h1>
-        <p className="mt-0.5 text-[12px] font-medium text-ink/55">
-          {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })} · {mock.host.city}
-          {waiting > 0 && <span className="text-warning-fg"> · {waiting} waiting on you</span>}
-        </p>
-      </header>
+      <SubPageHeader title="Today">
+        {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })} · {mock.host.city}
+        {waiting > 0 && <span className="text-warning-fg"> · {waiting} waiting on you</span>}
+      </SubPageHeader>
 
       <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         <Tile

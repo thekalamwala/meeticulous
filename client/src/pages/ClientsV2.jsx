@@ -27,6 +27,7 @@ import {
   Card, SearchInput, SegmentedControl, Button, buttonClasses, Modal, Textarea,
   StatusBadge, EmptyState, ErrorState, Skeleton, SkeletonText, cn, fmtMoney,
 } from '../components/dashboard/ui';
+import { PageHeading } from '../components/dashboard/ui/v2';
 import { PREMIUM_PLAN } from '../data/plans';
 import ProTeaser from '../components/dashboard/ProTeaser';
 
@@ -361,7 +362,7 @@ const ClientsV2 = () => {
   if (gated) {
     return (
       <div className="flex flex-col gap-2.5">
-        <h1 className="font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Clients</h1>
+        <PageHeading title="Clients" />
         <ProTeaser title="Unlock Clients" sub={`See every client's booking history, total spend and private notes — upgrade to ${PREMIUM_PLAN.name} to unlock your client list.`} src="crm">
           <ul className="divide-y divide-black/5">
             {SAMPLE_CUSTOMERS.map((c) => (
@@ -378,15 +379,15 @@ const ClientsV2 = () => {
 
   return (
     <div className="flex flex-col gap-2.5">
-      <header className="flex items-start justify-between gap-3">
-        <div>
-          <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">Clients</h1>
-          <p className="mt-0.5 text-[12px] font-medium text-ink/55">{total} {total === 1 ? 'client' : 'clients'}</p>
-        </div>
-        <Button variant="secondary" size="sm" onClick={() => exportRows()} disabled={loading || total === 0}>
-          <Download className="h-4 w-4" /> Export
-        </Button>
-      </header>
+      <PageHeading
+        title="Clients"
+        sub={`${total} ${total === 1 ? 'client' : 'clients'}`}
+        action={(
+          <Button variant="secondary" size="sm" onClick={() => exportRows()} disabled={loading || total === 0}>
+            <Download className="h-4 w-4" /> Export
+          </Button>
+        )}
+      />
 
       {/* Win-back — the thing a host with 60 clients cannot spot by eye. */}
       {lapsing.length > 0 && (
