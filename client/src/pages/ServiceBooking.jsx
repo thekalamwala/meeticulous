@@ -1341,7 +1341,7 @@ const ServiceBooking = () => {
                   <div className="flex items-center justify-between mb-3 h-10">
                     <button
                       onClick={prevMonth}
-                      className="min-h-10 p-2 hover:bg-gray-100 rounded-full"
+                      className="relative -top-1 min-h-10 p-2 hover:bg-gray-100 rounded-full"
                     >
                       <svg
                         className="w-5 h-5"
@@ -1362,7 +1362,7 @@ const ServiceBooking = () => {
                     </h3>
                     <button
                       onClick={nextMonth}
-                      className="min-h-10 p-2 hover:bg-gray-100 rounded-full"
+                      className="relative -top-1 min-h-10 p-2 hover:bg-gray-100 rounded-full"
                     >
                       <svg
                         className="w-5 h-5"
