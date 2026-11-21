@@ -117,17 +117,6 @@ const SlotSkeleton = () => (
 
 // Time-of-day icons for the Morning/Afternoon/Evening category cards. Inline SVG
 // to match the rest of this file (which doesn't import an icon lib).
-const iconBase = { fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", viewBox: "0 0 24 24" };
-const SunriseIcon = (p) => (
-  <svg {...iconBase} {...p}><path d="M12 2v6m-4 2a4 4 0 0 1 8 0M3 18h18M2 22h20M5.6 10.6 4.2 9.2M18.4 10.6l1.4-1.4" /></svg>
-);
-const SunIcon = (p) => (
-  <svg {...iconBase} {...p}><circle cx="12" cy="12" r="4" /><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
-);
-const MoonIcon = (p) => (
-  <svg {...iconBase} {...p}><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" /></svg>
-);
-
 // Labour-illusion: a short "wrapping up" screen between the action (pay / verify)
 // and the confirmed view. Operational transparency — makes the result feel
 // earned and reassures the guest that real work is happening.
@@ -314,7 +303,6 @@ const ServiceBooking = () => {
   const [calYear, setCalYear] = useState(new Date().getFullYear());
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState("");
-  const [slotCategory, setSlotCategory] = useState("morning"); // morning | afternoon | evening
   const [bookedSlots, setBookedSlots] = useState([]);
   // Server-computed availability (working hours − bookings − Google busy −
   // blocked dates). null → fall back to the legacy client-side computation.
@@ -1041,17 +1029,6 @@ const ServiceBooking = () => {
   // Server list is authoritative (includes Google busy + blocked dates);
   // local computation is the deploy-skew fallback only.
   const timeSlots = serverSlots ?? getTimeSlots();
-  // Group the day's open times into Morning/Afternoon/Evening + counts, so the
-  // category cards show real availability and can filter the grid.
-  const slotCats = [
-    { key: "morning",   label: "Morning",   Icon: SunriseIcon, test: (h) => h < 12 },
-    { key: "afternoon", label: "Afternoon", Icon: SunIcon,     test: (h) => h >= 12 && h < 17 },
-    { key: "evening",   label: "Evening",   Icon: MoonIcon,    test: (h) => h >= 17 },
-  ].map((c) => ({ ...c, items: timeSlots.filter((t) => c.test(parseInt(t.slice(0, 2), 10))) }));
-  // Honour the pick unless it's empty; then fall back to the first category that has slots.
-  const activeCat = slotCats.find((c) => c.key === slotCategory && c.items.length)
-    || slotCats.find((c) => c.items.length)
-    || slotCats[0];
   const calDays = [];
   for (let i = 0; i < firstDay; i++) calDays.push(null);
   for (let i = 1; i <= daysInMonth; i++) calDays.push(i);
@@ -1301,6 +1278,14 @@ const ServiceBooking = () => {
                       )}
                       {service.meeting_mode === "offline" ? "In-person" : "Online"}
                     </span>
+                    {service.total_bookings > 0 && (
+                      <span className="inline-flex items-center gap-1.5">
+                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M10 10a3.5 3.5 0 100-7 3.5 3.5 0 000 7" />
+                        </svg>
+                        {service.total_bookings} booked
+                      </span>
+                    )}
                   </div>
 
                   {service.description && (
@@ -1329,14 +1314,15 @@ const ServiceBooking = () => {
                     </div>
                   </div>
 
-                  {service.total_bookings > 0 && (
-                    <div className="mt-3 text-sm">
-                      <span className="font-bold text-gray-900">{service.total_bookings}</span> <span className="text-gray-400">booked</span>
+                  <div className="mt-4">
+                    <div className="text-2xl font-extrabold" style={{ color: tc }}>
+                      {priceOnRequest ? "On request" : isPaid ? `₹${Math.round((service.price + fees.bookingFee) * 100) / 100}` : "Free"}
                     </div>
-                  )}
-
-                  <div className="mt-4 text-2xl font-extrabold" style={{ color: tc }}>
-                    {priceOnRequest ? "On request" : isPaid ? `₹${Math.round((service.price + fees.bookingFee) * 100) / 100}` : "Free"}
+                    {isPaid && fees.bookingFee > 0 && (
+                      <div className="mt-0.5 text-xs text-gray-400">
+                        ₹{service.price} service + ₹{Math.round(fees.bookingFee * 100) / 100} booking fee <span className="text-gray-300">(incl. GST)</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </aside>
@@ -1352,7 +1338,7 @@ const ServiceBooking = () => {
               <div className="flex flex-col md:flex-row gap-5">
                 {/* Calendar */}
                 <div className="flex-1">
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center justify-between mb-3 h-10">
                     <button
                       onClick={prevMonth}
                       className="min-h-10 p-2 hover:bg-gray-100 rounded-full"
@@ -1411,7 +1397,7 @@ const ServiceBooking = () => {
                           key={day}
                           onClick={() => selectDate(day)}
                           disabled={!ok}
-                          className={`h-9 rounded-[14px] text-sm transition-colors ${ok && !sel ? "hover:bg-[color:var(--mt-blush,#FFE4EA)] cursor-pointer" : ""} ${!ok ? "text-gray-300 cursor-default" : ""}`}
+                          className={`aspect-square flex items-center justify-center rounded-[14px] text-sm transition-colors ${ok && !sel ? "hover:bg-[color:var(--mt-blush,#FFE4EA)] cursor-pointer" : ""} ${!ok ? "text-gray-300 cursor-default" : ""}`}
                           style={sel
                             ? { background: "var(--mt-blush, #FFE4EA)", color: tc, fontWeight: 700, boxShadow: "inset 0 0 0 2px var(--mt-rose, #E0506F)" }
                             : td && !sel
@@ -1428,36 +1414,12 @@ const ServiceBooking = () => {
                 <div className="flex-1" ref={timesRef}>
                   {selectedDate ? (
                     <>
-                      <div className="flex items-center justify-between gap-2 mb-3">
+                      <div className="flex items-center gap-2 mb-3 h-10">
                         <h3 className="font-semibold">
                           {DAYS_SHORT[selectedDate.getDay()]},{" "}
                           {MONTHS[selectedDate.getMonth()]}{" "}
                           {selectedDate.getDate()}
                         </h3>
-                        {/* Desktop only: icon filters for part of day (count in tooltip). */}
-                        {timeSlots.length > 0 && (
-                          <div className="hidden md:flex items-center gap-1.5">
-                            {slotCats.map((c) => {
-                              const on = activeCat.key === c.key;
-                              const disabled = c.items.length === 0;
-                              return (
-                                <button
-                                  key={c.key}
-                                  type="button"
-                                  disabled={disabled}
-                                  onClick={() => setSlotCategory(c.key)}
-                                  title={`${c.label} · ${c.items.length} ${c.items.length === 1 ? "slot" : "slots"}`}
-                                  className={`h-9 w-9 flex items-center justify-center rounded-full border-2 transition-all ${disabled ? "opacity-40 cursor-default" : "hover:bg-[color:var(--mt-blush,#FFE4EA)] cursor-pointer"}`}
-                                  style={on
-                                    ? { background: "var(--mt-blush, #FFE4EA)", borderColor: tc, color: tc }
-                                    : { background: "#fff", borderColor: "var(--color-line)", color: "#9ca3af" }}
-                                >
-                                  <c.Icon className="w-4 h-4" style={on ? { color: tc } : { color: "#9ca3af" }} />
-                                </button>
-                              );
-                            })}
-                          </div>
-                        )}
                       </div>
                       {slotsLoading ? (
                         <SlotSkeleton />
@@ -1475,9 +1437,9 @@ const ServiceBooking = () => {
                             </div>
                           ) : (
                             <div className="bas-fade">
-                              {/* Desktop filters by the active category; mobile shows all slots. */}
-                              <div className="max-h-[260px] overflow-y-auto pr-1 grid grid-cols-3 sm:grid-cols-4 gap-1.5">
-                                {(isDesktop ? activeCat.items : timeSlots).map((t) => {
+                              {/* All slots, no part-of-day filter. */}
+                              <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
+                                {timeSlots.map((t) => {
                                   const on = selectedTime === t;
                                   return (
                                     <button
