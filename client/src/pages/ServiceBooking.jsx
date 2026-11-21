@@ -1341,7 +1341,7 @@ const ServiceBooking = () => {
                   <div className="flex items-center justify-between mb-3 h-10">
                     <button
                       onClick={prevMonth}
-                      className="relative -top-1.5 min-h-10 p-2 hover:bg-gray-100 rounded-full"
+                      className="relative -top-2 min-h-10 p-2 rounded-full text-gray-700 hover:text-maroon transition-colors"
                     >
                       <svg
                         className="w-5 h-5"
@@ -1362,7 +1362,7 @@ const ServiceBooking = () => {
                     </h3>
                     <button
                       onClick={nextMonth}
-                      className="relative -top-1.5 min-h-10 p-2 hover:bg-gray-100 rounded-full"
+                      className="relative -top-2 min-h-10 p-2 rounded-full text-gray-700 hover:text-maroon transition-colors"
                     >
                       <svg
                         className="w-5 h-5"
@@ -1447,7 +1447,7 @@ const ServiceBooking = () => {
                                       onClick={() => setSelectedTime(t)}
                                       className="py-2 text-[13px] font-semibold rounded-xl border-2 transition-all"
                                       style={on
-                                        ? { background: tc, color: textOnTheme, borderColor: tc }
+                                        ? { background: "var(--mt-blush, #FFE4EA)", color: tc, fontWeight: 700, borderColor: "transparent", boxShadow: "inset 0 0 0 2px var(--mt-rose, #E0506F)" }
                                         : { background: "#fff", borderColor: "var(--color-line)", color: "#2B0A14" }}
                                     >
                                       {formatTime(t)}
