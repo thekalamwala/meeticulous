@@ -511,6 +511,7 @@ const ServiceBooking = () => {
   // open times. Any manual pick (a day or a slot) turns it off for good.
   const autoModeRef = useRef(true);
   const timesRef = useRef(null);
+  const calendarRef = useRef(null);
   // Desktop splits slots into Morning/Afternoon/Evening; mobile shows them flat.
   const [isDesktop, setIsDesktop] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
@@ -521,6 +522,14 @@ const ServiceBooking = () => {
     mq.addEventListener("change", fn);
     return () => mq.removeEventListener("change", fn);
   }, []);
+  // Mobile: skip the service card and land on the calendar when the time step opens.
+  useEffect(() => {
+    if (isDesktop || step !== "time" || !service) return;
+    requestAnimationFrame(() => {
+      if (typeof calendarRef.current?.scrollIntoView === "function")
+        calendarRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, [isDesktop, step, service]);
   const selectDate = (day) => {
     if (!isDateSelectable(day)) return;
     autoModeRef.current = false;
@@ -1328,7 +1337,7 @@ const ServiceBooking = () => {
               </aside>
 
               {/* RIGHT: calendar + slots */}
-              <div className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl p-4 sm:p-5">
+              <div ref={calendarRef} className="scroll-mt-20 bg-white border-2 border-[color:var(--color-line)] rounded-2xl p-4 sm:p-5">
                 <div className="flex items-center gap-2 min-w-0 mb-4">
                   <h2 className="text-base sm:text-xl font-bold leading-none truncate">When works for you?</h2>
                   <span className="relative -top-1.5 hidden sm:inline-flex items-center text-xs font-medium leading-none text-gray-400 bg-gray-100 px-2 py-1 rounded-full flex-shrink-0">
