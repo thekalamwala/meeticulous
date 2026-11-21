@@ -424,7 +424,7 @@ const Topbar = ({ onOpenNav, onOpenSearch, onGo }) => {
         className={cn('flex h-7 min-w-0 flex-1 items-center gap-1.5 rounded-full border-2 border-neutral-200 bg-white px-2.5 text-left text-[11.5px] font-medium text-ink/40 transition hover:border-maroon/30 sm:max-w-[250px]', ring)}
       >
         <Search className="h-3.5 w-3.5 shrink-0" strokeWidth={2.2} />
-        <span className="truncate">Search bookings, clients…</span>
+        <span className="truncate">Search or jump to anything…</span>
         <kbd className="ml-auto hidden shrink-0 rounded border border-neutral-200 px-1 text-[9.5px] font-bold sm:block">/</kbd>
       </button>
 
@@ -469,11 +469,40 @@ const Topbar = ({ onOpenNav, onOpenSearch, onGo }) => {
   );
 };
 
-/* ── Phone tab bar ─────────────────────────────────────────────────────── */
-const TabBar = ({ onMore }) => (
-  <nav aria-label="Sections" className="fixed inset-x-0 bottom-0 z-30 flex border-t-2 border-neutral-200 bg-cream/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
-    {TAB_BAR.map((to) => {
+/* ── Phone tab bar ─────────────────────────────────────────────────────────
+ * Five destinations, Grow raised in the centre as the hero. No "More": the
+ * full nav drawer is one tap away on the top-bar burger, so repeating it here
+ * was a sixth cramped slot for nothing. The whole rest of the product
+ * (Catalog, Schedule, Intelligence, Community, Settings…) lives in that drawer.
+ * ---------------------------------------------------------------------- */
+const TAB_ORDER = ['', 'bookings', 'grow', 'money', 'clients']; // Grow = index 2, centre
+const TabBar = () => (
+  <nav aria-label="Sections" className="fixed inset-x-0 bottom-0 z-30 flex items-end border-t-2 border-neutral-200 bg-cream/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
+    {TAB_ORDER.map((to, i) => {
       const item = FLAT.find((n) => n.to === to);
+      if (!item) return null;
+      if (i === 2) {
+        // Hero: a raised circle that punches up through the bar.
+        return (
+          <div key={item.label} className="flex flex-1 justify-center">
+            <NavLink
+              to={href(landingFor(item))}
+              end={item.end}
+              aria-label={item.label}
+              className={({ isActive }) => cn(
+                '-mt-6 flex h-16 w-16 flex-col items-center justify-center gap-0.5 rounded-full border-4 border-cream text-white shadow-lg transition active:translate-y-px',
+                isActive ? 'bg-maroon-dark' : 'bg-maroon',
+              )}
+            >
+              <span className="relative">
+                <item.icon className="h-5 w-5" strokeWidth={2.4} />
+                {item.badge > 0 && <span className="absolute -right-1 -top-0.5 h-2 w-2 rounded-full border-2 border-maroon bg-pink" />}
+              </span>
+              <span className="text-[8.5px] font-bold">{item.label}</span>
+            </NavLink>
+          </div>
+        );
+      }
       return (
         <NavLink
           key={item.label}
@@ -489,10 +518,6 @@ const TabBar = ({ onMore }) => (
         </NavLink>
       );
     })}
-    <button type="button" onClick={onMore} className="flex flex-1 flex-col items-center gap-0.5 py-1.5 text-[9.5px] font-bold text-ink/45">
-      <Menu className="h-[17px] w-[17px]" strokeWidth={2.2} />
-      More
-    </button>
   </nav>
 );
 
@@ -658,7 +683,7 @@ const HostLab = () => {
         </main>
       </div>
 
-      <TabBar onMore={() => setNavOpen(true)} />
+      <TabBar />
       <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} items={searchItems} onPick={(it) => go(it.to)} />
     </div>
   );
