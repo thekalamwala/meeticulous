@@ -1331,7 +1331,7 @@ const ServiceBooking = () => {
               <div className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl p-4 sm:p-5">
                 <div className="flex items-center gap-2 min-w-0 mb-4">
                   <h2 className="text-base sm:text-xl font-bold leading-none truncate">When works for you?</h2>
-                  <span className="hidden sm:inline-flex items-center text-xs font-medium leading-none text-gray-400 bg-gray-100 px-2 py-1 rounded-full flex-shrink-0">
+                  <span className="relative -top-1.5 hidden sm:inline-flex items-center text-xs font-medium leading-none text-gray-400 bg-gray-100 px-2 py-1 rounded-full flex-shrink-0">
                     {tzAbbr}
                   </span>
                 </div>
