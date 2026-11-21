@@ -187,11 +187,18 @@ const createItem = handle(async (req, res) => {
   let collaborators = [];
   if (await isFeatureEnabled('community_collaborators')) {
     const raw = Array.isArray(req.body?.collaborator_ids) ? req.body.collaborator_ids : [];
-    const ids = [...new Set(raw.map((x) => String(x)).filter(Boolean))].filter((id) => id !== uid);
+    const self = String(uid).toLowerCase();
+    // Lowercase so dedupe + self-exclusion match the case-insensitive uuid lookup
+    // (a client can't self-credit by sending its own id uppercased).
+    const ids = [...new Set(raw.map((x) => String(x).toLowerCase()).filter(Boolean))].filter((id) => id !== self);
     if (ids.length > 2) return fail(res, 400, 'COLLAB_LIMIT', 'You can add up to 2 collaborators.');
     if (ids.length) {
-      collaborators = await store.mentionableByIds(ids);
-      if (collaborators.length !== ids.length) return fail(res, 400, 'COLLAB_INVALID', 'Pick community members as collaborators.');
+      const valid = await store.mentionableByIds(ids);
+      if (valid.length !== ids.length) return fail(res, 400, 'COLLAB_INVALID', 'Pick community members as collaborators.');
+      // Keep the author's pick order (mentionableByIds returns DB order) so stored
+      // position — and the "with A & B" display — follows what they chose.
+      const byId = new Map(valid.map((c) => [c.id, c]));
+      collaborators = ids.map((id) => byId.get(id)).filter(Boolean);
     }
   }
 

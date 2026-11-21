@@ -201,6 +201,26 @@ describe('createItem', () => {
       expect(arg(callsOn('community_post_collaborators', 'insert')[0].ops, 'insert').map((x) => x.profile_id)).toEqual([C1]);
     });
 
+    test('self id in a different case is dropped, not credited', async () => {
+      setupCollab([C1]);
+      const r = res();
+      await ctrl.createItem(req({ kind: 'post', body: 'Hello there everyone', collaborator_ids: [C1, ME.toUpperCase()] }), r);
+      expect(statusOf(r)).toBe(201);
+      expect(arg(callsOn('community_post_collaborators', 'insert')[0].ops, 'insert').map((x) => x.profile_id)).toEqual([C1]);
+    });
+
+    test('collaborators are stored in the order the author picked, not DB order', async () => {
+      // profiles .in returns REVERSED; the insert must still follow the request order [C1, C2].
+      db.on('profiles', (ops) => (has(ops, 'in')
+        ? { data: [{ id: C2, is_host: false, is_banned: false, username: 'c2' }, { id: C1, is_host: false, is_banned: false, username: 'c1' }], error: null }
+        : { data: GUEST, error: null }));
+      db.on('community_members', (ops) => (has(ops, 'in') ? { data: [{ user_id: C1 }, { user_id: C2 }], error: null } : { data: null, error: null }));
+      db.on('community_post_collaborators', (ops) => ({ data: has(ops, 'insert') ? arg(ops, 'insert') : [], error: null }));
+      const r = res();
+      await ctrl.createItem(req({ kind: 'post', body: 'Hello there everyone', collaborator_ids: [C1, C2] }), r);
+      expect(arg(callsOn('community_post_collaborators', 'insert')[0].ops, 'insert').map((x) => x.profile_id)).toEqual([C1, C2]);
+    });
+
     test('flag off -> collaborator_ids ignored', async () => {
       isFeatureEnabled.mockImplementation((k) => k !== 'community_collaborators');
       setupCollab([C1, C2]);
