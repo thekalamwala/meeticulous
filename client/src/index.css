@@ -380,6 +380,29 @@ select:focus {
   box-shadow: 0 0 0 4px rgba(46, 16, 101, 0.14);
 }
 
+/* .fb-input is the shared user-facing input class, but it lives in @layer legacy
+   which loses to the unlayered base `input` rule above. Pin the minimalist look
+   here — unlayered + higher specificity — so every .fb-input form (login, reviews,
+   reschedule, WhatsApp verify, forgot/reset) gets the clean bottom border. Pages
+   can still override the focus underline to their theme (.bk-page / .pp-page). */
+input.fb-input,
+textarea.fb-input,
+select.fb-input {
+  min-height: 40px;
+  border: 0;
+  border-bottom: 1.5px solid var(--color-line);
+  border-radius: 0;
+  background: transparent;
+  padding: 0.55rem 0.15rem;
+}
+input.fb-input:focus,
+textarea.fb-input:focus,
+select.fb-input:focus {
+  border-color: transparent;
+  border-bottom-color: var(--color-primary);
+  box-shadow: none;
+}
+
 button:focus-visible,
 a:focus-visible,
 [role='button']:focus-visible {
