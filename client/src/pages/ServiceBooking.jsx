@@ -1463,16 +1463,11 @@ const ServiceBooking = () => {
                                     <button
                                       key={t}
                                       onClick={() => setSelectedTime(t)}
-                                      className="relative py-2 text-[13px] font-semibold rounded-xl border-2 transition-all"
+                                      className="py-2 text-[13px] font-semibold rounded-xl border-2 transition-all"
                                       style={on
                                         ? { background: tc, color: textOnTheme, borderColor: tc }
                                         : { background: "#fff", borderColor: "var(--color-line)", color: "#2B0A14" }}
                                     >
-                                      {on && (
-                                        <svg className="absolute left-1.5 top-1/2 -translate-y-1/2 w-3 h-3" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
-                                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                      )}
                                       {formatTime(t)}
                                     </button>
                                   );
