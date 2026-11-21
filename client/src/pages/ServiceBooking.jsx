@@ -1107,8 +1107,9 @@ const ServiceBooking = () => {
         {/* ── Booking Engine (full width) ── */}
         <div className="flex-1 min-w-0 flex flex-col">
           {/* Summary strip — replaces the side profile: who + what + when + total.
-              Hidden on the time step, where the left info card carries this. */}
-          {step !== "confirmed" && step !== "time" && (
+              Hidden on time (left info card carries it) and on details — the
+              "Who's coming?" screen reads cleaner without the repeated header. */}
+          {step !== "confirmed" && step !== "time" && step !== "details" && (
             <div className="flex items-center gap-3 bg-white border-2 border-[color:var(--color-line)] rounded-2xl px-4 py-3 mb-4">
               <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center"
                 style={{ background: `${tc}18`, color: tc }}>
