@@ -1148,9 +1148,9 @@ const ServiceBooking = () => {
               </div>
             </div>
           )}
-          {/* Progress bar — only the ACTIVE step expands to a horizontal
-              icon + label pill; done steps stay a solid orange icon, upcoming
-              steps a grey icon. */}
+          {/* Progress bar — hidden on the time step (it added nothing while
+              picking a slot, and the left card already frames the booking). */}
+          {step !== "time" && (
           <div className="mb-5 flex items-center w-full">
             {STEPS.map((s, i) => {
               const idx = STEPS.indexOf(step);
@@ -1190,6 +1190,7 @@ const ServiceBooking = () => {
               );
             })}
           </div>
+          )}
 
           {/* Labour-illusion: brief "wrapping up" screen before the confirmed view */}
           {finalizing && (
