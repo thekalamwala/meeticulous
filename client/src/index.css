@@ -342,8 +342,13 @@ textarea,
 select {
   width: 100%;
   min-height: 44px;
-  border: 1px solid #d7dce3;
-  border-radius: var(--radius-control);
+  /* Soft brand border (warm neutral-200), NOT the old cold grey #d7dce3. The
+     resting frame every bare input relies on — kept, just softened. */
+  border: 1px solid var(--border-1);
+  /* Inputs are rectangles → 8px, NOT --radius-control (which is the pill token
+     shared with .mt-btn). This rule used to inherit the 999px pill and render
+     every bare input as an oval. */
+  border-radius: var(--radius-input);
   background: var(--color-surface);
   color: var(--color-ink);
   padding: 0.78rem 0.95rem;
@@ -376,8 +381,17 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px rgba(46, 16, 101, 0.14);
+  border-color: var(--border-brand);
+  box-shadow: var(--focus-ring);
+}
+
+/* Inside the framed .mt-input the WRAPPER owns the focus ring (:focus-within);
+   the inner control must not draw its own, or the two rings stack (double border).
+   (0,1,2) beats the (0,1,1) `input:focus` rule above. */
+.mt-input input:focus,
+.mt-input textarea:focus,
+.mt-input select:focus {
+  box-shadow: none;
 }
 
 /* .fb-input is the shared user-facing input class, but it lives in @layer legacy
