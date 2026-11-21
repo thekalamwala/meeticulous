@@ -16,6 +16,7 @@ import { isNotFoundError } from "../utils/fetchError";
 import { resolveProfileSeo, profileGraphJsonLd, SITE_URL } from "../utils/seo";
 import { profileFaqs } from "../utils/profileFaqs";
 import FaqAccordion from "../components/FaqAccordion";
+import ItemCard from "../components/community/ItemCard";
 import { prerendered } from "../services/prerenderData";
 import { BadgeCheck, LayoutGrid, Package, Crown, Newspaper, PlayCircle, MessageCircle, Menu, X } from "lucide-react";
 
@@ -113,7 +114,7 @@ const SocialIcon = ({ platform, href }) => {
   return (
     <a href={href} target="_blank" rel="noreferrer"
       className="flex items-center justify-center flex-shrink-0 transition-colors hover:opacity-80"
-      style={{ width: 34, height: 34, borderRadius: '50%', border: `1px solid ${C.border}`, color: C.secondary, background: C.card }}
+      style={{ width: 32, height: 32, color: C.secondary }}
       title={platform.charAt(0).toUpperCase() + platform.slice(1)}>
       <svg className="w-4 h-4" fill="none" stroke="currentColor"
         strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"
@@ -134,8 +135,7 @@ const Badge = ({ badge, onSelect }) => {
       aria-label={label}
       className="flex items-center justify-center cursor-pointer select-none overflow-hidden transition-transform hover:scale-110"
       style={{
-        width: 44, height: 44, borderRadius: 12, background: '#F5ECEA', fontSize: 22,
-        border: `1px solid ${C.border}`,
+        width: 22, height: 22, borderRadius: 6, background: 'transparent', fontSize: 11,
       }}>
       {badge.image_url
         ? <img src={badge.image_url} alt={label} className="w-full h-full object-contain" />
@@ -155,6 +155,20 @@ const getServiceTag = (service) => {
 // Compact price label. "Price on request" hides the fee (host quotes offline).
 const cardPriceLabel = (s) => (s.price_on_request ? 'On request' : s.price === 0 ? 'Free' : `₹${s.price}`);
 
+// Price with the ₹ symbol and the number baseline-aligned: 3px gap, number nudged
+// up 1px (the rupee glyph sits lower than the digits in the display font).
+const Price = ({ label }) => {
+  if (typeof label === 'string' && label.startsWith('₹')) {
+    return (
+      <span className="inline-flex items-baseline" style={{ gap: 3 }}>
+        <span>₹</span>
+        <span style={{ transform: 'translateY(-1px)' }}>{label.slice(1)}</span>
+      </span>
+    );
+  }
+  return <>{label}</>;
+};
+
 // ─── Service Card ──────────────────────────────────────────────────────────────
 const ServiceCard = ({ service: s, profileSlug }) => {
   const _rawDesc  = s.short_description || s.description || '';
@@ -164,12 +178,12 @@ const ServiceCard = ({ service: s, profileSlug }) => {
   const tag       = getServiceTag(s);
 
   return (
-    <article className="flex flex-col bg-white rounded-2xl transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(43,10,20,0.08)]"
-      style={{ border: `2px solid ${C.border}`, padding: '18px 18px 16px' }}>
+    <article className="flex flex-col bg-white rounded-2xl"
+      style={{ border: `1px solid ${C.border}`, padding: '18px 18px 16px' }}>
 
-      {/* Type pill + tag */}
+      {/* Type badge + tag */}
       <div className="flex items-center justify-between gap-2 mb-2.5">
-        <span className="inline-flex items-center gap-1.5 text-[11.5px] font-semibold px-2.5 py-1 rounded-full"
+        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full"
           style={{ background: 'var(--profile-accent-light, #FFE4EA)', color: 'var(--profile-accent, #960D32)' }}>
           <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
             <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" />
@@ -177,7 +191,7 @@ const ServiceCard = ({ service: s, profileSlug }) => {
           1:1 Session
         </span>
         {tag && (
-          <span className="flex-shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full"
+          <span className="flex-shrink-0 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full"
             style={{ background: '#FDF0D2', color: '#5A3A00' }}>
             {tag}
           </span>
@@ -193,27 +207,29 @@ const ServiceCard = ({ service: s, profileSlug }) => {
       {/* Meta — duration + mode */}
       <div className="flex items-center gap-4 text-xs mt-3 mb-4" style={{ color: C.secondary }}>
         <span className="flex items-center gap-1.5">
-          <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: C.muted }} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="9" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l3 2" />
+          <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#AF9C99' }} fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clipRule="evenodd" />
           </svg>
           {s.duration} min
         </span>
         <span className="flex items-center gap-1.5">
           {s.meeting_mode === 'offline' ? (
-            <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: C.muted }} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
+            <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#AF9C99' }} fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M9.69 18.933c.11.055.275.133.46.133.183 0 .349-.078.46-.133a15.3 15.3 0 0 0 4.2-3.57C16.08 13.24 18 10.5 18 8a8 8 0 1 0-16 0c0 2.5 1.92 5.24 3.19 6.943a15.3 15.3 0 0 0 4.3 3.99ZM10 10.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" clipRule="evenodd" />
             </svg>
           ) : (
-            <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: C.muted }} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-              <polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+            <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#AF9C99' }} fill="currentColor" viewBox="0 0 20 20">
+              <path d="M3.25 4A2.25 2.25 0 0 0 1 6.25v7.5A2.25 2.25 0 0 0 3.25 16h7.5A2.25 2.25 0 0 0 13 13.75v-7.5A2.25 2.25 0 0 0 10.75 4h-7.5ZM19 4.75a.75.75 0 0 0-1.28-.53l-3 3a.75.75 0 0 0-.22.53v4.5c0 .199.079.39.22.53l3 3a.75.75 0 0 0 1.28-.53V4.75Z" />
             </svg>
           )}
           {s.meeting_mode === 'offline' ? 'In-person' : 'Online'}
         </span>
         {s.booking_count > 0 && (
           <span className="flex items-center gap-1.5">
-            <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: C.muted }} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-              <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18m-9 5 2 2 4-4" />
+            <svg className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#AF9C99' }} viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="17" rx="3" fill="currentColor" />
+              <path d="M8 2v3M16 2v3" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+              <path d="m8.3 13.6 2.3 2.3 4.4-4.4" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             {`Booked ${s.booking_count}×`}
           </span>
@@ -222,10 +238,10 @@ const ServiceCard = ({ service: s, profileSlug }) => {
 
       {/* Footer — price + Book */}
       <div className="flex items-center justify-between mt-auto pt-4" style={{ borderTop: `1px solid ${C.border}` }}>
-        <div className="font-display font-extrabold text-lg leading-none" style={{ color: C.text }}>{cardPriceLabel(s)}</div>
+        <div className="font-display font-extrabold text-xl leading-none" style={{ color: C.text }}><Price label={cardPriceLabel(s)} /></div>
         {bookUrl && (
           <Link to={bookUrl}
-            className="text-sm font-semibold flex items-center rounded-full transition-opacity hover:opacity-85"
+            className="text-sm font-semibold flex items-center rounded-full transition-all hover:opacity-90 active:scale-[0.97]"
             style={{ background: 'var(--profile-accent, #960D32)', color: 'var(--profile-accent-text, #ffffff)', height: 40, padding: '0 18px' }}>
             Book Now
           </Link>
@@ -246,8 +262,8 @@ const ProductCard = ({ product: p, profileSlug }) => {
   const detailUrl = `/${profileSlug}/product/${p.slug || p.id}`;
 
   return (
-    <div className="flex flex-row sm:flex-col bg-white rounded-2xl overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(43,10,20,0.08)]"
-      style={{ border: `2px solid ${C.border}` }}>
+    <div className="flex flex-row sm:flex-col bg-white rounded-2xl overflow-hidden"
+      style={{ border: `1px solid ${C.border}` }}>
 
       <Link to={detailUrl}
         className="relative flex-shrink-0 w-28 self-stretch sm:w-full sm:self-auto aspect-[16/9] overflow-hidden"
@@ -255,7 +271,7 @@ const ProductCard = ({ product: p, profileSlug }) => {
         {p.thumbnail_url
           ? <img src={p.thumbnail_url} alt={p.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
           : <span className="absolute inset-0 flex items-center justify-center text-4xl opacity-50">{TYPE_ICONS[p.type] || '📦'}</span>}
-        <span className="absolute top-2 left-2 text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize"
+        <span className="absolute top-2 left-2 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full"
           style={{ background: 'rgba(255,255,255,0.92)', color: 'var(--profile-accent, #960D32)' }}>
           {typeLabel}
         </span>
@@ -272,9 +288,9 @@ const ProductCard = ({ product: p, profileSlug }) => {
           <p className="hidden sm:block text-sm leading-relaxed line-clamp-2" style={{ color: C.secondary }}>{p.description}</p>
         )}
         <div className="flex items-center justify-between mt-auto pt-3" style={{ borderTop: `1px solid ${C.border}` }}>
-          <div className="font-display font-extrabold leading-none" style={{ color: C.text, fontSize: 17 }}>{isFree ? 'Free' : `₹${p.price}`}</div>
+          <div className="font-display font-extrabold leading-none" style={{ color: C.text, fontSize: 20 }}><Price label={isFree ? 'Free' : `₹${p.price}`} /></div>
           <Link to={detailUrl}
-            className="text-sm font-semibold flex items-center rounded-full transition-opacity hover:opacity-85"
+            className="text-sm font-semibold flex items-center rounded-full transition-all hover:opacity-90 active:scale-[0.97]"
             style={{ background: 'var(--profile-accent, #960D32)', color: 'var(--profile-accent-text, #ffffff)', height: 36, padding: '0 16px' }}>
             {isFree ? 'Get Free' : 'Buy Now'}
           </Link>
@@ -294,8 +310,10 @@ function bakedProfile(slug) {
 // ─── Feed — the host's community activity (posts + replies) ─────────────────────
 // Community reads are gated: a 404 = the `community` flag is off for this viewer,
 // shown as "coming soon". Read-only preview; each item links to its permalink.
-const ProfileFeed = ({ hostId, tc }) => {
+const ProfileFeed = ({ host, profileSlug, tc }) => {
+  const hostId = host?.id;
   const [s, setS] = useState({ status: 'loading', posts: [], comments: [] });
+  const [visible, setVisible] = useState(5); // posts shown; grows by a batch per "Load more"
   useEffect(() => {
     let alive = true;
     setS((p) => ({ ...p, status: 'loading' }));
@@ -304,6 +322,16 @@ const ProfileFeed = ({ hostId, tc }) => {
       .catch((e) => alive && setS({ status: e?.response?.status === 404 ? 'gated' : 'error', posts: [], comments: [] }));
     return () => { alive = false; };
   }, [hostId]);
+
+  // Map an activity post into the shape ItemCard (the real community feed card) wants:
+  // its author is this host, and space only passes through when it carries a key.
+  const hostAuthor = {
+    display_name: host?.name,
+    avatar_url: host?.profile_image,
+    role: 'host',
+    profile_url: profileSlug ? `/${profileSlug}` : undefined,
+  };
+  const toItem = (p) => ({ ...p, author: p.author || hostAuthor, space: p.space?.key ? p.space : undefined });
 
   const Shell = ({ children }) => (
     <div>
@@ -322,30 +350,36 @@ const ProfileFeed = ({ hostId, tc }) => {
   );
 
   if (s.status === 'loading') return <Shell><div className="py-16 text-center" style={{ color: C.muted }}>Loading feed…</div></Shell>;
-  if (s.status === 'gated')   return <Shell><Empty title="Feed is coming soon" sub="Posts and replies from this creator will show up here." /></Shell>;
+  if (s.status === 'gated')   return <Shell><Empty title="Feed is coming soon" sub="Posts from this creator will show up here." /></Shell>;
   if (s.status === 'error')   return <Shell><div className="py-16 text-center" style={{ color: C.muted }}>Couldn't load the feed.</div></Shell>;
-  if (!s.posts.length && !s.comments.length) return <Shell><Empty title="No posts yet" /></Shell>;
+  if (!s.posts.length) return <Shell><Empty title="No posts yet" /></Shell>;
+
+  // Posts-only (replies dropped — low signal here). getAuthorActivity returns the
+  // whole page up front, so "Load more" just reveals the next batch from memory —
+  // every click is instant, the next set is already loaded. Once all are shown, the
+  // page may be capped (<=20 from the endpoint), so point to the full community.
+  const shown = s.posts.slice(0, visible);
+  const moreLoaded = s.posts.length > visible;
 
   return (
     <Shell>
       <div className="space-y-4">
-        {s.posts.map((p) => (
-          <Link key={p.id} to={p.url} className="block rounded-2xl p-5 hover:no-underline" style={{ background: C.card, border: `1px solid ${C.border}` }}>
-            {p.title && <h3 className="font-display font-bold text-lg" style={{ color: C.text }}>{p.title}</h3>}
-            {p.body && <p className="text-sm mt-1.5 line-clamp-3" style={{ color: C.secondary }}>{p.body}</p>}
-            <div className="flex items-center gap-4 text-xs mt-3" style={{ color: C.muted }}>
-              <span>{p.like_count ?? 0} likes</span><span>{p.comment_count ?? 0} replies</span>
-            </div>
-          </Link>
+        {shown.map((p) => (
+          <ItemCard key={p.id} item={toItem(p)} />
         ))}
-        {s.comments.map((cm) => (
-          <Link key={cm.id} to={cm.parent?.url || '#'} className="block rounded-2xl p-4 hover:no-underline" style={{ background: C.card, border: `1px solid ${C.border}` }}>
-            <p className="text-xs font-medium mb-1" style={{ color: tc }}>
-              Replied{cm.parent?.title ? ` on “${cm.parent.title}”` : ''}
-            </p>
-            <p className="text-sm line-clamp-2" style={{ color: C.secondary }}>{cm.body}</p>
-          </Link>
-        ))}
+      </div>
+      <div className="mt-5 text-center">
+        {moreLoaded ? (
+          <button type="button" onClick={() => setVisible((v) => v + 6)}
+            className="inline-flex items-center justify-center rounded-full font-semibold text-sm transition-colors"
+            style={{ height: 42, padding: '0 22px', border: `1px solid ${C.border}`, background: C.card, color: C.text }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = `${tc}0D`; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = C.card; }}>
+            Load more
+          </button>
+        ) : s.posts.length >= 20 ? (
+          <Link to="/community" className="text-sm font-semibold hover:underline" style={{ color: tc }}>See all in the community →</Link>
+        ) : null}
       </div>
     </Shell>
   );
@@ -476,7 +510,8 @@ const HostProfile = () => {
   const [testimonials, setTestimonials] = useState(() => (seed && prerendered(`/host/${profileSlug}/testimonials`)) || []);
   const [badgeList,   setBadgeList]   = useState(() => (seed && prerendered(`/vendors/${profileSlug}/badges`)?.badges) || []);
   const [badgeInfo,   setBadgeInfo]   = useState(null); // clicked badge → bottom-right info popup
-  const [cardExpanded, setCardExpanded] = useState(false); // "More about" details expander
+  const [cardExpanded, setCardExpanded] = useState(false); // bio "Show more" toggle
+  const [linksOpen,    setLinksOpen]    = useState(false); // "Link in Bio" collapsible
 
   useEffect(() => {
     if (isVanity) return; // vanity slug → redirected in render; skip the 404 lookup
@@ -550,17 +585,12 @@ const HostProfile = () => {
     setServices(view.services);
   };
 
-  // Badge info popup auto-dismisses after 5s.
-  useEffect(() => {
-    if (!badgeInfo) return;
-    const t = setTimeout(() => setBadgeInfo(null), 5000);
-    return () => clearTimeout(t);
-  }, [badgeInfo]);
 
   // Derived values are null-safe: the component renders the preloader while host
   // is still loading, so these run before host exists.
   const tc        = host && isValidHex(host.theme_color) ? host.theme_color : DEFAULT_THEME_COLOR;
   const social    = host?.social_links || {};
+  const bio       = host?.bio || '';
   const badges    = badgeList;
   const firstName = (host?.name || '').trim().split(/\s+/)[0] || 'the host';
 
@@ -569,24 +599,16 @@ const HostProfile = () => {
     .filter(k => social[k])
     .map(k => ({ key: k, href: safeUrl(social[k], k === 'email') }))
     .filter(({ href }) => href !== '#');
+  const websiteUrl = safeUrl(social.website);
 
   const hasProducts = products.length > 0;
   // Offering types the host actually has drive the icon filters + nav (Memberships
   // and Updates are omitted until there's a data source — no empty doorway tabs).
   const showServices = filter === 'all' || filter === 'service';
   const showProducts = (filter === 'all' || filter === 'product') && hasProducts;
-  // Featured hero only on the "all" view, and only when there's a service to lead
-  // with; the grid then skips that first service so it isn't shown twice.
-  const featured     = filter === 'all' && services.length ? services[0] : null;
-  const gridServices = showServices ? (featured ? services.slice(1) : services) : [];
-  const nothingShown = gridServices.length === 0 && !featured && !showProducts;
-
-  // Intro / discovery CTA — the host's first FREE active service (price 0, not
-  // on-request) is their low-friction entry offer. No schema: "free" is already a
-  // first-class service state (plan free_services cap). Null when the host has none.
-  const introService = services.find(
-    (s) => s.slug && !s.price_on_request && Number(s.price) === 0,
-  );
+  // Grid shows every service (featured hero + intro CTA removed).
+  const gridServices = showServices ? services : [];
+  const nothingShown = gridServices.length === 0 && !showProducts;
 
   // Admin-managed SEO → head tags + ProfilePage JSON-LD (only once host loaded).
   const seo = host ? resolveProfileSeo({ host, services, siteUrl: SEO_SITE }) : null;
@@ -667,23 +689,20 @@ const HostProfile = () => {
             )}
           </a>
 
-          {/* Center — divider rail (text only; active = accent, neighbouring dividers fade) */}
-          <div className="absolute left-1/2 -translate-x-1/2 flex items-center rounded-full"
-            style={{ background: C.card, border: `1px solid ${C.border}`, padding: 3 }} role="tablist" aria-label="Sections">
-            {SECTIONS.map((s, i) => {
-              const prevActive = i > 0 && SECTIONS[i - 1].active;
-              return (
-                <button key={s.key} type="button" role="tab" aria-selected={s.active} onClick={s.onClick}
-                  className="relative text-sm transition-colors outline-none focus-visible:ring-2 rounded-full"
-                  style={{ color: s.active ? tc : C.muted, fontWeight: s.active ? 600 : 500, padding: '7px 15px', '--tw-ring-color': tc }}>
-                  {i > 0 && (
-                    <span aria-hidden="true" className="absolute left-0" style={{ top: '22%', bottom: '22%', width: 1,
-                      background: (s.active || prevActive) ? 'transparent' : C.border }} />
-                  )}
-                  {s.label}
-                </button>
-              );
-            })}
+          {/* Center — text-only rail: no container, no dividers. Active = bold +
+              2px accent underline flush to the navbar's bottom edge. */}
+          <div className="absolute left-1/2 -translate-x-1/2 inset-y-0 flex items-stretch gap-6"
+            role="tablist" aria-label="Sections">
+            {SECTIONS.map((s) => (
+              <button key={s.key} type="button" role="tab" aria-selected={s.active} onClick={s.onClick}
+                className="relative h-full flex items-center text-sm transition-colors outline-none focus-visible:ring-2 rounded-sm"
+                style={{ color: s.active ? tc : C.muted, fontWeight: s.active ? 700 : 500, '--tw-ring-color': tc }}>
+                {s.label}
+                {s.active && (
+                  <span aria-hidden="true" className="absolute left-0 right-0 bottom-0" style={{ height: 2, background: tc }} />
+                )}
+              </button>
+            ))}
           </div>
 
           {/* Right — CTA */}
@@ -735,8 +754,8 @@ const HostProfile = () => {
       {navOpen && (
         <div className="lg:hidden fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label={`${host.name} profile`} id="profile-drawer">
           <div className="absolute inset-0" style={{ background: 'rgba(43,10,20,0.40)' }} onClick={() => setNavOpen(false)} />
-          <div className="absolute left-0 right-0 bottom-0 rounded-t-3xl flex flex-col"
-            style={{ background: C.card, maxHeight: '90%', overflow: 'auto', paddingBottom: 'calc(28px + env(safe-area-inset-bottom, 0px))', boxShadow: '0 -14px 40px rgba(43,10,20,0.18)' }}>
+          <div className="absolute inset-0 flex flex-col"
+            style={{ background: C.card, overflow: 'auto', paddingBottom: 'calc(28px + env(safe-area-inset-bottom, 0px))' }}>
             {/* Grip handle on the sheet — always visible, not over the cover */}
             <div className="flex justify-center flex-shrink-0" style={{ paddingTop: 8, paddingBottom: 6 }}>
               <span aria-hidden="true" style={{ width: 40, height: 4, borderRadius: 4, background: C.border }} />
@@ -751,7 +770,7 @@ const HostProfile = () => {
               </button>
             </div>
             <div className="flex flex-col items-center text-center px-5" style={{ marginTop: -44 }}>
-              <span className="flex items-center justify-center overflow-hidden flex-shrink-0" style={{ position: 'relative', zIndex: 2, width: 88, height: 88, borderRadius: '50%', background: `${tc}18`, color: tc, border: `4px solid ${C.card}`, boxShadow: '0 4px 12px rgba(43,10,20,0.15)' }}>
+              <span className="flex items-center justify-center overflow-hidden flex-shrink-0" style={{ position: 'relative', zIndex: 2, width: 88, height: 88, borderRadius: '50%', background: `${tc}18`, color: tc, border: `2px solid ${C.card}` }}>
                 {host.profile_image
                   ? <img src={host.profile_image} alt={host.name} width={88} height={88} className="w-full h-full object-cover" />
                   : <span className="font-display font-extrabold" style={{ fontSize: 34 }}>{host.name?.charAt(0)?.toUpperCase()}</span>}
@@ -760,33 +779,67 @@ const HostProfile = () => {
               {host.name}
               {host.is_verified && <BadgeCheck className="w-[18px] h-[18px]" strokeWidth={2.2} style={{ color: tc }} aria-label="Verified" />}
             </span>
-            {(host.profession || host.tagline) && (
-              <p className="text-sm font-medium" style={{ color: tc, marginTop: 4, maxWidth: '34ch' }}>{host.profession || host.tagline}</p>
-            )}
-            {host.bio && (
-              <p className="text-sm w-full text-left" style={{ color: C.muted, marginTop: 12, lineHeight: 1.55 }}>{host.bio}</p>
-            )}
-
-            {badges.length > 0 && (
-              <div className="flex flex-wrap justify-center gap-2" style={{ marginTop: 14 }}>
-                {badges.map((b, i) => <Badge key={i} badge={b} onSelect={setBadgeInfo} />)}
+            {(() => {
+              const subtitle = [host.primary_category_label || host.profession || host.tagline, host.location].filter(Boolean).join(', ');
+              return subtitle ? <p className="text-sm" style={{ color: '#B0A3A0', marginTop: 2 }}>{subtitle}</p> : null;
+            })()}
+            {bio && (
+              <div className="w-full text-left" style={{ marginTop: 10 }}>
+                <p className={`text-[12.6px] leading-relaxed ${cardExpanded ? '' : 'line-clamp-2'}`} style={{ color: '#897572' }}>{bio}</p>
+                {bio.length > 70 && (
+                  <button type="button" onClick={() => setCardExpanded(v => !v)}
+                    className="text-[12.6px] font-semibold underline underline-offset-2 transition-opacity hover:opacity-70" style={{ color: C.text }}>
+                    {cardExpanded ? 'Show less' : 'Show more'}
+                  </button>
+                )}
               </div>
             )}
 
-            <div className="flex w-full justify-center gap-8" style={{ marginTop: 16, paddingTop: 16, borderTop: `1px solid ${C.border}` }}>
-              <div className="flex flex-col"><b className="font-display font-extrabold text-lg" style={{ color: C.text }}>{services.length}</b><span className="text-xs" style={{ color: C.muted }}>Services</span></div>
-              <div className="flex flex-col"><b className="font-display font-extrabold text-lg" style={{ color: C.text }}>{host.booking_count || 0}</b><span className="text-xs" style={{ color: C.muted }}>Bookings</span></div>
-              <div className="flex flex-col"><b className="font-display font-extrabold text-lg" style={{ color: C.text }}>{reviewData?.avg > 0 ? Number(reviewData.avg).toFixed(1) : '—'}</b><span className="text-xs" style={{ color: C.muted }}>Ratings</span></div>
+            {/* Stats — inset dividers + uppercase labels */}
+            <div className="flex items-center w-full text-center" style={{ marginTop: 16, paddingTop: 16, borderTop: `1px solid ${C.border}` }}>
+              {[
+                { n: services.length,       l: 'Services' },
+                { n: host.booking_count || 0, l: 'Bookings' },
+                { n: reviewData?.avg > 0 ? Number(reviewData.avg).toFixed(1) : '—', l: 'Rating', star: reviewData?.avg > 0 },
+              ].map((s, i) => (
+                <div key={s.l} className="relative flex-1 px-1">
+                  {i > 0 && <span aria-hidden="true" className="absolute left-0 top-1/2 -translate-y-1/2 w-px h-7" style={{ background: C.border }} />}
+                  <div className="font-display font-extrabold text-[17px] leading-none flex items-center justify-center gap-0.5" style={{ color: C.text }}>
+                    {s.n}{s.star && <span className="text-[11px] -mt-0.5" style={{ color: '#F6C35A' }}>★</span>}
+                  </div>
+                  <div className="text-[10px] font-semibold tracking-wider uppercase mt-1.5" style={{ color: C.muted }}>{s.l}</div>
+                </div>
+              ))}
             </div>
 
             {socialLinks.length > 0 && (
-              <div className="flex flex-wrap justify-center gap-2" style={{ marginTop: 14 }}>
-                {socialLinks.map(({ key, href }) => <SocialIcon key={key} platform={key} href={href} />)}
+              <div className="w-full overflow-hidden" style={{ marginTop: 16, borderRadius: 12, border: `1px solid ${C.border}` }}>
+                <button type="button" onClick={() => setLinksOpen(v => !v)} aria-expanded={linksOpen}
+                  className="w-full relative flex items-center justify-center gap-2 px-3.5 text-sm font-medium transition-colors hover:bg-black/[0.02] active:bg-black/[0.04]"
+                  style={{ height: 44, background: C.card, color: C.text }}>
+                  <svg className="w-4 h-4 flex-shrink-0" style={{ color: C.secondary }} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
+                  My Social Media
+                  <svg className={`absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 flex-shrink-0 transition-transform ${linksOpen ? 'rotate-180' : ''}`} style={{ color: C.muted }} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
+                </button>
+                <div className="overflow-hidden transition-all duration-300 ease-out" style={{ maxHeight: linksOpen ? 120 : 0, opacity: linksOpen ? 1 : 0 }}>
+                  <div className="p-3 flex flex-wrap justify-center gap-2" style={{ borderTop: `1px solid ${C.border}` }}>
+                    {socialLinks.map(({ key, href }) => <SocialIcon key={key} platform={key} href={href} />)}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {badges.length > 0 && (
+              <div className="w-full" style={{ marginTop: 16 }}>
+                <div className="text-[10px] font-semibold tracking-wider uppercase mb-2 text-center" style={{ color: C.muted }}>Badges</div>
+                <div className="flex flex-wrap justify-center gap-1">
+                  {badges.map((b, i) => <Badge key={i} badge={b} onSelect={setBadgeInfo} />)}
+                </div>
               </div>
             )}
 
             <button type="button" onClick={() => { setNavOpen(false); goOfferings('service'); }}
-              className="w-full flex items-center justify-center rounded-full font-semibold text-sm hover:opacity-90"
+              className="w-full flex items-center justify-center rounded-full font-semibold text-sm transition-opacity hover:opacity-90"
               style={{ height: 46, background: tc, color: '#fff', marginTop: 18 }}>
               Book a session
             </button>
@@ -829,100 +882,93 @@ const HostProfile = () => {
 
           {/* ── LEFT — identity card with cover banner (desktop only; on mobile the
                 profile lives in the corner-avatar drawer) ──────────────── */}
-          <aside className="hidden lg:block w-full max-w-md mx-auto lg:mx-0 lg:max-w-none lg:w-[320px] lg:flex-shrink-0 lg:sticky lg:top-[90px]">
-            <div className="rounded-3xl overflow-hidden" style={{ background: C.card, border: `1px solid ${C.border}`, boxShadow: '0 8px 28px rgba(43,10,20,0.05)' }}>
-              {/* Cover — host's, or the branded default. Avatar overlaps in front. */}
-              <HostCover src={host.cover_image} themeColor={tc} eager className="w-full" />
+          <aside className="hidden lg:block w-full max-w-md mx-auto lg:mx-0 lg:max-w-none lg:w-[320px] lg:flex-shrink-0 lg:sticky lg:top-[90px] lg:max-h-[calc(100vh-106px)] lg:overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="rounded-3xl overflow-hidden" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+              {/* Cover — host's, or the branded default. 90px band; avatar overlaps in front. */}
+              <HostCover src={host.cover_image} themeColor={tc} eager className="w-full" style={{ height: 90, aspectRatio: 'auto' }} />
               <div className="px-6 pb-6 text-center">
 
                 {/* Avatar — overlaps the cover, in front */}
-                <div className="flex justify-center relative -mt-12" style={{ zIndex: 2 }}>
+                <div className="flex justify-center relative -mt-10" style={{ zIndex: 2 }}>
                   <div className="relative overflow-hidden flex items-center justify-center"
-                    style={{ width: 92, height: 92, borderRadius: '50%', background: `${tc}18`, border: `4px solid ${C.card}`, boxShadow: '0 4px 12px rgba(43,10,20,0.14)' }}>
+                    style={{ width: 80, height: 80, borderRadius: '50%', background: `${tc}18`, border: `2px solid ${C.card}` }}>
                     {host.profile_image
-                      ? <img src={host.profile_image} alt={host.name} width={92} height={92} fetchpriority="high" decoding="async" className="w-full h-full object-cover" />
+                      ? <img src={host.profile_image} alt={host.name} width={80} height={80} fetchpriority="high" decoding="async" className="w-full h-full object-cover" />
                       : <span className="font-display font-extrabold text-3xl" style={{ color: tc }}>{host.name?.charAt(0)?.toUpperCase()}</span>}
-                    {host.is_verified && (
-                      <span className="absolute flex items-center justify-center" style={{ bottom: 2, right: 'calc(50% - 46px)', width: 22, height: 22, borderRadius: '50%', background: tc, border: `3px solid ${C.card}` }}>
-                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
-                      </span>
+                  </div>
+                </div>
+
+                {/* Name + verified mark + profession */}
+                <h1 className="font-display font-extrabold text-xl mt-3 flex items-center justify-center gap-1.5" style={{ color: C.text }}>
+                  {host.name}
+                  {host.is_verified && <BadgeCheck className="w-5 h-5 flex-shrink-0" strokeWidth={2.2} style={{ color: tc }} aria-label="Verified" />}
+                </h1>
+                {/* Category, location — one muted line, tight to the name */}
+                {(() => {
+                  const subtitle = [host.primary_category_label || host.profession || host.tagline, host.location].filter(Boolean).join(', ');
+                  return subtitle ? <p className="text-sm -mt-1.5" style={{ color: '#B0A3A0' }}>{subtitle}</p> : null;
+                })()}
+
+                {/* About — bio in the host's accent colour, Show more inline on the 3rd line */}
+                {bio && (
+                  <div className="mt-1.5">
+                    <p className={`text-[12.6px] leading-relaxed ${cardExpanded ? '' : 'line-clamp-2'}`} style={{ color: '#897572' }}>{bio}</p>
+                    {bio.length > 70 && (
+                      <button type="button" onClick={() => setCardExpanded(v => !v)}
+                        className="text-[12.6px] font-semibold underline underline-offset-2 transition-opacity hover:opacity-70" style={{ color: C.text }}>
+                        {cardExpanded ? 'Show less' : 'Show more'}
+                      </button>
                     )}
                   </div>
-                </div>
-
-                {/* Name + profession */}
-                <h1 className="font-display font-extrabold text-xl mt-3.5" style={{ color: C.text }}>{host.name}</h1>
-                {(host.profession || host.tagline) && (
-                  <p className="font-semibold text-sm mt-1.5" style={{ color: tc }}>{host.profession || host.tagline}</p>
                 )}
 
-                {/* Location — sits right under the name/profession */}
-                {host.location && (
-                  <p className="inline-flex items-center justify-center gap-1.5 text-sm mt-2" style={{ color: C.secondary }}>
-                    <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" /></svg>
-                    {host.location}
-                  </p>
-                )}
-
-                {/* Stats — Services · Bookings · Ratings */}
-                <div className="flex justify-center gap-7 mt-4 pt-4" style={{ borderTop: `1px solid ${C.border}` }}>
-                  <div className="flex flex-col"><b className="font-display font-extrabold text-lg" style={{ color: C.text }}>{services.length}</b><span className="text-xs" style={{ color: C.muted }}>Services</span></div>
-                  <div className="flex flex-col"><b className="font-display font-extrabold text-lg" style={{ color: C.text }}>{host.booking_count || 0}</b><span className="text-xs" style={{ color: C.muted }}>Bookings</span></div>
-                  <div className="flex flex-col"><b className="font-display font-extrabold text-lg" style={{ color: C.text }}>{reviewData.avg > 0 ? reviewData.avg.toFixed(1) : '—'}</b><span className="text-xs" style={{ color: C.muted }}>Ratings</span></div>
-                </div>
-
-                {/* Meta — member since · location · price-from */}
-                <div className="flex flex-col items-center gap-1.5 mt-4 text-xs" style={{ color: C.muted }}>
-                  {host.created_at && !Number.isNaN(new Date(host.created_at).getTime()) && (
-                    <span className="inline-flex items-center gap-1.5">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
-                      Hosting since {new Date(host.created_at).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
-                    </span>
-                  )}
-                  {(() => {
-                    const paid = services.filter((s) => !s.price_on_request && Number(s.price) > 0).map((s) => Number(s.price));
-                    return paid.length > 0 ? <span className="font-medium" style={{ color: C.secondary }}>Sessions from ₹{Math.min(...paid)}</span> : null;
-                  })()}
-                </div>
-
-                {/* Bio */}
-                {host.bio && (
-                  <p className="text-sm leading-relaxed text-left mt-4 pt-4" style={{ color: C.secondary, borderTop: `1px solid ${C.border}` }}>{host.bio}</p>
-                )}
-
-                {/* Featured review — the most recent, as social proof */}
-                {reviewData.reviews?.length > 0 && (
-                  <figure className="text-left mt-4 pt-4" style={{ borderTop: `1px solid ${C.border}` }}>
-                    <div className="flex items-center gap-1" aria-label={`${reviewData.avg.toFixed(1)} out of 5`}>
-                      {[0, 1, 2, 3, 4].map((i) => (
-                        <svg key={i} className="w-3.5 h-3.5" style={{ color: i < Math.round(reviewData.avg) ? '#F6C35A' : C.border }} fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                      ))}
+                {/* Stats — three cells with inset dividers + uppercase labels */}
+                <div className="flex items-center mt-4 pt-4 text-center" style={{ borderTop: `1px solid ${C.border}` }}>
+                  {[
+                    { n: services.length,       l: 'Services' },
+                    { n: host.booking_count || 0, l: 'Bookings' },
+                    { n: reviewData.avg > 0 ? reviewData.avg.toFixed(1) : '—', l: 'Rating', star: reviewData.avg > 0 },
+                  ].map((s, i) => (
+                    <div key={s.l} className="relative flex-1 px-1">
+                      {i > 0 && <span aria-hidden="true" className="absolute left-0 top-1/2 -translate-y-1/2 w-px h-7" style={{ background: C.border }} />}
+                      <div className="font-display font-extrabold text-[17px] leading-none flex items-center justify-center gap-0.5" style={{ color: C.text }}>
+                        {s.n}{s.star && <span className="text-[11px] -mt-0.5" style={{ color: '#F6C35A' }}>★</span>}
+                      </div>
+                      <div className="text-[10px] font-semibold tracking-wider uppercase mt-1.5" style={{ color: C.muted }}>{s.l}</div>
                     </div>
-                    <blockquote className="text-sm mt-2 line-clamp-4" style={{ color: C.secondary }}>“{reviewData.reviews[0].comment || reviewData.reviews[0].review || reviewData.reviews[0].text}”</blockquote>
-                    <figcaption className="text-xs mt-1.5" style={{ color: C.muted }}>— {reviewData.reviews[0].guest_name || reviewData.reviews[0].name || 'Verified guest'}</figcaption>
-                  </figure>
+                  ))}
+                </div>
+
+                {/* Link in Bio — collapsible: socials, centered button */}
+                {(websiteUrl !== '#' || socialLinks.length > 0) && (
+                  <div className="mt-5 overflow-hidden" style={{ borderRadius: 12, border: `1px solid ${C.border}` }}>
+                    <button type="button" onClick={() => setLinksOpen(v => !v)} aria-expanded={linksOpen}
+                      className="w-full relative flex items-center justify-center gap-2 px-3.5 text-sm font-medium transition-colors hover:bg-black/[0.02] active:bg-black/[0.04]"
+                      style={{ height: 44, background: C.card, color: C.text }}>
+                      <svg className="w-4 h-4 flex-shrink-0" style={{ color: C.secondary }} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
+                      My Social Media
+                      <svg className={`absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 flex-shrink-0 transition-transform ${linksOpen ? 'rotate-180' : ''}`} style={{ color: C.muted }} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
+                    </button>
+                    {socialLinks.length > 0 && (
+                      <div className="overflow-hidden transition-all duration-300 ease-out"
+                        style={{ maxHeight: linksOpen ? 120 : 0, opacity: linksOpen ? 1 : 0 }}>
+                        <div className="p-3 flex flex-wrap justify-center gap-2" style={{ borderTop: `1px solid ${C.border}` }}>
+                          {socialLinks.map(({ key, href }) => <SocialIcon key={key} platform={key} href={href} />)}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 )}
 
+                {/* Badges — labeled, at the bottom */}
                 {badges.length > 0 && (
-                  <div className="flex flex-wrap justify-center gap-2 mt-4">
-                    {badges.map((b, i) => <Badge key={i} badge={b} onSelect={setBadgeInfo} />)}
+                  <div className="mt-5">
+                    <div className="text-[10px] font-semibold tracking-wide uppercase mb-2" style={{ color: C.muted }}>Badges</div>
+                    <div className="flex flex-wrap justify-center gap-1">
+                      {badges.map((b, i) => <Badge key={i} badge={b} onSelect={setBadgeInfo} />)}
+                    </div>
                   </div>
                 )}
-
-                {socialLinks.length > 0 && (
-                  <div className="flex flex-wrap justify-center gap-2 mt-4">
-                    {socialLinks.map(({ key, href }) => <SocialIcon key={key} platform={key} href={href} />)}
-                  </div>
-                )}
-
-                {/* Share */}
-                <button type="button"
-                  onClick={() => { const url = window.location.href; if (navigator.share) navigator.share({ title: `${host.name} · Meeticulous`, url }).catch(() => {}); else navigator.clipboard?.writeText(url).catch(() => {}); }}
-                  className="w-full mt-5 flex items-center justify-center gap-2 rounded-full font-semibold text-[13px] transition-colors hover:opacity-90"
-                  style={{ height: 42, border: `1px solid ${C.border}`, background: C.card, color: C.text }}>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="m8.6 13.5 6.8 4M15.4 6.5 8.6 10.5" /></svg>
-                  Share profile
-                </button>
               </div>
             </div>
           </aside>
@@ -930,68 +976,10 @@ const HostProfile = () => {
           {/* ── RIGHT — offerings ──────────────────────── */}
           <section className="w-full lg:flex-1 min-w-0">
 
-            {filter === 'feed' ? <ProfileFeed hostId={host.id} tc={tc} /> : (<>
+            {filter === 'feed' ? <ProfileFeed host={host} profileSlug={profileSlug} tc={tc} /> : (<>
 
-            {/* Header + icon filters */}
-            <div id="offerings" className="flex items-start gap-3 flex-wrap mb-5" style={{ scrollMarginTop: 82 }}>
-              <div className="flex-1 min-w-[180px]">
-                <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight flex items-baseline gap-2 flex-wrap" style={{ color: C.text }}>
-                  <span className="font-serif italic font-normal text-base sm:text-lg" style={{ color: '#E0506F' }}>{host.name}'s</span>
-                  Offerings
-                </h2>
-              </div>
-
-              {/* Category filters removed — the profile nav (rail on desktop, bottom
-                  tab-bar on mobile) drives the section filter now. */}
-            </div>
-
-            {/* Intro CTA — soft, low-friction entry when the host offers a free service */}
-            {introService && (filter === 'all' || filter === 'service') && (
-              <Link to={`/${profileSlug}/booking/${introService.slug}`} aria-label="Start with a free intro session"
-                className="flex items-center gap-3 rounded-2xl mb-5 px-4 py-3 transition-opacity hover:opacity-90"
-                style={{ background: `${tc}0D`, border: `1px solid ${tc}33` }}>
-                <span className="flex items-center justify-center flex-shrink-0 rounded-full" style={{ width: 36, height: 36, background: tc, color: '#fff' }}>
-                  <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7z" /></svg>
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block font-display font-bold text-sm leading-tight truncate" style={{ color: C.text }}>New here? Start with a free intro</span>
-                  <span className="block text-xs truncate" style={{ color: C.secondary }}>{introService.title}</span>
-                </span>
-                <span className="flex-shrink-0 text-sm font-semibold rounded-full flex items-center" style={{ height: 36, padding: '0 16px', background: tc, color: '#fff' }}>Book free</span>
-              </Link>
-            )}
-
-            {/* Featured hero — leads the "all" view with the host's first service */}
-            {featured && (() => {
-              const bookUrl = featured.slug ? `/${profileSlug}/booking/${featured.slug}` : null;
-              const desc = featured.short_description || featured.description || '';
-              return (
-                <div className="relative rounded-3xl overflow-hidden mb-5" style={{ background: C.card, border: `1px solid ${C.border}`, boxShadow: '0 10px 30px rgba(150,13,50,0.07)' }}>
-                  <span className="absolute top-4 left-4 z-10 inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-3 py-1" style={{ background: tc, color: '#fff' }}>
-                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 10-12h-7z" /></svg>Featured
-                  </span>
-                  <div className="flex flex-col sm:flex-row">
-                    <div className="flex items-center justify-center flex-shrink-0 sm:w-48 min-h-[140px]" style={{ background: `linear-gradient(135deg, ${tc}, #E0506F)`, color: '#fff' }}>
-                      <svg className="w-16 h-16 opacity-95" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /><path d="M11 8v3l2 1.5" /></svg>
-                    </div>
-                    <div className="p-6 flex-1 min-w-0">
-                      <h3 className="font-display font-extrabold text-xl leading-tight" style={{ color: C.text }}>{featured.title}</h3>
-                      {desc && <p className="text-sm mt-2 line-clamp-2" style={{ color: C.secondary }}>{desc}</p>}
-                      <div className="flex items-center gap-4 text-xs mt-3" style={{ color: C.secondary }}>
-                        <span>{featured.duration} min</span>
-                        <span>{featured.meeting_mode === 'offline' ? 'In-person' : 'Online'}</span>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-4 mt-4">
-                        <div className="font-display font-extrabold text-2xl" style={{ color: C.text }}>{cardPriceLabel(featured)}</div>
-                        {bookUrl && (
-                          <Link to={bookUrl} className="inline-flex items-center rounded-full font-semibold text-sm transition-opacity hover:opacity-90" style={{ height: 46, padding: '0 22px', background: 'var(--profile-accent, #960D32)', color: 'var(--profile-accent-text, #ffffff)' }}>Book Now</Link>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
+            {/* Anchor for the profile nav's scroll-to (header/intro/featured removed) */}
+            <div id="offerings" style={{ scrollMarginTop: 82 }} />
 
             {/* Services grid */}
             {showServices && gridServices.length > 0 && (
@@ -1112,24 +1100,34 @@ const HostProfile = () => {
     </div>
       )}
 
-      {/* Badge info popup — bottom-right, click-triggered, auto-dismiss 5s. */}
+      {/* Badge detail — centered modal (tap-outside or ✕ to close). */}
       {badgeInfo && (
-        <div className="fixed bottom-4 right-4 z-[60] w-[min(20rem,calc(100vw-2rem))]" role="status" aria-live="polite">
-          <div className="flex items-start gap-3 rounded-2xl bg-white p-3 shadow-lg" style={{ border: `1px solid ${C.border}` }}>
-            <div className="flex-shrink-0 flex items-center justify-center overflow-hidden"
-              style={{ width: 40, height: 40, borderRadius: 12, background: '#F5ECEA', border: `1px solid ${C.border}` }}>
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+          style={{ background: 'rgba(43,10,20,0.45)', backdropFilter: 'blur(2px)' }}
+          onClick={() => setBadgeInfo(null)} role="dialog" aria-modal="true" aria-label={badgeInfo.name || 'Badge'}>
+          <div className="relative w-full max-w-[320px] rounded-3xl p-7 text-center"
+            style={{ background: C.card, boxShadow: '0 24px 64px rgba(43,10,20,0.30)' }}
+            onClick={(e) => e.stopPropagation()}>
+            <button type="button" onClick={() => setBadgeInfo(null)} aria-label="Close"
+              className="absolute flex items-center justify-center rounded-full transition-colors hover:bg-black/[0.05]"
+              style={{ top: 12, right: 12, width: 30, height: 30, color: C.muted }}>
+              <X className="w-4 h-4" />
+            </button>
+            <div className="mx-auto flex items-center justify-center overflow-hidden"
+              style={{ width: 64, height: 64, borderRadius: 18, background: `${tc}12`, border: `1px solid ${C.border}` }}>
               {badgeInfo.image_url
-                ? <img src={badgeInfo.image_url} alt="" className="w-full h-full object-contain" />
-                : <span className="font-extrabold" style={{ color: C.text }}>{(badgeInfo.name || 'B').charAt(0).toUpperCase()}</span>}
+                ? <img src={badgeInfo.image_url} alt="" className="w-full h-full object-contain p-2" />
+                : <span className="font-display font-extrabold text-2xl" style={{ color: tc }}>{(badgeInfo.name || 'B').charAt(0).toUpperCase()}</span>}
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold" style={{ color: C.text }}>{badgeInfo.name}</p>
-              {badgeInfo.description && (
-                <p className="mt-0.5 text-xs leading-snug" style={{ color: C.secondary }}>{badgeInfo.description}</p>
-              )}
-            </div>
-            <button type="button" onClick={() => setBadgeInfo(null)} aria-label="Dismiss"
-              className="ml-1 flex-shrink-0 leading-none text-gray-400 hover:text-gray-600">✕</button>
+            <h3 className="font-display font-extrabold text-lg mt-4" style={{ color: C.text }}>{badgeInfo.name}</h3>
+            {badgeInfo.description && (
+              <p className="text-sm leading-relaxed mt-2" style={{ color: C.secondary }}>{badgeInfo.description}</p>
+            )}
+            <button type="button" onClick={() => setBadgeInfo(null)}
+              className="w-full mt-6 flex items-center justify-center rounded-full font-semibold text-sm transition-opacity hover:opacity-90"
+              style={{ height: 42, background: tc, color: '#fff' }}>
+              Got it
+            </button>
           </div>
         </div>
       )}
