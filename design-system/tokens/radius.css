@@ -4,5 +4,5 @@
   --radius-xl:24px; --radius-2xl:32px; --radius-pill:999px; --radius-round:50%;
   --radius-control:var(--radius-pill);
   --radius-card:var(--radius-xl);
-  --radius-input:var(--radius-md);
+  --radius-input:8px; /* inputs/textareas: 8px rectangle, not the 16px --radius-md */
 }
