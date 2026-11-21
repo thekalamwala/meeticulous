@@ -393,6 +393,43 @@ async function loadAuthors(ids) {
   };
 }
 
+// Up to 2 per post, enforced in the controller. Position preserves the order the
+// author picked them. No-op on empty.
+async function insertCollaborators(postId, profileIds) {
+  const ids = (profileIds || []).filter(Boolean);
+  if (!ids.length) return;
+  await run(db('community_post_collaborators')
+    .insert(ids.map((profile_id, position) => ({ post_id: postId, profile_id, position }))));
+}
+
+// post_id -> ordered collaborator chips ({id, display_name, avatar_url, profile_url}).
+// Sorted by position in JS so the order holds regardless of DB ordering. Schema
+// fallback: an empty map before v3.226 is applied (feature degrades to none).
+async function loadCollaboratorsByPost(postIds) {
+  const map = new Map();
+  if (!postIds.length) return map;
+  let rows;
+  try {
+    rows = await run(db('community_post_collaborators')
+      .select('post_id, position, profile:profiles(id, name, first_name, username, profile_image)')
+      .in('post_id', postIds));
+  } catch (e) {
+    if (e.code === 'COMMUNITY_UNAVAILABLE') return map;
+    throw e;
+  }
+  for (const r of [...(rows || [])].sort((a, b) => (a.position || 0) - (b.position || 0))) {
+    const p = r.profile || {};
+    if (!map.has(r.post_id)) map.set(r.post_id, []);
+    map.get(r.post_id).push({
+      id: p.id,
+      display_name: p.name || p.first_name || 'Member',
+      avatar_url: p.profile_image || null,
+      profile_url: p.username ? `/${p.username}` : null,
+    });
+  }
+  return map;
+}
+
 async function loadMediaByPost(postIds) {
   const map = new Map();
   if (!postIds.length) return map;
@@ -511,7 +548,7 @@ module.exports = {
   listAuthorPosts, listAuthorComments, postContexts,
   loadAuthors, loadMediaByPost, likedIds, resetReadCaches,
   linksAllowed, getProfile, getMember, acceptTerms, updateMemberPrefs, getSpaceByKey, getSpaceById, getOwnedLiveTier,
-  insertPost, getPost, updatePost, insertMedia, listMedia, resolveUsernames, insertMentions, listMentions, searchMentionable, hostCard,
+  insertPost, getPost, updatePost, insertMedia, listMedia, insertCollaborators, loadCollaboratorsByPost, resolveUsernames, insertMentions, listMentions, searchMentionable, hostCard,
   getComment, insertComment, countCommentsByAuthorOnPost, countReplies, countRepliesByAuthor,
   listRecentTopLevelComments, updateComment, addReaction, removeReaction,
   addSave, removeSave, savedIds, addBlock, removeBlock,
