@@ -66,3 +66,21 @@ test('insertCollaborators with no ids makes no query', async () => {
   await store.insertCollaborators(POST, []);
   expect(db.calls.filter((c) => c.table === 'community_post_collaborators')).toHaveLength(0);
 });
+
+test('listAuthorPosts includes posts where the member is a collaborator', async () => {
+  db.on('community_post_collaborators', () => ({ data: [{ post_id: POST }], error: null }));
+  let orArg;
+  db.on('community_posts', (ops) => { orArg = (ops.find((o) => o[0] === 'or') || [])[1]; return { data: [{ id: POST }], error: null }; });
+  const rows = await store.listAuthorPosts({ authorId: A, cur: null, limit: 20 });
+  expect(rows).toEqual([{ id: POST }]);
+  expect(orArg).toContain(`author_id.eq.${A}`);
+  expect(orArg).toContain(`id.in.(${POST})`);
+});
+
+test('listAuthorPosts falls back to author-only when collaborators table is missing', async () => {
+  db.on('community_post_collaborators', () => ({ data: null, error: { code: '42P01', message: 'relation does not exist' } }));
+  let eqAuthor;
+  db.on('community_posts', (ops) => { eqAuthor = (ops.find((o) => o[0] === 'eq' && o[1] === 'author_id') || [])[2]; return { data: [], error: null }; });
+  await store.listAuthorPosts({ authorId: A, cur: null, limit: 20 });
+  expect(eqAuthor).toBe(A);
+});

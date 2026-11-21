@@ -354,7 +354,19 @@ const getPostBySlug = (slug) => run(db('community_posts').select('*').eq('slug',
 // Keyset-paged on created_at like the main feed; visibility (author ban) is
 // applied by the caller via filterVisible, so we over-fetch at the controller.
 async function listAuthorPosts({ authorId, cur, limit }) {
-  const q = keyset(db('community_posts').select('*').eq('status', 'visible').eq('author_id', authorId), cur, 'lt');
+  // A profile's feed = their own posts PLUS posts where they're a credited
+  // collaborator. Fetch the collaborated post ids first (schema-fallback: author-only
+  // before v3.226), then widen the selection.
+  let collabPostIds = [];
+  try {
+    const rows = await run(db('community_post_collaborators').select('post_id').eq('profile_id', authorId));
+    collabPostIds = (rows || []).map((r) => r.post_id);
+  } catch (e) { if (e.code !== 'COMMUNITY_UNAVAILABLE') throw e; }
+  const base = db('community_posts').select('*').eq('status', 'visible');
+  const scoped = collabPostIds.length
+    ? base.or(`author_id.eq.${authorId},id.in.(${collabPostIds.join(',')})`)
+    : base.eq('author_id', authorId);
+  const q = keyset(scoped, cur, 'lt');
   return (await run(q.order('created_at', { ascending: false }).order('id', { ascending: false }).limit(limit))) || [];
 }
 async function listAuthorComments({ authorId, cur, limit }) {
