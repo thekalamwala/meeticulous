@@ -168,6 +168,22 @@ const searchMentionable = async (q, { limit = 8 } = {}) => {
     }));
 };
 
+// The subset of `ids` that may be credited as collaborators: same rule as the
+// @mention list (not banned, has a username, and is a host OR a community member).
+// Returns [{ id, is_host }] for the valid ones; the controller rejects any id not here.
+const mentionableByIds = async (ids) => {
+  const list = [...new Set((ids || []).filter(Boolean))];
+  if (!list.length) return [];
+  const [profiles, members] = await Promise.all([
+    run(db('profiles').select('id, is_host, is_banned, username').in('id', list)),
+    run(db('community_members').select('user_id').in('user_id', list)),
+  ]);
+  const memberSet = new Set((members || []).map((m) => m.user_id));
+  return (profiles || [])
+    .filter((p) => !p.is_banned && p.username && (p.is_host || memberSet.has(p.id)))
+    .map((p) => ({ id: p.id, is_host: !!p.is_host }));
+};
+
 const getComment = (id) => run(db('community_comments').select('*').eq('id', id).maybeSingle());
 const insertComment = (row) => run(db('community_comments').insert(row).select('*').single());
 // How many comments `authorId` has on a post — Tithi's first-responder dedup (0 = not yet replied).
@@ -549,7 +565,7 @@ module.exports = {
   listAuthorPosts, listAuthorComments, postContexts,
   loadAuthors, loadMediaByPost, likedIds, resetReadCaches,
   linksAllowed, getProfile, getMember, acceptTerms, updateMemberPrefs, getSpaceByKey, getSpaceById, getOwnedLiveTier,
-  insertPost, getPost, updatePost, insertMedia, listMedia, insertCollaborators, loadCollaboratorsByPost, resolveUsernames, insertMentions, listMentions, searchMentionable, hostCard,
+  insertPost, getPost, updatePost, insertMedia, listMedia, insertCollaborators, loadCollaboratorsByPost, mentionableByIds, resolveUsernames, insertMentions, listMentions, searchMentionable, hostCard,
   getComment, insertComment, countCommentsByAuthorOnPost, countReplies, countRepliesByAuthor,
   listRecentTopLevelComments, updateComment, addReaction, removeReaction,
   addSave, removeSave, savedIds, addBlock, removeBlock,

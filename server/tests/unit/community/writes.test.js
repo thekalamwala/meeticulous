@@ -10,6 +10,7 @@ jest.mock('../../../services/community/notify', () => ({
   onAnswerAccepted: jest.fn().mockResolvedValue(undefined),
 }));
 jest.mock('../../../utils/sitemapCache', () => ({ bustSitemapCache: jest.fn() }));
+jest.mock('../../../utils/inAppNotify', () => ({ inAppNotify: jest.fn(), resolveInApp: jest.fn() }));
 jest.mock('../../../config/supabase', () => {
   const db = { handlers: {}, calls: [] };
   db.on = (table, fn) => { db.handlers[table] = fn; };
@@ -35,6 +36,8 @@ const notify = require('../../../services/community/notify');
 const { bustSitemapCache } = require('../../../utils/sitemapCache');
 const ctrl = require('../../../controllers/communityController');
 const store = require('../../../services/community/store');
+const { inAppNotify } = require('../../../utils/inAppNotify');
+const { isFeatureEnabled } = require('../../../services/featureFlags');
 
 const db = supabaseAdmin.__db;
 const has = (ops, m) => ops.some((o) => o[0] === m);
@@ -143,6 +146,70 @@ describe('createItem', () => {
     await ctrl.createItem(req({ kind: 'thread', format: 'announcement', title: 'Release notes', body: 'What changed', space_key: 'updates' }, {}, { ...MEMBER, badge: 'official' }), r);
     expect(statusOf(r)).toBe(201);
     expect(callsOn('community_posts', 'insert')).toHaveLength(1);
+  });
+
+  describe('collaborators', () => {
+    const C1 = 'cccccccc-0000-4000-8000-00000000000c';
+    const C2 = 'dddddddd-0000-4000-8000-00000000000d';
+    const C3 = 'eeeeeeee-0000-4000-8000-00000000000e';
+    const setupCollab = (validIds) => {
+      db.on('profiles', (ops) => {
+        if (has(ops, 'in')) return { data: validIds.map((id) => ({ id, is_host: false, is_banned: false, username: id.slice(0, 6) })), error: null };
+        return { data: eqVal(ops, 'id') === OTHER ? { ...GUEST, id: OTHER } : GUEST, error: null };
+      });
+      db.on('community_members', (ops) => (has(ops, 'in')
+        ? { data: validIds.map((id) => ({ user_id: id })), error: null }
+        : { data: null, error: null }));
+      db.on('community_post_collaborators', (ops) => ({ data: has(ops, 'insert') ? arg(ops, 'insert') : [], error: null }));
+    };
+
+    test('two valid collaborators -> inserted + notified', async () => {
+      setupCollab([C1, C2]);
+      const r = res();
+      await ctrl.createItem(req({ kind: 'post', body: 'Hello there everyone', collaborator_ids: [C1, C2] }), r);
+      expect(statusOf(r)).toBe(201);
+      const ins = callsOn('community_post_collaborators', 'insert');
+      expect(ins).toHaveLength(1);
+      expect(arg(ins[0].ops, 'insert').map((row) => row.profile_id)).toEqual([C1, C2]);
+      expect(inAppNotify).toHaveBeenCalledTimes(2);
+      expect(inAppNotify.mock.calls[0][0].type).toBe('COMMUNITY_COLLABORATOR_ADDED');
+    });
+
+    test('more than 2 -> 400 COLLAB_LIMIT, no post', async () => {
+      setupCollab([C1, C2, C3]);
+      const r = res();
+      await ctrl.createItem(req({ kind: 'post', body: 'Hello there everyone', collaborator_ids: [C1, C2, C3] }), r);
+      expect(statusOf(r)).toBe(400);
+      expect(bodyOf(r).code).toBe('COLLAB_LIMIT');
+      expect(callsOn('community_posts', 'insert')).toHaveLength(0);
+    });
+
+    test('a non-member collaborator -> 400 COLLAB_INVALID, no post', async () => {
+      setupCollab([C1]); // only C1 is a valid member; C2 is not
+      const r = res();
+      await ctrl.createItem(req({ kind: 'post', body: 'Hello there everyone', collaborator_ids: [C1, C2] }), r);
+      expect(statusOf(r)).toBe(400);
+      expect(bodyOf(r).code).toBe('COLLAB_INVALID');
+      expect(callsOn('community_posts', 'insert')).toHaveLength(0);
+    });
+
+    test('self + duplicates are dropped, not rejected', async () => {
+      setupCollab([C1]);
+      const r = res();
+      await ctrl.createItem(req({ kind: 'post', body: 'Hello there everyone', collaborator_ids: [C1, C1, ME] }), r);
+      expect(statusOf(r)).toBe(201);
+      expect(arg(callsOn('community_post_collaborators', 'insert')[0].ops, 'insert').map((x) => x.profile_id)).toEqual([C1]);
+    });
+
+    test('flag off -> collaborator_ids ignored', async () => {
+      isFeatureEnabled.mockImplementation((k) => k !== 'community_collaborators');
+      setupCollab([C1, C2]);
+      const r = res();
+      await ctrl.createItem(req({ kind: 'post', body: 'Hello there everyone', collaborator_ids: [C1, C2] }), r);
+      expect(statusOf(r)).toBe(201);
+      expect(callsOn('community_post_collaborators', 'insert')).toHaveLength(0);
+      expect(inAppNotify).not.toHaveBeenCalled();
+    });
   });
 
   test('phase-2 format -> 400 FORMAT_NOT_AVAILABLE', async () => {
