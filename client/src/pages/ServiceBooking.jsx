@@ -1247,38 +1247,77 @@ const ServiceBooking = () => {
             <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,330px)_minmax(0,1fr)] gap-5 items-start">
               {/* LEFT: service + host info card (Calendly-style). The calendar
                   moves to the right column so it no longer spans the full width. */}
-              <aside className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl p-5 lg:sticky lg:top-5">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center"
-                    style={{ background: `${tc}18`, color: tc }}>
-                    {host.profile_image
-                      ? <img src={host.profile_image} alt={host.name} className="w-full h-full object-cover" />
-                      : <span className="font-bold text-lg">{host.name?.charAt(0)?.toUpperCase()}</span>}
+              <aside className="overflow-hidden bg-white border-2 border-[color:var(--color-line)] rounded-2xl lg:sticky lg:top-5">
+                {/* Thumbnail — the service photo, or a host-themed banner when there isn't one. */}
+                <div className="relative aspect-[16/10] w-full overflow-hidden"
+                  style={service.thumbnail_url ? undefined : { background: `linear-gradient(135deg, ${tc}, ${tc}B3)` }}>
+                  {service.thumbnail_url
+                    ? <img src={service.thumbnail_url} alt={service.title} className="w-full h-full object-cover" />
+                    : (
+                      <div className="absolute inset-0 grid place-items-center text-white/85">
+                        <svg className="w-12 h-12" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                          <rect x="3" y="4.5" width="18" height="16" rx="2.5" /><path strokeLinecap="round" d="M3 9h18M8 2.5v4M16 2.5v4" />
+                        </svg>
+                      </div>
+                    )}
+                </div>
+
+                <div className="p-5">
+                  <h2 className="font-display text-xl font-extrabold leading-tight" style={{ color: tc }}>{service.title}</h2>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-gray-600">
+                    <span className="font-medium">{service.duration} min</span>
+                    <span className="text-gray-300">·</span>
+                    <span>{service.meeting_mode === "offline" ? "In-person" : "Online"}</span>
                   </div>
-                  <div className="min-w-0">
-                    <div className="text-xs text-gray-400 truncate">with {host.name}</div>
-                    <div className="font-display text-lg font-extrabold leading-tight" style={{ color: tc }}>{service.title}</div>
+
+                  {service.description && (
+                    <p className="mt-3 text-sm leading-relaxed text-gray-500 line-clamp-3 whitespace-pre-line">{service.description}</p>
+                  )}
+                  <Link to={`/${profileSlug}/${serviceSlug}`}
+                    className="mt-1.5 inline-block text-sm font-semibold hover:underline" style={{ color: tc }}>
+                    Read more →
+                  </Link>
+
+                  {/* By host + stats */}
+                  <div className="mt-4 flex items-center gap-2.5 border-t pt-4" style={{ borderColor: "var(--color-line)" }}>
+                    <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 grid place-items-center"
+                      style={{ background: `${tc}18`, color: tc }}>
+                      {host.profile_image
+                        ? <img src={host.profile_image} alt={host.name} className="w-full h-full object-cover" />
+                        : <span className="text-xs font-bold">{host.name?.charAt(0)?.toUpperCase()}</span>}
+                    </div>
+                    <div className="text-sm min-w-0 truncate"><span className="text-gray-400">By </span><span className="font-semibold text-gray-900">{host.name}</span></div>
                   </div>
+
+                  {(service.total_bookings > 0 || host.review_count > 0) && (
+                    <div className="mt-3 flex items-center gap-4 text-sm">
+                      {service.total_bookings > 0 && (
+                        <div><span className="font-bold text-gray-900">{service.total_bookings}</span> <span className="text-gray-400">booked</span></div>
+                      )}
+                      {host.review_count > 0 && (
+                        <div className="flex items-center gap-1">
+                          <svg className="w-4 h-4" style={{ color: tc }} fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.05 2.9c.3-.9 1.6-.9 1.9 0l1.3 4h4.2c.95 0 1.35 1.2.58 1.77l-3.4 2.47 1.3 4c.3.9-.73 1.65-1.5 1.1L10 13.8l-3.4 2.44c-.77.55-1.8-.2-1.5-1.1l1.3-4-3.4-2.47c-.77-.57-.37-1.77.58-1.77h4.2l1.3-4z" />
+                          </svg>
+                          <span className="font-bold text-gray-900">{Number(host.review_avg).toFixed(1)}</span>
+                          <span className="text-gray-400">({host.review_count})</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="mt-4 text-2xl font-extrabold" style={{ color: tc }}>
+                    {priceOnRequest ? "On request" : isPaid ? `₹${Math.round((service.price + fees.bookingFee) * 100) / 100}` : "Free"}
+                  </div>
+
+                  <Link to={`/${profileSlug}`}
+                    className="mt-4 inline-flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Back to Services
+                  </Link>
                 </div>
-                <div className="mt-4 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-gray-600">
-                  <span className="font-medium">{service.duration} min</span>
-                  <span className="text-gray-300">·</span>
-                  <span>{service.meeting_mode === "offline" ? "In-person" : "Online"}</span>
-                </div>
-                <div className="mt-3 text-2xl font-extrabold" style={{ color: tc }}>
-                  {priceOnRequest ? "On request" : isPaid ? `₹${Math.round((service.price + fees.bookingFee) * 100) / 100}` : "Free"}
-                </div>
-                {service.description && (
-                  <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-gray-500 border-t pt-4"
-                    style={{ borderColor: "var(--color-line)" }}>{service.description}</p>
-                )}
-                <Link to={`/${profileSlug}`}
-                  className="mt-4 inline-flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  Back to Services
-                </Link>
               </aside>
 
               {/* RIGHT: calendar + slots */}
