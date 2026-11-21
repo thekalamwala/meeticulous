@@ -1,19 +1,25 @@
-/* Friendly Brutalism Inputs */
+/* Minimalist user-facing inputs: a clean bottom border instead of a full frame,
+   transparent, roomy — paired with a label above the field in the markup. A
+   page can override the focus underline to its own theme colour (see .bk-page /
+   .pp-page). Admin and the community composer use their own input styles. */
 .fb-input {
     width: 100%;
-    padding: 0.8rem 0.95rem;
-    border: 2px solid var(--color-line);
-    border-radius: var(--radius-md);
-    background: var(--surface);
+    padding: 0.55rem 0.15rem;
+    border: 0;
+    border-bottom: 1.5px solid var(--color-line);
+    border-radius: 0;
+    background: transparent;
     color: var(--text);
-    transition: border-color var(--motion-base), box-shadow var(--motion-base), transform var(--motion-fast);
+    transition: border-color var(--motion-base), box-shadow var(--motion-base);
 }
+
+.fb-input::placeholder { color: #c4cad4; }
 
 .fb-input:focus {
     outline: none;
-    /* Brand: 3px rose focus ring on every input (was a leftover green ring). */
-    border-color: var(--mt-rose, #E0506F);
-    box-shadow: 0 0 0 3px rgba(224, 80, 111, 0.4);
+    border-color: transparent;
+    border-bottom-color: var(--color-primary, #960D32);
+    box-shadow: none;
 }
 
 .fb-input--center {

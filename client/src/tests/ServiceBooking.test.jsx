@@ -88,33 +88,34 @@ describe('ServiceBooking — summary strip', () => {
     });
   });
 
-  // Redesign: the side profile is dropped during booking; vendor / service /
-  // when / total now live in a compact summary strip above the stepper.
-  const waitForStrip = async () => {
-    await waitFor(() => screen.getByText(/with Jane Vendor/i));
+  // Redesign: the time step shows a left service-info card (title, duration,
+  // "By <host>", price, back link) in place of the old summary strip.
+  const waitForCard = async () => {
+    await waitFor(() => screen.getByText('Consultation'));
   };
 
-  test('shows vendor name in the summary strip', async () => {
+  test('shows the host name in the service card', async () => {
     renderBooking();
-    await waitFor(() => expect(screen.getByText(/with Jane Vendor/i)).toBeTruthy());
+    await waitForCard();
+    await waitFor(() => expect(screen.getAllByText(/Jane Vendor/).length).toBeGreaterThan(0));
   });
 
-  test('shows service title in the summary strip', async () => {
+  test('shows service title in the service card', async () => {
     renderBooking();
-    await waitForStrip();
+    await waitForCard();
     await waitFor(() => expect(screen.getByText('Consultation')).toBeTruthy());
   });
 
-  test('shows service duration in the summary strip', async () => {
+  test('shows service duration in the service card', async () => {
     renderBooking();
-    await waitForStrip();
+    await waitForCard();
     await waitFor(() => expect(screen.getByText(/30 min/i)).toBeTruthy());
   });
 
-  test('"Back to Services" link points to /:profileSlug', async () => {
+  test('the Back link points to /:profileSlug', async () => {
     renderBooking();
     await waitFor(() => {
-      const link = screen.getByRole('link', { name: /back to services/i });
+      const link = screen.getByRole('link', { name: 'Back' });
       expect(link.getAttribute('href')).toBe('/jane-vendor');
     });
   });

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronDown, CircleAlert, CircleHelp, Headset, Image, ImagePlus, Megaphone, MessagesSquare, Type, X } from 'lucide-react';
+import { ChevronDown, CircleAlert, CircleHelp, Headset, Image, ImagePlus, Megaphone, MessagesSquare, Type, UserPlus, X } from 'lucide-react';
 import { createItem, getMe, getSpaces } from '../../services/communityApi';
 import useKeyboardInset from './useKeyboardInset';
 import { uploadImage, getMyMembership } from '../../services/api';
@@ -11,6 +11,7 @@ import useMentionSuggest from './useMentionSuggest';
 import useTermsGate from './useTermsGate';
 import { errCode, errorCopy, fmtCount } from './communityErrors';
 import ItemCard, { SpaceIcon } from './ItemCard';
+import CollaboratorPicker from './CollaboratorPicker';
 
 const LIMITS = { TITLE: 150, THREAD: 10000, POST: 1000 }; // mirrors server/services/community/text.js
 const MAX_PHOTOS = 4;
@@ -66,6 +67,10 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
   const [busy, setBusy] = useState(false);
   const [banned, setBanned] = useState(false);
   const [audienceOpen, setAudienceOpen] = useState(false);
+  // Collaborators (community_collaborators): up to 2 credited co-authors.
+  const collabOn = useFeature('community_collaborators');
+  const [collaborators, setCollaborators] = useState([]);
+  const [collabOpen, setCollabOpen] = useState(false);
   // Membership audience gate (M3). Only hosts with a live program can gate a post.
   const membershipsOn = useFeature('community_memberships');
   const [program, setProgram] = useState(null);
@@ -117,7 +122,7 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
   const text = `${title} ${body}`;
   const nudge = MENTION.test(text) && COMPLAINT.test(text);
   // The modal wrapper reads this to ask before discarding a draft on Esc / backdrop / Close.
-  if (dirtyRef) dirtyRef.current = !!(title.trim() || body.trim() || photos.length);
+  if (dirtyRef) dirtyRef.current = !!(title.trim() || body.trim() || photos.length || collaborators.length);
 
   const addFiles = async (list) => {
     setPhotoErr('');
@@ -175,6 +180,7 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
       ...(canGate && audience !== 'public' && { audience }),
       ...(canGate && audience === 'tier' && audienceTierId && { audience_tier_id: audienceTierId }),
       ...(canGate && audience !== 'public' && teaserLine.trim() && { teaser_line: teaserLine.trim() }),
+      ...(collabOn && collaborators.length && { collaborator_ids: collaborators.map((c) => c.id) }),
       media: photos.map(({ url, width, height }) => ({ url, width, height })),
     };
     try {
@@ -310,6 +316,13 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
         </div>
       )}
 
+      {collabOn && (
+        <div className="mt-field">
+          <span className="mt-label">Collaborators <span className="mt-hint">(up to 2, credited on the post)</span></span>
+          <CollaboratorPicker value={collaborators} onChange={setCollaborators} selfId={user?.id} />
+        </div>
+      )}
+
       <div className="mt-toolbar">
         <button type="button" className="mt-btn mt-btn--secondary mt-btn--s" aria-haspopup="menu" aria-expanded={menu} onClick={() => setMenu((m) => !m)}>
           <F.Icon size={16} aria-hidden="true" />Format: {F.label}<ChevronDown size={16} aria-hidden="true" />
@@ -388,10 +401,20 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
             </div>
           )}
 
+          {collabOn && collabOpen && (
+            <div className="border-t border-[var(--border-1)] px-4 py-3">
+              <span className="mt-label mb-2 block">Collaborators <span className="mt-hint">(up to 2)</span></span>
+              <CollaboratorPicker value={collaborators} onChange={setCollaborators} selfId={user?.id} />
+            </div>
+          )}
+
           <div className="mt-composer-full__toolbar" style={kbInset ? { transform: `translateY(-${kbInset}px)` } : undefined}>
             <button type="button" onClick={() => fileRef.current?.click()} aria-label="Add photo" className="mt-btn mt-btn--ghost mt-btn--s gap-2"><Image size={20} aria-hidden="true" />Photo</button>
             <button type="button" aria-pressed={format === 'question'} onClick={() => setFormat((f) => (f === 'question' ? 'text' : 'question'))} className="mt-btn mt-btn--ghost mt-btn--s gap-2"><CircleHelp size={20} aria-hidden="true" />Ask</button>
             <button type="button" aria-pressed={thread} onClick={() => setKind((k) => (k === 'thread' ? 'post' : 'thread'))} className="mt-btn mt-btn--ghost mt-btn--s gap-2"><MessagesSquare size={20} aria-hidden="true" />Thread</button>
+            {collabOn && (
+              <button type="button" aria-pressed={collabOpen} aria-label="Add collaborators" onClick={() => setCollabOpen((o) => !o)} className="mt-btn mt-btn--ghost mt-btn--s gap-2"><UserPlus size={20} aria-hidden="true" />People{collaborators.length ? ` · ${collaborators.length}` : ''}</button>
+            )}
             <input ref={fileRef} type="file" accept={TYPES.join(',')} multiple hidden onChange={(e) => addFiles(e.target.files)} />
           </div>
         </div>

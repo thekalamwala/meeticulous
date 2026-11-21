@@ -24,7 +24,7 @@ function serializeAuthor(profile, member, dual = false) {
   };
 }
 
-function serializeItem(row, { author = null, member = null, space = null, viewer = { liked: false }, media = [], dual = false } = {}) {
+function serializeItem(row, { author = null, member = null, space = null, viewer = { liked: false }, media = [], dual = false, collaborators = [] } = {}) {
   const gone = GONE.includes(row.status);
   return {
     id: row.id,
@@ -53,6 +53,8 @@ function serializeItem(row, { author = null, member = null, space = null, viewer
     accepted_comment_id: row.accepted_comment_id ?? null,
     media: [...media].sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
       .map((m) => ({ url: m.url, width: m.width ?? null, height: m.height ?? null, alt: m.alt ?? null })),
+    // Up to 2 credited collaborators (already ordered by loadCollaboratorsByPost).
+    collaborators: gone ? [] : collaborators,
     viewer,
   };
 }
