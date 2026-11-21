@@ -1119,8 +1119,9 @@ const ServiceBooking = () => {
 
         {/* ── Booking Engine (full width) ── */}
         <div className="flex-1 min-w-0 flex flex-col">
-          {/* Summary strip — replaces the side profile: who + what + when + total */}
-          {step !== "confirmed" && (
+          {/* Summary strip — replaces the side profile: who + what + when + total.
+              Hidden on the time step, where the left info card carries this. */}
+          {step !== "confirmed" && step !== "time" && (
             <div className="flex items-center gap-3 bg-white border-2 border-[color:var(--color-line)] rounded-2xl px-4 py-3 mb-4">
               <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center"
                 style={{ background: `${tc}18`, color: tc }}>
@@ -1243,25 +1244,51 @@ const ServiceBooking = () => {
 
           {/* STEP: time */}
           {!finalizing && step === "time" && (
-            <div className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl p-4 sm:p-5">
-              <div className="flex items-center justify-between gap-2 mb-4">
-                <Link
-                  to={`/${profileSlug}`}
-                  className="text-sm text-gray-400 hover:text-gray-600 flex items-center gap-1 flex-shrink-0"
-                >
+            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,330px)_minmax(0,1fr)] gap-5 items-start">
+              {/* LEFT: service + host info card (Calendly-style). The calendar
+                  moves to the right column so it no longer spans the full width. */}
+              <aside className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl p-5 lg:sticky lg:top-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center"
+                    style={{ background: `${tc}18`, color: tc }}>
+                    {host.profile_image
+                      ? <img src={host.profile_image} alt={host.name} className="w-full h-full object-cover" />
+                      : <span className="font-bold text-lg">{host.name?.charAt(0)?.toUpperCase()}</span>}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-xs text-gray-400 truncate">with {host.name}</div>
+                    <div className="font-display text-lg font-extrabold leading-tight" style={{ color: tc }}>{service.title}</div>
+                  </div>
+                </div>
+                <div className="mt-4 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-gray-600">
+                  <span className="font-medium">{service.duration} min</span>
+                  <span className="text-gray-300">·</span>
+                  <span>{service.meeting_mode === "offline" ? "In-person" : "Online"}</span>
+                </div>
+                <div className="mt-3 text-2xl font-extrabold" style={{ color: tc }}>
+                  {priceOnRequest ? "On request" : isPaid ? `₹${Math.round((service.price + fees.bookingFee) * 100) / 100}` : "Free"}
+                </div>
+                {service.description && (
+                  <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-gray-500 border-t pt-4"
+                    style={{ borderColor: "var(--color-line)" }}>{service.description}</p>
+                )}
+                <Link to={`/${profileSlug}`}
+                  className="mt-4 inline-flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
-                  <span className="hidden sm:inline">Back to Services</span>
-                  <span className="sm:hidden">Back</span>
+                  Back to Services
                 </Link>
-                <div className="flex items-center gap-2 min-w-0">
+              </aside>
+
+              {/* RIGHT: calendar + slots */}
+              <div className="bg-white border-2 border-[color:var(--color-line)] rounded-2xl p-4 sm:p-5">
+                <div className="flex items-center gap-2 min-w-0 mb-4">
                   <h2 className="text-base sm:text-xl font-bold truncate">When works for you?</h2>
                   <span className="hidden sm:inline-flex text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full flex-shrink-0">
                     {tzAbbr}
                   </span>
                 </div>
-              </div>
               <div className="flex flex-col md:flex-row gap-5">
                 {/* Calendar */}
                 <div className="flex-1">
@@ -1449,6 +1476,7 @@ const ServiceBooking = () => {
                   </button>
                 </div>
               )}
+              </div>
             </div>
           )}
 
