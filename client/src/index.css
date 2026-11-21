@@ -385,6 +385,15 @@ select:focus {
   box-shadow: var(--focus-ring);
 }
 
+/* Inside the framed .mt-input the WRAPPER owns the focus ring (:focus-within);
+   the inner control must not draw its own, or the two rings stack (double border).
+   (0,1,2) beats the (0,1,1) `input:focus` rule above. */
+.mt-input input:focus,
+.mt-input textarea:focus,
+.mt-input select:focus {
+  box-shadow: none;
+}
+
 button:focus-visible,
 a:focus-visible,
 [role='button']:focus-visible {
