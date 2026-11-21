@@ -450,7 +450,7 @@ export const CommandPalette = ({ open, onClose, items, onPick }) => {
             ref={inputRef}
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search bookings, clients, services…"
+            placeholder="Search or jump to anything…"
             className="w-full bg-transparent text-[12px] font-medium text-ink outline-none placeholder:text-ink/35"
           />
           <kbd className="shrink-0 rounded border border-neutral-200 px-1.5 py-0.5 text-[9.5px] font-bold text-ink/40">esc</kbd>
@@ -467,7 +467,7 @@ export const CommandPalette = ({ open, onClose, items, onPick }) => {
                   onClick={() => { onPick(it); onClose(); }}
                   className={cn('flex w-full items-center gap-2 px-2.5 py-1.5 text-left transition', i === sel ? 'bg-blush' : 'hover:bg-cream')}
                 >
-                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-neutral-100 text-[10px] font-bold text-maroon">
+                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-[6px] bg-neutral-100 text-[10px] font-bold text-maroon">
                     {it.group.slice(0, 2).toUpperCase()}
                   </span>
                   <span className="min-w-0 flex-1">
