@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
+import { BadgeCheck } from "lucide-react";
 import {
   getServiceBySlug,
   sendOtp,
@@ -1261,14 +1262,45 @@ const ServiceBooking = () => {
                         </svg>
                       </div>
                     )}
+                  <Link to={`/${profileSlug}`}
+                    className="absolute top-2.5 left-2.5 inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-gray-700 shadow-sm hover:text-gray-900">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Back
+                  </Link>
+                  {host.review_count > 0 && (
+                    <div className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold shadow-sm">
+                      <svg className="w-3.5 h-3.5" style={{ color: tc }} fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.05 2.9c.3-.9 1.6-.9 1.9 0l1.3 4h4.2c.95 0 1.35 1.2.58 1.77l-3.4 2.47 1.3 4c.3.9-.73 1.65-1.5 1.1L10 13.8l-3.4 2.44c-.77.55-1.8-.2-1.5-1.1l1.3-4-3.4-2.47c-.77-.57-.37-1.77.58-1.77h4.2l1.3-4z" />
+                      </svg>
+                      <span className="text-gray-900">{Number(host.review_avg).toFixed(1)}</span>
+                      <span className="text-gray-400 font-medium">({host.review_count})</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="p-5">
                   <h2 className="font-display text-xl font-extrabold leading-tight" style={{ color: tc }}>{service.title}</h2>
-                  <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-gray-600">
-                    <span className="font-medium">{service.duration} min</span>
-                    <span className="text-gray-300">·</span>
-                    <span>{service.meeting_mode === "offline" ? "In-person" : "Online"}</span>
+                  <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-600">
+                    <span className="inline-flex items-center gap-1.5 font-medium">
+                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="9" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5V12l3 2" />
+                      </svg>
+                      {service.duration} min
+                    </span>
+                    <span className="inline-flex items-center gap-1.5">
+                      {service.meeting_mode === "offline" ? (
+                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 21s7-6 7-11a7 7 0 10-14 0c0 5 7 11 7 11z" /><circle cx="12" cy="10" r="2.5" />
+                        </svg>
+                      ) : (
+                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <rect x="2" y="6" width="13" height="12" rx="2" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 10l6-3v10l-6-3" />
+                        </svg>
+                      )}
+                      {service.meeting_mode === "offline" ? "In-person" : "Online"}
+                    </span>
                   </div>
 
                   {service.description && (
@@ -1279,7 +1311,8 @@ const ServiceBooking = () => {
                     Read more →
                   </Link>
 
-                  {/* By host + stats */}
+                  {/* By host — only the name links to the profile (same verified
+                      badge as the community / host profile). */}
                   <div className="mt-4 flex items-center gap-2.5 border-t pt-4" style={{ borderColor: "var(--color-line)" }}>
                     <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 grid place-items-center"
                       style={{ background: `${tc}18`, color: tc }}>
@@ -1287,37 +1320,24 @@ const ServiceBooking = () => {
                         ? <img src={host.profile_image} alt={host.name} className="w-full h-full object-cover" />
                         : <span className="text-xs font-bold">{host.name?.charAt(0)?.toUpperCase()}</span>}
                     </div>
-                    <div className="text-sm min-w-0 truncate"><span className="text-gray-400">By </span><span className="font-semibold text-gray-900">{host.name}</span></div>
+                    <div className="flex min-w-0 items-center gap-1 text-sm">
+                      <span className="text-gray-400">By</span>
+                      <Link to={`/${profileSlug}`} className="truncate font-semibold text-gray-900 hover:underline">{host.name}</Link>
+                      {host.is_verified && (
+                        <BadgeCheck className="w-4 h-4 flex-shrink-0" strokeWidth={2.2} style={{ color: tc }} aria-label="Verified" />
+                      )}
+                    </div>
                   </div>
 
-                  {(service.total_bookings > 0 || host.review_count > 0) && (
-                    <div className="mt-3 flex items-center gap-4 text-sm">
-                      {service.total_bookings > 0 && (
-                        <div><span className="font-bold text-gray-900">{service.total_bookings}</span> <span className="text-gray-400">booked</span></div>
-                      )}
-                      {host.review_count > 0 && (
-                        <div className="flex items-center gap-1">
-                          <svg className="w-4 h-4" style={{ color: tc }} fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9.05 2.9c.3-.9 1.6-.9 1.9 0l1.3 4h4.2c.95 0 1.35 1.2.58 1.77l-3.4 2.47 1.3 4c.3.9-.73 1.65-1.5 1.1L10 13.8l-3.4 2.44c-.77.55-1.8-.2-1.5-1.1l1.3-4-3.4-2.47c-.77-.57-.37-1.77.58-1.77h4.2l1.3-4z" />
-                          </svg>
-                          <span className="font-bold text-gray-900">{Number(host.review_avg).toFixed(1)}</span>
-                          <span className="text-gray-400">({host.review_count})</span>
-                        </div>
-                      )}
+                  {service.total_bookings > 0 && (
+                    <div className="mt-3 text-sm">
+                      <span className="font-bold text-gray-900">{service.total_bookings}</span> <span className="text-gray-400">booked</span>
                     </div>
                   )}
 
                   <div className="mt-4 text-2xl font-extrabold" style={{ color: tc }}>
                     {priceOnRequest ? "On request" : isPaid ? `₹${Math.round((service.price + fees.bookingFee) * 100) / 100}` : "Free"}
                   </div>
-
-                  <Link to={`/${profileSlug}`}
-                    className="mt-4 inline-flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                    Back to Services
-                  </Link>
                 </div>
               </aside>
 

@@ -112,10 +112,10 @@ describe('ServiceBooking — summary strip', () => {
     await waitFor(() => expect(screen.getByText(/30 min/i)).toBeTruthy());
   });
 
-  test('"Back to Services" link points to /:profileSlug', async () => {
+  test('the Back link points to /:profileSlug', async () => {
     renderBooking();
     await waitFor(() => {
-      const link = screen.getByRole('link', { name: /back to services/i });
+      const link = screen.getByRole('link', { name: 'Back' });
       expect(link.getAttribute('href')).toBe('/jane-vendor');
     });
   });
