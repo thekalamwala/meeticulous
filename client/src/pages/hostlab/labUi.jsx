@@ -552,10 +552,12 @@ export const Panel = ({ title, subtitle, action, children, className = '', flush
  * old palette. Rather than restyle a shared production component from inside a
  * prototype, the lab uses these, and the fix is filed as a P0 in the report.
  * ---------------------------------------------------------------------- */
+// Minimalist: clean bottom border instead of a full frame, transparent, no ring
+// — the Field label sits above. Matches the user-facing .fb-input style.
 export const FIELD =
-  'block rounded-sm border-2 border-neutral-200 bg-white px-2.5 text-[12px] font-medium text-ink ' +
-  'outline-none transition placeholder:text-ink/35 focus:border-maroon/50 ' +
-  'focus-visible:ring-[3px] focus-visible:ring-rose disabled:bg-neutral-50 disabled:text-ink/40';
+  'block border-solid border-x-0 border-t-0 border-b-[1.5px] rounded-none border-neutral-200 bg-transparent px-0.5 text-[12px] font-medium text-ink ' +
+  'outline-none transition placeholder:text-ink/35 focus:border-maroon ' +
+  'focus-visible:ring-0 disabled:text-ink/40';
 
 // `cn` is a plain string joiner — it does NOT resolve Tailwind conflicts. So a
 // base `w-full` silently beats a caller's `w-[116px]` (whichever Tailwind emits

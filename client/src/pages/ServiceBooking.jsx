@@ -211,31 +211,25 @@ const FinalizingScreen = ({ tc, textOnTheme, isPaid, task, onDone }) => {
 // Country dial codes offered on the phone field (India default).
 const DIAL_CODES = ["+91", "+1", "+44", "+971"];
 
-// Floating-label text input: label rests centered inside an empty field and
-// animates up onto the top border on focus / when filled. Uses the CSS `peer`
-// pattern — no extra JS. Focus color comes from the --tc var set on the step.
-// Floating label: label sits inside the empty field and animates up to the
-// border on focus / when filled.
-const FloatingInput = ({ id, label, type = "text", value, onChange, required, autoComplete }) => (
-  <div className="relative">
+// Minimalist field: a static label above the input, and a clean bottom border
+// instead of a full outline (see the `.bk-page .fb-input` rules below). No
+// floating animation. Focus underlines in the step's theme colour (--tc).
+const bkLabelCls = "mb-1.5 block text-xs font-medium text-gray-500";
+const FloatingInput = ({ id, label, type = "text", value, onChange, required, autoComplete, placeholder }) => (
+  <div>
+    <label htmlFor={id} className={bkLabelCls}>
+      {label}{required && <span style={{ color: "#e42527" }}> *</span>}
+    </label>
     <input
       id={id}
       type={type}
       required={required}
       autoComplete={autoComplete}
-      placeholder={label}
+      placeholder={placeholder || ""}
       value={value}
       onChange={onChange}
-      className="peer fb-input fb-input--sm placeholder-transparent"
+      className="fb-input fb-input--sm"
     />
-    <label
-      htmlFor={id}
-      className="pointer-events-none absolute left-2.5 top-0 -translate-y-1/2 bg-white px-1 text-xs font-medium text-gray-500 transition-all
-        peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-placeholder-shown:font-normal peer-placeholder-shown:text-gray-400
-        peer-focus:top-0 peer-focus:text-xs peer-focus:font-medium peer-focus:text-[color:var(--tc)]"
-    >
-      {label}{required && <span style={{ color: "#e42527" }}> *</span>}
-    </label>
   </div>
 );
 
@@ -1071,28 +1065,46 @@ const ServiceBooking = () => {
           Scope it to this page so booking inputs get a slim on-brand orange ring
           + orange border instead. */}
       <style>{`
-        /* Compact field sizing. The global input{min-height:44px;padding:0.78rem;
-           line-height:1.6} rule is UNLAYERED, so it beat the layered
-           .fb-input--sm padding — leaving the booking fields chunky. This
-           .bk-page .fb-input selector (higher specificity, also unlayered) wins
-           and restores the intended slim height across every field + the phone. */
+        /* Minimalist booking fields: no outer frame — a clean bottom border only,
+           transparent background, roomy. The global input{...} rule is UNLAYERED,
+           so this higher-specificity .bk-page selector (also unlayered) wins. */
         .bk-page .fb-input {
-          min-height: 40px;
-          padding-top: 0.5rem;
-          padding-bottom: 0.5rem;
-          font-size: 13px;
-          line-height: 1.35;
+          min-height: 44px;
+          padding: 0.5rem 0.125rem;
+          font-size: 14px;
+          line-height: 1.4;
+          border: 0;
+          border-bottom: 1.5px solid var(--color-line);
+          border-radius: 0;
+          background: transparent;
+          transition: border-color 0.18s ease;
         }
-        .bk-page .bk-phone-wrap { min-height: 40px; }
-        .bk-page .bk-phone-wrap input,
-        .bk-page .bk-phone-wrap select { min-height: 0; font-size: 13px; }
+        .bk-page .fb-input::placeholder { color: #c4cad4; }
         .bk-page .fb-input:focus {
-          border-color: ${tc};
-          box-shadow: 0 0 0 3px color-mix(in srgb, ${tc} 22%, transparent);
+          border-color: transparent;
+          border-bottom-color: ${tc};
+          box-shadow: none;
+        }
+        .bk-page .bk-phone-wrap {
+          min-height: 44px;
+          border: 0;
+          border-bottom: 1.5px solid var(--color-line);
+          border-radius: 0;
+          transition: border-color 0.18s ease;
+        }
+        .bk-page .bk-phone-wrap input,
+        .bk-page .bk-phone-wrap select {
+          min-height: 0;
+          font-size: 14px;
+          border: 0;
+          border-radius: 0;
+          background: transparent;
+          box-shadow: none;
         }
         .bk-page .bk-phone-wrap:focus-within {
-          border-color: ${tc};
-          box-shadow: 0 0 0 3px color-mix(in srgb, ${tc} 22%, transparent);
+          border-color: transparent;
+          border-bottom-color: ${tc};
+          box-shadow: none;
         }
       `}</style>
       {host?.is_verified === false && (
@@ -1558,8 +1570,9 @@ const ServiceBooking = () => {
                                   onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyCoupon(); } }}
                                   placeholder="Coupon code"
                                   aria-label="Coupon code"
-                                  className="flex-1 min-w-0 rounded-md border-2 border-[color:var(--color-line)] px-3 py-2 text-sm uppercase tracking-wide placeholder:normal-case placeholder:tracking-normal focus:outline-none focus:ring-2"
-                                  style={{ "--tw-ring-color": `${tc}55` }}
+                                  className="flex-1 min-w-0 rounded-md border-2 border-[color:var(--color-line)] px-3 py-2 text-sm uppercase tracking-wide placeholder:normal-case placeholder:tracking-normal focus:outline-none focus:shadow-none"
+                                  onFocus={(e) => { e.currentTarget.style.borderColor = tc; }}
+                                  onBlur={(e) => { e.currentTarget.style.borderColor = "var(--color-line)"; }}
                                 />
                                 <button type="button" onClick={applyCoupon} disabled={couponBusy || !couponCode.trim()}
                                   className="shrink-0 px-4 rounded-full text-sm font-semibold border-2 transition-opacity hover:opacity-85 disabled:opacity-40"
@@ -1598,13 +1611,15 @@ const ServiceBooking = () => {
                   </div>
                   <div className="space-y-3.5">
                     <FloatingInput id="bk-email" label="Email Address" type="email" required placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
-                    {/* Mobile: floating label + country dial-code select + national number; sent as fullPhone. */}
-                    <div className="relative">
-                      <div className="bk-phone-wrap flex items-stretch rounded-md border-2 border-[color:var(--color-line)] overflow-hidden transition-shadow">
+                    {/* Mobile: label above + country dial-code select + national number; sent as fullPhone. */}
+                    <div>
+                      <label htmlFor="bk-phone" className={bkLabelCls}>
+                        Mobile Number<span style={{ color: "#e42527" }}> *</span>
+                      </label>
+                      <div className="bk-phone-wrap flex items-stretch overflow-hidden">
                         <select
                           aria-label="Country code"
-                          className="w-[64px] shrink-0 bg-gray-50 text-sm font-medium text-gray-700 border-r pl-2 pr-0.5 outline-none cursor-pointer"
-                          style={{ borderColor: "var(--color-line)" }}
+                          className="w-[52px] shrink-0 bg-transparent text-sm font-medium text-gray-700 pl-0.5 pr-1 outline-none cursor-pointer"
                           value={dialCode}
                           onChange={(e) => setDialCode(e.target.value)}
                         >
@@ -1612,23 +1627,22 @@ const ServiceBooking = () => {
                             <option key={c} value={c}>{c}</option>
                           ))}
                         </select>
-                        <input id="bk-phone" type="tel" required placeholder="98765 43210" className="peer flex-1 min-w-0 px-3 py-2 bg-transparent outline-none text-sm" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                        <input id="bk-phone" type="tel" required placeholder="98765 43210" className="flex-1 min-w-0 px-2 py-2 bg-transparent outline-none text-sm" value={phone} onChange={(e) => setPhone(e.target.value)} />
                       </div>
-                      <label htmlFor="bk-phone" className="pointer-events-none absolute left-2.5 top-0 -translate-y-1/2 bg-white px-1 text-xs font-medium text-gray-500 transition-colors peer-focus:text-[color:var(--tc)]">
-                        Mobile Number<span style={{ color: "#e42527" }}> *</span>
-                      </label>
                       <p className="mt-1.5 text-xs text-gray-400">We'll send your booking details here.</p>
                     </div>
                   </div>
                   {/* State — place of supply for the GST invoice. Required for
                       paid bookings, so it stays visible; the rest of the billing
                       detail is optional and tucked behind the toggle below. */}
+                  <div>
+                  <label htmlFor="bk-state" className={bkLabelCls}>State{isPaid && <span style={{ color: "#e42527" }}> *</span>}</label>
                   <div className="relative">
                     <input
                       id="bk-state"
-                      placeholder="State"
+                      placeholder="Start typing your state…"
                       autoComplete="off"
-                      className="peer fb-input fb-input--sm placeholder-transparent"
+                      className="fb-input fb-input--sm"
                       value={billing.state}
                       onFocus={() => setStateOpen(true)}
                       onBlur={() => setTimeout(() => setStateOpen(false), 120)}
@@ -1663,11 +1677,7 @@ const ServiceBooking = () => {
                         </ul>
                       );
                     })()}
-                    <label htmlFor="bk-state" className="pointer-events-none absolute left-2.5 top-0 -translate-y-1/2 bg-white px-1 text-xs font-medium text-gray-500 transition-all
-                      peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-placeholder-shown:font-normal peer-placeholder-shown:text-gray-400
-                      peer-focus:top-0 peer-focus:text-xs peer-focus:font-medium peer-focus:text-[color:var(--tc)]">
-                      State{isPaid && <span style={{ color: "#e42527" }}> *</span>}
-                    </label>
+                  </div>
                   </div>
 
                   {/* GST toggle sits under State; its fields open full width below the grid. */}
@@ -1694,15 +1704,13 @@ const ServiceBooking = () => {
                     <FloatingInput id="bk-gstin" label="GSTIN" value={billing.gstin}
                       onChange={(e) => setBilling((b) => ({ ...b, gstin: e.target.value.toUpperCase() }))} />
                   </div>
-                  <div className="relative">
-                    <textarea id="bk-notes" placeholder="Add any notes or requests for this booking."
-                      className="peer fb-input fb-input--sm resize-none !min-h-0 !h-[88px] placeholder-transparent"
-                      value={notes} onChange={(e) => setNotes(e.target.value)} />
-                    <label htmlFor="bk-notes" className="pointer-events-none absolute left-2.5 top-0 -translate-y-1/2 bg-white px-1 text-xs font-medium text-gray-500 transition-all
-                      peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm peer-placeholder-shown:font-normal peer-placeholder-shown:text-gray-400
-                      peer-focus:top-0 peer-focus:text-xs peer-focus:font-medium peer-focus:text-[color:var(--tc)]">
+                  <div>
+                    <label htmlFor="bk-notes" className={bkLabelCls}>
                       Notes <span className="font-normal text-gray-400">(Optional)</span>
                     </label>
+                    <textarea id="bk-notes" placeholder="Add any notes or requests for this booking."
+                      className="fb-input fb-input--sm resize-none !min-h-0 !h-[88px]"
+                      value={notes} onChange={(e) => setNotes(e.target.value)} />
                   </div>
                 </div>
               )}

@@ -301,6 +301,15 @@ Items previously listed here as pending are now live:
   schema fallback and swallows write failures, so bookkeeping can never cost a member the
   access they paid for. **This records money; it does not move any** — the Route rail,
   settlement/statutory reads and refund reversal are the next slices (PR #405).
+- **v3.226** (`v3.226_community_post_collaborators.sql`) — applied 2026-11-21 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`) and verified (5 cols, RLS ON / no policies, 3 indexes = PK + unique
+  `(post_id, profile_id)` + `profile_id`, 2 cascade FKs, `COMMUNITY_COLLABORATOR_ADDED` event seeded
+  in_app=true/email=false). `community_post_collaborators` = up to 2 credited collaborators per
+  community post (instant credit + in-app notify; shown on the post and on each collaborator's
+  profile feed). Cap-2 + self-exclusion live in `communityController.createItem`, not the DB. Shipped
+  with PR #412 behind `community_collaborators` (ships OFF). Code is schema-fallback safe
+  (`store.loadCollaboratorsByPost` / `listAuthorPosts` degrade to empty/author-only), so the migration
+  was safe to apply before the code deploys. Only takes effect once the flag is flipped.
 - **v3.217** (`v3.217_creator_intelligence.sql`) — applied 2026-11-18 on the Meeticulous DB
   (`spquowzrefozmrzoszkf`) and verified: the 5 Creator Intelligence tables (`analytics_events`,
   `analytics_daily`, `analytics_daily_dim`, `booking_attribution`, `benchmark_daily`), the
