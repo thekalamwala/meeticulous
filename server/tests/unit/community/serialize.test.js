@@ -27,6 +27,11 @@ test('serializeItem', () => {
   expect(JSON.stringify(o)).not.toContain('leak');
   expect(serializeItem({ ...row, kind: 'post' }, {}).url).toBe('/community/p/s');
 });
+test('serializeItem passes through collaborators, default empty', () => {
+  const chips = [{ id: 'a', display_name: 'Ava', avatar_url: null, profile_url: '/ava' }];
+  expect(serializeItem(row, { author: guest, collaborators: chips }).collaborators).toEqual(chips);
+  expect(serializeItem(row, { author: guest }).collaborators).toEqual([]);
+});
 test('removed item blanked', () => {
   const o = serializeItem({ ...row, status: 'removed' }, { author: guest });
   expect(o.body).toBe('');

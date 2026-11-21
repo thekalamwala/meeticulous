@@ -451,9 +451,9 @@ async function likedIds(userId, targetType, ids) {
 // Batch-hydrate rows -> serialized items: one query each for authors, members, media, likes (+ cached spaces).
 async function hydrateItems(rows, viewerId) {
   const ids = rows.map((r) => r.id);
-  const [{ profiles, members, dualIds }, spaces, media, liked, saved] = await Promise.all([
+  const [{ profiles, members, dualIds }, spaces, media, collabs, liked, saved] = await Promise.all([
     loadAuthors(rows.map((r) => r.author_id)), listSpaces(), loadMediaByPost(ids),
-    likedIds(viewerId, 'post', ids), savedIds(viewerId, ids),
+    loadCollaboratorsByPost(ids), likedIds(viewerId, 'post', ids), savedIds(viewerId, ids),
   ]);
   const spaceById = new Map(spaces.map((s) => [s.id, s]));
   const items = rows.map((r) => serializeItem(r, {
@@ -461,6 +461,7 @@ async function hydrateItems(rows, viewerId) {
     member: members.get(r.author_id) || null,
     space: spaceById.get(r.space_id) || null,
     media: media.get(r.id) || [],
+    collaborators: collabs.get(r.id) || [],
     viewer: { liked: liked.has(r.id), saved: saved.has(r.id) },
     dual: dualIds.has(r.author_id),
   }));
