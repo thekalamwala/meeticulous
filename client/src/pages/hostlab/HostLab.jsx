@@ -410,10 +410,13 @@ const StatusDot = ({ ok, children }) => (
 const Topbar = ({ onOpenNav, onOpenSearch, onGo }) => {
   const [notif, setNotif] = useState(false);
   const [acct, setAcct] = useState(false);
-  const iconBtn = cn('grid h-7 w-7 place-items-center rounded-full text-ink/55 transition hover:bg-blush', ring);
+  const iconBtn = cn('grid h-9 w-9 place-items-center rounded-full text-ink/55 transition hover:bg-blush lg:h-7 lg:w-7', ring);
 
   return (
-    <header className="sticky top-0 z-30 flex h-11 shrink-0 items-center gap-1.5 border-b-2 border-neutral-200 bg-cream/95 px-2.5 backdrop-blur sm:px-4">
+    // Mobile gets a taller bar (56px), wider gaps and 36px tap targets so the
+    // chrome breathes under the prototype banner; lg: resets to the 44px console
+    // density that keeps the topbar aligned with the desktop rail header.
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b-2 border-neutral-200 bg-cream/95 px-3 backdrop-blur sm:px-4 lg:h-11">
       <button type="button" onClick={onOpenNav} aria-label="Open navigation" className={cn(iconBtn, 'lg:hidden')}>
         <Menu className="h-[18px] w-[18px]" strokeWidth={2.2} />
       </button>
@@ -421,7 +424,7 @@ const Topbar = ({ onOpenNav, onOpenSearch, onGo }) => {
       <button
         type="button"
         onClick={onOpenSearch}
-        className={cn('flex h-7 min-w-0 flex-1 items-center gap-1.5 rounded-full border-2 border-neutral-200 bg-white px-2.5 text-left text-[11.5px] font-medium text-ink/40 transition hover:border-maroon/30 sm:max-w-[250px]', ring)}
+        className={cn('flex h-9 min-w-0 flex-1 items-center gap-1.5 rounded-full border-2 border-neutral-200 bg-white px-3 text-left text-[11.5px] font-medium text-ink/40 transition hover:border-maroon/30 sm:max-w-[250px] lg:h-7 lg:px-2.5', ring)}
       >
         <Search className="h-3.5 w-3.5 shrink-0" strokeWidth={2.2} />
         <span className="truncate">Search bookings, clients…</span>
@@ -433,7 +436,7 @@ const Topbar = ({ onOpenNav, onOpenSearch, onGo }) => {
           where it belongs to what you are looking at. A second copy in the
           chrome was the same button twice on the one page that needs it, and
           an out-of-context one on the seven that don't. */}
-      <div className="ml-auto flex shrink-0 items-center gap-1">
+      <div className="ml-auto flex shrink-0 items-center gap-1.5 lg:gap-1">
         <button type="button" onClick={() => onGo('settings/help')} aria-label="Help and support" className={iconBtn}>
           <HelpCircle className="h-4 w-4" strokeWidth={2.2} />
         </button>
@@ -458,7 +461,7 @@ const Topbar = ({ onOpenNav, onOpenSearch, onGo }) => {
 
         <div className="relative">
           <button type="button" onClick={() => { setAcct((v) => !v); setNotif(false); }} aria-label="Account menu" className={cn('rounded-full transition hover:opacity-85', ring)}>
-            <Avatar name={mock.host.name} size="h-7 w-7 text-[10px]" />
+            <Avatar name={mock.host.name} size="h-8 w-8 text-[11px] lg:h-7 lg:w-7 lg:text-[10px]" />
           </button>
           <Popover open={acct} onClose={() => setAcct(false)} label="Account" width="w-[244px]">
             <ProfileMenu onGo={(to) => { onGo(to); setAcct(false); }} onClose={() => setAcct(false)} />
@@ -469,11 +472,40 @@ const Topbar = ({ onOpenNav, onOpenSearch, onGo }) => {
   );
 };
 
-/* ── Phone tab bar ─────────────────────────────────────────────────────── */
-const TabBar = ({ onMore }) => (
-  <nav aria-label="Sections" className="fixed inset-x-0 bottom-0 z-30 flex border-t-2 border-neutral-200 bg-cream/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
-    {TAB_BAR.map((to) => {
+/* ── Phone tab bar ─────────────────────────────────────────────────────────
+ * Five destinations, Grow raised in the centre as the hero. No "More": the
+ * full nav drawer is one tap away on the top-bar burger, so repeating it here
+ * was a sixth cramped slot for nothing. The whole rest of the product
+ * (Catalog, Schedule, Intelligence, Community, Settings…) lives in that drawer.
+ * ---------------------------------------------------------------------- */
+const TAB_ORDER = ['', 'bookings', 'grow', 'money', 'clients']; // Grow = index 2, centre
+const TabBar = () => (
+  <nav aria-label="Sections" className="fixed inset-x-0 bottom-0 z-30 flex items-end border-t-2 border-neutral-200 bg-cream/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
+    {TAB_ORDER.map((to, i) => {
       const item = FLAT.find((n) => n.to === to);
+      if (!item) return null;
+      if (i === 2) {
+        // Hero: a raised circle that punches up through the bar.
+        return (
+          <div key={item.label} className="flex flex-1 justify-center">
+            <NavLink
+              to={href(landingFor(item))}
+              end={item.end}
+              aria-label={item.label}
+              className={({ isActive }) => cn(
+                '-mt-6 flex h-16 w-16 flex-col items-center justify-center gap-0.5 rounded-full border-4 border-cream text-white shadow-lg transition active:translate-y-px',
+                isActive ? 'bg-maroon-dark' : 'bg-maroon',
+              )}
+            >
+              <span className="relative">
+                <item.icon className="h-5 w-5" strokeWidth={2.4} />
+                {item.badge > 0 && <span className="absolute -right-1 -top-0.5 h-2 w-2 rounded-full border-2 border-maroon bg-pink" />}
+              </span>
+              <span className="text-[8.5px] font-bold">{item.label}</span>
+            </NavLink>
+          </div>
+        );
+      }
       return (
         <NavLink
           key={item.label}
@@ -489,10 +521,6 @@ const TabBar = ({ onMore }) => (
         </NavLink>
       );
     })}
-    <button type="button" onClick={onMore} className="flex flex-1 flex-col items-center gap-0.5 py-1.5 text-[9.5px] font-bold text-ink/45">
-      <Menu className="h-[17px] w-[17px]" strokeWidth={2.2} />
-      More
-    </button>
   </nav>
 );
 
@@ -658,7 +686,7 @@ const HostLab = () => {
         </main>
       </div>
 
-      <TabBar onMore={() => setNavOpen(true)} />
+      <TabBar />
       <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} items={searchItems} onPick={(it) => go(it.to)} />
     </div>
   );
