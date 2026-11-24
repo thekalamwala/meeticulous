@@ -23,6 +23,16 @@
   --neutral-700:#4D3634; --neutral-800:#34201F; --neutral-900:#2B0A14;
   /* ── Marigold ramp ──────────────────────────────── */
   --marigold-100:#FDF0D2; --marigold-300:#F9D684; --marigold-400:#F6C35A; --marigold-600:#C68A12; --marigold-800:#5A3A00;
+  /* ── Category accents ───────────────────────────────
+     One hue per catalog kind: a light ground (-bg) + a vivid icon (-fg).
+     A deliberate EXTENSION beyond the core palette — it adds orange/violet/
+     green, which the base rules exclude — so it is scoped to catalog category
+     chips only, never body or chrome. Pending founder sign-off. */
+  --mt-cat-service-bg:#FFE1E7; --mt-cat-service-fg:#E11D48;
+  --mt-cat-product-bg:#FFE7D6; --mt-cat-product-fg:#EA580C;
+  --mt-cat-course-bg:#F3E1FB;  --mt-cat-course-fg:#9333EA;
+  --mt-cat-membership-bg:#D4F5EA; --mt-cat-membership-fg:#059669;
+  --mt-cat-offer-bg:#FFF0C8;   --mt-cat-offer-fg:#CA8A04;
   /* ── Feedback ───────────────────────────────────── */
   --green-100:#E3F4EA; --green-600:#1F7A4D; --green-700:#17603C;
   --red-100:#FDE8E6;   --red-600:#B42318;   --red-700:#912018;
