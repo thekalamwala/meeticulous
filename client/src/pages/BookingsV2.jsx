@@ -8,6 +8,7 @@
 // bulk actions, advanced status/payment/service filters. Search + status filter
 // are here because they're cheap over the loaded list.
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { CalendarClock, Clock, CalendarCheck2, CalendarX2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getHostBookings, getBookingReview } from '../services/api';
@@ -145,7 +146,16 @@ const BookingsV2 = () => {
         </div>
       ) : bookings.length === 0 ? (
         <EmptyState icon={CalendarX2} title="No bookings yet" description="They'll show up here as guests book you — share your link to get the first one." />
-      ) : view === 'list' ? (
+      ) : (
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={view}
+            initial={{ opacity: 0, scale: 0.96, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: 10 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 15 }}
+          >
+            {view === 'list' ? (
         <div className="overflow-hidden rounded-[8px] border border-neutral-200/60 bg-white">
           {listRows.length === 0 ? (
             <div className="px-3 py-10 text-center text-[12px] font-medium text-ink/50">No bookings match.</div>
@@ -203,6 +213,9 @@ const BookingsV2 = () => {
             ))}
           </div>
         </Panel>
+            )}
+          </motion.div>
+        </AnimatePresence>
       )}
 
       {selected && (
