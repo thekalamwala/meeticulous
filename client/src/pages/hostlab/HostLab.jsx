@@ -19,6 +19,7 @@
 // labUi.jsx; nothing sets a one-off size.
 // ─────────────────────────────────────────────────────────────────────────────
 import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import {
   Bell, CheckCircle2 as CircleCheck, ChevronRight, CreditCard, ExternalLink, HelpCircle,
@@ -263,7 +264,7 @@ const Popover = ({ open, onClose, label, width, children }) => {
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={onClose} aria-hidden="true" />
-      <div role="dialog" aria-label={label} className={cn('absolute right-0 top-full z-50 mt-1.5 overflow-hidden rounded-md border-2 border-neutral-200 bg-white dash-elev-3', width)}>
+      <div role="dialog" aria-label={label} className={cn('absolute right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-neutral-200/70 bg-white shadow-[0_4px_12px_-4px_rgba(43,10,20,0.1),0_16px_40px_-16px_rgba(43,10,20,0.25)]', width)}>
         {children}
       </div>
     </>
@@ -286,8 +287,8 @@ const ProfileMenu = ({ onGo, onClose }) => {
   // Hover is an inset rounded slot, never an edge-to-edge band: the menu reads
   // as a stack of objects rather than a ruled list.
   const row = cn(
-    'group mx-1.5 flex w-[calc(100%-12px)] items-center gap-2 rounded-sm px-2 py-[7px]',
-    'text-left text-[11.5px] font-medium text-ink/70 transition hover:bg-blush hover:text-ink',
+    'group mx-1.5 flex w-[calc(100%-12px)] items-center gap-2.5 rounded-xl px-2 py-2',
+    'text-left text-[12px] font-medium text-ink/70 transition hover:bg-blush hover:text-ink',
     ring,
   );
 
@@ -317,7 +318,7 @@ const ProfileMenu = ({ onGo, onClose }) => {
       </div>
 
       {/* Which space you are in */}
-      <div className="border-t-2 border-neutral-200 py-1.5">
+      <div className="border-t border-neutral-200/50 py-1.5">
         {/* State first, action second: the line tells you where you are, the
             row below it is the way out. Reading them the other way round meant
             the control arrived before the fact it depends on. */}
@@ -345,7 +346,7 @@ const ProfileMenu = ({ onGo, onClose }) => {
           </div>
         ) : (
           <button type="button" onClick={() => setConfirmSwitch(true)} className={cn(row, 'font-semibold text-ink')}>
-            <span className="grid h-6 w-6 shrink-0 place-items-center rounded bg-neutral-100 text-ink/55 transition group-hover:bg-white group-hover:text-maroon">
+            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-lg bg-neutral-100 text-ink/55 transition group-hover:bg-white group-hover:text-maroon">
               <Repeat className="h-3.5 w-3.5" strokeWidth={2.4} />
             </span>
             <span className="flex-1">Switch to Guest</span>
@@ -357,9 +358,9 @@ const ProfileMenu = ({ onGo, onClose }) => {
       {/* Setup — the same row shape as everything below it. The card, the
           seven segment bars and the "2 left · next:" line all said what the
           counter already says. */}
-      <div className="border-t-2 border-neutral-200 py-1.5">
+      <div className="border-t border-neutral-200/50 py-1.5">
         <button type="button" onClick={() => onGo('grow/page')} className={row}>
-          <span className="grid h-6 w-6 shrink-0 place-items-center rounded bg-neutral-100 text-ink/50 transition group-hover:bg-white group-hover:text-maroon">
+          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-lg bg-neutral-100 text-ink/50 transition group-hover:bg-white group-hover:text-maroon">
             <CircleCheck className="h-3.5 w-3.5" strokeWidth={2.2} />
           </span>
           <span className="flex-1 truncate">Setup checklist</span>
@@ -369,10 +370,10 @@ const ProfileMenu = ({ onGo, onClose }) => {
         </button>
       </div>
 
-      <div className="border-t-2 border-neutral-200 py-1.5">
+      <div className="border-t border-neutral-200/50 py-1.5">
         {LINKS.map((l) => (
           <button key={l.label} type="button" onClick={() => onGo(l.to)} className={row}>
-            <span className="grid h-6 w-6 shrink-0 place-items-center rounded bg-neutral-100 text-ink/50 transition group-hover:bg-white group-hover:text-maroon">
+            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-lg bg-neutral-100 text-ink/50 transition group-hover:bg-white group-hover:text-maroon">
               <l.icon className="h-3.5 w-3.5" strokeWidth={2.2} />
             </span>
             <span className="flex-1 truncate">{l.label}</span>
@@ -384,13 +385,13 @@ const ProfileMenu = ({ onGo, onClose }) => {
         ))}
       </div>
 
-      <div className="border-t-2 border-neutral-200 py-1.5">
+      <div className="border-t border-neutral-200/50 py-1.5">
         <button
           type="button"
           onClick={() => { toast.success('Signed out'); onClose(); }}
           className={cn(row, 'text-ink/55 hover:bg-error-bg hover:text-error-fg')}
         >
-          <span className="grid h-6 w-6 shrink-0 place-items-center rounded bg-neutral-100 text-ink/50 transition group-hover:bg-white group-hover:text-error-fg">
+          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-lg bg-neutral-100 text-ink/50 transition group-hover:bg-white group-hover:text-error-fg">
             <LogOut className="h-3.5 w-3.5" strokeWidth={2.2} />
           </span>
           Sign out
@@ -407,6 +408,28 @@ const StatusDot = ({ ok, children }) => (
   </span>
 );
 
+/* ── Account side-drawer (mobile) — the profile menu slides in from the right
+ * like a native app sheet; desktop keeps the dropdown. CSS-only slide, no dep. */
+const AccountDrawer = ({ open, onClose, children }) => createPortal(
+  <div className={cn('fixed inset-0 z-[90] lg:hidden', open ? '' : 'pointer-events-none')} aria-hidden={!open}>
+    <div
+      onClick={onClose}
+      className={cn('absolute inset-0 bg-ink/40 transition-opacity duration-300', open ? 'opacity-100' : 'opacity-0')}
+    />
+    <div
+      role="dialog"
+      aria-label="Account"
+      className={cn(
+        'absolute inset-y-0 right-0 flex w-[86%] max-w-[340px] flex-col overflow-y-auto bg-white shadow-[0_0_48px_-8px_rgba(43,10,20,0.45)] transition-transform duration-300 ease-out',
+        open ? 'translate-x-0' : 'translate-x-full',
+      )}
+    >
+      {children}
+    </div>
+  </div>,
+  document.body,
+);
+
 const Topbar = ({ onOpenNav, onOpenSearch, onGo }) => {
   const [notif, setNotif] = useState(false);
   const [acct, setAcct] = useState(false);
@@ -416,7 +439,7 @@ const Topbar = ({ onOpenNav, onOpenSearch, onGo }) => {
     // Mobile gets a taller bar (56px), wider gaps and 36px tap targets so the
     // chrome breathes under the prototype banner; lg: resets to the 44px console
     // density that keeps the topbar aligned with the desktop rail header.
-    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b-2 border-neutral-200 bg-cream/95 px-3 backdrop-blur sm:px-4 lg:h-11">
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 bg-cream/80 px-3 backdrop-blur-md shadow-[0_1px_16px_-10px_rgba(43,10,20,0.25)] sm:px-4 lg:h-11">
       <button type="button" onClick={onOpenNav} aria-label="Open navigation" className={cn(iconBtn, 'lg:hidden')}>
         <Menu className="h-[18px] w-[18px]" strokeWidth={2.2} />
       </button>
@@ -424,7 +447,7 @@ const Topbar = ({ onOpenNav, onOpenSearch, onGo }) => {
       <button
         type="button"
         onClick={onOpenSearch}
-        className={cn('flex h-9 min-w-0 flex-1 items-center gap-1.5 rounded-full border-2 border-neutral-200 bg-white px-3 text-left text-[11.5px] font-medium text-ink/40 transition hover:border-maroon/30 sm:max-w-[250px] lg:h-7 lg:px-2.5', ring)}
+        className={cn('flex h-9 min-w-0 flex-1 items-center gap-1.5 rounded-full border border-neutral-200/70 bg-white px-3 text-left text-[11.5px] font-medium text-ink/40 shadow-[0_1px_2px_rgba(43,10,20,0.03)] transition hover:border-maroon/30 sm:max-w-[250px] lg:h-7 lg:px-2.5', ring)}
       >
         <Search className="h-3.5 w-3.5 shrink-0" strokeWidth={2.2} />
         <span className="truncate">Search or jump to anything…</span>
@@ -447,7 +470,7 @@ const Topbar = ({ onOpenNav, onOpenSearch, onGo }) => {
             <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-rose" />
           </button>
           <Popover open={notif} onClose={() => setNotif(false)} label="Notifications" width="w-[268px]">
-            <p className="border-b-2 border-neutral-200 px-2.5 py-1.5 font-display text-[11.5px] font-bold text-ink">Recent activity</p>
+            <p className="border-b border-neutral-200/60 px-3 py-2 font-display text-[11.5px] font-bold text-ink">Recent activity</p>
             <ul className="max-h-[280px] divide-y divide-neutral-200/70 overflow-y-auto">
               {mock.activity.map((a) => (
                 <li key={a.id} className="px-2.5 py-1.5">
@@ -463,9 +486,15 @@ const Topbar = ({ onOpenNav, onOpenSearch, onGo }) => {
           <button type="button" onClick={() => { setAcct((v) => !v); setNotif(false); }} aria-label="Account menu" className={cn('rounded-full transition hover:opacity-85', ring)}>
             <Avatar name={mock.host.name} size="h-8 w-8 text-[11px] lg:h-7 lg:w-7 lg:text-[10px]" />
           </button>
-          <Popover open={acct} onClose={() => setAcct(false)} label="Account" width="w-[244px]">
+          {/* Desktop: a dropdown. Mobile: a native-feel side drawer. */}
+          <div className="hidden lg:block">
+            <Popover open={acct} onClose={() => setAcct(false)} label="Account" width="w-[264px]">
+              <ProfileMenu onGo={(to) => { onGo(to); setAcct(false); }} onClose={() => setAcct(false)} />
+            </Popover>
+          </div>
+          <AccountDrawer open={acct} onClose={() => setAcct(false)}>
             <ProfileMenu onGo={(to) => { onGo(to); setAcct(false); }} onClose={() => setAcct(false)} />
-          </Popover>
+          </AccountDrawer>
         </div>
       </div>
     </header>
