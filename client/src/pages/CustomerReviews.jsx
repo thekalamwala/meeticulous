@@ -99,7 +99,7 @@ const CustomerReviews = () => {
             {reviews.map((r) => {
               const author = r.profiles || {};
               return (
-                <div key={r.id} className="rounded-xl border-2 border-neutral-200 bg-white p-4">
+                <div key={r.id} className="rounded-[8px] border-2 border-neutral-200 bg-white p-4">
                   <div className="flex items-center gap-2.5">
                     {author.profile_image ? (
                       <img src={author.profile_image} alt="" className="h-9 w-9 shrink-0 rounded-full object-cover" />

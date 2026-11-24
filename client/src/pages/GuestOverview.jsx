@@ -33,7 +33,7 @@ const isCompleted = (b) => ["completed", "complete"].includes((b.status || "").t
 const StatTile = ({ icon: Icon, label, value, to }) => (
   <Link
     to={to}
-    className="flex items-center gap-3 rounded-xl border-2 border-neutral-200 bg-white p-3.5 transition hover:border-maroon/40 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
+    className="flex items-center gap-3 rounded-[8px] border-2 border-neutral-200 bg-white p-3.5 transition hover:border-maroon/40 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
   >
     <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-blush text-maroon">
       <Icon size={19} strokeWidth={2} />
@@ -86,7 +86,7 @@ const GuestOverview = () => {
 
       {/* Next booking — the hero. Maroon ground, pink dot = booked (brand rule). */}
       {loading ? (
-        <div className="h-28 animate-pulse rounded-2xl border-2 border-neutral-200 bg-white" />
+        <div className="h-28 animate-pulse rounded-[8px] border-2 border-neutral-200 bg-white" />
       ) : next ? (
         <Link
           to="/user/my-bookings"

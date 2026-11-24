@@ -48,13 +48,13 @@ function PostCard({ post }) {
   return (
     <article className="flex flex-col gap-3 rounded-2xl border-2 border-ink/10 bg-white p-5">
       <div className="flex items-start justify-between gap-3">
-        <span className="text-xs font-bold uppercase tracking-wide text-maroon">{post.category}</span>
-        {post.time && <span className="text-xs text-ink/50">{post.time}</span>}
+        <span className="mt-overline text-maroon">{post.category}</span>
+        {post.time && <span className="mt-post__meta">{post.time}</span>}
       </div>
       <h3 className="font-display text-lg font-extrabold leading-tight text-ink">{post.title}</h3>
-      {post.excerpt && <p className="text-sm leading-relaxed text-ink/70">{post.excerpt}</p>}
+      {post.excerpt && <p className="text-sm leading-relaxed text-muted">{post.excerpt}</p>}
       {(post.replies != null || post.likes != null) && (
-        <div className="flex gap-4 text-sm text-ink/60">
+        <div className="flex gap-4 text-sm text-muted">
           {post.replies != null && <span>💬 {post.replies} replies</span>}
           {post.likes != null && <span>❤️ {post.likes} likes</span>}
         </div>
@@ -109,7 +109,7 @@ export default function ContributorProfile({ data }) {
             </svg>
           )}
           {data.houseLabel && (
-            <span className="absolute right-4 top-4 inline-flex items-center gap-2 rounded-full border border-ink/10 bg-white/90 px-3 py-1 text-xs font-semibold text-ink backdrop-blur">
+            <span className="absolute right-4 top-4 inline-flex items-center gap-2 rounded-full border border-ink/10 bg-white/90 px-3 py-1 text-xs font-semibold text-ink">
               <span className="h-2 w-2 rounded-full bg-marigold" aria-hidden="true" />{data.houseLabel}
             </span>
           )}
@@ -124,7 +124,7 @@ export default function ContributorProfile({ data }) {
                 <h1 className="translate-y-[3px] font-display text-2xl font-extrabold leading-none tracking-tight text-maroon sm:truncate sm:text-3xl">{data.name}</h1>
                 {data.verified && <span className="-translate-y-[2px]"><Seal size={22} /></span>}
               </div>
-              <p className="mt-0.5 -translate-y-[10px] text-xs text-ink/70 sm:truncate">
+              <p className="mt-0.5 -translate-y-[10px] mt-post__meta sm:truncate">
                 {data.title && <strong className="font-semibold text-ink">{data.title}</strong>}{data.title && data.org ? ' · ' : ''}{data.org}
               </p>
             </div>
@@ -152,10 +152,10 @@ export default function ContributorProfile({ data }) {
                 aria-selected={on}
                 onClick={() => setTab(t.key)}
                 className={`relative -mb-px py-3 text-sm font-semibold transition-colors ${
-                  on ? 'text-maroon' : 'text-ink/50 hover:text-ink'}`}
+                  on ? 'text-maroon' : 'text-faint hover:text-ink'}`}
               >
                 {t.label}
-                {t.count != null && <span className="ml-1.5 text-xs font-bold text-ink/40">{t.count}</span>}
+                {t.count != null && <span className="ml-1.5 text-xs font-bold text-faint">{t.count}</span>}
                 {on && <span className="absolute inset-x-0 bottom-0 h-[1.5px] bg-maroon" aria-hidden="true" />}
               </button>
             );
@@ -168,14 +168,14 @@ export default function ContributorProfile({ data }) {
             {(data.script || data.bio) && (
               <div className="flex flex-col gap-2 rounded-2xl border-2 border-ink/10 bg-white p-5">
                 {data.script && <p className="font-serif text-2xl italic leading-tight text-rose">{data.script}</p>}
-                {data.bio && <p className="text-sm leading-relaxed text-ink/80">{data.bio}</p>}
+                {data.bio && <p className="text-sm leading-relaxed text-ink">{data.bio}</p>}
               </div>
             )}
 
             {tab === 'posts' && (
               data.posts?.length
                 ? data.posts.map((p, i) => <PostCard key={i} post={p} />)
-                : <p className="text-sm text-ink/60">Nothing posted yet.</p>
+                : <p className="text-sm text-muted">Nothing posted yet.</p>
             )}
 
             {tab === 'badges' && (
@@ -185,21 +185,21 @@ export default function ContributorProfile({ data }) {
                     <span aria-hidden="true">{b.emoji}</span>{b.label}
                   </span>
                 ))}
-                {!data.badges?.length && <p className="text-sm text-ink/60">No badges yet.</p>}
+                {!data.badges?.length && <p className="text-sm text-muted">No badges yet.</p>}
               </div>
             )}
 
             {tab === 'about' && (
               <div className="flex flex-col gap-3 rounded-2xl border-2 border-ink/10 bg-white p-5">
                 {(data.about || []).map((para, i) => (
-                  <p key={i} className="text-sm leading-relaxed text-ink/80">{para}</p>
+                  <p key={i} className="text-sm leading-relaxed text-ink">{para}</p>
                 ))}
                 {data.stats?.length > 0 && (
                   <dl className="mt-2 grid grid-cols-3 gap-2.5">
                     {data.stats.map((s) => (
                       <div key={s.label} className="rounded-[20px] border border-ink/10 bg-cream px-4 py-3">
                         <dd className="font-display text-xl font-extrabold leading-none text-ink">{s.value}</dd>
-                        <dt className="mt-1 text-[11px] font-semibold uppercase tracking-wide text-ink/50">{s.label}</dt>
+                        <dt className="mt-1 mt-overline text-faint">{s.label}</dt>
                       </div>
                     ))}
                   </dl>
@@ -216,7 +216,7 @@ export default function ContributorProfile({ data }) {
                       : <a href={l.href} target="_blank" rel="noopener noreferrer" className="font-medium text-maroon underline">{l.label}</a>}
                   </li>
                 ))}
-                {!data.links?.length && <li className="text-sm text-ink/60">No links yet.</li>}
+                {!data.links?.length && <li className="text-sm text-muted">No links yet.</li>}
               </ul>
             )}
           </div>

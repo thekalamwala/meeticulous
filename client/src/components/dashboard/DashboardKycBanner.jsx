@@ -7,8 +7,8 @@ const Banner = ({ tone, Icon, title, body }) => (
   <div className={`mb-5 flex items-start gap-3 rounded-md border p-4 ${tone.box}`}>
     <Icon className={`mt-0.5 h-5 w-5 shrink-0 ${tone.icon}`} strokeWidth={2.25} />
     <div className="min-w-0 flex-1">
-      <p className="text-sm font-semibold text-gray-900">{title}</p>
-      <p className="mt-0.5 text-xs text-gray-600">{body}</p>
+      <p className="text-sm font-semibold text-neutral-900">{title}</p>
+      <p className="mt-0.5 text-xs text-neutral-600">{body}</p>
     </div>
     <Link
       to="/dashboard/kyc"

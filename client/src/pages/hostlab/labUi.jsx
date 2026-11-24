@@ -128,14 +128,29 @@ export const useSubPage = (parent) => {
   return pageMeta(parent, page);
 };
 
-/* ── SubPageHeader — every sub-page gets a real heading of its own ─────── */
-export const SubPageHeader = ({ page, action, children }) => (
+/* ── SubPageHeader — every page gets a real heading of its own ──────────
+ *
+ * Two ways in, because two kinds of page exist:
+ *   <SubPageHeader page={page} />        a sub-page, titled from its nav.js entry
+ *   <SubPageHeader title="Today">…</…>   a destination with no sub-pages of its
+ *                                        own (Today, Catalog, Clients), or one
+ *                                        titled from its data (the editor)
+ *
+ * `page` wins when both are given. The subtitle is `children` if present, else
+ * the nav blurb — so a page whose subtitle is computed live (today's date, a
+ * row count, a sum) passes it as children and still gets the shared heading.
+ *
+ * This is deliberately NOT a tab strip. nav.js states the console's rule: if it
+ * has a URL in the rail it is a page, if it is a subset of one list it is a
+ * filter, nothing is a tab. This renders the heading only.
+ * ---------------------------------------------------------------------- */
+export const SubPageHeader = ({ page, title, action, children }) => (
   <header className="flex flex-wrap items-end justify-between gap-2">
     <div className="min-w-0">
       <h1 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.03em] text-maroon sm:text-[18px]">
-        {page.label}
+        {page ? page.label : title}
       </h1>
-      <p className="mt-0.5 text-[12px] font-medium text-ink/55">{children || page.blurb}</p>
+      <p className="mt-0.5 text-[12px] font-medium text-ink/55">{children || page?.blurb}</p>
     </div>
     {action}
   </header>
@@ -435,7 +450,7 @@ export const CommandPalette = ({ open, onClose, items, onPick }) => {
             ref={inputRef}
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search bookings, clients, services…"
+            placeholder="Search or jump to anything…"
             className="w-full bg-transparent text-[12px] font-medium text-ink outline-none placeholder:text-ink/35"
           />
           <kbd className="shrink-0 rounded border border-neutral-200 px-1.5 py-0.5 text-[9.5px] font-bold text-ink/40">esc</kbd>
@@ -537,10 +552,12 @@ export const Panel = ({ title, subtitle, action, children, className = '', flush
  * old palette. Rather than restyle a shared production component from inside a
  * prototype, the lab uses these, and the fix is filed as a P0 in the report.
  * ---------------------------------------------------------------------- */
+// Minimalist: clean bottom border instead of a full frame, transparent, no ring
+// — the Field label sits above. Matches the user-facing .fb-input style.
 export const FIELD =
-  'block rounded-sm border-2 border-neutral-200 bg-white px-2.5 text-[12px] font-medium text-ink ' +
-  'outline-none transition placeholder:text-ink/35 focus:border-maroon/50 ' +
-  'focus-visible:ring-[3px] focus-visible:ring-rose disabled:bg-neutral-50 disabled:text-ink/40';
+  'block border-solid border-x-0 border-t-0 border-b-[1.5px] rounded-none border-neutral-200 bg-transparent px-0.5 text-[12px] font-medium text-ink ' +
+  'outline-none transition placeholder:text-ink/35 focus:border-maroon ' +
+  'focus-visible:ring-0 disabled:text-ink/40';
 
 // `cn` is a plain string joiner — it does NOT resolve Tailwind conflicts. So a
 // base `w-full` silently beats a caller's `w-[116px]` (whichever Tailwind emits

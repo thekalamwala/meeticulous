@@ -121,7 +121,7 @@ const validateWeeklySchedule = (ws) => {
 // pre-migration DB still resolves the profile.
 const HOST_PUBLIC_COLS =
   "id, name, username, role, bio, tagline, profession, location, profile_image, " +
-  "cover_image, social_links, badges, theme_color, plan, is_verified, google_calendar_connected, primary_category, categories, updated_at";
+  "cover_image, social_links, badges, theme_color, plan, is_verified, google_calendar_connected, primary_category, categories, created_at, updated_at";
 const HOST_SEO_COLS =
   "seo_title, seo_description, og_title, og_description, seo_image, is_indexable, og_image, og_status";
 

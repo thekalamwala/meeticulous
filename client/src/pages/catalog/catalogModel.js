@@ -22,13 +22,14 @@
  * list is merged by hand in a component.
  */
 
-export const TYPES = ['service', 'product', 'course', 'coupon'];
+export const TYPES = ['service', 'product', 'course', 'coupon', 'membership'];
 
 export const TYPE_LABEL = {
   service: 'Service',
   product: 'Product',
   course: 'Course',
   coupon: 'Offer',
+  membership: 'Membership',
 };
 
 /** Plural, for the filter. */
@@ -37,10 +38,21 @@ export const TYPE_PLURAL = {
   product: 'Products',
   course: 'Courses',
   coupon: 'Offers',
+  membership: 'Memberships',
+};
+
+// One line on what each type is, for the "New" picker. Lifted from the Host Lab
+// descriptors so the live menu reads the same as the prototype the founder saw.
+export const TYPE_BLURB = {
+  service: 'Time on your calendar. A guest picks a slot and pays for it.',
+  product: 'A file a guest downloads. It sells while you sleep and takes no slot.',
+  course: 'Lessons a guest works through. Teach once, sell many times.',
+  membership: 'A monthly fee for ongoing access — the steadiest revenue a host can build.',
+  coupon: 'A code that takes money off. For a launch, a festival, or a returning client.',
 };
 
 // Where a row goes when clicked. Only services have a per-item editor route;
-// the other three edit inline on their own page, so a row lands there instead.
+// the rest edit inline on their own page, so a row lands there instead.
 // Stated rather than hidden: this is the seam a later step closes by unifying
 // the editors, and pretending otherwise would mean a dead link.
 export const HOME_OF = {
@@ -48,6 +60,19 @@ export const HOME_OF = {
   product: '/dashboard/products',
   course: '/dashboard/courses',
   coupon: '/dashboard/coupons',
+  // A host has ONE membership program; its tiers are managed on that one page.
+  membership: '/dashboard/memberships',
+};
+
+// Where "add a new one of this type" lands. Services have a dedicated add route;
+// the rest add on their own management page. Membership has no per-item create —
+// tiers are added on the program page, so it points there too.
+export const ADD_ROUTE = {
+  service: '/dashboard/service/add-new',
+  product: '/dashboard/products',
+  course: '/dashboard/courses',
+  coupon: '/dashboard/coupons',
+  membership: '/dashboard/memberships',
 };
 
 export const editHref = (item) =>
@@ -79,6 +104,23 @@ export function normalise(row, kind) {
       price: null,
       active: !!row.active,
       meta: couponSummary(row),
+    };
+  }
+
+  if (kind === 'membership') {
+    // A membership "item" is a TIER: { id, name, type: 'free'|'paid',
+    // price_inr, status: 'draft'|'live' }. It has no `title`/`price`/`is_active`
+    // like the others — same class of mismatch as coupons, so it gets its own
+    // branch rather than being forced through the generic shape.
+    const free = row.type === 'free';
+    const price = free ? null : num(row.price_inr);
+    return {
+      id: row.id,
+      kind,
+      title: row.name || 'Untitled tier',
+      price,
+      active: row.status === 'live',
+      meta: free ? 'Free' : (price ? `₹${price.toLocaleString('en-IN')}/mo` : null),
     };
   }
 

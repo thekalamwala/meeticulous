@@ -83,7 +83,7 @@ export default function TipWidget({ vpa, payeeName, note = 'Community tip', head
             </span>
             <h3 id="tip-heading" className="translate-y-[8px] font-display text-xl font-extrabold leading-none text-maroon">{heading}</h3>
           </div>
-          <p className="-mt-2 text-sm leading-relaxed text-ink/70">
+          <p className="-mt-2 text-sm leading-relaxed text-muted">
             {who} keeps the community warm for free. A tip goes straight to their UPI — not to us.
           </p>
 
@@ -102,11 +102,11 @@ export default function TipWidget({ vpa, payeeName, note = 'Community tip', head
             <label className={`relative flex h-11 flex-[1.3] items-center rounded-full border-2 px-4 transition-colors ${
               custom !== '' ? 'border-maroon' : 'border-ink/10'}`}>
               <span className="sr-only">Custom amount in rupees</span>
-              {custom !== '' && <span className="pointer-events-none mr-1 text-sm text-ink/60">₹</span>}
+              {custom !== '' && <span className="pointer-events-none mr-1 text-sm text-muted">₹</span>}
               <input
                 type="number" min={MIN_TIP} max={MAX_TIP} inputMode="numeric" value={custom}
                 onChange={(e) => setCustom(e.target.value)} placeholder="Custom" aria-invalid={amountError || undefined}
-                className="w-full min-w-0 border-0 bg-transparent p-0 text-sm outline-none placeholder:text-ink/40 focus:border-0 focus:shadow-none focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                className="w-full min-w-0 border-0 bg-transparent p-0 text-sm outline-none placeholder:text-faint focus:border-0 focus:shadow-none focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               />
             </label>
           </div>
@@ -121,10 +121,10 @@ export default function TipWidget({ vpa, payeeName, note = 'Community tip', head
                 imageSettings={{ src: LOGO, height: 34, width: 34, excavate: true }} />
             </div>
             <figcaption className="text-center">
-              <span className="block text-sm text-ink/70">
+              <span className="block text-sm text-muted">
                 {effective ? <>Scan to pay <strong className="text-ink">₹{inr(effective)}</strong></> : 'Enter an amount to pay'}
               </span>
-              <span className="mt-0.5 block font-mono text-xs text-ink/50">{recipient}</span>
+              <span className="mt-0.5 block font-mono text-xs text-faint">{recipient}</span>
             </figcaption>
           </figure>
 

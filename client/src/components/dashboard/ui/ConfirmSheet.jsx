@@ -23,7 +23,7 @@ export function ConfirmSheet({
   return (
     <Sheet open={open} onClose={onClose} title={title}>
       <div className="px-2 pb-2 pt-1">
-        {message && <p className="mb-5 text-sm leading-relaxed text-gray-600">{message}</p>}
+        {message && <p className="mb-5 text-sm leading-relaxed text-neutral-600">{message}</p>}
         <div className="flex flex-col gap-2">
           <Button
             full

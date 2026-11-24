@@ -1,16 +1,19 @@
 import { forwardRef } from 'react';
 import { cn } from './cn';
 
+// Minimalist: a clean bottom border instead of a full frame, transparent, no
+// ring — paired with a label above (see Label / FormField). Matches the
+// user-facing form style (.fb-input).
 const fieldBase =
-  'block w-full rounded border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 shadow-sm transition-colors ' +
-  'focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 ' +
-  'disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500';
+  'block w-full border-solid border-x-0 border-t-0 border-b-[1.5px] rounded-none border-neutral-300 bg-transparent text-sm text-neutral-900 placeholder:text-neutral-400 transition-colors ' +
+  'focus:border-primary focus:outline-none focus:shadow-none ' +
+  'disabled:cursor-not-allowed disabled:text-neutral-400';
 
 export const Input = forwardRef(function Input({ className = '', invalid = false, ...props }, ref) {
   return (
     <input
       ref={ref}
-      className={cn(fieldBase, 'h-10 px-3', invalid && 'border-red-400 focus:border-red-500 focus:ring-red-200', className)}
+      className={cn(fieldBase, 'h-10 px-0.5', invalid && 'border-red-400 focus:border-red-500', className)}
       {...props}
     />
   );
@@ -21,7 +24,7 @@ export const Textarea = forwardRef(function Textarea({ className = '', invalid =
     <textarea
       ref={ref}
       rows={rows}
-      className={cn(fieldBase, 'px-3 py-2', invalid && 'border-red-400 focus:ring-red-200', className)}
+      className={cn(fieldBase, 'px-0.5 py-2', invalid && 'border-red-400', className)}
       {...props}
     />
   );
@@ -46,7 +49,7 @@ export const Select = forwardRef(function Select({ className = '', invalid = fal
     <select
       ref={ref}
       style={SELECT_STYLE}
-      className={cn(fieldBase, 'h-10 cursor-pointer px-3 pr-8', invalid && 'border-red-400 focus:ring-red-200', className)}
+      className={cn(fieldBase, 'h-10 cursor-pointer px-0.5 pr-8', invalid && 'border-red-400', className)}
       {...props}
     >
       {children}
@@ -56,7 +59,7 @@ export const Select = forwardRef(function Select({ className = '', invalid = fal
 
 export function Label({ htmlFor, required, children, className = '' }) {
   return (
-    <label htmlFor={htmlFor} className={cn('mb-1.5 block text-sm font-medium text-gray-700', className)}>
+    <label htmlFor={htmlFor} className={cn('mb-1.5 block text-sm font-medium text-neutral-700', className)}>
       {children}
       {required && <span className="ml-0.5 text-red-500">*</span>}
     </label>
@@ -75,7 +78,7 @@ export function FormField({ label, htmlFor, required, hint, error, children, cla
       {error ? (
         <p className="mt-1 text-xs text-red-600">{error}</p>
       ) : hint ? (
-        <p className="mt-1 text-xs text-gray-500">{hint}</p>
+        <p className="mt-1 text-xs text-neutral-500">{hint}</p>
       ) : null}
     </div>
   );

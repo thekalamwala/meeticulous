@@ -17,7 +17,7 @@ const TIERS = [
 ];
 
 const LockedCard = ({ icon: Icon, title, desc }) => (
-  <div className="relative overflow-hidden rounded-xl border-2 border-neutral-200 bg-white p-4">
+  <div className="relative overflow-hidden rounded-[8px] border-2 border-neutral-200 bg-white p-4">
     <span className="absolute right-3 top-3 grid h-5 w-5 place-items-center rounded-full bg-neutral-100 text-ink/35"><Lock className="h-3 w-3" strokeWidth={2.4} /></span>
     <Icon className="h-6 w-6 text-maroon" strokeWidth={1.9} />
     <p className="mt-2 font-display text-[13.5px] font-extrabold tracking-[-0.02em] text-ink">{title}</p>
@@ -44,7 +44,7 @@ const Loyalty = () => {
         </div>
 
         {/* Tier progress */}
-        <div className="mb-5 rounded-xl border-2 border-neutral-200 bg-white p-4">
+        <div className="mb-5 rounded-[8px] border-2 border-neutral-200 bg-white p-4">
           <div className="flex items-baseline justify-between">
             <h2 className="font-display text-[15px] font-extrabold tracking-[-0.02em] text-ink">Your tier</h2>
             <span className="text-[12px] font-semibold text-ink/55">Total spent: <span className="font-bold text-ink">₹{spent.toLocaleString("en-IN")}</span></span>
@@ -80,7 +80,7 @@ const Loyalty = () => {
           <LockedCard icon={Percent} title="Promo codes" desc="Exclusive codes from our affiliate partners." />
         </div>
 
-        <div className="rounded-xl border-2 border-neutral-200 bg-white p-5 text-center">
+        <div className="rounded-[8px] border-2 border-neutral-200 bg-white p-5 text-center">
           <p className="text-[12px] font-medium leading-snug text-ink/55">
             We're putting the finishing touches on rewards. Keep booking — your spend will count toward your tier the day it goes live.
           </p>

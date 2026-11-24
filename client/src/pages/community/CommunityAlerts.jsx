@@ -59,8 +59,8 @@ export default function CommunityAlerts() {
 
       <label className="mt-card" style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
         <span className="min-w-0">
-          <span className="block text-sm font-medium text-ink">Email me about mentions &amp; replies</span>
-          <span className="block text-xs text-muted">In-app alerts always show here.</span>
+          <span className="mt-post__name block">Email me about mentions &amp; replies</span>
+          <span className="block mt-post__meta">In-app alerts always show here.</span>
         </span>
         <input type="checkbox" checked={emailOn} disabled={savingPref} onChange={togglePref} className="h-5 w-5 shrink-0 accent-maroon" aria-label="Email me about mentions and replies" />
       </label>
@@ -80,9 +80,9 @@ export default function CommunityAlerts() {
           >
             <span className="inline-grid h-8 w-8 shrink-0 place-items-center rounded-full bg-maroon/10 text-maroon"><Bell size={16} aria-hidden="true" /></span>
             <span className="min-w-0 flex-1">
-              <span className="block text-sm font-medium text-ink">{n.title}</span>
-              {n.body && <span className="block truncate text-xs text-muted">{n.body}</span>}
-              <span className="block text-xs text-muted">{relTime(n.created_at)}</span>
+              <span className="mt-post__name block">{n.title}</span>
+              {n.body && <span className="block truncate mt-post__meta">{n.body}</span>}
+              <span className="block mt-post__meta">{relTime(n.created_at)}</span>
             </span>
             {!n.read_at && <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-maroon" aria-label="Unread" />}
           </Link>

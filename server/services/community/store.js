@@ -92,6 +92,32 @@ const resolveUsernames = async (usernames) => (usernames.length
   : []);
 const insertMentions = (rows) => (rows.length ? run(db('community_mentions').insert(rows)) : null);
 
+// Mentions of one member, newest first, with the source post (and comment author) resolved.
+async function listMentions(userId, limit = 30) {
+  const rows = (await run(db('community_mentions').select('id, post_id, comment_id, created_at')
+    .eq('mentioned_user_id', userId).order('created_at', { ascending: false }).limit(limit))) || [];
+  const cids = uniq(rows.map((r) => r.comment_id));
+  const comments = cids.length
+    ? (await run(db('community_comments').select('id, post_id, author_id').in('id', cids))) || [] : [];
+  const cmap = new Map(comments.map((c) => [c.id, c]));
+  const postIds = uniq(rows.map((r) => r.post_id || cmap.get(r.comment_id)?.post_id));
+  const posts = postIds.length
+    ? (await run(db('community_posts').select('id, slug, kind, title, status, author_id').in('id', postIds))) || [] : [];
+  const pmap = new Map(posts.map((p) => [p.id, p]));
+  const { profiles } = await loadAuthors([...posts.map((p) => p.author_id), ...comments.map((c) => c.author_id)]);
+  return rows.map((r) => {
+    const c = r.comment_id ? cmap.get(r.comment_id) : null;
+    const p = pmap.get(r.post_id || c?.post_id);
+    const a = profiles.get(c ? c.author_id : p?.author_id);
+    return {
+      id: r.id, created_at: r.created_at, source: c ? 'comment' : 'post',
+      post: !p || ['deleted', 'removed'].includes(p.status) ? null
+        : { id: p.id, slug: p.slug, title: p.title ?? null, url: `/community/${p.kind === 'thread' ? 't' : 'p'}/${p.slug}` },
+      author: a ? { id: a.id, display_name: a.first_name || a.name || a.username || 'Member', username: a.username } : null,
+    };
+  });
+}
+
 // Host card stats for the community home left rail: lifetime bookings, active
 // services, and the host's own rating (avg of reviews where they're the subject).
 // Core tables (always present) queried directly; each count fails soft to 0/null
@@ -140,6 +166,22 @@ const searchMentionable = async (q, { limit = 8 } = {}) => {
       avatar_url: p.profile_image || null,
       role: badgeBy.get(p.id) ? 'staff' : (p.is_host ? 'host' : 'guest'),
     }));
+};
+
+// The subset of `ids` that may be credited as collaborators: same rule as the
+// @mention list (not banned, has a username, and is a host OR a community member).
+// Returns [{ id, is_host }] for the valid ones; the controller rejects any id not here.
+const mentionableByIds = async (ids) => {
+  const list = [...new Set((ids || []).filter(Boolean))];
+  if (!list.length) return [];
+  const [profiles, members] = await Promise.all([
+    run(db('profiles').select('id, is_host, is_banned, username').in('id', list)),
+    run(db('community_members').select('user_id').in('user_id', list)),
+  ]);
+  const memberSet = new Set((members || []).map((m) => m.user_id));
+  return (profiles || [])
+    .filter((p) => !p.is_banned && p.username && (p.is_host || memberSet.has(p.id)))
+    .map((p) => ({ id: p.id, is_host: !!p.is_host }));
 };
 
 const getComment = (id) => run(db('community_comments').select('*').eq('id', id).maybeSingle());
@@ -312,7 +354,19 @@ const getPostBySlug = (slug) => run(db('community_posts').select('*').eq('slug',
 // Keyset-paged on created_at like the main feed; visibility (author ban) is
 // applied by the caller via filterVisible, so we over-fetch at the controller.
 async function listAuthorPosts({ authorId, cur, limit }) {
-  const q = keyset(db('community_posts').select('*').eq('status', 'visible').eq('author_id', authorId), cur, 'lt');
+  // A profile's feed = their own posts PLUS posts where they're a credited
+  // collaborator. Fetch the collaborated post ids first (schema-fallback: author-only
+  // before v3.226), then widen the selection.
+  let collabPostIds = [];
+  try {
+    const rows = await run(db('community_post_collaborators').select('post_id').eq('profile_id', authorId));
+    collabPostIds = (rows || []).map((r) => r.post_id);
+  } catch (e) { if (e.code !== 'COMMUNITY_UNAVAILABLE') throw e; }
+  const base = db('community_posts').select('*').eq('status', 'visible');
+  const scoped = collabPostIds.length
+    ? base.or(`author_id.eq.${authorId},id.in.(${collabPostIds.join(',')})`)
+    : base.eq('author_id', authorId);
+  const q = keyset(scoped, cur, 'lt');
   return (await run(q.order('created_at', { ascending: false }).order('id', { ascending: false }).limit(limit))) || [];
 }
 async function listAuthorComments({ authorId, cur, limit }) {
@@ -367,6 +421,43 @@ async function loadAuthors(ids) {
   };
 }
 
+// Up to 2 per post, enforced in the controller. Position preserves the order the
+// author picked them. No-op on empty.
+async function insertCollaborators(postId, profileIds) {
+  const ids = (profileIds || []).filter(Boolean);
+  if (!ids.length) return;
+  await run(db('community_post_collaborators')
+    .insert(ids.map((profile_id, position) => ({ post_id: postId, profile_id, position }))));
+}
+
+// post_id -> ordered collaborator chips ({id, display_name, avatar_url, profile_url}).
+// Sorted by position in JS so the order holds regardless of DB ordering. Schema
+// fallback: an empty map before v3.226 is applied (feature degrades to none).
+async function loadCollaboratorsByPost(postIds) {
+  const map = new Map();
+  if (!postIds.length) return map;
+  let rows;
+  try {
+    rows = await run(db('community_post_collaborators')
+      .select('post_id, position, profile:profiles(id, name, first_name, username, profile_image)')
+      .in('post_id', postIds));
+  } catch (e) {
+    if (e.code === 'COMMUNITY_UNAVAILABLE') return map;
+    throw e;
+  }
+  for (const r of [...(rows || [])].sort((a, b) => (a.position || 0) - (b.position || 0))) {
+    const p = r.profile || {};
+    if (!map.has(r.post_id)) map.set(r.post_id, []);
+    map.get(r.post_id).push({
+      id: p.id,
+      display_name: p.name || p.first_name || 'Member',
+      avatar_url: p.profile_image || null,
+      profile_url: p.username ? `/${p.username}` : null,
+    });
+  }
+  return map;
+}
+
 async function loadMediaByPost(postIds) {
   const map = new Map();
   if (!postIds.length) return map;
@@ -388,9 +479,9 @@ async function likedIds(userId, targetType, ids) {
 // Batch-hydrate rows -> serialized items: one query each for authors, members, media, likes (+ cached spaces).
 async function hydrateItems(rows, viewerId) {
   const ids = rows.map((r) => r.id);
-  const [{ profiles, members, dualIds }, spaces, media, liked, saved] = await Promise.all([
+  const [{ profiles, members, dualIds }, spaces, media, collabs, liked, saved] = await Promise.all([
     loadAuthors(rows.map((r) => r.author_id)), listSpaces(), loadMediaByPost(ids),
-    likedIds(viewerId, 'post', ids), savedIds(viewerId, ids),
+    loadCollaboratorsByPost(ids), likedIds(viewerId, 'post', ids), savedIds(viewerId, ids),
   ]);
   const spaceById = new Map(spaces.map((s) => [s.id, s]));
   const items = rows.map((r) => serializeItem(r, {
@@ -398,6 +489,7 @@ async function hydrateItems(rows, viewerId) {
     member: members.get(r.author_id) || null,
     space: spaceById.get(r.space_id) || null,
     media: media.get(r.id) || [],
+    collaborators: collabs.get(r.id) || [],
     viewer: { liked: liked.has(r.id), saved: saved.has(r.id) },
     dual: dualIds.has(r.author_id),
   }));
@@ -485,7 +577,7 @@ module.exports = {
   listAuthorPosts, listAuthorComments, postContexts,
   loadAuthors, loadMediaByPost, likedIds, resetReadCaches,
   linksAllowed, getProfile, getMember, acceptTerms, updateMemberPrefs, getSpaceByKey, getSpaceById, getOwnedLiveTier,
-  insertPost, getPost, updatePost, insertMedia, listMedia, resolveUsernames, insertMentions, searchMentionable, hostCard,
+  insertPost, getPost, updatePost, insertMedia, listMedia, insertCollaborators, loadCollaboratorsByPost, mentionableByIds, resolveUsernames, insertMentions, listMentions, searchMentionable, hostCard,
   getComment, insertComment, countCommentsByAuthorOnPost, countReplies, countRepliesByAuthor,
   listRecentTopLevelComments, updateComment, addReaction, removeReaction,
   addSave, removeSave, savedIds, addBlock, removeBlock,

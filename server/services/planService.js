@@ -29,7 +29,12 @@ const FREE_PLAN = 'free';
 // 2026-11-01) so a missing table never advertises numbers the live DB wouldn't
 // enforce. Prices are EX-GST; the 18% is added by computeSubscriptionBreakdown
 // (₹199 → ₹234.82 charged, ₹999 → ₹1,178.82 charged). Mirrors client/src/data/plans.js.
-const PREMIUM_LIMITS = { services: -1, free_services: -1, bookings_per_year: -1, digital_products: -1, calendar_integrations: 2, profile_theme_colors: -1, reminder_flows: -1, followup_flows: -1, categories: -1, crm: -1, ai_generations: -1 };
+// `insights` gates Creator Intelligence (services/intel/gate.js): 0 or missing
+// locks the six gated blocks, -1 unlocks. It is here for the DB-unreachable
+// fallback path ONLY — live gating reads subscription_plans.limits, so Pro stays
+// locked until that row is updated. Deliberate: the gate opens when the founder
+// opens it, not quietly at merge.
+const PREMIUM_LIMITS = { services: -1, free_services: -1, bookings_per_year: -1, digital_products: -1, calendar_integrations: 2, profile_theme_colors: -1, reminder_flows: -1, followup_flows: -1, categories: -1, crm: -1, ai_generations: -1, insights: -1 };
 
 const FALLBACK_PLANS = {
   free:         { name: 'Starter', slug: 'free', annual_price: 0, monthly_price: 0, commission_percentage: 5, active: true,

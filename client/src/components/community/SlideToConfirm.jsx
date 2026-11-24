@@ -74,7 +74,7 @@ export default function SlideToConfirm({
       <span
         aria-live="polite"
         className={`pointer-events-none absolute inset-0 flex items-center justify-center pl-10 text-sm font-semibold ${
-          done || pct > 0.5 ? 'text-cream' : 'text-ink/60'}`}
+          done || pct > 0.5 ? 'text-cream' : 'text-muted'}`}
       >
         {done ? doneLabel : phase === 'confirming' ? confirmingLabel : label}
       </span>

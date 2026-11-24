@@ -14,6 +14,7 @@
 import { describe, it, expect } from 'vitest';
 import { NAV, NAV_V2, navFor, visibleSections, resolveActive, firstItemTo } from '../components/common/ConsoleSidebar';
 import { HOME_OF } from '../pages/catalog/catalogModel';
+import { GROUPS } from '../components/common/dashboardV2Groups';
 
 const routesOf = (nav) => nav.flatMap((s) => s.items.map((i) => i.to));
 const ALL_FLAGS = { flags: { guest_messaging: true, course_purchase: true, coupons: true, community_memberships: true } };
@@ -27,7 +28,16 @@ const ALL_FLAGS = { flags: { guest_messaging: true, course_purchase: true, coupo
 // Anything the catalog page links to counts as reachable. Everything else must
 // still be a rail entry.
 const CATALOG_COVERS = Object.values(HOME_OF);
-const V2_OWN_ROUTES = ['/dashboard/catalog'];
+// v2's own surfaces that have no NAV equivalent: the collapsed catalog list, and
+// the dashboard_sections_v2 Intelligence + Community consoles (graduated from the
+// Host Lab prototype; gated by their own OFF flag, so hidden unless it is on).
+const V2_OWN_ROUTES = [
+  '/dashboard/catalog',
+  '/dashboard/intelligence/overview', '/dashboard/intelligence/revenue',
+  '/dashboard/intelligence/audience', '/dashboard/intelligence/demand',
+  '/dashboard/community/activity', '/dashboard/community/mentions',
+  '/dashboard/community/answer', '/dashboard/community/spaces',
+];
 
 describe('nothing becomes unreachable under v2', () => {
   it('keeps every NAV page either in the rail or linked from the catalog', () => {
@@ -57,6 +67,28 @@ describe('nothing becomes unreachable under v2', () => {
   it('lists every route exactly once, so no page has two homes', () => {
     const seen = routesOf(NAV_V2);
     expect(seen).toHaveLength(new Set(seen).size);
+  });
+});
+
+describe('the dashboard_v2 shell reaches every section', () => {
+  // The v2 shell (DashboardLayoutV2) renders NAV_V2's sections bucketed into
+  // GROUPS. A section id present in NAV_V2 but absent from every bucket would be
+  // invisible on the new rail — the same quiet regression navParity guards for
+  // the rail itself, one level up. With every flag on, ALL sections are visible.
+  const ctx = { flags: { console_v2: true, guest_messaging: true, course_purchase: true, coupons: true, community_memberships: true } };
+  const bucketed = new Set(GROUPS.flatMap((g) => g.ids));
+
+  it('buckets every visible v2 section into a group', () => {
+    const stranded = visibleSections(ctx).map((s) => s.id).filter((id) => !bucketed.has(id));
+    // If this fails you added a NAV_V2 section and did not place it in a GROUPS
+    // bucket in dashboardV2Groups.js, so it cannot be reached from the v2 rail.
+    expect(stranded).toEqual([]);
+  });
+
+  it('buckets no id that is not a real section', () => {
+    const real = new Set(NAV_V2.map((s) => s.id));
+    const ghosts = [...bucketed].filter((id) => !real.has(id));
+    expect(ghosts).toEqual([]);
   });
 });
 
@@ -116,5 +148,14 @@ describe('the helpers still work against v2', () => {
   it('keeps Messages hidden until its flag is on', () => {
     const withoutMessages = visibleSections({ flags: { console_v2: true } });
     expect(withoutMessages.some((s) => s.id === 'messages')).toBe(false);
+  });
+
+  it('hides Intelligence + Community until dashboard_sections_v2 is on, then shows them', () => {
+    const off = visibleSections({ flags: { console_v2: true } }).map((s) => s.id);
+    expect(off).not.toContain('intelligence');
+    expect(off).not.toContain('community');
+    const on = visibleSections({ flags: { console_v2: true, dashboard_sections_v2: true } }).map((s) => s.id);
+    expect(on).toContain('intelligence');
+    expect(on).toContain('community');
   });
 });

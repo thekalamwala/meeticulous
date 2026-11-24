@@ -70,7 +70,7 @@ export default function CommunityTag() {
           <span className="mt-avatar rounded-md" aria-hidden="true"><Hash size={20} /></span>
           <div className="min-w-0 flex-1">
             <h1 className="mb-0 font-display text-2xl font-extrabold leading-tight tracking-tight text-maroon">{name}</h1>
-            <p className="mt-0.5 text-xs leading-snug text-muted">
+            <p className="mt-0.5 mt-post__meta">
               {meta.count} {meta.count === 1 ? 'question' : 'questions'} from hosts and guests, answered.
             </p>
           </div>

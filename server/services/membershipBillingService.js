@@ -12,6 +12,7 @@ const { supabaseAdmin } = require('../config/supabase');
 const razorpayConfig = require('./razorpayConfig');
 const { planStillExists, createSubscription, cancelSubscription } = require('./razorpaySubscriptions');
 const membershipNotify = require('./community/membershipNotify');
+const membershipCharges = require('./membershipCharges');
 
 const unixToIso = (s) => (s ? new Date(s * 1000).toISOString() : null);
 
@@ -46,7 +47,7 @@ async function startPaidSubscription({ tier, memberId, hostId }) {
 
 // Webhook: subscription.charged / .activated → grant/extend membership. Idempotent on
 // razorpay_subscription_id. notes (signature-verified) carry member/host/tier.
-async function activateFromSubscription({ rzpSub }) {
+async function activateFromSubscription({ rzpSub, rzpPayment = null }) {
   const notes = rzpSub?.notes || {};
   if (notes.kind !== 'membership' || !notes.member_id || !notes.host_id || !notes.tier_id) {
     return { activated: false, reason: 'missing membership notes' };
@@ -59,6 +60,12 @@ async function activateFromSubscription({ rzpSub }) {
     .from('community_membership_subscriptions').select('id')
     .eq('razorpay_subscription_id', rzpSub.id).maybeSingle();
   if (selErr) throw selErr; // let Razorpay retry rather than half-process
+
+  // Record the money BEFORE the entitlement write, while we still hold the payment
+  // entity. It is idempotent on the payment id and never throws, so it cannot cost
+  // the member the access they paid for — but a charge recorded with no entitlement
+  // is recoverable, where entitlement with no record is money we cannot pay out.
+  await membershipCharges.recordSubscriptionCharge({ rzpSub, rzpPayment, subscriptionRow: existing });
 
   if (existing) {
     const { error } = await supabaseAdmin.from('community_membership_subscriptions')
@@ -84,6 +91,84 @@ async function activateFromSubscription({ rzpSub }) {
     membershipNotify.newMember({ hostId: notes.host_id }); // first paid activation = new member
   }
   return { activated: true };
+}
+
+// ── Tier upgrade (immediate, prorated) ────────────────────────
+// A member on a paid tier moving to a dearer one pays the difference for the days
+// they have left today, and the new recurring subscription starts when the old
+// period would have ended — so no day is billed twice.
+
+/** One-time order for the prorated difference. notes carry everything verify needs. */
+async function createUpgradeOrder({ tier, current, memberId, hostId, quote }) {
+  const razorpay = await razorpayConfig.getClient();
+  return razorpay.orders.create({
+    amount: Math.round(quote.dueNowInr * 100),
+    currency: 'INR',
+    receipt: `mup_${String(tier.id).slice(0, 20)}`,
+    notes: {
+      kind: 'membership_upgrade',
+      member_id: memberId, host_id: hostId,
+      tier_id: tier.id, from_tier_id: current.tier_id,
+      due_now_inr: quote.dueNowInr, credit_inr: quote.creditInr,
+    },
+  });
+}
+
+/**
+ * Move the member onto the dearer tier once the difference is paid.
+ *
+ * Order of operations is deliberate, because the member's money has already moved
+ * by the time this runs:
+ *   1. mint the new subscription, deferred to the old period end (nothing charged now),
+ *   2. flip the membership row — this is the entitlement they just paid for,
+ *   3. cancel the old subscription.
+ * A failure at 1 or 2 leaves them on the old tier with the old subscription intact:
+ * recoverable, and they are not short of access. A failure at 3 is the one that could
+ * double-bill, so it is logged loudly rather than swallowed.
+ */
+async function applyUpgrade({ notes, current, tier, orderId = null, paymentId = null }) {
+  // The prorated difference is membership revenue like any other charge, and it is
+  // the host's money too. Recorded first, for the same reason a recurring charge is.
+  await membershipCharges.recordUpgradeCharge({
+    notes, orderId, paymentId, amountInr: Number(notes.due_now_inr) || 0, subscriptionRow: current,
+  });
+
+  const planId = await ensureTierPlan(tier);
+  const periodEndMs = current.current_period_end ? new Date(current.current_period_end).getTime() : 0;
+  // Razorpay rejects a start_at that is not comfortably in the future; if the paid
+  // period has already run out there is nothing left to defer past, so bill from now.
+  const startAt = Number.isFinite(periodEndMs) && periodEndMs > Date.now() + 5 * 60 * 1000
+    ? Math.floor(periodEndMs / 1000)
+    : undefined;
+
+  const newSub = await createSubscription({
+    planId, cadence: 'monthly', startAt,
+    notes: { kind: 'membership', tier_id: tier.id, host_id: notes.host_id, member_id: notes.member_id },
+  });
+
+  const { error } = await supabaseAdmin.from('community_membership_subscriptions')
+    .update({
+      tier_id: tier.id, status: 'active', razorpay_subscription_id: newSub.id,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', current.id);
+  if (error) throw error;
+
+  if (current.razorpay_subscription_id) {
+    try {
+      await cancelSubscription(current.razorpay_subscription_id, false); // immediate
+    } catch (e) {
+      // They are on the new tier and have been charged for it. An old mandate left
+      // alive bills again next cycle, so this needs a human, not a silent retry.
+      console.error(
+        `MEMBERSHIP_UPGRADE_OLD_SUB_NOT_CANCELLED sub=${current.razorpay_subscription_id} `
+        + `member=${notes.member_id} host=${notes.host_id}: ${e?.error?.description || e?.message}`,
+      );
+    }
+  }
+
+  membershipNotify.newMember({ hostId: notes.host_id, tierName: tier.name });
+  return { upgraded: true, subscription_id: newSub.id };
 }
 
 // subscription.halted → grace (past_due still counts as entitled in the gate).
@@ -120,4 +205,5 @@ async function cancelForMember({ memberId, hostId }) {
 
 module.exports = {
   ensureTierPlan, startPaidSubscription, activateFromSubscription, markHalted, markCancelled, cancelForMember,
+  createUpgradeOrder, applyUpgrade,
 };

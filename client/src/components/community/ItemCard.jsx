@@ -1,19 +1,20 @@
 import { Link } from 'react-router-dom';
-import toast from 'react-hot-toast';
 import {
-  Briefcase, CircleCheck, CircleHelp, Lightbulb, Lock, Megaphone, MessageCircle, MessagesSquare, Pin, Share2,
+  Briefcase, CircleCheck, CircleHelp, Lightbulb, Lock, Megaphone, MessagesSquare, Pin,
 } from 'lucide-react';
 import { relTime } from '../../utils/relTime';
-import AuthorChip, { Avatar } from './AuthorChip';
+import AuthorChip from './AuthorChip';
 import IdentityBadge from './IdentityBadge';
 import LikeButton from './LikeButton';
 import BookmarkButton from './BookmarkButton';
+import ShareButton from './ShareButton';
+import CommentCount from './CommentCount';
 import LinkifiedText from './LinkifiedText';
 import PostMenu from './PostMenu';
 
-// Feed cards show the first BODY_PREVIEW chars, then a Read more link.
+// Feed cards show the first BODY_PREVIEW chars, then an inline "see more" link. Inline so
+// the truncation costs no extra row — a link on its own line is a whole band of dead height.
 const BODY_PREVIEW = 256;
-const handleOf = (author) => (author?.profile_url ? `@${author.profile_url.replace(/^\//, '')}` : null);
 
 const SPACE_ICONS = { updates: Megaphone, help: CircleHelp, ideas: Lightbulb, 'host-corner': Briefcase, general: MessagesSquare };
 export function SpaceIcon({ spaceKey, size = 20 }) {
@@ -22,17 +23,6 @@ export function SpaceIcon({ spaceKey, size = 20 }) {
 }
 
 export const TOMBSTONE = { deleted: '[deleted]', removed: '[removed]' };
-
-async function share(item) {
-  const url = `${window.location.origin}${item.url}`;
-  try {
-    if (navigator.share) await navigator.share({ url, title: item.title || 'Meeticulous Community' });
-    else {
-      await navigator.clipboard.writeText(url);
-      toast.success('Link copied');
-    }
-  } catch { /* share sheet dismissed */ }
-}
 
 function Photos({ media, author }) {
   if (!media?.length) return null;
@@ -53,13 +43,20 @@ function Photos({ media, author }) {
   );
 }
 
+// One cell of the action row. Each cell is an equal-width flex child so the row divides the
+// card evenly instead of clumping left. Wrapping also keeps a button's sibling terms dialog
+// (LikeButton / BookmarkButton render a fragment) out of the row's own flex layout.
+function Cell({ children }) {
+  return <span className="mt-actionrow__cell">{children}</span>;
+}
+
 // One feed/detail card. `detail` = full text, h1 title, Reply action (onReply).
 // `actions` (detail only) = node for the More menu, built by the page that owns edit/delete/report.
 export default function ItemCard({ item, detail = false, onReply, actions, onHide, onReport, viewerId, canPin = false }) {
   if (TOMBSTONE[item.status]) {
     return (
-      <article data-testid="item-card" className="mt-card p-5 sm:p-6">
-        <p className="text-sm font-medium text-muted">{TOMBSTONE[item.status]}</p>
+      <article data-testid="item-card" className="mt-card mt-card--feed">
+        <p className="mt-post__meta">{TOMBSTONE[item.status]}</p>
       </article>
     );
   }
@@ -75,21 +72,13 @@ export default function ItemCard({ item, detail = false, onReply, actions, onHid
     // Open the host's membership space (profile_url is "/<username>").
     const joinTo = item.author?.profile_url ? `${item.author.profile_url}/membership` : '#';
     return (
-      <article data-testid="item-card" aria-label="Members-only post" className="mt-card gap-4 p-5 sm:p-6">
-        <div className="flex items-start gap-3">
-          <Avatar author={item.author} size="m" />
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-x-1.5 text-sm leading-snug">
-              <span className="font-semibold text-ink">{item.author?.display_name || 'Member'}</span>
-              <IdentityBadge author={item.author} />
-            </div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-blush px-2.5 py-0.5 text-xs font-medium text-maroon">
-              <Lock size={13} aria-hidden="true" />{chip}
-            </span>
-          </div>
-        </div>
-        {item.title && <h3 className="font-display text-lg font-extrabold leading-tight text-maroon">{item.title}</h3>}
-        {item.teaser && <p className="text-sm leading-relaxed text-muted">{item.teaser}…</p>}
+      <article data-testid="item-card" aria-label="Members-only post" className="mt-card mt-card--feed">
+        <AuthorChip author={item.author} badge={<IdentityBadge author={item.author} />} />
+        <span className="mt-post__chip self-start">
+          <Lock size={13} aria-hidden="true" />{chip}
+        </span>
+        {item.title && <h3 className="mt-post__title">{item.title}</h3>}
+        {item.teaser && <p className="mt-post__body text-muted">{item.teaser}…</p>}
         <Link to={joinTo} className="mt-btn mt-btn--primary mt-btn--s self-start gap-2 no-underline">
           <Lock size={15} aria-hidden="true" />{cta}
         </Link>
@@ -106,21 +95,20 @@ export default function ItemCard({ item, detail = false, onReply, actions, onHid
   const label = item.title || item.author?.display_name || 'Post';
   // No "Announcement" tag — the role badge + space carry context now.
   const meta = [relTime(item.created_at), item.edited_at && 'edited'].filter(Boolean).join(' · ');
-  const handle = handleOf(item.author);
   const long = !detail && typeof item.body === 'string' && item.body.length > BODY_PREVIEW;
   const bodyText = long ? `${item.body.slice(0, BODY_PREVIEW).trimEnd()}…` : item.body;
 
   const space = item.space && (
-    <Link to={`/community/s/${item.space.key}`} className="inline-flex h-6 items-center gap-2 rounded-full bg-neutral-100 px-3 text-xs font-medium text-ink no-underline hover:bg-pink-200 hover:text-maroon">
-      <SpaceIcon spaceKey={item.space.key} size={16} />{item.space.name}
+    <Link to={`/community/s/${item.space.key}`} className="mt-post__chip">
+      <SpaceIcon spaceKey={item.space.key} size={14} />{item.space.name}
     </Link>
   );
 
   return (
-    <article data-testid="item-card" aria-label={pinned ? 'Pinned post' : label} className={`mt-card gap-5 p-5 sm:p-6 ${pinned ? 'mt-card--blush' : ''}`}>
+    <article data-testid="item-card" aria-label={pinned ? 'Pinned post' : label} className={`mt-card mt-card--feed ${pinned ? 'mt-card--blush' : ''}`}>
       {pinned && (
-        <div className="flex items-center gap-2 text-xs font-medium text-maroon">
-          <Pin size={16} aria-hidden="true" />{item.space ? `Pinned in ${item.space.name}` : 'Pinned'}
+        <div className="mt-post__meta flex items-center gap-2 text-maroon">
+          <Pin size={14} aria-hidden="true" />{item.space ? `Pinned in ${item.space.name}` : 'Pinned'}
         </div>
       )}
 
@@ -128,16 +116,13 @@ export default function ItemCard({ item, detail = false, onReply, actions, onHid
         <>
           <div className="flex flex-wrap items-center gap-3">
             {space}
-            <span className="text-xs text-muted">Thread · last reply {relTime(item.last_activity_at)}</span>
+            <span className="mt-post__meta">Thread · last reply {relTime(item.last_activity_at)}</span>
           </div>
-          <Link to={item.url} className="font-display text-xl font-extrabold leading-tight tracking-tight text-maroon no-underline hover:underline">
-            {item.title}
-          </Link>
-          <p className="line-clamp-3 text-sm leading-relaxed text-muted">{item.body}</p>
+          <Link to={item.url} className="mt-post__title">{item.title}</Link>
+          <p className="mt-post__body line-clamp-3 text-muted">{item.body}</p>
           <div className="flex items-center gap-3">
-            <Avatar author={item.author} size="s" />
-            <AuthorChip author={item.author} avatar={false} />
-            {menu && <span className="ml-auto">{menu}</span>}
+            <AuthorChip author={item.author} size="s" badge={<IdentityBadge author={item.author} />} />
+            {menu && <span className="shrink-0">{menu}</span>}
           </div>
         </>
       ) : (
@@ -151,62 +136,44 @@ export default function ItemCard({ item, detail = false, onReply, actions, onHid
           {detail && item.title && (
             <h1 className="font-display text-3xl font-extrabold leading-tight tracking-tight text-maroon sm:text-4xl">{item.title}</h1>
           )}
-          {detail ? (
-            <div className="flex items-start gap-3">
-              <AuthorChip author={item.author} meta={meta} size={pinned ? 's' : 'm'} />
-              {menu && <span className="ml-auto">{menu}</span>}
-            </div>
-          ) : (
-            <div className="flex items-start gap-3">
-              <Avatar author={item.author} size={pinned ? 's' : 'm'} />
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm leading-snug">
-                  {item.author?.profile_url
-                    ? <Link to={item.author.profile_url} className="font-semibold text-ink no-underline hover:text-maroon hover:underline">{item.author.display_name}</Link>
-                    : <span className="font-semibold text-ink">{item.author?.display_name || 'Member'}</span>}
-                  <IdentityBadge author={item.author} />
-                  {question && <span className="mt-badge mt-badge--s shrink-0"><CircleHelp size={14} aria-hidden="true" />Question</span>}
-                </div>
-                {handle && <div className="text-xs leading-snug text-muted">{handle}</div>}
-              </div>
-              <div className="flex items-center gap-1 shrink-0">
-                <span className="whitespace-nowrap text-xs text-muted">{meta}</span>
-                {menu}
-              </div>
+          {/* One identity row for both views. The "⋯" is anchored to the card edge and
+              never competes with the name for space. */}
+          <div className="flex items-center gap-3">
+            <AuthorChip author={item.author} meta={meta} badge={<IdentityBadge author={item.author} />} collaborators={item.collaborators || []} />
+            {menu && <span className="shrink-0">{menu}</span>}
+          </div>
+          {/* Chips sit on their own row: inside the identity line they were what pushed
+              the time, and then the handle, onto lines of their own. */}
+          {((!detail && question) || (detail && !item.title && space)) && (
+            <div className="flex flex-wrap items-center gap-2">
+              {!detail && question && <span className="mt-badge mt-badge--s"><CircleHelp size={14} aria-hidden="true" />Question</span>}
+              {detail && !item.title && space}
             </div>
           )}
-          {detail && !item.title && space && <div>{space}</div>}
-          <p className="text-sm leading-relaxed text-ink">
+          <p className="mt-post__body">
             <LinkifiedText text={bodyText} />
+            {long && <> <Link to={item.url} className="mt-post__more">see more</Link></>}
           </p>
-          {long && (
-            <Link to={item.url} className="self-start text-sm font-medium text-maroon">Read more</Link>
-          )}
           <Photos media={item.media} author={item.author} />
         </>
       )}
 
-      <div className="flex flex-wrap items-center gap-1 border-t-2 border-ink/5 pt-3">
-        <LikeButton targetType="post" id={item.id} liked={item.viewer?.liked} count={item.like_count} />
-        {detail ? (
-          <button type="button" onClick={() => onReply?.(null)} className="mt-btn mt-btn--ghost mt-btn--s gap-2 font-medium text-muted hover:text-maroon">
-            <MessageCircle size={16} aria-hidden="true" />Reply
-          </button>
-        ) : (
-          <Link
-            to={item.url}
-            aria-label={`${item.comment_count} ${item.comment_count === 1 ? 'reply' : 'replies'}, open ${thread ? 'thread' : 'post'}`}
-            className="mt-btn mt-btn--ghost mt-btn--s gap-2 font-medium text-muted no-underline hover:text-maroon"
-          >
-            <MessageCircle size={16} aria-hidden="true" />{item.comment_count}
-          </Link>
-        )}
-        <button type="button" onClick={() => share(item)} aria-label="Share"
-          className="mt-btn mt-btn--ghost mt-btn--s gap-2 font-medium text-muted hover:text-maroon">
-          <Share2 size={16} aria-hidden="true" />
-        </button>
-        {!detail && <BookmarkButton id={item.id} saved={item.viewer?.saved} count={item.save_count} />}
-        {detail && actions && <span className="ml-auto">{actions}</span>}
+      <div className="mt-actionrow">
+        <Cell><LikeButton targetType="post" id={item.id} liked={item.viewer?.liked} count={item.like_count} /></Cell>
+        <Cell>
+          {detail ? (
+            <CommentCount count="Reply" label="Reply to this post" onClick={() => onReply?.(null)} />
+          ) : (
+            <CommentCount
+              to={item.url}
+              count={item.comment_count}
+              label={`${item.comment_count} ${item.comment_count === 1 ? 'reply' : 'replies'}, open ${thread ? 'thread' : 'post'}`}
+            />
+          )}
+        </Cell>
+        <Cell><ShareButton item={item} /></Cell>
+        {!detail && <Cell><BookmarkButton id={item.id} saved={item.viewer?.saved} count={item.save_count} /></Cell>}
+        {detail && actions && <span className="ml-auto pl-3">{actions}</span>}
       </div>
     </article>
   );

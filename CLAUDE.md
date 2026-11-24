@@ -285,6 +285,45 @@ Items previously listed here as pending are now live:
   next finding in it is a real one. Of 338 unpinned functions in `public`, 337 are extension-owned
   (btree_gist, pg_trgm and vector are all installed in public — a separate, lower advisor warning);
   exactly one was ours.
+- **v3.225** (`v3.225_membership_charges.sql`) — applied 2026-11-19 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`) and verified: 37 columns, 7 indexes, RLS ON with no policies, 0
+  anon/authenticated INSERT/UPDATE/DELETE grants (v3.206 default privileges held), 0 rows.
+  `membership_charges` = one row per successful membership charge. Until it existed, a charge
+  left NO trace: the webhook moved `current_period_end` forward and dropped the payment entity,
+  so membership revenue was invisible to `routeAutoPayoutService` (needs a payment id),
+  `settlementService` (sums `bookings.vendor_amount`), `withholdingReportService` and
+  `gstExportService` — all of which read rows. The payout gap was a RECORD gap.
+  Money snapshot comes from `lib/pricingEngine` (same engine as bookings), so commission and
+  TDS/TCS match for the same host. No platform fee on top — the tier price is what Razorpay
+  bills — so `platform_fee_amount` is 0 and `customer_total` is the amount charged. Unique
+  indexes on `razorpay_payment_id` / `razorpay_order_id` are the idempotency guard: a duplicate
+  row would later become a duplicate payout. Additive; `services/membershipCharges.js` keeps a
+  schema fallback and swallows write failures, so bookkeeping can never cost a member the
+  access they paid for. **This records money; it does not move any** — the Route rail,
+  settlement/statutory reads and refund reversal are the next slices (PR #405).
+- **v3.226** (`v3.226_community_post_collaborators.sql`) — applied 2026-11-21 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`) and verified (5 cols, RLS ON / no policies, 3 indexes = PK + unique
+  `(post_id, profile_id)` + `profile_id`, 2 cascade FKs, `COMMUNITY_COLLABORATOR_ADDED` event seeded
+  in_app=true/email=false). `community_post_collaborators` = up to 2 credited collaborators per
+  community post (instant credit + in-app notify; shown on the post and on each collaborator's
+  profile feed). Cap-2 + self-exclusion live in `communityController.createItem`, not the DB. Shipped
+  with PR #412 behind `community_collaborators` (ships OFF). Code is schema-fallback safe
+  (`store.loadCollaboratorsByPost` / `listAuthorPosts` degrade to empty/author-only), so the migration
+  was safe to apply before the code deploys. Only takes effect once the flag is flipped.
+- **v3.217** (`v3.217_creator_intelligence.sql`) — applied 2026-11-18 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`) and verified: the 5 Creator Intelligence tables (`analytics_events`,
+  `analytics_daily`, `analytics_daily_dim`, `booking_attribution`, `benchmark_daily`), the
+  `profiles.intel_revenue_target` column, RLS ON all 5 (no policies, service_role only — v3.186/v3.206
+  posture), and anon/authenticated REVOKED. Additive; code is schema-fallback safe (intel-rollup /
+  intel-prune wrap each day in try/catch and no-op on a missing table), so it was safe to ship on
+  release/2026-11 before apply. Intel stays dark until `analytics_ingest` is flipped ON (ships OFF:
+  the collect endpoint returns 202 and drops). Shipped with PRs #366 (foundation) / #367 / #371.
+- **v3.218** (`v3.218_analytics_size_fn.sql`) — applied 2026-11-18 on the Meeticulous DB and verified
+  (fn executes, returned 40960 bytes): `analytics_events_size_bytes()` (SECURITY DEFINER, pins
+  `search_path = public, pg_catalog`, EXECUTE granted to service_role ONLY). Feeds the ingest size
+  guard, sampled by intel-rollup/intel-prune, never called on the ingest path. **Filename note:**
+  number collides with `v3.218_community_membership.sql` (membership) — cosmetic only, both applied,
+  Supabase names migrations independently. Shipped with PR #371.
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
 
@@ -348,6 +387,27 @@ Bookings
 Payments
 - Razorpay is source of truth.
 - Verify signatures server-side.
+
+Withholding (TDS / TCS) — when CA sign-off is required
+  Ruled by the founder-CA on 2026-11-17 (PR #371). Cite this when the
+  tax-legal-signoff gate fires, instead of re-litigating it.
+
+  Sign-off IS required where a change determines a withheld amount OR ITS
+  ATTRIBUTION: rate, threshold, section, PAN/GSTIN condition, no-PAN floor,
+  state split, the period attributed to, refund/cancellation reversal, a write
+  to a withholding column, or statutory return/certificate content.
+
+  Sign-off is NOT required to aggregate or present already-persisted
+  withholding. That needs presentation review, not tax sign-off.
+
+  Two standing rules that came out of the same ruling:
+  - Withholding aggregates are FY-SCOPED (1 Apr–31 Mar IST, via
+    services/gst/gstPeriod.js). An all-time total reconciles to no statutory
+    record.
+  - Rates are asserted in ONE file, tests/unit/pricingEngineWithholding.test.js.
+    Every other fixture touching withholding uses deliberately non-statutory
+    amounts, so a changed rate can never be "corrected" into a fixture and
+    mistaken for validation.
 
 Plans
 Starter

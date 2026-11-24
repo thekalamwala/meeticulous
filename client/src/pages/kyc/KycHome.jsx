@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, Clock, XCircle, CheckCircle2, Banknote } from 'lucide-react';
 import { getMyKyc } from '../../services/api';
 import { PageHeader, Card, Button, SkeletonCard } from '../../components/dashboard/ui';
+import { PageHeading as PageHeadingV2, SubNav } from '../../components/dashboard/ui/v2';
+import { SETTINGS_NAV } from '../dashboardNav';
 
 const STATE = {
   pending:  { icon: Clock,        color: 'text-marigold-800', bg: 'bg-marigold-100', title: 'Verification in review', desc: "Your documents are being reviewed. Payouts unlock once approved." },
@@ -10,7 +12,7 @@ const STATE = {
   rejected: { icon: XCircle,      color: 'text-rose-700',     bg: 'bg-rose/10',      title: 'Verification rejected', desc: 'Please review the note below and re-submit.' },
 };
 
-export default function KycHome() {
+export default function KycHome({ embedded = false } = {}) {
   const [kyc, setKyc] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -19,7 +21,15 @@ export default function KycHome() {
     getMyKyc().then(({ data }) => setKyc(data)).catch(() => setKyc({ status: 'not_started' })).finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div><PageHeader title="Verification" subtitle="Verify your identity to receive payouts." /><SkeletonCard /></div>;
+  const head = embedded ? (
+    <div className="mb-4 flex flex-col gap-2.5">
+      <PageHeadingV2 title="Verification" sub="Verify your identity to receive payouts." />
+    </div>
+  ) : (
+    <PageHeader title="Verification" subtitle="Verify your identity to receive payouts." />
+  );
+
+  if (loading) return <div>{head}<SkeletonCard /></div>;
 
   const status = kyc?.status || 'not_started';
   const s = STATE[status];
@@ -29,7 +39,7 @@ export default function KycHome() {
 
   return (
     <div>
-      <PageHeader title="Verification" subtitle="Verify your identity to receive payouts." />
+      {head}
       {pending > 0 && !payoutsReady && (
         <div className="mb-4 flex items-center gap-3 rounded-xl border border-marigold-300 bg-marigold-100 p-4">
           <Banknote className="h-6 w-6 shrink-0 text-marigold-800" />

@@ -9,12 +9,16 @@
 import { describe, it, expect } from 'vitest';
 import {
   normalise, mergeCatalog, selectItems, countsByKind, editHref, couponSummary,
+  TYPES, TYPE_LABEL, TYPE_PLURAL, ADD_ROUTE, HOME_OF,
 } from '../pages/catalog/catalogModel';
 
 const svc = { id: 's1', title: 'Follow-up consult', price: 1200, is_active: true, duration: 30 };
 const prod = { id: 'p1', title: 'Meal plan PDF', price: 499, is_active: true };
 const course = { id: 'c1', title: 'Six weeks', price: 6999, is_active: false };
 const coupon = { id: 'o1', code: 'FIRST20', discount_type: 'percent', discount_value: 20, active: true };
+// A membership tier — the shape getMyMembership().program.tiers returns.
+const paidTier = { id: 'm1', name: 'Inner Circle', type: 'paid', price_inr: 499, status: 'live' };
+const freeTier = { id: 'm2', name: 'Free follows', type: 'free', price_inr: null, status: 'draft' };
 
 describe('normalise', () => {
   it('maps a service, keeping duration as its one distinguishing fact', () => {
@@ -53,6 +57,36 @@ describe('normalise', () => {
 
   it('survives a missing price or title', () => {
     expect(normalise({ id: 'x' }, 'product')).toMatchObject({ title: 'Untitled', price: 0 });
+  });
+
+  it('maps a paid membership tier: name is the title, status is live/hidden', () => {
+    expect(normalise(paidTier, 'membership')).toMatchObject({
+      id: 'm1', kind: 'membership', title: 'Inner Circle', price: 499, active: true, meta: '₹499/mo',
+    });
+  });
+
+  it('gives a free tier a null price and a "Free" summary, and a draft is hidden', () => {
+    expect(normalise(freeTier, 'membership')).toMatchObject({
+      id: 'm2', kind: 'membership', title: 'Free follows', price: null, active: false, meta: 'Free',
+    });
+  });
+});
+
+describe('type registry stays consistent', () => {
+  // The bug this prevents: a type is added to TYPES but not to a label/route
+  // map, so its Add option or row link is undefined — the exact gap that left
+  // Memberships out of the graduated catalog.
+  it('every type has a label, plural, add route, and home', () => {
+    for (const t of TYPES) {
+      expect(TYPE_LABEL[t], `label for ${t}`).toBeTruthy();
+      expect(TYPE_PLURAL[t], `plural for ${t}`).toBeTruthy();
+      expect(ADD_ROUTE[t], `add route for ${t}`).toBeTruthy();
+      expect(HOME_OF[t], `home for ${t}`).toBeTruthy();
+    }
+  });
+
+  it('includes membership', () => {
+    expect(TYPES).toContain('membership');
   });
 });
 

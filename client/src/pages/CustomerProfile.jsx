@@ -25,8 +25,9 @@ const Field = ({ icon: Icon, label, children, hint }) => (
   </div>
 );
 
+// Minimalist: clean bottom border instead of a full frame, transparent, no ring.
 const inputCls =
-  "w-full rounded-xl border-2 border-neutral-200 bg-white px-3.5 py-2.5 text-[13px] font-semibold text-ink outline-none transition focus:border-maroon/40 focus:ring-[3px] focus:ring-rose disabled:bg-neutral-50 disabled:text-ink/45";
+  "w-full border-solid border-x-0 border-t-0 border-b-[1.5px] rounded-none border-neutral-200 bg-transparent px-0.5 py-2 text-[13px] font-semibold text-ink outline-none transition focus:border-maroon focus:shadow-none disabled:text-ink/45";
 
 const CustomerProfile = () => {
   const { user, updateUser } = useAuth();
@@ -112,7 +113,7 @@ const CustomerProfile = () => {
             <PetalSpinner size={40} />
           </div>
         ) : (
-          <div className="flex flex-col gap-5 rounded-2xl border-2 border-neutral-200 bg-white p-5">
+          <div className="flex flex-col gap-5 rounded-[8px] border-2 border-neutral-200 bg-white p-5">
             {/* Avatar */}
             <div className="flex items-center gap-4">
               <div className="relative">
