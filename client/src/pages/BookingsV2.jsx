@@ -117,7 +117,13 @@ const BookingsV2 = () => {
         <nav className="flex gap-1 rounded-full border border-neutral-200/70 bg-white p-1">
           {VIEWS.map((v) => (
             <button key={v.id} type="button" onClick={() => setView(v.id)} aria-pressed={view === v.id}
-              className={cn('rounded-full px-3 py-1.5 text-[11.5px] font-bold transition', view === v.id ? 'bg-maroon text-white' : 'text-ink/55 hover:bg-blush hover:text-maroon')}>{v.label}</button>
+              className={cn('relative rounded-full px-3 py-1.5 text-[11.5px] font-bold transition-colors', view === v.id ? 'text-white' : 'text-ink/55 hover:text-maroon')}>
+              {view === v.id && (
+                <motion.span layoutId="viewPill" className="absolute inset-0 rounded-full bg-maroon"
+                  transition={{ type: 'spring', stiffness: 420, damping: 28 }} />
+              )}
+              <span className="relative z-10">{v.label}</span>
+            </button>
           ))}
         </nav>
         {view === 'list' ? (
@@ -146,16 +152,7 @@ const BookingsV2 = () => {
         </div>
       ) : bookings.length === 0 ? (
         <EmptyState icon={CalendarX2} title="No bookings yet" description="They'll show up here as guests book you — share your link to get the first one." />
-      ) : (
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={view}
-            initial={{ opacity: 0, scale: 0.96, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 10 }}
-            transition={{ type: 'spring', stiffness: 260, damping: 15 }}
-          >
-            {view === 'list' ? (
+      ) : view === 'list' ? (
         <div className="overflow-hidden rounded-[8px] border border-neutral-200/60 bg-white">
           {listRows.length === 0 ? (
             <div className="px-3 py-10 text-center text-[12px] font-medium text-ink/50">No bookings match.</div>
@@ -213,9 +210,6 @@ const BookingsV2 = () => {
             ))}
           </div>
         </Panel>
-            )}
-          </motion.div>
-        </AnimatePresence>
       )}
 
       {selected && (
