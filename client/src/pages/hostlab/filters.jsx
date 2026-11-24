@@ -138,10 +138,12 @@ export const Filter = ({
 };
 
 /** The row: search, the filters, an optional overflow menu, then the right side. */
-export const FilterBar = ({ search, children, more, onClearAll, activeCount = 0, trailing, className = '' }) => {
+export const FilterBar = ({ search, children, more, onClearAll, activeCount = 0, trailing, className = '', bare = false }) => {
   const [moreOpen, setMoreOpen, moreRef] = usePopover();
   return (
-    <div className={cn('flex flex-wrap items-center gap-1.5 rounded-lg border-2 border-neutral-200 bg-white p-1.5', className)}>
+    // `bare` drops the outer box (border + fill + padding) so the controls float
+    // on the page — the borderless catalog look. Default keeps the boxed bar.
+    <div className={cn('flex flex-wrap items-center gap-1.5', bare ? '' : 'rounded-lg border-2 border-neutral-200 bg-white p-1.5', className)}>
       {search && (
         <div className="relative min-w-[150px] flex-1 sm:max-w-[250px]">
           <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink/35" strokeWidth={2.4} />
