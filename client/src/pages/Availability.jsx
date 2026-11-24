@@ -14,6 +14,7 @@ import {
   ContextMenu, cn,
 } from "../components/dashboard/ui";
 import { PageHeading as PageHeadingV2 } from "../components/dashboard/ui/v2";
+import CalendarConnect from "../components/availability/CalendarConnect";
 
 const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 const DEFAULT_SCHEDULE = DAYS.reduce((acc, day) => { acc[day] = []; return acc; }, {});
@@ -267,6 +268,13 @@ const Availability = ({ embedded = false } = {}) => {
             <option value="weekend">Weekend (Sat–Sun)</option>
           </Select>
         </div>
+      </Card>
+
+      {/* Connected calendars — graduated from the host-lab prototype */}
+      <Card className="mb-5">
+        <h2 className="mb-1 text-base font-semibold text-ink">Connected calendars</h2>
+        <p className="mb-3 text-xs text-ink/40">Connect a calendar so busy time elsewhere blocks new bookings, and confirmed meetings sync automatically.</p>
+        <CalendarConnect />
       </Card>
 
       {/* Blocked dates — full days guests can never book */}
