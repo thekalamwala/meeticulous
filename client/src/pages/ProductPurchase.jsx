@@ -10,6 +10,7 @@ import {
   resendProductLink,
 } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import MeetDropdown from "../components/ui/MeetDropdown";
 import { analytics, EVENTS, gaClientId } from "../services/analytics";
 import useUtm from "../hooks/useUtm";
 import { isValidHex } from "../utils/themeUtils";
@@ -512,16 +513,14 @@ const ProductPurchase = () => {
                       <label className="block text-sm font-medium mb-1">
                         State <span className="text-gray-400 font-normal">(optional)</span>
                       </label>
-                      <select
+                      <MeetDropdown
+                        ariaLabel="State"
+                        placeholder="Select state"
+                        searchable
                         value={buyerState}
-                        onChange={(e) => setBuyerState(e.target.value)}
-                        className="fb-input"
-                      >
-                        <option value="">Select state</option>
-                        {INDIAN_STATES.map((s) => (
-                          <option key={s.code} value={s.name}>{s.name}</option>
-                        ))}
-                      </select>
+                        onChange={setBuyerState}
+                        options={INDIAN_STATES.map((s) => ({ value: s.name, label: s.name }))}
+                      />
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-1">

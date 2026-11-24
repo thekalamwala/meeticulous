@@ -20,6 +20,7 @@ import OnboardingStepper from './OnboardingStepper';
 import LivePreviewCard from './LivePreviewCard';
 import { DEFAULT_SUGGESTIONS, personaForSlug } from './personas';
 import PetalSpinner from '../../components/common/PetalSpinner';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 
 // First-service durations — the common set; host refines everything else in the
 // dashboard. Kept tiny on purpose: this screen exists to get ONE bookable
@@ -322,9 +323,15 @@ const ServiceStep = () => {
               {svcCats.length > 1 && (
                 <div>
                   <label htmlFor="svc-cat" className="text-xs font-semibold uppercase tracking-wider text-muted">Service type</label>
-                  <select id="svc-cat" value={category} onChange={(e) => setCategory(e.target.value)} className={`${fieldCls} mt-2.5`}>
-                    {svcCats.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
-                  </select>
+                  <div className="mt-2.5">
+                    <MeetDropdown
+                      id="svc-cat"
+                      ariaLabel="Service type"
+                      value={category}
+                      onChange={setCategory}
+                      options={svcCats.map((c) => ({ value: c.slug, label: c.name }))}
+                    />
+                  </div>
                 </div>
               )}
 
