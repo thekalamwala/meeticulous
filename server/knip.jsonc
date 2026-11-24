@@ -1,0 +1,28 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  // Dead-code check for the server (CJS). Run: cd server && npx knip
+  // Reports unused FILES and unused/unlisted DEPENDENCIES only.
+  // Export-tracing is OFF on purpose: controllers do `module.exports = { a, b }`
+  // consumed via `ctrl.a` in route files, which knip can't follow for CJS, so
+  // leaving it on reports ~1100 false-positive "unused exports". Don't turn it on.
+  "entry": [
+    "scripts/*.{js,mjs}",
+    "jest.resolver.js",
+    "tests/**/*.test.js"
+  ],
+  "project": ["**/*.{js,mjs}"],
+  "ignore": ["scripts/k6-prod-readonly.js"],
+  "ignoreDependencies": [
+    // Optional SES email provider: @aws-sdk is installed only where SES is
+    // configured, not a baseline dependency. Not a missing-dep bug.
+    "@aws-sdk/client-sesv2"
+  ],
+  "rules": {
+    "exports": "off",
+    "types": "off",
+    "nsExports": "off",
+    "classMembers": "off",
+    "enumMembers": "off",
+    "duplicates": "off"
+  }
+}
