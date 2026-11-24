@@ -30,7 +30,7 @@ import { Eye, EyeOff, Package, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { cn } from '../../../components/dashboard/ui';
-import { Panel, StatusPill, SubPageHeader, inr, pct } from '../labUi';
+import { StatusPill, SubPageHeader, inr, pct } from '../labUi';
 import { Filter, FilterBar } from '../filters';
 import { CATALOG_TYPES, TYPE_LIST } from '../catalogTypes';
 import { allItems, couponState, summarise } from '../catalogData';
@@ -196,7 +196,11 @@ const Catalog = () => {
         />
       </FilterBar>
 
-      <Panel flush title={`${rows.length} ${rows.length === 1 ? 'item' : 'items'}`}>
+      <div className="flex flex-col gap-1.5">
+        <p className="px-1 text-[10px] font-bold uppercase tracking-wide text-ink/40">
+          {rows.length} {rows.length === 1 ? 'item' : 'items'}
+        </p>
+        <div className="overflow-hidden rounded-2xl bg-white">
         {rows.length === 0 ? (
           <div className="flex flex-col items-center gap-1.5 px-3 py-10 text-center">
             <Package className="h-6 w-6 text-maroon/30" strokeWidth={1.8} />
@@ -216,7 +220,7 @@ const Catalog = () => {
             <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-[11.5px]">
                 <thead>
-                  <tr className="border-b-2 border-neutral-200 bg-cream text-[10px] uppercase tracking-wide text-ink/45">
+                  <tr className="text-[10px] uppercase tracking-wide text-ink/40">
                     <th scope="col" className="px-3 py-2 text-left font-bold">Item</th>
                     <th scope="col" className="w-20 px-3 py-2 text-right font-bold">Sold</th>
                     <th scope="col" className="w-28 px-3 py-2 text-right font-bold">Revenue</th>
@@ -224,7 +228,7 @@ const Catalog = () => {
                     <th scope="col" className="w-12 px-3 py-2" />
                   </tr>
                 </thead>
-                <tbody className="divide-y-2 divide-neutral-200">
+                <tbody className="divide-y divide-ink/5">
                   {rows.map((item) => {
                     const live = stateOf(item);
                     return (
@@ -259,7 +263,7 @@ const Catalog = () => {
             </div>
 
             {/* Mobile: revenue is the one number worth carrying across. */}
-            <ul className="divide-y-2 divide-neutral-200 md:hidden">
+            <ul className="divide-y divide-ink/5 md:hidden">
               {rows.map((item) => {
                 const live = stateOf(item);
                 return (
@@ -285,7 +289,8 @@ const Catalog = () => {
             </ul>
           </>
         )}
-      </Panel>
+        </div>
+      </div>
     </div>
   );
 };
