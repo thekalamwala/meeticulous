@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { Button, cn } from '../../../components/dashboard/ui';
 import {
-  Avatar, Drawer, Panel, StatusPill,
+  Avatar, Drawer, Panel, SourceDonut, StatusPill,
   fmtTime, inr, relDay, useLast,
 } from '../labUi';
 import mock from '../mockData';
@@ -356,24 +356,7 @@ const Today = ({ go }) => {
               </Button>
             )}
           >
-            <ul className="flex flex-col gap-2">
-              {mock.trafficSources.slice(0, 4).map((s) => {
-                const max = mock.trafficSources[0].views;
-                return (
-                  <li key={s.label}>
-                    <div className="mb-1 flex items-baseline justify-between gap-2">
-                      <span className="truncate text-[11.5px] font-semibold text-ink/80">{s.label}</span>
-                      <span className="shrink-0 text-[11px] font-bold tabular-nums text-ink">
-                        {s.bookings} <span className="font-medium text-ink/45">booked</span>
-                      </span>
-                    </div>
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-neutral-100">
-                      <div className="h-full rounded-full bg-maroon" style={{ width: `${(s.views / max) * 100}%` }} />
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
+            <SourceDonut rows={mock.trafficSources} valueKey="bookings" labelKey="label" />
           </Panel>
 
           <Panel title="Latest activity" flush>

@@ -378,6 +378,108 @@ export const RankedBars = ({ rows, valueKey = 'views', labelKey = 'label', forma
   );
 };
 
+/* ── SourceDonut — interactive donut for a categorical split (where bookings
+ * came from). Single-hue maroon ramp — tints of the brand hue, never a
+ * rainbow. Tap a slice or a legend row to focus it: the hole reads out that
+ * source's count, share and name; tap again to clear back to the total. Donut
+ * and legend sit side-by-side when the panel is wide and wrap to a column when
+ * it is narrow, so one component serves mobile and desktop. ─────────────── */
+const DONUT_RAMP = ['#960D32', '#B83651', '#E0506F', '#F27D93', '#FF9FB0', '#C8B0B8'];
+
+export const SourceDonut = ({ rows, valueKey = 'bookings', labelKey = 'label', stack = false }) => {
+  const [active, setActive] = useState(null);
+  const [hover, setHover] = useState(null);
+  const shown = hover ?? active;
+  const toggle = (i) => setActive((p) => (p === i ? null : i));
+
+  const total = rows.reduce((s, r) => s + (r[valueKey] || 0), 0) || 1;
+  const SIZE = 150; const SW = 22; const GROW = 5; const GAP = 2.5;
+  // Leave room for the active ring's extra width so it never clips the viewBox.
+  const R = (SIZE - SW - GROW) / 2 - 1;
+  const C = 2 * Math.PI * R;
+
+  let cum = 0;
+  const segs = rows.map((r, i) => {
+    const frac = (r[valueKey] || 0) / total;
+    const seg = { i, frac, offset: cum, color: DONUT_RAMP[i % DONUT_RAMP.length], row: r };
+    cum += frac;
+    return seg;
+  });
+  const sel = shown == null ? null : segs[shown];
+
+  return (
+    <div className={cn('flex items-center justify-center', stack ? 'flex-col gap-3' : 'flex-wrap gap-x-5 gap-y-3')}>
+      <div className="relative shrink-0" style={{ width: SIZE, height: SIZE }}>
+        <svg
+          viewBox={`0 0 ${SIZE} ${SIZE}`}
+          width={SIZE}
+          height={SIZE}
+          role="img"
+          aria-label={`Bookings by source — ${rows[0]?.[labelKey]} leads with ${Math.round((segs[0]?.frac || 0) * 100)}% of ${total}`}
+        >
+          <g transform={`rotate(-90 ${SIZE / 2} ${SIZE / 2})`}>
+            <circle cx={SIZE / 2} cy={SIZE / 2} r={R} fill="none" stroke="#F1EBE9" strokeWidth={SW} />
+            {segs.map((s) => {
+              const on = shown === s.i;
+              const len = Math.max(s.frac * C - GAP, 0.001);
+              return (
+                <circle
+                  key={s.i}
+                  cx={SIZE / 2}
+                  cy={SIZE / 2}
+                  r={R}
+                  fill="none"
+                  stroke={s.color}
+                  strokeWidth={on ? SW + GROW : SW}
+                  strokeDasharray={`${len} ${C - len}`}
+                  strokeDashoffset={-(s.offset * C)}
+                  className="cursor-pointer transition-[stroke-width,opacity] duration-150"
+                  style={{ opacity: shown == null || on ? 1 : 0.8 }}
+                  onMouseEnter={() => setHover(s.i)}
+                  onMouseLeave={() => setHover(null)}
+                  onClick={() => toggle(s.i)}
+                />
+              );
+            })}
+          </g>
+        </svg>
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
+          <span className="font-display text-[20px] font-extrabold leading-none tracking-[-0.04em] text-ink">
+            {sel ? (
+              <>{sel.row[valueKey].toLocaleString('en-IN')}<span className="text-ink/35">/{total.toLocaleString('en-IN')}</span></>
+            ) : total.toLocaleString('en-IN')}
+          </span>
+          <span className="mt-1 text-[11px] font-bold tabular-nums tracking-[0.02em] text-maroon">
+            {sel ? `${Math.round(sel.frac * 100)}%` : 'booked'}
+          </span>
+        </div>
+      </div>
+
+      <ul className={cn('flex flex-col gap-0.5', stack ? 'w-full' : 'min-w-[150px] flex-1')}>
+        {segs.map((s) => {
+          const on = shown === s.i;
+          return (
+            <li key={s.i}>
+              <button
+                type="button"
+                onMouseEnter={() => setHover(s.i)}
+                onMouseLeave={() => setHover(null)}
+                onClick={() => toggle(s.i)}
+                className={cn('flex w-full items-center gap-2 rounded-lg px-1.5 py-1 text-left transition', on ? 'bg-blush' : 'hover:bg-cream')}
+              >
+                <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: s.color }} />
+                <span className="min-w-0 flex-1 truncate text-[11.5px] font-semibold text-ink/80">{s.row[labelKey]}</span>
+                <span className="shrink-0 text-[11px] font-bold tabular-nums text-ink">{(s.row[valueKey]).toLocaleString('en-IN')}</span>
+                <span className="w-9 shrink-0 text-right text-[10.5px] font-bold tabular-nums text-ink/45">{Math.round(s.frac * 100)}%</span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+};
+
 /* ── Funnel — one measure across ordered stages, with step drop-off ────── */
 export const Funnel = ({ stages }) => {
   const top = stages[0]?.value || 1;

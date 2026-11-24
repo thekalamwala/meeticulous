@@ -1,19 +1,15 @@
-// Today — the mobile redesign from the standalone proposal, built on-brand.
-//
-// Layout follows the proposal file but leads like a daily cockpit, not a stats
-// page: what needs action → today's plan → shortcuts → money → performance →
-// what just happened. The proposal drew source-mix as a five-colour donut and
-// the glance tiles as 3D blobs; both break the brand rules (no 3D blobs, no
-// purple/blue, charts are single-hue — see labUi.jsx "never a pie, never five
-// hues"), so the glance uses a flat sprite and the breakdown is RankedBars.
+// Today — mobile. Sequence (founder spec): a Pro banner, the calendar slider +
+// today's meetings, at-a-glance stats, quick actions, weekly availability drawn
+// as a left-to-right bar chart (the desktop Booking-performance look, turned
+// horizontal for a phone), then where bookings came from. No heatmap on mobile.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  AlertTriangle, ArrowRight, BellRing, CalendarPlus, CalendarX2, ChevronLeft, ChevronRight,
-  Clock3, IndianRupee, MessageSquare, Package, Share2, Star, UserMinus, UserPlus, Video, Wallet,
+  AlertTriangle, ArrowRight, CalendarCheck2, Check, ChevronLeft, ChevronRight, Clock, IndianRupee,
+  MessageSquare, Package, Share2, Star, UserMinus, UserPlus, Video, X,
 } from 'lucide-react';
 import { Button, cn } from '../../../components/dashboard/ui';
 import {
-  Avatar, Drawer, Panel, RankedBars, StatusPill,
+  Avatar, Drawer, Panel, SourceDonut, StatusPill,
   fmtTime, inr, pct, relDay, useLast,
 } from '../labUi';
 import mock from '../mockData';
@@ -21,9 +17,6 @@ import mock from '../mockData';
 const DAY = 86_400_000;
 const sameDay = (a, b) => a.toDateString() === b.toDateString();
 const ymd = (d) => new Date(d).toISOString().slice(0, 10); // matches mockData's at().slice(0,10)
-const toMin = (t) => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
-const dayHours = (slots = []) => slots.reduce((n, s) => n + (toMin(s.end) - toMin(s.start)) / 60, 0);
-
 // Hide the scrollbar and fade the right edge, so a row reads as scrollable
 // without a visible track (brand: no raw browser chrome on a phone).
 const FADE_RIGHT = {
@@ -67,67 +60,152 @@ const useDragScroll = () => {
   return ref;
 };
 
-/* ── Needs attention — the first thing a host should see. Built from the
- * action queue (not a generic widget grid): each row names the thing and the
- * one action that clears it. Urgency carries a word, never colour alone. ──── */
-const QUEUE_ICON = { confirm: BellRing, unpaid: IndianRupee, lapsing: UserMinus, review: Star, gap: CalendarX2 };
-const URGENCY = {
-  now: ['Now', 'bg-maroon-100 text-maroon-700'],
-  today: ['Today', 'bg-warning-bg text-warning-fg'],
-  this_week: ['This week', 'bg-neutral-100 text-ink/55'],
-};
-const NeedsAttention = ({ go }) => {
-  const items = mock.actionQueue;
-  if (!items.length) return null;
+/* ── Pro promo banner — the maroon card from desktop, sized for a phone: no
+ * illustration, the ee thread tilted and faint behind, one headline, two CTAs,
+ * dismissible. Tokens only, no gradient. ────────────────────────────────── */
+const PromoBanner = ({ go }) => {
+  const [dismissed, setDismissed] = useState(false);
+  if (dismissed) return null;
   return (
-    <Panel title="Needs attention" subtitle={`${items.length} ${items.length === 1 ? 'thing' : 'things'} to clear`} flush>
-      <ul className="divide-y-2 divide-neutral-200">
-        {items.map((it) => {
-          const Icon = QUEUE_ICON[it.kind] || BellRing;
-          const [word, tone] = URGENCY[it.urgency] || URGENCY.this_week;
-          return (
-            <li key={it.id} className="flex items-start gap-2.5 px-3 py-2.5">
-              <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-blush text-maroon">
-                <Icon className="h-4 w-4" strokeWidth={2.3} />
-              </span>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-start justify-between gap-2">
-                  <p className="text-[12px] font-bold leading-snug text-ink">{it.title}</p>
-                  <span className={cn('shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-bold', tone)}>{word}</span>
-                </div>
-                <p className="mt-0.5 text-[11px] font-medium leading-snug text-ink/55">{it.detail}</p>
-                <button
-                  type="button"
-                  onClick={() => go(it.target)}
-                  className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-bold text-maroon hover:text-maroon-dark"
-                >
-                  {it.cta} <ArrowRight className="h-3 w-3" strokeWidth={2.6} />
-                </button>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    </Panel>
+    <div className="relative isolate overflow-hidden rounded-2xl bg-maroon px-4 py-4 text-white">
+      <img
+        aria-hidden="true"
+        src="/brand/ds/02-ee/mt-ee-thread-white.svg"
+        alt=""
+        className="pointer-events-none absolute right-0 top-1/2 h-[170%] w-auto -translate-y-1/2 translate-x-[16%] -rotate-[18deg] opacity-[0.08]"
+      />
+      <div className="relative pr-6">
+        <h2 className="font-display text-[22px] font-extrabold leading-[1.05] tracking-[-0.04em] text-white">
+          Smarter tools. <span className="text-pink">Done easier.</span>
+        </h2>
+        <p className="mt-1.5 text-[11.5px] font-medium leading-snug text-white/70">
+          Advanced analytics, priority support and custom branding — do more with every booking.
+        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <button
+            type="button"
+            onClick={() => go('settings/plan')}
+            className="inline-flex items-center gap-1.5 rounded-full bg-pink px-4 py-2 text-[12px] font-bold text-maroon-dark transition hover:bg-white focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
+          >
+            Start free trial <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
+          </button>
+          <button type="button" onClick={() => go('settings/plan')} className="inline-flex items-center gap-1 text-[12px] font-bold text-white/85 transition hover:text-white">
+            See what&apos;s included <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
+          </button>
+        </div>
+      </div>
+      <button
+        type="button"
+        onClick={() => setDismissed(true)}
+        aria-label="Dismiss"
+        className="absolute right-2.5 top-2.5 grid h-6 w-6 place-items-center rounded-full text-white/70 transition hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
+      >
+        <X className="h-4 w-4" strokeWidth={2.4} />
+      </button>
+    </div>
   );
 };
 
 /* ── Quick actions — the four things a host starts from ─────────────────── */
-const QuickAction = ({ icon: Icon, label, onClick, accent = false }) => (
-  <button type="button" onClick={onClick} className="group flex w-[74px] shrink-0 flex-col items-center gap-1.5 focus-visible:outline-none">
+const QuickAction = ({ icon: Icon, label, onClick, accent = false, badge }) => (
+  <button type="button" onClick={onClick} className="group flex w-[74px] shrink-0 snap-start flex-col items-center gap-1.5 focus-visible:outline-none">
     <span className={cn(
-      'grid h-14 w-14 place-items-center rounded-full border-2 transition group-hover:-translate-y-0.5',
+      'relative grid h-14 w-14 place-items-center rounded-full border-2 transition group-hover:-translate-y-0.5',
       accent ? 'border-maroon bg-maroon text-white hover:bg-maroon-dark' : 'border-neutral-200 bg-blush text-maroon hover:border-maroon/40',
     )}>
       <Icon className="h-5 w-5" strokeWidth={2.2} />
+      {badge ? (
+        <span className="absolute -right-0.5 -top-0.5 grid h-5 w-5 place-items-center rounded-full border-2 border-white bg-rose text-[10px] font-extrabold text-white">
+          {badge}
+        </span>
+      ) : null}
     </span>
     <span className="text-center text-[10.5px] font-semibold leading-tight text-ink/70">{label}</span>
   </button>
 );
 
-/* ── At a glance — the proposal's illustrated tiles. The four illustrations
- * are one 2×2 sprite (lifted verbatim from the standalone reference), sliced by
- * background-position; each quadrant carries its own coloured ground. ──────── */
+/* ── Needs you — the production "hardest first" action queue, opened full-screen
+ * from a Quick Action. Mobile has no room for it inline, so it lives behind an
+ * icon and takes over the screen when tapped. ──────────────────────────────── */
+const KIND_ICON = { confirm: CalendarCheck2, unpaid: IndianRupee, lapsing: UserMinus, review: Star, gap: Clock };
+const URGENCY = {
+  now: ['Now', 'bg-error-bg text-error-fg'],
+  today: ['Today', 'bg-warning-bg text-warning-fg'],
+  this_week: ['This week', 'bg-neutral-100 text-ink/55'],
+};
+
+const NeedsYouModal = ({ open, onClose, go }) => {
+  const [done, setDone] = useState([]);
+  const items = mock.actionQueue.filter((a) => !done.includes(a.id));
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-[120] flex flex-col bg-cream">
+      <header className="flex items-center justify-between border-b-2 border-neutral-200 bg-white px-4 py-3">
+        <div>
+          <h2 className="font-display text-[16px] font-extrabold tracking-[-0.02em] text-ink">Needs you</h2>
+          <p className="text-[11px] font-semibold text-ink/50">
+            {items.length ? `${items.length} waiting · hardest first` : 'All clear'}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="grid h-9 w-9 place-items-center rounded-full border-2 border-neutral-200 bg-white text-ink/55 transition hover:border-maroon/40 hover:text-maroon"
+        >
+          <X className="h-4 w-4" strokeWidth={2.4} />
+        </button>
+      </header>
+
+      <div className="flex-1 overflow-y-auto px-4 py-3">
+        {items.length === 0 ? (
+          <p className="flex items-center gap-2 pt-6 text-[13px] font-semibold text-success-fg">
+            <Check className="h-4 w-4 shrink-0" strokeWidth={2.8} /> All caught up. Nothing waiting on you.
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-2.5">
+            {items.map((a) => {
+              const Icon = KIND_ICON[a.kind] || AlertTriangle;
+              const [word, cls] = URGENCY[a.urgency];
+              return (
+                <li key={a.id} className="rounded-2xl border-2 border-neutral-200 bg-white p-3">
+                  <div className="flex items-start gap-2.5">
+                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-blush text-maroon">
+                      <Icon className="h-4 w-4" strokeWidth={2.4} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-[13px] font-bold leading-tight text-ink">{a.title}</span>
+                        <span className={cn('rounded-full px-1.5 py-px text-[9.5px] font-bold', cls)}>{word}</span>
+                      </div>
+                      <p className="mt-1 text-[11.5px] font-medium leading-snug text-ink/60">{a.detail}</p>
+                    </div>
+                  </div>
+                  <div className="mt-2.5 flex items-center gap-2">
+                    <Button size="sm" className="flex-1" onClick={() => { onClose(); go(a.target); }}>
+                      {a.cta} <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => setDone((d) => [...d, a.id])}
+                      aria-label={`Dismiss: ${a.title}`}
+                      className="grid h-9 w-9 shrink-0 place-items-center rounded-full border-2 border-neutral-200 text-ink/35 transition hover:border-maroon/30 hover:text-maroon"
+                    >
+                      <Check className="h-4 w-4" strokeWidth={2.6} />
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ── At a glance — illustrated tiles. The four illustrations are one 2×2 sprite
+ * sliced by background-position. ────────────────────────────────────────── */
 const GLANCE_SPRITE = '/brand/host-lab/glance-sprite.png';
 const GLANCE_POS = ['0% 0%', '100% 0%', '0% 100%', '100% 100%'];
 const Glance = ({ idx, label, value, onClick }) => (
@@ -146,67 +224,89 @@ const Glance = ({ idx, label, value, onClick }) => (
   </button>
 );
 
-/* ── Next payout — money is the first reason a host checks in, so it gets a
- * line of its own rather than hiding inside a glance tile. ───────────────── */
-const NextPayout = ({ go }) => {
-  const { available, clearing, next_payout_on: on } = mock.payouts;
-  return (
-    <button
-      type="button"
-      onClick={() => go('money/payouts')}
-      className="flex w-full items-center gap-3 rounded-lg border-2 border-maroon bg-maroon px-3 py-2.5 text-left text-white transition hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
-    >
-      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/15">
-        <Wallet className="h-4 w-4" strokeWidth={2.3} />
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-[10px] font-bold uppercase tracking-[0.07em] text-white/70">Ready to withdraw</span>
-        <span className="block font-display text-[19px] font-extrabold leading-none tracking-[-0.03em]">{inr(available)}</span>
-        <span className="mt-0.5 block text-[10.5px] font-medium text-white/65">
-          {inr(clearing)} clearing · pays out {relDay(on).toLowerCase()}
-        </span>
-      </span>
-      <ArrowRight className="h-4 w-4 shrink-0 text-white/80" strokeWidth={2.4} />
-    </button>
-  );
-};
-
-/* ── Weekly availability — single-hue lollipop, bookable hours per day ──── */
-const WEEK = [['Mon', 'monday'], ['Tue', 'tuesday'], ['Wed', 'wednesday'], ['Thu', 'thursday'], ['Fri', 'friday'], ['Sat', 'saturday'], ['Sun', 'sunday']];
-const Availability = ({ go }) => {
-  const hrs = WEEK.map(([lbl, key]) => [lbl, dayHours(mock.availability.weekly_schedule[key])]);
-  const max = Math.max(...hrs.map(([, h]) => h), 1);
+/* ── Profile performance — the desktop Booking-performance chart, rotated to
+ * horizontal for a phone: one stacked bar per month, split into the four
+ * booking statuses, with a legend. (Multi-hue + marigold are off the kit's
+ * single-hue / open-slots-only rules — kept here on the founder's spec.) ──── */
+const STATUS = [
+  ['Confirmed', '#960D32'], // maroon, solid
+  ['Completed', '#E0506F'], // rose, hatched
+  ['Pending', '#F6C35A'],   // marigold, solid
+  ['Cancelled', '#D4D4D8'], // neutral, hatched
+];
+const STATUS_SPLIT = [0.54, 0.24, 0.14, 0.08]; // confirmed / completed / pending / cancelled
+// Completed and Cancelled read as diagonal hatch; Confirmed and Pending solid.
+const segStyle = (i) => (i === 1 || i === 3)
+  ? { backgroundImage: `repeating-linear-gradient(45deg, ${STATUS[i][1]} 0 3px, #ffffff 3px 6px)` }
+  : { backgroundColor: STATUS[i][1] };
+const ProfilePerformance = ({ go }) => {
+  const [open, setOpen] = useState(null);
+  const rows = mock.revenueByMonth.map((m) => ({
+    month: m.month,
+    total: m.bookings,
+    seg: STATUS_SPLIT.map((r) => Math.round(m.bookings * r)),
+  }));
+  const max = Math.max(...rows.map((r) => r.total), 1);
   return (
     <Panel
-      title="Weekly availability"
-      subtitle="Bookable hours by day"
-      action={<Button size="sm" variant="ghost" onClick={() => go('schedule/hours')}>View hours <ArrowRight className="h-3 w-3" strokeWidth={2.6} /></Button>}
+      title="Profile performance"
+      subtitle="Bookings by status · last 12 months"
+      action={<Button size="sm" variant="ghost" onClick={() => go('intelligence/overview')}>Details <ArrowRight className="h-3 w-3" strokeWidth={2.6} /></Button>}
     >
-      <div className="flex items-stretch justify-between gap-1" style={{ height: 150 }}>
-        {hrs.map(([lbl, h]) => (
-          <div key={lbl} className="flex flex-1 flex-col items-center gap-1">
-            <span className={cn('text-[10px] font-bold tabular-nums', h ? 'text-maroon' : 'text-ink/30')}>{h ? `${h}h` : 'Off'}</span>
-            <div className="flex w-full flex-1 items-end justify-center">
-              {h ? (
-                <span className="flex flex-col items-center" style={{ height: `${Math.max((h / max) * 100, 8)}%` }}>
-                  <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-maroon" />
-                  <span className="w-[3px] flex-1 rounded-full bg-maroon/35" />
-                </span>
-              ) : (
-                <span className="h-2.5 w-2.5 rounded-full border-2 border-neutral-300" />
-              )}
-            </div>
-            <span className="text-[10px] font-semibold text-ink/45">{lbl}</span>
-          </div>
+      <ul className="flex flex-col gap-0.5">
+        {rows.map((r) => {
+          const isOpen = open === r.month;
+          return (
+            <li key={r.month}>
+              <button
+                type="button"
+                onClick={() => setOpen(isOpen ? null : r.month)}
+                aria-expanded={isOpen}
+                className="flex w-full items-center gap-2 rounded-md px-1 py-1 text-left transition hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
+              >
+                <span className={cn('w-7 shrink-0 text-[10px] font-bold', isOpen ? 'text-maroon' : 'text-ink/50')}>{r.month}</span>
+                <div className="flex h-3.5 flex-1 items-stretch">
+                  <span className="flex overflow-hidden rounded-full" style={{ width: `${Math.max((r.total / max) * 100, 3)}%` }}>
+                    {r.seg.map((v, i) => (v ? <span key={i} style={{ flex: v, ...segStyle(i) }} /> : null))}
+                  </span>
+                </div>
+                <span className="w-6 shrink-0 text-right text-[10.5px] font-bold tabular-nums text-ink/70">{r.total}</span>
+              </button>
+              {/* Curtain — the tapped month's breakdown slides open; one at a time. */}
+              <div className={cn('grid transition-[grid-template-rows] duration-200 ease-out', isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]')}>
+                <div className="min-h-0 overflow-hidden">
+                  <div className="ml-9 mr-8 mb-1 mt-1 rounded-md border-2 border-neutral-200 bg-cream/70 px-3 py-2">
+                    {STATUS.map(([label], i) => (
+                      <div key={label} className="flex items-center justify-between py-[3px] text-[11px]">
+                        <span className="inline-flex items-center gap-2 font-medium text-ink/70">
+                          <span className="h-2.5 w-3.5 rounded-[3px]" style={segStyle(i)} /> {label}
+                        </span>
+                        <span className="font-bold tabular-nums text-ink">{r.seg[i]}</span>
+                      </div>
+                    ))}
+                    <div className="mt-1 flex items-center justify-between border-t-2 border-neutral-200 pt-1.5 text-[11px] font-bold text-maroon">
+                      <span>Total</span><span className="tabular-nums">{r.total}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 border-t border-neutral-100 pt-2.5">
+        {STATUS.map(([label], i) => (
+          <span key={label} className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-ink/55">
+            <span className="h-2.5 w-3.5 rounded-[3px]" style={segStyle(i)} /> {label}
+          </span>
         ))}
       </div>
     </Panel>
   );
 };
 
-/* ── Day picker + schedule — the proposal's date strip and timeline.
- * The strip now carries meaning before you tap it: a maroon dot per booking
- * (capped at three) and a dash for a blocked or travelling day. ──────────── */
+/* ── Calendar slider + today's meetings — the date strip (with booking dots and
+ * a dash for blocked/travelling days) and the selected day's list. ───────── */
 const DaySchedule = ({ go }) => {
   const [sel, setSel] = useState(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; });
   const [openId, setOpenId] = useState(null);
@@ -216,8 +316,6 @@ const DaySchedule = ({ go }) => {
   const strip = useMemo(() => Array.from({ length: 14 }, (_, i) => new Date(base.getTime() + (i - 2) * DAY)), [base]);
   const nudge = (dir) => stripRef.current?.scrollBy({ left: dir * 180, behavior: 'smooth' });
 
-  // A day is blocked if it is in blocked_dates or has an override that leaves
-  // no slots (travelling). Both come from availability; compared as yyyy-mm-dd.
   const blocked = useMemo(() => {
     const set = new Set(mock.availability.blocked_dates);
     for (const o of mock.availability.date_overrides) if (!o.slots.length) set.add(o.date);
@@ -229,7 +327,6 @@ const DaySchedule = ({ go }) => {
     .filter((b) => sameDay(new Date(b.scheduled_at), sel) && b.status !== 'cancelled')
     .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at)), [sel]);
 
-  // When the chosen day is empty, point at the next booking instead of a dead end.
   const next = useMemo(() => {
     const end = new Date(sel.getTime() + DAY);
     return mock.bookings
@@ -242,7 +339,7 @@ const DaySchedule = ({ go }) => {
 
   return (
     <div className="flex flex-col gap-2.5">
-      {/* Date strip — arrow-nav day cards with booking/blocked markers. */}
+      {/* Calendar slider — arrow-nav day cards with booking/blocked markers. */}
       <div className="flex items-center gap-1.5">
         <button
           type="button"
@@ -252,7 +349,7 @@ const DaySchedule = ({ go }) => {
         >
           <ChevronLeft className="h-4 w-4" strokeWidth={2.4} />
         </button>
-        <div ref={stripRef} className="dash-noscrollbar flex flex-1 gap-2 overflow-x-auto scroll-smooth">
+        <div ref={stripRef} className="dash-noscrollbar flex flex-1 snap-x gap-2 overflow-x-auto scroll-smooth">
           {strip.map((d) => {
             const on = sameDay(d, sel);
             const today = sameDay(d, base);
@@ -265,7 +362,7 @@ const DaySchedule = ({ go }) => {
                 onClick={() => setSel(d)}
                 aria-current={on ? 'date' : undefined}
                 className={cn(
-                  'flex min-w-[62px] shrink-0 flex-col items-center gap-0.5 rounded-xl border-2 px-2.5 py-2 transition',
+                  'flex min-w-[62px] shrink-0 snap-start flex-col items-center gap-0.5 rounded-xl border-2 px-2.5 py-2 transition',
                   on ? 'border-maroon bg-blush text-maroon' : 'border-neutral-200 bg-white text-ink/70 hover:border-maroon/40',
                 )}
               >
@@ -275,7 +372,6 @@ const DaySchedule = ({ go }) => {
                 <span className="whitespace-nowrap font-display text-[13px] font-extrabold leading-none tracking-[-0.02em]">
                   {d.getDate()} {d.toLocaleDateString('en-IN', { month: 'short' })}
                 </span>
-                {/* marker row — booking dots, a blocked dash, or a held-open gap */}
                 <span aria-hidden="true" className="mt-1 flex h-1.5 items-center gap-0.5">
                   {isBlocked ? (
                     <span className="h-0.5 w-3 rounded-full bg-neutral-300" />
@@ -300,7 +396,7 @@ const DaySchedule = ({ go }) => {
       </div>
 
       <Panel
-        title={sel.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+        title={sameDay(sel, base) ? "Today's meetings" : sel.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
         subtitle={items.length ? `${items.length} ${items.length === 1 ? 'booking' : 'bookings'}` : (blocked.has(ymd(sel)) ? 'Blocked' : 'Nothing booked')}
         flush
       >
@@ -377,54 +473,6 @@ const DaySchedule = ({ go }) => {
   );
 };
 
-/* ── Recent activity — a short feed of what just happened, newest first. ── */
-const ACT_ICON = { booking: CalendarPlus, money: IndianRupee, review: Star, product: Package, alert: AlertTriangle };
-const RecentActivity = () => (
-  <Panel title="Recent activity" subtitle="Newest first" flush>
-    <ul className="divide-y-2 divide-neutral-200">
-      {mock.activity.map((a) => {
-        const Icon = ACT_ICON[a.kind] || Clock3;
-        return (
-          <li key={a.id} className="flex items-start gap-2.5 px-3 py-2">
-            <span className={cn('mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full', a.kind === 'alert' ? 'bg-error-bg text-error-fg' : 'bg-blush text-maroon')}>
-              <Icon className="h-3.5 w-3.5" strokeWidth={2.3} />
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="text-[11.5px] font-semibold leading-snug text-ink/85">{a.text}</p>
-              <p className="mt-0.5 text-[10px] font-medium text-ink/40">{relDay(a.at)} · {fmtTime(a.at)}</p>
-            </div>
-          </li>
-        );
-      })}
-    </ul>
-  </Panel>
-);
-
-/* ── Setup nudge — a slim bar, only while the go-live checklist is unfinished.
- * It points at the first undone step; it disappears once all are done. ───── */
-const SetupNudge = ({ go }) => {
-  const list = mock.setupChecklist;
-  const done = list.filter((s) => s.done).length;
-  const nextStep = list.find((s) => !s.done);
-  if (!nextStep) return null;
-  return (
-    <button
-      type="button"
-      onClick={() => go(nextStep.to)}
-      className="flex w-full items-center gap-2.5 rounded-lg border-2 border-marigold-300 bg-marigold-100 px-3 py-2 text-left transition hover:border-marigold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
-    >
-      <span className="min-w-0 flex-1">
-        <span className="block text-[11.5px] font-bold text-ink">Finish setting up · {list.length - done} left</span>
-        <span className="block truncate text-[10.5px] font-medium text-ink/55">Next: {nextStep.label}</span>
-      </span>
-      <span aria-hidden="true" className="flex shrink-0 gap-0.5">
-        {list.map((s, i) => <span key={i} className={cn('h-1.5 w-1.5 rounded-full', s.done ? 'bg-maroon' : 'bg-maroon/20')} />)}
-      </span>
-      <ArrowRight className="h-4 w-4 shrink-0 text-maroon" strokeWidth={2.4} />
-    </button>
-  );
-};
-
 /* ── Page ──────────────────────────────────────────────────────────────── */
 const Today = ({ go }) => {
   const paid = mock.bookings.filter((b) => b.amount > 0 && b.payment_status === 'paid');
@@ -432,36 +480,17 @@ const Today = ({ go }) => {
   const repeatRate = mock.clients.filter((c) => c.bookings_count >= 2).length / mock.clients.length;
   const convRate = mock.funnel.completed / mock.funnel.views;
   const glanceRef = useDragScroll();
+  const [needsOpen, setNeedsOpen] = useState(false);
 
   return (
     <div className="flex flex-col gap-3">
-      <header>
-        <h1 className="mb-0 font-display text-[20px] font-extrabold tracking-[-0.035em] text-maroon">Today</h1>
-        <p className="mt-0.5 text-[12px] font-medium text-ink/55">
-          {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })} · {mock.host.city}
-        </p>
-      </header>
+      {/* 1. Banner */}
+      <PromoBanner go={go} />
 
-      {/* 1. What needs action — top, because it's the only thing demanding it. */}
-      <NeedsAttention go={go} />
-
-      {/* 2. Today's plan — a host opens Today to see today first. */}
+      {/* 2 + 3. Calendar slider + today's meetings */}
       <DaySchedule go={go} />
 
-      {/* 3. Shortcuts */}
-      <section>
-        <h2 className="mb-2 font-display text-[12.5px] font-bold tracking-[-0.02em] text-ink">Quick actions</h2>
-        <div className="dash-noscrollbar flex gap-2 overflow-x-auto pb-1">
-          <QuickAction icon={Package} label="Manage services" accent onClick={() => go('catalog')} />
-          <QuickAction icon={UserPlus} label="Add client" onClick={() => go('clients')} />
-          <QuickAction icon={Share2} label="Share booking link" onClick={() => go('grow/page')} />
-          <QuickAction icon={Star} label="View reviews" onClick={() => go('grow/proof')} />
-        </div>
-      </section>
-
-      {/* 4. Money — the payout callout leads, then the glance stats. */}
-      <NextPayout go={go} />
-
+      {/* 4. At a glance */}
       <section>
         <h2 className="mb-2 font-display text-[12.5px] font-bold tracking-[-0.02em] text-ink">At a glance</h2>
         <div ref={glanceRef} className="dash-noscrollbar flex cursor-grab snap-x select-none gap-2.5 overflow-x-auto pb-1" style={FADE_RIGHT}>
@@ -472,28 +501,31 @@ const Today = ({ go }) => {
         </div>
       </section>
 
-      {/* 5. Performance */}
-      <Availability go={go} />
+      {/* 5. Quick actions */}
+      <section>
+        <h2 className="mb-2 font-display text-[12.5px] font-bold tracking-[-0.02em] text-ink">Quick actions</h2>
+        <div className="dash-noscrollbar -mx-1 flex snap-x gap-2 overflow-x-auto px-1 py-2">
+          <QuickAction icon={AlertTriangle} label="Needs you" badge={mock.actionQueue.length} onClick={() => setNeedsOpen(true)} />
+          <QuickAction icon={Package} label="Manage services" accent onClick={() => go('catalog')} />
+          <QuickAction icon={UserPlus} label="Add client" onClick={() => go('clients')} />
+          <QuickAction icon={Share2} label="Share booking link" onClick={() => go('grow/page')} />
+          <QuickAction icon={Star} label="View reviews" onClick={() => go('grow/proof')} />
+        </div>
+      </section>
 
+      {/* 6. Profile performance — Booking-performance chart layout */}
+      <ProfilePerformance go={go} />
+
+      {/* 7. Where bookings came from */}
       <Panel
         title="Where bookings came from"
         subtitle="Last 30 days"
         action={<Button size="sm" variant="ghost" onClick={() => go('intelligence/audience')}>Details <ArrowRight className="h-3 w-3" strokeWidth={2.6} /></Button>}
       >
-        <RankedBars
-          rows={mock.trafficSources}
-          valueKey="bookings"
-          labelKey="label"
-          format={(v) => `${v} booked`}
-          secondary={(r) => `${r.views.toLocaleString('en-IN')} views`}
-        />
+        <SourceDonut rows={mock.trafficSources} valueKey="bookings" labelKey="label" stack />
       </Panel>
 
-      {/* 6. What just happened */}
-      <RecentActivity />
-
-      {/* Onboarding — only while the checklist is unfinished. */}
-      <SetupNudge go={go} />
+      <NeedsYouModal open={needsOpen} onClose={() => setNeedsOpen(false)} go={go} />
     </div>
   );
 };
