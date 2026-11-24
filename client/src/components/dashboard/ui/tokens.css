@@ -15,8 +15,15 @@
 .dash-elev-hover { transition: box-shadow 0.15s ease; }
 .dash-elev-hover:hover { box-shadow: var(--elev-2); }
 
-/* Hide scrollbars on horizontal nav/tab strips while keeping scroll. */
-.dash-noscrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+/* Hide scrollbars on horizontal nav/tab strips while keeping scroll.
+   Momentum + contained overscroll so a finger-flick glides and never
+   bounces the whole page sideways. */
+.dash-noscrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
 .dash-noscrollbar::-webkit-scrollbar { display: none; }
 
 @media (prefers-reduced-motion: reduce) {

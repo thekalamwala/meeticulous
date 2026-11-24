@@ -8,7 +8,7 @@ import { Plus, Package, CalendarClock, FileDown, BookOpen, Users, TicketPercent 
 import { svcGetAll, getMyProducts, getMyCourses, getHostCoupons, getMyMembership } from '../services/api';
 import useFeatureFlags from '../hooks/useFeatureFlags';
 import { Button, SearchInput, SegmentedControl, ErrorState, Skeleton } from '../components/dashboard/ui';
-import { PageHeading, Panel, StatusPill, cn } from '../components/dashboard/ui/v2';
+import { PageHeading, StatusPill, cn } from '../components/dashboard/ui/v2';
 import {
   mergeCatalog, selectItems, countsByKind, editHref, TYPE_LABEL, TYPE_PLURAL, TYPE_BLURB, TYPES, ADD_ROUTE,
 } from './catalog/catalogModel';
@@ -131,7 +131,7 @@ const CatalogV2 = () => {
         <SegmentedControl value={status} onChange={setStatus} options={[{ value: 'all', label: 'All' }, { value: 'live', label: 'Live' }, { value: 'hidden', label: 'Hidden' }]} />
       </div>
 
-      <Panel flush>
+      <div className="overflow-hidden rounded-2xl bg-white">
         {rows.length === 0 ? (
           <div className="flex flex-col items-center gap-1.5 px-3 py-14 text-center">
             <Package className="h-6 w-6 text-maroon/30" strokeWidth={1.8} />
@@ -141,10 +141,10 @@ const CatalogV2 = () => {
             </p>
           </div>
         ) : (
-          <ul className="divide-y-2 divide-neutral-200">
+          <ul className="divide-y divide-ink/5">
             {rows.map((item) => (
               <li key={`${item.kind}-${item.id}`}>
-                <button type="button" onClick={() => navigate(editHref(item))} className="flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-cream">
+                <button type="button" onClick={() => navigate(editHref(item))} className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition hover:bg-cream">
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-2">
                       <span className="truncate text-[12px] font-bold text-ink">{item.title}</span>
@@ -161,7 +161,7 @@ const CatalogV2 = () => {
             ))}
           </ul>
         )}
-      </Panel>
+      </div>
     </div>
   );
 };
