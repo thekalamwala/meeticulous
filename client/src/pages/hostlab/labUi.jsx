@@ -16,7 +16,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, TrendingDown, TrendingUp, X } from 'lucide-react';
+import {
+  AlertTriangle, ArrowRight, CalendarCheck2, Check, ChevronDown, Clock, IndianRupee,
+  Search, Star, TrendingDown, TrendingUp, UserMinus, X,
+} from 'lucide-react';
 import { cn } from '../../components/dashboard/ui';
 import { pageMeta } from './nav';
 
@@ -476,6 +479,136 @@ export const SourceDonut = ({ rows, valueKey = 'bookings', labelKey = 'label', s
           );
         })}
       </ul>
+    </div>
+  );
+};
+
+/* ── NeedsYouModal — the "hardest first" action queue as a progress checklist
+ * (one component for mobile and desktop). A segmented progress bar up top, then
+ * accordion rows: a status dot (open = dashed ring, handled = green check), the
+ * title + urgency chip, and a chevron. One row expands at a time to reveal the
+ * detail and three controls — the CTA, ✓ handled, ✗ dismiss. ───────────────── */
+const NEEDS_ICON = { confirm: CalendarCheck2, unpaid: IndianRupee, lapsing: UserMinus, review: Star, gap: Clock };
+const NEEDS_URGENCY = {
+  now: ['Now', 'bg-error-bg text-error-fg'],
+  today: ['Today', 'bg-warning-bg text-warning-fg'],
+  this_week: ['This week', 'bg-neutral-100 text-ink/55'],
+};
+
+export const NeedsYouModal = ({ open, onClose, items = [], go }) => {
+  const [done, setDone] = useState([]);
+  const [openId, setOpenId] = useState(items[0]?.id ?? null);
+  if (!open) return null;
+
+  const total = items.length;
+  const resolved = done.length;
+  const allDone = total > 0 && resolved >= total;
+  const resolve = (id) => {
+    setDone((d) => (d.includes(id) ? d : [...d, id]));
+    const next = items.find((x) => x.id !== id && !done.includes(x.id));
+    setOpenId(next ? next.id : null);
+  };
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-end justify-center p-0 sm:items-center sm:p-4">
+      <button type="button" aria-label="Close" onClick={onClose} className="absolute inset-0 rounded-none bg-ink/40" />
+      <div className="relative z-10 flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-3xl border-2 border-neutral-200 bg-white shadow-xl sm:max-h-[85vh] sm:max-w-md sm:rounded-3xl">
+        <header className="shrink-0 px-4 pb-3 pt-4">
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <h2 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.02em] text-ink">Needs you</h2>
+              <p className="mt-0.5 text-[11px] font-semibold text-ink/50">
+                {allDone ? 'All caught up — nicely done.' : `${resolved} of ${total} handled · hardest first`}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              className="grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 border-neutral-200 bg-white text-ink/55 transition hover:border-maroon/40 hover:text-maroon"
+            >
+              <X className="h-4 w-4" strokeWidth={2.4} />
+            </button>
+          </div>
+          <div className="mt-3 flex gap-1.5">
+            {items.map((a, i) => (
+              <span key={a.id} className={cn('h-1.5 flex-1 rounded-full transition-colors', i < resolved ? 'bg-maroon' : 'bg-neutral-200')} />
+            ))}
+          </div>
+        </header>
+
+        <ul className="flex-1 divide-y-2 divide-neutral-200 overflow-y-auto border-t-2 border-neutral-200">
+          {items.map((a) => {
+            const isDone = done.includes(a.id);
+            const isOpen = openId === a.id;
+            const Icon = NEEDS_ICON[a.kind] || AlertTriangle;
+            const [word, chip] = NEEDS_URGENCY[a.urgency] || NEEDS_URGENCY.this_week;
+            return (
+              <li key={a.id}>
+                <button
+                  type="button"
+                  onClick={() => setOpenId(isOpen ? null : a.id)}
+                  className="flex w-full items-center gap-3 rounded-none px-4 py-3 text-left transition hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-rose"
+                >
+                  {isDone ? (
+                    <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-success-fg text-white">
+                      <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                    </span>
+                  ) : (
+                    <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 border-dashed border-maroon/40 text-maroon">
+                      <Icon className="h-3 w-3" strokeWidth={2.6} />
+                    </span>
+                  )}
+                  <span className="min-w-0 flex-1">
+                    <span className={cn('block truncate text-[12.5px] font-bold leading-tight', isDone ? 'text-ink/40 line-through' : 'text-ink')}>
+                      {a.title}
+                    </span>
+                  </span>
+                  {!isDone && (
+                    <span className={cn('shrink-0 rounded-full px-1.5 py-px text-[9.5px] font-bold', chip)}>{word}</span>
+                  )}
+                  <ChevronDown className={cn('h-4 w-4 shrink-0 text-ink/40 transition-transform', isOpen && 'rotate-180')} strokeWidth={2.4} />
+                </button>
+
+                <div className={cn('grid transition-[grid-template-rows] duration-200 ease-out', isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]')}>
+                  <div className="min-h-0 overflow-hidden">
+                    <div className="px-4 pb-3 pl-[52px]">
+                      <p className="text-[11.5px] font-medium leading-snug text-ink/60">{a.detail}</p>
+                      <div className="mt-2.5 flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => { onClose(); go(a.target); }}
+                          className="inline-flex items-center gap-1 rounded-full bg-maroon px-3 py-1.5 text-[11.5px] font-bold text-white transition hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
+                        >
+                          {a.cta} <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => resolve(a.id)}
+                          aria-label="Mark handled"
+                          title="Mark handled"
+                          className="grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 border-neutral-200 text-ink/45 transition hover:border-success-fg hover:text-success-fg"
+                        >
+                          <Check className="h-4 w-4" strokeWidth={2.6} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => resolve(a.id)}
+                          aria-label="Dismiss"
+                          title="Dismiss"
+                          className="grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 border-neutral-200 text-ink/45 transition hover:border-maroon/40 hover:text-maroon"
+                        >
+                          <X className="h-4 w-4" strokeWidth={2.6} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </div>
   );
 };

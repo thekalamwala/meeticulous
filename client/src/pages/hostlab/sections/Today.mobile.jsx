@@ -4,12 +4,12 @@
 // horizontal for a phone), then where bookings came from. No heatmap on mobile.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  AlertTriangle, ArrowRight, CalendarCheck2, Check, ChevronLeft, ChevronRight, Clock, IndianRupee,
-  MessageSquare, Package, Share2, Star, UserMinus, UserPlus, Video, X,
+  AlertTriangle, ArrowRight, ChevronLeft, ChevronRight,
+  MessageSquare, Package, Share2, Star, UserPlus, Video, X,
 } from 'lucide-react';
 import { Button, cn } from '../../../components/dashboard/ui';
 import {
-  Avatar, Drawer, Panel, SourceDonut, StatusPill,
+  Avatar, Drawer, NeedsYouModal, Panel, SourceDonut, StatusPill,
   fmtTime, inr, pct, relDay, useLast,
 } from '../labUi';
 import mock from '../mockData';
@@ -123,86 +123,6 @@ const QuickAction = ({ icon: Icon, label, onClick, accent = false, badge }) => (
     <span className="text-center text-[10.5px] font-semibold leading-tight text-ink/70">{label}</span>
   </button>
 );
-
-/* ── Needs you — the production "hardest first" action queue, opened full-screen
- * from a Quick Action. Mobile has no room for it inline, so it lives behind an
- * icon and takes over the screen when tapped. ──────────────────────────────── */
-const KIND_ICON = { confirm: CalendarCheck2, unpaid: IndianRupee, lapsing: UserMinus, review: Star, gap: Clock };
-const URGENCY = {
-  now: ['Now', 'bg-error-bg text-error-fg'],
-  today: ['Today', 'bg-warning-bg text-warning-fg'],
-  this_week: ['This week', 'bg-neutral-100 text-ink/55'],
-};
-
-const NeedsYouModal = ({ open, onClose, go }) => {
-  const [done, setDone] = useState([]);
-  const items = mock.actionQueue.filter((a) => !done.includes(a.id));
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-[120] flex flex-col bg-cream">
-      <header className="flex items-center justify-between border-b-2 border-neutral-200 bg-white px-4 py-3">
-        <div>
-          <h2 className="font-display text-[16px] font-extrabold tracking-[-0.02em] text-ink">Needs you</h2>
-          <p className="text-[11px] font-semibold text-ink/50">
-            {items.length ? `${items.length} waiting · hardest first` : 'All clear'}
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close"
-          className="grid h-9 w-9 place-items-center rounded-full border-2 border-neutral-200 bg-white text-ink/55 transition hover:border-maroon/40 hover:text-maroon"
-        >
-          <X className="h-4 w-4" strokeWidth={2.4} />
-        </button>
-      </header>
-
-      <div className="flex-1 overflow-y-auto px-4 py-3">
-        {items.length === 0 ? (
-          <p className="flex items-center gap-2 pt-6 text-[13px] font-semibold text-success-fg">
-            <Check className="h-4 w-4 shrink-0" strokeWidth={2.8} /> All caught up. Nothing waiting on you.
-          </p>
-        ) : (
-          <ul className="flex flex-col gap-2.5">
-            {items.map((a) => {
-              const Icon = KIND_ICON[a.kind] || AlertTriangle;
-              const [word, cls] = URGENCY[a.urgency];
-              return (
-                <li key={a.id} className="rounded-2xl border-2 border-neutral-200 bg-white p-3">
-                  <div className="flex items-start gap-2.5">
-                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-blush text-maroon">
-                      <Icon className="h-4 w-4" strokeWidth={2.4} />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="text-[13px] font-bold leading-tight text-ink">{a.title}</span>
-                        <span className={cn('rounded-full px-1.5 py-px text-[9.5px] font-bold', cls)}>{word}</span>
-                      </div>
-                      <p className="mt-1 text-[11.5px] font-medium leading-snug text-ink/60">{a.detail}</p>
-                    </div>
-                  </div>
-                  <div className="mt-2.5 flex items-center gap-2">
-                    <Button size="sm" className="flex-1" onClick={() => { onClose(); go(a.target); }}>
-                      {a.cta} <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
-                    </Button>
-                    <button
-                      type="button"
-                      onClick={() => setDone((d) => [...d, a.id])}
-                      aria-label={`Dismiss: ${a.title}`}
-                      className="grid h-9 w-9 shrink-0 place-items-center rounded-full border-2 border-neutral-200 text-ink/35 transition hover:border-maroon/30 hover:text-maroon"
-                    >
-                      <Check className="h-4 w-4" strokeWidth={2.6} />
-                    </button>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
-    </div>
-  );
-};
 
 /* ── At a glance — illustrated tiles. The four illustrations are one 2×2 sprite
  * sliced by background-position. ────────────────────────────────────────── */
@@ -418,10 +338,10 @@ const DaySchedule = ({ go }) => {
                 <button type="button" onClick={() => setOpenId(b.id)} className="flex w-full items-center gap-2 rounded-none px-3 py-2 text-left transition hover:bg-cream">
                   <span className={cn('w-[52px] shrink-0 text-[11.5px] font-bold tabular-nums', past ? 'text-ink/35' : 'text-maroon')}>{fmtTime(b.scheduled_at)}</span>
                   <span aria-hidden="true" className={cn('h-8 w-0.5 shrink-0 rounded-full', past ? 'bg-neutral-200' : 'bg-maroon')} />
-                  <Avatar name={b.guest_name} size="h-8 w-8 text-[10px]" />
+                  <span className={cn(past && 'opacity-50')}><Avatar name={b.guest_name} size="h-8 w-8 text-[10px]" /></span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[12px] font-bold text-ink">{b.guest_name}</span>
-                    <span className="block truncate text-[11px] font-medium text-ink/55">{b.services.title} · {b.services.duration} min</span>
+                    <span className={cn('block truncate text-[12px] font-bold', past ? 'text-ink/35' : 'text-ink')}>{b.guest_name}</span>
+                    <span className={cn('block truncate text-[11px] font-medium', past ? 'text-ink/30' : 'text-ink/55')}>{b.services.title} · {b.services.duration} min</span>
                   </span>
                   {b.payment_status === 'unpaid' && b.amount > 0 && <StatusPill status="unpaid" />}
                 </button>
@@ -525,7 +445,7 @@ const Today = ({ go }) => {
         <SourceDonut rows={mock.trafficSources} valueKey="bookings" labelKey="label" stack />
       </Panel>
 
-      <NeedsYouModal open={needsOpen} onClose={() => setNeedsOpen(false)} go={go} />
+      <NeedsYouModal open={needsOpen} onClose={() => setNeedsOpen(false)} items={mock.actionQueue} go={go} />
     </div>
   );
 };

@@ -13,80 +13,54 @@
 // growing?" — nothing is here to fill the grid.
 import { useMemo, useState } from 'react';
 import {
-  AlertTriangle, ArrowRight, CalendarCheck2, CalendarX2, Check, ChevronRight, Clock,
-  IndianRupee, MessageSquare, Share2, Star, TrendingDown, TrendingUp, UserMinus, Video, X,
+  AlertTriangle, ArrowRight, CalendarCheck2, CalendarX2, ChevronRight, MessageSquare,
+  Package, Share2, Star, TrendingDown, TrendingUp, UserPlus, Video, X,
 } from 'lucide-react';
 import { Button, cn } from '../../../components/dashboard/ui';
 import {
-  Avatar, Drawer, Panel, SourceDonut, StatusPill,
+  Avatar, Drawer, NeedsYouModal, Panel, SourceDonut, StatusPill,
   fmtTime, inr, relDay, useLast,
 } from '../labUi';
 import mock from '../mockData';
 
-const KIND_ICON = { confirm: CalendarCheck2, unpaid: IndianRupee, lapsing: UserMinus, review: Star, gap: Clock };
-const URGENCY = {
-  now: ['Now', 'bg-error-bg text-error-fg'],
-  today: ['Today', 'bg-warning-bg text-warning-fg'],
-  this_week: ['This week', 'bg-neutral-100 text-ink/55'],
-};
+/* ── Quick actions — a grid of icon tiles (mirrors mobile). "Needs you" carries
+ * the waiting-count badge and opens the modal; the rest route. ─────────────── */
+const QUICK_ACTIONS = [
+  { icon: Package, label: 'Manage services', target: 'catalog' },
+  { icon: UserPlus, label: 'Add client', target: 'clients' },
+  { icon: Share2, label: 'Share booking link', target: 'grow/page' },
+  { icon: Star, label: 'View reviews', target: 'grow/proof' },
+  { icon: CalendarCheck2, label: 'Availability', target: 'schedule' },
+];
 
-/* ── The action queue. The one block that makes this page worth opening. ── */
-const ActionQueue = ({ go }) => {
-  const [done, setDone] = useState([]);
-  const open = mock.actionQueue.filter((a) => !done.includes(a.id));
+const QuickActionTile = ({ icon: Icon, label, onClick, badge }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className="group flex flex-col items-center gap-1.5 rounded-xl border-2 border-neutral-200 bg-white px-2 py-3 text-center transition hover:border-maroon/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
+  >
+    <span className="relative grid h-11 w-11 place-items-center rounded-full border-2 border-neutral-200 bg-blush text-maroon transition group-hover:border-maroon/40">
+      <Icon className="h-5 w-5" strokeWidth={2.2} />
+      {badge ? (
+        <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full border-2 border-white bg-rose text-[10px] font-extrabold text-white">
+          {badge}
+        </span>
+      ) : null}
+    </span>
+    <span className="text-[11px] font-semibold leading-tight text-ink/70">{label}</span>
+  </button>
+);
 
-  if (open.length === 0) {
-    return (
-      <Panel title="Needs you">
-        <p className="flex items-center gap-2 text-[12px] font-semibold text-success-fg">
-          <Check className="h-4 w-4 shrink-0" strokeWidth={2.8} />
-          All clear. Next booking {relDay(mock.bookings[0].scheduled_at).toLowerCase()} at {fmtTime(mock.bookings[0].scheduled_at)}.
-        </p>
-      </Panel>
-    );
-  }
-
-  return (
-    <Panel title="Needs you" subtitle={`${open.length} waiting · hardest first`} flush>
-      <ul className="divide-y-2 divide-neutral-200">
-        {open.map((a) => {
-          const Icon = KIND_ICON[a.kind] || AlertTriangle;
-          const [word, cls] = URGENCY[a.urgency];
-          return (
-            <li key={a.id} className="flex items-center gap-2 px-3 py-2">
-              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-xs bg-blush text-maroon">
-                <Icon className="h-3.5 w-3.5" strokeWidth={2.4} />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="flex flex-wrap items-center gap-1.5">
-                  <span className="text-[12px] font-bold leading-tight text-ink">{a.title}</span>
-                  <span className={cn('rounded-full px-1.5 py-px text-[9.5px] font-bold', cls)}>{word}</span>
-                </span>
-                <span className="mt-0.5 block truncate text-[11px] font-medium text-ink/55">{a.detail}</span>
-              </span>
-              <button
-                type="button"
-                onClick={() => go(a.target)}
-                className="inline-flex h-7 shrink-0 items-center rounded-sm border-2 border-maroon px-2 text-[11px] font-bold text-maroon transition hover:bg-pink-100"
-              >
-                {a.cta}
-              </button>
-              <button
-                type="button"
-                onClick={() => setDone((d) => [...d, a.id])}
-                aria-label={`Dismiss: ${a.title}`}
-                title="Dismiss"
-                className="grid h-7 w-7 shrink-0 place-items-center rounded-xs text-ink/30 transition hover:bg-neutral-100 hover:text-ink/70"
-              >
-                <Check className="h-3.5 w-3.5" strokeWidth={2.6} />
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </Panel>
-  );
-};
+const QuickActions = ({ go, onNeedsYou }) => (
+  <Panel title="Quick actions" subtitle="Jump to what you do most">
+    <div className="grid grid-cols-3 gap-2">
+      <QuickActionTile icon={AlertTriangle} label="Needs you" badge={mock.actionQueue.length} onClick={onNeedsYou} />
+      {QUICK_ACTIONS.map((q) => (
+        <QuickActionTile key={q.label} icon={q.icon} label={q.label} onClick={() => go(q.target)} />
+      ))}
+    </div>
+  </Panel>
+);
 
 /* ── Today's timeline — the live dashboard has no "today" at all ───────── */
 const DayTimeline = ({ go }) => {
@@ -143,10 +117,10 @@ const DayTimeline = ({ go }) => {
                       {fmtTime(b.scheduled_at)}
                     </span>
                     <span aria-hidden="true" className={cn('h-7 w-0.5 shrink-0 rounded-full', past ? 'bg-neutral-200' : 'bg-maroon')} />
-                    <Avatar name={b.guest_name} size="h-7 w-7 text-[10px]" />
+                    <span className={cn(past && 'opacity-50')}><Avatar name={b.guest_name} size="h-7 w-7 text-[10px]" /></span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[12px] font-bold text-ink">{b.guest_name}</span>
-                      <span className="block truncate text-[11px] font-medium text-ink/55">{b.services.title} · {b.services.duration} min</span>
+                      <span className={cn('block truncate text-[12px] font-bold', past ? 'text-ink/35' : 'text-ink')}>{b.guest_name}</span>
+                      <span className={cn('block truncate text-[11px] font-medium', past ? 'text-ink/30' : 'text-ink/55')}>{b.services.title} · {b.services.duration} min</span>
                     </span>
                     <span className="hidden shrink-0 items-center gap-1 sm:flex">
                       <StatusPill status={b.status} />
@@ -328,6 +302,7 @@ const Today = ({ go }) => {
   const upcoming = mock.bookings.filter((b) => new Date(b.scheduled_at) > new Date() && b.status !== 'cancelled').length;
   const viewsDelta = Math.round(((mock.funnel.views - mock.funnel.views_prev) / mock.funnel.views_prev) * 100);
   const held = mock.payouts.clearing + mock.payouts.pending_completion;
+  const [needsOpen, setNeedsOpen] = useState(false);
 
   return (
     <div className="flex flex-col gap-2.5">
@@ -341,39 +316,41 @@ const Today = ({ go }) => {
         <KpiCard img="/brand/host-lab/kpi-views.png" label="Page views" value={mock.funnel.views.toLocaleString('en-IN')} delta={viewsDelta} deltaLabel="vs last 30 days" onClick={() => go('intelligence/audience')} />
       </div>
 
-      <ActionQueue go={go} />
-
-      <div className="grid gap-2.5 lg:grid-cols-[1.45fr_1fr]">
+      {/* 33 / 66 — quick actions (with Needs you) beside the day. */}
+      <div className="grid gap-2.5 lg:grid-cols-[1fr_2fr]">
+        <QuickActions go={go} onNeedsYou={() => setNeedsOpen(true)} />
         <DayTimeline go={go} />
-
-        <div className="flex min-w-0 flex-col gap-2.5">
-          <Panel
-            title="Where bookings came from"
-            subtitle="Last 30 days"
-            action={(
-              <Button size="sm" variant="ghost" onClick={() => go('intelligence/audience')}>
-                Details <ArrowRight className="h-3 w-3" strokeWidth={2.6} />
-              </Button>
-            )}
-          >
-            <SourceDonut rows={mock.trafficSources} valueKey="bookings" labelKey="label" />
-          </Panel>
-
-          <Panel title="Latest activity" flush>
-            <ul className="divide-y-2 divide-neutral-200">
-              {mock.activity.slice(0, 5).map((a) => (
-                <li key={a.id} className="flex items-start gap-2 px-3 py-1.5">
-                  <span className={cn('mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full', a.kind === 'alert' ? 'bg-error-fg' : a.kind === 'money' ? 'bg-success-fg' : 'bg-pink')} />
-                  <span className="min-w-0">
-                    <span className="block text-[11.5px] font-medium leading-snug text-ink/80">{a.text}</span>
-                    <span className="mt-px block text-[10px] font-semibold text-ink/40">{relDay(a.at)} · {fmtTime(a.at)}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </Panel>
-        </div>
       </div>
+
+      <div className="grid gap-2.5 lg:grid-cols-2">
+        <Panel
+          title="Where bookings came from"
+          subtitle="Last 30 days"
+          action={(
+            <Button size="sm" variant="ghost" onClick={() => go('intelligence/audience')}>
+              Details <ArrowRight className="h-3 w-3" strokeWidth={2.6} />
+            </Button>
+          )}
+        >
+          <SourceDonut rows={mock.trafficSources} valueKey="bookings" labelKey="label" />
+        </Panel>
+
+        <Panel title="Latest activity" flush>
+          <ul className="divide-y-2 divide-neutral-200">
+            {mock.activity.slice(0, 5).map((a) => (
+              <li key={a.id} className="flex items-start gap-2 px-3 py-1.5">
+                <span className={cn('mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full', a.kind === 'alert' ? 'bg-error-fg' : a.kind === 'money' ? 'bg-success-fg' : 'bg-pink')} />
+                <span className="min-w-0">
+                  <span className="block text-[11.5px] font-medium leading-snug text-ink/80">{a.text}</span>
+                  <span className="mt-px block text-[10px] font-semibold text-ink/40">{relDay(a.at)} · {fmtTime(a.at)}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      </div>
+
+      <NeedsYouModal open={needsOpen} onClose={() => setNeedsOpen(false)} items={mock.actionQueue} go={go} />
     </div>
   );
 };
