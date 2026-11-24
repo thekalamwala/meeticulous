@@ -683,9 +683,6 @@ const Calendars = () => {
         </ul>
       </Surface>
 
-      <p className="mt-2.5 flex items-center gap-1.5 px-0.5 text-[10.5px] font-medium text-ink/40">
-        <Lock className="h-3.5 w-3.5 shrink-0" strokeWidth={2.2} /> Only busy/free times are read — never event details.
-      </p>
     </div>
   );
 };
