@@ -67,7 +67,7 @@ const Hours = ({ schedule, setSchedule, dirty }) => {
   // inside 40px. The button and the stat moved up to that heading.
   return (
     <Panel flush>
-      <ul className="divide-y-2 divide-neutral-200">
+      <ul className="divide-y divide-neutral-200/60">
         {DAYS.map(([key, label]) => {
           const slots = schedule[key];
           const open = slots.length > 0;
@@ -169,7 +169,7 @@ const Hours = ({ schedule, setSchedule, dirty }) => {
         })}
       </ul>
       {dirty && (
-        <div className="flex items-center gap-2 border-t-2 border-neutral-200 bg-marigold-100 px-2.5 py-1.5">
+        <div className="flex items-center gap-2 border-t border-neutral-200/60 bg-marigold-100 px-2.5 py-1.5">
           <span className="text-[11px] font-bold text-marigold-800">Unsaved changes</span>
           <Button size="sm" className="ml-auto" onClick={() => toast.success('Hours saved')}>Save hours</Button>
         </div>
@@ -258,7 +258,7 @@ const Dates = ({ overrides, setOverrides, blocked, setBlocked, adding, setAdding
   return (
     <Panel flush>
       {adding && (
-        <div className="border-b-2 border-neutral-200 bg-cream p-2.5">
+        <div className="border-b border-neutral-200/60 bg-cream p-2.5">
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             <Field label="Date">
               <LabInput type="date" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
@@ -302,7 +302,7 @@ const Dates = ({ overrides, setOverrides, blocked, setBlocked, adding, setAdding
           <p className="max-w-sm text-[11px] font-medium text-ink/55">Add a date when you are away, or when you work different hours than usual.</p>
         </div>
       ) : (
-        <ul className="divide-y-2 divide-neutral-200">
+        <ul className="divide-y divide-neutral-200/60">
           {overrides.map((o) => (
             <li key={o.date} className="flex items-center gap-2 px-2.5 py-1.5">
               <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-marigold-100 text-marigold-800">
@@ -354,7 +354,7 @@ const Calendars = () => {
   const [cals, setCals] = useState(mock.availability.calendars);
   return (
     <Panel flush>
-      <ul className="divide-y-2 divide-neutral-200">
+      <ul className="divide-y divide-neutral-200/60">
         {cals.map((c) => (
           <li key={c.id} className="flex flex-wrap items-center gap-2 px-2.5 py-2">
             <span className={cn('grid h-8 w-8 shrink-0 place-items-center rounded-lg', c.status === 'connected' ? 'bg-success-bg text-success-fg' : 'bg-neutral-100 text-ink/45')}>
@@ -381,7 +381,7 @@ const Calendars = () => {
           </li>
         ))}
       </ul>
-      <div className="flex items-start gap-1.5 border-t-2 border-neutral-200 bg-cream p-2.5">
+      <div className="flex items-start gap-1.5 border-t border-neutral-200/60 bg-cream p-2.5">
         <Lock className="mt-0.5 h-4 w-4 shrink-0 text-ink/40" strokeWidth={2.2} />
         <p className="text-[11px] font-medium text-ink/60">
           Meeticulous reads only the busy/free times on a connected calendar. It never reads event titles, guests or notes.
@@ -446,7 +446,7 @@ const Preview = ({ schedule, rules }) => {
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {items.map((s) => (
-                  <span key={s.key} className="rounded-lg border-2 border-marigold-300 bg-marigold-100 px-2.5 py-1 text-[10.5px] font-bold text-marigold-800">
+                  <span key={s.key} className="rounded-lg border border-marigold-200 bg-marigold-100 px-2.5 py-1 text-[10.5px] font-bold text-marigold-800">
                     {s.at.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true }).replace(' ', '')}
                   </span>
                 ))}
