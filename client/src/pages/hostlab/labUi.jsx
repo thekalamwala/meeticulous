@@ -452,7 +452,7 @@ export const CommandPalette = ({ open, onClose, items, onPick }) => {
                   onClick={() => { onPick(it); onClose(); }}
                   className={cn('flex w-full items-center gap-2 px-2.5 py-1.5 text-left transition', i === sel ? 'bg-blush' : 'hover:bg-cream')}
                 >
-                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-neutral-100 text-[10px] font-bold text-maroon">
+                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-[6px] bg-neutral-100 text-[10px] font-bold text-maroon">
                     {it.group.slice(0, 2).toUpperCase()}
                   </span>
                   <span className="min-w-0 flex-1">
