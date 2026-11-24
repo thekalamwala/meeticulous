@@ -137,7 +137,7 @@ const DayTimeline = ({ go }) => {
                   <button
                     type="button"
                     onClick={() => setOpenId(b.id)}
-                    className="flex w-full items-center gap-2 px-3 py-1.5 text-left transition hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-rose"
+                    className="flex w-full items-center gap-2 rounded-none px-3 py-1.5 text-left transition hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-rose"
                   >
                     <span className={cn('w-[46px] shrink-0 text-[11.5px] font-bold tabular-nums', past ? 'text-ink/35' : 'text-maroon')}>
                       {fmtTime(b.scheduled_at)}

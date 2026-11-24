@@ -415,7 +415,7 @@ const DaySchedule = ({ go }) => {
             const past = new Date(b.scheduled_at) < new Date();
             return (
               <li key={b.id}>
-                <button type="button" onClick={() => setOpenId(b.id)} className="flex w-full items-center gap-2 px-3 py-2 text-left transition hover:bg-cream">
+                <button type="button" onClick={() => setOpenId(b.id)} className="flex w-full items-center gap-2 rounded-none px-3 py-2 text-left transition hover:bg-cream">
                   <span className={cn('w-[52px] shrink-0 text-[11.5px] font-bold tabular-nums', past ? 'text-ink/35' : 'text-maroon')}>{fmtTime(b.scheduled_at)}</span>
                   <span aria-hidden="true" className={cn('h-8 w-0.5 shrink-0 rounded-full', past ? 'bg-neutral-200' : 'bg-maroon')} />
                   <Avatar name={b.guest_name} size="h-8 w-8 text-[10px]" />
