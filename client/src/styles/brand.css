@@ -235,6 +235,7 @@
 .mt-dd--sm .mt-dd__trigger{height:var(--control-s);font-size:var(--text-body-s)}
 .mt-dd--inline{display:inline-block;width:auto}
 .mt-dd--inline .mt-dd__trigger{width:auto;gap:var(--space-2)}
+.mt-dd--invalid .mt-dd__trigger{border-color:var(--danger)}
 .mt-dd__panel{left:0;top:calc(100% + var(--space-3));min-width:100%;width:max-content;max-width:min(360px,90vw)}
 .mt-dd__list{display:flex;flex-direction:column;gap:var(--space-1);max-height:264px;overflow-y:auto}
 .mt-dd__item{width:100%}
