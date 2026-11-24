@@ -7,11 +7,12 @@
 // completed bookings, KYC) — no invented tasks. Revenue sparkline + delta are
 // computed from the host's own paid bookings. "Where bookings came from" shows
 // only when bookings actually carry a source; nothing is faked.
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  AlertTriangle, ArrowRight, CalendarCheck2, CalendarX2, Check, IndianRupee,
-  MessageSquare, Share2, ShieldCheck, Video,
+  AlertTriangle, ArrowRight, CalendarCheck2, CalendarX2, Check, ChevronLeft,
+  ChevronRight, IndianRupee, MessageSquare, Package, Share2, ShieldCheck, Star,
+  UserPlus, Video,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -65,6 +66,170 @@ const URGENCY = { now: ['Now', 'bg-error-bg text-error-fg'], today: ['Today', 'b
 
 const waLink = (phone) => { const d = (phone || '').replace(/\D/g, ''); return d ? `https://wa.me/${d}` : null; };
 
+/* ── Mobile Today — the Host Lab mobile redesign, on real data ──────────────
+ * Graduated from pages/hostlab/sections/Today.mobile: quick actions, a glance
+ * strip, a day-picker + schedule, then where bookings came from. The lab's
+ * weekly-availability lollipop, conversion/repeat-rate glances and per-source
+ * view counts are dropped here — the real dashboard has no source for them yet
+ * and this page never fakes a number (same rule as the desktop tree). The queue
+ * ("Needs you") is kept, not in the lab mock, because it is the real decision
+ * surface and dropping it on mobile would hide KYC / confirm / unpaid actions.
+ * Receives already-loaded data from TodayV2 so there is one fetch, two layouts.
+ * -------------------------------------------------------------------------- */
+const QUICK_ACTIONS = [
+  { icon: Package, label: 'Manage services', to: '/dashboard/catalog', accent: true },
+  { icon: UserPlus, label: 'Add client', to: '/dashboard/clients' },
+  { icon: Share2, label: 'Share page', to: '/dashboard/profile' },
+  { icon: Star, label: 'Reviews', to: '/dashboard/testimonials' },
+];
+
+const TodayMobile = ({ user, go, balance, bookings, views, queue, setDismissed, thisMonth, delta, series, upcoming, sources, money, held, setOpenId, loading }) => {
+  const [sel, setSel] = useState(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; });
+  const stripRef = useRef(null);
+  const base = useMemo(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }, []);
+  const strip = useMemo(() => Array.from({ length: 14 }, (_, i) => new Date(base.getTime() + (i - 2) * 86_400_000)), [base]);
+  const nudge = (dir) => stripRef.current?.scrollBy({ left: dir * 180, behavior: 'smooth' });
+  const sameDay = (a, b) => a.toDateString() === b.toDateString();
+
+  const dayItems = useMemo(() => bookings
+    .filter((b) => b.scheduled_at && sameDay(new Date(b.scheduled_at), sel) && lower(b.status) !== 'cancelled')
+    .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at)), [bookings, sel]);
+
+  return (
+    <div className="flex flex-col gap-3">
+      <header>
+        <h1 className="mb-0 font-display text-[20px] font-extrabold tracking-[-0.035em] text-maroon">Today</h1>
+        <p className="mt-0.5 text-[12px] font-medium text-ink/55">
+          {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}{user?.city ? ` · ${user.city}` : ''}
+          {queue.length > 0 && <span className="text-warning-fg"> · {queue.length} waiting on you</span>}
+        </p>
+      </header>
+
+      {/* Quick actions */}
+      <section>
+        <h2 className="mb-2 font-display text-[12.5px] font-bold tracking-[-0.02em] text-ink">Quick actions</h2>
+        <div className="dash-noscrollbar flex gap-2 overflow-x-auto pb-1">
+          {QUICK_ACTIONS.map((a) => (
+            <button key={a.label} type="button" onClick={() => go(a.to)} className="group flex w-[74px] shrink-0 flex-col items-center gap-1.5 focus-visible:outline-none">
+              <span className={cn('grid h-14 w-14 place-items-center rounded-full border-2 transition group-hover:-translate-y-0.5',
+                a.accent ? 'border-maroon bg-maroon text-white hover:bg-maroon-dark' : 'border-neutral-200 bg-blush text-maroon hover:border-maroon/40')}>
+                <a.icon className="h-5 w-5" strokeWidth={2.2} />
+              </span>
+              <span className="text-center text-[10.5px] font-semibold leading-tight text-ink/70">{a.label}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* At a glance — real tiles (the lab's illustrated sprite is dropped) */}
+      {loading ? (
+        <div className="grid grid-cols-2 gap-2">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-24 rounded-md" />)}</div>
+      ) : (
+        <div className="grid grid-cols-2 gap-2">
+          <Tile accent label="Ready to withdraw" value={money(balance?.available)} hint={`${money(held)} clearing or held`} onClick={() => go('/dashboard/payments/payouts')} />
+          <Tile label="This month" value={inr(thisMonth, { compact: true })} delta={delta ?? undefined} deltaLabel="vs last month"
+            spark={series.some((s) => s.revenue > 0) ? <Sparkline values={series.map((s) => s.revenue)} /> : undefined} onClick={() => go('/dashboard/earnings')} />
+          <Tile label="Upcoming" value={upcoming} hint="Not yet past" onClick={() => go('/dashboard/bookings')} />
+          <Tile label="Page views" value={views == null ? '—' : views.toLocaleString('en-IN')} hint="Public profile" onClick={() => go(user?.username ? `/${user.username}` : '/dashboard/profile')} />
+        </div>
+      )}
+
+      {/* Needs you — kept from the real page; hardest first */}
+      {queue.length > 0 && (
+        <Panel title="Needs you" subtitle={`${queue.length} waiting · hardest first`} flush>
+          <ul className="divide-y-2 divide-neutral-200">
+            {queue.map((a) => {
+              const Icon = KIND_ICON[a.kind] || AlertTriangle;
+              const [word, cls] = URGENCY[a.urgency];
+              return (
+                <li key={a.id} className="flex items-center gap-2 px-3 py-2">
+                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-xs bg-blush text-maroon"><Icon className="h-3.5 w-3.5" strokeWidth={2.4} /></span>
+                  <span className="min-w-0 flex-1">
+                    <span className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-[12px] font-bold leading-tight text-ink">{a.title}</span>
+                      <span className={cn('rounded-full px-1.5 py-px text-[9.5px] font-bold', cls)}>{word}</span>
+                    </span>
+                    <span className="mt-0.5 block truncate text-[11px] font-medium text-ink/55">{a.detail}</span>
+                  </span>
+                  <button type="button" onClick={() => go(a.to)} className="inline-flex h-7 shrink-0 items-center rounded-sm border-2 border-maroon px-2 text-[11px] font-bold text-maroon transition hover:bg-blush">{a.cta}</button>
+                  <button type="button" onClick={() => setDismissed((d) => [...d, a.id])} aria-label={`Dismiss: ${a.title}`} title="Dismiss"
+                    className="grid h-7 w-7 shrink-0 place-items-center rounded-xs text-ink/30 transition hover:bg-neutral-100 hover:text-ink/70"><Check className="h-3.5 w-3.5" strokeWidth={2.6} /></button>
+                </li>
+              );
+            })}
+          </ul>
+        </Panel>
+      )}
+
+      {/* Day picker + schedule */}
+      <div className="flex flex-col gap-2.5">
+        <div className="flex items-center gap-1.5">
+          <button type="button" aria-label="Earlier days" onClick={() => nudge(-1)}
+            className="grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 border-neutral-200 bg-white text-ink/55 transition hover:border-maroon/40 hover:text-maroon">
+            <ChevronLeft className="h-4 w-4" strokeWidth={2.4} />
+          </button>
+          <div ref={stripRef} className="dash-noscrollbar flex flex-1 gap-2 overflow-x-auto scroll-smooth">
+            {strip.map((d) => {
+              const on = sameDay(d, sel);
+              const today = sameDay(d, base);
+              return (
+                <button key={d.toISOString()} type="button" onClick={() => setSel(d)} aria-current={on ? 'date' : undefined}
+                  className={cn('flex min-w-[62px] shrink-0 flex-col items-center gap-0.5 rounded-xl border-2 px-2.5 py-2 transition',
+                    on ? 'border-maroon bg-blush text-maroon' : 'border-neutral-200 bg-white text-ink/70 hover:border-maroon/40')}>
+                  <span className={cn('text-[10.5px] font-semibold', on ? 'text-maroon' : 'text-ink/45')}>
+                    {today ? 'Today' : d.toLocaleDateString('en-IN', { weekday: 'short' })}
+                  </span>
+                  <span className="whitespace-nowrap font-display text-[13px] font-extrabold leading-none tracking-[-0.02em]">
+                    {d.getDate()} {d.toLocaleDateString('en-IN', { month: 'short' })}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          <button type="button" aria-label="Later days" onClick={() => nudge(1)}
+            className="grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 border-neutral-200 bg-white text-ink/55 transition hover:border-maroon/40 hover:text-maroon">
+            <ChevronRight className="h-4 w-4" strokeWidth={2.4} />
+          </button>
+        </div>
+
+        <Panel title={sel.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+          subtitle={dayItems.length ? `${dayItems.length} ${dayItems.length === 1 ? 'booking' : 'bookings'}` : 'Nothing booked'} flush>
+          {dayItems.length === 0 ? (
+            <p className="px-3 py-8 text-center text-[11.5px] font-medium text-ink/50">A clear day.</p>
+          ) : (
+            <ul className="divide-y-2 divide-neutral-200">
+              {dayItems.map((b) => {
+                const past = new Date(b.scheduled_at) < new Date();
+                return (
+                  <li key={b.id}>
+                    <button type="button" onClick={() => setOpenId(b.id)} className="flex w-full items-center gap-2 px-3 py-2 text-left transition hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-rose">
+                      <span className={cn('w-[52px] shrink-0 text-[11.5px] font-bold tabular-nums', past ? 'text-ink/35' : 'text-maroon')}>{fmtTime(b.scheduled_at)}</span>
+                      <span aria-hidden="true" className={cn('h-8 w-0.5 shrink-0 rounded-full', past ? 'bg-neutral-200' : 'bg-maroon')} />
+                      <Avatar name={b.guest_name} size="h-8 w-8 text-[10px]" />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-[12px] font-bold text-ink">{b.guest_name || 'Guest'}</span>
+                        <span className="block truncate text-[11px] font-medium text-ink/55">{b.services?.title || 'Booking'}{b.services?.duration ? ` · ${b.services.duration} min` : ''}</span>
+                      </span>
+                      {lower(b.payment_status) === 'unpaid' && amountOf(b) > 0 && <StatusPill status="unpaid" />}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </Panel>
+      </div>
+
+      {/* Where bookings came from — real sources only (counts, no faked views) */}
+      {sources.length > 0 && (
+        <Panel title="Where bookings came from" subtitle="By bookings">
+          <RankedBars rows={sources} valueKey="bookingsCount" labelKey="label" format={(v) => `${v} booked`} />
+        </Panel>
+      )}
+    </div>
+  );
+};
+
 const TodayV2 = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -105,7 +270,9 @@ const TodayV2 = () => {
       .filter((b) => b.scheduled_at && new Date(b.scheduled_at).toDateString() === t && lower(b.status) !== 'cancelled')
       .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));
   }, [bookings]);
-  const openBooking = useLast(todays.find((b) => b.id === openId) || null);
+  // Search all bookings, not just today's — the mobile day-picker opens bookings
+  // on any selected day through the same drawer.
+  const openBooking = useLast(bookings.find((b) => b.id === openId) || null);
 
   const sources = useMemo(() => {
     const by = {};
@@ -131,7 +298,18 @@ const TodayV2 = () => {
   }
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <>
+      {/* Mobile: the graduated Host Lab redesign. Desktop: the existing layout.
+          One data load above, two layouts; the booking Drawer below is shared. */}
+      <div className="lg:hidden">
+        <TodayMobile
+          user={user} go={go} balance={balance} bookings={bookings} views={views}
+          queue={queue} setDismissed={setDismissed} thisMonth={thisMonth} delta={delta}
+          series={series} upcoming={upcoming} sources={sources} money={money} held={held}
+          setOpenId={setOpenId} loading={status === 'loading'}
+        />
+      </div>
+      <div className="hidden flex-col gap-2.5 lg:flex">
       <PageHeading
         title="Today"
         sub={(
@@ -257,6 +435,7 @@ const TodayV2 = () => {
           </Panel>
         </div>
       </div>
+      </div>
 
       <Drawer open={!!openId && !!openBooking} onClose={() => setOpenId(null)} title={openBooking?.guest_name || ''} subtitle={openBooking?.services?.title || ''}>
         {openBooking && (
@@ -284,7 +463,7 @@ const TodayV2 = () => {
           </div>
         )}
       </Drawer>
-    </div>
+    </>
   );
 };
 

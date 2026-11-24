@@ -244,7 +244,7 @@ const SidebarBody = ({ sections, plan, badges, activeTo, onNavigate, collapsed =
 
 /* Topbar — real notifications + profile, no mock search. */
 const TopbarV2 = ({ onOpenNav, user, plan, planStyle, initial, logout }) => (
-  <header className="sticky top-0 z-30 flex h-11 shrink-0 items-center gap-1.5 border-b-2 border-neutral-200 bg-cream/95 px-2.5 backdrop-blur sm:px-4">
+  <header className="sticky top-0 z-30 flex h-11 shrink-0 items-center gap-1.5 bg-cream/80 px-2.5 backdrop-blur-md shadow-[0_1px_16px_-10px_rgba(43,10,20,0.25)] sm:px-4">
     <Link to="/dashboard" title="Meeticulous — Home" aria-label="Meeticulous — Home" className="lg:hidden">
       <img src="/brand/meeticulous-icon.svg" alt="Meeticulous" className="h-7 w-7 object-contain" />
     </Link>
