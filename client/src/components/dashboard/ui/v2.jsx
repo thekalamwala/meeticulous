@@ -201,9 +201,9 @@ const STATUS_WORD = {
   expired: ['Expired', 'bg-error-bg text-error-fg'],
   used_up: ['Used up', 'bg-error-bg text-error-fg'],
 };
-export const StatusPill = ({ status, children }) => {
+export const StatusPill = ({ status, children, icon: Icon }) => {
   const [word, cls] = STATUS_WORD[status] || [children || status, 'bg-neutral-100 text-ink/55'];
-  return <span className={cn('inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] font-bold', cls)}>{children || word}</span>;
+  return <span className={cn('inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold', cls)}>{Icon && <Icon className="h-3 w-3" strokeWidth={2.6} />}{children || word}</span>;
 };
 
 /* ── Toggle ────────────────────────────────────────────────────────────── */

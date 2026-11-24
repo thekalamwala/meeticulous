@@ -7,10 +7,16 @@ import { cn } from './cn';
 function useLockBody(open) {
   useEffect(() => {
     if (!open) return undefined;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    const { body } = document;
+    const prevOverflow = body.style.overflow;
+    const prevPad = body.style.paddingRight;
+    // Pad by the scrollbar width so hiding it doesn't shift the page right.
+    const sbw = window.innerWidth - document.documentElement.clientWidth;
+    body.style.overflow = 'hidden';
+    if (sbw > 0) body.style.paddingRight = `${sbw}px`;
     return () => {
-      document.body.style.overflow = prev;
+      body.style.overflow = prevOverflow;
+      body.style.paddingRight = prevPad;
     };
   }, [open]);
 }
