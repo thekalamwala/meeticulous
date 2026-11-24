@@ -60,36 +60,41 @@ const useDragScroll = () => {
   return ref;
 };
 
-/* ── Pro promo banner — the maroon card from desktop, sized for a phone: no
- * illustration, the ee thread tilted and faint behind, one headline, two CTAs,
- * dismissible. Tokens only, no gradient. ────────────────────────────────── */
+/* ── Pro promo banner — mobile only. A tall photo card (reference layout): the
+ * lifestyle image sits behind a maroon gradient, copy anchored to the bottom.
+ * This is deliberately a different shape from the slim desktop banner. ────── */
+const PROMO_SCRIM = {
+  backgroundImage:
+    'linear-gradient(0deg, #710d2d 4%, rgba(119,13,44,0.9) 26%, transparent 82%), linear-gradient(90deg, rgba(100,11,43,0.85), transparent 72%)',
+};
 const PromoBanner = ({ go }) => {
   const [dismissed, setDismissed] = useState(false);
   if (dismissed) return null;
   return (
-    <div className="relative isolate overflow-hidden rounded-2xl bg-maroon px-4 py-4 text-white">
+    <div className="relative isolate flex min-h-[256px] flex-col justify-end overflow-hidden rounded-2xl px-4 py-4 text-white">
       <img
-        aria-hidden="true"
-        src="/brand/ds/02-ee/mt-ee-thread-white.svg"
+        src="/brand/host-lab/promo-bg.jpg"
         alt=""
-        className="pointer-events-none absolute right-0 top-1/2 h-[170%] w-auto -translate-y-1/2 translate-x-[16%] -rotate-[18deg] opacity-[0.08]"
+        aria-hidden="true"
+        className="absolute inset-0 -z-10 h-full w-full object-cover object-right"
       />
-      <div className="relative pr-6">
-        <h2 className="font-display text-[22px] font-extrabold leading-[1.05] tracking-[-0.04em] text-white">
+      <div aria-hidden="true" className="absolute inset-0 -z-10" style={PROMO_SCRIM} />
+      <div className="relative">
+        <h2 className="max-w-[11ch] font-display text-[26px] font-extrabold leading-[1.05] tracking-[-0.04em] text-white">
           Smarter tools. <span className="text-pink">Done easier.</span>
         </h2>
-        <p className="mt-1.5 text-[11.5px] font-medium leading-snug text-white/70">
+        <p className="mt-1.5 max-w-[26ch] text-[12px] font-medium leading-snug text-white/80">
           Advanced analytics, priority support and custom branding — do more with every booking.
         </p>
-        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div className="mt-3.5 flex flex-wrap items-center gap-x-4 gap-y-2">
           <button
             type="button"
             onClick={() => go('settings/plan')}
-            className="inline-flex items-center gap-1.5 rounded-full bg-pink px-4 py-2 text-[12px] font-bold text-maroon-dark transition hover:bg-white focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
+            className="inline-flex items-center gap-1.5 rounded-full bg-cream px-4 py-2 text-[12px] font-bold text-maroon-dark transition hover:bg-white focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
           >
             Start free trial <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
           </button>
-          <button type="button" onClick={() => go('settings/plan')} className="inline-flex items-center gap-1 text-[12px] font-bold text-white/85 transition hover:text-white">
+          <button type="button" onClick={() => go('settings/plan')} className="inline-flex items-center gap-1 text-[12px] font-bold text-white/90 transition hover:text-white">
             See what&apos;s included <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
           </button>
         </div>
@@ -98,7 +103,7 @@ const PromoBanner = ({ go }) => {
         type="button"
         onClick={() => setDismissed(true)}
         aria-label="Dismiss"
-        className="absolute right-2.5 top-2.5 grid h-6 w-6 place-items-center rounded-full text-white/70 transition hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
+        className="absolute right-2.5 top-2.5 grid h-7 w-7 place-items-center rounded-full bg-black/20 text-white/80 transition hover:bg-black/35 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
       >
         <X className="h-4 w-4" strokeWidth={2.4} />
       </button>
