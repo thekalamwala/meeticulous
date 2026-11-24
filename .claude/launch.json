@@ -13,6 +13,19 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--prefix", "server"],
       "port": 5000
+    },
+    {
+      "name": "booking-funnel",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "C:/Users/shubh/OneDrive/Documents/Claude/Projects/mt-wt-booking-funnel/client", "--", "--port", "5176"],
+      "port": 5176,
+      "autoPort": true
+    },
+    {
+      "name": "booking-server",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "C:/Users/shubh/OneDrive/Documents/Claude/Projects/mt-wt-booking-funnel/server"],
+      "port": 5000
     }
   ]
 }
