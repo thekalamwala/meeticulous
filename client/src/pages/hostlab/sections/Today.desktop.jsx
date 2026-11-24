@@ -86,11 +86,6 @@ const DayTimeline = ({ go }) => {
         subtitle={todays.length
           ? `${todays.length} bookings · ${Math.floor(totalMin / 60)}h ${totalMin % 60}m · ${inr(money)} collected`
           : 'Nothing booked today'}
-        action={(
-          <Button size="sm" variant="ghost" onClick={() => go('bookings/week')}>
-            Week <ArrowRight className="h-3 w-3" strokeWidth={2.6} />
-          </Button>
-        )}
         flush
       >
         {todays.length === 0 ? (
@@ -132,6 +127,13 @@ const DayTimeline = ({ go }) => {
             })}
           </ul>
         )}
+        <button
+          type="button"
+          onClick={() => go('bookings/week')}
+          className="flex w-full items-center justify-center gap-1 border-t border-neutral-200/70 px-3 py-2.5 text-[11.5px] font-bold text-maroon transition hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-rose"
+        >
+          View full week <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
+        </button>
       </Panel>
 
       <Drawer
