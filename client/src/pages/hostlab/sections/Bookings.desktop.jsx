@@ -10,14 +10,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   ArrowDownUp, CalendarDays, CalendarX2, Check, Copy, Download,
-  CalendarRange, List, MessageSquare, Plus, RotateCcw, Trash2, UserX, Video, X,
+  CalendarRange, List, Plus, RotateCcw, Trash2, UserX, X,
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Button, cn } from '../../../components/dashboard/ui';
 import {
   Avatar, LabInput as Input, LabSelect as Select,
-  Drawer, Panel, StatusPill, fmtDayFull, fmtTime, inr, relDay, useLast, useSubPage,
+  Drawer, MeetIcon, Panel, StatusPill, WhatsAppIcon, fmtDayFull, fmtTime, inr, relDay, useLast, useSubPage,
 } from '../labUi';
 import { CheckBox, Filter, FilterBar, ViewSwitch } from '../filters';
 import mock from '../mockData';
@@ -161,8 +161,8 @@ const BookingDrawer = ({ open, booking, onClose, onAction }) => {
         </div>
 
         <div className="flex flex-wrap gap-1.5 border-t-2 border-neutral-200 pt-2.5">
-          <Button size="sm" variant="outline"><Video className="h-4 w-4" strokeWidth={2.4} /> Join call</Button>
-          <Button size="sm" variant="outline"><MessageSquare className="h-4 w-4" strokeWidth={2.4} /> WhatsApp</Button>
+          <Button size="sm" variant="outline"><MeetIcon className="h-4 w-4" /> Join call</Button>
+          <Button size="sm" variant="outline"><WhatsAppIcon className="h-4 w-4" /> WhatsApp</Button>
           <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard?.writeText(booking.ref); toast.success(`${booking.ref} copied`); }}>
             <Copy className="h-4 w-4" strokeWidth={2.4} /> Copy ref
           </Button>

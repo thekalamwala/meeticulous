@@ -5,11 +5,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle, ArrowRight, ChevronLeft, ChevronRight,
-  MessageSquare, Package, Share2, Star, UserPlus, Video, X,
+  Package, Share2, Star, UserPlus, X,
 } from 'lucide-react';
 import { Button, cn } from '../../../components/dashboard/ui';
 import {
-  Avatar, Drawer, NeedsYouModal, Panel, SourceDonut, StatusPill,
+  Avatar, Drawer, MeetIcon, NeedsYouModal, Panel, SourceDonut, StatusPill, WhatsAppIcon,
   fmtTime, inr, pct, relDay, useLast,
 } from '../labUi';
 import mock from '../mockData';
@@ -382,8 +382,8 @@ const DaySchedule = ({ go }) => {
               ))}
             </dl>
             <div className="flex flex-wrap gap-1.5">
-              <Button size="sm"><Video className="h-3.5 w-3.5" strokeWidth={2.4} /> Join call</Button>
-              <Button size="sm" variant="outline"><MessageSquare className="h-3.5 w-3.5" strokeWidth={2.4} /> WhatsApp</Button>
+              <Button size="sm" variant="outline"><MeetIcon className="h-4 w-4" /> Join call</Button>
+              <Button size="sm" variant="outline"><WhatsAppIcon className="h-4 w-4" /> WhatsApp</Button>
               <Button size="sm" variant="ghost" onClick={() => { setOpenId(null); go(`clients?client=${shown.client_id}`); }}>Open client</Button>
             </div>
           </div>

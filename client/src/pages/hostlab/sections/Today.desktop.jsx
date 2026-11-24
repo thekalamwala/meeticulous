@@ -13,12 +13,12 @@
 // growing?" — nothing is here to fill the grid.
 import { useMemo, useState } from 'react';
 import {
-  AlertTriangle, ArrowRight, CalendarCheck2, CalendarX2, ChevronRight, MessageSquare,
-  Package, Share2, Star, TrendingDown, TrendingUp, UserPlus, Video, X,
+  AlertTriangle, ArrowRight, CalendarCheck2, CalendarX2, ChevronRight,
+  Package, Share2, Star, TrendingDown, TrendingUp, UserPlus, X,
 } from 'lucide-react';
 import { Button, cn } from '../../../components/dashboard/ui';
 import {
-  Avatar, Drawer, NeedsYouModal, Panel, SourceDonut, StatusPill,
+  Avatar, Drawer, MeetIcon, NeedsYouModal, Panel, SourceDonut, StatusPill, WhatsAppIcon,
   fmtTime, inr, relDay, useLast,
 } from '../labUi';
 import mock from '../mockData';
@@ -37,9 +37,9 @@ const QuickActionTile = ({ icon: Icon, label, onClick, badge }) => (
   <button
     type="button"
     onClick={onClick}
-    className="group flex flex-col items-center gap-1.5 rounded-xl border-2 border-neutral-200 bg-white px-2 py-3 text-center transition hover:border-maroon/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
+    className="group flex flex-col items-center gap-2 rounded-2xl px-2 py-3 text-center transition hover:bg-blush/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
   >
-    <span className="relative grid h-11 w-11 place-items-center rounded-full border-2 border-neutral-200 bg-blush text-maroon transition group-hover:border-maroon/40">
+    <span className="relative grid h-12 w-12 place-items-center rounded-full bg-blush text-maroon transition group-hover:-translate-y-0.5 group-hover:bg-pink/60">
       <Icon className="h-5 w-5" strokeWidth={2.2} />
       {badge ? (
         <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full border-2 border-white bg-rose text-[10px] font-extrabold text-white">
@@ -175,8 +175,8 @@ const DayTimeline = ({ go }) => {
             )}
 
             <div className="flex flex-wrap gap-1.5">
-              <Button size="sm"><Video className="h-3.5 w-3.5" strokeWidth={2.4} /> Join call</Button>
-              <Button size="sm" variant="outline"><MessageSquare className="h-3.5 w-3.5" strokeWidth={2.4} /> WhatsApp</Button>
+              <Button size="sm" variant="outline"><MeetIcon className="h-4 w-4" /> Join call</Button>
+              <Button size="sm" variant="outline"><WhatsAppIcon className="h-4 w-4" /> WhatsApp</Button>
               <Button size="sm" variant="ghost" onClick={() => { setOpenId(null); go(`clients?client=${shown.client_id}`); }}>Open client</Button>
             </div>
           </div>
@@ -259,7 +259,7 @@ const CardValue = ({ value }) => {
 const KpiCard = ({ img, label, value, delta, deltaLabel, hint, onClick }) => {
   const up = delta != null && delta >= 0;
   return (
-    <div className="flex flex-col rounded-2xl border-2 border-neutral-200 bg-white p-4">
+    <div className="flex flex-col rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-[0_1px_2px_rgba(43,10,20,0.03),0_8px_24px_-12px_rgba(43,10,20,0.08)]">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="truncate text-[10.5px] font-bold uppercase tracking-[0.08em] text-ink/45">{label}</p>
