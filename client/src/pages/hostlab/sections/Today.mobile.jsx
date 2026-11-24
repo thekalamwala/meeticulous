@@ -4,7 +4,7 @@
 // horizontal for a phone), then where bookings came from. No heatmap on mobile.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  AlertTriangle, ArrowRight, ChevronLeft, ChevronRight,
+  AlertTriangle, ArrowRight, CalendarPlus, ChevronLeft, ChevronRight,
   Package, Share2, Star, UserPlus, X,
 } from 'lucide-react';
 import { Button, cn } from '../../../components/dashboard/ui';
@@ -321,14 +321,29 @@ const DaySchedule = ({ go }) => {
         flush
       >
       {items.length === 0 ? (
-        <div className="px-3 py-6 text-center">
-          <p className="text-[11.5px] font-medium text-ink/50">{blocked.has(ymd(sel)) ? 'This day is blocked.' : 'A clear day.'}</p>
-          {next && (
-            <button type="button" onClick={() => setSel(new Date(new Date(next.scheduled_at).setHours(0, 0, 0, 0)))} className="mt-1 text-[11.5px] font-bold text-maroon hover:text-maroon-dark">
-              Next: {relDay(next.scheduled_at)} {fmtTime(next.scheduled_at)} · {next.guest_name}
-            </button>
-          )}
-        </div>
+        blocked.has(ymd(sel)) ? (
+          <div className="px-4 py-7 text-center">
+            <p className="text-[11.5px] font-medium text-ink/50">This day is blocked.</p>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-1.5 px-4 py-7 text-center">
+            <span className="mb-0.5 grid h-10 w-10 place-items-center rounded-full bg-blush text-maroon">
+              <CalendarPlus className="h-5 w-5" strokeWidth={1.9} />
+            </span>
+            <p className="font-display text-[14px] font-extrabold tracking-[-0.02em] text-ink">A clear day ahead</p>
+            <p className="max-w-[240px] text-[11.5px] font-medium leading-snug text-ink/55">
+              Share your booking link and let guests grab a slot before it&apos;s gone.
+            </p>
+            <Button size="sm" className="mt-1.5" onClick={() => go('grow/page')}>
+              <Share2 className="h-3.5 w-3.5" strokeWidth={2.4} /> Share booking link
+            </Button>
+            {next && (
+              <button type="button" onClick={() => setSel(new Date(new Date(next.scheduled_at).setHours(0, 0, 0, 0)))} className="mt-1 text-[11px] font-bold text-maroon/70 transition hover:text-maroon">
+                Next booking {relDay(next.scheduled_at)} · {fmtTime(next.scheduled_at)}
+              </button>
+            )}
+          </div>
+        )
       ) : (
         <ul className="divide-y-2 divide-neutral-200">
           {items.map((b) => {
