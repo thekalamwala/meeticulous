@@ -92,7 +92,7 @@ export default function MeetDropdown({
   }, [open]);
 
   // keep the active row scrolled into view
-  useEffect(() => { if (open) activeRef.current?.scrollIntoView({ block: 'nearest' }); }, [active, open]);
+  useEffect(() => { if (open) activeRef.current?.scrollIntoView?.({ block: 'nearest' }); }, [active, open]);
 
   const choose = (o) => {
     if (o.disabled) return;
