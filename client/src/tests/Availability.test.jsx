@@ -14,25 +14,25 @@ describe('Availability per-day toggle', () => {
   it('opens a closed day and reveals its time inputs', async () => {
     const { container } = render(<MemoryRouter><Availability /></MemoryRouter>);
 
-    // 7 day switches, all closed. Time windows use <Select> dropdowns (30-min
-    // preset grid), not <input type=time> — so count selects, and by delta since
-    // the page also has fixed selects (Apply Monday's hours, timezone, buffer).
+    // 7 day switches, all closed. Time windows use the branded MeetDropdown
+    // (.mt-dd) now, not native <select> — so count those, by delta since the
+    // page also has fixed dropdowns (Apply Monday's hours, timezone, buffer).
     const switches = await screen.findAllByRole('switch');
     expect(switches).toHaveLength(7);
     expect(switches[0].getAttribute('aria-checked')).toBe('false');
-    const baseSelects = container.querySelectorAll('select').length;
+    const baseSelects = container.querySelectorAll('.mt-dd').length;
 
     // Toggle the first day on → a default window appears (start + end selects).
     fireEvent.click(switches[0]);
     await waitFor(() =>
-      expect(container.querySelectorAll('select').length).toBe(baseSelects + 2),
+      expect(container.querySelectorAll('.mt-dd').length).toBe(baseSelects + 2),
     );
     expect(switches[0].getAttribute('aria-checked')).toBe('true');
 
     // Toggle it back off → the two window selects disappear.
     fireEvent.click(switches[0]);
     await waitFor(() =>
-      expect(container.querySelectorAll('select').length).toBe(baseSelects),
+      expect(container.querySelectorAll('.mt-dd').length).toBe(baseSelects),
     );
   });
 });
