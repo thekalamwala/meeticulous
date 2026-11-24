@@ -132,10 +132,19 @@ const Catalog = () => {
   // Live is the ordinary state, so only the exceptions wear a pill.
   const stateOf = (item) => (item.kind === 'coupon' ? couponState(item) : item.active ? 'active' : 'inactive');
 
+  // One tint per catalog kind, from the --mt-cat-* tokens (design-system brand
+  // extension — pending founder sign-off). coupon rows use the "offer" tint.
+  const KIND_TINT = {
+    service: 'bg-cat-service-bg text-cat-service-fg',
+    product: 'bg-cat-product-bg text-cat-product-fg',
+    course: 'bg-cat-course-bg text-cat-course-fg',
+    membership: 'bg-cat-membership-bg text-cat-membership-fg',
+    coupon: 'bg-cat-offer-bg text-cat-offer-fg',
+  };
   const TypeIcon = ({ item, size = 'h-7 w-7', glyph = 'h-3.5 w-3.5' }) => {
     const type = CATALOG_TYPES[item.kind];
     return (
-      <span className={cn('grid shrink-0 place-items-center rounded-xs bg-neutral-100 text-ink/55', size)} title={type.label}>
+      <span className={cn('grid shrink-0 place-items-center rounded-xs', KIND_TINT[item.kind] || 'bg-blush text-maroon', size)} title={type.label}>
         <type.icon className={glyph} strokeWidth={2.4} />
       </span>
     );
