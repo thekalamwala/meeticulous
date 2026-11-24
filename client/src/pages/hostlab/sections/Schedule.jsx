@@ -12,12 +12,12 @@
 //     of a change without opening their own public page in another tab
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Calendar, CalendarPlus, CalendarX2, CheckCircle2, ChevronLeft, ChevronRight, Copy, Globe, Link2, Lock,
+  Calendar, CalendarPlus, CalendarX2, ChevronLeft, ChevronRight, Copy, Lock,
   Plus, Trash2, Clock, Eye,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button, cn } from '../../../components/dashboard/ui';
-import { LabSelect, Panel, SubPageHeader, Toggle, fmtDayFull, useSubPage } from '../labUi';
+import { LabSelect, SubPageHeader, Toggle, fmtDayFull, useSubPage } from '../labUi';
 import mock from '../mockData';
 
 const DAYS = [
@@ -38,6 +38,23 @@ const minutesOf = (t) => {
   const [h, m] = t.split(':').map(Number);
   return h * 60 + m;
 };
+
+/* ── Surface + SectionLabel — the de-boxed shell ──────────────────────────
+ * Premium desktop = one soft contained card. App-like mobile = no card
+ * chrome at all: the group sits directly on the page, iOS-settings style,
+ * under a small-caps label. One component, the breakpoint does the rest. */
+const Surface = ({ children, className = '' }) => (
+  <section className={cn('overflow-hidden rounded-2xl bg-white sm:border sm:border-neutral-200/70 sm:shadow-[0_1px_2px_rgba(43,10,20,0.03)]', className)}>
+    {children}
+  </section>
+);
+
+const SectionLabel = ({ children, action }) => (
+  <div className="mb-2 flex items-center justify-between gap-2 px-0.5">
+    <h2 className="text-[10px] font-extrabold uppercase tracking-[0.09em] text-ink/40">{children}</h2>
+    {action}
+  </div>
+);
 
 /* ── Hours ─────────────────────────────────────────────────────────────── */
 const Hours = ({ schedule, setSchedule, dirty }) => {
@@ -66,8 +83,8 @@ const Hours = ({ schedule, setSchedule, dirty }) => {
   // week's total; a panel title here would be the same thing a third time,
   // inside 40px. The button and the stat moved up to that heading.
   return (
-    <Panel flush>
-      <ul className="divide-y divide-neutral-200/60">
+    <Surface>
+      <ul className="divide-y divide-neutral-200/50">
         {DAYS.map(([key, label]) => {
           const slots = schedule[key];
           const open = slots.length > 0;
@@ -174,7 +191,7 @@ const Hours = ({ schedule, setSchedule, dirty }) => {
           <Button size="sm" className="ml-auto" onClick={() => toast.success('Hours saved')}>Save hours</Button>
         </div>
       )}
-    </Panel>
+    </Surface>
   );
 };
 
@@ -465,44 +482,103 @@ const RulesCards = ({ rules, setRules, overrides, setOverrides, blocked, setBloc
 };
 
 /* ── Calendars ─────────────────────────────────────────────────────────── */
+/* Provider marks — third-party integration logos (same pattern as the kit's
+ * MeetIcon / WhatsAppIcon), shown so the row reads as a real connection. */
+const GoogleMark = ({ className }) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+    <path fill="#4285F4" d="M23.52 12.27c0-.79-.07-1.54-.2-2.27H12v4.51h6.47a5.54 5.54 0 0 1-2.4 3.63v3h3.88c2.27-2.09 3.57-5.17 3.57-8.87z" />
+    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.76-2.11-6.7-4.94H1.3v3.1A11.99 11.99 0 0 0 12 24z" />
+    <path fill="#FBBC05" d="M5.3 14.31a7.2 7.2 0 0 1 0-4.6V6.6H1.3a12 12 0 0 0 0 10.8l4-3.09z" />
+    <path fill="#EA4335" d="M12 4.77c1.76 0 3.35.61 4.6 1.8l3.44-3.44A11.47 11.47 0 0 0 12 0 11.99 11.99 0 0 0 1.3 6.6l4 3.1C6.24 6.88 8.88 4.77 12 4.77z" />
+  </svg>
+);
+const AppleMark = ({ className }) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+    <path fill="#1A1A1A" d="M17.05 12.54c-.03-2.72 2.22-4.02 2.32-4.08-1.27-1.85-3.24-2.1-3.94-2.13-1.68-.17-3.28.99-4.13.99-.85 0-2.16-.97-3.56-.94-1.83.03-3.52 1.06-4.46 2.7-1.9 3.3-.49 8.19 1.36 10.87.9 1.31 1.98 2.78 3.39 2.73 1.36-.05 1.87-.88 3.52-.88 1.64 0 2.11.88 3.55.85 1.47-.03 2.4-1.34 3.3-2.65 1.04-1.52 1.47-2.99 1.49-3.07-.03-.01-2.86-1.1-2.89-4.36zM14.4 4.54c.75-.91 1.25-2.17 1.11-3.43-1.08.04-2.38.72-3.15 1.63-.69.8-1.3 2.08-1.14 3.31 1.2.09 2.43-.61 3.18-1.51z" />
+  </svg>
+);
+const providerMark = (name) => {
+  if (name.includes('Google')) return <GoogleMark className="h-5 w-5" />;
+  if (name.includes('Apple')) return <AppleMark className="h-5 w-5" />;
+  return <Calendar className="h-[18px] w-[18px] text-ink/45" strokeWidth={2.2} />;
+};
+
 const Calendars = () => {
   const [cals, setCals] = useState(mock.availability.calendars);
+  const connect = (c) => { setCals((v) => v.map((x) => (x.id === c.id ? { ...x, status: 'connected', account: 'ananya@icloud.com' } : x))); toast.success(`${c.name} connected`); };
+  const disconnect = (c) => { setCals((v) => v.map((x) => (x.id === c.id ? { ...x, status: 'available', account: null } : x))); toast.success(`${c.name} disconnected`); };
+
   return (
-    <Panel flush>
-      <ul className="divide-y divide-neutral-200/60">
-        {cals.map((c) => (
-          <li key={c.id} className="flex flex-wrap items-center gap-2 px-2.5 py-2">
-            <span className={cn('grid h-8 w-8 shrink-0 place-items-center rounded-lg', c.status === 'connected' ? 'bg-success-bg text-success-fg' : 'bg-neutral-100 text-ink/45')}>
-              {c.status === 'connected' ? <CheckCircle2 className="h-4 w-4" strokeWidth={2.4} /> : <Link2 className="h-4 w-4" strokeWidth={2.4} />}
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-[12px] font-bold text-ink">{c.name}</span>
-              <span className="block text-[11px] font-medium text-ink/55">
-                {c.status === 'connected' ? `${c.account} · two-way, busy time blocks your slots` : 'Not connected'}
-              </span>
-            </span>
-            {c.status === 'connected' ? (
-              <div className="flex items-center gap-1.5">
-                <Toggle checked onChange={() => toast.success('Two-way sync is required while connected')} label="Two-way sync" />
-                <Button size="sm" variant="outline" onClick={() => { setCals((v) => v.map((x) => (x.id === c.id ? { ...x, status: 'available', account: null } : x))); toast.success(`${c.name} disconnected`); }}>
-                  Disconnect
-                </Button>
+    <div>
+      {/* Mobile: bento cards (one tap-target each). Desktop: a de-boxed list. */}
+      <div className="grid grid-cols-2 gap-3 sm:hidden">
+        {cals.map((c) => {
+          const connected = c.status === 'connected';
+          return (
+            <div key={c.id} className="flex flex-col gap-3 rounded-3xl bg-white p-3.5 shadow-[0_1px_2px_rgba(43,10,20,0.04),0_12px_26px_-18px_rgba(43,10,20,0.16)]">
+              <div className="flex items-start justify-between">
+                <span className="grid h-11 w-11 place-items-center rounded-2xl bg-neutral-50">{providerMark(c.name)}</span>
+                {connected && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-success-bg px-1.5 py-0.5 text-[8.5px] font-bold uppercase tracking-wide text-success-fg">
+                    <span className="h-1.5 w-1.5 rounded-full bg-success-fg" /> On
+                  </span>
+                )}
               </div>
-            ) : (
-              <Button size="sm" onClick={() => { setCals((v) => v.map((x) => (x.id === c.id ? { ...x, status: 'connected', account: 'ananya@icloud.com' } : x))); toast.success(`${c.name} connected`); }}>
-                Connect
-              </Button>
-            )}
-          </li>
-        ))}
-      </ul>
-      <div className="flex items-start gap-1.5 border-t border-neutral-200/60 bg-cream p-2.5">
-        <Lock className="mt-0.5 h-4 w-4 shrink-0 text-ink/40" strokeWidth={2.2} />
-        <p className="text-[11px] font-medium text-ink/60">
-          Meeticulous reads only the busy/free times on a connected calendar. It never reads event titles, guests or notes.
-        </p>
+              <div className="min-w-0">
+                <p className="truncate text-[12.5px] font-extrabold text-ink">{c.name}</p>
+                <p className="mt-0.5 truncate text-[10.5px] font-medium text-ink/50">{connected ? c.account : 'Not connected'}</p>
+              </div>
+              {connected ? (
+                <div className="mt-auto flex items-center justify-between">
+                  <label className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wide text-ink/40">
+                    <Toggle checked onChange={() => toast.success('Two-way sync is required while connected')} label="Two-way sync" /> Sync
+                  </label>
+                  <button type="button" onClick={() => disconnect(c)} className="text-[10.5px] font-bold text-ink/45 transition hover:text-maroon">Remove</button>
+                </div>
+              ) : (
+                <Button size="sm" className="mt-auto w-full" onClick={() => connect(c)}>Connect</Button>
+              )}
+            </div>
+          );
+        })}
       </div>
-    </Panel>
+
+      <Surface className="hidden sm:block">
+        <ul className="divide-y divide-neutral-200/50">
+          {cals.map((c) => {
+            const connected = c.status === 'connected';
+            return (
+              <li key={c.id} className="flex items-center gap-3 px-4 py-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-neutral-50">
+                  {providerMark(c.name)}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex min-w-0 items-center gap-1.5">
+                    <span className="truncate text-[12.5px] font-bold text-ink">{c.name}</span>
+                    {connected && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-success-fg" />}
+                  </span>
+                  <span className="mt-0.5 block truncate text-[11px] font-medium text-ink/50">
+                    {connected ? c.account : 'Not connected'}
+                  </span>
+                </span>
+                {connected ? (
+                  <div className="flex shrink-0 items-center gap-2.5">
+                    <Toggle checked onChange={() => toast.success('Two-way sync is required while connected')} label="Two-way sync" />
+                    <button type="button" onClick={() => disconnect(c)} className="text-[11px] font-bold text-ink/45 transition hover:text-maroon">Disconnect</button>
+                  </div>
+                ) : (
+                  <Button size="sm" className="shrink-0" onClick={() => connect(c)}>Connect</Button>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </Surface>
+
+      <p className="mt-2.5 flex items-center gap-1.5 px-0.5 text-[10.5px] font-medium text-ink/40">
+        <Lock className="h-3.5 w-3.5 shrink-0" strokeWidth={2.2} /> Only busy/free times are read — never event details.
+      </p>
+    </div>
   );
 };
 
@@ -543,37 +619,40 @@ const Preview = ({ schedule, rules }) => {
   }, [slots]);
 
   return (
-    <Panel
-      title="What a guest sees right now"
-      subtitle={`Next bookable 30-minute slots, after your ${rules.min_notice_hours}h notice and ${rules.buffer_minutes}m gap`}
-      action={<Button size="sm" variant="ghost" onClick={() => toast.success('Opens your public booking page in a new tab')}><Eye className="h-4 w-4" strokeWidth={2.4} /> Open live page</Button>}
-    >
-      {grouped.length === 0 ? (
-        <p className="py-6 text-center text-[11.5px] font-semibold text-ink/45">
-          No slots are bookable in the next 10 days. Open some hours, or loosen the notice rule.
-        </p>
-      ) : (
-        <div className="flex flex-col gap-2">
-          {grouped.map(([day, items]) => (
-            <div key={day}>
-              <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-ink/45">
-                {new Date(day).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {items.map((s) => (
-                  <span key={s.key} className="rounded-lg border border-marigold-200 bg-marigold-100 px-2.5 py-1 text-[10.5px] font-bold text-marigold-800">
-                    {s.at.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true }).replace(' ', '')}
-                  </span>
-                ))}
+    <div>
+      <SectionLabel
+        action={(
+          <button type="button" onClick={() => toast.success('Opens your public booking page in a new tab')} className="inline-flex items-center gap-1 text-[10.5px] font-bold text-maroon transition hover:text-maroon-dark">
+            <Eye className="h-3.5 w-3.5" strokeWidth={2.4} /> Live page
+          </button>
+        )}
+      >
+        What a guest sees
+      </SectionLabel>
+      <Surface className="p-3 sm:p-4">
+        {grouped.length === 0 ? (
+          <p className="py-6 text-center text-[11.5px] font-semibold text-ink/45">No slots bookable in the next 10 days.</p>
+        ) : (
+          <div className="flex flex-col gap-2.5">
+            {grouped.map(([day, items]) => (
+              <div key={day}>
+                <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-ink/40">
+                  {new Date(day).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {items.map((s) => (
+                    <span key={s.key} className="rounded-full bg-marigold-100 px-2.5 py-1 text-[10.5px] font-bold text-marigold-800">
+                      {s.at.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true }).replace(' ', '')}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
-          <p className="flex items-center gap-1.5 text-[10.5px] font-medium text-ink/45">
-            <Globe className="h-3.5 w-3.5" strokeWidth={2.2} /> Shown in {rules.timezone}. Guests see their own zone.
-          </p>
-        </div>
-      )}
-    </Panel>
+            ))}
+          </div>
+        )}
+      </Surface>
+      <p className="mt-2 px-0.5 text-[10px] font-medium text-ink/40">{rules.timezone} · guests see their own zone</p>
+    </div>
   );
 };
 
@@ -621,7 +700,7 @@ const Schedule = () => {
   ) : null;
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-4">
       <SubPageHeader page={page} action={headerAction}>
         {page.slug === 'hours'
           ? `${totalHours.toFixed(1)} bookable hours a week · ${mock.availability.timezone}`
@@ -641,8 +720,8 @@ const Schedule = () => {
           setAdding={setAddingDate}
         />
       ) : (
-        <div className="grid gap-2.5 lg:grid-cols-[1.5fr_1fr]">
-          <div className="flex min-w-0 flex-col gap-2.5">
+        <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr] lg:gap-7">
+          <div className="flex min-w-0 flex-col gap-5">
             {page.slug === 'hours' && <Hours schedule={schedule} setSchedule={setSchedule} dirty={dirty} />}
             {page.slug === 'calendars' && <Calendars />}
           </div>
