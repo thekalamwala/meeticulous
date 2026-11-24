@@ -13,7 +13,7 @@
 // growing?" — nothing is here to fill the grid.
 import { useMemo, useState } from 'react';
 import {
-  AlertTriangle, ArrowRight, CalendarCheck2, CalendarPlus, ChevronRight,
+  AlertTriangle, ArrowRight, CalendarCheck2, ChevronRight, Image as ImageIcon,
   Package, Share2, Star, TrendingDown, TrendingUp, UserPlus, X,
 } from 'lucide-react';
 import { Button, cn } from '../../../components/dashboard/ui';
@@ -89,15 +89,17 @@ const DayTimeline = ({ go }) => {
         flush
       >
         {todays.length === 0 ? (
-          <div className="flex flex-col items-center gap-1.5 px-3 py-8 text-center">
-            <span className="mb-0.5 grid h-10 w-10 place-items-center rounded-full bg-blush text-maroon">
-              <CalendarPlus className="h-5 w-5" strokeWidth={1.9} />
-            </span>
-            <p className="font-display text-[14px] font-extrabold tracking-[-0.02em] text-ink">A clear day ahead</p>
-            <p className="max-w-[260px] text-[11.5px] font-medium leading-snug text-ink/55">Share your booking link and let guests grab a slot before it&apos;s gone.</p>
-            <Button size="sm" className="mt-1.5" onClick={() => go('grow/page')}>
-              <Share2 className="h-3.5 w-3.5" strokeWidth={2.4} /> Share booking link
-            </Button>
+          <div className="flex items-center gap-5 px-5 py-7">
+            <div className="min-w-0 flex-1">
+              <p className="font-display text-[18px] font-extrabold leading-tight tracking-[-0.03em] text-ink">A clear day ahead</p>
+              <p className="mt-1.5 max-w-[320px] text-[12px] font-medium leading-snug text-ink/55">Share your booking link and let guests grab a slot before it&apos;s gone.</p>
+              <Button size="sm" className="mt-3.5" onClick={() => go('grow/page')}>
+                <Share2 className="h-3.5 w-3.5" strokeWidth={2.4} /> Share booking link
+              </Button>
+            </div>
+            <div className="grid h-[104px] w-[150px] shrink-0 place-items-center rounded-xl border-2 border-dashed border-neutral-200 bg-blush/40 text-maroon/35">
+              <ImageIcon className="h-7 w-7" strokeWidth={1.6} />
+            </div>
           </div>
         ) : (
           <ul className="divide-y-2 divide-neutral-200">
