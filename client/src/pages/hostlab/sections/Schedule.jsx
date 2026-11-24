@@ -497,36 +497,105 @@ const AppleMark = ({ className }) => (
     <path fill="#1A1A1A" d="M17.05 12.54c-.03-2.72 2.22-4.02 2.32-4.08-1.27-1.85-3.24-2.1-3.94-2.13-1.68-.17-3.28.99-4.13.99-.85 0-2.16-.97-3.56-.94-1.83.03-3.52 1.06-4.46 2.7-1.9 3.3-.49 8.19 1.36 10.87.9 1.31 1.98 2.78 3.39 2.73 1.36-.05 1.87-.88 3.52-.88 1.64 0 2.11.88 3.55.85 1.47-.03 2.4-1.34 3.3-2.65 1.04-1.52 1.47-2.99 1.49-3.07-.03-.01-2.86-1.1-2.89-4.36zM14.4 4.54c.75-.91 1.25-2.17 1.11-3.43-1.08.04-2.38.72-3.15 1.63-.69.8-1.3 2.08-1.14 3.31 1.2.09 2.43-.61 3.18-1.51z" />
   </svg>
 );
+const OutlookMark = ({ className }) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+    <rect x="2.5" y="5" width="12.5" height="14" rx="2" fill="#0F6CBD" />
+    <text x="8.75" y="15.5" textAnchor="middle" fontSize="9.5" fontWeight="700" fill="#fff" fontFamily="Arial, sans-serif">O</text>
+    <path d="M15 9.5l6-1.4v7.8l-6-1.4z" fill="#0F6CBD" opacity="0.7" />
+  </svg>
+);
 const providerMark = (name) => {
   if (name.includes('Google')) return <GoogleMark className="h-5 w-5" />;
   if (name.includes('Apple')) return <AppleMark className="h-5 w-5" />;
+  if (name.includes('Outlook')) return <OutlookMark className="h-5 w-5" />;
   return <Calendar className="h-[18px] w-[18px] text-ink/45" strokeWidth={2.2} />;
+};
+const calBlurb = (name) => {
+  if (name.includes('Google')) return 'Two-way sync. Your Google busy times block new bookings, and confirmed meetings land on your calendar automatically.';
+  if (name.includes('Apple')) return 'Two-way sync. Your Apple Calendar busy times block new bookings, so a guest can never double-book you.';
+  return 'Microsoft Outlook sync is on the way — you will be able to connect your work calendar here soon.';
 };
 
 /* LockSlider — a slide-to-connect control. Locked = connected (synced),
  * unlocked = not connected. Tapping toggles the connection. */
-const LockSlider = ({ connected, onToggle, label }) => (
-  <button
-    type="button"
-    role="switch"
-    aria-checked={connected}
-    aria-label={label}
-    onClick={onToggle}
-    className={cn('relative h-9 w-full overflow-hidden rounded-full border-2 transition-colors', connected ? 'border-maroon bg-maroon' : 'border-neutral-300 bg-neutral-100')}
-  >
-    <span className={cn('pointer-events-none absolute top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase tracking-wide transition-all', connected ? 'left-4 text-white/85' : 'right-4 text-ink/45')}>
-      {connected ? 'Connected' : 'Connect'}
-    </span>
-    <span
-      className="absolute top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full bg-white shadow-[0_1px_3px_rgba(21,19,41,0.25)] transition-all"
-      style={{ left: connected ? 'calc(100% - 32px)' : '4px' }}
+/* A real drag-to-slide lock. Grab the knob and slide it along the track;
+ * release past halfway to connect / disconnect. (A tap on the far end counts
+ * as a full slide.) Vertical: top = locked/connected, bottom = unlocked. */
+const LockSlider = ({ connected, onToggle, label, comingSoon = false, vertical = false }) => {
+  const ref = useRef(null);
+  const dragRef = useRef(null); // live drag position, read synchronously on release
+  const [frac, setFrac] = useState(null); // 0..1 along the track while dragging; null when idle
+  const locked = connected && !comingSoon;
+
+  const fracFrom = (e) => {
+    const r = ref.current.getBoundingClientRect();
+    const raw = vertical ? (e.clientY - r.top) / r.height : (e.clientX - r.left) / r.width;
+    return Math.min(1, Math.max(0, raw));
+  };
+  const down = (e) => {
+    if (comingSoon) return;
+    try { ref.current.setPointerCapture(e.pointerId); } catch { /* synthetic pointer */ }
+    dragRef.current = fracFrom(e);
+    setFrac(dragRef.current);
+  };
+  const move = (e) => {
+    if (dragRef.current === null) return;
+    dragRef.current = fracFrom(e);
+    setFrac(dragRef.current);
+  };
+  const up = () => {
+    if (dragRef.current === null) return;
+    const f = dragRef.current;
+    dragRef.current = null;
+    setFrac(null);
+    const draggedToLocked = vertical ? f < 0.5 : f > 0.5;
+    if (draggedToLocked !== locked) onToggle();
+  };
+
+  const showLock = comingSoon || (frac != null ? (vertical ? frac < 0.5 : frac > 0.5) : locked);
+  const lit = showLock && !comingSoon; // maroon (locked) look
+
+  // knob offset along the track
+  let knobStyle;
+  if (vertical) {
+    const top = frac != null ? `calc(${(frac * 100).toFixed(1)}% - 16px)` : locked ? '4px' : 'calc(100% - 36px)';
+    knobStyle = { left: '50%', transform: 'translateX(-50%)', top, transition: frac != null ? 'none' : undefined };
+  } else {
+    const left = frac != null ? `calc(${(frac * 100).toFixed(1)}% - 16px)` : locked ? 'calc(100% - 36px)' : '4px';
+    knobStyle = { top: '50%', transform: 'translateY(-50%)', left, transition: frac != null ? 'none' : undefined };
+  }
+
+  return (
+    <button
+      ref={ref}
+      type="button"
+      role="switch"
+      aria-checked={connected}
+      aria-label={label}
+      disabled={comingSoon}
+      onPointerDown={down}
+      onPointerMove={move}
+      onPointerUp={up}
+      onPointerCancel={up}
+      className={cn(
+        'relative shrink-0 touch-none select-none overflow-hidden rounded-full border-2 transition-colors',
+        vertical ? 'w-11 self-stretch' : 'h-9 w-full',
+        comingSoon ? 'cursor-not-allowed border-neutral-200 bg-neutral-100' : lit ? 'cursor-grab border-maroon bg-maroon' : 'cursor-grab border-neutral-300 bg-neutral-100',
+      )}
     >
-      {connected
-        ? <Lock className="h-3.5 w-3.5 text-maroon" strokeWidth={2.4} />
-        : <LockOpen className="h-3.5 w-3.5 text-ink/45" strokeWidth={2.4} />}
-    </span>
-  </button>
-);
+      {!vertical && (
+        <span className={cn('pointer-events-none absolute top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase tracking-wide', comingSoon ? 'right-4 text-ink/35' : lit ? 'left-4 text-white/85' : 'right-4 text-ink/45')}>
+          {comingSoon ? 'Coming soon' : lit ? 'Connected' : 'Slide'}
+        </span>
+      )}
+      <span className={cn('absolute grid h-8 w-8 place-items-center rounded-full shadow-[0_1px_3px_rgba(21,19,41,0.25)]', comingSoon ? 'bg-neutral-200' : 'bg-white')} style={knobStyle}>
+        {showLock
+          ? <Lock className={cn('h-4 w-4', comingSoon ? 'text-ink/35' : 'text-maroon')} strokeWidth={2.4} />
+          : <LockOpen className="h-4 w-4 text-ink/45" strokeWidth={2.4} />}
+      </span>
+    </button>
+  );
+};
 
 const Calendars = () => {
   const [cals, setCals] = useState(mock.availability.calendars);
@@ -535,24 +604,40 @@ const Calendars = () => {
 
   return (
     <div>
-      {/* Mobile: one bento card per line — logo + name + email on one top
-          line, a slide-to-connect lock underneath. Desktop: a de-boxed list. */}
-      <div className="flex flex-col gap-3 sm:hidden">
+      {/* Mobile: three tall cards that together fill the viewport, each with a
+          vertical slide-to-connect lock on the right. Desktop: a de-boxed list. */}
+      <div className="flex min-h-[calc(100dvh-13rem)] flex-col gap-3 sm:hidden">
         {cals.map((c) => {
           const connected = c.status === 'connected';
           return (
-            <div key={c.id} className="flex flex-col gap-3 rounded-3xl bg-white p-3.5 shadow-[0_1px_2px_rgba(43,10,20,0.04),0_12px_26px_-18px_rgba(43,10,20,0.16)]">
-              <div className="flex items-center gap-3">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-neutral-50">{providerMark(c.name)}</span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[13px] font-extrabold text-ink">{c.name}</p>
-                  <p className="truncate text-[10.5px] font-medium text-ink/50">{connected ? c.account : 'Not connected'}</p>
+            <div key={c.id} className="flex flex-1 items-stretch gap-3 rounded-3xl bg-white p-4 shadow-[0_1px_2px_rgba(43,10,20,0.04),0_12px_26px_-18px_rgba(43,10,20,0.16)]">
+              <div className="flex min-w-0 flex-1 flex-col gap-3">
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-neutral-50">{providerMark(c.name)}</span>
+                  <p className="min-w-0 flex-1 truncate text-[14px] font-extrabold text-ink">
+                    {c.name}
+                    <span className="ml-2 text-[11px] font-medium text-ink/45">{connected ? c.account : 'Not connected'}</span>
+                  </p>
                 </div>
+                <p className="text-[11.5px] leading-relaxed text-ink/50">{calBlurb(c.name)}</p>
               </div>
-              <LockSlider connected={connected} onToggle={() => (connected ? disconnect(c) : connect(c))} label={`${c.name} connection`} />
+              <LockSlider vertical connected={connected} onToggle={() => (connected ? disconnect(c) : connect(c))} label={`${c.name} connection`} />
             </div>
           );
         })}
+        {/* Outlook — not yet available */}
+        <div className="flex flex-1 items-stretch gap-3 rounded-3xl bg-white/70 p-4 shadow-[0_1px_2px_rgba(43,10,20,0.03)]">
+          <div className="flex min-w-0 flex-1 flex-col gap-3">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-neutral-50 grayscale">{providerMark('Outlook Calendar')}</span>
+              <p className="min-w-0 flex-1 truncate text-[14px] font-extrabold text-ink/55">
+                Outlook Calendar<span className="ml-2 text-[11px] font-medium text-ink/40">Coming soon</span>
+              </p>
+            </div>
+            <p className="text-[11.5px] leading-relaxed text-ink/40">{calBlurb('Outlook Calendar')}</p>
+          </div>
+          <LockSlider vertical comingSoon label="Outlook Calendar — coming soon" />
+        </div>
       </div>
 
       <Surface className="hidden sm:block">
@@ -584,6 +669,17 @@ const Calendars = () => {
               </li>
             );
           })}
+          {/* Outlook — not yet available */}
+          <li className="flex items-center gap-3 px-4 py-3">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-neutral-50 grayscale">{providerMark('Outlook Calendar')}</span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-[12.5px] font-bold text-ink/55">Outlook Calendar</span>
+              <span className="mt-0.5 block truncate text-[11px] font-medium text-ink/40">Coming soon</span>
+            </span>
+            <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-neutral-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-ink/40">
+              <Lock className="h-3 w-3" strokeWidth={2.4} /> Soon
+            </span>
+          </li>
         </ul>
       </Surface>
 
@@ -731,11 +827,12 @@ const Schedule = () => {
           adding={addingDate}
           setAdding={setAddingDate}
         />
+      ) : page.slug === 'calendars' ? (
+        <Calendars />
       ) : (
         <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr] lg:gap-7">
           <div className="flex min-w-0 flex-col gap-5">
-            {page.slug === 'hours' && <Hours schedule={schedule} setSchedule={setSchedule} dirty={dirty} />}
-            {page.slug === 'calendars' && <Calendars />}
+            <Hours schedule={schedule} setSchedule={setSchedule} dirty={dirty} />
           </div>
           <div className="min-w-0">
             <Preview schedule={schedule} rules={rules} />
