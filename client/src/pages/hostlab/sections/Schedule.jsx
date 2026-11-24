@@ -12,7 +12,7 @@
 //     of a change without opening their own public page in another tab
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Calendar, CalendarPlus, CalendarX2, ChevronLeft, ChevronRight, Copy, Lock,
+  Calendar, CalendarPlus, CalendarX2, ChevronLeft, ChevronRight, Copy, Lock, LockOpen,
   Plus, Trash2, Clock, Eye,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -503,6 +503,31 @@ const providerMark = (name) => {
   return <Calendar className="h-[18px] w-[18px] text-ink/45" strokeWidth={2.2} />;
 };
 
+/* LockSlider — a slide-to-connect control. Locked = connected (synced),
+ * unlocked = not connected. Tapping toggles the connection. */
+const LockSlider = ({ connected, onToggle, label }) => (
+  <button
+    type="button"
+    role="switch"
+    aria-checked={connected}
+    aria-label={label}
+    onClick={onToggle}
+    className={cn('relative h-9 w-full overflow-hidden rounded-full border-2 transition-colors', connected ? 'border-maroon bg-maroon' : 'border-neutral-300 bg-neutral-100')}
+  >
+    <span className={cn('pointer-events-none absolute top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase tracking-wide transition-all', connected ? 'left-4 text-white/85' : 'right-4 text-ink/45')}>
+      {connected ? 'Connected' : 'Connect'}
+    </span>
+    <span
+      className="absolute top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full bg-white shadow-[0_1px_3px_rgba(21,19,41,0.25)] transition-all"
+      style={{ left: connected ? 'calc(100% - 32px)' : '4px' }}
+    >
+      {connected
+        ? <Lock className="h-3.5 w-3.5 text-maroon" strokeWidth={2.4} />
+        : <LockOpen className="h-3.5 w-3.5 text-ink/45" strokeWidth={2.4} />}
+    </span>
+  </button>
+);
+
 const Calendars = () => {
   const [cals, setCals] = useState(mock.availability.calendars);
   const connect = (c) => { setCals((v) => v.map((x) => (x.id === c.id ? { ...x, status: 'connected', account: 'ananya@icloud.com' } : x))); toast.success(`${c.name} connected`); };
@@ -510,34 +535,21 @@ const Calendars = () => {
 
   return (
     <div>
-      {/* Mobile: bento cards (one tap-target each). Desktop: a de-boxed list. */}
-      <div className="grid grid-cols-2 gap-3 sm:hidden">
+      {/* Mobile: one bento card per line — logo + name + email on one top
+          line, a slide-to-connect lock underneath. Desktop: a de-boxed list. */}
+      <div className="flex flex-col gap-3 sm:hidden">
         {cals.map((c) => {
           const connected = c.status === 'connected';
           return (
             <div key={c.id} className="flex flex-col gap-3 rounded-3xl bg-white p-3.5 shadow-[0_1px_2px_rgba(43,10,20,0.04),0_12px_26px_-18px_rgba(43,10,20,0.16)]">
-              <div className="flex items-start justify-between">
-                <span className="grid h-11 w-11 place-items-center rounded-2xl bg-neutral-50">{providerMark(c.name)}</span>
-                {connected && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-success-bg px-1.5 py-0.5 text-[8.5px] font-bold uppercase tracking-wide text-success-fg">
-                    <span className="h-1.5 w-1.5 rounded-full bg-success-fg" /> On
-                  </span>
-                )}
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-[12.5px] font-extrabold text-ink">{c.name}</p>
-                <p className="mt-0.5 truncate text-[10.5px] font-medium text-ink/50">{connected ? c.account : 'Not connected'}</p>
-              </div>
-              {connected ? (
-                <div className="mt-auto flex items-center justify-between">
-                  <label className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wide text-ink/40">
-                    <Toggle checked onChange={() => toast.success('Two-way sync is required while connected')} label="Two-way sync" /> Sync
-                  </label>
-                  <button type="button" onClick={() => disconnect(c)} className="text-[10.5px] font-bold text-ink/45 transition hover:text-maroon">Remove</button>
+              <div className="flex items-center gap-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-neutral-50">{providerMark(c.name)}</span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[13px] font-extrabold text-ink">{c.name}</p>
+                  <p className="truncate text-[10.5px] font-medium text-ink/50">{connected ? c.account : 'Not connected'}</p>
                 </div>
-              ) : (
-                <Button size="sm" className="mt-auto w-full" onClick={() => connect(c)}>Connect</Button>
-              )}
+              </div>
+              <LockSlider connected={connected} onToggle={() => (connected ? disconnect(c) : connect(c))} label={`${c.name} connection`} />
             </div>
           );
         })}
