@@ -6,7 +6,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { PageHeader, Card, Badge, Skeleton } from '../../components/admin/ui';
 import { adminGstIssues, adminGstSetIssueStatus } from '../../services/api';
-import { inr, num, PeriodFilter, defaultPeriod, periodParams } from './gstShared';
+import MeetDropdown from '../../components/ui/MeetDropdown';
+import { inr, num,PeriodFilter, defaultPeriod, periodParams } from './gstShared';
 
 const STATUSES = ['open', 'under_review', 'resolved', 'ignored'];
 const SEV_TONE = { high: 'danger', medium: 'warn', low: 'neutral' };
@@ -60,10 +61,8 @@ export default function AdminGstIssues() {
         <PeriodFilter value={period} onChange={setPeriod} />
         <label className="flex flex-col gap-1 text-[11px] uppercase tracking-wide adm-t3">
           Status
-          <select className="fb-input text-sm" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-            <option value="">All</option>
-            {STATUSES.map((st) => <option key={st} value={st}>{st.replace('_', ' ')}</option>)}
-          </select>
+          <MeetDropdown size="sm" ariaLabel="Status" value={statusFilter} onChange={setStatusFilter}
+            options={[{ value: '', label: 'All' }, ...STATUSES.map((st) => ({ value: st, label: st.replace('_', ' ') }))]} />
         </label>
       </div>
 
@@ -107,14 +106,14 @@ export default function AdminGstIssues() {
                       <td className="px-4 py-3 adm-t3 whitespace-nowrap">{i.sourceType} · {String(i.sourceId).slice(0, 8)}…</td>
                       <td className="px-4 py-3"><Badge tone={STATUS_TONE[i.status] || 'neutral'}>{(i.status || 'open').replace('_', ' ')}</Badge></td>
                       <td className="px-4 py-3">
-                        <select
-                          className="fb-input text-sm"
+                        <MeetDropdown
+                          size="sm"
+                          ariaLabel="Set status"
                           value={i.status || 'open'}
                           disabled={saving === rowKey}
-                          onChange={(e) => setStatus(i, e.target.value)}
-                        >
-                          {STATUSES.map((st) => <option key={st} value={st}>{st.replace('_', ' ')}</option>)}
-                        </select>
+                          onChange={(v) => setStatus(i, v)}
+                          options={STATUSES.map((st) => ({ value: st, label: st.replace('_', ' ') }))}
+                        />
                       </td>
                     </tr>
                   );

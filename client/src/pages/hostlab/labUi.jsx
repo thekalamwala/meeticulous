@@ -570,6 +570,7 @@ export const LabInput = ({ className = '', ...props }) => (
   <input className={cn(FIELD, unless(className, 'w', 'w-full'), unless(className, 'h', 'h-8'), className)} {...props} />
 );
 
+// ponytail: left native — takes <option> children + DOM-event onChange from many callers; not reproducible without rewriting every call site.
 export const LabSelect = ({ className = '', children, ...props }) => (
   <select
     className={cn(FIELD, 'cursor-pointer appearance-none pr-8', unless(className, 'w', 'w-full'), unless(className, 'h', 'h-8'), className)}

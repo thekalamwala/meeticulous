@@ -30,6 +30,7 @@ import {
 import { PageHeading } from '../components/dashboard/ui/v2';
 import { PREMIUM_PLAN } from '../data/plans';
 import ProTeaser from '../components/dashboard/ProTeaser';
+import MeetDropdown from '../components/ui/MeetDropdown';
 
 const LAPSE_DAYS = 60; // mirrors crmService.LAPSE_DAYS
 
@@ -433,19 +434,8 @@ const ClientsV2 = () => {
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <SearchInput value={q} onChange={setQ} placeholder="Name, phone or email…" className="w-full sm:w-64" />
-        <div className="relative inline-flex items-center">
-          <select
-            value={segment}
-            onChange={(e) => setSegment(e.target.value)}
-            aria-label="Segment"
-            className="h-10 appearance-none rounded-full border border-maroon/20 bg-white pl-3 pr-8 text-sm font-medium text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
-          >
-            {SEGMENTS.map((s) => (
-              <option key={s.value} value={s.value}>{s.label}{s.value !== 'all' ? ` (${counts[s.value] ?? 0})` : ''}</option>
-            ))}
-          </select>
-          <ChevronDown className="pointer-events-none absolute right-2.5 h-4 w-4 text-ink/40" />
-        </div>
+        <MeetDropdown size="sm" ariaLabel="Segment" value={segment} onChange={setSegment}
+          options={SEGMENTS.map((s) => ({ value: s.value, label: `${s.label}${s.value !== 'all' ? ` (${counts[s.value] ?? 0})` : ''}` }))} />
         <SegmentedControl className="sm:w-auto" value={sort} onChange={setSort}
           options={[{ value: 'recent', label: 'Recent' }, { value: 'ltv', label: 'Top Spend' }]} />
       </div>

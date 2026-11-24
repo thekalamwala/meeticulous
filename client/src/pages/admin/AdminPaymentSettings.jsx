@@ -1,3 +1,4 @@
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import { useState, useEffect } from "react";
 import { adminGetRazorpay, adminUpdateRazorpay, adminTestRazorpay } from "../../services/api";
 import toast from "react-hot-toast";
@@ -87,10 +88,8 @@ const AdminPaymentSettings = () => {
         {/* Mode */}
         <div>
           <label className="block text-sm font-medium adm-t1 mb-1">Mode</label>
-          <select className="fb-input w-40" value={form.mode} onChange={(e) => setForm((f) => ({ ...f, mode: e.target.value }))}>
-            <option value="test">Test</option>
-            <option value="live">Live</option>
-          </select>
+          <MeetDropdown className="w-40" ariaLabel="Mode" value={form.mode} onChange={(v) => setForm((f) => ({ ...f, mode: v }))}
+            options={[{ value: 'test', label: 'Test' }, { value: 'live', label: 'Live' }]} />
           <p className="text-xs adm-t3 mt-1">Informational label — use matching test/live keys below.</p>
         </div>
 

@@ -37,7 +37,8 @@ test('search and all three dropdowns sit on one row', async () => {
 
   const bar = container.querySelector('input[placeholder^="Search"]').closest('div').parentElement;
   expect(bar.className).not.toContain('flex-wrap');
-  expect(bar.querySelectorAll('select').length).toBe(3);
+  // The three native <select> filters are now MeetDropdown listboxes (.mt-dd).
+  expect(bar.querySelectorAll('.mt-dd').length).toBe(3);
 });
 
 test('renders the profile photo when the host has one', async () => {

@@ -116,7 +116,8 @@ test('save → follow-up window pre-picked for the outcome → send → next lea
   expect(outcome.mock.calls[0][0]).toBe('A');
   expect(outcome.mock.calls[0][1]).toMatchObject({ outcome: 'interested' });
   // One template for both channels; WhatsApp not approved yet → can't tick; email needs an address → type it.
-  expect(within(dialog).getByLabelText('Template').value).toBe('cold_call_interested');
+  // Template is now a MeetDropdown listbox; assert the pre-picked label ('Interested' = cold_call_interested).
+  expect(within(dialog).getByLabelText('Template').textContent).toContain('Interested');
   expect(within(dialog).getByText(/WhatsApp sends once Meta approves/)).toBeTruthy();
   expect(within(dialog).getByLabelText('Send WhatsApp').disabled).toBe(true);
   fireEvent.change(within(dialog).getByPlaceholderText('Type their email'), { target: { value: 'owner@bloom.co' } });

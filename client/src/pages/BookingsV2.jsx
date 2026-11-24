@@ -15,6 +15,7 @@ import { useRegisterRefresh } from '../components/dashboard/ui/refreshContext';
 import { Skeleton, EmptyState, ErrorState, SearchInput } from '../components/dashboard/ui';
 import { Avatar, Panel, PageHeading, StatusPill, Tile, cn, fmtTime, fmtDayFull } from '../components/dashboard/ui/v2';
 import { BookingDetailModal } from './Bookings';
+import MeetDropdown from '../components/ui/MeetDropdown';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const lower = (s) => String(s || '').toLowerCase();
@@ -122,10 +123,7 @@ const BookingsV2 = () => {
         {view === 'list' ? (
           <>
             <SearchInput value={q} onChange={setQ} placeholder="Guest, email or service…" className="w-full sm:w-56" />
-            <select value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Status"
-              className="h-10 rounded-full border border-maroon/20 bg-white px-3 text-sm font-medium text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose">
-              {STATUS_FILTER.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-            </select>
+            <MeetDropdown size="sm" ariaLabel="Status" value={status} onChange={setStatus} options={STATUS_FILTER} />
           </>
         ) : (
           <div className="flex items-center gap-1">
