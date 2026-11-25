@@ -78,7 +78,6 @@ export const PAGE_GUIDES = {
     { slug: 'topmate-commission', title: 'Topmate Commission & Fees (2026): What You Keep per ₹1,000' },
     { slug: 'calendly-pricing-india', title: 'Calendly Pricing in India (2026): Plans in ₹ with GST' },
     { slug: 'consultation-fees-india', title: 'How Much to Charge for Consultation in India (2026)' },
-    { slug: 'best-appointment-booking-apps-india', title: 'Appointment Scheduling Apps in India: 8 Compared in ₹ (2026)' },
   ],
   '/for/tutors': [
     { slug: 'how-to-start-online-tuition', title: 'How to Start Online Tuition in India: Batches, Fees & UPI' },
