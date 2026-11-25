@@ -25,7 +25,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import {
   Home, CalendarDays, Users, MessagesSquare, Package, CalendarRange,
   CreditCard, TrendingUp, Settings, ChevronRight, PanelLeft, Sparkles, X,
-  LifeBuoy, Plus, Copy, ArrowUpRight,
+  LifeBuoy, Copy, ArrowUpRight,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { markLinkShared } from '../../services/api';
@@ -258,31 +258,40 @@ const copyBookingLink = async (username) => {
     markLinkShared();
   } catch { toast.error('Could not copy your link.'); }
 };
-const BookingLink = ({ user }) => {
+/* Booking link card — bottom-left of the rail (founder pick, 2026-11-25): your
+ * page, one tap to copy, one to open. Collapsed rail shows just the copy button. */
+const BookingLinkCard = ({ user, collapsed }) => {
   if (!user?.username) return null;
   const host = window.location.host.replace(/^www\./, '');
-  return (
-    <div className="hidden items-center gap-2 lg:flex">
-      <a href={`/${user.username}`} target="_blank" rel="noreferrer" title="Open your booking page"
-        className="flex h-11 items-center gap-2.5 rounded-[14px] bg-white py-1 pl-1.5 pr-3.5 text-[14px] font-semibold text-ink transition hover:text-maroon focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
-        {user.profile_image
-          ? <img src={user.profile_image} alt="" className="h-8 w-8 rounded-[10px] object-cover" />
-          : <span className="grid h-8 w-8 place-items-center rounded-[10px] bg-blush text-[13px] font-semibold text-maroon">{(user.name || 'U').charAt(0)}</span>}
-        <span className="max-w-[240px] truncate">{host}/{user.username}</span>
-        <ArrowUpRight className="h-4 w-4 shrink-0 text-faint" strokeWidth={2.2} />
-      </a>
-      <button type="button" onClick={() => copyBookingLink(user.username)} aria-label="Copy booking link" title="Copy booking link"
-        className="grid h-11 w-11 place-items-center rounded-[14px] bg-white text-maroon transition hover:bg-pink-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
+  const copy = () => copyBookingLink(user.username);
+  if (collapsed) {
+    return (
+      <button type="button" onClick={copy} aria-label="Copy booking link" title="Copy booking link"
+        className={cn('mx-auto grid h-10 w-10 place-items-center rounded-[12px] bg-white text-maroon transition hover:bg-pink-100', ring)}>
         <Copy className="h-[18px] w-[18px]" strokeWidth={2.2} />
+      </button>
+    );
+  }
+  return (
+    <div className="rounded-[16px] bg-white p-3">
+      <p className="mb-0 text-[12px] font-medium text-faint">Your booking page</p>
+      <a href={`/${user.username}`} target="_blank" rel="noreferrer" title="Open your booking page"
+        className={cn('mt-0.5 flex items-center gap-1 rounded-[6px] text-[13.5px] font-semibold text-ink transition hover:text-maroon', ring)}>
+        <span className="min-w-0 truncate">{host}/{user.username}</span>
+        <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-faint" strokeWidth={2.2} />
+      </a>
+      <button type="button" onClick={copy}
+        className={cn('mt-2.5 flex h-9 w-full items-center justify-center gap-1.5 rounded-[10px] bg-maroon text-[13px] font-semibold text-white transition hover:bg-maroon-dark', ring)}>
+        <Copy className="h-3.5 w-3.5" strokeWidth={2.4} /> Copy link
       </button>
     </div>
   );
 };
 
-/* Topbar — booking link (desktop), help, notifications; profile lives in the
- * rail footer on desktop and stays here on phones. */
+/* Topbar — help, notifications and the profile card (top-right corner, founder
+ * pick). Desktop shows the card with your name; phones show just the avatar. */
 const TopbarV2 = ({ onOpenNav, user, plan, planStyle, initial, logout, onHome }) => (
-  <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 bg-cream/90 px-4 pt-[env(safe-area-inset-top,0px)] backdrop-blur-md sm:px-6 lg:h-16 lg:px-10">
+  <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 bg-cream/90 px-4 pt-[env(safe-area-inset-top,0px)] backdrop-blur-md sm:px-6 lg:h-16 lg:px-8">
     {/* Mobile: the logo is Home (founder decision, 2026-11-25), so it looks pressable
         and carries a maroon underline while you're on Today. */}
     <Link to="/dashboard" title="Meeticulous — Home" aria-label="Meeticulous — Home"
@@ -291,12 +300,16 @@ const TopbarV2 = ({ onOpenNav, user, plan, planStyle, initial, logout, onHome })
       <span aria-hidden="true" className={cn('h-[3px] w-4 rounded-full', onHome ? 'bg-maroon' : 'bg-transparent')} />
     </Link>
     <div className="ml-auto flex shrink-0 items-center gap-2">
-      <BookingLink user={user} />
       <Link to="/help" title="Support" aria-label="Support"
         className="grid h-10 w-10 place-items-center rounded-[12px] bg-white text-muted transition-colors hover:text-maroon">
         <LifeBuoy className="h-[19px] w-[19px]" strokeWidth={1.8} />
       </Link>
       <NotifBell />
+      <div className="hidden lg:block">
+        <ProfileMenu user={user} plan={plan} planStyle={planStyle} initial={initial} logout={logout} identity
+          triggerClassName="flex h-12 max-w-[260px] items-center gap-2.5 rounded-[14px] bg-white py-1.5 pl-1.5 pr-3 transition hover:bg-pink-100"
+          chevronClassName="h-4 w-4 shrink-0 text-faint" />
+      </div>
       <div className="lg:hidden"><ProfileMenu user={user} plan={plan} planStyle={planStyle} initial={initial} logout={logout} /></div>
     </div>
   </header>
@@ -364,21 +377,9 @@ const DashboardLayoutV2 = ({ children }) => {
               <PanelLeft className="h-3.5 w-3.5" strokeWidth={2.2} />
             </button>
           </div>
-          {/* Create — the one primary action, top of the rail on every page. */}
-          <div className={cn('shrink-0 pb-1', railCollapsed ? 'px-3' : 'px-3')}>
-            <Link to="/dashboard/service/add-new" title="New service" aria-label="New service"
-              className={cn('flex h-11 items-center justify-center gap-2 rounded-[12px] bg-maroon text-[14px] font-semibold text-white transition hover:bg-maroon-dark', ring)}>
-              <Plus className="h-[18px] w-[18px]" strokeWidth={2.4} />
-              {!railCollapsed && 'New service'}
-            </Link>
-          </div>
           <SidebarBody sections={sections} plan={plan} badges={badges} activeTo={activeTo} collapsed={railCollapsed} />
-          {/* You — profile at the bottom-left, where creators look for it. */}
-          <div className={cn('shrink-0 p-3 pt-0', railCollapsed && 'flex justify-center')}>
-            <ProfileMenu user={user} plan={plan} initial={initial} logout={logout}
-              identity={!railCollapsed} menuPlacement="up" menuAlign="left"
-              triggerClassName={cn('flex items-center gap-2.5 rounded-[14px] transition hover:bg-white', railCollapsed ? 'p-1' : 'w-full p-2')}
-              chevronClassName="h-4 w-4 shrink-0 text-faint" />
+          <div className="shrink-0 p-3 pt-0">
+            <BookingLinkCard user={user} collapsed={railCollapsed} />
           </div>
         </aside>
 
@@ -407,7 +408,7 @@ const DashboardLayoutV2 = ({ children }) => {
             {/* No scrollerRef: the window scrolls here. Passing <main> made scrollTop read 0
                 on every drag, so scrolling back UP on a phone was hijacked into a refresh. */}
             <PullToRefresh>
-              <div className="mx-auto w-full max-w-[1180px] px-4 pb-28 pt-2 sm:px-6 lg:px-10 lg:pb-12 lg:pt-4">
+              <div className="mx-auto w-full max-w-[1240px] px-4 pb-28 pt-2 sm:px-6 lg:mx-0 lg:px-8 lg:pb-12 lg:pt-4">
                 {/* Today shows KYC inside its own "Needs you" card, so the shell notice
                     would say the same thing twice there. */}
                 {pathname !== '/dashboard' && <KycNudgeStrip />}

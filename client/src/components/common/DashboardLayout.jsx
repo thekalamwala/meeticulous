@@ -371,7 +371,7 @@ export const ProfileMenu = ({
         {identity && (
           <span className="min-w-0 flex-1 text-left">
             <span className="block truncate text-[14px] font-semibold text-ink">{user?.name || 'Host'}</span>
-            <span className="block truncate text-[12.5px] text-faint">{user?.email || ''}</span>
+            <span className="block truncate text-[12px] text-faint">{user?.username ? `@${user.username}` : (user?.email || '')}</span>
           </span>
         )}
         <ChevronDown className={cn(chevronClassName, 'transition-transform', open && 'rotate-180')} />

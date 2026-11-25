@@ -17,7 +17,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   AlertTriangle, ArrowRight, CalendarCheck2, Check, Copy, IndianRupee,
-  Link2, Plus, ShieldCheck, Wallet, X,
+  Link2, ShieldCheck, Wallet, X,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -436,9 +436,8 @@ const TodayV2 = () => {
   // ONE layout for every screen size. Spacing does the grouping: 16px inside a
   // group, 40px between groups (Gestalt proximity), in the order a creator needs
   // it — who/what today, what to act on, how it's going, the week. Each control
-  // appears once: the booking link lives in the topbar on desktop and here on
-  // phones; "New service" is the rail's primary on desktop and sits beside the
-  // link on phones.
+  // appears once: the booking link lives in the rail's bottom-left card on
+  // desktop and here on phones (no rail there).
   return (
     <div className="flex flex-col gap-8 lg:gap-10">
       <div className="flex flex-col gap-4">
@@ -454,13 +453,7 @@ const TodayV2 = () => {
             </p>
           </div>
         </header>
-        <div className="flex items-center gap-2 lg:hidden">
-          <LinkChip username={user?.username} onCopy={copyLink} className="min-w-0 flex-1" />
-          <button type="button" onClick={() => go('/dashboard/service/add-new')} aria-label="New service" title="New service"
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-[14px] bg-white text-maroon transition active:scale-95 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
-            <Plus className="h-5 w-5" strokeWidth={2.4} />
-          </button>
-        </div>
+        <LinkChip username={user?.username} onCopy={copyLink} className="lg:hidden" />
         {showPromo && <ProStrip go={go} onClose={() => setPromoClosed(true)} />}
       </div>
 
