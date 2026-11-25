@@ -1,127 +1,253 @@
-// Creator Intelligence · Revenue — the reconciliation, from GET /host/intelligence/money.
-// Ungated: free hosts already get earnings history. All figures are live from bookings.
-import { useState, useEffect } from 'react';
-import { TrendingUp } from 'lucide-react';
+// Insights · Revenue (Kept) — the reconciliation, from GET /vendor/intelligence/money.
+// Ungated: free hosts already get earnings history. Absorbs the old Earnings page
+// (its period chips come along; /dashboard/earnings redirects here).
+//
+// Presentation only: every figure is the server's. Nothing here recomputes net,
+// commission or tax. Two rules from the CA ruling (2026-11-17):
+//  · withholding is FY-scoped, so the tax panel ALWAYS reads the all-time call
+//    (the server scopes it to the FY) and never the period-filtered one, and the
+//    "where it went" list does not show an all-time TDS/TCS total;
+//  · ₹0 deduction lines are hidden, not shown as ₹0.
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowRight, ChevronDown, Info } from 'lucide-react';
 import { getIntelligenceMoney } from '../../services/api';
-import { ErrorState, Skeleton } from '../../components/dashboard/ui';
-import { PageHeading, Panel, SubNav, Tile, BarChart, RankedBars, inr } from '../../components/dashboard/ui/v2';
-import { INTELLIGENCE_NAV } from '../dashboardNav';
+import { Skeleton } from '../../components/dashboard/ui';
+import { BarChart, InsightBand, Panel, RankedBars, Tile, cn, inr } from '../../components/dashboard/ui/v2';
+import { periodStart } from '../money/earningsModel';
+import { BandLink, Failed, Fact, Loading, Notice, linkBtn, monthLabel, monthLong, plural, serif, useInsight } from './insightsUi';
 
-const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const PERIODS = [
+  { value: 'all', label: 'All time', phrase: '' },
+  { value: '30d', label: '30 days', phrase: ' in the last 30 days' },
+  { value: '90d', label: '90 days', phrase: ' in the last 90 days' },
+  { value: 'year', label: 'This year', phrase: ' this year' },
+];
 
-const IntelRevenue = () => {
-  const [data, setData] = useState(null);
-  const [err, setErr] = useState(false);
+// Pure, tested: the deduction lines worth showing — ₹0 lines hidden.
+export const deductionLines = (s) => [
+  ['Commission', (s.commission || 0) + (s.commissionGst || 0), 'Including GST'],
+  ['Platform fee', (s.platformFee || 0) + (s.platformFeeGst || 0), 'Including GST'],
+  ['Payment gateway', s.razorpayFee || 0, 'Fee and tax'],
+  ['Refunded', s.refunded || 0, 'Returned to guests'],
+].filter(([, v]) => v > 0);
 
-  const load = async () => {
-    setErr(false);
-    setData(null);
-    try { const res = await getIntelligenceMoney(); setData(res.data || {}); }
-    catch { setErr(true); }
-  };
-  useEffect(() => { load(); }, []);
+// Pure, tested: chart labels for the monthly series ("Oct", or "Oct 25" across years).
+export const monthSeries = (byMonth = []) => {
+  const years = new Set(byMonth.map((m) => String(m.month).slice(0, 4)));
+  return byMonth.map((m) => ({ ...m, label: monthLabel(m.month, years.size > 1) }));
+};
 
-  const header = (
-    <>
-      <PageHeading title="Revenue" sub="From what guests paid to what reaches you, line by line." />
-    </>
-  );
+const PeriodChips = ({ value, onChange }) => (
+  <div role="group" aria-label="Period" className="dash-noscrollbar flex gap-2 overflow-x-auto">
+    {PERIODS.map((p) => (
+      <button key={p.value} type="button" onClick={() => onChange(p.value)} aria-pressed={value === p.value}
+        className={cn('shrink-0 rounded-[12px] px-3.5 py-2 text-[13.5px] font-semibold transition focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose',
+          value === p.value ? 'bg-ink text-white' : 'bg-white text-muted hover:bg-blush hover:text-maroon')}>
+        {p.label}
+      </button>
+    ))}
+  </div>
+);
 
-  if (err) {
-    return <div className="flex flex-col gap-4 sm:gap-6">{header}<ErrorState message="Couldn't load your revenue." onRetry={load} /></div>;
-  }
-  if (data === null) {
-    return <div className="flex flex-col gap-4 sm:gap-6">{header}<Skeleton className="h-28 rounded-xl" /><Skeleton className="h-64 rounded-xl" /></div>;
-  }
-
-  const { summary: s, settlement, byService = [], byMonth = [], concentration: conc, upcoming, withholding: w } = data;
-
-  if (!s || s.bookings === 0) {
-    return (
-      <div className="flex flex-col gap-4 sm:gap-6">
-        {header}
-        <div className="flex flex-col items-center gap-1.5 rounded-lg border-2 border-neutral-200 bg-white py-12 text-center">
-          <TrendingUp className="h-6 w-6 text-maroon/30" strokeWidth={1.8} />
-          <p className="text-[12px] font-bold text-ink">No paid bookings yet</p>
-          <p className="max-w-xs text-[11px] font-medium text-ink/55">Your revenue breakdown appears here once guests pay.</p>
-        </div>
-        {upcoming?.bookings > 0 && (
-          <Tile label="Confirmed, unpaid" value={inr(upcoming.value, { compact: true })} hint={plural(upcoming.bookings, 'booking')} />
-        )}
-      </div>
-    );
-  }
-
-  const monthChart = byMonth.map((m) => ({ ...m, month: m.month.slice(2) }));
-
+const WentPanel = ({ s }) => {
+  const lines = deductionLines(s);
+  const kept = s.gross > 0 ? Math.max(0, Math.min(1, s.net / s.gross)) : 1;
+  const taxed = (s.tds || 0) + (s.tcs || 0) > 0;
   return (
-    <div className="flex flex-col gap-4 sm:gap-6">
-      {header}
+    <Panel title="Where the money went" subtitle="From what guests paid to what you keep">
+      <div className="flex h-3 w-full overflow-hidden rounded-full bg-neutral-100" role="img"
+        aria-label={`You keep ${Math.round(kept * 100)}% of what guests paid`}>
+        <span className="h-full bg-maroon" style={{ width: `${kept * 100}%` }} />
+        <span className="h-full flex-1 bg-rose-500" />
+      </div>
+      <ul className="mt-3 flex flex-col divide-y divide-neutral-200">
+        <li className="flex items-baseline justify-between gap-3 py-2.5">
+          <span className="text-[14px] text-ink">Guests paid</span>
+          <span className="text-[14.5px] font-semibold tabular-nums text-ink">{inr(s.gross)}</span>
+        </li>
+        {lines.map(([label, v, hint]) => (
+          <li key={label} className="flex items-baseline justify-between gap-3 py-2.5">
+            <span className="min-w-0 text-[14px] text-ink">{label} <span className="text-[12.5px] text-faint">· {hint}</span></span>
+            <span className="shrink-0 text-[14.5px] font-semibold tabular-nums text-rose-600">−{inr(v)}</span>
+          </li>
+        ))}
+        {taxed && (
+          <li className="flex items-baseline justify-between gap-3 py-2.5">
+            <span className="text-[14px] text-ink">Tax withheld</span>
+            <span className="shrink-0 text-[13px] text-faint">This year, under Tax below</span>
+          </li>
+        )}
+        <li className="flex items-baseline justify-between gap-3 py-2.5">
+          <span className="text-[14px] font-semibold text-ink">You keep</span>
+          <span className="font-display text-[20px] font-extrabold tabular-nums tracking-[-0.02em] text-maroon">{inr(s.net)}</span>
+        </li>
+      </ul>
+      {!lines.length && <p className="mb-0 mt-1 text-[12.5px] text-faint">No fees or refunds taken in this period.</p>}
+    </Panel>
+  );
+};
 
-      {s.derivedLeads && (
-        <p className="rounded-md border-2 border-warning-bg bg-warning-bg/50 px-3 py-2 text-[11px] font-semibold text-warning-fg">
-          {plural(s.derivedRows, 'booking')} ({inr(s.derivedValue)}) had no payout snapshot, so their net is estimated and totals may not tie exactly.
+const NowPanel = ({ settlement, upcoming, go }) => (
+  <Panel title="Where it is now" subtitle="Paid out, on the way, or still to be paid"
+    action={<button type="button" onClick={() => go('/dashboard/payments/payouts')} className={linkBtn}>Payouts <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></button>}>
+    <div className="grid grid-cols-1 gap-2 min-[420px]:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+      {settlement && <Fact label="In your bank" value={inr(settlement.settled, { compact: true })} hint="Settled" />}
+      {settlement && <Fact label="On its way" value={inr(settlement.pending, { compact: true })} hint="Paid, not settled yet" />}
+      {upcoming && <Fact label="Booked, unpaid" value={inr(upcoming.value, { compact: true })} hint={plural(upcoming.bookings, 'booking')} />}
+    </div>
+  </Panel>
+);
+
+const MonthPanel = ({ byMonth }) => {
+  const rows = monthSeries(byMonth);
+  return (
+    <Panel title="By month" subtitle="What you kept, oldest first">
+      {rows.length >= 3 ? (
+        <div className="pt-5">
+          <BarChart data={rows} valueKey="net" labelKey="label"
+            tip={(r) => `${monthLong(r.month)} · ${inr(r.net)} kept · ${plural(r.bookings, 'booking')}`} />
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-2">
+          {rows.map((r) => <Fact key={r.month} label={monthLong(r.month)} value={inr(r.net, { compact: true })} hint={plural(r.bookings, 'booking')} />)}
+        </div>
+      )}
+    </Panel>
+  );
+};
+
+const ServicePanel = ({ byService, conc }) => (
+  <Panel title="By service" subtitle="What guests paid, highest first">
+    {byService.length === 1 ? (
+      <p className="mb-0 text-[14px] text-ink">All of it came from <b>{byService[0].label}</b>: {plural(byService[0].bookings, 'booking')}, {inr(byService[0].gross)}.</p>
+    ) : (
+      <RankedBars rows={byService} valueKey="gross" labelKey="label" format={(v) => (v ? inr(v) : 'Free')}
+        secondary={(r) => `· ${plural(r.bookings, 'booking')}`} />
+    )}
+    {conc?.share != null && conc.guests > conc.topN && (
+      <p className="mb-0 mt-4 rounded-[16px] bg-cream px-4 py-3 text-[14px] text-ink">
+        <b>{conc.share}%</b> of your revenue comes from your top {conc.topN} guests, out of {conc.guests}.
+      </p>
+    )}
+  </Panel>
+);
+
+const TaxPanel = ({ w }) => {
+  const [open, setOpen] = useState(false);
+  const none = !(w.total > 0);
+  const notes = [w.disclosure?.tds, w.disclosure?.tcs, w.disclosure?.caveat].filter((t) => typeof t === 'string');
+  return (
+    <Panel title={none ? 'No tax withheld this year' : `Tax withheld · ${w.fyLabel}`}
+      subtitle={none ? `${w.fyLabel} · from your payout records` : 'From your payout records'}>
+      {!none && (
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {w.tds > 0 && <Fact label="TDS" value={inr(w.tds, { decimals: true })} />}
+          {w.tcs > 0 && <Fact label="TCS" value={inr(w.tcs, { decimals: true })} />}
+          <Fact label="Total" value={inr(w.total, { decimals: true })} hint={`Across ${plural(w.bookingsMeasured, 'booking')}`} />
+        </div>
+      )}
+      {w.bookingsUnknown > 0 && (
+        <p className={cn('mb-0 text-[14px] text-ink', !none && 'mt-3')}>
+          {plural(w.bookingsUnknown, 'booking')} ({inr(w.unknownGross)} paid) have no payout record yet, so they aren&apos;t counted here.
         </p>
       )}
-
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
-        <Tile label="Net revenue" value={inr(s.net, { compact: true })} accent hint="After fees, tax and refunds" />
-        <Tile label="Gross" value={inr(s.gross, { compact: true })} hint="What guests paid" />
-        <Tile label="Paid bookings" value={s.bookings} hint={`Avg ${inr(s.aov)} per booking`} />
-        <Tile label="Net per booking" value={inr(s.netAov)} hint="What you keep on average" />
-      </div>
-
-      <Panel title="Where the gross went" subtitle="Every deduction, all paid bookings">
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
-          <Tile label="Commission" value={inr(s.commission + s.commissionGst, { compact: true })} hint="Including GST" />
-          <Tile label="Platform fee" value={inr(s.platformFee + s.platformFeeGst, { compact: true })} hint="Including GST" />
-          <Tile label="Payment gateway" value={inr(s.razorpayFee, { compact: true })} hint="Fee and tax" />
-          <Tile label="Refunded" value={inr(s.refunded, { compact: true })} hint="Returned to guests" />
-        </div>
-      </Panel>
-
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3">
-        {settlement && <Tile label="Settled" value={inr(settlement.settled, { compact: true })} hint="Paid out to you" />}
-        {settlement && <Tile label="Pending payout" value={inr(settlement.pending, { compact: true })} hint="Paid by guests, not yet settled" />}
-        {upcoming && <Tile label="Confirmed, unpaid" value={inr(upcoming.value, { compact: true })} hint={plural(upcoming.bookings, 'booking')} />}
-      </div>
-
-      <Panel title="Revenue by month" subtitle="Net, oldest first">
-        {monthChart.length ? <BarChart data={monthChart} valueKey="net" labelKey="month" /> : <p className="text-[11px] font-medium text-ink/55">No monthly data yet.</p>}
-      </Panel>
-
-      <Panel title="Revenue by service" subtitle="Gross, highest first">
-        <RankedBars rows={byService} valueKey="gross" labelKey="label"
-          format={(v) => inr(v)} secondary={(r) => `${plural(r.bookings, 'booking')} · net ${inr(r.net)}`} />
-      </Panel>
-
-      {conc && conc.share != null && (
-        <Panel title="Guest concentration">
-          <p className="text-[12px] font-medium text-ink/70">
-            <span className="font-bold text-ink">{conc.share}%</span> of your gross comes from your top {conc.topN} of {plural(conc.guests, 'guest')}.
-          </p>
-        </Panel>
-      )}
-
-      {w && (
-        <Panel title={`Tax withheld · ${w.fyLabel}`} subtitle="Measured from payout records only">
-          <div className="grid grid-cols-3 gap-2">
-            <Tile label="TDS" value={inr(w.tds, { decimals: true })} />
-            <Tile label="TCS" value={inr(w.tcs, { decimals: true })} />
-            <Tile label="Total" value={inr(w.total, { decimals: true })} hint={plural(w.bookingsMeasured, 'booking')} />
-          </div>
-          {w.bookingsUnknown > 0 && (
-            <p className="mt-2 text-[11px] font-medium text-ink/55">
-              {plural(w.bookingsUnknown, 'booking')} ({inr(w.unknownGross)} gross) have no payout snapshot and are left out of these totals.
-            </p>
-          )}
-          {w.disclosure && (
-            <div className="mt-2 flex flex-col gap-1 text-[10.5px] font-medium text-ink/45">
-              {[w.disclosure.tds, w.disclosure.tcs, w.disclosure.caveat].filter((t) => typeof t === 'string').map((t) => <p key={t}>{t}</p>)}
+      {notes.length > 0 && (
+        <div className={cn((!none || w.bookingsUnknown > 0) && 'mt-3')}>
+          <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className={cn(linkBtn, '-ml-2')}>
+            What this means <ChevronDown className={cn('h-4 w-4 transition', open && 'rotate-180')} strokeWidth={2.4} />
+          </button>
+          {open && (
+            <div className="mt-1 flex flex-col gap-1.5 text-[13px] text-muted">
+              {notes.map((t) => <p key={t} className="mb-0">{t}</p>)}
             </div>
           )}
-        </Panel>
+        </div>
       )}
+    </Panel>
+  );
+};
+
+const IntelRevenue = () => {
+  const navigate = useNavigate();
+  const go = (to) => navigate(to);
+  const [period, setPeriod] = useState('all');
+  const p = PERIODS.find((x) => x.value === period);
+  const [all, reloadAll] = useInsight(getIntelligenceMoney, 'money-all');
+  const [scoped, reloadScoped] = useInsight(
+    () => (period === 'all' ? Promise.resolve(null) : getIntelligenceMoney({ from: periodStart(period).toISOString() })),
+    `money-${period}`,
+  );
+  const data = period === 'all' ? all : scoped;
+
+  if (all === false || data === false) return <Failed what="revenue" onRetry={() => { reloadAll(); if (period !== 'all') reloadScoped(); }} />;
+  if (all === null) return <Loading />;
+
+  const s = data?.summary;
+  const has = s && s.bookings > 0;
+  const kept = has && s.gross > 0 ? Math.round((s.net / s.gross) * 100) : null;
+  const commission = has ? (s.commission || 0) + (s.commissionGst || 0) : 0;
+  const pending = data?.settlement?.pending || 0;
+
+  const band = !data ? null : has ? (
+    <InsightBand mascot="purple" eyebrow={`Revenue${p.phrase ? ` · ${p.label}` : ''}`}
+      title={kept != null
+        ? <>You keep {inr(kept)} <em className={serif}>of every ₹100 guests pay.</em></>
+        : <>{plural(s.bookings, 'paid booking')} <em className={serif}>{p.phrase ? p.phrase.trim() : 'so far'}.</em></>}
+      sub={[
+        commission > 0 && `Commission took ${inr(commission)}${p.phrase}.`,
+        pending > 0 && `${inr(pending)} is on its way to your bank.`,
+      ].filter(Boolean).join(' ') || `You kept ${inr(s.net)} from ${plural(s.bookings, 'paid booking')}${p.phrase}.`}
+      actions={<BandLink to="/dashboard/payments/payouts">See payouts <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></BandLink>} />
+  ) : (
+    <InsightBand mascot="purple" eyebrow="Revenue"
+      title={period === 'all' ? <>No paid bookings <em className={serif}>yet.</em></> : <>No paid bookings <em className={serif}>{p.phrase.trim()}.</em></>}
+      sub={period === 'all' ? 'What guests pay, what comes out and what reaches you fills in here once a guest pays.' : 'Try a longer period to see more.'}
+      actions={period === 'all' ? <BandLink to="/dashboard/bookings">See bookings <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></BandLink> : null} />
+  );
+
+  return (
+    <div className="flex flex-col gap-4 sm:gap-5">
+      {data === null ? <Skeleton className="h-[200px] rounded-[28px] sm:rounded-[32px]" /> : band}
+      <PeriodChips value={period} onChange={setPeriod} />
+      {data === null && (
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" aria-busy="true">
+          {[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[112px] rounded-[20px]" />)}
+        </div>
+      )}
+
+      {data && has && (
+        <>
+          {s.derivedLeads && (
+            <Notice icon={Info}>
+              {plural(s.derivedRows, 'older booking')} ({inr(s.derivedValue)}) had no payout record, so what you kept from {s.derivedRows === 1 ? 'it' : 'them'} is estimated.
+            </Notice>
+          )}
+
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+            <Tile label="You kept" value={inr(s.net, { compact: true })} accent hint="After fees and refunds" />
+            <Tile label="Guests paid" value={inr(s.gross, { compact: true })} hint="Before anything comes out" />
+            <Tile label="Paid bookings" value={s.bookings.toLocaleString('en-IN')} hint={`${inr(s.aov)} each on average`} />
+            <Tile label="Kept per booking" value={inr(s.netAov)} hint="On average" />
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2">
+            <WentPanel s={s} />
+            <NowPanel settlement={data.settlement} upcoming={data.upcoming} go={go} />
+            {data.byMonth?.length > 0 && <MonthPanel byMonth={data.byMonth} />}
+            {data.byService?.length > 0 && <ServicePanel byService={data.byService} conc={data.concentration} />}
+          </div>
+        </>
+      )}
+
+      {data && !has && data.upcoming?.bookings > 0 && (
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          <Tile label="Booked, not paid yet" value={inr(data.upcoming.value, { compact: true })} hint={plural(data.upcoming.bookings, 'booking')} />
+        </div>
+      )}
+
+      {/* Always the all-time call: the server scopes withholding to the FY itself. */}
+      {all.withholding && <TaxPanel w={all.withholding} />}
     </div>
   );
 };

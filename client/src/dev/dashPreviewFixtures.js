@@ -48,6 +48,9 @@ const BOOKINGS = [
   booking(11, -38, 0), booking(12, -41, 1), booking(13, -43, 3),
 ];
 
+// Insights › Demand: "Where bookings came from" needs 2+ sources to show.
+for (const i of [9, 12, 15]) if (BOOKINGS[i]) BOOKINGS[i].source = 'manual_cash';
+
 const ME = {
   id: 'host-preview', _id: 'host-preview', name: 'Riya Kapoor', email: 'riya@example.com',
   username: 'riyakapoor', role: 'vendor', is_host: true, is_verified: true,
@@ -109,8 +112,27 @@ const AUDIENCE = (pro) => (pro
 const DEMAND = (pro) => (pro
   ? { retention: { repeatGuestPct: 0.29, avgBookingsPerGuest: 1.9 }, leadTimeDays: 4,
     byWeekday: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d, i) => ({ day: d, bookings: [2, 3, 1, 4, 2, 1, 0][i] })),
-    byHour: [9, 10, 11, 12, 14, 15, 16, 17].map((h, i) => ({ hour: `${h > 12 ? h - 12 : h}${h >= 12 ? 'pm' : 'am'}`, bookings: [1, 3, 2, 1, 2, 3, 1, 0][i] })) }
+    // Real shape: 24 rows, hour 0–23 (IST), when the booking was made.
+    byHour: Array.from({ length: 24 }, (_, hour) => ({ hour, bookings: { 9: 1, 10: 3, 11: 2, 12: 1, 14: 2, 15: 3, 16: 1, 20: 1 }[hour] || 0 })) }
   : { locked: true });
+
+// ?dash_state=empty — a brand-new host: no bookings, nothing paid.
+const EMPTY = (pro) => ({
+  '/bookings/host': [],
+  '/vendor/intelligence/overview': {
+    ...OVERVIEW(pro), headline: { netRevenue: 0, paidBookings: 0, profileViews: null, viewToBook: null },
+    commissionLeak: { commissionPaid: 0, proCost: 999, stillToBreakEven: 999, aheadBy: 0, projectedYear: null, window: 'trailing_12_months', basis: 'Not enough history yet to project a year.' },
+    ...(pro ? { forecast: { confirmedUnpaid: { value: 0, bookings: 0 }, projectedMonth: null, basis: 'Fewer than 5 paid bookings in the window — too little to project from.' }, winBack: { staleDays: 60, atStake: 0, guests: [] } } : {}),
+  },
+  '/vendor/intelligence/money': {
+    ...MONEY, summary: { ...MONEY.summary, bookings: 0, gross: 0, net: 0, aov: 0, netAov: 0, commission: 0 },
+    settlement: { settled: 0, pending: 0 }, upcoming: { bookings: 0, value: 0 }, byMonth: [], byService: [], concentration: { guests: 0, share: null, topN: 0 },
+    withholding: { ...MONEY.withholding, bookingsMeasured: 0 },
+  },
+  '/vendor/intelligence/audience': pro ? { newGuests: 0, returningGuests: 0, repeatRate: 0, topGuests: [], funnel: { bookings: 0, paidBookings: 0, paidPct: 0 } } : { locked: true },
+  '/vendor/intelligence/demand': pro ? { retention: { repeatGuestPct: 0, avgBookingsPerGuest: 0 }, byWeekday: DEMAND(true).byWeekday.map((d) => ({ ...d, bookings: 0 })), byHour: DEMAND(true).byHour.map((h) => ({ ...h, bookings: 0 })) } : { locked: true },
+});
+export const buildEmptyFixtures = ({ pro = false } = {}) => EMPTY(pro);
 
 // Keyed by path relative to the API base, without the query string.
 export const buildFixtures = ({ pro = false } = {}) => ({

@@ -249,7 +249,9 @@ export const Toggle = ({ checked, onChange, label, disabled }) => (
 );
 
 /* ── Charts — single-series, one brand hue. ────────────────────────────── */
-export const BarChart = ({ data, valueKey = 'revenue', labelKey = 'month', format = (v) => inr(v, { compact: true }), height = 180 }) => {
+// `tip` (optional): (row) => tooltip text, for charts whose bar label is shorter
+// than what the tooltip should say ("Thu" → "Thursday · 4 bookings").
+export const BarChart = ({ data, valueKey = 'revenue', labelKey = 'month', format = (v) => inr(v, { compact: true }), height = 180, tip }) => {
   const [hover, setHover] = useState(null);
   const max = Math.max(...data.map((x) => x[valueKey]), 1);
   const ticks = [max, max / 2, 0];
@@ -272,7 +274,7 @@ export const BarChart = ({ data, valueKey = 'revenue', labelKey = 'month', forma
                 <button key={x[labelKey]} type="button"
                   onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)}
                   onFocus={() => setHover(i)} onBlur={() => setHover(null)}
-                  aria-label={`${x[labelKey]}: ${format(x[valueKey])}`}
+                  aria-label={tip ? tip(x) : `${x[labelKey]}: ${format(x[valueKey])}`}
                   className="group relative flex h-full flex-1 items-end justify-center focus-visible:outline-none">
                   <span className={cn('w-full max-w-[26px] rounded-t transition-colors', on ? 'bg-maroon-dark' : 'bg-maroon')}
                     style={{ height: `${h}%`, borderTopLeftRadius: 4, borderTopRightRadius: 4 }} />
@@ -289,8 +291,12 @@ export const BarChart = ({ data, valueKey = 'revenue', labelKey = 'month', forma
           {hover != null && (
             <div className="pointer-events-none absolute -top-1 z-10 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-[12px] bg-ink px-3 py-2 text-[12px] font-semibold text-white"
               style={{ left: `${((hover + 0.5) / data.length) * 100}%` }}>
-              {data[hover][labelKey]} · {format(data[hover][valueKey])}
-              {data[hover].bookings != null && <span className="text-white/60"> · {data[hover].bookings} bookings</span>}
+              {tip ? tip(data[hover]) : (
+                <>
+                  {data[hover][labelKey]} · {format(data[hover][valueKey])}
+                  {data[hover].bookings != null && <span className="text-white/60"> · {data[hover].bookings} bookings</span>}
+                </>
+              )}
             </div>
           )}
         </div>
