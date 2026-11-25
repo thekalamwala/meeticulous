@@ -10,6 +10,7 @@ import {
   resendProductLink,
 } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import MeetDropdown from "../components/ui/MeetDropdown";
 import { analytics, EVENTS, gaClientId } from "../services/analytics";
 import useUtm from "../hooks/useUtm";
 import { isValidHex } from "../utils/themeUtils";
@@ -310,7 +311,27 @@ const ProductPurchase = () => {
   const host = product.profiles;
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="pp-page min-h-screen bg-canvas">
+      {/* Minimalist purchase fields: label above (already in the markup) + a clean
+          bottom border instead of the heavy fb-input outline. Same colours; focus
+          underlines in the product's accent. */}
+      <style>{`
+        .pp-page .fb-input {
+          min-height: 44px;
+          padding: 0.5rem 0.125rem;
+          border: 0;
+          border-bottom: 1.5px solid var(--color-line);
+          border-radius: 0;
+          background: transparent;
+          transition: border-color 0.18s ease;
+        }
+        .pp-page .fb-input::placeholder { color: #c4cad4; }
+        .pp-page .fb-input:focus {
+          border-color: transparent;
+          border-bottom-color: ${accent};
+          box-shadow: none;
+        }
+      `}</style>
       <Seo
         title={`${product.title} — ${host?.name || "Meeticulous"}`}
         description={(product.description || `Buy ${product.title} from ${host?.name || "this creator"} on Meeticulous.`).slice(0, 160)}
@@ -492,16 +513,14 @@ const ProductPurchase = () => {
                       <label className="block text-sm font-medium mb-1">
                         State <span className="text-gray-400 font-normal">(optional)</span>
                       </label>
-                      <select
+                      <MeetDropdown
+                        ariaLabel="State"
+                        placeholder="Select state"
+                        searchable
                         value={buyerState}
-                        onChange={(e) => setBuyerState(e.target.value)}
-                        className="fb-input"
-                      >
-                        <option value="">Select state</option>
-                        {INDIAN_STATES.map((s) => (
-                          <option key={s.code} value={s.name}>{s.name}</option>
-                        ))}
-                      </select>
+                        onChange={setBuyerState}
+                        options={INDIAN_STATES.map((s) => ({ value: s.name, label: s.name }))}
+                      />
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-1">

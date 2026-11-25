@@ -1,3 +1,4 @@
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import {
@@ -214,12 +215,10 @@ const AdminPlans = () => {
         <div className="flex flex-wrap gap-2 mb-3">
           <input className="fb-input text-sm flex-1 min-w-[200px]" placeholder="Search host by name/email…"
             value={assignQuery} onChange={(e) => setAssignQuery(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && searchVendors()} />
-          <select className="fb-input text-sm w-44" value={assignPlanSlug} onChange={(e) => setAssignPlanSlug(e.target.value)}>
-            <option value="">Target plan…</option>
-            {/* Active plans + hidden bypass tiers (Supreme): assignable here only.
-                Supreme stays active=false so it's invisible everywhere else. */}
-            {plans.filter((p) => p.active || p.bypasses_kill_switches).map((p) => <option key={p.id} value={p.slug}>{p.name}{p.bypasses_kill_switches ? ' (hidden)' : ''}</option>)}
-          </select>
+          {/* Active plans + hidden bypass tiers (Supreme): assignable here only.
+              Supreme stays active=false so it's invisible everywhere else. */}
+          <MeetDropdown size="sm" className="w-44" ariaLabel="Target plan" placeholder="Target plan…" value={assignPlanSlug} onChange={setAssignPlanSlug}
+            options={[{ value: '', label: 'Target plan…' }, ...plans.filter((p) => p.active || p.bypasses_kill_switches).map((p) => ({ value: p.slug, label: `${p.name}${p.bypasses_kill_switches ? ' (hidden)' : ''}` }))]} />
           <Btn variant="outline" size="sm" onClick={searchVendors}>Search</Btn>
         </div>
         <input className="fb-input text-sm w-full mb-3" placeholder="Reason (optional) — saved to the audit log"
@@ -313,11 +312,8 @@ const AdminPlans = () => {
             </div>
 
             <div className="mb-4"><label className="block text-xs font-semibold adm-t3 mb-1">Support type</label>
-              <select className="fb-input text-sm w-56" value={form.support_type} onChange={(e) => setForm((f) => ({ ...f, support_type: e.target.value }))}>
-                <option value="standard">Standard</option>
-                <option value="priority_email">Priority email</option>
-                <option value="priority">Priority</option>
-              </select></div>
+              <MeetDropdown size="sm" className="w-56" ariaLabel="Support type" value={form.support_type} onChange={(v) => setForm((f) => ({ ...f, support_type: v }))}
+                options={[{ value: 'standard', label: 'Standard' }, { value: 'priority_email', label: 'Priority email' }, { value: 'priority', label: 'Priority' }]} /></div>
 
             <div className="flex justify-end gap-2 pt-4 border-t adm-border">
               <Btn variant="ghost" size="sm" onClick={() => setEditing(null)}>Cancel</Btn>

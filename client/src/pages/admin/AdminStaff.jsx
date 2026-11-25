@@ -1,3 +1,4 @@
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import { useState, useEffect } from 'react';
 import {
   adminListStaff, adminListRoles, adminCreateStaff,
@@ -185,19 +186,14 @@ const AdminStaff = () => {
               </div>
               <div>
                 <label className="block text-xs font-medium adm-t3 mb-1">Role</label>
-                <select className="fb-input" value={form.role_key} onChange={(e) => setForm({ ...form, role_key: e.target.value })}>
-                  {roles.map((r) => <option key={r.key} value={r.key}>{r.name}</option>)}
-                </select>
+                <MeetDropdown ariaLabel="Role" value={form.role_key} onChange={(v) => setForm({ ...form, role_key: v })}
+                  options={roles.map((r) => ({ value: r.key, label: r.name }))} />
                 <p className="text-[11px] adm-t3 mt-1">{roles.find((r) => r.key === form.role_key)?.description}</p>
               </div>
               <div>
                 <label className="block text-xs font-medium adm-t3 mb-1">CRM team <span className="adm-t3">(pipeline handoffs)</span></label>
-                <select className="fb-input" value={form.crm_team || ''} onChange={(e) => setForm({ ...form, crm_team: e.target.value })}>
-                  <option value="">— None —</option>
-                  <option value="sales">Sales (Presale)</option>
-                  <option value="relations">Relations (Customer Relations)</option>
-                  <option value="marketing">Marketing</option>
-                </select>
+                <MeetDropdown ariaLabel="CRM team" placeholder="— None —" value={form.crm_team || ''} onChange={(v) => setForm({ ...form, crm_team: v })}
+                  options={[{ value: '', label: '— None —' }, { value: 'sales', label: 'Sales (Presale)' }, { value: 'relations', label: 'Relations (Customer Relations)' }, { value: 'marketing', label: 'Marketing' }]} />
                 <p className="text-[11px] adm-t3 mt-1">Leads handed to this team auto-assign to its least-loaded member.</p>
               </div>
               {!editing && (

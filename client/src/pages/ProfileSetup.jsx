@@ -254,7 +254,7 @@ const InlineField = ({ value, onCommit, placeholder, multiline = false, inline =
       if (e.key === 'Escape') cancel();
       if (e.key === 'Enter' && !multiline) { e.preventDefault(); commit(); }
     },
-    className: cn('rounded-md border-2 border-maroon/40 bg-white px-2 py-1 text-ink focus:outline-none focus-visible:ring-[3px] focus-visible:ring-rose/40', inline ? 'w-auto min-w-[9rem] max-w-full' : 'w-full', inputClass),
+    className: cn('border-solid border-x-0 border-t-0 border-b-[1.5px] rounded-none border-maroon/40 bg-transparent px-0.5 py-1 text-ink focus:outline-none focus:border-maroon focus-visible:ring-0', inline ? 'w-auto min-w-[9rem] max-w-full' : 'w-full', inputClass),
   };
   if (multiline) {
     return (

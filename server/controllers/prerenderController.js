@@ -207,13 +207,22 @@ const websiteNode = (site) => ({
   '@type': 'WebSite', '@id': `${site}/#website`, url: `${site}/`,
   name: 'Meeticulous', publisher: { '@id': `${site}/#organization` }, inLanguage: 'en-IN',
 });
-// Mirrors client orgNode (utils/seo.js) + its ORG_LEGAL_NAME / ORG_CONTACT_POINT.
+// Mirrors client orgNode (utils/seo.js) + its ORG_LEGAL_NAME / ORG_CONTACT_POINT /
+// ORG_SAME_AS. Keep sameAs identical to client ORG_SAME_AS (seo.js) — the graph
+// parity suites (seoGraphParity.test.js + prerenderGraphParity.test.js) fail if they drift.
+const ORG_SAME_AS = [
+  'https://www.linkedin.com/company/meeticulous',
+  'https://www.instagram.com/meeticulousapp',
+  'https://www.facebook.com/meeticulousapp',
+  'https://x.com/meeticulous',
+];
 const orgNode = (site) => ({
   '@type': 'Organization', '@id': `${site}/#organization`, name: 'Meeticulous',
   legalName: 'Rajmudra Media LLP', url: `${site}/`,
   logo: { '@type': 'ImageObject', '@id': `${site}/#logo`, url: LOGO_URL(site), contentUrl: LOGO_URL(site), width: 512, height: 512 },
   description: 'Online booking and appointment scheduling platform for coaches, consultants, therapists, and small businesses.',
   contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email: 'team@meeticulous.com', availableLanguage: ['en', 'hi'] },
+  ...(ORG_SAME_AS.length ? { sameAs: ORG_SAME_AS } : {}),
 });
 const aggregateRatingNode = (avg, count) =>
   ({ '@type': 'AggregateRating', ratingValue: avg, reviewCount: count, bestRating: 5, worstRating: 1 });

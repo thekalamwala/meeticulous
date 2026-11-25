@@ -30,7 +30,7 @@ import { Eye, EyeOff, Package, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { cn } from '../../../components/dashboard/ui';
-import { Panel, StatusPill, SubPageHeader, inr, pct } from '../labUi';
+import { StatusPill, SubPageHeader, inr, pct } from '../labUi';
 import { Filter, FilterBar } from '../filters';
 import { CATALOG_TYPES, TYPE_LIST } from '../catalogTypes';
 import { allItems, couponState, summarise } from '../catalogData';
@@ -41,6 +41,17 @@ const SORTS = [
   { value: 'name', label: 'Name A-Z' },
   { value: 'type', label: 'Grouped by type' },
 ];
+
+// One tint per catalog kind, from the --mt-cat-* tokens (design-system brand
+// extension — pending founder sign-off). coupon rows use the "offer" tint.
+// Shared by the table tiles (TypeIcon) and the New-item menu.
+const KIND_TINT = {
+  service: 'bg-cat-service-bg text-cat-service-fg',
+  product: 'bg-cat-product-bg text-cat-product-fg',
+  course: 'bg-cat-course-bg text-cat-course-fg',
+  membership: 'bg-cat-membership-bg text-cat-membership-fg',
+  coupon: 'bg-cat-offer-bg text-cat-offer-fg',
+};
 
 /* ── New-item menu: pick what you are making, then get a page ──────────────
    Catalog keeps its create button where Bookings lost one: a host fills this
@@ -60,16 +71,16 @@ const NewMenu = ({ onPick }) => {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} aria-hidden="true" />
-          <div role="menu" className="absolute right-0 z-50 mt-1 w-64 overflow-hidden rounded-sm border-2 border-neutral-200 bg-white py-1 dash-elev-3">
+          <div role="menu" className="absolute right-0 z-50 mt-1 w-64 overflow-hidden rounded-sm border-2 border-neutral-200 bg-white dash-elev-3">
             {TYPE_LIST.map((t) => (
               <button
                 key={t.key}
                 type="button"
                 role="menuitem"
                 onClick={() => { setOpen(false); onPick(t.key); }}
-                className="flex w-full items-start gap-2 px-2.5 py-1.5 text-left transition hover:bg-blush"
+                className="flex w-full items-start gap-2 rounded-none px-3 py-2 text-left transition hover:bg-blush"
               >
-                <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-xs bg-neutral-100 text-ink/55">
+                <span className={cn('mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-xs', KIND_TINT[t.key] || 'bg-blush text-maroon')}>
                   <t.icon className="h-3 w-3" strokeWidth={2.4} />
                 </span>
                 <span className="min-w-0">
@@ -135,7 +146,7 @@ const Catalog = () => {
   const TypeIcon = ({ item, size = 'h-7 w-7', glyph = 'h-3.5 w-3.5' }) => {
     const type = CATALOG_TYPES[item.kind];
     return (
-      <span className={cn('grid shrink-0 place-items-center rounded-xs bg-neutral-100 text-ink/55', size)} title={type.label}>
+      <span className={cn('grid shrink-0 place-items-center rounded-xs', KIND_TINT[item.kind] || 'bg-blush text-maroon', size)} title={type.label}>
         <type.icon className={glyph} strokeWidth={2.4} />
       </span>
     );
@@ -160,6 +171,7 @@ const Catalog = () => {
       </SubPageHeader>
 
       <FilterBar
+        bare
         search={{ value: q, onChange: setQ, placeholder: 'Search what you sell' }}
         activeCount={activeCount}
         onClearAll={() => { setKind('all'); setState('all'); setQ(''); }}
@@ -187,7 +199,11 @@ const Catalog = () => {
         />
       </FilterBar>
 
-      <Panel flush title={`${rows.length} ${rows.length === 1 ? 'item' : 'items'}`}>
+      <div className="flex flex-col gap-1.5">
+        <p className="px-1 text-[10px] font-bold uppercase tracking-wide text-ink/40">
+          {rows.length} {rows.length === 1 ? 'item' : 'items'}
+        </p>
+        <div className="overflow-hidden rounded-2xl bg-white">
         {rows.length === 0 ? (
           <div className="flex flex-col items-center gap-1.5 px-3 py-10 text-center">
             <Package className="h-6 w-6 text-maroon/30" strokeWidth={1.8} />
@@ -207,7 +223,7 @@ const Catalog = () => {
             <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-[11.5px]">
                 <thead>
-                  <tr className="border-b-2 border-neutral-200 bg-cream text-[10px] uppercase tracking-wide text-ink/45">
+                  <tr className="text-[10px] uppercase tracking-wide text-ink/40">
                     <th scope="col" className="px-3 py-2 text-left font-bold">Item</th>
                     <th scope="col" className="w-20 px-3 py-2 text-right font-bold">Sold</th>
                     <th scope="col" className="w-28 px-3 py-2 text-right font-bold">Revenue</th>
@@ -215,7 +231,7 @@ const Catalog = () => {
                     <th scope="col" className="w-12 px-3 py-2" />
                   </tr>
                 </thead>
-                <tbody className="divide-y-2 divide-neutral-200">
+                <tbody className="divide-y divide-ink/5">
                   {rows.map((item) => {
                     const live = stateOf(item);
                     return (
@@ -250,7 +266,7 @@ const Catalog = () => {
             </div>
 
             {/* Mobile: revenue is the one number worth carrying across. */}
-            <ul className="divide-y-2 divide-neutral-200 md:hidden">
+            <ul className="divide-y divide-ink/5 md:hidden">
               {rows.map((item) => {
                 const live = stateOf(item);
                 return (
@@ -276,7 +292,8 @@ const Catalog = () => {
             </ul>
           </>
         )}
-      </Panel>
+        </div>
+      </div>
     </div>
   );
 };

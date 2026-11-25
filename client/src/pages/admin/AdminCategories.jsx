@@ -5,6 +5,7 @@ import {
   adminListCategories, adminCreateCategory, adminUpdateCategory, adminDeleteCategory,
 } from '../../services/api';
 import { groupCategories } from '../../utils/categoryUtils';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 
 const fmtDate = (s) => {
   if (!s) return '—';
@@ -85,19 +86,13 @@ const AdminCategories = () => {
   };
 
   const StatusCell = (cat) => (
-    <select
+    <MeetDropdown
+      size="sm"
       value={cat.status}
-      onChange={(e) => setStatus(cat, e.target.value)}
-      aria-label={`Status: ${cat.label}`}
-      className={`text-xs font-medium rounded border px-2 py-1 ${
-        cat.status === 'active'
-          ? 'border-green-300 bg-green-50 text-green-700'
-          : 'border-red-300 bg-red-50 text-red-700'
-      }`}
-    >
-      <option value="active">🟢 Active</option>
-      <option value="disabled">🔴 Off</option>
-    </select>
+      onChange={(v) => setStatus(cat, v)}
+      ariaLabel={`Status: ${cat.label}`}
+      options={[{ value: 'active', label: '🟢 Active' }, { value: 'disabled', label: '🔴 Off' }]}
+    />
   );
 
   const Row = (cat) => {

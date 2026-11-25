@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import toast from 'react-hot-toast';
 import {
   adminGetBadgeMeta, adminListBadges, adminGetBadge, adminCreateBadge, adminUpdateBadge,
@@ -178,12 +179,12 @@ const AdminBadges = () => {
       <div className="flex flex-wrap gap-2 mb-4">
         <input className="fb-input text-sm w-56" placeholder="Search badges…" value={filters.search}
           onChange={(e) => setFilters((f) => ({ ...f, search: e.target.value }))} />
-        <select className="fb-input text-sm w-36" value={filters.type} onChange={(e) => setFilters((f) => ({ ...f, type: e.target.value }))}>
-          <option value="">All types</option><option value="automatic">Automatic</option><option value="manual">Manual</option>
-        </select>
-        <select className="fb-input text-sm w-36" value={filters.status} onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value }))}>
-          <option value="">All statuses</option><option value="draft">Draft</option><option value="active">Active</option><option value="archived">Archived</option>
-        </select>
+        <div className="w-36"><MeetDropdown size="sm" ariaLabel="Badge type" value={filters.type} placeholder="All types"
+          onChange={(v) => setFilters((f) => ({ ...f, type: v }))}
+          options={[{ value: 'automatic', label: 'Automatic' }, { value: 'manual', label: 'Manual' }]} /></div>
+        <div className="w-36"><MeetDropdown size="sm" ariaLabel="Badge status" value={filters.status} placeholder="All statuses"
+          onChange={(v) => setFilters((f) => ({ ...f, status: v }))}
+          options={[{ value: 'draft', label: 'Draft' }, { value: 'active', label: 'Active' }, { value: 'archived', label: 'Archived' }]} /></div>
       </div>
 
       {/* Badge list */}
@@ -275,10 +276,9 @@ const AdminBadges = () => {
             <div className="flex flex-wrap gap-2 items-end">
               <div className="flex-1 min-w-[180px]">
                 <label className="block text-[11px] font-semibold adm-t3 mb-1">Assign manual badge</label>
-                <select className="fb-input text-sm" value={assignForm.badge_id} onChange={(e) => setAssignForm((f) => ({ ...f, badge_id: e.target.value }))}>
-                  <option value="">Select badge…</option>
-                  {manualBadges.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-                </select>
+                <MeetDropdown size="sm" ariaLabel="Assign manual badge" value={assignForm.badge_id} placeholder="Select badge…"
+                  onChange={(v) => setAssignForm((f) => ({ ...f, badge_id: v }))}
+                  options={manualBadges.map((b) => ({ value: b.id, label: b.name }))} />
               </div>
               <div className="flex-[2] min-w-[220px]">
                 <label className="block text-[11px] font-semibold adm-t3 mb-1">Reason (required)</label>
@@ -333,10 +333,9 @@ const AdminBadges = () => {
                   </div>
                 </div>
                 <div><label className="block text-sm font-medium adm-t1 mb-1">Category</label>
-                  <select className="fb-input" value={form.category_id} onChange={(e) => setForm((f) => ({ ...f, category_id: e.target.value }))}>
-                    <option value="">No category</option>
-                    {meta.categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select></div>
+                  <MeetDropdown ariaLabel="Category" value={form.category_id} placeholder="No category"
+                    onChange={(v) => setForm((f) => ({ ...f, category_id: v }))}
+                    options={meta.categories.map((c) => ({ value: c.id, label: c.name }))} /></div>
                 <div className="flex gap-5 pt-1">
                   <label className="flex items-center gap-2 text-sm adm-t2"><input type="checkbox" checked={form.is_bas_team} onChange={(e) => setForm((f) => ({ ...f, is_bas_team: e.target.checked }))} /> BAS Team badge</label>
                   <label className="flex items-center gap-2 text-sm adm-t2"><input type="checkbox" checked={form.is_negative} onChange={(e) => setForm((f) => ({ ...f, is_negative: e.target.checked }))} /> Negative (admin-only)</label>
@@ -375,14 +374,10 @@ const AdminBadges = () => {
                 </div>
                 {form.rules.map((r, i) => (
                   <div key={i} className="flex gap-2 items-center">
-                    <select className="fb-input text-sm flex-1" value={r.field}
-                      onChange={(e) => setForm((f) => ({ ...f, rules: f.rules.map((x, j) => j === i ? { ...x, field: e.target.value } : x) }))}>
-                      {meta.fields.map((fld) => <option key={fld} value={fld}>{fld}</option>)}
-                    </select>
-                    <select className="fb-input text-sm w-20" value={r.operator}
-                      onChange={(e) => setForm((f) => ({ ...f, rules: f.rules.map((x, j) => j === i ? { ...x, operator: e.target.value } : x) }))}>
-                      {meta.operators.map((op) => <option key={op} value={op}>{op}</option>)}
-                    </select>
+                    <div className="flex-1"><MeetDropdown size="sm" ariaLabel="Rule field" value={r.field} options={meta.fields}
+                      onChange={(v) => setForm((f) => ({ ...f, rules: f.rules.map((x, j) => j === i ? { ...x, field: v } : x) }))} /></div>
+                    <div className="w-20"><MeetDropdown size="sm" ariaLabel="Rule operator" value={r.operator} options={meta.operators}
+                      onChange={(v) => setForm((f) => ({ ...f, rules: f.rules.map((x, j) => j === i ? { ...x, operator: v } : x) }))} /></div>
                     <input type="number" className="fb-input text-sm w-28" value={r.value}
                       onChange={(e) => setForm((f) => ({ ...f, rules: f.rules.map((x, j) => j === i ? { ...x, value: e.target.value } : x) }))} />
                     <button onClick={() => setForm((f) => ({ ...f, rules: f.rules.filter((_, j) => j !== i) }))}

@@ -388,12 +388,15 @@ describe('professionGraphJsonLd — one @graph for /for pages, HowTo + linked or
     expect(JSON.stringify(g)).not.toContain('aggregateRating');
   });
 
-  test('Organization omits sameAs while no company socials exist; Service + SoftwareApplication reference it by @id', () => {
+  test('Organization carries brand sameAs identity links; Service + SoftwareApplication reference it by @id', () => {
     const g = professionGraphJsonLd({ siteUrl: SITE, ...base });
     const org = g['@graph'].find((n) => n['@type'] === 'Organization');
     const svc = g['@graph'].find((n) => n['@type'] === 'Service');
     const app = g['@graph'].find((n) => n['@type'] === 'SoftwareApplication');
-    expect(org.sameAs).toBeUndefined(); // ORG_SAME_AS is empty until the accounts launch
+    // ORG_SAME_AS now holds the live brand profiles → orgNode emits them (entity clarity).
+    expect(Array.isArray(org.sameAs)).toBe(true);
+    expect(org.sameAs.length).toBeGreaterThan(0);
+    expect(org.sameAs.every((u) => /^https:\/\//.test(u))).toBe(true);
     expect(svc.provider).toEqual({ '@id': org['@id'] });
     expect(app.publisher).toEqual({ '@id': org['@id'] });
   });

@@ -84,8 +84,8 @@ describe('HostProfile — profile info', () => {
 
   test('renders creator title/profession', async () => {
     renderProfile();
-    // Profession renders twice (collapsed mobile bar + full card) — match either.
-    await waitFor(() => expect(screen.getAllByText('Life Coach').length).toBeGreaterThan(0));
+    // Subtitle is "category/profession, location" on one line.
+    await waitFor(() => expect(screen.getAllByText('Life Coach, Mumbai').length).toBeGreaterThan(0));
   });
 
   test('renders bio text', async () => {
@@ -127,7 +127,8 @@ describe('HostProfile — services listing', () => {
   test('shows price correctly — paid and free', async () => {
     renderProfile();
     await waitFor(() => {
-      expect(screen.getByText('₹500')).toBeTruthy();
+      // ₹ and the number render as separate spans (baseline-aligned), so match the number.
+      expect(screen.getByText('500')).toBeTruthy();
       expect(screen.getByText('Free')).toBeTruthy();
     });
   });
@@ -245,23 +246,4 @@ describe('HostProfile — booking social proof', () => {
   });
 });
 
-// ── Free intro CTA ────────────────────────────────────────────────────────────
-
-describe('HostProfile — free intro CTA', () => {
-  test('renders the intro banner linking to the free service', async () => {
-    // SERVICES[1] (Workshop) is price 0 → the intro offer.
-    getHostProfile.mockResolvedValue({ data: { host: HOST, services: SERVICES, availability: null } });
-    renderProfile();
-    await waitFor(() => expect(screen.getByText(/start with a free intro/i)).toBeTruthy());
-    const cta = screen.getByRole('link', { name: /free intro/i });
-    expect(cta.getAttribute('href')).toBe('/jane-vendor/booking/workshop');
-  });
-
-  test('no intro banner when the host has no free service', async () => {
-    const paidOnly = [SERVICES[0], { ...SERVICES[1], price: 300 }];
-    getHostProfile.mockResolvedValue({ data: { host: HOST, services: paidOnly, availability: null } });
-    renderProfile();
-    await waitFor(() => screen.getByText('Workshop'));
-    expect(screen.queryByText(/start with a free intro/i)).toBeNull();
-  });
-});
+// (The free-intro CTA banner was removed from the profile in the redesign.)

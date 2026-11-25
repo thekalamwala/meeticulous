@@ -12,6 +12,7 @@ import { IC } from '../adminNav';
 import { Card, Skeleton, Btn } from '../ui';
 import { adminSeoLinkGraph } from '../../../services/api';
 import SeoInspector from './SeoInspector';
+import MeetDropdown from '../../ui/MeetDropdown';
 
 // Muted categorical hues — distinct but restrained so the graph stays airy on both themes.
 const TYPE_COLOR = { static: '#8fa0b8', blog: '#2fb39b', service: '#5b8def', host: '#FF9FB0', unknown: '#b6bfca', other: '#b6bfca' };
@@ -461,15 +462,10 @@ export default function SeoNetwork() {
 
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-2 mb-3">
-        <select className="fb-input text-sm" value={layout} onChange={(e) => setLayout(e.target.value)} aria-label="Graph layout">
-          <option value="tidy">Layout: Tidy</option>
-          <option value="force">Layout: Free</option>
-          <option value="anchored">Layout: Anchored</option>
-        </select>
-        <select className="fb-input text-sm" value={catFilter} onChange={(e) => setCatFilter(e.target.value)} aria-label="Filter by page type">
-          <option value="">All page types</option>
-          {presentTypes.map((t) => <option key={t} value={t}>{typeLabel(t)}</option>)}
-        </select>
+        <MeetDropdown size="sm" ariaLabel="Graph layout" value={layout} onChange={setLayout}
+          options={[{ value: 'tidy', label: 'Layout: Tidy' }, { value: 'force', label: 'Layout: Free' }, { value: 'anchored', label: 'Layout: Anchored' }]} />
+        <MeetDropdown size="sm" ariaLabel="Filter by page type" value={catFilter} onChange={setCatFilter}
+          options={[{ value: '', label: 'All page types' }, ...presentTypes.map((t) => ({ value: t, label: typeLabel(t) }))]} />
         <Btn size="sm" variant={showLabels ? 'primary' : 'outline'} onClick={() => setShowLabels((v) => !v)}>Hub labels</Btn>
         <div className="flex gap-1.5 ml-auto">
           <Btn size="sm" variant="outline" onClick={fitView}>Fit</Btn>

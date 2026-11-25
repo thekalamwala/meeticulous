@@ -1,0 +1,30 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  // Dead-code check for the client (ESM). Run: cd client && npx knip
+  // Reports unused FILES and unused/unlisted DEPENDENCIES.
+  // Export-tracing is OFF: dashboard/ui components export a named + a default
+  // of the same thing (knip calls those "duplicates"), and data modules are
+  // consumed as namespaces, so leaving it on buries the file-level signal under
+  // ~250 false positives. Hunt unused exports by hand when you want them.
+  "entry": [
+    "index.html",
+    "middleware.js",
+    "scripts/*.mjs",
+    "src/tests/setup.js",
+    "src/**/*.test.{js,jsx}",
+    "src/**/__tests__/**/*.{js,jsx}"
+  ],
+  "project": ["src/**/*.{js,jsx}", "*.{js,mjs}"],
+  // jest-dom loads via vitest setupFiles, and setup.js is resolved by vitest
+  // (not knip) — both are wired, not dead.
+  "ignoreDependencies": ["@testing-library/jest-dom"],
+  "ignoreUnresolved": ["./src/tests/setup.js"],
+  "rules": {
+    "exports": "off",
+    "types": "off",
+    "nsExports": "off",
+    "classMembers": "off",
+    "enumMembers": "off",
+    "duplicates": "off"
+  }
+}

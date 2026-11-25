@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import { adminGetMembers, adminPatchMember } from '../../../services/communityApi';
 import AdminEmptyState from '../../../components/admin/AdminEmptyState';
 import { Badge, Btn, Card, Skeleton } from '../../../components/admin/ui';
+import MeetDropdown from '../../../components/ui/MeetDropdown';
 import { askNote, banUntil, canModerate, errMsg } from './shared';
 
 const fld = 'border adm-border rounded-lg px-3 py-2 text-[12.5px] outline-none focus:ring-2 focus:ring-[#960D32]/30';
@@ -36,18 +37,18 @@ function Row({ m, can, save }) {
             Links allowed
           </label>
           <label className="inline-flex items-center gap-1.5">Badge
-            <select value={m.badge || 'none'} onChange={(e) => save(m, { badge: e.target.value === 'none' ? null : e.target.value })} className={fld}>
-              {['none', 'official', 'staff', 'ai'].map((b) => <option key={b} value={b}>{b}</option>)}
-            </select>
+            <MeetDropdown ariaLabel="Badge" size="sm" value={m.badge || 'none'}
+              onChange={(v) => save(m, { badge: v === 'none' ? null : v })}
+              options={['none', 'official', 'staff', 'ai'].map((b) => ({ value: b, label: b }))} />
           </label>
           <span className="inline-flex items-center gap-1 ml-auto">
             {isBanned(m) ? (
               <Btn size="sm" variant="outline" onClick={() => save(m, { banned_until: null, ban_reason: null })}>Unban</Btn>
             ) : (
               <>
-                <select aria-label="Ban length" value={days === 'permanent' ? 'permanent' : 'days'} onChange={(e) => setDays(e.target.value === 'permanent' ? 'permanent' : '7')} className={fld}>
-                  <option value="days">Days</option><option value="permanent">Permanent</option>
-                </select>
+                <MeetDropdown ariaLabel="Ban length" size="sm" value={days === 'permanent' ? 'permanent' : 'days'}
+                  onChange={(v) => setDays(v === 'permanent' ? 'permanent' : '7')}
+                  options={[{ value: 'days', label: 'Days' }, { value: 'permanent', label: 'Permanent' }]} />
                 {days !== 'permanent' && <input type="number" min="1" max="365" aria-label="Ban days" value={days} onChange={(e) => setDays(e.target.value)} className={`${fld} w-16`} />}
                 <Btn size="sm" variant="danger" onClick={ban}>Ban</Btn>
               </>
