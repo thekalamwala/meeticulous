@@ -139,7 +139,7 @@ export default function ItemCard({ item, detail = false, onReply, actions, onHid
           {/* One identity row for both views. The "⋯" is anchored to the card edge and
               never competes with the name for space. */}
           <div className="flex items-center gap-3">
-            <AuthorChip author={item.author} meta={meta} badge={<IdentityBadge author={item.author} />} />
+            <AuthorChip author={item.author} meta={meta} badge={<IdentityBadge author={item.author} />} collaborators={item.collaborators || []} />
             {menu && <span className="shrink-0">{menu}</span>}
           </div>
           {/* Chips sit on their own row: inside the identity line they were what pushed

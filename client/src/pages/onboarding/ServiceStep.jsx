@@ -20,6 +20,7 @@ import OnboardingStepper from './OnboardingStepper';
 import LivePreviewCard from './LivePreviewCard';
 import { DEFAULT_SUGGESTIONS, personaForSlug } from './personas';
 import PetalSpinner from '../../components/common/PetalSpinner';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 
 // First-service durations — the common set; host refines everything else in the
 // dashboard. Kept tiny on purpose: this screen exists to get ONE bookable
@@ -41,7 +42,7 @@ const pillCls = (on) =>
     on ? 'onb-pop border-primary bg-primary-light font-semibold text-primary' : 'border-black/10 bg-white text-ink hover:border-primary/40'
   }`;
 const card = 'rounded-[24px] border border-black/5 bg-white p-5 shadow-[0_8px_30px_rgba(26,26,26,0.04)]';
-const fieldCls = 'w-full rounded-[16px] border border-black/10 bg-white px-3 py-2.5 text-sm text-ink outline-none transition placeholder:text-ink/40 focus:border-primary focus:ring-2 focus:ring-primary/20';
+const fieldCls = 'w-full border-solid border-x-0 border-t-0 border-b-[1.5px] rounded-none border-black/15 bg-transparent px-0.5 py-2 text-sm text-ink outline-none transition placeholder:text-ink/40 focus:border-primary focus:shadow-none';
 
 /**
  * ServiceStep — screen 2 of the host onboarding ("First service").
@@ -322,9 +323,15 @@ const ServiceStep = () => {
               {svcCats.length > 1 && (
                 <div>
                   <label htmlFor="svc-cat" className="text-xs font-semibold uppercase tracking-wider text-muted">Service type</label>
-                  <select id="svc-cat" value={category} onChange={(e) => setCategory(e.target.value)} className={`${fieldCls} mt-2.5`}>
-                    {svcCats.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
-                  </select>
+                  <div className="mt-2.5">
+                    <MeetDropdown
+                      id="svc-cat"
+                      ariaLabel="Service type"
+                      value={category}
+                      onChange={setCategory}
+                      options={svcCats.map((c) => ({ value: c.slug, label: c.name }))}
+                    />
+                  </div>
                 </div>
               )}
 

@@ -16,8 +16,13 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, TrendingDown, TrendingUp, X } from 'lucide-react';
+import {
+  AlertTriangle, ArrowRight, CalendarCheck2, Check, ChevronDown, Clock, IndianRupee,
+  Search, Star, TrendingDown, TrendingUp, UserMinus, X,
+} from 'lucide-react';
 import { cn } from '../../components/dashboard/ui';
+import MeetDropdown from '../../components/ui/MeetDropdown';
+import { optionsFromChildren } from '../../components/ui/selectChildren';
 import { pageMeta } from './nav';
 
 /* ── Drawer ───────────────────────────────────────────────────────────────
@@ -253,12 +258,12 @@ export const Toggle = ({ checked, onChange, label, disabled }) => (
     disabled={disabled}
     onClick={() => onChange(!checked)}
     className={cn(
-      'relative h-6 w-9 shrink-0 rounded-full border-2 transition focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose',
+      'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full border-2 transition-colors focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose',
       checked ? 'border-maroon bg-maroon' : 'border-neutral-300 bg-neutral-100',
       disabled && 'cursor-not-allowed opacity-45',
     )}
   >
-    <span className={cn('absolute top-0.5 h-4 w-4 rounded-full bg-white transition-all', checked ? 'left-[22px]' : 'left-0.5')} />
+    <span className={cn('h-3.5 w-3.5 rounded-full bg-white shadow-sm transition-transform duration-200 ease-out', checked ? 'translate-x-[16px]' : 'translate-x-0.5')} />
   </button>
 );
 
@@ -378,6 +383,277 @@ export const RankedBars = ({ rows, valueKey = 'views', labelKey = 'label', forma
   );
 };
 
+/* ── SourceDonut — interactive donut for a categorical split (where bookings
+ * came from). Single-hue maroon ramp — tints of the brand hue, never a
+ * rainbow. Tap a slice or a legend row to focus it: the hole reads out that
+ * source's count, share and name; tap again to clear back to the total. Donut
+ * and legend sit side-by-side when the panel is wide and wrap to a column when
+ * it is narrow, so one component serves mobile and desktop. ─────────────── */
+const DONUT_RAMP = ['#960D32', '#B83651', '#E0506F', '#F27D93', '#FF9FB0', '#C8B0B8'];
+
+export const SourceDonut = ({ rows, valueKey = 'bookings', labelKey = 'label', stack = false }) => {
+  const [active, setActive] = useState(null);
+  const [hover, setHover] = useState(null);
+  const shown = hover ?? active;
+  const toggle = (i) => setActive((p) => (p === i ? null : i));
+
+  const total = rows.reduce((s, r) => s + (r[valueKey] || 0), 0) || 1;
+  const SIZE = 150; const SW = 22; const GROW = 5; const GAP = 2.5;
+  // Leave room for the active ring's extra width so it never clips the viewBox.
+  const R = (SIZE - SW - GROW) / 2 - 1;
+  const C = 2 * Math.PI * R;
+
+  let cum = 0;
+  const segs = rows.map((r, i) => {
+    const frac = (r[valueKey] || 0) / total;
+    const seg = { i, frac, offset: cum, color: DONUT_RAMP[i % DONUT_RAMP.length], row: r };
+    cum += frac;
+    return seg;
+  });
+  const sel = shown == null ? null : segs[shown];
+
+  return (
+    <div className={cn('flex items-center justify-center', stack ? 'flex-col gap-3' : 'flex-wrap gap-x-5 gap-y-3')}>
+      <div className="relative shrink-0" style={{ width: SIZE, height: SIZE }}>
+        <svg
+          viewBox={`0 0 ${SIZE} ${SIZE}`}
+          width={SIZE}
+          height={SIZE}
+          role="img"
+          aria-label={`Bookings by source — ${rows[0]?.[labelKey]} leads with ${Math.round((segs[0]?.frac || 0) * 100)}% of ${total}`}
+        >
+          <g transform={`rotate(-90 ${SIZE / 2} ${SIZE / 2})`}>
+            <circle cx={SIZE / 2} cy={SIZE / 2} r={R} fill="none" stroke="#F1EBE9" strokeWidth={SW} />
+            {segs.map((s) => {
+              const on = shown === s.i;
+              const len = Math.max(s.frac * C - GAP, 0.001);
+              return (
+                <circle
+                  key={s.i}
+                  cx={SIZE / 2}
+                  cy={SIZE / 2}
+                  r={R}
+                  fill="none"
+                  stroke={s.color}
+                  strokeWidth={on ? SW + GROW : SW}
+                  strokeDasharray={`${len} ${C - len}`}
+                  strokeDashoffset={-(s.offset * C)}
+                  className="cursor-pointer transition-[stroke-width,opacity] duration-150"
+                  style={{ opacity: shown == null || on ? 1 : 0.8 }}
+                  onMouseEnter={() => setHover(s.i)}
+                  onMouseLeave={() => setHover(null)}
+                  onClick={() => toggle(s.i)}
+                />
+              );
+            })}
+          </g>
+        </svg>
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
+          <span className="font-display text-[20px] font-extrabold leading-none tracking-[-0.04em] text-ink">
+            {sel ? (
+              <>{sel.row[valueKey].toLocaleString('en-IN')}<span className="text-ink/35">/{total.toLocaleString('en-IN')}</span></>
+            ) : total.toLocaleString('en-IN')}
+          </span>
+          <span className="mt-1 text-[11px] font-bold tabular-nums tracking-[0.02em] text-maroon">
+            {sel ? `${Math.round(sel.frac * 100)}%` : 'booked'}
+          </span>
+        </div>
+      </div>
+
+      <ul className={cn('flex flex-col gap-0.5', stack ? 'w-full' : 'min-w-[150px] flex-1')}>
+        {segs.map((s) => {
+          const on = shown === s.i;
+          return (
+            <li key={s.i}>
+              <button
+                type="button"
+                onMouseEnter={() => setHover(s.i)}
+                onMouseLeave={() => setHover(null)}
+                onClick={() => toggle(s.i)}
+                className={cn('flex w-full items-center gap-2 rounded-lg px-1.5 py-1 text-left transition', on ? 'bg-blush' : 'hover:bg-cream')}
+              >
+                <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: s.color }} />
+                <span className="min-w-0 flex-1 truncate text-[11.5px] font-semibold text-ink/80">{s.row[labelKey]}</span>
+                <span className="shrink-0 text-[11px] font-bold tabular-nums text-ink">{(s.row[valueKey]).toLocaleString('en-IN')}</span>
+                <span className="w-9 shrink-0 text-right text-[10.5px] font-bold tabular-nums text-ink/45">{Math.round(s.frac * 100)}%</span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+};
+
+/* ── Brand marks for the booking-drawer actions. Third-party logos kept as
+ * inline SVG so they render offline and keep their real colours on a white
+ * button. ─────────────────────────────────────────────────────────────────── */
+export const WhatsAppIcon = ({ className }) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+    <path fill="#25D366" d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24z" />
+    <path fill="#fff" d="M9.516 7.391c-.17-.379-.349-.387-.513-.394l-.436-.005a.84.84 0 00-.608.285c-.21.229-.797.779-.797 1.9 0 1.12.817 2.204.93 2.356.115.152 1.575 2.52 3.886 3.433 1.918.757 2.309.606 2.725.569.416-.038 1.343-.549 1.532-1.08.19-.531.19-.986.133-1.08-.057-.096-.21-.153-.436-.266-.228-.114-1.343-.663-1.551-.739-.209-.076-.36-.114-.513.114-.152.228-.588.738-.721.89-.133.152-.266.171-.494.057-.228-.114-.963-.355-1.834-1.132-.678-.605-1.136-1.352-1.269-1.58-.133-.228-.014-.351.1-.465.102-.102.228-.266.342-.398.113-.133.151-.228.228-.38.076-.153.038-.285-.019-.399-.057-.114-.5-1.236-.705-1.688z" />
+  </svg>
+);
+
+export const MeetIcon = ({ className }) => (
+  <svg viewBox="0 0 87.5 72" className={className} aria-hidden="true">
+    <path fill="#00832d" d="M49.5 36l8.53 9.75 11.47 7.33 2-17.02-2-16.64-11.69 6.44z" />
+    <path fill="#0066da" d="M0 51.5V66c0 3.315 2.685 6 6 6h14.5l3-10.96-3-9.54-9.95-3z" />
+    <path fill="#e94235" d="M20.5 0L0 20.5l10.55 3 9.95-3 2.95-9.41z" />
+    <path fill="#2684fc" d="M20.5 20.5H0v31h20.5z" />
+    <path fill="#00ac47" d="M82.6 8.68L69.5 19.44v34.4l13.16 10.8c1.97 1.54 4.85.135 4.85-2.37V11c0-2.535-2.945-3.925-4.91-2.32zM49.5 36v15.5h-29V72h43c3.315 0 6-2.685 6-6V53.84z" />
+    <path fill="#ffba00" d="M63.5 0h-43v20.5h29V36l20-16.56V6c0-3.315-2.685-6-6-6z" />
+  </svg>
+);
+
+/* ── NeedsYouModal — the "hardest first" action queue as a progress checklist
+ * (one component for mobile and desktop). A segmented progress bar up top, then
+ * accordion rows: a status dot (open = dashed ring, handled = green check), the
+ * title + urgency chip, and a chevron. One row expands at a time to reveal the
+ * detail and three controls — the CTA, ✓ handled, ✗ dismiss. ───────────────── */
+const NEEDS_ICON = { confirm: CalendarCheck2, unpaid: IndianRupee, lapsing: UserMinus, review: Star, gap: Clock };
+const NEEDS_URGENCY = {
+  now: ['Now', 'bg-error-bg text-error-fg'],
+  today: ['Today', 'bg-warning-bg text-warning-fg'],
+  this_week: ['This week', 'bg-neutral-100 text-ink/55'],
+};
+
+export const NeedsYouModal = ({ open, onClose, items = [], go }) => {
+  const [done, setDone] = useState([]);
+  const [openId, setOpenId] = useState(items[0]?.id ?? null);
+
+  const total = items.length;
+  const resolved = done.length;
+  const allDone = total > 0 && resolved >= total;
+  const resolve = (id) => {
+    setDone((d) => (d.includes(id) ? d : [...d, id]));
+    const next = items.find((x) => x.id !== id && !done.includes(x.id));
+    setOpenId(next ? next.id : null);
+  };
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <div className="fixed inset-0 z-[120]">
+          <motion.button
+            type="button"
+            aria-label="Close"
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="absolute inset-0 rounded-none bg-ink/40"
+          />
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'tween', duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
+            className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col border-l-2 border-neutral-200 bg-white shadow-xl"
+          >
+            <header className="shrink-0 px-4 pb-3 pt-4">
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <h2 className="mb-0 font-display text-[17px] font-extrabold tracking-[-0.02em] text-ink">Needs you</h2>
+              <p className="mt-0.5 text-[11px] font-semibold text-ink/50">
+                {allDone ? 'All caught up — nicely done.' : `${resolved} of ${total} handled · hardest first`}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              className="grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 border-neutral-200 bg-white text-ink/55 transition hover:border-maroon/40 hover:text-maroon"
+            >
+              <X className="h-4 w-4" strokeWidth={2.4} />
+            </button>
+          </div>
+          <div className="mt-3 flex gap-1.5">
+            {items.map((a, i) => (
+              <span key={a.id} className={cn('h-1.5 flex-1 rounded-full transition-colors', i < resolved ? 'bg-maroon' : 'bg-neutral-200')} />
+            ))}
+          </div>
+        </header>
+
+        <ul className="flex-1 divide-y-2 divide-neutral-200 overflow-y-auto border-t-2 border-neutral-200">
+          {items.map((a) => {
+            const isDone = done.includes(a.id);
+            const isOpen = openId === a.id;
+            const Icon = NEEDS_ICON[a.kind] || AlertTriangle;
+            const [word, chip] = NEEDS_URGENCY[a.urgency] || NEEDS_URGENCY.this_week;
+            return (
+              <li key={a.id}>
+                <button
+                  type="button"
+                  onClick={() => setOpenId(isOpen ? null : a.id)}
+                  className="flex w-full items-center gap-3 rounded-none px-4 py-3 text-left transition hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-rose"
+                >
+                  {isDone ? (
+                    <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-success-fg text-white">
+                      <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                    </span>
+                  ) : (
+                    <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 border-dashed border-maroon/40 text-maroon">
+                      <Icon className="h-3 w-3" strokeWidth={2.6} />
+                    </span>
+                  )}
+                  <span className="min-w-0 flex-1">
+                    <span className={cn('block truncate text-[12.5px] font-bold leading-tight', isDone ? 'text-ink/40 line-through' : 'text-ink')}>
+                      {a.title}
+                    </span>
+                  </span>
+                  {!isDone && (
+                    <span className={cn('shrink-0 rounded-full px-1.5 py-px text-[9.5px] font-bold', chip)}>{word}</span>
+                  )}
+                  <ChevronDown className={cn('h-4 w-4 shrink-0 text-ink/40 transition-transform', isOpen && 'rotate-180')} strokeWidth={2.4} />
+                </button>
+
+                <div className={cn('grid transition-[grid-template-rows] duration-200 ease-out', isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]')}>
+                  <div className="min-h-0 overflow-hidden">
+                    <div className="px-4 pb-3 pl-[52px]">
+                      <p className="text-[11.5px] font-medium leading-snug text-ink/60">{a.detail}</p>
+                      <div className="mt-2.5 flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => { onClose(); go(a.target); }}
+                          className="inline-flex items-center gap-1 rounded-full bg-maroon px-3 py-1.5 text-[11.5px] font-bold text-white transition hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
+                        >
+                          {a.cta} <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => resolve(a.id)}
+                          aria-label="Mark handled"
+                          title="Mark handled"
+                          className="grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 border-neutral-200 text-ink/45 transition hover:border-success-fg hover:text-success-fg"
+                        >
+                          <Check className="h-4 w-4" strokeWidth={2.6} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => resolve(a.id)}
+                          aria-label="Dismiss"
+                          title="Dismiss"
+                          className="grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 border-neutral-200 text-ink/45 transition hover:border-maroon/40 hover:text-maroon"
+                        >
+                          <X className="h-4 w-4" strokeWidth={2.6} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+            </ul>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+};
+
 /* ── Funnel — one measure across ordered stages, with step drop-off ────── */
 export const Funnel = ({ stages }) => {
   const top = stages[0]?.value || 1;
@@ -450,7 +726,7 @@ export const CommandPalette = ({ open, onClose, items, onPick }) => {
             ref={inputRef}
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search bookings, clients, services…"
+            placeholder="Search or jump to anything…"
             className="w-full bg-transparent text-[12px] font-medium text-ink outline-none placeholder:text-ink/35"
           />
           <kbd className="shrink-0 rounded border border-neutral-200 px-1.5 py-0.5 text-[9.5px] font-bold text-ink/40">esc</kbd>
@@ -467,7 +743,7 @@ export const CommandPalette = ({ open, onClose, items, onPick }) => {
                   onClick={() => { onPick(it); onClose(); }}
                   className={cn('flex w-full items-center gap-2 px-2.5 py-1.5 text-left transition', i === sel ? 'bg-blush' : 'hover:bg-cream')}
                 >
-                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-neutral-100 text-[10px] font-bold text-maroon">
+                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-[6px] bg-neutral-100 text-[10px] font-bold text-maroon">
                     {it.group.slice(0, 2).toUpperCase()}
                   </span>
                   <span className="min-w-0 flex-1">
@@ -511,9 +787,9 @@ export const StatusPill = ({ status, children }) => {
 
 /* ── SectionCard — the one card shape the lab uses ─────────────────────── */
 export const Panel = ({ title, subtitle, action, children, className = '', flush = false }) => (
-  <section className={cn('overflow-hidden rounded-lg border-2 border-neutral-200 bg-white', className)}>
+  <section className={cn('overflow-hidden rounded-2xl border border-neutral-200/80 bg-white shadow-[0_1px_2px_rgba(43,10,20,0.03),0_8px_24px_-12px_rgba(43,10,20,0.08)]', className)}>
     {(title || action) && (
-      <header className="flex flex-wrap items-center justify-between gap-1.5 border-b-2 border-neutral-200 px-3 py-2">
+      <header className="flex flex-wrap items-center justify-between gap-1.5 border-b border-neutral-200/70 px-3.5 py-2.5">
         <div className="min-w-0">
           {title && <h2 className="mb-0 font-display text-[12.5px] font-bold tracking-[-0.02em] text-ink">{title}</h2>}
           {subtitle && <p className="mt-0.5 text-[10.5px] font-medium text-ink/50">{subtitle}</p>}
@@ -545,17 +821,16 @@ export const Panel = ({ title, subtitle, action, children, className = '', flush
  * ---------------------------------------------------------------------- */
 
 /* ── Fields ───────────────────────────────────────────────────────────────
- * The kit's Form.jsx still ships pre-rebrand styling: `rounded` (10px) where
- * the radius scale says inputs are 16px, cold `border-gray-300` instead of the
- * warm neutral ramp, a 2px primary focus ring instead of the 3px rose one, and
- * a Select chevron whose SVG stroke is still hardcoded BLUE (#00457C) from the
- * old palette. Rather than restyle a shared production component from inside a
- * prototype, the lab uses these, and the fix is filed as a P0 in the report.
+ * LabInput/LabTextarea use the kit's minimalist .fb-input style. LabSelect now
+ * wraps the branded MeetDropdown (keeping the <option>-children + event-onChange
+ * API), so the lab's dropdowns match the rest of the site.
  * ---------------------------------------------------------------------- */
+// Minimalist: clean bottom border instead of a full frame, transparent, no ring
+// — the Field label sits above. Matches the user-facing .fb-input style.
 export const FIELD =
-  'block rounded-sm border-2 border-neutral-200 bg-white px-2.5 text-[12px] font-medium text-ink ' +
-  'outline-none transition placeholder:text-ink/35 focus:border-maroon/50 ' +
-  'focus-visible:ring-[3px] focus-visible:ring-rose disabled:bg-neutral-50 disabled:text-ink/40';
+  'block border-solid border-x-0 border-t-0 border-b-[1.5px] rounded-none border-neutral-200 bg-transparent px-0.5 text-[12px] font-medium text-ink ' +
+  'outline-none transition placeholder:text-ink/35 focus:border-maroon ' +
+  'focus-visible:ring-0 disabled:text-ink/40';
 
 // `cn` is a plain string joiner — it does NOT resolve Tailwind conflicts. So a
 // base `w-full` silently beats a caller's `w-[116px]` (whichever Tailwind emits
@@ -568,14 +843,20 @@ export const LabInput = ({ className = '', ...props }) => (
   <input className={cn(FIELD, unless(className, 'w', 'w-full'), unless(className, 'h', 'h-8'), className)} {...props} />
 );
 
-export const LabSelect = ({ className = '', children, ...props }) => (
-  <select
-    className={cn(FIELD, 'cursor-pointer appearance-none pr-8', unless(className, 'w', 'w-full'), unless(className, 'h', 'h-8'), className)}
-    style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23960D32' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\")", backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.7rem center' }}
-    {...props}
-  >
-    {children}
-  </select>
+// Branded dropdown; keeps the native-<select> API (<option> children + event
+// onChange) so every caller stays unchanged. Native values are strings — match.
+export const LabSelect = ({ className = '', children, value, onChange, ...props }) => (
+  <MeetDropdown
+    size="sm"
+    id={props.id}
+    name={props.name}
+    disabled={props.disabled}
+    ariaLabel={props['aria-label']}
+    className={cn(unless(className, 'w', 'w-full'), className)}
+    value={value == null ? '' : String(value)}
+    onChange={(v) => onChange?.({ target: { value: v, name: props.name } })}
+    options={optionsFromChildren(children)}
+  />
 );
 
 export const LabTextarea = ({ className = '', rows = 3, ...props }) => (

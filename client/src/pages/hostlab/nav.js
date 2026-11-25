@@ -39,7 +39,6 @@ export const SUBPAGES = {
   schedule: [
     { slug: 'hours', label: 'Hours', blurb: 'The week a guest can book against.' },
     { slug: 'rules', label: 'Rules', blurb: 'Notice, gaps and limits on every slot you offer.' },
-    { slug: 'dates', label: 'Specific dates', blurb: 'One-offs that override the weekly pattern.' },
     { slug: 'calendars', label: 'Calendars', blurb: 'Busy time elsewhere should close the slot here.' },
   ],
   // Creator Intelligence. Four pages, one question each — see

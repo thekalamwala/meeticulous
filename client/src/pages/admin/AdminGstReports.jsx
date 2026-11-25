@@ -3,6 +3,7 @@
 // are working papers (not government filing files).
 import React, { useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import { PageHeader, Card, Btn, Badge, Skeleton } from '../../components/admin/ui';
 import { adminGstReport, adminGstReportCsv } from '../../services/api';
 import { inr, num, PeriodFilter, defaultPeriod, periodParams, downloadBlob } from './gstShared';
@@ -148,9 +149,8 @@ export default function AdminGstReports() {
         <PeriodFilter value={period} onChange={setPeriod} />
         <label className="flex flex-col gap-1 text-[11px] uppercase tracking-wide adm-t3">
           Report
-          <select className="fb-input text-sm" value={type} onChange={(e) => { setType(e.target.value); setData(null); }}>
-            {REPORTS.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
-          </select>
+          <MeetDropdown size="sm" ariaLabel="Report" value={type} onChange={(v) => { setType(v); setData(null); }}
+            options={REPORTS.map((r) => ({ value: r.key, label: r.label }))} />
         </label>
         <Btn variant="primary" size="sm" onClick={view} disabled={loading}>{loading ? 'Running…' : 'View'}</Btn>
         {current?.csv && <Btn variant="outline" size="sm" onClick={csv}>Download CSV</Btn>}

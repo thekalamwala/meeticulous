@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { adminFinanceAccounts, adminFinanceLedger } from '../../services/api';
 import toast from 'react-hot-toast';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import { PageHeader, Btn, Skeleton } from '../../components/admin/ui';
 
 // Per-account ledger with running balance — the auditable account history.
@@ -54,12 +55,11 @@ const AdminLedger = () => {
       <div className="flex flex-wrap items-end gap-3 mb-4">
         <div>
           <label className="block text-[11px] font-medium adm-t3 mb-1">Account</label>
-          <select className="fb-input text-sm min-w-[280px]" value={accountId}
-            onChange={(e) => { setPage(1); setAccountId(e.target.value); }}>
-            {accounts.map((a) => (
-              <option key={a.id} value={a.id}>{a.code} — {a.name} ({a.type})</option>
-            ))}
-          </select>
+          <div className="min-w-[280px]">
+            <MeetDropdown size="sm" searchable ariaLabel="Account" value={accountId}
+              onChange={(v) => { setPage(1); setAccountId(v); }}
+              options={accounts.map((a) => ({ value: a.id, label: `${a.code} — ${a.name} (${a.type})` }))} />
+          </div>
         </div>
         {selected && (
           <p className="text-sm adm-t2 pb-2">

@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronDown, CircleAlert, CircleHelp, Headset, Image, ImagePlus, Megaphone, MessagesSquare, Type, X } from 'lucide-react';
+import { ChevronDown, CircleAlert, CircleHelp, Headset, Image, ImagePlus, Megaphone, MessagesSquare, Type, UserPlus, X } from 'lucide-react';
 import { createItem, getMe, getSpaces } from '../../services/communityApi';
 import useKeyboardInset from './useKeyboardInset';
+import MeetDropdown from '../ui/MeetDropdown';
 import { uploadImage, getMyMembership } from '../../services/api';
 import { analytics, EVENTS } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
@@ -11,6 +12,7 @@ import useMentionSuggest from './useMentionSuggest';
 import useTermsGate from './useTermsGate';
 import { errCode, errorCopy, fmtCount } from './communityErrors';
 import ItemCard, { SpaceIcon } from './ItemCard';
+import CollaboratorPicker from './CollaboratorPicker';
 
 const LIMITS = { TITLE: 150, THREAD: 10000, POST: 1000 }; // mirrors server/services/community/text.js
 const MAX_PHOTOS = 4;
@@ -66,6 +68,10 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
   const [busy, setBusy] = useState(false);
   const [banned, setBanned] = useState(false);
   const [audienceOpen, setAudienceOpen] = useState(false);
+  // Collaborators (community_collaborators): up to 2 credited co-authors.
+  const collabOn = useFeature('community_collaborators');
+  const [collaborators, setCollaborators] = useState([]);
+  const [collabOpen, setCollabOpen] = useState(false);
   // Membership audience gate (M3). Only hosts with a live program can gate a post.
   const membershipsOn = useFeature('community_memberships');
   const [program, setProgram] = useState(null);
@@ -117,7 +123,7 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
   const text = `${title} ${body}`;
   const nudge = MENTION.test(text) && COMPLAINT.test(text);
   // The modal wrapper reads this to ask before discarding a draft on Esc / backdrop / Close.
-  if (dirtyRef) dirtyRef.current = !!(title.trim() || body.trim() || photos.length);
+  if (dirtyRef) dirtyRef.current = !!(title.trim() || body.trim() || photos.length || collaborators.length);
 
   const addFiles = async (list) => {
     setPhotoErr('');
@@ -175,6 +181,7 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
       ...(canGate && audience !== 'public' && { audience }),
       ...(canGate && audience === 'tier' && audienceTierId && { audience_tier_id: audienceTierId }),
       ...(canGate && audience !== 'public' && teaserLine.trim() && { teaser_line: teaserLine.trim() }),
+      ...(collabOn && collaborators.length && { collaborator_ids: collaborators.map((c) => c.id) }),
       media: photos.map(({ url, width, height }) => ({ url, width, height })),
     };
     try {
@@ -239,15 +246,19 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
       {canGate && (
         <div className="mt-field">
           <label className="mt-label" htmlFor="composer-audience">Who can see this?</label>
-          <select id="composer-audience" className="mt-input"
+          <MeetDropdown
+            id="composer-audience"
+            ariaLabel="Who can see this?"
             value={audience === 'tier' ? audienceTierId : audience}
-            onChange={(e) => pickAudience(e.target.value)}>
-            <option value="public">Everyone</option>
-            {hasLiveFree && <option value="free_subscribers">Free subscribers</option>}
-            {liveTiers.filter((t) => t.type === 'paid').map((t) => (
-              <option key={t.id} value={t.id}>{t.name} members (₹{t.price_inr}/mo)</option>
-            ))}
-          </select>
+            onChange={pickAudience}
+            options={[
+              { value: 'public', label: 'Everyone' },
+              ...(hasLiveFree ? [{ value: 'free_subscribers', label: 'Free subscribers' }] : []),
+              ...liveTiers.filter((t) => t.type === 'paid').map((t) => ({
+                value: t.id, label: `${t.name} members (₹${t.price_inr}/mo)`,
+              })),
+            ]}
+          />
           {audience !== 'public' && (
             <>
               <input className="mt-input mt-2" maxLength={200} value={teaserLine}
@@ -307,6 +318,13 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
             )}
           </div>
           {photoErr && <span role="alert" className="mt-hint mt-field--error">{photoErr}</span>}
+        </div>
+      )}
+
+      {collabOn && (
+        <div className="mt-field">
+          <span className="mt-label">Collaborators <span className="mt-hint">(up to 2, credited on the post)</span></span>
+          <CollaboratorPicker value={collaborators} onChange={setCollaborators} selfId={user?.id} />
         </div>
       )}
 
@@ -388,10 +406,20 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
             </div>
           )}
 
+          {collabOn && collabOpen && (
+            <div className="border-t border-[var(--border-1)] px-4 py-3">
+              <span className="mt-label mb-2 block">Collaborators <span className="mt-hint">(up to 2)</span></span>
+              <CollaboratorPicker value={collaborators} onChange={setCollaborators} selfId={user?.id} />
+            </div>
+          )}
+
           <div className="mt-composer-full__toolbar" style={kbInset ? { transform: `translateY(-${kbInset}px)` } : undefined}>
             <button type="button" onClick={() => fileRef.current?.click()} aria-label="Add photo" className="mt-btn mt-btn--ghost mt-btn--s gap-2"><Image size={20} aria-hidden="true" />Photo</button>
             <button type="button" aria-pressed={format === 'question'} onClick={() => setFormat((f) => (f === 'question' ? 'text' : 'question'))} className="mt-btn mt-btn--ghost mt-btn--s gap-2"><CircleHelp size={20} aria-hidden="true" />Ask</button>
             <button type="button" aria-pressed={thread} onClick={() => setKind((k) => (k === 'thread' ? 'post' : 'thread'))} className="mt-btn mt-btn--ghost mt-btn--s gap-2"><MessagesSquare size={20} aria-hidden="true" />Thread</button>
+            {collabOn && (
+              <button type="button" aria-pressed={collabOpen} aria-label="Add collaborators" onClick={() => setCollabOpen((o) => !o)} className="mt-btn mt-btn--ghost mt-btn--s gap-2"><UserPlus size={20} aria-hidden="true" />People{collaborators.length ? ` · ${collaborators.length}` : ''}</button>
+            )}
             <input ref={fileRef} type="file" accept={TYPES.join(',')} multiple hidden onChange={(e) => addFiles(e.target.files)} />
           </div>
         </div>

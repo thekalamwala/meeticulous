@@ -4,6 +4,7 @@ import { adminGetReports, adminResolveReport, adminModerate, adminPatchMember } 
 import AdminEmptyState from '../../../components/admin/AdminEmptyState';
 import { Badge, Btn, Card, Skeleton } from '../../../components/admin/ui';
 import { askNote, banUntil, canModerate, errMsg } from './shared';
+import MeetDropdown from '../../../components/ui/MeetDropdown';
 
 const ICON = 'M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z';
 
@@ -40,11 +41,9 @@ function Group({ g, busy, run, moderate }) {
           {g.author.id && (
             <span className="inline-flex items-center gap-1 ml-auto">
               <label className="sr-only" htmlFor={`ban-${g.target_id}`}>Ban length</label>
-              <select id={`ban-${g.target_id}`} value={days === 'permanent' ? 'permanent' : 'days'}
-                onChange={(e) => setDays(e.target.value === 'permanent' ? 'permanent' : '7')}
-                className="border adm-border rounded-lg px-2 py-1.5 text-[12px]">
-                <option value="days">Days</option><option value="permanent">Permanent</option>
-              </select>
+              <MeetDropdown id={`ban-${g.target_id}`} ariaLabel="Ban length" size="sm" value={days === 'permanent' ? 'permanent' : 'days'}
+                onChange={(v) => setDays(v === 'permanent' ? 'permanent' : '7')}
+                options={[{ value: 'days', label: 'Days' }, { value: 'permanent', label: 'Permanent' }]} />
               {days !== 'permanent' && (
                 <input type="number" min="1" max="365" value={days} onChange={(e) => setDays(e.target.value)} aria-label="Ban days"
                   className="w-16 border adm-border rounded-lg px-2 py-1.5 text-[12px]" />

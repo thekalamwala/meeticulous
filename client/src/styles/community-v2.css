@@ -140,6 +140,15 @@
   line-height: 1.55;
   color: var(--fg-1);
   background: transparent;
+  border-radius: 12px;
+}
+/* A clean full box (all 4 sides) when typing, inset just off the sheet edge —
+   replaces the base input focus ring, which on this full-bleed textarea only
+   showed top/bottom. */
+.mt-composer-full__body:focus {
+  outline: 2px solid var(--border-brand);
+  outline-offset: -2px;
+  box-shadow: none;
 }
 .mt-composer-full__toolbar {
   display: flex;
@@ -149,6 +158,18 @@
   background: #fff;
 }
 .mt-composer-full__toolbar [aria-pressed="true"] { color: var(--mt-maroon); }
+
+/* Action row (like / reply / share / save): the hover lands as a small circle
+   behind the ICON only, not across the whole pill. The count sits outside it. */
+.mt-actionrow .mt-btn { padding: 0; background: transparent; }
+.mt-actionrow .mt-btn > svg {
+  box-sizing: content-box;
+  padding: 7px;
+  border-radius: 50%;
+  transition: background var(--dur-fast) var(--ease-out);
+}
+.mt-actionrow .mt-btn:hover > svg,
+.mt-actionrow .mt-btn:focus-visible > svg { background: var(--action-secondary-hover); }
 
 /* ── @mention typeahead (M5) — shared by composer + comment replies ── */
 .mt-mention-list {

@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { BadgeCheck, Sparkles } from 'lucide-react';
 
@@ -47,7 +48,7 @@ export function AuthorBadge({ author }) {
 // `badge` is the caller's <IdentityBadge/> node rather than an import, so this file and
 // IdentityBadge (which needs Avatar from here) don't form an import cycle. The seal
 // already encodes the role by colour, so the text role pill stays out of this row.
-export default function AuthorChip({ author, meta, size = 'm', avatar = true, badge = null }) {
+export default function AuthorChip({ author, meta, size = 'm', avatar = true, badge = null, collaborators = [] }) {
   const name = author?.display_name || 'Deleted account';
   const handle = author?.profile_url ? `@${author.profile_url.replace(/^\//, '')}` : null;
   return (
@@ -57,6 +58,19 @@ export default function AuthorChip({ author, meta, size = 'm', avatar = true, ba
         {author?.profile_url
           ? <Link to={author.profile_url} className="mt-identity__name">{name}</Link>
           : <span className="mt-identity__name">{name}</span>}
+        {collaborators.length > 0 && (
+          <span className="mt-identity__collab">
+            {' with '}
+            {collaborators.map((c, i) => (
+              <Fragment key={c.id}>
+                {i > 0 && ' & '}
+                {c.profile_url
+                  ? <Link to={c.profile_url} className="mt-identity__name">{c.display_name}</Link>
+                  : <span className="mt-identity__name">{c.display_name}</span>}
+              </Fragment>
+            ))}
+          </span>
+        )}
         {badge && <span className="mt-identity__seal">{badge}</span>}
         {handle && <span className="mt-identity__handle">{handle}</span>}
         {meta && <span className="mt-identity__time">{meta}</span>}

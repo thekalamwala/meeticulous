@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Plus, Trash2, MoreHorizontal, Globe, Clock, Settings, Lock } from "lucide-react";
+import { Plus, Trash2, MoreHorizontal, Globe, Clock, Settings } from "lucide-react";
 import {
   setAvailability as saveAvailability,
   getAvailability,
@@ -10,10 +9,13 @@ import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { isFreePlan } from "../utils/themeUtils";
 import {
-  PageHeader, Card, Button, FormField, Select, Input, StickyActionBar,
+  PageHeader, Card, Button, Select, Input, StickyActionBar,
   ContextMenu, cn,
 } from "../components/dashboard/ui";
 import { PageHeading as PageHeadingV2 } from "../components/dashboard/ui/v2";
+import CalendarConnect from "../components/availability/CalendarConnect";
+import HoursMobile from "../components/availability/HoursMobile";
+import BookingRulesCard from "../components/availability/BookingRulesCard";
 
 const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 const DEFAULT_SCHEDULE = DAYS.reduce((acc, day) => { acc[day] = []; return acc; }, {});
@@ -194,7 +196,19 @@ const Availability = ({ embedded = false } = {}) => {
           <span>Day</span><span>Availability</span><span>Time slots</span><span />
         </div>
 
-        <div className="divide-y divide-maroon/5">
+        {/* Mobile: app-style day cards (graduated from host-lab). Desktop: the grid rows below. */}
+        <HoursMobile
+          className="sm:hidden"
+          days={DAYS}
+          schedule={schedule}
+          isDayOpen={isDayOpen}
+          toggleDay={toggleDay}
+          addSlot={addSlot}
+          removeSlot={removeSlot}
+          updateSlot={updateSlot}
+        />
+
+        <div data-testid="weekly-grid" className="hidden divide-y divide-maroon/5 sm:block">
           {DAYS.map((day) => {
             const open = isDayOpen(day);
             const slots = open ? schedule[day] : [null]; // one row even when closed
@@ -269,6 +283,13 @@ const Availability = ({ embedded = false } = {}) => {
         </div>
       </Card>
 
+      {/* Connected calendars — graduated from the host-lab prototype */}
+      <Card className="mb-5">
+        <h2 className="mb-1 text-base font-semibold text-ink">Connected calendars</h2>
+        <p className="mb-3 text-xs text-ink/40">Connect a calendar so busy time elsewhere blocks new bookings, and confirmed meetings sync automatically.</p>
+        <CalendarConnect />
+      </Card>
+
       {/* Blocked dates — full days guests can never book */}
       <Card className="mb-5">
         <h2 className="mb-1 text-base font-semibold text-ink">Blocked dates</h2>
@@ -316,75 +337,19 @@ const Availability = ({ embedded = false } = {}) => {
         )}
       </Card>
 
-      {/* Schedule settings — timezone + buffer */}
-      <Card id="schedule-settings" className="mb-5">
-        <h2 className="mb-1 text-base font-semibold text-ink">Schedule settings</h2>
-        <p className="mb-4 text-xs text-ink/40">Update your timezone and buffer between bookings.</p>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormField label="Time zone" htmlFor="av-tz" className="mb-0">
-            <Select id="av-tz" value={timezone} onChange={(e) => { setTimezone(e.target.value); setDirty(true); }}>
-              <option value="Asia/Kolkata">Asia/Kolkata (GMT +05:30)</option>
-              <option value="America/New_York">America/New_York (EST)</option>
-              <option value="America/Los_Angeles">America/Los_Angeles (PST)</option>
-              <option value="Europe/London">Europe/London (GMT)</option>
-              <option value="Europe/Berlin">Europe/Berlin (CET)</option>
-              <option value="Asia/Dubai">Asia/Dubai (GST)</option>
-              <option value="Asia/Singapore">Asia/Singapore (SGT)</option>
-            </Select>
-          </FormField>
-          <FormField label="Buffer between bookings" htmlFor="av-buffer" className="mb-0">
-            <Select id="av-buffer" value={bufferMinutes} onChange={(e) => { setBufferMinutes(parseInt(e.target.value)); setDirty(true); }}>
-              <option value={0}>No buffer</option>
-              <option value={5}>5 minutes</option>
-              <option value={10}>10 minutes</option>
-              <option value={15}>15 minutes</option>
-              <option value={30}>30 minutes</option>
-              <option value={60}>1 hour</option>
-            </Select>
-          </FormField>
-        </div>
-        <p className="mt-2 text-xs text-ink/40">A buffer is the gap between the end of one booking and the start of the next.</p>
-      </Card>
-
-      {/* Booking caps — Pro power-host control */}
-      <Card className="mb-5">
-        <div className="mb-1 flex items-center gap-2">
-          <h2 className="text-base font-semibold text-ink">Booking caps</h2>
-          <span className="rounded-full bg-marigold-100 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-marigold-800">Pro</span>
-          {isFree && <Lock className="h-3.5 w-3.5 text-ink/40" strokeWidth={2.2} />}
-        </div>
-        <p className="mb-4 text-xs text-ink/40">
-          Protect your calendar. Leave a field blank for no limit — a booking that would exceed a cap is turned away.
-        </p>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {[
-            { key: "cap_per_day", label: "Max bookings per day" },
-            { key: "cap_per_week", label: "Max bookings per week" },
-            { key: "cap_per_guest", label: "Max bookings per guest" },
-          ].map(({ key, label }) => (
-            <FormField key={key} label={label} htmlFor={`av-${key}`} className="mb-0">
-              <Input
-                id={`av-${key}`}
-                type="number"
-                min={1}
-                max={999}
-                step={1}
-                inputMode="numeric"
-                placeholder="No limit"
-                disabled={isFree}
-                value={caps[key]}
-                onChange={(e) => { setCaps((c) => ({ ...c, [key]: e.target.value })); setDirty(true); }}
-              />
-            </FormField>
-          ))}
-        </div>
-        {isFree && (
-          <p className="mt-3 text-xs text-ink/55">
-            Booking caps are a Pro feature.{" "}
-            <Link to="/dashboard/upgrade?src=booking_caps" className="font-semibold text-maroon underline">Upgrade to Pro</Link>
-          </p>
-        )}
-      </Card>
+      {/* Booking rules + daily limits — graduated from host-lab */}
+      <div id="schedule-settings" className="mb-5">
+        <BookingRulesCard
+          timezone={timezone}
+          setTimezone={setTimezone}
+          bufferMinutes={bufferMinutes}
+          setBufferMinutes={setBufferMinutes}
+          caps={caps}
+          setCaps={setCaps}
+          isFree={isFree}
+          onChange={() => setDirty(true)}
+        />
+      </div>
 
       <StickyActionBar>
         {dirty && <span className="mr-auto text-sm text-muted">You have unsaved changes</span>}

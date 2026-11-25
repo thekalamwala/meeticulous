@@ -4,6 +4,7 @@
 
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import ForEvidence from './ForEvidence';
 
 export default function ForFaqIntro({ accent = 'currentColor' }) {
   return (
@@ -18,6 +19,8 @@ export default function ForFaqIntro({ accent = 'currentColor' }) {
       >
         Ask us anything <ArrowRight size={16} />
       </Link>
+      {/* Cited, verifiable evidence — mounts on every /for page for GEO/AEO. */}
+      <ForEvidence accent={accent} />
     </>
   );
 }

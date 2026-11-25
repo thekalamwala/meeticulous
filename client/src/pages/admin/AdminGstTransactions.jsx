@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import { PageHeader, Card, Badge, Btn, Skeleton } from '../../components/admin/ui';
 import { adminGstTransactions, adminGstReportCsv } from '../../services/api';
 import { inr, num, PeriodFilter, defaultPeriod, periodParams, downloadBlob, SOURCE_LABEL } from './gstShared';
@@ -80,12 +81,8 @@ export default function AdminGstTransactions() {
         <PeriodFilter value={period} onChange={(v) => { setPage(1); setPeriod(v); }} />
         <label className="flex flex-col gap-1 text-[11px] uppercase tracking-wide adm-t3">
           Stream
-          <select className="fb-input text-sm" value={filters.source_type} onChange={(e) => setFilter({ source_type: e.target.value })}>
-            <option value="">All</option>
-            <option value="booking">Booking fee</option>
-            <option value="subscription">Subscription</option>
-            <option value="commission">Commission</option>
-          </select>
+          <MeetDropdown size="sm" ariaLabel="Source" value={filters.source_type} onChange={(v) => setFilter({ source_type: v })}
+            options={[{ value: '', label: 'All' }, { value: 'booking', label: 'Booking fee' }, { value: 'subscription', label: 'Subscription' }, { value: 'commission', label: 'Commission' }]} />
         </label>
         <label className="flex flex-col gap-1 text-[11px] uppercase tracking-wide adm-t3">
           Buyer GSTIN

@@ -201,9 +201,9 @@ const STATUS_WORD = {
   expired: ['Expired', 'bg-error-bg text-error-fg'],
   used_up: ['Used up', 'bg-error-bg text-error-fg'],
 };
-export const StatusPill = ({ status, children }) => {
+export const StatusPill = ({ status, children, icon: Icon }) => {
   const [word, cls] = STATUS_WORD[status] || [children || status, 'bg-neutral-100 text-ink/55'];
-  return <span className={cn('inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] font-bold', cls)}>{children || word}</span>;
+  return <span className={cn('inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold', cls)}>{Icon && <Icon className="h-3 w-3" strokeWidth={2.6} />}{children || word}</span>;
 };
 
 /* ── Toggle ────────────────────────────────────────────────────────────── */
@@ -301,3 +301,126 @@ export const RankedBars = ({ rows, valueKey = 'views', labelKey = 'label', forma
     </ul>
   );
 };
+
+/* ── SourceDonut — interactive donut for a categorical split (where bookings
+ * came from). Single-hue maroon ramp — tints of the brand hue, never a rainbow.
+ * Hover/tap a slice or legend row to focus it: the hole reads that source's
+ * count, share and name; tap again to clear. Donut + legend sit side-by-side on
+ * a wide panel, wrap to a column when narrow (stack), so one component serves
+ * both layouts. Ported verbatim from the lab's labUi.jsx. ─────────────────── */
+const DONUT_RAMP = ['#960D32', '#B83651', '#E0506F', '#F27D93', '#FF9FB0', '#C8B0B8'];
+
+export const SourceDonut = ({ rows, valueKey = 'bookings', labelKey = 'label', stack = false }) => {
+  const [active, setActive] = useState(null);
+  const [hover, setHover] = useState(null);
+  const shown = hover ?? active;
+  const toggle = (i) => setActive((p) => (p === i ? null : i));
+
+  const total = rows.reduce((s, r) => s + (r[valueKey] || 0), 0) || 1;
+  const SIZE = 150; const SW = 22; const GROW = 5; const GAP = 2.5;
+  // Leave room for the active ring's extra width so it never clips the viewBox.
+  const R = (SIZE - SW - GROW) / 2 - 1;
+  const C = 2 * Math.PI * R;
+
+  let cum = 0;
+  const segs = rows.map((r, i) => {
+    const frac = (r[valueKey] || 0) / total;
+    const seg = { i, frac, offset: cum, color: DONUT_RAMP[i % DONUT_RAMP.length], row: r };
+    cum += frac;
+    return seg;
+  });
+  const sel = shown == null ? null : segs[shown];
+
+  return (
+    <div className={cn('flex items-center justify-center', stack ? 'flex-col gap-3' : 'flex-wrap gap-x-5 gap-y-3')}>
+      <div className="relative shrink-0" style={{ width: SIZE, height: SIZE }}>
+        <svg
+          viewBox={`0 0 ${SIZE} ${SIZE}`}
+          width={SIZE}
+          height={SIZE}
+          role="img"
+          aria-label={`Bookings by source — ${rows[0]?.[labelKey]} leads with ${Math.round((segs[0]?.frac || 0) * 100)}% of ${total}`}
+        >
+          <g transform={`rotate(-90 ${SIZE / 2} ${SIZE / 2})`}>
+            <circle cx={SIZE / 2} cy={SIZE / 2} r={R} fill="none" stroke="#F1EBE9" strokeWidth={SW} />
+            {segs.map((s) => {
+              const on = shown === s.i;
+              const len = Math.max(s.frac * C - GAP, 0.001);
+              return (
+                <circle
+                  key={s.i}
+                  cx={SIZE / 2}
+                  cy={SIZE / 2}
+                  r={R}
+                  fill="none"
+                  stroke={s.color}
+                  strokeWidth={on ? SW + GROW : SW}
+                  strokeDasharray={`${len} ${C - len}`}
+                  strokeDashoffset={-(s.offset * C)}
+                  className="cursor-pointer transition-[stroke-width,opacity] duration-150"
+                  style={{ opacity: shown == null || on ? 1 : 0.8 }}
+                  onMouseEnter={() => setHover(s.i)}
+                  onMouseLeave={() => setHover(null)}
+                  onClick={() => toggle(s.i)}
+                />
+              );
+            })}
+          </g>
+        </svg>
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
+          <span className="font-display text-[20px] font-extrabold leading-none tracking-[-0.04em] text-ink">
+            {sel ? (
+              <>{sel.row[valueKey].toLocaleString('en-IN')}<span className="text-ink/35">/{total.toLocaleString('en-IN')}</span></>
+            ) : total.toLocaleString('en-IN')}
+          </span>
+          <span className="mt-1 text-[11px] font-bold tabular-nums tracking-[0.02em] text-maroon">
+            {sel ? `${Math.round(sel.frac * 100)}%` : 'booked'}
+          </span>
+        </div>
+      </div>
+
+      <ul className={cn('flex flex-col gap-0.5', stack ? 'w-full' : 'min-w-[150px] flex-1')}>
+        {segs.map((s) => {
+          const on = shown === s.i;
+          return (
+            <li key={s.i}>
+              <button
+                type="button"
+                onMouseEnter={() => setHover(s.i)}
+                onMouseLeave={() => setHover(null)}
+                onClick={() => toggle(s.i)}
+                className={cn('flex w-full items-center gap-2 rounded-lg px-1.5 py-1 text-left transition', on ? 'bg-blush' : 'hover:bg-cream')}
+              >
+                <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: s.color }} />
+                <span className="min-w-0 flex-1 truncate text-[11.5px] font-semibold text-ink/80">{s.row[labelKey]}</span>
+                <span className="shrink-0 text-[11px] font-bold tabular-nums text-ink">{(s.row[valueKey]).toLocaleString('en-IN')}</span>
+                <span className="w-9 shrink-0 text-right text-[10.5px] font-bold tabular-nums text-ink/45">{Math.round(s.frac * 100)}%</span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+};
+
+/* ── Brand marks for the booking-drawer actions. Third-party logos kept as
+ * inline SVG so they render offline and keep their real colours on a white
+ * button. Ported verbatim from labUi.jsx. ─────────────────────────────────── */
+export const WhatsAppIcon = ({ className }) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+    <path fill="#25D366" d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24z" />
+    <path fill="#fff" d="M9.516 7.391c-.17-.379-.349-.387-.513-.394l-.436-.005a.84.84 0 00-.608.285c-.21.229-.797.779-.797 1.9 0 1.12.817 2.204.93 2.356.115.152 1.575 2.52 3.886 3.433 1.918.757 2.309.606 2.725.569.416-.038 1.343-.549 1.532-1.08.19-.531.19-.986.133-1.08-.057-.096-.21-.153-.436-.266-.228-.114-1.343-.663-1.551-.739-.209-.076-.36-.114-.513.114-.152.228-.588.738-.721.89-.133.152-.266.171-.494.057-.228-.114-.963-.355-1.834-1.132-.678-.605-1.136-1.352-1.269-1.58-.133-.228-.014-.351.1-.465.102-.102.228-.266.342-.398.113-.133.151-.228.228-.38.076-.153.038-.285-.019-.399-.057-.114-.5-1.236-.705-1.688z" />
+  </svg>
+);
+
+export const MeetIcon = ({ className }) => (
+  <svg viewBox="0 0 87.5 72" className={className} aria-hidden="true">
+    <path fill="#00832d" d="M49.5 36l8.53 9.75 11.47 7.33 2-17.02-2-16.64-11.69 6.44z" />
+    <path fill="#0066da" d="M0 51.5V66c0 3.315 2.685 6 6 6h14.5l3-10.96-3-9.54-9.95-3z" />
+    <path fill="#e94235" d="M20.5 0L0 20.5l10.55 3 9.95-3 2.95-9.41z" />
+    <path fill="#2684fc" d="M20.5 20.5H0v31h20.5z" />
+    <path fill="#00ac47" d="M82.6 8.68L69.5 19.44v34.4l13.16 10.8c1.97 1.54 4.85.135 4.85-2.37V11c0-2.535-2.945-3.925-4.91-2.32zM49.5 36v15.5h-29V72h43c3.315 0 6-2.685 6-6V53.84z" />
+    <path fill="#ffba00" d="M63.5 0h-43v20.5h29V36l20-16.56V6c0-3.315-2.685-6-6-6z" />
+  </svg>
+);

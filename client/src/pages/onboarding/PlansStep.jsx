@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Check, ChevronDown, Rocket, Loader2 } from 'lucide-react';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import { getPublicPlans, activateFreePlan, advanceToLive, createSubscription, syncSubscription, getMe } from '../../services/api';
 import { planLabel } from '../../utils/themeUtils';
 import { fireCelebration } from '../../utils/celebration';
@@ -424,18 +425,19 @@ const PlansStep = () => {
           <div className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-base font-bold text-gray-900">Billing state</h3>
             <p className="mt-1 text-sm text-gray-500">Required for your GST tax invoice — it sets your place of supply.</p>
-            <select
-              className="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-              value={billing.state_code}
-              onChange={(e) => {
-                const code = e.target.value;
-                const name = INDIAN_STATES.find((s) => s.code === code)?.name || '';
-                setBilling({ state_code: code, state: name });
-              }}
-            >
-              <option value="">Select your state…</option>
-              {INDIAN_STATES.map((s) => <option key={s.code} value={s.code}>{s.name}</option>)}
-            </select>
+            <div className="mt-3">
+              <MeetDropdown
+                ariaLabel="Billing state"
+                placeholder="Select your state…"
+                searchable
+                value={billing.state_code}
+                onChange={(code) => {
+                  const name = INDIAN_STATES.find((s) => s.code === code)?.name || '';
+                  setBilling({ state_code: code, state: name });
+                }}
+                options={INDIAN_STATES.map((s) => ({ value: s.code, label: s.name }))}
+              />
+            </div>
             <div className="mt-4 flex justify-end gap-2">
               <button type="button" className="rounded-lg px-3 py-2 text-sm text-gray-500"
                       onClick={() => setPendingPaid(null)}>Cancel</button>

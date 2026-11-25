@@ -6,6 +6,7 @@ import { Table, Badge, Btn } from '../../../components/admin/ui';
 import { crmColdCallHistory } from '../../../services/api';
 import { Chips } from './ccUi';
 import { OUTCOMES, outcomeLabel, outcomeTone } from './coldCallUtils';
+import MeetDropdown from '../../../components/ui/MeetDropdown';
 
 const fmt = (iso) => new Date(iso).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
 
@@ -45,10 +46,7 @@ export default function ColdCallHistory() {
         ]} />
         <div className="flex items-center gap-3">
           <span className="text-[12.5px] adm-t3">{data ? `${data.total} calls` : ''}</span>
-          <select className="fb-input text-[13px] !w-auto !min-h-0 !py-1.5" aria-label="Outcome" value={outcome} onChange={(e) => { setOutcome(e.target.value); setPage(1); }}>
-            <option value="">All outcomes</option>
-            {OUTCOMES.map((o) => <option key={o.key} value={o.key}>{o.label}</option>)}
-          </select>
+          <MeetDropdown size="sm" value={outcome} onChange={(v) => { setOutcome(v); setPage(1); }} placeholder="All outcomes" ariaLabel="Outcome" options={OUTCOMES.map((o) => ({ value: o.key, label: o.label }))} />
         </div>
       </div>
       <Table columns={columns} rows={data?.rows || []} rowKey={(r) => r.id}
