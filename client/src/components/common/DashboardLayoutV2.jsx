@@ -152,7 +152,7 @@ const NavRow = ({ section, plan, badges, activeTo, expanded, onToggle, onNavigat
             onClick={() => onToggle(section.id)}
             aria-expanded={expanded}
             aria-label={`${expanded ? 'Collapse' : 'Expand'} ${section.label}`}
-            className={cn('absolute right-1.5 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-faint transition hover:text-ink', ring)}
+            className={cn('absolute right-1.5 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-[10px] text-faint transition hover:text-ink', ring)}
           >
             <ChevronRight className={cn('h-3.5 w-3.5 transition-transform', expanded && 'rotate-90')} strokeWidth={2.6} />
           </button>
@@ -174,7 +174,7 @@ const NavRow = ({ section, plan, badges, activeTo, expanded, onToggle, onNavigat
                     locked && 'cursor-default text-ink/30 hover:bg-transparent')}
                 >
                   <span className="truncate">{pg.label}</span>
-                  {locked && <span className="ml-auto rounded-full bg-blush px-2 text-[11px] font-semibold text-maroon">Pro</span>}
+                  {locked && <span className="ml-auto rounded-[6px] bg-blush px-2 text-[11px] font-semibold text-maroon">Pro</span>}
                   {count > 0 && <Badge n={count} />}
                 </NavLink>
               </li>
@@ -257,7 +257,7 @@ const TopbarV2 = ({ onOpenNav, user, plan, planStyle, initial, logout, onHome })
     </Link>
     <div className="ml-auto flex shrink-0 items-center gap-2">
       <Link to="/help" title="Support" aria-label="Support"
-        className="grid h-10 w-10 place-items-center rounded-full bg-white text-muted transition-colors hover:text-maroon">
+        className="grid h-10 w-10 place-items-center rounded-[12px] bg-white text-muted transition-colors hover:text-maroon">
         <LifeBuoy className="h-[19px] w-[19px]" strokeWidth={1.8} />
       </Link>
       <NotifBell />
@@ -339,7 +339,7 @@ const DashboardLayoutV2 = ({ children }) => {
               <div className="flex h-16 shrink-0 items-center gap-2.5 px-5">
                 <img src="/brand/meeticulous-icon.svg" alt="" aria-hidden="true" className="h-8 w-8 object-contain" />
                 <span className="flex-1 font-display text-[18px] font-extrabold tracking-[-0.02em] text-maroon">Meeticulous</span>
-                <button type="button" onClick={closeNav} aria-label="Close navigation" className="grid h-10 w-10 place-items-center rounded-full text-muted hover:bg-white">
+                <button type="button" onClick={closeNav} aria-label="Close navigation" className="grid h-10 w-10 place-items-center rounded-[12px] text-muted hover:bg-white">
                   <X className="h-5 w-5" />
                 </button>
               </div>

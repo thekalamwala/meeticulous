@@ -18,7 +18,7 @@ const Banner = ({ tone, Icon, title, body }) => (
     </div>
     <Link
       to="/dashboard/kyc"
-      className="shrink-0 whitespace-nowrap rounded-full bg-maroon px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
+      className="shrink-0 whitespace-nowrap rounded-[12px] bg-maroon px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
     >
       {tone.label}
     </Link>

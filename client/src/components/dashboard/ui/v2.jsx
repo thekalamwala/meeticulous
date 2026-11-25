@@ -90,7 +90,7 @@ export const Drawer = ({ open, onClose, title, subtitle, children, width = 'sm:w
                 {subtitle && <p className="mt-0.5 truncate text-[13px] text-faint">{subtitle}</p>}
               </div>
               <button type="button" onClick={onClose} aria-label="Close"
-                className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-muted transition hover:bg-blush hover:text-maroon focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] text-muted transition hover:bg-blush hover:text-maroon focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
                 <X className="h-5 w-5" strokeWidth={2.2} />
               </button>
             </header>
@@ -143,11 +143,11 @@ export const PageHeading = ({ title, sub, action }) => (
  * Money/Schedule/Bookings graduate to one page + this nav; each tab is a real
  * URL (the old routes), so bookmarks and deep links keep working. */
 export const SubNav = ({ items }) => (
-  <nav aria-label="Sub-pages" className="flex w-fit max-w-full gap-1 overflow-x-auto rounded-full bg-white p-1 dash-noscrollbar">
+  <nav aria-label="Sub-pages" className="flex w-fit max-w-full gap-1 overflow-x-auto rounded-[14px] bg-white p-1 dash-noscrollbar">
     {items.map((it) => (
       <NavLink key={it.to} to={it.to} end={it.end}
         className={({ isActive }) => cn(
-          'shrink-0 rounded-full px-4 py-2 text-[13.5px] font-semibold transition focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose',
+          'shrink-0 rounded-[10px] px-4 py-2 text-[13.5px] font-semibold transition focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose',
           isActive ? 'bg-maroon text-white' : 'text-muted hover:bg-blush hover:text-maroon')}>
         {it.label}
       </NavLink>
@@ -212,7 +212,7 @@ const STATUS_WORD = {
 };
 export const StatusPill = ({ status, children, icon: Icon }) => {
   const [word, cls] = STATUS_WORD[status] || [children || status, 'bg-neutral-100 text-ink/55'];
-  return <span className={cn('inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-[11.5px] font-semibold', cls)}>{Icon && <Icon className="h-3 w-3" strokeWidth={2.6} />}{children || word}</span>;
+  return <span className={cn('inline-flex shrink-0 items-center gap-1 rounded-[8px] px-2.5 py-0.5 text-[11.5px] font-semibold', cls)}>{Icon && <Icon className="h-3 w-3" strokeWidth={2.6} />}{children || word}</span>;
 };
 
 /* ── Toggle ────────────────────────────────────────────────────────────── */

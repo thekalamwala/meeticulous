@@ -92,6 +92,10 @@ imagery). Pitch and guidelines: claude.ai/artifact/VKsrB9rmuxv2BN5rd3gGBH.
   ring. Never a filled maroon stat tile.
 - **Notices** are a white card with a blush icon chip, one sentence and one button, never a
   full-width coloured banner.
+- **Control radius (dashboard):** buttons, tabs, nav rows and icon buttons are rounded
+  rectangles: 12px (10px small / inside a group), badges 8px, tags 6px. Full circles only for
+  avatars, dots, toggles and the tab-bar centre button. Pills read soft but make hover fills
+  and focus rings look off (founder call, 2026-11-25). The marketing site keeps its pills.
 - **Mascots** (`client/public/about/mascot-*.png`, 400px sources): purple star = Intelligence /
   Pro, orange panda = Money / KYC, blue axolotl = Bookings / Today, green sprout = Grow / first
   steps. One per screen, ≥96px, only in bands, empty states, Pro previews, onboarding and

@@ -16,7 +16,7 @@ export function ErrorState({ icon: Icon, title = 'Something went wrong', message
         <button
           type="button"
           onClick={onRetry}
-          className="mt-5 rounded-full bg-maroon px-5 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
+          className="mt-5 rounded-[12px] bg-maroon px-5 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
         >
           Try again
         </button>
