@@ -21,6 +21,8 @@ import {
   Search, Star, TrendingDown, TrendingUp, UserMinus, X,
 } from 'lucide-react';
 import { cn } from '../../components/dashboard/ui';
+import MeetDropdown from '../../components/ui/MeetDropdown';
+import { optionsFromChildren } from '../../components/ui/selectChildren';
 import { pageMeta } from './nav';
 
 /* ── Drawer ───────────────────────────────────────────────────────────────
@@ -819,12 +821,9 @@ export const Panel = ({ title, subtitle, action, children, className = '', flush
  * ---------------------------------------------------------------------- */
 
 /* ── Fields ───────────────────────────────────────────────────────────────
- * The kit's Form.jsx still ships pre-rebrand styling: `rounded` (10px) where
- * the radius scale says inputs are 16px, cold `border-gray-300` instead of the
- * warm neutral ramp, a 2px primary focus ring instead of the 3px rose one, and
- * a Select chevron whose SVG stroke is still hardcoded BLUE (#00457C) from the
- * old palette. Rather than restyle a shared production component from inside a
- * prototype, the lab uses these, and the fix is filed as a P0 in the report.
+ * LabInput/LabTextarea use the kit's minimalist .fb-input style. LabSelect now
+ * wraps the branded MeetDropdown (keeping the <option>-children + event-onChange
+ * API), so the lab's dropdowns match the rest of the site.
  * ---------------------------------------------------------------------- */
 // Minimalist: clean bottom border instead of a full frame, transparent, no ring
 // — the Field label sits above. Matches the user-facing .fb-input style.
@@ -844,14 +843,20 @@ export const LabInput = ({ className = '', ...props }) => (
   <input className={cn(FIELD, unless(className, 'w', 'w-full'), unless(className, 'h', 'h-8'), className)} {...props} />
 );
 
-export const LabSelect = ({ className = '', children, ...props }) => (
-  <select
-    className={cn(FIELD, 'cursor-pointer appearance-none pr-8', unless(className, 'w', 'w-full'), unless(className, 'h', 'h-8'), className)}
-    style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23960D32' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\")", backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.7rem center' }}
-    {...props}
-  >
-    {children}
-  </select>
+// Branded dropdown; keeps the native-<select> API (<option> children + event
+// onChange) so every caller stays unchanged. Native values are strings — match.
+export const LabSelect = ({ className = '', children, value, onChange, ...props }) => (
+  <MeetDropdown
+    size="sm"
+    id={props.id}
+    name={props.name}
+    disabled={props.disabled}
+    ariaLabel={props['aria-label']}
+    className={cn(unless(className, 'w', 'w-full'), className)}
+    value={value == null ? '' : String(value)}
+    onChange={(v) => onChange?.({ target: { value: v, name: props.name } })}
+    options={optionsFromChildren(children)}
+  />
 );
 
 export const LabTextarea = ({ className = '', rows = 3, ...props }) => (

@@ -233,6 +233,35 @@
 .mt-menu__item[aria-disabled=true]{opacity:.55;cursor:not-allowed}
 .mt-select{position:relative}
 .mt-select select{cursor:pointer;padding-right:var(--space-7)}
+/* MeetDropdown — branded <select> replacement (Slot list). Trigger reuses .mt-input, panel reuses .mt-menu. */
+.mt-dd{position:relative}
+.mt-dd__trigger{width:100%;justify-content:space-between;text-align:left;cursor:pointer;font:var(--weight-regular) var(--text-body)/1.2 var(--font-body)}
+.mt-dd__trigger:focus-visible{outline:none;border-color:var(--border-brand);box-shadow:var(--focus-ring)}
+.mt-dd[data-open=true] .mt-dd__trigger{border-color:var(--border-brand);box-shadow:var(--focus-ring)}
+.mt-dd__val{flex:1;min-width:0;display:flex;align-items:center;gap:var(--space-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mt-dd__placeholder{color:var(--fg-3)}
+.mt-dd__chev{flex:none;color:var(--fg-2);transition:transform var(--dur-fast) var(--ease-out)}
+.mt-dd[data-open=true] .mt-dd__chev{transform:rotate(180deg)}
+.mt-dd--sm .mt-dd__trigger{height:var(--control-s);font-size:var(--text-body-s)}
+.mt-dd--inline{display:inline-block;width:auto}
+.mt-dd--inline .mt-dd__trigger{width:auto;gap:var(--space-2)}
+.mt-dd--invalid .mt-dd__trigger{border-color:var(--danger)}
+.mt-dd__panel{left:0;top:calc(100% + var(--space-3));min-width:100%;width:max-content;max-width:min(360px,90vw)}
+.mt-dd__list{display:flex;flex-direction:column;gap:var(--space-1);max-height:264px;overflow-y:auto}
+.mt-dd__item{width:100%}
+.mt-dd__item.is-active{background:var(--action-secondary-hover)}
+.mt-dd__item[aria-selected=true]{background:var(--pink-100);color:var(--fg-brand);font-weight:var(--weight-semibold)}
+.mt-dd__label{flex:1;min-width:0;display:flex;flex-direction:column}
+.mt-dd__label small{font-size:var(--text-caption);color:var(--fg-2);font-weight:var(--weight-regular)}
+.mt-dd__icon{flex:none;display:inline-flex;font-size:1.05em}
+.mt-dd__dot{width:8px;height:8px;border-radius:999px;background:var(--mt-pink);flex:none;margin-left:var(--space-2);opacity:0}
+.mt-dd__item[aria-selected=true] .mt-dd__dot{opacity:1}
+.mt-dd__search{display:flex;align-items:center;gap:var(--space-3);color:var(--fg-2);padding:0 0 var(--space-3);margin-bottom:var(--space-2);border-bottom:2px solid var(--border-1)}
+.mt-dd__search input{all:unset;flex:1;min-width:0;font:var(--weight-regular) var(--text-body)/1.2 var(--font-body);color:var(--fg-1)}
+.mt-dd__search input::placeholder{color:var(--fg-3)}
+.mt-dd__empty{padding:var(--space-4);text-align:center;color:var(--fg-3);font-size:var(--text-body-s)}
+/* Global: brand the native-select popup highlight maroon for every remaining <select> (one line, additive). */
+select{accent-color:var(--mt-maroon)}
 
 .mt-check{display:inline-flex;align-items:flex-start;gap:var(--space-4);cursor:pointer;font-size:var(--text-body-s);line-height:1.4;color:var(--fg-1)}
 .mt-check input{position:absolute;opacity:0;width:0;height:0}

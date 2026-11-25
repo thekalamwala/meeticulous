@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import toast from 'react-hot-toast';
 import {
   adminCampaigns, adminCampCreate, adminCampLaunch,
@@ -150,37 +151,31 @@ const AdminCampaigns = () => {
       {building && (
         <Card className="mb-6 max-w-2xl space-y-3">
           <div><label className="block text-xs font-semibold adm-t3 mb-1">Channel</label>
-            <select className="fb-input text-sm" value={form.channel}
-              onChange={(e) => { const channel = e.target.value; setForm({ ...form, channel }); if (form.segment_id) previewCount(form.segment_id, channel); }}>
-              <option value="email">Email</option>
-              <option value="whatsapp">WhatsApp</option>
-            </select></div>
+            <MeetDropdown size="sm" ariaLabel="Channel" value={form.channel}
+              onChange={(channel) => { setForm({ ...form, channel }); if (form.segment_id) previewCount(form.segment_id, channel); }}
+              options={[{ value: 'email', label: 'Email' }, { value: 'whatsapp', label: 'WhatsApp' }]} /></div>
           <div><label className="block text-xs font-semibold adm-t3 mb-1">Campaign name</label>
             <input className="fb-input text-sm" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
           <div><label className="block text-xs font-semibold adm-t3 mb-1">Audience (segment)</label>
-            <select className="fb-input text-sm" value={form.segment_id}
-              onChange={(e) => { setForm({ ...form, segment_id: e.target.value }); previewCount(e.target.value, form.channel); }}>
-              <option value="">Select a segment…</option>
-              {segments.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
+            <MeetDropdown size="sm" ariaLabel="Audience segment" value={form.segment_id} placeholder="Select a segment…"
+              onChange={(v) => { setForm({ ...form, segment_id: v }); previewCount(v, form.channel); }}
+              options={segments.map((s) => ({ value: s.id, label: s.name }))} />
             {count !== null && <p className="text-[11px] adm-t2 mt-1">≈ {count} consented {isWa ? 'WhatsApp' : 'email'} recipients</p>}
           </div>
 
           {isWa ? (
             <div><label className="block text-xs font-semibold adm-t3 mb-1">Approved WhatsApp template</label>
-              <select className="fb-input text-sm" value={form.whatsapp_template_id} onChange={(e) => setForm({ ...form, whatsapp_template_id: e.target.value })}>
-                <option value="">Select a template…</option>
-                {waTemplates.map((t) => <option key={t.id} value={t.id}>{t.name} ({t.param_count} vars)</option>)}
-              </select>
+              <MeetDropdown size="sm" ariaLabel="WhatsApp template" value={form.whatsapp_template_id} placeholder="Select a template…"
+                onChange={(v) => setForm({ ...form, whatsapp_template_id: v })}
+                options={waTemplates.map((t) => ({ value: t.id, label: `${t.name} (${t.param_count} vars)` }))} />
               {waTemplates.length === 0 && <p className="text-[11px] text-amber-600 mt-1">No WhatsApp templates yet — add one via “WhatsApp templates”.</p>}
             </div>
           ) : (
             <>
               <div><label className="block text-xs font-semibold adm-t3 mb-1">Email template</label>
-                <select className="fb-input text-sm" value={form.template_id} onChange={(e) => setForm({ ...form, template_id: e.target.value })}>
-                  <option value="">Select a template…</option>
-                  {templates.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-                </select></div>
+                <MeetDropdown size="sm" ariaLabel="Email template" value={form.template_id} placeholder="Select a template…"
+                  onChange={(v) => setForm({ ...form, template_id: v })}
+                  options={templates.map((t) => ({ value: t.id, label: t.name }))} /></div>
               <div><label className="block text-xs font-semibold adm-t3 mb-1">Subject override (optional)</label>
                 <input className="fb-input text-sm" value={form.subject_override} onChange={(e) => setForm({ ...form, subject_override: e.target.value })} /></div>
             </>

@@ -21,6 +21,7 @@ import Ic from '../../components/admin/Ic';
 import { sessionCan, IC } from '../../components/admin/adminNav';
 import { normalizePlan, getPlanBorderLabel } from '../../utils/themeUtils';
 import { GiftForm } from '../../components/admin/GiftPro';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 
 const inr = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`;
 const fmtDate = (d) => (d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—');
@@ -98,15 +99,14 @@ const ChangePlanModal = ({ host, onClose, onDone }) => {
         <button onClick={onClose} className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100">Cancel</button>
         <Btn onClick={submit} disabled={saving}>{saving ? 'Saving…' : 'Save'}</Btn>
       </>}>
-      <label className="block">
+      <div className="block">
         <span className="text-[12px] font-semibold text-gray-700">Plan</span>
-        <select value={plan} onChange={e => setPlan(e.target.value)} className={inputCls}>
-          <option value="starter">Starter</option>
-          <option value="creator">Pro (Partner)</option>
-          <option value="professional">Pro (Legacy Studio)</option>
-          <option value="supreme">Supreme</option>
-        </select>
-      </label>
+        <MeetDropdown ariaLabel="Plan" value={plan} onChange={setPlan}
+          options={[
+            { value: 'starter', label: 'Starter' }, { value: 'creator', label: 'Pro (Partner)' },
+            { value: 'professional', label: 'Pro (Legacy Studio)' }, { value: 'supreme', label: 'Supreme' },
+          ]} />
+      </div>
       <label className="block">
         <span className="text-[12px] font-semibold text-gray-700">Expires at</span>
         <span className="block text-[11px] text-gray-400">Optional — leave blank for no override.</span>
@@ -140,13 +140,11 @@ const AssignAmModal = ({ host, onClose, onDone }) => {
         <button onClick={onClose} className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100">Cancel</button>
         <Btn onClick={submit} disabled={saving}>{saving ? 'Saving…' : 'Save'}</Btn>
       </>}>
-      <label className="block">
+      <div className="block">
         <span className="text-[12px] font-semibold text-gray-700">Account manager</span>
-        <select value={amId} onChange={e => setAmId(e.target.value)} className={inputCls}>
-          <option value="">— Unassigned —</option>
-          {managers.map(m => <option key={m.id} value={m.id}>{m.name || m.email}</option>)}
-        </select>
-      </label>
+        <MeetDropdown ariaLabel="Account manager" value={amId} onChange={setAmId}
+          options={[{ value: '', label: '— Unassigned —' }, ...managers.map(m => ({ value: m.id, label: m.name || m.email }))]} />
+      </div>
     </Modal>
   );
 };

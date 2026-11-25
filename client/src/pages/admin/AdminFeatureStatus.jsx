@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { adminGetFeatures, adminToggleFeature, adminCreateFeature } from '../../services/api';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import toast from 'react-hot-toast';
 import { PageHeader, Card, Btn } from '../../components/admin/ui';
 
@@ -129,12 +130,8 @@ export default function AdminFeatureStatus() {
             </div>
             <div>
               <label className="block text-xs font-medium adm-t2 mb-1">Scope</label>
-              <select className="fb-input text-sm" value={form.scope}
-                onChange={(e) => setForm({ ...form, scope: e.target.value })}>
-                <option value="vendor">Host</option>
-                <option value="customer">Customer</option>
-                <option value="both">Shared</option>
-              </select>
+              <MeetDropdown size="sm" ariaLabel="Scope" value={form.scope} onChange={(v) => setForm({ ...form, scope: v })}
+                options={[{ value: 'vendor', label: 'Host' }, { value: 'customer', label: 'Customer' }, { value: 'both', label: 'Shared' }]} />
             </div>
           </div>
           <p className="text-[11px] adm-t3">

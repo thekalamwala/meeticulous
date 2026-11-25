@@ -12,6 +12,7 @@ import { PageHeader, Btn } from '../../components/admin/ui';
 import Ic from '../../components/admin/Ic';
 import { IC } from '../../components/admin/adminNav';
 import { normalizePlan, getPlanBorderLabel } from '../../utils/themeUtils';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 
 const inr = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`;
 const SEARCH_ICON = 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z';
@@ -142,23 +143,19 @@ const Host360List = () => {
             </button>
           )}
         </div>
-        <select value={plan} onChange={e => setPlan(e.target.value)} className={selCls}>
-          <option value="">All plans</option>
-          <option value="starter">Starter</option>
-          <option value="creator">Pro (Partner)</option>
-          <option value="professional">Pro (Legacy Studio)</option>
-          <option value="supreme">Supreme</option>
-        </select>
-        <select value={statusF} onChange={e => setStatusF(e.target.value)} className={selCls}>
-          <option value="">All statuses</option>
-          <option value="active">Active</option>
-          <option value="banned">Banned</option>
-          <option value="unverified">Unverified</option>
-        </select>
-        <select value={amId} onChange={e => setAmId(e.target.value)} className={selCls}>
-          <option value="">All account managers</option>
-          {managers.map(m => <option key={m.id} value={m.id}>{m.name || m.email}</option>)}
-        </select>
+        <MeetDropdown size="sm" ariaLabel="Plan" value={plan} onChange={setPlan}
+          options={[
+            { value: '', label: 'All plans' }, { value: 'starter', label: 'Starter' },
+            { value: 'creator', label: 'Pro (Partner)' }, { value: 'professional', label: 'Pro (Legacy Studio)' },
+            { value: 'supreme', label: 'Supreme' },
+          ]} />
+        <MeetDropdown size="sm" ariaLabel="Status" value={statusF} onChange={setStatusF}
+          options={[
+            { value: '', label: 'All statuses' }, { value: 'active', label: 'Active' },
+            { value: 'banned', label: 'Banned' }, { value: 'unverified', label: 'Unverified' },
+          ]} />
+        <MeetDropdown size="sm" ariaLabel="Account manager" value={amId} onChange={setAmId}
+          options={[{ value: '', label: 'All account managers' }, ...managers.map(m => ({ value: m.id, label: m.name || m.email }))]} />
       </div>
 
       {loading ? (

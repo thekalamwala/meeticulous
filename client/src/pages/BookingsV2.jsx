@@ -16,6 +16,7 @@ import { useRegisterRefresh } from '../components/dashboard/ui/refreshContext';
 import { Skeleton, EmptyState, ErrorState, SearchInput } from '../components/dashboard/ui';
 import { Avatar, Panel, PageHeading, StatusPill, cn, fmtTime, fmtDayFull } from '../components/dashboard/ui/v2';
 import { BookingDetailModal } from './Bookings';
+import MeetDropdown from '../components/ui/MeetDropdown';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const DAYS_FULL = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; // indexed by Date.getDay()
@@ -183,13 +184,9 @@ const BookingsV2 = () => {
         </nav>
         {view === 'list' ? (
           <>
-            {/* Status filter — mobile: right end of the toggle row (arrow right); desktop: after search (arrow left) */}
-            <div className="relative order-1 ml-auto shrink-0 sm:order-3 sm:ml-0">
-              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/50 sm:left-3 sm:right-auto" />
-              <select value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Status"
-                className="h-10 w-auto appearance-none rounded-full border border-maroon/20 bg-white pl-4 pr-9 text-sm font-medium text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose sm:pl-9 sm:pr-4">
-                {STATUS_FILTER.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-              </select>
+            {/* Status filter — mobile: right end of the toggle row; desktop: after search */}
+            <div className="order-1 ml-auto shrink-0 sm:order-3 sm:ml-0">
+              <MeetDropdown size="sm" ariaLabel="Status" value={status} onChange={setStatus} options={STATUS_FILTER} />
             </div>
             {/* Search — mobile: full-width second row; desktop: grows inline between toggle and filter */}
             <SearchInput value={q} onChange={setQ} placeholder="Guest, email or service…" className="order-2 w-full min-w-0 sm:order-2 sm:w-auto sm:flex-1" />

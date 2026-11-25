@@ -1,3 +1,4 @@
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { Plus, Pencil, Trash2, X } from 'lucide-react';
@@ -326,17 +327,13 @@ const AdminServiceCategories = () => {
       {/* Profession picker */}
       <div className="mb-4">
         <label className="block text-xs font-medium text-gray-700 mb-1">Profession</label>
-        <select
-          className="fb-input w-full max-w-sm"
+        <MeetDropdown
+          className="w-full max-w-sm"
+          ariaLabel="Profession"
           value={selected}
-          onChange={(e) => setSelected(e.target.value)}
-        >
-          {professionOptions.map((slug) => (
-            <option key={slug} value={slug}>
-              {labelFor(slug)} ({countByPrimary[slug] || 0})
-            </option>
-          ))}
-        </select>
+          onChange={setSelected}
+          options={professionOptions.map((slug) => ({ value: slug, label: `${labelFor(slug)} (${countByPrimary[slug] || 0})` }))}
+        />
       </div>
 
       {/* Table */}

@@ -18,6 +18,8 @@ import {
 import toast from 'react-hot-toast';
 import { Button, cn } from '../../../components/dashboard/ui';
 import { LabSelect, SubPageHeader, Toggle, fmtDayFull, useSubPage } from '../labUi';
+import MeetDropdown from '../../../components/ui/MeetDropdown';
+import { optionsFromChildren } from '../../../components/ui/selectChildren';
 import mock from '../mockData';
 
 const DAYS = [
@@ -277,16 +279,20 @@ const CARD_GRAD = {
   limits: 'linear-gradient(135deg,#F1ECFF 0%,#E5DCFF 100%)',
   dates: 'linear-gradient(135deg,#EAF8EE 0%,#DDF3E4 100%)',
 };
-const SELECT_CHEVRON = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A87A0' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\")";
-
-const RuleSelect = ({ className = '', children, ...props }) => (
-  <select
-    className={cn('w-full cursor-pointer appearance-none rounded-lg border border-neutral-200 bg-white px-2.5 py-2 pr-7 text-[11px] font-semibold text-ink outline-none transition focus:border-maroon', className)}
-    style={{ backgroundImage: SELECT_CHEVRON, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.6rem center' }}
-    {...props}
-  >
-    {children}
-  </select>
+// Branded dropdown; keeps the native-<select> API (<option> children + event
+// onChange) so callers stay unchanged. Native values are strings — match.
+const RuleSelect = ({ className = '', children, value, onChange, ...props }) => (
+  <MeetDropdown
+    size="sm"
+    id={props.id}
+    name={props.name}
+    disabled={props.disabled}
+    ariaLabel={props['aria-label']}
+    className={className}
+    value={value == null ? '' : String(value)}
+    onChange={(v) => onChange?.({ target: { value: v, name: props.name } })}
+    options={optionsFromChildren(children)}
+  />
 );
 
 const RuleField = ({ label, icon: Icon, children, className = '' }) => (

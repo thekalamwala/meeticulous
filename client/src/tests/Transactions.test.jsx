@@ -42,7 +42,8 @@ test('date filter defaults to This Month and clears to all-time', async () => {
   // Reference default is "This Month" → a dateFrom bound is sent on first load.
   expect(getTransactions.mock.calls[0][0].dateFrom).toBeTruthy();
 
-  fireEvent.change(screen.getByLabelText('Filter by date'), { target: { value: '' } });
+  fireEvent.click(screen.getByLabelText('Filter by date'));
+  fireEvent.click(screen.getByRole('option', { name: 'All time' }));
 
   await waitFor(() => {
     const last = getTransactions.mock.calls.at(-1)[0];

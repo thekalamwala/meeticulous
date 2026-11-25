@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { adminGetEscalation, adminReplyEscalation, adminUpdateEscalation } from '../../../services/api';
 import { Badge } from '../../../components/admin/ui';
 import { REASON_GROUPS } from '../../../utils/supportReasons';
+import MeetDropdown from '../../../components/ui/MeetDropdown';
 
 const STATUS_TONE = { open: 'warn', replied: 'ok', closed: 'neutral' };
 const RATING_EMOJI = { 1: '😠', 2: '😕', 3: '😐', 4: '🙂', 5: '🤩' };
@@ -83,14 +84,8 @@ export default function EscalationDetail({ id, onBack, onChanged }) {
           {closeOpen && e.status !== 'closed' && (
             <div className="mt-2 flex flex-wrap items-center gap-2 rounded-lg bg-[#faf9f7] px-3 py-2">
               <span className="text-xs font-medium adm-t2">Why did they need us?</span>
-              <select value={reasonCode} onChange={(ev) => setReasonCode(ev.target.value)} className="rounded-lg border adm-border px-2 py-1 text-xs">
-                <option value="">Reason (optional)…</option>
-                {REASON_GROUPS.map((g) => (
-                  <optgroup key={g.category} label={g.category}>
-                    {g.items.map((r) => <option key={r.code} value={r.code}>{r.label}</option>)}
-                  </optgroup>
-                ))}
-              </select>
+              <MeetDropdown ariaLabel="Reason" size="sm" value={reasonCode} onChange={setReasonCode} placeholder="Reason (optional)…"
+                options={REASON_GROUPS.flatMap((g) => g.items.map((r) => ({ value: r.code, label: r.label, sublabel: g.category })))} />
               <button onClick={() => setEscalationStatus('closed', reasonCode)} className="rounded-lg bg-[#960D32] px-2.5 py-1 text-xs font-medium text-white">Close</button>
               <button onClick={() => { setCloseOpen(false); setReasonCode(''); }} className="text-xs adm-t3">Cancel</button>
             </div>

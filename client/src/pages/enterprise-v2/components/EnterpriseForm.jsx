@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { submitEnterpriseLead } from '../../../services/api'
 import { analytics, EVENTS } from '../../../services/analytics'
+import MeetDropdown from '../../../components/ui/MeetDropdown'
 
 const initialFormData = {
   name: '',
@@ -418,23 +419,14 @@ function SelectField({
       </label>
 
       <div className="enterpriseFormField__select">
-        <select
+        <MeetDropdown
           id={name}
           name={name}
           value={value}
-          onChange={onChange}
-          required={required}
-        >
-          <option value="" disabled>
-            {placeholder}
-          </option>
-
-          {options.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
+          onChange={(v) => onChange({ target: { value: v } })}
+          placeholder={placeholder}
+          options={options}
+        />
       </div>
     </div>
   )

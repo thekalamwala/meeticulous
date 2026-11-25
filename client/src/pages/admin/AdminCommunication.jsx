@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import toast from 'react-hot-toast';
 import {
   adminEmailTemplates, adminEmailTemplate, adminEmailUpdate, adminEmailDuplicate,
@@ -236,9 +237,8 @@ const AdminCommunication = () => {
       {tab === 'settings' && settings && (
         <Card className="max-w-2xl space-y-3">
           <div><label className="block text-xs font-semibold adm-t3 mb-1">Provider</label>
-            <select className="fb-input text-sm w-44" value={settings.provider} onChange={(e) => setSettings({ ...settings, provider: e.target.value })}>
-              <option value="smtp">SMTP</option><option value="resend">Resend</option><option value="ses">Amazon SES</option>
-            </select>
+            <div className="w-44"><MeetDropdown size="sm" ariaLabel="Provider" value={settings.provider} onChange={(v) => setSettings({ ...settings, provider: v })}
+              options={[{ value: 'smtp', label: 'SMTP' }, { value: 'resend', label: 'Resend' }, { value: 'ses', label: 'Amazon SES' }]} /></div>
             <p className="text-[11px] adm-t3 mt-1">Swap providers without code changes. SMTP is the default.</p></div>
           <div className="grid grid-cols-2 gap-3">
             <div><label className="block text-xs font-semibold adm-t3 mb-1">From name</label>
