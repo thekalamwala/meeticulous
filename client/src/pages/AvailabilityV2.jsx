@@ -19,7 +19,8 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion, useDragControls, useReducedMotion } from 'framer-motion';
-import { CalendarClock, CalendarPlus, ChevronLeft, ChevronRight, ExternalLink, Lock, Minus, Plus, Trash2 } from 'lucide-react';
+import { Calendar, CalendarClock, CalendarPlus, CalendarRange, ChevronLeft, ChevronRight, Clock, ExternalLink, Globe, Lock, Minus, Plus, Trash2, User } from 'lucide-react';
+import MeetDropdown from '../components/ui/MeetDropdown';
 import { useAuth } from '../context/AuthContext';
 import { isFreePlan } from '../utils/themeUtils';
 import { ErrorState, Skeleton } from '../components/dashboard/ui';
@@ -309,35 +310,57 @@ const WeekGrid = ({ schedule }) => {
   );
 };
 
-/* ── Booking rules — each rule is a row that says what it does. A native
- * <select> sits invisibly over the row, so a tap opens the phone's own picker. */
-const SelectRow = ({ title, note, value, onChange, label, children }) => (
-  <li className="relative hover:bg-pink-50 focus-within:bg-pink-50">
-    <div className={cn(rowBase, 'pointer-events-none')}>
-      <span className="min-w-0 flex-1">
-        <span className="block text-[15px] font-semibold text-ink">{title}</span>
-        {note && <span className="mt-0.5 block text-[13px] text-faint">{note}</span>}
-      </span>
-      <ChevronRight className="h-5 w-5 shrink-0 text-faint" strokeWidth={2} aria-hidden="true" />
-    </div>
-    <select value={value} onChange={onChange} aria-label={label}
-      className="absolute inset-0 h-full w-full cursor-pointer appearance-none opacity-0">
-      {children}
-    </select>
-  </li>
+/* ── Booking rules + limits — two Kept cards with the branded MeetDropdown
+ * (founder call, 2026-11-25), not the OS menu. White, borderless, no gradient
+ * headers and no mascots (one per screen: the band's). Each control carries its
+ * rule in plain words underneath. Only what the backend saves is shown. ─── */
+// The dropdown's list hangs below the card, so these cards must not clip it.
+const unclipped = '!overflow-visible';
+// Kept inputs: 48px, 16px radius, 16px text on a phone (no iOS zoom).
+const ddKept = '[&_.mt-dd__trigger]:h-12 [&_.mt-dd__trigger]:rounded-[16px] [&_.mt-dd__trigger]:text-[16px] sm:[&_.mt-dd__trigger]:text-[15px]';
+const Field = ({ icon: Icon, label, hint, children }) => (
+  <div className="min-w-0">
+    <p className="mb-2 flex items-center gap-1.5 text-[13.5px] font-semibold text-ink">
+      {Icon && <Icon className="h-4 w-4 shrink-0 text-faint" strokeWidth={2} aria-hidden="true" />}{label}
+    </p>
+    {children}
+    {hint && <p className="mb-0 mt-2 text-[13px] text-muted">{hint}</p>}
+  </div>
 );
 
-const Stepper = ({ value, onChange, label }) => {
+const BookingRules = ({ ed }) => {
+  const touch = () => ed.setDirty(true);
+  const buffer = ed.bufferMinutes;
+  return (
+    <Panel title="Booking rules" subtitle="Where your hours live and the breathing room between bookings." className={unclipped}>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field icon={Globe} label="Time zone" hint="Guests see your times in their own time zone.">
+          <MeetDropdown value={ed.timezone} ariaLabel="Time zone" searchable className={ddKept}
+            options={TZ.map(([value, label]) => ({ value, label: label.replace(/ \(.*\)$/, ''), sublabel: (label.match(/\((.*)\)/) || [])[1] }))}
+            onChange={(v) => { ed.setTimezone(v); touch(); }} />
+        </Field>
+        <Field icon={Clock} label="Gap between bookings"
+          hint={buffer ? `A ${buffer < 60 ? `${buffer}-minute` : `${buffer / 60}-hour`} break after every booking.` : 'Bookings can run back to back.'}>
+          <MeetDropdown value={buffer} ariaLabel="Gap between bookings" className={ddKept}
+            options={BUFFERS.map(([value, label]) => ({ value, label }))}
+            onChange={(v) => { ed.setBufferMinutes(Number(v)); touch(); }} />
+        </Field>
+      </div>
+    </Panel>
+  );
+};
+
+const Stepper = ({ value, onChange, label, disabled }) => {
   const none = value === '' || value == null;
   const n = none ? null : Number(value);
-  const step = cn('grid h-10 w-10 place-items-center rounded-[12px] text-maroon hover:bg-pink-50 disabled:opacity-30', pressable, ring);
+  const step = cn('grid h-10 w-10 shrink-0 place-items-center rounded-[12px] text-maroon hover:bg-pink-50 disabled:text-neutral-300 disabled:hover:bg-transparent', pressable, ring);
   return (
-    <div className="flex h-12 shrink-0 items-center gap-1 rounded-[16px] bg-neutral-100 px-1">
-      <button type="button" disabled={none} aria-label={`Fewer ${label}`} onClick={() => onChange(n <= 1 ? '' : String(n - 1))} className={step}>
+    <div className="flex h-12 w-[9.5rem] shrink-0 items-center justify-between rounded-[16px] bg-neutral-100 px-1 sm:w-full">
+      <button type="button" disabled={disabled || none} aria-label={`Fewer ${label}`} onClick={() => onChange(n <= 1 ? '' : String(n - 1))} className={step}>
         <Minus className="h-4 w-4" strokeWidth={2.6} />
       </button>
-      <span className="w-6 text-center text-[15px] font-semibold tabular-nums text-ink" aria-live="polite">{none ? '∞' : n}</span>
-      <button type="button" aria-label={`More ${label}`} onClick={() => onChange(none ? '1' : String(Math.min(999, n + 1)))} className={step}>
+      <span className="min-w-0 text-center text-[16px] font-bold tabular-nums text-ink" aria-live="polite" aria-label={`${label}: ${none ? 'no limit' : n}`}>{none ? '∞' : n}</span>
+      <button type="button" disabled={disabled} aria-label={`More ${label}`} onClick={() => onChange(none ? '1' : String(Math.min(999, n + 1)))} className={step}>
         <Plus className="h-4 w-4" strokeWidth={2.6} />
       </button>
     </div>
@@ -345,49 +368,42 @@ const Stepper = ({ value, onChange, label }) => {
 };
 
 const CAPS = [
-  ['cap_per_day', 'bookings a day', (n) => `At most ${n} ${n === 1 ? 'booking' : 'bookings'} a day`, 'No limit on bookings a day'],
-  ['cap_per_week', 'bookings a week', (n) => `At most ${n} ${n === 1 ? 'booking' : 'bookings'} a week`, 'No limit on bookings a week'],
-  ['cap_per_guest', 'bookings per guest', (n) => `Each guest can hold ${n} ${n === 1 ? 'booking' : 'bookings'} at a time`, 'Guests can book as often as they like'],
+  ['cap_per_day', 'Per day', Calendar, 'bookings a day'],
+  ['cap_per_week', 'Per week', CalendarRange, 'bookings a week'],
+  ['cap_per_guest', 'Per guest', User, 'bookings per guest'],
 ];
-
-const BookingRules = ({ ed, isFree }) => {
-  const touch = () => ed.setDirty(true);
-  const buffer = ed.bufferMinutes;
-  return (
-    <Panel title="Booking rules" flush>
-      <ul className="mb-0 divide-y divide-neutral-200/70 p-0">
-        <SelectRow title={`Your hours are in ${tzName(ed.timezone)} time`} note="Guests see times in their own time zone."
-          value={ed.timezone} label="Time zone" onChange={(e) => { ed.setTimezone(e.target.value); touch(); }}>
-          {TZ.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-        </SelectRow>
-        <SelectRow title={buffer ? `A ${buffer < 60 ? `${buffer}-minute` : `${buffer / 60}-hour`} break after every booking` : 'Bookings can run back to back'}
-          note="Free time kept after each booking." value={buffer} label="Gap between bookings"
-          onChange={(e) => { ed.setBufferMinutes(parseInt(e.target.value, 10)); touch(); }}>
-          {BUFFERS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-        </SelectRow>
-        {isFree ? (
-          <li>
-            <Link to="/dashboard/upgrade?src=booking_caps" className={cn(rowBase, ring, 'focus-visible:ring-inset')}>
-              <span className="min-w-0 flex-1">
-                <span className="flex items-center gap-2 text-[15px] font-semibold text-ink">Booking limits <StatusPill status="pro" icon={Lock}>Pro</StatusPill></span>
-                <span className="mt-0.5 block text-[13px] text-faint">Cap bookings per day, week or guest, so a good week never turns into a hard one.</span>
-              </span>
-              <ChevronRight className="h-5 w-5 shrink-0 text-faint" strokeWidth={2} aria-hidden="true" />
-            </Link>
-          </li>
-        ) : CAPS.map(([k, label, on, off]) => {
-          const v = ed.caps[k];
-          return (
-            <li key={k} className="flex min-h-[64px] items-center gap-3 px-5 py-3 sm:px-6">
-              <span className="min-w-0 flex-1 text-[15px] font-semibold text-ink">{v === '' || v == null ? off : on(Number(v))}</span>
-              <Stepper value={v} label={label} onChange={(nv) => { ed.setCaps((c) => ({ ...c, [k]: nv })); touch(); }} />
-            </li>
-          );
-        })}
-      </ul>
-    </Panel>
-  );
+// "At most 6 a day and 24 a week. Each guest can hold 2 at a time." — the caps in one sentence.
+const capsSentence = (caps) => {
+  const has = (k) => caps[k] !== '' && caps[k] != null;
+  const parts = [has('cap_per_day') && `${caps.cap_per_day} a day`, has('cap_per_week') && `${caps.cap_per_week} a week`].filter(Boolean);
+  const out = [];
+  if (parts.length) out.push(`At most ${parts.join(' and ')}.`);
+  if (has('cap_per_guest')) out.push(`Each guest can hold ${caps.cap_per_guest} at a time.`);
+  return out.length ? out.join(' ') : 'No limits: every open slot can be booked. ∞ means no limit.';
 };
+
+const BookingLimits = ({ ed, isFree }) => (
+  <Panel title={<span className="inline-flex items-center gap-2">Booking limits <StatusPill status="pro" icon={Lock}>Pro</StatusPill></span>}
+    subtitle="Protect your calendar from a good week.">
+    {/* A phone gets a row per limit (label left, stepper right); from sm, three columns. */}
+    <div className="grid gap-3 sm:grid-cols-3">
+      {CAPS.map(([k, label, Icon, words]) => (
+        <div key={k} className="flex items-center justify-between gap-3 sm:block">
+          <p className="mb-0 flex items-center gap-1.5 text-[13.5px] font-semibold text-ink sm:mb-2">
+            <Icon className="h-4 w-4 shrink-0 text-faint" strokeWidth={2} aria-hidden="true" />{label}
+          </p>
+          <Stepper value={isFree ? '' : ed.caps[k]} label={words} disabled={isFree}
+            onChange={(nv) => { ed.setCaps((c) => ({ ...c, [k]: nv })); ed.setDirty(true); }} />
+        </div>
+      ))}
+    </div>
+    <div className="mt-5 border-t border-neutral-200/70 pt-4 text-[13px] text-muted">
+      {isFree
+        ? <p className="mb-0">Limits are a Pro feature. <Link to="/dashboard/upgrade?src=booking_caps" className="font-semibold text-maroon underline-offset-2 hover:underline">See Pro</Link></p>
+        : <p className="mb-0">{capsSentence(ed.caps)} A booking that would break a limit is simply not offered.</p>}
+    </div>
+  </Panel>
+);
 
 /* ── Days off — full days guests can never book. "Add days off" opens a Kept
  * month calendar in the sheet (not the browser's own picker): tap dates to
@@ -550,7 +566,8 @@ const AvailabilityV2 = () => {
       <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-6">
         <div className="flex min-w-0 flex-col gap-4 lg:gap-6">
           {loading ? sk('h-[520px]') : <WeeklyHours ed={ed} />}
-          {loading ? sk('h-[260px]') : <BookingRules ed={ed} isFree={isFree} />}
+          {loading ? sk('h-[220px]') : <BookingRules ed={ed} />}
+          {loading ? sk('h-[220px]') : <BookingLimits ed={ed} isFree={isFree} />}
         </div>
         <div className="flex min-w-0 flex-col gap-4 lg:gap-6">
           {loading ? sk('h-[300px]') : <WeekGrid schedule={ed.schedule} />}

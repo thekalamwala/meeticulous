@@ -34,7 +34,8 @@ describe('AvailabilityV2 (Kept Schedule)', () => {
     mount();
     expect(await screen.findByText(/open 16 hours a week/)).toBeTruthy();
     expect(screen.getByText('Mon and Tue.')).toBeTruthy();
-    expect(screen.getByText('A 15-minute break after every booking')).toBeTruthy();
+    expect(screen.getByText('A 15-minute break after every booking.')).toBeTruthy();
+    expect(screen.getByText('Limits are a Pro feature.', { exact: false })).toBeTruthy();
 
     expect(screen.queryByRole('button', { name: 'Save' })).toBeNull(); // the bar appears only with changes
     fireEvent.click(screen.getByRole('switch', { name: 'Open Sunday' }));
