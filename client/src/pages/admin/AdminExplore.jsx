@@ -4,6 +4,7 @@
  * Tabs: Featured Slots | Sponsored Keywords | Collections | Boosts | Verified Badges
  */
 import { useState, useEffect, useCallback } from 'react';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import toast from 'react-hot-toast';
 import Ic from '../../components/admin/Ic';
 import { IC } from '../../components/admin/adminNav';
@@ -82,10 +83,8 @@ function FeaturedTab() {
           <Input label="Host ID *" value={form.vendor_id} onChange={e => setForm(f => ({ ...f, vendor_id: e.target.value }))} placeholder="profiles.id (UUID)" />
           <div>
             <span className="text-xs font-bold adm-t1 uppercase tracking-wide mb-1 block">Slot Position (1–5) *</span>
-            <select value={form.slot_position} onChange={e => setForm(f => ({ ...f, slot_position: Number(e.target.value) }))}
-              className="w-full border-2 adm-border rounded-lg px-3 py-2 text-sm font-medium adm-card outline-none">
-              {[1,2,3,4,5].map(n => <option key={n} value={n}>Slot {n}</option>)}
-            </select>
+            <MeetDropdown ariaLabel="Slot position" value={String(form.slot_position)} onChange={(v) => setForm(f => ({ ...f, slot_position: Number(v) }))}
+              options={[1,2,3,4,5].map(n => ({ value: String(n), label: `Slot ${n}` }))} />
           </div>
           <Input label="Starts at *" type="datetime-local" value={form.starts_at} onChange={e => setForm(f => ({ ...f, starts_at: e.target.value }))} />
           <Input label="Ends at *"   type="datetime-local" value={form.ends_at}   onChange={e => setForm(f => ({ ...f, ends_at: e.target.value }))} />
@@ -281,11 +280,8 @@ function BoostsTab() {
           <Input label="Host ID *" value={form.vendor_id} onChange={e => setForm(f => ({ ...f, vendor_id: e.target.value }))} />
           <div>
             <span className="text-xs font-bold adm-t1 uppercase tracking-wide mb-1 block">Boost Type *</span>
-            <select value={form.boost_type} onChange={e => setForm(f => ({ ...f, boost_type: e.target.value }))}
-              className="w-full border-2 adm-border rounded-lg px-3 py-2 text-sm font-medium adm-card outline-none">
-              <option value="standard">Standard (1.5×)</option>
-              <option value="premium">Premium (2.5×)</option>
-            </select>
+            <MeetDropdown ariaLabel="Boost type" value={form.boost_type} onChange={(v) => setForm(f => ({ ...f, boost_type: v }))}
+              options={[{ value: 'standard', label: 'Standard (1.5×)' }, { value: 'premium', label: 'Premium (2.5×)' }]} />
           </div>
           <Input label="Starts at *" type="datetime-local" value={form.starts_at} onChange={e => setForm(f => ({ ...f, starts_at: e.target.value }))} />
           <Input label="Ends at *"   type="datetime-local" value={form.ends_at}   onChange={e => setForm(f => ({ ...f, ends_at: e.target.value }))} />

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ChevronDown, CircleAlert, CircleHelp, Headset, Image, ImagePlus, Megaphone, MessagesSquare, Type, UserPlus, X } from 'lucide-react';
 import { createItem, getMe, getSpaces } from '../../services/communityApi';
 import useKeyboardInset from './useKeyboardInset';
+import MeetDropdown from '../ui/MeetDropdown';
 import { uploadImage, getMyMembership } from '../../services/api';
 import { analytics, EVENTS } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
@@ -245,15 +246,19 @@ export default function ComposerForm({ variant = 'modal', onClose, onCreated, de
       {canGate && (
         <div className="mt-field">
           <label className="mt-label" htmlFor="composer-audience">Who can see this?</label>
-          <select id="composer-audience" className="mt-input"
+          <MeetDropdown
+            id="composer-audience"
+            ariaLabel="Who can see this?"
             value={audience === 'tier' ? audienceTierId : audience}
-            onChange={(e) => pickAudience(e.target.value)}>
-            <option value="public">Everyone</option>
-            {hasLiveFree && <option value="free_subscribers">Free subscribers</option>}
-            {liveTiers.filter((t) => t.type === 'paid').map((t) => (
-              <option key={t.id} value={t.id}>{t.name} members (₹{t.price_inr}/mo)</option>
-            ))}
-          </select>
+            onChange={pickAudience}
+            options={[
+              { value: 'public', label: 'Everyone' },
+              ...(hasLiveFree ? [{ value: 'free_subscribers', label: 'Free subscribers' }] : []),
+              ...liveTiers.filter((t) => t.type === 'paid').map((t) => ({
+                value: t.id, label: `${t.name} members (₹${t.price_inr}/mo)`,
+              })),
+            ]}
+          />
           {audience !== 'public' && (
             <>
               <input className="mt-input mt-2" maxLength={200} value={teaserLine}

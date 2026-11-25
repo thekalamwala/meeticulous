@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { Btn } from '../../../components/admin/ui';
 import { crmColdCallSend, crmUpdateTemplate } from '../../../services/api';
 import { HEADING } from './ccUi';
+import MeetDropdown from '../../../components/ui/MeetDropdown';
 import { MESSAGE_SETS, previewText, sendResultMessage, formatPhone, outcomeLabel } from './coldCallUtils';
 
 const VALID_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -126,9 +127,7 @@ export default function ColdCallCommunicate({ lead, templates, initialCategory, 
 
         <label className="block">
           <span className="text-[14px] font-bold adm-t1" style={HEADING}>Template</span>
-          <select className="fb-input !w-full mt-2" value={category} onChange={(e) => { setCategory(e.target.value); setOpen(null); }} aria-label="Template">
-            {options.map((m) => <option key={m.category} value={m.category}>{m.label}</option>)}
-          </select>
+          <MeetDropdown className="mt-2" value={category} onChange={(v) => { setCategory(v); setOpen(null); }} ariaLabel="Template" options={options.map((m) => ({ value: m.category, label: m.label }))} />
         </label>
 
         <div>

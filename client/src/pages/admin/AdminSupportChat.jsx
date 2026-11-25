@@ -16,6 +16,7 @@ import EscalationDetail from './bolt/EscalationDetail';
 import { priorityOf, waitMinutes, slaLevel, fmtWait, inboxSort, SLA_BREACH_MIN } from '../../utils/supportSla';
 import { teamForText, TEAM_FILTERS } from '../../utils/supportTeams';
 import { REASON_GROUPS } from '../../utils/supportReasons';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 
 const FILTERS = [
   { id: 'mine', label: 'My inbox' },
@@ -433,15 +434,10 @@ export default function AdminSupportChat() {
                   {resolveOpen && (
                     <div className="mt-2 flex flex-wrap items-center gap-2 rounded-lg border adm-border bg-[#faf9f7] px-3 py-2">
                       <span className="text-xs font-medium adm-t2">Why did they need us?</span>
-                      <select value={reasonCode} onChange={(e) => setReasonCode(e.target.value)}
-                        className="rounded-lg border adm-border px-2 py-1 text-xs">
-                        <option value="">Select a reason…</option>
-                        {REASON_GROUPS.map((g) => (
-                          <optgroup key={g.category} label={g.category}>
-                            {g.items.map((r) => <option key={r.code} value={r.code}>{r.label}</option>)}
-                          </optgroup>
-                        ))}
-                      </select>
+                      {/* MeetDropdown has no optgroups — the category rides as each option's sublabel. */}
+                      <MeetDropdown size="sm" searchable ariaLabel="Resolution reason" className="w-64"
+                        value={reasonCode} onChange={setReasonCode} placeholder="Select a reason…"
+                        options={REASON_GROUPS.flatMap((g) => g.items.map((r) => ({ value: r.code, label: r.label, sublabel: g.category })))} />
                       <button type="button" onClick={doResolve} disabled={!reasonCode} className="rounded-lg bg-[#960D32] px-2.5 py-1 text-xs font-medium text-white disabled:opacity-40">Resolve ticket</button>
                       <button type="button" onClick={() => { setResolveOpen(false); setReasonCode(''); }} className="text-xs adm-t3">Cancel</button>
                     </div>
@@ -481,14 +477,11 @@ export default function AdminSupportChat() {
       </div>
       {/* Team dropdown */}
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <label className="inline-flex items-center gap-1.5 rounded-lg border adm-border px-2.5 py-1.5 text-sm adm-t2">
+        <div className="inline-flex items-center gap-1.5 text-sm adm-t2" title="Route: CXO handles money & bugs, Support the rest">
           <span className="adm-t3">Team:</span>
-          <select value={teamFilter} onChange={(e) => setTeamFilter(e.target.value)}
-            title="Route: CXO handles money & bugs, Support the rest"
-            className="cursor-pointer bg-transparent font-medium outline-none">
-            {TEAM_FILTERS.map((f) => <option key={f.id} value={f.id}>{f.label}</option>)}
-          </select>
-        </label>
+          <MeetDropdown size="sm" ariaLabel="Team" value={teamFilter} onChange={setTeamFilter}
+            options={TEAM_FILTERS.map((f) => ({ value: f.id, label: f.label }))} />
+        </div>
       </div>
       {breaches > 0 && (
         <div className="mb-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700">
