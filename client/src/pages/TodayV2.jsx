@@ -391,17 +391,15 @@ const TodaySchedule = ({ todays, onOpen, go }) => {
                   phase === 'done' && 'text-muted')}>
                 <span className="flex items-center justify-between gap-2">
                   <span className={cn('font-display text-[18px] font-extrabold tabular-nums tracking-[-0.02em]', phase === 'done' ? 'text-muted' : 'text-maroon')}>{fmtTime(b.scheduled_at)}</span>
-                  <span className="flex items-center gap-1.5">
-                    {unpaid && <StatusPill status="unpaid" />}
-                    <span className={cn('rounded-[6px] px-2 py-0.5 text-[11.5px] font-semibold', cls)}>{word}</span>
-                  </span>
+                  <span className={cn('shrink-0 whitespace-nowrap rounded-[6px] px-2 py-0.5 text-[11.5px] font-semibold', cls)}>{word}</span>
                 </span>
-                <span className="flex items-center gap-2.5">
+                <span className="flex min-w-0 items-center gap-2.5">
                   <Avatar name={b.guest_name} />
-                  <span className="min-w-0">
+                  <span className="min-w-0 flex-1">
                     <span className="block truncate text-[14.5px] font-semibold text-ink">{b.guest_name || 'Guest'}</span>
                     <span className="block truncate text-[12.5px] text-muted">{b.services?.title || 'Booking'} · until {fmtTime(endOf(b).toISOString())}</span>
                   </span>
+                  {unpaid && <span className="ml-auto shrink-0"><StatusPill status="unpaid" /></span>}
                 </span>
               </button>
             );

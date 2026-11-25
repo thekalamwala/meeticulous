@@ -213,7 +213,7 @@ const STATUS_WORD = {
 };
 export const StatusPill = ({ status, children, icon: Icon }) => {
   const [word, cls] = STATUS_WORD[status] || [children || status, 'bg-neutral-100 text-ink/55'];
-  return <span className={cn('inline-flex shrink-0 items-center gap-1 rounded-[8px] px-2.5 py-0.5 text-[11.5px] font-semibold', cls)}>{Icon && <Icon className="h-3 w-3" strokeWidth={2.6} />}{children || word}</span>;
+  return <span className={cn('inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-[8px] px-2.5 py-0.5 text-[11.5px] font-semibold', cls)}>{Icon && <Icon className="h-3 w-3" strokeWidth={2.6} />}{children || word}</span>;
 };
 
 /* ── Toggle ────────────────────────────────────────────────────────────── */
