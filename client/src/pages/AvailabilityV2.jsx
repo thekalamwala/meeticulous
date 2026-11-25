@@ -15,7 +15,7 @@ import { CalendarClock, ExternalLink, Lock, Minus, Plus, Trash2 } from 'lucide-r
 import { useAuth } from '../context/AuthContext';
 import { isFreePlan } from '../utils/themeUtils';
 import { ErrorState, Skeleton, StickyActionBar } from '../components/dashboard/ui';
-import { InsightBand, PageHeading, Panel, StatusPill, Toggle, cn } from '../components/dashboard/ui/v2';
+import { InsightBand, PageHeading, Panel, StatusPill, cn } from '../components/dashboard/ui/v2';
 import useAvailabilityEditor, { DAYS } from '../components/availability/useAvailabilityEditor';
 import { BUFFERS, TZ } from '../components/availability/BookingRulesCard';
 import { GoogleMark, connectGoogleCalendar, googleDisconnectHint } from '../components/availability/CalendarConnect';
@@ -69,6 +69,17 @@ const bandPrimary = cn(bandBtn, 'bg-white text-maroon hover:bg-pink-100');
 const bandGhost = cn(bandBtn, 'bg-maroon-700 text-white ring-2 ring-inset ring-white/35 hover:ring-white/60');
 const serif = 'font-serif font-normal italic text-pink';
 
+// Day switch, 44×24 with a 20px knob that stays inside the track. (The shared v2
+// Toggle's knob runs 2px past its bordered track and clips into a crescent.)
+const DaySwitch = ({ checked, onChange, label }) => (
+  <button type="button" role="switch" aria-checked={checked} aria-label={label} onClick={onChange}
+    className={cn('relative h-6 w-11 shrink-0 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose',
+      checked ? 'bg-maroon hover:bg-maroon-dark' : 'bg-neutral-300 hover:bg-neutral-400')}>
+    <span aria-hidden="true" className={cn('absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-[0_1px_2px_rgba(43,10,20,0.25)] transition-transform motion-reduce:transition-none',
+      checked && 'translate-x-5')} />
+  </button>
+);
+
 /* ── Band — the week in one sentence, from the live editor state. ───────── */
 const ScheduleBand = ({ ed, username }) => {
   const { days, minutes, label, shared } = weekSummary(ed.schedule);
@@ -107,7 +118,7 @@ const DayRow = ({ day, ed }) => {
   return (
     <div className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:gap-4 sm:px-6">
       <div className="flex h-12 items-center gap-3 sm:w-[10.5rem] sm:shrink-0">
-        <Toggle checked={open} onChange={() => ed.toggleDay(day)} label={`${open ? 'Close' : 'Open'} ${DAY_NAME[day]}`} />
+        <DaySwitch checked={open} onChange={() => ed.toggleDay(day)} label={`${open ? 'Close' : 'Open'} ${DAY_NAME[day]}`} />
         <span className={cn('text-[15px] font-semibold', open ? 'text-ink' : 'text-faint')}>{DAY_NAME[day]}</span>
         {/* The day's total sits on the right on a phone; on desktop the windows say it. */}
         <span className="ml-auto text-[13px] text-faint sm:hidden">{open ? fmtHours(dayMinutes(slots)) : 'Closed'}</span>
