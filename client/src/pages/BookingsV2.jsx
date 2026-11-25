@@ -300,10 +300,12 @@ const PhoneRow = ({ b, now, onOpen }) => {
       <span className="flex min-w-0 flex-1 items-center gap-2 border-t border-neutral-100 py-3 pr-3 group-first:border-t-0">
         <span className="pointer-events-none min-w-0 flex-1">
           <span className={cn('block truncate text-[15px] font-semibold leading-snug', over || cancelled ? 'text-muted' : 'text-ink')}>{b.guest_name || 'Guest'}</span>
-          <span className="block truncate text-[13px] text-muted">{b.services?.title || 'Booking'} · {mins} min</span>
+          <span className="block truncate text-[13px] text-muted">{b.services?.title || 'Booking'}</span>
           <span className="mt-0.5 block truncate text-[12.5px] font-semibold">
             {onNow && <span className="text-maroon">On now · </span>}
             <span className={TONE[pills[0].key] || 'text-maroon'}>{words.join(' · ')}</span>
+            {/* Length sits with the state, so it never clips off the service name. */}
+            <span className="font-medium text-faint"> · {mins} min</span>
           </span>
         </span>
         {canJoin ? (
