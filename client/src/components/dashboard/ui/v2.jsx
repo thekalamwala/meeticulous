@@ -79,7 +79,7 @@ export const useLast = (value) => {
 };
 
 /* ── Drawer — right-side peek, animated, no scroll lock (Linear-style). ─── */
-export const Drawer = ({ open, onClose, title, subtitle, children, width = 'sm:w-[480px]' }) => {
+export const Drawer = ({ open, onClose, title, subtitle, children, footer, bodyClassName = '', width = 'sm:w-[480px]' }) => {
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
@@ -107,7 +107,8 @@ export const Drawer = ({ open, onClose, title, subtitle, children, width = 'sm:w
                 <X className="h-5 w-5" strokeWidth={2.2} />
               </button>
             </header>
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-5">{children}</div>
+            <div className={cn('min-h-0 flex-1 overflow-y-auto overscroll-contain p-5', bodyClassName)}>{children}</div>
+            {footer && <footer className="shrink-0 border-t border-neutral-200 bg-white px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3">{footer}</footer>}
           </motion.aside>
         </>
       )}

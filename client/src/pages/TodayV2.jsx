@@ -23,8 +23,9 @@ import { useAuth } from '../context/AuthContext';
 import { getPayoutBalance, getHostBookings, getMyProfileViews, getMyKyc, getMyServices, getAvailability, getPublicPlans, markLinkShared } from '../services/api';
 import { isFreePlan } from '../utils/themeUtils';
 import SetupGuide, { buildSetupSteps } from '../components/dashboard/SetupGuide';
+import BookingDetail, { BookingDetailFooter } from '../components/dashboard/BookingDetail';
 import { buildQueue } from '../utils/attentionQueue';
-import { Button, ErrorState, Skeleton } from '../components/dashboard/ui';
+import { ErrorState, Skeleton } from '../components/dashboard/ui';
 import {
   Avatar, Drawer, Figure, InsightBand, Panel, StatusPill, Tile,
   MeetIcon, WhatsAppIcon, cn, inr, fmtTime, fmtDayFull, relDay, useLast,
@@ -131,7 +132,7 @@ const BandPrimary = ({ children, ...p }) => <button type="button" className={cn(
 const BandGhost = ({ children, href, ...p }) => (href
   ? <a href={href} target="_blank" rel="noreferrer" className={cn(bandBtn, 'bg-maroon-700 text-white ring-2 ring-inset ring-white/35 hover:ring-white/60')}>{children}</a>
   : <button type="button" className={cn(bandBtn, 'bg-maroon-700 text-white ring-2 ring-inset ring-white/35 hover:ring-white/60')} {...p}>{children}</button>);
-const Chip = ({ children }) => <span className="inline-flex items-center gap-1.5 rounded-[8px] bg-white/12 px-2.5 py-1 text-[13px] text-white">{children}</span>;
+const Chip = ({ children }) => <span className="inline-flex items-center gap-1.5 rounded-[8px] bg-white/[0.12] px-2.5 py-1 text-[13px] text-white">{children}</span>;
 
 const BookingBand = ({ focus, onOpen }) => {
   const b = focus.booking;
@@ -601,31 +602,9 @@ const TodayV2 = () => {
 
       {!loading && setupOpen && <SetupGuide steps={setupSteps} onGo={go} onCopy={copyLink} />}
 
-      <Drawer open={!!openId && !!openBooking} onClose={() => setOpenId(null)} title={openBooking?.guest_name || ''} subtitle={openBooking?.services?.title || ''}>
-        {openBooking && (
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <StatusPill status={lower(openBooking.status)} />
-              {openBooking.payment_status && <StatusPill status={lower(openBooking.payment_status)} />}
-            </div>
-            <div className="rounded-[18px] bg-cream p-4">
-              <p className="mb-0 font-display text-[20px] font-bold tracking-[-0.02em] text-maroon">{relDay(openBooking.scheduled_at)} · {fmtTime(openBooking.scheduled_at)}</p>
-              <p className="mb-0 mt-0.5 text-[13px] text-muted">{fmtDayFull(openBooking.scheduled_at)}{openBooking.services?.duration ? ` · ${openBooking.services.duration} min` : ''}</p>
-            </div>
-            <dl className="grid grid-cols-2 gap-4">
-              {[['Amount', amountOf(openBooking) ? inr(amountOf(openBooking)) : 'Free'], ['Phone', openBooking.guest_phone || '—'], ['Email', openBooking.guest_email || '—']].map(([k, v]) => (
-                <div key={k} className="min-w-0"><dt className="text-[12.5px] text-faint">{k}</dt><dd className="mb-0 mt-0.5 truncate text-[14.5px] font-semibold text-ink">{v}</dd></div>
-              ))}
-            </dl>
-            <div className="flex flex-wrap gap-2">
-              {openBooking.meet_link && <a href={openBooking.meet_link} target="_blank" rel="noreferrer" className="inline-flex"><Button size="sm" variant="secondary"><MeetIcon className="h-4 w-4" /> Join call</Button></a>}
-              {waLink(openBooking.guest_phone)
-                ? <a href={waLink(openBooking.guest_phone)} target="_blank" rel="noreferrer" className="inline-flex"><Button size="sm" variant="secondary"><WhatsAppIcon className="h-4 w-4" /> WhatsApp</Button></a>
-                : null}
-              <Button size="sm" variant="ghost" onClick={() => { setOpenId(null); go('/dashboard/bookings'); }}>All bookings</Button>
-            </div>
-          </div>
-        )}
+      <Drawer open={!!openId && !!openBooking} onClose={() => setOpenId(null)} title="Booking details"
+        bodyClassName="bg-cream" footer={<BookingDetailFooter onAll={() => { setOpenId(null); go('/dashboard/bookings'); }} />}>
+        {openBooking && <BookingDetail booking={openBooking} bookings={bookings} />}
       </Drawer>
     </div>
   );
