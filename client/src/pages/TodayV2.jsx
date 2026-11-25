@@ -443,8 +443,8 @@ const TodaySchedule = ({ todays, onOpen, go }) => {
 
 /* ── Recent bookings — latest four, status as a word. ─────────────────────── */
 const RecentBookings = ({ bookings, onOpen, go }) => {
-  // Up to seven, newest first (founder call, 2026-11-25).
-  const rows = [...bookings].sort((a, b) => new Date(b.created_at || b.scheduled_at) - new Date(a.created_at || a.scheduled_at)).slice(0, 7);
+  // Up to eight, newest first (founder call, 2026-11-25).
+  const rows = [...bookings].sort((a, b) => new Date(b.created_at || b.scheduled_at) - new Date(a.created_at || a.scheduled_at)).slice(0, 8);
   return (
     <Panel title="Recent bookings" action={<button type="button" onClick={() => go('/dashboard/bookings')} className={linkBtn}>See all <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></button>}>
       {rows.length === 0 ? (
@@ -595,11 +595,9 @@ const TodayV2 = () => {
         </div>
       </section>
 
-      {/* Setup guide is a narrow column card beside Recent bookings (founder call, 2026-11-25). */}
-      <section aria-label="Recent bookings and setup" className={cn('grid grid-cols-1 items-start gap-4 lg:gap-5', !loading && setupOpen && 'lg:grid-cols-[1fr_320px]')}>
-        <RecentBookings bookings={bookings} onOpen={setOpenId} go={go} />
-        {!loading && setupOpen && <SetupGuide steps={setupSteps} onGo={go} onCopy={copyLink} />}
-      </section>
+      <RecentBookings bookings={bookings} onOpen={setOpenId} go={go} />
+
+      {!loading && setupOpen && <SetupGuide steps={setupSteps} onGo={go} onCopy={copyLink} />}
 
       <Drawer open={!!openId && !!openBooking} onClose={() => setOpenId(null)} title={openBooking?.guest_name || ''} subtitle={openBooking?.services?.title || ''}>
         {openBooking && (
