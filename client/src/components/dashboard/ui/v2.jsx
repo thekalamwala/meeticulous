@@ -175,7 +175,7 @@ export const Tile = ({ label, value, delta, deltaLabel, hint, onClick, accent = 
   const footer = delta != null || hint || more;
   return (
     <Tag type={onClick ? 'button' : undefined} onClick={onClick}
-      className={cn('relative flex min-w-0 flex-col overflow-hidden rounded-[20px] bg-white p-4 text-left transition sm:p-5', art && 'pr-[84px]',
+      className={cn('relative flex min-w-0 flex-col overflow-hidden rounded-[20px] bg-white p-4 text-left transition sm:p-5', art && 'pr-[96px] lg:pr-[112px]',
         // Featured = a maroon ring, never a filled maroon tile: the filled tile was
         // the loudest thing on the page even when its value was ₹0 (Kept audit).
         accent && 'ring-2 ring-inset ring-maroon',
@@ -191,7 +191,9 @@ export const Tile = ({ label, value, delta, deltaLabel, hint, onClick, accent = 
           the few tiles whose value is a word: it only affects digits. */}
       <span className="mt-2 font-display text-[24px] font-extrabold leading-none tracking-[-0.035em] tabular-nums text-ink sm:text-[28px]"><Figure value={value} /></span>
       {footer && (
-        <div className="mt-2.5 flex items-center gap-1.5 text-[12.5px]">
+        // With art, the footer drops to the tile's foot and runs the full width,
+        // in front of the mascot (founder call, 2026-11-25) — the value keeps clear of it.
+        <div className={cn('relative z-10 flex items-center gap-1.5 text-[12.5px]', art ? 'mt-auto -mr-[80px] pt-2.5 lg:-mr-[96px]' : 'mt-2.5')}>
           {delta != null && (
             <span className={cn('inline-flex shrink-0 items-center gap-0.5 font-semibold', up ? 'text-success-fg' : 'text-error-fg')}>
               {up ? <TrendingUp className="h-3.5 w-3.5" strokeWidth={2.4} /> : <TrendingDown className="h-3.5 w-3.5" strokeWidth={2.4} />}

@@ -587,7 +587,7 @@ const TodayV2 = () => {
   // Mascot art in each metric's empty right side, by domain (founder call,
   // 2026-11-25): orange = money, purple = insights, blue = bookings, green = growth.
   // Decorative — the label carries the meaning.
-  const art = (who) => <img src={`/about/mascot-${who}.png`} alt="" className="h-16 w-16 object-contain" />;
+  const art = (who) => <img src={`/about/mascot-${who}.png`} alt="" className="h-20 w-20 object-contain lg:h-24 lg:w-24" />;
   const metrics = [
     <Tile key="money" {...moneyTile} art={art('orange')} onClick={() => go('/dashboard/payments/payouts')} />,
     <Tile key="month" label="This month" value={inr(thisMonth, { compact: true })} delta={delta ?? undefined} deltaLabel="vs last month"
@@ -627,9 +627,9 @@ const TodayV2 = () => {
         {loading ? sk('h-[220px]') : <TodaySchedule todays={todays} onOpen={setOpenId} go={go} />}
       </section>
 
-      <section aria-label="Your week and numbers" className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2 lg:gap-5">
+      <section aria-label="Your week and numbers" className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5">
         {loading ? sk('h-[260px]') : <WeekPanel bookings={bookings} go={go} />}
-        <div className="grid grid-cols-2 gap-3 lg:gap-4">
+        <div className="grid grid-cols-2 gap-3 lg:h-full lg:grid-rows-2 lg:gap-4">
           {loading ? [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[124px] rounded-[20px]" />) : metrics}
         </div>
       </section>
