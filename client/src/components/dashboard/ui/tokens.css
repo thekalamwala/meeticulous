@@ -8,6 +8,11 @@
   --elev-1: var(--shadow-sm);
   --elev-2: var(--shadow-md);
   --elev-3: var(--shadow-lg);
+  /* The marketing site makes every <button> a pill (--btn-radius: 999px in
+     design-tokens.css). Inside the dashboard an unstyled button — a list row,
+     an accordion header — must never fall back to that: its hover fill would
+     read as a floating pill. Kept controls are 12px rounded rectangles. */
+  --btn-radius: 12px;
 }
 
 .dash-elev-1 { box-shadow: var(--elev-1); }
