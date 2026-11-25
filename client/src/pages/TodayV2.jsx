@@ -479,14 +479,41 @@ const TodaySchedule = ({ todays, onOpen, go }) => {
 };
 
 /* ── Recent bookings — latest four, status as a word. ─────────────────────── */
-const RecentBookings = ({ bookings, onOpen, go }) => {
-  const rows = [...bookings].sort((a, b) => new Date(b.created_at || b.scheduled_at) - new Date(a.created_at || a.scheduled_at)).slice(0, 4);
+// `fill`: on desktop the card takes the height of the card beside it (the setup
+// checklist) and lists as many whole rows as fit, re-measured whenever that height
+// changes (founder call, 2026-11-25). Otherwise it lists four.
+const RecentBookings = ({ bookings, onOpen, go, fill = false }) => {
+  const all = useMemo(() => [...bookings]
+    .sort((a, b) => new Date(b.created_at || b.scheduled_at) - new Date(a.created_at || a.scheduled_at))
+    .slice(0, 20), [bookings]);
+  const wrapRef = useRef(null);
+  const listRef = useRef(null);
+  const [fit, setFit] = useState(4);
+  useLayoutEffect(() => {
+    const wrap = wrapRef.current;
+    if (!fill || !wrap || typeof ResizeObserver === 'undefined') { setFit(4); return undefined; }
+    const measure = () => {
+      const ul = listRef.current;
+      if (!ul || !window.matchMedia?.('(min-width: 1024px)').matches) { setFit(4); return; }
+      const rowH = ul.children[1]?.offsetHeight || (ul.children[0]?.offsetHeight || 0) + 1;
+      if (!rowH) return;
+      const pad = parseFloat(getComputedStyle(ul.parentElement).paddingBottom) || 0;
+      const avail = wrap.getBoundingClientRect().bottom - ul.getBoundingClientRect().top - pad;
+      setFit(Math.max(1, Math.floor((avail + 1) / rowH)));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(wrap);
+    return () => ro.disconnect();
+  }, [fill, all.length]);
+  const rows = all.slice(0, fit);
   return (
-    <Panel title="Recent bookings" action={<button type="button" onClick={() => go('/dashboard/bookings')} className={linkBtn}>See all <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></button>}>
+    <div ref={wrapRef} className={fill ? 'lg:relative' : undefined}>
+    <Panel className={fill ? 'lg:absolute lg:inset-0' : ''} title="Recent bookings" action={<button type="button" onClick={() => go('/dashboard/bookings')} className={linkBtn}>See all <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></button>}>
       {rows.length === 0 ? (
         <p className="mb-0 rounded-[16px] bg-cream p-4 text-[14px] text-muted">New bookings show up here.</p>
       ) : (
-        <ul className="flex flex-col divide-y divide-neutral-200">
+        <ul ref={listRef} className="flex flex-col divide-y divide-neutral-200">
           {rows.map((b) => (
             <li key={b.id}>
               <button type="button" onClick={() => onOpen(b.id)}
@@ -503,6 +530,7 @@ const RecentBookings = ({ bookings, onOpen, go }) => {
         </ul>
       )}
     </Panel>
+    </div>
   );
 };
 
@@ -635,8 +663,9 @@ const TodayV2 = () => {
       </section>
 
       {/* Setup guide is a narrow column card beside Recent bookings (founder call, 2026-11-25). */}
-      <section aria-label="Recent bookings and setup" className={cn('grid grid-cols-1 items-start gap-4 lg:gap-5', !loading && setupOpen && 'lg:grid-cols-[1fr_320px]')}>
-        <RecentBookings bookings={bookings} onOpen={setOpenId} go={go} />
+      <section aria-label="Recent bookings and setup" className={cn('grid grid-cols-1 gap-4 lg:gap-5', !loading && setupOpen && 'lg:grid-cols-[1fr_320px]')}>
+        {/* Beside the checklist it fills that card's height so both end level (founder call, 2026-11-25). */}
+        <RecentBookings bookings={bookings} onOpen={setOpenId} go={go} fill={!loading && setupOpen} />
         {!loading && setupOpen && <SetupGuide steps={setupSteps} onGo={go} onCopy={copyLink} />}
       </section>
 
