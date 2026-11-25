@@ -56,7 +56,7 @@ export default function ProfessionCategories() {
         const gap = parseFloat(getComputedStyle(el).columnGap) || 16;
         el.scrollBy({ left: el.firstElementChild.offsetWidth + gap, behavior: 'smooth' });
       }
-    }, 2000);
+    }, 4000);
     return () => window.clearInterval(timer);
   }, [filter]);
 

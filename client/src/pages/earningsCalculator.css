@@ -52,7 +52,7 @@
   inset: 30px 0 auto;
   height: 5px;
   border-radius: 999px;
-  background: linear-gradient(to right, #960d32 var(--slider-progress), #dedde0 var(--slider-progress));
+  background: linear-gradient(to right, var(--mt-maroon) var(--slider-progress), #dedde0 var(--slider-progress));
 }
 
 .earnings-slider__thumb {
@@ -69,7 +69,7 @@
 }
 
 .earnings-slider input:focus-visible + .earnings-slider__visual .earnings-slider__thumb {
-  outline: 2px solid #960d32;
+  outline: 2px solid var(--mt-maroon);
   outline-offset: 2px;
 }
 
@@ -89,7 +89,7 @@
 }
 
 .earnings-plan--pro {
-  border-color: #960d32;
+  border-color: var(--mt-maroon);
   background: radial-gradient(ellipse at top right, #fae3eb, transparent 70%), #fff9fa;
   box-shadow: 0 6px 18px rgb(150 13 50 / 13%);
 }
@@ -97,7 +97,7 @@
 .earnings-plan__ribbon {
   isolation: isolate;
   white-space: nowrap;
-  background: #960d32;
+  background: var(--mt-maroon);
   color: #ffe9ad;
 }
 
