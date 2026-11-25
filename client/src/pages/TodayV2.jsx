@@ -10,9 +10,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  AlertTriangle, ArrowRight, CalendarCheck2, CalendarX2, Check, ChevronLeft,
-  ChevronRight, IndianRupee, Package, Share2, ShieldCheck, Star, TrendingDown,
-  TrendingUp, UserPlus, X,
+  AlertTriangle, ArrowRight, CalendarCheck2, CalendarX2, Check, ChevronDown,
+  ChevronLeft, ChevronRight, IndianRupee, Package, Share2, ShieldCheck, Star,
+  TrendingDown, TrendingUp, UserPlus, X,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -178,6 +178,95 @@ const KpiCard = ({ img, label, value, delta, deltaLabel, hint, onClick }) => {
   );
 };
 
+/* ── Quick actions — the Host Lab icon-grid panel. The "Needs you" tile carries
+ * the waiting-count badge and opens the side drawer; the rest route. Shared by
+ * desktop (3-col panel) and the mobile strip below. ───────────────────────── */
+const QUICK_ROUTES = [
+  { icon: Package, label: 'Manage services', to: '/dashboard/catalog' },
+  { icon: UserPlus, label: 'Add client', to: '/dashboard/clients' },
+  { icon: Share2, label: 'Share booking link', to: '/dashboard/profile' },
+  { icon: Star, label: 'View reviews', to: '/dashboard/testimonials' },
+  { icon: CalendarCheck2, label: 'Availability', to: '/dashboard/availability' },
+];
+
+const QuickActionTile = ({ icon: Icon, label, onClick, badge }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className="group flex flex-col items-center gap-2 rounded-2xl px-2 py-3 text-center transition hover:bg-blush/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
+  >
+    <span className="relative grid h-12 w-12 place-items-center rounded-full bg-blush text-maroon transition group-hover:-translate-y-0.5 group-hover:bg-pink/60">
+      <Icon className="h-5 w-5" strokeWidth={2.2} />
+      {badge ? (
+        <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full border-2 border-white bg-rose text-[10px] font-extrabold text-white">{badge}</span>
+      ) : null}
+    </span>
+    <span className="text-[11px] font-semibold leading-tight text-ink/70">{label}</span>
+  </button>
+);
+
+const QuickActions = ({ go, onNeedsYou, needsCount }) => (
+  <Panel title="Quick actions" subtitle="Jump to what you do most">
+    <div className="grid grid-cols-3 gap-2">
+      <QuickActionTile icon={AlertTriangle} label="Needs you" badge={needsCount || undefined} onClick={onNeedsYou} />
+      {QUICK_ROUTES.map((q) => <QuickActionTile key={q.label} icon={q.icon} label={q.label} onClick={() => go(q.to)} />)}
+    </div>
+  </Panel>
+);
+
+/* ── Needs-you drawer — the real action queue (KYC / confirm / unpaid, hardest
+ * first) as a progress checklist. One row expands at a time: detail, the CTA
+ * (routes + closes), and ✓ handled (dismisses). Built on the v2 Drawer, which
+ * portals to document.body, so the backdrop-blur shell never clips it. ─────── */
+const NeedsYouDrawer = ({ open, onClose, items, go, onResolve }) => {
+  const [expand, setExpand] = useState(null);
+  useEffect(() => { if (open) setExpand(items[0]?.id ?? null); }, [open, items]);
+  const total = items.length;
+  return (
+    <Drawer open={open} onClose={onClose} title="Needs you" subtitle={total ? `${total} waiting · hardest first` : 'All caught up — nicely done.'}>
+      {total === 0 ? (
+        <p className="flex items-center gap-2 text-[12px] font-semibold text-success-fg">
+          <Check className="h-4 w-4 shrink-0" strokeWidth={2.8} /> All clear. Nothing needs you right now.
+        </p>
+      ) : (
+        <ul className="divide-y-2 divide-neutral-200 border-y-2 border-neutral-200">
+          {items.map((a) => {
+            const Icon = KIND_ICON[a.kind] || AlertTriangle;
+            const [word, cls] = URGENCY[a.urgency] || URGENCY.this_week;
+            const isOpen = expand === a.id;
+            return (
+              <li key={a.id}>
+                <button type="button" onClick={() => setExpand(isOpen ? null : a.id)}
+                  className="flex w-full items-center gap-3 py-3 text-left transition hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-rose">
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 border-dashed border-maroon/40 text-maroon"><Icon className="h-3 w-3" strokeWidth={2.6} /></span>
+                  <span className="min-w-0 flex-1 truncate text-[12.5px] font-bold text-ink">{a.title}</span>
+                  <span className={cn('shrink-0 rounded-full px-1.5 py-px text-[9.5px] font-bold', cls)}>{word}</span>
+                  <ChevronDown className={cn('h-4 w-4 shrink-0 text-ink/40 transition-transform', isOpen && 'rotate-180')} strokeWidth={2.4} />
+                </button>
+                <div className={cn('grid transition-[grid-template-rows] duration-200 ease-out', isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]')}>
+                  <div className="min-h-0 overflow-hidden">
+                    <div className="pb-3 pl-9">
+                      <p className="text-[11.5px] font-medium leading-snug text-ink/60">{a.detail}</p>
+                      <div className="mt-2.5 flex items-center gap-2">
+                        <button type="button" onClick={() => { onClose(); go(a.to); }}
+                          className="inline-flex items-center gap-1 rounded-full bg-maroon px-3 py-1.5 text-[11.5px] font-bold text-white transition hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose">
+                          {a.cta} <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
+                        </button>
+                        <button type="button" onClick={() => onResolve(a.id)} aria-label="Mark handled" title="Mark handled"
+                          className="grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 border-neutral-200 text-ink/45 transition hover:border-success-fg hover:text-success-fg"><Check className="h-4 w-4" strokeWidth={2.6} /></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </Drawer>
+  );
+};
+
 /* ── Mobile Today — the Host Lab mobile redesign, on real data ──────────────
  * Graduated from pages/hostlab/sections/Today.mobile: quick actions, a glance
  * strip, a day-picker + schedule, then where bookings came from. The lab's
@@ -195,7 +284,7 @@ const QUICK_ACTIONS = [
   { icon: Star, label: 'Reviews', to: '/dashboard/testimonials' },
 ];
 
-const TodayMobile = ({ user, go, balance, bookings, views, queue, setDismissed, thisMonth, delta, upcoming, sources, money, held, setOpenId, loading, showPromo, onClosePromo }) => {
+const TodayMobile = ({ user, go, balance, bookings, views, queue, onNeedsYou, thisMonth, delta, upcoming, sources, money, held, setOpenId, loading, showPromo, onClosePromo }) => {
   const [sel, setSel] = useState(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; });
   const stripRef = useRef(null);
   const base = useMemo(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }, []);
@@ -229,6 +318,15 @@ const TodayMobile = ({ user, go, balance, bookings, views, queue, setDismissed, 
       <section>
         <h2 className="mb-2 font-display text-[12.5px] font-bold tracking-[-0.02em] text-ink">Quick actions</h2>
         <div className="dash-noscrollbar flex gap-2 overflow-x-auto pb-1">
+          {queue.length > 0 && (
+            <button type="button" onClick={onNeedsYou} className="group flex w-[74px] shrink-0 flex-col items-center gap-1.5 focus-visible:outline-none">
+              <span className="relative grid h-14 w-14 place-items-center rounded-full border-2 border-neutral-200 bg-blush text-maroon transition group-hover:-translate-y-0.5 group-hover:border-maroon/40">
+                <AlertTriangle className="h-5 w-5" strokeWidth={2.2} />
+                <span className="absolute -right-0.5 -top-0.5 grid h-5 w-5 place-items-center rounded-full border-2 border-white bg-rose text-[10px] font-extrabold text-white">{queue.length}</span>
+              </span>
+              <span className="text-center text-[10.5px] font-semibold leading-tight text-ink/70">Needs you</span>
+            </button>
+          )}
           {QUICK_ACTIONS.map((a) => (
             <button key={a.label} type="button" onClick={() => go(a.to)} className="group flex w-[74px] shrink-0 flex-col items-center gap-1.5 focus-visible:outline-none">
               <span className={cn('grid h-14 w-14 place-items-center rounded-full border-2 transition group-hover:-translate-y-0.5',
@@ -251,33 +349,6 @@ const TodayMobile = ({ user, go, balance, bookings, views, queue, setDismissed, 
           <KpiCard img="/brand/host-lab/kpi-upcoming.png" label="Upcoming" value={upcoming} hint="Not yet past" onClick={() => go('/dashboard/bookings')} />
           <KpiCard img="/brand/host-lab/kpi-views.png" label="Page views" value={views == null ? '—' : views.toLocaleString('en-IN')} hint="Public profile" onClick={() => go(user?.username ? `/${user.username}` : '/dashboard/profile')} />
         </div>
-      )}
-
-      {/* Needs you — kept from the real page; hardest first */}
-      {queue.length > 0 && (
-        <Panel title="Needs you" subtitle={`${queue.length} waiting · hardest first`} flush>
-          <ul className="divide-y-2 divide-neutral-200">
-            {queue.map((a) => {
-              const Icon = KIND_ICON[a.kind] || AlertTriangle;
-              const [word, cls] = URGENCY[a.urgency];
-              return (
-                <li key={a.id} className="flex items-center gap-2 px-3 py-2">
-                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-xs bg-blush text-maroon"><Icon className="h-3.5 w-3.5" strokeWidth={2.4} /></span>
-                  <span className="min-w-0 flex-1">
-                    <span className="flex flex-wrap items-center gap-1.5">
-                      <span className="text-[12px] font-bold leading-tight text-ink">{a.title}</span>
-                      <span className={cn('rounded-full px-1.5 py-px text-[9.5px] font-bold', cls)}>{word}</span>
-                    </span>
-                    <span className="mt-0.5 block truncate text-[11px] font-medium text-ink/55">{a.detail}</span>
-                  </span>
-                  <button type="button" onClick={() => go(a.to)} className="inline-flex h-7 shrink-0 items-center rounded-sm border-2 border-maroon px-2 text-[11px] font-bold text-maroon transition hover:bg-blush">{a.cta}</button>
-                  <button type="button" onClick={() => setDismissed((d) => [...d, a.id])} aria-label={`Dismiss: ${a.title}`} title="Dismiss"
-                    className="grid h-7 w-7 shrink-0 place-items-center rounded-xs text-ink/30 transition hover:bg-neutral-100 hover:text-ink/70"><Check className="h-3.5 w-3.5" strokeWidth={2.6} /></button>
-                </li>
-              );
-            })}
-          </ul>
-        </Panel>
       )}
 
       {/* Day picker + schedule */}
@@ -367,6 +438,7 @@ const TodayV2 = () => {
   const [dismissed, setDismissed] = useState([]);
   const [openId, setOpenId] = useState(null);
   const [promoClosed, setPromoClosed] = useState(false);
+  const [needsOpen, setNeedsOpen] = useState(false);
   // Upsell Pro only to free-plan hosts; dismissible for the session.
   const showPromo = isFreePlan(user?.plan) && !promoClosed;
 
@@ -431,7 +503,7 @@ const TodayV2 = () => {
       <div className="lg:hidden">
         <TodayMobile
           user={user} go={go} balance={balance} bookings={bookings} views={views}
-          queue={queue} setDismissed={setDismissed} thisMonth={thisMonth} delta={delta}
+          queue={queue} onNeedsYou={() => setNeedsOpen(true)} thisMonth={thisMonth} delta={delta}
           upcoming={upcoming} sources={sources} money={money} held={held}
           setOpenId={setOpenId} loading={status === 'loading'}
           showPromo={showPromo} onClosePromo={() => setPromoClosed(true)}
@@ -463,42 +535,9 @@ const TodayV2 = () => {
         </div>
       )}
 
-      {/* Needs you */}
-      {status === 'ready' && (
-        queue.length === 0 ? (
-          <Panel title="Needs you">
-            <p className="flex items-center gap-2 text-[12px] font-semibold text-success-fg">
-              <Check className="h-4 w-4 shrink-0" strokeWidth={2.8} /> All clear. Nothing needs you right now.
-            </p>
-          </Panel>
-        ) : (
-          <Panel title="Needs you" subtitle={`${queue.length} waiting · hardest first`} flush>
-            <ul className="divide-y-2 divide-neutral-200">
-              {queue.map((a) => {
-                const Icon = KIND_ICON[a.kind] || AlertTriangle;
-                const [word, cls] = URGENCY[a.urgency];
-                return (
-                  <li key={a.id} className="flex items-center gap-2 px-3 py-2">
-                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-xs bg-blush text-maroon"><Icon className="h-3.5 w-3.5" strokeWidth={2.4} /></span>
-                    <span className="min-w-0 flex-1">
-                      <span className="flex flex-wrap items-center gap-1.5">
-                        <span className="text-[12px] font-bold leading-tight text-ink">{a.title}</span>
-                        <span className={cn('rounded-full px-1.5 py-px text-[9.5px] font-bold', cls)}>{word}</span>
-                      </span>
-                      <span className="mt-0.5 block truncate text-[11px] font-medium text-ink/55">{a.detail}</span>
-                    </span>
-                    <button type="button" onClick={() => go(a.to)} className="inline-flex h-7 shrink-0 items-center rounded-sm border-2 border-maroon px-2 text-[11px] font-bold text-maroon transition hover:bg-blush">{a.cta}</button>
-                    <button type="button" onClick={() => setDismissed((d) => [...d, a.id])} aria-label={`Dismiss: ${a.title}`} title="Dismiss"
-                      className="grid h-7 w-7 shrink-0 place-items-center rounded-xs text-ink/30 transition hover:bg-neutral-100 hover:text-ink/70"><Check className="h-3.5 w-3.5" strokeWidth={2.6} /></button>
-                  </li>
-                );
-              })}
-            </ul>
-          </Panel>
-        )
-      )}
-
-      <div className="grid gap-2.5 lg:grid-cols-[1.45fr_1fr]">
+      {/* Quick actions (with the Needs-you tile + drawer) beside today's timeline */}
+      <div className="grid gap-2.5 lg:grid-cols-[1fr_2fr]">
+        {status === 'ready' && <QuickActions go={go} needsCount={queue.length} onNeedsYou={() => setNeedsOpen(true)} />}
         {/* Today's timeline */}
         <Panel title="Today" subtitle={todays.length ? `${todays.length} booking${todays.length > 1 ? 's' : ''}` : 'Nothing booked today'}
           action={<Button size="sm" variant="ghost" onClick={() => go('/dashboard/bookings')}>All bookings <ArrowRight className="h-3 w-3" strokeWidth={2.6} /></Button>} flush>
@@ -542,31 +581,32 @@ const TodayV2 = () => {
             </button>
           )}
         </Panel>
+      </div>
 
-        <div className="flex min-w-0 flex-col gap-2.5">
-          {sources.length > 0 && (
-            <Panel title="Where bookings came from" subtitle="By bookings">
-              <SourceDonut rows={sources} valueKey="bookingsCount" labelKey="label" />
-            </Panel>
-          )}
-          <Panel title="Recent bookings" flush>
-            {bookings.length === 0 ? (
-              <div className="p-3"><EmptyState title="No bookings yet" description="New bookings show up here." /></div>
-            ) : (
-              <ul className="divide-y-2 divide-neutral-200">
-                {[...bookings].sort((a, b) => new Date(b.scheduled_at) - new Date(a.scheduled_at)).slice(0, 5).map((b) => (
-                  <li key={b.id} className="flex items-start gap-2 px-3 py-1.5">
-                    <Avatar name={b.guest_name} size="h-6 w-6 text-[9px]" />
-                    <span className="min-w-0">
-                      <span className="block truncate text-[11.5px] font-medium leading-snug text-ink/80">{b.guest_name || 'Guest'} · {b.services?.title || 'booking'}</span>
-                      <span className="mt-px block text-[10px] font-semibold text-ink/40">{relDay(b.scheduled_at)} · {fmtTime(b.scheduled_at)}</span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
+      {/* Where bookings came from + recent activity */}
+      <div className="grid gap-2.5 lg:grid-cols-2">
+        {sources.length > 0 && (
+          <Panel title="Where bookings came from" subtitle="By bookings">
+            <SourceDonut rows={sources} valueKey="bookingsCount" labelKey="label" />
           </Panel>
-        </div>
+        )}
+        <Panel title="Recent bookings" flush>
+          {bookings.length === 0 ? (
+            <div className="p-3"><EmptyState title="No bookings yet" description="New bookings show up here." /></div>
+          ) : (
+            <ul className="divide-y-2 divide-neutral-200">
+              {[...bookings].sort((a, b) => new Date(b.scheduled_at) - new Date(a.scheduled_at)).slice(0, 5).map((b) => (
+                <li key={b.id} className="flex items-start gap-2 px-3 py-1.5">
+                  <Avatar name={b.guest_name} size="h-6 w-6 text-[9px]" />
+                  <span className="min-w-0">
+                    <span className="block truncate text-[11.5px] font-medium leading-snug text-ink/80">{b.guest_name || 'Guest'} · {b.services?.title || 'booking'}</span>
+                    <span className="mt-px block text-[10px] font-semibold text-ink/40">{relDay(b.scheduled_at)} · {fmtTime(b.scheduled_at)}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
       </div>
       </div>
 
@@ -596,6 +636,14 @@ const TodayV2 = () => {
           </div>
         )}
       </Drawer>
+
+      <NeedsYouDrawer
+        open={needsOpen}
+        onClose={() => setNeedsOpen(false)}
+        items={queue}
+        go={go}
+        onResolve={(id) => setDismissed((d) => (d.includes(id) ? d : [...d, id]))}
+      />
     </>
   );
 };
