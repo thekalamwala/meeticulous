@@ -197,7 +197,7 @@ const SidebarBody = ({ sections, plan, badges, activeTo, onNavigate, collapsed =
 
   return (
     <>
-      <nav aria-label="Dashboard sections" className="dash-noscrollbar flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto px-3 py-2">
+      <nav aria-label="Dashboard sections" className="dash-noscrollbar flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-3 py-1.5">
         {GROUPS.map((group, i) => {
           const rows = group.ids.map(byId).filter(Boolean);
           if (rows.length === 0) return null;
