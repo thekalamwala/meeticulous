@@ -46,7 +46,7 @@ import PullToRefresh from '../dashboard/ui/PullToRefresh';
 import { RefreshProvider } from '../dashboard/ui/refreshContext';
 import '../dashboard/ui/tokens.css';
 
-const RAIL = 248;      // expanded (Kept: roomier rail, 14px rows)
+const RAIL = 232;      // expanded (Kept: 13.5px rows, compact enough for 768px-tall screens)
 const RAIL_MIN = 64;   // icon only
 const RAIL_KEY = 'dashboard:rail';
 const ring = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose';
@@ -99,10 +99,10 @@ const NavRow = ({ section, plan, badges, activeTo, expanded, onToggle, onNavigat
           to={landing || '#'}
           onClick={onNavigate}
           title={section.label}
-          className={cn('relative mx-auto grid h-10 w-10 place-items-center rounded-[12px] transition', ring,
+          className={cn('relative mx-auto grid h-9 w-9 place-items-center rounded-[10px] transition', ring,
             sectionActive ? 'bg-white text-maroon shadow-[var(--shadow-sm)]' : 'text-muted hover:bg-white/70 hover:text-ink')}
         >
-          <Icon id={section.id} className="h-[19px] w-[19px]" />
+          <Icon id={section.id} className="h-[18px] w-[18px]" />
           {attention && <span className="absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full bg-rose" />}
         </NavLink>
         <div className="pointer-events-none absolute left-full top-0 z-50 hidden pl-1.5 group-hover/row:block group-focus-within/row:block">
@@ -136,13 +136,13 @@ const NavRow = ({ section, plan, badges, activeTo, expanded, onToggle, onNavigat
         <NavLink
           to={landing || '#'}
           onClick={onNavigate}
-          className={cn('flex h-10 items-center gap-3 rounded-[12px] px-3 text-[14px] font-medium transition', ring,
+          className={cn('flex h-[34px] items-center gap-2.5 rounded-[10px] px-2.5 text-[13.5px] font-medium transition', ring,
             multi && 'pr-9',
             // Kept: the active row is a white pill with maroon text — never a solid
             // maroon block, which was the loudest thing on every page.
             sectionActive ? 'bg-white font-semibold text-maroon shadow-[var(--shadow-sm)]' : 'text-ink hover:bg-white/70')}
         >
-          <Icon id={section.id} className={cn('h-[19px] w-[19px] shrink-0', sectionActive ? 'text-maroon' : 'text-muted')} />
+          <Icon id={section.id} className={cn('h-[18px] w-[18px] shrink-0', sectionActive ? 'text-maroon' : 'text-muted')} />
           <span className="flex-1 truncate">{section.label}</span>
           {attention && <span className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-rose" />}
         </NavLink>
@@ -160,7 +160,7 @@ const NavRow = ({ section, plan, badges, activeTo, expanded, onToggle, onNavigat
       </div>
 
       {multi && expanded && (
-        <ul className="mb-1 ml-[21px] mt-1 flex flex-col gap-0.5 border-l-2 border-neutral-200 pl-3">
+        <ul className="mb-0.5 ml-[19px] mt-0.5 flex flex-col gap-px border-l-2 border-neutral-200 pl-2.5">
           {section.items.map((pg) => {
             const locked = isLocked(pg, plan);
             const count = pg.badgeKey ? badges[pg.badgeKey] || 0 : 0;
@@ -169,7 +169,7 @@ const NavRow = ({ section, plan, badges, activeTo, expanded, onToggle, onNavigat
                 <NavLink
                   to={locked ? '#' : pg.to}
                   onClick={locked ? (e) => e.preventDefault() : onNavigate}
-                  className={cn('flex h-8 items-center rounded-[10px] px-3 text-[13.5px] transition', ring,
+                  className={cn('flex h-7 items-center rounded-[8px] px-2.5 text-[13px] transition', ring,
                     pg.to === activeTo ? 'font-semibold text-maroon' : 'text-muted hover:bg-white/70 hover:text-ink',
                     locked && 'cursor-default text-ink/30 hover:bg-transparent')}
                 >
@@ -195,7 +195,7 @@ const SidebarBody = ({ sections, plan, badges, activeTo, onNavigate, collapsed =
 
   return (
     <>
-      <nav aria-label="Dashboard sections" className="dash-noscrollbar flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-3 py-3">
+      <nav aria-label="Dashboard sections" className="dash-noscrollbar flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto px-3 py-2">
         {GROUPS.map((group, i) => {
           const rows = group.ids.map(byId).filter(Boolean);
           if (rows.length === 0) return null;
@@ -203,7 +203,7 @@ const SidebarBody = ({ sections, plan, badges, activeTo, onNavigate, collapsed =
             <div key={group.label}>
               {collapsed
                 ? i > 0 && <div className="mx-auto mb-1.5 h-px w-6 bg-neutral-200" />
-                : <p className="mb-0 px-3 pb-1.5 text-[12px] font-medium text-faint">{group.label}</p>}
+                : <p className="mb-0 px-2.5 pb-1 text-[11.5px] font-medium text-faint">{group.label}</p>}
               <ul className="flex flex-col gap-0.5">
                 {rows.map((section) => (
                   <NavRow
@@ -312,11 +312,11 @@ const DashboardLayoutV2 = ({ children }) => {
           className="dash-v2 group/rail fixed bottom-0 left-0 top-0 z-40 hidden flex-col bg-neutral-100 transition-[width] duration-200 lg:flex"
           style={{ width: railCollapsed ? RAIL_MIN : RAIL }}
         >
-          <div className={cn('flex h-16 shrink-0 items-center', railCollapsed ? 'justify-center px-0' : 'gap-2.5 px-5')}>
+          <div className={cn('flex h-14 shrink-0 items-center', railCollapsed ? 'justify-center px-0' : 'gap-2.5 px-4')}>
             <Link to="/dashboard" aria-label="Meeticulous — Home" className={cn('grid shrink-0 place-items-center rounded-xs', ring)}>
-              <img src="/brand/meeticulous-icon.svg" alt="" aria-hidden="true" className="h-8 w-8 object-contain" />
+              <img src="/brand/meeticulous-icon.svg" alt="" aria-hidden="true" className="h-7 w-7 object-contain" />
             </Link>
-            {!railCollapsed && <span className="flex-1 truncate font-display text-[18px] font-extrabold tracking-[-0.02em] text-maroon">Meeticulous</span>}
+            {!railCollapsed && <span className="flex-1 truncate font-display text-[17px] font-extrabold tracking-[-0.02em] text-maroon">Meeticulous</span>}
             <button
               type="button"
               onClick={toggleRail}
@@ -350,7 +350,7 @@ const DashboardLayoutV2 = ({ children }) => {
         )}
 
         {/* Content — offset by the fixed rail on lg+. */}
-        <div className={cn('transition-[padding] duration-200', railCollapsed ? 'lg:pl-[64px]' : 'lg:pl-[248px]')}>
+        <div className={cn('transition-[padding] duration-200', railCollapsed ? 'lg:pl-[64px]' : 'lg:pl-[232px]')}>
           <TopbarV2 onOpenNav={() => setNavOpen(true)} user={user} plan={plan} initial={initial} logout={logout} onHome={pathname === '/dashboard'} />
           <main className="min-h-[calc(100dvh-44px)]">
             {/* No scrollerRef: the window scrolls here. Passing <main> made scrollTop read 0
