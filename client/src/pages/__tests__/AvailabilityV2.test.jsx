@@ -36,17 +36,42 @@ describe('AvailabilityV2 (Kept Schedule)', () => {
     expect(screen.getByText('Mon and Tue.')).toBeTruthy();
     expect(screen.getByText('A 15-minute break after every booking')).toBeTruthy();
 
-    const save = screen.getByRole('button', { name: 'Save' });
-    expect(save.disabled).toBe(true); // nothing to save yet
+    expect(screen.queryByRole('button', { name: 'Save' })).toBeNull(); // the bar appears only with changes
     fireEvent.click(screen.getByRole('switch', { name: 'Open Sunday' }));
     expect(screen.getByText('Unsaved changes')).toBeTruthy();
-    fireEvent.click(save);
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     await waitFor(() => expect(setAvailability).toHaveBeenCalledTimes(1));
     expect(setAvailability.mock.calls[0][0]).toEqual({
       weekly_schedule: { ...ROW.weekly_schedule, sunday: [{ start: '09:00', end: '17:00' }] },
       timezone: 'Asia/Kolkata', buffer_minutes: 15, blocked_dates: ['2099-12-25'],
       cap_per_day: null, cap_per_week: null, cap_per_guest: null,
     });
+  });
+
+  it('edits a day in its sheet and copies its hours to other days', async () => {
+    getAvailability.mockResolvedValue({ data: ROW });
+    mount();
+    fireEvent.click(await screen.findByRole('button', { name: 'Edit Monday hours' }));
+    const sheet = await screen.findByRole('dialog', { name: 'Monday' });
+    expect(sheet.querySelectorAll('select')).toHaveLength(2);
+    fireEvent.click(screen.getByRole('button', { name: 'Copy to Wednesday' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Copy to 1 day' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+    expect(await screen.findByText(/open 24 hours a week/)).toBeTruthy();
+  });
+
+  it('picks days off on the Kept calendar and toggles them back', async () => {
+    getAvailability.mockResolvedValue({ data: ROW });
+    mount();
+    fireEvent.click(await screen.findByRole('button', { name: /Add days off/ }));
+    const cal = await screen.findByRole('group', { name: 'Pick days off' });
+    fireEvent.click(screen.getByRole('button', { name: 'Next month' }));
+    const day = cal.querySelector('button[aria-pressed="false"]:not([disabled])');
+    fireEvent.click(day);
+    expect(day.getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByText('Unsaved changes')).toBeTruthy();
+    fireEvent.click(day);
+    expect(day.getAttribute('aria-pressed')).toBe('false');
   });
 
   it('opens on the first-time band when there is no record yet', async () => {

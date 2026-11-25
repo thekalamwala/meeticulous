@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { fmtClock, fmtHours, daysLabel, sharedHours, weekSummary, weekGrid } from '../scheduleSummary';
+import { fmtClock, fmtHours, daysLabel, sharedHours, weekSummary, weekGrid, windowsLabel, monthCells } from '../scheduleSummary';
 import { validateSchedule } from '../useAvailabilityEditor';
 
 const nine5 = [{ start: '09:00', end: '17:00' }];
@@ -10,6 +10,11 @@ describe('scheduleSummary', () => {
     expect(fmtClock('13:30')).toBe('1:30 pm');
     expect(fmtClock('00:00')).toBe('12 am');
     expect(fmtClock('12:00')).toBe('12 pm');
+  });
+
+  it("lists a day's windows", () => {
+    expect(windowsLabel([{ start: '10:00', end: '13:00' }, { start: '15:00', end: '18:30' }])).toBe('10 am – 1 pm, 3 pm – 6:30 pm');
+    expect(windowsLabel([])).toBe('');
   });
 
   it('formats durations', () => {
@@ -55,6 +60,17 @@ describe('scheduleSummary', () => {
     expect(g.rows[0]).toBe(540);
     expect(g.rows).toHaveLength(18);
     expect(g.open.monday.every((x) => !x)).toBe(true);
+  });
+});
+
+describe('monthCells', () => {
+  it('pads to Monday and lists every day', () => {
+    const nov = monthCells(2026, 10); // 1 Nov 2026 is a Sunday
+    expect(nov.slice(0, 7)).toEqual([null, null, null, null, null, null, '2026-11-01']);
+    expect(nov.filter(Boolean)).toHaveLength(30);
+    expect(nov[nov.length - 1]).toBe('2026-11-30');
+    expect(monthCells(2027, 1).filter(Boolean)).toHaveLength(28);
+    expect(monthCells(2026, 5)[0]).toBe('2026-06-01'); // a Monday: no padding
   });
 });
 

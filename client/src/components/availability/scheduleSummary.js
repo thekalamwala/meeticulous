@@ -48,6 +48,9 @@ export const daysLabel = (days) => {
   return parts.length > 1 ? `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}` : parts[0] || '';
 };
 
+// A day's windows for a list row: "10 am – 1 pm, 3 pm – 6 pm".
+export const windowsLabel = (windows = []) => windows.map((w) => `${fmtClock(w.start)} – ${fmtClock(w.end)}`).join(', ');
+
 // The same single window on every open day → "10 am – 6 pm"; otherwise null.
 export const sharedHours = (schedule) => {
   const days = openDays(schedule);
@@ -85,4 +88,16 @@ export const weekGrid = (schedule) => {
     return acc;
   }, {});
   return { rows, open };
+};
+
+// A month for the days-off calendar, Monday first like the week grid: leading
+// nulls pad the first week, then one "YYYY-MM-DD" per day. month is 0-based.
+export const monthCells = (year, month) => {
+  const lead = (new Date(year, month, 1).getDay() + 6) % 7;
+  const days = new Date(year, month + 1, 0).getDate();
+  const p = (n) => String(n).padStart(2, '0');
+  return [
+    ...Array(lead).fill(null),
+    ...Array.from({ length: days }, (_, i) => `${year}-${p(month + 1)}-${p(i + 1)}`),
+  ];
 };

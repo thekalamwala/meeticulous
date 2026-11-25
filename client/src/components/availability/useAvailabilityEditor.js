@@ -102,6 +102,17 @@ export default function useAvailabilityEditor() {
     setDirty(true);
   };
 
+  // Copy one day's windows onto chosen days (Kept day sheet). Local edit only, like applyMondayTo.
+  const copyDayTo = (src, targets) => {
+    const windows = schedule[src] || [];
+    setSchedule((s) => {
+      const next = { ...s };
+      targets.forEach((d) => { next[d] = windows.map((w) => ({ ...w })); });
+      return next;
+    });
+    setDirty(true);
+  };
+
   const blockDate = (date) => {
     if (!date) return false;
     if (blockedDates.includes(date)) { toast.error("Date already blocked"); return false; }
@@ -140,7 +151,7 @@ export default function useAvailabilityEditor() {
   return {
     schedule, timezone, setTimezone, bufferMinutes, setBufferMinutes, blockedDates, caps, setCaps,
     loading, dirty, setDirty, status,
-    addSlot, removeSlot, updateSlot, isDayOpen, toggleDay, applyMondayTo, blockDate, unblockDate,
+    addSlot, removeSlot, updateSlot, isDayOpen, toggleDay, applyMondayTo, copyDayTo, blockDate, unblockDate,
     save, reset, fetchAvailability,
   };
 }
