@@ -1,5 +1,5 @@
 // SetupGuide — "Finish setting up your page": the host's go-live path as a
-// progress bar + accordion (pattern founder-picked, 2026-11-25). One step open at
+// vertical progress rail + accordion (pattern founder-picked, 2026-11-25). One step open at
 // a time; the first unfinished step opens by default with its one action. Hides
 // itself once every step is done. Built for Today and Grow → Your page.
 //
@@ -64,23 +64,26 @@ export default function SetupGuide({ steps, onGo, onCopy, title = 'Finish settin
           </div>
           <img src="/about/mascot-green.png" alt="" aria-hidden="true" className="h-16 w-16 shrink-0 object-contain lg:hidden" />
         </div>
-        <div className="flex gap-1.5" role="progressbar" aria-valuemin={0} aria-valuemax={steps.length} aria-valuenow={done} aria-label="Setup progress">
-          {steps.map((s) => <span key={s.key} className={cn('h-1.5 flex-1 rounded-full', s.done ? 'bg-maroon' : 'bg-neutral-200')} />)}
-        </div>
         <img src="/about/mascot-green.png" alt="" aria-hidden="true" className="mt-auto hidden h-28 w-28 self-start object-contain lg:block" />
       </div>
 
-      <ul className="border-t border-neutral-200 lg:border-l lg:border-t-0">
+      {/* Progress runs down the step markers as a vertical rail (founder call, 2026-11-25):
+          each step's segment turns maroon once that step is done. */}
+      <ul role="progressbar" aria-valuemin={0} aria-valuemax={steps.length} aria-valuenow={done} aria-label="Setup progress"
+        className="border-t border-neutral-200 lg:border-l lg:border-t-0">
         {steps.map((s, i) => {
           const isOpen = open === s.key;
           const act = () => (s.action === 'copy' ? onCopy?.() : onGo?.(s.to));
           return (
-            <li key={s.key} className={cn(i > 0 && 'border-t border-neutral-200', isOpen ? 'bg-white' : 'bg-cream/50')}>
+            <li key={s.key} className={cn('relative', i > 0 && 'border-t border-neutral-200', isOpen ? 'bg-white' : 'bg-cream/50')}>
+              <span aria-hidden="true" className={cn('pointer-events-none absolute left-[30px] z-[1] w-1 sm:left-[34px]',
+                i === 0 ? 'bottom-0 top-[26px]' : i === steps.length - 1 ? '-top-px h-[27px]' : '-top-px bottom-0',
+                s.done ? 'bg-maroon' : 'bg-neutral-200')} />
               <button type="button" onClick={() => setOpen(isOpen ? null : s.key)} aria-expanded={isOpen}
                 className="flex w-full items-center gap-3 rounded-none px-5 py-3.5 text-left transition hover:bg-cream focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-rose sm:px-6">
                 {s.done
-                  ? <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-success-fg text-white"><Check className="h-3.5 w-3.5" strokeWidth={3} /></span>
-                  : <span aria-hidden="true" className="h-6 w-6 shrink-0 rounded-full border-2 border-dashed border-neutral-300" />}
+                  ? <span className="relative z-[2] grid h-6 w-6 shrink-0 place-items-center rounded-full bg-success-fg text-white"><Check className="h-3.5 w-3.5" strokeWidth={3} /></span>
+                  : <span aria-hidden="true" className="relative z-[2] h-6 w-6 shrink-0 rounded-full border-2 border-dashed border-neutral-300 bg-white" />}
                 <span className={cn('min-w-0 flex-1 text-[15px]', s.done ? 'font-medium text-muted' : 'font-semibold text-ink')}>
                   {s.title}<span className="sr-only">{s.done ? ' (done)' : ' (to do)'}</span>
                 </span>
