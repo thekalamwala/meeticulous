@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { PageHeader, Card, Btn, Badge } from '../../../components/admin/ui';
 import { crmListTemplates, crmCreateTemplate, crmDeleteTemplate } from '../../../services/api';
+import MeetDropdown from '../../../components/ui/MeetDropdown';
 import toast from 'react-hot-toast';
 
 const CATEGORIES = ['first_outreach', 'follow_up', 'demo', 'trial', 'activation', 'payment', 'winback', 'announcement', 'custom'];
@@ -123,7 +124,7 @@ function NewTemplateModal({ onClose, onCreated }) {
             </div>
             <div>
               <label className="block text-[11px] font-medium adm-t2 mb-1">Category</label>
-              <select className="fb-input text-sm" {...f('category')}>{CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}</select>
+              <MeetDropdown value={form.category} onChange={(v) => setForm({ ...form, category: v })} ariaLabel="Category" options={CATEGORIES} />
             </div>
 
             {channel === 'whatsapp' ? (

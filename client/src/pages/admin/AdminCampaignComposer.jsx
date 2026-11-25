@@ -9,6 +9,7 @@
  * arrive in Phase 4; recipient list + manual/single audience in Phase 3.
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import toast from 'react-hot-toast';
 import { adminCampSegments, adminCampSegPreview, adminCampPreview, adminCampCreate, adminUploadImage, adminCampContacts, adminCampResolveAudience, adminCampTest } from '../../services/api';
 import { Card, Btn } from '../../components/admin/ui';
@@ -62,9 +63,8 @@ const Field = ({ label, children }) => (
   <div><label className="block text-xs font-semibold adm-t3 mb-1">{label}</label>{children}</div>
 );
 const AlignPicker = ({ value, onChange }) => (
-  <select className="fb-input text-sm" value={value || 'left'} onChange={(e) => onChange(e.target.value)}>
-    <option value="left">Left</option><option value="center">Center</option><option value="right">Right</option>
-  </select>
+  <MeetDropdown size="sm" ariaLabel="Alignment" value={value || 'left'} onChange={onChange}
+    options={[{ value: 'left', label: 'Left' }, { value: 'center', label: 'Center' }, { value: 'right', label: 'Right' }]} />
 );
 
 const BlockEditor = ({ block, onChange, onUpload }) => {
@@ -75,9 +75,8 @@ const BlockEditor = ({ block, onChange, onUpload }) => {
         <div className="space-y-2">
           <input className="fb-input text-sm" value={block.text} onChange={(e) => set({ text: e.target.value })} placeholder="Heading text" />
           <div className="grid grid-cols-2 gap-2">
-            <select className="fb-input text-sm" value={block.level} onChange={(e) => set({ level: +e.target.value })}>
-              <option value={1}>Large</option><option value={2}>Medium</option><option value={3}>Small</option>
-            </select>
+            <MeetDropdown size="sm" ariaLabel="Heading size" value={String(block.level)} onChange={(v) => set({ level: +v })}
+              options={[{ value: '1', label: 'Large' }, { value: '2', label: 'Medium' }, { value: '3', label: 'Small' }]} />
             <AlignPicker value={block.align} onChange={(align) => set({ align })} />
           </div>
         </div>
@@ -140,9 +139,8 @@ const BlockEditor = ({ block, onChange, onUpload }) => {
             value={(block.items || []).join('\n')}
             onChange={(e) => set({ items: e.target.value.split('\n') })}
             placeholder="One item per line — each gets a ✔" />
-          <select className="fb-input text-sm" value={block.columns || 1} onChange={(e) => set({ columns: +e.target.value })}>
-            <option value={1}>One column</option><option value={2}>Two columns</option>
-          </select>
+          <MeetDropdown size="sm" ariaLabel="Columns" value={String(block.columns || 1)} onChange={(v) => set({ columns: +v })}
+            options={[{ value: '1', label: 'One column' }, { value: '2', label: 'Two columns' }]} />
         </div>
       );
     case 'beforeAfter':
@@ -330,11 +328,8 @@ const AdminCampaignComposer = ({ onClose }) => {
             <Field label="Subject"><input className="fb-input text-sm" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Inbox subject line" /></Field>
             <Field label="Preview text (inbox preheader)"><input className="fb-input text-sm" value={previewText} onChange={(e) => setPreviewText(e.target.value)} placeholder="Shown after the subject in most inboxes" /></Field>
             <Field label="Layout">
-              <select className="fb-input text-sm" value={audience} onChange={(e) => setAudience(e.target.value)}>
-                <option value="customer">Guest (branded footer)</option>
-                <option value="vendor">Host (minimal footer)</option>
-                <option value="cold">Cold outreach (no header, plain)</option>
-              </select>
+              <MeetDropdown size="sm" ariaLabel="Layout" value={audience} onChange={setAudience}
+                options={[{ value: 'customer', label: 'Guest (branded footer)' }, { value: 'vendor', label: 'Host (minimal footer)' }, { value: 'cold', label: 'Cold outreach (no header, plain)' }]} />
             </Field>
           </Card>
 
@@ -351,10 +346,9 @@ const AdminCampaignComposer = ({ onClose }) => {
 
             {audMode === 'segment' ? (
               <>
-                <select className="fb-input text-sm" value={segmentId} onChange={(e) => { setSegmentId(e.target.value); previewCount(e.target.value); }}>
-                  <option value="">Select a segment…</option>
-                  {segments.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-                </select>
+                <MeetDropdown size="sm" ariaLabel="Segment" value={segmentId} placeholder="Select a segment…"
+                  onChange={(v) => { setSegmentId(v); previewCount(v); }}
+                  options={segments.map((s) => ({ value: s.id, label: s.name }))} />
                 {count !== null && <p className="text-[11px] adm-t2">≈ {count} consented email recipients</p>}
               </>
             ) : (
@@ -391,10 +385,9 @@ const AdminCampaignComposer = ({ onClose }) => {
 
           <Card className="space-y-2">
             <Field label="Start from a layout (optional)">
-              <select className="fb-input text-sm" value="" onChange={(e) => { if (e.target.value !== '') loadStarter(+e.target.value); }}>
-                <option value="">Blank — build your own</option>
-                {STARTER_DESIGNS.map((d, i) => <option key={d.name} value={i}>{d.name}</option>)}
-              </select>
+              <MeetDropdown size="sm" ariaLabel="Starter layout" value="" placeholder="Blank — build your own"
+                onChange={(v) => { if (v !== '') loadStarter(+v); }}
+                options={STARTER_DESIGNS.map((d, i) => ({ value: String(i), label: d.name }))} />
             </Field>
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold adm-t1">Content blocks</p>

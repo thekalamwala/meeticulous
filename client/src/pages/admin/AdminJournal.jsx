@@ -4,6 +4,7 @@ import {
   adminFinanceAdjustment, adminFinanceReversal, adminFinanceBankTransfer, adminFinanceRefund,
 } from '../../services/api';
 import toast from 'react-hot-toast';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import { PageHeader, Btn, Skeleton } from '../../components/admin/ui';
 
 // Journal browser — append-only double-entry record. Corrections happen ONLY
@@ -154,11 +155,9 @@ const AdminJournal = () => {
       <div className="flex flex-wrap items-end gap-3 mb-4">
         <div>
           <label className="block text-[11px] font-medium adm-t3 mb-1">Source</label>
-          <select className="fb-input text-sm" value={filters.source_type}
-            onChange={(e) => { setPage(1); setFilters((f) => ({ ...f, source_type: e.target.value })); }}>
-            <option value="">All sources</option>
-            {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
+          <MeetDropdown size="sm" ariaLabel="Source" value={filters.source_type}
+            onChange={(v) => { setPage(1); setFilters((f) => ({ ...f, source_type: v })); }}
+            options={[{ value: '', label: 'All sources' }, ...SOURCES.map((s) => ({ value: s, label: s }))]} />
         </div>
         <div>
           <label className="block text-[11px] font-medium adm-t3 mb-1">From</label>
@@ -312,11 +311,11 @@ const AdminJournal = () => {
                 <input type="text" className="fb-input text-sm w-full mb-3" value={adjDesc} onChange={(e) => setAdjDesc(e.target.value)} />
                 {adjLines.map((l, i) => (
                   <div key={i} className="flex gap-2 mb-2">
-                    <select className="fb-input text-sm flex-1" value={l.account_code}
-                      onChange={(e) => setAdjLines((ls) => ls.map((x, j) => (j === i ? { ...x, account_code: e.target.value } : x)))}>
-                      <option value="">Account…</option>
-                      {accounts.map((a) => <option key={a.code} value={a.code}>{a.code} — {a.name}</option>)}
-                    </select>
+                    <div className="flex-1 min-w-0">
+                      <MeetDropdown size="sm" searchable ariaLabel="Account" placeholder="Account…" value={l.account_code}
+                        onChange={(v) => setAdjLines((ls) => ls.map((x, j) => (j === i ? { ...x, account_code: v } : x)))}
+                        options={accounts.map((a) => ({ value: a.code, label: `${a.code} — ${a.name}` }))} />
+                    </div>
                     <input type="number" min="0" step="0.01" placeholder="Debit" className="fb-input text-sm w-24 tabular-nums" value={l.debit}
                       onChange={(e) => setAdjLines((ls) => ls.map((x, j) => (j === i ? { ...x, debit: e.target.value, credit: '' } : x)))} />
                     <input type="number" min="0" step="0.01" placeholder="Credit" className="fb-input text-sm w-24 tabular-nums" value={l.credit}

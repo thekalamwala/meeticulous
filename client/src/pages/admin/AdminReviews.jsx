@@ -1,3 +1,4 @@
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -104,17 +105,10 @@ const AdminReviews = () => {
 
       {/* Filters — direction / rating / search, each ~⅓ width */}
       <div className="flex flex-col sm:flex-row items-stretch gap-2 mb-4">
-        <select value={direction} onChange={e => setDirection(e.target.value)}
-          className="flex-1 border adm-border rounded-lg px-3 py-2 text-[12.5px] outline-none focus:ring-2 focus:ring-[#960D32]/30">
-          <option value="">All directions</option>
-          <option value="guest_to_host">Guest → Host</option>
-          <option value="host_to_guest">Host → Guest</option>
-        </select>
-        <select value={rating} onChange={e => setRating(e.target.value)}
-          className="flex-1 border adm-border rounded-lg px-3 py-2 text-[12.5px] outline-none focus:ring-2 focus:ring-[#960D32]/30">
-          <option value="">Any rating</option>
-          {[5, 4, 3, 2, 1].map(n => <option key={n} value={n}>{n} ★</option>)}
-        </select>
+        <MeetDropdown size="sm" className="flex-1" ariaLabel="Direction" placeholder="All directions" value={direction} onChange={setDirection}
+          options={[{ value: '', label: 'All directions' }, { value: 'guest_to_host', label: 'Guest → Host' }, { value: 'host_to_guest', label: 'Host → Guest' }]} />
+        <MeetDropdown size="sm" className="flex-1" ariaLabel="Rating" placeholder="Any rating" value={rating} onChange={setRating}
+          options={[{ value: '', label: 'Any rating' }, ...[5, 4, 3, 2, 1].map(n => ({ value: String(n), label: `${n} ★` }))]} />
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search comment…"
           className="flex-1 border adm-border rounded-lg px-3 py-2 text-[12.5px] outline-none focus:ring-2 focus:ring-[#960D32]/30" />
       </div>

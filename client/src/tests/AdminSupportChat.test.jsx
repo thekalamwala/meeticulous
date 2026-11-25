@@ -82,7 +82,8 @@ describe('AdminSupportChat', () => {
     fireEvent.click(screen.getByRole('button', { name: /^resolve$/i })); // opens the reason picker
     const confirm = screen.getByRole('button', { name: /resolve ticket/i });
     expect(confirm).toBeDisabled();
-    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'host_payout' } });
+    fireEvent.click(screen.getByLabelText('Resolution reason'));
+    fireEvent.click(screen.getByRole('option', { name: /Payout \/ earnings/ }));
     expect(confirm).toBeEnabled();
     fireEvent.click(confirm);
     await waitFor(() => expect(adminResolveSupport).toHaveBeenCalledWith('t1', { reason_code: 'host_payout' }));
@@ -91,7 +92,8 @@ describe('AdminSupportChat', () => {
   it('does not carry a picked reason over to the next opened thread', async () => {
     await claimThread();
     fireEvent.click(screen.getByRole('button', { name: /^resolve$/i }));
-    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'host_payout' } });
+    fireEvent.click(screen.getByLabelText('Resolution reason'));
+    fireEvent.click(screen.getByRole('option', { name: /Payout \/ earnings/ }));
     fireEvent.click(screen.getByRole('button', { name: /back to queue/i }));
     await waitFor(() => expect(screen.getByText('Payout is late')).toBeInTheDocument());
     fireEvent.click(screen.getByText('Payout is late'));

@@ -4,6 +4,7 @@
 // the gst.returns_file permission.
 import React, { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import { PageHeader, Card, Badge, Btn, Skeleton } from '../../components/admin/ui';
 import { adminGstReturns, adminGstSetReturnStatus } from '../../services/api';
 import { MONTHS } from './gstShared';
@@ -90,9 +91,8 @@ export default function AdminGstReturns() {
       <div className="mb-4">
         <label className="flex flex-col gap-1 text-[11px] uppercase tracking-wide adm-t3 w-fit">
           Financial year
-          <select className="fb-input text-sm" value={fy} onChange={(e) => setFy(e.target.value)}>
-            {fyOptions.map((o) => <option key={o.fy2} value={o.fy2}>{o.label}</option>)}
-          </select>
+          <MeetDropdown size="sm" ariaLabel="Financial year" value={fy} onChange={setFy}
+            options={fyOptions.map((o) => ({ value: o.fy2, label: o.label }))} />
         </label>
       </div>
 
@@ -118,9 +118,10 @@ export default function AdminGstReturns() {
             <div className="text-xs adm-t3 mb-4">Set the preparation / filing status for this return.</div>
 
             <label className="block text-[11px] uppercase tracking-wide adm-t3 mb-1">Status</label>
-            <select className="fb-input text-sm w-full mb-3" value={edit.status} onChange={(e) => setEdit({ ...edit, status: e.target.value })}>
-              {STATUSES.map((st) => <option key={st} value={st}>{st.replace('_', ' ')}</option>)}
-            </select>
+            <div className="w-full mb-3">
+              <MeetDropdown ariaLabel="Return status" value={edit.status} onChange={(v) => setEdit({ ...edit, status: v })}
+                options={STATUSES.map((st) => ({ value: st, label: st.replace('_', ' ') }))} />
+            </div>
 
             {edit.status === 'filed' && (
               <>

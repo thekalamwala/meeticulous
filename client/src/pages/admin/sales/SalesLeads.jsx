@@ -15,6 +15,7 @@ import { ALL_STATUSES, STATUS_LABEL, STATUS_TONE, SOURCES, SMART_VIEWS, rupees, 
 import { guardedSetStatus } from './statusMove';
 import { colorMap, TAG_PALETTE, swatchClass } from './salesTagColors';
 import TagChip from './TagChip';
+import MeetDropdown from '../../../components/ui/MeetDropdown';
 import MetricStrip from './MetricStrip';
 import EmptyState from './EmptyState';
 import { InlineText, InlineStatus } from './InlineCell';
@@ -91,20 +92,14 @@ function BulkSendModal({ mode, count, onClose, onSubmit }) {
         <div className="space-y-3">
           {mode === 'wa' && (waTemplates.length === 0
             ? <p className="text-[13px] adm-t2">No approved WhatsApp templates. Add them in <a href="/admin/sales/templates" className="text-[#960D32]">Templates</a>.</p>
-            : <select className="fb-input text-sm w-full" value={tpl} onChange={(e) => setTpl(e.target.value)}>
-                <option value="">Pick a template…</option>
-                {waTemplates.map((t) => <option key={t.id} value={t.id}>{t.label} ({t.name})</option>)}
-              </select>)}
+            : <MeetDropdown value={tpl} onChange={setTpl} placeholder="Pick a template…" ariaLabel="WhatsApp template" options={waTemplates.map((t) => ({ value: String(t.id), label: `${t.label} (${t.name})` }))} />)}
           {mode === 'email' && <>
             <input className="fb-input text-sm w-full" placeholder="Subject — {{first_name}} supported" value={subject} onChange={(e) => setSubject(e.target.value)} />
             <textarea className="fb-input text-sm w-full" rows={6} placeholder="HTML body — {{first_name}}, {{business_name}}…" value={html} onChange={(e) => setHtml(e.target.value)} />
           </>}
           {mode === 'enroll' && (sequences.length === 0
             ? <p className="text-[13px] adm-t2">No active sequences. <a href="/admin/sales/sequences" className="text-[#960D32]">Create one</a>.</p>
-            : <select className="fb-input text-sm w-full" value={seqId} onChange={(e) => setSeqId(e.target.value)}>
-                <option value="">Pick a sequence…</option>
-                {sequences.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-              </select>)}
+            : <MeetDropdown value={seqId} onChange={setSeqId} placeholder="Pick a sequence…" ariaLabel="Sequence" options={sequences.map((s) => ({ value: String(s.id), label: s.name }))} />)}
           <p className="text-[11px] adm-t3">Queued through the send gate — nothing goes out while the CRM kill-switch is off, and per-lead frequency limits apply.</p>
           <div className="flex justify-end gap-2">
             <Btn variant="outline" size="sm" onClick={onClose}>Cancel</Btn>
@@ -368,10 +363,7 @@ export default function SalesLeads() {
       {sel.size > 0 && (
         <Card className="mb-3 rounded-xl p-3 flex flex-wrap items-center gap-2">
           <span className="text-[13px] font-semibold adm-t1">{sel.size} selected</span>
-          <select className="fb-input text-xs py-1" defaultValue="" onChange={(e) => { if (e.target.value) bulk('status', e.target.value); e.target.value = ''; }}>
-            <option value="">Set stage…</option>
-            {ALL_STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
-          </select>
+          <MeetDropdown size="sm" value="" onChange={(v) => { if (v) bulk('status', v); }} placeholder="Set stage…" ariaLabel="Set stage" options={ALL_STATUSES.map((s) => ({ value: s, label: STATUS_LABEL[s] }))} />
           <Btn variant="outline" size="sm" onClick={() => { const tg = prompt('Tag to add:'); if (tg) bulk('tag_add', tg.trim()); }}>Add tag</Btn>
           <span className="w-px h-5 bg-gray-200" />
           <Btn size="sm" onClick={() => setBulkMode('wa')}>WhatsApp</Btn>
@@ -485,7 +477,7 @@ function NewLeadModal({ onClose, onCreated }) {
           <Field label="Profession"><input className="fb-input text-sm" {...f('profession')} /></Field>
           <Field label="City"><input className="fb-input text-sm" {...f('city')} /></Field>
           <Field label="Source">
-            <select className="fb-input text-sm" {...f('source')}>{SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}</select>
+            <MeetDropdown value={form.source} onChange={(v) => setForm({ ...form, source: v })} ariaLabel="Source" options={SOURCES} />
           </Field>
         </div>
         <div className="flex justify-end gap-2 pt-2">

@@ -39,8 +39,9 @@ test('status dropdown flips a category off', async () => {
   render(<AdminCategories />);
   // Target the row's status select by its aria-label (avoids colliding with the
   // group-name datalist input, which also has role combobox).
-  const select = await screen.findByLabelText('Status: Life Coach');
-  fireEvent.change(select, { target: { value: 'disabled' } });
+  const trigger = await screen.findByLabelText('Status: Life Coach');
+  fireEvent.click(trigger);
+  fireEvent.click(screen.getByRole('option', { name: /Off/ }));
   await waitFor(() => expect(adminUpdateCategory).toHaveBeenCalledWith('1', { status: 'disabled' }));
 });
 
