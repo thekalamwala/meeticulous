@@ -136,7 +136,7 @@ const BookingsV2 = () => {
               key={key}
               type="button"
               onClick={() => { setStatus(filter); setView('list'); }}
-              className="group rounded-xl border border-neutral-200/60 bg-white p-3.5 text-left transition hover:border-maroon/30 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
+              className="group rounded-xl border border-neutral-200/60 bg-white p-3.5 text-left transition hover:border-maroon/30 hover:bg-pink-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
             >
               {/* Desktop: icon + number/title aligned left, sub to the right corner */}
               <span className="hidden items-center justify-between gap-3 sm:flex">
