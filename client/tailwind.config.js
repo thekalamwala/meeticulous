@@ -26,6 +26,16 @@ export default {
         blush: "#FFE4EA",
         cream: "#FBF5F3",
         marigold: { DEFAULT: "#F6C35A", 100: "#FDF0D2", 300: "#F9D684", 600: "#C68A12", 800: "#5A3A00" },
+        // Category accents — one hue per catalog kind (icon fg on a light bg).
+        // Brand EXTENSION beyond the core palette (introduces green/orange/violet) —
+        // pending founder sign-off. Mirrors --mt-cat-* in design-system/tokens/colors.css.
+        cat: {
+          "service-bg": "#FFE1E7", "service-fg": "#E11D48",
+          "product-bg": "#FFE7D6", "product-fg": "#EA580C",
+          "course-bg": "#F3E1FB", "course-fg": "#9333EA",
+          "membership-bg": "#D4F5EA", "membership-fg": "#059669",
+          "offer-bg": "#FFF0C8", "offer-fg": "#CA8A04",
+        },
         muted: "#6B524F", // --neutral-600 (--fg-2)
         faint: "#8C716D", // --neutral-500 (--fg-3) — the lighter meta step
         ink: "#2B0A14", // --mt-ink

@@ -7,6 +7,7 @@ import Availability from '../pages/Availability';
 vi.mock('../services/api', () => ({
   getAvailability: vi.fn(() => Promise.resolve({ data: null })),
   setAvailability: vi.fn(() => Promise.resolve({ data: {} })),
+  getGoogleAuthUrl: vi.fn(() => Promise.resolve({ data: { url: '#' } })),
 }));
 vi.mock('react-hot-toast', () => ({ default: { success: vi.fn(), error: vi.fn() } }));
 
@@ -15,9 +16,12 @@ describe('Availability per-day toggle', () => {
     const { container } = render(<MemoryRouter><Availability /></MemoryRouter>);
 
     // 7 day switches, all closed. Time windows use the branded MeetDropdown
-    // (.mt-dd) now, not native <select> — so count those, by delta since the
-    // page also has fixed dropdowns (Apply Monday's hours, timezone, buffer).
-    const switches = await screen.findAllByRole('switch');
+    // (.mt-dd) now, not native <select> — count those, by delta since the page
+    // also has fixed dropdowns (Apply Monday's hours, timezone, buffer). The
+    // Connected-calendars card also renders slide-to-connect switches, so
+    // isolate the day toggles by their "Open/Close <day>" label.
+    const allSwitches = await screen.findAllByRole('switch');
+    const switches = allSwitches.filter((s) => /^(open|close) /i.test(s.getAttribute('aria-label') || ''));
     expect(switches).toHaveLength(7);
     expect(switches[0].getAttribute('aria-checked')).toBe('false');
     const baseSelects = container.querySelectorAll('.mt-dd').length;
