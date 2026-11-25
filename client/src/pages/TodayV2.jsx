@@ -11,16 +11,17 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   AlertTriangle, ArrowRight, CalendarCheck2, CalendarX2, Check, ChevronLeft,
-  ChevronRight, IndianRupee, MessageSquare, Package, Share2, ShieldCheck, Star,
-  UserPlus, Video,
+  ChevronRight, IndianRupee, Package, Share2, ShieldCheck, Star,
+  UserPlus, X,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { getPayoutBalance, getHostBookings, getMyProfileViews, getMyKyc } from '../services/api';
+import { isFreePlan } from '../utils/themeUtils';
 import { Button, EmptyState, ErrorState, Skeleton } from '../components/dashboard/ui';
 import {
-  Avatar, Drawer, PageHeading, Panel, Sparkline, StatusPill, Tile, RankedBars,
-  cn, inr, fmtTime, relDay, useLast,
+  Avatar, Drawer, PageHeading, Panel, Sparkline, StatusPill, Tile, SourceDonut,
+  MeetIcon, WhatsAppIcon, cn, inr, fmtTime, relDay, useLast,
 } from '../components/dashboard/ui/v2';
 
 const lower = (s) => String(s || '').toLowerCase();
@@ -66,6 +67,75 @@ const URGENCY = { now: ['Now', 'bg-error-bg text-error-fg'], today: ['Today', 'b
 
 const waLink = (phone) => { const d = (phone || '').replace(/\D/g, ''); return d ? `https://wa.me/${d}` : null; };
 
+const UPGRADE_TO = '/dashboard/upgrade';
+
+/* ── Pro promo — shown only to free-plan hosts (isFreePlan), dismissible for the
+ * session. Two deliberately different shapes (lab spec): a slim maroon card on
+ * desktop, a tall lifestyle-photo card on mobile. Tokens only, no gradient on
+ * the desktop one. CTAs route to the real upgrade page. ───────────────────── */
+const PromoDesktop = ({ go, onClose }) => (
+  <div className="relative isolate overflow-hidden rounded-3xl bg-maroon text-white">
+    <img aria-hidden="true" src="/brand/ds/02-ee/mt-ee-thread-white.svg" alt=""
+      className="pointer-events-none absolute right-0 top-1/2 h-[190%] w-auto -translate-y-1/2 translate-x-[14%] -rotate-[18deg] opacity-[0.07]" />
+    <div className="relative flex items-center gap-6 px-7 py-6 sm:px-9 sm:py-7">
+      <div className="min-w-0 flex-1">
+        <h2 className="font-display text-[34px] font-extrabold leading-[1.0] tracking-[-0.045em] text-white sm:text-[46px]">
+          Smarter tools. <span className="text-pink">Done easier.</span>
+        </h2>
+        <p className="mt-3 text-[13px] font-medium leading-snug text-white/70">
+          Advanced analytics, priority support and custom branding — do more with every booking you take.
+        </p>
+        <div className="mt-5 flex items-center gap-5">
+          <button type="button" onClick={() => go(UPGRADE_TO)}
+            className="inline-flex items-center gap-2 rounded-full bg-pink px-5 py-2.5 text-[13px] font-bold text-maroon-dark transition hover:bg-white focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
+            See Pro <ArrowRight className="h-4 w-4" strokeWidth={2.6} />
+          </button>
+          <button type="button" onClick={() => go(UPGRADE_TO)} className="inline-flex items-center gap-1.5 text-[13px] font-bold text-white/85 transition hover:text-white">
+            What&apos;s included <ArrowRight className="h-4 w-4" strokeWidth={2.6} />
+          </button>
+        </div>
+      </div>
+      <img src="/brand/ds/04-illustrations/mt-illo-live-dark.svg" alt="" aria-hidden="true" className="hidden h-28 w-auto shrink-0 self-center lg:block" />
+    </div>
+    <button type="button" onClick={onClose} aria-label="Dismiss"
+      className="absolute right-4 top-4 grid h-7 w-7 place-items-center rounded-full text-white/70 transition hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose">
+      <X className="h-4 w-4" strokeWidth={2.4} />
+    </button>
+  </div>
+);
+
+const PROMO_SCRIM = {
+  backgroundImage:
+    'linear-gradient(0deg, #710d2d 4%, rgba(119,13,44,0.9) 26%, transparent 82%), linear-gradient(90deg, rgba(100,11,43,0.85), transparent 72%)',
+};
+const PromoMobile = ({ go, onClose }) => (
+  <div className="relative isolate flex min-h-[256px] flex-col justify-end overflow-hidden rounded-2xl px-4 py-4 text-white">
+    <img src="/brand/host-lab/promo-bg.jpg" alt="" aria-hidden="true" className="absolute inset-0 -z-10 h-full w-full object-cover object-right" />
+    <div aria-hidden="true" className="absolute inset-0 -z-10" style={PROMO_SCRIM} />
+    <div className="relative">
+      <h2 className="max-w-[11ch] font-display text-[26px] font-extrabold leading-[1.05] tracking-[-0.04em] text-white">
+        Smarter tools. <span className="text-pink">Done easier.</span>
+      </h2>
+      <p className="mt-1.5 max-w-[26ch] text-[12px] font-medium leading-snug text-white/80">
+        Advanced analytics, priority support and custom branding — do more with every booking.
+      </p>
+      <div className="mt-3.5 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <button type="button" onClick={() => go(UPGRADE_TO)}
+          className="inline-flex items-center gap-1.5 rounded-full bg-cream px-4 py-2 text-[12px] font-bold text-maroon-dark transition hover:bg-white focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
+          See Pro <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
+        </button>
+        <button type="button" onClick={() => go(UPGRADE_TO)} className="inline-flex items-center gap-1 text-[12px] font-bold text-white/90 transition hover:text-white">
+          What&apos;s included <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
+        </button>
+      </div>
+    </div>
+    <button type="button" onClick={onClose} aria-label="Dismiss"
+      className="absolute right-2.5 top-2.5 grid h-7 w-7 place-items-center rounded-full bg-black/20 text-white/80 transition hover:bg-black/35 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose">
+      <X className="h-4 w-4" strokeWidth={2.4} />
+    </button>
+  </div>
+);
+
 /* ── Mobile Today — the Host Lab mobile redesign, on real data ──────────────
  * Graduated from pages/hostlab/sections/Today.mobile: quick actions, a glance
  * strip, a day-picker + schedule, then where bookings came from. The lab's
@@ -83,7 +153,7 @@ const QUICK_ACTIONS = [
   { icon: Star, label: 'Reviews', to: '/dashboard/testimonials' },
 ];
 
-const TodayMobile = ({ user, go, balance, bookings, views, queue, setDismissed, thisMonth, delta, series, upcoming, sources, money, held, setOpenId, loading }) => {
+const TodayMobile = ({ user, go, balance, bookings, views, queue, setDismissed, thisMonth, delta, series, upcoming, sources, money, held, setOpenId, loading, showPromo, onClosePromo }) => {
   const [sel, setSel] = useState(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; });
   const stripRef = useRef(null);
   const base = useMemo(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }, []);
@@ -104,6 +174,9 @@ const TodayMobile = ({ user, go, balance, bookings, views, queue, setDismissed, 
           {queue.length > 0 && <span className="text-warning-fg"> · {queue.length} waiting on you</span>}
         </p>
       </header>
+
+      {/* Pro promo — free-plan hosts only, tall photo card */}
+      {showPromo && <PromoMobile go={go} onClose={onClosePromo} />}
 
       {/* Quick actions */}
       <section>
@@ -223,7 +296,7 @@ const TodayMobile = ({ user, go, balance, bookings, views, queue, setDismissed, 
       {/* Where bookings came from — real sources only (counts, no faked views) */}
       {sources.length > 0 && (
         <Panel title="Where bookings came from" subtitle="By bookings">
-          <RankedBars rows={sources} valueKey="bookingsCount" labelKey="label" format={(v) => `${v} booked`} />
+          <SourceDonut rows={sources} valueKey="bookingsCount" labelKey="label" stack />
         </Panel>
       )}
     </div>
@@ -242,6 +315,9 @@ const TodayV2 = () => {
   const [status, setStatus] = useState('loading'); // loading | ready | error
   const [dismissed, setDismissed] = useState([]);
   const [openId, setOpenId] = useState(null);
+  const [promoClosed, setPromoClosed] = useState(false);
+  // Upsell Pro only to free-plan hosts; dismissible for the session.
+  const showPromo = isFreePlan(user?.plan) && !promoClosed;
 
   const load = useCallback(() => {
     setStatus('loading');
@@ -307,9 +383,11 @@ const TodayV2 = () => {
           queue={queue} setDismissed={setDismissed} thisMonth={thisMonth} delta={delta}
           series={series} upcoming={upcoming} sources={sources} money={money} held={held}
           setOpenId={setOpenId} loading={status === 'loading'}
+          showPromo={showPromo} onClosePromo={() => setPromoClosed(true)}
         />
       </div>
       <div className="hidden flex-col gap-2.5 lg:flex">
+      {showPromo && <PromoDesktop go={go} onClose={() => setPromoClosed(true)} />}
       <PageHeading
         title="Today"
         sub={(
@@ -408,12 +486,18 @@ const TodayV2 = () => {
               })}
             </ul>
           )}
+          {status !== 'loading' && (
+            <button type="button" onClick={() => go('/dashboard/bookings')}
+              className="flex w-full items-center justify-center gap-1 border-t border-neutral-200/70 px-3 py-2.5 text-[11.5px] font-bold text-maroon transition hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-rose">
+              View full week <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
+            </button>
+          )}
         </Panel>
 
         <div className="flex min-w-0 flex-col gap-2.5">
           {sources.length > 0 && (
-            <Panel title="Where bookings came from">
-              <RankedBars rows={sources} valueKey="bookingsCount" labelKey="label" format={(v) => `${v} booked`} />
+            <Panel title="Where bookings came from" subtitle="By bookings">
+              <SourceDonut rows={sources} valueKey="bookingsCount" labelKey="label" />
             </Panel>
           )}
           <Panel title="Recent bookings" flush>
@@ -454,9 +538,9 @@ const TodayV2 = () => {
               ))}
             </dl>
             <div className="flex flex-wrap gap-1.5">
-              {openBooking.meet_link && <a href={openBooking.meet_link} target="_blank" rel="noreferrer" className="inline-flex"><Button size="sm"><Video className="h-3.5 w-3.5" strokeWidth={2.4} /> Join call</Button></a>}
+              {openBooking.meet_link && <a href={openBooking.meet_link} target="_blank" rel="noreferrer" className="inline-flex"><Button size="sm" variant="outline"><MeetIcon className="h-4 w-4" /> Join call</Button></a>}
               {waLink(openBooking.guest_phone)
-                ? <a href={waLink(openBooking.guest_phone)} target="_blank" rel="noreferrer" className="inline-flex"><Button size="sm" variant="outline"><MessageSquare className="h-3.5 w-3.5" strokeWidth={2.4} /> WhatsApp</Button></a>
+                ? <a href={waLink(openBooking.guest_phone)} target="_blank" rel="noreferrer" className="inline-flex"><Button size="sm" variant="outline"><WhatsAppIcon className="h-4 w-4" /> WhatsApp</Button></a>
                 : null}
               <Button size="sm" variant="ghost" onClick={() => { setOpenId(null); go('/dashboard/bookings'); }}>All bookings</Button>
             </div>
