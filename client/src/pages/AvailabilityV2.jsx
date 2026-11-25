@@ -14,7 +14,7 @@ import { Link } from 'react-router-dom';
 import { CalendarClock, ExternalLink, Lock, Minus, Plus, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { isFreePlan } from '../utils/themeUtils';
-import { ErrorState, Skeleton, StickyActionBar } from '../components/dashboard/ui';
+import { ErrorState, Skeleton } from '../components/dashboard/ui';
 import { InsightBand, PageHeading, Panel, StatusPill, cn } from '../components/dashboard/ui/v2';
 import useAvailabilityEditor, { DAYS } from '../components/availability/useAvailabilityEditor';
 import { BUFFERS, TZ } from '../components/availability/BookingRulesCard';
@@ -374,7 +374,11 @@ const AvailabilityV2 = () => {
       </div>
 
       {!loading && (
-        <StickyActionBar className="mt-0">
+        // Own bar, not the shared StickyActionBar: that one sits 4rem up (the old 64px
+        // tab bar) and drops to the bottom from md, so under Kept's 77px tab bar (shown
+        // below lg) it slid 13px underneath and the Grow button covered it.
+        // ponytail: 77px = KeptTabBar's rendered height; read it from a CSS var if that bar changes.
+        <div className="sticky bottom-[calc(77px+env(safe-area-inset-bottom,0px))] z-30 -mx-4 border-t border-neutral-200 bg-white px-4 py-3 sm:-mx-6 sm:px-6 lg:bottom-0 lg:-mx-8 lg:px-8">
           <div className="flex w-full items-center gap-2">
             <p className={cn('mb-0 mr-auto flex items-center gap-2 text-[13.5px]', ed.dirty ? 'font-semibold text-ink' : 'text-faint')} aria-live="polite">
               {ed.dirty && <span className="h-2 w-2 shrink-0 rounded-full bg-maroon" aria-hidden="true" />}
@@ -383,7 +387,7 @@ const AvailabilityV2 = () => {
             <button type="button" className={btnSoft} disabled={!ed.dirty || ed.loading} onClick={ed.reset}>Discard</button>
             <button type="submit" className={btnPrimary} disabled={!ed.dirty || ed.loading}>{ed.loading ? 'Saving…' : 'Save'}</button>
           </div>
-        </StickyActionBar>
+        </div>
       )}
     </form>
   );
