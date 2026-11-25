@@ -55,22 +55,17 @@ export default function SetupGuide({ steps, onGo, onCopy, title = 'Finish settin
   if (done === steps.length) return null;
 
   return (
-    <section aria-labelledby="setup-guide" className={cn('overflow-hidden rounded-[24px] bg-white lg:grid lg:grid-cols-[300px_1fr]', className)}>
-      <div className="relative flex flex-col gap-4 p-5 sm:p-6">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h2 id="setup-guide" className="mb-0 font-display text-[20px] font-bold leading-tight tracking-[-0.02em] text-ink sm:text-[22px]">{title}</h2>
-            <p className="mb-0 mt-1 text-[13.5px] text-muted">{done} of {steps.length} done · a few minutes each</p>
-          </div>
-          <img src="/about/mascot-green.png" alt="" aria-hidden="true" className="h-16 w-16 shrink-0 object-contain lg:hidden" />
-        </div>
-        <img src="/about/mascot-green.png" alt="" aria-hidden="true" className="mt-auto hidden h-28 w-28 self-start object-contain lg:block" />
+    <section aria-labelledby="setup-guide" className={cn('overflow-hidden rounded-[24px] bg-white', className)}>
+      {/* One column, top to bottom: heading, the checklist, then the mascot (founder call, 2026-11-25). */}
+      <div className="p-5 sm:p-6">
+        <h2 id="setup-guide" className="mb-0 font-display text-[20px] font-bold leading-tight tracking-[-0.02em] text-ink sm:text-[22px]">{title}</h2>
+        <p className="mb-0 mt-1 text-[13.5px] text-muted">{done} of {steps.length} done · a few minutes each</p>
       </div>
 
       {/* Progress runs down the step markers as a vertical rail (founder call, 2026-11-25):
           each step's segment turns maroon once that step is done. */}
       <ul role="progressbar" aria-valuemin={0} aria-valuemax={steps.length} aria-valuenow={done} aria-label="Setup progress"
-        className="border-t border-neutral-200 lg:border-l lg:border-t-0">
+        className="border-y border-neutral-200">
         {steps.map((s, i) => {
           const isOpen = open === s.key;
           const act = () => (s.action === 'copy' ? onCopy?.() : onGo?.(s.to));
@@ -99,6 +94,7 @@ export default function SetupGuide({ steps, onGo, onCopy, title = 'Finish settin
           );
         })}
       </ul>
+      <img src="/about/mascot-green.png" alt="" aria-hidden="true" className="mx-5 my-4 h-24 w-24 object-contain sm:mx-6 lg:h-28 lg:w-28" />
     </section>
   );
 }

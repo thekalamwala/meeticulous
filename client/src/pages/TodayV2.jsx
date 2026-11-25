@@ -634,9 +634,11 @@ const TodayV2 = () => {
         </div>
       </section>
 
-      <RecentBookings bookings={bookings} onOpen={setOpenId} go={go} />
-
-      {!loading && setupOpen && <SetupGuide steps={setupSteps} onGo={go} onCopy={copyLink} />}
+      {/* Setup guide is a narrow column card beside Recent bookings (founder call, 2026-11-25). */}
+      <section aria-label="Recent bookings and setup" className={cn('grid grid-cols-1 items-start gap-4 lg:gap-5', !loading && setupOpen && 'lg:grid-cols-[1fr_320px]')}>
+        <RecentBookings bookings={bookings} onOpen={setOpenId} go={go} />
+        {!loading && setupOpen && <SetupGuide steps={setupSteps} onGo={go} onCopy={copyLink} />}
+      </section>
 
       <div className="flex flex-col gap-4">
         <LinkChip username={user?.username} onCopy={copyLink} className="w-full sm:w-[360px]" />
