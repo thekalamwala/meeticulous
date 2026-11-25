@@ -79,7 +79,7 @@ export default function SetupGuide({ steps, onGo, onCopy, title = 'Finish settin
           const isOpen = open === s.key;
           const act = () => (s.action === 'copy' ? onCopy?.() : onGo?.(s.to));
           return (
-            <li key={s.key} className={cn('relative', i > 0 && 'border-t border-neutral-200', isOpen ? 'bg-white' : 'bg-cream/50')}>
+            <li key={s.key} className={cn('relative transition-colors duration-300', i > 0 && 'border-t border-neutral-200', isOpen ? 'bg-white' : 'bg-cream/50')}>
               <span aria-hidden="true" className={cn('pointer-events-none absolute left-[30px] z-[1] w-1 sm:left-[34px]',
                 i === 0 ? 'bottom-0 top-[26px]' : i === steps.length - 1 ? '-top-px h-[27px]' : '-top-px bottom-0',
                 s.done ? 'bg-maroon' : 'bg-neutral-200')} />
@@ -93,12 +93,20 @@ export default function SetupGuide({ steps, onGo, onCopy, title = 'Finish settin
                 </span>
                 <ChevronDown className={cn('h-5 w-5 shrink-0 text-faint transition-transform', isOpen && 'rotate-180')} strokeWidth={2} />
               </button>
-              {isOpen && (
-                <div className="flex flex-col items-start gap-3 px-5 pb-4 pl-14 sm:px-6 sm:pl-[60px]">
-                  <p className="mb-0 max-w-[52ch] text-[14px] text-muted">{s.body}</p>
-                  <Button size="md" variant={s.done ? 'secondary' : 'primary'} onClick={act}>{s.cta}</Button>
+              {/* Smooth open/close (founder call, 2026-11-25): the body is always rendered
+                  and its row animates 0fr → 1fr, so the card, and the mascot that fills
+                  its left column, grow and shrink with the same motion. inert keeps a
+                  closed step's button out of the tab order. */}
+              <div aria-hidden={!isOpen} inert={isOpen ? undefined : ''}
+                className={cn('grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] motion-reduce:transition-none',
+                  isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]')}>
+                <div className="min-h-0 overflow-hidden">
+                  <div className="flex flex-col items-start gap-3 px-5 pb-4 pl-14 sm:px-6 sm:pl-[60px]">
+                    <p className="mb-0 max-w-[52ch] text-[14px] text-muted">{s.body}</p>
+                    <Button size="md" variant={s.done ? 'secondary' : 'primary'} onClick={act}>{s.cta}</Button>
+                  </div>
                 </div>
-              )}
+              </div>
             </li>
           );
         })}
