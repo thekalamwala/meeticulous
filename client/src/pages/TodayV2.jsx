@@ -262,7 +262,7 @@ const linkBtn = 'inline-flex items-center gap-1 rounded-[10px] px-2 py-1 text-[1
  *  · 'pages': one full-width page at a time (the week planner).
  * Opens on `startIndex`, set before paint so nothing jumps. ─────────────── */
 const CARD_W = 'min(248px, 76%)';
-const ScrollStrip = ({ label, startIndex = 0, children, mode = 'center', onIndex, goTo, arrows = true }) => {
+const ScrollStrip = ({ label, startIndex = 0, children, mode = 'center', onIndex, goTo, arrows = true, className = '' }) => {
   const ref = useRef(null);
   const items = Children.toArray(children);
   const [active, setActive] = useState(startIndex);
@@ -303,10 +303,10 @@ const ScrollStrip = ({ label, startIndex = 0, children, mode = 'center', onIndex
     ? { maskImage: 'linear-gradient(to right, transparent, #000 14%, #000 86%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, #000 14%, #000 86%, transparent)' }
     : undefined;
   return (
-    <div className="relative">
+    <div className={cn('relative flex flex-col', className)}>
       {arrows && active > 0 && <button type="button" onClick={() => go(active - 1)} aria-label={`Earlier ${label}`} className={cn(arrow, 'left-1')}><ChevronLeft className="h-4 w-4" strokeWidth={2.4} /></button>}
       <div ref={ref} onScroll={onScroll} role="list" aria-label={label}
-        className={cn('dash-noscrollbar flex snap-x snap-mandatory overflow-x-auto scroll-smooth', mode === 'center' ? 'gap-3 py-1' : 'gap-0')}
+        className={cn('dash-noscrollbar flex flex-1 snap-x snap-mandatory overflow-x-auto scroll-smooth', mode === 'center' ? 'gap-3 py-1' : 'gap-0')}
         style={mode === 'center' ? { ...fade, paddingInline: `calc((100% - ${CARD_W}) / 2)` } : undefined}>
         {items.map((child, i) => cloneElement(child, {
           'data-active': i === active ? 'true' : 'false',
@@ -439,12 +439,14 @@ const TodaySchedule = ({ todays, onOpen, go }) => {
     : 'Nothing booked today';
 
   return (
-    <Panel title="Today's schedule" subtitle={sub}
+    // Cards stretch to the panel's foot, so the row's spare height goes to the cards
+    // (founder call, 2026-11-25).
+    <Panel title="Today's schedule" subtitle={sub} className="flex flex-col" bodyClassName="flex flex-1 flex-col"
       action={<button type="button" onClick={() => go('/dashboard/bookings')} className={linkBtn}>All bookings <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></button>}>
       {todays.length === 0 ? (
         <p className="mb-0 rounded-[16px] bg-cream p-4 text-[14px] text-muted">A clear day. New bookings land here.</p>
       ) : (
-        <ScrollStrip label="bookings today" startIndex={startIndex}>
+        <ScrollStrip label="bookings today" startIndex={startIndex} className="flex-1">
           {todays.map((b, i) => {
             const phase = phases[i];
             const key = phase === 'upcoming' ? (i === nextIdx ? 'next' : 'later') : phase;
@@ -461,13 +463,13 @@ const TodaySchedule = ({ todays, onOpen, go }) => {
                   <span className={cn('font-display text-[18px] font-extrabold tabular-nums tracking-[-0.02em]', phase === 'done' ? 'text-muted' : 'text-maroon')}>{fmtTime(b.scheduled_at)}</span>
                   <span className={cn('shrink-0 whitespace-nowrap rounded-[6px] px-2 py-0.5 text-[11.5px] font-semibold', cls)}>{word}</span>
                 </span>
-                <span className="flex min-w-0 items-center gap-2.5">
-                  <Avatar name={b.guest_name} />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[14.5px] font-semibold text-ink">{b.guest_name || 'Guest'}</span>
-                    <span className="block truncate text-[12.5px] text-muted">{b.services?.title || 'Booking'} · until {fmtTime(endOf(b).toISOString())}</span>
+                <span className="mt-auto flex min-w-0 flex-col gap-0.5">
+                  <span className={cn('block truncate text-[16px] font-semibold', phase === 'done' ? 'text-muted' : 'text-ink')}>{b.guest_name || 'Guest'}</span>
+                  <span className="block truncate text-[13px] text-muted">{b.services?.title || 'Booking'}</span>
+                  <span className="mt-1 flex items-center gap-2 text-[12.5px] text-faint">
+                    until {fmtTime(endOf(b).toISOString())}
+                    {unpaid && <span className="ml-auto shrink-0"><StatusPill status="unpaid" /></span>}
                   </span>
-                  {unpaid && <span className="ml-auto shrink-0"><StatusPill status="unpaid" /></span>}
                 </span>
               </button>
             );
@@ -479,41 +481,15 @@ const TodaySchedule = ({ todays, onOpen, go }) => {
 };
 
 /* ── Recent bookings — latest four, status as a word. ─────────────────────── */
-// `fill`: on desktop the card takes the height of the card beside it (the setup
-// checklist) and lists as many whole rows as fit, re-measured whenever that height
-// changes (founder call, 2026-11-25). Otherwise it lists four.
-const RecentBookings = ({ bookings, onOpen, go, fill = false }) => {
-  const all = useMemo(() => [...bookings]
-    .sort((a, b) => new Date(b.created_at || b.scheduled_at) - new Date(a.created_at || a.scheduled_at))
-    .slice(0, 20), [bookings]);
-  const wrapRef = useRef(null);
-  const listRef = useRef(null);
-  const [fit, setFit] = useState(4);
-  useLayoutEffect(() => {
-    const wrap = wrapRef.current;
-    if (!fill || !wrap || typeof ResizeObserver === 'undefined') { setFit(4); return undefined; }
-    const measure = () => {
-      const ul = listRef.current;
-      if (!ul || !window.matchMedia?.('(min-width: 1024px)').matches) { setFit(4); return; }
-      const rowH = ul.children[1]?.offsetHeight || (ul.children[0]?.offsetHeight || 0) + 1;
-      if (!rowH) return;
-      const pad = parseFloat(getComputedStyle(ul.parentElement).paddingBottom) || 0;
-      const avail = wrap.getBoundingClientRect().bottom - ul.getBoundingClientRect().top - pad;
-      setFit(Math.max(1, Math.floor((avail + 1) / rowH)));
-    };
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(wrap);
-    return () => ro.disconnect();
-  }, [fill, all.length]);
-  const rows = all.slice(0, fit);
+const RecentBookings = ({ bookings, onOpen, go }) => {
+  // Up to seven, newest first (founder call, 2026-11-25).
+  const rows = [...bookings].sort((a, b) => new Date(b.created_at || b.scheduled_at) - new Date(a.created_at || a.scheduled_at)).slice(0, 7);
   return (
-    <div ref={wrapRef} className={fill ? 'lg:relative' : undefined}>
-    <Panel className={fill ? 'lg:absolute lg:inset-0' : ''} title="Recent bookings" action={<button type="button" onClick={() => go('/dashboard/bookings')} className={linkBtn}>See all <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></button>}>
+    <Panel title="Recent bookings" action={<button type="button" onClick={() => go('/dashboard/bookings')} className={linkBtn}>See all <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></button>}>
       {rows.length === 0 ? (
         <p className="mb-0 rounded-[16px] bg-cream p-4 text-[14px] text-muted">New bookings show up here.</p>
       ) : (
-        <ul ref={listRef} className="flex flex-col divide-y divide-neutral-200">
+        <ul className="flex flex-col divide-y divide-neutral-200">
           {rows.map((b) => (
             <li key={b.id}>
               <button type="button" onClick={() => onOpen(b.id)}
@@ -530,7 +506,6 @@ const RecentBookings = ({ bookings, onOpen, go, fill = false }) => {
         </ul>
       )}
     </Panel>
-    </div>
   );
 };
 
@@ -663,9 +638,8 @@ const TodayV2 = () => {
       </section>
 
       {/* Setup guide is a narrow column card beside Recent bookings (founder call, 2026-11-25). */}
-      <section aria-label="Recent bookings and setup" className={cn('grid grid-cols-1 gap-4 lg:gap-5', !loading && setupOpen && 'lg:grid-cols-[1fr_320px]')}>
-        {/* Beside the checklist it fills that card's height so both end level (founder call, 2026-11-25). */}
-        <RecentBookings bookings={bookings} onOpen={setOpenId} go={go} fill={!loading && setupOpen} />
+      <section aria-label="Recent bookings and setup" className={cn('grid grid-cols-1 items-start gap-4 lg:gap-5', !loading && setupOpen && 'lg:grid-cols-[1fr_320px]')}>
+        <RecentBookings bookings={bookings} onOpen={setOpenId} go={go} />
         {!loading && setupOpen && <SetupGuide steps={setupSteps} onGo={go} onCopy={copyLink} />}
       </section>
 

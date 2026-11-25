@@ -122,7 +122,7 @@ export const Drawer = ({ open, onClose, title, subtitle, children, width = 'sm:w
 // was a reaction to big corners on 2px-BORDERED panels; with the border gone the
 // big radius reads right. `flush` panels (lists, tables) keep one hairline under
 // the header so rows don't touch the title.
-export const Panel = ({ title, subtitle, action, children, className = '', flush = false }) => {
+export const Panel = ({ title, subtitle, action, children, className = '', bodyClassName = '', flush = false }) => {
   const head = title || action;
   return (
     <section className={cn('overflow-hidden rounded-[24px] bg-white', className)}>
@@ -136,7 +136,7 @@ export const Panel = ({ title, subtitle, action, children, className = '', flush
           {action}
         </header>
       )}
-      <div className={flush ? '' : cn('px-5 pb-5 sm:px-6 sm:pb-6', head ? 'pt-4' : 'pt-5 sm:pt-6')}>{children}</div>
+      <div className={cn(!flush && 'px-5 pb-5 sm:px-6 sm:pb-6', !flush && (head ? 'pt-4' : 'pt-5 sm:pt-6'), bodyClassName)}>{children}</div>
     </section>
   );
 };
@@ -467,12 +467,19 @@ export const InsightBand = ({ eyebrow, title, sub, actions, aside, mascot, compa
   <section className={cn('relative isolate flex flex-col justify-center overflow-hidden rounded-[28px] bg-maroon-700 px-5 py-6 text-white sm:rounded-[32px] sm:px-9 sm:py-8', className)}>
     <span aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 opacity-50"
       style={{ backgroundImage: 'url(/brand/ds/03-patterns/mt-pattern-loop-on-maroon.svg)', backgroundSize: '180px' }} />
-    <img src="/brand/ds/02-ee/mt-ee-thread-pink.svg" alt="" aria-hidden="true"
-      className="pointer-events-none absolute -bottom-2 -right-24 -z-10 w-[420px] opacity-90 sm:w-[560px]" />
-    {mascot && MASCOT[mascot] && (
-      <img src={MASCOT[mascot]} alt="" aria-hidden="true"
-        className={cn('pointer-events-none absolute bottom-0 right-2 w-[104px] sm:right-6', compact ? 'sm:w-[140px]' : 'sm:w-[180px]')} />
-    )}
+    {/* The ee thread runs from the bottom-middle of the card to its top-right corner,
+        both ends running off the edges, with the ee at the midpoint and the mascot on
+        the ee (founder call, 2026-11-25). The span is a size container so the angle and
+        length follow the card at any size; 32px of overshoot hides the rounded caps. */}
+    <span aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 [--m:96px] sm:[--m:128px]" style={{ containerType: 'size' }}>
+      <img src="/brand/ds/02-ee/mt-ee-thread-pink.svg" alt=""
+        className="absolute left-1/2 top-full max-w-none opacity-90"
+        style={{ width: 'calc(hypot(50cqw, 100cqh) + 32px)', transformOrigin: '0 50%', transform: 'translateY(-50%) rotate(atan2(-100cqh, 50cqw)) translateX(-16px)' }} />
+      {mascot && MASCOT[mascot] && (
+        <img src={MASCOT[mascot]} alt="" className="absolute w-[var(--m)]"
+          style={{ left: 'calc(75cqw - var(--m) / 2)', top: 'calc(50cqh - var(--m) / 2)' }} />
+      )}
+    </span>
     <div className={cn('grid gap-5', aside && 'lg:grid-cols-[1.25fr_1fr] lg:items-center', mascot && (compact ? 'pr-[96px] sm:pr-[150px]' : 'pr-[96px] sm:pr-[190px]'))}>
       <div className="min-w-0">
         {eyebrow && <p className="mb-0 text-[12px] font-semibold uppercase tracking-[0.08em] text-pink">{eyebrow}</p>}
