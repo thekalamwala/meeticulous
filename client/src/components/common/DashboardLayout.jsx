@@ -64,7 +64,7 @@ const useBodyScrollLock = (active) => {
 // side-drawer (`variant="drawer"`, the account menu). Both mobile shapes are
 // portaled to body so the topbar's backdrop-blur — which would otherwise become
 // the containing block for `fixed` — can't trap them.
-const MenuSurface = ({ open, onClose, isMobile, title, align = 'right', width = 'w-72', role = 'menu', variant = 'sheet', children }) => {
+const MenuSurface = ({ open, onClose, isMobile, title, align = 'right', width = 'w-72', role = 'menu', variant = 'sheet', placement = 'down', children }) => {
   // Right side-drawer: always mounted so the translate-x slide can animate both
   // ways; off-screen + inert while closed.
   if (isMobile && variant === 'drawer') {
@@ -121,7 +121,8 @@ const MenuSurface = ({ open, onClose, isMobile, title, align = 'right', width = 
   return (
     <div
       className={cn(
-        'absolute top-full z-50 mt-2 overflow-hidden rounded-2xl border border-neutral-200/70 bg-white shadow-[0_4px_12px_-4px_rgba(43,10,20,0.1),0_16px_40px_-16px_rgba(43,10,20,0.25)]',
+        'absolute z-50 overflow-hidden rounded-2xl border border-neutral-200/70 bg-white shadow-[0_4px_12px_-4px_rgba(43,10,20,0.1),0_16px_40px_-16px_rgba(43,10,20,0.25)]',
+        placement === 'up' ? 'bottom-full mb-2' : 'top-full mt-2',
         align === 'right' ? 'right-0' : 'left-0',
         width,
       )}
@@ -281,6 +282,11 @@ export const ProfileMenu = ({
   triggerClassName = 'flex items-center gap-1.5 rounded-full p-0.5 transition-colors hover:bg-neutral-100',
   avatarClassName = 'bg-primary/10 text-primary',
   chevronClassName = 'h-4 w-4 text-neutral-400',
+  // Sidebar placement (Kept rail footer): the trigger shows name + email and the
+  // menu opens upward from the bottom-left. Defaults keep the topbar behaviour.
+  identity = false,
+  menuPlacement = 'down',
+  menuAlign = 'right',
 }) => {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -362,10 +368,16 @@ export const ProfileMenu = ({
         aria-haspopup="menu"
       >
         <Avatar size="h-9 w-9 text-sm" />
+        {identity && (
+          <span className="min-w-0 flex-1 text-left">
+            <span className="block truncate text-[14px] font-semibold text-ink">{user?.name || 'Host'}</span>
+            <span className="block truncate text-[12.5px] text-faint">{user?.email || ''}</span>
+          </span>
+        )}
         <ChevronDown className={cn(chevronClassName, 'transition-transform', open && 'rotate-180')} />
       </button>
 
-      <MenuSurface open={open} onClose={close} isMobile={isMobile} title="Account" width="w-72" variant="drawer">
+      <MenuSurface open={open} onClose={close} isMobile={isMobile} title="Account" width="w-72" variant="drawer" placement={menuPlacement} align={menuAlign}>
         {/* Identity — a blush ground gives the menu a head instead of a first
             row; the two tone-on-tone arcs are the ee-thread brand motif, one per
             surface. Name + verify tick + plan badge, email beneath. */}

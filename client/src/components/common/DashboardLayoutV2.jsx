@@ -25,8 +25,10 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import {
   Home, CalendarDays, Users, MessagesSquare, Package, CalendarRange,
   CreditCard, TrendingUp, Settings, ChevronRight, PanelLeft, Sparkles, X,
-  LifeBuoy,
+  LifeBuoy, Plus, Copy, ArrowUpRight,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { markLinkShared } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import useIsMobile from '../../hooks/useIsMobile';
 import useSupportUnread from '../../hooks/useSupportUnread';
@@ -245,7 +247,40 @@ const SidebarBody = ({ sections, plan, badges, activeTo, onNavigate, collapsed =
   );
 };
 
-/* Topbar — real notifications + profile, no mock search. */
+/* Booking link — the creator's most-used control, top-right on every page
+ * (founder pick, after Topmate). Opens the public page; Copy is its own button. */
+const copyBookingLink = async (username) => {
+  if (!username) { toast.error('Set your username first.'); return; }
+  try {
+    await navigator.clipboard.writeText(`${window.location.origin}/${username}`);
+    toast.success('Booking link copied');
+    try { localStorage.setItem('mt_golive_link_shared', '1'); } catch { /* fine */ }
+    markLinkShared();
+  } catch { toast.error('Could not copy your link.'); }
+};
+const BookingLink = ({ user }) => {
+  if (!user?.username) return null;
+  const host = window.location.host.replace(/^www\./, '');
+  return (
+    <div className="hidden items-center gap-2 lg:flex">
+      <a href={`/${user.username}`} target="_blank" rel="noreferrer" title="Open your booking page"
+        className="flex h-11 items-center gap-2.5 rounded-[14px] bg-white py-1 pl-1.5 pr-3.5 text-[14px] font-semibold text-ink transition hover:text-maroon focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
+        {user.profile_image
+          ? <img src={user.profile_image} alt="" className="h-8 w-8 rounded-[10px] object-cover" />
+          : <span className="grid h-8 w-8 place-items-center rounded-[10px] bg-blush text-[13px] font-semibold text-maroon">{(user.name || 'U').charAt(0)}</span>}
+        <span className="max-w-[240px] truncate">{host}/{user.username}</span>
+        <ArrowUpRight className="h-4 w-4 shrink-0 text-faint" strokeWidth={2.2} />
+      </a>
+      <button type="button" onClick={() => copyBookingLink(user.username)} aria-label="Copy booking link" title="Copy booking link"
+        className="grid h-11 w-11 place-items-center rounded-[14px] bg-white text-maroon transition hover:bg-pink-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
+        <Copy className="h-[18px] w-[18px]" strokeWidth={2.2} />
+      </button>
+    </div>
+  );
+};
+
+/* Topbar — booking link (desktop), help, notifications; profile lives in the
+ * rail footer on desktop and stays here on phones. */
 const TopbarV2 = ({ onOpenNav, user, plan, planStyle, initial, logout, onHome }) => (
   <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 bg-cream/90 px-4 pt-[env(safe-area-inset-top,0px)] backdrop-blur-md sm:px-6 lg:h-16 lg:px-10">
     {/* Mobile: the logo is Home (founder decision, 2026-11-25), so it looks pressable
@@ -256,12 +291,13 @@ const TopbarV2 = ({ onOpenNav, user, plan, planStyle, initial, logout, onHome })
       <span aria-hidden="true" className={cn('h-[3px] w-4 rounded-full', onHome ? 'bg-maroon' : 'bg-transparent')} />
     </Link>
     <div className="ml-auto flex shrink-0 items-center gap-2">
+      <BookingLink user={user} />
       <Link to="/help" title="Support" aria-label="Support"
         className="grid h-10 w-10 place-items-center rounded-[12px] bg-white text-muted transition-colors hover:text-maroon">
         <LifeBuoy className="h-[19px] w-[19px]" strokeWidth={1.8} />
       </Link>
       <NotifBell />
-      <ProfileMenu user={user} plan={plan} planStyle={planStyle} initial={initial} logout={logout} />
+      <div className="lg:hidden"><ProfileMenu user={user} plan={plan} planStyle={planStyle} initial={initial} logout={logout} /></div>
     </div>
   </header>
 );
@@ -328,7 +364,22 @@ const DashboardLayoutV2 = ({ children }) => {
               <PanelLeft className="h-3.5 w-3.5" strokeWidth={2.2} />
             </button>
           </div>
+          {/* Create — the one primary action, top of the rail on every page. */}
+          <div className={cn('shrink-0 pb-1', railCollapsed ? 'px-3' : 'px-3')}>
+            <Link to="/dashboard/service/add-new" title="New service" aria-label="New service"
+              className={cn('flex h-11 items-center justify-center gap-2 rounded-[12px] bg-maroon text-[14px] font-semibold text-white transition hover:bg-maroon-dark', ring)}>
+              <Plus className="h-[18px] w-[18px]" strokeWidth={2.4} />
+              {!railCollapsed && 'New service'}
+            </Link>
+          </div>
           <SidebarBody sections={sections} plan={plan} badges={badges} activeTo={activeTo} collapsed={railCollapsed} />
+          {/* You — profile at the bottom-left, where creators look for it. */}
+          <div className={cn('shrink-0 p-3 pt-0', railCollapsed && 'flex justify-center')}>
+            <ProfileMenu user={user} plan={plan} initial={initial} logout={logout}
+              identity={!railCollapsed} menuPlacement="up" menuAlign="left"
+              triggerClassName={cn('flex items-center gap-2.5 rounded-[14px] transition hover:bg-white', railCollapsed ? 'p-1' : 'w-full p-2')}
+              chevronClassName="h-4 w-4 shrink-0 text-faint" />
+          </div>
         </aside>
 
         {/* Mobile drawer */}

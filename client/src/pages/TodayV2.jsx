@@ -16,14 +16,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  AlertTriangle, ArrowRight, CalendarCheck2, Check, Clock, Copy, IndianRupee,
-  Link2, Package, ShieldCheck, Star, UserPlus, Wallet, X,
+  AlertTriangle, ArrowRight, CalendarCheck2, Check, Copy, IndianRupee,
+  Link2, Plus, ShieldCheck, Wallet, X,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
-import { getPayoutBalance, getHostBookings, getMyProfileViews, getMyKyc, getMyServices, markLinkShared } from '../services/api';
+import { getPayoutBalance, getHostBookings, getMyProfileViews, getMyKyc, getMyServices, getAvailability, markLinkShared } from '../services/api';
 import { isFreePlan } from '../utils/themeUtils';
-import GoLiveChecklist from '../components/dashboard/GoLiveChecklist';
+import SetupGuide, { buildSetupSteps } from '../components/dashboard/SetupGuide';
 import { Button, ErrorState, Skeleton } from '../components/dashboard/ui';
 import {
   Avatar, Drawer, InsightBand, Panel, Sparkline, StatusPill, Tile,
@@ -119,17 +119,19 @@ const card = 'rounded-[24px] bg-white';
 
 /* Copy the public booking link — the one control every creator reaches for. Also
  * ticks the setup checklist's "share" step (same localStorage key + share signal). */
-const useCopyLink = (username) => useCallback(async () => {
+const readShared = () => { try { return localStorage.getItem(SHARE_KEY) === '1'; } catch { return false; } };
+const useCopyLink = (username, onCopied) => useCallback(async () => {
   if (!username) { toast.error('Set your username first.'); return; }
   try {
     await navigator.clipboard.writeText(`${window.location.origin}/${username}`);
     toast.success('Booking link copied');
     try { localStorage.setItem(SHARE_KEY, '1'); } catch { /* non-persistent is fine */ }
     markLinkShared();
+    onCopied?.();
   } catch {
     toast.error('Could not copy your link.');
   }
-}, [username]);
+}, [username, onCopied]);
 
 /* ── Your page — booking link with Copy and View. ─────────────────────────── */
 const LinkChip = ({ username, onCopy, className = '' }) => {
@@ -242,31 +244,6 @@ const NeedsYou = ({ queue, go, onResolve }) => (
   </section>
 );
 
-/* ── Shortcuts — the same five controls on phone and desktop. ─────────────── */
-const Shortcuts = ({ go, onCopy }) => {
-  const items = [
-    { icon: Copy, label: 'Copy link', onClick: onCopy, primary: true },
-    { icon: Package, label: 'Services', onClick: () => go('/dashboard/catalog') },
-    { icon: Clock, label: 'Availability', onClick: () => go('/dashboard/availability') },
-    { icon: UserPlus, label: 'Clients', onClick: () => go('/dashboard/clients') },
-    { icon: Star, label: 'Reviews', onClick: () => go('/dashboard/testimonials') },
-  ];
-  return (
-    <nav aria-label="Shortcuts" className="grid grid-cols-5 gap-2 sm:gap-3">
-      {items.map((s) => (
-        <button key={s.label} type="button" onClick={s.onClick}
-          className="group flex flex-col items-center gap-1.5 rounded-[18px] py-1 text-center transition focus-visible:outline-none sm:flex-row sm:gap-3 sm:bg-white sm:px-4 sm:py-3 sm:text-left sm:hover:shadow-[var(--shadow-md)]">
-          <span className={cn('grid h-12 w-12 shrink-0 place-items-center rounded-[16px] transition group-active:scale-95 group-focus-visible:ring-[3px] group-focus-visible:ring-rose sm:h-10 sm:w-10 sm:rounded-[12px]',
-            s.primary ? 'bg-maroon text-white' : 'bg-white text-maroon sm:bg-pink-100')}>
-            <s.icon className="h-5 w-5" strokeWidth={2} />
-          </span>
-          <span className="text-[12px] font-medium text-muted sm:text-[14px] sm:font-semibold sm:text-ink">{s.label}</span>
-        </button>
-      ))}
-    </nav>
-  );
-};
-
 /* ── Week — 7-day strip (pink dot = booked) + the chosen day's bookings. ──── */
 const BookingRow = ({ b, onOpen }) => {
   const past = new Date(b.scheduled_at) < new Date();
@@ -358,13 +335,15 @@ const TodayV2 = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const go = useCallback((to) => navigate(to), [navigate]);
-  const copyLink = useCopyLink(user?.username);
+  const [linkShared, setLinkShared] = useState(readShared);
+  const copyLink = useCopyLink(user?.username, useCallback(() => setLinkShared(true), []));
 
   const [balance, setBalance] = useState(null);
   const [bookings, setBookings] = useState([]);
   const [views, setViews] = useState(null);
   const [kyc, setKyc] = useState(null);
-  const [hasPaidService, setHasPaidService] = useState(true); // assume set up until we know
+  const [hasService, setHasService] = useState(true); // assume set up until we know
+  const [availabilitySet, setAvailabilitySet] = useState(true);
   const [status, setStatus] = useState('loading'); // loading | ready | error
   const [dismissed, setDismissed] = useState([]);
   const [openId, setOpenId] = useState(null);
@@ -380,10 +359,12 @@ const TodayV2 = () => {
       getMyProfileViews().then((r) => Number(r?.data?.views) || 0).catch(() => null),
       getMyKyc().then((r) => r?.data ?? null).catch(() => null),
       getMyServices().then((r) => (Array.isArray(r?.data) ? r.data : null)).catch(() => null),
+      getAvailability().then((r) => r?.data ?? null).catch(() => undefined),
     ])
-      .then(([bal, bk, vw, k, svcs]) => {
+      .then(([bal, bk, vw, k, svcs, avail]) => {
         setBalance(bal?.data ?? null); setBookings(bk); setViews(vw); setKyc(k);
-        if (svcs) setHasPaidService(svcs.some((x) => Number(x.price) > 0 && !x.price_on_request));
+        if (svcs) setHasService(svcs.length > 0);
+        if (avail !== undefined) setAvailabilitySet(!!avail); // undefined = request failed: don't nag
         setStatus('ready');
       })
       .catch(() => setStatus('error'));
@@ -400,7 +381,12 @@ const TodayV2 = () => {
     .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at)), [bookings]);
   const next = upcomingList[0] || null;
 
-  const queue = useMemo(() => buildQueue(bookings, kyc).filter((a) => !dismissed.includes(a.id)), [bookings, kyc, dismissed]);
+  const setupSteps = useMemo(() => buildSetupSteps({ hasService, availabilitySet, user, kyc, linkShared }),
+    [hasService, availabilitySet, user, kyc, linkShared]);
+  const setupOpen = setupSteps.some((s) => !s.done);
+  // While the setup guide shows, it owns payouts/KYC: Needs you doesn't repeat it.
+  const queue = useMemo(() => buildQueue(bookings, kyc)
+    .filter((a) => !dismissed.includes(a.id) && !(setupOpen && a.id === 'kyc')), [bookings, kyc, dismissed, setupOpen]);
   const resolve = (id) => setDismissed((d) => (d.includes(id) ? d : [...d, id]));
 
   const todays = useMemo(() => {
@@ -447,45 +433,55 @@ const TodayV2 = () => {
     );
   }
 
-  // ONE layout for every screen size, in the order a creator needs it: who/what
-  // today, what to act on, the controls they reach for, how it's going, the week.
-  // Phones stack it; wider screens set the same blocks side by side.
+  // ONE layout for every screen size. Spacing does the grouping: 16px inside a
+  // group, 40px between groups (Gestalt proximity), in the order a creator needs
+  // it — who/what today, what to act on, how it's going, the week. Each control
+  // appears once: the booking link lives in the topbar on desktop and here on
+  // phones; "New service" is the rail's primary on desktop and sits beside the
+  // link on phones.
   return (
-    <div className="flex flex-col gap-4 lg:gap-5">
-      <header className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-        <div className="min-w-0">
-          <h1 className="mb-0 font-display text-[28px] font-extrabold leading-[1.05] tracking-[-0.035em] text-maroon sm:text-[34px]">
-            {greeting()}{firstName ? `, ${firstName}` : ''}
-          </h1>
-          <p className="mb-0 mt-1 text-[14px] text-muted sm:text-[15px]">
-            {dateLine} · {queue.length > 0
-              ? <span className="font-semibold text-maroon">{queue.length} thing{queue.length > 1 ? 's' : ''} need{queue.length > 1 ? '' : 's'} you</span>
-              : 'All clear'}
-          </p>
+    <div className="flex flex-col gap-8 lg:gap-10">
+      <div className="flex flex-col gap-4">
+        <header className="flex flex-wrap items-end justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="mb-0 font-display text-[28px] font-extrabold leading-[1.05] tracking-[-0.035em] text-maroon sm:text-[34px]">
+              {greeting()}{firstName ? `, ${firstName}` : ''}
+            </h1>
+            <p className="mb-0 mt-1.5 text-[14px] text-muted sm:text-[15px]">
+              {dateLine} · {queue.length > 0
+                ? <span className="font-semibold text-maroon">{queue.length} thing{queue.length > 1 ? 's' : ''} need{queue.length > 1 ? '' : 's'} you</span>
+                : 'All clear'}
+            </p>
+          </div>
+        </header>
+        <div className="flex items-center gap-2 lg:hidden">
+          <LinkChip username={user?.username} onCopy={copyLink} className="min-w-0 flex-1" />
+          <button type="button" onClick={() => go('/dashboard/service/add-new')} aria-label="New service" title="New service"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-[14px] bg-white text-maroon transition active:scale-95 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
+            <Plus className="h-5 w-5" strokeWidth={2.4} />
+          </button>
         </div>
-        <div className="flex min-w-0 items-center gap-2">
-          <LinkChip username={user?.username} onCopy={copyLink} className="min-w-0 flex-1 lg:w-[340px] lg:flex-none" />
-          {!loading && <GoLiveChecklist kyc={kyc} hasPaidService={hasPaidService} username={user?.username} />}
-        </div>
-      </header>
+        {showPromo && <ProStrip go={go} onClose={() => setPromoClosed(true)} />}
+      </div>
 
-      {showPromo && <ProStrip go={go} onClose={() => setPromoClosed(true)} />}
+      {!loading && setupOpen && <SetupGuide steps={setupSteps} onGo={go} onCopy={copyLink} />}
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.7fr_1fr] lg:gap-5">
+      <section aria-label="Today" className="grid grid-cols-1 gap-4 lg:grid-cols-[1.7fr_1fr] lg:gap-5">
         {loading ? <Skeleton className="h-[220px] rounded-[28px]" /> : <TodayBand todays={todays} next={next} onOpen={setOpenId} onCopy={copyLink} />}
         {loading ? <Skeleton className="h-[220px] rounded-[24px]" /> : <NeedsYou queue={queue} go={go} onResolve={resolve} />}
-      </div>
+      </section>
 
-      <Shortcuts go={go} onCopy={copyLink} />
+      <section aria-labelledby="numbers" className="flex flex-col gap-4">
+        <h2 id="numbers" className="mb-0 font-display text-[20px] font-bold tracking-[-0.02em] text-ink">How it&apos;s going</h2>
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-5">
+          {loading ? [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[124px] rounded-[20px]" />) : metrics}
+        </div>
+      </section>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-5">
-        {loading ? [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[124px] rounded-[20px]" />) : metrics}
-      </div>
-
-      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[1.35fr_1fr] lg:gap-5">
+      <section aria-label="Your week" className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[1.35fr_1fr] lg:gap-5">
         <WeekPanel bookings={bookings} onOpen={setOpenId} go={go} />
         <RecentBookings bookings={bookings} onOpen={setOpenId} go={go} />
-      </div>
+      </section>
 
       <Drawer open={!!openId && !!openBooking} onClose={() => setOpenId(null)} title={openBooking?.guest_name || ''} subtitle={openBooking?.services?.title || ''}>
         {openBooking && (
