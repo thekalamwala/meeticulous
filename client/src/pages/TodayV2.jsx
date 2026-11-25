@@ -11,8 +11,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   AlertTriangle, ArrowRight, CalendarCheck2, CalendarX2, Check, ChevronLeft,
-  ChevronRight, IndianRupee, Package, Share2, ShieldCheck, Star,
-  UserPlus, X,
+  ChevronRight, IndianRupee, Package, Share2, ShieldCheck, Star, TrendingDown,
+  TrendingUp, UserPlus, X,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -20,7 +20,7 @@ import { getPayoutBalance, getHostBookings, getMyProfileViews, getMyKyc } from '
 import { isFreePlan } from '../utils/themeUtils';
 import { Button, EmptyState, ErrorState, Skeleton } from '../components/dashboard/ui';
 import {
-  Avatar, Drawer, PageHeading, Panel, Sparkline, StatusPill, Tile, SourceDonut,
+  Avatar, Drawer, PageHeading, Panel, StatusPill, SourceDonut,
   MeetIcon, WhatsAppIcon, cn, inr, fmtTime, relDay, useLast,
 } from '../components/dashboard/ui/v2';
 
@@ -136,6 +136,48 @@ const PromoMobile = ({ go, onClose }) => (
   </div>
 );
 
+/* ── KPI card — the Host Lab stat card: big value, a raw kit mascot nudged into
+ * the top-right (no border/hover on the image), and a delta-or-hint + "Show
+ * more" footer. Used for the four Today tiles on both layouts, on real values.
+ * The lab's accent (maroon) tile and inline sparkline are dropped here — the
+ * KpiCard treatment is white with a mascot, same as the lab. ──────────────── */
+const KpiCard = ({ img, label, value, delta, deltaLabel, hint, onClick }) => {
+  const up = delta != null && delta >= 0;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex flex-col rounded-2xl border border-neutral-200/80 bg-white p-4 text-left shadow-[0_1px_2px_rgba(43,10,20,0.03),0_8px_24px_-12px_rgba(43,10,20,0.08)] transition hover:border-maroon/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="truncate text-[10.5px] font-bold uppercase tracking-[0.08em] text-ink/45">{label}</p>
+          <p className="mt-1.5 font-display text-[23px] font-extrabold leading-none tracking-[-0.035em] tabular-nums text-ink">{value}</p>
+        </div>
+        <img src={img} alt="" aria-hidden="true" className="pointer-events-none -mr-1.5 -mt-2.5 h-16 w-16 shrink-0 object-contain" />
+      </div>
+      <div className="mt-3 flex items-center justify-between gap-2 border-t border-neutral-100 pt-2.5">
+        <div className="flex min-w-0 items-center gap-1.5">
+          {delta != null ? (
+            <>
+              <span className={cn('inline-flex shrink-0 items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10.5px] font-bold tabular-nums', up ? 'bg-success-bg text-success-fg' : 'bg-error-bg text-error-fg')}>
+                {up ? <TrendingUp className="h-3 w-3" strokeWidth={2.8} /> : <TrendingDown className="h-3 w-3" strokeWidth={2.8} />}
+                {up ? '+' : ''}{delta}%
+              </span>
+              <span className="truncate text-[10.5px] font-medium text-ink/45">{deltaLabel}</span>
+            </>
+          ) : (
+            <span className="truncate text-[11px] font-medium text-ink/45">{hint}</span>
+          )}
+        </div>
+        <span className="inline-flex shrink-0 items-center gap-0.5 text-[11px] font-bold text-ink/60">
+          Show more <ChevronRight className="h-3.5 w-3.5" strokeWidth={2.6} />
+        </span>
+      </div>
+    </button>
+  );
+};
+
 /* ── Mobile Today — the Host Lab mobile redesign, on real data ──────────────
  * Graduated from pages/hostlab/sections/Today.mobile: quick actions, a glance
  * strip, a day-picker + schedule, then where bookings came from. The lab's
@@ -153,7 +195,7 @@ const QUICK_ACTIONS = [
   { icon: Star, label: 'Reviews', to: '/dashboard/testimonials' },
 ];
 
-const TodayMobile = ({ user, go, balance, bookings, views, queue, setDismissed, thisMonth, delta, series, upcoming, sources, money, held, setOpenId, loading, showPromo, onClosePromo }) => {
+const TodayMobile = ({ user, go, balance, bookings, views, queue, setDismissed, thisMonth, delta, upcoming, sources, money, held, setOpenId, loading, showPromo, onClosePromo }) => {
   const [sel, setSel] = useState(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; });
   const stripRef = useRef(null);
   const base = useMemo(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }, []);
@@ -164,6 +206,11 @@ const TodayMobile = ({ user, go, balance, bookings, views, queue, setDismissed, 
   const dayItems = useMemo(() => bookings
     .filter((b) => b.scheduled_at && sameDay(new Date(b.scheduled_at), sel) && lower(b.status) !== 'cancelled')
     .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at)), [bookings, sel]);
+  // Booking dots per day on the slider — real bookings only. The lab also showed
+  // a dash for blocked/travelling days; there is no availability source on this
+  // page yet, so that marker is omitted rather than faked. (ponytail: add the
+  // dash once Today loads host availability.)
+  const countFor = (d) => bookings.filter((b) => b.scheduled_at && sameDay(new Date(b.scheduled_at), d) && lower(b.status) !== 'cancelled').length;
 
   return (
     <div className="flex flex-col gap-3">
@@ -194,16 +241,15 @@ const TodayMobile = ({ user, go, balance, bookings, views, queue, setDismissed, 
         </div>
       </section>
 
-      {/* At a glance — real tiles (the lab's illustrated sprite is dropped) */}
+      {/* At a glance — real values on the Host Lab mascot cards */}
       {loading ? (
-        <div className="grid grid-cols-2 gap-2">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-24 rounded-md" />)}</div>
+        <div className="grid grid-cols-2 gap-2">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-28 rounded-2xl" />)}</div>
       ) : (
         <div className="grid grid-cols-2 gap-2">
-          <Tile accent label="Ready to withdraw" value={money(balance?.available)} hint={`${money(held)} clearing or held`} onClick={() => go('/dashboard/payments/payouts')} />
-          <Tile label="This month" value={inr(thisMonth, { compact: true })} delta={delta ?? undefined} deltaLabel="vs last month"
-            spark={series.some((s) => s.revenue > 0) ? <Sparkline values={series.map((s) => s.revenue)} /> : undefined} onClick={() => go('/dashboard/earnings')} />
-          <Tile label="Upcoming" value={upcoming} hint="Not yet past" onClick={() => go('/dashboard/bookings')} />
-          <Tile label="Page views" value={views == null ? '—' : views.toLocaleString('en-IN')} hint="Public profile" onClick={() => go(user?.username ? `/${user.username}` : '/dashboard/profile')} />
+          <KpiCard img="/brand/host-lab/kpi-withdraw.png" label="Ready to withdraw" value={money(balance?.available)} hint={`${money(held)} clearing or held`} onClick={() => go('/dashboard/payments/payouts')} />
+          <KpiCard img="/brand/host-lab/kpi-month.png" label="This month" value={inr(thisMonth, { compact: true })} delta={delta ?? undefined} deltaLabel="vs last month" onClick={() => go('/dashboard/earnings')} />
+          <KpiCard img="/brand/host-lab/kpi-upcoming.png" label="Upcoming" value={upcoming} hint="Not yet past" onClick={() => go('/dashboard/bookings')} />
+          <KpiCard img="/brand/host-lab/kpi-views.png" label="Page views" value={views == null ? '—' : views.toLocaleString('en-IN')} hint="Public profile" onClick={() => go(user?.username ? `/${user.username}` : '/dashboard/profile')} />
         </div>
       )}
 
@@ -254,6 +300,11 @@ const TodayMobile = ({ user, go, balance, bookings, views, queue, setDismissed, 
                   </span>
                   <span className="whitespace-nowrap font-display text-[13px] font-extrabold leading-none tracking-[-0.02em]">
                     {d.getDate()} {d.toLocaleDateString('en-IN', { month: 'short' })}
+                  </span>
+                  <span aria-hidden="true" className="mt-1 flex h-1.5 items-center gap-0.5">
+                    {Array.from({ length: Math.min(countFor(d), 3) }).map((_, i) => (
+                      <span key={i} className={cn('h-1.5 w-1.5 rounded-full', on ? 'bg-maroon' : 'bg-maroon/55')} />
+                    ))}
                   </span>
                 </button>
               );
@@ -381,7 +432,7 @@ const TodayV2 = () => {
         <TodayMobile
           user={user} go={go} balance={balance} bookings={bookings} views={views}
           queue={queue} setDismissed={setDismissed} thisMonth={thisMonth} delta={delta}
-          series={series} upcoming={upcoming} sources={sources} money={money} held={held}
+          upcoming={upcoming} sources={sources} money={money} held={held}
           setOpenId={setOpenId} loading={status === 'loading'}
           showPromo={showPromo} onClosePromo={() => setPromoClosed(true)}
         />
@@ -401,16 +452,14 @@ const TodayV2 = () => {
 
       {status === 'loading' ? (
         <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
-          {[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-24 rounded-md" />)}
+          {[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-28 rounded-2xl" />)}
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
-          <Tile accent label="Ready to withdraw" value={money(balance?.available)} hint={`${money(held)} clearing or held`} onClick={() => go('/dashboard/payments/payouts')} />
-          <Tile label="This month" value={inr(thisMonth, { compact: true })} delta={delta ?? undefined} deltaLabel="vs last month"
-            spark={series.some((s) => s.revenue > 0) ? <Sparkline values={series.map((s) => s.revenue)} /> : undefined}
-            onClick={() => go('/dashboard/earnings')} />
-          <Tile label="Upcoming" value={upcoming} hint="Not yet past" onClick={() => go('/dashboard/bookings')} />
-          <Tile label="Page views" value={views == null ? '—' : views.toLocaleString('en-IN')} hint="Public profile" onClick={() => go(user?.username ? `/${user.username}` : '/dashboard/profile')} />
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <KpiCard img="/brand/host-lab/kpi-withdraw.png" label="Ready to withdraw" value={money(balance?.available)} hint={`${money(held)} clearing or held`} onClick={() => go('/dashboard/payments/payouts')} />
+          <KpiCard img="/brand/host-lab/kpi-month.png" label="This month" value={inr(thisMonth, { compact: true })} delta={delta ?? undefined} deltaLabel="vs last month" onClick={() => go('/dashboard/earnings')} />
+          <KpiCard img="/brand/host-lab/kpi-upcoming.png" label="Upcoming" value={upcoming} hint="Not yet past" onClick={() => go('/dashboard/bookings')} />
+          <KpiCard img="/brand/host-lab/kpi-views.png" label="Page views" value={views == null ? '—' : views.toLocaleString('en-IN')} hint="Public profile" onClick={() => go(user?.username ? `/${user.username}` : '/dashboard/profile')} />
         </div>
       )}
 
