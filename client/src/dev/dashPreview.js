@@ -16,7 +16,10 @@
 // and log "[dash-preview] no fixture" so it is obvious what to add.
 import { buildFixtures } from './dashPreviewFixtures';
 
-export const DASH_PREVIEW = import.meta.env.DEV && import.meta.env.VITE_DASH_PREVIEW === '1';
+// Never under the test runner: Vitest loads client/.env too, so a developer with
+// the preview switched on would otherwise run every test against fixtures.
+export const DASH_PREVIEW = import.meta.env.DEV && import.meta.env.MODE !== 'test'
+  && import.meta.env.VITE_DASH_PREVIEW === '1';
 
 export function installDashPreview(api) {
   if (!DASH_PREVIEW) return;

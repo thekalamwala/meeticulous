@@ -6,6 +6,12 @@ import axios from 'axios';
 afterEach(() => { vi.unstubAllEnvs(); vi.resetModules(); localStorage.clear(); });
 
 describe('dashPreview', () => {
+  it('stays off under the test runner even when .env switches it on', async () => {
+    vi.stubEnv('VITE_DASH_PREVIEW', '1');
+    const { DASH_PREVIEW } = await import('../dashPreview');
+    expect(DASH_PREVIEW).toBe(false);
+  });
+
   it('does nothing unless VITE_DASH_PREVIEW=1', async () => {
     vi.stubEnv('VITE_DASH_PREVIEW', '');
     const { installDashPreview, DASH_PREVIEW } = await import('../dashPreview');
@@ -19,6 +25,7 @@ describe('dashPreview', () => {
 
   it('answers from fixtures and swallows writes when on', async () => {
     vi.stubEnv('VITE_DASH_PREVIEW', '1');
+    vi.stubEnv('MODE', 'development');
     const { installDashPreview } = await import('../dashPreview');
     const api = axios.create({ baseURL: 'http://localhost:9/api' });
     installDashPreview(api);
