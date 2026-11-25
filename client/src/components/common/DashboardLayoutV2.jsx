@@ -40,6 +40,7 @@ import {
 import { NotifBell, ProfileMenu } from './DashboardLayout';
 import { GROUPS } from './dashboardV2Groups';
 import MobileTabBar from './MobileTabBar';
+import useDashboardChrome from '../../hooks/useDashboardChrome';
 import KycNudgeStrip from '../dashboard/KycNudgeStrip';
 import PullToRefresh from '../dashboard/ui/PullToRefresh';
 import { RefreshProvider } from '../dashboard/ui/refreshContext';
@@ -267,9 +268,11 @@ const DashboardLayoutV2 = ({ children }) => {
   const [navOpen, setNavOpen] = useState(false);
   const [railCollapsed, toggleRail] = useRailState();
   const navTriggerRef = useRef(null);
-  const mainRef = useRef(null);
 
-  useEffect(() => { setNavOpen(false); mainRef.current?.scrollTo?.({ top: 0 }); }, [pathname]);
+  // The window scrolls in this shell (<main> is min-h, not a scroll container), so
+  // reset the window on navigation, not <main>.
+  useEffect(() => { setNavOpen(false); window.scrollTo({ top: 0 }); }, [pathname]);
+  useDashboardChrome();
 
   const plan = normalizePlan(user?.plan);
   const initial = (user?.name || user?.email || 'U').trim().charAt(0).toUpperCase();
@@ -343,8 +346,10 @@ const DashboardLayoutV2 = ({ children }) => {
         {/* Content — offset by the fixed rail on lg+. */}
         <div className={cn('transition-[padding] duration-200', railCollapsed ? 'lg:pl-[56px]' : 'lg:pl-[200px]')}>
           <TopbarV2 onOpenNav={() => setNavOpen(true)} user={user} plan={plan} initial={initial} logout={logout} />
-          <main ref={mainRef} className="min-h-[calc(100dvh-44px)]">
-            <PullToRefresh scrollerRef={mainRef}>
+          <main className="min-h-[calc(100dvh-44px)]">
+            {/* No scrollerRef: the window scrolls here. Passing <main> made scrollTop read 0
+                on every drag, so scrolling back UP on a phone was hijacked into a refresh. */}
+            <PullToRefresh>
               <div className="mx-auto w-full max-w-[1180px] px-2.5 pb-20 pt-3.5 sm:px-4 lg:pb-7">
                 <KycNudgeStrip />
                 <PageTransition>{children}</PageTransition>

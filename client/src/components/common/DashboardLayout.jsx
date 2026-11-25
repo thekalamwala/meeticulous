@@ -15,6 +15,7 @@ import { cn } from '../dashboard/ui/cn';
 import { PageTransition } from '../dashboard/ui/PageTransition';
 import ConsoleSidebar from './ConsoleSidebar';
 import MobileTabBar from './MobileTabBar';
+import useDashboardChrome from '../../hooks/useDashboardChrome';
 import KycNudgeStrip from '../dashboard/KycNudgeStrip';
 import PullToRefresh from '../dashboard/ui/PullToRefresh';
 import { RefreshProvider } from '../dashboard/ui/refreshContext';
@@ -515,6 +516,7 @@ const DashTopbar = ({ user, plan, planStyle, initial, logout }) => (
 
 const DashboardLayout = ({ children }) => {
   const { user, logout } = useAuth();
+  useDashboardChrome();
   const { pathname } = useLocation();
 
   const [navOpen, setNavOpen] = useState(false);

@@ -304,6 +304,24 @@ Numbers are the hero — a balance/price is the biggest glyph on its card.
 
 ---
 
+### 7.1 Platform baseline (global — already shipped, don't redo per page)
+Set once for the whole client, guarded by `client/src/tests/mobileNativeBaseline.test.jsx`
+(checklist: emilkowalski/skills · mobile-native):
+- `viewport-fit=cover` in `index.html`, so `env(safe-area-inset-*)` is real. Anything fixed
+  to the bottom edge pads by `env(safe-area-inset-bottom,0px)`.
+- `hoverOnlyWhenSupported` in `tailwind.config.js`: `hover:` styles apply only on devices
+  that can hover. **A control revealed only on hover must also show on touch** —
+  add `[@media(hover:none)]:opacity-100`.
+- `index.css`: no tap highlight, `touch-action: manipulation` on controls, no label
+  selection on long-press, inputs 16px on touch screens (no iOS zoom), press opacity
+  on touch.
+- `useDashboardChrome()` in both dashboard shells: cream status bar, and no browser
+  pull-to-refresh (the dashboard has its own `PullToRefresh`).
+- `PullToRefresh` gets `scrollerRef` **only** when that element is the real scroll
+  container. In `DashboardLayoutV2` the window scrolls, so it takes none.
+- Still to confirm on a real phone each release: sticky hover, input zoom, safe areas,
+  keyboard. Chrome device mode reproduces none of them.
+
 ## 8. Anti-patterns (reads as "website on a phone")
 
 - ❌ Top navigation bar / hamburger as the main nav.

@@ -379,7 +379,7 @@ export default function EarningsCalculator() {
       </div>
 
       {/* Sticky CTA on mobile */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur sm:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] backdrop-blur sm:hidden">
         <Link to={ROUTE_START} className="flex items-center justify-center gap-1.5 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white">
           Start on {winner.plan.name} <ArrowRight size={16} />
         </Link>
