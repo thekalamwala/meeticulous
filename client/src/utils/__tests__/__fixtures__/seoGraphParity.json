@@ -136,7 +136,13 @@
             "en",
             "hi"
           ]
-        }
+        },
+        "sameAs": [
+          "https://www.linkedin.com/company/meeticulous",
+          "https://www.instagram.com/meeticulousapp",
+          "https://www.facebook.com/meeticulousapp",
+          "https://x.com/meeticulous"
+        ]
       },
       {
         "@type": "ProfilePage",
@@ -290,7 +296,13 @@
             "en",
             "hi"
           ]
-        }
+        },
+        "sameAs": [
+          "https://www.linkedin.com/company/meeticulous",
+          "https://www.instagram.com/meeticulousapp",
+          "https://www.facebook.com/meeticulousapp",
+          "https://x.com/meeticulous"
+        ]
       },
       {
         "@type": "Service",
@@ -419,7 +431,13 @@
             "en",
             "hi"
           ]
-        }
+        },
+        "sameAs": [
+          "https://www.linkedin.com/company/meeticulous",
+          "https://www.instagram.com/meeticulousapp",
+          "https://www.facebook.com/meeticulousapp",
+          "https://x.com/meeticulous"
+        ]
       },
       {
         "@type": "Product",

@@ -420,10 +420,16 @@ export const resolveBlogSeo = ({ post = {}, siteUrl = SITE_URL } = {}) => {
 // ── Shared brand / page builders ─────────────────────────────────────────────
 
 // Official brand profiles — used for Organization.sameAs (entity disambiguation
-// for SEO/GEO).
-// Empty until the company accounts exist (planned for the next deployment):
-// LinkedIn, Instagram, Facebook, X. Keep in sync with the Footer social links.
-export const ORG_SAME_AS = [];
+// for SEO/GEO). Feeds orgNode(), so every page that inlines the canonical
+// Organization (home, /for/*, /compare, product, blog) gets the same identity
+// links. Founder-supplied, verified live accounts. Keep in sync with the Footer
+// social links.
+export const ORG_SAME_AS = [
+  'https://www.linkedin.com/company/meeticulous',
+  'https://www.instagram.com/meeticulousapp',
+  'https://www.facebook.com/meeticulousapp',
+  'https://x.com/meeticulous',
+];
 
 // Legal entity + a support contact point. Source of truth is the company's own
 // published legal pages (/privacy, /terms) — Rajmudra Media LLP since 2026-10-31
