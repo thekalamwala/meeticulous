@@ -35,11 +35,11 @@ describe('DashboardKycBanner (pre-earnings KYC push)', () => {
 });
 
 describe('DashboardKycBanner (money waiting)', () => {
-  const waiting = /waiting — finish KYC to withdraw/i;
+  const waiting = /is waiting for you/i;
 
-  it('shows "₹X waiting — finish KYC" when earned but not approved/payouts-ready', () => {
+  it('shows "₹X is waiting for you" when earned but not approved/payouts-ready', () => {
     setup({ kyc: { status: 'not_started', pending_earnings: 2500, payouts_ready: false }, hasPaidService: true });
-    expect(screen.getByText(/₹2,500 waiting — finish KYC to withdraw/i)).toBeInTheDocument();
+    expect(screen.getByText(/₹2,500 is waiting for you/i)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Finish KYC/i })).toHaveAttribute('href', '/dashboard/kyc');
   });
 

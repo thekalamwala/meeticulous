@@ -16,7 +16,8 @@ Direction: **Loop & Slot**. A rounded calendar slot is the layout module, the ee
 
 - At most two grounds per page section: cream + maroon, or cream + blush.
 - Body text is ink or maroon. Rose is never used for body text.
-- No gradients, glassmorphism, blur, 3D blobs, neon or purple/blue.
+- No gradients, glassmorphism, blur, 3D blobs, neon or purple/blue. **One exception:** the four
+  official plush mascots (see *Product UI — Kept* below) are 3D and multicoloured by design.
 - Proportion: cream 45 · maroon 20 · blush 15 · ink 10 · pink 5 · rose 3 · marigold 2.
 - **Community topic pills are the one multicoloured surface** (`.mt-topic--1..8`): a topic
   hashes its name to a fixed tone so the same topic is always the same colour. The tones are
@@ -76,6 +77,29 @@ Direction: **Loop & Slot**. A rounded calendar slot is the layout module, the ee
 - **Meeting** only for an actual video call ("Google Meet link"). It hides that the guest pays.
 - Never rename code or data for this: the `bookings` table and API stay.
 
+## Product UI — Kept (dashboard, approved 2026-11-25)
+The host dashboard follows **Kept**: the brand stays maroon; the structure borrows from the
+best SaaS consoles (a tinted page with white cards, one focal band per page, big type, real
+imagery). Pitch and guidelines: claude.ai/artifact/VKsrB9rmuxv2BN5rd3gGBH.
+- **Grounds:** cream page + white cards. Cards have **no border** and a 24px radius (20 for
+  metric tiles, 32 for the band). A card never holds a bordered card. Hairlines only between rows.
+- **Insight band** (`InsightBand` in `client/src/components/dashboard/ui/v2.jsx`): maroon-700 +
+  loop pattern + the page's ONE ee thread + at most one mascot. Once per page, at the top. Its
+  headline is a sentence built from real figures; at most two actions.
+- **Type floor:** nothing under 12px. Page title 28/34px, card title 18/20px, metric 24/28px,
+  body 14–15px, meta 12.5–13px. No uppercase labels except the band's eyebrow.
+- **Maroon means act or matters:** actions, the active nav item, the band, a featured metric's
+  ring. Never a filled maroon stat tile.
+- **Notices** are a white card with a blush icon chip, one sentence and one button, never a
+  full-width coloured banner.
+- **Mascots** (`client/public/about/mascot-*.png`, 400px sources): purple star = Intelligence /
+  Pro, orange panda = Money / KYC, blue axolotl = Bookings / Today, green sprout = Grow / first
+  steps. One per screen, ≥96px, only in bands, empty states, Pro previews, onboarding and
+  celebrations. Never beside a number, in a data card or in a table. Never recolour or crop
+  through the face.
+- **Charts:** one hue (maroon-600); a second series or deduction is rose-500. Human labels
+  ("Oct", "Mon", "9 am"), 11px minimum, every chart has a tooltip.
+
 ## Before shipping any page, check
 - [ ] Only tokens, no stray hexes or fonts
 - [ ] At most one thread, at most one serif phrase
@@ -85,3 +109,4 @@ Direction: **Loop & Slot**. A rounded calendar slot is the layout module, the ee
 - [ ] Focus ring visible on every interactive element
 - [ ] Official logo files used, untouched
 - [ ] Visit is called what the customer calls it (appointment / session / booking)
+- [ ] Dashboard: no text under 12px, no bordered cards, at most one band and one mascot

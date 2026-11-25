@@ -246,16 +246,21 @@ Promo strip that auto-advances with dot indicators. Dots: filled = current.
 
 ## 4. Type & number scale (mobile)
 
-Bigger than web. Suggested:
+Kept scale (2026-11-25). Replaces the earlier 10–12px scale, which was the main
+reason the dashboard read small on phones. **Floor: 12px.**
 
 | Role | Size | Token |
 |---|---|---|
-| Hero number | 30–40px | `font-display` 800 |
-| Screen title | 18–22px | `font-display` 800, maroon |
-| Section heading | 13–15px | `font-display` 700 |
-| Card title | 12–13px | `font-sans` 700 |
-| Body / subtitle | 11–12px | `font-sans` 500, ink/55 |
-| Caption / label | 10–10.5px | `font-sans` 600 |
+| Screen title (large) | 28px → 20px when collapsed on scroll | `font-display` 800, maroon |
+| Band headline | 24px | `font-display` 800 |
+| Metric / hero number | 24–28px | `font-display` 800, tabular |
+| Card title | 18px | `font-display` 700 |
+| Body / row title | 14–14.5px | `font-sans` 500–600 |
+| Meta / subtitle | 12.5–13px | `font-sans` 400, `text-muted` / `text-faint` |
+| Tab bar label, eyebrow | 11–12px | `font-sans` 500–600 |
+
+Grey text uses `text-muted` (neutral-600) or `text-faint` (neutral-500) — never `text-ink/45`-style
+opacities.
 
 Numbers are the hero — a balance/price is the biggest glyph on its card.
 

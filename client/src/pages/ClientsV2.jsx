@@ -362,7 +362,7 @@ const ClientsV2 = () => {
 
   if (gated) {
     return (
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-4 sm:gap-6">
         <PageHeading title="Clients" />
         <ProTeaser title="Unlock Clients" sub={`See every client's booking history, total spend and private notes — upgrade to ${PREMIUM_PLAN.name} to unlock your client list.`} src="crm">
           <ul className="divide-y divide-black/5">
@@ -379,7 +379,7 @@ const ClientsV2 = () => {
   }
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-4 sm:gap-6">
       <PageHeading
         title="Clients"
         sub={`${total} ${total === 1 ? 'client' : 'clients'}`}

@@ -124,7 +124,7 @@ const BookingsV2 = () => {
   const today = new Date();
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-4 sm:gap-6">
       <PageHeading title="Bookings" sub={loading ? 'Loading…' : `${bookings.length} booking${bookings.length === 1 ? '' : 's'}`} />
 
       <div className="grid grid-cols-3 gap-2 sm:gap-3">

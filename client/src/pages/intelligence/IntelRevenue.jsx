@@ -28,17 +28,17 @@ const IntelRevenue = () => {
   );
 
   if (err) {
-    return <div className="flex flex-col gap-2.5">{header}<ErrorState message="Couldn't load your revenue." onRetry={load} /></div>;
+    return <div className="flex flex-col gap-4 sm:gap-6">{header}<ErrorState message="Couldn't load your revenue." onRetry={load} /></div>;
   }
   if (data === null) {
-    return <div className="flex flex-col gap-2.5">{header}<Skeleton className="h-28 rounded-xl" /><Skeleton className="h-64 rounded-xl" /></div>;
+    return <div className="flex flex-col gap-4 sm:gap-6">{header}<Skeleton className="h-28 rounded-xl" /><Skeleton className="h-64 rounded-xl" /></div>;
   }
 
   const { summary: s, settlement, byService = [], byMonth = [], concentration: conc, upcoming, withholding: w } = data;
 
   if (!s || s.bookings === 0) {
     return (
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-4 sm:gap-6">
         {header}
         <div className="flex flex-col items-center gap-1.5 rounded-lg border-2 border-neutral-200 bg-white py-12 text-center">
           <TrendingUp className="h-6 w-6 text-maroon/30" strokeWidth={1.8} />
@@ -55,7 +55,7 @@ const IntelRevenue = () => {
   const monthChart = byMonth.map((m) => ({ ...m, month: m.month.slice(2) }));
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-4 sm:gap-6">
       {header}
 
       {s.derivedLeads && (
@@ -64,7 +64,7 @@ const IntelRevenue = () => {
         </p>
       )}
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
         <Tile label="Net revenue" value={inr(s.net, { compact: true })} accent hint="After fees, tax and refunds" />
         <Tile label="Gross" value={inr(s.gross, { compact: true })} hint="What guests paid" />
         <Tile label="Paid bookings" value={s.bookings} hint={`Avg ${inr(s.aov)} per booking`} />
@@ -72,7 +72,7 @@ const IntelRevenue = () => {
       </div>
 
       <Panel title="Where the gross went" subtitle="Every deduction, all paid bookings">
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
           <Tile label="Commission" value={inr(s.commission + s.commissionGst, { compact: true })} hint="Including GST" />
           <Tile label="Platform fee" value={inr(s.platformFee + s.platformFeeGst, { compact: true })} hint="Including GST" />
           <Tile label="Payment gateway" value={inr(s.razorpayFee, { compact: true })} hint="Fee and tax" />
@@ -80,7 +80,7 @@ const IntelRevenue = () => {
         </div>
       </Panel>
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3">
         {settlement && <Tile label="Settled" value={inr(settlement.settled, { compact: true })} hint="Paid out to you" />}
         {settlement && <Tile label="Pending payout" value={inr(settlement.pending, { compact: true })} hint="Paid by guests, not yet settled" />}
         {upcoming && <Tile label="Confirmed, unpaid" value={inr(upcoming.value, { compact: true })} hint={plural(upcoming.bookings, 'booking')} />}

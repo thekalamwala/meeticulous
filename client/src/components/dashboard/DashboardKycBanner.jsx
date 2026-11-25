@@ -3,27 +3,30 @@ import { ShieldCheck, Wallet } from 'lucide-react';
 
 const rupees = (n) => `₹${Math.round(Number(n) || 0).toLocaleString('en-IN')}`;
 
+// Kept notice: a white card on the cream page, a blush icon chip, one sentence and
+// one maroon button. It replaces the full-width coloured banner, which added a third
+// ground colour to every page and took a quarter of the first phone screen.
+// Marigold is reserved for open time slots, and green for status words.
 const Banner = ({ tone, Icon, title, body }) => (
-  <div className={`mb-5 flex items-start gap-3 rounded-md border p-4 ${tone.box}`}>
-    <Icon className={`mt-0.5 h-5 w-5 shrink-0 ${tone.icon}`} strokeWidth={2.25} />
+  <div className="mb-4 flex items-center gap-3 rounded-[20px] bg-white p-3 sm:mb-6 sm:gap-4 sm:p-4">
+    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-blush text-maroon">
+      <Icon className="h-5 w-5" strokeWidth={2} />
+    </span>
     <div className="min-w-0 flex-1">
-      <p className="text-sm font-semibold text-neutral-900">{title}</p>
-      <p className="mt-0.5 text-xs text-neutral-600">{body}</p>
+      <p className="mb-0 text-[14px] font-semibold leading-snug text-ink">{title}</p>
+      <p className="mb-0 mt-0.5 hidden text-[13px] text-muted sm:block">{body}</p>
     </div>
     <Link
       to="/dashboard/kyc"
-      className={`shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-bold text-white transition-colors ${tone.cta}`}
+      className="shrink-0 whitespace-nowrap rounded-full bg-maroon px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose"
     >
       {tone.label}
     </Link>
   </div>
 );
 
-// Brand tokens (Loop & Slot). WARN = marigold = the design system's warning surface
-// (matches Badge `warning` + the --warning token). CASH = c-emerald (positive/money).
-// CTAs are maroon except the money banner, which keeps the positive emerald.
-const WARN = { box: 'border-marigold-300 bg-marigold-100', icon: 'text-marigold-800', cta: 'bg-maroon hover:bg-maroon-dark', label: 'Verify now' };
-const CASH = { box: 'border-c-emerald/30 bg-c-emerald/10', icon: 'text-c-emerald', cta: 'bg-c-emerald hover:opacity-90', label: 'Finish KYC' };
+const WARN = { label: 'Verify now' };
+const CASH = { label: 'Finish KYC' };
 
 /**
  * DashboardKycBanner — KYC nudge on the host dashboard home.
@@ -53,8 +56,8 @@ export default function DashboardKycBanner({ kyc, hasPaidService }) {
       <Banner
         tone={CASH}
         Icon={Wallet}
-        title={`You have ${rupees(kyc.pending_earnings)} waiting — finish KYC to withdraw`}
-        body="Your earnings are held safely. Complete the one-time verification (PAN + bank) and we'll release them to your account."
+        title={`${rupees(kyc.pending_earnings)} is waiting for you`}
+        body="Verify your PAN and bank once and we'll release it to your account."
       />
     );
   }

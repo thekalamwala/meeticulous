@@ -58,14 +58,14 @@ const PayoutsV2 = () => {
   );
 
   if (loading) {
-    return <div className="flex flex-col gap-2.5">{header}<Skeleton className="h-20 rounded-xl" /><Skeleton className="h-64 rounded-xl" /></div>;
+    return <div className="flex flex-col gap-4 sm:gap-6">{header}<Skeleton className="h-20 rounded-xl" /><Skeleton className="h-64 rounded-xl" /></div>;
   }
   if (error) {
-    return <div className="flex flex-col gap-2.5">{header}<ErrorState message="Couldn't load your payout data." onRetry={load} /></div>;
+    return <div className="flex flex-col gap-4 sm:gap-6">{header}<ErrorState message="Couldn't load your payout data." onRetry={load} /></div>;
   }
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-4 sm:gap-6">
       {header}
 
       {kycApproved ? (

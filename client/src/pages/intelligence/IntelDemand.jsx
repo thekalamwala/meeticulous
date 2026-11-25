@@ -28,12 +28,12 @@ const IntelDemand = () => {
     </>
   );
 
-  if (err) return <div className="flex flex-col gap-2.5">{header}<ErrorState message="Couldn't load your demand." onRetry={load} /></div>;
-  if (data === null) return <div className="flex flex-col gap-2.5">{header}<Skeleton className="h-28 rounded-xl" /><Skeleton className="h-64 rounded-xl" /></div>;
+  if (err) return <div className="flex flex-col gap-4 sm:gap-6">{header}<ErrorState message="Couldn't load your demand." onRetry={load} /></div>;
+  if (data === null) return <div className="flex flex-col gap-4 sm:gap-6">{header}<Skeleton className="h-28 rounded-xl" /><Skeleton className="h-64 rounded-xl" /></div>;
 
   if (data.locked) {
     return (
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-4 sm:gap-6">
         {header}
         <section className="flex flex-col gap-2 rounded-lg border-2 border-maroon/20 bg-blush/60 p-3">
           <div className="flex items-center gap-1.5">
@@ -58,10 +58,10 @@ const IntelDemand = () => {
   );
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-4 sm:gap-6">
       {header}
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3">
         <Tile label="Repeat guests" value={retention?.repeatGuestPct == null ? '—' : pct(retention.repeatGuestPct)} accent hint="Booked more than once" />
         <Tile label="Bookings per guest" value={retention?.avgBookingsPerGuest == null ? '—' : Number(retention.avgBookingsPerGuest).toFixed(1)} hint="Average" />
         {leadTimeDays != null && <Tile label="Lead time" value={`${leadTimeDays} days`} hint="Booked ahead, on average" />}
