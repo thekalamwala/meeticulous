@@ -37,9 +37,10 @@ import { PageTransition } from '../dashboard/ui/PageTransition';
 import {
   visibleSections, resolveActive, firstItemTo, isLocked, computeBadges, isLeafSection,
 } from './ConsoleSidebar';
-import { NotifBell, ProfileMenu } from './DashboardLayout';
+import { ProfileMenu } from './DashboardLayout';
 import { GROUPS } from './dashboardV2Groups';
 import MobileTabBar from './MobileTabBar';
+import NotificationsDrawer from './NotificationsDrawer';
 import useDashboardChrome from '../../hooks/useDashboardChrome';
 import KycNudgeStrip from '../dashboard/KycNudgeStrip';
 import PullToRefresh from '../dashboard/ui/PullToRefresh';
@@ -272,7 +273,7 @@ const TopbarV2 = ({ onOpenNav, user, plan, planStyle, initial, logout, onHome })
         className="grid h-10 w-10 place-items-center rounded-[12px] bg-white text-muted transition-colors hover:text-maroon">
         <LifeBuoy className="h-[19px] w-[19px]" strokeWidth={1.8} />
       </Link>
-      <NotifBell />
+      <NotificationsDrawer />
       <div className="hidden lg:block">
         <ProfileMenu user={user} plan={plan} planStyle={planStyle} initial={initial} logout={logout} identity
           triggerClassName="flex h-12 max-w-[260px] items-center gap-2.5 rounded-[14px] bg-white py-1.5 pl-1.5 pr-3 transition hover:bg-pink-100"

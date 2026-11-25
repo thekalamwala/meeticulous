@@ -11,19 +11,20 @@
 // One layout for phone and desktop (founder, 2026-11-25: the two must not look
 // like different dashboards). Same blocks in the same order; phones stack them,
 // desktop sets them side by side. Order follows what a creator needs on login:
-// greeting (topbar), needs your attention, next booking + today's schedule, the
+// greeting (topbar), a one-line pointer to Needs your attention (the queue lives in
+// the notifications drawer), next booking + today's schedule, the
 // week + numbers, recent bookings, setup (onboarding), then link + Pro (secondary).
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  AlertTriangle, ArrowRight, CalendarCheck2, Check, Copy, IndianRupee,
-  Link2, ShieldCheck, Wallet, X,
+  ArrowRight, Copy, Link2, Wallet, X,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { getPayoutBalance, getHostBookings, getMyProfileViews, getMyKyc, getMyServices, getAvailability, markLinkShared } from '../services/api';
 import { isFreePlan } from '../utils/themeUtils';
 import SetupGuide, { buildSetupSteps } from '../components/dashboard/SetupGuide';
+import { buildQueue, readHandled, HANDLED_EVENT, openNotifications } from '../utils/attentionQueue';
 import { Button, ErrorState, Skeleton } from '../components/dashboard/ui';
 import {
   Avatar, Drawer, InsightBand, Panel, Sparkline, StatusPill, Tile,
@@ -73,27 +74,9 @@ export const statusByMonth = (bookings, now = new Date()) => {
   return out;
 };
 
-// Real "needs you" items derived from bookings + kyc. Hardest first.
-export const buildQueue = (bookings, kyc, now = Date.now()) => {
-  const q = [];
-  const kycStatus = lower(kyc?.status || kyc?.kyc_status);
-  if (kycStatus && !['approved', 'verified'].includes(kycStatus)) {
-    const held = Number(kyc?.pending_earnings) || 0;
-    q.push({ id: 'kyc', kind: 'kyc', urgency: 'now', title: 'Verify to get paid',
-      detail: held > 0 ? `${inr(held)} is held until your PAN and bank are verified.` : 'Payouts are locked until verification is approved.',
-      cta: 'Verify now', to: '/dashboard/kyc' });
-  }
-  const pending = bookings.filter((b) => lower(b.status) === 'pending' && new Date(b.scheduled_at) > now - DAY);
-  if (pending.length) {
-    q.push({ id: 'confirm', kind: 'confirm', urgency: 'now', title: `${pending.length} booking${pending.length > 1 ? 's' : ''} to confirm`, detail: pending.slice(0, 2).map((b) => b.guest_name || 'Guest').join(', '), cta: 'Review', to: '/dashboard/bookings' });
-  }
-  const unpaid = bookings.filter((b) => lower(b.payment_status) === 'unpaid' && amountOf(b) > 0 && ['completed', 'confirmed'].includes(lower(b.status)));
-  if (unpaid.length) {
-    const owed = unpaid.reduce((n, b) => n + amountOf(b), 0);
-    q.push({ id: 'unpaid', kind: 'unpaid', urgency: 'today', title: `${unpaid.length} unpaid booking${unpaid.length > 1 ? 's' : ''}`, detail: `${inr(owed)} not yet collected`, cta: 'See', to: '/dashboard/bookings' });
-  }
-  return q;
-};
+// The action queue now lives in utils/attentionQueue (shared with the notifications
+// drawer); re-exported so existing imports keep working.
+export { buildQueue };
 
 // "Monday", "tomorrow", "later today" or "on 12 Dec" — how a person says when.
 export const whenWord = (iso, now = new Date()) => {
@@ -105,8 +88,6 @@ export const whenWord = (iso, now = new Date()) => {
   return `on ${d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`;
 };
 
-const KIND_ICON = { kyc: ShieldCheck, confirm: CalendarCheck2, unpaid: IndianRupee };
-const URGENCY = { now: ['Now', 'bg-error-bg text-error-fg'], today: ['Today', 'bg-warning-bg text-warning-fg'], this_week: ['This week', 'bg-neutral-100 text-muted'] };
 
 const waLink = (phone) => { const d = (phone || '').replace(/\D/g, ''); return d ? `https://wa.me/${d}` : null; };
 const sameDay = (a, b) => a.toDateString() === b.toDateString();
@@ -205,42 +186,18 @@ const TodayBand = ({ todays, next, onOpen, onCopy }) => {
   return <InsightBand eyebrow={eyebrow} title={title} sub={sub} actions={actions} mascot="blue" className="sm:py-7" />;
 };
 
-/* ── Needs you — the action queue, compact rows with the action inline. ───── */
-const NeedsYou = ({ queue, go, onResolve }) => (
-  <section className={cn(card, 'flex flex-col gap-3 p-5')} aria-labelledby="needs-you">
-    <div className="flex items-center justify-between gap-2">
-      <h2 id="needs-you" className="mb-0 font-display text-[18px] font-bold tracking-[-0.02em] text-ink">Needs your attention</h2>
-      {queue.length > 0 && <span className="rounded-[8px] bg-maroon px-2.5 py-0.5 text-[12px] font-semibold tabular-nums text-white">{queue.length}</span>}
-    </div>
-    {queue.length === 0 ? (
-      <p className="mb-0 flex flex-1 items-center gap-2 rounded-[16px] bg-cream p-4 text-[14px] font-medium text-success-fg">
-        <Check className="h-4 w-4 shrink-0" strokeWidth={2.6} /> All clear. Nothing needs you right now.
-      </p>
-    ) : (
-      <ul className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-        {queue.map((a) => {
-          const Icon = KIND_ICON[a.kind] || AlertTriangle;
-          const [word, cls] = URGENCY[a.urgency] || URGENCY.this_week;
-          return (
-            <li key={a.id} className="flex items-center gap-3 rounded-[16px] bg-cream p-3">
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-white text-maroon"><Icon className="h-5 w-5" strokeWidth={2} /></span>
-              <div className="min-w-0 flex-1">
-                <p className="mb-0 flex flex-wrap items-center gap-x-2 text-[14.5px] font-semibold leading-snug text-ink">
-                  {a.title} <span className={cn('rounded-[6px] px-1.5 text-[11px] font-semibold', cls)}>{word}</span>
-                </p>
-                <p className="mb-0 truncate text-[13px] text-muted" title={a.detail}>{a.detail}</p>
-              </div>
-              <Button size="sm" onClick={() => go(a.to)}>{a.cta}</Button>
-              <button type="button" onClick={() => onResolve(a.id)} aria-label={`Mark "${a.title}" handled`} title="Mark handled"
-                className="hidden h-8 w-8 shrink-0 place-items-center rounded-[10px] text-faint transition hover:bg-white hover:text-success-fg focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose sm:grid">
-                <Check className="h-4 w-4" strokeWidth={2.6} />
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    )}
-  </section>
+/* ── Attention line — the one pointer left on Today; the queue itself lives in
+ * the notifications drawer (founder pick, 2026-11-25). Hidden when all clear. ── */
+const AttentionLine = ({ queue }) => (
+  <button type="button" onClick={openNotifications}
+    className="flex w-full items-center gap-3 rounded-[16px] bg-white px-4 py-3 text-left transition hover:bg-pink-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
+    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-maroon text-[13px] font-semibold tabular-nums text-white">{queue.length}</span>
+    <span className="min-w-0 flex-1">
+      <span className="block text-[14.5px] font-semibold text-ink">{queue.length === 1 ? '1 thing needs' : `${queue.length} things need`} your attention</span>
+      <span className="block truncate text-[13px] text-muted">{queue.map((a) => a.title).join(' · ')}</span>
+    </span>
+    <ArrowRight className="h-5 w-5 shrink-0 text-maroon" strokeWidth={2.2} />
+  </button>
 );
 
 /* ── Week — 7-day strip (pink dot = booked) + the chosen day's bookings. ──── */
@@ -356,7 +313,7 @@ const TodayV2 = () => {
   const [hasService, setHasService] = useState(true); // assume set up until we know
   const [availabilitySet, setAvailabilitySet] = useState(true);
   const [status, setStatus] = useState('loading'); // loading | ready | error
-  const [dismissed, setDismissed] = useState([]);
+  const [handled, setHandled] = useState(readHandled);
   const [openId, setOpenId] = useState(null);
   const [promoClosed, setPromoClosed] = useState(false);
   // Upsell Pro only to free-plan hosts; dismissible for the session.
@@ -395,8 +352,12 @@ const TodayV2 = () => {
   const setupSteps = useMemo(() => buildSetupSteps({ hasService, availabilitySet, user, kyc, linkShared }),
     [hasService, availabilitySet, user, kyc, linkShared]);
   const setupOpen = setupSteps.some((s) => !s.done);
-  const queue = useMemo(() => buildQueue(bookings, kyc).filter((a) => !dismissed.includes(a.id)), [bookings, kyc, dismissed]);
-  const resolve = (id) => setDismissed((d) => (d.includes(id) ? d : [...d, id]));
+  useEffect(() => {
+    const sync = () => setHandled(readHandled());
+    window.addEventListener(HANDLED_EVENT, sync);
+    return () => window.removeEventListener(HANDLED_EVENT, sync);
+  }, []);
+  const queue = useMemo(() => buildQueue(bookings, kyc).filter((a) => !handled.includes(a.id)), [bookings, kyc, handled]);
 
   const todays = useMemo(() => {
     const t = new Date().toDateString();
@@ -448,7 +409,7 @@ const TodayV2 = () => {
   const sk = (h) => <Skeleton className={cn(h, 'rounded-[24px]')} />;
   return (
     <div className="flex flex-col gap-8 lg:gap-10">
-      {loading ? sk('h-[120px]') : <NeedsYou queue={queue} go={go} onResolve={resolve} />}
+      {!loading && queue.length > 0 && <AttentionLine queue={queue} />}
 
       <section aria-label="Today" className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr] lg:gap-5">
         {loading ? sk('h-[220px]') : <TodayBand todays={todays} next={next} onOpen={setOpenId} onCopy={copyLink} />}
