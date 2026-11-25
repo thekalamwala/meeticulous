@@ -316,7 +316,7 @@ const PhoneRow = ({ b, now, onOpen }) => {
     </li>
   );
 };
-const card = 'overflow-hidden rounded-[24px] bg-white';
+const card = 'overflow-hidden rounded-[24px] bg-white'; // overflow-hidden also clips the week/month belt
 const DayCard = ({ date, items, now, onOpen }) => {
   const meetCol = items.some((b) => b.meeting_link && endOf(b) > now && lower(b.status) !== 'cancelled');
   const label = dayLabel(date, now);
@@ -360,10 +360,33 @@ const dayAria = (date, n) => `${date.toLocaleDateString('en-IN', { weekday: 'lon
 const dayBtn = (on, isToday) => cn('flex flex-col items-center justify-center gap-1 rounded-[12px] transition', ring,
   on ? 'bg-maroon text-white' : isToday ? 'bg-blush text-maroon hover:bg-pink-100' : 'text-ink hover:bg-pink-50');
 
-const WeekStrip = ({ day, setDay, countOn, now }) => {
+/* Paging weeks or months rolls the dates like a belt (founder call, 2026-11-25):
+ * the old page slides out on one side while the new one slides in from the arrow's
+ * side, together, so the numbers visibly flow. Spatial consistency: you see where
+ * the next week comes from. popLayout lets both pages move at once; a fast second
+ * tap retargets from wherever the belt is, it never restarts. Reduced motion:
+ * a plain crossfade, no movement. Timing = the repo's navigation slide token
+ * (MOBILE_APP_UI section 6: 200-260ms, brand easing). */
+const BELT = { duration: 0.26, ease: [0.22, 0.61, 0.36, 1] }; // brand easing, same as the sheets
+const Belt = ({ pageKey, dir, children }) => {
+  const reduce = useReducedMotion();
+  const from = (d) => (reduce ? { opacity: 0 } : { x: `${d * 100}%` });
+  return (
+    <AnimatePresence initial={false} mode="popLayout" custom={dir}>
+      <motion.div key={pageKey} custom={dir} variants={{ enter: from, center: { x: 0, opacity: 1 }, exit: (d) => from(-d) }}
+        initial="enter" animate="center" exit="exit" transition={BELT}>
+        {children}
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+const WeekStrip = ({ day, setDay, countOn, now, dir = 1 }) => {
   const monday = mondayOf(day);
   return (
-    <div className={cn(card, 'grid grid-cols-7 gap-1 p-2 sm:p-3')}>
+    <div className={cn(card, 'p-2 sm:p-3')}>
+     <Belt pageKey={monday.toDateString()} dir={dir}>
+     <div className="grid grid-cols-7 gap-1">
       {Array.from({ length: 7 }, (_, i) => {
         const date = addDays(monday, i);
         const on = sameDay(date, day);
@@ -376,11 +399,13 @@ const WeekStrip = ({ day, setDay, countOn, now }) => {
           </button>
         );
       })}
+     </div>
+     </Belt>
     </div>
   );
 };
 
-const MonthGrid = ({ day, setDay, countOn, now }) => {
+const MonthGrid = ({ day, setDay, countOn, now, dir = 1 }) => {
   const first = new Date(day.getFullYear(), day.getMonth(), 1);
   const gridStart = mondayOf(first);
   return (
@@ -388,6 +413,7 @@ const MonthGrid = ({ day, setDay, countOn, now }) => {
       <div className="grid grid-cols-7 gap-1 pb-1">
         {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d) => <span key={d} className="py-1 text-center text-[12px] font-medium text-faint">{d}</span>)}
       </div>
+      <Belt pageKey={`${first.getFullYear()}-${first.getMonth()}`} dir={dir}>
       <div className="grid grid-cols-7 gap-1">
         {Array.from({ length: 42 }, (_, i) => {
           const date = addDays(gridStart, i);
@@ -403,6 +429,7 @@ const MonthGrid = ({ day, setDay, countOn, now }) => {
           );
         })}
       </div>
+      </Belt>
     </div>
   );
 };
@@ -601,6 +628,7 @@ const BookingsV2 = () => {
   const [status, setStatus] = useState('loading'); // loading | ready | error
   const [view, setView] = useState('list');
   const [calMode, setCalMode] = useState('week'); // phone: what "Calendar" opens
+  const [dir, setDir] = useState(1); // which way the week/month belt rolls
   const [tab, setTab] = useState('upcoming');
   const [day, setDay] = useState(() => startOfDay(new Date()));
   const [q, setQ] = useState('');
@@ -648,7 +676,8 @@ const BookingsV2 = () => {
   const clearAll = () => { setFilter({ status: 'all', pay: 'all' }); setQ(''); };
 
   const openBooking = useLast(bookings.find((b) => b.id === openId) || null);
-  const step = (dir) => setDay((d) => (view === 'month' ? new Date(d.getFullYear(), d.getMonth() + dir, 1) : addDays(d, dir * 7)));
+  const step = (d1) => { setDir(d1); setDay((d) => (view === 'month' ? new Date(d.getFullYear(), d.getMonth() + d1, 1) : addDays(d, d1 * 7))); };
+  const goToday = () => { const t = startOfDay(new Date()); setDir(t < day ? -1 : 1); setDay(t); };
   const rangeLabel = view === 'month'
     ? day.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })
     : `${mondayOf(day).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} – ${addDays(mondayOf(day), 6).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`;
@@ -711,7 +740,7 @@ const BookingsV2 = () => {
       <button type="button" onClick={() => step(-1)} aria-label={view === 'month' ? 'Previous month' : 'Previous week'} className={navBtn}><ChevronLeft className="h-4 w-4" strokeWidth={2.4} /></button>
       <span className="min-w-0 flex-1 text-center font-display text-[16px] font-bold tracking-[-0.02em] text-ink lg:flex-none lg:px-2" aria-live="polite">{rangeLabel}</span>
       <button type="button" onClick={() => step(1)} aria-label={view === 'month' ? 'Next month' : 'Next week'} className={navBtn}><ChevronRight className="h-4 w-4" strokeWidth={2.4} /></button>
-      <button type="button" onClick={() => setDay(startOfDay(new Date()))}
+      <button type="button" onClick={goToday}
         className={cn('h-11 shrink-0 rounded-[12px] bg-white px-4 text-[14px] font-semibold text-maroon transition hover:bg-pink-100', ring)}>Today</button>
     </div>
   );
@@ -800,8 +829,8 @@ const BookingsV2 = () => {
       ) : (
         <div className="flex flex-col gap-4">
           {view === 'week'
-            ? <WeekStrip day={day} setDay={setDay} countOn={countOn} now={now} />
-            : <MonthGrid day={day} setDay={setDay} countOn={countOn} now={now} />}
+            ? <WeekStrip day={day} setDay={setDay} countOn={countOn} now={now} dir={dir} />
+            : <MonthGrid day={day} setDay={setDay} countOn={countOn} now={now} dir={dir} />}
           {dayItems.length
             ? <DayCard date={day} items={dayItems} now={now} onOpen={setOpenId} />
             : <Note>Nothing booked {dayLabel(day, now) === 'Today' ? 'today' : `on ${day.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}`}{filtering ? ' that matches your filters' : ''}.</Note>}
