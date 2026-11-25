@@ -177,7 +177,7 @@ const Hours = ({ schedule, setSchedule, dirty }) => {
                             value={sl.start}
                             onChange={(e) => setSlot(key, i, 'start', e.target.value)}
                             aria-label={`${label} slot ${i + 1} start`}
-                            className="h-8 w-[116px]"
+                            className="h-8 w-[116px] !border-b-0"
                           >
                             {TIMES.map((t) => <option key={t.v} value={t.v}>{t.label}</option>)}
                           </LabSelect>
@@ -186,7 +186,7 @@ const Hours = ({ schedule, setSchedule, dirty }) => {
                             value={sl.end}
                             onChange={(e) => setSlot(key, i, 'end', e.target.value)}
                             aria-label={`${label} slot ${i + 1} end`}
-                            className={cn('h-8 w-[116px]', bad && 'border-error-fg')}
+                            className={cn('h-8 w-[116px] !border-b-0', bad && 'text-error-fg')}
                           >
                             {TIMES.map((t) => <option key={t.v} value={t.v}>{t.label}</option>)}
                           </LabSelect>
