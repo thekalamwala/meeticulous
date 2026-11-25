@@ -377,10 +377,9 @@ const ClientsV2 = () => {
                 <label className="relative block">
                   <span className="sr-only">Search clients</span>
                   <Search className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-faint" strokeWidth={2.2} />
-                  {/* 16px on phones so iOS doesn't zoom the page on focus. */}
                   <input type="search" inputMode="search" enterKeyHint="search" autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} value={q} onChange={(e) => setQ(e.target.value)}
                     placeholder="Search name, phone or email" disabled={loading}
-                    className="h-11 w-full rounded-[12px] border-0 bg-white pl-11 pr-11 text-[16px] text-ink placeholder:text-faint focus:outline-none focus-visible:ring-[3px] focus-visible:ring-rose disabled:opacity-60 sm:text-[14.5px] [&::-webkit-search-cancel-button]:hidden" />
+                    className="h-11 w-full rounded-[12px] border-0 bg-white pl-11 pr-11 text-[14.5px] text-ink placeholder:text-faint focus:outline-none focus-visible:ring-[3px] focus-visible:ring-rose disabled:opacity-60 [&::-webkit-search-cancel-button]:hidden" />
                   {q && (
                     <button type="button" onClick={() => setQ('')} aria-label="Clear search"
                       className={cn(control, 'absolute right-1.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center text-faint hover:text-maroon active:bg-pink-100')}>

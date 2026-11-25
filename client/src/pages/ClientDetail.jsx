@@ -8,6 +8,7 @@
 // plain WhatsApp / email link with the host's public booking URL — the host can't
 // book on a guest's behalf, so the button says what it does.
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowRight, ChevronLeft, Copy, Mail, Phone, Star, Trash2, UserX } from 'lucide-react';
 import { useRegisterRefresh } from '../components/dashboard/ui/refreshContext';
@@ -136,7 +137,7 @@ const NotesPanel = ({ customerId }) => {
         <label htmlFor="client-note" className="sr-only">New note</label>
         <textarea id="client-note" value={body} onChange={(e) => setBody(e.target.value)} rows={3}
           placeholder="Goals, preferences, what to pick up next time."
-          className="w-full resize-y rounded-[16px] border-0 bg-cream p-3.5 text-[16px] text-ink sm:text-[14px] placeholder:text-faint focus:outline-none focus-visible:ring-[3px] focus-visible:ring-rose" />
+          className="w-full resize-y rounded-[16px] border-0 bg-cream p-3.5 text-[14px] text-ink placeholder:text-faint focus:outline-none focus-visible:ring-[3px] focus-visible:ring-rose" />
         <button type="submit" disabled={saving || !body.trim()}
           className={cn(control, 'inline-flex h-10 items-center justify-center self-end bg-maroon px-4 text-[14px] font-semibold text-white hover:bg-maroon-dark disabled:cursor-default disabled:bg-neutral-200 disabled:text-neutral-400')}>
           {saving ? 'Saving…' : 'Add note'}
@@ -324,8 +325,11 @@ const ClientDetail = () => {
     : lapsing && last ? `Slipping away · last visit ${lastSeen(last)}`
       : c.first_booked_at ? `Client since ${monthYear(c.first_booked_at)}` : 'Client';
 
+  const ctaLabel = lapsing ? 'Win them back' : 'Send booking link';
+
   return (
-    <div className="flex flex-col gap-6">
+    // Phone: room under the last card for the pinned action.
+    <div className={cn('flex flex-col gap-6', sendLink && 'pb-20 lg:pb-0')}>
       <BackBar name={c.name || 'Name not given'} collapsed={collapsed} />
 
       {/* Contact card: the page's one band. */}
@@ -343,10 +347,28 @@ const ClientDetail = () => {
             {c.no_show_count > 0 && <span className="inline-flex items-center rounded-[8px] bg-white/[0.12] px-2.5 py-1 text-[13px] text-white">{noShowWord(c.no_show_count)}</span>}
           </span>
         ) : null}
-        actions={sendLink
-          ? <BandPrimary href={sendLink}>{lapsing ? 'Win them back' : 'Send booking link'} <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></BandPrimary>
-          : null} />
+        actions={sendLink ? <BandPrimary href={sendLink}>{ctaLabel} <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></BandPrimary> : null} />
       </div>
+
+      {/* Phone: once the card (and its button) scrolls away, the same action slides up
+          into the thumb zone above the tab bar (MOBILE_APP_UI.md §3.10), on a cream
+          strip so cards scroll under it cleanly instead of showing round it. Never two
+          copies on screen at once. Enter 200ms / exit 150ms on a strong ease-out;
+          reduced motion keeps only the fade. Portalled: the page sits inside
+          transformed wrappers (pull-to-refresh, page transition), which would pin a
+          fixed child to them instead of the screen. */}
+      {sendLink && createPortal(
+        <div aria-hidden={!collapsed}
+          className={cn('fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom,0px)+76px)] z-30 bg-cream/90 px-4 pb-4 pt-2 backdrop-blur-md lg:hidden',
+            'transition-[transform,opacity] ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transform-none',
+            collapsed ? 'translate-y-0 opacity-100 duration-200' : 'pointer-events-none translate-y-3 opacity-0 duration-150')}>
+          <a href={sendLink} target="_blank" rel="noreferrer" tabIndex={collapsed ? 0 : -1}
+            className={cn('flex h-12 w-full items-center justify-center gap-2 rounded-[12px] bg-maroon text-[15px] font-semibold text-white focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose active:bg-maroon-dark', press)}>
+            {ctaLabel} <ArrowRight className="h-4 w-4" strokeWidth={2.4} />
+          </a>
+        </div>,
+        document.body,
+      )}
 
       <QuickActions phone={c.phone} email={c.email} bookingUrl={bookingUrl} />
 
