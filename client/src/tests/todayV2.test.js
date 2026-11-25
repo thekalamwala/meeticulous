@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { revenueSeries, buildQueue, whenWord } from '../pages/TodayV2';
+import { revenueSeries, buildQueue, whenWord, phaseOf, weekLoad } from '../pages/TodayV2';
 
 const iso = (y, m, d = 15) => new Date(y, m, d).toISOString();
 
@@ -49,5 +49,33 @@ describe('TodayV2 whenWord', () => {
     expect(whenWord(at(26), now)).toBe('tomorrow');
     expect(whenWord(at(30), now)).toBe('Monday');
     expect(whenWord(at(30 + 9), now)).toMatch(/^on /);
+  });
+});
+
+describe('TodayV2 phaseOf', () => {
+  const now = new Date(2026, 10, 25, 14, 0);
+  const at = (h, m = 0, duration = 60) => ({ scheduled_at: new Date(2026, 10, 25, h, m).toISOString(), services: { duration } });
+  it('splits today into done, on now and upcoming', () => {
+    expect(phaseOf(at(11), now)).toBe('done');       // 11:00-12:00
+    expect(phaseOf(at(13, 30), now)).toBe('now');    // 13:30-14:30
+    expect(phaseOf(at(16), now)).toBe('upcoming');
+  });
+  it('assumes 30 minutes when a service has no duration', () => {
+    expect(phaseOf({ scheduled_at: new Date(2026, 10, 25, 13, 40).toISOString() }, now)).toBe('now');
+    expect(phaseOf({ scheduled_at: new Date(2026, 10, 25, 13, 20).toISOString() }, now)).toBe('done');
+  });
+});
+
+describe('TodayV2 weekLoad', () => {
+  const monday = new Date(2026, 10, 23); // Mon 23 Nov 2026
+  const now = new Date(2026, 10, 25, 12, 0); // Wed noon
+  const bk = (d, h, duration, amount, status = 'confirmed') => ({ scheduled_at: new Date(2026, 10, d, h).toISOString(), services: { duration }, customer_total: amount, status });
+  it('totals the week and flags the quiet days still ahead', () => {
+    const w = weekLoad([bk(23, 10, 60, 1000), bk(26, 11, 30, 500), bk(26, 15, 90, 0), bk(27, 9, 60, 999, 'cancelled'), bk(30, 10, 60, 2000)], monday, now);
+    expect(w.count).toBe(3);                 // the 30 Nov booking is next week; cancelled ignored
+    expect(w.hours).toBe(3);                 // 60 + 30 + 90 minutes
+    expect(w.expected).toBe(1500);
+    expect(w.days[3].count).toBe(2);         // Thursday
+    expect(w.quiet.map((d) => d.date.getDate())).toEqual([25, 27, 28, 29]); // Wed (today) .. Sun, not Mon/Tue (past)
   });
 });

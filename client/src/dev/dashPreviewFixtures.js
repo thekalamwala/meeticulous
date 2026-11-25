@@ -35,8 +35,14 @@ const booking = (i, days, svc, extra = {}) => {
   };
 };
 
+// Today: two done, one on now, two still to come — relative to the clock, so the
+// schedule cards always show every state.
+const minsFromNow = (m) => new Date(Date.now() + m * 60_000).toISOString();
+const today = (i, mins, svc, extra = {}) => booking(i, 0, svc, { scheduled_at: minsFromNow(mins), status: mins < 0 ? 'completed' : 'confirmed', ...extra });
+
 const BOOKINGS = [
   booking(1, 5, 0), booking(2, 0, 1, { status: 'pending' }),
+  today(20, -300, 1), today(21, -150, 0), today(22, -15, 2), today(23, 90, 0, { payment_status: 'unpaid' }), today(24, 210, 1),
   booking(3, -4, 2), booking(4, -7, 1), booking(5, -10, 0), booking(6, -11, 2),
   booking(7, -15, 0), booking(8, -18, 1), booking(9, -26, 0), booking(10, -33, 1),
   booking(11, -38, 0), booking(12, -41, 1), booking(13, -43, 3),

@@ -16,6 +16,7 @@ import {
 } from '../../utils/attentionQueue';
 
 const KIND_ICON = { kyc: ShieldCheck, confirm: CalendarCheck2, unpaid: IndianRupee };
+const SEEN_KEY = 'mt_notifications_seen';
 const URGENCY = { now: ['Now', 'bg-error-bg text-error-fg'], today: ['Today', 'bg-warning-bg text-warning-fg'], this_week: ['This week', 'bg-neutral-100 text-muted'] };
 
 export default function NotificationsDrawer() {
@@ -55,12 +56,29 @@ export default function NotificationsDrawer() {
   const badge = unread + items.length;
   const go = (to) => { setOpen(false); navigate(to); };
 
+  // Blinker: the bell pulses while there is something the host hasn't looked at
+  // yet, and stops the moment they open the drawer. "Seen" is a signature of what
+  // was waiting at that moment (attention ids + newest unread update), stored per
+  // browser, so a NEW item starts the pulse again.
+  const signature = badge ? [...items.map((a) => a.id), notifs.find((n) => !n.read_at)?.id || ''].join('|') : '';
+  const [seen, setSeen] = useState(() => { try { return localStorage.getItem(SEEN_KEY) || ''; } catch { return ''; } });
+  const blink = badge > 0 && signature !== seen;
+  useEffect(() => {
+    if (!open || !signature) return;
+    try { localStorage.setItem(SEEN_KEY, signature); } catch { /* per-session is fine */ }
+    setSeen(signature);
+  }, [open, signature]);
+
   return (
     <>
       <button type="button" onClick={() => setOpen(true)}
         aria-label={`Notifications${badge ? `, ${badge} waiting` : ''}`} aria-haspopup="dialog" aria-expanded={open}
         className="relative grid h-10 w-10 place-items-center rounded-[12px] bg-white text-muted transition-colors hover:text-maroon focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
-        <Bell className="h-[19px] w-[19px]" strokeWidth={1.8} />
+        <Bell className={cn('h-[19px] w-[19px]', blink && 'text-maroon')} strokeWidth={1.8} />
+        {blink && (
+          // Soft pulse behind the badge; off under reduced motion (the badge stays).
+          <span aria-hidden="true" className="absolute -right-1 -top-1 h-5 w-5 animate-ping rounded-[8px] bg-maroon/60 motion-reduce:hidden" />
+        )}
         {badge > 0 && (
           <span className="absolute -right-1 -top-1 grid h-5 min-w-[20px] place-items-center rounded-[8px] bg-maroon px-1 text-[11px] font-semibold tabular-nums text-white ring-2 ring-cream">
             {badge > 9 ? '9+' : badge}

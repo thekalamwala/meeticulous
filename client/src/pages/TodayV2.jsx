@@ -13,10 +13,10 @@
 // desktop sets them side by side. Order follows what a creator needs on login:
 // greeting (topbar), next booking + today's schedule, the
 // week + numbers, recent bookings, setup (onboarding), then link + Pro (secondary).
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Children, cloneElement, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  ArrowRight, Copy, Link2, Wallet, X,
+  ArrowRight, ChevronLeft, ChevronRight, Copy, Link2, Wallet, X,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -185,76 +185,238 @@ const TodayBand = ({ todays, next, onOpen, onCopy }) => {
   return <InsightBand eyebrow={eyebrow} title={title} sub={sub} actions={actions} mascot="blue" className="sm:py-7" />;
 };
 
-/* ── Week — 7-day strip (pink dot = booked) + the chosen day's bookings. ──── */
-const BookingRow = ({ b, onOpen }) => {
-  const past = new Date(b.scheduled_at) < new Date();
+const linkBtn = 'inline-flex items-center gap-1 rounded-[10px] px-2 py-1 text-[13.5px] font-semibold text-maroon transition hover:bg-pink-100';
+
+/* ── ScrollStrip — a swipeable row with two modes:
+ *  · 'center' (carousel): the active card sits centred and fully visible; its
+ *    neighbours peek in at the sides, faded and slightly smaller, so they read as
+ *    coming in / going out. Arrows sit over the peeking edges, never the card.
+ *  · 'pages': one full-width page at a time (the week planner).
+ * Opens on `startIndex`, set before paint so nothing jumps. ─────────────── */
+const CARD_W = 'min(248px, 76%)';
+const ScrollStrip = ({ label, startIndex = 0, children, mode = 'center', onIndex }) => {
+  const ref = useRef(null);
+  const items = Children.toArray(children);
+  const [active, setActive] = useState(startIndex);
+  const centerOf = (el, i) => {
+    const item = el.children[i];
+    return item ? item.offsetLeft - (el.clientWidth - item.offsetWidth) / 2 : 0;
+  };
+  const go = useCallback((i, smooth = true) => {
+    const el = ref.current;
+    if (!el) return;
+    const n = el.children.length;
+    const j = Math.max(0, Math.min(n - 1, i));
+    const left = mode === 'pages' ? j * el.clientWidth : centerOf(el, j);
+    el.scrollTo({ left, behavior: smooth ? 'smooth' : 'auto' });
+  }, [mode]);
+  const onScroll = () => {
+    const el = ref.current;
+    if (!el) return;
+    let best = 0; let dist = Infinity;
+    [...el.children].forEach((c, i) => {
+      const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - (el.scrollLeft + el.clientWidth / 2));
+      if (d < dist) { dist = d; best = i; }
+    });
+    if (best !== active) { setActive(best); onIndex?.(best); }
+  };
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.scrollBehavior = 'auto';
+    go(startIndex, false);
+    el.style.scrollBehavior = '';
+  }, [startIndex, go]);
+
+  const arrow = 'absolute top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 place-items-center rounded-[12px] bg-white text-maroon shadow-[var(--shadow-md)] transition hover:bg-pink-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose [@media(hover:hover)]:grid';
+  const fade = mode === 'center'
+    ? { maskImage: 'linear-gradient(to right, transparent, #000 14%, #000 86%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, #000 14%, #000 86%, transparent)' }
+    : undefined;
   return (
-    <li>
-      <button type="button" onClick={() => onOpen(b.id)}
-        className="flex w-full items-center gap-3 rounded-[14px] px-2 py-2.5 text-left transition hover:bg-cream focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
-        <span className={cn('w-[58px] shrink-0 text-[13px] font-semibold tabular-nums', past ? 'text-faint' : 'text-maroon')}>{fmtTime(b.scheduled_at)}</span>
-        <Avatar name={b.guest_name} />
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-[14.5px] font-semibold text-ink">{b.guest_name || 'Guest'}</span>
-          <span className="block truncate text-[13px] text-muted">{b.services?.title || 'Booking'}{b.services?.duration ? ` · ${b.services.duration} min` : ''}</span>
-        </span>
-        {lower(b.payment_status) === 'unpaid' && amountOf(b) > 0 && <StatusPill status="unpaid" />}
-      </button>
-    </li>
+    <div className="relative">
+      {active > 0 && <button type="button" onClick={() => go(active - 1)} aria-label={`Earlier ${label}`} className={cn(arrow, 'left-1')}><ChevronLeft className="h-4 w-4" strokeWidth={2.4} /></button>}
+      <div ref={ref} onScroll={onScroll} role="list" aria-label={label}
+        className={cn('dash-noscrollbar flex snap-x snap-mandatory overflow-x-auto scroll-smooth', mode === 'center' ? 'gap-3 py-1' : 'gap-0')}
+        style={mode === 'center' ? { ...fade, paddingInline: `calc((100% - ${CARD_W}) / 2)` } : undefined}>
+        {items.map((child, i) => cloneElement(child, {
+          'data-active': i === active ? 'true' : 'false',
+          style: { ...(child.props.style || {}), ...(mode === 'center' ? { width: CARD_W } : {}) },
+        }))}
+      </div>
+      {active < items.length - 1 && <button type="button" onClick={() => go(active + 1)} aria-label={`Later ${label}`} className={cn(arrow, 'right-1')}><ChevronRight className="h-4 w-4" strokeWidth={2.4} /></button>}
+    </div>
   );
 };
 
-const linkBtn = 'inline-flex items-center gap-1 rounded-[10px] px-2 py-1 text-[13.5px] font-semibold text-maroon transition hover:bg-pink-100';
+/* ── This week — planning, not running the day (Today's schedule does that).
+ * Swipe between this week, next week and the week after. Each page answers
+ * "how full am I and what will it earn": totals (bookings, booked hours,
+ * expected), one bar per day by booked time, and the quiet days to fill. ─── */
+const WEEKS_AHEAD = 3;
+const mondayOf = (d) => { const m = new Date(d); m.setHours(0, 0, 0, 0); m.setDate(m.getDate() - ((m.getDay() + 6) % 7)); return m; };
 
-const WeekPanel = ({ bookings, onOpen, go }) => {
-  const base = useMemo(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }, []);
-  const days = useMemo(() => Array.from({ length: 7 }, (_, i) => new Date(base.getTime() + i * DAY)), [base]);
-  const live = (b) => b.scheduled_at && lower(b.status) !== 'cancelled';
-  // Today has its own panel beside the band, so the week opens on the next day
-  // that has bookings (tomorrow when the week is quiet).
-  const [sel, setSel] = useState(() => days.slice(1).find((d) => bookings.some((b) => live(b) && sameDay(new Date(b.scheduled_at), d))) || days[1]);
-  const countFor = (d) => bookings.filter((b) => live(b) && sameDay(new Date(b.scheduled_at), d)).length;
-  const dayItems = useMemo(() => bookings
-    .filter((b) => live(b) && sameDay(new Date(b.scheduled_at), sel))
-    .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at)), [bookings, sel]);
-  const label = sameDay(sel, base) ? 'today' : `on ${sel.toLocaleDateString('en-IN', { weekday: 'long' })}`;
+// Pure, tested: one week's load from the host's own bookings.
+export const weekLoad = (bookings, monday, now = new Date()) => {
+  const days = Array.from({ length: 7 }, (_, i) => new Date(monday.getTime() + i * DAY));
+  const live = bookings.filter((b) => b.scheduled_at && lower(b.status) !== 'cancelled');
+  const perDay = days.map((d) => {
+    const items = live.filter((b) => sameDay(new Date(b.scheduled_at), d));
+    return {
+      date: d,
+      count: items.length,
+      minutes: items.reduce((n, b) => n + (Number(b.services?.duration) || 30), 0),
+      past: new Date(d).setHours(23, 59, 59, 999) < now.getTime(),
+    };
+  });
+  const weekItems = live.filter((b) => { const t = new Date(b.scheduled_at); return t >= days[0] && t < new Date(days[6].getTime() + DAY); });
+  return {
+    days: perDay,
+    count: weekItems.length,
+    hours: Math.round((perDay.reduce((n, d) => n + d.minutes, 0) / 60) * 10) / 10,
+    expected: weekItems.reduce((n, b) => n + amountOf(b), 0),
+    quiet: perDay.filter((d) => !d.past && d.count === 0),
+  };
+};
 
+const WeekPage = ({ week, label, onCopy, go }) => {
+  const max = Math.max(60, ...week.days.map((d) => d.minutes));
+  const today = new Date();
+  const quietNames = week.quiet.map((d) => d.date.toLocaleDateString('en-IN', { weekday: 'short' }));
   return (
-    <Panel title="This week" subtitle="Tap a day to see its bookings" action={<button type="button" onClick={() => go('/dashboard/bookings')} className={linkBtn}>All bookings <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></button>}>
-      <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
-        {days.map((d) => {
-          const on = sameDay(d, sel);
-          const n = countFor(d);
+    <div role="listitem" aria-label={label} className="flex w-full shrink-0 snap-start flex-col gap-4">
+      <div className="grid grid-cols-3 gap-2">
+        {[['Bookings', week.count], ['Booked', `${week.hours}h`], ['Expected', inr(week.expected, { compact: true })]].map(([k, v]) => (
+          <div key={k} className="rounded-[14px] bg-cream px-3 py-2.5">
+            <p className="mb-0 text-[12px] text-faint">{k}</p>
+            <p className="mb-0 font-display text-[20px] font-extrabold tabular-nums tracking-[-0.02em] text-ink">{v}</p>
+          </div>
+        ))}
+      </div>
+      <div className="grid grid-cols-7 items-end gap-1.5" style={{ height: 112 }}>
+        {week.days.map((d) => {
+          const isToday = sameDay(d.date, today);
+          const h = d.minutes ? Math.max(10, (d.minutes / max) * 84) : 4;
           return (
-            <button key={d.toISOString()} type="button" onClick={() => setSel(d)} aria-pressed={on}
-              aria-label={`${d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}${n ? `, ${n} booking${n > 1 ? 's' : ''}` : ''}`}
-              className={cn('flex flex-col items-center gap-0.5 rounded-[14px] py-2 transition focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose',
-                on ? 'bg-maroon text-white' : 'bg-cream text-muted hover:bg-blush')}>
-              <span className={cn('text-[11.5px] font-medium', on ? 'text-white/80' : 'text-faint')}>{sameDay(d, base) ? 'Today' : d.toLocaleDateString('en-IN', { weekday: 'short' })}</span>
-              <span className={cn('font-display text-[18px] font-extrabold leading-none tracking-[-0.02em] sm:text-[20px]', on ? 'text-white' : 'text-ink')}>{d.getDate()}</span>
-              <span aria-hidden="true" className={cn('mt-1 h-1.5 w-1.5 rounded-full', n ? 'bg-pink' : 'bg-transparent')} />
+            <button key={d.date.toISOString()} type="button" onClick={() => go('/dashboard/bookings')}
+              aria-label={`${d.date.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}: ${d.count} booking${d.count === 1 ? '' : 's'}`}
+              className="group flex h-full flex-col items-center justify-end gap-1 rounded-[10px] focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
+              <span className={cn('text-[11.5px] font-semibold tabular-nums', d.count ? 'text-ink' : 'text-transparent')}>{d.count || 0}</span>
+              <span className={cn('w-full max-w-[34px] rounded-[6px] transition group-hover:opacity-80',
+                d.past ? 'bg-neutral-200' : d.count ? 'bg-maroon' : 'bg-neutral-100')} style={{ height: h }} />
+              <span className={cn('text-[11.5px] font-medium', isToday ? 'font-semibold text-maroon' : 'text-faint')}>
+                {isToday ? 'Today' : d.date.toLocaleDateString('en-IN', { weekday: 'short' })}
+              </span>
             </button>
           );
         })}
       </div>
-      {dayItems.length === 0 ? (
-        <p className="mb-0 mt-3 rounded-[16px] bg-cream p-4 text-[14px] text-muted">Nothing booked {label}.</p>
+      {week.quiet.length > 0 ? (
+        <div className="flex flex-wrap items-center gap-3 rounded-[14px] bg-blush px-3.5 py-2.5">
+          <p className="mb-0 min-w-0 flex-1 text-[13.5px] text-ink">
+            <b className="font-semibold">{quietNames.join(', ')}</b> {week.quiet.length === 1 ? 'has' : 'have'} no bookings yet.
+          </p>
+          <Button size="sm" onClick={onCopy}><Copy className="h-3.5 w-3.5" strokeWidth={2.4} /> Copy link to fill</Button>
+        </div>
       ) : (
-        <ul className="mt-2 flex flex-col">{dayItems.map((b) => <BookingRow key={b.id} b={b} onOpen={onOpen} />)}</ul>
+        <p className="mb-0 rounded-[14px] bg-cream px-3.5 py-2.5 text-[13.5px] text-muted">Every day ahead has at least one booking.</p>
       )}
+    </div>
+  );
+};
+
+const WeekPanel = ({ bookings, onCopy, go }) => {
+  const weeks = useMemo(() => {
+    const m0 = mondayOf(new Date());
+    return Array.from({ length: WEEKS_AHEAD }, (_, i) => {
+      const monday = new Date(m0.getTime() + i * 7 * DAY);
+      const sunday = new Date(monday.getTime() + 6 * DAY);
+      const range = `${monday.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} – ${sunday.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`;
+      return { label: i === 0 ? 'This week' : i === 1 ? 'Next week' : 'In two weeks', range, load: weekLoad(bookings, monday) };
+    });
+  }, [bookings]);
+  const [page, setPage] = useState(0);
+  return (
+    <Panel title={weeks[page].label} subtitle={`${weeks[page].range} · swipe for the weeks ahead`}
+      action={<button type="button" onClick={() => go('/dashboard/bookings')} className={linkBtn}>Calendar <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></button>}>
+      <ScrollStrip label="weeks" mode="pages" onIndex={setPage}>
+        {weeks.map((w) => <WeekPage key={w.range} week={w.load} label={`${w.label}, ${w.range}`} onCopy={onCopy} go={go} />)}
+      </ScrollStrip>
+      <div className="mt-3 flex justify-center gap-1.5" aria-hidden="true">
+        {weeks.map((w, i) => <span key={w.range} className={cn('h-1.5 rounded-full transition-all', i === page ? 'w-5 bg-maroon' : 'w-1.5 bg-neutral-300')} />)}
+      </div>
     </Panel>
   );
 };
 
-/* ── Today's schedule — every booking today, in time order. ───────────────── */
-const TodaySchedule = ({ todays, onOpen, go }) => (
-  <Panel title="Today's schedule" subtitle={todays.length ? `${todays.length} booking${todays.length > 1 ? 's' : ''}` : 'Nothing booked today'}
-    action={<button type="button" onClick={() => go('/dashboard/bookings')} className={linkBtn}>All bookings <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></button>}>
-    {todays.length === 0
-      ? <p className="mb-0 rounded-[16px] bg-cream p-4 text-[14px] text-muted">A clear day. New bookings land here.</p>
-      : <ul className="flex flex-col">{todays.map((b) => <BookingRow key={b.id} b={b} onOpen={onOpen} />)}</ul>}
-  </Panel>
-);
+/* ── Today's schedule — today as a timeline of cards you can swipe: what's
+ * done (muted), what's on now, what's next and later. Opens on now / next. ── */
+const endOf = (b) => new Date(new Date(b.scheduled_at).getTime() + (Number(b.services?.duration) || 30) * 60_000);
+export const phaseOf = (b, now = new Date()) => {
+  const start = new Date(b.scheduled_at);
+  if (endOf(b) <= now) return 'done';
+  if (start <= now) return 'now';
+  return 'upcoming';
+};
+const PHASE = {
+  done: ['Done', 'bg-neutral-100 text-muted'],
+  now: ['On now', 'bg-maroon text-white'],
+  next: ['Up next', 'bg-blush text-maroon'],
+  later: ['Later', 'bg-cream text-muted'],
+};
+
+const TodaySchedule = ({ todays, onOpen, go }) => {
+  const now = new Date();
+  const phases = todays.map((b) => phaseOf(b, now));
+  const doneCount = phases.filter((p) => p === 'done').length;
+  const firstLive = phases.findIndex((p) => p !== 'done');
+  const nextIdx = phases.findIndex((p) => p === 'upcoming');
+  const startIndex = firstLive >= 0 ? firstLive : Math.max(0, todays.length - 1);
+  const sub = todays.length
+    ? [doneCount && `${doneCount} done`, todays.length - doneCount && `${todays.length - doneCount} still to come`].filter(Boolean).join(' · ')
+    : 'Nothing booked today';
+
+  return (
+    <Panel title="Today's schedule" subtitle={sub}
+      action={<button type="button" onClick={() => go('/dashboard/bookings')} className={linkBtn}>All bookings <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></button>}>
+      {todays.length === 0 ? (
+        <p className="mb-0 rounded-[16px] bg-cream p-4 text-[14px] text-muted">A clear day. New bookings land here.</p>
+      ) : (
+        <ScrollStrip label="bookings today" startIndex={startIndex}>
+          {todays.map((b, i) => {
+            const phase = phases[i];
+            const key = phase === 'upcoming' ? (i === nextIdx ? 'next' : 'later') : phase;
+            const [word, cls] = PHASE[key];
+            const unpaid = lower(b.payment_status) === 'unpaid' && amountOf(b) > 0;
+            return (
+              <button key={b.id} type="button" role="listitem" onClick={() => onOpen(b.id)}
+                aria-label={`${word}: ${b.guest_name || 'Guest'}, ${fmtTime(b.scheduled_at)}`}
+                className={cn('flex shrink-0 snap-center flex-col gap-3 rounded-[18px] p-4 text-left transition duration-300 ease-out focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-rose',
+                  'data-[active=false]:scale-[0.94] data-[active=false]:opacity-55 motion-reduce:transition-none',
+                  phase === 'now' ? 'bg-blush ring-2 ring-inset ring-maroon' : 'bg-cream hover:bg-blush',
+                  phase === 'done' && 'text-muted')}>
+                <span className="flex items-center justify-between gap-2">
+                  <span className={cn('font-display text-[18px] font-extrabold tabular-nums tracking-[-0.02em]', phase === 'done' ? 'text-muted' : 'text-maroon')}>{fmtTime(b.scheduled_at)}</span>
+                  <span className={cn('rounded-[6px] px-2 py-0.5 text-[11.5px] font-semibold', cls)}>{word}</span>
+                </span>
+                <span className="flex items-center gap-2.5">
+                  <Avatar name={b.guest_name} />
+                  <span className="min-w-0">
+                    <span className="block truncate text-[14.5px] font-semibold text-ink">{b.guest_name || 'Guest'}</span>
+                    <span className="block truncate text-[12.5px] text-muted">{b.services?.title || 'Booking'}</span>
+                  </span>
+                </span>
+                <span className="flex items-center justify-between gap-2 text-[12.5px] text-faint">
+                  <span>{b.services?.duration ? `${b.services.duration} min` : ''} · until {fmtTime(endOf(b).toISOString())}</span>
+                  {unpaid && <StatusPill status="unpaid" />}
+                </span>
+              </button>
+            );
+          })}
+        </ScrollStrip>
+      )}
+    </Panel>
+  );
+};
 
 /* ── Recent bookings — latest four, status as a word. ─────────────────────── */
 const RecentBookings = ({ bookings, onOpen, go }) => {
@@ -395,7 +557,7 @@ const TodayV2 = () => {
       </section>
 
       <section aria-label="Your week and numbers" className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2 lg:gap-5">
-        {loading ? sk('h-[260px]') : <WeekPanel bookings={bookings} onOpen={setOpenId} go={go} />}
+        {loading ? sk('h-[260px]') : <WeekPanel bookings={bookings} onCopy={copyLink} go={go} />}
         <div className="grid grid-cols-2 gap-3 lg:gap-4">
           {loading ? [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[124px] rounded-[20px]" />) : metrics}
         </div>
