@@ -190,9 +190,9 @@ const QUICK_ROUTES = [
 ];
 
 // Apple home-screen grammar, on-brand: a tinted squircle app-icon per action,
-// label beneath, generous whitespace, a 2px lift on hover. The "Needs you" tile
-// is the one filled (maroon) icon — the primary — and carries the count badge.
-// Flat token fills only — no gradient, blur or resting shadow (brand rules).
+// label beneath, generous whitespace. Hover only tints the fill — no lift. The
+// "Needs you" tile is the one filled (maroon) icon — the primary — and carries
+// the count badge. Flat token fills — no gradient, blur or resting shadow.
 const QuickActionTile = ({ icon: Icon, label, onClick, badge, primary = false }) => (
   <button
     type="button"
@@ -201,7 +201,7 @@ const QuickActionTile = ({ icon: Icon, label, onClick, badge, primary = false })
   >
     <span
       className={cn(
-        'relative grid h-16 w-16 place-items-center rounded-[20px] transition duration-200 ease-out group-hover:-translate-y-0.5 group-focus-visible:ring-[3px] group-focus-visible:ring-rose',
+        'relative grid h-16 w-16 place-items-center rounded-[20px] transition-colors duration-200 ease-out group-focus-visible:ring-[3px] group-focus-visible:ring-rose',
         primary ? 'bg-maroon text-white group-hover:bg-maroon-dark' : 'bg-blush text-maroon group-hover:bg-pink/50',
       )}
     >
