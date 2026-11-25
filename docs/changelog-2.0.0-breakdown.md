@@ -11,7 +11,28 @@ public entry presents the suite as live — "fake it so we can make it." Flag
 state of record lives in the repo `CLAUDE.md` migration log and
 `docs/current-work.md`.
 
-Two views of the same work: **§A day-wise**, **§B feature-wise**.
+Two views of the same work: **§A day-wise**, **§B feature-wise**, plus
+**§C** — the public version ladder these map onto.
+
+---
+
+## §C — Public version ladder
+
+Rather than one jump from `1.1.0` to `2.0.0`, the public `/changelog` steps up
+roughly every third day. Numbering is ours (minor bumps per release, one patch).
+Each row bundles that window's work into guest-facing bullets in
+`client/src/data/changelog.js`; the day-wise detail is in §A.
+
+| Version | Date | Theme | §A windows |
+|---|---|---|---|
+| `1.2.0` | Nov 5 | LinkedIn sign-in, gift Pro, 16-colour profile palette, steadier payouts, 5MB uploads | A1–A3 |
+| `1.2.1` | Nov 9 | patch — OTP digit slots, support SLA alerts, home/careers/about polish, community tidy-up | A4 |
+| `1.3.0` | Nov 11 | Tithi (Chief of Staff), native-app mobile shell, email/WhatsApp tracks, community v2, security audit | A5–A6 |
+| `1.4.0` | Nov 14 | coupons, video courses, cancellation policies, booking caps, testimonials wall, confirmation email, dashboard makeover | A7–A9 |
+| `1.5.0` | Nov 17 | memberships, Creator Intelligence, statutory TDS/TCS | A10–A11 |
+| `1.6.0` | Nov 19 | dashboard v2 (all sections on real data), rebuilt community feed, prorated membership upgrades | A12–A13 |
+| `1.7.0` | Nov 23 | booking flow redesign, community collaborators, minimalist forms, host profile redesign | A14 |
+| `2.0.0` | Nov 25 | capstone — premium host home (Today redesign) + everything above, together | A15–A16 |
 
 ---
 
