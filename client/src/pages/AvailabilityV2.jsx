@@ -77,7 +77,7 @@ const ScheduleBand = ({ ed, username }) => {
   if (!days.length) {
     const openWeekdays = () => DAYS.slice(0, 5).forEach((d) => { if (!ed.isDayOpen(d)) ed.toggleDay(d); });
     return (
-      <InsightBand mascot="blue" eyebrow="Your schedule"
+      <InsightBand mascot="blue" compact className="sm:py-6" eyebrow="Your schedule"
         title={<>Guests can&apos;t book you yet. <em className={serif}>Let&apos;s open your week.</em></>}
         sub="Turn on the days you work below, or start with weekdays, 9 am to 5 pm, and adjust."
         actions={<button type="button" className={bandPrimary} onClick={openWeekdays}><Plus className="h-4 w-4" strokeWidth={2.4} /> Open Mon–Fri, 9 to 5</button>} />
@@ -89,12 +89,12 @@ const ScheduleBand = ({ ed, username }) => {
     upcoming ? `${upcoming} ${upcoming === 1 ? 'day' : 'days'} off coming up.` : null,
   ].filter(Boolean).join(' ');
   return (
-    <InsightBand mascot="blue" eyebrow="Your schedule"
+    <InsightBand mascot="blue" compact className="sm:py-6" eyebrow="Your schedule"
       title={<>You&apos;re open {fmtHours(minutes)} a week, <span className="whitespace-nowrap">{label}.</span></>}
       sub={sub}
       actions={username && (
         <a href={`/${username}`} target="_blank" rel="noreferrer" className={bandGhost}>
-          See your booking page <ExternalLink className="h-4 w-4" strokeWidth={2.4} />
+          See your page <ExternalLink className="h-4 w-4" strokeWidth={2.4} />
         </a>
       )} />
   );
