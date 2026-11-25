@@ -1,16 +1,21 @@
 import { forwardRef } from 'react';
 import { cn } from './cn';
+import MeetDropdown from '../../ui/MeetDropdown';
+import { optionsFromChildren } from '../../ui/selectChildren';
 
+// Minimalist: a clean bottom border instead of a full frame, transparent, no
+// ring — paired with a label above (see Label / FormField). Matches the
+// user-facing form style (.fb-input).
 const fieldBase =
-  'block w-full rounded border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 shadow-sm transition-colors ' +
-  'focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 ' +
-  'disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500';
+  'block w-full border-solid border-x-0 border-t-0 border-b-[1.5px] rounded-none border-neutral-300 bg-transparent text-sm text-neutral-900 placeholder:text-neutral-400 transition-colors ' +
+  'focus:border-primary focus:outline-none focus:shadow-none ' +
+  'disabled:cursor-not-allowed disabled:text-neutral-400';
 
 export const Input = forwardRef(function Input({ className = '', invalid = false, ...props }, ref) {
   return (
     <input
       ref={ref}
-      className={cn(fieldBase, 'h-10 px-3', invalid && 'border-red-400 focus:border-red-500 focus:ring-red-200', className)}
+      className={cn(fieldBase, 'h-10 px-0.5', invalid && 'border-red-400 focus:border-red-500', className)}
       {...props}
     />
   );
@@ -21,42 +26,37 @@ export const Textarea = forwardRef(function Textarea({ className = '', invalid =
     <textarea
       ref={ref}
       rows={rows}
-      className={cn(fieldBase, 'px-3 py-2', invalid && 'border-red-400 focus:ring-red-200', className)}
+      className={cn(fieldBase, 'px-0.5 py-2', invalid && 'border-red-400', className)}
       {...props}
     />
   );
 });
 
-// On-brand native <select>: blue chevron + accent instead of the OS default
-// (grey arrow / blue highlight). The dropdown popup is OS-rendered and only
-// partially stylable, but the control itself now reads on-theme.
-const SELECT_STYLE = {
-  appearance: 'none',
-  WebkitAppearance: 'none',
-  MozAppearance: 'none',
-  accentColor: 'var(--primary)',
-  backgroundImage:
-    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2300457C' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\")",
-  backgroundRepeat: 'no-repeat',
-  backgroundPosition: 'right 0.7rem center',
-};
-
-export const Select = forwardRef(function Select({ className = '', invalid = false, children, ...props }, ref) {
+// Branded dropdown: wraps MeetDropdown but keeps this component's native-<select>
+// API — <option> children and an event-shaped onChange — so no caller changes.
+// A native select's value is always a string, so we stringify to match, and the
+// onChange handler still receives { target: { value, name } }.
+export const Select = forwardRef(function Select(
+  { className = '', invalid = false, children, value, onChange, name, id, disabled, ...props },
+  _ref,
+) {
   return (
-    <select
-      ref={ref}
-      style={SELECT_STYLE}
-      className={cn(fieldBase, 'h-10 cursor-pointer px-3 pr-8', invalid && 'border-red-400 focus:ring-red-200', className)}
-      {...props}
-    >
-      {children}
-    </select>
+    <MeetDropdown
+      id={id}
+      name={name}
+      disabled={disabled}
+      ariaLabel={props['aria-label']}
+      className={cn(invalid && 'mt-dd--invalid', className)}
+      value={value == null ? '' : String(value)}
+      onChange={(v) => onChange?.({ target: { value: v, name } })}
+      options={optionsFromChildren(children)}
+    />
   );
 });
 
 export function Label({ htmlFor, required, children, className = '' }) {
   return (
-    <label htmlFor={htmlFor} className={cn('mb-1.5 block text-sm font-medium text-gray-700', className)}>
+    <label htmlFor={htmlFor} className={cn('mb-1.5 block text-sm font-medium text-neutral-700', className)}>
       {children}
       {required && <span className="ml-0.5 text-red-500">*</span>}
     </label>
@@ -75,7 +75,7 @@ export function FormField({ label, htmlFor, required, hint, error, children, cla
       {error ? (
         <p className="mt-1 text-xs text-red-600">{error}</p>
       ) : hint ? (
-        <p className="mt-1 text-xs text-gray-500">{hint}</p>
+        <p className="mt-1 text-xs text-neutral-500">{hint}</p>
       ) : null}
     </div>
   );

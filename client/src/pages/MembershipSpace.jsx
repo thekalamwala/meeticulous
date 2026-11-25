@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { getMembershipSpace, joinMembership, createMembershipSubscription, syncMembershipSubscription } from "../services/api";
+import { getMembershipSpace, joinMembership, createMembershipSubscription, syncMembershipSubscription, verifyMembershipUpgrade } from "../services/api";
 import loadRazorpay from "../utils/loadRazorpay";
 import { useAuth } from "../context/AuthContext";
 import ItemCard from "../components/community/ItemCard";
@@ -49,6 +49,36 @@ export default function MembershipSpace() {
       const loaded = await loadRazorpay();
       if (!loaded) { toast.error("Payment gateway failed to load"); return; }
       const { data } = await createMembershipSubscription(tier.id);
+
+      // Moving up from a cheaper paid tier: a one-time order for the prorated
+      // difference, not a new mandate. The recurring one starts at the old period end.
+      if (data.upgrade) {
+        new window.Razorpay({
+          key: data.key,
+          order_id: data.razorpay_order_id,
+          amount: data.amount,
+          currency: data.currency,
+          name: "Meeticulous",
+          description: `${data.from_tier?.name || "Current tier"} → ${tier.name}`,
+          handler: async (r) => {
+            try {
+              await verifyMembershipUpgrade({
+                razorpay_order_id: r.razorpay_order_id,
+                razorpay_payment_id: r.razorpay_payment_id,
+                razorpay_signature: r.razorpay_signature,
+              });
+              toast.success(`You're on ${tier.name}`);
+            } catch (err) {
+              toast.error(err?.response?.data?.message || "Payment taken, but the upgrade did not apply. We're on it.");
+            }
+            await load();
+          },
+          prefill: { name: user?.name, email: user?.email },
+          theme: { color: "#960D32" },
+        }).open();
+        return;
+      }
+
       new window.Razorpay({
         key: data.key,
         subscription_id: data.subscription_id,
@@ -84,6 +114,12 @@ export default function MembershipSpace() {
       <div className="grid gap-3 sm:grid-cols-2">
         {tiers.map((t) => {
           const current = mine?.tier_id === t.id;
+          // What the member holds now decides whether another tier is a move up
+          // (allowed, prorated) or down (cancel first — they keep the paid period).
+          const heldPrice = mine ? Number(tiers.find((x) => x.id === mine.tier_id)?.price_inr) || 0 : 0;
+          const price = Number(t.price_inr) || 0;
+          const isUpgrade = !!mine && !current && price > heldPrice;
+          const isDowngrade = !!mine && !current && price <= heldPrice;
           return (
             <div key={t.id} className="mt-card flex flex-col gap-3 p-4">
               <div className="flex items-baseline justify-between">
@@ -99,11 +135,23 @@ export default function MembershipSpace() {
                 <span className="mt-auto inline-flex items-center justify-center gap-1.5 rounded-full bg-blush px-3 py-1.5 text-sm font-medium text-maroon">
                   <Check size={15} /> Current plan
                 </span>
+              ) : isDowngrade ? (
+                <span className="mt-auto text-center text-xs text-ink/50">
+                  Cancel your current tier to move here — it stays active until the period you have paid for ends.
+                </span>
               ) : (
                 <button onClick={() => join(t)} disabled={joining === t.id}
                   className="mt-btn mt-btn--primary mt-btn--s mt-auto">
-                  {joining === t.id ? "Joining…" : t.type === "free" ? "Join free" : `Join · ₹${t.price_inr}/mo`}
+                  {joining === t.id
+                    ? (isUpgrade ? "Upgrading…" : "Joining…")
+                    : isUpgrade ? `Upgrade · ₹${t.price_inr}/mo`
+                    : t.type === "free" ? "Join free" : `Join · ₹${t.price_inr}/mo`}
                 </button>
+              )}
+              {isUpgrade && (
+                <p className="-mt-1 text-center text-xs text-ink/50">
+                  You pay the difference for the days left on your current tier.
+                </p>
               )}
             </div>
           );

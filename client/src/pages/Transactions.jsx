@@ -9,6 +9,9 @@ import {
   Modal, EmptyState, ErrorState, Skeleton, fmtMoney, cn,
 } from "../components/dashboard/ui";
 import { isPreviewEnabled, getPreviewTransactions, filterPreviewTransactions } from "../utils/previewData";
+import { PageHeading, SubNav } from "../components/dashboard/ui/v2";
+import { MONEY_NAV } from "./dashboardNav";
+import MeetDropdown from "../components/ui/MeetDropdown";
 
 /* ==========================================================================
  * Transactions — redesigned content area (the host console shell/ConsoleSidebar
@@ -207,18 +210,8 @@ const dateFromFor = (preset) => {
 };
 
 // Pink pill select — same options the backend understands, styled to the reference.
-const FilterSelect = ({ value, onChange, children, label }) => (
-  <div className="relative">
-    <select
-      value={value}
-      onChange={onChange}
-      aria-label={label}
-      className="h-10 w-full cursor-pointer appearance-none rounded-full border border-maroon/15 bg-white pl-4 pr-9 text-sm font-medium text-ink shadow-sm outline-none transition focus:border-primary/50 focus:ring-2 focus:ring-primary/15"
-    >
-      {children}
-    </select>
-    <ChevronRight className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 rotate-90 text-primary/70" />
-  </div>
+const FilterSelect = ({ value, onChange, options, label }) => (
+  <MeetDropdown value={value} onChange={onChange} options={options} ariaLabel={label} />
 );
 
 /* ------------------------------------------------------------------ */
@@ -324,7 +317,9 @@ const TableSkeleton = () => (
 const PAGE_SIZE = 12;
 const EXPORT_LIMIT = 500;
 
-const Transactions = () => {
+// `embedded` (dashboard_v2): swap the standalone hero for the shared Money SubNav
+// + v2 PageHeading. ALL data/logic below is untouched — only the header changes.
+const Transactions = ({ embedded = false } = {}) => {
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -414,52 +409,58 @@ const Transactions = () => {
   const from = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
   const to = Math.min(page * PAGE_SIZE, total);
 
+  const exportBtn = (
+    <button
+      type="button"
+      onClick={exportCsv}
+      disabled={exporting || loading}
+      className="inline-flex h-10 shrink-0 items-center gap-2 self-start rounded-full bg-primary px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90 disabled:opacity-50 sm:self-auto"
+    >
+      <Download className="h-4 w-4" strokeWidth={2} />
+      {exporting ? "Exporting…" : "Export Report"}
+    </button>
+  );
+
   return (
     <div>
       {/* ── Page heading ─────────────────────────────────────────────── */}
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary">
-            <Receipt className="h-6 w-6" strokeWidth={2} />
-          </span>
-          <div>
-            <h1 className="font-display text-2xl font-extrabold tracking-tight text-maroon sm:text-[28px]">Transactions</h1>
-            <p className="mt-0.5 text-sm text-muted">Payments, refunds and payout records.</p>
-          </div>
+      {embedded ? (
+        <div className="mb-4 flex flex-col gap-2.5">
+          <PageHeading title="Transactions" sub="Payments, refunds and payout records." action={exportBtn} />
         </div>
-        <button
-          type="button"
-          onClick={exportCsv}
-          disabled={exporting || loading}
-          className="inline-flex h-10 shrink-0 items-center gap-2 self-start rounded-full bg-primary px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90 disabled:opacity-50 sm:self-auto"
-        >
-          <Download className="h-4 w-4" strokeWidth={2} />
-          {exporting ? "Exporting…" : "Export Report"}
-        </button>
-      </div>
+      ) : (
+        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary">
+              <Receipt className="h-6 w-6" strokeWidth={2} />
+            </span>
+            <div>
+              <h1 className="font-display text-2xl font-extrabold tracking-tight text-maroon sm:text-[28px]">Transactions</h1>
+              <p className="mt-0.5 text-sm text-muted">Payments, refunds and payout records.</p>
+            </div>
+          </div>
+          {exportBtn}
+        </div>
+      )}
 
       {/* ── Filter toolbar (only backend-supported controls are wired) ── */}
       <div className="mb-4 grid grid-cols-1 gap-2.5 rounded-2xl border border-maroon/10 bg-white p-3 shadow-sm sm:grid-cols-2 lg:grid-cols-[repeat(3,minmax(0,1fr))_1.6fr]">
-        <FilterSelect value={dateRange} onChange={(e) => onFilter(setDateRange)(e.target.value)} label="Filter by date">
-          <option value="month">This Month</option>
-          <option value="today">Today</option>
-          <option value="7d">Last 7 days</option>
-          <option value="30d">Last 30 days</option>
-          <option value="">All time</option>
-        </FilterSelect>
-        <FilterSelect value={status} onChange={(e) => onFilter(setStatus)(e.target.value)} label="Filter by status">
-          <option value="">All Status</option>
-          <option value="confirmed">Confirmed</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
-        </FilterSelect>
+        <FilterSelect value={dateRange} onChange={onFilter(setDateRange)} label="Filter by date"
+          options={[
+            { value: "month", label: "This Month" }, { value: "today", label: "Today" },
+            { value: "7d", label: "Last 7 days" }, { value: "30d", label: "Last 30 days" },
+            { value: "", label: "All time" },
+          ]} />
+        <FilterSelect value={status} onChange={onFilter(setStatus)} label="Filter by status"
+          options={[
+            { value: "", label: "All Status" }, { value: "confirmed", label: "Confirmed" },
+            { value: "completed", label: "Completed" }, { value: "cancelled", label: "Cancelled" },
+          ]} />
         {/* Sort is real (API `sort`). The reference's "Transaction type" and
             "Payment method" filters are omitted: the backend has no type or
             method field to filter on, so faking them would be decorative. */}
-        <FilterSelect value={sort} onChange={(e) => onFilter(setSort)(e.target.value)} label="Sort order">
-          <option value="desc">Newest first</option>
-          <option value="asc">Oldest first</option>
-        </FilterSelect>
+        <FilterSelect value={sort} onChange={onFilter(setSort)} label="Sort order"
+          options={[{ value: "desc", label: "Newest first" }, { value: "asc", label: "Oldest first" }]} />
         <div className="relative">
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/30" />
           <input

@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { adminListEscalations } from '../../../services/api';
 import { Badge, Skeleton } from '../../../components/admin/ui';
 import EscalationDetail from './EscalationDetail';
+import MeetDropdown from '../../../components/ui/MeetDropdown';
 
 const STATUS_TONE = { open: 'warn', replied: 'ok', closed: 'neutral' };
 const RATING_EMOJI = { 1: '😠', 2: '😕', 3: '😐', 4: '🙂', 5: '🤩' };
@@ -29,12 +30,8 @@ export default function EscalationsPage() {
   return (
     <>
       <div className="mb-3">
-        <select value={escStatus} onChange={(ev) => setEscStatus(ev.target.value)} className="border adm-border rounded-lg px-3 py-1.5 text-sm">
-          <option value="open">Open</option>
-          <option value="replied">Replied</option>
-          <option value="closed">Closed</option>
-          <option value="all">All</option>
-        </select>
+        <MeetDropdown ariaLabel="Escalation status" size="sm" value={escStatus} onChange={setEscStatus}
+          options={[{ value: 'open', label: 'Open' }, { value: 'replied', label: 'Replied' }, { value: 'closed', label: 'Closed' }, { value: 'all', label: 'All' }]} />
       </div>
       {loading ? <div className="space-y-2">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-16" />)}</div>
         : escs.length === 0 ? <p className="text-sm adm-t3">No escalations — Tithi is handling everything.</p>

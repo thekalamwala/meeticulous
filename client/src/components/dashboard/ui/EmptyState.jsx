@@ -1,20 +1,32 @@
 import { cn } from './cn';
 
-export function EmptyState({ icon: Icon, title, description, action, className = '' }) {
+/* Shared dashboard empty state. On the warm ramp, not Tailwind's cold greys.
+ *
+ * `script` is the one expressive affordance the brand allows here: a short
+ * human phrase set in Instrument Serif italic, appended to the title. It is
+ * optional — callers that want a plain, quiet empty row pass only `title`.
+ * Mirrors the community EmptyState (pages/community/CommunityLayout.jsx) so
+ * the two read as one system; that one also carries an illustration. */
+export function EmptyState({ icon: Icon, title, script, description, action, className = '' }) {
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center rounded-md border border-dashed border-gray-300 bg-gray-50/60 px-6 py-12 text-center',
+        'flex flex-col items-center justify-center rounded-md border border-dashed border-neutral-300 bg-blush/40 px-6 py-12 text-center',
         className,
       )}
     >
       {Icon && (
-        <div className="mb-3 rounded-full bg-gray-100 p-3 text-gray-400">
+        <div className="mb-3 rounded-full bg-blush p-3 text-maroon">
           <Icon className="h-6 w-6" />
         </div>
       )}
-      {title && <h3 className="text-sm font-semibold text-gray-900">{title}</h3>}
-      {description && <p className="mt-1 max-w-sm text-sm text-gray-500">{description}</p>}
+      {title && (
+        <h3 className="text-sm font-semibold text-ink">
+          {title}
+          {script && <> <span className="font-serif font-normal italic text-rose">{script}</span></>}
+        </h3>
+      )}
+      {description && <p className="mt-1 max-w-sm text-sm text-muted">{description}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
   );

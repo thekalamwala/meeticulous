@@ -2,7 +2,33 @@
 
 ## Task Workflow (default for every task)
 1. **Ask first.** Before starting any task, ask at least one clarifying question. Never dive in cold.
-2. **Fresh branch from main.** `git fetch origin && git switch -c <type>/<slug> origin/main`. Never work directly on `main` or reuse an old branch unless told to.
+2. **Fresh WORKTREE from main — never `git switch` in the shared checkout.**
+   ```bash
+   git fetch origin && git worktree add ../mt-wt-<slug> -b <type>/<slug> origin/main
+   ```
+   Then work in `../mt-wt-<slug>`. Never work directly on `main` or reuse an old branch unless told to.
+
+   **Why a worktree and not a branch switch.** Several Claude sessions share this
+   one clone at the same time. `git switch`, `git checkout` and `git reset --hard`
+   act on the whole working directory, so a session that switches branches destroys
+   every other session's uncommitted work — silently, and with no warning to either
+   side. This has bitten before; on 2026-11-17 a switch wiped 593 lines of another
+   session's in-progress work mid-build. A worktree gives each session its own
+   directory against the same repo, so nobody can be yanked out from under.
+   `git worktree list` shows who is where.
+
+   Three habits that go with it:
+   - **Commit as soon as something passes.** Uncommitted work is the only kind that
+     can be lost this way.
+   - **`git stash -u` before any switch** you still decide to make. The `-u` matters:
+     without it untracked files are not saved, and new files are most of a new
+     feature. That flag is the only reason the 593 lines above came back.
+   - **Never `git reset --hard` in a tree you did not dirty yourself.**
+
+   A worktree needs `node_modules` before it can run anything — junction it from the
+   main clone rather than reinstalling (`New-Item -ItemType Junction -Path
+   <wt>/server/node_modules -Target <main>/server/node_modules`, same for `client/`),
+   and copy `client/.env` across.
 3. **Work → commit → PR.** Do the change, commit, `gh pr create` (any type: feat/fix/docs/chore).
    **PR base = the open release train**, not `main`: check `git branch -r | grep release/` and use
    `--base release/YYYY-MM` (CI runs on `release/**`). The train ships to `main` in one merge
@@ -210,8 +236,8 @@ Items previously listed here as pending are now live:
   `anon` and `authenticated`. v3.206 revoked INSERT/UPDATE/DELETE but not TRUNCATE, and RLS does not
   cover TRUNCATE. Not currently reachable — PostgREST exposes no TRUNCATE verb, so the publishable
   key has no route to it — but it is the same posture v3.206 set out to close and wants a follow-up
-  migration. Also: `increment_coupon_redemption` (v3.204) is SECURITY DEFINER with no
-  `SET search_path`, unlike the v3.186/v3.218 pattern.
+  migration. The second half of this finding — `increment_coupon_redemption` (v3.204) being
+  SECURITY DEFINER with no `SET search_path` — is **FIXED** by v3.221 below.
 - **v3.188** (`v3.188_host_linkedin_login_flag.sql`) — applied (confirmed 2026-11-12). Was listed PENDING: apply before/at merge of the LinkedIn
   host login release: seeds the `host_linkedin_login` flag OFF (`ON CONFLICT DO NOTHING`). The registry
   entry also carries `enabled: false`, so a boot before the migration still creates it OFF.
@@ -236,6 +262,68 @@ Items previously listed here as pending are now live:
   supabase-js for auth+realtime, never PostgREST writes — verified, so no app impact). REVOKE-only, so
   rollback is a re-GRANT; the permissive write POLICIES are left in place (unreachable with no grant).
   Companion to v3.205 (profiles column SELECT) + v3.186 (functions + views). Shipped with PR #292.
+- **v3.221** (`v3.221_coupon_fn_search_path.sql`) — applied 2026-11-17 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`) and verified: `increment_coupon_redemption` now pins
+  `search_path = public, pg_temp`. Closes the open finding above. It was the ONLY one of 15
+  `SECURITY DEFINER` functions in `public` with a mutable path (measured, not assumed). Such a
+  function runs as its OWNER, so whatever the CALLER's search_path resolves `coupons` to is what
+  runs with owner rights. **pg_temp is NAMED** because Postgres searches the temp schema FIRST
+  whenever pg_temp is absent from the path — so the bare `= public` form used by v3.205 and v3.25
+  still permits a temp-table shadow (residual; those two are applied and left alone). Barely
+  exploitable today: EXECUTE is postgres + service_role only, and service_role can already write
+  `coupons` directly. It matters the day someone grants EXECUTE to `authenticated`, which CAN
+  create temp tables. ALTER-only, so body and ACL untouched — grants verified unchanged after.
+  Rollback: `ALTER FUNCTION public.increment_coupon_redemption(uuid) RESET search_path;`. Guarded:
+  `tests/unit/lockdownAnonRpcMigration.test.js` now fails ANY `SECURITY DEFINER` definition in a
+  migration from v3.186 on that does not pin search_path. Shipped with PR #375.
+- **v3.222** (`v3.222_course_fn_search_path.sql`) — applied 2026-11-17 on the Meeticulous DB and
+  verified (`search_path=public, pg_temp`; still SECURITY INVOKER; `courses` untouched; every
+  function we own now pins its path, 0 remaining).
+  Pins `increment_course_purchase_count`, the last entry in the Supabase
+  `function_search_path_mutable` lint. NOT v3.221's risk class: this one is SECURITY INVOKER, runs
+  with the caller's own rights, no privilege escalation — it is fixed so the lint reads zero and the
+  next finding in it is a real one. Of 338 unpinned functions in `public`, 337 are extension-owned
+  (btree_gist, pg_trgm and vector are all installed in public — a separate, lower advisor warning);
+  exactly one was ours.
+- **v3.225** (`v3.225_membership_charges.sql`) — applied 2026-11-19 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`) and verified: 37 columns, 7 indexes, RLS ON with no policies, 0
+  anon/authenticated INSERT/UPDATE/DELETE grants (v3.206 default privileges held), 0 rows.
+  `membership_charges` = one row per successful membership charge. Until it existed, a charge
+  left NO trace: the webhook moved `current_period_end` forward and dropped the payment entity,
+  so membership revenue was invisible to `routeAutoPayoutService` (needs a payment id),
+  `settlementService` (sums `bookings.vendor_amount`), `withholdingReportService` and
+  `gstExportService` — all of which read rows. The payout gap was a RECORD gap.
+  Money snapshot comes from `lib/pricingEngine` (same engine as bookings), so commission and
+  TDS/TCS match for the same host. No platform fee on top — the tier price is what Razorpay
+  bills — so `platform_fee_amount` is 0 and `customer_total` is the amount charged. Unique
+  indexes on `razorpay_payment_id` / `razorpay_order_id` are the idempotency guard: a duplicate
+  row would later become a duplicate payout. Additive; `services/membershipCharges.js` keeps a
+  schema fallback and swallows write failures, so bookkeeping can never cost a member the
+  access they paid for. **This records money; it does not move any** — the Route rail,
+  settlement/statutory reads and refund reversal are the next slices (PR #405).
+- **v3.226** (`v3.226_community_post_collaborators.sql`) — applied 2026-11-21 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`) and verified (5 cols, RLS ON / no policies, 3 indexes = PK + unique
+  `(post_id, profile_id)` + `profile_id`, 2 cascade FKs, `COMMUNITY_COLLABORATOR_ADDED` event seeded
+  in_app=true/email=false). `community_post_collaborators` = up to 2 credited collaborators per
+  community post (instant credit + in-app notify; shown on the post and on each collaborator's
+  profile feed). Cap-2 + self-exclusion live in `communityController.createItem`, not the DB. Shipped
+  with PR #412 behind `community_collaborators` (ships OFF). Code is schema-fallback safe
+  (`store.loadCollaboratorsByPost` / `listAuthorPosts` degrade to empty/author-only), so the migration
+  was safe to apply before the code deploys. Only takes effect once the flag is flipped.
+- **v3.217** (`v3.217_creator_intelligence.sql`) — applied 2026-11-18 on the Meeticulous DB
+  (`spquowzrefozmrzoszkf`) and verified: the 5 Creator Intelligence tables (`analytics_events`,
+  `analytics_daily`, `analytics_daily_dim`, `booking_attribution`, `benchmark_daily`), the
+  `profiles.intel_revenue_target` column, RLS ON all 5 (no policies, service_role only — v3.186/v3.206
+  posture), and anon/authenticated REVOKED. Additive; code is schema-fallback safe (intel-rollup /
+  intel-prune wrap each day in try/catch and no-op on a missing table), so it was safe to ship on
+  release/2026-11 before apply. Intel stays dark until `analytics_ingest` is flipped ON (ships OFF:
+  the collect endpoint returns 202 and drops). Shipped with PRs #366 (foundation) / #367 / #371.
+- **v3.218** (`v3.218_analytics_size_fn.sql`) — applied 2026-11-18 on the Meeticulous DB and verified
+  (fn executes, returned 40960 bytes): `analytics_events_size_bytes()` (SECURITY DEFINER, pins
+  `search_path = public, pg_catalog`, EXECUTE granted to service_role ONLY). Feeds the ingest size
+  guard, sampled by intel-rollup/intel-prune, never called on the ingest path. **Filename note:**
+  number collides with `v3.218_community_membership.sql` (membership) — cosmetic only, both applied,
+  Supabase names migrations independently. Shipped with PR #371.
 Workflow for any NEW migration: run it on BOTH DBs, and keep the
 code-side schema fallback (SELECT/INSERT destructure) until it is confirmed applied everywhere.
 
@@ -299,6 +387,27 @@ Bookings
 Payments
 - Razorpay is source of truth.
 - Verify signatures server-side.
+
+Withholding (TDS / TCS) — when CA sign-off is required
+  Ruled by the founder-CA on 2026-11-17 (PR #371). Cite this when the
+  tax-legal-signoff gate fires, instead of re-litigating it.
+
+  Sign-off IS required where a change determines a withheld amount OR ITS
+  ATTRIBUTION: rate, threshold, section, PAN/GSTIN condition, no-PAN floor,
+  state split, the period attributed to, refund/cancellation reversal, a write
+  to a withholding column, or statutory return/certificate content.
+
+  Sign-off is NOT required to aggregate or present already-persisted
+  withholding. That needs presentation review, not tax sign-off.
+
+  Two standing rules that came out of the same ruling:
+  - Withholding aggregates are FY-SCOPED (1 Apr–31 Mar IST, via
+    services/gst/gstPeriod.js). An all-time total reconciles to no statutory
+    record.
+  - Rates are asserted in ONE file, tests/unit/pricingEngineWithholding.test.js.
+    Every other fixture touching withholding uses deliberately non-statutory
+    amounts, so a changed rate can never be "corrected" into a fixture and
+    mistaken for validation.
 
 Plans
 Starter

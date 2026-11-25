@@ -26,7 +26,7 @@ export default function ProfileDrawer({ open, onClose, user }) {
             <Avatar author={author} />
             <div className="min-w-0">
               <div className="truncate font-semibold text-ink">{name}</div>
-              <div className="text-xs text-muted">{isHost ? 'Host' : 'Guest'}</div>
+              <div className="mt-post__meta">{isHost ? 'Host' : 'Guest'}</div>
             </div>
           </div>
         </div>

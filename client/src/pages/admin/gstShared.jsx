@@ -2,6 +2,7 @@
 // the IST-aware period picker, and a CSV blob download helper. Mirrors the local
 // `inr` convention used by the other admin finance pages (no shared money util).
 import React from 'react';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 
 export const inr = (n) =>
   new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(Number(n) || 0);
@@ -50,35 +51,26 @@ export function PeriodFilter({ value, onChange }) {
     <div className="flex flex-wrap items-end gap-3">
       <label className="flex flex-col gap-1 text-[11px] uppercase tracking-wide adm-t3">
         Financial year
-        <select className="fb-input text-sm" value={value.fy} onChange={(e) => set({ fy: e.target.value })}>
-          {fyOptions.map((o) => <option key={o.fy2} value={o.fy2}>{o.label}</option>)}
-        </select>
+        <MeetDropdown size="sm" ariaLabel="Financial year" value={value.fy} onChange={(v) => set({ fy: v })}
+          options={fyOptions.map((o) => ({ value: o.fy2, label: o.label }))} />
       </label>
       <label className="flex flex-col gap-1 text-[11px] uppercase tracking-wide adm-t3">
         Period
-        <select className="fb-input text-sm" value={value.mode} onChange={(e) => set({ mode: e.target.value })}>
-          <option value="month">Month</option>
-          <option value="quarter">Quarter</option>
-          <option value="annual">Full year</option>
-        </select>
+        <MeetDropdown size="sm" ariaLabel="Period" value={value.mode} onChange={(v) => set({ mode: v })}
+          options={[{ value: 'month', label: 'Month' }, { value: 'quarter', label: 'Quarter' }, { value: 'annual', label: 'Full year' }]} />
       </label>
       {value.mode === 'month' && (
         <label className="flex flex-col gap-1 text-[11px] uppercase tracking-wide adm-t3">
           Month
-          <select className="fb-input text-sm" value={value.month} onChange={(e) => set({ month: Number(e.target.value) })}>
-            {MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-          </select>
+          <MeetDropdown size="sm" searchable ariaLabel="Month" value={value.month} onChange={(v) => set({ month: Number(v) })}
+            options={MONTHS.map((m, i) => ({ value: i + 1, label: m }))} />
         </label>
       )}
       {value.mode === 'quarter' && (
         <label className="flex flex-col gap-1 text-[11px] uppercase tracking-wide adm-t3">
           Quarter
-          <select className="fb-input text-sm" value={value.quarter} onChange={(e) => set({ quarter: Number(e.target.value) })}>
-            <option value={1}>Q1 (Apr–Jun)</option>
-            <option value={2}>Q2 (Jul–Sep)</option>
-            <option value={3}>Q3 (Oct–Dec)</option>
-            <option value={4}>Q4 (Jan–Mar)</option>
-          </select>
+          <MeetDropdown size="sm" ariaLabel="Quarter" value={value.quarter} onChange={(v) => set({ quarter: Number(v) })}
+            options={[{ value: 1, label: 'Q1 (Apr–Jun)' }, { value: 2, label: 'Q2 (Jul–Sep)' }, { value: 3, label: 'Q3 (Oct–Dec)' }, { value: 4, label: 'Q4 (Jan–Mar)' }]} />
         </label>
       )}
     </div>

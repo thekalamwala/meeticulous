@@ -204,7 +204,7 @@ const InfoRow = ({ icon: Icon, label, value }) => (
   </div>
 );
 
-const BookingDetailModal = ({ booking, onClose, onAction, review, onReviewDone }) => {
+export const BookingDetailModal = ({ booking, onClose, onAction, review, onReviewDone }) => {
   const { on } = useFeatureFlags();
   const { user } = useAuth();
   const [tab, setTab] = useState("details");

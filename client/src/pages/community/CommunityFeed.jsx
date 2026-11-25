@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ChevronDown, CircleHelp, Image, MessagesSquare, SquarePen } from 'lucide-react';
+import { CircleHelp, Image, MessagesSquare, SquarePen } from 'lucide-react';
 import Seo from '../../components/common/Seo';
 import ErrorPage from '../ErrorPage';
 import { useInfiniteScroll } from '../../components/dashboard/ui/useInfiniteScroll';
 import { getFeed } from '../../services/communityApi';
-import CommunityTopics from '../../components/community/CommunityTopics';
 import { analytics, EVENTS } from '../../services/analytics';
 import { useAuth } from '../../context/AuthContext';
 import { useFeature } from '../../context/FeatureContext';
@@ -16,6 +15,7 @@ import { Avatar } from '../../components/community/AuthorChip';
 import useRequireLogin from '../../components/community/useRequireLogin';
 import useHiddenPosts from '../../components/community/useHiddenPosts';
 import ReportDialog from '../../components/community/ReportDialog';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import CommunityLayout, { EmptyState, ListStatus, SITE_DESC, useCursorList } from './CommunityLayout';
 
 const TABS = [
@@ -68,25 +68,24 @@ export default function CommunityFeed() {
 
       {/* v2: a slim one-line greeting, not a full-height hero, so the first post
           sits above the fold on a 390px phone. v1: the original hero. */}
-      <div className={v2 ? 'grid grid-cols-1 gap-x-4 gap-y-0 lg:grid-cols-[1fr_auto] lg:items-start' : 'flex flex-col gap-5 py-1'}>
+      {/* The greeting is one group: heading and subhead sit tight together (gap-y-1) with
+          real air above and below, so it reads as a block between the nav and the first
+          post instead of being squeezed against both. */}
+      <div className={v2 ? 'grid grid-cols-1 gap-x-4 gap-y-1 pb-2 pt-4 lg:grid-cols-[1fr_auto] lg:items-start' : 'flex flex-col gap-5 py-1'}>
         <h1 className={`order-1 font-display font-extrabold leading-tight tracking-tight text-maroon ${v2 ? 'text-xl lg:col-start-1 lg:row-start-1' : 'text-3xl sm:text-4xl'}`}>
           Ask, share, learn. <span className="font-serif font-normal italic text-rose">Find your people.</span>
         </h1>
-        <p className={`order-2 text-muted ${v2 ? 'text-xs lg:col-start-1 lg:row-start-2' : 'text-sm'}`}>Hosts and guests talking about sessions, pricing and the craft.</p>
+        <p className={`order-2 text-sm text-muted ${v2 ? 'lg:col-start-1 lg:row-start-2' : ''}`}>Hosts and guests talking about sessions, pricing and the craft.</p>
 
         {v2 ? (
           <div className="relative hidden lg:block lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:justify-self-end lg:self-center">
-            <select
-              aria-label="Filter the feed"
+            <MeetDropdown
+              size="sm"
+              ariaLabel="Filter the feed"
               value={tab}
-              onChange={(e) => setParams(e.target.value === 'everyone' ? {} : { tab: e.target.value })}
-              className="w-auto cursor-pointer appearance-none rounded-full border border-line bg-white py-1.5 pl-4 pr-9 text-[13px] font-semibold text-ink shadow-sm transition-colors hover:border-maroon/40 focus:outline-none focus:ring-2 focus:ring-maroon/30"
-            >
-              {TABS.map((t) => (
-                <option key={t.key} value={t.key} disabled={t.soon}>{t.label}{t.soon ? ' · soon' : ''}</option>
-              ))}
-            </select>
-            <ChevronDown size={15} aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted" />
+              onChange={(v) => setParams(v === 'everyone' ? {} : { tab: v })}
+              options={TABS.map((t) => ({ value: t.key, label: `${t.label}${t.soon ? ' · soon' : ''}`, disabled: t.soon }))}
+            />
           </div>
         ) : (
           <div role="tablist" aria-label="Feed" className="mt-tabs flex">
@@ -108,11 +107,13 @@ export default function CommunityFeed() {
         )}
       </div>
 
-      {/* Compact topic pills. On xl the rail shows them under the ad (see
-          CommunityLayout); here they cover narrower screens that have no rail. */}
-      <CommunityTopics className="xl:hidden" />
+      {/* Topics used to sit here, costing every reader a band of chrome before the first
+          post. Narrow screens now reach them in the spaces sheet (bottom bar → Spaces),
+          next to the spaces they belong with; xl still shows them in the rail. */}
 
-      <div className={`${v2 ? 'hidden lg:flex ' : ''}mt-card gap-4 p-5 sm:p-6`}>
+      {/* Desktop post box. Takes the feed card's density so it sits flush with the posts
+          below it instead of in a roomier card of its own. */}
+      <div className={`${v2 ? 'hidden lg:flex ' : ''}mt-card mt-card--feed`}>
         <div className="flex items-center gap-3">
           {user && <Avatar author={{ display_name: user.name || user.first_name, avatar_url: user.profile_image, role: user.is_host ? 'host' : 'guest' }} />}
           <button type="button" onClick={() => compose('post')} className="mt-input min-w-0 flex-1 cursor-text rounded-full text-left text-sm text-muted">

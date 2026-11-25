@@ -7,10 +7,16 @@ import { cn } from './cn';
 function useLockBody(open) {
   useEffect(() => {
     if (!open) return undefined;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    const { body } = document;
+    const prevOverflow = body.style.overflow;
+    const prevPad = body.style.paddingRight;
+    // Pad by the scrollbar width so hiding it doesn't shift the page right.
+    const sbw = window.innerWidth - document.documentElement.clientWidth;
+    body.style.overflow = 'hidden';
+    if (sbw > 0) body.style.paddingRight = `${sbw}px`;
     return () => {
-      document.body.style.overflow = prev;
+      body.style.overflow = prevOverflow;
+      body.style.paddingRight = prevPad;
     };
   }, [open]);
 }
@@ -63,16 +69,16 @@ export function Modal({ open, onClose, title, children, footer, size = 'md', cla
             )}
           >
             {/* Mobile grabber — signals a draggable native sheet (centered modal only). */}
-            {!drawer && <div className="mx-auto mt-2.5 h-1 w-10 rounded-full bg-gray-300 sm:hidden" aria-hidden="true" />}
+            {!drawer && <div className="mx-auto mt-2.5 h-1 w-10 rounded-full bg-neutral-300 sm:hidden" aria-hidden="true" />}
             {(title || onClose) && (
-              <div className="flex shrink-0 items-center justify-between border-b border-gray-100 px-5 py-4">
-                <h3 className="text-base font-semibold text-gray-900">{title}</h3>
+              <div className="flex shrink-0 items-center justify-between border-b border-neutral-100 px-5 py-4">
+                <h3 className="text-base font-semibold text-neutral-900">{title}</h3>
                 {onClose && (
                   <button
                     type="button"
                     onClick={onClose}
                     aria-label="Close"
-                    className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                    className="rounded p-1 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-600"
                   >
                     <X className="h-5 w-5" />
                   </button>
@@ -80,7 +86,7 @@ export function Modal({ open, onClose, title, children, footer, size = 'md', cla
               </div>
             )}
             <div className={cn('overflow-y-auto px-5 py-4', drawer ? 'flex-1' : 'max-h-[70vh]')}>{children}</div>
-            {footer && <div className="flex shrink-0 justify-end gap-2 border-t border-gray-100 px-5 py-3">{footer}</div>}
+            {footer && <div className="flex shrink-0 justify-end gap-2 border-t border-neutral-100 px-5 py-3">{footer}</div>}
           </motion.div>
         </motion.div>
       )}
@@ -111,8 +117,8 @@ export function Sheet({ open, onClose, title, children, side = 'bottom', classNa
               className,
             )}
           >
-            {isBottom && <div className="mx-auto mt-2.5 h-1 w-10 rounded-full bg-gray-300" />}
-            {title && <div className="px-5 pb-2 pt-3 text-base font-semibold text-gray-900">{title}</div>}
+            {isBottom && <div className="mx-auto mt-2.5 h-1 w-10 rounded-full bg-neutral-300" />}
+            {title && <div className="px-5 pb-2 pt-3 text-base font-semibold text-neutral-900">{title}</div>}
             <div
               className="dash-noscrollbar overflow-y-auto px-3 pb-[max(1rem,env(safe-area-inset-bottom))]"
               style={{ maxHeight: isBottom ? '78vh' : '100%' }}

@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { Wallet, CreditCard, IndianRupee, MessageCircle, CalendarCheck, XCircle } from 'lucide-react';
 
 // The single ranked "Next step" nudge on the host dashboard. Content is a data-only
-// descriptor from lib/hostNudges.buildNudges. The share nudge renders its own rich
+// descriptor (the `nudge` prop). The share nudge renders its own rich
 // hero in Dashboard, so this handles the KYC / legacy / upgrade descriptors.
 const ICONS = { Wallet, CreditCard, IndianRupee, MessageCircle, CalendarCheck };
 const TONE = {
@@ -29,8 +29,8 @@ export default function NextStepCard({ nudge, onDismiss, onAction }) {
     <div className={`mb-5 flex items-start gap-3 rounded-md border p-4 ${t.box}`}>
       <Icon className={`mt-0.5 h-5 w-5 shrink-0 ${t.icon}`} strokeWidth={2.25} />
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-gray-900">{nudge.title}</p>
-        <p className="mt-0.5 text-xs text-gray-600">{nudge.body}</p>
+        <p className="text-sm font-semibold text-neutral-900">{nudge.title}</p>
+        <p className="mt-0.5 text-xs text-neutral-600">{nudge.body}</p>
       </div>
       <div className="flex shrink-0 items-center gap-2">
         {nudge.action ? (

@@ -15,6 +15,7 @@ const { bustSitemapCache } = require('../utils/sitemapCache');
 const { adminAlert } = require('../utils/adminAlert');
 const { isFeatureEnabled } = require('../services/featureFlags');
 const membershipNotify = require('../services/community/membershipNotify');
+const { inAppNotify } = require('../utils/inAppNotify');
 
 const PHASE1_FORMATS = ['text', 'question', 'announcement'];
 // Spec §6/§13: the `official` space policy and announcements are for badge 'official' only.
@@ -179,6 +180,28 @@ const createItem = handle(async (req, res) => {
     if (audience !== 'public' && req.body.teaser_line) teaserLine = String(req.body.teaser_line).slice(0, 200);
   }
 
+  // Collaborators (community_collaborators): up to 2 credited co-authors, instant
+  // credit (no accept step). Validated BEFORE the post is written so a bad request
+  // leaves no orphan row. `collaborators` carries is_host so the notify lands in the
+  // right bell.
+  let collaborators = [];
+  if (await isFeatureEnabled('community_collaborators')) {
+    const raw = Array.isArray(req.body?.collaborator_ids) ? req.body.collaborator_ids : [];
+    const self = String(uid).toLowerCase();
+    // Lowercase so dedupe + self-exclusion match the case-insensitive uuid lookup
+    // (a client can't self-credit by sending its own id uppercased).
+    const ids = [...new Set(raw.map((x) => String(x).toLowerCase()).filter(Boolean))].filter((id) => id !== self);
+    if (ids.length > 2) return fail(res, 400, 'COLLAB_LIMIT', 'You can add up to 2 collaborators.');
+    if (ids.length) {
+      const valid = await store.mentionableByIds(ids);
+      if (valid.length !== ids.length) return fail(res, 400, 'COLLAB_INVALID', 'Pick community members as collaborators.');
+      // Keep the author's pick order (mentionableByIds returns DB order) so stored
+      // position — and the "with A & B" display — follows what they chose.
+      const byId = new Map(valid.map((c) => [c.id, c]));
+      collaborators = ids.map((id) => byId.get(id)).filter(Boolean);
+    }
+  }
+
   const item = await store.insertPost(
     { kind, format, author_id: uid, space_id: space?.id || null, title: draft.title, body: draft.body,
       audience, audience_tier_id: audienceTierId, teaser_line: teaserLine },
@@ -192,6 +215,29 @@ const createItem = handle(async (req, res) => {
     await store.updatePost(item.id, { status: 'deleted', deleted_at: now() }).catch(() => null);
     throw e;
   }
+  // Credit collaborators + notify them. Same no-half-post guard as media.
+  if (collaborators.length) {
+    try {
+      await store.insertCollaborators(item.id, collaborators.map((c) => c.id));
+    } catch (e) {
+      await store.updatePost(item.id, { status: 'deleted', deleted_at: now() }).catch(() => null);
+      throw e;
+    }
+    const link = `/community/${kind === 'thread' ? 't' : 'p'}/${item.slug}`;
+    const actorName = profile?.name || profile?.first_name || 'Someone';
+    for (const c of collaborators) {
+      inAppNotify({
+        userId: c.id,
+        role: c.is_host ? 'host' : 'guest',
+        type: 'COMMUNITY_COLLABORATOR_ADDED',
+        title: `${actorName} added you as a collaborator`,
+        link,
+        data: { post_id: item.id },
+        dedupeKey: `collab:${item.id}:${c.id}`,
+      });
+    }
+  }
+
   await recordMentions({ item, comment: null, text: `${draft.title || ''}\n${draft.body}`, actorId: uid });
   item.is_indexable = await safeRefresh(item.id);
   bustSitemapCache();
@@ -644,6 +690,12 @@ const authorActivity = handleRead(async (req, res) => {
   return res.json({ posts, comments: withParent });
 }, { posts: [], comments: [] });
 
+// GET /mentions — posts/comments that @mention the signed-in member, newest first. Private.
+const listMentions = handle(async (req, res) => {
+  const items = (await store.listMentions(req.user.id, 30)).filter((m) => m.post);
+  return res.json({ items });
+});
+
 // PATCH /prefs — update the member's email notification preference. Mentions and
 // replies share one flag (email_replies) server-side (notify.js wantsEmail), so
 // the client shows one toggle. ponytail: split into email_mentions when the two
@@ -683,7 +735,7 @@ const mentionSuggest = handle(async (req, res) => {
 });
 
 module.exports = {
-  listSpaces, feed, spaceThreads, tags, tagThreads, itemDetail, itemComments, me, myCard, authorActivity, mentionSuggest, updatePrefs,
+  listSpaces, feed, spaceThreads, tags, tagThreads, itemDetail, itemComments, me, myCard, authorActivity, listMentions, mentionSuggest, updatePrefs,
   acceptTerms, createItem, updateItem, deleteItem, createComment, updateComment, deleteComment,
   acceptAnswer, addReaction, removeReaction, createReport,
   createSave, removeSave, createBlock, removeBlock,

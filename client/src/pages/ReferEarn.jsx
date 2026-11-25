@@ -8,6 +8,9 @@ import {
   PageHeader, Section, StatCard, DataTable, Badge, Button,
   EmptyState, ErrorState, SkeletonCard, fmtMoney,
 } from "../components/dashboard/ui";
+import { PageHeading as PageHeadingV2, SubNav } from "../components/dashboard/ui/v2";
+import { GROW_NAV } from "./dashboardNav";
+import GrowShareButton from "../components/dashboard/GrowShareButton";
 
 const fmtDate = (iso) =>
   new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
@@ -44,7 +47,7 @@ const COLUMNS = [
   },
 ];
 
-const ReferEarn = () => {
+const ReferEarn = ({ embedded = false } = {}) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -65,6 +68,14 @@ const ReferEarn = () => {
   };
 
   useEffect(() => { load(); }, []);
+
+  const head = embedded ? (
+    <>
+      <PageHeadingV2 title="Refer & earn" sub="Invite other hosts. Earn cash when they subscribe." action={<GrowShareButton />} />
+    </>
+  ) : (
+    <PageHeader title="Refer & Earn" subtitle="Invite other hosts. Earn cash when they subscribe." />
+  );
 
   const username = data?.username || "";
   const link = username ? `${window.location.origin}/?ref=${username}` : "";
@@ -91,7 +102,7 @@ const ReferEarn = () => {
   if (loading) {
     return (
       <div>
-        <PageHeader title="Refer & Earn" subtitle="Invite other hosts. Earn cash when they subscribe." />
+        {head}
         <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)}
         </div>
@@ -103,7 +114,7 @@ const ReferEarn = () => {
   if (error) {
     return (
       <div>
-        <PageHeader title="Refer & Earn" subtitle="Invite other hosts. Earn cash when they subscribe." />
+        {head}
         <ErrorState message="Couldn’t load your referrals." onRetry={load} />
       </div>
     );
@@ -113,7 +124,7 @@ const ReferEarn = () => {
 
   return (
     <div>
-      <PageHeader title="Refer & Earn" subtitle="Invite other hosts. Earn cash when they subscribe." />
+      {head}
 
       {/* Referral link */}
       <div className="mb-6 rounded-xl border border-maroon/10 bg-white p-4">

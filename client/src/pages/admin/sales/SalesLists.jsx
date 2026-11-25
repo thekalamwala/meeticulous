@@ -4,6 +4,7 @@ import { PageHeader, Card, Btn, Table, Skeleton } from '../../../components/admi
 import { crmListLists, crmCreateList, crmGetList, crmListLeads, crmBulk, crmImportCommit, crmListTags, adminCampCreateSegment } from '../../../services/api';
 import { relTime } from './salesConstants';
 import TagChip from './TagChip';
+import MeetDropdown from '../../../components/ui/MeetDropdown';
 import LeadDrawer from './LeadDrawer';
 import toast from 'react-hot-toast';
 
@@ -155,10 +156,7 @@ function ListDetail({ listId }) {
       <div className="flex flex-wrap items-center gap-2 mb-4">
         <input className="fb-input text-sm flex-1 min-w-[200px]" placeholder="Search name, business, phone, email…"
           value={q} onChange={(e) => setQ(e.target.value)} />
-        <select className="fb-input text-sm w-auto min-w-[130px]" value={tag} onChange={(e) => { setTag(e.target.value); setPage(1); }}>
-          <option value="">Any tag</option>
-          {tagCatalog.map((tg) => <option key={tg.id} value={tg.name}>{tg.name}</option>)}
-        </select>
+        <MeetDropdown size="sm" className="min-w-[130px]" value={tag} onChange={(v) => { setTag(v); setPage(1); }} placeholder="Any tag" ariaLabel="Tag" searchable options={tagCatalog.map((tg) => ({ value: tg.name, label: tg.name }))} />
         {(tag || q) && <Btn variant="outline" size="sm" onClick={() => { setTag(''); setQ(''); setDq(''); setPage(1); }}>Clear</Btn>}
         <Btn size="sm" className="ml-auto" onClick={createSegment}>↗ Create segment</Btn>
       </div>

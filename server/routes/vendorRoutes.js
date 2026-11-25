@@ -15,6 +15,16 @@ const {
 // All vendor routes require auth
 router.use(protect);
 
+// Creator Intelligence (Phase 3). Both read bookings live, so they work the
+// day they ship rather than waiting on the event store. Money is ungated by
+// design (see services/intel/gate.js); Overview gates six blocks on the
+// subscription_plans limits.insights key.
+const { getMoney, getOverview, getAudience, getDemand } = require('../controllers/intelligenceController');
+router.get('/intelligence/money', getMoney);
+router.get('/intelligence/overview', getOverview);
+router.get('/intelligence/audience', getAudience);
+router.get('/intelligence/demand', getDemand);
+
 // Transactions
 router.get('/transactions', getTransactions);
 

@@ -25,6 +25,8 @@ import {
 import {
   PageHeader, Card, Button, FormField, Input, Select, StickyActionBar, Tabs, cn,
 } from "../components/dashboard/ui";
+import { PageHeading as PageHeadingV2, SubNav } from "../components/dashboard/ui/v2";
+import { SETTINGS_NAV } from "./dashboardNav";
 
 
 // Canonical cover-photo aspect ratio. Cropped to this on upload and rendered at
@@ -195,7 +197,7 @@ const ProfilePreview = ({ form, themeColor }) => {
   const borderColor = getPlanBorderColor('explorer'); // preview always uses explorer
 
   return (
-    <div className="mx-auto w-full max-w-[240px] select-none overflow-hidden rounded-3xl border-2 border-neutral-200 bg-white text-xs">
+    <div className="mx-auto w-full max-w-[240px] select-none overflow-hidden rounded-[8px] border-2 border-neutral-200 bg-white text-xs">
       {/* Cover — 3:1, matches every render site. Flat theme tint (no gradient). */}
       <div className="relative aspect-[3/1]">
         <img src={form.cover_image || DEFAULT_COVER_IMAGE} alt="" className="h-full w-full object-cover object-center" />
@@ -252,7 +254,7 @@ const InlineField = ({ value, onCommit, placeholder, multiline = false, inline =
       if (e.key === 'Escape') cancel();
       if (e.key === 'Enter' && !multiline) { e.preventDefault(); commit(); }
     },
-    className: cn('rounded-md border-2 border-maroon/40 bg-white px-2 py-1 text-ink focus:outline-none focus-visible:ring-[3px] focus-visible:ring-rose/40', inline ? 'w-auto min-w-[9rem] max-w-full' : 'w-full', inputClass),
+    className: cn('border-solid border-x-0 border-t-0 border-b-[1.5px] rounded-none border-maroon/40 bg-transparent px-0.5 py-1 text-ink focus:outline-none focus:border-maroon focus-visible:ring-0', inline ? 'w-auto min-w-[9rem] max-w-full' : 'w-full', inputClass),
   };
   if (multiline) {
     return (
@@ -267,7 +269,7 @@ const InlineField = ({ value, onCommit, placeholder, multiline = false, inline =
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-const ProfileSetup = () => {
+const ProfileSetup = ({ embedded = false } = {}) => {
   const { user, updateUser } = useAuth();
   const navigate = useNavigate();
   const [cropper, setCropper] = useState(null);
@@ -398,11 +400,20 @@ const ProfileSetup = () => {
   }, [dirty]);
 
   return (
-    <div className="mx-auto max-w-5xl">
-      <PageHeader
-        title="Settings"
-        subtitle={<>How guests discover and book you. Plan: <span className="font-semibold text-ink">{planLabel(plan, 'Starter')}</span></>}
-      />
+    <div className={embedded ? '' : 'mx-auto max-w-5xl'}>
+      {embedded ? (
+        <div className="mb-4 flex flex-col gap-2.5">
+          <PageHeadingV2
+            title="Account"
+            sub={<>How guests discover and book you. Plan: <span className="font-semibold text-ink">{planLabel(plan, 'Starter')}</span></>}
+          />
+        </div>
+      ) : (
+        <PageHeader
+          title="Settings"
+          subtitle={<>How guests discover and book you. Plan: <span className="font-semibold text-ink">{planLabel(plan, 'Starter')}</span></>}
+        />
+      )}
 
       {/* Section rail. Booking policy + privacy now live in their own "Booking &
           privacy" section instead of being buried under Integrations. Plan lives

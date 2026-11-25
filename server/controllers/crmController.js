@@ -67,12 +67,12 @@ const resolveCustomer = async (req, res) => {
   } catch (err) { return fail(res, err, 'Could not open client.'); }
 };
 
-// Resolve the crm_customers handle in :id to a host-owned row (or null).
+// Resolve the :id (a crm_customers handle OR a guest profile id) to a host-owned
+// row, or null. Shares getClient's resolver so notes/attributes work on the same
+// profile-id links that open the detail page.
 const ownedCustomer = async (hostId, id) => {
   if (!UUID_RE.test(id)) return null;
-  const { data } = await supabaseAdmin
-    .from('crm_customers').select('*').eq('id', id).eq('host_id', hostId).maybeSingle();
-  return data || null;
+  return crmService.resolveClientHandle(hostId, id);
 };
 
 // POST /api/crm/customers/:id/notes  { body, booking_id? }

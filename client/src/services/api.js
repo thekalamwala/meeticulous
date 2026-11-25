@@ -465,6 +465,15 @@ export const searchVendors    = (q)              => API.get('/host/search', { pa
 export const recordProfileView = (username)      => API.post(`/host/${encodeURIComponent(username)}/view`).catch(() => {});
 export const getMyProfileViews = ()              => API.get('/host/profile-views');
 
+// ── Creator Intelligence (behind `dashboard_sections_v2`) ─────
+// Both read live bookings server-side. Overview is plan-gated (free hosts get
+// the headline tiles + commission leak; forecast/win-back/benchmarks/cohorts
+// are REMOVED from the payload, not hidden). Money (Revenue) is ungated.
+export const getIntelligenceOverview = (params) => API.get('/vendor/intelligence/overview', { params });
+export const getIntelligenceAudience = (params) => API.get('/vendor/intelligence/audience', { params });
+export const getIntelligenceDemand   = (params) => API.get('/vendor/intelligence/demand', { params });
+export const getIntelligenceMoney    = (params) => API.get('/vendor/intelligence/money', { params });
+
 // ── Coupons (v3.204, behind the `coupons` flag) ───────────────
 // Guest: preview a discount before booking. Host: manage own codes.
 export const validateCoupon    = (data)            => API.post('/bookings/coupon/validate', data); // { code, service_id }
@@ -619,6 +628,9 @@ export const getMembershipSpace = (username)  => API.get(`/memberships/space/${e
 export const joinMembership     = (tierId)    => API.post('/memberships/join', { tier_id: tierId });
 export const createMembershipSubscription = (tierId) => API.post('/memberships/subscribe', { tier_id: tierId });
 export const syncMembershipSubscription   = (subId) => API.post('/memberships/subscription/sync', { subscription_id: subId });
+// Tier upgrade: /subscribe answers { upgrade: true, ... } when the member already
+// holds a cheaper paid tier; this confirms the prorated payment and moves them.
+export const verifyMembershipUpgrade = (p)    => API.post('/memberships/upgrade/verify', p);
 export const cancelMembership   = (hostId)    => API.post('/memberships/cancel', { host_id: hostId });
 export const getHostMembers     = ()          => API.get('/memberships/members');
 export const getMySubscriptions = ()          => API.get('/memberships/my-subscriptions');

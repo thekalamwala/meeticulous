@@ -9,6 +9,9 @@ const razorpayConfig = require('../services/razorpayConfig');
 const { fetchSubscription } = require('../services/razorpaySubscriptions');
 const billing = require('../services/membershipBillingService');
 const membershipNotify = require('../services/community/membershipNotify');
+const { verifySignature } = require('../utils/razorpaySignature');
+const { auditLog, securityLog } = require('../utils/logger');
+const { quoteUpgrade, isUpgrade } = require('../lib/membershipProration');
 
 const MAX_TIERS = 3;
 
@@ -270,22 +273,123 @@ const loadJoinablePaidTier = async (req, res, tierId) => {
   return tier;
 };
 
+// The caller's live membership with one host, with the price of the tier they hold
+// (which is what an upgrade is measured against). null when they have none.
+const loadCurrentMembership = async (memberId, hostId) => {
+  const { data } = await supabaseAdmin
+    .from('community_membership_subscriptions')
+    .select('id, tier_id, status, current_period_end, razorpay_subscription_id, tier:community_membership_tiers(id, name, type, price_inr)')
+    .eq('member_id', memberId).eq('host_id', hostId).in('status', ['active', 'past_due']).maybeSingle();
+  return data || null;
+};
+
 // ── POST /api/memberships/subscribe ───────────────────────────
 // Start a paid membership: mint/verify the tier's Razorpay plan + a subscription.
 // The webhook (notes.kind === 'membership') grants entitlement on charge.
+//
+// A member who already holds a tier with this host is MOVING, not joining:
+//   free → paid   a free row has no money behind it, so this is an ordinary
+//                 subscription; activateFromSubscription flips the row on charge.
+//   paid → dearer answers an upgrade order for the prorated difference instead of a
+//                 subscription; /upgrade/verify finishes the move once it is paid.
+//   same / cheaper refused — downgrades go through cancel, so the member keeps the
+//                 period they already paid for instead of losing it mid-cycle.
 const createPaidSubscription = async (req, res) => {
   try {
     const tier = await loadJoinablePaidTier(req, res, req.body?.tier_id);
     if (!tier) return;
     const hostId = tier.program.host_id;
 
-    const { data: current } = await supabaseAdmin
-      .from('community_membership_subscriptions').select('id')
-      .eq('member_id', req.user.id).eq('host_id', hostId).in('status', ['active', 'past_due']).maybeSingle();
-    if (current) return res.status(409).json({ message: 'You already have a membership with this host.' });
+    const current = await loadCurrentMembership(req.user.id, hostId);
+    if (current) {
+      if (current.tier_id === tier.id) {
+        return res.status(409).json({ message: 'You are already on this tier.' });
+      }
+      const currentPrice = Number(current.tier?.price_inr) || 0;
+      if (!isUpgrade(currentPrice, tier.price_inr)) {
+        return res.status(400).json({
+          message: 'To move to a lower tier, cancel your current membership first — it stays active until the end of the period you have paid for.',
+          downgrade: true,
+        });
+      }
+      if (current.razorpay_subscription_id) {
+        const quote = quoteUpgrade({
+          currentPriceInr: currentPrice,
+          newPriceInr: tier.price_inr,
+          periodEndIso: current.current_period_end,
+        });
+        const order = await billing.createUpgradeOrder({
+          tier, current, memberId: req.user.id, hostId, quote,
+        });
+        return res.status(201).json({
+          upgrade: true,
+          razorpay_order_id: order.id, amount: order.amount, currency: order.currency,
+          key: await razorpayConfig.getKeyId(),
+          from_tier: { id: current.tier_id, name: current.tier?.name || null, price_inr: currentPrice },
+          credit_inr: quote.creditInr, due_now_inr: quote.dueNowInr, remaining_days: quote.remainingDays,
+        });
+      }
+      // free → paid falls through: no credit to apply, no old mandate to cancel.
+    }
 
     const sub = await billing.startPaidSubscription({ tier, memberId: req.user.id, hostId });
     res.status(201).json({ subscription_id: sub.id, key: await razorpayConfig.getKeyId() });
+  } catch (error) { safeError(res, error); }
+};
+
+// ── POST /api/memberships/upgrade/verify ──────────────────────
+// Finish a paid → dearer-paid move after the prorated difference is paid.
+// The signature proves the order/payment pair is genuine; the order's own notes
+// (written by us at creation) say what it bought and for whom.
+const verifyUpgrade = async (req, res) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body || {};
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ message: 'razorpay_order_id, razorpay_payment_id and razorpay_signature are required' });
+    }
+    const keySecret = await razorpayConfig.getKeySecret();
+    if (!verifySignature(razorpay_order_id, razorpay_payment_id, razorpay_signature, keySecret)) {
+      securityLog('MEMBERSHIP_UPGRADE_SIGNATURE_INVALID', { order_id: razorpay_order_id, ip: req.ip });
+      return res.status(400).json({ message: 'Payment verification failed.' });
+    }
+
+    let rzpOrder;
+    try {
+      const razorpay = await razorpayConfig.getClient();
+      rzpOrder = await razorpay.orders.fetch(razorpay_order_id);
+    } catch (_) { return res.status(400).json({ message: 'Order not found.' }); }
+
+    const notes = rzpOrder?.notes || {};
+    const expectedPaise = Math.round(Number(notes.due_now_inr) * 100);
+    if (notes.kind !== 'membership_upgrade'
+        || String(notes.member_id) !== String(req.user.id)
+        || Number(rzpOrder?.amount) !== expectedPaise) {
+      securityLog('MEMBERSHIP_UPGRADE_MISMATCH', { order_id: razorpay_order_id, member: req.user.id, ip: req.ip });
+      return res.status(400).json({ message: 'Payment does not match this upgrade.' });
+    }
+
+    const current = await loadCurrentMembership(req.user.id, notes.host_id);
+    if (!current) return res.status(409).json({ message: 'No active membership to upgrade.' });
+    // Client retried after a slow first call — the move already landed.
+    if (String(current.tier_id) === String(notes.tier_id)) {
+      return res.json({ upgraded: true, reused: true, tier_id: current.tier_id });
+    }
+
+    const { data: tier } = await supabaseAdmin
+      .from('community_membership_tiers')
+      .select('id, name, type, status, price_inr, razorpay_plan_id_monthly')
+      .eq('id', notes.tier_id).maybeSingle();
+    if (!tier || tier.type !== 'paid') return res.status(400).json({ message: 'Tier is no longer available.' });
+
+    const result = await billing.applyUpgrade({
+      notes, current, tier,
+      orderId: razorpay_order_id, paymentId: razorpay_payment_id,
+    });
+    auditLog('MEMBERSHIP_UPGRADED', req.user.id, {
+      host_id: notes.host_id, from_tier_id: notes.from_tier_id, to_tier_id: tier.id,
+      paid_inr: Number(notes.due_now_inr) || 0, credit_inr: Number(notes.credit_inr) || 0,
+    });
+    res.json({ upgraded: true, tier_id: tier.id, subscription_id: result.subscription_id });
   } catch (error) { safeError(res, error); }
 };
 
@@ -385,5 +489,5 @@ const getMySubscriptions = async (req, res) => {
 module.exports = {
   getMyMembership, upsertProgram, addTier, updateTier, deleteTier, setPublished,
   getPublicSpace, joinFree, createPaidSubscription, syncPaidSubscription, cancelSubscription,
-  getHostMembers, getMySubscriptions,
+  verifyUpgrade, getHostMembers, getMySubscriptions,
 };

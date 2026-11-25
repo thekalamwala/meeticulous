@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { Card, Btn, Badge, Skeleton } from '../../../components/admin/ui';
 import { crmColdCallFollowUps, crmColdCallSetFollowUp, crmColdCallStats } from '../../../services/api';
 import Drawer from '../../../components/admin/seo/Drawer';
+import MeetDropdown from '../../../components/ui/MeetDropdown';
 import { Kpi, HEADING } from './ccUi';
 import { OUTCOMES, outcomeLabel, outcomeTone, formatPhone, countdown, safeUrl, ago } from './coldCallUtils';
 
@@ -112,9 +113,7 @@ export default function ColdCallFollowUps() {
             ['priority', 'Priority', [['', 'All priorities'], ['P1', 'P1'], ['P2', 'P2'], ['P3', 'P3']]],
           ].map(([k, label, opts]) => (
             <label key={k} className="block"><span className="text-[11px] font-semibold uppercase tracking-wide adm-t3">{label}</span>
-              <select className="fb-input text-[13px] !w-full !min-h-0 !py-1.5 mt-1" value={filters[k]} onChange={(e) => setF(k, e.target.value)}>
-                {opts.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-              </select></label>
+              <MeetDropdown size="sm" className="mt-1" value={filters[k]} onChange={(v) => setF(k, v)} ariaLabel={label} options={opts.map(([v, l]) => ({ value: v, label: l }))} /></label>
           ))}
           <label className="block"><span className="text-[11px] font-semibold uppercase tracking-wide adm-t3">Category</span>
             <input className="fb-input text-[13px] !w-full !min-h-0 !py-1.5 mt-1" placeholder="e.g. Dental" value={filters.category} onChange={(e) => setF('category', e.target.value)} /></label>
@@ -170,9 +169,7 @@ export default function ColdCallFollowUps() {
               <Btn size="sm" variant="outline" disabled={page >= pages} onClick={() => setPage((p) => p + 1)}>›</Btn>
             </div>
             <label className="flex items-center gap-2">Rows per page
-              <select className="fb-input text-[12.5px] !w-auto !min-h-0 !py-1" value={pageSize} onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}>
-                {[12, 25, 50].map((n) => <option key={n} value={n}>{n}</option>)}
-              </select></label>
+              <MeetDropdown size="sm" value={pageSize} onChange={(v) => { setPageSize(Number(v)); setPage(1); }} ariaLabel="Rows per page" options={[12, 25, 50].map((n) => ({ value: n, label: String(n) }))} /></label>
           </div>
         </Card>
 

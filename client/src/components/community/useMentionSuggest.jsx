@@ -103,7 +103,7 @@ export default function useMentionSuggest({ value, setValue, inputRef }) {
           <Avatar author={{ display_name: it.name, avatar_url: it.avatar_url, role: it.role }} size="s" />
           <span className="min-w-0">
             <span className="block truncate text-sm font-medium text-ink">{it.name}</span>
-            <span className="block truncate text-xs text-muted">@{it.username}</span>
+            <span className="block truncate mt-post__meta">@{it.username}</span>
           </span>
         </li>
       ))}

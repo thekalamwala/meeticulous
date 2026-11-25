@@ -6,6 +6,8 @@ import { getPublicPlans, createSubscription, syncSubscription, cancelSubscriptio
 import toast from "react-hot-toast";
 import BackButton from "../components/common/BackButton";
 import { PageHeader, Card, Button, buttonClasses, cn, Modal, Sheet, ConfirmSheet, Input, Select, FormField } from "../components/dashboard/ui";
+import { PageHeading as PageHeadingV2, SubNav } from "../components/dashboard/ui/v2";
+import { SETTINGS_NAV } from "./dashboardNav";
 import { planLabel, normalizePlan, GIFTED_PRO_LABEL } from "../utils/themeUtils";
 import loadRazorpay from "../utils/loadRazorpay";
 import { INDIAN_STATES } from "../lib/indianStates";
@@ -51,7 +53,7 @@ const Check = () => (
   </svg>
 );
 
-const UpgradePlan = () => {
+const UpgradePlan = ({ embedded = false } = {}) => {
   const { user, updateUser } = useAuth();
   // Which prompt sent the host here (?src=taste_ending, commission, …) — the
   // conversion funnel's trigger key (docs/host-lifecycle-nurture.md).
@@ -182,8 +184,12 @@ const UpgradePlan = () => {
   const hasActiveSub = user?.has_payment_mandate && (status === "active" || status === "cancelled") && currentPlan !== "starter";
 
   return (
-    <div className="mx-auto max-w-6xl">
-      <BackButton />
+    <div className={embedded ? '' : 'mx-auto max-w-6xl'}>
+      {!embedded && <BackButton />}
+      {embedded && (
+        <div className="mb-4 flex flex-col gap-2.5">
+        </div>
+      )}
       <PageHeader
         title="Upgrade Your Plan"
         subtitle={

@@ -18,6 +18,14 @@ export const EVENTS = Object.freeze({
   PAGE_VIEWED:        'page_viewed',        // manual SPA route change (autocapture also runs)
   PROFILE_VIEWED:     'host_profile_viewed', // guest landed on a host's public page
   SERVICE_VIEWED:     'service_viewed',      // guest opened a bookable service
+  // The only two events Creator Intelligence adds. Everything else it needs is
+  // already state in Postgres — bookings.status, cancelled_at, completed_at,
+  // reviews — and tracking those would be a second, lossier copy of facts we
+  // hold authoritatively. These two leave no server trace at all.
+  // props: { host_id, link_type: instagram|linkedin|youtube|website|whatsapp|cta }
+  PROFILE_LINK_CLICKED: 'profile_link_clicked', // guest clicked a host's outbound link
+  // props: { host_id, service_id, channel: whatsapp|copy|native|… }
+  SERVICE_SHARED:     'service_shared',      // share intent, which has no row anywhere
 
   // ── Paid landing pages (/compare/*) — ad traffic, retargeting-relevant ──
   LP_VIEWED:          'lp_viewed',           // ad visitor landed on a conversion LP

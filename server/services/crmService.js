@@ -147,11 +147,28 @@ const ensureCustomer = async (hostId, key) => {
   return created;
 };
 
-// Full detail for one client (addressed by the crm_customers UUID handle).
-// Returns null if the id isn't this host's. History/reviews are read LIVE.
+// Resolve a client handle: this host's crm_customers row addressed EITHER by its
+// own UUID, OR by a guest PROFILE id. A booking's "view client" link navigates to
+// /dashboard/clients/<guest_id>, and guest_id is a profiles.id, not a handle — so
+// without this fallback, opening a client from a booking 404s for every account
+// guest. Resolving via the guest's most recent booking key + ensureCustomer is
+// idempotent. Shared by getClient (detail) and the notes/attributes endpoints.
+const resolveClientHandle = async (hostId, id) => {
+  const { data: direct } = await supabaseAdmin
+    .from('crm_customers').select('*').eq('id', id).eq('host_id', hostId).maybeSingle();
+  if (direct) return direct;
+  const { data: bk } = await supabaseAdmin
+    .from('bookings').select('guest_phone, guest_email')
+    .eq('host_id', hostId).eq('guest_id', id)
+    .order('created_at', { ascending: false }).limit(1).maybeSingle();
+  const key = bk ? customerKey({ phone: bk.guest_phone, email: bk.guest_email }) : null;
+  return key ? ensureCustomer(hostId, key) : null;
+};
+
+// Full detail for one client (addressed by a crm_customers handle OR a guest
+// profile id). Returns null if the id isn't this host's. History/reviews read LIVE.
 const getClient = async (hostId, customerId) => {
-  const { data: crmRow } = await supabaseAdmin
-    .from('crm_customers').select('*').eq('id', customerId).eq('host_id', hostId).maybeSingle();
+  const crmRow = await resolveClientHandle(hostId, customerId);
   if (!crmRow) return null;
 
   const { data: bookings } = await supabaseAdmin
@@ -178,4 +195,4 @@ const getClient = async (hostId, customerId) => {
   return { customer, history, reviews };
 };
 
-module.exports = { listClients, getClient, ensureCustomer, aggregate, LAPSE_DAYS };
+module.exports = { listClients, getClient, resolveClientHandle, ensureCustomer, aggregate, LAPSE_DAYS };
