@@ -326,23 +326,24 @@ const TodayMobile = ({ user, go, balance, bookings, views, queue, onNeedsYou, th
       {/* Quick actions */}
       <section>
         <h2 className="mb-2 font-display text-[12.5px] font-bold tracking-[-0.02em] text-ink">Quick actions</h2>
-        <div className="dash-noscrollbar flex gap-2 overflow-x-auto pb-1">
+        {/* Apple squircle app-icons — same grammar as desktop. Needs-you is the
+            filled (maroon) primary + badge; the rest are blush. No hover lift. */}
+        <div className="dash-noscrollbar flex gap-3 overflow-x-auto pb-1">
           {queue.length > 0 && (
-            <button type="button" onClick={onNeedsYou} className="group flex w-[74px] shrink-0 flex-col items-center gap-1.5 focus-visible:outline-none">
-              <span className="relative grid h-14 w-14 place-items-center rounded-full border-2 border-neutral-200 bg-blush text-maroon transition group-hover:-translate-y-0.5 group-hover:border-maroon/40">
-                <AlertTriangle className="h-5 w-5" strokeWidth={2.2} />
-                <span className="absolute -right-0.5 -top-0.5 grid h-5 w-5 place-items-center rounded-full border-2 border-white bg-rose text-[10px] font-extrabold text-white">{queue.length}</span>
+            <button type="button" onClick={onNeedsYou} className="group flex w-[72px] shrink-0 flex-col items-center gap-2 focus-visible:outline-none">
+              <span className="relative grid h-16 w-16 place-items-center rounded-[20px] bg-maroon text-white transition-colors duration-200 ease-out group-hover:bg-maroon-dark group-focus-visible:ring-[3px] group-focus-visible:ring-rose">
+                <AlertTriangle className="h-6 w-6" strokeWidth={2} />
+                <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-[20px] place-items-center rounded-full border-2 border-white bg-rose px-1 text-[10px] font-bold tabular-nums text-white">{queue.length}</span>
               </span>
-              <span className="text-center text-[10.5px] font-semibold leading-tight text-ink/70">Needs you</span>
+              <span className="text-center text-[12px] font-medium tracking-[-0.01em] text-ink/75">Needs you</span>
             </button>
           )}
           {QUICK_ACTIONS.map((a) => (
-            <button key={a.label} type="button" onClick={() => go(a.to)} className="group flex w-[74px] shrink-0 flex-col items-center gap-1.5 focus-visible:outline-none">
-              <span className={cn('grid h-14 w-14 place-items-center rounded-full border-2 transition group-hover:-translate-y-0.5',
-                a.accent ? 'border-maroon bg-maroon text-white hover:bg-maroon-dark' : 'border-neutral-200 bg-blush text-maroon hover:border-maroon/40')}>
-                <a.icon className="h-5 w-5" strokeWidth={2.2} />
+            <button key={a.label} type="button" onClick={() => go(a.to)} className="group flex w-[72px] shrink-0 flex-col items-center gap-2 focus-visible:outline-none">
+              <span className="grid h-16 w-16 place-items-center rounded-[20px] bg-blush text-maroon transition-colors duration-200 ease-out group-hover:bg-pink/50 group-focus-visible:ring-[3px] group-focus-visible:ring-rose">
+                <a.icon className="h-6 w-6" strokeWidth={2} />
               </span>
-              <span className="text-center text-[10.5px] font-semibold leading-tight text-ink/70">{a.label}</span>
+              <span className="text-center text-[12px] font-medium tracking-[-0.01em] text-ink/75">{a.label}</span>
             </button>
           ))}
         </div>
