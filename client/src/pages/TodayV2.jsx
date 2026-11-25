@@ -16,17 +16,17 @@
 import { Children, cloneElement, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  ArrowRight, ChevronLeft, ChevronRight, Copy, Link2, Wallet, X,
+  ArrowRight, Check, ChevronLeft, ChevronRight, Copy, Link2, Wallet, X,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
-import { getPayoutBalance, getHostBookings, getMyProfileViews, getMyKyc, getMyServices, getAvailability, markLinkShared } from '../services/api';
+import { getPayoutBalance, getHostBookings, getMyProfileViews, getMyKyc, getMyServices, getAvailability, getPublicPlans, markLinkShared } from '../services/api';
 import { isFreePlan } from '../utils/themeUtils';
 import SetupGuide, { buildSetupSteps } from '../components/dashboard/SetupGuide';
 import { buildQueue } from '../utils/attentionQueue';
 import { Button, ErrorState, Skeleton } from '../components/dashboard/ui';
 import {
-  Avatar, Drawer, InsightBand, Panel, StatusPill, Tile,
+  Avatar, Drawer, Figure, InsightBand, Panel, StatusPill, Tile,
   MeetIcon, WhatsAppIcon, cn, inr, fmtTime, fmtDayFull, relDay, useLast,
 } from '../components/dashboard/ui/v2';
 
@@ -150,39 +150,107 @@ const ProStrip = ({ go, onClose }) => (
   </div>
 );
 
-/* ── Band — the page's one focal sentence, from real bookings. ────────────── */
-const TodayBand = ({ todays, next, onOpen, onCopy }) => {
-  const now = new Date();
-  const laterToday = todays.filter((b) => new Date(b.scheduled_at) > now);
-  const meta = (b) => [b.guest_name || 'Guest', b.services?.title].filter(Boolean).join(' · ');
-  const action = (label, onClick, Icon = ArrowRight) => (
-    <button type="button" onClick={onClick}
-      className="inline-flex h-11 items-center gap-2 rounded-[12px] bg-white px-5 text-[14px] font-semibold text-maroon transition hover:bg-pink-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-pink">
-      {label} <Icon className="h-4 w-4" strokeWidth={2.4} />
-    </button>
-  );
+/* ── Band — the one focal card. Three jobs, picked by what's true right now:
+ *  1. a booking is on now, or one is coming → that booking's details + actions;
+ *  2. nothing coming, free plan              → a Pro ad that converts;
+ *  3. nothing coming, already Pro            → "fill your calendar" (share).
+ * (founder spec, 2026-11-25) ─────────────────────────────────────────────── */
+// Pure, tested: the booking that matters now — the one in progress, else the next.
+export const focusBooking = (bookings, now = new Date()) => {
+  const live = bookings.filter((b) => b.scheduled_at && lower(b.status) !== 'cancelled');
+  const current = live.find((b) => new Date(b.scheduled_at) <= now && endOf(b) > now);
+  if (current) return { booking: current, phase: 'now' };
+  const next = live.filter((b) => new Date(b.scheduled_at) > now)
+    .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at))[0];
+  return next ? { booking: next, phase: 'next' } : null;
+};
 
-  let eyebrow; let title; let sub; let actions;
-  if (laterToday.length) {
-    const b = laterToday[0];
-    eyebrow = `Today · ${todays.length} booking${todays.length > 1 ? 's' : ''}`;
-    title = <>Next up at <em className={serif}>{fmtTime(b.scheduled_at)}.</em></>;
-    sub = meta(b);
-    actions = action('Open booking', () => onOpen(b.id));
-  } else if (next) {
-    eyebrow = 'Next booking';
-    title = todays.length
-      ? <>Today&apos;s done. Next is <em className={serif}>{whenWord(next.scheduled_at)}.</em></>
-      : <>A clear day. Next booking is <em className={serif}>{whenWord(next.scheduled_at)}.</em></>;
-    sub = `${meta(next)} · ${fmtDayFull(next.scheduled_at)} · ${fmtTime(next.scheduled_at)}`;
-    actions = action('Open booking', () => onOpen(next.id));
-  } else {
-    eyebrow = 'Today';
-    title = <>A clear day. <em className={serif}>Let&apos;s fill the next one.</em></>;
-    sub = 'Nothing is booked yet. Share your link where your audience already is.';
-    actions = action('Copy booking link', onCopy, Copy);
-  }
-  return <InsightBand eyebrow={eyebrow} title={title} sub={sub} actions={actions} mascot="blue" compact className="sm:py-5" />;
+const bandBtn = 'inline-flex h-11 items-center gap-2 rounded-[12px] px-5 text-[14px] font-semibold transition focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-pink';
+const BandPrimary = ({ children, ...p }) => <button type="button" className={cn(bandBtn, 'bg-white text-maroon hover:bg-pink-100')} {...p}>{children}</button>;
+const BandGhost = ({ children, href, ...p }) => (href
+  ? <a href={href} target="_blank" rel="noreferrer" className={cn(bandBtn, 'bg-maroon-700 text-white ring-2 ring-inset ring-white/35 hover:ring-white/60')}>{children}</a>
+  : <button type="button" className={cn(bandBtn, 'bg-maroon-700 text-white ring-2 ring-inset ring-white/35 hover:ring-white/60')} {...p}>{children}</button>);
+const Chip = ({ children }) => <span className="inline-flex items-center gap-1.5 rounded-[8px] bg-white/12 px-2.5 py-1 text-[13px] text-white">{children}</span>;
+
+const BookingBand = ({ focus, onOpen }) => {
+  const b = focus.booking;
+  const start = new Date(b.scheduled_at);
+  const isToday = sameDay(start, new Date());
+  const amount = amountOf(b);
+  const pay = !amount ? 'Free' : lower(b.payment_status) === 'paid' ? `${inr(amount)} · Paid` : `${inr(amount)} · Unpaid`;
+  const wa = waLink(b.guest_phone);
+  const eyebrow = focus.phase === 'now'
+    ? `On now · until ${fmtTime(endOf(b).toISOString())}`
+    : `Next booking · ${isToday ? 'today' : whenWord(b.scheduled_at)}`;
+  return (
+    <InsightBand mascot="blue" compact className="sm:py-5" eyebrow={eyebrow}
+      title={<>{b.guest_name || 'Guest'} <em className={serif}>at {fmtTime(b.scheduled_at)}</em></>}
+      sub={(
+        <span className="mt-1 flex flex-wrap gap-1.5">
+          <Chip>{b.services?.title || 'Booking'}</Chip>
+          {b.services?.duration ? <Chip>{b.services.duration} min</Chip> : null}
+          {!isToday && <Chip>{fmtDayFull(b.scheduled_at)}</Chip>}
+          <Chip>{pay}</Chip>
+        </span>
+      )}
+      actions={(
+        <>
+          {b.meeting_link
+            ? <BandPrimary onClick={() => window.open(b.meeting_link, '_blank', 'noopener')}><MeetIcon className="h-4 w-4" /> Join call</BandPrimary>
+            : <BandPrimary onClick={() => onOpen(b.id)}>Open booking <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></BandPrimary>}
+          {b.meeting_link
+            ? <BandGhost onClick={() => onOpen(b.id)}>Details</BandGhost>
+            : wa && <BandGhost href={wa}><WhatsAppIcon className="h-4 w-4" /> WhatsApp</BandGhost>}
+        </>
+      )} />
+  );
+};
+
+const ProAdBand = ({ proPlan, go }) => {
+  const monthly = Number(proPlan?.monthly_price) || 0;
+  const annual = Number(proPlan?.annual_price) || 0;
+  // Same display rule as the upgrade page: GST-inclusive (server is authoritative).
+  const price = monthly ? `${inr(Math.round(monthly * 1.18))}/month` : annual ? `${inr(Math.round(annual * 1.18))}/year` : null;
+  return (
+    <InsightBand mascot="purple" compact className="sm:py-5" eyebrow="Meeticulous Pro"
+      title={<>Your calendar is open. <em className={serif}>Fill it faster.</em></>}
+      sub={(
+        <span className="mt-1 flex flex-col gap-1">
+          {['Revenue forecast and a win-back list of guests to rebook', 'Your own branding on your booking page', 'Priority support from a real person'].map((t) => (
+            <span key={t} className="flex items-center gap-2"><Check className="h-4 w-4 shrink-0 text-pink" strokeWidth={2.6} />{t}</span>
+          ))}
+        </span>
+      )}
+      actions={(
+        <>
+          <BandPrimary onClick={() => go('/dashboard/upgrade?src=today_band')}>Upgrade to Pro <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></BandPrimary>
+          {price && <span className="self-center text-[14px] font-medium text-white/85">{price} · incl. GST</span>}
+        </>
+      )} />
+  );
+};
+
+const GrowBand = ({ username, views, onCopy }) => {
+  const url = username ? `${window.location.origin}/${username}` : null;
+  const share = url ? `https://wa.me/?text=${encodeURIComponent(`Book a session with me: ${url}`)}` : null;
+  return (
+    <InsightBand mascot="green" compact className="sm:py-5" eyebrow="Your calendar is open"
+      title={<>Nothing booked yet. <em className={serif}>Let&apos;s change that.</em></>}
+      sub={views ? `${views.toLocaleString('en-IN')} people have seen your page. Put your link where your audience already is.` : 'Put your link where your audience already is: bio, WhatsApp status, email signature.'}
+      actions={(
+        <>
+          <BandPrimary onClick={onCopy}><Copy className="h-4 w-4" strokeWidth={2.4} /> Copy booking link</BandPrimary>
+          {share && <BandGhost href={share}><WhatsAppIcon className="h-4 w-4" /> Share on WhatsApp</BandGhost>}
+        </>
+      )} />
+  );
+};
+
+export const TodayBand = ({ bookings, isFree, proPlan, username, views, onOpen, onCopy, go }) => {
+  const focus = focusBooking(bookings);
+  if (focus) return <BookingBand focus={focus} onOpen={onOpen} />;
+  if (isFree) return <ProAdBand proPlan={proPlan} go={go} />;
+  return <GrowBand username={username} views={views} onCopy={onCopy} />;
 };
 
 const linkBtn = 'inline-flex items-center gap-1 rounded-[10px] px-2 py-1 text-[13.5px] font-semibold text-maroon transition hover:bg-pink-100';
@@ -288,7 +356,7 @@ const WeekPage = ({ week, label, past, go }) => {
         {[['Bookings', week.count], ['Booked', `${week.hours}h`], [past ? 'Earned' : 'Expected', inr(week.expected, { compact: true })]].map(([k, v]) => (
           <div key={k} className="rounded-[14px] bg-cream px-3 py-2.5">
             <p className="mb-0 text-[12px] text-faint">{k}</p>
-            <p className="mb-0 font-display text-[20px] font-extrabold tabular-nums tracking-[-0.02em] text-ink">{v}</p>
+            <p className="mb-0 font-display text-[20px] font-extrabold tabular-nums tracking-[-0.02em] text-ink"><Figure value={v} /></p>
           </div>
         ))}
       </div>
@@ -454,8 +522,10 @@ const TodayV2 = () => {
   const [status, setStatus] = useState('loading'); // loading | ready | error
   const [openId, setOpenId] = useState(null);
   const [promoClosed, setPromoClosed] = useState(false);
+  const [proPlan, setProPlan] = useState(null);
   // Upsell Pro only to free-plan hosts; dismissible for the session.
-  const showPromo = isFreePlan(user?.plan) && !promoClosed;
+  const isFree = isFreePlan(user?.plan);
+  const showPromo = isFree && !promoClosed;
 
   const load = useCallback(() => {
     setStatus('loading');
@@ -466,8 +536,12 @@ const TodayV2 = () => {
       getMyKyc().then((r) => r?.data ?? null).catch(() => null),
       getMyServices().then((r) => (Array.isArray(r?.data) ? r.data : null)).catch(() => null),
       getAvailability().then((r) => r?.data ?? null).catch(() => undefined),
+      getPublicPlans().then((r) => { const d = r?.data; return Array.isArray(d) ? d : (d?.plans || []); }).catch(() => []),
     ])
-      .then(([bal, bk, vw, k, svcs, avail]) => {
+      .then(([bal, bk, vw, k, svcs, avail, plans]) => {
+        // The Pro offer = the first paid plan by sort order (same rule as the upgrade page).
+        setProPlan(plans.filter((pl) => (Number(pl.monthly_price) || 0) > 0 || (Number(pl.annual_price) || 0) > 0)
+          .sort((x, y) => (x.sort_order ?? 0) - (y.sort_order ?? 0))[0] || null);
         setBalance(bal?.data ?? null); setBookings(bk); setViews(vw); setKyc(k);
         if (svcs) setHasService(svcs.length > 0);
         if (avail !== undefined) setAvailabilitySet(!!avail); // undefined = request failed: don't nag
@@ -549,7 +623,7 @@ const TodayV2 = () => {
     <div className="flex flex-col gap-8 lg:gap-10">
 
       <section aria-label="Today" className="grid grid-cols-1 gap-4 lg:min-h-[251px] lg:grid-cols-[1.4fr_1fr] lg:gap-5">
-        {loading ? sk('h-[220px]') : <TodayBand todays={todays} next={next} onOpen={setOpenId} onCopy={copyLink} />}
+        {loading ? sk('h-[220px]') : <TodayBand bookings={bookings} isFree={isFree} proPlan={proPlan} username={user?.username} views={views} onOpen={setOpenId} onCopy={copyLink} go={go} />}
         {loading ? sk('h-[220px]') : <TodaySchedule todays={todays} onOpen={setOpenId} go={go} />}
       </section>
 
@@ -566,7 +640,7 @@ const TodayV2 = () => {
 
       <div className="flex flex-col gap-4">
         <LinkChip username={user?.username} onCopy={copyLink} className="w-full sm:w-[360px]" />
-        {showPromo && <ProStrip go={go} onClose={() => setPromoClosed(true)} />}
+        {showPromo && focusBooking(bookings) && <ProStrip go={go} onClose={() => setPromoClosed(true)} />}
       </div>
 
       <Drawer open={!!openId && !!openBooking} onClose={() => setOpenId(null)} title={openBooking?.guest_name || ''} subtitle={openBooking?.services?.title || ''}>

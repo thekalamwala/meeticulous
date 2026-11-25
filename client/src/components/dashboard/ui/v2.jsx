@@ -32,6 +32,19 @@ export const inr = (n, opts = {}) => {
 };
 export const pct = (n) => `${Math.round((Number(n) || 0) * 100)}%`;
 
+/* Big money figures: the ₹ glyph sits low against Bricolage digits, so set it
+ * apart by 3px and lift the digits 2px to share its optical line (founder spec,
+ * 2026-11-25). Non-rupee values pass through untouched. */
+export const Figure = ({ value }) => {
+  if (typeof value !== 'string' || !value.startsWith('₹')) return value;
+  return (
+    <>
+      <span className="mr-[3px]">₹</span>
+      <span className="relative -top-[2px]">{value.slice(1)}</span>
+    </>
+  );
+};
+
 /* ── Dates ─────────────────────────────────────────────────────────────── */
 const d = (iso) => new Date(iso);
 export const fmtDay = (iso) => (iso ? d(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—');
@@ -176,7 +189,7 @@ export const Tile = ({ label, value, delta, deltaLabel, hint, onClick, accent = 
           and tiles sit in a row, so proportional digits make neighbouring values
           jitter against each other and shift width as they refresh. Harmless on
           the few tiles whose value is a word: it only affects digits. */}
-      <span className="mt-2 font-display text-[24px] font-extrabold leading-none tracking-[-0.035em] tabular-nums text-ink sm:text-[28px]">{value}</span>
+      <span className="mt-2 font-display text-[24px] font-extrabold leading-none tracking-[-0.035em] tabular-nums text-ink sm:text-[28px]"><Figure value={value} /></span>
       {footer && (
         <div className="mt-2.5 flex items-center gap-1.5 text-[12.5px]">
           {delta != null && (

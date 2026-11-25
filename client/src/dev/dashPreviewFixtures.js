@@ -129,6 +129,10 @@ export const buildFixtures = ({ pro = false } = {}) => ({
   '/vendor/payout/balance': { available: 0, clearing: 0, pendingCompletion: 1424.05, inflight: 0, paidOut: 10441.45, lifetimeEarned: 11865.5, heldForKyc: 0, payoutsBlocked: true },
   '/bookings/host': BOOKINGS,
   '/host/profile-views': { views: 465 },
+  '/plans': [
+    { slug: 'starter', name: 'Starter', monthly_price: 0, annual_price: 0, sort_order: 1 },
+    { slug: 'premium', name: 'Pro', monthly_price: 999, annual_price: 9990, sort_order: 2 },
+  ],
   '/host/availability': { host_id: 'host-preview', timezone: 'Asia/Kolkata', weekly: { mon: [['10:00', '18:00']], tue: [['10:00', '18:00']], wed: [['10:00', '18:00']] } },
   '/support/unread': { unread: 0 },
   '/onboarding/status': { slug: 'riyakapoor', stepCompleted: 6, isComplete: true, name: 'Riya Kapoor', profileImage: '', primaryCategory: 'business-coach', calendarConnected: true, calendarSkipped: false },
