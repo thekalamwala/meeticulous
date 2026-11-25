@@ -6,6 +6,7 @@ import {
   Ticket, Percent, Trophy, Sparkles, FileText, Mail, Phone, Cake, Menu,
 } from "lucide-react";
 import GuestSidebar from "../components/common/GuestSidebar";
+import MeetDropdown from "../components/ui/MeetDropdown";
 
 // explore/console-restyle — a WORKING, no-login prototype of the FULL restyled
 // guest console at /preview/guest/*. It reuses the real restyled GuestSidebar
@@ -149,12 +150,7 @@ const Bookings = () => {
         title="My bookings"
         sub="Hi Meera, here are the sessions you've booked."
         right={
-          <div className="relative">
-            <select value={filter} onChange={(e) => setFilter(e.target.value)} className={`appearance-none rounded-full border-2 border-neutral-200 bg-white py-1.5 pl-3.5 pr-8 text-[12px] font-bold text-ink/70 ${ring}`}>
-              {FILTERS.map((f) => <option key={f}>{f}</option>)}
-            </select>
-            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/35" strokeWidth={2.2} />
-          </div>
+          <MeetDropdown size="sm" ariaLabel="Filter bookings" value={filter} onChange={setFilter} options={FILTERS} />
         }
       />
 

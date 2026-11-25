@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 
@@ -34,8 +34,10 @@ test('service category picker is scoped to the host profession', async () => {
   // The picker fetches by the host's primary_category slug.
   await waitFor(() => expect(listServiceCategories).toHaveBeenCalledWith('photographer'));
 
-  await screen.findByText('Wedding Photography');
-  expect(screen.getByText('Portrait Photography')).toBeInTheDocument();
+  // Category is a MeetDropdown now — open it to see the profession-scoped options.
+  fireEvent.click(await screen.findByLabelText('Category'));
+  await screen.findByRole('option', { name: 'Wedding Photography' });
+  expect(screen.getByRole('option', { name: 'Portrait Photography' })).toBeInTheDocument();
 });
 
 test('Overview and FAQ sections both render (FAQ moved beside Overview)', async () => {

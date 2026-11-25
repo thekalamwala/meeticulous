@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import { adminSearchContent, adminModerate, adminPin } from '../../../services/communityApi';
 import AdminEmptyState from '../../../components/admin/AdminEmptyState';
 import { Badge, Btn, Card, Skeleton } from '../../../components/admin/ui';
+import MeetDropdown from '../../../components/ui/MeetDropdown';
 import { askNote, canModerate, errMsg } from './shared';
 
 const fld = 'border adm-border rounded-lg px-3 py-2 text-[12.5px] outline-none focus:ring-2 focus:ring-[#960D32]/30';
@@ -40,13 +41,10 @@ export default function ContentTab() {
     <div>
       <div className="flex flex-col sm:flex-row gap-2 mb-4">
         <input aria-label="Search content" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search text…" className={`${fld} flex-1`} />
-        <select aria-label="Content type" value={type} onChange={(e) => setType(e.target.value)} className={fld}>
-          <option value="posts">Posts</option><option value="comments">Comments</option>
-        </select>
-        <select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)} className={fld}>
-          <option value="">Any status</option>
-          {['visible', 'hidden', 'removed', 'deleted'].map((s) => <option key={s} value={s}>{s}</option>)}
-        </select>
+        <MeetDropdown ariaLabel="Content type" size="sm" value={type} onChange={setType}
+          options={[{ value: 'posts', label: 'Posts' }, { value: 'comments', label: 'Comments' }]} />
+        <MeetDropdown ariaLabel="Status" size="sm" placeholder="Any status" value={status} onChange={setStatus}
+          options={['visible', 'hidden', 'removed', 'deleted'].map((s) => ({ value: s, label: s }))} />
       </div>
       {!items ? <Skeleton className="h-40" /> : !items.length ? (
         <AdminEmptyState title="Nothing found" description="Try a different search or filter." />

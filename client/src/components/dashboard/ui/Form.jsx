@@ -1,5 +1,7 @@
 import { forwardRef } from 'react';
 import { cn } from './cn';
+import MeetDropdown from '../../ui/MeetDropdown';
+import { optionsFromChildren } from '../../ui/selectChildren';
 
 // Minimalist: a clean bottom border instead of a full frame, transparent, no
 // ring — paired with a label above (see Label / FormField). Matches the
@@ -30,30 +32,25 @@ export const Textarea = forwardRef(function Textarea({ className = '', invalid =
   );
 });
 
-// On-brand native <select>: blue chevron + accent instead of the OS default
-// (grey arrow / blue highlight). The dropdown popup is OS-rendered and only
-// partially stylable, but the control itself now reads on-theme.
-const SELECT_STYLE = {
-  appearance: 'none',
-  WebkitAppearance: 'none',
-  MozAppearance: 'none',
-  accentColor: 'var(--primary)',
-  backgroundImage:
-    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2300457C' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\")",
-  backgroundRepeat: 'no-repeat',
-  backgroundPosition: 'right 0.7rem center',
-};
-
-export const Select = forwardRef(function Select({ className = '', invalid = false, children, ...props }, ref) {
+// Branded dropdown: wraps MeetDropdown but keeps this component's native-<select>
+// API — <option> children and an event-shaped onChange — so no caller changes.
+// A native select's value is always a string, so we stringify to match, and the
+// onChange handler still receives { target: { value, name } }.
+export const Select = forwardRef(function Select(
+  { className = '', invalid = false, children, value, onChange, name, id, disabled, ...props },
+  _ref,
+) {
   return (
-    <select
-      ref={ref}
-      style={SELECT_STYLE}
-      className={cn(fieldBase, 'h-10 cursor-pointer px-0.5 pr-8', invalid && 'border-red-400', className)}
-      {...props}
-    >
-      {children}
-    </select>
+    <MeetDropdown
+      id={id}
+      name={name}
+      disabled={disabled}
+      ariaLabel={props['aria-label']}
+      className={cn(invalid && 'mt-dd--invalid', className)}
+      value={value == null ? '' : String(value)}
+      onChange={(v) => onChange?.({ target: { value: v, name } })}
+      options={optionsFromChildren(children)}
+    />
   );
 });
 

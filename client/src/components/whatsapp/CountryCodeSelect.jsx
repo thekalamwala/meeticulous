@@ -1,3 +1,5 @@
+import MeetDropdown from '../ui/MeetDropdown';
+
 const COUNTRIES = [
   { iso: 'IN', code: '+91',  flag: '🇮🇳', name: 'India' },
   { iso: 'US', code: '+1',   flag: '🇺🇸', name: 'United States' },
@@ -19,18 +21,21 @@ export const defaultDialCode = () => {
   }
 };
 
+// Dedupe by code for the dropdown value (US/Canada both +1): the trigger shows
+// the flag + code, the panel adds the country name as a sublabel.
+const OPTIONS = COUNTRIES.filter((c, i) => COUNTRIES.findIndex((x) => x.code === c.code) === i)
+  .map((c) => ({ value: c.code, label: c.code, sublabel: c.name, icon: c.flag }));
+
 const CountryCodeSelect = ({ value, onChange, disabled }) => (
-  <select
-    aria-label="Country code"
-    className="fb-input fb-input--sm w-auto"
+  <MeetDropdown
+    ariaLabel="Country code"
+    className="mt-dd--inline"
+    size="sm"
     value={value}
-    onChange={(e) => onChange(e.target.value)}
+    onChange={onChange}
+    options={OPTIONS}
     disabled={disabled}
-  >
-    {COUNTRIES.map((c) => (
-      <option key={c.iso} value={c.code}>{c.flag} {c.code}</option>
-    ))}
-  </select>
+  />
 );
 
 export default CountryCodeSelect;

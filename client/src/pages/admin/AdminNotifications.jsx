@@ -1,3 +1,4 @@
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -289,18 +290,12 @@ const AdminNotifications = () => {
       {tab === 'logs' && (
         <div className="adm-card rounded-xl overflow-hidden">
           <div className="flex items-center gap-2 p-3 border-b adm-border">
-            <select className="fb-input text-sm w-36" value={logFilter.channel}
-              onChange={(e) => setLogFilter((f) => ({ ...f, channel: e.target.value }))}>
-              <option value="">All channels</option>
-              <option value="whatsapp">WhatsApp</option>
-              <option value="email">Email</option>
-            </select>
-            <select className="fb-input text-sm w-36" value={logFilter.status}
-              onChange={(e) => setLogFilter((f) => ({ ...f, status: e.target.value }))}>
-              <option value="">All statuses</option>
-              <option value="sent">Sent</option>
-              <option value="failed">Failed</option>
-            </select>
+            <MeetDropdown size="sm" className="w-36" ariaLabel="Channel" placeholder="All channels" value={logFilter.channel}
+              onChange={(v) => setLogFilter((f) => ({ ...f, channel: v }))}
+              options={[{ value: '', label: 'All channels' }, { value: 'whatsapp', label: 'WhatsApp' }, { value: 'email', label: 'Email' }]} />
+            <MeetDropdown size="sm" className="w-36" ariaLabel="Status" placeholder="All statuses" value={logFilter.status}
+              onChange={(v) => setLogFilter((f) => ({ ...f, status: v }))}
+              options={[{ value: '', label: 'All statuses' }, { value: 'sent', label: 'Sent' }, { value: 'failed', label: 'Failed' }]} />
             <Btn variant="outline" size="sm" onClick={loadLogs}>Refresh</Btn>
           </div>
           {loadingLogs ? (

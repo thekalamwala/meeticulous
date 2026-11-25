@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { Btn, Skeleton, Card } from '../../../components/admin/ui';
 import { TodayStrip, HEADING } from './ccUi';
 import { crmListLists, crmColdCallQueue } from '../../../services/api';
+import MeetDropdown from '../../../components/ui/MeetDropdown';
 import ColdCallUpload from './ColdCallUpload';
 import ColdCallSearch from './ColdCallSearch';
 
@@ -115,10 +116,7 @@ export default function ColdCallingLayout() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-[10fr_7fr_3fr] gap-2 mb-4">
             <ColdCallSearch onPick={(lead) => navigate(`/admin/sales/cold-calling/lead/${lead.id}`)} />
-            <select className="fb-input text-sm !w-full" aria-label="Calling list" value={listId} onChange={(e) => setListId(e.target.value)}>
-              <option value="">Choose a list…</option>
-              {(lists || []).map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
-            </select>
+            <MeetDropdown value={listId} onChange={setListId} placeholder="Choose a list…" ariaLabel="Calling list" searchable options={(lists || []).map((l) => ({ value: String(l.id), label: l.name }))} />
             <Btn variant="outline" className="w-full justify-center" onClick={() => setShowUpload(true)}>Upload CSV</Btn>
           </div>
         </>

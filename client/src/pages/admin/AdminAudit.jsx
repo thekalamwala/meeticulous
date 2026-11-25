@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { adminAuditLogs, adminAuditActions } from '../../services/api';
 import toast from 'react-hot-toast';
 import { PageHeader, Btn, Skeleton } from '../../components/admin/ui';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 
 // Read-only viewer for the append-only admin action trail (admin_audit_logs).
 // Filter by action + date range; paginated. Every mutating admin endpoint writes
@@ -48,11 +49,10 @@ const AdminAudit = () => {
       <div className="flex flex-wrap items-end gap-3 mb-4">
         <div>
           <label className="block text-[11px] font-medium adm-t3 mb-1">Action</label>
-          <select className="fb-input text-sm" value={filters.action}
-            onChange={(e) => { setPage(1); setFilters((f) => ({ ...f, action: e.target.value })); }}>
-            <option value="">All actions</option>
-            {actions.map((a) => <option key={a} value={a}>{a}</option>)}
-          </select>
+          <MeetDropdown className="text-sm" size="sm" ariaLabel="Action" value={filters.action}
+            placeholder="All actions"
+            options={actions.map((a) => ({ value: a, label: a }))}
+            onChange={(v) => { setPage(1); setFilters((f) => ({ ...f, action: v })); }} />
         </div>
         <div>
           <label className="block text-[11px] font-medium adm-t3 mb-1">From</label>
