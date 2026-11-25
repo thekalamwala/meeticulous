@@ -1,58 +1,105 @@
-import { useState, useEffect, useCallback } from 'react';
+// Client profile — one person, in the Kept direction (founder-approved 2026-11-25).
+// Borrowed from phone Contacts / Shopify Customers: a contact card on top (the
+// page's one maroon band), the figures that matter (lifetime spend, bookings,
+// average, last visit), a timeline of every booking, and private notes.
+//
+// Same data and handlers as before: crmGetCustomer (customer + history + reviews),
+// svcGetAll for service titles, and the notes endpoints. "Send booking link" is a
+// plain WhatsApp / email link with the host's public booking URL — the host can't
+// book on a guest's behalf, so the button says what it does.
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Phone, Mail, Tag, Repeat, UserX, MessageSquare, Trash2, CalendarClock, Lock } from 'lucide-react';
+import { ArrowRight, ChevronLeft, Copy, Mail, Phone, Star, Trash2, UserX } from 'lucide-react';
+import { useRegisterRefresh } from '../components/dashboard/ui/refreshContext';
 import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 import { crmGetCustomer, crmGetNotes, crmAddNote, crmDeleteNote, svcGetAll } from '../services/api';
+import { ErrorState, Skeleton } from '../components/dashboard/ui';
 import {
-  PageHeader, Card, Badge, StatusBadge, Button, Textarea, buttonClasses,
-  EmptyState, ErrorState, Skeleton, SkeletonText, SkeletonCard, fmtMoney,
-} from '../components/dashboard/ui';
+  Avatar, InsightBand, Panel, StatusPill, Tile, WhatsAppIcon, cn, fmtDayFull, inr,
+} from '../components/dashboard/ui/v2';
+import {
+  BandPrimary, ClientsProPreview, isLapsing, lastSeen, noShowWord, press, waLink,
+} from './ClientsV2';
 
-const fmtDate = (iso) =>
-  iso ? new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+const lower = (s) => String(s || '').toLowerCase();
+const fmtDate = (iso) => new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+const monthYear = (iso) => new Date(iso).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+const serif = 'font-serif font-normal italic text-pink';
+const control = `rounded-[12px] focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose ${press}`;
 
-// Plain-text star glyphs — matches the existing CustomerReviews rating display,
-// avoids pulling in another icon.
-const Stars = ({ n }) => (
-  <span className="text-primary text-sm tracking-tight" aria-label={`${n} out of 5`}>
-    {'★'.repeat(n)}<span className="text-ink/20">{'★'.repeat(5 - n)}</span>
-  </span>
+// The newest booking that has already happened (not cancelled). last_booking_at
+// can be a prepaid future booking, so the profile reads it off the history. Pure, tested.
+export const lastVisit = (history, now = Date.now()) => history
+  .filter((b) => lower(b.status) !== 'cancelled' && new Date(b.scheduled_at || b.created_at).getTime() <= now)
+  .map((b) => b.scheduled_at || b.created_at)
+  .sort()
+  .at(-1) || null;
+
+// The prefilled "come back" message. Pure, tested.
+export const bookAgainText = (name, url, lapsing) => {
+  const first = (name || '').trim().split(/\s+/)[0];
+  const hi = first ? `Hi ${first}` : 'Hi';
+  return lapsing
+    ? `${hi}, it's been a while! Here's my booking link if you'd like to come back: ${url}`
+    : `${hi}! Here's my booking link for your next visit: ${url}`;
+};
+
+/* Timeline — every booking, newest first, upcoming marked with the pink "booked" dot. */
+const Timeline = ({ history, serviceMap }) => {
+  const now = Date.now();
+  if (!history.length) {
+    return <p className="mb-0 rounded-[16px] bg-cream p-4 text-[14px] text-muted">No bookings yet. They show up here as they happen.</p>;
+  }
+  return (
+    <ol className="relative flex flex-col">
+      {history.map((b, i) => {
+        const when = b.scheduled_at || b.created_at;
+        const upcoming = new Date(when).getTime() > now && lower(b.status) !== 'cancelled';
+        const amount = Number(b.customer_total) || 0;
+        return (
+          <li key={b.id} className="relative flex gap-4 pb-5 last:pb-0">
+            {i < history.length - 1 && <span aria-hidden="true" className="absolute left-[7px] top-5 h-[calc(100%-12px)] w-0.5 bg-neutral-200" />}
+            <span aria-hidden="true" className={cn('relative mt-1 h-4 w-4 shrink-0 rounded-full', upcoming ? 'bg-maroon ring-4 ring-pink-100' : 'bg-neutral-200')}>
+              {upcoming && <span className="absolute inset-[4px] rounded-full bg-pink" />}
+            </span>
+            <div className="flex min-w-0 flex-1 flex-wrap items-start justify-between gap-x-3 gap-y-1">
+              <div className="min-w-0">
+                <p className="mb-0 truncate text-[14.5px] font-semibold text-ink">{serviceMap[b.service_id] || 'Booking'}</p>
+                <p className="mb-0 text-[13px] text-faint">{upcoming ? `Coming up · ${fmtDayFull(when)}` : fmtDate(when)}</p>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <StatusPill status={lower(b.status)} />
+                <span className="w-[72px] text-right text-[14px] font-semibold tabular-nums text-ink">{amount ? inr(amount) : 'Free'}</span>
+              </div>
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+  );
+};
+
+const ContactRow = ({ icon: Icon, href, children }) => (
+  <a href={href} className={cn(control, '-mx-2 flex items-center gap-3 px-2 py-1.5 hover:bg-cream')}>
+    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[12px] bg-pink-100 text-maroon"><Icon className="h-[18px] w-[18px]" strokeWidth={2} /></span>
+    <span className="min-w-0 flex-1 truncate text-[14px] text-ink">{children}</span>
+  </a>
 );
 
-const Meta = ({ label, value }) => (
-  <div>
-    <p className="text-[11px] font-medium uppercase tracking-wide text-ink/40">{label}</p>
-    <p className="mt-0.5 text-sm font-medium text-ink">{value}</p>
-  </div>
-);
-
-const HistoryItem = ({ b, serviceMap }) => (
-  <div className="flex items-start justify-between gap-3 border-b border-maroon/5 py-3 last:border-0">
-    <div className="min-w-0">
-      <p className="truncate text-sm font-medium text-ink">{serviceMap[b.service_id] || 'Service'}</p>
-      <p className="text-xs text-ink/40">{fmtDate(b.scheduled_at || b.created_at)}</p>
-    </div>
-    <div className="shrink-0 text-right">
-      <p className="text-sm font-semibold text-ink">{fmtMoney(b.customer_total)}</p>
-      <div className="mt-1"><StatusBadge status={b.status} /></div>
-    </div>
-  </div>
-);
-
-// Private notes — list + add + delete. Isolated so its own loading state
-// doesn't block the rest of the detail page.
-const NotesSection = ({ customerId }) => {
+// Private notes — list + add + delete. Isolated so its own loading state doesn't
+// block the rest of the profile.
+const NotesPanel = ({ customerId }) => {
   const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [state, setState] = useState('loading'); // loading | ready | error
   const [body, setBody] = useState('');
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(() => {
-    setLoading(true);
+    setState('loading');
     crmGetNotes(customerId)
-      .then(({ data }) => setNotes(data.notes || []))
-      .catch(() => toast.error('Failed to load notes'))
-      .finally(() => setLoading(false));
+      .then(({ data }) => { setNotes(data.notes || []); setState('ready'); })
+      .catch(() => setState('error'));
   }, [customerId]);
 
   useEffect(() => { load(); }, [load]);
@@ -83,65 +130,120 @@ const NotesSection = ({ customerId }) => {
   };
 
   return (
-    <Card>
-      <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-ink">
-        <MessageSquare className="h-4 w-4 text-ink/40" /> Notes
-      </h3>
-      <form onSubmit={handleAdd} className="mb-4 flex flex-col gap-2 sm:flex-row">
-        <Textarea
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-          placeholder="Add a private note about this client…"
-          rows={2}
-          className="flex-1"
-        />
-        <Button type="submit" disabled={saving || !body.trim()} className="sm:self-end">
-          Add
-        </Button>
+    <Panel title="Private notes" subtitle="Only you see these.">
+      <form onSubmit={handleAdd} className="flex flex-col gap-2">
+        <label htmlFor="client-note" className="sr-only">New note</label>
+        <textarea id="client-note" value={body} onChange={(e) => setBody(e.target.value)} rows={3}
+          placeholder="Goals, preferences, what to pick up next time."
+          className="w-full resize-y rounded-[16px] border-0 bg-cream p-3.5 text-[16px] text-ink sm:text-[14px] placeholder:text-faint focus:outline-none focus-visible:ring-[3px] focus-visible:ring-rose" />
+        <button type="submit" disabled={saving || !body.trim()}
+          className={cn(control, 'inline-flex h-10 items-center justify-center self-end bg-maroon px-4 text-[14px] font-semibold text-white hover:bg-maroon-dark disabled:cursor-default disabled:bg-neutral-200 disabled:text-neutral-400')}>
+          {saving ? 'Saving…' : 'Add note'}
+        </button>
       </form>
-      {loading ? (
-        <SkeletonText lines={3} />
-      ) : notes.length === 0 ? (
-        <p className="text-sm text-ink/40">No notes yet.</p>
-      ) : (
-        <ul className="space-y-2">
-          {notes.map((n) => (
-            <li key={n.id} className="flex items-start justify-between gap-3 rounded-lg bg-blush/40 p-3">
-              <div className="min-w-0">
-                <p className="whitespace-pre-wrap text-sm text-ink">{n.body}</p>
-                <p className="mt-1 text-xs text-ink/40">{fmtDate(n.created_at)}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleDelete(n.id)}
-                title="Delete note"
-                className="shrink-0 rounded p-1 text-ink/30 transition-colors hover:bg-rose/10 hover:text-rose-700"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </Card>
+      <div className="mt-4">
+        {state === 'loading' ? (
+          <div className="flex flex-col gap-2"><Skeleton className="h-16" /><Skeleton className="h-16" /></div>
+        ) : state === 'error' ? (
+          <p className="mb-0 text-[14px] text-muted">Your notes didn&apos;t load. <button type="button" onClick={load} className="font-semibold text-maroon underline underline-offset-2">Try again</button></p>
+        ) : notes.length === 0 ? (
+          <p className="mb-0 text-[14px] text-muted">No notes yet.</p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {notes.map((n) => (
+              <li key={n.id} className="flex items-start gap-2 rounded-[16px] bg-cream p-3.5">
+                <div className="min-w-0 flex-1">
+                  <p className="mb-0 whitespace-pre-wrap text-[14px] text-ink">{n.body}</p>
+                  <p className="mb-0 mt-1 text-[12.5px] text-faint">{fmtDate(n.created_at)}</p>
+                </div>
+                <button type="button" onClick={() => handleDelete(n.id)} aria-label="Delete note"
+                  className={cn(control, 'grid h-9 w-9 shrink-0 place-items-center text-faint hover:bg-pink-100 hover:text-maroon')}>
+                  <Trash2 className="h-4 w-4" strokeWidth={2.2} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </Panel>
+  );
+};
+
+/* Back bar — sticks under the top bar like an app's navigation bar. Once the
+ * contact card scrolls away the client's name slides in beside the back button
+ * (the iOS large-title pattern), so you always know whose page this is. */
+const BackBar = ({ name, collapsed = false }) => (
+  <div className="sticky top-[calc(3.5rem+env(safe-area-inset-top,0px))] z-20 -mx-4 -my-2 flex h-12 items-center gap-2 bg-cream/90 px-4 backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+    <Link to="/dashboard/clients" className={cn(control, '-ml-2 inline-flex h-11 shrink-0 items-center gap-0.5 px-2 text-[15px] font-semibold text-maroon active:bg-pink-100 [@media(hover:hover)]:hover:bg-pink-100')}>
+      <ChevronLeft className="h-5 w-5" strokeWidth={2.4} /> Clients
+    </Link>
+    {name && (
+      <span aria-hidden={!collapsed}
+        className={cn('flex min-w-0 items-center gap-2 transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none',
+          collapsed ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-1 opacity-0')}>
+        <Avatar name={name} size="h-8 w-8 text-[12px]" />
+        <span className="truncate text-[15px] font-semibold text-ink">{name}</span>
+      </span>
+    )}
+  </div>
+);
+
+/* Quick actions — the row under a contact on a phone: message, call, email,
+ * share your link. A missing channel stays in place, dimmed, with its reason. */
+const QuickActions = ({ phone, email, bookingUrl }) => {
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(bookingUrl); toast.success('Booking link copied'); }
+    catch { toast.error('Could not copy your link.'); }
+  };
+  const items = [
+    { key: 'wa', label: 'Message', off: 'No phone', icon: <WhatsAppIcon className="h-5 w-5" />, href: waLink(phone), external: true },
+    { key: 'call', label: 'Call', off: 'No phone', icon: <Phone className="h-5 w-5" strokeWidth={2} />, href: phone ? `tel:${phone}` : null },
+    { key: 'mail', label: 'Email', off: 'No email', icon: <Mail className="h-5 w-5" strokeWidth={2} />, href: email ? `mailto:${email}` : null },
+    { key: 'link', label: 'Copy link', off: 'No link yet', icon: <Copy className="h-5 w-5" strokeWidth={2} />, onClick: bookingUrl ? copy : null },
+  ];
+  const tile = 'flex h-[84px] flex-col items-center justify-center gap-1.5 rounded-[20px] bg-white text-[13px] font-semibold';
+  return (
+    <nav aria-label="Contact" className="grid grid-cols-4 gap-2.5 sm:gap-3">
+      {items.map((it) => {
+        const body = (
+          <>
+            <span className="grid h-10 w-10 place-items-center rounded-[12px] bg-pink-100 text-maroon">{it.icon}</span>
+            <span>{it.href || it.onClick ? it.label : it.off}</span>
+          </>
+        );
+        if (it.href) {
+          return (
+            <a key={it.key} href={it.href} {...(it.external ? { target: '_blank', rel: 'noreferrer' } : {})}
+              className={cn(tile, press, 'text-ink focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose active:bg-pink-50 [@media(hover:hover)]:hover:bg-pink-50')}>{body}</a>
+          );
+        }
+        if (it.onClick) {
+          return (
+            <button key={it.key} type="button" onClick={it.onClick}
+              className={cn(tile, press, 'text-ink focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose active:bg-pink-50 [@media(hover:hover)]:hover:bg-pink-50')}>{body}</button>
+          );
+        }
+        return <span key={it.key} aria-disabled="true" className={cn(tile, 'text-faint opacity-60')}>{body}</span>;
+      })}
+    </nav>
   );
 };
 
 const ClientDetail = () => {
   const { id } = useParams();
+  const { user } = useAuth();
   const [customer, setCustomer] = useState(null);
   const [history, setHistory] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [serviceMap, setServiceMap] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [gated, setGated] = useState(false);
+  const [status, setStatus] = useState('loading'); // loading | ready | error | missing | gated
+  const bandRef = useRef(null);
+  const [collapsed, setCollapsed] = useState(false);
 
+  // A refetch (pull-to-refresh) keeps the page on screen instead of flashing skeletons.
   const load = useCallback(() => {
-    setLoading(true);
-    setError(false);
-    setGated(false);
-    Promise.all([
+    setStatus((s) => (s === 'ready' ? s : 'loading'));
+    return Promise.all([
       crmGetCustomer(id),
       svcGetAll().catch(() => ({ data: [] })), // best-effort — enriches history with service titles
     ])
@@ -152,156 +254,143 @@ const ClientDetail = () => {
         const map = {};
         (svcRes.data || []).forEach((s) => { map[s.id] = s.title; });
         setServiceMap(map);
+        setStatus(detailRes.data.customer ? 'ready' : 'missing');
       })
       .catch((err) => {
-        if (err.response?.status === 403 && err.response?.data?.upgrade_required) setGated(true);
-        else setError(true);
-      })
-      .finally(() => setLoading(false));
+        if (err.response?.status === 403 && err.response?.data?.upgrade_required) setStatus('gated');
+        else setStatus(err.response?.status === 404 ? 'missing' : 'error');
+      });
   }, [id]);
 
   useEffect(() => { load(); }, [load]);
+  useRegisterRefresh(load); // pull-to-refresh re-fetches this client, not the whole page
 
-  if (loading) {
-    // Mirror the real layout (profile card → booking history → notes) so the
-    // page doesn't visibly reflow when data lands.
+  // The name joins the back bar once the contact card has scrolled under it.
+  useEffect(() => {
+    const el = bandRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return undefined;
+    const io = new IntersectionObserver(([e]) => setCollapsed(!e.isIntersecting), { rootMargin: '-120px 0px 0px 0px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [status]);
+
+  if (status === 'gated') return <ClientsProPreview />;
+
+  if (status === 'loading') {
+    // Mirror the real layout (band → figures → timeline + side) so nothing reflows.
     return (
-      <div>
-        <Skeleton className="mb-4 h-4 w-36" />
-        <Card className="mb-5">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div className="min-w-0 space-y-2.5">
-              <Skeleton className="h-6 w-48" />
-              <Skeleton className="h-4 w-64" />
-            </div>
-            <div className="space-y-2">
-              <Skeleton className="h-7 w-24 sm:ml-auto" />
-              <Skeleton className="h-3 w-28 sm:ml-auto" />
-            </div>
-          </div>
-          <div className="mt-4 grid grid-cols-2 gap-3 border-t border-maroon/5 pt-4 sm:grid-cols-3">
-            <Skeleton className="h-9" />
-            <Skeleton className="h-9" />
-            <Skeleton className="h-9" />
-          </div>
-        </Card>
-        <Card className="mb-5 space-y-3">
-          <Skeleton className="h-5 w-40" />
-          <Skeleton className="h-11" />
-          <Skeleton className="h-11" />
-          <Skeleton className="h-11" />
-        </Card>
-        <Card className="space-y-3">
-          <Skeleton className="h-5 w-24" />
-          <Skeleton className="h-16" />
-        </Card>
+      <div className="flex flex-col gap-6" aria-busy="true">
+        <BackBar />
+        <Skeleton className="h-[200px] !rounded-[28px] sm:h-[220px] sm:!rounded-[32px]" />
+        <Skeleton className="h-[84px] !rounded-[20px]" />
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+          {[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[108px] !rounded-[20px]" />)}
+        </div>
+        <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+          <Skeleton className="h-[360px] !rounded-[24px]" />
+          <Skeleton className="h-[260px] !rounded-[24px]" />
+        </div>
       </div>
     );
   }
 
-  if (gated) {
+  if (status !== 'ready') {
+    const missing = status === 'missing';
     return (
-      <div>
-        <PageHeader title="Customer" subtitle="Your customers" />
-        <Card className="border-2 border-dashed border-primary/30 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blush text-maroon">
-            <Lock className="h-6 w-6" strokeWidth={2} />
-          </div>
-          <h3 className="mb-1 font-display font-bold text-maroon">Unlock Customers</h3>
-          <p className="mb-4 text-sm text-muted">This is a Pro feature.</p>
-          <Link to="/dashboard/upgrade" className={buttonClasses({ variant: 'primary' })}>
-            Upgrade to Pro
-          </Link>
-        </Card>
+      <div className="flex flex-col gap-6">
+        <BackBar />
+        <div className="rounded-[24px] bg-white">
+          <ErrorState icon={UserX}
+            title={missing ? "We couldn't find this client." : "We couldn't load this client."}
+            message={missing ? 'They may have been merged with another record. Find them in your client list.' : 'Their records are safe. This is a problem showing them. Try again.'}
+            onRetry={missing ? undefined : load} />
+        </div>
       </div>
     );
   }
 
-  if (error || !customer) {
-    return (
-      <div>
-        <PageHeader title="Customer" />
-        <ErrorState message="Couldn't load this customer." onRetry={load} />
-      </div>
-    );
-  }
+  const c = customer;
+  const lapsing = isLapsing(c);
+  const last = lastVisit(history);
+  const upcoming = c.next_upcoming_at && new Date(c.next_upcoming_at).getTime() > Date.now() ? c.next_upcoming_at : null;
+  const avg = c.bookings_count ? Math.round(c.total_spent / c.bookings_count) : null;
+  const bookingUrl = user?.username ? `${window.location.origin}/${user.username}` : null;
+  const text = bookingUrl ? bookAgainText(c.name, bookingUrl, lapsing) : null;
+  const sendLink = text && (waLink(c.phone, text)
+    || (c.email ? `mailto:${c.email}?subject=${encodeURIComponent('Book your next visit')}&body=${encodeURIComponent(text)}` : null));
+
+  const eyebrow = upcoming ? `Next visit · ${fmtDayFull(upcoming)}`
+    : lapsing && last ? `Slipping away · last visit ${lastSeen(last)}`
+      : c.first_booked_at ? `Client since ${monthYear(c.first_booked_at)}` : 'Client';
 
   return (
-    <div>
-      <Link to="/dashboard/clients" className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-maroon">
-        <ArrowLeft className="h-4 w-4" /> Back to Customers
-      </Link>
+    <div className="flex flex-col gap-6">
+      <BackBar name={c.name || 'Name not given'} collapsed={collapsed} />
 
-      <Card className="mb-5">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-xl font-bold text-ink">{customer.name || 'Unknown Client'}</h2>
-              {customer.is_recurring && <Badge tone="primary"><Repeat className="h-3 w-3" />Recurring</Badge>}
-              {customer.no_show_count > 0 && (
-                <Badge tone="warning">
-                  <UserX className="h-3 w-3" />
-                  {customer.no_show_count} no-show{customer.no_show_count > 1 ? 's' : ''}
-                </Badge>
-              )}
-            </div>
-            <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted">
-              {customer.phone && <span className="inline-flex items-center gap-1"><Phone className="h-3.5 w-3.5" />{customer.phone}</span>}
-              {customer.email && <span className="inline-flex items-center gap-1"><Mail className="h-3.5 w-3.5" />{customer.email}</span>}
-            </div>
-            {customer.tags?.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {customer.tags.map((t) => (
-                  <Badge key={t} tone="neutral"><Tag className="h-3 w-3" />{t}</Badge>
-                ))}
+      {/* Contact card: the page's one band. */}
+      <div ref={bandRef}>
+      <InsightBand mascot="blue" compact className="sm:py-7" eyebrow={eyebrow}
+        title={(
+          <>
+            {c.name || 'Name not given'}
+            {c.bookings_count > 1 && <> <em className={serif}>{lapsing ? 'misses you.' : 'keeps coming back.'}</em></>}
+          </>
+        )}
+        sub={(c.tags?.length || c.no_show_count > 0) ? (
+          <span className="mt-1 flex flex-wrap gap-1.5">
+            {(c.tags || []).map((t) => <span key={t} className="inline-flex items-center rounded-[8px] bg-white/[0.12] px-2.5 py-1 text-[13px] text-white">{t}</span>)}
+            {c.no_show_count > 0 && <span className="inline-flex items-center rounded-[8px] bg-white/[0.12] px-2.5 py-1 text-[13px] text-white">{noShowWord(c.no_show_count)}</span>}
+          </span>
+        ) : null}
+        actions={sendLink
+          ? <BandPrimary href={sendLink}>{lapsing ? 'Win them back' : 'Send booking link'} <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></BandPrimary>
+          : null} />
+      </div>
+
+      <QuickActions phone={c.phone} email={c.email} bookingUrl={bookingUrl} />
+
+      <section aria-label="Figures" className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+        <Tile label="Lifetime spend" value={inr(c.total_spent)} hint={c.first_booked_at ? `Since ${monthYear(c.first_booked_at)}` : 'Paid bookings'} accent />
+        <Tile label="Bookings" value={c.bookings_count || null} note="No paid bookings yet"
+          hint={c.no_show_count > 0 ? noShowWord(c.no_show_count) : c.cancel_count > 0 ? `${c.cancel_count} cancelled` : 'Paid, all time'} />
+        <Tile label="Average booking" value={avg ? inr(avg) : null} note="Shows after their first paid booking" hint={avg ? 'Per paid booking' : undefined} />
+        <Tile label="Last visit" value={last ? lastSeen(last) : null} note="No visits yet" hint={last ? fmtDate(last) : undefined} />
+      </section>
+
+      <div className="grid items-start gap-6 lg:grid-cols-[1.4fr_1fr]">
+        <Panel title="Timeline" subtitle={`${history.length} ${history.length === 1 ? 'booking' : 'bookings'}, newest first`}>
+          <Timeline history={history} serviceMap={serviceMap} />
+        </Panel>
+
+        <div className="flex flex-col gap-6">
+          <Panel title="Contact">
+            {c.phone || c.email ? (
+              <div className="flex flex-col gap-1">
+                {c.phone && <ContactRow icon={Phone} href={`tel:${c.phone}`}>{c.phone}</ContactRow>}
+                {c.email && <ContactRow icon={Mail} href={`mailto:${c.email}`}>{c.email}</ContactRow>}
               </div>
-            )}
-          </div>
-          <div className="shrink-0 text-left sm:text-right">
-            <p className="text-2xl font-bold text-primary">{fmtMoney(customer.total_spent)}</p>
-            <p className="text-xs text-ink/40">Total spent · {customer.bookings_count} bookings</p>
-          </div>
-        </div>
+            ) : <p className="mb-0 text-[14px] text-muted">No phone or email on their bookings.</p>}
+          </Panel>
 
-        <div className="mt-4 grid grid-cols-2 gap-3 border-t border-maroon/5 pt-4 sm:grid-cols-3">
-          <Meta label="Client since" value={fmtDate(customer.first_booked_at)} />
-          <Meta label="Last seen" value={fmtDate(customer.last_booking_at)} />
-          <Meta
-            label="Next upcoming"
-            value={
-              customer.next_upcoming_at ? (
-                <span className="inline-flex items-center gap-1"><CalendarClock className="h-3.5 w-3.5 text-ink/40" />{fmtDate(customer.next_upcoming_at)}</span>
-              ) : '—'
-            }
-          />
-        </div>
-      </Card>
-
-      <div className="grid gap-5 lg:grid-cols-2">
-        <Card>
-          <h3 className="mb-3 text-sm font-semibold text-ink">Booking History</h3>
-          {history.length === 0 ? (
-            <EmptyState title="No bookings yet" description="This client's bookings will show up here." />
-          ) : (
-            <div>{history.map((b) => <HistoryItem key={b.id} b={b} serviceMap={serviceMap} />)}</div>
-          )}
+          <NotesPanel customerId={id} />
 
           {reviews.length > 0 && (
-            <div className="mt-5 border-t border-maroon/5 pt-4">
-              <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink/40">Reviews</h4>
-              <div className="space-y-3">
+            <Panel title="Their reviews">
+              <ul className="flex flex-col gap-2">
                 {reviews.map((r) => (
-                  <div key={r.id} className="rounded-lg bg-blush/40 p-3">
-                    <Stars n={r.rating} />
-                    {r.comment && <p className="mt-1 text-sm text-muted">{r.comment}</p>}
-                  </div>
+                  <li key={r.id} className="rounded-[16px] bg-cream p-3.5">
+                    <span className="flex items-center gap-0.5" role="img" aria-label={`${r.rating} out of 5`}>
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <Star key={n} className={cn('h-4 w-4', n <= r.rating ? 'fill-maroon text-maroon' : 'text-neutral-300')} strokeWidth={2} />
+                      ))}
+                    </span>
+                    {r.comment && <p className="mb-0 mt-1.5 text-[14px] text-ink">{r.comment}</p>}
+                  </li>
                 ))}
-              </div>
-            </div>
+              </ul>
+            </Panel>
           )}
-        </Card>
-
-        <NotesSection customerId={id} />
+        </div>
       </div>
     </div>
   );
