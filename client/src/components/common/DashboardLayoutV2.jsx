@@ -273,17 +273,19 @@ const BookingLinkCard = ({ user, collapsed }) => {
     );
   }
   return (
-    <div className="rounded-[16px] bg-white p-3">
-      <p className="mb-0 text-[12px] font-medium text-faint">Your booking page</p>
-      <a href={`/${user.username}`} target="_blank" rel="noreferrer" title="Open your booking page"
-        className={cn('mt-0.5 flex items-center gap-1 rounded-[6px] text-[13.5px] font-semibold text-ink transition hover:text-maroon', ring)}>
-        <span className="min-w-0 truncate">{host}/{user.username}</span>
-        <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-faint" strokeWidth={2.2} />
-      </a>
-      <button type="button" onClick={copy}
-        className={cn('mt-2.5 flex h-9 w-full items-center justify-center gap-1.5 rounded-[10px] bg-maroon text-[13px] font-semibold text-white transition hover:bg-maroon-dark', ring)}>
-        <Copy className="h-3.5 w-3.5" strokeWidth={2.4} /> Copy link
-      </button>
+    <div className="rounded-[14px] bg-white p-2.5 pl-3">
+      <p className="mb-0 text-[11.5px] font-medium text-faint">Your booking page</p>
+      <div className="mt-0.5 flex items-center gap-1.5">
+        <a href={`/${user.username}`} target="_blank" rel="noreferrer" title="Open your booking page"
+          className={cn('flex min-w-0 flex-1 items-center gap-1 rounded-[6px] text-[13px] font-semibold text-ink transition hover:text-maroon', ring)}>
+          <span className="min-w-0 truncate">{host}/{user.username}</span>
+          <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-faint" strokeWidth={2.2} />
+        </a>
+        <button type="button" onClick={copy} aria-label="Copy booking link" title="Copy booking link"
+          className={cn('grid h-8 w-8 shrink-0 place-items-center rounded-[8px] bg-maroon text-white transition hover:bg-maroon-dark', ring)}>
+          <Copy className="h-3.5 w-3.5" strokeWidth={2.4} />
+        </button>
+      </div>
     </div>
   );
 };
