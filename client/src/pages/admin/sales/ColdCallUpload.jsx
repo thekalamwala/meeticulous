@@ -4,6 +4,7 @@ import { Card, Btn } from '../../../components/admin/ui';
 import { crmColdCallImport } from '../../../services/api';
 import { parseCsv } from '../../../utils/parseCsv';
 import { FIELD_OPTIONS, guessFields, mapRows } from './coldCallUtils';
+import MeetDropdown from '../../../components/ui/MeetDropdown';
 
 export default function ColdCallUpload({ lists, onClose, onImported }) {
   const [grid, setGrid] = useState(null);
@@ -51,9 +52,7 @@ export default function ColdCallUpload({ lists, onClose, onImported }) {
               {grid[0].map((h, i) => (
                 <label key={i} className="flex items-center gap-2 text-[13px]">
                   <span className="w-32 truncate adm-t2" title={h}>{h}</span>
-                  <select className="fb-input text-sm" value={fields[i] || ''} onChange={(e) => setFields((f) => f.map((x, j) => (j === i ? e.target.value || null : x)))}>
-                    {FIELD_OPTIONS.map((o) => <option key={o} value={o}>{o || '— ignore —'}</option>)}
-                  </select>
+                  <MeetDropdown size="sm" value={fields[i] || ''} onChange={(v) => setFields((f) => f.map((x, j) => (j === i ? v || null : x)))} placeholder="— ignore —" ariaLabel={`Map column ${h}`} options={FIELD_OPTIONS.filter(Boolean).map((o) => ({ value: o, label: o }))} />
                 </label>
               ))}
             </div>
@@ -61,10 +60,7 @@ export default function ColdCallUpload({ lists, onClose, onImported }) {
             <div className="text-[13px] adm-t2">{rows.length} of {grid.length - 1} rows ready.</div>
             <div className="flex flex-wrap items-center gap-2 text-[13px]">
               <span className="adm-t3">Into:</span>
-              <select className="fb-input text-sm" value={target} onChange={(e) => setTarget(e.target.value)}>
-                <option value="new">New list…</option>
-                {lists.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
-              </select>
+              <MeetDropdown size="sm" value={target} onChange={setTarget} ariaLabel="Import into list" options={[{ value: 'new', label: 'New list…' }, ...lists.map((l) => ({ value: String(l.id), label: l.name }))]} />
               {target === 'new' && <input className="fb-input text-sm w-64" value={name} onChange={(e) => setName(e.target.value)} placeholder="List name" />}
             </div>
             <div className="flex justify-end"><Btn onClick={commit} disabled={busy || !rows.length}>{busy ? 'Importing…' : `Import ${rows.length} rows`}</Btn></div>

@@ -2,6 +2,7 @@
 // Dashboard, list-first views (Services / Profiles / Blog / Pages) each with a
 // right-side inspector drawer, and the operational tabs (Issues / Fixes / Search
 // Console). View is the :view route param so every tab is a real, linkable URL.
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -170,14 +171,10 @@ function IssuesTab() {
   return (
     <div>
       <div className="flex gap-3 mb-4">
-        <select className="fb-input text-sm" value={severity} onChange={(e) => setSeverity(e.target.value)}>
-          <option value="">All severities</option>
-          {['P0', 'P1', 'P2', 'P3', 'P4'].map((s) => <option key={s} value={s}>{s}</option>)}
-        </select>
-        <select className="fb-input text-sm" value={category} onChange={(e) => setCategory(e.target.value)}>
-          <option value="">All categories</option>
-          {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-        </select>
+        <MeetDropdown size="sm" ariaLabel="Severity" placeholder="All severities" value={severity} onChange={setSeverity}
+          options={[{ value: '', label: 'All severities' }, 'P0', 'P1', 'P2', 'P3', 'P4']} />
+        <MeetDropdown size="sm" ariaLabel="Category" placeholder="All categories" value={category} onChange={setCategory}
+          options={[{ value: '', label: 'All categories' }, ...CATEGORIES]} />
       </div>
       {loading ? <Skeleton className="h-40" /> : (
         <Card className="p-0 overflow-x-auto">
@@ -287,13 +284,10 @@ function FixesTab() {
         <Btn variant="primary" size="sm" onClick={generate} disabled={generating}>{generating ? 'Generating…' : 'Generate proposals'}</Btn>
       </Card>
       <div className="flex gap-3 mb-4 items-center flex-wrap">
-        <select className="fb-input text-sm" value={status} onChange={(e) => setStatus(e.target.value)}>
-          {['proposed', 'approved', 'applied', 'failed', 'rejected', 'rolled_back', ''].map((s) => <option key={s || 'all'} value={s}>{s || 'all statuses'}</option>)}
-        </select>
-        <select className="fb-input text-sm" value={level} onChange={(e) => setLevel(e.target.value)}>
-          <option value="">All levels</option>
-          {['AUTO', 'REVIEW', 'DO_NOT'].map((l) => <option key={l} value={l}>{l}</option>)}
-        </select>
+        <MeetDropdown size="sm" ariaLabel="Status" placeholder="all statuses" value={status} onChange={setStatus}
+          options={['proposed', 'approved', 'applied', 'failed', 'rejected', 'rolled_back', { value: '', label: 'all statuses' }]} />
+        <MeetDropdown size="sm" ariaLabel="Level" placeholder="All levels" value={level} onChange={setLevel}
+          options={[{ value: '', label: 'All levels' }, 'AUTO', 'REVIEW', 'DO_NOT']} />
         <div className="flex gap-2">{['AUTO', 'REVIEW', 'DO_NOT'].map((l) => <Badge key={l} tone={LEVEL_TONE[l]}>{l}: {byLevel[l] || 0}</Badge>)}</div>
       </div>
       {loading ? <Skeleton className="h-40" /> : (

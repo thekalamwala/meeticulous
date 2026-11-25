@@ -265,7 +265,7 @@ describe('ProfileSetup — reschedule fee', () => {
     renderSetup();
     await userEvent.click(screen.getByRole('tab', { name: /booking & privacy/i }));
     const select = screen.getByLabelText(/guest reschedule fee/i);
-    expect(Number(select.value)).toBe(0);
+    expect(select.textContent).toContain('Free');
   });
 
   test('pre-fills ₹10 when profile has reschedule_fee: 10', async () => {
@@ -276,7 +276,7 @@ describe('ProfileSetup — reschedule fee', () => {
     render(<MemoryRouter><ProfileSetup /></MemoryRouter>);
     await userEvent.click(screen.getByRole('tab', { name: /booking & privacy/i }));
     const select = screen.getByLabelText(/guest reschedule fee/i);
-    expect(Number(select.value)).toBe(10);
+    expect(select.textContent).toContain('₹10');
   });
 
   test('changing to ₹10 and saving calls updateProfile with reschedule_fee: 10', async () => {
@@ -284,7 +284,8 @@ describe('ProfileSetup — reschedule fee', () => {
     renderSetup();
     await userEvent.click(screen.getByRole('tab', { name: /booking & privacy/i }));
     const select = screen.getByLabelText(/guest reschedule fee/i);
-    await userEvent.selectOptions(select, '10');
+    await userEvent.click(select);
+    await userEvent.click(screen.getByRole('option', { name: /₹10/ }));
     await userEvent.click(screen.getByRole('button', { name: /save profile/i }));
     await waitFor(() =>
       expect(updateProfile).toHaveBeenCalledWith(

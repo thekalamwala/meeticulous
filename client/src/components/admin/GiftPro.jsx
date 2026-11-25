@@ -9,6 +9,7 @@ import {
   adminListGifts, adminExtendGift, adminRevokeGift, adminReviewGiftShare,
 } from '../../services/api';
 import { Card, Btn, Badge } from './ui';
+import MeetDropdown from '../ui/MeetDropdown';
 
 export const TENURES = [
   [1, '1 mo'], [2, '2 mo'], [6, '6 mo'], [12, '1 yr'], [24, '2 yr'], [60, '5 yr'],
@@ -247,9 +248,8 @@ export const GiftsTable = ({ refreshKey = 0 }) => {
                     )}
                     {g.status === 'active' && (extending === g.id ? (
                       <span className="inline-flex items-center gap-1.5">
-                        <select className="fb-input text-xs w-20" value={extendMonths} onChange={(e) => setExtendMonths(Number(e.target.value))}>
-                          {TENURES.map(([m, label]) => <option key={m} value={m}>+{label}</option>)}
-                        </select>
+                        <MeetDropdown size="sm" className="w-24" ariaLabel="Extend by" value={extendMonths} onChange={setExtendMonths}
+                          options={TENURES.map(([m, label]) => ({ value: m, label: `+${label}` }))} />
                         <Btn size="sm" onClick={() => act(() => adminExtendGift(g.id, extendMonths), 'Gift extended')}>Save</Btn>
                         <Btn variant="ghost" size="sm" onClick={() => setExtending(null)}>Cancel</Btn>
                       </span>

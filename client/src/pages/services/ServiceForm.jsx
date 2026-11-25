@@ -583,7 +583,7 @@ export default function ServiceForm({ initialData, serviceId }) {
               {svcCats.length > 0 && (
                 <div className="flex-1">
                   <label className={fieldLabel}>Category <span className="text-red-500">*</span></label>
-                  <Select value={form.category} onChange={e => set('category', e.target.value)}>
+                  <Select aria-label="Category" value={form.category} onChange={e => set('category', e.target.value)}>
                     {svcCats.map(c => <option key={c.slug} value={c.slug}>{c.name}</option>)}
                   </Select>
                   {allowSuggest && (
