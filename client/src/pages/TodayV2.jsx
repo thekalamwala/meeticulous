@@ -189,26 +189,35 @@ const QUICK_ROUTES = [
   { icon: CalendarCheck2, label: 'Availability', to: '/dashboard/availability' },
 ];
 
-const QuickActionTile = ({ icon: Icon, label, onClick, badge }) => (
+// Apple home-screen grammar, on-brand: a tinted squircle app-icon per action,
+// label beneath, generous whitespace, a 2px lift on hover. The "Needs you" tile
+// is the one filled (maroon) icon — the primary — and carries the count badge.
+// Flat token fills only — no gradient, blur or resting shadow (brand rules).
+const QuickActionTile = ({ icon: Icon, label, onClick, badge, primary = false }) => (
   <button
     type="button"
     onClick={onClick}
-    className="group flex flex-col items-center gap-2 rounded-2xl px-2 py-3 text-center transition hover:bg-blush/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
+    className="group flex flex-col items-center gap-2.5 rounded-2xl px-1 py-2 text-center focus-visible:outline-none"
   >
-    <span className="relative grid h-12 w-12 place-items-center rounded-full bg-blush text-maroon transition group-hover:-translate-y-0.5 group-hover:bg-pink/60">
-      <Icon className="h-5 w-5" strokeWidth={2.2} />
+    <span
+      className={cn(
+        'relative grid h-16 w-16 place-items-center rounded-[20px] transition duration-200 ease-out group-hover:-translate-y-0.5 group-focus-visible:ring-[3px] group-focus-visible:ring-rose',
+        primary ? 'bg-maroon text-white group-hover:bg-maroon-dark' : 'bg-blush text-maroon group-hover:bg-pink/50',
+      )}
+    >
+      <Icon className="h-6 w-6" strokeWidth={2} />
       {badge ? (
-        <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full border-2 border-white bg-rose text-[10px] font-extrabold text-white">{badge}</span>
+        <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-[20px] place-items-center rounded-full border-2 border-white bg-rose px-1 text-[10px] font-bold tabular-nums text-white">{badge}</span>
       ) : null}
     </span>
-    <span className="text-[11px] font-semibold leading-tight text-ink/70">{label}</span>
+    <span className="text-[12px] font-medium tracking-[-0.01em] text-ink/75">{label}</span>
   </button>
 );
 
 const QuickActions = ({ go, onNeedsYou, needsCount }) => (
   <Panel title="Quick actions" subtitle="Jump to what you do most">
-    <div className="grid grid-cols-3 gap-2">
-      <QuickActionTile icon={AlertTriangle} label="Needs you" badge={needsCount || undefined} onClick={onNeedsYou} />
+    <div className="grid grid-cols-3 gap-x-2 gap-y-4 pt-1">
+      <QuickActionTile icon={AlertTriangle} label="Needs you" badge={needsCount || undefined} onClick={onNeedsYou} primary={needsCount > 0} />
       {QUICK_ROUTES.map((q) => <QuickActionTile key={q.label} icon={q.icon} label={q.label} onClick={() => go(q.to)} />)}
     </div>
   </Panel>
