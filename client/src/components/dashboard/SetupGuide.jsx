@@ -77,7 +77,7 @@ export default function SetupGuide({ steps, onGo, onCopy, title = 'Finish settin
           return (
             <li key={s.key} className={cn(i > 0 && 'border-t border-neutral-200', isOpen ? 'bg-white' : 'bg-cream/50')}>
               <button type="button" onClick={() => setOpen(isOpen ? null : s.key)} aria-expanded={isOpen}
-                className="flex w-full items-center gap-3 px-5 py-3.5 text-left transition hover:bg-cream focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-rose sm:px-6">
+                className="flex w-full items-center gap-3 rounded-none px-5 py-3.5 text-left transition hover:bg-cream focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-rose sm:px-6">
                 {s.done
                   ? <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-success-fg text-white"><Check className="h-3.5 w-3.5" strokeWidth={3} /></span>
                   : <span aria-hidden="true" className="h-6 w-6 shrink-0 rounded-full border-2 border-dashed border-neutral-300" />}
