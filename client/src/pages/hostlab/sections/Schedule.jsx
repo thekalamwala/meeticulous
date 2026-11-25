@@ -12,8 +12,8 @@
 //     of a change without opening their own public page in another tab
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Calendar, CalendarPlus, CalendarX2, ChevronLeft, ChevronRight, Copy, Lock, LockOpen,
-  Plus, Trash2, Clock, Eye,
+  Calendar, CalendarPlus, CalendarX2, ChevronDown, ChevronLeft, ChevronRight, Copy, Lock, LockOpen,
+  Plus, Minus, Trash2, Clock, Eye, Globe, Bell, User,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button, cn } from '../../../components/dashboard/ui';
@@ -57,8 +57,24 @@ const SectionLabel = ({ children, action }) => (
 );
 
 /* ── Hours ─────────────────────────────────────────────────────────────── */
+/* TimePill — a boxed time picker for the mobile day cards: clock + the native
+ * select (styled flush) + a maroon chevron. Replaces the underline LabSelect,
+ * which read as cramped on a phone. */
+const TimePill = ({ value, onChange, label, bad = false }) => (
+  <div className={cn('relative flex min-w-0 flex-1 items-center gap-0.5 rounded-xl bg-neutral-100 px-1.5 py-2', bad && 'ring-2 ring-error-fg/60')}>
+    <Clock className="h-3 w-3 shrink-0 text-ink/40" strokeWidth={2.2} />
+    <select value={value} onChange={onChange} aria-label={label} className="min-w-0 flex-1 cursor-pointer appearance-none border-0 bg-transparent text-center text-[12px] font-bold text-ink outline-none">
+      {TIMES.map((t) => <option key={t.v} value={t.v}>{t.label}</option>)}
+    </select>
+    <ChevronDown className="h-3 w-3 shrink-0 text-maroon" strokeWidth={2.6} />
+  </div>
+);
+
+const fmtHrs = (h) => `${Number.isInteger(h) ? h : h.toFixed(1)} ${h === 1 ? 'hour' : 'hours'}`;
+
 const Hours = ({ schedule, setSchedule, dirty }) => {
   const [copyFrom, setCopyFrom] = useState(null);
+  const [collapsed, setCollapsed] = useState({}); // mobile: open days a host folded shut
 
   const addSlot = (day) =>
     setSchedule((s) => ({ ...s, [day]: [...s[day], { start: '09:00', end: '17:00' }] }));
@@ -68,6 +84,7 @@ const Hours = ({ schedule, setSchedule, dirty }) => {
     setSchedule((s) => ({ ...s, [day]: s[day].map((sl, j) => (j === i ? { ...sl, [key]: value } : sl)) }));
   const toggleDay = (day) =>
     setSchedule((s) => ({ ...s, [day]: s[day].length ? [] : [{ start: '09:00', end: '17:00' }] }));
+  const dayHours = (slots) => slots.reduce((n, sl) => n + Math.max(0, minutesOf(sl.end) - minutesOf(sl.start)), 0) / 60;
 
   const copyTo = (from, targets) => {
     setSchedule((s) => {
@@ -79,11 +96,63 @@ const Hours = ({ schedule, setSchedule, dirty }) => {
     toast.success(`${from[0].toUpperCase() + from.slice(1)}'s hours copied to ${targets.length} days`);
   };
 
-  // Untitled on purpose. The page heading above says "Hours" and carries the
-  // week's total; a panel title here would be the same thing a third time,
-  // inside 40px. The button and the stat moved up to that heading.
   return (
-    <Surface>
+    <div>
+      {/* Mobile: an app-style card per day — toggle + hours, boxed time pills,
+          add-a-slot, and a collapse chevron. Desktop: the dense list below. */}
+      <div className="flex flex-col gap-2.5 sm:hidden">
+        {DAYS.map(([key, label]) => {
+          const slots = schedule[key];
+          const open = slots.length > 0;
+          const shut = !!collapsed[key];
+          return (
+            <div key={key} className="overflow-hidden rounded-2xl bg-white shadow-[0_1px_2px_rgba(43,10,20,0.04),0_10px_24px_-18px_rgba(43,10,20,0.14)]">
+              <div className="flex items-center gap-2.5 px-3.5 py-3">
+                <Toggle checked={open} onChange={() => toggleDay(key)} label={`${label} open for bookings`} />
+                <span className={cn('text-[14px] font-extrabold', open ? 'text-ink' : 'text-ink/40')}>{label}</span>
+                <span className={cn('ml-auto text-[11.5px] font-bold', open ? 'text-ink/50' : 'text-ink/35')}>
+                  {open ? fmtHrs(dayHours(slots)) : 'Closed'}
+                </span>
+                {open && (
+                  <button type="button" onClick={() => setCollapsed((c) => ({ ...c, [key]: !c[key] }))} aria-label={`${shut ? 'Expand' : 'Collapse'} ${label}`} aria-expanded={!shut} className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-ink/40 transition hover:bg-blush hover:text-maroon">
+                    <ChevronDown className={cn('h-4 w-4 transition-transform', shut && '-rotate-180')} strokeWidth={2.4} />
+                  </button>
+                )}
+              </div>
+
+              {open && !shut && (
+                <div className="flex flex-col gap-2 px-3.5 pb-3.5">
+                  {slots.map((sl, i) => {
+                    const bad = minutesOf(sl.end) <= minutesOf(sl.start);
+                    return (
+                      <div key={i}>
+                        <div className="flex items-center gap-1.5">
+                          <TimePill value={sl.start} onChange={(e) => setSlot(key, i, 'start', e.target.value)} label={`${label} slot ${i + 1} start`} />
+                          <span className="shrink-0 text-[10.5px] font-bold text-ink/35">to</span>
+                          <TimePill value={sl.end} onChange={(e) => setSlot(key, i, 'end', e.target.value)} label={`${label} slot ${i + 1} end`} bad={bad} />
+                          <button type="button" onClick={() => removeSlot(key, i)} aria-label={`Remove ${label} slot ${i + 1}`} className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-ink/35 transition hover:bg-error-bg hover:text-error-fg">
+                            <Trash2 className="h-4 w-4" strokeWidth={2.2} />
+                          </button>
+                        </div>
+                        {bad && <p className="mt-1 text-[10.5px] font-bold text-error-fg">End must be after start</p>}
+                      </div>
+                    );
+                  })}
+                  <button type="button" onClick={() => addSlot(key)} className="flex items-center justify-center gap-1.5 rounded-xl bg-blush py-2.5 text-[12px] font-bold text-maroon transition active:bg-pink">
+                    <Plus className="h-4 w-4" strokeWidth={2.6} /> Add time slot
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })}
+        {dirty && (
+          <Button className="mt-1 w-full" onClick={() => toast.success('Hours saved')}>Save changes</Button>
+        )}
+      </div>
+
+      {/* Desktop: the dense list. */}
+      <Surface className="hidden sm:block">
       <ul className="divide-y divide-neutral-200/50">
         {DAYS.map(([key, label]) => {
           const slots = schedule[key];
@@ -191,7 +260,8 @@ const Hours = ({ schedule, setSchedule, dirty }) => {
           <Button size="sm" className="ml-auto" onClick={() => toast.success('Hours saved')}>Save hours</Button>
         </div>
       )}
-    </Surface>
+      </Surface>
+    </div>
   );
 };
 
@@ -219,12 +289,33 @@ const RuleSelect = ({ className = '', children, ...props }) => (
   </select>
 );
 
-const RuleField = ({ label, children, className = '' }) => (
+const RuleField = ({ label, icon: Icon, children, className = '' }) => (
   <label className={cn('block min-w-0', className)}>
-    <span className="mb-1.5 block text-[9px] font-extrabold uppercase tracking-[0.7px] text-ink/45">{label}</span>
+    <span className="mb-1.5 flex items-center gap-1.5 text-[11.5px] font-semibold text-ink/70">
+      {Icon && <Icon className="h-4 w-4 shrink-0 text-ink/40" strokeWidth={2} />}
+      {label}
+    </span>
     {children}
   </label>
 );
+
+/* NumberStepper — −/+ around a value for the Daily-limits caps; null = ∞ (no cap). */
+const NumberStepper = ({ value, onChange, label, min = 1 }) => {
+  const isNull = value == null;
+  const dec = () => onChange(isNull ? null : value <= min ? null : value - 1);
+  const inc = () => onChange(isNull ? min : value + 1);
+  return (
+    <div className="flex items-center justify-between rounded-lg border border-[#F1DCC0] bg-[#FFFDF9] px-1 py-1">
+      <button type="button" onClick={dec} disabled={isNull} aria-label={`Decrease ${label}`} className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-maroon transition hover:bg-blush disabled:opacity-30">
+        <Minus className="h-4 w-4" strokeWidth={2.6} />
+      </button>
+      <span className="min-w-0 flex-1 text-center text-[13px] font-extrabold tabular-nums text-ink">{isNull ? '∞' : value}</span>
+      <button type="button" onClick={inc} aria-label={`Increase ${label}`} className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-maroon transition hover:bg-blush">
+        <Plus className="h-4 w-4" strokeWidth={2.6} />
+      </button>
+    </div>
+  );
+};
 
 /* ── DatePicker — a brand-styled calendar popover ─────────────────────────
  * Replaces <input type="date">. The native picker's popup is drawn by the
@@ -349,26 +440,27 @@ const RulesCards = ({ rules, setRules, overrides, setOverrides, blocked, setBloc
   const hasDates = overrides.length > 0 || blocked.length > 0;
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.2fr]">
+    <div className="flex flex-col gap-3">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.2fr]">
       {/* Booking rules */}
       <RuleCard variant="booking" title="Booking rules" subtitle="Set your booking preferences and scheduling requirements." mascot="/hostlab-mascots/booking.png">
         <div className="grid grid-cols-2 gap-x-3 gap-y-3.5">
-          <RuleField label="Time zone">
+          <RuleField label="Time zone" icon={Globe}>
             <RuleSelect value={rules.timezone} onChange={(e) => setRules((r) => ({ ...r, timezone: e.target.value }))}>
               {['Asia/Kolkata', 'Asia/Dubai', 'Europe/London', 'America/New_York', 'Asia/Singapore'].map((t) => <option key={t}>{t}</option>)}
             </RuleSelect>
           </RuleField>
-          <RuleField label="Gap between bookings">
+          <RuleField label="Gap between bookings" icon={Clock}>
             <RuleSelect value={rules.buffer_minutes} onChange={(e) => setRules((r) => ({ ...r, buffer_minutes: +e.target.value }))}>
               {[0, 5, 10, 15, 20, 30, 45, 60].map((n) => <option key={n} value={n}>{n === 0 ? 'No gap' : `${n} minutes`}</option>)}
             </RuleSelect>
           </RuleField>
-          <RuleField label="Minimum notice">
+          <RuleField label="Minimum notice" icon={Bell}>
             <RuleSelect value={rules.min_notice_hours} onChange={(e) => setRules((r) => ({ ...r, min_notice_hours: +e.target.value }))}>
               {[0, 1, 2, 4, 8, 12, 24, 48].map((n) => <option key={n} value={n}>{n === 0 ? 'None' : n === 1 ? '1 hour' : `${n} hours`}</option>)}
             </RuleSelect>
           </RuleField>
-          <RuleField label="How far ahead">
+          <RuleField label="How far ahead" icon={Calendar}>
             <RuleSelect value={rules.booking_window_days} onChange={(e) => setRules((r) => ({ ...r, booking_window_days: +e.target.value }))}>
               {[7, 14, 30, 60, 90, 180, 365].map((n) => <option key={n} value={n}>{n} days</option>)}
             </RuleSelect>
@@ -379,18 +471,9 @@ const RulesCards = ({ rules, setRules, overrides, setOverrides, blocked, setBloc
       {/* Daily limits */}
       <RuleCard variant="limits" title="Daily limits" pro subtitle="Protect your calendar from a good week." mascot="/hostlab-mascots/limits.png">
         <div className="grid grid-cols-3 gap-2.5">
-          {[['per_day', 'Per day'], ['per_week', 'Per week'], ['per_guest', 'Per guest']].map(([k, label]) => (
-            <RuleField key={k} label={label}>
-              <input
-                type="number"
-                min={1}
-                inputMode="numeric"
-                placeholder="∞"
-                value={rules.caps[k] ?? ''}
-                onChange={(e) => setRules((r) => ({ ...r, caps: { ...r.caps, [k]: e.target.value === '' ? null : +e.target.value } }))}
-                aria-label={label}
-                className="w-full rounded-lg border border-[#F1DCC0] bg-[#FFFDF9] px-2.5 py-2 text-[12px] font-bold text-ink outline-none transition focus:border-[#E0A857]"
-              />
+          {[['per_day', 'Per day', Calendar], ['per_week', 'Per week', Calendar], ['per_guest', 'Per guest', User]].map(([k, label, icon]) => (
+            <RuleField key={k} label={label} icon={icon}>
+              <NumberStepper value={rules.caps[k] ?? null} onChange={(v) => setRules((r) => ({ ...r, caps: { ...r.caps, [k]: v } }))} label={label} />
             </RuleField>
           ))}
         </div>
@@ -477,6 +560,8 @@ const RulesCards = ({ rules, setRules, overrides, setOverrides, blocked, setBloc
           </div>
         )}
       </RuleCard>
+      </div>
+      <Button className="w-full sm:hidden" onClick={() => toast.success('Rules saved')}>Save changes</Button>
     </div>
   );
 };
