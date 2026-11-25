@@ -17,6 +17,8 @@
 // (bookingController creates paid bookings as pending), so the row says
 // "Awaiting payment" and nothing offers to confirm it.
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { AnimatePresence, motion, useDragControls, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight, CalendarDays, CalendarRange, ChevronLeft, ChevronRight, Copy, List, Search, SlidersHorizontal, Star, X,
@@ -238,7 +240,7 @@ const BookingRow = ({ b, now, onOpen, meetCol }) => {
   const mins = Math.round((end - start) / 60_000);
   const canJoin = b.meeting_link && !over && !cancelled;
   return (
-    <li className="relative hidden items-center gap-4 px-6 py-3.5 transition hover:bg-pink-50 sm:flex">
+    <li className="relative flex items-center gap-4 px-6 py-3.5 transition hover:bg-pink-50">
       {/* The whole row opens the booking (stretched button); the Meet link sits above it. */}
       <button type="button" onClick={() => onOpen(b.id)}
         aria-label={`${b.guest_name || 'Guest'}, ${fmtTime(b.scheduled_at)}, ${b.services?.title || 'Booking'}`}
@@ -262,17 +264,18 @@ const BookingRow = ({ b, now, onOpen, meetCol }) => {
   );
 };
 
-/* Phone: its own row, not the desktop row squeezed (founder call, 2026-11-25).
- * Agenda pattern (iOS Calendar / Google Calendar app): a state rail on the left,
- * the time range and the state as words on line one, the guest large, the
- * service under it, and a 44px Join button. Same content as the desktop row. */
+/* ── Phone: an app screen, not the desktop squeezed (founder call, 2026-11-25;
+ * design-system/MOBILE_APP_UI.md). Same content, its own markup. ──────── */
 const WORD = { confirmed: 'Confirmed', completed: 'Done', paid: 'Paid', unpaid: 'Unpaid', refunded: 'Refunded', cancelled: 'Cancelled', no_show: 'No-show' };
-const TONE = { // text colour of the state words, and the rail beside them
-  paid: ['text-success-fg', 'bg-maroon'], free: ['text-muted', 'bg-maroon'], confirmed: ['text-maroon', 'bg-maroon'],
-  pending: ['text-warning-fg', 'bg-warning-fg'], unpaid: ['text-warning-fg', 'bg-warning-fg'], failed: ['text-error-fg', 'bg-error-fg'],
-  completed: ['text-success-fg', 'bg-neutral-200'], cancelled: ['text-muted', 'bg-neutral-200'], refunded: ['text-muted', 'bg-neutral-200'],
-  no_show: ['text-error-fg', 'bg-error-fg'],
+const TONE = { // colour of the state words: the word carries the meaning, colour only helps
+  paid: 'text-success-fg', free: 'text-muted', confirmed: 'text-maroon', pending: 'text-warning-fg', unpaid: 'text-warning-fg',
+  failed: 'text-error-fg', completed: 'text-success-fg', cancelled: 'text-muted', refunded: 'text-muted', no_show: 'text-error-fg',
 };
+const splitTime = (iso) => { const t = fmtTime(iso); const m = t.match(/(am|pm)$/i); return [m ? t.slice(0, -2) : t, m ? m[0] : '']; };
+
+// A list row: a time tile up front (filled maroon while on now), the guest large,
+// the service and length, the state in words, then Join (44px) or a chevron.
+// Inset hairlines between rows, like a native grouped list.
 const PhoneRow = ({ b, now, onOpen }) => {
   const start = new Date(b.scheduled_at);
   const end = endOf(b);
@@ -281,34 +284,38 @@ const PhoneRow = ({ b, now, onOpen }) => {
   const onNow = !TERMINAL.includes(lower(b.status)) && start <= now && end > now;
   const canJoin = b.meeting_link && !over && !cancelled;
   const pills = rowPills(b);
-  const [tone, rail] = TONE[pills[0].key] || TONE.confirmed;
+  const words = pills.map((p) => p.word || WORD[p.key]);
+  const [clock, mer] = splitTime(b.scheduled_at);
+  const mins = Math.round((end - start) / 60_000);
   return (
-    <li className={cn('relative flex items-center gap-3 py-3 pl-4 pr-3 transition active:bg-pink-50', onNow && 'bg-pink-50')}>
+    <li className="group relative flex items-center gap-3 pl-4 transition-colors duration-100 active:bg-pink-50">
       <button type="button" onClick={() => onOpen(b.id)}
-        aria-label={`${b.guest_name || 'Guest'}, ${fmtTime(b.scheduled_at)}, ${b.services?.title || 'Booking'}, ${pills.map((p) => p.word || WORD[p.key]).join(', ')}`}
+        aria-label={`${b.guest_name || 'Guest'}, ${fmtTime(b.scheduled_at)}, ${b.services?.title || 'Booking'}, ${words.join(', ')}`}
         className="absolute inset-0 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-rose" />
-      <span aria-hidden="true" className={cn('w-1 self-stretch rounded-full', over && !onNow ? 'bg-neutral-200' : rail)} />
-      <span className="pointer-events-none min-w-0 flex-1">
-        <span className="flex items-baseline justify-between gap-2 text-[13px]">
-          <span className="truncate tabular-nums text-muted">
-            {onNow && <span className="font-semibold text-maroon">On now · </span>}
-            {fmtTime(b.scheduled_at)} – {fmtTime(end.toISOString())}
-          </span>
-          <span className={cn('shrink-0 font-semibold', tone)}>{pills.map((p) => p.word || WORD[p.key]).join(' · ')}</span>
-        </span>
-        <span className={cn('mt-0.5 block truncate text-[16px] font-semibold leading-snug', over || cancelled ? 'text-muted' : 'text-ink')}>{b.guest_name || 'Guest'}</span>
-        <span className="block truncate text-[14px] text-muted">{b.services?.title || 'Booking'}</span>
+      <span aria-hidden="true" className={cn('pointer-events-none grid h-[52px] w-[52px] shrink-0 place-content-center rounded-[16px] text-center transition-transform duration-100 group-active:scale-95',
+        onNow ? 'bg-maroon text-white' : over || cancelled ? 'bg-cream text-muted' : 'bg-blush text-maroon')}>
+        <span className="font-display text-[16px] font-extrabold leading-none tabular-nums tracking-[-0.02em]">{clock}</span>
+        <span className="mt-0.5 text-[12px] font-semibold leading-none">{mer}</span>
       </span>
-      {canJoin && (
-        <a href={b.meeting_link} target="_blank" rel="noreferrer" aria-label={`Join Google Meet with ${b.guest_name || 'guest'}`}
-          className={cn('relative grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-cream transition active:bg-blush', ring)}>
-          <MeetIcon className="h-5 w-5" />
-        </a>
-      )}
+      <span className="flex min-w-0 flex-1 items-center gap-2 border-t border-neutral-100 py-3 pr-3 group-first:border-t-0">
+        <span className="pointer-events-none min-w-0 flex-1">
+          <span className={cn('block truncate text-[15px] font-semibold leading-snug', over || cancelled ? 'text-muted' : 'text-ink')}>{b.guest_name || 'Guest'}</span>
+          <span className="block truncate text-[13px] text-muted">{b.services?.title || 'Booking'} · {mins} min</span>
+          <span className="mt-0.5 block truncate text-[12.5px] font-semibold">
+            {onNow && <span className="text-maroon">On now · </span>}
+            <span className={TONE[pills[0].key] || 'text-maroon'}>{words.join(' · ')}</span>
+          </span>
+        </span>
+        {canJoin ? (
+          <a href={b.meeting_link} target="_blank" rel="noreferrer" aria-label={`Join Google Meet with ${b.guest_name || 'guest'}`}
+            className={cn('relative grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-cream transition-transform duration-100 active:scale-95', ring)}>
+            <MeetIcon className="h-5 w-5" />
+          </a>
+        ) : <ChevronRight aria-hidden="true" className="pointer-events-none h-5 w-5 shrink-0 text-faint" strokeWidth={2.2} />}
+      </span>
     </li>
   );
 };
-
 const card = 'overflow-hidden rounded-[24px] bg-white';
 const DayCard = ({ date, items, now, onOpen }) => {
   const meetCol = items.some((b) => b.meeting_link && endOf(b) > now && lower(b.status) !== 'cancelled');
@@ -316,24 +323,24 @@ const DayCard = ({ date, items, now, onOpen }) => {
   const count = items.length > 1 && <span className="shrink-0 text-[13px] text-faint">{items.length} bookings</span>;
   // "Today" / "Tomorrow" on a phone also carry the date, since there is no calendar beside them.
   const phoneLabel = /^(Today|Tomorrow|Yesterday)$/.test(label)
-    ? <>{label} <span className="font-sans text-[14px] font-medium text-faint">{date.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}</span></>
+    ? <>{label} <span className="font-sans text-[13px] font-medium text-faint">{date.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}</span></>
     : label;
   return (
     <section aria-label={label}>
-      {/* Phone: a grouped-list section header above the card. */}
-      <header className="flex items-baseline justify-between gap-3 px-1 pb-2 sm:hidden">
-        <h2 className="mb-0 font-display text-[17px] font-bold tracking-[-0.02em] text-ink">{phoneLabel}</h2>
+      {/* Phone: a section header that sticks under the top bar while its day scrolls. */}
+      <header className="sticky top-14 z-20 -mx-4 flex items-baseline justify-between gap-3 bg-cream/95 px-5 pb-2 pt-1 backdrop-blur lg:hidden">
+        <h2 className="mb-0 font-display text-[16px] font-bold tracking-[-0.02em] text-ink">{phoneLabel}</h2>
         {count}
       </header>
       <div className={card}>
-        <header className="hidden items-baseline justify-between gap-3 px-6 pb-2 pt-5 sm:flex">
+        <header className="hidden items-baseline justify-between gap-3 px-6 pb-2 pt-5 lg:flex">
           <h2 className="mb-0 font-display text-[18px] font-bold tracking-[-0.02em] text-ink">{label}</h2>
           {count}
         </header>
-        <ul className="divide-y divide-neutral-100 sm:hidden">
+        <ul className="lg:hidden">
           {items.map((b) => <PhoneRow key={b.id} b={b} now={now} onOpen={onOpen} />)}
         </ul>
-        <ul className="hidden divide-y divide-neutral-100 sm:block">
+        <ul className="hidden divide-y divide-neutral-100 lg:block">
           {items.map((b) => <BookingRow key={b.id} b={b} now={now} onOpen={onOpen} meetCol={meetCol} />)}
         </ul>
       </div>
@@ -504,6 +511,69 @@ const BookingActions = ({ b, review, reviewsOn, onReschedule, onReview, onDone }
   );
 };
 
+/* ── Sheets: a bottom sheet on a phone, the side Drawer on desktop. ───────
+ * Phone sheet (MOBILE_APP_UI section 3.9): slides up from the bottom, grabber,
+ * drag the handle down (or flick) to dismiss, backdrop tap and Escape close it,
+ * the page behind stops scrolling, footer pinned in the thumb zone. */
+const DESKTOP = '(min-width: 1024px)';
+const useIsDesktop = () => {
+  const [is, setIs] = useState(() => typeof window !== 'undefined' && !!window.matchMedia?.(DESKTOP).matches);
+  useEffect(() => {
+    const mq = window.matchMedia?.(DESKTOP);
+    if (!mq) return undefined;
+    const on = () => setIs(mq.matches);
+    mq.addEventListener?.('change', on);
+    return () => mq.removeEventListener?.('change', on);
+  }, []);
+  return is;
+};
+
+const SHEET_EASE = [0.22, 0.61, 0.36, 1]; // brand easing, no bounce
+const BottomSheet = ({ open, onClose, title, footer, children, bodyClassName = '' }) => {
+  const drag = useDragControls();
+  const reduce = useReducedMotion();
+  useEffect(() => {
+    if (!open) return undefined;
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', onKey);
+    return () => { document.body.style.overflow = prev; document.removeEventListener('keydown', onKey); };
+  }, [open, onClose]);
+  const from = reduce ? { opacity: 0 } : { y: '100%' };
+  return createPortal(
+    <AnimatePresence>
+      {open && (
+        <>
+          <motion.div key="sheet-backdrop" className="fixed inset-0 z-[100] bg-ink/45" aria-hidden="true" onClick={onClose}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} />
+          <motion.section key="sheet" role="dialog" aria-modal="true" aria-label={title}
+            className="fixed inset-x-0 bottom-0 z-[101] flex max-h-[92dvh] flex-col overflow-hidden rounded-t-[32px] bg-white shadow-[var(--shadow-lg)]"
+            initial={from} animate={{ y: 0, opacity: 1 }} exit={{ ...from, transition: { duration: 0.18, ease: SHEET_EASE } }}
+            transition={{ duration: 0.26, ease: SHEET_EASE }}
+            drag="y" dragControls={drag} dragListener={false} dragConstraints={{ top: 0, bottom: 0 }} dragElastic={{ top: 0, bottom: 0.7 }}
+            onDragEnd={(_, { offset, velocity }) => { if (offset.y > 110 || velocity.y > 500) onClose(); }}>
+            <header onPointerDown={(e) => drag.start(e)} className="shrink-0 cursor-grab touch-none px-5 pb-3 pt-2.5">
+              <span aria-hidden="true" className="mx-auto mb-3 block h-1.5 w-10 rounded-full bg-neutral-300" />
+              <div className="flex items-center gap-3">
+                <h2 className="mb-0 min-w-0 flex-1 truncate font-display text-[18px] font-bold tracking-[-0.02em] text-ink">{title}</h2>
+                <button type="button" onClick={onClose} onPointerDown={(e) => e.stopPropagation()} aria-label="Close"
+                  className={cn('grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-cream text-muted transition-transform duration-100 active:scale-95', ring)}>
+                  <X className="h-5 w-5" strokeWidth={2.2} />
+                </button>
+              </div>
+            </header>
+            <div className={cn('min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4', bodyClassName)}>{children}</div>
+            {footer && <footer className="shrink-0 border-t border-neutral-200 bg-white px-4 pb-[max(16px,env(safe-area-inset-bottom))] pt-3">{footer}</footer>}
+          </motion.section>
+        </>
+      )}
+    </AnimatePresence>,
+    document.body,
+  );
+};
+const Sheet = (props) => (useIsDesktop() ? <Drawer {...props} /> : <BottomSheet {...props} />);
+
 /* ── Filter sheet ──────────────────────────────────────────────────────── */
 const Choice = ({ label, options, value, onChange }) => (
   <fieldset className="mb-6">
@@ -530,6 +600,7 @@ const BookingsV2 = () => {
   const [reviews, setReviews] = useState({});
   const [status, setStatus] = useState('loading'); // loading | ready | error
   const [view, setView] = useState('list');
+  const [calMode, setCalMode] = useState('week'); // phone: what "Calendar" opens
   const [tab, setTab] = useState('upcoming');
   const [day, setDay] = useState(() => startOfDay(new Date()));
   const [q, setQ] = useState('');
@@ -614,50 +685,95 @@ const BookingsV2 = () => {
       : <Note>No past bookings yet. They move here once they&apos;re over.</Note>;
   };
 
+  const filterBtn = (
+    <button type="button" onClick={() => setFilterOpen(true)} aria-label={filterCount ? `Filter, ${filterCount} on` : 'Filter'}
+      className={cn('relative inline-flex h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-[12px] bg-white px-3 text-[14px] font-semibold text-ink transition hover:bg-pink-50 active:scale-95 lg:px-4 lg:active:scale-100', ring)}>
+      <SlidersHorizontal className="h-[18px] w-[18px] text-maroon" strokeWidth={2.2} /><span aria-hidden="true" className="hidden lg:inline">Filter</span>
+      {filterCount > 0 && <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-[8px] bg-maroon px-1 text-[12px] tabular-nums text-white lg:static lg:h-auto lg:min-w-0 lg:px-1.5">{filterCount}</span>}
+    </button>
+  );
+  const searchBox = (
+    <label className="relative block w-full lg:w-auto lg:min-w-[220px] lg:flex-1">
+      <span className="sr-only">Search bookings</span>
+      <Search className="pointer-events-none absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-faint" strokeWidth={2.2} />
+      <input type="search" enterKeyHint="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Guest, phone, email or service"
+        className="h-11 w-full rounded-[12px] border-0 bg-white pl-10 pr-11 text-[14px] text-ink placeholder:text-faint focus:outline-none focus-visible:ring-[3px] focus-visible:ring-rose [&::-webkit-search-cancel-button]:hidden" />
+      {q && (
+        <button type="button" onClick={() => setQ('')} aria-label="Clear search"
+          className={cn('absolute right-0.5 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-[10px] text-muted hover:bg-blush hover:text-maroon', ring)}>
+          <X className="h-4 w-4" strokeWidth={2.2} />
+        </button>
+      )}
+    </label>
+  );
+  const calNav = (
+    <div className="flex items-center gap-2">
+      <button type="button" onClick={() => step(-1)} aria-label={view === 'month' ? 'Previous month' : 'Previous week'} className={navBtn}><ChevronLeft className="h-4 w-4" strokeWidth={2.4} /></button>
+      <span className="min-w-0 flex-1 text-center font-display text-[16px] font-bold tracking-[-0.02em] text-ink lg:flex-none lg:px-2" aria-live="polite">{rangeLabel}</span>
+      <button type="button" onClick={() => step(1)} aria-label={view === 'month' ? 'Next month' : 'Next week'} className={navBtn}><ChevronRight className="h-4 w-4" strokeWidth={2.4} /></button>
+      <button type="button" onClick={() => setDay(startOfDay(new Date()))}
+        className={cn('h-11 shrink-0 rounded-[12px] bg-white px-4 text-[14px] font-semibold text-maroon transition hover:bg-pink-100', ring)}>Today</button>
+    </div>
+  );
+  const phoneSeg = view === 'list' ? tab : 'calendar';
+  const pickPhoneSeg = (v) => {
+    if (v === 'calendar') { setView(calMode); return; }
+    setView('list'); setTab(v); setLimit(PAGE);
+  };
+
   return (
-    <div className="flex flex-col gap-6">
-      <PageHeading title="Bookings" />
+    <div className="flex flex-col gap-5 lg:gap-6">
+      <div className="hidden lg:block"><PageHeading title="Bookings" /></div>
+      {/* Phone: large title with the filter action beside it, app-style. */}
+      <header className="flex items-center justify-between gap-3 lg:hidden">
+        <h1 className="mb-0 font-display text-[26px] font-extrabold leading-[1.05] tracking-[-0.035em] text-maroon">Bookings</h1>
+        {filterBtn}
+      </header>
 
       {loading ? <Skeleton className="h-[220px] rounded-[28px] sm:rounded-[32px]" />
         : <BookingsBand bookings={bookings} onOpen={setOpenId} onCopy={copyLink} username={user?.username} />}
 
-      {/* Controls: view + search + filter, then the view's own row. 16px inside the group. */}
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <Seg label="View" value={view} onChange={setView} options={VIEWS} />
-          <button type="button" onClick={() => setFilterOpen(true)}
-            className={cn('order-2 ml-auto inline-flex h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-[12px] bg-white px-3 sm:px-4 text-[14px] font-semibold text-ink transition hover:bg-pink-50 sm:order-3 sm:ml-0', ring)}>
-            <SlidersHorizontal className="h-4 w-4 text-maroon" strokeWidth={2.2} /><span className="sr-only sm:not-sr-only">Filter</span>
-            {filterCount > 0 && <span className="rounded-[8px] bg-maroon px-1.5 text-[12px] tabular-nums text-white">{filterCount}</span>}
-          </button>
-          <label className="relative order-3 w-full sm:order-2 sm:w-auto sm:min-w-[220px] sm:flex-1">
-            <span className="sr-only">Search bookings</span>
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" strokeWidth={2.2} />
-            <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Guest, phone, email or service"
-              className="h-11 w-full rounded-[12px] border-0 bg-white pl-10 pr-10 text-[14px] text-ink placeholder:text-faint focus:outline-none focus-visible:ring-[3px] focus-visible:ring-rose [&::-webkit-search-cancel-button]:hidden" />
-            {q && (
-              <button type="button" onClick={() => setQ('')} aria-label="Clear search"
-                className={cn('absolute right-1.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-[10px] text-muted hover:bg-blush hover:text-maroon', ring)}>
-                <X className="h-4 w-4" strokeWidth={2.2} />
+      {/* Phone controls: one full-width segmented control, then search (lists only)
+          or the calendar's own switch and arrows. */}
+      <div className="flex flex-col gap-3 lg:hidden">
+        <div role="tablist" aria-label="Bookings view" className="grid grid-cols-3 gap-1 rounded-[14px] bg-white p-1">
+          {[
+            { value: 'upcoming', label: 'Upcoming', count: loading ? null : split.upcoming.length },
+            { value: 'past', label: 'Past', count: loading ? null : split.past.length },
+            { value: 'calendar', label: 'Calendar' },
+          ].map((o) => {
+            const sel = phoneSeg === o.value;
+            return (
+              <button key={o.value} type="button" role="tab" aria-selected={sel} onClick={() => pickPhoneSeg(o.value)}
+                className={cn('inline-flex h-10 min-w-0 items-center justify-center gap-1 rounded-[10px] px-1 text-[13px] font-semibold transition-colors duration-150', ring,
+                  sel ? 'bg-maroon text-white' : 'text-muted active:bg-blush')}>
+                {o.label}
+                {o.count != null && <span className={cn('rounded-[6px] px-1 text-[12px] tabular-nums', sel ? 'bg-white/20' : 'bg-cream')}>{o.count}</span>}
               </button>
-            )}
-          </label>
+            );
+          })}
         </div>
+        {view === 'list' ? searchBox : (
+          <>
+            <Seg label="Calendar" value={view} onChange={(v) => { setView(v); setCalMode(v); }} options={VIEWS.slice(1)} />
+            {calNav}
+          </>
+        )}
+      </div>
 
+      {/* Desktop controls: view + search + filter, then the view's own row. */}
+      <div className="hidden flex-col gap-4 lg:flex">
+        <div className="flex items-center gap-2">
+          <Seg label="View" value={view} onChange={(v) => { setView(v); if (v !== 'list') setCalMode(v); }} options={VIEWS} />
+          {searchBox}
+          {filterBtn}
+        </div>
         {view === 'list' ? (
           <Seg label="When" value={tab} onChange={(t) => { setTab(t); setLimit(PAGE); }} options={[
             { value: 'upcoming', label: 'Upcoming', count: loading ? null : split.upcoming.length },
             { value: 'past', label: 'Past', count: loading ? null : split.past.length },
           ]} />
-        ) : (
-          <div className="flex items-center gap-2">
-            <button type="button" onClick={() => step(-1)} aria-label={view === 'month' ? 'Previous month' : 'Previous week'} className={navBtn}><ChevronLeft className="h-4 w-4" strokeWidth={2.4} /></button>
-            <span className="min-w-0 flex-1 text-center font-display text-[16px] font-bold tracking-[-0.02em] text-ink sm:flex-none sm:px-2" aria-live="polite">{rangeLabel}</span>
-            <button type="button" onClick={() => step(1)} aria-label={view === 'month' ? 'Next month' : 'Next week'} className={navBtn}><ChevronRight className="h-4 w-4" strokeWidth={2.4} /></button>
-            <button type="button" onClick={() => setDay(startOfDay(new Date()))}
-              className={cn('h-11 shrink-0 rounded-[12px] bg-white px-4 text-[14px] font-semibold text-maroon transition hover:bg-pink-100', ring)}>Today</button>
-          </div>
-        )}
+        ) : calNav}
       </div>
 
       {loading ? (
@@ -692,7 +808,7 @@ const BookingsV2 = () => {
         </div>
       )}
 
-      <Drawer open={filterOpen} onClose={() => setFilterOpen(false)} title="Filter bookings" bodyClassName="bg-white"
+      <Sheet open={filterOpen} onClose={() => setFilterOpen(false)} title="Filter bookings" bodyClassName="bg-white"
         footer={(
           <div className="flex gap-2">
             <button type="button" onClick={() => setFilter({ status: 'all', pay: 'all' })} className={cn(actBtn, quiet)}>Clear</button>
@@ -701,9 +817,9 @@ const BookingsV2 = () => {
         )}>
         <Choice label="Status" options={STATUS_OPTIONS} value={filter.status} onChange={(v) => setFilter((f) => ({ ...f, status: v }))} />
         <Choice label="Payment" options={PAY_OPTIONS} value={filter.pay} onChange={(v) => setFilter((f) => ({ ...f, pay: v }))} />
-      </Drawer>
+      </Sheet>
 
-      <Drawer open={!!openId && !!openBooking} onClose={() => setOpenId(null)} title="Booking details" bodyClassName="bg-cream"
+      <Sheet open={!!openId && !!openBooking} onClose={() => setOpenId(null)} title="Booking details" bodyClassName="bg-cream"
         footer={openBooking && (
           <BookingActions key={openBooking.id} b={openBooking} review={reviews[openBooking.id] || null} reviewsOn={on('review_submission')}
             onReschedule={() => { setOpenId(null); setRescheduling(openBooking); }}
@@ -716,9 +832,9 @@ const BookingsV2 = () => {
             <Earnings b={openBooking} freePlan={isFreePlan(user?.plan)} />
           </>
         )}
-      </Drawer>
+      </Sheet>
 
-      {/* Drawer sits above modals (z-101 vs 100), so it closes before these open. */}
+      {/* The sheet/drawer sits above modals (z-101 vs 100), so it closes before these open. */}
       {rescheduling && (
         <RescheduleModal booking={rescheduling} onClose={() => setRescheduling(null)}
           onDone={() => { setRescheduling(null); load(); }} />

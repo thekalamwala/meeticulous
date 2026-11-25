@@ -55,6 +55,7 @@ describe('BookingsV2 states', () => {
     expect(await screen.findByText(/next booking/i)).toBeInTheDocument();
     expect(screen.getAllByText('Paid').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Awaiting payment').length).toBeGreaterThan(0);
-    expect(screen.getByRole('tab', { name: /upcoming\s*2/i })).toHaveAttribute('aria-selected', 'true');
+    // Phone and desktop each render their own control; both open on Upcoming.
+    screen.getAllByRole('tab', { name: /upcoming\s*2/i }).forEach((t) => expect(t).toHaveAttribute('aria-selected', 'true'));
   });
 });
