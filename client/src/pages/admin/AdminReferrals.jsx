@@ -1,3 +1,4 @@
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { PageHeader, Card, Btn, Badge } from '../../components/admin/ui';
@@ -45,10 +46,8 @@ const RuleRow = ({ rule, onSaved }) => {
         <span className="adm-t3"> · {rule.cadence}</span>
       </td>
       <td className="px-3 py-1.5">
-        <select className="fb-input text-sm" value={form.reward_type} onChange={(e) => set('reward_type', e.target.value)}>
-          <option value="cash_inr">Cash (₹)</option>
-          <option value="account_credit">Account credit</option>
-        </select>
+        <MeetDropdown size="sm" ariaLabel="Reward type" value={form.reward_type} onChange={(v) => set('reward_type', v)}
+          options={[{ value: 'cash_inr', label: 'Cash (₹)' }, { value: 'account_credit', label: 'Account credit' }]} />
       </td>
       <td className="px-3 py-1.5">
         <input type="number" min="0" step="1" className="fb-input text-sm w-24"

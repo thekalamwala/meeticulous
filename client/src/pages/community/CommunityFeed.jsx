@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ChevronDown, CircleHelp, Image, MessagesSquare, SquarePen } from 'lucide-react';
+import { CircleHelp, Image, MessagesSquare, SquarePen } from 'lucide-react';
 import Seo from '../../components/common/Seo';
 import ErrorPage from '../ErrorPage';
 import { useInfiniteScroll } from '../../components/dashboard/ui/useInfiniteScroll';
@@ -15,6 +15,7 @@ import { Avatar } from '../../components/community/AuthorChip';
 import useRequireLogin from '../../components/community/useRequireLogin';
 import useHiddenPosts from '../../components/community/useHiddenPosts';
 import ReportDialog from '../../components/community/ReportDialog';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import CommunityLayout, { EmptyState, ListStatus, SITE_DESC, useCursorList } from './CommunityLayout';
 
 const TABS = [
@@ -78,17 +79,13 @@ export default function CommunityFeed() {
 
         {v2 ? (
           <div className="relative hidden lg:block lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:justify-self-end lg:self-center">
-            <select
-              aria-label="Filter the feed"
+            <MeetDropdown
+              size="sm"
+              ariaLabel="Filter the feed"
               value={tab}
-              onChange={(e) => setParams(e.target.value === 'everyone' ? {} : { tab: e.target.value })}
-              className="w-auto cursor-pointer appearance-none rounded-full border border-line bg-white py-1.5 pl-4 pr-9 text-[13px] font-semibold text-ink shadow-sm transition-colors hover:border-maroon/40 focus:outline-none focus:ring-2 focus:ring-maroon/30"
-            >
-              {TABS.map((t) => (
-                <option key={t.key} value={t.key} disabled={t.soon}>{t.label}{t.soon ? ' · soon' : ''}</option>
-              ))}
-            </select>
-            <ChevronDown size={15} aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted" />
+              onChange={(v) => setParams(v === 'everyone' ? {} : { tab: v })}
+              options={TABS.map((t) => ({ value: t.key, label: `${t.label}${t.soon ? ' · soon' : ''}`, disabled: t.soon }))}
+            />
           </div>
         ) : (
           <div role="tablist" aria-label="Feed" className="mt-tabs flex">

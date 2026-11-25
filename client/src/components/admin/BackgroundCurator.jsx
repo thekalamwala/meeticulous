@@ -1,5 +1,6 @@
 import { BACKGROUNDS } from '../../backgrounds/registry';
 import HostBackground from '../../backgrounds/HostBackground';
+import MeetDropdown from '../ui/MeetDropdown';
 
 const SAMPLE = '#960D32'; // platform accent — shows motion to admin
 
@@ -41,12 +42,12 @@ export default function BackgroundCurator({ value, onChange }) {
             {b.paramSchema.map((p) => (
               <label key={p.key} className="mt-2 flex items-center justify-between gap-2 text-sm">
                 {p.label}
-                <select
+                <MeetDropdown
+                  size="sm"
+                  ariaLabel={p.label}
                   value={params[p.key] ?? p.options[0]}
-                  onChange={(e) => patch(b.key, { params: { ...params, [p.key]: e.target.value } })}
-                  className="rounded border-gray-300 text-sm">
-                  {p.options.map((o) => <option key={o} value={o}>{o}</option>)}
-                </select>
+                  onChange={(v) => patch(b.key, { params: { ...params, [p.key]: v } })}
+                  options={p.options} />
               </label>
             ))}
             <label className="mt-2 flex items-center gap-2 text-sm">

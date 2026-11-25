@@ -1,3 +1,4 @@
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -188,17 +189,16 @@ const AdminServices = () => {
                     <td data-label="Service Category" className="px-4 py-3">
                       {editing ? (
                         <div className="flex items-center gap-1.5">
-                          <select
-                            autoFocus
-                            defaultValue={s.category || ""}
+                          <MeetDropdown
+                            size="sm"
+                            className="max-w-[200px]"
+                            ariaLabel="Category"
+                            placeholder="— No category —"
+                            value={s.category || ""}
                             disabled={savingId === s.id}
-                            onChange={(e) => saveCategory(s, e.target.value)}
-                            className="border border-gray-200 rounded-lg px-2 py-1.5 text-[13px] adm-t1 bg-white focus:ring-2 focus:ring-[#960D32]/30 focus:border-[#960D32] outline-none max-w-[200px]">
-                            <option value="">— No category —</option>
-                            {optionsFor(primary).map((c) => (
-                              <option key={c.id} value={c.slug}>{c.name}</option>
-                            ))}
-                          </select>
+                            onChange={(v) => saveCategory(s, v)}
+                            options={[{ value: '', label: '— No category —' }, ...optionsFor(primary).map((c) => ({ value: c.slug, label: c.name }))]}
+                          />
                           <IconBtn icon={IC.x} label="Cancel" onClick={() => setEditingId(null)} />
                         </div>
                       ) : catLabel ? (

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { adminGetBookings, adminUpdateBooking, adminDeleteBooking, adminExecuteRefund } from '../../services/api';
 import toast from 'react-hot-toast';
 import { PageHeader, Skeleton } from '../../components/admin/ui';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 
 // ───────────────────────────────────────────────────────────────
 // Admin Bookings — support/operations console
@@ -1059,15 +1060,13 @@ const EditModal = ({ b, onClose, onSave }) => {
         <div className="p-5 space-y-4">
           <label className="block">
             <span className="text-[12px] font-medium text-gray-500 mb-1.5 block">Booking Status</span>
-            <select value={status} onChange={e => setStatus(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#960D32]/30 focus:border-[#960D32] outline-none">
-              {['pending', 'confirmed', 'completed', 'cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
+            <MeetDropdown value={status} onChange={setStatus} ariaLabel="Booking Status"
+              options={['pending', 'confirmed', 'completed', 'cancelled']} />
           </label>
           <label className="block">
             <span className="text-[12px] font-medium text-gray-500 mb-1.5 block">Customer Payment</span>
-            <select value={payment} onChange={e => setPayment(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#960D32]/30 focus:border-[#960D32] outline-none">
-              {[['unpaid', 'Pending'], ['paid', 'Received'], ['refunded', 'Refunded']].map(([v, lbl]) => <option key={v} value={v}>{lbl}</option>)}
-            </select>
+            <MeetDropdown value={payment} onChange={setPayment} ariaLabel="Customer Payment"
+              options={[{ value: 'unpaid', label: 'Pending' }, { value: 'paid', label: 'Received' }, { value: 'refunded', label: 'Refunded' }]} />
           </label>
         </div>
         <div className="flex justify-end gap-2 px-5 py-4 border-t border-gray-100">

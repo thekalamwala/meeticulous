@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, CheckCircle2 } from 'lucide-react';
 import Button from '../common/Button';
+import MeetDropdown from '../../../../components/ui/MeetDropdown';
 
 const DemoModal = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -117,16 +118,13 @@ const DemoModal = () => {
                 {required && <span style={{ color: 'var(--primary)' }}> *</span>}
             </label>
             {options ? (
-                <select
+                <MeetDropdown
                     id={`demo-${field}`}
                     value={formData[field]}
-                    onChange={(e) => handleChange(field, e.target.value)}
-                >
-                    <option value="">Select…</option>
-                    {options.map(opt => (
-                        <option key={opt} value={opt}>{opt}</option>
-                    ))}
-                </select>
+                    onChange={(v) => handleChange(field, v)}
+                    placeholder="Select…"
+                    options={options}
+                />
             ) : (
                 <input
                     id={`demo-${field}`}

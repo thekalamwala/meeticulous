@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { PageHeader, Card, Btn, Badge } from '../../../components/admin/ui';
 import SequenceFlow from '../../../components/admin/SequenceFlow';
+import MeetDropdown from '../../../components/ui/MeetDropdown';
 import { crmListSequences, crmCreateSequence, crmListTemplates } from '../../../services/api';
 import toast from 'react-hot-toast';
 
@@ -161,19 +162,14 @@ function NewSequenceModal({ audience, onClose, onCreated }) {
                 <div key={i} className="rounded-xl border border-gray-200 p-3 space-y-2">
                   <div className="flex items-center gap-2">
                     <span className="text-[11px] font-semibold adm-t3">Step {i + 1}</span>
-                    <select className="fb-input text-xs !py-1 w-28" value={s.channel} onChange={(e) => setStep(i, 'channel', e.target.value)}>
-                      {CHANNELS.map((c) => <option key={c} value={c}>{c}</option>)}
-                    </select>
+                    <MeetDropdown size="sm" className="w-28" value={s.channel} onChange={(v) => setStep(i, 'channel', v)} ariaLabel={`Step ${i + 1} channel`} options={CHANNELS} />
                     <label className="text-[11px] adm-t3 flex items-center gap-1">wait
                       <input type="number" min="0" className="fb-input text-xs !py-1 w-16" value={s.delay_hours} onChange={(e) => setStep(i, 'delay_hours', e.target.value)} /> h
                     </label>
                     {steps.length > 1 && <button type="button" className="ml-auto text-[11px] text-red-500" onClick={() => removeStep(i)}>Remove</button>}
                   </div>
                   {s.channel === 'whatsapp' ? (
-                    <select className="fb-input text-sm w-full" value={s.template_key} onChange={(e) => setStep(i, 'template_key', e.target.value)}>
-                      <option value="">Pick an approved WhatsApp template…</option>
-                      {waTemplates.map((t) => <option key={t.id} value={t.name}>{t.label} ({t.name})</option>)}
-                    </select>
+                    <MeetDropdown value={s.template_key} onChange={(v) => setStep(i, 'template_key', v)} placeholder="Pick an approved WhatsApp template…" ariaLabel={`Step ${i + 1} WhatsApp template`} options={waTemplates.map((t) => ({ value: t.name, label: `${t.label} (${t.name})` }))} />
                   ) : (
                     <>
                       <input className="fb-input text-sm w-full" placeholder="Subject — {{first_name}} supported" value={s.subject} onChange={(e) => setStep(i, 'subject', e.target.value)} />

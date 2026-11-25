@@ -1,3 +1,4 @@
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import Ic from '../../components/admin/Ic';
@@ -169,12 +170,8 @@ const AdminReservedSlugs = () => {
             </div>
             <div>
               <label className="block text-xs font-medium adm-t2 mb-1">Kind</label>
-              <select className="fb-input text-sm" value={form.kind}
-                onChange={(e) => setForm({ ...form, kind: e.target.value })}>
-                <option value="admin">Admin</option>
-                <option value="premium">Premium</option>
-                <option value="prefix">Prefix</option>
-              </select>
+              <MeetDropdown size="sm" ariaLabel="Kind" value={form.kind} onChange={(v) => setForm({ ...form, kind: v })}
+                options={[{ value: 'admin', label: 'Admin' }, { value: 'premium', label: 'Premium' }, { value: 'prefix', label: 'Prefix' }]} />
             </div>
           </div>
           <div>

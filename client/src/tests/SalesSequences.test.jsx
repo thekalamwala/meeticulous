@@ -40,7 +40,8 @@ test('blocks a whatsapp step with no template', async () => {
   fireEvent.click(screen.getAllByText('+ New sequence')[0]);
   fireEvent.change(screen.getByPlaceholderText('Name (e.g. New Lead nurture)'), { target: { value: 'X' } });
   // switch the single step to whatsapp (no template picked)
-  fireEvent.change(screen.getByDisplayValue('email'), { target: { value: 'whatsapp' } });
+  fireEvent.click(screen.getByLabelText('Step 1 channel'));
+  fireEvent.click(screen.getByRole('option', { name: /whatsapp/i }));
   fireEvent.click(screen.getByText('Create sequence'));
   await waitFor(() => {}); // let the submit handler run
   expect(crmCreateSequence).not.toHaveBeenCalled();

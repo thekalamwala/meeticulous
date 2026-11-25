@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { Wallet, CreditCard, IndianRupee, MessageCircle, CalendarCheck, XCircle } from 'lucide-react';
 
 // The single ranked "Next step" nudge on the host dashboard. Content is a data-only
-// descriptor from lib/hostNudges.buildNudges. The share nudge renders its own rich
+// descriptor (the `nudge` prop). The share nudge renders its own rich
 // hero in Dashboard, so this handles the KYC / legacy / upgrade descriptors.
 const ICONS = { Wallet, CreditCard, IndianRupee, MessageCircle, CalendarCheck };
 const TONE = {

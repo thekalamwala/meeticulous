@@ -1,5 +1,6 @@
 // client/src/pages/admin/AdminFeedback.jsx
 import { useEffect, useState } from 'react';
+import MeetDropdown from '../../components/ui/MeetDropdown';
 import toast from 'react-hot-toast';
 import { adminListFeedback, adminUpdateFeedback } from '../../services/api';
 import { PageHeader, Badge, Skeleton } from '../../components/admin/ui';
@@ -40,10 +41,7 @@ export default function AdminFeedback() {
   return (
     <div>
       <PageHeader title="Host Feedback" actions={
-        <select value={filter} onChange={(e) => setFilter(e.target.value)} className="border adm-border rounded-lg px-3 py-1.5 text-sm">
-          <option value="">All statuses</option>
-          {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-        </select>
+        <MeetDropdown size="sm" ariaLabel="Filter by status" value={filter} onChange={setFilter} placeholder="All statuses" options={STATUSES} />
       } />
 
       {loading ? <div className="space-y-2">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-10" />)}</div>
