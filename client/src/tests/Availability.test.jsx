@@ -13,30 +13,29 @@ vi.mock('react-hot-toast', () => ({ default: { success: vi.fn(), error: vi.fn() 
 
 describe('Availability per-day toggle', () => {
   it('opens a closed day and reveals its time inputs', async () => {
-    const { container } = render(<MemoryRouter><Availability /></MemoryRouter>);
+    render(<MemoryRouter><Availability /></MemoryRouter>);
 
-    // 7 day switches, all closed. Time windows use <Select> dropdowns (30-min
-    // preset grid), not <input type=time> — so count selects, and by delta since
-    // the page also has fixed selects (Apply Monday's hours, timezone, buffer).
-    // The Connected-calendars card also renders slide-to-connect switches, so
-    // isolate the day toggles by their "Open/Close <day>" label.
-    const allSwitches = await screen.findAllByRole('switch');
-    const switches = allSwitches.filter((s) => /^(open|close) /i.test(s.getAttribute('aria-label') || ''));
+    // Scope to the desktop weekly grid: the page also renders the mobile day
+    // cards (HoursMobile), the Connected-calendars switches, and the Booking-rules
+    // selects — all in the DOM at once in jsdom. The grid holds the 7 day toggles
+    // and, per open day, start+end <Select> dropdowns.
+    const grid = await screen.findByTestId('weekly-grid');
+    const switches = [...grid.querySelectorAll('[role="switch"]')];
     expect(switches).toHaveLength(7);
     expect(switches[0].getAttribute('aria-checked')).toBe('false');
-    const baseSelects = container.querySelectorAll('select').length;
+    const baseSelects = grid.querySelectorAll('select').length;
 
     // Toggle the first day on → a default window appears (start + end selects).
     fireEvent.click(switches[0]);
     await waitFor(() =>
-      expect(container.querySelectorAll('select').length).toBe(baseSelects + 2),
+      expect(grid.querySelectorAll('select').length).toBe(baseSelects + 2),
     );
     expect(switches[0].getAttribute('aria-checked')).toBe('true');
 
     // Toggle it back off → the two window selects disappear.
     fireEvent.click(switches[0]);
     await waitFor(() =>
-      expect(container.querySelectorAll('select').length).toBe(baseSelects),
+      expect(grid.querySelectorAll('select').length).toBe(baseSelects),
     );
   });
 });
