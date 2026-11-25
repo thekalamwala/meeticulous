@@ -377,8 +377,11 @@ const AvailabilityV2 = () => {
         // Own bar, not the shared StickyActionBar: that one sits 4rem up (the old 64px
         // tab bar) and drops to the bottom from md, so under Kept's 77px tab bar (shown
         // below lg) it slid 13px underneath and the Grow button covered it.
+        // The negative bottom margin eats the layout's bottom padding (pb-28 below lg,
+        // pb-12 at lg) down to the tab bar's height, so at the end of the page the bar
+        // still lands on the tab bar / window bottom instead of floating above a gap.
         // ponytail: 77px = KeptTabBar's rendered height; read it from a CSS var if that bar changes.
-        <div className="sticky bottom-[calc(77px+env(safe-area-inset-bottom,0px))] z-30 -mx-4 border-t border-neutral-200 bg-white px-4 py-3 sm:-mx-6 sm:px-6 lg:bottom-0 lg:-mx-8 lg:px-8">
+        <div className="sticky bottom-[calc(77px+env(safe-area-inset-bottom,0px))] z-30 -mx-4 mb-[calc(77px_+_env(safe-area-inset-bottom,0px)_-_7rem)] border-t border-neutral-200 bg-white px-4 py-3 sm:-mx-6 sm:px-6 lg:bottom-0 lg:-mx-8 lg:mb-[-3rem] lg:px-8">
           <div className="flex w-full items-center gap-2">
             <p className={cn('mb-0 mr-auto flex items-center gap-2 text-[13.5px]', ed.dirty ? 'font-semibold text-ink' : 'text-faint')} aria-live="polite">
               {ed.dirty && <span className="h-2 w-2 shrink-0 rounded-full bg-maroon" aria-hidden="true" />}
