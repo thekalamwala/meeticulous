@@ -169,7 +169,7 @@ export const SubNav = ({ items }) => (
 );
 
 /* ── Tile — the one stat shape. ────────────────────────────────────────── */
-export const Tile = ({ label, value, delta, deltaLabel, hint, onClick, accent = false, spark, art, more, children }) => {
+export const Tile = ({ label, value, note, delta, deltaLabel, hint, onClick, accent = false, spark, art, more, children }) => {
   const Tag = onClick ? 'button' : 'div';
   const up = delta != null && delta >= 0;
   const footer = delta != null || hint || more;
@@ -189,7 +189,10 @@ export const Tile = ({ label, value, delta, deltaLabel, hint, onClick, accent = 
           and tiles sit in a row, so proportional digits make neighbouring values
           jitter against each other and shift width as they refresh. Harmless on
           the few tiles whose value is a word: it only affects digits. */}
-      <span className="mt-2 font-display text-[24px] font-extrabold leading-none tracking-[-0.035em] tabular-nums text-ink sm:text-[28px]"><Figure value={value} /></span>
+      {/* No figure yet: say so in a sentence, never a dash or a fake ₹0 (Kept: honest states). */}
+      {value == null && note
+        ? <span className="mt-2 text-[15px] font-medium leading-snug text-muted">{note}</span>
+        : <span className="mt-2 font-display text-[24px] font-extrabold leading-none tracking-[-0.035em] tabular-nums text-ink sm:text-[28px]"><Figure value={value} /></span>}
       {footer && (
         // With art, the footer drops to the tile's foot and runs the full width,
         // in front of the mascot (founder call, 2026-11-25) — the value keeps clear of it.
@@ -231,7 +234,7 @@ const STATUS_WORD = {
 };
 export const StatusPill = ({ status, children, icon: Icon }) => {
   const [word, cls] = STATUS_WORD[status] || [children || status, 'bg-neutral-100 text-ink/55'];
-  return <span className={cn('inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-[8px] px-2.5 py-0.5 text-[11.5px] font-semibold', cls)}>{Icon && <Icon className="h-3 w-3" strokeWidth={2.6} />}{children || word}</span>;
+  return <span className={cn('inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-[8px] px-2.5 py-0.5 text-[12px] font-semibold', cls)}>{Icon && <Icon className="h-3 w-3" strokeWidth={2.6} />}{children || word}</span>;
 };
 
 /* ── Toggle ────────────────────────────────────────────────────────────── */
@@ -422,7 +425,7 @@ export const SourceDonut = ({ rows, valueKey = 'bookings', labelKey = 'label', s
                 <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: s.color }} />
                 <span className="min-w-0 flex-1 truncate text-[11.5px] font-semibold text-ink/80">{s.row[labelKey]}</span>
                 <span className="shrink-0 text-[11px] font-bold tabular-nums text-ink">{(s.row[valueKey]).toLocaleString('en-IN')}</span>
-                <span className="w-9 shrink-0 text-right text-[10.5px] font-bold tabular-nums text-ink/45">{Math.round(s.frac * 100)}%</span>
+                <span className="w-9 shrink-0 text-right text-[11px] font-bold tabular-nums text-ink/45">{Math.round(s.frac * 100)}%</span>
               </button>
             </li>
           );

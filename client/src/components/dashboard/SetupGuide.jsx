@@ -63,7 +63,12 @@ export default function SetupGuide({ steps, onGo, onCopy, title = 'Finish settin
           <h2 id="setup-guide" className="mb-0 font-display text-[20px] font-bold leading-tight tracking-[-0.02em] text-ink sm:text-[22px]">{title}</h2>
           <p className="mb-0 mt-1 text-[13.5px] text-muted">{done} of {steps.length} done · a few minutes each</p>
         </div>
-        <img src="/about/mascot-green.png" alt="" aria-hidden="true" className="h-16 w-16 shrink-0 object-contain lg:mt-auto lg:h-28 lg:w-28" />
+        <img src="/about/mascot-green.png" alt="" aria-hidden="true" className="h-16 w-16 shrink-0 object-contain lg:hidden" />
+        {/* Desktop: the mascot fills whatever height the checklist leaves under the heading
+            (founder call, 2026-11-25). Absolutely placed so it never makes the card taller. */}
+        <div aria-hidden="true" className="relative mt-4 hidden min-h-[140px] w-full flex-1 lg:block">
+          <img src="/about/mascot-green.png" alt="" className="absolute inset-0 h-full w-full object-contain object-left-bottom" />
+        </div>
       </div>
 
       {/* Progress runs down the step markers as a vertical rail (founder call, 2026-11-25):

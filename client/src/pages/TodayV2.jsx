@@ -329,10 +329,10 @@ const WeekPage = ({ week, label, past, go }) => {
             <button key={d.date.toISOString()} type="button" onClick={() => go('/dashboard/bookings')}
               aria-label={`${d.date.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}: ${d.count} booking${d.count === 1 ? '' : 's'}`}
               className="group flex h-full flex-col items-center justify-end gap-1 rounded-[10px] focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
-              <span className={cn('text-[11.5px] font-semibold tabular-nums', d.count ? 'text-ink' : 'text-transparent')}>{d.count || 0}</span>
+              <span className={cn('text-[12px] font-semibold tabular-nums', d.count ? 'text-ink' : 'text-transparent')}>{d.count || 0}</span>
               <span className={cn('w-full max-w-[34px] rounded-[6px] transition group-hover:opacity-80',
                 d.past ? 'bg-neutral-200' : d.count ? 'bg-maroon' : 'bg-neutral-100')} style={{ height: h }} />
-              <span className={cn('text-[11.5px] font-medium', isToday ? 'font-semibold text-maroon' : 'text-faint')}>
+              <span className={cn('text-[12px] font-medium', isToday ? 'font-semibold text-maroon' : 'text-faint')}>
                 {isToday ? 'Today' : d.date.toLocaleDateString('en-IN', { weekday: 'short' })}
               </span>
             </button>
@@ -422,7 +422,7 @@ const TodaySchedule = ({ todays, onOpen, go }) => {
                   phase === 'done' && 'text-muted')}>
                 <span className="flex items-center justify-between gap-2">
                   <span className={cn('font-display text-[18px] font-extrabold tabular-nums tracking-[-0.02em]', phase === 'done' ? 'text-muted' : 'text-maroon')}>{fmtTime(b.scheduled_at)}</span>
-                  <span className={cn('shrink-0 whitespace-nowrap rounded-[6px] px-2 py-0.5 text-[11.5px] font-semibold', cls)}>{word}</span>
+                  <span className={cn('shrink-0 whitespace-nowrap rounded-[6px] px-2 py-0.5 text-[12px] font-semibold', cls)}>{word}</span>
                 </span>
                 <span className="mt-auto flex min-w-0 flex-col gap-0.5">
                   <span className={cn('block truncate text-[16px] font-semibold', phase === 'done' ? 'text-muted' : 'text-ink')}>{b.guest_name || 'Guest'}</span>
@@ -539,10 +539,11 @@ const TodayV2 = () => {
   const ready = Number(balance?.available) || 0;
   const held = (balance?.clearing || 0) + (balance?.pendingCompletion || 0);
   const moneyTile = !balance
-    ? { label: 'Ready to withdraw', value: '—', hint: 'Balance unavailable' }
+    ? { label: 'Ready to withdraw', value: null, note: 'Balance unavailable right now' }
     : ready > 0 || held === 0
       ? { label: 'Ready to withdraw', value: inr(ready), hint: held ? `${inr(held)} clearing or held` : 'Paid out as bookings clear' }
-      : { label: 'Waiting for you', value: inr(held), hint: balance.payoutsBlocked ? '₹0 ready · verify to release' : '₹0 ready · clearing now' };
+      : { label: 'Waiting for you', value: inr(held), hint: balance.payoutsBlocked ? '₹0 ready right now' : '₹0 ready · clearing now' };
+  // The "verify" ask lives in the setup checklist and the bell, not here (Kept: one fact, one place).
   const pageTo = user?.username ? `/${user.username}` : PROFILE_TO;
 
   // Mascot art in each metric's empty right side, by domain (founder call,
@@ -555,7 +556,7 @@ const TodayV2 = () => {
       hint="Paid bookings" art={art('purple')} onClick={() => go('/dashboard/intelligence/revenue')} />,
     <Tile key="upcoming" label="Upcoming" value={upcomingList.length} hint={next ? `Next: ${fmtDayFull(next.scheduled_at)}` : 'Nothing scheduled'}
       art={art('blue')} onClick={() => go('/dashboard/bookings')} />,
-    <Tile key="views" label="Page views" value={views == null ? '—' : views.toLocaleString('en-IN')} hint="Your public page"
+    <Tile key="views" label="Page views" value={views == null ? null : views.toLocaleString('en-IN')} note="Not tracked yet" hint="Your public page"
       art={art('green')} onClick={() => go(pageTo)} />,
   ];
 
@@ -595,7 +596,8 @@ const TodayV2 = () => {
         </div>
       </section>
 
-      <RecentBookings bookings={bookings} onOpen={setOpenId} go={go} />
+      {/* Wait for the data: an empty state before it lands is a false one (Kept audit). */}
+      {loading ? sk('h-[360px]') : <RecentBookings bookings={bookings} onOpen={setOpenId} go={go} />}
 
       {!loading && setupOpen && <SetupGuide steps={setupSteps} onGo={go} onCopy={copyLink} />}
 

@@ -24,6 +24,12 @@ describe('Tile', () => {
     expect(valueSpan('9')?.textContent).toBe('₹9');
   });
 
+  it('says so in a sentence when there is no figure, never a dash', () => {
+    render(<Tile label="Page views" value={null} note="Not tracked yet" />);
+    expect(screen.getByText('Not tracked yet')).toBeInTheDocument();
+    expect(screen.queryByText('—')).toBeNull();
+  });
+
   it('still renders label and hint', () => {
     render(<Tile label="Upcoming" value="14" hint="Next 30 days" />);
     expect(screen.getByText('Upcoming')).toBeInTheDocument();
