@@ -44,6 +44,8 @@ export function installDashPreview(api) {
     } else {
       data = { success: true, preview: true }; // never reaches a server
     }
+    // A fixture that is an Error simulates a failed read (error-state screenshots).
+    if (data instanceof Error) throw Object.assign(data, { config, response: { status: 500, data: {} } });
     return { data, status: 200, statusText: 'OK', headers: {}, config, request: {} };
   };
   // eslint-disable-next-line no-console

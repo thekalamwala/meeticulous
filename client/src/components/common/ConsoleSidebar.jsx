@@ -202,24 +202,19 @@ export const NAV_V2 = [
     ],
   },
   {
+    // Grow (Kept, founder-approved 2026-11-26): one section with in-page tabs.
+    // Overview is the landing (the phone's raised centre tab opens it). Reviews and
+    // Refer & earn keep their old URLs. Community is a Grow tab now, not a rail
+    // section of its own: one row covers its four routes (Mentions is a filter
+    // inside Activity), still hidden until dashboard_sections_v2 is on.
     id: 'grow', label: 'Grow', icon: 'nav-refer',
     items: [
-      { to: '/dashboard/testimonials', label: 'Social proof', icon: 'nav-profile' },
+      { to: '/dashboard/grow', label: 'Overview', icon: 'nav-overview', matchPrefix: '/dashboard/grow' },
+      { to: '/dashboard/grow/page', label: 'Your page', icon: 'nav-profile', matchPrefix: '/dashboard/grow/page' },
+      { to: '/dashboard/testimonials', label: 'Reviews', icon: 'nav-profile' },
       { to: '/dashboard/referrals', label: 'Refer & earn', icon: 'nav-refer' },
+      { to: '/dashboard/community/activity', label: 'Community', icon: 'nav-chat', matchPrefix: '/dashboard/community', visible: (c) => !!c.flags?.dashboard_sections_v2 },
     ],
-  },
-  {
-    // dashboard_sections_v2 (ships OFF): the console's view of /community — this
-    // host's own activity, open questions to answer, and the spaces. Hidden until
-    // the flag is on; routes redirect home off-flag.
-    id: 'community', label: 'Community', icon: 'nav-chat',
-    items: [
-      { to: '/dashboard/community/activity', label: 'Activity', icon: 'nav-chat', matchPrefix: '/dashboard/community/activity' },
-      { to: '/dashboard/community/mentions', label: 'Mentions', icon: 'nav-chat', matchPrefix: '/dashboard/community/mentions' },
-      { to: '/dashboard/community/answer', label: 'Answer', icon: 'nav-chat', matchPrefix: '/dashboard/community/answer' },
-      { to: '/dashboard/community/spaces', label: 'Spaces', icon: 'nav-chat', matchPrefix: '/dashboard/community/spaces' },
-    ],
-    visible: (c) => !!c.flags?.dashboard_sections_v2,
   },
   {
     id: 'settings', label: 'Settings', icon: 'rail-settings',

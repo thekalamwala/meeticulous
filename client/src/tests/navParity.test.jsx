@@ -37,6 +37,8 @@ const V2_OWN_ROUTES = [
   '/dashboard/intelligence/audience', '/dashboard/intelligence/demand',
   '/dashboard/community/activity', '/dashboard/community/mentions',
   '/dashboard/community/answer', '/dashboard/community/spaces',
+  // Grow (Kept): its overview landing and the booking-page editor.
+  '/dashboard/grow', '/dashboard/grow/page',
 ];
 
 describe('nothing becomes unreachable under v2', () => {
@@ -117,6 +119,12 @@ describe('the regrouping itself', () => {
     expect(sectionOf('/dashboard/referrals')).toBe('grow');
   });
 
+  it('lands Grow on its overview, with Your page beside it', () => {
+    const grow = NAV_V2.find((s) => s.id === 'grow');
+    expect(firstItemTo(grow, 'starter')).toBe('/dashboard/grow');
+    expect(sectionOf('/dashboard/grow/page')).toBe('grow');
+  });
+
   it('leaves Money exactly as it was — it already matched the redesign', () => {
     const before = NAV.find((s) => s.id === 'money').items.map((i) => i.to).sort();
     const after = NAV_V2.find((s) => s.id === 'money').items.map((i) => i.to).sort();
@@ -151,11 +159,14 @@ describe('the helpers still work against v2', () => {
   });
 
   it('hides Intelligence + Community until dashboard_sections_v2 is on, then shows them', () => {
-    const off = visibleSections({ flags: { console_v2: true } }).map((s) => s.id);
-    expect(off).not.toContain('intelligence');
-    expect(off).not.toContain('community');
-    const on = visibleSections({ flags: { console_v2: true, dashboard_sections_v2: true } }).map((s) => s.id);
-    expect(on).toContain('intelligence');
-    expect(on).toContain('community');
+    // Community is a Grow tab now (Kept), not a rail section: its one row lives in Grow.
+    const growRoutes = (secs) => secs.find((s) => s.id === 'grow').items.map((i) => i.to);
+    const offSecs = visibleSections({ flags: { console_v2: true } });
+    expect(offSecs.map((s) => s.id)).not.toContain('intelligence');
+    expect(growRoutes(offSecs)).not.toContain('/dashboard/community/activity');
+    const onSecs = visibleSections({ flags: { console_v2: true, dashboard_sections_v2: true } });
+    expect(onSecs.map((s) => s.id)).toContain('intelligence');
+    expect(onSecs.map((s) => s.id)).not.toContain('community');
+    expect(growRoutes(onSecs)).toContain('/dashboard/community/activity');
   });
 });
