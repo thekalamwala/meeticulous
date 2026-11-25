@@ -1,12 +1,12 @@
 // BookingDetail — one booking, readable at a glance (Kept, founder call 2026-11-25).
 // The pattern hosts know from Calendly / Google Calendar event details: who, when,
-// how to reach them, what they paid, what they wrote. Opens from Today in the side
+// how to reach them, what they paid (in the header), what they wrote. Opens from Today in the side
 // drawer; the Bookings page is meant to reuse it.
 //
 // Display only. Same data the list already loaded and plain links (Meet, WhatsApp,
 // tel:, mailto:). Nothing here confirms, reschedules, cancels or refunds a booking:
 // those flows stay on the Bookings page, behind their own checks.
-import { ArrowRight, CalendarClock, Mail, Phone, Wallet } from 'lucide-react';
+import { ArrowRight, CalendarClock, Mail, Phone } from 'lucide-react';
 import { cn, fmtTime, inr, relDay, StatusPill, MeetIcon, WhatsAppIcon } from './ui/v2';
 
 const lower = (v) => String(v || '').toLowerCase();
@@ -91,6 +91,13 @@ export default function BookingDetail({ booking: b, bookings = [], now = new Dat
   const mins = Math.round((end - start) / 60_000);
   const mode = lower(b.services?.meeting_mode);
   const canJoin = b.meeting_link && !done && !cancelled;
+  const payWord = { paid: 'Paid', unpaid: 'Unpaid', refunded: 'Refunded', pending: 'Payment pending', failed: 'Payment failed' }[lower(b.payment_status)];
+  const payLabel = amount ? `${inr(amount)}${payWord ? ` · ${payWord}` : ''}` : 'Free';
+  const payNotes = [
+    amount > 0 && b.paid_at && `Paid ${dayShort(b.paid_at)}`,
+    discount > 0 && `${inr(discount)} off with a discount code`,
+    refunded > 0 && `${inr(refunded)} refunded${b.refunded_at ? ` on ${dayShort(b.refunded_at)}` : ''}`,
+  ].filter(Boolean);
 
   return (
     <div className="flex flex-col gap-3">
@@ -107,7 +114,10 @@ export default function BookingDetail({ booking: b, bookings = [], now = new Dat
           {mins > 0 && <Chip>{mins} min</Chip>}
           {!isToday && <Chip>{dayShort(b.scheduled_at)}</Chip>}
           {mode && <Chip>{mode === 'online' ? 'Online' : mode === 'offline' || mode === 'in_person' ? 'In person' : mode}</Chip>}
+          {/* Payment lives in the header (founder call, 2026-11-25): amount and its state. */}
+          <Chip>{payLabel}</Chip>
         </div>
+        {payNotes.length > 0 && <p className="mb-0 mt-2 text-[13px] text-white/75">{payNotes.join(' · ')}</p>}
         {(canJoin || wa) && (
           <div className="mt-4 flex flex-wrap gap-2">
             {canJoin && (
@@ -143,22 +153,6 @@ export default function BookingDetail({ booking: b, bookings = [], now = new Dat
         {phone && <Row icon={Phone} href={`tel:${phone}`}><span className="block truncate text-[14px] text-ink">{phone}</span></Row>}
         {email && <Row icon={Mail} href={`mailto:${email}`}><span className="block truncate text-[14px] text-ink">{email}</span></Row>}
         {!phone && !email && <p className="mb-0 text-[13px] text-muted">No contact details on this booking.</p>}
-      </Card>
-
-      <Card title="Payment">
-        <Row icon={Wallet}>
-          <span className="flex items-center justify-between gap-3">
-            <span className="font-display text-[22px] font-extrabold tabular-nums tracking-[-0.03em] text-ink">{amount ? inr(amount) : 'Free'}</span>
-            {amount > 0 && b.payment_status && <StatusPill status={lower(b.payment_status)} />}
-          </span>
-        </Row>
-        {(discount > 0 || refunded > 0 || (amount > 0 && b.paid_at)) && (
-          <ul className="mb-0 mt-2 flex flex-col gap-1 pl-0 text-[13px] text-muted">
-            {amount > 0 && b.paid_at && <li className="list-none">Paid {dayShort(b.paid_at)}</li>}
-            {discount > 0 && <li className="list-none">{inr(discount)} off with a discount code</li>}
-            {refunded > 0 && <li className="list-none">{inr(refunded)} refunded{b.refunded_at ? ` on ${dayShort(b.refunded_at)}` : ''}</li>}
-          </ul>
-        )}
       </Card>
 
       {b.notes?.trim() && (
