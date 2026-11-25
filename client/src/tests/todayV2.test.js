@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { revenueSeries, buildQueue } from '../pages/TodayV2';
+import { revenueSeries, buildQueue, whenWord } from '../pages/TodayV2';
 
 const iso = (y, m, d = 15) => new Date(y, m, d).toISOString();
 
@@ -37,5 +37,17 @@ describe('TodayV2 buildQueue', () => {
   it('omits KYC when approved', () => {
     const q = buildQueue([{ status: 'pending', scheduled_at: new Date(now + 1000).toISOString() }], { status: 'approved' }, now);
     expect(q.map((x) => x.id)).toEqual(['confirm']);
+  });
+});
+
+describe('TodayV2 whenWord', () => {
+  // Wed 25 Nov 2026, 10:00 local
+  const now = new Date(2026, 10, 25, 10, 0);
+  const at = (d, h = 9) => new Date(2026, 10, d, h, 0).toISOString();
+  it('says when like a person would', () => {
+    expect(whenWord(at(25, 16), now)).toBe('later today');
+    expect(whenWord(at(26), now)).toBe('tomorrow');
+    expect(whenWord(at(30), now)).toBe('Monday');
+    expect(whenWord(at(30 + 9), now)).toMatch(/^on /);
   });
 });

@@ -357,7 +357,9 @@ const DashboardLayoutV2 = ({ children }) => {
                 on every drag, so scrolling back UP on a phone was hijacked into a refresh. */}
             <PullToRefresh>
               <div className="mx-auto w-full max-w-[1180px] px-4 pb-28 pt-2 sm:px-6 lg:px-10 lg:pb-12 lg:pt-4">
-                <KycNudgeStrip />
+                {/* Today shows KYC inside its own "Needs you" card, so the shell notice
+                    would say the same thing twice there. */}
+                {pathname !== '/dashboard' && <KycNudgeStrip />}
                 <PageTransition>{children}</PageTransition>
               </div>
             </PullToRefresh>

@@ -445,7 +445,7 @@ const MASCOT = {
   blue: '/about/mascot-blue.png', green: '/about/mascot-green.png',
 };
 export const InsightBand = ({ eyebrow, title, sub, actions, aside, mascot, className = '' }) => (
-  <section className={cn('relative isolate overflow-hidden rounded-[28px] bg-maroon-700 px-5 py-6 text-white sm:rounded-[32px] sm:px-9 sm:py-8', className)}>
+  <section className={cn('relative isolate flex flex-col justify-center overflow-hidden rounded-[28px] bg-maroon-700 px-5 py-6 text-white sm:rounded-[32px] sm:px-9 sm:py-8', className)}>
     <span aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 opacity-50"
       style={{ backgroundImage: 'url(/brand/ds/03-patterns/mt-pattern-loop-on-maroon.svg)', backgroundSize: '180px' }} />
     <img src="/brand/ds/02-ee/mt-ee-thread-pink.svg" alt="" aria-hidden="true"
