@@ -328,7 +328,7 @@ const TodayMobile = ({ user, go, balance, bookings, views, queue, onNeedsYou, th
         <h2 className="mb-2 font-display text-[12.5px] font-bold tracking-[-0.02em] text-ink">Quick actions</h2>
         {/* Apple squircle app-icons — same grammar as desktop. Needs-you is the
             filled (maroon) primary + badge; the rest are blush. No hover lift. */}
-        <div className="dash-noscrollbar flex gap-3 overflow-x-auto pb-1">
+        <div className="dash-noscrollbar flex gap-3 overflow-x-auto px-0.5 pb-1 pt-2">
           {queue.length > 0 && (
             <button type="button" onClick={onNeedsYou} className="group flex w-[72px] shrink-0 flex-col items-center gap-2 focus-visible:outline-none">
               <span className="relative grid h-16 w-16 place-items-center rounded-[20px] bg-maroon text-white transition-colors duration-200 ease-out group-hover:bg-maroon-dark group-focus-visible:ring-[3px] group-focus-visible:ring-rose">
