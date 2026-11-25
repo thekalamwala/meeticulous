@@ -108,9 +108,11 @@ imagery). Pitch and guidelines: claude.ai/artifact/VKsrB9rmuxv2BN5rd3gGBH.
   fall back to the marketing pill.
 - **Mascots** (`client/public/about/mascot-*.png`, 400px sources): purple star = Intelligence /
   Pro, orange panda = Money / KYC, blue axolotl = Bookings / Today, green sprout = Grow / first
-  steps. One per screen, ≥96px, only in bands, empty states, Pro previews, onboarding and
-  celebrations. Never beside a number, in a data card or in a table. Never recolour or crop
-  through the face.
+  steps. Use them in bands, empty states, Pro previews, onboarding and celebrations. **Exception
+  (founder call, 2026-11-25):** the metric tiles on Today carry one 64px mascot each in their empty
+  right side, matched by domain (orange = money, purple = insights, blue = bookings, green =
+  growth), placed out of the flow so it never adds height. Never in a table or a list row. Never
+  recolour or crop through the face.
 - **Charts:** one hue (maroon-600); a second series or deduction is rose-500. Human labels
   ("Oct", "Mon", "9 am"), 11px minimum, every chart has a tooltip.
 

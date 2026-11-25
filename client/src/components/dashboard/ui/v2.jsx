@@ -156,13 +156,13 @@ export const SubNav = ({ items }) => (
 );
 
 /* ── Tile — the one stat shape. ────────────────────────────────────────── */
-export const Tile = ({ label, value, delta, deltaLabel, hint, onClick, accent = false, spark, more, children }) => {
+export const Tile = ({ label, value, delta, deltaLabel, hint, onClick, accent = false, spark, art, more, children }) => {
   const Tag = onClick ? 'button' : 'div';
   const up = delta != null && delta >= 0;
   const footer = delta != null || hint || more;
   return (
     <Tag type={onClick ? 'button' : undefined} onClick={onClick}
-      className={cn('flex min-w-0 flex-col rounded-[20px] bg-white p-4 text-left transition sm:p-5',
+      className={cn('relative flex min-w-0 flex-col overflow-hidden rounded-[20px] bg-white p-4 text-left transition sm:p-5', art && 'pr-[84px]',
         // Featured = a maroon ring, never a filled maroon tile: the filled tile was
         // the loudest thing on the page even when its value was ₹0 (Kept audit).
         accent && 'ring-2 ring-inset ring-maroon',
@@ -190,6 +190,9 @@ export const Tile = ({ label, value, delta, deltaLabel, hint, onClick, accent = 
         </div>
       )}
       {children}
+      {/* art: a large monoline icon in the card's empty right side — no chip, no
+          background, out of the flow so it never adds height (Kept, 2026-11-25). */}
+      {art && <span aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-maroon sm:right-4">{art}</span>}
     </Tag>
   );
 };

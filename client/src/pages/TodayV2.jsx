@@ -26,7 +26,7 @@ import SetupGuide, { buildSetupSteps } from '../components/dashboard/SetupGuide'
 import { buildQueue } from '../utils/attentionQueue';
 import { Button, ErrorState, Skeleton } from '../components/dashboard/ui';
 import {
-  Avatar, Drawer, InsightBand, Panel, Sparkline, StatusPill, Tile,
+  Avatar, Drawer, InsightBand, Panel, StatusPill, Tile,
   MeetIcon, WhatsAppIcon, cn, inr, fmtTime, fmtDayFull, relDay, useLast,
 } from '../components/dashboard/ui/v2';
 
@@ -510,13 +510,18 @@ const TodayV2 = () => {
       : { label: 'Waiting for you', value: inr(held), hint: balance.payoutsBlocked ? '₹0 ready · verify to release' : '₹0 ready · clearing now' };
   const pageTo = user?.username ? `/${user.username}` : PROFILE_TO;
 
+  // Mascot art in each metric's empty right side, by domain (founder call,
+  // 2026-11-25): orange = money, purple = insights, blue = bookings, green = growth.
+  // Decorative — the label carries the meaning.
+  const art = (who) => <img src={`/about/mascot-${who}.png`} alt="" className="h-16 w-16 object-contain" />;
   const metrics = [
-    <Tile key="money" {...moneyTile} onClick={() => go('/dashboard/payments/payouts')} />,
+    <Tile key="money" {...moneyTile} art={art('orange')} onClick={() => go('/dashboard/payments/payouts')} />,
     <Tile key="month" label="This month" value={inr(thisMonth, { compact: true })} delta={delta ?? undefined} deltaLabel="vs last month"
-      hint="Paid bookings" spark={series.some((s) => s.revenue) ? <Sparkline values={series.map((s) => s.revenue)} /> : null}
-      onClick={() => go('/dashboard/intelligence/revenue')} />,
-    <Tile key="upcoming" label="Upcoming" value={upcomingList.length} hint={next ? `Next: ${fmtDayFull(next.scheduled_at)}` : 'Nothing scheduled'} onClick={() => go('/dashboard/bookings')} />,
-    <Tile key="views" label="Page views" value={views == null ? '—' : views.toLocaleString('en-IN')} hint="Your public page" onClick={() => go(pageTo)} />,
+      hint="Paid bookings" art={art('purple')} onClick={() => go('/dashboard/intelligence/revenue')} />,
+    <Tile key="upcoming" label="Upcoming" value={upcomingList.length} hint={next ? `Next: ${fmtDayFull(next.scheduled_at)}` : 'Nothing scheduled'}
+      art={art('blue')} onClick={() => go('/dashboard/bookings')} />,
+    <Tile key="views" label="Page views" value={views == null ? '—' : views.toLocaleString('en-IN')} hint="Your public page"
+      art={art('green')} onClick={() => go(pageTo)} />,
   ];
 
   const loading = status === 'loading';
