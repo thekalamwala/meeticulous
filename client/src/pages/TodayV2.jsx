@@ -21,7 +21,7 @@ import { isFreePlan } from '../utils/themeUtils';
 import { Button, EmptyState, ErrorState, Skeleton } from '../components/dashboard/ui';
 import {
   Avatar, Drawer, PageHeading, Panel, StatusPill, SourceDonut,
-  MeetIcon, WhatsAppIcon, cn, inr, fmtTime, relDay, useLast,
+  MeetIcon, WhatsAppIcon, cn, inr, pct, fmtTime, relDay, useLast,
 } from '../components/dashboard/ui/v2';
 
 const lower = (s) => String(s || '').toLowerCase();
@@ -39,6 +39,29 @@ export const revenueSeries = (bookings, now = new Date()) => {
       .filter((b) => isPaid(b) && b.scheduled_at && monthKey(b.scheduled_at) === key)
       .reduce((n, b) => n + amountOf(b), 0);
     out.push({ month: d.toLocaleDateString('en-IN', { month: 'short' }), revenue });
+  }
+  return out;
+};
+
+// Bookings by status over the last 12 calendar months, oldest→newest. Each row
+// carries the real per-status counts (confirmed/completed/pending/cancelled) —
+// no_show folds into cancelled. Pure, tested. Nothing invented (the lab mock
+// split a fixed ratio; this counts the host's own bookings).
+export const statusByMonth = (bookings, now = new Date()) => {
+  const out = [];
+  for (let i = 11; i >= 0; i -= 1) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${d.getMonth()}`;
+    const seg = [0, 0, 0, 0]; // confirmed, completed, pending, cancelled
+    for (const b of bookings) {
+      if (!b.scheduled_at || monthKey(b.scheduled_at) !== key) continue;
+      const s = lower(b.status);
+      if (s === 'confirmed') seg[0] += 1;
+      else if (s === 'completed') seg[1] += 1;
+      else if (s === 'pending') seg[2] += 1;
+      else if (s === 'cancelled' || s === 'no_show') seg[3] += 1;
+    }
+    out.push({ month: d.toLocaleDateString('en-IN', { month: 'short' }), seg, total: seg[0] + seg[1] + seg[2] + seg[3] });
   }
   return out;
 };
@@ -276,15 +299,92 @@ const NeedsYouDrawer = ({ open, onClose, items, go, onResolve }) => {
   );
 };
 
-/* ── Mobile Today — the Host Lab mobile redesign, on real data ──────────────
- * Graduated from pages/hostlab/sections/Today.mobile: quick actions, a glance
- * strip, a day-picker + schedule, then where bookings came from. The lab's
- * weekly-availability lollipop, conversion/repeat-rate glances and per-source
- * view counts are dropped here — the real dashboard has no source for them yet
- * and this page never fakes a number (same rule as the desktop tree). The queue
- * ("Needs you") is kept, not in the lab mock, because it is the real decision
- * surface and dropping it on mobile would hide KYC / confirm / unpaid actions.
- * Receives already-loaded data from TodayV2 so there is one fetch, two layouts.
+/* ── At a glance — the lab's illustrated glance tiles (one 2×2 sprite sliced by
+ * background-position), on real metrics. ──────────────────────────────────── */
+const GLANCE_SPRITE = '/brand/host-lab/glance-sprite.png';
+const GLANCE_POS = ['0% 0%', '100% 0%', '0% 100%', '100% 100%'];
+const Glance = ({ idx, label, value, onClick }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className="flex min-w-[128px] shrink-0 snap-start flex-col text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
+  >
+    <span aria-hidden="true" className="aspect-square w-full rounded-xl"
+      style={{ backgroundImage: `url(${GLANCE_SPRITE})`, backgroundSize: '200% 200%', backgroundPosition: GLANCE_POS[idx] }} />
+    <span className="mt-1.5 text-[11px] font-semibold leading-tight text-ink/60">{label}</span>
+    <span className="mt-0.5 font-display text-[19px] font-extrabold leading-none tracking-[-0.03em] text-maroon">{value}</span>
+  </button>
+);
+
+/* ── Profile performance — one stacked bar per month, split by the four booking
+ * statuses, on REAL per-status counts (statusByMonth). Tap a month for its
+ * breakdown. (Multi-hue + marigold are a deliberate exception to the single-hue
+ * / open-slots-only kit rules, carried from the lab on the founder's spec.) ── */
+const PERF_STATUS = [
+  ['Confirmed', '#960D32'],
+  ['Completed', '#E0506F'],
+  ['Pending', '#F6C35A'],
+  ['Cancelled', '#D4D4D8'],
+];
+const perfSeg = (i) => (i === 1 || i === 3)
+  ? { backgroundImage: `repeating-linear-gradient(45deg, ${PERF_STATUS[i][1]} 0 3px, #ffffff 3px 6px)` }
+  : { backgroundColor: PERF_STATUS[i][1] };
+const ProfilePerformance = ({ rows, go }) => {
+  const [open, setOpen] = useState(null);
+  const max = Math.max(...rows.map((r) => r.total), 1);
+  return (
+    <Panel title="Profile performance" subtitle="Bookings by status · last 12 months"
+      action={<Button size="sm" variant="ghost" onClick={() => go('/dashboard/intelligence/overview')}>Details <ArrowRight className="h-3 w-3" strokeWidth={2.6} /></Button>}>
+      <ul className="flex flex-col gap-0.5">
+        {rows.map((r) => {
+          const isOpen = open === r.month;
+          return (
+            <li key={r.month}>
+              <button type="button" onClick={() => setOpen(isOpen ? null : r.month)} aria-expanded={isOpen}
+                className="flex w-full items-center gap-2 rounded-md px-1 py-1 text-left transition hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose">
+                <span className={cn('w-7 shrink-0 text-[10px] font-bold', isOpen ? 'text-maroon' : 'text-ink/50')}>{r.month}</span>
+                <div className="flex h-3.5 flex-1 items-stretch">
+                  {r.total > 0 && (
+                    <span className="flex overflow-hidden rounded-full" style={{ width: `${Math.max((r.total / max) * 100, 3)}%` }}>
+                      {r.seg.map((v, i) => (v ? <span key={i} style={{ flex: v, ...perfSeg(i) }} /> : null))}
+                    </span>
+                  )}
+                </div>
+                <span className="w-6 shrink-0 text-right text-[10.5px] font-bold tabular-nums text-ink/70">{r.total}</span>
+              </button>
+              <div className={cn('grid transition-[grid-template-rows] duration-200 ease-out', isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]')}>
+                <div className="min-h-0 overflow-hidden">
+                  <div className="mb-1 ml-9 mr-8 mt-1 rounded-md border-2 border-neutral-200 bg-cream/70 px-3 py-2">
+                    {PERF_STATUS.map(([label], i) => (
+                      <div key={label} className="flex items-center justify-between py-[3px] text-[11px]">
+                        <span className="inline-flex items-center gap-2 font-medium text-ink/70"><span className="h-2.5 w-3.5 rounded-[3px]" style={perfSeg(i)} /> {label}</span>
+                        <span className="font-bold tabular-nums text-ink">{r.seg[i]}</span>
+                      </div>
+                    ))}
+                    <div className="mt-1 flex items-center justify-between border-t-2 border-neutral-200 pt-1.5 text-[11px] font-bold text-maroon"><span>Total</span><span className="tabular-nums">{r.total}</span></div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 border-t border-neutral-100 pt-2.5">
+        {PERF_STATUS.map(([label], i) => (
+          <span key={label} className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-ink/55"><span className="h-2.5 w-3.5 rounded-[3px]" style={perfSeg(i)} /> {label}</span>
+        ))}
+      </div>
+    </Panel>
+  );
+};
+
+/* ── Mobile Today — the Host Lab mobile layout, on real data ─────────────────
+ * Sequence mirrors pages/hostlab/sections/Today.mobile: promo, the calendar
+ * slider + today's meetings, an at-a-glance strip, quick actions, profile
+ * performance, then where bookings came from. Every number is the host's own:
+ * the glance metrics and the per-status bars are computed from real bookings /
+ * views / balance, never the lab's invented splits. The "Needs you" queue rides
+ * in the quick-actions row (tile + drawer). One fetch in TodayV2, two layouts.
  * -------------------------------------------------------------------------- */
 const QUICK_ACTIONS = [
   { icon: Package, label: 'Manage services', to: '/dashboard/catalog', accent: true },
@@ -293,7 +393,7 @@ const QUICK_ACTIONS = [
   { icon: Star, label: 'Reviews', to: '/dashboard/testimonials' },
 ];
 
-const TodayMobile = ({ user, go, balance, bookings, views, queue, onNeedsYou, thisMonth, delta, upcoming, sources, money, held, setOpenId, loading, showPromo, onClosePromo }) => {
+const TodayMobile = ({ user, go, balance, bookings, views, queue, onNeedsYou, sources, money, setOpenId, loading, showPromo, onClosePromo }) => {
   const [sel, setSel] = useState(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; });
   const stripRef = useRef(null);
   const base = useMemo(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }, []);
@@ -310,6 +410,23 @@ const TodayMobile = ({ user, go, balance, bookings, views, queue, onNeedsYou, th
   // dash once Today loads host availability.)
   const countFor = (d) => bookings.filter((b) => b.scheduled_at && sameDay(new Date(b.scheduled_at), d) && lower(b.status) !== 'cancelled').length;
 
+  // At-a-glance metrics — all from the host's own data, none faked.
+  const paidBookings = bookings.filter((b) => isPaid(b) && amountOf(b) > 0);
+  const avgValue = paidBookings.length ? Math.round(paidBookings.reduce((n, b) => n + amountOf(b), 0) / paidBookings.length) : 0;
+  const guestCounts = useMemo(() => {
+    const by = {};
+    for (const b of bookings) {
+      if (lower(b.status) === 'cancelled') continue;
+      const k = b.guest_phone || b.guest_email;
+      if (k) by[k] = (by[k] || 0) + 1;
+    }
+    return Object.values(by);
+  }, [bookings]);
+  const repeatRate = guestCounts.length ? guestCounts.filter((n) => n >= 2).length / guestCounts.length : 0;
+  const bookedCount = bookings.filter((b) => lower(b.status) !== 'cancelled').length;
+  const convRate = views ? Math.min(bookedCount / views, 1) : null;
+  const statusMonths = useMemo(() => statusByMonth(bookings), [bookings]);
+
   return (
     <div className="flex flex-col gap-3">
       <header>
@@ -323,45 +440,7 @@ const TodayMobile = ({ user, go, balance, bookings, views, queue, onNeedsYou, th
       {/* Pro promo — free-plan hosts only, tall photo card */}
       {showPromo && <PromoMobile go={go} onClose={onClosePromo} />}
 
-      {/* Quick actions */}
-      <section>
-        <h2 className="mb-2 font-display text-[12.5px] font-bold tracking-[-0.02em] text-ink">Quick actions</h2>
-        {/* Apple squircle app-icons — same grammar as desktop. Needs-you is the
-            filled (maroon) primary + badge; the rest are blush. No hover lift. */}
-        <div className="dash-noscrollbar flex gap-3 overflow-x-auto px-0.5 pb-1 pt-2">
-          {queue.length > 0 && (
-            <button type="button" onClick={onNeedsYou} className="group flex w-[72px] shrink-0 flex-col items-center gap-2 focus-visible:outline-none">
-              <span className="relative grid h-16 w-16 place-items-center rounded-[20px] bg-maroon text-white transition-colors duration-200 ease-out group-hover:bg-maroon-dark group-focus-visible:ring-[3px] group-focus-visible:ring-rose">
-                <AlertTriangle className="h-6 w-6" strokeWidth={2} />
-                <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-[20px] place-items-center rounded-full border-2 border-white bg-rose px-1 text-[10px] font-bold tabular-nums text-white">{queue.length}</span>
-              </span>
-              <span className="text-center text-[12px] font-medium tracking-[-0.01em] text-ink/75">Needs you</span>
-            </button>
-          )}
-          {QUICK_ACTIONS.map((a) => (
-            <button key={a.label} type="button" onClick={() => go(a.to)} className="group flex w-[72px] shrink-0 flex-col items-center gap-2 focus-visible:outline-none">
-              <span className="grid h-16 w-16 place-items-center rounded-[20px] bg-blush text-maroon transition-colors duration-200 ease-out group-hover:bg-pink/50 group-focus-visible:ring-[3px] group-focus-visible:ring-rose">
-                <a.icon className="h-6 w-6" strokeWidth={2} />
-              </span>
-              <span className="text-center text-[12px] font-medium tracking-[-0.01em] text-ink/75">{a.label}</span>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* At a glance — real values on the Host Lab mascot cards */}
-      {loading ? (
-        <div className="grid grid-cols-2 gap-2">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-28 rounded-2xl" />)}</div>
-      ) : (
-        <div className="grid grid-cols-2 gap-2">
-          <KpiCard img="/brand/host-lab/kpi-withdraw.png" label="Ready to withdraw" value={money(balance?.available)} hint={`${money(held)} clearing or held`} onClick={() => go('/dashboard/payments/payouts')} />
-          <KpiCard img="/brand/host-lab/kpi-month.png" label="This month" value={inr(thisMonth, { compact: true })} delta={delta ?? undefined} deltaLabel="vs last month" onClick={() => go('/dashboard/earnings')} />
-          <KpiCard img="/brand/host-lab/kpi-upcoming.png" label="Upcoming" value={upcoming} hint="Not yet past" onClick={() => go('/dashboard/bookings')} />
-          <KpiCard img="/brand/host-lab/kpi-views.png" label="Page views" value={views == null ? '—' : views.toLocaleString('en-IN')} hint="Public profile" onClick={() => go(user?.username ? `/${user.username}` : '/dashboard/profile')} />
-        </div>
-      )}
-
-      {/* Day picker + schedule */}
+      {/* Calendar slider + today's meetings */}
       <div className="flex flex-col gap-2.5">
         <div className="flex items-center gap-1.5">
           <button type="button" aria-label="Earlier days" onClick={() => nudge(-1)}
@@ -424,6 +503,49 @@ const TodayMobile = ({ user, go, balance, bookings, views, queue, onNeedsYou, th
           )}
         </Panel>
       </div>
+
+      {/* At a glance — illustrated glance tiles on real metrics */}
+      <section>
+        <h2 className="mb-2 font-display text-[12.5px] font-bold tracking-[-0.02em] text-ink">At a glance</h2>
+        {loading ? (
+          <div className="dash-noscrollbar flex gap-2.5 overflow-x-auto pb-1">{[0, 1, 2].map((i) => <Skeleton key={i} className="aspect-square w-[128px] shrink-0 rounded-xl" />)}</div>
+        ) : (
+          <div className="dash-noscrollbar flex snap-x gap-2.5 overflow-x-auto pb-1">
+            <Glance idx={0} label="Ready to withdraw" value={money(balance?.available)} onClick={() => go('/dashboard/payments/payouts')} />
+            <Glance idx={1} label="Average booking value" value={avgValue ? inr(avgValue) : '—'} onClick={() => go('/dashboard/earnings')} />
+            <Glance idx={2} label="Repeat client rate" value={guestCounts.length ? pct(repeatRate) : '—'} onClick={() => go('/dashboard/clients')} />
+            <Glance idx={3} label="Booking conversion" value={convRate == null ? '—' : pct(convRate)} onClick={() => go(user?.username ? `/${user.username}` : '/dashboard/profile')} />
+          </div>
+        )}
+      </section>
+
+      {/* Quick actions — Apple squircle app-icons. Needs-you is the filled
+          (maroon) primary + badge; the rest are blush. No hover lift. */}
+      <section>
+        <h2 className="mb-2 font-display text-[12.5px] font-bold tracking-[-0.02em] text-ink">Quick actions</h2>
+        <div className="dash-noscrollbar flex gap-3 overflow-x-auto px-0.5 pb-1 pt-2">
+          {queue.length > 0 && (
+            <button type="button" onClick={onNeedsYou} className="group flex w-[72px] shrink-0 flex-col items-center gap-2 focus-visible:outline-none">
+              <span className="relative grid h-16 w-16 place-items-center rounded-[20px] bg-maroon text-white transition-colors duration-200 ease-out group-hover:bg-maroon-dark group-focus-visible:ring-[3px] group-focus-visible:ring-rose">
+                <AlertTriangle className="h-6 w-6" strokeWidth={2} />
+                <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-[20px] place-items-center rounded-full border-2 border-white bg-rose px-1 text-[10px] font-bold tabular-nums text-white">{queue.length}</span>
+              </span>
+              <span className="text-center text-[12px] font-medium tracking-[-0.01em] text-ink/75">Needs you</span>
+            </button>
+          )}
+          {QUICK_ACTIONS.map((a) => (
+            <button key={a.label} type="button" onClick={() => go(a.to)} className="group flex w-[72px] shrink-0 flex-col items-center gap-2 focus-visible:outline-none">
+              <span className="grid h-16 w-16 place-items-center rounded-[20px] bg-blush text-maroon transition-colors duration-200 ease-out group-hover:bg-pink/50 group-focus-visible:ring-[3px] group-focus-visible:ring-rose">
+                <a.icon className="h-6 w-6" strokeWidth={2} />
+              </span>
+              <span className="text-center text-[12px] font-medium tracking-[-0.01em] text-ink/75">{a.label}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* Profile performance — real bookings by status, last 12 months */}
+      {!loading && bookedCount > 0 && <ProfilePerformance rows={statusMonths} go={go} />}
 
       {/* Where bookings came from — real sources only (counts, no faked views) */}
       {sources.length > 0 && (
@@ -513,8 +635,7 @@ const TodayV2 = () => {
       <div className="lg:hidden">
         <TodayMobile
           user={user} go={go} balance={balance} bookings={bookings} views={views}
-          queue={queue} onNeedsYou={() => setNeedsOpen(true)} thisMonth={thisMonth} delta={delta}
-          upcoming={upcoming} sources={sources} money={money} held={held}
+          queue={queue} onNeedsYou={() => setNeedsOpen(true)} sources={sources} money={money}
           setOpenId={setOpenId} loading={status === 'loading'}
           showPromo={showPromo} onClosePromo={() => setPromoClosed(true)}
         />
