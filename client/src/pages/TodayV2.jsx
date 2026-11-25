@@ -16,7 +16,7 @@
 import { Children, cloneElement, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  ArrowRight, Check, ChevronLeft, ChevronRight, Copy, Link2, Wallet, X,
+  ArrowRight, Check, ChevronLeft, ChevronRight, Copy, Wallet,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -90,7 +90,6 @@ export const whenWord = (iso, now = new Date()) => {
 
 const waLink = (phone) => { const d = (phone || '').replace(/\D/g, ''); return d ? `https://wa.me/${d}` : null; };
 const sameDay = (a, b) => a.toDateString() === b.toDateString();
-const UPGRADE_TO = '/dashboard/upgrade';
 const PROFILE_TO = '/dashboard/profile';
 const SHARE_KEY = 'mt_golive_link_shared'; // same key GoLiveChecklist reads
 const serif = 'font-serif font-normal italic text-pink';
@@ -111,44 +110,6 @@ const useCopyLink = (username, onCopied) => useCallback(async () => {
     toast.error('Could not copy your link.');
   }
 }, [username, onCopied]);
-
-/* ── Your page — booking link with Copy and View. ─────────────────────────── */
-const LinkChip = ({ username, onCopy, className = '' }) => {
-  if (!username) return null;
-  const host = typeof window !== 'undefined' ? window.location.host.replace(/^www\./, '') : 'meeticulous.com';
-  return (
-    <div className={cn('flex min-w-0 items-center gap-1 rounded-[14px] bg-white p-1 pl-3', className)}>
-      <Link2 className="h-4 w-4 shrink-0 text-maroon" strokeWidth={2.2} />
-      <a href={`/${username}`} target="_blank" rel="noreferrer" className="min-w-0 flex-1 truncate px-1.5 text-[13.5px] font-medium text-ink hover:text-maroon">
-        {host}/<b className="font-semibold">{username}</b>
-      </a>
-      <button type="button" onClick={onCopy}
-        className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[10px] bg-maroon px-3 text-[13px] font-semibold text-white transition hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
-        <Copy className="h-3.5 w-3.5" strokeWidth={2.4} /> Copy
-      </button>
-    </div>
-  );
-};
-
-/* ── Pro strip — free plans only, dismissible, first thing on the page. A light
- * card so the maroon band below stays the one focal surface. ───────────────── */
-const ProStrip = ({ go, onClose }) => (
-  <div className="relative flex items-center gap-3 overflow-hidden rounded-[20px] bg-blush py-3 pl-3 pr-12 sm:gap-4 sm:py-3.5 sm:pl-4">
-    <img src="/about/mascot-purple.png" alt="" aria-hidden="true" className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14" />
-    <div className="min-w-0 flex-1">
-      <p className="mb-0 text-[14.5px] font-semibold leading-snug text-maroon sm:text-[15px]">Smarter tools. Done easier.</p>
-      <p className="mb-0 truncate text-[13px] text-muted">Analytics, priority support and your own branding.</p>
-    </div>
-    <button type="button" onClick={() => go(UPGRADE_TO)}
-      className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-[12px] bg-maroon px-4 text-[13.5px] font-semibold text-white transition hover:bg-maroon-dark focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
-      See Pro <ArrowRight className="hidden h-4 w-4 sm:block" strokeWidth={2.4} />
-    </button>
-    <button type="button" onClick={onClose} aria-label="Dismiss"
-      className="absolute right-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-[10px] text-faint transition hover:bg-white hover:text-ink focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
-      <X className="h-4 w-4" strokeWidth={2.4} />
-    </button>
-  </div>
-);
 
 /* ── Band — the one focal card. Three jobs, picked by what's true right now:
  *  1. a booking is on now, or one is coming → that booking's details + actions;
@@ -524,11 +485,8 @@ const TodayV2 = () => {
   const [availabilitySet, setAvailabilitySet] = useState(true);
   const [status, setStatus] = useState('loading'); // loading | ready | error
   const [openId, setOpenId] = useState(null);
-  const [promoClosed, setPromoClosed] = useState(false);
   const [proPlan, setProPlan] = useState(null);
-  // Upsell Pro only to free-plan hosts; dismissible for the session.
   const isFree = isFreePlan(user?.plan);
-  const showPromo = isFree && !promoClosed;
 
   const load = useCallback(() => {
     setStatus('loading');
@@ -642,11 +600,6 @@ const TodayV2 = () => {
         <RecentBookings bookings={bookings} onOpen={setOpenId} go={go} />
         {!loading && setupOpen && <SetupGuide steps={setupSteps} onGo={go} onCopy={copyLink} />}
       </section>
-
-      <div className="flex flex-col gap-4">
-        <LinkChip username={user?.username} onCopy={copyLink} className="w-full sm:w-[360px]" />
-        {showPromo && focusBooking(bookings) && <ProStrip go={go} onClose={() => setPromoClosed(true)} />}
-      </div>
 
       <Drawer open={!!openId && !!openBooking} onClose={() => setOpenId(null)} title={openBooking?.guest_name || ''} subtitle={openBooking?.services?.title || ''}>
         {openBooking && (
