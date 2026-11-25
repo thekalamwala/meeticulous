@@ -96,6 +96,11 @@ imagery). Pitch and guidelines: claude.ai/artifact/VKsrB9rmuxv2BN5rd3gGBH.
   rectangles: 12px (10px small / inside a group), badges 8px, tags 6px. Full circles only for
   avatars, dots, toggles and the tab-bar centre button. Pills read soft but make hover fills
   and focus rings look off (founder call, 2026-11-25). The marketing site keeps its pills.
+- **Hover and press fills take the element's own shape, never a pill.** A row that runs edge to
+  edge inside a card (accordion headers, list rows) has a square hover; the card's 24px corner
+  clips the first and last rows. An inset row (with space around it inside the card) uses 12px.
+  The dashboard sets `--btn-radius: 12px` on `.dash`, so a button with no radius class can never
+  fall back to the marketing pill.
 - **Mascots** (`client/public/about/mascot-*.png`, 400px sources): purple star = Intelligence /
   Pro, orange panda = Money / KYC, blue axolotl = Bookings / Today, green sprout = Grow / first
   steps. One per screen, ≥96px, only in bands, empty states, Pro previews, onboarding and
