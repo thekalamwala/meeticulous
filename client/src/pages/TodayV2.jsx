@@ -11,8 +11,8 @@
 // One layout for phone and desktop (founder, 2026-11-25: the two must not look
 // like different dashboards). Same blocks in the same order; phones stack them,
 // desktop sets them side by side. Order follows what a creator needs on login:
-// greeting (in the topbar) + booking link, Pro strip, setup, what's next + what needs you,
-// shortcuts, how it's going, the week.
+// greeting (topbar), needs your attention, next booking + today's schedule, the
+// week + numbers, recent bookings, setup (onboarding), then link + Pro (secondary).
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -209,7 +209,7 @@ const TodayBand = ({ todays, next, onOpen, onCopy }) => {
 const NeedsYou = ({ queue, go, onResolve }) => (
   <section className={cn(card, 'flex flex-col gap-3 p-5')} aria-labelledby="needs-you">
     <div className="flex items-center justify-between gap-2">
-      <h2 id="needs-you" className="mb-0 font-display text-[18px] font-bold tracking-[-0.02em] text-ink">Needs you</h2>
+      <h2 id="needs-you" className="mb-0 font-display text-[18px] font-bold tracking-[-0.02em] text-ink">Needs your attention</h2>
       {queue.length > 0 && <span className="rounded-[8px] bg-maroon px-2.5 py-0.5 text-[12px] font-semibold tabular-nums text-white">{queue.length}</span>}
     </div>
     {queue.length === 0 ? (
@@ -217,7 +217,7 @@ const NeedsYou = ({ queue, go, onResolve }) => (
         <Check className="h-4 w-4 shrink-0" strokeWidth={2.6} /> All clear. Nothing needs you right now.
       </p>
     ) : (
-      <ul className="flex flex-col gap-2">
+      <ul className="grid grid-cols-1 gap-2 lg:grid-cols-2">
         {queue.map((a) => {
           const Icon = KIND_ICON[a.kind] || AlertTriangle;
           const [word, cls] = URGENCY[a.urgency] || URGENCY.this_week;
@@ -266,9 +266,11 @@ const linkBtn = 'inline-flex items-center gap-1 rounded-[10px] px-2 py-1 text-[1
 
 const WeekPanel = ({ bookings, onOpen, go }) => {
   const base = useMemo(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }, []);
-  const [sel, setSel] = useState(base);
   const days = useMemo(() => Array.from({ length: 7 }, (_, i) => new Date(base.getTime() + i * DAY)), [base]);
   const live = (b) => b.scheduled_at && lower(b.status) !== 'cancelled';
+  // Today has its own panel beside the band, so the week opens on the next day
+  // that has bookings (tomorrow when the week is quiet).
+  const [sel, setSel] = useState(() => days.slice(1).find((d) => bookings.some((b) => live(b) && sameDay(new Date(b.scheduled_at), d))) || days[1]);
   const countFor = (d) => bookings.filter((b) => live(b) && sameDay(new Date(b.scheduled_at), d)).length;
   const dayItems = useMemo(() => bookings
     .filter((b) => live(b) && sameDay(new Date(b.scheduled_at), sel))
@@ -276,7 +278,7 @@ const WeekPanel = ({ bookings, onOpen, go }) => {
   const label = sameDay(sel, base) ? 'today' : `on ${sel.toLocaleDateString('en-IN', { weekday: 'long' })}`;
 
   return (
-    <Panel title="This week" action={<button type="button" onClick={() => go('/dashboard/bookings')} className={linkBtn}>All bookings <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></button>}>
+    <Panel title="This week" subtitle="Tap a day to see its bookings" action={<button type="button" onClick={() => go('/dashboard/bookings')} className={linkBtn}>All bookings <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></button>}>
       <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
         {days.map((d) => {
           const on = sameDay(d, sel);
@@ -301,6 +303,16 @@ const WeekPanel = ({ bookings, onOpen, go }) => {
     </Panel>
   );
 };
+
+/* ── Today's schedule — every booking today, in time order. ───────────────── */
+const TodaySchedule = ({ todays, onOpen, go }) => (
+  <Panel title="Today's schedule" subtitle={todays.length ? `${todays.length} booking${todays.length > 1 ? 's' : ''}` : 'Nothing booked today'}
+    action={<button type="button" onClick={() => go('/dashboard/bookings')} className={linkBtn}>All bookings <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></button>}>
+    {todays.length === 0
+      ? <p className="mb-0 rounded-[16px] bg-cream p-4 text-[14px] text-muted">A clear day. New bookings land here.</p>
+      : <ul className="flex flex-col">{todays.map((b) => <BookingRow key={b.id} b={b} onOpen={onOpen} />)}</ul>}
+  </Panel>
+);
 
 /* ── Recent bookings — latest four, status as a word. ─────────────────────── */
 const RecentBookings = ({ bookings, onOpen, go }) => {
@@ -383,9 +395,7 @@ const TodayV2 = () => {
   const setupSteps = useMemo(() => buildSetupSteps({ hasService, availabilitySet, user, kyc, linkShared }),
     [hasService, availabilitySet, user, kyc, linkShared]);
   const setupOpen = setupSteps.some((s) => !s.done);
-  // While the setup guide shows, it owns payouts/KYC: Needs you doesn't repeat it.
-  const queue = useMemo(() => buildQueue(bookings, kyc)
-    .filter((a) => !dismissed.includes(a.id) && !(setupOpen && a.id === 'kyc')), [bookings, kyc, dismissed, setupOpen]);
+  const queue = useMemo(() => buildQueue(bookings, kyc).filter((a) => !dismissed.includes(a.id)), [bookings, kyc, dismissed]);
   const resolve = (id) => setDismissed((d) => (d.includes(id) ? d : [...d, id]));
 
   const todays = useMemo(() => {
@@ -430,36 +440,36 @@ const TodayV2 = () => {
     );
   }
 
-  // ONE layout for every screen size. Spacing does the grouping: 16px inside a
-  // group, 40px between groups (Gestalt proximity), in the order a creator needs
-  // it — who/what today, what to act on, how it's going, the week. Each control
-  // appears once: the booking link sits in this header on every screen size.
+  // ONE layout for every screen size, in the founder's order (2026-11-25):
+  // attention first, then what's next + today's schedule, the week + the
+  // numbers, recent bookings; onboarding and promotion last so they never get
+  // between a host and their day. Spacing groups it: 16px inside a group, 40px
+  // between groups.
+  const sk = (h) => <Skeleton className={cn(h, 'rounded-[24px]')} />;
   return (
     <div className="flex flex-col gap-8 lg:gap-10">
-      <div className="flex flex-col gap-4">
-        <LinkChip username={user?.username} onCopy={copyLink} className="w-full sm:w-[360px]" />
+      {loading ? sk('h-[120px]') : <NeedsYou queue={queue} go={go} onResolve={resolve} />}
 
-        {showPromo && <ProStrip go={go} onClose={() => setPromoClosed(true)} />}
-      </div>
-
-      {!loading && setupOpen && <SetupGuide steps={setupSteps} onGo={go} onCopy={copyLink} />}
-
-      <section aria-label="Today" className="grid grid-cols-1 gap-4 lg:grid-cols-[1.7fr_1fr] lg:gap-5">
-        {loading ? <Skeleton className="h-[220px] rounded-[28px]" /> : <TodayBand todays={todays} next={next} onOpen={setOpenId} onCopy={copyLink} />}
-        {loading ? <Skeleton className="h-[220px] rounded-[24px]" /> : <NeedsYou queue={queue} go={go} onResolve={resolve} />}
+      <section aria-label="Today" className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr] lg:gap-5">
+        {loading ? sk('h-[220px]') : <TodayBand todays={todays} next={next} onOpen={setOpenId} onCopy={copyLink} />}
+        {loading ? sk('h-[220px]') : <TodaySchedule todays={todays} onOpen={setOpenId} go={go} />}
       </section>
 
-      <section aria-labelledby="numbers" className="flex flex-col gap-4">
-        <h2 id="numbers" className="mb-0 font-display text-[20px] font-bold tracking-[-0.02em] text-ink">How it&apos;s going</h2>
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-5">
+      <section aria-label="Your week and numbers" className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2 lg:gap-5">
+        {loading ? sk('h-[260px]') : <WeekPanel bookings={bookings} onOpen={setOpenId} go={go} />}
+        <div className="grid grid-cols-2 gap-3 lg:gap-4">
           {loading ? [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[124px] rounded-[20px]" />) : metrics}
         </div>
       </section>
 
-      <section aria-label="Your week" className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[1.35fr_1fr] lg:gap-5">
-        <WeekPanel bookings={bookings} onOpen={setOpenId} go={go} />
-        <RecentBookings bookings={bookings} onOpen={setOpenId} go={go} />
-      </section>
+      <RecentBookings bookings={bookings} onOpen={setOpenId} go={go} />
+
+      {!loading && setupOpen && <SetupGuide steps={setupSteps} onGo={go} onCopy={copyLink} />}
+
+      <div className="flex flex-col gap-4">
+        <LinkChip username={user?.username} onCopy={copyLink} className="w-full sm:w-[360px]" />
+        {showPromo && <ProStrip go={go} onClose={() => setPromoClosed(true)} />}
+      </div>
 
       <Drawer open={!!openId && !!openBooking} onClose={() => setOpenId(null)} title={openBooking?.guest_name || ''} subtitle={openBooking?.services?.title || ''}>
         {openBooking && (
