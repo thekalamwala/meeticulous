@@ -445,7 +445,7 @@ const MASCOT = {
   purple: '/about/mascot-purple.png', orange: '/about/mascot-orange.png',
   blue: '/about/mascot-blue.png', green: '/about/mascot-green.png',
 };
-export const InsightBand = ({ eyebrow, title, sub, actions, aside, mascot, className = '' }) => (
+export const InsightBand = ({ eyebrow, title, sub, actions, aside, mascot, compact = false, className = '' }) => (
   <section className={cn('relative isolate flex flex-col justify-center overflow-hidden rounded-[28px] bg-maroon-700 px-5 py-6 text-white sm:rounded-[32px] sm:px-9 sm:py-8', className)}>
     <span aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 opacity-50"
       style={{ backgroundImage: 'url(/brand/ds/03-patterns/mt-pattern-loop-on-maroon.svg)', backgroundSize: '180px' }} />
@@ -453,14 +453,14 @@ export const InsightBand = ({ eyebrow, title, sub, actions, aside, mascot, class
       className="pointer-events-none absolute -bottom-2 -right-24 -z-10 w-[420px] opacity-90 sm:w-[560px]" />
     {mascot && MASCOT[mascot] && (
       <img src={MASCOT[mascot]} alt="" aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 right-2 w-[104px] sm:right-6 sm:w-[180px]" />
+        className={cn('pointer-events-none absolute bottom-0 right-2 w-[104px] sm:right-6', compact ? 'sm:w-[140px]' : 'sm:w-[180px]')} />
     )}
-    <div className={cn('grid gap-5', aside && 'lg:grid-cols-[1.25fr_1fr] lg:items-center', mascot && 'pr-[96px] sm:pr-[190px]')}>
+    <div className={cn('grid gap-5', aside && 'lg:grid-cols-[1.25fr_1fr] lg:items-center', mascot && (compact ? 'pr-[96px] sm:pr-[150px]' : 'pr-[96px] sm:pr-[190px]'))}>
       <div className="min-w-0">
         {eyebrow && <p className="mb-0 text-[12px] font-semibold uppercase tracking-[0.08em] text-pink">{eyebrow}</p>}
         <h2 className="mb-0 mt-2 max-w-[22ch] font-display text-[24px] font-extrabold leading-[1.08] tracking-[-0.03em] text-white sm:text-[32px]">{title}</h2>
         {sub && <p className="mt-2.5 max-w-[48ch] text-[14px] text-white/80 sm:text-[15px]">{sub}</p>}
-        {actions && <div className="mt-5 flex flex-wrap gap-2.5">{actions}</div>}
+        {actions && <div className={cn('flex flex-wrap gap-2.5', compact ? 'mt-4' : 'mt-5')}>{actions}</div>}
       </div>
       {aside && <div className="min-w-0">{aside}</div>}
     </div>

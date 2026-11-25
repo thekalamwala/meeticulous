@@ -182,7 +182,7 @@ const TodayBand = ({ todays, next, onOpen, onCopy }) => {
     sub = 'Nothing is booked yet. Share your link where your audience already is.';
     actions = action('Copy booking link', onCopy, Copy);
   }
-  return <InsightBand eyebrow={eyebrow} title={title} sub={sub} actions={actions} mascot="blue" className="sm:py-7" />;
+  return <InsightBand eyebrow={eyebrow} title={title} sub={sub} actions={actions} mascot="blue" compact className="sm:py-5" />;
 };
 
 const linkBtn = 'inline-flex items-center gap-1 rounded-[10px] px-2 py-1 text-[13.5px] font-semibold text-maroon transition hover:bg-pink-100';
@@ -194,7 +194,7 @@ const linkBtn = 'inline-flex items-center gap-1 rounded-[10px] px-2 py-1 text-[1
  *  · 'pages': one full-width page at a time (the week planner).
  * Opens on `startIndex`, set before paint so nothing jumps. ─────────────── */
 const CARD_W = 'min(248px, 76%)';
-const ScrollStrip = ({ label, startIndex = 0, children, mode = 'center', onIndex }) => {
+const ScrollStrip = ({ label, startIndex = 0, children, mode = 'center', onIndex, goTo, arrows = true }) => {
   const ref = useRef(null);
   const items = Children.toArray(children);
   const [active, setActive] = useState(startIndex);
@@ -227,6 +227,8 @@ const ScrollStrip = ({ label, startIndex = 0, children, mode = 'center', onIndex
     go(startIndex, false);
     el.style.scrollBehavior = '';
   }, [startIndex, go]);
+  // External controls (e.g. arrows in a panel header) ask for an index.
+  useEffect(() => { if (goTo != null) go(goTo.index); }, [goTo, go]);
 
   const arrow = 'absolute top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 place-items-center rounded-[12px] bg-white text-maroon shadow-[var(--shadow-md)] transition hover:bg-pink-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose [@media(hover:hover)]:grid';
   const fade = mode === 'center'
@@ -234,7 +236,7 @@ const ScrollStrip = ({ label, startIndex = 0, children, mode = 'center', onIndex
     : undefined;
   return (
     <div className="relative">
-      {active > 0 && <button type="button" onClick={() => go(active - 1)} aria-label={`Earlier ${label}`} className={cn(arrow, 'left-1')}><ChevronLeft className="h-4 w-4" strokeWidth={2.4} /></button>}
+      {arrows && active > 0 && <button type="button" onClick={() => go(active - 1)} aria-label={`Earlier ${label}`} className={cn(arrow, 'left-1')}><ChevronLeft className="h-4 w-4" strokeWidth={2.4} /></button>}
       <div ref={ref} onScroll={onScroll} role="list" aria-label={label}
         className={cn('dash-noscrollbar flex snap-x snap-mandatory overflow-x-auto scroll-smooth', mode === 'center' ? 'gap-3 py-1' : 'gap-0')}
         style={mode === 'center' ? { ...fade, paddingInline: `calc((100% - ${CARD_W}) / 2)` } : undefined}>
@@ -243,16 +245,15 @@ const ScrollStrip = ({ label, startIndex = 0, children, mode = 'center', onIndex
           style: { ...(child.props.style || {}), ...(mode === 'center' ? { width: CARD_W } : {}) },
         }))}
       </div>
-      {active < items.length - 1 && <button type="button" onClick={() => go(active + 1)} aria-label={`Later ${label}`} className={cn(arrow, 'right-1')}><ChevronRight className="h-4 w-4" strokeWidth={2.4} /></button>}
+      {arrows && active < items.length - 1 && <button type="button" onClick={() => go(active + 1)} aria-label={`Later ${label}`} className={cn(arrow, 'right-1')}><ChevronRight className="h-4 w-4" strokeWidth={2.4} /></button>}
     </div>
   );
 };
 
 /* ── This week — planning, not running the day (Today's schedule does that).
- * Swipe between this week, next week and the week after. Each page answers
- * "how full am I and what will it earn": totals (bookings, booked hours,
- * expected), one bar per day by booked time, and the quiet days to fill. ─── */
-const WEEKS_AHEAD = 3;
+ * Swipe between last week, this week and next week (opens on this week). Each
+ * page answers "how full was / am I and what does it earn": totals (bookings,
+ * booked hours, earned or expected) and one bar per day by booked time. ───── */
 const mondayOf = (d) => { const m = new Date(d); m.setHours(0, 0, 0, 0); m.setDate(m.getDate() - ((m.getDay() + 6) % 7)); return m; };
 
 // Pure, tested: one week's load from the host's own bookings.
@@ -278,14 +279,13 @@ export const weekLoad = (bookings, monday, now = new Date()) => {
   };
 };
 
-const WeekPage = ({ week, label, onCopy, go }) => {
+const WeekPage = ({ week, label, past, go }) => {
   const max = Math.max(60, ...week.days.map((d) => d.minutes));
   const today = new Date();
-  const quietNames = week.quiet.map((d) => d.date.toLocaleDateString('en-IN', { weekday: 'short' }));
   return (
     <div role="listitem" aria-label={label} className="flex w-full shrink-0 snap-start flex-col gap-4">
       <div className="grid grid-cols-3 gap-2">
-        {[['Bookings', week.count], ['Booked', `${week.hours}h`], ['Expected', inr(week.expected, { compact: true })]].map(([k, v]) => (
+        {[['Bookings', week.count], ['Booked', `${week.hours}h`], [past ? 'Earned' : 'Expected', inr(week.expected, { compact: true })]].map(([k, v]) => (
           <div key={k} className="rounded-[14px] bg-cream px-3 py-2.5">
             <p className="mb-0 text-[12px] text-faint">{k}</p>
             <p className="mb-0 font-display text-[20px] font-extrabold tabular-nums tracking-[-0.02em] text-ink">{v}</p>
@@ -310,40 +310,35 @@ const WeekPage = ({ week, label, onCopy, go }) => {
           );
         })}
       </div>
-      {week.quiet.length > 0 ? (
-        <div className="flex flex-wrap items-center gap-3 rounded-[14px] bg-blush px-3.5 py-2.5">
-          <p className="mb-0 min-w-0 flex-1 text-[13.5px] text-ink">
-            <b className="font-semibold">{quietNames.join(', ')}</b> {week.quiet.length === 1 ? 'has' : 'have'} no bookings yet.
-          </p>
-          <Button size="sm" onClick={onCopy}><Copy className="h-3.5 w-3.5" strokeWidth={2.4} /> Copy link to fill</Button>
-        </div>
-      ) : (
-        <p className="mb-0 rounded-[14px] bg-cream px-3.5 py-2.5 text-[13.5px] text-muted">Every day ahead has at least one booking.</p>
-      )}
     </div>
   );
 };
 
-const WeekPanel = ({ bookings, onCopy, go }) => {
+const WeekPanel = ({ bookings, go }) => {
   const weeks = useMemo(() => {
     const m0 = mondayOf(new Date());
-    return Array.from({ length: WEEKS_AHEAD }, (_, i) => {
+    return [-1, 0, 1].map((i) => {
       const monday = new Date(m0.getTime() + i * 7 * DAY);
       const sunday = new Date(monday.getTime() + 6 * DAY);
       const range = `${monday.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} – ${sunday.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`;
-      return { label: i === 0 ? 'This week' : i === 1 ? 'Next week' : 'In two weeks', range, load: weekLoad(bookings, monday) };
+      return { label: i < 0 ? 'Last week' : i === 0 ? 'This week' : 'Next week', past: i < 0, range, load: weekLoad(bookings, monday) };
     });
   }, [bookings]);
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1); // this week, in the middle
+  const [goTo, setGoTo] = useState(null);
+  const step = (dir) => setGoTo({ index: page + dir }); // fresh object so the same index can repeat
+  const nav = 'grid h-9 w-9 place-items-center rounded-[10px] bg-cream text-maroon transition hover:bg-pink-100 disabled:cursor-default disabled:text-neutral-300 disabled:hover:bg-cream focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose';
   return (
-    <Panel title={weeks[page].label} subtitle={`${weeks[page].range} · swipe for the weeks ahead`}
-      action={<button type="button" onClick={() => go('/dashboard/bookings')} className={linkBtn}>Calendar <ArrowRight className="h-4 w-4" strokeWidth={2.4} /></button>}>
-      <ScrollStrip label="weeks" mode="pages" onIndex={setPage}>
-        {weeks.map((w) => <WeekPage key={w.range} week={w.load} label={`${w.label}, ${w.range}`} onCopy={onCopy} go={go} />)}
+    <Panel title={weeks[page].label} subtitle={`${weeks[page].range} · swipe for last or next week`}
+      action={(
+        <div className="flex items-center gap-1.5">
+          <button type="button" onClick={() => step(-1)} disabled={page === 0} aria-label="Previous week" className={nav}><ChevronLeft className="h-4 w-4" strokeWidth={2.4} /></button>
+          <button type="button" onClick={() => step(1)} disabled={page === weeks.length - 1} aria-label="Next week" className={nav}><ChevronRight className="h-4 w-4" strokeWidth={2.4} /></button>
+        </div>
+      )}>
+      <ScrollStrip label="weeks" mode="pages" startIndex={1} onIndex={setPage} goTo={goTo} arrows={false}>
+        {weeks.map((w) => <WeekPage key={w.range} week={w.load} label={`${w.label}, ${w.range}`} past={w.past} go={go} />)}
       </ScrollStrip>
-      <div className="mt-3 flex justify-center gap-1.5" aria-hidden="true">
-        {weeks.map((w, i) => <span key={w.range} className={cn('h-1.5 rounded-full transition-all', i === page ? 'w-5 bg-maroon' : 'w-1.5 bg-neutral-300')} />)}
-      </div>
     </Panel>
   );
 };
@@ -396,18 +391,17 @@ const TodaySchedule = ({ todays, onOpen, go }) => {
                   phase === 'done' && 'text-muted')}>
                 <span className="flex items-center justify-between gap-2">
                   <span className={cn('font-display text-[18px] font-extrabold tabular-nums tracking-[-0.02em]', phase === 'done' ? 'text-muted' : 'text-maroon')}>{fmtTime(b.scheduled_at)}</span>
-                  <span className={cn('rounded-[6px] px-2 py-0.5 text-[11.5px] font-semibold', cls)}>{word}</span>
+                  <span className="flex items-center gap-1.5">
+                    {unpaid && <StatusPill status="unpaid" />}
+                    <span className={cn('rounded-[6px] px-2 py-0.5 text-[11.5px] font-semibold', cls)}>{word}</span>
+                  </span>
                 </span>
                 <span className="flex items-center gap-2.5">
                   <Avatar name={b.guest_name} />
                   <span className="min-w-0">
                     <span className="block truncate text-[14.5px] font-semibold text-ink">{b.guest_name || 'Guest'}</span>
-                    <span className="block truncate text-[12.5px] text-muted">{b.services?.title || 'Booking'}</span>
+                    <span className="block truncate text-[12.5px] text-muted">{b.services?.title || 'Booking'} · until {fmtTime(endOf(b).toISOString())}</span>
                   </span>
-                </span>
-                <span className="flex items-center justify-between gap-2 text-[12.5px] text-faint">
-                  <span>{b.services?.duration ? `${b.services.duration} min` : ''} · until {fmtTime(endOf(b).toISOString())}</span>
-                  {unpaid && <StatusPill status="unpaid" />}
                 </span>
               </button>
             );
@@ -551,13 +545,13 @@ const TodayV2 = () => {
   return (
     <div className="flex flex-col gap-8 lg:gap-10">
 
-      <section aria-label="Today" className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr] lg:gap-5">
+      <section aria-label="Today" className="grid grid-cols-1 gap-4 lg:min-h-[251px] lg:grid-cols-[1.4fr_1fr] lg:gap-5">
         {loading ? sk('h-[220px]') : <TodayBand todays={todays} next={next} onOpen={setOpenId} onCopy={copyLink} />}
         {loading ? sk('h-[220px]') : <TodaySchedule todays={todays} onOpen={setOpenId} go={go} />}
       </section>
 
       <section aria-label="Your week and numbers" className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2 lg:gap-5">
-        {loading ? sk('h-[260px]') : <WeekPanel bookings={bookings} onCopy={copyLink} go={go} />}
+        {loading ? sk('h-[260px]') : <WeekPanel bookings={bookings} go={go} />}
         <div className="grid grid-cols-2 gap-3 lg:gap-4">
           {loading ? [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[124px] rounded-[20px]" />) : metrics}
         </div>
