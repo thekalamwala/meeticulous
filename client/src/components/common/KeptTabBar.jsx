@@ -4,8 +4,8 @@
 //   Today · Bookings · ( Grow ) · Money · More
 //
 // No new grammar, just the one people already know from Instagram, GPay and iOS:
-// five equal slots so the raised centre is truly centred; the active tab gets a
-// maroon icon, a bolder stroke and a blush backing; one 12px label size; a rose dot
+// five equal slots so the raised centre is truly centred; the active tab's icon
+// turns solid maroon (no backing); one 12px label size; a rose dot
 // only when something needs you. Tapping the tab you're on scrolls to the top.
 // "More" rises as a bottom sheet with everything else as big tiles.
 //
@@ -40,6 +40,28 @@ const SUB = {
 const SHEET_ORDER = ['clients', 'messages', 'catalog', 'schedule', 'intelligence', 'community', 'settings'];
 const HELP = { id: 'help', label: 'Help', to: '/dashboard/chat' };
 
+// Solid twins of the outline icons, for the active tab (founder call, 2026-11-25):
+// active = a filled glyph, no background. Drawn on lucide's 24px grid so they sit
+// exactly where the outline ones do; details (door, date dots, clasp) are cut out
+// with evenodd so a filled icon still reads as itself.
+const solid = (paths) => function SolidIcon({ className }) {
+  // Scaled 1.1x about the centre: an outline's 2px stroke reaches 2–22 on the grid,
+  // a fill drawn on the path line stops at 3–21, so unscaled it read a size smaller.
+  return <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}><g transform="translate(12 12) scale(1.1) translate(-12 -12)">{paths}</g></svg>;
+};
+const SOLID = {
+  home: solid(<path d="M10.6 2.6a2 2 0 0 1 2.8 0l7 6.3A2 2 0 0 1 21 10.4V19a2 2 0 0 1-2 2h-4v-6a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v6H5a2 2 0 0 1-2-2v-8.6a2 2 0 0 1 .6-1.5z" />),
+  bookings: solid(<>
+    <path d="M8 2a1 1 0 0 1 1 1v1h6V3a1 1 0 1 1 2 0v1h1a3 3 0 0 1 3 3v1H3V7a3 3 0 0 1 3-3h1V3a1 1 0 0 1 1-1z" />
+    <path fillRule="evenodd" d="M3 10h18v9a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3zm5 3.2a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2zm4 0a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2zm4 0a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2zm-8 4a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2zm4 0a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2zm4 0a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2z" />
+  </>),
+  money: solid(<path fillRule="evenodd" d="M5 3h12a2 2 0 0 1 2 2v2H6a1 1 0 0 0 0 2h13a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm12 13.6a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2z" />),
+  more: solid(<>
+    <rect x="3" y="3" width="7.5" height="7.5" rx="2" /><rect x="13.5" y="3" width="7.5" height="7.5" rx="2" />
+    <rect x="3" y="13.5" width="7.5" height="7.5" rx="2" /><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2" />
+  </>),
+};
+
 const Dot = ({ className = '' }) => (
   <span aria-hidden="true" className={cn('absolute h-2.5 w-2.5 rounded-full bg-rose ring-2 ring-white', className)} />
 );
@@ -51,13 +73,13 @@ const label12 = 'block max-w-full truncate px-1 text-[12px] leading-4';
 
 const press = 'transition-transform duration-100 ease-out group-active:scale-[0.97] motion-reduce:transition-none motion-reduce:group-active:scale-100';
 
-const Tab = ({ label, Icon, active, dot, onClick, buttonRef, ...rest }) => (
+const Tab = ({ label, Icon, SolidIcon, active, dot, onClick, buttonRef, ...rest }) => (
   <button ref={buttonRef} type="button" onClick={onClick} aria-current={active ? 'page' : undefined}
     aria-label={dot ? `${label}, needs your attention` : label}
     className="group flex min-w-0 flex-col items-center justify-end gap-1 pb-3 pt-3 focus-visible:outline-none" {...rest}>
     <span className={cn('relative grid h-8 w-14 place-items-center rounded-[12px] transition-colors group-focus-visible:ring-[3px] group-focus-visible:ring-rose', press,
-      active ? 'bg-blush text-maroon' : 'text-muted')}>
-      <Icon className="h-6 w-6" strokeWidth={active ? 2.3 : 1.8} />
+      active ? 'text-maroon' : 'text-muted')}>
+      {active && SolidIcon ? <SolidIcon className="h-6 w-6" /> : <Icon className="h-6 w-6" strokeWidth={active ? 2.3 : 1.8} />}
       {dot && <Dot className="right-3 top-0.5" />}
     </span>
     <span className={cn(label12, active ? 'font-semibold text-maroon' : 'font-medium text-muted')}>{label}</span>
@@ -194,10 +216,10 @@ export default function KeptTabBar() {
       <nav aria-label="Primary"
         className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 items-end border-t border-neutral-200 bg-white pb-[env(safe-area-inset-bottom,0px)] lg:hidden">
         {tabs.map((s) => {
-          const props = { label: s.label, Icon: ICON[s.id] || LayoutGrid, active: activeId === s.id, dot: attention(s), onClick: () => onTab(s) };
+          const props = { label: s.label, Icon: ICON[s.id] || LayoutGrid, SolidIcon: SOLID[s.id], active: activeId === s.id, dot: attention(s), onClick: () => onTab(s) };
           return s.id === centreId ? <CentreTab key={s.id} {...props} /> : <Tab key={s.id} {...props} />;
         })}
-        <Tab label="More" Icon={LayoutGrid} active={moreActive || open} dot={moreAttention} buttonRef={moreRef}
+        <Tab label="More" Icon={LayoutGrid} SolidIcon={SOLID.more} active={moreActive || open} dot={moreAttention} buttonRef={moreRef}
           aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen((v) => !v)} />
       </nav>
       <MoreSheet open={open} onClose={close} items={sheetItems} activeId={activeId} attention={attention}
