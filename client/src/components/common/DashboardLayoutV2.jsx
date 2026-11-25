@@ -25,10 +25,8 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import {
   Home, CalendarDays, Users, MessagesSquare, Package, CalendarRange,
   CreditCard, TrendingUp, Settings, ChevronRight, PanelLeft, Sparkles, X,
-  LifeBuoy, Copy, ArrowUpRight,
+  LifeBuoy,
 } from 'lucide-react';
-import toast from 'react-hot-toast';
-import { markLinkShared } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import useIsMobile from '../../hooks/useIsMobile';
 import useSupportUnread from '../../hooks/useSupportUnread';
@@ -247,53 +245,14 @@ const SidebarBody = ({ sections, plan, badges, activeTo, onNavigate, collapsed =
   );
 };
 
-/* Booking link — the creator's most-used control, top-right on every page
- * (founder pick, after Topmate). Opens the public page; Copy is its own button. */
-const copyBookingLink = async (username) => {
-  if (!username) { toast.error('Set your username first.'); return; }
-  try {
-    await navigator.clipboard.writeText(`${window.location.origin}/${username}`);
-    toast.success('Booking link copied');
-    try { localStorage.setItem('mt_golive_link_shared', '1'); } catch { /* fine */ }
-    markLinkShared();
-  } catch { toast.error('Could not copy your link.'); }
-};
-/* Booking link card — bottom-left of the rail (founder pick, 2026-11-25): your
- * page, one tap to copy, one to open. Collapsed rail shows just the copy button. */
-const BookingLinkCard = ({ user, collapsed }) => {
-  if (!user?.username) return null;
-  const host = window.location.host.replace(/^www\./, '');
-  const copy = () => copyBookingLink(user.username);
-  if (collapsed) {
-    return (
-      <button type="button" onClick={copy} aria-label="Copy booking link" title="Copy booking link"
-        className={cn('mx-auto grid h-10 w-10 place-items-center rounded-[12px] bg-white text-maroon transition hover:bg-pink-100', ring)}>
-        <Copy className="h-[18px] w-[18px]" strokeWidth={2.2} />
-      </button>
-    );
-  }
-  return (
-    <div className="rounded-[14px] bg-white p-2.5 pl-3">
-      <p className="mb-0 text-[11.5px] font-medium text-faint">Your booking page</p>
-      <div className="mt-0.5 flex items-center gap-1.5">
-        <a href={`/${user.username}`} target="_blank" rel="noreferrer" title="Open your booking page"
-          className={cn('flex min-w-0 flex-1 items-center gap-1 rounded-[6px] text-[13px] font-semibold text-ink transition hover:text-maroon', ring)}>
-          <span className="min-w-0 truncate">{host}/{user.username}</span>
-          <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-faint" strokeWidth={2.2} />
-        </a>
-        <button type="button" onClick={copy} aria-label="Copy booking link" title="Copy booking link"
-          className={cn('grid h-8 w-8 shrink-0 place-items-center rounded-[8px] bg-maroon text-white transition hover:bg-maroon-dark', ring)}>
-          <Copy className="h-3.5 w-3.5" strokeWidth={2.4} />
-        </button>
-      </div>
-    </div>
-  );
-};
-
 /* Topbar — help, notifications and the profile card (top-right corner, founder
  * pick). Desktop shows the card with your name; phones show just the avatar. */
+const greetingFor = (h = new Date().getHours()) => (h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening');
+
+// Same 56px height as the rail header, so the logo, the greeting and the profile
+// card sit on one line (founder pick, 2026-11-25).
 const TopbarV2 = ({ onOpenNav, user, plan, planStyle, initial, logout, onHome }) => (
-  <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 bg-cream/90 px-4 pt-[env(safe-area-inset-top,0px)] backdrop-blur-md sm:px-6 lg:h-16 lg:px-8">
+  <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 bg-cream/90 px-4 pt-[env(safe-area-inset-top,0px)] backdrop-blur-md sm:px-6 lg:px-8">
     {/* Mobile: the logo is Home (founder decision, 2026-11-25), so it looks pressable
         and carries a maroon underline while you're on Today. */}
     <Link to="/dashboard" title="Meeticulous — Home" aria-label="Meeticulous — Home"
@@ -301,6 +260,13 @@ const TopbarV2 = ({ onOpenNav, user, plan, planStyle, initial, logout, onHome })
       <img src="/brand/meeticulous-icon.svg" alt="Meeticulous" className="h-8 w-8 object-contain" />
       <span aria-hidden="true" className={cn('h-[3px] w-4 rounded-full', onHome ? 'bg-maroon' : 'bg-transparent')} />
     </Link>
+    {/* Today's heading lives in the topbar: "Good evening, Riya". Other pages keep
+        their own page titles. */}
+    {onHome && (
+      <h1 className="mb-0 min-w-0 truncate font-display text-[19px] font-extrabold tracking-[-0.03em] text-maroon lg:text-[24px]">
+        {greetingFor()}{user?.name ? `, ${user.name.trim().split(/\s+/)[0]}` : ''}
+      </h1>
+    )}
     <div className="ml-auto flex shrink-0 items-center gap-2">
       <Link to="/help" title="Support" aria-label="Support"
         className="grid h-10 w-10 place-items-center rounded-[12px] bg-white text-muted transition-colors hover:text-maroon">
@@ -380,9 +346,6 @@ const DashboardLayoutV2 = ({ children }) => {
             </button>
           </div>
           <SidebarBody sections={sections} plan={plan} badges={badges} activeTo={activeTo} collapsed={railCollapsed} />
-          <div className="shrink-0 p-3 pt-0">
-            <BookingLinkCard user={user} collapsed={railCollapsed} />
-          </div>
         </aside>
 
         {/* Mobile drawer */}

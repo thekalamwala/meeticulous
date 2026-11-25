@@ -11,7 +11,7 @@
 // One layout for phone and desktop (founder, 2026-11-25: the two must not look
 // like different dashboards). Same blocks in the same order; phones stack them,
 // desktop sets them side by side. Order follows what a creator needs on login:
-// greeting + booking link + setup, Pro strip, what's next + what needs you,
+// greeting (in the topbar) + booking link, Pro strip, setup, what's next + what needs you,
 // shortcuts, how it's going, the week.
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -110,7 +110,6 @@ const URGENCY = { now: ['Now', 'bg-error-bg text-error-fg'], today: ['Today', 'b
 
 const waLink = (phone) => { const d = (phone || '').replace(/\D/g, ''); return d ? `https://wa.me/${d}` : null; };
 const sameDay = (a, b) => a.toDateString() === b.toDateString();
-const greeting = (h = new Date().getHours()) => (h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening');
 const UPGRADE_TO = '/dashboard/upgrade';
 const PROFILE_TO = '/dashboard/profile';
 const SHARE_KEY = 'mt_golive_link_shared'; // same key GoLiveChecklist reads
@@ -417,8 +416,6 @@ const TodayV2 = () => {
     <Tile key="views" label="Page views" value={views == null ? '—' : views.toLocaleString('en-IN')} hint="Your public page" onClick={() => go(pageTo)} />,
   ];
 
-  const firstName = (user?.name || '').trim().split(/\s+/)[0];
-  const dateLine = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
   const loading = status === 'loading';
 
   if (status === 'error') {
@@ -436,24 +433,12 @@ const TodayV2 = () => {
   // ONE layout for every screen size. Spacing does the grouping: 16px inside a
   // group, 40px between groups (Gestalt proximity), in the order a creator needs
   // it — who/what today, what to act on, how it's going, the week. Each control
-  // appears once: the booking link lives in the rail's bottom-left card on
-  // desktop and here on phones (no rail there).
+  // appears once: the booking link sits in this header on every screen size.
   return (
     <div className="flex flex-col gap-8 lg:gap-10">
       <div className="flex flex-col gap-4">
-        <header className="flex flex-wrap items-end justify-between gap-3">
-          <div className="min-w-0">
-            <h1 className="mb-0 font-display text-[28px] font-extrabold leading-[1.05] tracking-[-0.035em] text-maroon sm:text-[34px]">
-              {greeting()}{firstName ? `, ${firstName}` : ''}
-            </h1>
-            <p className="mb-0 mt-1.5 text-[14px] text-muted sm:text-[15px]">
-              {dateLine} · {queue.length > 0
-                ? <span className="font-semibold text-maroon">{queue.length} thing{queue.length > 1 ? 's' : ''} need{queue.length > 1 ? '' : 's'} you</span>
-                : 'All clear'}
-            </p>
-          </div>
-        </header>
-        <LinkChip username={user?.username} onCopy={copyLink} className="lg:hidden" />
+        <LinkChip username={user?.username} onCopy={copyLink} className="w-full sm:w-[360px]" />
+
         {showPromo && <ProStrip go={go} onClose={() => setPromoClosed(true)} />}
       </div>
 
