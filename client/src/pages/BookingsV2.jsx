@@ -16,7 +16,7 @@
 // is no host "confirm": 'pending' means the guest hasn't paid yet
 // (bookingController creates paid bookings as pending), so the row says
 // "Awaiting payment" and nothing offers to confirm it.
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useDragControls, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -288,7 +288,7 @@ const PhoneRow = ({ b, now, onOpen }) => {
   const [clock, mer] = splitTime(b.scheduled_at);
   const mins = Math.round((end - start) / 60_000);
   return (
-    <li className="group relative flex items-center gap-3 pl-4 transition-colors duration-100 active:bg-pink-50">
+    <li className="group relative flex select-none items-center gap-3 pl-4 transition-colors duration-100 [-webkit-touch-callout:none] active:bg-pink-50">
       <button type="button" onClick={() => onOpen(b.id)}
         aria-label={`${b.guest_name || 'Guest'}, ${fmtTime(b.scheduled_at)}, ${b.services?.title || 'Booking'}, ${words.join(', ')}`}
         className="absolute inset-0 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-rose" />
@@ -308,7 +308,7 @@ const PhoneRow = ({ b, now, onOpen }) => {
         </span>
         {canJoin ? (
           <a href={b.meeting_link} target="_blank" rel="noreferrer" aria-label={`Join Google Meet with ${b.guest_name || 'guest'}`}
-            className={cn('relative grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-cream transition-transform duration-100 active:scale-95', ring)}>
+            className={cn('relative grid h-11 w-11 shrink-0 select-none place-items-center rounded-[12px] bg-cream transition-transform duration-100 [-webkit-touch-callout:none] active:scale-95', ring)}>
             <MeetIcon className="h-5 w-5" />
           </a>
         ) : <ChevronRight aria-hidden="true" className="pointer-events-none h-5 w-5 shrink-0 text-faint" strokeWidth={2.2} />}
@@ -368,24 +368,39 @@ const dayBtn = (on, isToday) => cn('flex flex-col items-center justify-center ga
  * a plain crossfade, no movement. Timing = the repo's navigation slide token
  * (MOBILE_APP_UI section 6: 200-260ms, brand easing). */
 const BELT = { duration: 0.26, ease: [0.22, 0.61, 0.36, 1] }; // brand easing, same as the sheets
-const Belt = ({ pageKey, dir, children }) => {
+// Swipe (mobile-native): drag the page sideways and let go to roll the belt, like a
+// native calendar strip. It follows the finger with some resistance, flicks count
+// (velocity is projected), and a short drag springs back. Framer gives the drag
+// surface touch-action: pan-y, so vertical page scroll still works over it. A drag
+// never also selects the day under the finger (click guard).
+const SWIPE_PX = 56;
+const Belt = ({ pageKey, dir, onStep, children }) => {
   const reduce = useReducedMotion();
+  const dragged = useRef(false);
   const from = (d) => (reduce ? { opacity: 0 } : { x: `${d * 100}%` });
   return (
     <AnimatePresence initial={false} mode="popLayout" custom={dir}>
       <motion.div key={pageKey} custom={dir} variants={{ enter: from, center: { x: 0, opacity: 1 }, exit: (d) => from(-d) }}
-        initial="enter" animate="center" exit="exit" transition={BELT}>
+        initial="enter" animate="center" exit="exit" transition={BELT}
+        drag={onStep ? 'x' : false} dragConstraints={{ left: 0, right: 0 }} dragElastic={0.35} dragMomentum={false}
+        onDragStart={() => { dragged.current = true; }}
+        onDragEnd={(_, { offset, velocity }) => {
+          const travel = offset.x + velocity.x * 0.2;
+          if (Math.abs(travel) > SWIPE_PX) onStep(travel < 0 ? 1 : -1);
+          setTimeout(() => { dragged.current = false; }, 0); // after the click that follows pointerup
+        }}
+        onClickCapture={(e) => { if (dragged.current) { e.preventDefault(); e.stopPropagation(); } }}>
         {children}
       </motion.div>
     </AnimatePresence>
   );
 };
 
-const WeekStrip = ({ day, setDay, countOn, now, dir = 1 }) => {
+const WeekStrip = ({ day, setDay, countOn, now, dir = 1, onStep }) => {
   const monday = mondayOf(day);
   return (
     <div className={cn(card, 'p-2 sm:p-3')}>
-     <Belt pageKey={monday.toDateString()} dir={dir}>
+     <Belt pageKey={monday.toDateString()} dir={dir} onStep={onStep}>
      <div className="grid grid-cols-7 gap-1">
       {Array.from({ length: 7 }, (_, i) => {
         const date = addDays(monday, i);
@@ -405,7 +420,7 @@ const WeekStrip = ({ day, setDay, countOn, now, dir = 1 }) => {
   );
 };
 
-const MonthGrid = ({ day, setDay, countOn, now, dir = 1 }) => {
+const MonthGrid = ({ day, setDay, countOn, now, dir = 1, onStep }) => {
   const first = new Date(day.getFullYear(), day.getMonth(), 1);
   const gridStart = mondayOf(first);
   return (
@@ -413,7 +428,7 @@ const MonthGrid = ({ day, setDay, countOn, now, dir = 1 }) => {
       <div className="grid grid-cols-7 gap-1 pb-1">
         {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d) => <span key={d} className="py-1 text-center text-[12px] font-medium text-faint">{d}</span>)}
       </div>
-      <Belt pageKey={`${first.getFullYear()}-${first.getMonth()}`} dir={dir}>
+      <Belt pageKey={`${first.getFullYear()}-${first.getMonth()}`} dir={dir} onStep={onStep}>
       <div className="grid grid-cols-7 gap-1">
         {Array.from({ length: 42 }, (_, i) => {
           const date = addDays(gridStart, i);
@@ -725,7 +740,7 @@ const BookingsV2 = () => {
     <label className="relative block w-full lg:w-auto lg:min-w-[220px] lg:flex-1">
       <span className="sr-only">Search bookings</span>
       <Search className="pointer-events-none absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-faint" strokeWidth={2.2} />
-      <input type="search" enterKeyHint="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Guest, phone, email or service"
+      <input type="search" enterKeyHint="search" autoCorrect="off" spellCheck={false} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Guest, phone, email or service"
         className="h-11 w-full rounded-[12px] border-0 bg-white pl-10 pr-11 text-[14px] text-ink placeholder:text-faint focus:outline-none focus-visible:ring-[3px] focus-visible:ring-rose [&::-webkit-search-cancel-button]:hidden" />
       {q && (
         <button type="button" onClick={() => setQ('')} aria-label="Clear search"
@@ -829,8 +844,8 @@ const BookingsV2 = () => {
       ) : (
         <div className="flex flex-col gap-4">
           {view === 'week'
-            ? <WeekStrip day={day} setDay={setDay} countOn={countOn} now={now} dir={dir} />
-            : <MonthGrid day={day} setDay={setDay} countOn={countOn} now={now} dir={dir} />}
+            ? <WeekStrip day={day} setDay={setDay} countOn={countOn} now={now} dir={dir} onStep={step} />
+            : <MonthGrid day={day} setDay={setDay} countOn={countOn} now={now} dir={dir} onStep={step} />}
           {dayItems.length
             ? <DayCard date={day} items={dayItems} now={now} onOpen={setOpenId} />
             : <Note>Nothing booked {dayLabel(day, now) === 'Today' ? 'today' : `on ${day.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}`}{filtering ? ' that matches your filters' : ''}.</Note>}
