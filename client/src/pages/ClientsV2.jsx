@@ -121,7 +121,7 @@ export const groupRecent = (rows, now = Date.now()) => {
 /* ── Shared Kept bits (also used by ClientDetail) ─────────────────────────── */
 // Press feedback (Emil Kowalski's rule): a button dips to 0.97 on press with a
 // strong ease-out, so a tap feels answered. Press only, never hover (Kept).
-export const press = 'transition-[transform,background-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:active:scale-100 [-webkit-tap-highlight-color:transparent] touch-manipulation';
+export const press = 'transition-[transform,background-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:active:scale-100 touch-manipulation select-none [-webkit-touch-callout:none]';
 const serif = 'font-serif font-normal italic text-pink';
 const bandBtn = `inline-flex h-11 items-center gap-2 rounded-[12px] px-5 text-[14px] font-semibold focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-pink ${press}`;
 export const BandPrimary = ({ children, href, ...p }) => (href
@@ -179,15 +179,15 @@ const control = `rounded-[12px] focus-visible:outline-none focus-visible:ring-[3
 // Segment chips: separate 12px tiles so the row can scroll edge to edge on a phone,
 // like an app's filter bar. Hover tints only where hover exists; touch gets a press tint.
 const chip = (on) => cn('h-10 shrink-0 snap-start rounded-[12px] px-3.5 text-[13.5px] font-semibold focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose', press,
-  on ? 'bg-maroon text-white' : 'bg-white text-ink/75 active:bg-pink-100 [@media(hover:hover)]:hover:bg-pink-50');
+  on ? 'bg-maroon text-white' : 'bg-white text-ink/75 active:bg-pink-100 hover:bg-pink-50');
 
 /* One contact row. The whole row opens the profile; WhatsApp is its own target. */
 const ClientRow = ({ c, vip, busy, onOpen }) => {
   const wa = waLink(c.phone);
   return (
-    <li className="flex items-center transition-colors duration-150 [@media(hover:hover)]:hover:bg-pink-50">
+    <li className="flex items-center transition-colors duration-150 hover:bg-pink-50">
       <button type="button" onClick={() => onOpen(c)} aria-busy={busy}
-        className="flex min-h-[68px] min-w-0 flex-1 items-center gap-3 py-3 pl-5 text-left transition-colors duration-100 [-webkit-tap-highlight-color:transparent] touch-manipulation focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-rose active:bg-pink-100 sm:pl-6">
+        className="flex min-h-[68px] min-w-0 flex-1 items-center gap-3 py-3 pl-5 text-left transition-colors duration-100 touch-manipulation select-none [-webkit-touch-callout:none] focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-rose active:bg-pink-100 sm:pl-6">
         <Avatar name={c.name} size="h-11 w-11 text-[14px]" />
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -209,7 +209,7 @@ const ClientRow = ({ c, vip, busy, onOpen }) => {
       <span className="flex w-14 shrink-0 justify-center pr-2 sm:w-16 sm:pr-3">
         {wa && (
           <a href={wa} target="_blank" rel="noreferrer" aria-label={`WhatsApp ${c.name || 'this client'}`}
-            className={cn(control, 'grid h-11 w-11 place-items-center active:bg-pink-100 [@media(hover:hover)]:hover:bg-pink-100')}>
+            className={cn(control, 'grid h-11 w-11 place-items-center active:bg-pink-100 hover:bg-pink-100')}>
             <WhatsAppIcon className="h-[22px] w-[22px]" />
           </a>
         )}
@@ -378,7 +378,7 @@ const ClientsV2 = () => {
                   <span className="sr-only">Search clients</span>
                   <Search className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-faint" strokeWidth={2.2} />
                   {/* 16px on phones so iOS doesn't zoom the page on focus. */}
-                  <input type="search" inputMode="search" enterKeyHint="search" autoComplete="off" value={q} onChange={(e) => setQ(e.target.value)}
+                  <input type="search" inputMode="search" enterKeyHint="search" autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} value={q} onChange={(e) => setQ(e.target.value)}
                     placeholder="Search name, phone or email" disabled={loading}
                     className="h-11 w-full rounded-[12px] border-0 bg-white pl-11 pr-11 text-[16px] text-ink placeholder:text-faint focus:outline-none focus-visible:ring-[3px] focus-visible:ring-rose disabled:opacity-60 sm:text-[14.5px] [&::-webkit-search-cancel-button]:hidden" />
                   {q && (
@@ -388,7 +388,7 @@ const ClientsV2 = () => {
                     </button>
                   )}
                 </label>
-                <nav aria-label="Segments" className="dash-noscrollbar -mx-4 flex snap-x gap-2 overflow-x-auto scroll-px-4 px-4 sm:mx-0 sm:flex-wrap sm:px-0">
+                <nav aria-label="Segments" className="dash-noscrollbar -mx-4 flex snap-x gap-2 overflow-x-auto overscroll-x-contain scroll-px-4 px-4 sm:mx-0 sm:flex-wrap sm:px-0">
                   {loading ? [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-10 w-24 shrink-0" />)
                     : SEGMENTS.filter((s) => s.value === 'all' || s.value === segment || counts[s.value] > 0).map((s) => (
                       <button key={s.value} type="button" aria-pressed={segment === s.value} onClick={() => setSegment(s.value)} className={chip(segment === s.value)}>
@@ -411,7 +411,7 @@ const ClientsV2 = () => {
                     ))}
                   </div>
                   <button type="button" onClick={exportRows} disabled={loading || rows.length === 0} aria-label={filtered ? `Export these ${rows.length}` : 'Export all clients'}
-                    className={cn(control, 'inline-flex h-10 shrink-0 items-center gap-1.5 px-3 text-[13.5px] font-semibold text-maroon active:bg-pink-100 disabled:cursor-default disabled:text-neutral-300 [@media(hover:hover)]:hover:bg-pink-100')}>
+                    className={cn(control, 'inline-flex h-10 shrink-0 items-center gap-1.5 px-3 text-[13.5px] font-semibold text-maroon active:bg-pink-100 disabled:cursor-default disabled:text-neutral-300 hover:bg-pink-100')}>
                     <Download className="h-4 w-4" strokeWidth={2.4} /><span className="hidden sm:inline">{filtered ? `Export ${rows.length}` : 'Export'}</span>
                   </button>
                 </header>

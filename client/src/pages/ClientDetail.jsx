@@ -63,14 +63,15 @@ const Timeline = ({ history, serviceMap }) => {
             <span aria-hidden="true" className={cn('relative mt-1 h-4 w-4 shrink-0 rounded-full', upcoming ? 'bg-maroon ring-4 ring-pink-100' : 'bg-neutral-200')}>
               {upcoming && <span className="absolute inset-[4px] rounded-full bg-pink" />}
             </span>
-            <div className="flex min-w-0 flex-1 flex-wrap items-start justify-between gap-x-3 gap-y-1">
-              <div className="min-w-0">
-                <p className="mb-0 truncate text-[14.5px] font-semibold text-ink">{serviceMap[b.service_id] || 'Booking'}</p>
-                <p className="mb-0 text-[13px] text-faint">{upcoming ? `Coming up · ${fmtDayFull(when)}` : fmtDate(when)}</p>
+            {/* Same two-line shape at every width: what + how much, then when + status. */}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-baseline justify-between gap-3">
+                <p className="mb-0 min-w-0 truncate text-[14.5px] font-semibold text-ink">{serviceMap[b.service_id] || 'Booking'}</p>
+                <span className="shrink-0 text-[14px] font-semibold tabular-nums text-ink">{amount ? inr(amount) : 'Free'}</span>
               </div>
-              <div className="flex shrink-0 items-center gap-2">
+              <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span className="text-[13px] text-faint">{upcoming ? `Coming up · ${fmtDayFull(when)}` : fmtDate(when)}</span>
                 <StatusPill status={lower(b.status)} />
-                <span className="w-[72px] text-right text-[14px] font-semibold tabular-nums text-ink">{amount ? inr(amount) : 'Free'}</span>
               </div>
             </div>
           </li>
@@ -81,7 +82,7 @@ const Timeline = ({ history, serviceMap }) => {
 };
 
 const ContactRow = ({ icon: Icon, href, children }) => (
-  <a href={href} className={cn(control, '-mx-2 flex items-center gap-3 px-2 py-1.5 hover:bg-cream')}>
+  <a href={href} className={cn(control, '-mx-2 flex items-center gap-3 px-2 py-1.5 hover:bg-cream active:bg-cream')}>
     <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[12px] bg-pink-100 text-maroon"><Icon className="h-[18px] w-[18px]" strokeWidth={2} /></span>
     <span className="min-w-0 flex-1 truncate text-[14px] text-ink">{children}</span>
   </a>
@@ -174,13 +175,13 @@ const NotesPanel = ({ customerId }) => {
  * (the iOS large-title pattern), so you always know whose page this is. */
 const BackBar = ({ name, collapsed = false }) => (
   <div className="sticky top-[calc(3.5rem+env(safe-area-inset-top,0px))] z-20 -mx-4 -my-2 flex h-12 items-center gap-2 bg-cream/90 px-4 backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-    <Link to="/dashboard/clients" className={cn(control, '-ml-2 inline-flex h-11 shrink-0 items-center gap-0.5 px-2 text-[15px] font-semibold text-maroon active:bg-pink-100 [@media(hover:hover)]:hover:bg-pink-100')}>
+    <Link to="/dashboard/clients" className={cn(control, '-ml-2 inline-flex h-11 shrink-0 items-center gap-0.5 px-2 text-[15px] font-semibold text-maroon active:bg-pink-100 hover:bg-pink-100')}>
       <ChevronLeft className="h-5 w-5" strokeWidth={2.4} /> Clients
     </Link>
     {name && (
       <span aria-hidden={!collapsed}
-        className={cn('flex min-w-0 items-center gap-2 transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none',
-          collapsed ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-1 opacity-0')}>
+        className={cn('flex min-w-0 items-center gap-2 transition-[opacity,transform] ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none',
+          collapsed ? 'translate-y-0 opacity-100 duration-200' : 'pointer-events-none translate-y-1 opacity-0 duration-150')}>
         <Avatar name={name} size="h-8 w-8 text-[12px]" />
         <span className="truncate text-[15px] font-semibold text-ink">{name}</span>
       </span>
@@ -214,13 +215,13 @@ const QuickActions = ({ phone, email, bookingUrl }) => {
         if (it.href) {
           return (
             <a key={it.key} href={it.href} {...(it.external ? { target: '_blank', rel: 'noreferrer' } : {})}
-              className={cn(tile, press, 'text-ink focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose active:bg-pink-50 [@media(hover:hover)]:hover:bg-pink-50')}>{body}</a>
+              className={cn(tile, press, 'text-ink focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose active:bg-pink-50 hover:bg-pink-50')}>{body}</a>
           );
         }
         if (it.onClick) {
           return (
             <button key={it.key} type="button" onClick={it.onClick}
-              className={cn(tile, press, 'text-ink focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose active:bg-pink-50 [@media(hover:hover)]:hover:bg-pink-50')}>{body}</button>
+              className={cn(tile, press, 'text-ink focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose active:bg-pink-50 hover:bg-pink-50')}>{body}</button>
           );
         }
         return <span key={it.key} aria-disabled="true" className={cn(tile, 'text-faint opacity-60')}>{body}</span>;
