@@ -98,6 +98,9 @@ imagery). Pitch and guidelines: claude.ai/artifact/VKsrB9rmuxv2BN5rd3gGBH.
   and focus rings look off (founder call, 2026-11-25). The marketing site keeps its pills.
 - **Rail (desktop nav):** 232px wide, 34px rows at 13.5px, 28px sub-rows at 13px, 18px icons. Sized
   so every section can expand on a 768px-tall laptop without the footer being cropped.
+- **Hover never moves anything in the dashboard:** no lift, no scale, no wobble, no hover shadow.
+  Hover only tints the background (white → pink-50 / cream → blush) and links shift colour. This
+  overrides the kit's general "cards lift 2px" rule inside the product (founder call, 2026-11-25).
 - **Hover and press fills take the element's own shape, never a pill.** A row that runs edge to
   edge inside a card (accordion headers, list rows) has a square hover; the card's 24px corner
   clips the first and last rows. An inset row (with space around it inside the card) uses 12px.

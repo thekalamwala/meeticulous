@@ -166,7 +166,8 @@ export const Tile = ({ label, value, delta, deltaLabel, hint, onClick, accent = 
         // Featured = a maroon ring, never a filled maroon tile: the filled tile was
         // the loudest thing on the page even when its value was ₹0 (Kept audit).
         accent && 'ring-2 ring-inset ring-maroon',
-        onClick && 'hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)] active:translate-y-0 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose')}>
+        // Kept: hover tints, it never lifts, scales or shadows (founder call, 2026-11-25).
+        onClick && 'hover:bg-pink-50 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose')}>
       <div className="flex items-start justify-between gap-2">
         <span className="truncate text-[13px] font-medium text-muted">{label}</span>
         {spark && <span className="mt-px shrink-0">{spark}</span>}
