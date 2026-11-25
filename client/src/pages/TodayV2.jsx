@@ -11,8 +11,7 @@
 // One layout for phone and desktop (founder, 2026-11-25: the two must not look
 // like different dashboards). Same blocks in the same order; phones stack them,
 // desktop sets them side by side. Order follows what a creator needs on login:
-// greeting (topbar), a one-line pointer to Needs your attention (the queue lives in
-// the notifications drawer), next booking + today's schedule, the
+// greeting (topbar), next booking + today's schedule, the
 // week + numbers, recent bookings, setup (onboarding), then link + Pro (secondary).
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -24,7 +23,7 @@ import { useAuth } from '../context/AuthContext';
 import { getPayoutBalance, getHostBookings, getMyProfileViews, getMyKyc, getMyServices, getAvailability, markLinkShared } from '../services/api';
 import { isFreePlan } from '../utils/themeUtils';
 import SetupGuide, { buildSetupSteps } from '../components/dashboard/SetupGuide';
-import { buildQueue, readHandled, HANDLED_EVENT, openNotifications } from '../utils/attentionQueue';
+import { buildQueue } from '../utils/attentionQueue';
 import { Button, ErrorState, Skeleton } from '../components/dashboard/ui';
 import {
   Avatar, Drawer, InsightBand, Panel, Sparkline, StatusPill, Tile,
@@ -186,20 +185,6 @@ const TodayBand = ({ todays, next, onOpen, onCopy }) => {
   return <InsightBand eyebrow={eyebrow} title={title} sub={sub} actions={actions} mascot="blue" className="sm:py-7" />;
 };
 
-/* ── Attention line — the one pointer left on Today; the queue itself lives in
- * the notifications drawer (founder pick, 2026-11-25). Hidden when all clear. ── */
-const AttentionLine = ({ queue }) => (
-  <button type="button" onClick={openNotifications}
-    className="flex w-full items-center gap-3 rounded-[16px] bg-white px-4 py-3 text-left transition hover:bg-pink-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-rose">
-    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-maroon text-[13px] font-semibold tabular-nums text-white">{queue.length}</span>
-    <span className="min-w-0 flex-1">
-      <span className="block text-[14.5px] font-semibold text-ink">{queue.length === 1 ? '1 thing needs' : `${queue.length} things need`} your attention</span>
-      <span className="block truncate text-[13px] text-muted">{queue.map((a) => a.title).join(' · ')}</span>
-    </span>
-    <ArrowRight className="h-5 w-5 shrink-0 text-maroon" strokeWidth={2.2} />
-  </button>
-);
-
 /* ── Week — 7-day strip (pink dot = booked) + the chosen day's bookings. ──── */
 const BookingRow = ({ b, onOpen }) => {
   const past = new Date(b.scheduled_at) < new Date();
@@ -313,7 +298,6 @@ const TodayV2 = () => {
   const [hasService, setHasService] = useState(true); // assume set up until we know
   const [availabilitySet, setAvailabilitySet] = useState(true);
   const [status, setStatus] = useState('loading'); // loading | ready | error
-  const [handled, setHandled] = useState(readHandled);
   const [openId, setOpenId] = useState(null);
   const [promoClosed, setPromoClosed] = useState(false);
   // Upsell Pro only to free-plan hosts; dismissible for the session.
@@ -352,12 +336,6 @@ const TodayV2 = () => {
   const setupSteps = useMemo(() => buildSetupSteps({ hasService, availabilitySet, user, kyc, linkShared }),
     [hasService, availabilitySet, user, kyc, linkShared]);
   const setupOpen = setupSteps.some((s) => !s.done);
-  useEffect(() => {
-    const sync = () => setHandled(readHandled());
-    window.addEventListener(HANDLED_EVENT, sync);
-    return () => window.removeEventListener(HANDLED_EVENT, sync);
-  }, []);
-  const queue = useMemo(() => buildQueue(bookings, kyc).filter((a) => !handled.includes(a.id)), [bookings, kyc, handled]);
 
   const todays = useMemo(() => {
     const t = new Date().toDateString();
@@ -401,15 +379,15 @@ const TodayV2 = () => {
     );
   }
 
-  // ONE layout for every screen size, in the founder's order (2026-11-25):
-  // attention first, then what's next + today's schedule, the week + the
+  // ONE layout for every screen size, in the founder's order (2026-11-25).
+  // "Needs your attention" lives in the notifications drawer (bell), not here:
+  // what's next + today's schedule, the week + the
   // numbers, recent bookings; onboarding and promotion last so they never get
   // between a host and their day. Spacing groups it: 16px inside a group, 40px
   // between groups.
   const sk = (h) => <Skeleton className={cn(h, 'rounded-[24px]')} />;
   return (
     <div className="flex flex-col gap-8 lg:gap-10">
-      {!loading && queue.length > 0 && <AttentionLine queue={queue} />}
 
       <section aria-label="Today" className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr] lg:gap-5">
         {loading ? sk('h-[220px]') : <TodayBand todays={todays} next={next} onOpen={setOpenId} onCopy={copyLink} />}
