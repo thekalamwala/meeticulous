@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, Check, ChevronLeft, ChevronRight } from "lucide-react";
 
 /* "Who it's for" — Calendly-style carousel: the current audience is a big card
    in the centre (horizontal on wide screens), the others sit at the edges as
@@ -13,20 +13,20 @@ import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 
 /* Top vignette — a small UI-style card built only from real labels (who it's
    for + what they get), on the audience's tint. */
-const Vignette = ({ a, on }) => (
+const Vignette = ({ a }) => (
   <div
-    className="relative overflow-hidden rounded-[24px] p-5 sm:p-6"
+    className="relative overflow-hidden rounded-[24px] p-2.5 sm:p-6"
     style={{ background: `linear-gradient(150deg, color-mix(in srgb, ${a.color} 8%, white), color-mix(in srgb, ${a.color} 22%, white))` }}
   >
-    <div className="rounded-[24px] bg-white p-4 shadow-[var(--shadow-md)]">
+    <div className="rounded-[24px] bg-white p-3 shadow-[var(--shadow-md)] sm:p-4">
       <div className="flex items-center gap-2.5">
         <span
-          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full"
+          className="hidden h-9 w-9 flex-shrink-0 items-center justify-center rounded-full sm:flex"
           style={{ backgroundColor: `color-mix(in srgb, ${a.color} 14%, white)`, color: a.color }}
         >
           <a.icon size={17} />
         </span>
-        <p className="font-heading text-sm font-bold text-ink">Built for {a.title.toLowerCase()}</p>
+        <p className="font-heading text-lg font-bold leading-tight text-ink sm:text-sm">Built for {a.title.toLowerCase()}</p>
       </div>
       <ul className="mt-3 flex flex-wrap gap-1.5">
         {a.who.map((w) => (
@@ -44,14 +44,6 @@ const Vignette = ({ a, on }) => (
         ))}
       </ul>
     </div>
-    {/* "Book" pill — echoes the reference's floating action button */}
-    <span
-      aria-hidden
-      className={`absolute bottom-3 right-4 rounded-full px-4 py-1.5 text-xs font-semibold text-white ${on ? "opacity-100" : "opacity-70"}`}
-      style={{ backgroundColor: a.color }}
-    >
-      Book a session
-    </span>
   </div>
 );
 
@@ -65,6 +57,25 @@ const PUSH = {
 };
 const EASE = [0.32, 0.72, 0, 1]; // fast out, soft landing
 
+// Card body — identical markup for the measurer and the live card.
+const Body = ({ a, wide }) => (
+  <div className={wide ? "grid grid-cols-[0.95fr_1.05fr] items-center gap-8 p-6" : "p-2.5 text-left sm:p-5 sm:text-center"}>
+    <Vignette a={a} />
+    <div className={wide ? "pr-4 text-left" : "max-sm:px-1.5 max-sm:pb-1.5"}>
+      <h3 className={`font-heading text-xl font-bold tracking-tight text-ink sm:text-3xl ${wide ? "" : "mt-3 sm:mt-6"}`}>{a.title}</h3>
+      <p className={`mt-2 text-sm leading-relaxed text-ink sm:mt-3 sm:text-base ${wide ? "" : "mx-auto max-w-sm"}`}>{a.desc}</p>
+      <Link
+        to={a.learnMore}
+        aria-label={`Learn more about Meeticulous for ${a.title.toLowerCase()}`}
+        className="relative mt-3 inline-flex items-center justify-center gap-2 rounded-full bg-[var(--audience-color)] px-4 py-1.5 text-xs font-semibold text-white hover:text-white hover:no-underline max-md:!min-h-0 max-md:after:absolute max-md:after:inset-x-0 max-md:after:-inset-y-2 max-sm:mx-auto max-sm:flex max-sm:w-fit sm:mt-5"
+        style={{ "--audience-color": a.color }}
+      >
+        Learn more <ArrowRight size={14} aria-hidden />
+      </Link>
+    </div>
+  </div>
+);
+
 export default function AudienceCarousel({ audiences }) {
   const reduce = useReducedMotion();
   const n = audiences.length;
@@ -72,6 +83,7 @@ export default function AudienceCarousel({ audiences }) {
   const stageRef = useRef(null);
   const measureRefs = useRef([]);
   const [stageW, setStageW] = useState(0);
+  const [mobile, setMobile] = useState(false);
   const [contentH, setContentH] = useState(0);
   const [measuredW, setMeasuredW] = useState(-1); // centre width contentH was measured at
 
@@ -87,7 +99,9 @@ export default function AudienceCarousel({ audiences }) {
   const sideW = big ? 80 : 22;
   const outerW = big ? 44 : 10;
   const gap = big ? 16 : 6;
-  const centreW = Math.max(0, Math.min(stageW - 2 * (sideW + outerW + 2 * gap), 820));
+  const centreW = mobile
+    ? Math.round(stageW * 0.84)
+    : Math.max(0, Math.min(stageW - 2 * (sideW + outerW + 2 * gap), 820));
   const wide = centreW >= 600; // centre card goes horizontal (panel | text)
   const centreH = contentH;
   const sideH = Math.round(centreH * 0.66);
@@ -98,17 +112,31 @@ export default function AudienceCarousel({ audiences }) {
   useLayoutEffect(() => {
     const el = stageRef.current;
     if (!el) return;
-    const measure = () => setStageW(el.clientWidth);
+    const breakpoint = window.matchMedia("(min-width: 640px)");
+    const measure = () => {
+      setStageW(el.clientWidth);
+      setMobile(!breakpoint.matches);
+    };
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
-    return () => ro.disconnect();
+    breakpoint.addEventListener("change", measure);
+    return () => {
+      ro.disconnect();
+      breakpoint.removeEventListener("change", measure);
+    };
   }, []);
   useLayoutEffect(() => {
-    const hs = measureRefs.current.map((m) => m?.offsetHeight || 0);
-    setContentH(Math.max(0, ...hs));
-    setMeasuredW(centreW);
-  }, [centreW, wide, audiences]);
+    const measure = () => {
+      const hs = measureRefs.current.map((m) => m?.offsetHeight || 0);
+      setContentH(Math.max(0, ...hs) + (mobile ? 4 : 0));
+      setMeasuredW(centreW);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    measureRefs.current.forEach((el) => { if (el) ro.observe(el); });
+    return () => ro.disconnect();
+  }, [centreW, wide, mobile, audiences]);
 
   // Simple swipe / drag: 40px+ horizontal moves one card.
   const startX = useRef(null);
@@ -123,6 +151,17 @@ export default function AudienceCarousel({ audiences }) {
   const centreLeft = (stageW - centreW) / 2;
   const slot = (off) => {
     if (off === 0) return { left: centreLeft, width: centreW, height: centreH, opacity: 1 };
+    if (mobile) {
+      const outer = Math.abs(off) === 2;
+      return {
+        left: centreLeft + Math.sign(off) * stageW * (outer ? 0.065 : 0.045),
+        width: centreW,
+        height: centreH * (outer ? 0.66 : 0.8),
+        top: outer ? "61%" : "54%",
+        transform: `translateY(-50%) rotate(${Math.sign(off) * (outer ? 14 : 8)}deg)`,
+        opacity: Math.abs(off) <= 2 ? 1 : 0,
+      };
+    }
     const dir = Math.sign(off);
     const nearL = dir < 0 ? centreLeft - gap - sideW : centreLeft + centreW + gap;
     if (Math.abs(off) === 1) return { left: nearL, width: sideW, height: sideH, opacity: 1 };
@@ -131,24 +170,6 @@ export default function AudienceCarousel({ audiences }) {
     // parked beyond the outer slot, hidden
     return { left: dir < 0 ? outerL - outerW : outerL + outerW, width: outerW, height: outerH, opacity: 0 };
   };
-
-  // Card body — identical markup for the measurer and the live card.
-  const Body = ({ a }) => (
-    <div className={wide ? "grid grid-cols-[0.95fr_1.05fr] items-center gap-8 p-6" : "p-4 text-center sm:p-5"}>
-      <Vignette a={a} on />
-      <div className={wide ? "pr-4 text-left" : ""}>
-        <h3 className={`font-heading text-3xl font-bold tracking-tight text-ink ${wide ? "" : "mt-6"}`}>{a.title}</h3>
-        <p className={`mt-3 text-base leading-relaxed text-ink ${wide ? "" : "mx-auto max-w-sm"}`}>{a.desc}</p>
-        <Link
-          to={a.learnMore}
-          aria-label={`Learn more about Meeticulous for ${a.title.toLowerCase()}`}
-          className="mt-5 inline-block border-b-2 border-primary pb-0.5 text-sm font-semibold text-ink hover:text-primary-cta hover:no-underline"
-        >
-          Learn more
-        </Link>
-      </div>
-    </div>
-  );
 
   return (
     <div
@@ -164,7 +185,7 @@ export default function AudienceCarousel({ audiences }) {
       <div aria-hidden className="pointer-events-none invisible absolute left-0 top-0 -z-10" style={{ width: centreW }}>
         {audiences.map((a, i) => (
           <div key={a.key} ref={(el) => { measureRefs.current[i] = el; }}>
-            <Body a={a} />
+            <Body a={a} wide={wide} />
           </div>
         ))}
       </div>
@@ -191,16 +212,19 @@ export default function AudienceCarousel({ audiences }) {
               <article
                 key={`slot-${off}`}
                 style={{
-                  ...slot(off),
                   top: "50%",
                   transform: "translateY(-50%)",
+                  ...slot(off),
+                  "--audience-color": a.color,
                   zIndex: on ? 3 : Math.abs(off) === 1 ? 2 : 1,
                   pointerEvents: Math.abs(off) > 2 ? "none" : undefined,
                 }}
                 onClick={() => !on && go(off)}
                 aria-hidden={!on}
-                className={`absolute overflow-hidden rounded-[24px] border-2 border-neutral-200 bg-white ${
-                  on ? "shadow-[var(--shadow-md)]" : "cursor-pointer"
+                className={`absolute overflow-hidden rounded-[24px] border-2 ${
+                  on
+                    ? "border-neutral-200 bg-white shadow-[var(--shadow-md)] max-sm:border-ink/75"
+                    : "cursor-pointer border-neutral-200 bg-white max-sm:border-[color-mix(in_srgb,var(--audience-color)_45%,white)]"
                 }`}
               >
                 {on ? (
@@ -217,14 +241,14 @@ export default function AudienceCarousel({ audiences }) {
                       className="absolute inset-y-0 left-0 bg-white"
                       style={{ width: centreW }}
                     >
-                      <Body a={a} />
+                      <Body a={a} wide={wide} />
                     </motion.div>
                   </AnimatePresence>
                 ) : (
-                  // Side sliver: tint + icon push-slide together, same direction
+                  // Side card: tint and preview push-slide together, same direction
                   // and timing as the centre card.
                   <AnimatePresence initial={false} custom={dir}>
-                    <motion.span
+                    <motion.div
                       key={a.key}
                       custom={dir}
                       variants={PUSH}
@@ -235,11 +259,27 @@ export default function AudienceCarousel({ audiences }) {
                       className="absolute inset-0 flex items-center justify-center"
                       style={{
                         color: a.color,
-                        background: `linear-gradient(150deg, color-mix(in srgb, ${a.color} 10%, white), color-mix(in srgb, ${a.color} 26%, white))`,
+                        // Mobile: flat tint (BRAND_RULES: no gradients/glass/blur).
+                        background: mobile
+                          ? `color-mix(in srgb, ${a.color} 12%, white)`
+                          : `linear-gradient(150deg, color-mix(in srgb, ${a.color} 10%, white), color-mix(in srgb, ${a.color} 26%, white))`,
                       }}
                     >
-                      <a.icon size={Math.abs(off) === 1 ? (big ? 24 : 14) : big ? 18 : 10} />
-                    </motion.span>
+                      {mobile ? (
+                        <div
+                          className={`pointer-events-none absolute top-5 w-1/2 space-y-2 text-[11px] leading-snug opacity-40 ${
+                            off < 0 ? "left-2 text-left" : "right-2 text-right"
+                          }`}
+                        >
+                          <p className="font-heading text-sm font-bold">{a.title}</p>
+                          <ul className="space-y-2 border-t border-current/20 pt-2">
+                            {a.points.map((point) => <li key={point}>{point}</li>)}
+                          </ul>
+                        </div>
+                      ) : (
+                        <a.icon size={Math.abs(off) === 1 ? (big ? 24 : 14) : big ? 18 : 10} />
+                      )}
+                    </motion.div>
                   </AnimatePresence>
                 )}
               </article>
@@ -247,7 +287,21 @@ export default function AudienceCarousel({ audiences }) {
           })}
       </div>
 
-      <div className="mt-8 flex items-center justify-center gap-4">
+      <div className="mt-4 flex justify-center sm:hidden">
+        {audiences.map((a, i) => (
+          <button
+            key={a.key}
+            type="button"
+            aria-label={`Show ${a.title}`}
+            aria-current={i === active ? "true" : undefined}
+            onClick={() => i !== active && go(i - active)}
+            className="grid h-11 w-11 place-items-center rounded-full"
+          >
+            <span className={`h-3 w-3 rounded-full border border-ink/60 ${i === active ? "bg-ink/75" : "bg-white"}`} />
+          </button>
+        ))}
+      </div>
+      <div className="mt-8 hidden items-center justify-center gap-4 sm:flex">
         <button
           type="button"
           onClick={() => go(-1)}

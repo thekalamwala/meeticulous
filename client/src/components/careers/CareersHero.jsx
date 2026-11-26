@@ -1,15 +1,13 @@
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, MapPin, Coffee, Heart, Sparkles, Sun, Flame } from 'lucide-react';
 import { gsap, useGSAP, EASE } from '../about/gsapSetup';
-import { company } from './careersContent';
-
-// Centred hero: eyebrow, heading, mission line and the two CTAs. (The photo
-// composition — portraits, fact chips, icon tiles — was removed 2026-11-02 at
-// the owner's request.)
+import { company, getOpenJobs } from './careersContent';
+import './careersHero.css';
 
 export default function CareersHero() {
   const root = useRef(null);
+  const openRoles = getOpenJobs().length;
 
   useGSAP(
     () => {
@@ -19,31 +17,33 @@ export default function CareersHero() {
           opacity: 0, y: 28, duration: 0.8, ease: EASE, stagger: 0.1,
         });
       });
+      return () => mm.revert();
     },
     { scope: root }
   );
 
   return (
-    <section ref={root} className="relative overflow-hidden bg-canvas px-5 py-20 sm:px-8 lg:py-28">
-      <div className="mx-auto max-w-3xl text-center">
-        <p className="js-rise text-sm font-semibold uppercase tracking-[0.2em] text-primary">Careers</p>
-        <h1 className="js-rise mt-3 font-display font-extrabold leading-[1.08] text-maroon text-[clamp(2.4rem,5vw,3.75rem)]">
-          Build the calm way to <span className="text-rose">get booked.</span>
-        </h1>
-        <p className="js-rise mx-auto mt-6 max-w-xl text-lg leading-relaxed text-ink/70">{company.missionBlurb}</p>
-        <div className="js-rise mt-9 flex flex-wrap items-center justify-center gap-6">
-          <a
-            href="#open-roles"
-            className="inline-flex items-center gap-1.5 rounded-full bg-primary-cta px-6 py-3 text-sm font-semibold text-white hover:no-underline hover:opacity-90"
-          >
-            See open roles <ArrowRight size={16} aria-hidden="true" />
-          </a>
-          <Link
-            to="/about#team"
-            className="border-b-2 border-ink pb-0.5 text-sm font-semibold text-ink hover:border-primary hover:text-primary-cta hover:no-underline"
-          >
-            Meet the team
-          </Link>
+    <section ref={root} className="careers-hero px-5 py-12 sm:px-8 lg:py-16">
+      <div className="careers-hero__layout">
+        <div className="careers-hero__copy">
+          <h1 className="js-rise">Build the calm way<br className="hidden xl:block" /> to <span>get booked.</span></h1>
+          <p className="js-rise careers-hero__mission">{company.missionBlurb}</p>
+          <div className="js-rise careers-hero__actions">
+            <a href="#open-roles" className="careers-hero__primary">See open roles <ArrowRight size={15} aria-hidden="true" /></a>
+            <Link to="/about#team" className="careers-hero__team">Meet the team</Link>
+          </div>
+          <ul className="js-rise careers-hero__perks">
+            <li><MapPin size={13} aria-hidden="true" />Remote-first (India)</li>
+            <li><Coffee size={13} aria-hidden="true" />Flexible, calm hours</li>
+            <li><Heart size={13} aria-hidden="true" />Work with creators</li>
+          </ul>
+        </div>
+        <div className="js-rise careers-hero__frame">
+          <span className="careers-hero__tag careers-hero__tag--remote"><Sparkles size={14} aria-hidden="true" />Remote-first</span>
+          <span className="careers-hero__tag careers-hero__tag--calm"><Sun size={14} aria-hidden="true" />Calm over chaos</span>
+          <a href="#open-roles" className="careers-hero__tag careers-hero__tag--roles"><Flame size={14} aria-hidden="true" />{openRoles} open roles</a>
+          <img src="/images/careers/mascot-team.webp" alt="Meeticulous mascots collaborating around a table" width="1100" height="733" loading="eager" fetchPriority="high" className="careers-hero__scene" />
+          <span className="careers-hero__tag careers-hero__tag--creators"><Heart size={14} aria-hidden="true" />Creators first</span>
         </div>
       </div>
     </section>
