@@ -11,11 +11,13 @@ vi.mock('../services/api', () => ({
   getHostProfile: vi.fn(),
   getHostReviews: vi.fn().mockResolvedValue({ data: { reviews: [], count: 0, avg: 0 } }),
   getHostProducts: vi.fn().mockResolvedValue({ data: [] }),
+  getHostCourses: vi.fn().mockResolvedValue({ data: [] }),
+  getMembershipSpace: vi.fn().mockRejectedValue({ response: { status: 404 } }),
   getVendorBadges: vi.fn().mockResolvedValue({ data: { badges: [] } }),
   recordProfileView: vi.fn(),
 }));
 
-import { getHostProfile } from '../services/api';
+import { getHostProfile, getHostProducts, getHostCourses, getMembershipSpace } from '../services/api';
 import HostProfile from '../pages/HostProfile';
 
 const HOST = {
@@ -247,3 +249,78 @@ describe('HostProfile — booking social proof', () => {
 });
 
 // (The free-intro CTA banner was removed from the profile in the redesign.)
+
+// ── Profile tabs (/:username/products|courses|membership) ─────────────────────
+
+const renderTab = (path) =>
+  render(
+    <MemoryRouter initialEntries={[path]}>
+      <Routes>
+        <Route path="/:profileSlug" element={<HostProfile />} />
+        <Route path="/:profileSlug/products" element={<HostProfile tab="products" />} />
+        <Route path="/:profileSlug/courses" element={<HostProfile tab="courses" />} />
+        <Route path="/:profileSlug/membership" element={<HostProfile tab="membership" />} />
+      </Routes>
+    </MemoryRouter>
+  );
+
+// The first stat cell of the desktop card (aside) — its number + label.
+const firstStat = () => {
+  const label = document.querySelector('aside .uppercase.tracking-wider');
+  return { label: label?.textContent, n: label?.previousSibling?.textContent };
+};
+
+describe('HostProfile — tabs', () => {
+  beforeEach(() => {
+    getHostProfile.mockResolvedValue({ data: { host: HOST, services: SERVICES, availability: null } });
+  });
+  afterEach(() => {
+    getHostProducts.mockResolvedValue({ data: [] });
+    getHostCourses.mockResolvedValue({ data: [] });
+    getMembershipSpace.mockRejectedValue({ response: { status: 404 } });
+  });
+
+  test('a tab shows only when the host has an item of that type', async () => {
+    getHostCourses.mockResolvedValue({ data: [{ id: 'c1', title: 'Breathwork 101', slug: 'breath', price: 0, lesson_count: 3 }] });
+    renderTab('/jane-vendor');
+    await waitFor(() => expect(screen.getAllByRole('tab', { name: 'Courses' }).length).toBe(1));
+    expect(screen.queryByRole('tab', { name: 'Products' })).toBeNull();
+    expect(screen.queryByRole('tab', { name: 'Membership' })).toBeNull();
+  });
+
+  test('products tab lists products and counts them in the card', async () => {
+    getHostProducts.mockResolvedValue({ data: [{ id: 'p1', title: 'Meal plan PDF', price: 299, type: 'pdf' }] });
+    renderTab('/jane-vendor/products');
+    await waitFor(() => expect(screen.getByText('Meal plan PDF')).toBeTruthy());
+    expect(firstStat()).toEqual({ label: 'Products', n: '1' });
+    expect(screen.queryByText('Consultation')).toBeNull(); // services grid stays on /:username
+  });
+
+  test('courses tab shows the lesson count', async () => {
+    getHostCourses.mockResolvedValue({ data: [{ id: 'c1', title: 'Breathwork 101', slug: 'breath', price: 499, lesson_count: 3 }] });
+    renderTab('/jane-vendor/courses');
+    await waitFor(() => expect(screen.getByText('Breathwork 101')).toBeTruthy());
+    expect(screen.getByText('3 lessons')).toBeTruthy();
+    expect(firstStat()).toEqual({ label: 'Courses', n: '1' });
+  });
+
+  test('membership tab shows tiers and the actual member count', async () => {
+    getMembershipSpace.mockResolvedValue({ data: {
+      host: { username: 'jane-vendor', name: 'Jane Vendor' },
+      program: { name: 'Inner circle', blurb: 'Monthly calls.' },
+      tiers: [{ id: 't1', name: 'Gold', type: 'paid', price_inr: 499, perks: ['Monthly call'] }],
+      posts: [], viewer_membership: null, member_count: 42,
+    } });
+    renderTab('/jane-vendor/membership');
+    await waitFor(() => expect(screen.getByText('Inner circle')).toBeTruthy());
+    expect(screen.getByText('Monthly call')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Join' })).toBeTruthy();
+    expect(firstStat()).toEqual({ label: 'Members', n: '42' });
+  });
+
+  test('a tab URL with nothing to show falls back to the profile', async () => {
+    renderTab('/jane-vendor/courses');
+    await waitFor(() => expect(screen.getAllByText('Consultation').length).toBeGreaterThan(0));
+    expect(firstStat().label).toBe('Services');
+  });
+});
