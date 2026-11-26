@@ -29,7 +29,7 @@ const POSITION = {
 // Concise, REAL feature highlights — mirrors data/plans.js. Keep in sync if plans change.
 const FEATURES = {
   free: ["5% commission per booking", "Unlimited services & bookings", "Booking page + payments", "24-hour reminders", "Email support"],
-  premium: ["0% commission (Keep 100% of your earnings)", "Client CRM + history", "Follow-up & rebook automation", "Unlimited digital products", "Priority WhatsApp support"],
+  premium: ["0% commission", "Client CRM + history", "Follow-up & rebook automation", "Unlimited digital products", "Priority WhatsApp support"],
 };
 
 const PLAN_MASCOTS = { free: ["green"], premium: ["orange", "purple"] };
