@@ -46,7 +46,8 @@ function BillToggle({ yearly, onChange }) {
           className={`absolute h-4 w-4 rounded-full bg-white shadow-sm ${yearly ? "right-1" : "left-1"}`}
         />
       </span>
-      {yearly ? "Billed yearly" : "Billed monthly"}
+      {/* Stable label: a switch names its ON state; the price suffix shows the period. */}
+      Billed yearly
     </button>
   );
 }

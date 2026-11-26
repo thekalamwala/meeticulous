@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Check, ChevronLeft, ChevronRight, Play } from "lucide-react";
+import { ArrowRight, Check, ChevronLeft, ChevronRight } from "lucide-react";
 
 /* "Who it's for" — Calendly-style carousel: the current audience is a big card
    in the centre (horizontal on wide screens), the others sit at the edges as
@@ -70,7 +70,7 @@ const Body = ({ a, wide }) => (
         className="relative mt-3 inline-flex items-center justify-center gap-2 rounded-full bg-[var(--audience-color)] px-4 py-1.5 text-xs font-semibold text-white hover:text-white hover:no-underline max-md:!min-h-0 max-md:after:absolute max-md:after:inset-x-0 max-md:after:-inset-y-2 max-sm:mx-auto max-sm:flex max-sm:w-fit sm:mt-5"
         style={{ "--audience-color": a.color }}
       >
-        Learn more <Play size={12} fill="currentColor" aria-hidden />
+        Learn more <ArrowRight size={14} aria-hidden />
       </Link>
     </div>
   </div>
@@ -224,7 +224,7 @@ export default function AudienceCarousel({ audiences }) {
                 className={`absolute overflow-hidden rounded-[24px] border-2 ${
                   on
                     ? "border-neutral-200 bg-white shadow-[var(--shadow-md)] max-sm:border-ink/75"
-                    : "cursor-pointer border-neutral-200 bg-white max-sm:border-[color-mix(in_srgb,var(--audience-color)_45%,white)] max-sm:bg-white/60 max-sm:shadow-[0_4px_12px_rgba(26,26,26,0.06)] max-sm:backdrop-blur-[1px]"
+                    : "cursor-pointer border-neutral-200 bg-white max-sm:border-[color-mix(in_srgb,var(--audience-color)_45%,white)]"
                 }`}
               >
                 {on ? (
@@ -259,14 +259,15 @@ export default function AudienceCarousel({ audiences }) {
                       className="absolute inset-0 flex items-center justify-center"
                       style={{
                         color: a.color,
+                        // Mobile: flat tint (BRAND_RULES: no gradients/glass/blur).
                         background: mobile
-                          ? `linear-gradient(150deg, rgb(255 255 255 / 55%), color-mix(in srgb, ${a.color} 23%, transparent))`
+                          ? `color-mix(in srgb, ${a.color} 12%, white)`
                           : `linear-gradient(150deg, color-mix(in srgb, ${a.color} 10%, white), color-mix(in srgb, ${a.color} 26%, white))`,
                       }}
                     >
                       {mobile ? (
                         <div
-                          className={`pointer-events-none absolute top-5 w-1/2 space-y-2 text-[11px] leading-snug opacity-25 blur-[0.6px] ${
+                          className={`pointer-events-none absolute top-5 w-1/2 space-y-2 text-[11px] leading-snug opacity-40 ${
                             off < 0 ? "left-2 text-left" : "right-2 text-right"
                           }`}
                         >
