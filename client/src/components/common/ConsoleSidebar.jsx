@@ -183,7 +183,7 @@ export const NAV_V2 = [
   {
     // dashboard_sections_v2 (ships OFF): graduated Host Lab Intelligence onto real
     // bookings. Hidden entirely until the flag is on; its routes redirect home off-flag.
-    id: 'intelligence', label: 'Intelligence', icon: 'nav-earnings',
+    id: 'intelligence', label: 'Insights', icon: 'nav-earnings',
     items: [
       { to: '/dashboard/intelligence/overview', label: 'Overview', icon: 'nav-overview', matchPrefix: '/dashboard/intelligence/overview' },
       { to: '/dashboard/intelligence/revenue', label: 'Revenue', icon: 'nav-earnings', matchPrefix: '/dashboard/intelligence/revenue' },

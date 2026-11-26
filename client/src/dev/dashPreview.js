@@ -14,7 +14,7 @@
 // Use: VITE_DASH_PREVIEW=1 (and optionally VITE_DASH_PREVIEW_PLAN=pro) in
 // client/.env, run the dev server, open /dashboard. Unknown endpoints answer []
 // and log "[dash-preview] no fixture" so it is obvious what to add.
-import { buildFixtures } from './dashPreviewFixtures';
+import { buildEmptyFixtures, buildFixtures } from './dashPreviewFixtures';
 
 // Never under the test runner: Vitest loads client/.env too, so a developer with
 // the preview switched on would otherwise run every test against fixtures.
@@ -23,8 +23,22 @@ export const DASH_PREVIEW = import.meta.env.DEV && import.meta.env.MODE !== 'tes
 
 export function installDashPreview(api) {
   if (!DASH_PREVIEW) return;
-  const pro = import.meta.env.VITE_DASH_PREVIEW_PLAN === 'pro';
-  const fixtures = buildFixtures({ pro });
+  // Per-tab switches for checking every state without a restart:
+  //   ?dash_plan=pro|starter   ?dash_state=loading|error|empty|off
+  // Remembered for the tab (sessionStorage), so in-app navigation keeps them.
+  const pick = (k) => {
+    try {
+      const v = new URLSearchParams(window.location.search).get(k);
+      if (v) sessionStorage.setItem(k, v);
+      return sessionStorage.getItem(k);
+    } catch { return null; }
+  };
+  const planPick = pick('dash_plan');
+  const state = pick('dash_state');
+  const pro = planPick ? planPick === 'pro' : import.meta.env.VITE_DASH_PREVIEW_PLAN === 'pro';
+  const fixtures = { ...buildFixtures({ pro }), ...(state === 'empty' ? buildEmptyFixtures({ pro }) : {}) };
+  // loading/error apply to page data only, never to the session or the flags.
+  const SHELL = ['/auth/me', '/feature-flags', '/notifications', '/notifications/channel', '/support/unread', '/onboarding/status'];
 
   try {
     localStorage.setItem('user', JSON.stringify({ ...fixtures['/auth/me'], token: 'dash-preview' }));
@@ -45,6 +59,15 @@ export function installDashPreview(api) {
     }
     if (hook && 'data' in hook) return { data: hook.data, status: 200, statusText: 'OK', headers: {}, config, request: {} };
     let data;
+    if (method === 'GET' && !SHELL.includes(path)) {
+      if (state === 'loading') return new Promise(() => {});
+      if (state === 'error') {
+        const err = new Error('dash-preview: simulated failure');
+        err.config = config;
+        err.response = { status: 500, data: { message: 'Simulated' }, config };
+        throw err;
+      }
+    }
     if (method === 'GET') {
       data = fixtures[path];
       if (data === undefined) {

@@ -187,10 +187,8 @@ const TransactionsV2 = lazy(() => import('./pages/TransactionsV2'));
 const InvoicesV2     = lazy(() => import('./pages/InvoicesV2'));
 const AvailabilityV2 = lazy(() => import('./pages/AvailabilityV2'));
 // dashboard_sections_v2 (ships OFF): graduated Intelligence + Community consoles.
-const IntelOverview    = lazy(() => import('./pages/intelligence/IntelOverview'));
-const IntelRevenue     = lazy(() => import('./pages/intelligence/IntelRevenue'));
-const IntelAudience    = lazy(() => import('./pages/intelligence/IntelAudience'));
-const IntelDemand      = lazy(() => import('./pages/intelligence/IntelDemand'));
+// Insights (Kept): Overview / Revenue / Audience / Demand as one page with tabs.
+const Insights         = lazy(() => import('./pages/intelligence/Insights'));
 const CommunityActivity = lazy(() => import('./pages/community/CommunityActivity'));
 const CommunityMentions = lazy(() => import('./pages/community/CommunityMentions'));
 const CommunityAnswer   = lazy(() => import('./pages/community/CommunityAnswer'));
@@ -451,6 +449,8 @@ function CatalogRoute() {
 // shared Money SubNav. Fails closed to the existing page.
 function EarningsRoute() {
   const { flags } = useFeatureFlags();
+  // Kept: Earnings folded into Insights › Revenue. The old URL keeps working.
+  if (flags.dashboard_sections_v2) return <Navigate to="/dashboard/intelligence/revenue" replace />;
   return flags.dashboard_v2 ? <EarningsV2 /> : <Earnings />;
 }
 function PayoutsRoute() {
@@ -815,10 +815,9 @@ function App() {
           <Route path="/dashboard/availability" element={<DashboardWrapper><AvailabilityRoute /></DashboardWrapper>} />
           {/* dashboard_sections_v2 (ships OFF): Intelligence + Community consoles.
               SectionsRoute redirects to /dashboard until the flag is flipped on. */}
-          <Route path="/dashboard/intelligence/overview" element={<DashboardWrapper><SectionsRoute><IntelOverview /></SectionsRoute></DashboardWrapper>} />
-          <Route path="/dashboard/intelligence/revenue" element={<DashboardWrapper><SectionsRoute><IntelRevenue /></SectionsRoute></DashboardWrapper>} />
-          <Route path="/dashboard/intelligence/audience" element={<DashboardWrapper><SectionsRoute><IntelAudience /></SectionsRoute></DashboardWrapper>} />
-          <Route path="/dashboard/intelligence/demand" element={<DashboardWrapper><SectionsRoute><IntelDemand /></SectionsRoute></DashboardWrapper>} />
+          {/* One route for the four tabs (overview|revenue|audience|demand); Insights
+              redirects anything else to overview, so the old URLs all keep working. */}
+          <Route path="/dashboard/intelligence/:tab" element={<DashboardWrapper><SectionsRoute><Insights /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/community/activity" element={<DashboardWrapper><SectionsRoute><CommunityRoute view="activity" Old={CommunityActivity} /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/community/mentions" element={<DashboardWrapper><SectionsRoute><CommunityRoute view="mentions" Old={CommunityMentions} /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/community/answer" element={<DashboardWrapper><SectionsRoute><CommunityRoute view="answer" Old={CommunityAnswer} /></SectionsRoute></DashboardWrapper>} />
