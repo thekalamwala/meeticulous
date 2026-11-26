@@ -8,6 +8,10 @@ import toast from "react-hot-toast";
 import { setAvailability as saveAvailability, getAvailability } from "../../services/api";
 
 export const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+
+// Time off entries in blocked_dates: a legacy "YYYY-MM-DD" string (whole day) or
+// { date, reason?, from?, to? } (server: utils/timeOff). dateOf reads either.
+export const dateOf = (e) => (typeof e === "string" ? e.slice(0, 10) : String(e?.date || ""));
 const DEFAULT_SCHEDULE = DAYS.reduce((acc, day) => { acc[day] = []; return acc; }, {});
 
 // Mirror server validation (P1-10): each window needs end > start, no overlaps on
@@ -113,14 +117,23 @@ export default function useAvailabilityEditor() {
     setDirty(true);
   };
 
+  const byDate = (a, b) => (dateOf(a) < dateOf(b) ? -1 : dateOf(a) > dateOf(b) ? 1 : 0);
   const blockDate = (date) => {
     if (!date) return false;
-    if (blockedDates.includes(date)) { toast.error("Date already blocked"); return false; }
-    setBlockedDates([...blockedDates, date].sort());
+    if (blockedDates.some((e) => dateOf(e) === date)) { toast.error("Date already blocked"); return false; }
+    setBlockedDates([...blockedDates, date].sort(byDate));
     setDirty(true);
     return true;
   };
-  const unblockDate = (date) => { setBlockedDates(blockedDates.filter((x) => x !== date)); setDirty(true); };
+  const unblockDate = (date) => { setBlockedDates((list) => list.filter((x) => dateOf(x) !== date)); setDirty(true); };
+  // Add or replace the one time-off entry for a date (Kept editor). A whole day
+  // with no reason stays a plain date string, so older readers still see it.
+  const setTimeOff = ({ date, from, to, reason }) => {
+    const note = (reason || "").trim();
+    const entry = !from && !to && !note ? date : { date, ...(note && { reason: note }), ...(from && to && { from, to }) };
+    setBlockedDates((list) => [...list.filter((x) => dateOf(x) !== date), entry].sort(byDate));
+    setDirty(true);
+  };
 
   const save = async () => {
     const scheduleErr = validateSchedule(schedule);
@@ -151,7 +164,7 @@ export default function useAvailabilityEditor() {
   return {
     schedule, timezone, setTimezone, bufferMinutes, setBufferMinutes, blockedDates, caps, setCaps,
     loading, dirty, setDirty, status,
-    addSlot, removeSlot, updateSlot, isDayOpen, toggleDay, applyMondayTo, copyDayTo, blockDate, unblockDate,
+    addSlot, removeSlot, updateSlot, isDayOpen, toggleDay, applyMondayTo, copyDayTo, blockDate, unblockDate, setTimeOff,
     save, reset, fetchAvailability,
   };
 }

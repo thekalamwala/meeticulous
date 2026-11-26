@@ -3,6 +3,7 @@
  * Vendor Service Module v2 — full CRUD with slug, rich fields, inclusions, FAQs etc.
  * Does NOT touch existing bookingController / authController / paymentController.
  */
+const { publicAvailability } = require('../utils/timeOff');
 const { supabaseAdmin } = require('../config/supabase');
 const { safeError } = require('../utils/httpError');
 const { setPublicCache } = require('../utils/httpCache');
@@ -554,7 +555,7 @@ const buildPublicServiceBySlug = async (slug) => {
       service: svc,
       vendor: vendor || {},
       totalServices: totalServices || 0,
-      availability: availability || null,
+      availability: publicAvailability(availability) || null, // no private time-off reasons
       reviews: reviewList,
       avgRating,
       ratingBreakdown,
@@ -665,7 +666,7 @@ const buildPublicServiceByProfileAndSlug = async (profileSlug, serviceSlug) => {
       appearance,
       totalServices: totalServices || 0,
       totalBookings: totalBookings || 0,
-      availability: availability || null,
+      availability: publicAvailability(availability) || null, // no private time-off reasons
       reviews: reviewList,
       avgRating,
       ratingBreakdown,

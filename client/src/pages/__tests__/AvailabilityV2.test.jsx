@@ -61,18 +61,40 @@ describe('AvailabilityV2 (Kept Schedule)', () => {
     expect(await screen.findByText(/open 24 hours a week/)).toBeTruthy();
   });
 
-  it('picks days off on the Kept calendar and toggles them back', async () => {
+  it('adds part-day time off with a private reason and saves it as an object', async () => {
     getAvailability.mockResolvedValue({ data: ROW });
     mount();
-    fireEvent.click(await screen.findByRole('button', { name: /Add days off/ }));
-    const cal = await screen.findByRole('group', { name: 'Pick days off' });
+    fireEvent.click(await screen.findByRole('button', { name: /Add time off/ }));
+    const cal = await screen.findByRole('group', { name: 'Pick a date for time off' });
     fireEvent.click(screen.getByRole('button', { name: 'Next month' }));
-    const day = cal.querySelector('button[aria-pressed="false"]:not([disabled])');
+    const day = cal.querySelector('button:not([disabled])');
     fireEvent.click(day);
-    expect(day.getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(screen.getByRole('switch', { name: 'All day' })); // part of the day
+    fireEvent.change(screen.getByLabelText('Time off starts'), { target: { value: '14:00' } });
+    fireEvent.change(screen.getByLabelText('Time off ends'), { target: { value: '16:00' } });
+    fireEvent.change(screen.getByPlaceholderText(/Diwali/), { target: { value: '  Doctor  ' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Add to time off' }));
     expect(screen.getByText('Unsaved changes')).toBeTruthy();
-    fireEvent.click(day);
-    expect(day.getAttribute('aria-pressed')).toBe('false');
+    fireEvent.click(screen.getByRole('button', { name: /^Done/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(setAvailability).toHaveBeenCalledTimes(1));
+    const saved = setAvailability.mock.calls[0][0].blocked_dates;
+    expect(saved).toContain('2099-12-25'); // the legacy plain date survives untouched
+    expect(saved).toContainEqual({ date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/), from: '14:00', to: '16:00', reason: 'Doctor' });
+  });
+
+  it('keeps a whole day with no reason as a plain date string', async () => {
+    getAvailability.mockResolvedValue({ data: { ...ROW, blocked_dates: [] } });
+    mount();
+    fireEvent.click(await screen.findByRole('button', { name: /Add time off/ }));
+    const cal = await screen.findByRole('group', { name: 'Pick a date for time off' });
+    fireEvent.click(screen.getByRole('button', { name: 'Next month' }));
+    fireEvent.click(cal.querySelector('button:not([disabled])'));
+    fireEvent.click(screen.getByRole('button', { name: 'Add to time off' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Done/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(setAvailability).toHaveBeenCalledTimes(1));
+    expect(setAvailability.mock.calls[0][0].blocked_dates).toEqual([expect.stringMatching(/^\d{4}-\d{2}-01$/)]);
   });
 
   it('opens on the first-time band when there is no record yet', async () => {

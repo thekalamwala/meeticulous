@@ -11,7 +11,7 @@ import { PageHeading as PageHeadingV2 } from "../components/dashboard/ui/v2";
 import CalendarConnect from "../components/availability/CalendarConnect";
 import HoursMobile from "../components/availability/HoursMobile";
 import BookingRulesCard from "../components/availability/BookingRulesCard";
-import useAvailabilityEditor, { DAYS } from "../components/availability/useAvailabilityEditor";
+import useAvailabilityEditor, { DAYS, dateOf } from "../components/availability/useAvailabilityEditor";
 
 // 30-min preset grid, stored as 24h "HH:MM", displayed 12h. Old records saved via
 // <input type=time> may hold off-grid values — TimeSelect injects a fallback option
@@ -206,9 +206,9 @@ const Availability = ({ embedded = false } = {}) => {
           <p className="text-sm text-ink/40">No blocked dates</p>
         ) : (
           <div className="flex flex-wrap gap-2">
-            {blockedDates.map((d) => (
+            {blockedDates.map((entry) => { const d = dateOf(entry); return (
               <span key={d} className="inline-flex items-center gap-1.5 rounded-lg border border-rose/30 bg-rose/10 px-2.5 py-1 text-xs text-rose-700">
-                {d}
+                {d}{entry.from && entry.to ? ` ${entry.from}–${entry.to}` : ""}
                 <button
                   type="button"
                   onClick={() => unblockDate(d)}
@@ -218,7 +218,7 @@ const Availability = ({ embedded = false } = {}) => {
                   ×
                 </button>
               </span>
-            ))}
+            ); })}
           </div>
         )}
       </Card>

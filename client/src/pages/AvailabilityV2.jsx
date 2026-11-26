@@ -25,7 +25,7 @@ import { useAuth } from '../context/AuthContext';
 import { isFreePlan } from '../utils/themeUtils';
 import { ErrorState, Skeleton } from '../components/dashboard/ui';
 import { InsightBand, PageHeading, Panel, StatusPill, cn } from '../components/dashboard/ui/v2';
-import useAvailabilityEditor, { DAYS } from '../components/availability/useAvailabilityEditor';
+import useAvailabilityEditor, { DAYS, dateOf } from '../components/availability/useAvailabilityEditor';
 import { BUFFERS, TZ } from '../components/availability/BookingRulesCard';
 import { GoogleMark, connectGoogleCalendar, googleDisconnectHint } from '../components/availability/CalendarConnect';
 import { SHORT, fmtClock, fmtHours, minutesOf, monthCells, weekGrid, weekSummary, windowsLabel } from '../components/availability/scheduleSummary';
@@ -152,7 +152,7 @@ const Sheet = ({ open, onClose, title, children, footer }) => {
 const ScheduleBand = ({ ed, username }) => {
   const { days, minutes, label, shared } = weekSummary(ed.schedule);
   const tz = tzName(ed.timezone);
-  const upcoming = ed.blockedDates.filter((d) => d >= todayIso()).length;
+  const upcoming = ed.blockedDates.filter((d) => dateOf(d) >= todayIso()).length;
   if (!days.length) {
     const openWeekdays = () => DAYS.slice(0, 5).forEach((d) => { if (!ed.isDayOpen(d)) ed.toggleDay(d); });
     return (
@@ -165,7 +165,7 @@ const ScheduleBand = ({ ed, username }) => {
   const sub = [
     shared ? `${shared}, ${tz} time.` : `Hours vary by day, ${tz} time.`,
     ed.bufferMinutes ? `${fmtHours(ed.bufferMinutes)} between bookings.` : 'Bookings can run back to back.',
-    upcoming ? `${upcoming} ${upcoming === 1 ? 'day' : 'days'} off coming up.` : null,
+    upcoming ? `${upcoming} ${upcoming === 1 ? 'day' : 'days'} with time off coming up.` : null,
   ].filter(Boolean).join(' ');
   return (
     <InsightBand mascot="blue" compact className="sm:py-6" eyebrow="Your schedule"
@@ -405,14 +405,70 @@ const BookingLimits = ({ ed, isFree }) => (
   </Panel>
 );
 
-/* ── Days off — full days guests can never book. "Add days off" opens a Kept
- * month calendar in the sheet (not the browser's own picker): tap dates to
- * toggle them, several at once. Past dates can't be picked. ─────────────── */
+/* ── Time off — times guests can't book: a whole day, or part of one, each with
+ * an optional reason only the host sees (founder, 2026-11-26). "Add time off"
+ * opens a Kept month calendar in the sheet; tap a date to edit it below. ── */
 const MONTH_FMT = { month: 'long', year: 'numeric' };
-const DayOffCalendar = ({ ed }) => {
+// One entry per date, normalised: { date, from, to, reason, whole }.
+const timeOffOn = (list, iso) => {
+  const e = (list || []).find((x) => dateOf(x) === iso);
+  if (!e) return null;
+  if (typeof e === 'string') return { date: iso, from: '', to: '', reason: '', whole: true };
+  const whole = !(e.from && e.to);
+  return { date: iso, from: e.from || '', to: e.to || '', reason: e.reason || '', whole };
+};
+const timeOffLabel = (t) => (t.whole ? 'All day' : `${fmtClock(t.from)} – ${fmtClock(t.to)}`);
+
+const TimeOffEditor = ({ iso, ed, onDone }) => {
+  const existing = timeOffOn(ed.blockedDates, iso);
+  const [whole, setWhole] = useState(existing ? existing.whole : true);
+  const [from, setFrom] = useState(existing?.from || '10:00');
+  const [to, setTo] = useState(existing?.to || '13:00');
+  const [reason, setReason] = useState(existing?.reason || '');
+  const bad = !whole && minutesOf(to) <= minutesOf(from);
+  const save = () => {
+    if (bad) return;
+    ed.setTimeOff({ date: iso, reason, ...(whole ? {} : { from, to }) });
+    onDone();
+  };
+  return (
+    <div className="mt-5 flex flex-col gap-3 border-t border-neutral-200/70 pt-5">
+      <p className="mb-0 text-[15px] font-semibold text-ink">{fmtDate(iso)}</p>
+      <div className="flex min-h-[48px] items-center justify-between gap-3 rounded-[16px] bg-cream px-4">
+        <span className="text-[15px] font-semibold text-ink">All day</span>
+        <DaySwitch checked={whole} onChange={() => setWhole((w) => !w)} label="All day" />
+      </div>
+      {!whole && (
+        <div>
+          <div className="flex items-center gap-2">
+            <TimeSelect value={from} onChange={(e) => setFrom(e.target.value)} aria-label="Time off starts" className="min-w-0 flex-1" />
+            <span className="shrink-0 text-[13px] text-faint">to</span>
+            <TimeSelect value={to} bad={bad} onChange={(e) => setTo(e.target.value)} aria-label="Time off ends" aria-invalid={bad || undefined} className="min-w-0 flex-1" />
+          </div>
+          {bad && <p className="mb-0 mt-1.5 text-[12.5px] font-medium text-error-fg">The end time must be after the start time.</p>}
+        </div>
+      )}
+      <label className="block">
+        <span className="mb-1.5 block text-[13px] font-medium text-muted">Reason <span className="text-faint">(only you see this)</span></span>
+        <input type="text" value={reason} maxLength={120} onChange={(e) => setReason(e.target.value)} placeholder="Diwali, doctor, travel…"
+          className="h-12 w-full rounded-[16px] border border-neutral-200 bg-white px-3.5 text-[16px] text-ink outline-none transition placeholder:text-faint hover:bg-pink-50 focus-visible:border-maroon focus-visible:ring-[3px] focus-visible:ring-rose/40 sm:text-[15px]" />
+      </label>
+      <div className="flex gap-2">
+        {existing && (
+          <button type="button" className={cn(btnSoft, 'flex-1')} onClick={() => { ed.unblockDate(iso); onDone(); }}>Remove</button>
+        )}
+        <button type="button" className={cn(btnPrimary, 'flex-1')} disabled={bad} onClick={save}>{existing ? 'Update' : 'Add to time off'}</button>
+      </div>
+    </div>
+  );
+};
+
+const DayOffCalendar = ({ ed, initial }) => {
   const now = new Date();
   const today = todayIso();
-  const [view, setView] = useState({ y: now.getFullYear(), m: now.getMonth() });
+  const start = initial ? new Date(`${initial}T00:00:00`) : now;
+  const [view, setView] = useState({ y: start.getFullYear(), m: start.getMonth() });
+  const [sel, setSel] = useState(initial || null);
   const cells = monthCells(view.y, view.m);
   const atStart = view.y === now.getFullYear() && view.m === now.getMonth();
   const shift = (n) => setView(({ y, m }) => {
@@ -431,71 +487,88 @@ const DayOffCalendar = ({ ed }) => {
           <button type="button" className={navBtn} onClick={() => shift(1)} aria-label="Next month"><ChevronRight className="h-5 w-5" strokeWidth={2.4} /></button>
         </div>
       </div>
-      <div className="grid grid-cols-7 gap-1" role="group" aria-label="Pick days off">
+      <div className="grid grid-cols-7 gap-1" role="group" aria-label="Pick a date for time off">
         {DAYS.map((d) => <span key={d} className="pb-1 text-center text-[12px] font-medium text-faint">{SHORT[d]}</span>)}
         {cells.map((iso, i) => {
           if (!iso) return <span key={`b${i}`} />;
           const past = iso < today;
-          const off = ed.blockedDates.includes(iso);
-          const isToday = iso === today;
+          const t = timeOffOn(ed.blockedDates, iso);
+          const picked = iso === sel;
           return (
-            <button key={iso} type="button" disabled={past} aria-pressed={off}
-              aria-label={`${fmtDate(iso)}${off ? ', day off' : ''}`}
-              onClick={() => (off ? ed.unblockDate(iso) : ed.blockDate(iso))}
+            <button key={iso} type="button" disabled={past} aria-pressed={picked}
+              aria-label={`${fmtDate(iso)}${t ? `, time off ${timeOffLabel(t).toLowerCase()}` : ''}`}
+              onClick={() => setSel(picked ? null : iso)}
               className={cn('grid aspect-square min-h-[40px] place-items-center rounded-[12px] text-[15px] font-semibold tabular-nums', pressable, ring,
                 past ? 'cursor-not-allowed text-neutral-300'
-                  : off ? 'bg-maroon text-white hover:bg-maroon-dark'
-                    : cn('text-ink hover:bg-pink-50', isToday && 'ring-2 ring-inset ring-maroon/35'))}>
+                  : t?.whole ? 'bg-maroon text-white hover:bg-maroon-dark'
+                    : t ? 'bg-maroon-100 text-maroon hover:bg-pink-100'
+                      : 'text-ink hover:bg-pink-50',
+                !past && !t && iso === today && 'ring-2 ring-inset ring-maroon/35',
+                picked && 'outline outline-2 outline-offset-2 outline-maroon')}>
               {Number(iso.slice(8))}
             </button>
           );
         })}
       </div>
-      <div className="mt-4 flex items-center gap-4 text-[12.5px] text-muted">
-        <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-[4px] bg-maroon" /> Day off</span>
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[12.5px] text-muted">
+        <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-[4px] bg-maroon" /> All day off</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-[4px] bg-maroon-100" /> Part of the day</span>
         <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded-[4px] ring-2 ring-inset ring-maroon/35" /> Today</span>
       </div>
+      {sel
+        ? <TimeOffEditor key={sel} iso={sel} ed={ed} onDone={() => setSel(null)} />
+        : <p className="mb-0 mt-5 border-t border-neutral-200/70 pt-5 text-[14px] text-muted">Tap a date to take it off, or part of it.</p>}
     </div>
   );
 };
 
 const DaysOff = ({ ed }) => {
   const today = todayIso();
-  const [picking, setPicking] = useState(false);
-  const upcoming = ed.blockedDates.filter((d) => d >= today).length;
+  const [picking, setPicking] = useState(null); // null = closed; '' = calendar; 'YYYY-MM-DD' = that date
+  const upcoming = ed.blockedDates.filter((e) => dateOf(e) >= today).length;
   return (
-    <Panel title="Days off" flush subtitle="No one can book these dates, whatever your weekly hours say.">
+    <Panel title="Time off" flush subtitle="No one can book these times, whatever your weekly hours say.">
       <ul className="mb-0 divide-y divide-neutral-200/70 p-0">
-        {ed.blockedDates.map((d) => {
-          const past = d < today;
+        {ed.blockedDates.map((entry) => {
+          const t = timeOffOn([entry], dateOf(entry));
+          const past = t.date < today;
           return (
-            <li key={d} className="flex min-h-[64px] items-center gap-3 py-2 pl-5 pr-3 sm:pl-6 sm:pr-4">
-              <span className={cn('flex-1 text-[15px] font-semibold', past ? 'text-faint' : 'text-ink')}>{fmtDate(d)}</span>
-              {past && <StatusPill status="past">Past</StatusPill>}
-              <button type="button" className={iconBtn} onClick={() => ed.unblockDate(d)} aria-label={`Unblock ${fmtDate(d)}`}>
+            <li key={t.date} className="flex items-center">
+              <button type="button" onClick={() => setPicking(t.date)} aria-label={`Edit time off on ${fmtDate(t.date)}`}
+                className={cn(rowBase, 'pr-2 sm:pr-2', ring, 'focus-visible:ring-inset')}>
+                <span className="min-w-0 flex-1">
+                  <span className={cn('flex items-center gap-2 text-[15px] font-semibold', past ? 'text-faint' : 'text-ink')}>
+                    {fmtDate(t.date)} {past && <StatusPill status="past">Past</StatusPill>}
+                  </span>
+                  <span className="mt-0.5 block truncate text-[13px] text-muted">
+                    {timeOffLabel(t)}{t.reason && <span className="text-faint"> · {t.reason}</span>}
+                  </span>
+                </span>
+              </button>
+              <button type="button" className={cn(iconBtn, 'mr-3 sm:mr-4')} onClick={() => ed.unblockDate(t.date)} aria-label={`Remove time off on ${fmtDate(t.date)}`}>
                 <Trash2 className="h-[18px] w-[18px]" strokeWidth={2} />
               </button>
             </li>
           );
         })}
         <li>
-          <button type="button" onClick={() => setPicking(true)} className={cn(rowBase, 'text-maroon', ring, 'focus-visible:ring-inset')}>
+          <button type="button" onClick={() => setPicking('')} className={cn(rowBase, 'text-maroon', ring, 'focus-visible:ring-inset')}>
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-blush"><CalendarPlus className="h-5 w-5" strokeWidth={2.2} /></span>
             <span className="min-w-0 flex-1">
-              <span className="block text-[15px] font-semibold">Add days off</span>
-              {!ed.blockedDates.length && <span className="mt-0.5 block text-[13px] text-faint">No days off planned yet.</span>}
+              <span className="block text-[15px] font-semibold">Add time off</span>
+              {!ed.blockedDates.length && <span className="mt-0.5 block text-[13px] text-faint">A day off, or a few hours of one.</span>}
             </span>
             <ChevronRight className="h-5 w-5 shrink-0 text-faint" strokeWidth={2} aria-hidden="true" />
           </button>
         </li>
       </ul>
-      <Sheet open={picking} onClose={() => setPicking(false)} title="Days off"
+      <Sheet open={picking !== null} onClose={() => setPicking(null)} title="Time off"
         footer={(
-          <button type="button" className={cn(btnPrimary, 'w-full')} onClick={() => setPicking(false)}>
-            {upcoming ? `Done · ${upcoming} ${upcoming === 1 ? 'day' : 'days'} off` : 'Done'}
+          <button type="button" className={cn(btnPrimary, 'w-full')} onClick={() => setPicking(null)}>
+            {upcoming ? `Done · ${upcoming} coming up` : 'Done'}
           </button>
         )}>
-        <DayOffCalendar ed={ed} />
+        {picking !== null && <DayOffCalendar key={picking} ed={ed} initial={picking || null} />}
       </Sheet>
     </Panel>
   );
