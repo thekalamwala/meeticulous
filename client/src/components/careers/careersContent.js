@@ -1,6 +1,6 @@
 // All Careers-page copy + open roles. Round-2: swap placeholder copy,
 // real compensation bands, and culture photos before public launch.
-import { Rocket, HeartHandshake, Sprout, Clock, Globe2, TrendingUp } from 'lucide-react';
+import { Clock, Globe2, TrendingUp } from 'lucide-react';
 
 // Live hiring inbox. Footer uses team@meeticulous.com; flip here if it changes.
 export const HIRING_EMAIL = 'team@meeticulous.com';
@@ -9,9 +9,9 @@ export const company = {
   missionBlurb:
     'We help India’s creators and professionals get booked and paid — without losing a cut to commission. Come build the calm way to get booked.',
   values: [
-    { icon: Rocket, title: 'Ship fast, stay calm', body: 'Small team, real ownership. You’ll see your work live in days, not quarters.' },
-    { icon: HeartHandshake, title: 'Creators first', body: 'Every decision starts with the people who put food on the table with their craft.' },
-    { icon: Sprout, title: 'Grow with us', body: 'Early team, wide scope. Your role expands as fast as you do.' },
+    { image: '/images/careers/ship-fast.webp', tone: 'border-[#f1d8d5] bg-[#fff2f2]', title: 'Ship fast, stay calm', body: 'Small team, real ownership. You’ll see your work live in days, not quarters.' },
+    { image: '/images/careers/creators-first.webp', tone: 'border-[#e8dcf5] bg-[#f7f1ff]', title: 'Creators first', body: 'Every decision starts with the people who put food on the table with their craft.' },
+    { image: '/images/careers/grow-with-us.webp', tone: 'border-[#d6e4d8] bg-[#eef7f2]', title: 'Grow with us', body: 'Early team, wide scope. Your role expands as fast as you do.' },
   ],
   perks: [
     { icon: Globe2, title: 'Remote-first', body: 'Work from anywhere in India. We sync on outcomes, not desks.' },

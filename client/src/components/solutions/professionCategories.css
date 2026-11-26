@@ -1,0 +1,44 @@
+.solutions-directory {
+  background: radial-gradient(ellipse at 85% 80%, #f8e8ee 0, transparent 60%), linear-gradient(120deg, #fafbfc, #fcf7f8);
+}
+.profession-browser { --directory-accent: #960d32; color: #202027; }
+.profession-browser__heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }
+.profession-browser__eyebrow { margin: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #8c2849; }
+.profession-browser__heading h2 { margin: 0; color: #202027; font-size: clamp(1.9rem, 3.8vw, 2.75rem); font-weight: 750; line-height: 1.08; letter-spacing: -.035em; }
+.profession-browser__intro { max-width: 310px; margin: 0 0 3px; color: #62616a; font-size: 14px; line-height: 1.6; }
+.profession-browser__filters { display: flex; width: fit-content; max-width: 100%; gap: 3px; margin-top: 30px; padding: 5px; overflow-x: auto; scrollbar-width: none; border: 1px solid #e8dfe4; border-radius: 999px; background: #f1e8ed; }
+.profession-browser__filters::-webkit-scrollbar, .profession-browser__track::-webkit-scrollbar { display: none; }
+.profession-browser__filters button { display: inline-flex; min-height: 34px; flex: none; align-items: center; justify-content: center; gap: 7px; border: 0; border-radius: 999px; padding: 7px 12px; background: transparent; color: #403942; white-space: nowrap; font-size: 12px; font-weight: 550; cursor: pointer; }
+.profession-browser__filters button svg { color: #9b4b68; }
+.profession-browser__filters button[aria-selected="true"] { background: #fff; color: #33252c; box-shadow: 0 2px 6px #37202d14; }
+.profession-browser__filters button:hover { background: #ffffff9c; }
+.profession-browser__stage { position: relative; margin-top: 24px; }
+.profession-browser__track { display: flex; align-items: stretch; gap: 16px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 5px 3px 16px; cursor: grab; }
+.profession-browser__track:active { cursor: grabbing; }
+.profession-browser__card { flex: 0 0 calc((100% - 16px) / 2); min-width: 0; display: flex; flex-direction: column; padding: 9px; border: 1px solid #e5e1e5; border-radius: 15px; background: #fff; box-shadow: 0 4px 8px #24172509, 0 10px 22px #24172506; scroll-snap-align: start; color: #25232b; text-decoration: none; user-select: none; transition: border-color .2s, box-shadow .2s; }
+.profession-browser__card:hover { border-color: #b77b92; box-shadow: 0 6px 18px #652b4118; text-decoration: none; }
+.profession-browser__card > img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 9px; background: #f4f2f4; }
+.profession-browser__card-copy { padding: 12px 4px 4px; }
+.profession-browser__card h3 { margin: 0; color: #26232a; font-size: 14px; font-weight: 750; line-height: 1.35; letter-spacing: -.015em; }
+.profession-browser__card p { margin: 4px 0 0; min-height: 34px; color: #727078; font-size: 11px; line-height: 1.5; }
+.profession-browser__card ul { display: flex; flex-wrap: wrap; gap: 5px; margin: 12px 0 0; padding: 0; list-style: none; }
+.profession-browser__card li { border: 1px solid #e9e6e9; border-radius: 999px; padding: 3px 7px; background: #faf9fa; color: #615962; font-size: 9px; line-height: 1.2; }
+.profession-browser__arrow { position: absolute; top: calc(50% - 22px); z-index: 2; display: grid; width: 40px; min-height: 40px; height: 40px; place-items: center; border: 1px solid #e3dfe4; border-radius: 50%; background: #fff; color: #655763; box-shadow: 0 3px 9px #29132312; cursor: pointer; }
+.profession-browser__arrow--previous { left: -21px; }
+.profession-browser__arrow--next { right: -21px; }
+.profession-browser button:disabled { opacity: .35; cursor: default; }
+.profession-browser :is(button, a, input, [tabindex]):focus-visible { outline: 3px solid #960d32; outline-offset: 3px; }
+@media (min-width: 1024px) {
+  .profession-browser__card { flex-basis: calc((100% - 48px) / 4); }
+}
+@media (max-width: 639px) {
+  .profession-browser__heading { align-items: flex-start; flex-direction: column; gap: 16px; }
+  .profession-browser__intro { max-width: 32rem; font-size: 13px; }
+  .profession-browser__filters { margin-top: 24px; width: 100%; }
+  .profession-browser__track { gap: 12px; }
+  .profession-browser__card { flex-basis: 80%; min-width: 0; }
+  .profession-browser__arrow { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .profession-browser__card { transition: none; }
+}

@@ -39,6 +39,8 @@ function ExploreFull() {
   // fallback ('exact' | 'partial' | 'relaxed_topic' | 'relaxed_location' | 'none').
   const [parsed,     setParsed]     = useState(null);
   const [fetching,   setFetching]   = useState(false);
+  const [fetchError, setFetchError] = useState(false);
+  const [retry, setRetry] = useState(0);
 
   const reqRef   = useRef(0);
   const abortRef = useRef(null);
@@ -81,6 +83,7 @@ function ExploreFull() {
     const controller = new AbortController();
     abortRef.current = controller;
     setFetching(true);
+    setFetchError(false);
     getExploreServices({ q, category, service, page, limit: PAGE_SIZE }, { signal: controller.signal })
       .then(res => {
         if (reqId !== reqRef.current) return;
@@ -94,9 +97,10 @@ function ExploreFull() {
         setServices([]);
         setMeta({ total: 0, totalPages: 0, page: 1 });
         setParsed(null);
+        setFetchError(true);
       })
       .finally(() => { if (reqId === reqRef.current) setFetching(false); });
-  }, [q, category, service, page]);
+  }, [q, category, service, page, retry]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -212,7 +216,7 @@ function ExploreFull() {
         <div>
           <h2 className="font-heading text-xl font-bold tracking-tight text-ink">{headingText}</h2>
           <p className="mt-0.5 text-sm text-muted">
-            {fetching && services.length === 0 ? 'Searching…' : `${meta.total} service${meta.total === 1 ? '' : 's'} found`}
+            {fetchError ? 'Search is temporarily unavailable' : fetching && services.length === 0 ? 'Searching…' : `${meta.total} service${meta.total === 1 ? '' : 's'} found`}
             {q && pWhere && !fallbackNote && ` · ${pWhere}`}
           </p>
         </div>
@@ -262,6 +266,14 @@ function ExploreFull() {
                 </div>
               </div>
             ))}
+          </div>
+        ) : fetchError ? (
+          <div role="alert" className="rounded-[16px] border border-black/5 bg-[#F8FAFC] px-6 py-16 text-center">
+            <p className="font-heading text-lg font-bold text-ink">We couldn’t load the search results</p>
+            <p className="mt-2 text-sm text-muted">The service may be temporarily unavailable. Try again in a moment.</p>
+            <button type="button" onClick={() => setRetry((attempt) => attempt + 1)} className="btn mt-5 inline-flex items-center bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#2B0A14]">
+              Try again
+            </button>
           </div>
         ) : services.length === 0 ? (
           <div className="rounded-2xl border border-black/5 bg-[#F8FAFC] px-6 py-16 text-center">

@@ -1,11 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Plus, Trash2, MoreHorizontal, Globe, Clock, Settings } from "lucide-react";
-import {
-  setAvailability as saveAvailability,
-  getAvailability,
-} from "../services/api";
 import BackButton from "../components/common/BackButton";
-import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { isFreePlan } from "../utils/themeUtils";
 import {
@@ -16,9 +11,7 @@ import { PageHeading as PageHeadingV2 } from "../components/dashboard/ui/v2";
 import CalendarConnect from "../components/availability/CalendarConnect";
 import HoursMobile from "../components/availability/HoursMobile";
 import BookingRulesCard from "../components/availability/BookingRulesCard";
-
-const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
-const DEFAULT_SCHEDULE = DAYS.reduce((acc, day) => { acc[day] = []; return acc; }, {});
+import useAvailabilityEditor, { DAYS } from "../components/availability/useAvailabilityEditor";
 
 // 30-min preset grid, stored as 24h "HH:MM", displayed 12h. Old records saved via
 // <input type=time> may hold off-grid values — TimeSelect injects a fallback option
@@ -43,118 +36,17 @@ const TimeSelect = ({ value, onChange }) => {
 // `embedded` (dashboard_v2): swap the standalone PageHeader for the v2 PageHeading.
 // The slot editor below is untouched — only the header changes.
 const Availability = ({ embedded = false } = {}) => {
-  const [schedule, setSchedule] = useState(DEFAULT_SCHEDULE);
-  const [timezone, setTimezone] = useState("Asia/Kolkata");
-  const [bufferMinutes, setBufferMinutes] = useState(0);
-  const [blockedDates, setBlockedDates] = useState([]); // "YYYY-MM-DD" strings
   const [newBlockedDate, setNewBlockedDate] = useState("");
-  // Booking caps (Pro). "" = no cap; stored as null on save.
-  const [caps, setCaps] = useState({ cap_per_day: "", cap_per_week: "", cap_per_guest: "" });
-  const [loading, setLoading] = useState(false);
-  const [dirty, setDirty] = useState(false);
+  const {
+    schedule, timezone, setTimezone, bufferMinutes, setBufferMinutes, blockedDates, caps, setCaps,
+    loading, dirty, setDirty, addSlot, removeSlot, updateSlot, isDayOpen, toggleDay, applyMondayTo,
+    blockDate, unblockDate, save, reset,
+  } = useAvailabilityEditor();
 
   const { user } = useAuth() || {};
   const isFree = isFreePlan(user?.plan);
 
-  const fetchAvailability = async () => {
-    try {
-      const { data } = await getAvailability();
-      if (data) {
-        setSchedule(data.weekly_schedule || DEFAULT_SCHEDULE);
-        setTimezone(data.timezone || "Asia/Kolkata");
-        setBufferMinutes(data.buffer_minutes || 0);
-        setBlockedDates(Array.isArray(data.blocked_dates) ? data.blocked_dates : []);
-        setCaps({
-          cap_per_day: data.cap_per_day ?? "",
-          cap_per_week: data.cap_per_week ?? "",
-          cap_per_guest: data.cap_per_guest ?? "",
-        });
-      }
-    } catch { /* no record yet — start with defaults */ }
-  };
-
-  useEffect(() => { fetchAvailability(); }, []);
-
-  const addSlot = (day) => {
-    setSchedule((s) => ({ ...s, [day]: [...(s[day] || []), { start: "09:00", end: "17:00" }] }));
-    setDirty(true);
-  };
-  const removeSlot = (day, idx) => {
-    setSchedule((s) => ({ ...s, [day]: s[day].filter((_, i) => i !== idx) }));
-    setDirty(true);
-  };
-  const updateSlot = (day, idx, field, val) => {
-    setSchedule((s) => {
-      const updated = [...s[day]];
-      updated[idx] = { ...updated[idx], [field]: val };
-      return { ...s, [day]: updated };
-    });
-    setDirty(true);
-  };
-  // A day is "open" when it has ≥1 slot; toggling on seeds a default 9–5 window,
-  // toggling off clears the day (empty slot array = unavailable in the save model).
-  const isDayOpen = (day) => (schedule[day]?.length || 0) > 0;
-  const toggleDay = (day) => {
-    setSchedule((s) => ({ ...s, [day]: s[day]?.length ? [] : [{ start: "09:00", end: "17:00" }] }));
-    setDirty(true);
-  };
-  // "Apply Monday's hours to…" — copy Monday's windows onto a scope of days.
-  const applyMondayTo = (scope) => {
-    const src = schedule.monday || [];
-    if (!src.length) { toast.error("Set Monday's hours first"); return; }
-    const targets = scope === "weekdays" ? DAYS.slice(0, 5) : scope === "weekend" ? DAYS.slice(5) : DAYS;
-    setSchedule((s) => {
-      const next = { ...s };
-      targets.forEach((d) => { next[d] = src.map((w) => ({ ...w })); });
-      return next;
-    });
-    toast.success("Applied Monday's hours");
-    setDirty(true);
-  };
-
-  // Mirror server validation (P1-10): each window needs end > start, no overlaps on
-  // a day. HH:MM strings compare lexically, so string comparison is correct.
-  const validateSchedule = () => {
-    for (const day of DAYS) {
-      const windows = schedule[day] || [];
-      const ranges = [];
-      for (const w of windows) {
-        if (!w.start || !w.end) return `Fill in both times on ${day}.`;
-        if (w.end <= w.start) return `On ${day}, the end time must be after the start time.`;
-        ranges.push([w.start, w.end]);
-      }
-      ranges.sort((a, b) => (a[0] < b[0] ? -1 : 1));
-      for (let i = 1; i < ranges.length; i++) {
-        if (ranges[i][0] < ranges[i - 1][1]) return `Overlapping time windows on ${day}.`;
-      }
-    }
-    return null;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const scheduleErr = validateSchedule();
-    if (scheduleErr) { toast.error(scheduleErr); return; }
-    setLoading(true);
-    try {
-      await saveAvailability({
-        weekly_schedule: schedule,
-        timezone,
-        buffer_minutes: bufferMinutes,
-        blocked_dates: blockedDates,
-        // "" → null (no cap). Server re-gates to Pro and ignores a free host's values.
-        cap_per_day: caps.cap_per_day === "" ? null : Number(caps.cap_per_day),
-        cap_per_week: caps.cap_per_week === "" ? null : Number(caps.cap_per_week),
-        cap_per_guest: caps.cap_per_guest === "" ? null : Number(caps.cap_per_guest),
-      });
-      toast.success("Availability saved!");
-      setDirty(false);
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to save");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleSubmit = (e) => { e.preventDefault(); save(); };
 
   const scrollToSettings = () => {
     document.getElementById("schedule-settings")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -305,13 +197,7 @@ const Availability = ({ embedded = false } = {}) => {
           <Button
             type="button"
             variant="secondary"
-            onClick={() => {
-              if (!newBlockedDate) return;
-              if (blockedDates.includes(newBlockedDate)) { toast.error("Date already blocked"); return; }
-              setBlockedDates([...blockedDates, newBlockedDate].sort());
-              setNewBlockedDate("");
-              setDirty(true);
-            }}
+            onClick={() => { if (blockDate(newBlockedDate)) setNewBlockedDate(""); }}
           >
             <Plus className="h-3.5 w-3.5" /> Block date
           </Button>
@@ -325,7 +211,7 @@ const Availability = ({ embedded = false } = {}) => {
                 {d}
                 <button
                   type="button"
-                  onClick={() => { setBlockedDates(blockedDates.filter((x) => x !== d)); setDirty(true); }}
+                  onClick={() => unblockDate(d)}
                   className="font-bold text-rose/60 hover:text-rose-700"
                   aria-label={`Unblock ${d}`}
                 >
@@ -357,7 +243,7 @@ const Availability = ({ embedded = false } = {}) => {
           type="button"
           variant="secondary"
           disabled={loading}
-          onClick={() => { fetchAvailability(); setDirty(false); }}
+          onClick={reset}
         >
           Cancel
         </Button>
