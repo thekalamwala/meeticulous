@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useKyc } from '../../context/KycContext';
 import { useAuth } from '../../context/AuthContext';
-import { Card, FormField, Input, Button } from '../../components/dashboard/ui';
+import { FormField, Input, Button } from '../../components/dashboard/ui';
 
 const RE = { pan: /^[A-Z]{5}[0-9]{4}[A-Z]$/, aadhaar: /^[0-9]{12}$/, email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, phone: /^[0-9]{10,15}$/ };
 
@@ -36,10 +36,10 @@ export default function KycStart() {
   };
 
   return (
-    <Card className="p-4 sm:p-5">
-      <h2 className="mb-0.5 text-base font-semibold text-gray-900">Personal details</h2>
-      <p className="mb-4 text-sm text-gray-500">These must match your PAN exactly.</p>
-      <form onSubmit={next} className="space-y-3">
+    <section className="rounded-[24px] bg-white p-5 sm:p-6">
+      <h2 className="mb-0 font-display text-[18px] font-bold tracking-[-0.02em] text-ink sm:text-[20px]">Personal details</h2>
+      <p className="mb-5 mt-1 text-[14px] text-muted">These must match your PAN exactly.</p>
+      <form onSubmit={next} className="space-y-4">
         <FormField label="Full name" htmlFor="k-name" required className="mb-0">
           <Input id="k-name" value={personal.full_name} onChange={set('full_name')} placeholder="As printed on PAN" />
         </FormField>
@@ -58,6 +58,6 @@ export default function KycStart() {
           <Button type="submit" size="lg" full>Continue</Button>
         </div>
       </form>
-    </Card>
+    </section>
   );
 }

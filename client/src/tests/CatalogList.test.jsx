@@ -65,7 +65,7 @@ it('names what failed and still shows the rest', async () => {
   // A host must know WHICH part of their catalog is missing before trusting
   // the list — a generic "something went wrong" would leave them reading a
   // short list as though it were complete.
-  expect(screen.getByText(/could not load offers/i)).toBeInTheDocument();
+  expect(screen.getByText(/could not load discounts/i)).toBeInTheDocument();
   expect(screen.getByText('Meal plan PDF')).toBeInTheDocument();
 });
 

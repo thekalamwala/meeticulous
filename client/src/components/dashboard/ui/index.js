@@ -13,7 +13,7 @@ export { ErrorState } from './ErrorState';
 export { InfiniteFeed } from './InfiniteFeed';
 export { useInfiniteScroll } from './useInfiniteScroll';
 export { Skeleton, SkeletonText, SkeletonCard } from './Skeleton';
-export { Input, Textarea, Select, Label, FormField } from './Form';
+export { Input, Textarea, Select, Label, FormField, FieldStyle } from './Form';
 export { DataTable } from './DataTable';
 export { Tabs } from './Tabs';
 export { SearchInput, FilterBar } from './Toolbar';

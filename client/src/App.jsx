@@ -187,10 +187,8 @@ const TransactionsV2 = lazy(() => import('./pages/TransactionsV2'));
 const InvoicesV2     = lazy(() => import('./pages/InvoicesV2'));
 const AvailabilityV2 = lazy(() => import('./pages/AvailabilityV2'));
 // dashboard_sections_v2 (ships OFF): graduated Intelligence + Community consoles.
-const IntelOverview    = lazy(() => import('./pages/intelligence/IntelOverview'));
-const IntelRevenue     = lazy(() => import('./pages/intelligence/IntelRevenue'));
-const IntelAudience    = lazy(() => import('./pages/intelligence/IntelAudience'));
-const IntelDemand      = lazy(() => import('./pages/intelligence/IntelDemand'));
+// Insights (Kept): Overview / Revenue / Audience / Demand as one page with tabs.
+const Insights         = lazy(() => import('./pages/intelligence/Insights'));
 const CommunityActivity = lazy(() => import('./pages/community/CommunityActivity'));
 const CommunityMentions = lazy(() => import('./pages/community/CommunityMentions'));
 const CommunityAnswer   = lazy(() => import('./pages/community/CommunityAnswer'));
@@ -205,6 +203,12 @@ const GrowCommunity = lazy(() => import('./pages/grow/GrowCommunity'));
 const UpgradePlanV2  = lazy(() => import('./pages/UpgradePlanV2'));
 const KycHomeV2      = lazy(() => import('./pages/kyc/KycHomeV2'));
 const ChatPageV2     = lazy(() => import('./pages/ChatPageV2'));
+// Kept Settings (dashboard_v2): grouped rows, pushed sub-screens on phone, two panes on desktop.
+const AccountPane       = lazy(() => import('./pages/settings/AccountPane'));
+const NotificationsPane = lazy(() => import('./pages/settings/NotificationsPane'));
+const IntegrationsPane  = lazy(() => import('./pages/settings/IntegrationsPane'));
+const HelpHub           = lazy(() => import('./pages/help/HelpHub'));
+const NotificationsPage = lazy(() => import('./pages/notifications/NotificationsPage'));
 const ClientDetail = lazy(() => import('./pages/ClientDetail'));
 
 // KYC (host identity verification)
@@ -445,6 +449,8 @@ function CatalogRoute() {
 // shared Money SubNav. Fails closed to the existing page.
 function EarningsRoute() {
   const { flags } = useFeatureFlags();
+  // Kept: Earnings folded into Insights › Revenue. The old URL keeps working.
+  if (flags.dashboard_sections_v2) return <Navigate to="/dashboard/intelligence/revenue" replace />;
   return flags.dashboard_v2 ? <EarningsV2 /> : <Earnings />;
 }
 function PayoutsRoute() {
@@ -499,7 +505,17 @@ function ReferralsRoute() {
 // route with the shared Settings SubNav. Fails closed to the existing page.
 function ProfileRoute() {
   const { flags } = useFeatureFlags();
-  return flags.dashboard_v2 ? <ProfileSetupV2 /> : <ProfileSetup />;
+  // Kept: /dashboard/profile is the Settings root (phone list / desktop Account pane).
+  return flags.dashboard_v2 ? <AccountPane root /> : <ProfileSetup />;
+}
+// Kept Settings sub-screens (additive routes). Off-flag they fall back to the old page.
+const SETTINGS_PANES = { account: AccountPane, notifications: NotificationsPane, integrations: IntegrationsPane };
+function SettingsPaneRoute() {
+  const { flags } = useFeatureFlags();
+  const { pane } = useParams();
+  const Pane = SETTINGS_PANES[pane];
+  if (!flags.dashboard_v2 || !Pane) return <Navigate to="/dashboard/profile" replace />;
+  return <Pane />;
 }
 function UpgradeRoute() {
   const { flags } = useFeatureFlags();
@@ -511,7 +527,18 @@ function KycRoute() {
 }
 function ChatRoute() {
   const { flags } = useFeatureFlags();
-  return flags.dashboard_v2 ? <ChatPageV2 /> : <ChatPage />;
+  // Kept: the chat page IS Help (Tithi + answers + feedback). ChatPageV2 stays for reference.
+  return flags.dashboard_v2 ? <HelpHub /> : <ChatPage />;
+}
+// Kept: every notification, grouped by day (the bell opens it on phones). Additive route.
+function NotificationsRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <NotificationsPage /> : <Navigate to="/dashboard" replace />;
+}
+// Kept: feedback is one option on Help now; the old URL opens Help with its sheet up.
+function FeedbackRoute() {
+  const { flags } = useFeatureFlags();
+  return flags.dashboard_v2 ? <Navigate to="/dashboard/chat?feedback=1" replace /> : <Feedback />;
 }
 
 function DashboardWrapper({ children }) {
@@ -788,15 +815,15 @@ function App() {
           <Route path="/dashboard/availability" element={<DashboardWrapper><AvailabilityRoute /></DashboardWrapper>} />
           {/* dashboard_sections_v2 (ships OFF): Intelligence + Community consoles.
               SectionsRoute redirects to /dashboard until the flag is flipped on. */}
-          <Route path="/dashboard/intelligence/overview" element={<DashboardWrapper><SectionsRoute><IntelOverview /></SectionsRoute></DashboardWrapper>} />
-          <Route path="/dashboard/intelligence/revenue" element={<DashboardWrapper><SectionsRoute><IntelRevenue /></SectionsRoute></DashboardWrapper>} />
-          <Route path="/dashboard/intelligence/audience" element={<DashboardWrapper><SectionsRoute><IntelAudience /></SectionsRoute></DashboardWrapper>} />
-          <Route path="/dashboard/intelligence/demand" element={<DashboardWrapper><SectionsRoute><IntelDemand /></SectionsRoute></DashboardWrapper>} />
+          {/* One route for the four tabs (overview|revenue|audience|demand); Insights
+              redirects anything else to overview, so the old URLs all keep working. */}
+          <Route path="/dashboard/intelligence/:tab" element={<DashboardWrapper><SectionsRoute><Insights /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/community/activity" element={<DashboardWrapper><SectionsRoute><CommunityRoute view="activity" Old={CommunityActivity} /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/community/mentions" element={<DashboardWrapper><SectionsRoute><CommunityRoute view="mentions" Old={CommunityMentions} /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/community/answer" element={<DashboardWrapper><SectionsRoute><CommunityRoute view="answer" Old={CommunityAnswer} /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/community/spaces" element={<DashboardWrapper><SectionsRoute><CommunityRoute view="spaces" Old={CommunitySpaces} /></SectionsRoute></DashboardWrapper>} />
           <Route path="/dashboard/profile" element={<DashboardWrapper><ProfileRoute /></DashboardWrapper>} />
+          <Route path="/dashboard/settings/:pane" element={<DashboardWrapper><SettingsPaneRoute /></DashboardWrapper>} />
           <Route path="/dashboard/kyc" element={<DashboardWrapper><KycRoute /></DashboardWrapper>} />
           {/* KycProvider sits OUTSIDE DashboardWrapper on purpose: DashboardLayout
               renders pages inside PageTransition (keyed on pathname), so a provider
@@ -812,6 +839,11 @@ function App() {
           <Route path="/dashboard/courses" element={<DashboardWrapper><Courses /></DashboardWrapper>} />
           <Route path="/dashboard/memberships" element={<DashboardWrapper><Memberships /></DashboardWrapper>} />
           <Route path="/dashboard/coupons" element={<DashboardWrapper><HostCoupons /></DashboardWrapper>} />
+          {/* "Add new" routes for each catalog type, like /dashboard/service/add-new:
+              the type's own page with its create form open (useAddNewRoute). */}
+          <Route path="/dashboard/product/add-new" element={<DashboardWrapper><Products /></DashboardWrapper>} />
+          <Route path="/dashboard/course/add-new" element={<DashboardWrapper><Courses /></DashboardWrapper>} />
+          <Route path="/dashboard/coupon/add-new" element={<DashboardWrapper><HostCoupons /></DashboardWrapper>} />
           <Route path="/dashboard/membership" element={<DashboardWrapper><Membership /></DashboardWrapper>} />
           <Route path="/dashboard/testimonials" element={<DashboardWrapper><TestimonialsRoute /></DashboardWrapper>} />
           <Route path="/dashboard/grow" element={<DashboardWrapper><GrowHomeRoute /></DashboardWrapper>} />
@@ -821,8 +853,9 @@ function App() {
           <Route path="/dashboard/referrals" element={<DashboardWrapper><ReferralsRoute /></DashboardWrapper>} />
           <Route path="/dashboard/payments/transactions" element={<DashboardWrapper><TransactionsRoute /></DashboardWrapper>} />
           <Route path="/dashboard/invoices" element={<DashboardWrapper><InvoicesRoute /></DashboardWrapper>} />
-          <Route path="/dashboard/feedback" element={<DashboardWrapper><Feedback /></DashboardWrapper>} />
+          <Route path="/dashboard/feedback" element={<DashboardWrapper><FeedbackRoute /></DashboardWrapper>} />
           <Route path="/dashboard/chat" element={<DashboardWrapper><ChatRoute /></DashboardWrapper>} />
+          <Route path="/dashboard/notifications" element={<DashboardWrapper><NotificationsRoute /></DashboardWrapper>} />
 
           {/* Host Lab — redesign prototype of the host dashboard. Its own shell,
               its own sample data, zero API calls. Deliberately NOT wrapped in

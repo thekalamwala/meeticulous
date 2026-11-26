@@ -24,7 +24,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import {
   Home, CalendarDays, Users, MessagesSquare, Package, CalendarRange,
   CreditCard, TrendingUp, Settings, ChevronRight, PanelLeft, Sparkles,
-  LifeBuoy,
+  LifeBuoy, Plus,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import useSupportUnread from '../../hooks/useSupportUnread';
@@ -40,7 +40,6 @@ import { GROUPS } from './dashboardV2Groups';
 import KeptTabBar from './KeptTabBar';
 import NotificationsDrawer from './NotificationsDrawer';
 import useDashboardChrome from '../../hooks/useDashboardChrome';
-import KycNudgeStrip from '../dashboard/KycNudgeStrip';
 import PullToRefresh from '../dashboard/ui/PullToRefresh';
 import { RefreshProvider } from '../dashboard/ui/refreshContext';
 import '../dashboard/ui/tokens.css';
@@ -109,7 +108,7 @@ const NavRow = ({ section, plan, badges, activeTo, expanded, onToggle, onNavigat
             <p className="px-2.5 py-1 text-[11.5px] font-bold text-ink">{section.label}</p>
             {multi && (
               <ul className="border-t-2 border-neutral-200 pt-1">
-                {section.items.map((pg) => (
+                {section.items.filter((pg) => !pg.railHidden).map((pg) => (
                   <li key={pg.to}>
                     <NavLink
                       to={isLocked(pg, plan) ? '#' : pg.to}
@@ -162,15 +161,16 @@ const NavRow = ({ section, plan, badges, activeTo, expanded, onToggle, onNavigat
 
       {multi && expanded && (
         <ul className="mb-0.5 ml-[19px] mt-0.5 flex flex-col gap-px border-l-2 border-neutral-200 pl-2.5">
-          {section.items.map((pg) => {
+          {section.items.filter((pg) => !pg.railHidden).map((pg) => {
             const locked = isLocked(pg, plan);
             const count = pg.badgeKey ? badges[pg.badgeKey] || 0 : 0;
             return (
-              <li key={pg.to}>
+              <li key={pg.to} className="group/sub relative">
                 <NavLink
                   to={locked ? '#' : pg.to}
                   onClick={locked ? (e) => e.preventDefault() : onNavigate}
                   className={cn('flex h-7 items-center rounded-[8px] px-2.5 text-[13px] transition', ring,
+                    pg.addTo && !locked && 'pr-8',
                     pg.to === activeTo ? 'font-semibold text-maroon' : 'text-muted hover:bg-white/70 hover:text-ink',
                     locked && 'cursor-default text-ink/30 hover:bg-transparent')}
                 >
@@ -178,6 +178,14 @@ const NavRow = ({ section, plan, badges, activeTo, expanded, onToggle, onNavigat
                   {locked && <span className="ml-auto rounded-[6px] bg-blush px-2 text-[11px] font-semibold text-maroon">Pro</span>}
                   {count > 0 && <Badge n={count} />}
                 </NavLink>
+                {/* Optional "add new" shortcut (e.g. Catalog types): shows on row hover or
+                    focus, and always on touch, where nothing hovers. */}
+                {pg.addTo && !locked && (
+                  <NavLink to={pg.addTo} onClick={onNavigate} aria-label={pg.addLabel || `Add ${pg.label}`} title={pg.addLabel || `Add ${pg.label}`}
+                    className={cn('absolute right-0.5 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-[8px] text-faint opacity-0 transition hover:bg-white hover:text-maroon focus-visible:opacity-100 group-hover/sub:opacity-100 [@media(hover:none)]:opacity-100', ring)}>
+                    <Plus className="h-3.5 w-3.5" strokeWidth={2.6} />
+                  </NavLink>
+                )}
               </li>
             );
           })}
@@ -267,7 +275,8 @@ const TopbarV2 = ({ user, plan, planStyle, initial, logout, onHome }) => (
       </h1>
     )}
     <div className="ml-auto flex shrink-0 items-center gap-2">
-      <Link to="/help" title="Support" aria-label="Support"
+      {/* Kept: the lifebuoy opens the dashboard's Help hub (founder, 2026-11-26). */}
+      <Link to="/dashboard/chat" title="Help" aria-label="Help"
         className="grid h-10 w-10 place-items-center rounded-[12px] bg-white text-muted transition-colors hover:text-maroon">
         <LifeBuoy className="h-[19px] w-[19px]" strokeWidth={1.8} />
       </Link>
@@ -351,9 +360,9 @@ const DashboardLayoutV2 = ({ children }) => {
                 on every drag, so scrolling back UP on a phone was hijacked into a refresh. */}
             <PullToRefresh>
               <div className="mx-auto w-full max-w-[1240px] px-4 pb-28 pt-2 sm:px-6 lg:mx-0 lg:px-8 lg:pb-12 lg:pt-4">
-                {/* Today shows KYC inside its own "Needs you" card, so the shell notice
-                    would say the same thing twice there. */}
-                {pathname !== '/dashboard' && <KycNudgeStrip />}
+                {/* No shell KYC strip (founder call, 2026-11-26): the verify ask lives in
+                    Today's setup checklist + the bell, and inside Money's balance. A strip
+                    on every page said it twice. */}
                 <PageTransition>{children}</PageTransition>
               </div>
             </PullToRefresh>

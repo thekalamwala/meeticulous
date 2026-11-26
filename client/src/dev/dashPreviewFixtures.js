@@ -1,7 +1,9 @@
 // Sample data for the dev-only dashboard preview (see ./dashPreview.js).
 // Shapes mirror the real API responses (captured 2026-11-25); every person and
 // figure here is made up. No real guest data belongs in this file.
+import { catalogFixtures } from './dashPreviewCatalog';
 import { buildCrmFixtures } from './dashPreviewCrm';
+import { buildMoneyFixtures } from './dashPreviewMoney';
 
 const day = 86_400_000;
 const at = (days, h = 10, m = 30) => {
@@ -49,6 +51,9 @@ const BOOKINGS = [
   booking(7, -15, 0), booking(8, -18, 1), booking(9, -26, 0), booking(10, -33, 1),
   booking(11, -38, 0), booking(12, -41, 1), booking(13, -43, 3),
 ];
+
+// Insights › Demand: "Where bookings came from" needs 2+ sources to show.
+for (const i of [9, 12, 15]) if (BOOKINGS[i]) BOOKINGS[i].source = 'manual_cash';
 
 const ME = {
   id: 'host-preview', _id: 'host-preview', name: 'Riya Kapoor', email: 'riya@example.com',
@@ -111,9 +116,27 @@ const AUDIENCE = (pro) => (pro
 const DEMAND = (pro) => (pro
   ? { retention: { repeatGuestPct: 0.29, avgBookingsPerGuest: 1.9 }, leadTimeDays: 4,
     byWeekday: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d, i) => ({ day: d, bookings: [2, 3, 1, 4, 2, 1, 0][i] })),
-    byHour: [9, 10, 11, 12, 14, 15, 16, 17].map((h, i) => ({ hour: `${h > 12 ? h - 12 : h}${h >= 12 ? 'pm' : 'am'}`, bookings: [1, 3, 2, 1, 2, 3, 1, 0][i] })) }
+    // Real shape: 24 rows, hour 0–23 (IST), when the booking was made.
+    byHour: Array.from({ length: 24 }, (_, hour) => ({ hour, bookings: { 9: 1, 10: 3, 11: 2, 12: 1, 14: 2, 15: 3, 16: 1, 20: 1 }[hour] || 0 })) }
   : { locked: true });
 
+// ?dash_state=empty — a brand-new host: no bookings, nothing paid.
+const EMPTY = (pro) => ({
+  '/bookings/host': [],
+  '/vendor/intelligence/overview': {
+    ...OVERVIEW(pro), headline: { netRevenue: 0, paidBookings: 0, profileViews: null, viewToBook: null },
+    commissionLeak: { commissionPaid: 0, proCost: 999, stillToBreakEven: 999, aheadBy: 0, projectedYear: null, window: 'trailing_12_months', basis: 'Not enough history yet to project a year.' },
+    ...(pro ? { forecast: { confirmedUnpaid: { value: 0, bookings: 0 }, projectedMonth: null, basis: 'Fewer than 5 paid bookings in the window — too little to project from.' }, winBack: { staleDays: 60, atStake: 0, guests: [] } } : {}),
+  },
+  '/vendor/intelligence/money': {
+    ...MONEY, summary: { ...MONEY.summary, bookings: 0, gross: 0, net: 0, aov: 0, netAov: 0, commission: 0 },
+    settlement: { settled: 0, pending: 0 }, upcoming: { bookings: 0, value: 0 }, byMonth: [], byService: [], concentration: { guests: 0, share: null, topN: 0 },
+    withholding: { ...MONEY.withholding, bookingsMeasured: 0 },
+  },
+  '/vendor/intelligence/audience': pro ? { newGuests: 0, returningGuests: 0, repeatRate: 0, topGuests: [], funnel: { bookings: 0, paidBookings: 0, paidPct: 0 } } : { locked: true },
+  '/vendor/intelligence/demand': pro ? { retention: { repeatGuestPct: 0, avgBookingsPerGuest: 0 }, byWeekday: DEMAND(true).byWeekday.map((d) => ({ ...d, bookings: 0 })), byHour: DEMAND(true).byHour.map((h) => ({ ...h, bookings: 0 })) } : { locked: true },
+});
+export const buildEmptyFixtures = ({ pro = false } = {}) => EMPTY(pro);
 
 // Grow (Kept) — testimonials, guest reviews, referrals and community activity.
 // localStorage `dash_preview_grow` switches the case for screenshots:
@@ -185,10 +208,14 @@ export const buildFixtures = ({ pro = false } = {}) => ({
     dashboard_v2: true, dashboard_sections_v2: true, console_v2: true, payouts: true, earnings: true,
     transactions: true, services: true, coupons: true, digital_products: true, community: true,
     community_v2: true, community_memberships: true, availability_editor: true, google_calendar: true,
+    course_purchase: true,
   },
   '/notifications': { notifications: [
-    { id: 'n1', type: 'booking_new', title: 'New booking', body: 'Aarav Shah booked Funnel Teardown', link: '/dashboard/bookings', created_at: at(-1), read_at: null, data: {} },
-  ], unreadCount: 1 },
+    { id: 'n1', type: 'booking_new', title: 'New booking', body: 'Aarav Shah booked Funnel Teardown', link: '/dashboard/bookings', created_at: at(0, 9, 12), read_at: null, data: {} },
+    { id: 'n2', type: 'payment', title: 'Payment received', body: '₹1,499 from Meera Iyer for Funnel Teardown', link: '/dashboard/earnings', created_at: at(-1, 18, 40), read_at: null, data: {} },
+    { id: 'n3', type: 'booking_rescheduled', title: 'Booking moved', body: 'Kabir Rao moved Growth Sprint Workshop to Friday, 4:00pm', link: '/dashboard/bookings', created_at: at(-1, 10, 5), read_at: at(-1, 12), data: {} },
+    { id: 'n4', type: 'payout', title: 'Payout sent', body: '₹2,840 is on its way to your bank', link: '/dashboard/payments/payouts', created_at: at(-4, 9, 0), read_at: at(-4, 10), data: {} },
+  ], unreadCount: 2 },
   '/notifications/channel': {},
   '/kyc/me': { status: 'not_started', pending_earnings: 1424.05, payouts_ready: false },
   '/host/services': SERVICES,
@@ -196,8 +223,10 @@ export const buildFixtures = ({ pro = false } = {}) => ({
   '/bookings/host': BOOKINGS,
   '/host/profile-views': { views: 465 },
   '/plans': [
-    { slug: 'starter', name: 'Starter', monthly_price: 0, annual_price: 0, sort_order: 1 },
-    { slug: 'premium', name: 'Pro', monthly_price: 999, annual_price: 9990, sort_order: 2 },
+    { slug: 'starter', name: 'Starter', monthly_price: 0, annual_price: 0, sort_order: 1, commission_percentage: 5,
+      limits: { services: -1, bookings_per_year: -1, digital_products: 3 }, support_type: 'email' },
+    { slug: 'premium', name: 'Pro', monthly_price: 999, annual_price: 9990, sort_order: 2, commission_percentage: 0,
+      limits: { services: -1, bookings_per_year: -1, digital_products: -1 }, integrations: { calendar_apps: ['google_calendar'] }, support_type: 'priority' },
   ],
   '/host/availability': { host_id: 'host-preview', timezone: 'Asia/Kolkata', weekly: { mon: [['10:00', '18:00']], tue: [['10:00', '18:00']], wed: [['10:00', '18:00']] },
     // The real row's shape (Schedule page reads these): Mon–Fri, a split Friday, Saturday mornings.
@@ -210,6 +239,16 @@ export const buildFixtures = ({ pro = false } = {}) => ({
     buffer_minutes: 15, blocked_dates: [{ date: '2026-12-02', from: '14:00', to: '16:00', reason: 'Doctor' }, '2026-12-25', { date: '2027-01-01', reason: 'New year' }],
     cap_per_day: pro ? 6 : null, cap_per_week: null, cap_per_guest: null },
   '/support/unread': { unread: 0 },
+  // Kept Settings/Help preview (dev-only, made-up): support chat, hours and feedback.
+  '/support/thread': { thread: { id: 'th-1', status: 'bot', reference: 'MT-1042' }, messages: [
+    { id: 'm1', sender: 'user', body: 'How long does a payout take after a booking?', created_at: at(-2, 11, 2) },
+    { id: 'm2', sender: 'bot', sender_name: 'Tithi', body: 'Payouts reach your bank 3 working days after the session, once your PAN and bank are verified. Yours are not verified yet, so the money waits until then.', created_at: at(-2, 11, 3) },
+  ] },
+  '/support/threads': { threads: [{ id: 'th-1', status: 'bot', reference: 'MT-1042', last_message_at: at(-2, 11, 3) }] },
+  '/support/hours': { open: true },
+  '/feedback/mine': { feedback: [
+    { id: 'fb-1', type: 'idea', subject: 'Let guests pick a time zone', body: 'Some of my clients are in Dubai and get confused by IST slots.', status: 'planned', admin_response: 'Good call. It is on the list for December.', created_at: at(-9) },
+  ] },
   '/onboarding/status': { slug: 'riyakapoor', stepCompleted: 6, isComplete: true, name: 'Riya Kapoor', profileImage: '', primaryCategory: 'business-coach', calendarConnected: true, calendarSkipped: false },
   '/vendor/intelligence/overview': OVERVIEW(pro),
   '/vendor/intelligence/money': MONEY,
@@ -217,4 +256,8 @@ export const buildFixtures = ({ pro = false } = {}) => ({
   '/vendor/intelligence/demand': DEMAND(pro),
   ...buildCrmFixtures(),
   ...GROW(growCase()),
+  ...buildMoneyFixtures(),
+  // Catalog (kept-catalog): services/products/courses/discounts/memberships.
+  // Last on purpose: its '/services' rows are a superset of the CRM picker's.
+  ...catalogFixtures(),
 });

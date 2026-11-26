@@ -768,6 +768,9 @@ export const svcUpdate              = (id, data)               => API.put(`/serv
 export const svcDelete              = (id)                     => API.delete(`/services/${id}`);
 export const svcDuplicate           = (id)                     => API.post(`/services/${id}/duplicate`);
 export const svcToggle              = (id)                     => API.put(`/services/${id}/toggle`);
+// Catalog order (v3.227 sort_order): ids in the order the host wants them shown.
+const REORDER_BASE = { service: '/services', product: '/products', course: '/courses' };
+export const reorderCatalog         = (kind, ids)              => API.put(`${REORDER_BASE[kind]}/reorder`, { ids });
 export const svcGetPublic           = (slug)                   => API.get(`/services/public/${slug}`);
 // Clean URL: resolves service by both profileSlug + serviceSlug (validates vendor ownership)
 export const svcGetPublicByProfile  = (profileSlug, serviceSlug) => API.get(`/services/public/${profileSlug}/${serviceSlug}`);

@@ -9,6 +9,12 @@ import {
   Badge, EmptyState, ErrorState, ConfirmSheet, cn,
 } from "../components/dashboard/ui";
 import ComingSoonTeaser from "../components/dashboard/ComingSoonTeaser";
+import useAddNewRoute from "../hooks/useAddNewRoute";
+import useFeatureFlags from "../hooks/useFeatureFlags";
+import {
+  KeptPage, KeptHeader, KeptList, KeptRow, RowThumb, RowSwitch, IconAction, KeptEditor, KeptEmpty,
+  KeptError, KeptSkeleton, PinnedAction, pinnedBtn, primaryBtn,
+} from "./catalog/KeptKit";
 
 const emptyForm = {
   code: "", discount_type: "percent", discount_value: "",
@@ -34,6 +40,9 @@ export default function HostCoupons() {
   const [saving, setSaving] = useState(false);
   const [confirmDel, setConfirmDel] = useState(null); // coupon row
   const [deleting, setDeleting] = useState(false);
+  // Kept look (dashboard_v2): the page is "Discounts". Same state and handlers.
+  const { flags } = useFeatureFlags();
+  const kept = !!flags?.dashboard_v2;
 
   const load = useCallback(async () => {
     try {
@@ -48,6 +57,11 @@ export default function HostCoupons() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  // /dashboard/coupon/add-new opens the create form (rail +, Catalog "New"),
+  // once we know coupons are switched on for this platform.
+  const openNew = useCallback(() => setShowForm(true), []);
+  useAddNewRoute({ open: openNew, ready: coupons !== null && loadError !== "disabled", formOpen: showForm, listPath: "/dashboard/coupons" });
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
@@ -99,6 +113,18 @@ export default function HostCoupons() {
     }
   };
 
+  if (loadError === "disabled" && kept) {
+    return (
+      <KeptPage pinned={false}>
+        <KeptHeader title="Discounts" sub="Codes that take money off at checkout." />
+        <ComingSoonTeaser
+          feature="coupons"
+          title="Discount codes"
+          blurb="Create codes guests apply at checkout: launches, win-backs and seasonal offers. Coming to Pro."
+        />
+      </KeptPage>
+    );
+  }
   if (loadError === "disabled") {
     return (
       <div className="mx-auto max-w-2xl px-4 py-6">
@@ -112,27 +138,8 @@ export default function HostCoupons() {
     );
   }
 
-  return (
-    <div className="mx-auto max-w-3xl px-4 py-6">
-      <PageHeader
-        title="Coupons"
-        subtitle="Create discount codes guests can apply at checkout. You absorb the discount — commission and taxes recompute on the lower price."
-        actions={
-          !showForm && coupons?.length > 0 ? (
-            <Button variant="primary" onClick={() => setShowForm(true)}>
-              <Plus className="h-4 w-4" /> New coupon
-            </Button>
-          ) : null
-        }
-      />
-
-      {loadError === "error" && (
-        <ErrorState message="Couldn't load your coupons." onRetry={load} />
-      )}
-
-      {showForm && (
-        <Card padded={false} className="mb-5 p-4">
-          <form onSubmit={submit} className="space-y-4">
+  // Form fields, shared by the legacy card and the Kept editor.
+  const couponFields = (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField label="Code" htmlFor="c-code" required hint="3–24 letters, numbers, - or _">
                 <Input id="c-code" value={form.code} onChange={set("code")} placeholder="WELCOME10"
@@ -158,6 +165,93 @@ export default function HostCoupons() {
                 <Input id="c-exp" type="date" value={form.expires_at} onChange={set("expires_at")} />
               </FormField>
             </div>
+  );
+
+  if (kept) {
+    const closeForm = () => { setShowForm(false); setForm(emptyForm); };
+    const usage = (c) => {
+      const used = Number(c.times_redeemed) || 0;
+      const cap = c.max_redemptions != null ? ` of ${c.max_redemptions}` : "";
+      const ends = c.expires_at
+        ? `${new Date(c.expires_at).getTime() < Date.now() ? "Ended" : "Ends"} ${new Date(c.expires_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}`
+        : "No end date";
+      return `${used}${cap} used · ${ends}`;
+    };
+    const active = (coupons || []).filter((c) => couponState(c).label === "Active").length;
+    return (
+      <KeptPage>
+        <KeptHeader title="Discounts"
+          sub={coupons === null ? "Loading your discounts…" : coupons.length ? `${coupons.length} ${coupons.length === 1 ? "code" : "codes"} · ${active} active` : "Codes guests apply at checkout. You absorb the discount; commission and tax recompute on the lower price."}
+          action={<button type="button" onClick={() => setShowForm(true)} className={primaryBtn}><Plus className="h-4 w-4" strokeWidth={2.4} /> New discount</button>} />
+
+        {coupons === null ? <KeptSkeleton /> : loadError === "error" && coupons.length === 0 ? (
+          <KeptError what="discounts" onRetry={load} />
+        ) : coupons.length === 0 ? (
+          <KeptEmpty icon={Ticket} title="No discounts yet"
+            sub="A code that takes money off a booking. For a launch, a festival, or a client coming back."
+            action={<button type="button" onClick={() => setShowForm(true)} className={primaryBtn}><Plus className="h-4 w-4" strokeWidth={2.4} /> New discount</button>} />
+        ) : (
+          <KeptList label="Your discounts">
+            {coupons.map((c) => {
+              const st = couponState(c);
+              return (
+                <KeptRow key={c.id}
+                  thumb={<RowThumb glyph="%" />}
+                  title={c.code}
+                  detail={`${st.label === "Active" || st.label === "Inactive" ? "" : `${st.label} · `}${usage(c)}`}
+                  price={describe(c)} note={c.min_amount > 0 ? `on bookings over ₹${Math.round(c.min_amount)}` : null}
+                  trailing={(
+                    <>
+                      <RowSwitch checked={!!c.active} onChange={() => toggle(c)} word={c.active ? "Active" : "Paused"}
+                        label={`${c.active ? "Pause" : "Turn on"} ${c.code}`} />
+                      <IconAction danger label={`Delete ${c.code}`} onClick={() => setConfirmDel(c)} />
+                    </>
+                  )} />
+              );
+            })}
+          </KeptList>
+        )}
+
+        <KeptEditor open={showForm} onClose={closeForm} formId="coupon-form" saving={saving}
+          title="New discount" subtitle="Guests type the code at checkout." saveLabel="Create discount">
+          <form id="coupon-form" onSubmit={submit} className="space-y-1">
+            {couponFields}
+          </form>
+        </KeptEditor>
+
+        <ConfirmSheet open={!!confirmDel} title="Delete discount?"
+          message={confirmDel ? `“${confirmDel.code}” will be removed. A code already used on a booking can't be deleted: pause it instead.` : ""}
+          confirmLabel="Delete" danger busy={deleting} onConfirm={doDelete} onClose={() => setConfirmDel(null)} />
+
+        <PinnedAction show={!showForm && coupons !== null && !(loadError === "error" && coupons.length === 0)}>
+          <button type="button" onClick={() => setShowForm(true)} className={pinnedBtn}><Plus className="h-4 w-4" strokeWidth={2.4} /> New discount</button>
+        </PinnedAction>
+      </KeptPage>
+    );
+  }
+
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-6">
+      <PageHeader
+        title="Coupons"
+        subtitle="Create discount codes guests can apply at checkout. You absorb the discount — commission and taxes recompute on the lower price."
+        actions={
+          !showForm && coupons?.length > 0 ? (
+            <Button variant="primary" onClick={() => setShowForm(true)}>
+              <Plus className="h-4 w-4" /> New coupon
+            </Button>
+          ) : null
+        }
+      />
+
+      {loadError === "error" && (
+        <ErrorState message="Couldn't load your coupons." onRetry={load} />
+      )}
+
+      {showForm && (
+        <Card padded={false} className="mb-5 p-4">
+          <form onSubmit={submit} className="space-y-4">
+            {couponFields}
             <div className="flex gap-2">
               <Button type="submit" variant="primary" disabled={saving}>
                 {saving ? "Creating…" : "Create coupon"}

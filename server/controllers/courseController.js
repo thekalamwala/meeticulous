@@ -11,6 +11,8 @@ const platformConfig = require('../services/platformConfig');
 const razorpayConfig = require('../services/razorpayConfig');
 const { verifySignature } = require('../utils/razorpaySignature');
 const { calculatePlatformFee, calculateGst, round2 } = require('../lib/pricingEngine');
+const { sortHostOrder } = require('../services/catalogOrder');
+const { withGuestPrices } = require('../services/guestPrice');
 const { auditLog, securityLog } = require('../utils/logger');
 
 // ponytail: schema-fallback — if the v3.214 tables aren't applied yet, Supabase
@@ -92,7 +94,8 @@ const getMyCourses = async (req, res) => {
       if (isMissingTable(error)) return res.json([]);
       return safeError(res, error);
     }
-    res.json(data || []);
+    // Kept Catalog: the host's order (v3.227) + what a guest pays (server-computed).
+    res.json(await withGuestPrices(sortHostOrder(data || []), 'course', req.user.id));
   } catch (error) { safeError(res, error); }
 };
 

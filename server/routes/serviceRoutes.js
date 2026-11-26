@@ -11,6 +11,7 @@ const {
   getPublicServiceBySlug,
   getPublicServiceByProfileAndSlug,
   getPriceBenchmark,
+  reorderServices,
 } = require('../controllers/serviceController');
 const { protect, requireHost } = require('../middleware/authMiddleware');
 // BUG-04: import plan middlewares so the new /api/services endpoint enforces limits
@@ -29,6 +30,8 @@ router.post('/ai/listing',    protect, requireHost, attachPlan, generateAiListin
 // Advisory price benchmark — static path before any /:id route so it isn't shadowed.
 router.get('/price-benchmark', protect, requireHost, getPriceBenchmark);
 router.get('/',               protect, getMyServices);
+// Kept Catalog order (v3.227) — static path before PUT /:id so it isn't shadowed.
+router.put('/reorder',        protect, requireHost, reorderServices);
 router.post('/',              protect, requireHost, requireFeature('services'), ...serviceWriteRules, validate, attachPlan, enforceMinPrice, checkServiceLimit, createService); // BUG-04 fixed
 router.get('/:id',            protect, getServiceById);
 router.put('/:id',            protect, requireHost, requireFeature('services'), ...serviceWriteRules, validate, attachPlan, enforceMinPrice, updateService);

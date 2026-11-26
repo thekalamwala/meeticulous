@@ -40,6 +40,11 @@ const PAGES = [
   'pages/services/ServicesDirectory.jsx',
   'pages/ProfileSetup.jsx',
   'pages/UpgradePlan.jsx',
+  // Kept Catalog (2026-11-26)
+  'pages/CatalogV2.jsx',
+  'pages/catalog/KeptKit.jsx',
+  'pages/catalog/BottomSheet.jsx',
+  'pages/catalog/ServicePreviewCard.jsx',
 ];
 
 const GRAY = /\b(?:text|bg|border|ring|from|to|via|divide|placeholder|fill|stroke)-gray-\d/g;
