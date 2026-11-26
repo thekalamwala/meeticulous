@@ -10,6 +10,7 @@ const { attachPlan, checkProductLimit } = require('../middleware/planMiddleware'
 const { requireFeature } = require('../middleware/requireFeature');
 const { freeDownloadLimiter, freeDownloadIpLimiter, downloadTokenLimiter } = require('../middleware/security');
 const { validate, createProductRules, updateProductRules } = require('../middleware/validate');
+const { makeReorderHandler } = require('../services/catalogOrder');
 
 // Public
 router.get('/host/:username', getHostProducts);
@@ -31,6 +32,9 @@ router.post('/resend-link', freeDownloadIpLimiter, freeDownloadLimiter, optional
 // before they're stored and later rendered as links (stored-XSS / phishing guard).
 router.post('/', protect, requireHost, requireFeature('digital_products'), attachPlan, checkProductLimit, ...createProductRules, validate, createProduct);
 router.get('/mine/all', protect, getMyProducts);
+// Kept Catalog order (v3.227). PUT /reorder never collides with PUT /:id's handler
+// order-wise: declared first, so 'reorder' is not read as a product id.
+router.put('/reorder', protect, requireHost, makeReorderHandler('products'));
 router.put('/:id', protect, requireHost, requireFeature('digital_products'), ...updateProductRules, validate, updateProduct);
 router.delete('/:id', protect, requireHost, deleteProduct);
 
