@@ -987,7 +987,7 @@ const Navbar = () => {
             {/* Fixed full-height drawer */}
             <div
               id="mobile-menu"
-              className="fixed top-14 right-0 bottom-0 z-50 flex w-[82%] max-w-xs flex-col overflow-y-auto overscroll-contain bg-white pb-6 shadow-2xl md:hidden"
+              className="fixed top-14 right-0 bottom-0 z-50 flex w-[82%] max-w-xs flex-col overflow-y-auto overscroll-contain bg-white pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] shadow-2xl md:hidden"
               aria-label="Mobile navigation"
             >
             {/* Nav links */}

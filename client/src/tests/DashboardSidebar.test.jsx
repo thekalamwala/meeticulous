@@ -90,17 +90,19 @@ describe('dashboard topbar profile menu', () => {
     expect(screen.getByText('Log out')).toBeInTheDocument();
   });
 
-  it('shows a verified tick by the name that links to KYC', () => {
+  // Verification status sits on its own row (founder screenshot, 2026-11-25),
+  // not as a tick by the name.
+  it('shows Verified on the verification row once KYC is approved', () => {
     renderLayout({ name: 'Host', plan: 'creator', role: 'host', kyc_status: 'approved' });
     openProfile();
-    expect(screen.getByRole('link', { name: 'Verified host' }))
+    expect(screen.getByRole('link', { name: 'Verification, verified' }))
       .toHaveAttribute('href', '/dashboard/kyc');
   });
 
-  it('shows a not-verified tick by the name when KYC is not done', () => {
+  it('asks to verify on the verification row when KYC is not done', () => {
     renderLayout({ name: 'Host', plan: 'creator', role: 'host', kyc_status: 'pending' });
     openProfile();
-    expect(screen.getByRole('link', { name: /Not verified/ }))
+    expect(screen.getByRole('link', { name: /not verified yet/ }))
       .toHaveAttribute('href', '/dashboard/kyc');
   });
 });

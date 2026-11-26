@@ -29,14 +29,14 @@ const CommunitySpaces = () => {
     </>
   );
 
-  if (err) return <div className="flex flex-col gap-2.5">{header}<ErrorState message="Couldn't load community spaces." onRetry={load} /></div>;
-  if (spaces === null) return <div className="flex flex-col gap-2.5">{header}<Skeleton className="h-64 rounded-xl" /></div>;
+  if (err) return <div className="flex flex-col gap-4 sm:gap-6">{header}<ErrorState message="Couldn't load community spaces." onRetry={load} /></div>;
+  if (spaces === null) return <div className="flex flex-col gap-4 sm:gap-6">{header}<Skeleton className="h-64 rounded-xl" /></div>;
   if (spaces.length === 0) {
-    return <div className="flex flex-col gap-2.5">{header}<EmptyState icon={LayoutGrid} title="No spaces yet" description="Community rooms will appear here." /></div>;
+    return <div className="flex flex-col gap-4 sm:gap-6">{header}<EmptyState icon={LayoutGrid} title="No spaces yet" description="Community rooms will appear here." /></div>;
   }
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-4 sm:gap-6">
       {header}
       <Panel title="All spaces" subtitle={`${spaces.length} rooms`} flush>
         <div className="overflow-hidden rounded-[8px]">

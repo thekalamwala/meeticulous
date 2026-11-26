@@ -63,7 +63,7 @@ const NavTab = ({ section, active, hasAttention, onClick }) => (
       <TabIcon icon={section.icon} />
       {hasAttention && <AttentionDot />}
     </span>
-    <span className="max-w-full truncate text-[10px] font-semibold leading-none">{section.label}</span>
+    <span className="max-w-full truncate text-[11px] font-medium leading-none">{section.label}</span>
   </button>
 );
 
@@ -94,7 +94,7 @@ const MobileTabBar = ({ onOpenMore, moreTriggerRef }) => {
   return (
     <nav
       aria-label="Primary"
-      className="fixed inset-x-0 bottom-0 z-40 flex items-stretch border-t-2 border-neutral-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 flex items-stretch border-t border-neutral-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
     >
       {left.map((s) => (
         <NavTab key={s.id} section={s} active={active.sectionId === s.id} hasAttention={sectionAttention(s)} onClick={() => go(s)} />

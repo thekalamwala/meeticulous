@@ -6,7 +6,7 @@ import { PageHeading, SubNav } from '../components/dashboard/ui/v2';
 import { SETTINGS_NAV } from './dashboardNav';
 
 const ChatPageV2 = () => (
-  <div className="flex flex-col gap-2.5">
+  <div className="flex flex-col gap-4 sm:gap-6">
     <PageHeading title="Help" sub="Chat with the Meeticulous team." />
     <SupportChat />
   </div>

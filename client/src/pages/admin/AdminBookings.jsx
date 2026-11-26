@@ -317,7 +317,7 @@ const BookingRow = ({ b, status, onView, onEdit, onDelete }) => {
       </td>
       {/* 10 Actions (reveal on row hover/focus) */}
       <td className="px-3 py-3 align-middle">
-        <div className="flex items-center gap-0.5 justify-end opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity"
+        <div className="flex items-center gap-0.5 justify-end opacity-0 group-hover:opacity-100 focus-within:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity"
           onClick={(e) => e.stopPropagation()}>
           <IconBtn icon={IC.eye} label="View details" tone="primary" onClick={() => onView(b)} />
           <IconBtn icon={IC.pencil} label="Edit booking" tone="gray" onClick={() => onEdit(b)} />

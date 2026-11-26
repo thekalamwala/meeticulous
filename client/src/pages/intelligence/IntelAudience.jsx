@@ -29,12 +29,12 @@ const IntelAudience = () => {
     </>
   );
 
-  if (err) return <div className="flex flex-col gap-2.5">{header}<ErrorState message="Couldn't load your audience." onRetry={load} /></div>;
-  if (data === null) return <div className="flex flex-col gap-2.5">{header}<Skeleton className="h-28 rounded-xl" /><Skeleton className="h-64 rounded-xl" /></div>;
+  if (err) return <div className="flex flex-col gap-4 sm:gap-6">{header}<ErrorState message="Couldn't load your audience." onRetry={load} /></div>;
+  if (data === null) return <div className="flex flex-col gap-4 sm:gap-6">{header}<Skeleton className="h-28 rounded-xl" /><Skeleton className="h-64 rounded-xl" /></div>;
 
   if (data.locked) {
     return (
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-4 sm:gap-6">
         {header}
         <section className="flex flex-col gap-2 rounded-lg border-2 border-maroon/20 bg-blush/60 p-3">
           <div className="flex items-center gap-1.5">
@@ -55,10 +55,10 @@ const IntelAudience = () => {
   const guests = Array.isArray(topGuests) ? topGuests : [];
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-4 sm:gap-6">
       {header}
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
         <Tile label="New guests" value={num(data.newGuests)} accent hint="First-time bookers" />
         <Tile label="Returning guests" value={num(data.returningGuests)} hint="Booked again" />
         <Tile label="Repeat rate" value={data.repeatRate == null ? '—' : pct(data.repeatRate)} hint="Guests who came back" />
