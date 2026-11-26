@@ -11,7 +11,7 @@ import toast from 'react-hot-toast';
 import { TrendingUp } from 'lucide-react';
 import FeatureGate from '../../components/common/FeatureGate';
 import ThumbnailCropper from '../../components/common/ThumbnailCropper';
-import { PageHeader, Card, Button, Input, Select, Textarea, cn } from '../../components/dashboard/ui';
+import { PageHeader, Card, Button, Input, Select, Textarea, FieldStyle, cn } from '../../components/dashboard/ui';
 import { BOLT_ENABLED } from '../../config/aiListing';
 import { useAuth } from '../../context/AuthContext';
 import { normalizePlan } from '../../utils/themeUtils';
@@ -522,7 +522,11 @@ export default function ServiceForm({ initialData, serviceId }) {
   };
 
   return (
-    <form id="service-form" onSubmit={handleSubmit} className={cn(kept && 'pb-28 lg:pb-0')}>
+    <FieldStyle.Provider value={kept ? 'filled' : 'line'}>
+    {/* Kept: filled inputs (FieldStyle) and the form's own field labels at the
+        Kept label size, without editing each label. */}
+    <form id="service-form" onSubmit={handleSubmit}
+      className={cn(kept && 'pb-28 lg:pb-0 [&_label.text-sm]:text-[13.5px] [&_label.text-sm]:font-semibold [&_label.text-sm]:text-ink')}>
       {/* Page header */}
       {kept ? (
         <header className="mb-5 flex flex-col gap-2 sm:mb-6">
@@ -863,5 +867,6 @@ export default function ServiceForm({ initialData, serviceId }) {
 
       {suggestOpen && <SuggestSubcategoryModal primary={primaryCat} onClose={() => setSuggestOpen(false)} />}
     </form>
+    </FieldStyle.Provider>
   );
 }

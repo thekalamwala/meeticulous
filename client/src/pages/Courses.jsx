@@ -11,6 +11,11 @@ import ThumbnailCropper from "../components/common/ThumbnailCropper";
 import ComingSoonTeaser from "../components/dashboard/ComingSoonTeaser";
 import { Link } from "react-router-dom";
 import { Plus, Video, Trash2, GripVertical } from "lucide-react";
+import useFeatureFlags from "../hooks/useFeatureFlags";
+import {
+  KeptPage, KeptHeader, KeptList, KeptRow, RowThumb, RowSwitch, KeptEditor, KeptEmpty,
+  KeptError, KeptSkeleton, PinnedAction, pinnedBtn, primaryBtn,
+} from "./catalog/KeptKit";
 import toast from "react-hot-toast";
 import {
   PageHeader, Card, Button, buttonClasses, FormField, Input, Textarea,
@@ -41,6 +46,10 @@ const Courses = () => {
   const [dirty, setDirty] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
+  const [fetched, setFetched] = useState(false); // first load finished (Kept skeleton)
+  // Kept look (dashboard_v2). Same state and handlers; only the shell differs.
+  const { flags } = useFeatureFlags();
+  const kept = !!flags?.dashboard_v2;
 
   // Admin kill-switch (fail-open) + Pro gate. Creation is a paid-plan feature;
   // server enforces the same via planService.isFreeSlug.
@@ -56,6 +65,8 @@ const Courses = () => {
     } catch {
       setLoadError(true);
       toast.error("Failed to load courses");
+    } finally {
+      setFetched(true);
     }
   };
   useEffect(() => { fetchCourses(); }, []);
@@ -141,11 +152,9 @@ const Courses = () => {
   };
 
   // Free plan / kill-switch off → upgrade teaser (mirrors Products.jsx).
-  if (!canCreate) {
-    return (
-      <div className="mx-auto max-w-4xl">
-        <BackButton hasUnsavedChanges={false} />
-        <PageHeader title="Video Courses" subtitle="Sell structured video courses — buy once, watch anytime." />
+  // Plan-gated body, shared by both looks.
+  const lockedBody = (
+      <>
         {!coursesOn ? (
           <ComingSoonTeaser
             feature="courses"
@@ -180,25 +189,29 @@ const Courses = () => {
             </div>
           </div>
         )}
+      </>
+  );
+  if (!canCreate) {
+    if (kept) {
+      return (
+        <KeptPage pinned={false}>
+          <KeptHeader title="Courses" sub="Video lessons a guest buys once and watches any time." />
+          {lockedBody}
+        </KeptPage>
+      );
+    }
+    return (
+      <div className="mx-auto max-w-4xl">
+        <BackButton hasUnsavedChanges={false} />
+        <PageHeader title="Video Courses" subtitle="Sell structured video courses — buy once, watch anytime." />
+        {lockedBody}
       </div>
     );
   }
 
-  return (
-    <div className="mx-auto max-w-4xl">
-      <BackButton hasUnsavedChanges={dirty} />
-      <PageHeader
-        title="Video Courses"
-        subtitle="Sell structured video courses — buy once, watch anytime."
-        actions={!showForm ? (
-          <Button className="hidden sm:inline-flex" onClick={openCreate}><Plus className="h-4 w-4" />Add Course</Button>
-        ) : null}
-      />
-
-      {showForm && (
-        <Card as="form" onSubmit={handleSubmit} className="mb-6 space-y-4">
-          <h2 className="font-semibold text-ink">{editingId ? "Edit Course" : "New Course"}</h2>
-
+  // Form fields, shared by the legacy card and the Kept editor.
+  const courseFields = (
+    <>
           <FormField label="Title" htmlFor="crs-title" className="mb-0">
             <Input id="crs-title" required placeholder="e.g. The Complete Reels Course" value={form.title} onChange={(e) => handleChange("title", e.target.value)} />
           </FormField>
@@ -234,6 +247,83 @@ const Courses = () => {
               <Plus className="h-4 w-4" />Add lesson
             </Button>
           </div>
+
+    </>
+  );
+
+  if (kept) {
+    const priceOf = (c) => (Number(c.price) ? `₹${Number(c.price).toLocaleString("en-IN")}` : "Free");
+    // Guest total comes from the server (guest_total, pricingEngine). Never computed here.
+    const guestOf = (c) => (Number(c.guest_total) > Number(c.price) ? `Guests pay ₹${Number(c.guest_total).toLocaleString("en-IN", { maximumFractionDigits: 2 })}` : null);
+    const live = courses.filter((c) => c.is_active).length;
+    return (
+      <KeptPage>
+        <KeptHeader title="Courses"
+          sub={!fetched ? "Loading your courses…" : courses.length ? `${courses.length} ${courses.length === 1 ? "course" : "courses"} · ${live} on your page` : "Video lessons a guest buys once and watches any time."}
+          action={<button type="button" onClick={openCreate} className={primaryBtn}><Plus className="h-4 w-4" strokeWidth={2.4} /> Add course</button>} />
+
+        {!fetched ? <KeptSkeleton /> : loadError && courses.length === 0 ? (
+          <KeptError what="courses" onRetry={fetchCourses} />
+        ) : courses.length === 0 ? (
+          <KeptEmpty icon={Video} title="No courses yet"
+            sub="Teach once, sell many times. A course is a set of video lessons a guest buys and watches at their own pace."
+            action={<button type="button" onClick={openCreate} className={primaryBtn}><Plus className="h-4 w-4" strokeWidth={2.4} /> Add a course</button>} />
+        ) : (
+          <KeptList label="Your courses">
+            {courses.map((c) => {
+              const n = (c.course_lessons || []).length;
+              return (
+                <KeptRow key={c.id} onOpen={() => openEdit(c)}
+                  thumb={<RowThumb image={c.thumbnail_url} icon={Video} />}
+                  title={c.title}
+                  detail={[n ? `${n} ${n === 1 ? "lesson" : "lessons"}` : "No lessons yet", c.purchase_count ? `${Number(c.purchase_count).toLocaleString("en-IN")} sold` : null].filter(Boolean).join(" · ")}
+                  price={priceOf(c)} note={guestOf(c)}
+                  trailing={<RowSwitch checked={!!c.is_active} onChange={() => handleToggle(c)} word={c.is_active ? "On your page" : "Hidden"}
+                    label={`${c.is_active ? "Hide" : "Show"} ${c.title} on your page`} />} />
+              );
+            })}
+          </KeptList>
+        )}
+
+        <KeptEditor open={showForm} onClose={handleCancel} formId="course-form" saving={loading}
+          title={editingId ? "Edit course" : "New course"}
+          subtitle={editingId ? form.title || undefined : "Guests can buy it as soon as you save."}
+          saveLabel={editingId ? "Save changes" : "Create course"}
+          onDelete={editingId ? () => setConfirmDelete(courses.find((x) => x.id === editingId) || { id: editingId, title: form.title }) : undefined}>
+          <form id="course-form" onSubmit={handleSubmit} className="space-y-4">
+            {courseFields}
+          </form>
+        </KeptEditor>
+
+        <ConfirmSheet open={!!confirmDelete} title="Delete course?"
+          message={confirmDelete ? `"${confirmDelete.title}" and its lessons will be permanently deleted. This cannot be undone.` : ""}
+          confirmLabel="Delete" danger onConfirm={async () => { await doDelete(); doDiscard(); }} onClose={() => setConfirmDelete(null)} />
+        <ConfirmSheet open={confirmDiscard} title="Discard changes?" message="Your unsaved changes will be lost."
+          confirmLabel="Discard" danger onConfirm={doDiscard} onClose={() => setConfirmDiscard(false)} />
+
+        <PinnedAction show={!showForm && fetched && !(loadError && courses.length === 0)}>
+          <button type="button" onClick={openCreate} className={pinnedBtn}><Plus className="h-4 w-4" strokeWidth={2.4} /> Add a course</button>
+        </PinnedAction>
+      </KeptPage>
+    );
+  }
+
+  return (
+    <div className="mx-auto max-w-4xl">
+      <BackButton hasUnsavedChanges={dirty} />
+      <PageHeader
+        title="Video Courses"
+        subtitle="Sell structured video courses — buy once, watch anytime."
+        actions={!showForm ? (
+          <Button className="hidden sm:inline-flex" onClick={openCreate}><Plus className="h-4 w-4" />Add Course</Button>
+        ) : null}
+      />
+
+      {showForm && (
+        <Card as="form" onSubmit={handleSubmit} className="mb-6 space-y-4">
+          <h2 className="font-semibold text-ink">{editingId ? "Edit Course" : "New Course"}</h2>
+
+          {courseFields}
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button type="submit" disabled={loading}>{loading ? "Saving..." : editingId ? "Save Changes" : "Create Course"}</Button>

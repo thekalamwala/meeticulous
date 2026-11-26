@@ -16,6 +16,11 @@ import BackButton from "../components/common/BackButton";
 import ThumbnailCropper from "../components/common/ThumbnailCropper";
 import ProTeaser from "../components/dashboard/ProTeaser";
 import { Plus, Package } from "lucide-react";
+import useFeatureFlags from "../hooks/useFeatureFlags";
+import {
+  KeptPage, KeptHeader, KeptList, KeptRow, RowThumb, RowSwitch, KeptEditor, KeptEmpty,
+  KeptError, KeptSkeleton, PinnedAction, pinnedBtn, primaryBtn,
+} from "./catalog/KeptKit";
 import toast from "react-hot-toast";
 import {
   PageHeader, Card, Button, FormField, Input, Select, Textarea,
@@ -85,6 +90,10 @@ const Products = () => {
   const [thumbMode, setThumbMode] = useState("url"); // "url" | "upload"
   const [confirmDelete, setConfirmDelete] = useState(null); // product pending delete
   const [confirmDiscard, setConfirmDiscard] = useState(false); // unsaved-changes guard
+  const [fetched, setFetched] = useState(false); // first load finished (Kept skeleton)
+  // Kept look (dashboard_v2). Same state and handlers; only the shell differs.
+  const { flags } = useFeatureFlags();
+  const kept = !!flags?.dashboard_v2;
 
   // Admin kill-switch gate (fail-open: on unless an admin disabled it).
   const digitalProductsOn = useFeature("digital_products");
@@ -125,6 +134,8 @@ const Products = () => {
     } catch {
       setLoadError(true);
       toast.error("Failed to load products");
+    } finally {
+      setFetched(true);
     }
   };
 
@@ -268,11 +279,9 @@ const Products = () => {
 
   // Plan-gated: free/limited plans see the page blurred behind an upgrade card.
   // (Kill-switch OFF is a separate, neutral message — an upgrade can't unlock it.)
-  if (!canCreate) {
-    return (
-      <div className="mx-auto max-w-4xl">
-        <BackButton hasUnsavedChanges={false} />
-        <PageHeader title="Digital Products" subtitle="Sell PDFs, templates, ebooks, and more." />
+  // Plan-gated body, shared by both looks.
+  const lockedBody = (
+      <>
         {!digitalProductsOn ? (
           <Card className="border-2 border-dashed border-primary/30 text-center">
             <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blush text-maroon">
@@ -303,31 +312,29 @@ const Products = () => {
             </ul>
           </ProTeaser>
         )}
+      </>
+  );
+  if (!canCreate) {
+    if (kept) {
+      return (
+        <KeptPage pinned={false}>
+          <KeptHeader title="Products" sub="Files guests download: PDFs, templates, ebooks." />
+          {lockedBody}
+        </KeptPage>
+      );
+    }
+    return (
+      <div className="mx-auto max-w-4xl">
+        <BackButton hasUnsavedChanges={false} />
+        <PageHeader title="Digital Products" subtitle="Sell PDFs, templates, ebooks, and more." />
+        {lockedBody}
       </div>
     );
   }
 
-  return (
-    <div className="mx-auto max-w-4xl">
-      <BackButton hasUnsavedChanges={dirty} />
-
-      <PageHeader
-        title="Digital Products"
-        subtitle="Sell PDFs, templates, ebooks, and more."
-        actions={
-          !showForm ? (
-            <Button className="hidden sm:inline-flex" onClick={openCreate}>
-              <Plus className="h-4 w-4" />
-              Add Product
-            </Button>
-          ) : null
-        }
-      />
-
-      {showForm && (
-        <Card as="form" onSubmit={handleSubmit} className="mb-6 space-y-4">
-          <h2 className="font-semibold text-ink">{editingId ? "Edit Product" : "New Product"}</h2>
-
+  // Form fields, shared by the legacy card and the Kept editor.
+  const productFields = (
+    <>
           <FormField label="Title" htmlFor="prod-title" className="mb-0">
             <Input id="prod-title" type="text" required placeholder="e.g. UI Component Kit" value={form.title} onChange={(e) => handleChange("title", e.target.value)} />
           </FormField>
@@ -410,6 +417,87 @@ const Products = () => {
               />
             )}
           </FormField>
+
+    </>
+  );
+
+  if (kept) {
+    const priceOf = (p) => (Number(p.price) ? `₹${Number(p.price).toLocaleString("en-IN")}` : "Free");
+    // Guest total comes from the server (guest_total, pricingEngine). Never computed here.
+    const guestOf = (p) => (Number(p.guest_total) > Number(p.price) ? `Guests pay ₹${Number(p.guest_total).toLocaleString("en-IN", { maximumFractionDigits: 2 })}` : null);
+    const typeLabel = (t) => PRODUCT_TYPES.find((x) => x.value === t)?.label || "Download";
+    const live = products.filter((p) => p.is_active).length;
+    return (
+      <KeptPage>
+        <KeptHeader title="Products"
+          sub={!fetched ? "Loading your products…" : products.length ? `${products.length} ${products.length === 1 ? "product" : "products"} · ${live} on your page` : "Files guests download: PDFs, templates, ebooks."}
+          action={<button type="button" onClick={openCreate} className={primaryBtn}><Plus className="h-4 w-4" strokeWidth={2.4} /> Add product</button>} />
+
+        {!fetched ? <KeptSkeleton /> : loadError && products.length === 0 ? (
+          <KeptError what="products" onRetry={fetchProducts} />
+        ) : products.length === 0 ? (
+          <KeptEmpty icon={Package} title="No products yet"
+            sub="A product is a file a guest buys and downloads. It sells while you sleep and takes no slot on your calendar."
+            action={<button type="button" onClick={openCreate} className={primaryBtn}><Plus className="h-4 w-4" strokeWidth={2.4} /> Add a product</button>} />
+        ) : (
+          <KeptList label="Your products">
+            {products.map((p) => (
+              <KeptRow key={p.id} onOpen={() => openEdit(p)}
+                thumb={<RowThumb image={p.thumbnail_url} icon={Package} />}
+                title={p.title}
+                detail={[typeLabel(p.type), p.purchase_count ? `${Number(p.purchase_count).toLocaleString("en-IN")} sold` : null].filter(Boolean).join(" · ")}
+                price={priceOf(p)} note={guestOf(p)}
+                trailing={<RowSwitch checked={!!p.is_active} onChange={() => handleToggle(p)} word={p.is_active ? "On your page" : "Hidden"}
+                  label={`${p.is_active ? "Hide" : "Show"} ${p.title} on your page`} />} />
+            ))}
+          </KeptList>
+        )}
+
+        <KeptEditor open={showForm} onClose={handleCancel} formId="product-form" saving={loading || fileUploading}
+          title={editingId ? "Edit product" : "New product"}
+          subtitle={editingId ? form.title || undefined : "Guests can buy it as soon as you save."}
+          saveLabel={editingId ? "Save changes" : "Create product"}
+          onDelete={editingId ? () => setConfirmDelete(products.find((x) => x.id === editingId) || { id: editingId, title: form.title }) : undefined}>
+          <form id="product-form" onSubmit={handleSubmit} className="space-y-4">
+            {productFields}
+          </form>
+        </KeptEditor>
+
+        <ConfirmSheet open={!!confirmDelete} title="Delete product?"
+          message={confirmDelete ? `"${confirmDelete.title}" will be permanently deleted. This cannot be undone.` : ""}
+          confirmLabel="Delete" danger onConfirm={async () => { await doDelete(); doDiscard(); }} onClose={() => setConfirmDelete(null)} />
+        <ConfirmSheet open={confirmDiscard} title="Discard changes?" message="Your unsaved changes will be lost."
+          confirmLabel="Discard" danger onConfirm={doDiscard} onClose={() => setConfirmDiscard(false)} />
+
+        <PinnedAction show={!showForm && fetched && !(loadError && products.length === 0)}>
+          <button type="button" onClick={openCreate} className={pinnedBtn}><Plus className="h-4 w-4" strokeWidth={2.4} /> Add a product</button>
+        </PinnedAction>
+      </KeptPage>
+    );
+  }
+
+  return (
+    <div className="mx-auto max-w-4xl">
+      <BackButton hasUnsavedChanges={dirty} />
+
+      <PageHeader
+        title="Digital Products"
+        subtitle="Sell PDFs, templates, ebooks, and more."
+        actions={
+          !showForm ? (
+            <Button className="hidden sm:inline-flex" onClick={openCreate}>
+              <Plus className="h-4 w-4" />
+              Add Product
+            </Button>
+          ) : null
+        }
+      />
+
+      {showForm && (
+        <Card as="form" onSubmit={handleSubmit} className="mb-6 space-y-4">
+          <h2 className="font-semibold text-ink">{editingId ? "Edit Product" : "New Product"}</h2>
+
+          {productFields}
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button type="submit" disabled={loading}>

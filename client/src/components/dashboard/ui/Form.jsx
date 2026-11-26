@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, createContext, useContext } from 'react';
 import { cn } from './cn';
 import MeetDropdown from '../../ui/MeetDropdown';
 import { optionsFromChildren } from '../../ui/selectChildren';
@@ -11,22 +11,38 @@ const fieldBase =
   'focus:border-primary focus:outline-none focus:shadow-none ' +
   'disabled:cursor-not-allowed disabled:text-neutral-400';
 
+// Opt-in Kept look (dashboard_v2 pages): a filled cream field with a 12px
+// radius and the rose focus ring, instead of the underline. A page wraps its
+// form in <FieldStyle.Provider value="filled">; everything else keeps the
+// underline, so no existing screen changes.
+export const FieldStyle = createContext('line');
+const filledBase =
+  'block w-full rounded-[12px] border-0 bg-cream text-[14.5px] text-ink placeholder:text-faint transition-colors ' +
+  'focus:bg-white focus:outline-none focus:ring-[3px] focus:ring-rose ' +
+  'disabled:cursor-not-allowed disabled:opacity-60';
+
 export const Input = forwardRef(function Input({ className = '', invalid = false, ...props }, ref) {
+  const filled = useContext(FieldStyle) === 'filled';
   return (
     <input
       ref={ref}
-      className={cn(fieldBase, 'h-10 px-0.5', invalid && 'border-red-400 focus:border-red-500', className)}
+      className={filled
+        ? cn(filledBase, 'h-11 px-3.5', invalid && 'ring-[3px] ring-red-300', className)
+        : cn(fieldBase, 'h-10 px-0.5', invalid && 'border-red-400 focus:border-red-500', className)}
       {...props}
     />
   );
 });
 
 export const Textarea = forwardRef(function Textarea({ className = '', invalid = false, rows = 4, ...props }, ref) {
+  const filled = useContext(FieldStyle) === 'filled';
   return (
     <textarea
       ref={ref}
       rows={rows}
-      className={cn(fieldBase, 'px-0.5 py-2', invalid && 'border-red-400', className)}
+      className={filled
+        ? cn(filledBase, 'px-3.5 py-3', invalid && 'ring-[3px] ring-red-300', className)
+        : cn(fieldBase, 'px-0.5 py-2', invalid && 'border-red-400', className)}
       {...props}
     />
   );
@@ -55,8 +71,9 @@ export const Select = forwardRef(function Select(
 });
 
 export function Label({ htmlFor, required, children, className = '' }) {
+  const filled = useContext(FieldStyle) === 'filled';
   return (
-    <label htmlFor={htmlFor} className={cn('mb-1.5 block text-sm font-medium text-neutral-700', className)}>
+    <label htmlFor={htmlFor} className={cn(filled ? 'mb-1.5 block text-[13.5px] font-semibold text-ink' : 'mb-1.5 block text-sm font-medium text-neutral-700', className)}>
       {children}
       {required && <span className="ml-0.5 text-red-500">*</span>}
     </label>

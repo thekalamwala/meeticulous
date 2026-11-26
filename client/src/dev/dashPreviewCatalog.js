@@ -30,10 +30,14 @@ const COUPONS = [
   { id: 'cpn-1', code: 'DIWALI20', discount_type: 'percent', discount_value: 20, active: true, times_redeemed: 3, max_redemptions: 50, expires_at: new Date(Date.now() + 9 * day).toISOString(), created_at: ago(10) },
   { id: 'cpn-2', code: 'WELCOMEBACK', discount_type: 'flat', discount_value: 300, active: false, times_redeemed: 0, max_redemptions: null, expires_at: null, created_at: ago(5) },
 ];
-const MEMBERSHIP = { program: { id: 'mp-1', name: 'Growth circle', tiers: [
-  { id: 'tier-1', name: 'Circle', type: 'paid', price_inr: 499, status: 'live', position: 0, created_at: ago(15) },
-  { id: 'tier-2', name: 'Inner circle', type: 'paid', price_inr: 1999, status: 'draft', position: 1, created_at: ago(15) },
+const MEMBERSHIP = { program: { id: 'mp-1', name: 'Growth circle', blurb: 'Monthly growth clinics and a members-only Q&A.', status: 'live', tiers: [
+  { id: 'tier-1', name: 'Circle', type: 'paid', price_inr: 499, status: 'live', position: 0, perks: ['Monthly group clinic', 'Members-only Q&A'], created_at: ago(15) },
+  { id: 'tier-2', name: 'Inner circle', type: 'paid', price_inr: 1999, status: 'draft', position: 1, perks: ['Everything in Circle', 'One 1:1 review a month'], created_at: ago(15) },
 ] } };
+const MEMBERS = { member_count: 2, mrr: 998, members: [
+  { id: 'mm-1', status: 'active', member: { name: 'Meera Iyer' }, tier: { name: 'Circle' } },
+  { id: 'mm-2', status: 'active', member: { name: 'Kabir Rao' }, tier: { name: 'Circle' } },
+] };
 
 const LONG = 'Complete 1:1 business strategy deep-dive for founders who want to rebuild their whole go-to-market plan';
 const WORST = {
@@ -51,7 +55,7 @@ export function catalogFixtures() {
   let mode = '';
   try { mode = localStorage.getItem('dash-preview-catalog') || ''; } catch { /* storage blocked */ }
   if (mode === 'empty') {
-    return { '/services': [], '/products/mine/all': [], '/courses/mine/all': [], '/host/coupons': [], '/memberships/mine': { program: null } };
+    return { '/services': [], '/products/mine/all': [], '/courses/mine/all': [], '/host/coupons': [], '/memberships/mine': { program: null }, '/memberships/members': { member_count: 0, mrr: 0, members: [] } };
   }
   if (mode === 'error') {
     return { '/services': ERR, '/products/mine/all': ERR, '/courses/mine/all': ERR, '/host/coupons': ERR, '/memberships/mine': ERR };
@@ -62,5 +66,6 @@ export function catalogFixtures() {
     '/courses/mine/all': COURSES,
     '/host/coupons': COUPONS,
     '/memberships/mine': MEMBERSHIP,
+    '/memberships/members': MEMBERS,
   };
 }
